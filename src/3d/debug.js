@@ -1,10 +1,5 @@
-import {
-  Color3,
-  DynamicTexture,
-  Mesh,
-  StandardMaterial,
-  Vector3
-} from 'babylonjs'
+import Babylon from 'babylonjs'
+const { Color3, DynamicTexture, Mesh, StandardMaterial, Vector3 } = Babylon
 
 export function showAxis(size) {
   function makeTextPlane(text, color, size) {

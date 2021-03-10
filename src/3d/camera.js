@@ -1,4 +1,5 @@
-import { ArcRotateCamera, Vector3 } from 'babylonjs'
+import Babylon from 'babylonjs'
+const { ArcRotateCamera, Vector3 } = Babylon
 
 export function createCamera() {
   const camera = new ArcRotateCamera(

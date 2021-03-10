@@ -1,4 +1,5 @@
-import { Color3, DirectionalLight, ShadowGenerator, Vector3 } from 'babylonjs'
+import Babylon from 'babylonjs'
+const { Color3, DirectionalLight, ShadowGenerator, Vector3 } = Babylon
 
 export function createLight() {
   const light = new DirectionalLight('sun', new Vector3(100, -200, -100))

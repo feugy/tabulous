@@ -1,4 +1,5 @@
-import {
+import Babylon from 'babylonjs'
+const {
   ActionManager,
   Animation,
   Axis,
@@ -10,7 +11,7 @@ import {
   StandardMaterial,
   Texture,
   Vector3
-} from 'babylonjs'
+} = Babylon
 
 export function createCard({
   x = 0,

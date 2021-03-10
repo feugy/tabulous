@@ -1,6 +1,7 @@
 <script>
-  import { Engine, Scene } from 'babylonjs'
+  import Babylon from 'babylonjs'
   import { createCamera, createCard, createLight, createTable } from '../3d'
+  const { Engine, Scene } = Babylon
 
   let canvas
   let interaction
@@ -43,10 +44,11 @@
 </script>
 
 <style>
-  :global(body, html, #sapper) {
+  :global(body, html) {
     margin: 0;
     height: 100%;
     overflow: hidden;
+    font-family: sans-serif;
   }
 
   main {
@@ -71,9 +73,7 @@
 
 <svelte:window on:resize={handleResize} />
 
-{#if typeof window !== 'undefined'}
-  <main>
-    <canvas bind:this={canvas} />
-    <div bind:this={interaction} />
-  </main>
-{/if}
+<main>
+  <canvas bind:this={canvas} />
+  <div bind:this={interaction} />
+</main>
