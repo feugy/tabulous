@@ -1,44 +1,45 @@
 <script>
-  import { onDestroy } from 'svelte'
-  import createWorld from '../components/World'
-  import createTable from '../components/Table'
-  import createCard from '../components/Card'
-  import CameraControls from '../components/CameraControls.svelte'
+  import { Engine, Scene } from 'babylonjs'
+  import { createCamera, createCard, createLight, createTable } from '../3d'
 
-  let container
-  let world
+  let canvas
+  let interaction
+  let engine
 
-  $: if (!!container && !world) {
-    world = createWorld({ container })
-    const table = createTable()
+  $: if (!!canvas && !!interaction) {
+    engine = new Engine(canvas, true)
+    engine.inputElement = interaction
+
+    const scene = new Scene(engine)
+    createCamera()
+    // showAxis(2)
+    createTable()
+    // create light after table, so table doesn't project shadow
+    createLight()
+
     const card1 = createCard({
-      x: -3,
-      sideA: 'images/splendor/1/ruby-1.png',
-      sideB: 'images/splendor/1/back.png'
+      x: -4,
+      front: 'images/splendor/1/ruby-1.png',
+      back: 'images/splendor/1/back.png'
     })
     const card2 = createCard({
-      sideA: 'images/splendor/2/diamond-1.png',
-      sideB: 'images/splendor/2/back.png'
+      front: 'images/splendor/2/diamond-1.png',
+      back: 'images/splendor/2/back.png'
     })
     const card3 = createCard({
-      x: 3,
-      sideA: 'images/splendor/3/sapphire-1.png',
-      sideB: 'images/splendor/3/back.png'
+      x: 4,
+      front: 'images/splendor/3/sapphire-1.png',
+      back: 'images/splendor/3/back.png'
     })
-    world.scene.add(
-      table.instance,
-      card1.instance,
-      card2.instance,
-      card3.instance
-    )
-    world.renderer.addUpdatable(card1, card2, card3)
+
+    engine.runRenderLoop(function () {
+      scene.render()
+    })
   }
 
-  onDestroy(() => {
-    if (world) {
-      world.dispose()
-    }
-  })
+  function handleResize() {
+    engine?.resize()
+  }
 </script>
 
 <style>
@@ -53,12 +54,14 @@
     height: 100%;
   }
 
-  div {
+  div,
+  canvas {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    touch-action: none;
   }
 </style>
 
@@ -66,13 +69,11 @@
   <title>Board Forge</title>
 </svelte:head>
 
+<svelte:window on:resize={handleResize} />
+
 {#if typeof window !== 'undefined'}
   <main>
-    <div bind:this={container} />
-    <div>
-      {#if world}
-        <CameraControls camera={world.camera} />
-      {/if}
-    </div>
+    <canvas bind:this={canvas} />
+    <div bind:this={interaction} />
   </main>
 {/if}
