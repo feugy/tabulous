@@ -1,30 +1,30 @@
 import Babylon from 'babylonjs'
+import { DragBehavior, FlipBehavior, StackBehavior } from './behaviors'
 const {
   ActionManager,
-  Animation,
   Axis,
   ExecuteCodeAction,
   Mesh,
   MeshBuilder,
-  PointerDragBehavior,
   Space,
   StandardMaterial,
-  Texture,
-  Vector3
+  Texture
 } = Babylon
 
 export function createCard({
   x = 0,
   y = 0,
+  // Poker ratio is between 1.39 and 1.41
   width = 3,
-  height = 4.12,
+  height = 4.25,
   front,
   back,
-  flipDuration = 0.5
+  isFlipped = false,
+  flipDuration = 0.5,
+  moveDuration = 0.1,
+  snapDistance = 0.25,
+  ...cardProps
 } = {}) {
-  let isFlipped = false
-  let isFlipping = false
-
   const faces = [
     MeshBuilder.CreatePlane('front-face', { width, height }),
     MeshBuilder.CreatePlane('back-face', { width, height })
@@ -38,85 +38,40 @@ export function createCard({
   faces[1].rotate(Axis.Z, Math.PI, Space.LOCAL)
   const card = Mesh.MergeMeshes(faces, true, false, null, false, true)
   card.receiveShadows = true
-  card.position.set(x, y, 0)
-
-  const frameRate = 30
-  const lastFrame = Math.round(frameRate * flipDuration)
-
-  const flipAnimation = new Animation(
-    'flip',
-    'rotation.z',
-    frameRate,
-    Animation.ANIMATIONTYPE_FLOAT,
-    Animation.ANIMATIONLOOPMODE_CONSTANT
-  )
-
-  const raiseAnimation = new Animation(
-    'raise',
-    'position.y',
-    frameRate,
-    Animation.ANIMATIONTYPE_FLOAT,
-    Animation.ANIMATIONLOOPMODE_CONSTANT
-  )
-
-  function flip() {
-    if (isFlipping) {
-      return
-    }
-    flipAnimation.setKeys([
-      { frame: 0, value: isFlipped ? Math.PI : 0 },
-      { frame: lastFrame, value: isFlipped ? 0 : Math.PI }
-    ])
-    raiseAnimation.setKeys([
-      { frame: 0, value: card.position.y },
-      { frame: lastFrame * 0.5, value: card.position.y + width * 0.75 },
-      { frame: lastFrame, value: card.position.y }
-    ])
-    drag.enabled = false
-    isFlipping = true
-    drag.releaseDrag()
-    card
-      .getScene()
-      .beginDirectAnimation(
-        card,
-        [flipAnimation, raiseAnimation],
-        0,
-        frameRate,
-        false,
-        1,
-        () => {
-          drag.enabled = true
-          isFlipping = false
-          isFlipped = !isFlipped
-        }
-      )
+  card.position.set(x, 0, y)
+  if (isFlipped) {
+    card.rotation.z = Math.PI
   }
+  Object.assign(card, cardProps)
 
+  const dragBehavior = new DragBehavior({ moveDuration, snapDistance })
+  card.addBehavior(dragBehavior)
+
+  const flipBehavior = new FlipBehavior({ isFlipped })
+  flipBehavior.onMoveStartObservable.add(() => {
+    dragBehavior.enabled = false
+    dragBehavior.releaseDrag()
+  })
+  flipBehavior.onMoveStopObservable.add(() => {
+    dragBehavior.enabled = true
+  })
+  card.addBehavior(flipBehavior)
   card.actionManager = new ActionManager(card.getScene())
   card.actionManager.registerAction(
-    new ExecuteCodeAction(ActionManager.OnPickTrigger, flip)
+    new ExecuteCodeAction(ActionManager.OnPickTrigger, () =>
+      flipBehavior.flip(flipDuration)
+    )
   )
 
-  const drag = new PointerDragBehavior({
-    dragPlaneNormal: new Vector3(0, 1, 0)
+  const stackBehavior = new StackBehavior({ moveDuration })
+  const target = MeshBuilder.CreateBox('target', {
+    width,
+    height: 10,
+    size: height
   })
-  drag.updateDragPlane = false
-  drag.validateDrag = () => !isFlipping
-  card.addBehavior(drag)
-
-  let initialPos
-  drag.onDragStartObservable.add(() => {
-    initialPos = card.position.clone()
-  })
-  drag.onDragObservable.add(() => {
-    // don't elevate if we're only holding the mouse button without moving
-    if (Vector3.Distance(initialPos, card.position) > 0.02) {
-      card.position.y = initialPos.y + 0.5
-    }
-  })
-  drag.onDragEndObservable.add(() => {
-    card.position.y = initialPos.y
-  })
+  target.parent = card
+  stackBehavior.defineTarget(target)
+  card.addBehavior(stackBehavior)
 
   return card
 }

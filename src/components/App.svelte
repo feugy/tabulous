@@ -1,42 +1,49 @@
 <script>
+  import { onMount } from 'svelte'
   import Babylon from 'babylonjs'
-  import { createCamera, createCard, createLight, createTable } from '../3d'
-  const { Engine, Scene } = Babylon
+  import {
+    createCamera,
+    createCard,
+    createLight,
+    createTable,
+    showAxis
+  } from '../3d'
+  const { Engine, Vector3, Scene } = Babylon
 
   let canvas
   let interaction
   let engine
 
-  $: if (!!canvas && !!interaction) {
+  onMount(() => {
     engine = new Engine(canvas, true)
     engine.inputElement = interaction
 
     const scene = new Scene(engine)
+
     createCamera()
     // showAxis(2)
     createTable()
     // create light after table, so table doesn't project shadow
     createLight()
 
-    const card1 = createCard({
-      x: -4,
-      front: 'images/splendor/1/ruby-1.png',
-      back: 'images/splendor/1/back.png'
-    })
-    const card2 = createCard({
-      front: 'images/splendor/2/diamond-1.png',
-      back: 'images/splendor/2/back.png'
-    })
-    const card3 = createCard({
-      x: 4,
-      front: 'images/splendor/3/sapphire-1.png',
-      back: 'images/splendor/3/back.png'
-    })
+    const gems = ['ruby', 'diamond', 'sapphire']
+    for (let x = -12; x <= 12; x += 4) {
+      // for (let x = -4; x < 0; x += 4) {
+      for (const gem of gems) {
+        const i = gems.indexOf(gem)
+        createCard({
+          x,
+          y: i * 5 - 5,
+          front: `images/splendor/${i + 1}/${gem}-1.png`,
+          back: `images/splendor/${i + 1}/back.png`,
+          isFlipped: true
+        })
+      }
+    }
 
-    engine.runRenderLoop(function () {
-      scene.render()
-    })
-  }
+    engine.runRenderLoop(scene.render.bind(scene))
+    return () => engine?.dispose()
+  })
 
   function handleResize() {
     engine?.resize()
