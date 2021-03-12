@@ -1,5 +1,6 @@
 import Babylon from 'babylonjs'
 import { MoveBehavior } from './movable'
+import { applyGravity } from './utils'
 
 const { Animation, Vector3 } = Babylon
 
@@ -65,7 +66,8 @@ export class FlipBehavior extends MoveBehavior {
         () => {
           this.isMoving = false
           this.isFlipped = !isFlipped
-          onMoveStopObservable.notifyObservers({ mesh, from: to, duration })
+          const from = applyGravity(mesh)
+          onMoveStopObservable.notifyObservers({ mesh, from, duration })
         }
       )
   }

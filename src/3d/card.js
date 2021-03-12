@@ -64,13 +64,13 @@ export function createCard({
   )
 
   const stackBehavior = new StackBehavior({ moveDuration })
-  const target = MeshBuilder.CreateBox('target', {
-    width,
-    height: 10,
-    size: height
-  })
-  target.parent = card
-  stackBehavior.defineTarget(target)
+  // const target = MeshBuilder.CreateBox('target', {
+  //   width,
+  //   height: 10,
+  //   size: height
+  // })
+  // target.parent = card
+  // stackBehavior.defineTarget(target)
   card.addBehavior(stackBehavior)
 
   return card

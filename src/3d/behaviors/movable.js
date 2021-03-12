@@ -1,5 +1,5 @@
 import Babylon from 'babylonjs'
-
+import { applyGravity } from './utils'
 const { Animation, Observable } = Babylon
 
 export class MoveBehavior {
@@ -66,6 +66,7 @@ export class MoveBehavior {
         1,
         () => {
           this.isMoving = false
+          applyGravity(mesh)
           onMoveStopObservable.notifyObservers({ mesh, from, duration })
         }
       )
