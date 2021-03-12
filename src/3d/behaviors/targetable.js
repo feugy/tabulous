@@ -1,4 +1,6 @@
 import Babylon from 'babylonjs'
+import { isAbove } from './utils'
+
 const { Observable } = Babylon
 
 const targets = []
@@ -60,7 +62,7 @@ TargetBehavior.findTarget = dragged => {
     for (const target of targets) {
       if (target.enabled && target.mesh !== dragged) {
         for (const box of target.collisionBoxes) {
-          if (box.intersectsMesh(dragged, false)) {
+          if (isAbove(dragged, box)) {
             dropBoxes.push({
               target,
               box,

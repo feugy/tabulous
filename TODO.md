@@ -2,15 +2,19 @@
 
 ## Single player
 
-- stack actions:
-  - stack size
+- rotable behavior
+- multi selection (ctrl or 2 fingers)
   - move all
   - flip all
+  - rotate all
+- stack actions:
+  - stack size
   - draw multiple cards
   - shuffle
   - add to bottom
 - tokens (stackable, flippable)
 - boards
+- camera controls
 
 ## Multi player
 
@@ -21,5 +25,3 @@
 - inline video
 
 # Known issues
-
-- the combination of flip and drag movement can elevate a card

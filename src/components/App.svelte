@@ -8,7 +8,8 @@
     createTable,
     showAxis
   } from '../3d'
-  const { Engine, Vector3, Scene } = Babylon
+
+  const { Engine, Scene } = Babylon
 
   let canvas
   let interaction
@@ -32,6 +33,7 @@
       for (const gem of gems) {
         const i = gems.indexOf(gem)
         createCard({
+          // id: gem,
           x,
           y: i * 5 - 5,
           front: `images/splendor/${i + 1}/${gem}-1.png`,

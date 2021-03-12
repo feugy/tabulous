@@ -17,15 +17,14 @@ const rayLength = 30
 
 export function applyGravity(mesh) {
   const { boundingBox } = mesh.getBoundingInfo()
-  const down = new Vector3(0, -1, 0)
-  const up = new Vector3(0, 1, 0)
+  const down = Vector3.Down()
+  const up = Vector3.Up()
   const scene = mesh.getScene()
   const over = new Set()
   function predicate(other) {
     return other.isPickable && other !== mesh
   }
   for (const vertex of [...boundingBox.vectorsWorld, mesh.position]) {
-    // new RayHelper(new Ray(vertex, direction, 10)).show(scene)
     let hit = scene.pickWithRay(new Ray(vertex, down, rayLength), predicate)
     if (hit.pickedMesh) {
       over.add(hit.pickedMesh)
@@ -43,4 +42,22 @@ export function applyGravity(mesh) {
       ordered[0].getBoundingInfo().boundingBox.maximumWorld.y + 0.02
   }
   return mesh.position
+}
+
+export function isAbove(mesh, target) {
+  const { boundingBox } = mesh.getBoundingInfo()
+  const down = Vector3.Down()
+  const originalScale = target.scaling.clone()
+  target.scaling.addInPlace(new Vector3(0.2, 0.2, 0.2))
+  target.computeWorldMatrix(true)
+  let hit = 0
+  for (const vertex of boundingBox.vectorsWorld) {
+    if (new Ray(vertex, down, rayLength).intersectsMesh(target).hit) {
+      hit++
+    } else {
+      break
+    }
+  }
+  target.scaling.copyFrom(originalScale)
+  return hit === boundingBox.vectorsWorld.length
 }

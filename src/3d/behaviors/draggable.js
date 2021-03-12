@@ -57,8 +57,8 @@ export class DragBehavior {
 
     this.drag.onDragEndObservable.add(event => {
       if (hasMoved) {
-        // TargetBehavior.hideTargets()
         const drop = TargetBehavior.findTarget(mesh)
+        // TargetBehavior.hideTargets()
         if (drop) {
           this.onDragEndObservable.notifyObservers(event)
         } else {
