@@ -4,6 +4,7 @@
   import {
     createCamera,
     createCard,
+    createEngine,
     createLight,
     createTable,
     showAxis
@@ -16,10 +17,7 @@
   let engine
 
   onMount(() => {
-    engine = new Engine(canvas, true)
-    engine.inputElement = interaction
-
-    const scene = new Scene(engine)
+    engine = createEngine({ canvas, interaction })
 
     createCamera()
     // showAxis(2)
@@ -43,8 +41,8 @@
       }
     }
 
-    engine.runRenderLoop(scene.render.bind(scene))
-    return () => engine?.dispose()
+    engine.start()
+    return () => engine.dispose()
   })
 
   function handleResize() {

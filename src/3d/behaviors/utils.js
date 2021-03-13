@@ -42,7 +42,6 @@ export function applyGravity(mesh) {
     const ordered = [...over.values()].sort(
       (a, b) => b.absolutePosition.y - a.absolutePosition.y
     )
-    console.log(`${mesh.id} > ${ordered[0].id}`)
     const { x, z } = mesh.absolutePosition
     mesh.setAbsolutePosition(
       new Vector3(
@@ -81,4 +80,8 @@ export function getMoveableBehavior(mesh) {
 
 export function getTargetableBehavior(mesh) {
   return mesh?.getBehaviorByName('stack') || mesh?.getBehaviorByName('target')
+}
+
+export function screenToGround(scene, { x, y }) {
+  return scene.createPickingRay(x, y).intersectsAxis('y')
 }

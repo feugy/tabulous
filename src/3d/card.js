@@ -3,6 +3,7 @@ import { DragBehavior, FlipBehavior, StackBehavior } from './behaviors'
 const {
   ActionManager,
   Axis,
+  Color3,
   ExecuteCodeAction,
   Mesh,
   MeshBuilder,
@@ -43,6 +44,9 @@ export function createCard({
     card.rotation.z = Math.PI
   }
   Object.assign(card, cardProps)
+
+  card.overlayColor = new Color3(0, 0.8, 0)
+  card.overlayAlpha = 0.2
 
   const dragBehavior = new DragBehavior({ moveDuration, snapDistance })
   card.addBehavior(dragBehavior)

@@ -36,6 +36,17 @@ export class FlipBehavior extends MoveBehavior {
       return
     }
     this.isMoving = true
+
+    // multiple flip support
+    const { selection } = mesh.getScene()
+    if (selection.meshes.includes(mesh)) {
+      for (const other of selection.meshes) {
+        if (other !== mesh) {
+          other.getBehaviorByName(this.name)?.flip(duration)
+        }
+      }
+    }
+
     const to = mesh.absolutePosition.clone()
     const [min, max] = mesh.getBoundingInfo().boundingBox.vectorsWorld
     const width = Math.abs(min.x - max.x)

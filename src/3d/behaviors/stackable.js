@@ -29,7 +29,6 @@ export class StackBehavior extends TargetBehavior {
   push(mesh) {
     const { stack, moveDuration } = this
     stack.push(mesh)
-    console.log(`stack ${mesh.id} above ${stack[stack.length - 2].id}`, stack)
     animateMove(mesh, stack[0].absolutePosition, moveDuration, () =>
       applyGravity(mesh)
     )
@@ -47,9 +46,6 @@ export class StackBehavior extends TargetBehavior {
     if (stack.length <= 0) {
       return
     }
-    console.log(
-      `pop ${stack[stack.length - 1].id} from ${stack[stack.length - 2].id}`
-    )
     const mesh = stack.pop()
     const targetable = getTargetableBehavior(mesh)
     if (targetable) {

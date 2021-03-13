@@ -12,5 +12,6 @@ export function createTable({
 
   table.material = new StandardMaterial('table-front')
   table.material.emissiveColor = color
+  table.isPickable = false
   return table
 }
