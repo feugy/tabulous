@@ -2,13 +2,12 @@
 
 ## Refactor
 
-- multi-selectable behavior)
+- target manager
 - constants for behavior names + -able names
 
 ## Single player
 
 - multi selection
-  - move all
   - rotate all
 - stack actions:
   - stack size
@@ -16,6 +15,7 @@
   - shuffle
   - add to bottom
 - rotable behavior (on right click)
+- action icons & infos
 - tokens (stackable, flippable, rotable)
 - boards
 - camera controls
@@ -30,6 +30,6 @@
 
 # Known issues
 
-- flipping stacked elevates them
+- need to merge stacks
 - card must stay on the table
 - camera can go wild

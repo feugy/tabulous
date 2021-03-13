@@ -1,19 +1,18 @@
 import Babylon from 'babylonjs'
 import { TargetBehavior } from './targetable'
-import { animateMove } from './utils'
-const { Observable, PointerDragBehavior, Vector3 } = Babylon
+import { animateMove, applyGravity } from '../utils'
+import { dragManager } from '../managers'
+const { Vector3 } = Babylon
 
 export class DragBehavior {
-  constructor({ moveDuration, snapDistance } = {}) {
-    this.drag = new PointerDragBehavior({
-      dragPlaneNormal: Vector3.Up()
-    })
+  constructor({ moveDuration, snapDistance, elevation } = {}) {
     this.enabled = true
     this.snapDistance = snapDistance || 0.25
     this.moveDuration = moveDuration || 0.1
-    this.onDragStartObservable = new Observable()
-    this.onDragObservable = new Observable()
-    this.onDragEndObservable = new Observable()
+    this.elevation = elevation ? elevation : 0.5
+    this.dragStartObserver = null
+    this.dragObserver = null
+    this.dragEndObserver = null
   }
 
   get name() {
@@ -23,77 +22,50 @@ export class DragBehavior {
   init() {}
 
   attach(mesh) {
-    mesh.addBehavior(this.drag)
-
-    const flipBehavior = mesh.getBehaviorByName('flip')
-    if (flipBehavior) {
-      this.validateDrag = () => !flipBehavior.isMoving
-    }
-
-    let initialPos
     let target = null
-    let hasMoved = false
-
-    this.drag.onDragStartObservable.add(() => {
-      initialPos = mesh.absolutePosition.clone()
-      hasMoved = false
+    this.mesh = mesh
+    this.dragStartObserver = dragManager.onDragStartObservable.add(dragged => {
+      if (dragged.mesh === mesh) {
+        mesh.absolutePosition.y += this.elevation
+      }
     })
 
-    this.drag.onDragObservable.add(event => {
-      if (
-        !hasMoved &&
-        Vector3.Distance(initialPos, mesh.absolutePosition) > 0.01
-      ) {
-        hasMoved = true
-        // TargetBehavior.showTargets()
-        this.onDragStartObservable.notifyObservers({
-          dragPlanePoint: event.dragPlanePoint,
-          pointerId: event.pointerId
-        })
-        // reset initial position after stack pop
-        initialPos = mesh.absolutePosition.clone()
-      }
-      // don't elevate if we're only holding the mouse button without moving
-      if (hasMoved) {
+    this.dragObserver = dragManager.onDragObservable.add(dragged => {
+      if (dragged.mesh === mesh) {
+        // hide previous target and move
         if (target) {
           target.box.visibility = 0
         }
-        mesh.absolutePosition.y = initialPos.y + 0.5
-        this.onDragObservable.notifyObservers(event)
+        mesh.setAbsolutePosition(mesh.absolutePosition.add(dragged.move))
+        // find and show new target
         target = TargetBehavior.findTarget(mesh)
         TargetBehavior.showTarget(target)
       }
     })
 
-    this.drag.onDragEndObservable.add(event => {
-      if (hasMoved) {
-        mesh.renderOverlay = false
+    this.dragEndObserver = dragManager.onDragEndObservable.add(dragged => {
+      if (dragged.mesh === mesh) {
         TargetBehavior.hideTarget(target)
         if (target) {
+          console.log(`drop ${mesh.id} over ${target.mesh.id}`)
           target.drop()
         } else {
-          const { x, z } = mesh.absolutePosition
+          const { x, y, z } = mesh.absolutePosition
           const absolutePosition = new Vector3(
             Math.round(x / this.snapDistance) * this.snapDistance,
-            initialPos.y,
+            y,
             Math.round(z / this.snapDistance) * this.snapDistance
           )
-          animateMove(mesh, absolutePosition, this.moveDuration, () =>
-            this.onDragEndObservable.notifyObservers(event)
-          )
+          console.log(`end drag ${mesh.id}`)
+          animateMove(mesh, absolutePosition, this.moveDuration, applyGravity)
         }
       }
     })
   }
 
   detach() {
-    this.drag.attachedNode?.removeBehavior(this.drag)
-    this.drag.onDragStartObservable.clear()
-    this.drag.onDragObservable.clear()
-    this.drag.onDragEndObservable.clear()
-  }
-
-  releaseDrag() {
-    this.drag.releaseDrag()
+    dragManager.onDragStartObservable.remove(this.dragStartObserver)
+    dragManager.onDragObservable.remove(this.dragObserver)
+    dragManager.onDragEndObservable.remove(this.dragEndObserver)
   }
 }

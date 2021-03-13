@@ -1,5 +1,5 @@
 import Babylon from 'babylonjs'
-import { applyGravity } from './utils'
+import { applyGravity } from '../utils'
 const { Animation, Observable } = Babylon
 
 export class MoveBehavior {
@@ -15,7 +15,7 @@ export class MoveBehavior {
     this.mesh = null
     this.isMoving = false
     this.onMoveStartObservable = new Observable()
-    this.onMoveStopObservable = new Observable()
+    this.onMoveEndObservable = new Observable()
   }
 
   get name() {
@@ -41,7 +41,7 @@ export class MoveBehavior {
       frameRate,
       moveAnimation,
       onMoveStartObservable,
-      onMoveStopObservable
+      onMoveEndObservable
     } = this
     if (isMoving) {
       return
@@ -66,9 +66,10 @@ export class MoveBehavior {
         1,
         () => {
           this.isMoving = false
+          // spirted animation may not exactly end where we want, so force the final position
           mesh.setAbsolutePosition(to)
           applyGravity(mesh)
-          onMoveStopObservable.notifyObservers({ mesh, from, duration })
+          onMoveEndObservable.notifyObservers({ mesh, from, duration })
         }
       )
   }

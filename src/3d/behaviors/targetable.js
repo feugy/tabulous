@@ -1,5 +1,5 @@
 import Babylon from 'babylonjs'
-import { isAbove } from './utils'
+import { isAbove } from '../utils'
 
 const { Observable } = Babylon
 

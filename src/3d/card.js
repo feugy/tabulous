@@ -52,13 +52,6 @@ export function createCard({
   card.addBehavior(dragBehavior)
 
   const flipBehavior = new FlipBehavior({ isFlipped })
-  flipBehavior.onMoveStartObservable.add(() => {
-    dragBehavior.enabled = false
-    dragBehavior.releaseDrag()
-  })
-  flipBehavior.onMoveStopObservable.add(() => {
-    dragBehavior.enabled = true
-  })
   card.addBehavior(flipBehavior)
   card.actionManager = new ActionManager(card.getScene())
   card.actionManager.registerAction(

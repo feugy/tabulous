@@ -1,6 +1,7 @@
 import Babylon from 'babylonjs'
 import { MoveBehavior } from './movable'
-import { applyGravity } from './utils'
+import { applyGravity } from '../utils'
+import { multiSelectionManager } from '../managers'
 
 const { Animation, Vector3 } = Babylon
 
@@ -21,7 +22,7 @@ export class FlipBehavior extends MoveBehavior {
     return 'flip'
   }
 
-  flip(duration) {
+  flip(duration, skipMulti = false) {
     const {
       isMoving,
       isFlipped,
@@ -30,22 +31,20 @@ export class FlipBehavior extends MoveBehavior {
       flipAnimation,
       moveAnimation,
       onMoveStartObservable,
-      onMoveStopObservable
+      onMoveEndObservable
     } = this
     if (isMoving) {
       return
     }
-    this.isMoving = true
-
-    // multiple flip support
-    const { selection } = mesh.getScene()
-    if (selection.meshes.includes(mesh)) {
-      for (const other of selection.meshes) {
-        if (other !== mesh) {
-          other.getBehaviorByName(this.name)?.flip(duration)
-        }
+    if (!skipMulti && multiSelectionManager.meshes.includes(mesh)) {
+      // when flipping stacks, flip them in order to keep y-ordering
+      for (const other of multiSelectionManager.meshes) {
+        other.getBehaviorByName(this.name)?.flip(duration, true)
       }
+      return
     }
+    console.log(`start flip ${mesh.id}`)
+    this.isMoving = true
 
     const to = mesh.absolutePosition.clone()
     const [min, max] = mesh.getBoundingInfo().boundingBox.vectorsWorld
@@ -77,8 +76,9 @@ export class FlipBehavior extends MoveBehavior {
         () => {
           this.isMoving = false
           this.isFlipped = !isFlipped
+          console.log(`end flip ${mesh.id}`)
           const from = applyGravity(mesh)
-          onMoveStopObservable.notifyObservers({ mesh, from, duration })
+          onMoveEndObservable.notifyObservers({ mesh, from, duration })
         }
       )
   }

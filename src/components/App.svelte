@@ -26,12 +26,13 @@
     createLight()
 
     const gems = ['ruby', 'diamond', 'sapphire']
+    let j = 1
     for (let x = -12; x <= 12; x += 4) {
       // for (let x = -4; x < 0; x += 4) {
       for (const gem of gems) {
         const i = gems.indexOf(gem)
         createCard({
-          // id: gem,
+          id: `${gem}-${j}`,
           x,
           y: i * 5 - 5,
           front: `images/splendor/${i + 1}/${gem}-1.png`,
@@ -39,6 +40,7 @@
           isFlipped: true
         })
       }
+      j++
     }
 
     engine.start()
