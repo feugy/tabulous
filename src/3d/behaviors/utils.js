@@ -7,8 +7,7 @@ export function animateMove(
   duration,
   onEnd = () => {}
 ) {
-  const movable =
-    mesh.getBehaviorByName('move') || mesh.getBehaviorByName('flip')
+  const movable = getMoveableBehavior(mesh)
   if (!movable) {
     mesh.setAbsolutePosition(absolutePosition)
     onEnd()
@@ -74,4 +73,12 @@ export function isAbove(mesh, target) {
   }
   target.scaling.copyFrom(originalScale)
   return hit === boundingBox.vectorsWorld.length
+}
+
+export function getMoveableBehavior(mesh) {
+  return mesh?.getBehaviorByName('move') || mesh?.getBehaviorByName('flip')
+}
+
+export function getTargetableBehavior(mesh) {
+  return mesh?.getBehaviorByName('stack') || mesh?.getBehaviorByName('target')
 }

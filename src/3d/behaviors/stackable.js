@@ -1,5 +1,5 @@
 import { TargetBehavior } from './targetable'
-import { animateMove, applyGravity } from './utils'
+import { animateMove, applyGravity, getTargetableBehavior } from './utils'
 
 export class StackBehavior extends TargetBehavior {
   constructor({ moveDuration } = {}) {
@@ -28,14 +28,18 @@ export class StackBehavior extends TargetBehavior {
 
   push(mesh) {
     const { stack, moveDuration } = this
-    console.log(`stack ${mesh.id} above ${stack[stack.length - 1].id}`)
     stack.push(mesh)
+    console.log(`stack ${mesh.id} above ${stack[stack.length - 2].id}`, stack)
     animateMove(mesh, stack[0].absolutePosition, moveDuration, () =>
       applyGravity(mesh)
     )
     mesh
       .getBehaviorByName('drag')
       ?.onDragStartObservable.addOnce(() => this.pop())
+    const targetable = getTargetableBehavior(mesh)
+    if (targetable) {
+      targetable.enabled = false
+    }
   }
 
   pop() {
@@ -46,6 +50,11 @@ export class StackBehavior extends TargetBehavior {
     console.log(
       `pop ${stack[stack.length - 1].id} from ${stack[stack.length - 2].id}`
     )
-    return stack.pop()
+    const mesh = stack.pop()
+    const targetable = getTargetableBehavior(mesh)
+    if (targetable) {
+      targetable.enabled = true
+    }
+    return mesh
   }
 }

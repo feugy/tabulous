@@ -66,6 +66,7 @@ export class MoveBehavior {
         1,
         () => {
           this.isMoving = false
+          mesh.setAbsolutePosition(to)
           applyGravity(mesh)
           onMoveStopObservable.notifyObservers({ mesh, from, duration })
         }
