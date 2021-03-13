@@ -47,7 +47,7 @@ export class MoveBehavior {
       return
     }
     this.isMoving = true
-    const from = mesh.position.clone()
+    const from = mesh.absolutePosition.clone()
     onMoveStartObservable.notifyObservers({ mesh, to, duration })
 
     const lastFrame = Math.round(frameRate * duration)

@@ -45,46 +45,45 @@ export class TargetBehavior {
   }
 }
 
-TargetBehavior.showTargets = () => {
-  for (const target of targets) {
-    if (target.enabled) {
-      for (const box of target.collisionBoxes) {
-        box.visibility = 0.2
-      }
-    }
+TargetBehavior.showTarget = ({ box } = {}) => {
+  if (box) {
+    box.visibility = 0.5
   }
 }
 
 TargetBehavior.findTarget = dragged => {
   const dragBehavior = dragged.getBehaviorByName('drag')
   if (dragBehavior) {
-    const dropBoxes = []
+    const candidates = []
     for (const target of targets) {
       if (target.enabled && target.mesh !== dragged) {
         for (const box of target.collisionBoxes) {
           if (isAbove(dragged, box)) {
-            dropBoxes.push({
+            candidates.push({
               target,
               box,
-              y: target.mesh.position.y
+              y: target.mesh.absolutePosition.y
             })
           }
         }
       }
     }
-    if (dropBoxes.length > 0) {
-      dropBoxes.sort((a, b) => b.y - a.y)
-      const { target, box } = dropBoxes[0]
-      target.onDropObservable.notifyObservers({ dragged, box })
-      return target.mesh
+    if (candidates.length > 0) {
+      candidates.sort((a, b) => b.y - a.y)
+      const [{ box, target }] = candidates
+      return {
+        box,
+        mesh: target.mesh,
+        drop() {
+          target.onDropObservable.notifyObservers({ dragged, box })
+        }
+      }
     }
   }
 }
 
-TargetBehavior.hideTargets = () => {
-  for (const target of targets) {
-    for (const box of target.collisionBoxes) {
-      box.visibility = 0
-    }
+TargetBehavior.hideTarget = ({ box } = {}) => {
+  if (box) {
+    box.visibility = 0
   }
 }

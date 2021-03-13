@@ -6,7 +6,7 @@ const { Observable, PointerDragBehavior, Vector3 } = Babylon
 export class DragBehavior {
   constructor({ moveDuration, snapDistance } = {}) {
     this.drag = new PointerDragBehavior({
-      dragPlaneNormal: new Vector3(0, 1, 0)
+      dragPlaneNormal: Vector3.Up()
     })
     this.enabled = true
     this.snapDistance = snapDistance || 0.25
@@ -31,14 +31,19 @@ export class DragBehavior {
     }
 
     let initialPos
+    let target = null
     let hasMoved = false
+
     this.drag.onDragStartObservable.add(() => {
-      initialPos = mesh.position.clone()
+      initialPos = mesh.absolutePosition.clone()
       hasMoved = false
     })
 
     this.drag.onDragObservable.add(event => {
-      if (!hasMoved && Vector3.Distance(initialPos, mesh.position) > 0.01) {
+      if (
+        !hasMoved &&
+        Vector3.Distance(initialPos, mesh.absolutePosition) > 0.01
+      ) {
         hasMoved = true
         // TargetBehavior.showTargets()
         this.onDragStartObservable.notifyObservers({
@@ -46,29 +51,34 @@ export class DragBehavior {
           pointerId: event.pointerId
         })
         // reset initial position after stack pop
-        initialPos = mesh.position.clone()
+        initialPos = mesh.absolutePosition.clone()
       }
       // don't elevate if we're only holding the mouse button without moving
       if (hasMoved) {
-        mesh.position.y = initialPos.y + 0.5
+        if (target) {
+          target.box.visibility = 0
+        }
+        mesh.absolutePosition.y = initialPos.y + 0.5
         this.onDragObservable.notifyObservers(event)
+        target = TargetBehavior.findTarget(mesh)
+        TargetBehavior.showTarget(target)
       }
     })
 
     this.drag.onDragEndObservable.add(event => {
       if (hasMoved) {
-        const drop = TargetBehavior.findTarget(mesh)
-        // TargetBehavior.hideTargets()
-        if (drop) {
-          this.onDragEndObservable.notifyObservers(event)
+        mesh.renderOverlay = false
+        TargetBehavior.hideTarget(target)
+        if (target) {
+          target.drop()
         } else {
-          const { x, z } = mesh.position
-          const position = new Vector3(
+          const { x, z } = mesh.absolutePosition
+          const absolutePosition = new Vector3(
             Math.round(x / this.snapDistance) * this.snapDistance,
             initialPos.y,
             Math.round(z / this.snapDistance) * this.snapDistance
           )
-          animateMove(mesh, position, this.moveDuration, () =>
+          animateMove(mesh, absolutePosition, this.moveDuration, () =>
             this.onDragEndObservable.notifyObservers(event)
           )
         }

@@ -30,7 +30,9 @@ export class StackBehavior extends TargetBehavior {
     const { stack, moveDuration } = this
     console.log(`stack ${mesh.id} above ${stack[stack.length - 1].id}`)
     stack.push(mesh)
-    animateMove(mesh, stack[0].position, moveDuration, () => applyGravity(mesh))
+    animateMove(mesh, stack[0].absolutePosition, moveDuration, () =>
+      applyGravity(mesh)
+    )
     mesh
       .getBehaviorByName('drag')
       ?.onDragStartObservable.addOnce(() => this.pop())

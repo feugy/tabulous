@@ -36,7 +36,7 @@ export class FlipBehavior extends MoveBehavior {
       return
     }
     this.isMoving = true
-    const to = mesh.position.clone()
+    const to = mesh.absolutePosition.clone()
     const [min, max] = mesh.getBoundingInfo().boundingBox.vectorsWorld
     const width = Math.abs(min.x - max.x)
     onMoveStartObservable.notifyObservers({ mesh, to, duration })

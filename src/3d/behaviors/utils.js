@@ -1,14 +1,19 @@
 import Babylon from 'babylonjs'
 const { Ray, Vector3 } = Babylon
 
-export function animateMove(mesh, position, duration, onEnd = () => {}) {
+export function animateMove(
+  mesh,
+  absolutePosition,
+  duration,
+  onEnd = () => {}
+) {
   const movable =
     mesh.getBehaviorByName('move') || mesh.getBehaviorByName('flip')
   if (!movable) {
-    mesh.position.copy(position)
+    mesh.setAbsolutePosition(absolutePosition)
     onEnd()
   } else {
-    movable.moveTo(position, duration)
+    movable.moveTo(absolutePosition, duration)
     movable.onMoveStopObservable.addOnce(onEnd)
   }
 }
@@ -24,7 +29,7 @@ export function applyGravity(mesh) {
   function predicate(other) {
     return other.isPickable && other !== mesh
   }
-  for (const vertex of [...boundingBox.vectorsWorld, mesh.position]) {
+  for (const vertex of [...boundingBox.vectorsWorld, mesh.absolutePosition]) {
     let hit = scene.pickWithRay(new Ray(vertex, down, rayLength), predicate)
     if (hit.pickedMesh) {
       over.add(hit.pickedMesh)
@@ -36,19 +41,28 @@ export function applyGravity(mesh) {
   }
   if (over.size) {
     const ordered = [...over.values()].sort(
-      (a, b) => b.position.y - a.position.y
+      (a, b) => b.absolutePosition.y - a.absolutePosition.y
     )
-    mesh.position.y =
-      ordered[0].getBoundingInfo().boundingBox.maximumWorld.y + 0.02
+    console.log(`${mesh.id} > ${ordered[0].id}`)
+    const { x, z } = mesh.absolutePosition
+    mesh.setAbsolutePosition(
+      new Vector3(
+        x,
+        ordered[0].getBoundingInfo().boundingBox.maximumWorld.y + 0.02,
+        z
+      )
+    )
   }
-  return mesh.position
+  return mesh.absolutePosition
 }
+
+const targetScale = 0.3
 
 export function isAbove(mesh, target) {
   const { boundingBox } = mesh.getBoundingInfo()
   const down = Vector3.Down()
   const originalScale = target.scaling.clone()
-  target.scaling.addInPlace(new Vector3(0.2, 0.2, 0.2))
+  target.scaling.addInPlace(new Vector3(targetScale, targetScale, targetScale))
   target.computeWorldMatrix(true)
   let hit = 0
   for (const vertex of boundingBox.vectorsWorld) {
