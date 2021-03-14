@@ -3,7 +3,6 @@
 ## Refactor
 
 - target manager
-- constants for behavior names + -able names
 
 ## Single player
 

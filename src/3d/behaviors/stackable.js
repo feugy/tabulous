@@ -29,7 +29,7 @@ export class StackBehavior extends TargetBehavior {
   }
 
   get name() {
-    return 'stack'
+    return StackBehavior.NAME
   }
 
   attach(mesh) {
@@ -70,3 +70,5 @@ export class StackBehavior extends TargetBehavior {
     return mesh
   }
 }
+
+StackBehavior.NAME = 'stackable'

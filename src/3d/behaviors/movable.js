@@ -19,7 +19,7 @@ export class MoveBehavior {
   }
 
   get name() {
-    return 'move'
+    return MoveBehavior.NAME
   }
 
   init() {}
@@ -74,3 +74,5 @@ export class MoveBehavior {
       )
   }
 }
+
+MoveBehavior.NAME = 'movable'

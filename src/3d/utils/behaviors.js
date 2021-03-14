@@ -1,3 +1,10 @@
+import {
+  FlipBehavior,
+  MoveBehavior,
+  StackBehavior,
+  TargetBehavior
+} from '../behaviors'
+
 export function animateMove(
   mesh,
   absolutePosition,
@@ -15,9 +22,15 @@ export function animateMove(
 }
 
 export function getMoveableBehavior(mesh) {
-  return mesh?.getBehaviorByName('move') || mesh?.getBehaviorByName('flip')
+  return (
+    mesh?.getBehaviorByName(MoveBehavior.NAME) ||
+    mesh?.getBehaviorByName(FlipBehavior.NAME)
+  )
 }
 
 export function getTargetableBehavior(mesh) {
-  return mesh?.getBehaviorByName('stack') || mesh?.getBehaviorByName('target')
+  return (
+    mesh?.getBehaviorByName(StackBehavior.NAME) ||
+    mesh?.getBehaviorByName(TargetBehavior.NAME)
+  )
 }

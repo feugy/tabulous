@@ -19,7 +19,7 @@ export class FlipBehavior extends MoveBehavior {
   }
 
   get name() {
-    return 'flip'
+    return FlipBehavior.NAME
   }
 
   flip(duration, skipMulti = false) {
@@ -83,3 +83,5 @@ export class FlipBehavior extends MoveBehavior {
       )
   }
 }
+
+FlipBehavior.NAME = 'flippable'

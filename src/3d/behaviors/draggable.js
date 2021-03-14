@@ -16,7 +16,7 @@ export class DragBehavior {
   }
 
   get name() {
-    return 'drag'
+    return DragBehavior.NAME
   }
 
   init() {}
@@ -69,3 +69,5 @@ export class DragBehavior {
     dragManager.onDragEndObservable.remove(this.dragEndObserver)
   }
 }
+
+DragBehavior.NAME = 'draggable'

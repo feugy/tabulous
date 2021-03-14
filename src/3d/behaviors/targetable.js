@@ -1,4 +1,5 @@
 import Babylon from 'babylonjs'
+import { DragBehavior } from './draggable'
 import { isAbove } from '../utils'
 
 const { Observable } = Babylon
@@ -14,7 +15,7 @@ export class TargetBehavior {
   }
 
   get name() {
-    return 'target'
+    return TargetBehavior.NAME
   }
 
   init() {}
@@ -52,7 +53,7 @@ TargetBehavior.showTarget = ({ box } = {}) => {
 }
 
 TargetBehavior.findTarget = dragged => {
-  const dragBehavior = dragged.getBehaviorByName('drag')
+  const dragBehavior = dragged.getBehaviorByName(DragBehavior.NAME)
   if (dragBehavior) {
     const candidates = []
     for (const target of targets) {
@@ -87,3 +88,5 @@ TargetBehavior.hideTarget = ({ box } = {}) => {
     box.visibility = 0
   }
 }
+
+TargetBehavior.NAME = 'targetable'
