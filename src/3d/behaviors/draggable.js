@@ -1,7 +1,6 @@
 import Babylon from 'babylonjs'
-import { TargetBehavior } from './targetable'
 import { animateMove, applyGravity } from '../utils'
-import { dragManager } from '../managers'
+import { dragManager, targetManager } from '../managers'
 const { Vector3 } = Babylon
 
 export class DragBehavior {
@@ -38,14 +37,14 @@ export class DragBehavior {
         }
         mesh.setAbsolutePosition(mesh.absolutePosition.add(dragged.move))
         // find and show new target
-        target = TargetBehavior.findTarget(mesh)
-        TargetBehavior.showTarget(target)
+        target = targetManager.findTarget(mesh)
+        targetManager.showTarget(target)
       }
     })
 
     this.dragEndObserver = dragManager.onDragEndObservable.add(dragged => {
       if (dragged.mesh === mesh) {
-        TargetBehavior.hideTarget(target)
+        targetManager.hideTarget(target)
         if (target) {
           console.log(`drop ${mesh.id} over ${target.mesh.id}`)
           target.drop()

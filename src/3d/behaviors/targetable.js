@@ -1,10 +1,7 @@
 import Babylon from 'babylonjs'
-import { DragBehavior } from './draggable'
-import { isAbove } from '../utils'
+import { targetManager } from '../managers/target'
 
 const { Observable } = Babylon
-
-const targets = []
 
 export class TargetBehavior {
   constructor() {
@@ -23,15 +20,12 @@ export class TargetBehavior {
   attach(mesh) {
     if (!this.mesh) {
       this.mesh = mesh
-      targets.push(this)
+      targetManager.addBehavior(this)
     }
   }
 
   detach() {
-    const idx = targets.indexOf(this)
-    if (idx >= 0) {
-      targets.splice(idx, 1)
-    }
+    targetManager.removeBehavior(this)
     for (const collisionBox of this.collisionBoxes) {
       collisionBox.dispose()
     }
@@ -43,49 +37,6 @@ export class TargetBehavior {
     this.collisionBoxes.push(collisionBox)
     collisionBox.visibility = 0
     collisionBox.isPickable = false
-  }
-}
-
-TargetBehavior.showTarget = ({ box } = {}) => {
-  if (box) {
-    box.visibility = 0.5
-  }
-}
-
-TargetBehavior.findTarget = dragged => {
-  const dragBehavior = dragged.getBehaviorByName(DragBehavior.NAME)
-  if (dragBehavior) {
-    const candidates = []
-    for (const target of targets) {
-      if (target.enabled && target.mesh !== dragged) {
-        for (const box of target.collisionBoxes) {
-          if (isAbove(dragged, box)) {
-            candidates.push({
-              target,
-              box,
-              y: target.mesh.absolutePosition.y
-            })
-          }
-        }
-      }
-    }
-    if (candidates.length > 0) {
-      candidates.sort((a, b) => b.y - a.y)
-      const [{ box, target }] = candidates
-      return {
-        box,
-        mesh: target.mesh,
-        drop() {
-          target.onDropObservable.notifyObservers({ dragged, box })
-        }
-      }
-    }
-  }
-}
-
-TargetBehavior.hideTarget = ({ box } = {}) => {
-  if (box) {
-    box.visibility = 0
   }
 }
 

@@ -2,8 +2,6 @@
 
 ## Refactor
 
-- target manager
-
 ## Single player
 
 - multi selection
@@ -30,5 +28,6 @@
 # Known issues
 
 - need to merge stacks
+- flip stack only flip individual card: it does not change the ordering
 - card must stay on the table
 - camera can go wild
