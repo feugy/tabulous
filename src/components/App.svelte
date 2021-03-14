@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte'
-  import Babylon from 'babylonjs'
+  import { FPSViewer } from './index'
   import {
     createCamera,
     createCard,
@@ -9,8 +9,7 @@
     createTable,
     showAxis
   } from '../3d'
-
-  const { Engine, Scene } = Babylon
+  import { initEngine } from '../stores'
 
   let canvas
   let interaction
@@ -19,6 +18,7 @@
   onMount(() => {
     engine = createEngine({ canvas, interaction })
 
+    initEngine(engine)
     createCamera()
     // showAxis(2)
     createTable()
@@ -84,5 +84,5 @@
 
 <main>
   <canvas bind:this={canvas} />
-  <div bind:this={interaction} />
+  <div bind:this={interaction}><FPSViewer /></div>
 </main>

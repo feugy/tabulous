@@ -7,10 +7,12 @@
   },
   "dependencies": {
     "babylonjs": "^4.2.0",
+    "rxjs": "^6.6.6",
     "svelte": "^3.35.0"
   },
   "devDependencies": {
     "@snowpack/plugin-dotenv": "^2.0.5",
+    "@snowpack/plugin-postcss": "^1.1.0",
     "@snowpack/plugin-svelte": "^3.5.2",
     "eslint": "^7.21.0",
     "eslint-config-prettier": "^8.1.0",

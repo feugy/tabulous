@@ -11,15 +11,6 @@ export function createEngine({ canvas, interaction } = {}) {
   dragManager.init({ scene })
   multiSelectionManager.init({ scene })
 
-  return {
-    start() {
-      engine.runRenderLoop(scene.render.bind(scene))
-    },
-    resize() {
-      engine.resize()
-    },
-    dispose() {
-      engine.dispose()
-    }
-  }
+  engine.start = () => engine.runRenderLoop(scene.render.bind(scene))
+  return engine
 }
