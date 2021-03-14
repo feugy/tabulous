@@ -1,5 +1,6 @@
 import { DragBehavior } from '../behaviors'
 import { isAbove } from '../utils'
+import { multiSelectionManager } from './multi-selection'
 
 class TargetManager {
   constructor() {
@@ -33,8 +34,9 @@ class TargetManager {
     const dragBehavior = dragged.getBehaviorByName(DragBehavior.NAME)
     if (dragBehavior) {
       const candidates = []
+      const excluded = [dragged, ...multiSelectionManager.meshes]
       for (const target of this.behaviors) {
-        if (target.enabled && target.mesh !== dragged) {
+        if (target.enabled && !excluded.includes(target.mesh)) {
           for (const box of target.collisionBoxes) {
             if (isAbove(dragged, box)) {
               candidates.push({

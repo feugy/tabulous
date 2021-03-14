@@ -4,24 +4,53 @@ import { dragManager, multiSelectionManager } from '../managers'
 import { animateMove, getTargetableBehavior } from '../utils'
 const { Vector3 } = Babylon
 
+function pushOnStack(behavior, mesh) {
+  const base = behavior.base || behavior
+  const { moveDuration, stack } = base
+  enableLastTarget(stack, false)
+  setBase(mesh, base)
+  stack.push(mesh)
+  console.log(`++ stack ${stack.map(({ id }) => id)}`)
+  const { x, z } = stack[0].absolutePosition
+  animateMove(mesh, new Vector3(x, mesh.absolutePosition.y, z), moveDuration)
+}
+
+function enableLastTarget(stack, enabled) {
+  const targetable = getTargetableBehavior(stack[stack.length - 1])
+  if (targetable) {
+    targetable.enabled = enabled
+    console.log(
+      `!! ${enabled ? 'enable' : 'disable'} target for ${
+        stack[stack.length - 1].id
+      }`
+    )
+  }
+}
+
+function setBase(mesh, base) {
+  const targetable = getTargetableBehavior(mesh)
+  if (targetable) {
+    targetable.base = base
+  }
+}
+
 export class StackBehavior extends TargetBehavior {
   constructor({ moveDuration } = {}) {
     super()
     this.moveDuration = moveDuration || 0.1
     this.dropObserver = null
     this.stack = []
+    this.base = null
     dragManager.onDragStartObservable.add(({ mesh }) => {
       // pop the last item if it's dragged, unless:
       // 1. there's only one item
       // 2. the first item is also dragged (we're dragging the whole stack)
-      // for staks of several items:
-      if (this.stack.length > 1) {
-        if (multiSelectionManager.meshes.includes(this.stack[0])) {
-          // disable target when dragging the whole stack
-          this.enabled = false
-          dragManager.onDragEndObservable.addOnce(() => (this.enabled = true))
-        } else if (mesh === this.stack[this.stack.length - 1]) {
-          // or pop last item when dragged
+      const { stack } = this
+      if (stack.length > 1) {
+        if (
+          mesh === stack[stack.length - 1] &&
+          !multiSelectionManager.meshes.includes(stack[0])
+        ) {
           this.pop()
         }
       }
@@ -47,13 +76,17 @@ export class StackBehavior extends TargetBehavior {
   }
 
   push(mesh) {
-    const { stack, moveDuration } = this
-    stack.push(mesh)
-    const { x, z } = stack[0].absolutePosition
-    animateMove(mesh, new Vector3(x, mesh.absolutePosition.y, z), moveDuration)
-    const targetable = getTargetableBehavior(mesh)
-    if (targetable) {
-      targetable.enabled = false
+    if (!mesh || (this.base || this).stack.includes(mesh)) {
+      return
+    }
+    const stackBehavior = mesh.getBehaviorByName(StackBehavior.NAME)
+    if (stackBehavior) {
+      for (const mesh of stackBehavior.stack) {
+        pushOnStack(this, mesh)
+      }
+      stackBehavior.stack = [stackBehavior.stack[0]]
+    } else {
+      pushOnStack(this, mesh)
     }
   }
 
@@ -63,10 +96,9 @@ export class StackBehavior extends TargetBehavior {
       return
     }
     const mesh = stack.pop()
-    const targetable = getTargetableBehavior(mesh)
-    if (targetable) {
-      targetable.enabled = true
-    }
+    setBase(mesh, null)
+    enableLastTarget(stack, true)
+    console.log(`-- stack ${stack.map(({ id }) => id)}`)
     return mesh
   }
 }
