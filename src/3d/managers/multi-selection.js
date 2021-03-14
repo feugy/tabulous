@@ -1,7 +1,10 @@
 import Babylon from 'babylonjs'
 // don't import from index because of circular dependencies
 import { center3, screenToGround } from '../utils/vector'
+import { makeLogger } from '../../utils'
+
 const { MeshBuilder, Observable, PointerEventTypes, Vector3 } = Babylon
+const logger = makeLogger('multi-selection')
 
 class MultiSelectionManager {
   constructor() {
@@ -67,9 +70,9 @@ class MultiSelectionManager {
           this.meshes.sort(
             (a, b) => a.absolutePosition.y - b.absolutePosition.y
           )
-          console.log(
-            '> selection',
-            this.meshes.map(({ id }) => id)
+          logger.debug(
+            { selection: this.meshes },
+            `new multiple selection: ${this.meshes.map(({ id }) => id)}`
           )
           selectionBox?.dispose()
           this.stop = screenToGround(scene, localPosition)

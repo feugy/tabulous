@@ -1,11 +1,16 @@
 import Babylon from 'babylonjs'
+import { makeLogger } from '../../utils'
 
 const { Ray, Vector3 } = Babylon
+const logger = makeLogger('gravity')
 
 const rayLength = 30
 
 export function applyGravity(mesh) {
-  console.log(`gravity for ${mesh.id} y: ${mesh.absolutePosition.y}`)
+  logger.trace(
+    { y: mesh.absolutePosition.y, mesh },
+    `gravity for ${mesh.id} y: ${mesh.absolutePosition.y}`
+  )
   const { boundingBox } = mesh.getBoundingInfo()
   const down = Vector3.Down()
   const scene = mesh.getScene()
@@ -23,13 +28,12 @@ export function applyGravity(mesh) {
       (a, b) => b.absolutePosition.y - a.absolutePosition.y
     )
     y = ordered[0].getBoundingInfo().boundingBox.maximumWorld.y + 0.02
-    console.log(
-      `${mesh.id} (${mesh.absolutePosition.y}) is above ${ordered.map(
-        ({ id }) => id
-      )}`
+    logger.trace(
+      { ordered, mesh },
+      `${mesh.id} is above ${ordered.map(({ id }) => id)}`
     )
   }
-  console.log(`${mesh.id} y = ${y}`)
+  logger.debug({ y, mesh }, `${mesh.id} assigned to y: ${y}`)
   const { x, z } = mesh.absolutePosition
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.computeWorldMatrix(true)

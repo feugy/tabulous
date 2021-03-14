@@ -1,7 +1,10 @@
 import Babylon from 'babylonjs'
 import { animateMove, applyGravity } from '../utils'
 import { dragManager, targetManager } from '../managers'
+import { makeLogger } from '../../utils'
 const { Vector3 } = Babylon
+
+const logger = makeLogger('draggable')
 
 export class DragBehavior {
   constructor({ moveDuration, snapDistance, elevation } = {}) {
@@ -46,7 +49,10 @@ export class DragBehavior {
       if (dragged.mesh === mesh) {
         targetManager.hideTarget(target)
         if (target) {
-          console.log(`drop ${mesh.id} over ${target.mesh.id}`)
+          logger.debug(
+            { dropped: mesh, target },
+            `drop ${mesh.id} over ${target.mesh.id}`
+          )
           target.drop()
         } else {
           const { x, y, z } = mesh.absolutePosition
@@ -55,7 +61,7 @@ export class DragBehavior {
             y,
             Math.round(z / this.snapDistance) * this.snapDistance
           )
-          console.log(`end drag ${mesh.id}`)
+          logger.debug({ dragged: mesh }, `end drag ${mesh.id}`)
           animateMove(mesh, absolutePosition, this.moveDuration, applyGravity)
         }
       }

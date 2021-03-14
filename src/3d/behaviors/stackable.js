@@ -2,7 +2,10 @@ import Babylon from 'babylonjs'
 import { TargetBehavior } from './targetable'
 import { dragManager, multiSelectionManager } from '../managers'
 import { animateMove, getTargetableBehavior } from '../utils'
+import { makeLogger } from '../../utils'
+
 const { Vector3 } = Babylon
+const logger = makeLogger('stackable')
 
 function pushOnStack(behavior, mesh) {
   const base = behavior.base || behavior
@@ -10,19 +13,19 @@ function pushOnStack(behavior, mesh) {
   enableLastTarget(stack, false)
   setBase(mesh, base)
   stack.push(mesh)
-  console.log(`++ stack ${stack.map(({ id }) => id)}`)
   const { x, z } = stack[0].absolutePosition
+  logger.debug({ stack, mesh }, `push ${mesh.id} on stack ${stack[0].id}`)
   animateMove(mesh, new Vector3(x, mesh.absolutePosition.y, z), moveDuration)
 }
 
 function enableLastTarget(stack, enabled) {
-  const targetable = getTargetableBehavior(stack[stack.length - 1])
+  const mesh = stack[stack.length - 1]
+  const targetable = getTargetableBehavior(mesh)
   if (targetable) {
     targetable.enabled = enabled
-    console.log(
-      `!! ${enabled ? 'enable' : 'disable'} target for ${
-        stack[stack.length - 1].id
-      }`
+    logger.trace(
+      { mesh },
+      `!! ${enabled ? 'enable' : 'disable'} target for ${mesh.id}`
     )
   }
 }
@@ -98,7 +101,10 @@ export class StackBehavior extends TargetBehavior {
     const mesh = stack.pop()
     setBase(mesh, null)
     enableLastTarget(stack, true)
-    console.log(`-- stack ${stack.map(({ id }) => id)}`)
+    logger.debug(
+      { stack, mesh },
+      `pop ${mesh.id} out of stack ${stack.map(({ id }) => id)}`
+    )
     return mesh
   }
 }

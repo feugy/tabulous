@@ -2,8 +2,10 @@ import Babylon from 'babylonjs'
 import { MoveBehavior } from './movable'
 import { applyGravity } from '../utils'
 import { multiSelectionManager } from '../managers'
+import { makeLogger } from '../../utils'
 
 const { Animation, Vector3 } = Babylon
+const logger = makeLogger('flippable')
 
 export class FlipBehavior extends MoveBehavior {
   constructor(args) {
@@ -43,7 +45,7 @@ export class FlipBehavior extends MoveBehavior {
       }
       return
     }
-    console.log(`start flip ${mesh.id}`)
+    logger.trace({ mesh }, `start flip ${mesh.id}`)
     this.isMoving = true
 
     const to = mesh.absolutePosition.clone()
@@ -76,7 +78,7 @@ export class FlipBehavior extends MoveBehavior {
         () => {
           this.isMoving = false
           this.isFlipped = !isFlipped
-          console.log(`end flip ${mesh.id}`)
+          logger.debug({ mesh }, `end flip ${mesh.id}`)
           const from = applyGravity(mesh)
           onMoveEndObservable.notifyObservers({ mesh, from, duration })
         }
