@@ -1,10 +1,13 @@
 import Babylon from 'babylonjs'
-import { DragBehavior, FlipBehavior, StackBehavior } from './behaviors'
+import {
+  DragBehavior,
+  FlipBehavior,
+  RotateBehavior,
+  StackBehavior
+} from './behaviors'
 const {
-  ActionManager,
   Axis,
   Color3,
-  ExecuteCodeAction,
   Mesh,
   MeshBuilder,
   Space,
@@ -22,6 +25,7 @@ export function createCard({
   back,
   isFlipped = false,
   flipDuration = 0.5,
+  rotateDuration = 0.2,
   moveDuration = 0.1,
   snapDistance = 0.25,
   ...cardProps
@@ -51,14 +55,11 @@ export function createCard({
   const dragBehavior = new DragBehavior({ moveDuration, snapDistance })
   card.addBehavior(dragBehavior)
 
-  const flipBehavior = new FlipBehavior({ isFlipped })
+  const flipBehavior = new FlipBehavior({ duration: flipDuration, isFlipped })
   card.addBehavior(flipBehavior)
-  card.actionManager = new ActionManager(card.getScene())
-  card.actionManager.registerAction(
-    new ExecuteCodeAction(ActionManager.OnPickTrigger, () =>
-      flipBehavior.flip(flipDuration)
-    )
-  )
+
+  const rotateBehavior = new RotateBehavior({ duration: rotateDuration })
+  card.addBehavior(rotateBehavior)
 
   const stackBehavior = new StackBehavior({ moveDuration })
   const target = MeshBuilder.CreateBox('target', {

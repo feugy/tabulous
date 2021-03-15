@@ -5,25 +5,25 @@ import { multiSelectionManager } from '../managers'
 import { makeLogger } from '../../utils'
 
 const { ActionManager, Animation, ExecuteCodeAction, Vector3 } = Babylon
-const logger = makeLogger('flippable')
+const logger = makeLogger('rotable')
 
-export class FlipBehavior extends MoveBehavior {
+export class RotateBehavior extends MoveBehavior {
   constructor(args) {
     super(args)
-    this.flipAnimation = new Animation(
-      'flip',
-      'rotation.z',
+    this.rotateAnimation = new Animation(
+      'rotate',
+      'rotation.y',
       this.frameRate,
       Animation.ANIMATIONTYPE_FLOAT,
       Animation.ANIMATIONLOOPMODE_CONSTANT
     )
     this.duration = args.duration || 0.5
-    this.isFlipped = args.isFlipped || false
     this.action = null
+    this.rotation = args.rotation || 0
   }
 
   get name() {
-    return FlipBehavior.NAME
+    return RotateBehavior.NAME
   }
 
   attach(mesh, withAction = true) {
@@ -36,7 +36,7 @@ export class FlipBehavior extends MoveBehavior {
       this.action = new ExecuteCodeAction(
         ActionManager.OnPickTrigger,
         ({ sourceEvent: { button } }) => {
-          if (button === 0) this.flip()
+          if (button === 2) this.rotate()
         }
       )
       mesh.actionManager.registerAction(this.action)
@@ -50,14 +50,14 @@ export class FlipBehavior extends MoveBehavior {
     }
   }
 
-  flip(skipMulti = false) {
+  rotate(skipMulti = false) {
     const {
       duration,
       isMoving,
-      isFlipped,
+      rotation,
       mesh,
       frameRate,
-      flipAnimation,
+      rotateAnimation,
       moveAnimation,
       onMoveStartObservable,
       onMoveEndObservable
@@ -66,30 +66,28 @@ export class FlipBehavior extends MoveBehavior {
       return
     }
     if (!skipMulti && multiSelectionManager.meshes.includes(mesh)) {
-      // when flipping stacks, flip them in order to keep y-ordering
+      // when rotating stacks, rotate them in order to keep y-ordering
       for (const other of multiSelectionManager.meshes) {
-        other.getBehaviorByName(this.name)?.flip(true)
+        other.getBehaviorByName(this.name)?.rotate(true)
       }
       return
     }
-    logger.trace({ mesh }, `start flipping ${mesh.id}`)
+    logger.trace({ mesh }, `start rotating ${mesh.id}`)
     this.isMoving = true
 
     const to = mesh.absolutePosition.clone()
-    const [min, max] = mesh.getBoundingInfo().boundingBox.vectorsWorld
-    const width = Math.abs(min.x - max.x)
     onMoveStartObservable.notifyObservers({ mesh, to, duration })
 
     const lastFrame = Math.round(frameRate * duration)
-    flipAnimation.setKeys([
-      { frame: 0, value: isFlipped ? Math.PI : 0 },
-      { frame: lastFrame, value: isFlipped ? 0 : Math.PI }
+    rotateAnimation.setKeys([
+      { frame: 0, value: rotation * 0.5 * Math.PI },
+      { frame: lastFrame, value: (rotation + 1) * 0.5 * Math.PI }
     ])
     moveAnimation.setKeys([
       { frame: 0, value: to },
       {
         frame: lastFrame * 0.5,
-        value: new Vector3(to.x, to.y + width * 0.75, to.z)
+        value: new Vector3(to.x, to.y + 0.5, to.z)
       },
       { frame: lastFrame, value: to }
     ])
@@ -97,15 +95,15 @@ export class FlipBehavior extends MoveBehavior {
       .getScene()
       .beginDirectAnimation(
         mesh,
-        [flipAnimation, moveAnimation],
+        [rotateAnimation, moveAnimation],
         0,
         lastFrame,
         false,
         1,
         () => {
           this.isMoving = false
-          this.isFlipped = !isFlipped
-          logger.debug({ mesh }, `end flipping ${mesh.id}`)
+          logger.debug({ mesh }, `end rotating ${mesh.id}`)
+          this.rotation = (this.rotation + 1) % 4
           const from = applyGravity(mesh)
           onMoveEndObservable.notifyObservers({ mesh, from, duration })
         }
@@ -113,4 +111,4 @@ export class FlipBehavior extends MoveBehavior {
   }
 }
 
-FlipBehavior.NAME = 'flippable'
+RotateBehavior.NAME = 'rotable'

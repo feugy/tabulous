@@ -1,5 +1,6 @@
 export * from './draggable'
 export * from './flippable'
 export * from './movable'
+export * from './rotable'
 export * from './stackable'
 export * from './targetable'

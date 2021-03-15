@@ -4,9 +4,6 @@
 
 ## Single player
 
-- rotable behavior (on right click)
-- multi selection
-  - rotate all
 - stack actions:
   - stack size
   - draw multiple cards
