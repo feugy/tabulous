@@ -25,7 +25,7 @@ function enableLastTarget(stack, enabled) {
     targetable.enabled = enabled
     logger.trace(
       { mesh },
-      `!! ${enabled ? 'enable' : 'disable'} target for ${mesh.id}`
+      `${enabled ? 'enable' : 'disable'} target for ${mesh.id}`
     )
   }
 }
@@ -74,8 +74,8 @@ export class StackBehavior extends TargetBehavior {
   }
 
   detach() {
-    super.detach()
     this.onDropObservable?.remove(this.dropObserver)
+    super.detach()
   }
 
   push(mesh) {

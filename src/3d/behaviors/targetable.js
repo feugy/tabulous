@@ -20,12 +20,12 @@ export class TargetBehavior {
   attach(mesh) {
     if (!this.mesh) {
       this.mesh = mesh
-      targetManager.addBehavior(this)
+      targetManager.registerTargetable(this)
     }
   }
 
   detach() {
-    targetManager.removeBehavior(this)
+    targetManager.unregisterTargetable(this)
     for (const collisionBox of this.collisionBoxes) {
       collisionBox.dispose()
     }

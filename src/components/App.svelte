@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte'
-  import { FPSViewer } from './index'
+  import { FPSViewer, StackSizeTooltip } from './index'
   import {
     createCamera,
     createCard,
@@ -84,5 +84,8 @@
 
 <main>
   <canvas bind:this={canvas} />
-  <div bind:this={interaction}><FPSViewer /></div>
+  <div bind:this={interaction}>
+    <FPSViewer />
+    <StackSizeTooltip />
+  </div>
 </main>

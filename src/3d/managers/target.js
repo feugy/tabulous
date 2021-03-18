@@ -7,11 +7,11 @@ class TargetManager {
     this.behaviors = []
   }
 
-  addBehavior(behavior) {
+  registerTargetable(behavior) {
     this.behaviors.push(behavior)
   }
 
-  removeBehavior(behavior) {
+  unregisterTargetable(behavior) {
     const idx = this.behaviors.indexOf(behavior)
     if (idx >= 0) {
       this.behaviors.splice(idx, 1)

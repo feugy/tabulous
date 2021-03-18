@@ -4,15 +4,14 @@
 
 ## Single player
 
+- display actions on hover
 - stack actions:
-  - stack size
   - draw multiple cards
   - shuffle
   - add to bottom
-- action icons & infos
+- camera controls
 - tokens (stackable, flippable, rotable)
 - boards
-- camera controls
 - game loading mechanism
 
 ## Multi player
@@ -28,3 +27,20 @@
 - flip stack only flip individual card: it does not change the ordering
 - card must stay on the table
 - camera can go wild
+
+# Notes
+
+In Tabletopia, the interaction model is:
+
+- left drag the board to pan
+- right drag the board to control camera angle
+- molette to zoom in and out
+- left drag an item to move (clear previous selection unless clicking a selected item)
+- left left click to select (clear previous selection)
+- double click to zoom (only on cards)
+- right click to display action menu (clear previous selection unless clicking a selected item)
+- drag + left click to select multiple
+- shift + left click to add (or remove) to the multiple selection
+- keyboard shortcut to trigger actions on current selection
+
+Being forced to do click (either select or menu) before triggering actions (shortcut or menu) is a bummer

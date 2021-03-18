@@ -43,11 +43,12 @@ export class RotateBehavior extends MoveBehavior {
     }
   }
 
-  detach(mesh) {
-    super.detach(mesh)
+  detach() {
     if (this.action) {
-      mesh.actionManager.unregisterAction(this.action)
+      // TODO it should always be defined?!
+      this.mesh.actionManager?.unregisterAction(this.action)
     }
+    super.detach()
   }
 
   rotate(skipMulti = false) {

@@ -10,9 +10,13 @@ class MultiSelectionManager {
   constructor() {
     this.onSelectionActiveObservable = new Observable()
     this.onSelectionResetObservable = new Observable()
+    this.onOverObservable = new Observable()
+    this.onOutObservable = new Observable()
     this.start = null
     this.stop = null
     this.meshes = []
+    this.hoverable = new Set()
+    this.hovered = null
   }
 
   init({ scene } = {}) {
@@ -25,6 +29,7 @@ class MultiSelectionManager {
         pointerDown = true
         this.start = null
         this.stop = null
+        // TODO alter current selection on shiftKey
         if (this.meshes.length) {
           let hit = scene.pickWithRay(
             scene.createPickingRay(localPosition.x, localPosition.y)
@@ -33,28 +38,51 @@ class MultiSelectionManager {
             this.resetSelection()
           }
         }
-      } else if (type === PointerEventTypes.POINTERMOVE && event.shiftKey) {
-        if (pointerDown && !this.start) {
-          // detects a multiple selection operation.
-          // create a box to vizualise selected area
-          this.start = screenToGround(scene, localPosition)
-          selectionBox = MeshBuilder.CreateBox('multi-selection', { size: 0 })
-          selectionBox.visibility = 0.2
-          selectionBox.isPickable = false
-          selectionBox.position = this.start
-          this.meshes = []
+      } else if (type === PointerEventTypes.POINTERMOVE) {
+        if (event.shiftKey) {
+          if (pointerDown && !this.start) {
+            // detects a multiple selection operation.
+            // create a box to vizualise selected area
+            this.start = screenToGround(scene, localPosition)
+            selectionBox = MeshBuilder.CreateBox('multi-selection', { size: 0 })
+            selectionBox.visibility = 0.2
+            selectionBox.isPickable = false
+            selectionBox.position = this.start
+            this.meshes = []
+          }
+          if (this.start) {
+            // updates size and position of the multiple selection box.
+            // its position is the center of operation start and current position, then we scale it
+            info.skipOnPointerObservable = true
+            const current = screenToGround(scene, localPosition)
+            selectionBox.position = center3(this.start, current)
+            selectionBox.scaling = new Vector3(
+              Math.abs(current.x - this.start.x),
+              1,
+              Math.abs(current.z - this.start.z)
+            )
+          }
         }
-        if (this.start) {
-          // updates size and position of the multiple selection box.
-          // its position is the center of operation start and current position, then we scale it
-          info.skipOnPointerObservable = true
-          const current = screenToGround(scene, localPosition)
-          selectionBox.position = center3(this.start, current)
-          selectionBox.scaling = new Vector3(
-            Math.abs(current.x - this.start.x),
-            1,
-            Math.abs(current.z - this.start.z)
+        const mesh = scene
+          .multiPickWithRay(
+            scene.createPickingRay(localPosition.x, localPosition.y),
+            mesh => this.hoverable.has(mesh)
           )
+          .sort((a, b) => a.distance - b.distance)[0]?.pickedMesh
+        if (mesh) {
+          this.onOverObservable.notifyObservers({
+            event,
+            mesh,
+            selection: this.meshes
+          })
+          this.hovered = mesh
+        } else if (this.hovered) {
+          this.onOutObservable.notifyObservers({
+            event,
+            mesh: this.hovered,
+            selection: this.meshes
+          })
+          this.hovered = null
         }
       } else if (type === PointerEventTypes.POINTERUP) {
         pointerDown = false
@@ -91,6 +119,18 @@ class MultiSelectionManager {
         mesh.renderOverlay = false
       }
       this.meshes = []
+    }
+  }
+
+  registerHoverable(behavior) {
+    if (!this.hoverable.has(behavior.mesh)) {
+      this.hoverable.add(behavior.mesh)
+    }
+  }
+
+  unregisterHoverable(behavior) {
+    if (this.hoverable.has(behavior.mesh)) {
+      this.hoverable.delete(behavior.mesh)
     }
   }
 }
