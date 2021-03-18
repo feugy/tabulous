@@ -73,7 +73,7 @@ export class FlipBehavior extends MoveBehavior {
       }
       return
     }
-    logger.trace({ mesh }, `start flipping ${mesh.id}`)
+    logger.debug({ mesh }, `start flipping ${mesh.id}`)
     this.isMoving = true
 
     const to = mesh.absolutePosition.clone()

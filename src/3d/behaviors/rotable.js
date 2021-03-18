@@ -73,7 +73,7 @@ export class RotateBehavior extends MoveBehavior {
       }
       return
     }
-    logger.trace({ mesh }, `start rotating ${mesh.id}`)
+    logger.debug({ mesh }, `start rotating ${mesh.id}`)
     this.isMoving = true
 
     const to = mesh.absolutePosition.clone()

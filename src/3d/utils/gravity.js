@@ -7,7 +7,7 @@ const logger = makeLogger('gravity')
 const rayLength = 30
 
 export function applyGravity(mesh) {
-  logger.trace(
+  logger.debug(
     { y: mesh.absolutePosition.y, mesh },
     `gravity for ${mesh.id} y: ${mesh.absolutePosition.y}`
   )
@@ -28,7 +28,7 @@ export function applyGravity(mesh) {
       (a, b) => b.absolutePosition.y - a.absolutePosition.y
     )
     y = ordered[0].getBoundingInfo().boundingBox.maximumWorld.y + 0.02
-    logger.trace(
+    logger.debug(
       { ordered, mesh },
       `${mesh.id} is above ${ordered.map(({ id }) => id)}`
     )

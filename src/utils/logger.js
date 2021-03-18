@@ -3,6 +3,7 @@ const levels = {
   flippable: 'info',
   gravity: 'info',
   'multi-selection': 'info',
+  rotable: 'info',
   stackable: 'info'
 }
 

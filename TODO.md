@@ -4,7 +4,6 @@
 
 ## Single player
 
-- display actions on hover
 - stack actions:
   - draw multiple cards
   - shuffle

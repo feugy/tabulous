@@ -23,7 +23,7 @@ function enableLastTarget(stack, enabled) {
   const targetable = getTargetableBehavior(mesh)
   if (targetable) {
     targetable.enabled = enabled
-    logger.trace(
+    logger.debug(
       { mesh },
       `${enabled ? 'enable' : 'disable'} target for ${mesh.id}`
     )
