@@ -28,6 +28,11 @@ export class FlipBehavior extends MoveBehavior {
 
   attach(mesh, withAction = true) {
     super.attach(mesh)
+    if (!mesh.metadata) {
+      mesh.metadata = {}
+    }
+    mesh.metadata.flip = this.flip.bind(this)
+    mesh.metadata.isFlipped = this.isFlipped
     if (withAction) {
       if (!mesh.actionManager) {
         mesh.actionManager = new ActionManager(mesh.getScene())
@@ -106,6 +111,7 @@ export class FlipBehavior extends MoveBehavior {
         () => {
           this.isMoving = false
           this.isFlipped = !isFlipped
+          mesh.metadata.isFlipped = this.isFlipped
           logger.debug({ mesh }, `end flipping ${mesh.id}`)
           const from = applyGravity(mesh)
           onMoveEndObservable.notifyObservers({ mesh, from, duration })

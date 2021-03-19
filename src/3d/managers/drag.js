@@ -16,7 +16,7 @@ class DragManager {
     let meshes = null
 
     scene.onPrePointerObservable.add(info => {
-      const { type, localPosition } = info
+      const { type, localPosition, event } = info
       if (type === PointerEventTypes.POINTERDOWN) {
         const { pickedMesh } = scene.pickWithRay(
           scene.createPickingRay(localPosition.x, localPosition.y)
@@ -35,7 +35,11 @@ class DragManager {
             ? [...multiSelectionManager.meshes]
             : [picked]
           for (const mesh of meshes) {
-            this.onDragStartObservable.notifyObservers({ position, mesh })
+            this.onDragStartObservable.notifyObservers({
+              position,
+              mesh,
+              event
+            })
           }
         }
         if (meshes) {
@@ -43,14 +47,19 @@ class DragManager {
           const move = current.subtract(position)
           position = current
           for (const mesh of meshes) {
-            this.onDragObservable.notifyObservers({ position, move, mesh })
+            this.onDragObservable.notifyObservers({
+              position,
+              move,
+              mesh,
+              event
+            })
           }
         }
       } else if (type === PointerEventTypes.POINTERUP && picked) {
         if (meshes) {
           // consider selection order to notify lower items first
           for (const mesh of meshes) {
-            this.onDragEndObservable.notifyObservers({ position, mesh })
+            this.onDragEndObservable.notifyObservers({ position, mesh, event })
           }
           meshes = null
         }

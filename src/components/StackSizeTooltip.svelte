@@ -1,31 +1,41 @@
 <script>
   import { onMount } from 'svelte'
-  import { StackBehavior } from '../3d/behaviors'
-  import { multiSelectionManager } from '../3d/managers'
+  import { engine } from '../stores'
 
   let left = 0
   let top = 0
+  let object
   let stackSize
 
-  onMount(() => {
-    const onOverObserver = multiSelectionManager.onOverObservable.add(
-      ({ mesh, event: { clientX, clientY } }) => {
-        const behavior = mesh.getBehaviorByName(StackBehavior.NAME)
-        if (behavior?.base?.stack?.length > 1) {
-          stackSize = behavior.base.stack.length
-          left = clientX
-          top = clientY
-        }
+  onMount(() =>
+    engine.subscribe(engine => {
+      if (!engine) {
+        return
       }
-    )
-    const onOutObserver = multiSelectionManager.onOutObservable.add(
-      () => (stackSize = null)
-    )
-    return () => {
-      multiSelectionManager.onOverObservable.remove(onOverObserver)
-      multiSelectionManager.onOutObservable.remove(onOutObserver)
-    }
-  })
+      engine.onPointerOver.subscribe(
+        ({ mesh, event: { clientX, clientY } }) => {
+          object = mesh
+          stackSize = null
+          if (object.metadata?.base?.stack?.length > 1) {
+            stackSize = object.metadata.base.stack.length
+            left = clientX
+            top = clientY
+          }
+        }
+      )
+      engine.onDragEnd.subscribe(({ mesh, event: { clientX, clientY } }) =>
+        // TODO should listen to drop instead
+        setTimeout(() => {
+          if (mesh === object && object.metadata?.base?.stack?.length > 1) {
+            stackSize = object.metadata.base.stack.length
+            left = clientX
+            top = clientY
+          }
+        }, 0)
+      )
+      engine.onPointerOut.subscribe(() => (object = null))
+    })
+  )
 </script>
 
 <style>
@@ -46,7 +56,7 @@
 
 <div
   style={`visibility: ${
-    stackSize ? 'visible' : 'hidden'
+    object && stackSize ? 'visible' : 'hidden'
   }; left: ${left}px; top: ${top}px`}
 >
   {stackSize}

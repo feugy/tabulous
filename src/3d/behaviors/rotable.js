@@ -28,6 +28,11 @@ export class RotateBehavior extends MoveBehavior {
 
   attach(mesh, withAction = true) {
     super.attach(mesh)
+    if (!mesh.metadata) {
+      mesh.metadata = {}
+    }
+    mesh.metadata.rotate = this.rotate.bind(this)
+    mesh.metadata.rotation = this.rotation
     if (withAction) {
       if (!mesh.actionManager) {
         mesh.actionManager = new ActionManager(mesh.getScene())
@@ -105,6 +110,7 @@ export class RotateBehavior extends MoveBehavior {
           this.isMoving = false
           logger.debug({ mesh }, `end rotating ${mesh.id}`)
           this.rotation = (this.rotation + 1) % 4
+          mesh.metadata.rotation = this.rotation
           const from = applyGravity(mesh)
           onMoveEndObservable.notifyObservers({ mesh, from, duration })
         }

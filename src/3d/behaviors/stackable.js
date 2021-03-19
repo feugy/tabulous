@@ -34,6 +34,7 @@ function setBase(mesh, base) {
   const targetable = getTargetableBehavior(mesh)
   if (targetable) {
     targetable.base = base
+    targetable.mesh.metadata.base = targetable.base
   }
 }
 
@@ -67,6 +68,11 @@ export class StackBehavior extends TargetBehavior {
   attach(mesh) {
     super.attach(mesh)
     this.stack = [mesh]
+    if (!mesh.metadata) {
+      mesh.metadata = {}
+    }
+    mesh.metadata.stack = this.stack
+    mesh.metadata.base = this.base
     this.dropObserver = this.onDropObservable.add(({ dragged }) =>
       this.push(dragged)
     )
@@ -87,7 +93,7 @@ export class StackBehavior extends TargetBehavior {
       for (const mesh of stackBehavior.stack) {
         pushOnStack(this, mesh)
       }
-      stackBehavior.stack = [stackBehavior.stack[0]]
+      stackBehavior.stack.splice(1, stackBehavior.stack.length)
     } else {
       pushOnStack(this, mesh)
     }

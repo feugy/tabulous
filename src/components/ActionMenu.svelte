@@ -1,8 +1,7 @@
 <script>
   import { onMount } from 'svelte'
-  import { FlipBehavior, RotateBehavior } from '../3d/behaviors'
-  import { dragManager, multiSelectionManager } from '../3d/managers'
-  import { groundToScreen } from '../3d/utils'
+  import { engine } from '../stores'
+  import { getMeshCoordinates } from '../utils'
 
   let left = 0
   let top = 0
@@ -13,64 +12,53 @@
 
   const delay = 500
 
-  onMount(() => {
-    const onOverObserver = multiSelectionManager.onOverObservable.add(
-      ({ mesh }) => {
+  onMount(() =>
+    engine.subscribe(engine => {
+      if (!engine) {
+        return
+      }
+      engine.onPointerOver.subscribe(({ mesh }) => {
         clearTimeout(timeout)
         if (!object && !isDragging) {
           timeout = setTimeout(() => {
             object = mesh
-            const { x, y } = groundToScreen(
-              mesh.absolutePosition,
-              mesh.getScene()
-            )
+            const { x, y } = getMeshCoordinates(object)
             left = x
             top = y
             actions = []
-            const flipBehavior = mesh.getBehaviorByName(FlipBehavior.NAME)
-            if (flipBehavior) {
+            if (object.metadata.flip) {
               actions.push({
                 name: 'Retourner',
-                action: () => flipBehavior.flip()
+                action: () => object.metadata.flip()
               })
             }
-            const rotateBehavior = mesh.getBehaviorByName(RotateBehavior.NAME)
-            if (rotateBehavior) {
+            if (object.metadata.rotate) {
               actions.push({
-                name: 'Tourner',
-                action: () => rotateBehavior.rotate()
+                name: 'Pivoter',
+                action: () => object.metadata.rotate()
               })
             }
           }, delay)
         }
-      }
-    )
-    const onDragStartObserver = dragManager.onDragStartObservable.add(
-      ({ mesh }) => {
+      })
+      engine.onDragStart.subscribe(({ mesh }) => {
         clearTimeout(timeout)
         isDragging = true
         if (mesh.id === object?.id) {
           object = null
         }
-      }
-    )
-    const onDragEndObserver = dragManager.onDragEndObservable.add(() => {
-      clearTimeout(timeout)
-      isDragging = false
+      })
+      engine.onDragEnd.subscribe(() => {
+        clearTimeout(timeout)
+        isDragging = false
+      })
+      engine.onPointerOut.subscribe(() => {
+        clearTimeout(timeout)
+        isDragging = false
+        object = null
+      })
     })
-    const onOutObserver = multiSelectionManager.onOutObservable.add(() => {
-      clearTimeout(timeout)
-      isDragging = false
-      object = null
-    })
-
-    return () => {
-      multiSelectionManager.onOverObservable.remove(onOverObserver)
-      multiSelectionManager.onOutObservable.remove(onOutObserver)
-      dragManager.onDragStartObservable.remove(onDragStartObserver)
-      dragManager.onDragEndObservable.remove(onDragEndObserver)
-    }
-  })
+  )
 </script>
 
 <style>
