@@ -2,11 +2,12 @@
 
 ## Refactor
 
+- do not show action menu while animating
+
 ## Single player
 
 - stack actions:
   - draw multiple cards
-  - shuffle
   - add to bottom
 - camera controls
 - tokens (stackable, flippable, rotable)

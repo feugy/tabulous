@@ -38,6 +38,12 @@
                 action: () => object.metadata.rotate()
               })
             }
+            if (object.metadata.stack?.length > 1) {
+              actions.push({
+                name: 'Mélanger',
+                action: () => object.metadata.schuffle()
+              })
+            }
           }, delay)
         }
       })

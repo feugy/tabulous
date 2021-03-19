@@ -16,8 +16,8 @@
         ({ mesh, event: { clientX, clientY } }) => {
           object = mesh
           stackSize = null
-          if (object.metadata?.base?.stack?.length > 1) {
-            stackSize = object.metadata.base.stack.length
+          if (object.metadata?.stack?.length > 1) {
+            stackSize = object.metadata.stack.length
             left = clientX
             top = clientY
           }
@@ -26,8 +26,8 @@
       engine.onDragEnd.subscribe(({ mesh, event: { clientX, clientY } }) =>
         // TODO should listen to drop instead
         setTimeout(() => {
-          if (mesh === object && object.metadata?.base?.stack?.length > 1) {
-            stackSize = object.metadata.base.stack.length
+          if (mesh === object && object.metadata?.stack?.length > 1) {
+            stackSize = object.metadata.stack.length
             left = clientX
             top = clientY
           }

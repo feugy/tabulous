@@ -2,7 +2,7 @@ import Babylon from 'babylonjs'
 import { TargetBehavior } from './targetable'
 import { dragManager, multiSelectionManager } from '../managers'
 import { animateMove, getTargetableBehavior } from '../utils'
-import { makeLogger } from '../../utils'
+import { makeLogger, shuffle } from '../../utils'
 
 const { Vector3 } = Babylon
 const logger = makeLogger('stackable')
@@ -34,7 +34,8 @@ function setBase(mesh, base) {
   const targetable = getTargetableBehavior(mesh)
   if (targetable) {
     targetable.base = base
-    targetable.mesh.metadata.base = targetable.base
+    targetable.mesh.metadata.stack = base?.stack
+    targetable.mesh.metadata.schuffle = base ? () => base.schuffle() : () => {}
   }
 }
 
@@ -71,8 +72,8 @@ export class StackBehavior extends TargetBehavior {
     if (!mesh.metadata) {
       mesh.metadata = {}
     }
-    mesh.metadata.stack = this.stack
-    mesh.metadata.base = this.base
+    mesh.metadata.stack = this.base?.stack
+    mesh.metadata.shuffle = () => {}
     this.dropObserver = this.onDropObservable.add(({ dragged }) =>
       this.push(dragged)
     )
@@ -101,7 +102,7 @@ export class StackBehavior extends TargetBehavior {
 
   pop() {
     const { stack } = this
-    if (stack.length <= 0) {
+    if (stack.length <= 1) {
       return
     }
     const mesh = stack.pop()
@@ -112,6 +113,35 @@ export class StackBehavior extends TargetBehavior {
       `pop ${mesh.id} out of stack ${stack.map(({ id }) => id)}`
     )
     return mesh
+  }
+
+  schuffle() {
+    if (this.stack.length <= 1) {
+      return
+    }
+    const stack = shuffle(this.stack)
+    logger.debug(
+      { old: this.stack, stack },
+      `schuffle ${this.stack.map(({ id }) => id)} to ${stack.map(
+        ({ id }) => id
+      )}`
+    )
+    const position = this.mesh.absolutePosition.clone()
+    for (const item of stack) {
+      item.setAbsolutePosition(position)
+      position.y += 0.5
+    }
+    const baseBehavior = stack[0].getBehaviorByName(StackBehavior.NAME)
+    baseBehavior.base = null
+    baseBehavior.stack = [stack[0]]
+    for (let i = 1; i < stack.length; i++) {
+      const stackBehavior = stack[i].getBehaviorByName(StackBehavior.NAME)
+      if (stackBehavior) {
+        stackBehavior.base = null
+        stackBehavior.stack = [stack[i]]
+      }
+      baseBehavior.push(stack[i])
+    }
   }
 }
 

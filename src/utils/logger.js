@@ -4,7 +4,7 @@ const levels = {
   gravity: 'info',
   'multi-selection': 'info',
   rotable: 'info',
-  stackable: 'info'
+  stackable: 'debug'
 }
 
 const levelMap = {
