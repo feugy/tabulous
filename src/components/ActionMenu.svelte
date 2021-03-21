@@ -89,6 +89,7 @@
 </style>
 
 <ul
+  on:pointerdown|stopPropagation
   style={`visibility: ${
     object ? 'visible' : 'hidden'
   }; left: ${left}px; top: ${top}px`}

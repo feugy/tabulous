@@ -13,9 +13,12 @@ function pushOnStack(behavior, mesh) {
   enableLastTarget(stack, false)
   setBase(mesh, base)
   stack.push(mesh)
-  const { x, z } = stack[0].absolutePosition
+  stack[0].computeWorldMatrix()
+  const { x, y, z } = stack[0].absolutePosition
+  const pushedY =
+    mesh.absolutePosition.y <= y ? y + 0.2 : mesh.absolutePosition.y
   logger.debug({ stack, mesh }, `push ${mesh.id} on stack ${stack[0].id}`)
-  animateMove(mesh, new Vector3(x, mesh.absolutePosition.y, z), moveDuration)
+  animateMove(mesh, new Vector3(x, pushedY, z), moveDuration)
   controlManager.record({ meshId: stack[0].id, fn: 'push', args: [mesh.id] })
 }
 
@@ -149,6 +152,13 @@ export class StackBehavior extends TargetBehavior {
       baseBehavior.push(stack[i].id)
     }
     controlManager.record({ meshId: stack[0].id, fn: 'shuffle', args: [ids] })
+  }
+
+  serialize() {
+    return {
+      stack:
+        this.stack.length <= 1 ? [] : this.stack.slice(1).map(({ id }) => id)
+    }
   }
 }
 

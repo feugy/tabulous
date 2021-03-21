@@ -20,6 +20,7 @@ const {
 
 export function createCard({
   x = 0,
+  z = 0,
   y = 0,
   // Poker ratio is between 1.39 and 1.41
   width = 3,
@@ -27,6 +28,7 @@ export function createCard({
   front,
   back,
   isFlipped = false,
+  angle = 0,
   flipDuration = 0.5,
   rotateDuration = 0.2,
   moveDuration = 0.1,
@@ -47,21 +49,37 @@ export function createCard({
   faces[1].rotate(Axis.X, Math.PI / -2, Space.LOCAL)
   faces[1].rotate(Axis.Z, Math.PI, Space.LOCAL)
   const card = Mesh.MergeMeshes(faces, true, false, null, false, true)
+  card.name = 'card'
   card.receiveShadows = true
-  card.position.set(x, 0, y)
-  if (isFlipped) {
-    card.rotation.z = Math.PI
-  }
+  card.position.set(x, y, z)
   Object.assign(card, cardProps)
+
+  card.metadata = {
+    serialize: () => ({
+      x: card.position.x,
+      y: card.position.y,
+      z: card.position.z,
+      width,
+      height,
+      front,
+      back,
+      ...cardProps,
+      ...flipBehavior.serialize(),
+      ...rotateBehavior.serialize(),
+      ...stackBehavior.serialize()
+    })
+  }
 
   card.overlayColor = new Color3(0, 0.8, 0)
   card.overlayAlpha = 0.2
 
   card.addBehavior(new DragBehavior({ moveDuration, snapDistance }))
 
-  card.addBehavior(new FlipBehavior({ duration: flipDuration, isFlipped }))
+  const flipBehavior = new FlipBehavior({ duration: flipDuration, isFlipped })
+  card.addBehavior(flipBehavior)
 
-  card.addBehavior(new RotateBehavior({ duration: rotateDuration }))
+  const rotateBehavior = new RotateBehavior({ duration: rotateDuration, angle })
+  card.addBehavior(rotateBehavior)
 
   card.addBehavior(new HoverBehavior())
 

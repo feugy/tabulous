@@ -3,7 +3,9 @@ const levels = {
   flippable: 'info',
   gravity: 'info',
   'multi-selection': 'info',
+  peer: 'warn',
   rotable: 'info',
+  'scene-loader': 'debug',
   stackable: 'debug'
 }
 
@@ -23,7 +25,7 @@ const loggers = new Map()
 function noop() {}
 
 function getImplementation(name, level) {
-  return levelMap[levels[name] || 'warn'] >= levelMap[level]
+  return levelMap[level] < levelMap[levels[name] || 'warn']
     ? console[level].bind(console)
     : noop
 }
@@ -32,7 +34,7 @@ export function makeLogger(name) {
   if (!loggers.has(name)) {
     loggers.set(name, {
       trace: getImplementation(name, 'trace'),
-      debug: getImplementation(name, 'debug'),
+      debug: getImplementation(name, 'log'),
       log: getImplementation(name, 'log'),
       info: getImplementation(name, 'info'),
       warn: getImplementation(name, 'warn'),

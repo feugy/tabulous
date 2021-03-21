@@ -18,10 +18,11 @@
   import { initEngine, initPeer } from '../stores'
 
   let canvas
+  let interaction
   let engine
 
   onMount(() => {
-    engine = createEngine({ canvas })
+    engine = createEngine({ canvas, interaction })
 
     initEngine(engine)
     createCamera()
@@ -39,7 +40,7 @@
         createCard({
           id: `${gem}-${j}`,
           x,
-          y: i * 5 - 5,
+          z: i * 5 - 5,
           front: `images/splendor/${i + 1}/${gem}-1.png`,
           back: `images/splendor/${i + 1}/back.png`,
           isFlipped: true
@@ -49,7 +50,6 @@
     }
 
     engine.start()
-
     initPeer()
     return () => engine.dispose()
   })
@@ -72,6 +72,7 @@
     height: 100%;
   }
 
+  .interaction,
   canvas {
     position: absolute;
     top: 0;
@@ -89,10 +90,12 @@
 <svelte:window on:resize={handleResize} />
 
 <main>
-  <canvas bind:this={canvas} />
+  <div class="interaction" bind:this={interaction}>
+    <canvas bind:this={canvas} />
+    <ActionMenu />
+  </div>
   <Connect />
   <Chat />
-  <ActionMenu />
   <FPSViewer />
   <StackSizeTooltip />
 </main>

@@ -1,10 +1,13 @@
 import Babylon from 'babylonjs'
 import { Subject } from 'rxjs'
 import { controlManager, dragManager, multiSelectionManager } from './managers'
+import { loadScene, serializeScene } from './utils'
+
 const { Engine, Scene } = Babylon
 
-export function createEngine({ canvas } = {}) {
+export function createEngine({ canvas, interaction } = {}) {
   const engine = new Engine(canvas, true)
+  engine.inputElement = interaction
 
   const scene = new Scene(engine)
 
@@ -15,6 +18,8 @@ export function createEngine({ canvas } = {}) {
 
   engine.applyAction = controlManager.apply.bind(controlManager)
   engine.movePeerPointer = controlManager.movePeerPointer.bind(controlManager)
+  engine.serializeScene = () => serializeScene(scene)
+  engine.loadScene = descriptor => loadScene(scene, descriptor)
 
   const mapping = [
     {
@@ -53,12 +58,11 @@ export function createEngine({ canvas } = {}) {
   }
 
   function handlePointerOut(event) {
-    console.log('OUT')
     multiSelectionManager.cancel(event)
     dragManager.cancel(event)
   }
 
-  canvas.addEventListener('pointerout', handlePointerOut)
+  interaction.addEventListener('pointerleave', handlePointerOut)
   // engine.onDisposeObservable.add(() => {
   //   for (const { observable, subjectName, observer } of mapping) {
   //     engine[subjectName].unsubscribe()

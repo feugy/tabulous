@@ -28,6 +28,7 @@ export class FlipBehavior extends MoveBehavior {
 
   attach(mesh, withAction = true) {
     super.attach(mesh)
+    mesh.rotation.z = this.isFlipped ? Math.PI : 0
     if (!mesh.metadata) {
       mesh.metadata = {}
     }
@@ -119,6 +120,10 @@ export class FlipBehavior extends MoveBehavior {
           onMoveEndObservable.notifyObservers({ mesh, from, duration })
         }
       )
+  }
+
+  serialize() {
+    return { isFlipped: this.isFlipped }
   }
 }
 

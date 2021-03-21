@@ -19,7 +19,7 @@ export class RotateBehavior extends MoveBehavior {
     )
     this.duration = args.duration || 0.5
     this.action = null
-    this.rotation = args.rotation || 0
+    this.angle = args.angle || 0
   }
 
   get name() {
@@ -28,11 +28,12 @@ export class RotateBehavior extends MoveBehavior {
 
   attach(mesh, withAction = true) {
     super.attach(mesh)
+    mesh.rotation.y = this.angle * 0.5 * Math.PI
     if (!mesh.metadata) {
       mesh.metadata = {}
     }
     mesh.metadata.rotate = this.rotate.bind(this)
-    mesh.metadata.rotation = this.rotation
+    mesh.metadata.angle = this.angle
     if (withAction) {
       if (!mesh.actionManager) {
         mesh.actionManager = new ActionManager(mesh.getScene())
@@ -60,7 +61,7 @@ export class RotateBehavior extends MoveBehavior {
     const {
       duration,
       isMoving,
-      rotation,
+      angle,
       mesh,
       frameRate,
       rotateAnimation,
@@ -88,8 +89,8 @@ export class RotateBehavior extends MoveBehavior {
 
     const lastFrame = Math.round(frameRate * duration)
     rotateAnimation.setKeys([
-      { frame: 0, value: rotation * 0.5 * Math.PI },
-      { frame: lastFrame, value: (rotation + 1) * 0.5 * Math.PI }
+      { frame: 0, value: angle * 0.5 * Math.PI },
+      { frame: lastFrame, value: (angle + 1) * 0.5 * Math.PI }
     ])
     moveAnimation.setKeys([
       { frame: 0, value: to },
@@ -111,12 +112,16 @@ export class RotateBehavior extends MoveBehavior {
         () => {
           this.isMoving = false
           logger.debug({ mesh }, `end rotating ${mesh.id}`)
-          this.rotation = (this.rotation + 1) % 4
-          mesh.metadata.rotation = this.rotation
+          this.angle = (this.angle + 1) % 4
+          mesh.metadata.angle = this.angle
           const from = applyGravity(mesh)
           onMoveEndObservable.notifyObservers({ mesh, from, duration })
         }
       )
+  }
+
+  serialize() {
+    return { angle: this.angle }
   }
 }
 

@@ -2,6 +2,7 @@
 
 ## Refactor
 
+- decouple communication channel from game logic
 - do not show action menu while animating
 
 ## Single player
@@ -22,6 +23,7 @@
 
 # Known issues
 
+- peer lost on reload > store in session/local storage?
 - some actions are lost, or not applied, like quick multiple rotations
 - peer pointer remains after peer is gone
 - flip stack only flip individual card: it does not change the ordering
