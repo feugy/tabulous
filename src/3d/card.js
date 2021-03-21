@@ -6,6 +6,8 @@ import {
   RotateBehavior,
   StackBehavior
 } from './behaviors'
+import { controlManager } from './managers'
+
 const {
   Axis,
   Color3,
@@ -73,5 +75,9 @@ export function createCard({
   stackBehavior.defineTarget(target)
   card.addBehavior(stackBehavior)
 
+  controlManager.registerControlable(card)
+  card.onDisposeObservable.addOnce(() =>
+    controlManager.unregisterControlable(card)
+  )
   return card
 }

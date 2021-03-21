@@ -1,11 +1,10 @@
 import Babylon from 'babylonjs'
 import { Subject } from 'rxjs'
-import { dragManager, multiSelectionManager } from './managers'
+import { controlManager, dragManager, multiSelectionManager } from './managers'
 const { Engine, Scene } = Babylon
 
-export function createEngine({ canvas, interaction } = {}) {
+export function createEngine({ canvas } = {}) {
   const engine = new Engine(canvas, true)
-  engine.inputElement = interaction
 
   const scene = new Scene(engine)
 
@@ -13,6 +12,9 @@ export function createEngine({ canvas, interaction } = {}) {
   multiSelectionManager.init({ scene })
 
   engine.start = () => engine.runRenderLoop(scene.render.bind(scene))
+
+  engine.applyAction = controlManager.apply.bind(controlManager)
+  engine.movePeerPointer = controlManager.movePeerPointer.bind(controlManager)
 
   const mapping = [
     {
@@ -37,7 +39,9 @@ export function createEngine({ canvas, interaction } = {}) {
     },
     { observable: dragManager.onDragObservable, subjectName: 'onDrag' },
     { observable: dragManager.onDragEndObservable, subjectName: 'onDragEnd' },
-    { observable: engine.onEndFrameObservable, subjectName: 'onFrameEnd' }
+    { observable: engine.onEndFrameObservable, subjectName: 'onFrameEnd' },
+    { observable: controlManager.onActionObservable, subjectName: 'onAction' },
+    { observable: controlManager.onPointerObservable, subjectName: 'onPointer' }
   ]
 
   // expose Babylon observables as RX subjects
@@ -47,11 +51,20 @@ export function createEngine({ canvas, interaction } = {}) {
       engine[subjectName].next.bind(engine[subjectName])
     )
   }
+
+  function handlePointerOut(event) {
+    console.log('OUT')
+    multiSelectionManager.cancel(event)
+    dragManager.cancel(event)
+  }
+
+  canvas.addEventListener('pointerout', handlePointerOut)
   // engine.onDisposeObservable.add(() => {
   //   for (const { observable, subjectName, observer } of mapping) {
   //     engine[subjectName].unsubscribe()
   //     observable.remove(observer)
   //   }
+  //   cancas.removeEventListener('mouseleave', handlePointerOut)
   // })
   return engine
 }

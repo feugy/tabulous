@@ -8,13 +8,12 @@ class DragManager {
     this.onDragStartObservable = new Observable()
     this.onDragObservable = new Observable()
     this.onDragEndObservable = new Observable()
+    this.position = null
+    this.picked = null
+    this.meshes = null
   }
 
   init({ scene, tolerance = 0.03 } = {}) {
-    let position = null
-    let picked = null
-    let meshes = null
-
     scene.onPrePointerObservable.add(info => {
       const { type, localPosition, event } = info
       if (type === PointerEventTypes.POINTERDOWN) {
@@ -22,51 +21,62 @@ class DragManager {
           scene.createPickingRay(localPosition.x, localPosition.y)
         )
         if (pickedMesh) {
-          picked = pickedMesh
-          position = screenToGround(scene, localPosition)
-          meshes = null
+          this.picked = pickedMesh
+          this.position = screenToGround(scene, localPosition)
+          this.meshes = null
         }
-      } else if (type === PointerEventTypes.POINTERMOVE && picked) {
+      } else if (type === PointerEventTypes.POINTERMOVE && this.picked) {
         const current = screenToGround(scene, localPosition)
-        if (!meshes && Vector3.Distance(position, current) > tolerance) {
+        if (
+          !this.meshes &&
+          Vector3.Distance(this.position, current) > tolerance
+        ) {
           info.skipOnPointerObservable = true
           // TODO clear selection?
-          meshes = multiSelectionManager.meshes.includes(picked)
+          this.meshes = multiSelectionManager.meshes.includes(this.picked)
             ? [...multiSelectionManager.meshes]
-            : [picked]
-          for (const mesh of meshes) {
+            : [this.picked]
+          for (const mesh of this.meshes) {
             this.onDragStartObservable.notifyObservers({
-              position,
+              position: this.position,
               mesh,
               event
             })
           }
         }
-        if (meshes) {
+        if (this.meshes) {
           info.skipOnPointerObservable = true
-          const move = current.subtract(position)
-          position = current
-          for (const mesh of meshes) {
+          const move = current.subtract(this.position)
+          this.position = current
+          for (const mesh of this.meshes) {
             this.onDragObservable.notifyObservers({
-              position,
+              position: this.position,
               move,
               mesh,
               event
             })
           }
         }
-      } else if (type === PointerEventTypes.POINTERUP && picked) {
-        if (meshes) {
-          // consider selection order to notify lower items first
-          for (const mesh of meshes) {
-            this.onDragEndObservable.notifyObservers({ position, mesh, event })
-          }
-          meshes = null
-        }
-        picked = null
-        position = null
+      } else if (type === PointerEventTypes.POINTERUP && this.picked) {
+        this.cancel(event)
       }
     })
+  }
+
+  cancel(event) {
+    if (this.meshes) {
+      // consider selection order to notify lower items first
+      for (const mesh of this.meshes) {
+        this.onDragEndObservable.notifyObservers({
+          position: this.position,
+          mesh,
+          event
+        })
+      }
+      this.meshes = null
+    }
+    this.picked = null
+    this.position = null
   }
 }
 

@@ -1,8 +1,8 @@
 import Babylon from 'babylonjs'
 import { TargetBehavior } from './targetable'
-import { dragManager, multiSelectionManager } from '../managers'
+import { controlManager, dragManager, multiSelectionManager } from '../managers'
 import { animateMove, getTargetableBehavior } from '../utils'
-import { makeLogger, shuffle } from '../../utils'
+import { makeLogger } from '../../utils'
 
 const { Vector3 } = Babylon
 const logger = makeLogger('stackable')
@@ -16,6 +16,7 @@ function pushOnStack(behavior, mesh) {
   const { x, z } = stack[0].absolutePosition
   logger.debug({ stack, mesh }, `push ${mesh.id} on stack ${stack[0].id}`)
   animateMove(mesh, new Vector3(x, mesh.absolutePosition.y, z), moveDuration)
+  controlManager.record({ meshId: stack[0].id, fn: 'push', args: [mesh.id] })
 }
 
 function enableLastTarget(stack, enabled) {
@@ -35,7 +36,9 @@ function setBase(mesh, base) {
   if (targetable) {
     targetable.base = base
     targetable.mesh.metadata.stack = base?.stack
-    targetable.mesh.metadata.schuffle = base ? () => base.schuffle() : () => {}
+    targetable.mesh.metadata.shuffle = base
+      ? ids => base.shuffle(ids)
+      : () => {}
   }
 }
 
@@ -73,9 +76,11 @@ export class StackBehavior extends TargetBehavior {
       mesh.metadata = {}
     }
     mesh.metadata.stack = this.base?.stack
+    mesh.metadata.push = id => this.push(id)
+    mesh.metadata.pop = () => this.pop()
     mesh.metadata.shuffle = () => {}
     this.dropObserver = this.onDropObservable.add(({ dragged }) =>
-      this.push(dragged)
+      this.push(dragged?.id)
     )
     // TODO automatically define target, and disable function
   }
@@ -85,7 +90,8 @@ export class StackBehavior extends TargetBehavior {
     super.detach()
   }
 
-  push(mesh) {
+  push(meshId) {
+    const mesh = this.stack[0].getScene().getMeshByID(meshId)
     if (!mesh || (this.base || this).stack.includes(mesh)) {
       return
     }
@@ -112,19 +118,19 @@ export class StackBehavior extends TargetBehavior {
       { stack, mesh },
       `pop ${mesh.id} out of stack ${stack.map(({ id }) => id)}`
     )
+    controlManager.record({ meshId: stack[0].id, fn: 'pop' })
     return mesh
   }
 
-  schuffle() {
+  shuffle(ids) {
     if (this.stack.length <= 1) {
       return
     }
-    const stack = shuffle(this.stack)
+    const posById = new Map(this.stack.map(({ id }, i) => [id, i]))
+    const stack = ids.map(id => this.stack[posById.get(id)])
     logger.debug(
       { old: this.stack, stack },
-      `schuffle ${this.stack.map(({ id }) => id)} to ${stack.map(
-        ({ id }) => id
-      )}`
+      `shuffle ${this.stack.map(({ id }) => id)} to ${ids}`
     )
     const position = this.mesh.absolutePosition.clone()
     for (const item of stack) {
@@ -140,8 +146,9 @@ export class StackBehavior extends TargetBehavior {
         stackBehavior.base = null
         stackBehavior.stack = [stack[i]]
       }
-      baseBehavior.push(stack[i])
+      baseBehavior.push(stack[i].id)
     }
+    controlManager.record({ meshId: stack[0].id, fn: 'shuffle', args: [ids] })
   }
 }
 

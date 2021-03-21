@@ -1,6 +1,12 @@
 <script>
   import { onMount } from 'svelte'
-  import { ActionMenu, FPSViewer, StackSizeTooltip } from './index'
+  import {
+    ActionMenu,
+    Chat,
+    Connect,
+    FPSViewer,
+    StackSizeTooltip
+  } from './index'
   import {
     createCamera,
     createCard,
@@ -9,14 +15,13 @@
     createTable,
     showAxis
   } from '../3d'
-  import { initEngine } from '../stores'
+  import { initEngine, initPeer } from '../stores'
 
   let canvas
-  let interaction
   let engine
 
   onMount(() => {
-    engine = createEngine({ canvas, interaction })
+    engine = createEngine({ canvas })
 
     initEngine(engine)
     createCamera()
@@ -44,6 +49,8 @@
     }
 
     engine.start()
+
+    initPeer()
     return () => engine.dispose()
   })
 
@@ -65,7 +72,6 @@
     height: 100%;
   }
 
-  div,
   canvas {
     position: absolute;
     top: 0;
@@ -84,9 +90,9 @@
 
 <main>
   <canvas bind:this={canvas} />
-  <div bind:this={interaction}>
-    <ActionMenu />
-    <FPSViewer />
-    <StackSizeTooltip />
-  </div>
+  <Connect />
+  <Chat />
+  <ActionMenu />
+  <FPSViewer />
+  <StackSizeTooltip />
 </main>

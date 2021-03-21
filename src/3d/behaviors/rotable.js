@@ -1,7 +1,7 @@
 import Babylon from 'babylonjs'
 import { MoveBehavior } from './movable'
 import { applyGravity } from '../utils'
-import { multiSelectionManager } from '../managers'
+import { controlManager, multiSelectionManager } from '../managers'
 import { makeLogger } from '../../utils'
 
 const { ActionManager, Animation, ExecuteCodeAction, Vector3 } = Babylon
@@ -80,6 +80,8 @@ export class RotateBehavior extends MoveBehavior {
     }
     logger.debug({ mesh }, `start rotating ${mesh.id}`)
     this.isMoving = true
+
+    controlManager.record({ meshId: mesh.id, fn: 'rotate' })
 
     const to = mesh.absolutePosition.clone()
     onMoveStartObservable.notifyObservers({ mesh, to, duration })

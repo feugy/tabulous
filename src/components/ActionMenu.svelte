@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte'
   import { engine } from '../stores'
-  import { getMeshCoordinates } from '../utils'
+  import { getMeshCoordinates, shuffle } from '../utils'
 
   let left = 0
   let top = 0
@@ -41,7 +41,10 @@
             if (object.metadata.stack?.length > 1) {
               actions.push({
                 name: 'Mélanger',
-                action: () => object.metadata.schuffle()
+                action: () => {
+                  const ids = object.metadata.stack.map(({ id }) => id)
+                  object.metadata.shuffle(shuffle(ids))
+                }
               })
             }
           }, delay)
@@ -68,23 +71,31 @@
 </script>
 
 <style>
-  div {
+  ul {
     position: absolute;
     height: auto;
     width: auto;
     display: inline-flex;
     flex-direction: column;
     visibility: hidden;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  button {
+    min-width: 100%;
   }
 </style>
 
-<div
+<ul
   style={`visibility: ${
     object ? 'visible' : 'hidden'
   }; left: ${left}px; top: ${top}px`}
-  on:pointerdown|stopPropagation
 >
   {#each actions as { name, action }}
-    <button on:click={action}>{name}</button>
+    <li>
+      <button on:click={action}>{name}</button>
+    </li>
   {/each}
-</div>
+</ul>

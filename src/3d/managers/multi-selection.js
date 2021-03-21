@@ -1,4 +1,5 @@
 import Babylon from 'babylonjs'
+import { controlManager } from './control'
 // don't import from index because of circular dependencies
 import { center3, screenToGround } from '../utils/vector'
 import { makeLogger } from '../../utils'
@@ -39,11 +40,13 @@ class MultiSelectionManager {
           }
         }
       } else if (type === PointerEventTypes.POINTERMOVE) {
+        const position = screenToGround(scene, localPosition)
+        controlManager.recordPointer(position)
         if (event.shiftKey) {
           if (pointerDown && !this.start) {
             // detects a multiple selection operation.
             // create a box to vizualise selected area
-            this.start = screenToGround(scene, localPosition)
+            this.start = position
             selectionBox = MeshBuilder.CreateBox('multi-selection', { size: 0 })
             selectionBox.visibility = 0.2
             selectionBox.isPickable = false
@@ -54,7 +57,7 @@ class MultiSelectionManager {
             // updates size and position of the multiple selection box.
             // its position is the center of operation start and current position, then we scale it
             info.skipOnPointerObservable = true
-            const current = screenToGround(scene, localPosition)
+            const current = position
             selectionBox.position = center3(this.start, current)
             selectionBox.scaling = new Vector3(
               Math.abs(current.x - this.start.x),
@@ -131,6 +134,17 @@ class MultiSelectionManager {
   unregisterHoverable(behavior) {
     if (this.hoverable.has(behavior.mesh)) {
       this.hoverable.delete(behavior.mesh)
+    }
+  }
+
+  cancel(event) {
+    if (this.hovered) {
+      this.onOutObservable.notifyObservers({
+        event,
+        mesh: this.hovered,
+        selection: this.meshes
+      })
+      this.hovered = null
     }
   }
 }

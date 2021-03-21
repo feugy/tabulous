@@ -1,7 +1,7 @@
 import Babylon from 'babylonjs'
 import { MoveBehavior } from './movable'
 import { applyGravity } from '../utils'
-import { multiSelectionManager } from '../managers'
+import { controlManager, multiSelectionManager } from '../managers'
 import { makeLogger } from '../../utils'
 
 const { ActionManager, Animation, ExecuteCodeAction, Vector3 } = Babylon
@@ -80,6 +80,8 @@ export class FlipBehavior extends MoveBehavior {
     }
     logger.debug({ mesh }, `start flipping ${mesh.id}`)
     this.isMoving = true
+
+    controlManager.record({ meshId: mesh.id, fn: 'flip' })
 
     const to = mesh.absolutePosition.clone()
     const [min, max] = mesh.getBoundingInfo().boundingBox.vectorsWorld

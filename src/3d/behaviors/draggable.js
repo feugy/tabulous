@@ -1,6 +1,6 @@
 import Babylon from 'babylonjs'
 import { animateMove, applyGravity } from '../utils'
-import { dragManager, targetManager } from '../managers'
+import { controlManager, dragManager, targetManager } from '../managers'
 import { makeLogger } from '../../utils'
 const { Vector3 } = Babylon
 
@@ -29,6 +29,10 @@ export class DragBehavior {
     this.dragStartObserver = dragManager.onDragStartObservable.add(dragged => {
       if (dragged.mesh === mesh) {
         mesh.absolutePosition.y += this.elevation
+        controlManager.record({
+          meshId: mesh.id,
+          pos: mesh.absolutePosition.asArray()
+        })
       }
     })
 
@@ -39,6 +43,10 @@ export class DragBehavior {
           target.box.visibility = 0
         }
         mesh.setAbsolutePosition(mesh.absolutePosition.add(dragged.move))
+        controlManager.record({
+          meshId: mesh.id,
+          pos: mesh.absolutePosition.asArray()
+        })
         // find and show new target
         target = targetManager.findTarget(mesh)
         targetManager.showTarget(target)
@@ -62,7 +70,12 @@ export class DragBehavior {
             Math.round(z / this.snapDistance) * this.snapDistance
           )
           logger.debug({ dragged: mesh }, `end drag ${mesh.id}`)
-          animateMove(mesh, absolutePosition, this.moveDuration, applyGravity)
+          animateMove(mesh, absolutePosition, this.moveDuration, mesh =>
+            controlManager.record({
+              meshId: mesh.id,
+              pos: applyGravity(mesh).asArray()
+            })
+          )
         }
       }
     })

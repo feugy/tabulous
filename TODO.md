@@ -18,14 +18,14 @@
 
 - player name
 - table creation
-- broadcast positions & rotations
-- inline chat
 - inline video
 
 # Known issues
 
+- some actions are lost, or not applied, like quick multiple rotations
+- peer pointer remains after peer is gone
 - flip stack only flip individual card: it does not change the ordering
-- card must stay on the table
+- card can leave the table
 - camera can go wild
 
 # Notes
