@@ -41,6 +41,9 @@ class MultiSelectionManager {
         }
       } else if (type === PointerEventTypes.POINTERMOVE) {
         const position = screenToGround(scene, localPosition)
+        if (!position) {
+          return
+        }
         controlManager.recordPointer(position)
         if (event.shiftKey) {
           if (pointerDown && !this.start) {
@@ -61,7 +64,7 @@ class MultiSelectionManager {
             selectionBox.position = center3(this.start, current)
             selectionBox.scaling = new Vector3(
               Math.abs(current.x - this.start.x),
-              1,
+              2,
               Math.abs(current.z - this.start.z)
             )
           }

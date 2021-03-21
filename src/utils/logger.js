@@ -5,8 +5,8 @@ const levels = {
   'multi-selection': 'info',
   peer: 'warn',
   rotable: 'info',
-  'scene-loader': 'debug',
-  stackable: 'debug'
+  'scene-loader': 'info',
+  stackable: 'info'
 }
 
 const levelMap = {

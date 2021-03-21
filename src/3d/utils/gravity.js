@@ -22,12 +22,13 @@ export function applyGravity(mesh) {
       over.add(hit.pickedMesh)
     }
   }
-  let y = 0
+  const offset = boundingBox.extendSizeWorld.y * 0.5
+  let y = offset
   if (over.size) {
     const ordered = [...over.values()].sort(
       (a, b) => b.absolutePosition.y - a.absolutePosition.y
     )
-    y = ordered[0].getBoundingInfo().boundingBox.maximumWorld.y + 0.02
+    y = ordered[0].getBoundingInfo().boundingBox.maximumWorld.y + 0.02 + offset
     logger.debug(
       { ordered, mesh },
       `${mesh.id} is above ${ordered.map(({ id }) => id)}`

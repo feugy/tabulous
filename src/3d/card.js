@@ -15,7 +15,8 @@ const {
   MeshBuilder,
   Space,
   StandardMaterial,
-  Texture
+  Texture,
+  Vector3
 } = Babylon
 
 export function createCard({
@@ -51,7 +52,7 @@ export function createCard({
   const card = Mesh.MergeMeshes(faces, true, false, null, false, true)
   card.name = 'card'
   card.receiveShadows = true
-  card.position.set(x, y, z)
+  card.setAbsolutePosition(new Vector3(x, y, z))
   Object.assign(card, cardProps)
 
   card.metadata = {
@@ -73,15 +74,15 @@ export function createCard({
   card.overlayColor = new Color3(0, 0.8, 0)
   card.overlayAlpha = 0.2
 
-  card.addBehavior(new DragBehavior({ moveDuration, snapDistance }))
+  card.addBehavior(new DragBehavior({ moveDuration, snapDistance }), true)
 
   const flipBehavior = new FlipBehavior({ duration: flipDuration, isFlipped })
-  card.addBehavior(flipBehavior)
+  card.addBehavior(flipBehavior, true)
 
   const rotateBehavior = new RotateBehavior({ duration: rotateDuration, angle })
-  card.addBehavior(rotateBehavior)
+  card.addBehavior(rotateBehavior, true)
 
-  card.addBehavior(new HoverBehavior())
+  card.addBehavior(new HoverBehavior(), true)
 
   const stackBehavior = new StackBehavior({ moveDuration })
   const target = MeshBuilder.CreateBox('target', {
@@ -91,7 +92,7 @@ export function createCard({
   })
   target.parent = card
   stackBehavior.defineTarget(target)
-  card.addBehavior(stackBehavior)
+  card.addBehavior(stackBehavior, true)
 
   controlManager.registerControlable(card)
   card.onDisposeObservable.addOnce(() =>

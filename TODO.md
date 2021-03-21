@@ -2,6 +2,7 @@
 
 ## Refactor
 
+- ability to shuffle stack on scene loading
 - decouple communication channel from game logic
 - do not show action menu while animating
 
@@ -11,9 +12,7 @@
   - draw multiple cards
   - add to bottom
 - camera controls
-- tokens (stackable, flippable, rotable)
 - boards
-- game loading mechanism
 
 ## Multi player
 
@@ -23,6 +22,8 @@
 
 # Known issues
 
+- stacking tokens and cards together should be forbidden
+- multi select should not be squared in world, but on screen, and have infinite height
 - peer lost on reload > store in session/local storage?
 - some actions are lost, or not applied, like quick multiple rotations
 - peer pointer remains after peer is gone

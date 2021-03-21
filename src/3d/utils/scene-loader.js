@@ -1,15 +1,19 @@
 import { createCard } from '../card'
+import { createRoundToken } from '../round-token'
 import { makeLogger } from '../../utils'
 
 const logger = makeLogger('scene-loader')
 
 export function serializeScene(scene) {
   const data = {
-    cards: []
+    cards: [],
+    roundTokens: []
   }
   for (const mesh of scene.meshes) {
     if (mesh.name === 'card') {
       data.cards.push(mesh.metadata.serialize())
+    } else if (mesh.name === 'round-token') {
+      data.roundTokens.push(mesh.metadata.serialize())
     }
   }
   logger.debug({ data }, `serialize scene`)
@@ -20,14 +24,15 @@ export function loadScene(scene, data) {
   const disposed = new Array(scene.meshes.length)
   let j = 0
   for (let i = 0; i < disposed.length; i++) {
-    if (scene.meshes[i].name === 'card') {
-      disposed[j++] = scene.meshes[i]
+    const mesh = scene.meshes[i]
+    if (mesh.name === 'card' || mesh.name === 'round-token') {
+      disposed[j++] = mesh
     }
   }
   disposed.splice(j)
-  for (const card of disposed) {
-    logger.debug({ card }, `dispose card ${card.id}`)
-    card.dispose()
+  for (const mesh of disposed) {
+    logger.debug({ mesh }, `dispose mesh ${mesh.id}`)
+    mesh.dispose()
   }
 
   const meshById = new Map()
@@ -38,7 +43,12 @@ export function loadScene(scene, data) {
     const mesh = createCard({ ...card, stack: undefined })
     meshById.set(mesh.id, mesh)
   }
-  for (const { stack, id } of data.cards) {
+  for (const token of data.roundTokens) {
+    logger.debug({ token }, `create new round token ${token.id}`)
+    const mesh = createRoundToken({ ...token, stack: undefined })
+    meshById.set(mesh.id, mesh)
+  }
+  for (const { stack, id } of [...data.cards, ...data.roundTokens]) {
     if (stack?.length) {
       for (const stackedId of stack) {
         logger.debug({ stackedId, id }, `push ${stackedId} on top of ${id}`)

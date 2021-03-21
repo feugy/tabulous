@@ -9,13 +9,13 @@
   } from './index'
   import {
     createCamera,
-    createCard,
     createEngine,
     createLight,
     createTable,
     showAxis
   } from '../3d'
   import { initEngine, initPeer } from '../stores'
+  import { default as splendor } from '../games/splendor/scene.json'
 
   let canvas
   let interaction
@@ -31,25 +31,8 @@
     // create light after table, so table doesn't project shadow
     createLight()
 
-    const gems = ['ruby', 'diamond', 'sapphire']
-    let j = 1
-    for (let x = -12; x <= 12; x += 4) {
-      // for (let x = -4; x < 0; x += 4) {
-      for (const gem of gems) {
-        const i = gems.indexOf(gem)
-        createCard({
-          id: `${gem}-${j}`,
-          x,
-          z: i * 5 - 5,
-          front: `images/splendor/${i + 1}/${gem}-1.png`,
-          back: `images/splendor/${i + 1}/back.png`,
-          isFlipped: true
-        })
-      }
-      j++
-    }
-
     engine.start()
+    engine.loadScene(splendor)
     initPeer()
     return () => engine.dispose()
   })

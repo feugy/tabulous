@@ -98,7 +98,7 @@ export class FlipBehavior extends MoveBehavior {
       { frame: 0, value: to },
       {
         frame: lastFrame * 0.5,
-        value: new Vector3(to.x, to.y + width * 0.75, to.z)
+        value: new Vector3(to.x, to.y + width, to.z)
       },
       { frame: lastFrame, value: to }
     ])
