@@ -8,10 +8,13 @@
 
 ## Single player
 
-- stack actions:
-  - draw multiple cards
-  - add to bottom
 - camera controls
+- zoom on item
+- permanently shows stack size
+- stack actions:
+  - draw multiple cards (either in hand, or in front of them)
+  - distribute multiple cards to players (either in their hand, or in front of them)
+  - add to bottom
 - boards
 
 ## Multi player
@@ -22,6 +25,9 @@
 
 # Known issues
 
+- camera zoom is not enough subtle
+- dragging card above high stack does not work
+- flipping stack is messing with drap and unstack
 - stacking tokens and cards together should be forbidden
 - multi select should not be squared in world, but on screen, and have infinite height
 - peer lost on reload > store in session/local storage?
@@ -30,6 +36,7 @@
 - flip stack only flip individual card: it does not change the ordering
 - card can leave the table
 - camera can go wild
+- shuffle animation is pretty bad
 
 # Notes
 
@@ -47,3 +54,24 @@ In Tabletopia, the interaction model is:
 - keyboard shortcut to trigger actions on current selection
 
 Being forced to do click (either select or menu) before triggering actions (shortcut or menu) is a bummer
+
+Game setup
+
+- min/max number of players allowed
+- players' positions
+- token/card enabled behaviors (overall+per item setting?)
+- personnal hand support (impact on the draw and distribute commands)
+
+Ideas for UI:
+
+- top right, an help button with drawing for base commands (pan, camera, DnD, main actions)
+- top right, an link to the rule book, opened in a floating pane, either taking whole screen, or a third of it
+- top left, in a column, player avatars/videos, with number of tokens/cards in hand, and mute indicator & command
+- bottom left, chat window
+- bottom, expansible area showing player's hand
+
+Ideas for joining a game:
+
+- new player should wait in a loby until another player let them in
+- joining player are assigned to a slot, that will remain even if player disconnects
+- any player can mute, or kick, another player (really?)
