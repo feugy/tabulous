@@ -25,7 +25,6 @@
 
 # Known issues
 
-- camera zoom is not enough subtle
 - dragging card above high stack does not work
 - flipping stack is messing with drap and unstack
 - stacking tokens and cards together should be forbidden
@@ -35,7 +34,6 @@
 - peer pointer remains after peer is gone
 - flip stack only flip individual card: it does not change the ordering
 - card can leave the table
-- camera can go wild
 - shuffle animation is pretty bad
 
 # Notes
