@@ -26,15 +26,15 @@ export class TargetBehavior {
 
   detach() {
     targetManager.unregisterTargetable(this)
-    for (const collisionBox of this.collisionBoxes) {
-      collisionBox.dispose()
+    for (const { box } of this.collisionBoxes) {
+      box.dispose()
     }
     this.collisionBoxes = []
     this.mesh = null
   }
 
-  defineTarget(collisionBox) {
-    this.collisionBoxes.push(collisionBox)
+  defineTarget(collisionBox, kinds = []) {
+    this.collisionBoxes.push({ box: collisionBox, kinds })
     collisionBox.visibility = 0
     collisionBox.isPickable = false
   }

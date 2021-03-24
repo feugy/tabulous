@@ -69,7 +69,11 @@ export function createRoundToken({
   token.overlayColor = new Color3(0, 0.8, 0)
   token.overlayAlpha = 0.2
 
-  token.addBehavior(new DragBehavior({ moveDuration, snapDistance }), true)
+  const dragKind = 'round-target'
+  token.addBehavior(
+    new DragBehavior({ moveDuration, snapDistance, dragKind }),
+    true
+  )
 
   const flipBehavior = new FlipBehavior({ duration: flipDuration, isFlipped })
   token.addBehavior(flipBehavior, true)
@@ -85,7 +89,7 @@ export function createRoundToken({
     height: 1
   })
   target.parent = token
-  stackBehavior.defineTarget(target)
+  stackBehavior.defineTarget(target, [dragKind])
   token.addBehavior(stackBehavior, true)
 
   controlManager.registerControlable(token)

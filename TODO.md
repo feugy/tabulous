@@ -26,9 +26,9 @@
 # Known issues
 
 - dragging card above high stack does not work
-- flipping stack is messing with drap and unstack
-- stacking tokens and cards together should be forbidden
+- flipping stack is messing with drag and unstack
 - multi select should not be squared in world, but on screen, and have infinite height
+- gravity after flip can leave item floating
 - peer lost on reload > store in session/local storage?
 - some actions are lost, or not applied, like quick multiple rotations
 - peer pointer remains after peer is gone

@@ -74,7 +74,11 @@ export function createCard({
   card.overlayColor = new Color3(0, 0.8, 0)
   card.overlayAlpha = 0.2
 
-  card.addBehavior(new DragBehavior({ moveDuration, snapDistance }), true)
+  const dragKind = 'card'
+  card.addBehavior(
+    new DragBehavior({ moveDuration, snapDistance, dragKind }),
+    true
+  )
 
   const flipBehavior = new FlipBehavior({ duration: flipDuration, isFlipped })
   card.addBehavior(flipBehavior, true)
@@ -91,7 +95,7 @@ export function createCard({
     size: height
   })
   target.parent = card
-  stackBehavior.defineTarget(target)
+  stackBehavior.defineTarget(target, [dragKind])
   card.addBehavior(stackBehavior, true)
 
   controlManager.registerControlable(card)

@@ -30,15 +30,15 @@ class TargetManager {
     }
   }
 
-  findTarget(dragged) {
+  findTarget(dragged, kind) {
     const dragBehavior = dragged.getBehaviorByName(DragBehavior.NAME)
     if (dragBehavior) {
       const candidates = []
       const excluded = [dragged, ...multiSelectionManager.meshes]
       for (const target of this.behaviors) {
         if (target.enabled && !excluded.includes(target.mesh)) {
-          for (const box of target.collisionBoxes) {
-            if (isAbove(dragged, box)) {
+          for (const { box, kinds } of target.collisionBoxes) {
+            if (kinds.includes(kind) && isAbove(dragged, box)) {
               candidates.push({
                 target,
                 box,
