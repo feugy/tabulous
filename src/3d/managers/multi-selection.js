@@ -1,10 +1,12 @@
 import Babylon from 'babylonjs'
+import { default as earcut } from 'earcut'
 import { controlManager } from './control'
 // don't import from index because of circular dependencies
-import { center3, screenToGround } from '../utils/vector'
+import { screenToGround } from '../utils/vector'
+import { isContaining } from '../utils/mesh'
 import { makeLogger } from '../../utils'
 
-const { MeshBuilder, Observable, PointerEventTypes, Vector3 } = Babylon
+const { Color3, MeshBuilder, Observable, PointerEventTypes } = Babylon
 const logger = makeLogger('multi-selection')
 
 class MultiSelectionManager {
@@ -14,7 +16,7 @@ class MultiSelectionManager {
     this.onOverObservable = new Observable()
     this.onOutObservable = new Observable()
     this.start = null
-    this.stop = null
+    this.startPosition = null
     this.meshes = []
     this.hoverable = new Set()
     this.hovered = null
@@ -22,6 +24,7 @@ class MultiSelectionManager {
 
   init({ scene } = {}) {
     let selectionBox = null
+    let selectionHint = null
     let pointerDown = false
 
     scene.onPrePointerObservable.add(info => {
@@ -29,8 +32,7 @@ class MultiSelectionManager {
       if (type === PointerEventTypes.POINTERDOWN) {
         pointerDown = true
         this.start = null
-        this.stop = null
-        // TODO alter current selection on shiftKey
+        // TODO alter current selection on ctrlKey
         if (this.meshes.length) {
           let hit = scene.pickWithRay(
             scene.createPickingRay(localPosition.x, localPosition.y)
@@ -50,23 +52,59 @@ class MultiSelectionManager {
             // detects a multiple selection operation.
             // create a box to vizualise selected area
             this.start = position
-            selectionBox = MeshBuilder.CreateBox('multi-selection', { size: 0 })
-            selectionBox.visibility = 0.2
-            selectionBox.isPickable = false
-            selectionBox.position = this.start
             this.meshes = []
+            this.startPosition = { ...localPosition }
           }
           if (this.start) {
-            // updates size and position of the multiple selection box.
-            // its position is the center of operation start and current position, then we scale it
             info.skipOnPointerObservable = true
-            const current = position
-            selectionBox.position = center3(this.start, current)
-            selectionBox.scaling = new Vector3(
-              Math.abs(current.x - this.start.x),
-              2,
-              Math.abs(current.z - this.start.z)
+
+            const width = this.startPosition.x - localPosition.x
+            const height = this.startPosition.y - localPosition.y
+
+            selectionBox?.dispose()
+            selectionHint?.dispose()
+            const depth = scene.activeCamera.position.y
+            selectionBox = MeshBuilder.ExtrudePolygon(
+              'selection-box',
+              {
+                shape: [
+                  this.start,
+                  screenToGround(scene, {
+                    x: this.startPosition.x - width,
+                    y: this.startPosition.y
+                  }),
+                  position,
+                  screenToGround(scene, {
+                    x: this.startPosition.x,
+                    y: this.startPosition.y - height
+                  }),
+                  this.start
+                ],
+                depth
+              },
+              scene,
+              earcut
             )
+            selectionBox.visibility = 0
+            selectionBox.isPickable = false
+            selectionBox.position.y += depth
+
+            selectionHint = MeshBuilder.CreateLines('selection-hint', {
+              points: [
+                this.start,
+                screenToGround(scene, {
+                  x: this.startPosition.x - width,
+                  y: this.startPosition.y
+                }),
+                position,
+                screenToGround(scene, {
+                  x: this.startPosition.x,
+                  y: this.startPosition.y - height
+                }),
+                this.start
+              ],
+              colors: Array.from({ length: 6 }, () => Color3.Green().toColor4())
+            })
           }
         }
         const mesh = scene
@@ -95,7 +133,11 @@ class MultiSelectionManager {
         if (this.start) {
           // end of a multiple selection: find selected meshes
           for (const mesh of scene.meshes) {
-            if (mesh.isPickable && selectionBox.intersectsMesh(mesh)) {
+            if (
+              mesh.isPickable &&
+              selectionBox &&
+              isContaining(selectionBox, mesh)
+            ) {
               this.meshes.push(mesh)
               mesh.renderOverlay = true
             }
@@ -109,7 +151,9 @@ class MultiSelectionManager {
             `new multiple selection: ${this.meshes.map(({ id }) => id)}`
           )
           selectionBox?.dispose()
-          this.stop = screenToGround(scene, localPosition)
+          selectionHint?.dispose()
+          this.start = null
+          this.startPosition = null
           this.onSelectionActiveObservable.notifyObservers()
         }
       }
@@ -119,8 +163,6 @@ class MultiSelectionManager {
   resetSelection() {
     if (this.meshes.length) {
       this.onSelectionResetObservable.notifyObservers()
-      this.start = null
-      this.stop = null
       for (const mesh of this.meshes) {
         mesh.renderOverlay = false
       }

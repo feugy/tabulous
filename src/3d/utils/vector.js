@@ -18,7 +18,3 @@ export function groundToScreen(point, scene) {
   )
   return { x, y }
 }
-
-export function center3({ x: xA, z: zA }, { x: xB, z: zB }, y = 0) {
-  return new Vector3((xA + xB) * 0.5, y, (zA + zB) * 0.5)
-}

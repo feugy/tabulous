@@ -67,7 +67,7 @@
 </style>
 
 <svelte:head>
-  <title>Board Forge</title>
+  <title>Tabulous</title>
 </svelte:head>
 
 <svelte:window on:resize={handleResize} />
