@@ -19,7 +19,7 @@ export function createEngine({ canvas, interaction } = {}) {
   engine.applyAction = controlManager.apply.bind(controlManager)
   engine.movePeerPointer = controlManager.movePeerPointer.bind(controlManager)
   engine.serializeScene = () => serializeScene(scene)
-  engine.loadScene = descriptor => loadScene(scene, descriptor)
+  engine.loadScene = descriptor => loadScene(engine, scene, descriptor)
 
   const mapping = [
     {

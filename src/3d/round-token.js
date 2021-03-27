@@ -46,6 +46,7 @@ export function createRoundToken({
   token.material = new StandardMaterial('round-token')
   token.material.diffuseTexture = new Texture(texture)
   token.material.diffuseTexture.hasAlpha = true
+  token.material.freeze()
 
   token.receiveShadows = true
   token.setAbsolutePosition(new Vector3(x, y, z))
@@ -84,12 +85,12 @@ export function createRoundToken({
   token.addBehavior(new HoverBehavior(), true)
 
   const stackBehavior = new StackBehavior({ moveDuration })
-  const target = MeshBuilder.CreateCylinder('target', {
-    diameter: diameter * 1.15,
-    height: 1
+  const target = MeshBuilder.CreateCylinder('drop-target', {
+    diameter,
+    height: height + 0.02
   })
   target.parent = token
-  stackBehavior.defineTarget(target, [dragKind])
+  stackBehavior.defineTarget(target, 0.6, [dragKind])
   token.addBehavior(stackBehavior, true)
 
   controlManager.registerControlable(token)

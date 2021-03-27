@@ -1,34 +1,52 @@
 import Babylon from 'babylonjs'
+import { getHeight } from './mesh'
 import { makeLogger } from '../../utils'
 
 const { Ray, Vector3 } = Babylon
 const logger = makeLogger('gravity')
 
 const rayLength = 30
+const down = Vector3.Down()
+
+function findBellow(mesh, predicate) {
+  const over = new Map()
+  const { boundingBox } = mesh.getBoundingInfo()
+
+  const vertices = [mesh.absolutePosition]
+  for (const vertex of boundingBox.vectorsWorld) {
+    if (vertex.y <= vertices[0].y) {
+      vertices.push(vertex)
+    }
+  }
+
+  const scene = mesh.getScene()
+  for (const vertex of vertices) {
+    const hit = scene.pickWithRay(new Ray(vertex, down, rayLength), predicate)
+    if (hit.pickedMesh) {
+      const count = over.get(hit.pickedMesh) || 0
+      over.set(hit.pickedMesh, count + 1)
+    }
+  }
+  return over
+}
+
+export function altitudeOnTop(mesh, other) {
+  return other.absolutePosition.y + getHeight(other) + getHeight(mesh) + 0.001
+}
 
 export function applyGravity(mesh) {
   logger.debug(
     { y: mesh.absolutePosition.y, mesh },
     `gravity for ${mesh.id} y: ${mesh.absolutePosition.y}`
   )
-  const { boundingBox } = mesh.getBoundingInfo()
-  const down = Vector3.Down()
-  const scene = mesh.getScene()
-  const over = new Set()
-  const predicate = other => other.isPickable && other !== mesh
-  for (const vertex of [...boundingBox.vectorsWorld, mesh.absolutePosition]) {
-    const hit = scene.pickWithRay(new Ray(vertex, down, rayLength), predicate)
-    if (hit.pickedMesh) {
-      over.add(hit.pickedMesh)
-    }
-  }
-  const offset = boundingBox.extendSizeWorld.y * 0.5
-  let y = offset
+  mesh.computeWorldMatrix(true)
+  const over = findBellow(mesh, other => other.isPickable && other !== mesh)
+  let y = getHeight(mesh)
   if (over.size) {
-    const ordered = [...over.values()].sort(
+    const ordered = [...over.keys()].sort(
       (a, b) => b.absolutePosition.y - a.absolutePosition.y
     )
-    y = ordered[0].getBoundingInfo().boundingBox.maximumWorld.y + 0.02 + offset
+    y = altitudeOnTop(mesh, ordered[0])
     logger.debug(
       { ordered, mesh },
       `${mesh.id} is above ${ordered.map(({ id }) => id)}`
@@ -41,22 +59,13 @@ export function applyGravity(mesh) {
   return mesh.absolutePosition
 }
 
-const targetScale = 0.3
-
-export function isAbove(mesh, target) {
-  const { boundingBox } = mesh.getBoundingInfo()
-  const down = Vector3.Down()
+export function isAbove(mesh, target, scale) {
   const originalScale = target.scaling.clone()
-  target.scaling.addInPlace(new Vector3(targetScale, targetScale, targetScale))
-  target.computeWorldMatrix(true)
-  let hit = 0
-  for (const vertex of boundingBox.vectorsWorld) {
-    if (new Ray(vertex, down, rayLength).intersectsMesh(target).hit) {
-      hit++
-    } else {
-      break
-    }
-  }
+  target.scaling.addInPlace(new Vector3(scale, scale, scale))
+  target.computeWorldMatrix()
+
+  const over = findBellow(mesh, other => other === target)
   target.scaling.copyFrom(originalScale)
-  return hit === boundingBox.vectorsWorld.length
+  target.computeWorldMatrix()
+  return over.get(target) >= 4
 }

@@ -7,7 +7,7 @@ export class TargetBehavior {
   constructor() {
     this.mesh = null
     this.enabled = true
-    this.collisionBoxes = []
+    this.targets = []
     this.onDropObservable = new Observable()
   }
 
@@ -26,17 +26,17 @@ export class TargetBehavior {
 
   detach() {
     targetManager.unregisterTargetable(this)
-    for (const { box } of this.collisionBoxes) {
-      box.dispose()
+    for (const { zone } of this.targets) {
+      zone.dispose()
     }
-    this.collisionBoxes = []
+    this.targets = []
     this.mesh = null
   }
 
-  defineTarget(collisionBox, kinds = []) {
-    this.collisionBoxes.push({ box: collisionBox, kinds })
-    collisionBox.visibility = 0
-    collisionBox.isPickable = false
+  defineTarget(zone, scale, kinds = []) {
+    this.targets.push({ zone, scale, kinds })
+    zone.visibility = 0
+    zone.isPickable = false
   }
 }
 

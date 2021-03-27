@@ -3,12 +3,13 @@
 ## Refactor
 
 - engine should be global, not subscribable
-- ability to shuffle stack on scene loading
 - decouple communication channel from game logic
-- do not show action menu while animating
+- disable any possible action while animating
 
 ## Single player
 
+- serialize faceUVs
+- ability to shuffle stack on scene loading
 - camera controls
 - zoom on item
 - permanently shows stack size
@@ -26,15 +27,14 @@
 
 # Known issues
 
-- dragging card above high stack does not work
-- flipping stack is messing with drag and unstack
-- gravity after flip can leave item floating
+- stack animation on game load is annoying
+- flip stacked items only flip individual card: it does not change the ordering
+- flipping or rotating item does not change vertical position: items above it will still be above it at the end
+- moving items bellow other does not apply gravity to them
 - peer lost on reload > store in session/local storage?
-- some actions are lost, or not applied, like quick multiple rotations
+- some actions are lost over the wire, or not applied, like quick multiple rotations
+- need to synchronise actions over the wire (like flipping overlapping cards)
 - peer pointer remains after peer is gone
-- flip stack only flip individual card: it does not change the ordering
-- card can leave the table
-- shuffle animation is pretty bad
 
 # Notes
 
@@ -73,3 +73,10 @@ Ideas for joining a game:
 - new player should wait in a loby until another player let them in
 - joining player are assigned to a slot, that will remain even if player disconnects
 - any player can mute, or kick, another player (really?)
+
+# Various learnings
+
+Physics engine aren't great: they are all pretty deprecated. [Cannon-es can not be used yet](https://github.com/BabylonJS/Babylon.js/issues/9810).
+When stacked, card are always bouncing.
+
+Polygon extrusion does not support path (for curves like rounded corners), and the resulting mesh is not vertically (Y axis) centered

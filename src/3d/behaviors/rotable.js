@@ -111,9 +111,11 @@ export class RotateBehavior extends MoveBehavior {
         1,
         () => {
           this.isMoving = false
-          logger.debug({ mesh }, `end rotating ${mesh.id}`)
           this.angle = (this.angle + 1) % 4
           mesh.metadata.angle = this.angle
+          logger.debug({ mesh }, `end rotating ${mesh.id}`)
+          // framed animation may not exactly end where we want, so force the final position
+          mesh.setAbsolutePosition(to)
           const from = applyGravity(mesh)
           onMoveEndObservable.notifyObservers({ mesh, from, duration })
         }

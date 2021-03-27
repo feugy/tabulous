@@ -1,10 +1,14 @@
+import Babylon from 'babylonjs'
 import { DragBehavior } from '../behaviors'
 import { isAbove } from '../utils'
 import { multiSelectionManager } from './multi-selection'
 
+const { Color3, HighlightLayer } = Babylon
+
 class TargetManager {
   constructor() {
     this.behaviors = []
+    this.highlight = null
   }
 
   registerTargetable(behavior) {
@@ -18,15 +22,24 @@ class TargetManager {
     }
   }
 
-  showTarget({ box } = {}) {
-    if (box) {
-      box.visibility = 0.5
+  showTarget(target) {
+    if (target?.zone) {
+      if (!this.highlight || this.highlight.isDisposed) {
+        this.highlight = new HighlightLayer('target-highlight')
+        this.highlight.innerGlow = false
+        this.highlight.onDisposeObservable.addOnce(() => {
+          this.highlight = null
+        })
+      }
+      target.zone.visibility = 0.01
+      this.highlight.addMesh(target.zone, Color3.Green())
     }
   }
 
-  hideTarget({ box } = {}) {
-    if (box) {
-      box.visibility = 0
+  hideTarget(target) {
+    if (target?.zone) {
+      target.zone.visibility = 0
+      this.highlight.removeMesh(target.zone)
     }
   }
 
@@ -35,14 +48,15 @@ class TargetManager {
     if (dragBehavior) {
       const candidates = []
       const excluded = [dragged, ...multiSelectionManager.meshes]
-      for (const target of this.behaviors) {
-        if (target.enabled && !excluded.includes(target.mesh)) {
-          for (const { box, kinds } of target.collisionBoxes) {
-            if (kinds.includes(kind) && isAbove(dragged, box)) {
+      for (const behavior of this.behaviors) {
+        if (behavior.enabled && !excluded.includes(behavior.mesh)) {
+          for (const target of behavior.targets) {
+            const { zone, scale, kinds } = target
+            if (kinds.includes(kind) && isAbove(dragged, zone, scale)) {
               candidates.push({
+                behavior,
                 target,
-                box,
-                y: target.mesh.absolutePosition.y
+                y: behavior.mesh.absolutePosition.y
               })
             }
           }
@@ -50,12 +64,15 @@ class TargetManager {
       }
       if (candidates.length > 0) {
         candidates.sort((a, b) => b.y - a.y)
-        const [{ box, target }] = candidates
+        const [{ target, behavior }] = candidates
         return {
-          box,
-          mesh: target.mesh,
+          zone: target.zone,
+          mesh: behavior.mesh,
           drop() {
-            target.onDropObservable.notifyObservers({ dragged, box })
+            behavior.onDropObservable.notifyObservers({
+              dragged,
+              target
+            })
           }
         }
       }

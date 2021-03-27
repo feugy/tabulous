@@ -34,7 +34,7 @@ export class MoveBehavior {
     this.mesh = null
   }
 
-  moveTo(to, duration) {
+  moveTo(to, duration, gravity = true) {
     const {
       isMoving,
       mesh,
@@ -50,7 +50,9 @@ export class MoveBehavior {
     const from = mesh.absolutePosition.clone()
     onMoveStartObservable.notifyObservers({ mesh, to, duration })
 
-    const lastFrame = Math.round(frameRate * duration)
+    const lastFrame = mesh.getScene().isLoading
+      ? 1
+      : Math.round(frameRate * duration)
     moveAnimation.setKeys([
       { frame: 0, value: from },
       { frame: lastFrame, value: to }
@@ -66,9 +68,11 @@ export class MoveBehavior {
         1,
         () => {
           this.isMoving = false
-          // spirted animation may not exactly end where we want, so force the final position
+          // framed animation may not exactly end where we want, so force the final position
           mesh.setAbsolutePosition(to)
-          applyGravity(mesh)
+          if (gravity) {
+            applyGravity(mesh)
+          }
           onMoveEndObservable.notifyObservers({ mesh, from, duration })
         }
       )

@@ -5,19 +5,18 @@ import {
   TargetBehavior
 } from '../behaviors'
 
-export function animateMove(
-  mesh,
-  absolutePosition,
-  duration,
-  onEnd = () => {}
-) {
+export function animateMove(mesh, absolutePosition, duration, onEnd) {
   const movable = getMoveableBehavior(mesh)
-  if (!movable) {
+  if (mesh.getScene().isLoading || !movable || !duration) {
     mesh.setAbsolutePosition(absolutePosition)
-    onEnd(mesh)
+    if (onEnd) {
+      onEnd(mesh)
+    }
   } else {
-    movable.moveTo(absolutePosition, duration)
-    movable.onMoveEndObservable.addOnce(() => onEnd(mesh))
+    movable.moveTo(absolutePosition, duration, false)
+    if (onEnd) {
+      movable.onMoveEndObservable.addOnce(() => onEnd(mesh))
+    }
   }
 }
 

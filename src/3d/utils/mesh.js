@@ -17,3 +17,7 @@ export function isContaining(container, mesh) {
     meshMin.z >= containerMin.z
   )
 }
+
+export function getHeight(mesh) {
+  return mesh.getBoundingInfo().boundingBox.extendSizeWorld.y
+}

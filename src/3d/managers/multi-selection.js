@@ -87,7 +87,8 @@ class MultiSelectionManager {
             )
             selectionBox.visibility = 0
             selectionBox.isPickable = false
-            selectionBox.position.y += depth
+            // -1 allows to select items lying on the floor whith very low camera angle
+            selectionBox.position.y += depth - 1
 
             selectionHint = MeshBuilder.CreateLines('selection-hint', {
               points: [

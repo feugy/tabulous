@@ -116,6 +116,8 @@ export class FlipBehavior extends MoveBehavior {
           this.isFlipped = !isFlipped
           mesh.metadata.isFlipped = this.isFlipped
           logger.debug({ mesh }, `end flipping ${mesh.id}`)
+          // framed animation may not exactly end where we want, so force the final position
+          mesh.setAbsolutePosition(to)
           const from = applyGravity(mesh)
           onMoveEndObservable.notifyObservers({ mesh, from, duration })
         }
