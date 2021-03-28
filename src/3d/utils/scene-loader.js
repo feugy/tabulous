@@ -1,5 +1,6 @@
 import { createCard } from '../card'
 import { createRoundToken } from '../round-token'
+import { createRoundedTile } from '../rounded-tile'
 import { makeLogger } from '../../utils'
 
 const logger = makeLogger('scene-loader')
@@ -7,13 +8,16 @@ const logger = makeLogger('scene-loader')
 export function serializeScene(scene) {
   const data = {
     cards: [],
-    roundTokens: []
+    roundTokens: [],
+    roundedTiles: []
   }
   for (const mesh of scene.meshes) {
     if (mesh.name === 'card') {
       data.cards.push(mesh.metadata.serialize())
     } else if (mesh.name === 'round-token') {
       data.roundTokens.push(mesh.metadata.serialize())
+    } else if (mesh.name === 'rounded-tile') {
+      data.roundedTiles.push(mesh.metadata.serialize())
     }
   }
   logger.debug({ data }, `serialize scene`)
@@ -50,7 +54,16 @@ export function loadScene(engine, scene, data) {
     const mesh = createRoundToken({ ...token, stack: undefined })
     meshById.set(mesh.id, mesh)
   }
-  for (const { stack, id } of [...data.cards, ...data.roundTokens]) {
+  for (const tile of data.roundedTiles) {
+    logger.debug({ tile }, `create new rounded tile ${tile.id}`)
+    const mesh = createRoundedTile({ ...tile, stack: undefined })
+    meshById.set(mesh.id, mesh)
+  }
+  for (const { stack, id } of [
+    ...data.cards,
+    ...data.roundTokens,
+    ...data.roundedTiles
+  ]) {
     if (stack?.length) {
       for (const stackedId of stack) {
         logger.debug({ stackedId, id }, `push ${stackedId} on top of ${id}`)

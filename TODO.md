@@ -8,11 +8,12 @@
 
 ## Single player
 
-- serialize faceUVs
+- ust CTRL for changing multiple selection
+- parametrize and serialize UVs
 - ability to shuffle stack on scene loading
 - camera controls
 - zoom on item
-- permanently shows stack size
+- permanently shows stack size?
 - stack actions:
   - draw multiple cards (either in hand, or in front of them)
   - distribute multiple cards to players (either in their hand, or in front of them)
@@ -27,7 +28,8 @@
 
 # Known issues
 
-- stack animation on game load is annoying
+- menu does not disappear after action
+- multi selection does not always work fine
 - flip stacked items only flip individual card: it does not change the ordering
 - flipping or rotating item does not change vertical position: items above it will still be above it at the end
 - moving items bellow other does not apply gravity to them
