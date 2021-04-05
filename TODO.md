@@ -2,7 +2,6 @@
 
 ## Refactor
 
-- decouple communication channel from game logic
 - disable any possible action while animating
 
 ## Single player

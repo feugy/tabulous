@@ -1,11 +1,7 @@
 <script>
-  import { chat, connectedPeers, sendToPeers } from '../stores'
+  import { chat, connected, sendMessage } from '../stores'
 
   let outgoingMessage
-
-  function handleSend() {
-    sendToPeers({ message: outgoingMessage })
-  }
 </script>
 
 <style>
@@ -37,14 +33,14 @@
   }
 </style>
 
-{#if $connectedPeers.length}
+{#if $connected.length}
   <aside>
     <ul>
       {#each $chat || [] as { peer, message }}<li>
           <span class="from">{peer}</span><span class="message">{message}</span>
         </li>{/each}
     </ul>
-    <form on:submit|preventDefault={handleSend}>
+    <form on:submit|preventDefault={() => sendMessage(outgoingMessage)}>
       <input bind:value={outgoingMessage} />
       <button type="submit">Envoyer</button>
     </form>

@@ -14,7 +14,7 @@
     createTable,
     showAxis
   } from '../3d'
-  import { initEngine, initPeer, loadScene } from '../stores'
+  import { initEngine, initCommunication, loadScene } from '../stores'
   import { default as splendor } from '../games/splendor/scene.json'
 
   let canvas
@@ -33,7 +33,7 @@
 
     engine.start()
     loadScene(splendor)
-    initPeer()
+    initCommunication()
     return () => engine.dispose()
   })
 

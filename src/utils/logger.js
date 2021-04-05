@@ -1,9 +1,9 @@
 const levels = {
+  communication: 'warn',
   draggable: 'info',
   flippable: 'info',
   gravity: 'info',
   'multi-selection': 'info',
-  peer: 'warn',
   rotable: 'info',
   'scene-loader': 'info',
   stackable: 'info'

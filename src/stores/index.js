@@ -1,2 +1,4 @@
+export * from './chat'
+export * from './communication'
 export * from './engine'
-export * from './peer'
+export * from './players'

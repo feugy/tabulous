@@ -1,11 +1,7 @@
 <script>
-  import { connectToPeer, connectedPeers, currentPeerId } from '../stores'
+  import { connectWith, connected, currentPeerId } from '../stores'
 
   let id
-
-  function handleConnect() {
-    connectToPeer(id)
-  }
 </script>
 
 <style>
@@ -19,10 +15,10 @@
   }
 </style>
 
-{#if $connectedPeers.length === 0}
+{#if $connected.length === 0}
   <aside>
     <div>Peer id: {$currentPeerId}</div>
-    <form on:submit|preventDefault={handleConnect}>
+    <form on:submit|preventDefault={() => connectWith(id)}>
       <input bind:value={id} />
       <button type="submit">Rejoindre</button>
     </form>
