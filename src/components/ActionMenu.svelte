@@ -1,5 +1,6 @@
 <script>
   import { onMount } from 'svelte'
+  import { _ } from 'svelte-intl'
   import { getMeshCoordinates, shuffle } from '../utils'
   import { dragStart, dragEnd, pointerOut, pointerOver } from '../stores'
 
@@ -33,19 +34,19 @@
         actions = []
         if (object.metadata.flip) {
           actions.push({
-            name: 'Retourner',
+            name: $_('flip'),
             action: () => object.metadata.flip()
           })
         }
         if (object.metadata.rotate) {
           actions.push({
-            name: 'Pivoter',
+            name: $_('rotate'),
             action: () => object.metadata.rotate()
           })
         }
         if (object.metadata.stack?.length > 1) {
           actions.push({
-            name: 'Mélanger',
+            name: $_('shuffle'),
             action: () => {
               const ids = object.metadata.stack.map(({ id }) => id)
               object.metadata.shuffle(shuffle(ids))

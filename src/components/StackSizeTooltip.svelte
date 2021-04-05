@@ -42,19 +42,10 @@
   }
 </script>
 
-<style>
+<style type="postcss">
   div {
-    display: inline-block;
-    visibility: hidden;
-    position: absolute;
-    color: white;
-    font-weight: 600;
-    font-size: 1.2rem;
+    @apply absolute invisible inline-block font-semibold text-lg text-white h-auto w-auto -mt-8 -ml-8;
     text-shadow: 0 0 2px black;
-    margin-top: -1rem;
-    margin-left: 1rem;
-    height: auto;
-    width: auto;
   }
 </style>
 

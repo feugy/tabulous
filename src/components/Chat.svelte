@@ -1,4 +1,5 @@
 <script>
+  import { _ } from 'svelte-intl'
   import { chat, connected, sendMessage } from '../stores'
 
   let outgoingMessage
@@ -6,10 +7,7 @@
 
 <style type="postcss">
   aside {
-    @apply absolute z-10 bg-white flex flex-col;
-    top: 5px;
-    left: 5px;
-    padding: 0.5rem;
+    @apply absolute z-10 bg-white flex flex-col left-2 top-2 p-2;
     height: 30%;
   }
   ul {
@@ -33,7 +31,7 @@
     </ul>
     <form on:submit|preventDefault={() => sendMessage(outgoingMessage)}>
       <input bind:value={outgoingMessage} />
-      <button type="submit">Envoyer</button>
+      <button type="submit">{$_('send')}</button>
     </form>
   </aside>
 {/if}

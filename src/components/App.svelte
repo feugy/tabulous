@@ -1,5 +1,6 @@
 <script>
   import { onMount } from 'svelte'
+  import { _ } from 'svelte-intl'
   import {
     ActionMenu,
     Chat,
@@ -55,7 +56,7 @@
 </style>
 
 <svelte:head>
-  <title>Tabulous</title>
+  <title>{$_('tabulous')}</title>
 </svelte:head>
 
 <svelte:window on:resize={handleResize} />
