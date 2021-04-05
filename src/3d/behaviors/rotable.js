@@ -1,10 +1,14 @@
-import Babylon from 'babylonjs'
+import {
+  ActionManager,
+  Animation,
+  ExecuteCodeAction,
+  Vector3
+} from '@babylonjs/core'
 import { MoveBehavior } from './movable'
 import { applyGravity } from '../utils'
 import { controlManager, multiSelectionManager } from '../managers'
 import { makeLogger } from '../../utils'
 
-const { ActionManager, Animation, ExecuteCodeAction, Vector3 } = Babylon
 const logger = makeLogger('rotable')
 
 export class RotateBehavior extends MoveBehavior {

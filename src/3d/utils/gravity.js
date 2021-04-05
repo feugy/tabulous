@@ -1,8 +1,7 @@
-import Babylon from 'babylonjs'
+import { Ray, Vector3 } from '@babylonjs/core'
 import { getHeight } from './mesh'
 import { makeLogger } from '../../utils'
 
-const { Ray, Vector3 } = Babylon
 const logger = makeLogger('gravity')
 
 const rayLength = 30

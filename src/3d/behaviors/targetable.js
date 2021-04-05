@@ -1,7 +1,5 @@
-import Babylon from 'babylonjs'
+import { Observable } from '@babylonjs/core'
 import { targetManager } from '../managers/target'
-
-const { Observable } = Babylon
 
 export class TargetBehavior {
   constructor() {

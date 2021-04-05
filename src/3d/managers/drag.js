@@ -1,9 +1,7 @@
-import Babylon from 'babylonjs'
+import { Observable, PointerEventTypes, Vector3 } from '@babylonjs/core'
 import { multiSelectionManager } from './multi-selection'
 import { isAboveTable, screenToGround } from '../utils'
 import { makeLogger } from '../../utils'
-
-const { Observable, PointerEventTypes, Vector3 } = Babylon
 
 const logger = makeLogger('draggable')
 

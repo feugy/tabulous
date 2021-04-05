@@ -1,5 +1,4 @@
-import Babylon from 'babylonjs'
-const { Matrix, Vector3 } = Babylon
+import { Matrix, Vector3 } from '@babylonjs/core'
 
 let table
 

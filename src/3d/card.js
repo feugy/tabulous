@@ -1,14 +1,4 @@
-import Babylon from 'babylonjs'
 import {
-  DragBehavior,
-  FlipBehavior,
-  HoverBehavior,
-  RotateBehavior,
-  StackBehavior
-} from './behaviors'
-import { controlManager } from './managers'
-
-const {
   Axis,
   Color3,
   Mesh,
@@ -17,7 +7,15 @@ const {
   Texture,
   Vector3,
   Vector4
-} = Babylon
+} from '@babylonjs/core'
+import {
+  DragBehavior,
+  FlipBehavior,
+  HoverBehavior,
+  RotateBehavior,
+  StackBehavior
+} from './behaviors'
+import { controlManager } from './managers'
 
 export function createCard({
   x = 0,

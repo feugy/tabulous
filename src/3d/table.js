@@ -1,5 +1,4 @@
-import Babylon from 'babylonjs'
-const { Color3, MeshBuilder, StandardMaterial } = Babylon
+import { Color3, MeshBuilder, StandardMaterial } from '@babylonjs/core'
 
 export function createTable({
   width = 100,

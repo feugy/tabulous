@@ -4,13 +4,11 @@
   let id
 </script>
 
-<style>
+<style type="postcss">
   aside {
-    position: absolute;
+    @apply absolute z-10 bg-white;
     top: 5px;
     left: 5px;
-    z-index: 1;
-    background-color: white;
     padding: 0.5rem;
   }
 </style>

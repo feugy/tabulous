@@ -2,13 +2,11 @@
   import { fps } from '../stores'
 </script>
 
-<style>
+<style type="postcss">
   div {
-    position: absolute;
+    @apply absolute z-10 block bg-white;
     right: 5px;
     top: 5px;
-    display: inline-block;
-    background-color: white;
     padding: 0.5rem;
   }
 </style>

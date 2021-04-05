@@ -1,9 +1,7 @@
-import Babylon from 'babylonjs'
+import { Vector3 } from '@babylonjs/core'
 import { animateMove, applyGravity } from '../utils'
 import { controlManager, dragManager, targetManager } from '../managers'
 import { makeLogger } from '../../utils'
-
-const { Vector3 } = Babylon
 
 const logger = makeLogger('draggable')
 

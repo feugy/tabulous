@@ -4,31 +4,22 @@
   let outgoingMessage
 </script>
 
-<style>
+<style type="postcss">
   aside {
-    position: absolute;
+    @apply absolute z-10 bg-white flex flex-col;
     top: 5px;
     left: 5px;
-    z-index: 1;
-    background-color: white;
     padding: 0.5rem;
     height: 30%;
-    display: flex;
-    flex-direction: column;
   }
   ul {
-    flex-grow: 1;
-    overflow-y: auto;
-    list-style: none;
-    padding: 0;
-    margin: 0;
+    @apply flex-grow overflow-y-auto list-none p-0 m-0;
   }
   li {
     padding-bottom: 0.5em;
   }
   .from {
-    font-weight: 450;
-    color: lightslategray;
+    @apply font-medium text-gray-300;
     padding-right: 0.5em;
   }
 </style>

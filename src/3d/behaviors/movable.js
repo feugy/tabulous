@@ -1,6 +1,5 @@
-import Babylon from 'babylonjs'
+import { Animation, Observable } from '@babylonjs/core'
 import { applyGravity } from '../utils'
-const { Animation, Observable } = Babylon
 
 export class MoveBehavior {
   constructor({ frameRate } = {}) {

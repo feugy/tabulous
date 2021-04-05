@@ -1,14 +1,4 @@
-import Babylon from 'babylonjs'
 import {
-  DragBehavior,
-  FlipBehavior,
-  HoverBehavior,
-  RotateBehavior,
-  StackBehavior
-} from './behaviors'
-import { controlManager } from './managers'
-
-const {
   Axis,
   CSG,
   Color3,
@@ -18,7 +8,15 @@ const {
   Texture,
   Vector3,
   Vector4
-} = Babylon
+} from '@babylonjs/core'
+import {
+  DragBehavior,
+  FlipBehavior,
+  HoverBehavior,
+  RotateBehavior,
+  StackBehavior
+} from './behaviors'
+import { controlManager } from './managers'
 
 const side = new Vector4(0.2, 0, 0.3, 1)
 

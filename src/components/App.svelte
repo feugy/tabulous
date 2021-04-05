@@ -42,26 +42,14 @@
   }
 </script>
 
-<style>
-  :global(body, html) {
-    margin: 0;
-    height: 100%;
-    overflow: hidden;
-    font-family: sans-serif;
-  }
-
+<style type="postcss">
   main {
-    position: relative;
-    height: 100%;
+    @apply relative h-full;
   }
 
   .interaction,
   canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    @apply absolute w-full h-full top-0 left-0;
     touch-action: none;
   }
 </style>

@@ -1,9 +1,7 @@
-import Babylon from 'babylonjs'
+import { Color3, HighlightLayer } from '@babylonjs/core'
 import { DragBehavior } from '../behaviors'
 import { isAbove } from '../utils'
 import { multiSelectionManager } from './multi-selection'
-
-const { Color3, HighlightLayer } = Babylon
 
 class TargetManager {
   constructor() {

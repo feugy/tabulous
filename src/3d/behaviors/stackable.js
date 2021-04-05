@@ -1,4 +1,4 @@
-import Babylon from 'babylonjs'
+import { Vector3 } from '@babylonjs/core'
 import { TargetBehavior } from './targetable'
 import { controlManager, dragManager, multiSelectionManager } from '../managers'
 import {
@@ -9,7 +9,6 @@ import {
 } from '../utils'
 import { makeLogger } from '../../utils'
 
-const { Vector3 } = Babylon
 const logger = makeLogger('stackable')
 
 function pushOnStack(base) {

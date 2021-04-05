@@ -1,7 +1,5 @@
-import Babylon from 'babylonjs'
+import { Observable, Vector3 } from '@babylonjs/core'
 import { createPeerPointer } from '../peer-pointer'
-
-const { Observable, Vector3 } = Babylon
 
 function getKey(action) {
   return `${action?.meshId}-${action.fn?.toString() || 'pos'}`

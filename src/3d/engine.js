@@ -1,7 +1,5 @@
-import Babylon from 'babylonjs'
+import { Engine, Scene } from '@babylonjs/core'
 import { dragManager, multiSelectionManager } from './managers'
-
-const { Engine, Scene } = Babylon
 
 export function createEngine({ canvas, interaction } = {}) {
   const engine = new Engine(canvas, true)

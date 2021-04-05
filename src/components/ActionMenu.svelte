@@ -76,21 +76,13 @@
   }
 </script>
 
-<style>
+<style type="postcss">
   ul {
-    position: absolute;
-    height: auto;
-    width: auto;
-    display: inline-flex;
-    flex-direction: column;
-    visibility: hidden;
-    list-style: none;
-    margin: 0;
-    padding: 0;
+    @apply absolute h-auto w-auto inline-flex flex-col invisible list-none m-0 p-0;
   }
 
   button {
-    min-width: 100%;
+    @apply min-w-full;
   }
 </style>
 

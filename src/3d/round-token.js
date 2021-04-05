@@ -1,4 +1,11 @@
-import Babylon from 'babylonjs'
+import {
+  Color3,
+  MeshBuilder,
+  StandardMaterial,
+  Texture,
+  Vector3,
+  Vector4
+} from '@babylonjs/core'
 import {
   DragBehavior,
   FlipBehavior,
@@ -7,15 +14,6 @@ import {
   StackBehavior
 } from './behaviors'
 import { controlManager } from './managers'
-
-const {
-  Color3,
-  MeshBuilder,
-  StandardMaterial,
-  Texture,
-  Vector3,
-  Vector4
-} = Babylon
 
 export function createRoundToken({
   x = 0,

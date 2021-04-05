@@ -1,4 +1,9 @@
-import Babylon from 'babylonjs'
+import {
+  Color3,
+  MeshBuilder,
+  Observable,
+  PointerEventTypes
+} from '@babylonjs/core'
 import { default as earcut } from 'earcut'
 import { controlManager } from './control'
 // don't import from index because of circular dependencies
@@ -6,7 +11,6 @@ import { screenToGround } from '../utils/vector'
 import { isContaining } from '../utils/mesh'
 import { makeLogger } from '../../utils'
 
-const { Color3, MeshBuilder, Observable, PointerEventTypes } = Babylon
 const logger = makeLogger('multi-selection')
 
 class MultiSelectionManager {

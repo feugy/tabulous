@@ -1,6 +1,4 @@
-import Babylon from 'babylonjs'
-
-const { Axis, MeshBuilder, Space } = Babylon
+import { Axis, MeshBuilder, Space } from '@babylonjs/core'
 
 export function createPeerPointer({ id } = {}) {
   const peerPointer = MeshBuilder.CreateDisc('peer-pointer', { radius: 0.2 })
