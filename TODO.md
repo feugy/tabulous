@@ -37,6 +37,7 @@
 - some actions are lost over the wire, or not applied, like quick multiple rotations
 - need to synchronise actions over the wire (like flipping overlapping cards)
 - peer pointer remains after peer is gone
+- build doesn't load game's JSON
 
 # Notes
 

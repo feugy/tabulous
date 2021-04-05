@@ -11,7 +11,12 @@ module.exports = {
     'snowpack-plugin-yaml'
   ],
   routes: [],
-  optimize: {},
+  optimize: {
+    bundle: true,
+    minify: true,
+    treeshake: true,
+    target: 'es2018'
+  },
   packageOptions: {},
   devOptions: {},
   buildOptions: {}
