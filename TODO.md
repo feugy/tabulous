@@ -2,7 +2,6 @@
 
 ## Refactor
 
-- engine should be global, not subscribable
 - decouple communication channel from game logic
 - disable any possible action while animating
 
@@ -19,12 +18,14 @@
   - distribute multiple cards to players (either in their hand, or in front of them)
   - add to bottom
 - boards
+- player's hand
 
 ## Multi player
 
 - player name
 - table creation
 - inline video
+- game persistence
 
 # Known issues
 

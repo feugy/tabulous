@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte'
-  import { engine } from '../stores'
   import { getMeshCoordinates, shuffle } from '../utils'
+  import { dragStart, dragEnd, pointerOut, pointerOver } from '../stores'
 
   let left = 0
   let top = 0
@@ -12,62 +12,68 @@
 
   const delay = 500
 
-  onMount(() =>
-    engine.subscribe(engine => {
-      if (!engine) {
-        return
-      }
-      engine.onPointerOver.subscribe(({ mesh }) => {
-        clearTimeout(timeout)
-        if (!object && !isDragging) {
-          timeout = setTimeout(() => {
-            object = mesh
-            const { x, y } = getMeshCoordinates(object)
-            left = x
-            top = y
-            actions = []
-            if (object.metadata.flip) {
-              actions.push({
-                name: 'Retourner',
-                action: () => object.metadata.flip()
-              })
-            }
-            if (object.metadata.rotate) {
-              actions.push({
-                name: 'Pivoter',
-                action: () => object.metadata.rotate()
-              })
-            }
-            if (object.metadata.stack?.length > 1) {
-              actions.push({
-                name: 'Mélanger',
-                action: () => {
-                  const ids = object.metadata.stack.map(({ id }) => id)
-                  object.metadata.shuffle(shuffle(ids))
-                }
-              })
-            }
-          }, delay)
+  onMount(() => {
+    const subs = [
+      pointerOver.subscribe(handlePointerOver),
+      pointerOut.subscribe(handlePointerOut),
+      dragStart.subscribe(handleDragStart),
+      dragEnd.subscribe(handleDragEnd)
+    ]
+    return () => subs.map(sub => sub.unsubscribe())
+  })
+
+  function handlePointerOver({ mesh }) {
+    clearTimeout(timeout)
+    if (!object && !isDragging) {
+      timeout = setTimeout(() => {
+        object = mesh
+        const { x, y } = getMeshCoordinates(object)
+        left = x
+        top = y
+        actions = []
+        if (object.metadata.flip) {
+          actions.push({
+            name: 'Retourner',
+            action: () => object.metadata.flip()
+          })
         }
-      })
-      engine.onDragStart.subscribe(({ mesh }) => {
-        clearTimeout(timeout)
-        isDragging = true
-        if (mesh.id === object?.id) {
-          object = null
+        if (object.metadata.rotate) {
+          actions.push({
+            name: 'Pivoter',
+            action: () => object.metadata.rotate()
+          })
         }
-      })
-      engine.onDragEnd.subscribe(() => {
-        clearTimeout(timeout)
-        isDragging = false
-      })
-      engine.onPointerOut.subscribe(() => {
-        clearTimeout(timeout)
-        isDragging = false
-        object = null
-      })
-    })
-  )
+        if (object.metadata.stack?.length > 1) {
+          actions.push({
+            name: 'Mélanger',
+            action: () => {
+              const ids = object.metadata.stack.map(({ id }) => id)
+              object.metadata.shuffle(shuffle(ids))
+            }
+          })
+        }
+      }, delay)
+    }
+  }
+
+  function handleDragStart({ mesh }) {
+    clearTimeout(timeout)
+    isDragging = true
+    if (mesh.id === object?.id) {
+      object = null
+    }
+  }
+
+  function handleDragEnd() {
+    clearTimeout(timeout)
+    isDragging = false
+  }
+
+  function handlePointerOut() {
+    clearTimeout(timeout)
+    isDragging = false
+    object = null
+  }
 </script>
 
 <style>

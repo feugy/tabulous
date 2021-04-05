@@ -1,41 +1,45 @@
 <script>
   import { onMount } from 'svelte'
-  import { engine } from '../stores'
+  import { dragEnd, pointerOut, pointerOver } from '../stores'
 
   let left = 0
   let top = 0
   let object
   let stackSize
 
-  onMount(() =>
-    engine.subscribe(engine => {
-      if (!engine) {
-        return
+  onMount(() => {
+    const subs = [
+      pointerOver.subscribe(handlePointerOver),
+      pointerOut.subscribe(handlePointerOut),
+      dragEnd.subscribe(handleDragEnd)
+    ]
+    return () => subs.map(sub => sub.unsubscribe())
+  })
+
+  function handlePointerOver({ mesh, event: { clientX, clientY } }) {
+    object = mesh
+    stackSize = null
+    if (object.metadata?.stack?.length > 1) {
+      stackSize = object.metadata.stack.length
+      left = clientX
+      top = clientY
+    }
+  }
+
+  function handleDragEnd({ mesh, event: { clientX, clientY } }) {
+    // TODO should listen to drop instead
+    setTimeout(() => {
+      if (mesh === object && object.metadata?.stack?.length > 1) {
+        stackSize = object.metadata.stack.length
+        left = clientX
+        top = clientY
       }
-      engine.onPointerOver.subscribe(
-        ({ mesh, event: { clientX, clientY } }) => {
-          object = mesh
-          stackSize = null
-          if (object.metadata?.stack?.length > 1) {
-            stackSize = object.metadata.stack.length
-            left = clientX
-            top = clientY
-          }
-        }
-      )
-      engine.onDragEnd.subscribe(({ mesh, event: { clientX, clientY } }) =>
-        // TODO should listen to drop instead
-        setTimeout(() => {
-          if (mesh === object && object.metadata?.stack?.length > 1) {
-            stackSize = object.metadata.stack.length
-            left = clientX
-            top = clientY
-          }
-        }, 0)
-      )
-      engine.onPointerOut.subscribe(() => (object = null))
-    })
-  )
+    }, 0)
+  }
+
+  function handlePointerOut() {
+    object = null
+  }
 </script>
 
 <style>

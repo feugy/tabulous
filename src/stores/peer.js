@@ -1,8 +1,14 @@
-import { get } from 'svelte/store'
 import Peer from 'peerjs'
 import { Subject, BehaviorSubject, merge } from 'rxjs'
 import { filter, scan } from 'rxjs/operators'
-import { engine as engine$ } from './engine'
+import {
+  serializeScene,
+  loadScene,
+  applyAction,
+  movePeerPointer,
+  action,
+  pointer
+} from './engine'
 import { makeLogger } from '../utils'
 
 const logger = makeLogger('peer')
@@ -30,7 +36,7 @@ function removeConnection(connection) {
 function setupConnection(connection) {
   connection.on('open', () => {
     const peers = connections.map(({ peer }) => peer)
-    const scene = get(engine$).serializeScene()
+    const scene = serializeScene()
     logger.info(
       { peers, scene, connection },
       `connection established with ${connection.peer}, sending peers and scene`
@@ -58,20 +64,6 @@ function setupConnection(connection) {
   ])
 }
 
-engine$.subscribe(engine => {
-  if (engine) {
-    engine.onAction.subscribe(sendToPeers)
-    engine.onPointer.subscribe(sendToPeers)
-    incomingMessages$.subscribe(data => {
-      if (data?.meshId) {
-        engine.applyAction(data)
-      } else if (data?.pointer) {
-        engine.movePeerPointer(data)
-      }
-    })
-  }
-})
-
 export const incomingMessages = incomingMessages$.asObservable()
 
 export const currentPeerId = currentPeerId$.asObservable()
@@ -87,6 +79,17 @@ export function initPeer() {
   for (const connection of connections) {
     removeConnection(connection)
   }
+
+  action.subscribe(sendToPeers)
+  pointer.subscribe(sendToPeers)
+  incomingMessages$.subscribe(data => {
+    if (data?.meshId) {
+      applyAction(data)
+    } else if (data?.pointer) {
+      movePeerPointer(data)
+    }
+  })
+
   peer = new Peer(Math.floor(Math.random() * 100000))
   peer.on('connection', setupConnection)
   currentPeerId$.next(peer.id)
@@ -123,7 +126,7 @@ export async function connectToPeer(id) {
               connectToPeer(id)
             }
           }
-          get(engine$).loadScene(data.scene)
+          loadScene(data.scene)
         }
       }
       connection.on('data', receivePeers)
