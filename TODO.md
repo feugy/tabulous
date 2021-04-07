@@ -83,3 +83,5 @@ Physics engine aren't great: they are all pretty deprecated. [Cannon-es can not 
 When stacked, card are always bouncing.
 
 Polygon extrusion does not support path (for curves like rounded corners), and the resulting mesh is not vertically (Y axis) centered
+
+`@storybook/addon-svelte-csf` doesn't work yet with storybook's webpack5 builder. What a pity...

@@ -2,3 +2,5 @@ apps/web/.snowpack
 apps/web/build
 node_modules
 scans
+.eslintcache
+.husky/_
