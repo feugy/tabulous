@@ -3,13 +3,16 @@
   "version": "0.0.1",
   "description": "Tabulous web application",
   "scripts": {
-    "start": "snowpack dev",
     "build": "snowpack build",
+    "build:storybook": "build-storybook",
+    "start": "snowpack dev",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "test": "jest --coverage --colors",
+    "test:dev": "jest --watch"
   },
   "devDependencies": {
     "@babel/core": "^7.13.14",
+    "@babel/preset-env": "^7.13.12",
     "@babylonjs/core": "^5.0.0-alpha.16",
     "@snowpack/plugin-dotenv": "^2.1.0",
     "@snowpack/plugin-postcss": "^1.2.2",
@@ -24,6 +27,8 @@
     "babel-loader": "^8.2.2",
     "earcut": "^2.2.2",
     "format-message": "^6.2.3",
+    "jest": "^26.6.2",
+    "jest-watch-typeahead": "^0.6.2",
     "peerjs": "^1.3.2",
     "postcss": "^8.2.9",
     "postcss-import": "^14.0.1",
@@ -33,6 +38,7 @@
     "snowpack-plugin-yaml": "^1.0.4",
     "svelte": "^3.37.0",
     "svelte-intl": "^1.1.3",
+    "svelte-jester": "^1.3.2",
     "svelte-loader": "^3.1.0",
     "tailwindcss": "^2.1.0"
   }

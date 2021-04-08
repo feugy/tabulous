@@ -4,9 +4,10 @@ env:
   browser: true
   es2020: true
   node: true
+  jest: true
 plugins:
   - svelte3
-overrides: 
+overrides:
   - files: ['*.svelte']
     processor: svelte3/svelte3
 parserOptions:
