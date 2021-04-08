@@ -1,7 +1,7 @@
 // https://bost.ocks.org/mike/shuffle/
-export function shuffle(array) {
-  const copy = array.concat()
-  let { length } = array
+export function shuffle(array = []) {
+  const copy = Array.isArray(array) ? [...array] : []
+  let { length } = copy
   let i
 
   while (length) {

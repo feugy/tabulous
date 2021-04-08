@@ -1,6 +1,6 @@
 <script>
   import { _ } from 'svelte-intl'
-  import { chat, connected, sendMessage } from '../stores'
+  import { thread, connected, sendMessage } from '../stores'
 
   let outgoingMessage
 </script>
@@ -25,7 +25,7 @@
 {#if $connected.length}
   <aside>
     <ul>
-      {#each $chat || [] as { peer, message }}<li>
+      {#each $thread || [] as { peer, message }}<li>
           <span class="from">{peer}</span><span class="message">{message}</span>
         </li>{/each}
     </ul>

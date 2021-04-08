@@ -1,5 +1,5 @@
 import Peer from 'peerjs'
-import { Subject, BehaviorSubject } from 'rxjs'
+import { BehaviorSubject } from 'rxjs'
 import { makeLogger } from '../utils'
 
 const logger = makeLogger('communication')
@@ -8,15 +8,15 @@ let peer
 
 const connections = []
 
-const lastMessageSent$ = new Subject()
+const lastMessageSent$ = new BehaviorSubject()
 
-const lastMessageReceived$ = new Subject()
+const lastMessageReceived$ = new BehaviorSubject()
 
-const currentPeerId$ = new Subject()
+const currentPeerId$ = new BehaviorSubject()
 
 const connected$ = new BehaviorSubject(connections)
 
-const lastConnected$ = new Subject()
+const lastConnected$ = new BehaviorSubject()
 
 function removeConnection(connection) {
   logger.info({ connection }, `connection to ${connection.peer} lost!`)
@@ -36,16 +36,16 @@ function setupConnection(connection) {
     )
     connection.send({ peers })
   })
-  connection.on('data', data => {
-    logger.debug({ data, connection }, `data from ${connection.peer}`)
-    lastMessageReceived$.next({ ...data, peer: connection.peer })
-  })
   connection.on('error', error =>
     logger.warn(
       { connection, error },
       `${connection.peer} encounter an error: ${error.message}`
     )
   )
+  connection.on('data', data => {
+    logger.debug({ data, connection }, `data from ${connection.peer}`)
+    lastMessageReceived$.next({ ...data, peer: connection.peer })
+  })
   connection.on('close', () => {
     logger.info({ connection }, `connection to ${connection.peer} closed`)
     removeConnection(connection)
@@ -65,7 +65,7 @@ export const connected = connected$.asObservable()
 export const lastConnected = lastConnected$.asObservable()
 
 export function initCommunication() {
-  for (const connection of connections) {
+  for (const connection of [...connections]) {
     removeConnection(connection)
   }
 
@@ -77,17 +77,23 @@ export function initCommunication() {
   currentPeerId$.next(peer.id)
 }
 
-export async function connectWith(id) {
+export async function connectWith(id, waitForPeers = true) {
   setupConnection(
     await new Promise((resolve, reject) => {
       const connection = peer.connect(id)
-      connection.on('open', () => {
+
+      connection.once('open', () => {
         logger.info(
           { connection },
           `connection established with ${connection.peer}`
         )
-        resolve(connection)
+        if (waitForPeers) {
+          connection.on('data', receivePeers)
+        } else {
+          resolve(connection)
+        }
       })
+
       connection.once('error', error => {
         logger.warn(
           { error, peer: id },
@@ -95,6 +101,7 @@ export async function connectWith(id) {
         )
         reject(error)
       })
+
       function receivePeers(data) {
         if (data?.peers) {
           connection.removeListener('data', receivePeers)
@@ -104,12 +111,12 @@ export async function connectWith(id) {
           )
           for (const id of data.peers) {
             if (id !== peer.id && connections.every(conn => conn.peer !== id)) {
-              connectWith(id)
+              connectWith(id, false)
             }
           }
+          resolve(connection)
         }
       }
-      connection.on('data', receivePeers)
     })
   )
 }
