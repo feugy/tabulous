@@ -2,7 +2,8 @@
 
 ## Refactor
 
-- disable any possible action while animating
+- [ ] storybook or equivalent
+- [ ] disable any possible action while animating
 
 ## Single player
 
@@ -85,3 +86,5 @@ When stacked, card are always bouncing.
 Polygon extrusion does not support path (for curves like rounded corners), and the resulting mesh is not vertically (Y axis) centered
 
 `@storybook/addon-svelte-csf` doesn't work yet with storybook's webpack5 builder. What a pity...
+
+Setting package's type to "module" is not possible, because `snowpack.config.js` would become an ESM module. Since it's using `require()` to load `svelte.config.js` we can not make it an ESM module.

@@ -1,10 +1,5 @@
-import './style'
-import { locale, translations, getBrowserLocale } from 'svelte-intl'
-import fr from './locales/fr.yaml'
+import './common'
 import App from './components/App.svelte'
-
-translations.update({ fr })
-locale.set(getBrowserLocale('fr'))
 
 const app = new App({ target: document.body })
 

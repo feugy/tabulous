@@ -13,6 +13,11 @@
   "workspaces": [
     "apps/*"
   ],
+  "scripts": {
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "prepare": "husky install"
+  },
   "devDependencies": {
     "eslint": "^7.23.0",
     "eslint-config-prettier": "^8.1.0",
@@ -25,8 +30,5 @@
   "lint-staged": {
     "*.{js,svelte}": "eslint --cache --fix",
     "*.{js,svelte,css,md}": "prettier --write"
-  },
-  "scripts": {
-    "prepare": "husky install"
   }
 }

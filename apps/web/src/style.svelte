@@ -5,6 +5,6 @@
 
   html,
   body {
-    @apply h-full overflow-hidden m-0;
+    @apply font-sans bg-black h-full overflow-hidden m-0;
   }
 </style>

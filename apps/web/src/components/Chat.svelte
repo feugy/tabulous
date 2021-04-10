@@ -1,6 +1,6 @@
 <script>
   import { _ } from 'svelte-intl'
-  import { thread, connected, sendMessage } from '../stores'
+  import { thread, connected, sendToThread } from '../stores'
 
   let outgoingMessage
 </script>
@@ -29,7 +29,7 @@
           <span class="from">{peer}</span><span class="message">{message}</span>
         </li>{/each}
     </ul>
-    <form on:submit|preventDefault={() => sendMessage(outgoingMessage)}>
+    <form on:submit|preventDefault={() => sendToThread(outgoingMessage)}>
       <input bind:value={outgoingMessage} />
       <button type="submit">{$_('send')}</button>
     </form>

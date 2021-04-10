@@ -12,8 +12,8 @@
     createCamera,
     createEngine,
     createLight,
-    createTable,
-    showAxis
+    createTable
+    // showAxis
   } from '../3d'
   import { initEngine, initCommunication, loadScene } from '../stores'
   import { default as splendor } from '../games/splendor/scene.json'
