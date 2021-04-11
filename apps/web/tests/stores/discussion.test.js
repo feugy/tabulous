@@ -1,6 +1,6 @@
-import * as communication from './communication'
+import * as communication from '@src/stores/communication'
 
-jest.mock('./communication', () => {
+jest.mock('@src/stores/communication', () => {
   const { Subject } = require('rxjs')
   const lastMessageSent = new Subject()
   return {
@@ -16,7 +16,7 @@ describe('Discussion store', () => {
   let discussion
 
   beforeAll(async () => {
-    discussion = await import('./discussion')
+    discussion = await import('@src/stores/discussion')
     subscription = discussion.thread.subscribe(
       content => (threadContent = content)
     )

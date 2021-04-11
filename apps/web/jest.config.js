@@ -1,5 +1,8 @@
+const svelteConfig = require('./svelte.config.js')
+
 module.exports = {
-  rootDir: 'src/',
+  rootDir: './',
+  testMatch: ['<rootDir>/tests/**/*.test.js'],
   testEnvironment: 'jsdom',
   transform: {
     '^.+\\.js$': [
@@ -8,19 +11,20 @@ module.exports = {
         presets: [['@babel/preset-env', { targets: { node: 'current' } }]]
       }
     ],
-    '^.+\\.svelte$': 'svelte-jester'
+    '^.+\\.svelte$': [
+      'jest-transform-svelte',
+      { preprocess: svelteConfig.preprocess }
+    ]
   },
-  transformIgnorePatterns: ['node_modules\\/(?!@babylonjs|@storybook)'],
+  moduleNameMapper: {
+    '@src/(.+)$': '<rootDir>/src/$1'
+  },
+  transformIgnorePatterns: ['node_modules\\/(?!@babylonjs)'],
   moduleFileExtensions: ['js', 'svelte', 'json', 'yml'],
   watchPlugins: [
     'jest-watch-typeahead/filename',
     'jest-watch-typeahead/testname'
   ],
-  coverageDirectory: '../coverage',
-  collectCoverageFrom: [
-    '**/*.js',
-    '**/*.svelte',
-    '!**/*.test.js',
-    '!**/*.stories.*'
-  ]
+  coverageDirectory: './coverage',
+  collectCoverageFrom: ['<rootDir>/src/**/*.js', '<rootDir>/src/**/*.svelte']
 }

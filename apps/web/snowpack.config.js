@@ -11,8 +11,5 @@ module.exports = {
     minify: true,
     treeshake: true,
     target: 'es2018'
-  },
-  packageOptions: {},
-  devOptions: {},
-  buildOptions: {}
+  }
 }

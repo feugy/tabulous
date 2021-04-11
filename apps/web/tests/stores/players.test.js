@@ -1,10 +1,10 @@
 import { randomUUID } from 'crypto'
 import { Subject } from 'rxjs'
-import * as communication from './communication'
-import * as engine from './engine'
+import * as communication from '@src/stores/communication'
+import * as engine from '@src/stores/engine'
 
-jest.mock('./communication')
-jest.mock('./engine')
+jest.mock('@src/stores/communication')
+jest.mock('@src/stores/engine')
 
 describe('Players store', () => {
   const action = new Subject()
@@ -23,7 +23,7 @@ describe('Players store', () => {
     lastConnected
   )
 
-  beforeAll(() => import('./players'))
+  beforeAll(() => import('@src/stores/players'))
 
   beforeEach(jest.clearAllMocks)
 

@@ -1,8 +1,8 @@
 import { randomUUID } from 'crypto'
 import { get } from 'svelte/store'
 import Peer from 'peerjs'
-import * as communication from './communication'
-import { makeLogger } from '../utils'
+import * as communication from '@src/stores/communication'
+import { makeLogger } from '@src/utils'
 
 jest.mock('peerjs')
 

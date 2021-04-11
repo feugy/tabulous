@@ -3,6 +3,7 @@ const postcss = require('./postcss.config.js')
 
 // This file is used by
 // - @snowpack/plugin-svelte
+// - jest-transform-svelte
 // - "Svelte for VS Code" plugin
 module.exports = {
   preprocess: sveltePreprocess({ postcss })

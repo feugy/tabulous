@@ -2,7 +2,8 @@
 
 ## Refactor
 
-- [ ] storybook or equivalent
+- [ ] workbench: storybook, react-cosmos https://github.com/react-cosmos/react-cosmos/blob/main/docs/snowpack.md, svench
+- [ ] UI lib: Notus (https://www.creative-tim.com/learning-lab/tailwind/svelte/buttons/notus)
 - [ ] disable any possible action while animating
 
 ## Single player
@@ -87,4 +88,9 @@ Polygon extrusion does not support path (for curves like rounded corners), and t
 
 `@storybook/addon-svelte-csf` doesn't work yet with storybook's webpack5 builder. What a pity...
 
-Setting package's type to "module" is not possible, because `snowpack.config.js` would become an ESM module. Since it's using `require()` to load `svelte.config.js` we can not make it an ESM module.
+Setting package's type to "module" is not possible, because `snowpack.config.js` would become an ESM module. Since it's using `require()` to load `svelte.config.js` it can not be a module.
+Besides, Jest built-in support for modules [is still in progress](https://github.com/facebook/jest/issues/9430).
+
+@web/test-runner, which is snowpack's recommendation, is not at the level of Jest. Running actual browsers to run test is an interesting idea (although it complexifies CI setup).
+Chai is a good replacement for Jest's expect, and using mocha instead of Jasmine is a no-brainer.
+However, two blockers appeared: Sinon can not mock entire dependencies (maybe an equivvalent rewire would), making mocking extremely hard, and @web/test-runner runs mocha in the browser, preventing to have an global setup script (mocha's --require option)
