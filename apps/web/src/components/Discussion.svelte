@@ -22,7 +22,7 @@
     }
   }
   .from {
-    @apply text-right font-medium text-gray-300 pr-2;
+    @apply text-right font-medium text-blue-300 pr-2;
   }
 </style>
 

@@ -2,7 +2,6 @@
 
 ## Refactor
 
-- [ ] workbench: storybook, react-cosmos https://github.com/react-cosmos/react-cosmos/blob/main/docs/snowpack.md, svench
 - [ ] UI lib: Notus (https://www.creative-tim.com/learning-lab/tailwind/svelte/buttons/notus)
 - [ ] disable any possible action while animating
 
