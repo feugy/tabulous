@@ -9,6 +9,7 @@
     "@snowpack/plugin-svelte": "^3.6.1",
     "autoprefixer": "^10.2.5",
     "format-message": "^6.2.3",
+    "material-design-icons": "^3.0.1",
     "postcss": "^8.2.9",
     "postcss-import": "^14.0.1",
     "postcss-nested": "^5.0.5",

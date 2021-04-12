@@ -5,6 +5,17 @@ import { groupByName } from '../../utils'
 let workbench = null
 let workbenchOrigin = null
 
+function updateUrl(name) {
+  const url = new URL(window.location)
+  url.searchParams.set('tool', name)
+  window.history.pushState({ name }, '', url)
+}
+
+function readToolFromUrl() {
+  const params = new URLSearchParams(window.location.search)
+  return params.get('tool')
+}
+
 export function setWorkbenchFrame(frame) {
   workbench = frame
   workbenchOrigin = new URL(workbench.src).origin
@@ -25,10 +36,21 @@ const current$ = new BehaviorSubject()
 
 current$.subscribe(data => {
   if (workbench) {
-    workbench.contentWindow.postMessage(
+    workbench.contentWindow?.postMessage(
       { type: 'selectTool', data },
       workbenchOrigin
     )
+  }
+})
+
+window.addEventListener('popstate', ({ state }) => {
+  if (state?.name) {
+    for (const tool of tools$.value) {
+      if (state.name === tool.name) {
+        current$.next(tool)
+        break
+      }
+    }
   }
 })
 
@@ -44,8 +66,12 @@ function registerTool(tool) {
     tool
   ])
 
-  // there is no current tool yet, or the current tool has been updated
-  if (!current$.value || (idx >= 0 && current$.value === list[idx])) {
+  // the current tool has been updated, or there are no current tool, but an url match
+  const urlName = readToolFromUrl()
+  if (
+    (idx >= 0 && current$.value === list[idx]) ||
+    (!current$.value && (urlName === tool.name || !urlName))
+  ) {
     current$.next(tool)
   }
 }
@@ -53,5 +79,6 @@ function registerTool(tool) {
 export function selectTool(tool) {
   if (tools$.value.includes(tool)) {
     current$.next(tool)
+    updateUrl(tool.name)
   }
 }

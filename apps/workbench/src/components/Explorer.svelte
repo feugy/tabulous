@@ -8,15 +8,22 @@
 
 <style type="postcss">
   aside {
-    @apply p-4;
+    @apply py-4 bg-gray-300 w-56 overflow-auto;
 
     h1 {
-      @apply text-2xl;
+      @apply px-4 text-2xl text-center;
+
+      & .material-icons {
+        @apply text-yellow-500 text-4xl;
+      }
     }
   }
 </style>
 
 <aside>
-  <h1>{$_('UI Workbench')}</h1>
+  <h1>
+    <span class="material-icons">handyman</span>
+    <span>{$_('UI Workbench')}</span>
+  </h1>
   <Group {toolsGroup} {current} on:select />
 </aside>
