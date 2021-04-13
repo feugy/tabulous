@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Tabulous UI Workbench",
   "scripts": {
+    "build": "snowpack build",
     "start": "snowpack dev"
   },
   "devDependencies": {

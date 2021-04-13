@@ -1,2 +1,5 @@
+export { default as Explorer } from './Explorer.svelte'
+export { default as Group } from './Group.svelte'
 export { default as Tool } from './Tool.svelte'
+export { default as Toolbar } from './Toolbar.svelte'
 export { default as Workbench } from './Workbench.svelte'

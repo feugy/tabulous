@@ -8,13 +8,12 @@
 
 <style type="postcss">
   aside {
-    @apply py-4 bg-gray-300 w-56 overflow-auto;
-
+    @apply py-4 w-56 overflow-auto border-r flex-shrink-0; /* border-primary; */
     h1 {
       @apply px-4 text-2xl text-center;
 
       & .material-icons {
-        @apply text-yellow-500 text-4xl;
+        @apply text-4xl; /* text-primary; */
       }
     }
   }
@@ -23,7 +22,8 @@
 <aside>
   <h1>
     <span class="material-icons">handyman</span>
-    <span>{$_('UI Workbench')}</span>
+    <span>{$_('title.app')}</span>
   </h1>
+  <slot />
   <Group {toolsGroup} {current} on:select />
 </aside>

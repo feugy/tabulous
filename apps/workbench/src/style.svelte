@@ -7,7 +7,7 @@
 
   html,
   body {
-    @apply font-sans h-full overflow-hidden m-0;
+    @apply font-sans h-full overflow-hidden m-0; /* text-dark bg-page; */
   }
 
   body {

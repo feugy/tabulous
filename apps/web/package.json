@@ -6,7 +6,8 @@
     "build": "snowpack build",
     "start": "snowpack dev",
     "test": "jest --coverage --colors",
-    "test:dev": "jest --watch"
+    "test:dev": "jest --watch",
+    "workbench": "npx serve ../workbench/build -p 9090"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.13.15",

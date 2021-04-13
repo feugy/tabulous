@@ -34,16 +34,20 @@
     @apply cursor-pointer mt-2 select-none;
 
     &.current {
-      @apply bg-yellow-500 text-gray-100;
+      @apply bg-gray-300;
     }
 
-    & .expand {
-      @apply text-gray-400;
-    }
+    /* &.current {
+      @apply bg-primary text-light;
+    } */
 
-    & .symbol {
-      @apply text-yellow-700;
-    }
+    /* & .expand {
+      @apply text-secondary;
+    } */
+
+    /* & .symbol {
+      @apply text-primary-dark;
+    } */
   }
 
   .tool {

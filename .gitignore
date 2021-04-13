@@ -1,6 +1,6 @@
-apps/web/.snowpack
-apps/web/build
-node_modules
+.snowpack/
+build/
+node_modules/
 coverage/
-scans
+scans/
 .eslintcache
