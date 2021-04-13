@@ -1,5 +1,5 @@
 <script>
-  import { Tool } from '@tabulous/workbench/src/components'
+  import { Tool } from '@tabulous/workbench/src/workbench'
   import Discussion from '../src/components/Discussion.svelte'
 </script>
 

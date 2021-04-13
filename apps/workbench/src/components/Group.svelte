@@ -37,17 +37,19 @@
       @apply bg-gray-300;
     }
 
-    /* &.current {
-      @apply bg-primary text-light;
-    } */
-
-    /* & .expand {
-      @apply text-secondary;
-    } */
-
-    /* & .symbol {
-      @apply text-primary-dark;
-    } */
+    &.current {
+      color: theme('colors.secondary.text');
+      background-color: theme('colors.primary.main');
+      & .symbol {
+        color: theme('colors.secondary.dark');
+      }
+    }
+    & .expand {
+      color: theme('colors.secondary.light');
+    }
+    & .symbol {
+      color: theme('colors.primary.dark');
+    }
   }
 
   .tool {

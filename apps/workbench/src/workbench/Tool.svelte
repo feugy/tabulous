@@ -1,5 +1,5 @@
 <script>
-  import { registerTool, currentTool } from '../stores/workbench'
+  import { registerTool, currentTool } from './stores'
 
   export let name
   let tool

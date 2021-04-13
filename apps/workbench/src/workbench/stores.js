@@ -1,16 +1,16 @@
-import { BehaviorSubject } from 'rxjs'
+import { writable, derived } from 'svelte/store'
 
 const main = window.parent
 let mainOrigin = null
 
-const current$ = new BehaviorSubject()
+const current = new writable()
 
-export const currentTool = current$.asObservable()
+export const currentTool = derived(current, n => n)
 
 window.addEventListener('message', ({ origin, data }) => {
   if (origin === mainOrigin) {
     if (data.type === 'selectTool') {
-      current$.next(data.data)
+      current.set(data.data)
     }
   }
 })

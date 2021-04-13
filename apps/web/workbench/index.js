@@ -1,4 +1,4 @@
-import { Workbench } from '@tabulous/workbench/src/components'
+import { Workbench } from '@tabulous/workbench/src/workbench'
 
 import '../src/common'
 import Discussion from './Discussion.tools.svelte'

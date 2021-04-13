@@ -8,7 +8,7 @@
     currentTool,
     selectTool,
     setWorkbenchFrame
-  } from './stores/app'
+  } from './stores'
 
   let frame
   let viewport
@@ -24,8 +24,10 @@
 
   .viewport {
     @apply flex-grow overflow-auto text-center;
-    /* TODO theme */
-    background-image: radial-gradient(#d1d5db 1px, transparent 1px);
+    background-image: radial-gradient(
+      theme('colors.secondary.light') 1px,
+      transparent 1px
+    );
     background-size: 20px 20px;
   }
 

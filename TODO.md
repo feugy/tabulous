@@ -2,7 +2,7 @@
 
 ## Refactor
 
-- [ ] UI lib: Notus (https://www.creative-tim.com/learning-lab/tailwind/svelte/buttons/notus)
+- [ ] UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
 - [ ] disable any possible action while animating
 
 ## Single player

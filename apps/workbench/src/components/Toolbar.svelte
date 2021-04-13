@@ -30,18 +30,15 @@
       return
     }
     isViewPortActive = !isViewPortActive
-    const { style } = viewport.firstChild
+    const { style, classList } = viewport.firstChild
     if (isViewPortActive) {
       style.width = `${viewPortWidth}px`
       style.height = `${viewPortHeight}px`
-      style.margin = '2rem'
-      // TODO theme
-      style.border = '1px solid #e5e7eb'
+      classList.add('viewport-frame')
     } else {
       style.width = '100%'
       style.height = '100%'
-      style.margin = ''
-      style.border = ''
+      classList.remove('viewport-frame')
     }
   }
 
@@ -60,15 +57,23 @@
 </script>
 
 <style type="postcss">
+  :global(.viewport-frame) {
+    @apply border m-8;
+    border-color: theme('colors.primary.main');
+    border-style: solid !important;
+  }
+
   nav {
-    @apply w-full py-2 px-4 border-b text-center; /*border-primary;*/
+    @apply w-full py-2 px-4 border-b text-center;
+    border-color: theme('colors.primary.main');
   }
   ul {
     @apply inline-flex;
     & > li {
       @apply px-2;
       & + li {
-        @apply border-l; /* border-primary; */
+        @apply border-l;
+        border-color: theme('colors.primary.main');
       }
     }
   }

@@ -1,6 +1,6 @@
 import { BehaviorSubject } from 'rxjs'
 import { map } from 'rxjs/operators'
-import { groupByName } from '../../utils'
+import { groupByName } from '../utils'
 
 let workbench = null
 let workbenchOrigin = null

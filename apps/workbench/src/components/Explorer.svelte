@@ -8,12 +8,14 @@
 
 <style type="postcss">
   aside {
-    @apply py-4 w-56 overflow-auto border-r flex-shrink-0; /* border-primary; */
+    @apply py-4 w-56 overflow-auto border-r flex-shrink-0;
+    border-color: theme('colors.primary.main');
     h1 {
       @apply px-4 text-2xl text-center;
 
       & .material-icons {
-        @apply text-4xl; /* text-primary; */
+        @apply text-4xl;
+        color: theme('colors.primary.main');
       }
     }
   }
