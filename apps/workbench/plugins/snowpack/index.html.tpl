@@ -5,6 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
   <body>
-    <script type="module" src="/workbench/index.js"></script>
+    <script type="module" src="%MOUNT_POINT%/index.js"></script>
   </body>
 </html>

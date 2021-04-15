@@ -1,10 +1,19 @@
 import { Workbench } from '@tabulous/workbench/src/workbench'
 
-import '../src/common'
-import Discussion from './Discussion.tools.svelte'
-import FPSViewer from './FPSViewer.tools.svelte'
+// TODO can we move init in an async function and let it be loaded within Workbench?
+// TODO can Workbench take an array of path and import them? (possible CORS issue)
+;(async () => {
+  // ugly fix for peerjs https://github.com/peers/peerjs/issues/753
+  window.parcelRequire = {}
+  await import('../src/common')
 
-new Workbench({
-  target: document.body,
-  props: { tools: [Discussion, FPSViewer] }
-})
+  new Workbench({
+    target: document.body,
+    props: {
+      tools: [
+        (await import('./Discussion.tools.svelte')).default,
+        (await import('./FPSViewer.tools.svelte')).default
+      ]
+    }
+  })
+})()
