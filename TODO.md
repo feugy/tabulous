@@ -2,32 +2,35 @@
 
 ## Refactor
 
-- engine should be global, not subscribable
-- decouple communication channel from game logic
-- disable any possible action while animating
+- [ ] UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
+- [ ] disable any possible action while animating
 
 ## Single player
 
-- serialize faceUVs
+- ust CTRL for changing multiple selection
+- parametrize and serialize UVs
 - ability to shuffle stack on scene loading
 - camera controls
 - zoom on item
-- permanently shows stack size
+- permanently shows stack size?
 - stack actions:
   - draw multiple cards (either in hand, or in front of them)
   - distribute multiple cards to players (either in their hand, or in front of them)
   - add to bottom
 - boards
+- player's hand
 
 ## Multi player
 
 - player name
 - table creation
 - inline video
+- game persistence
 
 # Known issues
 
-- stack animation on game load is annoying
+- menu does not disappear after action
+- multi selection does not always work fine
 - flip stacked items only flip individual card: it does not change the ordering
 - flipping or rotating item does not change vertical position: items above it will still be above it at the end
 - moving items bellow other does not apply gravity to them
@@ -35,6 +38,7 @@
 - some actions are lost over the wire, or not applied, like quick multiple rotations
 - need to synchronise actions over the wire (like flipping overlapping cards)
 - peer pointer remains after peer is gone
+- build doesn't load game's JSON
 
 # Notes
 
@@ -80,3 +84,12 @@ Physics engine aren't great: they are all pretty deprecated. [Cannon-es can not 
 When stacked, card are always bouncing.
 
 Polygon extrusion does not support path (for curves like rounded corners), and the resulting mesh is not vertically (Y axis) centered
+
+`@storybook/addon-svelte-csf` doesn't work yet with storybook's webpack5 builder. What a pity...
+
+Setting package's type to "module" is not possible, because `snowpack.config.js` would become an ESM module. Since it's using `require()` to load `svelte.config.js` it can not be a module.
+Besides, Jest built-in support for modules [is still in progress](https://github.com/facebook/jest/issues/9430).
+
+@web/test-runner, which is snowpack's recommendation, is not at the level of Jest. Running actual browsers to run test is an interesting idea (although it complexifies CI setup).
+Chai is a good replacement for Jest's expect, and using mocha instead of Jasmine is a no-brainer.
+However, two blockers appeared: Sinon can not mock entire dependencies (maybe an equivvalent rewire would), making mocking extremely hard, and @web/test-runner runs mocha in the browser, preventing to have an global setup script (mocha's --require option)

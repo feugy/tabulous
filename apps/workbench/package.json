@@ -1,0 +1,26 @@
+{
+  "name": "@tabulous/workbench",
+  "version": "0.0.1",
+  "description": "Tabulous UI Workbench",
+  "scripts": {
+    "build": "vite build",
+    "serve": "vite preview",
+    "start": "vite"
+  },
+  "devDependencies": {
+    "@rollup/plugin-yaml": "^3.0.0",
+    "@sveltejs/vite-plugin-svelte": "next",
+    "autoprefixer": "^10.2.5",
+    "format-message": "^6.2.3",
+    "postcss": "^8.2.9",
+    "postcss-import": "^14.0.1",
+    "postcss-nested": "^5.0.5",
+    "rxjs": "^7.0.0-beta.15",
+    "sirv": "^1.0.11",
+    "svelte": "^3.37.0",
+    "svelte-intl": "^1.1.3",
+    "svelte-preprocess": "^4.7.0",
+    "tailwindcss": "^2.1.1",
+    "vite": "^2.1.5"
+  }
+}

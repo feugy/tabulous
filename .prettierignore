@@ -1,2 +1,5 @@
+coverage/
+dist/
 node_modules/
-__sapper__/
+scans/
+.husky/

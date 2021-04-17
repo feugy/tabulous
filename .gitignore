@@ -1,4 +1,6 @@
-.snowpack
-build
-node_modules
-scans
+.snowpack/
+dist/
+coverage/
+node_modules/
+scans/
+.eslintcache
