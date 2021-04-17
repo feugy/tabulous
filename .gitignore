@@ -1,6 +1,6 @@
 .snowpack/
-build/
-node_modules/
+dist/
 coverage/
+node_modules/
 scans/
 .eslintcache

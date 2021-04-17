@@ -16,9 +16,9 @@ window.addEventListener('message', ({ origin, data }) => {
 })
 
 export function registerTool(data) {
-  if (document.referrer) {
+  if (parent) {
     if (!mainOrigin) {
-      mainOrigin = new URL(document.referrer).origin
+      mainOrigin = new URL(parent.location.href).origin
     }
     main.postMessage({ type: 'registerTool', data }, mainOrigin)
   }

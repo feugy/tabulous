@@ -1,11 +1,11 @@
 // This file is used by
-// - @snowpack/plugin-svelte (through svelte.config.mjs)
-// - "Svelte for VS Code" plugin (through svelte.config.mjs)
+// - svelte.config.js
 // - "VSCode Tailwind CSS IntelliSense" plugin
 module.exports = {
   plugins: [
     require('postcss-import'),
-    require('tailwindcss'),
+    // need to explicitly pass configuration as tailwind doesn't like monorepo structure
+    require('tailwindcss')(require('./tailwind.config.js')),
     require('postcss-nested'),
     require('autoprefixer')
   ]

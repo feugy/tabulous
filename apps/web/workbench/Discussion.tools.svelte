@@ -37,5 +37,5 @@
 </Tool>
 
 <Tool name="Components/Discussion/With short thread">
-  <Discussion thread={[{ peer: 'test', message: 'Aww yeah!!!' }]} />
+  <Discussion thread={[{ peer: 'test', message: 'Aww yeah!!' }]} />
 </Tool>

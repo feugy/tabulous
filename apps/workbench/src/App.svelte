@@ -13,7 +13,7 @@
   let frame
   let viewport
 
-  const src = 'http://localhost:8080/workbench.html' // new URLSearchParams(window.location.search).get('target')
+  const src = 'workframe.html' // new URLSearchParams(window.location.search).get('target')
   onMount(() => setWorkbenchFrame(frame))
 </script>
 
