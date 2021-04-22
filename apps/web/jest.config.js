@@ -1,5 +1,3 @@
-const svelteConfig = require('./svelte.config.js')
-
 module.exports = {
   rootDir: './',
   testMatch: ['<rootDir>/tests/**/*.test.js'],
@@ -11,16 +9,15 @@ module.exports = {
         presets: [['@babel/preset-env', { targets: { node: 'current' } }]]
       }
     ],
-    '^.+\\.svelte$': [
-      'jest-transform-svelte',
-      { preprocess: svelteConfig.preprocess }
-    ]
+    '^.+\\.svelte$': 'jest-transform-svelte',
+    '^.+\\.ya?ml$': 'jest-yaml-transform'
   },
   moduleNameMapper: {
     '@src/(.+)$': '<rootDir>/src/$1'
   },
   transformIgnorePatterns: ['node_modules\\/(?!@babylonjs)'],
-  moduleFileExtensions: ['js', 'svelte', 'json', 'yml'],
+  moduleFileExtensions: ['js', 'svelte'],
+  setupFilesAfterEnv: ['<rootDir>/tests/jest-setup.js'],
   watchPlugins: [
     'jest-watch-typeahead/filename',
     'jest-watch-typeahead/testname'

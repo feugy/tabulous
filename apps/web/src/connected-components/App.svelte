@@ -1,13 +1,7 @@
 <script>
   import { onMount } from 'svelte'
   import { _ } from 'svelte-intl'
-  import {
-    ActionMenu,
-    Chat,
-    Connect,
-    FPSViewer,
-    StackSizeTooltip
-  } from './index'
+  import { ActionMenu, Chat, Connect, FPSViewer, StackSizeTooltip } from '.'
   import {
     createCamera,
     createEngine,
