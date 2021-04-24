@@ -1,6 +1,6 @@
 <script>
   import { Tool, ToolBox } from '@atelier/svelte'
-  import Discussion from '@src/components/Discussion.sveltelte'
+  import { Discussion } from '../../src/components'
 </script>
 
 <ToolBox

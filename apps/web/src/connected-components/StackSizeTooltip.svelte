@@ -44,15 +44,20 @@
 
 <style type="postcss">
   div {
-    @apply absolute invisible inline-block font-semibold text-lg text-white h-auto w-auto -mt-8 -ml-8;
-    text-shadow: 0 0 2px black;
+    @apply absolute invisible inline-block h-auto w-auto -mt-8 -ml-8 font-bold text-xl;
+    color: theme('colors.primary.text');
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: theme('colors.primary.dark');
+
+    &.active {
+      @apply visible;
+    }
   }
 </style>
 
 <div
-  style={`visibility: ${
-    object && stackSize ? 'visible' : 'hidden'
-  }; left: ${left}px; top: ${top}px`}
+  class:active={object && stackSize}
+  style={`left: ${left}px; top: ${top}px`}
 >
   {stackSize}
 </div>

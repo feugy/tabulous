@@ -1,35 +1,28 @@
 import Peer from 'peerjs'
-import { BehaviorSubject } from 'rxjs'
+import { BehaviorSubject, Subject } from 'rxjs'
 import { makeLogger } from '../utils'
 
 const logger = makeLogger('communication')
 
+const storageKey = 'peers'
+
 let peer
 
-const connections = []
-
-const lastMessageSent$ = new BehaviorSubject()
-
-const lastMessageReceived$ = new BehaviorSubject()
-
-const currentPeerId$ = new BehaviorSubject()
-
-const connected$ = new BehaviorSubject(connections)
-
-const lastConnected$ = new BehaviorSubject()
+const connections = new Map()
+const lastMessageSent$ = new Subject()
+const lastMessageReceived$ = new Subject()
+const connected$ = new BehaviorSubject()
+const lastConnected$ = new Subject()
 
 function removeConnection(connection) {
   logger.info({ connection }, `connection to ${connection.peer} lost!`)
-  const idx = connections.indexOf(connection)
-  if (idx !== -1) {
-    connections.splice(idx, 1)
-  }
-  connected$.next(connections)
+  connections.delete(connection.peer)
+  connected$.next([...(peer ? [peer.id] : []), ...connections.keys()])
 }
 
 function setupConnection(connection) {
   connection.on('open', () => {
-    const peers = connections.map(({ peer }) => peer)
+    const peers = connected$.value
     logger.info(
       { peers, connection },
       `connection established with ${connection.peer}, sending peers`
@@ -44,43 +37,72 @@ function setupConnection(connection) {
   )
   connection.on('data', data => {
     logger.debug({ data, connection }, `data from ${connection.peer}`)
-    lastMessageReceived$.next({ ...data, peer: connection.peer })
+    lastMessageReceived$.next({ data, from: connection.peer })
   })
   connection.on('close', () => {
     logger.info({ connection }, `connection to ${connection.peer} closed`)
     removeConnection(connection)
   })
-  connections.push(connection)
-  connected$.next(connections)
+  connections.set(connection.peer, connection)
+  connected$.next([peer.id, ...connections.keys()])
 }
+
+connected$.subscribe(peers => {
+  if (peers) {
+    logger.debug({ peers }, `persisting current peers`)
+    sessionStorage.setItem(storageKey, JSON.stringify(peers))
+  }
+})
 
 export const lastMessageSent = lastMessageSent$.asObservable()
 
 export const lastMessageReceived = lastMessageReceived$.asObservable()
 
-export const currentPeerId = currentPeerId$.asObservable()
-
 export const connected = connected$.asObservable()
 
 export const lastConnected = lastConnected$.asObservable()
 
-export function initCommunication() {
+export async function initCommunication(id) {
+  logger.info({ id }, `initializing communication`)
+  const previousPeers = sessionStorage.getItem(storageKey)
   for (const connection of [...connections]) {
     removeConnection(connection)
   }
 
-  peer = new Peer(Math.floor(Math.random() * 100000))
+  peer = new Peer(id, { debug: 3 })
   peer.on('connection', connection => {
     setupConnection(connection)
-    connection.on('open', () => lastConnected$.next(connection))
+    connection.on('open', () => lastConnected$.next(connection.peer))
   })
-  currentPeerId$.next(peer.id)
+  connected$.next([peer.id])
+  if (previousPeers) {
+    logger.debug({ previousPeers }, `try to reconnect with previous peers...`)
+    try {
+      const [previousId, ...peers] = JSON.parse(previousPeers)
+      if (previousId === id) {
+        for (const peer of peers) {
+          console.log(connections.has(peer), peer)
+          await connectWith(peer, false)
+        }
+      }
+    } catch (error) {
+      logger.warn(
+        { error, previousPeers },
+        `can not reconnect with previous peers: ${error.message}`
+      )
+    }
+  }
 }
 
 export async function connectWith(id, waitForPeers = true) {
+  if (!peer || connections.has(id)) return
   setupConnection(
     await new Promise((resolve, reject) => {
       const connection = peer.connect(id)
+      logger.info(
+        { peer: id, waitForPeers },
+        `establishing connection with peer ${id}`
+      )
 
       connection.once('open', () => {
         logger.info(
@@ -109,9 +131,9 @@ export async function connectWith(id, waitForPeers = true) {
             { ...data, connection },
             `receiving peers from ${connection.peer}`
           )
-          for (const id of data.peers) {
-            if (id !== peer.id && connections.every(conn => conn.peer !== id)) {
-              connectWith(id, false)
+          for (const peer of data.peers) {
+            if (connections.has(peer)) {
+              connectWith(peer, false)
             }
           }
           resolve(connection)
@@ -124,8 +146,12 @@ export async function connectWith(id, waitForPeers = true) {
 export function send(data, to = null) {
   if (peer) {
     const closed = []
-    lastMessageSent$.next({ ...data, peer: peer.id })
-    for (const connection of to ? [to] : connections) {
+    lastMessageSent$.next({ data, from: peer.id })
+    if (to && !connections.has(to)) {
+      return
+    }
+    const destination = to ? new Map([[to, connections.get(to)]]) : connections
+    for (const [, connection] of destination) {
       if (connection.open) {
         logger.debug({ data, connection }, `sending data to ${connection.peer}`)
         connection.send(data)

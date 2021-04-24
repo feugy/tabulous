@@ -3,6 +3,7 @@ import { dragManager, multiSelectionManager } from './managers'
 
 export function createEngine({ canvas, interaction } = {}) {
   const engine = new Engine(canvas, true)
+  engine.enableOfflineSupport = false
   engine.inputElement = interaction
 
   const scene = new Scene(engine)

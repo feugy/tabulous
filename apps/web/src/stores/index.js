@@ -1,4 +1,5 @@
+export * from './authentication'
 export * from './communication'
 export * from './discussion'
-export * from './engine'
-export * from './players'
+export * from './game-engine'
+export * from './game-manager'

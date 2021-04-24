@@ -1,7 +1,9 @@
 const levels = {
-  communication: 'warn',
+  authentication: 'debug',
+  communication: 'info',
   draggable: 'info',
   flippable: 'info',
+  'game-manager': 'debug',
   gravity: 'info',
   'multi-selection': 'info',
   rotable: 'info',

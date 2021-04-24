@@ -8,9 +8,10 @@ const resetSymbol = Symbol('reset-chat')
 const reset$ = new BehaviorSubject({ message: resetSymbol })
 
 export const thread = merge(lastMessageSent, lastMessageReceived, reset$).pipe(
-  filter(data => data?.message),
+  filter(({ data } = {}) => data?.message),
   scan(
-    (thread, data) => (data.message === resetSymbol ? [] : [...thread, data]),
+    (thread, { data }) =>
+      data.message === resetSymbol ? [] : [...thread, data],
     []
   )
 )

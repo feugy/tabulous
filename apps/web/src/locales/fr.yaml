@@ -1,8 +1,27 @@
 connect with: Rejoindre
-flip: Retourner
 fps _: 'FPS : {value}'
 peer id _: 'Identifiant : {value}'
-rotate: Pivoter
 send: Envoyer
-shuffle: Mélanger
 tabulous: Tabulous
+
+actions:
+  join-game: Rejoindre
+  log-in: Entrer
+  log-out: Quitter
+  new-game: Nouveau
+page-titles:
+  game: Tabulous • Jeu
+  home: Tabulous • Accueil
+  log-in: Tabulous • Connection
+placeholders:
+  game-id: Numéro de partie
+  user-name: Pseudo
+titles:
+  home: Bonjour {username} !
+  join-game: Quelle partie souhaites tu rejoindre ?
+  log-in: Bienvenue !
+tooltips:
+  flip: Retourner
+  quit-game: Quitter le jeu
+  rotate: Pivoter
+  shuffle: Mélanger

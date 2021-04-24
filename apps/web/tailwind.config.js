@@ -1,23 +1,33 @@
 module.exports = {
-  purge: ['./src/**/*.svelte'],
+  purge: ['./index.html', './src/**/*.{svelte,js}'],
   theme: {
     extend: {
+      // https://paletton.com/#uid=7000u0k00pB00Ts00vE01kb0oes
       colors: {
+        text: '#444545',
         primary: {
-          main: '#f59e0b',
-          light: '#ffc259',
-          dark: '#a36700',
-          text: '#1c2833'
+          main: '#7a7a7a',
+          light: '#979797',
+          dark: '#606060',
+          text: '#fcfcfc'
         },
         secondary: {
-          main: '#079d80',
-          light: '#3db099',
-          dark: '#006854',
-          text: '#f3f4f6'
+          main: '#a3a3a3',
+          light: '#cacaca',
+          dark: '#818181',
+          text: '#5b5c5b'
+        },
+        disabled: {
+          main: '#a1a1a1',
+          text: '#737272'
         }
       },
-      background: {
-        page: '#e5e7eb'
+      backgrounds: {
+        page: '#fcfcfc',
+        primary: '#ffffff'
+      },
+      transitions: {
+        short: '150ms'
       }
     }
   },

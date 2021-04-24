@@ -1,5 +1,19 @@
 # TODO
 
+## Tests
+
+- Login route
+  - displays login form
+  - can not authenticate without username
+  - authenticates and navigates to home
+- Home route
+  - creates new game
+  - opens join game dialogue
+- JoinGameDialogue component
+  - can not join game without game Id
+  - displays loader and joins game
+  - displays loader and show error
+
 ## Refactor
 
 - [ ] UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
@@ -22,19 +36,16 @@
 
 ## Multi player
 
-- player name
-- table creation
+- show player Id to invite
 - inline video
-- game persistence
 
 # Known issues
 
-- menu does not disappear after action
+- single source of truth multiplayer mode!
 - multi selection does not always work fine
 - flip stacked items only flip individual card: it does not change the ordering
 - flipping or rotating item does not change vertical position: items above it will still be above it at the end
 - moving items bellow other does not apply gravity to them
-- peer lost on reload > store in session/local storage?
 - some actions are lost over the wire, or not applied, like quick multiple rotations
 - need to synchronise actions over the wire (like flipping overlapping cards)
 - peer pointer remains after peer is gone

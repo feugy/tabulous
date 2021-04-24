@@ -1,10 +1,11 @@
 import { BehaviorSubject, Subject } from 'rxjs'
+import { lastMessageReceived, send } from './communication'
+import { createCamera, createEngine, createLight, createTable } from '../3d'
 import {
   controlManager,
   dragManager,
   multiSelectionManager
 } from '../3d/managers'
-import * as utils from '../3d/utils'
 
 const engine$ = new BehaviorSubject(null)
 const fps$ = new BehaviorSubject(0)
@@ -49,27 +50,34 @@ export const dragEnd = dragEnd$.asObservable()
 export const action = action$.asObservable()
 export const pointer = pointer$.asObservable()
 
-export function initEngine(engine) {
+export function initEngine(options) {
+  const engine = createEngine(options)
+
   engine.onEndFrameObservable.add(() => fps$.next(engine.getFps().toFixed()))
   // expose Babylon observables as RX subjects
   for (const { observable, subject } of mapping) {
     mapping.observer = observable.add(subject.next.bind(subject))
   }
   engine$.next(engine)
-}
 
-export const applyAction = controlManager.apply.bind(controlManager)
+  createCamera()
+  // showAxis(2)
+  createTable()
+  // create light after table, so table doesn't project shadow
+  createLight()
 
-export const movePeerPointer = controlManager.movePeerPointer.bind(
-  controlManager
-)
+  engine.start()
 
-export function serializeScene() {
-  return engine$.value ? utils.serializeScene(engine$.value.scenes[0]) : {}
-}
+  // apply other players' update
+  lastMessageReceived.subscribe(({ data }) => {
+    if (data?.pointer) {
+      controlManager.movePeerPointer(data)
+    } else if (data?.meshId) {
+      controlManager.apply(data)
+    }
+  })
 
-export function loadScene(descriptor) {
-  if (engine$.value) {
-    utils.loadScene(engine$.value, engine$.value.scenes[0], descriptor)
-  }
+  // send updates to other players
+  action.subscribe(send)
+  pointer.subscribe(send)
 }
