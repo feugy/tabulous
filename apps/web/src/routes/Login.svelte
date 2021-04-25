@@ -4,14 +4,12 @@
   import { Button, Input, Pane } from '../components'
   import { logIn } from '../stores'
 
-  export const params = {}
-
   let username = ''
   $: disabled = !username || username.trim().length === 0
 
   async function handleLogin() {
     try {
-      await logIn({ username })
+      await logIn(username)
       const redirect = new URLSearchParams($querystring).get('redirect')
       replace(redirect || '/home')
     } catch {

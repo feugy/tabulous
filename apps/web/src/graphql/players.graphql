@@ -1,0 +1,6 @@
+mutation logIn($username: String!) {
+  logIn(username: $username) {
+    id
+    username
+  }
+}

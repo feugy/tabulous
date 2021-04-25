@@ -1,0 +1,8 @@
+type Player {
+  id: ID!
+  username: String!
+}
+
+type Mutation {
+  logIn(username: String!): Player
+}

@@ -18,7 +18,7 @@ module.exports = {
           text: '#5b5c5b'
         },
         disabled: {
-          main: '#a1a1a1',
+          main: '#cacaca',
           text: '#737272'
         }
       },

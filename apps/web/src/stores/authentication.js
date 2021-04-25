@@ -1,45 +1,53 @@
 import { BehaviorSubject } from 'rxjs'
-import { initCommunication } from './communication'
+import { closeReceiver, openReceiver } from './sse'
+import { initGraphQLGlient, runMutation } from './graphcl-client'
+import * as graphQL from '../graphql'
 import { makeLogger } from '../utils'
 
 const logger = makeLogger('authentication')
 
-const storageKey = 'user'
+const storageKey = 'player'
 
 const current$ = new BehaviorSubject()
 
-current$.subscribe(user => {
-  if (user) {
-    logger.debug({ user }, `saving session`)
-    sessionStorage.setItem(storageKey, JSON.stringify(user))
-  } else if (user === null) {
+current$.subscribe(player => {
+  if (player) {
+    logger.debug({ player }, `saving session`)
+    sessionStorage.setItem(storageKey, JSON.stringify(player))
+    initGraphQLGlient(player)
+    openReceiver(player)
+  } else if (player === null) {
     logger.debug(`clearing session storage`)
     sessionStorage.clear()
+    initGraphQLGlient()
+    closeReceiver()
   }
 })
 
-export const currentUser = current$.asObservable()
+export const currentPlayer = current$.asObservable()
 
 export async function recoverSession() {
-  const userData = sessionStorage.getItem(storageKey)
-  try {
-    logger.debug({ userData }, `recovering previous session`)
-    await logIn(JSON.parse(userData))
-  } catch (error) {
-    logger.warn(
-      { error, userData },
-      `failed to recover session: ${error.message}`
-    )
-    await logOut()
+  const playerData = sessionStorage.getItem(storageKey)
+  if (playerData) {
+    try {
+      logger.debug({ playerData }, `recovering previous session`)
+      await logIn(JSON.parse(playerData).username)
+    } catch (error) {
+      logger.warn(
+        { error, playerData },
+        `failed to recover session: ${error.message}`
+      )
+      await logOut()
+    }
+    logger.debug({ player: current$.value }, `session recovery complete`)
   }
-  logger.debug({ user: current$.value }, `session recovery complete`)
 }
 
-export async function logIn({ username, id }) {
-  id = id || Math.floor(Math.random() * 100000).toString()
-  logger.info({ id, username }, `authenticating ${username}`)
-  current$.next({ username, id })
-  await initCommunication(id)
+export async function logIn(username) {
+  initGraphQLGlient()
+  const player = await runMutation(graphQL.logIn, { username })
+  logger.info(player, `authenticating ${username}`)
+  current$.next(player)
 }
 
 export async function logOut() {

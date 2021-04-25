@@ -1,0 +1,118 @@
+# import Player from "players.graphql"
+
+type Game {
+  id: ID!
+  kind: String!
+  created: Float!
+  playerIds: [ID]!
+  scene: GameScene!
+}
+
+type GameScene {
+  cards: [Card]!
+  roundTokens: [RoundToken]!
+  roundedTiles: [RoundedTiles]!
+}
+
+type Card {
+  id: ID!
+  texture: String!
+  width: Float
+  height: Float
+  depth: Float
+  x: Float
+  y: Float
+  z: Float
+  isFlipped: Boolean
+  angle: Float
+  stack: [String]
+}
+
+type RoundToken {
+  id: ID!
+  texture: String!
+  x: Float
+  y: Float
+  z: Float
+  diameter: Float
+  height: Float
+  isFlipped: Boolean
+  angle: Float
+  stack: [String]
+}
+
+type RoundedTiles {
+  id: ID!
+  texture: String!
+  width: Float
+  height: Float
+  depth: Float
+  x: Float
+  y: Float
+  z: Float
+  isFlipped: Boolean
+  angle: Float
+  stack: [String]
+}
+
+input GameInput {
+  id: ID!
+  scene: GameSceneInput!
+}
+
+input GameSceneInput {
+  cards: [CardInput]!
+  roundTokens: [RoundTokenInput]!
+  roundedTiles: [RoundedTilesInput]!
+}
+input CardInput {
+  id: ID!
+  texture: String!
+  width: Float
+  height: Float
+  depth: Float
+  x: Float
+  y: Float
+  z: Float
+  isFlipped: Boolean
+  angle: Float
+  stack: [String]
+}
+
+input RoundTokenInput {
+  id: ID!
+  texture: String!
+  x: Float
+  y: Float
+  z: Float
+  diameter: Float
+  height: Float
+  isFlipped: Boolean
+  angle: Float
+  stack: [String]
+}
+
+input RoundedTilesInput {
+  id: ID!
+  texture: String!
+  width: Float
+  height: Float
+  depth: Float
+  x: Float
+  y: Float
+  z: Float
+  isFlipped: Boolean
+  angle: Float
+  stack: [String]
+}
+
+type Query {
+  loadGame(gameId: ID!): Game
+  listGames: [Game]
+}
+
+type Mutation {
+  createGame(kind: String!): Game
+  saveGame(game: GameInput!): Game
+  invite(gameId: ID!, playerId: ID!): Game
+}

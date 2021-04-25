@@ -1,5 +1,5 @@
 import { BehaviorSubject, Subject } from 'rxjs'
-import { lastMessageReceived, send } from './communication'
+import { lastMessageReceived, send } from './peer-channels'
 import { createCamera, createEngine, createLight, createTable } from '../3d'
 import {
   controlManager,

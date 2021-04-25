@@ -2,7 +2,11 @@
   import { onMount, onDestroy } from 'svelte'
   import { _ } from 'svelte-intl'
   import { push } from 'svelte-spa-router'
-  import { ActionMenu, StackSizeTooltip } from '../connected-components'
+  import {
+    ActionMenu,
+    InviteDialogue,
+    StackSizeTooltip
+  } from '../connected-components'
   import { Button, Discussion } from '../components'
   import { engine, initEngine, loadGame, thread, sendToThread } from '../stores'
 
@@ -10,6 +14,7 @@
 
   let canvas
   let interaction
+  let openInvite = false
 
   onMount(async () => {
     initEngine({ canvas, interaction })
@@ -69,5 +74,11 @@
   <Discussion
     thread={$thread}
     on:sendMessage={({ detail }) => sendToThread(detail.text)}
+    on:askInvite={() => (openInvite = true)}
+  />
+  <InviteDialogue
+    gameId={params.gameId}
+    open={openInvite}
+    on:close={() => (openInvite = false)}
   />
 </aside>

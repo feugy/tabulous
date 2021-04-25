@@ -1,9 +1,14 @@
 <script>
-  import { Tool, ToolBox } from '@atelier/svelte'
+  import { Tool, ToolBox } from '@atelier-wb/svelte'
   import { Button } from '../../src/components'
 </script>
 
-<ToolBox component={Button} name="Components/Button" events={['click']}>
+<ToolBox
+  component={Button}
+  name="Components/Button"
+  props={{ disabled: false }}
+  events={['click']}
+>
   <Tool
     name="Primary with text and icon"
     props={{ text: 'Hello!', icon: 'emoji_people' }}

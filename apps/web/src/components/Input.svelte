@@ -1,6 +1,16 @@
 <script>
+  import { createEventDispatcher } from 'svelte'
+
   export let placeholder = null
   export let value = ''
+
+  const dispatch = createEventDispatcher()
+
+  function handleKey(event) {
+    if (event.code === 'Enter') {
+      dispatch('enter', { value })
+    }
+  }
 </script>
 
 <style type="postcss">
@@ -36,5 +46,5 @@
 
 <fieldset>
   {#if placeholder}<legend class:has-value={!!value}>{placeholder}</legend>{/if}
-  <input {...$$restProps} bind:value />
+  <input {...$$restProps} bind:value on:keyup={handleKey} />
 </fieldset>

@@ -1,6 +1,7 @@
 export { default as Button } from './Button.svelte'
 export { default as Dialogue } from './Dialogue.svelte'
 export { default as Discussion } from './Discussion.svelte'
+export { default as GameLink } from './GameLink.svelte'
 export { default as Input } from './Input.svelte'
 export { default as Pane } from './Pane.svelte'
 export { default as Progress } from './Progress.svelte'

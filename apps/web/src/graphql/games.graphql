@@ -1,0 +1,67 @@
+mutation createGame($kind: String!) {
+  createGame(kind: $kind) {
+    id
+  }
+}
+
+mutation invite($gameId: ID!, $playerId: ID!) {
+  invite(gameId: $gameId, playerId: $playerId) {
+    playerIds
+  }
+}
+
+query listGames {
+  listGames {
+    id
+    created
+    kind
+    playerIds
+  }
+}
+
+query loadGame($gameId: ID!) {
+  loadGame(gameId: $gameId) {
+    id
+    playerIds
+    scene {
+      cards {
+        id
+        texture
+        x
+        y
+        z
+        isFlipped
+        angle
+        stack
+      }
+      roundTokens {
+        id
+        texture
+        x
+        y
+        z
+        diameter
+        height
+        isFlipped
+        angle
+        stack
+      }
+      roundedTiles {
+        id
+        texture
+        x
+        y
+        z
+        isFlipped
+        angle
+        stack
+      }
+    }
+  }
+}
+
+mutation saveGame($game: GameInput!) {
+  saveGame(game: $game) {
+    id
+  }
+}

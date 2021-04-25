@@ -3,7 +3,7 @@
   import Router, { push, replace } from 'svelte-spa-router'
   import { wrap } from 'svelte-spa-router/wrap'
   import Login from './routes/Login.svelte'
-  import { currentUser, recoverSession } from './stores'
+  import { currentPlayer, recoverSession } from './stores'
 
   const routes = {
     '/home': wrap({
@@ -19,12 +19,12 @@
 
   onMount(() => recoverSession())
 
-  $: if ($currentUser === null) {
+  $: if ($currentPlayer === null) {
     push('/login')
   }
 
   function isAuthenticated() {
-    return $currentUser !== null
+    return $currentPlayer !== null
   }
 
   function handleUnauthenticated({ detail }) {

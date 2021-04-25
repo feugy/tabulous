@@ -6,11 +6,16 @@
   export let thread
 
   const dispatch = createEventDispatcher()
-  let text
+  let text = ''
 
   function handleSend() {
     dispatch('sendMessage', { text })
     text = ''
+  }
+  function handleInvite(event) {
+    dispatch('askInvite')
+    // to avoid submitting the whole form
+    event.preventDefault()
   }
 </script>
 
@@ -31,18 +36,31 @@
     color: theme('colors.secondary.main');
   }
   form {
-    @apply flex gap-4;
+    @apply flex gap-4 items-center;
   }
 </style>
 
 <div class="discussion">
   <div class="messages">
-    {#each thread || [] as { peer, message }}
-      <span class="from">{peer}</span><span class="message">{message}</span>
+    {#each thread || [] as { from, message }}
+      <span class="from">{from?.username}</span><span class="message"
+        >{message}</span
+      >
     {/each}
   </div>
   <form on:submit|preventDefault={handleSend}>
     <Input bind:value={text} />
-    <Button secondary type="submit" text={$_('send')} icon="send" />
+    <Button
+      type="submit"
+      disabled={text?.trim().length === 0}
+      title={$_('tooltips.send-message')}
+      icon="send"
+    />
+    <Button
+      secondary
+      title={$_('tooltips.invite-player')}
+      icon="connect_without_contact"
+      on:click={handleInvite}
+    />
   </form>
 </div>

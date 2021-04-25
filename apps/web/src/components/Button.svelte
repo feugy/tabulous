@@ -20,6 +20,7 @@
       transform: scale(1.05);
     }
 
+    &.secondary:disabled,
     &:disabled {
       background-color: theme('colors.disabled.main');
       color: theme('colors.disabled.text');

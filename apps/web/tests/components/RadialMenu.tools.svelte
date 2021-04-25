@@ -1,5 +1,5 @@
 <script>
-  import { Tool } from '@atelier/svelte'
+  import { Tool } from '@atelier-wb/svelte'
   import { RadialMenu } from '../../src/components'
 </script>
 
