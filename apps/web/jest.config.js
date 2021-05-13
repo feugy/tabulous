@@ -9,14 +9,15 @@ module.exports = {
         presets: [['@babel/preset-env', { targets: { node: 'current' } }]]
       }
     ],
+    '^.+\\.graphql$': 'jest-transform-graphql',
     '^.+\\.svelte$': 'jest-transform-svelte',
     '^.+\\.ya?ml$': 'jest-yaml-transform'
   },
   moduleNameMapper: {
     '@src/(.+)$': '<rootDir>/src/$1'
   },
-  transformIgnorePatterns: ['node_modules\\/(?!@babylonjs)'],
-  moduleFileExtensions: ['js', 'svelte'],
+  transformIgnorePatterns: ['node_modules\\/(?!@babylonjs|simple-peer-light)'],
+  moduleFileExtensions: ['js', 'svelte', 'graphql'],
   setupFilesAfterEnv: ['<rootDir>/tests/jest-setup.js'],
   watchPlugins: [
     'jest-watch-typeahead/filename',

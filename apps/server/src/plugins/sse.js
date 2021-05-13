@@ -1,5 +1,5 @@
 import { filter, map } from 'rxjs/operators'
-import { invites, getPlayerById } from '../services/index.js'
+import { invites, getPlayerById } from '../services'
 
 function serialize(chunk) {
   const payload = []

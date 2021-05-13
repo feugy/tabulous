@@ -37,5 +37,5 @@ export function sendToThread(message) {
  * Clears discussion thread
  */
 export function clearThread() {
-  reset$.next({ message: resetSymbol })
+  reset$.next({ data: { message: resetSymbol } })
 }

@@ -4,9 +4,9 @@ import { tick } from 'svelte'
 import html from 'svelte-htm'
 import { translate } from '../test-utils'
 import FPSViewer from '@src/connected-components/FPSViewer.svelte'
-import { fps } from '@src/stores/engine'
+import { fps } from '@src/stores/game-engine'
 
-jest.mock('@src/stores/engine', () => ({
+jest.mock('@src/stores/game-engine', () => ({
   fps: new (require('rxjs').BehaviorSubject)()
 }))
 
