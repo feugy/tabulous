@@ -1,4 +1,4 @@
 import './common'
-import App from './components/App.svelte'
+import App from './App.svelte'
 
 export default new App({ target: document.body })

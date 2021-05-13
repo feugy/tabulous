@@ -1,12 +1,12 @@
-import * as communication from '@src/stores/communication'
+import * as peerChannels from '@src/stores/peer-channels'
 
-jest.mock('@src/stores/communication', () => {
+jest.mock('@src/stores/peer-channels', () => {
   const { Subject } = require('rxjs')
   const lastMessageSent = new Subject()
   return {
     lastMessageReceived: new Subject(),
     lastMessageSent,
-    send: lastMessageSent.next.bind(lastMessageSent)
+    send: message => lastMessageSent.next({ data: message })
   }
 })
 
@@ -35,7 +35,7 @@ describe('Discussion store', () => {
     const message3 = 'message 3'
 
     for (const message of [message1, message2, message3]) {
-      communication.lastMessageReceived.next({ message })
+      peerChannels.lastMessageReceived.next({ data: { message } })
     }
 
     expect(threadContent).toEqual([
@@ -70,10 +70,10 @@ describe('Discussion store', () => {
     const message4 = 'message 4'
     const message5 = 'message 5'
 
-    communication.lastMessageReceived.next({ message: message1 })
+    peerChannels.lastMessageReceived.next({ data: { message: message1 } })
     discussion.sendToThread(message2)
-    communication.lastMessageReceived.next({ message: message3 })
-    communication.lastMessageReceived.next({ message: message4 })
+    peerChannels.lastMessageReceived.next({ data: { message: message3 } })
+    peerChannels.lastMessageReceived.next({ data: { message: message4 } })
     discussion.sendToThread(message5)
 
     expect(threadContent).toEqual([

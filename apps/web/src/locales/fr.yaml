@@ -1,8 +1,34 @@
-connect with: Rejoindre
-flip: Retourner
 fps _: 'FPS : {value}'
-peer id _: 'Identifiant : {value}'
-rotate: Pivoter
-send: Envoyer
-shuffle: Mélanger
-tabulous: Tabulous
+
+actions:
+  invite: Inviter
+  log-in: Entrer
+  log-out: Quitter
+  new-game: Nouveau
+formats:
+  date:
+    short-date:
+      hour: 2-digit
+      minute: 2-digit
+      day: 2-digit
+      month: short
+labels:
+  players-count: '{ length, plural, one {# joueur} other {# joueurs} }'
+page-titles:
+  game: Tabulous • Jeu
+  home: Tabulous • Accueil
+  log-in: Tabulous • Connection
+placeholders:
+  player-id: Id joueur
+  user-name: Pseudo
+titles:
+  home: Bonjour {username} ({id}) !
+  invite: Qui vas tu inviter ?
+  log-in: Bienvenue !
+tooltips:
+  flip: Retourner
+  quit-game: Quitter le jeu
+  rotate: Pivoter
+  send-message: Envoyer à tous
+  invite-player: Inviter un(e) joueur(se)
+  shuffle: Mélanger

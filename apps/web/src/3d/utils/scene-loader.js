@@ -46,17 +46,29 @@ export function loadScene(engine, scene, data) {
 
   for (const card of data.cards) {
     logger.debug({ card }, `create new card ${card.id}`)
-    const mesh = createCard({ ...card, stack: undefined })
+    const mesh = createCard({
+      ...card,
+      stack: undefined,
+      __typename: undefined
+    })
     meshById.set(mesh.id, mesh)
   }
   for (const token of data.roundTokens) {
     logger.debug({ token }, `create new round token ${token.id}`)
-    const mesh = createRoundToken({ ...token, stack: undefined })
+    const mesh = createRoundToken({
+      ...token,
+      stack: undefined,
+      __typename: undefined
+    })
     meshById.set(mesh.id, mesh)
   }
   for (const tile of data.roundedTiles) {
     logger.debug({ tile }, `create new rounded tile ${tile.id}`)
-    const mesh = createRoundedTile({ ...tile, stack: undefined })
+    const mesh = createRoundedTile({
+      ...tile,
+      stack: undefined,
+      __typename: undefined
+    })
     meshById.set(mesh.id, mesh)
   }
   for (const { stack, id } of [

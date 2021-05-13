@@ -1,10 +1,14 @@
 const levels = {
-  communication: 'warn',
+  authentication: 'info',
   draggable: 'info',
   flippable: 'info',
+  'game-manager': 'info',
+  graphql: 'info',
   gravity: 'info',
   'multi-selection': 'info',
+  'peer-channels': 'info',
   rotable: 'info',
+  sse: 'info',
   'scene-loader': 'info',
   stackable: 'info'
 }

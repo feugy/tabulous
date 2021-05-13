@@ -94,7 +94,7 @@ export function createRoundedTile({
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, true, false))
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, false, true))
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, false, false))
-  const tile = tileCSG.toMesh('tile')
+  const tile = tileCSG.toMesh('rounded-tile')
   tileMesh.dispose()
 
   tile.material = new StandardMaterial('faces')
