@@ -149,3 +149,14 @@ Removing server to only allow peer communication is really hard:
 
 GraphQL subscriptions are good replacement to WebSockets for implementing the WebRTC signaling server.
 However, for scalabily and resilliency reasons, I prefer keeping the signaling server independant from the main server.
+
+For decent in-game performance, textures must be GPU-compressed to KTX2 container format. This will skip CPU uncompressing jpeg/png content before passing it to the GPU.
+
+```shell
+mogrify -flop -strip apps/web/public/images/splendor/1/*.png
+for file in apps/web/public/images/splendor/1/*.png; do toktx --uastc 4 ${file/.png/.ktx2} $file; done
+```
+
+1. flip image horizontally (front face on the left, back face on the right, mirrored)
+2. strip png ICC profile (ktx2 does not support them)
+3. convert to ktx2

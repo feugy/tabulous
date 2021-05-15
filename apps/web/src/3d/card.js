@@ -37,8 +37,8 @@ export function createCard({
   const faces = MeshBuilder.CreatePlane('faces', {
     width,
     height,
-    frontUVs: new Vector4(0, 0, 0.5, 1),
-    backUVs: new Vector4(1, 0, 0.5, 1),
+    frontUVs: new Vector4(1, 1, 0.5, 0),
+    backUVs: new Vector4(0, 1, 0.5, 0),
     sideOrientation: Mesh.DOUBLESIDE
   })
   faces.material = new StandardMaterial('faces')

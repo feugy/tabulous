@@ -4,6 +4,7 @@
   import { push } from 'svelte-spa-router'
   import {
     ActionMenu,
+    FPSViewer,
     InviteDialogue,
     StackSizeTooltip
   } from '../connected-components'
@@ -62,6 +63,7 @@
     <ActionMenu />
   </div>
   <StackSizeTooltip />
+  <FPSViewer />
 </main>
 <nav>
   <Button

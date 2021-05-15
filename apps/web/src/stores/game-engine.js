@@ -79,5 +79,5 @@ export function initEngine(options) {
 
   // send updates to other players
   action.subscribe(send)
-  pointer.subscribe(send)
+  // pointer.subscribe(send)
 }

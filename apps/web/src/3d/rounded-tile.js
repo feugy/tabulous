@@ -75,8 +75,8 @@ export function createRoundedTile({
     side,
     side,
     side,
-    new Vector4(0, 0, 0.5, 1),
-    new Vector4(1, 1, 0.5, 0)
+    new Vector4(1, 1, 0.5, 0),
+    new Vector4(0, 0, 0.5, 1)
   ]
   const color = Color4.FromArray(borderColor)
   const faceColors = [color, color, color, color, undefined, undefined]
