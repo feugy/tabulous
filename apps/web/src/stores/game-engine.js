@@ -1,4 +1,5 @@
 import { BehaviorSubject, Subject } from 'rxjs'
+import { auditTime } from 'rxjs/operators'
 import { lastMessageReceived, send } from './peer-channels'
 import { createCamera, createEngine, createLight, createTable } from '../3d'
 import {
@@ -54,21 +55,20 @@ export function initEngine(options) {
   const engine = createEngine(options)
 
   engine.onEndFrameObservable.add(() => fps$.next(engine.getFps().toFixed()))
-  // expose Babylon observables as RX subjects
+  // exposes Babylon observables as RX subjects
   for (const { observable, subject } of mapping) {
     mapping.observer = observable.add(subject.next.bind(subject))
   }
   engine$.next(engine)
 
   createCamera()
-  // showAxis(2)
   createTable()
-  // create light after table, so table doesn't project shadow
+  // creates light after table, so table doesn't project shadow
   createLight()
 
   engine.start()
 
-  // apply other players' update
+  // applies other players' update
   lastMessageReceived.subscribe(({ data }) => {
     if (data?.pointer) {
       controlManager.movePeerPointer(data)
@@ -77,7 +77,8 @@ export function initEngine(options) {
     }
   })
 
-  // send updates to other players
+  // sends updates to other players
   action.subscribe(send)
-  // pointer.subscribe(send)
+  // only sends pointer once every 200ms
+  pointer.pipe(auditTime(200)).subscribe(send)
 }

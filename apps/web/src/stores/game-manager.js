@@ -124,18 +124,20 @@ export async function loadGame(gameId, engine) {
     const index = game.playerIds.indexOf(player.id)
     subscriptions.push(
       connected.subscribe(peerIds => {
-        logger.debug({ peerIds }, `peers have joined or left`)
-        let hasHost = false
-        for (let i = 0; !hasHost && i < index; i++) {
-          // a previous player in player list is connected, they are host
-          hasHost = peerIds.includes(game.playerIds[i])
-        }
-        if (!hasHost) {
-          for (const subscription of subscriptions) {
-            subscription.unsubscribe()
+        if (peerIds.length) {
+          logger.debug({ peerIds }, `peers have joined or left`)
+          let hasHost = false
+          for (let i = 0; !hasHost && i < index; i++) {
+            // a previous player in player list is connected, they are host
+            hasHost = peerIds.includes(game.playerIds[i])
           }
-          subscriptions.splice(0, subscriptions.length)
-          takeHostRole(gameId, engine)
+          if (!hasHost) {
+            for (const subscription of subscriptions) {
+              subscription.unsubscribe()
+            }
+            subscriptions.splice(0, subscriptions.length)
+            takeHostRole(gameId, engine)
+          }
         }
       })
     )

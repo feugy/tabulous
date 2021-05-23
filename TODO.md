@@ -40,15 +40,12 @@
 
 # Known issues
 
-- single source of truth multiplayer mode!
+- multi selection in multi-player mode
 - multi selection does not always work fine
 - flip stacked items only flip individual card: it does not change the ordering
 - flipping or rotating item does not change vertical position: items above it will still be above it at the end
 - moving items bellow other does not apply gravity to them
-- some actions are lost over the wire, or not applied, like quick multiple rotations
-- need to synchronise actions over the wire (like flipping overlapping cards)
 - peer pointer remains after peer is gone
-- build doesn't load game's JSON
 
 # Notes
 
@@ -157,6 +154,5 @@ mogrify -flop -strip apps/web/public/images/splendor/1/*.png
 for file in apps/web/public/images/splendor/1/*.png; do toktx --uastc 4 ${file/.png/.ktx2} $file; done
 ```
 
-1. flip image horizontally (front face on the left, back face on the right, mirrored)
-2. strip png ICC profile (ktx2 does not support them)
-3. convert to ktx2
+1. flip image horizontally (front face on the left, back face on the right, mirrored) and strip png ICC profile (ktx2 does not support them)
+2. convert to ktx2

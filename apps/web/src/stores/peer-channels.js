@@ -1,6 +1,7 @@
 import Peer from 'simple-peer-light'
 import WebSocket from 'reconnecting-websocket'
 import { BehaviorSubject, Subject } from 'rxjs'
+import { filter, scan } from 'rxjs/operators'
 import { makeLogger } from '../utils'
 
 const logger = makeLogger('peer-channels')
@@ -9,10 +10,12 @@ const connectTimeout = 3000
 
 let socket
 let player
+let messageId = 1
 const peers = new Map()
 const lastMessageSent$ = new Subject()
 const lastMessageReceived$ = new Subject()
-const connected$ = new BehaviorSubject()
+const unorderedMessages$ = new Subject()
+const connected$ = new BehaviorSubject([])
 const lastConnected$ = new Subject()
 
 function unwire(peer) {
@@ -26,6 +29,33 @@ function unwire(peer) {
 function sendThroughSocket(message) {
   socket.send(JSON.stringify(message))
 }
+
+unorderedMessages$
+  .pipe(
+    // orders message, lower id first
+    scan((list, last) =>
+      last === null
+        ? null
+        : [...list, last].sort((a, b) => b.messageId - a.messageId)
+    ),
+    filter(list => {
+      // no list or list of one? do not emit
+      if (list === null || list.length === 1) {
+        return false
+      }
+      // emit only if all messages are in order
+      return list.every(
+        ({ messageId }, i) => i === 0 || list[i - 1].messageId === messageId - 1
+      )
+    })
+  )
+  .subscribe(list => {
+    // processes each ordered message, and clears list
+    for (const data of list) {
+      lastMessageReceived$.next(data)
+    }
+    unorderedMessages$.next(null)
+  })
 
 async function createPeer(playerId) {
   return new Promise((resolve, reject) => {
@@ -79,7 +109,20 @@ async function createPeer(playerId) {
       peer.on('data', stringData => {
         const data = JSON.parse(stringData)
         logger.debug({ data, peer }, `data from ${peer.player.id}`)
-        lastMessageReceived$.next({ data, from: peer.player })
+
+        const { lastMessageId } = peers.get(peer.player.id)
+        if (data.messageId !== lastMessageId + 1 && lastMessageId > 0) {
+          console.error(
+            `Invalid message ids: received ${data.messageId}, expecting: ${lastMessageId}`
+          )
+          unorderedMessages$.next({ data, from: peer.player })
+        } else {
+          lastMessageReceived$.next({ data, from: peer.player })
+        }
+        // stores higher last only, so unorderedMessage could get lower ones
+        if (data.messageId > lastMessageId) {
+          peers.get(peer.player.id).lastMessageId = data.messageId
+        }
       })
       peer.on('close', () => {
         logger.info({ peer }, `connection to ${peer.player.id} closed`)
@@ -89,7 +132,7 @@ async function createPeer(playerId) {
         { peers, peer },
         `connection established with ${peer.player.id}`
       )
-      peers.set(peer.player.id, peer)
+      peers.set(peer.player.id, { peer, lastMessageId: 0 })
       connected$.next([...peers.keys()])
       lastConnected$.next(peer.player.id)
       if (initiator) {
@@ -165,7 +208,7 @@ export async function startAccepting(playerData) {
  * Closes all communication channels.
  */
 export function closeChannels() {
-  for (const peer of [...peers.values()]) {
+  for (const { peer } of [...peers.values()]) {
     unwire(peer)
   }
   socket?.close()
@@ -198,8 +241,9 @@ export function send(data, to = null) {
     return
   }
   const destination = to ? new Map([[to, peers.get(to)]]) : peers
-  for (const [playerId, peer] of destination) {
+  for (const [playerId, { peer }] of destination) {
     logger.debug({ data, peer }, `sending data to ${playerId}`)
-    peer.send(JSON.stringify(data))
+    peer.send(JSON.stringify({ ...data, messageId }))
   }
+  messageId++
 }
