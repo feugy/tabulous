@@ -77,6 +77,7 @@ class ControlManager {
     }
     const key = getKey(action)
     // inhibits to avoid looping when this mesh will invoke apply()
+    mesh.metadata.fromPeer = true
     this.inhibit.add(key)
     if (action.fn) {
       this.inhibit.add()
@@ -85,6 +86,7 @@ class ControlManager {
       mesh.setAbsolutePosition(Vector3.FromArray(action.pos))
     }
     this.inhibit.delete(key)
+    mesh.metadata.fromPeer = null
   }
 
   /**

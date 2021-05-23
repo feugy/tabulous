@@ -76,7 +76,11 @@ export class RotateBehavior extends MoveBehavior {
     if (isMoving) {
       return
     }
-    if (!skipMulti && multiSelectionManager.meshes.includes(mesh)) {
+    if (
+      !skipMulti &&
+      !mesh.metadata?.fromPeer &&
+      multiSelectionManager.meshes.includes(mesh)
+    ) {
       // when rotating stacks, rotate them in order to keep y-ordering
       for (const other of multiSelectionManager.meshes) {
         other.getBehaviorByName(this.name)?.rotate(true)
@@ -86,7 +90,9 @@ export class RotateBehavior extends MoveBehavior {
     logger.debug({ mesh }, `start rotating ${mesh.id}`)
     this.isMoving = true
 
-    controlManager.record({ meshId: mesh.id, fn: 'rotate' })
+    if (!mesh.metadata?.fromPeer) {
+      controlManager.record({ meshId: mesh.id, fn: 'rotate' })
+    }
 
     const to = mesh.absolutePosition.clone()
     onMoveStartObservable.notifyObservers({ mesh, to, duration })

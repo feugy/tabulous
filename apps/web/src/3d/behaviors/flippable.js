@@ -76,7 +76,11 @@ export class FlipBehavior extends MoveBehavior {
     if (isMoving) {
       return
     }
-    if (!skipMulti && multiSelectionManager.meshes.includes(mesh)) {
+    if (
+      !skipMulti &&
+      !mesh.metadata?.fromPeer &&
+      multiSelectionManager.meshes.includes(mesh)
+    ) {
       // when flipping stacks, flip them in order to keep y-ordering
       for (const other of multiSelectionManager.meshes) {
         other.getBehaviorByName(this.name)?.flip(true)
@@ -86,7 +90,9 @@ export class FlipBehavior extends MoveBehavior {
     logger.debug({ mesh }, `start flipping ${mesh.id}`)
     this.isMoving = true
 
-    controlManager.record({ meshId: mesh.id, fn: 'flip' })
+    if (!mesh.metadata?.fromPeer) {
+      controlManager.record({ meshId: mesh.id, fn: 'flip' })
+    }
 
     const to = mesh.absolutePosition.clone()
     const [min, max] = mesh.getBoundingInfo().boundingBox.vectorsWorld

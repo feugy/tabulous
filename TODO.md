@@ -40,7 +40,6 @@
 
 # Known issues
 
-- multi selection in multi-player mode
 - multi selection does not always work fine
 - flip stacked items only flip individual card: it does not change the ordering
 - flipping or rotating item does not change vertical position: items above it will still be above it at the end
