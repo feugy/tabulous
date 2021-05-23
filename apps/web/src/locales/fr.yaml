@@ -8,9 +8,9 @@ actions:
 formats:
   date:
     short-date:
+      day: 2-digit
       hour: 2-digit
       minute: 2-digit
-      day: 2-digit
       month: short
 labels:
   players-count: '{ length, plural, one {# joueur} other {# joueurs} }'
@@ -26,9 +26,10 @@ titles:
   invite: Qui vas tu inviter ?
   log-in: Bienvenue !
 tooltips:
+  center-camera: Centrer la caméra
   flip: Retourner
+  invite-player: Inviter un(e) joueur(se)
   quit-game: Quitter le jeu
   rotate: Pivoter
   send-message: Envoyer à tous
-  invite-player: Inviter un(e) joueur(se)
   shuffle: Mélanger

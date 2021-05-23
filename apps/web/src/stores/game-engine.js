@@ -7,6 +7,8 @@ import {
   dragManager,
   multiSelectionManager
 } from '../3d/managers'
+import { getCamera } from '../3d/utils'
+import { Vector3 } from '@babylonjs/core'
 
 const engine$ = new BehaviorSubject(null)
 const fps$ = new BehaviorSubject(0)
@@ -20,6 +22,7 @@ const drag$ = new Subject()
 const dragEnd$ = new Subject()
 const action$ = new Subject()
 const pointer$ = new Subject()
+let cameraPosition = null
 
 const mapping = [
   { observable: multiSelectionManager.onOverObservable, subject: pointerOver$ },
@@ -59,13 +62,14 @@ export function initEngine(options) {
   for (const { observable, subject } of mapping) {
     mapping.observer = observable.add(subject.next.bind(subject))
   }
-  engine$.next(engine)
 
   createCamera()
   createTable()
   // creates light after table, so table doesn't project shadow
   createLight()
+  cameraPosition = getCamera(engine)?.position.clone()
 
+  engine$.next(engine)
   engine.start()
 
   // applies other players' update
@@ -87,4 +91,16 @@ export function initEngine(options) {
   action.subscribe(send)
   // only sends pointer once every 200ms
   pointer.pipe(auditTime(200)).subscribe(send)
+}
+
+/**
+ * Moves the 3D camera to a given position (in 3D world), its origin by default.
+ * Does nothing unless the 3D engine was initialized and a camera created.
+ * @param {number[]} [position] - Vector3 components for the new position.
+ */
+export function moveCameraTo(position = null) {
+  const camera = getCamera(engine$.value)
+  if (camera) {
+    camera.position = position ? Vector3.FromArray(position) : cameraPosition
+  }
 }

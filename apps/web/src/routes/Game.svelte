@@ -9,7 +9,14 @@
     StackSizeTooltip
   } from '../connected-components'
   import { Button, Discussion } from '../components'
-  import { engine, initEngine, loadGame, thread, sendToThread } from '../stores'
+  import {
+    engine,
+    initEngine,
+    loadGame,
+    moveCameraTo,
+    thread,
+    sendToThread
+  } from '../stores'
 
   export let params = {}
 
@@ -41,9 +48,17 @@
   }
 
   aside {
-    @apply absolute bottom-2 right-2 shadow-lg;
-    background: theme('backgrounds.primary');
-    max-height: 30%;
+    @apply absolute;
+
+    &.right {
+      @apply bottom-2 right-2 shadow-lg;
+      background: theme('backgrounds.primary');
+      max-height: 30%;
+    }
+
+    &.left {
+      @apply top-2 left-2;
+    }
   }
 
   nav {
@@ -67,12 +82,19 @@
 </main>
 <nav>
   <Button
-    icon="close"
+    icon="home"
     title={$_('tooltips.quit-game')}
     on:click={() => push('/home')}
   />
 </nav>
-<aside>
+<aside class="left">
+  <Button
+    icon="center_focus_strong"
+    title={$_('tooltips.center-camera')}
+    on:click={() => moveCameraTo()}
+  />
+</aside>
+<aside class="right">
   <Discussion
     thread={$thread}
     on:sendMessage={({ detail }) => sendToThread(detail.text)}
