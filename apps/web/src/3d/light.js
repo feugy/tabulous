@@ -5,6 +5,11 @@ import {
   Vector3
 } from '@babylonjs/core'
 
+/**
+ * Creates a directional light mimicing sun, to produce shadows.
+ * Note: all meshes created before this light will not project any shadow.
+ * @returns an object containing created `light` and `shadowGenerator`.
+ */
 export function createLight() {
   const light = new DirectionalLight('sun', new Vector3(100, -200, -100))
   light.specular = new Color3(0, 0, 0)

@@ -52,6 +52,35 @@ function makeCornerMesh(
   return cornerCSG
 }
 
+/**
+ * Creates a tile with rounded corners.
+ * Tiles are boxes, so their position is their center (half their depth).
+ * By default, the tile dimension follows American poker tile standard (beetween 1.39 & 1.41).
+ * A tile has the following behaviors:
+ * - draggable
+ * - flippable
+ * - rotable
+ * - stackable (the entire tile is a drop target)
+ * - hoverable (?)
+ * A tile's texture must have 2 faces, front then back, aligned horizontally. Edges have silde color (borderColor).
+ * @param {object} params - tile parameters, including (all other properties will be passed to the created mesh):
+ * @param {number} [params.x] - initial position along the X axis.
+ * @param {number} [params.y] - initial position along the Y axis.
+ * @param {number} [params.z] - initial position along the Z axis.
+ * @param {number} [params.borderRadius] - radius applied to each corner.
+ * @param {number[]} [params.borderColor] - Color4's components used as edge color.
+ * @param {string} [params.texture] - tile's texture url.
+ * @param {number} [params.width] - tile's width (X axis).
+ * @param {number} [params.height] - tile's height (Z axis).
+ * @param {number} [params.depth] - tile's depth (Y axis).
+ * @param {boolean} [params.isFlipped] - initial flip state (face visible).
+ * @param {number} [params.flipDuration] - flip duration (in seconds).
+ * @param {number} [params.angle] - initial rotation angle (top above), in radians.
+ * @param {number} [params.rotateDuration] - rotation duration (in seconds).
+ * @param {number} [params.snapDistance] - distance bellow which the tile automatically snaps to nearest position.
+ * @param {number} [params.moveDuration] - automatic move duration (in seconds), when snapping.
+ * @returns the created tile mesh.
+ */
 export function createRoundedTile({
   x = 0,
   z = 0,
