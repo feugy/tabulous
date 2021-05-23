@@ -5,7 +5,7 @@ import { Axis, MeshBuilder, Space } from '@babylonjs/core'
  * For now, a simple disc, that casts shadows.
  * @param {object} params - point parameters, including:
  * @param {string} params.id - the peer id.
- * @returns the created peer.
+ * @returns {import('@babylonjs/core').Mesh} the created peer pointer.
  */
 export function createPeerPointer({ id } = {}) {
   const peerPointer = MeshBuilder.CreateDisc('peer-pointer', { radius: 0.2 })

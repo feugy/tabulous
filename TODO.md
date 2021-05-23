@@ -45,7 +45,6 @@
 - flip stacked items only flip individual card: it does not change the ordering
 - flipping or rotating item does not change vertical position: items above it will still be above it at the end
 - moving items bellow other does not apply gravity to them
-- peer pointer remains after peer is gone
 
 # Notes
 

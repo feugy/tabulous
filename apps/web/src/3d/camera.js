@@ -7,7 +7,7 @@ import { ArcRotateCamera, Vector3 } from '@babylonjs/core'
  * @param {number} [boundaries.maxX] - maximum x coordinate
  * @param {number} [boundaries.minZ] - minimum z coordinate
  * @param {number} [boundaries.maxZ] - maximum z coordinate
- * @returns the created camera
+ * @returns {ArcRotateCamera} the created camera
  */
 export function createCamera({
   minX = -38,

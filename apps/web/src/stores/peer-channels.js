@@ -220,7 +220,7 @@ export function closeChannels() {
  * Connects with another player, from their id.
  * @async
  * @param {string} playerId - player id to connect with
- * @returns {simple-peer-light.Peer} - connection, in case of success
+ * @returns {Peer} - connection, in case of success
  * @throws {Error} when no connected peer is matching provided id
  */
 export async function connectWith(playerId) {

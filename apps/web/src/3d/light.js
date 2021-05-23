@@ -6,9 +6,15 @@ import {
 } from '@babylonjs/core'
 
 /**
+ * @typedef {object} LightResult
+ * @property {DirectionalLight} light - created light
+ * @property {ShadowGenerator} shadowGenerator - created shadow generator
+ */
+
+/**
  * Creates a directional light mimicing sun, to produce shadows.
  * Note: all meshes created before this light will not project any shadow.
- * @returns an object containing created `light` and `shadowGenerator`.
+ * @returns {LightResult} an object containing created light and shadowGenerator.
  */
 export function createLight() {
   const light = new DirectionalLight('sun', new Vector3(100, -200, -100))

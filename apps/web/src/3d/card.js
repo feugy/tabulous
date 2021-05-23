@@ -42,7 +42,7 @@ import { controlManager } from './managers'
  * @param {number} [params.rotateDuration] - rotation duration (in seconds).
  * @param {number} [params.snapDistance] - distance bellow which the card automatically snaps to nearest position.
  * @param {number} [params.moveDuration] - automatic move duration (in seconds), when snapping.
- * @returns the created card mesh.
+ * @returns {Mesh} the created card mesh.
  */
 export function createCard({
   x = 0,

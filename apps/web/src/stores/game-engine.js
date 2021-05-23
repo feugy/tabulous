@@ -1,6 +1,6 @@
 import { BehaviorSubject, Subject } from 'rxjs'
 import { auditTime } from 'rxjs/operators'
-import { lastMessageReceived, send } from './peer-channels'
+import { connected, lastMessageReceived, send } from './peer-channels'
 import { createCamera, createEngine, createLight, createTable } from '../3d'
 import {
   controlManager,
@@ -74,6 +74,12 @@ export function initEngine(options) {
       controlManager.movePeerPointer(data)
     } else if (data?.meshId) {
       controlManager.apply(data)
+    }
+  })
+  // prunes unused peer pointers if needed
+  connected.subscribe(peerIds => {
+    if (peerIds) {
+      controlManager.pruneUnusedPeerPointers(peerIds)
     }
   })
 

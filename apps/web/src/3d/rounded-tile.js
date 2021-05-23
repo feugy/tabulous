@@ -79,7 +79,7 @@ function makeCornerMesh(
  * @param {number} [params.rotateDuration] - rotation duration (in seconds).
  * @param {number} [params.snapDistance] - distance bellow which the tile automatically snaps to nearest position.
  * @param {number} [params.moveDuration] - automatic move duration (in seconds), when snapping.
- * @returns the created tile mesh.
+ * @returns {import('@babylonjs/core').Mesh} the created tile mesh.
  */
 export function createRoundedTile({
   x = 0,

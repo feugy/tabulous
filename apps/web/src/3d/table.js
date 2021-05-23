@@ -7,7 +7,7 @@ import { Color4, MeshBuilder, StandardMaterial } from '@babylonjs/core'
  * @param {number} [params.width] - table's width (X axis).
  * @param {number} [params.height] - table's height (Z axis).
  * @param {number[]} [params.color] - Color4's components used as table color.
- * @returns the created table ground.
+ * @returns {import('@babylonjs/core').Mesh} the created table ground.
  */
 export function createTable({
   width = 100,

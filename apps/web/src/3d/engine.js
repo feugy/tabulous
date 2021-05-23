@@ -8,7 +8,7 @@ import { dragManager, multiSelectionManager } from './managers'
  * @param {object} params - parameters, including:
  * @param {HTMLCanvasElement} params.canvas - HTML canvas used to display the scene.
  * @param {HTMLElement} params.interaction - HTML element receiving user interaction (mouse events, taps).
- * @returns the created 3D engine.
+ * @returns {Engine} the created 3D engine.
  */
 export function createEngine({ canvas, interaction } = {}) {
   const engine = new Engine(canvas, true)
