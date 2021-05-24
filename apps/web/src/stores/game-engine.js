@@ -7,8 +7,7 @@ import {
   dragManager,
   multiSelectionManager
 } from '../3d/managers'
-import { getCamera } from '../3d/utils'
-import { Vector3 } from '@babylonjs/core'
+import { saveCamera, restoreCamera } from '../3d/utils'
 
 const engine$ = new BehaviorSubject(null)
 const fps$ = new BehaviorSubject(0)
@@ -22,7 +21,7 @@ const drag$ = new Subject()
 const dragEnd$ = new Subject()
 const action$ = new Subject()
 const pointer$ = new Subject()
-let cameraPosition = null
+let initialCamera = null
 
 const mapping = [
   { observable: multiSelectionManager.onOverObservable, subject: pointerOver$ },
@@ -67,7 +66,8 @@ export function initEngine(options) {
   createTable()
   // creates light after table, so table doesn't project shadow
   createLight()
-  cameraPosition = getCamera(engine)?.position.clone()
+  initialCamera = saveCamera(engine)
+  engine.displayLoadingUI()
 
   engine$.next(engine)
   engine.start()
@@ -96,11 +96,9 @@ export function initEngine(options) {
 /**
  * Moves the 3D camera to a given position (in 3D world), its origin by default.
  * Does nothing unless the 3D engine was initialized and a camera created.
- * @param {number[]} [position] - Vector3 components for the new position.
+ * @async
+ * @param {number[]} [state] - Vector3 components for the new position.
  */
-export function moveCameraTo(position = null) {
-  const camera = getCamera(engine$.value)
-  if (camera) {
-    camera.position = position ? Vector3.FromArray(position) : cameraPosition
-  }
+export async function moveCameraTo(state = null) {
+  return restoreCamera(engine$.value, state ?? initialCamera)
 }

@@ -26,7 +26,7 @@ export function serializeScene(scene) {
 
 export function loadScene(engine, scene, data) {
   engine.displayLoadingUI()
-  scene._addPendingData(data)
+  scene.onDataLoadedObservable.addOnce(() => engine.hideLoadingUI())
   const disposed = new Array(scene.meshes.length)
   let j = 0
   for (let i = 0; i < disposed.length; i++) {
@@ -84,8 +84,4 @@ export function loadScene(engine, scene, data) {
       }
     }
   }
-  setTimeout(() => {
-    scene._removePendingData(data)
-    engine.hideLoadingUI()
-  }, 0)
 }
