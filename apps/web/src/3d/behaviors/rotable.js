@@ -1,9 +1,4 @@
-import {
-  ActionManager,
-  Animation,
-  ExecuteCodeAction,
-  Vector3
-} from '@babylonjs/core'
+import { Animation, Vector3 } from '@babylonjs/core'
 import { MoveBehavior } from './movable'
 import { applyGravity } from '../utils'
 import { controlManager, multiSelectionManager } from '../managers'
@@ -30,7 +25,7 @@ export class RotateBehavior extends MoveBehavior {
     return RotateBehavior.NAME
   }
 
-  attach(mesh, withAction = true) {
+  attach(mesh) {
     super.attach(mesh)
     mesh.rotation.y = this.angle * 0.5 * Math.PI
     if (!mesh.metadata) {
@@ -38,30 +33,9 @@ export class RotateBehavior extends MoveBehavior {
     }
     mesh.metadata.rotate = this.rotate.bind(this)
     mesh.metadata.angle = this.angle
-    if (withAction) {
-      if (!mesh.actionManager) {
-        mesh.actionManager = new ActionManager(mesh.getScene())
-      }
-      // OnLeftPickTrigger is fired on pointer down, and we can't cancel it when dragging
-      this.action = new ExecuteCodeAction(
-        ActionManager.OnPickTrigger,
-        ({ sourceEvent: { button } }) => {
-          if (button === 2) this.rotate()
-        }
-      )
-      mesh.actionManager.registerAction(this.action)
-    }
   }
 
-  detach() {
-    if (this.action) {
-      // TODO it should always be defined?!
-      this.mesh.actionManager?.unregisterAction(this.action)
-    }
-    super.detach()
-  }
-
-  rotate(skipMulti = false) {
+  rotate(single = false) {
     const {
       duration,
       isMoving,
@@ -77,13 +51,14 @@ export class RotateBehavior extends MoveBehavior {
       return
     }
     if (
-      !skipMulti &&
+      !single &&
       !mesh.metadata?.fromPeer &&
       multiSelectionManager.meshes.includes(mesh)
     ) {
-      // when rotating stacks, rotate them in order to keep y-ordering
-      for (const other of multiSelectionManager.meshes) {
-        other.getBehaviorByName(this.name)?.rotate(true)
+      for (const selected of multiSelectionManager.meshes) {
+        if (selected.metadata?.rotate) {
+          selected.metadata.rotate(true)
+        }
       }
       return
     }

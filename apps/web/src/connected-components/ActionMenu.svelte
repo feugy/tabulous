@@ -3,7 +3,13 @@
   import { _ } from 'svelte-intl'
   import { RadialMenu } from '../components'
   import { getMeshCoordinates, shuffle } from '../utils'
-  import { dragStart, dragEnd, pointerOut, pointerOver } from '../stores'
+  import {
+    detail,
+    dragStart,
+    dragEnd,
+    pointerOut,
+    pointerOver
+  } from '../stores'
 
   const delay = 500
   let x = 0
@@ -55,6 +61,13 @@
               const ids = object.metadata.stack.map(({ id }) => id)
               object.metadata.shuffle(shuffle(ids))
             }
+          })
+        }
+        if (object.metadata.images) {
+          actions.push({
+            icon: 'visibility',
+            title: $_('tooltips.detail'),
+            onClick: () => detail.next({ mesh })
           })
         }
       }, delay)

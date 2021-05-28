@@ -2,11 +2,11 @@ import { ArcRotateCamera, Vector3 } from '@babylonjs/core'
 
 /**
  * Creates an arc rotate camera in current scene, that can pan using left mouse button
- * @param {object} [boundaries] - camera contraints
- * @param {number} [boundaries.minX] - minimum x coordinate
- * @param {number} [boundaries.maxX] - maximum x coordinate
- * @param {number} [boundaries.minZ] - minimum z coordinate
- * @param {number} [boundaries.maxZ] - maximum z coordinate
+ * @param {object} boundaries? - camera contraints
+ * @param {number} boundaries.minX? - minimum x coordinate
+ * @param {number} boundaries.maxX? - maximum x coordinate
+ * @param {number} boundaries.minZ? - minimum z coordinate
+ * @param {number} boundaries.maxZ? - maximum z coordinate
  * @returns {ArcRotateCamera} the created camera
  */
 export function createCamera({

@@ -6,6 +6,7 @@
     ActionMenu,
     FPSViewer,
     InviteDialogue,
+    MeshDetails,
     StackSizeTooltip
   } from '../connected-components'
   import { Button, Discussion } from '../components'
@@ -79,6 +80,7 @@
   </div>
   <StackSizeTooltip />
   <FPSViewer />
+  <MeshDetails />
 </main>
 <nav>
   <Button

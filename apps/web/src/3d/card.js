@@ -27,21 +27,22 @@ import { controlManager } from './managers'
  * - rotable
  * - stackable (the entire card is a drop target)
  * - hoverable (?)
- * A card's texture must have 2 faces, front then back, aligned horizontally.
+ * A card's texture must have 2 faces, back then front, aligned horizontally.
  * @param {object} params - card parameters, including (all other properties will be passed to the created mesh):
- * @param {number} [params.x] - initial position along the X axis.
- * @param {number} [params.y] - initial position along the Y axis.
- * @param {number} [params.z] - initial position along the Z axis.
- * @param {string} [params.texture] - card's texture url.
- * @param {number} [params.width] - card's width (X axis).
- * @param {number} [params.height] - card's height (Z axis).
- * @param {number} [params.depth] - card's depth (Y axis).
- * @param {boolean} [params.isFlipped] - initial flip state (face visible).
- * @param {number} [params.flipDuration] - flip duration (in seconds).
- * @param {number} [params.angle] - initial rotation angle (top above), in radians.
- * @param {number} [params.rotateDuration] - rotation duration (in seconds).
- * @param {number} [params.snapDistance] - distance bellow which the card automatically snaps to nearest position.
- * @param {number} [params.moveDuration] - automatic move duration (in seconds), when snapping.
+ * @param {number} params.x? - initial position along the X axis.
+ * @param {number} params.y? - initial position along the Y axis.
+ * @param {number} params.z? - initial position along the Z axis.
+ * @param {string} params.texture? - card's texture url.
+ * @param {number} params.width? - card's width (X axis).
+ * @param {number} params.height? - card's height (Z axis).
+ * @param {number} params.depth? - card's depth (Y axis).
+ * @param {boolean} params.isFlipped? - initial flip state (face visible).
+ * @param {number} params.flipDuration? - flip duration (in seconds).
+ * @param {number} params.angle? - initial rotation angle (top above), in radians.
+ * @param {number} params.rotateDuration? - rotation duration (in seconds).
+ * @param {number} params.snapDistance? - distance bellow which the card automatically snaps to nearest position.
+ * @param {number} params.moveDuration? - automatic move duration (in seconds), when snapping.
+ * @param {ImageDefs} params.images? - detailed images for this card.
  * @returns {Mesh} the created card mesh.
  */
 export function createCard({
@@ -58,13 +59,14 @@ export function createCard({
   rotateDuration = 0.2,
   moveDuration = 0.1,
   snapDistance = 0.25,
+  images,
   ...cardProps
 } = {}) {
   const faces = MeshBuilder.CreatePlane('faces', {
     width,
     height,
-    frontUVs: new Vector4(1, 1, 0.5, 0),
-    backUVs: new Vector4(0, 1, 0.5, 0),
+    frontUVs: new Vector4(0.5, 1, 0, 0),
+    backUVs: new Vector4(0.5, 1, 1, 0),
     sideOrientation: Mesh.DOUBLESIDE
   })
   faces.material = new StandardMaterial('faces')
@@ -91,6 +93,7 @@ export function createCard({
   Object.assign(card, cardProps)
 
   card.metadata = {
+    images,
     serialize: () => ({
       ...cardProps,
       x: card.position.x,
@@ -100,6 +103,7 @@ export function createCard({
       height,
       depth,
       texture,
+      images,
       ...flipBehavior.serialize(),
       ...rotateBehavior.serialize(),
       ...stackBehavior.serialize()

@@ -1,14 +1,39 @@
-import { Observable, Vector3 } from '@babylonjs/core'
+import { Observable, PointerEventTypes, Scene, Vector3 } from '@babylonjs/core'
 import { createPeerPointer } from '../peer-pointer'
 
 function getKey(action) {
   return `${action?.meshId}-${action.fn?.toString() || 'pos'}`
 }
 
+function handleInput({ mesh, singleTap, button, manager }) {
+  if (singleTap) {
+    const fn = button === 0 ? 'flip' : button === 2 ? 'rotate' : null
+    if (mesh.metadata?.[fn]) {
+      mesh.metadata?.[fn]()
+    }
+  } else if (mesh.metadata?.images?.front) {
+    manager.onDetailedObservable.notifyObservers({ mesh })
+  }
+}
+
+/**
+ * @typedef {object} Action applied action to a given mesh:
+ * @property {string} meshId - modified mesh id.
+ * @property {string} fn? - optionnal name of the applied action (default to 'pos').
+ * @property {any[]} args? - optional argument array for this action.
+ */
+
+/**
+ * @typedef {object} ImageDefs detailed images definitions for a given mesh:
+ * @property {string} front - image for the mesh front face.
+ * @property {string} back? - image for the mesh front back.
+ */
+
 class ControlManager {
   /**
-   * Creates a manager to programmatically control meshes.
-   * It handles a collection of meshes, applying them received actions.
+   * Creates a manager to control a collection of meshes:
+   * - runs actions based on user input (clicks, double clicks...)
+   * - applies actions received from peers
    * It also controls pointer objects to represent peer players.
    */
   constructor() {
@@ -18,6 +43,31 @@ class ControlManager {
     this.inhibit = new Set()
     this.onActionObservable = new Observable()
     this.onPointerObservable = new Observable()
+    this.onDetailedObservable = new Observable()
+  }
+
+  /**
+   * Gives a scene to the manager so it can listen to pointer events and trigger behaviors.
+   * @param {object} params - parameters, including:
+   * @param {Scene} params.scene - scene attached to.
+   */
+  init({ scene }) {
+    let delayedTap
+    scene.onPointerObservable.add(({ type, pickInfo, event: { button } }) => {
+      const mesh = pickInfo?.pickedMesh
+      if (mesh && this.controlables.has(mesh.id)) {
+        if (type === PointerEventTypes.POINTERTAP) {
+          // delays event in case a double tap occurs
+          delayedTap = setTimeout(
+            () => handleInput({ mesh, singleTap: true, button, manager: this }),
+            Scene.DoubleClickDelay
+          )
+        } else if (type === PointerEventTypes.POINTERDOUBLETAP) {
+          clearTimeout(delayedTap)
+          handleInput({ mesh, singleTap: false, button, manager: this })
+        }
+      }
+    })
   }
 
   /**
@@ -43,9 +93,7 @@ class ControlManager {
   /**
    * Records an actions from one of the controlled meshes, and notifies observers.
    * Does nothing if the source mesh is not controlled.
-   * @param {object} action - recorded action, including:
-   * @param {string} action.meshId - id of the source mesh.
-   * @param {string} [action.fn] - name of the recorded action, default to 'pos'.
+   * @param {Action} action - recorded action
    */
   record(action) {
     const key = getKey(action)
@@ -66,9 +114,7 @@ class ControlManager {
   /**
    * Applies an actions to a controlled meshes (`fn` in its metadatas), or changes its position (`fn` is 'pos').
    * Does nothing if the target mesh is not controlled.
-   * @param {object} action - applied action, including:
-   * @param {string} action.meshId - id of the source mesh.
-   * @param {string} [action.fn] - name of the applied action.
+   * @param {Action} action - applied action
    */
   apply(action) {
     const mesh = this.controlables.get(action?.meshId)

@@ -21,6 +21,7 @@ const drag$ = new Subject()
 const dragEnd$ = new Subject()
 const action$ = new Subject()
 const pointer$ = new Subject()
+const detail = new Subject()
 let initialCamera = null
 
 const mapping = [
@@ -38,7 +39,8 @@ const mapping = [
   { observable: dragManager.onDragObservable, subject: drag$ },
   { observable: dragManager.onDragEndObservable, subject: dragEnd$ },
   { observable: controlManager.onActionObservable, subject: action$ },
-  { observable: controlManager.onPointerObservable, subject: pointer$ }
+  { observable: controlManager.onPointerObservable, subject: pointer$ },
+  { observable: controlManager.onDetailedObservable, subject: detail }
 ]
 
 export const engine = engine$.asObservable()
@@ -52,6 +54,7 @@ export const drag = drag$.asObservable()
 export const dragEnd = dragEnd$.asObservable()
 export const action = action$.asObservable()
 export const pointer = pointer$.asObservable()
+export { detail }
 
 export function initEngine(options) {
   const engine = createEngine(options)

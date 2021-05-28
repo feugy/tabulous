@@ -4,6 +4,7 @@
   export let open = false
   export let x = 0
   export let y = 0
+  export let angleShift = 0.25
 
   $: left = typeof x === 'number' ? `${x}px` : x
   $: top = typeof y === 'number' ? `${y}px` : y
@@ -16,8 +17,8 @@
     const angle = (-2 * Math.PI * (1 - i)) / items.length
     // add 1 radius because css origin is menu's top-left corner, not its center
     return {
-      x: radius * (Math.cos(angle) + 1),
-      y: radius * (Math.sin(angle) + 1)
+      x: radius * (Math.cos(angle + angleShift) + 1),
+      y: radius * (Math.sin(angle + angleShift) + 1)
     }
   }
 

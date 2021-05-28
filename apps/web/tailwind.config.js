@@ -24,7 +24,8 @@ module.exports = {
       },
       backgrounds: {
         page: '#fcfcfc',
-        primary: '#ffffff'
+        primary: '#ffffff',
+        backdrop: '#7a7a7a75'
       },
       transitions: {
         short: '150ms'

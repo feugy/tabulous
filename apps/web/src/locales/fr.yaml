@@ -27,6 +27,7 @@ titles:
   log-in: Bienvenue !
 tooltips:
   center-camera: Centrer la caméra
+  detail: Regarder
   flip: Retourner
   invite-player: Inviter un(e) joueur(se)
   quit-game: Quitter le jeu

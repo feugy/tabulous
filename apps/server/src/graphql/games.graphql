@@ -14,9 +14,15 @@ type GameScene {
   roundedTiles: [RoundedTiles]!
 }
 
+type ImageDefs {
+  front: String!
+  back: String
+}
+
 type Card {
   id: ID!
   texture: String!
+  images: ImageDefs!
   width: Float
   height: Float
   depth: Float
@@ -31,6 +37,7 @@ type Card {
 type RoundToken {
   id: ID!
   texture: String!
+  images: ImageDefs!
   x: Float
   y: Float
   z: Float
@@ -44,6 +51,7 @@ type RoundToken {
 type RoundedTiles {
   id: ID!
   texture: String!
+  images: ImageDefs!
   width: Float
   height: Float
   depth: Float
@@ -60,14 +68,21 @@ input GameInput {
   scene: GameSceneInput!
 }
 
+input ImageDefsInput {
+  front: String!
+  back: String
+}
+
 input GameSceneInput {
   cards: [CardInput]!
   roundTokens: [RoundTokenInput]!
   roundedTiles: [RoundedTilesInput]!
 }
+
 input CardInput {
   id: ID!
   texture: String!
+  images: ImageDefsInput!
   width: Float
   height: Float
   depth: Float
@@ -82,6 +97,7 @@ input CardInput {
 input RoundTokenInput {
   id: ID!
   texture: String!
+  images: ImageDefsInput!
   x: Float
   y: Float
   z: Float
@@ -95,6 +111,7 @@ input RoundTokenInput {
 input RoundedTilesInput {
   id: ID!
   texture: String!
+  images: ImageDefsInput!
   width: Float
   height: Float
   depth: Float

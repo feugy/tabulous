@@ -27,6 +27,10 @@ query loadGame($gameId: ID!) {
       cards {
         id
         texture
+        images {
+          front
+          back
+        }
         x
         y
         z
@@ -37,6 +41,10 @@ query loadGame($gameId: ID!) {
       roundTokens {
         id
         texture
+        images {
+          front
+          back
+        }
         x
         y
         z
@@ -49,6 +57,10 @@ query loadGame($gameId: ID!) {
       roundedTiles {
         id
         texture
+        images {
+          front
+          back
+        }
         x
         y
         z

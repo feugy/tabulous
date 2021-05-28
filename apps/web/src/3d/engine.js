@@ -1,5 +1,5 @@
 import { Engine, Scene } from '@babylonjs/core'
-import { dragManager, multiSelectionManager } from './managers'
+import { controlManager, dragManager, multiSelectionManager } from './managers'
 
 /**
  * Creates the Babylon's 3D engine, with its single scene, and its render loop.
@@ -18,6 +18,7 @@ export function createEngine({ canvas, interaction } = {}) {
   const scene = new Scene(engine)
 
   dragManager.init({ scene })
+  controlManager.init({ scene })
   multiSelectionManager.init({ scene })
 
   engine.start = () => engine.runRenderLoop(scene.render.bind(scene))
