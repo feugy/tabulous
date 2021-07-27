@@ -9,8 +9,9 @@
     MeshDetails,
     StackSizeTooltip
   } from '../connected-components'
-  import { Button, Discussion } from '../components'
+  import { Button, Discussion, PlayerAvatar } from '../components'
   import {
+    connected,
     engine,
     initEngine,
     loadGame,
@@ -52,9 +53,9 @@
     @apply absolute;
 
     &.right {
-      @apply bottom-2 right-2 shadow-lg;
-      background: theme('backgrounds.primary');
-      max-height: 30%;
+      @apply flex flex-col items-center top-14 right-2 gap-2;
+      max-height: 93vh;
+      width: 300px;
     }
 
     &.left {
@@ -97,6 +98,9 @@
   />
 </aside>
 <aside class="right">
+  {#each $connected as { player, stream }, i}
+    <PlayerAvatar {player} {stream} controllable={i === 0} />
+  {/each}
   <Discussion
     thread={$thread}
     on:sendMessage={({ detail }) => sendToThread(detail.text)}

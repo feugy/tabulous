@@ -22,7 +22,7 @@ export function openReceiver(player) {
   closeReceiver()
   logger.info({ player }, 'starting receiving server-sent event')
 
-  receiver = new EventSource(`http://localhost:3001/sse?id=${player.id}`)
+  receiver = new EventSource(`/sse?id=${player.id}`)
   receiver.addEventListener('invite', event => {
     logger.debug({ event }, 'receiving game invite')
     inviteReceived$.next(JSON.stringify(event.data))

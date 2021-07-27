@@ -23,5 +23,5 @@
 <article on:click={() => push(`/game/${game.id}`)}>
   <h3>{game.kind}</h3>
   <span class="created">{$_('{ created, date, short-date }', game)}</span>
-  <span class="players">{$_('labels.players-count', game.playerIds)}</span>
+  <span class="players">{$_('labels.players-count', game.players)}</span>
 </article>

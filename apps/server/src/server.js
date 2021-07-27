@@ -1,9 +1,11 @@
 import fastify from 'fastify'
 
 function configure() {
-  const app = fastify({ logger: { level: 'info' } })
+  const app = fastify({ logger: { level: 'debug' } })
 
-  app.register(import('fastify-cors'), { origin: 'http://localhost:3000' })
+  app.register(import('fastify-cors'), {
+    origin: ['http://localhost:3000', 'http://78.192.173.27:3000']
+  })
   app.register(import('fastify-websocket'))
   app.register(import('./plugins/peer-signal.js'))
   app.register(import('./plugins/graphql.js'))

@@ -41,6 +41,7 @@
   .filter.open {
     @apply visible;
     backdrop-filter: blur(4px);
+    background-color: theme('backgrounds.backdrop');
   }
 
   .backdrop {

@@ -154,11 +154,11 @@ class ControlManager {
 
   /**
    * Compares the list of peer pointers with the list of connect peer ids, to remove unnecessary pointers.
-   * @param {string[]} connectedPeers - list of connected peer ids.
+   * @param {string[]} connectedPeerIds - list of connected peer ids.
    */
-  pruneUnusedPeerPointers(connectedPeers) {
+  pruneUnusedPeerPointers(connectedPeerIds) {
     for (const [id, pointer] of this.peerPointers) {
-      if (!connectedPeers.includes(id)) {
+      if (!connectedPeerIds.includes(id)) {
         pointer.dispose()
         this.peerPointers.delete(id)
       }

@@ -1,6 +1,7 @@
 import {
   createGame,
   invite,
+  getPlayersById,
   listGames,
   loadGame,
   saveGame
@@ -8,6 +9,25 @@ import {
 import { isAuthenticated } from './utils.js'
 
 export default {
+  loaders: {
+    Game: {
+      players: {
+        async loader(queries) {
+          return Promise.all(
+            queries.map(
+              ({ obj: { playerIds, players } }) =>
+                players ?? getPlayersById(playerIds)
+            )
+          )
+        },
+        // disable cache since playing statuses are volatile
+        opts: {
+          cache: false
+        }
+      }
+    }
+  },
+
   Query: {
     loadGame: isAuthenticated(async (obj, { gameId }, { player }) =>
       loadGame(gameId, player.id)

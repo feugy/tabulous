@@ -48,6 +48,7 @@ export function loadScene(engine, scene, data) {
     logger.debug({ card }, `create new card ${card.id}`)
     const mesh = createCard({
       ...card,
+      images: { ...card.images, __typename: undefined },
       stack: undefined,
       __typename: undefined
     })
@@ -57,6 +58,7 @@ export function loadScene(engine, scene, data) {
     logger.debug({ token }, `create new round token ${token.id}`)
     const mesh = createRoundToken({
       ...token,
+      images: { ...token.images, __typename: undefined },
       stack: undefined,
       __typename: undefined
     })
@@ -66,6 +68,7 @@ export function loadScene(engine, scene, data) {
     logger.debug({ tile }, `create new rounded tile ${tile.id}`)
     const mesh = createRoundedTile({
       ...tile,
+      images: { ...tile.images, __typename: undefined },
       stack: undefined,
       __typename: undefined
     })

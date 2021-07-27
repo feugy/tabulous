@@ -7,11 +7,20 @@
 
   const dispatch = createEventDispatcher()
   let text = ''
+  let messageContainer
+
+  $: if (messageContainer && thread) {
+    // automatically scrolls to last when receiving a new message
+    setTimeout(() => {
+      messageContainer.lastElementChild?.scrollIntoView()
+    }, 0)
+  }
 
   function handleSend() {
     dispatch('sendMessage', { text })
     text = ''
   }
+
   function handleInvite(event) {
     dispatch('askInvite')
     // to avoid submitting the whole form
@@ -21,8 +30,10 @@
 
 <style type="postcss">
   .discussion {
-    @apply flex flex-col p-4;
+    @apply flex flex-col overflow-auto p-2 shadow-md self-stretch;
+    background: theme('backgrounds.primary');
   }
+
   .messages {
     @apply grid flex-grow overflow-y-auto;
     grid-template-columns: auto 1fr;
@@ -31,17 +42,19 @@
       @apply pb-2;
     }
   }
+
   .from {
     @apply text-right font-medium pr-2;
     color: theme('colors.secondary.main');
   }
+
   form {
     @apply flex gap-4 items-center;
   }
 </style>
 
 <div class="discussion">
-  <div class="messages">
+  <div class="messages" bind:this={messageContainer}>
     {#each thread || [] as { from, message }}
       <span class="from">{from?.username}</span><span class="message"
         >{message}</span

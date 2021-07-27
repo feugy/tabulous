@@ -1,3 +1,9 @@
+fragment lightPlayer on Player {
+  id
+  username
+  playing
+}
+
 mutation createGame($kind: String!) {
   createGame(kind: $kind) {
     id
@@ -6,7 +12,9 @@ mutation createGame($kind: String!) {
 
 mutation invite($gameId: ID!, $playerId: ID!) {
   invite(gameId: $gameId, playerId: $playerId) {
-    playerIds
+    players {
+      ...lightPlayer
+    }
   }
 }
 
@@ -15,14 +23,18 @@ query listGames {
     id
     created
     kind
-    playerIds
+    players {
+      ...lightPlayer
+    }
   }
 }
 
 query loadGame($gameId: ID!) {
   loadGame(gameId: $gameId) {
     id
-    playerIds
+    players {
+      ...lightPlayer
+    }
     scene {
       cards {
         id
@@ -68,6 +80,14 @@ query loadGame($gameId: ID!) {
         angle
         stack
       }
+    }
+  }
+}
+
+query loadGamePlayers($gameId: ID!) {
+  loadGame(gameId: $gameId) {
+    players {
+      ...lightPlayer
     }
   }
 }

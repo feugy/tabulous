@@ -1,4 +1,6 @@
 import fp from 'fastify-plugin'
+import { setPlaying } from '../services/index.js'
+import { getAuthenticatedPlayer } from './utils.js'
 
 /**
  * Registers routes to implement a WebRTC signaling server, based on WebSockets.
@@ -9,69 +11,65 @@ import fp from 'fastify-plugin'
  */
 async function peerSignal(app, opts = {}) {
   const path = opts.path || '/ws'
-  const offers = new Map()
+  const socketByPlayerId = new Map()
 
-  app.get(path, { websocket: true }, (connection, { log }) => {
-    connection.socket.on('message', rawMessage => {
-      try {
-        const message = JSON.parse(rawMessage)
-        log.debug({ message }, 'receiveing message')
+  app.get(
+    path,
+    { websocket: true },
+    (connection, { log, query: { bearer } }) => {
+      let player
 
-        if (message?.type === 'offer') {
-          offers.set(message.player.id, {
-            signal: message.signal,
-            player: message.player,
-            socket: connection.socket
-          })
-          log.info(message, `storing offer for player ${message.player.id}`)
-        } else if (message?.type === 'answer') {
-          let found = false
-          for (const [to, { socket, from }] of offers) {
-            if (from === message.player.id) {
-              log.debug(message, `sending anwser to peer ${to}`)
+      getAuthenticatedPlayer(bearer).then(data => {
+        if (data) {
+          player = data
+          log.info({ player }, 'opening websocket')
+          setPlaying(player.id, true)
+          socketByPlayerId.set(player.id, connection.socket)
+        } else {
+          log.warn('closing playerless websocket')
+          connection.socket.terminate()
+        }
+      })
+
+      connection.socket.on('message', async rawMessage => {
+        try {
+          const message = JSON.parse(rawMessage)
+          log.debug({ message }, 'receiveing message')
+
+          const type = message?.type
+          if (type === 'offer' || type === 'answer') {
+            const playerId = message.to?.id
+            const socket = socketByPlayerId.get(playerId)
+            if (socket) {
+              log.debug(
+                message,
+                `sending ${type} from ${message.from?.id} to ${playerId}`
+              )
               socket.send(JSON.stringify(message))
-              log.info({ to, from }, `handshake complete, cleaning offers`)
-              offers.delete(to)
-              found = true
-              break
+            } else {
+              log.warn(message, `no socket found for player ${playerId}`)
             }
           }
-          if (!found) {
-            log.warn(message, `no offer found for the answer!`)
-          }
-        } else if (message?.type === 'handshake') {
-          const data = offers.get(message.to)
-          if (data) {
-            log.debug(data, `returning signal connecting to ${message.to}`)
-            data.from = message.from
-            connection.socket.send(
-              JSON.stringify({ signal: data.signal, player: data.player })
-            )
-          } else {
-            log.warn(message, `no offer found for player ${message.to}`)
-          }
-        }
-      } catch (error) {
-        log.error(
-          { error, rawMessage },
-          `failed to process incoming message: ${error.message}`
-        )
-      }
-    })
-
-    connection.socket.on('close', () => {
-      for (const [playerId, { socket }] of offers) {
-        if (socket === connection.socket) {
-          log.info(
-            { playerId },
-            `connection to ${playerId} closed, cleaning offers`
+        } catch (error) {
+          log.error(
+            { error, rawMessage },
+            `failed to process incoming message: ${error.message}`
           )
-          offers.delete(playerId)
-          break
         }
-      }
-    })
-  })
+      })
+
+      connection.socket.on('close', () => {
+        if (player) {
+          log.info(
+            { player },
+            `connection with ${player.id} closed, cleaning offers`
+          )
+          setPlaying(player.id, false)
+          socketByPlayerId.delete(player.id)
+        }
+      })
+    }
+  )
 }
 
 export default fp(peerSignal, {

@@ -1,4 +1,4 @@
-import { BehaviorSubject, Subject } from 'rxjs'
+import { BehaviorSubject, Subject, merge } from 'rxjs'
 import { auditTime } from 'rxjs/operators'
 import { connected, lastMessageReceived, send } from './peer-channels'
 import { createCamera, createEngine, createLight, createTable } from '../3d'
@@ -19,7 +19,8 @@ const selectionReset$ = new Subject()
 const dragStart$ = new Subject()
 const drag$ = new Subject()
 const dragEnd$ = new Subject()
-const action$ = new Subject()
+const localAction$ = new Subject()
+const remoteAction$ = new Subject()
 const pointer$ = new Subject()
 const detail = new Subject()
 let initialCamera = null
@@ -38,7 +39,7 @@ const mapping = [
   { observable: dragManager.onDragStartObservable, subject: dragStart$ },
   { observable: dragManager.onDragObservable, subject: drag$ },
   { observable: dragManager.onDragEndObservable, subject: dragEnd$ },
-  { observable: controlManager.onActionObservable, subject: action$ },
+  { observable: controlManager.onActionObservable, subject: localAction$ },
   { observable: controlManager.onPointerObservable, subject: pointer$ },
   { observable: controlManager.onDetailedObservable, subject: detail }
 ]
@@ -52,7 +53,7 @@ export const selectionReset = selectionReset$.asObservable()
 export const dragStart = dragStart$.asObservable()
 export const drag = drag$.asObservable()
 export const dragEnd = dragEnd$.asObservable()
-export const action = action$.asObservable()
+export const action = merge(localAction$, remoteAction$)
 export const pointer = pointer$.asObservable()
 export { detail }
 
@@ -70,7 +71,6 @@ export function initEngine(options) {
   // creates light after table, so table doesn't project shadow
   createLight()
   initialCamera = saveCamera(engine)
-  engine.displayLoadingUI()
 
   engine$.next(engine)
   engine.start()
@@ -81,17 +81,19 @@ export function initEngine(options) {
       controlManager.movePeerPointer(data)
     } else if (data?.meshId) {
       controlManager.apply(data)
+      // expose remote actions to other store and components
+      remoteAction$.next(data)
     }
   })
   // prunes unused peer pointers if needed
-  connected.subscribe(peerIds => {
-    if (peerIds) {
-      controlManager.pruneUnusedPeerPointers(peerIds)
+  connected.subscribe(peers => {
+    if (peers) {
+      controlManager.pruneUnusedPeerPointers(peers.map(({ peerId }) => peerId))
     }
   })
 
-  // sends updates to other players
-  action.subscribe(send)
+  // sends local action to other players
+  localAction$.subscribe(send)
   // only sends pointer once every 200ms
   pointer.pipe(auditTime(200)).subscribe(send)
 }
