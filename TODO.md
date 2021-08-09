@@ -139,13 +139,26 @@ GraphQL subscriptions are good replacement to WebSockets for implementing the We
 However, for scalabily and resilliency reasons, I prefer keeping the signaling server independant from the main server.
 
 For decent in-game performance, textures must be GPU-compressed to KTX2 container format. This will skip CPU uncompressing jpeg/png content before passing it to the GPU.
+Some GPU also require [dimensions to be multiple of 4](https://forum.babylonjs.com/t/non-displayable-image-after-converting-png-with-alpha-to-ktx2-webgl-warning-compressedteximage-unexpected-error-from-driver/16471)
+
+Sizes:
+
+- cards: 372x260
+- tiles: 352x176
+- tokens: 380x184
 
 ```shell
-mogrify -flop -strip apps/web/public/images/splendor/1/*.png
-for file in apps/web/public/images/splendor/1/*.png; do toktx --uastc 4 ${file/.png/.ktx2} $file; done
+folder=apps/web/public/images/splendor/1; \
+size=372x260; \
+for file in $folder/*.png; do \
+  outFile=${file/.png/.out.png}; \
+  convert -flop -strip -resize $size\! $file $outFile; \
+  toktx --uastc 4 ${file/.png/.ktx2} $outFile; \
+  rm $outFile; \
+done
 ```
 
-1. flip image horizontally (front face on the left, back face on the right, mirrored) and strip png ICC profile (ktx2 does not support them)
+1. flip image horizontally (front face on the left, back face on the right, mirrored), strip png ICC profile (ktx2 does not support them) and resize
 2. convert to ktx2
 
 There is no built-in way for the remote side of an WebRTC connection to know that video or audio was disabled.
