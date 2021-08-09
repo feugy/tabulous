@@ -2,7 +2,8 @@ import {
   Color3,
   MeshBuilder,
   Observable,
-  PointerEventTypes
+  PointerEventTypes,
+  Scene
 } from '@babylonjs/core'
 import { default as earcut } from 'earcut'
 import { controlManager } from './control'
@@ -12,6 +13,20 @@ import { isContaining } from '../utils/mesh'
 import { makeLogger } from '../../utils'
 
 const logger = makeLogger('multi-selection')
+
+function handleInput({ mesh, singleTap, button }) {
+  if (singleTap) {
+    controlManager.apply({
+      meshId: mesh.id,
+      fn: button === 0 ? 'flip' : button === 2 ? 'rotate' : null
+    })
+  } else {
+    // delay because double taps will trigger a click that immediately closes the overlay
+    setTimeout(() => {
+      controlManager.askForDetails(mesh.id)
+    }, 100)
+  }
+}
 
 class MultiSelectionManager {
   constructor() {
@@ -30,6 +45,7 @@ class MultiSelectionManager {
     let selectionBox = null
     let selectionHint = null
     let pointerDown = false
+    let delayedTap
 
     scene.onPrePointerObservable.add(info => {
       const { type, event, localPosition } = info
@@ -126,12 +142,7 @@ class MultiSelectionManager {
           })
           this.hovered = mesh
         } else if (this.hovered) {
-          this.onOutObservable.notifyObservers({
-            event,
-            mesh: this.hovered,
-            selection: this.meshes
-          })
-          this.hovered = null
+          this.stopHovering(event)
         }
       } else if (type === PointerEventTypes.POINTERUP) {
         pointerDown = false
@@ -163,6 +174,30 @@ class MultiSelectionManager {
         }
       }
     })
+
+    scene.onPointerObservable.add(({ type, pickInfo, event }) => {
+      const { button, pointerType } = event
+      const mesh = pickInfo?.pickedMesh
+      if (mesh) {
+        if (type === PointerEventTypes.POINTERTAP) {
+          // ignore taps on the hovered mesh to keep menu opened
+          if (this.hovered !== mesh || pointerType === 'mouse') {
+            // delays event in case a double tap occurs
+            delayedTap = setTimeout(
+              () => handleInput({ mesh, singleTap: true, button }),
+              Scene.DoubleClickDelay
+            )
+            if (pointerType !== 'mouse') {
+              // tapping another mesh than the hovered one stops hovering
+              this.stopHovering(event)
+            }
+          }
+        } else if (type === PointerEventTypes.POINTERDOUBLETAP) {
+          clearTimeout(delayedTap)
+          handleInput({ mesh, singleTap: false, button })
+        }
+      }
+    })
   }
 
   resetSelection() {
@@ -187,7 +222,7 @@ class MultiSelectionManager {
     }
   }
 
-  cancel(event) {
+  stopHovering(event) {
     if (this.hovered) {
       this.onOutObservable.notifyObservers({
         event,

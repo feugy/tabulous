@@ -1,19 +1,8 @@
-import { Observable, PointerEventTypes, Scene, Vector3 } from '@babylonjs/core'
+import { Observable, Vector3 } from '@babylonjs/core'
 import { createPeerPointer } from '../peer-pointer'
 
 function getKey(action) {
   return `${action?.meshId}-${action.fn?.toString() || 'pos'}`
-}
-
-function handleInput({ mesh, singleTap, button, manager }) {
-  if (singleTap) {
-    const fn = button === 0 ? 'flip' : button === 2 ? 'rotate' : null
-    if (mesh.metadata?.[fn]) {
-      mesh.metadata?.[fn]()
-    }
-  } else if (mesh.metadata?.images?.front) {
-    manager.onDetailedObservable.notifyObservers({ mesh })
-  }
 }
 
 /**
@@ -47,28 +36,11 @@ class ControlManager {
   }
 
   /**
-   * Gives a scene to the manager so it can listen to pointer events and trigger behaviors.
+   * Gives a scene to the manager. Does nothing for ow
    * @param {object} params - parameters, including:
    * @param {Scene} params.scene - scene attached to.
    */
-  init({ scene }) {
-    let delayedTap
-    scene.onPointerObservable.add(({ type, pickInfo, event: { button } }) => {
-      const mesh = pickInfo?.pickedMesh
-      if (mesh && this.controlables.has(mesh.id)) {
-        if (type === PointerEventTypes.POINTERTAP) {
-          // delays event in case a double tap occurs
-          delayedTap = setTimeout(
-            () => handleInput({ mesh, singleTap: true, button, manager: this }),
-            Scene.DoubleClickDelay
-          )
-        } else if (type === PointerEventTypes.POINTERDOUBLETAP) {
-          clearTimeout(delayedTap)
-          handleInput({ mesh, singleTap: false, button, manager: this })
-        }
-      }
-    })
-  }
+  init() {}
 
   /**
    * Registers a new controllable mesh.
@@ -97,10 +69,9 @@ class ControlManager {
    */
   record(action) {
     const key = getKey(action)
-    if (this.inhibit.has(key) || !this.controlables.has(action?.meshId)) {
-      return
+    if (!this.inhibit.has(key) && this.controlables.has(action?.meshId)) {
+      this.onActionObservable.notifyObservers(action)
     }
-    this.onActionObservable.notifyObservers(action)
   }
 
   /**
@@ -112,27 +83,40 @@ class ControlManager {
   }
 
   /**
-   * Applies an actions to a controlled meshes (`fn` in its metadatas), or changes its position (`fn` is 'pos').
+   * Applies an actions to a controlled meshes (`fn` in its metadatas), or changes its position (action.pos is defined).
    * Does nothing if the target mesh is not controlled.
    * @param {Action} action - applied action
+   * @param {boolean} fromPeer - true to indicate this action comes from a remote peer
    */
-  apply(action) {
+  apply(action, fromPeer = false) {
     const mesh = this.controlables.get(action?.meshId)
-    if (!mesh) {
-      return
-    }
+    if (!mesh) return
+
     const key = getKey(action)
     // inhibits to avoid looping when this mesh will invoke apply()
-    mesh.metadata.fromPeer = true
-    this.inhibit.add(key)
+    mesh.metadata.fromPeer = fromPeer
+    if (fromPeer) {
+      this.inhibit.add(key)
+    }
     if (action.fn) {
-      this.inhibit.add()
       mesh.metadata[action.fn](...(action.args || []))
     } else if (action.pos) {
       mesh.setAbsolutePosition(Vector3.FromArray(action.pos))
     }
     this.inhibit.delete(key)
     mesh.metadata.fromPeer = null
+  }
+
+  /**
+   * Notify observers that user requested details of a given mesh.
+   * Does nothing if the requested mesh is not controlled.
+   * @param {string} meshId - the requested mesh
+   */
+  askForDetails(meshId) {
+    const mesh = this.controlables.get(meshId)
+    if (mesh && mesh.metadata?.images?.front) {
+      this.onDetailedObservable.notifyObservers({ mesh })
+    }
   }
 
   /**

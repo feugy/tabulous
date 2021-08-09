@@ -7,6 +7,7 @@
 
 ## Single player
 
+- touch support for multiple selection, camera rotation, and secondary action (rotate mesh)
 - ust CTRL for changing multiple selection
 - parametrize and serialize UVs
 - ability to shuffle stack on scene loading

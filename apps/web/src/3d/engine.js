@@ -15,6 +15,7 @@ export function createEngine({ canvas, interaction } = {}) {
   engine.enableOfflineSupport = false
   engine.inputElement = interaction
 
+  Scene.DoubleClickDelay = 350
   const scene = new Scene(engine)
 
   dragManager.init({ scene })
@@ -24,11 +25,10 @@ export function createEngine({ canvas, interaction } = {}) {
   engine.start = () => engine.runRenderLoop(scene.render.bind(scene))
 
   function handlePointerOut(event) {
-    multiSelectionManager.cancel(event)
+    multiSelectionManager.stopHovering(event)
     dragManager.cancel(event)
   }
 
-  interaction.addEventListener('pointerleave', handlePointerOut)
   engine.onDisposeObservable.addOnce(() => {
     canvas.removeEventListener('pointerleave', handlePointerOut)
   })

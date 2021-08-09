@@ -114,6 +114,6 @@
   {y}
   open={object !== null}
   items={actions}
-  on:mouseenter={() => (pointerOnMenu = true)}
-  on:mouseleave={handlePointerOutMenu}
+  on:pointerenter={() => (pointerOnMenu = true)}
+  on:pointerleave={handlePointerOutMenu}
 />

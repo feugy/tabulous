@@ -75,7 +75,7 @@
 
 <main>
   <div class="interaction" bind:this={interaction}>
-    <canvas bind:this={canvas} />
+    <canvas touch-action="none" bind:this={canvas} />
     <ActionMenu />
   </div>
   <StackSizeTooltip />

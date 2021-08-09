@@ -80,7 +80,7 @@ export function initEngine(options) {
     if (data?.pointer) {
       controlManager.movePeerPointer(data)
     } else if (data?.meshId) {
-      controlManager.apply(data)
+      controlManager.apply(data, true)
       // expose remote actions to other store and components
       remoteAction$.next(data)
     }
