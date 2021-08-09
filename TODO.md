@@ -1,25 +1,9 @@
 # TODO
 
-## Tests
-
-- Login route
-  - displays login form
-  - can not authenticate without username
-  - authenticates and navigates to home
-- Home route
-  - creates new game
-  - opens join game dialogue
-- JoinGameDialogue component
-  - can not join game without game Id
-  - displays loader and joins game
-  - displays loader and show error
-
 ## Refactor
 
 - UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
 - disable any possible action while animating
-- game screen: move invite button next to home button
-- game screen: only show chat when there are other players
 
 ## Single player
 

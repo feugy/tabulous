@@ -16,20 +16,22 @@
   $: if (hasStream && video) {
     video.srcObject = stream
     hasAudio = stream.getAudioTracks().length > 0
+    muted = !hasAudio
     hasVideo = stream.getVideoTracks().length > 0
+    stopped = !hasVideo
   }
 
   function toggleMic() {
     muted = !muted
     for (const track of stream.getAudioTracks()) {
-      track.enabled = muted
+      track.enabled = !muted
     }
   }
 
   function toggleVideo() {
     stopped = !stopped
     for (const track of stream.getVideoTracks()) {
-      track.enabled = !track.stopped
+      track.enabled = !stopped
     }
   }
 </script>
@@ -78,12 +80,7 @@
 <figure class:hasStream class:noImage>
   {#if hasStream}
     <!-- svelte-ignore a11y-media-has-caption -->
-    <video
-      class:stopped={!video?.enabled}
-      autoplay={true}
-      muted={controllable}
-      bind:this={video}
-    />
+    <video class:stopped autoplay muted={controllable} bind:this={video} />
     <legend>
       {#if controllable}
         {#if hasAudio}<Button

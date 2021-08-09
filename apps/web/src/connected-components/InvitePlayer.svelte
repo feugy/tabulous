@@ -4,11 +4,16 @@
   import { invite } from '../stores'
 
   export let gameId
-  export let open = false
 
   let input
+  let open = false
   let title = $_('titles.invite')
   $: buttonDisabled = !input || !input.trim().length
+
+  function handleClose() {
+    input = ''
+    open = false
+  }
 
   async function handleInvite() {
     if (buttonDisabled) {
@@ -16,12 +21,17 @@
     }
     const playerId = input.trim()
     invite(gameId, playerId)
-    input = ''
-    open = false
+    handleClose()
   }
 </script>
 
-<Dialogue {title} {open} on:close on:open>
+<Button
+  secondary
+  title={$_('tooltips.invite-player')}
+  icon="connect_without_contact"
+  on:click={() => (open = true)}
+/>
+<Dialogue {title} {open} on:close={handleClose}>
   <Input
     placeholder={$_('placeholders.player-id')}
     bind:value={input}

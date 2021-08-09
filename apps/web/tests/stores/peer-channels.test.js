@@ -121,7 +121,7 @@ describe('Peer channels store', () => {
       const answer = { to: player2, from: player1, signal: { type: 'answer' } }
       expect(Peer).not.toHaveBeenCalled()
 
-      webSocket.events.message.mock.calls[0][0]({
+      await webSocket.events.message.mock.calls[0][0]({
         data: JSON.stringify(offer)
       })
       expect(Peer).toHaveBeenCalledWith(
@@ -146,7 +146,7 @@ describe('Peer channels store', () => {
     })
 
     it('handles unknown WebSocket message', async () => {
-      webSocket.events.message.mock.calls[0][0]({
+      await webSocket.events.message.mock.calls[0][0]({
         data: JSON.stringify({
           to: player2,
           from: player1,
@@ -159,7 +159,7 @@ describe('Peer channels store', () => {
     })
 
     it('handles unparseable WebSocket message', async () => {
-      webSocket.events.message.mock.calls[0][0]({
+      await webSocket.events.message.mock.calls[0][0]({
         data: 'unparseable'
       })
       expect(Peer).not.toHaveBeenCalled()
@@ -176,6 +176,7 @@ describe('Peer channels store', () => {
         const answer = { from: player3, signal: { type: 'answer' } }
 
         communication.connectWith(player3)
+        await Promise.resolve()
         expect(Peer).toHaveBeenCalledWith(
           expect.objectContaining({ initiator: true, trickle: false })
         )
@@ -185,7 +186,7 @@ describe('Peer channels store', () => {
           JSON.stringify({ type: 'offer', ...offer })
         )
 
-        webSocket.events.message.mock.calls[0][0]({
+        await webSocket.events.message.mock.calls[0][0]({
           data: JSON.stringify(answer)
         })
         peers[0].events.connect.mock.calls[0][0]()
@@ -214,7 +215,7 @@ describe('Peer channels store', () => {
           JSON.stringify({ type: 'offer', ...offer })
         )
 
-        webSocket.events.message.mock.calls[0][0]({
+        await webSocket.events.message.mock.calls[0][0]({
           data: JSON.stringify(answer)
         })
         expect(get(communication.connected)).toEqual([])
@@ -229,7 +230,7 @@ describe('Peer channels store', () => {
     beforeEach(async () => {
       webSocket.events.open = jest.fn().mockImplementation(handler => handler())
       await communication.openChannels(player1)
-      webSocket.events.message.mock.calls[0][0]({
+      await webSocket.events.message.mock.calls[0][0]({
         data: JSON.stringify({
           to: player1,
           from: player2,
@@ -237,7 +238,7 @@ describe('Peer channels store', () => {
         })
       })
       peers[0].events.connect.mock.calls[0][0]()
-      webSocket.events.message.mock.calls[0][0]({
+      await webSocket.events.message.mock.calls[0][0]({
         data: JSON.stringify({
           to: player1,
           from: player3,

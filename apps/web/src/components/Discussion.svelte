@@ -20,12 +20,6 @@
     dispatch('sendMessage', { text })
     text = ''
   }
-
-  function handleInvite(event) {
-    dispatch('askInvite')
-    // to avoid submitting the whole form
-    event.preventDefault()
-  }
 </script>
 
 <style type="postcss">
@@ -68,12 +62,6 @@
       disabled={text?.trim().length === 0}
       title={$_('tooltips.send-message')}
       icon="send"
-    />
-    <Button
-      secondary
-      title={$_('tooltips.invite-player')}
-      icon="connect_without_contact"
-      on:click={handleInvite}
     />
   </form>
 </div>

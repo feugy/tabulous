@@ -5,7 +5,7 @@
   import {
     ActionMenu,
     FPSViewer,
-    InviteDialogue,
+    InvitePlayer,
     MeshDetails,
     StackSizeTooltip
   } from '../connected-components'
@@ -24,7 +24,6 @@
 
   let canvas
   let interaction
-  let openInvite = false
 
   onMount(async () => {
     initEngine({ canvas, interaction })
@@ -84,6 +83,7 @@
   <MeshDetails />
 </main>
 <nav>
+  <InvitePlayer gameId={params.gameId} />
   <Button
     icon="home"
     title={$_('tooltips.quit-game')}
@@ -97,18 +97,14 @@
     on:click={() => moveCameraTo()}
   />
 </aside>
-<aside class="right">
-  {#each $connected as { player, stream }, i}
-    <PlayerAvatar {player} {stream} controllable={i === 0} />
-  {/each}
-  <Discussion
-    thread={$thread}
-    on:sendMessage={({ detail }) => sendToThread(detail.text)}
-    on:askInvite={() => (openInvite = true)}
-  />
-  <InviteDialogue
-    gameId={params.gameId}
-    open={openInvite}
-    on:close={() => (openInvite = false)}
-  />
-</aside>
+{#if $connected.length}
+  <aside class="right">
+    {#each $connected as { player, stream }, i}
+      <PlayerAvatar {player} {stream} controllable={i === 0} />
+    {/each}
+    <Discussion
+      thread={$thread}
+      on:sendMessage={({ detail }) => sendToThread(detail.text)}
+    />
+  </aside>
+{/if}

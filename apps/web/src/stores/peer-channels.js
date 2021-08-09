@@ -1,3 +1,4 @@
+import 'webrtc-adapter'
 import Peer from 'simple-peer-light'
 import WebSocket from 'reconnecting-websocket'
 import { BehaviorSubject, Subject } from 'rxjs'
@@ -35,7 +36,7 @@ function refreshConnected() {
 }
 
 function unwire(id) {
-  logger.info({ id }, `cleaning connection to ${id}`)
+  logger.debug({ id }, `cleaning connection to ${id}`)
   channels.get(id)?.peer?.destroy()
   channels.delete(id)
   refreshConnected()
@@ -77,17 +78,6 @@ unorderedMessages$
   })
 
 async function createPeer({ signal, from, to }) {
-  if (navigator.mediaDevices && !current.stream) {
-    try {
-      current.stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true
-      })
-    } catch (err) {
-      console.error(`Failed to access media devices: ${err.message}`)
-    }
-  }
-
   return new Promise(resolve => {
     const peer = new Peer({
       initiator: signal === undefined,
@@ -109,6 +99,7 @@ async function createPeer({ signal, from, to }) {
     }
 
     peer.on('stream', stream => {
+      logger.debug({ peer }, `receiving stream from ${to.id}`)
       channels.get(to.id).stream = stream
       refreshConnected()
     })
@@ -166,6 +157,21 @@ async function createPeer({ signal, from, to }) {
   })
 }
 
+async function attachLocalMedia() {
+  if (!current || current.stream) return
+  logger.info(`attaching local media to current peer`)
+  if (navigator.mediaDevices) {
+    try {
+      current.stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true
+      })
+    } catch (error) {
+      logger.warn({ error }, `Failed to access media devices: ${error.message}`)
+    }
+  }
+}
+
 /**
  * Emits last data sent to another player
  * @type {Observable<object>}
@@ -211,18 +217,26 @@ export async function openChannels(player) {
   )
   return new Promise((resolve, reject) => {
     ws.addEventListener('open', function () {
-      logger.info({ player }, 'WebSocket connected')
+      logger.debug({ player }, 'WebSocket connected')
       socket = ws
-      socket.addEventListener('message', ({ data: rawData }) => {
+      socket.addEventListener('message', async ({ data: rawData }) => {
         try {
           const data = JSON.parse(rawData)
           const type = data?.signal?.type
           if (type === 'offer') {
-            logger.info(data, `receiving offer from server, create peer`)
-            const { from, to } = data
-            createPeer({ ...data, from: to, to: from })
+            logger.debug(data, `receiving offer from server, create peer`)
+            const { from, to, signal } = data
+            const channel = channels.get(from?.id)
+            if (channel) {
+              // existing peer negociation
+              channel.peer.signal(signal)
+            } else {
+              // new peer joining
+              await attachLocalMedia()
+              createPeer({ ...data, from: to, to: from })
+            }
           } else if (type === 'answer') {
-            logger.info(
+            logger.debug(
               data,
               `receiving answer from server, completing connection`
             )
@@ -252,7 +266,7 @@ export async function openChannels(player) {
 }
 
 /**
- * Connects with another player.
+ * Connects with another player, asking to attach media if necessary.
  * @async
  * @param {object} player - player to connect with
  * @returns {Peer} - connection, in case of success
@@ -264,11 +278,13 @@ export async function connectWith(player) {
     { to: player, from: current.player },
     `establishing connection with peer ${player.id}`
   )
+  await attachLocalMedia()
   return await createPeer({ to: player, from: current.player })
 }
 
 /**
  * Closes all communication channels.
+ * Also stops local media if relevant.
  */
 export function closeChannels() {
   // copies all keys as we're about to alter the collection
@@ -277,6 +293,11 @@ export function closeChannels() {
   }
   socket?.close()
   socket = null
+  if (current?.stream) {
+    for (const track of current.stream.getTracks()) {
+      track.stop()
+    }
+  }
   current = null
 }
 
@@ -296,7 +317,14 @@ export function send(data, playerId = null) {
     : channels
   for (const [playerId, { peer }] of destination) {
     logger.trace({ data, peer }, `sending data to ${playerId}`)
-    peer.send(JSON.stringify({ ...data, messageId }))
+    try {
+      peer.send(JSON.stringify({ ...data, messageId }))
+    } catch (error) {
+      logger.warn(
+        { error, peer, data },
+        `failed to send data to peer ${playerId}: ${error.message}`
+      )
+    }
   }
   messageId++
 }
