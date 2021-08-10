@@ -1,5 +1,4 @@
 <script>
-  import { onMount } from 'svelte'
   import Router, { push, replace } from 'svelte-spa-router'
   import { wrap } from 'svelte-spa-router/wrap'
   import Login from './routes/Login.svelte'
@@ -17,14 +16,13 @@
     '/*': Login
   }
 
-  onMount(() => recoverSession())
-
   $: if ($currentPlayer === null) {
     push('/login')
   }
 
-  function isAuthenticated() {
-    return Boolean($currentPlayer)
+  async function isAuthenticated() {
+    if ($currentPlayer) return true
+    return Boolean(await recoverSession())
   }
 
   function handleUnauthenticated({ detail }) {

@@ -1,5 +1,13 @@
 # TODO
 
+## Partie avec Célia
+
+1. menu remains while zooming in or out
+1. dropping sometimes trigger flip
+1. stack indicator can not work in touch
+1. we could show when there's only one mesh
+1. menu prevents clicking
+
 ## Refactor
 
 - server logging

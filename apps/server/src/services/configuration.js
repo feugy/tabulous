@@ -69,15 +69,16 @@ export function loadConfiguration() {
   const configuration = {
     isProduction,
     serverUrl: {
-      host: HOST ?? isProduction ? '0.0.0.0' : undefined,
+      host: HOST ?? (isProduction ? '0.0.0.0' : undefined),
       port: PORT ? Number(PORT) : isProduction ? 443 : 3001
     },
-    https: isProduction
-      ? {
-          key: HTTPS_KEY ?? 'keys/privkey.pem',
-          cert: HTTPS_CERT ?? 'keys/cert.pem'
-        }
-      : undefined,
+    https:
+      (HTTPS_KEY && HTTPS_CERT) || isProduction
+        ? {
+            key: HTTPS_KEY ?? 'keys/privkey.pem',
+            cert: HTTPS_CERT ?? 'keys/cert.pem'
+          }
+        : null,
     logger: { level: LOG_LEVEL ?? 'debug' },
     plugins: {
       graphql: { graphiql: isProduction ? null : 'playground' },
@@ -87,7 +88,7 @@ export function loadConfiguration() {
     }
   }
   if (!validate(configuration)) {
-    console.log(
+    console.warn(
       `Configuration is invalid: please check your environment variables.\n`,
       validate.errors
     )
