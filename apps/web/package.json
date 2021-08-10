@@ -4,7 +4,7 @@
   "description": "Tabulous web application",
   "scripts": {
     "build": "vite build",
-    "serve": "vite preview",
+    "preview": "vite preview",
     "start": "vite --https",
     "test": "jest --coverage --colors",
     "test:dev": "jest --watch"

@@ -1,6 +1,7 @@
-.snowpack/
-dist/
+certbot/
 coverage/
+dist/
+keys/
 node_modules/
 scans/
 .eslintcache

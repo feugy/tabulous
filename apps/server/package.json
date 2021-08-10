@@ -4,19 +4,22 @@
   "description": "Tabulous web server",
   "type": "module",
   "scripts": {
-    "start": "nodemon src/server.js | pino-pretty -c -t"
+    "start": "NODE_ENV=production node src/server.js",
+    "start:dev": "nodemon src/server.js | pino-pretty -c -t"
   },
   "dependencies": {
     "@graphql-tools/load": "^6.2.8",
     "@graphql-tools/graphql-file-loader": "^6.2.7",
     "deepmerge": "^4.2.2",
     "fastify": "^3.15.0",
-    "fastify-cors": "^6.0.0",
     "fastify-plugin": "^3.0.0",
+    "fastify-static": "^4.2.3",
     "fastify-websocket": "^3.1.0",
     "mercurius": "^7.5.0",
-    "nodemon": "^2.0.12",
     "pino-pretty": "^4.7.1",
     "rxjs": "^7.0.0"
+  },
+  "devDpendencies": {
+    "nodemon": "^2.0.12"
   }
 }

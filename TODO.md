@@ -2,6 +2,8 @@
 
 ## Refactor
 
+- server async configuration
+- server logging
 - UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
 - disable any possible action while animating
 
@@ -116,6 +118,50 @@ The host player is in charge of:
 1. storing the game descriptor locally and/or on server
 
 When the host player disconnects, a new host is elected: the first connected player in the game player list becomes host
+
+## HTTPs certificate
+
+Follow official Let's Encrypt [instructions](https://certbot.eff.org/lets-encrypt/ubuntufocal-other) for Ubuntu.
+
+1. run the app locally on port 80
+
+   ```shell
+   sudo NODE_ENV=production node apps/server/src/server.js TODO port
+   ```
+
+1. install certbot and certbot-dns-ovh plugin using snapd
+
+   ```shell
+   sudo snap install --classic certbot
+   sudo ln -s /snap/bin/certbot /usr/bin/certbot
+   sudo snap set certbot trust-plugin-with-root=ok
+   sudo snap install certbot-dns-ovh
+   ```
+
+1. get 1h credentials from [OVH DNS](https://eu.api.ovh.com/createToken/), using your OVH ID and password, naming the script 'certbot' and allowing GET+PUT+POST+DELETE on `/domain/zone/*`
+
+1. save the credentials in an `certbot/ovh.ini` file:
+
+   ```shell
+   dns_ovh_endpoint = ovh-eu
+   dns_ovh_application_key = AkG1LEDihK0AEP9g
+   dns_ovh_application_secret = k1oYVImXc3YQYxwA3DTUc2Ch6oI7stXN
+   dns_ovh_consumer_key = KVw37RY59KXOrinnLEO1QIMSC7Dec0ST
+   ```
+
+1. run the certbot command
+
+   ```shell
+   certbot certonly --dns-ovh --dns-ovh-credentials certbot/ovh.ini -d tabulous.fr -d www.tabulous.fr --work-dir certbot --logs-dir certbot --config-dir certbot
+   ```
+
+1. copy relevant files to run it locally
+   ```shell
+   cp certbot/live/tabulous.fr/cert.pem keys/
+   cp certbot/live/tabulous.fr/privkey.pem keys/
+   ```
+
+Here there are, copied from `certbot/live/tabulous.fr/` to `keys/\` folder.
 
 # Various learnings
 
