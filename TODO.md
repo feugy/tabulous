@@ -2,14 +2,24 @@
 
 ## Refactor
 
-- server async configuration
 - server logging
+- moves images to server
 - UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
 - disable any possible action while animating
 
 ## Single player
 
-- touch support for multiple selection, camera rotation, and secondary action (rotate mesh)
+- possible different interaction
+  - tap table to pan camera
+  - molette/pinch table to zoom camera
+  - drag table for multiple selection
+  - drag mesh/selection for movement
+  - hover/tap mesh/selection for menu
+  - left click mesh/selection for primary action (flip)
+  - right click mesh/selection for secondary action (rotate)
+  - middle click mesh/selection for ternary action (rotate)
+  - double click/tap mesh to view
+  - ?? rotate camera
 - ust CTRL for changing multiple selection
 - parametrize and serialize UVs
 - ability to shuffle stack on scene loading
@@ -126,7 +136,7 @@ Follow official Let's Encrypt [instructions](https://certbot.eff.org/lets-encryp
 1. run the app locally on port 80
 
    ```shell
-   sudo NODE_ENV=production node apps/server/src/server.js TODO port
+   sudo NODE_ENV=production PORT=80 node apps/server
    ```
 
 1. install certbot and certbot-dns-ovh plugin using snapd

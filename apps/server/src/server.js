@@ -1,32 +1,21 @@
-import { readFileSync } from 'fs'
+import { readFile } from 'fs/promises'
 import fastify from 'fastify'
 
-const { NODE_ENV } = process.env
-
-const isProduction = /^\w*production\w*$/i.test(NODE_ENV)
-
-function configure() {
-  const url = isProduction ? { port: 443, host: '0.0.0.0' } : 3001
+export async function startServer(config) {
   const app = fastify({
-    logger: { level: 'debug' },
-    https: isProduction
+    logger: config.logger,
+    https: config.https
       ? {
-          key: readFileSync('keys/privkey.pem'),
-          cert: readFileSync('keys/cert.pem')
+          key: await readFile(config.https.key),
+          cert: await readFile(config.https.cert)
         }
       : undefined
   })
 
   app.register(import('fastify-websocket'))
-  app.register(import('./plugins/peer-signal.js'))
-  app.register(import('./plugins/graphql.js'))
-  app.register(import('./plugins/sse.js'))
-  app.register(import('./plugins/client.js'))
-  return { app, url }
+  app.register(import('./plugins/peer-signal.js'), config.plugins.peerSignal)
+  app.register(import('./plugins/graphql.js'), config.plugins.graphql)
+  app.register(import('./plugins/sse.js'), config.plugins.sse)
+  app.register(import('./plugins/static.js'), config.plugins.static)
+  return app.listen(config.serverUrl)
 }
-
-async function start({ app, url }) {
-  return app.listen(url)
-}
-
-start(configure())

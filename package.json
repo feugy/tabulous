@@ -16,13 +16,12 @@
   "scripts": {
     "build": "run-p -ncs build:**",
     "build:web": "npm run build --workspace apps/web",
-    "dev": "run-p -ncs dev:**",
-    "dev:server": "npm run start:dev --workspace apps/server",
-    "dev:web": "npm start --workspace apps/web",
     "format": "prettier --write .",
     "lint": "eslint .",
     "prepare": "husky install",
-    "start": "npm start --workspace apps/server",
+    "start": "run-p -ncs start:**",
+    "start:server": "npm start --workspace apps/server",
+    "start:web": "npm start --workspace apps/web",
     "test": "run-s -ncs test:**",
     "test:web": "npm t --workspace apps/web"
   },
