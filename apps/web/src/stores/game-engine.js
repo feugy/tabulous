@@ -59,6 +59,7 @@ export { detail }
 
 export function initEngine(options) {
   const engine = createEngine(options)
+  engine.displayLoadingUI()
 
   engine.onEndFrameObservable.add(() => fps$.next(engine.getFps().toFixed()))
   // exposes Babylon observables as RX subjects

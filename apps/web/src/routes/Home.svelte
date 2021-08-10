@@ -14,7 +14,7 @@
 
 <style type="postcss">
   h1 {
-    @apply text-3xl my-2;
+    @apply text-3xl py-4;
   }
 
   .action {

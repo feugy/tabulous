@@ -24,7 +24,7 @@
   }
 
   function isAuthenticated() {
-    return $currentPlayer !== null
+    return Boolean($currentPlayer)
   }
 
   function handleUnauthenticated({ detail }) {

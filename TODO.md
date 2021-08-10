@@ -24,7 +24,9 @@
 ## Multi player
 
 - persistant chat
-- search by name and id
+- invite dialogue must take focus and invite on enter key
+- invite players by name and id
+- search players by name
 - indicates when remote stream is muted/stopped
 
 # Known issues

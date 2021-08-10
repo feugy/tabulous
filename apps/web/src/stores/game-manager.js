@@ -110,7 +110,7 @@ export async function loadGame(gameId, engine) {
   logger.info({ gameId }, `loading game ${gameId} into engine`)
   await openChannels(player)
 
-  let game = await runQuery(graphQL.loadGame, { gameId })
+  let game = await runQuery(graphQL.loadGame, { gameId }, false)
 
   if (game.players.every(({ id, playing }) => id === player.id || !playing)) {
     // is the only playing player: take the host role

@@ -287,6 +287,7 @@ export async function connectWith(player) {
  * Also stops local media if relevant.
  */
 export function closeChannels() {
+  logger.info(`closing peer communication`)
   // copies all keys as we're about to alter the collection
   for (const id of [...channels.keys()]) {
     unwire(id)

@@ -5,12 +5,12 @@
 
 <style type="postcss">
   header {
-    @apply w-full;
+    @apply w-full pt-4;
     background: theme('colors.secondary.light');
   }
 
   div {
-    @apply relative px-8 py-4 lg:w-3/4 lg:mx-auto;
+    @apply relative px-8 lg:w-3/4 lg:mx-auto;
   }
   nav {
     @apply flex justify-end lg:w-3/4 lg:mx-auto;
