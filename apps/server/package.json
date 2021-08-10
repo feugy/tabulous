@@ -4,7 +4,7 @@
   "description": "Tabulous web server",
   "type": "module",
   "scripts": {
-    "start": "node src/server.js | pino-pretty -c -t"
+    "start": "nodemon src/server.js | pino-pretty -c -t"
   },
   "dependencies": {
     "@graphql-tools/load": "^6.2.8",
@@ -15,6 +15,7 @@
     "fastify-plugin": "^3.0.0",
     "fastify-websocket": "^3.1.0",
     "mercurius": "^7.5.0",
+    "nodemon": "^2.0.12",
     "pino-pretty": "^4.7.1",
     "rxjs": "^7.0.0"
   }

@@ -11,4 +11,6 @@ export const schema = loadSchemaSync(['./players.graphql', './games.graphql'], {
   loaders: [new GraphQLFileLoader()]
 })
 
-export const resolvers = merge.all([gameResolvers, playerResolvers])
+const { loaders, ...resolvers } = merge.all([gameResolvers, playerResolvers])
+
+export { resolvers, loaders }

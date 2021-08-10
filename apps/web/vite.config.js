@@ -19,5 +19,16 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['@urql/svelte']
   },
-  server: { open: true }
+  server: {
+    open: true,
+    proxy: {
+      '/ws': {
+        target: 'http://localhost:3001',
+        ws: true
+      },
+      '^/(graphql|sse)/?': {
+        target: 'http://localhost:3001'
+      }
+    }
+  }
 })

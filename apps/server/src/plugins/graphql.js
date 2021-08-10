@@ -1,6 +1,6 @@
 import mercurius from 'mercurius'
-import { schema, resolvers } from '../graphql/index.js'
-import { getPlayerById } from '../services/index.js'
+import { schema, resolvers, loaders } from '../graphql/index.js'
+import { getAuthenticatedPlayer } from './utils.js'
 
 /**
  * Registers Tabulous graphql endpoints (powered by mercurius) into the provided fastify application.
@@ -11,16 +11,11 @@ async function registerGraphQL(app, opts) {
   app.register(mercurius, {
     schema,
     resolvers,
+    loaders,
     graphiql: 'playground',
-    context: async request => {
-      const token = request.headers.authorization
-      let player = null
-      if (token && token.startsWith('Bearer ')) {
-        const id = token.replace('Bearer ', '')
-        player = await getPlayerById(id)
-      }
-      return { player }
-    },
+    context: async request => ({
+      player: await getAuthenticatedPlayer(request.headers.authorization)
+    }),
     ...opts
   })
 }

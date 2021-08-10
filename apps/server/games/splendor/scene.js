@@ -2,7 +2,12 @@ export default {
   cards: [
     {
       id: 'card-diamond-1-1',
-      texture: 'images/splendor/1/diamond-1.png',
+      texture: 'images/splendor/1/diamond-1.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-diamond-1-1.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3,
       stack: [
@@ -49,241 +54,441 @@ export default {
     },
     {
       id: 'card-diamond-1-2',
-      texture: 'images/splendor/1/diamond-2.png',
+      texture: 'images/splendor/1/diamond-2.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-diamond-1-2.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-diamond-1-3',
-      texture: 'images/splendor/1/diamond-3.png',
+      texture: 'images/splendor/1/diamond-3.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-diamond-1-3.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-diamond-1-4',
-      texture: 'images/splendor/1/diamond-4.png',
+      texture: 'images/splendor/1/diamond-4.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-diamond-1-4.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-diamond-1-5',
-      texture: 'images/splendor/1/diamond-5.png',
+      texture: 'images/splendor/1/diamond-5.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-diamond-1-5.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-diamond-1-6',
-      texture: 'images/splendor/1/diamond-6.png',
+      texture: 'images/splendor/1/diamond-6.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-diamond-1-6.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-diamond-1-7',
-      texture: 'images/splendor/1/diamond-7.png',
+      texture: 'images/splendor/1/diamond-7.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-diamond-1-7.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-diamond-1-8',
-      texture: 'images/splendor/1/diamond-8.png',
+      texture: 'images/splendor/1/diamond-8.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-diamond-1-8.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-emerald-1-1',
-      texture: 'images/splendor/1/emerald-1.png',
+      texture: 'images/splendor/1/emerald-1.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-emerald-1-1.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-emerald-1-2',
-      texture: 'images/splendor/1/emerald-2.png',
+      texture: 'images/splendor/1/emerald-2.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-emerald-1-2.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-emerald-1-3',
-      texture: 'images/splendor/1/emerald-3.png',
+      texture: 'images/splendor/1/emerald-3.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-emerald-1-3.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-emerald-1-4',
-      texture: 'images/splendor/1/emerald-4.png',
+      texture: 'images/splendor/1/emerald-4.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-emerald-1-4.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-emerald-1-5',
-      texture: 'images/splendor/1/emerald-5.png',
+      texture: 'images/splendor/1/emerald-5.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-emerald-1-5.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-emerald-1-6',
-      texture: 'images/splendor/1/emerald-6.png',
+      texture: 'images/splendor/1/emerald-6.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-emerald-1-6.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-emerald-1-7',
-      texture: 'images/splendor/1/emerald-7.png',
+      texture: 'images/splendor/1/emerald-7.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-emerald-1-7.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-emerald-1-8',
-      texture: 'images/splendor/1/emerald-8.png',
+      texture: 'images/splendor/1/emerald-8.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-emerald-1-8.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-quartz-1-1',
-      texture: 'images/splendor/1/quartz-1.png',
+      texture: 'images/splendor/1/quartz-1.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-quartz-1-1.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-quartz-1-2',
-      texture: 'images/splendor/1/quartz-2.png',
+      texture: 'images/splendor/1/quartz-2.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-quartz-1-2.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-quartz-1-3',
-      texture: 'images/splendor/1/quartz-3.png',
+      texture: 'images/splendor/1/quartz-3.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-quartz-1-3.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-quartz-1-4',
-      texture: 'images/splendor/1/quartz-4.png',
+      texture: 'images/splendor/1/quartz-4.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-quartz-1-4.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-quartz-1-5',
-      texture: 'images/splendor/1/quartz-5.png',
+      texture: 'images/splendor/1/quartz-5.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-quartz-1-5.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-quartz-1-6',
-      texture: 'images/splendor/1/quartz-6.png',
+      texture: 'images/splendor/1/quartz-6.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-quartz-1-6.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-quartz-1-7',
-      texture: 'images/splendor/1/quartz-7.png',
+      texture: 'images/splendor/1/quartz-7.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-quartz-1-7.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-quartz-1-8',
-      texture: 'images/splendor/1/quartz-8.png',
+      texture: 'images/splendor/1/quartz-8.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-quartz-1-8.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-ruby-1-1',
-      texture: 'images/splendor/1/ruby-1.png',
+      texture: 'images/splendor/1/ruby-1.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-ruby-1-1.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-ruby-1-2',
-      texture: 'images/splendor/1/ruby-2.png',
+      texture: 'images/splendor/1/ruby-2.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-ruby-1-2.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-ruby-1-3',
-      texture: 'images/splendor/1/ruby-3.png',
+      texture: 'images/splendor/1/ruby-3.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-ruby-1-3.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-ruby-1-4',
-      texture: 'images/splendor/1/ruby-4.png',
+      texture: 'images/splendor/1/ruby-4.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-ruby-1-4.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-ruby-1-5',
-      texture: 'images/splendor/1/ruby-5.png',
+      texture: 'images/splendor/1/ruby-5.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-ruby-1-5.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-ruby-1-6',
-      texture: 'images/splendor/1/ruby-6.png',
+      texture: 'images/splendor/1/ruby-6.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-ruby-1-6.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-ruby-1-7',
-      texture: 'images/splendor/1/ruby-7.png',
+      texture: 'images/splendor/1/ruby-7.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-ruby-1-7.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-ruby-1-8',
-      texture: 'images/splendor/1/ruby-8.png',
+      texture: 'images/splendor/1/ruby-8.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-ruby-1-8.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-sapphire-1-1',
-      texture: 'images/splendor/1/sapphire-1.png',
+      texture: 'images/splendor/1/sapphire-1.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-sapphire-1-1.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-sapphire-1-2',
-      texture: 'images/splendor/1/sapphire-2.png',
+      texture: 'images/splendor/1/sapphire-2.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-sapphire-1-2.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-sapphire-1-3',
-      texture: 'images/splendor/1/sapphire-3.png',
+      texture: 'images/splendor/1/sapphire-3.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-sapphire-1-3.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-sapphire-1-4',
-      texture: 'images/splendor/1/sapphire-4.png',
+      texture: 'images/splendor/1/sapphire-4.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-sapphire-1-4.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-sapphire-1-5',
-      texture: 'images/splendor/1/sapphire-5.png',
+      texture: 'images/splendor/1/sapphire-5.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-sapphire-1-5.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-sapphire-1-6',
-      texture: 'images/splendor/1/sapphire-6.png',
+      texture: 'images/splendor/1/sapphire-6.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-sapphire-1-6.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-sapphire-1-7',
-      texture: 'images/splendor/1/sapphire-7.png',
+      texture: 'images/splendor/1/sapphire-7.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-sapphire-1-7.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-sapphire-1-8',
-      texture: 'images/splendor/1/sapphire-8.png',
+      texture: 'images/splendor/1/sapphire-8.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-sapphire-1-8.png',
+        back: 'images/splendor/HR/card-1-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: -3
     },
     {
       id: 'card-ruby-2-1',
-      texture: 'images/splendor/2/ruby-1.png',
+      texture: 'images/splendor/2/ruby-1.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-ruby-2-1.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2,
       stack: [
@@ -320,181 +525,331 @@ export default {
     },
     {
       id: 'card-ruby-2-2',
-      texture: 'images/splendor/2/ruby-2.png',
+      texture: 'images/splendor/2/ruby-2.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-ruby-2-2.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-ruby-2-3',
-      texture: 'images/splendor/2/ruby-3.png',
+      texture: 'images/splendor/2/ruby-3.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-ruby-2-3.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-ruby-2-4',
-      texture: 'images/splendor/2/ruby-4.png',
+      texture: 'images/splendor/2/ruby-4.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-ruby-2-4.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-ruby-2-5',
-      texture: 'images/splendor/2/ruby-5.png',
+      texture: 'images/splendor/2/ruby-5.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-ruby-2-5.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-ruby-2-6',
-      texture: 'images/splendor/2/ruby-6.png',
+      texture: 'images/splendor/2/ruby-6.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-ruby-2-6.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-sapphire-2-1',
-      texture: 'images/splendor/2/sapphire-1.png',
+      texture: 'images/splendor/2/sapphire-1.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-sapphire-2-1.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-sapphire-2-2',
-      texture: 'images/splendor/2/sapphire-2.png',
+      texture: 'images/splendor/2/sapphire-2.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-sapphire-2-2.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-sapphire-2-3',
-      texture: 'images/splendor/2/sapphire-3.png',
+      texture: 'images/splendor/2/sapphire-3.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-sapphire-2-3.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-sapphire-2-4',
-      texture: 'images/splendor/2/sapphire-4.png',
+      texture: 'images/splendor/2/sapphire-4.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-sapphire-2-4.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-sapphire-2-5',
-      texture: 'images/splendor/2/sapphire-5.png',
+      texture: 'images/splendor/2/sapphire-5.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-sapphire-2-5.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-sapphire-2-6',
-      texture: 'images/splendor/2/sapphire-6.png',
+      texture: 'images/splendor/2/sapphire-6.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-sapphire-2-6.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-emerald-2-1',
-      texture: 'images/splendor/2/emerald-1.png',
+      texture: 'images/splendor/2/emerald-1.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-emerald-2-1.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-emerald-2-2',
-      texture: 'images/splendor/2/emerald-2.png',
+      texture: 'images/splendor/2/emerald-2.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-emerald-2-2.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-emerald-2-3',
-      texture: 'images/splendor/2/emerald-3.png',
+      texture: 'images/splendor/2/emerald-3.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-emerald-2-3.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-emerald-2-4',
-      texture: 'images/splendor/2/emerald-4.png',
+      texture: 'images/splendor/2/emerald-4.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-emerald-2-4.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-emerald-2-5',
-      texture: 'images/splendor/2/emerald-5.png',
+      texture: 'images/splendor/2/emerald-5.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-emerald-2-5.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-emerald-2-6',
-      texture: 'images/splendor/2/emerald-6.png',
+      texture: 'images/splendor/2/emerald-6.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-emerald-2-6.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-diamond-2-1',
-      texture: 'images/splendor/2/diamond-1.png',
+      texture: 'images/splendor/2/diamond-1.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-diamond-2-1.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-diamond-2-2',
-      texture: 'images/splendor/2/diamond-2.png',
+      texture: 'images/splendor/2/diamond-2.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-diamond-2-2.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-diamond-2-3',
-      texture: 'images/splendor/2/diamond-3.png',
+      texture: 'images/splendor/2/diamond-3.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-diamond-2-3.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-diamond-2-4',
-      texture: 'images/splendor/2/diamond-4.png',
+      texture: 'images/splendor/2/diamond-4.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-diamond-2-4.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-diamond-2-5',
-      texture: 'images/splendor/2/diamond-5.png',
+      texture: 'images/splendor/2/diamond-5.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-diamond-2-5.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-diamond-2-6',
-      texture: 'images/splendor/2/diamond-6.png',
+      texture: 'images/splendor/2/diamond-6.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-diamond-2-6.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-quartz-2-1',
-      texture: 'images/splendor/2/quartz-1.png',
+      texture: 'images/splendor/2/quartz-1.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-quartz-2-1.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-quartz-2-2',
-      texture: 'images/splendor/2/quartz-2.png',
+      texture: 'images/splendor/2/quartz-2.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-quartz-2-2.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-quartz-2-3',
-      texture: 'images/splendor/2/quartz-3.png',
+      texture: 'images/splendor/2/quartz-3.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-quartz-2-3.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-quartz-2-4',
-      texture: 'images/splendor/2/quartz-4.png',
+      texture: 'images/splendor/2/quartz-4.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-quartz-2-4.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-quartz-2-5',
-      texture: 'images/splendor/2/quartz-5.png',
+      texture: 'images/splendor/2/quartz-5.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-quartz-2-5.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-quartz-2-6',
-      texture: 'images/splendor/2/quartz-6.png',
+      texture: 'images/splendor/2/quartz-6.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-quartz-2-6.png',
+        back: 'images/splendor/HR/card-2-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 2
     },
     {
       id: 'card-diamond-3-1',
-      texture: 'images/splendor/3/diamond-1.png',
+      texture: 'images/splendor/3/diamond-1.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-diamond-3-1.png',
+        back: 'images/splendor/HR/card-3-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 7,
       stack: [
@@ -521,116 +876,210 @@ export default {
     },
     {
       id: 'card-diamond-3-2',
-      texture: 'images/splendor/3/diamond-2.png',
+      texture: 'images/splendor/3/diamond-2.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-diamond-3-2.png',
+        back: 'images/splendor/HR/card-3-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 7
     },
     {
       id: 'card-diamond-3-3',
-      texture: 'images/splendor/3/diamond-3.png',
+      texture: 'images/splendor/3/diamond-3.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-diamond-3-3.png',
+        back: 'images/splendor/HR/card-3-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 7
     },
     {
       id: 'card-diamond-3-4',
-      texture: 'images/splendor/3/diamond-4.png',
+      texture: 'images/splendor/3/diamond-4.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-diamond-3-4.png',
+        back: 'images/splendor/HR/card-3-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 7
     },
     {
       id: 'card-ruby-3-1',
-      texture: 'images/splendor/3/ruby-1.png',
+      texture: 'images/splendor/3/ruby-1.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-ruby-3-1.png',
+        back: 'images/splendor/HR/card-3-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 7
     },
     {
       id: 'card-ruby-3-2',
-      texture: 'images/splendor/3/ruby-2.png',
+      texture: 'images/splendor/3/ruby-2.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-ruby-3-2.png',
+        back: 'images/splendor/HR/card-3-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 7
     },
     {
       id: 'card-ruby-3-3',
-      texture: 'images/splendor/3/ruby-3.png',
-
+      texture: 'images/splendor/3/ruby-3.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-ruby-3-3.png',
+        back: 'images/splendor/HR/card-3-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 7
     },
     {
       id: 'card-ruby-3-4',
-      texture: 'images/splendor/3/ruby-4.png',
+      texture: 'images/splendor/3/ruby-4.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-ruby-3-4.png',
+        back: 'images/splendor/HR/card-3-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 7
     },
     {
       id: 'card-sapphire-3-1',
-      texture: 'images/splendor/3/sapphire-1.png',
+      texture: 'images/splendor/3/sapphire-1.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-sapphire-3-1.png',
+        back: 'images/splendor/HR/card-3-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 7
     },
     {
       id: 'card-sapphire-3-2',
-      texture: 'images/splendor/3/sapphire-2.png',
+      texture: 'images/splendor/3/sapphire-2.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-sapphire-3-2.png',
+        back: 'images/splendor/HR/card-3-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 7
     },
     {
       id: 'card-sapphire-3-3',
-      texture: 'images/splendor/3/sapphire-3.png',
+      texture: 'images/splendor/3/sapphire-3.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-sapphire-3-3.png',
+        back: 'images/splendor/HR/card-3-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 7
     },
     {
       id: 'card-sapphire-3-4',
-      texture: 'images/splendor/3/sapphire-4.png',
+      texture: 'images/splendor/3/sapphire-4.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-sapphire-3-4.png',
+        back: 'images/splendor/HR/card-3-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 7
     },
     {
       id: 'card-emerald-3-1',
-      texture: 'images/splendor/3/emerald-1.png',
+      texture: 'images/splendor/3/emerald-1.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-emerald-3-1.png',
+        back: 'images/splendor/HR/card-3-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 7
     },
     {
       id: 'card-emerald-3-2',
-      texture: 'images/splendor/3/emerald-2.png',
+      texture: 'images/splendor/3/emerald-2.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-emerald-3-2.png',
+        back: 'images/splendor/HR/card-3-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 7
     },
     {
       id: 'card-emerald-3-3',
-      texture: 'images/splendor/3/emerald-3.png',
+      texture: 'images/splendor/3/emerald-3.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-emerald-3-3.png',
+        back: 'images/splendor/HR/card-3-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 7
     },
     {
       id: 'card-emerald-3-4',
-      texture: 'images/splendor/3/emerald-4.png',
+      texture: 'images/splendor/3/emerald-4.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-emerald-3-4.png',
+        back: 'images/splendor/HR/card-3-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 7
     },
     {
       id: 'card-quartz-3-1',
-      texture: 'images/splendor/3/quartz-1.png',
+      texture: 'images/splendor/3/quartz-1.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-quartz-3-1.png',
+        back: 'images/splendor/HR/card-3-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 7
     },
     {
       id: 'card-quartz-3-2',
-      texture: 'images/splendor/3/quartz-2.png',
+      texture: 'images/splendor/3/quartz-2.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-quartz-3-2.png',
+        back: 'images/splendor/HR/card-3-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 7
     },
     {
       id: 'card-quartz-3-3',
-      texture: 'images/splendor/3/quartz-3.png',
+      texture: 'images/splendor/3/quartz-3.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-quartz-3-3.png',
+        back: 'images/splendor/HR/card-3-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 7
     },
     {
       id: 'card-quartz-3-4',
-      texture: 'images/splendor/3/quartz-4.png',
+      texture: 'images/splendor/3/quartz-4.ktx2',
+      images: {
+        front: 'images/splendor/HR/card-quartz-3-4.png',
+        back: 'images/splendor/HR/card-3-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 7
     }
@@ -638,7 +1087,11 @@ export default {
   roundTokens: [
     {
       id: 'token-gold-1',
-      texture: 'images/splendor/tokens/gold.png',
+      texture: 'images/splendor/tokens/gold.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-gold.png',
+        back: 'images/splendor/HR/token-gold.png'
+      },
       diameter: 2,
       height: 0.1,
       x: -4,
@@ -648,7 +1101,11 @@ export default {
     },
     {
       id: 'token-gold-2',
-      texture: 'images/splendor/tokens/gold.png',
+      texture: 'images/splendor/tokens/gold.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-gold.png',
+        back: 'images/splendor/HR/token-gold.png'
+      },
       diameter: 2,
       height: 0.1,
       x: -4,
@@ -657,7 +1114,11 @@ export default {
     },
     {
       id: 'token-gold-3',
-      texture: 'images/splendor/tokens/gold.png',
+      texture: 'images/splendor/tokens/gold.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-gold.png',
+        back: 'images/splendor/HR/token-gold.png'
+      },
       diameter: 2,
       height: 0.1,
       x: -4,
@@ -666,7 +1127,11 @@ export default {
     },
     {
       id: 'token-gold-4',
-      texture: 'images/splendor/tokens/gold.png',
+      texture: 'images/splendor/tokens/gold.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-gold.png',
+        back: 'images/splendor/HR/token-gold.png'
+      },
       diameter: 2,
       height: 0.1,
       x: -4,
@@ -675,7 +1140,11 @@ export default {
     },
     {
       id: 'token-gold-5',
-      texture: 'images/splendor/tokens/gold.png',
+      texture: 'images/splendor/tokens/gold.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-gold.png',
+        back: 'images/splendor/HR/token-gold.png'
+      },
       diameter: 2,
       height: 0.1,
       x: -4,
@@ -684,7 +1153,11 @@ export default {
     },
     {
       id: 'token-emerald-1',
-      texture: 'images/splendor/tokens/emerald.png',
+      texture: 'images/splendor/tokens/emerald.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-emerald.png',
+        back: 'images/splendor/HR/token-emerald.png'
+      },
       diameter: 2,
       height: 0.1,
       x: -1,
@@ -701,7 +1174,11 @@ export default {
     },
     {
       id: 'token-emerald-2',
-      texture: 'images/splendor/tokens/emerald.png',
+      texture: 'images/splendor/tokens/emerald.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-emerald.png',
+        back: 'images/splendor/HR/token-emerald.png'
+      },
       diameter: 2,
       height: 0.1,
       x: -1,
@@ -710,7 +1187,11 @@ export default {
     },
     {
       id: 'token-emerald-3',
-      texture: 'images/splendor/tokens/emerald.png',
+      texture: 'images/splendor/tokens/emerald.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-emerald.png',
+        back: 'images/splendor/HR/token-emerald.png'
+      },
       diameter: 2,
       height: 0.1,
       x: -1,
@@ -719,7 +1200,11 @@ export default {
     },
     {
       id: 'token-emerald-4',
-      texture: 'images/splendor/tokens/emerald.png',
+      texture: 'images/splendor/tokens/emerald.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-emerald.png',
+        back: 'images/splendor/HR/token-emerald.png'
+      },
       diameter: 2,
       height: 0.1,
       x: -1,
@@ -728,7 +1213,11 @@ export default {
     },
     {
       id: 'token-emerald-5',
-      texture: 'images/splendor/tokens/emerald.png',
+      texture: 'images/splendor/tokens/emerald.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-emerald.png',
+        back: 'images/splendor/HR/token-emerald.png'
+      },
       diameter: 2,
       height: 0.1,
       x: -1,
@@ -737,7 +1226,11 @@ export default {
     },
     {
       id: 'token-emerald-6',
-      texture: 'images/splendor/tokens/emerald.png',
+      texture: 'images/splendor/tokens/emerald.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-emerald.png',
+        back: 'images/splendor/HR/token-emerald.png'
+      },
       diameter: 2,
       height: 0.1,
       x: -1,
@@ -746,7 +1239,11 @@ export default {
     },
     {
       id: 'token-emerald-7',
-      texture: 'images/splendor/tokens/emerald.png',
+      texture: 'images/splendor/tokens/emerald.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-emerald.png',
+        back: 'images/splendor/HR/token-emerald.png'
+      },
       diameter: 2,
       height: 0.1,
       x: -1,
@@ -755,7 +1252,11 @@ export default {
     },
     {
       id: 'token-sapphire-1',
-      texture: 'images/splendor/tokens/sapphire.png',
+      texture: 'images/splendor/tokens/sapphire.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-sapphire.png',
+        back: 'images/splendor/HR/token-sapphire.png'
+      },
       diameter: 2,
       height: 0.1,
       x: 2,
@@ -772,7 +1273,11 @@ export default {
     },
     {
       id: 'token-sapphire-2',
-      texture: 'images/splendor/tokens/sapphire.png',
+      texture: 'images/splendor/tokens/sapphire.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-sapphire.png',
+        back: 'images/splendor/HR/token-sapphire.png'
+      },
       diameter: 2,
       height: 0.1,
       x: 2,
@@ -781,7 +1286,11 @@ export default {
     },
     {
       id: 'token-sapphire-3',
-      texture: 'images/splendor/tokens/sapphire.png',
+      texture: 'images/splendor/tokens/sapphire.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-sapphire.png',
+        back: 'images/splendor/HR/token-sapphire.png'
+      },
       diameter: 2,
       height: 0.1,
       x: 2,
@@ -790,7 +1299,11 @@ export default {
     },
     {
       id: 'token-sapphire-4',
-      texture: 'images/splendor/tokens/sapphire.png',
+      texture: 'images/splendor/tokens/sapphire.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-sapphire.png',
+        back: 'images/splendor/HR/token-sapphire.png'
+      },
       diameter: 2,
       height: 0.1,
       x: 2,
@@ -799,7 +1312,11 @@ export default {
     },
     {
       id: 'token-sapphire-5',
-      texture: 'images/splendor/tokens/sapphire.png',
+      texture: 'images/splendor/tokens/sapphire.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-sapphire.png',
+        back: 'images/splendor/HR/token-sapphire.png'
+      },
       diameter: 2,
       height: 0.1,
       x: 2,
@@ -808,7 +1325,11 @@ export default {
     },
     {
       id: 'token-sapphire-6',
-      texture: 'images/splendor/tokens/sapphire.png',
+      texture: 'images/splendor/tokens/sapphire.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-sapphire.png',
+        back: 'images/splendor/HR/token-sapphire.png'
+      },
       diameter: 2,
       height: 0.1,
       x: 2,
@@ -817,7 +1338,11 @@ export default {
     },
     {
       id: 'token-sapphire-7',
-      texture: 'images/splendor/tokens/sapphire.png',
+      texture: 'images/splendor/tokens/sapphire.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-sapphire.png',
+        back: 'images/splendor/HR/token-sapphire.png'
+      },
       diameter: 2,
       height: 0.1,
       x: 2,
@@ -826,7 +1351,11 @@ export default {
     },
     {
       id: 'token-diamond-1',
-      texture: 'images/splendor/tokens/diamond.png',
+      texture: 'images/splendor/tokens/diamond.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-diamond.png',
+        back: 'images/splendor/HR/token-diamond.png'
+      },
       diameter: 2,
       height: 0.1,
       x: 5,
@@ -843,7 +1372,11 @@ export default {
     },
     {
       id: 'token-diamond-2',
-      texture: 'images/splendor/tokens/diamond.png',
+      texture: 'images/splendor/tokens/diamond.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-diamond.png',
+        back: 'images/splendor/HR/token-diamond.png'
+      },
       diameter: 2,
       height: 0.1,
       x: 5,
@@ -852,7 +1385,11 @@ export default {
     },
     {
       id: 'token-diamond-3',
-      texture: 'images/splendor/tokens/diamond.png',
+      texture: 'images/splendor/tokens/diamond.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-diamond.png',
+        back: 'images/splendor/HR/token-diamond.png'
+      },
       diameter: 2,
       height: 0.1,
       x: 5,
@@ -861,7 +1398,11 @@ export default {
     },
     {
       id: 'token-diamond-4',
-      texture: 'images/splendor/tokens/diamond.png',
+      texture: 'images/splendor/tokens/diamond.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-diamond.png',
+        back: 'images/splendor/HR/token-diamond.png'
+      },
       diameter: 2,
       height: 0.1,
       x: 5,
@@ -870,7 +1411,11 @@ export default {
     },
     {
       id: 'token-diamond-5',
-      texture: 'images/splendor/tokens/diamond.png',
+      texture: 'images/splendor/tokens/diamond.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-diamond.png',
+        back: 'images/splendor/HR/token-diamond.png'
+      },
       diameter: 2,
       height: 0.1,
       x: 5,
@@ -879,7 +1424,11 @@ export default {
     },
     {
       id: 'token-diamond-6',
-      texture: 'images/splendor/tokens/diamond.png',
+      texture: 'images/splendor/tokens/diamond.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-diamond.png',
+        back: 'images/splendor/HR/token-diamond.png'
+      },
       diameter: 2,
       height: 0.1,
       x: 5,
@@ -888,7 +1437,11 @@ export default {
     },
     {
       id: 'token-diamond-7',
-      texture: 'images/splendor/tokens/diamond.png',
+      texture: 'images/splendor/tokens/diamond.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-diamond.png',
+        back: 'images/splendor/HR/token-diamond.png'
+      },
       diameter: 2,
       height: 0.1,
       x: 5,
@@ -897,7 +1450,11 @@ export default {
     },
     {
       id: 'token-quartz-1',
-      texture: 'images/splendor/tokens/quartz.png',
+      texture: 'images/splendor/tokens/quartz.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-quartz.png',
+        back: 'images/splendor/HR/token-quartz.png'
+      },
       diameter: 2,
       height: 0.1,
       x: 8,
@@ -914,7 +1471,11 @@ export default {
     },
     {
       id: 'token-quartz-2',
-      texture: 'images/splendor/tokens/quartz.png',
+      texture: 'images/splendor/tokens/quartz.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-quartz.png',
+        back: 'images/splendor/HR/token-quartz.png'
+      },
       diameter: 2,
       height: 0.1,
       x: 8,
@@ -923,7 +1484,11 @@ export default {
     },
     {
       id: 'token-quartz-3',
-      texture: 'images/splendor/tokens/quartz.png',
+      texture: 'images/splendor/tokens/quartz.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-quartz.png',
+        back: 'images/splendor/HR/token-quartz.png'
+      },
       diameter: 2,
       height: 0.1,
       x: 8,
@@ -932,7 +1497,11 @@ export default {
     },
     {
       id: 'token-quartz-4',
-      texture: 'images/splendor/tokens/quartz.png',
+      texture: 'images/splendor/tokens/quartz.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-quartz.png',
+        back: 'images/splendor/HR/token-quartz.png'
+      },
       diameter: 2,
       height: 0.1,
       x: 8,
@@ -941,7 +1510,11 @@ export default {
     },
     {
       id: 'token-quartz-5',
-      texture: 'images/splendor/tokens/quartz.png',
+      texture: 'images/splendor/tokens/quartz.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-quartz.png',
+        back: 'images/splendor/HR/token-quartz.png'
+      },
       diameter: 2,
       height: 0.1,
       x: 8,
@@ -950,7 +1523,11 @@ export default {
     },
     {
       id: 'token-quartz-6',
-      texture: 'images/splendor/tokens/quartz.png',
+      texture: 'images/splendor/tokens/quartz.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-quartz.png',
+        back: 'images/splendor/HR/token-quartz.png'
+      },
       diameter: 2,
       height: 0.1,
       x: 8,
@@ -959,7 +1536,11 @@ export default {
     },
     {
       id: 'token-quartz-7',
-      texture: 'images/splendor/tokens/quartz.png',
+      texture: 'images/splendor/tokens/quartz.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-quartz.png',
+        back: 'images/splendor/HR/token-quartz.png'
+      },
       diameter: 2,
       height: 0.1,
       x: 8,
@@ -968,7 +1549,11 @@ export default {
     },
     {
       id: 'token-ruby-1',
-      texture: 'images/splendor/tokens/ruby.png',
+      texture: 'images/splendor/tokens/ruby.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-ruby.png',
+        back: 'images/splendor/HR/token-ruby.png'
+      },
       diameter: 2,
       height: 0.1,
       x: 11,
@@ -985,7 +1570,11 @@ export default {
     },
     {
       id: 'token-ruby-2',
-      texture: 'images/splendor/tokens/ruby.png',
+      texture: 'images/splendor/tokens/ruby.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-ruby.png',
+        back: 'images/splendor/HR/token-ruby.png'
+      },
       diameter: 2,
       height: 0.1,
       x: 11,
@@ -994,7 +1583,11 @@ export default {
     },
     {
       id: 'token-ruby-3',
-      texture: 'images/splendor/tokens/ruby.png',
+      texture: 'images/splendor/tokens/ruby.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-ruby.png',
+        back: 'images/splendor/HR/token-ruby.png'
+      },
       diameter: 2,
       height: 0.1,
       x: 11,
@@ -1003,7 +1596,11 @@ export default {
     },
     {
       id: 'token-ruby-4',
-      texture: 'images/splendor/tokens/ruby.png',
+      texture: 'images/splendor/tokens/ruby.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-ruby.png',
+        back: 'images/splendor/HR/token-ruby.png'
+      },
       diameter: 2,
       height: 0.1,
       x: 11,
@@ -1012,7 +1609,11 @@ export default {
     },
     {
       id: 'token-ruby-5',
-      texture: 'images/splendor/tokens/ruby.png',
+      texture: 'images/splendor/tokens/ruby.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-ruby.png',
+        back: 'images/splendor/HR/token-ruby.png'
+      },
       diameter: 2,
       height: 0.1,
       x: 11,
@@ -1021,7 +1622,11 @@ export default {
     },
     {
       id: 'token-ruby-6',
-      texture: 'images/splendor/tokens/ruby.png',
+      texture: 'images/splendor/tokens/ruby.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-ruby.png',
+        back: 'images/splendor/HR/token-ruby.png'
+      },
       diameter: 2,
       height: 0.1,
       x: 11,
@@ -1030,7 +1635,11 @@ export default {
     },
     {
       id: 'token-ruby-7',
-      texture: 'images/splendor/tokens/ruby.png',
+      texture: 'images/splendor/tokens/ruby.ktx2',
+      images: {
+        front: 'images/splendor/HR/token-ruby.png',
+        back: 'images/splendor/HR/token-ruby.png'
+      },
       diameter: 2,
       height: 0.1,
       x: 11,
@@ -1041,7 +1650,12 @@ export default {
   roundedTiles: [
     {
       id: 'tile-1',
-      texture: 'images/splendor/tiles/tile-1.png',
+      texture: 'images/splendor/tiles/tile-1.ktx2',
+      images: {
+        front: 'images/splendor/HR/tile-1.png',
+        back: 'images/splendor/HR/tile-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 11.5,
       stack: [
@@ -1058,55 +1672,100 @@ export default {
     },
     {
       id: 'tile-2',
-      texture: 'images/splendor/tiles/tile-2.png',
+      texture: 'images/splendor/tiles/tile-2.ktx2',
+      images: {
+        front: 'images/splendor/HR/tile-2.png',
+        back: 'images/splendor/HR/tile-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 11.5
     },
     {
       id: 'tile-3',
-      texture: 'images/splendor/tiles/tile-3.png',
+      texture: 'images/splendor/tiles/tile-3.ktx2',
+      images: {
+        front: 'images/splendor/HR/tile-3.png',
+        back: 'images/splendor/HR/tile-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 11.5
     },
     {
       id: 'tile-4',
-      texture: 'images/splendor/tiles/tile-4.png',
+      texture: 'images/splendor/tiles/tile-4.ktx2',
+      images: {
+        front: 'images/splendor/HR/tile-4.png',
+        back: 'images/splendor/HR/tile-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 11.5
     },
     {
       id: 'tile-5',
-      texture: 'images/splendor/tiles/tile-5.png',
+      texture: 'images/splendor/tiles/tile-5.ktx2',
+      images: {
+        front: 'images/splendor/HR/tile-5.png',
+        back: 'images/splendor/HR/tile-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 11.5
     },
     {
       id: 'tile-6',
-      texture: 'images/splendor/tiles/tile-6.png',
+      texture: 'images/splendor/tiles/tile-6.ktx2',
+      images: {
+        front: 'images/splendor/HR/tile-6.png',
+        back: 'images/splendor/HR/tile-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 11.5
     },
     {
       id: 'tile-7',
-      texture: 'images/splendor/tiles/tile-7.png',
+      texture: 'images/splendor/tiles/tile-7.ktx2',
+      images: {
+        front: 'images/splendor/HR/tile-7.png',
+        back: 'images/splendor/HR/tile-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 11.5
     },
     {
       id: 'tile-8',
-      texture: 'images/splendor/tiles/tile-8.png',
+      texture: 'images/splendor/tiles/tile-8.ktx2',
+      images: {
+        front: 'images/splendor/HR/tile-8.png',
+        back: 'images/splendor/HR/tile-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 11.5
     },
     {
       id: 'tile-9',
-      texture: 'images/splendor/tiles/tile-9.png',
+      texture: 'images/splendor/tiles/tile-9.ktx2',
+      images: {
+        front: 'images/splendor/HR/tile-9.png',
+        back: 'images/splendor/HR/tile-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 11.5
     },
     {
       id: 'tile-10',
-      texture: 'images/splendor/tiles/tile-10.png',
+      texture: 'images/splendor/tiles/tile-10.ktx2',
+      images: {
+        front: 'images/splendor/HR/tile-10.png',
+        back: 'images/splendor/HR/tile-back.png'
+      },
+      isFlipped: true,
       x: -4,
       z: 11.5
     }

@@ -26,7 +26,7 @@ export function serializeScene(scene) {
 
 export function loadScene(engine, scene, data) {
   engine.displayLoadingUI()
-  scene._addPendingData(data)
+  scene.onDataLoadedObservable.addOnce(() => engine.hideLoadingUI())
   const disposed = new Array(scene.meshes.length)
   let j = 0
   for (let i = 0; i < disposed.length; i++) {
@@ -48,6 +48,7 @@ export function loadScene(engine, scene, data) {
     logger.debug({ card }, `create new card ${card.id}`)
     const mesh = createCard({
       ...card,
+      images: { ...card.images, __typename: undefined },
       stack: undefined,
       __typename: undefined
     })
@@ -57,6 +58,7 @@ export function loadScene(engine, scene, data) {
     logger.debug({ token }, `create new round token ${token.id}`)
     const mesh = createRoundToken({
       ...token,
+      images: { ...token.images, __typename: undefined },
       stack: undefined,
       __typename: undefined
     })
@@ -66,6 +68,7 @@ export function loadScene(engine, scene, data) {
     logger.debug({ tile }, `create new rounded tile ${tile.id}`)
     const mesh = createRoundedTile({
       ...tile,
+      images: { ...tile.images, __typename: undefined },
       stack: undefined,
       __typename: undefined
     })
@@ -84,8 +87,4 @@ export function loadScene(engine, scene, data) {
       }
     }
   }
-  setTimeout(() => {
-    scene._removePendingData(data)
-    engine.hideLoadingUI()
-  }, 0)
 }

@@ -4,17 +4,26 @@
   import { push } from 'svelte-spa-router'
   import {
     ActionMenu,
-    InviteDialogue,
+    FPSViewer,
+    InvitePlayer,
+    MeshDetails,
     StackSizeTooltip
   } from '../connected-components'
-  import { Button, Discussion } from '../components'
-  import { engine, initEngine, loadGame, thread, sendToThread } from '../stores'
+  import { Button, Discussion, PlayerAvatar } from '../components'
+  import {
+    connected,
+    engine,
+    initEngine,
+    loadGame,
+    moveCameraTo,
+    thread,
+    sendToThread
+  } from '../stores'
 
   export let params = {}
 
   let canvas
   let interaction
-  let openInvite = false
 
   onMount(async () => {
     initEngine({ canvas, interaction })
@@ -40,9 +49,17 @@
   }
 
   aside {
-    @apply absolute bottom-2 right-2 shadow-lg;
-    background: theme('backgrounds.primary');
-    max-height: 30%;
+    @apply absolute;
+
+    &.right {
+      @apply flex flex-col items-center top-14 right-2 gap-2;
+      max-height: 93vh;
+      width: 300px;
+    }
+
+    &.left {
+      @apply top-2 left-2;
+    }
   }
 
   nav {
@@ -58,27 +75,36 @@
 
 <main>
   <div class="interaction" bind:this={interaction}>
-    <canvas bind:this={canvas} />
+    <canvas touch-action="none" bind:this={canvas} />
     <ActionMenu />
   </div>
   <StackSizeTooltip />
+  <FPSViewer />
+  <MeshDetails />
 </main>
 <nav>
+  <InvitePlayer gameId={params.gameId} />
   <Button
-    icon="close"
+    icon="home"
     title={$_('tooltips.quit-game')}
     on:click={() => push('/home')}
   />
 </nav>
-<aside>
-  <Discussion
-    thread={$thread}
-    on:sendMessage={({ detail }) => sendToThread(detail.text)}
-    on:askInvite={() => (openInvite = true)}
-  />
-  <InviteDialogue
-    gameId={params.gameId}
-    open={openInvite}
-    on:close={() => (openInvite = false)}
+<aside class="left">
+  <Button
+    icon="center_focus_strong"
+    title={$_('tooltips.center-camera')}
+    on:click={() => moveCameraTo()}
   />
 </aside>
+{#if $connected.length}
+  <aside class="right">
+    {#each $connected as { player, stream }, i}
+      <PlayerAvatar {player} {stream} controllable={i === 0} />
+    {/each}
+    <Discussion
+      thread={$thread}
+      on:sendMessage={({ detail }) => sendToThread(detail.text)}
+    />
+  </aside>
+{/if}

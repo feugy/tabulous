@@ -17,11 +17,38 @@ import {
 } from './behaviors'
 import { controlManager } from './managers'
 
+/**
+ * Creates a card mesh.
+ * Cards are planes whith a given width and height (Babylon's depth), wrapped into a box mesh, so they could be stacked with other objects.
+ * By default, the card dimension follows American poker card standard (beetween 1.39 & 1.41).
+ * A card has the following behaviors:
+ * - draggable
+ * - flippable
+ * - rotable
+ * - stackable (the entire card is a drop target)
+ * - hoverable (?)
+ * A card's texture must have 2 faces, back then front, aligned horizontally.
+ * @param {object} params - card parameters, including (all other properties will be passed to the created mesh):
+ * @param {number} params.x? - initial position along the X axis.
+ * @param {number} params.y? - initial position along the Y axis.
+ * @param {number} params.z? - initial position along the Z axis.
+ * @param {string} params.texture? - card's texture url.
+ * @param {number} params.width? - card's width (X axis).
+ * @param {number} params.height? - card's height (Z axis).
+ * @param {number} params.depth? - card's depth (Y axis).
+ * @param {boolean} params.isFlipped? - initial flip state (face visible).
+ * @param {number} params.flipDuration? - flip duration (in seconds).
+ * @param {number} params.angle? - initial rotation angle (top above), in radians.
+ * @param {number} params.rotateDuration? - rotation duration (in seconds).
+ * @param {number} params.snapDistance? - distance bellow which the card automatically snaps to nearest position.
+ * @param {number} params.moveDuration? - automatic move duration (in seconds), when snapping.
+ * @param {ImageDefs} params.images? - detailed images for this card.
+ * @returns {Mesh} the created card mesh.
+ */
 export function createCard({
   x = 0,
   z = 0,
   y = 0,
-  // Poker ratio is between 1.39 and 1.41
   width = 3,
   height = 4.25,
   depth = 0.01,
@@ -32,13 +59,14 @@ export function createCard({
   rotateDuration = 0.2,
   moveDuration = 0.1,
   snapDistance = 0.25,
+  images,
   ...cardProps
 } = {}) {
   const faces = MeshBuilder.CreatePlane('faces', {
     width,
     height,
-    frontUVs: new Vector4(0, 0, 0.5, 1),
-    backUVs: new Vector4(1, 0, 0.5, 1),
+    frontUVs: new Vector4(0.5, 1, 0, 0),
+    backUVs: new Vector4(0.5, 1, 1, 0),
     sideOrientation: Mesh.DOUBLESIDE
   })
   faces.material = new StandardMaterial('faces')
@@ -53,7 +81,7 @@ export function createCard({
   })
 
   // because planes are in 2-D, collisions with other meshes could be tricky.
-  // wraps the plane with an invisible box. Box will take picks
+  // wraps the plane with an invisible box. Box will take rays and pick operations.
   card.visibility = 0
   faces.rotate(Axis.X, Math.PI * 0.5)
   faces.position.y += depth * 0.5
@@ -65,7 +93,9 @@ export function createCard({
   Object.assign(card, cardProps)
 
   card.metadata = {
+    images,
     serialize: () => ({
+      ...cardProps,
       x: card.position.x,
       y: card.position.y,
       z: card.position.z,
@@ -73,7 +103,7 @@ export function createCard({
       height,
       depth,
       texture,
-      ...cardProps,
+      images,
       ...flipBehavior.serialize(),
       ...rotateBehavior.serialize(),
       ...stackBehavior.serialize()

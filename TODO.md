@@ -1,26 +1,13 @@
 # TODO
 
-## Tests
-
-- Login route
-  - displays login form
-  - can not authenticate without username
-  - authenticates and navigates to home
-- Home route
-  - creates new game
-  - opens join game dialogue
-- JoinGameDialogue component
-  - can not join game without game Id
-  - displays loader and joins game
-  - displays loader and show error
-
 ## Refactor
 
-- [ ] UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
-- [ ] disable any possible action while animating
+- UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
+- disable any possible action while animating
 
 ## Single player
 
+- touch support for multiple selection, camera rotation, and secondary action (rotate mesh)
 - ust CTRL for changing multiple selection
 - parametrize and serialize UVs
 - ability to shuffle stack on scene loading
@@ -36,19 +23,18 @@
 
 ## Multi player
 
-- inline video
+- persistant chat
+- invite dialogue must take focus and invite on enter key
+- invite players by name and id
+- search players by name
+- indicates when remote stream is muted/stopped
 
 # Known issues
 
-- single source of truth multiplayer mode!
 - multi selection does not always work fine
 - flip stacked items only flip individual card: it does not change the ordering
 - flipping or rotating item does not change vertical position: items above it will still be above it at the end
 - moving items bellow other does not apply gravity to them
-- some actions are lost over the wire, or not applied, like quick multiple rotations
-- need to synchronise actions over the wire (like flipping overlapping cards)
-- peer pointer remains after peer is gone
-- build doesn't load game's JSON
 
 # Notes
 
@@ -90,31 +76,36 @@ Ideas for joining a game:
 
 ## WebRTC Connection handshake
 
-1. player A comes first
-   1. it opens an initiator peer, generating its offer
-   1. it registers its offer into the signaling server
-1. player B connects with A, from its ID
-   1. it opens a receiver peer
-   1. it gets from signaling server player A's offer from its ID
-   1. it sends player A's offer through its peer, and generates its answer
-   1. it registers its answer into the signaling server
-   1. signaling server sends the answer to player A
-   1. player A's sends player B's answer through its peer
-   1. connection is now complete
+1. player A is already in game, with an open WebSocket connection
+1. player B join game
+   1. opens a WebSocket connection
+   1. creates a WebRTC peer (initiator) and receives an offer signal
+   1. send it throught WebSocket to player A
+1. player A receives offer through WebSocket
+   1. creates a WebRTC peer
+   1. uses the offer and receives an answer signal
+   1. send it throught WebSocket to player B
+1. player B receives answer through WebSocket
+   1. uses the answer
+1. their duplex connection is established
 
 ## Game lifecycle
 
 1. player A calls `createGame(kind)`
 1. server creates a game id, loads scene descriptor, adds player A to the player list, returns the game id
-1. player A calls `loadGame(id)` and becomes an initiator peer
+1. player A calls `loadGame(id)`
 1. server returns the game scene descriptor and player list
-1. player A tries to connect with other players (no-op)
-1. since his the only player, A becomes host
-1. (optional) player B wants to join game, player A allows it
-1. player B calls `loadGame(id)` and becomes an initiator peer
+1. player A calls `invite(gameId, playerId)` to invite player B
+1. player B calls `loadGame(id)`
 1. server returns the game scene descriptor and player list
-1. player B tries to connect with other players
-1. player A will accept the connection
+1. player B tries to connect with all players already connected (see connection handshake)
+
+## STUN & TURN server `WIP`
+
+```shell
+docker run -d --network=host coturn/coturn --external-ip=78.192.173.27 --relay-ip=192.168.1.45 -X -v -u tabulous:soulubat -a -f -r tabulous
+
+```
 
 ## The host role
 
@@ -149,3 +140,34 @@ Removing server to only allow peer communication is really hard:
 
 GraphQL subscriptions are good replacement to WebSockets for implementing the WebRTC signaling server.
 However, for scalabily and resilliency reasons, I prefer keeping the signaling server independant from the main server.
+
+For decent in-game performance, textures must be GPU-compressed to KTX2 container format. This will skip CPU uncompressing jpeg/png content before passing it to the GPU.
+Some GPU also require [dimensions to be multiple of 4](https://forum.babylonjs.com/t/non-displayable-image-after-converting-png-with-alpha-to-ktx2-webgl-warning-compressedteximage-unexpected-error-from-driver/16471)
+
+Sizes:
+
+- cards: 372x260
+- tiles: 352x176
+- tokens: 380x184
+
+```shell
+folder=apps/web/public/images/splendor/1; \
+size=372x260; \
+for file in $folder/*.png; do \
+  outFile=${file/.png/.out.png}; \
+  convert -flop -strip -resize $size\! $file $outFile; \
+  toktx --uastc 4 ${file/.png/.ktx2} $outFile; \
+  rm $outFile; \
+done
+```
+
+1. flip image horizontally (front face on the left, back face on the right, mirrored), strip png ICC profile (ktx2 does not support them) and resize
+2. convert to ktx2
+
+There is no built-in way for the remote side of an WebRTC connection to know that video or audio was disabled.
+The mute/unmute events are meant for network issues. Stopping a track is definitive. Adding/removing track from stream only works locally (or would trigger re-negociation)
+
+# Source
+
+[Cours complet apprendre K8s](https://devopssec.fr/article/cours-complet-apprendre-orchestrateur-kubernetes-k8s#begin-article-section)
+[OVH terraform Kube Provider](https://registry.terraform.io/providers/ovh/ovh/latest/docs)

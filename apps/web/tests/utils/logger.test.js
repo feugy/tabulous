@@ -3,7 +3,6 @@ import { makeLogger } from '@src/utils/logger'
 
 describe('Logger', () => {
   let trace
-  let debug
   let log
   let info
   let warn
@@ -13,7 +12,6 @@ describe('Logger', () => {
     jest.clearAllMocks()
     const noop = () => {}
     trace = jest.spyOn(console, 'trace').mockImplementation(noop)
-    debug = jest.spyOn(console, 'debug').mockImplementation(noop)
     log = jest.spyOn(console, 'log').mockImplementation(noop)
     info = jest.spyOn(console, 'info').mockImplementation(noop)
     warn = jest.spyOn(console, 'warn').mockImplementation(noop)
@@ -26,7 +24,6 @@ describe('Logger', () => {
 
     expect(makeLogger(name)).toBe(logger)
     expect(trace).not.toHaveBeenCalled()
-    expect(debug).not.toHaveBeenCalled()
     expect(log).not.toHaveBeenCalled()
     expect(info).not.toHaveBeenCalled()
     expect(warn).not.toHaveBeenCalled()
@@ -41,7 +38,7 @@ describe('Logger', () => {
     expect(trace).not.toHaveBeenCalled()
 
     logger.debug(message)
-    expect(debug).not.toHaveBeenCalled()
+    expect(log).not.toHaveBeenCalled()
 
     logger.log(message)
     expect(log).not.toHaveBeenCalled()
@@ -58,7 +55,7 @@ describe('Logger', () => {
     expect(error).toHaveBeenCalledWith(message)
 
     expect(trace).not.toHaveBeenCalled()
-    expect(debug).not.toHaveBeenCalled()
+    expect(log).not.toHaveBeenCalled()
     expect(log).not.toHaveBeenCalled()
     expect(info).toHaveBeenCalledTimes(1)
     expect(warn).toHaveBeenCalledTimes(1)

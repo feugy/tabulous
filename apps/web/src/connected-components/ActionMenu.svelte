@@ -3,7 +3,13 @@
   import { _ } from 'svelte-intl'
   import { RadialMenu } from '../components'
   import { getMeshCoordinates, shuffle } from '../utils'
-  import { dragStart, dragEnd, pointerOut, pointerOver } from '../stores'
+  import {
+    detail,
+    dragStart,
+    dragEnd,
+    pointerOut,
+    pointerOver
+  } from '../stores'
 
   const delay = 500
   let x = 0
@@ -57,6 +63,13 @@
             }
           })
         }
+        if (object.metadata.images) {
+          actions.push({
+            icon: 'visibility',
+            title: $_('tooltips.detail'),
+            onClick: () => detail.next({ mesh })
+          })
+        }
       }, delay)
     }
   }
@@ -101,6 +114,6 @@
   {y}
   open={object !== null}
   items={actions}
-  on:mouseenter={() => (pointerOnMenu = true)}
-  on:mouseleave={handlePointerOutMenu}
+  on:pointerenter={() => (pointerOnMenu = true)}
+  on:pointerleave={handlePointerOutMenu}
 />

@@ -5,7 +5,7 @@
   "scripts": {
     "build": "vite build",
     "serve": "vite preview",
-    "start": "vite",
+    "start": "vite --https",
     "test": "jest --coverage --colors",
     "test:dev": "jest --watch"
   },
@@ -45,6 +45,7 @@
     "svelte-preprocess": "^4.7.0",
     "svelte-spa-router": "^3.1.0",
     "tailwindcss": "^2.1.1",
-    "vite": "^2.1.5"
+    "vite": "^2.1.5",
+    "webrtc-adapter": "^8.1.0"
   }
 }

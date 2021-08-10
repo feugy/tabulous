@@ -1,6 +1,7 @@
 type Player {
   id: ID!
   username: String!
+  playing: Boolean!
 }
 
 type Mutation {

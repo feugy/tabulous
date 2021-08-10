@@ -1,16 +1,16 @@
 import { BehaviorSubject } from 'rxjs'
-import { auditTime } from 'rxjs/operators'
+import { debounceTime } from 'rxjs/operators'
 import { currentPlayer } from './authentication'
 import { action } from './game-engine'
 import { runQuery, runMutation } from './graphcl-client'
 import {
   closeChannels,
-  connected,
   connectWith,
-  lastConnected,
+  lastConnectedId,
+  lastDisconnectedId,
   lastMessageReceived,
   send,
-  startAccepting
+  openChannels
 } from './peer-channels'
 import { inviteReceived } from './sse'
 import * as graphQL from '../graphql'
@@ -27,25 +27,39 @@ const playerGames$ = new BehaviorSubject([])
 
 function takeHostRole(gameId, engine) {
   logger.info({ gameId }, `taking game host role`)
-  const subscriptions = [
-    action.pipe(auditTime(1000)).subscribe(() => {
-      logger.debug({ gameId }, `persisting game ${gameId}`)
-      const saved = serializeScene(engine.scenes[0])
-      sessionStorage.setItem(`game-${gameId}`, JSON.stringify(saved))
-      runMutation(graphQL.saveGame, { game: { id: gameId, scene: saved } })
-    }),
-    lastConnected.subscribe(peer => {
-      logger.info(
-        { gameId, peer },
-        `sending game data ${gameId} to peer ${peer}`
-      )
-      send({ gameId, scene: serializeScene(engine.scenes[0]) }, peer)
-    })
-  ]
+  scheduleCleanup(
+    new Map([
+      [
+        'save',
+        action.pipe(debounceTime(1000)).subscribe(() => {
+          logger.debug({ gameId }, `persisting game ${gameId}`)
+          const saved = serializeScene(engine.scenes[0])
+          sessionStorage.setItem(`game-${gameId}`, JSON.stringify(saved))
+          runMutation(graphQL.saveGame, { game: { id: gameId, scene: saved } })
+        })
+      ],
+      [
+        'sendGame',
+        lastConnectedId.subscribe(peerId => {
+          logger.info(
+            { gameId, peerId },
+            `sending game data ${gameId} to peer ${peerId}`
+          )
+          send({ gameId, scene: serializeScene(engine.scenes[0]) }, peerId)
+        })
+      ]
+    ]),
+    engine
+  )
+}
+
+function scheduleCleanup(subscriptions, engine) {
   engine.onDisposeObservable.addOnce(() => {
-    for (const subscription of subscriptions) {
+    for (const [, subscription] of subscriptions) {
       subscription.unsubscribe()
     }
+    subscriptions.clear()
+    closeChannels()
   })
 }
 
@@ -86,59 +100,58 @@ export async function createGame(kind = 'splendor') {
  * @param {@babylonjs.Engine} engine - game engine used to play
  */
 export async function loadGame(gameId, engine) {
+  if (!player) {
+    logger.warn(
+      { gameId },
+      `fail loading game ${gameId} as there are no current player yet`
+    )
+    return
+  }
   logger.info({ gameId }, `loading game ${gameId} into engine`)
-  const subscriptions = []
-  const game = await runQuery(graphQL.loadGame, { gameId })
+  await openChannels(player)
 
-  // connect with all other players
-  await startAccepting(player)
-  engine.onDisposeObservable.addOnce(() => {
-    for (const subscription of subscriptions) {
-      subscription.unsubscribe()
-    }
-    subscriptions.splice(0, subscriptions.length)
-    closeChannels()
-  })
+  let game = await runQuery(graphQL.loadGame, { gameId }, false)
 
-  const connectPromises = game.playerIds
-    .filter(id => id !== player.id)
-    .map(connectWith)
-  // then load the game scene
-  loadScene(engine, engine.scenes[0], game.scene)
-
-  const connectionStatuses = await Promise.allSettled(connectPromises)
-  if (connectionStatuses.every(status => status === 'rejected')) {
-    // if the single player, becomes host
+  if (game.players.every(({ id, playing }) => id === player.id || !playing)) {
+    // is the only playing player: take the host role
+    loadScene(engine, engine.scenes[0], game.scene)
     takeHostRole(gameId, engine)
   } else {
-    // if not, load game scene received from host
-    subscriptions.push(
-      lastMessageReceived.subscribe(({ data }) => {
-        if (data?.gameId && data?.scene) {
-          logger.debug(data, `receiving game data (${data.gameId})`)
-          loadScene(engine, engine.scenes[0], data.scene)
-        }
-      })
-    )
-    // and awaits on disconnection, to potentially become host
-    const index = game.playerIds.indexOf(player.id)
-    subscriptions.push(
-      connected.subscribe(peerIds => {
-        logger.debug({ peerIds }, `peers have joined or left`)
-        let hasHost = false
-        for (let i = 0; !hasHost && i < index; i++) {
-          // a previous player in player list is connected, they are host
-          hasHost = peerIds.includes(game.playerIds[i])
-        }
-        if (!hasHost) {
-          for (const subscription of subscriptions) {
-            subscription.unsubscribe()
+    // connect with other players that are already playing
+    game.players
+      .filter(({ id, playing }) => id !== player.id && playing)
+      .map(connectWith)
+
+    const subscriptions = new Map([
+      // load game scene received from host
+      [
+        'loadScene',
+        lastMessageReceived.subscribe(({ data }) => {
+          if (data?.gameId && data?.scene) {
+            logger.debug(data, `receiving game data (${data.gameId})`)
+            loadScene(engine, engine.scenes[0], data.scene)
+            subscriptions.get('loadScene').unsubscribe()
+            subscriptions.delete('loadScene')
           }
-          subscriptions.splice(0, subscriptions.length)
-          takeHostRole(gameId, engine)
-        }
-      })
-    )
+        })
+      ],
+      // and awaits on disconnection, to potentially become host
+      [
+        'electHost',
+        lastDisconnectedId.subscribe(async () => {
+          const { players } = await runQuery(graphQL.loadGamePlayers, {
+            gameId
+          })
+          const nextHost = players.find(({ playing }) => playing)
+          if (nextHost?.id === player.id) {
+            takeHostRole(gameId, engine)
+            subscriptions.get('electHost').unsubscribe()
+            subscriptions.delete('electHost')
+          }
+        })
+      ]
+    ])
+    scheduleCleanup(subscriptions, engine)
   }
 }
 

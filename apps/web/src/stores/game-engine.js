@@ -1,11 +1,13 @@
-import { BehaviorSubject, Subject } from 'rxjs'
-import { lastMessageReceived, send } from './peer-channels'
+import { BehaviorSubject, Subject, merge } from 'rxjs'
+import { auditTime } from 'rxjs/operators'
+import { connected, lastMessageReceived, send } from './peer-channels'
 import { createCamera, createEngine, createLight, createTable } from '../3d'
 import {
   controlManager,
   dragManager,
   multiSelectionManager
 } from '../3d/managers'
+import { saveCamera, restoreCamera } from '../3d/utils'
 
 const engine$ = new BehaviorSubject(null)
 const fps$ = new BehaviorSubject(0)
@@ -17,8 +19,11 @@ const selectionReset$ = new Subject()
 const dragStart$ = new Subject()
 const drag$ = new Subject()
 const dragEnd$ = new Subject()
-const action$ = new Subject()
+const localAction$ = new Subject()
+const remoteAction$ = new Subject()
 const pointer$ = new Subject()
+const detail = new Subject()
+let initialCamera = null
 
 const mapping = [
   { observable: multiSelectionManager.onOverObservable, subject: pointerOver$ },
@@ -34,8 +39,9 @@ const mapping = [
   { observable: dragManager.onDragStartObservable, subject: dragStart$ },
   { observable: dragManager.onDragObservable, subject: drag$ },
   { observable: dragManager.onDragEndObservable, subject: dragEnd$ },
-  { observable: controlManager.onActionObservable, subject: action$ },
-  { observable: controlManager.onPointerObservable, subject: pointer$ }
+  { observable: controlManager.onActionObservable, subject: localAction$ },
+  { observable: controlManager.onPointerObservable, subject: pointer$ },
+  { observable: controlManager.onDetailedObservable, subject: detail }
 ]
 
 export const engine = engine$.asObservable()
@@ -47,37 +53,58 @@ export const selectionReset = selectionReset$.asObservable()
 export const dragStart = dragStart$.asObservable()
 export const drag = drag$.asObservable()
 export const dragEnd = dragEnd$.asObservable()
-export const action = action$.asObservable()
+export const action = merge(localAction$, remoteAction$)
 export const pointer = pointer$.asObservable()
+export { detail }
 
 export function initEngine(options) {
   const engine = createEngine(options)
+  engine.displayLoadingUI()
 
   engine.onEndFrameObservable.add(() => fps$.next(engine.getFps().toFixed()))
-  // expose Babylon observables as RX subjects
+  // exposes Babylon observables as RX subjects
   for (const { observable, subject } of mapping) {
     mapping.observer = observable.add(subject.next.bind(subject))
   }
-  engine$.next(engine)
 
   createCamera()
-  // showAxis(2)
   createTable()
-  // create light after table, so table doesn't project shadow
+  // creates light after table, so table doesn't project shadow
   createLight()
+  initialCamera = saveCamera(engine)
 
+  engine$.next(engine)
   engine.start()
 
-  // apply other players' update
+  // applies other players' update
   lastMessageReceived.subscribe(({ data }) => {
     if (data?.pointer) {
       controlManager.movePeerPointer(data)
     } else if (data?.meshId) {
-      controlManager.apply(data)
+      controlManager.apply(data, true)
+      // expose remote actions to other store and components
+      remoteAction$.next(data)
+    }
+  })
+  // prunes unused peer pointers if needed
+  connected.subscribe(peers => {
+    if (peers) {
+      controlManager.pruneUnusedPeerPointers(peers.map(({ peerId }) => peerId))
     }
   })
 
-  // send updates to other players
-  action.subscribe(send)
-  pointer.subscribe(send)
+  // sends local action to other players
+  localAction$.subscribe(send)
+  // only sends pointer once every 200ms
+  pointer.pipe(auditTime(200)).subscribe(send)
+}
+
+/**
+ * Moves the 3D camera to a given position (in 3D world), its origin by default.
+ * Does nothing unless the 3D engine was initialized and a camera created.
+ * @async
+ * @param {number[]} [state] - Vector3 components for the new position.
+ */
+export async function moveCameraTo(state = null) {
+  return restoreCamera(engine$.value, state ?? initialCamera)
 }

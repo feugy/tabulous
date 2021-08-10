@@ -15,6 +15,32 @@ import {
 } from './behaviors'
 import { controlManager } from './managers'
 
+/**
+ * Creates a round token, like a pocker one.
+ * Tokens are cylinders, so their position is their center (half their height).
+ * A token has the following behaviors:
+ * - draggable
+ * - flippable
+ * - rotable
+ * - stackable (the token token is a drop target)
+ * - hoverable (?)
+ * A token's texture must have 3 faces, back then edge then front, aligned horizontally.
+ * @param {object} params - token parameters, including (all other properties will be passed to the created mesh):
+ * @param {number} params.x? - initial position along the X axis.
+ * @param {number} params.y? - initial position along the Y axis.
+ * @param {number} params.z? - initial position along the Z axis.
+ * @param {string} params.texture? - token's texture url.
+ * @param {number} params.diameter? - token's diameter (X+Z axis).
+ * @param {number} params.height? - token's height (Y axis).
+ * @param {boolean} params.isFlipped? - initial flip state (face visible).
+ * @param {number} params.flipDuration? - flip duration (in seconds).
+ * @param {number} params.angle? - initial rotation angle (top above), in radians.
+ * @param {number} params.rotateDuration? - rotation duration (in seconds).
+ * @param {number} params.snapDistance? - distance bellow which the token automatically snaps to nearest position.
+ * @param {number} params.moveDuration? - automatic move duration (in seconds), when snapping.
+ * @param {ImageDefs} params.images? - detailed images for this card.
+ * @returns the created token mesh.
+ */
 export function createRoundToken({
   x = 0,
   y = 0.05,
@@ -28,6 +54,7 @@ export function createRoundToken({
   rotateDuration = 0.2,
   moveDuration = 0.1,
   snapDistance = 0.25,
+  images,
   ...tokenProps
 } = {}) {
   const faceUV = [
@@ -51,14 +78,16 @@ export function createRoundToken({
   Object.assign(token, tokenProps)
 
   token.metadata = {
+    images,
     serialize: () => ({
+      ...tokenProps,
       x: token.position.x,
       y: token.position.y,
       z: token.position.z,
       texture,
       diameter,
       height,
-      ...tokenProps,
+      images,
       ...flipBehavior.serialize(),
       ...rotateBehavior.serialize(),
       ...stackBehavior.serialize()

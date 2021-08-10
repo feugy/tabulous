@@ -1,431 +1,352 @@
 import { randomUUID } from 'crypto'
 import { get } from 'svelte/store'
+import WebSocket from 'reconnecting-websocket'
 import Peer from 'simple-peer-light'
 import * as communication from '@src/stores/peer-channels'
-import { makeLogger } from '@src/utils'
+import { mockLogger } from '../utils.js'
 
 jest.mock('reconnecting-websocket')
 jest.mock('simple-peer-light')
 
-const openForPeersIdx = 0
-const errorIdx = 1
-const dataIdx = 2
-const closeIdx = 3
-const openForLastConnectedIdx = 4
+describe('Peer channels store', () => {
+  const logger = mockLogger('peer-channels')
+  const player1 = { username: 'Paul', id: 10 }
+  const player2 = { username: 'Jack', id: 20 }
+  const player3 = { username: 'Gene', id: 30 }
+  const webSocket = {
+    events: {},
+    addEventListener: (event, handler) => {
+      if (!webSocket.events[event]) {
+        webSocket.events[event] = jest.fn()
+      }
+      webSocket.events[event](handler)
+    },
+    send: jest.fn(),
+    close: jest.fn()
+  }
+  let peers = []
+  let subscriptions = []
+  let lastConnectedId
+  let lastDisconnectedId
+  let messagesSent = []
+  let messagesReceived = []
 
-describe.skip('Peer channels store', () => {
-  const logger = makeLogger('peer-channels')
-  let peer
-  let handleConnection
+  beforeAll(() => {
+    subscriptions = [
+      communication.lastConnectedId.subscribe(value => {
+        lastConnectedId = value
+      }),
+      communication.lastDisconnectedId.subscribe(value => {
+        lastDisconnectedId = value
+      }),
+      communication.lastMessageSent.subscribe(value => {
+        messagesSent.push(value)
+      }),
+      communication.lastMessageReceived.subscribe(value => {
+        messagesReceived.push(value)
+      })
+    ]
+  })
 
   beforeEach(() => {
     jest.resetAllMocks()
-    peer = { id: randomUUID(), on: jest.fn(), connect: jest.fn() }
-    Peer.mockReturnValueOnce(peer)
-    communication.initCommunication()
-
-    expect(get(communication.connected)).toEqual([])
-    expect(peer.on).toHaveBeenNthCalledWith(
-      1,
-      'connection',
-      expect.any(Function)
-    )
-    handleConnection = peer.on.mock.calls[openForPeersIdx][1]
+    lastConnectedId = null
+    lastDisconnectedId = null
+    messagesSent = []
+    messagesReceived = []
+    WebSocket.mockReturnValueOnce(webSocket)
+    Peer.mockImplementation(() => {
+      const peer = {
+        id: randomUUID(),
+        events: {},
+        on: (event, handler) => {
+          if (!peer.events[event]) {
+            peer.events[event] = jest.fn()
+          }
+          peer.events[event](handler)
+        },
+        signal: jest.fn(),
+        send: jest.fn(),
+        destroy: jest.fn()
+      }
+      peers.push(peer)
+      return peer
+    })
   })
 
-  afterEach(() => {
-    for (const connection of [...get(communication.connected)]) {
-      connection.on.mock.calls[closeIdx][1]()
-    }
+  afterEach(async () => {
+    communication.closeChannels()
+    peers = []
   })
 
-  it('can not send data without initialized connection', () => {
+  afterAll(() => subscriptions.forEach(sub => sub.unsubscribe()))
+
+  it('can not connect with peer until WebSocket is open', () => {
+    communication.connectWith(player3)
     expect(get(communication.connected)).toEqual([])
-    communication.send(randomUUID())
-    expect(get(communication.connected)).toEqual([])
+    expect(Peer).not.toHaveBeenCalled()
   })
 
-  describe('startAccepting()', () => {
-    it('can receive incoming connections', () => {
-      const connection1 = { peer: randomUUID(), on: jest.fn() }
-      handleConnection(connection1)
+  describe('openChannels()', () => {
+    it('opens WebSocket for a given player', async () => {
+      webSocket.events.open = jest.fn().mockImplementation(handler => handler())
 
-      expect(connection1.on).toHaveBeenNthCalledWith(
-        openForPeersIdx + 1,
-        'open',
-        expect.any(Function)
+      await communication.openChannels(player1)
+      expect(WebSocket).toHaveBeenCalledWith(
+        `ws://localhost/ws?bearer=${player1.id}`
       )
-      expect(connection1.on).toHaveBeenNthCalledWith(
-        errorIdx + 1,
-        'error',
-        expect.any(Function)
-      )
-      expect(connection1.on).toHaveBeenNthCalledWith(
-        dataIdx + 1,
-        'data',
-        expect.any(Function)
-      )
-      expect(connection1.on).toHaveBeenNthCalledWith(
-        closeIdx + 1,
-        'close',
-        expect.any(Function)
-      )
-      expect(connection1.on).toHaveBeenNthCalledWith(
-        openForLastConnectedIdx + 1,
-        'open',
-        expect.any(Function)
-      )
-      expect(connection1.on).toHaveBeenCalledTimes(openForLastConnectedIdx + 1)
-
-      expect(get(communication.connected)).toEqual([connection1])
-
-      const connection2 = { peer: randomUUID(), on: jest.fn() }
-      handleConnection(connection2)
-
-      expect(get(communication.connected)).toEqual([connection1, connection2])
-      expect(peer.on).toHaveBeenCalledTimes(1)
-      expect(get(communication.currentPeerId)).toEqual(peer.id)
+      expect(WebSocket).toHaveBeenCalledTimes(1)
     })
 
-    it('sends peers to new connections, and updates last connected', () => {
-      const connection = { peer: randomUUID(), on: jest.fn(), send: jest.fn() }
-      handleConnection(connection)
+    it('handles WebSocket connection errors', async () => {
+      const error = new Error('boom')
+      webSocket.events.error = jest
+        .fn()
+        .mockImplementation(handler => handler(error))
 
-      let [, handleOpen] = connection.on.mock.calls[openForPeersIdx]
-      handleOpen()
-      expect(connection.send).toHaveBeenCalledWith({ peers: [connection.peer] })
-      expect(connection.send).toHaveBeenCalledTimes(1)
+      await expect(
+        communication.openChannels({ username: 'Paul', id: 10 })
+      ).rejects.toThrow(error)
+    })
+  })
 
-      handleOpen = connection.on.mock.calls[openForLastConnectedIdx][1]
-      handleOpen()
-      expect(get(communication.lastConnected)).toEqual(connection)
+  describe('given opened channels', () => {
+    beforeEach(async () => {
+      webSocket.events.open = jest.fn().mockImplementation(handler => handler())
+      await communication.openChannels(player1)
     })
 
-    it('handles connection loss', () => {
-      const connection = { peer: randomUUID(), on: jest.fn() }
-      handleConnection(connection)
+    it('opens WebRTC peer when receiving an offer, and sends the answer through WebSocket', async () => {
+      const offer = { to: player1, from: player2, signal: { type: 'offer' } }
+      const answer = { to: player2, from: player1, signal: { type: 'answer' } }
+      expect(Peer).not.toHaveBeenCalled()
 
-      expect(get(communication.connected)).toEqual([connection])
+      await webSocket.events.message.mock.calls[0][0]({
+        data: JSON.stringify(offer)
+      })
+      expect(Peer).toHaveBeenCalledWith(
+        expect.objectContaining({ initiator: false, trickle: false })
+      )
+      expect(peers[0].signal).toHaveBeenCalledWith(offer.signal)
 
-      const [, handleClose] = connection.on.mock.calls[closeIdx]
-      handleClose()
+      peers[0].events.signal.mock.calls[0][0](answer.signal)
+      expect(webSocket.send).toHaveBeenCalledWith(
+        JSON.stringify({ type: 'answer', ...answer })
+      )
+
+      peers[0].events.connect.mock.calls[0][0]()
+      expect(get(communication.connected)).toEqual([
+        { player: player1 },
+        { player: player2 }
+      ])
+      expect(Peer).toHaveBeenCalledTimes(1)
+      expect(peers[0].events.signal).toHaveBeenCalledTimes(1)
+      expect(webSocket.send).toHaveBeenCalledTimes(1)
+      expect(lastConnectedId).toEqual(player2.id)
+    })
+
+    it('handles unknown WebSocket message', async () => {
+      await webSocket.events.message.mock.calls[0][0]({
+        data: JSON.stringify({
+          to: player2,
+          from: player1,
+          signal: { type: 'unknown' }
+        })
+      })
+      expect(Peer).not.toHaveBeenCalled()
       expect(get(communication.connected)).toEqual([])
+      expect(logger.warn).not.toHaveBeenCalled()
     })
 
-    it('logs connections errors', () => {
-      const warn = jest.spyOn(logger, 'warn').mockImplementation(() => {})
-
-      const connection = { peer: randomUUID(), on: jest.fn() }
-      handleConnection(connection)
-
-      expect(get(communication.connected)).toEqual([connection])
-
-      const [, handleError] = connection.on.mock.calls[errorIdx]
-      const error = new Error('boom!')
-      expect(get(communication.connected)).toEqual([connection])
-
-      handleError(error)
-
-      expect(warn).toHaveBeenCalledWith(
-        { connection, error },
-        expect.any(String)
+    it('handles unparseable WebSocket message', async () => {
+      await webSocket.events.message.mock.calls[0][0]({
+        data: 'unparseable'
+      })
+      expect(Peer).not.toHaveBeenCalled()
+      expect(get(communication.connected)).toEqual([])
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.objectContaining({ rawData: 'unparseable' }),
+        'failed to process data from signaling server'
       )
-      expect(warn).toHaveBeenCalledTimes(1)
+    })
+
+    describe('connectWith()', () => {
+      it('opens WebRTC peer, sends offer through WebSocket and accept answer', async () => {
+        const offer = { to: player3, from: player1, signal: { type: 'offer' } }
+        const answer = { from: player3, signal: { type: 'answer' } }
+
+        communication.connectWith(player3)
+        await Promise.resolve()
+        expect(Peer).toHaveBeenCalledWith(
+          expect.objectContaining({ initiator: true, trickle: false })
+        )
+
+        peers[0].events.signal.mock.calls[0][0](offer.signal)
+        expect(webSocket.send).toHaveBeenCalledWith(
+          JSON.stringify({ type: 'offer', ...offer })
+        )
+
+        await webSocket.events.message.mock.calls[0][0]({
+          data: JSON.stringify(answer)
+        })
+        peers[0].events.connect.mock.calls[0][0]()
+        expect(peers[0].signal).toHaveBeenCalledWith(answer.signal)
+        expect(get(communication.connected)).toEqual([
+          { player: player1 },
+          { player: player3 }
+        ])
+        expect(Peer).toHaveBeenCalledTimes(1)
+        expect(peers[0].signal).toHaveBeenCalledTimes(1)
+        expect(webSocket.send).toHaveBeenCalledTimes(1)
+        expect(lastConnectedId).toEqual(player3.id)
+      })
+
+      it.skip('NEED TIMEOUT does not accept answer for an unknown player', async () => {
+        const offer = { to: player3, from: player1, signal: { type: 'offer' } }
+        const answer = { from: player2, signal: { type: 'answer' } }
+
+        communication.connectWith(player3)
+        expect(Peer).toHaveBeenCalledWith(
+          expect.objectContaining({ initiator: true, trickle: false })
+        )
+
+        peers[0].events.signal.mock.calls[0][0](offer.signal)
+        expect(webSocket.send).toHaveBeenCalledWith(
+          JSON.stringify({ type: 'offer', ...offer })
+        )
+
+        await webSocket.events.message.mock.calls[0][0]({
+          data: JSON.stringify(answer)
+        })
+        expect(get(communication.connected)).toEqual([])
+        expect(Peer).toHaveBeenCalledTimes(1)
+        expect(peers[0].signal).not.toHaveBeenCalled()
+        expect(webSocket.send).toHaveBeenCalledTimes(1)
+      })
     })
   })
 
-  describe('connectWith()', () => {
-    it('can connect with another peer', async () => {
-      const connection = {
-        peer: randomUUID(),
-        once: jest.fn(),
-        on: jest.fn(),
-        removeListener: jest.fn()
-      }
-
-      peer.connect.mockReturnValueOnce(connection)
-      const promise = communication.connectWith(peer.id)
-
-      expect(connection.once).toHaveBeenNthCalledWith(
-        openForPeersIdx + 1,
-        'open',
-        expect.any(Function)
-      )
-      expect(connection.once).toHaveBeenNthCalledWith(
-        errorIdx + 1,
-        'error',
-        expect.any(Function)
-      )
-
-      const [, handleOpen] = connection.once.mock.calls[openForPeersIdx]
-      handleOpen()
-      expect(connection.on).toHaveBeenNthCalledWith(
-        1,
-        'data',
-        expect.any(Function)
-      )
-
-      const [, handleData] = connection.on.mock.calls[0]
-      handleData({ peers: [] })
-      expect(connection.removeListener).toHaveBeenNthCalledWith(
-        1,
-        'data',
-        handleData
-      )
-      await expect(promise).resolves.not.toBeDefined()
-      expect(connection.on).toHaveBeenNthCalledWith(
-        openForPeersIdx + 2,
-        'open',
-        expect.any(Function)
-      )
-      expect(connection.on).toHaveBeenNthCalledWith(
-        errorIdx + 2,
-        'error',
-        expect.any(Function)
-      )
-      expect(connection.on).toHaveBeenNthCalledWith(
-        dataIdx + 2,
-        'data',
-        expect.any(Function)
-      )
-      expect(connection.on).toHaveBeenNthCalledWith(
-        closeIdx + 2,
-        'close',
-        expect.any(Function)
-      )
-      expect(connection.on).toHaveBeenCalledTimes(closeIdx + 2)
-    })
-
-    it('connects to all other peers when receiving them', async () => {
-      const connection1 = {
-        peer: randomUUID(),
-        once: jest.fn(),
-        on: jest.fn(),
-        removeListener: jest.fn()
-      }
-      const connection2 = { peer: randomUUID(), once: jest.fn(), on: jest.fn() }
-      const connection3 = { peer: randomUUID(), once: jest.fn(), on: jest.fn() }
-
-      peer.connect
-        .mockReturnValueOnce(connection1)
-        .mockReturnValueOnce(connection2)
-        .mockReturnValueOnce(connection3)
-      const promise = communication.connectWith(peer.id)
-
-      expect(connection1.once).toHaveBeenNthCalledWith(
-        openForPeersIdx + 1,
-        'open',
-        expect.any(Function)
-      )
-      expect(connection1.once).toHaveBeenNthCalledWith(
-        errorIdx + 1,
-        'error',
-        expect.any(Function)
-      )
-
-      const [, handleOpenConnection1] = connection1.once.mock.calls[
-        openForPeersIdx
-      ]
-      handleOpenConnection1()
-      expect(connection1.on).toHaveBeenNthCalledWith(
-        1,
-        'data',
-        expect.any(Function)
-      )
-
-      const [, handleData] = connection1.on.mock.calls[0]
-      handleData({
-        peers: [connection2.peer, connection3.peer]
+  describe('given connected peers', () => {
+    beforeEach(async () => {
+      webSocket.events.open = jest.fn().mockImplementation(handler => handler())
+      await communication.openChannels(player1)
+      await webSocket.events.message.mock.calls[0][0]({
+        data: JSON.stringify({
+          to: player1,
+          from: player2,
+          signal: { type: 'offer' }
+        })
       })
-      expect(connection1.removeListener).toHaveBeenNthCalledWith(
-        1,
-        'data',
-        handleData
-      )
-
-      expect(connection2.once).toHaveBeenNthCalledWith(
-        openForPeersIdx + 1,
-        'open',
-        expect.any(Function)
-      )
-      expect(connection2.once).toHaveBeenNthCalledWith(
-        errorIdx + 1,
-        'error',
-        expect.any(Function)
-      )
-
-      const [, handleOpenConnection2] = connection2.once.mock.calls[
-        openForPeersIdx
-      ]
-      handleOpenConnection2()
-      expect(connection2.on).not.toHaveBeenCalled()
-      const [, handleOpenConnection3] = connection2.once.mock.calls[
-        openForPeersIdx
-      ]
-      handleOpenConnection3()
-      expect(connection3.on).not.toHaveBeenCalled()
-
-      await expect(promise).resolves.not.toBeDefined()
-      expect(connection1.on).toHaveBeenNthCalledWith(
-        openForPeersIdx + 2,
-        'open',
-        expect.any(Function)
-      )
-      expect(connection1.on).toHaveBeenNthCalledWith(
-        errorIdx + 2,
-        'error',
-        expect.any(Function)
-      )
-      expect(connection1.on).toHaveBeenNthCalledWith(
-        dataIdx + 2,
-        'data',
-        expect.any(Function)
-      )
-      expect(connection1.on).toHaveBeenNthCalledWith(
-        closeIdx + 2,
-        'close',
-        expect.any(Function)
-      )
-      expect(connection1.on).toHaveBeenCalledTimes(closeIdx + 2)
-    })
-
-    it('handles connections errors', async () => {
-      const connection = {
-        peer: randomUUID(),
-        once: jest.fn(),
-        on: jest.fn(),
-        removeListener: jest.fn()
-      }
-
-      peer.connect.mockReturnValueOnce(connection)
-      const promise = communication.connectWith(peer.id)
-
-      expect(connection.once).toHaveBeenNthCalledWith(
-        openForPeersIdx + 1,
-        'open',
-        expect.any(Function)
-      )
-      expect(connection.once).toHaveBeenNthCalledWith(
-        errorIdx + 1,
-        'error',
-        expect.any(Function)
-      )
-
-      const error = new Error('Kaboom!')
-      const [, handleError] = connection.once.mock.calls[errorIdx]
-      handleError(error)
-      await expect(promise).rejects.toEqual(error)
-      expect(connection.on).not.toHaveBeenCalled()
-    })
-  })
-
-  it('can receive data', () => {
-    const connection = { peer: randomUUID(), on: jest.fn() }
-    handleConnection(connection)
-
-    const [, handleData] = connection.on.mock.calls[dataIdx]
-    const data = { foo: randomUUID() }
-    handleData(data)
-
-    expect(get(communication.lastMessageReceived)).toEqual({
-      ...data,
-      peer: connection.peer
-    })
-  })
-
-  describe('send()', () => {
-    it('broadcasts data to all peers', () => {
-      const connection1 = {
-        peer: randomUUID(),
-        on: jest.fn(),
-        open: true,
-        send: jest.fn()
-      }
-      handleConnection(connection1)
-      const connection2 = {
-        peer: randomUUID(),
-        on: jest.fn(),
-        open: true,
-        send: jest.fn()
-      }
-      handleConnection(connection2)
-      expect(get(communication.connected)).toEqual([connection1, connection2])
-
-      let data = { foo: randomUUID() }
-      communication.send(data)
-
-      expect(get(communication.lastMessageSent)).toEqual({
-        ...data,
-        peer: peer.id
+      peers[0].events.connect.mock.calls[0][0]()
+      await webSocket.events.message.mock.calls[0][0]({
+        data: JSON.stringify({
+          to: player1,
+          from: player3,
+          signal: { type: 'offer' }
+        })
       })
-      expect(connection1.send).toHaveBeenNthCalledWith(1, data)
-      expect(connection2.send).toHaveBeenNthCalledWith(1, data)
-
-      data = { bar: randomUUID() }
-      communication.send(data)
-
-      expect(get(communication.lastMessageSent)).toEqual({
-        ...data,
-        peer: peer.id
-      })
-      expect(connection1.send).toHaveBeenNthCalledWith(2, data)
-      expect(connection2.send).toHaveBeenNthCalledWith(2, data)
-      expect(connection1.send).toHaveBeenCalledTimes(2)
-      expect(connection2.send).toHaveBeenCalledTimes(2)
+      peers[1].events.connect.mock.calls[0][0]()
+      await Promise.resolve()
+      expect(get(communication.connected)).toEqual([
+        { player: player1 },
+        { player: player2 },
+        { player: player3 }
+      ])
+      expect(peers).toHaveLength(2)
     })
 
-    it('sends data to a single peers', () => {
-      const connection1 = {
-        peer: randomUUID(),
-        on: jest.fn(),
-        open: true,
-        send: jest.fn()
-      }
-      handleConnection(connection1)
-      const connection2 = {
-        peer: randomUUID(),
-        on: jest.fn(),
-        open: true,
-        send: jest.fn()
-      }
-      handleConnection(connection2)
-      expect(get(communication.connected)).toEqual([connection1, connection2])
-
-      const data = { foo: randomUUID() }
-      communication.send(data, connection2)
-
-      expect(get(communication.lastMessageSent)).toEqual({
-        ...data,
-        peer: peer.id
-      })
-      expect(connection1.send).not.toHaveBeenCalled()
-      expect(connection2.send).toHaveBeenCalledWith(data)
-      expect(connection2.send).toHaveBeenCalledTimes(1)
+    it('handles peer disconnection', async () => {
+      peers[0].events.close.mock.calls[0][0]()
+      expect(get(communication.connected)).toEqual([
+        { player: player1 },
+        { player: player3 }
+      ])
+      expect(lastDisconnectedId).toEqual(player2.id)
     })
 
-    it('disconnect closed peers on send', () => {
-      const connection1 = { peer: randomUUID(), on: jest.fn(), send: jest.fn() }
-      handleConnection(connection1)
-      const connection2 = {
-        peer: randomUUID(),
-        on: jest.fn(),
-        open: true,
-        send: jest.fn()
-      }
-      handleConnection(connection2)
-      expect(get(communication.connected)).toEqual([connection1, connection2])
+    it('can receive peer stream', () => {
+      const stream = randomUUID()
+      peers[1].events.stream.mock.calls[0][0](stream)
+      expect(get(communication.connected)).toEqual([
+        { player: player1 },
+        { player: player2 },
+        { player: player3, stream }
+      ])
+    })
 
-      const data = { foo: randomUUID() }
-      communication.send(data)
+    it('logs peer errors', async () => {
+      const error = new Error('boom!!')
+      peers[0].events.error.mock.calls[0][0](error)
+      expect(get(communication.connected)).toEqual([
+        { player: player1 },
+        { player: player2 },
+        { player: player3 }
+      ])
+      expect(lastDisconnectedId).toBeNull()
+      expect(logger.warn).toHaveBeenCalledWith(
+        { peer: peers[0], error },
+        `peer ${player2.id} encounter an error: ${error.message}`
+      )
+    })
 
-      expect(get(communication.lastMessageSent)).toEqual({
-        ...data,
-        peer: peer.id
+    it('can receive message', () => {
+      const data = { message: randomUUID(), messageId: 1 }
+      peers[0].events.data.mock.calls[0][0](JSON.stringify(data))
+      expect(messagesReceived).toEqual([{ data, from: player2 }])
+
+      peers[1].events.data.mock.calls[0][0](JSON.stringify(data))
+      expect(messagesReceived).toEqual([
+        { data, from: player2 },
+        { data, from: player3 }
+      ])
+    })
+
+    it('reorders received message', async () => {
+      const msg1 = { message: randomUUID(), messageId: 1 }
+      const msg2 = { message: randomUUID(), messageId: 2 }
+      const msg3 = { message: randomUUID(), messageId: 3 }
+      const msg4 = { message: randomUUID(), messageId: 4 }
+      peers[0].events.data.mock.calls[0][0](JSON.stringify(msg1))
+      peers[0].events.data.mock.calls[0][0](JSON.stringify(msg4))
+      peers[0].events.data.mock.calls[0][0](JSON.stringify(msg2))
+      peers[0].events.data.mock.calls[0][0](JSON.stringify(msg3))
+      expect(messagesReceived).toEqual([
+        { data: msg1, from: player2 },
+        { data: msg2, from: player2 },
+        { data: msg3, from: player2 },
+        { data: msg4, from: player2 }
+      ])
+    })
+
+    describe('send()', () => {
+      it('sends message to all connected peers', () => {
+        const data = { message: randomUUID() }
+        const sentData = JSON.stringify({ ...data, messageId: 1 })
+        communication.send(data)
+        expect(peers[0].send).toHaveBeenCalledWith(sentData)
+        expect(peers[1].send).toHaveBeenCalledWith(sentData)
+        expect(peers[0].send).toHaveBeenCalledTimes(1)
+        expect(peers[1].send).toHaveBeenCalledTimes(1)
+        expect(messagesSent).toEqual([{ data, from: player1 }])
       })
-      expect(connection1.send).not.toHaveBeenCalled()
-      expect(connection2.send).toHaveBeenCalledWith(data)
-      expect(connection2.send).toHaveBeenCalledTimes(1)
-      expect(get(communication.connected)).toEqual([connection2])
+
+      it('sends message to a given peer', () => {
+        const data = { content: randomUUID() }
+        const sentData = JSON.stringify({ ...data, messageId: 2 })
+        communication.send(data, player3.id)
+        expect(peers[1].send).toHaveBeenCalledWith(sentData)
+        expect(peers[0].send).not.toHaveBeenCalled()
+        expect(peers[1].send).toHaveBeenCalledTimes(1)
+        expect(messagesSent).toEqual([{ data, from: player1 }])
+      })
+
+      it('does not send message to unknown peer', () => {
+        const data = { whatever: randomUUID() }
+        communication.send(data, 500)
+        expect(peers[0].send).not.toHaveBeenCalled()
+        expect(peers[1].send).not.toHaveBeenCalled()
+        expect(messagesSent).toEqual([{ data, from: player1 }])
+      })
     })
   })
 })

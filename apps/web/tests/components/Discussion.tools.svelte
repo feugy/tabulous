@@ -6,7 +6,7 @@
 <ToolBox
   component={Discussion}
   name="Components/Discussion"
-  events={['sendMessage', 'askInvite']}
+  events={['sendMessage']}
 >
   <Tool
     name="Long thread"

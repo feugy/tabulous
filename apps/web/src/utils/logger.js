@@ -6,7 +6,7 @@ const levels = {
   graphql: 'info',
   gravity: 'info',
   'multi-selection': 'info',
-  'peer-channels': 'info',
+  'peer-channels': 'debug',
   rotable: 'info',
   sse: 'info',
   'scene-loader': 'info',
@@ -38,7 +38,7 @@ export function makeLogger(name) {
   if (!loggers.has(name)) {
     loggers.set(name, {
       trace: getImplementation(name, 'trace'),
-      debug: getImplementation(name, 'debug'),
+      debug: getImplementation(name, 'log'),
       log: getImplementation(name, 'log'),
       info: getImplementation(name, 'info'),
       warn: getImplementation(name, 'warn'),

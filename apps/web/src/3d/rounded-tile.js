@@ -52,6 +52,36 @@ function makeCornerMesh(
   return cornerCSG
 }
 
+/**
+ * Creates a tile with rounded corners.
+ * Tiles are boxes, so their position is their center (half their depth).
+ * By default, the tile dimension follows American poker tile standard (beetween 1.39 & 1.41).
+ * A tile has the following behaviors:
+ * - draggable
+ * - flippable
+ * - rotable
+ * - stackable (the entire tile is a drop target)
+ * - hoverable (?)
+ * A tile's texture must have 2 faces, back then front, aligned horizontally. Edges have silde color (borderColor).
+ * @param {object} params - tile parameters, including (all other properties will be passed to the created mesh):
+ * @param {number} params.x? - initial position along the X axis.
+ * @param {number} params.y? - initial position along the Y axis.
+ * @param {number} params.z? - initial position along the Z axis.
+ * @param {number} params.borderRadius? - radius applied to each corner.
+ * @param {number[]} params.borderColor? - Color4's components used as edge color.
+ * @param {string} params.texture? - tile's texture url.
+ * @param {number} params.width? - tile's width (X axis).
+ * @param {number} params.height? - tile's height (Z axis).
+ * @param {number} params.depth? - tile's depth (Y axis).
+ * @param {boolean} params.isFlipped? - initial flip state (face visible).
+ * @param {number} params.flipDuration? - flip duration (in seconds).
+ * @param {number} params.angle? - initial rotation angle (top above), in radians.
+ * @param {number} params.rotateDuration? - rotation duration (in seconds).
+ * @param {number} params.snapDistance? - distance bellow which the tile automatically snaps to nearest position.
+ * @param {number} params.moveDuration? - automatic move duration (in seconds), when snapping.
+ * @param {ImageDefs} params.images? - detailed images for this card.
+ * @returns {import('@babylonjs/core').Mesh} the created tile mesh.
+ */
 export function createRoundedTile({
   x = 0,
   z = 0,
@@ -68,6 +98,7 @@ export function createRoundedTile({
   rotateDuration = 0.2,
   moveDuration = 0.1,
   snapDistance = 0.25,
+  images,
   ...tileProps
 } = {}) {
   const faceUV = [
@@ -75,8 +106,8 @@ export function createRoundedTile({
     side,
     side,
     side,
-    new Vector4(0, 0, 0.5, 1),
-    new Vector4(1, 1, 0.5, 0)
+    new Vector4(0.5, 1, 0, 0),
+    new Vector4(0.5, 0, 1, 1)
   ]
   const color = Color4.FromArray(borderColor)
   const faceColors = [color, color, color, color, undefined, undefined]
@@ -107,6 +138,7 @@ export function createRoundedTile({
   Object.assign(tile, tileProps)
 
   tile.metadata = {
+    images,
     serialize: () => ({
       x: tile.position.x,
       y: tile.position.y,
@@ -115,6 +147,7 @@ export function createRoundedTile({
       height,
       depth,
       texture,
+      images,
       ...tileProps,
       ...flipBehavior.serialize(),
       ...rotateBehavior.serialize(),

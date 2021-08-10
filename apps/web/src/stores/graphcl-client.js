@@ -19,7 +19,7 @@ export function initGraphQLGlient(player) {
 
   logger.info({ player }, 'initialize GraphQL client')
   client = createClient({
-    url: 'http://localhost:3001/graphql',
+    url: '/graphql',
     fetchOptions: () => ({ headers })
   })
 }

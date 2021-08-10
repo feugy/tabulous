@@ -1,9 +1,4 @@
-import {
-  ActionManager,
-  Animation,
-  ExecuteCodeAction,
-  Vector3
-} from '@babylonjs/core'
+import { Animation, Vector3 } from '@babylonjs/core'
 import { MoveBehavior } from './movable'
 import { applyGravity } from '../utils'
 import { controlManager, multiSelectionManager } from '../managers'
@@ -30,7 +25,7 @@ export class FlipBehavior extends MoveBehavior {
     return FlipBehavior.NAME
   }
 
-  attach(mesh, withAction = true) {
+  attach(mesh) {
     super.attach(mesh)
     mesh.rotation.z = this.isFlipped ? Math.PI : 0
     if (!mesh.metadata) {
@@ -38,30 +33,9 @@ export class FlipBehavior extends MoveBehavior {
     }
     mesh.metadata.flip = this.flip.bind(this)
     mesh.metadata.isFlipped = this.isFlipped
-    if (withAction) {
-      if (!mesh.actionManager) {
-        mesh.actionManager = new ActionManager(mesh.getScene())
-      }
-      // OnLeftPickTrigger is fired on pointer down, and we can't cancel it when dragging
-      this.action = new ExecuteCodeAction(
-        ActionManager.OnPickTrigger,
-        ({ sourceEvent: { button } }) => {
-          if (button === 0) this.flip()
-        }
-      )
-      mesh.actionManager.registerAction(this.action)
-    }
   }
 
-  detach() {
-    if (this.action) {
-      // TODO it should always be defined?!
-      this.mesh.actionManager?.unregisterAction(this.action)
-    }
-    super.detach()
-  }
-
-  flip(skipMulti = false) {
+  flip(single = false) {
     const {
       duration,
       isMoving,
@@ -76,17 +50,24 @@ export class FlipBehavior extends MoveBehavior {
     if (isMoving) {
       return
     }
-    if (!skipMulti && multiSelectionManager.meshes.includes(mesh)) {
-      // when flipping stacks, flip them in order to keep y-ordering
-      for (const other of multiSelectionManager.meshes) {
-        other.getBehaviorByName(this.name)?.flip(true)
+    if (
+      !single &&
+      !mesh.metadata?.fromPeer &&
+      multiSelectionManager.meshes.includes(mesh)
+    ) {
+      for (const selected of multiSelectionManager.meshes) {
+        if (selected.metadata?.flip) {
+          selected.metadata.flip(true)
+        }
       }
       return
     }
     logger.debug({ mesh }, `start flipping ${mesh.id}`)
     this.isMoving = true
 
-    controlManager.record({ meshId: mesh.id, fn: 'flip' })
+    if (!mesh.metadata?.fromPeer) {
+      controlManager.record({ meshId: mesh.id, fn: 'flip' })
+    }
 
     const to = mesh.absolutePosition.clone()
     const [min, max] = mesh.getBoundingInfo().boundingBox.vectorsWorld
