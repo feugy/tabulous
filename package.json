@@ -14,8 +14,10 @@
     "apps/*"
   ],
   "scripts": {
-    "lint": "eslint .",
+    "build": "run-p -ncs build:**",
+    "build:web": "npm run build --workspace apps/web",
     "format": "prettier --write .",
+    "lint": "eslint .",
     "prepare": "husky install",
     "start": "run-p -ncs start:**",
     "start:server": "npm start --workspace apps/server",

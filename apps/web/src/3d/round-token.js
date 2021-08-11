@@ -113,7 +113,7 @@ export function createRoundToken({
 
   const stackBehavior = new StackBehavior({ moveDuration })
   const target = MeshBuilder.CreateCylinder('drop-target', {
-    diameter,
+    diameter: diameter * 1.03,
     height: height + 0.02
   })
   target.parent = token

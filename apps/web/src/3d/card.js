@@ -137,9 +137,9 @@ export function createCard({
 
   const stackBehavior = new StackBehavior({ moveDuration })
   const target = MeshBuilder.CreateBox('drop-target', {
-    width,
+    width: width * 1.03,
     height: depth + 0.01,
-    depth: height
+    depth: height * 1.03
   })
   target.parent = card
   stackBehavior.defineTarget(target, 0.3, [dragKind])

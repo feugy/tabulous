@@ -9,14 +9,13 @@ import { getAuthenticatedPlayer } from './utils.js'
  */
 async function registerGraphQL(app, opts) {
   app.register(mercurius, {
+    ...opts,
     schema,
     resolvers,
     loaders,
-    graphiql: 'playground',
     context: async request => ({
       player: await getAuthenticatedPlayer(request.headers.authorization)
-    }),
-    ...opts
+    })
   })
 }
 

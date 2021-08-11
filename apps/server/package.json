@@ -3,20 +3,31 @@
   "version": "0.0.1",
   "description": "Tabulous web server",
   "type": "module",
+  "main": "./src",
   "scripts": {
-    "start": "nodemon src/server.js | pino-pretty -c -t"
+    "start": "nodemon . | pino-pretty -c -t",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --coverage --colors",
+    "test:dev": "NODE_OPTIONS=--experimental-vm-modules jest jest --watch"
   },
   "dependencies": {
     "@graphql-tools/load": "^6.2.8",
     "@graphql-tools/graphql-file-loader": "^6.2.7",
+    "ajv": "^8.6.2",
     "deepmerge": "^4.2.2",
+    "dotenv": "^10.0.0",
     "fastify": "^3.15.0",
-    "fastify-cors": "^6.0.0",
     "fastify-plugin": "^3.0.0",
+    "fastify-static": "^4.2.3",
     "fastify-websocket": "^3.1.0",
     "mercurius": "^7.5.0",
-    "nodemon": "^2.0.12",
     "pino-pretty": "^4.7.1",
     "rxjs": "^7.0.0"
+  },
+  "devDependencies": {
+    "faker": "^5.5.3",
+    "jest": "^27.0.6",
+    "jest-transform-graphql": "^2.1.0",
+    "jest-watch-typeahead": "^0.6.4",
+    "nodemon": "^2.0.12"
   }
 }

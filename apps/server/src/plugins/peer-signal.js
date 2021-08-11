@@ -7,14 +7,13 @@ import { getAuthenticatedPlayer } from './utils.js'
  * TODO more doc
  * @param {fastify} app - a fastify application
  * @param {object} opts - plugin's options, including:
- * @param {string} [opts.path='/ws'] - the websocket endpoint path
+ * @param {string} opts.path - the websocket endpoint path
  */
-async function peerSignal(app, opts = {}) {
-  const path = opts.path || '/ws'
+async function peerSignal(app, opts) {
   const socketByPlayerId = new Map()
 
   app.get(
-    path,
+    opts.path,
     { websocket: true },
     (connection, { log, query: { bearer } }) => {
       let player
@@ -74,6 +73,6 @@ async function peerSignal(app, opts = {}) {
 
 export default fp(peerSignal, {
   fastify: '>= 3.15.0',
-  name: 'fastify-peer-signal',
+  name: 'tabulous-peer-signal',
   dependencies: ['fastify-websocket']
 })

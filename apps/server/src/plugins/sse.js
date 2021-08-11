@@ -45,15 +45,14 @@ function makeDecorator(retry) {
  * Will send "invite" events to the guest player when they've been invited to a game
  * @param {fastify} app - a fastify application
  * @param {object} opts - plugin's options, including:
- * @param {string} [opts.path='/sse'] - the sse endpoint path
+ * @param {string} opts.path - the sse endpoint path
  */
 async function registerSSE(app, opts) {
-  const path = opts.path || '/sse'
   const retry = opts.retryDelay || 3000
 
   app.decorateReply('sse', makeDecorator(retry))
 
-  app.get(path, ({ query }, reply) => {
+  app.get(opts.path, ({ query }, reply) => {
     getPlayerById(query.id).then(player => {
       if (player) {
         reply.sse(

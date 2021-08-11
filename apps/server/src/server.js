@@ -1,20 +1,21 @@
+import { readFile } from 'fs/promises'
 import fastify from 'fastify'
 
-function configure() {
-  const app = fastify({ logger: { level: 'debug' } })
-
-  app.register(import('fastify-cors'), {
-    origin: ['http://localhost:3000', 'http://78.192.173.27:3000']
+export async function startServer(config) {
+  const app = fastify({
+    logger: config.logger,
+    https: config.https
+      ? {
+          key: await readFile(config.https.key),
+          cert: await readFile(config.https.cert)
+        }
+      : undefined
   })
+
   app.register(import('fastify-websocket'))
-  app.register(import('./plugins/peer-signal.js'))
-  app.register(import('./plugins/graphql.js'))
-  app.register(import('./plugins/sse.js'))
-  return app
+  app.register(import('./plugins/peer-signal.js'), config.plugins.peerSignal)
+  app.register(import('./plugins/graphql.js'), config.plugins.graphql)
+  app.register(import('./plugins/sse.js'), config.plugins.sse)
+  app.register(import('./plugins/static.js'), config.plugins.static)
+  return app.listen(config.serverUrl)
 }
-
-async function start(app, port = 3001) {
-  return app.listen(port)
-}
-
-start(configure())

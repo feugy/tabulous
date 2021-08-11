@@ -1,4 +1,4 @@
-import { Color3, HighlightLayer } from '@babylonjs/core'
+import { Color3 } from '@babylonjs/core'
 import { DragBehavior } from '../behaviors'
 import { isAbove } from '../utils'
 import { multiSelectionManager } from './multi-selection'
@@ -6,7 +6,6 @@ import { multiSelectionManager } from './multi-selection'
 class TargetManager {
   constructor() {
     this.behaviors = []
-    this.highlight = null
   }
 
   registerTargetable(behavior) {
@@ -22,22 +21,17 @@ class TargetManager {
 
   showTarget(target) {
     if (target?.zone) {
-      if (!this.highlight || this.highlight.isDisposed) {
-        this.highlight = new HighlightLayer('target-highlight')
-        this.highlight.innerGlow = false
-        this.highlight.onDisposeObservable.addOnce(() => {
-          this.highlight = null
-        })
-      }
-      target.zone.visibility = 0.01
-      this.highlight.addMesh(target.zone, Color3.Green())
+      target.zone.visibility = 0.1
+      target.zone.enableEdgesRendering()
+      target.zone.edgesWidth = 5.0
+      target.zone.edgesColor = Color3.Green().toColor4()
     }
   }
 
   hideTarget(target) {
     if (target?.zone) {
       target.zone.visibility = 0
-      this.highlight.removeMesh(target.zone)
+      target.zone.disableEdgesRendering()
     }
   }
 
