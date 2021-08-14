@@ -1,20 +1,5 @@
 <script>
-  import { onMount } from 'svelte'
-  import { detail } from '../stores'
-
-  let image = null
-
-  onMount(() =>
-    detail.subscribe(({ mesh }) => {
-      image =
-        mesh.metadata?.images?.[mesh.metadata?.isFlipped ? 'back' : 'front'] ??
-        null
-    })
-  )
-
-  function handleClose() {
-    image = null
-  }
+  export let data
 </script>
 
 <style type="postcss">
@@ -37,6 +22,6 @@
   }
 </style>
 
-<figure class:open={image} on:click={handleClose}>
-  <img src={image} alt="" />
+<figure class:open={Boolean(data)} on:click={() => (data = null)}>
+  <img src={data?.image} alt="" />
 </figure>

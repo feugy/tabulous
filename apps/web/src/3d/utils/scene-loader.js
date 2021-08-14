@@ -83,7 +83,7 @@ export function loadScene(engine, scene, data) {
       for (const stackedId of stack) {
         logger.debug({ stackedId, id }, `push ${stackedId} on top of ${id}`)
         // TODO prevent triggering control manager
-        scene.getMeshByID(id).metadata.push(stackedId)
+        scene.getMeshById(id).metadata.push(stackedId)
       }
     }
   }

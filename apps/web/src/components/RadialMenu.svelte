@@ -4,14 +4,15 @@
   export let open = false
   export let x = 0
   export let y = 0
-  export let angleShift = 0.25
+  export let angleShift = 0.2
 
   $: left = typeof x === 'number' ? `${x}px` : x
   $: top = typeof y === 'number' ? `${y}px` : y
   $: radius = 12.5 * items.length
 
   // TODO https://tailwindcss.com/docs/configuration#referencing-in-java-script
-  const enterDuration = 150
+  // TODO use css module?
+  const enterDuration = 100
 
   function computeItemPosition({ i }) {
     const angle = (-2 * Math.PI * (1 - i)) / items.length
@@ -43,13 +44,17 @@
 </script>
 
 <style type="postcss">
-  ul {
-    @apply absolute rounded-full border-2;
+  aside {
+    @apply absolute rounded-full border-2 flex items-center justify-center;
     border-color: theme('colors.primary.light');
     width: var(--size);
     height: var(--size);
     /* align menu center on given coordinates */
     transform: translate(-50%, -50%);
+  }
+
+  ul {
+    @position relative;
   }
 
   li {
@@ -61,19 +66,19 @@
 </style>
 
 {#if open}
-  <ul
-    on:pointerdown|stopPropagation
-    style={`left: ${left}; top: ${top}; --size:${radius * 2}px;`}
-    on:mouseenter
-    on:mouseleave
-  >
-    {#each items as { onClick, ...buttonProps }, i}
-      <li
-        in:enter={{ i }}
-        on:introend={({ target }) => handleEnterEnd({ i, target })}
-      >
-        <Button {...buttonProps} on:click={onClick} />
-      </li>
-    {/each}
-  </ul>
+  <aside style={`left: ${left}; top: ${top}; --size:${radius * 2}px;`}>
+    <ul on:pointerdown|stopPropagation on:mouseenter on:mouseleave>
+      {#each items as { onClick, ...buttonProps }, i}
+        {#key buttonProps}
+          <li
+            in:enter={{ i }}
+            on:introend={({ target }) => handleEnterEnd({ i, target })}
+          >
+            <Button {...buttonProps} on:click={onClick} />
+          </li>
+        {/key}
+      {/each}
+    </ul>
+    <slot />
+  </aside>
 {/if}

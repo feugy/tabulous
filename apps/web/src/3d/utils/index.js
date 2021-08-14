@@ -1,5 +1,4 @@
 export * from './behaviors'
-export * from './camera'
 export * from './gravity'
 export * from './mesh'
 export * from './scene-loader'

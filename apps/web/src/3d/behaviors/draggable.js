@@ -1,93 +1,62 @@
-import { Vector3 } from '@babylonjs/core'
-import { animateMove, applyGravity } from '../utils'
-import { controlManager, dragManager, targetManager } from '../managers'
-import { makeLogger } from '../../utils'
-
-const logger = makeLogger('draggable')
+import { dragManager } from '../managers'
 
 export class DragBehavior {
-  constructor({ moveDuration, snapDistance, elevation, dragKind } = {}) {
-    this.enabled = true
-    this.snapDistance = snapDistance || 0.25
-    this.moveDuration = moveDuration || 0.1
-    this.elevation = elevation ? elevation : 0.5
+  /**
+   * Creates behavior to make a mesh draggable, so it could be moved and dropped.
+   * When moving mesh, its final position will snap to a virtual grid.
+   * A mesh can only be dropped onto targets with the same kind.
+   *
+   * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
+   * @property {string} dragKind - drag kind.
+   * @property {number} snapDistance - snap grid unit, in 3D world coordinate.
+   * @property {number} moveDuration - duration (in milliseconds) of the snap move.
+   *
+   * @param {object} params - parameters, including:
+   * @param {number} params.snapDistance - snap grid unit, in 3D world coordinate.
+   * @param {number} params.moveDuration - duration (in milliseconds) of the snap move.
+   * @param {string} params.dragKind - drag kind.
+   */
+  constructor({ moveDuration, snapDistance, dragKind } = {}) {
+    this.mesh = null
     this.dragKind = dragKind
-    this.dragStartObserver = null
-    this.dragObserver = null
-    this.dragEndObserver = null
+    this.snapDistance = snapDistance || 0.25
+    this.moveDuration = moveDuration || 100
   }
 
+  /**
+   * @property {string} name - this behavior's constant name.
+   */
   get name() {
     return DragBehavior.NAME
   }
 
+  /**
+   * Does nothing.
+   * @see {@link import('@babylonjs/core').Behavior.init}
+   */
   init() {}
 
+  /**
+   * Attaches this behavior to a mesh, registering it to the drag manager
+   * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
+   */
   attach(mesh) {
-    let target = null
     this.mesh = mesh
-
-    this.dragStartObserver = dragManager.onDragStartObservable.add(dragged => {
-      if (dragged.mesh === mesh) {
-        mesh.absolutePosition.y += this.elevation
-        controlManager.record({
-          meshId: mesh.id,
-          pos: mesh.absolutePosition.asArray()
-        })
-      }
-    })
-
-    this.dragObserver = dragManager.onDragObservable.add(dragged => {
-      if (dragged.mesh === mesh) {
-        // hide previous target and move
-        if (target) {
-          targetManager.hideTarget(target)
-          target = null
-        }
-        mesh.setAbsolutePosition(mesh.absolutePosition.addInPlace(dragged.move))
-        controlManager.record({
-          meshId: mesh.id,
-          pos: mesh.absolutePosition.asArray()
-        })
-        // find and show new target
-        target = targetManager.findTarget(mesh, this.dragKind)
-        targetManager.showTarget(target)
-      }
-    })
-
-    this.dragEndObserver = dragManager.onDragEndObservable.add(dragged => {
-      if (dragged.mesh === mesh) {
-        targetManager.hideTarget(target)
-        if (target) {
-          logger.debug(
-            { dropped: mesh, target },
-            `drop ${mesh.id} over ${target.mesh.id}`
-          )
-          target.drop()
-        } else {
-          const { x, y, z } = mesh.absolutePosition
-          const absolutePosition = new Vector3(
-            Math.round(x / this.snapDistance) * this.snapDistance,
-            y,
-            Math.round(z / this.snapDistance) * this.snapDistance
-          )
-          logger.debug({ dragged: mesh }, `end drag ${mesh.id}`)
-          animateMove(mesh, absolutePosition, this.moveDuration, mesh =>
-            controlManager.record({
-              meshId: mesh.id,
-              pos: applyGravity(mesh).asArray()
-            })
-          )
-        }
-      }
-    })
+    dragManager.registerDraggable(this)
   }
 
+  /**
+   * Detaches this behavior from its mesh, by unregistering from the drag manager.
+   */
   detach() {
-    dragManager.onDragStartObservable.remove(this.dragStartObserver)
-    dragManager.onDragObservable.remove(this.dragObserver)
-    dragManager.onDragEndObservable.remove(this.dragEndObserver)
+    dragManager.unregisterDraggable(this)
   }
 }
 
+/**
+ * Name of all draggable behaviors.
+ * @static
+ * @memberof DragBehavior
+ * @type {string}
+ */
 DragBehavior.NAME = 'draggable'

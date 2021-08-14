@@ -26,11 +26,15 @@ titles:
   invite: Qui vas tu inviter ?
   log-in: Bienvenue !
 tooltips:
-  center-camera: Centrer la caméra
   detail: Regarder
+  enter-fullscreen: Entrer en plein-écran
   flip: Retourner
   invite-player: Inviter un(e) joueur(se)
+  leave-fullscreen: Quitter le plein-écran
   quit-game: Quitter le jeu
+  restore-camera: '{index, plural, =0 {Centrer la caméra sur la position initiale} other {Centrer la caméra sur la position #}}'
   rotate: Pivoter
+  save-camera: '{index, plural, =0 {Impossible de changer la position initiale} other {Enregistrer la position la caméra sur la position #}}'
+  save-new-camera: Enregistrer la position de la caméra
   send-message: Envoyer à tous
   shuffle: Mélanger

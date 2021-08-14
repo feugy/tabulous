@@ -3,32 +3,48 @@ import { Matrix, Vector3 } from '@babylonjs/core'
 let table
 
 /**
- * Converts a screen position (2D, DOM) into a point on the ground (3D, scene).
+ * @typedef {object} ScreenPosition position on screen (2D, DOM):
+ * @property {number} x - x coordinate.
+ * @property {number} y - y coordinate.
+ */
+
+/**
+ * Converts a screen position into a point on the ground (3D, scene).
  * Useful to know where on the ground a player has clicked.
  * @param {import('@babylonjs/core').Scene} scene - current scene.
- * @param {object} position - screen position, including:
- * @param {number} position.x - x coordinate.
- * @param {number} position.y - y coordinate.
- * @returns {Vector3} 3D point on the ground plane (Y axis) for this position
+ * @param {ScreenPosition} position - screen position.
+ * @returns {Vector3} 3D point on the ground plane (Y axis) for this position.
  */
 export function screenToGround(scene, { x, y }) {
   return scene.createPickingRay(x, y).intersectsAxis('y')
 }
 
+/**
+ * Indicates whether a screen position (2D, DOM) is above the table mesh.
+ * @param {import('@babylonjs/core').Scene} scene - current scene.
+ * @param {ScreenPosition} position - screen position.
+ * @returns {boolean} true if the point is within the table area, false otherwise.
+ */
 export function isAboveTable(scene, { x, y }) {
   if (!table || table.isDisposed) {
-    table = scene.getMeshByID('table')
+    table = scene.getMeshById('table')
   }
-  return scene.createPickingRay(x, y).intersectsMesh(table).hit
+  return table ? scene.createPickingRay(x, y).intersectsMesh(table).hit : false
 }
 
-export function groundToScreen(point, scene) {
-  if (!scene?.activeCamera) {
+/**
+ * Returns screen coordinate of a given mesh.
+ * @param {import('@babylonjs/core').Mesh} mesh - the tested mesh
+ * @returns {ScreenPosition|null} this mesh's screen position
+ */
+export function getMeshScreenPosition(mesh) {
+  if (!mesh || !mesh.getScene()?.activeCamera) {
     return null
   }
+  const scene = mesh.getScene()
   const engine = scene.getEngine()
   const { x, y } = Vector3.Project(
-    point,
+    mesh.absolutePosition,
     Matrix.Identity(),
     scene.getTransformMatrix(),
     scene.activeCamera.viewport.toGlobal(

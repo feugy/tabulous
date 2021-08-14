@@ -128,7 +128,7 @@ async function createPeer({ signal, from, to }) {
 
       peer.on('data', stringData => {
         const data = JSON.parse(stringData)
-        logger.trace({ data, peer }, `data from ${to.id}`)
+        logger.debug({ data, peer }, `data from ${to.id}`)
 
         const { lastMessageId } = channels.get(to.id)
         if (data.messageId !== lastMessageId + 1 && lastMessageId > 0) {
@@ -317,7 +317,7 @@ export function send(data, playerId = null) {
     ? new Map([[playerId, channels.get(playerId)]])
     : channels
   for (const [playerId, { peer }] of destination) {
-    logger.trace({ data, peer }, `sending data to ${playerId}`)
+    logger.debug({ data, peer }, `sending data to ${playerId}`)
     try {
       peer.send(JSON.stringify({ ...data, messageId }))
     } catch (error) {

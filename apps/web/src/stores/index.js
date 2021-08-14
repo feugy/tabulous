@@ -1,5 +1,6 @@
 export * from './authentication'
 export * from './discussion'
+export * from './fullscreen'
 export * from './game-engine'
 export * from './game-manager'
 export * from './graphcl-client'

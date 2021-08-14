@@ -1,16 +1,19 @@
 const levels = {
-  authentication: 'trace',
-  draggable: 'info',
-  flippable: 'info',
-  'game-manager': 'info',
-  graphql: 'info',
-  gravity: 'info',
-  'multi-selection': 'info',
-  'peer-channels': 'info',
-  rotable: 'info',
-  sse: 'info',
-  'scene-loader': 'info',
-  stackable: 'info'
+  authentication: 'warn',
+  camera: 'warn',
+  drag: 'warn',
+  flippable: 'warn',
+  'game-manager': 'warn',
+  graphql: 'warn',
+  gravity: 'warn',
+  input: 'warn',
+  'peer-channels': 'warn',
+  rotable: 'warn',
+  selection: 'warn',
+  sse: 'warn',
+  'scene-loader': 'warn',
+  stackable: 'warn',
+  target: 'warn'
 }
 
 const levelMap = {
@@ -29,7 +32,7 @@ const loggers = new Map()
 function noop() {}
 
 function getImplementation(name, level) {
-  return levelMap[level] <= levelMap[levels[name] || 'warn']
+  return levelMap[level] <= levelMap[levels[name] || 'info']
     ? console[level].bind(console)
     : noop
 }
