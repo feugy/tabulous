@@ -9,9 +9,9 @@ import {
   Vector4
 } from '@babylonjs/core'
 import {
+  DetailBehavior,
   DragBehavior,
   FlipBehavior,
-  HoverBehavior,
   RotateBehavior,
   StackBehavior
 } from './behaviors'
@@ -37,13 +37,13 @@ import { controlManager } from './managers'
  * @param {number} params.height? - card's height (Z axis).
  * @param {number} params.depth? - card's depth (Y axis).
  * @param {boolean} params.isFlipped? - initial flip state (face visible).
- * @param {number} params.flipDuration? - flip duration (in seconds).
+ * @param {number} params.flipDuration? - flip duration (in milliseconds).
  * @param {number} params.angle? - initial rotation angle (top above), in radians.
- * @param {number} params.rotateDuration? - rotation duration (in seconds).
+ * @param {number} params.rotateDuration? - rotation duration (in milliseconds).
  * @param {number} params.snapDistance? - distance bellow which the card automatically snaps to nearest position.
- * @param {number} params.moveDuration? - automatic move duration (in seconds), when snapping.
- * @param {ImageDefs} params.images? - detailed images for this card.
- * @returns {Mesh} the created card mesh.
+ * @param {number} params.moveDuration? - automatic move duration (in milliseconds), when snapping.
+ * @param {import('./utils').ImageDefs} params.images? - detailed images for this card.
+ * @returns {import('@babylonjs/core').Mesh} the created card mesh.
  */
 export function createCard({
   x = 0,
@@ -55,9 +55,9 @@ export function createCard({
   texture,
   isFlipped = false,
   angle = 0,
-  flipDuration = 0.5,
-  rotateDuration = 0.2,
-  moveDuration = 0.1,
+  flipDuration = 500,
+  rotateDuration = 200,
+  moveDuration = 100,
   snapDistance = 0.25,
   images,
   ...cardProps
@@ -121,6 +121,8 @@ export function createCard({
     }
   })
 
+  card.addBehavior(new DetailBehavior(), true)
+
   const dragKind = 'card'
   card.addBehavior(
     new DragBehavior({ moveDuration, snapDistance, dragKind }),
@@ -133,16 +135,14 @@ export function createCard({
   const rotateBehavior = new RotateBehavior({ duration: rotateDuration, angle })
   card.addBehavior(rotateBehavior, true)
 
-  card.addBehavior(new HoverBehavior(), true)
-
   const stackBehavior = new StackBehavior({ moveDuration })
-  const target = MeshBuilder.CreateBox('drop-target', {
+  const dropZone = MeshBuilder.CreateBox('drop-zone', {
     width: width * 1.03,
     height: depth + 0.01,
     depth: height * 1.03
   })
-  target.parent = card
-  stackBehavior.defineTarget(target, 0.3, [dragKind])
+  dropZone.parent = card
+  stackBehavior.addZone(dropZone, 0.3, [dragKind])
   card.addBehavior(stackBehavior, true)
 
   controlManager.registerControlable(card)

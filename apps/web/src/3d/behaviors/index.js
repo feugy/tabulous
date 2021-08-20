@@ -1,6 +1,6 @@
+export * from './detailable'
 export * from './draggable'
 export * from './flippable'
-export * from './hoverable'
 export * from './movable'
 export * from './rotable'
 export * from './stackable'

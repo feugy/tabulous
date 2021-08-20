@@ -7,9 +7,9 @@ import {
   Vector4
 } from '@babylonjs/core'
 import {
+  DetailBehavior,
   DragBehavior,
   FlipBehavior,
-  HoverBehavior,
   RotateBehavior,
   StackBehavior
 } from './behaviors'
@@ -33,12 +33,12 @@ import { controlManager } from './managers'
  * @param {number} params.diameter? - token's diameter (X+Z axis).
  * @param {number} params.height? - token's height (Y axis).
  * @param {boolean} params.isFlipped? - initial flip state (face visible).
- * @param {number} params.flipDuration? - flip duration (in seconds).
+ * @param {number} params.flipDuration? - flip duration (in milliseconds).
  * @param {number} params.angle? - initial rotation angle (top above), in radians.
- * @param {number} params.rotateDuration? - rotation duration (in seconds).
+ * @param {number} params.rotateDuration? - rotation duration (in milliseconds).
  * @param {number} params.snapDistance? - distance bellow which the token automatically snaps to nearest position.
- * @param {number} params.moveDuration? - automatic move duration (in seconds), when snapping.
- * @param {ImageDefs} params.images? - detailed images for this card.
+ * @param {number} params.moveDuration? - automatic move duration (in milliseconds), when snapping.
+ * @param {import('./utils').ImageDefs} params.images? - detailed images for this card.
  * @returns the created token mesh.
  */
 export function createRoundToken({
@@ -50,9 +50,9 @@ export function createRoundToken({
   texture,
   isFlipped = false,
   angle = 0,
-  flipDuration = 0.5,
-  rotateDuration = 0.2,
-  moveDuration = 0.1,
+  flipDuration = 500,
+  rotateDuration = 200,
+  moveDuration = 100,
   snapDistance = 0.25,
   images,
   ...tokenProps
@@ -97,6 +97,8 @@ export function createRoundToken({
   token.overlayColor = new Color3(0, 0.8, 0)
   token.overlayAlpha = 0.2
 
+  token.addBehavior(new DetailBehavior(), true)
+
   const dragKind = 'round-target'
   token.addBehavior(
     new DragBehavior({ moveDuration, snapDistance, dragKind }),
@@ -109,15 +111,13 @@ export function createRoundToken({
   const rotateBehavior = new RotateBehavior({ duration: rotateDuration, angle })
   token.addBehavior(rotateBehavior, true)
 
-  token.addBehavior(new HoverBehavior(), true)
-
   const stackBehavior = new StackBehavior({ moveDuration })
-  const target = MeshBuilder.CreateCylinder('drop-target', {
+  const dropZone = MeshBuilder.CreateCylinder('drop-zone', {
     diameter: diameter * 1.03,
     height: height + 0.02
   })
-  target.parent = token
-  stackBehavior.defineTarget(target, 0.6, [dragKind])
+  dropZone.parent = token
+  stackBehavior.addZone(dropZone, 0.6, [dragKind])
   token.addBehavior(stackBehavior, true)
 
   controlManager.registerControlable(token)

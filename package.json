@@ -23,6 +23,7 @@
     "start:server": "npm start --workspace apps/server",
     "start:web": "npm start --workspace apps/web",
     "test": "run-s -ncs test:**",
+    "test:server": "npm t --workspace apps/server",
     "test:web": "npm t --workspace apps/web"
   },
   "devDependencies": {

@@ -1,86 +1,97 @@
 # TODO
 
-## Partie avec Célia
-
-1. menu remains while zooming in or out
-1. dropping sometimes trigger flip
-1. stack indicator can not work in touch
-1. we could show when there's only one mesh
-1. menu prevents clicking
+- Game descriptor:
+  - split mesh definitions from initial position (slots)
+  - randomized slots for shuffling during creation
+  - player camera position
+- share camera position to game host for saving
+- ability to remove game (creator only)
 
 ## Refactor
 
+- behaviors may not care about active selection (game-interaction/game-engine should)
 - server logging
+- enable [Babylon.js treeshaking](https://doc.babylonjs.com/divingDeeper/developWithBjs/treeShaking)
+- all manager managing a collection of behaviors should check their capabilities
 - moves images to server
+- completly disable Babylon input management
 - UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
 - disable any possible action while animating
 
 ## Single player
 
-- possible different interaction
-  - tap table to pan camera
-  - molette/pinch table to zoom camera
-  - drag table for multiple selection
-  - drag mesh/selection for movement
-  - hover/tap mesh/selection for menu
-  - left click mesh/selection for primary action (flip)
-  - right click mesh/selection for secondary action (rotate)
-  - middle click mesh/selection for ternary action (rotate)
-  - double click/tap mesh to view
-  - ?? rotate camera
-- ust CTRL for changing multiple selection
-- parametrize and serialize UVs
-- ability to shuffle stack on scene loading
-- camera controls
-- zoom on item
-- permanently shows stack size?
+- boards
+- player's hand
 - stack actions:
   - draw multiple cards (either in hand, or in front of them)
   - distribute multiple cards to players (either in their hand, or in front of them)
-  - add to bottom
-- boards
-- player's hand
+- parametrize and serialize UVs
+- keyboard
 
 ## Multi player
 
-- persistant chat
 - invite dialogue must take focus and invite on enter key
 - invite players by name and id
 - search players by name
+- persistant chat
 - indicates when remote stream is muted/stopped
 
 # Known issues
 
-- multi selection does not always work fine
+- all textures but card ones are invisible on Huawei. May be [this](https://forum.babylonjs.com/t/engine-crashes-on-android-devices/23176).
+  > BJS - [23:43:20]: Unable to compile effect:
+  > BJS - [23:43:20]: Uniforms: world, view, viewProjection, vEyePosition, vLightsType, vAmbientColor, vDiffuseColor, vSpecularColor, vEmissiveColor, visibility, vFogInfos, vFogColor, pointSize, vDiffuseInfos, vAmbientInfos, vOpacityInfos, vReflectionInfos, vEmissiveInfos, vSpecularInfos, vBumpInfos, vLightmapInfos, vRefractionInfos, mBones, vClipPlane, vClipPlane2, vClipPlane3, vClipPlane4, vClipPlane5, vClipPlane6, diffuseMatrix, ambientMatrix, opacityMatrix, reflectionMatrix, emissiveMatrix, specularMatrix, bumpMatrix, normalMatrix, lightmapMatrix, refractionMatrix, diffuseLeftColor, diffuseRightColor, opacityParts, reflectionLeftColor, reflectionRightColor, emissiveLeftColor, emissiveRightColor, refractionLeftColor, refractionRightColor, vReflectionPosition, vReflectionSize, vRefractionPosition, vRefractionSize, logarithmicDepthConstant, vTangentSpaceParams, alphaCutOff, boneTextureWidth, morphTargetTextureInfo, morphTargetTextureIndices, vDetailInfos, detailMatrix, previousWorld, previousViewProjection, vLightData0, vLightDiffuse0, vLightSpecular0, vLightDirection0, vLightFalloff0, vLightGround0, lightMatrix0, shadowsInfo0, depthValues0, viewFrustumZ0, cascadeBlendFactor0, lightSizeUVCorrection0, depthCorrection0, penumbraDarkness0, frustumLengths0, diffuseSampler, ambientSampler, opacitySampler, reflectionCubeSampler, reflection2DSampler, emissiveSampler, specularSampler, bumpSampler, lightmapSampler, refractionCubeSampler, refraction2DSampler, boneSampler, morphTargets, detailSampler, shadowSampler0, depthSampler0
+  > BJS - [23:43:20]: Attributes: position, normal
+  > BJS - [23:43:20]: Defines:
+
+#define DIFFUSEDIRECTUV 0
+#define DETAILDIRECTUV 0
+#define DETAIL_NORMALBLENDMETHOD 0
+#define AMBIENTDIRECTUV 0
+#define OPACITYDIRECTUV 0
+#define EMISSIVEDIRECTUV 0
+#define SPECULARDIRECTUV 0
+#define BUMPDIRECTUV 0
+#define NORMAL
+#define NUM_BONE_INFLUENCERS 0
+#define BonesPerMesh 0
+#define LIGHTMAPDIRECTUV 0
+#define SHADOWFLOAT
+#define NUM_MORPH_INFLUENCERS 0
+#define ALPHABLEND
+#define PREPASS_IRRADIANCE_INDEX -1
+#define PREPASS_ALBEDO_INDEX -1
+#define PREPASS_DEPTH_INDEX -1
+#define PREPASS_NORMAL_INDEX -1
+#define PREPASS_POSITION_INDEX -1
+#define PREPASS_VELOCITY_INDEX -1
+#define PREPASS_REFLECTIVITY_INDEX -1
+#define SCENE_MRT_COUNT 0
+#define VIGNETTEBLENDMODEMULTIPLY
+#define SAMPLER3DGREENDEPTH
+#define SAMPLER3DBGRMAP
+#define LIGHT0
+#define DIRLIGHT0
+#define SHADOW0
+#define SHADOWPCF0
+#define SHADOWS
+
+- all textures are black on Xperia tablet [issue](https://forum.babylonjs.com/t/babylonjs-is-running-webgl-1-0-instead-of-2-0/2992/6)
+- selection hint does not consider camera angle
 - flip stacked items only flip individual card: it does not change the ordering
 - flipping or rotating item does not change vertical position: items above it will still be above it at the end
 - moving items bellow other does not apply gravity to them
 
-# Notes
+# Ideas
 
-In Tabletopia, the interaction model is:
-
-- left drag the board to pan
-- right drag the board to control camera angle
-- molette to zoom in and out
-- left drag an item to move (clear previous selection unless clicking a selected item)
-- left left click to select (clear previous selection)
-- double click to zoom (only on cards)
-- right click to display action menu (clear previous selection unless clicking a selected item)
-- drag + left click to select multiple
-- shift + left click to add (or remove) to the multiple selection
-- keyboard shortcut to trigger actions on current selection
-
-Being forced to do click (either select or menu) before triggering actions (shortcut or menu) is a bummer
-
-Game setup
+## Game setup
 
 - min/max number of players allowed
 - players' positions
 - token/card enabled behaviors (overall+per item setting?)
-- personnal hand support (impact on the draw and distribute commands)
+- personnal hand support (impact on the draw and deal commands)
 
-Ideas for UI:
+## Game UI:
 
 - top right, an help button with drawing for base commands (pan, camera, DnD, main actions)
 - top right, an link to the rule book, opened in a floating pane, either taking whole screen, or a third of it
@@ -88,9 +99,49 @@ Ideas for UI:
 - bottom left, chat window
 - bottom, expansible area showing player's hand
 
-Ideas for joining a game:
+## Joining a game:
 
 - any player can mute, or kick, another player (really?)
+
+# Interaction model
+
+| Action on table  | Tabulous                     | Tabletopia                  |
+| ---------------- | ---------------------------- | --------------------------- |
+| zoom camera      | molette, pinch               | molette, +/-                |
+| move camera      | left click, tap              | left drag, W/A/S/D          |
+| rotate camera    | right drag, long finger drag | right drag                  |
+| fullscreen       | _button_                     | ~/esc                       |
+| save camera      | _button_                     | shift+number, _menu action_ |
+| restore camera   | _button_                     | number, _menu action_       |
+| menu             | _N/A_                        | right click                 |
+| toggle hand      | _N/A_                        | _menu action_               |
+| toggle interface | _N/A_                        | _menu action_               |
+| help             | _N/A_                        | F1, _button_, _menu action_ |
+| magnify          | _N/A_                        | Z, _menu action_            |
+
+| Action on Mesh  | Tabulous                                     | Tabletopia                                       |
+| --------------- | -------------------------------------------- | ------------------------------------------------ |
+| move            | left drag, finger drag                       | left drag                                        |
+| select          | _N/A_                                        | left click                                       |
+| multiple select | left drag table, finger drag table           | Shift+left click, Shift+left drag                |
+| menu            | mouse hover, single tap                      | right click                                      |
+| view details    | double left click, double tap, _menu action_ | double left click                                |
+| flip            | left click, _menu action_                    | F, _menu action_                                 |
+| rotate          | right click, _menu action_                   | Ctrl+left drag, Q/E/PgUp/PgDown, _menu action_   |
+| (un)lock        | _N/A_                                        | L, _menu action_                                 |
+| put under       | _N/A_                                        | U, _menu action_                                 |
+| take to hand    | _N/A_                                        | T, _move to screen bottom_, _menu action (draw)_ |
+
+| Action on Stacks    | Tabulous      | Tabletopia                              |
+| ------------------- | ------------- | --------------------------------------- |
+| shuffle             | _menu action_ | _menu action_                           |
+| select N to hand    | _N/A_         | molette+left drag, _menu action (take)_ |
+| deal N              | _N/A_         | molette+left drag, _menu action (deal)_ |
+| stack on top        | _move over_   | _move over_                             |
+| stack at the bottom | _N/A_         | Shift+_move over_                       |
+
+In Tabletopia, being forced to do click (either select or menu) before triggering actions (shortcut or menu) is a bummer.
+They support keyboard, but not fingers.
 
 # Multi-player
 
@@ -230,8 +281,3 @@ done
 
 There is no built-in way for the remote side of an WebRTC connection to know that video or audio was disabled.
 The mute/unmute events are meant for network issues. Stopping a track is definitive. Adding/removing track from stream only works locally (or would trigger re-negociation)
-
-# Source
-
-[Cours complet apprendre K8s](https://devopssec.fr/article/cours-complet-apprendre-orchestrateur-kubernetes-k8s#begin-article-section)
-[OVH terraform Kube Provider](https://registry.terraform.io/providers/ovh/ovh/latest/docs)

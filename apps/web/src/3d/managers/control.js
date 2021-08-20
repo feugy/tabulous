@@ -1,5 +1,6 @@
-import { Observable, Vector3 } from '@babylonjs/core'
+import { Observable, PointerEventTypes, Vector3 } from '@babylonjs/core'
 import { createPeerPointer } from '../peer-pointer'
+import { screenToGround } from '../utils'
 
 function getKey(action) {
   return `${action?.meshId}-${action.fn?.toString() || 'pos'}`
@@ -13,38 +14,63 @@ function getKey(action) {
  */
 
 /**
- * @typedef {object} ImageDefs detailed images definitions for a given mesh:
- * @property {string} front - image for the mesh front face.
- * @property {string} back? - image for the mesh front back.
+ * @typedef {number[]} PointerPosition pointer change, as an array of x/z 3D coordinates.
+ */
+
+/**
+ * @typedef {object} MeshDetails details of a given mesh.
+ * @property {import('@babylonjs/core').Mesh} mesh - the detailed mesh.
+ * @property {object} data - detailed data, including:
+ * @property {string} data.image? - image for that mesh.
  */
 
 class ControlManager {
   /**
-   * Creates a manager to control a collection of meshes:
-   * - runs actions based on user input (clicks, double clicks...)
-   * - applies actions received from peers
-   * It also controls pointer objects to represent peer players.
+   * Creates a manager to remotely control a collection of meshes:
+   * - applies actions received to specific meshes
+   * - propagates applied actions to observers (with cycle breaker)
+   * - controls pointer objects to represent peer players.
+   * Clears all observers on scene disposal.
+   *
+   * @property {Observable<Action>} onActionObservable - emits applied actions.
+   * @property {Observable<PointerPosition>} onPointerObservable - emits local pointer 3D position.
+   * @property {Observable<MeshDetails>} onDetailedObservable - emits when displaying details of a given mesh.
    */
   constructor() {
+    this.onActionObservable = new Observable()
+    this.onPointerObservable = new Observable()
+    this.onDetailedObservable = new Observable()
+    // private
     this.controlables = new Map()
     this.peerPointers = new Map()
     // prevents loops when applying an received action
     this.inhibit = new Set()
-    this.onActionObservable = new Observable()
-    this.onPointerObservable = new Observable()
-    this.onDetailedObservable = new Observable()
   }
 
   /**
-   * Gives a scene to the manager. Does nothing for ow
+   * Gives a scene to the manager.
    * @param {object} params - parameters, including:
    * @param {Scene} params.scene - scene attached to.
    */
-  init() {}
+  init({ scene }) {
+    scene.onPrePointerObservable.add(({ type, localPosition }) => {
+      if (type === PointerEventTypes.POINTERMOVE) {
+        const pointer = screenToGround(scene, localPosition)?.asArray()
+        if (pointer) {
+          this.onPointerObservable.notifyObservers({ pointer })
+        }
+      }
+    })
+    scene.onDisposeObservable.addOnce(() => {
+      this.onActionObservable.clear()
+      this.onPointerObservable.clear()
+      this.onDetailedObservable.clear()
+    })
+  }
 
   /**
    * Registers a new controllable mesh.
-   * Does nothing if this mesh is already controlled.
+   * Does nothing if this mesh is already managed.
    * @param {object} mesh - controled mesh (needs at least an id property).
    */
   registerControlable(mesh) {
@@ -55,8 +81,8 @@ class ControlManager {
 
   /**
    * Unregisters a controlled mesh.
-   * Does nothing if this mesh is not yet controlled.
-   * @param {object} mesh - controlled mesh (needs at least an id property) .
+   * Does nothing on unmanaged mesh.
+   * @param {object} mesh - controlled mesh (needs at least an id property).
    */
   unregisterControlable(mesh) {
     this.controlables.delete(mesh?.id)
@@ -65,7 +91,7 @@ class ControlManager {
   /**
    * Records an actions from one of the controlled meshes, and notifies observers.
    * Does nothing if the source mesh is not controlled.
-   * @param {Action} action - recorded action
+   * @param {Action} action - recorded action.
    */
   record(action) {
     const key = getKey(action)
@@ -75,18 +101,10 @@ class ControlManager {
   }
 
   /**
-   * Records a pointer change, and notifies observers.
-   * @param {Vector3} position - pointer position in the 3D engine
-   */
-  recordPointer(position) {
-    this.onPointerObservable.notifyObservers({ pointer: position.asArray() })
-  }
-
-  /**
    * Applies an actions to a controlled meshes (`fn` in its metadatas), or changes its position (action.pos is defined).
    * Does nothing if the target mesh is not controlled.
-   * @param {Action} action - applied action
-   * @param {boolean} fromPeer - true to indicate this action comes from a remote peer
+   * @param {Action} action - applied action.
+   * @param {boolean} fromPeer - true to indicate this action comes from a remote peer.
    */
   apply(action, fromPeer = false) {
     const mesh = this.controlables.get(action?.meshId)
@@ -105,18 +123,6 @@ class ControlManager {
     }
     this.inhibit.delete(key)
     mesh.metadata.fromPeer = null
-  }
-
-  /**
-   * Notify observers that user requested details of a given mesh.
-   * Does nothing if the requested mesh is not controlled.
-   * @param {string} meshId - the requested mesh
-   */
-  askForDetails(meshId) {
-    const mesh = this.controlables.get(meshId)
-    if (mesh && mesh.metadata?.images?.front) {
-      this.onDetailedObservable.notifyObservers({ mesh })
-    }
   }
 
   /**

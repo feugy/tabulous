@@ -1,9 +1,13 @@
 fps _: 'FPS : {value}'
 
 actions:
+  enter-fullscreen: Plein-écran
   invite: Inviter
+  invite-player: Inviter un(e) joueur(se)
+  leave-fullscreen: Quitter le plein-écran
   log-in: Entrer
   log-out: Quitter
+  quit-game: Quitter le jeu
   new-game: Nouveau
 formats:
   date:
@@ -26,11 +30,12 @@ titles:
   invite: Qui vas tu inviter ?
   log-in: Bienvenue !
 tooltips:
-  center-camera: Centrer la caméra
   detail: Regarder
   flip: Retourner
-  invite-player: Inviter un(e) joueur(se)
-  quit-game: Quitter le jeu
+  game-menu: Menu des commandes
+  restore-camera: '{index, plural, =0 {Centrer la caméra sur la position initiale} other {Centrer la caméra sur la position #}}'
   rotate: Pivoter
+  save-camera: '{index, plural, =0 {Impossible de changer la position initiale} other {Enregistrer la position la caméra sur la position #}}'
+  save-new-camera: Enregistrer la position de la caméra
   send-message: Envoyer à tous
   shuffle: Mélanger

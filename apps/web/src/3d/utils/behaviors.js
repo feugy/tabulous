@@ -5,18 +5,12 @@ import {
   TargetBehavior
 } from '../behaviors'
 
-export function animateMove(mesh, absolutePosition, duration, onEnd) {
+export async function animateMove(mesh, absolutePosition, duration) {
   const movable = getMoveableBehavior(mesh)
   if (mesh.getScene().isLoading || !movable || !duration) {
     mesh.setAbsolutePosition(absolutePosition)
-    if (onEnd) {
-      onEnd(mesh)
-    }
   } else {
-    movable.moveTo(absolutePosition, duration, false)
-    if (onEnd) {
-      movable.onMoveEndObservable.addOnce(() => onEnd(mesh))
-    }
+    return movable.moveTo(absolutePosition, duration, false)
   }
 }
 

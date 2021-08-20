@@ -10,9 +10,9 @@ import {
   Vector4
 } from '@babylonjs/core'
 import {
+  DetailBehavior,
   DragBehavior,
   FlipBehavior,
-  HoverBehavior,
   RotateBehavior,
   StackBehavior
 } from './behaviors'
@@ -74,12 +74,12 @@ function makeCornerMesh(
  * @param {number} params.height? - tile's height (Z axis).
  * @param {number} params.depth? - tile's depth (Y axis).
  * @param {boolean} params.isFlipped? - initial flip state (face visible).
- * @param {number} params.flipDuration? - flip duration (in seconds).
+ * @param {number} params.flipDuration? - flip duration (in milliseconds).
  * @param {number} params.angle? - initial rotation angle (top above), in radians.
- * @param {number} params.rotateDuration? - rotation duration (in seconds).
+ * @param {number} params.rotateDuration? - rotation duration (in milliseconds).
  * @param {number} params.snapDistance? - distance bellow which the tile automatically snaps to nearest position.
- * @param {number} params.moveDuration? - automatic move duration (in seconds), when snapping.
- * @param {ImageDefs} params.images? - detailed images for this card.
+ * @param {number} params.moveDuration? - automatic move duration (in milliseconds), when snapping.
+ * @param {import('./utils').ImageDefs} params.images? - detailed images for this card.
  * @returns {import('@babylonjs/core').Mesh} the created tile mesh.
  */
 export function createRoundedTile({
@@ -94,9 +94,9 @@ export function createRoundedTile({
   texture,
   isFlipped = false,
   angle = 0,
-  flipDuration = 0.5,
-  rotateDuration = 0.2,
-  moveDuration = 0.1,
+  flipDuration = 500,
+  rotateDuration = 200,
+  moveDuration = 100,
   snapDistance = 0.25,
   images,
   ...tileProps
@@ -158,6 +158,8 @@ export function createRoundedTile({
   tile.overlayColor = new Color3(0, 0.8, 0)
   tile.overlayAlpha = 0.2
 
+  tile.addBehavior(new DetailBehavior(), true)
+
   const dragKind = 'tile'
   tile.addBehavior(
     new DragBehavior({ moveDuration, snapDistance, dragKind }),
@@ -170,16 +172,14 @@ export function createRoundedTile({
   const rotateBehavior = new RotateBehavior({ duration: rotateDuration, angle })
   tile.addBehavior(rotateBehavior, true)
 
-  tile.addBehavior(new HoverBehavior(), true)
-
   const stackBehavior = new StackBehavior({ moveDuration })
-  const target = MeshBuilder.CreateBox('drop-target', {
+  const dropZone = MeshBuilder.CreateBox('drop-zone', {
     width: width * 1.03,
     height: depth + 0.01,
     depth: height * 1.03
   })
-  target.parent = tile
-  stackBehavior.defineTarget(target, 0.3, [dragKind])
+  dropZone.parent = tile
+  stackBehavior.addZone(dropZone, 0.3, [dragKind])
   tile.addBehavior(stackBehavior, true)
 
   controlManager.registerControlable(tile)

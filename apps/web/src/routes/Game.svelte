@@ -1,29 +1,39 @@
 <script>
   import { onMount, onDestroy } from 'svelte'
   import { _ } from 'svelte-intl'
-  import { push } from 'svelte-spa-router'
+  import {
+    FPSViewer,
+    GameMenu,
+    InvitePlayerDialogue
+  } from '../connected-components'
   import {
     ActionMenu,
-    FPSViewer,
-    InvitePlayer,
-    MeshDetails,
+    CameraSwitch,
+    Discussion,
+    ObjectDetails,
+    PlayerAvatar,
     StackSizeTooltip
-  } from '../connected-components'
-  import { Button, Discussion, PlayerAvatar } from '../components'
+  } from '../components'
   import {
+    cameraSaveCount,
     connected,
     engine,
     initEngine,
     loadGame,
-    moveCameraTo,
-    thread,
-    sendToThread
+    meshDetails,
+    meshForMenu,
+    restoreCamera,
+    saveCamera,
+    sendToThread,
+    stackSize,
+    thread
   } from '../stores'
 
   export let params = {}
 
   let canvas
   let interaction
+  let openInviteDialogue = false
 
   onMount(async () => {
     initEngine({ canvas, interaction })
@@ -44,26 +54,32 @@
 
   .interaction,
   canvas {
-    @apply absolute w-full h-full top-0 left-0;
+    @apply absolute w-full h-full top-0 left-0 z-0;
     touch-action: none;
   }
 
   aside {
-    @apply absolute;
+    @apply absolute z-10;
 
     &.right {
-      @apply flex flex-col items-center top-14 right-2 gap-2;
+      @apply flex flex-col items-center top-2 right-2 gap-2;
       max-height: 93vh;
-      width: 300px;
+      width: 150px;
+
+      @screen lg {
+        width: 200px;
+      }
+      @screen xl {
+        width: 300px;
+      }
+      @screen 2xl {
+        width: 350px;
+      }
     }
 
     &.left {
-      @apply top-2 left-2;
+      @apply top-2 left-2 flex flex-col gap-2;
     }
-  }
-
-  nav {
-    @apply absolute top-2 right-2;
   }
 </style>
 
@@ -73,30 +89,32 @@
 
 <svelte:window on:resize={handleResize} />
 
-<main>
-  <div class="interaction" bind:this={interaction}>
-    <canvas touch-action="none" bind:this={canvas} />
-    <ActionMenu />
-  </div>
-  <StackSizeTooltip />
-  <FPSViewer />
-  <MeshDetails />
-</main>
-<nav>
-  <InvitePlayer gameId={params.gameId} />
-  <Button
-    icon="home"
-    title={$_('tooltips.quit-game')}
-    on:click={() => push('/home')}
-  />
-</nav>
 <aside class="left">
-  <Button
-    icon="center_focus_strong"
-    title={$_('tooltips.center-camera')}
-    on:click={() => moveCameraTo()}
+  <GameMenu on:invite-player={() => (openInviteDialogue = true)} />
+  <InvitePlayerDialogue
+    gameId={params.gameId}
+    open={openInviteDialogue}
+    on:close={() => (openInviteDialogue = false)}
+  />
+  <CameraSwitch
+    saveCount={$cameraSaveCount}
+    on:restore={({ detail: { index } }) => restoreCamera(index)}
+    on:save={({ detail: { index } }) => saveCamera(index)}
   />
 </aside>
+<main>
+  <div
+    class="interaction"
+    bind:this={interaction}
+    on:contextmenu|preventDefault
+  >
+    <canvas touch-action="none" bind:this={canvas} />
+    <ActionMenu object={$meshForMenu} />
+  </div>
+  <StackSizeTooltip size={$stackSize} />
+  <FPSViewer />
+  <ObjectDetails data={$meshDetails} />
+</main>
 {#if $connected.length}
   <aside class="right">
     {#each $connected as { player, stream }, i}
