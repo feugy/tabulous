@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto'
 import { Subject } from 'rxjs'
+import { instanciateGame } from './utils.js'
 
 const gamesById = new Map()
 const invites$ = new Subject()
@@ -9,32 +10,55 @@ function isOwner(game, playerId) {
 }
 
 /**
- * Emits when an invite is sent, including hostId, guestId and gameId
- * @type {Observable<object>}
+ * @typedef {object} Invite an player invite to an existing game:
+ * @property {string} gameId - shared game id.
+ * @property {string} guestId - invited player id.
+ * @property {string} hostId - inviting player id.
+ */
+
+/**
+ * @typedef {object} Game an active game:
+ * @property {string} id - unique game id.
+ * @property {string} kind - game kind (relates with game descriptor).
+ * @property {number} created - game creation timestamp.
+ * @property {string[]} playerId - player ids, the first always being the creator id.
+ * @property {Scene} scene - TODO the 3D engine scene, with game meshes.
+ */
+
+/**
+ * Emits when an invite is sent, including hostId, guestId and gameId.
+ * @type {Observable<Invite>}
  */
 export const invites = invites$.asObservable()
 
 /**
  * Creates a new game of a given kind, registering the creator as a player.
- * The operation will fail when:
- * - the requested kind is not supported
+ * It instanciate an unique set, based on the descriptor's bags and slots.
  * @async
- * @param {string} kind - game's kind
- * @param {string} playerId - creating player id
- * @returns {object} the created game
+ * @param {string} kind - game's kind.
+ * @param {string} playerId - creating player id.
+ * @returns {Game} the created game.
+ * @throws {Error} when no descriptor could be found for this kind.
  */
 export async function createGame(kind, playerId) {
-  const { default: scene } = await import(`../../games/${kind}/scene.js`)
-  const id = randomUUID()
-  const created = {
-    id,
-    kind,
-    created: Date.now(),
-    playerIds: [playerId],
-    scene
+  try {
+    const descriptor = await import(`../../games/${kind}.js`)
+    const id = randomUUID()
+    const created = {
+      id,
+      kind,
+      created: Date.now(),
+      playerIds: [playerId],
+      scene: instanciateGame(descriptor)
+    }
+    gamesById.set(id, created)
+    return created
+  } catch (err) {
+    if (err?.message?.includes('Cannot find module')) {
+      throw new Error(`Unsupported game ${kind}`)
+    }
+    throw err
   }
-  gamesById.set(id, created)
-  return created
 }
 
 /**
@@ -43,9 +67,9 @@ export async function createGame(kind, playerId) {
  * - no game could match this game id
  * - the player does not own the game
  * @async
- * @param {string} gameId - loaded game id
- * @param {string} playerId - player id
- * @returns {object|null} the loaded game
+ * @param {string} gameId - loaded game id.
+ * @param {string} playerId - player id.
+ * @returns {Game|null} the loaded game, or null.
  */
 export async function loadGame(gameId, playerId) {
   const game = gamesById.get(gameId)
@@ -60,9 +84,9 @@ export async function loadGame(gameId, playerId) {
  * The operation will abort and return null when:
  * - the player does not own the game
  * @async
- * @param {object} game - saved game
- * @param {string} playerId - owner id
- * @returns {object|null} the saved game
+ * @param {Game} game - saved game.
+ * @param {string} playerId - owner id.
+ * @returns {Game|null} the saved game, or null.
  */
 export async function saveGame(game, playerId) {
   const previous = gamesById.get(game.id)
@@ -80,12 +104,12 @@ export async function saveGame(game, playerId) {
  * - no game could match this game id
  * - the inviting player does not own the game
  * - the guest is already part of the game players
- * It also updates invites observable
+ * It also updates invites observable.
  * @async
- * @param {string} gameId - shared game id
- * @param {string} guestId - invited player id
- * @param {string} hostId - inviting player id
- * @returns {object|null} updated game, or null if the player can not be invited
+ * @param {string} gameId - shared game id.
+ * @param {string} guestId - invited player id.
+ * @param {string} hostId - inviting player id.
+ * @returns {Game|null} updated game, or null if the player can not be invited.
  */
 export async function invite(gameId, guestId, hostId) {
   const game = gamesById.get(gameId)
@@ -100,8 +124,8 @@ export async function invite(gameId, guestId, hostId) {
 /**
  * Lists all games this players is in.
  * @async
- * @param {string} playerId - player id
- * @returns {[object]} a list of games (could be empty)
+ * @param {string} playerId - player id.
+ * @returns {Game[]} a list of games (could be empty).
  */
 export async function listGames(playerId) {
   const games = []
