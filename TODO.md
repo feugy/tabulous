@@ -1,10 +1,10 @@
 # TODO
 
 - share camera position to game host for saving
-- ability to remove game (creator only)
 
 ## Refactor
 
+- creates ConfirmDialogue component
 - behaviors may not care about active selection (game-interaction/game-engine should)
 - server logging (warning on invalid descriptors)
 - enable [Babylon.js treeshaking](https://doc.babylonjs.com/divingDeeper/developWithBjs/treeShaking)

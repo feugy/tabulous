@@ -16,7 +16,7 @@ import { shuffle } from '../utils/index.js'
 /**
  * @typedef {object} Slot position slot for meshes.
  * A slot defines 3D coordinates for its meshes. Meshes will be picked out of a given bag, and stacked if needed.
- * Any other property define in bag will be assigned to positionned meshes.
+ * Any other property define in bag will be assigned to positioned meshes.
  * NOTICE: when using multiple slots on the same bag, slot with no count MUST COME LAST.
  *
  * @property {string} bagId - id of a bag to pick meshes.

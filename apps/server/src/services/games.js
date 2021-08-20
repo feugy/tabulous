@@ -62,6 +62,24 @@ export async function createGame(kind, playerId) {
 }
 
 /**
+ * Deletes a game for a given player.
+ * The operation will abort and return null when:
+ * - no game could match this game id
+ * - the player does not own the game
+ * @async
+ * @param {string} gameId - loaded game id.
+ * @param {string} playerId - player id.
+ * @returns {Game|null} the deleted game, or null.
+ */
+export async function deleteGame(gameId, playerId) {
+  const game = await loadGame(gameId, playerId)
+  if (game) {
+    gamesById.delete(gameId)
+  }
+  return game
+}
+
+/**
  * Loads a game for a given player.
  * The operation will abort and return null when:
  * - no game could match this game id

@@ -1,5 +1,5 @@
 import faker from 'faker'
-import { createGame } from '@src/services/games.js'
+import { createGame, deleteGame, loadGame } from '@src/services/games.js'
 
 describe('createGame()', () => {
   it('throws an error on unknown game', async () => {
@@ -23,6 +23,35 @@ describe('createGame()', () => {
         roundTokens: expect.any(Array),
         roundedTiles: expect.any(Array)
       }
+    })
+  })
+})
+
+describe('deleteGame()', () => {
+  it('returns null on unknown game', async () => {
+    expect(
+      await deleteGame(faker.datatype.uuid(), faker.datatype.uuid())
+    ).toBeNull()
+  })
+
+  describe('given an existing game', () => {
+    let game
+    const playerId = faker.datatype.uuid()
+
+    beforeEach(async () => {
+      game = await createGame('splendor', playerId)
+    })
+
+    // TODO delete afterEach
+
+    it('returns null when on un-owned game', async () => {
+      expect(await deleteGame(game.id, faker.datatype.uuid())).toBeNull()
+      expect(await loadGame(game.id, playerId)).toBeDefined()
+    })
+
+    it('returns deleted game', async () => {
+      expect(await deleteGame(game.id, playerId)).toEqual(game)
+      expect(await loadGame(game.id, playerId)).toBeNull()
     })
   })
 })

@@ -1,6 +1,6 @@
 import { BehaviorSubject } from 'rxjs'
 import { closeReceiver, openReceiver } from './sse'
-import { initGraphQLGlient, runMutation } from './graphcl-client'
+import { initGraphQLGlient, runMutation } from './graphql-client'
 import * as graphQL from '../graphql'
 import { makeLogger } from '../utils'
 

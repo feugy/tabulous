@@ -2,7 +2,7 @@ import { BehaviorSubject } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
 import { currentPlayer } from './authentication'
 import { action } from './game-engine'
-import { runQuery, runMutation } from './graphcl-client'
+import { runQuery, runMutation } from './graphql-client'
 import {
   closeChannels,
   connectWith,
@@ -88,6 +88,17 @@ export async function createGame(kind = 'splendor') {
   const game = await runMutation(graphQL.createGame, { kind })
   logger.info(game, `create new ${kind} game (${game.id})`)
   return game.id
+}
+
+/**
+ * Deletes a game owned by current player, and refreshes the game list.
+ * @async
+ * @param {string} gameId - the deleted game id
+ */
+export async function deleteGame(gameId) {
+  logger.info({ gameId }, `deletes game (${gameId})`)
+  await runMutation(graphQL.deleteGame, { gameId })
+  await listGames()
 }
 
 /**

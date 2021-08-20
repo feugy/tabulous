@@ -1,14 +1,33 @@
 <script>
   import { push } from 'svelte-spa-router'
   import { _ } from 'svelte-intl'
-  import { Button, GameLink } from '../components'
+  import { Button, Dialogue, GameLink } from '../components'
   import { Header } from '../connected-components'
-  import { currentPlayer, createGame, playerGames, listGames } from '../stores'
+  import {
+    currentPlayer,
+    createGame,
+    deleteGame,
+    playerGames,
+    listGames
+  } from '../stores'
+
+  let gameToDelete = null
 
   listGames()
 
   async function handleNewGame() {
     push(`/game/${await createGame()}`)
+  }
+
+  async function handleDeleteGame({ detail: game }) {
+    gameToDelete = game
+  }
+
+  async function handleDeletionClose({ detail: confirmed } = {}) {
+    if (confirmed) {
+      await deleteGame(gameToDelete.id)
+    }
+    gameToDelete = null
   }
 </script>
 
@@ -44,6 +63,35 @@
 
 <main>
   {#each $playerGames as game (game.id)}
-    <GameLink {game} />
+    <GameLink
+      {game}
+      playerId={$currentPlayer.id}
+      on:delete={handleDeleteGame}
+    />
   {/each}
 </main>
+
+{#if gameToDelete}
+  <Dialogue
+    open
+    title={$_('titles.confirm-game-deletion')}
+    on:close={handleDeletionClose}
+  >
+    <span
+      >{$_('labels.confirm-game-deletion', {
+        kind: $_(`games.${gameToDelete.kind}`)
+      })}</span
+    >
+    <svelte:fragment slot="buttons">
+      <Button
+        secondary
+        text={$_('actions.cancel')}
+        on:click={() => handleDeletionClose({ detail: false })}
+      />
+      <Button
+        text={$_('actions.confirm')}
+        on:click={() => handleDeletionClose({ detail: true })}
+      />
+    </svelte:fragment>
+  </Dialogue>
+{/if}
