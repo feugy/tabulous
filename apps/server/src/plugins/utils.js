@@ -1,9 +1,14 @@
 import { getPlayerById } from '../services/index.js'
 
-export async function getAuthenticatedPlayer(token) {
+/**
+ * Finds the authenticated player based on Bearer data.
+ * @param {string} bearer - Bearer data received from incoming request.
+ * @returns {Player|null} the corresponding player, if any.
+ */
+export async function getAuthenticatedPlayer(bearer) {
   let player = null
-  if (token) {
-    const id = token.replace('Bearer ', '')
+  if (bearer) {
+    const id = bearer.replace('Bearer ', '')
     player = await getPlayerById(id)
   }
   return player

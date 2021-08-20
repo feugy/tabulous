@@ -3,11 +3,28 @@ import { setPlaying } from '../services/index.js'
 import { getAuthenticatedPlayer } from './utils.js'
 
 /**
+ * @typedef {object} PeerSignalOptions Peer signaling plugin options, including:
+ * @property {string} path - the websocket endpoint path.
+ */
+
+/**
  * Registers routes to implement a WebRTC signaling server, based on WebSockets.
- * TODO more doc
- * @param {fastify} app - a fastify application
- * @param {object} opts - plugin's options, including:
- * @param {string} opts.path - the websocket endpoint path
+ * It depends on fastify-websocket plugin.
+ * The implemented protocol is:
+ *   1. player A is already in game, with an open WebSocket connection
+ *   2. player B join game
+ *     a. opens a WebSocket connection
+ *     b. creates a WebRTC peer (initiator) and receives an offer signal
+ *     c. send it throught WebSocket to player A
+ *   3. player A receives offer through WebSocket
+ *     a. creates a WebRTC peer
+ *     b. uses the offer and receives an answer signal
+ *     c. send it throught WebSocket to player B
+ *   4. player B receives answer through WebSocket, and uses it
+ *   5. their duplex connection is established
+ *
+ * @param {import('fastify').FastifyInstance} app - a fastify application.
+ * @param {PeerSignalOptions} opts - plugin's options.
  */
 async function peerSignal(app, opts) {
   const socketByPlayerId = new Map()

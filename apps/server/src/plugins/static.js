@@ -3,10 +3,14 @@ import { cwd } from 'process'
 import staticPlugin from 'fastify-static'
 
 /**
- * Registers endpoints to serve the ctatic client.
- * @param {fastify} app - a fastify application
- * @param {object} opts - plugin's options, including:
+ * @typedef {object} StaticOptions Static content plugin options, including:
  * @param {string} opts.path - path to the client files (relative path are resolved with current working directory)
+ */
+
+/**
+ * Registers endpoints to serve the static game client.
+ * @param {import('fastify').FastifyInstance} app - a fastify application.
+ * @param {StaticOptions} opts - plugin's options.
  */
 async function registerClient(app, opts) {
   const root = !isAbsolute(opts.path) ? resolve(cwd(), opts.path) : opts.path

@@ -1,11 +1,18 @@
 const players = new Map()
 
 /**
+ * @typedef {object} Player a player
+ * @property {string} id - unique id.
+ * @property {string} username - player user name.
+ * @property {boolean} playing - whether this player has currently joined an active game.
+ */
+
+/**
  * Logs a given user into Tabulous.
  * Currently allows any input, assigning an id to the new ones, and returning already know id.
  * @async
- * @param {string} username - the player's username
- * @returns
+ * @param {string} username - the player's username.
+ * @returns {Player} the authenticated player.
  */
 export async function logIn(username) {
   let player = [...players.values()].find(
@@ -25,7 +32,7 @@ export async function logIn(username) {
 /**
  * Returns a given player from its id.
  * @param {string} playerId - player id
- * @returns {object|null} the requested player, or null if no player matches it
+ * @returns {Player|null} the requested player, or null if no player matches it.
  */
 export async function getPlayerById(playerId) {
   return players.get(playerId) ?? null
@@ -33,8 +40,8 @@ export async function getPlayerById(playerId) {
 
 /**
  * Returns several players from their id, keeping results ordered as ids.
- * @param {[string]} playerIds - array of player ids
- * @returns {[object|null]} the requested players, or null if no player matches it
+ * @param {string[]} playerIds - array of player ids.
+ * @returns {[Player|null]} the requested players, or null if no player matches it.
  */
 export async function getPlayersById(playerIds = []) {
   const result = []
@@ -47,9 +54,9 @@ export async function getPlayersById(playerIds = []) {
 /**
  * Changes player's "is playing" flag.
  * Does nothing when no player is matching the given id.
- * @param {string} playerId - related player id
- * @param {boolean} playing - new value for the flag
- * @returns {[object|null]} the modified player
+ * @param {string} playerId - related player id.
+ * @param {boolean} playing - new value for the flag.
+ * @returns {Player|null} the modified player.
  */
 export async function setPlaying(playerId, playing) {
   const player = await getPlayerById(playerId)
