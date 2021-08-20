@@ -67,8 +67,8 @@ export class TargetBehavior {
    */
   detach() {
     targetManager.unregisterTargetable(this)
-    for (const { zone } of this.zones) {
-      zone.dispose()
+    for (const { mesh } of this.zones) {
+      mesh.dispose()
     }
     this.zones = []
     this.mesh = null

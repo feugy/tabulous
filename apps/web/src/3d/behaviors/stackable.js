@@ -147,7 +147,7 @@ export class StackBehavior extends TargetBehavior {
     controlManager.record({ meshId: stack[0].id, fn: 'push', args: [mesh.id] })
     const { x, z } = stack[0].absolutePosition
     const y = altitudeOnTop(mesh, stack[stack.length - 1])
-    logger.debug(
+    logger.info(
       { stack, mesh, x, y, z },
       `push ${mesh.id} on stack ${stack.map(({ id }) => id)}`
     )
@@ -175,7 +175,7 @@ export class StackBehavior extends TargetBehavior {
     setBase(mesh, null)
     // note: no need to enable the poped mesh target: since it was last, it's always enabled
     enableLastTarget(stack, true)
-    logger.debug(
+    logger.info(
       { stack, mesh },
       `pop ${mesh.id} out of stack ${stack.map(({ id }) => id)}`
     )
@@ -210,7 +210,7 @@ export class StackBehavior extends TargetBehavior {
     basePosition.y += getHeight(stack[0]) - getHeight(this.mesh)
     stack[0].setAbsolutePosition(basePosition)
 
-    logger.debug(
+    logger.info(
       { old: this.stack, stack, base: basePosition },
       `reorder\n${this.stack.map(({ id }) => id)}\nto\n${ids}`
     )

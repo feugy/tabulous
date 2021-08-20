@@ -1,11 +1,13 @@
 <script>
   import { onMount, onDestroy } from 'svelte'
   import { _ } from 'svelte-intl'
-  import { push } from 'svelte-spa-router'
-  import { FPSViewer, InvitePlayer } from '../connected-components'
+  import {
+    FPSViewer,
+    GameMenu,
+    InvitePlayerDialogue
+  } from '../connected-components'
   import {
     ActionMenu,
-    Button,
     CameraSwitch,
     Discussion,
     ObjectDetails,
@@ -17,7 +19,6 @@
     connected,
     engine,
     initEngine,
-    isFullscreen,
     loadGame,
     meshDetails,
     meshForMenu,
@@ -25,7 +26,6 @@
     saveCamera,
     sendToThread,
     stackSize,
-    toggleFullscreen,
     thread
   } from '../stores'
 
@@ -33,6 +33,7 @@
 
   let canvas
   let interaction
+  let openInviteDialogue = false
 
   onMount(async () => {
     initEngine({ canvas, interaction })
@@ -89,12 +90,11 @@
 <svelte:window on:resize={handleResize} />
 
 <aside class="left">
-  <Button
-    icon={$isFullscreen ? 'fullscreen_exit' : 'fullscreen'}
-    title={$_(
-      $isFullscreen ? 'tooltips.leave-fullscreen' : 'tooltips.enter-fullscreen'
-    )}
-    on:click={() => toggleFullscreen()}
+  <GameMenu on:invite-player={() => (openInviteDialogue = true)} />
+  <InvitePlayerDialogue
+    gameId={params.gameId}
+    open={openInviteDialogue}
+    on:close={() => (openInviteDialogue = false)}
   />
   <CameraSwitch
     saveCount={$cameraSaveCount}
@@ -115,21 +115,8 @@
   <FPSViewer />
   <ObjectDetails data={$meshDetails} />
 </main>
-<aside class="right">
-  <span class="self-end"
-    ><Button
-      icon="home"
-      title={$_('tooltips.quit-game')}
-      on:click={() => {
-        if ($isFullscreen) {
-          toggleFullscreen()
-        }
-        push('/home')
-      }}
-    /></span
-  >
-  <span class="self-end"><InvitePlayer gameId={params.gameId} /></span>
-  {#if $connected.length}
+{#if $connected.length}
+  <aside class="right">
     {#each $connected as { player, stream }, i}
       <PlayerAvatar {player} {stream} controllable={i === 0} />
     {/each}
@@ -137,5 +124,5 @@
       thread={$thread}
       on:sendMessage={({ detail }) => sendToThread(detail.text)}
     />
-  {/if}
-</aside>
+  </aside>
+{/if}

@@ -4,9 +4,9 @@
   import { invite } from '../stores'
 
   export let gameId
+  export let open = false
 
   let input
-  let open = false
   let title = $_('titles.invite')
   $: buttonDisabled = !input || !input.trim().length
 
@@ -25,13 +25,7 @@
   }
 </script>
 
-<Button
-  secondary
-  title={$_('tooltips.invite-player')}
-  icon="connect_without_contact"
-  on:click={() => (open = true)}
-/>
-<Dialogue {title} {open} on:close={handleClose}>
+<Dialogue {title} {open} on:close on:close={handleClose}>
   <Input
     placeholder={$_('placeholders.player-id')}
     bind:value={input}

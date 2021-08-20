@@ -142,8 +142,8 @@ export function attachInputs({
      * Implements actions on drag operations:
      * - starting dragging always closes menu
      * - starting dragging clears selection unless dragging a selected mesh
-     * - (long) dragging table with left click/finger/stylus selects meshes
-     * - dragging table with right click/finger/stylus rotates the camera
+     * - dragging table with left click/finger/stylus selects meshes
+     * - (long) dragging table with right click/finger/stylus rotates the camera
      * Dragging meshes is built into dragManager
      */
     drags$.subscribe({
@@ -152,10 +152,10 @@ export function attachInputs({
           meshForMenu$.next(null)
           if (!mesh) {
             const position = { x: event.x, y: event.y }
-            if (button === 0 || long) {
-              selectionPosition = position
-            } else if (button === 2 || !isMouse(event)) {
+            if (button === 2 || (!isMouse(event) && long)) {
               cameraDragPosition = position
+            } else if (button === 0 || !isMouse(event)) {
+              selectionPosition = position
             }
           }
         } else if (type === 'drag') {

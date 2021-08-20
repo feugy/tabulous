@@ -5,7 +5,7 @@ import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('input')
 
-const PinchMovementThreshold = 5
+const PinchMovementThreshold = 4
 const PinchAttemptThreshold = 2
 const LongTapDelay = 500
 

@@ -82,7 +82,11 @@ class SelectionManager {
       box.isPickable = false
 
       for (const mesh of scene.meshes) {
-        if (mesh.isPickable && isContaining(box, mesh)) {
+        if (
+          !this.meshes.includes(mesh) &&
+          mesh.isPickable &&
+          isContaining(box, mesh)
+        ) {
           this.meshes.push(mesh)
           mesh.renderOverlay = true
         }

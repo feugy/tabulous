@@ -138,11 +138,18 @@ class CameraManager {
    * Altitude is always in 3D world coordinate, angle in radians, and position in screen coordinates
    * @param {object} params - parameters, including:
    * @param {number} params.y? - initial altitude
+   * @param {number} params.alpha? - initial alpha angle
    * @param {number} params.minY? - minimum camera altitude, in 3D coordinate
    * @param {number} params.maxY? - maximum camera altitude, in 3D coordinate
    * @param {number} params.minAngle? - minimum camera angle (with x/z plane), in radian
    */
-  init({ y = 20, minY = 5, maxY = 70, minAngle = Math.PI / 4 } = {}) {
+  init({
+    y = 25,
+    alpha = Math.PI / 8,
+    minY = 5,
+    maxY = 70,
+    minAngle = Math.PI / 4
+  } = {}) {
     this.minAngle = minAngle
     this.saves = []
 
@@ -150,7 +157,7 @@ class CameraManager {
     this.camera = new ArcRotateCamera(
       'camera',
       (3 * Math.PI) / 2,
-      0,
+      alpha,
       y,
       Vector3.Zero()
     )
