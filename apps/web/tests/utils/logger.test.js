@@ -44,7 +44,7 @@ describe('Logger', () => {
     expect(log).not.toHaveBeenCalled()
 
     logger.info(message)
-    expect(info).toHaveBeenCalledWith(message)
+    expect(info).not.toHaveBeenCalledWith(message)
 
     message = randomUUID()
     logger.warn(message)
@@ -57,7 +57,7 @@ describe('Logger', () => {
     expect(trace).not.toHaveBeenCalled()
     expect(log).not.toHaveBeenCalled()
     expect(log).not.toHaveBeenCalled()
-    expect(info).toHaveBeenCalledTimes(1)
+    expect(info).not.toHaveBeenCalledTimes(1)
     expect(warn).toHaveBeenCalledTimes(1)
     expect(error).toHaveBeenCalledTimes(1)
   })

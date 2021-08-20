@@ -1,40 +1,39 @@
 import { Observable } from '@babylonjs/core'
-import { targetManager } from '../managers/target'
+import { targetManager } from '../managers'
 
 /**
- * @typedef {object} Target definition of a drop target:
- * TODO rename Zone, turn zone Mesh to a geometry and rename, and rename scale as extend.
- * @property {TargetBehavior} behavior - the enclosing targetable behavior.
- * @property {import('@babylonjs/core').Mesh} zone - invisible, unpickable mesh acting as drop zone.
- * @property {number} scale - units (in 3D coordinate) added to the zone's bounding box to determine.
- * @property {string[]} kinds - array of allowed drag kinds for this target.
+ * @typedef {object} DropZone definition of a target drop zone:
+ * @property {TargetBehavior} targetable - the enclosing targetable behavior.
+ * @property {import('@babylonjs/core').Mesh} mesh - invisible, unpickable mesh acting as drop zone.
+ * @property {number} extend - units (in 3D coordinate) added to the zone's bounding box to determine.
+ * @property {string[]} kinds - array of allowed drag kinds for this zone.
  */
 
 /**
  * @typedef {object} DropDetails detailed images definitions for a given mesh:
  * @property {import('@babylonjs/core').Mesh[]} dropped - a list of dropped meshes.
- * @property {Target} target - the target onto meshes are dropped.
+ * @property {DropZone} zone - the zone onto meshes are dropped.
  */
 
 export class TargetBehavior {
   /**
    * Creates behavior to make a mesh targetable for drag operations, registered into the target manager.
-   * A targetable mesh can have multiple targets, materialized with 3D geometries and each allowing one or several kinds.
-   * All targets can be enable and disabled at once.
-   * An observable emits every time one of the target receives a drop.
+   * A targetable mesh can have multiple drop zones, materialized with 3D geometries and each allowing one or several kinds.
+   * All zones can be enable and disabled at once.
+   * An observable emits every time one of the zone receives a drop.
    *
    * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
    * @property {boolean} enabled - activity status (true by default).
-   * @property {Target[]} targets - defined targets for this mesh.
-   * @property {Observable<DropDetails>} onDropObservable - emits every time draggable meshes are dropped to one of the targets
+   * @property {DropZone[]} zones - defined drop zones for this target.
+   * @property {Observable<DropDetails>} onDropObservable - emits every time draggable meshes are dropped to one of the zones.
    *
    * @param {object} params - parameters, including:
-   * @param {number} [params.moveDuration=100] - duration (in milliseconds) of an individual mesh shuffle animation.
+   * @param {number} [params.moveDuration=100] - duration (in milliseconds) of an individual mesh re-order animation.
    */
   constructor() {
     this.mesh = null
     this.enabled = true
-    this.targets = []
+    this.zones = []
     this.onDropObservable = new Observable()
   }
 
@@ -63,29 +62,28 @@ export class TargetBehavior {
   }
 
   /**
-   * Detaches this behavior from its mesh, disposing all its target zones,
+   * Detaches this behavior from its mesh, disposing all its drop zones,
    * and unregistering it from the target manager.
    */
   detach() {
     targetManager.unregisterTargetable(this)
-    for (const { zone } of this.targets) {
+    for (const { zone } of this.zones) {
       zone.dispose()
     }
-    this.targets = []
+    this.zones = []
     this.mesh = null
   }
 
   /**
    * Adds a new zone to this mesh, making it invisible and unpickable.
-   * TODO rename addZone.
-   * @param {import('@babylonjs/core').Mesh} zone - invisible, unpickable mesh acting as drop zone.
-   * @param {number} scale - units (in 3D coordinate) added to the zone's bounding box to determine possible drops TODO rename.
-   * @param {string[]} (kinds=[]) - array of allowed drag kinds for this target.
+   * @param {import('@babylonjs/core').Mesh} mesh - invisible, unpickable mesh acting as drop zone.
+   * @param {number} extent - units (in 3D coordinate) added to the zone's bounding box to determine possible drops.
+   * @param {string[]} (kinds=[]) - array of allowed drag kinds for this zone.
    */
-  defineTarget(zone, scale, kinds = []) {
-    zone.visibility = 0
-    zone.isPickable = false
-    this.targets.push({ zone, scale, kinds, behavior: this })
+  addZone(mesh, extent, kinds = []) {
+    mesh.visibility = 0
+    mesh.isPickable = false
+    this.zones.push({ mesh, extent, kinds, targetable: this })
   }
 }
 

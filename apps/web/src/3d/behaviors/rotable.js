@@ -2,7 +2,8 @@ import { Animation, Vector3 } from '@babylonjs/core'
 import { MoveBehavior } from './movable'
 import { applyGravity } from '../utils'
 import { controlManager, selectionManager } from '../managers'
-import { makeLogger } from '../../utils'
+// '../../utils' creates a cyclic dependency in Jest
+import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('rotable')
 

@@ -18,8 +18,8 @@ const levels = {
 
 const levelMap = {
   all: 6,
-  trace: 6,
-  debug: 5,
+  trace: 5,
+  debug: 4,
   log: 4,
   info: 3,
   warn: 2,

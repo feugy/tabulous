@@ -1,22 +1,23 @@
 import { Color3 } from '@babylonjs/core'
+import { selectionManager } from '.'
 import { isAbove } from '../utils'
-import { selectionManager } from './selection'
-import { makeLogger } from '../../utils'
+// '../../utils' creates a cyclic dependency in Jest
+import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('target')
 
 class TargetManager {
   /**
    * Creates a manager to manages drop targets for draggable meshes:
-   * - find relevant targets physically bellow a given mesh, according to their kind
-   * - highlight targets
-   * - drop mesh onto their relevant target
-   * Each registered behavior can have multiple targets
+   * - find relevant zones physically bellow a given mesh, according to their kind
+   * - highlight zones
+   * - drop mesh onto their relevant zones
+   * Each registered behavior can have multiple zones
    */
   constructor() {
     // private
     this.behaviors = new Set()
-    this.droppablesByTarget = new Map()
+    this.droppablesByDropZone = new Map()
   }
 
   /**
@@ -29,43 +30,43 @@ class TargetManager {
   }
 
   /**
-   * Unregisters a targetable behavior, clearing all its targets.
+   * Unregisters a targetable behavior, clearing all its zones.
    * Does nothing on unmanaged behavior.
    * @param {Targetable} behavior - controlled behavior.
    */
   unregisterTargetable(behavior) {
     this.behaviors.delete(behavior)
-    for (const target of behavior?.targets ?? []) {
-      this.clear(target)
+    for (const zone of behavior?.zones ?? []) {
+      this.clear(zone)
     }
   }
 
   /**
-   * Finds targets physically bellow a given mesh.
-   * Only targets accepting the dragged kind will match.
-   * In case several targets are bellow the mesh, and the one on top will prevail (according to its elevation).
-   * The found target is highlithed, and the dragged mesh will be saved as potential droppable for this target.
+   * Finds drop zones physically bellow a given mesh.
+   * Only zones accepting the dragged kind will match.
+   * In case several zones are bellow the mesh, and the one on top will prevail (according to its elevation).
+   * The found zone is highlithed, and the dragged mesh will be saved as potential droppable for this zone.
    *
    * @param {import('@babylonjs/core').Mesh} dragged - a dragged mesh.
    * @param {string} kind - drag kind.
-   * @return {import('../behaviors').Target} the found target, if any.
+   * @return {import('../behaviors').DropZone} the found drop zone, if any.
    */
-  findTarget(dragged, kind) {
+  findDropZone(dragged, kind) {
     logger.debug(
       { dragged, kind, b: this.behaviors },
-      `find targets for ${dragged?.id} (${kind})`
+      `find drop zones for ${dragged?.id} (${kind})`
     )
     const candidates = []
     const excluded = [dragged, ...selectionManager.meshes]
-    for (const behavior of this.behaviors) {
-      if (behavior.enabled && !excluded.includes(behavior.mesh)) {
-        for (const target of behavior.targets) {
-          const { zone, scale, kinds } = target
-          if (kinds.includes(kind) && isAbove(dragged, zone, scale)) {
+    for (const targetable of this.behaviors) {
+      if (targetable.enabled && !excluded.includes(targetable.mesh)) {
+        for (const zone of targetable.zones) {
+          const { mesh, extent, kinds } = zone
+          if (kinds.includes(kind) && isAbove(dragged, mesh, extent)) {
             candidates.push({
-              behavior,
-              target,
-              y: behavior.mesh.absolutePosition.y
+              targetable,
+              zone,
+              y: targetable.mesh.absolutePosition.y
             })
           }
         }
@@ -77,32 +78,32 @@ class TargetManager {
     )
     if (candidates.length > 0) {
       candidates.sort((a, b) => b.y - a.y)
-      const [{ target, behavior }] = candidates
+      const [{ targetable, zone }] = candidates
       logger.info(
-        { target, dragged, kind },
-        `found drop target ${behavior.mesh?.id} for ${dragged?.id} (${kind})`
+        { zone, dragged, kind },
+        `found drop zone ${targetable.mesh?.id} for ${dragged?.id} (${kind})`
       )
-      const droppables = this.droppablesByTarget.get(target) ?? []
-      this.droppablesByTarget.set(target, [...droppables, dragged])
-      if (target?.zone?.visibility === 0) {
-        target.zone.visibility = 0.1
-        target.zone.enableEdgesRendering()
-        target.zone.edgesWidth = 5.0
-        target.zone.edgesColor = Color3.Green().toColor4()
+      const droppables = this.droppablesByDropZone.get(zone) ?? []
+      this.droppablesByDropZone.set(zone, [...droppables, dragged])
+      if (zone?.mesh?.visibility === 0) {
+        zone.mesh.visibility = 0.1
+        zone.mesh.enableEdgesRendering()
+        zone.mesh.edgesWidth = 5.0
+        zone.mesh.edgesColor = Color3.Green().toColor4()
       }
-      return target
+      return zone
     }
   }
 
   /**
-   * Clears all droppable meshes of a given target, and stops highlighting it.
-   * @param {import('../behaviors').Target} target - the cleared target.
+   * Clears all droppable meshes of a given drop zone, and stops highlighting it.
+   * @param {import('../behaviors').DropZone} zone - the cleared drop zone.
    */
-  clear(target) {
-    this.droppablesByTarget.delete(target)
-    if (target?.zone) {
-      target.zone.visibility = 0
-      target.zone.disableEdgesRendering()
+  clear(zone) {
+    this.droppablesByDropZone.delete(zone)
+    if (zone?.mesh) {
+      zone.mesh.visibility = 0
+      zone.mesh.disableEdgesRendering()
     }
   }
 
@@ -110,21 +111,21 @@ class TargetManager {
    * If the provided target as droppable meshes, performs a drop operation, that is,
    * notifying drop observers of the corresponding Targetable behavior.
    * It clears the target.
-   * @param {import('../behaviors').Target} target - the darget dropped onto.
+   * @param {import('../behaviors').DropZone} zone - the zone dropped onto.
    * @returns {import('@babylonjs/core').Mesh[]} list of droppable meshes, if any.
    */
-  dropOn(target) {
-    const dropped = this.droppablesByTarget.get(target) ?? []
+  dropOn(zone) {
+    const dropped = this.droppablesByDropZone.get(zone) ?? []
     if (dropped.length) {
       logger.info(
-        { target, dragged: dropped },
-        `performs drop over mesh ${target.behavior.mesh?.id} for ${dropped.map(
+        { zone, dragged: dropped },
+        `performs drop over mesh ${zone.targetable.mesh?.id} for ${dropped.map(
           ({ id }) => id
         )}`
       )
-      target.behavior.onDropObservable.notifyObservers({ dropped, target })
+      zone.targetable.onDropObservable.notifyObservers({ dropped, zone })
     }
-    this.clear(target)
+    this.clear(zone)
     return dropped
   }
 }

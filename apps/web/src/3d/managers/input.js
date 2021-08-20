@@ -1,5 +1,7 @@
 import { Observable, PointerEventTypes, Scene } from '@babylonjs/core'
-import { distance, makeLogger } from '../../utils'
+import { distance } from '../../utils'
+// '../../utils' creates a cyclic dependency in Jest
+import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('input')
 

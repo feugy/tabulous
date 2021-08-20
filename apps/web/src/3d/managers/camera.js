@@ -5,7 +5,8 @@ import {
   Vector3
 } from '@babylonjs/core'
 import { isAboveTable, screenToGround } from '../utils'
-import { makeLogger } from '../../utils'
+// '../../utils' creates a cyclic dependency in Jest
+import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('camera')
 

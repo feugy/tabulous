@@ -4,7 +4,7 @@ export class DragBehavior {
   /**
    * Creates behavior to make a mesh draggable, so it could be moved and dropped.
    * When moving mesh, its final position will snap to a virtual grid.
-   * A mesh can only be dropped onto targets with the same kind.
+   * A mesh can only be dropped onto zones with the same kind.
    *
    * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
    * @property {string} dragKind - drag kind.

@@ -112,12 +112,12 @@ export function createRoundToken({
   token.addBehavior(rotateBehavior, true)
 
   const stackBehavior = new StackBehavior({ moveDuration })
-  const target = MeshBuilder.CreateCylinder('drop-target', {
+  const dropZone = MeshBuilder.CreateCylinder('drop-zone', {
     diameter: diameter * 1.03,
     height: height + 0.02
   })
-  target.parent = token
-  stackBehavior.defineTarget(target, 0.6, [dragKind])
+  dropZone.parent = token
+  stackBehavior.addZone(dropZone, 0.6, [dragKind])
   token.addBehavior(stackBehavior, true)
 
   controlManager.registerControlable(token)

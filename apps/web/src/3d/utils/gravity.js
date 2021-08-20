@@ -1,6 +1,7 @@
 import { Ray, Vector3 } from '@babylonjs/core'
-import { getHeight } from './mesh'
-import { makeLogger } from '../../utils'
+import { getHeight } from '.'
+// '../../utils' creates a cyclic dependency in Jest
+import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('gravity')
 

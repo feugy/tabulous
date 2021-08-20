@@ -7,7 +7,8 @@ import {
   getHeight,
   getTargetableBehavior
 } from '../utils'
-import { makeLogger } from '../../utils'
+// '../../utils' creates a cyclic dependency in Jest
+import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('stackable')
 
@@ -29,8 +30,8 @@ function setBase(mesh, base) {
     targetable.base = base
     targetable.stack = [mesh]
     targetable.mesh.metadata.stack = base?.stack
-    targetable.mesh.metadata.shuffle = base
-      ? ids => base.shuffle(ids)
+    targetable.mesh.metadata.reorder = base
+      ? ids => base.reorder(ids)
       : () => {}
   }
 }
@@ -46,7 +47,7 @@ export class StackBehavior extends TargetBehavior {
    * @property {number} moveDuration - duration (in milliseconds) when pushing or shuffling individual meshes.
    *
    * @param {object} params - parameters, including:
-   * @param {number} [params.moveDuration=100] - duration (in milliseconds) of an individual mesh shuffle animation.
+   * @param {number} [params.moveDuration=100] - duration (in milliseconds) of an individual mesh reorder animation.
    */
   constructor({ moveDuration } = {}) {
     super()
@@ -71,7 +72,7 @@ export class StackBehavior extends TargetBehavior {
    * - a `stack` array of meshes (initially contains this mesh).
    * - a `push()` function to programmatically drop another mesh onto the stack.
    * - a `pop()` function to programmatically pop the highest mesh from stack.
-   * - a `shuffle()` function to shuffle the stack with animation.
+   * - a `reorder()` function to re-order the stack with animation.
    * It binds to its drop observable to push dropped meshes to the stack.
    * It binds to the drag manager drag observable to pop the first stacked mesh when dragging it.
    * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
@@ -85,7 +86,7 @@ export class StackBehavior extends TargetBehavior {
     mesh.metadata.stack = this.base?.stack
     mesh.metadata.push = id => this.push(id)
     mesh.metadata.pop = () => this.pop()
-    mesh.metadata.shuffle = () => {}
+    mesh.metadata.reorder = () => {}
 
     this.dropObserver = this.onDropObservable.add(({ dropped }) => {
       // sort all dropped meshes by elevation (lowest first)
@@ -183,7 +184,7 @@ export class StackBehavior extends TargetBehavior {
   }
 
   /**
-   * Reorder the stack:
+   * Reorders the stack:
    * - records the action into the control manager
    * - moves in parallel all meshes to "explode" the stack and wait until they complete
    * - re-order the internal stack according to the provided id array
@@ -191,18 +192,18 @@ export class StackBehavior extends TargetBehavior {
    * - sequentially push all other mesh in order to animates them.
    * - disables all targets but the ones of the highest mesh in stack
    *
-   * TODO base stack? rename into reorder
+   * TODO base stack?
    * @async
    * @param {string[]} ids - array or mesh ids givin the new order.
    */
-  async shuffle(ids) {
+  async reorder(ids) {
     if (this.stack.length <= 1) {
       return
     }
     const posById = new Map(this.stack.map(({ id }, i) => [id, i]))
     const stack = ids.map(id => this.stack[posById.get(id)])
 
-    controlManager.record({ meshId: stack[0].id, fn: 'shuffle', args: [ids] })
+    controlManager.record({ meshId: stack[0].id, fn: 'reorder', args: [ids] })
 
     // move the new base card to its final position to allow stack computations
     const basePosition = this.mesh.absolutePosition.clone()
@@ -211,7 +212,7 @@ export class StackBehavior extends TargetBehavior {
 
     logger.debug(
       { old: this.stack, stack, base: basePosition },
-      `shuffle\n${this.stack.map(({ id }) => id)}\nto\n${ids}`
+      `reorder\n${this.stack.map(({ id }) => id)}\nto\n${ids}`
     )
 
     let last = null

@@ -26,7 +26,7 @@ function getKey(action) {
 
 class ControlManager {
   /**
-   * Creates a manager to control a collection of meshes:
+   * Creates a manager to remotely control a collection of meshes:
    * - applies actions received to specific meshes
    * - propagates applied actions to observers (with cycle breaker)
    * - controls pointer objects to represent peer players.
@@ -48,7 +48,7 @@ class ControlManager {
   }
 
   /**
-   * Gives a scene to the manager a scene.
+   * Gives a scene to the manager.
    * @param {object} params - parameters, including:
    * @param {Scene} params.scene - scene attached to.
    */

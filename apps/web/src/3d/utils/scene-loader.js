@@ -1,7 +1,6 @@
-import { createCard } from '../card'
-import { createRoundToken } from '../round-token'
-import { createRoundedTile } from '../rounded-tile'
-import { makeLogger } from '../../utils'
+import { createCard, createRoundToken, createRoundedTile } from '..'
+// '../../utils' creates a cyclic dependency in Jest
+import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('scene-loader')
 

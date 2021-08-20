@@ -1,6 +1,7 @@
 import { Color3, MeshBuilder, Vector3 } from '@babylonjs/core'
 import { isContaining, screenToGround } from '../utils'
-import { makeLogger } from '../../utils'
+// '../../utils' creates a cyclic dependency in Jest
+import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('selection')
 
@@ -81,7 +82,6 @@ class SelectionManager {
       box.isPickable = false
 
       for (const mesh of scene.meshes) {
-        // TODO controllable mesh only
         if (mesh.isPickable && isContaining(box, mesh)) {
           this.meshes.push(mesh)
           mesh.renderOverlay = true

@@ -38,7 +38,7 @@
           title: $_('tooltips.shuffle'),
           onClick: () => {
             const ids = object.metadata.stack.map(({ id }) => id)
-            object.metadata.shuffle(shuffle(ids))
+            object.metadata.reorder(shuffle(ids))
           }
         })
       }

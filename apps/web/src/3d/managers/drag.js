@@ -1,13 +1,19 @@
 import { Vector3 } from '@babylonjs/core'
-import { controlManager, inputManager, targetManager } from '.'
-import { selectionManager } from './selection'
+import {
+  controlManager,
+  inputManager,
+  selectionManager,
+  targetManager
+} from '.'
 import {
   animateMove,
   applyGravity,
   isAboveTable,
   screenToGround
 } from '../utils'
-import { makeLogger, sleep } from '../../utils'
+import { sleep } from '../../utils'
+// '../../utils' creates a cyclic dependency in Jest
+import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('drag')
 
@@ -33,26 +39,25 @@ class DragManager {
    * @param {number} [params.elevation=0.5] - altitude applied to meshes while dragging them.
    */
   init({ scene, elevation = 0.5 } = {}) {
-    const targets = new Set()
+    const zones = new Set()
     let lastPosition = null
     let dragged = []
 
-    // dynamically creates stopDrag to keep dragged and targets hidden
+    // dynamically creates stopDrag to keep dragged and zones hidden
     this.stopDrag = () => {
       if (dragged.length === 0) return
 
-      // trigger drop operation on all identified targets
+      // trigger drop operation on all identified drop zones
       const droppedIds = new Set()
-      for (const target of targets) {
-        logger.debug({ target }, `completes drop`)
-        for (const dropped of targetManager.dropOn(target)) {
+      for (const zone of zones) {
+        logger.debug({ zone }, `completes drop`)
+        for (const dropped of targetManager.dropOn(zone)) {
           droppedIds.add(dropped.id)
         }
       }
-      targets.clear()
+      zones.clear()
 
       // and moves remaining meshes
-      // TODO Fix: when moving stacks, gravity is applied concurrently
       Promise.all(
         dragged
           .filter(mesh => !droppedIds.has(mesh.id))
@@ -102,10 +107,10 @@ class DragManager {
           })
         }
       } else if (type === 'drag' && dragged.length) {
-        for (const target of targets) {
-          targetManager.clear(target)
+        for (const zone of zones) {
+          targetManager.clear(zone)
         }
-        targets.clear()
+        zones.clear()
 
         if (isAboveTable(scene, screenPosition)) {
           const currentPosition = screenToGround(scene, screenPosition)
@@ -130,12 +135,12 @@ class DragManager {
           move.y = highest
 
           for (const mesh of dragged) {
-            const target = targetManager.findTarget(
+            const zone = targetManager.findDropZone(
               mesh,
               this.behaviorByMeshId.get(mesh.id).dragKind
             )
-            if (target) {
-              targets.add(target)
+            if (zone) {
+              zones.add(zone)
             }
             mesh.setAbsolutePosition(mesh.absolutePosition.addInPlace(move))
             controlManager.record({

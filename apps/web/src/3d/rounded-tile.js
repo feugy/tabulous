@@ -173,13 +173,13 @@ export function createRoundedTile({
   tile.addBehavior(rotateBehavior, true)
 
   const stackBehavior = new StackBehavior({ moveDuration })
-  const target = MeshBuilder.CreateBox('drop-target', {
+  const dropZone = MeshBuilder.CreateBox('drop-zone', {
     width: width * 1.03,
     height: depth + 0.01,
     depth: height * 1.03
   })
-  target.parent = tile
-  stackBehavior.defineTarget(target, 0.3, [dragKind])
+  dropZone.parent = tile
+  stackBehavior.addZone(dropZone, 0.3, [dragKind])
   tile.addBehavior(stackBehavior, true)
 
   controlManager.registerControlable(tile)
