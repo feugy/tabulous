@@ -54,7 +54,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run test Web UI
+      - name: Run server test
+        run: npm run test:server
+
+      - name: Run UI tests
         run: npm run test:web
 
       # - name: Send coverage to Codacy
