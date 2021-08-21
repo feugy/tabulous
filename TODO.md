@@ -4,7 +4,6 @@
 
 ## Refactor
 
-- creates ConfirmDialogue component
 - behaviors may not care about active selection (game-interaction/game-engine should)
 - server logging (warning on invalid descriptors)
 - enable [Babylon.js treeshaking](https://doc.babylonjs.com/divingDeeper/developWithBjs/treeShaking)
@@ -26,7 +25,6 @@
 
 ## Multi player
 
-- invite dialogue must take focus and invite on enter key
 - invite players by name and id
 - search players by name
 - persistant chat

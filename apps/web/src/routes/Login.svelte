@@ -5,7 +5,13 @@
   import { logIn } from '../stores'
 
   let username = ''
+  let inputRef
+
   $: disabled = !username || username.trim().length === 0
+
+  $: if (inputRef) {
+    inputRef.focus()
+  }
 
   async function handleLogin() {
     try {
@@ -48,6 +54,7 @@
         <Input
           placeholder={$_('placeholders.user-name')}
           bind:value={username}
+          bind:ref={inputRef}
         />
       </div>
       <div class="actions">
