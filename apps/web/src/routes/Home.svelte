@@ -65,7 +65,7 @@
   {#each $playerGames as game (game.id)}
     <GameLink
       {game}
-      playerId={$currentPlayer.id}
+      playerId={$currentPlayer?.id}
       on:delete={handleDeleteGame}
     />
   {/each}
