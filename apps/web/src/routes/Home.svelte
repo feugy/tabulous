@@ -1,7 +1,7 @@
 <script>
   import { push } from 'svelte-spa-router'
   import { _ } from 'svelte-intl'
-  import { Button, Dialogue, GameLink } from '../components'
+  import { Button, ConfirmDialogue, GameLink } from '../components'
   import { Header } from '../connected-components'
   import {
     currentPlayer,
@@ -72,26 +72,12 @@
 </main>
 
 {#if gameToDelete}
-  <Dialogue
+  <ConfirmDialogue
     open
     title={$_('titles.confirm-game-deletion')}
+    message={$_('labels.confirm-game-deletion', {
+      kind: $_(`games.${gameToDelete.kind}`)
+    })}
     on:close={handleDeletionClose}
-  >
-    <span
-      >{$_('labels.confirm-game-deletion', {
-        kind: $_(`games.${gameToDelete.kind}`)
-      })}</span
-    >
-    <svelte:fragment slot="buttons">
-      <Button
-        secondary
-        text={$_('actions.cancel')}
-        on:click={() => handleDeletionClose({ detail: false })}
-      />
-      <Button
-        text={$_('actions.confirm')}
-        on:click={() => handleDeletionClose({ detail: true })}
-      />
-    </svelte:fragment>
-  </Dialogue>
+  />
 {/if}

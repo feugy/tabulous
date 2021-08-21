@@ -1,6 +1,7 @@
 export { default as ActionMenu } from './ActionMenu.svelte'
 export { default as Button } from './Button.svelte'
 export { default as CameraSwitch } from './CameraSwitch.svelte'
+export { default as ConfirmDialogue } from './ConfirmDialogue.svelte'
 export { default as Dialogue } from './Dialogue.svelte'
 export { default as Discussion } from './Discussion.svelte'
 export { default as Dropdown } from './Dropdown.svelte'

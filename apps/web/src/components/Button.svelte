@@ -3,6 +3,7 @@
   export let icon = null
   export let badge = null
   export let secondary = false
+  export let ref = null
 </script>
 
 <style type="postcss">
@@ -59,7 +60,7 @@
   }
 </style>
 
-<button {...$$restProps} class:secondary on:click
+<button {...$$restProps} class:secondary bind:this={ref} on:click
   >{#if icon}<span class="material-icons">{icon}</span>{/if}{#if text}<span
       class="text">{text}</span
     >{/if}{#if badge != undefined}<span class="badge"
