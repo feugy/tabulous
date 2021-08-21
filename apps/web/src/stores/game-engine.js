@@ -148,6 +148,7 @@ export function initEngine({
     for (const subscription of subscriptions) {
       subscription.unsubscribe()
     }
+    engine$.next(null)
   })
 }
 

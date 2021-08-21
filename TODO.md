@@ -1,7 +1,5 @@
 # TODO
 
-- share camera position to game host for saving
-
 ## Refactor
 
 - behaviors may not care about active selection (game-interaction/game-engine should)
@@ -15,6 +13,8 @@
 
 ## Single player
 
+- refresh game list on game deletion
+- share camera position to game host for saving
 - boards
 - player's hand
 - stack actions:
@@ -27,7 +27,6 @@
 
 - invite players by name and id
 - search players by name
-- persistant chat
 - indicates when remote stream is muted/stopped
 
 # Known issues

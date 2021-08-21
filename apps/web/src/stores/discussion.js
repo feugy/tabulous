@@ -1,41 +1,73 @@
 import { BehaviorSubject, merge } from 'rxjs'
-import { filter, scan } from 'rxjs/operators'
+import { filter } from 'rxjs/operators'
 import { lastMessageReceived, lastMessageSent, send } from './peer-channels'
 
 const resetSymbol = Symbol('reset-chat')
 
 // initialize to ensure an empty thread, instead of undefined
-const reset$ = new BehaviorSubject({ message: resetSymbol })
+const reset$ = new BehaviorSubject({
+  data: { type: 'message', text: resetSymbol }
+})
+
+const thread$ = new BehaviorSubject([])
+
+merge(lastMessageSent, lastMessageReceived, reset$)
+  .pipe(filter(({ data } = {}) => data?.type === 'message'))
+  .subscribe({
+    next: ({ data, from }) => {
+      const messages = thread$.getValue()
+      thread$.next(
+        data.text === resetSymbol
+          ? []
+          : [...messages, { ...data, playerId: from?.id }]
+      )
+    }
+  })
 
 /**
- * @typedef {object} Message
- * @property {string} message - textual message
+ * @typedef {object} Message a message in the discussion thread:
+ * @property {string} playerId - sender id.
+ * @property {string} text - message's textual content.
+ * @property {number} time - creation timestamp.
  */
 
 /**
- * Discussion thread, as an array of objects
+ * Discussion thread, as an array of objects.
  * @type {Observable<[Message]>}
  */
-export const thread = merge(lastMessageSent, lastMessageReceived, reset$).pipe(
-  filter(({ data } = {}) => data?.message),
-  scan(
-    (thread, { data, from }) =>
-      data.message === resetSymbol ? [] : [...thread, { ...data, from }],
-    []
-  )
-)
+export const thread = thread$.asObservable()
 
 /**
- * Sends a message to other players
- * @param {string} message
+ * Sends a message to other players.
+ * @param {string} text - message textual content.
  */
-export function sendToThread(message) {
-  send({ message })
+export function sendToThread(text) {
+  send({ type: 'message', text, time: Date.now() })
 }
 
 /**
- * Clears discussion thread
+ * Clears discussion thread.
  */
 export function clearThread() {
-  reset$.next({ data: { message: resetSymbol } })
+  reset$.next({ data: { type: 'message', text: resetSymbol } })
+}
+
+/**
+ * TODO test
+ * Loads messages into the discussion thread, clearing previous content.
+ * @param {Message[]} messages? - new thread content.
+ */
+export function loadThread(messages) {
+  thread$.next(messages || [])
+}
+
+/**
+ * Serialize the current discussion so it could be saved on server.
+ * @returns {Messages[]} a list (potentially empty) of serialized messages.
+ */
+export function serializeThread() {
+  // exclude other fields from incoming data to make it serializable
+  return thread$
+    .getValue()
+    .map(({ text, time, playerId }) => ({ text, time, playerId }))
 }

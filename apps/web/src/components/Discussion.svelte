@@ -4,16 +4,25 @@
   import { Button, Input } from '.'
 
   export let thread
+  export let players
 
   const dispatch = createEventDispatcher()
   let text = ''
   let messageContainer
+  const playerById = new Map()
 
   $: if (messageContainer && thread) {
     // automatically scrolls to last when receiving a new message
     setTimeout(() => {
       messageContainer.lastElementChild?.scrollIntoView()
     }, 0)
+  }
+
+  $: if (players) {
+    playerById.clear()
+    for (const player of players) {
+      playerById.set(player.id, player)
+    }
   }
 
   function handleSend() {
@@ -49,9 +58,9 @@
 
 <div class="discussion">
   <div class="messages" bind:this={messageContainer}>
-    {#each thread || [] as { from, message }}
-      <span class="from">{from?.username}</span><span class="message"
-        >{message}</span
+    {#each thread || [] as { playerId, text }}
+      <span class="from">{playerById.get(playerId)?.username ?? ''}</span><span
+        class="message">{text}</span
       >
     {/each}
   </div>

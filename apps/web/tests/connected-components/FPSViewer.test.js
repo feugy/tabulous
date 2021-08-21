@@ -6,9 +6,10 @@ import { translate } from '../test-utils'
 import FPSViewer from '@src/connected-components/FPSViewer.svelte'
 import { fps } from '@src/stores/game-engine'
 
-jest.mock('@src/stores/game-engine', () => ({
-  fps: new (require('rxjs').BehaviorSubject)()
-}))
+jest.mock('@src/stores/game-engine', () => {
+  const { BehaviorSubject } = require('rxjs')
+  return { fps: new BehaviorSubject(), engine: new BehaviorSubject() }
+})
 
 describe('FPSViewer connected component', () => {
   beforeEach(jest.resetAllMocks)

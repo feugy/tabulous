@@ -17,6 +17,7 @@
   import {
     cameraSaveCount,
     connected,
+    currentGame,
     engine,
     initEngine,
     loadGame,
@@ -122,6 +123,7 @@
   {#if $connected.length || $thread.length}
     <Discussion
       thread={$thread}
+      players={$currentGame?.players}
       on:sendMessage={({ detail }) => sendToThread(detail.text)}
     />
   {/if}
