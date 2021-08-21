@@ -26,10 +26,11 @@ import { controlManager } from './managers'
  * - hoverable (?)
  * A token's texture must have 3 faces, back then edge then front, aligned horizontally.
  * @param {object} params - token parameters, including (all other properties will be passed to the created mesh):
+ * @param {string} params.texture - token's texture url.
+ * @param {import('./utils').ImageDefs} params.images - detailed images for this token.
  * @param {number} params.x? - initial position along the X axis.
  * @param {number} params.y? - initial position along the Y axis.
  * @param {number} params.z? - initial position along the Z axis.
- * @param {string} params.texture? - token's texture url.
  * @param {number} params.diameter? - token's diameter (X+Z axis).
  * @param {number} params.height? - token's height (Y axis).
  * @param {boolean} params.isFlipped? - initial flip state (face visible).
@@ -38,7 +39,6 @@ import { controlManager } from './managers'
  * @param {number} params.rotateDuration? - rotation duration (in milliseconds).
  * @param {number} params.snapDistance? - distance bellow which the token automatically snaps to nearest position.
  * @param {number} params.moveDuration? - automatic move duration (in milliseconds), when snapping.
- * @param {import('./utils').ImageDefs} params.images? - detailed images for this card.
  * @returns the created token mesh.
  */
 export function createRoundToken({

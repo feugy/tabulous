@@ -19,7 +19,13 @@ for (const [level, count] of cardCountPerLevel) {
         images: {
           front: `images/splendor/HR/card-${kind}-${level}-${index}.png`,
           back: `images/splendor/HR/card-${level}-back.png`
-        }
+        },
+        x: 0,
+        z: 0,
+        y: 0,
+        width: 3,
+        height: 4.25,
+        depth: 0.01
       })
     }
   }
@@ -36,6 +42,9 @@ for (const kind of [...gems, 'gold']) {
         front: `images/splendor/HR/token-${kind}.png`,
         back: `images/splendor/HR/token-${kind}.png`
       },
+      x: 0,
+      y: 0.05,
+      z: 0,
       diameter: 2,
       height: 0.1
     })
@@ -50,7 +59,15 @@ for (let index = 1; index <= 10; index++) {
     images: {
       front: `images/splendor/HR/tile-${index}.png`,
       back: `images/splendor/HR/tile-back.png`
-    }
+    },
+    x: 0,
+    z: 0,
+    y: 0,
+    width: 3,
+    height: 3,
+    depth: 0.05,
+    borderRadius: 0.4,
+    borderColor: [0, 0, 0, 1]
   })
 }
 
@@ -87,10 +104,10 @@ export const slots = [
   { x: 0, z: -3, bagId: 'cards-level-1', count: 1 },
   { x: -4, z: -3, bagId: 'cards-level-1', count: 1 },
   { x: -8, z: -3, bagId: 'cards-level-1', isFlipped: true },
-  { x: -7, y: 0.05, z: -7, bagId: 'tokens-gold' },
-  { x: -4, y: 0.05, z: -7, bagId: 'tokens-emerald' },
-  { x: -1, y: 0.05, z: -7, bagId: 'tokens-sapphire' },
-  { x: 2, y: 0.05, z: -7, bagId: 'tokens-diamond' },
-  { x: 5, y: 0.05, z: -7, bagId: 'tokens-quartz' },
-  { x: 8, y: 0.05, z: -7, bagId: 'tokens-ruby' }
+  { x: -7, z: -7, bagId: 'tokens-gold' },
+  { x: -4, z: -7, bagId: 'tokens-emerald' },
+  { x: -1, z: -7, bagId: 'tokens-sapphire' },
+  { x: 2, z: -7, bagId: 'tokens-diamond' },
+  { x: 5, z: -7, bagId: 'tokens-quartz' },
+  { x: 8, z: -7, bagId: 'tokens-ruby' }
 ]

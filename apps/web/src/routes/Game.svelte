@@ -115,14 +115,14 @@
   <FPSViewer />
   <ObjectDetails data={$meshDetails} />
 </main>
-{#if $connected.length}
-  <aside class="right">
-    {#each $connected as { player, stream }, i}
-      <PlayerAvatar {player} {stream} controllable={i === 0} />
-    {/each}
+<aside class="right">
+  {#each $connected as { player, stream }, i}
+    <PlayerAvatar {player} {stream} controllable={i === 0} />
+  {/each}
+  {#if $connected.length || $thread.length}
     <Discussion
       thread={$thread}
       on:sendMessage={({ detail }) => sendToThread(detail.text)}
     />
-  </aside>
-{/if}
+  {/if}
+</aside>

@@ -108,8 +108,10 @@ async function animate(camera, { alpha, beta, elevation, target }, duration) {
 
 /**
  * @typedef {object} CameraSave camera state save, including:
- * @property {Vector3} target - camera locked target.
- * @property {Vector3} rotation - camera 3D rotation (alpha, beta, radius).
+ * @property {number[]} target - camera locked target, as an array of 3D coordinates.
+ * @property {number} alpha - alpha angle, in radian.
+ * @property {number} beta - beta angle, in radia.
+ * @property {number} elevation - altitude, in 3D coordinate.
  */
 
 class CameraManager {
@@ -237,7 +239,7 @@ class CameraManager {
       alpha: this.camera[rotateAlpha.targetProperty],
       beta: this.camera[rotateBeta.targetProperty],
       elevation: this.camera[elevate.targetProperty],
-      target: this.camera[pan.targetProperty].clone()
+      target: this.camera[pan.targetProperty].asArray()
     }
     this.onSaveObservable.notifyObservers(this.saves)
   }
@@ -250,7 +252,14 @@ class CameraManager {
    */
   restore(index = 0, duration = 300) {
     if (!this.camera || !this.saves[index]) return
-    animate(this.camera, this.saves[index], duration)
+    animate(
+      this.camera,
+      {
+        ...this.saves[index],
+        target: Vector3.FromArray(this.saves[index].target)
+      },
+      duration
+    )
   }
 }
 

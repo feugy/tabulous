@@ -64,12 +64,13 @@ function makeCornerMesh(
  * - hoverable (?)
  * A tile's texture must have 2 faces, back then front, aligned horizontally. Edges have silde color (borderColor).
  * @param {object} params - tile parameters, including (all other properties will be passed to the created mesh):
+ * @param {string} params.texture - tile's texture url.
+ * @param {import('./utils').ImageDefs} params.images - detailed images for this tile.
  * @param {number} params.x? - initial position along the X axis.
  * @param {number} params.y? - initial position along the Y axis.
  * @param {number} params.z? - initial position along the Z axis.
  * @param {number} params.borderRadius? - radius applied to each corner.
  * @param {number[]} params.borderColor? - Color4's components used as edge color.
- * @param {string} params.texture? - tile's texture url.
  * @param {number} params.width? - tile's width (X axis).
  * @param {number} params.height? - tile's height (Z axis).
  * @param {number} params.depth? - tile's depth (Y axis).
@@ -79,7 +80,6 @@ function makeCornerMesh(
  * @param {number} params.rotateDuration? - rotation duration (in milliseconds).
  * @param {number} params.snapDistance? - distance bellow which the tile automatically snaps to nearest position.
  * @param {number} params.moveDuration? - automatic move duration (in milliseconds), when snapping.
- * @param {import('./utils').ImageDefs} params.images? - detailed images for this card.
  * @returns {import('@babylonjs/core').Mesh} the created tile mesh.
  */
 export function createRoundedTile({
@@ -146,6 +146,8 @@ export function createRoundedTile({
       width,
       height,
       depth,
+      borderColor,
+      borderRadius,
       texture,
       images,
       ...tileProps,
