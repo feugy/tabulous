@@ -1,5 +1,6 @@
 import {
   createGame,
+  deleteGame,
   invite,
   getPlayersById,
   listGames,
@@ -43,6 +44,9 @@ export default {
     ),
     saveGame: isAuthenticated(async (obj, { game }, { player }) =>
       saveGame(game, player.id)
+    ),
+    deleteGame: isAuthenticated(async (obj, { gameId }, { player }) =>
+      deleteGame(gameId, player.id)
     ),
     invite: isAuthenticated(async (obj, { gameId, playerId }, { player }) =>
       invite(gameId, playerId, player.id)

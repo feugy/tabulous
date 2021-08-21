@@ -10,6 +10,12 @@ mutation createGame($kind: String!) {
   }
 }
 
+mutation deleteGame($gameId: ID!) {
+  deleteGame(gameId: $gameId) {
+    id
+  }
+}
+
 mutation invite($gameId: ID!, $playerId: ID!) {
   invite(gameId: $gameId, playerId: $playerId) {
     players {

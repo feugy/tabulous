@@ -7,7 +7,7 @@
   "scripts": {
     "start": "nodemon . | pino-pretty -c -t",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --coverage --colors",
-    "test:dev": "NODE_OPTIONS=--experimental-vm-modules jest jest --watch"
+    "test:dev": "NODE_OPTIONS=--experimental-vm-modules jest --watch"
   },
   "dependencies": {
     "@graphql-tools/load": "^6.2.8",

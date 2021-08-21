@@ -6,20 +6,27 @@
   export let gameId
   export let open = false
 
-  let input
+  let inputRef
+  let text
   let title = $_('titles.invite')
-  $: buttonDisabled = !input || !input.trim().length
+
+  $: disabled = !text || !text.trim().length
+
+  $: if (open && inputRef) {
+    // we must wait for the dialogue to be displayed
+    setTimeout(() => inputRef.focus(), 100)
+  }
 
   function handleClose() {
-    input = ''
+    text = ''
     open = false
   }
 
   async function handleInvite() {
-    if (buttonDisabled) {
+    if (disabled) {
       return
     }
-    const playerId = input.trim()
+    const playerId = text.trim()
     invite(gameId, playerId)
     handleClose()
   }
@@ -28,14 +35,15 @@
 <Dialogue {title} {open} on:close on:close={handleClose}>
   <Input
     placeholder={$_('placeholders.player-id')}
-    bind:value={input}
+    bind:value={text}
+    bind:ref={inputRef}
     on:enter={handleInvite}
   />
   <svelte:fragment slot="buttons">
     <Button
       icon="connect_without_contact"
       text={$_('actions.invite')}
-      disabled={buttonDisabled}
+      {disabled}
       on:click={handleInvite}
     />
   </svelte:fragment>

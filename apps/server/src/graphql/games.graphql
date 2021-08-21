@@ -131,5 +131,6 @@ type Query {
 type Mutation {
   createGame(kind: String!): Game
   saveGame(game: GameInput!): Game
+  deleteGame(gameId: ID!): Game
   invite(gameId: ID!, playerId: ID!): Game
 }

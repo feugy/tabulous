@@ -1,16 +1,11 @@
 # TODO
 
-- Game descriptor:
-  - split mesh definitions from initial position (slots)
-  - randomized slots for shuffling during creation
-  - player camera position
 - share camera position to game host for saving
-- ability to remove game (creator only)
 
 ## Refactor
 
 - behaviors may not care about active selection (game-interaction/game-engine should)
-- server logging
+- server logging (warning on invalid descriptors)
 - enable [Babylon.js treeshaking](https://doc.babylonjs.com/divingDeeper/developWithBjs/treeShaking)
 - all manager managing a collection of behaviors should check their capabilities
 - moves images to server
@@ -30,7 +25,6 @@
 
 ## Multi player
 
-- invite dialogue must take focus and invite on enter key
 - invite players by name and id
 - search players by name
 - persistant chat
@@ -143,24 +137,7 @@
 In Tabletopia, being forced to do click (either select or menu) before triggering actions (shortcut or menu) is a bummer.
 They support keyboard, but not fingers.
 
-# Multi-player
-
-## WebRTC Connection handshake
-
-1. player A is already in game, with an open WebSocket connection
-1. player B join game
-   1. opens a WebSocket connection
-   1. creates a WebRTC peer (initiator) and receives an offer signal
-   1. send it throught WebSocket to player A
-1. player A receives offer through WebSocket
-   1. creates a WebRTC peer
-   1. uses the offer and receives an answer signal
-   1. send it throught WebSocket to player B
-1. player B receives answer through WebSocket
-   1. uses the answer
-1. their duplex connection is established
-
-## Game lifecycle
+# Game lifecycle
 
 1. player A calls `createGame(kind)`
 1. server creates a game id, loads scene descriptor, adds player A to the player list, returns the game id
@@ -170,13 +147,6 @@ They support keyboard, but not fingers.
 1. player B calls `loadGame(id)`
 1. server returns the game scene descriptor and player list
 1. player B tries to connect with all players already connected (see connection handshake)
-
-## STUN & TURN server `WIP`
-
-```shell
-docker run -d --network=host coturn/coturn --external-ip=78.192.173.27 --relay-ip=192.168.1.45 -X -v -u tabulous:soulubat -a -f -r tabulous
-
-```
 
 ## The host role
 
@@ -188,7 +158,7 @@ The host player is in charge of:
 
 When the host player disconnects, a new host is elected: the first connected player in the game player list becomes host
 
-## HTTPs certificate
+# HTTPs certificate
 
 Follow official Let's Encrypt [instructions](https://certbot.eff.org/lets-encrypt/ubuntufocal-other) for Ubuntu.
 
@@ -281,3 +251,10 @@ done
 
 There is no built-in way for the remote side of an WebRTC connection to know that video or audio was disabled.
 The mute/unmute events are meant for network issues. Stopping a track is definitive. Adding/removing track from stream only works locally (or would trigger re-negociation)
+
+STUN & TURN server:
+
+```shell
+docker run -d --network=host coturn/coturn --external-ip=78.192.173.27 --relay-ip=192.168.1.45 -X -v -u tabulous:soulubat -a -f -r tabulous
+
+```

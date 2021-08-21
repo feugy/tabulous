@@ -51,6 +51,42 @@ const validate = new Ajv({ allErrors: true }).compile({
   }
 })
 
+/**
+ * @typedef {object} Configuration loaded configuration, including:
+ * @property {boolean} isProduction - indicates production mode.
+ * @property {object} serverUrl - node's `server.listen()` url object, including:
+ * @property {string} serverUrl.host - IP4/6 address this server will listen to.
+ * @property {number} serverUrl.port - server listening port.
+ * @property {object} https - node's `tls.createSecureContext()` options, including:
+ * @property {string} https.key - relative or absolute path to the PEM file of your SSL key.
+ * @property {string} https.cert - relative or absolute path to the PEM file of your SSL certificate.
+ * @property {object} logger - Pino logger options, including:
+ * @property {string} logger.level - level used for logging.
+ * @property {object} plugins - options for all plugin used::
+ * @property {import('../plugins/graphql').GraphQLOptions} plugins.graphql - options for the GraphQL plugin.
+ * @property {import('../plugins/peer-signal').PeerSignalOptions} plugins.peerSignal - options for the peer signaling plugin.
+ * @property {import('../plugins/sse').SSEOptions} plugins.sse - options for the Server Sent Event plugin.
+ * @property {import('../plugins/static').StaticOptions} plugins.static - options for the static files plugin.
+ * @see {@link https://nodejs.org/docs/latest-v16.x/api/net.html#net_server_listen_options_callback}
+ * @see {@link https://nodejs.org/docs/latest-v16.x/api/tls.html#tls_tls_createsecurecontext_options}
+ * @see {@link https://github.com/pinojs/pino/blob/master/docs/api.md#options}
+ */
+
+/**
+ * Synchronously loads and validates the server configuration from environment variables:
+ * - CLIENT_ROOT: relative/absolute path to the folder containing UI static files. Default to 'apps/web/dist'.
+ * - HOST : IP4/6 address this server will listen to.
+ * - HTTPS_CERT: relative or absolute path to the PEM file of your SSL certificate. Required in production, defaults to 'keys/cert.pem'.
+ * - HTTPS_KEY: relative or absolute path to the PEM file of your SSL key. Rrequired in production, defaults to 'keys/privkey.pem'.
+ * - LOG_LEVEL: logger level used, one of 'trace', 'debug', 'info', 'warn', 'error', 'fatal'. Defaults to 'debug'.
+ * - NODE_ENV: 'production' indicates production mode.
+ * - PORT: server listening port (must be a number). Defaults to 443 in production, and 3001 otherwise.
+ * - SSE_ENDPOINT: url of the server sent event endpoint. Defaults to '/sse'.
+ * - WS_ENDPOINT: url of the web socket endpoint. Defaults to '/ws'.
+ *
+ * @returns {Configuration} the loaded configuration.
+ * @throws {Error} when the provided environment variables do not match expected values.
+ */
 export function loadConfiguration() {
   const {
     CLIENT_ROOT,
@@ -75,8 +111,8 @@ export function loadConfiguration() {
     https:
       (HTTPS_KEY && HTTPS_CERT) || isProduction
         ? {
-            key: HTTPS_KEY ?? 'keys/privkey.pem',
-            cert: HTTPS_CERT ?? 'keys/cert.pem'
+            key: HTTPS_KEY ?? join('keys', 'privkey.pem'),
+            cert: HTTPS_CERT ?? join('keys', 'cert.pem')
           }
         : null,
     logger: { level: LOG_LEVEL ?? 'debug' },

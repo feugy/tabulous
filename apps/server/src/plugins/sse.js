@@ -41,11 +41,23 @@ function makeDecorator(retry) {
 }
 
 /**
+ * @typedef {object} SSEOptions Server Sent Event plugin options, including:
+ * @property {string} path - the sse endpoint path
+ */
+
+/**
+ * @typedef {object} InviteEvent Event sent to players, including:
+ * @property {string} event - type is always 'invite'
+ * @property {import('../services').Invite} data - the invite data.
+ */
+
+/**
  * Registers Server-Sent Event endpoint into the provided fastify application.
- * Will send "invite" events to the guest player when they've been invited to a game
- * @param {fastify} app - a fastify application
- * @param {object} opts - plugin's options, including:
- * @param {string} opts.path - the sse endpoint path
+ * Will send InviteEvent to the guest player when they've been invited to a game.
+ *
+ * It enriches the fastify application with `sse()` reply decorator which takes an observable as single parameter.
+ * @param {import('fastify').FastifyInstance} app - a fastify application.
+ * @param {SSEOptions} opts - plugin's options.
  */
 async function registerSSE(app, opts) {
   const retry = opts.retryDelay || 3000

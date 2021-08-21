@@ -1,6 +1,8 @@
 fps _: 'FPS : {value}'
 
 actions:
+  cancel: Non
+  confirm: Oui
   enter-fullscreen: Plein-écran
   invite: Inviter
   invite-player: Inviter un(e) joueur(se)
@@ -16,8 +18,12 @@ formats:
       hour: 2-digit
       minute: 2-digit
       month: short
+games:
+  splendor: Splendor
+  riichi: Riichi Mahjong
 labels:
-  players-count: '{ length, plural, one {# joueur} other {# joueurs} }'
+  peer-players: avec {names}
+  confirm-game-deletion: Souhaitez vous vraiment supprimer cette partie de {kind} ?
 page-titles:
   game: Tabulous • Jeu
   home: Tabulous • Accueil
@@ -26,6 +32,7 @@ placeholders:
   player-id: Id joueur
   user-name: Pseudo
 titles:
+  confirm-game-deletion: Suppression de la partie
   home: Bonjour {username} ({id}) !
   invite: Qui vas tu inviter ?
   log-in: Bienvenue !

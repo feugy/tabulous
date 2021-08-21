@@ -3,6 +3,7 @@
 
   export let placeholder = null
   export let value = ''
+  export let ref = null
 
   const dispatch = createEventDispatcher()
 
@@ -46,5 +47,5 @@
 
 <fieldset>
   {#if placeholder}<legend class:has-value={!!value}>{placeholder}</legend>{/if}
-  <input {...$$restProps} bind:value on:keyup={handleKey} />
+  <input {...$$restProps} bind:value bind:this={ref} on:keyup={handleKey} />
 </fieldset>
