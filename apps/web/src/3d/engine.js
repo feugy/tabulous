@@ -3,8 +3,8 @@ import { Engine, Scene } from '@babylonjs/core'
 import {
   cameraManager,
   controlManager,
-  dragManager,
   inputManager,
+  moveManager,
   selectionManager
 } from './managers'
 
@@ -28,7 +28,7 @@ export function createEngine({ canvas, interaction, doubleTapDelay } = {}) {
 
   cameraManager.init({ scene })
   inputManager.init({ scene })
-  dragManager.init({ scene })
+  moveManager.init({ scene })
   controlManager.init({ scene })
   selectionManager.init({ scene })
 

@@ -8,8 +8,8 @@ import {
 } from '@babylonjs/core'
 import {
   DetailBehavior,
-  DragBehavior,
   FlipBehavior,
+  MoveBehavior,
   RotateBehavior,
   StackBehavior
 } from './behaviors'
@@ -19,11 +19,11 @@ import { controlManager } from './managers'
  * Creates a round token, like a pocker one.
  * Tokens are cylinders, so their position is their center (half their height).
  * A token has the following behaviors:
- * - draggable
+ * - movable
+ * - detailable
  * - flippable
  * - rotable
  * - stackable (the token token is a drop target)
- * - hoverable (?)
  * A token's texture must have 3 faces, back then edge then front, aligned horizontally.
  * @param {object} params - token parameters, including (all other properties will be passed to the created mesh):
  * @param {string} params.texture - token's texture url.
@@ -101,7 +101,7 @@ export function createRoundToken({
 
   const dragKind = 'round-target'
   token.addBehavior(
-    new DragBehavior({ moveDuration, snapDistance, dragKind }),
+    new MoveBehavior({ moveDuration, snapDistance, dragKind }),
     true
   )
 

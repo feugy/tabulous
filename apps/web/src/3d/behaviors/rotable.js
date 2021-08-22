@@ -1,5 +1,5 @@
 import { Animation, Vector3 } from '@babylonjs/core'
-import { MoveBehavior } from './movable'
+import { AnimateBehavior } from './animatable'
 import { applyGravity } from '../utils'
 import { controlManager, selectionManager } from '../managers'
 // '../../utils' creates a cyclic dependency in Jest
@@ -7,14 +7,14 @@ import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('rotable')
 
-export class RotateBehavior extends MoveBehavior {
+export class RotateBehavior extends AnimateBehavior {
   /**
    * Creates behavior to make a mesh rotable with animation.
    * It will add to this mesh's metadata:
    * - a `rotate()` function to rotate by 45°.
    * - a rotation `angle` (in radian).
    *
-   * @extends {MoveBehavior}
+   * @extends {AnimateBehavior}
    * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
    * @property {number} angle - rotation angle, in radian.
    * @property {number} duration - duration (in milliseconds) of the rotation animation.
@@ -89,7 +89,7 @@ export class RotateBehavior extends MoveBehavior {
     if (
       !single &&
       !mesh.metadata?.fromPeer &&
-      selectionManager.meshes.includes(mesh)
+      selectionManager.meshes.has(mesh)
     ) {
       for (const selected of selectionManager.meshes) {
         if (selected.metadata?.rotate) {

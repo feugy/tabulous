@@ -1,18 +1,18 @@
 const levels = {
   authentication: 'warn',
   camera: 'warn',
-  drag: 'warn',
   flippable: 'warn',
   'game-manager': 'warn',
   graphql: 'warn',
   gravity: 'warn',
   input: 'warn',
+  move: 'warn',
   'peer-channels': 'warn',
   rotable: 'warn',
   selection: 'warn',
   sse: 'warn',
   'scene-loader': 'warn',
-  stackable: 'warn',
+  stackable: 'info',
   target: 'warn'
 }
 

@@ -1,5 +1,5 @@
+export * from './animatable'
 export * from './detailable'
-export * from './draggable'
 export * from './flippable'
 export * from './movable'
 export * from './rotable'

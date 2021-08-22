@@ -1,5 +1,5 @@
 import { Animation, Vector3 } from '@babylonjs/core'
-import { MoveBehavior } from './movable'
+import { AnimateBehavior } from './animatable'
 import { applyGravity } from '../utils'
 import { controlManager, selectionManager } from '../managers'
 // '../../utils' creates a cyclic dependency in Jest
@@ -7,11 +7,11 @@ import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('flippable')
 
-export class FlipBehavior extends MoveBehavior {
+export class FlipBehavior extends AnimateBehavior {
   /**
    * Creates behavior to make a mesh flippable with animation.
    *
-   * @extends {MoveBehavior}
+   * @extends {AnimateBehavior}
    * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
    * @property {boolean} isFlipped - true when this mesh is flipped.
    * @property {number} duration - duration (in milliseconds) of the flip animation.
@@ -86,7 +86,7 @@ export class FlipBehavior extends MoveBehavior {
     if (
       !single &&
       !mesh.metadata?.fromPeer &&
-      selectionManager.meshes.includes(mesh)
+      selectionManager.meshes.has(mesh)
     ) {
       for (const selected of selectionManager.meshes) {
         if (selected.metadata?.flip) {

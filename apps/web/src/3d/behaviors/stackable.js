@@ -108,7 +108,7 @@ export class StackBehavior extends TargetBehavior {
         type === 'dragStart' &&
         stack.length > 1 &&
         stack[stack.length - 1] === mesh &&
-        !selectionManager.meshes.includes(stack[0])
+        !selectionManager.meshes.has(stack[0])
       ) {
         this.pop()
       }

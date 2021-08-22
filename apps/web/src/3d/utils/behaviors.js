@@ -1,6 +1,7 @@
 import {
+  AnimateBehavior,
   FlipBehavior,
-  MoveBehavior,
+  RotateBehavior,
   StackBehavior,
   TargetBehavior
 } from '../behaviors'
@@ -16,8 +17,9 @@ export async function animateMove(mesh, absolutePosition, duration) {
 
 export function getMoveableBehavior(mesh) {
   return (
-    mesh?.getBehaviorByName(MoveBehavior.NAME) ||
-    mesh?.getBehaviorByName(FlipBehavior.NAME)
+    mesh?.getBehaviorByName(AnimateBehavior.NAME) ||
+    mesh?.getBehaviorByName(FlipBehavior.NAME) ||
+    mesh?.getBehaviorByName(RotateBehavior.NAME)
   )
 }
 

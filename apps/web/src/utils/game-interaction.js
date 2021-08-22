@@ -4,6 +4,7 @@ import {
   cameraManager,
   controlManager,
   inputManager,
+  moveManager,
   selectionManager
 } from '../3d/managers'
 import { normalize } from '.'
@@ -70,7 +71,7 @@ export function attachInputs({
             setTimeout(() => meshForMenu$.next(mesh), 100)
           }
         } else {
-          if (selectionManager.meshes.length > 0) {
+          if (selectionManager.meshes.size) {
             selectionManager.clear()
           } else {
             if (type === 'tap' && (!isMouse(event) || button === 0)) {
@@ -144,7 +145,7 @@ export function attachInputs({
      * - starting dragging clears selection unless dragging a selected mesh
      * - dragging table with left click/finger/stylus selects meshes
      * - (long) dragging table with right click/finger/stylus rotates the camera
-     * Dragging meshes is built into dragManager
+     * - dragging mesh moves it
      */
     drags$.subscribe({
       next: ({ type, mesh, button, long, event }) => {
@@ -157,6 +158,8 @@ export function attachInputs({
             } else if (button === 0 || !isMouse(event)) {
               selectionPosition = position
             }
+          } else {
+            moveManager.start(mesh, event)
           }
         } else if (type === 'drag') {
           if (cameraDragPosition) {
@@ -173,6 +176,8 @@ export function attachInputs({
             cameraDragPosition = event
           } else if (selectionPosition) {
             selectionManager.drawSelectionBox(selectionPosition, event)
+          } else if (mesh) {
+            moveManager.continue(event)
           }
         } else if (type === 'dragStop') {
           if (cameraDragPosition) {
@@ -180,6 +185,8 @@ export function attachInputs({
           } else if (selectionPosition) {
             selectionManager.select()
             selectionPosition = null
+          } else if (mesh) {
+            moveManager.stop(event)
           }
         }
       }
