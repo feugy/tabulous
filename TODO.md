@@ -1,7 +1,5 @@
 # TODO
 
-- share camera position to game host for saving
-
 ## Refactor
 
 - behaviors may not care about active selection (game-interaction/game-engine should)
@@ -15,6 +13,8 @@
 
 ## Single player
 
+- prevent interaction while displaying loading UI
+- refresh game list on game deletion
 - boards
 - player's hand
 - stack actions:
@@ -25,9 +25,12 @@
 
 ## Multi player
 
+- sometimes, sending game to peer is not received
+- on vite reload, all players could become hosts or peers simultaneously
+- stop trying to connect while leaving game room
+- invite player with ENTER (numeric pad)
 - invite players by name and id
 - search players by name
-- persistant chat
 - indicates when remote stream is muted/stopped
 
 # Known issues

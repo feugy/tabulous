@@ -106,10 +106,21 @@ async function animate(camera, { alpha, beta, elevation, target }, duration) {
   })
 }
 
+function saveState(camera) {
+  return {
+    alpha: camera[rotateAlpha.targetProperty],
+    beta: camera[rotateBeta.targetProperty],
+    elevation: camera[elevate.targetProperty],
+    target: camera[pan.targetProperty].asArray()
+  }
+}
+
 /**
  * @typedef {object} CameraSave camera state save, including:
- * @property {Vector3} target - camera locked target.
- * @property {Vector3} rotation - camera 3D rotation (alpha, beta, radius).
+ * @property {number[]} target - camera locked target, as an array of 3D coordinates.
+ * @property {number} alpha - alpha angle, in radian.
+ * @property {number} beta - beta angle, in radia.
+ * @property {number} elevation - altitude, in 3D coordinate.
  */
 
 class CameraManager {
@@ -136,6 +147,7 @@ class CameraManager {
    * Creates a camera in current scene, that supports animated zooming and panning.
    * It can not leave the table.
    * Altitude is always in 3D world coordinate, angle in radians, and position in screen coordinates
+   * It maintains a list of saves, the first being its initial state (can  not be changed).
    * @param {object} params - parameters, including:
    * @param {number} params.y? - initial altitude
    * @param {number} params.alpha? - initial alpha angle
@@ -151,7 +163,6 @@ class CameraManager {
     minAngle = Math.PI / 4
   } = {}) {
     this.minAngle = minAngle
-    this.saves = []
 
     logger.info({ y, minY, maxY }, 'initialize camera manager')
     this.camera = new ArcRotateCamera(
@@ -176,6 +187,8 @@ class CameraManager {
     this.camera
       .getScene()
       .onDisposeObservable.addOnce(() => this.onSaveObservable.clear())
+
+    this.saves = [saveState(this.camera)]
   }
 
   /**
@@ -228,18 +241,15 @@ class CameraManager {
 
   /**
    * Saves camera current position into a given slot.
-   * Does nothing if the specified index is not within [0..saves.length].
-   * @param {number} [index=0] - slot where the state is saved.
+   * The first slot is reserved.
+   * Does nothing if the specified index is not within [1..saves.length].
+   * Notifies observers.
+   * @param {number} [index=1] - slot where the state is saved.
    */
-  save(index = 0) {
-    if (!this.camera || index < 0 || index > this.saves.length) return
-    this.saves[index] = {
-      alpha: this.camera[rotateAlpha.targetProperty],
-      beta: this.camera[rotateBeta.targetProperty],
-      elevation: this.camera[elevate.targetProperty],
-      target: this.camera[pan.targetProperty].clone()
-    }
-    this.onSaveObservable.notifyObservers(this.saves)
+  save(index = 1) {
+    if (!this.camera || index < 1 || index > this.saves.length) return
+    this.saves[index] = saveState(this.camera)
+    this.onSaveObservable.notifyObservers(this.saves.slice(1))
   }
 
   /**
@@ -250,7 +260,24 @@ class CameraManager {
    */
   restore(index = 0, duration = 300) {
     if (!this.camera || !this.saves[index]) return
-    animate(this.camera, this.saves[index], duration)
+    animate(
+      this.camera,
+      {
+        ...this.saves[index],
+        target: Vector3.FromArray(this.saves[index].target)
+      },
+      duration
+    )
+  }
+
+  /**
+   * Loads saves position, keeping only the first save which can not be changed.
+   * Notifies observers.
+   * @param {CameraSave[]} saves - an array of save position
+   */
+  loadSaves(saves) {
+    this.saves.splice(1, this.saves.length, ...saves)
+    this.onSaveObservable.notifyObservers(this.saves.slice(1))
   }
 }
 

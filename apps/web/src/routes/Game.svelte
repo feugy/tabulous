@@ -15,8 +15,9 @@
     StackSizeTooltip
   } from '../components'
   import {
-    cameraSaveCount,
+    cameraSaves,
     connected,
+    currentGame,
     engine,
     initEngine,
     loadGame,
@@ -97,7 +98,7 @@
     on:close={() => (openInviteDialogue = false)}
   />
   <CameraSwitch
-    saveCount={$cameraSaveCount}
+    saveCount={($cameraSaves?.length ?? 0) + 1}
     on:restore={({ detail: { index } }) => restoreCamera(index)}
     on:save={({ detail: { index } }) => saveCamera(index)}
   />
@@ -115,14 +116,15 @@
   <FPSViewer />
   <ObjectDetails data={$meshDetails} />
 </main>
-{#if $connected.length}
-  <aside class="right">
-    {#each $connected as { player, stream }, i}
-      <PlayerAvatar {player} {stream} controllable={i === 0} />
-    {/each}
+<aside class="right">
+  {#each $connected as { player, stream }, i}
+    <PlayerAvatar {player} {stream} controllable={i === 0} />
+  {/each}
+  {#if $connected.length || $thread.length}
     <Discussion
       thread={$thread}
+      players={$currentGame?.players}
       on:sendMessage={({ detail }) => sendToThread(detail.text)}
     />
-  </aside>
-{/if}
+  {/if}
+</aside>

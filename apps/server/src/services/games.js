@@ -22,7 +22,72 @@ function isOwner(game, playerId) {
  * @property {string} kind - game kind (relates with game descriptor).
  * @property {number} created - game creation timestamp.
  * @property {string[]} playerId - player ids, the first always being the creator id.
- * @property {Scene} scene - TODO the 3D engine scene, with game meshes.
+ * @property {Scene} scene - the 3D engine scene, with game meshes.
+ */
+
+/**
+ * @typedef {object} Scene a 3D scene made of:
+ * @property {Card[]} cards - a list of card meshes.
+ * @property {RoundToken[]} roundTokens - a list of cylindric tokens.
+ * @property {RoundedTiles[]} roundedTiles - a list of tiles with rounded corners.
+ */
+
+/**
+ * @typedef {object} ImageDefs image definitions for a given mesh:
+ * @property {string} front - path to its front image.
+ * @property {string} back? - path to its back image, when relevant.
+ */
+
+/**
+ * @typedef {object} Mesh an abstract 3D mesh:
+ * @property {string} id - mesh unique id.
+ * @property {string} texture - path to its texture file (one path for the entire mesh).
+ * @property {ImageDefs} images - other image definitions.
+ * @property {number} x? - 3D coordinate along the X axis (horizontal).
+ * @property {number} z? - 3D coordinate along the Z axis (vertical).
+ * @property {number} y? - 3D coordinate along the Y axis (altitude).
+ * @property {boolean} isFlipped? - true means the back face is visible.
+ * @property {number} angle? - rotation angle along Y axis, in radian.
+ * @property {string[]} stack? - when this mesh is the origin of a stack, ordered list of other mesh ids.
+ */
+
+/**
+ * @typedef {Mesh} Card a card mesh:
+ * @property {number} width? - card's width (X axis).
+ * @property {number} height? - card's height (Z axis).
+ * @property {number} depth? - card's depth (Y axis).
+ */
+
+/**
+ * @typedef {Mesh} RoundToken a round token mesh:
+ * @property {number} diameter? - token's diameter (X+Z axis).
+ * @property {number} height? - token's height (Y axis).
+ */
+
+/**
+ * @typedef {Mesh} RoundedTiles a tile mesh with rounded corners:
+ * @property {number} width? - tile's width (X axis).
+ * @property {number} height? - tile's height (Z axis).
+ * @property {number} depth? - tile's depth (Y axis)..
+ * @property {number} borderRadius? - radius applied to each corner.
+ * @property {number[]} borderColor? - Color4's components used as edge color.
+ */
+
+/**
+ * @typedef {object} Message a message in the discussion thread:
+ * @property {string} playerId - sender id.
+ * @property {string} text - message's textual content.
+ * @property {number} time - creation timestamp.
+ */
+
+/**
+ * @typedef {object} CameraPosition a saved camera position
+ * @property {string} playerId - owner id.
+ * @property {number} index - 0-based index of this camera save.
+ * @property {number[]} target - camera locked target, as an array of 3D coordinates.
+ * @property {number} alpha - alpha angle, in radian.
+ * @property {number} beta - beta angle, in radia.
+ * @property {number} elevation - altitude, in 3D coordinate.
  */
 
 /**
@@ -111,7 +176,12 @@ export async function saveGame(game, playerId) {
   if (!isOwner(previous, playerId)) {
     return null
   }
-  const saved = { ...previous, scene: game.scene }
+  const saved = {
+    ...previous,
+    scene: game.scene || previous.scene,
+    messages: game.messages || previous.messages,
+    cameras: game.cameras || previous.cameras
+  }
   gamesById.set(game.id, saved)
   return saved
 }

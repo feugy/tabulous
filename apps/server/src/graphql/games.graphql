@@ -6,6 +6,8 @@ type Game {
   created: Float!
   players: [Player]!
   scene: GameScene!
+  messages: [Message]
+  cameras: [CameraPosition]
 }
 
 type GameScene {
@@ -55,6 +57,8 @@ type RoundedTiles {
   width: Float
   height: Float
   depth: Float
+  borderRadius: Float
+  borderColor: [Float]
   x: Float
   y: Float
   z: Float
@@ -63,9 +67,26 @@ type RoundedTiles {
   stack: [String]
 }
 
+type Message {
+  playerId: ID!
+  text: String!
+  time: Float!
+}
+
+type CameraPosition {
+  playerId: ID!
+  index: Float!
+  target: [Float]!
+  alpha: Float!
+  beta: Float!
+  elevation: Float!
+}
+
 input GameInput {
   id: ID!
-  scene: GameSceneInput!
+  scene: GameSceneInput
+  messages: [MessageInput]
+  cameras: [CameraPositionInput]
 }
 
 input ImageDefsInput {
@@ -77,6 +98,21 @@ input GameSceneInput {
   cards: [CardInput]!
   roundTokens: [RoundTokenInput]!
   roundedTiles: [RoundedTilesInput]!
+}
+
+input CardInput {
+  id: ID!
+  texture: String!
+  images: ImageDefsInput!
+  width: Float
+  height: Float
+  depth: Float
+  x: Float
+  y: Float
+  z: Float
+  isFlipped: Boolean
+  angle: Float
+  stack: [String]
 }
 
 input CardInput {
@@ -115,12 +151,29 @@ input RoundedTilesInput {
   width: Float
   height: Float
   depth: Float
+  borderRadius: Float
+  borderColor: [Float]
   x: Float
   y: Float
   z: Float
   isFlipped: Boolean
   angle: Float
   stack: [String]
+}
+
+input MessageInput {
+  playerId: ID!
+  text: String!
+  time: Float!
+}
+
+input CameraPositionInput {
+  playerId: ID!
+  index: Float!
+  target: [Float]!
+  alpha: Float!
+  beta: Float!
+  elevation: Float!
 }
 
 type Query {

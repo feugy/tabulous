@@ -1,5 +1,5 @@
 import { BehaviorSubject, Subject, merge } from 'rxjs'
-import { auditTime, map } from 'rxjs/operators'
+import { auditTime, filter, map } from 'rxjs/operators'
 import { connected, lastMessageReceived, send } from './peer-channels'
 import { createEngine, createLight, createTable } from '../3d'
 import { cameraManager, controlManager } from '../3d/managers'
@@ -13,7 +13,7 @@ const pointer$ = new Subject()
 const meshDetails$ = new Subject()
 const meshForMenu$ = new Subject()
 const stackSize$ = new Subject()
-const cameraSaves$ = new Subject()
+const cameraSaves$ = new BehaviorSubject([])
 
 /**
  * Emits 3D engine when available.
@@ -52,10 +52,10 @@ export const meshForMenu = meshForMenu$.asObservable()
 export const stackSize = stackSize$.asObservable()
 
 /**
- * Emits how many saved position for the camera.
- * @type {Observable<number>}
+ * Emits camera saved positions.
+ * @type {Observable<import('../3d/managers').CameraSave>}
  */
-export const cameraSaveCount = cameraSaves$.pipe(map(saves => saves.length))
+export const cameraSaves = cameraSaves$.pipe(filter(saves => saves.length))
 
 /**
  * Initialize the 3D engine, which includes:
@@ -83,7 +83,6 @@ export function initEngine({
 } = {}) {
   const engine = createEngine({ canvas, interaction, doubleTapDelay })
   engine.displayLoadingUI()
-  cameraManager.save()
 
   engine.onEndFrameObservable.add(() => fps$.next(engine.getFps().toFixed()))
 
@@ -148,6 +147,7 @@ export function initEngine({
     for (const subscription of subscriptions) {
       subscription.unsubscribe()
     }
+    engine$.next(null)
   })
 }
 
@@ -163,4 +163,11 @@ export function saveCamera(...args) {
  */
 export function restoreCamera(...args) {
   cameraManager.restore(...args)
+}
+
+/**
+ * @see {@link import('../3d/managers').CameraManager.loadSaves}
+ */
+export function loadCameraSaves(...args) {
+  cameraManager.loadSaves(...args)
 }

@@ -55,6 +55,9 @@ query loadGame($gameId: ID!) {
         isFlipped
         angle
         stack
+        width
+        height
+        depth
       }
       roundTokens {
         id
@@ -66,11 +69,11 @@ query loadGame($gameId: ID!) {
         x
         y
         z
-        diameter
-        height
         isFlipped
         angle
         stack
+        diameter
+        height
       }
       roundedTiles {
         id
@@ -85,7 +88,25 @@ query loadGame($gameId: ID!) {
         isFlipped
         angle
         stack
+        width
+        height
+        depth
+        borderRadius
+        borderColor
       }
+    }
+    messages {
+      playerId
+      text
+      time
+    }
+    cameras {
+      playerId
+      index
+      target
+      alpha
+      beta
+      elevation
     }
   }
 }
