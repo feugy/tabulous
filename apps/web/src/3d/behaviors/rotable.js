@@ -120,6 +120,8 @@ export class RotateBehavior extends AnimateBehavior {
       },
       { frame: lastFrame, value: to }
     ])
+    // prevents interactions and collisions
+    mesh.isPickable = false
     return new Promise(resolve =>
       mesh
         .getScene()
@@ -138,6 +140,7 @@ export class RotateBehavior extends AnimateBehavior {
             // framed animation may not exactly end where we want, so force the final position
             mesh.setAbsolutePosition(to)
             applyGravity(mesh)
+            mesh.isPickable = true
             resolve()
           }
         )

@@ -35,7 +35,7 @@ export function altitudeOnTop(mesh, other) {
 }
 
 export function applyGravity(mesh) {
-  logger.debug(
+  logger.info(
     { y: mesh.absolutePosition.y, mesh },
     `gravity for ${mesh.id} y: ${mesh.absolutePosition.y}`
   )
@@ -47,12 +47,12 @@ export function applyGravity(mesh) {
       (a, b) => b.absolutePosition.y - a.absolutePosition.y
     )
     y = altitudeOnTop(mesh, ordered[0])
-    logger.debug(
+    logger.info(
       { ordered, mesh },
       `${mesh.id} is above ${ordered.map(({ id }) => id)}`
     )
   }
-  logger.debug({ y, mesh }, `${mesh.id} assigned to y: ${y}`)
+  logger.info({ y, mesh }, `${mesh.id} assigned to y: ${y}`)
   const { x, z } = mesh.absolutePosition
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.computeWorldMatrix(true)

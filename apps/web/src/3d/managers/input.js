@@ -164,14 +164,13 @@ class InputManager {
       )
 
       const button = event.pointerType === 'mouse' ? event.button : undefined
-      const mesh = scene.pickWithRay(scene.createPickingRay(event.x, event.y))
-        .pickedMesh
-      // const mesh = scene
-      //   .multiPickWithRay(
-      //     scene.createPickingRay(localPosition.x, localPosition.y),
-      //     mesh => this.hoverable.has(mesh)
-      //   )
-      //   .sort((a, b) => a.distance - b.distance)[0]?.pickedMesh
+      // takes mesh with highest elevation, and only when they are pickable
+      const mesh = scene
+        .multiPickWithRay(
+          scene.createPickingRay(event.x, event.y),
+          mesh => mesh.isPickable
+        )
+        .sort((a, b) => a.distance - b.distance)[0]?.pickedMesh
 
       switch (type) {
         case PointerEventTypes.POINTERDOWN: {

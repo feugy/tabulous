@@ -1,11 +1,6 @@
 import { Vector3 } from '@babylonjs/core'
 import { controlManager, selectionManager, targetManager } from '.'
-import {
-  animateMove,
-  applyGravity,
-  isAboveTable,
-  screenToGround
-} from '../utils'
+import { animateMove, isAboveTable, screenToGround } from '../utils'
 import { sleep } from '../../utils'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
@@ -159,11 +154,11 @@ class MoveManager {
           )
           logger.info({ mesh }, `end move operation on table ${mesh.id}`)
           return sleep(i * 1.5)
-            .then(() => animateMove(mesh, absolutePosition, moveDuration))
+            .then(() => animateMove(mesh, absolutePosition, moveDuration, true))
             .then(() =>
               controlManager.record({
                 meshId: mesh.id,
-                pos: applyGravity(mesh).asArray()
+                pos: mesh.absolutePosition.asArray()
               })
             )
         })

@@ -5,13 +5,22 @@ import {
   StackBehavior,
   TargetBehavior
 } from '../behaviors'
+import { applyGravity } from './gravity'
 
-export async function animateMove(mesh, absolutePosition, duration) {
+export async function animateMove(
+  mesh,
+  absolutePosition,
+  duration,
+  withGravity = false
+) {
   const movable = getMoveableBehavior(mesh)
   if (mesh.getScene().isLoading || !movable || !duration) {
     mesh.setAbsolutePosition(absolutePosition)
+    if (withGravity) {
+      applyGravity(mesh)
+    }
   } else {
-    return movable.moveTo(absolutePosition, duration, false)
+    return movable.moveTo(absolutePosition, duration, withGravity)
   }
 }
 

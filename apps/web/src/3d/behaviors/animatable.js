@@ -84,6 +84,8 @@ export class AnimateBehavior {
       { frame: 0, value: from },
       { frame: lastFrame, value: to }
     ])
+    // prevents interactions and collisions
+    mesh.isPickable = false
     return new Promise(resolve =>
       mesh
         .getScene()
@@ -101,6 +103,7 @@ export class AnimateBehavior {
             if (gravity) {
               applyGravity(mesh)
             }
+            mesh.isPickable = true
             resolve()
           }
         )

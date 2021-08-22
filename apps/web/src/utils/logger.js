@@ -12,7 +12,7 @@ const levels = {
   selection: 'warn',
   sse: 'warn',
   'scene-loader': 'warn',
-  stackable: 'info',
+  stackable: 'warn',
   target: 'warn'
 }
 

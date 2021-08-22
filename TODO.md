@@ -9,7 +9,6 @@
 - moves images to server
 - completly disable Babylon input management
 - UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
-- disable any possible action while animating
 
 ## Single player
 
@@ -37,7 +36,6 @@
 
 # Known issues
 
-- with 3 meshes: stack A over B, select both, then stack over C. A's elevation is wrong (stacks/base are good)
 - all textures but card ones are invisible on Huawei. May be [this](https://forum.babylonjs.com/t/engine-crashes-on-android-devices/23176).
   > BJS - [23:43:20]: Unable to compile effect:
   > BJS - [23:43:20]: Uniforms: world, view, viewProjection, vEyePosition, vLightsType, vAmbientColor, vDiffuseColor, vSpecularColor, vEmissiveColor, visibility, vFogInfos, vFogColor, pointSize, vDiffuseInfos, vAmbientInfos, vOpacityInfos, vReflectionInfos, vEmissiveInfos, vSpecularInfos, vBumpInfos, vLightmapInfos, vRefractionInfos, mBones, vClipPlane, vClipPlane2, vClipPlane3, vClipPlane4, vClipPlane5, vClipPlane6, diffuseMatrix, ambientMatrix, opacityMatrix, reflectionMatrix, emissiveMatrix, specularMatrix, bumpMatrix, normalMatrix, lightmapMatrix, refractionMatrix, diffuseLeftColor, diffuseRightColor, opacityParts, reflectionLeftColor, reflectionRightColor, emissiveLeftColor, emissiveRightColor, refractionLeftColor, refractionRightColor, vReflectionPosition, vReflectionSize, vRefractionPosition, vRefractionSize, logarithmicDepthConstant, vTangentSpaceParams, alphaCutOff, boneTextureWidth, morphTargetTextureInfo, morphTargetTextureIndices, vDetailInfos, detailMatrix, previousWorld, previousViewProjection, vLightData0, vLightDiffuse0, vLightSpecular0, vLightDirection0, vLightFalloff0, vLightGround0, lightMatrix0, shadowsInfo0, depthValues0, viewFrustumZ0, cascadeBlendFactor0, lightSizeUVCorrection0, depthCorrection0, penumbraDarkness0, frustumLengths0, diffuseSampler, ambientSampler, opacitySampler, reflectionCubeSampler, reflection2DSampler, emissiveSampler, specularSampler, bumpSampler, lightmapSampler, refractionCubeSampler, refraction2DSampler, boneSampler, morphTargets, detailSampler, shadowSampler0, depthSampler0
