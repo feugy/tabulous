@@ -2,7 +2,7 @@ import { BehaviorSubject, merge } from 'rxjs'
 import { debounceTime, filter } from 'rxjs/operators'
 import { currentPlayer } from './authentication'
 import { clearThread, loadThread, serializeThread } from './discussion'
-import { action, engine } from './game-engine'
+import { action, cameraSaves, engine, loadCameraSaves } from './game-engine'
 import { runQuery, runMutation } from './graphql-client'
 import {
   closeChannels,
@@ -39,57 +39,113 @@ engine.subscribe(engine => {
   }
 })
 
+// skips saving camera positions after loading them from game data
+let skipSharingCamera = false
+// cameras for all players
+let cameras = []
+
+function load(game, engine) {
+  loadScene(engine, engine.scenes[0], game.scene)
+  loadThread(game.messages)
+  cameras = game.cameras ?? []
+  const playerCameras = cameras
+    .filter(save => save.playerId === player.id)
+    .sort((a, b) => a.index - b.index)
+  if (playerCameras.length) {
+    skipSharingCamera = true
+    loadCameraSaves(playerCameras)
+  }
+}
+
+function mergeCameras({ playerId, cameras: playerCameras }) {
+  logger.info(
+    { playerId, cameras, playerCameras },
+    `merging cameras for ${playerId}`
+  )
+  cameras = [
+    // keeps saves from other players as-is
+    ...cameras.filter(save => save.playerId !== playerId),
+    // enriches player saves with their id and index
+    ...playerCameras.map((save, index) => ({ ...save, playerId, index }))
+  ]
+}
+
+function saveCameras(gameId) {
+  logger.info({ gameId, cameras: cameras }, `persisting game cameras`)
+  runMutation(graphQL.saveGame, { game: { id: gameId, cameras } })
+}
+
 function takeHostRole(gameId, engine) {
   logger.info({ gameId }, `taking game host role`)
-  scheduleCleanup(
-    new Map([
-      [
-        'saveScene',
-        action.pipe(debounceTime(1000)).subscribe(() => {
-          logger.debug({ gameId }, `persisting game (${gameId}) scene`)
+  const subscriptions = new Map([
+    [
+      'saveScene',
+      action.pipe(debounceTime(1000)).subscribe(() => {
+        logger.info({ gameId }, `persisting game scene`)
+        runMutation(graphQL.saveGame, {
+          game: { id: gameId, scene: serializeScene(engine.scenes[0]) }
+        })
+      })
+    ],
+    [
+      'saveThread',
+      merge(lastMessageSent, lastMessageReceived)
+        .pipe(
+          filter(({ data }) => data?.type === 'message'),
+          debounceTime(1000)
+        )
+        .subscribe(() => {
+          logger.info({ gameId }, `persisting game thread`)
           runMutation(graphQL.saveGame, {
-            game: { id: gameId, scene: serializeScene(engine.scenes[0]) }
+            game: { id: gameId, messages: serializeThread() }
           })
         })
-      ],
-      [
-        'saveThread',
-        merge(lastMessageSent, lastMessageReceived)
-          .pipe(
-            filter(({ data }) => data?.type === 'message'),
-            debounceTime(1000)
-          )
-          .subscribe(() => {
-            logger.debug({ gameId }, `persisting game (${gameId}) thread`)
-            runMutation(graphQL.saveGame, {
-              game: { id: gameId, messages: serializeThread() }
-            })
-          })
-      ],
-      [
-        'sendGame',
-        lastConnectedId.subscribe(peerId => {
-          logger.info(
-            { gameId, peerId },
-            `sending game data ${gameId} to peer ${peerId}`
-          )
-          send(
-            {
-              gameId,
-              scene: serializeScene(engine.scenes[0]),
-              messages: serializeThread()
-            },
-            peerId
-          )
+    ],
+    [
+      'savePeerCameras',
+      lastMessageReceived
+        .pipe(filter(({ data }) => data?.type === 'saveCameras'))
+        .subscribe(({ data }) => {
+          mergeCameras(data)
+          saveCameras(gameId)
         })
-      ]
-    ]),
-    engine
-  )
+    ],
+    [
+      'saveOwnCameras',
+      cameraSaves.subscribe(cameras => {
+        if (skipSharingCamera) {
+          skipSharingCamera = false
+          return
+        }
+        mergeCameras({ playerId: player.id, cameras })
+        saveCameras(gameId)
+      })
+    ],
+    [
+      'sendGame',
+      lastConnectedId.subscribe(peerId => {
+        logger.info(
+          { gameId, peerId },
+          `sending game data ${gameId} to peer ${peerId}`
+        )
+        send(
+          {
+            gameId,
+            scene: serializeScene(engine.scenes[0]),
+            messages: serializeThread(),
+            cameras
+          },
+          peerId
+        )
+      })
+    ]
+  ])
+  scheduleCleanup(subscriptions, engine)
 }
 
 function scheduleCleanup(subscriptions, engine) {
   engine.onDisposeObservable.addOnce(() => {
+    logger.info(`closing all subscriptions and channels`)
     for (const [, subscription] of subscriptions) {
       subscription.unsubscribe()
     }
@@ -159,7 +215,7 @@ export async function loadGame(gameId, engine) {
     )
     return
   }
-  logger.info({ gameId }, `loading game ${gameId} into engine`)
+  logger.info({ gameId }, `entering game ${gameId}`)
   await openChannels(player)
 
   let game = await runQuery(graphQL.loadGame, { gameId }, false)
@@ -167,30 +223,46 @@ export async function loadGame(gameId, engine) {
 
   if (game.players.every(({ id, playing }) => id === player.id || !playing)) {
     // is the only playing player: take the host role
-    loadScene(engine, engine.scenes[0], game.scene)
-    loadThread(game.messages)
+    load(game, engine)
     takeHostRole(gameId, engine)
   } else {
-    // connect with other players that are already playing
-    game.players
-      .filter(({ id, playing }) => id !== player.id && playing)
-      .map(connectWith)
+    const peers = game.players.filter(
+      ({ id, playing }) => id !== player.id && playing
+    )
+    logger.info({ peers }, `connecting to other players`)
+    for (const peer of peers) {
+      connectWith(peer)
+    }
 
     const subscriptions = new Map([
-      // load game scene received from host
       [
-        'loadScene',
-        lastMessageReceived.subscribe(({ data }) => {
-          if (data?.gameId && data?.scene) {
-            logger.debug(data, `receiving game data (${data.gameId})`)
-            loadScene(engine, engine.scenes[0], data.scene)
-            loadThread(data.messages)
-            subscriptions.get('loadScene').unsubscribe()
-            subscriptions.delete('loadScene')
+        'receiveScene',
+        lastMessageReceived
+          .pipe(filter(({ data }) => data?.gameId && data?.scene))
+          .subscribe(({ data }) => {
+            logger.info({ game }, `receiving game data (${data.gameId})`)
+            load(data, engine)
+            subscriptions.get('receiveScene').unsubscribe()
+            subscriptions.delete('receiveScene')
+          })
+      ],
+      [
+        'shareCameras',
+        cameraSaves.subscribe(cameras => {
+          if (skipSharingCamera) {
+            skipSharingCamera = false
+            return
           }
+          logger.info({ cameras }, `sharing camera saves with peers`)
+          send({ type: 'saveCameras', cameras, playerId: player.id })
         })
       ],
-      // and awaits on disconnection, to potentially become host
+      [
+        'receiveCameras',
+        lastMessageReceived
+          .pipe(filter(({ data }) => data?.type === 'saveCameras'))
+          .subscribe(({ data }) => mergeCameras(data))
+      ],
       [
         'electHost',
         lastDisconnectedId.subscribe(async () => {
@@ -199,9 +271,11 @@ export async function loadGame(gameId, engine) {
           })
           const nextHost = players.find(({ playing }) => playing)
           if (nextHost?.id === player.id) {
+            for (const [, subscription] of subscriptions) {
+              subscription.unsubscribe()
+            }
+            subscriptions.clear()
             takeHostRole(gameId, engine)
-            subscriptions.get('electHost').unsubscribe()
-            subscriptions.delete('electHost')
           }
         })
       ]

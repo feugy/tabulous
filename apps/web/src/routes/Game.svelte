@@ -15,7 +15,7 @@
     StackSizeTooltip
   } from '../components'
   import {
-    cameraSaveCount,
+    cameraSaves,
     connected,
     currentGame,
     engine,
@@ -98,7 +98,7 @@
     on:close={() => (openInviteDialogue = false)}
   />
   <CameraSwitch
-    saveCount={$cameraSaveCount}
+    saveCount={($cameraSaves?.length ?? 0) + 1}
     on:restore={({ detail: { index } }) => restoreCamera(index)}
     on:save={({ detail: { index } }) => saveCamera(index)}
   />
