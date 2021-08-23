@@ -29,7 +29,6 @@
 - sometimes, sending game to peer is not received
 - on vite reload, all players could become hosts or peers simultaneously
 - stop trying to connect while leaving game room
-- invite player with ENTER (numeric pad)
 - invite players by name and id
 - search players by name
 - indicates when remote stream is muted/stopped

@@ -8,7 +8,7 @@
   const dispatch = createEventDispatcher()
 
   function handleKey(event) {
-    if (event.code === 'Enter') {
+    if (event.key === 'Enter') {
       dispatch('enter', { value })
     }
   }
