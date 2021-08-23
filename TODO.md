@@ -25,7 +25,6 @@
 
 ## Multi player
 
-- sometimes, sending game to peer is not received
 - on vite reload, all players could become hosts or peers simultaneously
 - stop trying to connect while leaving game room
 - invite players by name and id

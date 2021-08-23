@@ -12,6 +12,7 @@
     Discussion,
     ObjectDetails,
     PlayerAvatar,
+    Progress,
     StackSizeTooltip
   } from '../components'
   import {
@@ -35,10 +36,11 @@
   let canvas
   let interaction
   let openInviteDialogue = false
+  let loadPromise
 
   onMount(async () => {
     initEngine({ canvas, interaction })
-    await loadGame(params.gameId, $engine)
+    loadPromise = loadGame(params.gameId, $engine)
   })
 
   onDestroy(() => $engine?.dispose())
@@ -82,6 +84,10 @@
       @apply top-2 left-2 flex flex-col gap-2;
     }
   }
+
+  .overlay {
+    @apply absolute w-full h-full top-0 left-0 flex items-center justify-center z-20;
+  }
 </style>
 
 <svelte:head>
@@ -89,6 +95,16 @@
 </svelte:head>
 
 <svelte:window on:resize={handleResize} />
+
+{#await loadPromise}
+  <div class="overlay">
+    <Progress />
+  </div>
+{:catch error}
+  <div class="overlay">
+    {error.message}
+  </div>
+{/await}
 
 <aside class="left">
   <GameMenu on:invite-player={() => (openInviteDialogue = true)} />
