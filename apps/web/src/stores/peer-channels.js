@@ -194,6 +194,7 @@ function detachLocalMedia() {
     for (const track of current.stream.getTracks()) {
       track.stop()
     }
+    current.stream = undefined
   }
 }
 
