@@ -61,8 +61,9 @@ class InputManager {
    * Gives a scene to the manager, so it can bind to underlying events.
    * @param {object} params - parameters, including:
    * @param {Scene} params.scene - scene attached to.
+   * @param {boolean} [params.suspended=true] - whether the input manager starts as suspended or not.
    */
-  init({ scene } = {}) {
+  init({ scene, suspended = true } = {}) {
     // same finger/stylus/mouse will have same pointerId for down, move(s) and up events
     // different fingers will have different ids
     const pointers = new Map()
@@ -78,7 +79,7 @@ class InputManager {
     let hovered = null
     let lastTap = 0
     let tapPointers = 1
-    this.suspended = false
+    this.suspended = suspended
 
     const startHover = (event, mesh) => {
       if (hovered !== mesh) {

@@ -12,7 +12,6 @@
 
 ## Single player
 
-- prevent interaction while displaying loading UI
 - refresh game list on game deletion
 - boards
 - player's hand

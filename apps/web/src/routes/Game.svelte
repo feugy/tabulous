@@ -109,7 +109,7 @@
     bind:this={interaction}
     on:contextmenu|preventDefault
   >
-    <canvas touch-action="none" bind:this={canvas} />
+    <canvas bind:this={canvas} />
     <ActionMenu object={$meshForMenu} />
   </div>
   <StackSizeTooltip size={$stackSize} />
