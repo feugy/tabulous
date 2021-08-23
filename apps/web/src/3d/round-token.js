@@ -14,7 +14,7 @@ import {
   StackBehavior
 } from './behaviors'
 import { controlManager } from './managers'
-import { adaptTexture } from './utils'
+import { adaptTexture, attachMaterialError } from './utils'
 
 /**
  * Creates a round token, like a pocker one.
@@ -73,6 +73,7 @@ export function createRoundToken({
   token.material.diffuseTexture = new Texture(adaptTexture(texture))
   token.material.diffuseTexture.hasAlpha = true
   token.material.freeze()
+  attachMaterialError(token.material)
 
   token.receiveShadows = true
   token.setAbsolutePosition(new Vector3(x, y, z))

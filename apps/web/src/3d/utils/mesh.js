@@ -56,3 +56,19 @@ export function adaptTexture(texture) {
     ? texture.replace('.ktx2', '.gl1.png')
     : texture
 }
+
+/**
+ * Gracefully handles material error due to shadow casting on some Android mobiles.
+ * It'll downgrade the shadowGenerator to some supported configuration.
+ * @param {import('@babel/core').Material} material - a mesh's material.
+ * @see {@link https://forum.babylonjs.com/t/mobile-shadows-pcf-filter/22104/3}
+ */
+export function attachMaterialError(material) {
+  material.onError = (effect, errors) => {
+    if (errors?.includes('FRAGMENT SHADER')) {
+      material
+        .getScene()
+        .lights[0].getShadowGenerator().useContactHardeningShadow = false
+    }
+  }
+}

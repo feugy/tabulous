@@ -16,7 +16,7 @@ import {
   StackBehavior
 } from './behaviors'
 import { controlManager } from './managers'
-import { adaptTexture } from './utils'
+import { adaptTexture, attachMaterialError } from './utils'
 
 /**
  * Creates a card mesh.
@@ -70,10 +70,12 @@ export function createCard({
     backUVs: new Vector4(0.5, 1, 1, 0),
     sideOrientation: Mesh.DOUBLESIDE
   })
+  faces.receiveShadows = true
   faces.material = new StandardMaterial('faces')
   faces.material.diffuseTexture = new Texture(adaptTexture(texture))
   faces.material.diffuseTexture.hasAlpha = true
   faces.material.freeze()
+  attachMaterialError(faces.material)
 
   const card = MeshBuilder.CreateBox('card', {
     width,
@@ -89,7 +91,6 @@ export function createCard({
   faces.isPickable = false
   faces.parent = card
 
-  card.receiveShadows = true
   card.setAbsolutePosition(new Vector3(x, y, z))
   Object.assign(card, cardProps)
 
