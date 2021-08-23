@@ -39,7 +39,7 @@ export function attachInputs({
   stackSize$
 } = {}) {
   const maxPanInput = 50
-  const maxPan = 2.5
+  const maxPan = 3
   let selectionPosition
   let panPosition
   let rotatePosition
