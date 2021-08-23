@@ -10,6 +10,7 @@ const logger = makeLogger('peer-channels')
 let socket
 let current
 let messageId = 1
+const connectDuration = 10e3
 const channels = new Map()
 const lastMessageSent$ = new Subject()
 const lastMessageReceived$ = new Subject()
@@ -40,6 +41,9 @@ function unwire(id) {
   channels.get(id)?.peer?.destroy()
   channels.delete(id)
   refreshConnected()
+  if (channels.size === 0) {
+    detachLocalMedia()
+  }
   lastDisconnectedId$.next(id)
 }
 
@@ -78,21 +82,23 @@ unorderedMessages$
   })
 
 async function createPeer({ signal, from, to }) {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     const peer = new Peer({
       initiator: signal === undefined,
       stream: current.stream,
       trickle: false, // true does not work at all on localhost (FF prints turn/stun warnings after answer)
       config: {
-        iceServers: [
-          { urls: 'stun:turn2.l.google.com' }
-          // { urls: 'stun:localhost:3478' },
-          // { urls: 'turn:localhost:3478', username: 'tabulous', credential: 'soulubat' }
-        ]
+        iceServers: [{ urls: 'stun:turn2.l.google.com' }]
       }
     })
     logger.debug({ peer }, `peer created`)
-    channels.set(to.id, { peer, lastMessageId: 0, player: to })
+    channels.set(to.id, {
+      peer,
+      lastMessageId: 0,
+      player: to,
+      established: false
+    })
+    let connectTimeout = 0
 
     if (signal) {
       peer.signal(signal)
@@ -112,11 +118,21 @@ async function createPeer({ signal, from, to }) {
           `${signal.type} ready, sharing with server`
         )
         sendThroughSocket({ type, to, from, signal })
+        connectTimeout = setTimeout(() => {
+          const error = new Error(
+            `Failed to establish connection after ${Math.floor(
+              connectDuration / 1000
+            )}`
+          )
+          logger.error(error.message)
+          unwire(to.id)
+          reject(error)
+        }, connectDuration)
       }
     })
 
-    // TODO connect event may not follow peer.signal(). use a timeout
     peer.on('connect', () => {
+      clearTimeout(connectTimeout)
       logger.info({ peers: channels }, `connection established with ${to.id}`)
 
       peer.on('error', error =>
@@ -150,6 +166,7 @@ async function createPeer({ signal, from, to }) {
         unwire(to.id)
       })
 
+      channels.get(to.id).established = true
       refreshConnected()
       lastConnectedId$.next(to.id)
       resolve(peer)
@@ -168,6 +185,14 @@ async function attachLocalMedia() {
       })
     } catch (error) {
       logger.warn({ error }, `Failed to access media devices: ${error.message}`)
+    }
+  }
+}
+
+function detachLocalMedia() {
+  if (current?.stream) {
+    for (const track of current.stream.getTracks()) {
+      track.stop()
     }
   }
 }
@@ -216,7 +241,8 @@ export async function openChannels(player) {
     `${location.origin.replace('http', 'ws')}/ws?bearer=${player.id}`
   )
   return new Promise((resolve, reject) => {
-    ws.addEventListener('open', function () {
+    ws.onopen = () => {
+      ws.onopen = undefined
       logger.debug({ player }, 'WebSocket connected')
       socket = ws
       socket.addEventListener('message', async ({ data: rawData }) => {
@@ -259,9 +285,12 @@ export async function openChannels(player) {
         }
       })
       resolve()
-    })
+    }
 
-    ws.addEventListener('error', reject)
+    ws.onerror = error => {
+      ws.onerror = undefined
+      reject(error)
+    }
   })
 }
 
@@ -294,11 +323,7 @@ export function closeChannels() {
   }
   socket?.close()
   socket = null
-  if (current?.stream) {
-    for (const track of current.stream.getTracks()) {
-      track.stop()
-    }
-  }
+  detachLocalMedia()
   current = null
 }
 
@@ -316,15 +341,18 @@ export function send(data, playerId = null) {
   const destination = playerId
     ? new Map([[playerId, channels.get(playerId)]])
     : channels
-  for (const [playerId, { peer }] of destination) {
-    logger.debug({ data, peer }, `sending data to ${playerId}`)
-    try {
-      peer.send(JSON.stringify({ ...data, messageId }))
-    } catch (error) {
-      logger.warn(
-        { error, peer, data },
-        `failed to send data to peer ${playerId}: ${error.message}`
-      )
+  for (const [playerId, { peer, established }] of destination) {
+    if (established) {
+      logger.debug({ data, peer }, `sending data to ${playerId}`)
+      try {
+        peer.send(JSON.stringify({ ...data, messageId }))
+      } catch (error) {
+        logger.warn(
+          { error, peer, data },
+          `failed to send data to peer ${playerId}: ${error.message}`
+        )
+        unwire(playerId)
+      }
     }
   }
   messageId++

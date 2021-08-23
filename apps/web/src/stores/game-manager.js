@@ -24,6 +24,9 @@ const logger = makeLogger('game-manager')
 const playerGames$ = new BehaviorSubject([])
 const currentGame$ = new BehaviorSubject()
 
+// when joining game with connected peers, delay during which we expect to receive the game data
+const gameReceptionDelay = 30e3
+
 // stores current player
 let player
 currentPlayer.subscribe(value => (player = value))
@@ -203,6 +206,8 @@ export async function deleteGame(gameId) {
  * Player must already be registered into the game.
  * If current player is the only connected player, it takes the host role, responsible for saving
  * the game and sharing it with new players.
+ * If other players are connected, waits at most 30s to receive the game data from game host.
+ * Resolves when the game data has been received (either as host or regular peer).
  * @async
  * @param {string} gameId - the loaded game id
  * @param {@babylonjs.Engine} engine - game engine used to play
@@ -226,61 +231,69 @@ export async function loadGame(gameId, engine) {
     load(game, engine)
     takeHostRole(gameId, engine)
   } else {
-    const peers = game.players.filter(
-      ({ id, playing }) => id !== player.id && playing
-    )
-    logger.info({ peers }, `connecting to other players`)
-    for (const peer of peers) {
-      connectWith(peer)
-    }
+    return new Promise((resolve, reject) => {
+      const peers = game.players.filter(
+        ({ id, playing }) => id !== player.id && playing
+      )
+      logger.info({ peers }, `connecting to other players`)
+      for (const peer of peers) {
+        connectWith(peer)
+      }
 
-    const subscriptions = new Map([
-      [
-        'receiveScene',
-        lastMessageReceived
-          .pipe(filter(({ data }) => data?.gameId && data?.scene))
-          .subscribe(({ data }) => {
-            logger.info({ game }, `receiving game data (${data.gameId})`)
-            load(data, engine)
-            subscriptions.get('receiveScene').unsubscribe()
-            subscriptions.delete('receiveScene')
-          })
-      ],
-      [
-        'shareCameras',
-        cameraSaves.subscribe(cameras => {
-          if (skipSharingCamera) {
-            skipSharingCamera = false
-            return
-          }
-          logger.info({ cameras }, `sharing camera saves with peers`)
-          send({ type: 'saveCameras', cameras, playerId: player.id })
+      const gameReceptionTimeout = setTimeout(() => {
+        const error = new Error(
+          `No game data after ${Math.floor(gameReceptionDelay / 1000)}s`
+        )
+        logger.error(error.message)
+        reject(error)
+      }, gameReceptionDelay)
+
+      lastMessageReceived
+        .pipe(filter(({ data }) => data?.gameId && data?.scene))
+        .subscribe(({ data }) => {
+          clearTimeout(gameReceptionTimeout)
+          logger.info({ game }, `receiving game data (${data.gameId})`)
+          load(data, engine)
+
+          const subscriptions = new Map([
+            [
+              'shareCameras',
+              cameraSaves.subscribe(cameras => {
+                if (skipSharingCamera) {
+                  skipSharingCamera = false
+                  return
+                }
+                logger.info({ cameras }, `sharing camera saves with peers`)
+                send({ type: 'saveCameras', cameras, playerId: player.id })
+              })
+            ],
+            [
+              'receiveCameras',
+              lastMessageReceived
+                .pipe(filter(({ data }) => data?.type === 'saveCameras'))
+                .subscribe(({ data }) => mergeCameras(data))
+            ],
+            [
+              'electHost',
+              lastDisconnectedId.subscribe(async () => {
+                const { players } = await runQuery(graphQL.loadGamePlayers, {
+                  gameId
+                })
+                const nextHost = players.find(({ playing }) => playing)
+                if (nextHost?.id === player.id) {
+                  for (const [, subscription] of subscriptions) {
+                    subscription.unsubscribe()
+                  }
+                  subscriptions.clear()
+                  takeHostRole(gameId, engine)
+                }
+              })
+            ]
+          ])
+          scheduleCleanup(subscriptions, engine)
+          resolve()
         })
-      ],
-      [
-        'receiveCameras',
-        lastMessageReceived
-          .pipe(filter(({ data }) => data?.type === 'saveCameras'))
-          .subscribe(({ data }) => mergeCameras(data))
-      ],
-      [
-        'electHost',
-        lastDisconnectedId.subscribe(async () => {
-          const { players } = await runQuery(graphQL.loadGamePlayers, {
-            gameId
-          })
-          const nextHost = players.find(({ playing }) => playing)
-          if (nextHost?.id === player.id) {
-            for (const [, subscription] of subscriptions) {
-              subscription.unsubscribe()
-            }
-            subscriptions.clear()
-            takeHostRole(gameId, engine)
-          }
-        })
-      ]
-    ])
-    scheduleCleanup(subscriptions, engine)
+    })
   }
 }
 

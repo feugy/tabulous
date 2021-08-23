@@ -21,6 +21,16 @@ describe('Peer channels store', () => {
       }
       webSocket.events[event](handler)
     },
+    set onopen(handler) {
+      if (handler) {
+        webSocket.addEventListener('open', handler)
+      }
+    },
+    set onerror(handler) {
+      if (handler) {
+        webSocket.addEventListener('error', handler)
+      }
+    },
     send: jest.fn(),
     close: jest.fn()
   }
@@ -171,11 +181,15 @@ describe('Peer channels store', () => {
     })
 
     describe('connectWith()', () => {
+      beforeEach(jest.useFakeTimers)
+
+      afterEach(jest.useRealTimers)
+
       it('opens WebRTC peer, sends offer through WebSocket and accept answer', async () => {
         const offer = { to: player3, from: player1, signal: { type: 'offer' } }
         const answer = { from: player3, signal: { type: 'answer' } }
 
-        communication.connectWith(player3)
+        const promise = communication.connectWith(player3)
         await Promise.resolve()
         expect(Peer).toHaveBeenCalledWith(
           expect.objectContaining({ initiator: true, trickle: false })
@@ -199,13 +213,15 @@ describe('Peer channels store', () => {
         expect(peers[0].signal).toHaveBeenCalledTimes(1)
         expect(webSocket.send).toHaveBeenCalledTimes(1)
         expect(lastConnectedId).toEqual(player3.id)
+        await expect(promise).resolves.toEqual(peers[0])
       })
 
-      it.skip('NEED TIMEOUT does not accept answer for an unknown player', async () => {
+      it('does not accept answer for an unknown player', async () => {
         const offer = { to: player3, from: player1, signal: { type: 'offer' } }
         const answer = { from: player2, signal: { type: 'answer' } }
 
-        communication.connectWith(player3)
+        const promise = communication.connectWith(player3)
+        await Promise.resolve()
         expect(Peer).toHaveBeenCalledWith(
           expect.objectContaining({ initiator: true, trickle: false })
         )
@@ -218,10 +234,12 @@ describe('Peer channels store', () => {
         await webSocket.events.message.mock.calls[0][0]({
           data: JSON.stringify(answer)
         })
+        jest.runAllTimers()
         expect(get(communication.connected)).toEqual([])
         expect(Peer).toHaveBeenCalledTimes(1)
         expect(peers[0].signal).not.toHaveBeenCalled()
         expect(webSocket.send).toHaveBeenCalledTimes(1)
+        await expect(promise).rejects.toThrow(/Failed to establish connection/)
       })
     })
   })

@@ -81,8 +81,6 @@ export function initEngine({
   pointerThrottle = 200
 } = {}) {
   const engine = createEngine({ canvas, interaction, doubleTapDelay })
-  engine.displayLoadingUI()
-
   engine.onEndFrameObservable.add(() => fps$.next(engine.getFps().toFixed()))
 
   const mapping = [

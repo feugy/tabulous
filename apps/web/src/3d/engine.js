@@ -32,16 +32,29 @@ export function createEngine({ canvas, interaction, doubleTapDelay } = {}) {
   controlManager.init({ scene })
   selectionManager.init({ scene })
 
+  let dataLoaded = false
+
   engine.start = () => engine.runRenderLoop(scene.render.bind(scene))
+  scene.onDataLoadedObservable.addOnce(() => {
+    dataLoaded = true
+    handleEnter()
+  })
 
-  // TODO issue with Babylon@5.alpha37
-  // canvas.addEventListener('pointerenter', inputManager.resume)
-  // canvas.addEventListener('pointerleave', inputManager.suspend)
+  const handleLeave = event => {
+    inputManager.suspend(event)
+  }
+  const handleEnter = () => {
+    if (dataLoaded) {
+      inputManager.resume()
+    }
+  }
+  interaction.addEventListener('focus', handleEnter)
+  interaction.addEventListener('blur', handleLeave)
 
-  // engine.onDisposeObservable.addOnce(() => {
-  //   canvas.removeEventListener('pointerenter', inputManager.resume)
-  //   canvas.removeEventListener('pointerleave', inputManager.suspend)
-  // })
+  engine.onDisposeObservable.addOnce(() => {
+    interaction.removeEventListener('focus', handleEnter)
+    interaction.removeEventListener('blur', handleLeave)
+  })
 
   // scene.debugLayer.show({ embedMode: true })
   return engine
