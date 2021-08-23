@@ -1,3 +1,5 @@
+import { Engine } from '@babylonjs/core'
+
 /**
  * @typedef {object} ImageDefs detailed images definitions for a given mesh:
  * @property {string} front - image for the mesh front face.
@@ -36,4 +38,21 @@ export function isContaining(container, mesh) {
  */
 export function getHeight(mesh) {
   return mesh.getBoundingInfo().boundingBox.extendSizeWorld.y
+}
+
+let version
+
+/**
+ * Adapts the downloaded texture file based on the current WebGL version.
+ * Since WebGL 1 does not support Khronos Texture properly, uses png files instead.
+ * @param {string} texture - the texture file name.
+ * @returns {string} if the engine is WebGL 1, the input texture with ktx2 extension replaced with png.
+ */
+export function adaptTexture(texture) {
+  if (!version) {
+    version = Engine.LastCreatedEngine.version
+  }
+  return texture && version === 1
+    ? texture.replace('.ktx2', '.gl1.png')
+    : texture
 }

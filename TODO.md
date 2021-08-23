@@ -38,40 +38,37 @@
   > BJS - [23:43:20]: Uniforms: world, view, viewProjection, vEyePosition, vLightsType, vAmbientColor, vDiffuseColor, vSpecularColor, vEmissiveColor, visibility, vFogInfos, vFogColor, pointSize, vDiffuseInfos, vAmbientInfos, vOpacityInfos, vReflectionInfos, vEmissiveInfos, vSpecularInfos, vBumpInfos, vLightmapInfos, vRefractionInfos, mBones, vClipPlane, vClipPlane2, vClipPlane3, vClipPlane4, vClipPlane5, vClipPlane6, diffuseMatrix, ambientMatrix, opacityMatrix, reflectionMatrix, emissiveMatrix, specularMatrix, bumpMatrix, normalMatrix, lightmapMatrix, refractionMatrix, diffuseLeftColor, diffuseRightColor, opacityParts, reflectionLeftColor, reflectionRightColor, emissiveLeftColor, emissiveRightColor, refractionLeftColor, refractionRightColor, vReflectionPosition, vReflectionSize, vRefractionPosition, vRefractionSize, logarithmicDepthConstant, vTangentSpaceParams, alphaCutOff, boneTextureWidth, morphTargetTextureInfo, morphTargetTextureIndices, vDetailInfos, detailMatrix, previousWorld, previousViewProjection, vLightData0, vLightDiffuse0, vLightSpecular0, vLightDirection0, vLightFalloff0, vLightGround0, lightMatrix0, shadowsInfo0, depthValues0, viewFrustumZ0, cascadeBlendFactor0, lightSizeUVCorrection0, depthCorrection0, penumbraDarkness0, frustumLengths0, diffuseSampler, ambientSampler, opacitySampler, reflectionCubeSampler, reflection2DSampler, emissiveSampler, specularSampler, bumpSampler, lightmapSampler, refractionCubeSampler, refraction2DSampler, boneSampler, morphTargets, detailSampler, shadowSampler0, depthSampler0
   > BJS - [23:43:20]: Attributes: position, normal
   > BJS - [23:43:20]: Defines:
-
-#define DIFFUSEDIRECTUV 0
-#define DETAILDIRECTUV 0
-#define DETAIL_NORMALBLENDMETHOD 0
-#define AMBIENTDIRECTUV 0
-#define OPACITYDIRECTUV 0
-#define EMISSIVEDIRECTUV 0
-#define SPECULARDIRECTUV 0
-#define BUMPDIRECTUV 0
-#define NORMAL
-#define NUM_BONE_INFLUENCERS 0
-#define BonesPerMesh 0
-#define LIGHTMAPDIRECTUV 0
-#define SHADOWFLOAT
-#define NUM_MORPH_INFLUENCERS 0
-#define ALPHABLEND
-#define PREPASS_IRRADIANCE_INDEX -1
-#define PREPASS_ALBEDO_INDEX -1
-#define PREPASS_DEPTH_INDEX -1
-#define PREPASS_NORMAL_INDEX -1
-#define PREPASS_POSITION_INDEX -1
-#define PREPASS_VELOCITY_INDEX -1
-#define PREPASS_REFLECTIVITY_INDEX -1
-#define SCENE_MRT_COUNT 0
-#define VIGNETTEBLENDMODEMULTIPLY
-#define SAMPLER3DGREENDEPTH
-#define SAMPLER3DBGRMAP
-#define LIGHT0
-#define DIRLIGHT0
-#define SHADOW0
-#define SHADOWPCF0
-#define SHADOWS
-
-- all textures are black on Xperia tablet [issue](https://forum.babylonjs.com/t/babylonjs-is-running-webgl-1-0-instead-of-2-0/2992/6)
+  > #define DIFFUSEDIRECTUV 0
+  > #define DETAILDIRECTUV 0
+  > #define DETAIL_NORMALBLENDMETHOD 0
+  > #define AMBIENTDIRECTUV 0
+  > #define OPACITYDIRECTUV 0
+  > #define EMISSIVEDIRECTUV 0
+  > #define SPECULARDIRECTUV 0
+  > #define BUMPDIRECTUV 0
+  > #define NORMAL
+  > #define NUM_BONE_INFLUENCERS 0
+  > #define BonesPerMesh 0
+  > #define LIGHTMAPDIRECTUV 0
+  > #define SHADOWFLOAT
+  > #define NUM_MORPH_INFLUENCERS 0
+  > #define ALPHABLEND
+  > #define PREPASS_IRRADIANCE_INDEX -1
+  > #define PREPASS_ALBEDO_INDEX -1
+  > #define PREPASS_DEPTH_INDEX -1
+  > #define PREPASS_NORMAL_INDEX -1
+  > #define PREPASS_POSITION_INDEX -1
+  > #define PREPASS_VELOCITY_INDEX -1
+  > #define PREPASS_REFLECTIVITY_INDEX -1
+  > #define SCENE_MRT_COUNT 0
+  > #define VIGNETTEBLENDMODEMULTIPLY
+  > #define SAMPLER3DGREENDEPTH
+  > #define SAMPLER3DBGRMAP
+  > #define LIGHT0
+  > #define DIRLIGHT0
+  > #define SHADOW0
+  > #define SHADOWPCF0
+  > #define SHADOWS
 - selection hint does not consider camera angle
 - flip stacked items only flip individual card: it does not change the ordering
 - flipping or rotating item does not change vertical position: items above it will still be above it at the end
@@ -239,10 +236,12 @@ Sizes:
 ```shell
 folder=apps/web/public/images/splendor/1; \
 size=372x260; \
-for file in $folder/*.png; do \
+for file in $folder/!(*.gl1.png|!(*.png)); do \
   outFile=${file/.png/.out.png}; \
   convert -flop -strip -resize $size\! $file $outFile; \
-  toktx --uastc 4 ${file/.png/.ktx2} $outFile; \
+  gl1File=${file/.png/.gl1.png}; \
+  toktx --uastc 2 ${file/.png/.ktx2} $outFile; \
+  convert -flop -rotate 180 $outFile $gl1File; \
   rm $outFile; \
 done
 ```

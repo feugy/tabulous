@@ -16,6 +16,7 @@ import {
   StackBehavior
 } from './behaviors'
 import { controlManager } from './managers'
+import { adaptTexture } from './utils'
 
 /**
  * Creates a card mesh.
@@ -70,7 +71,7 @@ export function createCard({
     sideOrientation: Mesh.DOUBLESIDE
   })
   faces.material = new StandardMaterial('faces')
-  faces.material.diffuseTexture = new Texture(texture)
+  faces.material.diffuseTexture = new Texture(adaptTexture(texture))
   faces.material.diffuseTexture.hasAlpha = true
   faces.material.freeze()
 
