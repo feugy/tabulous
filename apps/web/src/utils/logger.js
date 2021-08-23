@@ -2,6 +2,7 @@ const levels = {
   authentication: 'warn',
   camera: 'warn',
   flippable: 'warn',
+  'game-interaction': 'warn',
   'game-manager': 'warn',
   graphql: 'warn',
   gravity: 'warn',
