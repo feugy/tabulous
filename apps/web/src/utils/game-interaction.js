@@ -17,6 +17,14 @@ function isMouse(event) {
   return event.pointerType === 'mouse'
 }
 
+function pointerKind(event, button, pointers) {
+  return button === 2 || (!isMouse(event) && pointers === 2)
+    ? 'right'
+    : button === 0 || !isMouse(event)
+    ? 'left'
+    : null
+}
+
 /**
  * Attach to game engine's input manager observables to implement game interaction model.
  * @param {object} params - parameters, including:
@@ -101,19 +109,20 @@ export function attachInputs({
       )
       .subscribe({
         next: ({ mesh, button, event, long, pointers }) => {
+          const kind = pointerKind(event, button, pointers)
           if (long) {
             mesh.metadata.detail?.()
             logger.info(
               { mesh, button, long, event },
               `display details for mesh ${mesh.id}`
             )
-          } else if (button === 2 || (!isMouse(event) && pointers === 2)) {
+          } else if (kind === 'right') {
             controlManager.apply({ meshId: mesh.id, fn: 'rotate' })
             logger.info(
               { mesh, button, long, event },
               `rotates mesh ${mesh.id}`
             )
-          } else if (button === 0 || !isMouse(event)) {
+          } else if (kind === 'left') {
             controlManager.apply({ meshId: mesh.id, fn: 'flip' })
             logger.info({ mesh, button, long, event }, `flips mesh ${mesh.id}`)
           }
@@ -132,26 +141,28 @@ export function attachInputs({
       next: ({ type, mesh, button, long, pointers, event }) => {
         if (type === 'dragStart') {
           meshForMenu$.next(null)
+          const kind = pointerKind(event, button, pointers)
           if (mesh) {
             if (!selectionManager.meshes.has(mesh)) {
               selectionManager.clear()
             }
-            if (button === 0 || !isMouse(event)) {
+            if (kind === 'left') {
               moveManager.start(mesh, event)
               logger.info(
                 { mesh, button, long, pointers, event },
                 `start moving mesh ${mesh.id}`
               )
             }
-          } else {
+          }
+          if (!moveManager.inProgress) {
             const position = { x: event.x, y: event.y }
-            if (button === 2 || (!isMouse(event) && pointers === 2)) {
+            if (kind === 'right') {
               rotatePosition = position
               logger.info(
                 { button, long, pointers, event },
                 `start rotating camera`
               )
-            } else if (button === 0 || !isMouse(event)) {
+            } else if (kind === 'left') {
               if (long) {
                 selectionPosition = position
                 logger.info(

@@ -16,9 +16,11 @@ class MoveManager {
    * - release mesh on table, or on their relevant target
    *
    * @property {number} elevation - elevation applied to meshes while dragging them.
+   * @property {boolean} inProgress - true while a move operation is in progress.
    */
   constructor() {
     this.elevation = null
+    this.inProgress = false
     // private
     this.scene = null
     this.meshIds = new Set()
@@ -51,6 +53,7 @@ class MoveManager {
       : [mesh]
     let lastPosition = screenToGround(this.scene, event)
     let zones = new Set()
+    this.inProgress = true
 
     logger.info(
       { moved, position: lastPosition.asArray() },
@@ -163,6 +166,7 @@ class MoveManager {
             )
         })
       )
+      this.inProgress = false
     }
   }
 
