@@ -1,4 +1,4 @@
-import { Matrix, Vector3 } from '@babylonjs/core'
+import { Matrix, Ray, Vector3 } from '@babylonjs/core'
 
 let table
 
@@ -30,6 +30,23 @@ export function isAboveTable(scene, { x, y }) {
     table = scene.getMeshById('table')
   }
   return table ? scene.createPickingRay(x, y).intersectsMesh(table).hit : false
+}
+
+/**
+ * Indicates whether a world position (3D, scene) is above the table mesh.
+ * @param {import('@babylonjs/core').Scene} scene - current scene.
+ * @param {Vector3} position - 3D position.
+ * @returns {boolean} true if the point is within the table area, false otherwise.
+ */
+export function isPositionAboveTable(scene, position) {
+  if (!table || table.isDisposed) {
+    table = scene.getMeshById('table')
+  }
+  return table
+    ? new Ray(position, new Vector3(position.x, -1, position.z)).intersectsMesh(
+        table
+      ).hit
+    : false
 }
 
 /**

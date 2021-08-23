@@ -1,6 +1,6 @@
 export * from './camera'
 export * from './control'
-export * from './drag'
 export * from './input'
+export * from './move'
 export * from './selection'
 export * from './target'

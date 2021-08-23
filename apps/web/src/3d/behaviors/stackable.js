@@ -108,7 +108,7 @@ export class StackBehavior extends TargetBehavior {
         type === 'dragStart' &&
         stack.length > 1 &&
         stack[stack.length - 1] === mesh &&
-        !selectionManager.meshes.includes(stack[0])
+        !selectionManager.meshes.has(stack[0])
       ) {
         this.pop()
       }
@@ -154,7 +154,7 @@ export class StackBehavior extends TargetBehavior {
     enableLastTarget(stack, false)
     setBase(mesh, base)
     stack.push(mesh)
-    return animateMove(mesh, new Vector3(x, y, z), moveDuration)
+    await animateMove(mesh, new Vector3(x, y, z), moveDuration, true)
   }
 
   /**
@@ -217,6 +217,8 @@ export class StackBehavior extends TargetBehavior {
 
     let last = null
     for (const mesh of stack) {
+      // prevents interactions and collisions
+      mesh.isPickable = false
       if (last) {
         const { x, z } = mesh.absolutePosition
         mesh.setAbsolutePosition(new Vector3(x, altitudeOnTop(mesh, last), z))
@@ -240,7 +242,10 @@ export class StackBehavior extends TargetBehavior {
             )
           ),
           this.moveDuration * 2
-        )
+        ).then(() => {
+          // animateMove re-enabled interactions and collisions
+          mesh.isPickable = false
+        })
       )
     )
 
@@ -254,7 +259,7 @@ export class StackBehavior extends TargetBehavior {
     baseBehavior.base = null
     baseBehavior.stack = [stack[0]]
     enableLastTarget(stack, true)
-    await animateMove(stack[0], basePosition, this.moveDuration)
+    await animateMove(stack[0], basePosition, this.moveDuration, true)
     for (const mesh of stack.slice(1)) {
       await baseBehavior.push(mesh.id)
     }

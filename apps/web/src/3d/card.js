@@ -10,8 +10,8 @@ import {
 } from '@babylonjs/core'
 import {
   DetailBehavior,
-  DragBehavior,
   FlipBehavior,
+  MoveBehavior,
   RotateBehavior,
   StackBehavior
 } from './behaviors'
@@ -22,11 +22,11 @@ import { controlManager } from './managers'
  * Cards are planes whith a given width and height (Babylon's depth), wrapped into a box mesh, so they could be stacked with other objects.
  * By default, the card dimension follows American poker card standard (beetween 1.39 & 1.41).
  * A card has the following behaviors:
- * - draggable
+ * - movable
+ * - detailable
  * - flippable
  * - rotable
  * - stackable (the entire card is a drop target)
- * - hoverable (?)
  * A card's texture must have 2 faces, back then front, aligned horizontally.
  * @param {object} params - card parameters, including (all other properties will be passed to the created mesh):
  * @param {string} params.texture - card's texture url.
@@ -125,7 +125,7 @@ export function createCard({
 
   const dragKind = 'card'
   card.addBehavior(
-    new DragBehavior({ moveDuration, snapDistance, dragKind }),
+    new MoveBehavior({ moveDuration, snapDistance, dragKind }),
     true
   )
 

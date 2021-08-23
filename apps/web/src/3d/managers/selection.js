@@ -12,10 +12,10 @@ class SelectionManager {
    * - select all meshes contained in the selection box, highlighting them
    * - clear previous selection
    *
-   * @property {import('@babylonjs/core').Mesh[]} meshes - active selection of meshes
+   * @property {Set<import('@babylonjs/core').Mesh>} meshes - active selection of meshes
    */
   constructor() {
-    this.meshes = []
+    this.meshes = new Set()
     // private
     this.scene = null
     this.box = null
@@ -82,23 +82,15 @@ class SelectionManager {
       box.isPickable = false
 
       for (const mesh of scene.meshes) {
-        if (
-          !this.meshes.includes(mesh) &&
-          mesh.isPickable &&
-          isContaining(box, mesh)
-        ) {
-          this.meshes.push(mesh)
+        if (mesh.isPickable && isContaining(box, mesh)) {
+          this.meshes.add(mesh)
           mesh.renderOverlay = true
         }
       }
 
-      logger.info(
-        { start, end, selection: this.meshes },
-        `new multiple selection: ${this.meshes.map(({ id }) => id)}`
-      )
+      logger.info({ start, end, meshes: this.meshes }, `new multiple selection`)
       box.dispose()
       start = null
-      return this.meshes
     }
   }
 
@@ -112,13 +104,13 @@ class SelectionManager {
    * Clears current selection, notifying all observers
    */
   clear() {
-    if (this.meshes.length) {
-      logger.info({ selection: this.meshes }, `reset multiple selection`)
+    if (this.meshes.size) {
+      logger.info({ meshes: this.meshes }, `reset multiple selection`)
       for (const mesh of this.meshes) {
         mesh.renderOverlay = false
       }
     }
-    this.meshes = []
+    this.meshes.clear()
   }
 }
 

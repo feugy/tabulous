@@ -1,30 +1,26 @@
-import { Animation } from '@babylonjs/core'
-import { applyGravity } from '../utils'
+import { moveManager } from '../managers'
 
 export class MoveBehavior {
   /**
-   * Creates behavior to make a mesh movable with animation.
-   * It ignores any animations triggered while a previous animation is running.
+   * Creates behavior to make a mesh movable, and droppable over target zones.
+   * When moving mesh, its final position will snap to a virtual grid.
+   * A mesh can only be dropped onto zones with the same kind.
    *
    * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
-   * @property {boolean} isAnimated - true when this mesh is being animated.
-   * @property {number} frameRate - number of frames per second.
+   * @property {string} dragKind - drag kind.
+   * @property {number} snapDistance - snap grid unit, in 3D world coordinate.
+   * @property {number} moveDuration - duration (in milliseconds) of the snap move.
    *
    * @param {object} params - parameters, including:
-   * @param {number} [params.frameRate=30] - number of frames per second.
+   * @param {number} params.snapDistance - snap grid unit, in 3D world coordinate.
+   * @param {number} params.moveDuration - duration (in milliseconds) of the snap move.
+   * @param {string} params.dragKind - drag kind.
    */
-  constructor({ frameRate } = {}) {
+  constructor({ moveDuration, snapDistance, dragKind } = {}) {
     this.mesh = null
-    this.isAnimated = false
-    this.frameRate = frameRate || 30
-    // private
-    this.moveAnimation = new Animation(
-      'move',
-      'position',
-      this.frameRate,
-      Animation.ANIMATIONTYPE_VECTOR3,
-      Animation.ANIMATIONLOOPMODE_CONSTANT
-    )
+    this.dragKind = dragKind
+    this.snapDistance = snapDistance || 0.25
+    this.moveDuration = moveDuration || 100
   }
 
   /**
@@ -41,75 +37,24 @@ export class MoveBehavior {
   init() {}
 
   /**
-   * Attaches this behavior to a mesh.
+   * Attaches this behavior to a mesh, registering it to the drag manager
    * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
    */
   attach(mesh) {
-    if (!this.mesh) {
-      this.mesh = mesh
-    }
+    this.mesh = mesh
+    moveManager.registerMovable(this)
   }
 
   /**
-   * Detaches this behavior from its mesh.
+   * Detaches this behavior from its mesh, by unregistering from the drag manager.
    */
   detach() {
-    this.mesh = null
-  }
-
-  /**
-   * Moves the related mesh with an animation:
-   * - runs the move animation until completion
-   * - applies gravity (if requested)
-   * - returns
-   * Does nothing if the mesh is already being animated.
-   *
-   * @async
-   * @param {import('@babylonjs/core').Vector3} to - the desired new position.
-   * @param {number} duration - move duration (in milliseconds).
-   * @param {boolean} [gravity=true] - applies gravity at the end.
-   */
-  async moveTo(to, duration, gravity = true) {
-    const { isAnimated, mesh, frameRate, moveAnimation } = this
-    if (isAnimated) {
-      return
-    }
-    this.isAnimated = true
-    const from = mesh.absolutePosition.clone()
-
-    const lastFrame = mesh.getScene().isLoading
-      ? 1
-      : Math.round(frameRate * (duration / 1000))
-    moveAnimation.setKeys([
-      { frame: 0, value: from },
-      { frame: lastFrame, value: to }
-    ])
-    return new Promise(resolve =>
-      mesh
-        .getScene()
-        .beginDirectAnimation(
-          mesh,
-          [moveAnimation],
-          0,
-          lastFrame,
-          false,
-          1,
-          () => {
-            this.isAnimated = false
-            // framed animation may not exactly end where we want, so force the final position
-            mesh.setAbsolutePosition(to)
-            if (gravity) {
-              applyGravity(mesh)
-            }
-            resolve()
-          }
-        )
-    )
+    moveManager.unregisterMovable(this)
   }
 }
 
 /**
- * Name of all movable behaviors.
+ * Name of all draggable behaviors.
  * @static
  * @memberof MoveBehavior
  * @type {string}

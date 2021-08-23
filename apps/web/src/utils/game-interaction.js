@@ -1,12 +1,17 @@
 import { interval, Subject } from 'rxjs'
-import { debounceTime, delayWhen, filter, scan } from 'rxjs/operators'
+import { delayWhen, filter, scan } from 'rxjs/operators'
 import {
   cameraManager,
   controlManager,
   inputManager,
+  moveManager,
   selectionManager
 } from '../3d/managers'
 import { normalize } from '.'
+// '.' creates a cyclic dependency in Jest
+import { makeLogger } from './logger'
+
+const logger = makeLogger('game-interaction')
 
 function isMouse(event) {
   return event.pointerType === 'mouse'
@@ -16,19 +21,21 @@ function isMouse(event) {
  * Attach to game engine's input manager observables to implement game interaction model.
  * @param {object} params - parameters, including:
  * @param {number} params.doubleTapDelay - number of milliseconds between 2 taps to be considered as a double tap.
- * @param {number} params.menuHoverDelay - number of milliseconds mouse should stay above a mesh to trigger menu.
  * @param {Subject<import('@babylonjs/core').Mesh>} params.meshForMenu$ - subject emitting when mesh menu should be displayed and hidden.
  * @param {Subject<number?>} params.stackSize$ - subject emitting currently hovered stack size.
  * @returns {import('rxjs').Subscription[]} an array of observable subscriptions
  */
 export function attachInputs({
-  menuHoverDelay,
   doubleTapDelay,
   meshForMenu$,
   stackSize$
 } = {}) {
-  let cameraDragPosition
+  const maxPanInput = 50
+  const maxPan = 2.5
   let selectionPosition
+  let panPosition
+  let rotatePosition
+  let panInProgress = false
 
   const taps$ = new Subject()
   const drags$ = new Subject()
@@ -51,45 +58,37 @@ export function attachInputs({
   return [
     /**
      * Implements actions on user taps:
-     * - single or double taps/clicks, on mesh or table, always closes menu
-     * - single or double taps/clicks on table clears selection
-     * - a single tap/left click on table pans camera, unless we had an active selection
-     * - a double tap/left click on mesh opens its details
-     * - a single tap on mesh opens menu
+     * - click/tap always closes menu
+     * - click/tap clears selection unless tapping/clicking it
+     * - double click/double tap on mesh opens its menu
      */
     taps$.subscribe({
-      next: ({ type, mesh, button, event }) => {
+      next: ({ type, mesh, event }) => {
         meshForMenu$.next(null)
         if (mesh) {
+          if (!selectionManager.meshes.has(mesh)) {
+            selectionManager.clear()
+          }
           if (type === 'doubletap') {
-            if (!isMouse(event) || button === 0) {
-              mesh.metadata.detail?.()
-            }
-          } else if (!isMouse(event)) {
-            // delay to prevent the tap event triggering one of the menu item
-            setTimeout(() => meshForMenu$.next(mesh), 100)
+            meshForMenu$.next(mesh)
+            logger.info({ mesh, event }, `display menu for mesh ${mesh.id}`)
           }
         } else {
-          if (selectionManager.meshes.length > 0) {
-            selectionManager.clear()
-          } else {
-            if (type === 'tap' && (!isMouse(event) || button === 0)) {
-              cameraManager.pan(event)
-            }
-          }
+          selectionManager.clear()
         }
       }
     }),
 
     /**
      * Implements actions on mouse single clicks:
-     * - single left click on mesh flips it
-     * - single right click on mesh rotates it
+     * - single left click/tap on mesh flips it
+     * - single right click/2 fingers tap on mesh rotates it
+     * - long click/long tap on mesh opens its details
      * - any double click immediately following a single click discards the operation
      */
     taps$
       .pipe(
-        filter(({ mesh, event }) => mesh && isMouse(event)),
+        filter(({ mesh }) => mesh),
         delayWhen(({ type }) => interval(type === 'tap' ? doubleTapDelay : 0)),
         scan(
           (previous, event) =>
@@ -101,12 +100,123 @@ export function attachInputs({
         filter(data => data?.type === 'tap')
       )
       .subscribe({
-        next: ({ mesh, button }) =>
-          controlManager.apply({
-            meshId: mesh.id,
-            fn: button === 0 ? 'flip' : 'rotate'
-          })
+        next: ({ mesh, button, event, long, pointers }) => {
+          if (long) {
+            mesh.metadata.detail?.()
+            logger.info(
+              { mesh, button, long, event },
+              `display details for mesh ${mesh.id}`
+            )
+          } else if (button === 2 || (!isMouse(event) && pointers === 2)) {
+            controlManager.apply({ meshId: mesh.id, fn: 'rotate' })
+            logger.info(
+              { mesh, button, long, event },
+              `rotates mesh ${mesh.id}`
+            )
+          } else if (button === 0 || !isMouse(event)) {
+            controlManager.apply({ meshId: mesh.id, fn: 'flip' })
+            logger.info({ mesh, button, long, event }, `flips mesh ${mesh.id}`)
+          }
+        }
       }),
+
+    /**
+     * Implements actions on drag operations:
+     * - starting dragging always closes menu
+     * - dragging table with left click/finger selects meshes
+     * - dragging table with right click/two fingers rotates the camera
+     * - long dragging table with left click/finger selects meshes
+     * - dragging mesh moves it
+     */
+    drags$.subscribe({
+      next: ({ type, mesh, button, long, pointers, event }) => {
+        if (type === 'dragStart') {
+          meshForMenu$.next(null)
+          if (mesh) {
+            if (!selectionManager.meshes.has(mesh)) {
+              selectionManager.clear()
+            }
+            if (button === 0 || !isMouse(event)) {
+              moveManager.start(mesh, event)
+              logger.info(
+                { mesh, button, long, pointers, event },
+                `start moving mesh ${mesh.id}`
+              )
+            }
+          } else {
+            const position = { x: event.x, y: event.y }
+            if (button === 2 || (!isMouse(event) && pointers === 2)) {
+              rotatePosition = position
+              logger.info(
+                { button, long, pointers, event },
+                `start rotating camera`
+              )
+            } else if (button === 0 || !isMouse(event)) {
+              if (long) {
+                selectionPosition = position
+                logger.info(
+                  { button, long, pointers, event },
+                  `start selecting meshes`
+                )
+              } else {
+                panPosition = position
+                logger.info(
+                  { button, long, pointers, event },
+                  `start panning camera`
+                )
+              }
+            }
+          }
+        } else if (type === 'drag') {
+          if (rotatePosition) {
+            const deltaX = event.x - rotatePosition.x
+            const deltaY = event.y - rotatePosition.y
+            cameraManager.rotate(
+              Math.abs(deltaX) < 8
+                ? 0
+                : deltaX < 0
+                ? Math.PI / 4
+                : -Math.PI / 4,
+              Math.abs(deltaY) < 4 ? 0 : normalize(deltaY, 10, 0, Math.PI / 6)
+            )
+            rotatePosition = event
+          } else if (panPosition) {
+            if (!panInProgress) {
+              cameraManager
+                .pan(
+                  normalize(panPosition.x - event.x, maxPanInput, 0, maxPan),
+                  normalize(event.y - panPosition.y, maxPanInput, 0, maxPan),
+                  100
+                )
+                .then(() => {
+                  panInProgress = false
+                })
+              panPosition = event
+              panInProgress = true
+            }
+          } else if (selectionPosition) {
+            selectionManager.drawSelectionBox(selectionPosition, event)
+          } else if (mesh) {
+            moveManager.continue(event)
+          }
+        } else if (type === 'dragStop') {
+          if (selectionPosition) {
+            selectionManager.select()
+            logger.info({ button, long, pointers, event }, `selecting meshes`)
+          } else if (mesh) {
+            moveManager.stop()
+            logger.info(
+              { mesh, button, long, pointers, event },
+              `stop moving mesh ${mesh.id}`
+            )
+          }
+          selectionPosition = null
+          rotatePosition = null
+          panPosition = null
+          panInProgress = false
+        }
+      }
+    }),
 
     /**
      * Implements actions on mouse wheel:
@@ -117,6 +227,7 @@ export function attachInputs({
       next: ({ event }) => {
         meshForMenu$.next(null)
         cameraManager.zoom(event.deltaY * 0.1)
+        logger.info({ event }, `zooming camera with wheel`)
       }
     }),
 
@@ -126,60 +237,14 @@ export function attachInputs({
      * - zoom camera in and out on pinch
      */
     pinchs$.subscribe({
-      next: ({ type, pinchDelta }) => {
+      next: ({ type, pinchDelta, event }) => {
         if (type === 'pinchStart') {
           meshForMenu$.next(null)
         } else if (type === 'pinch') {
           const normalized = normalize(pinchDelta, 30, 0, 15)
           if (Math.abs(normalized) > 3) {
             cameraManager.zoom(normalized)
-          }
-        }
-      }
-    }),
-
-    /**
-     * Implements actions on drag operations:
-     * - starting dragging always closes menu
-     * - starting dragging clears selection unless dragging a selected mesh
-     * - dragging table with left click/finger/stylus selects meshes
-     * - (long) dragging table with right click/finger/stylus rotates the camera
-     * Dragging meshes is built into dragManager
-     */
-    drags$.subscribe({
-      next: ({ type, mesh, button, long, event }) => {
-        if (type === 'dragStart') {
-          meshForMenu$.next(null)
-          if (!mesh) {
-            const position = { x: event.x, y: event.y }
-            if (button === 2 || (!isMouse(event) && long)) {
-              cameraDragPosition = position
-            } else if (button === 0 || !isMouse(event)) {
-              selectionPosition = position
-            }
-          }
-        } else if (type === 'drag') {
-          if (cameraDragPosition) {
-            const deltaX = event.x - cameraDragPosition.x
-            const deltaY = event.y - cameraDragPosition.y
-            cameraManager.rotate(
-              Math.abs(deltaX) < 5
-                ? 0
-                : deltaX < 0
-                ? Math.PI / 4
-                : -Math.PI / 4,
-              normalize(deltaY, 10, 0, Math.PI / 6)
-            )
-            cameraDragPosition = event
-          } else if (selectionPosition) {
-            selectionManager.drawSelectionBox(selectionPosition, event)
-          }
-        } else if (type === 'dragStop') {
-          if (cameraDragPosition) {
-            cameraDragPosition = null
-          } else if (selectionPosition) {
-            selectionManager.select()
-            selectionPosition = null
+            logger.info({ event, pinchDelta }, `zooming camera with pinch`)
           }
         }
       }
@@ -187,30 +252,19 @@ export function attachInputs({
 
     /**
      * Implements actions on mesh hover (with mouse):
-     * - opens menu if the mouse stays at least 500ms over the mesh
-     * - closes menu when the mouse leave the mesh
-     * - immeditaly displays stack indicator on mesh hover
+     * - displays stack indicator when hovering a mesh
+     * - hides stack indicator when leaving the mesh
      */
     meshHover$
-      .pipe(
-        debounceTime(menuHoverDelay),
-        filter(({ type, event }) => type === 'hoverStart' && isMouse(event))
-      )
+      .pipe(filter(({ event, mesh }) => mesh && isMouse(event)))
       .subscribe({
-        next: ({ mesh }) => {
-          stackSize$.next(null)
-          meshForMenu$.next(mesh)
+        next: ({ type, mesh }) => {
+          if (type === 'hoverStart') {
+            stackSize$.next(mesh?.metadata?.stack?.length ?? 1)
+          } else {
+            stackSize$.next(null)
+          }
         }
-      }),
-    meshHover$.pipe(filter(({ event }) => isMouse(event))).subscribe({
-      next: ({ type, mesh }) => {
-        if (type === 'hoverStop') {
-          stackSize$.next(null)
-          meshForMenu$.next(null)
-        } else {
-          stackSize$.next(mesh?.metadata?.stack?.length ?? 1)
-        }
-      }
-    })
+      })
   ]
 }

@@ -5,9 +5,9 @@ import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('input')
 
-const PinchMovementThreshold = 4
-const PinchAttemptThreshold = 2
-const LongTapDelay = 500
+const PinchMovementThreshold = 5
+const PinchAttemptThreshold = 3
+const LongDelay = 250
 
 /**
  * @typedef {object} InputData input event data:
@@ -31,7 +31,7 @@ function findDragStart(pointers, current) {
 }
 
 function isLong({ event } = {}, times) {
-  return Date.now() - (times.get(event.pointerId) ?? Date.now()) > LongTapDelay
+  return Date.now() - (times.get(event.pointerId) ?? Date.now()) > LongDelay
 }
 
 class InputManager {
@@ -76,7 +76,8 @@ class InputManager {
     }
     let dragOrigin = null
     let hovered = null
-    let lastTap = {}
+    let lastTap = 0
+    let tapPointers = 1
     this.suspended = false
 
     const startHover = (event, mesh) => {
@@ -164,14 +165,13 @@ class InputManager {
       )
 
       const button = event.pointerType === 'mouse' ? event.button : undefined
-      const mesh = scene.pickWithRay(scene.createPickingRay(event.x, event.y))
-        .pickedMesh
-      // const mesh = scene
-      //   .multiPickWithRay(
-      //     scene.createPickingRay(localPosition.x, localPosition.y),
-      //     mesh => this.hoverable.has(mesh)
-      //   )
-      //   .sort((a, b) => a.distance - b.distance)[0]?.pickedMesh
+      // takes mesh with highest elevation, and only when they are pickable
+      const mesh = scene
+        .multiPickWithRay(
+          scene.createPickingRay(event.x, event.y),
+          mesh => mesh.isPickable
+        )
+        .sort((a, b) => a.distance - b.distance)[0]?.pickedMesh
 
       switch (type) {
         case PointerEventTypes.POINTERDOWN: {
@@ -195,6 +195,9 @@ class InputManager {
         }
 
         case PointerEventTypes.POINTERMOVE: {
+          if (event.movementX === 0 && event.movementY === 0) {
+            break
+          }
           if (pinch.first) {
             const oldDistance = pinch.distance
             // updates pinch pointers and computes new distance
@@ -206,7 +209,7 @@ class InputManager {
             pinch.distance = distance(pinch.first.event, pinch.second.event)
             const pinchDelta = oldDistance - pinch.distance
 
-            if (!pinch.confirmed) {
+            if (!pinch.confirmed && pinchDelta !== 0) {
               pinch.attempts++
               if (Math.abs(pinchDelta) > PinchMovementThreshold) {
                 pinch.confirmed = true
@@ -245,7 +248,7 @@ class InputManager {
                 }
                 logger.info(
                   data,
-                  `start ${data.long ? 'long ' : ' '}dragging ${
+                  `start${data.long ? ' long ' : ' '}dragging ${
                     dragOrigin.mesh?.id ?? ''
                   } ${
                     dragOrigin.button ? `with button ${dragOrigin.button}` : ''
@@ -255,7 +258,8 @@ class InputManager {
               }
             }
 
-            if (dragOrigin) {
+            // when dragging with multiple pointers, only consider drag origin moves
+            if (dragOrigin?.event.pointerId === event.pointerId) {
               const data = {
                 type: 'drag',
                 ...dragOrigin,
@@ -285,34 +289,38 @@ class InputManager {
 
         case PointerEventTypes.POINTERUP: {
           if (dragOrigin) {
-            this.stopDrag(event)
-          } else if (pinch.confirmed) {
-            this.stopPinch(event)
-          } else if (pointers.has(event.pointerId)) {
-            const data = {
-              type:
-                lastTap.button === button &&
-                Date.now() - lastTap.time < Scene.DoubleClickDelay
-                  ? 'doubletap'
-                  : 'tap',
-              mesh,
-              button,
-              event,
-              pointers: pointers.size,
-              long: isLong({ event }, pointerTimes)
-            }
-            logger.info(
-              data,
-              `${data.long ? 'Long ' : ' '}${data.type} on ${
-                mesh?.id ?? 'table'
-              } ${button ? `with button ${button}` : ''}`
-            )
-            this.onTapObservable.notifyObservers(data)
             if (pointers.size === 1) {
-              // simultaneous pointer should not trigger double taps
-              lastTap = { time: Date.now(), button }
+              // keep dragging with multiple fingers until the last one left the surface
+              this.stopDrag(event)
+            }
+          } else if (!pinch.confirmed) {
+            if (pointers.size > 1) {
+              // when tapping with multiple pointers, ignore all but the last
+              tapPointers = pointers.size
+            } else {
+              const data = {
+                type:
+                  Date.now() - lastTap < Scene.DoubleClickDelay
+                    ? 'doubletap'
+                    : 'tap',
+                mesh,
+                button,
+                event,
+                pointers: tapPointers,
+                long: isLong({ event }, pointerTimes)
+              }
+              logger.info(
+                data,
+                `${data.long ? 'Long ' : ' '}${data.type} on ${
+                  mesh?.id ?? 'table'
+                } ${button ? `with button ${button}` : ''}`
+              )
+              this.onTapObservable.notifyObservers(data)
+              tapPointers = 1
+              lastTap = Date.now()
             }
           }
+          this.stopPinch(event)
           pointers.delete(event.pointerId)
           pointerTimes.delete(event.pointerId)
           break

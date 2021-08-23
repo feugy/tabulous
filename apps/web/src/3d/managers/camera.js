@@ -4,7 +4,7 @@ import {
   Observable,
   Vector3
 } from '@babylonjs/core'
-import { isAboveTable, screenToGround } from '../utils'
+import { isPositionAboveTable } from '../utils'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
 
@@ -192,32 +192,39 @@ class CameraManager {
   }
 
   /**
-   * Moves the camera on x/z plane to face a given screen coordinate, with animation.
-   * Coordinates outside the table will be ignored
-   * @param {import('../utils').ScreenPosition} to - screen position to move camera to.
+   * Moves the camera on x/z plane by a given delta, with animation.
+   * Coordinates outside the table will be ignored.
+   * Ends with the animation.
+   * @async
+   * @param {number} deltaX - difference, in screen position to move camera along the X axis.
+   * @param {number} deltaZ - difference, in screen position to move camera along the Z axis.
    * @param {number} [duration=300] - animation duration, in ms
    */
-  pan(to, duration = 300) {
+  async pan(deltaX, deltaZ, duration = 300) {
     if (!this.camera) return
 
-    const scene = this.camera.getScene()
-    if (isAboveTable(scene, to)) {
-      animate(this.camera, { target: screenToGround(scene, to) }, duration)
+    const target = this.camera[pan.targetProperty].add(
+      new Vector3(deltaX, 0, deltaZ)
+    )
+    if (isPositionAboveTable(this.camera.getScene(), target)) {
+      await animate(this.camera, { target }, duration)
     }
   }
 
   /**
    * Rotates the camera by a given angles, with animation.
-   * Coordinates outside the table will be ignored
+   * Coordinates outside the table will be ignored.
+   * Ends with the animation.
+   * @async
    * @param {number} [alpha=0] - longitudinal rotation (around the Z axis), in radian
    * @param {number} [beta=0] - latitudinal rotation, in radian, between minAngle and PI/2
    * @param {number} [duration=300] - animation duration, in ms
    */
-  rotate(alpha = 0, beta = 0, duration = 300) {
+  async rotate(alpha = 0, beta = 0, duration = 300) {
     if (!this.camera) return
 
     if ((alpha || beta) && !currentAnimation) {
-      animate(
+      await animate(
         this.camera,
         { alpha: this.camera.alpha + alpha, beta: this.camera.beta + beta },
         duration
@@ -227,12 +234,14 @@ class CameraManager {
 
   /**
    * Zooms the camera in or out by a given step, with animation.
+   * Ends with the animation.
+   * @async
    * @param {number} step - positive or negative elevation (in 3D world coordinates).
    * @param {number} [duration=300] - animation duration, in ms
    */
-  zoom(elevation, duration = 300) {
+  async zoom(elevation, duration = 300) {
     if (!this.camera) return
-    animate(
+    await animate(
       this.camera,
       { elevation: this.camera.radius + elevation },
       duration

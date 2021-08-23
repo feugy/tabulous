@@ -11,8 +11,8 @@ import {
 } from '@babylonjs/core'
 import {
   DetailBehavior,
-  DragBehavior,
   FlipBehavior,
+  MoveBehavior,
   RotateBehavior,
   StackBehavior
 } from './behaviors'
@@ -57,11 +57,11 @@ function makeCornerMesh(
  * Tiles are boxes, so their position is their center (half their depth).
  * By default, the tile dimension follows American poker tile standard (beetween 1.39 & 1.41).
  * A tile has the following behaviors:
- * - draggable
+ * - movable
+ * - detailable
  * - flippable
  * - rotable
  * - stackable (the entire tile is a drop target)
- * - hoverable (?)
  * A tile's texture must have 2 faces, back then front, aligned horizontally. Edges have silde color (borderColor).
  * @param {object} params - tile parameters, including (all other properties will be passed to the created mesh):
  * @param {string} params.texture - tile's texture url.
@@ -164,7 +164,7 @@ export function createRoundedTile({
 
   const dragKind = 'tile'
   tile.addBehavior(
-    new DragBehavior({ moveDuration, snapDistance, dragKind }),
+    new MoveBehavior({ moveDuration, snapDistance, dragKind }),
     true
   )
 

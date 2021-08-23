@@ -1,5 +1,5 @@
 import { BehaviorSubject, Subject, merge } from 'rxjs'
-import { auditTime, filter, map } from 'rxjs/operators'
+import { auditTime, delay, filter, map } from 'rxjs/operators'
 import { connected, lastMessageReceived, send } from './peer-channels'
 import { createEngine, createLight, createTable } from '../3d'
 import { cameraManager, controlManager } from '../3d/managers'
@@ -43,7 +43,8 @@ export const meshDetails = meshDetails$.pipe(map(({ data }) => data))
  * Emits meshes player would like to open menu on.
  * @type {Observable<import('@babylonjs/core').Mesh>}
  */
-export const meshForMenu = meshForMenu$.asObservable()
+export const meshForMenu = meshForMenu$.pipe(delay(300))
+// note: we delay by 300ms so that browser does not fire a click on menu when double-tapping a mesh
 
 /**
  * Emits the stack size of the currently hovered mesh
@@ -70,14 +71,12 @@ export const cameraSaves = cameraSaves$.pipe(filter(saves => saves.length))
  * @param {object} params - parameters, including:
  * @param {HTMLCanvasElement} params.canvas - HTML canvas used to display the scene.
  * @param {HTMLElement} params.interaction - HTML element receiving user interaction (mouse events, taps).
- * @param {number} [params.doubleTapDelay=500] - number of milliseconds between 2 taps to be considered as a double tap.
- * @param {number} [params.menuHoverDelay=300] - number of milliseconds mouse should stay above a mesh to trigger menu.
+ * @param {number} [params.doubleTapDelay=300] - number of milliseconds between 2 taps to be considered as a double tap.
  * @param {number} [params.pointerThrottle=200] - number of milliseconds during which pointer will be ignored before being shared with peers.
  */
 export function initEngine({
   canvas,
   interaction,
-  menuHoverDelay = 1000,
   doubleTapDelay = 300,
   pointerThrottle = 200
 } = {}) {
@@ -99,7 +98,6 @@ export function initEngine({
 
   // implements game interaction model
   const subscriptions = attachInputs({
-    menuHoverDelay,
     doubleTapDelay,
     meshForMenu$,
     stackSize$
