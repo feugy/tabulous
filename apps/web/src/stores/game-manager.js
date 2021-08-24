@@ -3,7 +3,7 @@ import { debounceTime, filter } from 'rxjs/operators'
 import { currentPlayer } from './authentication'
 import { clearThread, loadThread, serializeThread } from './discussion'
 import { action, cameraSaves, engine, loadCameraSaves } from './game-engine'
-import { runQuery, runMutation } from './graphql-client'
+import { runQuery, runMutation, runSubscription } from './graphql-client'
 import {
   closeChannels,
   connectWith,
@@ -14,7 +14,6 @@ import {
   send,
   openChannels
 } from './peer-channels'
-import { inviteReceived } from './sse'
 import * as graphQL from '../graphql'
 import { makeLogger } from '../utils'
 import { loadScene, serializeScene } from '../3d/utils'
@@ -23,6 +22,7 @@ const logger = makeLogger('game-manager')
 
 const playerGames$ = new BehaviorSubject([])
 const currentGame$ = new BehaviorSubject()
+let listGamesSubscription = null
 
 // when joining game with connected peers, delay during which we expect to receive the game data
 const gameReceptionDelay = 30e3
@@ -30,9 +30,6 @@ const gameReceptionDelay = 30e3
 // stores current player
 let player
 currentPlayer.subscribe(value => (player = value))
-
-// updates game list on deletions
-inviteReceived.subscribe(() => listGames())
 
 // resets current game and clears discussion thread when disposing game engine
 engine.subscribe(engine => {
@@ -148,11 +145,16 @@ export const playerGames = playerGames$.asObservable()
 export const currentGame = currentGame$.asObservable()
 
 /**
- * Lists all games of the current player, populating `playerGames`.
+ * Lists all games of the current player, populating `playerGames` observable.
  * @async
  */
 export async function listGames() {
-  playerGames$.next((await runQuery(graphQL.listGames, {}, false)) || [])
+  if (listGamesSubscription) {
+    listGamesSubscription.unsubscribe()
+  }
+  listGamesSubscription = runSubscription(graphQL.listGames).subscribe(
+    playerGames$
+  )
 }
 
 /**
@@ -176,7 +178,6 @@ export async function createGame(kind = 'splendor') {
 export async function deleteGame(gameId) {
   logger.info({ gameId }, `deletes game (${gameId})`)
   await runMutation(graphQL.deleteGame, { gameId })
-  await listGames()
 }
 
 /**

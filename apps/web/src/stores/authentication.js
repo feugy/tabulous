@@ -1,5 +1,4 @@
 import { BehaviorSubject } from 'rxjs'
-import { closeReceiver, openReceiver } from './sse'
 import { initGraphQLGlient, runMutation } from './graphql-client'
 import * as graphQL from '../graphql'
 import { makeLogger } from '../utils'
@@ -15,12 +14,10 @@ current$.subscribe(player => {
     logger.debug({ player }, `saving session`)
     sessionStorage.setItem(storageKey, JSON.stringify(player))
     initGraphQLGlient(player)
-    openReceiver(player)
   } else if (player === null) {
     logger.debug(`clearing session storage`)
     sessionStorage.clear()
     initGraphQLGlient()
-    closeReceiver()
   }
 })
 

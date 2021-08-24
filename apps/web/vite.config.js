@@ -26,7 +26,11 @@ export default defineConfig({
         target: 'http://localhost:3001',
         ws: true
       },
-      '^/(graphql|sse)/?': {
+      '/graphql': {
+        target: 'http://localhost:3001',
+        ws: true
+      },
+      '^/graphql/?': {
         target: 'http://localhost:3001'
       }
     }

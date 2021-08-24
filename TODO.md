@@ -15,7 +15,6 @@ Partie avec Loïc:
 ## Refactor
 
 - behaviors may not care about active selection (game-interaction/game-engine should)
-- use graphQL subscriptions instead of SSE
 - server logging (warning on invalid descriptors)
 - enable [Babylon.js treeshaking](https://doc.babylonjs.com/divingDeeper/developWithBjs/treeShaking)
 - all manager managing a collection of behaviors should check their capabilities
@@ -25,7 +24,6 @@ Partie avec Loïc:
 
 ## Single player
 
-- refresh game list on game deletion
 - player's hand
 - stack actions:
   - draw multiple cards (either in hand, or in front of them)

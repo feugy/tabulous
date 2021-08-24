@@ -1,20 +1,7 @@
 import { randomUUID } from 'crypto'
 import { Subject } from 'rxjs'
+import { concatMap, mergeMap } from 'rxjs/operators'
 import { instanciateGame } from './utils.js'
-
-const gamesById = new Map()
-const invites$ = new Subject()
-
-function isOwner(game, playerId) {
-  return game && game.playerIds.includes(playerId)
-}
-
-/**
- * @typedef {object} Invite an player invite to an existing game:
- * @property {string} gameId - shared game id.
- * @property {string} guestId - invited player id.
- * @property {string} hostId - inviting player id.
- */
 
 /**
  * @typedef {object} Game an active game:
@@ -90,15 +77,34 @@ function isOwner(game, playerId) {
  * @property {number} elevation - altitude, in 3D coordinate.
  */
 
+const gamesById = new Map()
+const gameListsUpdate$ = new Subject()
+
+function isOwner(game, playerId) {
+  return game && game.playerIds.includes(playerId)
+}
+
 /**
- * Emits when an invite is sent, including hostId, guestId and gameId.
- * @type {Observable<Invite>}
+ * @typedef {object} GameListUpdate an updated list of player games.
+ * @property {string} playerId - the corresponding player id.
+ * @property {Game[]} games - their games.
  */
-export const invites = invites$.asObservable()
+
+/**
+ * Emits updates of game list for individual players.
+ * @type {Observable<GameListUpdate[]>}
+ */
+export const gameListsUpdate = gameListsUpdate$.pipe(
+  concatMap(n => n),
+  mergeMap(async playerId =>
+    listGames(playerId).then(games => ({ playerId, games }))
+  )
+)
 
 /**
  * Creates a new game of a given kind, registering the creator as a player.
  * It instanciate an unique set, based on the descriptor's bags and slots.
+ * Updates the creator's game list.
  * @async
  * @param {string} kind - game's kind.
  * @param {string} playerId - creating player id.
@@ -117,6 +123,7 @@ export async function createGame(kind, playerId) {
       scene: instanciateGame(descriptor)
     }
     gamesById.set(id, created)
+    gameListsUpdate$.next(created.playerIds)
     return created
   } catch (err) {
     if (err?.message?.includes('Cannot find module')) {
@@ -131,6 +138,7 @@ export async function createGame(kind, playerId) {
  * The operation will abort and return null when:
  * - no game could match this game id
  * - the player does not own the game
+ * Updates game lists of all related players.
  * @async
  * @param {string} gameId - loaded game id.
  * @param {string} playerId - player id.
@@ -140,6 +148,7 @@ export async function deleteGame(gameId, playerId) {
   const game = await loadGame(gameId, playerId)
   if (game) {
     gamesById.delete(gameId)
+    gameListsUpdate$.next(game.playerIds)
   }
   return game
 }
@@ -192,7 +201,7 @@ export async function saveGame(game, playerId) {
  * - no game could match this game id
  * - the inviting player does not own the game
  * - the guest is already part of the game players
- * It also updates invites observable.
+ * Updates game lists of all related players.
  * @async
  * @param {string} gameId - shared game id.
  * @param {string} guestId - invited player id.
@@ -205,7 +214,7 @@ export async function invite(gameId, guestId, hostId) {
     return null
   }
   game.playerIds.push(guestId)
-  invites$.next({ hostId, guestId, gameId })
+  gameListsUpdate$.next(game.playerIds)
   return game
 }
 

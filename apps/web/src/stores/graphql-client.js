@@ -1,4 +1,12 @@
-import { createClient } from '@urql/core'
+import {
+  createClient,
+  defaultExchanges,
+  subscriptionExchange
+} from '@urql/core'
+import { from } from 'rxjs'
+import { map } from 'rxjs/operators'
+import { SubscriptionClient } from 'subscriptions-transport-ws'
+import { toObservable } from 'wonka'
 import { makeLogger } from '../utils'
 
 const logger = makeLogger('graphql')
@@ -13,15 +21,26 @@ let client
  */
 export function initGraphQLGlient(player) {
   const headers = {}
+  const exchanges = [...defaultExchanges]
   if (player) {
     headers.authorization = `Bearer ${player.id}`
+    const wsClient = new SubscriptionClient(
+      `${location.origin.replace('http', 'ws')}/graphql`,
+      { reconnect: true, connectionParams: { bearer: player.id } }
+    )
+    exchanges.push(
+      subscriptionExchange({
+        forwardSubscription: operation => wsClient.request(operation)
+      })
+    )
   }
 
   logger.info({ player }, 'initialize GraphQL client')
   client = createClient({
     url: '/graphql',
     fetchOptions: () => ({ headers }),
-    maskTypename: true
+    maskTypename: true,
+    exchanges
   })
 }
 
@@ -50,4 +69,24 @@ export async function runQuery(query, variables, cache = true) {
   )
   const keys = Object.keys(data || {})
   return keys.length !== 1 ? data : data[keys[0]]
+}
+
+/**
+ * Starts a subscriptions, returning an observable.
+ * @param {import('graphql').DocumentNode} subscription - the ran subscription.
+ * @param {object} variables? - variables passed to the supscription, if any.
+ * @returns {Observable} an observable which emits every time an updates is received.
+ */
+export function runSubscription(subscription, variables) {
+  if (!client) throw new Error('Client is not initialized yet')
+  logger.debug({ subscription, variables }, 'starting graphQL subscription')
+  return from(toObservable(client.subscription(subscription, variables))).pipe(
+    map(({ data, error }) => {
+      if (error) {
+        logger.error({ error }, `Error received on subscription`)
+      }
+      const keys = Object.keys(data || {})
+      return keys.length !== 1 ? data : data[keys[0]]
+    })
+  )
 }

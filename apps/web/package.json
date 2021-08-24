@@ -39,6 +39,7 @@
     "reconnecting-websocket": "^4.4.0",
     "rxjs": "^7.0.0",
     "simple-peer-light": "^9.10.0",
+    "subscriptions-transport-ws": "^0.9.19",
     "svelte": "^3.37.0",
     "svelte-htm": "^1.1.1",
     "svelte-intl": "^1.1.3",
