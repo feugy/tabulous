@@ -57,5 +57,6 @@ export function createEngine({ canvas, interaction, doubleTapDelay } = {}) {
   })
 
   // scene.debugLayer.show({ embedMode: true })
+  // new AxesViewer(scene)
   return engine
 }

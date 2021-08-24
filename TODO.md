@@ -1,5 +1,19 @@
 # TODO
 
+Partie avec Loïc:
+
+- Babylon.js loader UI is still visible on the top left corner
+- flip stacked items only flip individual card: it should also invert the ordering (flip the whole stack)
+- button to save a new camera position should be grayed out when the current position is already saved
+- updating an saved camera position is not intuitive
+- crash when reordering stack
+  ```js
+  async reorder(ids) {
+    // ...
+    for (const mesh of stack) {
+      mesh.isPickable = false // TypeError: mesh is undefined
+  ```
+
 ## Refactor
 
 - behaviors may not care about active selection (game-interaction/game-engine should)
@@ -33,44 +47,6 @@
 
 # Known issues
 
-- all textures but card ones are invisible on Huawei. May be [this](https://forum.babylonjs.com/t/engine-crashes-on-android-devices/23176).
-  > BJS - [23:43:20]: Unable to compile effect:
-  > BJS - [23:43:20]: Uniforms: world, view, viewProjection, vEyePosition, vLightsType, vAmbientColor, vDiffuseColor, vSpecularColor, vEmissiveColor, visibility, vFogInfos, vFogColor, pointSize, vDiffuseInfos, vAmbientInfos, vOpacityInfos, vReflectionInfos, vEmissiveInfos, vSpecularInfos, vBumpInfos, vLightmapInfos, vRefractionInfos, mBones, vClipPlane, vClipPlane2, vClipPlane3, vClipPlane4, vClipPlane5, vClipPlane6, diffuseMatrix, ambientMatrix, opacityMatrix, reflectionMatrix, emissiveMatrix, specularMatrix, bumpMatrix, normalMatrix, lightmapMatrix, refractionMatrix, diffuseLeftColor, diffuseRightColor, opacityParts, reflectionLeftColor, reflectionRightColor, emissiveLeftColor, emissiveRightColor, refractionLeftColor, refractionRightColor, vReflectionPosition, vReflectionSize, vRefractionPosition, vRefractionSize, logarithmicDepthConstant, vTangentSpaceParams, alphaCutOff, boneTextureWidth, morphTargetTextureInfo, morphTargetTextureIndices, vDetailInfos, detailMatrix, previousWorld, previousViewProjection, vLightData0, vLightDiffuse0, vLightSpecular0, vLightDirection0, vLightFalloff0, vLightGround0, lightMatrix0, shadowsInfo0, depthValues0, viewFrustumZ0, cascadeBlendFactor0, lightSizeUVCorrection0, depthCorrection0, penumbraDarkness0, frustumLengths0, diffuseSampler, ambientSampler, opacitySampler, reflectionCubeSampler, reflection2DSampler, emissiveSampler, specularSampler, bumpSampler, lightmapSampler, refractionCubeSampler, refraction2DSampler, boneSampler, morphTargets, detailSampler, shadowSampler0, depthSampler0
-  > BJS - [23:43:20]: Attributes: position, normal
-  > BJS - [23:43:20]: Defines:
-  > #define DIFFUSEDIRECTUV 0
-  > #define DETAILDIRECTUV 0
-  > #define DETAIL_NORMALBLENDMETHOD 0
-  > #define AMBIENTDIRECTUV 0
-  > #define OPACITYDIRECTUV 0
-  > #define EMISSIVEDIRECTUV 0
-  > #define SPECULARDIRECTUV 0
-  > #define BUMPDIRECTUV 0
-  > #define NORMAL
-  > #define NUM_BONE_INFLUENCERS 0
-  > #define BonesPerMesh 0
-  > #define LIGHTMAPDIRECTUV 0
-  > #define SHADOWFLOAT
-  > #define NUM_MORPH_INFLUENCERS 0
-  > #define ALPHABLEND
-  > #define PREPASS_IRRADIANCE_INDEX -1
-  > #define PREPASS_ALBEDO_INDEX -1
-  > #define PREPASS_DEPTH_INDEX -1
-  > #define PREPASS_NORMAL_INDEX -1
-  > #define PREPASS_POSITION_INDEX -1
-  > #define PREPASS_VELOCITY_INDEX -1
-  > #define PREPASS_REFLECTIVITY_INDEX -1
-  > #define SCENE_MRT_COUNT 0
-  > #define VIGNETTEBLENDMODEMULTIPLY
-  > #define SAMPLER3DGREENDEPTH
-  > #define SAMPLER3DBGRMAP
-  > #define LIGHT0
-  > #define DIRLIGHT0
-  > #define SHADOW0
-  > #define SHADOWPCF0
-  > #define SHADOWS
-- selection hint does not consider camera angle
-- flip stacked items only flip individual card: it does not change the ordering
 - flipping or rotating item does not change vertical position: items above it will still be above it at the end
 - moving items bellow other does not apply gravity to them
 
