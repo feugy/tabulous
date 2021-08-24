@@ -21,7 +21,7 @@ export function createLight() {
   light.specular = new Color3(0, 0, 0)
 
   const shadowGenerator = new ShadowGenerator(1024, light)
-  shadowGenerator.useContactHardeningShadow = true
+  shadowGenerator.usePercentageCloserFiltering = true
 
   light
     .getScene()

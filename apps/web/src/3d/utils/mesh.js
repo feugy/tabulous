@@ -66,9 +66,9 @@ export function adaptTexture(texture) {
 export function attachMaterialError(material) {
   material.onError = (effect, errors) => {
     if (errors?.includes('FRAGMENT SHADER')) {
-      material
-        .getScene()
-        .lights[0].getShadowGenerator().useContactHardeningShadow = false
+      const shadowGenerator = material.getScene().lights[0].getShadowGenerator()
+      shadowGenerator.usePercentageCloserFiltering = false
+      shadowGenerator.useContactHardeningShadow = false
     }
   }
 }

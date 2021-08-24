@@ -2,8 +2,6 @@
 
 Partie avec Loïc:
 
-- Babylon.js loader UI is still visible on the top left corner
-- flip stacked items only flip individual card: it should also invert the ordering (flip the whole stack)
 - button to save a new camera position should be grayed out when the current position is already saved
 - updating an saved camera position is not intuitive
 - crash when reordering stack
@@ -17,6 +15,7 @@ Partie avec Loïc:
 ## Refactor
 
 - behaviors may not care about active selection (game-interaction/game-engine should)
+- use graphQL subscriptions instead of SSE
 - server logging (warning on invalid descriptors)
 - enable [Babylon.js treeshaking](https://doc.babylonjs.com/divingDeeper/developWithBjs/treeShaking)
 - all manager managing a collection of behaviors should check their capabilities
@@ -27,27 +26,27 @@ Partie avec Loïc:
 ## Single player
 
 - refresh game list on game deletion
-- boards
 - player's hand
 - stack actions:
   - draw multiple cards (either in hand, or in front of them)
   - distribute multiple cards to players (either in their hand, or in front of them)
+- boards
 - parametrize and serialize UVs
 - keyboard
+- visual hint on long operations
 - hide/collapse discussion thread
 - hide/collapse videos and avatars
 
 ## Multi player
 
 - on vite reload, all players could become hosts or peers simultaneously
-- stop trying to connect while leaving game room
 - invite players by name and id
 - search players by name
 - indicates when remote stream is muted/stopped
 
 # Known issues
 
-- flipping or rotating item does not change vertical position: items above it will still be above it at the end
+- flip stacked items only flip individual card: it should also invert the ordering (flip the whole stack)
 - moving items bellow other does not apply gravity to them
 
 # Ideas
@@ -66,10 +65,6 @@ Partie avec Loïc:
 - top left, in a column, player avatars/videos, with number of tokens/cards in hand, and mute indicator & command
 - bottom left, chat window
 - bottom, expansible area showing player's hand
-
-## Joining a game:
-
-- any player can mute, or kick, another player (really?)
 
 # Interaction model
 
@@ -224,6 +219,7 @@ done
 
 1. flip image horizontally (front face on the left, back face on the right, mirrored), strip png ICC profile (ktx2 does not support them) and resize
 2. convert to ktx2
+3. make a png equivalent for WebGL1 engines, rotated so it match meshes's UV
 
 There is no built-in way for the remote side of an WebRTC connection to know that video or audio was disabled.
 The mute/unmute events are meant for network issues. Stopping a track is definitive. Adding/removing track from stream only works locally (or would trigger re-negociation)
