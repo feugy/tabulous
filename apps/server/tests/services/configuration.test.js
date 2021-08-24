@@ -33,7 +33,6 @@ describe('loadConfiguration()', () => {
     const port = faker.datatype.number({ min: 0, max: 8000 })
     const host = faker.internet.ip()
     const level = faker.random.arrayElement(['fatal', 'error', 'info', 'debug'])
-    const peerSignalPath = faker.lorem.slug()
     const staticPath = faker.system.directoryPath()
     const key = faker.system.filePath()
     const cert = faker.system.filePath()
@@ -44,7 +43,6 @@ describe('loadConfiguration()', () => {
       HOST: host,
       LOG_LEVEL: level,
       CLIENT_ROOT: staticPath,
-      WS_ENDPOINT: peerSignalPath,
       HTTPS_CERT: cert,
       HTTPS_KEY: key
     }
@@ -56,7 +54,6 @@ describe('loadConfiguration()', () => {
       https: { key, cert },
       plugins: {
         graphql: { graphiql: 'playground' },
-        peerSignal: { path: peerSignalPath },
         static: { path: staticPath }
       }
     })
@@ -77,7 +74,6 @@ describe('loadConfiguration()', () => {
       },
       plugins: {
         graphql: { graphiql: null },
-        peerSignal: { path: '/ws' },
         static: { path: join('apps', 'web', 'dist') }
       }
     })
@@ -93,7 +89,6 @@ describe('loadConfiguration()', () => {
       https: null,
       plugins: {
         graphql: { graphiql: 'playground' },
-        peerSignal: { path: '/ws' },
         static: { path: join('apps', 'web', 'dist') }
       }
     })

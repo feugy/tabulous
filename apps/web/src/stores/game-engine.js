@@ -122,10 +122,10 @@ export function initEngine({
       }),
 
       // prunes unused peer pointers if needed
-      connected.subscribe(peers => {
-        if (peers) {
+      connected.subscribe(players => {
+        if (players) {
           controlManager.pruneUnusedPeerPointers(
-            peers.map(({ peerId }) => peerId)
+            players.map(({ playerId }) => playerId)
           )
         }
       }),

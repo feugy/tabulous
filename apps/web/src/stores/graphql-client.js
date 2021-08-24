@@ -3,10 +3,10 @@ import {
   defaultExchanges,
   subscriptionExchange
 } from '@urql/core'
-import { from } from 'rxjs'
+import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { SubscriptionClient } from 'subscriptions-transport-ws'
-import { toObservable } from 'wonka'
+import { pipe, subscribe } from 'wonka'
 import { makeLogger } from '../utils'
 
 const logger = makeLogger('graphql')
@@ -46,16 +46,16 @@ export function initGraphQLGlient(player) {
 
 export async function runMutation(query, variables) {
   if (!client) throw new Error('Client is not initialized yet')
-  logger.debug({ query, variables }, 'run graphQL mutation')
+  logger.info({ query, variables }, 'run graphQL mutation')
   const { data } = await client.mutation(query, variables).toPromise()
-  logger.debug({ query, variables, data }, 'receiving graphQL mutation results')
+  logger.info({ query, variables, data }, 'receiving graphQL mutation results')
   const keys = Object.keys(data || {})
   return keys.length !== 1 ? data : data[keys[0]]
 }
 
 export async function runQuery(query, variables, cache = true) {
   if (!client) throw new Error('Client is not initialized yet')
-  logger.debug({ query, variables, cache }, 'run graphQL query')
+  logger.info({ query, variables, cache }, 'run graphQL query')
   const { data } = await client
     .query(
       query,
@@ -63,7 +63,7 @@ export async function runQuery(query, variables, cache = true) {
       cache ? undefined : { requestPolicy: 'network-only' }
     )
     .toPromise()
-  logger.debug(
+  logger.info(
     { query, variables, cache, data },
     'receiving graphQL query results'
   )
@@ -79,8 +79,17 @@ export async function runQuery(query, variables, cache = true) {
  */
 export function runSubscription(subscription, variables) {
   if (!client) throw new Error('Client is not initialized yet')
-  logger.debug({ subscription, variables }, 'starting graphQL subscription')
-  return from(toObservable(client.subscription(subscription, variables))).pipe(
+  return new Observable(observer => {
+    logger.info({ subscription, variables }, 'starting graphQL subscription')
+    const sub = pipe(
+      client.subscription(subscription, variables),
+      subscribe(value => observer.next(value))
+    )
+    return () => {
+      logger.info({ subscription, variables }, 'stopping graphQL subscription')
+      sub.unsubscribe()
+    }
+  }).pipe(
     map(({ data, error }) => {
       if (error) {
         logger.error({ error }, `Error received on subscription`)

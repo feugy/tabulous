@@ -12,7 +12,7 @@ jest.mock('@src/stores/peer-channels', () => {
 
 describe('Discussion store', () => {
   let discussion
-  const player = { id: '123456' }
+  const playerId = '123456'
   const text1 = 'message 1'
   const text2 = 'message 2'
   const text3 = 'message 3'
@@ -32,13 +32,13 @@ describe('Discussion store', () => {
     for (const text of [text1, text2, text3]) {
       peerChannels.lastMessageReceived.next({
         data: { type: 'message', text },
-        from: player
+        playerId
       })
     }
     expect(discussion.serializeThread()).toEqual([
-      { text: text1, playerId: player.id },
-      { text: text2, playerId: player.id },
-      { text: text3, playerId: player.id }
+      { text: text1, playerId },
+      { text: text2, playerId },
+      { text: text3, playerId }
     ])
   })
 
@@ -58,23 +58,23 @@ describe('Discussion store', () => {
     expect(discussion.serializeThread()).toEqual([])
     peerChannels.lastMessageReceived.next({
       data: { type: 'message', text: text1 },
-      from: player
+      playerId
     })
     discussion.sendToThread(text2)
     peerChannels.lastMessageReceived.next({
       data: { type: 'message', text: text3 },
-      from: player
+      playerId
     })
     peerChannels.lastMessageReceived.next({
       data: { type: 'message', text: text4 },
-      from: player
+      playerId
     })
     discussion.sendToThread(text5)
     expect(discussion.serializeThread()).toEqual([
-      { text: text1, playerId: player.id },
+      { text: text1, playerId },
       { text: text2, time: expect.any(Number) },
-      { text: text3, playerId: player.id },
-      { text: text4, playerId: player.id },
+      { text: text3, playerId },
+      { text: text4, playerId },
       { text: text5, time: expect.any(Number) }
     ])
   })
@@ -82,15 +82,13 @@ describe('Discussion store', () => {
   it('loads messages into thread', () => {
     peerChannels.lastMessageReceived.next({
       data: { type: 'message', text: text1 },
-      from: player
+      playerId
     })
-    expect(discussion.serializeThread()).toEqual([
-      { text: text1, playerId: player.id }
-    ])
+    expect(discussion.serializeThread()).toEqual([{ text: text1, playerId }])
     const messages = [
-      { text: text2, playerId: player.id, time: Date.now() - 10 },
-      { text: text3, playerId: player.id, time: Date.now() - 5 },
-      { text: text4, playerId: player.id, time: Date.now() }
+      { text: text2, playerId, time: Date.now() - 10 },
+      { text: text3, playerId, time: Date.now() - 5 },
+      { text: text4, playerId, time: Date.now() }
     ]
     discussion.loadThread(messages)
     expect(discussion.serializeThread()).toEqual(messages)

@@ -11,7 +11,6 @@ const levels = {
   'peer-channels': 'warn',
   rotable: 'warn',
   selection: 'warn',
-  sse: 'warn',
   'scene-loader': 'warn',
   stackable: 'warn',
   target: 'warn'

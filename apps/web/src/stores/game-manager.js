@@ -114,10 +114,10 @@ function takeHostRole(gameId, engine) {
       saveCameras(gameId)
     }),
     // send game data to new peers
-    lastConnectedId.subscribe(peerId => {
+    lastConnectedId.subscribe(playerId => {
       logger.info(
-        { gameId, peerId },
-        `sending game data ${gameId} to peer ${peerId}`
+        { gameId, playerId },
+        `sending game data ${gameId} to peer ${playerId}`
       )
       send(
         {
@@ -126,7 +126,7 @@ function takeHostRole(gameId, engine) {
           messages: serializeThread(),
           cameras
         },
-        peerId
+        playerId
       )
     })
   ]
@@ -202,7 +202,7 @@ export async function loadGame(gameId, engine) {
   const subscriptions = []
 
   logger.info({ gameId }, `entering game ${gameId}`)
-  await openChannels(player)
+  openChannels(player)
   engine.onDisposeObservable.addOnce(() => {
     logger.info(`closing all subscriptions and channels`)
     for (const subscription of subscriptions) {
@@ -241,7 +241,7 @@ export async function loadGame(gameId, engine) {
       )
       logger.info({ peers }, `connecting to other players`)
       for (const peer of peers) {
-        connectWith(peer)
+        connectWith(peer.id)
       }
 
       const gameReceptionTimeout = setTimeout(() => {

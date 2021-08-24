@@ -13,7 +13,6 @@ export async function startServer(config) {
   })
 
   app.register(import('fastify-websocket'), { maxPayload: 1048576 })
-  app.register(import('./plugins/peer-signal.js'), config.plugins.peerSignal)
   app.register(import('./plugins/graphql.js'), config.plugins.graphql)
   app.register(import('./plugins/static.js'), config.plugins.static)
   return app.listen(config.serverUrl)
