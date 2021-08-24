@@ -48,7 +48,7 @@ let skipSharingCamera = false
 let cameras = []
 
 function load(game, engine) {
-  loadScene(engine, engine.scenes[0], game.scene)
+  loadScene(engine, game.scene)
   loadThread(game.messages)
   cameras = game.cameras ?? []
   const playerCameras = cameras
@@ -80,81 +80,59 @@ function saveCameras(gameId) {
 
 function takeHostRole(gameId, engine) {
   logger.info({ gameId }, `taking game host role`)
-  const subscriptions = new Map([
-    [
-      'saveScene',
-      action.pipe(debounceTime(1000)).subscribe(() => {
-        logger.info({ gameId }, `persisting game scene`)
+  return [
+    // save scene
+    action.pipe(debounceTime(1000)).subscribe(() => {
+      logger.info({ gameId }, `persisting game scene`)
+      runMutation(graphQL.saveGame, {
+        game: { id: gameId, scene: serializeScene(engine) }
+      })
+    }),
+    // save discussion thread
+    merge(lastMessageSent, lastMessageReceived)
+      .pipe(
+        filter(({ data }) => data?.type === 'message'),
+        debounceTime(1000)
+      )
+      .subscribe(() => {
+        logger.info({ gameId }, `persisting game thread`)
         runMutation(graphQL.saveGame, {
-          game: { id: gameId, scene: serializeScene(engine.scenes[0]) }
+          game: { id: gameId, messages: serializeThread() }
         })
-      })
-    ],
-    [
-      'saveThread',
-      merge(lastMessageSent, lastMessageReceived)
-        .pipe(
-          filter(({ data }) => data?.type === 'message'),
-          debounceTime(1000)
-        )
-        .subscribe(() => {
-          logger.info({ gameId }, `persisting game thread`)
-          runMutation(graphQL.saveGame, {
-            game: { id: gameId, messages: serializeThread() }
-          })
-        })
-    ],
-    [
-      'savePeerCameras',
-      lastMessageReceived
-        .pipe(filter(({ data }) => data?.type === 'saveCameras'))
-        .subscribe(({ data }) => {
-          mergeCameras(data)
-          saveCameras(gameId)
-        })
-    ],
-    [
-      'saveOwnCameras',
-      cameraSaves.subscribe(cameras => {
-        if (skipSharingCamera) {
-          skipSharingCamera = false
-          return
-        }
-        mergeCameras({ playerId: player.id, cameras })
+      }),
+    // save camera positions from peers
+    lastMessageReceived
+      .pipe(filter(({ data }) => data?.type === 'saveCameras'))
+      .subscribe(({ data }) => {
+        mergeCameras(data)
         saveCameras(gameId)
-      })
-    ],
-    [
-      'sendGame',
-      lastConnectedId.subscribe(peerId => {
-        logger.info(
-          { gameId, peerId },
-          `sending game data ${gameId} to peer ${peerId}`
-        )
-        send(
-          {
-            gameId,
-            scene: serializeScene(engine.scenes[0]),
-            messages: serializeThread(),
-            cameras
-          },
-          peerId
-        )
-      })
-    ]
-  ])
-  scheduleCleanup(subscriptions, engine)
-}
-
-function scheduleCleanup(subscriptions, engine) {
-  engine.onDisposeObservable.addOnce(() => {
-    logger.info(`closing all subscriptions and channels`)
-    for (const [, subscription] of subscriptions) {
-      subscription.unsubscribe()
-    }
-    subscriptions.clear()
-    closeChannels()
-  })
+      }),
+    // save player own camera positions
+    cameraSaves.subscribe(cameras => {
+      if (skipSharingCamera) {
+        skipSharingCamera = false
+        return
+      }
+      mergeCameras({ playerId: player.id, cameras })
+      saveCameras(gameId)
+    }),
+    // send game data to new peers
+    lastConnectedId.subscribe(peerId => {
+      logger.info(
+        { gameId, peerId },
+        `sending game data ${gameId} to peer ${peerId}`
+      )
+      send(
+        {
+          gameId,
+          scene: serializeScene(engine),
+          messages: serializeThread(),
+          cameras
+        },
+        peerId
+      )
+    })
+  ]
 }
 
 /**
@@ -220,16 +198,41 @@ export async function loadGame(gameId, engine) {
     )
     return
   }
+  const subscriptions = []
+
   logger.info({ gameId }, `entering game ${gameId}`)
   await openChannels(player)
+  engine.onDisposeObservable.addOnce(() => {
+    logger.info(`closing all subscriptions and channels`)
+    for (const subscription of subscriptions) {
+      subscription.unsubscribe()
+    }
+    closeChannels()
+  })
 
   let game = await runQuery(graphQL.loadGame, { gameId }, false)
   currentGame$.next(game)
 
+  subscriptions.push(
+    // share camera positions with others
+    cameraSaves.subscribe(cameras => {
+      if (skipSharingCamera) {
+        skipSharingCamera = false
+        return
+      }
+      logger.info({ cameras }, `sharing camera saves with peers`)
+      send({ type: 'saveCameras', cameras, playerId: player.id })
+    }),
+    // receive camera positions from others
+    lastMessageReceived
+      .pipe(filter(({ data }) => data?.type === 'saveCameras'))
+      .subscribe(({ data }) => mergeCameras(data))
+  )
+
   if (game.players.every(({ id, playing }) => id === player.id || !playing)) {
     // is the only playing player: take the host role
     load(game, engine)
-    takeHostRole(gameId, engine)
+    subscriptions.push(...takeHostRole(gameId, engine))
   } else {
     return new Promise((resolve, reject) => {
       const peers = game.players.filter(
@@ -248,51 +251,29 @@ export async function loadGame(gameId, engine) {
         reject(error)
       }, gameReceptionDelay)
 
-      lastMessageReceived
+      const once = lastMessageReceived
         .pipe(filter(({ data }) => data?.gameId && data?.scene))
         .subscribe(({ data }) => {
           clearTimeout(gameReceptionTimeout)
+          once.unsubscribe()
           logger.info({ game }, `receiving game data (${data.gameId})`)
           load(data, engine)
 
-          const subscriptions = new Map([
-            [
-              'shareCameras',
-              cameraSaves.subscribe(cameras => {
-                if (skipSharingCamera) {
-                  skipSharingCamera = false
-                  return
-                }
-                logger.info({ cameras }, `sharing camera saves with peers`)
-                send({ type: 'saveCameras', cameras, playerId: player.id })
+          // elect new host
+          subscriptions.push(
+            lastDisconnectedId.subscribe(async () => {
+              const { players } = await runQuery(graphQL.loadGamePlayers, {
+                gameId
               })
-            ],
-            [
-              'receiveCameras',
-              lastMessageReceived
-                .pipe(filter(({ data }) => data?.type === 'saveCameras'))
-                .subscribe(({ data }) => mergeCameras(data))
-            ],
-            [
-              'electHost',
-              lastDisconnectedId.subscribe(async () => {
-                const { players } = await runQuery(graphQL.loadGamePlayers, {
-                  gameId
-                })
-                const nextHost = players.find(({ playing }) => playing)
-                if (nextHost?.id === player.id) {
-                  for (const [, subscription] of subscriptions) {
-                    subscription.unsubscribe()
-                  }
-                  subscriptions.clear()
-                  takeHostRole(gameId, engine)
-                }
-              })
-            ]
-          ])
-          scheduleCleanup(subscriptions, engine)
+              const nextHost = players.find(({ playing }) => playing)
+              if (nextHost?.id === player.id) {
+                takeHostRole(gameId, engine)
+              }
+            })
+          )
           resolve()
         })
+      subscriptions.push(once)
     })
   }
 }

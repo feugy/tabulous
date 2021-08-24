@@ -4,13 +4,14 @@ import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('scene-loader')
 
-export function serializeScene(scene) {
+export function serializeScene(engine) {
+  if (!engine.scenes.length) return
   const data = {
     cards: [],
     roundTokens: [],
     roundedTiles: []
   }
-  for (const mesh of scene.meshes) {
+  for (const mesh of engine.scenes[0].meshes) {
     if (mesh.name === 'card') {
       data.cards.push(mesh.metadata.serialize())
     } else if (mesh.name === 'round-token') {
@@ -23,7 +24,9 @@ export function serializeScene(scene) {
   return data
 }
 
-export function loadScene(engine, scene, data) {
+export function loadScene(engine, data) {
+  if (!engine.scenes.length) return
+  const [scene] = engine.scenes
   engine.displayLoadingUI()
   scene.onDataLoadedObservable.addOnce(() => engine.hideLoadingUI())
   const disposed = new Array(scene.meshes.length)
