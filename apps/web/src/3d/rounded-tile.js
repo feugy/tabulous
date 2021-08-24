@@ -17,6 +17,7 @@ import {
   StackBehavior
 } from './behaviors'
 import { controlManager } from './managers'
+import { adaptTexture, attachMaterialError } from './utils'
 
 const side = new Vector4(0.2, 0, 0.3, 1)
 
@@ -129,9 +130,10 @@ export function createRoundedTile({
   tileMesh.dispose()
 
   tile.material = new StandardMaterial('faces')
-  tile.material.diffuseTexture = new Texture(texture)
+  tile.material.diffuseTexture = new Texture(adaptTexture(texture))
   tile.material.diffuseTexture.hasAlpha = true
   tile.material.freeze()
+  attachMaterialError(tile.material)
 
   tile.receiveShadows = true
   tile.setAbsolutePosition(new Vector3(x, y + depth * 0.5, z))

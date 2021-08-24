@@ -56,6 +56,7 @@
   }
 
   .interaction,
+  .overlay,
   canvas {
     @apply absolute w-full h-full top-0 left-0 z-0;
     touch-action: none;
@@ -86,7 +87,7 @@
   }
 
   .overlay {
-    @apply absolute w-full h-full top-0 left-0 flex items-center justify-center z-20;
+    @apply flex items-center justify-center z-10;
   }
 </style>
 

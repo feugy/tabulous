@@ -1,8 +1,21 @@
 # TODO
 
+Partie avec Loïc:
+
+- button to save a new camera position should be grayed out when the current position is already saved
+- updating an saved camera position is not intuitive
+- crash when reordering stack
+  ```js
+  async reorder(ids) {
+    // ...
+    for (const mesh of stack) {
+      mesh.isPickable = false // TypeError: mesh is undefined
+  ```
+
 ## Refactor
 
 - behaviors may not care about active selection (game-interaction/game-engine should)
+- use graphQL subscriptions instead of SSE
 - server logging (warning on invalid descriptors)
 - enable [Babylon.js treeshaking](https://doc.babylonjs.com/divingDeeper/developWithBjs/treeShaking)
 - all manager managing a collection of behaviors should check their capabilities
@@ -13,68 +26,27 @@
 ## Single player
 
 - refresh game list on game deletion
-- boards
 - player's hand
 - stack actions:
   - draw multiple cards (either in hand, or in front of them)
   - distribute multiple cards to players (either in their hand, or in front of them)
+- boards
 - parametrize and serialize UVs
 - keyboard
+- visual hint on long operations
 - hide/collapse discussion thread
 - hide/collapse videos and avatars
 
 ## Multi player
 
 - on vite reload, all players could become hosts or peers simultaneously
-- stop trying to connect while leaving game room
 - invite players by name and id
 - search players by name
 - indicates when remote stream is muted/stopped
 
 # Known issues
 
-- all textures but card ones are invisible on Huawei. May be [this](https://forum.babylonjs.com/t/engine-crashes-on-android-devices/23176).
-  > BJS - [23:43:20]: Unable to compile effect:
-  > BJS - [23:43:20]: Uniforms: world, view, viewProjection, vEyePosition, vLightsType, vAmbientColor, vDiffuseColor, vSpecularColor, vEmissiveColor, visibility, vFogInfos, vFogColor, pointSize, vDiffuseInfos, vAmbientInfos, vOpacityInfos, vReflectionInfos, vEmissiveInfos, vSpecularInfos, vBumpInfos, vLightmapInfos, vRefractionInfos, mBones, vClipPlane, vClipPlane2, vClipPlane3, vClipPlane4, vClipPlane5, vClipPlane6, diffuseMatrix, ambientMatrix, opacityMatrix, reflectionMatrix, emissiveMatrix, specularMatrix, bumpMatrix, normalMatrix, lightmapMatrix, refractionMatrix, diffuseLeftColor, diffuseRightColor, opacityParts, reflectionLeftColor, reflectionRightColor, emissiveLeftColor, emissiveRightColor, refractionLeftColor, refractionRightColor, vReflectionPosition, vReflectionSize, vRefractionPosition, vRefractionSize, logarithmicDepthConstant, vTangentSpaceParams, alphaCutOff, boneTextureWidth, morphTargetTextureInfo, morphTargetTextureIndices, vDetailInfos, detailMatrix, previousWorld, previousViewProjection, vLightData0, vLightDiffuse0, vLightSpecular0, vLightDirection0, vLightFalloff0, vLightGround0, lightMatrix0, shadowsInfo0, depthValues0, viewFrustumZ0, cascadeBlendFactor0, lightSizeUVCorrection0, depthCorrection0, penumbraDarkness0, frustumLengths0, diffuseSampler, ambientSampler, opacitySampler, reflectionCubeSampler, reflection2DSampler, emissiveSampler, specularSampler, bumpSampler, lightmapSampler, refractionCubeSampler, refraction2DSampler, boneSampler, morphTargets, detailSampler, shadowSampler0, depthSampler0
-  > BJS - [23:43:20]: Attributes: position, normal
-  > BJS - [23:43:20]: Defines:
-
-#define DIFFUSEDIRECTUV 0
-#define DETAILDIRECTUV 0
-#define DETAIL_NORMALBLENDMETHOD 0
-#define AMBIENTDIRECTUV 0
-#define OPACITYDIRECTUV 0
-#define EMISSIVEDIRECTUV 0
-#define SPECULARDIRECTUV 0
-#define BUMPDIRECTUV 0
-#define NORMAL
-#define NUM_BONE_INFLUENCERS 0
-#define BonesPerMesh 0
-#define LIGHTMAPDIRECTUV 0
-#define SHADOWFLOAT
-#define NUM_MORPH_INFLUENCERS 0
-#define ALPHABLEND
-#define PREPASS_IRRADIANCE_INDEX -1
-#define PREPASS_ALBEDO_INDEX -1
-#define PREPASS_DEPTH_INDEX -1
-#define PREPASS_NORMAL_INDEX -1
-#define PREPASS_POSITION_INDEX -1
-#define PREPASS_VELOCITY_INDEX -1
-#define PREPASS_REFLECTIVITY_INDEX -1
-#define SCENE_MRT_COUNT 0
-#define VIGNETTEBLENDMODEMULTIPLY
-#define SAMPLER3DGREENDEPTH
-#define SAMPLER3DBGRMAP
-#define LIGHT0
-#define DIRLIGHT0
-#define SHADOW0
-#define SHADOWPCF0
-#define SHADOWS
-
-- all textures are black on Xperia tablet [issue](https://forum.babylonjs.com/t/babylonjs-is-running-webgl-1-0-instead-of-2-0/2992/6)
-- selection hint does not consider camera angle
-- flip stacked items only flip individual card: it does not change the ordering
-- flipping or rotating item does not change vertical position: items above it will still be above it at the end
+- flip stacked items only flip individual card: it should also invert the ordering (flip the whole stack)
 - moving items bellow other does not apply gravity to them
 
 # Ideas
@@ -93,10 +65,6 @@
 - top left, in a column, player avatars/videos, with number of tokens/cards in hand, and mute indicator & command
 - bottom left, chat window
 - bottom, expansible area showing player's hand
-
-## Joining a game:
-
-- any player can mute, or kick, another player (really?)
 
 # Interaction model
 
@@ -239,16 +207,19 @@ Sizes:
 ```shell
 folder=apps/web/public/images/splendor/1; \
 size=372x260; \
-for file in $folder/*.png; do \
+for file in $folder/!(*.gl1.png|!(*.png)); do \
   outFile=${file/.png/.out.png}; \
   convert -flop -strip -resize $size\! $file $outFile; \
-  toktx --uastc 4 ${file/.png/.ktx2} $outFile; \
+  gl1File=${file/.png/.gl1.png}; \
+  toktx --uastc 2 ${file/.png/.ktx2} $outFile; \
+  convert -flop -rotate 180 $outFile $gl1File; \
   rm $outFile; \
 done
 ```
 
 1. flip image horizontally (front face on the left, back face on the right, mirrored), strip png ICC profile (ktx2 does not support them) and resize
 2. convert to ktx2
+3. make a png equivalent for WebGL1 engines, rotated so it match meshes's UV
 
 There is no built-in way for the remote side of an WebRTC connection to know that video or audio was disabled.
 The mute/unmute events are meant for network issues. Stopping a track is definitive. Adding/removing track from stream only works locally (or would trigger re-negociation)

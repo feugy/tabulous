@@ -1,4 +1,12 @@
-import { Color3, MeshBuilder, Vector3 } from '@babylonjs/core'
+import {
+  Axis,
+  Color3,
+  Mesh,
+  MeshBuilder,
+  Quaternion,
+  Space,
+  Vector3
+} from '@babylonjs/core'
 import { isContaining, screenToGround } from '../utils'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
@@ -46,9 +54,9 @@ class SelectionManager {
       screenToGround(scene, start),
       screenToGround(scene, { x: start.x - width, y: start.y }),
       screenToGround(scene, end),
-      screenToGround(scene, { x: start.x, y: start.y - height }),
-      screenToGround(scene, start)
+      screenToGround(scene, { x: start.x, y: start.y - height })
     ]
+    points.push(points[0].clone())
 
     this.box = MeshBuilder.CreateLines('selection-hint', {
       points,
@@ -59,24 +67,25 @@ class SelectionManager {
     this.select = () => {
       if (!this.box) return
       this.box.dispose()
-
-      const startPoint = screenToGround(scene, start)
-      const endPoint = screenToGround(scene, end)
-      const width = Math.abs(startPoint.x - endPoint.x)
-      const depth = Math.abs(startPoint.z - endPoint.z)
-      const box = MeshBuilder.CreateBox('selection-box', {
-        width,
-        height: 150,
-        depth
+      // extrude a polygon from the lines, but since extrusion goes along Z axis,
+      // rotate the points first
+      const position = screenToGround(scene, {
+        x: start.x + (end.x - start.x) / 2,
+        y: start.y + (end.y - start.y) / 2
       })
-      box.setAbsolutePosition(
-        new Vector3(
-          Math.min(startPoint.x, endPoint.x) + width / 2,
-          // allows to select items lying on the floor whith very low camera angle
-          -1,
-          Math.min(startPoint.z, endPoint.z) + depth / 2
-        )
-      )
+      const rotation = Quaternion.RotationAxis(Axis.X, Math.PI / 2)
+      for (const point of points) {
+        point.rotateByQuaternionAroundPointToRef(rotation, position, point)
+      }
+      const box = MeshBuilder.ExtrudeShape('selection-box', {
+        shape: points,
+        path: [Vector3.Zero(), new Vector3(0, 0, 20)],
+        sideOrientation: Mesh.DOUBLESIDE
+      })
+      // and finally rotate the extruded polygon back
+      box.setPivotPoint(position, Space.WORLD)
+      box.rotate(Axis.X, Math.PI / -2)
+      box.position.y = -5
       box.computeWorldMatrix()
       box.visibility = 0
       box.isPickable = false

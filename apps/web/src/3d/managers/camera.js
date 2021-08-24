@@ -1,6 +1,7 @@
 import {
   Animation,
   ArcRotateCamera,
+  Matrix,
   Observable,
   Vector3
 } from '@babylonjs/core'
@@ -196,16 +197,24 @@ class CameraManager {
    * Coordinates outside the table will be ignored.
    * Ends with the animation.
    * @async
-   * @param {number} deltaX - difference, in screen position to move camera along the X axis.
-   * @param {number} deltaZ - difference, in screen position to move camera along the Z axis.
+   * @param {number} deltaX - amount of 3D units to horizontally move camera.
+   * @param {number} deltaY - amount of 3D units to vertically move camera.
    * @param {number} [duration=300] - animation duration, in ms
    */
-  async pan(deltaX, deltaZ, duration = 300) {
+  async pan(deltaX, deltaY, duration = 300) {
     if (!this.camera) return
 
-    const target = this.camera[pan.targetProperty].add(
-      new Vector3(deltaX, 0, deltaZ)
+    const direction = Vector3.Zero()
+
+    Vector3.TransformNormalToRef(
+      new Vector3(deltaX, deltaY, 0),
+      Matrix.Invert(this.camera.getViewMatrix()),
+      direction
     )
+    const target = this.camera[pan.targetProperty].add(
+      new Vector3(direction.x, 0, direction.z)
+    )
+
     if (isPositionAboveTable(this.camera.getScene(), target)) {
       await animate(this.camera, { target }, duration)
     }

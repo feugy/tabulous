@@ -22,6 +22,7 @@ export function createLight() {
 
   const shadowGenerator = new ShadowGenerator(1024, light)
   shadowGenerator.usePercentageCloserFiltering = true
+
   light
     .getScene()
     .onNewMeshAddedObservable.add(mesh =>
