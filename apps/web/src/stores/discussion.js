@@ -14,12 +14,10 @@ const thread$ = new BehaviorSubject([])
 merge(lastMessageSent, lastMessageReceived, reset$)
   .pipe(filter(({ data } = {}) => data?.type === 'message'))
   .subscribe({
-    next: ({ data, from }) => {
+    next: ({ data, playerId }) => {
       const messages = thread$.getValue()
       thread$.next(
-        data.text === resetSymbol
-          ? []
-          : [...messages, { ...data, playerId: from?.id }]
+        data.text === resetSymbol ? [] : [...messages, { ...data, playerId }]
       )
     }
   })

@@ -15,7 +15,6 @@ Partie avec Loïc:
 ## Refactor
 
 - behaviors may not care about active selection (game-interaction/game-engine should)
-- use graphQL subscriptions instead of SSE
 - server logging (warning on invalid descriptors)
 - enable [Babylon.js treeshaking](https://doc.babylonjs.com/divingDeeper/developWithBjs/treeShaking)
 - all manager managing a collection of behaviors should check their capabilities
@@ -25,7 +24,6 @@ Partie avec Loïc:
 
 ## Single player
 
-- refresh game list on game deletion
 - player's hand
 - stack actions:
   - draw multiple cards (either in hand, or in front of them)
@@ -176,7 +174,7 @@ Here there are, copied from `certbot/live/tabulous.fr/` to `keys/\` folder.
 Physics engine aren't great: they are all pretty deprecated. [Cannon-es can not be used yet](https://github.com/BabylonJS/Babylon.js/issues/9810).
 When stacked, card are always bouncing.
 
-Polygon extrusion does not support path (for curves like rounded corners), and the resulting mesh is not vertically (Y axis) centered
+Polygon extrusion does not support path (for curves like rounded corners), and the resulting mesh is not vertically (Y axis) centered.
 
 `@storybook/addon-svelte-csf` doesn't work yet with storybook's webpack5 builder. What a pity...
 
@@ -187,15 +185,25 @@ Besides, Jest built-in support for modules [is still in progress](https://github
 Chai is a good replacement for Jest's expect, and using mocha instead of Jasmine is a no-brainer.
 However, two blockers appeared: Sinon can not mock entire dependencies (maybe an equivvalent rewire would), making mocking extremely hard, and @web/test-runner runs mocha in the browser, preventing to have an global setup script (mocha's --require option)
 
+Finally, using vite solves all the above, and enables Jest again.
+Testing server code on Node requires `NODE_OPTIONS=--experimental-vm-modules` while running jest. What a bummer.
+
+To make WebRTC work in real world scenario, it is paramount to share **every signal received**.
+One must not stop listening to signal event after connection is established, and one muse not handle only `offer` and `answer` types.
+This enables: trickle, further media addition, peers with no media while others have...
+
 Removing server to only allow peer communication is really hard:
 
-- a server is needed for peers to exchange webRTC offers and answers, when connecting for the first time, and when reconnecting
+- a server is needed for peers to exchange webRTC offers and answers (signaling server)
 - when host player is offline, a server is needed to give the new host all the required data
+- we might need a TURN server to relay video/data streams in some situations
 
-GraphQL subscriptions are good replacement to WebSockets for implementing the WebRTC signaling server.
-However, for scalabily and resilliency reasons, I prefer keeping the signaling server independant from the main server.
+I started with SSE to push game invites to players, and Websocket to keep the signaling server independant from the app logic, but it's too many sockets for the same user.
+GraphQL subscriptions over WS are perfect to implement both usecases..
 
 For decent in-game performance, textures must be GPU-compressed to KTX2 container format. This will skip CPU uncompressing jpeg/png content before passing it to the GPU.
+However, it's not broadly supported on WebGL 1 platform, so I kept the png files as fallback.
+
 Some GPU also require [dimensions to be multiple of 4](https://forum.babylonjs.com/t/non-displayable-image-after-converting-png-with-alpha-to-ktx2-webgl-warning-compressedteximage-unexpected-error-from-driver/16471)
 
 Sizes:

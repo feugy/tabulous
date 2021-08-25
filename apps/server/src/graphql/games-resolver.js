@@ -1,13 +1,15 @@
+import { filter } from 'rxjs/operators'
+import { isAuthenticated } from './utils.js'
 import {
   createGame,
   deleteGame,
   invite,
+  gameListsUpdate,
   getPlayersById,
-  listGames,
   loadGame,
-  saveGame
+  saveGame,
+  listGames
 } from '../services/index.js'
-import { isAuthenticated } from './utils.js'
 
 export default {
   loaders: {
@@ -30,26 +32,43 @@ export default {
   },
 
   Query: {
-    loadGame: isAuthenticated(async (obj, { gameId }, { player }) =>
+    loadGame: isAuthenticated((obj, { gameId }, { player }) =>
       loadGame(gameId, player.id)
-    ),
-    listGames: isAuthenticated(async (obj, args, { player }) =>
-      listGames(player.id)
     )
   },
 
   Mutation: {
-    createGame: isAuthenticated(async (obj, { kind }, { player }) =>
+    createGame: isAuthenticated((obj, { kind }, { player }) =>
       createGame(kind, player.id)
     ),
-    saveGame: isAuthenticated(async (obj, { game }, { player }) =>
+    saveGame: isAuthenticated((obj, { game }, { player }) =>
       saveGame(game, player.id)
     ),
-    deleteGame: isAuthenticated(async (obj, { gameId }, { player }) =>
+    deleteGame: isAuthenticated((obj, { gameId }, { player }) =>
       deleteGame(gameId, player.id)
     ),
-    invite: isAuthenticated(async (obj, { gameId, playerId }, { player }) =>
+    invite: isAuthenticated((obj, { gameId, playerId }, { player }) =>
       invite(gameId, playerId, player.id)
     )
+  },
+
+  Subscription: {
+    listGames: {
+      subscribe: isAuthenticated(async (obj, args, { pubsub, player }) => {
+        const topic = `listGames-${player.id}`
+        const subscription = gameListsUpdate
+          .pipe(filter(({ playerId }) => playerId === player.id))
+          .subscribe(({ games }) =>
+            pubsub.publish({ topic, payload: { listGames: games } })
+          )
+
+        const queue = await pubsub.subscribe(topic)
+        queue.once('close', () => subscription.unsubscribe())
+        listGames(player.id).then(games =>
+          pubsub.publish({ topic, payload: { listGames: games } })
+        )
+        return queue
+      })
+    }
   }
 }

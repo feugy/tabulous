@@ -18,6 +18,12 @@ async function registerGraphQL(app, opts) {
     schema,
     resolvers,
     loaders,
+    subscription: {
+      async onConnect({ payload }) {
+        const player = await getAuthenticatedPlayer(payload?.bearer)
+        return player ? { player } : null
+      }
+    },
     context: async request => ({
       player: await getAuthenticatedPlayer(request.headers.authorization)
     })

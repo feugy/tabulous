@@ -130,14 +130,14 @@ class ControlManager {
    * Creates this object if it does not exists yet.
    * The peer pointer depth (Y axis) is always ignored and forced to 0.5.
    * @param {object} params - pointer parameters, including:
-   * @param {string} params.peer - peer id owning this pointer.
+   * @param {string} params.playerId - id of the pointer owner.
    * @param {number[]} params.pointer - Vector3 components describing the pointer position in 3D engine.
    */
-  movePeerPointer({ peer, pointer }) {
-    let mesh = this.peerPointers.get(peer)
+  movePeerPointer({ playerId, pointer }) {
+    let mesh = this.peerPointers.get(playerId)
     if (!mesh) {
-      mesh = createPeerPointer({ id: peer })
-      this.peerPointers.set(peer, mesh)
+      mesh = createPeerPointer({ id: playerId })
+      this.peerPointers.set(playerId, mesh)
     }
     mesh.setAbsolutePosition(new Vector3(pointer[0], 0.5, pointer[2]))
   }
@@ -147,10 +147,10 @@ class ControlManager {
    * @param {string[]} connectedPeerIds - list of connected peer ids.
    */
   pruneUnusedPeerPointers(connectedPeerIds) {
-    for (const [id, pointer] of this.peerPointers) {
-      if (!connectedPeerIds.includes(id)) {
+    for (const [playerId, pointer] of this.peerPointers) {
+      if (!connectedPeerIds.includes(playerId)) {
         pointer.dispose()
-        this.peerPointers.delete(id)
+        this.peerPointers.delete(playerId)
       }
     }
   }

@@ -1,16 +1,17 @@
 import 'webrtc-adapter'
 import Peer from 'simple-peer-light'
-import WebSocket from 'reconnecting-websocket'
 import { BehaviorSubject, Subject } from 'rxjs'
 import { filter, scan } from 'rxjs/operators'
+import { runMutation, runSubscription } from './graphql-client'
+import * as graphQL from '../graphql'
 import { makeLogger } from '../utils'
 
 const logger = makeLogger('peer-channels')
 
-let socket
+let signalSubscription
 let current
 let messageId = 1
-const connectDuration = 10e3
+const connectDuration = 20e3
 const channels = new Map()
 const lastMessageSent$ = new Subject()
 const lastMessageReceived$ = new Subject()
@@ -21,17 +22,18 @@ const lastDisconnectedId$ = new Subject()
 
 /**
  * @typedef {object} PeerPlayer
- * @property {object} player - player object
+ * @property {string} playerId - player id
  * @property {stream} stream? - video stream from that player
  */
 
 function refreshConnected() {
+  const peers = [...channels.values()].filter(({ established }) => established)
   connected$.next(
-    channels.size > 0
-      ? [current, ...channels.values()].map(({ player, stream }) => ({
-          player,
-          stream
-        }))
+    peers.length > 0
+      ? [
+          { playerId: current.player.id, stream: current.stream },
+          ...peers
+        ].map(({ playerId, stream }) => ({ playerId, stream }))
       : []
   )
 }
@@ -45,10 +47,6 @@ function unwire(id) {
     detachLocalMedia()
   }
   lastDisconnectedId$.next(id)
-}
-
-function sendThroughSocket(message) {
-  socket.send(JSON.stringify(message))
 }
 
 unorderedMessages$
@@ -81,109 +79,119 @@ unorderedMessages$
     unorderedMessages$.next(null)
   })
 
-async function createPeer({ signal, from, to }) {
+async function createPeer(playerId, signal) {
   return new Promise((resolve, reject) => {
     const peer = new Peer({
       initiator: signal === undefined,
       stream: current.stream,
-      trickle: false, // true does not work at all on localhost (FF prints turn/stun warnings after answer)
+      trickle: true, // true does not work at all
       config: {
         iceServers: [{ urls: 'stun:turn2.l.google.com' }]
       }
     })
-    logger.debug({ peer }, `peer created`)
-    channels.set(to.id, {
-      peer,
-      lastMessageId: 0,
-      player: to,
-      established: false
-    })
-    let connectTimeout = 0
-
-    if (signal) {
-      peer.signal(signal)
+    peer._debug = function (...args) {
+      // simple-peer leverages console string substitution
+      return logger.debug(...args, { peer: peer._id })
     }
 
+    logger.debug({ peer }, `peer created`)
+    channels.set(playerId, {
+      peer,
+      lastMessageId: 0,
+      playerId,
+      established: false
+    })
+
+    const connectTimeout = setTimeout(() => {
+      const error = new Error(
+        `Failed to establish connection after ${Math.floor(
+          connectDuration / 1000
+        )}`
+      )
+      logger.error(error.message)
+      unwire(playerId)
+      reject(error)
+    }, connectDuration)
+
+    peer.on('error', error =>
+      logger.warn(
+        { peer, error },
+        `peer ${playerId} encounter an error: ${error.message}`
+      )
+    )
+
+    peer.on('close', () => {
+      clearTimeout(connectTimeout)
+      logger.info({ peer }, `connection to ${playerId} closed`)
+      unwire(playerId)
+    })
+
     peer.on('stream', stream => {
-      logger.debug({ peer }, `receiving stream from ${to.id}`)
-      channels.get(to.id).stream = stream
+      logger.debug({ peer }, `receiving stream from ${playerId}`)
+      channels.get(playerId).stream = stream
       refreshConnected()
     })
 
     peer.on('signal', signal => {
       const type = signal?.type
-      if (type === 'offer' || type === 'answer') {
-        logger.debug(
-          { peer, signal },
-          `${signal.type} ready, sharing with server`
+      logger.debug(
+        { peer, signal },
+        `${signal.type} ready, sharing with server`
+      )
+      runMutation(graphQL.sendSignal, {
+        signal: { type, to: playerId, signal: JSON.stringify(signal) }
+      })
+    })
+
+    peer.on('data', stringData => {
+      const data = JSON.parse(stringData)
+      logger.debug({ data, peer }, `data from ${playerId}`)
+
+      const { lastMessageId } = channels.get(playerId)
+      if (data.messageId !== lastMessageId + 1 && lastMessageId > 0) {
+        logger.error(
+          `Invalid message ids: received ${data.messageId}, expecting: ${lastMessageId}`
         )
-        sendThroughSocket({ type, to, from, signal })
-        connectTimeout = setTimeout(() => {
-          const error = new Error(
-            `Failed to establish connection after ${Math.floor(
-              connectDuration / 1000
-            )}`
-          )
-          logger.error(error.message)
-          unwire(to.id)
-          reject(error)
-        }, connectDuration)
+        unorderedMessages$.next({ data, playerId })
+      } else {
+        lastMessageReceived$.next({ data, playerId })
+      }
+      // stores higher last only, so unorderedMessage could get lower ones
+      if (data.messageId > lastMessageId) {
+        channels.get(playerId).lastMessageId = data.messageId
       }
     })
 
     peer.on('connect', () => {
       clearTimeout(connectTimeout)
-      logger.info({ peers: channels }, `connection established with ${to.id}`)
-
-      peer.on('error', error =>
-        logger.warn(
-          { peer, error },
-          `peer ${to.id} encounter an error: ${error.message}`
-        )
+      logger.info(
+        { peers: channels },
+        `connection established with ${playerId}`
       )
-
-      peer.on('data', stringData => {
-        const data = JSON.parse(stringData)
-        logger.debug({ data, peer }, `data from ${to.id}`)
-
-        const { lastMessageId } = channels.get(to.id)
-        if (data.messageId !== lastMessageId + 1 && lastMessageId > 0) {
-          logger.error(
-            `Invalid message ids: received ${data.messageId}, expecting: ${lastMessageId}`
-          )
-          unorderedMessages$.next({ data, from: to })
-        } else {
-          lastMessageReceived$.next({ data, from: to })
-        }
-        // stores higher last only, so unorderedMessage could get lower ones
-        if (data.messageId > lastMessageId) {
-          channels.get(to.id).lastMessageId = data.messageId
-        }
-      })
-
-      peer.on('close', () => {
-        logger.info({ peer }, `connection to ${to.id} closed`)
-        unwire(to.id)
-      })
-
-      channels.get(to.id).established = true
+      channels.get(playerId).established = true
       refreshConnected()
-      lastConnectedId$.next(to.id)
+      lastConnectedId$.next(playerId)
       resolve(peer)
     })
+
+    if (signal) {
+      peer.signal(signal)
+    }
   })
 }
 
 async function attachLocalMedia() {
   if (!current || current.stream) return
-  logger.info(`attaching local media to current peer`)
   if (navigator.mediaDevices) {
+    logger.info(`attaching local media to current peer`)
     try {
       current.stream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true
       })
+      logger.debug(`media successfully attached`)
     } catch (error) {
+      current.stream = null
       logger.warn({ error }, `Failed to access media devices: ${error.message}`)
     }
   }
@@ -211,7 +219,8 @@ export const lastMessageSent = lastMessageSent$.asObservable()
 export const lastMessageReceived = lastMessageReceived$.asObservable()
 
 /**
- * Emits an array of currently connected player descriptors
+ * Emits an array of currently connected player descriptors.
+ * If current player is single, the array will be empty, otherwise it always comes first.
  * @type {Observable<[PeerPlayer]>}
  */
 export const connected = connected$.asObservable()
@@ -231,85 +240,60 @@ export const lastDisconnectedId = lastDisconnectedId$.asObservable()
 /**
  * Configures communication channels in order to honor other players' connection requests
  * @async
- * @param {object} player - current player
- * @param {object?} stream - media stream object returned by getUserMedia()
+ * @param {object} player - current player // TODO
  */
 export async function openChannels(player) {
   current = { player }
   logger.info({ player }, 'initializing peer communication')
 
-  const ws = new WebSocket(
-    `${location.origin.replace('http', 'ws')}/ws?bearer=${player.id}`
-  )
-  return new Promise((resolve, reject) => {
-    ws.onopen = () => {
-      ws.onopen = undefined
-      logger.debug({ player }, 'WebSocket connected')
-      socket = ws
-      socket.addEventListener('message', async ({ data: rawData }) => {
-        try {
-          const data = JSON.parse(rawData)
-          const type = data?.signal?.type
-          if (type === 'offer') {
-            logger.debug(data, `receiving offer from server, create peer`)
-            const { from, to, signal } = data
-            const channel = channels.get(from?.id)
-            if (channel) {
-              // existing peer negociation
-              channel.peer.signal(signal)
-            } else {
-              // new peer joining
-              await attachLocalMedia()
-              createPeer({ ...data, from: to, to: from })
-            }
-          } else if (type === 'answer') {
-            logger.debug(
-              data,
-              `receiving answer from server, completing connection`
-            )
-            const { from, signal } = data
-            const channel = channels.get(from?.id)
-            if (channel) {
-              channel.peer.signal(signal)
-            } else {
-              logger.warn(
-                { data, channels },
-                `no peer found for answer from ${from?.id}`
-              )
-            }
-          }
-        } catch (error) {
+  signalSubscription = runSubscription(graphQL.awaitSignal).subscribe(
+    async ({ from, signal, type }) => {
+      const channel = channels.get(from)
+      if (type === 'offer') {
+        logger.info(
+          { from, signal },
+          `receiving offer from server, create peer`
+        )
+      } else if (type === 'answer') {
+        logger.info(
+          { from, signal },
+          `receiving answer from server, completing connection`
+        )
+      }
+      if (channel) {
+        // handshake or negociation
+        channel.peer.signal(signal)
+      } else {
+        if (type === 'offer') {
+          // new peer joining
+          await attachLocalMedia()
+          createPeer(from, signal)
+        } else {
           logger.warn(
-            { error, rawData },
-            `failed to process data from signaling server`
+            { from, type, signal, channels },
+            `no peer found for signal from ${from}`
           )
         }
-      })
-      resolve()
+      }
     }
-
-    ws.onerror = error => {
-      ws.onerror = undefined
-      reject(error)
-    }
-  })
+  )
 }
 
 /**
  * Connects with another player, asking to attach media if necessary.
  * @async
- * @param {object} player - player to connect with
+ * @param {string} playerId - id of the player to connect with
  * @returns {Peer} - connection, in case of success
  * @throws {Error} when no connected peer is matching provided id
  */
-export async function connectWith(player) {
-  if (!socket || !current) return
+export async function connectWith(playerId) {
+  if (!signalSubscription || !current) return
   logger.info(
-    { to: player, from: current.player },
-    `establishing connection with peer ${player.id}`
+    { to: playerId, from: current.player.id },
+    `establishing connection with peer ${playerId}`
   )
   await attachLocalMedia()
-  return await createPeer({ to: player, from: current.player })
+  return await createPeer(playerId)
 }
 
 /**
@@ -322,10 +306,10 @@ export function closeChannels() {
   for (const id of [...channels.keys()]) {
     unwire(id)
   }
-  socket?.close()
-  socket = null
   detachLocalMedia()
   current = null
+  signalSubscription?.unsubscribe()
+  signalSubscription = null
 }
 
 /**
@@ -335,10 +319,10 @@ export function closeChannels() {
  * @param {string} [playerId] - targeted player id. Do not provide to broacast data
  */
 export function send(data, playerId = null) {
-  lastMessageSent$.next({ data, from: current?.player })
-  if (playerId && !channels.has(playerId)) {
+  if (!current?.player || (playerId && !channels.has(playerId))) {
     return
   }
+  lastMessageSent$.next({ data, playerId: current.player.id })
   const destination = playerId
     ? new Map([[playerId, channels.get(playerId)]])
     : channels

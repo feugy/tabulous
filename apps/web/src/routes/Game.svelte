@@ -134,8 +134,12 @@
   <ObjectDetails data={$meshDetails} />
 </main>
 <aside class="right">
-  {#each $connected as { player, stream }, i}
-    <PlayerAvatar {player} {stream} controllable={i === 0} />
+  {#each $connected as { playerId, stream }, i}
+    <PlayerAvatar
+      player={$currentGame?.players?.find(({ id }) => id === playerId)}
+      {stream}
+      controllable={i === 0}
+    />
   {/each}
   {#if $connected.length || $thread.length}
     <Discussion

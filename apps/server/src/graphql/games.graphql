@@ -178,7 +178,6 @@ input CameraPositionInput {
 
 type Query {
   loadGame(gameId: ID!): Game
-  listGames: [Game]
 }
 
 type Mutation {
@@ -186,4 +185,8 @@ type Mutation {
   saveGame(game: GameInput!): Game
   deleteGame(gameId: ID!): Game
   invite(gameId: ID!, playerId: ID!): Game
+}
+
+type Subscription {
+  listGames: [Game]
 }

@@ -31,16 +31,6 @@ const validate = new Ajv({ allErrors: true }).compile({
             graphiql: { type: 'string', nullable: true }
           }
         },
-        peerSignal: {
-          properties: {
-            path: { type: 'string' }
-          }
-        },
-        sse: {
-          properties: {
-            path: { type: 'string' }
-          }
-        },
         static: {
           properties: {
             path: { type: 'string' }
@@ -64,8 +54,6 @@ const validate = new Ajv({ allErrors: true }).compile({
  * @property {string} logger.level - level used for logging.
  * @property {object} plugins - options for all plugin used::
  * @property {import('../plugins/graphql').GraphQLOptions} plugins.graphql - options for the GraphQL plugin.
- * @property {import('../plugins/peer-signal').PeerSignalOptions} plugins.peerSignal - options for the peer signaling plugin.
- * @property {import('../plugins/sse').SSEOptions} plugins.sse - options for the Server Sent Event plugin.
  * @property {import('../plugins/static').StaticOptions} plugins.static - options for the static files plugin.
  * @see {@link https://nodejs.org/docs/latest-v16.x/api/net.html#net_server_listen_options_callback}
  * @see {@link https://nodejs.org/docs/latest-v16.x/api/tls.html#tls_tls_createsecurecontext_options}
@@ -81,7 +69,6 @@ const validate = new Ajv({ allErrors: true }).compile({
  * - LOG_LEVEL: logger level used, one of 'trace', 'debug', 'info', 'warn', 'error', 'fatal'. Defaults to 'debug'.
  * - NODE_ENV: 'production' indicates production mode.
  * - PORT: server listening port (must be a number). Defaults to 443 in production, and 3001 otherwise.
- * - SSE_ENDPOINT: url of the server sent event endpoint. Defaults to '/sse'.
  * - WS_ENDPOINT: url of the web socket endpoint. Defaults to '/ws'.
  *
  * @returns {Configuration} the loaded configuration.
@@ -95,9 +82,7 @@ export function loadConfiguration() {
     HTTPS_KEY,
     LOG_LEVEL,
     NODE_ENV,
-    PORT,
-    SSE_ENDPOINT,
-    WS_ENDPOINT
+    PORT
   } = process.env
 
   const isProduction = /^\w*production\w*$/i.test(NODE_ENV)
@@ -118,8 +103,6 @@ export function loadConfiguration() {
     logger: { level: LOG_LEVEL ?? 'debug' },
     plugins: {
       graphql: { graphiql: isProduction ? null : 'playground' },
-      peerSignal: { path: WS_ENDPOINT ?? '/ws' },
-      sse: { path: SSE_ENDPOINT ?? '/sse' },
       static: { path: CLIENT_ROOT ?? join('apps', 'web', 'dist') }
     }
   }

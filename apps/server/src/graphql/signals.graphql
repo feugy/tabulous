@@ -1,0 +1,19 @@
+type Signal {
+  type: String!
+  from: ID!
+  signal: String!
+}
+
+input SignalInput {
+  type: String!
+  to: ID!
+  signal: String!
+}
+
+type Mutation {
+  sendSignal(signal: SignalInput): Signal
+}
+
+type Subscription {
+  awaitSignal: Signal
+}

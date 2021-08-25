@@ -24,7 +24,7 @@ mutation invite($gameId: ID!, $playerId: ID!) {
   }
 }
 
-query listGames {
+subscription listGames {
   listGames {
     id
     created

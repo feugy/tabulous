@@ -18,9 +18,9 @@
     }, 0)
   }
 
-  $: if (players) {
+  $: {
     playerById.clear()
-    for (const player of players) {
+    for (const player of players ?? []) {
       playerById.set(player.id, player)
     }
   }
