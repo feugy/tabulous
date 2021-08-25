@@ -11,7 +11,7 @@ const logger = makeLogger('peer-channels')
 let signalSubscription
 let current
 let messageId = 1
-const connectDuration = 10e3
+const connectDuration = 20e3
 const channels = new Map()
 const lastMessageSent$ = new Subject()
 const lastMessageReceived$ = new Subject()
@@ -27,12 +27,13 @@ const lastDisconnectedId$ = new Subject()
  */
 
 function refreshConnected() {
+  const peers = [...channels.values()].filter(({ established }) => established)
   connected$.next(
-    channels.size > 0
-      ? [current, ...channels.values()].map(({ player, playerId, stream }) => ({
-          playerId: playerId ?? player?.id,
-          stream
-        }))
+    peers.length > 0
+      ? [
+          { playerId: current.player.id, stream: current.stream },
+          ...peers
+        ].map(({ playerId, stream }) => ({ playerId, stream }))
       : []
   )
 }
@@ -83,11 +84,16 @@ async function createPeer(playerId, signal) {
     const peer = new Peer({
       initiator: signal === undefined,
       stream: current.stream,
-      trickle: false, // true does not work at all on localhost (FF prints turn/stun warnings after answer)
+      trickle: true, // true does not work at all
       config: {
         iceServers: [{ urls: 'stun:turn2.l.google.com' }]
       }
     })
+    peer._debug = function (...args) {
+      // simple-peer leverages console string substitution
+      return logger.debug(...args, { peer: peer._id })
+    }
+
     logger.debug({ peer }, `peer created`)
     channels.set(playerId, {
       peer,
@@ -95,11 +101,30 @@ async function createPeer(playerId, signal) {
       playerId,
       established: false
     })
-    let connectTimeout = 0
 
-    if (signal) {
-      peer.signal(signal)
-    }
+    const connectTimeout = setTimeout(() => {
+      const error = new Error(
+        `Failed to establish connection after ${Math.floor(
+          connectDuration / 1000
+        )}`
+      )
+      logger.error(error.message)
+      unwire(playerId)
+      reject(error)
+    }, connectDuration)
+
+    peer.on('error', error =>
+      logger.warn(
+        { peer, error },
+        `peer ${playerId} encounter an error: ${error.message}`
+      )
+    )
+
+    peer.on('close', () => {
+      clearTimeout(connectTimeout)
+      logger.info({ peer }, `connection to ${playerId} closed`)
+      unwire(playerId)
+    })
 
     peer.on('stream', stream => {
       logger.debug({ peer }, `receiving stream from ${playerId}`)
@@ -109,24 +134,31 @@ async function createPeer(playerId, signal) {
 
     peer.on('signal', signal => {
       const type = signal?.type
-      if (type === 'offer' || type === 'answer') {
-        logger.debug(
-          { peer, signal },
-          `${signal.type} ready, sharing with server`
+      logger.debug(
+        { peer, signal },
+        `${signal.type} ready, sharing with server`
+      )
+      runMutation(graphQL.sendSignal, {
+        signal: { type, to: playerId, signal: JSON.stringify(signal) }
+      })
+    })
+
+    peer.on('data', stringData => {
+      const data = JSON.parse(stringData)
+      logger.debug({ data, peer }, `data from ${playerId}`)
+
+      const { lastMessageId } = channels.get(playerId)
+      if (data.messageId !== lastMessageId + 1 && lastMessageId > 0) {
+        logger.error(
+          `Invalid message ids: received ${data.messageId}, expecting: ${lastMessageId}`
         )
-        runMutation(graphQL.sendSignal, {
-          signal: { type, to: playerId, signal: JSON.stringify(signal) }
-        })
-        connectTimeout = setTimeout(() => {
-          const error = new Error(
-            `Failed to establish connection after ${Math.floor(
-              connectDuration / 1000
-            )}`
-          )
-          logger.error(error.message)
-          unwire(playerId)
-          reject(error)
-        }, connectDuration)
+        unorderedMessages$.next({ data, playerId })
+      } else {
+        lastMessageReceived$.next({ data, playerId })
+      }
+      // stores higher last only, so unorderedMessage could get lower ones
+      if (data.messageId > lastMessageId) {
+        channels.get(playerId).lastMessageId = data.messageId
       }
     })
 
@@ -136,56 +168,30 @@ async function createPeer(playerId, signal) {
         { peers: channels },
         `connection established with ${playerId}`
       )
-
-      peer.on('error', error =>
-        logger.warn(
-          { peer, error },
-          `peer ${playerId} encounter an error: ${error.message}`
-        )
-      )
-
-      peer.on('data', stringData => {
-        const data = JSON.parse(stringData)
-        logger.debug({ data, peer }, `data from ${playerId}`)
-
-        const { lastMessageId } = channels.get(playerId)
-        if (data.messageId !== lastMessageId + 1 && lastMessageId > 0) {
-          logger.error(
-            `Invalid message ids: received ${data.messageId}, expecting: ${lastMessageId}`
-          )
-          unorderedMessages$.next({ data, playerId })
-        } else {
-          lastMessageReceived$.next({ data, playerId })
-        }
-        // stores higher last only, so unorderedMessage could get lower ones
-        if (data.messageId > lastMessageId) {
-          channels.get(playerId).lastMessageId = data.messageId
-        }
-      })
-
-      peer.on('close', () => {
-        logger.info({ peer }, `connection to ${playerId} closed`)
-        unwire(playerId)
-      })
-
       channels.get(playerId).established = true
       refreshConnected()
       lastConnectedId$.next(playerId)
       resolve(peer)
     })
+
+    if (signal) {
+      peer.signal(signal)
+    }
   })
 }
 
 async function attachLocalMedia() {
   if (!current || current.stream) return
-  logger.info(`attaching local media to current peer`)
   if (navigator.mediaDevices) {
+    logger.info(`attaching local media to current peer`)
     try {
       current.stream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true
       })
+      logger.debug(`media successfully attached`)
     } catch (error) {
+      current.stream = null
       logger.warn({ error }, `Failed to access media devices: ${error.message}`)
     }
   }
@@ -213,7 +219,8 @@ export const lastMessageSent = lastMessageSent$.asObservable()
 export const lastMessageReceived = lastMessageReceived$.asObservable()
 
 /**
- * Emits an array of currently connected player descriptors
+ * Emits an array of currently connected player descriptors.
+ * If current player is single, the array will be empty, otherwise it always comes first.
  * @type {Observable<[PeerPlayer]>}
  */
 export const connected = connected$.asObservable()
@@ -240,33 +247,31 @@ export async function openChannels(player) {
   logger.info({ player }, 'initializing peer communication')
 
   signalSubscription = runSubscription(graphQL.awaitSignal).subscribe(
-    async data => {
-      if (data.type === 'offer') {
-        logger.debug(data, `receiving offer from server, create peer`)
-        const { from, signal } = data
-        const channel = channels.get(from)
-        if (channel) {
-          // existing peer negociation
-          channel.peer.signal(signal)
-        } else {
+    async ({ from, signal, type }) => {
+      const channel = channels.get(from)
+      if (type === 'offer') {
+        logger.info(
+          { from, signal },
+          `receiving offer from server, create peer`
+        )
+      } else if (type === 'answer') {
+        logger.info(
+          { from, signal },
+          `receiving answer from server, completing connection`
+        )
+      }
+      if (channel) {
+        // handshake or negociation
+        channel.peer.signal(signal)
+      } else {
+        if (type === 'offer') {
           // new peer joining
           await attachLocalMedia()
           createPeer(from, signal)
-        }
-      } else {
-        logger.debug(
-          data,
-          `receiving answer from server, completing connection`
-        )
-        const { from, signal } = data
-        const channel = channels.get(from)
-        if (channel) {
-          // handshake completion
-          channel.peer.signal(signal)
         } else {
           logger.warn(
-            { data, channels },
-            `no peer found for answer from ${from}`
+            { from, type, signal, channels },
+            `no peer found for signal from ${from}`
           )
         }
       }

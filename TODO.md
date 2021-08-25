@@ -188,6 +188,10 @@ However, two blockers appeared: Sinon can not mock entire dependencies (maybe an
 Finally, using vite solves all the above, and enables Jest again.
 Testing server code on Node requires `NODE_OPTIONS=--experimental-vm-modules` while running jest. What a bummer.
 
+To make WebRTC work in real world scenario, it is paramount to share **every signal received**.
+One must not stop listening to signal event after connection is established, and one muse not handle only `offer` and `answer` types.
+This enables: trickle, further media addition, peers with no media while others have...
+
 Removing server to only allow peer communication is really hard:
 
 - a server is needed for peers to exchange webRTC offers and answers (signaling server)

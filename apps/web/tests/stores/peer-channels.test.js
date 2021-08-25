@@ -106,7 +106,7 @@ describe('Peer channels store', () => {
       await awaitSignal.next(offer)
 
       expect(Peer).toHaveBeenCalledWith(
-        expect.objectContaining({ initiator: false, trickle: false })
+        expect.objectContaining({ initiator: false, trickle: true })
       )
       expect(peers[0].signal).toHaveBeenCalledWith(offer.signal)
 
@@ -146,7 +146,7 @@ describe('Peer channels store', () => {
         const connectWith = communication.connectWith(playerId3)
         await Promise.resolve()
         expect(Peer).toHaveBeenCalledWith(
-          expect.objectContaining({ initiator: true, trickle: false })
+          expect.objectContaining({ initiator: true, trickle: true })
         )
 
         peers[0].events.signal.mock.calls[0][0](offer)
@@ -184,7 +184,7 @@ describe('Peer channels store', () => {
         const connectWith = communication.connectWith(playerId3)
         await Promise.resolve()
         expect(Peer).toHaveBeenCalledWith(
-          expect.objectContaining({ initiator: true, trickle: false })
+          expect.objectContaining({ initiator: true, trickle: true })
         )
 
         peers[0].events.signal.mock.calls[0][0](offer)
