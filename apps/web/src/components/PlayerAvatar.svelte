@@ -38,20 +38,22 @@
 
 <style type="postcss">
   figure {
-    @apply inline-block relative text-center rounded-full flex-shrink-0 flex-grow-0;
+    @apply inline-flex relative items-center justify-center;
+    width: 150px;
+    height: 150px;
 
     &.hasStream {
-      @apply rounded-none;
-      background-color: theme('backgrounds.backdrop');
-    }
-    &.noImage {
-      background-color: theme('backgrounds.backdrop');
+      @apply overflow-hidden bg-black w-full h-full;
     }
   }
 
   figcaption {
-    @apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 whitespace-nowrap;
+    @apply absolute top-0 left-0 w-full h-full flex items-center justify-center p-4 rounded-full;
     color: theme('colors.primary.text');
+
+    &.noImage {
+      background-color: theme('backgrounds.backdrop');
+    }
   }
 
   legend {
@@ -59,7 +61,7 @@
   }
 
   img {
-    @apply rounded-full w-40 h-40 relative z-10;
+    @apply rounded-full h-full;
     border: 0.5rem solid theme('colors.primary.light');
     background-color: theme('colors.primary.text');
 
@@ -69,7 +71,7 @@
   }
 
   video {
-    @apply h-full relative z-10;
+    @apply z-10;
 
     &.stopped {
       @apply opacity-0;
@@ -79,6 +81,7 @@
 
 <figure class:hasStream class:noImage>
   {#if hasStream}
+    <figcaption>{player?.username}</figcaption>
     <!-- svelte-ignore a11y-media-has-caption -->
     <video class:stopped autoplay muted={controllable} bind:this={video} />
     <legend>
@@ -102,6 +105,8 @@
         noImage = true
       }}
     />
+    {#if noImage}
+      <figcaption class:noImage>{player?.username}</figcaption>
+    {/if}
   {/if}
-  <figcaption class:noImage>{player?.username}</figcaption>
 </figure>

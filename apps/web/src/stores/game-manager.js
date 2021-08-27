@@ -24,6 +24,13 @@ const playerGames$ = new BehaviorSubject([])
 const currentGame$ = new BehaviorSubject()
 let listGamesSubscription = null
 
+// updates current game when receiving player updates
+playerGames$.subscribe(games => {
+  if (currentGame$.value) {
+    currentGame$.next(games.find(({ id }) => id === currentGame$.value.id))
+  }
+})
+
 // when joining game with connected peers, delay during which we expect to receive the game data
 const gameReceptionDelay = 30e3
 

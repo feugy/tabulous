@@ -1,5 +1,11 @@
 # TODO
 
+Partie avec Célia:
+
+- pinch/pan/rotate event with finger trigger tap on cards
+- camera buttons should be at the bottom
+- token above card does not have target any more?
+
 Partie avec Loïc:
 
 - button to save a new camera position should be grayed out when the current position is already saved
@@ -32,8 +38,6 @@ Partie avec Loïc:
 - parametrize and serialize UVs
 - keyboard
 - visual hint on long operations
-- hide/collapse discussion thread
-- hide/collapse videos and avatars
 
 ## Multi player
 

@@ -27,10 +27,8 @@
     name="Secondary with text"
     props={{ secondary: true, text: 'Hello!' }}
   />
-  <div class="m-4">
-    <Tool name="With badge" props={{ text: 'Inbox', icon: 'email', badge: 5 }}>
-      <div slot="header">Vous avez...</div>
-      <div slot="footer">Nouveau(x) message(s).</div></Tool
-    >
-  </div>
+  <Tool name="With badge" props={{ text: 'Inbox', icon: 'email', badge: 5 }}>
+    <div slot="header">Vous avez...</div>
+    <div slot="footer">Nouveau(x) message(s).</div></Tool
+  >
 </ToolBox>
