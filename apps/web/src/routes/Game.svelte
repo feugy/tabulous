@@ -61,8 +61,6 @@
     : // single player: no avatars
       []
 
-  $: console.log(avatars)
-
   onMount(async () => {
     initEngine({ canvas, interaction })
     loadPromise = loadGame(params.gameId, $engine)

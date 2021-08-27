@@ -2,7 +2,6 @@
 
 Partie avec Célia:
 
-- pinch/pan/rotate event with finger trigger tap on cards
 - camera buttons should be at the bottom
 - token above card does not have target any more?
 

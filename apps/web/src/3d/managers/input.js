@@ -277,7 +277,7 @@ class InputManager {
             }
           }
 
-          if (!dragOrigin && !pinch.confirmed) {
+          if (pointers.size === 0 && !dragOrigin && !pinch.confirmed) {
             if (mesh !== hovered) {
               this.stopHover(event)
             }
@@ -294,7 +294,7 @@ class InputManager {
               // keep dragging with multiple fingers until the last one left the surface
               this.stopDrag(event)
             }
-          } else if (!pinch.confirmed) {
+          } else if (!pinch.confirmed && pointers.size) {
             if (pointers.size > 1) {
               // when tapping with multiple pointers, ignore all but the last
               tapPointers = pointers.size
