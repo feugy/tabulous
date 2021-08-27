@@ -14,7 +14,7 @@
   $: if (messageContainer && thread) {
     // automatically scrolls to last when receiving a new message
     setTimeout(() => {
-      messageContainer.lastElementChild?.scrollIntoView()
+      messageContainer?.lastElementChild?.scrollIntoView()
     }, 0)
   }
 

@@ -2,7 +2,7 @@
   import { onMount, onDestroy } from 'svelte'
   import { _ } from 'svelte-intl'
   import {
-    FPSViewer,
+    // FPSViewer,
     GameMenu,
     InvitePlayerDialogue
   } from '../connected-components'
@@ -144,6 +144,7 @@
     open={openInviteDialogue}
     on:close={() => (openInviteDialogue = false)}
   />
+  <span class="flex-1" />
   <CameraSwitch
     saveCount={($cameraSaves?.length ?? 0) + 1}
     on:restore={({ detail: { index } }) => restoreCamera(index)}
@@ -160,7 +161,6 @@
     <ActionMenu object={$meshForMenu} />
   </div>
   <StackSizeTooltip size={$stackSize} />
-  <FPSViewer />
   <ObjectDetails data={$meshDetails} />
 </main>
 {#if $currentGame?.players.length > 1}

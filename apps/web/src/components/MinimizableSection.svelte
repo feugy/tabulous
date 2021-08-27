@@ -47,12 +47,8 @@
   let size
 
   function handleClick() {
-    if (hasMoved) {
-      hasMoved = false
-    } else {
-      minimized = !minimized
-      dispatch('minimize', { minimized })
-    }
+    minimized = !minimized
+    dispatch('minimize', { minimized })
   }
 
   function handleDown(event) {
@@ -79,6 +75,7 @@
   }
 
   function handleUp() {
+    hasMoved = false
     window.removeEventListener('pointermove', handleMove)
     window.removeEventListener('pointerup', handleUp)
   }
@@ -113,10 +110,20 @@
     @apply absolute h-full m-0 p-0 flex items-start;
     --offset: -42px;
 
-    & hr {
-      @apply border-none border-l-2 h-full;
+    & .buttonContainer {
+      @apply relative top-2 -right-2 z-30;
+    }
+
+    & .gutter {
+      @apply relative border-none border-l-2 h-full z-20;
       border-style: solid;
       cursor: ew-resize;
+
+      &:after {
+        @apply absolute inline-block w-4 h-10 top-1/2 -mt-4 -ml-2 rounded;
+        background-color: theme('colors.primary.light');
+        content: '';
+      }
     }
 
     &.right {
@@ -130,9 +137,17 @@
     &.vertical {
       @apply w-full h-auto flex-col;
 
-      & hr {
+      & .buttonContainer {
+        @apply top-auto right-auto left-2 -bottom-2;
+      }
+
+      & .gutter {
         @apply w-full h-auto border-b-2;
         cursor: ns-resize;
+
+        &:after {
+          @apply w-10 h-4 top-auto left-1/2 -ml-4 -mt-2;
+        }
       }
 
       &.top {
@@ -157,8 +172,10 @@
   style="{props.style}: {innerDimension};"
 >
   <menu class:vertical class={placement}>
-    <Button icon={innerIcon} on:click={handleClick} />
-    <hr on:pointerdown={handleDown} />
+    <span class="buttonContainer">
+      <Button icon={innerIcon} on:click={handleClick} />
+    </span>
+    <div class="gutter" on:pointerdown={handleDown} />
   </menu>
   <span>
     <slot />

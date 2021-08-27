@@ -1,10 +1,5 @@
 # TODO
 
-Partie avec Célia:
-
-- camera buttons should be at the bottom
-- token above card does not have target any more?
-
 Partie avec Loïc:
 
 - button to save a new camera position should be grayed out when the current position is already saved
