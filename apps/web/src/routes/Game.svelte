@@ -9,12 +9,12 @@
   import {
     ActionMenu,
     CameraSwitch,
+    CursorInfo,
     Discussion,
     MinimizableSection,
     ObjectDetails,
     PlayerAvatar,
-    Progress,
-    StackSizeTooltip
+    Progress
   } from '../components'
   import {
     cameraSaves,
@@ -24,6 +24,7 @@
     engine,
     initEngine,
     loadGame,
+    longInputs,
     meshDetails,
     meshForMenu,
     restoreCamera,
@@ -160,7 +161,7 @@
     <canvas bind:this={canvas} />
     <ActionMenu object={$meshForMenu} />
   </div>
-  <StackSizeTooltip size={$stackSize} />
+  <CursorInfo size={$stackSize} halos={longInputs} />
   <ObjectDetails data={$meshDetails} />
 </main>
 {#if $currentGame?.players.length > 1}

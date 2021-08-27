@@ -31,7 +31,6 @@ Partie avec Loïc:
 - boards
 - parametrize and serialize UVs
 - keyboard
-- visual hint on long operations
 
 ## Multi player
 
@@ -42,6 +41,7 @@ Partie avec Loïc:
 
 # Known issues
 
+- stack size remains after showing mesh details
 - flip stacked items only flip individual card: it should also invert the ordering (flip the whole stack)
 - moving items bellow other does not apply gravity to them
 

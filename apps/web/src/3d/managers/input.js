@@ -11,7 +11,7 @@ const LongDelay = 250
 
 /**
  * @typedef {object} InputData input event data:
- * @property {string} type - event type (tap, doubletap, wheel, dragStart, drag, dragStop, hoverStart, hoverStop, pinchStart, pinch, pinchStop).
+ * @property {string} type - event type (tap, doubletap, wheel, dragStart, drag, dragStop, hoverStart, hoverStop, pinchStart, pinch, pinchStop, longPointer).
  * @property {PointerEvent} event - the original browser event.
  * @property {number} pointers? - number of pointers used
  * @property {object} mesh? - mesh upon which event occured, when relevant.
@@ -30,10 +30,6 @@ function findDragStart(pointers, current) {
     : null
 }
 
-function isLong({ event } = {}, times) {
-  return Date.now() - (times.get(event.pointerId) ?? Date.now()) > LongDelay
-}
-
 class InputManager {
   /**
    * Creates a manager to manages user inputs, and notify observers for:
@@ -48,6 +44,7 @@ class InputManager {
    * @property {Observable<InputData>} onPinchObservable - emits pinch start, pinch(ing) and pinch stop operation events.
    * @property {Observable<InputData>} onHoverObservable - emits pointer hover start and stop events.
    * @property {Observable<InputData>} onWheelObservable - emits pointer wheel events.
+   * @property {Observable<InputData>} onLongObservable - emits an event when detecting long operations (long tap/drag/pinch).
    */
   constructor() {
     this.onTapObservable = new Observable()
@@ -55,6 +52,7 @@ class InputManager {
     this.onPinchObservable = new Observable()
     this.onHoverObservable = new Observable()
     this.onWheelObservable = new Observable()
+    this.onLongObservable = new Observable()
   }
 
   /**
@@ -177,7 +175,20 @@ class InputManager {
       switch (type) {
         case PointerEventTypes.POINTERDOWN: {
           pointers.set(event.pointerId, { mesh, button, event })
-          pointerTimes.set(event.pointerId, Date.now())
+          pointerTimes.set(event.pointerId, {
+            time: Date.now(),
+            long: false,
+            deferLong: setTimeout(() => {
+              pointerTimes.get(event.pointerId).long = true
+              const data = {
+                type: 'longPointer',
+                event,
+                pointers: pointers.size
+              }
+              logger.info(data, `long pointer detected`)
+              this.onLongObservable.notifyObservers(data)
+            }, LongDelay)
+          })
 
           const wasPinching = pinch.first !== null
           if (pointers.size === 2) {
@@ -199,6 +210,8 @@ class InputManager {
           if (event.movementX === 0 && event.movementY === 0) {
             break
           }
+          clearTimeout(pointerTimes.get(event.pointerId)?.deferLong)
+
           if (pinch.first) {
             const oldDistance = pinch.distance
             // updates pinch pointers and computes new distance
@@ -219,7 +232,7 @@ class InputManager {
                   pinchDelta,
                   event,
                   pointers: 2,
-                  long: isLong(pinch.first, pointerTimes)
+                  long: pointerTimes.get(event.pointerId)?.long
                 }
                 logger.info(data, `start ${data.long ? 'long ' : ' '}pinching`)
                 this.onPinchObservable.notifyObservers(data)
@@ -245,7 +258,7 @@ class InputManager {
                   type: 'dragStart',
                   ...dragOrigin,
                   pointers: pointers.size,
-                  long: isLong(dragOrigin, pointerTimes)
+                  long: pointerTimes.get(dragOrigin.event.pointerId)?.long
                 }
                 logger.info(
                   data,
@@ -289,6 +302,7 @@ class InputManager {
         }
 
         case PointerEventTypes.POINTERUP: {
+          clearTimeout(pointerTimes.get(event.pointerId)?.deferLong)
           if (dragOrigin) {
             if (pointers.size === 1) {
               // keep dragging with multiple fingers until the last one left the surface
@@ -308,7 +322,7 @@ class InputManager {
                 button,
                 event,
                 pointers: tapPointers,
-                long: isLong({ event }, pointerTimes)
+                long: pointerTimes.get(event.pointerId)?.long
               }
               logger.info(
                 data,
