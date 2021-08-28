@@ -1,17 +1,5 @@
 # TODO
 
-Partie avec Loïc:
-
-- button to save a new camera position should be grayed out when the current position is already saved
-- updating an saved camera position is not intuitive
-- crash when reordering stack
-  ```js
-  async reorder(ids) {
-    // ...
-    for (const mesh of stack) {
-      mesh.isPickable = false // TypeError: mesh is undefined
-  ```
-
 ## Refactor
 
 - behaviors may not care about active selection (game-interaction/game-engine should)
@@ -21,6 +9,7 @@ Partie avec Loïc:
 - moves images to server
 - completly disable Babylon input management
 - UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
+- parametrize and serialize UVs
 
 ## Single player
 
@@ -28,24 +17,31 @@ Partie avec Loïc:
 - stack actions:
   - draw multiple cards (either in hand, or in front of them)
   - distribute multiple cards to players (either in their hand, or in front of them)
+  - put under
+  - feedback on stacking
 - boards
-- parametrize and serialize UVs
 - keyboard
-- visual hint on long operations
-- hide/collapse discussion thread
-- hide/collapse videos and avatars
+- feedback on stacking
+- updating a saved camera position is not intuitive
 
 ## Multi player
 
-- on vite reload, all players could become hosts or peers simultaneously
 - invite players by name and id
 - search players by name
 - indicates when remote stream is muted/stopped
 
 # Known issues
 
+- crash when reordering stack
+  ```js
+  async reorder(ids) {
+    // ...
+    for (const mesh of stack) {
+      mesh.isPickable = false // TypeError: mesh is undefined
+  ```
 - flip stacked items only flip individual card: it should also invert the ordering (flip the whole stack)
 - moving items bellow other does not apply gravity to them
+- on vite reload, all players could become hosts or peers simultaneously
 
 # Ideas
 

@@ -28,72 +28,64 @@ leo a diam sollicitudin tempor id. Eget nullam non nisi est. Ullamcorper a
 lacus vestibulum sed arcu non odio euismod lacinia.`
 </script>
 
-<style type="postcss">
-  main {
-    @apply p-4;
-  }
-</style>
-
-<main>
-  <ToolBox
-    component={Dropdown}
-    name="Components/Drop down"
+<ToolBox
+  component={Dropdown}
+  name="Components/Drop down"
+  props={{
+    disabled: false,
+    valueAsText: false,
+    withArrow: true,
+    text: 'Greet',
+    icon: 'emoji_people',
+    options: [
+      'Hello! (this is in English)',
+      `Salut ! (c'est en français)`,
+      'Hallo ! (das ist im Deutsch)'
+    ]
+  }}
+  events={['click']}
+>
+  <Tool name="Left aligned">
+    <div slot="header">{headerText}</div>
+    <div slot="footer">{footerText}</div>
+  </Tool>
+  <span class="text-right">
+    <Tool name="Right aligned">
+      <div slot="header">{headerText}</div>
+      <div slot="footer">{footerText}</div>
+    </Tool>
+  </span>
+  <Tool
+    name="Icon only"
     props={{
-      disabled: false,
-      valueAsText: false,
-      withArrow: true,
-      text: 'Greet',
-      icon: 'emoji_people',
+      text: null,
+      icon: 'headset_mic',
       options: [
-        'Hello! (this is in English)',
-        `Salut ! (c'est en français)`,
-        'Hallo ! (das ist im Deutsch)'
+        { icon: 'play_arrow', label: 'play' },
+        { icon: 'stop', label: 'stop' },
+        { icon: 'fast_rewind', label: 'previous' },
+        { icon: 'fast_forward', label: 'next' }
       ]
     }}
-    events={['click']}
   >
-    <Tool name="Left aligned">
-      <div slot="header">{headerText}</div>
-      <div slot="footer">{footerText}</div>
-    </Tool>
-    <span class="text-right">
-      <Tool name="Right aligned">
-        <div slot="header">{headerText}</div>
-        <div slot="footer">{footerText}</div>
-      </Tool>
-    </span>
-    <Tool
-      name="Icon only"
-      props={{
-        text: null,
-        icon: 'headset_mic',
-        options: [
-          { icon: 'play_arrow', label: 'play' },
-          { icon: 'stop', label: 'stop' },
-          { icon: 'fast_rewind', label: 'previous' },
-          { icon: 'fast_forward', label: 'next' }
-        ]
-      }}
-    >
-      <div slot="header">{headerText}</div>
-      <div slot="footer">{footerText}</div>
-    </Tool>
-    <Tool
-      name="Value as text"
-      props={{
-        text: 'player',
-        icon: 'headset_mic',
-        valueAsText: true,
-        options: [
-          { icon: 'play_arrow', label: 'play' },
-          { icon: 'stop', label: 'stop' },
-          { icon: 'fast_rewind', label: 'previous' },
-          { icon: 'fast_forward', label: 'next' }
-        ]
-      }}
-    >
-      <div slot="header">{headerText}</div>
-      <div slot="footer">{footerText}</div>
-    </Tool>
-  </ToolBox>
-</main>
+    <div slot="header">{headerText}</div>
+    <div slot="footer">{footerText}</div>
+  </Tool>
+  <Tool
+    name="Value as text"
+    props={{
+      text: 'player',
+      icon: 'headset_mic',
+      valueAsText: true,
+      options: [
+        { icon: 'play_arrow', label: 'play' },
+        { icon: 'stop', label: 'stop' },
+        { icon: 'fast_rewind', label: 'previous' },
+        { icon: 'fast_forward', label: 'next' }
+      ]
+    }}
+  >
+    <div slot="header">{headerText}</div>
+    <div slot="footer">{footerText}</div>
+  </Tool>
+</ToolBox>

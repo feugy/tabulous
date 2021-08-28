@@ -5,7 +5,7 @@
 
 <style type="postcss">
   header {
-    @apply w-full pt-4;
+    @apply w-full pt-4 px-4;
     background: theme('colors.secondary.light');
   }
 

@@ -37,12 +37,12 @@
   }
 
   .action {
-    @apply flex gap-2 absolute -bottom-4 right-0;
+    @apply flex gap-2 justify-center pb-2 sm:absolute sm:-bottom-4 sm:right-0;
   }
 
   main {
-    @apply grid mx-auto my-8 gap-8 grid-cols-3;
-    @apply md:w-10/12 lg:w-9/12 xl:w-7/12;
+    @apply grid mx-auto my-8 gap-8 grid-cols-1 w-10/12;
+    @apply xs:grid-cols-2 sm:grid-cols-3 lg:w-9/12 xl:w-7/12;
   }
 </style>
 

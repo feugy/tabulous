@@ -91,7 +91,7 @@ export function attachInputs({
      * Implements actions on mouse single clicks:
      * - single left click/tap on mesh flips it
      * - single right click/2 fingers tap on mesh rotates it
-     * - long click/long tap on mesh opens its details
+     * - long click/long tap on mesh opens its details (and clears stack size)
      * - any double click immediately following a single click discards the operation
      */
     taps$
@@ -116,6 +116,7 @@ export function attachInputs({
               { mesh, button, long, event },
               `display details for mesh ${mesh.id}`
             )
+            stackSize$.next(null)
           } else if (kind === 'right') {
             controlManager.apply({ meshId: mesh.id, fn: 'rotate' })
             logger.info(

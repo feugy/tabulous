@@ -3,8 +3,13 @@
   import { _ } from 'svelte-intl'
   import Button from './Button.svelte'
 
-  export let saveCount = 1
+  export let current = null
+  export let saves = []
   export let maxCount = 6
+
+  $: saveCount = saves.length
+
+  $: isSaved = Boolean(saves.find(({ hash }) => hash === current?.hash))
 
   // catching clicks on window ensure we leave adding mode wherever user clicks
   // it allows them cancelling the operation
@@ -26,19 +31,16 @@
   }
 </script>
 
-<style type="postcss">
-</style>
-
 <svelte:window on:click={() => (adding = false)} />
 
-{#each { length: saveCount } as save, index}
+{#each saves as save, index}
   <Button
     icon="videocam"
     badge={index === 0 ? null : index}
     title={$_(adding ? 'tooltips.save-camera' : 'tooltips.restore-camera', {
       index
     })}
-    disabled={adding && index === 0}
+    disabled={save.hash === current?.hash}
     on:click={() => handleSaveOrRestore(index)}
   />{' '}
 {/each}
@@ -53,6 +55,7 @@
   <Button
     icon="video_call"
     title={$_('tooltips.save-new-camera')}
+    disabled={isSaved}
     on:click={handleEnterAdd}
   />
 {/if}

@@ -1,8 +1,8 @@
 import { BehaviorSubject, Subject, merge } from 'rxjs'
-import { auditTime, delay, filter, map } from 'rxjs/operators'
+import { auditTime, delay, map } from 'rxjs/operators'
 import { connected, lastMessageReceived, send } from './peer-channels'
 import { createEngine, createLight, createTable } from '../3d'
-import { cameraManager, controlManager } from '../3d/managers'
+import { cameraManager, controlManager, inputManager } from '../3d/managers'
 import { attachInputs } from '../utils'
 
 const engine$ = new BehaviorSubject(null)
@@ -14,6 +14,8 @@ const meshDetails$ = new Subject()
 const meshForMenu$ = new Subject()
 const stackSize$ = new Subject()
 const cameraSaves$ = new BehaviorSubject([])
+const longInputs$ = new Subject()
+const currentCamera$ = new Subject()
 
 /**
  * Emits 3D engine when available.
@@ -56,7 +58,19 @@ export const stackSize = stackSize$.asObservable()
  * Emits camera saved positions.
  * @type {Observable<import('../3d/managers').CameraSave>}
  */
-export const cameraSaves = cameraSaves$.pipe(filter(saves => saves.length))
+export const cameraSaves = cameraSaves$.asObservable()
+
+/**
+ * Emits when a long tap/drag/pinch... input was detected.
+ * @type {Observable<import('../3d/managers').CameraSave>}
+ */
+export const longInputs = longInputs$.asObservable()
+
+/**
+ * Emits the new camera state every time it changes.
+ * @type {Observable<import('../3d/managers').CameraSave>}
+ */
+export const currentCamera = currentCamera$.asObservable()
 
 /**
  * Initialize the 3D engine, which includes:
@@ -83,11 +97,27 @@ export function initEngine({
   const engine = createEngine({ canvas, interaction, doubleTapDelay })
   engine.onEndFrameObservable.add(() => fps$.next(engine.getFps().toFixed()))
 
+  createTable()
+  // creates light after table, so table doesn't project shadow
+  createLight()
+
+  engine$.next(engine)
+  engine.start()
+
+  // initialize cameras
+  cameraSaves$.next(cameraManager.saves)
+  currentCamera$.next(cameraManager.saves[0])
+
   const mapping = [
     { observable: controlManager.onActionObservable, subject: localAction$ },
     { observable: controlManager.onPointerObservable, subject: pointer$ },
     { observable: controlManager.onDetailedObservable, subject: meshDetails$ },
-    { observable: cameraManager.onSaveObservable, subject: cameraSaves$ }
+    { observable: cameraManager.onSaveObservable, subject: cameraSaves$ },
+    { observable: cameraManager.onMoveObservable, subject: currentCamera$ },
+    {
+      observable: inputManager.onLongObservable,
+      subject: longInputs$
+    }
   ]
   // exposes Babylon observables as RX subjects
   for (const { observable, subject } of mapping) {
@@ -100,13 +130,6 @@ export function initEngine({
     meshForMenu$,
     stackSize$
   })
-
-  createTable()
-  // creates light after table, so table doesn't project shadow
-  createLight()
-
-  engine$.next(engine)
-  engine.start()
 
   // applies other players' update
   subscriptions.push(

@@ -29,6 +29,9 @@ module.exports = {
       },
       transitions: {
         short: '150ms'
+      },
+      screens: {
+        xs: '475px'
       }
     }
   },

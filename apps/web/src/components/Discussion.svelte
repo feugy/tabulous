@@ -14,7 +14,7 @@
   $: if (messageContainer && thread) {
     // automatically scrolls to last when receiving a new message
     setTimeout(() => {
-      messageContainer.lastElementChild?.scrollIntoView()
+      messageContainer?.lastElementChild?.scrollIntoView()
     }, 0)
   }
 
@@ -33,12 +33,12 @@
 
 <style type="postcss">
   .discussion {
-    @apply flex flex-col overflow-auto p-2 shadow-md self-stretch;
+    @apply flex flex-col overflow-auto p-2 shadow-md justify-end h-full;
     background: theme('backgrounds.primary');
   }
 
   .messages {
-    @apply grid flex-grow overflow-y-auto;
+    @apply grid overflow-y-auto;
     grid-template-columns: auto 1fr;
 
     & > * {
