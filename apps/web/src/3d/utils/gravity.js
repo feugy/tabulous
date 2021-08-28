@@ -69,3 +69,15 @@ export function isAbove(mesh, target, scale) {
   target.computeWorldMatrix()
   return over.get(target) >= 4
 }
+
+/**
+ * Sort meshes by elevation, lowest first.
+ * This will guarantee a proper gravity application when running operations (moves, flips...) in parallel.
+ * @param {import('@babel/core').Mesh[]} meshes - array of meshes to order.
+ * @return {import('@babel/core').Mesh[]} sorted array.
+ */
+export function sortByElevation(meshes) {
+  return [...(meshes ?? [])].sort(
+    (a, b) => a.absolutePosition.y - b.absolutePosition.y
+  )
+}

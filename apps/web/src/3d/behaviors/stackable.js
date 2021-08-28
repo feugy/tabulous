@@ -4,8 +4,10 @@ import { controlManager, inputManager, selectionManager } from '../managers'
 import {
   altitudeOnTop,
   animateMove,
+  applyGravity,
   getHeight,
-  getTargetableBehavior
+  getTargetableBehavior,
+  sortByElevation
 } from '../utils'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
@@ -17,22 +19,19 @@ function enableLastTarget(stack, enabled) {
   const targetable = getTargetableBehavior(mesh)
   if (targetable) {
     targetable.enabled = enabled
-    logger.debug(
+    logger.info(
       { mesh },
       `${enabled ? 'enable' : 'disable'} target for ${mesh.id}`
     )
   }
 }
 
-function setBase(mesh, base) {
+function setBase(mesh, base, stack) {
   const targetable = getTargetableBehavior(mesh)
   if (targetable) {
     targetable.base = base
-    targetable.stack = [mesh]
-    targetable.mesh.metadata.stack = base?.stack
-    targetable.mesh.metadata.reorder = base
-      ? ids => base.reorder(ids)
-      : () => {}
+    targetable.stack = stack
+    mesh.metadata.stack = targetable.stack
   }
 }
 
@@ -83,18 +82,14 @@ export class StackBehavior extends TargetBehavior {
     if (!mesh.metadata) {
       mesh.metadata = {}
     }
-    mesh.metadata.stack = this.base?.stack
+    mesh.metadata.stack = this.stack
     mesh.metadata.push = id => this.push(id)
     mesh.metadata.pop = () => this.pop()
-    mesh.metadata.reorder = () => {}
+    mesh.metadata.reorder = (...args) => this.reorder(...args)
 
     this.dropObserver = this.onDropObservable.add(({ dropped }) => {
       // sort all dropped meshes by elevation (lowest first)
-      const sorted = [...dropped].sort(
-        (a, b) => a.absolutePosition.y - b.absolutePosition.y
-      )
-      // then push them
-      for (const mesh of sorted) {
+      for (const mesh of sortByElevation(dropped)) {
         this.push(mesh?.id)
       }
     })
@@ -152,7 +147,7 @@ export class StackBehavior extends TargetBehavior {
       `push ${mesh.id} on stack ${stack.map(({ id }) => id)}`
     )
     enableLastTarget(stack, false)
-    setBase(mesh, base)
+    setBase(mesh, base, stack)
     stack.push(mesh)
     await animateMove(mesh, new Vector3(x, y, z), moveDuration, true)
   }
@@ -163,16 +158,15 @@ export class StackBehavior extends TargetBehavior {
    * - disables all targets but the ones of the highest mesh in stack
    * - records the action into the control manager
    *
-   * TODO base stack?
    * @return {import('@babylonjs/core').Mesh} the poped mesh, if any.
    */
   pop() {
-    const { stack } = this
+    const stack = this.base?.stack ?? this.stack
     if (stack.length <= 1) {
       return
     }
     const mesh = stack.pop()
-    setBase(mesh, null)
+    setBase(mesh, null, [mesh])
     // note: no need to enable the poped mesh target: since it was last, it's always enabled
     enableLastTarget(stack, true)
     logger.info(
@@ -192,18 +186,23 @@ export class StackBehavior extends TargetBehavior {
    * - sequentially push all other mesh in order to animates them.
    * - disables all targets but the ones of the highest mesh in stack
    *
-   * TODO base stack?
    * @async
    * @param {string[]} ids - array or mesh ids givin the new order.
+   * @param {boolean} [animate = true] - enables visual animation
    */
-  async reorder(ids) {
-    if (this.stack.length <= 1) {
+  async reorder(ids, animate = true) {
+    const old = this.base?.stack ?? this.stack
+    if (old.length <= 1) {
       return
     }
-    const posById = new Map(this.stack.map(({ id }, i) => [id, i]))
-    const stack = ids.map(id => this.stack[posById.get(id)])
+    const posById = new Map(old.map(({ id }, i) => [id, i]))
+    const stack = ids.map(id => old[posById.get(id)])
 
-    controlManager.record({ meshId: stack[0].id, fn: 'reorder', args: [ids] })
+    controlManager.record({
+      meshId: stack[0].id,
+      fn: 'reorder',
+      args: [ids, animate]
+    })
 
     // move the new base card to its final position to allow stack computations
     const basePosition = this.mesh.absolutePosition.clone()
@@ -211,59 +210,75 @@ export class StackBehavior extends TargetBehavior {
     stack[0].setAbsolutePosition(basePosition)
 
     logger.info(
-      { old: this.stack, stack, base: basePosition },
-      `reorder\n${this.stack.map(({ id }) => id)}\nto\n${ids}`
+      { old, stack, base: basePosition, animate },
+      `reorder: ${old.map(({ id }) => id)} into ${ids}`
     )
 
-    let last = null
+    enableLastTarget(old, false)
     for (const mesh of stack) {
       // prevents interactions and collisions
       mesh.isPickable = false
+    }
+
+    let last = null
+    const newPositions = []
+    // moves all cards to their final position
+    for (const mesh of stack) {
       if (last) {
         const { x, z } = mesh.absolutePosition
-        mesh.setAbsolutePosition(new Vector3(x, altitudeOnTop(mesh, last), z))
+        const position = new Vector3(x, altitudeOnTop(mesh, last), z)
+        mesh.setAbsolutePosition(position)
+        newPositions.push(position)
+      } else {
+        applyGravity(mesh)
+        newPositions.push(mesh.absolutePosition.clone())
       }
       last = mesh
     }
 
-    // first, explode
-    const distance =
-      stack[0].getBoundingInfo().boundingBox.extendSizeWorld.x * 1.5
-    const increment = (2 * Math.PI) / stack.length
-    await Promise.all(
-      stack.map((mesh, i) =>
-        animateMove(
-          mesh,
-          mesh.absolutePosition.add(
-            new Vector3(
-              Math.sin(i * increment) * distance,
-              0,
-              Math.cos(i * increment) * distance
-            )
-          ),
-          this.moveDuration * 2
-        ).then(() => {
-          // animateMove re-enabled interactions and collisions
-          mesh.isPickable = false
-        })
-      )
-    )
-
-    // then reorder internal stack, which will animate to final positions
+    setBase(stack[0], null, stack)
     const baseBehavior = stack[0].getBehaviorByName(StackBehavior.NAME)
-    const durationSave = baseBehavior.moveDuration
-    baseBehavior.moveDuration = Math.max(
-      (durationSave * 4) / stack.length,
-      0.02
-    )
-    baseBehavior.base = null
-    baseBehavior.stack = [stack[0]]
-    enableLastTarget(stack, true)
-    await animateMove(stack[0], basePosition, this.moveDuration, true)
     for (const mesh of stack.slice(1)) {
-      await baseBehavior.push(mesh.id)
+      setBase(mesh, baseBehavior, stack)
     }
-    baseBehavior.moveDuration = durationSave
+    enableLastTarget(stack, true)
+
+    if (animate) {
+      // first, explode
+      const distance =
+        stack[0].getBoundingInfo().boundingBox.extendSizeWorld.x * 1.5
+      const increment = (2 * Math.PI) / stack.length
+      await Promise.all(
+        stack.map((mesh, i) =>
+          animateMove(
+            mesh,
+            mesh.absolutePosition.add(
+              new Vector3(
+                Math.sin(i * increment) * distance,
+                i * 0.05,
+                Math.cos(i * increment) * distance
+              )
+            ),
+            this.moveDuration * 2
+          ).then(() => {
+            // animateMove re-enabled interactions and collisions
+            mesh.isPickable = false
+          })
+        )
+      )
+      // then animate all cards to final positions
+      const moveDuration = Math.max(
+        (baseBehavior.moveDuration * 4) / stack.length,
+        0.02
+      )
+      for (const [i, mesh] of stack.entries()) {
+        await animateMove(mesh, newPositions[i], moveDuration)
+      }
+    } else {
+      for (const mesh of stack) {
+        mesh.isPickable = true
+      }
+    }
   }
 
   /**

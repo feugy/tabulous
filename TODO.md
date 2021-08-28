@@ -38,9 +38,24 @@
     for (const mesh of stack) {
       mesh.isPickable = false // TypeError: mesh is undefined
   ```
-- flip stacked items only flip individual card: it should also invert the ordering (flip the whole stack)
 - moving items bellow other does not apply gravity to them
 - on vite reload, all players could become hosts or peers simultaneously
+
+# Network
+
+- SFR + proxy boulot Lionel: WebRTC failed
+- SFR Lionel: WebRTC failed
+- Bouyges téléphone Lionel: WebRTC failed
+
+```
+{
+   "from": "4717",
+   "type": "candidate",
+   "signal": "{\"type\":\"candidate\",\"candidate\":{\"candidate\":\"candidate:640089829 1 udp 2122260223 192.168.43.213 48168 typ host generation 0 ufrag +Y+q network-id 1 network-cost 10\",\"sdpMLineIndex\":0,\"sdpMid\":\"0\"}}",
+   "channels": {}
+}
+no peer found for signal from 4717
+```
 
 # Ideas
 

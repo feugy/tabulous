@@ -1,6 +1,11 @@
 import { Vector3 } from '@babylonjs/core'
 import { controlManager, selectionManager, targetManager } from '.'
-import { animateMove, isAboveTable, screenToGround } from '../utils'
+import {
+  animateMove,
+  isAboveTable,
+  screenToGround,
+  sortByElevation
+} from '../utils'
 import { sleep } from '../../utils'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
@@ -137,10 +142,9 @@ class MoveManager {
         }
       }
       zones.clear()
-      const nonDropped = moved
-        .filter(mesh => !droppedIds.has(mesh.id))
-        // sort them by elevation (lowest first) for gravity computations
-        .sort((a, b) => a.absolutePosition.y - b.absolutePosition.y)
+      const nonDropped = sortByElevation(
+        moved.filter(mesh => !droppedIds.has(mesh.id))
+      )
       moved.splice(0, moved.length)
 
       // and moves remaining meshes

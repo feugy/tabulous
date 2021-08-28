@@ -7,7 +7,7 @@ import {
   Space,
   Vector3
 } from '@babylonjs/core'
-import { isContaining, screenToGround } from '../utils'
+import { isContaining, screenToGround, sortByElevation } from '../utils'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
 
@@ -96,6 +96,8 @@ class SelectionManager {
           mesh.renderOverlay = true
         }
       }
+      // keep selection ordered from lowest to highest: it'll guarantuee gravity application
+      this.meshes = new Set(sortByElevation(this.meshes))
 
       logger.info({ start, end, meshes: this.meshes }, `new multiple selection`)
       box.dispose()

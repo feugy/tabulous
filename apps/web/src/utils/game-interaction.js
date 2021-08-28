@@ -108,11 +108,11 @@ export function attachInputs({
         filter(data => data?.type === 'tap')
       )
       .subscribe({
-        next: ({ mesh, button, event, long, pointers }) => {
+        next: async ({ mesh, button, event, long, pointers }) => {
           const kind = pointerKind(event, button, pointers)
-          const meshes = selectionManager.meshes.has(mesh)
-            ? selectionManager.meshes
-            : [mesh]
+          const meshes = new Set(
+            selectionManager.meshes.has(mesh) ? selectionManager.meshes : [mesh]
+          )
           if (long) {
             mesh.metadata.detail?.()
             logger.info(
@@ -129,11 +129,39 @@ export function attachInputs({
               )
             }
           } else if (kind === 'left') {
-            for (const mesh of meshes) {
-              controlManager.apply({ meshId: mesh.id, fn: 'flip' })
+            const exclude = new Set()
+            const reorderStack = new Set()
+            await Promise.all(
+              [...meshes].map(mesh => {
+                // flipped stacked needs to be reordered
+                if (
+                  !exclude.has(mesh) &&
+                  mesh.metadata.stack?.length > 1 &&
+                  mesh.metadata.stack.every(mesh => meshes.has(mesh))
+                ) {
+                  reorderStack.add(mesh)
+                  for (const excluded of mesh.metadata.stack) {
+                    exclude.add(excluded)
+                  }
+                }
+                logger.info(
+                  { mesh, button, long, event },
+                  `flips mesh ${mesh.id}`
+                )
+                return controlManager.apply({ meshId: mesh.id, fn: 'flip' })
+              })
+            )
+            for (const mesh of reorderStack) {
+              const ids = mesh.metadata.stack.map(({ id }) => id).reverse()
+              controlManager.apply({
+                meshId: mesh.id,
+                fn: 'reorder',
+                args: [ids, false]
+              })
               logger.info(
                 { mesh, button, long, event },
-                `flips mesh ${mesh.id}`
+                `reorders stack for ${mesh.id}`,
+                ids
               )
             }
           }

@@ -103,10 +103,12 @@ class ControlManager {
   /**
    * Applies an actions to a controlled meshes (`fn` in its metadatas), or changes its position (action.pos is defined).
    * Does nothing if the target mesh is not controlled.
+   * Returns when the action is fully applied.
+   * @async
    * @param {Action} action - applied action.
    * @param {boolean} fromPeer - true to indicate this action comes from a remote peer.
    */
-  apply(action, fromPeer = false) {
+  async apply(action, fromPeer = false) {
     const mesh = this.controlables.get(action?.meshId)
     if (!mesh) return
 
@@ -116,7 +118,7 @@ class ControlManager {
       this.inhibit.add(key)
     }
     if (action.fn) {
-      mesh.metadata[action.fn](...(action.args || []))
+      await mesh.metadata[action.fn](...(action.args || []))
     } else if (action.pos) {
       mesh.setAbsolutePosition(Vector3.FromArray(action.pos))
     }
