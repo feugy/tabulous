@@ -99,7 +99,7 @@
     @apply absolute z-10 top-0;
 
     &.right {
-      @apply right-0;
+      @apply right-0 bottom-0;
       background-color: theme('backgrounds.page');
     }
 
