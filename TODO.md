@@ -12,15 +12,14 @@
 
 ## Single player
 
+- feedback on stacking
 - player's hand
 - stack actions:
   - draw multiple cards (either in hand, or in front of them)
   - distribute multiple cards to players (either in their hand, or in front of them)
   - put under
-  - feedback on stacking
 - boards
 - keyboard
-- feedback on stacking
 - updating a saved camera position is not intuitive
 
 ## Multi player

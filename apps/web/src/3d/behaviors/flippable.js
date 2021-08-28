@@ -92,8 +92,12 @@ export class FlipBehavior extends AnimateBehavior {
 
     const lastFrame = Math.round(frameRate * (duration / 1000))
     flipAnimation.setKeys([
-      { frame: 0, value: isFlipped ? Math.PI : 0 },
-      { frame: lastFrame, value: isFlipped ? 0 : Math.PI }
+      { frame: 0, value: mesh.rotation.z },
+      {
+        frame: lastFrame,
+        value:
+          mesh.rotation.z + (mesh.rotation.y < Math.PI ? Math.PI : -Math.PI)
+      }
     ])
     moveAnimation.setKeys([
       { frame: 0, value: to },
@@ -119,6 +123,12 @@ export class FlipBehavior extends AnimateBehavior {
             this.isAnimated = false
             this.isFlipped = !isFlipped
             mesh.metadata.isFlipped = this.isFlipped
+            // keep rotation between [0..2 * PI[, without modulo because it does not keep plain values
+            if (mesh.rotation.z < 0) {
+              mesh.rotation.z += 2 * Math.PI
+            } else if (mesh.rotation.z >= 2 * Math.PI) {
+              mesh.rotation.z -= 2 * Math.PI
+            }
             logger.debug({ mesh }, `end flipping ${mesh.id}`)
             // framed animation may not exactly end where we want, so force the final position
             mesh.setAbsolutePosition(to)
