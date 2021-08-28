@@ -12,7 +12,7 @@
     CursorInfo,
     Discussion,
     MinimizableSection,
-    ObjectDetails,
+    MeshDetails,
     PlayerAvatar,
     Progress
   } from '../components'
@@ -76,6 +76,10 @@
 
   function handlePeerAsideResize() {
     peerAsideDimension = 'auto'
+  }
+
+  function handleCloseDetails() {
+    interaction?.focus()
   }
 </script>
 
@@ -169,7 +173,7 @@
     <ActionMenu object={$meshForMenu} />
   </div>
   <CursorInfo size={$stackSize} halos={longInputs} />
-  <ObjectDetails data={$meshDetails} />
+  <MeshDetails mesh={$meshDetails} on:close={handleCloseDetails} />
 </main>
 {#if $currentGame?.players.length > 1}
   <aside class="right" style="width: {peerAsideDimension}">

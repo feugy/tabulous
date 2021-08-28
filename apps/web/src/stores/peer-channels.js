@@ -34,7 +34,7 @@ function refreshConnected() {
           { playerId: current.player.id, stream: current.stream },
           ...peers
         ].map(({ playerId, stream }) => ({ playerId, stream }))
-      : [] // { playerId: current.player.id, stream: current.stream }] // TO REMOVE
+      : []
   )
 }
 
@@ -245,9 +245,6 @@ export const lastDisconnectedId = lastDisconnectedId$.asObservable()
 export async function openChannels(player) {
   current = { player }
   logger.info({ player }, 'initializing peer communication')
-
-  // await attachLocalMedia() // TO REMOVE
-  // refreshConnected() // TO REMOVE
 
   signalSubscription = runSubscription(graphQL.awaitSignal).subscribe(
     async ({ from, signal, type }) => {

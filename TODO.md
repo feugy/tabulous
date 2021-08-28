@@ -9,6 +9,7 @@
 - moves images to server
 - completly disable Babylon input management
 - UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
+- parametrize and serialize UVs
 
 ## Single player
 
@@ -16,15 +17,15 @@
 - stack actions:
   - draw multiple cards (either in hand, or in front of them)
   - distribute multiple cards to players (either in their hand, or in front of them)
+  - put under
+  - feedback on stacking
 - boards
-- parametrize and serialize UVs
 - keyboard
 - feedback on stacking
 - updating a saved camera position is not intuitive
 
 ## Multi player
 
-- on vite reload, all players could become hosts or peers simultaneously
 - invite players by name and id
 - search players by name
 - indicates when remote stream is muted/stopped
@@ -38,9 +39,9 @@
     for (const mesh of stack) {
       mesh.isPickable = false // TypeError: mesh is undefined
   ```
-- stack size remains after showing mesh details
 - flip stacked items only flip individual card: it should also invert the ordering (flip the whole stack)
 - moving items bellow other does not apply gravity to them
+- on vite reload, all players could become hosts or peers simultaneously
 
 # Ideas
 

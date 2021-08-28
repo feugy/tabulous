@@ -1,5 +1,19 @@
 <script>
-  export let data
+  import { afterUpdate, createEventDispatcher } from 'svelte'
+
+  export let mesh
+
+  const dispatch = createEventDispatcher()
+  let previous
+
+  afterUpdate(() => {
+    if (!previous) {
+      previous = mesh
+    } else if (previous !== mesh) {
+      dispatch(previous ? 'close' : 'open')
+      previous = mesh
+    }
+  })
 </script>
 
 <style type="postcss">
@@ -22,6 +36,6 @@
   }
 </style>
 
-<figure class:open={Boolean(data)} on:click={() => (data = null)}>
-  <img src={data?.image} alt="" />
+<figure class:open={Boolean(mesh)} on:click={() => (mesh = null)}>
+  <img src={mesh?.image} alt="" />
 </figure>
