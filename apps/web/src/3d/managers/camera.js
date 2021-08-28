@@ -108,12 +108,18 @@ async function animate(camera, { alpha, beta, elevation, target }, duration) {
 }
 
 function saveState(camera) {
-  return {
+  return addHash({
     alpha: camera[rotateAlpha.targetProperty],
     beta: camera[rotateBeta.targetProperty],
     elevation: camera[elevate.targetProperty],
     target: camera[pan.targetProperty].asArray()
-  }
+  })
+}
+
+function addHash(save) {
+  if (!save) return save
+  save.hash = `${save.target[0]}-${save.target[1]}-${save.target[2]}-${save.alpha}-${save.beta}-${save.elevation}`
+  return save
 }
 
 /**
@@ -122,6 +128,7 @@ function saveState(camera) {
  * @property {number} alpha - alpha angle, in radian.
  * @property {number} beta - beta angle, in radia.
  * @property {number} elevation - altitude, in 3D coordinate.
+ * @property {string} hash - hash to compare saves together.
  */
 
 class CameraManager {
@@ -136,19 +143,21 @@ class CameraManager {
    * @property {TargetCamera} camera? - managed camera.
    * @property {CameraSave[]} saves? - list of camera state saves.
    * @property {Observable<CameraSave[]>} onSaveObservable - emits when saving new camera positions.
+   * @property {Observable<CameraSave>} onMoveObservable - emits when moving current camera (target, angle or elevation).
    */
   constructor() {
     this.camera = null
     this.minAngle = 0
     this.saves = []
     this.onSaveObservable = new Observable()
+    this.onMoveObservable = new Observable()
   }
 
   /**
    * Creates a camera in current scene, that supports animated zooming and panning.
    * It can not leave the table.
    * Altitude is always in 3D world coordinate, angle in radians, and position in screen coordinates
-   * It maintains a list of saves, the first being its initial state (can  not be changed).
+   * It maintains a list of saves, the first being its initial state.
    * @param {object} params - parameters, including:
    * @param {number} params.y? - initial altitude
    * @param {number} params.alpha? - initial alpha angle
@@ -217,6 +226,7 @@ class CameraManager {
 
     if (isPositionAboveTable(this.camera.getScene(), target)) {
       await animate(this.camera, { target }, duration)
+      this.onMoveObservable.notifyObservers(saveState(this.camera))
     }
   }
 
@@ -238,6 +248,7 @@ class CameraManager {
         { alpha: this.camera.alpha + alpha, beta: this.camera.beta + beta },
         duration
       )
+      this.onMoveObservable.notifyObservers(saveState(this.camera))
     }
   }
 
@@ -255,19 +266,19 @@ class CameraManager {
       { elevation: this.camera.radius + elevation },
       duration
     )
+    this.onMoveObservable.notifyObservers(saveState(this.camera))
   }
 
   /**
    * Saves camera current position into a given slot.
-   * The first slot is reserved.
-   * Does nothing if the specified index is not within [1..saves.length].
+   * Does nothing if the specified index is not within [0..saves.length].
    * Notifies observers.
    * @param {number} [index=1] - slot where the state is saved.
    */
-  save(index = 1) {
-    if (!this.camera || index < 1 || index > this.saves.length) return
+  save(index = 0) {
+    if (!this.camera || index < 0 || index > this.saves.length) return
     this.saves[index] = saveState(this.camera)
-    this.onSaveObservable.notifyObservers(this.saves.slice(1))
+    this.onSaveObservable.notifyObservers(this.saves)
   }
 
   /**
@@ -286,16 +297,16 @@ class CameraManager {
       },
       duration
     )
+    this.onMoveObservable.notifyObservers(this.saves[index])
   }
 
   /**
-   * Loads saves position, keeping only the first save which can not be changed.
-   * Notifies observers.
+   * Loads saved position and notifies observers.
    * @param {CameraSave[]} saves - an array of save position
    */
-  loadSaves(saves) {
-    this.saves.splice(1, this.saves.length, ...saves)
-    this.onSaveObservable.notifyObservers(this.saves.slice(1))
+  loadSaves(saves = []) {
+    this.saves = saves
+    this.onSaveObservable.notifyObservers(this.saves)
   }
 }
 

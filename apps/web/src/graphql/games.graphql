@@ -107,6 +107,7 @@ query loadGame($gameId: ID!) {
       alpha
       beta
       elevation
+      hash
     }
   }
 }

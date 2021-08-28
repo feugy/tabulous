@@ -8,7 +8,19 @@
   name="Components/Camera Switch"
   events={['save', 'restore']}
 >
-  <Tool name="Single save" props={{ saveCount: 1 }} />
-  <Tool name="Multiple saves" props={{ saveCount: 3 }} />
-  <Tool name="Max count reached" props={{ saveCount: 4, maxCount: 4 }} />
+  <Tool name="Single save" props={{ saves: [{ hash: 'a' }] }} />
+  <Tool
+    name="Multiple saves with current"
+    props={{
+      current: { hash: 'b' },
+      saves: [{ hash: 'a' }, { hash: 'b' }, { hash: 'c' }]
+    }}
+  />
+  <Tool
+    name="Max count reached"
+    props={{
+      saves: [{ hash: 'a' }, { hash: 'b' }, { hash: 'c' }, { hash: 'd' }],
+      maxCount: 4
+    }}
+  />
 </ToolBox>

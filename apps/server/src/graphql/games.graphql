@@ -80,6 +80,7 @@ type CameraPosition {
   alpha: Float!
   beta: Float!
   elevation: Float!
+  hash: String!
 }
 
 input GameInput {
@@ -174,6 +175,7 @@ input CameraPositionInput {
   alpha: Float!
   beta: Float!
   elevation: Float!
+  hash: String!
 }
 
 type Query {

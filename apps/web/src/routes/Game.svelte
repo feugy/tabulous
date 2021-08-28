@@ -19,6 +19,7 @@
   import {
     cameraSaves,
     connected,
+    currentCamera,
     currentGame,
     currentPlayer,
     engine,
@@ -91,7 +92,7 @@
   }
 
   aside {
-    @apply absolute h-full z-10 top-0 bottom-0;
+    @apply absolute z-10 top-0;
 
     &.right {
       @apply right-0;
@@ -99,7 +100,11 @@
     }
 
     &.left {
-      @apply flex flex-col left-0 p-2 gap-2;
+      @apply left-0 p-2;
+    }
+
+    &.bottom {
+      @apply top-auto bottom-0 flex flex-col p-2 gap-2;
     }
   }
 
@@ -145,9 +150,11 @@
     open={openInviteDialogue}
     on:close={() => (openInviteDialogue = false)}
   />
-  <span class="flex-1" />
+</aside>
+<aside class="left bottom">
   <CameraSwitch
-    saveCount={($cameraSaves?.length ?? 0) + 1}
+    current={$currentCamera}
+    saves={$cameraSaves}
     on:restore={({ detail: { index } }) => restoreCamera(index)}
     on:save={({ detail: { index } }) => saveCamera(index)}
   />

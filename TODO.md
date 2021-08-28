@@ -1,17 +1,5 @@
 # TODO
 
-Partie avec Loïc:
-
-- button to save a new camera position should be grayed out when the current position is already saved
-- updating an saved camera position is not intuitive
-- crash when reordering stack
-  ```js
-  async reorder(ids) {
-    // ...
-    for (const mesh of stack) {
-      mesh.isPickable = false // TypeError: mesh is undefined
-  ```
-
 ## Refactor
 
 - behaviors may not care about active selection (game-interaction/game-engine should)
@@ -31,6 +19,8 @@ Partie avec Loïc:
 - boards
 - parametrize and serialize UVs
 - keyboard
+- feedback on stacking
+- updating a saved camera position is not intuitive
 
 ## Multi player
 
@@ -41,6 +31,13 @@ Partie avec Loïc:
 
 # Known issues
 
+- crash when reordering stack
+  ```js
+  async reorder(ids) {
+    // ...
+    for (const mesh of stack) {
+      mesh.isPickable = false // TypeError: mesh is undefined
+  ```
 - stack size remains after showing mesh details
 - flip stacked items only flip individual card: it should also invert the ordering (flip the whole stack)
 - moving items bellow other does not apply gravity to them
