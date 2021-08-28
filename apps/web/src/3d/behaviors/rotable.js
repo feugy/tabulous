@@ -1,7 +1,7 @@
 import { Animation, Vector3 } from '@babylonjs/core'
 import { AnimateBehavior } from './animatable'
 import { applyGravity } from '../utils'
-import { controlManager, selectionManager } from '../managers'
+import { controlManager } from '../managers'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
 
@@ -63,7 +63,6 @@ export class RotateBehavior extends AnimateBehavior {
 
   /**
    * Rotates the related mesh with an animation:
-   * - triggers rotation on rotable meshes in the current selection (does not wait on them)
    * - records the action into the control manager
    * - runs the rotation animation until completion and updates the rotation angle
    * - applies gravity
@@ -71,9 +70,8 @@ export class RotateBehavior extends AnimateBehavior {
    * Does nothing if the mesh is already being animated.
    *
    * @async
-   * @param {boolean} [single=false] - set as true to ignore other meshes from current selection
    */
-  async rotate(single = false) {
+  async rotate() {
     const {
       duration,
       isAnimated,
@@ -86,24 +84,10 @@ export class RotateBehavior extends AnimateBehavior {
     if (isAnimated) {
       return
     }
-    if (
-      !single &&
-      !mesh.metadata?.fromPeer &&
-      selectionManager.meshes.has(mesh)
-    ) {
-      for (const selected of selectionManager.meshes) {
-        if (selected.metadata?.rotate) {
-          selected.metadata.rotate(true)
-        }
-      }
-      return
-    }
     logger.debug({ mesh }, `start rotating ${mesh.id}`)
     this.isAnimated = true
 
-    if (!mesh.metadata?.fromPeer) {
-      controlManager.record({ meshId: mesh.id, fn: 'rotate' })
-    }
+    controlManager.record({ meshId: mesh.id, fn: 'rotate' })
 
     const to = mesh.absolutePosition.clone()
 

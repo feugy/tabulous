@@ -1,7 +1,7 @@
 import { Animation, Vector3 } from '@babylonjs/core'
 import { AnimateBehavior } from './animatable'
 import { applyGravity } from '../utils'
-import { controlManager, selectionManager } from '../managers'
+import { controlManager } from '../managers'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
 
@@ -60,7 +60,6 @@ export class FlipBehavior extends AnimateBehavior {
 
   /**
    * Flips the related mesh with an animation:
-   * - triggers flip on flippable meshes in the current selection (does not wait on them)
    * - records the action into the control manager
    * - runs the flip animation until completion and updates the flip status
    * - applies gravity
@@ -68,9 +67,8 @@ export class FlipBehavior extends AnimateBehavior {
    * Does nothing if the mesh is already being animated.
    *
    * @async
-   * @param {boolean} [single=false] - set as true to ignore other meshes from current selection
    */
-  async flip(single = false) {
+  async flip() {
     const {
       duration,
       isAnimated,
@@ -83,24 +81,10 @@ export class FlipBehavior extends AnimateBehavior {
     if (isAnimated) {
       return
     }
-    if (
-      !single &&
-      !mesh.metadata?.fromPeer &&
-      selectionManager.meshes.has(mesh)
-    ) {
-      for (const selected of selectionManager.meshes) {
-        if (selected.metadata?.flip) {
-          selected.metadata.flip(true)
-        }
-      }
-      return
-    }
     logger.debug({ mesh }, `start flipping ${mesh.id}`)
     this.isAnimated = true
 
-    if (!mesh.metadata?.fromPeer) {
-      controlManager.record({ meshId: mesh.id, fn: 'flip' })
-    }
+    controlManager.record({ meshId: mesh.id, fn: 'flip' })
 
     const to = mesh.absolutePosition.clone()
     const [min, max] = mesh.getBoundingInfo().boundingBox.vectorsWorld

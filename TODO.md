@@ -2,7 +2,6 @@
 
 ## Refactor
 
-- behaviors may not care about active selection (game-interaction/game-engine should)
 - server logging (warning on invalid descriptors)
 - enable [Babylon.js treeshaking](https://doc.babylonjs.com/divingDeeper/developWithBjs/treeShaking)
 - all manager managing a collection of behaviors should check their capabilities

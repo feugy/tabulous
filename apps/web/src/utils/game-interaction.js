@@ -110,6 +110,9 @@ export function attachInputs({
       .subscribe({
         next: ({ mesh, button, event, long, pointers }) => {
           const kind = pointerKind(event, button, pointers)
+          const meshes = selectionManager.meshes.has(mesh)
+            ? selectionManager.meshes
+            : [mesh]
           if (long) {
             mesh.metadata.detail?.()
             logger.info(
@@ -118,14 +121,21 @@ export function attachInputs({
             )
             stackSize$.next(null)
           } else if (kind === 'right') {
-            controlManager.apply({ meshId: mesh.id, fn: 'rotate' })
-            logger.info(
-              { mesh, button, long, event },
-              `rotates mesh ${mesh.id}`
-            )
+            for (const mesh of meshes) {
+              controlManager.apply({ meshId: mesh.id, fn: 'rotate' })
+              logger.info(
+                { mesh, button, long, event },
+                `rotates mesh ${mesh.id}`
+              )
+            }
           } else if (kind === 'left') {
-            controlManager.apply({ meshId: mesh.id, fn: 'flip' })
-            logger.info({ mesh, button, long, event }, `flips mesh ${mesh.id}`)
+            for (const mesh of meshes) {
+              controlManager.apply({ meshId: mesh.id, fn: 'flip' })
+              logger.info(
+                { mesh, button, long, event },
+                `flips mesh ${mesh.id}`
+              )
+            }
           }
         }
       }),
