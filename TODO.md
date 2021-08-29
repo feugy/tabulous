@@ -30,6 +30,8 @@
 
 # Known issues
 
+- stacked cards bellow the highest can be moved (rotate the highest and click bellow)
+- only stop input operations on mouseleave, do not suspend the whole thing
 - crash when reordering stack
   ```js
   async reorder(ids) {

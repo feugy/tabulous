@@ -5,7 +5,6 @@ import {
   altitudeOnTop,
   animateMove,
   applyGravity,
-  getHeight,
   getTargetableBehavior,
   sortByElevation
 } from '../utils'
@@ -72,6 +71,7 @@ export class StackBehavior extends TargetBehavior {
    * - a `push()` function to programmatically drop another mesh onto the stack.
    * - a `pop()` function to programmatically pop the highest mesh from stack.
    * - a `reorder()` function to re-order the stack with animation.
+   * - a `flipAll()` function to flip an entire stack with animation.
    * It binds to its drop observable to push dropped meshes to the stack.
    * It binds to the drag manager drag observable to pop the first stacked mesh when dragging it.
    * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
@@ -83,9 +83,10 @@ export class StackBehavior extends TargetBehavior {
       mesh.metadata = {}
     }
     mesh.metadata.stack = this.stack
-    mesh.metadata.push = id => this.push(id)
+    mesh.metadata.push = (...args) => this.push(...args)
     mesh.metadata.pop = () => this.pop()
     mesh.metadata.reorder = (...args) => this.reorder(...args)
+    mesh.metadata.flipAll = () => this.flipAll()
 
     this.dropObserver = this.onDropObservable.add(({ dropped }) => {
       // sort all dropped meshes by elevation (lowest first)
@@ -133,9 +134,8 @@ export class StackBehavior extends TargetBehavior {
    */
   async push(meshId) {
     const mesh = this.stack[0].getScene().getMeshById(meshId)
-    if (!mesh || (this.base || this).stack.includes(mesh)) {
-      return
-    }
+    if (!mesh || (this.base || this).stack.includes(mesh)) return
+
     const base = this.base || this
     const { moveDuration, stack } = base
 
@@ -162,9 +162,8 @@ export class StackBehavior extends TargetBehavior {
    */
   pop() {
     const stack = this.base?.stack ?? this.stack
-    if (stack.length <= 1) {
-      return
-    }
+    if (stack.length <= 1) return
+
     const mesh = stack.pop()
     setBase(mesh, null, [mesh])
     // note: no need to enable the poped mesh target: since it was last, it's always enabled
@@ -178,13 +177,13 @@ export class StackBehavior extends TargetBehavior {
   }
 
   /**
-   * Reorders the stack:
+   * Reorders the stack, with a possible animation:
    * - records the action into the control manager
-   * - moves in parallel all meshes to "explode" the stack and wait until they complete
-   * - re-order the internal stack according to the provided id array
-   * - moves the new lowest mesh back to its position and wait until completed
-   * - sequentially push all other mesh in order to animates them.
+   * - updates each mesh's base and stack, including metadata, according to new order
    * - disables all targets but the ones of the highest mesh in stack
+   * - moves each mesh to their final position, applying gravity, with no animation
+   * - (when requested) moves in parallel all meshes to "explode" the stack and wait until they complete
+   * - (when requestd) moves in serie all meshes to their final position and wait until completion
    *
    * @async
    * @param {string[]} ids - array or mesh ids givin the new order.
@@ -192,9 +191,8 @@ export class StackBehavior extends TargetBehavior {
    */
   async reorder(ids, animate = true) {
     const old = this.base?.stack ?? this.stack
-    if (old.length <= 1) {
-      return
-    }
+    if (old.length <= 1) return
+
     const posById = new Map(old.map(({ id }, i) => [id, i]))
     const stack = ids.map(id => old[posById.get(id)])
 
@@ -204,17 +202,21 @@ export class StackBehavior extends TargetBehavior {
       args: [ids, animate]
     })
 
-    // move the new base card to its final position to allow stack computations
-    const basePosition = this.mesh.absolutePosition.clone()
-    basePosition.y += getHeight(stack[0]) - getHeight(this.mesh)
-    stack[0].setAbsolutePosition(basePosition)
-
     logger.info(
-      { old, stack, base: basePosition, animate },
+      { old, stack, animate },
       `reorder: ${old.map(({ id }) => id)} into ${ids}`
     )
 
+    // updates stack and base internals
+    setBase(stack[0], null, stack)
+    const baseBehavior = stack[0].getBehaviorByName(StackBehavior.NAME)
+    for (const mesh of stack.slice(1)) {
+      setBase(mesh, baseBehavior, stack)
+    }
+    // updates targets
     enableLastTarget(old, false)
+    enableLastTarget(stack, true)
+
     for (const mesh of stack) {
       // prevents interactions and collisions
       mesh.isPickable = false
@@ -222,26 +224,19 @@ export class StackBehavior extends TargetBehavior {
 
     let last = null
     const newPositions = []
-    // moves all cards to their final position
+    // moves meshes to their final position
     for (const mesh of stack) {
-      if (last) {
+      if (!last) {
+        applyGravity(mesh)
+        newPositions.push(mesh.absolutePosition.clone())
+      } else {
         const { x, z } = mesh.absolutePosition
         const position = new Vector3(x, altitudeOnTop(mesh, last), z)
         mesh.setAbsolutePosition(position)
         newPositions.push(position)
-      } else {
-        applyGravity(mesh)
-        newPositions.push(mesh.absolutePosition.clone())
       }
       last = mesh
     }
-
-    setBase(stack[0], null, stack)
-    const baseBehavior = stack[0].getBehaviorByName(StackBehavior.NAME)
-    for (const mesh of stack.slice(1)) {
-      setBase(mesh, baseBehavior, stack)
-    }
-    enableLastTarget(stack, true)
 
     if (animate) {
       // first, explode
@@ -274,11 +269,24 @@ export class StackBehavior extends TargetBehavior {
       for (const [i, mesh] of stack.entries()) {
         await animateMove(mesh, newPositions[i], moveDuration)
       }
-    } else {
-      for (const mesh of stack) {
-        mesh.isPickable = true
-      }
     }
+    for (const mesh of stack) {
+      mesh.isPickable = true
+    }
+  }
+
+  /**
+   * Flips entire stack, when relevant. Does nothing on 1-mesh stacks.
+   * Each mesh will be flipped in order (lowest first), then their order inverted (lowest becomes highest).
+   * @async
+   */
+  async flipAll() {
+    const base = this.base ?? this
+    if (base.stack.length <= 1) return
+
+    // we need to wait before reordering that cards reached their new place
+    await Promise.all(base.stack.map(mesh => mesh.metadata.flip?.()))
+    base.reorder(base.stack.map(({ id }) => id).reverse(), false)
   }
 
   /**
