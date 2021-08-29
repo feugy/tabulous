@@ -13,7 +13,7 @@ export async function animateMove(
   duration,
   withGravity = false
 ) {
-  const movable = getMoveableBehavior(mesh)
+  const movable = getAnimatableBehavior(mesh)
   if (mesh.getScene().isLoading || !movable || !duration) {
     mesh.setAbsolutePosition(absolutePosition)
     if (withGravity) {
@@ -24,7 +24,7 @@ export async function animateMove(
   }
 }
 
-export function getMoveableBehavior(mesh) {
+export function getAnimatableBehavior(mesh) {
   return (
     mesh?.getBehaviorByName(AnimateBehavior.NAME) ||
     mesh?.getBehaviorByName(FlipBehavior.NAME) ||

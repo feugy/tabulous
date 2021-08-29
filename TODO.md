@@ -30,7 +30,6 @@
 
 # Known issues
 
-- stacked cards bellow the highest can be moved (rotate the highest and click bellow)
 - crash when reordering stack
   ```js
   async reorder(ids) {

@@ -1,4 +1,5 @@
 import { Vector3 } from '@babylonjs/core'
+import { MoveBehavior } from './movable'
 import { TargetBehavior } from './targetable'
 import { controlManager, inputManager, selectionManager } from '../managers'
 import {
@@ -13,15 +14,18 @@ import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('stackable')
 
-function enableLastTarget(stack, enabled) {
+function enableLast(stack, enabled) {
+  const operation = enabled ? 'enable' : 'disable'
   const mesh = stack[stack.length - 1]
   const targetable = getTargetableBehavior(mesh)
   if (targetable) {
     targetable.enabled = enabled
-    logger.info(
-      { mesh },
-      `${enabled ? 'enable' : 'disable'} target for ${mesh.id}`
-    )
+    logger.info({ mesh }, `${operation} target for ${mesh.id}`)
+  }
+  const movable = mesh.getBehaviorByName(MoveBehavior.NAME)
+  if (movable) {
+    movable.enabled = enabled
+    logger.info({ mesh }, `${operation} moves for ${mesh.id}`)
   }
 }
 
@@ -38,6 +42,8 @@ export class StackBehavior extends TargetBehavior {
   /**
    * Creates behavior to make a mesh stackable (it can be stacked above other stackable mesh)
    * and targetable (it can receive other stackable meshs).
+   * Once a mesh is stacked bellow others, it can not be moved independently, and its targets are disabled.
+   * Only the highest mesh on stack can be moved (it is automatically poped out) and be targeted.
    *
    * @extends {TargetBehavior}
    * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
@@ -124,7 +130,7 @@ export class StackBehavior extends TargetBehavior {
   /**
    * Pushes a mesh onto this stack, or the base stack if this mesh is already stacked:
    * - records the action into the control manager
-   * - disables all targets but the ones of the highest mesh in stack
+   * - disables targets and moves of all meshes but the highest one
    * - runs a move animation with gravity until completion
    * - updates the base stack array
    * Does nothing if the mesh is already on stack (or unknown).
@@ -146,7 +152,7 @@ export class StackBehavior extends TargetBehavior {
       { stack, mesh, x, y, z },
       `push ${mesh.id} on stack ${stack.map(({ id }) => id)}`
     )
-    enableLastTarget(stack, false)
+    enableLast(stack, false)
     setBase(mesh, base, stack)
     stack.push(mesh)
     await animateMove(mesh, new Vector3(x, y, z), moveDuration, true)
@@ -155,7 +161,7 @@ export class StackBehavior extends TargetBehavior {
   /**
    * Pops the highest mesh from this stack:
    * - updates the stack array
-   * - disables all targets but the ones of the highest mesh in stack
+   * - disables targets and moves of all meshes but the highest one
    * - records the action into the control manager
    *
    * @return {import('@babylonjs/core').Mesh} the poped mesh, if any.
@@ -167,7 +173,7 @@ export class StackBehavior extends TargetBehavior {
     const mesh = stack.pop()
     setBase(mesh, null, [mesh])
     // note: no need to enable the poped mesh target: since it was last, it's always enabled
-    enableLastTarget(stack, true)
+    enableLast(stack, true)
     logger.info(
       { stack, mesh },
       `pop ${mesh.id} out of stack ${stack.map(({ id }) => id)}`
@@ -180,7 +186,7 @@ export class StackBehavior extends TargetBehavior {
    * Reorders the stack, with a possible animation:
    * - records the action into the control manager
    * - updates each mesh's base and stack, including metadata, according to new order
-   * - disables all targets but the ones of the highest mesh in stack
+   * - disables targets and moves of all meshes but the highest one
    * - moves each mesh to their final position, applying gravity, with no animation
    * - (when requested) moves in parallel all meshes to "explode" the stack and wait until they complete
    * - (when requestd) moves in serie all meshes to their final position and wait until completion
@@ -214,8 +220,8 @@ export class StackBehavior extends TargetBehavior {
       setBase(mesh, baseBehavior, stack)
     }
     // updates targets
-    enableLastTarget(old, false)
-    enableLastTarget(stack, true)
+    enableLast(old, false)
+    enableLast(stack, true)
 
     for (const mesh of stack) {
       // prevents interactions and collisions
@@ -277,7 +283,9 @@ export class StackBehavior extends TargetBehavior {
 
   /**
    * Flips entire stack, when relevant. Does nothing on 1-mesh stacks.
-   * Each mesh will be flipped in order (lowest first), then their order inverted (lowest becomes highest).
+   * - flips in parallel each mesh
+   * - re-order the stack so the lowest mesh becomes the highest
+   * - disables targets and moves of all meshes but the highest one
    * @async
    */
   async flipAll() {

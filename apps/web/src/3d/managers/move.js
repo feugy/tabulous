@@ -46,12 +46,18 @@ class MoveManager {
   /**
    * Start moving a managed mesh, recording its position.
    * If it is part of the active selection, moves the entire selection.
-   * Does nothing on unmanaged meshes.
+   * Does nothing on unmanaged meshes or mesh with disabled behavior.
    * @param {import('@babel/core').Mesh} mesh - to be moved.
    * @param {MouseEvent|TouchEvent} event - mouse or touch event containing the screen position.
    */
   start(mesh, event) {
-    if (!this.meshIds.has(mesh?.id)) return
+    if (
+      !this.meshIds.has(mesh?.id) ||
+      !this.behaviorByMeshId.get(mesh?.id).enabled
+    ) {
+      return
+    }
+    console.log(this.behaviorByMeshId.get(mesh?.id))
 
     const moved = selectionManager.meshes.has(mesh)
       ? [...selectionManager.meshes].filter(mesh => this.meshIds.has(mesh?.id))
