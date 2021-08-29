@@ -32,28 +32,17 @@ export function createEngine({ canvas, interaction, doubleTapDelay } = {}) {
   controlManager.init({ scene })
   selectionManager.init({ scene })
 
-  let dataLoaded = false
-
   engine.start = () => engine.runRenderLoop(scene.render.bind(scene))
   scene.onDataLoadedObservable.addOnce(() => {
-    dataLoaded = true
-    handleEnter()
+    inputManager.enabled = true
   })
 
-  const handleLeave = event => {
-    inputManager.suspend(event)
+  function handleLeave(event) {
+    inputManager.stopAll(event)
   }
-  const handleEnter = () => {
-    if (dataLoaded) {
-      inputManager.resume()
-    }
-  }
-  interaction.addEventListener('focus', handleEnter)
-  interaction.addEventListener('blur', handleLeave)
-
+  interaction.addEventListener('pointerleave', handleLeave)
   engine.onDisposeObservable.addOnce(() => {
-    interaction.removeEventListener('focus', handleEnter)
-    interaction.removeEventListener('blur', handleLeave)
+    interaction.removeEventListener('pointerleave', handleLeave)
   })
 
   // scene.debugLayer.show({ embedMode: true })
