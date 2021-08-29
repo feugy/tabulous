@@ -6,56 +6,51 @@
   export let current = null
   export let saves = []
   export let maxCount = 6
+  export let longTapDelay = 250
+
+  const timeByPointerId = new Map()
+  let deferLong
 
   $: saveCount = saves.length
 
   $: isSaved = Boolean(saves.find(({ hash }) => hash === current?.hash))
 
-  // catching clicks on window ensure we leave adding mode wherever user clicks
-  // it allows them cancelling the operation
-  let adding = false
-
   const dispatch = createEventDispatcher()
 
-  function handleSaveOrRestore(index) {
-    dispatch(adding ? 'save' : 'restore', { index })
+  function handleDown(pointerId) {
+    timeByPointerId.set(pointerId, Date.now())
+    deferLong = setTimeout(() => dispatch('longTap'), longTapDelay)
   }
 
-  function handleAddSave(index) {
-    dispatch('save', { index })
-  }
-
-  function handleEnterAdd(event) {
-    event.stopPropagation()
-    adding = true
+  function handleUp(pointerId, index) {
+    clearTimeout(deferLong)
+    const start = timeByPointerId.get(pointerId)
+    if (start) {
+      if (Date.now() - start < longTapDelay) {
+        dispatch('restore', { index })
+      } else if (index !== 0) {
+        dispatch('save', { index })
+      }
+    }
+    timeByPointerId.clear()
   }
 </script>
-
-<svelte:window on:click={() => (adding = false)} />
 
 {#each saves as save, index}
   <Button
     icon="videocam"
     badge={index === 0 ? null : index}
-    title={$_(adding ? 'tooltips.save-camera' : 'tooltips.restore-camera', {
-      index
-    })}
+    title={$_('tooltips.save-restore-camera', { index })}
     disabled={save.hash === current?.hash}
-    on:click={() => handleSaveOrRestore(index)}
+    on:pointerdown={({ pointerId }) => handleDown(pointerId)}
+    on:pointerup={({ pointerId }) => handleUp(pointerId, index)}
   />{' '}
 {/each}
-{#if adding}
-  <Button
-    icon="videocam"
-    badge={saveCount}
-    title={$_('tooltips.save-camera', { index: saveCount })}
-    on:click={() => handleAddSave(saveCount)}
-  />
-{:else if saveCount <= maxCount}
+{#if saveCount <= maxCount}
   <Button
     icon="video_call"
     title={$_('tooltips.save-new-camera')}
     disabled={isSaved}
-    on:click={handleEnterAdd}
+    on:click={() => dispatch('save', { index: saveCount })}
   />
 {/if}

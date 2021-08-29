@@ -40,9 +40,8 @@ tooltips:
   detail: Regarder
   flip: Retourner
   game-menu: Menu des commandes
-  restore-camera: '{index, plural, =0 {Centrer la caméra sur la position initiale} other {Centrer la caméra sur la position #}}'
   rotate: Pivoter
-  save-camera: '{index, plural, =0 {Impossible de changer la position initiale} other {Enregistrer la position la caméra sur la position #}}'
+  save-restore-camera: '{index, plural, =0 {Charger la position initiale de la camera} other {Charger (clic) ou enregistrer (clic long) la position de la caméra sur la position #}}'
   save-new-camera: Enregistrer la position de la caméra
   send-message: Envoyer à tous
   shuffle: Mélanger

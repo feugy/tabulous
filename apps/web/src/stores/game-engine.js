@@ -14,7 +14,6 @@ const meshDetails$ = new Subject()
 const meshForMenu$ = new Subject()
 const stackSize$ = new Subject()
 const cameraSaves$ = new BehaviorSubject([])
-const longInputs$ = new Subject()
 const currentCamera$ = new Subject()
 
 /**
@@ -62,9 +61,9 @@ export const cameraSaves = cameraSaves$.asObservable()
 
 /**
  * Emits when a long tap/drag/pinch... input was detected.
- * @type {Observable<import('../3d/managers').CameraSave>}
+ * @type {Subject<import('../3d/managers').CameraSave>}
  */
-export const longInputs = longInputs$.asObservable()
+export const longInputs = new Subject()
 
 /**
  * Emits the new camera state every time it changes.
@@ -92,9 +91,15 @@ export function initEngine({
   canvas,
   interaction,
   doubleTapDelay = 300,
+  longTapDelay = 250,
   pointerThrottle = 200
 } = {}) {
-  const engine = createEngine({ canvas, interaction, doubleTapDelay })
+  const engine = createEngine({
+    canvas,
+    interaction,
+    doubleTapDelay,
+    longTapDelay
+  })
   engine.onEndFrameObservable.add(() => fps$.next(engine.getFps().toFixed()))
 
   createTable()
@@ -114,10 +119,7 @@ export function initEngine({
     { observable: controlManager.onDetailedObservable, subject: meshDetails$ },
     { observable: cameraManager.onSaveObservable, subject: cameraSaves$ },
     { observable: cameraManager.onMoveObservable, subject: currentCamera$ },
-    {
-      observable: inputManager.onLongObservable,
-      subject: longInputs$
-    }
+    { observable: inputManager.onLongObservable, subject: longInputs }
   ]
   // exposes Babylon observables as RX subjects
   for (const { observable, subject } of mapping) {

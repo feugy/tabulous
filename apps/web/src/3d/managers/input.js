@@ -7,7 +7,6 @@ const logger = makeLogger('input')
 
 const PinchMovementThreshold = 5
 const PinchAttemptThreshold = 3
-const LongDelay = 250
 
 /**
  * @typedef {object} InputData input event data:
@@ -61,9 +60,10 @@ class InputManager {
    * Gives a scene to the manager, so it can bind to underlying events.
    * @param {object} params - parameters, including:
    * @param {Scene} params.scene - scene attached to.
+   * @param {number} params.longTapDelay - number of milliseconds to hold pointer down before it is considered as long.
    * @param {boolean} [params.enabled=true] - whether the input manager actively handles inputs or not.
    */
-  init({ scene, enabled = false } = {}) {
+  init({ scene, enabled = false, longTapDelay } = {}) {
     // same finger/stylus/mouse will have same pointerId for down, move(s) and up events
     // different fingers will have different ids
     const pointers = new Map()
@@ -80,6 +80,7 @@ class InputManager {
     let lastTap = 0
     let tapPointers = 1
     this.enabled = enabled
+    this.longTapDelay = longTapDelay
 
     const startHover = (event, mesh) => {
       if (hovered !== mesh) {
@@ -189,7 +190,7 @@ class InputManager {
               }
               logger.info(data, `long pointer detected`)
               this.onLongObservable.notifyObservers(data)
-            }, LongDelay)
+            }, this.longTapDelay)
           })
 
           const wasPinching = pinch.first !== null
