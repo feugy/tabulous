@@ -100,7 +100,7 @@
     <!-- svelte-ignore a11y-missing-attribute -->
     <img
       class:noImage
-      src={player?.avatar ?? '---'}
+      src={player?.avatar ?? '/no-avatar.png'}
       on:error={() => {
         noImage = true
       }}

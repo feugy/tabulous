@@ -1,5 +1,5 @@
 import { /*AxesViewer,*/ Engine, Scene } from '@babylonjs/core'
-import '@babylonjs/inspector'
+// import '@babylonjs/inspector'
 import {
   cameraManager,
   controlManager,

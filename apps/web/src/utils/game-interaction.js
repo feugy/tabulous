@@ -38,8 +38,6 @@ export function attachInputs({
   meshForMenu$,
   stackSize$
 } = {}) {
-  const maxPanInput = 50
-  const maxPan = 3
   let selectionPosition
   let panPosition
   let rotatePosition
@@ -209,28 +207,26 @@ export function attachInputs({
           }
         } else if (type === 'drag') {
           if (rotatePosition) {
-            const deltaX = event.x - rotatePosition.x
+            // for alpha, rotate clockwise when panning the top side of the screen, and anti-clockwise when panning the bottom side
+            const deltaX =
+              event.y < window.innerHeight / 2
+                ? event.x - rotatePosition.x
+                : rotatePosition.x - event.x
             const deltaY = event.y - rotatePosition.y
             cameraManager.rotate(
               Math.abs(deltaX) < 8
                 ? 0
                 : deltaX < 0
-                ? Math.PI / 4
-                : -Math.PI / 4,
+                ? -Math.PI / 4
+                : Math.PI / 4,
               Math.abs(deltaY) < 4 ? 0 : normalize(deltaY, 10, 0, Math.PI / 6)
             )
             rotatePosition = event
           } else if (panPosition) {
             if (!panInProgress) {
-              cameraManager
-                .pan(
-                  normalize(panPosition.x - event.x, maxPanInput, 0, maxPan),
-                  normalize(event.y - panPosition.y, maxPanInput, 0, maxPan),
-                  100
-                )
-                .then(() => {
-                  panInProgress = false
-                })
+              cameraManager.pan(panPosition, event, 100).then(() => {
+                panInProgress = false
+              })
               panPosition = event
               panInProgress = true
             }

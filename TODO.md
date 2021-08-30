@@ -20,7 +20,6 @@
   - put under
 - boards
 - keyboard
-- updating a saved camera position is not intuitive
 
 ## Multi player
 
@@ -67,6 +66,7 @@ no peer found for signal from 4717
 
 ## Game UI:
 
+- show contextual help (for example, on hover) to indicates which commands are available
 - top right, an help button with drawing for base commands (pan, camera, DnD, main actions)
 - top right, an link to the rule book, opened in a floating pane, either taking whole screen, or a third of it
 - top left, in a column, player avatars/videos, with number of tokens/cards in hand, and mute indicator & command
