@@ -1,4 +1,5 @@
-import { Animation, Vector3 } from '@babylonjs/core'
+import { Animation } from '@babylonjs/core/Animations/animation'
+import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { AnimateBehavior } from './animatable'
 import { applyGravity } from '../utils'
 import { controlManager } from '../managers'

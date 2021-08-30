@@ -1,13 +1,11 @@
-import {
-  Axis,
-  Color3,
-  Mesh,
-  MeshBuilder,
-  StandardMaterial,
-  Texture,
-  Vector3,
-  Vector4
-} from '@babylonjs/core'
+import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial'
+import { Texture } from '@babylonjs/core/Materials/Textures/texture'
+import { Axis } from '@babylonjs/core/Maths/math.axis'
+import { Color3 } from '@babylonjs/core/Maths/math.color'
+import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector'
+import { Mesh } from '@babylonjs/core/Meshes/mesh'
+import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { PlaneBuilder } from '@babylonjs/core/Meshes/Builders/planeBuilder'
 import {
   DetailBehavior,
   FlipBehavior,
@@ -63,7 +61,7 @@ export function createCard({
   images,
   ...cardProps
 } = {}) {
-  const faces = MeshBuilder.CreatePlane('faces', {
+  const faces = PlaneBuilder.CreatePlane('faces', {
     width,
     height,
     frontUVs: new Vector4(0.5, 1, 0, 0),
@@ -77,7 +75,7 @@ export function createCard({
   faces.material.freeze()
   attachMaterialError(faces.material)
 
-  const card = MeshBuilder.CreateBox('card', {
+  const card = BoxBuilder.CreateBox('card', {
     width,
     height: depth,
     depth: height
@@ -138,7 +136,7 @@ export function createCard({
   card.addBehavior(rotateBehavior, true)
 
   const stackBehavior = new StackBehavior({ moveDuration })
-  const dropZone = MeshBuilder.CreateBox('drop-zone', {
+  const dropZone = BoxBuilder.CreateBox('drop-zone', {
     width: width * 1.03,
     height: depth + 0.01,
     depth: height * 1.03

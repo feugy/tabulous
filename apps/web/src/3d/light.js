@@ -1,9 +1,9 @@
-import {
-  Color3,
-  DirectionalLight,
-  ShadowGenerator,
-  Vector3
-} from '@babylonjs/core'
+// mandatory side effect
+import '@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent'
+import { DirectionalLight } from '@babylonjs/core/Lights/directionalLight'
+import { ShadowGenerator } from '@babylonjs/core/Lights/Shadows/shadowGenerator'
+import { Color3 } from '@babylonjs/core/Maths/math.color'
+import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 
 /**
  * @typedef {object} LightResult

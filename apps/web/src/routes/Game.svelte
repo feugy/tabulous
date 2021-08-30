@@ -144,7 +144,7 @@
   </div>
 {:catch error}
   <div class="overlay">
-    {error.message}
+    {error.message ?? error}
   </div>
 {/await}
 

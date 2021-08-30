@@ -1,4 +1,4 @@
-import { Color3 } from '@babylonjs/core'
+import { Color3 } from '@babylonjs/core/Maths/math.color'
 import { selectionManager } from '.'
 import { isAbove } from '../utils'
 // '../../utils' creates a cyclic dependency in Jest

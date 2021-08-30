@@ -1,4 +1,6 @@
-import { Observable, PointerEventTypes, Scene } from '@babylonjs/core'
+import { PointerEventTypes } from '@babylonjs/core/Events/pointerEvents'
+import { Observable } from '@babylonjs/core/Misc/observable'
+import { Scene } from '@babylonjs/core/scene'
 import { distance } from '../../utils'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'

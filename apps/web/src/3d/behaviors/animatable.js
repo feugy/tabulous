@@ -1,4 +1,4 @@
-import { Animation } from '@babylonjs/core'
+import { Animation } from '@babylonjs/core/Animations/animation'
 import { applyGravity } from '../utils'
 
 export class AnimateBehavior {

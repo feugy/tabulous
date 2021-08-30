@@ -1,11 +1,8 @@
-import {
-  Color3,
-  MeshBuilder,
-  StandardMaterial,
-  Texture,
-  Vector3,
-  Vector4
-} from '@babylonjs/core'
+import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial'
+import { Texture } from '@babylonjs/core/Materials/Textures/texture'
+import { Color3 } from '@babylonjs/core/Maths/math.color'
+import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector'
+import { CylinderBuilder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
 import {
   DetailBehavior,
   FlipBehavior,
@@ -63,7 +60,7 @@ export function createRoundToken({
     new Vector4(0.49, 1, 0.509, 0),
     new Vector4(0.509, 0, 1, 1)
   ]
-  const token = MeshBuilder.CreateCylinder('round-token', {
+  const token = CylinderBuilder.CreateCylinder('round-token', {
     diameter,
     height,
     tessellation: 48,
@@ -114,7 +111,7 @@ export function createRoundToken({
   token.addBehavior(rotateBehavior, true)
 
   const stackBehavior = new StackBehavior({ moveDuration })
-  const dropZone = MeshBuilder.CreateCylinder('drop-zone', {
+  const dropZone = CylinderBuilder.CreateCylinder('drop-zone', {
     diameter: diameter * 1.03,
     height: height + 0.02
   })

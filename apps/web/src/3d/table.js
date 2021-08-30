@@ -1,4 +1,6 @@
-import { Color4, MeshBuilder, StandardMaterial } from '@babylonjs/core'
+import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial'
+import { Color4 } from '@babylonjs/core/Maths/math.color'
+import { GroundBuilder } from '@babylonjs/core/Meshes/Builders/groundBuilder'
 
 /**
  * Creates ground mesh to act as table, that received shadows but can not receive rays.
@@ -14,7 +16,7 @@ export function createTable({
   height = 50,
   color = [0.2, 0.2, 0.2, 1]
 } = {}) {
-  const table = MeshBuilder.CreateGround('table', { width, height })
+  const table = GroundBuilder.CreateGround('table', { width, height })
   table.position.y = -0.01
   table.receiveShadows = true
 

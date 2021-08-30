@@ -3,7 +3,6 @@
 ## Refactor
 
 - server logging (warning on invalid descriptors)
-- enable [Babylon.js treeshaking](https://doc.babylonjs.com/divingDeeper/developWithBjs/treeShaking)
 - all manager managing a collection of behaviors should check their capabilities
 - moves images to server
 - completly disable Babylon input management
@@ -29,13 +28,6 @@
 
 # Known issues
 
-- crash when reordering stack
-  ```js
-  async reorder(ids) {
-    // ...
-    for (const mesh of stack) {
-      mesh.isPickable = false // TypeError: mesh is undefined
-  ```
 - moving items bellow other does not apply gravity to them
 - on vite reload, all players could become hosts or peers simultaneously
 
@@ -210,7 +202,10 @@ Removing server to only allow peer communication is really hard:
 - we might need a TURN server to relay video/data streams in some situations
 
 I started with SSE to push game invites to players, and Websocket to keep the signaling server independant from the app logic, but it's too many sockets for the same user.
-GraphQL subscriptions over WS are perfect to implement both usecases..
+GraphQL subscriptions over WS are perfect to implement both usecases.
+
+Enabling tree shaking in Babylon.js is [cumbersom](https://doc.babylonjs.com/divingDeeper/developWithBjs/treeShaking), but really effective:
+Final code went from 1417 modules to 674 (53% less) and the vendor.js file from 3782.23kb to 1389.03 (63% less).
 
 For decent in-game performance, textures must be GPU-compressed to KTX2 container format. This will skip CPU uncompressing jpeg/png content before passing it to the GPU.
 However, it's not broadly supported on WebGL 1 platform, so I kept the png files as fallback.

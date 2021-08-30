@@ -1,4 +1,4 @@
-import { Vector3 } from '@babylonjs/core'
+import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { MoveBehavior } from './movable'
 import { TargetBehavior } from './targetable'
 import { controlManager, inputManager, selectionManager } from '../managers'

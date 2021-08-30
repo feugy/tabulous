@@ -1,3 +1,5 @@
+// mandatory side effect
+import '@babylonjs/core/Loading/loadingScreen'
 import { createCard, createRoundToken, createRoundedTile } from '..'
 import { FlipBehavior, RotateBehavior, StackBehavior } from '../behaviors'
 // '../../utils' creates a cyclic dependency in Jest
