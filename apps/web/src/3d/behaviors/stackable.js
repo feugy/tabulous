@@ -36,6 +36,7 @@ function setBase(mesh, base, stack) {
     targetable.stack = stack
     mesh.metadata.stack = targetable.stack
   }
+  return targetable
 }
 
 export class StackBehavior extends TargetBehavior {
@@ -140,7 +141,7 @@ export class StackBehavior extends TargetBehavior {
    */
   async push(meshId) {
     const mesh = this.stack[0].getScene().getMeshById(meshId)
-    if (!mesh || (this.base || this).stack.includes(mesh)) return
+    if (!mesh || this.stack.includes(mesh)) return
 
     const base = this.base || this
     const { moveDuration, stack } = base
@@ -214,8 +215,7 @@ export class StackBehavior extends TargetBehavior {
     )
 
     // updates stack and base internals
-    setBase(stack[0], null, stack)
-    const baseBehavior = stack[0].getBehaviorByName(StackBehavior.NAME)
+    const baseBehavior = setBase(stack[0], null, stack)
     for (const mesh of stack.slice(1)) {
       setBase(mesh, baseBehavior, stack)
     }
@@ -309,7 +309,9 @@ export class StackBehavior extends TargetBehavior {
   serialize() {
     return {
       stack:
-        this.stack.length <= 1 ? [] : this.stack.slice(1).map(({ id }) => id)
+        this.base !== null || this.stack.length <= 1
+          ? []
+          : this.stack.slice(1).map(({ id }) => id)
     }
   }
 }
