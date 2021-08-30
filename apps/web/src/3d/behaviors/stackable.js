@@ -63,6 +63,7 @@ export class StackBehavior extends TargetBehavior {
     this.dropObserver = null
     this.base = null
     this.pushQueue = []
+    this.inhibitControl = false
   }
 
   /**
@@ -85,15 +86,7 @@ export class StackBehavior extends TargetBehavior {
    */
   attach(mesh) {
     super.attach(mesh)
-    this.stack = [mesh]
-    if (!mesh.metadata) {
-      mesh.metadata = {}
-    }
-    mesh.metadata.stack = this.stack
-    mesh.metadata.push = (...args) => this.push(...args)
-    mesh.metadata.pop = () => this.pop()
-    mesh.metadata.reorder = (...args) => this.reorder(...args)
-    mesh.metadata.flipAll = () => this.flipAll()
+    this.fromState({ stack: [] })
 
     this.dropObserver = this.onDropObservable.add(({ dropped }) => {
       // sort all dropped meshes by elevation (lowest first)
@@ -130,7 +123,7 @@ export class StackBehavior extends TargetBehavior {
 
   /**
    * Pushes a mesh onto this stack, or the base stack if this mesh is already stacked:
-   * - records the action into the control manager
+   * - records the action into the control manager (if not inhibited)
    * - disables targets and moves of all meshes but the highest one
    * - runs a move animation with gravity until completion
    * - updates the base stack array
@@ -146,7 +139,9 @@ export class StackBehavior extends TargetBehavior {
     const base = this.base || this
     const { moveDuration, stack } = base
 
-    controlManager.record({ meshId: stack[0].id, fn: 'push', args: [mesh.id] })
+    if (!this.inhibitControl) {
+      controlManager.record({ meshId: stack[0].id, fn: 'push', args: [meshId] })
+    }
     const { x, z } = stack[0].absolutePosition
     const y = altitudeOnTop(mesh, stack[stack.length - 1])
     logger.info(
@@ -312,6 +307,29 @@ export class StackBehavior extends TargetBehavior {
         this.base !== null || this.stack.length <= 1
           ? []
           : this.stack.slice(1).map(({ id }) => id)
+    }
+  }
+
+  /**
+   * Updates this behavior's state and mesh to match provided data.
+   * @param {FlippableState} state - state to update to.
+   */
+  fromState(state) {
+    if (Array.isArray(state.stack)) {
+      this.stack = [this.mesh]
+      if (!this.mesh.metadata) {
+        this.mesh.metadata = {}
+      }
+      this.mesh.metadata.stack = this.stack
+      this.mesh.metadata.push = (...args) => this.push(...args)
+      this.mesh.metadata.pop = () => this.pop()
+      this.mesh.metadata.reorder = (...args) => this.reorder(...args)
+      this.mesh.metadata.flipAll = () => this.flipAll()
+      this.inhibitControl = true
+      for (const id of state.stack) {
+        this.push(id)
+      }
+      this.inhibitControl = false
     }
   }
 }

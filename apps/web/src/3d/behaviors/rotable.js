@@ -53,12 +53,7 @@ export class RotateBehavior extends AnimateBehavior {
    */
   attach(mesh) {
     super.attach(mesh)
-    mesh.rotation.y = this.angle * 0.5 * Math.PI
-    if (!mesh.metadata) {
-      mesh.metadata = {}
-    }
-    mesh.metadata.rotate = this.rotate.bind(this)
-    mesh.metadata.angle = this.angle
+    this.fromState(this)
   }
 
   /**
@@ -142,6 +137,22 @@ export class RotateBehavior extends AnimateBehavior {
    */
   serialize() {
     return { angle: this.angle }
+  }
+
+  /**
+   * Updates this behavior's state and mesh to match provided data.
+   * @param {RotableState} state - state to update to.
+   */
+  fromState(state = {}) {
+    if ('angle' in state) {
+      this.angle = state.angle
+      this.mesh.rotation.y = this.angle * 0.5 * Math.PI
+      if (!this.mesh.metadata) {
+        this.mesh.metadata = {}
+      }
+      this.mesh.metadata.rotate = this.rotate.bind(this)
+      this.mesh.metadata.angle = this.angle
+    }
   }
 }
 

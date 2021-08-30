@@ -50,12 +50,7 @@ export class FlipBehavior extends AnimateBehavior {
    */
   attach(mesh) {
     super.attach(mesh)
-    mesh.rotation.z = this.isFlipped ? Math.PI : 0
-    if (!mesh.metadata) {
-      mesh.metadata = {}
-    }
-    mesh.metadata.flip = this.flip.bind(this)
-    mesh.metadata.isFlipped = this.isFlipped
+    this.fromState(this)
   }
 
   /**
@@ -151,6 +146,22 @@ export class FlipBehavior extends AnimateBehavior {
    */
   serialize() {
     return { isFlipped: this.isFlipped }
+  }
+
+  /**
+   * Updates this behavior's state and mesh to match provided data.
+   * @param {FlippableState} state - state to update to.
+   */
+  fromState(state = {}) {
+    if ('isFlipped' in state) {
+      this.isFlipped = state.isFlipped
+      this.mesh.rotation.z = this.isFlipped ? Math.PI : 0
+      if (!this.mesh.metadata) {
+        this.mesh.metadata = {}
+      }
+      this.mesh.metadata.flip = this.flip.bind(this)
+      this.mesh.metadata.isFlipped = this.isFlipped
+    }
   }
 }
 

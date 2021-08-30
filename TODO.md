@@ -29,6 +29,7 @@
 
 # Known issues
 
+- on stack, can click on N-1 mesh while N mesh is flipping (breaks move/target
 - crash when reordering stack
   ```js
   async reorder(ids) {
@@ -131,6 +132,7 @@ The host player is in charge of:
 1. be the source of thruth
 1. sending an updated game descriptor to new peers
 1. storing the game descriptor locally and/or on server
+1. regularly sending the game state so all peer could sync their state
 
 When the host player disconnects, a new host is elected: the first connected player in the game player list becomes host
 
