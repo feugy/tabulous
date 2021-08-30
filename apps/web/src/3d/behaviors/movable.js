@@ -7,6 +7,7 @@ export class MoveBehavior {
    * A mesh can only be dropped onto zones with the same kind.
    *
    * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
+   * @property {boolean} enabled - activity status (true by default).
    * @property {string} dragKind - drag kind.
    * @property {number} snapDistance - snap grid unit, in 3D world coordinate.
    * @property {number} moveDuration - duration (in milliseconds) of the snap move.
@@ -19,6 +20,7 @@ export class MoveBehavior {
   constructor({ moveDuration, snapDistance, dragKind } = {}) {
     this.mesh = null
     this.dragKind = dragKind
+    this.enabled = true
     this.snapDistance = snapDistance || 0.25
     this.moveDuration = moveDuration || 100
   }

@@ -43,7 +43,7 @@ class TargetManager {
 
   /**
    * Finds drop zones physically bellow a given mesh.
-   * Only zones accepting the dragged kind will match.
+   * Only enabled zones accepting the dragged, kind will match.
    * In case several zones are bellow the mesh, and the one on top will prevail (according to its elevation).
    * The found zone is highlithed, and the dragged mesh will be saved as potential droppable for this zone.
    *

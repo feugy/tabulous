@@ -17,8 +17,8 @@ import {
  * @returns {LightResult} an object containing created light and shadowGenerator.
  */
 export function createLight() {
-  const light = new DirectionalLight('sun', new Vector3(100, -200, -100))
-  light.specular = new Color3(0, 0, 0)
+  const light = new DirectionalLight('sun', new Vector3(0, -10, 0))
+  light.specular = Color3.Black()
 
   const shadowGenerator = new ShadowGenerator(1024, light)
   shadowGenerator.usePercentageCloserFiltering = true

@@ -52,9 +52,9 @@
   }
 
   div.halo {
-    @apply w-2 h-2 rounded-full transform -translate-x-1/2 -translate-y-1/2;
-    animation-duration: 750ms;
-    transform-origin: top left;
+    @apply w-4 h-4 rounded-full -mt-2 -ml-2;
+    animation-duration: 400ms;
+    transform-origin: center;
     box-shadow: 0 0 0.15rem 0 lime;
   }
 
@@ -62,33 +62,35 @@
     0% {
       visibility: visible;
       opacity: 1;
-      scale: 1;
+      transform: scale(1);
     }
     40% {
-      scale: 5;
+      transform: scale(6);
       opacity: 1;
     }
     50% {
-      scale: 6;
+      transform: scale(8);
       opacity: 0;
     }
     51% {
-      scale: 2;
+      transform: scale(2);
       opacity: 1;
     }
     90% {
-      scale: 6;
+      transform: scale(7);
       opacity: 1;
     }
     100% {
       visibility: hidden;
-      scale: 7;
+      transform: scale(9);
       opacity: 0;
     }
   }
 </style>
 
-<svelte:body on:mousemove={event => (position = event)} />
+<svelte:body
+  on:pointermove={event => (position = event)}
+  on:pointerdown={event => (position = event)} />
 <menu style={`left: ${position?.x}px; top: ${position?.y}px`}>
   <div class="stackSize" class:active={Boolean(size)}>
     {size}

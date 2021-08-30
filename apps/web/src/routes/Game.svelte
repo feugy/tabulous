@@ -37,6 +37,7 @@
 
   export let params = {}
 
+  const longTapDelay = 250
   let canvas
   let interaction
   let openInviteDialogue = false
@@ -64,7 +65,7 @@
       []
 
   onMount(async () => {
-    initEngine({ canvas, interaction })
+    initEngine({ canvas, interaction, longTapDelay })
     loadPromise = loadGame(params.gameId, $engine)
   })
 
@@ -99,7 +100,7 @@
     @apply absolute z-10 top-0;
 
     &.right {
-      @apply right-0;
+      @apply right-0 bottom-0;
       background-color: theme('backgrounds.page');
     }
 
@@ -157,8 +158,10 @@
 </aside>
 <aside class="left bottom">
   <CameraSwitch
+    {longTapDelay}
     current={$currentCamera}
     saves={$cameraSaves}
+    on:longTap={() => longInputs.next()}
     on:restore={({ detail: { index } }) => restoreCamera(index)}
     on:save={({ detail: { index } }) => saveCamera(index)}
   />

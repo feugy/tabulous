@@ -38,8 +38,6 @@ export function attachInputs({
   meshForMenu$,
   stackSize$
 } = {}) {
-  const maxPanInput = 50
-  const maxPan = 3
   let selectionPosition
   let panPosition
   let rotatePosition
@@ -78,8 +76,8 @@ export function attachInputs({
             selectionManager.clear()
           }
           if (type === 'doubletap') {
-            meshForMenu$.next(mesh)
             logger.info({ mesh, event }, `display menu for mesh ${mesh.id}`)
+            meshForMenu$.next(mesh)
           }
         } else {
           selectionManager.clear()
@@ -108,24 +106,52 @@ export function attachInputs({
         filter(data => data?.type === 'tap')
       )
       .subscribe({
-        next: ({ mesh, button, event, long, pointers }) => {
+        next: async ({ mesh, button, event, long, pointers }) => {
           const kind = pointerKind(event, button, pointers)
+          const meshes = new Set(
+            selectionManager.meshes.has(mesh) ? selectionManager.meshes : [mesh]
+          )
           if (long) {
-            mesh.metadata.detail?.()
             logger.info(
               { mesh, button, long, event },
               `display details for mesh ${mesh.id}`
             )
+            mesh.metadata.detail?.()
             stackSize$.next(null)
           } else if (kind === 'right') {
-            controlManager.apply({ meshId: mesh.id, fn: 'rotate' })
-            logger.info(
-              { mesh, button, long, event },
-              `rotates mesh ${mesh.id}`
-            )
+            for (const mesh of meshes) {
+              logger.info(
+                { mesh, button, long, event },
+                `rotates mesh ${mesh.id}`
+              )
+              controlManager.apply({ meshId: mesh.id, fn: 'rotate' })
+            }
           } else if (kind === 'left') {
-            controlManager.apply({ meshId: mesh.id, fn: 'flip' })
-            logger.info({ mesh, button, long, event }, `flips mesh ${mesh.id}`)
+            const exclude = new Set()
+            for (const mesh of meshes) {
+              if (!exclude.has(mesh)) {
+                if (
+                  mesh.metadata.stack?.length > 1 &&
+                  mesh.metadata.stack.every(mesh => meshes.has(mesh))
+                ) {
+                  // when current selection contains all mesh of a stack, we should flip the entire stack
+                  logger.info(
+                    { mesh, button, long, event },
+                    `flips stack of ${mesh.id}`
+                  )
+                  controlManager.apply({ meshId: mesh.id, fn: 'flipAll' })
+                  for (const excluded of mesh.metadata.stack) {
+                    exclude.add(excluded)
+                  }
+                } else {
+                  logger.info(
+                    { mesh, button, long, event },
+                    `flips mesh ${mesh.id}`
+                  )
+                  controlManager.apply({ meshId: mesh.id, fn: 'flip' })
+                }
+              }
+            }
           }
         }
       }),
@@ -148,61 +174,59 @@ export function attachInputs({
               selectionManager.clear()
             }
             if (kind === 'left') {
-              moveManager.start(mesh, event)
               logger.info(
                 { mesh, button, long, pointers, event },
                 `start moving mesh ${mesh.id}`
               )
+              moveManager.start(mesh, event)
             }
           }
           if (!moveManager.inProgress) {
             const position = { x: event.x, y: event.y }
             if (kind === 'right') {
-              rotatePosition = position
               logger.info(
                 { button, long, pointers, event },
                 `start rotating camera`
               )
+              rotatePosition = position
             } else if (kind === 'left') {
               if (long) {
-                selectionPosition = position
                 logger.info(
                   { button, long, pointers, event },
                   `start selecting meshes`
                 )
+                selectionPosition = position
               } else {
-                panPosition = position
                 logger.info(
                   { button, long, pointers, event },
                   `start panning camera`
                 )
+                panPosition = position
               }
             }
           }
         } else if (type === 'drag') {
           if (rotatePosition) {
-            const deltaX = event.x - rotatePosition.x
+            // for alpha, rotate clockwise when panning the top side of the screen, and anti-clockwise when panning the bottom side
+            const deltaX =
+              event.y < window.innerHeight / 2
+                ? event.x - rotatePosition.x
+                : rotatePosition.x - event.x
             const deltaY = event.y - rotatePosition.y
             cameraManager.rotate(
               Math.abs(deltaX) < 8
                 ? 0
                 : deltaX < 0
-                ? Math.PI / 4
-                : -Math.PI / 4,
+                ? -Math.PI / 4
+                : Math.PI / 4,
               Math.abs(deltaY) < 4 ? 0 : normalize(deltaY, 10, 0, Math.PI / 6)
             )
             rotatePosition = event
           } else if (panPosition) {
             if (!panInProgress) {
-              cameraManager
-                .pan(
-                  normalize(panPosition.x - event.x, maxPanInput, 0, maxPan),
-                  normalize(event.y - panPosition.y, maxPanInput, 0, maxPan),
-                  100
-                )
-                .then(() => {
-                  panInProgress = false
-                })
+              cameraManager.pan(panPosition, event, 100).then(() => {
+                panInProgress = false
+              })
               panPosition = event
               panInProgress = true
             }
@@ -213,14 +237,14 @@ export function attachInputs({
           }
         } else if (type === 'dragStop') {
           if (selectionPosition) {
-            selectionManager.select()
             logger.info({ button, long, pointers, event }, `selecting meshes`)
+            selectionManager.select()
           } else if (mesh) {
-            moveManager.stop()
             logger.info(
               { mesh, button, long, pointers, event },
               `stop moving mesh ${mesh.id}`
             )
+            moveManager.stop()
           }
           selectionPosition = null
           rotatePosition = null
@@ -237,9 +261,9 @@ export function attachInputs({
      */
     wheels$.subscribe({
       next: ({ event }) => {
+        logger.info({ event }, `zooming camera with wheel`)
         meshForMenu$.next(null)
         cameraManager.zoom(event.deltaY * 0.1)
-        logger.info({ event }, `zooming camera with wheel`)
       }
     }),
 
@@ -255,8 +279,8 @@ export function attachInputs({
         } else if (type === 'pinch') {
           const normalized = normalize(pinchDelta, 30, 0, 15)
           if (Math.abs(normalized) > 3) {
-            cameraManager.zoom(normalized)
             logger.info({ event, pinchDelta }, `zooming camera with pinch`)
+            cameraManager.zoom(normalized)
           }
         }
       }

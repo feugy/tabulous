@@ -1,7 +1,7 @@
 import { Animation, Vector3 } from '@babylonjs/core'
 import { AnimateBehavior } from './animatable'
 import { applyGravity } from '../utils'
-import { controlManager, selectionManager } from '../managers'
+import { controlManager } from '../managers'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
 
@@ -60,7 +60,6 @@ export class FlipBehavior extends AnimateBehavior {
 
   /**
    * Flips the related mesh with an animation:
-   * - triggers flip on flippable meshes in the current selection (does not wait on them)
    * - records the action into the control manager
    * - runs the flip animation until completion and updates the flip status
    * - applies gravity
@@ -68,9 +67,8 @@ export class FlipBehavior extends AnimateBehavior {
    * Does nothing if the mesh is already being animated.
    *
    * @async
-   * @param {boolean} [single=false] - set as true to ignore other meshes from current selection
    */
-  async flip(single = false) {
+  async flip() {
     const {
       duration,
       isAnimated,
@@ -83,24 +81,10 @@ export class FlipBehavior extends AnimateBehavior {
     if (isAnimated) {
       return
     }
-    if (
-      !single &&
-      !mesh.metadata?.fromPeer &&
-      selectionManager.meshes.has(mesh)
-    ) {
-      for (const selected of selectionManager.meshes) {
-        if (selected.metadata?.flip) {
-          selected.metadata.flip(true)
-        }
-      }
-      return
-    }
     logger.debug({ mesh }, `start flipping ${mesh.id}`)
     this.isAnimated = true
 
-    if (!mesh.metadata?.fromPeer) {
-      controlManager.record({ meshId: mesh.id, fn: 'flip' })
-    }
+    controlManager.record({ meshId: mesh.id, fn: 'flip' })
 
     const to = mesh.absolutePosition.clone()
     const [min, max] = mesh.getBoundingInfo().boundingBox.vectorsWorld
@@ -108,8 +92,12 @@ export class FlipBehavior extends AnimateBehavior {
 
     const lastFrame = Math.round(frameRate * (duration / 1000))
     flipAnimation.setKeys([
-      { frame: 0, value: isFlipped ? Math.PI : 0 },
-      { frame: lastFrame, value: isFlipped ? 0 : Math.PI }
+      { frame: 0, value: mesh.rotation.z },
+      {
+        frame: lastFrame,
+        value:
+          mesh.rotation.z + (mesh.rotation.y < Math.PI ? Math.PI : -Math.PI)
+      }
     ])
     moveAnimation.setKeys([
       { frame: 0, value: to },
@@ -135,6 +123,12 @@ export class FlipBehavior extends AnimateBehavior {
             this.isAnimated = false
             this.isFlipped = !isFlipped
             mesh.metadata.isFlipped = this.isFlipped
+            // keep rotation between [0..2 * PI[, without modulo because it does not keep plain values
+            if (mesh.rotation.z < 0) {
+              mesh.rotation.z += 2 * Math.PI
+            } else if (mesh.rotation.z >= 2 * Math.PI) {
+              mesh.rotation.z -= 2 * Math.PI
+            }
             logger.debug({ mesh }, `end flipping ${mesh.id}`)
             // framed animation may not exactly end where we want, so force the final position
             mesh.setAbsolutePosition(to)

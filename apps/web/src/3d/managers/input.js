@@ -7,7 +7,6 @@ const logger = makeLogger('input')
 
 const PinchMovementThreshold = 5
 const PinchAttemptThreshold = 3
-const LongDelay = 250
 
 /**
  * @typedef {object} InputData input event data:
@@ -39,6 +38,7 @@ class InputManager {
    * - mouse wheel
    * Clears all observers on scene disposal.
    *
+   * @property {boolean} enabled - whether inputs are handled or ignored.
    * @property {Observable<InputData>} onTapObservable - emits single and double tap events.
    * @property {Observable<InputData>} onDragObservable - emits drag start, drag(ging) and drag stop operation events.
    * @property {Observable<InputData>} onPinchObservable - emits pinch start, pinch(ing) and pinch stop operation events.
@@ -47,6 +47,7 @@ class InputManager {
    * @property {Observable<InputData>} onLongObservable - emits an event when detecting long operations (long tap/drag/pinch).
    */
   constructor() {
+    this.enabled = false
     this.onTapObservable = new Observable()
     this.onDragObservable = new Observable()
     this.onPinchObservable = new Observable()
@@ -59,9 +60,10 @@ class InputManager {
    * Gives a scene to the manager, so it can bind to underlying events.
    * @param {object} params - parameters, including:
    * @param {Scene} params.scene - scene attached to.
-   * @param {boolean} [params.suspended=true] - whether the input manager starts as suspended or not.
+   * @param {number} params.longTapDelay - number of milliseconds to hold pointer down before it is considered as long.
+   * @param {boolean} [params.enabled=true] - whether the input manager actively handles inputs or not.
    */
-  init({ scene, suspended = true } = {}) {
+  init({ scene, enabled = false, longTapDelay } = {}) {
     // same finger/stylus/mouse will have same pointerId for down, move(s) and up events
     // different fingers will have different ids
     const pointers = new Map()
@@ -77,7 +79,8 @@ class InputManager {
     let hovered = null
     let lastTap = 0
     let tapPointers = 1
-    this.suspended = suspended
+    this.enabled = enabled
+    this.longTapDelay = longTapDelay
 
     const startHover = (event, mesh) => {
       if (hovered !== mesh) {
@@ -150,7 +153,7 @@ class InputManager {
 
     scene.onPrePointerObservable.add(({ type, event }) => {
       if (
-        this.suspended ||
+        !this.enabled ||
         (type !== PointerEventTypes.POINTERDOWN &&
           type !== PointerEventTypes.POINTERMOVE &&
           type !== PointerEventTypes.POINTERUP &&
@@ -187,7 +190,7 @@ class InputManager {
               }
               logger.info(data, `long pointer detected`)
               this.onLongObservable.notifyObservers(data)
-            }, LongDelay)
+            }, this.longTapDelay)
           })
 
           const wasPinching = pinch.first !== null
@@ -370,21 +373,13 @@ class InputManager {
   }
 
   /**
-   * Suspends all inputs. Useful when canvas lost focus.
-   * @param {Event} event - focus lost event
+   * Stops all active operations (drags, pinchs, hover...). Useful when canvas lost focus.
+   * @param {Event} event - triggering event
    */
-  suspend(event) {
-    this.suspended = true
+  stopAll(event) {
     this.stopDrag(event)
     this.stopPinch(event)
     this.stopHover(event)
-  }
-
-  /**
-   * Resumes all inputs. Useful when canvas got the focus back.
-   */
-  resume() {
-    this.suspended = false
   }
 }
 

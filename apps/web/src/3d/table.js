@@ -12,7 +12,7 @@ import { Color4, MeshBuilder, StandardMaterial } from '@babylonjs/core'
 export function createTable({
   width = 100,
   height = 50,
-  color = [0.5, 0.5, 0.5, 1]
+  color = [0.2, 0.2, 0.2, 1]
 } = {}) {
   const table = MeshBuilder.CreateGround('table', { width, height })
   table.position.y = -0.01

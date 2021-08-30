@@ -1,6 +1,11 @@
-import { Vector3 } from '@babylonjs/core'
+import { BoundingInfo, Vector3 } from '@babylonjs/core'
 import { controlManager, selectionManager, targetManager } from '.'
-import { animateMove, isAboveTable, screenToGround } from '../utils'
+import {
+  animateMove,
+  isAboveTable,
+  screenToGround,
+  sortByElevation
+} from '../utils'
 import { sleep } from '../../utils'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
@@ -41,12 +46,17 @@ class MoveManager {
   /**
    * Start moving a managed mesh, recording its position.
    * If it is part of the active selection, moves the entire selection.
-   * Does nothing on unmanaged meshes.
+   * Does nothing on unmanaged meshes or mesh with disabled behavior.
    * @param {import('@babel/core').Mesh} mesh - to be moved.
    * @param {MouseEvent|TouchEvent} event - mouse or touch event containing the screen position.
    */
   start(mesh, event) {
-    if (!this.meshIds.has(mesh?.id)) return
+    if (
+      !this.meshIds.has(mesh?.id) ||
+      !this.behaviorByMeshId.get(mesh?.id).enabled
+    ) {
+      return
+    }
 
     const moved = selectionManager.meshes.has(mesh)
       ? [...selectionManager.meshes].filter(mesh => this.meshIds.has(mesh?.id))
@@ -82,23 +92,42 @@ class MoveManager {
         logger.debug({ moved, event, move }, `continue move operation`)
         lastPosition = currentPosition
 
-        let highest = 0
-        const allMeshes = this.scene.meshes
+        let min
+        let max
+        // evaluates the bounding box of all moved meshes
         for (const mesh of moved) {
-          // check possible collision, except within current selection
-          for (const other of allMeshes) {
-            if (
-              other.isPickable &&
-              !moved.includes(other) &&
-              mesh.intersectsMesh(other) &&
-              !selectionManager.meshes.has(other)
-            ) {
-              const { y } = other.getBoundingInfo().boundingBox.maximumWorld
-              highest = highest < y ? y : highest
-            }
+          const {
+            minimumWorld,
+            maximumWorld
+          } = mesh.getBoundingInfo().boundingBox
+          if (!min) {
+            min = minimumWorld
+            max = maximumWorld
+          } else {
+            min = Vector3.Minimize(min, minimumWorld)
+            max = Vector3.Maximize(max, maximumWorld)
           }
         }
-        move.y = highest
+        const movedBoundingInfo = new BoundingInfo(min, max)
+
+        let highest = 0
+        // check possible collision, except within current selection or currently moved
+        for (const other of this.scene.meshes.filter(
+          mesh =>
+            mesh.isPickable &&
+            !moved.includes(mesh) &&
+            !selectionManager.meshes.has(mesh)
+        )) {
+          const otherBox = other.getBoundingInfo()
+          if (movedBoundingInfo.intersects(otherBox)) {
+            const { y } = otherBox.boundingBox.maximumWorld
+            highest = highest < y ? y : highest
+          }
+        }
+        // elevates moved mesh in case of collision
+        if (highest) {
+          move.y = highest - min.y
+        }
 
         for (const mesh of moved) {
           const zone = targetManager.findDropZone(
@@ -137,10 +166,9 @@ class MoveManager {
         }
       }
       zones.clear()
-      const nonDropped = moved
-        .filter(mesh => !droppedIds.has(mesh.id))
-        // sort them by elevation (lowest first) for gravity computations
-        .sort((a, b) => a.absolutePosition.y - b.absolutePosition.y)
+      const nonDropped = sortByElevation(
+        moved.filter(mesh => !droppedIds.has(mesh.id))
+      )
       moved.splice(0, moved.length)
 
       // and moves remaining meshes

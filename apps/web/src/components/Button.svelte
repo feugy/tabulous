@@ -60,7 +60,13 @@
   }
 </style>
 
-<button {...$$restProps} class:secondary bind:this={ref} on:click
+<button
+  {...$$restProps}
+  class:secondary
+  bind:this={ref}
+  on:click
+  on:pointerup
+  on:pointerdown
   >{#if icon}<span class="material-icons">{icon}</span>{/if}{#if text}<span
       class="text">{text}</span
     >{/if}{#if badge != undefined}<span class="badge"

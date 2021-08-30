@@ -1,11 +1,10 @@
 import {
   Animation,
   ArcRotateCamera,
-  Matrix,
   Observable,
   Vector3
 } from '@babylonjs/core'
-import { isPositionAboveTable } from '../utils'
+import { isPositionAboveTable, screenToGround } from '../utils'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
 
@@ -202,29 +201,26 @@ class CameraManager {
   }
 
   /**
-   * Moves the camera on x/z plane by a given delta, with animation.
+   * Applies a given movement to the camera on x/z plane, with animation.
    * Coordinates outside the table will be ignored.
    * Ends with the animation.
    * @async
-   * @param {number} deltaX - amount of 3D units to horizontally move camera.
-   * @param {number} deltaY - amount of 3D units to vertically move camera.
-   * @param {number} [duration=300] - animation duration, in ms
+   * @param {import('../utils').ScreenPosition} movementStart - movement starting point, in screen coordinate.
+   * @param {import('../utils').ScreenPosition} movementEnd -movement ending point, in screen coordinate.
+   * @param {number} [duration=300] - animation duration, in ms.
    */
-  async pan(deltaX, deltaY, duration = 300) {
+  async pan(movementStart, movementEnd, duration = 300) {
     if (!this.camera) return
+    const scene = this.camera.getScene()
 
-    const direction = Vector3.Zero()
+    const start = screenToGround(scene, movementStart)
+    const end = screenToGround(scene, movementEnd)
 
-    Vector3.TransformNormalToRef(
-      new Vector3(deltaX, deltaY, 0),
-      Matrix.Invert(this.camera.getViewMatrix()),
-      direction
-    )
     const target = this.camera[pan.targetProperty].add(
-      new Vector3(direction.x, 0, direction.z)
+      new Vector3(start.x - end.x, 0, start.z - end.z)
     )
 
-    if (isPositionAboveTable(this.camera.getScene(), target)) {
+    if (isPositionAboveTable(scene, target)) {
       await animate(this.camera, { target }, duration)
       this.onMoveObservable.notifyObservers(saveState(this.camera))
     }
@@ -234,10 +230,10 @@ class CameraManager {
    * Rotates the camera by a given angles, with animation.
    * Coordinates outside the table will be ignored.
    * Ends with the animation.
-   * @async
-   * @param {number} [alpha=0] - longitudinal rotation (around the Z axis), in radian
-   * @param {number} [beta=0] - latitudinal rotation, in radian, between minAngle and PI/2
-   * @param {number} [duration=300] - animation duration, in ms
+   * @async.=
+   * @param {number} [alpha=0] - longitudinal rotation (around the Z axis), in radian.
+   * @param {number} [beta=0] - latitudinal rotation, in radian, between minAngle and PI/2.
+   * @param {number} [duration=300] - animation duration, in ms.
    */
   async rotate(alpha = 0, beta = 0, duration = 300) {
     if (!this.camera) return
@@ -257,7 +253,7 @@ class CameraManager {
    * Ends with the animation.
    * @async
    * @param {number} step - positive or negative elevation (in 3D world coordinates).
-   * @param {number} [duration=300] - animation duration, in ms
+   * @param {number} [duration=300] - animation duration, in ms.
    */
   async zoom(elevation, duration = 300) {
     if (!this.camera) return
@@ -302,7 +298,7 @@ class CameraManager {
 
   /**
    * Loads saved position and notifies observers.
-   * @param {CameraSave[]} saves - an array of save position
+   * @param {CameraSave[]} saves - an array of save position.
    */
   loadSaves(saves = []) {
     this.saves = saves

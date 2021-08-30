@@ -2,7 +2,6 @@
 
 ## Refactor
 
-- behaviors may not care about active selection (game-interaction/game-engine should)
 - server logging (warning on invalid descriptors)
 - enable [Babylon.js treeshaking](https://doc.babylonjs.com/divingDeeper/developWithBjs/treeShaking)
 - all manager managing a collection of behaviors should check their capabilities
@@ -13,16 +12,14 @@
 
 ## Single player
 
+- feedback on stacking
 - player's hand
 - stack actions:
   - draw multiple cards (either in hand, or in front of them)
   - distribute multiple cards to players (either in their hand, or in front of them)
   - put under
-  - feedback on stacking
 - boards
 - keyboard
-- feedback on stacking
-- updating a saved camera position is not intuitive
 
 ## Multi player
 
@@ -39,9 +36,24 @@
     for (const mesh of stack) {
       mesh.isPickable = false // TypeError: mesh is undefined
   ```
-- flip stacked items only flip individual card: it should also invert the ordering (flip the whole stack)
 - moving items bellow other does not apply gravity to them
 - on vite reload, all players could become hosts or peers simultaneously
+
+# Network
+
+- SFR + proxy boulot Lionel: WebRTC failed
+- SFR Lionel: WebRTC failed
+- Bouyges téléphone Lionel: WebRTC failed
+
+```
+{
+   "from": "4717",
+   "type": "candidate",
+   "signal": "{\"type\":\"candidate\",\"candidate\":{\"candidate\":\"candidate:640089829 1 udp 2122260223 192.168.43.213 48168 typ host generation 0 ufrag +Y+q network-id 1 network-cost 10\",\"sdpMLineIndex\":0,\"sdpMid\":\"0\"}}",
+   "channels": {}
+}
+no peer found for signal from 4717
+```
 
 # Ideas
 
@@ -54,6 +66,7 @@
 
 ## Game UI:
 
+- show contextual help (for example, on hover) to indicates which commands are available
 - top right, an help button with drawing for base commands (pan, camera, DnD, main actions)
 - top right, an link to the rule book, opened in a floating pane, either taking whole screen, or a third of it
 - top left, in a column, player avatars/videos, with number of tokens/cards in hand, and mute indicator & command

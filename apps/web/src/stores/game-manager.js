@@ -26,8 +26,10 @@ let listGamesSubscription = null
 
 // updates current game when receiving player updates
 playerGames$.subscribe(games => {
-  if (currentGame$.value) {
-    currentGame$.next(games.find(({ id }) => id === currentGame$.value.id))
+  const current = currentGame$.value
+  const update = games.find(({ id }) => id === current?.id)
+  if (current && update) {
+    currentGame$.next({ ...current, ...update })
   }
 })
 
@@ -220,6 +222,7 @@ export async function loadGame(gameId, engine) {
 
   let game = await runQuery(graphQL.loadGame, { gameId }, false)
   currentGame$.next(game)
+  listGames() // to enable receiving player updates
 
   subscriptions.push(
     // share camera positions with others

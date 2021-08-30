@@ -6,9 +6,16 @@
 <ToolBox
   component={CameraSwitch}
   name="Components/Camera Switch"
-  events={['save', 'restore']}
+  props={{ longTapDelay: 250 }}
+  events={['save', 'restore', 'longTap']}
 >
   <Tool name="Single save" props={{ saves: [{ hash: 'a' }] }} />
+  <Tool
+    name="Multiple saves"
+    props={{
+      saves: [{ hash: 'a' }, { hash: 'b' }, { hash: 'c' }]
+    }}
+  />
   <Tool
     name="Multiple saves with current"
     props={{
@@ -20,7 +27,7 @@
     name="Max count reached"
     props={{
       saves: [{ hash: 'a' }, { hash: 'b' }, { hash: 'c' }, { hash: 'd' }],
-      maxCount: 4
+      maxCount: 3
     }}
   />
 </ToolBox>
