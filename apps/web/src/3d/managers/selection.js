@@ -62,6 +62,8 @@ class SelectionManager {
       points,
       colors: Array.from({ length: 6 }, () => Color3.Green().toColor4())
     })
+    // ensure the box to be displayed "in front of" all other meshes
+    this.box.renderingGroupId = 2
 
     // dynamically assign select function to keep start and end in scope
     this.select = () => {
