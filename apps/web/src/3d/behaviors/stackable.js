@@ -27,6 +27,11 @@ function enableLast(stack, enabled) {
     movable.enabled = enabled
     logger.info({ mesh }, `${operation} moves for ${mesh.id}`)
   }
+  if (enabled) {
+    controlManager.registerControlable(mesh)
+  } else {
+    controlManager.unregisterControlable(mesh)
+  }
 }
 
 function setBase(mesh, base, stack) {

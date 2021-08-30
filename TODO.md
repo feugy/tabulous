@@ -29,7 +29,6 @@
 
 # Known issues
 
-- on stack, can click on N-1 mesh while N mesh is flipping (breaks move/target
 - crash when reordering stack
   ```js
   async reorder(ids) {
@@ -67,6 +66,7 @@ no peer found for signal from 4717
 
 ## Game UI:
 
+- visual hint when receiving messages on collapsed section
 - show contextual help (for example, on hover) to indicates which commands are available
 - top right, an help button with drawing for base commands (pan, camera, DnD, main actions)
 - top right, an link to the rule book, opened in a floating pane, either taking whole screen, or a third of it
