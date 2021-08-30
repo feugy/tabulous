@@ -18,6 +18,7 @@ import {
  */
 export function createLight() {
   const light = new DirectionalLight('sun', new Vector3(0, -10, 0))
+  light.intensity = 0.8
   light.specular = Color3.Black()
 
   const shadowGenerator = new ShadowGenerator(1024, light)
