@@ -9,6 +9,7 @@ import { getAuthenticatedPlayer } from './utils.js'
 
 /**
  * Registers Tabulous graphql endpoints (powered by mercurius) into the provided fastify application.
+ * @async
  * @param {import('fastify').FastifyInstance} app - a fastify application.
  * @param {GraphQLOptions} opts - plugin options.
  */

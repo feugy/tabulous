@@ -10,6 +10,8 @@ import { instanciateGame } from './utils.js'
  * @property {number} created - game creation timestamp.
  * @property {string[]} playerId - player ids, the first always being the creator id.
  * @property {Scene} scene - the 3D engine scene, with game meshes.
+ * @property {Message[]} messages - game discussion thread, if any.
+ * @property {CameraPosition[]} cameras - player's saved camera positions, if any.
  */
 
 /**
@@ -96,9 +98,7 @@ function isOwner(game, playerId) {
  */
 export const gameListsUpdate = gameListsUpdate$.pipe(
   concatMap(n => n),
-  mergeMap(async playerId =>
-    listGames(playerId).then(games => ({ playerId, games }))
-  )
+  mergeMap(playerId => listGames(playerId).then(games => ({ playerId, games })))
 )
 
 /**
@@ -106,21 +106,24 @@ export const gameListsUpdate = gameListsUpdate$.pipe(
  * It instanciate an unique set, based on the descriptor's bags and slots.
  * Updates the creator's game list.
  * @async
+ * @param {string} root - path (JavaScript import) containing game descriptors
  * @param {string} kind - game's kind.
  * @param {string} playerId - creating player id.
  * @returns {Game} the created game.
  * @throws {Error} when no descriptor could be found for this kind.
  */
-export async function createGame(kind, playerId) {
+export async function createGame(root, kind, playerId) {
   try {
-    const descriptor = await import(`../../games/${kind}.js`)
+    const descriptor = await import(`${root}/${kind}.js`)
     const id = randomUUID()
     const created = {
       id,
       kind,
       created: Date.now(),
       playerIds: [playerId],
-      scene: instanciateGame(descriptor)
+      scene: instanciateGame(descriptor),
+      messages: [],
+      cameras: []
     }
     gamesById.set(id, created)
     gameListsUpdate$.next(created.playerIds)
@@ -181,18 +184,18 @@ export async function loadGame(gameId, playerId) {
  * @returns {Game|null} the saved game, or null.
  */
 export async function saveGame(game, playerId) {
-  const previous = gamesById.get(game.id)
-  if (!isOwner(previous, playerId)) {
-    return null
+  const previous = await loadGame(game?.id, playerId)
+  if (previous) {
+    const saved = {
+      ...previous,
+      scene: game.scene || previous.scene,
+      messages: game.messages || previous.messages,
+      cameras: game.cameras || previous.cameras
+    }
+    gamesById.set(game.id, saved)
+    return saved
   }
-  const saved = {
-    ...previous,
-    scene: game.scene || previous.scene,
-    messages: game.messages || previous.messages,
-    cameras: game.cameras || previous.cameras
-  }
-  gamesById.set(game.id, saved)
-  return saved
+  return null
 }
 
 /**
@@ -209,8 +212,8 @@ export async function saveGame(game, playerId) {
  * @returns {Game|null} updated game, or null if the player can not be invited.
  */
 export async function invite(gameId, guestId, hostId) {
-  const game = gamesById.get(gameId)
-  if (!isOwner(game, hostId) || game.playerIds.includes(guestId)) {
+  const game = await loadGame(gameId, hostId)
+  if (!game || game.playerIds.includes(guestId)) {
     return null
   }
   game.playerIds.push(guestId)

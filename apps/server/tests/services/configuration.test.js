@@ -1,7 +1,8 @@
 import { join } from 'path'
 import { jest } from '@jest/globals'
 import faker from 'faker'
-import { loadConfiguration } from '@src/services/configuration.js'
+import services from '../../src/services'
+const { loadConfiguration } = services
 
 describe('loadConfiguration()', () => {
   const { ...envSave } = process.env

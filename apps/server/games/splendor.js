@@ -1,5 +1,20 @@
+/**
+ * 40 level 1 cards, 30 level 2 cards, 30 level 3 cards.
+ * @type {import('../src/services/games').Card[]}
+ */
 export const cards = []
+
+/**
+ * 8 emeralds, rubies, quartzes, sapphires and diamonds gems.
+ * 5 pieces of gold.
+ * @type {import('../src/services/games').RoundToken[]}
+ */
 export const roundTokens = []
+
+/**
+ * 10 people tiles.
+ * @type {import('../src/services/games').RoundedTiles[]}
+ */
 export const roundedTiles = []
 
 const gems = ['diamond', 'emerald', 'quartz', 'ruby', 'sapphire']
@@ -73,7 +88,13 @@ for (let index = 1; index <= 10; index++) {
 
 const pickId = ({ id }) => id
 
-// bags to randomize
+/**
+ * Bags to randomize:
+ * - one for each card level
+ * - one for each token type
+ * - one for tiles
+ * @type {Map<string, string[]>}
+ */
 export const bags = new Map([
   ['cards-level-1', cards.slice(0, 40).map(pickId)],
   ['cards-level-2', cards.slice(40, 70).map(pickId)],
@@ -86,7 +107,13 @@ export const bags = new Map([
   ['tiles', roundedTiles.map(pickId)]
 ])
 
-// pre-defined slots
+/**
+ * Pre-define slots:
+ * - tiles deck
+ * - for each card level, one deck and 4 un-flipped cards
+ * - one for each token type
+ * @type {import('../src/services/utils').Slot[]}
+ */
 export const slots = [
   { x: -8, z: 11.5, bagId: 'tiles', isFlipped: true },
   { x: 8, z: 7, bagId: 'cards-level-3', count: 1 },

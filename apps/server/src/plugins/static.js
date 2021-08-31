@@ -9,6 +9,7 @@ import staticPlugin from 'fastify-static'
 
 /**
  * Registers endpoints to serve the static game client.
+ * @async
  * @param {import('fastify').FastifyInstance} app - a fastify application.
  * @param {StaticOptions} opts - plugin's options.
  */

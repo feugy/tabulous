@@ -172,6 +172,18 @@ Follow official Let's Encrypt [instructions](https://certbot.eff.org/lets-encryp
 
 Here there are, copied from `certbot/live/tabulous.fr/` to `keys/\` folder.
 
+# Server data operations
+
+- create player
+- find one player by id
+- find several players by ids
+- update player's playing boolean (or full player)
+- create full game
+- find one game by id
+- find games which player ids contains an id
+- update full game
+- delete game
+
 # Various learnings
 
 Physics engine aren't great: they are all pretty deprecated. [Cannon-es can not be used yet](https://github.com/BabylonJS/Babylon.js/issues/9810).
@@ -190,6 +202,9 @@ However, two blockers appeared: Sinon can not mock entire dependencies (maybe an
 
 Finally, using vite solves all the above, and enables Jest again.
 Testing server code on Node requires `NODE_OPTIONS=--experimental-vm-modules` while running jest. What a bummer.
+
+Another pitfall with ESM and jest: `jest.mock()` does not work at all.
+[Here is a ticket to follow](https://github.com/facebook/jest/issues/10025). Using Testdouble [may be an alternative](https://github.com/facebook/jest/issues/11786).
 
 To make WebRTC work in real world scenario, it is paramount to share **every signal received**.
 One must not stop listening to signal event after connection is established, and one muse not handle only `offer` and `answer` types.

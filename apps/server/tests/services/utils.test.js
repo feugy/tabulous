@@ -1,4 +1,4 @@
-import { instanciateGame } from '@src/services/utils.js'
+import { instanciateGame } from '../../src/services/utils'
 
 describe('instanciateGame()', () => {
   it('ignores missing mesh', () => {

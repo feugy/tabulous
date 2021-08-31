@@ -7,6 +7,9 @@ import gameResolvers from './games-resolver.js'
 import playerResolvers from './players-resolver.js'
 import signalResolvers from './signals-resolver.js'
 
+/**
+ * Synchronously loaded GraphQL schemas for players, games and signals.
+ */
 export const schema = loadSchemaSync(
   ['./players.graphql', './games.graphql', './signals.graphql'],
   {
@@ -15,6 +18,9 @@ export const schema = loadSchemaSync(
   }
 )
 
+/**
+ * Loaders and resolvers for players, games and signals.
+ */
 const { loaders, ...resolvers } = merge.all([
   gameResolvers,
   playerResolvers,
