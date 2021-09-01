@@ -1,4 +1,4 @@
-import { shuffle } from '../../src/utils'
+import { shuffle } from '../../src/utils/index.js'
 
 describe('shuffle()', () => {
   it('randomized elements of an array, leaving source array unmodified', () => {

@@ -1,11 +1,15 @@
 import faker from 'faker'
-import services from '../../src/services'
-const { logIn, getPlayerById, getPlayersById, setPlaying } = services
+import {
+  logIn,
+  getPlayerById,
+  getPlayersById,
+  setPlaying
+} from '../../src/services/authentication.js'
 
 describe('logIn()', () => {
   it('authenticate player and returns details', async () => {
     const username = faker.name.firstName()
-    expect(await services.logIn(username)).toEqual({
+    expect(await logIn(username)).toEqual({
       id: expect.any(String),
       username,
       playing: false
@@ -14,9 +18,7 @@ describe('logIn()', () => {
 
   it('returns the same object from the same credentials', async () => {
     const username = faker.name.firstName()
-    expect(await services.logIn(username)).toEqual(
-      await services.logIn(username)
-    )
+    expect(await logIn(username)).toEqual(await logIn(username))
   })
 })
 

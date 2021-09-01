@@ -1,5 +1,7 @@
-import { join } from 'path'
 import Ajv from 'ajv/dist/jtd.js'
+import { isAbsolute, join } from 'path'
+import { pathToFileURL } from 'url'
+import { cwd } from 'process'
 
 const validate = new Ajv({ allErrors: true }).compile({
   properties: {
@@ -22,6 +24,11 @@ const validate = new Ajv({ allErrors: true }).compile({
     logger: {
       properties: {
         level: { enum: ['trace', 'debug', 'info', 'warn', 'error', 'fatal'] }
+      }
+    },
+    games: {
+      properties: {
+        path: { type: 'string' }
       }
     },
     plugins: {
@@ -52,7 +59,9 @@ const validate = new Ajv({ allErrors: true }).compile({
  * @property {string} https.cert - relative or absolute path to the PEM file of your SSL certificate.
  * @property {object} logger - Pino logger options, including:
  * @property {string} logger.level - level used for logging.
- * @property {object} plugins - options for all plugin used::
+ * @property {object} games - game engine properties, including;
+ * @property {string} games.path - folder url (relative to current working directory) containing game descriptors.
+ * @property {object} plugins - options for all plugin used:
  * @property {import('../plugins/graphql').GraphQLOptions} plugins.graphql - options for the GraphQL plugin.
  * @property {import('../plugins/static').StaticOptions} plugins.static - options for the static files plugin.
  * @see {@link https://nodejs.org/docs/latest-v16.x/api/net.html#net_server_listen_options_callback}
@@ -62,7 +71,8 @@ const validate = new Ajv({ allErrors: true }).compile({
 
 /**
  * Synchronously loads and validates the server configuration from environment variables:
- * - CLIENT_ROOT: relative/absolute path to the folder containing UI static files. Default to 'apps/web/dist'.
+ * - CLIENT_ROOT: folder path (relative to current working directory) containing UI static files. Defaults to '../web/dist'.
+ * - GAMES_PATH: folder url (relative to current working directory) containing game descriptors. Defaults to './games'.
  * - HOST : IP4/6 address this server will listen to.
  * - HTTPS_CERT: relative or absolute path to the PEM file of your SSL certificate. Required in production, defaults to 'keys/cert.pem'.
  * - HTTPS_KEY: relative or absolute path to the PEM file of your SSL key. Rrequired in production, defaults to 'keys/privkey.pem'.
@@ -77,6 +87,7 @@ const validate = new Ajv({ allErrors: true }).compile({
 export function loadConfiguration() {
   const {
     CLIENT_ROOT,
+    GAMES_PATH,
     HOST,
     HTTPS_CERT,
     HTTPS_KEY,
@@ -103,9 +114,25 @@ export function loadConfiguration() {
     logger: { level: LOG_LEVEL ?? 'debug' },
     plugins: {
       graphql: { graphiql: isProduction ? null : 'playground' },
-      static: { path: CLIENT_ROOT ?? join('apps', 'web', 'dist') }
+      static: { path: CLIENT_ROOT ?? join('..', 'web', 'dist') }
+    },
+    games: {
+      path: GAMES_PATH ?? 'games'
     }
   }
+  if (!isAbsolute(configuration.plugins.static.path)) {
+    configuration.plugins.static.path = join(
+      cwd(),
+      configuration.plugins.static.path
+    )
+  }
+  if (!configuration.games.path.startsWith('file://')) {
+    configuration.games.path = new URL(
+      configuration.games.path,
+      pathToFileURL(cwd() + '/dummy')
+    ).toString()
+  }
+
   if (!validate(configuration)) {
     console.warn(
       `Configuration is invalid: please check your environment variables.\n`,

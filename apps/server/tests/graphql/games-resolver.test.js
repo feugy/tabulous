@@ -1,16 +1,16 @@
 import { jest } from '@jest/globals'
 import faker from 'faker'
 import fastify from 'fastify'
-import services from '../../src/services'
-import graphQL from '../../src/plugins/graphql'
+import { Subject } from 'rxjs'
 import {
   openGraphQLWebSocket,
   startSubscription,
   stopSubscription,
   toGraphQLArg,
   waitOnMessage
-} from '../test-utils'
-import { Subject } from 'rxjs'
+} from '../test-utils.js'
+import services from '../../src/services/index.js'
+import graphQL from '../../src/plugins/graphql.js'
 
 describe('given a started server', () => {
   let server
@@ -21,9 +21,11 @@ describe('given a started server', () => {
     { id: faker.datatype.uuid(), username: faker.name.firstName() },
     { id: faker.datatype.uuid(), username: faker.name.firstName() }
   ]
+  const gamesPath = faker.system.directoryPath()
 
   beforeAll(async () => {
     server = fastify({ logger: false })
+    server.decorate('conf', { games: { path: gamesPath } })
     server.register(graphQL)
     await server.listen()
     ws = await openGraphQLWebSocket(server)
@@ -130,7 +132,11 @@ describe('given a started server', () => {
       expect(response.statusCode).toEqual(200)
       expect(services.getPlayerById).toHaveBeenCalledWith(playerId)
       expect(services.getPlayerById).toHaveBeenCalledTimes(1)
-      expect(services.createGame).toHaveBeenCalledWith(kind, playerId)
+      expect(services.createGame).toHaveBeenCalledWith(
+        gamesPath,
+        kind,
+        playerId
+      )
       expect(services.createGame).toHaveBeenCalledTimes(1)
       expect(services.getPlayersById).toHaveBeenCalledWith(game.playerIds)
       expect(services.getPlayersById).toHaveBeenCalledTimes(1)

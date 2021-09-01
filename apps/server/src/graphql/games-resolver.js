@@ -48,9 +48,8 @@ export default {
      * @param {string} data.kind - created game kind.
      * @returns {import('../services/games').Game|null} created game details, or null.
      */
-    createGame: isAuthenticated((obj, { kind }, { player }) =>
-      // TODO root
-      services.createGame(kind, player.id)
+    createGame: isAuthenticated((obj, { kind }, { player, conf }) =>
+      services.createGame(conf.games.path, kind, player.id)
     ),
 
     /**

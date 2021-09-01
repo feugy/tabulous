@@ -1,8 +1,8 @@
 import { jest } from '@jest/globals'
 import faker from 'faker'
 import fastify from 'fastify'
-import services from '../../src/services'
-import graphQL from '../../src/plugins/graphql'
+import services from '../../src/services/index.js'
+import graphQL from '../../src/plugins/graphql.js'
 
 describe('given a started server', () => {
   let server

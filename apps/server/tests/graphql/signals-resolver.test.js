@@ -1,15 +1,15 @@
 import { jest } from '@jest/globals'
 import faker from 'faker'
 import fastify from 'fastify'
-import services from '../../src/services'
-import graphQL from '../../src/plugins/graphql'
 import {
   openGraphQLWebSocket,
   startSubscription,
   stopSubscription,
   toGraphQLArg,
   waitOnMessage
-} from '../test-utils'
+} from '../test-utils.js'
+import services from '../../src/services/index.js'
+import graphQL from '../../src/plugins/graphql.js'
 
 describe('given a started server', () => {
   let server

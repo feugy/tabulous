@@ -1,9 +1,10 @@
 import { createServer } from 'http'
-import { join } from 'path'
-import { startServer } from '../src/server'
+import { join, resolve } from 'path'
+import { cwd } from 'process'
+import { startServer } from '../src/server.js'
 
 describe('startServer()', () => {
-  let server
+  let app
   let port
 
   beforeEach(async () => {
@@ -13,16 +14,16 @@ describe('startServer()', () => {
     dummy.close()
   })
 
-  afterEach(() => server?.close())
+  afterEach(() => app?.close())
 
-  it('starts server on given port', async () => {
-    server = await startServer({
+  it('starts app on given port', async () => {
+    app = await startServer({
       serverUrl: { port },
       logger: { level: 'fatal' },
-      plugins: { static: { path: 'games' } }
+      plugins: { static: { path: resolve(cwd(), 'games') } }
     })
 
-    let response = await server.inject({
+    let response = await app.inject({
       method: 'POST',
       url: 'graphql',
       payload: { query: 'mutation { logIn { id } }' }
@@ -32,7 +33,7 @@ describe('startServer()', () => {
     )
     expect(response.statusCode).toEqual(400)
 
-    response = await server.inject({ url: 'splendor.js' })
+    response = await app.inject({ url: 'splendor.js' })
     expect(response.statusCode).toEqual(200)
   })
 
@@ -45,8 +46,18 @@ describe('startServer()', () => {
           cert: join('tests', 'fixtures', 'cert.pem')
         },
         logger: { level: 'fatal' },
-        plugins: { static: { path: 'games' } }
+        plugins: { static: { path: resolve(cwd(), 'games') } }
       })
     ).rejects.toThrow(/base64 decode/)
+  })
+
+  it('decorates app with configuration property', async () => {
+    const conf = {
+      serverUrl: { port },
+      logger: { level: 'fatal' },
+      plugins: { static: { path: resolve(cwd(), 'games') } }
+    }
+    app = await startServer(conf)
+    expect(app.conf).toEqual(conf)
   })
 })

@@ -4,6 +4,7 @@ import fastify from 'fastify'
 /**
  * Starts Tabulous server, using provided configuration.
  * Server has graphQL endpoints registered, and can serve static files.
+ * Its configuration object is available as a decorator: the `conf` property.
  * @async
  * @param {import('./services/configuration').Configuration} config - server options
  * @returns {import('fastify').FastifyInstance} configured and started server.
@@ -19,6 +20,7 @@ export async function startServer(config) {
       : undefined
   })
 
+  app.decorate('conf', config)
   app.register(import('fastify-websocket'), { maxPayload: 1048576 })
   app.register(import('./plugins/graphql.js'), config.plugins.graphql)
   app.register(import('./plugins/static.js'), config.plugins.static)
