@@ -25,12 +25,12 @@ describeFn(
 
     beforeAll(() => {
       subscription = gameListsUpdate.subscribe(update => updates.push(update))
-      return repositories.players.connect()
+      return repositories.games.connect()
     })
 
     afterAll(() => {
       subscription?.unsubscribe()
-      return repositories.players.release()
+      return repositories.games.release()
     })
 
     beforeEach(() => {

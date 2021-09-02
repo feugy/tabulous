@@ -31,6 +31,11 @@ const validate = new Ajv({ allErrors: true }).compile({
         path: { type: 'string' }
       }
     },
+    data: {
+      properties: {
+        path: { type: 'string' }
+      }
+    },
     plugins: {
       properties: {
         graphql: {
@@ -72,6 +77,7 @@ const validate = new Ajv({ allErrors: true }).compile({
 /**
  * Synchronously loads and validates the server configuration from environment variables:
  * - CLIENT_ROOT: folder path (relative to current working directory) containing UI static files. Defaults to '../web/dist'.
+ * - DATA_PATH: folder path (relative to current working directory) containing data stores. Defaults to './data'.
  * - GAMES_PATH: folder url (relative to current working directory) containing game descriptors. Defaults to './games'.
  * - HOST : IP4/6 address this server will listen to.
  * - HTTPS_CERT: relative or absolute path to the PEM file of your SSL certificate. Required in production, defaults to 'keys/cert.pem'.
@@ -87,6 +93,7 @@ const validate = new Ajv({ allErrors: true }).compile({
 export function loadConfiguration() {
   const {
     CLIENT_ROOT,
+    DATA_PATH,
     GAMES_PATH,
     HOST,
     HTTPS_CERT,
@@ -118,6 +125,9 @@ export function loadConfiguration() {
     },
     games: {
       path: GAMES_PATH ?? 'games'
+    },
+    data: {
+      path: DATA_PATH ?? 'data'
     }
   }
   if (!isAbsolute(configuration.plugins.static.path)) {
@@ -125,6 +135,9 @@ export function loadConfiguration() {
       cwd(),
       configuration.plugins.static.path
     )
+  }
+  if (!isAbsolute(configuration.data.path)) {
+    configuration.data.path = join(cwd(), configuration.data.path)
   }
   if (!configuration.games.path.startsWith('file://')) {
     configuration.games.path = new URL(

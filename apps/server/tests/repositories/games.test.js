@@ -19,7 +19,7 @@ describe('given a connected repository and several games', () => {
     await games.save(models)
   })
 
-  afterEach(() => games.connect())
+  afterEach(() => games.release())
 
   describe('Game repository', () => {
     describe('listByPlayerId()', () => {

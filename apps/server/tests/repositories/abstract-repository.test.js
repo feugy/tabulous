@@ -1,19 +1,103 @@
+import { jest } from '@jest/globals'
 import faker from 'faker'
+import { chmod, readFile, rm, watch, writeFile } from 'fs/promises'
+import { tmpdir } from 'os'
+import { join } from 'path'
 import { AbstractRepository } from '../../src/repositories/abstract-repository.js'
 
-describe('Player repository', () => {
+describe('Abstract repository', () => {
   it('can not build a nameless repository', () => {
     expect(() => new AbstractRepository({})).toThrow(
       'every repository needs a name'
     )
   })
 
+  describe('connect()', () => {
+    let repository
+    let file
+    const ac = new AbortController()
+    const path = tmpdir()
+
+    beforeEach(() => {
+      repository = new AbstractRepository({ name: faker.lorem.word() })
+      file = join(path, `${repository.name}.json`)
+      jest.useFakeTimers()
+    })
+
+    afterEach(() => {
+      ac.abort()
+      jest.useRealTimers()
+      return rm(file, { force: true })
+    })
+
+    it('reads model from storage file', async () => {
+      const models = [
+        { id: faker.datatype.uuid(), foo: faker.lorem.word() },
+        { id: faker.datatype.uuid(), bar: faker.lorem.word() }
+      ]
+
+      await writeFile(
+        file,
+        JSON.stringify(models.map(model => [model.id, model]))
+      )
+
+      await repository.connect({ path })
+      expect(await repository.getById(models.map(({ id }) => id))).toEqual(
+        models
+      )
+    })
+
+    it('handles unexisting file', async () => {
+      await rm(file, { force: true })
+      await repository.connect({ path })
+      expect(await repository.list()).toEqual(
+        expect.objectContaining({ total: 0 })
+      )
+    })
+
+    it('throws errors on unwritable file', async () => {
+      await writeFile(file, '')
+      await chmod(file, 0o200)
+      await expect(repository.connect({ path })).rejects.toThrow(
+        `Failed to connect repository ${repository.name}`
+      )
+    })
+
+    it('starts saving data into storage file', async () => {
+      const id1 = faker.datatype.uuid()
+      const id2 = faker.datatype.uuid()
+      await rm(file, { force: true })
+      await repository.connect({ path })
+
+      const watcher = watch(file, { signal: ac.signal })
+
+      await repository.save({ id: id1, foo: faker.lorem.word() })
+      jest.runAllTimers()
+      await watcher
+      const { length } = await readFile(file, 'utf8')
+      expect(length).toBeGreaterThan(0)
+
+      await repository.save({ id: id2, bar: faker.lorem.word() })
+      jest.runAllTimers()
+      await watcher
+      expect((await readFile(file, 'utf8')).length).toBeGreaterThan(length)
+
+      await repository.deleteById([id1, id2])
+      jest.runAllTimers()
+      await watcher
+      expect((await readFile(file, 'utf8')).length).toBeLessThan(length)
+    })
+  })
+
   describe('given a connected repository', () => {
     const repository = new AbstractRepository({ name: 'test' })
 
-    beforeEach(() => repository.connect())
+    beforeEach(async () => {
+      await rm(join(tmpdir(), 'test.json'), { force: true })
+      await repository.connect({ path: tmpdir() })
+    })
 
-    afterEach(() => repository.connect())
+    afterEach(() => repository.release())
 
     describe('save()', () => {
       it('creates a model and assigns it an id', async () => {

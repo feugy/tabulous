@@ -28,7 +28,8 @@ describe('startServer()', () => {
     app = await startServer({
       serverUrl: { port },
       logger: { level: 'fatal' },
-      plugins: { static: { path: resolve(cwd(), 'games') } }
+      plugins: { static: { path: resolve(cwd(), 'games') } },
+      data: { path: 'data' }
     })
 
     let response = await app.inject({
@@ -43,7 +44,9 @@ describe('startServer()', () => {
 
     response = await app.inject({ url: 'splendor.js' })
     expect(response.statusCode).toEqual(200)
+    expect(repositories.games.connect).toHaveBeenCalledWith({ path: 'data' })
     expect(repositories.games.connect).toHaveBeenCalledTimes(1)
+    expect(repositories.players.connect).toHaveBeenCalledWith({ path: 'data' })
     expect(repositories.players.connect).toHaveBeenCalledTimes(1)
   })
 
@@ -56,7 +59,8 @@ describe('startServer()', () => {
           cert: join('tests', 'fixtures', 'cert.pem')
         },
         logger: { level: 'fatal' },
-        plugins: { static: { path: resolve(cwd(), 'games') } }
+        plugins: { static: { path: resolve(cwd(), 'games') } },
+        data: { path: 'data' }
       })
     ).rejects.toThrow(/base64 decode/)
   })
@@ -65,7 +69,8 @@ describe('startServer()', () => {
     const conf = {
       serverUrl: { port },
       logger: { level: 'fatal' },
-      plugins: { static: { path: resolve(cwd(), 'games') } }
+      plugins: { static: { path: resolve(cwd(), 'games') } },
+      data: { path: 'data' }
     }
     app = await startServer(conf)
     expect(app.conf).toEqual(conf)

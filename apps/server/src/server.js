@@ -24,8 +24,8 @@ export async function startServer(config) {
   })
 
   app.decorate('conf', config)
-  await players.connect()
-  await games.connect()
+  await players.connect({ path: config.data.path })
+  await games.connect({ path: config.data.path })
 
   app.register(import('fastify-websocket'), { maxPayload: 1048576 })
   app.register(import('./plugins/graphql.js'), config.plugins.graphql)

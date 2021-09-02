@@ -20,6 +20,7 @@ describe('loadConfiguration()', () => {
     const level = faker.random.arrayElement(['fatal', 'error', 'info', 'debug'])
     const staticPath = resolve(cwd(), faker.system.directoryPath())
     const gamesPath = `file://${faker.system.directoryPath()}`
+    const dataPath = faker.system.filePath()
     const key = faker.system.filePath()
     const cert = faker.system.filePath()
 
@@ -30,6 +31,7 @@ describe('loadConfiguration()', () => {
       LOG_LEVEL: level,
       CLIENT_ROOT: staticPath,
       GAMES_PATH: gamesPath,
+      DATA_PATH: dataPath,
       HTTPS_CERT: cert,
       HTTPS_KEY: key
     }
@@ -43,7 +45,8 @@ describe('loadConfiguration()', () => {
         graphql: { graphiql: 'playground' },
         static: { path: staticPath }
       },
-      games: { path: gamesPath }
+      games: { path: gamesPath },
+      data: { path: dataPath }
     })
   })
 
@@ -64,7 +67,8 @@ describe('loadConfiguration()', () => {
         graphql: { graphiql: null },
         static: { path: resolve(cwd(), '..', 'web', 'dist') }
       },
-      games: { path: `${cwdUrl}/games` }
+      games: { path: `${cwdUrl}/games` },
+      data: { path: resolve(cwd(), 'data') }
     })
   })
 
@@ -80,7 +84,8 @@ describe('loadConfiguration()', () => {
         graphql: { graphiql: 'playground' },
         static: { path: resolve(cwd(), '..', 'web', 'dist') }
       },
-      games: { path: `${cwdUrl}/games` }
+      games: { path: `${cwdUrl}/games` },
+      data: { path: resolve(cwd(), 'data') }
     })
   })
 
@@ -110,5 +115,10 @@ describe('loadConfiguration()', () => {
   it('considers GAMES_PATH relatively to current working directory', () => {
     process.env.GAMES_PATH = './test'
     expect(loadConfiguration().games.path).toEqual(`${cwdUrl}/test`)
+  })
+
+  it('considers DATA_PATH relatively to current working directory', () => {
+    process.env.DATA_PATH = './test'
+    expect(loadConfiguration().data.path).toEqual(join(cwd(), 'test'))
   })
 })

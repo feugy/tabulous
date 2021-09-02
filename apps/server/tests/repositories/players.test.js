@@ -13,7 +13,7 @@ describe('given a connected repository and several players', () => {
     await players.save(models)
   })
 
-  afterEach(() => players.connect())
+  afterEach(() => players.release())
 
   describe('Player repository', () => {
     describe('getByUsername()', () => {

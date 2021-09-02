@@ -1,4 +1,6 @@
 import { randomUUID } from 'crypto'
+import { readFile, writeFile } from 'fs/promises'
+import { join } from 'path'
 
 /**
  * @typedef {object} Page
@@ -8,6 +10,23 @@ import { randomUUID } from 'crypto'
  * @property {string} sort - sorting criteria used: direction (+ or -) then property (name, rank...).
  * @property {object[]} results - returned models.
  */
+
+async function persist(repository) {
+  return repository.file
+    ? writeFile(
+        repository.file,
+        JSON.stringify([...repository.modelsById.entries()])
+      )
+    : null
+}
+
+async function scheduleSave(repository, delay = 10e3) {
+  clearTimeout(repository.saveTimer)
+  repository.saveTimer = setTimeout(
+    () => persist(repository).catch(err => console.error(err)),
+    delay
+  )
+}
 
 export class AbstractRepository {
   /**
@@ -27,17 +46,40 @@ export class AbstractRepository {
 
   /**
    * Connects the repository to the underlying storage system.
+   * Will store models into a JSON file named after the repository.
    * @async
-   * @param {object} args - connection arguments.
+   * @param {object} args - connection arguments:
+   * @param {string} args.path - folder path in which data will be stored.
    */
-  async connect() {
-    this.modelsById.clear()
+  async connect({ path } = {}) {
+    if (path) {
+      this.file = join(path, `${this.name}.json`)
+      try {
+        this.modelsById = new Map(
+          JSON.parse(await readFile(this.file, 'utf-8'))
+        )
+      } catch (err) {
+        if (err?.code === 'ENOENT') {
+          this.modelsById = new Map()
+        } else {
+          throw new Error(
+            `Failed to connect repository ${this.name}: ${err.message}`
+          )
+        }
+      }
+    } else {
+      this.file = null
+      this.modelsById = new Map()
+    }
   }
 
   /**
-   * Tears the repository down to release its connection
+   * Tears the repository down to release its connection.
+   * Saves data onto storage.
    */
   async release() {
+    clearTimeout(this.saveTimer)
+    await persist(this)
     this.modelsById.clear()
   }
 
@@ -98,6 +140,7 @@ export class AbstractRepository {
       results.push(saved)
       this.modelsById.set(record.id, saved)
     }
+    scheduleSave(this)
     return Array.isArray(data) ? results : results[0]
   }
 
@@ -115,6 +158,7 @@ export class AbstractRepository {
       results.push(this.modelsById.get(id) ?? null)
       this.modelsById.delete(id)
     }
+    scheduleSave(this)
     return Array.isArray(ids) ? results : results[0]
   }
 }
