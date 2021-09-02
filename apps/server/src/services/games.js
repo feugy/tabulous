@@ -1,7 +1,7 @@
-import { randomUUID } from 'crypto'
 import { Subject } from 'rxjs'
 import { concatMap, mergeMap } from 'rxjs/operators'
 import { instanciateGame } from './utils.js'
+import repositories from '../repositories/index.js'
 
 /**
  * @typedef {object} Game an active game:
@@ -79,7 +79,6 @@ import { instanciateGame } from './utils.js'
  * @property {number} elevation - altitude, in 3D coordinate.
  */
 
-const gamesById = new Map()
 const gameListsUpdate$ = new Subject()
 
 function isOwner(game, playerId) {
@@ -115,17 +114,14 @@ export const gameListsUpdate = gameListsUpdate$.pipe(
 export async function createGame(root, kind, playerId) {
   try {
     const descriptor = await import(`${root}/${kind}.js`)
-    const id = randomUUID()
-    const created = {
-      id,
+    const created = await repositories.games.save({
       kind,
       created: Date.now(),
       playerIds: [playerId],
       scene: instanciateGame(descriptor),
       messages: [],
       cameras: []
-    }
-    gamesById.set(id, created)
+    })
     gameListsUpdate$.next(created.playerIds)
     return created
   } catch (err) {
@@ -150,7 +146,7 @@ export async function createGame(root, kind, playerId) {
 export async function deleteGame(gameId, playerId) {
   const game = await loadGame(gameId, playerId)
   if (game) {
-    gamesById.delete(gameId)
+    await repositories.games.deleteById(gameId)
     gameListsUpdate$.next(game.playerIds)
   }
   return game
@@ -167,7 +163,7 @@ export async function deleteGame(gameId, playerId) {
  * @returns {Game|null} the loaded game, or null.
  */
 export async function loadGame(gameId, playerId) {
-  const game = gamesById.get(gameId)
+  const game = await repositories.games.getById(gameId)
   if (!isOwner(game, playerId)) {
     return null
   }
@@ -186,14 +182,12 @@ export async function loadGame(gameId, playerId) {
 export async function saveGame(game, playerId) {
   const previous = await loadGame(game?.id, playerId)
   if (previous) {
-    const saved = {
+    return repositories.games.save({
       ...previous,
-      scene: game.scene || previous.scene,
-      messages: game.messages || previous.messages,
-      cameras: game.cameras || previous.cameras
-    }
-    gamesById.set(game.id, saved)
-    return saved
+      scene: game.scene ?? previous.scene,
+      messages: game.messages ?? previous.messages,
+      cameras: game.cameras ?? previous.cameras
+    })
   }
   return null
 }
@@ -217,22 +211,18 @@ export async function invite(gameId, guestId, hostId) {
     return null
   }
   game.playerIds.push(guestId)
+  await repositories.games.save(game)
   gameListsUpdate$.next(game.playerIds)
   return game
 }
 
 /**
- * Lists all games this players is in.
+ * Lists up to 50 games this players is in.
  * @async
  * @param {string} playerId - player id.
  * @returns {Game[]} a list of games (could be empty).
  */
 export async function listGames(playerId) {
-  const games = []
-  for (const [, game] of gamesById) {
-    if (game.playerIds.includes(playerId)) {
-      games.push(game)
-    }
-  }
-  return games
+  return (await repositories.games.listByPlayerId(playerId, { size: 50 }))
+    .results
 }

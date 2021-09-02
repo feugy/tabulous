@@ -1,13 +1,21 @@
+import { jest } from '@jest/globals'
 import { createServer } from 'http'
 import { join, resolve } from 'path'
 import { cwd } from 'process'
+import repositories from '../src/repositories/index.js'
 import { startServer } from '../src/server.js'
 
 describe('startServer()', () => {
   let app
   let port
 
+  beforeAll(() => {
+    jest.spyOn(repositories.games, 'connect').mockImplementation(() => {})
+    jest.spyOn(repositories.players, 'connect').mockImplementation(() => {})
+  })
+
   beforeEach(async () => {
+    jest.resetAllMocks()
     const dummy = createServer()
     await dummy.listen()
     port = dummy.address().port
@@ -35,6 +43,8 @@ describe('startServer()', () => {
 
     response = await app.inject({ url: 'splendor.js' })
     expect(response.statusCode).toEqual(200)
+    expect(repositories.games.connect).toHaveBeenCalledTimes(1)
+    expect(repositories.players.connect).toHaveBeenCalledTimes(1)
   })
 
   it('reads https files and propagate errors', async () => {

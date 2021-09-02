@@ -13,7 +13,7 @@ export default {
           return Promise.all(
             queries.map(
               ({ obj: { playerIds, players } }) =>
-                players ?? services.getPlayersById(playerIds)
+                players ?? services.getPlayerById(playerIds)
             )
           )
         },

@@ -57,8 +57,9 @@ describe('given a started server', () => {
         created: faker.date.past().getTime(),
         playerIds: players.map(({ id }) => id)
       }
-      services.getPlayerById.mockResolvedValueOnce(players[0])
-      services.getPlayersById.mockResolvedValueOnce(players)
+      services.getPlayerById
+        .mockResolvedValueOnce(players[0])
+        .mockResolvedValueOnce(players)
       services.loadGame.mockResolvedValueOnce(game)
 
       const response = await server.inject({
@@ -84,12 +85,11 @@ describe('given a started server', () => {
         data: { loadGame: { ...game, playerIds: undefined, players } }
       })
       expect(response.statusCode).toEqual(200)
-      expect(services.getPlayerById).toHaveBeenCalledWith(playerId)
-      expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+      expect(services.getPlayerById).toHaveBeenNthCalledWith(1, playerId)
+      expect(services.getPlayerById).toHaveBeenNthCalledWith(2, game.playerIds)
+      expect(services.getPlayerById).toHaveBeenCalledTimes(2)
       expect(services.loadGame).toHaveBeenCalledWith(game.id, playerId)
       expect(services.loadGame).toHaveBeenCalledTimes(1)
-      expect(services.getPlayersById).toHaveBeenCalledWith(game.playerIds)
-      expect(services.getPlayersById).toHaveBeenCalledTimes(1)
     })
 
     it('creates a new game and resolves player objects', async () => {
@@ -101,8 +101,9 @@ describe('given a started server', () => {
         created: Date.now(),
         playerIds: [playerId]
       }
-      services.getPlayerById.mockResolvedValueOnce(players[0])
-      services.getPlayersById.mockResolvedValueOnce([players[0]])
+      services.getPlayerById
+        .mockResolvedValueOnce(players[0])
+        .mockResolvedValueOnce([players[0]])
       services.createGame.mockResolvedValueOnce(game)
 
       const response = await server.inject({
@@ -130,16 +131,15 @@ describe('given a started server', () => {
         }
       })
       expect(response.statusCode).toEqual(200)
-      expect(services.getPlayerById).toHaveBeenCalledWith(playerId)
-      expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+      expect(services.getPlayerById).toHaveBeenNthCalledWith(1, playerId)
+      expect(services.getPlayerById).toHaveBeenNthCalledWith(2, game.playerIds)
+      expect(services.getPlayerById).toHaveBeenCalledTimes(2)
       expect(services.createGame).toHaveBeenCalledWith(
         gamesPath,
         kind,
         playerId
       )
       expect(services.createGame).toHaveBeenCalledTimes(1)
-      expect(services.getPlayersById).toHaveBeenCalledWith(game.playerIds)
-      expect(services.getPlayersById).toHaveBeenCalledTimes(1)
     })
 
     it('saves an existing game and resolves player objects', async () => {
@@ -159,8 +159,9 @@ describe('given a started server', () => {
         playerIds: players.map(({ id }) => id),
         messages
       }
-      services.getPlayerById.mockResolvedValueOnce(players[0])
-      services.getPlayersById.mockResolvedValueOnce(players)
+      services.getPlayerById
+        .mockResolvedValueOnce(players[0])
+        .mockResolvedValueOnce(players)
       services.saveGame.mockResolvedValueOnce(game)
 
       const response = await server.inject({
@@ -191,15 +192,14 @@ describe('given a started server', () => {
         data: { saveGame: { ...game, playerIds: undefined, players } }
       })
       expect(response.statusCode).toEqual(200)
-      expect(services.getPlayerById).toHaveBeenCalledWith(playerId)
-      expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+      expect(services.getPlayerById).toHaveBeenNthCalledWith(1, playerId)
+      expect(services.getPlayerById).toHaveBeenNthCalledWith(2, game.playerIds)
+      expect(services.getPlayerById).toHaveBeenCalledTimes(2)
       expect(services.saveGame).toHaveBeenCalledWith(
         { id: game.id, messages },
         playerId
       )
       expect(services.saveGame).toHaveBeenCalledTimes(1)
-      expect(services.getPlayersById).toHaveBeenCalledWith(game.playerIds)
-      expect(services.getPlayersById).toHaveBeenCalledTimes(1)
     })
 
     it('invites another player to an existing game and resolves player objects', async () => {
@@ -211,8 +211,9 @@ describe('given a started server', () => {
         created: faker.date.past().getTime(),
         playerIds: [playerId, peerId]
       }
-      services.getPlayerById.mockResolvedValueOnce(players[0])
-      services.getPlayersById.mockResolvedValueOnce(players.slice(0, 2))
+      services.getPlayerById
+        .mockResolvedValueOnce(players[0])
+        .mockResolvedValueOnce(players.slice(0, 2))
       services.invite.mockResolvedValueOnce(game)
 
       const response = await server.inject({
@@ -244,12 +245,11 @@ describe('given a started server', () => {
         }
       })
       expect(response.statusCode).toEqual(200)
-      expect(services.getPlayerById).toHaveBeenCalledWith(playerId)
-      expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+      expect(services.getPlayerById).toHaveBeenNthCalledWith(1, playerId)
+      expect(services.getPlayerById).toHaveBeenNthCalledWith(2, game.playerIds)
+      expect(services.getPlayerById).toHaveBeenCalledTimes(2)
       expect(services.invite).toHaveBeenCalledWith(game.id, peerId, playerId)
       expect(services.invite).toHaveBeenCalledTimes(1)
-      expect(services.getPlayersById).toHaveBeenCalledWith(game.playerIds)
-      expect(services.getPlayersById).toHaveBeenCalledTimes(1)
     })
 
     it('deletes an existing game and resolves player objects', async () => {
@@ -260,8 +260,9 @@ describe('given a started server', () => {
         created: faker.date.past().getTime(),
         playerIds: players.map(({ id }) => id)
       }
-      services.getPlayerById.mockResolvedValueOnce(players[0])
-      services.getPlayersById.mockResolvedValueOnce(players)
+      services.getPlayerById
+        .mockResolvedValueOnce(players[0])
+        .mockResolvedValueOnce(players)
       services.deleteGame.mockResolvedValueOnce(game)
 
       const response = await server.inject({
@@ -287,12 +288,11 @@ describe('given a started server', () => {
         data: { deleteGame: { ...game, playerIds: undefined, players } }
       })
       expect(response.statusCode).toEqual(200)
-      expect(services.getPlayerById).toHaveBeenCalledWith(playerId)
-      expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+      expect(services.getPlayerById).toHaveBeenNthCalledWith(1, playerId)
+      expect(services.getPlayerById).toHaveBeenNthCalledWith(2, game.playerIds)
+      expect(services.getPlayerById).toHaveBeenCalledTimes(2)
       expect(services.deleteGame).toHaveBeenCalledWith(game.id, playerId)
       expect(services.deleteGame).toHaveBeenCalledTimes(1)
-      expect(services.getPlayersById).toHaveBeenCalledWith(game.playerIds)
-      expect(services.getPlayersById).toHaveBeenCalledTimes(1)
     })
 
     it('lists player games on subscription', async () => {
@@ -314,9 +314,10 @@ describe('given a started server', () => {
           playerIds: [playerId, players[2].id]
         }
       ]
-      services.getPlayerById.mockResolvedValueOnce(players[0])
-      services.getPlayersById.mockImplementation(async ids =>
-        players.filter(({ id }) => ids.includes(id))
+      services.getPlayerById.mockImplementation(async ids =>
+        Array.isArray(ids)
+          ? players.filter(({ id }) => ids.includes(id))
+          : players.find(({ id }) => id === ids)
       )
       services.listGames.mockResolvedValueOnce(games)
       const start = startSubscription(
@@ -347,23 +348,22 @@ describe('given a started server', () => {
           }
         })
       )
-      expect(services.getPlayerById).toHaveBeenCalledWith(playerId)
-      expect(services.getPlayerById).toHaveBeenCalledTimes(1)
       expect(services.listGames).toHaveBeenCalledWith(playerId)
       expect(services.listGames).toHaveBeenCalledTimes(1)
-      expect(services.getPlayersById).toHaveBeenNthCalledWith(
-        1,
+      expect(services.getPlayerById).toHaveBeenCalledWith(playerId)
+      expect(services.getPlayerById).toHaveBeenNthCalledWith(
+        2,
         games[0].playerIds
       )
-      expect(services.getPlayersById).toHaveBeenNthCalledWith(
-        2,
+      expect(services.getPlayerById).toHaveBeenNthCalledWith(
+        3,
         games[1].playerIds
       )
-      expect(services.getPlayersById).toHaveBeenNthCalledWith(
-        3,
+      expect(services.getPlayerById).toHaveBeenNthCalledWith(
+        4,
         games[2].playerIds
       )
-      expect(services.getPlayersById).toHaveBeenCalledTimes(3)
+      expect(services.getPlayerById).toHaveBeenCalledTimes(4)
       await stopSubscription(ws)
     })
 
@@ -374,10 +374,9 @@ describe('given a started server', () => {
         created: Date.now(),
         playerIds: [playerId]
       }
-      services.getPlayerById.mockResolvedValueOnce(players[0])
-      services.getPlayersById.mockImplementation(async ids =>
-        players.filter(({ id }) => ids.includes(id))
-      )
+      services.getPlayerById
+        .mockResolvedValueOnce(players[0])
+        .mockResolvedValueOnce([players[0]])
       services.listGames.mockResolvedValueOnce([])
       const start = startSubscription(
         ws,
@@ -407,12 +406,11 @@ describe('given a started server', () => {
         })
       )
 
-      expect(services.getPlayerById).toHaveBeenCalledWith(playerId)
-      expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+      expect(services.getPlayerById).toHaveBeenNthCalledWith(1, playerId)
+      expect(services.getPlayerById).toHaveBeenNthCalledWith(2, game.playerIds)
+      expect(services.getPlayerById).toHaveBeenCalledTimes(2)
       expect(services.listGames).toHaveBeenCalledWith(playerId)
       expect(services.listGames).toHaveBeenCalledTimes(1)
-      expect(services.getPlayersById).toHaveBeenCalledWith(game.playerIds)
-      expect(services.getPlayersById).toHaveBeenCalledTimes(1)
       await stopSubscription(ws)
     })
   })
