@@ -1,5 +1,5 @@
 import { isAuthenticated } from './utils.js'
-import { setPlaying } from '../services/authentication.js'
+import services from '../services/index.js'
 
 /**
  * The implemented protocol is:
@@ -17,6 +17,12 @@ import { setPlaying } from '../services/authentication.js'
  */
 export default {
   Mutation: {
+    /**
+     * Emits signal addressed from current player onto the subscription of another player.
+     * Requires valid authentication.
+     * @param {object} args - mutation arguments, including:
+     * @param {import('./signals.graphql').SignalInput} data.signal - signal addressed to another player.
+     */
     sendSignal: isAuthenticated((obj, { signal }, { player, pubsub }) => {
       signal.from = player.id
       pubsub.publish({
@@ -28,11 +34,17 @@ export default {
   },
 
   Subscription: {
+    /**
+     * Emits signal addressed to the current player
+     * Requires valid authentication.
+     * @async
+     * @yields {import('./signals.graphql').Signal}
+     */
     awaitSignal: {
-      subscribe: isAuthenticated(async (obj, args, { pubsub, player }) => {
-        setPlaying(player.id, true)
+      subscribe: isAuthenticated(async (obj, args, { player, pubsub }) => {
+        services.setPlaying(player.id, true)
         const queue = await pubsub.subscribe(`sendSignal-${player.id}`)
-        queue.once('close', () => setPlaying(player.id, false))
+        queue.once('close', () => services.setPlaying(player.id, false))
         return queue
       })
     }

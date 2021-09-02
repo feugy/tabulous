@@ -1,7 +1,7 @@
-import { randomUUID } from 'crypto'
 import { Subject } from 'rxjs'
 import { concatMap, mergeMap } from 'rxjs/operators'
 import { instanciateGame } from './utils.js'
+import repositories from '../repositories/index.js'
 
 /**
  * @typedef {object} Game an active game:
@@ -10,6 +10,8 @@ import { instanciateGame } from './utils.js'
  * @property {number} created - game creation timestamp.
  * @property {string[]} playerId - player ids, the first always being the creator id.
  * @property {Scene} scene - the 3D engine scene, with game meshes.
+ * @property {Message[]} messages - game discussion thread, if any.
+ * @property {CameraPosition[]} cameras - player's saved camera positions, if any.
  */
 
 /**
@@ -77,7 +79,6 @@ import { instanciateGame } from './utils.js'
  * @property {number} elevation - altitude, in 3D coordinate.
  */
 
-const gamesById = new Map()
 const gameListsUpdate$ = new Subject()
 
 function isOwner(game, playerId) {
@@ -96,9 +97,7 @@ function isOwner(game, playerId) {
  */
 export const gameListsUpdate = gameListsUpdate$.pipe(
   concatMap(n => n),
-  mergeMap(async playerId =>
-    listGames(playerId).then(games => ({ playerId, games }))
-  )
+  mergeMap(playerId => listGames(playerId).then(games => ({ playerId, games })))
 )
 
 /**
@@ -106,23 +105,23 @@ export const gameListsUpdate = gameListsUpdate$.pipe(
  * It instanciate an unique set, based on the descriptor's bags and slots.
  * Updates the creator's game list.
  * @async
+ * @param {string} root - path (JavaScript import) containing game descriptors
  * @param {string} kind - game's kind.
  * @param {string} playerId - creating player id.
  * @returns {Game} the created game.
  * @throws {Error} when no descriptor could be found for this kind.
  */
-export async function createGame(kind, playerId) {
+export async function createGame(root, kind, playerId) {
   try {
-    const descriptor = await import(`../../games/${kind}.js`)
-    const id = randomUUID()
-    const created = {
-      id,
+    const descriptor = await import(`${root}/${kind}.js`)
+    const created = await repositories.games.save({
       kind,
       created: Date.now(),
       playerIds: [playerId],
-      scene: instanciateGame(descriptor)
-    }
-    gamesById.set(id, created)
+      scene: instanciateGame(descriptor),
+      messages: [],
+      cameras: []
+    })
     gameListsUpdate$.next(created.playerIds)
     return created
   } catch (err) {
@@ -147,7 +146,7 @@ export async function createGame(kind, playerId) {
 export async function deleteGame(gameId, playerId) {
   const game = await loadGame(gameId, playerId)
   if (game) {
-    gamesById.delete(gameId)
+    await repositories.games.deleteById(gameId)
     gameListsUpdate$.next(game.playerIds)
   }
   return game
@@ -164,7 +163,7 @@ export async function deleteGame(gameId, playerId) {
  * @returns {Game|null} the loaded game, or null.
  */
 export async function loadGame(gameId, playerId) {
-  const game = gamesById.get(gameId)
+  const game = await repositories.games.getById(gameId)
   if (!isOwner(game, playerId)) {
     return null
   }
@@ -181,18 +180,16 @@ export async function loadGame(gameId, playerId) {
  * @returns {Game|null} the saved game, or null.
  */
 export async function saveGame(game, playerId) {
-  const previous = gamesById.get(game.id)
-  if (!isOwner(previous, playerId)) {
-    return null
+  const previous = await loadGame(game?.id, playerId)
+  if (previous) {
+    return repositories.games.save({
+      ...previous,
+      scene: game.scene ?? previous.scene,
+      messages: game.messages ?? previous.messages,
+      cameras: game.cameras ?? previous.cameras
+    })
   }
-  const saved = {
-    ...previous,
-    scene: game.scene || previous.scene,
-    messages: game.messages || previous.messages,
-    cameras: game.cameras || previous.cameras
-  }
-  gamesById.set(game.id, saved)
-  return saved
+  return null
 }
 
 /**
@@ -209,27 +206,23 @@ export async function saveGame(game, playerId) {
  * @returns {Game|null} updated game, or null if the player can not be invited.
  */
 export async function invite(gameId, guestId, hostId) {
-  const game = gamesById.get(gameId)
-  if (!isOwner(game, hostId) || game.playerIds.includes(guestId)) {
+  const game = await loadGame(gameId, hostId)
+  if (!game || game.playerIds.includes(guestId)) {
     return null
   }
   game.playerIds.push(guestId)
+  await repositories.games.save(game)
   gameListsUpdate$.next(game.playerIds)
   return game
 }
 
 /**
- * Lists all games this players is in.
+ * Lists up to 50 games this players is in.
  * @async
  * @param {string} playerId - player id.
  * @returns {Game[]} a list of games (could be empty).
  */
 export async function listGames(playerId) {
-  const games = []
-  for (const [, game] of gamesById) {
-    if (game.playerIds.includes(playerId)) {
-      games.push(game)
-    }
-  }
-  return games
+  return (await repositories.games.listByPlayerId(playerId, { size: 50 }))
+    .results
 }

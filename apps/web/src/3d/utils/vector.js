@@ -1,4 +1,5 @@
-import { Matrix, Ray, Vector3 } from '@babylonjs/core'
+import { Ray } from '@babylonjs/core/Culling/ray'
+import { Matrix, Vector3 } from '@babylonjs/core/Maths/math.vector'
 
 let table
 

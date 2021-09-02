@@ -3,7 +3,6 @@
 ## Refactor
 
 - server logging (warning on invalid descriptors)
-- enable [Babylon.js treeshaking](https://doc.babylonjs.com/divingDeeper/developWithBjs/treeShaking)
 - all manager managing a collection of behaviors should check their capabilities
 - moves images to server
 - completly disable Babylon input management
@@ -29,13 +28,6 @@
 
 # Known issues
 
-- crash when reordering stack
-  ```js
-  async reorder(ids) {
-    // ...
-    for (const mesh of stack) {
-      mesh.isPickable = false // TypeError: mesh is undefined
-  ```
 - moving items bellow other does not apply gravity to them
 - on vite reload, all players could become hosts or peers simultaneously
 
@@ -66,6 +58,7 @@ no peer found for signal from 4717
 
 ## Game UI:
 
+- visual hint when receiving messages on collapsed section
 - show contextual help (for example, on hover) to indicates which commands are available
 - top right, an help button with drawing for base commands (pan, camera, DnD, main actions)
 - top right, an link to the rule book, opened in a floating pane, either taking whole screen, or a third of it
@@ -131,6 +124,7 @@ The host player is in charge of:
 1. be the source of thruth
 1. sending an updated game descriptor to new peers
 1. storing the game descriptor locally and/or on server
+1. regularly sending the game state so all peer could sync their state
 
 When the host player disconnects, a new host is elected: the first connected player in the game player list becomes host
 
@@ -178,6 +172,18 @@ Follow official Let's Encrypt [instructions](https://certbot.eff.org/lets-encryp
 
 Here there are, copied from `certbot/live/tabulous.fr/` to `keys/\` folder.
 
+# Server data operations
+
+- create player
+- find one player by id
+- find several players by ids
+- update player's playing boolean (or full player)
+- create full game
+- find one game by id
+- find games which player ids contains an id
+- update full game
+- delete game
+
 # Various learnings
 
 Physics engine aren't great: they are all pretty deprecated. [Cannon-es can not be used yet](https://github.com/BabylonJS/Babylon.js/issues/9810).
@@ -197,6 +203,9 @@ However, two blockers appeared: Sinon can not mock entire dependencies (maybe an
 Finally, using vite solves all the above, and enables Jest again.
 Testing server code on Node requires `NODE_OPTIONS=--experimental-vm-modules` while running jest. What a bummer.
 
+Another pitfall with ESM and jest: `jest.mock()` does not work at all.
+[Here is a ticket to follow](https://github.com/facebook/jest/issues/10025). Using Testdouble [may be an alternative](https://github.com/facebook/jest/issues/11786).
+
 To make WebRTC work in real world scenario, it is paramount to share **every signal received**.
 One must not stop listening to signal event after connection is established, and one muse not handle only `offer` and `answer` types.
 This enables: trickle, further media addition, peers with no media while others have...
@@ -208,7 +217,10 @@ Removing server to only allow peer communication is really hard:
 - we might need a TURN server to relay video/data streams in some situations
 
 I started with SSE to push game invites to players, and Websocket to keep the signaling server independant from the app logic, but it's too many sockets for the same user.
-GraphQL subscriptions over WS are perfect to implement both usecases..
+GraphQL subscriptions over WS are perfect to implement both usecases.
+
+Enabling tree shaking in Babylon.js is [cumbersom](https://doc.babylonjs.com/divingDeeper/developWithBjs/treeShaking), but really effective:
+Final code went from 1417 modules to 674 (53% less) and the vendor.js file from 3782.23kb to 1389.03 (63% less).
 
 For decent in-game performance, textures must be GPU-compressed to KTX2 container format. This will skip CPU uncompressing jpeg/png content before passing it to the GPU.
 However, it's not broadly supported on WebGL 1 platform, so I kept the png files as fallback.

@@ -1,9 +1,7 @@
-import {
-  Animation,
-  ArcRotateCamera,
-  Observable,
-  Vector3
-} from '@babylonjs/core'
+import { Animation } from '@babylonjs/core/Animations/animation'
+import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera'
+import { Vector3 } from '@babylonjs/core/Maths/math.vector'
+import { Observable } from '@babylonjs/core/Misc/observable'
 import { isPositionAboveTable, screenToGround } from '../utils'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'

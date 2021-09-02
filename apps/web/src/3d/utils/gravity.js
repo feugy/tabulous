@@ -1,4 +1,5 @@
-import { Ray, Vector3 } from '@babylonjs/core'
+import { Ray } from '@babylonjs/core/Culling/ray'
+import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { getHeight } from '.'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'

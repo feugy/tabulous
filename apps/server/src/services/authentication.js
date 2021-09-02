@@ -1,4 +1,4 @@
-const players = new Map()
+import repositories from '../repositories/index.js'
 
 /**
  * @typedef {object} Player a player
@@ -15,40 +15,25 @@ const players = new Map()
  * @returns {Player} the authenticated player.
  */
 export async function logIn(username) {
-  let player = [...players.values()].find(
-    player => player.username === username
-  )
+  const player = await repositories.players.getByUsername(username)
   if (!player) {
-    player = {
+    return repositories.players.save({
       id: `${Math.floor(Math.random() * 9000 + 1000)}`,
       username,
       playing: false
-    }
-    players.set(player.id, player)
+    })
   }
   return player
 }
 
 /**
- * Returns a given player from its id.
- * @param {string} playerId - player id
- * @returns {Player|null} the requested player, or null if no player matches it.
+ * Returns a single or several player from their id.
+ * @async
+ * @param {string|string[]} playerId - desired player id(s).
+ * @returns {object|null|[object|null]} matching player(s), or null(s).
  */
 export async function getPlayerById(playerId) {
-  return players.get(playerId) ?? null
-}
-
-/**
- * Returns several players from their id, keeping results ordered as ids.
- * @param {string[]} playerIds - array of player ids.
- * @returns {[Player|null]} the requested players, or null if no player matches it.
- */
-export async function getPlayersById(playerIds = []) {
-  const result = []
-  for (const id of playerIds) {
-    result.push(players.get(id) ?? null)
-  }
-  return result
+  return repositories.players.getById(playerId)
 }
 
 /**
@@ -61,7 +46,7 @@ export async function getPlayersById(playerIds = []) {
 export async function setPlaying(playerId, playing) {
   const player = await getPlayerById(playerId)
   if (player) {
-    player.playing = playing
+    return repositories.players.save({ id: playerId, playing })
   }
   return player
 }

@@ -1,14 +1,11 @@
-import {
-  Axis,
-  CSG,
-  Color3,
-  Color4,
-  MeshBuilder,
-  StandardMaterial,
-  Texture,
-  Vector3,
-  Vector4
-} from '@babylonjs/core'
+import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial'
+import { Texture } from '@babylonjs/core/Materials/Textures/texture'
+import { Axis } from '@babylonjs/core/Maths/math.axis'
+import { Color3, Color4 } from '@babylonjs/core/Maths/math.color'
+import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector'
+import { CSG } from '@babylonjs/core/Meshes/csg'
+import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CylinderBuilder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
 import {
   DetailBehavior,
   FlipBehavior,
@@ -28,7 +25,7 @@ function makeCornerMesh(
 ) {
   const color = Color4.FromArray(borderColor)
 
-  const cyclinderMesh = MeshBuilder.CreateCylinder('cylinder', {
+  const cyclinderMesh = CylinderBuilder.CreateCylinder('cylinder', {
     diameter: borderRadius,
     height: depth,
     faceColors: [color, color, color]
@@ -37,7 +34,7 @@ function makeCornerMesh(
   cyclinderMesh.position.z += (top ? 1 : -1) * (height - borderRadius) * 0.5
 
   const cornerWidth = borderRadius * 0.7
-  const cornerMesh = MeshBuilder.CreateBox('corner', {
+  const cornerMesh = BoxBuilder.CreateBox('corner', {
     width: cornerWidth,
     depth: cornerWidth,
     height: depth
@@ -112,7 +109,7 @@ export function createRoundedTile({
   ]
   const color = Color4.FromArray(borderColor)
   const faceColors = [color, color, color, color, undefined, undefined]
-  const tileMesh = MeshBuilder.CreateBox('rounded-tile', {
+  const tileMesh = BoxBuilder.CreateBox('rounded-tile', {
     width,
     height: depth,
     depth: height,
@@ -177,7 +174,7 @@ export function createRoundedTile({
   tile.addBehavior(rotateBehavior, true)
 
   const stackBehavior = new StackBehavior({ moveDuration })
-  const dropZone = MeshBuilder.CreateBox('drop-zone', {
+  const dropZone = BoxBuilder.CreateBox('drop-zone', {
     width: width * 1.03,
     height: depth + 0.01,
     depth: height * 1.03

@@ -1,4 +1,5 @@
-import { BoundingInfo, Vector3 } from '@babylonjs/core'
+import { BoundingInfo } from '@babylonjs/core/Culling/boundingInfo'
+import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { controlManager, selectionManager, targetManager } from '.'
 import {
   animateMove,

@@ -53,16 +53,20 @@ let skipSharingCamera = false
 // cameras for all players
 let cameras = []
 
-function load(game, engine) {
-  loadScene(engine, game.scene)
-  loadThread(game.messages)
-  cameras = game.cameras ?? []
-  const playerCameras = cameras
-    .filter(save => save.playerId === player.id)
-    .sort((a, b) => a.index - b.index)
-  if (playerCameras.length) {
-    skipSharingCamera = true
-    loadCameraSaves(playerCameras)
+function load(game, engine, firstLoad) {
+  loadScene(engine, game.scene, firstLoad)
+  if (game.messages) {
+    loadThread(game.messages)
+  }
+  if (game.cameras) {
+    cameras = game.cameras
+    const playerCameras = cameras
+      .filter(save => save.playerId === player.id)
+      .sort((a, b) => a.index - b.index)
+    if (playerCameras.length) {
+      skipSharingCamera = true
+      loadCameraSaves(playerCameras)
+    }
   }
 }
 
@@ -88,11 +92,12 @@ function takeHostRole(gameId, engine) {
   logger.info({ gameId }, `taking game host role`)
   return [
     // save scene
-    action.pipe(debounceTime(1000)).subscribe(() => {
-      logger.info({ gameId }, `persisting game scene`)
-      runMutation(graphQL.saveGame, {
-        game: { id: gameId, scene: serializeScene(engine) }
-      })
+    action.pipe(debounceTime(1000)).subscribe(action => {
+      logger.info({ gameId, action }, `persisting game scene on action`)
+      const scene = serializeScene(engine)
+      runMutation(graphQL.saveGame, { game: { id: gameId, scene } })
+      logger.info({ gameId }, `sending scene sync`)
+      send({ type: 'game-sync', gameId, scene })
     }),
     // save discussion thread
     merge(lastMessageSent, lastMessageReceived)
@@ -130,6 +135,7 @@ function takeHostRole(gameId, engine) {
       )
       send(
         {
+          type: 'game-sync',
           gameId,
           scene: serializeScene(engine),
           messages: serializeThread(),
@@ -262,29 +268,32 @@ export async function loadGame(gameId, engine) {
         reject(error)
       }, gameReceptionDelay)
 
-      const once = lastMessageReceived
-        .pipe(filter(({ data }) => data?.gameId && data?.scene))
-        .subscribe(({ data }) => {
-          clearTimeout(gameReceptionTimeout)
-          once.unsubscribe()
-          logger.info({ game }, `receiving game data (${data.gameId})`)
-          load(data, engine)
-
-          // elect new host
-          subscriptions.push(
-            lastDisconnectedId.subscribe(async () => {
-              const { players } = await runQuery(graphQL.loadGamePlayers, {
-                gameId
-              })
-              const nextHost = players.find(({ playing }) => playing)
-              if (nextHost?.id === player.id) {
-                takeHostRole(gameId, engine)
-              }
-            })
-          )
-          resolve()
-        })
-      subscriptions.push(once)
+      let isFirstLoad = true
+      subscriptions.push(
+        lastMessageReceived
+          .pipe(filter(({ data }) => data.type === 'game-sync'))
+          .subscribe(({ data }) => {
+            logger.info({ game }, `loading game data (${data.gameId})`)
+            if (isFirstLoad) {
+              clearTimeout(gameReceptionTimeout)
+              // elect new host
+              subscriptions.push(
+                lastDisconnectedId.subscribe(async () => {
+                  const { players } = await runQuery(graphQL.loadGamePlayers, {
+                    gameId
+                  })
+                  const nextHost = players.find(({ playing }) => playing)
+                  if (nextHost?.id === player.id) {
+                    takeHostRole(gameId, engine)
+                  }
+                })
+              )
+              resolve()
+            }
+            load(data, engine, isFirstLoad)
+            isFirstLoad = false
+          })
+      )
     })
   }
 }

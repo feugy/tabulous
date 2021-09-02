@@ -1,4 +1,6 @@
-import { Observable, PointerEventTypes, Vector3 } from '@babylonjs/core'
+import { PointerEventTypes } from '@babylonjs/core/Events/pointerEvents'
+import { Vector3 } from '@babylonjs/core/Maths/math.vector'
+import { Observable } from '@babylonjs/core/Misc/observable'
 import { createPeerPointer } from '../peer-pointer'
 import { screenToGround } from '../utils'
 

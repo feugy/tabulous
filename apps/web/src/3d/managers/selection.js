@@ -1,12 +1,9 @@
-import {
-  Axis,
-  Color3,
-  Mesh,
-  MeshBuilder,
-  Quaternion,
-  Space,
-  Vector3
-} from '@babylonjs/core'
+import { Axis, Space } from '@babylonjs/core/Maths/math.axis'
+import { Color3 } from '@babylonjs/core/Maths/math.color'
+import { Vector3, Quaternion } from '@babylonjs/core/Maths/math.vector'
+import { Mesh } from '@babylonjs/core/Meshes/mesh'
+import { LinesBuilder } from '@babylonjs/core/Meshes/Builders/linesBuilder'
+import { ShapeBuilder } from '@babylonjs/core/Meshes/Builders/shapeBuilder'
 import { isContaining, screenToGround, sortByElevation } from '../utils'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
@@ -58,10 +55,12 @@ class SelectionManager {
     ]
     points.push(points[0].clone())
 
-    this.box = MeshBuilder.CreateLines('selection-hint', {
+    this.box = LinesBuilder.CreateLines('selection-hint', {
       points,
       colors: Array.from({ length: 6 }, () => Color3.Green().toColor4())
     })
+    // ensure the box to be displayed "in front of" all other meshes
+    this.box.renderingGroupId = 2
 
     // dynamically assign select function to keep start and end in scope
     this.select = () => {
@@ -77,7 +76,7 @@ class SelectionManager {
       for (const point of points) {
         point.rotateByQuaternionAroundPointToRef(rotation, position, point)
       }
-      const box = MeshBuilder.ExtrudeShape('selection-box', {
+      const box = ShapeBuilder.ExtrudeShape('selection-box', {
         shape: points,
         path: [Vector3.Zero(), new Vector3(0, 0, 20)],
         sideOrientation: Mesh.DOUBLESIDE

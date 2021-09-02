@@ -9,6 +9,10 @@ import { getAuthenticatedPlayer } from './utils.js'
 
 /**
  * Registers Tabulous graphql endpoints (powered by mercurius) into the provided fastify application.
+ * it provides context to resovers, with:
+ * - the player object, as `player`
+ * - the server full configuration, as `conf`
+ * @async
  * @param {import('fastify').FastifyInstance} app - a fastify application.
  * @param {GraphQLOptions} opts - plugin options.
  */
@@ -21,11 +25,12 @@ async function registerGraphQL(app, opts) {
     subscription: {
       async onConnect({ payload }) {
         const player = await getAuthenticatedPlayer(payload?.bearer)
-        return player ? { player } : null
+        return { player, conf: app.conf }
       }
     },
     context: async request => ({
-      player: await getAuthenticatedPlayer(request.headers.authorization)
+      player: await getAuthenticatedPlayer(request.headers.authorization),
+      conf: app.conf
     })
   })
 }

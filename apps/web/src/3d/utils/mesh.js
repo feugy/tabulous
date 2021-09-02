@@ -1,4 +1,4 @@
-import { Engine } from '@babylonjs/core'
+import { Engine } from '@babylonjs/core/Engines/engine'
 
 /**
  * @typedef {object} ImageDefs detailed images definitions for a given mesh:
