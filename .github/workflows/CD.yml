@@ -31,33 +31,12 @@ jobs:
         run: npm ci
 
       - name: Build artifacts
-        run: npm run build
+        run: ./hosting/build.sh
 
-      - name: Configure SSH
-        run: |
-          mkdir -p ~/.ssh/
-          echo "$KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          cat >>~/.ssh/config <<END
-          Host vps
-              HostName $HOST
-              Port $PORT
-
-              User $USER
-              IdentityFile ~/.ssh/id_rsa
-              StrictHostKeyChecking no
-          END
+      - name: Upload to VPS and trigger deployment
+        run: ./hosting/upload.sh
         env:
           USER: ${{ secrets.DEPLOY_USERNAME }}
           KEY: ${{ secrets.DEPLOY_SSH_KEY }}
           HOST: ${{ secrets.DEPLOY_HOST }}
           PORT: ${{ secrets.DEPLOY_PORT }}
-
-      - name: Upload UI files to VPS
-        run: scp -r apps/web/dist vps:~/web
-
-      - name: Upload server files to VPS
-        run: scp -r apps/server/dist/* vps:~/server
-
-      - name: Trigger deployment
-        run: ssh vps '~/server/deploy.sh'

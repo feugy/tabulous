@@ -129,13 +129,6 @@ The host player is in charge of:
 
 When the host player disconnects, a new host is elected: the first connected player in the game player list becomes host
 
-# Build server:
-
-- cd apps/server
-- rm package-lock.json
-- npm i --production
-- tar -zcf server.tar.gz node_modules/ src/ games/ ../../.nvmrc start.sh package.json
-
 ## HTTPs certificate
 
 Follow official Let's Encrypt [instructions](https://certbot.eff.org/lets-encrypt/ubuntufocal-other) for Ubuntu.

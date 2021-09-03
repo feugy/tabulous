@@ -5,7 +5,6 @@
   "type": "module",
   "main": "./src",
   "scripts": {
-    "build": "scripts/build.sh",
     "start": "nodemon . | pino-pretty -c -t",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --coverage --colors",
     "test:dev": "NODE_OPTIONS=--experimental-vm-modules jest --watch"

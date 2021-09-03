@@ -22,7 +22,7 @@ server {
   }
 
   location / {
-    root /home/tabulous/web/dist;
+    root /home/tabulous/web;
     index index.html;
   }
 }

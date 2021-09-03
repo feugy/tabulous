@@ -14,9 +14,6 @@
     "apps/*"
   ],
   "scripts": {
-    "build": "run-s -ncs build:**",
-    "build:server": "npm run build --prefix apps/server",
-    "build:web": "npm run build --workspace apps/web",
     "format": "prettier --write .",
     "lint": "eslint .",
     "prepare": "husky install",

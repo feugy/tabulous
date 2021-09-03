@@ -25,12 +25,9 @@ First commands will need to connect with IPv4 (hence the `-4` flag) in the meant
   - `sudo systemctl restart sshd`
 - add technical user `tabulous` for running the app: `sudo adduser tabulous`
 - grant it the right to restart services:
-  - `sudo visudo`
-  - add `tabulous ALL=NOPASSWD:/usr/bin/systemctl`
-  - add `tabulous ALL=NOPASSWD:/usr/sbin/nginx`
-- creates some folders:
-  - `sudo su - tabulous`
-  - `mkdir -m 700 nginx web server`
+  - open sudoer configuration file: `sudo visudo`
+  - add: `tabulous ALL=NOPASSWD:/usr/bin/systemctl`
+  - add: `tabulous ALL=NOPASSWD:/usr/sbin/nginx`
 
 ## Connectivity
 
@@ -64,13 +61,7 @@ First commands will need to connect with IPv4 (hence the `-4` flag) in the meant
 
 ## Software
 
-- copy the application files to the VPS:
-
-  - nginx configuration: `scp hosting/tabulous.nginx tabulous@vps-XYZ.vps.ovh.net:~/nginx/tabulous`
-  - SSL certificates: `scp -r hosting/certbot tabulous@vps-XYZ.vps.ovh.net:~/certbot`
-  - UI files : `scp -r apps/web/dist tabulous@vps-XYZ.vps.ovh.net:~/web/dist`
-  - server files : `scp apps/server/server.tar.gz tabulous@vps-XYZ.vps.ovh.net:~/server/`
-  - systemD configuration : `scp hosting/tabulous.systemd ubuntu@vps-XYZ.vps.ovh.net:~/tabulous.service`
+- Copy SSL certificates: `scp -r hosting/certbot tabulous@vps-XYZ.vps.ovh.net:~/certbot`
 
 - install Nginx:
 
@@ -79,12 +70,17 @@ First commands will need to connect with IPv4 (hence the `-4` flag) in the meant
   - stop it: `sudo nginx -s quit`
   - edits its configuration: `sudo vi /etc/nginx/nginx.conf`:
     - change `user www-data` to `user tabulous`
-  - creates a symbolic link for tabulous NGINX site: `sudo ln -s /home/tabulous/nginx/tabulous /etc/nginx/sites-enabled/tabulous`
   - removes default NGINX site: `sudo rm /etc/nginx/sites-enabled/default`
+  - creates a symbolic link for tabulous NGINX site: `sudo ln -s /home/tabulous/nginx/tabulous /etc/nginx/sites-enabled/tabulous`
+
+- prepare SystemD configuration for tabulous server:
+
+  - open an SSH connection to the VPS: `ssh ubuntu@vps-XYZ.vps.ovh.net`
+  - creates a symbolic link for tabulous service definition: `sudo ln -s /home/tabulous/systemd/tabulous.service /etc/systemd/system/tabulous.service`
 
 - install NVM and Node.js:
 
-  - open an SSH connection to the VPS: `ssh ubuntu@vps-XYZ.vps.ovh.net`
+  - open an SSH connection to the VPS _as tabulous_: `ssh tabulous@vps-XYZ.vps.ovh.net`
   - gets Node Version Manager: `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash`
   - makes nvm command available: `source ~/.bashrc`
 
@@ -95,23 +91,6 @@ First commands will need to connect with IPv4 (hence the `-4` flag) in the meant
   - make it executable: `sudo ln -s /snap/bin/certbot /usr/bin/certbot`
   - give it authorizations: `sudo snap set certbot trust-plugin-with-root=ok`
   - install certbot OVH DNS plugin: `sudo snap install certbot-dns-ovh`
-
-- run the application server
-
-  - open an SSH connection to the VPS: `ssh ubuntu@vps-XYZ.vps.ovh.net`
-  - move SystemD configuration to the proper place: `sudo mv ~/tabulous.service /etc/systemd/system`
-  - enable it: `sudo systemctl enable tabulous`
-  - endorse Tabulous user: `sudo su - tabulous`
-  - move to the server folder: `cd ~/server`
-  - unzip the code: `tar -xzf server.tar.gz`
-  - secure access: `chmod -R og= .`
-  - use the right Node.js version: `nvm install`
-  - make start.sh executable: `chmod u+x start.sh`
-
-- start everything!
-  - open an SSH connection to the VPS: `ssh ubuntu@vps-XYZ.vps.ovh.net`
-  - start tabulous server: `sudo systemctl start tabulous`
-  - start Nginx: `sudo nginx`
 
 ## Continuous deployment
 
