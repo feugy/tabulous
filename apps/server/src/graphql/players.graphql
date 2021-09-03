@@ -4,6 +4,10 @@ type Player {
   playing: Boolean!
 }
 
+type Query {
+  getCurrentPlayer: Player
+}
+
 type Mutation {
   logIn(username: String!, password: String!): Player
 }

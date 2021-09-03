@@ -1,6 +1,16 @@
+fragment player on Player {
+  id
+  username
+}
+
 mutation logIn($username: String!, $password: String!) {
   logIn(username: $username, password: $password) {
-    id
-    username
+    ...player
+  }
+}
+
+query getCurrentPlayer {
+  getCurrentPlayer {
+    ...player
   }
 }

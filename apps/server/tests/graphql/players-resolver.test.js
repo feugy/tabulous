@@ -18,6 +18,8 @@ describe('given a started server', () => {
     }
   })
 
+  beforeEach(jest.resetAllMocks)
+
   afterAll(async () => {
     Object.assign(services, originalServices)
     await server?.close()
@@ -33,12 +35,7 @@ describe('given a started server', () => {
         method: 'POST',
         url: 'graphql',
         payload: {
-          query: `mutation { 
-  logIn(username: "${username}", password: "${password}") { 
-    id 
-    username 
-  }
-}`
+          query: `mutation { logIn(username: "${username}", password: "${password}") { id username } }`
         }
       })
       expect(response.json()).toEqual({
@@ -47,6 +44,62 @@ describe('given a started server', () => {
       expect(response.statusCode).toEqual(200)
       expect(services.logIn).toHaveBeenCalledWith(username, password)
       expect(services.logIn).toHaveBeenCalledTimes(1)
+    })
+
+    it('returns current player from authentication details', async () => {
+      const username = faker.name.firstName()
+      const id = faker.datatype.uuid()
+      services.getPlayerById.mockResolvedValueOnce({ id, username, foo: 'bar' })
+      const response = await server.inject({
+        method: 'POST',
+        url: 'graphql',
+        headers: { authorization: `Bearer ${id}` },
+        payload: {
+          query: `query { getCurrentPlayer { id username } }`
+        }
+      })
+      expect(response.json()).toEqual({
+        data: { getCurrentPlayer: { id, username } }
+      })
+      expect(response.statusCode).toEqual(200)
+      expect(services.getPlayerById).toHaveBeenCalledWith(id)
+      expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+    })
+
+    it('does not return current player without authentication details', async () => {
+      const response = await server.inject({
+        method: 'POST',
+        url: 'graphql',
+        payload: {
+          query: `query { getCurrentPlayer { id username } }`
+        }
+      })
+      expect(response.json()).toEqual({
+        data: { getCurrentPlayer: null },
+        errors: [expect.objectContaining({ message: 'Unauthorized' })]
+      })
+      expect(response.statusCode).toEqual(200)
+      expect(services.getPlayerById).not.toHaveBeenCalledWith()
+    })
+
+    it('does not return current player with invalid authentication details', async () => {
+      const id = faker.datatype.uuid()
+      services.getPlayerById.mockResolvedValueOnce(null)
+      const response = await server.inject({
+        method: 'POST',
+        url: 'graphql',
+        headers: { authorization: `Bearer ${id}` },
+        payload: {
+          query: `query { getCurrentPlayer { id username } }`
+        }
+      })
+      expect(response.json()).toEqual({
+        data: { getCurrentPlayer: null },
+        errors: [expect.objectContaining({ message: 'Unauthorized' })]
+      })
+      expect(response.statusCode).toEqual(200)
+      expect(services.getPlayerById).toHaveBeenCalledWith(id)
+      expect(services.getPlayerById).toHaveBeenCalledTimes(1)
     })
   })
 })

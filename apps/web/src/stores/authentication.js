@@ -10,12 +10,18 @@ const storageKey = 'player'
 const current$ = new BehaviorSubject()
 
 current$.subscribe(player => {
+  const playerData = sessionStorage.getItem(storageKey)
+  // skip if we receiving the same player as before
+  if (playerData && JSON.parse(playerData)?.id === player?.id) {
+    logger.debug({ player, playerData }, `skiping session save`)
+    return
+  }
   if (player) {
-    logger.debug({ player }, `saving session`)
+    logger.info({ player }, `saving session`)
     sessionStorage.setItem(storageKey, JSON.stringify(player))
     initGraphQLGlient(player)
   } else if (player === null) {
-    logger.debug(`clearing session storage`)
+    logger.info(`clearing session storage`)
     sessionStorage.clear()
     initGraphQLGlient()
   }
@@ -37,8 +43,10 @@ export async function recoverSession() {
   if (playerData) {
     let player = null
     try {
-      logger.debug({ playerData }, `recovering previous session`)
-      player = await logIn(JSON.parse(playerData).username)
+      logger.info({ playerData }, `recovering previous session`)
+      initGraphQLGlient(JSON.parse(playerData))
+      player = await runMutation(graphQL.getCurrentPlayer)
+      current$.next(player)
     } catch (error) {
       logger.warn(
         { error, playerData },
@@ -46,7 +54,7 @@ export async function recoverSession() {
       )
       await logOut()
     }
-    logger.debug({ player: current$.value }, `session recovery complete`)
+    logger.info({ player: current$.value }, `session recovery complete`)
     return player
   }
 }
@@ -71,5 +79,6 @@ export async function logIn(username, password) {
  * @async
  */
 export async function logOut() {
+  logger.info(`logging out`)
   current$.next(null)
 }
