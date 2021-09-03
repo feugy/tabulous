@@ -35,6 +35,7 @@ jobs:
         run: |
           mkdir -p ~/.ssh/
           echo "$KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
           cat >>~/.ssh/config <<END
           Host vps
               HostName $HOST
