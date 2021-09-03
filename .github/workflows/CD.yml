@@ -34,7 +34,7 @@ jobs:
       - name: Upload UI files to VPS
         uses: betanzos/scp-upload@v1
         with:
-          source: ui-dist
+          source: apps/web/dist
           host: ${{ secrets.DEPLOY_HOST }}
           port: ${{ secrets.DEPLOY_PORT }}
           username: ${{ secrets.DEPLOY_USERNAME }}
@@ -44,7 +44,7 @@ jobs:
       - name: Upload server files to VPS
         uses: betanzos/scp-upload@v1
         with:
-          source: server-dist
+          source: apps/server/dist
           host: ${{ secrets.DEPLOY_HOST }}
           port: ${{ secrets.DEPLOY_PORT }}
           username: ${{ secrets.DEPLOY_USERNAME }}
@@ -52,5 +52,10 @@ jobs:
           remote_dir: ~/server/dist
 
       - name: Deploy on VPS
-        run: ssh -i ${{ secrets.DEPLOY_SSH_KEY }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} -p {{secrets.DEPLOY_PORT}} "~/server/deploy.sh"
-        shell: bash
+        run: |
+          mkdir -p ~/.ssh/
+          cat << EOF > ~/.ssh/id_rsa
+          ${{ secrets.DEPLOY_SSH_KEY }}
+          EOF
+          chmod 600 ~/.ssh/id_rsa
+          ssh ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} -p {{secrets.DEPLOY_PORT}} "~/server/deploy.sh"
