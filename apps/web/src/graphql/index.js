@@ -7,7 +7,7 @@ import {
   loadGamePlayers,
   saveGame
 } from './games.graphql'
-import { logIn } from './players.graphql'
+import { getCurrentPlayer, logIn } from './players.graphql'
 import { sendSignal, awaitSignal } from './signals.graphql'
 
 // jest transformers don't allow export all from graphql files
@@ -15,6 +15,7 @@ export {
   awaitSignal,
   createGame,
   deleteGame,
+  getCurrentPlayer,
   invite,
   listGames,
   loadGame,

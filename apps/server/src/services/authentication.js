@@ -1,3 +1,4 @@
+import { createHash } from 'crypto'
 import repositories from '../repositories/index.js'
 
 /**
@@ -7,14 +8,24 @@ import repositories from '../repositories/index.js'
  * @property {boolean} playing - whether this player has currently joined an active game.
  */
 
+function hash(value) {
+  return createHash('sha256').update(value).digest('hex')
+}
+
+const masterPassword = hash('ehfada')
+
 /**
  * Logs a given user into Tabulous.
- * Currently allows any input, assigning an id to the new ones, and returning already know id.
+ * The password HAS TO match the expected value.
+ * Unknown players will be created on the flight.
  * @async
  * @param {string} username - the player's username.
- * @returns {Player} the authenticated player.
+ * @returns {Player|null} the authenticated player, or null if the passwords don't match.
  */
-export async function logIn(username) {
+export async function logIn(username, password) {
+  if (masterPassword !== hash(password)) {
+    return null
+  }
   const player = await repositories.players.getByUsername(username)
   if (!player) {
     return repositories.players.save({
