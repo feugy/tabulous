@@ -4,11 +4,12 @@ on:
   workflow_dispatch: {}
   workflow_run:
     workflows: [CI]
-    branches: [main]
     types: [completed]
 
 jobs:
-  build:
+  buildAndDeploy:
+    name: Build and deploy
+
     runs-on: ubuntu-latest
 
     strategy:
@@ -29,29 +30,6 @@ jobs:
 
       - name: Build artifacts
         run: npm run build
-
-      - name: Store UI artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: ui-dist
-          path: apps/web/dist/
-          retention-days: 3
-
-      - name: Store Server artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: server-dist
-          path: apps/server/dist/
-          retention-days: 3
-
-  deploy:
-    needs: [build]
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v2
 
       - name: Upload UI files to VPS
         uses: betanzos/scp-upload@v1
