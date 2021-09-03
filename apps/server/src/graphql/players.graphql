@@ -5,5 +5,5 @@ type Player {
 }
 
 type Mutation {
-  logIn(username: String!): Player
+  logIn(username: String!, password: String!): Player
 }

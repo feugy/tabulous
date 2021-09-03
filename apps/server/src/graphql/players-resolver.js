@@ -7,8 +7,9 @@ export default {
      * @async
      * @param {object} args - mutation arguments, including:
      * @param {string} data.username - username.
+     * @param {string} data.password - clear password.
      * @returns {import('../services/authentication').Player|null} authentified player or null.
      */
-    logIn: (_, { username }) => services.logIn(username)
+    logIn: (_, { username, password }) => services.logIn(username, password)
   }
 }

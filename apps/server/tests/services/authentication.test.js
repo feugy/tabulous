@@ -14,16 +14,29 @@ describe('given initialized repository', () => {
   describe('logIn()', () => {
     it('authenticates player and returns details', async () => {
       const username = faker.name.firstName()
-      expect(await logIn(username)).toEqual({
+      const password = 'ehfada'
+      const player = await logIn(username, password)
+      expect(player).toEqual({
         id: expect.any(String),
         username,
-        playing: false
+        playing: false,
+        password: expect.any(String)
       })
+      expect(player.password).not.toEqual(password)
+    })
+
+    it('rejects invalid password', async () => {
+      const username = faker.name.firstName()
+      const password = faker.internet.password()
+      expect(await logIn(username, password)).toBeNull()
     })
 
     it('returns the same object from the same credentials', async () => {
       const username = faker.name.firstName()
-      expect(await logIn(username)).toEqual(await logIn(username))
+      const password = 'ehfada'
+      expect(await logIn(username, password)).toEqual(
+        await logIn(username, password)
+      )
     })
   })
 
@@ -38,7 +51,7 @@ describe('given initialized repository', () => {
 
     beforeAll(async () => {
       for (const [i, player] of players.entries()) {
-        players[i] = await logIn(player.username)
+        players[i] = await logIn(player.username, 'ehfada')
       }
     })
 

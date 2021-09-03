@@ -26,6 +26,7 @@ describe('given a started server', () => {
   describe('Player GraphQL resolver', () => {
     it('logs user without authentication', async () => {
       const username = faker.name.firstName()
+      const password = faker.internet.password()
       const id = faker.datatype.uuid()
       services.logIn.mockResolvedValueOnce({ username, id, whatever: 'foo' })
       const response = await server.inject({
@@ -33,7 +34,7 @@ describe('given a started server', () => {
         url: 'graphql',
         payload: {
           query: `mutation { 
-  logIn(username: "${username}") { 
+  logIn(username: "${username}", password: "${password}") { 
     id 
     username 
   }
@@ -44,7 +45,7 @@ describe('given a started server', () => {
         data: { logIn: { id, username } }
       })
       expect(response.statusCode).toEqual(200)
-      expect(services.logIn).toHaveBeenCalledWith(username)
+      expect(services.logIn).toHaveBeenCalledWith(username, password)
       expect(services.logIn).toHaveBeenCalledTimes(1)
     })
   })
