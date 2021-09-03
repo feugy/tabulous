@@ -1,0 +1,28 @@
+server {
+  listen 80 default_server;
+  listen [::]:80 default_server;
+
+  server_name tabulous.fr www.tabulous.fr tabulous.games www.tabulous.games;
+  return 301 https://$host$request_uri;
+}
+
+server {
+  listen 443 ssl;
+  ssl_certificate /home/tabulous/certbot/live/tabulous.fr/fullchain.pem;
+  ssl_certificate_key /home/tabulous/certbot/live/tabulous.fr/privkey.pem;
+
+  server_name tabulous.fr www.tabulous.fr tabulous.games www.tabulous.games;
+
+  location /graphql {
+    proxy_pass http://localhost:3001;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "Upgrade";
+    proxy_set_header Host $host;
+  }
+
+  location / {
+    root /home/tabulous/web/dist;
+    index index.html;
+  }
+}

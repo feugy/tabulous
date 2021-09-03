@@ -1,0 +1,78 @@
+name: CD
+
+on:
+  workflow_dispatch: {}
+  workflow_run:
+    workflows: [CI]
+    branches: [main]
+    types: [completed]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [15.x]
+
+    steps:
+      - name: Check code out
+        uses: actions/checkout@v2
+
+      - name: Set Node.js ${{ matrix.node-version }} up
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build artifacts
+        run: npm run build
+
+      - name: Store UI artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ui-dist
+          path: apps/web/dist/
+          retention-days: 3
+
+      - name: Store Server artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: server-dist
+          path: apps/server/dist/
+          retention-days: 3
+
+  deploy:
+    needs: [build]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+
+      - name: Upload UI files to VPS
+        uses: betanzos/scp-upload@v1
+        with:
+          source: ui-dist
+          host: ${{ secrets.DEPLOY_HOST }}
+          port: ${{ secrets.DEPLOY_PORT }}
+          username: ${{ secrets.DEPLOY_USERNAME }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          remote_dir: ~/web/dist
+
+      - name: Upload server files to VPS
+        uses: betanzos/scp-upload@v1
+        with:
+          source: server-dist
+          host: ${{ secrets.DEPLOY_HOST }}
+          port: ${{ secrets.DEPLOY_PORT }}
+          username: ${{ secrets.DEPLOY_USERNAME }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          remote_dir: ~/server/dist
+
+      - name: Deploy on VPS
+        run: ssh -i ${{ secrets.DEPLOY_SSH_KEY }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} -p {{secrets.DEPLOY_PORT}} "~/server/deploy.sh"
+        shell: bash

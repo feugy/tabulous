@@ -1,6 +1,6 @@
 import { readFile } from 'fs/promises'
 import fastify from 'fastify'
-import repositories from './repositories'
+import repositories from './repositories/index.js'
 const { games, players } = repositories
 
 /**
