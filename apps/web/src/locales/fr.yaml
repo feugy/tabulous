@@ -31,6 +31,7 @@ page-titles:
 placeholders:
   player-id: Id joueur
   user-name: Pseudo
+  password: Mot de passe
 titles:
   confirm-game-deletion: Suppression de la partie
   home: Bonjour {username} ({id}) !

@@ -1,5 +1,5 @@
-mutation logIn($username: String!) {
-  logIn(username: $username) {
+mutation logIn($username: String!, $password: String!) {
+  logIn(username: $username, password: $password) {
     id
     username
   }

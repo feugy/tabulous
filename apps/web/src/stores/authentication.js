@@ -55,11 +55,12 @@ export async function recoverSession() {
  * Logs a player in.
  * @async
  * @param {string} username - username of the authenticating player
+ * @param {string} password - clear password
  * @returns {object} the authenticated player object
  */
-export async function logIn(username) {
+export async function logIn(username, password) {
   initGraphQLGlient()
-  const player = await runMutation(graphQL.logIn, { username })
+  const player = await runMutation(graphQL.logIn, { username, password })
   logger.info(player, `authenticating ${username}`)
   current$.next(player)
   return player

@@ -5,9 +5,14 @@
   import { logIn } from '../stores'
 
   let username = ''
+  let password = ''
   let inputRef
 
-  $: disabled = !username || username.trim().length === 0
+  $: disabled =
+    !username ||
+    username.trim().length === 0 ||
+    !password ||
+    password.trim().length <= 3
 
   $: if (inputRef) {
     inputRef.focus()
@@ -15,7 +20,7 @@
 
   async function handleLogin() {
     try {
-      await logIn(username)
+      await logIn(username, password)
       const redirect = new URLSearchParams($querystring).get('redirect')
       replace(redirect || '/home')
     } catch {
@@ -55,6 +60,13 @@
           placeholder={$_('placeholders.user-name')}
           bind:value={username}
           bind:ref={inputRef}
+        />
+      </div>
+      <div class="row">
+        <Input
+          type="password"
+          placeholder={$_('placeholders.password')}
+          bind:value={password}
         />
       </div>
       <div class="actions">
