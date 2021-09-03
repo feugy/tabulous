@@ -10,7 +10,8 @@ jobs:
   buildAndDeploy:
     name: Build and deploy
 
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    # either triggered manually, or when CI completed, and it was not on a PR
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && !github.event.workflow_run.head_branch) }}
 
     runs-on: ubuntu-latest
 
