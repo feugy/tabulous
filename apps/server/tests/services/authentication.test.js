@@ -14,15 +14,11 @@ describe('given initialized repository', () => {
   describe('logIn()', () => {
     it('authenticates player and returns details', async () => {
       const username = faker.name.firstName()
-      const password = 'ehfada'
-      const player = await logIn(username, password)
-      expect(player).toEqual({
+      expect(await logIn(username, 'ehfada')).toEqual({
         id: expect.any(String),
         username,
-        playing: false,
-        password: expect.any(String)
+        playing: false
       })
-      expect(player.password).not.toEqual(password)
     })
 
     it('rejects invalid password', async () => {

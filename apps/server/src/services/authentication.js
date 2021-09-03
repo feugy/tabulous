@@ -31,8 +31,7 @@ export async function logIn(username, password) {
     return repositories.players.save({
       id: `${Math.floor(Math.random() * 9000 + 1000)}`,
       username,
-      playing: false,
-      password: masterPassword
+      playing: false
     })
   }
   return player
