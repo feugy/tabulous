@@ -31,31 +31,29 @@ jobs:
       - name: Build artifacts
         run: npm run build
 
-      - name: Upload UI files to VPS
-        uses: betanzos/scp-upload@v1
-        with:
-          source: apps/web/dist
-          host: ${{ secrets.DEPLOY_HOST }}
-          port: ${{ secrets.DEPLOY_PORT }}
-          username: ${{ secrets.DEPLOY_USERNAME }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          remote_dir: ~/web/dist
-
-      - name: Upload server files to VPS
-        uses: betanzos/scp-upload@v1
-        with:
-          source: apps/server/dist
-          host: ${{ secrets.DEPLOY_HOST }}
-          port: ${{ secrets.DEPLOY_PORT }}
-          username: ${{ secrets.DEPLOY_USERNAME }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          remote_dir: ~/server/dist
-
-      - name: Deploy on VPS
+      - name: Configure SSH
         run: |
           mkdir -p ~/.ssh/
-          cat << EOF > ~/.ssh/id_rsa
-          ${{ secrets.DEPLOY_SSH_KEY }}
-          EOF
-          chmod 600 ~/.ssh/id_rsa
-          ssh ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST }} -p {{secrets.DEPLOY_PORT}} "~/server/deploy.sh"
+          echo "$KEY" > ~/.ssh/id_rsa
+          cat >>~/.ssh/config <<END
+          Host vps
+              HostName $HOST
+              Port $PORT
+              User $USER
+              IdentityFile ~/.ssh/id_rsa
+              StrictHostKeyChecking no
+          END
+        env:
+          USER: ${{ secrets.DEPLOY_USERNAME }}
+          KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          HOST: ${{ secrets.DEPLOY_HOST }}
+          PORT: ${{ secrets.DEPLOY_PORT }}
+
+      - name: Upload UI files to VPS
+        run: scp -r apps/web/dist vps:~/web/dist
+
+      - name: Upload server files to VPS
+        run: scp -r apps/server/dist vps:~/server/dist
+
+      - name: Trigger deployment
+        run: ssh vps '~/server/deploy.sh'

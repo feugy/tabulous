@@ -115,7 +115,8 @@ First commands will need to connect with IPv4 (hence the `-4` flag) in the meant
 
 ## Continuous deployment
 
-[Source](https://coderflex.com/blog/2-easy-steps-to-automate-a-deployment-in-a-vps-with-github-actions)
+[Inspiration](https://coderflex.com/blog/2-easy-steps-to-automate-a-deployment-in-a-vps-with-github-actions)
+[Github action and SSH commands](https://blog.benoitblanchon.fr/github-action-run-ssh-commands/)
 
 - Authorize Gihub action
   - open an SSH connection to the VPS _as tabulous_: `ssh tabulous@vps-XYZ.vps.ovh.net`
@@ -126,6 +127,9 @@ First commands will need to connect with IPv4 (hence the `-4` flag) in the meant
     - add `DEPLOY_PORT` secret and set it to `22`
     - add `DEPLOY_USERNAME` secret and set it to `tabulous`
     - add `DEPLOY_SSH_KEY` secret and set it to the exact content of `.ssh/id_rsa`
+
+The `CD` github workflow will trigger after a successful run of `CI` workflow, on master branch.
+It can also be manually triggered from the [Github action interface](https://github.com/feugy/tabulous/actions/workflows/CD.yml)
 
 _Hints_
 
