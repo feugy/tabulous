@@ -11,7 +11,7 @@ jobs:
     name: Build and deploy
 
     # either triggered manually, or when CI completed, and it was not on a PR
-    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && !github.event.workflow_run.head_branch) }}
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
 
     runs-on: ubuntu-latest
 
@@ -20,6 +20,9 @@ jobs:
         node-version: [15.x]
 
     steps:
+      - name: Debug
+        run: echo "coucou ${{ github.event.workflow_run.head_branch }}"
+
       - name: Check code out
         uses: actions/checkout@v2
 
