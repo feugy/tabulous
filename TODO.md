@@ -8,6 +8,7 @@
 - completly disable Babylon input management
 - UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
 - parametrize and serialize UVs
+- automate SSH renewal with certbot
 
 ## Single player
 
@@ -128,7 +129,14 @@ The host player is in charge of:
 
 When the host player disconnects, a new host is elected: the first connected player in the game player list becomes host
 
-# HTTPs certificate
+# Build server:
+
+- cd apps/server
+- rm package-lock.json
+- npm i --production
+- tar -zcf server.tar.gz node_modules/ src/ games/ ../../.nvmrc start.sh package.json
+
+## HTTPs certificate
 
 Follow official Let's Encrypt [instructions](https://certbot.eff.org/lets-encrypt/ubuntufocal-other) for Ubuntu.
 
@@ -161,16 +169,16 @@ Follow official Let's Encrypt [instructions](https://certbot.eff.org/lets-encryp
 1. run the certbot command
 
    ```shell
-   certbot certonly --dns-ovh --dns-ovh-credentials certbot/ovh.ini -d tabulous.fr -d www.tabulous.fr --work-dir certbot --logs-dir certbot --config-dir certbot
+   certbot certonly --dns-ovh --dns-ovh-credentials certbot/ovh.ini -d tabulous.fr -d www.tabulous.fr --work-dir hosting/certbot --logs-dir hosting/certbot --config-dir hosting/certbot
    ```
 
 1. copy relevant files to run it locally
    ```shell
-   cp certbot/live/tabulous.fr/cert.pem keys/
-   cp certbot/live/tabulous.fr/privkey.pem keys/
+   cp hosting/certbot/live/tabulous.fr/cert.pem keys/
+   cp hosting/certbot/live/tabulous.fr/privkey.pem keys/
    ```
 
-Here there are, copied from `certbot/live/tabulous.fr/` to `keys/\` folder.
+Here there are, copied from `hosting/certbot/live/tabulous.fr/` to `keys/\` folder.
 
 # Server data operations
 

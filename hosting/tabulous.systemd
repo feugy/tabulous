@@ -1,0 +1,15 @@
+[Unit]
+Description=Tabulous Server
+After=network-online.target
+
+[Service]
+# EnvironmentFile=/home/tabulous/server/.env
+ExecStart=/home/tabulous/server/start.sh
+WorkingDirectory=/home/tabulous/server
+LimitNOFILE=4096
+IgnoreSIGPIPE=false
+KillMode=process
+User=tabulous
+
+[Install]
+WantedBy=multi-user.target
