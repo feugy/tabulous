@@ -1,6 +1,7 @@
 #!/bin/bash
 . ~/.nvm/nvm.sh
 set -x
+cd /home/tabulous/server
 tar -x --file server.tar.gz -z
 set +x
 nvm install
@@ -11,4 +12,4 @@ cat << EOF > start.sh
 node .
 EOF
 chmod 700 start.sh
-sudo systemctl restart tabulous 
+sudo systemctl restart tabulous
