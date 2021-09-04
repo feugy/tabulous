@@ -9,6 +9,7 @@
   import {
     ActionMenu,
     CameraSwitch,
+    ControlsHelp,
     CursorInfo,
     Discussion,
     MinimizableSection,
@@ -44,9 +45,10 @@
   let openInviteDialogue = false
   let loadPromise
   let rightTab
-  let rightAsideInitialWidth = '20vw'
+  let rightAsideInitialWidth = '30vw'
   let hasPeers = false
   let discussionDimension = '15%'
+  let rightAsideIcons = ['help']
 
   $: avatars = $connected.length
     ? // current player should go first
@@ -68,6 +70,16 @@
       []
 
   $: hasPeers = $currentGame?.players.length > 1
+
+  $: {
+    rightAsideIcons = ['help']
+    if ($currentGame?.rulesBookPageCount > 1) {
+      rightAsideIcons.splice(0, 0, 'auto_stories')
+    }
+    if (hasPeers) {
+      rightAsideIcons.splice(0, 0, 'people_alt')
+    }
+  }
 
   onMount(async () => {
     initEngine({ canvas, interaction, longTapDelay })
@@ -186,13 +198,13 @@
 <aside class="right">
   <MinimizableSection
     placement="right"
-    icons={hasPeers ? ['people_alt', 'help'] : ['help']}
+    icons={rightAsideIcons}
     minimized={!hasPeers}
     bind:currentTab={rightTab}
     on:resize={() => (rightAsideInitialWidth = null)}
   >
     <div class="right-content">
-      {#if rightTab === 0 && hasPeers}
+      {#if rightAsideIcons[rightTab] === 'people_alt'}
         <div
           class="peers"
           style={rightAsideInitialWidth
@@ -214,6 +226,18 @@
             />
           </MinimizableSection>
         {/if}
+      {:else if rightAsideIcons[rightTab] === 'auto_stories'}
+        <div
+          class="help"
+          style={rightAsideInitialWidth
+            ? `max-width: ${rightAsideInitialWidth}`
+            : ''}
+        >
+          <RuleViewer
+            game={$currentGame?.kind}
+            lastPage={$currentGame?.rulesBookPageCount - 1}
+          />
+        </div>
       {:else}
         <div
           class="help"
@@ -221,7 +245,7 @@
             ? `max-width: ${rightAsideInitialWidth}`
             : ''}
         >
-          <RuleViewer game={$currentGame?.kind} lastPage={3} />
+          <ControlsHelp />
         </div>
       {/if}
     </div>

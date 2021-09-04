@@ -109,6 +109,7 @@ query loadGame($gameId: ID!) {
       elevation
       hash
     }
+    rulesBookPageCount
   }
 }
 

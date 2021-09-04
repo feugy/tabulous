@@ -7,9 +7,6 @@
   export let lastPage = 0
   export let game = ''
 
-  $: src =
-    page === 0 ? '/images/help-fr.png' : `/images/${game}/rules/${page}.png`
-
   const dispatch = createEventDispatcher()
 
   function handleNavigate(previous = false) {
@@ -49,10 +46,8 @@
   </menu>
   <div class="image-container">
     <img
-      alt={page === 0
-        ? $_('tooltips.help-controls')
-        : $_('tooltips.rule-page', { page })}
-      {src}
+      alt={$_('tooltips.rule-page', { page: page + 1 })}
+      src={`/images/${game}/rules/${page + 1}.png`}
     />
   </div>
 </section>

@@ -12,6 +12,7 @@ import repositories from '../repositories/index.js'
  * @property {Scene} scene - the 3D engine scene, with game meshes.
  * @property {Message[]} messages - game discussion thread, if any.
  * @property {CameraPosition[]} cameras - player's saved camera positions, if any.
+ * @property {number} rulesBookPageCount? - number of pages in the rules book, if any.
  */
 
 /**
@@ -120,7 +121,8 @@ export async function createGame(root, kind, playerId) {
       playerIds: [playerId],
       scene: instanciateGame(descriptor),
       messages: [],
-      cameras: []
+      cameras: [],
+      rulesBookPageCount: descriptor.rulesBookPageCount
     })
     gameListsUpdate$.next(created.playerIds)
     return created

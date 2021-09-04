@@ -5,7 +5,7 @@
 
 <style type="postcss">
   .rule-viewer {
-    @apply flex absolute inset-0;
+    @apply flex -mt-16 h-full;
 
     :global(& .tool-preview) {
       @apply overflow-auto p-2;

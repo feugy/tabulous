@@ -1,0 +1,39 @@
+<script>
+  import { _ } from 'svelte-intl'
+  export let actions = []
+  export let outcome = ''
+</script>
+
+<style type="postcss">
+  div {
+    @apply inline-flex items-center;
+  }
+
+  img {
+    width: 30%;
+
+    &:not(:first-of-type) {
+      @apply ml-1;
+    }
+
+    &:not(:last-of-type) {
+      @apply border-solid pr-1;
+      border-right-width: 1px;
+      border-color: theme('colors.secondary.light');
+    }
+  }
+
+  span {
+    @apply flex-1 pl-2;
+  }
+</style>
+
+<div>
+  {#each actions as action}
+    <img
+      alt={$_(`tooltips.help-${action}`)}
+      src={`/images/help/${action}.png`}
+    />
+  {/each}
+  <span>{$_(`tooltips.${outcome}`)}</span>
+</div>

@@ -1,4 +1,9 @@
 /**
+ * Splendor's rules book has 4 pages
+ */
+export const rulesBookPageCount = 4
+
+/**
  * 40 level 1 cards, 30 level 2 cards, 30 level 3 cards.
  * @type {import('../src/services/games').Card[]}
  */
