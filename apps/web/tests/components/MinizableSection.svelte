@@ -3,6 +3,7 @@
   import { players, thread } from './Discussion.testdata'
 
   export let placement = 'top'
+  let currentTab
 </script>
 
 <style type="postcss">
@@ -34,7 +35,24 @@
 </style>
 
 <aside class={placement}>
-  <MinimizableSection {...$$props} on:minimize on:resize>
-    <Discussion {players} {thread} />
+  <MinimizableSection
+    {...$$props}
+    bind:currentTab
+    on:minimize
+    on:resize
+    on:change
+  >
+    {#if !currentTab}
+      <Discussion {players} {thread} />
+    {/if}
+    {#if currentTab === 1}
+      <span class="p-4">
+        <div>
+          Vous savez quelle différence il y a entre un con et un voleur ?
+        </div>
+        <div>Non...</div>
+        <div>Un voleur de temps en temps ça se repose.</div></span
+      >
+    {/if}
   </MinimizableSection>
 </aside>
