@@ -42,6 +42,8 @@ tooltips:
   flip: Retourner
   game-menu: Menu des commandes
   rotate: Pivoter
+  help-controls: Contrôles de l'interface
+  rule-page: Livre de règles, page {page}
   save-restore-camera: '{index, plural, =0 {Charger la position initiale de la camera} other {Charger (clic) ou enregistrer (clic long) la position de la caméra sur la position #}}'
   save-new-camera: Enregistrer la position de la caméra
   send-message: Envoyer à tous

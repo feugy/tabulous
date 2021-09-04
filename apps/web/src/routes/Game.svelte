@@ -14,7 +14,8 @@
     MinimizableSection,
     MeshDetails,
     PlayerAvatar,
-    Progress
+    Progress,
+    RuleViewer
   } from '../components'
   import {
     cameraSaves,
@@ -42,7 +43,9 @@
   let interaction
   let openInviteDialogue = false
   let loadPromise
-  let peerAsideDimension = '20%'
+  let rightTab
+  let rightAsideInitialWidth = '20vw'
+  let hasPeers = false
   let discussionDimension = '15%'
 
   $: avatars = $connected.length
@@ -64,6 +67,8 @@
     : // single player: no avatars
       []
 
+  $: hasPeers = $currentGame?.players.length > 1
+
   onMount(async () => {
     initEngine({ canvas, interaction, longTapDelay })
     loadPromise = loadGame(params.gameId, $engine)
@@ -73,10 +78,6 @@
 
   function handleResize() {
     $engine?.resize()
-  }
-
-  function handlePeerAsideResize() {
-    peerAsideDimension = 'auto'
   }
 
   function handleCloseDetails() {
@@ -124,6 +125,10 @@
   .peers {
     @apply grid flex-1 gap-2 place-items-center grid-flow-col;
     grid-template-rows: repeat(auto-fit, minmax(150px, 1fr));
+  }
+
+  .help {
+    @apply h-full;
   }
 
   article {
@@ -178,16 +183,22 @@
   <CursorInfo size={$stackSize} halos={longInputs} />
   <MeshDetails mesh={$meshDetails} on:close={handleCloseDetails} />
 </main>
-{#if $currentGame?.players.length > 1}
-  <aside class="right" style="width: {peerAsideDimension}">
-    <MinimizableSection
-      placement="right"
-      icon="people_alt"
-      on:resize={handlePeerAsideResize}
-      on:minimize={handlePeerAsideResize}
-    >
-      <div class="right-content">
-        <div class="peers">
+<aside class="right">
+  <MinimizableSection
+    placement="right"
+    icons={hasPeers ? ['people_alt', 'help'] : ['help']}
+    minimized={!hasPeers}
+    bind:currentTab={rightTab}
+    on:resize={() => (rightAsideInitialWidth = null)}
+  >
+    <div class="right-content">
+      {#if rightTab === 0 && hasPeers}
+        <div
+          class="peers"
+          style={rightAsideInitialWidth
+            ? `min-width: ${rightAsideInitialWidth}`
+            : ''}
+        >
           {#each avatars as props}<PlayerAvatar {...props} />{/each}
         </div>
         {#if $connected.length || $thread.length}
@@ -203,7 +214,16 @@
             />
           </MinimizableSection>
         {/if}
-      </div>
-    </MinimizableSection>
-  </aside>
-{/if}
+      {:else}
+        <div
+          class="help"
+          style={rightAsideInitialWidth
+            ? `max-width: ${rightAsideInitialWidth}`
+            : ''}
+        >
+          <RuleViewer game={$currentGame?.kind} lastPage={3} />
+        </div>
+      {/if}
+    </div>
+  </MinimizableSection>
+</aside>
