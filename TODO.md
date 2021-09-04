@@ -2,13 +2,10 @@
 
 ## Refactor
 
-- server logging (warning on invalid descriptors)
 - all manager managing a collection of behaviors should check their capabilities
-- moves images to server
 - completly disable Babylon input management
 - UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
 - parametrize and serialize UVs
-- automate SSH renewal with certbot
 
 ## Single player
 
@@ -27,8 +24,25 @@
 - search players by name
 - indicates when remote stream is muted/stopped
 
+## Server
+
+- use JWT as authentication token (stores player id and username)
+- allows a single connection per player (discards other JWTs)
+- logging (warning on invalid descriptors)
+
+## Hosting
+
+- where to store secrets?
+- use an env file
+- deploy in a folder named after the commit SHA
+- use symlink to switch between deployments (including conf files)
+- rotates log files
+- notifies on deployment failures/success
+- automate SSH renewal with certbot
+
 # Known issues
 
+- DATA_PATH folder is not created when it does not exist
 - moving items bellow other does not apply gravity to them
 - on vite reload, all players could become hosts or peers simultaneously
 

@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto'
-import { readFile, writeFile } from 'fs/promises'
-import { join } from 'path'
+import { mkdir, readFile, writeFile } from 'fs/promises'
+import { dirname, join } from 'path'
 
 /**
  * @typedef {object} Page
@@ -54,6 +54,7 @@ export class AbstractRepository {
   async connect({ path } = {}) {
     if (path) {
       this.file = join(path, `${this.name}.json`)
+      await mkdir(dirname(this.file), { recursive: true })
       try {
         this.modelsById = new Map(
           JSON.parse(await readFile(this.file, 'utf-8'))
@@ -61,6 +62,7 @@ export class AbstractRepository {
       } catch (err) {
         if (err?.code === 'ENOENT') {
           this.modelsById = new Map()
+          persist(this)
         } else {
           throw new Error(
             `Failed to connect repository ${this.name}: ${err.message}`

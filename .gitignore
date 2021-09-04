@@ -1,5 +1,6 @@
 certbot/
 coverage/
+data/
 dist/
 keys/
 node_modules/
