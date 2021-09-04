@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals'
 import faker from 'faker'
-import { chmod, readFile, rm, watch, writeFile } from 'fs/promises'
+import { chmod, readFile, rm, stat, watch, writeFile } from 'fs/promises'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { AbstractRepository } from '../../src/repositories/abstract-repository.js'
@@ -47,12 +47,17 @@ describe('Abstract repository', () => {
       )
     })
 
-    it('handles unexisting file', async () => {
+    it('handles unexisting file and creates it', async () => {
       await rm(file, { force: true })
+      const watcher = watch(file, { signal: ac.signal })
+
       await repository.connect({ path })
       expect(await repository.list()).toEqual(
         expect.objectContaining({ total: 0 })
       )
+
+      await watcher
+      await expect(stat(file)).resolves.toBeDefined()
     })
 
     it('throws errors on unwritable file', async () => {
