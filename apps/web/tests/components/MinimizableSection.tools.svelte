@@ -6,11 +6,15 @@
 <ToolBox
   component={MinimizableSection}
   name="Components/Minimizable Section"
-  events={['minimize', 'resize']}
+  events={['minimize', 'resize', 'change']}
 >
   <Tool
-    name="Custom icon"
-    props={{ placement: 'bottom', icon: 'question_answer' }}
+    name="Multiple, custom tabs"
+    props={{
+      placement: 'bottom',
+      minimized: true,
+      icons: ['question_answer', 'help']
+    }}
   />
   <Tool name="Left" props={{ placement: 'left' }} />
   <Tool name="Right" props={{ placement: 'right' }} />

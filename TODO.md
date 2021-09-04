@@ -2,6 +2,8 @@
 
 ## Refactor
 
+- tells user how to access game rules book
+- store game's last rule page in game descriptor and data
 - all manager managing a collection of behaviors should check their capabilities
 - completly disable Babylon input management
 - UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
@@ -75,10 +77,6 @@ no peer found for signal from 4717
 
 - visual hint when receiving messages on collapsed section
 - show contextual help (for example, on hover) to indicates which commands are available
-- top right, an help button with drawing for base commands (pan, camera, DnD, main actions)
-- top right, an link to the rule book, opened in a floating pane, either taking whole screen, or a third of it
-- top left, in a column, player avatars/videos, with number of tokens/cards in hand, and mute indicator & command
-- bottom left, chat window
 - bottom, expansible area showing player's hand
 
 # Interaction model

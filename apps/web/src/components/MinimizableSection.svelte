@@ -4,8 +4,9 @@
 
   export let minimized = false
   export let placement = 'top'
-  export let dimension
-  export let icon
+  export let dimension = undefined
+  export let icons = undefined
+  export let currentTab = 0
 
   $: vertical = placement === 'top' || placement === 'bottom'
   $: props = vertical
@@ -21,23 +22,25 @@
         node: 'offsetWidth',
         negate: placement === 'right'
       }
-  $: innerIcon =
-    icon ??
-    (minimized
-      ? placement === 'top'
-        ? 'expand_more'
-        : placement === 'bottom'
-        ? 'expand_less'
-        : placement === 'left'
-        ? 'navigate_next'
-        : 'navigate_before'
-      : placement === 'top'
-      ? 'expand_less'
-      : placement === 'bottom'
-      ? 'expand_more'
-      : placement === 'left'
-      ? 'navigate_before'
-      : 'navigate_next')
+  $: innerIcons = Array.isArray(icons)
+    ? icons
+    : [
+        minimized
+          ? placement === 'top'
+            ? 'expand_more'
+            : placement === 'bottom'
+            ? 'expand_less'
+            : placement === 'left'
+            ? 'navigate_next'
+            : 'navigate_before'
+          : placement === 'top'
+          ? 'expand_less'
+          : placement === 'bottom'
+          ? 'expand_more'
+          : placement === 'left'
+          ? 'navigate_before'
+          : 'navigate_next'
+      ]
 
   let dispatch = createEventDispatcher()
   let hasMoved = false
@@ -46,9 +49,19 @@
   let node
   let size
 
-  function handleClick() {
-    minimized = !minimized
-    dispatch('minimize', { minimized })
+  function handleClick(i) {
+    const shouldChange = i !== currentTab
+    if (shouldChange) {
+      currentTab = i
+      if (!minimized) {
+        innerDimension = `${node[props.node]}px`
+      }
+      dispatch('change', { currentTab })
+    }
+    if (minimized || !shouldChange) {
+      minimized = !minimized
+      dispatch('minimize', { minimized })
+    }
   }
 
   function handleDown(event) {
@@ -56,7 +69,7 @@
     if (!minimized) {
       event.preventDefault()
       previousEvent = event
-      size = node[props.node]
+      size = node[props.node] ?? 0
       window.addEventListener('pointermove', handleMove)
       window.addEventListener('pointerup', handleUp)
     }
@@ -111,7 +124,11 @@
     --offset: -42px;
 
     & .buttonContainer {
-      @apply relative top-2 -right-2 z-30;
+      @apply relative flex flex-col top-2 -right-2 z-30 gap-2;
+
+      & .active {
+        transform: scale(1.2);
+      }
     }
 
     & .gutter {
@@ -132,13 +149,17 @@
     &.left {
       @apply flex-row-reverse;
       right: var(--offset);
+
+      & .buttonContainer {
+        @apply right-auto -left-2;
+      }
     }
 
     &.vertical {
       @apply w-full h-auto flex-col;
 
       & .buttonContainer {
-        @apply top-auto right-auto left-2 -bottom-2;
+        @apply flex-row top-auto right-auto left-2 -bottom-2;
       }
 
       & .gutter {
@@ -153,6 +174,10 @@
       &.top {
         @apply flex-col-reverse;
         bottom: var(--offset);
+
+        & .buttonContainer {
+          @apply bottom-auto -top-2;
+        }
       }
       &.bottom {
         top: var(--offset);
@@ -166,16 +191,27 @@
 </style>
 
 <section
+  role="region"
   class:minimized
   class:vertical
   bind:this={node}
+  aria-expanded={!minimized}
   style="{props.style}: {innerDimension};"
 >
   <menu class:vertical class={placement}>
-    <span class="buttonContainer">
-      <Button icon={innerIcon} on:click={handleClick} />
-    </span>
-    <div class="gutter" on:pointerdown={handleDown} />
+    <ol role="tablist" class="buttonContainer">
+      {#each innerIcons as icon, i}
+        <li class:active={innerIcons.length > 1 && i === currentTab}>
+          <Button
+            role="tab"
+            aria-selected={innerIcons.length > 1 && i === currentTab}
+            {icon}
+            on:click={() => handleClick(i)}
+          />
+        </li>
+      {/each}
+    </ol>
+    <div role="scrollbar" class="gutter" on:pointerdown={handleDown} />
   </menu>
   <span>
     <slot />
