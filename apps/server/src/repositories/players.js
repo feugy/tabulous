@@ -23,6 +23,32 @@ class PlayerRepository extends AbstractRepository {
     }
     return null
   }
+
+  /**
+   * Finds players containing a given seed in their username.
+   * @async
+   * @param {object} args - search arguments, including:
+   * @param {string} args.search - searched text
+   * @param {number} [args.from = 0] - 0-based index of the first result
+   * @param {number} [args.size = 10] - maximum number of models returned after first results.
+   * @returns {import('./abstract-repository').Page} a given page of matching players.
+   */
+  async searchByUsername({ search, from = 0, size = 10 } = {}) {
+    const results = []
+    let total = 0
+    let i = 0
+    const lowerSeed = search.toLowerCase().trim()
+    for (const [, player] of this.modelsById) {
+      if (player.username.toLowerCase().includes(lowerSeed)) {
+        total++
+        if (from <= i && i < from + size) {
+          results.push(player)
+        }
+        i++
+      }
+    }
+    return { total, from, size, results }
+  }
 }
 
 /**
