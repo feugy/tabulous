@@ -42,7 +42,6 @@
 
 # Known issues
 
-- inviting an unexisting player it saves invalid game
 - moving items bellow other does not apply gravity to them
 - on vite reload, all players could become hosts or peers simultaneously
 

@@ -23,14 +23,16 @@ describeFn(
     const updates = []
     let subscription
 
-    beforeAll(() => {
+    beforeAll(async () => {
       subscription = gameListsUpdate.subscribe(update => updates.push(update))
-      return repositories.games.connect()
+      await repositories.games.connect()
+      await repositories.players.connect()
     })
 
-    afterAll(() => {
+    afterAll(async () => {
       subscription?.unsubscribe()
-      return repositories.games.release()
+      await repositories.games.release()
+      await repositories.players.release()
     })
 
     beforeEach(() => {
@@ -68,7 +70,8 @@ describeFn(
             roundedTiles: expect.any(Array)
           },
           cameras: [],
-          messages: []
+          messages: [],
+          rulesBookPageCount: 4
         })
         await sleep()
         expect(updates).toEqual([{ playerId, games: [game] }])
@@ -156,6 +159,8 @@ describeFn(
       describe('invite()', () => {
         const peerId = faker.datatype.uuid()
 
+        beforeAll(() => repositories.players.save({ id: peerId }))
+
         it('returns null on unknown game', async () => {
           expect(
             await invite(faker.datatype.uuid(), peerId, playerId)
@@ -166,6 +171,13 @@ describeFn(
         it('returns null on un-owned game', async () => {
           expect(
             await invite(game.id, peerId, faker.datatype.uuid())
+          ).toBeNull()
+          expect(updates).toHaveLength(0)
+        })
+
+        it('returns null on unknown guest id', async () => {
+          expect(
+            await invite(game.id, faker.datatype.uuid(), playerId)
           ).toBeNull()
           expect(updates).toHaveLength(0)
         })
@@ -193,6 +205,10 @@ describeFn(
         const peerId = faker.datatype.uuid()
         const games = []
         const getId = ({ id }) => id
+
+        beforeAll(() =>
+          repositories.players.save([{ id: peerId }, { id: playerId }])
+        )
 
         beforeEach(async () => {
           games.push(game)

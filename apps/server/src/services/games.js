@@ -200,6 +200,7 @@ export async function saveGame(game, playerId) {
  * - no game could match this game id
  * - the inviting player does not own the game
  * - the guest is already part of the game players
+ * - the guest id is invalid
  * Updates game lists of all related players.
  * @async
  * @param {string} gameId - shared game id.
@@ -208,8 +209,9 @@ export async function saveGame(game, playerId) {
  * @returns {Game|null} updated game, or null if the player can not be invited.
  */
 export async function invite(gameId, guestId, hostId) {
+  const guest = await repositories.players.getById(guestId)
   const game = await loadGame(gameId, hostId)
-  if (!game || game.playerIds.includes(guestId)) {
+  if (!game || !guest || game.playerIds.includes(guestId)) {
     return null
   }
   game.playerIds.push(guestId)
