@@ -11,6 +11,7 @@ import { shuffle } from '../utils/index.js'
  * @property {import('./games').RoundedTiles[]} roundedTiles? - all rounded tiles.
  * @property {Map<string, string[]>} bags? - map of randomized bags, as a list of mesh ids.
  * @property {Slot[]} slots? - a list of position slots
+ * @property {number} rulesBookPageCount? - number of pages in the rules book, if any.
  */
 
 /**

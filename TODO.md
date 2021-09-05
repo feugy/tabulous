@@ -2,8 +2,6 @@
 
 ## Refactor
 
-- tells user how to access game rules book
-- store game's last rule page in game descriptor and data
 - all manager managing a collection of behaviors should check their capabilities
 - completly disable Babylon input management
 - UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
@@ -44,7 +42,6 @@
 
 # Known issues
 
-- DATA_PATH folder is not created when it does not exist
 - moving items bellow other does not apply gravity to them
 - on vite reload, all players could become hosts or peers simultaneously
 
