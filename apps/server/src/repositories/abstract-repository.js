@@ -20,11 +20,11 @@ async function persist(repository) {
     : null
 }
 
-async function scheduleSave(repository, delay = 10e3) {
+async function scheduleSave(repository) {
   clearTimeout(repository.saveTimer)
   repository.saveTimer = setTimeout(
     () => persist(repository).catch(err => console.error(err)),
-    delay
+    repository.saveDelay
   )
 }
 
@@ -34,13 +34,15 @@ export class AbstractRepository {
    * Base class for all repository classes, providing CRUD operations.
    * @param {object} args - arguments, including:
    * @param {string} args.name - model name.
+   * @param {number} [args.saveDelay=10000] - delay (in ms) before persisting data after it got updated.
    * @returns {AbstractRepository} a model repository.
    */
-  constructor({ name }) {
+  constructor({ name, saveDelay = 10e3 }) {
     if (!name) {
       throw new Error(`every repository needs a name`)
     }
     this.name = name
+    this.saveDelay = saveDelay
     this.modelsById = new Map()
   }
 
