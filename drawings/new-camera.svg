@@ -3,8 +3,8 @@
 
 <svg
    width="192.64157"
-   height="160.96533"
-   viewBox="0 0 50.969747 42.588743"
+   height="100"
+   viewBox="0 0 50.969747 26.458333"
    version="1.1"
    id="svg1194"
    inkscape:version="1.1 (c4e8f9e, 2021-05-24)"
@@ -33,14 +33,15 @@
      fit-margin-bottom="5"
      units="px"
      inkscape:zoom="2.6832492"
-     inkscape:cx="-0.55902374"
+     inkscape:cx="89.071116"
      inkscape:cy="127.08473"
      inkscape:window-width="1866"
      inkscape:window-height="1053"
      inkscape:window-x="54"
      inkscape:window-y="-10"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g2829">
+     inkscape:current-layer="g2829"
+     height="100px">
     <inkscape:grid
        type="xygrid"
        id="grid6583" />
@@ -84,7 +85,7 @@
        transform="translate(-134.96548,-32.199732)">
       <g
          id="g2834"
-         transform="translate(-0.26880126,22.845281)">
+         transform="translate(-0.26880126,15.104988)">
         <rect
            style="font-variation-settings:normal;vector-effect:none;fill:#808080;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.793746;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;stop-color:#000000"
            id="rect303866-9"
