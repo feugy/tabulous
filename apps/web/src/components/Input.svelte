@@ -47,5 +47,15 @@
 
 <fieldset>
   {#if placeholder}<legend class:has-value={!!value}>{placeholder}</legend>{/if}
-  <input {...$$restProps} bind:value bind:this={ref} on:keyup={handleKey} />
+  <input
+    {...$$restProps}
+    bind:value
+    bind:this={ref}
+    on:focus
+    on:blur
+    on:input
+    on:keyup
+    on:keydown
+    on:keyup={handleKey}
+  />
 </fieldset>
