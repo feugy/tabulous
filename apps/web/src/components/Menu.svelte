@@ -1,6 +1,7 @@
 <script>
   import { createEventDispatcher } from 'svelte'
   import { slide } from 'svelte/transition'
+  import Portal from 'svelte-portal'
 
   export let anchor
   export let options
@@ -59,21 +60,21 @@
     ref.setAttribute('style', sav)
 
     const minWidth = anchorDim.width
-    let top = anchorDim.height
-    let left = 0
+    let top = anchorDim.bottom
+    let left = anchorDim.left
 
     let right = null
     let bottom = null
-    if (anchorDim.left + Math.max(menuWidth, minWidth) > innerWidth) {
+    if (left + Math.max(menuWidth, minWidth) > innerWidth) {
       left = null
-      right = 0
+      right = innerWidth - anchorDim.right
     }
     if (
       anchorDim.top - menuHeight >= 0 &&
       innerHeight < anchorDim.bottom + menuHeight
     ) {
       top = null
-      bottom = anchorDim.height
+      bottom = innerHeight - anchorDim.top
     }
     Object.assign(ref.style, {
       top: top !== null ? `${top}px` : '',
@@ -126,7 +127,7 @@
     if (option.Component) {
       option.props.open = true
       evt.stopPropagation()
-    } else {
+    } else if (!option?.disabled) {
       select(option)
     }
   }
@@ -155,11 +156,19 @@
 <style type="postcss">
   ul {
     @apply absolute rounded z-20 text-sm shadow-md;
-    background-color: theme('colors.primary.light');
+    background-color: theme('backgrounds.page');
   }
 
   li {
     @apply p-2 whitespace-nowrap flex items-center;
+
+    &:first-of-type {
+      @apply rounded-t;
+    }
+
+    &:last-of-type {
+      @apply rounded-b;
+    }
 
     &:not(.disabled) {
       &:hover,
@@ -185,43 +194,45 @@
   on:resize|capture={handleVisible}
 />
 
-{#if open && anchor}
-  <ul
-    role="menu"
-    tabindex="-1"
-    transition:slide
-    on:introstart={handleVisible}
-    on:keydown={handleMenuKeyDown}
-    on:focus={evt => handleFocus(evt, ref.dataset.focusNext !== 'false')}
-    bind:this={ref}
-  >
-    {#each options as option}
-      <li
-        role="menuitem"
-        aria-disabled={option.disabled}
-        class:disabled={option.disabled}
-        class:current={option === value}
-        tabindex={option.disabled ? undefined : -1}
-        on:click={evt => handleItemClick(evt, option)}
-        on:keydown={evt => handleItemKeyDown(evt, option)}
-        on:focus={() => (option.props ? (option.props.focus = true) : null)}
-        on:blur={() => (option.props ? (option.props.focus = false) : null)}
-      >
-        {#if option.Component}
-          <svelte:component
-            this={option.Component}
-            {...option.props}
-            on:close={() => {
-              option.props.open = false
-              dispatch('select', option)
-            }}
-            on:close={handleInteraction}
-          />
-        {:else}
-          {#if option.icon}<i class="material-icons">{option.icon}</i>{/if}
-          {option.label || option}
-        {/if}
-      </li>
-    {/each}
-  </ul>
+{#if open && anchor && Array.isArray(options)}
+  <Portal>
+    <ul
+      role="menu"
+      tabindex="-1"
+      transition:slide
+      on:introstart={handleVisible}
+      on:keydown={handleMenuKeyDown}
+      on:focus={evt => handleFocus(evt, ref.dataset.focusNext !== 'false')}
+      bind:this={ref}
+    >
+      {#each options as option}
+        <li
+          role="menuitem"
+          aria-disabled={option.disabled}
+          class:disabled={option.disabled}
+          class:current={option === value}
+          tabindex={option.disabled ? undefined : -1}
+          on:click={evt => handleItemClick(evt, option)}
+          on:keydown={evt => handleItemKeyDown(evt, option)}
+          on:focus={() => (option.props ? (option.props.focus = true) : null)}
+          on:blur={() => (option.props ? (option.props.focus = false) : null)}
+        >
+          {#if option.Component}
+            <svelte:component
+              this={option.Component}
+              {...option.props}
+              on:close={() => {
+                option.props.open = false
+                dispatch('select', option)
+              }}
+              on:close={handleInteraction}
+            />
+          {:else}
+            {#if option.icon}<i class="material-icons">{option.icon}</i>{/if}
+            {option.label || option}
+          {/if}
+        </li>
+      {/each}
+    </ul>
+  </Portal>
 {/if}
