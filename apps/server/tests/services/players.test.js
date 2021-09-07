@@ -113,11 +113,10 @@ describe('given initialized repository', () => {
         expect(await searchPlayers('man', players[3].id)).toEqual([players[1]])
       })
 
-      it('excludes nothing bellow 3 characters', async () => {
+      it('excludes nothing bellow 2 characters', async () => {
         expect(await searchPlayers(null, players[0].id)).toEqual([])
         expect(await searchPlayers(' a ', players[0].id)).toEqual([])
         expect(await searchPlayers('a', players[0].id)).toEqual([])
-        expect(await searchPlayers('an', players[0].id)).toEqual([])
       })
     })
   })

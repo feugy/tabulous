@@ -64,13 +64,13 @@ export async function setPlaying(playerId, playing) {
 
 /**
  * Searches for player which usernames contains searched text, up to 50 results.
- * Excludes current player from results, and returns nothing unless search text is at least 3 characters
+ * Excludes current player from results, and returns nothing unless search text is at least 2 characters
  * @param {string} search - searched text.
  * @param {string} playerId - the current player id.
  * @returns {Player[]} list of matching players.
  */
 export async function searchPlayers(search, playerId) {
-  if ((search ?? '').trim().length < 3) return []
+  if ((search ?? '').trim().length < 2) return []
   const { results } = await repositories.players.searchByUsername({
     search,
     size: 50
