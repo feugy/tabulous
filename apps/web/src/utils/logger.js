@@ -1,5 +1,4 @@
 const levels = {
-  authentication: 'warn',
   camera: 'warn',
   flippable: 'warn',
   'game-interaction': 'warn',
@@ -8,6 +7,7 @@ const levels = {
   gravity: 'warn',
   input: 'warn',
   move: 'warn',
+  players: 'warn',
   'peer-channels': 'warn',
   rotable: 'warn',
   selection: 'warn',

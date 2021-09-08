@@ -3,11 +3,11 @@ import { initGraphQLGlient, runQuery, runMutation } from './graphql-client'
 import * as graphQL from '../graphql'
 import { makeLogger } from '../utils'
 
-const logger = makeLogger('authentication')
+const logger = makeLogger('players')
 
 const storageKey = 'player'
 
-const current$ = new BehaviorSubject()
+const current$ = new BehaviorSubject(null)
 
 current$.subscribe(player => {
   const playerData = sessionStorage.getItem(storageKey)
@@ -39,13 +39,13 @@ export const currentPlayer = current$.asObservable()
  * @returns {object|null} the authenticated player in case of success, or null.
  */
 export async function recoverSession() {
+  let player = null
   const playerData = sessionStorage.getItem(storageKey)
   if (playerData) {
-    let player = null
     try {
       logger.info({ playerData }, `recovering previous session`)
       initGraphQLGlient(JSON.parse(playerData))
-      player = await runMutation(graphQL.getCurrentPlayer)
+      player = await runQuery(graphQL.getCurrentPlayer)
       current$.next(player)
     } catch (error) {
       logger.warn(
@@ -54,9 +54,11 @@ export async function recoverSession() {
       )
       await logOut()
     }
-    logger.info({ player: current$.value }, `session recovery complete`)
-    return player
+  } else {
+    await logOut()
   }
+  logger.info({ player: current$.value }, `session recovery complete`)
+  return player
 }
 
 /**
@@ -64,12 +66,20 @@ export async function recoverSession() {
  * @async
  * @param {string} username - username of the authenticating player.
  * @param {string} password - clear password.
- * @returns {object} the authenticated player object.
+ * @returns {object|null} the authenticated player object, if any.
  */
 export async function logIn(username, password) {
   initGraphQLGlient()
-  const player = await runMutation(graphQL.logIn, { username, password })
-  logger.info(player, `authenticating ${username}`)
+  let player = null
+  try {
+    player = await runMutation(graphQL.logIn, { username, password })
+    logger.info(player, `authenticating ${username}`)
+  } catch (error) {
+    logger.info(
+      { error },
+      `failed to authenticate ${username}: ${error.message}`
+    )
+  }
   current$.next(player)
   return player
 }
