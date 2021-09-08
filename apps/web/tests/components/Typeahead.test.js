@@ -6,6 +6,7 @@ import { writable } from 'svelte/store'
 import html from 'svelte-htm'
 import Typeahead from '../../src/components/Typeahead.svelte'
 import { sleep } from '../../src/utils/index.js'
+import { extractText } from '../test-utils'
 
 describe('Typeahead component', () => {
   const handleInput = jest.fn()
@@ -56,7 +57,7 @@ describe('Typeahead component', () => {
       await tick()
       expect(screen.queryByRole('menu')).toBeInTheDocument()
       const items = screen.getAllByRole('menuitem')
-      expect(items.map(item => item.textContent.trim())).toEqual(
+      expect(extractText(items)).toEqual(
         options.map(option => option.label ?? option)
       )
     })

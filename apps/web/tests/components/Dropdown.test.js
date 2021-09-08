@@ -3,6 +3,7 @@ import { tick } from 'svelte'
 import html from 'svelte-htm'
 import Dropdown from '../../src/components/Dropdown.svelte'
 import { sleep } from '../../src/utils/index.js'
+import { extractText } from '../test-utils'
 
 describe('Dropdown component', () => {
   const handleClose = jest.fn()
@@ -36,7 +37,7 @@ describe('Dropdown component', () => {
 
       expect(screen.queryByRole('menu')).toBeInTheDocument()
       const items = screen.getAllByRole('menuitem')
-      expect(items.map(item => item.textContent.trim())).toEqual(
+      expect(extractText(items)).toEqual(
         options.map(option => option.label ?? option)
       )
       expect(handleSelect).not.toHaveBeenCalled()

@@ -6,6 +6,7 @@
 
   let video
   let noImage = false
+  let hasImage = false
   let hasAudio = false
   let muted = false
   let hasVideo = false
@@ -101,11 +102,10 @@
     <img
       class:noImage
       src={player?.avatar ?? '/no-avatar.png'}
-      on:error={() => {
-        noImage = true
-      }}
+      on:load={() => (hasImage = true)}
+      on:error={() => (noImage = true)}
     />
-    {#if noImage}
+    {#if noImage || !hasImage}
       <figcaption class:noImage>{player?.username}</figcaption>
     {/if}
   {/if}

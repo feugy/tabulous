@@ -40,7 +40,7 @@
 
   .messages {
     @apply grid overflow-y-auto;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: minmax(auto, 22.5%) 1fr;
 
     & > * {
       @apply pb-2;
