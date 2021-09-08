@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import faker from 'faker'
 import { tick } from 'svelte'
 import html from 'svelte-htm'
-import { translate } from '../test-utils'
+import { extractText, translate } from '../test-utils'
 import InvitePlayerDialogue from '../../src/connected-components/InvitePlayerDialogue.svelte'
 import { invite, searchPlayers } from '../../src/stores'
 import { sleep } from '../../src/utils'
@@ -58,9 +58,9 @@ describe('InvitePlayerDialogue connected component', () => {
     render(html`<${InvitePlayerDialogue} open game=${game} />`)
     userEvent.type(screen.getByRole('textbox'), name)
     await waitFor(() =>
-      expect(
-        screen.getAllByRole('menuitem').map(item => item.textContent.trim())
-      ).toEqual(candidates.map(player => player.username))
+      expect(extractText(screen.getAllByRole('menuitem'))).toEqual(
+        candidates.map(player => player.username)
+      )
     )
     expect(
       screen.getByRole('button', {
@@ -82,9 +82,9 @@ describe('InvitePlayerDialogue connected component', () => {
     render(html`<${InvitePlayerDialogue} open game=${game} />`)
     userEvent.type(screen.getByRole('textbox'), name)
     await waitFor(() =>
-      expect(
-        screen.getAllByRole('menuitem').map(item => item.textContent.trim())
-      ).toEqual(candidates.map(player => player.username))
+      expect(extractText(screen.getAllByRole('menuitem'))).toEqual(
+        candidates.map(player => player.username)
+      )
     )
     const [item0, item1, item2] = screen.getAllByRole('menuitem')
     expect(item0).toHaveAttribute('aria-disabled', 'true')

@@ -93,7 +93,7 @@
           <MinimizableSection
             dimension={discussionDimension}
             placement="bottom"
-            icon="question_answer"
+            icons={['question_answer']}
           >
             <Discussion {thread} players={game?.players} on:sendMessage />
           </MinimizableSection>
