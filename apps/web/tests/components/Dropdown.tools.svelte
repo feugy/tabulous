@@ -43,7 +43,7 @@ lacus vestibulum sed arcu non odio euismod lacinia.`
       'Hallo ! (das ist im Deutsch)'
     ]
   }}
-  events={['click']}
+  events={['click', 'select', 'close']}
 >
   <Tool name="Left aligned">
     <div slot="header">{headerText}</div>

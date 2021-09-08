@@ -20,8 +20,6 @@
 
 ## Multi player
 
-- invite players by name and id
-- search players by name
 - indicates when remote stream is muted/stopped
 
 ## Server
@@ -187,6 +185,7 @@ Here there are, copied from `hosting/certbot/live/tabulous.fr/` to `keys/\` fold
 - create player
 - find one player by id
 - find several players by ids
+- search players by their username
 - update player's playing boolean (or full player)
 - create full game
 - find one game by id

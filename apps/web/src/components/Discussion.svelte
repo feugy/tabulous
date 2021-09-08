@@ -1,7 +1,8 @@
 <script>
   import { createEventDispatcher } from 'svelte'
   import { _ } from 'svelte-intl'
-  import { Button, Input } from '.'
+  import Button from './Button.svelte'
+  import Input from './Input.svelte'
 
   export let thread
   export let players

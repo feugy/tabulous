@@ -1,6 +1,6 @@
 import { BehaviorSubject, merge } from 'rxjs'
 import { debounceTime, filter } from 'rxjs/operators'
-import { currentPlayer } from './authentication'
+import { currentPlayer } from './players'
 import { clearThread, loadThread, serializeThread } from './discussion'
 import { action, cameraSaves, engine, loadCameraSaves } from './game-engine'
 import { runQuery, runMutation, runSubscription } from './graphql-client'
@@ -176,8 +176,8 @@ export async function listGames() {
  * Creates a new game of a given kind on server, registering current player in it,
  * and receiving its id.
  * @async
- * @param {string} kind - created game kind
- * @returns {string} the created game id
+ * @param {string} kind - created game kind.
+ * @returns {string} the created game id.
  */
 export async function createGame(kind = 'splendor') {
   const game = await runMutation(graphQL.createGame, { kind })
@@ -188,7 +188,7 @@ export async function createGame(kind = 'splendor') {
 /**
  * Deletes a game owned by current player, and refreshes the game list.
  * @async
- * @param {string} gameId - the deleted game id
+ * @param {string} gameId - the deleted game id.
  */
 export async function deleteGame(gameId) {
   logger.info({ gameId }, `deletes game (${gameId})`)
@@ -203,8 +203,8 @@ export async function deleteGame(gameId) {
  * If other players are connected, waits at most 30s to receive the game data from game host.
  * Resolves when the game data has been received (either as host or regular peer).
  * @async
- * @param {string} gameId - the loaded game id
- * @param {@babylonjs.Engine} engine - game engine used to play
+ * @param {string} gameId - the loaded game id.
+ * @param {@babylonjs.Engine} engine - game engine used to play.
  */
 export async function loadGame(gameId, engine) {
   if (!player) {
@@ -301,13 +301,14 @@ export async function loadGame(gameId, engine) {
 /**
  * Invites another player to a given game.
  * @async
- * @param {string} gameId - the shared game id
- * @param {string} playerId - the invited player id
+ * @param {string} gameId - the shared game id.
+ * @param {string} playerId - the invited player id.
+ * @returns {boolean} true when guest was invited.
  */
 export async function invite(gameId, playerId) {
   logger.info(
     { gameId, playerId },
     `invite player ${playerId} to game ${gameId}`
   )
-  await runMutation(graphQL.invite, { gameId, playerId })
+  return Boolean(await runMutation(graphQL.invite, { gameId, playerId }))
 }

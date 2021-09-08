@@ -1,4 +1,4 @@
-import { makeLogger } from '@src/utils/index.js'
+import { makeLogger } from '../src/utils/logger'
 
 export function mockLogger(name) {
   const logger = makeLogger(name)

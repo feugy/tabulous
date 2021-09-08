@@ -9,7 +9,17 @@ export default {
      * @async
      * @returns {import('../services/authentication').Player|null} current player or null.
      */
-    getCurrentPlayer: isAuthenticated((obj, args, { player }) => player)
+    getCurrentPlayer: isAuthenticated((obj, args, { player }) => player),
+
+    /**
+     * Returns players (except the current one) which username contains searched text.
+     * Requires valid authentication.
+     * @async
+     * @returns {import('../services/authentication').Player[]} list (potentially empty) of matching players.
+     */
+    searchPlayers: isAuthenticated((obj, { search }, { player }) =>
+      services.searchPlayers(search, player.id)
+    )
   },
 
   Mutation: {

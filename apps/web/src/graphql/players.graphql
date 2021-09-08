@@ -14,3 +14,9 @@ query getCurrentPlayer {
     ...player
   }
 }
+
+query searchPlayers($search: String!) {
+  searchPlayers(search: $search) {
+    ...player
+  }
+}

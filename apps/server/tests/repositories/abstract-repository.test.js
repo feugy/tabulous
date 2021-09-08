@@ -1,9 +1,9 @@
-import { jest } from '@jest/globals'
 import faker from 'faker'
 import { chmod, readFile, rm, stat, watch, writeFile } from 'fs/promises'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { AbstractRepository } from '../../src/repositories/abstract-repository.js'
+import { sleep } from '../../src/utils/index.js'
 
 describe('Abstract repository', () => {
   it('can not build a nameless repository', () => {
@@ -19,14 +19,15 @@ describe('Abstract repository', () => {
     const path = tmpdir()
 
     beforeEach(() => {
-      repository = new AbstractRepository({ name: faker.lorem.word() })
+      repository = new AbstractRepository({
+        name: faker.lorem.word(),
+        saveDelay: 10
+      })
       file = join(path, `${repository.name}.json`)
-      jest.useFakeTimers()
     })
 
     afterEach(() => {
       ac.abort()
-      jest.useRealTimers()
       return rm(file, { force: true })
     })
 
@@ -77,19 +78,19 @@ describe('Abstract repository', () => {
       const watcher = watch(file, { signal: ac.signal })
 
       await repository.save({ id: id1, foo: faker.lorem.word() })
-      jest.runAllTimers()
       await watcher
+      await sleep(10)
       const { length } = await readFile(file, 'utf8')
       expect(length).toBeGreaterThan(0)
 
       await repository.save({ id: id2, bar: faker.lorem.word() })
-      jest.runAllTimers()
       await watcher
+      await sleep(10)
       expect((await readFile(file, 'utf8')).length).toBeGreaterThan(length)
 
       await repository.deleteById([id1, id2])
-      jest.runAllTimers()
       await watcher
+      await sleep(10)
       expect((await readFile(file, 'utf8')).length).toBeLessThan(length)
     })
   })

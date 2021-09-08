@@ -168,7 +168,7 @@
 <aside class="left">
   <GameMenu on:invite-player={() => (openInviteDialogue = true)} />
   <InvitePlayerDialogue
-    gameId={params.gameId}
+    game={$currentGame}
     open={openInviteDialogue}
     on:close={() => (openInviteDialogue = false)}
   />

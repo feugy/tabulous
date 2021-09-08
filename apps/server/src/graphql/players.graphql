@@ -6,6 +6,7 @@ type Player {
 
 type Query {
   getCurrentPlayer: Player
+  searchPlayers(search: String!): [Player]
 }
 
 type Mutation {

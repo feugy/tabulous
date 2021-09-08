@@ -3,10 +3,10 @@ import faker from 'faker'
 import { tick } from 'svelte'
 import html from 'svelte-htm'
 import { translate } from '../test-utils'
-import FPSViewer from '@src/connected-components/FPSViewer.svelte'
-import { fps } from '@src/stores/game-engine'
+import FPSViewer from '../../src/connected-components/FPSViewer.svelte'
+import { fps } from '../../src/stores/game-engine'
 
-jest.mock('@src/stores/game-engine', () => {
+jest.mock('../../src/stores/game-engine', () => {
   const { BehaviorSubject } = require('rxjs')
   return { fps: new BehaviorSubject(), engine: new BehaviorSubject() }
 })

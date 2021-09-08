@@ -1,10 +1,10 @@
 <script>
   import { createEventDispatcher } from 'svelte'
-  import { slide } from 'svelte/transition'
   import Button from './Button.svelte'
+  import Menu from './Menu.svelte'
 
-  export let value
   export let options
+  export let value = null
   export let valueAsText = true
   export let withArrow = true
   export let text = null
@@ -12,125 +12,17 @@
 
   const dispatch = createEventDispatcher()
   let menu
-  let button
+  let anchor
 
   $: iconOnly = !valueAsText && !text
-  $: if (!value && options.length) {
-    value = options[0]
-  }
   $: if (valueAsText) {
     text = value ? value.label || value : text
   }
 
-  function isInComponent(element) {
-    return !element
-      ? false
-      : element === menu ||
-        element.getAttribute('role') === 'menu' ||
-        element === button
-      ? true
-      : isInComponent(element.parentElement)
-  }
-
-  function select(option) {
-    value = option
-    handleButtonClick()
-    dispatch('select', value)
-  }
-
-  function handleInteraction(evt) {
-    if ((evt.target && isInComponent(evt.target)) || !open) {
-      return
-    }
-    handleButtonClick()
-  }
-
-  function handleButtonClick() {
+  function handleClick() {
     open = !open
     if (!open) {
       dispatch('close')
-    }
-  }
-
-  async function handleMenuVisible() {
-    if (!menu) {
-      return
-    }
-    const sav = menu.getAttribute('style')
-    // reset styling to get final menu dimension
-    menu.setAttribute('style', '')
-    const buttonDim = button.getBoundingClientRect()
-    const {
-      width: menuWidth,
-      height: menuHeight
-    } = menu.getBoundingClientRect()
-    const { innerWidth, innerHeight } = window
-    // restore styling to resume anumations
-    menu.setAttribute('style', sav)
-
-    const minWidth = buttonDim.width
-    let top = buttonDim.height
-    let left = 0
-
-    let right = null
-    let bottom = null
-    if (buttonDim.left + Math.max(menuWidth, minWidth) > innerWidth) {
-      left = null
-      right = 0
-    }
-    if (
-      buttonDim.top - menuHeight >= 0 &&
-      innerHeight < buttonDim.bottom + menuHeight
-    ) {
-      top = null
-      bottom = buttonDim.height
-    }
-    Object.assign(menu.style, {
-      top: top !== null ? `${top}px` : '',
-      left: left !== null ? `${left}px` : '',
-      right: right !== null ? `${right}px` : '',
-      bottom: bottom !== null ? `${bottom}px` : '',
-      minWidth: `${minWidth}px`
-    })
-    if (menu.children.length) {
-      const idx = options.indexOf(value)
-      menu.children.item(idx === -1 ? 0 : idx).focus()
-    }
-  }
-
-  function handleMenuKeyDown(evt) {
-    const current = document.activeElement.closest('[role="menuitem"]')
-    if (!current) {
-      return
-    }
-    let focusable
-    switch (evt.key) {
-      case 'ArrowDown':
-        focusable = current.nextElementSibling
-        while (focusable && focusable.hasAttribute('aria-disabled')) {
-          focusable = focusable.nextElementSibling
-        }
-        break
-      case 'ArrowUp':
-        focusable = current.previousElementSibling
-        while (focusable && focusable.hasAttribute('aria-disabled')) {
-          focusable = focusable.previousElementSibling
-        }
-        break
-      case 'Home':
-        focusable = menu.firstElementChild
-        break
-      case 'End':
-        focusable = menu.lastElementChild
-        break
-      case 'Escape':
-      case 'Tab':
-        handleButtonClick()
-        break
-    }
-    if (focusable) {
-      focusable.focus()
-      evt.preventDefault()
     }
   }
 </script>
@@ -143,107 +35,31 @@
   .arrow {
     @apply ml-2 -mr-2;
   }
-
-  ul {
-    @apply absolute rounded z-20 text-sm shadow-md;
-    background-color: theme('colors.primary.light');
-  }
-
-  li {
-    @apply p-2 whitespace-nowrap flex items-center;
-
-    &:not(.disabled) {
-      /* TODO mobile? */
-      &:hover,
-      &:focus {
-        @apply cursor-pointer outline-none;
-        color: theme('colors.primary.text');
-        background-color: theme('colors.primary.dark');
-      }
-    }
-
-    &.disabled {
-    }
-
-    & > i {
-      @apply mr-2 text-base;
-    }
-  }
 </style>
-
-<svelte:window
-  on:click|capture={handleInteraction}
-  on:resize|capture={handleMenuVisible}
-/>
 
 <span
   class="wrapper"
-  bind:this={button}
+  bind:this={anchor}
   aria-haspopup="menu"
   aria-expanded={open}
 >
-  <Button {...$$restProps} {text} on:click={handleButtonClick}>
+  <Button {...$$restProps} {text} on:click={handleClick}>
     {#if withArrow}
       <i class:iconOnly class="material-icons arrow">
         {`arrow_drop_${open ? 'up' : 'down'}`}
       </i>
     {/if}
   </Button>
-  {#if open}
-    <ul
-      role="menu"
-      transition:slide
-      on:introstart={handleMenuVisible}
-      on:keydown={handleMenuKeyDown}
-      bind:this={menu}
-    >
-      {#each options as option}
-        <li
-          role="menuitem"
-          aria-disabled={option.disabled}
-          class:disabled={option.disabled}
-          tabindex={option.disabled ? undefined : -1}
-          on:click={evt => {
-            if (option.Component) {
-              option.props.open = true
-              evt.stopPropagation()
-            } else {
-              select(option)
-            }
-          }}
-          on:keydown={evt => {
-            if (
-              evt.key === 'Enter' ||
-              evt.key === ' ' ||
-              evt.key === 'ArrowRight'
-            ) {
-              if (option.Component) {
-                option.props.open = true
-                evt.stopPropagation()
-              } else {
-                select(option)
-              }
-            }
-          }}
-          on:focus={() => (option.props ? (option.props.focus = true) : null)}
-          on:blur={() => (option.props ? (option.props.focus = false) : null)}
-        >
-          {#if option.Component}
-            <svelte:component
-              this={option.Component}
-              {...option.props}
-              on:close={() => {
-                option.props.open = false
-                dispatch('select', option)
-              }}
-              on:close={handleInteraction}
-            />
-          {:else}
-            {#if option.icon}<i class="material-icons">{option.icon}</i>{/if}
-            {option.label || option}
-          {/if}
-        </li>
-      {/each}
-    </ul>
-  {/if}
+  <Menu
+    {anchor}
+    {open}
+    {options}
+    bind:value
+    takesFocus
+    bind:ref={menu}
+    on:close
+    on:select
+    on:close={() => (open = false)}
+    on:select={({ detail }) => (value = detail)}
+  />
 </span>

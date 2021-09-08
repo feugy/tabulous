@@ -1,12 +1,13 @@
 import { BehaviorSubject } from 'rxjs'
-import { initGraphQLGlient, runMutation } from './graphql-client'
+import { initGraphQLGlient, runQuery, runMutation } from './graphql-client'
 import * as graphQL from '../graphql'
 import { makeLogger } from '../utils'
 
-const logger = makeLogger('authentication')
+const logger = makeLogger('players')
 
 const storageKey = 'player'
 
+// we distinguish no value (undefined) and no player (null)
 const current$ = new BehaviorSubject()
 
 current$.subscribe(player => {
@@ -28,7 +29,7 @@ current$.subscribe(player => {
 })
 
 /**
- * Emits currently authenticated player
+ * Emits currently authenticated player.
  * @type {Observable<object>}
  */
 export const currentPlayer = current$.asObservable()
@@ -36,16 +37,16 @@ export const currentPlayer = current$.asObservable()
 /**
  * Recovers previous session by reusing data from session storage.
  * @async
- * @returns {object|null} the authenticated player in case of success, or null
+ * @returns {object|null} the authenticated player in case of success, or null.
  */
 export async function recoverSession() {
+  let player = null
   const playerData = sessionStorage.getItem(storageKey)
   if (playerData) {
-    let player = null
     try {
       logger.info({ playerData }, `recovering previous session`)
       initGraphQLGlient(JSON.parse(playerData))
-      player = await runMutation(graphQL.getCurrentPlayer)
+      player = await runQuery(graphQL.getCurrentPlayer)
       current$.next(player)
     } catch (error) {
       logger.warn(
@@ -54,22 +55,32 @@ export async function recoverSession() {
       )
       await logOut()
     }
-    logger.info({ player: current$.value }, `session recovery complete`)
-    return player
+  } else {
+    await logOut()
   }
+  logger.info({ player: current$.value }, `session recovery complete`)
+  return player
 }
 
 /**
  * Logs a player in.
  * @async
- * @param {string} username - username of the authenticating player
- * @param {string} password - clear password
- * @returns {object} the authenticated player object
+ * @param {string} username - username of the authenticating player.
+ * @param {string} password - clear password.
+ * @returns {object|null} the authenticated player object, if any.
  */
 export async function logIn(username, password) {
   initGraphQLGlient()
-  const player = await runMutation(graphQL.logIn, { username, password })
-  logger.info(player, `authenticating ${username}`)
+  let player = null
+  try {
+    player = await runMutation(graphQL.logIn, { username, password })
+    logger.info(player, `authenticating ${username}`)
+  } catch (error) {
+    logger.info(
+      { error },
+      `failed to authenticate ${username}: ${error.message}`
+    )
+  }
   current$.next(player)
   return player
 }
@@ -81,4 +92,15 @@ export async function logIn(username, password) {
 export async function logOut() {
   logger.info(`logging out`)
   current$.next(null)
+}
+
+/**
+ * Searches for player whom username contains the searched text.
+ * @async
+ * @param {string} search - searched text.
+ * @returns {object[]} a list (possibly empty) of matching candidates.
+ */
+export async function searchPlayers(search) {
+  logger.info({ search }, `searches for ${search}`)
+  return runQuery(graphQL.searchPlayers, { search })
 }

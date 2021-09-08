@@ -1,4 +1,4 @@
-import * as collections from '@src/utils/collections'
+import * as collections from '../../src/utils/collections'
 
 describe('Collection utils', () => {
   describe('shuffle()', () => {

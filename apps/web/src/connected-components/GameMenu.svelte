@@ -35,7 +35,6 @@
 <Dropdown
   icon="menu"
   title={$_('tooltips.game-menu')}
-  valueAsText={false}
   withArrow={false}
   {options}
   on:select={handleSelect}
