@@ -1,49 +1,87 @@
 <script>
   import { _ } from 'svelte-intl'
-  import { Button, Dialogue, Input } from '../components'
-  import { invite } from '../stores'
+  import { debounceTime, map, switchMap } from 'rxjs/operators'
+  import { Button, Dialogue, Typeahead } from '../components'
+  import { invite, searchPlayers } from '../stores'
+  import { Subject } from 'rxjs'
+  import { onMount } from 'svelte'
 
-  export let gameId
+  export let game
   export let open = false
 
   let inputRef
-  let text
   let title = $_('titles.invite')
+  let candidates
+  let guestPlayer
+  let search = new Subject()
 
-  $: disabled = !text || !text.trim().length
+  onMount(() =>
+    search
+      .pipe(
+        debounceTime(100),
+        switchMap(search => searchPlayers(search)),
+        map(players =>
+          players.map(player => ({
+            ...player,
+            disabled: Boolean(game.players.find(({ id }) => id === player.id)),
+            label: player.username
+          }))
+        )
+      )
+      .subscribe({ next: results => (candidates = results) })
+  )
 
   $: if (open && inputRef) {
     // we must wait for the dialogue to be displayed
-    setTimeout(() => inputRef.focus(), 100)
+    setTimeout(() => inputRef?.focus(), 100)
   }
 
   function handleClose() {
-    text = ''
     open = false
+    guestPlayer = null
   }
 
   async function handleInvite() {
-    if (disabled) {
+    if (!guestPlayer) {
       return
     }
-    const playerId = text.trim()
-    invite(gameId, playerId)
-    handleClose()
+    if (await invite(game.id, guestPlayer.id)) {
+      handleClose()
+    }
+  }
+
+  async function findCandidates({ target }) {
+    const text = target?.value ?? ''
+    if (text.length >= 2) {
+      search.next(text)
+    } else {
+      candidates = undefined
+      guestPlayer = undefined
+    }
   }
 </script>
 
+<style type="postcss">
+  div {
+    @apply flex;
+  }
+</style>
+
 <Dialogue {title} {open} on:close on:close={handleClose}>
-  <Input
-    placeholder={$_('placeholders.player-id')}
-    bind:value={text}
-    bind:ref={inputRef}
-    on:enter={handleInvite}
-  />
+  <div>
+    <Typeahead
+      placeholder={$_('placeholders.username')}
+      bind:ref={inputRef}
+      options={candidates}
+      on:input={findCandidates}
+      on:select={({ detail }) => (guestPlayer = detail)}
+    />
+  </div>
   <svelte:fragment slot="buttons">
     <Button
       icon="connect_without_contact"
       text={$_('actions.invite')}
-      {disabled}
+      disabled={!guestPlayer}
       on:click={handleInvite}
     />
   </svelte:fragment>

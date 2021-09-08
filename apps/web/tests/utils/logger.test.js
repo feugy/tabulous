@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto'
-import { makeLogger } from '@src/utils/logger'
+import { makeLogger } from '../../src/utils/logger'
 
 describe('Logger', () => {
   let trace

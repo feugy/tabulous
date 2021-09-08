@@ -6,7 +6,7 @@
   export let anchor
   export let options
   export let open
-  export let value
+  export let value = null
   export let takesFocus = true
   export let ref = null
 

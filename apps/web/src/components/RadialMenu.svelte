@@ -1,5 +1,5 @@
 <script>
-  import { Button } from '.'
+  import Button from './Button.svelte'
   export let items = []
   export let open = false
   export let x = 0

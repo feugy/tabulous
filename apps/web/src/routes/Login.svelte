@@ -57,7 +57,7 @@
     <form on:submit|preventDefault={handleLogin}>
       <div class="row">
         <Input
-          placeholder={$_('placeholders.user-name')}
+          placeholder={$_('placeholders.username')}
           bind:value={username}
           bind:ref={inputRef}
         />

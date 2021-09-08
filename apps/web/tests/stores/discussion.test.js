@@ -1,6 +1,6 @@
-import * as peerChannels from '@src/stores/peer-channels'
+import * as peerChannels from '../../src/stores/peer-channels'
 
-jest.mock('@src/stores/peer-channels', () => {
+jest.mock('../../src/stores/peer-channels', () => {
   const { Subject } = require('rxjs')
   const lastMessageSent = new Subject()
   return {
@@ -20,7 +20,7 @@ describe('Discussion store', () => {
   const text5 = 'message 5'
 
   beforeAll(async () => {
-    discussion = await import('@src/stores/discussion')
+    discussion = await import('../../src/stores/discussion')
   })
 
   beforeEach(() => {

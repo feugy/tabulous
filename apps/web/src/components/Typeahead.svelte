@@ -4,8 +4,9 @@
   import Input from './Input.svelte'
   import Menu from './Menu.svelte'
 
-  export let value
+  export let value = null
   export let options
+  export let ref = null
   let anchor
   let open
   let menu
@@ -44,7 +45,7 @@
 
 <style type="postcss">
   .wrapper {
-    @apply relative inline-block;
+    @apply relative inline-block flex-grow;
   }
 </style>
 
@@ -58,6 +59,7 @@
     {...$$restProps}
     type="text"
     value={text}
+    bind:ref
     on:input
     on:keyup
     on:keydown

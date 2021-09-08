@@ -1,7 +1,8 @@
 <script>
   import { afterUpdate, createEventDispatcher } from 'svelte'
   import Portal from 'svelte-portal'
-  import { Button, Pane } from '.'
+  import Button from './Button.svelte'
+  import Pane from './Pane.svelte'
 
   export let open
   export let title

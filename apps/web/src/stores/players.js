@@ -1,5 +1,5 @@
 import { BehaviorSubject } from 'rxjs'
-import { initGraphQLGlient, runMutation } from './graphql-client'
+import { initGraphQLGlient, runQuery, runMutation } from './graphql-client'
 import * as graphQL from '../graphql'
 import { makeLogger } from '../utils'
 
@@ -28,7 +28,7 @@ current$.subscribe(player => {
 })
 
 /**
- * Emits currently authenticated player
+ * Emits currently authenticated player.
  * @type {Observable<object>}
  */
 export const currentPlayer = current$.asObservable()
@@ -36,7 +36,7 @@ export const currentPlayer = current$.asObservable()
 /**
  * Recovers previous session by reusing data from session storage.
  * @async
- * @returns {object|null} the authenticated player in case of success, or null
+ * @returns {object|null} the authenticated player in case of success, or null.
  */
 export async function recoverSession() {
   const playerData = sessionStorage.getItem(storageKey)
@@ -62,9 +62,9 @@ export async function recoverSession() {
 /**
  * Logs a player in.
  * @async
- * @param {string} username - username of the authenticating player
- * @param {string} password - clear password
- * @returns {object} the authenticated player object
+ * @param {string} username - username of the authenticating player.
+ * @param {string} password - clear password.
+ * @returns {object} the authenticated player object.
  */
 export async function logIn(username, password) {
   initGraphQLGlient()
@@ -81,4 +81,15 @@ export async function logIn(username, password) {
 export async function logOut() {
   logger.info(`logging out`)
   current$.next(null)
+}
+
+/**
+ * Searches for player whom username contains the searched text.
+ * @async
+ * @param {string} search - searched text.
+ * @returns {object[]} a list (possibly empty) of matching candidates.
+ */
+export async function searchPlayers(search) {
+  logger.info({ search }, `searches for ${search}`)
+  return runQuery(graphQL.searchPlayers, { search })
 }

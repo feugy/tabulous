@@ -29,8 +29,7 @@ page-titles:
   home: Tabulous • Accueil
   log-in: Tabulous • Connection
 placeholders:
-  player-id: Id joueur
-  user-name: Pseudo
+  username: Pseudo
   password: Mot de passe
 titles:
   camera-controls: Contrôler la caméra

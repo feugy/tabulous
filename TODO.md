@@ -20,8 +20,6 @@
 
 ## Multi player
 
-- search players by name
-- invite players by name
 - indicates when remote stream is muted/stopped
 
 ## Server
