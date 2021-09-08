@@ -28,8 +28,8 @@
 
   function select(option) {
     value = option
-    toggleVisibility()
     dispatch('select', value)
+    toggleVisibility()
   }
 
   function toggleVisibility() {
@@ -85,7 +85,11 @@
     })
     if (ref.children.length && takesFocus) {
       const idx = options.indexOf(value)
-      ref.children.item(idx === -1 ? 0 : idx).focus()
+      if (idx >= 0 && !value.disabled) {
+        ref.children.item(idx).focus()
+      } else {
+        handleFocus(null, true)
+      }
     }
   }
 
@@ -143,12 +147,13 @@
     } else {
       focusable = ref[next ? 'firstElementChild' : 'lastElementChild']
     }
-    while (focusable && focusable.hasAttribute('aria-disabled')) {
+    // note that JSDom does not support focusable?.ariaDisabled === 'true'
+    while (focusable?.getAttribute('aria-disabled') === 'true') {
       focusable = focusable[prop]
     }
     if (focusable) {
       focusable.focus()
-      evt.preventDefault()
+      evt?.preventDefault()
     }
   }
 </script>

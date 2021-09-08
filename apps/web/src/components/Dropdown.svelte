@@ -3,8 +3,8 @@
   import Button from './Button.svelte'
   import Menu from './Menu.svelte'
 
-  export let value
   export let options
+  export let value = null
   export let valueAsText = true
   export let withArrow = true
   export let text = null
@@ -15,9 +15,6 @@
   let anchor
 
   $: iconOnly = !valueAsText && !text
-  $: if (!value && options.length) {
-    value = options[0]
-  }
   $: if (valueAsText) {
     text = value ? value.label || value : text
   }

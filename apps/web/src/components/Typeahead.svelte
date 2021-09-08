@@ -15,6 +15,8 @@
   $: if (value) {
     // updates text based on current option
     text = value?.label ?? value
+  } else {
+    text = ''
   }
 
   $: if (options) {
@@ -38,7 +40,10 @@
       // matches possible option with current text
       const text = evt.currentTarget.value
       await tick()
-      value = options?.find(option => option?.label === text || option === text)
+      value = options?.find(
+        option =>
+          option?.label === text || (option === text && !option?.disabled)
+      )
     }
   }
 </script>

@@ -1,10 +1,10 @@
 <script>
+  import { onMount } from 'svelte'
   import { _ } from 'svelte-intl'
+  import { Subject } from 'rxjs'
   import { debounceTime, map, switchMap } from 'rxjs/operators'
   import { Button, Dialogue, Typeahead } from '../components'
   import { invite, searchPlayers } from '../stores'
-  import { Subject } from 'rxjs'
-  import { onMount } from 'svelte'
 
   export let game
   export let open = false
@@ -31,14 +31,10 @@
       .subscribe({ next: results => (candidates = results) })
   )
 
-  $: if (open && inputRef) {
-    // we must wait for the dialogue to be displayed
-    setTimeout(() => inputRef?.focus(), 100)
-  }
-
   function handleClose() {
     open = false
-    guestPlayer = null
+    candidates = undefined
+    guestPlayer = undefined
   }
 
   async function handleInvite() {
@@ -67,14 +63,21 @@
   }
 </style>
 
-<Dialogue {title} {open} on:close on:close={handleClose}>
+<Dialogue
+  {title}
+  {open}
+  on:open={() => inputRef?.focus()}
+  on:close
+  on:close={handleClose}
+>
   <div>
     <Typeahead
       placeholder={$_('placeholders.username')}
-      bind:ref={inputRef}
       options={candidates}
+      bind:value={guestPlayer}
+      bind:ref={inputRef}
       on:input={findCandidates}
-      on:select={({ detail }) => (guestPlayer = detail)}
+      on:select={() => inputRef?.focus()}
     />
   </div>
   <svelte:fragment slot="buttons">

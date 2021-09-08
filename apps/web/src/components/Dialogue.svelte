@@ -1,5 +1,5 @@
 <script>
-  import { afterUpdate, createEventDispatcher } from 'svelte'
+  import { afterUpdate, createEventDispatcher, onMount } from 'svelte'
   import Portal from 'svelte-portal'
   import Button from './Button.svelte'
   import Pane from './Pane.svelte'
@@ -10,6 +10,12 @@
 
   const dispatch = createEventDispatcher()
   let previous = null
+
+  onMount(() => {
+    if (open) {
+      dispatch('open')
+    }
+  })
 
   afterUpdate(() => {
     if (previous === null) {
@@ -47,7 +53,7 @@
 
   .backdrop {
     @apply opacity-0;
-    transition: all theme('transitions.short') ease-in-out;
+    transition: opacity theme('transitions.short') ease-in-out;
 
     &.open {
       @apply opacity-100 visible;
