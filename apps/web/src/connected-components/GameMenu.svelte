@@ -36,6 +36,7 @@
   icon="menu"
   title={$_('tooltips.game-menu')}
   withArrow={false}
+  valueAsText={false}
   {options}
   on:select={handleSelect}
 />
