@@ -7,7 +7,8 @@ const logger = makeLogger('players')
 
 const storageKey = 'player'
 
-const current$ = new BehaviorSubject(null)
+// we distinguish no value (undefined) and no player (null)
+const current$ = new BehaviorSubject()
 
 current$.subscribe(player => {
   const playerData = sessionStorage.getItem(storageKey)
