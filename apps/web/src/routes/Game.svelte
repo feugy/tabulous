@@ -9,14 +9,10 @@
   import {
     ActionMenu,
     CameraSwitch,
-    ControlsHelp,
     CursorInfo,
-    Discussion,
-    MinimizableSection,
+    GameAside,
     MeshDetails,
-    PlayerAvatar,
-    Progress,
-    RuleViewer
+    Progress
   } from '../components'
   import {
     cameraSaves,
@@ -44,42 +40,6 @@
   let interaction
   let openInviteDialogue = false
   let loadPromise
-  let rightTab
-  let rightAsideInitialWidth = '30vw'
-  let hasPeers = false
-  let discussionDimension = '15%'
-  let rightAsideIcons = ['help']
-
-  $: avatars = $connected.length
-    ? // current player should go first
-      [
-        $currentPlayer,
-        ...$currentGame?.players.filter(({ id }) => id !== $currentPlayer.id)
-      ].map((player, i) => ({
-        player,
-        controllable: i === 0,
-        stream: $connected?.find(({ playerId }) => playerId === player.id)
-          ?.stream
-      }))
-    : $currentGame?.players.length > 1
-    ? // multiple player but none connected: remove current
-      $currentGame.players
-        .filter(({ id }) => id !== $currentPlayer.id)
-        .map(player => ({ player }))
-    : // single player: no avatars
-      []
-
-  $: hasPeers = $currentGame?.players.length > 1
-
-  $: {
-    rightAsideIcons = ['help']
-    if ($currentGame?.rulesBookPageCount > 1) {
-      rightAsideIcons.splice(0, 0, 'auto_stories')
-    }
-    if (hasPeers) {
-      rightAsideIcons.splice(0, 0, 'people_alt')
-    }
-  }
 
   onMount(async () => {
     initEngine({ canvas, interaction, longTapDelay })
@@ -110,42 +70,17 @@
   }
 
   aside {
-    @apply absolute z-10 top-0;
-
-    &.right {
-      @apply right-0 bottom-0;
-      background-color: theme('backgrounds.page');
+    @apply absolute z-10 left-0 p-2;
+    &.top {
+      @apply top-0;
     }
-
-    &.left {
-      @apply left-0 p-2;
-    }
-
     &.bottom {
-      @apply top-auto bottom-0 flex flex-col p-2 gap-2;
+      @apply bottom-0 flex flex-col gap-2;
     }
   }
 
   .overlay {
     @apply flex items-center justify-center z-10;
-  }
-
-  .right-content {
-    @apply flex flex-col h-full items-stretch;
-  }
-
-  .peers {
-    @apply grid flex-1 gap-2 place-items-center grid-flow-col;
-    grid-template-rows: repeat(auto-fit, minmax(150px, 1fr));
-  }
-
-  .help {
-    @apply h-full;
-  }
-
-  article {
-    background-color: red;
-    min-height: 150px;
   }
 </style>
 
@@ -165,7 +100,7 @@
   </div>
 {/await}
 
-<aside class="left">
+<aside class="top">
   <GameMenu on:invite-player={() => (openInviteDialogue = true)} />
   <InvitePlayerDialogue
     game={$currentGame}
@@ -173,7 +108,7 @@
     on:close={() => (openInviteDialogue = false)}
   />
 </aside>
-<aside class="left bottom">
+<aside class="bottom">
   <CameraSwitch
     {longTapDelay}
     current={$currentCamera}
@@ -195,59 +130,10 @@
   <CursorInfo size={$stackSize} halos={longInputs} />
   <MeshDetails mesh={$meshDetails} on:close={handleCloseDetails} />
 </main>
-<aside class="right">
-  <MinimizableSection
-    placement="right"
-    icons={rightAsideIcons}
-    minimized={!hasPeers}
-    bind:currentTab={rightTab}
-    on:resize={() => (rightAsideInitialWidth = null)}
-  >
-    <div class="right-content">
-      {#if rightAsideIcons[rightTab] === 'people_alt'}
-        <div
-          class="peers"
-          style={rightAsideInitialWidth
-            ? `min-width: ${rightAsideInitialWidth}`
-            : ''}
-        >
-          {#each avatars as props}<PlayerAvatar {...props} />{/each}
-        </div>
-        {#if $connected.length || $thread.length}
-          <MinimizableSection
-            dimension={discussionDimension}
-            placement="bottom"
-            icon="question_answer"
-          >
-            <Discussion
-              thread={$thread}
-              players={$currentGame?.players}
-              on:sendMessage={({ detail }) => sendToThread(detail.text)}
-            />
-          </MinimizableSection>
-        {/if}
-      {:else if rightAsideIcons[rightTab] === 'auto_stories'}
-        <div
-          class="help"
-          style={rightAsideInitialWidth
-            ? `max-width: ${rightAsideInitialWidth}`
-            : ''}
-        >
-          <RuleViewer
-            game={$currentGame?.kind}
-            lastPage={$currentGame?.rulesBookPageCount - 1}
-          />
-        </div>
-      {:else}
-        <div
-          class="help"
-          style={rightAsideInitialWidth
-            ? `max-width: ${rightAsideInitialWidth}`
-            : ''}
-        >
-          <ControlsHelp />
-        </div>
-      {/if}
-    </div>
-  </MinimizableSection>
-</aside>
+<GameAside
+  game={$currentGame}
+  player={$currentPlayer}
+  connected={$connected}
+  thread={$thread}
+  on:sendMessage={({ detail }) => sendToThread(detail.text)}
+/>
