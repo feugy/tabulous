@@ -12,6 +12,9 @@ describe('startServer()', () => {
   beforeAll(() => {
     jest.spyOn(repositories.games, 'connect').mockImplementation(() => {})
     jest.spyOn(repositories.players, 'connect').mockImplementation(() => {})
+    jest
+      .spyOn(repositories.catalogItems, 'connect')
+      .mockImplementation(() => {})
   })
 
   beforeEach(async () => {
@@ -29,7 +32,8 @@ describe('startServer()', () => {
       serverUrl: { port },
       logger: { level: 'fatal' },
       plugins: { static: { path: resolve(cwd(), 'games') } },
-      data: { path: 'data' }
+      data: { path: 'data' },
+      games: { path: 'games' }
     })
 
     let response = await app.inject({
@@ -48,6 +52,10 @@ describe('startServer()', () => {
     expect(repositories.games.connect).toHaveBeenCalledTimes(1)
     expect(repositories.players.connect).toHaveBeenCalledWith({ path: 'data' })
     expect(repositories.players.connect).toHaveBeenCalledTimes(1)
+    expect(repositories.catalogItems.connect).toHaveBeenCalledWith({
+      path: 'games'
+    })
+    expect(repositories.catalogItems.connect).toHaveBeenCalledTimes(1)
   })
 
   it('reads https files and propagate errors', async () => {
@@ -60,7 +68,8 @@ describe('startServer()', () => {
         },
         logger: { level: 'fatal' },
         plugins: { static: { path: resolve(cwd(), 'games') } },
-        data: { path: 'data' }
+        data: { path: 'data' },
+        games: { path: 'games' }
       })
     ).rejects.toThrow(/base64 decode/)
   })
@@ -70,7 +79,8 @@ describe('startServer()', () => {
       serverUrl: { port },
       logger: { level: 'fatal' },
       plugins: { static: { path: resolve(cwd(), 'games') } },
-      data: { path: 'data' }
+      data: { path: 'data' },
+      games: { path: 'games' }
     }
     app = await startServer(conf)
     expect(app.conf).toEqual(conf)

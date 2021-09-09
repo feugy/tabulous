@@ -1,0 +1,7 @@
+type CatalogItem {
+  name: ID!
+}
+
+type Query {
+  listCatalog: [CatalogItem]
+}

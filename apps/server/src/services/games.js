@@ -106,32 +106,27 @@ export const gameListsUpdate = gameListsUpdate$.pipe(
  * It instanciate an unique set, based on the descriptor's bags and slots.
  * Updates the creator's game list.
  * @async
- * @param {string} root - path (JavaScript import) containing game descriptors
  * @param {string} kind - game's kind.
  * @param {string} playerId - creating player id.
  * @returns {Game} the created game.
  * @throws {Error} when no descriptor could be found for this kind.
  */
-export async function createGame(root, kind, playerId) {
-  try {
-    const descriptor = await import(`${root}/${kind}.js`)
-    const created = await repositories.games.save({
-      kind,
-      created: Date.now(),
-      playerIds: [playerId],
-      scene: instanciateGame(descriptor),
-      messages: [],
-      cameras: [],
-      rulesBookPageCount: descriptor.rulesBookPageCount
-    })
-    gameListsUpdate$.next(created.playerIds)
-    return created
-  } catch (err) {
-    if (err?.message?.includes('Cannot find module')) {
-      throw new Error(`Unsupported game ${kind}`)
-    }
-    throw err
+export async function createGame(kind, playerId) {
+  const descriptor = await repositories.catalogItems.getById(kind)
+  if (!descriptor) {
+    throw new Error(`Unsupported game ${kind}`)
   }
+  const created = await repositories.games.save({
+    kind,
+    created: Date.now(),
+    playerIds: [playerId],
+    scene: instanciateGame(descriptor),
+    messages: [],
+    cameras: [],
+    rulesBookPageCount: descriptor.rulesBookPageCount
+  })
+  gameListsUpdate$.next(created.playerIds)
+  return created
 }
 
 /**

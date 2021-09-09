@@ -86,7 +86,7 @@ describe('given a started server', () => {
           errors: [expect.objectContaining({ message: 'Unauthorized' })]
         })
         expect(response.statusCode).toEqual(200)
-        expect(services.getPlayerById).not.toHaveBeenCalledWith()
+        expect(services.getPlayerById).not.toHaveBeenCalled()
       })
 
       it('does not return current player with invalid authentication details', async () => {

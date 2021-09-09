@@ -1,4 +1,5 @@
 import faker from 'faker'
+import { join } from 'path'
 import repositories from '../../src/repositories/index.js'
 import {
   createGame,
@@ -10,9 +11,6 @@ import {
   saveGame
 } from '../../src/services/games.js'
 import { sleep } from '../../src/utils/time.js'
-
-const fixtures = `${import.meta.url}/../../fixtures/games`
-const gamesFolder = `${import.meta.url}/../../../games`
 
 // until https://github.com/facebook/jest/issues/11438 is resolve, running jest in band will fail
 const describeFn = process.env.CI ? describe.skip : describe
@@ -27,12 +25,16 @@ describeFn(
       subscription = gameListsUpdate.subscribe(update => updates.push(update))
       await repositories.games.connect()
       await repositories.players.connect()
+      await repositories.catalogItems.connect({
+        path: join('tests', 'fixtures', 'games')
+      })
     })
 
     afterAll(async () => {
       subscription?.unsubscribe()
       await repositories.games.release()
       await repositories.players.release()
+      await repositories.catalogItems.release()
     })
 
     beforeEach(() => {
@@ -42,23 +44,16 @@ describeFn(
     describe('createGame()', () => {
       it('throws an error on unknown game', async () => {
         const kind = faker.lorem.word()
-        await expect(
-          createGame(fixtures, kind, faker.datatype.uuid())
-        ).rejects.toThrow(`Unsupported game ${kind}`)
-        expect(updates).toHaveLength(0)
-      })
-
-      it('throws an error on invalid descriptor', async () => {
-        await expect(
-          createGame(fixtures, 'invalid', faker.datatype.uuid())
-        ).rejects.toThrow(`(slots ?? []) is not iterable`)
+        await expect(createGame(kind, faker.datatype.uuid())).rejects.toThrow(
+          `Unsupported game ${kind}`
+        )
         expect(updates).toHaveLength(0)
       })
 
       it('creates a game from descriptor and trigger list update', async () => {
         const kind = 'splendor'
         const playerId = faker.datatype.uuid()
-        const game = await createGame(gamesFolder, kind, playerId)
+        const game = await createGame(kind, playerId)
         expect(game).toEqual({
           id: expect.any(String),
           created: expect.any(Number),
@@ -83,7 +78,7 @@ describeFn(
       const playerId = faker.datatype.uuid()
 
       beforeEach(async () => {
-        game = await createGame(gamesFolder, 'splendor', playerId)
+        game = await createGame('splendor', playerId)
         await sleep()
         updates.splice(0, updates.length)
       })
@@ -214,14 +209,14 @@ describeFn(
           games.push(game)
           await invite(games[0].id, peerId, playerId)
 
-          games.push(await createGame(gamesFolder, 'splendor', playerId))
+          games.push(await createGame('splendor', playerId))
 
-          games.push(await createGame(gamesFolder, 'splendor', playerId))
+          games.push(await createGame('splendor', playerId))
 
-          games.push(await createGame(gamesFolder, 'splendor', peerId))
+          games.push(await createGame('splendor', peerId))
           await invite(games[3].id, playerId, peerId)
 
-          games.push(await createGame(gamesFolder, 'splendor', peerId))
+          games.push(await createGame('splendor', peerId))
         })
 
         afterEach(async () => {

@@ -1,6 +1,5 @@
 import Ajv from 'ajv/dist/jtd.js'
 import { isAbsolute, join } from 'path'
-import { pathToFileURL } from 'url'
 import { cwd } from 'process'
 
 const validate = new Ajv({ allErrors: true }).compile({
@@ -53,6 +52,10 @@ const validate = new Ajv({ allErrors: true }).compile({
   }
 })
 
+function makeAbsolute(path) {
+  return isAbsolute(path) ? path : join(cwd(), path)
+}
+
 /**
  * @typedef {object} Configuration loaded configuration, including:
  * @property {boolean} isProduction - indicates production mode.
@@ -65,7 +68,7 @@ const validate = new Ajv({ allErrors: true }).compile({
  * @property {object} logger - Pino logger options, including:
  * @property {string} logger.level - level used for logging.
  * @property {object} games - game engine properties, including;
- * @property {string} games.path - folder url (relative to current working directory) containing game descriptors.
+ * @property {string} games.path - folder path (relative to current working directory) containing game descriptors.
  * @property {object} plugins - options for all plugin used:
  * @property {import('../plugins/graphql').GraphQLOptions} plugins.graphql - options for the GraphQL plugin.
  * @property {import('../plugins/static').StaticOptions} plugins.static - options for the static files plugin.
@@ -78,7 +81,7 @@ const validate = new Ajv({ allErrors: true }).compile({
  * Synchronously loads and validates the server configuration from environment variables:
  * - CLIENT_ROOT: folder path (relative to current working directory) containing UI static files. Defaults to '../web/dist'.
  * - DATA_PATH: folder path (relative to current working directory) containing data stores. Defaults to './data'.
- * - GAMES_PATH: folder url (relative to current working directory) containing game descriptors. Defaults to './games'.
+ * - GAMES_PATH: folder path (relative to current working directory) containing game descriptors. Defaults to './games'.
  * - HOST : IP4/6 address this server will listen to.
  * - HTTPS_CERT: relative or absolute path to the PEM file of your SSL certificate. Required in production, defaults to 'keys/cert.pem'.
  * - HTTPS_KEY: relative or absolute path to the PEM file of your SSL key. Rrequired in production, defaults to 'keys/privkey.pem'.
@@ -130,21 +133,11 @@ export function loadConfiguration() {
       path: DATA_PATH ?? 'data'
     }
   }
-  if (!isAbsolute(configuration.plugins.static.path)) {
-    configuration.plugins.static.path = join(
-      cwd(),
-      configuration.plugins.static.path
-    )
-  }
-  if (!isAbsolute(configuration.data.path)) {
-    configuration.data.path = join(cwd(), configuration.data.path)
-  }
-  if (!configuration.games.path.startsWith('file://')) {
-    configuration.games.path = new URL(
-      configuration.games.path,
-      pathToFileURL(cwd() + '/dummy')
-    ).toString()
-  }
+  configuration.plugins.static.path = makeAbsolute(
+    configuration.plugins.static.path
+  )
+  configuration.data.path = makeAbsolute(configuration.data.path)
+  configuration.games.path = makeAbsolute(configuration.games.path)
 
   if (!validate(configuration)) {
     console.warn(
