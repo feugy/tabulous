@@ -1,7 +1,8 @@
+import faker from 'faker'
 import { join } from 'path'
 import { catalogItems } from '../../src/repositories/catalog-items.js'
 
-describe('given a connected repository on mocked data', () => {
+describe('Catalog Items repository', () => {
   const items = [
     { name: 'belote', cards: [], bags: new Map(), slots: [] },
     { name: 'klondike', cards: [], bags: new Map(), slots: [] },
@@ -17,22 +18,52 @@ describe('given a connected repository on mocked data', () => {
     }
   ]
 
-  beforeEach(async () => {
-    await catalogItems.connect({
-      path: join('tests', 'fixtures', 'games')
-    })
-  })
+  const fixtures = join('tests', 'fixtures', 'games')
 
   afterEach(() => catalogItems.release())
 
-  describe('Catalog repository', () => {
-    describe('list()', () => {
-      it('lists all items within folder', async () => {
-        expect(await catalogItems.list()).toEqual({
-          total: 3,
-          from: 0,
-          size: Number.POSITIVE_INFINITY,
-          results: items
+  describe('connect()', () => {
+    it('throws an error on unreadable folder', async () => {
+      await expect(
+        catalogItems.connect({ path: faker.system.filePath() })
+      ).rejects.toThrow('Failed to connect Catalog Items repository')
+    })
+
+    it('throws an error on unreadable folder', async () => {
+      await expect(
+        catalogItems.connect({ path: faker.system.filePath() })
+      ).rejects.toThrow('Failed to connect Catalog Items repository')
+    })
+  })
+
+  describe('given a connected repository on mocked data', () => {
+    beforeEach(() => catalogItems.connect({ path: fixtures }))
+
+    describe('Catalog repository', () => {
+      describe('list()', () => {
+        it('lists all items within folder', async () => {
+          expect(await catalogItems.list()).toEqual({
+            total: 3,
+            from: 0,
+            size: Number.POSITIVE_INFINITY,
+            results: items
+          })
+        })
+      })
+
+      describe('save()', () => {
+        it('throws error as it is not supported', async () => {
+          await expect(catalogItems.save()).rejects.toThrow(
+            'Catalog items can not be saved'
+          )
+        })
+      })
+
+      describe('deleteById()', () => {
+        it('throws error as it is not supported', async () => {
+          await expect(catalogItems.deleteById()).rejects.toThrow(
+            'Catalog items can not be deleted'
+          )
         })
       })
     })

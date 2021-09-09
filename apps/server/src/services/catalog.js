@@ -9,15 +9,25 @@ import repositories from '../repositories/index.js'
 /**
  * Computes a given player's catalog, only including free games and restricted games they can access.
  * @async
- * @param {import('./players').Player} player - related player
+ * @param {import('./players').Player} player - related player.
  * @returns {CatalogItem[]} the full list of catalog items for this player.
  */
 export async function listCatalog(player) {
   const results = []
   for (const item of (await repositories.catalogItems.list()).results) {
-    if (!item.restricted || player.catalog?.includes(item.name)) {
+    if (canAccess(player, item)) {
       results.push(item)
     }
   }
   return results
+}
+
+/**
+ * Indicates whether a given player can access the provided catalog item.
+ * @param {import('./players').Player} player - related player.
+ * @param {CatalogItem} item - the checked catalog item.
+ * @returns {boolean} true when the item is publicly available or if this player was granted access.
+ */
+export function canAccess(player, item) {
+  return !item.restricted || player?.catalog?.includes(item.name)
 }

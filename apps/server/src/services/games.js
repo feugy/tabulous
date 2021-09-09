@@ -1,5 +1,6 @@
 import { Subject } from 'rxjs'
 import { concatMap, mergeMap } from 'rxjs/operators'
+import { canAccess } from './catalog.js'
 import { instanciateGame } from './utils.js'
 import repositories from '../repositories/index.js'
 
@@ -115,6 +116,9 @@ export async function createGame(kind, playerId) {
   const descriptor = await repositories.catalogItems.getById(kind)
   if (!descriptor) {
     throw new Error(`Unsupported game ${kind}`)
+  }
+  if (!canAccess(await repositories.players.getById(playerId), descriptor)) {
+    throw new Error(`Access to game ${kind} is restricted`)
   }
   const created = await repositories.games.save({
     kind,

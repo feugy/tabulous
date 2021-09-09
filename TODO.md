@@ -183,8 +183,7 @@ Here there are, copied from `hosting/certbot/live/tabulous.fr/` to `keys/\` fold
 # Server data operations
 
 - create player
-- find one player by id
-- find several players by ids
+- find one/several players by id
 - search players by their username
 - update player's playing boolean (or full player)
 - create full game
@@ -192,6 +191,8 @@ Here there are, copied from `hosting/certbot/live/tabulous.fr/` to `keys/\` fold
 - find games which player ids contains an id
 - update full game
 - delete game
+- list game descriptors
+- find one/several game descriptors by id
 
 # Various learnings
 

@@ -50,8 +50,16 @@ describeFn(
         expect(updates).toHaveLength(0)
       })
 
-      it('creates a game from descriptor and trigger list update', async () => {
+      it('throws an error on restricted game', async () => {
         const kind = 'splendor'
+        await expect(createGame(kind, faker.datatype.uuid())).rejects.toThrow(
+          `Access to game ${kind} is restricted`
+        )
+        expect(updates).toHaveLength(0)
+      })
+
+      it('creates a game from descriptor and trigger list update', async () => {
+        const kind = 'klondike'
         const playerId = faker.datatype.uuid()
         const game = await createGame(kind, playerId)
         expect(game).toEqual({
@@ -65,8 +73,7 @@ describeFn(
             roundedTiles: expect.any(Array)
           },
           cameras: [],
-          messages: [],
-          rulesBookPageCount: 4
+          messages: []
         })
         await sleep()
         expect(updates).toEqual([{ playerId, games: [game] }])
@@ -78,7 +85,7 @@ describeFn(
       const playerId = faker.datatype.uuid()
 
       beforeEach(async () => {
-        game = await createGame('splendor', playerId)
+        game = await createGame('belote', playerId)
         await sleep()
         updates.splice(0, updates.length)
       })
@@ -209,14 +216,14 @@ describeFn(
           games.push(game)
           await invite(games[0].id, peerId, playerId)
 
-          games.push(await createGame('splendor', playerId))
+          games.push(await createGame('belote', playerId))
 
-          games.push(await createGame('splendor', playerId))
+          games.push(await createGame('klondike', playerId))
 
-          games.push(await createGame('splendor', peerId))
+          games.push(await createGame('belote', peerId))
           await invite(games[3].id, playerId, peerId)
 
-          games.push(await createGame('splendor', peerId))
+          games.push(await createGame('belote', peerId))
         })
 
         afterEach(async () => {
