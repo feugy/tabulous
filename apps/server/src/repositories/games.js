@@ -15,7 +15,7 @@ class GameRepository extends AbstractRepository {
    * @param {object} args - list arguments, including:
    * @param {number} [args.from = 0] - 0-based index of the first result
    * @param {number} [args.size = 10] - maximum number of models returned after first results.
-   * @returns {Page} a given page of games.
+   * @returns {import('./abstract-repository').Page} a given page of games.
    */
   async listByPlayerId(playerId, { from = 0, size = 10 } = {}) {
     let i = 0

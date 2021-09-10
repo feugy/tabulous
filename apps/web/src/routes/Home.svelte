@@ -1,22 +1,28 @@
 <script>
   import { push } from 'svelte-spa-router'
   import { _ } from 'svelte-intl'
-  import { Button, ConfirmDialogue, GameLink } from '../components'
+  import {
+    CatalogItem,
+    ConfirmDialogue,
+    GameLink,
+    Progress
+  } from '../components'
   import { Header } from '../connected-components'
   import {
     currentPlayer,
     createGame,
     deleteGame,
-    playerGames,
-    listGames
+    listCatalog,
+    listGames,
+    playerGames
   } from '../stores'
 
   let gameToDelete = null
 
   listGames()
 
-  async function handleNewGame() {
-    push(`/game/${await createGame()}`)
+  async function handleNewGame({ detail: { name } }) {
+    push(`/game/${await createGame(name)}`)
   }
 
   async function handleDeleteGame({ detail: game }) {
@@ -32,17 +38,29 @@
 </script>
 
 <style type="postcss">
+  main {
+    @apply flex flex-col h-full w-full;
+  }
+
   h1 {
     @apply text-3xl py-4;
   }
 
-  .action {
-    @apply flex gap-2 justify-center pb-2 sm:absolute sm:-bottom-4 sm:right-0;
+  h2 {
+    @apply text-2xl py-4 lg:w-3/4 lg:mx-auto;
   }
 
-  main {
+  div {
+    @apply flex-1 overflow-y-auto px-4 pb-4;
+  }
+
+  section {
     @apply grid mx-auto my-8 gap-8 grid-cols-1 w-10/12;
     @apply xs:grid-cols-2 sm:grid-cols-3 lg:w-9/12 xl:w-7/12;
+  }
+
+  .no-games {
+    @apply italic;
   }
 </style>
 
@@ -50,25 +68,35 @@
   <title>{$_('page-titles.home')}</title>
 </svelte:head>
 
-<Header>
-  <h1>{$_('titles.home', $currentPlayer)}</h1>
-  <span class="action">
-    <Button
-      icon="games"
-      text={$_('actions.new-game')}
-      on:click={handleNewGame}
-    />
-  </span>
-</Header>
-
 <main>
-  {#each $playerGames as game (game.id)}
-    <GameLink
-      {game}
-      playerId={$currentPlayer?.id}
-      on:delete={handleDeleteGame}
-    />
-  {/each}
+  <Header>
+    <h1>{$_('titles.home', $currentPlayer)}</h1>
+  </Header>
+
+  <div>
+    <h2>{$_('titles.your-games')}</h2>
+    <section>
+      {#each $playerGames.sort((a, b) => b.created - a.created) as game (game.id)}
+        <GameLink
+          {game}
+          playerId={$currentPlayer?.id}
+          on:delete={handleDeleteGame}
+        />
+      {:else}
+        <span class="no-games">{$_('labels.no-games-yet')}</span>
+      {/each}
+    </section>
+
+    <h2>{$_('titles.catalog')}</h2>
+    <section>
+      {#await listCatalog()}
+        <Progress />
+      {:then catalog}
+        {#each catalog as game}
+          <CatalogItem {game} on:click={handleNewGame} />{/each}
+      {/await}
+    </section>
+  </div>
 </main>
 
 {#if gameToDelete}

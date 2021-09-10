@@ -1,0 +1,11 @@
+type CatalogItem {
+  name: ID!
+  # minimum age in years
+  minAge: Int
+  # minimum time in minutes
+  minTime: Int
+}
+
+type Query {
+  listCatalog: [CatalogItem]
+}

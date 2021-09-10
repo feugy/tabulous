@@ -19,11 +19,15 @@ formats:
       minute: 2-digit
       month: short
 games:
+  klondike: Solitaire
   splendor: Splendor
   riichi: Riichi Mahjong
 labels:
-  peer-players: avec {names}
   confirm-game-deletion: Souhaitez vous vraiment supprimer cette partie de {kind} ?
+  game-min-age: 'age : {minAge}+'
+  game-min-time: "temps : {minTime}'"
+  no-games-yet: Rien pour l'instant ! Choisissez un jeu disponible.
+  peer-players: avec {names}
 page-titles:
   game: Tabulous • Jeu
   home: Tabulous • Accueil
@@ -33,8 +37,10 @@ placeholders:
   password: Mot de passe
 titles:
   camera-controls: Contrôler la caméra
+  catalog: Jeux disponibles
   confirm-game-deletion: Suppression de la partie
-  home: Bonjour {username} ({id}) !
+  your-games: Parties en cours
+  home: Bonjour {username} !
   invite: Qui vas tu inviter ?
   log-in: Bienvenue !
   object-controls: Contrôler un objet

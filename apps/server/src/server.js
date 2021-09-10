@@ -1,7 +1,6 @@
 import { readFile } from 'fs/promises'
 import fastify from 'fastify'
 import repositories from './repositories/index.js'
-const { games, players } = repositories
 
 /**
  * Starts Tabulous server, using provided configuration.
@@ -24,8 +23,9 @@ export async function startServer(config) {
   })
 
   app.decorate('conf', config)
-  await players.connect({ path: config.data.path })
-  await games.connect({ path: config.data.path })
+  await repositories.players.connect({ path: config.data.path })
+  await repositories.games.connect({ path: config.data.path })
+  await repositories.catalogItems.connect({ path: config.games.path })
 
   app.register(import('fastify-websocket'), { maxPayload: 1048576 })
   app.register(import('./plugins/graphql.js'), config.plugins.graphql)

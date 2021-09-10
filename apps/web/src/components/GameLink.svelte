@@ -22,7 +22,7 @@
 
 <style type="postcss">
   article {
-    @apply inline-flex flex-col p-6 shadow-md cursor-pointer;
+    @apply inline-flex flex-col p-6 rounded shadow-md cursor-pointer;
     background: theme('backgrounds.primary');
     transition: all theme('transitions.short') ease-in-out;
 

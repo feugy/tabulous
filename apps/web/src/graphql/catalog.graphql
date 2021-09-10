@@ -1,0 +1,7 @@
+query listCatalog {
+  listCatalog {
+    name
+    minAge
+    minTime
+  }
+}

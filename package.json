@@ -25,14 +25,14 @@
     "test:web": "npm t --workspace apps/web"
   },
   "devDependencies": {
-    "eslint": "^7.23.0",
+    "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-svelte3": "^3.1.2",
-    "husky": "^6.0.0",
-    "lint-staged": "^10.5.4",
+    "husky": "^7.0.2",
+    "lint-staged": "^11.1.2",
     "npm-run-all": "^4.1.5",
-    "prettier": "^2.2.1",
-    "prettier-plugin-svelte": "^2.2.0"
+    "prettier": "^2.3.2",
+    "prettier-plugin-svelte": "^2.4.0"
   },
   "lint-staged": {
     "*.{js,svelte}": "eslint --cache --fix",

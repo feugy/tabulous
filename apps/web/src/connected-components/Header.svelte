@@ -10,7 +10,7 @@
   }
 
   div {
-    @apply relative px-8 lg:w-3/4 lg:mx-auto;
+    @apply relative lg:w-3/4 lg:mx-auto;
   }
   nav {
     @apply flex justify-end lg:w-3/4 lg:mx-auto;

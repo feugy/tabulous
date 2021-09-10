@@ -7,6 +7,9 @@ export default {
      * Returns the current player data from their authentication details.
      * Requires valid authentication.
      * @async
+     * @param {object} obj - graphQL object.
+     * @param {object} args - query arguments:
+     * @param {object} context - graphQL context.
      * @returns {import('../services/authentication').Player|null} current player or null.
      */
     getCurrentPlayer: isAuthenticated((obj, args, { player }) => player),
@@ -15,6 +18,10 @@ export default {
      * Returns players (except the current one) which username contains searched text.
      * Requires valid authentication.
      * @async
+     * @param {object} obj - graphQL object.
+     * @param {object} args - query arguments, including:
+     * @param {string} args.search - searched text.
+     * @param {object} context - graphQL context.
      * @returns {import('../services/authentication').Player[]} list (potentially empty) of matching players.
      */
     searchPlayers: isAuthenticated((obj, { search }, { player }) =>
@@ -26,6 +33,7 @@ export default {
     /**
      * Authenticate an user from their username.
      * @async
+     * @param {object} obj - graphQL object.
      * @param {object} args - mutation arguments, including:
      * @param {string} data.username - username.
      * @param {string} data.password - clear password.

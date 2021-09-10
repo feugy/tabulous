@@ -20,8 +20,11 @@ export default {
     /**
      * Emits signal addressed from current player onto the subscription of another player.
      * Requires valid authentication.
+     * @param {object} obj - graphQL object.
      * @param {object} args - mutation arguments, including:
-     * @param {import('./signals.graphql').SignalInput} data.signal - signal addressed to another player.
+     * @param {import('./signals.graphql').SignalInput} args.signal - signal addressed to another player.
+     * @param {object} context - graphQL context.
+     * @returns {import('./signals.graphql').Signal} signal addressed.
      */
     sendSignal: isAuthenticated((obj, { signal }, { player, pubsub }) => {
       signal.from = player.id
@@ -38,6 +41,9 @@ export default {
      * Emits signal addressed to the current player
      * Requires valid authentication.
      * @async
+     * @param {object} obj - graphQL object.
+     * @param {object} args - query arguments.
+     * @param {object} context - graphQL context.
      * @yields {import('./signals.graphql').Signal}
      */
     awaitSignal: {

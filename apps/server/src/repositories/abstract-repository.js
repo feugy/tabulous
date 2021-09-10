@@ -88,7 +88,7 @@ export class AbstractRepository {
   }
 
   /**
-   * Lists models with pagination and sort.
+   * Lists models with pagination.
    * @async
    * @param {object} args - list arguments, including:
    * @param {number} [args.from = 0] - 0-based index of the first result

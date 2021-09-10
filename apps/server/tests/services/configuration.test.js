@@ -2,12 +2,10 @@ import { jest } from '@jest/globals'
 import faker from 'faker'
 import { join, resolve } from 'path'
 import { cwd } from 'process'
-import { pathToFileURL } from 'url'
 import { loadConfiguration } from '../../src/services/configuration.js'
 
 describe('loadConfiguration()', () => {
   const { ...envSave } = process.env
-  const cwdUrl = pathToFileURL(cwd()).toString()
 
   beforeEach(() => {
     process.env = { ...envSave }
@@ -19,8 +17,8 @@ describe('loadConfiguration()', () => {
     const host = faker.internet.ip()
     const level = faker.random.arrayElement(['fatal', 'error', 'info', 'debug'])
     const staticPath = resolve(cwd(), faker.system.directoryPath())
-    const gamesPath = `file://${faker.system.directoryPath()}`
-    const dataPath = faker.system.filePath()
+    const gamesPath = faker.system.directoryPath()
+    const dataPath = faker.system.directoryPath()
     const key = faker.system.filePath()
     const cert = faker.system.filePath()
 
@@ -67,7 +65,7 @@ describe('loadConfiguration()', () => {
         graphql: { graphiql: null },
         static: { path: resolve(cwd(), '..', 'web', 'dist') }
       },
-      games: { path: `${cwdUrl}/games` },
+      games: { path: resolve(cwd(), 'games') },
       data: { path: resolve(cwd(), 'data') }
     })
   })
@@ -84,7 +82,7 @@ describe('loadConfiguration()', () => {
         graphql: { graphiql: 'playground' },
         static: { path: resolve(cwd(), '..', 'web', 'dist') }
       },
-      games: { path: `${cwdUrl}/games` },
+      games: { path: resolve(cwd(), 'games') },
       data: { path: resolve(cwd(), 'data') }
     })
   })
@@ -114,7 +112,7 @@ describe('loadConfiguration()', () => {
 
   it('considers GAMES_PATH relatively to current working directory', () => {
     process.env.GAMES_PATH = './test'
-    expect(loadConfiguration().games.path).toEqual(`${cwdUrl}/test`)
+    expect(loadConfiguration().games.path).toEqual(join(cwd(), 'test'))
   })
 
   it('considers DATA_PATH relatively to current working directory', () => {
