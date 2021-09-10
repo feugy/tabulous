@@ -1,4 +1,14 @@
 /**
+ * Minimum time in minutes.
+ */
+export const minTime = 15
+
+/**
+ * Minimum age in years.
+ */
+export const minAge = 7
+
+/**
  * 13 cards of each suit: spades, diamonds, clubs, hearts.
  * @type {import('../src/services/games').Card[]}
  */
