@@ -240,13 +240,15 @@ Some GPU also require [dimensions to be multiple of 4](https://forum.babylonjs.c
 
 Sizes:
 
-- cards: 372x260
-- tiles: 352x176
-- tokens: 380x184
+- Splendor
+  - cards: 372x260
+  - tiles: 352x176
+  - tokens: 380x184
+- French suited cards: 360x260
 
 ```shell
-folder=apps/web/public/images/splendor/1; \
-size=372x260; \
+folder=apps/web/public/images/french-suited-cards; \
+size=360x260; \
 for file in $folder/!(*.gl1.png|!(*.png)); do \
   outFile=${file/.png/.out.png}; \
   convert -flop -strip -resize $size\! $file $outFile; \
