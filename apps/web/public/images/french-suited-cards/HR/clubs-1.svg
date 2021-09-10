@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 9.0, SVG Export Plug-In  -->
+
+<!-- This set of SVG files is a complete cards game with figures, numbers	-->
+
+<!--    and backs of cards completely designed in SVG.				-->
+
+<!--    									-->
+
+<!--    Copyright (C) 2004 David Bellot						-->
+
+<!--										-->
+
+<!--    This library is free software; you can redistribute it and/or		-->
+
+<!--    modify it under the terms of the GNU Lesser General Public		-->
+
+<!--    License as published by the Free Software Foundation; either		-->
+
+<!--    version 2 of the License, or (at your option) any later version		-->
+
+<!--										-->
+
+<!--    This library is distributed in the hope that it will be useful,		-->
+
+<!--    but WITHOUT ANY WARRANTY; without even the implied warranty of		-->
+
+<!--    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU	-->
+
+<!--    Lesser General Public License for more details.				-->
+
+<!--										-->
+
+<!--    You should have received a copy of the GNU Lesser General Public	-->
+
+<!--    License along with this library; if not, write to the Free Software	-->
+
+<!--    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA-->
+
+<!--										-->
+
+<!--    Contact the author David Bellot at bellot@stat.berkeley.edu or 		-->
+
+<!--    david.bellot@free.fr or yimyom@users.sourceforge.net			-->
+
+<svg
+   width="208"
+   height="300"
+   viewBox="0 0 167.08643 240.26483"
+   xml:space="preserve"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="1.1 (c4e8f9e, 2021-05-24)"
+   sodipodi:docname="clubs-1.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   version="1.0"
+   inkscape:export-filename="/home/damien/dev/perso/tabulous/apps/web/public/images/klondike/clubs-1.png"
+   inkscape:export-xdpi="83.199997"
+   inkscape:export-ydpi="83.199997"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"><metadata
+   id="metadata90"><rdf:RDF><cc:Work
+       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></cc:Work></rdf:RDF></metadata><defs
+   id="defs88">
+		
+		
+		
+		
+		
+		
+	</defs><sodipodi:namedview
+   inkscape:window-height="1053"
+   inkscape:window-width="1866"
+   inkscape:pageshadow="2"
+   inkscape:pageopacity="0.0"
+   guidetolerance="10.0"
+   gridtolerance="10.0"
+   objecttolerance="10.0"
+   borderopacity="1.0"
+   bordercolor="#666666"
+   pagecolor="#ffffff"
+   id="base"
+   inkscape:zoom="1.7576595"
+   inkscape:cx="1.1378768"
+   inkscape:cy="199.69738"
+   inkscape:window-x="54"
+   inkscape:window-y="-10"
+   inkscape:current-layer="svg2"
+   inkscape:showpageshadow="false"
+   width="208px"
+   height="303px"
+   inkscape:pagecheckerboard="0"
+   showgrid="false"
+   fit-margin-top="0"
+   fit-margin-left="0"
+   fit-margin-right="0"
+   fit-margin-bottom="0"
+   inkscape:window-maximized="1" />
+	<path
+   id="path5"
+   d="m 166.83643,233.55491 c 0,3.75409 -3.08594,6.82253 -6.87011,6.82253 H 7.11133 C 3.33594,240.37744 0.25,237.309 0.25,233.55491 V 6.7099227 c 0,-3.7487545 3.08594,-6.82252933 6.86133,-6.82252933 h 152.85499 c 3.78417,0 6.87011,3.07377483 6.87011,6.82252933 z"
+   style="fill:#ffffff;fill-rule:nonzero;stroke:#000000;stroke-width:0.5;stroke-miterlimit:4" /><use
+   x="0"
+   y="0"
+   xlink:href="#use2370"
+   id="use2374"
+   transform="rotate(180,83.543205,119.57805)"
+   width="167.08643"
+   height="242.66748" /><use
+   x="0"
+   y="0"
+   xlink:href="#path2242"
+   id="use2370"
+   transform="matrix(0.3006846,0,0,0.3006846,-8.7477236,-1.8275705)"
+   width="167.08643"
+   height="242.66748" /><path
+   style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1"
+   d="m 83.46822,103.60742 c -3.79776,0 -6.87501,3.07724 -6.875,6.875 0,1.96016 0.83322,3.72148 2.15,4.975 1.01754,0.96866 2.46716,3.16423 2.95,4.925 -0.94183,-0.56759 -1.79019,-1.21446 -2.3,-1.75 -1.25353,-1.31678 -3.01485,-2.125 -4.975,-2.125 -3.79777,0 -6.875,3.07724 -6.875,6.875 -1e-5,3.79776 3.07724,6.875 6.875,6.875 1.96015,0 3.72148,-0.83322 4.975,-2.15 0.53755,-0.56469 1.44627,-1.2792 2.45,-1.875 -0.1408,6.30515 -2.30471,10.425 -6.25,10.425 0,0 15.775,0 15.775,0 -3.95581,0 -6.14477,-4.14143 -6.275,-10.475 1.05816,0.60735 2.04176,1.33858 2.6,1.925 1.2535,1.31678 3.01486,2.15 4.975,2.15 3.79771,0 6.875,-3.07724 6.875,-6.875 0,-3.79776 -3.07729,-6.875 -6.875,-6.875 -1.96013,0 -3.7215,0.80822 -4.975,2.125 -0.53083,0.55761 -1.45276,1.21889 -2.45,1.8 0.46773,-1.76943 1.9473,-3.99666 2.975,-4.975 1.31677,-1.25352 2.125,-3.01485 2.125,-4.975 0,-3.79776 -3.07724,-6.875 -6.875,-6.875 z"
+   id="path2242"
+   sodipodi:nodetypes="csscsssssccccssssscssc" />
+<g
+   style="fill-rule:nonzero;stroke:#000000;stroke-miterlimit:4"
+   id="g2192"
+   transform="translate(0.99402,0.2194451)">
+			<path
+   style="stroke:none"
+   d="m 10.987793,25.827148 v -1.46875 h 0.661621 L 14.682129,7.7958984 h 1.280762 l 3.044921,16.5624996 h 0.761231 v 1.46875 h -3.77002 v -1.46875 h 0.785645 l -0.664551,-3.6875 h -3.020996 l -0.676269,3.6875 h 0.966308 v 1.46875 z m 2.377441,-6.625 h 2.48877 l -1.232422,-6.884765 z"
+   id="path2194" />
+		</g><g
+   style="fill-rule:nonzero;stroke:#000000;stroke-miterlimit:4"
+   id="g2196"
+   transform="translate(-0.40612,-2.9942452)">
+			<path
+   style="stroke:none"
+   d="m 155.51074,216.40918 v 1.46875 h -0.66113 l -3.0332,16.5625 h -1.28125 l -3.04493,-16.5625 h -0.76074 v -1.46875 H 150.5 v 1.46875 h -0.78613 l 0.66504,3.6875 h 3.0205 l 0.67676,-3.6875 h -0.96679 v -1.46875 z m -2.37793,6.625 h -2.48828 l 1.23242,6.88477 z"
+   id="path2198" />
+		</g></svg>

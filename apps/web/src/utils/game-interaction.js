@@ -135,11 +135,14 @@ export function attachInputs({
                   mesh.metadata.stack.every(mesh => meshes.has(mesh))
                 ) {
                   // when current selection contains all mesh of a stack, we should flip the entire stack
+                  // use last one since other are not controllable
+                  const last =
+                    mesh.metadata.stack[mesh.metadata.stack.length - 1]
                   logger.info(
-                    { mesh, button, long, event },
-                    `flips stack of ${mesh.id}`
+                    { mesh: last, button, long, event },
+                    `flips stack of ${last.id}`
                   )
-                  controlManager.apply({ meshId: mesh.id, fn: 'flipAll' })
+                  controlManager.apply({ meshId: last.id, fn: 'flipAll' })
                   for (const excluded of mesh.metadata.stack) {
                     exclude.add(excluded)
                   }
