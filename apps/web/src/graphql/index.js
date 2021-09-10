@@ -1,3 +1,4 @@
+import { listCatalog } from './catalog.graphql'
 import {
   createGame,
   deleteGame,
@@ -17,6 +18,7 @@ export {
   deleteGame,
   getCurrentPlayer,
   invite,
+  listCatalog,
   listGames,
   loadGame,
   loadGamePlayers,

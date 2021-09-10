@@ -9,6 +9,7 @@
 
 ## Single player
 
+- sort catalog on game names
 - feedback on stacking
 - player's hand
 - stack actions:

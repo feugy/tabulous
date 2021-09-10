@@ -1,7 +1,17 @@
 /**
- * Splendor's rules book has 4 pages
+ * Splendor's rules book has 4 pages.
  */
 export const rulesBookPageCount = 4
+
+/**
+ * Minimum time in minutes.
+ */
+export const minTime = 30
+
+/**
+ * Minimum age in years.
+ */
+export const minAge = 10
 
 /**
  * 40 level 1 cards, 30 level 2 cards, 30 level 3 cards.

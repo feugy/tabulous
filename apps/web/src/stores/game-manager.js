@@ -179,7 +179,7 @@ export async function listGames() {
  * @param {string} kind - created game kind.
  * @returns {string} the created game id.
  */
-export async function createGame(kind = 'splendor') {
+export async function createGame(kind) {
   const game = await runMutation(graphQL.createGame, { kind })
   logger.info(game, `create new ${kind} game (${game.id})`)
   return game.id

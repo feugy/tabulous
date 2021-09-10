@@ -1,5 +1,6 @@
 const levels = {
   camera: 'warn',
+  catalog: 'warn',
   flippable: 'warn',
   'game-interaction': 'warn',
   'game-manager': 'warn',
