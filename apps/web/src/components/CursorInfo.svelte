@@ -92,7 +92,7 @@
   on:pointermove={event => (position = event)}
   on:pointerdown={event => (position = event)} />
 <menu style={`left: ${position?.x}px; top: ${position?.y}px`}>
-  <div class="stackSize" class:active={Boolean(size)}>
+  <div class="stackSize" class:active={size > 1}>
     {size}
   </div>
   <div class="halo" bind:this={halo} on:animationend={handleHaloEnd} />

@@ -8,9 +8,9 @@
 - UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
 - parametrize and serialize UVs
 
-## Single player
+## UI
 
-- boards (no stack hover)
+- anchors/slots
 - sort catalog on game names
 - feedback on stacking
 - player's hand
@@ -19,10 +19,8 @@
   - distribute multiple cards to players (either in their hand, or in front of them)
   - put under
 - keyboard
-
-## Multi player
-
 - indicates when remote stream is muted/stopped
+- zoom in/out on rules
 
 ## Server
 
