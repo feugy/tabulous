@@ -125,7 +125,7 @@ export function createRoundedTile({
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, true, false))
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, false, true))
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, false, false))
-  const tile = tileCSG.toMesh(id)
+  const tile = tileCSG.toMesh('rounded-tile')
   tile.id = id
   tileMesh.dispose()
 
@@ -136,7 +136,7 @@ export function createRoundedTile({
   attachMaterialError(tile.material)
 
   tile.receiveShadows = true
-  tile.setAbsolutePosition(new Vector3(x, y + depth * 0.5, z))
+  tile.setAbsolutePosition(new Vector3(x, y, z))
   Object.assign(tile, tileProps)
 
   tile.metadata = {

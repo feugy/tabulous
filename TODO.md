@@ -2,7 +2,10 @@
 
 ## Refactor
 
-- behaviors should be configurable from game descriptors (movable/stackable...)
+- make anchorable behavior
+- stop inverting depth and height. Use 3D world conventions
+- behaviors should be configurable in game descriptors (movable/stackable...)
+- drag kind must be configurable in game descriptors
 - all manager managing a collection of behaviors should check their capabilities
 - completly disable Babylon input management
 - UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
@@ -10,7 +13,6 @@
 
 ## UI
 
-- anchors/slots
 - sort catalog on game names
 - feedback on stacking
 - player's hand

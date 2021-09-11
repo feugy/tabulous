@@ -7,20 +7,27 @@ import { Engine } from '@babylonjs/core/Engines/engine'
  */
 
 /**
+ *
+ * @typedef {object} Anchor anchor definition on meshes: they acts as drop targets.
+ * @property {number} x - position along the X axis, relative to the mesh's center.
+ * @property {number} y - position along the Y axis, relative to the mesh's center.
+ * @property {number} z - position along the Z axis, relative to the mesh's center.
+ * @property {number} width? - anchor's width (X axis).
+ * @property {number} height? - anchor's height (Z axis).
+ * @property {number} depth? - anchor's depth (Y axis).
+ */
+
+/**
  * Indicates whether a given container completely contain the tested mesh, using their bounding boxes.
  * @param {import('@babylonjs/core').Mesh} container - container that may contain the mesh.
  * @param {import('@babylonjs/core').Mesh} mesh - tested mesh.
  * @returns {boolean} true if container contains mesh, false otherwise.
  */
 export function isContaining(container, mesh) {
-  const {
-    maximumWorld: containerMax,
-    minimumWorld: containerMin
-  } = container.getBoundingInfo().boundingBox
-  const {
-    maximumWorld: meshMax,
-    minimumWorld: meshMin
-  } = mesh.getBoundingInfo().boundingBox
+  const { maximumWorld: containerMax, minimumWorld: containerMin } =
+    container.getBoundingInfo().boundingBox
+  const { maximumWorld: meshMax, minimumWorld: meshMin } =
+    mesh.getBoundingInfo().boundingBox
   return (
     containerMin.x <= meshMin.x &&
     meshMax.x <= containerMax.x &&

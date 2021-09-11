@@ -62,7 +62,7 @@ export function createRoundToken({
     new Vector4(0.49, 1, 0.509, 0),
     new Vector4(0.509, 0, 1, 1)
   ]
-  const token = CylinderBuilder.CreateCylinder(id, {
+  const token = CylinderBuilder.CreateCylinder('round-token', {
     diameter,
     height,
     tessellation: 48,

@@ -77,7 +77,7 @@ export function createCard({
   faces.material.freeze()
   attachMaterialError(faces.material)
 
-  const card = BoxBuilder.CreateBox(id, {
+  const card = BoxBuilder.CreateBox('card', {
     width,
     height: depth,
     depth: height
@@ -88,7 +88,6 @@ export function createCard({
   // wraps the plane with an invisible box. Box will take rays and pick operations.
   card.visibility = 0
   faces.rotate(Axis.X, Math.PI * 0.5)
-  faces.position.y += depth * 0.5
   faces.isPickable = false
   faces.parent = card
 

@@ -23,6 +23,15 @@ type ImageDefs {
   back: String
 }
 
+type Anchor {
+  x: Float
+  y: Float
+  z: Float
+  width: Float
+  height: Float
+  depth: Float
+}
+
 type Card {
   id: ID!
   texture: String!
@@ -79,6 +88,7 @@ type Board {
   x: Float
   y: Float
   z: Float
+  anchors: [Anchor]
 }
 
 type Message {
@@ -107,6 +117,15 @@ input GameInput {
 input ImageDefsInput {
   front: String!
   back: String
+}
+
+input AnchorInput {
+  x: Float
+  y: Float
+  z: Float
+  width: Float
+  height: Float
+  depth: Float
 }
 
 input GameSceneInput {
@@ -187,6 +206,7 @@ input BoardInput {
   x: Float
   y: Float
   z: Float
+  anchors: [AnchorInput]
 }
 
 input MessageInput {
