@@ -120,11 +120,11 @@
   }
 
   menu {
-    @apply absolute h-full m-0 p-0 flex items-start;
+    @apply absolute h-full m-0 p-0 flex items-start pointer-events-none;
     --offset: -42px;
 
     & .buttonContainer {
-      @apply relative flex flex-col top-2 -right-2 z-30 gap-2;
+      @apply relative flex flex-col top-2 -right-2 z-30 gap-2 pointer-events-auto;
 
       & .active {
         transform: scale(1.2);
@@ -132,7 +132,7 @@
     }
 
     & .gutter {
-      @apply relative border-none border-l-2 h-full z-20;
+      @apply relative border-none border-l-2 h-full z-20 pointer-events-auto;
       border-style: solid;
       cursor: ew-resize;
 

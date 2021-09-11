@@ -1,6 +1,6 @@
 <script>
   import { Tool, ToolBox } from '@atelier-wb/svelte'
-  import MinimizableSection from './MinizableSection.svelte'
+  import MinimizableSection from './MinimizableSection.svelte'
 </script>
 
 <ToolBox
