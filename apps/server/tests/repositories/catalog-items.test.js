@@ -34,6 +34,16 @@ describe('Catalog Items repository', () => {
         catalogItems.connect({ path: faker.system.filePath() })
       ).rejects.toThrow('Failed to connect Catalog Items repository')
     })
+
+    it('handles an folder without game descriptors', async () => {
+      await catalogItems.connect({ path: join('..', '..', 'drawings') })
+      expect(await catalogItems.list()).toEqual({
+        total: 0,
+        from: 0,
+        size: Number.POSITIVE_INFINITY,
+        results: []
+      })
+    })
   })
 
   describe('given a connected repository on mocked data', () => {

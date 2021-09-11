@@ -20,7 +20,8 @@ import repositories from '../repositories/index.js'
  * @typedef {object} Scene a 3D scene made of:
  * @property {Card[]} cards - a list of card meshes.
  * @property {RoundToken[]} roundTokens - a list of cylindric tokens.
- * @property {RoundedTiles[]} roundedTiles - a list of tiles with rounded corners.
+ * @property {RoundedTile[]} roundedTiles - a list of tiles with rounded corners.
+ * @property {Board[]} boards - a list of boards with rounded corners.
  */
 
 /**
@@ -33,13 +34,12 @@ import repositories from '../repositories/index.js'
  * @typedef {object} Mesh an abstract 3D mesh:
  * @property {string} id - mesh unique id.
  * @property {string} texture - path to its texture file (one path for the entire mesh).
- * @property {ImageDefs} images - other image definitions.
+ * @property {ImageDefs} images? - other image definitions.
  * @property {number} x? - 3D coordinate along the X axis (horizontal).
  * @property {number} z? - 3D coordinate along the Z axis (vertical).
  * @property {number} y? - 3D coordinate along the Y axis (altitude).
  * @property {boolean} isFlipped? - true means the back face is visible.
  * @property {number} angle? - rotation angle along Y axis, in radian.
- * @property {string[]} stack? - when this mesh is the origin of a stack, ordered list of other mesh ids.
  */
 
 /**
@@ -47,21 +47,32 @@ import repositories from '../repositories/index.js'
  * @property {number} width? - card's width (X axis).
  * @property {number} height? - card's height (Z axis).
  * @property {number} depth? - card's depth (Y axis).
+ * @property {string[]} stack? - when this mesh is the origin of a stack, ordered list of other mesh ids.
  */
 
 /**
  * @typedef {Mesh} RoundToken a round token mesh:
  * @property {number} diameter? - token's diameter (X+Z axis).
  * @property {number} height? - token's height (Y axis).
+ * @property {string[]} stack? - when this mesh is the origin of a stack, ordered list of other mesh ids.
  */
 
 /**
- * @typedef {Mesh} RoundedTiles a tile mesh with rounded corners:
+ * @typedef {Mesh} RoundedTile a tile mesh with rounded corners:
  * @property {number} width? - tile's width (X axis).
  * @property {number} height? - tile's height (Z axis).
  * @property {number} depth? - tile's depth (Y axis)..
  * @property {number} borderRadius? - radius applied to each corner.
  * @property {number[]} borderColor? - Color4's components used as edge color.
+ * @property {string[]} stack? - when this mesh is the origin of a stack, ordered list of other mesh ids.
+ */
+
+/**
+ * @typedef {Mesh} Board a tile mesh with rounded corners:
+ * @property {number} width? - tile's width (X axis).
+ * @property {number} height? - tile's height (Z axis).
+ * @property {number} depth? - tile's depth (Y axis)..
+ * @property {number} borderRadius? - radius applied to each corner.
  */
 
 /**

@@ -2,6 +2,7 @@
 
 ## Refactor
 
+- behaviors should be configurable from game descriptors (movable/stackable...)
 - all manager managing a collection of behaviors should check their capabilities
 - completly disable Babylon input management
 - UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
@@ -9,6 +10,7 @@
 
 ## Single player
 
+- boards (no stack hover)
 - sort catalog on game names
 - feedback on stacking
 - player's hand
@@ -16,7 +18,6 @@
   - draw multiple cards (either in hand, or in front of them)
   - distribute multiple cards to players (either in their hand, or in front of them)
   - put under
-- boards
 - keyboard
 
 ## Multi player
@@ -245,6 +246,8 @@ Sizes:
   - tiles: 352x176
   - tokens: 380x184
 - French suited cards: 360x260
+- Klondike:
+  - board: 1964x980
 
 ```shell
 folder=apps/web/public/images/french-suited-cards; \

@@ -53,15 +53,16 @@ function makeCornerMesh(
 /**
  * Creates a tile with rounded corners.
  * Tiles are boxes, so their position is their center (half their depth).
- * By default, the tile dimension follows American poker tile standard (beetween 1.39 & 1.41).
  * A tile has the following behaviors:
  * - movable
  * - detailable
  * - flippable
  * - rotable
  * - stackable (the entire tile is a drop target)
- * A tile's texture must have 2 faces, back then front, aligned horizontally. Edges have silde color (borderColor).
+ * A tile's texture must have 2 faces, back then front, aligned horizontally.
+ * Edges have solid color (borderColor).
  * @param {object} params - tile parameters, including (all other properties will be passed to the created mesh):
+ * @param {string} params.id - tile's unique id.
  * @param {string} params.texture - tile's texture url.
  * @param {import('./utils').ImageDefs} params.images - detailed images for this tile.
  * @param {number} params.x? - initial position along the X axis.
@@ -81,6 +82,7 @@ function makeCornerMesh(
  * @returns {import('@babylonjs/core').Mesh} the created tile mesh.
  */
 export function createRoundedTile({
+  id,
   x = 0,
   z = 0,
   y = 0,
@@ -123,10 +125,11 @@ export function createRoundedTile({
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, true, false))
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, false, true))
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, false, false))
-  const tile = tileCSG.toMesh('rounded-tile')
+  const tile = tileCSG.toMesh(id)
+  tile.id = id
   tileMesh.dispose()
 
-  tile.material = new StandardMaterial('faces')
+  tile.material = new StandardMaterial(id)
   tile.material.diffuseTexture = new Texture(adaptTexture(texture))
   tile.material.diffuseTexture.hasAlpha = true
   tile.material.freeze()
@@ -139,6 +142,8 @@ export function createRoundedTile({
   tile.metadata = {
     images,
     serialize: () => ({
+      ...tileProps,
+      id,
       x: tile.position.x,
       y: tile.position.y,
       z: tile.position.z,
@@ -149,7 +154,6 @@ export function createRoundedTile({
       borderRadius,
       texture,
       images,
-      ...tileProps,
       ...flipBehavior.serialize(),
       ...rotateBehavior.serialize(),
       ...stackBehavior.serialize()

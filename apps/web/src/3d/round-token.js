@@ -24,6 +24,7 @@ import { adaptTexture, attachMaterialError } from './utils'
  * - stackable (the token token is a drop target)
  * A token's texture must have 3 faces, back then edge then front, aligned horizontally.
  * @param {object} params - token parameters, including (all other properties will be passed to the created mesh):
+ * @param {string} params.id - token's unique id.
  * @param {string} params.texture - token's texture url.
  * @param {import('./utils').ImageDefs} params.images - detailed images for this token.
  * @param {number} params.x? - initial position along the X axis.
@@ -40,6 +41,7 @@ import { adaptTexture, attachMaterialError } from './utils'
  * @returns the created token mesh.
  */
 export function createRoundToken({
+  id,
   x = 0,
   y = 0.05,
   z = 0,
@@ -60,13 +62,13 @@ export function createRoundToken({
     new Vector4(0.49, 1, 0.509, 0),
     new Vector4(0.509, 0, 1, 1)
   ]
-  const token = CylinderBuilder.CreateCylinder('round-token', {
+  const token = CylinderBuilder.CreateCylinder(id, {
     diameter,
     height,
     tessellation: 48,
     faceUV
   })
-  token.material = new StandardMaterial('round-token')
+  token.material = new StandardMaterial(id)
   token.material.diffuseTexture = new Texture(adaptTexture(texture))
   token.material.diffuseTexture.hasAlpha = true
   token.material.freeze()
@@ -80,6 +82,7 @@ export function createRoundToken({
     images,
     serialize: () => ({
       ...tokenProps,
+      id,
       x: token.position.x,
       y: token.position.y,
       z: token.position.z,
@@ -98,7 +101,7 @@ export function createRoundToken({
 
   token.addBehavior(new DetailBehavior(), true)
 
-  const dragKind = 'round-target'
+  const dragKind = 'round-token'
   token.addBehavior(
     new MoveBehavior({ moveDuration, snapDistance, dragKind }),
     true

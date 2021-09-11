@@ -8,7 +8,8 @@ import { shuffle } from '../utils/index.js'
  *
  * @property {import('./games').Card[]} cards? - all cards.
  * @property {import('./games').RoundToken[]} roundTokens? - all round tokens.
- * @property {import('./games').RoundedTiles[]} roundedTiles? - all rounded tiles.
+ * @property {import('./games').RoundedTile[]} roundedTiles? - all rounded tiles.
+ * @property {import('./games').Board[]} boards? - all boards.
  * @property {Map<string, string[]>} bags? - map of randomized bags, as a list of mesh ids.
  * @property {Slot[]} slots? - a list of position slots
  * @property {number} rulesBookPageCount? - number of pages in the rules book, if any.
@@ -30,18 +31,19 @@ import { shuffle } from '../utils/index.js'
  * @returns {import('./games').Scene} a 3D scene, ready to be loaded in the 3D engine.
  */
 export function instanciateGame(descriptor = {}) {
-  const { bags, slots, cards, roundTokens, roundedTiles } = descriptor
+  const { bags, slots, cards, roundTokens, roundedTiles, boards } = descriptor
   // first, performs a deep copy
   const scene = merge(
-    { cards, roundTokens, roundedTiles },
-    { cards: [], roundTokens: [], roundedTiles: [] }
+    { cards, roundTokens, roundedTiles, boards },
+    { cards: [], roundTokens: [], roundedTiles: [], boards: [] }
   )
   const randomized = new Map()
   const all = new Map()
   for (const mesh of [
     ...scene.cards,
     ...scene.roundTokens,
-    ...scene.roundedTiles
+    ...scene.roundedTiles,
+    ...scene.boards
   ]) {
     all.set(mesh.id, mesh)
   }

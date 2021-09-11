@@ -65,7 +65,8 @@ describe('given a subscription to game lists and an initialized repository', () 
         scene: {
           cards: expect.any(Array),
           roundTokens: expect.any(Array),
-          roundedTiles: expect.any(Array)
+          roundedTiles: expect.any(Array),
+          boards: expect.any(Array)
         },
         cameras: [],
         messages: []

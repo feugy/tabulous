@@ -14,7 +14,8 @@ describe('instanciateGame()', () => {
         descriptor.cards.map(expect.objectContaining)
       ),
       roundTokens: [],
-      roundedTiles: []
+      roundedTiles: [],
+      boards: []
     })
   })
 
@@ -29,7 +30,8 @@ describe('instanciateGame()', () => {
     expect(scene).toEqual({
       cards: descriptor.cards,
       roundTokens: [],
-      roundedTiles: []
+      roundedTiles: [],
+      boards: []
     })
   })
 
@@ -43,7 +45,8 @@ describe('instanciateGame()', () => {
     expect(scene).toEqual({
       cards: descriptor.cards,
       roundTokens: [],
-      roundedTiles: []
+      roundedTiles: [],
+      boards: []
     })
   })
 
@@ -62,7 +65,8 @@ describe('instanciateGame()', () => {
           descriptor.cards.map(expect.objectContaining)
         ),
         roundTokens: [],
-        roundedTiles: []
+        roundedTiles: [],
+        boards: []
       })
       expect(scene.cards).not.toEqual(descriptor.cards)
       expect(
@@ -104,7 +108,8 @@ describe('instanciateGame()', () => {
           descriptor.cards.map(expect.objectContaining)
         ),
         roundTokens: [],
-        roundedTiles: []
+        roundedTiles: [],
+        boards: []
       })
       expect(
         scene.cards.filter(({ stack }) => stack?.length === 1)

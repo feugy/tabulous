@@ -1,4 +1,5 @@
 export * from './card'
+export * from './board'
 export * from './engine'
 export * from './light'
 export * from './peer-pointer'

@@ -1,6 +1,11 @@
 // mandatory side effect
 import '@babylonjs/core/Loading/loadingScreen'
-import { createCard, createRoundToken, createRoundedTile } from '..'
+import {
+  createBoard,
+  createCard,
+  createRoundToken,
+  createRoundedTile
+} from '..'
 import { FlipBehavior, RotateBehavior, StackBehavior } from '../behaviors'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
@@ -12,7 +17,8 @@ export function serializeScene(engine) {
   const data = {
     cards: [],
     roundTokens: [],
-    roundedTiles: []
+    roundedTiles: [],
+    boards: []
   }
   for (const mesh of engine.scenes[0].meshes) {
     if (mesh.name === 'card') {
@@ -21,6 +27,8 @@ export function serializeScene(engine) {
       data.roundTokens.push(mesh.metadata.serialize())
     } else if (mesh.name === 'rounded-tile') {
       data.roundedTiles.push(mesh.metadata.serialize())
+    } else if (mesh.name === 'board') {
+      data.boards.push(mesh.metadata.serialize())
     }
   }
   logger.debug({ data }, `serialize scene`)
@@ -64,7 +72,8 @@ export function loadScene(engine, data, initial = true) {
       factory: createRoundedTile,
       source: data.roundedTiles,
       name: 'rounded tile'
-    }
+    },
+    { factory: createBoard, source: data.boards, name: 'board' }
   ]
 
   // makes sure all meshes are created

@@ -28,6 +28,7 @@ import { adaptTexture, attachMaterialError } from './utils'
  * - stackable (the entire card is a drop target)
  * A card's texture must have 2 faces, back then front, aligned horizontally.
  * @param {object} params - card parameters, including (all other properties will be passed to the created mesh):
+ * @param {string} params.id - card's unique id.
  * @param {string} params.texture - card's texture url.
  * @param {import('./utils').ImageDefs} params.images - detailed images for this car.
  * @param {number} params.x? - initial position along the X axis.
@@ -45,6 +46,7 @@ import { adaptTexture, attachMaterialError } from './utils'
  * @returns {import('@babylonjs/core').Mesh} the created card mesh.
  */
 export function createCard({
+  id,
   x = 0,
   z = 0,
   y = 0,
@@ -61,7 +63,7 @@ export function createCard({
   images,
   ...cardProps
 } = {}) {
-  const faces = PlaneBuilder.CreatePlane('faces', {
+  const faces = PlaneBuilder.CreatePlane(`${id}-plane`, {
     width,
     height,
     frontUVs: new Vector4(0.5, 1, 0, 0),
@@ -69,17 +71,18 @@ export function createCard({
     sideOrientation: Mesh.DOUBLESIDE
   })
   faces.receiveShadows = true
-  faces.material = new StandardMaterial('faces')
+  faces.material = new StandardMaterial(id)
   faces.material.diffuseTexture = new Texture(adaptTexture(texture))
   faces.material.diffuseTexture.hasAlpha = true
   faces.material.freeze()
   attachMaterialError(faces.material)
 
-  const card = BoxBuilder.CreateBox('card', {
+  const card = BoxBuilder.CreateBox(id, {
     width,
     height: depth,
     depth: height
   })
+  card.id = id
 
   // because planes are in 2-D, collisions with other meshes could be tricky.
   // wraps the plane with an invisible box. Box will take rays and pick operations.
@@ -96,6 +99,7 @@ export function createCard({
     images,
     serialize: () => ({
       ...cardProps,
+      id,
       x: card.position.x,
       y: card.position.y,
       z: card.position.z,

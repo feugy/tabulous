@@ -94,6 +94,17 @@ query loadGame($gameId: ID!) {
         borderRadius
         borderColor
       }
+      boards {
+        id
+        texture
+        x
+        y
+        z
+        width
+        height
+        depth
+        borderRadius
+      }
     }
     messages {
       playerId
