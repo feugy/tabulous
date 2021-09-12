@@ -52,7 +52,7 @@ function makeCornerMesh(
 
 /**
  * Creates a tile with rounded corners.
- * Tiles are boxes, so their position is their center (half their depth).
+ * Tiles are boxes, so their position is their center.
  * A tile has the following behaviors:
  * - movable
  * - detailable

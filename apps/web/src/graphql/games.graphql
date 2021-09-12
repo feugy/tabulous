@@ -4,13 +4,17 @@ fragment lightPlayer on Player {
   playing
 }
 
-fragment anchor on Anchor {
-  x
-  y
-  z
-  width
-  height
-  depth
+fragment anchorable on AnchorableState {
+  moveDuration
+  anchors {
+    x
+    y
+    z
+    width
+    height
+    depth
+    kinds
+  }
 }
 
 mutation createGame($kind: String!) {
@@ -113,8 +117,8 @@ query loadGame($gameId: ID!) {
         height
         depth
         borderRadius
-        anchors {
-          ...anchor
+        anchorable {
+          ...anchorable
         }
       }
     }

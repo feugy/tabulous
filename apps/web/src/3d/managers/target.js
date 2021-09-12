@@ -59,10 +59,14 @@ class TargetManager {
     const candidates = []
     const excluded = [dragged, ...selectionManager.meshes]
     for (const targetable of this.behaviors) {
-      if (targetable.enabled && !excluded.includes(targetable.mesh)) {
+      if (!excluded.includes(targetable.mesh)) {
         for (const zone of targetable.zones) {
-          const { mesh, extent, kinds } = zone
-          if (kinds.includes(kind) && isAbove(dragged, mesh, extent)) {
+          const { enabled, mesh, extent, kinds } = zone
+          if (
+            enabled &&
+            (!kinds || kinds.includes(kind)) &&
+            isAbove(dragged, mesh, extent)
+          ) {
             candidates.push({
               targetable,
               zone,

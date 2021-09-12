@@ -6,8 +6,12 @@ import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector'
 import { CSG } from '@babylonjs/core/Meshes/csg'
 import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { CylinderBuilder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
-import { TargetBehavior } from './behaviors'
-import { adaptTexture, animateMove, attachMaterialError } from './utils'
+import {
+  adaptTexture,
+  attachMaterialError,
+  registerBehaviors,
+  serializeBehaviors
+} from './utils'
 
 const side = new Vector4(0.2, 0, 0.3, 1)
 
@@ -38,9 +42,8 @@ function makeCornerMesh({ borderRadius, width, height, depth }, top, left) {
 
 /**
  * Creates a board with rounded corners.
- * Boards are boxes, so their position is their center (half their depth).
- * A board has no behavior and is not controllable.
- * Boards have a single solid color.
+ * Boards are boxes, so their position is their center.
+ * A board supports all behaviors.
  * @param {object} params - tile parameters, including (all other properties will be passed to the created mesh):
  * @param {string} params.id - board's unique id.
  * @param {string} params.texture - board's texture url.
@@ -51,8 +54,6 @@ function makeCornerMesh({ borderRadius, width, height, depth }, top, left) {
  * @param {number} params.width? - tile's width (X axis).
  * @param {number} params.height? - tile's height (Z axis).
  * @param {number} params.depth? - tile's depth (Y axis).
- * @param {import('./utils').Anchor[]} params.anchors - mesh anchors on this board.
- * @param {number} params.moveDuration? - automatic move duration (in milliseconds), when dropping to an anchor.
  * @returns {import('@babylonjs/core').Mesh} the created tile mesh.
  */
 export function createBoard({
@@ -65,8 +66,6 @@ export function createBoard({
   depth = 0.05,
   texture,
   borderRadius = 0.4,
-  anchors,
-  moveDuration = 100,
   ...boardProps
 } = {}) {
   const faceUV = [
@@ -116,31 +115,14 @@ export function createBoard({
       depth,
       texture,
       borderRadius,
-      anchors
+      ...serializeBehaviors(board.behaviors)
     })
   }
 
   board.overlayColor = new Color3(0, 0.8, 0)
   board.overlayAlpha = 0.2
 
-  if (Array.isArray(anchors)) {
-    const targetBehavior = new TargetBehavior()
-    targetBehavior.onDropObservable.add(({ dropped, zone }) => {
-      const { x, y, z } = zone.mesh.getAbsolutePosition()
-      animateMove(dropped[0], new Vector3(x, y + 0.1, z), moveDuration, true)
-    })
+  registerBehaviors(board, boardProps)
 
-    board.addBehavior(targetBehavior, true)
-    for (const { x, y, z, width, height, depth } of anchors) {
-      const anchor = BoxBuilder.CreateBox('anchor', {
-        width,
-        height: depth,
-        depth: height
-      })
-      anchor.parent = board
-      anchor.position = new Vector3(x ?? 0, y ?? 0, z ?? 0)
-      targetBehavior.addZone(anchor, 0.6, ['card'])
-    }
-  }
   return board
 }

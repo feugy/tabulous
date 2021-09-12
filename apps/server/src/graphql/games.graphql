@@ -23,6 +23,11 @@ type ImageDefs {
   back: String
 }
 
+type AnchorableState {
+  anchors: [Anchor]
+  moveDuration: Int
+}
+
 type Anchor {
   x: Float
   y: Float
@@ -30,6 +35,7 @@ type Anchor {
   width: Float
   height: Float
   depth: Float
+  kinds: [String]
 }
 
 type Card {
@@ -88,7 +94,7 @@ type Board {
   x: Float
   y: Float
   z: Float
-  anchors: [Anchor]
+  anchorable: AnchorableState
 }
 
 type Message {
@@ -119,6 +125,11 @@ input ImageDefsInput {
   back: String
 }
 
+input AnchorableStateInput {
+  anchors: [AnchorInput]
+  moveDuration: Int
+}
+
 input AnchorInput {
   x: Float
   y: Float
@@ -126,6 +137,7 @@ input AnchorInput {
   width: Float
   height: Float
   depth: Float
+  kinds: [String]
 }
 
 input GameSceneInput {
@@ -206,7 +218,7 @@ input BoardInput {
   x: Float
   y: Float
   z: Float
-  anchors: [AnchorInput]
+  anchorable: AnchorableStateInput
 }
 
 input MessageInput {

@@ -15,13 +15,13 @@ import { adaptTexture, attachMaterialError } from './utils'
 
 /**
  * Creates a round token, like a pocker one.
- * Tokens are cylinders, so their position is their center (half their height).
+ * Tokens are cylinders, so their position is their center.
  * A token has the following behaviors:
  * - movable
  * - detailable
  * - flippable
  * - rotable
- * - stackable (the token token is a drop target)
+ * - stackable (the entire token is a drop target)
  * A token's texture must have 3 faces, back then edge then front, aligned horizontally.
  * @param {object} params - token parameters, including (all other properties will be passed to the created mesh):
  * @param {string} params.id - token's unique id.

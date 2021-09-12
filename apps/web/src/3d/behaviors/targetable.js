@@ -6,7 +6,8 @@ import { targetManager } from '../managers'
  * @property {TargetBehavior} targetable - the enclosing targetable behavior.
  * @property {import('@babylonjs/core').Mesh} mesh - invisible, unpickable mesh acting as drop zone.
  * @property {number} extend - units (in 3D coordinate) added to the zone's bounding box to determine.
- * @property {string[]} kinds - array of allowed drag kinds for this zone.
+ * @property {boolean} enabled - whether this zone is active or not.
+ * @property {string[]} kinds? - an optional array of allowed drag kinds for this zone (allows all if not present).
  */
 
 /**
@@ -23,7 +24,6 @@ export class TargetBehavior {
    * An observable emits every time one of the zone receives a drop.
    *
    * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
-   * @property {boolean} enabled - activity status (true by default).
    * @property {DropZone[]} zones - defined drop zones for this target.
    * @property {Observable<DropDetails>} onDropObservable - emits every time draggable meshes are dropped to one of the zones.
    *
@@ -32,7 +32,6 @@ export class TargetBehavior {
    */
   constructor() {
     this.mesh = null
-    this.enabled = true
     this.zones = []
     this.onDropObservable = new Observable()
   }
@@ -78,12 +77,13 @@ export class TargetBehavior {
    * Adds a new zone to this mesh, making it invisible and unpickable.
    * @param {import('@babylonjs/core').Mesh} mesh - invisible, unpickable mesh acting as drop zone.
    * @param {number} extent - units (in 3D coordinate) added to the zone's bounding box to determine possible drops.
-   * @param {string[]} (kinds=[]) - array of allowed drag kinds for this zone.
+   * @param {string[]} kinds? - an optional array of allowed drag kinds for this zone.
+   * @param {boolean} [enabled=true] - enables this zone.
    */
-  addZone(mesh, extent, kinds = []) {
+  addZone(mesh, extent, kinds, enabled = true) {
     mesh.visibility = 0
     mesh.isPickable = false
-    this.zones.push({ mesh, extent, kinds, targetable: this })
+    this.zones.push({ mesh, extent, kinds, enabled, targetable: this })
   }
 }
 

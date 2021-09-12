@@ -57,28 +57,31 @@ export const boards = [
     height: 30,
     depth: 0.01,
     borderRadius: 0.4,
-    anchors: [
-      // stock
-      { x: -12.25, z: 11.5, width, height, depth },
-      // discard
-      { x: -8.25, z: 11.5, width, height, depth },
-      // diamonds
-      { x: -0.25, z: 11.5, width, height, depth },
-      // clubs
-      { x: 3.75, z: 11.5, width, height, depth },
-      // spades
-      { x: 7.75, z: 11.5, width, height, depth },
-      // hearts
-      { x: 11.75, z: 11.5, width, height, depth },
-      // 7 columns
-      { x: -12.25, z: 6.55, width, height, depth },
-      { x: -8.25, z: 6.55, width, height, depth },
-      { x: -4.25, z: 6.55, width, height, depth },
-      { x: -0.25, z: 6.55, width, height, depth },
-      { x: 3.75, z: 6.55, width, height, depth },
-      { x: 7.75, z: 6.55, width, height, depth },
-      { x: 11.75, z: 6.55, width, height, depth }
-    ]
+    anchorable: {
+      moveDuration: 100,
+      anchors: [
+        // stock
+        { x: -12.25, z: 11.5, width, height, depth },
+        // discard
+        { x: -8.25, z: 11.5, width, height, depth },
+        // diamonds
+        { x: -0.25, z: 11.5, width, height, depth },
+        // clubs
+        { x: 3.75, z: 11.5, width, height, depth },
+        // spades
+        { x: 7.75, z: 11.5, width, height, depth },
+        // hearts
+        { x: 11.75, z: 11.5, width, height, depth },
+        // 7 columns
+        { x: -12.25, z: 6.55, width, height, depth },
+        { x: -8.25, z: 6.55, width, height, depth },
+        { x: -4.25, z: 6.55, width, height, depth },
+        { x: -0.25, z: 6.55, width, height, depth },
+        { x: 3.75, z: 6.55, width, height, depth },
+        { x: 7.75, z: 6.55, width, height, depth },
+        { x: 11.75, z: 6.55, width, height, depth }
+      ]
+    }
   }
 ]
 

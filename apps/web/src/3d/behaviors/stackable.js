@@ -19,7 +19,9 @@ function enableLast(stack, enabled) {
   const mesh = stack[stack.length - 1]
   const targetable = getTargetableBehavior(mesh)
   if (targetable) {
-    targetable.enabled = enabled
+    for (const zone of targetable.zones) {
+      zone.enabled = enabled
+    }
     logger.info({ mesh }, `${operation} target for ${mesh.id}`)
   }
   const movable = mesh.getBehaviorByName(MoveBehavior.NAME)
@@ -317,7 +319,7 @@ export class StackBehavior extends TargetBehavior {
 
   /**
    * Updates this behavior's state and mesh to match provided data.
-   * @param {FlippableState} state - state to update to.
+   * @param {StackableState} state - state to update to.
    */
   fromState(state) {
     if (Array.isArray(state.stack)) {

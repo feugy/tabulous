@@ -6,6 +6,7 @@ import {
   createRoundToken,
   createRoundedTile
 } from '..'
+import { restoreBehaviors } from './behaviors'
 import { FlipBehavior, RotateBehavior, StackBehavior } from '../behaviors'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
@@ -92,6 +93,7 @@ export function loadScene(engine, data, initial = true) {
         if (rotable) {
           rotable.fromState(state)
         }
+        restoreBehaviors(mesh.behaviors, state)
       } else {
         logger.debug({ state }, `create new ${name} ${state.id}`)
         mesh = factory({ ...state, stack: undefined })

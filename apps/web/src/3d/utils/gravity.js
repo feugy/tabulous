@@ -65,7 +65,7 @@ export function applyGravity(mesh) {
   return mesh.absolutePosition
 }
 
-export function isAbove(mesh, target, scale) {
+export function isAbove(mesh, target, scale = 1) {
   const originalScale = target.scaling.clone()
   target.scaling.addInPlace(new Vector3(scale, scale, scale))
   target.computeWorldMatrix()

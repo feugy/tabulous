@@ -1,3 +1,4 @@
+export * from './anchorable'
 export * from './animatable'
 export * from './detailable'
 export * from './flippable'

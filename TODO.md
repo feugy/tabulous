@@ -2,7 +2,6 @@
 
 ## Refactor
 
-- make anchorable behavior
 - stop inverting depth and height. Use 3D world conventions
 - behaviors should be configurable in game descriptors (movable/stackable...)
 - drag kind must be configurable in game descriptors
