@@ -6,6 +6,7 @@ import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector'
 import { CSG } from '@babylonjs/core/Meshes/csg'
 import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { CylinderBuilder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
+import { controlManager } from './managers'
 import {
   adaptTexture,
   attachMaterialError,
@@ -124,5 +125,9 @@ export function createBoard({
 
   registerBehaviors(board, boardProps)
 
+  controlManager.registerControlable(board)
+  board.onDisposeObservable.addOnce(() =>
+    controlManager.unregisterControlable(board)
+  )
   return board
 }

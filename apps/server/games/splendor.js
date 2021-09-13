@@ -55,7 +55,12 @@ for (const [level, count] of cardCountPerLevel) {
         y: 0,
         width: 3,
         height: 4.25,
-        depth: 0.01
+        depth: 0.01,
+        detailable: true,
+        movable: { kind: 'card' },
+        flippable: {},
+        rotable: {},
+        stackable: { kinds: ['card'] }
       })
     }
   }
@@ -76,7 +81,12 @@ for (const kind of [...gems, 'gold']) {
       y: 0.05,
       z: 0,
       diameter: 2,
-      height: 0.1
+      height: 0.1,
+      detailable: true,
+      movable: { kind: 'token' },
+      flippable: {},
+      rotable: {},
+      stackable: { kinds: ['token'], isCylindric: true, extent: 0.9 }
     })
   }
 }
@@ -97,7 +107,12 @@ for (let index = 1; index <= 10; index++) {
     height: 3,
     depth: 0.05,
     borderRadius: 0.4,
-    borderColor: [0, 0, 0, 1]
+    borderColor: [0, 0, 0, 1],
+    detailable: true,
+    movable: { kind: 'tile' },
+    flippable: {},
+    rotable: {},
+    stackable: { kinds: ['tile'] }
   })
 }
 
@@ -130,22 +145,22 @@ export const bags = new Map([
  * @type {import('../src/services/utils').Slot[]}
  */
 export const slots = [
-  { x: -8, z: 11.5, bagId: 'tiles', isFlipped: true },
+  { x: -8, z: 11.5, bagId: 'tiles', flippable: { isFlipped: true } },
   { x: 8, z: 7, bagId: 'cards-level-3', count: 1 },
   { x: 4, z: 7, bagId: 'cards-level-3', count: 1 },
   { x: 0, z: 7, bagId: 'cards-level-3', count: 1 },
   { x: -4, z: 7, bagId: 'cards-level-3', count: 1 },
-  { x: -8, z: 7, bagId: 'cards-level-3', isFlipped: true },
+  { x: -8, z: 7, bagId: 'cards-level-3', flippable: { isFlipped: true } },
   { x: 8, z: 2, bagId: 'cards-level-2', count: 1 },
   { x: 4, z: 2, bagId: 'cards-level-2', count: 1 },
   { x: 0, z: 2, bagId: 'cards-level-2', count: 1 },
   { x: -4, z: 2, bagId: 'cards-level-2', count: 1 },
-  { x: -8, z: 2, bagId: 'cards-level-2', isFlipped: true },
+  { x: -8, z: 2, bagId: 'cards-level-2', flippable: { isFlipped: true } },
   { x: 8, z: -3, bagId: 'cards-level-1', count: 1 },
   { x: 4, z: -3, bagId: 'cards-level-1', count: 1 },
   { x: 0, z: -3, bagId: 'cards-level-1', count: 1 },
   { x: -4, z: -3, bagId: 'cards-level-1', count: 1 },
-  { x: -8, z: -3, bagId: 'cards-level-1', isFlipped: true },
+  { x: -8, z: -3, bagId: 'cards-level-1', flippable: { isFlipped: true } },
   { x: -7, z: -7, bagId: 'tokens-gold' },
   { x: -4, z: -7, bagId: 'tokens-emerald' },
   { x: -1, z: -7, bagId: 'tokens-sapphire' },

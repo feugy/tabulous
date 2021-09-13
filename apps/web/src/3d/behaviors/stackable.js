@@ -1,4 +1,6 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
+import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CylinderBuilder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
 import { MoveBehavior } from './movable'
 import { TargetBehavior } from './targetable'
 import { controlManager, inputManager, selectionManager } from '../managers'
@@ -46,6 +48,15 @@ function setBase(mesh, base, stack) {
   return targetable
 }
 
+/**
+ * @typedef {object} StackableState behavior persistent state, including:
+ * @property {string[]} stack - array of stacked mesh ids, not including the current mesh if alone.
+ * @property {boolean} isCylindric - indicates whether to use a circular (true) or rectangular (false) drop zone (false.
+ * @property {string[]} kinds? - an optional array of allowed drag kinds for this zone (allows all if not present).
+ * @property {number} [duration=100] - duration (in milliseconds) when pushing or shuffling individual meshes.
+ * @property {number} [extent=0.6] - drop zone extent zone (1 means 100% size).
+ */
+
 export class StackBehavior extends TargetBehavior {
   /**
    * Creates behavior to make a mesh stackable (it can be stacked above other stackable mesh)
@@ -56,18 +67,18 @@ export class StackBehavior extends TargetBehavior {
    * @extends {TargetBehavior}
    * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
    * @property {import('@babylonjs/core').Mesh[]} stack - array of meshes (initially contains this mesh).
-   * @property {number} moveDuration - duration (in milliseconds) when pushing or shuffling individual meshes.
+   * @property {StackableState} state - the behavior's current state.
    *
-   * @param {object} params - parameters, including:
-   * @param {number} [params.moveDuration=100] - duration (in milliseconds) of an individual mesh reorder animation.
+   * @param {StackableState} state - behavior state.
    */
-  constructor({ moveDuration } = {}) {
+  constructor(state = {}) {
     super()
+    this._state = state
     this.stack = []
-    this.moveDuration = moveDuration || 100
     // private
     this.dragObserver = null
     this.dropObserver = null
+    this.dropZone = null
     this.base = null
     this.pushQueue = []
     this.inhibitControl = false
@@ -93,7 +104,7 @@ export class StackBehavior extends TargetBehavior {
    */
   attach(mesh) {
     super.attach(mesh)
-    this.fromState({ stack: [] })
+    this.fromState(this._state)
 
     this.dropObserver = this.onDropObservable.add(({ dropped }) => {
       // sort all dropped meshes by elevation (lowest first)
@@ -116,7 +127,6 @@ export class StackBehavior extends TargetBehavior {
         this.pop()
       }
     })
-    // TODO automatically define target?
   }
 
   /**
@@ -144,7 +154,7 @@ export class StackBehavior extends TargetBehavior {
     if (!mesh || this.stack.includes(mesh)) return
 
     const base = this.base || this
-    const { moveDuration, stack } = base
+    const { stack } = base
 
     if (!this.inhibitControl) {
       controlManager.record({ meshId: stack[0].id, fn: 'push', args: [meshId] })
@@ -158,7 +168,7 @@ export class StackBehavior extends TargetBehavior {
     enableLast(stack, false)
     setBase(mesh, base, stack)
     stack.push(mesh)
-    await animateMove(mesh, new Vector3(x, y, z), moveDuration, true)
+    await animateMove(mesh, new Vector3(x, y, z), this._state.duration, true)
   }
 
   /**
@@ -262,7 +272,7 @@ export class StackBehavior extends TargetBehavior {
                 Math.cos(i * increment) * distance
               )
             ),
-            this.moveDuration * 2
+            this._state.duration * 2
           ).then(() => {
             // animateMove re-enabled interactions and collisions
             mesh.isPickable = false
@@ -270,12 +280,9 @@ export class StackBehavior extends TargetBehavior {
         )
       )
       // then animate all cards to final positions
-      const moveDuration = Math.max(
-        (baseBehavior.moveDuration * 4) / stack.length,
-        0.02
-      )
+      const duration = Math.max((this._state.duration * 4) / stack.length, 0.02)
       for (const [i, mesh] of stack.entries()) {
-        await animateMove(mesh, newPositions[i], moveDuration)
+        await animateMove(mesh, newPositions[i], duration)
       }
     }
     for (const mesh of stack) {
@@ -300,16 +307,15 @@ export class StackBehavior extends TargetBehavior {
   }
 
   /**
-   * @typedef {object} StackableState behavior persistent state, including:
-   * @property {string[]} stack - array of stacked mesh ids, not including the current mesh if alone.
-   */
-
-  /**
    * Gets this behavior's state.
    * @returns {StackableState} this behavior's state for serialization.
    */
-  serialize() {
+  get state() {
     return {
+      duration: this._state.duration,
+      extent: this._state.extent,
+      kinds: this._state.kinds,
+      isCylindric: this._state.isCylindric,
       stack:
         this.base !== null || this.stack.length <= 1
           ? []
@@ -321,23 +327,49 @@ export class StackBehavior extends TargetBehavior {
    * Updates this behavior's state and mesh to match provided data.
    * @param {StackableState} state - state to update to.
    */
-  fromState(state) {
-    if (Array.isArray(state.stack)) {
-      this.stack = [this.mesh]
-      if (!this.mesh.metadata) {
-        this.mesh.metadata = {}
-      }
-      this.mesh.metadata.stack = this.stack
-      this.mesh.metadata.push = (...args) => this.push(...args)
-      this.mesh.metadata.pop = () => this.pop()
-      this.mesh.metadata.reorder = (...args) => this.reorder(...args)
-      this.mesh.metadata.flipAll = () => this.flipAll()
+  fromState(state = {}) {
+    if (!this.mesh) {
+      throw new Error('Can not restore state without mesh')
+    }
+    this.stack = [this.mesh]
+    // dispose previous drop zone
+    this.removeZone(this.dropZone?.id)
+    // TODO unregister zone
+    // since graphQL returns nulls, we can not use default values
+    this._state = {
+      ...state,
+      extent: state.extent || 0.3,
+      duration: state.duration || 100
+    }
+    if (Array.isArray(this._state.stack)) {
       this.inhibitControl = true
-      for (const id of state.stack) {
+      for (const id of this._state.stack) {
         this.push(id)
       }
       this.inhibitControl = false
     }
+    // builds a drop zone from the mesh's dimensions
+    const { x, y, z } = this.mesh.getBoundingInfo().boundingBox.extendSizeWorld
+    this.dropZone = this._state.isCylindric
+      ? CylinderBuilder.CreateCylinder('drop-zone', {
+          diameter: x * 2,
+          height: y * 2
+        })
+      : BoxBuilder.CreateBox('drop-zone', {
+          width: x * 2,
+          height: y * 2,
+          depth: z * 2
+        })
+    this.dropZone.parent = this.mesh
+    this.addZone(this.dropZone, this._state.extent, this._state.kinds)
+    if (!this.mesh.metadata) {
+      this.mesh.metadata = {}
+    }
+    this.mesh.metadata.stack = this.stack
+    this.mesh.metadata.push = (...args) => this.push(...args)
+    this.mesh.metadata.pop = () => this.pop()
+    this.mesh.metadata.reorder = (...args) => this.reorder(...args)
+    this.mesh.metadata.flipAll = () => this.flipAll()
   }
 }
 

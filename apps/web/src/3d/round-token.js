@@ -3,25 +3,17 @@ import { Texture } from '@babylonjs/core/Materials/Textures/texture'
 import { Color3 } from '@babylonjs/core/Maths/math.color'
 import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector'
 import { CylinderBuilder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
-import {
-  DetailBehavior,
-  FlipBehavior,
-  MoveBehavior,
-  RotateBehavior,
-  StackBehavior
-} from './behaviors'
 import { controlManager } from './managers'
-import { adaptTexture, attachMaterialError } from './utils'
+import {
+  adaptTexture,
+  attachMaterialError,
+  registerBehaviors,
+  serializeBehaviors
+} from './utils'
 
 /**
  * Creates a round token, like a pocker one.
  * Tokens are cylinders, so their position is their center.
- * A token has the following behaviors:
- * - movable
- * - detailable
- * - flippable
- * - rotable
- * - stackable (the entire token is a drop target)
  * A token's texture must have 3 faces, back then edge then front, aligned horizontally.
  * @param {object} params - token parameters, including (all other properties will be passed to the created mesh):
  * @param {string} params.id - token's unique id.
@@ -32,12 +24,6 @@ import { adaptTexture, attachMaterialError } from './utils'
  * @param {number} params.z? - initial position along the Z axis.
  * @param {number} params.diameter? - token's diameter (X+Z axis).
  * @param {number} params.height? - token's height (Y axis).
- * @param {boolean} params.isFlipped? - initial flip state (face visible).
- * @param {number} params.flipDuration? - flip duration (in milliseconds).
- * @param {number} params.angle? - initial rotation angle (top above), in radians.
- * @param {number} params.rotateDuration? - rotation duration (in milliseconds).
- * @param {number} params.snapDistance? - distance bellow which the token automatically snaps to nearest position.
- * @param {number} params.moveDuration? - automatic move duration (in milliseconds), when snapping.
  * @returns the created token mesh.
  */
 export function createRoundToken({
@@ -48,12 +34,6 @@ export function createRoundToken({
   diameter = 2,
   height = 0.1,
   texture,
-  isFlipped = false,
-  angle = 0,
-  flipDuration = 500,
-  rotateDuration = 200,
-  moveDuration = 100,
-  snapDistance = 0.25,
   images,
   ...tokenProps
 } = {}) {
@@ -68,6 +48,7 @@ export function createRoundToken({
     tessellation: 48,
     faceUV
   })
+  token.id = id
   token.material = new StandardMaterial(id)
   token.material.diffuseTexture = new Texture(adaptTexture(texture))
   token.material.diffuseTexture.hasAlpha = true
@@ -90,37 +71,14 @@ export function createRoundToken({
       diameter,
       height,
       images,
-      ...flipBehavior.serialize(),
-      ...rotateBehavior.serialize(),
-      ...stackBehavior.serialize()
+      ...serializeBehaviors(token.behaviors)
     })
   }
 
   token.overlayColor = new Color3(0, 0.8, 0)
   token.overlayAlpha = 0.2
 
-  token.addBehavior(new DetailBehavior(), true)
-
-  const dragKind = 'round-token'
-  token.addBehavior(
-    new MoveBehavior({ moveDuration, snapDistance, dragKind }),
-    true
-  )
-
-  const flipBehavior = new FlipBehavior({ duration: flipDuration, isFlipped })
-  token.addBehavior(flipBehavior, true)
-
-  const rotateBehavior = new RotateBehavior({ duration: rotateDuration, angle })
-  token.addBehavior(rotateBehavior, true)
-
-  const stackBehavior = new StackBehavior({ moveDuration })
-  const dropZone = CylinderBuilder.CreateCylinder('drop-zone', {
-    diameter: diameter * 1.03,
-    height: height + 0.02
-  })
-  dropZone.parent = token
-  stackBehavior.addZone(dropZone, 0.6, [dragKind])
-  token.addBehavior(stackBehavior, true)
+  registerBehaviors(token, tokenProps)
 
   controlManager.registerControlable(token)
   token.onDisposeObservable.addOnce(() =>

@@ -1,9 +1,13 @@
 # TODO
 
+- snap from other peer
+- unstacking mesh does not enable the mesh bellow
+- stack issue from peer
+
 ## Refactor
 
+- rework target detection. Instead of using real mesh and rays use shapes overlap: each zone is a rectangle/circle on XZ plane, and the moved mesh another rectangle/circle. Check the center of the moved mesh
 - stop inverting depth and height. Use 3D world conventions
-- behaviors should be configurable in game descriptors (movable/stackable...)
 - drag kind must be configurable in game descriptors
 - all manager managing a collection of behaviors should check their capabilities
 - completly disable Babylon input management
@@ -232,6 +236,8 @@ GraphQL subscriptions over WS are perfect to implement both usecases.
 
 Enabling tree shaking in Babylon.js is [cumbersom](https://doc.babylonjs.com/divingDeeper/developWithBjs/treeShaking), but really effective:
 Final code went from 1417 modules to 674 (53% less) and the vendor.js file from 3782.23kb to 1389.03 (63% less).
+
+Running game with Babylon's debug panel kills `setTimeout()`. Something under the hood must monkey patch it.
 
 For decent in-game performance, textures must be GPU-compressed to KTX2 container format. This will skip CPU uncompressing jpeg/png content before passing it to the GPU.
 However, it's not broadly supported on WebGL 1 platform, so I kept the png files as fallback.

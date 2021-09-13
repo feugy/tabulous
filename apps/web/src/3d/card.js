@@ -6,26 +6,18 @@ import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector'
 import { Mesh } from '@babylonjs/core/Meshes/mesh'
 import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { PlaneBuilder } from '@babylonjs/core/Meshes/Builders/planeBuilder'
-import {
-  DetailBehavior,
-  FlipBehavior,
-  MoveBehavior,
-  RotateBehavior,
-  StackBehavior
-} from './behaviors'
 import { controlManager } from './managers'
-import { adaptTexture, attachMaterialError } from './utils'
+import {
+  adaptTexture,
+  attachMaterialError,
+  registerBehaviors,
+  serializeBehaviors
+} from './utils'
 
 /**
  * Creates a card mesh.
  * Cards are planes whith a given width and height (Babylon's depth), wrapped into a box mesh, so they could be stacked with other objects.
  * By default, the card dimension follows American poker card standard (beetween 1.39 & 1.41).
- * A card has the following behaviors:
- * - movable
- * - detailable
- * - flippable
- * - rotable
- * - stackable (the entire card is a drop target)
  * A card's texture must have 2 faces, back then front, aligned horizontally.
  * @param {object} params - card parameters, including (all other properties will be passed to the created mesh):
  * @param {string} params.id - card's unique id.
@@ -37,12 +29,6 @@ import { adaptTexture, attachMaterialError } from './utils'
  * @param {number} params.width? - card's width (X axis).
  * @param {number} params.height? - card's height (Z axis).
  * @param {number} params.depth? - card's depth (Y axis).
- * @param {boolean} params.isFlipped? - initial flip state (face visible).
- * @param {number} params.flipDuration? - flip duration (in milliseconds).
- * @param {number} params.angle? - initial rotation angle (top above), in radians.
- * @param {number} params.rotateDuration? - rotation duration (in milliseconds).
- * @param {number} params.snapDistance? - distance bellow which the card automatically snaps to nearest position.
- * @param {number} params.moveDuration? - automatic move duration (in milliseconds), when snapping.
  * @returns {import('@babylonjs/core').Mesh} the created card mesh.
  */
 export function createCard({
@@ -54,12 +40,6 @@ export function createCard({
   height = 4.25,
   depth = 0.01,
   texture,
-  isFlipped = false,
-  angle = 0,
-  flipDuration = 500,
-  rotateDuration = 200,
-  moveDuration = 100,
-  snapDistance = 0.25,
   images,
   ...cardProps
 } = {}) {
@@ -107,9 +87,7 @@ export function createCard({
       depth,
       texture,
       images,
-      ...flipBehavior.serialize(),
-      ...rotateBehavior.serialize(),
-      ...stackBehavior.serialize()
+      ...serializeBehaviors(card.behaviors)
     })
   }
 
@@ -124,29 +102,7 @@ export function createCard({
     }
   })
 
-  card.addBehavior(new DetailBehavior(), true)
-
-  const dragKind = 'card'
-  card.addBehavior(
-    new MoveBehavior({ moveDuration, snapDistance, dragKind }),
-    true
-  )
-
-  const flipBehavior = new FlipBehavior({ duration: flipDuration, isFlipped })
-  card.addBehavior(flipBehavior, true)
-
-  const rotateBehavior = new RotateBehavior({ duration: rotateDuration, angle })
-  card.addBehavior(rotateBehavior, true)
-
-  const stackBehavior = new StackBehavior({ moveDuration })
-  const dropZone = BoxBuilder.CreateBox('drop-zone', {
-    width: width * 1.03,
-    height: depth + 0.01,
-    depth: height * 1.03
-  })
-  dropZone.parent = card
-  stackBehavior.addZone(dropZone, 0.3, [dragKind])
-  card.addBehavior(stackBehavior, true)
+  registerBehaviors(card, cardProps)
 
   controlManager.registerControlable(card)
   card.onDisposeObservable.addOnce(() =>

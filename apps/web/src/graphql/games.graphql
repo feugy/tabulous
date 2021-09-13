@@ -4,8 +4,31 @@ fragment lightPlayer on Player {
   playing
 }
 
+fragment movable on MovableState {
+  duration
+  snapDistance
+  kind
+}
+
+fragment flippable on FlippableState {
+  isFlipped
+  duration
+}
+
+fragment rotable on RotableState {
+  angle
+  duration
+}
+
+fragment stackable on StackableState {
+  stack
+  duration
+  extent
+  kinds
+  isCylindric
+}
+
 fragment anchorable on AnchorableState {
-  moveDuration
   anchors {
     x
     y
@@ -15,6 +38,7 @@ fragment anchorable on AnchorableState {
     depth
     kinds
   }
+  duration
 }
 
 mutation createGame($kind: String!) {
@@ -65,12 +89,25 @@ query loadGame($gameId: ID!) {
         x
         y
         z
-        isFlipped
-        angle
-        stack
         width
         height
         depth
+        detailable
+        movable {
+          ...movable
+        }
+        flippable {
+          ...flippable
+        }
+        rotable {
+          ...rotable
+        }
+        stackable {
+          ...stackable
+        }
+        anchorable {
+          ...anchorable
+        }
       }
       roundTokens {
         id
@@ -82,11 +119,24 @@ query loadGame($gameId: ID!) {
         x
         y
         z
-        isFlipped
-        angle
-        stack
         diameter
         height
+        detailable
+        movable {
+          ...movable
+        }
+        flippable {
+          ...flippable
+        }
+        rotable {
+          ...rotable
+        }
+        stackable {
+          ...stackable
+        }
+        anchorable {
+          ...anchorable
+        }
       }
       roundedTiles {
         id
@@ -98,14 +148,27 @@ query loadGame($gameId: ID!) {
         x
         y
         z
-        isFlipped
-        angle
-        stack
         width
         height
         depth
         borderRadius
         borderColor
+        detailable
+        movable {
+          ...movable
+        }
+        flippable {
+          ...flippable
+        }
+        rotable {
+          ...rotable
+        }
+        stackable {
+          ...stackable
+        }
+        anchorable {
+          ...anchorable
+        }
       }
       boards {
         id
@@ -117,6 +180,19 @@ query loadGame($gameId: ID!) {
         height
         depth
         borderRadius
+        detailable
+        movable {
+          ...movable
+        }
+        flippable {
+          ...flippable
+        }
+        rotable {
+          ...rotable
+        }
+        stackable {
+          ...stackable
+        }
         anchorable {
           ...anchorable
         }

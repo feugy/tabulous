@@ -6,15 +6,13 @@ import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector'
 import { CSG } from '@babylonjs/core/Meshes/csg'
 import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { CylinderBuilder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
-import {
-  DetailBehavior,
-  FlipBehavior,
-  MoveBehavior,
-  RotateBehavior,
-  StackBehavior
-} from './behaviors'
 import { controlManager } from './managers'
-import { adaptTexture, attachMaterialError } from './utils'
+import {
+  adaptTexture,
+  attachMaterialError,
+  registerBehaviors,
+  serializeBehaviors
+} from './utils'
 
 const side = new Vector4(0.2, 0, 0.3, 1)
 
@@ -73,12 +71,6 @@ function makeCornerMesh(
  * @param {number} params.width? - tile's width (X axis).
  * @param {number} params.height? - tile's height (Z axis).
  * @param {number} params.depth? - tile's depth (Y axis).
- * @param {boolean} params.isFlipped? - initial flip state (face visible).
- * @param {number} params.flipDuration? - flip duration (in milliseconds).
- * @param {number} params.angle? - initial rotation angle (top above), in radians.
- * @param {number} params.rotateDuration? - rotation duration (in milliseconds).
- * @param {number} params.snapDistance? - distance bellow which the tile automatically snaps to nearest position.
- * @param {number} params.moveDuration? - automatic move duration (in milliseconds), when snapping.
  * @returns {import('@babylonjs/core').Mesh} the created tile mesh.
  */
 export function createRoundedTile({
@@ -92,12 +84,6 @@ export function createRoundedTile({
   borderRadius = 0.4,
   borderColor = [0, 0, 0, 1],
   texture,
-  isFlipped = false,
-  angle = 0,
-  flipDuration = 500,
-  rotateDuration = 200,
-  moveDuration = 100,
-  snapDistance = 0.25,
   images,
   ...tileProps
 } = {}) {
@@ -154,38 +140,14 @@ export function createRoundedTile({
       borderRadius,
       texture,
       images,
-      ...flipBehavior.serialize(),
-      ...rotateBehavior.serialize(),
-      ...stackBehavior.serialize()
+      ...serializeBehaviors(tile.behaviors)
     })
   }
 
   tile.overlayColor = new Color3(0, 0.8, 0)
   tile.overlayAlpha = 0.2
 
-  tile.addBehavior(new DetailBehavior(), true)
-
-  const dragKind = 'tile'
-  tile.addBehavior(
-    new MoveBehavior({ moveDuration, snapDistance, dragKind }),
-    true
-  )
-
-  const flipBehavior = new FlipBehavior({ duration: flipDuration, isFlipped })
-  tile.addBehavior(flipBehavior, true)
-
-  const rotateBehavior = new RotateBehavior({ duration: rotateDuration, angle })
-  tile.addBehavior(rotateBehavior, true)
-
-  const stackBehavior = new StackBehavior({ moveDuration })
-  const dropZone = BoxBuilder.CreateBox('drop-zone', {
-    width: width * 1.03,
-    height: depth + 0.01,
-    depth: height * 1.03
-  })
-  dropZone.parent = tile
-  stackBehavior.addZone(dropZone, 0.3, [dragKind])
-  tile.addBehavior(stackBehavior, true)
+  registerBehaviors(tile, tileProps)
 
   controlManager.registerControlable(tile)
   tile.onDisposeObservable.addOnce(() =>

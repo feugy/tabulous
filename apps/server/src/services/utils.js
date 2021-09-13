@@ -66,11 +66,16 @@ export function instanciateGame(descriptor = {}) {
     if (bag) {
       const slotted = bag.splice(0, count ?? bag.length)
       for (const mesh of slotted) {
-        Object.assign(mesh, props)
+        Object.assign(mesh, merge(mesh, props))
       }
       // slots with more than 1 mesh become stacks
       if (slotted.length > 1) {
-        slotted[0].stack = slotted.slice(1).map(({ id }) => id)
+        Object.assign(
+          slotted[0],
+          merge(slotted[0], {
+            stackable: { stack: slotted.slice(1).map(({ id }) => id) }
+          })
+        )
       }
     }
   }

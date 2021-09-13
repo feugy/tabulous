@@ -120,7 +120,7 @@ class ControlManager {
       this.inhibit.add(key)
     }
     if (action.fn) {
-      await mesh.metadata[action.fn](...(action.args || []))
+      await mesh.metadata[action.fn]?.(...(action.args || []))
     } else if (action.pos) {
       mesh.setAbsolutePosition(Vector3.FromArray(action.pos))
     }

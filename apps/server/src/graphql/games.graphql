@@ -23,9 +23,33 @@ type ImageDefs {
   back: String
 }
 
+type FlippableState {
+  isFlipped: Boolean
+  duration: Int
+}
+
+type RotableState {
+  angle: Float
+  duration: Int
+}
+
+type MovableState {
+  duration: Int
+  snapDistance: Float
+  kind: String
+}
+
+type StackableState {
+  stack: [String]
+  duration: Int
+  extent: Float
+  kinds: [String]
+  isCylindric: Boolean
+}
+
 type AnchorableState {
   anchors: [Anchor]
-  moveDuration: Int
+  duration: Int
 }
 
 type Anchor {
@@ -48,9 +72,12 @@ type Card {
   x: Float
   y: Float
   z: Float
-  isFlipped: Boolean
-  angle: Float
-  stack: [String]
+  detailable: Boolean
+  movable: MovableState
+  flippable: FlippableState
+  rotable: RotableState
+  anchorable: AnchorableState
+  stackable: StackableState
 }
 
 type RoundToken {
@@ -62,9 +89,12 @@ type RoundToken {
   z: Float
   diameter: Float
   height: Float
-  isFlipped: Boolean
-  angle: Float
-  stack: [String]
+  detailable: Boolean
+  movable: MovableState
+  flippable: FlippableState
+  rotable: RotableState
+  anchorable: AnchorableState
+  stackable: StackableState
 }
 
 type RoundedTile {
@@ -79,9 +109,12 @@ type RoundedTile {
   x: Float
   y: Float
   z: Float
-  isFlipped: Boolean
-  angle: Float
-  stack: [String]
+  detailable: Boolean
+  movable: MovableState
+  flippable: FlippableState
+  rotable: RotableState
+  anchorable: AnchorableState
+  stackable: StackableState
 }
 
 type Board {
@@ -94,7 +127,12 @@ type Board {
   x: Float
   y: Float
   z: Float
+  detailable: Boolean
+  movable: MovableState
+  flippable: FlippableState
+  rotable: RotableState
   anchorable: AnchorableState
+  stackable: StackableState
 }
 
 type Message {
@@ -125,9 +163,33 @@ input ImageDefsInput {
   back: String
 }
 
+input FlippableStateInput {
+  isFlipped: Boolean
+  duration: Int
+}
+
+input RotableStateInput {
+  angle: Float
+  duration: Int
+}
+
+input MovableStateInput {
+  duration: Int
+  snapDistance: Float
+  kind: String
+}
+
+input StackableStateInput {
+  stack: [String]
+  duration: Int
+  extent: Float
+  kinds: [String]
+  isCylindric: Boolean
+}
+
 input AnchorableStateInput {
   anchors: [AnchorInput]
-  moveDuration: Int
+  duration: Int
 }
 
 input AnchorInput {
@@ -157,9 +219,12 @@ input CardInput {
   x: Float
   y: Float
   z: Float
-  isFlipped: Boolean
-  angle: Float
-  stack: [String]
+  detailable: Boolean
+  movable: MovableStateInput
+  flippable: FlippableStateInput
+  rotable: RotableStateInput
+  anchorable: AnchorableStateInput
+  stackable: StackableStateInput
 }
 
 input CardInput {
@@ -172,9 +237,12 @@ input CardInput {
   x: Float
   y: Float
   z: Float
-  isFlipped: Boolean
-  angle: Float
-  stack: [String]
+  detailable: Boolean
+  movable: MovableStateInput
+  flippable: FlippableStateInput
+  rotable: RotableStateInput
+  anchorable: AnchorableStateInput
+  stackable: StackableStateInput
 }
 
 input RoundTokenInput {
@@ -186,9 +254,12 @@ input RoundTokenInput {
   z: Float
   diameter: Float
   height: Float
-  isFlipped: Boolean
-  angle: Float
-  stack: [String]
+  detailable: Boolean
+  movable: MovableStateInput
+  flippable: FlippableStateInput
+  rotable: RotableStateInput
+  anchorable: AnchorableStateInput
+  stackable: StackableStateInput
 }
 
 input RoundedTileInput {
@@ -203,9 +274,12 @@ input RoundedTileInput {
   x: Float
   y: Float
   z: Float
-  isFlipped: Boolean
-  angle: Float
-  stack: [String]
+  detailable: Boolean
+  movable: MovableStateInput
+  flippable: FlippableStateInput
+  rotable: RotableStateInput
+  anchorable: AnchorableStateInput
+  stackable: StackableStateInput
 }
 
 input BoardInput {
@@ -218,7 +292,12 @@ input BoardInput {
   x: Float
   y: Float
   z: Float
+  detailable: Boolean
+  movable: MovableStateInput
+  flippable: FlippableStateInput
+  rotable: RotableStateInput
   anchorable: AnchorableStateInput
+  stackable: StackableStateInput
 }
 
 input MessageInput {

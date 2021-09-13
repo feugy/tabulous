@@ -7,7 +7,7 @@ import {
   createRoundedTile
 } from '..'
 import { restoreBehaviors } from './behaviors'
-import { FlipBehavior, RotateBehavior, StackBehavior } from '../behaviors'
+import { StackBehavior } from '../behaviors'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
 
@@ -54,7 +54,7 @@ export function loadScene(engine, data, initial = true) {
   }
   const disposables = new Set(scene.meshes)
   for (const mesh of disposables) {
-    if (!['card', 'round-token', 'rounded-tile'].includes(mesh.name)) {
+    if (!['card', 'round-token', 'rounded-tile', 'board'].includes(mesh.name)) {
       disposables.delete(mesh)
     }
   }
@@ -81,29 +81,27 @@ export function loadScene(engine, data, initial = true) {
   for (const { factory, source, name } of sources) {
     for (const state of source) {
       let mesh = scene.getMeshById(state.id)
+      const { stackable } = state
       if (mesh) {
         logger.debug({ state, mesh }, `updates ${name} ${state.id}`)
         disposables.delete(mesh)
         mesh.position.copyFromFloats(state.x, state.y, state.z)
-        const flippable = mesh.getBehaviorByName(FlipBehavior.NAME)
-        if (flippable) {
-          flippable.fromState(state)
-        }
-        const rotable = mesh.getBehaviorByName(RotateBehavior.NAME)
-        if (rotable) {
-          rotable.fromState(state)
-        }
         restoreBehaviors(mesh.behaviors, state)
       } else {
         logger.debug({ state }, `create new ${name} ${state.id}`)
-        mesh = factory({ ...state, stack: undefined })
+        mesh = factory({
+          ...state,
+          stackable: stackable ? { ...stackable, stack: undefined } : undefined
+        })
       }
-      const stackable = mesh.getBehaviorByName(StackBehavior.NAME)
-      if (stackable) {
-        // reset stacks
-        stackable.fromState({ stack: [] })
-        if (state.stack?.length > 0) {
-          stackables.push({ stackable, state })
+      const behavior = mesh.getBehaviorByName(StackBehavior.NAME)
+      if (behavior) {
+        if (stackable?.stack?.length > 0) {
+          // stores for later
+          stackables.push({ behavior, stackable })
+        } else {
+          // reset stacks
+          behavior.fromState(stackable)
         }
       }
     }
@@ -114,7 +112,7 @@ export function loadScene(engine, data, initial = true) {
     mesh.dispose()
   }
   // now that all mesh are available, restore all stacks
-  for (const { stackable, state } of stackables) {
-    stackable.fromState(state)
+  for (const { behavior, stackable } of stackables) {
+    behavior.fromState(stackable)
   }
 }

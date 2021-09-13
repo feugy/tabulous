@@ -199,7 +199,7 @@
   on:resize|capture={handleVisible}
 />
 
-{#if open && anchor && Array.isArray(options)}
+{#if open && anchor && options?.length}
   <Portal>
     <ul
       role="menu"

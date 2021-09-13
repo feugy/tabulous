@@ -8,6 +8,12 @@ import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('rotable')
 
+/**
+ * @typedef {object} RotableState behavior persistent state, including:
+ * @property {number} angle - current rotation (in radian).
+ * @property {number} [duration=200] - duration (in milliseconds) of the rotation animation.
+ */
+
 export class RotateBehavior extends AnimateBehavior {
   /**
    * Creates behavior to make a mesh rotable with animation.
@@ -17,17 +23,13 @@ export class RotateBehavior extends AnimateBehavior {
    *
    * @extends {AnimateBehavior}
    * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
-   * @property {number} angle - rotation angle, in radian.
-   * @property {number} duration - duration (in milliseconds) of the rotation animation.
+   * @property {RotableState} state - the behavior's current state.
    *
-   * @param {object} params - parameters, including:
-   * @param {number} [params.angle=0] - initial rotation (in radian).
-   * @param {number} [params.duration=500] - duration (in milliseconds) of the rotation animation.
+   * @param {RotableState} state - behavior state.
    */
-  constructor(args) {
-    super(args)
-    this.angle = args.angle || 0
-    this.duration = args.duration || 500
+  constructor(state = {}) {
+    super(state)
+    this.state = state
     // private
     this.rotateAnimation = new Animation(
       'rotate',
@@ -54,7 +56,7 @@ export class RotateBehavior extends AnimateBehavior {
    */
   attach(mesh) {
     super.attach(mesh)
-    this.fromState(this)
+    this.fromState(this.state)
   }
 
   /**
@@ -69,9 +71,8 @@ export class RotateBehavior extends AnimateBehavior {
    */
   async rotate() {
     const {
-      duration,
+      state: { duration, angle },
       isAnimated,
-      angle,
       mesh,
       frameRate,
       rotateAnimation,
@@ -89,8 +90,8 @@ export class RotateBehavior extends AnimateBehavior {
 
     const lastFrame = Math.round(frameRate * (duration / 1000))
     rotateAnimation.setKeys([
-      { frame: 0, value: angle * 0.5 * Math.PI },
-      { frame: lastFrame, value: (angle + 1) * 0.5 * Math.PI }
+      { frame: 0, value: angle },
+      { frame: lastFrame, value: angle + 0.5 * Math.PI }
     ])
     moveAnimation.setKeys([
       { frame: 0, value: to },
@@ -114,8 +115,9 @@ export class RotateBehavior extends AnimateBehavior {
           1,
           () => {
             this.isAnimated = false
-            this.angle = (this.angle + 1) % 4
-            mesh.metadata.angle = this.angle
+            this.state.angle =
+              (this.state.angle + 0.5 * Math.PI) % (2 * Math.PI)
+            mesh.metadata.angle = this.state.angle
             logger.debug({ mesh }, `end rotating ${mesh.id}`)
             // framed animation may not exactly end where we want, so force the final position
             mesh.setAbsolutePosition(to)
@@ -128,31 +130,26 @@ export class RotateBehavior extends AnimateBehavior {
   }
 
   /**
-   * @typedef {object} RotableState behavior persistent state, including:
-   * @property {number} angle - current rotation (in radian).
-   */
-
-  /**
-   * Gets this behavior's state.
-   * @returns {RotableState} this behavior's state for serialization.
-   */
-  serialize() {
-    return { angle: this.angle }
-  }
-
-  /**
    * Updates this behavior's state and mesh to match provided data.
    * @param {RotableState} state - state to update to.
    */
   fromState(state = {}) {
-    if ('angle' in state) {
-      this.angle = state.angle
-      this.mesh.rotation.y = this.angle * 0.5 * Math.PI
+    if (!this.mesh) {
+      throw new Error('Can not restore state without mesh')
+    }
+    // since graphQL returns nulls, we can not use default values
+    this.state = {
+      ...state,
+      angle: state.angle || 0,
+      duration: state.duration || 200
+    }
+    if ('angle' in this.state) {
+      this.mesh.rotation.y = this.state.angle
       if (!this.mesh.metadata) {
         this.mesh.metadata = {}
       }
       this.mesh.metadata.rotate = this.rotate.bind(this)
-      this.mesh.metadata.angle = this.angle
+      this.mesh.metadata.angle = this.state.angle
     }
   }
 }

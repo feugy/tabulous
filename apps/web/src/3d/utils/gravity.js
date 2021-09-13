@@ -47,7 +47,7 @@ export function applyGravity(mesh) {
   )
   mesh.computeWorldMatrix(true)
   const over = findBellow(mesh, other => other.isPickable && other !== mesh)
-  let y = getHeight(mesh)
+  let y = getHeight(mesh) * 0.5
   if (over.size) {
     const ordered = [...over.keys()].sort(
       (a, b) => b.absolutePosition.y - a.absolutePosition.y

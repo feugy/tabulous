@@ -35,7 +35,13 @@ for (const suit of suits) {
       z: 0,
       width,
       height,
-      depth
+      depth,
+      detailable: true,
+      // use all defaults
+      movable: {},
+      flippable: {},
+      rotable: {},
+      stackable: {}
     })
   }
 }
@@ -58,7 +64,6 @@ export const boards = [
     depth: 0.01,
     borderRadius: 0.4,
     anchorable: {
-      moveDuration: 100,
       anchors: [
         // stock
         { x: -12.25, z: 11.5, width, height, depth },
@@ -103,27 +108,48 @@ export const slots = [
   // 1st column
   { x: -13, y: baseY, z: 6.55, bagId: 'cards', count: 1 },
   // 2nd column
-  { x: -9, y: baseY, z: 6.55, bagId: 'cards', isFlipped: true, count: 1 },
+  {
+    x: -9,
+    y: baseY,
+    z: 6.55,
+    bagId: 'cards',
+    flippable: { isFlipped: true },
+    count: 1
+  },
   { x: -9, y: baseY + depth * 2, z: 5, bagId: 'cards', count: 1 },
   // 3rd column
-  { x: -5, y: baseY, z: 6.55, bagId: 'cards', isFlipped: true, count: 1 },
+  {
+    x: -5,
+    y: baseY,
+    z: 6.55,
+    bagId: 'cards',
+    flippable: { isFlipped: true },
+    count: 1
+  },
   {
     x: -5,
     y: baseY + depth * 2,
     z: 5,
     bagId: 'cards',
-    isFlipped: true,
+    flippable: { isFlipped: true },
     count: 1
   },
   { x: -5, y: baseY + depth * 3, z: 3.75, bagId: 'cards', count: 1 },
   // 4th column
-  { x: -1, y: baseY, z: 6.55, bagId: 'cards', isFlipped: true, count: 1 },
+  {
+    x: -1,
+    y: baseY,
+    z: 6.55,
+    bagId: 'cards',
+    flippable: { isFlipped: true },
+    count: 1
+  },
   {
     x: -1,
     y: baseY + depth * 2,
     z: 5,
     bagId: 'cards',
-    isFlipped: true,
+    flippable: { isFlipped: true },
     count: 1
   },
   {
@@ -131,18 +157,25 @@ export const slots = [
     y: baseY + depth * 3,
     z: 3.75,
     bagId: 'cards',
-    isFlipped: true,
+    flippable: { isFlipped: true },
     count: 1
   },
   { x: -1, y: baseY + depth * 4, z: 2.5, bagId: 'cards', count: 1 },
   // 5th column
-  { x: 3, y: baseY, z: 6.55, bagId: 'cards', isFlipped: true, count: 1 },
+  {
+    x: 3,
+    y: baseY,
+    z: 6.55,
+    bagId: 'cards',
+    flippable: { isFlipped: true },
+    count: 1
+  },
   {
     x: 3,
     y: baseY + depth * 2,
     z: 5,
     bagId: 'cards',
-    isFlipped: true,
+    flippable: { isFlipped: true },
     count: 1
   },
   {
@@ -150,7 +183,7 @@ export const slots = [
     y: baseY + depth * 3,
     z: 3.75,
     bagId: 'cards',
-    isFlipped: true,
+    flippable: { isFlipped: true },
     count: 1
   },
   {
@@ -158,18 +191,25 @@ export const slots = [
     y: baseY + depth * 4,
     z: 2.5,
     bagId: 'cards',
-    isFlipped: true,
+    flippable: { isFlipped: true },
     count: 1
   },
   { x: 3, y: baseY + depth * 5, z: 1.25, bagId: 'cards', count: 1 },
   // 6th column
-  { x: 7, y: baseY, z: 6.55, bagId: 'cards', isFlipped: true, count: 1 },
+  {
+    x: 7,
+    y: baseY,
+    z: 6.55,
+    bagId: 'cards',
+    flippable: { isFlipped: true },
+    count: 1
+  },
   {
     x: 7,
     y: baseY + depth * 2,
     z: 5,
     bagId: 'cards',
-    isFlipped: true,
+    flippable: { isFlipped: true },
     count: 1
   },
   {
@@ -177,7 +217,7 @@ export const slots = [
     y: baseY + depth * 3,
     z: 3.75,
     bagId: 'cards',
-    isFlipped: true,
+    flippable: { isFlipped: true },
     count: 1
   },
   {
@@ -185,7 +225,7 @@ export const slots = [
     y: baseY + depth * 4,
     z: 2.5,
     bagId: 'cards',
-    isFlipped: true,
+    flippable: { isFlipped: true },
     count: 1
   },
   {
@@ -193,18 +233,25 @@ export const slots = [
     y: baseY + depth * 5,
     z: 1.25,
     bagId: 'cards',
-    isFlipped: true,
+    flippable: { isFlipped: true },
     count: 1
   },
   { x: 7, y: baseY + depth * 6, z: 0, bagId: 'cards', count: 1 },
   // 7th column
-  { x: 11, y: baseY, z: 6.55, bagId: 'cards', isFlipped: true, count: 1 },
+  {
+    x: 11,
+    y: baseY,
+    z: 6.55,
+    bagId: 'cards',
+    flippable: { isFlipped: true },
+    count: 1
+  },
   {
     x: 11,
     y: baseY + depth * 2,
     z: 5,
     bagId: 'cards',
-    isFlipped: true,
+    flippable: { isFlipped: true },
     count: 1
   },
   {
@@ -212,7 +259,7 @@ export const slots = [
     y: baseY + depth * 3,
     z: 3.75,
     bagId: 'cards',
-    isFlipped: true,
+    flippable: { isFlipped: true },
     count: 1
   },
   {
@@ -220,7 +267,7 @@ export const slots = [
     y: baseY + depth * 4,
     z: 2.5,
     bagId: 'cards',
-    isFlipped: true,
+    flippable: { isFlipped: true },
     count: 1
   },
   {
@@ -228,7 +275,7 @@ export const slots = [
     y: baseY + depth * 5,
     z: 1.25,
     bagId: 'cards',
-    isFlipped: true,
+    flippable: { isFlipped: true },
     count: 1
   },
   {
@@ -236,10 +283,10 @@ export const slots = [
     y: baseY + depth * 6,
     z: 0,
     bagId: 'cards',
-    isFlipped: true,
+    flippable: { isFlipped: true },
     count: 1
   },
   { x: 11, y: baseY + depth * 8, z: -1.25, bagId: 'cards', count: 1 },
   // stock
-  { x: -13, y: baseY, z: 11.5, bagId: 'cards', isFlipped: true }
+  { x: -13, y: baseY, z: 11.5, bagId: 'cards', flippable: { isFlipped: true } }
 ]

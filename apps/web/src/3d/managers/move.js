@@ -97,10 +97,8 @@ class MoveManager {
         let max
         // evaluates the bounding box of all moved meshes
         for (const mesh of moved) {
-          const {
-            minimumWorld,
-            maximumWorld
-          } = mesh.getBoundingInfo().boundingBox
+          const { minimumWorld, maximumWorld } =
+            mesh.getBoundingInfo().boundingBox
           if (!min) {
             min = minimumWorld
             max = maximumWorld
@@ -133,7 +131,7 @@ class MoveManager {
         for (const mesh of moved) {
           const zone = targetManager.findDropZone(
             mesh,
-            this.behaviorByMeshId.get(mesh.id).dragKind
+            this.behaviorByMeshId.get(mesh.id).state.kind
           )
           if (zone) {
             zones.add(zone)
@@ -176,9 +174,9 @@ class MoveManager {
       await Promise.all(
         nonDropped.map((mesh, i) => {
           const { x, y, z } = mesh.absolutePosition
-          const { snapDistance, moveDuration } = this.behaviorByMeshId.get(
-            mesh.id
-          )
+          const {
+            state: { snapDistance, duration }
+          } = this.behaviorByMeshId.get(mesh.id)
           const absolutePosition = new Vector3(
             Math.round(x / snapDistance) * snapDistance,
             y,
@@ -186,7 +184,7 @@ class MoveManager {
           )
           logger.info({ mesh }, `end move operation on table ${mesh.id}`)
           return sleep(i * 1.5)
-            .then(() => animateMove(mesh, absolutePosition, moveDuration, true))
+            .then(() => animateMove(mesh, absolutePosition, duration, true))
             .then(() =>
               controlManager.record({
                 meshId: mesh.id,

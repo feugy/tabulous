@@ -19,7 +19,7 @@ import { inputManager } from '../managers'
  * @typedef {object} AnchorableState behavior persistent state, including:
  * @property {Anchor[]} anchors - arry of anchor definitions.
  * @property {Anchor[]} anchors - array of anchor definitions.
- * @property {number} [snapDuration=100] - duration (in milliseconds) of the snapping animation.
+ * @property {number} [duration=100] - duration (in milliseconds) of the snap animation.
  */
 
 export class AnchorBehavior extends TargetBehavior {
@@ -31,13 +31,14 @@ export class AnchorBehavior extends TargetBehavior {
    *
    * @param {AnchorableState} state - behavior state.
    */
-  constructor(state) {
+  constructor(state = {}) {
     super()
     this.state = state
     // private
     this.dropObserver = null
     this.dragObserver = null
     this.zoneByMeshId = new Map()
+    this.anchorIds = []
   }
 
   /**
@@ -64,12 +65,7 @@ export class AnchorBehavior extends TargetBehavior {
       this.zoneByMeshId.set(mesh.id, zone)
       // moves it to the final position
       const { x, y, z } = zone.mesh.getAbsolutePosition()
-      animateMove(
-        mesh,
-        new Vector3(x, y + 0.1, z),
-        this.state.snapDuration,
-        true
-      )
+      animateMove(mesh, new Vector3(x, y + 0.1, z), this.state.duration, true)
     })
 
     this.dragObserver = inputManager.onDragObservable.add(({ type, mesh }) => {
@@ -93,12 +89,20 @@ export class AnchorBehavior extends TargetBehavior {
    * Updates this behavior's state and mesh to match provided data.
    * @param {AnchorableState} state - state to update to.
    */
-  fromState(state) {
+  fromState(state = {}) {
     if (!this.mesh) {
-      throw new Error('Can not restore anchorable state without mesh')
+      throw new Error('Can not restore state without mesh')
     }
-    if (Array.isArray(state.anchors)) {
-      for (const { x, y, z, width, height, depth, kinds } of state.anchors) {
+    // dispose previous anchors
+    for (const id of this.anchorIds) {
+      this.removeZone(id)
+    }
+    this.anchorIds = []
+    // since graphQL returns nulls, we can not use default values
+    this.state = { ...state, duration: state.duration || 100 }
+    if (Array.isArray(this.state.anchors)) {
+      for (const { x, y, z, width, height, depth, kinds } of this.state
+        .anchors) {
         const anchor = BoxBuilder.CreateBox('anchor', {
           width,
           height: depth,
@@ -107,6 +111,7 @@ export class AnchorBehavior extends TargetBehavior {
         anchor.parent = this.mesh
         anchor.position = new Vector3(x ?? 0, y ?? 0, z ?? 0)
         this.addZone(anchor, 0.6, kinds)
+        this.anchorIds.push(anchor.id)
       }
     }
   }

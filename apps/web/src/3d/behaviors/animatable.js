@@ -114,7 +114,7 @@ export class AnimateBehavior {
 /**
  * Name of all movable behaviors.
  * @static
- * @memberof MoveBehavior
+ * @memberof AnimateBehavior
  * @type {string}
  */
 AnimateBehavior.NAME = 'animatable'

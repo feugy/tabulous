@@ -1,14 +1,23 @@
 import {
   AnchorBehavior,
   AnimateBehavior,
+  DetailBehavior,
   FlipBehavior,
+  MoveBehavior,
   RotateBehavior,
   StackBehavior,
   TargetBehavior
 } from '../behaviors'
 import { applyGravity } from './gravity'
 
-const behaviorNames = [[AnchorBehavior.NAME, AnchorBehavior]]
+const behaviorNames = [
+  [MoveBehavior.NAME, MoveBehavior],
+  [FlipBehavior.NAME, FlipBehavior],
+  [RotateBehavior.NAME, RotateBehavior],
+  [DetailBehavior.NAME, DetailBehavior],
+  [AnchorBehavior.NAME, AnchorBehavior],
+  [StackBehavior.NAME, StackBehavior]
+]
 
 /**
  * Looks into the given parameters, and creates relevant behaviors according to its content.
@@ -32,12 +41,13 @@ export function registerBehaviors(mesh, params) {
 
 /**
  * Restores a mesh behaviors states from the provided paramerter object.
+ * Warning! stackable behavior is ignored, since it needs all mesh to exist before being restored.
  * @param {import('@babel/core').Behavior[]} behaviors - list of serialized behaviors.
  * @param {object} state hash of behavior states.
  */
 export function restoreBehaviors(behaviors, state) {
   for (const behavior of behaviors) {
-    if (state[behavior.name]) {
+    if (state[behavior.name] && behavior.name !== StackBehavior.NAME) {
       behavior.fromState(state[behavior.name])
     }
   }
@@ -53,6 +63,8 @@ export function serializeBehaviors(behaviors) {
   for (const behavior of behaviors) {
     if (behavior.state) {
       result[behavior.name] = behavior.state
+    } else if (behavior.name === DetailBehavior.NAME) {
+      result[behavior.name] = true
     }
   }
   return result

@@ -85,6 +85,21 @@ export class TargetBehavior {
     mesh.isPickable = false
     this.zones.push({ mesh, extent, kinds, enabled, targetable: this })
   }
+
+  /**
+   * Removes an existing zone, disposing its mesh.
+   * Does nothing if no zone is bound to the given mesh id
+   * @param {string} zoneMeshId - id of the removed zone mesh.
+   */
+  removeZone(zoneMeshId) {
+    if (zoneMeshId) {
+      const idx = this.zones.findIndex(({ mesh }) => mesh.id === zoneMeshId)
+      if (idx >= 0) {
+        const [{ mesh }] = this.zones.splice(idx, 1)
+        mesh.dispose()
+      }
+    }
+  }
 }
 
 /**

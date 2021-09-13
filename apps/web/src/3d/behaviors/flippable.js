@@ -8,23 +8,25 @@ import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('flippable')
 
+/**
+ * @typedef {object} FlippableState behavior persistent state, including:
+ * @property {boolean} isFlipped - current flip status.
+ * @property {number} [duration=500] - duration (in milliseconds) of the flip animation.
+ */
+
 export class FlipBehavior extends AnimateBehavior {
   /**
    * Creates behavior to make a mesh flippable with animation.
    *
    * @extends {AnimateBehavior}
    * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
-   * @property {boolean} isFlipped - true when this mesh is flipped.
-   * @property {number} duration - duration (in milliseconds) of the flip animation.
+   * @property {FlippableState} state - the behavior's current state.
    *
-   * @param {object} params - parameters, including:
-   * @param {boolean} [params.isFlipped=false] - true to flip this mesh, initially.
-   * @param {number} [params.duration=500] - duration (in milliseconds) of the flip animation.
+   * @param {FlippableState} state - behavior state.
    */
-  constructor(params) {
-    super(params)
-    this.isFlipped = params.isFlipped || false
-    this.duration = params.duration || 500
+  constructor(state = {}) {
+    super(state)
+    this.state = state
     // private
     this.flipAnimation = new Animation(
       'flip',
@@ -51,7 +53,7 @@ export class FlipBehavior extends AnimateBehavior {
    */
   attach(mesh) {
     super.attach(mesh)
-    this.fromState(this)
+    this.fromState(this.state)
   }
 
   /**
@@ -66,9 +68,8 @@ export class FlipBehavior extends AnimateBehavior {
    */
   async flip() {
     const {
-      duration,
+      state: { duration, isFlipped },
       isAnimated,
-      isFlipped,
       mesh,
       frameRate,
       flipAnimation,
@@ -117,8 +118,8 @@ export class FlipBehavior extends AnimateBehavior {
           1,
           () => {
             this.isAnimated = false
-            this.isFlipped = !isFlipped
-            mesh.metadata.isFlipped = this.isFlipped
+            this.state.isFlipped = !isFlipped
+            mesh.metadata.isFlipped = this.state.isFlipped
             // keep rotation between [0..2 * PI[, without modulo because it does not keep plain values
             if (mesh.rotation.z < 0) {
               mesh.rotation.z += 2 * Math.PI
@@ -137,31 +138,26 @@ export class FlipBehavior extends AnimateBehavior {
   }
 
   /**
-   * @typedef {object} FlippableState behavior persistent state, including:
-   * @property {boolean} isFlipped - current flip status.
-   */
-
-  /**
-   * Gets this behavior's state.
-   * @returns {FlippableState} this behavior's state for serialization.
-   */
-  serialize() {
-    return { isFlipped: this.isFlipped }
-  }
-
-  /**
    * Updates this behavior's state and mesh to match provided data.
    * @param {FlippableState} state - state to update to.
    */
   fromState(state = {}) {
-    if ('isFlipped' in state) {
-      this.isFlipped = state.isFlipped
-      this.mesh.rotation.z = this.isFlipped ? Math.PI : 0
+    if (!this.mesh) {
+      throw new Error('Can not restore state without mesh')
+    }
+    // since graphQL returns nulls, we can not use default values
+    this.state = {
+      ...state,
+      isFlipped: state.isFlipped || false,
+      duration: state.duration || 500
+    }
+    if ('isFlipped' in this.state) {
+      this.mesh.rotation.z = this.state.isFlipped ? Math.PI : 0
       if (!this.mesh.metadata) {
         this.mesh.metadata = {}
       }
       this.mesh.metadata.flip = this.flip.bind(this)
-      this.mesh.metadata.isFlipped = this.isFlipped
+      this.mesh.metadata.isFlipped = this.state.isFlipped
     }
   }
 }

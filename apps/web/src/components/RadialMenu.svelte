@@ -65,7 +65,7 @@
   }
 </style>
 
-{#if open}
+{#if open && items?.length}
   <aside style={`left: ${left}; top: ${top}; --size:${radius * 2}px;`}>
     <ul on:pointerdown|stopPropagation on:mouseenter on:mouseleave>
       {#each items as { onClick, ...buttonProps }, i}

@@ -1,5 +1,12 @@
 import { moveManager } from '../managers'
 
+/**
+ * @typedef {object} MovableState behavior persistent state, including:
+ * @property {string} kind - drag kind, used to select targets.
+ * @property {boolean} [snapDistance=0.25] - snap grid unit, in 3D world coordinate.
+ * @property {number} [duration=100] - duration (in milliseconds) of the snap animation.
+ */
+
 export class MoveBehavior {
   /**
    * Creates behavior to make a mesh movable, and droppable over target zones.
@@ -8,21 +15,14 @@ export class MoveBehavior {
    *
    * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
    * @property {boolean} enabled - activity status (true by default).
-   * @property {string} dragKind - drag kind.
-   * @property {number} snapDistance - snap grid unit, in 3D world coordinate.
-   * @property {number} moveDuration - duration (in milliseconds) of the snap move.
+   * @property {MovableState} state - the behavior's current state.
    *
-   * @param {object} params - parameters, including:
-   * @param {number} params.snapDistance - snap grid unit, in 3D world coordinate.
-   * @param {number} params.moveDuration - duration (in milliseconds) of the snap move.
-   * @param {string} params.dragKind - drag kind.
+   * @param {MovableState} state - behavior state.
    */
-  constructor({ moveDuration, snapDistance, dragKind } = {}) {
+  constructor(state = {}) {
     this.mesh = null
-    this.dragKind = dragKind
+    this.state = state
     this.enabled = true
-    this.snapDistance = snapDistance || 0.25
-    this.moveDuration = moveDuration || 100
   }
 
   /**
@@ -44,6 +44,7 @@ export class MoveBehavior {
    */
   attach(mesh) {
     this.mesh = mesh
+    this.fromState(this.state)
     moveManager.registerMovable(this)
   }
 
@@ -52,6 +53,22 @@ export class MoveBehavior {
    */
   detach() {
     moveManager.unregisterMovable(this)
+  }
+
+  /**
+   * Updates this behavior's state and mesh to match provided data.
+   * @param {FlippableState} state - state to update to.
+   */
+  fromState(state = {}) {
+    if (!this.mesh) {
+      throw new Error('Can not restore state without mesh')
+    }
+    // since graphQL returns nulls, we can not use default values
+    this.state = {
+      ...state,
+      snapDistance: state.snapDistance || 0.25,
+      duration: state.duration || 100
+    }
   }
 }
 

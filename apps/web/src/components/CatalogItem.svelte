@@ -20,7 +20,7 @@
   }
 
   img {
-    @apply max-h-full place-self-center;
+    @apply max-h-full place-self-center overflow-hidden;
     grid-area: full;
   }
 
