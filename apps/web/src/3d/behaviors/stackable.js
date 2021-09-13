@@ -78,7 +78,6 @@ export class StackBehavior extends TargetBehavior {
     // private
     this.dragObserver = null
     this.dropObserver = null
-    this.dropZone = null
     this.base = null
     this.pushQueue = []
     this.inhibitControl = false
@@ -333,8 +332,9 @@ export class StackBehavior extends TargetBehavior {
     }
     this.stack = [this.mesh]
     // dispose previous drop zone
-    this.removeZone(this.dropZone?.id)
-    // TODO unregister zone
+    for (const zone of this.zones) {
+      this.removeZone(zone)
+    }
     // since graphQL returns nulls, we can not use default values
     this._state = {
       ...state,
@@ -350,7 +350,7 @@ export class StackBehavior extends TargetBehavior {
     }
     // builds a drop zone from the mesh's dimensions
     const { x, y, z } = this.mesh.getBoundingInfo().boundingBox.extendSizeWorld
-    this.dropZone = this._state.isCylindric
+    const dropZone = this._state.isCylindric
       ? CylinderBuilder.CreateCylinder('drop-zone', {
           diameter: x * 2,
           height: y * 2
@@ -360,8 +360,8 @@ export class StackBehavior extends TargetBehavior {
           height: y * 2,
           depth: z * 2
         })
-    this.dropZone.parent = this.mesh
-    this.addZone(this.dropZone, this._state.extent, this._state.kinds)
+    dropZone.parent = this.mesh
+    this.addZone(dropZone, this._state.extent, this._state.kinds)
     if (!this.mesh.metadata) {
       this.mesh.metadata = {}
     }

@@ -85,7 +85,7 @@ export function createRoundedTile({
   borderColor = [0, 0, 0, 1],
   texture,
   images,
-  ...tileProps
+  ...behaviorStates
 } = {}) {
   const faceUV = [
     side,
@@ -123,12 +123,10 @@ export function createRoundedTile({
 
   tile.receiveShadows = true
   tile.setAbsolutePosition(new Vector3(x, y, z))
-  Object.assign(tile, tileProps)
 
   tile.metadata = {
     images,
     serialize: () => ({
-      ...tileProps,
       id,
       x: tile.position.x,
       y: tile.position.y,
@@ -147,7 +145,7 @@ export function createRoundedTile({
   tile.overlayColor = new Color3(0, 0.8, 0)
   tile.overlayAlpha = 0.2
 
-  registerBehaviors(tile, tileProps)
+  registerBehaviors(tile, behaviorStates)
 
   controlManager.registerControlable(tile)
   tile.onDisposeObservable.addOnce(() =>

@@ -1,9 +1,5 @@
 # TODO
 
-- snap from other peer
-- unstacking mesh does not enable the mesh bellow
-- stack issue from peer
-
 ## Refactor
 
 - rework target detection. Instead of using real mesh and rays use shapes overlap: each zone is a rectangle/circle on XZ plane, and the moved mesh another rectangle/circle. Check the center of the moved mesh

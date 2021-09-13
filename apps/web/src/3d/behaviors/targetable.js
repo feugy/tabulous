@@ -79,25 +79,26 @@ export class TargetBehavior {
    * @param {number} extent - units (in 3D coordinate) added to the zone's bounding box to determine possible drops.
    * @param {string[]} kinds? - an optional array of allowed drag kinds for this zone.
    * @param {boolean} [enabled=true] - enables this zone.
+   * @returns {DropZone} the created zone.
    */
   addZone(mesh, extent, kinds, enabled = true) {
     mesh.visibility = 0
     mesh.isPickable = false
-    this.zones.push({ mesh, extent, kinds, enabled, targetable: this })
+    const zone = { mesh, extent, kinds, enabled, targetable: this }
+    this.zones.push(zone)
+    return zone
   }
 
   /**
    * Removes an existing zone, disposing its mesh.
    * Does nothing if no zone is bound to the given mesh id
-   * @param {string} zoneMeshId - id of the removed zone mesh.
+   * @param {DropZone} zone - removed zone mesh.
    */
-  removeZone(zoneMeshId) {
-    if (zoneMeshId) {
-      const idx = this.zones.findIndex(({ mesh }) => mesh.id === zoneMeshId)
-      if (idx >= 0) {
-        const [{ mesh }] = this.zones.splice(idx, 1)
-        mesh.dispose()
-      }
+  removeZone(zone) {
+    const idx = this.zones.indexOf(zone)
+    if (idx >= 0) {
+      const [{ mesh }] = this.zones.splice(idx, 1)
+      mesh.dispose()
     }
   }
 }

@@ -32,12 +32,7 @@ function findBellow(mesh, predicate) {
 }
 
 export function altitudeOnTop(mesh, other) {
-  return (
-    other.absolutePosition.y +
-    getHeight(other) * 0.5 +
-    getHeight(mesh) * 0.5 +
-    0.001
-  )
+  return other.absolutePosition.y + getHeight(other) + getHeight(mesh) + 0.001
 }
 
 export function applyGravity(mesh) {

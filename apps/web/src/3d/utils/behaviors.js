@@ -48,7 +48,7 @@ export function registerBehaviors(mesh, params) {
 export function restoreBehaviors(behaviors, state) {
   for (const behavior of behaviors) {
     if (state[behavior.name] && behavior.name !== StackBehavior.NAME) {
-      behavior.fromState(state[behavior.name])
+      behavior.fromState?.(state[behavior.name])
     }
   }
 }

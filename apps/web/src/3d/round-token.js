@@ -35,7 +35,7 @@ export function createRoundToken({
   height = 0.1,
   texture,
   images,
-  ...tokenProps
+  ...behaviorStates
 } = {}) {
   const faceUV = [
     new Vector4(0, 0, 0.49, 1),
@@ -57,12 +57,10 @@ export function createRoundToken({
 
   token.receiveShadows = true
   token.setAbsolutePosition(new Vector3(x, y, z))
-  Object.assign(token, tokenProps)
 
   token.metadata = {
     images,
     serialize: () => ({
-      ...tokenProps,
       id,
       x: token.position.x,
       y: token.position.y,
@@ -78,7 +76,7 @@ export function createRoundToken({
   token.overlayColor = new Color3(0, 0.8, 0)
   token.overlayAlpha = 0.2
 
-  registerBehaviors(token, tokenProps)
+  registerBehaviors(token, behaviorStates)
 
   controlManager.registerControlable(token)
   token.onDisposeObservable.addOnce(() =>

@@ -67,7 +67,7 @@ export function createBoard({
   depth = 0.05,
   texture,
   borderRadius = 0.4,
-  ...boardProps
+  ...behaviorStates
 } = {}) {
   const faceUV = [
     side,
@@ -102,11 +102,9 @@ export function createBoard({
 
   board.receiveShadows = true
   board.setAbsolutePosition(new Vector3(x, y, z))
-  Object.assign(board, boardProps)
 
   board.metadata = {
     serialize: () => ({
-      ...boardProps,
       id,
       x: board.position.x,
       y: board.position.y,
@@ -123,7 +121,7 @@ export function createBoard({
   board.overlayColor = new Color3(0, 0.8, 0)
   board.overlayAlpha = 0.2
 
-  registerBehaviors(board, boardProps)
+  registerBehaviors(board, behaviorStates)
 
   controlManager.registerControlable(board)
   board.onDisposeObservable.addOnce(() =>

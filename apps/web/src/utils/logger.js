@@ -1,4 +1,5 @@
 const levels = {
+  anchorable: 'warn',
   camera: 'warn',
   catalog: 'warn',
   flippable: 'warn',

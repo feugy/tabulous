@@ -41,7 +41,7 @@ export function createCard({
   depth = 0.01,
   texture,
   images,
-  ...cardProps
+  ...behaviorStates
 } = {}) {
   const faces = PlaneBuilder.CreatePlane(`${id}-plane`, {
     width,
@@ -72,12 +72,10 @@ export function createCard({
   faces.parent = card
 
   card.setAbsolutePosition(new Vector3(x, y, z))
-  Object.assign(card, cardProps)
 
   card.metadata = {
     images,
     serialize: () => ({
-      ...cardProps,
       id,
       x: card.position.x,
       y: card.position.y,
@@ -102,7 +100,7 @@ export function createCard({
     }
   })
 
-  registerBehaviors(card, cardProps)
+  registerBehaviors(card, behaviorStates)
 
   controlManager.registerControlable(card)
   card.onDisposeObservable.addOnce(() =>
