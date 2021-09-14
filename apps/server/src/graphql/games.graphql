@@ -60,6 +60,7 @@ type Anchor {
   height: Float
   depth: Float
   kinds: [String]
+  snappedId: ID
 }
 
 type Card {
@@ -200,6 +201,7 @@ input AnchorInput {
   height: Float
   depth: Float
   kinds: [String]
+  snappedId: ID
 }
 
 input GameSceneInput {

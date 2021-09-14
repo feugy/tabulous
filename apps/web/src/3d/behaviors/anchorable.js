@@ -8,6 +8,45 @@ import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('anchorable')
 
+function updateSnapped(
+  snapping,
+  snappedId,
+  zone,
+  behavior,
+  inhibitControl = false
+) {
+  const {
+    mesh,
+    zoneBySnappedId,
+    state: { anchors }
+  } = behavior
+  const meshId = mesh.id
+  const zoneId = zone.mesh.id
+  if (snapping) {
+    logger.info(
+      { mesh, snappedId, zone },
+      `snap ${snappedId} onto ${meshId}, zone ${zoneId}`
+    )
+    if (!inhibitControl) {
+      controlManager.record({ meshId, fn: 'snap', args: [snappedId, zoneId] })
+    }
+    zone.enabled = false
+    zoneBySnappedId.set(snappedId, zone)
+    anchors[zone.anchorIndex].snappedId = snappedId
+  } else {
+    logger.info(
+      { mesh, snappedId, zone },
+      `release snapped ${snappedId} from ${meshId}, zone ${zoneId}`
+    )
+    if (!inhibitControl) {
+      controlManager.record({ meshId, fn: 'unsnap', args: [snappedId] })
+    }
+    zone.enabled = true
+    zoneBySnappedId.delete(snappedId)
+    anchors[zone.anchorIndex].snappedId = undefined
+  }
+}
+
 /**
  * @typedef {object} Anchor anchor definition on meshes: they acts as drop targets.
  * @property {number} x? - position along the X axis, relative to the mesh's center.
@@ -98,20 +137,10 @@ export class AnchorBehavior extends TargetBehavior {
   async snap(snappedId, anchorId) {
     const snapped = this.mesh?.getScene().getMeshById(snappedId)
     const zone = this.zones.find(({ mesh }) => mesh.id === anchorId)
-    if (!snapped || !zone || zone.snappedId) return
+    if (!snapped || !zone || this.state.anchors[zone.anchorIndex]?.snappedId)
+      return
 
-    logger.info(
-      { mesh: this.mesh, snapped, zone },
-      `snap ${snappedId} onto ${this.mesh.id}, zone ${anchorId}`
-    )
-    controlManager.record({
-      meshId: this.mesh.id,
-      fn: 'snap',
-      args: [snappedId, anchorId]
-    })
-    // only allows one mesh
-    zone.enabled = false
-    this.zoneBySnappedId.set(snappedId, zone)
+    updateSnapped(true, snappedId, zone, this)
     // moves it to the final position
     const { x, y, z } = zone.mesh.getAbsolutePosition()
     await animateMove(
@@ -124,8 +153,8 @@ export class AnchorBehavior extends TargetBehavior {
 
   /**
    * Release a snapped mesh from an anchor:
-   * - enables the relevant zone so it can not be reused
    * - records the action into the control manager
+   * - enables the relevant zone so it can not be reused
    * Does nothing if the mesh does not exist or is not snapped.
    * When the unsnapped id is the current mesh, release all anchors.
    *
@@ -135,30 +164,14 @@ export class AnchorBehavior extends TargetBehavior {
     const zone = this.zoneBySnappedId.get(releasedId)
     if (!zone && this.mesh?.id !== releasedId) return
 
-    controlManager.record({
-      meshId: this.mesh.id,
-      fn: 'unsnap',
-      args: [releasedId]
-    })
-
     if (zone) {
-      logger.info(
-        { mesh: this.mesh, releasedId, zone },
-        `release snapped ${releasedId} from ${this.mesh.id}, zone ${zone.mesh.id}`
-      )
       // we're moving an anchored mesh: clears its zone
-      zone.enabled = true
-      this.zoneBySnappedId.delete(releasedId)
+      updateSnapped(false, releasedId, zone, this)
     } else {
       // we're moving the anchorable mesh: it clears all zones
-      for (const zone of this.zones) {
-        zone.enabled = true
+      for (const [snappedId, zone] of this.zoneBySnappedId.entries()) {
+        updateSnapped(false, snappedId, zone, this)
       }
-      this.zoneBySnappedId.clear()
-      logger.info(
-        { mesh: this.mesh },
-        `release all meshes snapped onto ${releasedId}`
-      )
     }
   }
 
@@ -171,24 +184,27 @@ export class AnchorBehavior extends TargetBehavior {
       throw new Error('Can not restore state without mesh')
     }
     // dispose previous anchors
-    for (const zone of this.zones) {
+    for (const zone of this.zoneBySnappedId.values()) {
       this.removeZone(zone)
     }
     this.zoneBySnappedId.clear()
     // since graphQL returns nulls, we can not use default values
     this.state = { ...state, duration: state.duration || 100 }
     if (Array.isArray(this.state.anchors)) {
-      let i = 0
-      for (const { x, y, z, width, height, depth, kinds } of this.state
-        .anchors) {
-        const anchor = BoxBuilder.CreateBox(`anchor-${i++}`, {
-          width,
-          height: depth,
-          depth: height
+      for (const [i, anchor] of this.state.anchors.entries()) {
+        const mesh = BoxBuilder.CreateBox(`anchor-${i}`, {
+          width: anchor.width,
+          height: anchor.depth,
+          depth: anchor.height
         })
-        anchor.parent = this.mesh
-        anchor.position = new Vector3(x ?? 0, y ?? 0, z ?? 0)
-        this.addZone(anchor, 0.6, kinds)
+        mesh.parent = this.mesh
+        mesh.position = new Vector3(anchor.x ?? 0, anchor.y ?? 0, anchor.z ?? 0)
+        const zone = this.addZone(mesh, 0.6, anchor.kinds)
+        // relates the created zone with the anchor
+        zone.anchorIndex = i
+        if (anchor.snappedId) {
+          updateSnapped(true, anchor.snappedId, zone, this, true)
+        }
       }
     }
     if (!this.mesh.metadata) {

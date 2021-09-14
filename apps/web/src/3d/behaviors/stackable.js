@@ -190,7 +190,8 @@ export class StackBehavior extends TargetBehavior {
       { stack, mesh },
       `pop ${mesh.id} out of stack ${stack.map(({ id }) => id)}`
     )
-    controlManager.record({ meshId: stack[0].id, fn: 'pop' })
+    // note: all mesh in stack are uncontrollable, so we pass the poped mesh id
+    controlManager.record({ meshId: mesh.id, fn: 'pop' })
     return mesh
   }
 
@@ -366,10 +367,10 @@ export class StackBehavior extends TargetBehavior {
       this.mesh.metadata = {}
     }
     this.mesh.metadata.stack = this.stack
-    this.mesh.metadata.push = (...args) => this.push(...args)
-    this.mesh.metadata.pop = () => this.pop()
-    this.mesh.metadata.reorder = (...args) => this.reorder(...args)
-    this.mesh.metadata.flipAll = () => this.flipAll()
+    this.mesh.metadata.push = this.push.bind(this)
+    this.mesh.metadata.pop = this.pop.bind(this)
+    this.mesh.metadata.reorder = this.reorder.bind(this)
+    this.mesh.metadata.flipAll = this.flipAll.bind(this)
   }
 }
 

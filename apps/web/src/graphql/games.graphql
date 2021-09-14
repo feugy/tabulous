@@ -37,6 +37,7 @@ fragment anchorable on AnchorableState {
     height
     depth
     kinds
+    snappedId
   }
   duration
 }
