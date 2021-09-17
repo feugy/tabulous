@@ -96,7 +96,8 @@ export class StackBehavior extends TargetBehavior {
    * - a `push()` function to programmatically drop another mesh onto the stack.
    * - a `pop()` function to programmatically pop the highest mesh from stack.
    * - a `reorder()` function to re-order the stack with animation.
-   * - a `flipAll()` function to flip an entire stack with animation.
+   * - a `flipAll()` function to flip an entire stack with animation, inverting the stack order.
+   * - a `rotateAll()` function to rotate an entire stack with animation.
    * It binds to its drop observable to push dropped meshes to the stack.
    * It binds to the drag manager drag observable to pop the first stacked mesh when dragging it.
    * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
@@ -307,6 +308,18 @@ export class StackBehavior extends TargetBehavior {
   }
 
   /**
+   * Rotates entire stack, when relevant. Does nothing on 1-mesh stacks.
+   * - rotates in parallel each mesh
+   * @async
+   */
+  async rotateAll() {
+    const base = this.base ?? this
+    if (base.stack.length <= 1) return
+
+    await Promise.all(base.stack.map(mesh => mesh.metadata.rotate?.()))
+  }
+
+  /**
    * Gets this behavior's state.
    * @returns {StackableState} this behavior's state for serialization.
    */
@@ -371,6 +384,7 @@ export class StackBehavior extends TargetBehavior {
     this.mesh.metadata.pop = this.pop.bind(this)
     this.mesh.metadata.reorder = this.reorder.bind(this)
     this.mesh.metadata.flipAll = this.flipAll.bind(this)
+    this.mesh.metadata.rotateAll = this.rotateAll.bind(this)
   }
 }
 
