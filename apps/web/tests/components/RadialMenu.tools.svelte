@@ -18,4 +18,5 @@
     ]
   }}
   events={['close', 'select']}
+  layout="centered"
 />

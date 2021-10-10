@@ -36,8 +36,6 @@ export function getHeight(mesh) {
   return mesh.getBoundingInfo().boundingBox.extendSizeWorld.y
 }
 
-let version
-
 /**
  * Adapts the downloaded texture file based on the current WebGL version.
  * Since WebGL 1 does not support Khronos Texture properly, uses png files instead.
@@ -45,10 +43,7 @@ let version
  * @returns {string} if the engine is WebGL 1, the input texture with ktx2 extension replaced with png.
  */
 export function adaptTexture(texture) {
-  if (!version) {
-    version = Engine.LastCreatedEngine.version
-  }
-  return texture && version === 1
+  return texture && Engine.LastCreatedEngine.version === 1
     ? texture.replace('.ktx2', '.gl1.png')
     : texture
 }

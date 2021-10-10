@@ -1,0 +1,198 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Toolshot components/ControlsHelp.tools.svelte: Components/Controls Help 1`] = `
+<span>
+  <div>
+    <h3>
+      Contrôler un objet
+    </h3>
+     
+    <section>
+      <div>
+        <img
+          alt="Double clic gauche sur un objet"
+          src="/images/help/double-left-object.png"
+        />
+        <img
+          alt="Tap avec deux doigts sur un objet"
+          src="/images/help/two-pointers-object.png"
+        />
+         
+        <span>
+          Ouvre le menu
+        </span>
+      </div>
+      <div>
+        <img
+          alt="Long clic gauche sur un objet"
+          src="/images/help/long-left-object.png"
+        />
+        <img
+          alt="Long tap sur un objet"
+          src="/images/help/long-pointer-object.png"
+        />
+         
+        <span>
+          Affiche en grand
+        </span>
+      </div>
+      <div>
+        <img
+          alt="Tiré-déplacé avec un long clic gauche"
+          src="/images/help/long-left-drag-select.png"
+        />
+        <img
+          alt="Tiré-déplacé avec un long tap"
+          src="/images/help/long-pointer-drag-select.png"
+        />
+         
+        <span>
+          Ajoute à la sélection
+        </span>
+      </div>
+      <div>
+        <img
+          alt="Clic gauche en dehors de la sélection"
+          src="/images/help/left-outside-selection.png"
+        />
+        <img
+          alt="Tap en dehors de la sélection"
+          src="/images/help/pointer-outside-selection.png"
+        />
+         
+        <span>
+          Vide la sélection
+        </span>
+      </div>
+    </section>
+     
+    <h3>
+      Contrôler un ou plusieurs objets
+    </h3>
+     
+    <section>
+      <div>
+        <img
+          alt="Tiré-déplacé un objet avec le clic gauche"
+          src="/images/help/left-drag-object.png"
+        />
+        <img
+          alt="Tiré-déplacé un objet avec un tap"
+          src="/images/help/pointer-drag-object.png"
+        />
+         
+        <span>
+          Déplace
+        </span>
+      </div>
+      <div>
+        <img
+          alt="Clic gauche sur un objet"
+          src="/images/help/left-object.png"
+        />
+        <img
+          alt="Tap sur un objet"
+          src="/images/help/pointer-object.png"
+        />
+         
+        <span>
+          Retourne
+        </span>
+      </div>
+      <div>
+        <img
+          alt="Clic droit sur un objet"
+          src="/images/help/right-object.png"
+        />
+        <img
+          alt="Tap avec deux doigts sur un objet"
+          src="/images/help/two-pointers-object.png"
+        />
+         
+        <span>
+          Pivote
+        </span>
+      </div>
+    </section>
+     
+    <h3>
+      Contrôler la caméra
+    </h3>
+     
+    <section>
+      <div>
+        <img
+          alt="Tiré-déplacé avec le clic gauche"
+          src="/images/help/left-drag.png"
+        />
+        <img
+          alt="Tiré-déplacé avec un tap"
+          src="/images/help/pointer-drag.png"
+        />
+         
+        <span>
+          Déplace
+        </span>
+      </div>
+      <div>
+        <img
+          alt="Tiré-déplacé avec le clic droit"
+          src="/images/help/right-drag.png"
+        />
+        <img
+          alt="Tap avec deux doigts sur un objet"
+          src="/images/help/two-pointers-drag.png"
+        />
+         
+        <span>
+          Pivote et incline
+        </span>
+      </div>
+      <div>
+        <img
+          alt="Molette de la souris"
+          src="/images/help/mouse-wheel.png"
+        />
+        <img
+          alt="Pincer"
+          src="/images/help/pinch.png"
+        />
+         
+        <span>
+          Zoome
+        </span>
+      </div>
+      <div>
+        <img
+          alt="Clic sur le bouton \\"nouvelle caméra\\""
+          src="/images/help/new-camera.png"
+        />
+         
+        <span>
+          Enregistre la position
+        </span>
+      </div>
+      <div>
+        <img
+          alt="Clic sur un emplacement de caméra"
+          src="/images/help/restore-camera.png"
+        />
+         
+        <span>
+          Restaure la position
+        </span>
+      </div>
+      <div>
+        <img
+          alt="Long clic sur un emplacement de caméra"
+          src="/images/help/update-camera.png"
+        />
+         
+        <span>
+          Met à jour la position
+        </span>
+      </div>
+    </section>
+  </div>
+</span>
+`;

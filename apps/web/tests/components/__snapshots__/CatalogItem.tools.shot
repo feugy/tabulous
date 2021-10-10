@@ -1,0 +1,65 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Toolshot components/CatalogItem.tools.svelte: No age nor time 1`] = `
+<span
+  class="catalog-item-viewer"
+>
+  <article>
+    <img
+      alt="Solitaire"
+      src="/images/catalog/klondike.png"
+    />
+     
+    <div
+      class="content"
+    >
+      <caption>
+        <h3>
+          Solitaire
+        </h3>
+         
+        <span
+          class="characteristics"
+        >
+           
+        </span>
+      </caption>
+    </div>
+  </article>
+</span>
+`;
+
+exports[`Toolshot components/CatalogItem.tools.svelte: With Age and time 1`] = `
+<span
+  class="catalog-item-viewer"
+>
+  <article>
+    <img
+      alt="Splendor"
+      src="/images/catalog/splendor.png"
+    />
+     
+    <div
+      class="content"
+    >
+      <caption>
+        <h3>
+          Splendor
+        </h3>
+         
+        <span
+          class="characteristics"
+        >
+          <span>
+            temps : 30'
+          </span>
+           
+          <span>
+            age : 10+
+          </span>
+        </span>
+      </caption>
+    </div>
+  </article>
+</span>
+`;

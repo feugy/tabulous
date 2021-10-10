@@ -4,7 +4,6 @@
 </script>
 
 <Tool
-  component={ConfirmDialogue}
   name="Components/Confirm Dialogue"
   props={{
     open: true,
@@ -13,9 +12,10 @@
 serait pas des fois de la betterave ? Hein ?`,
     title: 'Ils boivent'
   }}
-  events={['close', 'open']}
+  let:props
+  let:handleEvent
 >
-  <dl slot="header">
+  <dl>
     <dt>Raoul Wolfoni</dt>
     <dd>Faut reconnaître, c'est du brutal !</dd>
     <dt>Paul Wolfoni</dt>
@@ -35,4 +35,5 @@ serait pas des fois de la betterave ? Hein ?`,
     <dt>Mr Fernand</dt>
     <dd>Lulu la nantaise.</dd>
   </dl>
+  <ConfirmDialogue {...props} on:close={handleEvent} on:open={handleEvent} />
 </Tool>

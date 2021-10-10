@@ -14,8 +14,11 @@ module.exports = {
     '^.+\\.ya?ml$': 'jest-yaml-transform'
   },
   transformIgnorePatterns: [
-    'node_modules\\/(?!@babylonjs|simple-peer-light|svelte-spa-router|svelte-portal)'
+    'node_modules\\/(?!@babylonjs|simple-peer-light|svelte-spa-router|svelte-portal|@atelier-wb)'
   ],
+  moduleNameMapper: {
+    '^.+\\.png$': 'identity-obj-proxy'
+  },
   moduleFileExtensions: ['js', 'svelte', 'graphql'],
   setupFilesAfterEnv: ['<rootDir>/tests/jest-setup.js'],
   watchPlugins: [

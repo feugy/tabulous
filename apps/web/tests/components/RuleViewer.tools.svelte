@@ -5,7 +5,8 @@
 
 <style type="postcss">
   .rule-viewer {
-    @apply flex -mt-16 max-h-full;
+    @apply flex h-full overflow-auto;
+    max-width: 100vh;
 
     :global(& .tool-preview) {
       @apply overflow-auto p-2;
@@ -19,5 +20,6 @@
     name="Components/Rule Viewer"
     props={{ game: 'splendor', lastPage: 3 }}
     events={['change']}
+    layout="centered"
   />
 </div>

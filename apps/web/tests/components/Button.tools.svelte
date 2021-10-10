@@ -8,6 +8,7 @@
   name="Components/Button"
   props={{ disabled: false, secondary: false }}
   events={['click']}
+  layout="centered"
 >
   <Tool
     name="Primary with text and icon"
@@ -27,8 +28,14 @@
     name="Secondary with text"
     props={{ secondary: true, text: 'Hello!' }}
   />
-  <Tool name="With badge" props={{ text: 'Inbox', icon: 'email', badge: 5 }}>
-    <div slot="header">Vous avez...</div>
-    <div slot="footer">Nouveau(x) message(s).</div></Tool
+  <Tool
+    name="With badge"
+    props={{ text: 'Inbox', icon: 'email', badge: 5 }}
+    let:props
+    let:handleEvent
   >
+    <div>Vous avez...</div>
+    <Button {...props} on:click={handleEvent} />
+    <div>Nouveau(x) message(s).</div>
+  </Tool>
 </ToolBox>

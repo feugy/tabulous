@@ -1,0 +1,74 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Toolshot components/RadialMenu.tools.svelte: Components/Radial Menu 1`] = `
+<span>
+  <aside
+    style="left: 25%; top: 25%; --size:100px;"
+  >
+    <ul>
+      <li>
+        <button>
+          <span
+            class="material-icons"
+          >
+            home
+          </span>
+          
+          
+          
+        </button>
+         
+      </li>
+      
+      <li>
+        <button
+          class="secondary"
+        >
+          <span
+            class="material-icons"
+          >
+            settings
+          </span>
+          
+          
+          
+        </button>
+         
+      </li>
+      
+      <li>
+        <button
+          class="secondary"
+        >
+          <span
+            class="material-icons"
+          >
+            face
+          </span>
+          
+          
+          
+        </button>
+         
+      </li>
+      
+      <li>
+        <button>
+          <span
+            class="material-icons"
+          >
+            lock
+          </span>
+          
+          
+          
+        </button>
+         
+      </li>
+      
+    </ul>
+     
+  </aside>
+  
+</span>
+`;

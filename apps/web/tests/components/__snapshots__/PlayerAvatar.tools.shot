@@ -1,0 +1,61 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Toolshot components/PlayerAvatar.tools.svelte: No video 1`] = `
+<span>
+  <figure>
+    <img
+      src="default"
+    />
+     
+    <figcaption>
+      Joe le clodo
+    </figcaption>
+    
+  </figure>
+</span>
+`;
+
+exports[`Toolshot components/PlayerAvatar.tools.svelte: No video nor avatar 1`] = `
+<span>
+  <figure>
+    <img
+      src="/no-avatar.png"
+    />
+     
+    <figcaption>
+      Joe le clodo
+    </figcaption>
+    
+  </figure>
+</span>
+`;
+
+exports[`Toolshot components/PlayerAvatar.tools.svelte: With uncontrollable video 1`] = `
+<span>
+  <figure>
+    <img
+      src="default"
+    />
+     
+    <figcaption>
+      Joe le clodo
+    </figcaption>
+    
+  </figure>
+</span>
+`;
+
+exports[`Toolshot components/PlayerAvatar.tools.svelte: With video 1`] = `
+<span>
+  <figure>
+    <img
+      src="default"
+    />
+     
+    <figcaption>
+      Joe le clodo
+    </figcaption>
+    
+  </figure>
+</span>
+`;

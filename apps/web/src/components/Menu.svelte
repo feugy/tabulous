@@ -1,3 +1,9 @@
+<script context="module">
+  const selector = navigator.userAgent.includes('jsdom')
+    ? 'focus'
+    : 'focus-within'
+</script>
+
 <script>
   import { createEventDispatcher } from 'svelte'
   import { slide } from 'svelte/transition'
@@ -118,18 +124,16 @@
 
   function handleItemKeyDown(evt, option) {
     if (evt.key === 'Enter' || evt.key === ' ' || evt.key === 'ArrowRight') {
-      if (option.Component) {
-        option.props.open = true
-        evt.stopPropagation()
-      } else {
-        select(option)
-      }
+      handleItemClick(evt, option)
     }
   }
 
   function handleItemClick(evt, option) {
     if (option.Component) {
       option.props.open = true
+      // blur to let sub component take the focus
+      document.activeElement.blur()
+      evt.target.focus()
       evt.stopPropagation()
     } else if (!option?.disabled) {
       select(option)
@@ -140,7 +144,7 @@
     const prop = next ? 'nextElementSibling' : 'previousElementSibling'
     let focusable
     let current =
-      ref.querySelector('[role="menuitem"]:focus') ??
+      ref.querySelector(`[role="menuitem"]:${selector}`) ??
       ref.querySelector('[role="menuitem"].current')
     if (current) {
       focusable = current[prop]

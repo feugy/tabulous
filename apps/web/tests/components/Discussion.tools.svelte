@@ -10,6 +10,7 @@
     name="Components/Discussion"
     props={{ players }}
     events={['sendMessage']}
+    layout="centered"
   >
     <Tool name="Long thread" props={{ thread }} />
 
