@@ -91,6 +91,11 @@ First commands will need to connect with IPv4 (hence the `-4` flag) in the meant
   - make it executable: `sudo ln -s /snap/bin/certbot /usr/bin/certbot`
   - give it authorizations: `sudo snap set certbot trust-plugin-with-root=ok`
   - install certbot OVH DNS plugin: `sudo snap install certbot-dns-ovh`
+  - configure for Nginx: `sudo certbot --nginx` then:
+    1.  provide email
+    1.  accept terms of service
+    1.  decline sharing email address
+    1.  allow all domains
 
 ## Continuous deployment
 
@@ -114,3 +119,14 @@ _Hints_
 
 Tail server logs: `journalctl -f -u tabulous`
 Tail nginx logs: `tail -f /var/log/nginx/access.log`
+
+## Maintenance
+
+1. update all packages:
+   ```sh
+   sudo apt dist-upgrade -y
+   ```
+1. renew SSH certificates
+   ```sh
+   sudo certbot renew
+   ```
