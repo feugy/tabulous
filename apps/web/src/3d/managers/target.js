@@ -1,6 +1,6 @@
 import { Color3 } from '@babylonjs/core/Maths/math.color'
 import { selectionManager } from '.'
-import { isAbove } from '../utils'
+import { getTargetableBehavior, isAbove } from '../utils'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
 
@@ -23,22 +23,32 @@ class TargetManager {
   /**
    * Registers a new targetable behavior.
    * Does nothing if this behavior is already managed.
-   * @param {Targetable} behavior - targetable behavior.
+   * @param {import('../behaviors').TargetBehavior} behavior - targetable behavior.
    */
   registerTargetable(behavior) {
-    this.behaviors.add(behavior)
+    if (behavior?.mesh) {
+      this.behaviors.add(behavior)
+    }
   }
 
   /**
    * Unregisters a targetable behavior, clearing all its zones.
    * Does nothing on unmanaged behavior.
-   * @param {Targetable} behavior - controlled behavior.
+   * @param {import('../behaviors').TargetBehavior} behavior - controlled behavior.
    */
   unregisterTargetable(behavior) {
     this.behaviors.delete(behavior)
     for (const zone of behavior?.zones ?? []) {
       this.clear(zone)
     }
+  }
+
+  /**
+   * @param {import('@babylonjs/core').Mesh} mesh - tested mesh.
+   * @returns {boolean} whether this mesh's target behavior is controlled or not
+   */
+  isManaging(mesh) {
+    return this.behaviors.has(getTargetableBehavior(mesh))
   }
 
   /**
@@ -70,7 +80,7 @@ class TargetManager {
             candidates.push({
               targetable,
               zone,
-              y: targetable.mesh.absolutePosition.y
+              y: zone.mesh.absolutePosition.y
             })
           }
         }

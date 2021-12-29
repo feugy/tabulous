@@ -1,14 +1,45 @@
 # TODO
 
+a stack of 2, 1 mesh partially overlapping it, could stack a 3rd mesh (should be prevented?)
+pivot selection only alter the first
+
+## Brittle tests
+
+- `AnchorBehavior › given attached to a mesh with zones › snaps dropped mesh`
+
+  > `expect(snapped.absolutePosition.x).toBeCloseTo(anchor.x ?? 0)`
+  > Presumably solved on Jan 14 by waiting longer for animation to finish
+
+- `isAbove() 3D utility › applies scaling when detecting hovered mesh`
+
+  > `expect(isAbove(box, box2, 2)).toBe(false)`
+  > Presumably solved on Jan 15 by reducing the scale factor
+
+- `Dropdown component › given textual options › closes menu on click`
+
+  > `expect(received).toBeNull()` line 115 (menu does exist)
+
+- `InputManager › given an initialized manager() › handles multiple pointers taps`
+
+  > `expect(received).toHaveLength(expected)` line 1319 (1 long received)
+
 ## Refactor
 
-- rework target detection. Instead of using real mesh and rays use shapes overlap: each zone is a rectangle/circle on XZ plane, and the moved mesh another rectangle/circle. Check the center of the moved mesh
-- stop inverting depth and height. Use 3D world conventions
-- drag kind must be configurable in game descriptors
+- merge board & rounded tile (include border in texture)
+- behavior should be managers, since they can be attached to multiple meshes
 - all manager managing a collection of behaviors should check their capabilities
+- stop inverting depth and height. Use 3D world conventions
+- rename StackableBehavior.state.stack into stackIds, to make the difference with StackableBehavior.mesh.metadata.stack which contains references to meshes.
+- game-interaction unit tests
+- component, connected-component and routes rendering tests
+- rework target detection. Instead of using real mesh and rays use shapes overlap: each zone is a rectangle/circle on XZ plane, and the moved mesh another rectangle/circle. Check the center of the moved mesh
+- getHeight() should return the real height, not just its half
+- altitudeOnTop() should only take only mesh: mesh.absolutePosition.y + getHeight(mesh) + 0.001
+- drag kind must be configurable in game descriptors
 - completly disable Babylon input management
 - UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
 - parametrize and serialize UVs
+- stackable duration override's movable duration on
 
 ## UI
 
@@ -170,7 +201,7 @@ Follow official Let's Encrypt [instructions](https://certbot.eff.org/lets-encryp
 1. run the certbot command
 
    ```shell
-   certbot certonly --dns-ovh --dns-ovh-credentials certbot/ovh.ini -d tabulous.fr -d www.tabulous.fr --work-dir hosting/certbot --logs-dir hosting/certbot --config-dir hosting/certbot
+   certbot certonly --dns-ovh --dns-ovh-credentials hosting/certbot/ovh.ini -d tabulous.fr -d www.tabulous.fr --work-dir hosting/certbot --logs-dir hosting/certbot --config-dir hosting/certbot
    ```
 
 1. copy relevant files to run it locally

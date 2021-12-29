@@ -8,7 +8,7 @@ import { DiscBuilder } from '@babylonjs/core/Meshes/Builders/discBuilder'
  * @param {string} params.id - the peer id.
  * @returns {import('@babylonjs/core').Mesh} the created peer pointer.
  */
-export function createPeerPointer({ id } = {}) {
+export function createPeerPointer({ id }) {
   const peerPointer = DiscBuilder.CreateDisc('peer-pointer', { radius: 0.2 })
   peerPointer.id = id
   peerPointer.isPickable = false

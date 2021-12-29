@@ -124,8 +124,5 @@ export function createBoard({
   registerBehaviors(board, behaviorStates)
 
   controlManager.registerControlable(board)
-  board.onDisposeObservable.addOnce(() =>
-    controlManager.unregisterControlable(board)
-  )
   return board
 }

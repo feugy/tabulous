@@ -1,51 +1,13 @@
 import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
+import { AnchorBehaviorName } from './names'
 import { TargetBehavior } from './targetable'
 import { animateMove } from '../utils'
 import { controlManager, inputManager } from '../managers'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
 
-const logger = makeLogger('anchorable')
-
-function updateSnapped(
-  snapping,
-  snappedId,
-  zone,
-  behavior,
-  inhibitControl = false
-) {
-  const {
-    mesh,
-    zoneBySnappedId,
-    state: { anchors }
-  } = behavior
-  const meshId = mesh.id
-  const zoneId = zone.mesh.id
-  if (snapping) {
-    logger.info(
-      { mesh, snappedId, zone },
-      `snap ${snappedId} onto ${meshId}, zone ${zoneId}`
-    )
-    if (!inhibitControl) {
-      controlManager.record({ meshId, fn: 'snap', args: [snappedId, zoneId] })
-    }
-    zone.enabled = false
-    zoneBySnappedId.set(snappedId, zone)
-    anchors[zone.anchorIndex].snappedId = snappedId
-  } else {
-    logger.info(
-      { mesh, snappedId, zone },
-      `release snapped ${snappedId} from ${meshId}, zone ${zoneId}`
-    )
-    if (!inhibitControl) {
-      controlManager.record({ meshId, fn: 'unsnap', args: [snappedId] })
-    }
-    zone.enabled = true
-    zoneBySnappedId.delete(snappedId)
-    anchors[zone.anchorIndex].snappedId = undefined
-  }
-}
+const logger = makeLogger(AnchorBehaviorName)
 
 /**
  * @typedef {object} Anchor anchor definition on meshes: they acts as drop targets.
@@ -54,7 +16,7 @@ function updateSnapped(
  * @property {number} z? - position along the Z axis, relative to the mesh's center.
  * @property {number} width - anchor's width (X axis).
  * @property {number} height - anchor's height (Z axis).
- * @property {number} depth? - anchor's depth (Y axis).
+ * @property {number} depth - anchor's depth (Y axis).
  * @property {string[]} kinds? - an array of allowed drag kinds
  * @property {string} snappedId? - the currently snapped mesh id
  */
@@ -87,7 +49,7 @@ export class AnchorBehavior extends TargetBehavior {
    * @property {string} name - this behavior's constant name.
    */
   get name() {
-    return AnchorBehavior.NAME
+    return AnchorBehaviorName
   }
 
   /**
@@ -108,7 +70,7 @@ export class AnchorBehavior extends TargetBehavior {
     })
 
     this.dragObserver = inputManager.onDragObservable.add(({ type, mesh }) => {
-      if (type === 'dragStart') {
+      if (type === 'dragStart' && mesh) {
         this.unsnap(mesh.id)
       }
     })
@@ -140,15 +102,7 @@ export class AnchorBehavior extends TargetBehavior {
     if (!snapped || !zone || this.state.anchors[zone.anchorIndex]?.snappedId)
       return
 
-    updateSnapped(true, snappedId, zone, this)
-    // moves it to the final position
-    const { x, y, z } = zone.mesh.getAbsolutePosition()
-    await animateMove(
-      snapped,
-      new Vector3(x, y + 0.1, z),
-      this.state.duration,
-      true
-    )
+    await snapToAnchor(snappedId, zone, this)
   }
 
   /**
@@ -166,13 +120,22 @@ export class AnchorBehavior extends TargetBehavior {
 
     if (zone) {
       // we're moving an anchored mesh: clears its zone
-      updateSnapped(false, releasedId, zone, this)
+      unsnapFromAnchor(zone, this)
     } else {
       // we're moving the anchorable mesh: it clears all zones
-      for (const [snappedId, zone] of this.zoneBySnappedId.entries()) {
-        updateSnapped(false, snappedId, zone, this)
+      for (const zone of this.zoneBySnappedId.values()) {
+        unsnapFromAnchor(zone, this)
       }
     }
+  }
+
+  /**
+   * Returns the zone to which a given mesh is snapped
+   * @param {string} meshId - id of the tested mesh
+   * @returns {Anchor | null} zone to which this mesh is snapped, if any
+   */
+  snappedZone(meshId) {
+    return this.zoneBySnappedId.get(meshId) ?? null
   }
 
   /**
@@ -184,12 +147,12 @@ export class AnchorBehavior extends TargetBehavior {
       throw new Error('Can not restore state without mesh')
     }
     // dispose previous anchors
-    for (const zone of this.zoneBySnappedId.values()) {
+    for (const zone of [...this.zones]) {
       this.removeZone(zone)
     }
     this.zoneBySnappedId.clear()
     // since graphQL returns nulls, we can not use default values
-    this.state = { ...state, duration: state.duration || 100 }
+    this.state = { ...state, duration: state.duration ?? 100 }
     if (Array.isArray(this.state.anchors)) {
       for (const [i, anchor] of this.state.anchors.entries()) {
         const mesh = BoxBuilder.CreateBox(`anchor-${i}`, {
@@ -203,7 +166,7 @@ export class AnchorBehavior extends TargetBehavior {
         // relates the created zone with the anchor
         zone.anchorIndex = i
         if (anchor.snappedId) {
-          updateSnapped(true, anchor.snappedId, zone, this, true)
+          snapToAnchor(anchor.snappedId, zone, this, false)
         }
       }
     }
@@ -216,10 +179,52 @@ export class AnchorBehavior extends TargetBehavior {
   }
 }
 
-/**
- * Name of all anchorable behaviors.
- * @static
- * @memberof AnchorBehavior
- * @type {string}
- */
-AnchorBehavior.NAME = 'anchorable'
+async function snapToAnchor(snappedId, zone, behavior, recordAction = true) {
+  const {
+    mesh,
+    zoneBySnappedId,
+    state: { anchors }
+  } = behavior
+  const meshId = mesh.id
+  const zoneId = zone.mesh.id
+  const snapped = mesh.getScene().getMeshById(snappedId)
+  anchors[zone.anchorIndex].snappedId = snapped?.id
+  if (snapped) {
+    logger.info(
+      { mesh, snappedId, zone },
+      `snap ${snappedId} onto ${meshId}, zone ${zone.mesh.id}`
+    )
+    if (recordAction) {
+      controlManager.record({ meshId, fn: 'snap', args: [snappedId, zoneId] })
+    }
+    zone.enabled = false
+    zoneBySnappedId.set(snappedId, zone)
+    // moves it to the final position
+    const { x, y, z } = zone.mesh.getAbsolutePosition()
+    await animateMove(
+      snapped,
+      new Vector3(x, y + 0.1, z),
+      recordAction ? behavior.state.duration : 0,
+      true
+    )
+  }
+}
+
+function unsnapFromAnchor(zone, behavior) {
+  const {
+    mesh,
+    zoneBySnappedId,
+    state: { anchors }
+  } = behavior
+  const meshId = mesh.id
+  const zoneId = zone.mesh.id
+  const { snappedId } = anchors[zone.anchorIndex]
+  logger.info(
+    { mesh, snappedId, zone },
+    `release snapped ${snappedId} from ${meshId}, zone ${zoneId}`
+  )
+  controlManager.record({ meshId, fn: 'unsnap', args: [snappedId] })
+  zone.enabled = true
+  zoneBySnappedId.delete(snappedId)
+  anchors[zone.anchorIndex].snappedId = undefined
+}

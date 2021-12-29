@@ -17,7 +17,7 @@ class MoveManager {
   /**
    * Creates a manager to move meshes with MoveBehavior:
    * - can start, continue and stop moving managed mesh
-   * - moves the entier selection if it contains the moved mesh
+   * - moves the entire selection if it contains the moved mesh
    * - triggers target detection while continuing the operation
    * - release mesh on table, or on their relevant target
    *
@@ -39,7 +39,7 @@ class MoveManager {
    * @param {Scene} params.scene - scene attached to.
    * @param {number} [params.elevation=0.5] - elevation applied to meshes while dragging them.
    */
-  init({ scene, elevation = 0.5 } = {}) {
+  init({ scene, elevation = 0.5 }) {
     this.scene = scene
     this.elevation = elevation
   }
@@ -129,6 +129,8 @@ class MoveManager {
         }
 
         for (const mesh of moved) {
+          mesh.setAbsolutePosition(mesh.absolutePosition.addInPlace(move))
+          mesh.computeWorldMatrix()
           const zone = targetManager.findDropZone(
             mesh,
             this.behaviorByMeshId.get(mesh.id).state.kind
@@ -136,7 +138,6 @@ class MoveManager {
           if (zone) {
             zones.add(zone)
           }
-          mesh.setAbsolutePosition(mesh.absolutePosition.addInPlace(move))
           controlManager.record({
             meshId: mesh.id,
             pos: mesh.absolutePosition.asArray()
@@ -150,6 +151,9 @@ class MoveManager {
         this.stop()
       }
     }
+
+    // dynamically assign getActiveZones function to keep zones in scope
+    this.getActiveZones = () => [...zones]
 
     // dynamically assign stop function to keep moved, zones and lastPosition in scope
     this.stop = async () => {
@@ -215,12 +219,20 @@ class MoveManager {
   async stop() {}
 
   /**
+   * Returns all drop zones actives while moving meshes
+   * @return {import('../behaviors').DropZone} an array (possibly empty) of active zones
+   */
+  getActiveZones() {
+    return []
+  }
+
+  /**
    * Registers a new MoveBehavior, making it possible to move its mesh.
    * Does nothing if this behavior is already managed.
    * @param {MoveBehavior} behavior - movable behavior
    */
   registerMovable(behavior) {
-    if (behavior?.mesh?.id && !this.meshIds.has(behavior.mesh.id)) {
+    if (behavior?.mesh?.id) {
       this.meshIds.add(behavior.mesh.id)
       this.behaviorByMeshId.set(behavior.mesh.id, behavior)
     }
@@ -236,6 +248,14 @@ class MoveManager {
       this.meshIds.delete(behavior.mesh.id)
       this.behaviorByMeshId.delete(behavior.mesh.id)
     }
+  }
+
+  /**
+   * @param {import('@babel/core').Mesh} mesh - tested mesh
+   * @returns {boolean} whether this mesh is controlled or not
+   */
+  isManaging(mesh) {
+    return this.meshIds.has(mesh?.id)
   }
 }
 

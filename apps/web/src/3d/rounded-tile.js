@@ -148,8 +148,5 @@ export function createRoundedTile({
   registerBehaviors(tile, behaviorStates)
 
   controlManager.registerControlable(tile)
-  tile.onDisposeObservable.addOnce(() =>
-    controlManager.unregisterControlable(tile)
-  )
   return tile
 }

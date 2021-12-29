@@ -4,9 +4,10 @@ import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import {
   adaptTexture,
+  attachMaterialError,
   getHeight,
   isContaining
-} from '../../../src/3d/utils/mesh'
+} from '../../../src/3d/utils'
 
 let engine
 
@@ -112,5 +113,42 @@ describe('adaptTexture() 3D utility', () => {
     ])('%s', (text, original, result) => {
       expect(adaptTexture(original)).toEqual(result)
     })
+  })
+})
+
+describe('attachMaterialError() 3D utility', () => {
+  let material
+  let shadowGenerator
+
+  beforeEach(() => {
+    shadowGenerator = {}
+    material = {
+      getScene: () => ({
+        lights: [
+          { getShadowGenerator: jest.fn().mockReturnValue(shadowGenerator) }
+        ]
+      })
+    }
+  })
+
+  it('disables shadow generator on material shader error', () => {
+    attachMaterialError(material)
+    expect(material.onError).toBeInstanceOf(Function)
+    expect(shadowGenerator).toEqual({})
+    material.onError(null, ['FRAGMENT SHADER'])
+    expect(shadowGenerator).toEqual({
+      usePercentageCloserFiltering: false,
+      useContactHardeningShadow: false
+    })
+  })
+
+  it('ignores all other errors', () => {
+    attachMaterialError(material)
+    expect(material.onError).toBeInstanceOf(Function)
+    expect(shadowGenerator).toEqual({})
+    material.onError(null, ['OTHER', 'ERROR'])
+    expect(shadowGenerator).toEqual({})
+    material.onError()
+    expect(shadowGenerator).toEqual({})
   })
 })

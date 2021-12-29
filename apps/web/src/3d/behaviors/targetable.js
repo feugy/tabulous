@@ -1,4 +1,5 @@
 import { Observable } from '@babylonjs/core/Misc/observable'
+import { TargetBehaviorName } from './names'
 import { targetManager } from '../managers'
 
 /**
@@ -40,7 +41,7 @@ export class TargetBehavior {
    * @property {string} name - this behavior's constant name.
    */
   get name() {
-    return TargetBehavior.NAME
+    return TargetBehaviorName
   }
 
   /**
@@ -54,10 +55,8 @@ export class TargetBehavior {
    * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
    */
   attach(mesh) {
-    if (!this.mesh) {
-      this.mesh = mesh
-      targetManager.registerTargetable(this)
-    }
+    this.mesh = mesh
+    targetManager.registerTargetable(this)
   }
 
   /**
@@ -102,11 +101,3 @@ export class TargetBehavior {
     }
   }
 }
-
-/**
- * Name of all targetable behaviors.
- * @static
- * @memberof TargetBehavior
- * @type {string}
- */
-TargetBehavior.NAME = 'targetable'

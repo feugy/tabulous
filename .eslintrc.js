@@ -13,7 +13,8 @@ module.exports = {
       processor: 'svelte3/svelte3'
     },
     {
-      files: ['*.mjs']
+      files: ['*.js'],
+      extends: ['prettier']
     }
   ],
   parserOptions: {

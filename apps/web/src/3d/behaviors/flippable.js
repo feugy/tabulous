@@ -1,12 +1,13 @@
 import { Animation } from '@babylonjs/core/Animations/animation'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { AnimateBehavior } from './animatable'
+import { FlipBehaviorName } from './names'
 import { applyGravity } from '../utils'
 import { controlManager } from '../managers'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
 
-const logger = makeLogger('flippable')
+const logger = makeLogger(FlipBehaviorName)
 
 /**
  * @typedef {object} FlippableState behavior persistent state, including:
@@ -41,7 +42,7 @@ export class FlipBehavior extends AnimateBehavior {
    * @property {string} name - this behavior's constant name.
    */
   get name() {
-    return FlipBehavior.NAME
+    return FlipBehaviorName
   }
 
   /**
@@ -75,7 +76,7 @@ export class FlipBehavior extends AnimateBehavior {
       flipAnimation,
       moveAnimation
     } = this
-    if (isAnimated) {
+    if (isAnimated || !mesh) {
       return
     }
     logger.debug({ mesh }, `start flipping ${mesh.id}`)
@@ -148,24 +149,14 @@ export class FlipBehavior extends AnimateBehavior {
     // since graphQL returns nulls, we can not use default values
     this.state = {
       ...state,
-      isFlipped: state.isFlipped || false,
-      duration: state.duration || 500
+      isFlipped: state.isFlipped ?? false,
+      duration: state.duration ?? 500
     }
-    if ('isFlipped' in this.state) {
-      this.mesh.rotation.z = this.state.isFlipped ? Math.PI : 0
-      if (!this.mesh.metadata) {
-        this.mesh.metadata = {}
-      }
-      this.mesh.metadata.flip = this.flip.bind(this)
-      this.mesh.metadata.isFlipped = this.state.isFlipped
+    this.mesh.rotation.z = this.state.isFlipped ? Math.PI : 0
+    if (!this.mesh.metadata) {
+      this.mesh.metadata = {}
     }
+    this.mesh.metadata.flip = this.flip.bind(this)
+    this.mesh.metadata.isFlipped = this.state.isFlipped
   }
 }
-
-/**
- * Name of all flippable behaviors.
- * @static
- * @memberof FlipBehavior
- * @type {string}
- */
-FlipBehavior.NAME = 'flippable'

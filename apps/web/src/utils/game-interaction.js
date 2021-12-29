@@ -234,7 +234,7 @@ export function attachInputs({
         } else if (type === 'dragStop') {
           if (selectionPosition) {
             logger.info({ button, long, pointers, event }, `selecting meshes`)
-            selectionManager.select()
+            selectionManager.selectWithinBox()
           } else if (mesh) {
             logger.info(
               { mesh, button, long, pointers, event },

@@ -7,7 +7,7 @@ import {
   createRoundedTile
 } from '..'
 import { restoreBehaviors } from './behaviors'
-import { StackBehavior } from '../behaviors'
+import { StackBehaviorName } from '../behaviors/names'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
 
@@ -63,18 +63,18 @@ export function loadScene(engine, data, initial = true) {
   logger.debug({ data }, `load new scene`)
 
   const sources = [
-    { factory: createCard, source: data.cards, name: 'card' },
+    { factory: createCard, source: data?.cards ?? [], name: 'card' },
     {
       factory: createRoundToken,
-      source: data.roundTokens,
+      source: data?.roundTokens ?? [],
       name: 'round token'
     },
     {
       factory: createRoundedTile,
-      source: data.roundedTiles,
+      source: data?.roundedTiles ?? [],
       name: 'rounded tile'
     },
-    { factory: createBoard, source: data.boards, name: 'board' }
+    { factory: createBoard, source: data?.boards ?? [], name: 'board' }
   ]
 
   // makes sure all meshes are created
@@ -94,7 +94,7 @@ export function loadScene(engine, data, initial = true) {
           stackable: stackable ? { ...stackable, stack: undefined } : undefined
         })
       }
-      const behavior = mesh.getBehaviorByName(StackBehavior.NAME)
+      const behavior = mesh.getBehaviorByName(StackBehaviorName)
       if (behavior) {
         if (stackable?.stack?.length > 0) {
           // stores for later

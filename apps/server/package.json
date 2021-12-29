@@ -6,8 +6,8 @@
   "main": "./src",
   "scripts": {
     "start": "nodemon . | pino-pretty -c -t",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest --coverage --colors",
-    "test:dev": "NODE_OPTIONS=--experimental-vm-modules jest --watch"
+    "test": "NODE_OPTIONS=\"--experimental-vm-modules --no-warnings\" jest --coverage --colors",
+    "test:dev": "NODE_OPTIONS=\"--experimental-vm-modules --no-warnings\" jest --watch"
   },
   "dependencies": {
     "@graphql-tools/graphql-file-loader": "^6.2.7",
@@ -25,9 +25,9 @@
   },
   "devDependencies": {
     "faker": "^5.5.3",
-    "jest": "^27.1.1",
+    "jest": "^27.4.4",
     "jest-transform-graphql": "^2.1.0",
-    "jest-watch-typeahead": "^0.6.4",
+    "jest-watch-typeahead": "^1.0.0",
     "nodemon": "^2.0.12",
     "ws": "^8.2.1"
   }

@@ -1,3 +1,4 @@
+import { DetailBehaviorName } from './names'
 import { controlManager } from '../managers'
 
 export class DetailBehavior {
@@ -14,7 +15,7 @@ export class DetailBehavior {
    * @property {string} name - this behavior's constant name.
    */
   get name() {
-    return DetailBehavior.NAME
+    return DetailBehaviorName
   }
 
   /**
@@ -25,17 +26,16 @@ export class DetailBehavior {
 
   /**
    * Attaches this behavior to a mesh, adding to its metadata:
+   * - an empty `images` array
    * - the `detail()` method.
    * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
    */
   attach(mesh) {
-    if (!this.mesh) {
-      this.mesh = mesh
-      if (!mesh.metadata) {
-        mesh.metadata = { images: [] }
-      }
-      mesh.metadata.detail = this.detail.bind(this)
+    this.mesh = mesh
+    if (!mesh.metadata) {
+      mesh.metadata = { images: {} }
     }
+    mesh.metadata.detail = this.detail.bind(this)
   }
 
   /**
@@ -61,11 +61,3 @@ export class DetailBehavior {
     })
   }
 }
-
-/**
- * Name of all detailable behaviors.
- * @static
- * @memberof DetailBehavior
- * @type {string}
- */
-DetailBehavior.NAME = 'detailable'

@@ -1,4 +1,5 @@
 import { Animation } from '@babylonjs/core/Animations/animation'
+import { AnimateBehaviorName } from './names'
 import { applyGravity } from '../utils'
 
 export class AnimateBehavior {
@@ -16,7 +17,7 @@ export class AnimateBehavior {
   constructor({ frameRate } = {}) {
     this.mesh = null
     this.isAnimated = false
-    this.frameRate = frameRate || 30
+    this.frameRate = frameRate ?? 30
     // private
     this.moveAnimation = new Animation(
       'move',
@@ -31,7 +32,7 @@ export class AnimateBehavior {
    * @property {string} name - this behavior's constant name.
    */
   get name() {
-    return AnimateBehavior.NAME
+    return AnimateBehaviorName
   }
 
   /**
@@ -45,9 +46,7 @@ export class AnimateBehavior {
    * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
    */
   attach(mesh) {
-    if (!this.mesh) {
-      this.mesh = mesh
-    }
+    this.mesh = mesh
   }
 
   /**
@@ -71,7 +70,7 @@ export class AnimateBehavior {
    */
   async moveTo(to, duration, gravity = true) {
     const { isAnimated, mesh, frameRate, moveAnimation } = this
-    if (isAnimated) {
+    if (isAnimated || !mesh) {
       return
     }
     this.isAnimated = true
@@ -110,11 +109,3 @@ export class AnimateBehavior {
     )
   }
 }
-
-/**
- * Name of all movable behaviors.
- * @static
- * @memberof AnimateBehavior
- * @type {string}
- */
-AnimateBehavior.NAME = 'animatable'

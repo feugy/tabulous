@@ -31,7 +31,7 @@ class SelectionManager {
    * @param {object} params - parameters, including:
    * @param {Scene} params.scene - scene attached to.
    */
-  init({ scene } = {}) {
+  init({ scene }) {
     this.scene = scene
   }
 
@@ -41,6 +41,7 @@ class SelectionManager {
    * @param {import('../utils').ScreenPosition} end - selection box's end screen position.
    */
   drawSelectionBox(start, end) {
+    if (!this.scene) return
     logger.debug({ start, end }, `draw selection box`)
     const width = start.x - end.x
     const height = start.y - end.y
@@ -62,10 +63,9 @@ class SelectionManager {
     // ensure the box to be displayed "in front of" all other meshes
     this.box.renderingGroupId = 2
 
-    // dynamically assign select function to keep start and end in scope
-    this.select = () => {
-      if (!this.box) return
-      this.box.dispose()
+    // dynamically assign selectInBox function to keep start and end in scope
+    this.selectWithinBox = () => {
+      this.box?.dispose()
       // extrude a polygon from the lines, but since extrusion goes along Z axis,
       // rotate the points first
       const position = screenToGround(scene, {
@@ -91,12 +91,10 @@ class SelectionManager {
 
       for (const mesh of scene.meshes) {
         if (mesh.isPickable && isContaining(box, mesh)) {
-          this.meshes.add(mesh)
-          mesh.renderOverlay = true
+          addToSelection(this, mesh)
         }
       }
-      // keep selection ordered from lowest to highest: it'll guarantuee gravity application
-      this.meshes = new Set(sortByElevation(this.meshes))
+      reorderSelection(this)
 
       logger.info({ start, end, meshes: this.meshes }, `new multiple selection`)
       box.dispose()
@@ -105,10 +103,18 @@ class SelectionManager {
   }
 
   /**
-   * Selects all mesh contained in the selection box, notifying all observers
-   * @returns {array<object>} the selected meshes, if any
+   * Selects all mesh contained in the selection box, disposing the box
    */
-  select() {}
+  selectWithinBox() {}
+
+  /**
+   * Adds an individual mesh into selection (if not already in)
+   * @param {Mesh} - mesh added to the active selection
+   */
+  select(mesh) {
+    addToSelection(this, mesh)
+    reorderSelection(this)
+  }
 
   /**
    * Clears current selection, notifying all observers
@@ -129,3 +135,15 @@ class SelectionManager {
  * @type {SelectionManager}
  */
 export const selectionManager = new SelectionManager()
+
+function addToSelection(manager, mesh) {
+  if (!manager.meshes.has(mesh)) {
+    manager.meshes.add(mesh)
+    mesh.renderOverlay = true
+  }
+}
+
+function reorderSelection(manager) {
+  // keep selection ordered from lowest to highest: it'll guarantuee gravity application
+  manager.meshes = new Set(sortByElevation(manager.meshes))
+}

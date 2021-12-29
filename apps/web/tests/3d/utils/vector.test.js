@@ -6,7 +6,7 @@ import {
   isAboveTable,
   isPositionAboveTable,
   screenToGround
-} from '../../../src/3d/utils/vector'
+} from '../../../src/3d/utils'
 import { initialize3dEngine } from '../../test-utils'
 
 let engine

@@ -103,8 +103,5 @@ export function createCard({
   registerBehaviors(card, behaviorStates)
 
   controlManager.registerControlable(card)
-  card.onDisposeObservable.addOnce(() =>
-    controlManager.unregisterControlable(card)
-  )
   return card
 }

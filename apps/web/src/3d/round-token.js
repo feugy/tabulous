@@ -79,8 +79,5 @@ export function createRoundToken({
   registerBehaviors(token, behaviorStates)
 
   controlManager.registerControlable(token)
-  token.onDisposeObservable.addOnce(() =>
-    controlManager.unregisterControlable(token)
-  )
   return token
 }

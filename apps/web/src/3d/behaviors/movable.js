@@ -1,3 +1,4 @@
+import { MoveBehaviorName } from './names'
 import { moveManager } from '../managers'
 
 /**
@@ -29,7 +30,7 @@ export class MoveBehavior {
    * @property {string} name - this behavior's constant name.
    */
   get name() {
-    return MoveBehavior.NAME
+    return MoveBehaviorName
   }
 
   /**
@@ -66,16 +67,8 @@ export class MoveBehavior {
     // since graphQL returns nulls, we can not use default values
     this.state = {
       ...state,
-      snapDistance: state.snapDistance || 0.25,
-      duration: state.duration || 100
+      snapDistance: state.snapDistance ?? 0.25,
+      duration: state.duration ?? 100
     }
   }
 }
-
-/**
- * Name of all draggable behaviors.
- * @static
- * @memberof MoveBehavior
- * @type {string}
- */
-MoveBehavior.NAME = 'movable'

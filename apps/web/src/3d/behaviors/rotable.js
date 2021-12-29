@@ -1,6 +1,7 @@
 import { Animation } from '@babylonjs/core/Animations/animation'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { AnimateBehavior } from './animatable'
+import { RotateBehaviorName } from './names'
 import { applyGravity } from '../utils'
 import { controlManager } from '../managers'
 // '../../utils' creates a cyclic dependency in Jest
@@ -44,7 +45,7 @@ export class RotateBehavior extends AnimateBehavior {
    * @property {string} name - this behavior's constant name.
    */
   get name() {
-    return RotateBehavior.NAME
+    return RotateBehaviorName
   }
 
   /**
@@ -78,7 +79,7 @@ export class RotateBehavior extends AnimateBehavior {
       rotateAnimation,
       moveAnimation
     } = this
-    if (isAnimated) {
+    if (isAnimated || !mesh) {
       return
     }
     logger.debug({ mesh }, `start rotating ${mesh.id}`)
@@ -140,24 +141,14 @@ export class RotateBehavior extends AnimateBehavior {
     // since graphQL returns nulls, we can not use default values
     this.state = {
       ...state,
-      angle: state.angle || 0,
-      duration: state.duration || 200
+      angle: state.angle ?? 0,
+      duration: state.duration ?? 200
     }
-    if ('angle' in this.state) {
-      this.mesh.rotation.y = this.state.angle
-      if (!this.mesh.metadata) {
-        this.mesh.metadata = {}
-      }
-      this.mesh.metadata.rotate = this.rotate.bind(this)
-      this.mesh.metadata.angle = this.state.angle
+    this.mesh.rotation.y = this.state.angle
+    if (!this.mesh.metadata) {
+      this.mesh.metadata = {}
     }
+    this.mesh.metadata.rotate = this.rotate.bind(this)
+    this.mesh.metadata.angle = this.state.angle
   }
 }
-
-/**
- * Name of all rotable behaviors.
- * @static
- * @memberof RotateBehavior
- * @type {string}
- */
-RotateBehavior.NAME = 'rotable'

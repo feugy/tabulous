@@ -1,22 +1,30 @@
 import {
   AnchorBehavior,
-  AnimateBehavior,
   DetailBehavior,
   FlipBehavior,
   MoveBehavior,
   RotateBehavior,
-  StackBehavior,
-  TargetBehavior
+  StackBehavior
 } from '../behaviors'
+import {
+  AnchorBehaviorName,
+  AnimateBehaviorName,
+  DetailBehaviorName,
+  FlipBehaviorName,
+  MoveBehaviorName,
+  RotateBehaviorName,
+  StackBehaviorName,
+  TargetBehaviorName
+} from '../behaviors/names'
 import { applyGravity } from './gravity'
 
 const behaviorNames = [
-  [MoveBehavior.NAME, MoveBehavior],
-  [FlipBehavior.NAME, FlipBehavior],
-  [RotateBehavior.NAME, RotateBehavior],
-  [DetailBehavior.NAME, DetailBehavior],
-  [AnchorBehavior.NAME, AnchorBehavior],
-  [StackBehavior.NAME, StackBehavior]
+  [MoveBehaviorName, MoveBehavior],
+  [FlipBehaviorName, FlipBehavior],
+  [RotateBehaviorName, RotateBehavior],
+  [DetailBehaviorName, DetailBehavior],
+  [AnchorBehaviorName, AnchorBehavior],
+  [StackBehaviorName, StackBehavior]
 ]
 
 /**
@@ -47,7 +55,7 @@ export function registerBehaviors(mesh, params) {
  */
 export function restoreBehaviors(behaviors, state) {
   for (const behavior of behaviors) {
-    if (state[behavior.name] && behavior.name !== StackBehavior.NAME) {
+    if (state[behavior.name] && behavior.name !== StackBehaviorName) {
       behavior.fromState?.(state[behavior.name])
     }
   }
@@ -63,7 +71,7 @@ export function serializeBehaviors(behaviors) {
   for (const behavior of behaviors) {
     if (behavior.state) {
       result[behavior.name] = behavior.state
-    } else if (behavior.name === DetailBehavior.NAME) {
+    } else if (behavior.name === DetailBehaviorName) {
       result[behavior.name] = true
     }
   }
@@ -104,9 +112,9 @@ export async function animateMove(
  */
 export function getAnimatableBehavior(mesh) {
   return (
-    mesh?.getBehaviorByName(AnimateBehavior.NAME) ||
-    mesh?.getBehaviorByName(FlipBehavior.NAME) ||
-    mesh?.getBehaviorByName(RotateBehavior.NAME)
+    mesh?.getBehaviorByName(AnimateBehaviorName) ??
+    mesh?.getBehaviorByName(FlipBehaviorName) ??
+    mesh?.getBehaviorByName(RotateBehaviorName)
   )
 }
 
@@ -117,8 +125,8 @@ export function getAnimatableBehavior(mesh) {
  */
 export function getTargetableBehavior(mesh) {
   return (
-    mesh?.getBehaviorByName(StackBehavior.NAME) ||
-    mesh?.getBehaviorByName(AnchorBehavior.NAME) ||
-    mesh?.getBehaviorByName(TargetBehavior.NAME)
+    mesh?.getBehaviorByName(StackBehaviorName) ??
+    mesh?.getBehaviorByName(AnchorBehaviorName) ??
+    mesh?.getBehaviorByName(TargetBehaviorName)
   )
 }

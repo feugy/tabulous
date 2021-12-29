@@ -1,6 +1,14 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import {
+  AnchorBehaviorName,
+  DetailBehaviorName,
+  FlipBehaviorName,
+  MoveBehaviorName,
+  RotateBehaviorName,
+  StackBehaviorName
+} from '../../../src/3d/behaviors/names'
+import {
   animateMove,
   getAnimatableBehavior,
   getTargetableBehavior,
@@ -170,7 +178,7 @@ describe('registerBehaviors() 3D utility', () => {
       duration: 345
     }
     registerBehaviors(box, { movable: state })
-    expect(box.getBehaviorByName(MoveBehavior.NAME)).toHaveProperty(
+    expect(box.getBehaviorByName(MoveBehaviorName)).toHaveProperty(
       'state',
       state
     )
@@ -179,7 +187,7 @@ describe('registerBehaviors() 3D utility', () => {
   it('adds flippable behavior to a mesh', () => {
     const state = { isFlipped: true, duration: 123 }
     registerBehaviors(box, { flippable: state })
-    expect(box.getBehaviorByName(FlipBehavior.NAME)).toHaveProperty(
+    expect(box.getBehaviorByName(FlipBehaviorName)).toHaveProperty(
       'state',
       state
     )
@@ -188,7 +196,7 @@ describe('registerBehaviors() 3D utility', () => {
   it('adds rotable behavior to a mesh', () => {
     const state = { angle: Math.PI * 0.75, duration: 321 }
     registerBehaviors(box, { rotable: state })
-    expect(box.getBehaviorByName(RotateBehavior.NAME)).toHaveProperty(
+    expect(box.getBehaviorByName(RotateBehaviorName)).toHaveProperty(
       'state',
       state
     )
@@ -197,7 +205,7 @@ describe('registerBehaviors() 3D utility', () => {
   it('adds detailable behavior to a mesh', () => {
     const state = true
     registerBehaviors(box, { detailable: state })
-    expect(box.getBehaviorByName(DetailBehavior.NAME)).toBeDefined()
+    expect(box.getBehaviorByName(DetailBehaviorName)).toBeDefined()
   })
 
   it('adds anchorable behavior to a mesh', () => {
@@ -217,7 +225,7 @@ describe('registerBehaviors() 3D utility', () => {
       duration: 415
     }
     registerBehaviors(box, { anchorable: state })
-    expect(box.getBehaviorByName(AnchorBehavior.NAME)).toHaveProperty(
+    expect(box.getBehaviorByName(AnchorBehaviorName)).toHaveProperty(
       'state',
       state
     )
@@ -232,7 +240,7 @@ describe('registerBehaviors() 3D utility', () => {
       duration: 415
     }
     registerBehaviors(box, { stackable: state })
-    expect(box.getBehaviorByName(StackBehavior.NAME)).toHaveProperty(
+    expect(box.getBehaviorByName(StackBehaviorName)).toHaveProperty(
       'state',
       state
     )
@@ -247,21 +255,21 @@ describe('registerBehaviors() 3D utility', () => {
       flippable: { isFlipped: false },
       rotable: { angle: Math.PI }
     })
-    expect(box.getBehaviorByName(AnchorBehavior.NAME)).toHaveProperty('state', {
+    expect(box.getBehaviorByName(AnchorBehaviorName)).toHaveProperty('state', {
       anchors: [],
       duration: 100
     })
-    expect(box.getBehaviorByName(DetailBehavior.NAME)).toBeDefined()
-    expect(box.getBehaviorByName(FlipBehavior.NAME)).toHaveProperty('state', {
+    expect(box.getBehaviorByName(DetailBehaviorName)).toBeDefined()
+    expect(box.getBehaviorByName(FlipBehaviorName)).toHaveProperty('state', {
       duration: 500,
       isFlipped: false
     })
-    expect(box.getBehaviorByName(MoveBehavior.NAME)).toBeDefined()
-    expect(box.getBehaviorByName(RotateBehavior.NAME)).toHaveProperty('state', {
+    expect(box.getBehaviorByName(MoveBehaviorName)).toBeDefined()
+    expect(box.getBehaviorByName(RotateBehaviorName)).toHaveProperty('state', {
       duration: 200,
       angle: Math.PI
     })
-    expect(box.getBehaviorByName(StackBehavior.NAME)).toHaveProperty('state', {
+    expect(box.getBehaviorByName(StackBehaviorName)).toHaveProperty('state', {
       stack: [],
       duration: 100,
       extent: 1.5
@@ -391,11 +399,11 @@ describe('restoreBehaviors() 3D utility', () => {
       rotable,
       stackable
     })
-    expect(box.getBehaviorByName(MoveBehavior.NAME).state).toEqual(movable)
-    expect(box.getBehaviorByName(FlipBehavior.NAME).state).toEqual(flippable)
-    expect(box.getBehaviorByName(RotateBehavior.NAME).state).toEqual(rotable)
-    expect(box.getBehaviorByName(AnchorBehavior.NAME).state).toEqual(anchorable)
-    expect(box.getBehaviorByName(StackBehavior.NAME).state).toEqual({
+    expect(box.getBehaviorByName(MoveBehaviorName).state).toEqual(movable)
+    expect(box.getBehaviorByName(FlipBehaviorName).state).toEqual(flippable)
+    expect(box.getBehaviorByName(RotateBehaviorName).state).toEqual(rotable)
+    expect(box.getBehaviorByName(AnchorBehaviorName).state).toEqual(anchorable)
+    expect(box.getBehaviorByName(StackBehaviorName).state).toEqual({
       duration: 100,
       extent: 0.3,
       stack: []
@@ -411,22 +419,22 @@ describe('restoreBehaviors() 3D utility', () => {
     box.addBehavior(new StackBehavior(), true)
     box.addBehavior(new AnimateBehavior(), true)
     restoreBehaviors(box.behaviors, {})
-    expect(box.getBehaviorByName(MoveBehavior.NAME).state).toEqual({
+    expect(box.getBehaviorByName(MoveBehaviorName).state).toEqual({
       snapDistance: 0.25,
       duration: 100
     })
-    expect(box.getBehaviorByName(FlipBehavior.NAME).state).toEqual({
+    expect(box.getBehaviorByName(FlipBehaviorName).state).toEqual({
       isFlipped: false,
       duration: 500
     })
-    expect(box.getBehaviorByName(RotateBehavior.NAME).state).toEqual({
+    expect(box.getBehaviorByName(RotateBehaviorName).state).toEqual({
       angle: 0,
       duration: 200
     })
-    expect(box.getBehaviorByName(AnchorBehavior.NAME).state).toEqual({
+    expect(box.getBehaviorByName(AnchorBehaviorName).state).toEqual({
       duration: 100
     })
-    expect(box.getBehaviorByName(StackBehavior.NAME).state).toEqual({
+    expect(box.getBehaviorByName(StackBehaviorName).state).toEqual({
       duration: 100,
       extent: 0.3,
       stack: []
