@@ -4,7 +4,7 @@
   export let outcome = ''
 </script>
 
-<style type="postcss">
+<style lang="postcss">
   div {
     @apply inline-flex items-center;
   }
@@ -17,9 +17,7 @@
     }
 
     &:not(:last-of-type) {
-      @apply border-solid pr-1;
-      border-right-width: 1px;
-      border-color: theme('colors.secondary.light');
+      @apply border-r border-$secondary-light pr-1;
     }
   }
 

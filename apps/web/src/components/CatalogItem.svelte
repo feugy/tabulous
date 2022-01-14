@@ -7,15 +7,14 @@
   const dispatch = createEventDispatcher()
 </script>
 
-<style type="postcss">
+<style lang="postcss">
   article {
-    @apply inline-grid h-64 shadow-md cursor-pointer flex-1 rounded overflow-hidden;
+    @apply inline-grid h-64 shadow-md cursor-pointer flex-1 rounded 
+           overflow-hidden bg-$base-lighter transition-all duration-$short;
     grid-template-areas: 'full';
-    background: theme('backgrounds.primary');
-    transition: all theme('transitions.short') ease-in-out;
 
     &:hover {
-      transform: scale(1.05);
+      @apply transform-gpu scale-105;
     }
   }
 
@@ -30,9 +29,8 @@
   }
 
   caption {
-    @apply flex flex-col flex-nowrap w-full gap-4 p-4 opacity-80 items-center;
-    background: theme('colors.primary.main');
-    color: theme('colors.primary.text');
+    @apply flex flex-col flex-nowrap w-full gap-4 p-4 
+           opacity-80 items-center bg-$primary text-$primary-lightest;
   }
 
   h3 {

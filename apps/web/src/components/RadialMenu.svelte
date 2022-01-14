@@ -43,14 +43,12 @@
   }
 </script>
 
-<style type="postcss">
+<style lang="postcss">
   aside {
-    @apply absolute rounded-full border-2 flex items-center justify-center;
-    border-color: theme('colors.primary.light');
+    @apply absolute rounded-full border-2 flex items-center 
+           justify-center border-$primary-light transform-gpu -translate-x-1/2 -translate-y-1/2;
     width: var(--size);
     height: var(--size);
-    /* align menu center on given coordinates */
-    transform: translate(-50%, -50%);
   }
 
   ul {
@@ -58,10 +56,8 @@
   }
 
   li {
-    @apply absolute;
-    opacity: 0;
+    @apply absolute opacity-0  transform-gpu -translate-x-1/2 -translate-y-1/2;
     /* align item center on the menu's circle */
-    transform: translate(-50%, -50%);
   }
 </style>
 

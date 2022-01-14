@@ -16,7 +16,7 @@
     actions = []
     open = Boolean(object)
     if (open) {
-      ({ x, y } = getMeshScreenPosition(object))
+      ;({ x, y } = getMeshScreenPosition(object)) // eslint-disable-line no-extra-semi
       stackSize = object.metadata.stack?.length ?? 0
       if (object.metadata.flip) {
         actions.push({
@@ -53,12 +53,11 @@
   }
 </script>
 
-<style type="postcss">
+<style lang="postcss">
   .stack {
-    @apply inline-block h-auto w-auto font-bold text-xl pointer-events-none;
-    color: theme('colors.primary.text');
+    @apply inline-block h-auto w-auto font-bold text-xl pointer-events-none text-$primary-lightest;
     -webkit-text-stroke-width: 1px;
-    -webkit-text-stroke-color: theme('colors.primary.dark');
+    -webkit-text-stroke-color: var(--primary-dark);
   }
 </style>
 

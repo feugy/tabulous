@@ -10,7 +10,7 @@ input SignalInput {
   signal: String!
 }
 
-type Mutation {
+extend type Mutation {
   sendSignal(signal: SignalInput): Signal
 }
 

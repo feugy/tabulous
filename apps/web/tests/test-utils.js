@@ -44,7 +44,7 @@ export function initialize3dEngine(
 }
 
 export function disposeAllMeshes(scene) {
-  for (const mesh of [...scene?.meshes]) {
+  for (const mesh of [...(scene?.meshes ?? [])]) {
     mesh.dispose()
   }
 }

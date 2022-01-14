@@ -15,7 +15,7 @@
   }
 </script>
 
-<style type="postcss">
+<style lang="postcss">
   section {
     @apply flex flex-col flex-1 max-h-full max-w-full items-center gap-2 p-2;
   }

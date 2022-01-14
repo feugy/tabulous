@@ -94,27 +94,19 @@
   }
 </script>
 
-<style type="postcss">
+<style lang="postcss">
   section {
-    @apply relative flex items-stretch justify-items-stretch h-full z-10;
-    min-width: min-content;
-    max-width: 100%;
+    @apply relative flex items-stretch justify-items-stretch h-full z-10 min-w-min max-w-full;
 
     &:not(.vertical).minimized {
-      width: 0 !important;
-      min-width: 0;
+      @apply min-w-0 !w-0;
     }
 
     &.vertical {
-      @apply w-full h-auto;
-      min-width: auto;
-      max-width: auto;
-      min-height: min-content;
-      max-height: 100%;
+      @apply w-full h-auto min-w-none max-w-none min-h-min max-h-full;
 
       &.minimized {
-        height: 0 !important;
-        min-height: 0;
+        @apply min-h-0 !h-0;
       }
     }
   }
@@ -127,18 +119,16 @@
       @apply relative flex flex-col top-2 -right-2 z-30 gap-2 pointer-events-auto;
 
       & .active {
-        transform: scale(1.2);
+        @apply transform-gpu scale-125;
       }
     }
 
     & .gutter {
-      @apply relative border-none border-l-2 h-full z-20 pointer-events-auto;
-      border-style: solid;
+      @apply relative border border-l-2 h-full z-20 pointer-events-auto;
       cursor: ew-resize;
 
       &:after {
-        @apply absolute inline-block w-4 h-10 top-1/2 -mt-4 -ml-2 rounded;
-        background-color: theme('colors.primary.light');
+        @apply absolute inline-block w-4 h-10 top-1/2 -mt-4 -ml-2 rounded bg-$primary-light;
         content: '';
       }
     }

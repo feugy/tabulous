@@ -3,7 +3,7 @@
   import { RuleViewer } from '../../src/components'
 </script>
 
-<style type="postcss">
+<style lang="postcss">
   .rule-viewer {
     @apply flex h-full overflow-auto;
     max-width: 100vh;

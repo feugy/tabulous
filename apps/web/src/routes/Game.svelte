@@ -57,7 +57,7 @@
   }
 </script>
 
-<style type="postcss">
+<style lang="postcss">
   main {
     @apply relative h-full;
   }

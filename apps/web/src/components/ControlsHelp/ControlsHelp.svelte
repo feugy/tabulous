@@ -32,7 +32,7 @@
   ]
 </script>
 
-<style type="postcss">
+<style lang="postcss">
   div {
     @apply flex-1 p-2 h-full overflow-auto;
   }
@@ -43,9 +43,7 @@
   }
 
   h3 {
-    @apply text-xl border-solid mx-2 pb-1 pt-4;
-    border-bottom-width: 1px;
-    border-color: theme('colors.secondary.light');
+    @apply text-xl border-b border-$secondary-light mx-2 pb-1 pt-4;
   }
 </style>
 

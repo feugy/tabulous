@@ -22,6 +22,7 @@ module.exports = {
   },
   settings: {
     // unfortunately, eslint-plugin-svelte can not work with preprocessors, like postcss
-    'svelte3/ignore-styles': () => true
+    'svelte3/ignore-styles': () => true,
+    'svelte3/ignore-warnings': ({ code }) => code === 'a11y-no-redundant-roles'
   }
 }

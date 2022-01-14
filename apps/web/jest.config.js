@@ -17,7 +17,8 @@ module.exports = {
     'node_modules\\/(?!@babylonjs|simple-peer-light|svelte-spa-router|svelte-portal|@atelier-wb)'
   ],
   moduleNameMapper: {
-    '^.+\\.png$': 'identity-obj-proxy'
+    '^.+\\.png$': 'identity-obj-proxy',
+    '^.+\\.(post)?css$': 'identity-obj-proxy'
   },
   moduleFileExtensions: ['js', 'svelte', 'graphql'],
   setupFilesAfterEnv: ['<rootDir>/tests/jest-setup.js'],

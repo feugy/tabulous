@@ -64,14 +64,14 @@ describe('ControlManager', () => {
         localPosition: { x: 100, y: 200 }
       })
       expect(currentPointer).toEqual([
-        -42.70810574484504, 0, 15.609075959304121
+        -42.70810574484502, 0, 15.609075959304086
       ])
       scene.onPrePointerObservable.notifyObservers({
         type: PointerEventTypes.POINTERMOVE,
         localPosition: { x: 200, y: 250 }
       })
       expect(currentPointer).toEqual([
-        -37.370545321065926, 0, 12.86138393014597
+        -37.37054532106592, 0, 12.861383930145937
       ])
     })
 

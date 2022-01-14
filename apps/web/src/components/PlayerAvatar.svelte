@@ -37,7 +37,7 @@
   }
 </script>
 
-<style type="postcss">
+<style lang="postcss">
   figure {
     @apply inline-flex relative items-center justify-center;
     width: 150px;
@@ -49,22 +49,19 @@
   }
 
   figcaption {
-    @apply absolute top-0 left-0 w-full h-full flex items-center justify-center p-4 rounded-full;
-    color: theme('colors.primary.text');
+    @apply absolute top-0 left-0 w-full h-full flex items-center justify-center p-4 rounded-full text-$primary-lightest;
 
     &.noImage {
-      background-color: theme('backgrounds.backdrop');
+      @apply bg-$base-dark;
     }
   }
 
   legend {
-    @apply absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 z-10;
+    @apply absolute bottom-4 left-1/2 transform-gpu -translate-x-1/2 flex gap-2 z-10;
   }
 
   img {
-    @apply rounded-full h-full;
-    border: 0.5rem solid theme('colors.primary.light');
-    background-color: theme('colors.primary.text');
+    @apply rounded-full border-5 border-$primary-light bg-$primary-lightest h-full;
 
     &.noImage {
       @apply opacity-0;

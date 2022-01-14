@@ -1,2 +1,2 @@
 import '../../src/common'
-import './styles.css'
+import './styles.postcss'

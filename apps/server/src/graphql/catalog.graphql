@@ -6,6 +6,6 @@ type CatalogItem {
   minTime: Int
 }
 
-type Query {
+extend type Query {
   listCatalog: [CatalogItem]
 }

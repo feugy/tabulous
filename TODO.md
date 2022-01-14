@@ -1,7 +1,12 @@
 # TODO
 
-a stack of 2, 1 mesh partially overlapping it, could stack a 3rd mesh (should be prevented?)
-pivot selection only alter the first
+1. update atelier
+
+1. fix stack + flip + snap issue
+
+1. a stack of 2, 1 mesh partially overlapping it, could stack a 3rd mesh (should be prevented?)
+
+1. pivot selection only alter the first
 
 ## Brittle tests
 

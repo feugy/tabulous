@@ -1,5 +1,6 @@
 import { getBrowserLocale, locale, options, translations } from 'svelte-intl'
-import './style.svelte'
+import 'virtual:windi.css'
+import './style.postcss'
 import fr from './locales/fr.yaml'
 
 translations.update({ fr })

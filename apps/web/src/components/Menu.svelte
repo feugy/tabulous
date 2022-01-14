@@ -162,10 +162,9 @@
   }
 </script>
 
-<style type="postcss">
+<style lang="postcss">
   ul {
-    @apply absolute rounded z-20 text-sm shadow-md;
-    background-color: theme('backgrounds.page');
+    @apply absolute rounded z-20 text-sm shadow-md bg-$base-lightest;
   }
 
   li {
@@ -182,13 +181,10 @@
     &:not(.disabled) {
       &:hover,
       &:focus {
-        @apply cursor-pointer outline-none;
-        color: theme('colors.primary.text');
-        background-color: theme('colors.primary.dark');
+        @apply cursor-pointer outline-none text-$primary-lightest bg-$primary-dark;
       }
       &.current {
-        color: theme('colors.primary.text');
-        background-color: theme('colors.primary.main');
+        @apply text-$primary-lightest bg-$primary;
       }
     }
 

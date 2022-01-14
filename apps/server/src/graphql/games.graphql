@@ -229,24 +229,6 @@ input CardInput {
   stackable: StackableStateInput
 }
 
-input CardInput {
-  id: ID!
-  texture: String!
-  images: ImageDefsInput!
-  width: Float
-  height: Float
-  depth: Float
-  x: Float
-  y: Float
-  z: Float
-  detailable: Boolean
-  movable: MovableStateInput
-  flippable: FlippableStateInput
-  rotable: RotableStateInput
-  anchorable: AnchorableStateInput
-  stackable: StackableStateInput
-}
-
 input RoundTokenInput {
   id: ID!
   texture: String!
@@ -318,17 +300,17 @@ input CameraPositionInput {
   hash: String!
 }
 
-type Query {
+extend type Query {
   loadGame(gameId: ID!): Game
 }
 
-type Mutation {
+extend type Mutation {
   createGame(kind: String!): Game
   saveGame(game: GameInput!): Game
   deleteGame(gameId: ID!): Game
   invite(gameId: ID!, playerId: ID!): Game
 }
 
-type Subscription {
+extend type Subscription {
   listGames: [Game]
 }

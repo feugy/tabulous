@@ -3,7 +3,7 @@
   import { CatalogItem } from '../../src/components'
 </script>
 
-<style type="postcss">
+<style lang="postcss">
   .catalog-item-viewer {
     :global(& .tool-preview) {
       @apply grid gap-6 p-6;

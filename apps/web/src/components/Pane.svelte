@@ -1,7 +1,6 @@
-<style type="postcss">
+<style lang="postcss">
   .pane {
-    @apply p-8 shadow-md;
-    background: theme('backgrounds.primary');
+    @apply p-8 shadow-md bg-$base-lighter;
   }
 </style>
 

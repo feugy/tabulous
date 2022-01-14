@@ -39,33 +39,33 @@
   }
 </script>
 
-<style type="postcss">
+<style lang="postcss">
   .backdrop,
   .filter {
-    @apply invisible fixed flex items-center justify-center inset-0 m-0 z-10 p-10;
-  }
-
-  .filter.open {
-    @apply visible;
-    backdrop-filter: blur(4px);
-    background-color: theme('backgrounds.backdrop');
-  }
-
-  .backdrop {
-    @apply opacity-0;
-    transition: opacity theme('transitions.short') ease-in-out;
+    @apply fixed flex items-center justify-center 
+           inset-0 m-0 z-10 p-10 opacity-0 
+           transition duration-$short pointer-events-none;
 
     &.open {
-      @apply opacity-100 visible;
+      @apply opacity-100 pointer-events-auto;
+    }
+  }
+
+  .filter {
+    @apply bg-$base-dark delay-150;
+
+    &.open {
+      @apply opacity-90 backdrop-filter backdrop-blur-sm;
     }
   }
 
   .close-container {
     @apply absolute top-0 right-0 m-4;
   }
+
   article {
-    @apply flex flex-col w-full max-h-full;
-    @apply md:w-10/12 lg:w-9/12 xl:w-7/12;
+    @apply flex flex-col w-full max-h-full
+           md:w-10/12 lg:w-9/12 xl:w-7/12;
   }
 
   .content {

@@ -6,7 +6,7 @@
   let currentTab
 </script>
 
-<style type="postcss">
+<style lang="postcss">
   aside {
     @apply absolute bg-gray-100;
 

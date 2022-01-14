@@ -20,14 +20,13 @@
   }
 </script>
 
-<style type="postcss">
+<style lang="postcss">
   article {
-    @apply inline-flex flex-col p-6 rounded shadow-md cursor-pointer;
-    background: theme('backgrounds.primary');
-    transition: all theme('transitions.short') ease-in-out;
+    @apply inline-flex flex-col p-6 rounded shadow-md cursor-pointer 
+           bg-$base-lighter transition duration-$short;
 
     &:hover {
-      transform: scale(1.05);
+      @apply transform-gpu scale-105;
     }
   }
 
