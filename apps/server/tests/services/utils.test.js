@@ -70,7 +70,7 @@ describe('instanciateGame()', () => {
       })
       expect(scene.cards).not.toEqual(descriptor.cards)
       expect(
-        scene.cards.filter(({ stack }) => stack?.length === 9)
+        scene.cards.filter(({ stackable }) => stackable?.stack.length === 9)
       ).toHaveLength(1)
       const slot = descriptor.slots[0]
       expect(
@@ -112,12 +112,12 @@ describe('instanciateGame()', () => {
         boards: []
       })
       expect(
-        scene.cards.filter(({ stack }) => stack?.length === 1)
+        scene.cards.filter(({ stackable }) => stackable?.stack.length === 1)
       ).toHaveLength(1)
       expect(scene.cards.filter(({ x }) => x === 10)).toHaveLength(2)
       expect(scene.cards.filter(({ x }) => x === 5)).toHaveLength(1)
       expect(
-        scene.cards.filter(({ stack }) => stack?.length === 6)
+        scene.cards.filter(({ stackable }) => stackable?.stack.length === 6)
       ).toHaveLength(1)
       expect(scene.cards.filter(({ x }) => x === 1)).toHaveLength(7)
     })
