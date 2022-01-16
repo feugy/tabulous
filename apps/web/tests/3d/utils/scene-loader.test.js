@@ -2,13 +2,13 @@ import { NullEngine } from '@babylonjs/core/Engines/nullEngine'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
 import {
-  createBoard,
   createCard,
   createTable,
   createRoundToken,
   createRoundedTile
 } from '../../../src/3d'
-import { loadScene, serializeScene } from '../../../src/3d/utils/scene-loader'
+import { MoveBehaviorName } from '../../../src/3d/behaviors'
+import { loadMeshes, serializeMeshes } from '../../../src/3d/utils/scene-loader'
 import { initialize3dEngine } from '../../test-utils'
 
 let engine
@@ -18,11 +18,11 @@ const renderHeight = 1024
 
 afterAll(() => engine.dispose())
 
-describe('serializeScene() 3D utility', () => {
+describe('serializeMeshes() 3D utility', () => {
   it('ignores engine without scene', () => {
     jest.spyOn(console, 'log').mockImplementationOnce(() => {})
     engine = new NullEngine()
-    expect(serializeScene(engine)).toBeUndefined()
+    expect(serializeMeshes(engine)).toBeUndefined()
   })
 
   describe('given an engine', () => {
@@ -37,12 +37,7 @@ describe('serializeScene() 3D utility', () => {
     })
 
     it('can handle an empty scene', () => {
-      expect(serializeScene(engine)).toEqual({
-        cards: [],
-        roundTokens: [],
-        roundedTiles: [],
-        boards: []
-      })
+      expect(serializeMeshes(engine)).toEqual([])
     })
 
     it('serializes cards', () => {
@@ -58,12 +53,10 @@ describe('serializeScene() 3D utility', () => {
         height: faker.datatype.number(),
         depth: faker.datatype.number()
       })
-      expect(serializeScene(engine)).toEqual({
-        cards: [card1.metadata.serialize(), card2.metadata.serialize()],
-        roundTokens: [],
-        roundedTiles: [],
-        boards: []
-      })
+      expect(serializeMeshes(engine)).toEqual([
+        card1.metadata.serialize(),
+        card2.metadata.serialize()
+      ])
     })
 
     it('serializes round tokens', () => {
@@ -78,12 +71,10 @@ describe('serializeScene() 3D utility', () => {
         diameter: faker.datatype.number(),
         height: faker.datatype.number()
       })
-      expect(serializeScene(engine)).toEqual({
-        cards: [],
-        roundTokens: [token1.metadata.serialize(), token2.metadata.serialize()],
-        roundedTiles: [],
-        boards: []
-      })
+      expect(serializeMeshes(engine)).toEqual([
+        token1.metadata.serialize(),
+        token2.metadata.serialize()
+      ])
     })
 
     it('serializes rounded tiles', () => {
@@ -101,47 +92,24 @@ describe('serializeScene() 3D utility', () => {
         height: faker.datatype.number(),
         depth: faker.datatype.number()
       })
-      expect(serializeScene(engine)).toEqual({
-        cards: [],
-        roundTokens: [],
-        roundedTiles: [tile1.metadata.serialize(), tile2.metadata.serialize()],
-        boards: []
-      })
-    })
-
-    it('serializes boards', () => {
-      const board1 = createBoard({ id: 'board1' })
-      const board2 = createBoard({
-        id: 'board2',
-        texture: faker.internet.url(),
-        images: [faker.random.word()],
-        x: faker.datatype.number(),
-        y: faker.datatype.number(),
-        z: faker.datatype.number(),
-        borderRadius: faker.datatype.number(),
-        width: faker.datatype.number(),
-        height: faker.datatype.number(),
-        depth: faker.datatype.number()
-      })
-      expect(serializeScene(engine)).toEqual({
-        cards: [],
-        roundTokens: [],
-        roundedTiles: [],
-        boards: [board1.metadata.serialize(), board2.metadata.serialize()]
-      })
+      expect(serializeMeshes(engine)).toEqual([
+        tile1.metadata.serialize(),
+        tile2.metadata.serialize()
+      ])
     })
   })
 })
 
-describe('loadScene() 3D utility', () => {
+describe('loadMeshes() 3D utility', () => {
   it('ignores engine without scene', () => {
     jest.spyOn(console, 'log').mockImplementationOnce(() => {})
     engine = new NullEngine()
-    expect(loadScene(engine, {})).toBeUndefined()
+    expect(loadMeshes(engine, [])).toBeUndefined()
   })
 
   describe('given an engine and some data', () => {
     let card1 = {
+      shape: 'card',
       depth: 0.13,
       height: 4.2,
       id: 'card1',
@@ -159,6 +127,7 @@ describe('loadScene() 3D utility', () => {
     }
 
     let card2 = {
+      shape: 'card',
       depth: 0.2,
       height: 4,
       id: 'card2',
@@ -171,6 +140,7 @@ describe('loadScene() 3D utility', () => {
     }
 
     let token1 = {
+      shape: 'roundToken',
       diameter: 5.1,
       height: 7.6,
       id: 'token1',
@@ -184,6 +154,7 @@ describe('loadScene() 3D utility', () => {
     }
 
     let tile1 = {
+      shape: 'roundedTile',
       borderColor: [0, 10, 100, 50],
       borderRadius: 1.14,
       depth: 3.44,
@@ -197,20 +168,6 @@ describe('loadScene() 3D utility', () => {
       z: 72
     }
 
-    let board1 = {
-      borderRadius: 6.45,
-      depth: 2.98,
-      height: 4,
-      id: 'board1',
-      texture: 'https://raegan.biz',
-      width: 3.9,
-      x: 82,
-      y: 24,
-      z: 86,
-      movable: { snapDistance: 0.1, duration: 100 },
-      anchorable: { anchors: [], duration: 100 }
-    }
-
     beforeAll(() => {
       ;({ engine, scene } = initialize3dEngine({ renderWidth, renderHeight }))
     })
@@ -221,46 +178,37 @@ describe('loadScene() 3D utility', () => {
       }
     })
 
-    it('handles empty or no data', () => {
-      expect(loadScene(engine, {})).toBeUndefined()
-      expect(scene.meshes).toHaveLength(0)
-      expect(loadScene(engine)).toBeUndefined()
-      expect(scene.meshes).toHaveLength(0)
-      expect(loadScene(engine, null)).toBeUndefined()
-      expect(scene.meshes).toHaveLength(0)
-      expect()
+    it('handles empty input', () => {
+      expect(loadMeshes(engine, [])).toBeUndefined()
     })
 
     it('displays loading UI on initial load only', () => {
       const displayLoadingUI = jest.spyOn(engine, 'displayLoadingUI')
 
-      loadScene(engine, { cards: [card1] }, false)
+      loadMeshes(engine, [card1], false)
       expect(displayLoadingUI).toHaveBeenCalledTimes(0)
       expect(scene.getMeshById(card1.id)).toBeDefined()
 
-      loadScene(engine, { cards: [card1] })
+      loadMeshes(engine, [card1])
       expect(displayLoadingUI).toHaveBeenCalledTimes(1)
       expect(scene.getMeshById(card1.id)).toBeDefined()
     })
 
     it('disposes all existing cards, tokens, tiles and boxes but leaves other meshes', () => {
-      createBoard({ id: 'board' })
       createTable()
       createRoundToken({ id: 'token' })
       CreateBox('box', { width: 10, height: 10, depth: 10 })
       createRoundedTile({ id: 'tile' })
       createCard({ id: 'card' })
 
-      expect(scene.getMeshById('board')).toBeDefined()
       expect(scene.getMeshById('table')).toBeDefined()
       expect(scene.getMeshById('token')).toBeDefined()
       expect(scene.getMeshById('box')).toBeDefined()
       expect(scene.getMeshById('tile')).toBeDefined()
       expect(scene.getMeshById('card')).toBeDefined()
 
-      loadScene(engine, {})
+      loadMeshes(engine, [])
 
-      expect(scene.getMeshById('board')).toBeNull()
       expect(scene.getMeshById('table')).toBeDefined()
       expect(scene.getMeshById('token')).toBeNull()
       expect(scene.getMeshById('box')).toBeDefined()
@@ -269,12 +217,7 @@ describe('loadScene() 3D utility', () => {
     })
 
     it('adds new meshes with their behaviors', () => {
-      loadScene(engine, {
-        cards: [card1, card2],
-        roundTokens: [token1],
-        roundedTiles: [tile1],
-        boards: [board1]
-      })
+      loadMeshes(engine, [card1, token1, tile1, card2])
       expect(scene.getMeshById(card1.id)).toBeDefined()
       expect(scene.getMeshById(card1.id).metadata.serialize()).toEqual(card1)
       expect(scene.getMeshById(card2.id)).toBeDefined()
@@ -283,8 +226,30 @@ describe('loadScene() 3D utility', () => {
       expect(scene.getMeshById(token1.id).metadata.serialize()).toEqual(token1)
       expect(scene.getMeshById(tile1.id)).toBeDefined()
       expect(scene.getMeshById(tile1.id).metadata.serialize()).toEqual(tile1)
-      expect(scene.getMeshById(board1.id)).toBeDefined()
-      expect(scene.getMeshById(board1.id).metadata.serialize()).toEqual(board1)
+    })
+
+    it('trims null values out', () => {
+      const id = 'card20'
+      const card = {
+        shape: 'card',
+        depth: 0.13,
+        height: 4.2,
+        id,
+        images: ['mobile'],
+        texture: 'https://elyse.biz',
+        width: 7.8,
+        x: 21,
+        y: null,
+        z: null,
+        movable: { snapDistance: 0.1, duration: null }
+      }
+      loadMeshes(engine, [card])
+      const mesh = scene.getMeshById(id)
+      expect(mesh.absolutePosition.asArray()).toEqual([card.x, 0, 0])
+      expect(mesh.getBehaviorByName(MoveBehaviorName).state).toEqual({
+        snapDistance: card.movable.snapDistance,
+        duration: 100
+      })
     })
 
     it('updates existing meshes with their behaviors', () => {
@@ -308,20 +273,7 @@ describe('loadScene() 3D utility', () => {
         flippable: { isFlipped: false },
         rotable: { angle: Math.PI * 2 }
       })
-      const originalBoard = createBoard({
-        id: board1.id,
-        x: 10,
-        y: 20,
-        z: 30,
-        movable: { snapDistance: 10, duration: 100 },
-        anchorable: { anchors: [{ id: 1 }], duration: 100 }
-      })
-      loadScene(engine, {
-        cards: [card1, card2],
-        roundTokens: [token1],
-        roundedTiles: [tile1],
-        boards: [board1]
-      })
+      loadMeshes(engine, [card1, card2, token1, tile1])
       expect(scene.getMeshById(card1.id)).toBeDefined()
       expect(scene.getMeshById(card1.id).metadata.serialize()).toEqual({
         ...originalCard.metadata.serialize(),
@@ -347,19 +299,11 @@ describe('loadScene() 3D utility', () => {
         y: tile1.y,
         z: tile1.z
       })
-      expect(scene.getMeshById(board1.id)).toBeDefined()
-      expect(scene.getMeshById(board1.id).metadata.serialize()).toEqual({
-        ...originalBoard.metadata.serialize(),
-        x: board1.x,
-        y: board1.y,
-        z: board1.z,
-        movable: board1.movable,
-        anchorable: board1.anchorable
-      })
     })
 
     it('restores mesh stacks', () => {
       let card1 = {
+        shape: 'card',
         id: 'card1',
         stackable: {
           duration: 100,
@@ -369,14 +313,12 @@ describe('loadScene() 3D utility', () => {
           stack: ['card2', 'card4', 'card3']
         }
       }
-      loadScene(engine, {
-        cards: [
-          card1,
-          { id: 'card2', stackable: { stack: [] } },
-          { id: 'card3' },
-          { id: 'card4' }
-        ]
-      })
+      loadMeshes(engine, [
+        card1,
+        { shape: 'card', id: 'card2', stackable: { stack: [] } },
+        { shape: 'card', id: 'card3' },
+        { shape: 'card', id: 'card4' }
+      ])
       expect(scene.getMeshById(card1.id)).toBeDefined()
       expect(scene.getMeshById(card1.id).metadata.serialize()).toEqual({
         ...card1,

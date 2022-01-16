@@ -51,12 +51,6 @@ function makeCornerMesh(
 /**
  * Creates a tile with rounded corners.
  * Tiles are boxes, so their position is their center.
- * A tile has the following behaviors:
- * - movable
- * - detailable
- * - flippable
- * - rotable
- * - stackable (the entire tile is a drop target)
  * A tile's texture must have 2 faces, back then front, aligned horizontally.
  * Edges have solid color (borderColor).
  * @param {object} params - tile parameters, including (all other properties will be passed to the created mesh):
@@ -97,7 +91,7 @@ export function createRoundedTile({
   ]
   const color = Color4.FromArray(borderColor)
   const faceColors = [color, color, color, color, undefined, undefined]
-  const tileMesh = CreateBox('rounded-tile', {
+  const tileMesh = CreateBox('roundedTile', {
     width,
     height: depth,
     depth: height,
@@ -111,7 +105,7 @@ export function createRoundedTile({
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, true, false))
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, false, true))
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, false, false))
-  const tile = tileCSG.toMesh('rounded-tile')
+  const tile = tileCSG.toMesh('roundedTile')
   tile.id = id
   tileMesh.dispose()
 
@@ -128,6 +122,7 @@ export function createRoundedTile({
   tile.metadata = {
     images,
     serialize: () => ({
+      shape: tile.name,
       id,
       x: tile.position.x,
       y: tile.position.y,

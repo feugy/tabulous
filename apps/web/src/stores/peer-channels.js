@@ -30,10 +30,9 @@ function refreshConnected() {
   const peers = [...channels.values()].filter(({ established }) => established)
   connected$.next(
     peers.length > 0
-      ? [
-          { playerId: current.player.id, stream: current.stream },
-          ...peers
-        ].map(({ playerId, stream }) => ({ playerId, stream }))
+      ? [{ playerId: current.player.id, stream: current.stream }, ...peers].map(
+          ({ playerId, stream }) => ({ playerId, stream })
+        )
       : []
   )
 }

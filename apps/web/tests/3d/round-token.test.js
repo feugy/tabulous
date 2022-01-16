@@ -9,7 +9,7 @@ describe('createRoundToken()', () => {
   it('creates a token with default values and no behavior', () => {
     const mesh = createRoundToken()
     const { boundingBox } = mesh.getBoundingInfo()
-    expect(mesh.name).toEqual('round-token')
+    expect(mesh.name).toEqual('roundToken')
     expect(boundingBox.extendSize.x * 2).toEqual(2)
     expect(boundingBox.extendSize.z * 2).toEqual(2)
     expect(boundingBox.extendSize.y * 2).toEqual(0.1)
@@ -55,7 +55,7 @@ describe('createRoundToken()', () => {
 
     it('has all the expected data', () => {
       const { boundingBox } = mesh.getBoundingInfo()
-      expect(mesh.name).toEqual('round-token')
+      expect(mesh.name).toEqual('roundToken')
       expect(mesh.id).toEqual(id)
       expect(boundingBox.extendSize.x * 2).toEqual(diameter)
       expect(boundingBox.extendSize.z * 2).toEqual(diameter)
@@ -88,6 +88,7 @@ describe('createRoundToken()', () => {
 
     it('serialize with its state', () => {
       expect(mesh.metadata.serialize()).toEqual({
+        shape: 'roundToken',
         id,
         x,
         y,

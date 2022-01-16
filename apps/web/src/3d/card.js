@@ -77,6 +77,7 @@ export function createCard({
   card.metadata = {
     images,
     serialize: () => ({
+      shape: card.name,
       id,
       x: card.position.x,
       y: card.position.y,

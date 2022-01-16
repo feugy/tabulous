@@ -23,10 +23,12 @@
 - `InputManager › given an initialized manager() › handles multiple pointers taps`
 
   > `expect(received).toHaveLength(expected)` line 1319 (1 long received)
+  > Presumably solved on Jan 16 by reducing in-between events timers
 
 ## Refactor
 
-- merge board & rounded tile (include border in texture)
+- images should go to detailable now.
+- no need for stackable.isCylindric, now that we have mesh's shape.
 - behavior should be managers, since they can be attached to multiple meshes
 - all manager managing a collection of behaviors should check their capabilities
 - stop inverting depth and height. Use 3D world conventions
@@ -60,6 +62,12 @@
 - use JWT as authentication token (stores player id and username)
 - allows a single connection per player (discards other JWTs)
 - logging (warning on invalid descriptors)
+
+## Klondike
+
+- snap cards on new game
+- restrict snapping for aces
+- card anchors
 
 ## Hosting
 

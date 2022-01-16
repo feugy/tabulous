@@ -14,23 +14,16 @@ export const minTime = 30
 export const minAge = 10
 
 /**
- * 40 level 1 cards, 30 level 2 cards, 30 level 3 cards.
- * @type {import('../src/services/games').Card[]}
+ * 40 level 1 cards, 30 level 2 cards, 20 level 3 cards.
+ * +
+ * 8 emeralds, rubies, quartzes, sapphires and diamonds round tokens.
+ * 5 gold round tokens.
+ * +
+ * 10 noble rounded tiles.
+ *
+ * @type {import('../src/services/games').Mesh[]}
  */
-export const cards = []
-
-/**
- * 8 emeralds, rubies, quartzes, sapphires and diamonds gems.
- * 5 pieces of gold.
- * @type {import('../src/services/games').RoundToken[]}
- */
-export const roundTokens = []
-
-/**
- * 10 people tiles.
- * @type {import('../src/services/games').RoundedTiles[]}
- */
-export const roundedTiles = []
+export const meshes = []
 
 const gems = ['diamond', 'emerald', 'quartz', 'ruby', 'sapphire']
 const cardCountPerLevel = new Map([
@@ -38,13 +31,42 @@ const cardCountPerLevel = new Map([
   [2, 6],
   [3, 4]
 ])
+const cardBags = { 1: [], 2: [], 3: [] }
+const tokenBags = {
+  diamond: [],
+  emerald: [],
+  quartz: [],
+  ruby: [],
+  sapphire: [],
+  gold: []
+}
+const tileBag = []
+
+/**
+ * Bags to randomize:
+ * - one for each card level
+ * - one for each token type
+ * - one for tiles
+ * @type {Map<string, string[]>}
+ */
+export const bags = new Map([
+  ['cards-level-1', cardBags[1]],
+  ['cards-level-2', cardBags[2]],
+  ['cards-level-3', cardBags[3]],
+  ...gems.map(kind => [`tokens-${kind}`, tokenBags[kind]]),
+  ['tokens-gold', tokenBags.gold],
+  ['tiles', tileBag]
+])
+
 // 3 levels of cards.
 // level 1 has 8 cards of each gem, level 2 has 6 cards of each, level 3 has 4 of each.
 for (const [level, count] of cardCountPerLevel) {
   for (const kind of gems) {
     for (let index = 1; index <= count; index++) {
-      cards.push({
-        id: `card-${kind}-${level}-${index}`,
+      const id = `card-${kind}-${level}-${index}`
+      meshes.push({
+        shape: 'card',
+        id,
         texture: `images/splendor/${level}/${kind}-${index}.ktx2`,
         images: {
           front: `images/splendor/HR/card-${kind}-${level}-${index}.png`,
@@ -62,6 +84,7 @@ for (const [level, count] of cardCountPerLevel) {
         rotable: {},
         stackable: { kinds: ['card'] }
       })
+      cardBags[level].push(id)
     }
   }
 }
@@ -70,8 +93,10 @@ for (const [level, count] of cardCountPerLevel) {
 for (const kind of [...gems, 'gold']) {
   const count = kind === 'gold' ? 5 : 8
   for (let index = 1; index <= count; index++) {
-    roundTokens.push({
-      id: `token-${kind}-${index}`,
+    const id = `token-${kind}-${index}`
+    meshes.push({
+      shape: 'roundToken',
+      id,
       texture: `images/splendor/tokens/${kind}.ktx2`,
       images: {
         front: `images/splendor/HR/token-${kind}.png`,
@@ -88,13 +113,16 @@ for (const kind of [...gems, 'gold']) {
       rotable: {},
       stackable: { kinds: ['token'], isCylindric: true, extent: 0.9 }
     })
+    tokenBags[kind].push(id)
   }
 }
 
 // 10 tiles
 for (let index = 1; index <= 10; index++) {
-  roundedTiles.push({
-    id: `tile-${index}`,
+  const id = `tile-${index}`
+  meshes.push({
+    shape: 'roundedTile',
+    id,
     texture: `images/splendor/tiles/tile-${index}.ktx2`,
     images: {
       front: `images/splendor/HR/tile-${index}.png`,
@@ -114,28 +142,8 @@ for (let index = 1; index <= 10; index++) {
     rotable: {},
     stackable: { kinds: ['tile'] }
   })
+  tileBag.push(id)
 }
-
-const pickId = ({ id }) => id
-
-/**
- * Bags to randomize:
- * - one for each card level
- * - one for each token type
- * - one for tiles
- * @type {Map<string, string[]>}
- */
-export const bags = new Map([
-  ['cards-level-1', cards.slice(0, 40).map(pickId)],
-  ['cards-level-2', cards.slice(40, 70).map(pickId)],
-  ['cards-level-3', cards.slice(70).map(pickId)],
-  ...gems.map((kind, i) => [
-    `tokens-${kind}`,
-    roundTokens.slice(i * 8, (i + 1) * 8).map(pickId)
-  ]),
-  ['tokens-gold', roundTokens.slice(gems.length * 8).map(pickId)],
-  ['tiles', roundedTiles.map(pickId)]
-])
 
 /**
  * Pre-define slots:

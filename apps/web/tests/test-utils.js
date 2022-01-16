@@ -8,6 +8,7 @@ import { _ } from 'svelte-intl'
 import { inspect } from 'util'
 // mandatory side effects
 import '@babylonjs/core/Animations/animatable'
+import '@babylonjs/core/Rendering/edgesRenderer'
 
 export function translate(...args) {
   return get(_)(...args)

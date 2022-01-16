@@ -42,7 +42,7 @@ export function createRoundToken({
     new Vector4(0.49, 1, 0.509, 0),
     new Vector4(0.509, 0, 1, 1)
   ]
-  const token = CreateCylinder('round-token', {
+  const token = CreateCylinder('roundToken', {
     diameter,
     height,
     tessellation: 48,
@@ -62,6 +62,7 @@ export function createRoundToken({
   token.metadata = {
     images,
     serialize: () => ({
+      shape: token.name,
       id,
       x: token.position.x,
       y: token.position.y,

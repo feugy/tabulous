@@ -10,9 +10,11 @@ export const minAge = 7
 
 /**
  * 13 cards of each suit: spades, diamonds, clubs, hearts.
- * @type {import('../src/services/games').Card[]}
+ * +
+ * 1 board for all cards
+ * @type {import('../src/services/games').Mesh[]}
  */
-export const cards = []
+export const meshes = []
 
 const suits = ['spades', 'diamonds', 'clubs', 'hearts']
 
@@ -23,7 +25,8 @@ const baseY = 0.025
 
 for (const suit of suits) {
   for (let index = 1; index <= 13; index++) {
-    cards.push({
+    meshes.push({
+      shape: 'card',
       id: `${suit}-${index}`,
       texture: `images/french-suited-cards/${suit}-${index}.ktx2`,
       images: {
@@ -49,53 +52,49 @@ for (const suit of suits) {
 const pickId = ({ id }) => id
 
 /**
- * 1 board for all cards
- * @type {import('../src/services/games').Board[]}
- */
-export const boards = [
-  {
-    id: 'board',
-    texture: `images/klondike/board.ktx2`,
-    x: -0.75,
-    y: -0.005,
-    z: 0,
-    width: 30,
-    height: 30,
-    depth: 0.01,
-    borderRadius: 0.4,
-    anchorable: {
-      anchors: [
-        // stock
-        { x: -12.25, z: 11.5, width, height, depth },
-        // discard
-        { x: -8.25, z: 11.5, width, height, depth },
-        // diamonds
-        { x: -0.25, z: 11.5, width, height, depth },
-        // clubs
-        { x: 3.75, z: 11.5, width, height, depth },
-        // spades
-        { x: 7.75, z: 11.5, width, height, depth },
-        // hearts
-        { x: 11.75, z: 11.5, width, height, depth },
-        // 7 columns
-        { x: -12.25, z: 6.55, width, height, depth },
-        { x: -8.25, z: 6.55, width, height, depth },
-        { x: -4.25, z: 6.55, width, height, depth },
-        { x: -0.25, z: 6.55, width, height, depth },
-        { x: 3.75, z: 6.55, width, height, depth },
-        { x: 7.75, z: 6.55, width, height, depth },
-        { x: 11.75, z: 6.55, width, height, depth }
-      ]
-    }
-  }
-]
-
-/**
  * Bags to randomize:
  * - one for all remaining cards
  * @type {Map<string, string[]>}
  */
-export const bags = new Map([['cards', cards.map(pickId)]])
+export const bags = new Map([['cards', meshes.map(pickId)]])
+
+meshes.push({
+  shape: 'roundedTile',
+  id: 'board',
+  images: { front: '', back: '' },
+  texture: `images/klondike/board.ktx2`,
+  x: -0.75,
+  y: -0.005,
+  z: 0,
+  width: 30,
+  height: 30,
+  depth: 0.01,
+  borderRadius: 0.4,
+  anchorable: {
+    anchors: [
+      // stock
+      { x: -12.25, z: 11.5, width, height, depth },
+      // discard
+      { x: -8.25, z: 11.5, width, height, depth },
+      // diamonds
+      { x: -0.25, z: 11.5, width, height, depth },
+      // clubs
+      { x: 3.75, z: 11.5, width, height, depth },
+      // spades
+      { x: 7.75, z: 11.5, width, height, depth },
+      // hearts
+      { x: 11.75, z: 11.5, width, height, depth },
+      // 7 columns
+      { x: -12.25, z: 6.55, width, height, depth },
+      { x: -8.25, z: 6.55, width, height, depth },
+      { x: -4.25, z: 6.55, width, height, depth },
+      { x: -0.25, z: 6.55, width, height, depth },
+      { x: 3.75, z: 6.55, width, height, depth },
+      { x: 7.75, z: 6.55, width, height, depth },
+      { x: 11.75, z: 6.55, width, height, depth }
+    ]
+  }
+})
 
 /**
  * Pre-define slots:

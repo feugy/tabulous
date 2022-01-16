@@ -5,17 +5,10 @@ type Game {
   kind: String!
   created: Float!
   players: [Player]!
-  scene: GameScene!
+  meshes: [Mesh]!
   messages: [Message]
   cameras: [CameraPosition]
   rulesBookPageCount: Int
-}
-
-type GameScene {
-  cards: [Card]!
-  roundTokens: [RoundToken]!
-  roundedTiles: [RoundedTile]!
-  boards: [Board]!
 }
 
 type ImageDefs {
@@ -63,13 +56,11 @@ type Anchor {
   snappedId: ID
 }
 
-type Card {
+type Mesh {
   id: ID!
   texture: String!
-  images: ImageDefs!
-  width: Float
-  height: Float
-  depth: Float
+  images: ImageDefs
+  shape: Shape
   x: Float
   y: Float
   z: Float
@@ -79,61 +70,30 @@ type Card {
   rotable: RotableState
   anchorable: AnchorableState
   stackable: StackableState
-}
-
-type RoundToken {
-  id: ID!
-  texture: String!
-  images: ImageDefs!
-  x: Float
-  y: Float
-  z: Float
+  """
+  cards, rounded tokens and rounded tiles
+  """
+  height: Float
+  """
+  cards and rounded tiles
+  """
+  width: Float
+  depth: Float
+  """
+  round tokens
+  """
   diameter: Float
-  height: Float
-  detailable: Boolean
-  movable: MovableState
-  flippable: FlippableState
-  rotable: RotableState
-  anchorable: AnchorableState
-  stackable: StackableState
-}
-
-type RoundedTile {
-  id: ID!
-  texture: String!
-  images: ImageDefs!
-  width: Float
-  height: Float
-  depth: Float
+  """
+  rounded tiles
+  """
   borderRadius: Float
   borderColor: [Float]
-  x: Float
-  y: Float
-  z: Float
-  detailable: Boolean
-  movable: MovableState
-  flippable: FlippableState
-  rotable: RotableState
-  anchorable: AnchorableState
-  stackable: StackableState
 }
 
-type Board {
-  id: ID!
-  texture: String!
-  width: Float
-  height: Float
-  depth: Float
-  borderRadius: Float
-  x: Float
-  y: Float
-  z: Float
-  detailable: Boolean
-  movable: MovableState
-  flippable: FlippableState
-  rotable: RotableState
-  anchorable: AnchorableState
-  stackable: StackableState
+enum Shape {
+  card
+  roundedTile
+  roundToken
 }
 
 type Message {
@@ -154,7 +114,7 @@ type CameraPosition {
 
 input GameInput {
   id: ID!
-  scene: GameSceneInput
+  meshes: [MeshInput]
   messages: [MessageInput]
   cameras: [CameraPositionInput]
 }
@@ -204,20 +164,11 @@ input AnchorInput {
   snappedId: ID
 }
 
-input GameSceneInput {
-  cards: [CardInput]!
-  roundTokens: [RoundTokenInput]!
-  roundedTiles: [RoundedTileInput]!
-  boards: [BoardInput]!
-}
-
-input CardInput {
+input MeshInput {
   id: ID!
   texture: String!
-  images: ImageDefsInput!
-  width: Float
-  height: Float
-  depth: Float
+  images: ImageDefsInput
+  shape: Shape
   x: Float
   y: Float
   z: Float
@@ -227,61 +178,24 @@ input CardInput {
   rotable: RotableStateInput
   anchorable: AnchorableStateInput
   stackable: StackableStateInput
-}
-
-input RoundTokenInput {
-  id: ID!
-  texture: String!
-  images: ImageDefsInput!
-  x: Float
-  y: Float
-  z: Float
+  """
+  cards, rounded tokens and rounded tiles
+  """
+  height: Float
+  """
+  cards and rounded tiles
+  """
+  width: Float
+  depth: Float
+  """
+  round tokens
+  """
   diameter: Float
-  height: Float
-  detailable: Boolean
-  movable: MovableStateInput
-  flippable: FlippableStateInput
-  rotable: RotableStateInput
-  anchorable: AnchorableStateInput
-  stackable: StackableStateInput
-}
-
-input RoundedTileInput {
-  id: ID!
-  texture: String!
-  images: ImageDefsInput!
-  width: Float
-  height: Float
-  depth: Float
+  """
+  rounded tiles
+  """
   borderRadius: Float
   borderColor: [Float]
-  x: Float
-  y: Float
-  z: Float
-  detailable: Boolean
-  movable: MovableStateInput
-  flippable: FlippableStateInput
-  rotable: RotableStateInput
-  anchorable: AnchorableStateInput
-  stackable: StackableStateInput
-}
-
-input BoardInput {
-  id: ID!
-  texture: String!
-  width: Float
-  height: Float
-  depth: Float
-  borderRadius: Float
-  x: Float
-  y: Float
-  z: Float
-  detailable: Boolean
-  movable: MovableStateInput
-  flippable: FlippableStateInput
-  rotable: RotableStateInput
-  anchorable: AnchorableStateInput
-  stackable: StackableStateInput
 }
 
 input MessageInput {

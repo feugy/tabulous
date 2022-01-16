@@ -9,7 +9,7 @@ describe('createRoundedTile()', () => {
   it('creates a tile with default values and no behavior', () => {
     const mesh = createRoundedTile()
     const { boundingBox } = mesh.getBoundingInfo()
-    expect(mesh.name).toEqual('rounded-tile')
+    expect(mesh.name).toEqual('roundedTile')
     expect(boundingBox.extendSize.x * 2).toEqual(3)
     expect(boundingBox.extendSize.z * 2).toEqual(3)
     expect(boundingBox.extendSize.y * 2).toEqual(0.05)
@@ -70,7 +70,7 @@ describe('createRoundedTile()', () => {
 
     it('has all the expected data', () => {
       const { boundingBox } = mesh.getBoundingInfo()
-      expect(mesh.name).toEqual('rounded-tile')
+      expect(mesh.name).toEqual('roundedTile')
       expect(mesh.id).toEqual(id)
       expect(boundingBox.extendSize.x * 2).toEqual(width)
       expect(boundingBox.extendSize.z * 2).toEqual(height)
@@ -106,6 +106,7 @@ describe('createRoundedTile()', () => {
 
     it('serialize with its state', () => {
       expect(mesh.metadata.serialize()).toEqual({
+        shape: 'roundedTile',
         id,
         x,
         y,

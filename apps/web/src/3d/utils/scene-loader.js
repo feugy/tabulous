@@ -1,11 +1,8 @@
 // mandatory side effect
 import '@babylonjs/core/Loading/loadingScreen'
-import {
-  createBoard,
-  createCard,
-  createRoundToken,
-  createRoundedTile
-} from '..'
+import { createCard } from '../card'
+import { createRoundToken } from '../round-token'
+import { createRoundedTile } from '../rounded-tile'
 import { restoreBehaviors } from './behaviors'
 import { StackBehaviorName } from '../behaviors/names'
 // '../../utils' creates a cyclic dependency in Jest
@@ -13,27 +10,21 @@ import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('scene-loader')
 
-export function serializeScene(engine) {
+/**
+ * Serializes engine's meshes.
+ * @param {import('@babel/core').Engine} engine - 3D engine used.
+ * @returns {object[]} list of serialized meshes TODO.
+ */
+export function serializeMeshes(engine) {
   if (!engine.scenes.length) return
-  const data = {
-    cards: [],
-    roundTokens: [],
-    roundedTiles: [],
-    boards: []
-  }
+  const meshes = []
   for (const mesh of engine.scenes[0].meshes) {
-    if (mesh.name === 'card') {
-      data.cards.push(mesh.metadata.serialize())
-    } else if (mesh.name === 'round-token') {
-      data.roundTokens.push(mesh.metadata.serialize())
-    } else if (mesh.name === 'rounded-tile') {
-      data.roundedTiles.push(mesh.metadata.serialize())
-    } else if (mesh.name === 'board') {
-      data.boards.push(mesh.metadata.serialize())
+    if (supportedNames.includes(mesh.name)) {
+      meshes.push(mesh.metadata.serialize())
     }
   }
-  logger.debug({ data }, `serialize scene`)
-  return data
+  logger.debug({ meshes }, `serialize meshes`)
+  return meshes
 }
 
 /**
@@ -42,10 +33,10 @@ export function serializeScene(engine) {
  * - deletes existing mesh that are not found in the provided data
  * - shows and hides Babylon's loading UI while loading asset (initial loading only)
  * @param {import('@babel/core').Engine} engine - 3D engine used.
- * @param {object} data - the loaded scene data TODO.
+ * @param {object} meshes - list of loaded meshes TODO.
  * @param {boolean} [initial = true] - indicates whether this is the first loading or not.
  */
-export function loadScene(engine, data, initial = true) {
+export function loadMeshes(engine, meshes, initial = true) {
   if (!engine.scenes.length) return
   const [scene] = engine.scenes
   if (initial) {
@@ -54,55 +45,39 @@ export function loadScene(engine, data, initial = true) {
   }
   const disposables = new Set(scene.meshes)
   for (const mesh of disposables) {
-    if (!['card', 'round-token', 'rounded-tile', 'board'].includes(mesh.name)) {
+    if (!supportedNames.includes(mesh.name)) {
       disposables.delete(mesh)
     }
   }
 
   const stackables = []
-  logger.debug({ data }, `load new scene`)
-
-  const sources = [
-    { factory: createCard, source: data?.cards ?? [], name: 'card' },
-    {
-      factory: createRoundToken,
-      source: data?.roundTokens ?? [],
-      name: 'round token'
-    },
-    {
-      factory: createRoundedTile,
-      source: data?.roundedTiles ?? [],
-      name: 'rounded tile'
-    },
-    { factory: createBoard, source: data?.boards ?? [], name: 'board' }
-  ]
+  logger.debug({ meshes }, `loads meshes`)
 
   // makes sure all meshes are created
-  for (const { factory, source, name } of sources) {
-    for (const state of source) {
-      let mesh = scene.getMeshById(state.id)
-      const { stackable } = state
-      if (mesh) {
-        logger.debug({ state, mesh }, `updates ${name} ${state.id}`)
-        disposables.delete(mesh)
-        mesh.position.copyFromFloats(state.x, state.y, state.z)
-        restoreBehaviors(mesh.behaviors, state)
-      } else {
-        logger.debug({ state }, `create new ${name} ${state.id}`)
-        mesh = factory({
-          ...state,
+  for (const state of meshes) {
+    let mesh = scene.getMeshById(state.id)
+    const { stackable, shape: name } = state
+    if (mesh) {
+      logger.debug({ state, mesh }, `updates ${name} ${state.id}`)
+      disposables.delete(mesh)
+      mesh.position.copyFromFloats(state.x, state.y, state.z)
+      restoreBehaviors(mesh.behaviors, state)
+    } else {
+      logger.debug({ state }, `create new ${name} ${state.id}`)
+      mesh = meshCreatorByName.get(name)(
+        removeNulls(state, {
           stackable: stackable ? { ...stackable, stack: undefined } : undefined
         })
-      }
-      const behavior = mesh.getBehaviorByName(StackBehaviorName)
-      if (behavior) {
-        if (stackable?.stack?.length > 0) {
-          // stores for later
-          stackables.push({ behavior, stackable })
-        } else {
-          // reset stacks
-          behavior.fromState(stackable)
-        }
+      )
+    }
+    const behavior = mesh.getBehaviorByName(StackBehaviorName)
+    if (behavior) {
+      if (stackable?.stack?.length > 0) {
+        // stores for later
+        stackables.push({ behavior, stackable })
+      } else {
+        // reset stacks
+        behavior.fromState(stackable)
       }
     }
   }
@@ -115,4 +90,26 @@ export function loadScene(engine, data, initial = true) {
   for (const { behavior, stackable } of stackables) {
     behavior.fromState(stackable)
   }
+}
+
+const meshCreatorByName = new Map([
+  ['card', createCard],
+  ['roundToken', createRoundToken],
+  ['roundedTile', createRoundedTile]
+])
+
+const supportedNames = [...meshCreatorByName.keys()]
+
+function removeNulls(object, extension = {}) {
+  const result = extension
+  for (const key in object) {
+    const prop = object[key]
+    if (prop !== null) {
+      result[key] =
+        !Array.isArray(prop) && typeof prop === 'object'
+          ? removeNulls(prop)
+          : prop
+    }
+  }
+  return result
 }

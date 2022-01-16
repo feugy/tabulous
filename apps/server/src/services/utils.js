@@ -6,10 +6,7 @@ import { shuffle } from '../utils/index.js'
  * Meshes could be cards, round tokens and rounded tiles. They must have an id.
  * Meshes are randomized in bags, then positioned on slots.
  *
- * @property {import('./games').Card[]} cards? - all cards.
- * @property {import('./games').RoundToken[]} roundTokens? - all round tokens.
- * @property {import('./games').RoundedTile[]} roundedTiles? - all rounded tiles.
- * @property {import('./games').Board[]} boards? - all boards.
+ * @property {import('./games').Mesh[]} meshes? - all meshes.
  * @property {Map<string, string[]>} bags? - map of randomized bags, as a list of mesh ids.
  * @property {Slot[]} slots? - a list of position slots
  * @property {number} rulesBookPageCount? - number of pages in the rules book, if any.
@@ -28,24 +25,15 @@ import { shuffle } from '../utils/index.js'
 /**
  * Creates a unique game from a game descriptor.
  * @param {GameDescriptor} descriptor - to create game from.
- * @returns {import('./games').Scene} a 3D scene, ready to be loaded in the 3D engine.
+ * @returns {import('./games').Mesh[]} a list of serialized 3D meshes.
  */
-export function instanciateGame(descriptor = {}) {
-  const { bags, slots, cards, roundTokens, roundedTiles, boards } = descriptor
+export function createMeshes(descriptor) {
+  const { bags, slots, meshes } = descriptor
   // first, performs a deep copy
-  const scene = merge(
-    { cards, roundTokens, roundedTiles, boards },
-    { cards: [], roundTokens: [], roundedTiles: [], boards: [] }
-  )
   const randomized = new Map()
   const all = new Map()
-  for (const mesh of [
-    ...scene.cards,
-    ...scene.roundTokens,
-    ...scene.roundedTiles,
-    ...scene.boards
-  ]) {
-    all.set(mesh.id, mesh)
+  for (const mesh of meshes) {
+    all.set(mesh.id, { ...mesh })
   }
 
   // then, randomize each bags
@@ -80,5 +68,5 @@ export function instanciateGame(descriptor = {}) {
     }
   }
 
-  return scene
+  return [...all.values()]
 }

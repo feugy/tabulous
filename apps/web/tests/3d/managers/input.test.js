@@ -146,7 +146,7 @@ describe('InputManager', () => {
         triggerEvent(POINTERDOWN, { ...pointerA, pointerId: idA }, 'tap')
         await sleep(10)
         triggerEvent(POINTERDOWN, { ...pointerB, pointerId: idB }, 'tap')
-        await sleep(50)
+        await sleep(10)
         triggerEvent(POINTERUP, { ...pointerA, pointerId: idA }, 'tap')
         await sleep(10)
         const event = triggerEvent(

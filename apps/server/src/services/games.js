@@ -1,7 +1,7 @@
 import { Subject } from 'rxjs'
 import { concatMap, mergeMap } from 'rxjs/operators'
 import { canAccess } from './catalog.js'
-import { instanciateGame } from './utils.js'
+import { createMeshes } from './utils.js'
 import repositories from '../repositories/index.js'
 
 /**
@@ -10,18 +10,10 @@ import repositories from '../repositories/index.js'
  * @property {string} kind - game kind (relates with game descriptor).
  * @property {number} created - game creation timestamp.
  * @property {string[]} playerId - player ids, the first always being the creator id.
- * @property {Scene} scene - the 3D engine scene, with game meshes.
+ * @property {Mesh[]} meshes - game meshes.
  * @property {Message[]} messages - game discussion thread, if any.
  * @property {CameraPosition[]} cameras - player's saved camera positions, if any.
  * @property {number} rulesBookPageCount? - number of pages in the rules book, if any.
- */
-
-/**
- * @typedef {object} Scene a 3D scene made of:
- * @property {Card[]} cards - a list of card meshes.
- * @property {RoundToken[]} roundTokens - a list of cylindric tokens.
- * @property {RoundedTile[]} roundedTiles - a list of tiles with rounded corners.
- * @property {Board[]} boards - a list of boards with rounded corners.
  */
 
 /**
@@ -31,48 +23,71 @@ import repositories from '../repositories/index.js'
  */
 
 /**
- * @typedef {object} Mesh an abstract 3D mesh:
+ * @typedef {object} Mesh a 3D mesh, with a given shape. Some of its attribute are shape-specific:
+ * @property {string} shape - the mesh shape: card, roundToken or roundedTile.
  * @property {string} id - mesh unique id.
  * @property {string} texture - path to its texture file (one path for the entire mesh).
  * @property {ImageDefs} images? - other image definitions.
  * @property {number} x? - 3D coordinate along the X axis (horizontal).
  * @property {number} z? - 3D coordinate along the Z axis (vertical).
  * @property {number} y? - 3D coordinate along the Y axis (altitude).
+ * @property {number} width? - mesh's width (X axis).
+ * @property {number} height? - mesh's height (Z axis), for card and rounded tiles.
+ * @property {number} depth? - mesh's depth (Y axis), for card and rounded tiles.
+ * @property {number} diameter? - mesh's diameter (X+Z axis), for round tokens.
+ * @property {number} borderRadius? - cordener radius, for rounded tiles.
+ * @property {number[]} borderColor? - Color4's components used as edge color, for rounded tiles.
+ * @property {boolean} detailable? - whether this mesh could be detailed or not.
+ * @property {MovableState} movable? - if this mesh could be moved, contains move state.
+ * @property {FlippableState} flippable? - if this mesh could be flipped, contains flip state.
+ * @property {RotableState} rotable? - if this mesh could be rotated along Y axis, contains rotation state.
+ * @property {AnchorableState} anchorable? - if this mesh has anchors, contains their state.
+ * @property {StackableState} stackable? - if this mesh could be stack under others, contains stack state.
+ */
+
+/**
+ * @typedef {object} MovableState state for movable meshes:
+ * @property {number} duration? - move animation duration, in milliseconds.
+ * @property {number} snapDistance? - distance between dots of an imaginary snap grid.
+ * @property {string} kind? - kind used when dragging and droping the mesh over targets.
+ */
+
+/**
+ * @typedef {object} FlippableState state for flippable meshes:
  * @property {boolean} isFlipped? - true means the back face is visible.
+ * @property {number} duration? - flip animation duration, in milliseconds.
+ */
+
+/**
+ * @typedef {object} RotableState state for flippable meshes:
  * @property {number} angle? - rotation angle along Y axis, in radian.
+ * @property {number} duration? - rotation animation duration, in milliseconds.
  */
 
 /**
- * @typedef {Mesh} Card a card mesh:
- * @property {number} width? - card's width (X axis).
- * @property {number} height? - card's height (Z axis).
- * @property {number} depth? - card's depth (Y axis).
- * @property {string[]} stack? - when this mesh is the origin of a stack, ordered list of other mesh ids.
+ * @typedef {object} StackableState state for stackable meshes:
+ * @property {string[]} stack? - ordered list of ids for meshes stacked on top of this one.
+ * @property {number} duration? - stack animations duration, in milliseconds.
+ * @property {string[]} kinds? - acceptable meshe kinds, that could be stacked on top of this one. Leave undefined to accept all.
+ * @property {number} extent? - dimension multiplier applied to the drop target.
  */
 
 /**
- * @typedef {Mesh} RoundToken a round token mesh:
- * @property {number} diameter? - token's diameter (X+Z axis).
- * @property {number} height? - token's height (Y axis).
- * @property {string[]} stack? - when this mesh is the origin of a stack, ordered list of other mesh ids.
+ * @typedef {object} AnchorableState state for anchorable meshes:
+ * @property {Anchor[]} anchors? - list of anchors.
+ * @property {number} duration? - snap animation duration, in milliseconds.
  */
 
 /**
- * @typedef {Mesh} RoundedTile a tile mesh with rounded corners:
- * @property {number} width? - tile's width (X axis).
- * @property {number} height? - tile's height (Z axis).
- * @property {number} depth? - tile's depth (Y axis)..
- * @property {number} borderRadius? - radius applied to each corner.
- * @property {number[]} borderColor? - Color4's components used as edge color.
- * @property {string[]} stack? - when this mesh is the origin of a stack, ordered list of other mesh ids.
- */
-
-/**
- * @typedef {Mesh} Board a tile mesh with rounded corners:
- * @property {number} width? - tile's width (X axis).
- * @property {number} height? - tile's height (Z axis).
- * @property {number} depth? - tile's depth (Y axis)..
- * @property {number} borderRadius? - radius applied to each corner.
+ * @typedef {object} Anchorable a rectangular anchor definition:
+ * @property {string} snappedId? - id of the mesh currently snapped to this anchor.
+ * @property {number} x? - 3D coordinate (relative to the parent mesh) along the X axis (horizontal).
+ * @property {number} z? - 3D coordinate (relative to the parent mesh) along the Z axis (vertical).
+ * @property {number} y? - 3D coordinate (relative to the parent mesh) along the Y axis (altitude).
+ * @property {number} width? - anchor's width (X axis).
+ * @property {number} height? - anchor's height (Z axis).
+ * @property {number} depth? - anchor's depth (Y axis).
+ * @property {string[]} kinds? - acceptable meshe kinds, that could be snapped to the anchor. Leave undefined to accept all.
  */
 
 /**
@@ -135,7 +150,7 @@ export async function createGame(kind, playerId) {
     kind,
     created: Date.now(),
     playerIds: [playerId],
-    scene: instanciateGame(descriptor),
+    meshes: createMeshes(descriptor),
     messages: [],
     cameras: [],
     rulesBookPageCount: descriptor.rulesBookPageCount
@@ -196,7 +211,7 @@ export async function saveGame(game, playerId) {
   if (previous) {
     return repositories.games.save({
       ...previous,
-      scene: game.scene ?? previous.scene,
+      meshes: game.meshes ?? previous.meshes,
       messages: game.messages ?? previous.messages,
       cameras: game.cameras ?? previous.cameras
     })

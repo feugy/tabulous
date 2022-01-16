@@ -103,6 +103,7 @@ describe('createCard()', () => {
 
     it('serialize with its state', () => {
       expect(mesh.metadata.serialize()).toEqual({
+        shape: 'card',
         id,
         x,
         y,

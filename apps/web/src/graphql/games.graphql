@@ -79,124 +79,38 @@ query loadGame($gameId: ID!) {
     players {
       ...lightPlayer
     }
-    scene {
-      cards {
-        id
-        texture
-        images {
-          front
-          back
-        }
-        x
-        y
-        z
-        width
-        height
-        depth
-        detailable
-        movable {
-          ...movable
-        }
-        flippable {
-          ...flippable
-        }
-        rotable {
-          ...rotable
-        }
-        stackable {
-          ...stackable
-        }
-        anchorable {
-          ...anchorable
-        }
+    meshes {
+      id
+      texture
+      images {
+        front
+        back
       }
-      roundTokens {
-        id
-        texture
-        images {
-          front
-          back
-        }
-        x
-        y
-        z
-        diameter
-        height
-        detailable
-        movable {
-          ...movable
-        }
-        flippable {
-          ...flippable
-        }
-        rotable {
-          ...rotable
-        }
-        stackable {
-          ...stackable
-        }
-        anchorable {
-          ...anchorable
-        }
+      x
+      y
+      z
+      shape
+      width
+      height
+      depth
+      diameter
+      borderRadius
+      borderColor
+      detailable
+      movable {
+        ...movable
       }
-      roundedTiles {
-        id
-        texture
-        images {
-          front
-          back
-        }
-        x
-        y
-        z
-        width
-        height
-        depth
-        borderRadius
-        borderColor
-        detailable
-        movable {
-          ...movable
-        }
-        flippable {
-          ...flippable
-        }
-        rotable {
-          ...rotable
-        }
-        stackable {
-          ...stackable
-        }
-        anchorable {
-          ...anchorable
-        }
+      flippable {
+        ...flippable
       }
-      boards {
-        id
-        texture
-        x
-        y
-        z
-        width
-        height
-        depth
-        borderRadius
-        detailable
-        movable {
-          ...movable
-        }
-        flippable {
-          ...flippable
-        }
-        rotable {
-          ...rotable
-        }
-        stackable {
-          ...stackable
-        }
-        anchorable {
-          ...anchorable
-        }
+      rotable {
+        ...rotable
+      }
+      stackable {
+        ...stackable
+      }
+      anchorable {
+        ...anchorable
       }
     }
     messages {

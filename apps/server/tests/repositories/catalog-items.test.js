@@ -4,15 +4,18 @@ import { catalogItems } from '../../src/repositories/catalog-items.js'
 
 describe('Catalog Items repository', () => {
   const items = [
-    { name: 'belote', cards: [], bags: new Map(), slots: [] },
-    { name: 'klondike', cards: [], bags: new Map(), slots: [] },
+    {
+      name: 'belote',
+      meshes: [{ shape: 'card', id: 'one-of-diamonds' }],
+      bags: new Map(),
+      slots: []
+    },
+    { name: 'klondike', meshes: [], bags: new Map(), slots: [] },
     {
       name: 'splendor',
       restricted: true,
       rulesBookPageCount: 4,
-      cards: [],
-      roundTokens: [],
-      roundedTiles: [],
+      meshes: [],
       bags: new Map(),
       slots: []
     }
