@@ -4,8 +4,8 @@ import { Axis } from '@babylonjs/core/Maths/math.axis'
 import { Color3 } from '@babylonjs/core/Maths/math.color'
 import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector'
 import { CSG } from '@babylonjs/core/Meshes/csg'
-import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
-import { CylinderBuilder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
 import { controlManager } from './managers'
 import {
   adaptTexture,
@@ -17,7 +17,7 @@ import {
 const side = new Vector4(0.2, 0, 0.3, 1)
 
 function makeCornerMesh({ borderRadius, width, height, depth }, top, left) {
-  const cyclinderMesh = CylinderBuilder.CreateCylinder('cylinder', {
+  const cyclinderMesh = CreateCylinder('cylinder', {
     diameter: borderRadius,
     height: depth
   })
@@ -25,7 +25,7 @@ function makeCornerMesh({ borderRadius, width, height, depth }, top, left) {
   cyclinderMesh.position.z += (top ? 1 : -1) * (height - borderRadius) * 0.5
 
   const cornerWidth = borderRadius * 0.7
-  const cornerMesh = BoxBuilder.CreateBox('corner', {
+  const cornerMesh = CreateBox('corner', {
     width: cornerWidth,
     depth: cornerWidth,
     height: depth
@@ -77,7 +77,7 @@ export function createBoard({
     new Vector4(0.5, 1, 0, 0),
     new Vector4(0.5, 0, 1, 1)
   ]
-  const boardMesh = BoxBuilder.CreateBox('board', {
+  const boardMesh = CreateBox('board', {
     width,
     height: depth,
     depth: height,

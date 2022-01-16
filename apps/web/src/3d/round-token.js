@@ -2,7 +2,7 @@ import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial'
 import { Texture } from '@babylonjs/core/Materials/Textures/texture'
 import { Color3 } from '@babylonjs/core/Maths/math.color'
 import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector'
-import { CylinderBuilder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
+import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
 import { controlManager } from './managers'
 import {
   adaptTexture,
@@ -42,7 +42,7 @@ export function createRoundToken({
     new Vector4(0.49, 1, 0.509, 0),
     new Vector4(0.509, 0, 1, 1)
   ]
-  const token = CylinderBuilder.CreateCylinder('round-token', {
+  const token = CreateCylinder('round-token', {
     diameter,
     height,
     tessellation: 48,

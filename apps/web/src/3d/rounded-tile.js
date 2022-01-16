@@ -4,8 +4,8 @@ import { Axis } from '@babylonjs/core/Maths/math.axis'
 import { Color3, Color4 } from '@babylonjs/core/Maths/math.color'
 import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector'
 import { CSG } from '@babylonjs/core/Meshes/csg'
-import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
-import { CylinderBuilder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
 import { controlManager } from './managers'
 import {
   adaptTexture,
@@ -23,7 +23,7 @@ function makeCornerMesh(
 ) {
   const color = Color4.FromArray(borderColor)
 
-  const cyclinderMesh = CylinderBuilder.CreateCylinder('cylinder', {
+  const cyclinderMesh = CreateCylinder('cylinder', {
     diameter: borderRadius,
     height: depth,
     faceColors: [color, color, color]
@@ -32,7 +32,7 @@ function makeCornerMesh(
   cyclinderMesh.position.z += (top ? 1 : -1) * (height - borderRadius) * 0.5
 
   const cornerWidth = borderRadius * 0.7
-  const cornerMesh = BoxBuilder.CreateBox('corner', {
+  const cornerMesh = CreateBox('corner', {
     width: cornerWidth,
     depth: cornerWidth,
     height: depth
@@ -97,7 +97,7 @@ export function createRoundedTile({
   ]
   const color = Color4.FromArray(borderColor)
   const faceColors = [color, color, color, color, undefined, undefined]
-  const tileMesh = BoxBuilder.CreateBox('rounded-tile', {
+  const tileMesh = CreateBox('rounded-tile', {
     width,
     height: depth,
     depth: height,

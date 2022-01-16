@@ -1,5 +1,5 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import {
   AnchorBehaviorName,
   DetailBehaviorName,
@@ -45,7 +45,7 @@ beforeAll(async () => {
 })
 
 beforeEach(() => {
-  box = BoxBuilder.CreateBox('box', {})
+  box = CreateBox('box', {})
 })
 
 afterAll(() => engine.dispose())

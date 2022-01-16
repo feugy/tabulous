@@ -1,6 +1,6 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
-import { GroundBuilder } from '@babylonjs/core/Meshes/Builders/groundBuilder'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CreateGround } from '@babylonjs/core/Meshes/Builders/groundBuilder'
 import {
   getMeshScreenPosition,
   isAboveTable,
@@ -21,7 +21,7 @@ beforeAll(() => {
     renderWidth,
     renderHeight
   }))
-  box = BoxBuilder.CreateBox('box', {})
+  box = CreateBox('box', {})
 })
 
 afterEach(() => {
@@ -85,7 +85,7 @@ describe('isAboveTable() 3D utility', () => {
   })
 
   it('returns false with disposed table mesh', () => {
-    table = GroundBuilder.CreateGround('table', { width, height })
+    table = CreateGround('table', { width, height })
     table.dispose()
     expect(
       isAboveTable(scene, { x: renderWidth * 0.5, y: renderHeight * 0.5 })
@@ -93,9 +93,7 @@ describe('isAboveTable() 3D utility', () => {
   })
 
   describe('given a table mesh', () => {
-    beforeAll(
-      () => (table = GroundBuilder.CreateGround('table', { width, height }))
-    )
+    beforeAll(() => (table = CreateGround('table', { width, height })))
 
     afterAll(() => table.dispose())
 
@@ -143,15 +141,13 @@ describe('isPositionAboveTable() 3D utility', () => {
   })
 
   it('returns false with disposed table mesh', () => {
-    table = GroundBuilder.CreateGround('table', { width, height })
+    table = CreateGround('table', { width, height })
     table.dispose()
     expect(isPositionAboveTable(scene, Vector3.Zero())).toEqual(false)
   })
 
   describe('given a table mesh', () => {
-    beforeAll(
-      () => (table = GroundBuilder.CreateGround('table', { width, height }))
-    )
+    beforeAll(() => (table = CreateGround('table', { width, height })))
 
     afterAll(() => table.dispose())
 

@@ -1,5 +1,5 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
 import { configures3dTestEngine, sleep } from '../../test-utils'
 import {
@@ -47,7 +47,7 @@ describe('StackBehavior', () => {
 
   it('can hydrate with default state', () => {
     const behavior = new StackBehavior()
-    const mesh = BoxBuilder.CreateBox('box0', {})
+    const mesh = CreateBox('box0', {})
     mesh.addBehavior(behavior, true)
 
     behavior.fromState()
@@ -67,7 +67,7 @@ describe('StackBehavior', () => {
 
     beforeEach(() => {
       ;[mesh, ...meshes] = Array.from({ length: 4 }, (_, rank) => {
-        const box = BoxBuilder.CreateBox(`box${rank}`, {})
+        const box = CreateBox(`box${rank}`, {})
         box.setAbsolutePosition(new Vector3(rank, rank, rank))
         box.addBehavior(new StackBehavior({ duration: 10 }), true)
         box.addBehavior(new FlipBehavior(), true)

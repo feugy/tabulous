@@ -1,5 +1,5 @@
 import { Axis, Space } from '@babylonjs/core/Maths/math.axis'
-import { DiscBuilder } from '@babylonjs/core/Meshes/Builders/discBuilder'
+import { CreateDisc } from '@babylonjs/core/Meshes/Builders/discBuilder'
 
 /**
  * Creates an pointer representing a peer player.
@@ -9,7 +9,7 @@ import { DiscBuilder } from '@babylonjs/core/Meshes/Builders/discBuilder'
  * @returns {import('@babylonjs/core').Mesh} the created peer pointer.
  */
 export function createPeerPointer({ id }) {
-  const peerPointer = DiscBuilder.CreateDisc('peer-pointer', { radius: 0.2 })
+  const peerPointer = CreateDisc('peer-pointer', { radius: 0.2 })
   peerPointer.id = id
   peerPointer.isPickable = false
   peerPointer.rotate(Axis.X, Math.PI / 2, Space.LOCAL)

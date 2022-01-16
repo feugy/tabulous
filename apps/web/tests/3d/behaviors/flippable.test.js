@@ -1,4 +1,4 @@
-import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
 import { configures3dTestEngine } from '../../test-utils'
 import { FlipBehavior, FlipBehaviorName } from '../../../src/3d/behaviors'
@@ -17,7 +17,7 @@ describe('FlipBehavior', () => {
       duration: faker.datatype.number()
     }
     const behavior = new FlipBehavior(state)
-    const mesh = BoxBuilder.CreateBox('box', {})
+    const mesh = CreateBox('box', {})
 
     expect(behavior.name).toEqual(FlipBehaviorName)
     expect(behavior.state).toEqual(state)
@@ -41,7 +41,7 @@ describe('FlipBehavior', () => {
 
   it('can hydrate with default state', () => {
     const behavior = new FlipBehavior()
-    const mesh = BoxBuilder.CreateBox('box', {})
+    const mesh = CreateBox('box', {})
     mesh.addBehavior(behavior, true)
 
     behavior.fromState()
@@ -60,7 +60,7 @@ describe('FlipBehavior', () => {
 
     beforeEach(() => {
       behavior = new FlipBehavior({ duration: 50 })
-      mesh = BoxBuilder.CreateBox('box', {})
+      mesh = CreateBox('box', {})
       mesh.addBehavior(behavior, true)
     })
 

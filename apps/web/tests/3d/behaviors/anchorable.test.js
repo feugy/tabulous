@@ -1,5 +1,5 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
 import { cleanDebugFile, configures3dTestEngine, sleep } from '../../test-utils'
 import {
@@ -32,9 +32,9 @@ describe('AnchorBehavior', () => {
   })
 
   it('can not snap without mesh', () => {
-    const snapped = BoxBuilder.CreateBox('box', {})
+    const snapped = CreateBox('box', {})
     snapped.setAbsolutePosition(new Vector3(1, 1, 1))
-    const anchor = BoxBuilder.CreateBox('anchor', {})
+    const anchor = CreateBox('anchor', {})
     const behavior = new AnchorBehavior()
     behavior.addZone(anchor, 1)
 
@@ -44,10 +44,10 @@ describe('AnchorBehavior', () => {
   })
 
   it('can not unsnap a mesh not previously snapped', () => {
-    const snapped = BoxBuilder.CreateBox('box', {})
+    const snapped = CreateBox('box', {})
 
     const behavior = new AnchorBehavior()
-    behavior.addZone(BoxBuilder.CreateBox('anchor', {}), 1)
+    behavior.addZone(CreateBox('anchor', {}), 1)
 
     behavior.unsnap(snapped.id)
     expect(recordSpy).not.toHaveBeenCalled()
@@ -65,10 +65,10 @@ describe('AnchorBehavior', () => {
     let behavior
 
     beforeEach(() => {
-      mesh = BoxBuilder.CreateBox('box', {})
+      mesh = CreateBox('box', {})
       mesh.addBehavior(new AnimateBehavior(), true)
       meshes = Array.from({ length: 2 }, (_, rank) => {
-        const box = BoxBuilder.CreateBox(`box${rank + 1}`, {})
+        const box = CreateBox(`box${rank + 1}`, {})
         box.addBehavior(new AnimateBehavior(), true)
         box.setAbsolutePosition(new Vector3(rank + 10, rank + 10, rank + 10))
         return box

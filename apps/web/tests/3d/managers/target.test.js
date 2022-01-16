@@ -1,5 +1,5 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { configures3dTestEngine } from '../../test-utils'
 import {
   targetManager as manager,
@@ -19,13 +19,13 @@ describe('TargetManager', () => {
 
   describe('registerTargetable()', () => {
     it('registers a mesh', () => {
-      const mesh = BoxBuilder.CreateBox('box3', {})
+      const mesh = CreateBox('box3', {})
       mesh.addBehavior(new TargetBehavior(), true)
       expect(manager.isManaging(mesh)).toBe(true)
     })
 
     it('automatically unregisters a mesh upon disposal', () => {
-      const mesh = BoxBuilder.CreateBox('box3', {})
+      const mesh = CreateBox('box3', {})
       mesh.addBehavior(new TargetBehavior(), true)
       expect(manager.isManaging(mesh)).toBe(true)
 
@@ -34,7 +34,7 @@ describe('TargetManager', () => {
     })
 
     it('automatically unregisters a mesh upon behavior detachment', () => {
-      const mesh = BoxBuilder.CreateBox('box3', {})
+      const mesh = CreateBox('box3', {})
       const behavior = new TargetBehavior()
       mesh.addBehavior(behavior, true)
       expect(manager.isManaging(mesh)).toBe(true)
@@ -68,13 +68,11 @@ describe('TargetManager', () => {
     })
 
     it('returns nothing if mesh is not above any target', () => {
-      expect(
-        manager.findDropZone(BoxBuilder.CreateBox('box', {}))
-      ).not.toBeDefined()
+      expect(manager.findDropZone(CreateBox('box', {}))).not.toBeDefined()
     })
 
     it('returns targets below mesh', () => {
-      const mesh = BoxBuilder.CreateBox('box', {})
+      const mesh = CreateBox('box', {})
       mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
       mesh.computeWorldMatrix()
 
@@ -83,7 +81,7 @@ describe('TargetManager', () => {
 
     it('ignores targets with kinds below kind-less mesh', () => {
       zone1.kinds = ['card']
-      const mesh = BoxBuilder.CreateBox('box', {})
+      const mesh = CreateBox('box', {})
       mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
       mesh.computeWorldMatrix()
 
@@ -92,7 +90,7 @@ describe('TargetManager', () => {
 
     it('ignores disabled targets', () => {
       zone1.enabled = false
-      const mesh = BoxBuilder.CreateBox('box', {})
+      const mesh = CreateBox('box', {})
       mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
       mesh.computeWorldMatrix()
 
@@ -101,7 +99,7 @@ describe('TargetManager', () => {
 
     it('ignores target part of the current selection', () => {
       selectionManager.select(zone1.targetable.mesh)
-      const mesh = BoxBuilder.CreateBox('box', {})
+      const mesh = CreateBox('box', {})
       mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
       mesh.computeWorldMatrix()
 
@@ -109,7 +107,7 @@ describe('TargetManager', () => {
     })
 
     it('returns kind-less targets below mesh with kind', () => {
-      const mesh = BoxBuilder.CreateBox('box', {})
+      const mesh = CreateBox('box', {})
       mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
       mesh.computeWorldMatrix()
 
@@ -118,7 +116,7 @@ describe('TargetManager', () => {
 
     it('returns targets below mesh with matching kind', () => {
       zone1.kinds = ['card', 'box']
-      const mesh = BoxBuilder.CreateBox('box', {})
+      const mesh = CreateBox('box', {})
       mesh.setAbsolutePosition(zone2.mesh.absolutePosition)
       mesh.computeWorldMatrix()
 
@@ -130,7 +128,7 @@ describe('TargetManager', () => {
       const zone4 = createsTargetZone('target4', new Vector3(0, 1, 0))
       createsTargetZone('target5', new Vector3(0, 0.5, 0))
 
-      const mesh = BoxBuilder.CreateBox('box', {})
+      const mesh = CreateBox('box', {})
       mesh.setAbsolutePosition(new Vector3(0, 5, 0))
       mesh.computeWorldMatrix()
 
@@ -139,7 +137,7 @@ describe('TargetManager', () => {
 
     describe('clear()', () => {
       beforeEach(() => {
-        const mesh = BoxBuilder.CreateBox('box', {})
+        const mesh = CreateBox('box', {})
         mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
         mesh.computeWorldMatrix()
         manager.findDropZone(mesh, 'box')
@@ -172,7 +170,7 @@ describe('TargetManager', () => {
       let meshes = ['box1', 'box2']
       beforeEach(() => {
         meshes = meshes.map(id => {
-          const mesh = BoxBuilder.CreateBox(id, {})
+          const mesh = CreateBox(id, {})
           mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
           mesh.computeWorldMatrix()
           manager.findDropZone(mesh, 'box')
@@ -193,13 +191,13 @@ describe('TargetManager', () => {
   })
 
   function createsTargetZone(id, position = new Vector3(0, 0, 0)) {
-    const targetable = BoxBuilder.CreateBox(`targetable-${id}`, {})
+    const targetable = CreateBox(`targetable-${id}`, {})
     targetable.isPickable = false
     const behavior = new TargetBehavior()
     behavior.onDropObservable.add(drop => drops.push(drop))
     targetable.addBehavior(behavior, true)
 
-    const target = BoxBuilder.CreateBox(id, {})
+    const target = CreateBox(id, {})
     target.setAbsolutePosition(position)
     target.computeWorldMatrix()
     return behavior.addZone(target, 0.5)

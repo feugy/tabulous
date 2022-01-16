@@ -4,8 +4,8 @@ import { Axis } from '@babylonjs/core/Maths/math.axis'
 import { Color3 } from '@babylonjs/core/Maths/math.color'
 import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector'
 import { Mesh } from '@babylonjs/core/Meshes/mesh'
-import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
-import { PlaneBuilder } from '@babylonjs/core/Meshes/Builders/planeBuilder'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CreatePlane } from '@babylonjs/core/Meshes/Builders/planeBuilder'
 import { controlManager } from './managers'
 import {
   adaptTexture,
@@ -43,7 +43,7 @@ export function createCard({
   images,
   ...behaviorStates
 } = {}) {
-  const faces = PlaneBuilder.CreatePlane(`${id}-plane`, {
+  const faces = CreatePlane(`${id}-plane`, {
     width,
     height,
     frontUVs: new Vector4(0.5, 1, 0, 0),
@@ -57,7 +57,7 @@ export function createCard({
   faces.material.freeze()
   attachMaterialError(faces.material)
 
-  const card = BoxBuilder.CreateBox('card', {
+  const card = CreateBox('card', {
     width,
     height: depth,
     depth: height

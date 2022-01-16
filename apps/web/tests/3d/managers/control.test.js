@@ -1,5 +1,5 @@
 import { PointerEventTypes } from '@babylonjs/core/Events/pointerEvents'
-import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
 import { configures3dTestEngine } from '../../test-utils'
 import { controlManager as manager } from '../../../src/3d/managers'
@@ -22,8 +22,8 @@ describe('ControlManager', () => {
     actions = []
     currentPointer = null
 
-    mesh = BoxBuilder.CreateBox('box', {})
-    anchorable = BoxBuilder.CreateBox('box2', {})
+    mesh = CreateBox('box', {})
+    anchorable = CreateBox('box2', {})
     anchorable.addBehavior(
       new AnchorBehavior({
         anchors: [{ width: 1, height: 1, depth: 0.5 }]
@@ -94,7 +94,7 @@ describe('ControlManager', () => {
 
   describe('registerControlable()', () => {
     it('registers a mesh', () => {
-      const mesh = BoxBuilder.CreateBox('box3', {})
+      const mesh = CreateBox('box3', {})
       expect(manager.isManaging(mesh)).toBe(false)
 
       manager.registerControlable(mesh)
@@ -102,7 +102,7 @@ describe('ControlManager', () => {
     })
 
     it('automatically unregisters a mesh upon disposal', () => {
-      const mesh = BoxBuilder.CreateBox('box3', {})
+      const mesh = CreateBox('box3', {})
       manager.registerControlable(mesh)
       expect(manager.isManaging(mesh)).toBe(true)
 
@@ -113,7 +113,7 @@ describe('ControlManager', () => {
 
   describe('unregisterControlable()', () => {
     it('ignores uncontrolled mesh', () => {
-      const mesh = BoxBuilder.CreateBox('box3', {})
+      const mesh = CreateBox('box3', {})
       expect(manager.isManaging(mesh)).toBe(false)
 
       manager.unregisterControlable(mesh)
@@ -123,7 +123,7 @@ describe('ControlManager', () => {
 
   describe('apply()', () => {
     it('ignores uncontrolled mesh', () => {
-      const mesh = BoxBuilder.CreateBox('box', {})
+      const mesh = CreateBox('box', {})
       mesh.addBehavior(new FlipBehavior(), true)
       const flipSpy = jest.spyOn(mesh.metadata, 'flip')
 

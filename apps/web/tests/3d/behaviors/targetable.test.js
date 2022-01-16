@@ -1,4 +1,4 @@
-import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
 import { configures3dTestEngine } from '../../test-utils'
 import { TargetBehavior, TargetBehaviorName } from '../../../src/3d/behaviors'
@@ -17,7 +17,7 @@ describe('TargetBehavior', () => {
       duration: faker.datatype.number()
     }
     const behavior = new TargetBehavior(state)
-    const mesh = BoxBuilder.CreateBox('box', {})
+    const mesh = CreateBox('box', {})
 
     expect(behavior.name).toEqual(TargetBehaviorName)
     expect(behavior.zones).toEqual([])
@@ -29,7 +29,7 @@ describe('TargetBehavior', () => {
 
   it('adds zones', () => {
     const behavior = new TargetBehavior()
-    const mesh1 = BoxBuilder.CreateBox('box1', {})
+    const mesh1 = CreateBox('box1', {})
     const zone1 = behavior.addZone(mesh1, 1.2)
     expect(behavior.zones).toEqual([zone1])
     expect(zone1).toEqual(
@@ -40,7 +40,7 @@ describe('TargetBehavior', () => {
       })
     )
 
-    const mesh2 = BoxBuilder.CreateBox('box1', {})
+    const mesh2 = CreateBox('box1', {})
     const zone2 = behavior.addZone(mesh2, 2, ['box', 'card'], false)
     expect(behavior.zones).toEqual([zone1, zone2])
     expect(zone2).toEqual(
@@ -61,7 +61,7 @@ describe('TargetBehavior', () => {
 
   it('removes added zone and disposes their mesh', () => {
     const behavior = new TargetBehavior()
-    const mesh = BoxBuilder.CreateBox('box', {})
+    const mesh = CreateBox('box', {})
     const zone = behavior.addZone(mesh, 1.2)
     expect(behavior.zones).toEqual([zone])
 
@@ -72,7 +72,7 @@ describe('TargetBehavior', () => {
 
   it('can not remove random zone', () => {
     const behavior = new TargetBehavior()
-    const mesh = BoxBuilder.CreateBox('box', {})
+    const mesh = CreateBox('box', {})
 
     behavior.removeZone({
       mesh,
@@ -89,7 +89,7 @@ describe('TargetBehavior', () => {
 
     beforeEach(() => {
       behavior = new TargetBehavior()
-      mesh = BoxBuilder.CreateBox('box', {})
+      mesh = CreateBox('box', {})
       mesh.addBehavior(behavior, true)
     })
 
@@ -99,9 +99,9 @@ describe('TargetBehavior', () => {
     })
 
     it('unregisteres from manager and removes zones upon detaching', () => {
-      const mesh1 = BoxBuilder.CreateBox('box1', {})
+      const mesh1 = CreateBox('box1', {})
       behavior.addZone(mesh1, 1.2)
-      const mesh2 = BoxBuilder.CreateBox('box1', {})
+      const mesh2 = CreateBox('box1', {})
       behavior.addZone(mesh2, 2, ['box', 'card'], false)
 
       mesh.dispose()

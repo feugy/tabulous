@@ -1,5 +1,5 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
 import { configures3dTestEngine, sleep } from '../../test-utils'
 import { inputManager as manager } from '../../../src/3d/managers'
@@ -80,7 +80,7 @@ describe('InputManager', () => {
     beforeEach(() => {
       manager.init({ scene, enabled: true, longTapDelay: 100 })
       meshes = meshes.map(({ id, position }) => {
-        const mesh = BoxBuilder.CreateBox(id, {})
+        const mesh = CreateBox(id, {})
         mesh.setAbsolutePosition(position)
         mesh.computeWorldMatrix()
         return mesh
@@ -1218,7 +1218,7 @@ describe('InputManager', () => {
     })
 
     it('picks highest meshes on Y-order', () => {
-      const mesh = BoxBuilder.CreateBox('box6', {})
+      const mesh = CreateBox('box6', {})
       mesh.setAbsolutePosition(new Vector3(10, 1, 0))
       mesh.computeWorldMatrix()
       const pointer = { x: 1266, y: 512 }

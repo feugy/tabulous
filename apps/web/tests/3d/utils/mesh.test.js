@@ -1,7 +1,7 @@
 import { Scene } from '@babylonjs/core/scene'
 import { NullEngine } from '@babylonjs/core/Engines/nullEngine'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import {
   adaptTexture,
   attachMaterialError,
@@ -22,20 +22,20 @@ afterAll(() => engine.dispose())
 describe('getHeight() 3D utility', () => {
   it('returns the height of a box', () => {
     const height = 3
-    const box = BoxBuilder.CreateBox('box', { width: 2, height, depth: 4 })
+    const box = CreateBox('box', { width: 2, height, depth: 4 })
     expect(getHeight(box)).toEqual(height / 2)
   })
 
   it('returns the height of a positionned box', () => {
     const height = 6
-    const box = BoxBuilder.CreateBox('box', { width: 2, height, depth: 4 })
+    const box = CreateBox('box', { width: 2, height, depth: 4 })
     box.setAbsolutePosition(new Vector3(-3, -5, -6))
     expect(getHeight(box)).toEqual(height / 2)
   })
 
   it('returns the height of a rotated box', () => {
     const height = 6
-    const box = BoxBuilder.CreateBox('box', { width: 2, height, depth: 4 })
+    const box = CreateBox('box', { width: 2, height, depth: 4 })
     box.rotation.x = Math.PI / 4
     box.setAbsolutePosition(new Vector3(2, 4, 6))
     box.computeWorldMatrix()
@@ -48,8 +48,8 @@ describe('isContaining() 3D utility', () => {
   let smallBox
 
   beforeAll(() => {
-    bigBox = BoxBuilder.CreateBox('Md', { width: 10, height: 10, depth: 10 })
-    smallBox = BoxBuilder.CreateBox('Sm', { width: 3, height: 3, depth: 3 })
+    bigBox = CreateBox('Md', { width: 10, height: 10, depth: 10 })
+    smallBox = CreateBox('Sm', { width: 3, height: 3, depth: 3 })
   })
 
   beforeEach(() => {

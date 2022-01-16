@@ -1,5 +1,5 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { configures3dTestEngine } from '../../test-utils'
 import { selectionManager as manager } from '../../../src/3d/managers'
 
@@ -33,7 +33,7 @@ describe('SelectionManager', () => {
 
   describe('select()', () => {
     it('adds meshes to selection', () => {
-      const mesh = BoxBuilder.CreateBox('box1', {})
+      const mesh = CreateBox('box1', {})
       manager.select(mesh)
       expect(manager.meshes.has(mesh)).toBe(true)
       expect(manager.meshes.size).toBe(1)
@@ -41,22 +41,22 @@ describe('SelectionManager', () => {
     })
 
     it('reorders selection based on elevation', () => {
-      const mesh1 = BoxBuilder.CreateBox('box1', {})
+      const mesh1 = CreateBox('box1', {})
       mesh1.setAbsolutePosition(new Vector3(0, 5, 0))
       manager.select(mesh1)
       expectSelection([mesh1])
 
-      const mesh2 = BoxBuilder.CreateBox('box2', {})
+      const mesh2 = CreateBox('box2', {})
       mesh2.setAbsolutePosition(new Vector3(0, -2, 0))
       manager.select(mesh2)
       expectSelection([mesh2, mesh1])
 
-      const mesh3 = BoxBuilder.CreateBox('box3', {})
+      const mesh3 = CreateBox('box3', {})
       mesh3.setAbsolutePosition(new Vector3(0, 7, 0))
       manager.select(mesh3)
       expectSelection([mesh2, mesh1, mesh3])
 
-      const mesh4 = BoxBuilder.CreateBox('box4', {})
+      const mesh4 = CreateBox('box4', {})
       mesh4.setAbsolutePosition(new Vector3(0, 2, 0))
       manager.select(mesh4)
       expectSelection([mesh2, mesh4, mesh1, mesh3])
@@ -68,7 +68,7 @@ describe('SelectionManager', () => {
 
     beforeEach(() => {
       meshes = meshes.map(id => {
-        const mesh = BoxBuilder.CreateBox(id, {})
+        const mesh = CreateBox(id, {})
         manager.select(mesh)
         return mesh
       })
@@ -111,7 +111,7 @@ describe('SelectionManager', () => {
 
     beforeEach(() => {
       meshes = meshes.map(({ id, position }) => {
-        const mesh = BoxBuilder.CreateBox(id, {})
+        const mesh = CreateBox(id, {})
         mesh.setAbsolutePosition(position)
         mesh.computeWorldMatrix()
         return mesh

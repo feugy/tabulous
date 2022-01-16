@@ -1,5 +1,5 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
 import {
   altitudeOnTop,
@@ -17,13 +17,13 @@ describe('sortByElevation() 3D utility', () => {
 
   beforeEach(() => {
     boxes = []
-    boxes.push(BoxBuilder.CreateBox('box', {}))
+    boxes.push(CreateBox('box', {}))
     boxes[boxes.length - 1].absolutePosition.y = 10
-    boxes.push(BoxBuilder.CreateBox('box2', {}))
+    boxes.push(CreateBox('box2', {}))
     boxes[boxes.length - 1].absolutePosition.y = 0
-    boxes.push(BoxBuilder.CreateBox('box3', {}))
+    boxes.push(CreateBox('box3', {}))
     boxes[boxes.length - 1].absolutePosition.y = -5
-    boxes.push(BoxBuilder.CreateBox('box4', {}))
+    boxes.push(CreateBox('box4', {}))
     boxes[boxes.length - 1].absolutePosition.y = 7
   })
 
@@ -51,11 +51,11 @@ describe('applyGravity() 3D utility', () => {
   const z = faker.datatype.number()
 
   it('positions mesh on the ground', () => {
-    const box = BoxBuilder.CreateBox('box', {})
+    const box = CreateBox('box', {})
     expect(getHeight(box)).toEqual(0.5)
     box.setAbsolutePosition(new Vector3(x, 10, z))
     box.computeWorldMatrix()
-    const box2 = BoxBuilder.CreateBox('box2', {})
+    const box2 = CreateBox('box2', {})
     box2.setAbsolutePosition(new Vector3(x + 2, 3, z))
     box2.computeWorldMatrix()
     expect(box.absolutePosition.y).toEqual(10)
@@ -63,11 +63,11 @@ describe('applyGravity() 3D utility', () => {
   })
 
   it('positions mesh with negative position', () => {
-    const box = BoxBuilder.CreateBox('box', {})
+    const box = CreateBox('box', {})
     expect(getHeight(box)).toEqual(0.5)
     box.setAbsolutePosition(new Vector3(x, -10, z))
     box.computeWorldMatrix()
-    const box2 = BoxBuilder.CreateBox('box2', {})
+    const box2 = CreateBox('box2', {})
     box2.setAbsolutePosition(new Vector3(x, 3, z - 2))
     box2.computeWorldMatrix()
     expect(box.absolutePosition.y).toEqual(-10)
@@ -75,10 +75,10 @@ describe('applyGravity() 3D utility', () => {
   })
 
   it('positions mesh just above another one', () => {
-    const box = BoxBuilder.CreateBox('box', {})
+    const box = CreateBox('box', {})
     box.setAbsolutePosition(new Vector3(x, 15, z))
     box.computeWorldMatrix()
-    const box2 = BoxBuilder.CreateBox('box2', {})
+    const box2 = CreateBox('box2', {})
     box2.setAbsolutePosition(new Vector3(x, 3, z))
     box2.computeWorldMatrix()
     let pos = applyGravity(box)
@@ -88,10 +88,10 @@ describe('applyGravity() 3D utility', () => {
   })
 
   it('positions mesh above another one with partial overlap', () => {
-    const box = BoxBuilder.CreateBox('box', {})
+    const box = CreateBox('box', {})
     box.setAbsolutePosition(new Vector3(x, 10, z))
     box.computeWorldMatrix()
-    const box2 = BoxBuilder.CreateBox('box2', {})
+    const box2 = CreateBox('box2', {})
     box2.setAbsolutePosition(new Vector3(x - 0.5, 2, z - 0.5))
     box2.computeWorldMatrix()
     let pos = applyGravity(box)
@@ -101,13 +101,13 @@ describe('applyGravity() 3D utility', () => {
   })
 
   it('positions mesh just above several ones', () => {
-    const box = BoxBuilder.CreateBox('box', {})
+    const box = CreateBox('box', {})
     box.setAbsolutePosition(new Vector3(x, 20, z))
     box.computeWorldMatrix()
-    const box2 = BoxBuilder.CreateBox('box2', {})
+    const box2 = CreateBox('box2', {})
     box2.setAbsolutePosition(new Vector3(x - 0.5, 4, z))
     box2.computeWorldMatrix()
-    const box3 = BoxBuilder.CreateBox('box3', {})
+    const box3 = CreateBox('box3', {})
     box3.setAbsolutePosition(new Vector3(x + 0.5, 3, z))
     box3.computeWorldMatrix()
     let pos = applyGravity(box)
@@ -122,10 +122,10 @@ describe('isAbove() 3D utility', () => {
   const z = faker.datatype.number()
 
   it('finds when a mesh is hovering another one', () => {
-    const box = BoxBuilder.CreateBox('box', {})
+    const box = CreateBox('box', {})
     box.setAbsolutePosition(new Vector3(x, 20, z))
     box.computeWorldMatrix()
-    const box2 = BoxBuilder.CreateBox('box2', {})
+    const box2 = CreateBox('box2', {})
     box2.setAbsolutePosition(new Vector3(x - 0.5, 4, z))
     box2.computeWorldMatrix()
 
@@ -133,10 +133,10 @@ describe('isAbove() 3D utility', () => {
   })
 
   it('finds when a mesh is not hovering another one', () => {
-    const box = BoxBuilder.CreateBox('box', {})
+    const box = CreateBox('box', {})
     box.setAbsolutePosition(new Vector3(x, 20, z))
     box.computeWorldMatrix()
-    const box2 = BoxBuilder.CreateBox('box2', {})
+    const box2 = CreateBox('box2', {})
     box2.setAbsolutePosition(new Vector3(x - 3, 4, z))
     box2.computeWorldMatrix()
 
@@ -144,10 +144,10 @@ describe('isAbove() 3D utility', () => {
   })
 
   it('applies scaling when detecting hovered mesh', () => {
-    const box = BoxBuilder.CreateBox('box', {})
+    const box = CreateBox('box', {})
     box.setAbsolutePosition(new Vector3(x, 20, z))
     box.computeWorldMatrix()
-    const box2 = BoxBuilder.CreateBox('box2', {})
+    const box2 = CreateBox('box2', {})
     box2.setAbsolutePosition(new Vector3(x - 1, 4, z))
     box2.computeWorldMatrix()
 
@@ -158,9 +158,9 @@ describe('isAbove() 3D utility', () => {
 
 describe('altitudeOnTop() 3D utility', () => {
   it('considers heights when positioning mesh above another one', () => {
-    const box = BoxBuilder.CreateBox('box', { height: 4 })
+    const box = CreateBox('box', { height: 4 })
     box.absolutePosition.y = 20
-    const box2 = BoxBuilder.CreateBox('box2', { height: 3 })
+    const box2 = CreateBox('box2', { height: 3 })
     expect(altitudeOnTop(box2, box)).toEqual(20 + 4 / 2 + 3 / 2 + 0.001)
   })
 })

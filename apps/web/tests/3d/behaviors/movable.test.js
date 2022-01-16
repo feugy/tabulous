@@ -1,4 +1,4 @@
-import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
 import { configures3dTestEngine } from '../../test-utils'
 import { MoveBehavior, MoveBehaviorName } from '../../../src/3d/behaviors'
@@ -14,7 +14,7 @@ describe('MoveBehavior', () => {
       duration: faker.datatype.number()
     }
     const behavior = new MoveBehavior(state)
-    const mesh = BoxBuilder.CreateBox('box', {})
+    const mesh = CreateBox('box', {})
 
     expect(behavior.enabled).toBe(true)
     expect(behavior.state).toEqual(state)
@@ -26,7 +26,7 @@ describe('MoveBehavior', () => {
   })
 
   it('registers mesh into MoveManager', () => {
-    const mesh = BoxBuilder.CreateBox('box', {})
+    const mesh = CreateBox('box', {})
     expect(moveManager.isManaging(mesh)).toBe(false)
 
     mesh.addBehavior(new MoveBehavior(), true)
@@ -38,13 +38,13 @@ describe('MoveBehavior', () => {
       'Can not restore state without mesh'
     )
   })
-
   describe('given attached to a mesh', () => {
     let mesh
     let behavior
+
     beforeEach(() => {
       behavior = new MoveBehavior()
-      mesh = BoxBuilder.CreateBox('box', {})
+      mesh = CreateBox('box', {})
       mesh.addBehavior(behavior, true)
     })
 

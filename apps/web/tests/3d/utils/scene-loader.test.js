@@ -1,5 +1,5 @@
 import { NullEngine } from '@babylonjs/core/Engines/nullEngine'
-import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
 import {
   createBoard,
@@ -247,7 +247,7 @@ describe('loadScene() 3D utility', () => {
       createBoard({ id: 'board' })
       createTable()
       createRoundToken({ id: 'token' })
-      BoxBuilder.CreateBox('box', { width: 10, height: 10, depth: 10 })
+      CreateBox('box', { width: 10, height: 10, depth: 10 })
       createRoundedTile({ id: 'tile' })
       createCard({ id: 'card' })
 

@@ -86,7 +86,6 @@ export function serializeBehaviors(behaviors) {
  * @param {import('@babel/core').Vector3} absolutePosition - its final, absolute position.
  * @param {number} duration - how long, in ms, the move will last.
  * @param {boolean} [withGravity=false] - whether to apply gravity at the end.
- * @returns
  */
 export async function animateMove(
   mesh,

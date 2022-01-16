@@ -1,6 +1,6 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
-import { CylinderBuilder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
 import { MoveBehaviorName, StackBehaviorName } from './names'
 import { TargetBehavior } from './targetable'
 import { controlManager, inputManager, selectionManager } from '../managers'
@@ -298,7 +298,7 @@ export class StackBehavior extends TargetBehavior {
   }
 
   /**
-   * Flips entire stack, when relevant. Does nothing on 1-mesh stacks.
+   * Flips entire stack:
    * - flips in parallel each mesh
    * - re-order the stack so the lowest mesh becomes the highest
    * - disables targets and moves of all meshes but the highest one
@@ -312,8 +312,7 @@ export class StackBehavior extends TargetBehavior {
   }
 
   /**
-   * Rotates entire stack, when relevant. Does nothing on 1-mesh stacks.
-   * - rotates in parallel each mesh
+   * Rotates entire stack (each mesh in parallel).
    * @async
    */
   async rotateAll() {
@@ -361,15 +360,8 @@ export class StackBehavior extends TargetBehavior {
     // builds a drop zone from the mesh's dimensions
     const { x, y, z } = this.mesh.getBoundingInfo().boundingBox.extendSizeWorld
     const dropZone = this._state.isCylindric
-      ? CylinderBuilder.CreateCylinder('drop-zone', {
-          diameter: x * 2,
-          height: y * 2
-        })
-      : BoxBuilder.CreateBox('drop-zone', {
-          width: x * 2,
-          height: y * 2,
-          depth: z * 2
-        })
+      ? CreateCylinder('drop-zone', { diameter: x * 2, height: y * 2 })
+      : CreateBox('drop-zone', { width: x * 2, height: y * 2, depth: z * 2 })
     dropZone.parent = this.mesh
     this.addZone(dropZone, this._state.extent, this._state.kinds)
 

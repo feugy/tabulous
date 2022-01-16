@@ -1,4 +1,4 @@
-import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { configures3dTestEngine } from '../../test-utils'
 import { DetailBehavior, DetailBehaviorName } from '../../../src/3d/behaviors'
 import { controlManager } from '../../../src/3d/managers'
@@ -17,7 +17,7 @@ describe('DetailBehavior', () => {
 
   it('has initial state', () => {
     const behavior = new DetailBehavior()
-    const mesh = BoxBuilder.CreateBox('box', {})
+    const mesh = CreateBox('box', {})
 
     expect(behavior.mesh).toBeNull()
     expect(behavior.name).toEqual(DetailBehaviorName)
@@ -38,7 +38,7 @@ describe('DetailBehavior', () => {
 
     beforeEach(() => {
       behavior = new DetailBehavior()
-      mesh = BoxBuilder.CreateBox('box', {})
+      mesh = CreateBox('box', {})
       mesh.addBehavior(behavior, true)
     })
 

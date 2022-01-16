@@ -7,8 +7,8 @@ exports[`Toolshot components/MinimizableSection.tools.svelte: Bottom 1`] = `
   >
     <section
       aria-expanded="true"
+      aria-label="minimizable"
       class="vertical"
-      role="region"
       style="height: auto;"
     >
       <menu
@@ -180,7 +180,7 @@ exports[`Toolshot components/MinimizableSection.tools.svelte: Left 1`] = `
   >
     <section
       aria-expanded="true"
-      role="region"
+      aria-label="minimizable"
       style="width: auto;"
     >
       <menu
@@ -352,8 +352,8 @@ exports[`Toolshot components/MinimizableSection.tools.svelte: Multiple, custom t
   >
     <section
       aria-expanded="false"
+      aria-label="minimizable"
       class="minimized vertical"
-      role="region"
       style="height: auto;"
     >
       <menu
@@ -543,7 +543,7 @@ exports[`Toolshot components/MinimizableSection.tools.svelte: Right 1`] = `
   >
     <section
       aria-expanded="true"
-      role="region"
+      aria-label="minimizable"
       style="width: auto;"
     >
       <menu
@@ -715,8 +715,8 @@ exports[`Toolshot components/MinimizableSection.tools.svelte: Top 1`] = `
   >
     <section
       aria-expanded="true"
+      aria-label="minimizable"
       class="vertical"
-      role="region"
       style="height: auto;"
     >
       <menu

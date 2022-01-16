@@ -1,5 +1,5 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
 import { configures3dTestEngine, sleep } from '../../test-utils'
 import { createTable } from '../../../src/3d'
@@ -60,13 +60,13 @@ describe('MoveManager', () => {
 
   describe('registerMovable()', () => {
     it('registers a mesh', () => {
-      const mesh = BoxBuilder.CreateBox('box3', {})
+      const mesh = CreateBox('box3', {})
       mesh.addBehavior(new MoveBehavior(), true)
       expect(manager.isManaging(mesh)).toBe(true)
     })
 
     it('automatically unregisters a mesh upon disposal', () => {
-      const mesh = BoxBuilder.CreateBox('box3', {})
+      const mesh = CreateBox('box3', {})
       mesh.addBehavior(new MoveBehavior(), true)
       expect(manager.isManaging(mesh)).toBe(true)
 
@@ -75,7 +75,7 @@ describe('MoveManager', () => {
     })
 
     it('automatically unregisters a mesh upon behavior detachment', () => {
-      const mesh = BoxBuilder.CreateBox('box3', {})
+      const mesh = CreateBox('box3', {})
       const behavior = new MoveBehavior()
       mesh.addBehavior(behavior, true)
       expect(manager.isManaging(mesh)).toBe(true)
@@ -109,13 +109,13 @@ describe('MoveManager', () => {
     })
 
     it('ignores uncontrolled mesh', () => {
-      const mesh = BoxBuilder.CreateBox('box4', {})
+      const mesh = CreateBox('box4', {})
       manager.start(mesh, { x: centerX, y: centerY })
       expect(manager.inProgress).toBe(false)
     })
 
     it('ignores disabled mesh', () => {
-      const mesh = BoxBuilder.CreateBox('box4', {})
+      const mesh = CreateBox('box4', {})
       const behavior = new MoveBehavior()
       mesh.addBehavior(behavior, true)
       behavior.enabled = false
@@ -214,7 +214,7 @@ describe('MoveManager', () => {
     })
 
     it('elevates moved when detecting a collision', () => {
-      const obstacle = BoxBuilder.CreateBox('obstacle', { size: 2 })
+      const obstacle = CreateBox('obstacle', { size: 2 })
       obstacle.setAbsolutePosition(1, 0.5, 1)
       obstacle.computeWorldMatrix()
 
@@ -300,10 +300,10 @@ describe('MoveManager', () => {
 
     it('elevates entire selection on collision', () => {
       const deltaX = 0.8257662057876587
-      const obstacle1 = BoxBuilder.CreateBox('obstacle1', { size: 2 })
+      const obstacle1 = CreateBox('obstacle1', { size: 2 })
       obstacle1.setAbsolutePosition(1, 0.5, 1)
       obstacle1.computeWorldMatrix()
-      const obstacle2 = BoxBuilder.CreateBox('obstacle2', { size: 2 })
+      const obstacle2 = CreateBox('obstacle2', { size: 2 })
       obstacle2.setAbsolutePosition(-10, 0, -10)
       obstacle2.computeWorldMatrix()
 
@@ -469,7 +469,7 @@ describe('MoveManager', () => {
   })
 
   function createsMovable(id = 'box', position = new Vector3(1, 1, 1)) {
-    const movable = BoxBuilder.CreateBox(id, {})
+    const movable = CreateBox(id, {})
     movable.setAbsolutePosition(position)
     movable.addBehavior(new MoveBehavior(), true)
     movable.computeWorldMatrix()
@@ -477,13 +477,13 @@ describe('MoveManager', () => {
   }
 
   function createsTarget(rank = 1, position = new Vector3(0, 0, 0)) {
-    const targetable = BoxBuilder.CreateBox(`targetable-${rank}`, {})
+    const targetable = CreateBox(`targetable-${rank}`, {})
     targetable.isPickable = false
     const behavior = new TargetBehavior()
     behavior.onDropObservable.add(drop => drops.push(drop))
     targetable.addBehavior(behavior, true)
 
-    const target = BoxBuilder.CreateBox(`target-${rank}`, {})
+    const target = CreateBox(`target-${rank}`, {})
     target.setAbsolutePosition(position)
     target.computeWorldMatrix()
     behavior.addZone(target, 0.5)

@@ -2,8 +2,8 @@ import { Axis, Space } from '@babylonjs/core/Maths/math.axis'
 import { Color3 } from '@babylonjs/core/Maths/math.color'
 import { Vector3, Quaternion } from '@babylonjs/core/Maths/math.vector'
 import { Mesh } from '@babylonjs/core/Meshes/mesh'
-import { LinesBuilder } from '@babylonjs/core/Meshes/Builders/linesBuilder'
-import { ShapeBuilder } from '@babylonjs/core/Meshes/Builders/shapeBuilder'
+import { CreateLines } from '@babylonjs/core/Meshes/Builders/linesBuilder'
+import { ExtrudeShape } from '@babylonjs/core/Meshes/Builders/shapeBuilder'
 import { isContaining, screenToGround, sortByElevation } from '../utils'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
@@ -56,7 +56,7 @@ class SelectionManager {
     ]
     points.push(points[0].clone())
 
-    this.box = LinesBuilder.CreateLines('selection-hint', {
+    this.box = CreateLines('selection-hint', {
       points,
       colors: Array.from({ length: 6 }, () => Color3.Green().toColor4())
     })
@@ -76,7 +76,7 @@ class SelectionManager {
       for (const point of points) {
         point.rotateByQuaternionAroundPointToRef(rotation, position, point)
       }
-      const box = ShapeBuilder.ExtrudeShape('selection-box', {
+      const box = ExtrudeShape('selection-box', {
         shape: points,
         path: [Vector3.Zero(), new Vector3(0, 0, 20)],
         sideOrientation: Mesh.DOUBLESIDE

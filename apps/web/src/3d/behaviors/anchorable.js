@@ -1,4 +1,4 @@
-import { BoxBuilder } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { AnchorBehaviorName } from './names'
 import { TargetBehavior } from './targetable'
@@ -155,7 +155,7 @@ export class AnchorBehavior extends TargetBehavior {
     this.state = { ...state, duration: state.duration ?? 100 }
     if (Array.isArray(this.state.anchors)) {
       for (const [i, anchor] of this.state.anchors.entries()) {
-        const mesh = BoxBuilder.CreateBox(`anchor-${i}`, {
+        const mesh = CreateBox(`anchor-${i}`, {
           width: anchor.width,
           height: anchor.depth,
           depth: anchor.height
