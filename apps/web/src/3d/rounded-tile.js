@@ -123,6 +123,7 @@ export function createRoundedTile({
 
   tile.receiveShadows = true
   tile.setAbsolutePosition(new Vector3(x, y, z))
+  tile.isPickable = false
 
   tile.metadata = {
     images,

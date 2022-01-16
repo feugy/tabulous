@@ -1,11 +1,17 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
-import { cleanDebugFile, configures3dTestEngine, sleep } from '../../test-utils'
+import {
+  cleanDebugFile,
+  configures3dTestEngine,
+  debug,
+  sleep
+} from '../../test-utils'
 import {
   AnchorBehavior,
   AnchorBehaviorName,
-  AnimateBehavior
+  AnimateBehavior,
+  StackBehavior
 } from '../../../src/3d/behaviors'
 import { controlManager, inputManager } from '../../../src/3d/managers'
 import { altitudeOnTop } from '../../../src/3d/utils'
@@ -18,6 +24,7 @@ describe('AnchorBehavior', () => {
   beforeAll(cleanDebugFile)
 
   beforeEach(jest.resetAllMocks)
+  beforeEach(() => debug('\n\n---------------------\n\n'))
 
   it('has initial state', () => {
     const state = {
@@ -215,6 +222,32 @@ describe('AnchorBehavior', () => {
       })
     })
 
+    it('snaps a stack of mesh', async () => {
+      const stacked = CreateBox('stacked-box1', {})
+      stacked.addBehavior(new AnimateBehavior(), true)
+      const snapped = meshes[0]
+
+      snapped.addBehavior(new StackBehavior({ stack: [stacked.id] }), true)
+      expectClosePosition(snapped, [10, 10, 10])
+      expectClosePosition(stacked, [10, altitudeOnTop(stacked, snapped), 10])
+      expect(behavior.snappedZone(snapped.id)).toBeNull()
+
+      const args = [snapped.id, behavior.zones[0].mesh.id]
+      await mesh.metadata.snap(...args)
+      expectSnapped(snapped, 0)
+      expectClosePosition(stacked, [
+        snapped.absolutePosition.x,
+        altitudeOnTop(stacked, snapped),
+        snapped.absolutePosition.z
+      ])
+      expect(recordSpy).toHaveBeenCalledTimes(1)
+      expect(recordSpy).toHaveBeenCalledWith({
+        fn: 'snap',
+        meshId: mesh.id,
+        args
+      })
+    })
+
     it('snaps dropped mesh', async () => {
       const snapped = meshes[1]
       expect(snapped.absolutePosition.asArray()).toEqual([11, 11, 11])
@@ -322,11 +355,11 @@ describe('AnchorBehavior', () => {
       expect(behavior.snappedZone(snapped.id)).toEqual(zone)
       expect(anchor.snappedId).toEqual(snapped.id)
       expect(mesh.metadata.anchors[anchorRank].snappedId).toEqual(snapped.id)
-      expect(snapped.absolutePosition.x).toBeCloseTo(anchor.x ?? 0)
-      expect(snapped.absolutePosition.y).toBeCloseTo(
-        altitudeOnTop(snapped, mesh)
-      )
-      expect(snapped.absolutePosition.z).toBeCloseTo(anchor.z ?? 0)
+      expectClosePosition(snapped, [
+        anchor.x ?? 0,
+        altitudeOnTop(snapped, mesh),
+        anchor.z ?? 0
+      ])
     }
 
     function expectUnsnapped(snapped, anchorRank) {
@@ -336,6 +369,12 @@ describe('AnchorBehavior', () => {
       expect(behavior.snappedZone(snapped.id)).toBeNull()
       expect(anchor.snappedId).not.toBeDefined()
       expect(mesh.metadata.anchors[anchorRank].snappedId).not.toBeDefined()
+    }
+
+    function expectClosePosition(mesh, [x, y, z]) {
+      expect(mesh.absolutePosition.x).toEqual(x)
+      expect(mesh.absolutePosition.y).toBeCloseTo(y)
+      expect(mesh.absolutePosition.z).toEqual(z)
     }
   })
 })

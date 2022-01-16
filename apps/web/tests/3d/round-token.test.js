@@ -13,7 +13,7 @@ describe('createRoundToken()', () => {
     expect(boundingBox.extendSize.x * 2).toEqual(2)
     expect(boundingBox.extendSize.z * 2).toEqual(2)
     expect(boundingBox.extendSize.y * 2).toEqual(0.1)
-    expect(mesh.isPickable).toBe(true)
+    expect(mesh.isPickable).toBe(false)
     expect(mesh.absolutePosition.x).toEqual(0)
     expect(mesh.absolutePosition.y).toBeCloseTo(0.1, -0.01)
     expect(mesh.absolutePosition.z).toEqual(0)

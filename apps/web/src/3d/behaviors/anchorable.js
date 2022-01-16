@@ -6,6 +6,8 @@ import { animateMove } from '../utils'
 import { controlManager, inputManager } from '../managers'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
+import { StackBehaviorName } from '.'
+import { sleep } from '../../utils'
 
 const logger = makeLogger(AnchorBehaviorName)
 
@@ -162,6 +164,7 @@ export class AnchorBehavior extends TargetBehavior {
         })
         mesh.parent = this.mesh
         mesh.position = new Vector3(anchor.x ?? 0, anchor.y ?? 0, anchor.z ?? 0)
+        mesh.computeWorldMatrix(true)
         const zone = this.addZone(mesh, 0.6, anchor.kinds)
         // relates the created zone with the anchor
         zone.anchorIndex = i
@@ -183,12 +186,12 @@ async function snapToAnchor(snappedId, zone, behavior, recordAction = true) {
   const {
     mesh,
     zoneBySnappedId,
-    state: { anchors }
+    state: { anchors, duration }
   } = behavior
   const meshId = mesh.id
   const zoneId = zone.mesh.id
   const snapped = mesh.getScene().getMeshById(snappedId)
-  anchors[zone.anchorIndex].snappedId = snapped?.id
+  anchors[zone.anchorIndex].snappedId = undefined
   if (snapped) {
     logger.info(
       { mesh, snappedId, zone },
@@ -198,15 +201,23 @@ async function snapToAnchor(snappedId, zone, behavior, recordAction = true) {
       controlManager.record({ meshId, fn: 'snap', args: [snappedId, zoneId] })
     }
     zone.enabled = false
-    zoneBySnappedId.set(snappedId, zone)
     // moves it to the final position
     const { x, y, z } = zone.mesh.getAbsolutePosition()
-    await animateMove(
-      snapped,
-      new Vector3(x, y + 0.1, z),
-      recordAction ? behavior.state.duration : 0,
-      true
-    )
+    const position = new Vector3(x, y + 0.1, z)
+
+    const stackable = snapped.getBehaviorByName(StackBehaviorName)
+    const moved = stackable?.stack ?? [snapped]
+    anchors[zone.anchorIndex].snappedId = moved[0].id
+    zoneBySnappedId.set(moved[0].id, zone)
+    if (recordAction) {
+      await Promise.all(
+        moved.map((mesh, i) =>
+          sleep(i * 1.5).then(() => animateMove(mesh, position, duration, true))
+        )
+      )
+    } else {
+      moved.map(mesh => animateMove(mesh, position, 0, true))
+    }
   }
 }
 

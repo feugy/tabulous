@@ -15,6 +15,7 @@ describe('MoveBehavior', () => {
     }
     const behavior = new MoveBehavior(state)
     const mesh = CreateBox('box', {})
+    mesh.isPickable = false
 
     expect(behavior.enabled).toBe(true)
     expect(behavior.state).toEqual(state)
@@ -23,6 +24,7 @@ describe('MoveBehavior', () => {
 
     mesh.addBehavior(behavior, true)
     expect(behavior.mesh).toEqual(mesh)
+    expect(mesh.isPickable).toBe(true)
   })
 
   it('registers mesh into MoveManager', () => {
@@ -38,6 +40,11 @@ describe('MoveBehavior', () => {
       'Can not restore state without mesh'
     )
   })
+
+  it('handles detaching without mesh', () => {
+    expect(() => new MoveBehavior().detach()).not.toThrowError()
+  })
+
   describe('given attached to a mesh', () => {
     let mesh
     let behavior

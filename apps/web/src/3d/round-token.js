@@ -57,6 +57,7 @@ export function createRoundToken({
 
   token.receiveShadows = true
   token.setAbsolutePosition(new Vector3(x, y, z))
+  token.isPickable = false
 
   token.metadata = {
     images,

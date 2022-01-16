@@ -72,6 +72,7 @@ export function createCard({
   faces.parent = card
 
   card.setAbsolutePosition(new Vector3(x, y, z))
+  card.isPickable = false
 
   card.metadata = {
     images,

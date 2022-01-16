@@ -102,6 +102,7 @@ export function createBoard({
 
   board.receiveShadows = true
   board.setAbsolutePosition(new Vector3(x, y, z))
+  board.isPickable = false
 
   board.metadata = {
     serialize: () => ({

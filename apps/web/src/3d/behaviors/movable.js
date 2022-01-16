@@ -45,6 +45,7 @@ export class MoveBehavior {
    */
   attach(mesh) {
     this.mesh = mesh
+    mesh.isPickable = true
     this.fromState(this.state)
     moveManager.registerMovable(this)
   }
@@ -53,7 +54,10 @@ export class MoveBehavior {
    * Detaches this behavior from its mesh, by unregistering from the drag manager.
    */
   detach() {
-    moveManager.unregisterMovable(this)
+    if (this.mesh) {
+      this.mesh.isPickable = false
+      moveManager.unregisterMovable(this)
+    }
   }
 
   /**

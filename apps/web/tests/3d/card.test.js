@@ -13,7 +13,7 @@ describe('createCard()', () => {
     expect(boundingBox.extendSize.x * 2).toEqual(3)
     expect(boundingBox.extendSize.z * 2).toEqual(4.25)
     expect(boundingBox.extendSize.y * 2).toEqual(0.01)
-    expect(mesh.isPickable).toBe(true)
+    expect(mesh.isPickable).toBe(false)
     expect(mesh.absolutePosition.x).toEqual(0)
     expect(mesh.absolutePosition.y).toEqual(0)
     expect(mesh.absolutePosition.z).toEqual(0)
