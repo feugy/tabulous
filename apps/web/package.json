@@ -47,6 +47,7 @@
     "svelte-portal": "^2.1.2",
     "svelte-preprocess": "^4.10.1",
     "svelte-spa-router": "^3.2.0",
+    "svelte-windicss-preprocess": "^4.2.5",
     "vite": "^2.7.12",
     "vite-plugin-windicss": "^1.6.2",
     "windicss": "^3.4.2",

@@ -1,7 +1,5 @@
 # TODO
 
-1. update atelier
-
 1. fix stack + flip + snap issue
 
 1. a stack of 2, 1 mesh partially overlapping it, could stack a 3rd mesh (should be prevented?)

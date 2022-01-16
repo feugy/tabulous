@@ -60,14 +60,6 @@
     @apply grid flex-1 gap-2 place-items-center grid-flow-col;
     grid-template-rows: repeat(auto-fit, minmax(150px, 1fr));
   }
-
-  .thread {
-    @apply grid;
-  }
-
-  .help {
-    @apply h-full;
-  }
 </style>
 
 <aside>

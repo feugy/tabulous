@@ -181,11 +181,11 @@
 </style>
 
 <section
-  role="region"
   class:minimized
   class:vertical
   bind:this={node}
   aria-expanded={!minimized}
+  aria-label="minimizable"
   style="{props.style}: {innerDimension};"
 >
   <menu class:vertical class={placement}>
