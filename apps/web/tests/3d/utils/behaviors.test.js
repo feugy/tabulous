@@ -309,10 +309,11 @@ describe('restoreBehaviors() 3D utility', () => {
   })
 
   it('restores detailable behavior', () => {
-    const detailable = new DetailBehavior()
+    const state = { frontImage: 'front.png', backImage: 'back.jpg' }
+    const detailable = new DetailBehavior(state)
     box.addBehavior(detailable, true)
-    restoreBehaviors(box.behaviors, { detailable: true })
-    expect(detailable).toEqual(detailable)
+    restoreBehaviors(box.behaviors, { detailable: state })
+    expect(detailable.state).toEqual(detailable.state)
   })
 
   it('restores anchorable behavior', () => {
@@ -498,9 +499,10 @@ describe('serializeBehaviors() 3D utility', () => {
     })
   })
 
-  it('does not serialize detailable behavior', () => {
-    expect(serializeBehaviors([new DetailBehavior()])).toEqual({
-      detailable: true
+  it('serializes detailable behavior', () => {
+    const state = { frontImage: 'front.png', backImage: 'back.jpg' }
+    expect(serializeBehaviors([new DetailBehavior(state)])).toEqual({
+      detailable: state
     })
   })
 
@@ -533,10 +535,11 @@ describe('serializeBehaviors() 3D utility', () => {
       snapDistance: 0.5,
       duration: 345
     }
+    const detailable = { frontImage: 'front.png', backImage: 'back.jpg' }
     box.addBehavior(new MoveBehavior(movable), true)
     box.addBehavior(new FlipBehavior(flippable), true)
     box.addBehavior(new RotateBehavior(rotable), true)
-    box.addBehavior(new DetailBehavior(), true)
+    box.addBehavior(new DetailBehavior(detailable), true)
     box.addBehavior(new AnchorBehavior(anchorable), true)
     box.addBehavior(new StackBehavior(stackable), true)
     box.addBehavior(new AnimateBehavior(), true)
@@ -546,7 +549,7 @@ describe('serializeBehaviors() 3D utility', () => {
       stackable: { ...stackable, stack: [] },
       rotable,
       movable,
-      detailable: true
+      detailable
     })
   })
 

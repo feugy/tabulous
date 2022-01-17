@@ -18,7 +18,6 @@ import {
  * @param {object} params - token parameters, including (all other properties will be passed to the created mesh):
  * @param {string} params.id - token's unique id.
  * @param {string} params.texture - token's texture url.
- * @param {import('./utils').ImageDefs} params.images - detailed images for this token.
  * @param {number} params.x? - initial position along the X axis.
  * @param {number} params.y? - initial position along the Y axis.
  * @param {number} params.z? - initial position along the Z axis.
@@ -34,7 +33,6 @@ export function createRoundToken({
   diameter = 2,
   height = 0.1,
   texture,
-  images,
   ...behaviorStates
 } = {}) {
   const faceUV = [
@@ -60,7 +58,6 @@ export function createRoundToken({
   token.isPickable = false
 
   token.metadata = {
-    images,
     serialize: () => ({
       shape: token.name,
       id,
@@ -70,7 +67,6 @@ export function createRoundToken({
       texture,
       diameter,
       height,
-      images,
       ...serializeBehaviors(token.behaviors)
     })
   }

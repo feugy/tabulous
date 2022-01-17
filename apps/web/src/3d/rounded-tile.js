@@ -56,7 +56,6 @@ function makeCornerMesh(
  * @param {object} params - tile parameters, including (all other properties will be passed to the created mesh):
  * @param {string} params.id - tile's unique id.
  * @param {string} params.texture - tile's texture url.
- * @param {import('./utils').ImageDefs} params.images - detailed images for this tile.
  * @param {number} params.x? - initial position along the X axis.
  * @param {number} params.y? - initial position along the Y axis.
  * @param {number} params.z? - initial position along the Z axis.
@@ -78,7 +77,6 @@ export function createRoundedTile({
   borderRadius = 0.4,
   borderColor = [0, 0, 0, 1],
   texture,
-  images,
   ...behaviorStates
 } = {}) {
   const faceUV = [
@@ -120,7 +118,6 @@ export function createRoundedTile({
   tile.isPickable = false
 
   tile.metadata = {
-    images,
     serialize: () => ({
       shape: tile.name,
       id,
@@ -133,7 +130,6 @@ export function createRoundedTile({
       borderColor,
       borderRadius,
       texture,
-      images,
       ...serializeBehaviors(tile.behaviors)
     })
   }

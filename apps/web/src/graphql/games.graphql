@@ -4,44 +4,6 @@ fragment lightPlayer on Player {
   playing
 }
 
-fragment movable on MovableState {
-  duration
-  snapDistance
-  kind
-}
-
-fragment flippable on FlippableState {
-  isFlipped
-  duration
-}
-
-fragment rotable on RotableState {
-  angle
-  duration
-}
-
-fragment stackable on StackableState {
-  stack
-  duration
-  extent
-  kinds
-  isCylindric
-}
-
-fragment anchorable on AnchorableState {
-  anchors {
-    x
-    y
-    z
-    width
-    height
-    depth
-    kinds
-    snappedId
-  }
-  duration
-}
-
 mutation createGame($kind: String!) {
   createGame(kind: $kind) {
     id
@@ -82,10 +44,6 @@ query loadGame($gameId: ID!) {
     meshes {
       id
       texture
-      images {
-        front
-        back
-      }
       x
       y
       z
@@ -96,21 +54,42 @@ query loadGame($gameId: ID!) {
       diameter
       borderRadius
       borderColor
-      detailable
+      detailable {
+        frontImage
+        backImage
+      }
       movable {
-        ...movable
+        duration
+        snapDistance
+        kind
       }
       flippable {
-        ...flippable
+        isFlipped
+        duration
       }
       rotable {
-        ...rotable
+        angle
+        duration
       }
       stackable {
-        ...stackable
+        stack
+        duration
+        extent
+        kinds
+        isCylindric
       }
       anchorable {
-        ...anchorable
+        anchors {
+          x
+          y
+          z
+          width
+          height
+          depth
+          kinds
+          snappedId
+        }
+        duration
       }
     }
     messages {

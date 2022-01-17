@@ -11,9 +11,9 @@ type Game {
   rulesBookPageCount: Int
 }
 
-type ImageDefs {
-  front: String!
-  back: String
+type DetailableState {
+  frontImage: String!
+  backImage: String
 }
 
 type FlippableState {
@@ -59,12 +59,11 @@ type Anchor {
 type Mesh {
   id: ID!
   texture: String!
-  images: ImageDefs
   shape: Shape
   x: Float
   y: Float
   z: Float
-  detailable: Boolean
+  detailable: DetailableState
   movable: MovableState
   flippable: FlippableState
   rotable: RotableState
@@ -119,9 +118,9 @@ input GameInput {
   cameras: [CameraPositionInput]
 }
 
-input ImageDefsInput {
-  front: String!
-  back: String
+input DetailableStateInput {
+  frontImage: String!
+  backImage: String
 }
 
 input FlippableStateInput {
@@ -167,12 +166,11 @@ input AnchorInput {
 input MeshInput {
   id: ID!
   texture: String!
-  images: ImageDefsInput
   shape: Shape
   x: Float
   y: Float
   z: Float
-  detailable: Boolean
+  detailable: DetailableStateInput
   movable: MovableStateInput
   flippable: FlippableStateInput
   rotable: RotableStateInput

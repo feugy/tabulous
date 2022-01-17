@@ -16,14 +16,25 @@ describe('DetailBehavior', () => {
   afterAll(() => controlManager.onDetailedObservable.remove(onDetailedObserver))
 
   it('has initial state', () => {
-    const behavior = new DetailBehavior()
+    const state = {
+      frontImage: faker.image.imageUrl(),
+      backImage: faker.image.imageUrl()
+    }
+    const behavior = new DetailBehavior(state)
     const mesh = CreateBox('box', {})
 
     expect(behavior.mesh).toBeNull()
     expect(behavior.name).toEqual(DetailBehaviorName)
+    expect(behavior.state).toEqual(state)
 
     mesh.addBehavior(behavior, true)
     expect(behavior.mesh).toEqual(mesh)
+  })
+
+  it('can not restore state without mesh', () => {
+    expect(() => new DetailBehavior().fromState({ front: null })).toThrow(
+      'Can not restore state without mesh'
+    )
   })
 
   it('can not show details without mesh', () => {
@@ -32,61 +43,64 @@ describe('DetailBehavior', () => {
     expect(onDetailedObserver).not.toHaveBeenCalled()
   })
 
-  describe('given attached to a mesh', () => {
+  it('can hydrate with default state', () => {
+    const behavior = new DetailBehavior()
+    const mesh = CreateBox('box', {})
+    mesh.addBehavior(behavior, true)
+
+    behavior.fromState()
+    expect(behavior.state).toEqual({ frontImage: null, backImage: null })
+    expect(behavior.mesh).toEqual(mesh)
+    expect(mesh.metadata.frontImage).toBe(null)
+    expect(mesh.metadata.backImage).toBe(null)
+  })
+
+  describe.each([
+    {
+      title: ' with images',
+      frontImage: faker.image.imageUrl(),
+      backImage: faker.image.imageUrl()
+    },
+    {
+      title: ' with no images',
+      frontImage: null,
+      backImage: null
+    }
+  ])('given attached to a mesh$title', ({ frontImage, backImage }) => {
     let mesh
     let behavior
 
     beforeEach(() => {
-      behavior = new DetailBehavior()
+      behavior = new DetailBehavior({ frontImage, backImage })
       mesh = CreateBox('box', {})
       mesh.addBehavior(behavior, true)
     })
 
     it('attaches metadata to its mesh', () => {
       expect(mesh.metadata).toEqual({
-        images: {},
+        frontImage,
+        backImage,
         detail: expect.any(Function)
       })
     })
 
-    it('can show details without images', () => {
+    it('can show front image', () => {
       mesh.metadata.detail()
       expect(onDetailedObserver).toHaveBeenCalledTimes(1)
       expect(onDetailedObserver).toHaveBeenCalledWith(
-        {
-          mesh,
-          data: { image: null }
-        },
+        { mesh, data: { image: frontImage } },
         expect.anything()
       )
     })
 
-    describe('given images on mesh', () => {
-      const front = faker.internet.url()
-      const back = faker.internet.url()
-
-      beforeEach(() => {
-        mesh.metadata.images = { front, back }
-      })
-
-      it('can show front image', () => {
-        mesh.metadata.detail()
-        expect(onDetailedObserver).toHaveBeenCalledTimes(1)
-        expect(onDetailedObserver).toHaveBeenCalledWith(
-          { mesh, data: { image: front } },
-          expect.anything()
-        )
-      })
-
-      it('can show back image', () => {
-        mesh.metadata.isFlipped = true
-        mesh.metadata.detail()
-        expect(onDetailedObserver).toHaveBeenCalledTimes(1)
-        expect(onDetailedObserver).toHaveBeenCalledWith(
-          { mesh, data: { image: back } },
-          expect.anything()
-        )
-      })
+    it('can show back image', () => {
+      mesh.metadata.isFlipped = true
+      mesh.metadata.detail()
+      expect(onDetailedObserver).toHaveBeenCalledTimes(1)
+      expect(onDetailedObserver).toHaveBeenCalledWith(
+        { mesh, data: { image: backImage } },
+        expect.anything()
+      )
     })
   })
 })

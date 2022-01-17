@@ -18,7 +18,6 @@ describe('createRoundToken()', () => {
     expect(mesh.absolutePosition.y).toBeCloseTo(0.1, -0.01)
     expect(mesh.absolutePosition.z).toEqual(0)
     expect(mesh.metadata).toEqual({
-      images: undefined,
       serialize: expect.any(Function)
     })
     expect(mesh.behaviors).toHaveLength(0)
@@ -33,11 +32,13 @@ describe('createRoundToken()', () => {
     const x = faker.datatype.number()
     const y = faker.datatype.number()
     const z = faker.datatype.number()
-    const images = { front: faker.internet.url(), back: faker.internet.url() }
     const behaviors = {
       movable: { kind: faker.lorem.word() },
       rotable: { angle: Math.PI },
-      detailable: true
+      detailable: {
+        frontImage: faker.internet.url(),
+        backImage: faker.internet.url()
+      }
     }
 
     beforeEach(() => {
@@ -48,7 +49,6 @@ describe('createRoundToken()', () => {
         x,
         y,
         z,
-        images,
         ...behaviors
       })
     })
@@ -72,7 +72,7 @@ describe('createRoundToken()', () => {
         expect.objectContaining(behaviors.rotable)
       )
       expect(mesh.metadata).toEqual({
-        images,
+        ...behaviors.detailable,
         angle: behaviors.rotable.angle,
         serialize: expect.any(Function),
         detail: expect.any(Function),
@@ -95,8 +95,7 @@ describe('createRoundToken()', () => {
         z,
         diameter,
         height,
-        images,
-        detailable: true,
+        detailable: behaviors.detailable,
         rotable: {
           ...behaviors.rotable,
           duration: 200

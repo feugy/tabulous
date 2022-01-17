@@ -17,17 +17,10 @@ import repositories from '../repositories/index.js'
  */
 
 /**
- * @typedef {object} ImageDefs image definitions for a given mesh:
- * @property {string} front - path to its front image.
- * @property {string} back? - path to its back image, when relevant.
- */
-
-/**
  * @typedef {object} Mesh a 3D mesh, with a given shape. Some of its attribute are shape-specific:
  * @property {string} shape - the mesh shape: card, roundToken or roundedTile.
  * @property {string} id - mesh unique id.
  * @property {string} texture - path to its texture file (one path for the entire mesh).
- * @property {ImageDefs} images? - other image definitions.
  * @property {number} x? - 3D coordinate along the X axis (horizontal).
  * @property {number} z? - 3D coordinate along the Z axis (vertical).
  * @property {number} y? - 3D coordinate along the Y axis (altitude).
@@ -37,12 +30,18 @@ import repositories from '../repositories/index.js'
  * @property {number} diameter? - mesh's diameter (X+Z axis), for round tokens.
  * @property {number} borderRadius? - cordener radius, for rounded tiles.
  * @property {number[]} borderColor? - Color4's components used as edge color, for rounded tiles.
- * @property {boolean} detailable? - whether this mesh could be detailed or not.
+ * @property {DetailableState} detailable? - if this mesh could be detailed, contains details.
  * @property {MovableState} movable? - if this mesh could be moved, contains move state.
  * @property {FlippableState} flippable? - if this mesh could be flipped, contains flip state.
  * @property {RotableState} rotable? - if this mesh could be rotated along Y axis, contains rotation state.
  * @property {AnchorableState} anchorable? - if this mesh has anchors, contains their state.
  * @property {StackableState} stackable? - if this mesh could be stack under others, contains stack state.
+ */
+
+/**
+ * @typedef {object} DetailableState state for detailable meshes:
+ * @property {string} frontImage - path to its front image.
+ * @property {string} backImage? - path to its back image, when relevant.
  */
 
 /**

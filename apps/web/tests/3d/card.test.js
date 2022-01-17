@@ -36,11 +36,13 @@ describe('createCard()', () => {
     const x = faker.datatype.number()
     const y = faker.datatype.number()
     const z = faker.datatype.number()
-    const images = { front: faker.internet.url(), back: faker.internet.url() }
     const behaviors = {
       movable: { kind: faker.lorem.word() },
       rotable: { angle: Math.PI },
-      detailable: true
+      detailable: {
+        frontImage: faker.internet.url(),
+        backImage: faker.internet.url()
+      }
     }
 
     beforeEach(() => {
@@ -52,7 +54,6 @@ describe('createCard()', () => {
         x,
         y,
         z,
-        images,
         ...behaviors
       })
     })
@@ -78,7 +79,7 @@ describe('createCard()', () => {
         expect.objectContaining(behaviors.rotable)
       )
       expect(mesh.metadata).toEqual({
-        images,
+        ...behaviors.detailable,
         angle: behaviors.rotable.angle,
         serialize: expect.any(Function),
         detail: expect.any(Function),
@@ -111,8 +112,7 @@ describe('createCard()', () => {
         width,
         height,
         depth,
-        images,
-        detailable: true,
+        detailable: behaviors.detailable,
         rotable: {
           ...behaviors.rotable,
           duration: 200

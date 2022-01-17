@@ -29,17 +29,16 @@ for (const suit of suits) {
       shape: 'card',
       id: `${suit}-${index}`,
       texture: `images/french-suited-cards/${suit}-${index}.ktx2`,
-      images: {
-        front: `images/french-suited-cards/HR/${suit}-${index}.svg`,
-        back: `images/french-suited-cards/HR/back.svg`
-      },
       x: 0,
       y: baseY,
       z: 0,
       width,
       height,
       depth,
-      detailable: true,
+      detailable: {
+        frontImage: `images/french-suited-cards/HR/${suit}-${index}.svg`,
+        backImage: `images/french-suited-cards/HR/back.svg`
+      },
       // use all defaults
       movable: {},
       flippable: {},
@@ -61,7 +60,6 @@ export const bags = new Map([['cards', meshes.map(pickId)]])
 meshes.push({
   shape: 'roundedTile',
   id: 'board',
-  images: { front: '', back: '' },
   texture: `images/klondike/board.ktx2`,
   x: -0.75,
   y: -0.005,

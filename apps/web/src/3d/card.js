@@ -22,7 +22,6 @@ import {
  * @param {object} params - card parameters, including (all other properties will be passed to the created mesh):
  * @param {string} params.id - card's unique id.
  * @param {string} params.texture - card's texture url.
- * @param {import('./utils').ImageDefs} params.images - detailed images for this car.
  * @param {number} params.x? - initial position along the X axis.
  * @param {number} params.y? - initial position along the Y axis.
  * @param {number} params.z? - initial position along the Z axis.
@@ -40,7 +39,6 @@ export function createCard({
   height = 4.25,
   depth = 0.01,
   texture,
-  images,
   ...behaviorStates
 } = {}) {
   const faces = CreatePlane(`${id}-plane`, {
@@ -75,7 +73,6 @@ export function createCard({
   card.isPickable = false
 
   card.metadata = {
-    images,
     serialize: () => ({
       shape: card.name,
       id,
@@ -86,7 +83,6 @@ export function createCard({
       height,
       depth,
       texture,
-      images,
       ...serializeBehaviors(card.behaviors)
     })
   }

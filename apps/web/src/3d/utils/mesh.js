@@ -1,12 +1,6 @@
 import { Engine } from '@babylonjs/core/Engines/engine'
 
 /**
- * @typedef {object} ImageDefs detailed images definitions for a given mesh:
- * @property {string} front - image for the mesh front face.
- * @property {string} back? - image for the mesh front back.
- */
-
-/**
  * Indicates whether a given container completely contain the tested mesh, using their bounding boxes.
  * @param {import('@babylonjs/core').Mesh} container - container that may contain the mesh.
  * @param {import('@babylonjs/core').Mesh} mesh - tested mesh.

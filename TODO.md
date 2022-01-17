@@ -16,18 +16,21 @@
   > `expect(isAbove(box, box2, 2)).toBe(false)`
   > Presumably solved on Jan 15 by reducing the scale factor
 
-- `Dropdown component › given textual options › closes menu on click`
-
-  > `expect(received).toBeNull()` line 115 (menu does exist)
-
 - `InputManager › given an initialized manager() › handles multiple pointers taps`
 
   > `expect(received).toHaveLength(expected)` line 1319 (1 long received)
   > Presumably solved on Jan 16 by reducing in-between events timers
 
+- `Dropdown component › given textual options › closes menu on click`
+
+  > `expect(received).toBeNull()` line 115 (menu does exist)
+
+- `Typeahead component › given object options › closes menu with keyboard and opens on focus`
+
+  > `expect(received).toBeNull()` line 126 (menu does exist)
+
 ## Refactor
 
-- images should go to detailable now.
 - no need for stackable.isCylindric, now that we have mesh's shape.
 - behavior should be managers, since they can be attached to multiple meshes
 - all manager managing a collection of behaviors should check their capabilities

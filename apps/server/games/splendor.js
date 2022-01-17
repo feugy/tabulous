@@ -68,17 +68,16 @@ for (const [level, count] of cardCountPerLevel) {
         shape: 'card',
         id,
         texture: `images/splendor/${level}/${kind}-${index}.ktx2`,
-        images: {
-          front: `images/splendor/HR/card-${kind}-${level}-${index}.png`,
-          back: `images/splendor/HR/card-${level}-back.png`
-        },
         x: 0,
         z: 0,
         y: 0,
         width: 3,
         height: 4.25,
         depth: 0.01,
-        detailable: true,
+        detailable: {
+          frontImage: `images/splendor/HR/card-${kind}-${level}-${index}.png`,
+          backImage: `images/splendor/HR/card-${level}-back.png`
+        },
         movable: { kind: 'card' },
         flippable: {},
         rotable: {},
@@ -98,16 +97,15 @@ for (const kind of [...gems, 'gold']) {
       shape: 'roundToken',
       id,
       texture: `images/splendor/tokens/${kind}.ktx2`,
-      images: {
-        front: `images/splendor/HR/token-${kind}.png`,
-        back: `images/splendor/HR/token-${kind}.png`
-      },
       x: 0,
       y: 0.05,
       z: 0,
       diameter: 2,
       height: 0.1,
-      detailable: true,
+      detailable: {
+        frontImage: `images/splendor/HR/token-${kind}.png`,
+        backImage: `images/splendor/HR/token-${kind}.png`
+      },
       movable: { kind: 'token' },
       flippable: {},
       rotable: {},
@@ -124,10 +122,6 @@ for (let index = 1; index <= 10; index++) {
     shape: 'roundedTile',
     id,
     texture: `images/splendor/tiles/tile-${index}.ktx2`,
-    images: {
-      front: `images/splendor/HR/tile-${index}.png`,
-      back: `images/splendor/HR/tile-back.png`
-    },
     x: 0,
     z: 0,
     y: 0,
@@ -136,7 +130,10 @@ for (let index = 1; index <= 10; index++) {
     depth: 0.05,
     borderRadius: 0.4,
     borderColor: [0, 0, 0, 1],
-    detailable: true,
+    detailable: {
+      frontImage: `images/splendor/HR/tile-${index}.png`,
+      backImage: `images/splendor/HR/tile-back.png`
+    },
     movable: { kind: 'tile' },
     flippable: {},
     rotable: {},

@@ -18,7 +18,6 @@ describe('createRoundedTile()', () => {
     expect(mesh.absolutePosition.y).toBeCloseTo(0.05, -0.01)
     expect(mesh.absolutePosition.z).toEqual(0)
     expect(mesh.metadata).toEqual({
-      images: undefined,
       serialize: expect.any(Function)
     })
     expect(mesh.behaviors).toHaveLength(0)
@@ -34,7 +33,6 @@ describe('createRoundedTile()', () => {
     const x = faker.datatype.number()
     const y = faker.datatype.number()
     const z = faker.datatype.number()
-    const images = { front: faker.internet.url(), back: faker.internet.url() }
     const behaviors = {
       anchorable: {
         width: width * 0.5,
@@ -42,7 +40,10 @@ describe('createRoundedTile()', () => {
         kinds: [faker.lorem.word()]
       },
       flippable: { isFlipped: faker.datatype.boolean() },
-      detailable: true
+      detailable: {
+        frontImage: faker.internet.url(),
+        backImage: faker.internet.url()
+      }
     }
     const borderColor = Math.random()
     const borderRadius = [
@@ -63,7 +64,6 @@ describe('createRoundedTile()', () => {
         z,
         borderColor,
         borderRadius,
-        images,
         ...behaviors
       })
     })
@@ -87,7 +87,7 @@ describe('createRoundedTile()', () => {
         expect.objectContaining(behaviors.flippable)
       )
       expect(mesh.metadata).toEqual({
-        images,
+        ...behaviors.detailable,
         isFlipped: behaviors.flippable.isFlipped,
         serialize: expect.any(Function),
         detail: expect.any(Function),
@@ -116,8 +116,7 @@ describe('createRoundedTile()', () => {
         depth,
         borderColor,
         borderRadius,
-        images,
-        detailable: true,
+        detailable: behaviors.detailable,
         flippable: {
           ...behaviors.flippable,
           duration: 500
