@@ -134,16 +134,11 @@ export class RotateBehavior extends AnimateBehavior {
    * Updates this behavior's state and mesh to match provided data.
    * @param {RotableState} state - state to update to.
    */
-  fromState(state = {}) {
+  fromState({ angle = 0, duration = 200 } = {}) {
     if (!this.mesh) {
       throw new Error('Can not restore state without mesh')
     }
-    // since graphQL returns nulls, we can not use default values
-    this.state = {
-      ...state,
-      angle: state.angle ?? 0,
-      duration: state.duration ?? 200
-    }
+    this.state = { angle, duration }
     this.mesh.rotation.y = this.state.angle
     if (!this.mesh.metadata) {
       this.mesh.metadata = {}

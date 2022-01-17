@@ -341,16 +341,17 @@ export class StackBehavior extends TargetBehavior {
    * Updates this behavior's state and mesh to match provided data.
    * @param {StackableState} state - state to update to.
    */
-  fromState(state = {}) {
+  fromState({
+    stack = [],
+    extent = 0.3,
+    duration = 100,
+    kinds,
+    isCylindric
+  } = {}) {
     if (!this.mesh) {
       throw new Error('Can not restore state without mesh')
     }
-    // since graphQL returns nulls, we can not use default values
-    this._state = {
-      ...state,
-      extent: state.extent ?? 0.3,
-      duration: state.duration ?? 100
-    }
+    this._state = { stack, kinds, isCylindric, extent, duration }
 
     this.stack = [this.mesh]
     // dispose previous drop zone

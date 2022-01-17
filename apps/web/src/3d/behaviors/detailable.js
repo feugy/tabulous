@@ -3,8 +3,8 @@ import { controlManager } from '../managers'
 
 /**
  * @typedef {object} DetailableState behavior persistent state, including:
- * @property {string} front - front image url.
- * @property {string} back - back image url.
+ * @property {string} frontImage - front image url.
+ * @property {string} backImage - back image url.
  */
 
 export class DetailBehavior {
@@ -71,18 +71,13 @@ export class DetailBehavior {
 
   /**
    * Updates this behavior's state and mesh to match provided data.
-   * @param {DetailState} state - state to update to.
+   * @param {DetailableState} state - state to update to.
    */
-  fromState(state = {}) {
+  fromState({ frontImage = null, backImage = null } = {}) {
     if (!this.mesh) {
       throw new Error('Can not restore state without mesh')
     }
-    // since graphQL returns nulls, we can not use default values
-    this.state = {
-      ...state,
-      frontImage: state.frontImage ?? null,
-      backImage: state.backImage ?? null
-    }
+    this.state = { frontImage, backImage }
     if (!this.mesh.metadata) {
       this.mesh.metadata = {}
     }

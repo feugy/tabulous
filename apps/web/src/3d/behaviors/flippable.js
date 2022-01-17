@@ -142,16 +142,11 @@ export class FlipBehavior extends AnimateBehavior {
    * Updates this behavior's state and mesh to match provided data.
    * @param {FlippableState} state - state to update to.
    */
-  fromState(state = {}) {
+  fromState({ isFlipped = false, duration = 500 } = {}) {
     if (!this.mesh) {
       throw new Error('Can not restore state without mesh')
     }
-    // since graphQL returns nulls, we can not use default values
-    this.state = {
-      ...state,
-      isFlipped: state.isFlipped ?? false,
-      duration: state.duration ?? 500
-    }
+    this.state = { isFlipped, duration }
     this.mesh.rotation.z = this.state.isFlipped ? Math.PI : 0
     if (!this.mesh.metadata) {
       this.mesh.metadata = {}

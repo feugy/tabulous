@@ -433,6 +433,7 @@ describe('restoreBehaviors() 3D utility', () => {
       duration: 200
     })
     expect(box.getBehaviorByName(AnchorBehaviorName).state).toEqual({
+      anchors: [],
       duration: 100
     })
     expect(box.getBehaviorByName(StackBehaviorName).state).toEqual({

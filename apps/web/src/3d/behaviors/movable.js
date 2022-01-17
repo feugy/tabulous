@@ -62,17 +62,12 @@ export class MoveBehavior {
 
   /**
    * Updates this behavior's state and mesh to match provided data.
-   * @param {FlippableState} state - state to update to.
+   * @param {MovableState} state - state to update to.
    */
-  fromState(state = {}) {
+  fromState({ kind, snapDistance = 0.25, duration = 100 } = {}) {
     if (!this.mesh) {
       throw new Error('Can not restore state without mesh')
     }
-    // since graphQL returns nulls, we can not use default values
-    this.state = {
-      ...state,
-      snapDistance: state.snapDistance ?? 0.25,
-      duration: state.duration ?? 100
-    }
+    this.state = { kind, snapDistance, duration }
   }
 }

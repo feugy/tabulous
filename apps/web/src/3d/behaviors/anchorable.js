@@ -144,7 +144,7 @@ export class AnchorBehavior extends TargetBehavior {
    * Updates this behavior's state and mesh to match provided data.
    * @param {AnchorableState} state - state to update to.
    */
-  fromState(state = {}) {
+  fromState({ anchors = [], duration = 100 } = {}) {
     if (!this.mesh) {
       throw new Error('Can not restore state without mesh')
     }
@@ -153,8 +153,7 @@ export class AnchorBehavior extends TargetBehavior {
       this.removeZone(zone)
     }
     this.zoneBySnappedId.clear()
-    // since graphQL returns nulls, we can not use default values
-    this.state = { ...state, duration: state.duration ?? 100 }
+    this.state = { anchors, duration }
     if (Array.isArray(this.state.anchors)) {
       for (const [i, anchor] of this.state.anchors.entries()) {
         const mesh = CreateBox(`anchor-${i}`, {

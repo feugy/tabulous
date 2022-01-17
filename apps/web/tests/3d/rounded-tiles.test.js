@@ -35,9 +35,13 @@ describe('createRoundedTile()', () => {
     const z = faker.datatype.number()
     const behaviors = {
       anchorable: {
-        width: width * 0.5,
-        height: height * 0.5,
-        kinds: [faker.lorem.word()]
+        anchors: [
+          {
+            width: width * 0.5,
+            height: height * 0.5,
+            kinds: [faker.lorem.word()]
+          }
+        ]
       },
       flippable: { isFlipped: faker.datatype.boolean() },
       detailable: {
@@ -88,11 +92,11 @@ describe('createRoundedTile()', () => {
       )
       expect(mesh.metadata).toEqual({
         ...behaviors.detailable,
+        ...behaviors.anchorable,
         isFlipped: behaviors.flippable.isFlipped,
         serialize: expect.any(Function),
         detail: expect.any(Function),
         flip: expect.any(Function),
-        anchors: undefined,
         snap: expect.any(Function),
         unsnap: expect.any(Function)
       })

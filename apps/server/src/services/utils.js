@@ -29,11 +29,10 @@ import { shuffle } from '../utils/index.js'
  */
 export function createMeshes(descriptor) {
   const { bags, slots, meshes } = descriptor
-  // first, performs a deep copy
   const randomized = new Map()
   const all = new Map()
   for (const mesh of meshes) {
-    all.set(mesh.id, { ...mesh })
+    all.set(mesh.id, merge(mesh, {}))
   }
 
   // then, randomize each bags
