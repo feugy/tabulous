@@ -150,7 +150,7 @@ class InputManager {
       }
     }
 
-    scene.onPrePointerObservable.clear() // TODO double check in real
+    scene.onPrePointerObservable.clear()
     scene.onPrePointerObservable.add(({ type, event }) => {
       if (
         !this.enabled ||

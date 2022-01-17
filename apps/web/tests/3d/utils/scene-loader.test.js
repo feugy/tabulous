@@ -7,7 +7,7 @@ import {
   createRoundToken,
   createRoundedTile
 } from '../../../src/3d'
-import { MoveBehaviorName } from '../../../src/3d/behaviors'
+import { MoveBehaviorName, StackBehaviorName } from '../../../src/3d/behaviors'
 import { loadMeshes, serializeMeshes } from '../../../src/3d/utils/scene-loader'
 import { initialize3dEngine } from '../../test-utils'
 
@@ -237,7 +237,8 @@ describe('loadMeshes() 3D utility', () => {
         x: 21,
         y: null,
         z: null,
-        movable: { snapDistance: 0.1, duration: null }
+        movable: { snapDistance: 0.1, duration: null },
+        stackable: {}
       }
       loadMeshes(engine, [card])
       const mesh = scene.getMeshById(id)
@@ -245,6 +246,11 @@ describe('loadMeshes() 3D utility', () => {
       expect(mesh.getBehaviorByName(MoveBehaviorName).state).toEqual({
         snapDistance: card.movable.snapDistance,
         duration: 100
+      })
+      expect(mesh.getBehaviorByName(StackBehaviorName).state).toEqual({
+        stack: [],
+        duration: 100,
+        extent: 0.3
       })
     })
 

@@ -54,7 +54,8 @@ export function loadMeshes(engine, meshes, initial = true) {
   logger.debug({ meshes }, `loads meshes`)
 
   // makes sure all meshes are created
-  for (const state of meshes) {
+  for (const rawState of meshes) {
+    const state = removeNulls(rawState)
     let mesh = scene.getMeshById(state.id)
     const { stackable, shape: name } = state
     if (mesh) {
@@ -64,11 +65,10 @@ export function loadMeshes(engine, meshes, initial = true) {
       restoreBehaviors(mesh.behaviors, state)
     } else {
       logger.debug({ state }, `create new ${name} ${state.id}`)
-      mesh = meshCreatorByName.get(name)(
-        removeNulls(state, {
-          stackable: stackable ? { ...stackable, stack: undefined } : undefined
-        })
-      )
+      mesh = meshCreatorByName.get(name)({
+        ...state,
+        stackable: stackable ? { ...stackable, stack: undefined } : undefined
+      })
     }
     const behavior = mesh.getBehaviorByName(StackBehaviorName)
     if (behavior) {
@@ -100,8 +100,8 @@ const meshCreatorByName = new Map([
 
 const supportedNames = [...meshCreatorByName.keys()]
 
-function removeNulls(object, extension = {}) {
-  const result = extension
+function removeNulls(object) {
+  const result = {}
   for (const key in object) {
     const prop = object[key]
     if (prop !== null) {

@@ -1,19 +1,18 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
-import {
-  cleanDebugFile,
-  configures3dTestEngine,
-  debug,
-  sleep
-} from '../../test-utils'
+import { configures3dTestEngine, sleep } from '../../test-utils'
 import {
   AnchorBehavior,
   AnchorBehaviorName,
   AnimateBehavior,
   StackBehavior
 } from '../../../src/3d/behaviors'
-import { controlManager, inputManager } from '../../../src/3d/managers'
+import {
+  controlManager,
+  inputManager,
+  selectionManager
+} from '../../../src/3d/managers'
 import { altitudeOnTop } from '../../../src/3d/utils'
 
 describe('AnchorBehavior', () => {
@@ -21,10 +20,7 @@ describe('AnchorBehavior', () => {
 
   const recordSpy = jest.spyOn(controlManager, 'record')
 
-  beforeAll(cleanDebugFile)
-
   beforeEach(jest.resetAllMocks)
-  beforeEach(() => debug('\n\n---------------------\n\n'))
 
   it('has initial state', () => {
     const state = {
@@ -294,6 +290,29 @@ describe('AnchorBehavior', () => {
       inputManager.onDragObservable.notifyObservers({
         type: 'dragStart',
         mesh: snapped
+      })
+      expectUnsnapped(snapped, 0)
+      expect(recordSpy).toHaveBeenCalledTimes(1)
+      expect(recordSpy).toHaveBeenCalledWith({
+        fn: 'unsnap',
+        meshId: mesh.id,
+        args: [snapped.id]
+      })
+    })
+
+    it('unsnaps dragged selection', async () => {
+      const snapped = meshes[1]
+      behavior.fromState({
+        anchors: [{ width: 1, height: 2, depth: 0.5, snappedId: snapped.id }]
+      })
+      expectSnapped(snapped, 0)
+
+      selectionManager.select(snapped)
+      selectionManager.select(meshes[0])
+
+      inputManager.onDragObservable.notifyObservers({
+        type: 'dragStart',
+        mesh: meshes[0]
       })
       expectUnsnapped(snapped, 0)
       expect(recordSpy).toHaveBeenCalledTimes(1)

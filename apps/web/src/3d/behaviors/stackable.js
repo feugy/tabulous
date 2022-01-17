@@ -366,13 +366,11 @@ export class StackBehavior extends TargetBehavior {
     dropZone.parent = this.mesh
     this.addZone(dropZone, this._state.extent, this._state.kinds)
 
-    if (Array.isArray(this._state.stack)) {
-      this.inhibitControl = true
-      for (const id of this._state.stack) {
-        this.push(id)
-      }
-      this.inhibitControl = false
+    this.inhibitControl = true
+    for (const id of this._state.stack) {
+      this.push(id)
     }
+    this.inhibitControl = false
 
     if (!this.mesh.metadata) {
       this.mesh.metadata = {}

@@ -3,7 +3,7 @@ import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { AnchorBehaviorName } from './names'
 import { TargetBehavior } from './targetable'
 import { animateMove } from '../utils'
-import { controlManager, inputManager } from '../managers'
+import { controlManager, inputManager, selectionManager } from '../managers'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
 import { StackBehaviorName } from '.'
@@ -73,7 +73,12 @@ export class AnchorBehavior extends TargetBehavior {
 
     this.dragObserver = inputManager.onDragObservable.add(({ type, mesh }) => {
       if (type === 'dragStart' && mesh) {
-        this.unsnap(mesh.id)
+        const moved = selectionManager.meshes.has(mesh)
+          ? [...selectionManager.meshes]
+          : [mesh]
+        for (const { id } of moved) {
+          this.unsnap(id)
+        }
       }
     })
   }
@@ -154,22 +159,20 @@ export class AnchorBehavior extends TargetBehavior {
     }
     this.zoneBySnappedId.clear()
     this.state = { anchors, duration }
-    if (Array.isArray(this.state.anchors)) {
-      for (const [i, anchor] of this.state.anchors.entries()) {
-        const mesh = CreateBox(`anchor-${i}`, {
-          width: anchor.width,
-          height: anchor.depth,
-          depth: anchor.height
-        })
-        mesh.parent = this.mesh
-        mesh.position = new Vector3(anchor.x ?? 0, anchor.y ?? 0, anchor.z ?? 0)
-        mesh.computeWorldMatrix(true)
-        const zone = this.addZone(mesh, 0.6, anchor.kinds)
-        // relates the created zone with the anchor
-        zone.anchorIndex = i
-        if (anchor.snappedId) {
-          snapToAnchor(anchor.snappedId, zone, this, false)
-        }
+    for (const [i, anchor] of this.state.anchors.entries()) {
+      const mesh = CreateBox(`anchor-${i}`, {
+        width: anchor.width,
+        height: anchor.depth,
+        depth: anchor.height
+      })
+      mesh.parent = this.mesh
+      mesh.position = new Vector3(anchor.x ?? 0, anchor.y ?? 0, anchor.z ?? 0)
+      mesh.computeWorldMatrix(true)
+      const zone = this.addZone(mesh, 0.6, anchor.kinds)
+      // relates the created zone with the anchor
+      zone.anchorIndex = i
+      if (anchor.snappedId) {
+        snapToAnchor(anchor.snappedId, zone, this, false)
       }
     }
     if (!this.mesh.metadata) {
