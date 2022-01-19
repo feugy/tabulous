@@ -268,7 +268,7 @@ describe('loadMeshes() 3D utility', () => {
         duration: 100
       })
       expect(mesh.getBehaviorByName(StackBehaviorName).state).toEqual({
-        stack: [],
+        stackIds: [],
         duration: 100,
         extent: 0.3
       })
@@ -331,12 +331,12 @@ describe('loadMeshes() 3D utility', () => {
           duration: 100,
           extent: 0.5,
           kinds: 'card',
-          stack: ['card2', 'card4', 'card3']
+          stackIds: ['card2', 'card4', 'card3']
         }
       }
       loadMeshes(engine, [
         card1,
-        { shape: 'card', id: 'card2', stackable: { stack: [] } },
+        { shape: 'card', id: 'card2', stackable: { stackIds: [] } },
         { shape: 'card', id: 'card3' },
         { shape: 'card', id: 'card4' }
       ])

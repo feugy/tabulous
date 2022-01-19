@@ -223,7 +223,7 @@ describe('AnchorBehavior', () => {
       stacked.addBehavior(new AnimateBehavior(), true)
       const snapped = meshes[0]
 
-      snapped.addBehavior(new StackBehavior({ stack: [stacked.id] }), true)
+      snapped.addBehavior(new StackBehavior({ stackIds: [stacked.id] }), true)
       expectClosePosition(snapped, [10, 10, 10])
       expectClosePosition(stacked, [10, altitudeOnTop(stacked, snapped), 10])
       expect(behavior.snappedZone(snapped.id)).toBeNull()

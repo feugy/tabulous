@@ -50,7 +50,7 @@ function setBase(mesh, base, stack) {
 
 /**
  * @typedef {object} StackableState behavior persistent state, including:
- * @property {string[]} stack - array of stacked mesh ids, not including the current mesh if alone.
+ * @property {string[]} stackIds - array of stacked mesh ids, not including the current mesh if alone.
  * @property {string[]} kinds? - an optional array of allowed drag kinds for this zone (allows all if not present).
  * @property {number} [duration=100] - duration (in milliseconds) when pushing or shuffling individual meshes.
  * @property {number} [extent=0.6] - drop zone extent zone (1 means 100% size).
@@ -328,7 +328,7 @@ export class StackBehavior extends TargetBehavior {
       duration: this._state.duration,
       extent: this._state.extent,
       kinds: this._state.kinds,
-      stack:
+      stackIds:
         this.base !== null || this.stack.length <= 1
           ? []
           : this.stack.slice(1).map(({ id }) => id)
@@ -339,11 +339,11 @@ export class StackBehavior extends TargetBehavior {
    * Updates this behavior's state and mesh to match provided data.
    * @param {StackableState} state - state to update to.
    */
-  fromState({ stack = [], extent = 0.3, duration = 100, kinds } = {}) {
+  fromState({ stackIds = [], extent = 0.3, duration = 100, kinds } = {}) {
     if (!this.mesh) {
       throw new Error('Can not restore state without mesh')
     }
-    this._state = { stack, kinds, extent, duration }
+    this._state = { kinds, extent, duration }
 
     this.stack = [this.mesh]
     // dispose previous drop zone
@@ -360,7 +360,7 @@ export class StackBehavior extends TargetBehavior {
     this.addZone(dropZone, this._state.extent, this._state.kinds)
 
     this.inhibitControl = true
-    for (const id of this._state.stack) {
+    for (const id of stackIds) {
       this.push(id)
     }
     this.inhibitControl = false

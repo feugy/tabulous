@@ -60,7 +60,7 @@ export function createMeshes(descriptor) {
         Object.assign(
           slotted[0],
           merge(slotted[0], {
-            stackable: { stack: slotted.slice(1).map(({ id }) => id) }
+            stackable: { stackIds: slotted.slice(1).map(({ id }) => id) }
           })
         )
       }

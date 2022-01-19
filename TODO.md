@@ -31,16 +31,15 @@
 
 ## Refactor
 
-- behavior should be managers, since they can be attached to multiple meshes
-- all manager managing a collection of behaviors should check their capabilities
-- stop inverting depth and height. Use 3D world conventions
 - rename StackableBehavior.state.stack into stackIds, to make the difference with StackableBehavior.mesh.metadata.stack which contains references to meshes.
-- game-interaction unit tests
-- component, connected-component and routes rendering tests
-- rework target detection. Instead of using real mesh and rays use shapes overlap: each zone is a rectangle/circle on XZ plane, and the moved mesh another rectangle/circle. Check the center of the moved mesh
+- stop inverting depth and height. Use 3D world conventions
 - getHeight() should return the real height, not just its half
 - altitudeOnTop() should only take only mesh: mesh.absolutePosition.y + getHeight(mesh) + 0.001
-- drag kind must be configurable in game descriptors
+- rework target detection. Instead of using real mesh and rays use shapes overlap: each zone is a rectangle/circle on XZ plane, and the moved mesh another rectangle/circle. Check the center of the moved mesh
+- behavior should be managers, since they can be attached to multiple meshes
+- all manager managing a collection of behaviors should check their capabilities
+- game-interaction unit tests
+- component, connected-component and routes rendering tests
 - completly disable Babylon input management
 - UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
 - stackable duration override's movable duration on

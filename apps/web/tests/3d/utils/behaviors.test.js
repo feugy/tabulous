@@ -234,7 +234,7 @@ describe('registerBehaviors() 3D utility', () => {
   it('adds stackable behavior to a mesh', () => {
     const state = {
       extent: 1.5,
-      stack: [],
+      stackIds: [],
       kinds: ['round-token'],
       duration: 415
     }
@@ -269,7 +269,7 @@ describe('registerBehaviors() 3D utility', () => {
       angle: Math.PI
     })
     expect(box.getBehaviorByName(StackBehaviorName)).toHaveProperty('state', {
-      stack: [],
+      stackIds: [],
       duration: 100,
       extent: 1.5
     })
@@ -339,7 +339,7 @@ describe('restoreBehaviors() 3D utility', () => {
 
   it('does not restore stackable behavior', () => {
     const state = {
-      stack: ['a426f1', '23f658'],
+      stackIds: ['a426f1', '23f658'],
       extent: 1.5,
       kinds: ['round-token'],
       duration: 415
@@ -350,7 +350,7 @@ describe('restoreBehaviors() 3D utility', () => {
     expect(stackable.state).toEqual({
       duration: 100,
       extent: 0.3,
-      stack: []
+      stackIds: []
     })
   })
 
@@ -373,7 +373,7 @@ describe('restoreBehaviors() 3D utility', () => {
     }
     const rotable = { angle: Math.PI * 0.75, duration: 432 }
     const stackable = {
-      stack: ['a426f1', '23f658'],
+      stackIds: ['a426f1', '23f658'],
       extent: 1.5,
       kinds: ['round-token'],
       duration: 415
@@ -404,7 +404,7 @@ describe('restoreBehaviors() 3D utility', () => {
     expect(box.getBehaviorByName(StackBehaviorName).state).toEqual({
       duration: 100,
       extent: 0.3,
-      stack: []
+      stackIds: []
     })
   })
 
@@ -436,7 +436,7 @@ describe('restoreBehaviors() 3D utility', () => {
     expect(box.getBehaviorByName(StackBehaviorName).state).toEqual({
       duration: 100,
       extent: 0.3,
-      stack: []
+      stackIds: []
     })
   })
 })
@@ -465,13 +465,13 @@ describe('serializeBehaviors() 3D utility', () => {
 
   it('serializes stackable behavior', () => {
     const state = {
-      stack: ['a426f1', '23f658'],
+      stackIds: ['a426f1', '23f658'],
       extent: 1.5,
       kinds: ['round-token'],
       duration: 415
     }
     expect(serializeBehaviors([new StackBehavior(state)])).toEqual({
-      stackable: { ...state, stack: [] }
+      stackable: { ...state, stackIds: [] }
     })
   })
 
@@ -522,7 +522,7 @@ describe('serializeBehaviors() 3D utility', () => {
     }
     const rotable = { angle: Math.PI * 0.75, duration: 432 }
     const stackable = {
-      stack: ['a426f1', '23f658'],
+      stackIds: ['a426f1', '23f658'],
       extent: 1.5,
       kinds: ['round-token'],
       duration: 415
@@ -542,7 +542,7 @@ describe('serializeBehaviors() 3D utility', () => {
     expect(serializeBehaviors(box.behaviors)).toEqual({
       flippable,
       anchorable,
-      stackable: { ...stackable, stack: [] },
+      stackable: { ...stackable, stackIds: [] },
       rotable,
       movable,
       detailable

@@ -67,12 +67,12 @@ export function loadMeshes(engine, meshes, initial = true) {
       logger.debug({ state }, `create new ${name} ${state.id}`)
       mesh = meshCreatorByName.get(name)({
         ...state,
-        stackable: stackable ? { ...stackable, stack: undefined } : undefined
+        stackable: stackable ? { ...stackable, stackIds: undefined } : undefined
       })
     }
     const behavior = mesh.getBehaviorByName(StackBehaviorName)
     if (behavior) {
-      if (stackable?.stack?.length > 0) {
+      if (stackable?.stackIds?.length > 0) {
         // stores for later
         stackables.push({ behavior, stackable })
       } else {

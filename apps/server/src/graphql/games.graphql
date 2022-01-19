@@ -33,7 +33,7 @@ type MovableState {
 }
 
 type StackableState {
-  stack: [String]
+  stackIds: [String]
   duration: Int
   extent: Float
   kinds: [String]
@@ -139,7 +139,7 @@ input MovableStateInput {
 }
 
 input StackableStateInput {
-  stack: [String]
+  stackIds: [String]
   duration: Int
   extent: Float
   kinds: [String]

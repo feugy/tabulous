@@ -65,7 +65,7 @@ import repositories from '../repositories/index.js'
 
 /**
  * @typedef {object} StackableState state for stackable meshes:
- * @property {string[]} stack? - ordered list of ids for meshes stacked on top of this one.
+ * @property {string[]} stackIds? - ordered list of ids for meshes stacked on top of this one.
  * @property {number} duration? - stack animations duration, in milliseconds.
  * @property {string[]} kinds? - acceptable meshe kinds, that could be stacked on top of this one. Leave undefined to accept all.
  * @property {number} extent? - dimension multiplier applied to the drop target.

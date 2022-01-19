@@ -56,7 +56,7 @@ describe('createMeshes()', () => {
       )
       expect(meshes).not.toEqual(descriptor.cards)
       expect(
-        meshes.filter(({ stackable }) => stackable?.stack.length === 9)
+        meshes.filter(({ stackable }) => stackable?.stackIds.length === 9)
       ).toHaveLength(1)
       const slot = descriptor.slots[0]
       expect(
@@ -93,12 +93,12 @@ describe('createMeshes()', () => {
         expect.arrayContaining(descriptor.meshes.map(expect.objectContaining))
       )
       expect(
-        meshes.filter(({ stackable }) => stackable?.stack.length === 1)
+        meshes.filter(({ stackable }) => stackable?.stackIds.length === 1)
       ).toHaveLength(1)
       expect(meshes.filter(({ x }) => x === 10)).toHaveLength(2)
       expect(meshes.filter(({ x }) => x === 5)).toHaveLength(1)
       expect(
-        meshes.filter(({ stackable }) => stackable?.stack.length === 6)
+        meshes.filter(({ stackable }) => stackable?.stackIds.length === 6)
       ).toHaveLength(1)
       expect(meshes.filter(({ x }) => x === 1)).toHaveLength(7)
     })

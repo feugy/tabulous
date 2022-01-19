@@ -25,7 +25,7 @@ describe('StackBehavior', () => {
       extent: faker.datatype.number(),
       duration: faker.datatype.number(),
       kinds: [],
-      stack: []
+      stackIds: []
     }
     const behavior = new StackBehavior(state)
 
@@ -53,7 +53,7 @@ describe('StackBehavior', () => {
     expect(behavior.state).toEqual({
       extent: 0.3,
       duration: 100,
-      stack: []
+      stackIds: []
     })
     expect(behavior.mesh).toEqual(mesh)
     expect(mesh.metadata.stack).toEqual([mesh])
@@ -97,12 +97,12 @@ describe('StackBehavior', () => {
 
     it('can hydrate from state', async () => {
       const extent = faker.datatype.number()
-      const stack = [meshes[0].id, meshes[2].id]
+      const stackIds = [meshes[0].id, meshes[2].id]
       const duration = faker.datatype.number()
       expect(meshes[0].absolutePosition).toEqual(Vector3.FromArray([1, 1, 1]))
       expect(meshes[2].absolutePosition).toEqual(Vector3.FromArray([3, 3, 3]))
 
-      behavior.fromState({ duration, extent, stack })
+      behavior.fromState({ duration, extent, stackIds })
       expectZone(behavior, extent, false)
       expectStack([mesh, meshes[0], meshes[2]])
       expect(behavior.state.duration).toEqual(duration)
@@ -134,7 +134,7 @@ describe('StackBehavior', () => {
     })
 
     it('can push on any stacked mesh', async () => {
-      behavior.fromState({ stack: ['box2', 'box1'] })
+      behavior.fromState({ stackIds: ['box2', 'box1'] })
 
       await meshes[1].metadata.push(meshes[2].id)
       expectStack([mesh, meshes[1], meshes[0], meshes[2]])
@@ -147,7 +147,7 @@ describe('StackBehavior', () => {
     })
 
     it('pushes dropped meshes', async () => {
-      behavior.fromState({ stack: ['box2'] })
+      behavior.fromState({ stackIds: ['box2'] })
       const targetable = getTargetableBehavior(meshes[1])
 
       targetable.onDropObservable.notifyObservers({
@@ -176,7 +176,7 @@ describe('StackBehavior', () => {
     })
 
     it('pops last mesh from stack', async () => {
-      behavior.fromState({ stack: ['box2', 'box1', 'box3'] })
+      behavior.fromState({ stackIds: ['box2', 'box1', 'box3'] })
 
       let poped = await mesh.metadata.pop()
       expect(poped?.id).toBe('box3')
@@ -200,7 +200,7 @@ describe('StackBehavior', () => {
     })
 
     it('can pop from any stacked mesh', async () => {
-      behavior.fromState({ stack: ['box3', 'box1', 'box2'] })
+      behavior.fromState({ stackIds: ['box3', 'box1', 'box2'] })
 
       let poped = await meshes[2].metadata.pop()
       expect(poped?.id).toBe('box2')
@@ -214,7 +214,7 @@ describe('StackBehavior', () => {
     })
 
     it('pops dragged meshes', async () => {
-      behavior.fromState({ stack: ['box3', 'box1', 'box2'] })
+      behavior.fromState({ stackIds: ['box3', 'box1', 'box2'] })
 
       inputManager.onDragObservable.notifyObservers({
         type: 'dragStart',
@@ -230,7 +230,7 @@ describe('StackBehavior', () => {
     })
 
     it('reorders stack to given order', async () => {
-      behavior.fromState({ stack: ['box3', 'box2', 'box1'] })
+      behavior.fromState({ stackIds: ['box3', 'box2', 'box1'] })
 
       await mesh.metadata.reorder(['box0', 'box1', 'box2', 'box3'], false)
 
@@ -244,7 +244,7 @@ describe('StackBehavior', () => {
     })
 
     it('reorders with animation', async () => {
-      behavior.fromState({ stack: ['box1', 'box2', 'box3'] })
+      behavior.fromState({ stackIds: ['box1', 'box2', 'box3'] })
 
       await mesh.metadata.reorder(['box2', 'box0', 'box3', 'box1'])
 
@@ -258,7 +258,7 @@ describe('StackBehavior', () => {
     })
 
     it('can reorder any stacked mesh', async () => {
-      behavior.fromState({ stack: ['box2', 'box1', 'box3'] })
+      behavior.fromState({ stackIds: ['box2', 'box1', 'box3'] })
 
       meshes[2].metadata.reorder(['box0', 'box1', 'box2', 'box3'], false)
 
@@ -272,7 +272,7 @@ describe('StackBehavior', () => {
     })
 
     it('can move current mesh while reordering', async () => {
-      behavior.fromState({ stack: ['box3', 'box2', 'box1'] })
+      behavior.fromState({ stackIds: ['box3', 'box2', 'box1'] })
 
       mesh.metadata.reorder(['box3', 'box0', 'box2', 'box1'], false)
 
@@ -286,7 +286,7 @@ describe('StackBehavior', () => {
     })
 
     it('flips the entire stack', async () => {
-      behavior.fromState({ stack: ['box1', 'box2', 'box3'] })
+      behavior.fromState({ stackIds: ['box1', 'box2', 'box3'] })
 
       await mesh.metadata.flipAll()
       expectStack([meshes[2], meshes[1], meshes[0], mesh])
@@ -325,7 +325,7 @@ describe('StackBehavior', () => {
     })
 
     it('rotates the entire stack', async () => {
-      behavior.fromState({ stack: ['box1', 'box2', 'box3'] })
+      behavior.fromState({ stackIds: ['box1', 'box2', 'box3'] })
 
       await mesh.metadata.rotateAll()
       expectStack([mesh, meshes[0], meshes[1], meshes[2]])
@@ -365,7 +365,7 @@ function expectStack(meshes) {
   for (const [rank, mesh] of meshes.entries()) {
     expect(mesh.metadata.stack).toEqual(meshes)
     if (rank === 0) {
-      expect(getTargetableBehavior(mesh).state.stack).toEqual(ids)
+      expect(getTargetableBehavior(mesh).state.stackIds).toEqual(ids)
     }
     if (rank === meshes.length - 1) {
       expectInteractible(mesh, true)

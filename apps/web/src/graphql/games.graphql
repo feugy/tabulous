@@ -72,7 +72,7 @@ query loadGame($gameId: ID!) {
         duration
       }
       stackable {
-        stack
+        stackIds
         duration
         extent
         kinds
