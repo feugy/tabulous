@@ -72,8 +72,8 @@ for (const [level, count] of cardCountPerLevel) {
         z: 0,
         y: 0,
         width: 3,
-        height: 4.25,
-        depth: 0.01,
+        height: 0.01,
+        depth: 4.25,
         detailable: {
           frontImage: `images/splendor/HR/card-${kind}-${level}-${index}.png`,
           backImage: `images/splendor/HR/card-${level}-back.png`
@@ -139,8 +139,8 @@ for (let index = 1; index <= 10; index++) {
     z: 0,
     y: 0,
     width: 3,
-    height: 3,
-    depth: 0.05,
+    height: 0.05,
+    depth: 3,
     borderRadius: 0.4,
     detailable: {
       frontImage: `images/splendor/HR/tile-${index}.png`,

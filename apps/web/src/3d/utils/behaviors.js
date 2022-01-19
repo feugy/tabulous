@@ -71,8 +71,6 @@ export function serializeBehaviors(behaviors) {
   for (const behavior of behaviors) {
     if (behavior.state) {
       result[behavior.name] = behavior.state
-    } else if (behavior.name === DetailBehaviorName) {
-      result[behavior.name] = true
     }
   }
   return result

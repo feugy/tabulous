@@ -7,7 +7,7 @@ import { CreateGround } from '@babylonjs/core/Meshes/Builders/groundBuilder'
  * Table is always 0.01 unit bellow (Y axis) origin.
  * @param {object} params - table parameters, including:
  * @param {number} params.width? - table's width (X axis).
- * @param {number} params.height? - table's height (Z axis).
+ * @param {number} params.height? - table's height (Y axis).
  * @param {number[]} params.color? - Color4's components used as table color.
  * @returns {import('@babylonjs/core').Mesh} the created table ground.
  */

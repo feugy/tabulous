@@ -26,8 +26,8 @@ import repositories from '../repositories/index.js'
  * @property {number} z? - 3D coordinate along the Z axis (vertical).
  * @property {number} y? - 3D coordinate along the Y axis (altitude).
  * @property {number} width? - mesh's width (X axis).
- * @property {number} height? - mesh's height (Z axis), for card and rounded tiles.
- * @property {number} depth? - mesh's depth (Y axis), for card and rounded tiles.
+ * @property {number} height? - mesh's height (Y axis), for card and rounded tiles.
+ * @property {number} depth? - mesh's depth (Z axis), for card and rounded tiles.
  * @property {number} diameter? - mesh's diameter (X+Z axis), for round tokens.
  * @property {number} borderRadius? - cordener radius, for rounded tiles.
  * @property {DetailableState} detailable? - if this mesh could be detailed, contains details.
@@ -84,8 +84,8 @@ import repositories from '../repositories/index.js'
  * @property {number} z? - 3D coordinate (relative to the parent mesh) along the Z axis (vertical).
  * @property {number} y? - 3D coordinate (relative to the parent mesh) along the Y axis (altitude).
  * @property {number} width? - anchor's width (X axis).
- * @property {number} height? - anchor's height (Z axis).
- * @property {number} depth? - anchor's depth (Y axis).
+ * @property {number} height? - anchor's height (Y axis).
+ * @property {number} depth? - anchor's depth (Z axis).
  * @property {string[]} kinds? - acceptable meshe kinds, that could be snapped to the anchor. Leave undefined to accept all.
  */
 

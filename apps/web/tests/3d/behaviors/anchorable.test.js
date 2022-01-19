@@ -362,8 +362,8 @@ describe('AnchorBehavior', () => {
       expect(anchor.kinds).toEqual(kinds)
       const { boundingBox } = anchor.mesh.getBoundingInfo()
       expect(boundingBox.extendSize.x * 2).toEqual(width)
-      expect(boundingBox.extendSize.z * 2).toEqual(height)
-      expect(boundingBox.extendSize.y * 2).toEqual(depth)
+      expect(boundingBox.extendSize.y * 2).toEqual(height)
+      expect(boundingBox.extendSize.z * 2).toEqual(depth)
       expect(anchor.mesh.absolutePosition.asArray()).toEqual([x, y, z])
     }
 

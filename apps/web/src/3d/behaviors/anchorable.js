@@ -17,8 +17,8 @@ const logger = makeLogger(AnchorBehaviorName)
  * @property {number} y? - position along the Y axis, relative to the mesh's center.
  * @property {number} z? - position along the Z axis, relative to the mesh's center.
  * @property {number} width - anchor's width (X axis).
- * @property {number} height - anchor's height (Z axis).
- * @property {number} depth - anchor's depth (Y axis).
+ * @property {number} height - anchor's height (Y axis).
+ * @property {number} depth - anchor's depth (Z axis).
  * @property {string[]} kinds? - an array of allowed drag kinds
  * @property {string} snappedId? - the currently snapped mesh id
  */
@@ -159,20 +159,19 @@ export class AnchorBehavior extends TargetBehavior {
     }
     this.zoneBySnappedId.clear()
     this.state = { anchors, duration }
-    for (const [i, anchor] of this.state.anchors.entries()) {
-      const mesh = CreateBox(`anchor-${i}`, {
-        width: anchor.width,
-        height: anchor.depth,
-        depth: anchor.height
-      })
+    for (const [
+      i,
+      { x, y, z, width, depth, height, kinds, snappedId }
+    ] of this.state.anchors.entries()) {
+      const mesh = CreateBox(`anchor-${i}`, { width, depth, height })
       mesh.parent = this.mesh
-      mesh.position = new Vector3(anchor.x ?? 0, anchor.y ?? 0, anchor.z ?? 0)
+      mesh.position = new Vector3(x ?? 0, y ?? 0, z ?? 0)
       mesh.computeWorldMatrix(true)
-      const zone = this.addZone(mesh, 0.6, anchor.kinds)
+      const zone = this.addZone(mesh, 0.6, kinds)
       // relates the created zone with the anchor
       zone.anchorIndex = i
-      if (anchor.snappedId) {
-        snapToAnchor(anchor.snappedId, zone, this, false)
+      if (snappedId) {
+        snapToAnchor(snappedId, zone, this, false)
       }
     }
     if (!this.mesh.metadata) {

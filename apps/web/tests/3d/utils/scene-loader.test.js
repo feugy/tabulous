@@ -343,8 +343,8 @@ describe('loadMeshes() 3D utility', () => {
       expect(scene.getMeshById(card1.id)).toBeDefined()
       expect(scene.getMeshById(card1.id).metadata.serialize()).toEqual({
         ...card1,
-        depth: 0.01,
-        height: 4.25,
+        depth: 4.25,
+        height: 0.01,
         width: 3,
         faceUV: [
           [0.5, 1, 0, 0],

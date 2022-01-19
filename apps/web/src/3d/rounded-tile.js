@@ -21,20 +21,20 @@ function makeCornerMesh(
 ) {
   const cyclinderMesh = CreateCylinder('cylinder', {
     diameter: borderRadius,
-    height: depth,
+    height,
     faceUV: [faceUV, faceUV, faceUV]
   })
   cyclinderMesh.position.x += (left ? -1 : 1) * (width - borderRadius) * 0.5
-  cyclinderMesh.position.z += (top ? 1 : -1) * (height - borderRadius) * 0.5
+  cyclinderMesh.position.z += (top ? 1 : -1) * (depth - borderRadius) * 0.5
 
   const cornerWidth = borderRadius * 0.7
   const cornerMesh = CreateBox('corner', {
     width: cornerWidth,
     depth: cornerWidth,
-    height: depth
+    height
   })
   cornerMesh.position.x += (left ? -1 : 1) * width * 0.5
-  cornerMesh.position.z += (top ? 1 : -1) * height * 0.5
+  cornerMesh.position.z += (top ? 1 : -1) * depth * 0.5
   cornerMesh.rotate(Axis.Y, Math.PI * 0.25)
   const cornerCSG = CSG.FromMesh(cornerMesh).subtract(
     CSG.FromMesh(cyclinderMesh)
@@ -57,8 +57,8 @@ function makeCornerMesh(
  * @param {number} params.z? - initial position along the Z axis.
  * @param {number} params.borderRadius? - radius applied to each corner.
  * @param {number} params.width? - tile's width (X axis).
- * @param {number} params.height? - tile's height (Z axis).
- * @param {number} params.depth? - tile's depth (Y axis).
+ * @param {number} params.height? - tile's height (Y axis).
+ * @param {number} params.depth? - tile's depth (Z axis).
  * @returns {import('@babylonjs/core').Mesh} the created tile mesh.
  */
 export function createRoundedTile({
@@ -67,8 +67,8 @@ export function createRoundedTile({
   z = 0,
   y = 0,
   width = 3,
-  height = 3,
-  depth = 0.05,
+  height = 0.05,
+  depth = 3,
   borderRadius = 0.4,
   texture,
   faceUV = [
@@ -83,8 +83,8 @@ export function createRoundedTile({
 } = {}) {
   const tileMesh = CreateBox('roundedTile', {
     width,
-    height: depth,
-    depth: height,
+    height,
+    depth,
     faceUV: faceUV.map(components => Vector4.FromArray(components)),
     faceColors: [],
     wrap: true

@@ -27,8 +27,8 @@ import {
  * @param {number} params.y? - initial position along the Y axis.
  * @param {number} params.z? - initial position along the Z axis.
  * @param {number} params.width? - card's width (X axis).
- * @param {number} params.height? - card's height (Z axis).
- * @param {number} params.depth? - card's depth (Y axis).
+ * @param {number} params.height? - card's height (Y axis).
+ * @param {number} params.depth? - card's depth (Z axis).
  * @returns {import('@babylonjs/core').Mesh} the created card mesh.
  */
 export function createCard({
@@ -37,8 +37,8 @@ export function createCard({
   z = 0,
   y = 0,
   width = 3,
-  height = 4.25,
-  depth = 0.01,
+  height = 0.01,
+  depth = 4.25,
   texture,
   faceUV = [
     [0.5, 1, 0, 0],
@@ -48,7 +48,7 @@ export function createCard({
 } = {}) {
   const faces = CreatePlane(`${id}-plane`, {
     width,
-    height,
+    height: depth,
     frontUVs: Vector4.FromArray(faceUV[0]),
     backUVs: Vector4.FromArray(faceUV[1]),
     sideOrientation: Mesh.DOUBLESIDE
@@ -60,11 +60,7 @@ export function createCard({
   faces.material.freeze()
   attachMaterialError(faces.material)
 
-  const card = CreateBox('card', {
-    width,
-    height: depth,
-    depth: height
-  })
+  const card = CreateBox('card', { width, height, depth })
   card.id = id
 
   // because planes are in 2-D, collisions with other meshes could be tricky.
