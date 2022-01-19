@@ -37,7 +37,6 @@ type StackableState {
   duration: Int
   extent: Float
   kinds: [String]
-  isCylindric: Boolean
 }
 
 type AnchorableState {
@@ -144,7 +143,6 @@ input StackableStateInput {
   duration: Int
   extent: Float
   kinds: [String]
-  isCylindric: Boolean
 }
 
 input AnchorableStateInput {

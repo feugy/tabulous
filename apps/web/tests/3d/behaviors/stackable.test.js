@@ -25,7 +25,6 @@ describe('StackBehavior', () => {
       extent: faker.datatype.number(),
       duration: faker.datatype.number(),
       kinds: [],
-      isCylindric: false,
       stack: []
     }
     const behavior = new StackBehavior(state)

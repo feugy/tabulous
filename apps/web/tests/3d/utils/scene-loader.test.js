@@ -331,7 +331,6 @@ describe('loadMeshes() 3D utility', () => {
           duration: 100,
           extent: 0.5,
           kinds: 'card',
-          isCylindric: false,
           stack: ['card2', 'card4', 'card3']
         }
       }

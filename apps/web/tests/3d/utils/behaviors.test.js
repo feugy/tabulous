@@ -235,7 +235,6 @@ describe('registerBehaviors() 3D utility', () => {
     const state = {
       extent: 1.5,
       stack: [],
-      isCylindric: true,
       kinds: ['round-token'],
       duration: 415
     }
@@ -342,7 +341,6 @@ describe('restoreBehaviors() 3D utility', () => {
     const state = {
       stack: ['a426f1', '23f658'],
       extent: 1.5,
-      isCylindric: true,
       kinds: ['round-token'],
       duration: 415
     }
@@ -377,7 +375,6 @@ describe('restoreBehaviors() 3D utility', () => {
     const stackable = {
       stack: ['a426f1', '23f658'],
       extent: 1.5,
-      isCylindric: true,
       kinds: ['round-token'],
       duration: 415
     }
@@ -470,7 +467,6 @@ describe('serializeBehaviors() 3D utility', () => {
     const state = {
       stack: ['a426f1', '23f658'],
       extent: 1.5,
-      isCylindric: true,
       kinds: ['round-token'],
       duration: 415
     }
@@ -528,7 +524,6 @@ describe('serializeBehaviors() 3D utility', () => {
     const stackable = {
       stack: ['a426f1', '23f658'],
       extent: 1.5,
-      isCylindric: true,
       kinds: ['round-token'],
       duration: 415
     }

@@ -31,7 +31,6 @@
 
 ## Refactor
 
-- no need for stackable.isCylindric, now that we have mesh's shape.
 - behavior should be managers, since they can be attached to multiple meshes
 - all manager managing a collection of behaviors should check their capabilities
 - stop inverting depth and height. Use 3D world conventions
@@ -48,7 +47,7 @@
 
 ## UI
 
-- sort catalog on game names
+- sort and filter catalog on game names
 - feedback on stacking
 - player's hand
 - stack actions:

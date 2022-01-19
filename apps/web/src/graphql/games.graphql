@@ -76,7 +76,6 @@ query loadGame($gameId: ID!) {
         duration
         extent
         kinds
-        isCylindric
       }
       anchorable {
         anchors {

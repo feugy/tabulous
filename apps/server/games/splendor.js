@@ -114,7 +114,7 @@ for (const kind of [...gems, 'gold']) {
       movable: { kind: 'token' },
       flippable: {},
       rotable: {},
-      stackable: { kinds: ['token'], isCylindric: true, extent: 0.9 }
+      stackable: { kinds: ['token'], extent: 0.9 }
     })
     tokenBags[kind].push(id)
   }
