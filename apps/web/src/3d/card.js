@@ -22,6 +22,7 @@ import {
  * @param {object} params - card parameters, including (all other properties will be passed to the created mesh):
  * @param {string} params.id - card's unique id.
  * @param {string} params.texture - card's texture url.
+ * @param {number[][]} params.faceUV? - up to 2 face UV (Vector4 components), to map texture on the card.
  * @param {number} params.x? - initial position along the X axis.
  * @param {number} params.y? - initial position along the Y axis.
  * @param {number} params.z? - initial position along the Z axis.
@@ -39,13 +40,17 @@ export function createCard({
   height = 4.25,
   depth = 0.01,
   texture,
+  faceUV = [
+    [0.5, 1, 0, 0],
+    [0.5, 1, 1, 0]
+  ],
   ...behaviorStates
 } = {}) {
   const faces = CreatePlane(`${id}-plane`, {
     width,
     height,
-    frontUVs: new Vector4(0.5, 1, 0, 0),
-    backUVs: new Vector4(0.5, 1, 1, 0),
+    frontUVs: Vector4.FromArray(faceUV[0]),
+    backUVs: Vector4.FromArray(faceUV[1]),
     sideOrientation: Mesh.DOUBLESIDE
   })
   faces.receiveShadows = true
@@ -83,6 +88,7 @@ export function createCard({
       height,
       depth,
       texture,
+      faceUV,
       ...serializeBehaviors(card.behaviors)
     })
   }

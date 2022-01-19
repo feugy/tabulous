@@ -59,6 +59,7 @@ type Anchor {
 type Mesh {
   id: ID!
   texture: String!
+  faceUV: [[Float]]
   shape: Shape
   x: Float
   y: Float
@@ -86,7 +87,6 @@ type Mesh {
   rounded tiles
   """
   borderRadius: Float
-  borderColor: [Float]
 }
 
 enum Shape {
@@ -166,6 +166,7 @@ input AnchorInput {
 input MeshInput {
   id: ID!
   texture: String!
+  faceUV: [[Float]]
   shape: Shape
   x: Float
   y: Float
@@ -193,7 +194,6 @@ input MeshInput {
   rounded tiles
   """
   borderRadius: Float
-  borderColor: [Float]
 }
 
 input MessageInput {

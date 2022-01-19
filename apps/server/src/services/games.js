@@ -21,6 +21,7 @@ import repositories from '../repositories/index.js'
  * @property {string} shape - the mesh shape: card, roundToken or roundedTile.
  * @property {string} id - mesh unique id.
  * @property {string} texture - path to its texture file (one path for the entire mesh).
+ * @property {number[][]} faceUV - list of face UV (Vector4 components), to map texture on the mesh (depends on its shape).
  * @property {number} x? - 3D coordinate along the X axis (horizontal).
  * @property {number} z? - 3D coordinate along the Z axis (vertical).
  * @property {number} y? - 3D coordinate along the Y axis (altitude).
@@ -29,7 +30,6 @@ import repositories from '../repositories/index.js'
  * @property {number} depth? - mesh's depth (Y axis), for card and rounded tiles.
  * @property {number} diameter? - mesh's diameter (X+Z axis), for round tokens.
  * @property {number} borderRadius? - cordener radius, for rounded tiles.
- * @property {number[]} borderColor? - Color4's components used as edge color, for rounded tiles.
  * @property {DetailableState} detailable? - if this mesh could be detailed, contains details.
  * @property {MovableState} movable? - if this mesh could be moved, contains move state.
  * @property {FlippableState} flippable? - if this mesh could be flipped, contains flip state.

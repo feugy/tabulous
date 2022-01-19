@@ -18,6 +18,7 @@ import {
  * @param {object} params - token parameters, including (all other properties will be passed to the created mesh):
  * @param {string} params.id - token's unique id.
  * @param {string} params.texture - token's texture url.
+ * @param {number[][]} params.faceUV? - up to 3 face UV (Vector4 components), to map texture on the token.
  * @param {number} params.x? - initial position along the X axis.
  * @param {number} params.y? - initial position along the Y axis.
  * @param {number} params.z? - initial position along the Z axis.
@@ -33,18 +34,18 @@ export function createRoundToken({
   diameter = 2,
   height = 0.1,
   texture,
+  faceUV = [
+    [0, 0, 0.5, 1],
+    [0, 0, 0, 0],
+    [0.5, 0, 1, 1]
+  ],
   ...behaviorStates
 } = {}) {
-  const faceUV = [
-    new Vector4(0, 0, 0.49, 1),
-    new Vector4(0.49, 1, 0.509, 0),
-    new Vector4(0.509, 0, 1, 1)
-  ]
   const token = CreateCylinder('roundToken', {
     diameter,
     height,
     tessellation: 48,
-    faceUV
+    faceUV: faceUV.map(components => Vector4.FromArray(components))
   })
   token.id = id
   token.material = new StandardMaterial(id)
@@ -65,6 +66,7 @@ export function createRoundToken({
       y: token.position.y,
       z: token.position.z,
       texture,
+      faceUV,
       diameter,
       height,
       ...serializeBehaviors(token.behaviors)

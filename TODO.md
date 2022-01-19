@@ -44,7 +44,6 @@
 - drag kind must be configurable in game descriptors
 - completly disable Babylon input management
 - UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
-- parametrize and serialize UVs
 - stackable duration override's movable duration on
 
 ## UI

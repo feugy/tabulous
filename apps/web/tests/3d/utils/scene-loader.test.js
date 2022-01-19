@@ -87,7 +87,7 @@ describe('serializeMeshes() 3D utility', () => {
         y: faker.datatype.number(),
         z: faker.datatype.number(),
         borderRadius: faker.datatype.number(),
-        borderColor: [0, 10, 100, 50],
+        faceUV: [Array.from({ length: 4 }, () => faker.datatype.number())],
         width: faker.datatype.number(),
         height: faker.datatype.number(),
         depth: faker.datatype.number()
@@ -114,6 +114,10 @@ describe('loadMeshes() 3D utility', () => {
       height: 4.2,
       id: 'card1',
       texture: 'https://elyse.biz',
+      faceUV: [
+        [0.5, 1, 0, 0],
+        [0.5, 1, 1, 0]
+      ],
       width: 7.8,
       x: 21,
       y: 62,
@@ -131,6 +135,10 @@ describe('loadMeshes() 3D utility', () => {
       height: 4,
       id: 'card2',
       texture: 'https://elyse.biz',
+      faceUV: [
+        [0.5, 1, 0, 0],
+        [0.5, 1, 1, 0]
+      ],
       width: 3,
       x: -5,
       y: 0,
@@ -143,6 +151,11 @@ describe('loadMeshes() 3D utility', () => {
       height: 7.6,
       id: 'token1',
       texture: 'https://miracle.com',
+      faceUV: [
+        [0, 0, 0.5, 1],
+        [0, 0, 0, 0],
+        [0.5, 0, 1, 1]
+      ],
       x: 78,
       y: 34,
       z: 63,
@@ -152,12 +165,19 @@ describe('loadMeshes() 3D utility', () => {
 
     let tile1 = {
       shape: 'roundedTile',
-      borderColor: [0, 10, 100, 50],
       borderRadius: 1.14,
       depth: 3.44,
       height: 5.67,
       id: 'tile1',
       texture: 'https://rusty.net',
+      faceUV: [
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0.5, 1, 0, 0],
+        [0.5, 0, 1, 1]
+      ],
       width: 5,
       x: 43,
       y: 37,
@@ -327,6 +347,10 @@ describe('loadMeshes() 3D utility', () => {
         depth: 0.01,
         height: 4.25,
         width: 3,
+        faceUV: [
+          [0.5, 1, 0, 0],
+          [0.5, 1, 1, 0]
+        ],
         x: 0,
         y: 0,
         z: 0

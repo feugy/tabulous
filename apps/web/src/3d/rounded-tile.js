@@ -1,7 +1,7 @@
 import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial'
 import { Texture } from '@babylonjs/core/Materials/Textures/texture'
 import { Axis } from '@babylonjs/core/Maths/math.axis'
-import { Color3, Color4 } from '@babylonjs/core/Maths/math.color'
+import { Color3 } from '@babylonjs/core/Maths/math.color'
 import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector'
 import { CSG } from '@babylonjs/core/Meshes/csg'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
@@ -14,19 +14,15 @@ import {
   serializeBehaviors
 } from './utils'
 
-const side = new Vector4(0.2, 0, 0.3, 1)
-
 function makeCornerMesh(
-  { borderRadius, width, height, depth, borderColor },
+  { borderRadius, width, height, depth, faceUV },
   top,
   left
 ) {
-  const color = Color4.FromArray(borderColor)
-
   const cyclinderMesh = CreateCylinder('cylinder', {
     diameter: borderRadius,
     height: depth,
-    faceColors: [color, color, color]
+    faceUV: [faceUV, faceUV, faceUV]
   })
   cyclinderMesh.position.x += (left ? -1 : 1) * (width - borderRadius) * 0.5
   cyclinderMesh.position.z += (top ? 1 : -1) * (height - borderRadius) * 0.5
@@ -52,15 +48,14 @@ function makeCornerMesh(
  * Creates a tile with rounded corners.
  * Tiles are boxes, so their position is their center.
  * A tile's texture must have 2 faces, back then front, aligned horizontally.
- * Edges have solid color (borderColor).
  * @param {object} params - tile parameters, including (all other properties will be passed to the created mesh):
  * @param {string} params.id - tile's unique id.
  * @param {string} params.texture - tile's texture url.
+ * @param {number[][]} params.faceUV? - up to 6 face UV (Vector4 components), to map texture on the tile.
  * @param {number} params.x? - initial position along the X axis.
  * @param {number} params.y? - initial position along the Y axis.
  * @param {number} params.z? - initial position along the Z axis.
  * @param {number} params.borderRadius? - radius applied to each corner.
- * @param {number[]} params.borderColor? - Color4's components used as edge color.
  * @param {number} params.width? - tile's width (X axis).
  * @param {number} params.height? - tile's height (Z axis).
  * @param {number} params.depth? - tile's depth (Y axis).
@@ -75,30 +70,33 @@ export function createRoundedTile({
   height = 3,
   depth = 0.05,
   borderRadius = 0.4,
-  borderColor = [0, 0, 0, 1],
   texture,
+  faceUV = [
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0.5, 1, 0, 0],
+    [0.5, 0, 1, 1]
+  ],
   ...behaviorStates
 } = {}) {
-  const faceUV = [
-    side,
-    side,
-    side,
-    side,
-    new Vector4(0.5, 1, 0, 0),
-    new Vector4(0.5, 0, 1, 1)
-  ]
-  const color = Color4.FromArray(borderColor)
-  const faceColors = [color, color, color, color, undefined, undefined]
   const tileMesh = CreateBox('roundedTile', {
     width,
     height: depth,
     depth: height,
-    faceUV,
-    faceColors,
+    faceUV: faceUV.map(components => Vector4.FromArray(components)),
+    faceColors: [],
     wrap: true
   })
   const tileCSG = CSG.FromMesh(tileMesh)
-  const cornerParams = { borderColor, borderRadius, width, height, depth }
+  const cornerParams = {
+    faceUV: Vector4.FromArray(faceUV[0]),
+    borderRadius,
+    width,
+    height,
+    depth
+  }
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, true, true))
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, true, false))
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, false, true))
@@ -127,9 +125,9 @@ export function createRoundedTile({
       width,
       height,
       depth,
-      borderColor,
       borderRadius,
       texture,
+      faceUV,
       ...serializeBehaviors(tile.behaviors)
     })
   }

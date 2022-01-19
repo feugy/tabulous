@@ -97,6 +97,11 @@ for (const kind of [...gems, 'gold']) {
       shape: 'roundToken',
       id,
       texture: `images/splendor/tokens/${kind}.ktx2`,
+      faceUV: [
+        [0, 0, 0.49, 1],
+        [0.49, 0, 0.509, 1],
+        [0.509, 0, 1, 1]
+      ],
       x: 0,
       y: 0.05,
       z: 0,
@@ -122,6 +127,14 @@ for (let index = 1; index <= 10; index++) {
     shape: 'roundedTile',
     id,
     texture: `images/splendor/tiles/tile-${index}.ktx2`,
+    faceUV: [
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0.5, 1, 0, 0],
+      [0.5, 0, 1, 1]
+    ],
     x: 0,
     z: 0,
     y: 0,
@@ -129,7 +142,6 @@ for (let index = 1; index <= 10; index++) {
     height: 3,
     depth: 0.05,
     borderRadius: 0.4,
-    borderColor: [0, 0, 0, 1],
     detailable: {
       frontImage: `images/splendor/HR/tile-${index}.png`,
       backImage: `images/splendor/HR/tile-back.png`

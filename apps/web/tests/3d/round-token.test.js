@@ -32,6 +32,11 @@ describe('createRoundToken()', () => {
     const x = faker.datatype.number()
     const y = faker.datatype.number()
     const z = faker.datatype.number()
+    const faceUV = [
+      Array.from({ length: 4 }, () => faker.datatype.number()),
+      Array.from({ length: 4 }, () => faker.datatype.number()),
+      Array.from({ length: 4 }, () => faker.datatype.number())
+    ]
     const behaviors = {
       movable: { kind: faker.lorem.word() },
       rotable: { angle: Math.PI },
@@ -49,6 +54,7 @@ describe('createRoundToken()', () => {
         x,
         y,
         z,
+        faceUV,
         ...behaviors
       })
     })
@@ -93,6 +99,7 @@ describe('createRoundToken()', () => {
         x,
         y,
         z,
+        faceUV,
         diameter,
         height,
         detailable: behaviors.detailable,

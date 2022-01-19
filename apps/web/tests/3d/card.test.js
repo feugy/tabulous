@@ -36,6 +36,11 @@ describe('createCard()', () => {
     const x = faker.datatype.number()
     const y = faker.datatype.number()
     const z = faker.datatype.number()
+    const faceUV = [
+      Array.from({ length: 4 }, () => faker.datatype.number()),
+      Array.from({ length: 4 }, () => faker.datatype.number())
+    ]
+
     const behaviors = {
       movable: { kind: faker.lorem.word() },
       rotable: { angle: Math.PI },
@@ -54,6 +59,7 @@ describe('createCard()', () => {
         x,
         y,
         z,
+        faceUV,
         ...behaviors
       })
     })
@@ -112,6 +118,7 @@ describe('createCard()', () => {
         width,
         height,
         depth,
+        faceUV,
         detailable: behaviors.detailable,
         rotable: {
           ...behaviors.rotable,

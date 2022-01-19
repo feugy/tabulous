@@ -33,6 +33,9 @@ describe('createRoundedTile()', () => {
     const x = faker.datatype.number()
     const y = faker.datatype.number()
     const z = faker.datatype.number()
+    const faceUV = Array.from({ length: 6 }, () =>
+      Array.from({ length: 4 }, () => faker.datatype.number())
+    )
     const behaviors = {
       anchorable: {
         anchors: [
@@ -49,13 +52,7 @@ describe('createRoundedTile()', () => {
         backImage: faker.internet.url()
       }
     }
-    const borderColor = Math.random()
-    const borderRadius = [
-      Math.random(),
-      Math.random(),
-      Math.random(),
-      Math.random()
-    ]
+    const borderRadius = Math.random()
 
     beforeEach(() => {
       mesh = createRoundedTile({
@@ -63,10 +60,10 @@ describe('createRoundedTile()', () => {
         width,
         height,
         depth,
+        faceUV,
         x,
         y,
         z,
-        borderColor,
         borderRadius,
         ...behaviors
       })
@@ -115,10 +112,10 @@ describe('createRoundedTile()', () => {
         x,
         y,
         z,
+        faceUV,
         width,
         height,
         depth,
-        borderColor,
         borderRadius,
         detailable: behaviors.detailable,
         flippable: {
