@@ -31,11 +31,6 @@ function enableLast(stack, enabled) {
     movable.enabled = enabled
     logger.info({ mesh }, `${operation} moves for ${mesh.id}`)
   }
-  if (enabled) {
-    controlManager.registerControlable(mesh)
-  } else {
-    controlManager.unregisterControlable(mesh)
-  }
 }
 
 function setBase(mesh, base, stack) {
@@ -103,7 +98,6 @@ export class StackBehavior extends TargetBehavior {
    */
   attach(mesh) {
     super.attach(mesh)
-    controlManager.registerControlable(mesh)
     this.fromState(this._state)
 
     this.dropObserver = this.onDropObservable.add(({ dropped }) => {

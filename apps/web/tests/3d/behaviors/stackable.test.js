@@ -396,6 +396,5 @@ function expectInteractible(mesh, isInteractible = true) {
   for (const zone of getTargetableBehavior(mesh).zones) {
     expect(zone.enabled).toBe(isInteractible)
   }
-  expect(controlManager.isManaging(mesh)).toBe(isInteractible)
   expect(mesh.getBehaviorByName(MoveBehaviorName).enabled).toBe(isInteractible)
 }
