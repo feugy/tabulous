@@ -46,7 +46,7 @@ class ControlManager {
     this.controlables = new Map()
     this.peerPointers = new Map()
     // prevents loops when applying an received action
-    this.inhibit = new Set()
+    this.inhibitedKeys = new Set()
   }
 
   /**
@@ -108,7 +108,10 @@ class ControlManager {
    */
   record(action) {
     const key = getKey(action)
-    if (!this.inhibit.has(key) && this.isManaging({ id: action?.meshId })) {
+    if (
+      !this.inhibitedKeys.has(key) &&
+      this.isManaging({ id: action?.meshId })
+    ) {
       this.onActionObservable.notifyObservers(action)
     }
   }
@@ -128,14 +131,14 @@ class ControlManager {
     const key = getKey(action)
     // inhibits to avoid looping when this mesh will invoke apply()
     if (fromPeer) {
-      this.inhibit.add(key)
+      this.inhibitedKeys.add(key)
     }
     if (action.fn) {
       await mesh.metadata?.[action.fn]?.(...(action.args || []))
     } else if (action.pos) {
       mesh.setAbsolutePosition(Vector3.FromArray(action.pos))
     }
-    this.inhibit.delete(key)
+    this.inhibitedKeys.delete(key)
   }
 
   /**

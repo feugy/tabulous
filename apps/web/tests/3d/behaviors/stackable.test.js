@@ -69,9 +69,10 @@ describe('StackBehavior', () => {
         const box = CreateBox(`box${rank}`, {})
         box.setAbsolutePosition(new Vector3(rank, rank, rank))
         box.addBehavior(new StackBehavior({ duration: 10 }), true)
-        box.addBehavior(new FlipBehavior(), true)
+        box.addBehavior(new FlipBehavior({ duration: 100 }), true)
         box.addBehavior(new RotateBehavior(), true)
         box.addBehavior(new MoveBehavior(), true)
+        controlManager.registerControlable(box)
         return box
       })
 
@@ -290,24 +291,28 @@ describe('StackBehavior', () => {
 
       await mesh.metadata.flipAll()
       expectStack([meshes[2], meshes[1], meshes[0], mesh])
-      expect(recordSpy).toHaveBeenCalledTimes(5)
+      expect(recordSpy).toHaveBeenCalledTimes(6)
       expect(recordSpy).toHaveBeenNthCalledWith(1, {
-        fn: 'flip',
+        fn: 'flipAll',
         meshId: mesh.id
       })
       expect(recordSpy).toHaveBeenNthCalledWith(2, {
         fn: 'flip',
-        meshId: meshes[0].id
+        meshId: mesh.id
       })
       expect(recordSpy).toHaveBeenNthCalledWith(3, {
         fn: 'flip',
-        meshId: meshes[1].id
+        meshId: meshes[0].id
       })
       expect(recordSpy).toHaveBeenNthCalledWith(4, {
         fn: 'flip',
-        meshId: meshes[2].id
+        meshId: meshes[1].id
       })
       expect(recordSpy).toHaveBeenNthCalledWith(5, {
+        fn: 'flip',
+        meshId: meshes[2].id
+      })
+      expect(recordSpy).toHaveBeenNthCalledWith(6, {
         fn: 'reorder',
         meshId: mesh.id,
         args: [['box3', 'box2', 'box1', 'box0'], false]
@@ -317,11 +322,33 @@ describe('StackBehavior', () => {
     it('flips an entire stack of one', async () => {
       await mesh.metadata.flipAll()
       expectStack([mesh])
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
+      expect(recordSpy).toHaveBeenCalledTimes(2)
+      expect(recordSpy).toHaveBeenNthCalledWith(1, {
+        fn: 'flipAll',
+        meshId: mesh.id
+      })
+      expect(recordSpy).toHaveBeenNthCalledWith(2, {
         fn: 'flip',
         meshId: mesh.id
       })
+    })
+
+    it('flips the entire stack from peer', async () => {
+      behavior.fromState({ stackIds: ['box1', 'box2', 'box3'] })
+      controlManager.apply({ fn: 'flipAll', meshId: mesh.id }, true)
+      controlManager.apply({ fn: 'flipAll', meshId: mesh.id }, true)
+      controlManager.apply({ fn: 'flip', meshId: mesh.id }, true)
+      controlManager.apply({ fn: 'flip', meshId: meshes[0].id }, true)
+      controlManager.apply({ fn: 'flip', meshId: meshes[1].id }, true)
+      controlManager.apply({ fn: 'flip', meshId: meshes[2].id }, true)
+      controlManager.apply({
+        fn: 'reorder',
+        meshId: mesh.id,
+        args: [['box3', 'box2', 'box1', 'box0'], false]
+      })
+
+      await sleep(200)
+      expectStack([meshes[2], meshes[1], meshes[0], mesh])
     })
 
     it('rotates the entire stack', async () => {

@@ -34,6 +34,10 @@ export const fps = fps$.asObservable()
  */
 export const action = merge(localAction$, remoteAction$)
 
+remoteAction$.subscribe({
+  next: action => action.fn && console.log('remote action', action)
+})
+
 /**
  * Emits mesh details when the player requested them.
  * @type {Observable<import('../3d/managers').MeshDetails>}

@@ -54,6 +54,7 @@ let skipSharingCamera = false
 let cameras = []
 
 function load(game, engine, firstLoad) {
+  if (!firstLoad) return // TODO remove, just for testing
   loadMeshes(engine, game.meshes, firstLoad)
   if (game.messages) {
     loadThread(game.messages)
@@ -248,7 +249,7 @@ export async function loadGame(gameId, engine) {
 
   if (game.players.every(({ id, playing }) => id === player.id || !playing)) {
     // is the only playing player: take the host role
-    load(game, engine)
+    load(game, engine, true)
     subscriptions.push(...takeHostRole(gameId, engine))
   } else {
     return new Promise((resolve, reject) => {

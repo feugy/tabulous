@@ -292,16 +292,30 @@ export class StackBehavior extends TargetBehavior {
 
   /**
    * Flips entire stack:
+   * - records the action into the control manager
    * - flips in parallel each mesh
    * - re-order the stack so the lowest mesh becomes the highest
-   * - disables targets and moves of all meshes but the highest one
+   *
+   * Controllable meshes are unregistered during the operation to avoid triggering individual actions
    * @async
    */
   async flipAll() {
     const base = this.base ?? this
+
+    controlManager.record({ meshId: base.stack[0].id, fn: 'flipAll' })
+    const ignored = []
+    for (const mesh of base.stack) {
+      if (controlManager.isManaging(mesh)) {
+        controlManager.unregisterControlable(mesh)
+        ignored.push(mesh)
+      }
+    }
     // we need to wait before reordering that cards reached their new place
     await Promise.all(base.stack.map(mesh => mesh.metadata.flip?.()))
     base.reorder(base.stack.map(({ id }) => id).reverse(), false)
+    for (const mesh of ignored) {
+      controlManager.registerControlable(mesh)
+    }
   }
 
   /**
