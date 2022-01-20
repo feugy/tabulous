@@ -17,6 +17,8 @@ export const minAge = 7
 export const meshes = []
 
 const suits = ['spades', 'diamonds', 'clubs', 'hearts']
+const reds = ['diamonds', 'hearts']
+const blacks = ['spades', 'clubs']
 
 const depth = 4.25
 const width = 3
@@ -39,8 +41,21 @@ for (const suit of suits) {
         frontImage: `images/french-suited-cards/HR/${suit}-${index}.svg`,
         backImage: `images/french-suited-cards/HR/back.svg`
       },
+      anchorable: {
+        anchors: [
+          {
+            z: -1,
+            width,
+            height,
+            depth,
+            kinds: reds.includes(suit) ? blacks : reds
+          }
+        ]
+      },
+      movable: {
+        kind: suit
+      },
       // use all defaults
-      movable: {},
       flippable: {},
       rotable: {},
       stackable: {}
@@ -75,13 +90,13 @@ meshes.push({
       // discard
       { x: -8.25, z: 11.5, width, height, depth },
       // diamonds
-      { x: -0.25, z: 11.5, width, height, depth },
+      { x: -0.25, z: 11.5, width, height, depth, kinds: ['diamonds'] },
       // clubs
-      { x: 3.75, z: 11.5, width, height, depth },
+      { x: 3.75, z: 11.5, width, height, depth, kinds: ['clubs'] },
       // spades
-      { x: 7.75, z: 11.5, width, height, depth },
+      { x: 7.75, z: 11.5, width, height, depth, kinds: ['spades'] },
       // hearts
-      { x: 11.75, z: 11.5, width, height, depth },
+      { x: 11.75, z: 11.5, width, height, depth, kinds: ['hearts'] },
       // 7 columns
       { x: -12.25, z: 6.55, width, height, depth },
       { x: -8.25, z: 6.55, width, height, depth },

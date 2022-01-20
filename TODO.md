@@ -1,9 +1,5 @@
 # TODO
 
-1. a stack of 2, 1 mesh partially overlapping it, could stack a 3rd mesh (should be prevented?)
-
-1. pivot selection only alter the first
-
 ## Brittle tests
 
 - `AnchorBehavior › given attached to a mesh with zones › snaps dropped mesh`
@@ -64,8 +60,6 @@
 ## Klondike
 
 - snap cards on new game
-- restrict snapping for aces
-- card anchors
 
 ## Hosting
 
