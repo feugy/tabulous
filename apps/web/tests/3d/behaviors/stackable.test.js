@@ -11,7 +11,7 @@ import {
   StackBehaviorName
 } from '../../../src/3d/behaviors'
 import { controlManager, inputManager } from '../../../src/3d/managers'
-import { altitudeOnTop, getTargetableBehavior } from '../../../src/3d/utils'
+import { getPositionAbove, getTargetableBehavior } from '../../../src/3d/utils'
 
 describe('StackBehavior', () => {
   configures3dTestEngine()
@@ -414,7 +414,7 @@ function expectZone(behavior, extent, enabled) {
 function expectOnTop(meshAbove, meshBelow) {
   expect(meshAbove.absolutePosition.x).toEqual(meshBelow.absolutePosition.x)
   expect(meshAbove.absolutePosition.y).toBeCloseTo(
-    altitudeOnTop(meshAbove, meshBelow)
+    getPositionAbove(meshAbove, meshBelow)
   )
   expect(meshAbove.absolutePosition.z).toEqual(meshBelow.absolutePosition.z)
 }

@@ -23,14 +23,14 @@ describe('getHeight() 3D utility', () => {
   it('returns the height of a box', () => {
     const height = 3
     const box = CreateBox('box', { width: 2, height, depth: 4 })
-    expect(getHeight(box)).toEqual(height / 2)
+    expect(getHeight(box)).toEqual(height)
   })
 
   it('returns the height of a positionned box', () => {
     const height = 6
     const box = CreateBox('box', { width: 2, height, depth: 4 })
     box.setAbsolutePosition(new Vector3(-3, -5, -6))
-    expect(getHeight(box)).toEqual(height / 2)
+    expect(getHeight(box)).toEqual(height)
   })
 
   it('returns the height of a rotated box', () => {
@@ -39,7 +39,7 @@ describe('getHeight() 3D utility', () => {
     box.rotation.x = Math.PI / 4
     box.setAbsolutePosition(new Vector3(2, 4, 6))
     box.computeWorldMatrix()
-    expect(getHeight(box)).toBeGreaterThan(height / 2)
+    expect(getHeight(box)).toBeGreaterThan(height)
   })
 })
 

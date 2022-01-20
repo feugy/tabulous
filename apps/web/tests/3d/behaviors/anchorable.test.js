@@ -13,7 +13,7 @@ import {
   inputManager,
   selectionManager
 } from '../../../src/3d/managers'
-import { altitudeOnTop } from '../../../src/3d/utils'
+import { getPositionAbove } from '../../../src/3d/utils'
 
 describe('AnchorBehavior', () => {
   configures3dTestEngine()
@@ -225,7 +225,7 @@ describe('AnchorBehavior', () => {
 
       snapped.addBehavior(new StackBehavior({ stackIds: [stacked.id] }), true)
       expectClosePosition(snapped, [10, 10, 10])
-      expectClosePosition(stacked, [10, altitudeOnTop(stacked, snapped), 10])
+      expectClosePosition(stacked, [10, getPositionAbove(stacked, snapped), 10])
       expect(behavior.snappedZone(snapped.id)).toBeNull()
 
       const args = [snapped.id, behavior.zones[0].mesh.id]
@@ -233,7 +233,7 @@ describe('AnchorBehavior', () => {
       expectSnapped(snapped, 0)
       expectClosePosition(stacked, [
         snapped.absolutePosition.x,
-        altitudeOnTop(stacked, snapped),
+        getPositionAbove(stacked, snapped),
         snapped.absolutePosition.z
       ])
       expect(recordSpy).toHaveBeenCalledTimes(1)
@@ -376,7 +376,7 @@ describe('AnchorBehavior', () => {
       expect(mesh.metadata.anchors[anchorRank].snappedId).toEqual(snapped.id)
       expectClosePosition(snapped, [
         anchor.x ?? 0,
-        altitudeOnTop(snapped, mesh),
+        getPositionAbove(snapped, mesh),
         anchor.z ?? 0
       ])
     }

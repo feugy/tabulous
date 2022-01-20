@@ -506,13 +506,11 @@ function expectPosition(mesh, [x, y, z]) {
 function getAltitudeOnCollision(moved, obstacle) {
   return (
     moved.getBoundingInfo().boundingBox.minimumWorld.y -
-    getHeight(moved) * 2 +
+    getHeight(moved) +
     obstacle.getBoundingInfo().boundingBox.maximumWorld.y
   )
 }
 
 function getAltitudeOnDrop(moved, target) {
-  return (
-    target.getBoundingInfo().boundingBox.maximumWorld.y + getHeight(moved) * 2
-  )
+  return target.getBoundingInfo().boundingBox.maximumWorld.y + getHeight(moved)
 }

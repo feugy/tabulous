@@ -94,7 +94,7 @@ describe('FlipBehavior', () => {
       await mesh.metadata.flip()
       expectFlipped()
       expect(mesh.absolutePosition.x).toEqual(x)
-      expect(mesh.absolutePosition.y).toEqual(0.25)
+      expect(mesh.absolutePosition.y).toEqual(0.5)
       expect(mesh.absolutePosition.z).toEqual(z)
     })
 
@@ -110,7 +110,7 @@ describe('FlipBehavior', () => {
       await mesh.metadata.flip()
       expectFlipped()
       expect(mesh.absolutePosition.x).toEqual(x)
-      expect(mesh.absolutePosition.y).toEqual(0.25)
+      expect(mesh.absolutePosition.y).toEqual(0.5)
       expect(mesh.absolutePosition.z).toEqual(z)
     })
 

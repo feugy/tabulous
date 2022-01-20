@@ -91,7 +91,7 @@ describe('RotateBehavior', () => {
       await mesh.metadata.rotate()
       expectRotated(Math.PI * 0.5)
       expect(mesh.absolutePosition.x).toEqual(x)
-      expect(mesh.absolutePosition.y).toEqual(0.25)
+      expect(mesh.absolutePosition.y).toEqual(0.5)
       expect(mesh.absolutePosition.z).toEqual(z)
     })
 

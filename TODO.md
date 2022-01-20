@@ -27,8 +27,6 @@
 
 ## Refactor
 
-- getHeight() should return the real height, not just its half
-- altitudeOnTop() should only take only mesh: mesh.absolutePosition.y + getHeight(mesh) + 0.001
 - rework target detection. Instead of using real mesh and rays use shapes overlap: each zone is a rectangle/circle on XZ plane, and the moved mesh another rectangle/circle. Check the center of the moved mesh
 - behavior should be managers, since they can be attached to multiple meshes
 - all manager managing a collection of behaviors should check their capabilities

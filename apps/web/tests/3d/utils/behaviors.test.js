@@ -162,12 +162,12 @@ describe('animateMove() 3D utility', () => {
   it('moves an animatable mesh without gravity', async () => {
     box.addBehavior(new RotateBehavior(), true)
     await animateMove(box, new Vector3(10, 5, 4), 100, true)
-    expect(box.absolutePosition).toEqual(new Vector3(10, 0.25, 4))
+    expect(box.absolutePosition).toEqual(new Vector3(10, 0.5, 4))
   })
 
   it('moves without animation regular mesh with gravity', async () => {
     animateMove(box, new Vector3(15, 0, -4), 100, true)
-    expect(box.absolutePosition).toEqual(new Vector3(15, 0.25, -4))
+    expect(box.absolutePosition).toEqual(new Vector3(15, 0.5, -4))
   })
 })
 

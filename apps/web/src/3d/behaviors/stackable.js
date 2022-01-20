@@ -5,7 +5,7 @@ import { MoveBehaviorName, StackBehaviorName } from './names'
 import { TargetBehavior } from './targetable'
 import { controlManager, inputManager, selectionManager } from '../managers'
 import {
-  altitudeOnTop,
+  getPositionAbove,
   animateMove,
   applyGravity,
   getTargetableBehavior,
@@ -154,7 +154,7 @@ export class StackBehavior extends TargetBehavior {
       controlManager.record({ meshId: stack[0].id, fn: 'push', args: [meshId] })
     }
     const { x, z } = stack[0].absolutePosition
-    const y = altitudeOnTop(mesh, stack[stack.length - 1])
+    const y = getPositionAbove(mesh, stack[stack.length - 1])
     logger.info(
       { stack, mesh, x, y, z },
       `push ${mesh.id} on stack ${stack.map(({ id }) => id)}`
@@ -249,7 +249,7 @@ export class StackBehavior extends TargetBehavior {
         newPositions.push(mesh.absolutePosition.clone())
       } else {
         const { x, z } = mesh.absolutePosition
-        const position = new Vector3(x, altitudeOnTop(mesh, last), z)
+        const position = new Vector3(x, getPositionAbove(mesh, last), z)
         mesh.setAbsolutePosition(position)
         newPositions.push(position)
       }

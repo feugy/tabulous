@@ -2,7 +2,7 @@ import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
 import {
-  altitudeOnTop,
+  getPositionAbove,
   applyGravity,
   getHeight,
   isAbove,
@@ -52,26 +52,26 @@ describe('applyGravity() 3D utility', () => {
 
   it('positions mesh on the ground', () => {
     const box = CreateBox('box', {})
-    expect(getHeight(box)).toEqual(0.5)
+    expect(getHeight(box)).toEqual(1)
     box.setAbsolutePosition(new Vector3(x, 10, z))
     box.computeWorldMatrix()
     const box2 = CreateBox('box2', {})
     box2.setAbsolutePosition(new Vector3(x + 2, 3, z))
     box2.computeWorldMatrix()
     expect(box.absolutePosition.y).toEqual(10)
-    expect(applyGravity(box).asArray()).toEqual([x, 0.25, z])
+    expect(applyGravity(box).asArray()).toEqual([x, 0.5, z])
   })
 
   it('positions mesh with negative position', () => {
     const box = CreateBox('box', {})
-    expect(getHeight(box)).toEqual(0.5)
+    expect(getHeight(box)).toEqual(1)
     box.setAbsolutePosition(new Vector3(x, -10, z))
     box.computeWorldMatrix()
     const box2 = CreateBox('box2', {})
     box2.setAbsolutePosition(new Vector3(x, 3, z - 2))
     box2.computeWorldMatrix()
     expect(box.absolutePosition.y).toEqual(-10)
-    expect(applyGravity(box).asArray()).toEqual([x, 0.25, z])
+    expect(applyGravity(box).asArray()).toEqual([x, 0.5, z])
   })
 
   it('positions mesh just above another one', () => {
@@ -156,12 +156,12 @@ describe('isAbove() 3D utility', () => {
   })
 })
 
-describe('altitudeOnTop() 3D utility', () => {
-  it('considers heights when positioning mesh above another one', () => {
+describe('getPositionAbove() 3D utility', () => {
+  it('considers heights when positioning mesh above another one (without fresh matrix)', () => {
     const box = CreateBox('box', { height: 4 })
     box.absolutePosition.y = 20
     const box2 = CreateBox('box2', { height: 3 })
-    expect(altitudeOnTop(box2, box)).toEqual(20 + 4 / 2 + 3 / 2 + 0.001)
+    expect(getPositionAbove(box2, box)).toEqual(20 + 4 / 2 + 3 / 2 + 0.001)
   })
 })
 

@@ -38,8 +38,12 @@ function findBelow(mesh, predicate) {
  * @param {import('@babel/core').Mesh} other - foundation to put the mesh on.
  * @returns {number} resulting Y coordinate.
  */
-export function altitudeOnTop(mesh, other) {
-  return other.absolutePosition.y + getHeight(other) + getHeight(mesh) + 0.001
+export function getPositionAbove(mesh, other) {
+  return (
+    other.absolutePosition.y +
+    (getHeight(other) + getHeight(mesh)) * 0.5 +
+    0.001
+  )
 }
 
 /**
@@ -59,7 +63,7 @@ export function applyGravity(mesh) {
   let y = getHeight(mesh) * 0.5
   if (over.size) {
     const ordered = sortByElevation(over.keys(), true)
-    y = altitudeOnTop(mesh, ordered[0])
+    y = getPositionAbove(mesh, ordered[0])
     logger.info(
       { ordered, mesh },
       `${mesh.id} is above ${ordered.map(({ id }) => id)}`

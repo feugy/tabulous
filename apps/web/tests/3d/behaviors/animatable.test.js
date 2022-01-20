@@ -64,7 +64,7 @@ describe('AnimateBehavior', () => {
       await behavior.moveTo(position, duration)
       const realDuration = Date.now() - startTime
       expect(mesh.absolutePosition).toEqual(
-        new Vector3(position.x, 0.25, position.z)
+        new Vector3(position.x, 0.5, position.z)
       )
       expect(realDuration).toBeGreaterThanOrEqual(duration)
       expect(realDuration).toBeLessThanOrEqual(duration * 1.2)
@@ -79,7 +79,7 @@ describe('AnimateBehavior', () => {
       await behavior.moveTo(position, duration)
       const realDuration = Date.now() - startTime
       expect(mesh.absolutePosition).toEqual(
-        new Vector3(position.x, 0.25, position.z)
+        new Vector3(position.x, 0.5, position.z)
       )
       expect(realDuration).toBeGreaterThanOrEqual(25)
       expect(realDuration).toBeLessThanOrEqual(75)
