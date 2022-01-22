@@ -1,10 +1,11 @@
 // mandatory side effect
 import '@babylonjs/core/Loading/loadingScreen'
+import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { createCard } from '../card'
 import { createRoundToken } from '../round-token'
 import { createRoundedTile } from '../rounded-tile'
 import { restoreBehaviors } from './behaviors'
-import { StackBehaviorName } from '../behaviors/names'
+import { AnchorBehaviorName, StackBehaviorName } from '../behaviors/names'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
 
@@ -51,33 +52,46 @@ export function loadMeshes(engine, meshes, initial = true) {
   }
 
   const stackables = []
+  const anchorables = []
   logger.debug({ meshes }, `loads meshes`)
 
   // makes sure all meshes are created
   for (const rawState of meshes) {
     const state = removeNulls(rawState)
     let mesh = scene.getMeshById(state.id)
-    const { stackable, shape: name } = state
+    const { stackable, anchorable, shape: name } = state
     if (mesh) {
       logger.debug({ state, mesh }, `updates ${name} ${state.id}`)
       disposables.delete(mesh)
-      mesh.position.copyFromFloats(state.x, state.y, state.z)
+      mesh.setAbsolutePosition(new Vector3(state.x, state.y, state.z))
+      mesh.computeWorldMatrix(true)
       restoreBehaviors(mesh.behaviors, state)
     } else {
       logger.debug({ state }, `create new ${name} ${state.id}`)
       mesh = meshCreatorByName.get(name)({
         ...state,
+        anchorable: anchorable ? { ...anchorable, anchors: [] } : undefined,
         stackable: stackable ? { ...stackable, stackIds: undefined } : undefined
       })
     }
-    const behavior = mesh.getBehaviorByName(StackBehaviorName)
-    if (behavior) {
+    const stackBehavior = mesh.getBehaviorByName(StackBehaviorName)
+    if (stackBehavior) {
       if (stackable?.stackIds?.length > 0) {
         // stores for later
-        stackables.push({ behavior, stackable })
+        stackables.push({ stackBehavior, stackable })
       } else {
         // reset stacks
-        behavior.fromState(stackable)
+        stackBehavior.fromState(stackable)
+      }
+    }
+    const anchorBehavior = mesh.getBehaviorByName(AnchorBehaviorName)
+    if (anchorBehavior) {
+      if (anchorable?.anchors.find(({ snappedId }) => snappedId)) {
+        // stores for later
+        anchorables.push({ anchorBehavior, anchorable })
+      } else {
+        // reset anchors
+        anchorBehavior.fromState(anchorable)
       }
     }
   }
@@ -86,9 +100,12 @@ export function loadMeshes(engine, meshes, initial = true) {
     logger.debug({ mesh }, `dispose mesh ${mesh.id}`)
     mesh.dispose()
   }
-  // now that all mesh are available, restore all stacks
-  for (const { behavior, stackable } of stackables) {
-    behavior.fromState(stackable)
+  // now that all mesh are available, restore all stacks and anchors
+  for (const { stackBehavior, stackable } of stackables) {
+    stackBehavior.fromState(stackable)
+  }
+  for (const { anchorBehavior, anchorable } of anchorables) {
+    anchorBehavior.fromState(anchorable)
   }
 }
 

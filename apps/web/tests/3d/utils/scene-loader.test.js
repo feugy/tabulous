@@ -9,7 +9,7 @@ import {
 } from '../../../src/3d'
 import { MoveBehaviorName, StackBehaviorName } from '../../../src/3d/behaviors'
 import { loadMeshes, serializeMeshes } from '../../../src/3d/utils/scene-loader'
-import { initialize3dEngine } from '../../test-utils'
+import { expectPosition, initialize3dEngine } from '../../test-utils'
 
 let engine
 let scene
@@ -324,7 +324,7 @@ describe('loadMeshes() 3D utility', () => {
     })
 
     it('restores mesh stacks', () => {
-      let card1 = {
+      const card1 = {
         shape: 'card',
         id: 'card1',
         stackable: {
@@ -354,6 +354,56 @@ describe('loadMeshes() 3D utility', () => {
         y: 0,
         z: 0
       })
+    })
+
+    it('restores mesh anchors', () => {
+      const x = 2
+      const y = 0 // TODO issue
+      const z = 4
+      const card1 = {
+        shape: 'card',
+        id: 'card1',
+        x,
+        y,
+        z,
+        anchorable: {
+          duration: 100,
+          anchors: [
+            { snappedId: 'card2', x: 2 },
+            { snappedId: 'card4', x: -2 }
+          ]
+        }
+      }
+      loadMeshes(engine, [
+        card1,
+        { shape: 'card', id: 'card2' },
+        { shape: 'card', id: 'card3' },
+        { shape: 'card', id: 'card4' }
+      ])
+      const mesh1 = scene.getMeshById(card1.id)
+      expect(mesh1).toBeDefined()
+      expectPosition(mesh1, [x, y, z])
+      expect(mesh1.metadata.serialize()).toEqual({
+        ...card1,
+        depth: 4.25,
+        height: 0.01,
+        width: 3,
+        faceUV: [
+          [0.5, 1, 0, 0],
+          [0.5, 1, 1, 0]
+        ],
+        x,
+        y,
+        z
+      })
+
+      const mesh2 = scene.getMeshById('card2')
+      expect(mesh2).toBeDefined()
+      expectPosition(mesh2, [x + 2, y + 0.001, z])
+
+      const mesh4 = scene.getMeshById('card4')
+      expect(mesh4).toBeDefined()
+      expectPosition(mesh4, [x - 2, y + 0.001, z])
     })
   })
 })
