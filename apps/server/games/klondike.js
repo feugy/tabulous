@@ -93,10 +93,10 @@ meshes.push({
       { x: -0.25, z: 11.5, width, height, depth, kinds: ['diamonds'] },
       // clubs
       { x: 3.75, z: 11.5, width, height, depth, kinds: ['clubs'] },
-      // spades
-      { x: 7.75, z: 11.5, width, height, depth, kinds: ['spades'] },
       // hearts
-      { x: 11.75, z: 11.5, width, height, depth, kinds: ['hearts'] },
+      { x: 7.75, z: 11.5, width, height, depth, kinds: ['hearts'] },
+      // spades
+      { x: 11.75, z: 11.5, width, height, depth, kinds: ['spades'] },
       // 7 columns
       { x: -12.25, z: 6.55, width, height, depth },
       { x: -8.25, z: 6.55, width, height, depth },
