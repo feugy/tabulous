@@ -74,7 +74,7 @@ export class AnimateBehavior {
       return
     }
     this.isAnimated = true
-    const from = mesh.absolutePosition.clone()
+    const from = mesh.position.clone()
 
     const lastFrame = mesh.getScene().isLoading
       ? 1
@@ -98,7 +98,7 @@ export class AnimateBehavior {
           () => {
             this.isAnimated = false
             // framed animation may not exactly end where we want, so force the final position
-            mesh.setAbsolutePosition(to)
+            mesh.position.copyFrom(to)
             if (gravity) {
               applyGravity(mesh)
             }

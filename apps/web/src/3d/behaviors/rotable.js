@@ -87,7 +87,7 @@ export class RotateBehavior extends AnimateBehavior {
 
     controlManager.record({ meshId: mesh.id, fn: 'rotate' })
 
-    const to = mesh.absolutePosition.clone()
+    const to = mesh.position.clone()
 
     const lastFrame = Math.round(frameRate * (duration / 1000))
     rotateAnimation.setKeys([
@@ -121,7 +121,7 @@ export class RotateBehavior extends AnimateBehavior {
             mesh.metadata.angle = this.state.angle
             logger.debug({ mesh }, `end rotating ${mesh.id}`)
             // framed animation may not exactly end where we want, so force the final position
-            mesh.setAbsolutePosition(to)
+            mesh.position.copyFrom(to)
             applyGravity(mesh)
             mesh.isPickable = true
             resolve()

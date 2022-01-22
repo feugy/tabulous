@@ -78,3 +78,9 @@ export function debug(...args) {
 export function cleanDebugFile() {
   rmSync(debugFile, { force: true })
 }
+
+export function expectPosition(mesh, [x, y, z]) {
+  expect(mesh.absolutePosition.x).toBeCloseTo(x)
+  expect(mesh.absolutePosition.y).toBeCloseTo(y)
+  expect(mesh.absolutePosition.z).toBeCloseTo(z)
+}

@@ -1,7 +1,7 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
-import { configures3dTestEngine, sleep } from '../../test-utils'
+import { configures3dTestEngine, expectPosition, sleep } from '../../test-utils'
 import {
   FlipBehavior,
   MoveBehavior,
@@ -11,7 +11,7 @@ import {
   StackBehaviorName
 } from '../../../src/3d/behaviors'
 import { controlManager, inputManager } from '../../../src/3d/managers'
-import { getPositionAbove, getTargetableBehavior } from '../../../src/3d/utils'
+import { computeYAbove, getTargetableBehavior } from '../../../src/3d/utils'
 
 describe('StackBehavior', () => {
   configures3dTestEngine()
@@ -412,11 +412,11 @@ function expectZone(behavior, extent, enabled) {
 }
 
 function expectOnTop(meshAbove, meshBelow) {
-  expect(meshAbove.absolutePosition.x).toEqual(meshBelow.absolutePosition.x)
-  expect(meshAbove.absolutePosition.y).toBeCloseTo(
-    getPositionAbove(meshAbove, meshBelow)
-  )
-  expect(meshAbove.absolutePosition.z).toEqual(meshBelow.absolutePosition.z)
+  expectPosition(meshAbove, [
+    meshBelow.absolutePosition.x,
+    computeYAbove(meshAbove, meshBelow),
+    meshBelow.absolutePosition.z
+  ])
 }
 
 function expectInteractible(mesh, isInteractible = true) {

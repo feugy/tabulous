@@ -7,8 +7,6 @@ import { targetManager } from '../../../src/3d/managers'
 describe('TargetBehavior', () => {
   configures3dTestEngine()
 
-  // const recordSpy = jest.spyOn(controlManager, 'record')
-
   beforeEach(jest.resetAllMocks)
 
   it('has initial state', () => {

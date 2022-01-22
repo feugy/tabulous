@@ -1,6 +1,7 @@
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import faker from 'faker'
-import { configures3dTestEngine } from '../../test-utils'
+import { configures3dTestEngine, expectPosition } from '../../test-utils'
 import { RotateBehavior, RotateBehaviorName } from '../../../src/3d/behaviors'
 import { controlManager } from '../../../src/3d/managers'
 
@@ -83,16 +84,12 @@ describe('RotateBehavior', () => {
     it('rotates mesh clockwise and apply gravity', async () => {
       const x = faker.datatype.number()
       const z = faker.datatype.number()
-      mesh.absolutePosition.x = x
-      mesh.absolutePosition.y = 10
-      mesh.absolutePosition.z = z
+      mesh.setAbsolutePosition(new Vector3(x, 10, z))
 
       expectRotated(0)
       await mesh.metadata.rotate()
       expectRotated(Math.PI * 0.5)
-      expect(mesh.absolutePosition.x).toEqual(x)
-      expect(mesh.absolutePosition.y).toEqual(0.5)
-      expect(mesh.absolutePosition.z).toEqual(z)
+      expectPosition(mesh, [x, 0.5, z])
     })
 
     it('makes mesh unpickable while rotating', async () => {

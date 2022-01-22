@@ -84,7 +84,7 @@ export class FlipBehavior extends AnimateBehavior {
 
     controlManager.record({ meshId: mesh.id, fn: 'flip' })
 
-    const to = mesh.absolutePosition.clone()
+    const to = mesh.position.clone()
     const [min, max] = mesh.getBoundingInfo().boundingBox.vectorsWorld
     const width = Math.abs(min.x - max.x)
 
@@ -129,7 +129,7 @@ export class FlipBehavior extends AnimateBehavior {
             }
             logger.debug({ mesh }, `end flipping ${mesh.id}`)
             // framed animation may not exactly end where we want, so force the final position
-            mesh.setAbsolutePosition(to)
+            mesh.position.copyFrom(to)
             applyGravity(mesh)
             mesh.isPickable = true
             resolve()

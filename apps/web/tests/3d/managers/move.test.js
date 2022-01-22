@@ -1,7 +1,7 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
-import { configures3dTestEngine, sleep } from '../../test-utils'
+import { configures3dTestEngine, expectPosition, sleep } from '../../test-utils'
 import { createTable } from '../../../src/3d'
 import {
   controlManager,
@@ -495,12 +495,6 @@ function expectZoneForMeshes(targetId, meshes) {
   const zone = manager.getActiveZones().find(({ mesh }) => mesh.id === targetId)
   expect(zone).toBeDefined()
   expect(targetManager.droppablesByDropZone.get(zone)).toEqual(meshes)
-}
-
-function expectPosition(mesh, [x, y, z]) {
-  expect(mesh.absolutePosition.x).toBeCloseTo(x)
-  expect(mesh.absolutePosition.y).toBeCloseTo(y)
-  expect(mesh.absolutePosition.z).toBeCloseTo(z)
 }
 
 function getAltitudeOnCollision(moved, obstacle) {
