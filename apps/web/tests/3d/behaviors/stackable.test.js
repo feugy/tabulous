@@ -3,6 +3,8 @@ import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
 import { configures3dTestEngine, expectPosition, sleep } from '../../test-utils'
 import {
+  AnchorBehavior,
+  AnchorBehaviorName,
   FlipBehavior,
   MoveBehavior,
   MoveBehaviorName,
@@ -72,6 +74,9 @@ describe('StackBehavior', () => {
         box.addBehavior(new FlipBehavior({ duration: 100 }), true)
         box.addBehavior(new RotateBehavior(), true)
         box.addBehavior(new MoveBehavior(), true)
+        box.addBehavior(
+          new AnchorBehavior({ anchors: [{ x: -0.5 }, { x: 0.5 }] })
+        )
         controlManager.registerControlable(box)
         return box
       })
@@ -424,4 +429,10 @@ function expectInteractible(mesh, isInteractible = true) {
     expect(zone.enabled).toBe(isInteractible)
   }
   expect(mesh.getBehaviorByName(MoveBehaviorName).enabled).toBe(isInteractible)
+  const anchorable = mesh.getBehaviorByName(AnchorBehaviorName)
+  if (anchorable) {
+    for (const zone of anchorable.zones) {
+      expect(zone.enabled).toBe(isInteractible)
+    }
+  }
 }

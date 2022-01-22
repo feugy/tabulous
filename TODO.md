@@ -15,7 +15,6 @@
 - `InputManager › given an initialized manager() › handles multiple pointers taps`
 
   > `expect(received).toHaveLength(expected)` line 1319 (1 long received)
-  > Presumably solved on Jan 16 by reducing in-between events timers
 
 - `Dropdown component › given textual options › closes menu on click`
 
@@ -306,3 +305,6 @@ STUN & TURN server:
 docker run -d --network=host coturn/coturn --external-ip=78.192.173.27 --relay-ip=192.168.1.45 -X -v -u tabulous:soulubat -a -f -r tabulous
 
 ```
+
+Anchor stick to the principle of "behave as in real life": acting on the anchor mesh does not impact any of the snapped mesh.
+Making snapped meshes children of the anchor makes it easy to move all at once, but creates undesirable side effect: flip and rotate also apply to all snap meshes, and when selecting all and applying flip/rotate, the snapped mesh perform the operation once with the anchor, and another time on their own.

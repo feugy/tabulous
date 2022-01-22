@@ -356,54 +356,73 @@ describe('loadMeshes() 3D utility', () => {
       })
     })
 
-    it('restores mesh anchors', () => {
-      const x = 2
-      const y = 0 // TODO issue
-      const z = 4
+    it('restores mesh anchors with proper Y-ordering', () => {
+      const pos1 = { x: 2, y: 2, z: 4 }
+      const shift = 2
+      const height = 0.01
       const card1 = {
         shape: 'card',
         id: 'card1',
-        x,
-        y,
-        z,
+        ...pos1,
         anchorable: {
           duration: 100,
           anchors: [
-            { snappedId: 'card2', x: 2 },
-            { snappedId: 'card4', x: -2 }
+            { snappedId: 'card2', x: shift },
+            { snappedId: 'card4', x: -shift }
           ]
-        }
+        },
+        movable: {}
       }
+      const card4 = {
+        shape: 'card',
+        id: 'card4',
+        anchorable: {
+          duration: 100,
+          anchors: [{ snappedId: 'card3' }]
+        },
+        x: -5,
+        y: 2.001,
+        z: -5,
+        movable: {}
+      }
+
       loadMeshes(engine, [
+        card4,
         card1,
-        { shape: 'card', id: 'card2' },
-        { shape: 'card', id: 'card3' },
-        { shape: 'card', id: 'card4' }
+        { shape: 'card', id: 'card2', movable: {} },
+        { shape: 'card', id: 'card3', movable: {} }
       ])
       const mesh1 = scene.getMeshById(card1.id)
-      expect(mesh1).toBeDefined()
-      expectPosition(mesh1, [x, y, z])
+      expect(mesh1).not.toBeNull()
+      expectPosition(mesh1, [pos1.x, pos1.y, pos1.z])
       expect(mesh1.metadata.serialize()).toEqual({
         ...card1,
+        ...pos1,
+        movable: { duration: 100, snapDistance: 0.25 },
         depth: 4.25,
-        height: 0.01,
+        height,
         width: 3,
         faceUV: [
           [0.5, 1, 0, 0],
           [0.5, 1, 1, 0]
-        ],
-        x,
-        y,
-        z
+        ]
       })
 
       const mesh2 = scene.getMeshById('card2')
-      expect(mesh2).toBeDefined()
-      expectPosition(mesh2, [x + 2, y + 0.001, z])
+      expect(mesh2).not.toBeNull()
+      expectPosition(mesh2, [pos1.x + shift, pos1.y + height + 0.001, pos1.z])
 
       const mesh4 = scene.getMeshById('card4')
-      expect(mesh4).toBeDefined()
-      expectPosition(mesh4, [x - 2, y + 0.001, z])
+      expect(mesh4).not.toBeNull()
+      expectPosition(mesh4, [pos1.x - shift, pos1.y + height + 0.001, pos1.z])
+
+      const mesh3 = scene.getMeshById('card3')
+      expect(mesh3).not.toBeNull()
+      expectPosition(mesh3, [
+        pos1.x - shift,
+        pos1.y + (height + 0.001) * 2,
+        pos1.z
+      ])
     })
   })
 })

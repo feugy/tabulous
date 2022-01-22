@@ -1,7 +1,11 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
-import { MoveBehaviorName, StackBehaviorName } from './names'
+import {
+  AnchorBehaviorName,
+  MoveBehaviorName,
+  StackBehaviorName
+} from './names'
 import { TargetBehavior } from './targetable'
 import { controlManager, inputManager, selectionManager } from '../managers'
 import {
@@ -25,6 +29,14 @@ function enableLast(stack, enabled) {
       zone.enabled = enabled
     }
     logger.info({ mesh }, `${operation} target for ${mesh.id}`)
+  }
+  const anchorable = mesh.getBehaviorByName(AnchorBehaviorName)
+  if (anchorable) {
+    if (enabled) {
+      anchorable.enable()
+    } else {
+      anchorable.disable()
+    }
   }
   const movable = mesh.getBehaviorByName(MoveBehaviorName)
   if (movable) {

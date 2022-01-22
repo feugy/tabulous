@@ -1,7 +1,7 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
-import { configures3dTestEngine, sleep } from '../../test-utils'
+import { configures3dTestEngine, expectPosition, sleep } from '../../test-utils'
 import {
   AnchorBehavior,
   AnchorBehaviorName,
@@ -13,14 +13,17 @@ import {
   inputManager,
   selectionManager
 } from '../../../src/3d/managers'
-import { getPositionAbove } from '../../../src/3d/utils'
+import { animateMove, computeYAbove } from '../../../src/3d/utils'
 
 describe('AnchorBehavior', () => {
   configures3dTestEngine()
 
   const recordSpy = jest.spyOn(controlManager, 'record')
 
-  beforeEach(jest.resetAllMocks)
+  beforeEach(() => {
+    jest.resetAllMocks()
+    selectionManager.clear()
+  })
 
   it('has initial state', () => {
     const state = {
@@ -68,7 +71,7 @@ describe('AnchorBehavior', () => {
     let behavior
 
     beforeEach(() => {
-      mesh = CreateBox('box', {})
+      mesh = CreateBox('box', { width: 5, depth: 5 })
       mesh.addBehavior(new AnimateBehavior(), true)
       meshes = Array.from({ length: 2 }, (_, rank) => {
         const box = CreateBox(`box${rank + 1}`, {})
@@ -224,16 +227,16 @@ describe('AnchorBehavior', () => {
       const snapped = meshes[0]
 
       snapped.addBehavior(new StackBehavior({ stackIds: [stacked.id] }), true)
-      expectClosePosition(snapped, [10, 10, 10])
-      expectClosePosition(stacked, [10, getPositionAbove(stacked, snapped), 10])
+      expectPosition(snapped, [10, 10, 10])
+      expectPosition(stacked, [10, computeYAbove(stacked, snapped), 10])
       expect(behavior.snappedZone(snapped.id)).toBeNull()
 
       const args = [snapped.id, behavior.zones[0].mesh.id]
       await mesh.metadata.snap(...args)
       expectSnapped(snapped, 0)
-      expectClosePosition(stacked, [
+      expectPosition(stacked, [
         snapped.absolutePosition.x,
-        getPositionAbove(stacked, snapped),
+        computeYAbove(stacked, snapped),
         snapped.absolutePosition.z
       ])
       expect(recordSpy).toHaveBeenCalledTimes(1)
@@ -327,14 +330,26 @@ describe('AnchorBehavior', () => {
       behavior.fromState({
         anchors: [
           { width: 1, height: 2, depth: 0.5, snappedId: meshes[0].id },
-          { width: 1, height: 2, depth: 0.5, snappedId: meshes[1].id }
+          {
+            width: 1,
+            height: 2,
+            depth: 0.5,
+            snappedId: meshes[1].id,
+            x: 2,
+            y: 3,
+            z: 1
+          }
         ]
       })
       expectSnapped(meshes[0], 0)
       expectSnapped(meshes[1], 1)
+      const position = [5, 3, 4]
 
       inputManager.onDragObservable.notifyObservers({ type: 'dragStart', mesh })
       inputManager.onDragObservable.notifyObservers({ type: 'dragMove', mesh })
+      animateMove(mesh, new Vector3(...position), 0, false)
+
+      expectPosition(mesh, position)
       expectUnsnapped(meshes[0], 0)
       expectUnsnapped(meshes[1], 1)
       expect(recordSpy).toHaveBeenCalledTimes(2)
@@ -350,50 +365,111 @@ describe('AnchorBehavior', () => {
       })
     })
 
+    it('does not unsnap parts of the active selection', () => {
+      behavior.fromState({
+        anchors: [
+          { width: 1, height: 2, depth: 0.5, snappedId: meshes[0].id },
+          {
+            width: 1,
+            height: 2,
+            depth: 0.5,
+            snappedId: meshes[1].id,
+            x: 2,
+            y: 3,
+            z: 1
+          }
+        ]
+      })
+      expectSnapped(meshes[0], 0)
+      expectSnapped(meshes[1], 1)
+
+      selectionManager.select(mesh)
+      selectionManager.select(meshes[0])
+
+      inputManager.onDragObservable.notifyObservers({
+        type: 'dragStart',
+        mesh: mesh
+      })
+
+      expectSnapped(meshes[0], 0)
+      expectUnsnapped(meshes[1], 1)
+      expect(recordSpy).toHaveBeenCalledTimes(1)
+      expect(recordSpy).toHaveBeenCalledWith({
+        fn: 'unsnap',
+        meshId: mesh.id,
+        args: [meshes[1].id]
+      })
+    })
+
+    it('can disable all anchors', () => {
+      expectZoneEnabled(0)
+      expectZoneEnabled(1)
+
+      behavior.disable()
+      expectZoneEnabled(0, false)
+      expectZoneEnabled(1, false)
+    })
+
+    it('can enable all anchors', () => {
+      behavior.disable()
+
+      behavior.enable()
+      expectZoneEnabled(0)
+      expectZoneEnabled(1)
+    })
+
+    it('does enable anchors with snapped meshes', () => {
+      mesh.metadata.snap(meshes[1].id, behavior.zones[1].mesh.id)
+      behavior.disable()
+
+      behavior.enable()
+      expectZoneEnabled(0)
+      expectZoneEnabled(1, false)
+    })
+
     function expectAnchor(
       rank,
       { width, height, depth, x = 0, y = 0, z = 0 },
       isEnabled = true,
       kinds = undefined
     ) {
-      const anchor = behavior.zones[rank]
-      expect(anchor).toBeDefined()
-      expect(anchor.enabled).toEqual(isEnabled)
-      expect(anchor.kinds).toEqual(kinds)
-      const { boundingBox } = anchor.mesh.getBoundingInfo()
+      const zone = behavior.zones[rank]
+      expect(zone).toBeDefined()
+      expectZoneEnabled(rank, isEnabled)
+      expect(zone.kinds).toEqual(kinds)
+      const { boundingBox } = zone.mesh.getBoundingInfo()
       expect(boundingBox.extendSize.x * 2).toEqual(width)
       expect(boundingBox.extendSize.y * 2).toEqual(height)
       expect(boundingBox.extendSize.z * 2).toEqual(depth)
-      expect(anchor.mesh.absolutePosition.asArray()).toEqual([x, y, z])
+      expect(zone.mesh.absolutePosition.asArray()).toEqual([x, y, z])
     }
 
     function expectSnapped(snapped, anchorRank) {
       const anchor = behavior.state.anchors[anchorRank]
       const zone = behavior.zones[anchorRank]
-      expect(zone.enabled).toBe(false)
+      expectZoneEnabled(anchorRank, false)
       expect(behavior.snappedZone(snapped.id)).toEqual(zone)
       expect(anchor.snappedId).toEqual(snapped.id)
       expect(mesh.metadata.anchors[anchorRank].snappedId).toEqual(snapped.id)
-      expectClosePosition(snapped, [
-        anchor.x ?? 0,
-        getPositionAbove(snapped, mesh),
-        anchor.z ?? 0
+      expectPosition(snapped, [
+        zone.mesh.absolutePosition.x,
+        computeYAbove(snapped, mesh),
+        zone.mesh.absolutePosition.z
       ])
+      // expect(snapped.parent?.id).toEqual(mesh.id)
     }
 
     function expectUnsnapped(snapped, anchorRank) {
       const anchor = behavior.state.anchors[anchorRank]
-      const zone = behavior.zones[anchorRank]
-      expect(zone.enabled).toBe(true)
+      expectZoneEnabled(anchorRank)
       expect(behavior.snappedZone(snapped.id)).toBeNull()
       expect(anchor.snappedId).not.toBeDefined()
       expect(mesh.metadata.anchors[anchorRank].snappedId).not.toBeDefined()
+      // expect(snapped.parent?.id).toBeUndefined()
     }
 
-    function expectClosePosition(mesh, [x, y, z]) {
-      expect(mesh.absolutePosition.x).toEqual(x)
-      expect(mesh.absolutePosition.y).toBeCloseTo(y)
-      expect(mesh.absolutePosition.z).toEqual(z)
+    function expectZoneEnabled(rank, enabled = true) {
+      expect(behavior.zones[rank]?.enabled).toBe(enabled)
     }
   })
 })

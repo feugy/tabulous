@@ -78,7 +78,11 @@ export function loadMeshes(engine, meshes, initial = true) {
     if (stackBehavior) {
       if (stackable?.stackIds?.length > 0) {
         // stores for later
-        stackables.push({ stackBehavior, stackable })
+        stackables.push({
+          stackBehavior,
+          stackable,
+          y: mesh.absolutePosition.y
+        })
       } else {
         // reset stacks
         stackBehavior.fromState(stackable)
@@ -88,7 +92,11 @@ export function loadMeshes(engine, meshes, initial = true) {
     if (anchorBehavior) {
       if (anchorable?.anchors.find(({ snappedId }) => snappedId)) {
         // stores for later
-        anchorables.push({ anchorBehavior, anchorable })
+        anchorables.push({
+          anchorBehavior,
+          anchorable,
+          y: mesh.absolutePosition.y
+        })
       } else {
         // reset anchors
         anchorBehavior.fromState(anchorable)
@@ -100,11 +108,15 @@ export function loadMeshes(engine, meshes, initial = true) {
     logger.debug({ mesh }, `dispose mesh ${mesh.id}`)
     mesh.dispose()
   }
-  // now that all mesh are available, restore all stacks and anchors
-  for (const { stackBehavior, stackable } of stackables) {
+  // now that all mesh are available, restore all stacks and anchors, starting from lowest
+  for (const { stackBehavior, stackable } of stackables.sort(
+    (a, b) => a.y - b.y
+  )) {
     stackBehavior.fromState(stackable)
   }
-  for (const { anchorBehavior, anchorable } of anchorables) {
+  for (const { anchorBehavior, anchorable } of anchorables.sort(
+    (a, b) => a.y - b.y
+  )) {
     anchorBehavior.fromState(anchorable)
   }
 }
