@@ -6,6 +6,8 @@ import { appendFileSync, rmSync } from 'fs'
 import { get } from 'svelte/store'
 import { _ } from 'svelte-intl'
 import { inspect } from 'util'
+import { AnchorBehaviorName } from '../src/3d/behaviors/names'
+import { computeYAbove } from '../src/3d/utils/gravity'
 // mandatory side effects
 import '@babylonjs/core/Animations/animatable'
 import '@babylonjs/core/Rendering/edgesRenderer'
@@ -83,4 +85,33 @@ export function expectPosition(mesh, [x, y, z]) {
   expect(mesh.absolutePosition.x).toBeCloseTo(x)
   expect(mesh.absolutePosition.y).toBeCloseTo(y)
   expect(mesh.absolutePosition.z).toBeCloseTo(z)
+}
+
+export function expectSnapped(mesh, snapped, anchorRank = 0) {
+  const behavior = mesh.getBehaviorByName(AnchorBehaviorName)
+  const anchor = behavior.state.anchors[anchorRank]
+  const zone = behavior.zones[anchorRank]
+  expectZoneEnabled(mesh, anchorRank, false)
+  expect(behavior.snappedZone(snapped.id)).toEqual(zone)
+  expect(anchor.snappedId).toEqual(snapped.id)
+  expect(mesh.metadata.anchors[anchorRank].snappedId).toEqual(snapped.id)
+  expectPosition(snapped, [
+    zone.mesh.absolutePosition.x,
+    computeYAbove(snapped, mesh),
+    zone.mesh.absolutePosition.z
+  ])
+}
+
+export function expectUnsnapped(mesh, snapped, anchorRank = 0) {
+  const behavior = mesh.getBehaviorByName(AnchorBehaviorName)
+  const anchor = behavior.state.anchors[anchorRank]
+  expectZoneEnabled(mesh, anchorRank)
+  expect(behavior.snappedZone(snapped.id)).toBeNull()
+  expect(anchor.snappedId).not.toBeDefined()
+  expect(mesh.metadata.anchors[anchorRank].snappedId).not.toBeDefined()
+}
+
+export function expectZoneEnabled(mesh, rank, enabled = true) {
+  const behavior = mesh.getBehaviorByName(AnchorBehaviorName)
+  expect(behavior.zones[rank]?.enabled).toBe(enabled)
 }

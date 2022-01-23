@@ -20,41 +20,6 @@ import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('stackable')
 
-function enableLast(stack, enabled) {
-  const operation = enabled ? 'enable' : 'disable'
-  const mesh = stack[stack.length - 1]
-  const targetable = getTargetableBehavior(mesh)
-  if (targetable) {
-    for (const zone of targetable.zones) {
-      zone.enabled = enabled
-    }
-    logger.info({ mesh }, `${operation} target for ${mesh.id}`)
-  }
-  const anchorable = mesh.getBehaviorByName(AnchorBehaviorName)
-  if (anchorable) {
-    if (enabled) {
-      anchorable.enable()
-    } else {
-      anchorable.disable()
-    }
-  }
-  const movable = mesh.getBehaviorByName(MoveBehaviorName)
-  if (movable) {
-    movable.enabled = enabled
-    logger.info({ mesh }, `${operation} moves for ${mesh.id}`)
-  }
-}
-
-function setBase(mesh, base, stack) {
-  const targetable = getTargetableBehavior(mesh)
-  if (targetable) {
-    targetable.base = base
-    targetable.stack = stack
-    mesh.metadata.stack = targetable.stack
-  }
-  return targetable
-}
-
 /**
  * @typedef {object} StackableState behavior persistent state, including:
  * @property {string[]} stackIds - array of stacked mesh ids, not including the current mesh if alone.
@@ -67,7 +32,7 @@ export class StackBehavior extends TargetBehavior {
   /**
    * Creates behavior to make a mesh stackable (it can be stacked above other stackable mesh)
    * and targetable (it can receive other stackable meshs).
-   * Once a mesh is stacked bellow others, it can not be moved independently, and its targets are disabled.
+   * Once a mesh is stacked bellow others, it can not be moved independently, and its targets and anchors are disabled.
    * Only the highest mesh on stack can be moved (it is automatically poped out) and be targeted.
    *
    * @extends {TargetBehavior}
@@ -395,4 +360,39 @@ export class StackBehavior extends TargetBehavior {
     this.mesh.metadata.flipAll = this.flipAll.bind(this)
     this.mesh.metadata.rotateAll = this.rotateAll.bind(this)
   }
+}
+
+function enableLast(stack, enabled) {
+  const operation = enabled ? 'enable' : 'disable'
+  const mesh = stack[stack.length - 1]
+  const targetable = getTargetableBehavior(mesh)
+  if (targetable) {
+    for (const zone of targetable.zones) {
+      zone.enabled = enabled
+    }
+    logger.info({ mesh }, `${operation} target for ${mesh.id}`)
+  }
+  const anchorable = mesh.getBehaviorByName(AnchorBehaviorName)
+  if (anchorable) {
+    if (enabled) {
+      anchorable.enable()
+    } else {
+      anchorable.disable()
+    }
+  }
+  const movable = mesh.getBehaviorByName(MoveBehaviorName)
+  if (movable) {
+    movable.enabled = enabled
+    logger.info({ mesh }, `${operation} moves for ${mesh.id}`)
+  }
+}
+
+function setBase(mesh, base, stack) {
+  const targetable = getTargetableBehavior(mesh)
+  if (targetable) {
+    targetable.base = base
+    targetable.stack = stack
+    mesh.metadata.stack = targetable.stack
+  }
+  return targetable
 }

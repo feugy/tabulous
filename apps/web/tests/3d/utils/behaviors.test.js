@@ -16,7 +16,11 @@ import {
   restoreBehaviors,
   serializeBehaviors
 } from '../../../src/3d/utils/behaviors'
-import { initialize3dEngine } from '../../test-utils'
+import {
+  disposeAllMeshes,
+  expectPosition,
+  initialize3dEngine
+} from '../../test-utils'
 
 let engine
 let box
@@ -50,9 +54,7 @@ beforeEach(() => {
 
 afterAll(() => engine.dispose())
 
-afterEach(() => {
-  box.dispose()
-})
+afterEach(() => disposeAllMeshes(box.getScene()))
 
 describe('getAnimatableBehavior() 3D utility', () => {
   it('finds rotable', () => {
@@ -140,34 +142,36 @@ describe('getTargetableBehavior() 3D utility', () => {
 
 describe('animateMove() 3D utility', () => {
   it('moves an animatable mesh without gravity', async () => {
-    const position = new Vector3(10, 5, 4)
+    const position = [10, 5, 4]
     box.addBehavior(new AnimateBehavior(), true)
-    await animateMove(box, position, 100)
-    expect(box.absolutePosition).toEqual(position)
+    await animateMove(box, Vector3.FromArray(position), 100)
+    expectPosition(box, position)
   })
 
   it('moves without animation when omitting duration', async () => {
-    const position = new Vector3(-2, -4, -0.5)
+    const position = [-2, -4, -0.5]
     box.addBehavior(new FlipBehavior(), true)
-    animateMove(box, position, 0)
-    expect(box.absolutePosition).toEqual(position)
+    animateMove(box, Vector3.FromArray(position), 0)
+    expectPosition(box, position)
   })
 
   it('moves without animation regular mesh', async () => {
-    const position = new Vector3(15, 0, -4)
-    animateMove(box, position, 100)
-    expect(box.absolutePosition).toEqual(position)
+    const position = [15, 0, -4]
+    animateMove(box, Vector3.FromArray(position), 100)
+    expectPosition(box, position)
   })
 
   it('moves an animatable mesh without gravity', async () => {
+    const position = [10, 0.5, 4]
     box.addBehavior(new RotateBehavior(), true)
-    await animateMove(box, new Vector3(10, 5, 4), 100, true)
-    expect(box.absolutePosition).toEqual(new Vector3(10, 0.5, 4))
+    await animateMove(box, Vector3.FromArray(position), 100, true)
+    expectPosition(box, position)
   })
 
   it('moves without animation regular mesh with gravity', async () => {
-    animateMove(box, new Vector3(15, 0, -4), 100, true)
-    expect(box.absolutePosition).toEqual(new Vector3(15, 0.5, -4))
+    const position = [10, 0.5, -4]
+    animateMove(box, Vector3.FromArray(position), 100, true)
+    expectPosition(box, position)
   })
 })
 

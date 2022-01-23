@@ -118,23 +118,36 @@ export class AnchorBehavior extends TargetBehavior {
   }
 
   /**
+   * @returns {String[]} ids for the meshes snapped to this one
+   */
+  getSnappedIds() {
+    return [...this.zoneBySnappedId.keys()]
+  }
+
+  /**
    * Span another mesh onto an anchor:
    * - records the action into the control manager
    * - disables this zone so it can not be used
    * - moves the mesh to the provided anchor with gravity
-   * Does nothing if the mesh does not exist or is already snapped to an anchor.
+   * Does nothing if the mesh or the anchor does not exist.
+   * Does nothing if the anchor is diabled.
    *
    * @async
    * @param {string} snappedId - id of the snapped mesh.
    * @param {string} anchorId - id of the anchor mesh to snap onto.
    */
   async snap(snappedId, anchorId) {
-    const snapped = this.mesh?.getScene().getMeshById(snappedId)
+    let snapped = this.mesh?.getScene().getMeshById(snappedId)
     const zone = this.zones.find(({ mesh }) => mesh.id === anchorId)
-    if (!snapped || !zone || this.state.anchors[zone.anchorIndex]?.snappedId)
+    if (!snapped || !zone || !zone.enabled) {
       return
-
-    await snapToAnchor(snappedId, zone, this)
+    }
+    controlManager.record({
+      meshId: this.mesh.id,
+      fn: 'snap',
+      args: [snappedId, anchorId]
+    })
+    await snapToAnchor(this, snappedId, zone)
   }
 
   /**
@@ -146,9 +159,24 @@ export class AnchorBehavior extends TargetBehavior {
    * @param {string} releasedId - id of the released mesh.
    */
   unsnap(releasedId) {
-    const zone = this.zoneBySnappedId.get(releasedId)
-    if (zone) {
-      unsnapFromAnchor(zone, this)
+    const meshId = this.mesh?.id
+    const released = getMeshList(this.mesh?.getScene(), releasedId)?.[0]
+
+    if (released) {
+      const snappedId = released.id
+      const zone = this.zoneBySnappedId.get(snappedId)
+
+      if (zone) {
+        logger.info(
+          { mesh: this.mesh, snappedId, zone },
+          `release snapped ${snappedId} from ${meshId}, zone ${zone.mesh.id}`
+        )
+        console.log(
+          `release snapped ${snappedId} from ${meshId}, zone ${zone.mesh.id}`
+        )
+        controlManager.record({ meshId, fn: 'unsnap', args: [releasedId] })
+        unsetAnchor(this, zone, released)
+      }
     }
   }
 
@@ -187,7 +215,7 @@ export class AnchorBehavior extends TargetBehavior {
       // relates the created zone with the anchor
       zone.anchorIndex = i
       if (snappedId) {
-        snapToAnchor(snappedId, zone, this, false)
+        snapToAnchor(this, snappedId, zone, false)
       }
     }
     if (!this.mesh.metadata) {
@@ -199,75 +227,81 @@ export class AnchorBehavior extends TargetBehavior {
   }
 }
 
-async function snapToAnchor(snappedId, zone, behavior, recordAction = true) {
+async function snapToAnchor(behavior, snappedId, zone, animate = true) {
   const {
     mesh,
-    zoneBySnappedId,
     state: { anchors, duration }
   } = behavior
   const meshId = mesh.id
-  const zoneId = zone.mesh.id
-  const snapped = mesh.getScene().getMeshById(snappedId)
-  const anchor = anchors[zone.anchorIndex]
-  anchor.snappedId = undefined
-  if (snapped) {
+  anchors[zone.anchorIndex].snappedId = undefined
+  const snappedList = getMeshList(mesh.getScene(), snappedId)
+
+  if (snappedList) {
     logger.info(
       { mesh, snappedId, zone },
       `snap ${snappedId} onto ${meshId}, zone ${zone.mesh.id}`
     )
     console.log(`snap ${snappedId} onto ${meshId}, zone ${zone.mesh.id}`)
-    if (recordAction) {
-      controlManager.record({ meshId, fn: 'snap', args: [snappedId, zoneId] })
-    }
-    zone.enabled = false
+
+    setAnchor(behavior, zone, snappedList[0])
     // moves it to the final position
     const { x, z } = zone.mesh.getAbsolutePosition()
-    const position = new Vector3(x, computeYAbove(snapped, zone.mesh), z)
-
-    const stackable = snapped.getBehaviorByName(StackBehaviorName)
-    const moved = stackable?.stack ?? [snapped]
-    anchor.snappedId = moved[0].id
-    zoneBySnappedId.set(moved[0].id, zone)
-    if (recordAction) {
+    const position = new Vector3(x, computeYAbove(snappedList[0], zone.mesh), z)
+    if (animate) {
       await Promise.all(
-        moved.map((mesh, i) =>
+        snappedList.map((mesh, i) =>
           sleep(i * 1.5).then(() => animateMove(mesh, position, duration, true))
         )
       )
     } else {
-      moved.map(mesh => animateMove(mesh, position, 0, true))
+      snappedList.map(mesh => animateMove(mesh, position, 0, true))
     }
   }
 }
 
-function unsnapFromAnchor(zone, behavior) {
-  const {
-    mesh,
-    zoneBySnappedId,
-    state: { anchors }
-  } = behavior
-  const meshId = mesh.id
-  const zoneId = zone.mesh.id
-  const { snappedId } = anchors[zone.anchorIndex]
-  logger.info(
-    { mesh, snappedId, zone },
-    `release snapped ${snappedId} from ${meshId}, zone ${zoneId}`
-  )
-  console.log(`release snapped ${snappedId} from ${meshId}, zone ${zoneId}`)
-  controlManager.record({ meshId, fn: 'unsnap', args: [snappedId] })
-  zone.enabled = true
-  zoneBySnappedId.delete(snappedId)
-  anchors[zone.anchorIndex].snappedId = undefined
-}
-
 function getUnselectedSnappedId(behavior, selectedIds) {
-  return [...behavior.zoneBySnappedId.keys()].filter(
-    id => !selectedIds.includes(id)
-  )
+  return behavior.getSnappedIds().filter(id => !selectedIds.includes(id))
 }
 
 function unsnapAll(behavior, ids) {
   for (const id of ids) {
     behavior.unsnap(id)
   }
+}
+
+function setAnchor(behavior, zone, snapped) {
+  const {
+    mesh,
+    zoneBySnappedId,
+    state: { anchors }
+  } = behavior
+  if (!snapped.metadata) {
+    snapped.metadata = {}
+  }
+  snapped.metadata.anchor = mesh.id
+  zoneBySnappedId.set(snapped.id, zone)
+  const anchor = anchors[zone.anchorIndex]
+  anchor.snappedId = snapped.id
+  zone.enabled = false
+}
+
+function unsetAnchor(behavior, zone, snapped) {
+  const {
+    zoneBySnappedId,
+    state: { anchors }
+  } = behavior
+  snapped.metadata.anchor = undefined
+  zoneBySnappedId.delete(snapped.id, zone)
+  const anchor = anchors[zone.anchorIndex]
+  anchor.snappedId = undefined
+  zone.enabled = true
+}
+
+function getMeshList(scene, meshId) {
+  let mesh = scene?.getMeshById(meshId)
+  if (!mesh) {
+    return null
+  }
+  const stackable = mesh.getBehaviorByName(StackBehaviorName)
+  return stackable?.stack ?? [mesh]
 }
