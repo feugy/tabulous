@@ -17,8 +17,6 @@ export const minAge = 7
 export const meshes = []
 
 const suits = ['spades', 'diamonds', 'clubs', 'hearts']
-const reds = ['diamonds', 'hearts']
-const blacks = ['spades', 'clubs']
 
 const depth = 4.25
 const width = 3
@@ -43,13 +41,9 @@ for (const suit of suits) {
       },
       anchorable: {
         anchors: [
-          {
-            z: -1,
-            width,
-            height,
-            depth,
-            kinds: reds.includes(suit) ? blacks : reds
-          }
+          // let stackable target take priority over anchors
+          { y: -0.001, z: -1, width, height, depth },
+          { y: -0.001, z: 1, width, height, depth }
         ]
       },
       movable: {

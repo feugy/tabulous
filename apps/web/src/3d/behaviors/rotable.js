@@ -53,11 +53,23 @@ export class RotateBehavior extends AnimateBehavior {
    * - the `angle` property.
    * - the `rotate()` method.
    * It initializes its rotation according to angle.
+   * When attaching/detaching this mesh to a parent, adjust rotation angle
+   * according to the parent's own rotation, so that rotating the parent
+   * will accordingly rotate the chil.
    * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
    */
   attach(mesh) {
     super.attach(mesh)
     this.fromState(this.state)
+
+    const originalSetter = mesh.setParent.bind(mesh)
+    mesh.setParent = parent => {
+      const angle = getRotatableAngle(parent ?? mesh.parent)
+      if (angle !== undefined) {
+        updateAngle(this, parent ? -angle : angle)
+      }
+      originalSetter(parent)
+    }
   }
 
   /**
@@ -88,11 +100,12 @@ export class RotateBehavior extends AnimateBehavior {
     controlManager.record({ meshId: mesh.id, fn: 'rotate' })
 
     const to = mesh.position.clone()
+    const rotation = 0.5 * Math.PI
 
     const lastFrame = Math.round(frameRate * (duration / 1000))
     rotateAnimation.setKeys([
       { frame: 0, value: angle },
-      { frame: lastFrame, value: angle + 0.5 * Math.PI }
+      { frame: lastFrame, value: angle + rotation }
     ])
     moveAnimation.setKeys([
       { frame: 0, value: to },
@@ -116,9 +129,8 @@ export class RotateBehavior extends AnimateBehavior {
           1,
           () => {
             this.isAnimated = false
-            this.state.angle =
-              (this.state.angle + 0.5 * Math.PI) % (2 * Math.PI)
-            mesh.metadata.angle = this.state.angle
+            updateAngle(this, rotation)
+            mesh.rotation.y = this.state.angle
             logger.debug({ mesh }, `end rotating ${mesh.id}`)
             // framed animation may not exactly end where we want, so force the final position
             mesh.position.copyFrom(to)
@@ -140,10 +152,20 @@ export class RotateBehavior extends AnimateBehavior {
     }
     this.state = { angle, duration }
     this.mesh.rotation.y = this.state.angle
+    this.mesh.computeWorldMatrix(true)
     if (!this.mesh.metadata) {
       this.mesh.metadata = {}
     }
     this.mesh.metadata.rotate = this.rotate.bind(this)
     this.mesh.metadata.angle = this.state.angle
   }
+}
+
+function updateAngle(behavior, rotation) {
+  behavior.state.angle = (behavior.state.angle + rotation) % (2 * Math.PI)
+  behavior.mesh.metadata.angle = behavior.state.angle
+}
+
+function getRotatableAngle(mesh) {
+  return mesh?.getBehaviorByName(RotateBehaviorName)?.state.angle
 }

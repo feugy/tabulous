@@ -60,7 +60,7 @@ export class AnchorBehavior extends TargetBehavior {
    * - the `snap()` method.
    * - the `unsnap()` method.
    * It binds to its drop observable to snap dropped meshes on the anchor (unless the anchor is already full).
-   * It binds to the drag manager to unsnap dragged meshes, unless they are dragged together with the current mesh
+   * It binds to the drag manager to unsnap dragged meshes, when dragged independently from the current mesh
    * @param {import('@babylonjs/core').Mesh} mesh - which becomes anchorable.
    */
   attach(mesh) {
@@ -74,16 +74,16 @@ export class AnchorBehavior extends TargetBehavior {
 
     this.dragObserver = inputManager.onDragObservable.add(({ type, mesh }) => {
       if (type === 'dragStart' && mesh) {
-        let movedIds = (
-          selectionManager.meshes.has(mesh)
-            ? [...selectionManager.meshes]
-            : [mesh]
-        ).map(({ id }) => id)
+        let moved = selectionManager.meshes.has(mesh)
+          ? selectionManager.meshes.has(this.mesh)
+            ? []
+            : [...selectionManager.meshes]
+          : [mesh]
 
-        if (movedIds.includes(this.mesh.id)) {
-          movedIds = getUnselectedSnappedId(this, movedIds)
-        }
-        unsnapAll(this, movedIds)
+        unsnapAll(
+          this,
+          moved.map(({ id }) => id)
+        )
       }
     })
   }
@@ -171,9 +171,6 @@ export class AnchorBehavior extends TargetBehavior {
           { mesh: this.mesh, snappedId, zone },
           `release snapped ${snappedId} from ${meshId}, zone ${zone.mesh.id}`
         )
-        console.log(
-          `release snapped ${snappedId} from ${meshId}, zone ${zone.mesh.id}`
-        )
         controlManager.record({ meshId, fn: 'unsnap', args: [releasedId] })
         unsetAnchor(this, zone, released)
       }
@@ -241,9 +238,7 @@ async function snapToAnchor(behavior, snappedId, zone, animate = true) {
       { mesh, snappedId, zone },
       `snap ${snappedId} onto ${meshId}, zone ${zone.mesh.id}`
     )
-    console.log(`snap ${snappedId} onto ${meshId}, zone ${zone.mesh.id}`)
 
-    setAnchor(behavior, zone, snappedList[0])
     // moves it to the final position
     const { x, z } = zone.mesh.getAbsolutePosition()
     const position = new Vector3(x, computeYAbove(snappedList[0], zone.mesh), z)
@@ -253,14 +248,12 @@ async function snapToAnchor(behavior, snappedId, zone, animate = true) {
           sleep(i * 1.5).then(() => animateMove(mesh, position, duration, true))
         )
       )
+      setAnchor(behavior, zone, snappedList[0], true)
     } else {
+      setAnchor(behavior, zone, snappedList[0], false)
       snappedList.map(mesh => animateMove(mesh, position, 0, true))
     }
   }
-}
-
-function getUnselectedSnappedId(behavior, selectedIds) {
-  return behavior.getSnappedIds().filter(id => !selectedIds.includes(id))
 }
 
 function unsnapAll(behavior, ids) {
@@ -269,7 +262,7 @@ function unsnapAll(behavior, ids) {
   }
 }
 
-function setAnchor(behavior, zone, snapped) {
+function setAnchor(behavior, zone, snapped, keepPosition) {
   const {
     mesh,
     zoneBySnappedId,
@@ -279,6 +272,13 @@ function setAnchor(behavior, zone, snapped) {
     snapped.metadata = {}
   }
   snapped.metadata.anchor = mesh.id
+
+  if (keepPosition) {
+    snapped.setParent(mesh)
+  } else {
+    snapped.parent = mesh
+    snapped.position = Vector3.Zero()
+  }
   zoneBySnappedId.set(snapped.id, zone)
   const anchor = anchors[zone.anchorIndex]
   anchor.snappedId = snapped.id
@@ -291,6 +291,7 @@ function unsetAnchor(behavior, zone, snapped) {
     state: { anchors }
   } = behavior
   snapped.metadata.anchor = undefined
+  snapped.setParent(null)
   zoneBySnappedId.delete(snapped.id, zone)
   const anchor = anchors[zone.anchorIndex]
   anchor.snappedId = undefined

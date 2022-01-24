@@ -99,82 +99,7 @@ describe('MoveManager', () => {
     })
   })
 
-  describe('start()', () => {
-    let moved
-
-    beforeAll(() => manager.init({ scene }))
-
-    beforeEach(() => {
-      moved = createsMovable()
-    })
-
-    it('ignores uncontrolled mesh', () => {
-      const mesh = CreateBox('box4', {})
-      manager.start(mesh, { x: centerX, y: centerY })
-      expect(manager.inProgress).toBe(false)
-    })
-
-    it('ignores disabled mesh', () => {
-      const mesh = CreateBox('box4', {})
-      const behavior = new MoveBehavior()
-      mesh.addBehavior(behavior, true)
-      behavior.enabled = false
-
-      manager.start(mesh, { x: centerX, y: centerY })
-      expect(manager.inProgress).toBe(false)
-    })
-
-    it('elevates moved mesh', () => {
-      manager.start(moved, { x: centerX, y: centerY })
-      expect(manager.inProgress).toBe(true)
-      expectPosition(moved, [1, 1 + manager.elevation, 1])
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
-        meshId: moved.id,
-        pos: moved.absolutePosition.asArray()
-      })
-    })
-  })
-
-  describe('start()', () => {
-    let moved
-
-    beforeAll(() => manager.init({ scene }))
-
-    beforeEach(() => {
-      moved = [
-        createsMovable(),
-        createsMovable('box1', new Vector3(0, 5, 0)),
-        createsMovable('box2', new Vector3(-3, 0, -3))
-      ]
-      for (const mesh of moved) {
-        selectionManager.select(mesh)
-      }
-    })
-
-    it('elevates entire selection', () => {
-      manager.start(moved[1], { x: centerX, y: centerY })
-      expectPosition(moved[0], [1, 1 + manager.elevation, 1])
-      expectPosition(moved[1], [0, 5 + manager.elevation, 0])
-      expectPosition(moved[2], [-3, manager.elevation, -3])
-      expect(recordSpy).toHaveBeenCalledTimes(moved.length)
-      expect(recordSpy).toHaveBeenNthCalledWith(1, {
-        meshId: moved[2].id,
-        pos: moved[2].absolutePosition.asArray()
-      })
-      expect(recordSpy).toHaveBeenNthCalledWith(2, {
-        meshId: moved[0].id,
-        pos: moved[0].absolutePosition.asArray()
-      })
-      expect(recordSpy).toHaveBeenNthCalledWith(3, {
-        meshId: moved[1].id,
-        pos: moved[1].absolutePosition.asArray()
-      })
-      expect(manager.getActiveZones()).toHaveLength(0)
-    })
-  })
-
-  describe('continue()', () => {
+  describe('given single mesh', () => {
     let moved
     let targets
 
@@ -184,63 +109,156 @@ describe('MoveManager', () => {
       moved = createsMovable()
       targets = [
         createsTarget(1, new Vector3(3, 0, 0)),
-        createsTarget(2, new Vector3(-3, 0, 0))
+        createsTarget(2, new Vector3(-1, 0, -4.1))
       ]
-      manager.start(moved, { x: centerX, y: centerY })
-      recordSpy.mockReset()
     })
 
-    it('updates moved mesh position', () => {
-      const deltaX = 2.029703140258789
-      const deltaZ = -2.196934700012207
-      manager.continue({ x: centerX + 50, y: centerY + 50 })
-      expectPosition(moved, [1 + deltaX, 1 + manager.elevation, 1 + deltaZ])
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
-        meshId: moved.id,
-        pos: moved.absolutePosition.asArray()
+    describe('start()', () => {
+      it('ignores uncontrolled mesh', () => {
+        const mesh = CreateBox('box4', {})
+        manager.start(mesh, { x: centerX, y: centerY })
+        expect(manager.inProgress).toBe(false)
       })
-      expect(manager.getActiveZones()).toHaveLength(0)
-    })
 
-    it('updates possible targets', () => {
-      manager.continue({ x: centerX + 50, y: centerY + 20 })
-      expect(manager.getActiveZones()).toHaveLength(1)
-      expectZoneForMeshes(targets[0].id, [moved])
+      it('ignores disabled mesh', () => {
+        const mesh = CreateBox('box4', {})
+        const behavior = new MoveBehavior()
+        mesh.addBehavior(behavior, true)
+        behavior.enabled = false
 
-      manager.continue({ x: centerX - 100, y: centerY + 20 })
-      expect(manager.getActiveZones()).toHaveLength(1)
-      expectZoneForMeshes(targets[1].id, [moved])
-    })
-
-    it('elevates moved when detecting a collision', () => {
-      const obstacle = CreateBox('obstacle', { size: 2 })
-      obstacle.setAbsolutePosition(1, 0.5, 1)
-      obstacle.computeWorldMatrix()
-
-      manager.continue({ x: centerX + 20, y: centerY })
-      expectPosition(moved, [
-        1.8257662057876587,
-        getAltitudeOnCollision(moved, obstacle),
-        1
-      ])
-    })
-
-    it('stops when pointer is leaving table', async () => {
-      manager.continue({ x: centerX * 3, y: centerY * 3 })
-      await sleep()
-      expectPosition(moved, [1, getHeight(moved) / 2, 1])
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
-        meshId: moved.id,
-        pos: moved.absolutePosition.asArray()
+        manager.start(mesh, { x: centerX, y: centerY })
+        expect(manager.inProgress).toBe(false)
       })
-      expect(manager.getActiveZones()).toHaveLength(0)
-      expect(manager.inProgress).toBe(false)
+
+      it('elevates moved mesh', () => {
+        manager.start(moved, { x: centerX, y: centerY })
+        expect(manager.inProgress).toBe(true)
+        expectPosition(moved, [1, 1 + manager.elevation, 1])
+        expect(recordSpy).toHaveBeenCalledTimes(1)
+        expect(recordSpy).toHaveBeenCalledWith({
+          meshId: moved.id,
+          pos: moved.absolutePosition.asArray()
+        })
+      })
+    })
+
+    describe('continue()', () => {
+      beforeEach(() => {
+        manager.start(moved, { x: centerX, y: centerY })
+        recordSpy.mockReset()
+      })
+
+      it('updates moved mesh position', () => {
+        const deltaX = 2.029703140258789
+        const deltaZ = -2.196934700012207
+        manager.continue({ x: centerX + 50, y: centerY + 50 })
+        expectPosition(moved, [1 + deltaX, 1 + manager.elevation, 1 + deltaZ])
+        expect(recordSpy).toHaveBeenCalledTimes(1)
+        expect(recordSpy).toHaveBeenCalledWith({
+          meshId: moved.id,
+          pos: moved.absolutePosition.asArray()
+        })
+        expect(manager.getActiveZones()).toHaveLength(0)
+      })
+
+      it('updates possible targets', () => {
+        manager.continue({ x: centerX + 50, y: centerY + 20 })
+        expect(manager.getActiveZones()).toHaveLength(1)
+        expectZoneForMeshes(targets[0].id, [moved])
+
+        manager.continue({ x: centerX - 50, y: centerY + 120 })
+        expect(manager.getActiveZones()).toHaveLength(1)
+        expectZoneForMeshes(targets[1].id, [moved])
+      })
+
+      it('elevates moved when detecting a collision', () => {
+        const obstacle = CreateBox('obstacle', { size: 2 })
+        obstacle.setAbsolutePosition(1, 0.5, 1)
+        obstacle.computeWorldMatrix()
+
+        manager.continue({ x: centerX + 20, y: centerY })
+        expectPosition(moved, [
+          1.8257662057876587,
+          getAltitudeOnCollision(moved, obstacle),
+          1
+        ])
+      })
+
+      it('stops when pointer is leaving table', async () => {
+        manager.continue({ x: centerX * 3, y: centerY * 3 })
+        await sleep()
+        expectPosition(moved, [1, getHeight(moved) / 2, 1])
+        expect(recordSpy).toHaveBeenCalledTimes(1)
+        expect(recordSpy).toHaveBeenCalledWith({
+          meshId: moved.id,
+          pos: moved.absolutePosition.asArray()
+        })
+        expect(manager.getActiveZones()).toHaveLength(0)
+        expect(manager.inProgress).toBe(false)
+      })
+    })
+
+    describe('stop()', () => {
+      beforeEach(() => {
+        manager.start(moved, { x: centerX, y: centerY })
+        recordSpy.mockReset()
+      })
+
+      it('descends moved mesh', async () => {
+        await manager.stop()
+        expectPosition(moved, [1, getHeight(moved) / 2, 1])
+        expect(recordSpy).toHaveBeenCalledTimes(1)
+        expect(recordSpy).toHaveBeenCalledWith({
+          meshId: moved.id,
+          pos: moved.absolutePosition.asArray()
+        })
+        expect(manager.getActiveZones()).toHaveLength(0)
+        expect(manager.inProgress).toBe(false)
+        expect(drops).toHaveLength(0)
+      })
+
+      it('drops moved mesh to active target', async () => {
+        const deltaX = 2.050389051437378
+        const deltaZ = -0.8877299800515175
+        manager.continue({ x: centerX + 50, y: centerY + 20 })
+        expect(manager.getActiveZones()).toHaveLength(1)
+        expectZoneForMeshes(targets[0].id, [moved])
+
+        await manager.stop()
+        expectPosition(moved, [
+          1 + deltaX,
+          moved.absolutePosition.y,
+          1 + deltaZ
+        ])
+        expect(recordSpy).toHaveBeenCalledTimes(1)
+        expect(recordSpy).toHaveBeenCalledWith({
+          meshId: moved.id,
+          pos: moved.absolutePosition.asArray()
+        })
+        expect(manager.getActiveZones()).toHaveLength(0)
+        expect(manager.inProgress).toBe(false)
+        expect(drops).toHaveLength(1)
+        expectDroppedEvent(0, targets[0], [moved])
+      })
+
+      it('disables other operations', async () => {
+        await manager.stop()
+        manager.continue()
+        await manager.stop()
+        expectPosition(moved, [1, getHeight(moved) / 2, 1])
+        expect(recordSpy).toHaveBeenCalledTimes(1)
+        expect(recordSpy).toHaveBeenCalledWith({
+          meshId: moved.id,
+          pos: moved.absolutePosition.asArray()
+        })
+        expect(manager.inProgress).toBe(false)
+        expect(drops).toHaveLength(0)
+        expect(manager.getActiveZones()).toHaveLength(0)
+      })
     })
   })
 
-  describe('continue()', () => {
+  describe('given active selection', () => {
     let moved
     let targets
 
@@ -259,161 +277,157 @@ describe('MoveManager', () => {
         createsTarget(1, new Vector3(3, 0, 0)),
         createsTarget(2, new Vector3(-1, 0, -4.1))
       ]
-      manager.start(moved[0], { x: centerX, y: centerY })
-      recordSpy.mockReset()
     })
 
-    it('moves entire selection, ordered by elevation', () => {
-      const deltaX = 2.029703140258789
-      const deltaZ = -2.196934700012207
-
-      manager.continue({ x: centerX + 50, y: centerY + 50 })
-      expectPosition(moved[0], [1 + deltaX, 1 + manager.elevation, 1 + deltaZ])
-      expectPosition(moved[1], [deltaX, 5 + manager.elevation, deltaZ])
-      expectPosition(moved[2], [-3 + deltaX, manager.elevation, -3 + deltaZ])
-      expect(recordSpy).toHaveBeenCalledTimes(moved.length)
-      expect(recordSpy).toHaveBeenNthCalledWith(1, {
-        meshId: moved[2].id,
-        pos: moved[2].absolutePosition.asArray()
+    describe('start()', () => {
+      it('elevates entire selection', () => {
+        manager.start(moved[1], { x: centerX, y: centerY })
+        expectPosition(moved[0], [1, 1 + manager.elevation, 1])
+        expectPosition(moved[1], [0, 5 + manager.elevation, 0])
+        expectPosition(moved[2], [-3, manager.elevation, -3])
+        expect(recordSpy).toHaveBeenCalledTimes(moved.length)
+        expect(recordSpy).toHaveBeenNthCalledWith(1, {
+          meshId: moved[2].id,
+          pos: moved[2].absolutePosition.asArray()
+        })
+        expect(recordSpy).toHaveBeenNthCalledWith(2, {
+          meshId: moved[0].id,
+          pos: moved[0].absolutePosition.asArray()
+        })
+        expect(recordSpy).toHaveBeenNthCalledWith(3, {
+          meshId: moved[1].id,
+          pos: moved[1].absolutePosition.asArray()
+        })
+        expect(manager.getActiveZones()).toHaveLength(0)
       })
-      expect(recordSpy).toHaveBeenNthCalledWith(2, {
-        meshId: moved[0].id,
-        pos: moved[0].absolutePosition.asArray()
+    })
+
+    describe('continue()', () => {
+      beforeEach(() => {
+        manager.start(moved[0], { x: centerX, y: centerY })
+        recordSpy.mockReset()
       })
-      expect(recordSpy).toHaveBeenNthCalledWith(3, {
-        meshId: moved[1].id,
-        pos: moved[1].absolutePosition.asArray()
+
+      it('moves entire selection, ordered by elevation', () => {
+        const deltaX = 2.029703140258789
+        const deltaZ = -2.196934700012207
+
+        manager.continue({ x: centerX + 50, y: centerY + 50 })
+        expectPosition(moved[0], [
+          1 + deltaX,
+          1 + manager.elevation,
+          1 + deltaZ
+        ])
+        expectPosition(moved[1], [deltaX, 5 + manager.elevation, deltaZ])
+        expectPosition(moved[2], [-3 + deltaX, manager.elevation, -3 + deltaZ])
+        expect(recordSpy).toHaveBeenCalledTimes(moved.length)
+        expect(recordSpy).toHaveBeenNthCalledWith(1, {
+          meshId: moved[2].id,
+          pos: moved[2].absolutePosition.asArray()
+        })
+        expect(recordSpy).toHaveBeenNthCalledWith(2, {
+          meshId: moved[0].id,
+          pos: moved[0].absolutePosition.asArray()
+        })
+        expect(recordSpy).toHaveBeenNthCalledWith(3, {
+          meshId: moved[1].id,
+          pos: moved[1].absolutePosition.asArray()
+        })
+        expect(manager.getActiveZones()).toHaveLength(0)
       })
-      expect(manager.getActiveZones()).toHaveLength(0)
+
+      it('updates target for individual selected meshes', () => {
+        manager.continue({ x: centerX + 50, y: centerY + 20 })
+        expect(manager.getActiveZones()).toHaveLength(2)
+        expectZoneForMeshes(targets[0].id, [moved[0]])
+        expectZoneForMeshes(targets[1].id, [moved[2]])
+
+        manager.continue({ x: centerX + 50, y: centerY + 30 })
+        expect(manager.getActiveZones()).toHaveLength(1)
+        expectZoneForMeshes(targets[1].id, [moved[2]])
+      })
+
+      it('elevates entire selection on collision', () => {
+        const deltaX = 0.8257662057876587
+        const obstacle1 = CreateBox('obstacle1', { size: 2 })
+        obstacle1.setAbsolutePosition(1, 0.5, 1)
+        obstacle1.computeWorldMatrix()
+        const obstacle2 = CreateBox('obstacle2', { size: 2 })
+        obstacle2.setAbsolutePosition(-10, 0, -10)
+        obstacle2.computeWorldMatrix()
+
+        manager.continue({ x: centerX + 20, y: centerY })
+        expectPosition(moved[0], [
+          1 + deltaX,
+          getAltitudeOnCollision(moved[0], obstacle1),
+          1
+        ])
+        expectPosition(moved[1], [
+          deltaX,
+          getAltitudeOnCollision(moved[1], obstacle1),
+          0
+        ])
+        expectPosition(moved[2], [
+          -3 + deltaX,
+          getAltitudeOnCollision(moved[2], obstacle1),
+          -3
+        ])
+      })
+
+      it('does not checks collision within selection', () => {
+        moved[0].setAbsolutePosition(new Vector3(-2.5, manager.elevation, -2.5))
+        moved[0].computeWorldMatrix()
+        const deltaX = 2.029703140258789
+        const deltaZ = -2.196934700012207
+
+        manager.continue({ x: centerX + 50, y: centerY + 50 })
+        expectPosition(moved[0], [
+          -2.5 + deltaX,
+          manager.elevation,
+          -2.5 + deltaZ
+        ])
+        expectPosition(moved[1], [deltaX, 5 + manager.elevation, deltaZ])
+        expectPosition(moved[2], [-3 + deltaX, manager.elevation, -3 + deltaZ])
+      })
     })
 
-    it('updates target for individual selected meshes', () => {
-      manager.continue({ x: centerX + 50, y: centerY + 20 })
-      expect(manager.getActiveZones()).toHaveLength(2)
-      expectZoneForMeshes(targets[0].id, [moved[0]])
-      expectZoneForMeshes(targets[1].id, [moved[2]])
+    describe('stop()', () => {
+      beforeEach(() => {
+        manager.start(moved[0], { x: centerX, y: centerY })
+        recordSpy.mockReset()
+      })
 
-      manager.continue({ x: centerX + 50, y: centerY + 30 })
-      expect(manager.getActiveZones()).toHaveLength(1)
-      expectZoneForMeshes(targets[1].id, [moved[2]])
-    })
+      it('drops relevant meshes on their target and move others', async () => {
+        const deltaX = 2.050389051437378
+        const deltaZ = -0.8877299800515175
+        manager.continue({ x: centerX + 50, y: centerY + 20 })
+        expect(manager.getActiveZones()).toHaveLength(2)
+        expectZoneForMeshes(targets[0].id, [moved[0]])
+        expectZoneForMeshes(targets[1].id, [moved[2]])
 
-    it('elevates entire selection on collision', () => {
-      const deltaX = 0.8257662057876587
-      const obstacle1 = CreateBox('obstacle1', { size: 2 })
-      obstacle1.setAbsolutePosition(1, 0.5, 1)
-      obstacle1.computeWorldMatrix()
-      const obstacle2 = CreateBox('obstacle2', { size: 2 })
-      obstacle2.setAbsolutePosition(-10, 0, -10)
-      obstacle2.computeWorldMatrix()
-
-      manager.continue({ x: centerX + 20, y: centerY })
-      expectPosition(moved[0], [
-        1 + deltaX,
-        getAltitudeOnCollision(moved[0], obstacle1),
-        1
-      ])
-      expectPosition(moved[1], [
-        deltaX,
-        getAltitudeOnCollision(moved[1], obstacle1),
-        0
-      ])
-      expectPosition(moved[2], [
-        -3 + deltaX,
-        getAltitudeOnCollision(moved[2], obstacle1),
-        -3
-      ])
-    })
-
-    it('does not checks collision within selection', () => {
-      moved[0].setAbsolutePosition(new Vector3(-2.5, manager.elevation, -2.5))
-      moved[0].computeWorldMatrix()
-      const deltaX = 2.029703140258789
-      const deltaZ = -2.196934700012207
-
-      manager.continue({ x: centerX + 50, y: centerY + 50 })
-      expectPosition(moved[0], [
-        -2.5 + deltaX,
-        manager.elevation,
-        -2.5 + deltaZ
-      ])
-      expectPosition(moved[1], [deltaX, 5 + manager.elevation, deltaZ])
-      expectPosition(moved[2], [-3 + deltaX, manager.elevation, -3 + deltaZ])
+        await manager.stop()
+        expectPosition(moved[0], [
+          1 + deltaX,
+          moved[0].absolutePosition.y,
+          1 + deltaZ
+        ])
+        expectPosition(moved[1], [2, getHeight(moved[1]) / 2, -1])
+        expectPosition(moved[2], [
+          -3 + deltaX,
+          moved[2].absolutePosition.y,
+          -3 + deltaZ
+        ])
+        expect(manager.getActiveZones()).toHaveLength(0)
+        expect(manager.inProgress).toBe(false)
+        expect(drops).toHaveLength(2)
+        expectDroppedEvent(0, targets[1], [moved[2]])
+        expectDroppedEvent(1, targets[0], [moved[0]])
+      })
     })
   })
 
-  describe('stop()', () => {
+  describe('given parent and active selection', () => {
     let moved
-    let target
-
-    beforeAll(() => manager.init({ scene }))
-
-    beforeEach(() => {
-      moved = createsMovable()
-      target = createsTarget(1, new Vector3(3, 0, 0))
-      manager.start(moved, { x: centerX, y: centerY })
-      recordSpy.mockReset()
-    })
-
-    it('descends moved mesh', async () => {
-      await manager.stop()
-      expectPosition(moved, [1, getHeight(moved) / 2, 1])
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
-        meshId: moved.id,
-        pos: moved.absolutePosition.asArray()
-      })
-      expect(manager.getActiveZones()).toHaveLength(0)
-      expect(manager.inProgress).toBe(false)
-      expect(drops).toHaveLength(0)
-    })
-
-    it('drops moved mesh to active target', async () => {
-      const deltaX = 2.050389051437378
-      const deltaZ = -0.8877299800515175
-      manager.continue({ x: centerX + 50, y: centerY + 20 })
-      expect(manager.getActiveZones()).toHaveLength(1)
-      expectZoneForMeshes(target.id, [moved])
-
-      await manager.stop()
-      expectPosition(moved, [
-        1 + deltaX,
-        getAltitudeOnDrop(moved, target),
-        1 + deltaZ
-      ])
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
-        meshId: moved.id,
-        pos: moved.absolutePosition.asArray()
-      })
-      expect(manager.getActiveZones()).toHaveLength(0)
-      expect(manager.inProgress).toBe(false)
-      expect(drops).toHaveLength(1)
-      expect(drops[0]).toEqual({
-        zone: expect.objectContaining({ mesh: target }),
-        dropped: [moved]
-      })
-    })
-
-    it('disables other operations', async () => {
-      await manager.stop()
-      manager.continue()
-      await manager.stop()
-      expectPosition(moved, [1, getHeight(moved) / 2, 1])
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
-        meshId: moved.id,
-        pos: moved.absolutePosition.asArray()
-      })
-      expect(manager.inProgress).toBe(false)
-      expect(drops).toHaveLength(0)
-      expect(manager.getActiveZones()).toHaveLength(0)
-    })
-  })
-
-  describe('stop()', () => {
-    let moved
-    let targets
 
     beforeAll(() => manager.init({ scene }))
 
@@ -421,49 +435,53 @@ describe('MoveManager', () => {
       moved = [
         createsMovable(),
         createsMovable('box1', new Vector3(0, 5, 0)),
-        createsMovable('box2', new Vector3(-3, 1, -3))
+        createsMovable('box2', new Vector3(-3, 0, -3))
       ]
-      for (const mesh of moved) {
-        selectionManager.select(mesh)
-      }
-      targets = [
-        createsTarget(1, new Vector3(3, 0, 0)),
-        createsTarget(2, new Vector3(-1, 0, -4.1))
-      ]
-      manager.start(moved[0], { x: centerX, y: centerY })
-      recordSpy.mockReset()
+      moved[1].setParent(moved[0])
+      moved[2].setParent(moved[1])
+      selectionManager.select(moved[0])
+      selectionManager.select(moved[1])
     })
 
-    it('drops relevant meshes on their target and move others', async () => {
-      const deltaX = 2.050389051437378
-      const deltaZ = -0.8877299800515175
-      manager.continue({ x: centerX + 50, y: centerY + 20 })
-      expect(manager.getActiveZones()).toHaveLength(2)
-      expectZoneForMeshes(targets[0].id, [moved[0]])
-      expectZoneForMeshes(targets[1].id, [moved[2]])
-
-      await manager.stop()
-      expectPosition(moved[0], [
-        1 + deltaX,
-        getAltitudeOnDrop(moved[0], targets[0]),
-        1 + deltaZ
-      ])
-      expectPosition(moved[1], [2, getHeight(moved[1]) / 2, -1])
-      expectPosition(moved[2], [
-        -3 + deltaX,
-        getAltitudeOnDrop(moved[2], targets[1]),
-        -3 + deltaZ
-      ])
-      expect(manager.getActiveZones()).toHaveLength(0)
-      expect(manager.inProgress).toBe(false)
-      expect(drops).toHaveLength(2)
-      expect(drops[0]).toEqual({
-        zone: expect.objectContaining({ mesh: targets[0] }),
-        dropped: [moved[0]]
+    describe('start()', () => {
+      it('elevates unselected children mesh', () => {
+        manager.start(moved[1], { x: centerX, y: centerY })
+        expectPosition(moved[0], [1, 1 + manager.elevation, 1])
+        expectPosition(moved[1], [0, 5 + manager.elevation, 0])
+        expectPosition(moved[2], [-3, manager.elevation, -3])
+        expect(recordSpy).toHaveBeenCalledTimes(1)
+        expect(recordSpy).toHaveBeenNthCalledWith(1, {
+          meshId: moved[0].id,
+          pos: moved[0].absolutePosition.asArray()
+        })
+        expect(manager.getActiveZones()).toHaveLength(0)
       })
-      expect(drops[1]).toEqual({
-        zone: expect.objectContaining({ mesh: targets[1] }),
-        dropped: [moved[2]]
+    })
+
+    describe('continue()', () => {
+      beforeEach(() => {
+        manager.start(moved[1], { x: centerX, y: centerY })
+        recordSpy.mockReset()
+      })
+
+      it('moves selection and their children', () => {
+        const deltaX = 2.029703140258789
+        const deltaZ = -2.196934700012207
+
+        manager.continue({ x: centerX + 50, y: centerY + 50 })
+        expectPosition(moved[0], [
+          1 + deltaX,
+          1 + manager.elevation,
+          1 + deltaZ
+        ])
+        expectPosition(moved[1], [deltaX, 5 + manager.elevation, deltaZ])
+        expectPosition(moved[2], [-3 + deltaX, manager.elevation, -3 + deltaZ])
+        expect(recordSpy).toHaveBeenCalledTimes(1)
+        expect(recordSpy).toHaveBeenCalledWith({
+          meshId: moved[0].id,
+          pos: moved[0].absolutePosition.asArray()
+        })
+        expect(manager.getActiveZones()).toHaveLength(0)
       })
     })
   })
@@ -489,12 +507,19 @@ describe('MoveManager', () => {
     behavior.addZone(target, 0.5)
     return target
   }
+
+  function expectDroppedEvent(rank, target, moved) {
+    expect(drops[rank]?.zone.mesh.id).toEqual(target.id)
+    expect(getIds(drops[rank]?.dropped)).toEqual(getIds(moved))
+  }
 })
 
 function expectZoneForMeshes(targetId, meshes) {
   const zone = manager.getActiveZones().find(({ mesh }) => mesh.id === targetId)
   expect(zone).toBeDefined()
-  expect(targetManager.droppablesByDropZone.get(zone)).toEqual(meshes)
+  expect(getIds(targetManager.droppablesByDropZone.get(zone))).toEqual(
+    getIds(meshes)
+  )
 }
 
 function getAltitudeOnCollision(moved, obstacle) {
@@ -505,6 +530,6 @@ function getAltitudeOnCollision(moved, obstacle) {
   )
 }
 
-function getAltitudeOnDrop(moved, target) {
-  return target.getBoundingInfo().boundingBox.maximumWorld.y + getHeight(moved)
+function getIds(meshes = []) {
+  return meshes.map(({ id }) => id)
 }

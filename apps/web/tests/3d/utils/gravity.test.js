@@ -44,6 +44,10 @@ describe('sortByElevation() 3D utility', () => {
       boxes[2]
     ])
   })
+
+  it('handles no input', () => {
+    expect(sortByElevation()).toEqual([])
+  })
 })
 
 describe('applyGravity() 3D utility', () => {

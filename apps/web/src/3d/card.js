@@ -46,7 +46,7 @@ export function createCard({
   ],
   ...behaviorStates
 } = {}) {
-  const faces = CreatePlane(`${id}-plane`, {
+  const faces = CreatePlane(`plane-${id}`, {
     width,
     height: depth,
     frontUVs: Vector4.FromArray(faceUV[0]),

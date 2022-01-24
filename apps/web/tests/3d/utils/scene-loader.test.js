@@ -323,7 +323,7 @@ describe('loadMeshes() 3D utility', () => {
       })
     })
 
-    it('restores mesh stacks', () => {
+    it('restores mesh stacks with proper Y-ordering', () => {
       const card1 = {
         shape: 'card',
         id: 'card1',
@@ -332,16 +332,39 @@ describe('loadMeshes() 3D utility', () => {
           extent: 0.5,
           kinds: 'card',
           stackIds: ['card2', 'card4', 'card3']
-        }
+        },
+        movable: {}
+      }
+      const card5 = {
+        shape: 'card',
+        id: 'card5',
+        stackable: {
+          duration: 100,
+          extent: 0.5,
+          kinds: 'card',
+          stackIds: ['card6']
+        },
+        x: -5,
+        y: 2,
+        z: -5,
+        movable: {}
       }
       loadMeshes(engine, [
+        card5,
         card1,
-        { shape: 'card', id: 'card2', stackable: { stackIds: [] } },
-        { shape: 'card', id: 'card3' },
-        { shape: 'card', id: 'card4' }
+        {
+          shape: 'card',
+          id: 'card2',
+          stackable: { stackIds: [] },
+          movable: {}
+        },
+        { shape: 'card', id: 'card3', movable: {} },
+        { shape: 'card', id: 'card4', movable: {} },
+        { shape: 'card', id: 'card6', movable: {} }
       ])
-      expect(scene.getMeshById(card1.id)).toBeDefined()
-      expect(scene.getMeshById(card1.id).metadata.serialize()).toEqual({
+      const mesh1 = scene.getMeshById(card1.id)
+      expect(mesh1).not.toBeNull()
+      expect(mesh1.metadata.serialize()).toEqual({
         ...card1,
         depth: 4.25,
         height: 0.01,
@@ -352,7 +375,21 @@ describe('loadMeshes() 3D utility', () => {
         ],
         x: 0,
         y: 0,
-        z: 0
+        z: 0,
+        movable: { duration: 100, snapDistance: 0.25 }
+      })
+      const mesh5 = scene.getMeshById(card5.id)
+      expect(mesh5).not.toBeNull()
+      expect(mesh5.metadata.serialize()).toEqual({
+        ...card5,
+        depth: 4.25,
+        height: 0.01,
+        width: 3,
+        faceUV: [
+          [0.5, 1, 0, 0],
+          [0.5, 1, 1, 0]
+        ],
+        movable: { duration: 100, snapDistance: 0.25 }
       })
     })
 

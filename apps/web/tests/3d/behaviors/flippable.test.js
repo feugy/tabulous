@@ -1,7 +1,12 @@
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import faker from 'faker'
-import { configures3dTestEngine, expectPosition } from '../../test-utils'
+import {
+  configures3dTestEngine,
+  expectFlipped,
+  expectPickable,
+  expectPosition
+} from '../../test-utils'
 import { FlipBehavior, FlipBehaviorName } from '../../../src/3d/behaviors'
 import { controlManager } from '../../../src/3d/managers'
 
@@ -41,18 +46,15 @@ describe('FlipBehavior', () => {
   })
 
   it('can hydrate with default state', () => {
-    const behavior = new FlipBehavior()
-    const mesh = CreateBox('box', {})
-    mesh.addBehavior(behavior, true)
+    const behavior = createAttachedFlippable()
 
     behavior.fromState()
     expect(behavior.state).toEqual({
       isFlipped: false,
       duration: 500
     })
-    expect(behavior.mesh).toEqual(mesh)
-    expect(mesh.rotation.z).toEqual(0)
-    expect(mesh.metadata.isFlipped).toEqual(false)
+    expect(behavior.mesh.rotation.z).toEqual(0)
+    expect(behavior.mesh.metadata.isFlipped).toEqual(false)
   })
 
   describe('given attached to a mesh', () => {
@@ -60,9 +62,8 @@ describe('FlipBehavior', () => {
     let behavior
 
     beforeEach(() => {
-      behavior = new FlipBehavior({ duration: 50 })
-      mesh = CreateBox('box', {})
-      mesh.addBehavior(behavior, true)
+      behavior = createAttachedFlippable({ duration: 50 })
+      mesh = behavior.mesh
     })
 
     it('attaches metadata to its mesh', () => {
@@ -81,7 +82,7 @@ describe('FlipBehavior', () => {
       behavior.fromState(state)
       expect(behavior.state).toEqual(state)
       expect(behavior.mesh).toEqual(mesh)
-      expectFlipped()
+      expectFlipped(mesh)
     })
 
     it('flips mesh clockwise and apply gravity', async () => {
@@ -89,9 +90,9 @@ describe('FlipBehavior', () => {
       const z = faker.datatype.number()
       mesh.setAbsolutePosition(new Vector3(x, 10, z))
 
-      expectFlipped(false)
+      expectFlipped(mesh, false)
       await mesh.metadata.flip()
-      expectFlipped()
+      expectFlipped(mesh)
       expectPosition(mesh, [x, 0.5, z])
     })
 
@@ -101,25 +102,58 @@ describe('FlipBehavior', () => {
       mesh.rotation.y = 1.5 * Math.PI
       mesh.setAbsolutePosition(new Vector3(x, 10, z))
 
-      expectFlipped(false)
+      expectFlipped(mesh, false)
       await mesh.metadata.flip()
-      expectFlipped()
+      expectFlipped(mesh)
       expectPosition(mesh, [x, 0.5, z])
     })
 
+    describe('given parent and children', () => {
+      let child
+      let granChild
+
+      beforeEach(() => {
+        child = createAttachedFlippable().mesh
+        child.setParent(mesh)
+        granChild = createAttachedFlippable().mesh
+        granChild.setParent(child)
+      })
+
+      it('flips mesh independently from its children', async () => {
+        await mesh.metadata.flip()
+        expectFlipped(mesh)
+        expectFlipped(child, false)
+        expectFlipped(granChild, false)
+      })
+
+      it('flips mesh independently from its parent', async () => {
+        await child.metadata.flip()
+        expectFlipped(mesh, false)
+        expectFlipped(child)
+        expectFlipped(granChild, false)
+      })
+
+      it('flips multiple dependent meshes', async () => {
+        await Promise.all([mesh.metadata.flip(), child.metadata.flip()])
+        expectFlipped(mesh)
+        expectFlipped(child)
+        expectFlipped(granChild, false)
+      })
+    })
+
     it('makes mesh unpickable while flipping', async () => {
-      expectPickable()
-      expectFlipped(false)
+      expectPickable(mesh)
+      expectFlipped(mesh, false)
       const flipPromise = mesh.metadata.flip()
-      expectPickable(false)
+      expectPickable(mesh, false)
       await flipPromise
 
-      expectPickable()
-      expectFlipped()
+      expectPickable(mesh)
+      expectFlipped(mesh)
     })
 
     it('records flips to controlManager', async () => {
-      expectFlipped(false)
+      expectFlipped(mesh, false)
       expect(recordSpy).toHaveBeenCalledTimes(0)
       await mesh.metadata.flip()
       expect(recordSpy).toHaveBeenCalledTimes(1)
@@ -127,7 +161,7 @@ describe('FlipBehavior', () => {
         meshId: mesh.id,
         fn: 'flip'
       })
-      expectFlipped()
+      expectFlipped(mesh)
 
       await mesh.metadata.flip()
       expect(recordSpy).toHaveBeenCalledTimes(2)
@@ -135,53 +169,47 @@ describe('FlipBehavior', () => {
         meshId: mesh.id,
         fn: 'flip'
       })
-      expectFlipped(false)
+      expectFlipped(mesh, false)
     })
 
     it('flips mesh with initial rotation', async () => {
-      const initialRotation = Math.PI * 0.5
+      const initialRotation = Math.PI * -0.5
       mesh.rotation.z = initialRotation
-      expectFlipped(false, initialRotation)
+      expectFlipped(mesh, false, initialRotation)
       await mesh.metadata.flip()
-      expectFlipped(true, initialRotation)
+      expectFlipped(mesh, true, initialRotation)
     })
 
     it('keeps rotation within [0..2*Math.PI[', async () => {
-      expectFlipped(false)
+      expectFlipped(mesh, false)
       await mesh.metadata.flip()
       await mesh.metadata.flip()
       await mesh.metadata.flip()
-      expectFlipped()
+      expectFlipped(mesh)
 
       mesh.rotation.z = Math.PI * -0.5
       await mesh.metadata.flip()
-      expectFlipped(false, Math.PI * 0.5)
+      expectFlipped(mesh, false, Math.PI * 0.5)
     })
 
     it('can not flip while animating', async () => {
-      expectPickable()
-      expectFlipped(false)
+      expectPickable(mesh)
+      expectFlipped(mesh, false)
       const promise = mesh.metadata.flip()
-      expectPickable(false)
+      expectPickable(mesh, false)
       await mesh.metadata.flip()
       await promise
 
-      expectPickable()
-      expectFlipped()
+      expectPickable(mesh)
+      expectFlipped(mesh)
       expect(recordSpy).toHaveBeenCalledTimes(1)
     })
-
-    function expectFlipped(isFlipped = true, initialRotation = 0) {
-      expect(mesh.metadata.isFlipped).toBe(isFlipped)
-      expect(behavior.state.isFlipped).toBe(isFlipped)
-      expect(mesh.rotation.z).toEqual(
-        initialRotation + (isFlipped ? Math.PI : 0)
-      )
-    }
-
-    function expectPickable(isPickable = true) {
-      expect(mesh.isPickable).toBe(isPickable)
-      expect(behavior.isAnimated).toBe(!isPickable)
-    }
   })
 })
+
+function createAttachedFlippable(state) {
+  const behavior = new FlipBehavior(state)
+  const mesh = CreateBox('box', {})
+  mesh.addBehavior(behavior, true)
+  return behavior
+}

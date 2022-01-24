@@ -84,6 +84,7 @@ export class FlipBehavior extends AnimateBehavior {
 
     controlManager.record({ meshId: mesh.id, fn: 'flip' })
 
+    const attach = detach(mesh)
     const to = mesh.position.clone()
     const [min, max] = mesh.getBoundingInfo().boundingBox.vectorsWorld
     const width = Math.abs(min.x - max.x)
@@ -130,6 +131,7 @@ export class FlipBehavior extends AnimateBehavior {
             logger.debug({ mesh }, `end flipping ${mesh.id}`)
             // framed animation may not exactly end where we want, so force the final position
             mesh.position.copyFrom(to)
+            attach()
             applyGravity(mesh)
             mesh.isPickable = true
             resolve()
@@ -153,5 +155,34 @@ export class FlipBehavior extends AnimateBehavior {
     }
     this.mesh.metadata.flip = this.flip.bind(this)
     this.mesh.metadata.isFlipped = this.state.isFlipped
+  }
+}
+
+function detach(mesh) {
+  let parent = mesh.parent
+  mesh.setParent(null)
+
+  const savedSetter = mesh.setParent.bind(mesh)
+  mesh.setParent = newParent => {
+    parent = newParent
+  }
+
+  const children = mesh.getChildMeshes(
+    true,
+    ({ name }) =>
+      !name.startsWith('plane-') &&
+      !name.startsWith('drop-') &&
+      !name.startsWith('anchor-')
+  )
+  for (const child of children) {
+    child.setParent(null)
+  }
+
+  return () => {
+    mesh.setParent = savedSetter
+    mesh.setParent(parent)
+    for (const child of children) {
+      child.setParent(mesh)
+    }
   }
 }

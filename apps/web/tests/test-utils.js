@@ -1,13 +1,19 @@
 import { Scene } from '@babylonjs/core/scene'
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera'
 import { NullEngine } from '@babylonjs/core/Engines/nullEngine'
-import { Vector3 } from '@babylonjs/core/Maths/math.vector'
+import { Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector'
+import { Logger } from '@babylonjs/core/Misc/logger'
 import { appendFileSync, rmSync } from 'fs'
 import { get } from 'svelte/store'
 import { _ } from 'svelte-intl'
 import { inspect } from 'util'
-import { AnchorBehaviorName } from '../src/3d/behaviors/names'
+import { getAnimatableBehavior } from '../src/3d/utils/behaviors'
 import { computeYAbove } from '../src/3d/utils/gravity'
+import {
+  AnchorBehaviorName,
+  FlipBehaviorName,
+  RotateBehaviorName
+} from '../src/3d/behaviors/names'
 // mandatory side effects
 import '@babylonjs/core/Animations/animatable'
 import '@babylonjs/core/Rendering/edgesRenderer'
@@ -30,7 +36,7 @@ export function extractText(nodes) {
 export function initialize3dEngine(
   engineProps = { renderWidth: 2048, renderHeight: 1024 }
 ) {
-  jest.spyOn(console, 'log').mockImplementationOnce(() => {})
+  Logger.LogLevels = Logger.NoneLogLevel
   const engine = new NullEngine(engineProps)
   const scene = new Scene(engine)
   const camera = new ArcRotateCamera(
@@ -111,7 +117,33 @@ export function expectUnsnapped(mesh, snapped, anchorRank = 0) {
   expect(mesh.metadata.anchors[anchorRank].snappedId).not.toBeDefined()
 }
 
-export function expectZoneEnabled(mesh, rank, enabled = true) {
+export function expectZoneEnabled(mesh, rank = 0, enabled = true) {
   const behavior = mesh.getBehaviorByName(AnchorBehaviorName)
   expect(behavior.zones[rank]?.enabled).toBe(enabled)
+}
+
+export function expectPickable(mesh, isPickable = true) {
+  expect(mesh.isPickable).toBe(isPickable)
+  expect(getAnimatableBehavior(mesh)?.isAnimated).toBe(!isPickable)
+}
+
+export function expectFlipped(mesh, isFlipped = true, initialRotation = 0) {
+  expect(mesh.metadata.isFlipped).toBe(isFlipped)
+  expect(mesh.getBehaviorByName(FlipBehaviorName)?.state.isFlipped).toBe(
+    isFlipped
+  )
+  expectAbsoluteRotation(mesh, initialRotation + (isFlipped ? Math.PI : 0), 'z')
+}
+
+export function expectRotated(mesh, angle, absoluteAngle = angle) {
+  expect(mesh.metadata.angle).toBe(angle)
+  expect(mesh.getBehaviorByName(RotateBehaviorName).state.angle).toBe(angle)
+  expectAbsoluteRotation(mesh, absoluteAngle, 'y')
+}
+
+export function expectAbsoluteRotation(mesh, angle, axis) {
+  mesh.computeWorldMatrix(true)
+  const rotation = Quaternion.Identity()
+  mesh.getWorldMatrix().decompose(Vector3.Zero(), rotation, Vector3.Zero())
+  expect(rotation.toEulerAngles()[axis]).toBeCloseTo(angle)
 }

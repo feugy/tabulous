@@ -1,16 +1,8 @@
 # TODO
 
+- multi select stack + flip all + snap: sometimes issues
+
 ## Brittle tests
-
-- `AnchorBehavior › given attached to a mesh with zones › snaps dropped mesh`
-
-  > `expect(snapped.absolutePosition.x).toBeCloseTo(anchor.x ?? 0)`
-  > Presumably solved on Jan 14 by waiting longer for animation to finish
-
-- `isAbove() 3D utility › applies scaling when detecting hovered mesh`
-
-  > `expect(isAbove(box, box2, 2)).toBe(false)`
-  > Presumably solved on Jan 15 by reducing the scale factor
 
 - `InputManager › given an initialized manager() › handles multiple pointers taps`
 
@@ -26,6 +18,7 @@
 
 ## Refactor
 
+- rework remote moves: instead of sending individual positions, send drag start, move and stop (with selection)
 - rework target detection. Instead of using real mesh and rays use shapes overlap: each zone is a rectangle/circle on XZ plane, and the moved mesh another rectangle/circle. Check the center of the moved mesh
 - behavior should be managers, since they can be attached to multiple meshes
 - all manager managing a collection of behaviors should check their capabilities
@@ -305,6 +298,3 @@ STUN & TURN server:
 docker run -d --network=host coturn/coturn --external-ip=78.192.173.27 --relay-ip=192.168.1.45 -X -v -u tabulous:soulubat -a -f -r tabulous
 
 ```
-
-Anchor stick to the principle of "behave as in real life": acting on the anchor mesh does not impact any of the snapped mesh.
-Making snapped meshes children of the anchor makes it easy to move all at once, but creates undesirable side effect: flip and rotate also apply to all snap meshes, and when selecting all and applying flip/rotate, the snapped mesh perform the operation once with the anchor, and another time on their own.

@@ -27,6 +27,7 @@ export function createLight() {
   const shadowGenerator = new ShadowGenerator(1024, light)
   shadowGenerator.usePercentageCloserFiltering = true
 
+  /* istanbul ignore next */
   light
     .getScene()
     .onNewMeshAddedObservable.add(mesh =>

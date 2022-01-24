@@ -62,6 +62,12 @@ class MoveManager {
     const moved = selectionManager.meshes.has(mesh)
       ? [...selectionManager.meshes].filter(mesh => this.meshIds.has(mesh?.id))
       : [mesh]
+    const allMoved = [...moved]
+    for (const mesh of allMoved) {
+      if (allMoved.includes(mesh.parent)) {
+        moved.splice(moved.indexOf(mesh), 1)
+      }
+    }
     let lastPosition = screenToGround(this.scene, event)
     let zones = new Set()
     this.inProgress = true
@@ -72,7 +78,8 @@ class MoveManager {
     )
 
     for (const mesh of moved) {
-      mesh.absolutePosition.y += this.elevation
+      mesh.position.y += this.elevation
+      mesh.computeWorldMatrix()
       controlManager.record({
         meshId: mesh.id,
         pos: mesh.absolutePosition.asArray()
@@ -160,17 +167,20 @@ class MoveManager {
       if (moved.length === 0) return
 
       // trigger drop operation on all identified drop zones
-      const droppedIds = new Set()
+      const dropped = []
       for (const zone of zones) {
         const meshes = targetManager.dropOn(zone)
-        logger.info({ zone, meshes }, `completes move operation on target`)
+        logger.info(
+          { zone, meshes },
+          `completes move operation on target ${meshes.map(({ id }) => id)}`
+        )
         for (const mesh of meshes) {
-          droppedIds.add(mesh.id)
+          dropped.push(mesh)
         }
       }
       zones.clear()
       const nonDropped = sortByElevation(
-        moved.filter(mesh => !droppedIds.has(mesh.id))
+        moved.filter(mesh => !dropped.includes(mesh))
       )
       moved.splice(0, moved.length)
 
