@@ -69,6 +69,7 @@ import repositories from '../repositories/index.js'
  * @property {number} duration? - stack animations duration, in milliseconds.
  * @property {string[]} kinds? - acceptable meshe kinds, that could be stacked on top of this one. Leave undefined to accept all.
  * @property {number} extent? - dimension multiplier applied to the drop target.
+ * @property {number} priority? - priority applied when multiple targets with same altitude apply.
  */
 
 /**
@@ -87,6 +88,7 @@ import repositories from '../repositories/index.js'
  * @property {number} height? - anchor's height (Y axis).
  * @property {number} depth? - anchor's depth (Z axis).
  * @property {string[]} kinds? - acceptable meshe kinds, that could be snapped to the anchor. Leave undefined to accept all.
+ * @property {number} priority? - priority applied when multiple targets with same altitude apply.
  */
 
 /**

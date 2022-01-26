@@ -36,6 +36,7 @@ type StackableState {
   stackIds: [String]
   duration: Int
   extent: Float
+  priority: Float
   kinds: [String]
 }
 
@@ -51,6 +52,7 @@ type Anchor {
   width: Float
   height: Float
   depth: Float
+  priority: Float
   kinds: [String]
   snappedId: ID
 }
@@ -142,6 +144,7 @@ input StackableStateInput {
   stackIds: [String]
   duration: Int
   extent: Float
+  priority: Float
   kinds: [String]
 }
 
@@ -157,6 +160,7 @@ input AnchorInput {
   width: Float
   height: Float
   depth: Float
+  priority: Float
   kinds: [String]
   snappedId: ID
 }

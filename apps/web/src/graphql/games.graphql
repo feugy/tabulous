@@ -76,6 +76,7 @@ query loadGame($gameId: ID!) {
         duration
         extent
         kinds
+        priority
       }
       anchorable {
         anchors {
@@ -86,6 +87,7 @@ query loadGame($gameId: ID!) {
           height
           depth
           kinds
+          priority
           snappedId
         }
         duration

@@ -71,7 +71,7 @@ class TargetManager {
     for (const targetable of this.behaviors) {
       if (!excluded.includes(targetable.mesh)) {
         for (const zone of targetable.zones) {
-          const { enabled, mesh, extent, kinds } = zone
+          const { enabled, mesh, extent, kinds, priority } = zone
           if (
             enabled &&
             (!kinds || kinds.includes(kind)) &&
@@ -80,6 +80,7 @@ class TargetManager {
             candidates.push({
               targetable,
               zone,
+              priority,
               y: zone.mesh.absolutePosition.y
             })
           }
@@ -91,7 +92,9 @@ class TargetManager {
       `${candidates.length} candidate(s) found`
     )
     if (candidates.length > 0) {
-      candidates.sort((a, b) => b.y - a.y)
+      candidates.sort((a, b) =>
+        b.y === a.y ? b.priority - a.priority : b.y - a.y
+      )
       const [{ targetable, zone }] = candidates
       logger.info(
         { zone, dragged, kind },

@@ -2,7 +2,7 @@ import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { AnchorBehaviorName } from './names'
 import { TargetBehavior } from './targetable'
-import { animateMove, computeYAbove } from '../utils'
+import { animateMove } from '../utils'
 import { controlManager, inputManager, selectionManager } from '../managers'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
@@ -19,7 +19,8 @@ const logger = makeLogger(AnchorBehaviorName)
  * @property {number} width - anchor's width (X axis).
  * @property {number} height - anchor's height (Y axis).
  * @property {number} depth - anchor's depth (Z axis).
- * @property {string[]} kinds? - an array of allowed drag kinds
+ * @property {string[]} kinds? - an optional array of allowed drag kinds for this zone (allows all if not specified).
+ * @property {number} priority? - priority applied when multiple targets with same altitude apply.
  * @property {string} snappedId? - the currently snapped mesh id
  */
 
@@ -221,13 +222,13 @@ export class AnchorBehavior extends TargetBehavior {
     this.state = { anchors, duration }
     for (const [
       i,
-      { x, y, z, width, depth, height, kinds, snappedId }
+      { x, y, z, width, depth, height, kinds, priority, snappedId }
     ] of this.state.anchors.entries()) {
       const dropZone = CreateBox(`anchor-${i}`, { width, depth, height })
       dropZone.parent = this.mesh
       dropZone.position = new Vector3(x ?? 0, y ?? 0, z ?? 0)
       dropZone.computeWorldMatrix(true)
-      const zone = this.addZone(dropZone, 0.6, kinds)
+      const zone = this.addZone(dropZone, 0.6, kinds, true, priority)
       // relates the created zone with the anchor
       zone.anchorIndex = i
       if (snappedId) {
@@ -253,26 +254,39 @@ async function snapToAnchor(behavior, snappedId, zone, animate = true) {
   const snappedList = getMeshList(mesh.getScene(), snappedId)
 
   if (snappedList) {
+    const [snapped] = snappedList
     logger.info(
-      { mesh, snappedId, zone },
-      `snap ${snappedId} onto ${meshId}, zone ${zone.mesh.id}`
+      { mesh, snappedIds: snappedList.map(({ id }) => id), zone },
+      `snap ${snapped.id} onto ${meshId}, zone ${zone.mesh.id}`
     )
 
     // moves it to the final position
     const { x, z } = zone.mesh.getAbsolutePosition()
-    const position = new Vector3(x, computeYAbove(snappedList[0], zone.mesh), z)
     if (animate) {
       await Promise.all(
-        snappedList.map((mesh, i) =>
-          sleep(i * 1.5).then(() => animateMove(mesh, position, duration, true))
+        snappedList.map((snapped, i) =>
+          sleep(i * 1.5).then(() =>
+            animateMove(
+              snapped,
+              new Vector3(x, highest(snapped, mesh), z),
+              duration,
+              true
+            )
+          )
         )
       )
-      setAnchor(behavior, zone, snappedList[0], true)
+      setAnchor(behavior, zone, snapped, true)
     } else {
-      setAnchor(behavior, zone, snappedList[0], false)
-      snappedList.map(mesh => animateMove(mesh, position, 0, true))
+      setAnchor(behavior, zone, snapped, false)
+      snappedList.map(snapped =>
+        animateMove(snapped, new Vector3(x, highest(snapped, mesh), z), 0, true)
+      )
     }
   }
+}
+
+function highest(mesh, snapped) {
+  return Math.max(mesh.absolutePosition.y, snapped.absolutePosition.y) + 0.001
 }
 
 function unsnapAll(behavior, ids) {

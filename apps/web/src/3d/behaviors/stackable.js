@@ -23,7 +23,8 @@ const logger = makeLogger('stackable')
 /**
  * @typedef {object} StackableState behavior persistent state, including:
  * @property {string[]} stackIds - array of stacked mesh ids, not including the current mesh if alone.
- * @property {string[]} kinds? - an optional array of allowed drag kinds for this zone (allows all if not present).
+ * @property {string[]} kinds? - an optional array of allowed drag kinds for this zone (allows all if not specified).
+ * @property {number} priority? - priority applied when multiple targets with same altitude apply.
  * @property {number} [duration=100] - duration (in milliseconds) when pushing or shuffling individual meshes.
  * @property {number} [extent=0.6] - drop zone extent zone (1 means 100% size).
  */
@@ -313,6 +314,7 @@ export class StackBehavior extends TargetBehavior {
       duration: this._state.duration,
       extent: this._state.extent,
       kinds: this._state.kinds,
+      priority: this._state.priority,
       stackIds:
         this.base !== null || this.stack.length <= 1
           ? []
@@ -324,11 +326,18 @@ export class StackBehavior extends TargetBehavior {
    * Updates this behavior's state and mesh to match provided data.
    * @param {StackableState} state - state to update to.
    */
-  fromState({ stackIds = [], extent = 0.3, duration = 100, kinds } = {}) {
+  fromState({
+    stackIds = [],
+    extent = 0.3,
+    duration = 100,
+    kinds,
+    enabled,
+    priority
+  } = {}) {
     if (!this.mesh) {
       throw new Error('Can not restore state without mesh')
     }
-    this._state = { kinds, extent, duration }
+    this._state = { kinds, priority, extent, enabled, duration }
 
     this.stack = [this.mesh]
     // dispose previous drop zone
@@ -342,7 +351,13 @@ export class StackBehavior extends TargetBehavior {
         ? CreateCylinder('drop-zone', { diameter: x * 2, height: y * 2 })
         : CreateBox('drop-zone', { width: x * 2, height: y * 2, depth: z * 2 })
     dropZone.parent = this.mesh
-    this.addZone(dropZone, this._state.extent, this._state.kinds)
+    this.addZone(
+      dropZone,
+      this._state.extent,
+      this._state.kinds,
+      this._state.enabled,
+      this._state.priority
+    )
 
     this.inhibitControl = true
     for (const id of stackIds) {

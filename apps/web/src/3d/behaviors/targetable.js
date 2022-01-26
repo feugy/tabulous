@@ -9,6 +9,7 @@ import { targetManager } from '../managers'
  * @property {number} extend - units (in 3D coordinate) added to the zone's bounding box to determine.
  * @property {boolean} enabled - whether this zone is active or not.
  * @property {string[]} kinds? - an optional array of allowed drag kinds for this zone (allows all if not present).
+ * @property {number} priority? - priority applied when multiple targets with same altitude apply.
  */
 
 /**
@@ -78,12 +79,13 @@ export class TargetBehavior {
    * @param {number} extent - units (in 3D coordinate) added to the zone's bounding box to determine possible drops.
    * @param {string[]} kinds? - an optional array of allowed drag kinds for this zone.
    * @param {boolean} [enabled=true] - enables this zone.
+   * @param {number} [priority=0] - priority for this zone.
    * @returns {DropZone} the created zone.
    */
-  addZone(mesh, extent, kinds, enabled = true) {
+  addZone(mesh, extent, kinds, enabled = true, priority = 0) {
     mesh.visibility = 0
     mesh.isPickable = false
-    const zone = { mesh, extent, kinds, enabled, targetable: this }
+    const zone = { mesh, extent, kinds, enabled, targetable: this, priority }
     this.zones.push(zone)
     return zone
   }

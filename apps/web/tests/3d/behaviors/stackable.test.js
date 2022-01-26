@@ -111,11 +111,13 @@ describe('StackBehavior', () => {
       const extent = faker.datatype.number()
       const stackIds = [meshes[0].id, meshes[2].id]
       const duration = faker.datatype.number()
+      const kinds = ['card']
+      const priority = faker.datatype.number()
       expect(meshes[0].absolutePosition).toEqual(Vector3.FromArray([1, 1, 1]))
       expect(meshes[2].absolutePosition).toEqual(Vector3.FromArray([3, 3, 3]))
 
-      behavior.fromState({ duration, extent, stackIds })
-      expectZone(behavior, extent, false)
+      behavior.fromState({ duration, extent, stackIds, kinds, priority })
+      expectZone(behavior, extent, false, kinds, priority)
       expectStacked([mesh, meshes[0], meshes[2]])
       expect(behavior.state.duration).toEqual(duration)
       expect(behavior.state.extent).toEqual(extent)
@@ -398,10 +400,11 @@ describe('StackBehavior', () => {
   })
 })
 
-function expectZone(behavior, extent, enabled) {
+function expectZone(behavior, extent, enabled, kinds, priority = 0) {
   expect(behavior.zones).toHaveLength(1)
-  expect(behavior.zones[0]).toEqual(
-    expect.objectContaining({ extent, enabled })
-  )
+  expect(behavior.zones[0].extent).toEqual(extent)
+  expect(behavior.zones[0].enabled).toEqual(enabled)
+  expect(behavior.zones[0].kinds).toEqual(kinds)
+  expect(behavior.zones[0].priority).toEqual(priority)
   expect(behavior.zones[0].mesh?.parent?.id).toEqual(behavior.mesh.id)
 }

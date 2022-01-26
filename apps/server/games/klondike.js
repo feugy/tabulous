@@ -41,9 +41,8 @@ for (const suit of suits) {
       },
       anchorable: {
         anchors: [
-          // let stackable target take priority over anchors
-          { y: -0.001, z: -1, width, height, depth },
-          { y: -0.001, z: 1, width, height, depth }
+          { z: -1, width, height, depth },
+          { z: 1, width, height, depth }
         ]
       },
       movable: {
@@ -52,7 +51,9 @@ for (const suit of suits) {
       // use all defaults
       flippable: {},
       rotable: {},
-      stackable: {}
+      stackable: {
+        priority: 1
+      }
     })
   }
 }

@@ -141,14 +141,14 @@ describe('AnchorBehavior', () => {
         anchors: [
           { x: 1, y: 1, z: 0, width: 1, height: 2, depth: 0.5 },
           { x: -1, y: 1, z: 0, width: 2, height: 1, depth: 0.25 },
-          { width: 1, height: 1, depth: 1, kinds: ['cards'] }
+          { width: 1, height: 1, depth: 1, kinds: ['cards'], priority: 1 }
         ]
       })
       expect(behavior.state.duration).toEqual(duration)
       expect(behavior.state.anchors).toEqual([
         { x: 1, y: 1, z: 0, width: 1, height: 2, depth: 0.5 },
         { x: -1, y: 1, z: 0, width: 2, height: 1, depth: 0.25 },
-        { width: 1, height: 1, depth: 1, kinds: ['cards'] }
+        { width: 1, height: 1, depth: 1, kinds: ['cards'], priority: 1 }
       ])
       expect(mesh.metadata).toEqual(
         expect.objectContaining({
@@ -160,7 +160,7 @@ describe('AnchorBehavior', () => {
       expect(behavior.zones).toHaveLength(behavior.state.anchors.length)
       expectAnchor(0, behavior.state.anchors[0])
       expectAnchor(1, behavior.state.anchors[1])
-      expectAnchor(2, behavior.state.anchors[2], true, ['cards'])
+      expectAnchor(2, behavior.state.anchors[2], true, ['cards'], 1)
       expect(recordSpy).not.toHaveBeenCalled()
     })
 
@@ -597,12 +597,14 @@ describe('AnchorBehavior', () => {
       rank,
       { width, height, depth, x = 0, y = 0, z = 0 },
       isEnabled = true,
-      kinds = undefined
+      kinds = undefined,
+      priority = 0
     ) {
       const zone = behavior.zones[rank]
       expect(zone).toBeDefined()
       expectZoneEnabled(mesh, rank, isEnabled)
       expect(zone.kinds).toEqual(kinds)
+      expect(zone.priority).toEqual(priority)
       const { boundingBox } = zone.mesh.getBoundingInfo()
       expect(boundingBox.extendSize.x * 2).toEqual(width)
       expect(boundingBox.extendSize.y * 2).toEqual(height)

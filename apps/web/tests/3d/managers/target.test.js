@@ -123,10 +123,22 @@ describe('TargetManager', () => {
       expectActiveZone(manager.findDropZone(mesh, 'box'), zone2)
     })
 
-    it('returns highest target below mesh', () => {
-      createsTargetZone('target3', new Vector3(0, 0, 0))
+    it('returns highest target below mesh regardless of priorities', () => {
+      createsTargetZone('target3', new Vector3(0, 0, 0), 10)
       const zone4 = createsTargetZone('target4', new Vector3(0, 1, 0))
       createsTargetZone('target5', new Vector3(0, 0.5, 0))
+
+      const mesh = CreateBox('box', {})
+      mesh.setAbsolutePosition(new Vector3(0, 5, 0))
+      mesh.computeWorldMatrix()
+
+      expectActiveZone(manager.findDropZone(mesh, 'box'), zone4)
+    })
+
+    it('returns highest priority target below mesh', () => {
+      createsTargetZone('target3', new Vector3(0, 0, 0))
+      const zone4 = createsTargetZone('target4', new Vector3(0, 0, 0), 2)
+      createsTargetZone('target5', new Vector3(0, 0, 0), 1)
 
       const mesh = CreateBox('box', {})
       mesh.setAbsolutePosition(new Vector3(0, 5, 0))
@@ -190,7 +202,11 @@ describe('TargetManager', () => {
     })
   })
 
-  function createsTargetZone(id, position = new Vector3(0, 0, 0)) {
+  function createsTargetZone(
+    id,
+    position = new Vector3(0, 0, 0),
+    priority = undefined
+  ) {
     const targetable = CreateBox(`targetable-${id}`, {})
     targetable.isPickable = false
     const behavior = new TargetBehavior()
@@ -200,11 +216,11 @@ describe('TargetManager', () => {
     const target = CreateBox(id, {})
     target.setAbsolutePosition(position)
     target.computeWorldMatrix()
-    return behavior.addZone(target, 0.5)
+    return behavior.addZone(target, 0.5, undefined, undefined, priority)
   }
 
   function expectActiveZone(actual, expected) {
-    expect(actual).toEqual(expected)
+    expect(actual.mesh.id).toEqual(expected.mesh.id)
     expectVisibility(actual, true)
   }
 
