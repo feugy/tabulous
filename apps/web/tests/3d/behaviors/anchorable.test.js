@@ -3,6 +3,7 @@ import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
 import {
   configures3dTestEngine,
+  expectFlipped,
   expectPosition,
   expectRotated,
   expectSnapped,
@@ -15,6 +16,7 @@ import {
   AnchorBehavior,
   AnchorBehaviorName,
   AnimateBehavior,
+  FlipBehavior,
   RotateBehavior,
   StackBehavior
 } from '../../../src/3d/behaviors'
@@ -229,6 +231,36 @@ describe('AnchorBehavior', () => {
       expectAnchor(0, behavior.state.anchors[0], false)
       expectSnapped(mesh, meshes[0], 0)
       expect(behavior.getSnappedIds()).toEqual([meshes[0].id])
+      expect(recordSpy).not.toHaveBeenCalled()
+    })
+
+    it('snaps flippable meshes when hydrating', () => {
+      const snapped = meshes[0]
+      snapped.addBehavior(new FlipBehavior({ isFlipped: true }), true)
+      expectFlipped(snapped)
+
+      mesh.addBehavior(new FlipBehavior({ isFlipped: true }), true)
+      expectFlipped(mesh)
+      behavior.fromState({
+        anchors: [{ width: 1, height: 2, depth: 0.5, snappedId: snapped.id }]
+      })
+      expect(behavior.state.duration).toEqual(100)
+      expect(behavior.state.anchors).toEqual([
+        { width: 1, height: 2, depth: 0.5, snappedId: 'box1' }
+      ])
+      expect(mesh.metadata).toEqual(
+        expect.objectContaining({
+          anchors: behavior.state.anchors,
+          snap: expect.any(Function),
+          unsnap: expect.any(Function)
+        })
+      )
+      expect(behavior.zones).toHaveLength(behavior.state.anchors.length)
+      expectAnchor(0, behavior.state.anchors[0], false)
+      expectFlipped(mesh)
+      expectSnapped(mesh, snapped, 0)
+      expectFlipped(snapped)
+      expect(behavior.getSnappedIds()).toEqual([snapped.id])
       expect(recordSpy).not.toHaveBeenCalled()
     })
 

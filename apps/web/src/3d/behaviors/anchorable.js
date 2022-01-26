@@ -311,6 +311,7 @@ function setAnchor(behavior, zone, snapped, keepPosition) {
     snapped.setParent(mesh)
   } else {
     snapped.parent = mesh
+    snapped.rotation = Vector3.Zero()
     snapped.position = Vector3.Zero()
   }
   zoneBySnappedId.set(snapped.id, zone)

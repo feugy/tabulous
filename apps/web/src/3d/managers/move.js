@@ -78,7 +78,8 @@ class MoveManager {
     )
 
     for (const mesh of moved) {
-      mesh.position.y += this.elevation
+      const { x, y, z } = mesh.absolutePosition
+      mesh.setAbsolutePosition(new Vector3(x, y + this.elevation, z))
       mesh.computeWorldMatrix()
       controlManager.record({
         meshId: mesh.id,
