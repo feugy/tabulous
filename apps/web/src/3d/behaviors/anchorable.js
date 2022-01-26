@@ -44,6 +44,7 @@ export class AnchorBehavior extends TargetBehavior {
     // private
     this.dropObserver = null
     this.dragObserver = null
+    this.actionObserver = null
     this.zoneBySnappedId = new Map()
   }
 
@@ -86,12 +87,30 @@ export class AnchorBehavior extends TargetBehavior {
         )
       }
     })
+
+    this.actionObserver = controlManager.onActionObservable.add(
+      ({ meshId, fn, args }) => {
+        const zone = this.zoneBySnappedId.get(meshId)
+        if (zone && (fn === 'reorder' || fn === 'flipAll')) {
+          const scene = this.mesh.getScene()
+          const stack = getMeshList(scene, meshId)
+          const released = stack[0]
+          const snapped =
+            fn === 'flipAll'
+              ? stack.reverse()[0]
+              : stack.find(({ id }) => id === args[0][0])
+          unsetAnchor(this, zone, released)
+          setAnchor(this, zone, snapped, true)
+        }
+      }
+    )
   }
 
   /**
    * Detaches this behavior from its mesh.
    */
   detach() {
+    controlManager.onActionObservable.remove(this.actionObserver)
     inputManager.onDragObservable.remove(this.dragObserver)
     this.onDropObservable?.remove(this.dropObserver)
     super.detach()
@@ -180,7 +199,7 @@ export class AnchorBehavior extends TargetBehavior {
   /**
    * Returns the zone to which a given mesh is snapped
    * @param {string} meshId - id of the tested mesh
-   * @returns {Anchor | null} zone to which this mesh is snapped, if any
+   * @returns {import('./targetable').DropZone | null} zone to which this mesh is snapped, if any
    */
   snappedZone(meshId) {
     return this.zoneBySnappedId.get(meshId) ?? null
@@ -271,6 +290,7 @@ function setAnchor(behavior, zone, snapped, keepPosition) {
   if (!snapped.metadata) {
     snapped.metadata = {}
   }
+  // TODO: rename anchor to snappedToId
   snapped.metadata.anchor = mesh.id
 
   if (keepPosition) {
@@ -304,5 +324,5 @@ function getMeshList(scene, meshId) {
     return null
   }
   const stackable = mesh.getBehaviorByName(StackBehaviorName)
-  return stackable?.stack ?? [mesh]
+  return stackable?.stack ? [...stackable.stack] : [mesh]
 }

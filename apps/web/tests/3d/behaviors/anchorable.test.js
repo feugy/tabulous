@@ -6,6 +6,7 @@ import {
   expectPosition,
   expectRotated,
   expectSnapped,
+  expectStacked,
   expectUnsnapped,
   expectZoneEnabled,
   sleep
@@ -27,10 +28,11 @@ import { animateMove, computeYAbove } from '../../../src/3d/utils'
 describe('AnchorBehavior', () => {
   configures3dTestEngine()
 
-  const recordSpy = jest.spyOn(controlManager, 'record')
+  let recordSpy
 
   beforeEach(() => {
-    jest.resetAllMocks()
+    jest.clearAllMocks()
+    recordSpy = jest.spyOn(controlManager, 'record')
     selectionManager.clear()
   })
 
@@ -97,6 +99,7 @@ describe('AnchorBehavior', () => {
         const box = CreateBox(`box${rank + 1}`, {})
         box.addBehavior(new AnimateBehavior(), true)
         box.setAbsolutePosition(new Vector3(rank + 10, rank + 10, rank + 10))
+        controlManager.registerControlable(box)
         return box
       })
 
@@ -107,6 +110,7 @@ describe('AnchorBehavior', () => {
         ]
       })
       mesh.addBehavior(behavior, true)
+      controlManager.registerControlable(mesh)
     })
 
     it('attaches metadata to its mesh', () => {
@@ -359,6 +363,34 @@ describe('AnchorBehavior', () => {
       })
     })
 
+    it('updates snapped when reordering a stack', async () => {
+      const snapped = meshes[0]
+      const stacked = makeStack(snapped)
+      behavior.fromState({
+        anchors: [{ width: 1, height: 2, depth: 0.5, snappedId: snapped.id }]
+      })
+      expectSnapped(mesh, snapped, 0)
+      expectStacked([snapped, stacked])
+
+      await stacked.metadata.reorder([stacked.id, snapped.id])
+      expectStacked([stacked, snapped])
+      expectSnapped(mesh, stacked, 0)
+    })
+
+    it('updates snapped when flipping an entire stack', async () => {
+      const snapped = meshes[0]
+      const stacked = makeStack(snapped)
+      behavior.fromState({
+        anchors: [{ width: 1, height: 2, depth: 0.5, snappedId: snapped.id }]
+      })
+      expectSnapped(mesh, snapped, 0)
+      expectStacked([snapped, stacked])
+
+      await stacked.metadata.flipAll()
+      expectStacked([stacked, snapped])
+      expectSnapped(mesh, stacked, 0)
+    })
+
     it('does not snap on an busy anchor', async () => {
       const snapped = meshes[0]
       behavior.fromState({
@@ -584,6 +616,10 @@ function makeStack(mesh) {
   const stacked = CreateBox('stacked-box1', {})
   stacked.addBehavior(new AnimateBehavior(), true)
   stacked.addBehavior(new StackBehavior(), true)
-  mesh.addBehavior(new StackBehavior({ stackIds: [stacked.id] }), true)
+  const stackable = new StackBehavior()
+  mesh.addBehavior(stackable, true)
+  // TODO issue when using StackBehavior({ stackIds: [stacked.id] })
+  stackable.fromState({ stackIds: [stacked.id] })
+  controlManager.registerControlable(stacked)
   return stacked
 }

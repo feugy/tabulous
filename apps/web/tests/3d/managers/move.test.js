@@ -16,7 +16,7 @@ describe('MoveManager', () => {
   let scene
   const centerX = 1024
   const centerY = 512
-  const recordSpy = jest.spyOn(controlManager, 'record')
+  let recordSpy
   let drops
 
   configures3dTestEngine(created => {
@@ -24,7 +24,8 @@ describe('MoveManager', () => {
   })
 
   beforeEach(() => {
-    jest.resetAllMocks()
+    jest.clearAllMocks()
+    recordSpy = jest.spyOn(controlManager, 'record')
     createTable()
     drops = []
     selectionManager.clear()

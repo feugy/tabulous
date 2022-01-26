@@ -1,6 +1,6 @@
 # TODO
 
-- multi select stack + flip all + snap: sometimes issues
+- stackable: when building from state, enabledLast gets targetable behavior for current mesh, but it's not yet enabled, and zones are not disabled
 
 ## Brittle tests
 
@@ -20,7 +20,7 @@
 
 - rework remote moves: instead of sending individual positions, send drag start, move and stop (with selection)
 - rework target detection. Instead of using real mesh and rays use shapes overlap: each zone is a rectangle/circle on XZ plane, and the moved mesh another rectangle/circle. Check the center of the moved mesh
-- behavior should be managers, since they can be attached to multiple meshes
+- reconsider the behavior/manager split of responsibilities
 - all manager managing a collection of behaviors should check their capabilities
 - game-interaction unit tests
 - component, connected-component and routes rendering tests

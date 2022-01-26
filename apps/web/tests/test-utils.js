@@ -7,11 +7,15 @@ import { appendFileSync, rmSync } from 'fs'
 import { get } from 'svelte/store'
 import { _ } from 'svelte-intl'
 import { inspect } from 'util'
-import { getAnimatableBehavior } from '../src/3d/utils/behaviors'
+import {
+  getAnimatableBehavior,
+  getTargetableBehavior
+} from '../src/3d/utils/behaviors'
 import { computeYAbove } from '../src/3d/utils/gravity'
 import {
   AnchorBehaviorName,
   FlipBehaviorName,
+  MoveBehaviorName,
   RotateBehaviorName
 } from '../src/3d/behaviors/names'
 // mandatory side effects
@@ -97,10 +101,10 @@ export function expectSnapped(mesh, snapped, anchorRank = 0) {
   const behavior = mesh.getBehaviorByName(AnchorBehaviorName)
   const anchor = behavior.state.anchors[anchorRank]
   const zone = behavior.zones[anchorRank]
-  expectZoneEnabled(mesh, anchorRank, false)
-  expect(behavior.snappedZone(snapped.id)).toEqual(zone)
   expect(anchor.snappedId).toEqual(snapped.id)
   expect(mesh.metadata.anchors[anchorRank].snappedId).toEqual(snapped.id)
+  expectZoneEnabled(mesh, anchorRank, false)
+  expect(behavior.snappedZone(snapped.id)?.mesh.id).toEqual(zone.mesh.id)
   expectPosition(snapped, [
     zone.mesh.absolutePosition.x,
     computeYAbove(snapped, mesh),
@@ -146,4 +150,48 @@ export function expectAbsoluteRotation(mesh, angle, axis) {
   const rotation = Quaternion.Identity()
   mesh.getWorldMatrix().decompose(Vector3.Zero(), rotation, Vector3.Zero())
   expect(rotation.toEulerAngles()[axis]).toBeCloseTo(angle)
+}
+
+export function expectStacked(meshes) {
+  const ids = getIds(meshes.slice(1))
+  for (const [rank, mesh] of meshes.entries()) {
+    expect(getIds(mesh.metadata.stack)).toEqual(getIds(meshes))
+    if (rank === 0) {
+      expect(getTargetableBehavior(mesh).state.stackIds).toEqual(ids)
+    }
+    if (rank === meshes.length - 1) {
+      expectInteractible(mesh, true)
+    } else {
+      expectInteractible(mesh, false)
+      expectOnTop(meshes[rank + 1], mesh)
+    }
+  }
+}
+
+function getIds(meshes = []) {
+  return meshes.map(({ id }) => id)
+}
+
+function expectOnTop(meshAbove, meshBelow) {
+  expectPosition(meshAbove, [
+    meshBelow.absolutePosition.x,
+    computeYAbove(meshAbove, meshBelow),
+    meshBelow.absolutePosition.z
+  ])
+}
+
+export function expectInteractible(mesh, isInteractible = true) {
+  for (const zone of getTargetableBehavior(mesh).zones) {
+    expect(zone.enabled).toBe(isInteractible)
+  }
+  const movable = mesh.getBehaviorByName(MoveBehaviorName)
+  if (movable) {
+    expect(movable.enabled).toBe(isInteractible)
+  }
+  const anchorable = mesh.getBehaviorByName(AnchorBehaviorName)
+  if (anchorable) {
+    for (const zone of anchorable.zones) {
+      expect(zone.enabled).toBe(isInteractible)
+    }
+  }
 }

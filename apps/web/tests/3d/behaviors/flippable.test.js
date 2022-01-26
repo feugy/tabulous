@@ -13,9 +13,12 @@ import { controlManager } from '../../../src/3d/managers'
 describe('FlipBehavior', () => {
   configures3dTestEngine()
 
-  const recordSpy = jest.spyOn(controlManager, 'record')
+  let recordSpy
 
-  beforeEach(jest.resetAllMocks)
+  beforeEach(() => {
+    jest.clearAllMocks()
+    recordSpy = jest.spyOn(controlManager, 'record')
+  })
 
   it('has initial state', () => {
     const state = {
