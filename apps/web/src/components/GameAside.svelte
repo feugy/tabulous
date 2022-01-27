@@ -18,14 +18,14 @@
 
   $: avatars = connected?.length
     ? // current player should go first
-      [player, ...game?.players.filter(({ id }) => id !== player.id)].map(
-        (peer, i) => ({
-          player: peer,
-          controllable: i === 0,
-          stream: connected?.find(({ playerId }) => playerId === peer.id)
-            ?.stream
-        })
-      )
+      [
+        player,
+        ...(game?.players.filter(({ id }) => id !== player.id) ?? [])
+      ].map((peer, i) => ({
+        player: peer,
+        controllable: i === 0,
+        stream: connected?.find(({ playerId }) => playerId === peer.id)?.stream
+      }))
     : game?.players.length > 1
     ? // multiple player but none connected: remove current
       game.players
@@ -47,10 +47,9 @@
   }
 </script>
 
-<style type="postcss">
+<style lang="postcss">
   aside {
-    @apply absolute z-10 top-0 right-0 bottom-0;
-    background-color: theme('backgrounds.page');
+    @apply absolute z-10 top-0 right-0 bottom-0 bg-$base-lightest;
   }
 
   .content {
@@ -60,14 +59,6 @@
   .peers {
     @apply grid flex-1 gap-2 place-items-center grid-flow-col;
     grid-template-rows: repeat(auto-fit, minmax(150px, 1fr));
-  }
-
-  .thread {
-    @apply grid;
-  }
-
-  .help {
-    @apply h-full;
   }
 </style>
 

@@ -16,14 +16,12 @@
   })
 </script>
 
-<style type="postcss">
+<style lang="postcss">
   figure {
-    @apply flex absolute inset-0 justify-center pointer-events-none;
-    padding: 5% 0;
+    @apply flex absolute inset-0 justify-center pointer-events-none py-[5%] px-0;
 
     &.open {
-      @apply pointer-events-auto;
-      background-color: theme('backgrounds.backdrop');
+      @apply pointer-events-auto bg-$base-dark;
 
       & img {
         @apply opacity-100 translate-y-0;

@@ -3,9 +3,9 @@ import {
   defaultExchanges,
   subscriptionExchange
 } from '@urql/core'
+import { createClient as createWSClient } from 'graphql-ws'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
-import { SubscriptionClient } from 'subscriptions-transport-ws'
 import { pipe, subscribe } from 'wonka'
 import { makeLogger } from '../utils'
 
@@ -24,13 +24,17 @@ export function initGraphQLGlient(player) {
   const exchanges = [...defaultExchanges]
   if (player) {
     headers.authorization = `Bearer ${player.id}`
-    const wsClient = new SubscriptionClient(
-      `${location.origin.replace('http', 'ws')}/graphql`,
-      { reconnect: true, connectionParams: { bearer: player.id } }
-    )
+    const wsClient = new createWSClient({
+      url: `${location.origin.replace('http', 'ws')}/graphql`,
+      connectionParams: { bearer: player.id }
+    })
     exchanges.push(
       subscriptionExchange({
-        forwardSubscription: operation => wsClient.request(operation)
+        forwardSubscription: operation => ({
+          subscribe: sink => ({
+            unsubscribe: wsClient.subscribe(operation, sink)
+          })
+        })
       })
     )
   }

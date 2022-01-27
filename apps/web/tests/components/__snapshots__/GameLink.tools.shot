@@ -1,0 +1,101 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Toolshot components/GameLink.tools.svelte: Invited 1`] = `
+<span>
+  <article>
+    <span
+      class="title"
+    >
+      <h3>
+        Riichi Mahjong
+      </h3>
+       
+    </span>
+     
+    <span
+      class="created"
+    >
+      dim. 2, 9 PM (seconde: 3)
+    </span>
+     
+    <span
+      class="players"
+    >
+      avec Chandra, Timothé
+    </span>
+  </article>
+</span>
+`;
+
+exports[`Toolshot components/GameLink.tools.svelte: Owned 1`] = `
+<span>
+  <article>
+    <span
+      class="title"
+    >
+      <h3>
+        Riichi Mahjong
+      </h3>
+       
+      <button
+        class="secondary"
+      >
+        <span
+          class="material-icons"
+        >
+          delete
+        </span>
+        
+        
+        
+      </button>
+    </span>
+     
+    <span
+      class="created"
+    >
+      dim. 2, 9 PM (seconde: 3)
+    </span>
+     
+    <span
+      class="players"
+    >
+      avec Sarah, Timothé
+    </span>
+  </article>
+</span>
+`;
+
+exports[`Toolshot components/GameLink.tools.svelte: Single owned 1`] = `
+<span>
+  <article>
+    <span
+      class="title"
+    >
+      <h3>
+        Riichi Mahjong
+      </h3>
+       
+      <button
+        class="secondary"
+      >
+        <span
+          class="material-icons"
+        >
+          delete
+        </span>
+        
+        
+        
+      </button>
+    </span>
+     
+    <span
+      class="created"
+    >
+      dim. 2, 9 PM (seconde: 3)
+    </span>
+     
+  </article>
+</span>
+`;

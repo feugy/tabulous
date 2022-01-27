@@ -1,4 +1,5 @@
 import { Observable } from '@babylonjs/core/Misc/observable'
+import { TargetBehaviorName } from './names'
 import { targetManager } from '../managers'
 
 /**
@@ -6,7 +7,9 @@ import { targetManager } from '../managers'
  * @property {TargetBehavior} targetable - the enclosing targetable behavior.
  * @property {import('@babylonjs/core').Mesh} mesh - invisible, unpickable mesh acting as drop zone.
  * @property {number} extend - units (in 3D coordinate) added to the zone's bounding box to determine.
- * @property {string[]} kinds - array of allowed drag kinds for this zone.
+ * @property {boolean} enabled - whether this zone is active or not.
+ * @property {string[]} kinds? - an optional array of allowed drag kinds for this zone (allows all if not present).
+ * @property {number} priority? - priority applied when multiple targets with same altitude apply.
  */
 
 /**
@@ -23,7 +26,6 @@ export class TargetBehavior {
    * An observable emits every time one of the zone receives a drop.
    *
    * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
-   * @property {boolean} enabled - activity status (true by default).
    * @property {DropZone[]} zones - defined drop zones for this target.
    * @property {Observable<DropDetails>} onDropObservable - emits every time draggable meshes are dropped to one of the zones.
    *
@@ -32,7 +34,6 @@ export class TargetBehavior {
    */
   constructor() {
     this.mesh = null
-    this.enabled = true
     this.zones = []
     this.onDropObservable = new Observable()
   }
@@ -41,7 +42,7 @@ export class TargetBehavior {
    * @property {string} name - this behavior's constant name.
    */
   get name() {
-    return TargetBehavior.NAME
+    return TargetBehaviorName
   }
 
   /**
@@ -55,10 +56,8 @@ export class TargetBehavior {
    * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
    */
   attach(mesh) {
-    if (!this.mesh) {
-      this.mesh = mesh
-      targetManager.registerTargetable(this)
-    }
+    this.mesh = mesh
+    targetManager.registerTargetable(this)
   }
 
   /**
@@ -78,19 +77,29 @@ export class TargetBehavior {
    * Adds a new zone to this mesh, making it invisible and unpickable.
    * @param {import('@babylonjs/core').Mesh} mesh - invisible, unpickable mesh acting as drop zone.
    * @param {number} extent - units (in 3D coordinate) added to the zone's bounding box to determine possible drops.
-   * @param {string[]} (kinds=[]) - array of allowed drag kinds for this zone.
+   * @param {string[]} kinds? - an optional array of allowed drag kinds for this zone.
+   * @param {boolean} [enabled=true] - enables this zone.
+   * @param {number} [priority=0] - priority for this zone.
+   * @returns {DropZone} the created zone.
    */
-  addZone(mesh, extent, kinds = []) {
+  addZone(mesh, extent, kinds, enabled = true, priority = 0) {
     mesh.visibility = 0
     mesh.isPickable = false
-    this.zones.push({ mesh, extent, kinds, targetable: this })
+    const zone = { mesh, extent, kinds, enabled, targetable: this, priority }
+    this.zones.push(zone)
+    return zone
+  }
+
+  /**
+   * Removes an existing zone, disposing its mesh.
+   * Does nothing if no zone is bound to the given mesh id
+   * @param {DropZone} zone - removed zone mesh.
+   */
+  removeZone(zone) {
+    const idx = this.zones.indexOf(zone)
+    if (idx >= 0) {
+      const [{ mesh }] = this.zones.splice(idx, 1)
+      mesh.dispose()
+    }
   }
 }
-
-/**
- * Name of all targetable behaviors.
- * @static
- * @memberof TargetBehavior
- * @type {string}
- */
-TargetBehavior.NAME = 'targetable'

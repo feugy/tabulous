@@ -118,15 +118,8 @@ export function attachInputs({
             )
             mesh.metadata.detail?.()
             stackSize$.next(null)
-          } else if (kind === 'right') {
-            for (const mesh of meshes) {
-              logger.info(
-                { mesh, button, long, event },
-                `rotates mesh ${mesh.id}`
-              )
-              controlManager.apply({ meshId: mesh.id, fn: 'rotate' })
-            }
-          } else if (kind === 'left') {
+          } else if (kind === 'right' || kind === 'left') {
+            const fn = kind === 'right' ? 'rotate' : 'flip'
             const exclude = new Set()
             for (const mesh of meshes) {
               if (!exclude.has(mesh)) {
@@ -134,24 +127,24 @@ export function attachInputs({
                   mesh.metadata.stack?.length > 1 &&
                   mesh.metadata.stack.every(mesh => meshes.has(mesh))
                 ) {
-                  // when current selection contains all mesh of a stack, we should flip the entire stack
+                  // when current selection contains all mesh of a stack, we should action the entire stack
                   // use last one since other are not controllable
                   const last =
                     mesh.metadata.stack[mesh.metadata.stack.length - 1]
                   logger.info(
                     { mesh: last, button, long, event },
-                    `flips stack of ${last.id}`
+                    `${fn}s stack of ${last.id}`
                   )
-                  controlManager.apply({ meshId: last.id, fn: 'flipAll' })
+                  controlManager.apply({ meshId: last.id, fn: `${fn}All` })
                   for (const excluded of mesh.metadata.stack) {
                     exclude.add(excluded)
                   }
                 } else {
                   logger.info(
                     { mesh, button, long, event },
-                    `flips mesh ${mesh.id}`
+                    `${fn}s mesh ${mesh.id}`
                   )
-                  controlManager.apply({ meshId: mesh.id, fn: 'flip' })
+                  controlManager.apply({ meshId: mesh.id, fn })
                 }
               }
             }
@@ -241,7 +234,7 @@ export function attachInputs({
         } else if (type === 'dragStop') {
           if (selectionPosition) {
             logger.info({ button, long, pointers, event }, `selecting meshes`)
-            selectionManager.select()
+            selectionManager.selectWithinBox()
           } else if (mesh) {
             logger.info(
               { mesh, button, long, pointers, event },

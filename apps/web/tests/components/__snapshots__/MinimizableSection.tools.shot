@@ -1,0 +1,882 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Toolshot components/MinimizableSection.tools.svelte: Bottom 1`] = `
+<span>
+  <aside
+    class="bottom"
+  >
+    <section
+      aria-expanded="true"
+      aria-label="minimizable"
+      class="vertical"
+      style="height: auto;"
+    >
+      <menu
+        class="bottom vertical"
+      >
+        <ol
+          class="buttonContainer"
+          role="tablist"
+        >
+          <li>
+            <button
+              aria-selected="false"
+              role="tab"
+            >
+              <span
+                class="material-icons"
+              >
+                expand_more
+              </span>
+              
+              
+              
+            </button>
+             
+          </li>
+        </ol>
+         
+        <div
+          class="gutter"
+          role="scrollbar"
+        />
+      </menu>
+       
+      <span>
+        <div
+          class="discussion"
+        >
+          <div
+            class="messages"
+          >
+            <span
+              class="from"
+            >
+              Fernand Naudin
+            </span>
+            <span
+              class="message"
+            >
+              Qu'est-ce qui se passe encore ?
+            </span>
+            <span
+              class="from"
+            >
+              Maître Folage
+            </span>
+            <span
+              class="message"
+            >
+              Notre ami va se faire un plaisir de vous l'expliquer.
+            </span>
+            <span
+              class="from"
+            >
+              Pascal
+            </span>
+            <span
+              class="message"
+            >
+              Les Volfoni ont organisé à la péniche une petite réunion des cadres, façon meeting, si vous voyez ce que je veux dire.
+M'enfin quoi, on parle dans votre dos.
+            </span>
+            <span
+              class="from"
+            >
+              Fernand Naudin
+            </span>
+            <span
+              class="message"
+            >
+              Et tu tiens ça d'où ?
+            </span>
+            <span
+              class="from"
+            >
+              Pascal
+            </span>
+            <span
+              class="message"
+            >
+              Je ne peux pas le dire, j'ai promis. Ce serait mal.
+            </span>
+            <span
+              class="from"
+            >
+              Fernand Naudin
+            </span>
+            <span
+              class="message"
+            >
+              Alors ?
+            </span>
+            <span
+              class="from"
+            >
+              Maître Folage
+            </span>
+            <span
+              class="message"
+            >
+              Eh bien. Euh. Y'a deux solutions : ou on se dérange, ou on méprise. 
+Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire, bien sûr.
+            </span>
+            <span
+              class="from"
+            >
+              Fernand Naudin
+            </span>
+            <span
+              class="message"
+            >
+              Bon, on va y aller, hmm ?
+            </span>
+            <span
+              class="from"
+            >
+              Pascal
+            </span>
+            <span
+              class="message"
+            >
+              Monsieur Fernand, y'a peut-être une place pour moi dans votre auto. Des fois que la réunion devienne houleuse ... J'ai une présence tranquillisante.
+            </span>
+          </div>
+           
+          <form>
+            <fieldset>
+               
+              <input />
+            </fieldset>
+             
+            <button
+              disabled=""
+              title="Envoyer à tous"
+              type="submit"
+            >
+              <span
+                class="material-icons"
+              >
+                send
+              </span>
+              
+              
+              
+            </button>
+          </form>
+        </div>
+         
+        
+      </span>
+    </section>
+  </aside>
+</span>
+`;
+
+exports[`Toolshot components/MinimizableSection.tools.svelte: Left 1`] = `
+<span>
+  <aside
+    class="left"
+  >
+    <section
+      aria-expanded="true"
+      aria-label="minimizable"
+      style="width: auto;"
+    >
+      <menu
+        class="left"
+      >
+        <ol
+          class="buttonContainer"
+          role="tablist"
+        >
+          <li>
+            <button
+              aria-selected="false"
+              role="tab"
+            >
+              <span
+                class="material-icons"
+              >
+                navigate_before
+              </span>
+              
+              
+              
+            </button>
+             
+          </li>
+        </ol>
+         
+        <div
+          class="gutter"
+          role="scrollbar"
+        />
+      </menu>
+       
+      <span>
+        <div
+          class="discussion"
+        >
+          <div
+            class="messages"
+          >
+            <span
+              class="from"
+            >
+              Fernand Naudin
+            </span>
+            <span
+              class="message"
+            >
+              Qu'est-ce qui se passe encore ?
+            </span>
+            <span
+              class="from"
+            >
+              Maître Folage
+            </span>
+            <span
+              class="message"
+            >
+              Notre ami va se faire un plaisir de vous l'expliquer.
+            </span>
+            <span
+              class="from"
+            >
+              Pascal
+            </span>
+            <span
+              class="message"
+            >
+              Les Volfoni ont organisé à la péniche une petite réunion des cadres, façon meeting, si vous voyez ce que je veux dire.
+M'enfin quoi, on parle dans votre dos.
+            </span>
+            <span
+              class="from"
+            >
+              Fernand Naudin
+            </span>
+            <span
+              class="message"
+            >
+              Et tu tiens ça d'où ?
+            </span>
+            <span
+              class="from"
+            >
+              Pascal
+            </span>
+            <span
+              class="message"
+            >
+              Je ne peux pas le dire, j'ai promis. Ce serait mal.
+            </span>
+            <span
+              class="from"
+            >
+              Fernand Naudin
+            </span>
+            <span
+              class="message"
+            >
+              Alors ?
+            </span>
+            <span
+              class="from"
+            >
+              Maître Folage
+            </span>
+            <span
+              class="message"
+            >
+              Eh bien. Euh. Y'a deux solutions : ou on se dérange, ou on méprise. 
+Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire, bien sûr.
+            </span>
+            <span
+              class="from"
+            >
+              Fernand Naudin
+            </span>
+            <span
+              class="message"
+            >
+              Bon, on va y aller, hmm ?
+            </span>
+            <span
+              class="from"
+            >
+              Pascal
+            </span>
+            <span
+              class="message"
+            >
+              Monsieur Fernand, y'a peut-être une place pour moi dans votre auto. Des fois que la réunion devienne houleuse ... J'ai une présence tranquillisante.
+            </span>
+          </div>
+           
+          <form>
+            <fieldset>
+               
+              <input />
+            </fieldset>
+             
+            <button
+              disabled=""
+              title="Envoyer à tous"
+              type="submit"
+            >
+              <span
+                class="material-icons"
+              >
+                send
+              </span>
+              
+              
+              
+            </button>
+          </form>
+        </div>
+         
+        
+      </span>
+    </section>
+  </aside>
+</span>
+`;
+
+exports[`Toolshot components/MinimizableSection.tools.svelte: Multiple, custom tabs 1`] = `
+<span>
+  <aside
+    class="bottom"
+  >
+    <section
+      aria-expanded="false"
+      aria-label="minimizable"
+      class="minimized vertical"
+      style="height: auto;"
+    >
+      <menu
+        class="bottom vertical"
+      >
+        <ol
+          class="buttonContainer"
+          role="tablist"
+        >
+          <li
+            class="active"
+          >
+            <button
+              aria-selected="true"
+              role="tab"
+            >
+              <span
+                class="material-icons"
+              >
+                question_answer
+              </span>
+              
+              
+              
+            </button>
+             
+          </li>
+          <li>
+            <button
+              aria-selected="false"
+              role="tab"
+            >
+              <span
+                class="material-icons"
+              >
+                help
+              </span>
+              
+              
+              
+            </button>
+             
+          </li>
+        </ol>
+         
+        <div
+          class="gutter"
+          role="scrollbar"
+        />
+      </menu>
+       
+      <span>
+        <div
+          class="discussion"
+        >
+          <div
+            class="messages"
+          >
+            <span
+              class="from"
+            >
+              Fernand Naudin
+            </span>
+            <span
+              class="message"
+            >
+              Qu'est-ce qui se passe encore ?
+            </span>
+            <span
+              class="from"
+            >
+              Maître Folage
+            </span>
+            <span
+              class="message"
+            >
+              Notre ami va se faire un plaisir de vous l'expliquer.
+            </span>
+            <span
+              class="from"
+            >
+              Pascal
+            </span>
+            <span
+              class="message"
+            >
+              Les Volfoni ont organisé à la péniche une petite réunion des cadres, façon meeting, si vous voyez ce que je veux dire.
+M'enfin quoi, on parle dans votre dos.
+            </span>
+            <span
+              class="from"
+            >
+              Fernand Naudin
+            </span>
+            <span
+              class="message"
+            >
+              Et tu tiens ça d'où ?
+            </span>
+            <span
+              class="from"
+            >
+              Pascal
+            </span>
+            <span
+              class="message"
+            >
+              Je ne peux pas le dire, j'ai promis. Ce serait mal.
+            </span>
+            <span
+              class="from"
+            >
+              Fernand Naudin
+            </span>
+            <span
+              class="message"
+            >
+              Alors ?
+            </span>
+            <span
+              class="from"
+            >
+              Maître Folage
+            </span>
+            <span
+              class="message"
+            >
+              Eh bien. Euh. Y'a deux solutions : ou on se dérange, ou on méprise. 
+Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire, bien sûr.
+            </span>
+            <span
+              class="from"
+            >
+              Fernand Naudin
+            </span>
+            <span
+              class="message"
+            >
+              Bon, on va y aller, hmm ?
+            </span>
+            <span
+              class="from"
+            >
+              Pascal
+            </span>
+            <span
+              class="message"
+            >
+              Monsieur Fernand, y'a peut-être une place pour moi dans votre auto. Des fois que la réunion devienne houleuse ... J'ai une présence tranquillisante.
+            </span>
+          </div>
+           
+          <form>
+            <fieldset>
+               
+              <input />
+            </fieldset>
+             
+            <button
+              disabled=""
+              title="Envoyer à tous"
+              type="submit"
+            >
+              <span
+                class="material-icons"
+              >
+                send
+              </span>
+              
+              
+              
+            </button>
+          </form>
+        </div>
+         
+        
+      </span>
+    </section>
+  </aside>
+</span>
+`;
+
+exports[`Toolshot components/MinimizableSection.tools.svelte: Right 1`] = `
+<span>
+  <aside
+    class="right"
+  >
+    <section
+      aria-expanded="true"
+      aria-label="minimizable"
+      style="width: auto;"
+    >
+      <menu
+        class="right"
+      >
+        <ol
+          class="buttonContainer"
+          role="tablist"
+        >
+          <li>
+            <button
+              aria-selected="false"
+              role="tab"
+            >
+              <span
+                class="material-icons"
+              >
+                navigate_next
+              </span>
+              
+              
+              
+            </button>
+             
+          </li>
+        </ol>
+         
+        <div
+          class="gutter"
+          role="scrollbar"
+        />
+      </menu>
+       
+      <span>
+        <div
+          class="discussion"
+        >
+          <div
+            class="messages"
+          >
+            <span
+              class="from"
+            >
+              Fernand Naudin
+            </span>
+            <span
+              class="message"
+            >
+              Qu'est-ce qui se passe encore ?
+            </span>
+            <span
+              class="from"
+            >
+              Maître Folage
+            </span>
+            <span
+              class="message"
+            >
+              Notre ami va se faire un plaisir de vous l'expliquer.
+            </span>
+            <span
+              class="from"
+            >
+              Pascal
+            </span>
+            <span
+              class="message"
+            >
+              Les Volfoni ont organisé à la péniche une petite réunion des cadres, façon meeting, si vous voyez ce que je veux dire.
+M'enfin quoi, on parle dans votre dos.
+            </span>
+            <span
+              class="from"
+            >
+              Fernand Naudin
+            </span>
+            <span
+              class="message"
+            >
+              Et tu tiens ça d'où ?
+            </span>
+            <span
+              class="from"
+            >
+              Pascal
+            </span>
+            <span
+              class="message"
+            >
+              Je ne peux pas le dire, j'ai promis. Ce serait mal.
+            </span>
+            <span
+              class="from"
+            >
+              Fernand Naudin
+            </span>
+            <span
+              class="message"
+            >
+              Alors ?
+            </span>
+            <span
+              class="from"
+            >
+              Maître Folage
+            </span>
+            <span
+              class="message"
+            >
+              Eh bien. Euh. Y'a deux solutions : ou on se dérange, ou on méprise. 
+Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire, bien sûr.
+            </span>
+            <span
+              class="from"
+            >
+              Fernand Naudin
+            </span>
+            <span
+              class="message"
+            >
+              Bon, on va y aller, hmm ?
+            </span>
+            <span
+              class="from"
+            >
+              Pascal
+            </span>
+            <span
+              class="message"
+            >
+              Monsieur Fernand, y'a peut-être une place pour moi dans votre auto. Des fois que la réunion devienne houleuse ... J'ai une présence tranquillisante.
+            </span>
+          </div>
+           
+          <form>
+            <fieldset>
+               
+              <input />
+            </fieldset>
+             
+            <button
+              disabled=""
+              title="Envoyer à tous"
+              type="submit"
+            >
+              <span
+                class="material-icons"
+              >
+                send
+              </span>
+              
+              
+              
+            </button>
+          </form>
+        </div>
+         
+        
+      </span>
+    </section>
+  </aside>
+</span>
+`;
+
+exports[`Toolshot components/MinimizableSection.tools.svelte: Top 1`] = `
+<span>
+  <aside
+    class="top"
+  >
+    <section
+      aria-expanded="true"
+      aria-label="minimizable"
+      class="vertical"
+      style="height: auto;"
+    >
+      <menu
+        class="top vertical"
+      >
+        <ol
+          class="buttonContainer"
+          role="tablist"
+        >
+          <li>
+            <button
+              aria-selected="false"
+              role="tab"
+            >
+              <span
+                class="material-icons"
+              >
+                expand_less
+              </span>
+              
+              
+              
+            </button>
+             
+          </li>
+        </ol>
+         
+        <div
+          class="gutter"
+          role="scrollbar"
+        />
+      </menu>
+       
+      <span>
+        <div
+          class="discussion"
+        >
+          <div
+            class="messages"
+          >
+            <span
+              class="from"
+            >
+              Fernand Naudin
+            </span>
+            <span
+              class="message"
+            >
+              Qu'est-ce qui se passe encore ?
+            </span>
+            <span
+              class="from"
+            >
+              Maître Folage
+            </span>
+            <span
+              class="message"
+            >
+              Notre ami va se faire un plaisir de vous l'expliquer.
+            </span>
+            <span
+              class="from"
+            >
+              Pascal
+            </span>
+            <span
+              class="message"
+            >
+              Les Volfoni ont organisé à la péniche une petite réunion des cadres, façon meeting, si vous voyez ce que je veux dire.
+M'enfin quoi, on parle dans votre dos.
+            </span>
+            <span
+              class="from"
+            >
+              Fernand Naudin
+            </span>
+            <span
+              class="message"
+            >
+              Et tu tiens ça d'où ?
+            </span>
+            <span
+              class="from"
+            >
+              Pascal
+            </span>
+            <span
+              class="message"
+            >
+              Je ne peux pas le dire, j'ai promis. Ce serait mal.
+            </span>
+            <span
+              class="from"
+            >
+              Fernand Naudin
+            </span>
+            <span
+              class="message"
+            >
+              Alors ?
+            </span>
+            <span
+              class="from"
+            >
+              Maître Folage
+            </span>
+            <span
+              class="message"
+            >
+              Eh bien. Euh. Y'a deux solutions : ou on se dérange, ou on méprise. 
+Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire, bien sûr.
+            </span>
+            <span
+              class="from"
+            >
+              Fernand Naudin
+            </span>
+            <span
+              class="message"
+            >
+              Bon, on va y aller, hmm ?
+            </span>
+            <span
+              class="from"
+            >
+              Pascal
+            </span>
+            <span
+              class="message"
+            >
+              Monsieur Fernand, y'a peut-être une place pour moi dans votre auto. Des fois que la réunion devienne houleuse ... J'ai une présence tranquillisante.
+            </span>
+          </div>
+           
+          <form>
+            <fieldset>
+               
+              <input />
+            </fieldset>
+             
+            <button
+              disabled=""
+              title="Envoyer à tous"
+              type="submit"
+            >
+              <span
+                class="material-icons"
+              >
+                send
+              </span>
+              
+              
+              
+            </button>
+          </form>
+        </div>
+         
+        
+      </span>
+    </section>
+  </aside>
+</span>
+`;

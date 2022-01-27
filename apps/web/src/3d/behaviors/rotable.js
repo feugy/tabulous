@@ -1,12 +1,19 @@
 import { Animation } from '@babylonjs/core/Animations/animation'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { AnimateBehavior } from './animatable'
+import { RotateBehaviorName } from './names'
 import { applyGravity } from '../utils'
 import { controlManager } from '../managers'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('rotable')
+
+/**
+ * @typedef {object} RotableState behavior persistent state, including:
+ * @property {number} angle - current rotation (in radian).
+ * @property {number} [duration=200] - duration (in milliseconds) of the rotation animation.
+ */
 
 export class RotateBehavior extends AnimateBehavior {
   /**
@@ -17,17 +24,13 @@ export class RotateBehavior extends AnimateBehavior {
    *
    * @extends {AnimateBehavior}
    * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
-   * @property {number} angle - rotation angle, in radian.
-   * @property {number} duration - duration (in milliseconds) of the rotation animation.
+   * @property {RotableState} state - the behavior's current state.
    *
-   * @param {object} params - parameters, including:
-   * @param {number} [params.angle=0] - initial rotation (in radian).
-   * @param {number} [params.duration=500] - duration (in milliseconds) of the rotation animation.
+   * @param {RotableState} state - behavior state.
    */
-  constructor(args) {
-    super(args)
-    this.angle = args.angle || 0
-    this.duration = args.duration || 500
+  constructor(state = {}) {
+    super(state)
+    this.state = state
     // private
     this.rotateAnimation = new Animation(
       'rotate',
@@ -42,7 +45,7 @@ export class RotateBehavior extends AnimateBehavior {
    * @property {string} name - this behavior's constant name.
    */
   get name() {
-    return RotateBehavior.NAME
+    return RotateBehaviorName
   }
 
   /**
@@ -50,11 +53,23 @@ export class RotateBehavior extends AnimateBehavior {
    * - the `angle` property.
    * - the `rotate()` method.
    * It initializes its rotation according to angle.
+   * When attaching/detaching this mesh to a parent, adjust rotation angle
+   * according to the parent's own rotation, so that rotating the parent
+   * will accordingly rotate the chil.
    * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
    */
   attach(mesh) {
     super.attach(mesh)
-    this.fromState(this)
+    this.fromState(this.state)
+
+    const originalSetter = mesh.setParent.bind(mesh)
+    mesh.setParent = parent => {
+      const angle = getRotatableAngle(parent ?? mesh.parent)
+      if (angle !== undefined) {
+        updateAngle(this, parent ? -angle : angle)
+      }
+      originalSetter(parent)
+    }
   }
 
   /**
@@ -69,15 +84,14 @@ export class RotateBehavior extends AnimateBehavior {
    */
   async rotate() {
     const {
-      duration,
+      state: { duration, angle },
       isAnimated,
-      angle,
       mesh,
       frameRate,
       rotateAnimation,
       moveAnimation
     } = this
-    if (isAnimated) {
+    if (isAnimated || !mesh) {
       return
     }
     logger.debug({ mesh }, `start rotating ${mesh.id}`)
@@ -85,12 +99,13 @@ export class RotateBehavior extends AnimateBehavior {
 
     controlManager.record({ meshId: mesh.id, fn: 'rotate' })
 
-    const to = mesh.absolutePosition.clone()
+    const to = mesh.position.clone()
+    const rotation = 0.5 * Math.PI
 
     const lastFrame = Math.round(frameRate * (duration / 1000))
     rotateAnimation.setKeys([
-      { frame: 0, value: angle * 0.5 * Math.PI },
-      { frame: lastFrame, value: (angle + 1) * 0.5 * Math.PI }
+      { frame: 0, value: angle },
+      { frame: lastFrame, value: angle + rotation }
     ])
     moveAnimation.setKeys([
       { frame: 0, value: to },
@@ -114,11 +129,11 @@ export class RotateBehavior extends AnimateBehavior {
           1,
           () => {
             this.isAnimated = false
-            this.angle = (this.angle + 1) % 4
-            mesh.metadata.angle = this.angle
+            updateAngle(this, rotation)
+            mesh.rotation.y = this.state.angle
             logger.debug({ mesh }, `end rotating ${mesh.id}`)
             // framed animation may not exactly end where we want, so force the final position
-            mesh.setAbsolutePosition(to)
+            mesh.position.copyFrom(to)
             applyGravity(mesh)
             mesh.isPickable = true
             resolve()
@@ -128,39 +143,29 @@ export class RotateBehavior extends AnimateBehavior {
   }
 
   /**
-   * @typedef {object} RotableState behavior persistent state, including:
-   * @property {number} angle - current rotation (in radian).
-   */
-
-  /**
-   * Gets this behavior's state.
-   * @returns {RotableState} this behavior's state for serialization.
-   */
-  serialize() {
-    return { angle: this.angle }
-  }
-
-  /**
    * Updates this behavior's state and mesh to match provided data.
    * @param {RotableState} state - state to update to.
    */
-  fromState(state = {}) {
-    if ('angle' in state) {
-      this.angle = state.angle
-      this.mesh.rotation.y = this.angle * 0.5 * Math.PI
-      if (!this.mesh.metadata) {
-        this.mesh.metadata = {}
-      }
-      this.mesh.metadata.rotate = this.rotate.bind(this)
-      this.mesh.metadata.angle = this.angle
+  fromState({ angle = 0, duration = 200 } = {}) {
+    if (!this.mesh) {
+      throw new Error('Can not restore state without mesh')
     }
+    this.state = { angle, duration }
+    this.mesh.rotation.y = this.state.angle
+    this.mesh.computeWorldMatrix(true)
+    if (!this.mesh.metadata) {
+      this.mesh.metadata = {}
+    }
+    this.mesh.metadata.rotate = this.rotate.bind(this)
+    this.mesh.metadata.angle = this.state.angle
   }
 }
 
-/**
- * Name of all rotable behaviors.
- * @static
- * @memberof RotateBehavior
- * @type {string}
- */
-RotateBehavior.NAME = 'rotable'
+function updateAngle(behavior, rotation) {
+  behavior.state.angle = (behavior.state.angle + rotation) % (2 * Math.PI)
+  behavior.mesh.metadata.angle = behavior.state.angle
+}
+
+function getRotatableAngle(mesh) {
+  return mesh?.getBehaviorByName(RotateBehaviorName)?.state.angle
+}

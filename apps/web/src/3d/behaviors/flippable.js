@@ -1,12 +1,19 @@
 import { Animation } from '@babylonjs/core/Animations/animation'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { AnimateBehavior } from './animatable'
+import { FlipBehaviorName } from './names'
 import { applyGravity } from '../utils'
 import { controlManager } from '../managers'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
 
-const logger = makeLogger('flippable')
+const logger = makeLogger(FlipBehaviorName)
+
+/**
+ * @typedef {object} FlippableState behavior persistent state, including:
+ * @property {boolean} isFlipped - current flip status.
+ * @property {number} [duration=500] - duration (in milliseconds) of the flip animation.
+ */
 
 export class FlipBehavior extends AnimateBehavior {
   /**
@@ -14,17 +21,13 @@ export class FlipBehavior extends AnimateBehavior {
    *
    * @extends {AnimateBehavior}
    * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
-   * @property {boolean} isFlipped - true when this mesh is flipped.
-   * @property {number} duration - duration (in milliseconds) of the flip animation.
+   * @property {FlippableState} state - the behavior's current state.
    *
-   * @param {object} params - parameters, including:
-   * @param {boolean} [params.isFlipped=false] - true to flip this mesh, initially.
-   * @param {number} [params.duration=500] - duration (in milliseconds) of the flip animation.
+   * @param {FlippableState} state - behavior state.
    */
-  constructor(params) {
-    super(params)
-    this.isFlipped = params.isFlipped || false
-    this.duration = params.duration || 500
+  constructor(state = {}) {
+    super(state)
+    this.state = state
     // private
     this.flipAnimation = new Animation(
       'flip',
@@ -39,7 +42,7 @@ export class FlipBehavior extends AnimateBehavior {
    * @property {string} name - this behavior's constant name.
    */
   get name() {
-    return FlipBehavior.NAME
+    return FlipBehaviorName
   }
 
   /**
@@ -51,7 +54,7 @@ export class FlipBehavior extends AnimateBehavior {
    */
   attach(mesh) {
     super.attach(mesh)
-    this.fromState(this)
+    this.fromState(this.state)
   }
 
   /**
@@ -66,15 +69,14 @@ export class FlipBehavior extends AnimateBehavior {
    */
   async flip() {
     const {
-      duration,
+      state: { duration, isFlipped },
       isAnimated,
-      isFlipped,
       mesh,
       frameRate,
       flipAnimation,
       moveAnimation
     } = this
-    if (isAnimated) {
+    if (isAnimated || !mesh) {
       return
     }
     logger.debug({ mesh }, `start flipping ${mesh.id}`)
@@ -82,7 +84,8 @@ export class FlipBehavior extends AnimateBehavior {
 
     controlManager.record({ meshId: mesh.id, fn: 'flip' })
 
-    const to = mesh.absolutePosition.clone()
+    const attach = detach(mesh)
+    const to = mesh.position.clone()
     const [min, max] = mesh.getBoundingInfo().boundingBox.vectorsWorld
     const width = Math.abs(min.x - max.x)
 
@@ -117,8 +120,8 @@ export class FlipBehavior extends AnimateBehavior {
           1,
           () => {
             this.isAnimated = false
-            this.isFlipped = !isFlipped
-            mesh.metadata.isFlipped = this.isFlipped
+            this.state.isFlipped = !isFlipped
+            mesh.metadata.isFlipped = this.state.isFlipped
             // keep rotation between [0..2 * PI[, without modulo because it does not keep plain values
             if (mesh.rotation.z < 0) {
               mesh.rotation.z += 2 * Math.PI
@@ -127,7 +130,8 @@ export class FlipBehavior extends AnimateBehavior {
             }
             logger.debug({ mesh }, `end flipping ${mesh.id}`)
             // framed animation may not exactly end where we want, so force the final position
-            mesh.setAbsolutePosition(to)
+            mesh.position.copyFrom(to)
+            attach()
             applyGravity(mesh)
             mesh.isPickable = true
             resolve()
@@ -137,39 +141,48 @@ export class FlipBehavior extends AnimateBehavior {
   }
 
   /**
-   * @typedef {object} FlippableState behavior persistent state, including:
-   * @property {boolean} isFlipped - current flip status.
-   */
-
-  /**
-   * Gets this behavior's state.
-   * @returns {FlippableState} this behavior's state for serialization.
-   */
-  serialize() {
-    return { isFlipped: this.isFlipped }
-  }
-
-  /**
    * Updates this behavior's state and mesh to match provided data.
    * @param {FlippableState} state - state to update to.
    */
-  fromState(state = {}) {
-    if ('isFlipped' in state) {
-      this.isFlipped = state.isFlipped
-      this.mesh.rotation.z = this.isFlipped ? Math.PI : 0
-      if (!this.mesh.metadata) {
-        this.mesh.metadata = {}
-      }
-      this.mesh.metadata.flip = this.flip.bind(this)
-      this.mesh.metadata.isFlipped = this.isFlipped
+  fromState({ isFlipped = false, duration = 500 } = {}) {
+    if (!this.mesh) {
+      throw new Error('Can not restore state without mesh')
     }
+    this.state = { isFlipped, duration }
+    this.mesh.rotation.z = this.state.isFlipped ? Math.PI : 0
+    if (!this.mesh.metadata) {
+      this.mesh.metadata = {}
+    }
+    this.mesh.metadata.flip = this.flip.bind(this)
+    this.mesh.metadata.isFlipped = this.state.isFlipped
   }
 }
 
-/**
- * Name of all flippable behaviors.
- * @static
- * @memberof FlipBehavior
- * @type {string}
- */
-FlipBehavior.NAME = 'flippable'
+function detach(mesh) {
+  let parent = mesh.parent
+  mesh.setParent(null)
+
+  const savedSetter = mesh.setParent.bind(mesh)
+  mesh.setParent = newParent => {
+    parent = newParent
+  }
+
+  const children = mesh.getChildMeshes(
+    true,
+    ({ name }) =>
+      !name.startsWith('plane-') &&
+      !name.startsWith('drop-') &&
+      !name.startsWith('anchor-')
+  )
+  for (const child of children) {
+    child.setParent(null)
+  }
+
+  return () => {
+    mesh.setParent = savedSetter
+    mesh.setParent(parent)
+    for (const child of children) {
+      child.setParent(mesh)
+    }
+  }
+}

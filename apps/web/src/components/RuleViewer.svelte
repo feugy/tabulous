@@ -15,7 +15,7 @@
   }
 </script>
 
-<style type="postcss">
+<style lang="postcss">
   section {
     @apply flex flex-col flex-1 max-h-full max-w-full items-center gap-2 p-2;
   }
@@ -45,9 +45,11 @@
     />
   </menu>
   <div class="image-container">
-    <img
-      alt={$_('tooltips.rule-page', { page: page + 1 })}
-      src={`/images/${game}/rules/${page + 1}.png`}
-    />
+    {#if game}
+      <img
+        alt={$_('tooltips.rule-page', { page: page + 1 })}
+        src={`/images/${game}/rules/${page + 1}.png`}
+      />
+    {/if}
   </div>
 </section>

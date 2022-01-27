@@ -27,7 +27,7 @@
   }
 </script>
 
-<style type="postcss">
+<style lang="postcss">
   .wrapper {
     @apply relative inline-block;
   }

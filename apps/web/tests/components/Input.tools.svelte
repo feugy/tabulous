@@ -3,7 +3,12 @@
   import { Input } from '../../src/components'
 </script>
 
-<ToolBox component={Input} name="Components/Input" events={['enter', 'input']}>
+<ToolBox
+  component={Input}
+  name="Components/Input"
+  events={['enter', 'input']}
+  layout="centered"
+>
   <Tool
     name="With initial value"
     props={{ placeholder: 'Please enter value', value: 'initial value' }}

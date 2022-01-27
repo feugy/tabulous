@@ -3,7 +3,7 @@
   import { CatalogItem } from '../../src/components'
 </script>
 
-<style type="postcss">
+<style lang="postcss">
   .catalog-item-viewer {
     :global(& .tool-preview) {
       @apply grid gap-6 p-6;
@@ -12,18 +12,28 @@
   }
 </style>
 
-<span class="catalog-item-viewer">
-  <ToolBox
-    component={CatalogItem}
-    name="Components/Catalog Item"
-    events={['click']}
+<ToolBox name="Components/Catalog Item" layout="centered">
+  <Tool
+    name="No age nor time"
+    props={{ game: { name: 'klondike' } }}
+    let:props
+    let:handleEvent
   >
-    <Tool name="No age nor time" props={{ game: { name: 'klondike' } }} />
-    <Tool
-      name="With Age and time"
-      props={{
-        game: { name: 'splendor', minTime: 30, minAge: 10, restricted: true }
-      }}
-    />
-  </ToolBox>
-</span>
+    <span class="catalog-item-viewer">
+      <CatalogItem {...props} on:click={handleEvent} />
+    </span>
+  </Tool>
+
+  <Tool
+    name="With Age and time"
+    props={{
+      game: { name: 'splendor', minTime: 30, minAge: 10, restricted: true }
+    }}
+    let:props
+    let:handleEvent
+  >
+    <span class="catalog-item-viewer">
+      <CatalogItem {...props} on:click={handleEvent} />
+    </span>
+  </Tool>
+</ToolBox>

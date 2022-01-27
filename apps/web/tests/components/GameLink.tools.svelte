@@ -23,6 +23,7 @@
     }
   }}
   events={['delete']}
+  layout="centered"
 >
   <Tool name="Owned" props={{ playerId: players[0].id }} />
   <Tool

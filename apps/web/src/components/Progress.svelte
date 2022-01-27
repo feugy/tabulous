@@ -1,24 +1,14 @@
-<script>
-</script>
-
-<style type="postcss">
-  div {
-    @apply inline-block w-10 h-10 overflow-hidden;
-  }
-
+<style lang="postcss">
   svg {
-    @apply block animate-spin;
+    @apply inline-block w-10 h-10 m-4;
   }
 
   circle {
-    stroke: theme('colors.primary.main');
+    @apply stroke-$primary stroke-offset-0;
     stroke-dasharray: 80px, 200px;
-    stroke-dashoffset: 0px;
   }
 </style>
 
-<div>
-  <svg viewBox="22 22 44 44">
-    <circle cx="44" cy="44" r="20.2" fill="none" stroke-width="3.6" />
-  </svg>
-</div>
+<svg class="animate-spin" role="progressbar" viewBox="22 22 44 44">
+  <circle cx="44" cy="44" r="20.2" fill="none" stroke-width="3.6" />
+</svg>

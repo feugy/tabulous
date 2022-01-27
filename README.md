@@ -8,7 +8,7 @@ Meet your friends online to play your favorite games!
 
 ## How to use
 
-You need Node.js 15+ and NPM.
+You need Node.js 16+ and NPM.
 
 1. Checkout the code:
    ```shell

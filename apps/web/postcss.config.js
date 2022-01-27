@@ -1,11 +1,6 @@
 // This file is used by
-// - svelte.config.js
-// - "VSCode Tailwind CSS IntelliSense" plugin
+// - vite
+// - svelte-windi-preprocess
 module.exports = {
-  plugins: [
-    // need to explicitly pass configuration as tailwind doesn't like monorepo structure
-    require('tailwindcss')(require('./tailwind.config.js')),
-    require('postcss-nested'),
-    require('autoprefixer')
-  ]
+  plugins: [require('postcss-nested'), require('autoprefixer')]
 }

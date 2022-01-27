@@ -6,39 +6,34 @@
   export let ref = null
 </script>
 
-<style type="postcss">
+<style lang="postcss">
   button {
-    @apply py-2 px-4 rounded relative;
-    background-color: theme('colors.primary.main');
-    color: theme('colors.primary.text');
-    transition: all theme('transitions.short') ease-in-out;
+    @apply py-2 px-4 rounded relative bg-$primary text-$primary-lightest 
+           transition-all duration-$short;
 
     &:focus {
-      background-color: theme('colors.primary.light');
+      @apply bg-$primary-light;
     }
 
     &:hover:not(:disabled) {
-      background-color: theme('colors.primary.light');
-      transform: scale(1.05);
+      @apply bg-$primary-light transform-gpu scale-105;
     }
 
     &.secondary:disabled,
     &:disabled {
-      background-color: theme('colors.disabled.main');
-      color: theme('colors.disabled.text');
+      @apply bg-$disabled text-$disabled-dark;
     }
   }
 
   button.secondary {
-    background-color: theme('colors.secondary.main');
-    color: theme('colors.secondary.text');
+    @apply bg-$secondary text-$secondary-lightest;
 
     &:focus {
-      background-color: theme('colors.secondary.light');
+      @apply bg-$secondary-light;
     }
 
     &:hover:not(:disabled) {
-      background-color: theme('colors.secondary.light');
+      @apply bg-$secondary-light;
     }
   }
 
@@ -50,13 +45,9 @@
   }
 
   .badge {
-    @apply absolute rounded-full leading-4 text-xs p-1;
-    @apply flex justify-center items-center;
-    background-color: theme('colors.disabled.main');
-    color: theme('colors.disabled.text');
-    top: -0.5rem;
-    right: -0.5rem;
-    min-width: 1.5rem;
+    @apply absolute rounded-full leading-4 text-xs p-1 
+           flex justify-center items-center bg-$disabled 
+           text-$disabled-dark -top-2 -right-2 min-w-6;
   }
 </style>
 

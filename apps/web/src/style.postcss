@@ -1,0 +1,58 @@
+@import 'material-design-icons-iconfont';
+
+:root {
+  /* 
+  https://designsystem.digital.gov/design-tokens/
+  https://paletton.com/#uid=7000u0k00pB00Ts00vE01kb0oes
+  */
+  --ink: #444545;
+
+  --base-lightest: #ffffff;
+  --base-lighter: #fcfcfc;
+  /* --primary-light: #;
+  --primary: #; */
+  --base-dark: #7a7a7abf;
+  /* --primary-darker: #;
+  --primary-darkest: #; 
+  --primary-vivid: #; */
+
+  --primary-lightest: #fcfcfc;
+  /* --primary-lighter: #; */
+  --primary-light: #979797;
+  --primary: #7a7a7a;
+  --primary-dark: #606060;
+  /* --primary-darker: #;
+  --primary-darkest: #; 
+  --primary-vivid: #; */
+
+  --secondary-lightest: #5b5c5b;
+  --secondary-light: #cacaca;
+  --secondary: #a3a3a3;
+  --secondary-dark: #818181;
+  /* --secondary-darker: #;
+  --secondary-darkest: #;
+  --secondary-vivid: #; */
+
+  /* --disabled-lightest: #;
+  --disabled-lighter: #;
+  --disabled-light: #; */
+  --disabled: #cacaca;
+  --disabled-dark: #737272;
+  /* --disabled-darker: #;
+  --disabled-darkest: #; */
+
+  --short: 150ms;
+}
+
+.material-icons {
+  vertical-align: -0.2em;
+}
+
+html,
+body {
+  @apply font-sans h-full overflow-hidden m-0 bg-$base-lighter text-$ink;
+}
+
+.heading {
+  @apply text-3xl border-b mb-4 border-$primary-dark;
+}

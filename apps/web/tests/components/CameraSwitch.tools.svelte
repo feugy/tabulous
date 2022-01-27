@@ -8,6 +8,7 @@
   name="Components/Camera Switch"
   props={{ longTapDelay: 250 }}
   events={['save', 'restore', 'longTap']}
+  layout="centered"
 >
   <Tool name="Single save" props={{ saves: [{ hash: 'a' }] }} />
   <Tool

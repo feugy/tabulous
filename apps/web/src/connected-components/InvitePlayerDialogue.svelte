@@ -57,7 +57,7 @@
   }
 </script>
 
-<style type="postcss">
+<style lang="postcss">
   div {
     @apply flex;
   }

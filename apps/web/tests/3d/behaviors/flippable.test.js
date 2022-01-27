@@ -1,0 +1,218 @@
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { Vector3 } from '@babylonjs/core/Maths/math.vector'
+import faker from 'faker'
+import {
+  configures3dTestEngine,
+  expectFlipped,
+  expectPickable,
+  expectPosition
+} from '../../test-utils'
+import { FlipBehavior, FlipBehaviorName } from '../../../src/3d/behaviors'
+import { controlManager } from '../../../src/3d/managers'
+
+describe('FlipBehavior', () => {
+  configures3dTestEngine()
+
+  let recordSpy
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    recordSpy = jest.spyOn(controlManager, 'record')
+  })
+
+  it('has initial state', () => {
+    const state = {
+      isFlipped: faker.datatype.boolean(),
+      duration: faker.datatype.number()
+    }
+    const behavior = new FlipBehavior(state)
+    const mesh = CreateBox('box', {})
+
+    expect(behavior.name).toEqual(FlipBehaviorName)
+    expect(behavior.state).toEqual(state)
+    expect(behavior.mesh).toBeNull()
+
+    mesh.addBehavior(behavior, true)
+    expect(behavior.mesh).toEqual(mesh)
+  })
+
+  it('can not restore state without mesh', () => {
+    expect(() => new FlipBehavior().fromState({ isFlipped: false })).toThrow(
+      'Can not restore state without mesh'
+    )
+  })
+
+  it('can not flip without mesh', async () => {
+    const behavior = new FlipBehavior()
+    await behavior.flip()
+    expect(recordSpy).not.toHaveBeenCalled()
+  })
+
+  it('can hydrate with default state', () => {
+    const behavior = createAttachedFlippable()
+
+    behavior.fromState()
+    expect(behavior.state).toEqual({
+      isFlipped: false,
+      duration: 500
+    })
+    expect(behavior.mesh.rotation.z).toEqual(0)
+    expect(behavior.mesh.metadata.isFlipped).toEqual(false)
+  })
+
+  describe('given attached to a mesh', () => {
+    let mesh
+    let behavior
+
+    beforeEach(() => {
+      behavior = createAttachedFlippable({ duration: 50 })
+      mesh = behavior.mesh
+    })
+
+    it('attaches metadata to its mesh', () => {
+      expect(mesh.metadata).toEqual({
+        isFlipped: false,
+        flip: expect.any(Function)
+      })
+    })
+
+    it('can hydrate from state', () => {
+      expect(mesh.rotation.z).toEqual(0)
+      const state = {
+        isFlipped: true,
+        duration: faker.datatype.number()
+      }
+      behavior.fromState(state)
+      expect(behavior.state).toEqual(state)
+      expect(behavior.mesh).toEqual(mesh)
+      expectFlipped(mesh)
+    })
+
+    it('flips mesh clockwise and apply gravity', async () => {
+      const x = faker.datatype.number()
+      const z = faker.datatype.number()
+      mesh.setAbsolutePosition(new Vector3(x, 10, z))
+
+      expectFlipped(mesh, false)
+      await mesh.metadata.flip()
+      expectFlipped(mesh)
+      expectPosition(mesh, [x, 0.5, z])
+    })
+
+    it('flips mesh anti-clockwise and apply gravity', async () => {
+      const x = faker.datatype.number()
+      const z = faker.datatype.number()
+      mesh.rotation.y = 1.5 * Math.PI
+      mesh.setAbsolutePosition(new Vector3(x, 10, z))
+
+      expectFlipped(mesh, false)
+      await mesh.metadata.flip()
+      expectFlipped(mesh)
+      expectPosition(mesh, [x, 0.5, z])
+    })
+
+    describe('given parent and children', () => {
+      let child
+      let granChild
+
+      beforeEach(() => {
+        child = createAttachedFlippable().mesh
+        child.setParent(mesh)
+        granChild = createAttachedFlippable().mesh
+        granChild.setParent(child)
+      })
+
+      it('flips mesh independently from its children', async () => {
+        await mesh.metadata.flip()
+        expectFlipped(mesh)
+        expectFlipped(child, false)
+        expectFlipped(granChild, false)
+      })
+
+      it('flips mesh independently from its parent', async () => {
+        await child.metadata.flip()
+        expectFlipped(mesh, false)
+        expectFlipped(child)
+        expectFlipped(granChild, false)
+      })
+
+      it('flips multiple dependent meshes', async () => {
+        await Promise.all([mesh.metadata.flip(), child.metadata.flip()])
+        expectFlipped(mesh)
+        expectFlipped(child)
+        expectFlipped(granChild, false)
+      })
+    })
+
+    it('makes mesh unpickable while flipping', async () => {
+      expectPickable(mesh)
+      expectFlipped(mesh, false)
+      const flipPromise = mesh.metadata.flip()
+      expectPickable(mesh, false)
+      await flipPromise
+
+      expectPickable(mesh)
+      expectFlipped(mesh)
+    })
+
+    it('records flips to controlManager', async () => {
+      expectFlipped(mesh, false)
+      expect(recordSpy).toHaveBeenCalledTimes(0)
+      await mesh.metadata.flip()
+      expect(recordSpy).toHaveBeenCalledTimes(1)
+      expect(recordSpy).toHaveBeenNthCalledWith(1, {
+        meshId: mesh.id,
+        fn: 'flip'
+      })
+      expectFlipped(mesh)
+
+      await mesh.metadata.flip()
+      expect(recordSpy).toHaveBeenCalledTimes(2)
+      expect(recordSpy).toHaveBeenNthCalledWith(2, {
+        meshId: mesh.id,
+        fn: 'flip'
+      })
+      expectFlipped(mesh, false)
+    })
+
+    it('flips mesh with initial rotation', async () => {
+      const initialRotation = Math.PI * -0.5
+      mesh.rotation.z = initialRotation
+      expectFlipped(mesh, false, initialRotation)
+      await mesh.metadata.flip()
+      expectFlipped(mesh, true, initialRotation)
+    })
+
+    it('keeps rotation within [0..2*Math.PI[', async () => {
+      expectFlipped(mesh, false)
+      await mesh.metadata.flip()
+      await mesh.metadata.flip()
+      await mesh.metadata.flip()
+      expectFlipped(mesh)
+
+      mesh.rotation.z = Math.PI * -0.5
+      await mesh.metadata.flip()
+      expectFlipped(mesh, false, Math.PI * 0.5)
+    })
+
+    it('can not flip while animating', async () => {
+      expectPickable(mesh)
+      expectFlipped(mesh, false)
+      const promise = mesh.metadata.flip()
+      expectPickable(mesh, false)
+      await mesh.metadata.flip()
+      await promise
+
+      expectPickable(mesh)
+      expectFlipped(mesh)
+      expect(recordSpy).toHaveBeenCalledTimes(1)
+    })
+  })
+})
+
+function createAttachedFlippable(state) {
+  const behavior = new FlipBehavior(state)
+  const mesh = CreateBox('box', {})
+  mesh.addBehavior(behavior, true)
+  return behavior
+}

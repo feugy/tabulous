@@ -2,8 +2,8 @@ import { Axis, Space } from '@babylonjs/core/Maths/math.axis'
 import { Color3 } from '@babylonjs/core/Maths/math.color'
 import { Vector3, Quaternion } from '@babylonjs/core/Maths/math.vector'
 import { Mesh } from '@babylonjs/core/Meshes/mesh'
-import { LinesBuilder } from '@babylonjs/core/Meshes/Builders/linesBuilder'
-import { ShapeBuilder } from '@babylonjs/core/Meshes/Builders/shapeBuilder'
+import { CreateLines } from '@babylonjs/core/Meshes/Builders/linesBuilder'
+import { ExtrudeShape } from '@babylonjs/core/Meshes/Builders/shapeBuilder'
 import { isContaining, screenToGround, sortByElevation } from '../utils'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
@@ -31,7 +31,7 @@ class SelectionManager {
    * @param {object} params - parameters, including:
    * @param {Scene} params.scene - scene attached to.
    */
-  init({ scene } = {}) {
+  init({ scene }) {
     this.scene = scene
   }
 
@@ -41,6 +41,7 @@ class SelectionManager {
    * @param {import('../utils').ScreenPosition} end - selection box's end screen position.
    */
   drawSelectionBox(start, end) {
+    if (!this.scene) return
     logger.debug({ start, end }, `draw selection box`)
     const width = start.x - end.x
     const height = start.y - end.y
@@ -55,17 +56,16 @@ class SelectionManager {
     ]
     points.push(points[0].clone())
 
-    this.box = LinesBuilder.CreateLines('selection-hint', {
+    this.box = CreateLines('selection-hint', {
       points,
       colors: Array.from({ length: 6 }, () => Color3.Green().toColor4())
     })
     // ensure the box to be displayed "in front of" all other meshes
     this.box.renderingGroupId = 2
 
-    // dynamically assign select function to keep start and end in scope
-    this.select = () => {
-      if (!this.box) return
-      this.box.dispose()
+    // dynamically assign selectInBox function to keep start and end in scope
+    this.selectWithinBox = () => {
+      this.box?.dispose()
       // extrude a polygon from the lines, but since extrusion goes along Z axis,
       // rotate the points first
       const position = screenToGround(scene, {
@@ -76,7 +76,7 @@ class SelectionManager {
       for (const point of points) {
         point.rotateByQuaternionAroundPointToRef(rotation, position, point)
       }
-      const box = ShapeBuilder.ExtrudeShape('selection-box', {
+      const box = ExtrudeShape('selection-box', {
         shape: points,
         path: [Vector3.Zero(), new Vector3(0, 0, 20)],
         sideOrientation: Mesh.DOUBLESIDE
@@ -91,12 +91,10 @@ class SelectionManager {
 
       for (const mesh of scene.meshes) {
         if (mesh.isPickable && isContaining(box, mesh)) {
-          this.meshes.add(mesh)
-          mesh.renderOverlay = true
+          addToSelection(this, mesh)
         }
       }
-      // keep selection ordered from lowest to highest: it'll guarantuee gravity application
-      this.meshes = new Set(sortByElevation(this.meshes))
+      reorderSelection(this)
 
       logger.info({ start, end, meshes: this.meshes }, `new multiple selection`)
       box.dispose()
@@ -105,10 +103,18 @@ class SelectionManager {
   }
 
   /**
-   * Selects all mesh contained in the selection box, notifying all observers
-   * @returns {array<object>} the selected meshes, if any
+   * Selects all mesh contained in the selection box, disposing the box
    */
-  select() {}
+  selectWithinBox() {}
+
+  /**
+   * Adds an individual mesh into selection (if not already in)
+   * @param {Mesh} - mesh added to the active selection
+   */
+  select(mesh) {
+    addToSelection(this, mesh)
+    reorderSelection(this)
+  }
 
   /**
    * Clears current selection, notifying all observers
@@ -129,3 +135,15 @@ class SelectionManager {
  * @type {SelectionManager}
  */
 export const selectionManager = new SelectionManager()
+
+function addToSelection(manager, mesh) {
+  if (!manager.meshes.has(mesh)) {
+    manager.meshes.add(mesh)
+    mesh.renderOverlay = true
+  }
+}
+
+function reorderSelection(manager) {
+  // keep selection ordered from lowest to highest: it'll guarantuee gravity application
+  manager.meshes = new Set(sortByElevation(manager.meshes))
+}

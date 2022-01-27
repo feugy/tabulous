@@ -31,7 +31,7 @@
   }
 </script>
 
-<style type="postcss">
+<style lang="postcss">
   menu {
     @apply absolute pointer-events-none m-0;
 
@@ -41,10 +41,9 @@
   }
 
   div.stackSize {
-    @apply inline-block h-auto w-auto -mt-8 ml-4 font-bold text-xl;
-    color: theme('colors.primary.text');
+    @apply inline-block h-auto w-auto -mt-8 ml-4 font-bold text-xl text-$primary-lightest;
     -webkit-text-stroke-width: 1px;
-    -webkit-text-stroke-color: theme('colors.primary.dark');
+    -webkit-text-stroke-color: var(--primary-dark);
 
     &.active {
       @apply visible;
@@ -92,7 +91,7 @@
   on:pointermove={event => (position = event)}
   on:pointerdown={event => (position = event)} />
 <menu style={`left: ${position?.x}px; top: ${position?.y}px`}>
-  <div class="stackSize" class:active={Boolean(size)}>
+  <div class="stackSize" class:active={size > 1}>
     {size}
   </div>
   <div class="halo" bind:this={halo} on:animationend={handleHaloEnd} />

@@ -5,67 +5,95 @@ type Game {
   kind: String!
   created: Float!
   players: [Player]!
-  scene: GameScene!
+  meshes: [Mesh]!
   messages: [Message]
   cameras: [CameraPosition]
   rulesBookPageCount: Int
 }
 
-type GameScene {
-  cards: [Card]!
-  roundTokens: [RoundToken]!
-  roundedTiles: [RoundedTiles]!
+type DetailableState {
+  frontImage: String!
+  backImage: String
 }
 
-type ImageDefs {
-  front: String!
-  back: String
+type FlippableState {
+  isFlipped: Boolean
+  duration: Int
 }
 
-type Card {
-  id: ID!
-  texture: String!
-  images: ImageDefs!
+type RotableState {
+  angle: Float
+  duration: Int
+}
+
+type MovableState {
+  duration: Int
+  snapDistance: Float
+  kind: String
+}
+
+type StackableState {
+  stackIds: [String]
+  duration: Int
+  extent: Float
+  priority: Float
+  kinds: [String]
+}
+
+type AnchorableState {
+  anchors: [Anchor]
+  duration: Int
+}
+
+type Anchor {
+  x: Float
+  y: Float
+  z: Float
   width: Float
   height: Float
   depth: Float
-  x: Float
-  y: Float
-  z: Float
-  isFlipped: Boolean
-  angle: Float
-  stack: [String]
+  priority: Float
+  kinds: [String]
+  snappedId: ID
 }
 
-type RoundToken {
+type Mesh {
   id: ID!
   texture: String!
-  images: ImageDefs!
+  faceUV: [[Float]]
+  shape: Shape
   x: Float
   y: Float
   z: Float
+  detailable: DetailableState
+  movable: MovableState
+  flippable: FlippableState
+  rotable: RotableState
+  anchorable: AnchorableState
+  stackable: StackableState
+  """
+  cards, rounded tokens and rounded tiles
+  """
+  height: Float
+  """
+  cards and rounded tiles
+  """
+  width: Float
+  depth: Float
+  """
+  round tokens
+  """
   diameter: Float
-  height: Float
-  isFlipped: Boolean
-  angle: Float
-  stack: [String]
+  """
+  rounded tiles
+  """
+  borderRadius: Float
 }
 
-type RoundedTiles {
-  id: ID!
-  texture: String!
-  images: ImageDefs!
-  width: Float
-  height: Float
-  depth: Float
-  borderRadius: Float
-  borderColor: [Float]
-  x: Float
-  y: Float
-  z: Float
-  isFlipped: Boolean
-  angle: Float
-  stack: [String]
+enum Shape {
+  card
+  roundedTile
+  roundToken
 }
 
 type Message {
@@ -86,81 +114,88 @@ type CameraPosition {
 
 input GameInput {
   id: ID!
-  scene: GameSceneInput
+  meshes: [MeshInput]
   messages: [MessageInput]
   cameras: [CameraPositionInput]
 }
 
-input ImageDefsInput {
-  front: String!
-  back: String
+input DetailableStateInput {
+  frontImage: String!
+  backImage: String
 }
 
-input GameSceneInput {
-  cards: [CardInput]!
-  roundTokens: [RoundTokenInput]!
-  roundedTiles: [RoundedTilesInput]!
+input FlippableStateInput {
+  isFlipped: Boolean
+  duration: Int
 }
 
-input CardInput {
-  id: ID!
-  texture: String!
-  images: ImageDefsInput!
+input RotableStateInput {
+  angle: Float
+  duration: Int
+}
+
+input MovableStateInput {
+  duration: Int
+  snapDistance: Float
+  kind: String
+}
+
+input StackableStateInput {
+  stackIds: [String]
+  duration: Int
+  extent: Float
+  priority: Float
+  kinds: [String]
+}
+
+input AnchorableStateInput {
+  anchors: [AnchorInput]
+  duration: Int
+}
+
+input AnchorInput {
+  x: Float
+  y: Float
+  z: Float
   width: Float
   height: Float
   depth: Float
+  priority: Float
+  kinds: [String]
+  snappedId: ID
+}
+
+input MeshInput {
+  id: ID!
+  texture: String!
+  faceUV: [[Float]]
+  shape: Shape
   x: Float
   y: Float
   z: Float
-  isFlipped: Boolean
-  angle: Float
-  stack: [String]
-}
-
-input CardInput {
-  id: ID!
-  texture: String!
-  images: ImageDefsInput!
-  width: Float
+  detailable: DetailableStateInput
+  movable: MovableStateInput
+  flippable: FlippableStateInput
+  rotable: RotableStateInput
+  anchorable: AnchorableStateInput
+  stackable: StackableStateInput
+  """
+  cards, rounded tokens and rounded tiles
+  """
   height: Float
+  """
+  cards and rounded tiles
+  """
+  width: Float
   depth: Float
-  x: Float
-  y: Float
-  z: Float
-  isFlipped: Boolean
-  angle: Float
-  stack: [String]
-}
-
-input RoundTokenInput {
-  id: ID!
-  texture: String!
-  images: ImageDefsInput!
-  x: Float
-  y: Float
-  z: Float
+  """
+  round tokens
+  """
   diameter: Float
-  height: Float
-  isFlipped: Boolean
-  angle: Float
-  stack: [String]
-}
-
-input RoundedTilesInput {
-  id: ID!
-  texture: String!
-  images: ImageDefsInput!
-  width: Float
-  height: Float
-  depth: Float
+  """
+  rounded tiles
+  """
   borderRadius: Float
-  borderColor: [Float]
-  x: Float
-  y: Float
-  z: Float
-  isFlipped: Boolean
-  angle: Float
-  stack: [String]
 }
 
 input MessageInput {
@@ -179,17 +214,17 @@ input CameraPositionInput {
   hash: String!
 }
 
-type Query {
+extend type Query {
   loadGame(gameId: ID!): Game
 }
 
-type Mutation {
+extend type Mutation {
   createGame(kind: String!): Game
   saveGame(game: GameInput!): Game
   deleteGame(gameId: ID!): Game
   invite(gameId: ID!, playerId: ID!): Game
 }
 
-type Subscription {
+extend type Subscription {
   listGames: [Game]
 }

@@ -17,7 +17,7 @@ class MoveManager {
   /**
    * Creates a manager to move meshes with MoveBehavior:
    * - can start, continue and stop moving managed mesh
-   * - moves the entier selection if it contains the moved mesh
+   * - moves the entire selection if it contains the moved mesh
    * - triggers target detection while continuing the operation
    * - release mesh on table, or on their relevant target
    *
@@ -39,7 +39,7 @@ class MoveManager {
    * @param {Scene} params.scene - scene attached to.
    * @param {number} [params.elevation=0.5] - elevation applied to meshes while dragging them.
    */
-  init({ scene, elevation = 0.5 } = {}) {
+  init({ scene, elevation = 0.5 }) {
     this.scene = scene
     this.elevation = elevation
   }
@@ -62,6 +62,12 @@ class MoveManager {
     const moved = selectionManager.meshes.has(mesh)
       ? [...selectionManager.meshes].filter(mesh => this.meshIds.has(mesh?.id))
       : [mesh]
+    const allMoved = [...moved]
+    for (const mesh of allMoved) {
+      if (allMoved.includes(mesh.parent)) {
+        moved.splice(moved.indexOf(mesh), 1)
+      }
+    }
     let lastPosition = screenToGround(this.scene, event)
     let zones = new Set()
     this.inProgress = true
@@ -72,7 +78,9 @@ class MoveManager {
     )
 
     for (const mesh of moved) {
-      mesh.absolutePosition.y += this.elevation
+      const { x, y, z } = mesh.absolutePosition
+      mesh.setAbsolutePosition(new Vector3(x, y + this.elevation, z))
+      mesh.computeWorldMatrix()
       controlManager.record({
         meshId: mesh.id,
         pos: mesh.absolutePosition.asArray()
@@ -97,10 +105,8 @@ class MoveManager {
         let max
         // evaluates the bounding box of all moved meshes
         for (const mesh of moved) {
-          const {
-            minimumWorld,
-            maximumWorld
-          } = mesh.getBoundingInfo().boundingBox
+          const { minimumWorld, maximumWorld } =
+            mesh.getBoundingInfo().boundingBox
           if (!min) {
             min = minimumWorld
             max = maximumWorld
@@ -131,14 +137,15 @@ class MoveManager {
         }
 
         for (const mesh of moved) {
+          mesh.setAbsolutePosition(mesh.absolutePosition.addInPlace(move))
+          mesh.computeWorldMatrix()
           const zone = targetManager.findDropZone(
             mesh,
-            this.behaviorByMeshId.get(mesh.id).dragKind
+            this.behaviorByMeshId.get(mesh.id).state.kind
           )
           if (zone) {
             zones.add(zone)
           }
-          mesh.setAbsolutePosition(mesh.absolutePosition.addInPlace(move))
           controlManager.record({
             meshId: mesh.id,
             pos: mesh.absolutePosition.asArray()
@@ -153,22 +160,28 @@ class MoveManager {
       }
     }
 
+    // dynamically assign getActiveZones function to keep zones in scope
+    this.getActiveZones = () => [...zones]
+
     // dynamically assign stop function to keep moved, zones and lastPosition in scope
     this.stop = async () => {
       if (moved.length === 0) return
 
       // trigger drop operation on all identified drop zones
-      const droppedIds = new Set()
+      const dropped = []
       for (const zone of zones) {
         const meshes = targetManager.dropOn(zone)
-        logger.info({ zone, meshes }, `completes move operation on target`)
+        logger.info(
+          { zone, meshes },
+          `completes move operation on target ${meshes.map(({ id }) => id)}`
+        )
         for (const mesh of meshes) {
-          droppedIds.add(mesh.id)
+          dropped.push(mesh)
         }
       }
       zones.clear()
       const nonDropped = sortByElevation(
-        moved.filter(mesh => !droppedIds.has(mesh.id))
+        moved.filter(mesh => !dropped.includes(mesh))
       )
       moved.splice(0, moved.length)
 
@@ -176,9 +189,9 @@ class MoveManager {
       await Promise.all(
         nonDropped.map((mesh, i) => {
           const { x, y, z } = mesh.absolutePosition
-          const { snapDistance, moveDuration } = this.behaviorByMeshId.get(
-            mesh.id
-          )
+          const {
+            state: { snapDistance, duration }
+          } = this.behaviorByMeshId.get(mesh.id)
           const absolutePosition = new Vector3(
             Math.round(x / snapDistance) * snapDistance,
             y,
@@ -186,7 +199,7 @@ class MoveManager {
           )
           logger.info({ mesh }, `end move operation on table ${mesh.id}`)
           return sleep(i * 1.5)
-            .then(() => animateMove(mesh, absolutePosition, moveDuration, true))
+            .then(() => animateMove(mesh, absolutePosition, duration, true))
             .then(() =>
               controlManager.record({
                 meshId: mesh.id,
@@ -217,12 +230,20 @@ class MoveManager {
   async stop() {}
 
   /**
+   * Returns all drop zones actives while moving meshes
+   * @return {import('../behaviors').DropZone} an array (possibly empty) of active zones
+   */
+  getActiveZones() {
+    return []
+  }
+
+  /**
    * Registers a new MoveBehavior, making it possible to move its mesh.
    * Does nothing if this behavior is already managed.
    * @param {MoveBehavior} behavior - movable behavior
    */
   registerMovable(behavior) {
-    if (behavior?.mesh?.id && !this.meshIds.has(behavior.mesh.id)) {
+    if (behavior?.mesh?.id) {
       this.meshIds.add(behavior.mesh.id)
       this.behaviorByMeshId.set(behavior.mesh.id, behavior)
     }
@@ -238,6 +259,14 @@ class MoveManager {
       this.meshIds.delete(behavior.mesh.id)
       this.behaviorByMeshId.delete(behavior.mesh.id)
     }
+  }
+
+  /**
+   * @param {import('@babel/core').Mesh} mesh - tested mesh
+   * @returns {boolean} whether this mesh is controlled or not
+   */
+  isManaging(mesh) {
+    return this.meshIds.has(mesh?.id)
   }
 }
 

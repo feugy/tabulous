@@ -175,7 +175,7 @@ describe('given a started server', () => {
           headers: { authorization: `Bearer ${playerId}` },
           payload: {
             query: `mutation {
-  saveGame(game: ${toGraphQLArg({ id: game.id, messages })}) {
+  saveGame(game: ${toGraphQLArg({ id: game.id, messages, meshes: [] })}) {
     id
     kind
     created
@@ -194,7 +194,9 @@ describe('given a started server', () => {
         })
 
         expect(response.json()).toEqual({
-          data: { saveGame: { ...game, playerIds: undefined, players } }
+          data: {
+            saveGame: { ...game, playerIds: undefined, players }
+          }
         })
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).toHaveBeenNthCalledWith(1, playerId)
@@ -204,7 +206,7 @@ describe('given a started server', () => {
         )
         expect(services.getPlayerById).toHaveBeenCalledTimes(2)
         expect(services.saveGame).toHaveBeenCalledWith(
-          { id: game.id, messages },
+          { id: game.id, messages, meshes: [] },
           playerId
         )
         expect(services.saveGame).toHaveBeenCalledTimes(1)

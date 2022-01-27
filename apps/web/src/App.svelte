@@ -32,7 +32,4 @@
   }
 </script>
 
-<style type="postcss">
-</style>
-
 <Router {routes} on:conditionsFailed={handleUnauthenticated} />

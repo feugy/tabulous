@@ -4,7 +4,7 @@ import { Observable } from '@babylonjs/core/Misc/observable'
 import { createPeerPointer } from '../peer-pointer'
 import { screenToGround } from '../utils'
 
-function getKey(action) {
+function getKey(action = {}) {
   return `${action?.meshId}-${action.fn?.toString() || 'pos'}`
 }
 
@@ -46,7 +46,7 @@ class ControlManager {
     this.controlables = new Map()
     this.peerPointers = new Map()
     // prevents loops when applying an received action
-    this.inhibit = new Set()
+    this.inhibitedKeys = new Set()
   }
 
   /**
@@ -73,21 +73,32 @@ class ControlManager {
   /**
    * Registers a new controllable mesh.
    * Does nothing if this mesh is already managed.
-   * @param {object} mesh - controled mesh (needs at least an id property).
+   * @param {import('@babel/core').Mesh} mesh - controled mesh (needs at least an id property).
    */
   registerControlable(mesh) {
-    if (mesh?.id && !this.controlables.has(mesh.id)) {
+    if (!this.isManaging(mesh)) {
       this.controlables.set(mesh.id, mesh)
+      mesh.onDisposeObservable.addOnce(() =>
+        controlManager.unregisterControlable(mesh)
+      )
     }
   }
 
   /**
    * Unregisters a controlled mesh.
    * Does nothing on unmanaged mesh.
-   * @param {object} mesh - controlled mesh (needs at least an id property).
+   * @param {import('@babel/core').Mesh} mesh - controlled mesh (needs at least an id property).
    */
   unregisterControlable(mesh) {
     this.controlables.delete(mesh?.id)
+  }
+
+  /**
+   * @param {import('@babel/core').Mesh} mesh - tested mesh
+   * @returns {boolean} whether this mesh is controlled or not
+   */
+  isManaging(mesh) {
+    return this.controlables.has(mesh?.id)
   }
 
   /**
@@ -97,7 +108,10 @@ class ControlManager {
    */
   record(action) {
     const key = getKey(action)
-    if (!this.inhibit.has(key) && this.controlables.has(action?.meshId)) {
+    if (
+      !this.inhibitedKeys.has(key) &&
+      this.isManaging({ id: action?.meshId })
+    ) {
       this.onActionObservable.notifyObservers(action)
     }
   }
@@ -117,14 +131,14 @@ class ControlManager {
     const key = getKey(action)
     // inhibits to avoid looping when this mesh will invoke apply()
     if (fromPeer) {
-      this.inhibit.add(key)
+      this.inhibitedKeys.add(key)
     }
     if (action.fn) {
-      await mesh.metadata[action.fn](...(action.args || []))
+      await mesh.metadata?.[action.fn]?.(...(action.args || []))
     } else if (action.pos) {
       mesh.setAbsolutePosition(Vector3.FromArray(action.pos))
     }
-    this.inhibit.delete(key)
+    this.inhibitedKeys.delete(key)
   }
 
   /**
@@ -136,12 +150,12 @@ class ControlManager {
    * @param {number[]} params.pointer - Vector3 components describing the pointer position in 3D engine.
    */
   movePeerPointer({ playerId, pointer }) {
-    let mesh = this.peerPointers.get(playerId)
-    if (!mesh) {
-      mesh = createPeerPointer({ id: playerId })
-      this.peerPointers.set(playerId, mesh)
+    let peerPointer = this.getPeerPointer(playerId)
+    if (!peerPointer) {
+      peerPointer = createPeerPointer({ id: playerId })
+      this.peerPointers.set(playerId, peerPointer)
     }
-    mesh.setAbsolutePosition(new Vector3(pointer[0], 0.5, pointer[2]))
+    peerPointer.setAbsolutePosition(new Vector3(pointer[0], 0.5, pointer[2]))
   }
 
   /**
@@ -155,6 +169,15 @@ class ControlManager {
         this.peerPointers.delete(playerId)
       }
     }
+  }
+
+  /**
+   * Returns the peer pointer mesh representing a given player.
+   * @param {string} playerId - id of the tested player.
+   * @returns {import('@babel/core').Mesh} the corresponding pointer, if any.
+   */
+  getPeerPointer(playerId) {
+    return this.peerPointers.get(playerId)
   }
 }
 

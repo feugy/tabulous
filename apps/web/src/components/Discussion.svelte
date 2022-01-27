@@ -15,7 +15,7 @@
   $: if (messageContainer && thread) {
     // automatically scrolls to last when receiving a new message
     setTimeout(() => {
-      messageContainer?.lastElementChild?.scrollIntoView()
+      messageContainer?.lastElementChild?.scrollIntoView?.()
     }, 0)
   }
 
@@ -32,10 +32,9 @@
   }
 </script>
 
-<style type="postcss">
+<style lang="postcss">
   .discussion {
-    @apply flex flex-col overflow-auto p-2 shadow-md justify-end h-full;
-    background: theme('backgrounds.primary');
+    @apply flex flex-col overflow-auto p-2 shadow-md justify-end h-full bg-$base-lighter;
   }
 
   .messages {
@@ -48,8 +47,7 @@
   }
 
   .from {
-    @apply text-right font-medium pr-2;
-    color: theme('colors.secondary.main');
+    @apply text-right font-medium pr-2 text-$secondary;
   }
 
   form {

@@ -31,7 +31,7 @@ describe('MinimizableSection component', () => {
     it('collapses and expands on click', async () => {
       renderComponent()
 
-      const section = screen.queryByRole('region')
+      const section = screen.getByRole('region')
       expect(section).toHaveAttribute('aria-expanded', 'true')
 
       fireEvent.click(screen.getByRole('tab'))
@@ -77,7 +77,7 @@ describe('MinimizableSection component', () => {
 
     it('can start minimized', () => {
       renderComponent({ minimized: true })
-      expect(screen.queryByRole('region')).toHaveAttribute(
+      expect(screen.getByRole('region')).toHaveAttribute(
         'aria-expanded',
         'false'
       )

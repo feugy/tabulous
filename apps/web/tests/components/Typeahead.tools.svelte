@@ -7,6 +7,7 @@
   component={Typeahead}
   name="Components/Typeahead"
   events={['change', 'input', 'close', 'select']}
+  layout="centered"
 >
   <Tool name="With labels" />
   <Tool name="With objects" />

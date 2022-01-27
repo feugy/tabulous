@@ -13,14 +13,11 @@ module.exports = {
       processor: 'svelte3/svelte3'
     },
     {
-      files: ['*.mjs']
+      files: ['*.js'],
+      extends: ['prettier']
     }
   ],
   parserOptions: {
     sourceType: 'module'
-  },
-  settings: {
-    // unfortunately, eslint-plugin-svelte can not work with preprocessors, like postcss
-    'svelte3/ignore-styles': () => true
   }
 }

@@ -1,10 +1,9 @@
-const sveltePreprocess = require('svelte-preprocess')
-const postcss = require('./postcss.config.js')
+const { windi } = require('svelte-windicss-preprocess')
 
 // This file is used by
 // - @svelte/vite-plugin-svelte
 // - jest-transform-svelte
 // - "Svelte for VS Code" plugin
 module.exports = {
-  preprocess: sveltePreprocess({ postcss })
+  preprocess: windi()
 }

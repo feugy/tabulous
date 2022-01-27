@@ -1,9 +1,15 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { MoveBehavior } from './movable'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
+import {
+  AnchorBehaviorName,
+  MoveBehaviorName,
+  StackBehaviorName
+} from './names'
 import { TargetBehavior } from './targetable'
 import { controlManager, inputManager, selectionManager } from '../managers'
 import {
-  altitudeOnTop,
+  getCenterAltitudeAbove,
   animateMove,
   applyGravity,
   getTargetableBehavior,
@@ -14,55 +20,33 @@ import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('stackable')
 
-function enableLast(stack, enabled) {
-  const operation = enabled ? 'enable' : 'disable'
-  const mesh = stack[stack.length - 1]
-  const targetable = getTargetableBehavior(mesh)
-  if (targetable) {
-    targetable.enabled = enabled
-    logger.info({ mesh }, `${operation} target for ${mesh.id}`)
-  }
-  const movable = mesh.getBehaviorByName(MoveBehavior.NAME)
-  if (movable) {
-    movable.enabled = enabled
-    logger.info({ mesh }, `${operation} moves for ${mesh.id}`)
-  }
-  if (enabled) {
-    controlManager.registerControlable(mesh)
-  } else {
-    controlManager.unregisterControlable(mesh)
-  }
-}
-
-function setBase(mesh, base, stack) {
-  const targetable = getTargetableBehavior(mesh)
-  if (targetable) {
-    targetable.base = base
-    targetable.stack = stack
-    mesh.metadata.stack = targetable.stack
-  }
-  return targetable
-}
+/**
+ * @typedef {object} StackableState behavior persistent state, including:
+ * @property {string[]} stackIds - array of stacked mesh ids, not including the current mesh if alone.
+ * @property {string[]} kinds? - an optional array of allowed drag kinds for this zone (allows all if not specified).
+ * @property {number} priority? - priority applied when multiple targets with same altitude apply.
+ * @property {number} [duration=100] - duration (in milliseconds) when pushing or shuffling individual meshes.
+ * @property {number} [extent=0.6] - drop zone extent zone (1 means 100% size).
+ */
 
 export class StackBehavior extends TargetBehavior {
   /**
    * Creates behavior to make a mesh stackable (it can be stacked above other stackable mesh)
    * and targetable (it can receive other stackable meshs).
-   * Once a mesh is stacked bellow others, it can not be moved independently, and its targets are disabled.
+   * Once a mesh is stacked bellow others, it can not be moved independently, and its targets and anchors are disabled.
    * Only the highest mesh on stack can be moved (it is automatically poped out) and be targeted.
    *
    * @extends {TargetBehavior}
    * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
    * @property {import('@babylonjs/core').Mesh[]} stack - array of meshes (initially contains this mesh).
-   * @property {number} moveDuration - duration (in milliseconds) when pushing or shuffling individual meshes.
+   * @property {StackableState} state - the behavior's current state.
    *
-   * @param {object} params - parameters, including:
-   * @param {number} [params.moveDuration=100] - duration (in milliseconds) of an individual mesh reorder animation.
+   * @param {StackableState} state - behavior state.
    */
-  constructor({ moveDuration } = {}) {
+  constructor(state = {}) {
     super()
+    this._state = state
     this.stack = []
-    this.moveDuration = moveDuration || 100
     // private
     this.dragObserver = null
     this.dropObserver = null
@@ -75,7 +59,7 @@ export class StackBehavior extends TargetBehavior {
    * @property {string} name - this behavior's constant name.
    */
   get name() {
-    return StackBehavior.NAME
+    return StackBehaviorName
   }
 
   /**
@@ -84,14 +68,15 @@ export class StackBehavior extends TargetBehavior {
    * - a `push()` function to programmatically drop another mesh onto the stack.
    * - a `pop()` function to programmatically pop the highest mesh from stack.
    * - a `reorder()` function to re-order the stack with animation.
-   * - a `flipAll()` function to flip an entire stack with animation.
+   * - a `flipAll()` function to flip an entire stack with animation, inverting the stack order.
+   * - a `rotateAll()` function to rotate an entire stack with animation.
    * It binds to its drop observable to push dropped meshes to the stack.
    * It binds to the drag manager drag observable to pop the first stacked mesh when dragging it.
    * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
    */
   attach(mesh) {
     super.attach(mesh)
-    this.fromState({ stack: [] })
+    this.fromState(this._state)
 
     this.dropObserver = this.onDropObservable.add(({ dropped }) => {
       // sort all dropped meshes by elevation (lowest first)
@@ -114,7 +99,6 @@ export class StackBehavior extends TargetBehavior {
         this.pop()
       }
     })
-    // TODO automatically define target?
   }
 
   /**
@@ -141,22 +125,27 @@ export class StackBehavior extends TargetBehavior {
     const mesh = this.stack[0].getScene().getMeshById(meshId)
     if (!mesh || this.stack.includes(mesh)) return
 
-    const base = this.base || this
-    const { moveDuration, stack } = base
+    const base = this.base ?? this
+    const { stack } = base
 
     if (!this.inhibitControl) {
       controlManager.record({ meshId: stack[0].id, fn: 'push', args: [meshId] })
     }
     const { x, z } = stack[0].absolutePosition
-    const y = altitudeOnTop(mesh, stack[stack.length - 1])
+    const y = getCenterAltitudeAbove(stack[stack.length - 1], mesh)
     logger.info(
       { stack, mesh, x, y, z },
       `push ${mesh.id} on stack ${stack.map(({ id }) => id)}`
     )
-    enableLast(stack, false)
+    enableLast(stack, false, this)
     setBase(mesh, base, stack)
     stack.push(mesh)
-    await animateMove(mesh, new Vector3(x, y, z), moveDuration, true)
+    await animateMove(
+      mesh,
+      new Vector3(x, y, z),
+      this.inhibitControl ? 0 : this._state.duration,
+      true
+    )
   }
 
   /**
@@ -174,11 +163,12 @@ export class StackBehavior extends TargetBehavior {
     const mesh = stack.pop()
     setBase(mesh, null, [mesh])
     // note: no need to enable the poped mesh target: since it was last, it's always enabled
-    enableLast(stack, true)
+    enableLast(stack, true, this)
     logger.info(
       { stack, mesh },
       `pop ${mesh.id} out of stack ${stack.map(({ id }) => id)}`
     )
+    // note: all mesh in stack are uncontrollable, so we pass the poped mesh id
     controlManager.record({ meshId: stack[0].id, fn: 'pop' })
     return mesh
   }
@@ -204,7 +194,7 @@ export class StackBehavior extends TargetBehavior {
     const stack = ids.map(id => old[posById.get(id)])
 
     controlManager.record({
-      meshId: stack[0].id,
+      meshId: old[0].id,
       fn: 'reorder',
       args: [ids, animate]
     })
@@ -220,8 +210,8 @@ export class StackBehavior extends TargetBehavior {
       setBase(mesh, baseBehavior, stack)
     }
     // updates targets
-    enableLast(old, false)
-    enableLast(stack, true)
+    enableLast(old, false, this)
+    enableLast(stack, true, this)
 
     for (const mesh of stack) {
       // prevents interactions and collisions
@@ -237,7 +227,7 @@ export class StackBehavior extends TargetBehavior {
         newPositions.push(mesh.absolutePosition.clone())
       } else {
         const { x, z } = mesh.absolutePosition
-        const position = new Vector3(x, altitudeOnTop(mesh, last), z)
+        const position = new Vector3(x, getCenterAltitudeAbove(last, mesh), z)
         mesh.setAbsolutePosition(position)
         newPositions.push(position)
       }
@@ -260,7 +250,7 @@ export class StackBehavior extends TargetBehavior {
                 Math.cos(i * increment) * distance
               )
             ),
-            this.moveDuration * 2
+            this._state.duration * 2
           ).then(() => {
             // animateMove re-enabled interactions and collisions
             mesh.isPickable = false
@@ -268,12 +258,9 @@ export class StackBehavior extends TargetBehavior {
         )
       )
       // then animate all cards to final positions
-      const moveDuration = Math.max(
-        (baseBehavior.moveDuration * 4) / stack.length,
-        0.02
-      )
+      const duration = Math.max((this._state.duration * 4) / stack.length, 0.02)
       for (const [i, mesh] of stack.entries()) {
-        await animateMove(mesh, newPositions[i], moveDuration)
+        await animateMove(mesh, newPositions[i], duration)
       }
     }
     for (const mesh of stack) {
@@ -282,33 +269,53 @@ export class StackBehavior extends TargetBehavior {
   }
 
   /**
-   * Flips entire stack, when relevant. Does nothing on 1-mesh stacks.
+   * Flips entire stack:
+   * - records the action into the control manager
    * - flips in parallel each mesh
    * - re-order the stack so the lowest mesh becomes the highest
-   * - disables targets and moves of all meshes but the highest one
+   *
+   * Controllable meshes are unregistered during the operation to avoid triggering individual actions
    * @async
    */
   async flipAll() {
     const base = this.base ?? this
-    if (base.stack.length <= 1) return
 
+    controlManager.record({ meshId: base.stack[0].id, fn: 'flipAll' })
+    const ignored = []
+    for (const mesh of base.stack) {
+      if (controlManager.isManaging(mesh)) {
+        controlManager.unregisterControlable(mesh)
+        ignored.push(mesh)
+      }
+    }
     // we need to wait before reordering that cards reached their new place
     await Promise.all(base.stack.map(mesh => mesh.metadata.flip?.()))
     base.reorder(base.stack.map(({ id }) => id).reverse(), false)
+    for (const mesh of ignored) {
+      controlManager.registerControlable(mesh)
+    }
   }
 
   /**
-   * @typedef {object} StackableState behavior persistent state, including:
-   * @property {string[]} stack - array of stacked mesh ids, not including the current mesh if alone.
+   * Rotates entire stack (each mesh in parallel).
+   * @async
    */
+  async rotateAll() {
+    const base = this.base ?? this
+    await Promise.all(base.stack.map(mesh => mesh.metadata.rotate?.()))
+  }
 
   /**
    * Gets this behavior's state.
    * @returns {StackableState} this behavior's state for serialization.
    */
-  serialize() {
+  get state() {
     return {
-      stack:
+      duration: this._state.duration,
+      extent: this._state.extent,
+      kinds: this._state.kinds,
+      priority: this._state.priority,
+      stackIds:
         this.base !== null || this.stack.length <= 1
           ? []
           : this.stack.slice(1).map(({ id }) => id)
@@ -317,32 +324,91 @@ export class StackBehavior extends TargetBehavior {
 
   /**
    * Updates this behavior's state and mesh to match provided data.
-   * @param {FlippableState} state - state to update to.
+   * @param {StackableState} state - state to update to.
    */
-  fromState(state) {
-    if (Array.isArray(state.stack)) {
-      this.stack = [this.mesh]
-      if (!this.mesh.metadata) {
-        this.mesh.metadata = {}
-      }
-      this.mesh.metadata.stack = this.stack
-      this.mesh.metadata.push = (...args) => this.push(...args)
-      this.mesh.metadata.pop = () => this.pop()
-      this.mesh.metadata.reorder = (...args) => this.reorder(...args)
-      this.mesh.metadata.flipAll = () => this.flipAll()
-      this.inhibitControl = true
-      for (const id of state.stack) {
-        this.push(id)
-      }
-      this.inhibitControl = false
+  fromState({
+    stackIds = [],
+    extent = 0.3,
+    duration = 100,
+    kinds,
+    enabled,
+    priority
+  } = {}) {
+    if (!this.mesh) {
+      throw new Error('Can not restore state without mesh')
     }
+    this._state = { kinds, priority, extent, enabled, duration }
+
+    this.stack = [this.mesh]
+    // dispose previous drop zone
+    for (const zone of this.zones) {
+      this.removeZone(zone)
+    }
+    // builds a drop zone from the mesh's dimensions
+    const { x, y, z } = this.mesh.getBoundingInfo().boundingBox.extendSizeWorld
+    const dropZone =
+      this.mesh.name === 'roundToken'
+        ? CreateCylinder('drop-zone', { diameter: x * 2, height: y * 2 })
+        : CreateBox('drop-zone', { width: x * 2, height: y * 2, depth: z * 2 })
+    dropZone.parent = this.mesh
+    this.addZone(
+      dropZone,
+      this._state.extent,
+      this._state.kinds,
+      this._state.enabled,
+      this._state.priority
+    )
+
+    this.inhibitControl = true
+    for (const id of stackIds) {
+      this.push(id)
+    }
+    this.inhibitControl = false
+
+    if (!this.mesh.metadata) {
+      this.mesh.metadata = {}
+    }
+    this.mesh.metadata.stack = this.stack
+    this.mesh.metadata.push = this.push.bind(this)
+    this.mesh.metadata.pop = this.pop.bind(this)
+    this.mesh.metadata.reorder = this.reorder.bind(this)
+    this.mesh.metadata.flipAll = this.flipAll.bind(this)
+    this.mesh.metadata.rotateAll = this.rotateAll.bind(this)
   }
 }
 
-/**
- * Name of all stackable behaviors.
- * @static
- * @memberof StackBehavior
- * @type {string}
- */
-StackBehavior.NAME = 'stackable'
+function enableLast(stack, enabled, behavior) {
+  const operation = enabled ? 'enable' : 'disable'
+  const mesh = stack[stack.length - 1]
+  const targetable =
+    behavior.mesh === mesh ? behavior : getTargetableBehavior(mesh)
+  if (targetable) {
+    for (const zone of targetable.zones) {
+      zone.enabled = enabled
+    }
+    logger.info({ mesh }, `${operation} target for ${mesh.id}`)
+  }
+  const anchorable = mesh.getBehaviorByName(AnchorBehaviorName)
+  if (anchorable) {
+    if (enabled) {
+      anchorable.enable()
+    } else {
+      anchorable.disable()
+    }
+  }
+  const movable = mesh.getBehaviorByName(MoveBehaviorName)
+  if (movable) {
+    movable.enabled = enabled
+    logger.info({ mesh }, `${operation} moves for ${mesh.id}`)
+  }
+}
+
+function setBase(mesh, base, stack) {
+  const targetable = getTargetableBehavior(mesh)
+  if (targetable) {
+    targetable.base = base
+    targetable.stack = stack
+    mesh.metadata.stack = targetable.stack
+  }
+  return targetable
+}

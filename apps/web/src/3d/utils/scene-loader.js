@@ -1,30 +1,31 @@
 // mandatory side effect
 import '@babylonjs/core/Loading/loadingScreen'
-import { createCard, createRoundToken, createRoundedTile } from '..'
-import { FlipBehavior, RotateBehavior, StackBehavior } from '../behaviors'
+import { Vector3 } from '@babylonjs/core/Maths/math.vector'
+import { createCard } from '../card'
+import { createRoundToken } from '../round-token'
+import { createRoundedTile } from '../rounded-tile'
+import { restoreBehaviors } from './behaviors'
+import { AnchorBehaviorName, StackBehaviorName } from '../behaviors/names'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('scene-loader')
 
-export function serializeScene(engine) {
+/**
+ * Serializes engine's meshes.
+ * @param {import('@babel/core').Engine} engine - 3D engine used.
+ * @returns {object[]} list of serialized meshes TODO.
+ */
+export function serializeMeshes(engine) {
   if (!engine.scenes.length) return
-  const data = {
-    cards: [],
-    roundTokens: [],
-    roundedTiles: []
-  }
+  const meshes = []
   for (const mesh of engine.scenes[0].meshes) {
-    if (mesh.name === 'card') {
-      data.cards.push(mesh.metadata.serialize())
-    } else if (mesh.name === 'round-token') {
-      data.roundTokens.push(mesh.metadata.serialize())
-    } else if (mesh.name === 'rounded-tile') {
-      data.roundedTiles.push(mesh.metadata.serialize())
+    if (supportedNames.includes(mesh.name)) {
+      meshes.push(mesh.metadata.serialize())
     }
   }
-  logger.debug({ data }, `serialize scene`)
-  return data
+  logger.debug({ meshes }, `serialize meshes`)
+  return meshes
 }
 
 /**
@@ -33,10 +34,10 @@ export function serializeScene(engine) {
  * - deletes existing mesh that are not found in the provided data
  * - shows and hides Babylon's loading UI while loading asset (initial loading only)
  * @param {import('@babel/core').Engine} engine - 3D engine used.
- * @param {object} data - the loaded scene data TODO.
+ * @param {object} meshes - list of loaded meshes TODO.
  * @param {boolean} [initial = true] - indicates whether this is the first loading or not.
  */
-export function loadScene(engine, data, initial = true) {
+export function loadMeshes(engine, meshes, initial = true) {
   if (!engine.scenes.length) return
   const [scene] = engine.scenes
   if (initial) {
@@ -45,55 +46,60 @@ export function loadScene(engine, data, initial = true) {
   }
   const disposables = new Set(scene.meshes)
   for (const mesh of disposables) {
-    if (!['card', 'round-token', 'rounded-tile'].includes(mesh.name)) {
+    if (!supportedNames.includes(mesh.name)) {
       disposables.delete(mesh)
     }
   }
 
   const stackables = []
-  logger.debug({ data }, `load new scene`)
-
-  const sources = [
-    { factory: createCard, source: data.cards, name: 'card' },
-    {
-      factory: createRoundToken,
-      source: data.roundTokens,
-      name: 'round token'
-    },
-    {
-      factory: createRoundedTile,
-      source: data.roundedTiles,
-      name: 'rounded tile'
-    }
-  ]
+  const anchorables = []
+  logger.debug({ meshes }, `loads meshes`)
 
   // makes sure all meshes are created
-  for (const { factory, source, name } of sources) {
-    for (const state of source) {
-      let mesh = scene.getMeshById(state.id)
-      if (mesh) {
-        logger.debug({ state, mesh }, `updates ${name} ${state.id}`)
-        disposables.delete(mesh)
-        mesh.position.copyFromFloats(state.x, state.y, state.z)
-        const flippable = mesh.getBehaviorByName(FlipBehavior.NAME)
-        if (flippable) {
-          flippable.fromState(state)
-        }
-        const rotable = mesh.getBehaviorByName(RotateBehavior.NAME)
-        if (rotable) {
-          rotable.fromState(state)
-        }
+  for (const rawState of meshes) {
+    const state = removeNulls(rawState)
+    let mesh = scene.getMeshById(state.id)
+    const { stackable, anchorable, shape: name } = state
+    if (mesh) {
+      logger.debug({ state, mesh }, `updates ${name} ${state.id}`)
+      disposables.delete(mesh)
+      mesh.setAbsolutePosition(new Vector3(state.x, state.y, state.z))
+      mesh.computeWorldMatrix(true)
+      restoreBehaviors(mesh.behaviors, state)
+    } else {
+      logger.debug({ state }, `create new ${name} ${state.id}`)
+      mesh = meshCreatorByName.get(name)({
+        ...state,
+        anchorable: anchorable ? { ...anchorable, anchors: [] } : undefined,
+        stackable: stackable ? { ...stackable, stackIds: undefined } : undefined
+      })
+    }
+    const stackBehavior = mesh.getBehaviorByName(StackBehaviorName)
+    if (stackBehavior) {
+      if (stackable?.stackIds?.length > 0) {
+        // stores for later
+        stackables.push({
+          stackBehavior,
+          stackable,
+          y: mesh.absolutePosition.y
+        })
       } else {
-        logger.debug({ state }, `create new ${name} ${state.id}`)
-        mesh = factory({ ...state, stack: undefined })
-      }
-      const stackable = mesh.getBehaviorByName(StackBehavior.NAME)
-      if (stackable) {
         // reset stacks
-        stackable.fromState({ stack: [] })
-        if (state.stack?.length > 0) {
-          stackables.push({ stackable, state })
-        }
+        stackBehavior.fromState(stackable)
+      }
+    }
+    const anchorBehavior = mesh.getBehaviorByName(AnchorBehaviorName)
+    if (anchorBehavior) {
+      if (anchorable?.anchors.find(({ snappedId }) => snappedId)) {
+        // stores for later
+        anchorables.push({
+          anchorBehavior,
+          anchorable,
+          y: mesh.absolutePosition.y
+        })
+      } else {
+        // reset anchors
+        anchorBehavior.fromState(anchorable)
       }
     }
   }
@@ -102,8 +108,37 @@ export function loadScene(engine, data, initial = true) {
     logger.debug({ mesh }, `dispose mesh ${mesh.id}`)
     mesh.dispose()
   }
-  // now that all mesh are available, restore all stacks
-  for (const { stackable, state } of stackables) {
-    stackable.fromState(state)
+  // now that all mesh are available, restore all stacks and anchors, starting from lowest
+  for (const { stackBehavior, stackable } of stackables.sort(
+    (a, b) => a.y - b.y
+  )) {
+    stackBehavior.fromState(stackable)
   }
+  for (const { anchorBehavior, anchorable } of anchorables.sort(
+    (a, b) => a.y - b.y
+  )) {
+    anchorBehavior.fromState(anchorable)
+  }
+}
+
+const meshCreatorByName = new Map([
+  ['card', createCard],
+  ['roundToken', createRoundToken],
+  ['roundedTile', createRoundedTile]
+])
+
+const supportedNames = [...meshCreatorByName.keys()]
+
+function removeNulls(object) {
+  const result = {}
+  for (const key in object) {
+    const prop = object[key]
+    if (prop !== null) {
+      result[key] =
+        !Array.isArray(prop) && typeof prop === 'object'
+          ? removeNulls(prop)
+          : prop
+    }
+  }
+  return result
 }

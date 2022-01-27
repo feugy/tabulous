@@ -27,6 +27,7 @@ export function screenToGround(scene, { x, y }) {
  * @returns {boolean} true if the point is within the table area, false otherwise.
  */
 export function isAboveTable(scene, { x, y }) {
+  /* istanbul ignore next */
   if (!table || table.isDisposed) {
     table = scene.getMeshById('table')
   }
@@ -40,6 +41,7 @@ export function isAboveTable(scene, { x, y }) {
  * @returns {boolean} true if the point is within the table area, false otherwise.
  */
 export function isPositionAboveTable(scene, position) {
+  /* istanbul ignore next */
   if (!table || table.isDisposed) {
     table = scene.getMeshById('table')
   }

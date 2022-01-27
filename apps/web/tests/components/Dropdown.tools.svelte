@@ -29,7 +29,6 @@ lacus vestibulum sed arcu non odio euismod lacinia.`
 </script>
 
 <ToolBox
-  component={Dropdown}
   name="Components/Drop down"
   props={{
     disabled: false,
@@ -43,18 +42,32 @@ lacus vestibulum sed arcu non odio euismod lacinia.`
       'Hallo ! (das ist im Deutsch)'
     ]
   }}
-  events={['click', 'select', 'close']}
+  layout="centered"
 >
-  <Tool name="Left aligned">
-    <div slot="header">{headerText}</div>
-    <div slot="footer">{footerText}</div>
+  <Tool name="Left aligned" let:props let:handleEvent>
+    <div>
+      <div>{headerText}</div>
+      <Dropdown
+        {...props}
+        on:click={handleEvent}
+        on:select={handleEvent}
+        on:close={handleEvent}
+      />
+      <div>{footerText}</div>
+    </div>
   </Tool>
-  <span class="text-right">
-    <Tool name="Right aligned">
-      <div slot="header">{headerText}</div>
-      <div slot="footer">{footerText}</div>
-    </Tool>
-  </span>
+  <Tool name="Right aligned" let:props let:handleEvent>
+    <div class="text-right">
+      <div>{headerText}</div>
+      <Dropdown
+        {...props}
+        on:click={handleEvent}
+        on:select={handleEvent}
+        on:close={handleEvent}
+      />
+      <div>{footerText}</div>
+    </div>
+  </Tool>
   <Tool
     name="Icon only"
     props={{
@@ -67,9 +80,19 @@ lacus vestibulum sed arcu non odio euismod lacinia.`
         { icon: 'fast_forward', label: 'next' }
       ]
     }}
+    let:props
+    let:handleEvent
   >
-    <div slot="header">{headerText}</div>
-    <div slot="footer">{footerText}</div>
+    <div>
+      <div>{headerText}</div>
+      <Dropdown
+        {...props}
+        on:click={handleEvent}
+        on:select={handleEvent}
+        on:close={handleEvent}
+      />
+      <div>{footerText}</div>
+    </div>
   </Tool>
   <Tool
     name="Value as text"
@@ -84,8 +107,18 @@ lacus vestibulum sed arcu non odio euismod lacinia.`
         { icon: 'fast_forward', label: 'next' }
       ]
     }}
+    let:props
+    let:handleEvent
   >
-    <div slot="header">{headerText}</div>
-    <div slot="footer">{footerText}</div>
+    <div>
+      <div>{headerText}</div>
+      <Dropdown
+        {...props}
+        on:click={handleEvent}
+        on:select={handleEvent}
+        on:close={handleEvent}
+      />
+      <div>{footerText}</div>
+    </div>
   </Tool>
 </ToolBox>

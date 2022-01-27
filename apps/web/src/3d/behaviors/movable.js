@@ -1,4 +1,12 @@
+import { MoveBehaviorName } from './names'
 import { moveManager } from '../managers'
+
+/**
+ * @typedef {object} MovableState behavior persistent state, including:
+ * @property {string} kind - drag kind, used to select targets.
+ * @property {boolean} [snapDistance=0.25] - snap grid unit, in 3D world coordinate.
+ * @property {number} [duration=100] - duration (in milliseconds) of the snap animation.
+ */
 
 export class MoveBehavior {
   /**
@@ -8,28 +16,21 @@ export class MoveBehavior {
    *
    * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
    * @property {boolean} enabled - activity status (true by default).
-   * @property {string} dragKind - drag kind.
-   * @property {number} snapDistance - snap grid unit, in 3D world coordinate.
-   * @property {number} moveDuration - duration (in milliseconds) of the snap move.
+   * @property {MovableState} state - the behavior's current state.
    *
-   * @param {object} params - parameters, including:
-   * @param {number} params.snapDistance - snap grid unit, in 3D world coordinate.
-   * @param {number} params.moveDuration - duration (in milliseconds) of the snap move.
-   * @param {string} params.dragKind - drag kind.
+   * @param {MovableState} state - behavior state.
    */
-  constructor({ moveDuration, snapDistance, dragKind } = {}) {
+  constructor(state = {}) {
     this.mesh = null
-    this.dragKind = dragKind
+    this.state = state
     this.enabled = true
-    this.snapDistance = snapDistance || 0.25
-    this.moveDuration = moveDuration || 100
   }
 
   /**
    * @property {string} name - this behavior's constant name.
    */
   get name() {
-    return MoveBehavior.NAME
+    return MoveBehaviorName
   }
 
   /**
@@ -44,6 +45,8 @@ export class MoveBehavior {
    */
   attach(mesh) {
     this.mesh = mesh
+    mesh.isPickable = true
+    this.fromState(this.state)
     moveManager.registerMovable(this)
   }
 
@@ -51,14 +54,20 @@ export class MoveBehavior {
    * Detaches this behavior from its mesh, by unregistering from the drag manager.
    */
   detach() {
-    moveManager.unregisterMovable(this)
+    if (this.mesh) {
+      this.mesh.isPickable = false
+      moveManager.unregisterMovable(this)
+    }
+  }
+
+  /**
+   * Updates this behavior's state and mesh to match provided data.
+   * @param {MovableState} state - state to update to.
+   */
+  fromState({ kind, snapDistance = 0.25, duration = 100 } = {}) {
+    if (!this.mesh) {
+      throw new Error('Can not restore state without mesh')
+    }
+    this.state = { kind, snapDistance, duration }
   }
 }
-
-/**
- * Name of all draggable behaviors.
- * @static
- * @memberof MoveBehavior
- * @type {string}
- */
-MoveBehavior.NAME = 'movable'

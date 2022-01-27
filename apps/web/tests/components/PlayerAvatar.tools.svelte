@@ -11,6 +11,7 @@
   component={PlayerAvatarWithVideo}
   props={{ player }}
   events={['mute', 'stop']}
+  layout="centered"
 >
   <Tool name="With video" />
   <Tool name="With uncontrollable video" props={{ controllable: false }} />

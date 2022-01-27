@@ -16,7 +16,7 @@ import {
 } from './peer-channels'
 import * as graphQL from '../graphql'
 import { makeLogger } from '../utils'
-import { loadScene, serializeScene } from '../3d/utils'
+import { loadMeshes, serializeMeshes } from '../3d/utils'
 
 const logger = makeLogger('game-manager')
 
@@ -54,7 +54,8 @@ let skipSharingCamera = false
 let cameras = []
 
 function load(game, engine, firstLoad) {
-  loadScene(engine, game.scene, firstLoad)
+  if (!firstLoad) return // TODO remove, just for testing
+  loadMeshes(engine, game.meshes, firstLoad)
   if (game.messages) {
     loadThread(game.messages)
   }
@@ -94,10 +95,10 @@ function takeHostRole(gameId, engine) {
     // save scene
     action.pipe(debounceTime(1000)).subscribe(action => {
       logger.info({ gameId, action }, `persisting game scene on action`)
-      const scene = serializeScene(engine)
-      runMutation(graphQL.saveGame, { game: { id: gameId, scene } })
+      const meshes = serializeMeshes(engine)
+      runMutation(graphQL.saveGame, { game: { id: gameId, meshes } })
       logger.info({ gameId }, `sending scene sync`)
-      send({ type: 'game-sync', gameId, scene })
+      send({ type: 'game-sync', gameId, meshes })
     }),
     // save discussion thread
     merge(lastMessageSent, lastMessageReceived)
@@ -137,7 +138,7 @@ function takeHostRole(gameId, engine) {
         {
           type: 'game-sync',
           gameId,
-          scene: serializeScene(engine),
+          meshes: serializeMeshes(engine),
           messages: serializeThread(),
           cameras
         },
@@ -248,7 +249,7 @@ export async function loadGame(gameId, engine) {
 
   if (game.players.every(({ id, playing }) => id === player.id || !playing)) {
     // is the only playing player: take the host role
-    load(game, engine)
+    load(game, engine, true)
     subscriptions.push(...takeHostRole(gameId, engine))
   } else {
     return new Promise((resolve, reject) => {

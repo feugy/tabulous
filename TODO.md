@@ -1,27 +1,43 @@
 # TODO
 
+## Brittle tests
+
+- `InputManager › given an initialized manager() › handles multiple pointers taps`
+
+  > `expect(received).toHaveLength(expected)` line 1319 (1 long received)
+
+- `Dropdown component › given textual options › closes menu on click`
+
+  > `expect(received).toBeNull()` line 115 (menu does exist)
+
+- `Typeahead component › given object options › closes menu with keyboard and opens on focus`
+
+  > `expect(received).toBeNull()` line 126 (menu does exist)
+
 ## Refactor
 
+- rework remote moves: instead of sending individual positions, send drag start, move and stop (with selection)
+- rework target detection. Instead of using real mesh and rays use shapes overlap: each zone is a rectangle/circle on XZ plane, and the moved mesh another rectangle/circle. Check the center of the moved mesh
+- reconsider the behavior/manager split of responsibilities
 - all manager managing a collection of behaviors should check their capabilities
+- game-interaction unit tests
+- component, connected-component and routes rendering tests
 - completly disable Babylon input management
 - UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
-- parametrize and serialize UVs
+- stackable duration override's movable duration on
 
-## Single player
+## UI
 
-- sort catalog on game names
+- sort and filter catalog on game names
 - feedback on stacking
 - player's hand
 - stack actions:
   - draw multiple cards (either in hand, or in front of them)
   - distribute multiple cards to players (either in their hand, or in front of them)
   - put under
-- boards
 - keyboard
-
-## Multi player
-
 - indicates when remote stream is muted/stopped
+- zoom in/out on rules
 
 ## Server
 
@@ -170,7 +186,7 @@ Follow official Let's Encrypt [instructions](https://certbot.eff.org/lets-encryp
 1. run the certbot command
 
    ```shell
-   certbot certonly --dns-ovh --dns-ovh-credentials certbot/ovh.ini -d tabulous.fr -d www.tabulous.fr --work-dir hosting/certbot --logs-dir hosting/certbot --config-dir hosting/certbot
+   certbot certonly --dns-ovh --dns-ovh-credentials hosting/certbot/ovh.ini -d tabulous.fr -d www.tabulous.fr --work-dir hosting/certbot --logs-dir hosting/certbot --config-dir hosting/certbot
    ```
 
 1. copy relevant files to run it locally
@@ -233,6 +249,8 @@ GraphQL subscriptions over WS are perfect to implement both usecases.
 Enabling tree shaking in Babylon.js is [cumbersom](https://doc.babylonjs.com/divingDeeper/developWithBjs/treeShaking), but really effective:
 Final code went from 1417 modules to 674 (53% less) and the vendor.js file from 3782.23kb to 1389.03 (63% less).
 
+Running game with Babylon's debug panel kills `setTimeout()`. Something under the hood must monkey patch it.
+
 For decent in-game performance, textures must be GPU-compressed to KTX2 container format. This will skip CPU uncompressing jpeg/png content before passing it to the GPU.
 However, it's not broadly supported on WebGL 1 platform, so I kept the png files as fallback.
 
@@ -245,6 +263,8 @@ Sizes:
   - tiles: 352x176
   - tokens: 380x184
 - French suited cards: 360x260
+- Klondike:
+  - board: 1964x980
 
 ```shell
 folder=apps/web/public/images/french-suited-cards; \

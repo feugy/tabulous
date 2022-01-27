@@ -3,12 +3,4 @@
   import { Pane } from '../../src/components'
 </script>
 
-<style>
-  div {
-    padding: 2rem;
-  }
-</style>
-
-<div>
-  <Tool component={Pane} name="Components/Pane" />
-</div>
+<Tool component={Pane} name="Components/Pane" layout="padded" />

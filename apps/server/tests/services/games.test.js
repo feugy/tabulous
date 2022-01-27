@@ -62,11 +62,7 @@ describe('given a subscription to game lists and an initialized repository', () 
         created: expect.any(Number),
         kind,
         playerIds: [playerId],
-        scene: {
-          cards: expect.any(Array),
-          roundTokens: expect.any(Array),
-          roundedTiles: expect.any(Array)
-        },
+        meshes: expect.any(Array),
         cameras: [],
         messages: []
       })
@@ -113,11 +109,10 @@ describe('given a subscription to game lists and an initialized repository', () 
       })
 
       it('can save scene', async () => {
-        const scene = game.scene
-        scene.cards.push(scene.cards[0])
-        expect(await saveGame({ id: game.id, scene }, playerId)).toEqual({
+        const meshes = [...game.meshes, game.meshes[0]]
+        expect(await saveGame({ id: game.id, meshes }, playerId)).toEqual({
           ...game,
-          scene,
+          meshes: [game.meshes[0], game.meshes[0]],
           cameras: [],
           messages: []
         })
@@ -127,7 +122,6 @@ describe('given a subscription to game lists and an initialized repository', () 
         const messages = [{ playerId, text: 'test!', time: Date.now() }]
         expect(await saveGame({ id: game.id, messages }, playerId)).toEqual({
           ...game,
-          scene: game.scene,
           cameras: [],
           messages
         })
@@ -146,7 +140,6 @@ describe('given a subscription to game lists and an initialized repository', () 
         ]
         expect(await saveGame({ id: game.id, cameras }, playerId)).toEqual({
           ...game,
-          scene: game.scene,
           cameras,
           messages: []
         })

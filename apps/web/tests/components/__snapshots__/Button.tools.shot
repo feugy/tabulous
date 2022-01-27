@@ -1,0 +1,113 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Toolshot components/Button.tools.svelte: Primary with icon only 1`] = `
+<span>
+  <button>
+    <span
+      class="material-icons"
+    >
+      videogame_asset
+    </span>
+    
+    
+    
+  </button>
+</span>
+`;
+
+exports[`Toolshot components/Button.tools.svelte: Primary with text 1`] = `
+<span>
+  <button>
+    
+    <span
+      class="text"
+    >
+      Hello!
+    </span>
+    
+    
+  </button>
+</span>
+`;
+
+exports[`Toolshot components/Button.tools.svelte: Primary with text and icon 1`] = `
+<span>
+  <button>
+    <span
+      class="material-icons"
+    >
+      emoji_people
+    </span>
+    
+    <span
+      class="text"
+    >
+      Hello!
+    </span>
+    
+    
+  </button>
+</span>
+`;
+
+exports[`Toolshot components/Button.tools.svelte: Secondary with icon only 1`] = `
+<span>
+  <button
+    class="secondary"
+  >
+    <span
+      class="material-icons"
+    >
+      videogame_asset
+    </span>
+    
+    
+    
+  </button>
+</span>
+`;
+
+exports[`Toolshot components/Button.tools.svelte: Secondary with text 1`] = `
+<span>
+  <button
+    class="secondary"
+  >
+    
+    <span
+      class="text"
+    >
+      Hello!
+    </span>
+    
+    
+  </button>
+</span>
+`;
+
+exports[`Toolshot components/Button.tools.svelte: Secondary with text and icon 1`] = `
+<span>
+  <button
+    class="secondary"
+  >
+    <span
+      class="material-icons"
+    >
+      emoji_people
+    </span>
+    
+    <span
+      class="text"
+    >
+      Hello!
+    </span>
+    
+    
+  </button>
+</span>
+`;
+
+exports[`Toolshot components/Button.tools.svelte: With badge 1`] = `
+<div>
+  Vous avez...
+</div>
+`;
