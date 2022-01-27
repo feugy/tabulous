@@ -8,8 +8,8 @@ server {
 
 server {
   listen 443 ssl;
-  ssl_certificate /home/tabulous/certbot/live/tabulous.fr/fullchain.pem;
-  ssl_certificate_key /home/tabulous/certbot/live/tabulous.fr/privkey.pem;
+  ssl_certificate /etc/letsencrypt/live/tabulous.fr/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/tabulous.fr/privkey.pem;
 
   server_name tabulous.fr www.tabulous.fr tabulous.games www.tabulous.games;
 
