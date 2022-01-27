@@ -67,6 +67,15 @@ describe('StackBehavior', () => {
     expect(mesh.metadata.stack).toEqual([mesh])
   })
 
+  it('can hydrate with stacked mesh', () => {
+    const stacked = CreateBox('box1', {})
+    stacked.addBehavior(new StackBehavior(), true)
+
+    const mesh = CreateBox('box0', {})
+    mesh.addBehavior(new StackBehavior({ stackIds: [stacked.id] }), true)
+    expectStacked([mesh, stacked])
+  })
+
   describe('given attached to a mesh', () => {
     let mesh
     let meshes = []

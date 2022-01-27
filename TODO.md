@@ -1,7 +1,5 @@
 # TODO
 
-- stackable: when building from state, enabledLast gets targetable behavior for current mesh, but it's not yet enabled, and zones are not disabled
-
 ## Brittle tests
 
 - `InputManager › given an initialized manager() › handles multiple pointers taps`

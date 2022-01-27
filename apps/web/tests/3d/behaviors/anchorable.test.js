@@ -659,10 +659,7 @@ function makeStack(mesh) {
   const stacked = CreateBox('stacked-box1', {})
   stacked.addBehavior(new AnimateBehavior(), true)
   stacked.addBehavior(new StackBehavior(), true)
-  const stackable = new StackBehavior()
-  mesh.addBehavior(stackable, true)
-  // TODO issue when using StackBehavior({ stackIds: [stacked.id] })
-  stackable.fromState({ stackIds: [stacked.id] })
+  mesh.addBehavior(new StackBehavior({ stackIds: [stacked.id] }), true)
   controlManager.registerControlable(stacked)
   return stacked
 }

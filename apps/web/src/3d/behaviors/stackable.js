@@ -137,7 +137,7 @@ export class StackBehavior extends TargetBehavior {
       { stack, mesh, x, y, z },
       `push ${mesh.id} on stack ${stack.map(({ id }) => id)}`
     )
-    enableLast(stack, false)
+    enableLast(stack, false, this)
     setBase(mesh, base, stack)
     stack.push(mesh)
     await animateMove(
@@ -163,7 +163,7 @@ export class StackBehavior extends TargetBehavior {
     const mesh = stack.pop()
     setBase(mesh, null, [mesh])
     // note: no need to enable the poped mesh target: since it was last, it's always enabled
-    enableLast(stack, true)
+    enableLast(stack, true, this)
     logger.info(
       { stack, mesh },
       `pop ${mesh.id} out of stack ${stack.map(({ id }) => id)}`
@@ -210,8 +210,8 @@ export class StackBehavior extends TargetBehavior {
       setBase(mesh, baseBehavior, stack)
     }
     // updates targets
-    enableLast(old, false)
-    enableLast(stack, true)
+    enableLast(old, false, this)
+    enableLast(stack, true, this)
 
     for (const mesh of stack) {
       // prevents interactions and collisions
@@ -377,10 +377,11 @@ export class StackBehavior extends TargetBehavior {
   }
 }
 
-function enableLast(stack, enabled) {
+function enableLast(stack, enabled, behavior) {
   const operation = enabled ? 'enable' : 'disable'
   const mesh = stack[stack.length - 1]
-  const targetable = getTargetableBehavior(mesh)
+  const targetable =
+    behavior.mesh === mesh ? behavior : getTargetableBehavior(mesh)
   if (targetable) {
     for (const zone of targetable.zones) {
       zone.enabled = enabled
