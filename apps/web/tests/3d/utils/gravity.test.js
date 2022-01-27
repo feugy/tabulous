@@ -2,7 +2,7 @@ import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
 import {
-  computeYAbove,
+  getCenterAltitudeAbove,
   applyGravity,
   getHeight,
   isAbove,
@@ -160,12 +160,14 @@ describe('isAbove() 3D utility', () => {
   })
 })
 
-describe('computeYAbove() 3D utility', () => {
+describe('getCenterAltitudeAbove() 3D utility', () => {
   it('considers heights when positioning mesh above another one (without fresh matrix)', () => {
     const box = CreateBox('box', { height: 4 })
     box.absolutePosition.y = 20
     const box2 = CreateBox('box2', { height: 3 })
-    expect(computeYAbove(box2, box)).toEqual(20 + 4 / 2 + 3 / 2 + 0.001)
+    expect(getCenterAltitudeAbove(box, box2)).toEqual(
+      20 + 4 / 2 + 3 / 2 + 0.001
+    )
   })
 })
 

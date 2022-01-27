@@ -9,7 +9,7 @@ import {
 import { TargetBehavior } from './targetable'
 import { controlManager, inputManager, selectionManager } from '../managers'
 import {
-  computeYAbove,
+  getCenterAltitudeAbove,
   animateMove,
   applyGravity,
   getTargetableBehavior,
@@ -132,7 +132,7 @@ export class StackBehavior extends TargetBehavior {
       controlManager.record({ meshId: stack[0].id, fn: 'push', args: [meshId] })
     }
     const { x, z } = stack[0].absolutePosition
-    const y = computeYAbove(mesh, stack[stack.length - 1])
+    const y = getCenterAltitudeAbove(stack[stack.length - 1], mesh)
     logger.info(
       { stack, mesh, x, y, z },
       `push ${mesh.id} on stack ${stack.map(({ id }) => id)}`
@@ -227,7 +227,7 @@ export class StackBehavior extends TargetBehavior {
         newPositions.push(mesh.absolutePosition.clone())
       } else {
         const { x, z } = mesh.absolutePosition
-        const position = new Vector3(x, computeYAbove(mesh, last), z)
+        const position = new Vector3(x, getCenterAltitudeAbove(last, mesh), z)
         mesh.setAbsolutePosition(position)
         newPositions.push(position)
       }

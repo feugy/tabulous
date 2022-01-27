@@ -32,18 +32,23 @@ function findBelow(mesh, predicate) {
 }
 
 /**
- * Computes the Y coordinate to assign to 'mesh' so it goes above 'other', considering their heights.
- * Does not modifies any coordinate.
- * @param {import('@babel/core').Mesh} mesh - positionned over the other mesh.
- * @param {import('@babel/core').Mesh} other - foundation to put the mesh on.
+ * REturns the absolute altitude (Y axis) above a given mesh, including minimum spacing.
+ * @param {import('@babel/core').Mesh} mesh - related mesh.
  * @returns {number} resulting Y coordinate.
  */
-export function computeYAbove(mesh, other) {
-  return (
-    other.absolutePosition.y +
-    (getHeight(other) + getHeight(mesh)) * 0.5 +
-    0.001
-  )
+export function getAtlitudeAbove(mesh) {
+  return mesh.absolutePosition.y + getHeight(mesh) * 0.5 + 0.001
+}
+
+/**
+ * Computes the Y coordinate to assign to 'mesh' so it goes above 'other', considering their heights.
+ * Does not modifies any coordinate.
+ * @param {import('@babel/core').Mesh} meshBelow - foundation to put the mesh on.
+ * @param {import('@babel/core').Mesh} meshAbove - positionned over the other mesh.
+ * @returns {number} resulting Y coordinate.
+ */
+export function getCenterAltitudeAbove(meshBelow, meshAbove) {
+  return getAtlitudeAbove(meshBelow) + getHeight(meshAbove) * 0.5
 }
 
 /**
@@ -63,7 +68,7 @@ export function applyGravity(mesh) {
   let y = getHeight(mesh) * 0.5
   if (over.size) {
     const ordered = sortByElevation(over.keys(), true)
-    y = computeYAbove(mesh, ordered[0])
+    y = getCenterAltitudeAbove(ordered[0], mesh)
     logger.info(
       { ordered, mesh },
       `${mesh.id} is above ${ordered.map(({ id }) => id)}`

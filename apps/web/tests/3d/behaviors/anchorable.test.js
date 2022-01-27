@@ -25,7 +25,7 @@ import {
   inputManager,
   selectionManager
 } from '../../../src/3d/managers'
-import { animateMove, computeYAbove } from '../../../src/3d/utils'
+import { animateMove, getCenterAltitudeAbove } from '../../../src/3d/utils'
 
 describe('AnchorBehavior', () => {
   configures3dTestEngine()
@@ -101,6 +101,7 @@ describe('AnchorBehavior', () => {
         const box = CreateBox(`box${rank + 1}`, {})
         box.addBehavior(new AnimateBehavior(), true)
         box.setAbsolutePosition(new Vector3(rank + 10, rank + 10, rank + 10))
+        box.computeWorldMatrix()
         controlManager.registerControlable(box)
         return box
       })
@@ -266,10 +267,10 @@ describe('AnchorBehavior', () => {
 
     it('snaps rotable meshes when hydrating', () => {
       const snapped = meshes[0]
-      snapped.addBehavior(new RotateBehavior({ angle: 0 }), true)
-      expectRotated(snapped, 0)
-
       const angle = Math.PI * 0.5
+      snapped.addBehavior(new RotateBehavior({ angle }), true)
+      expectRotated(snapped, angle)
+
       mesh.addBehavior(new RotateBehavior({ angle }), true)
       expectRotated(mesh, angle)
       behavior.fromState({
@@ -316,7 +317,11 @@ describe('AnchorBehavior', () => {
       const snapped = meshes[0]
       const stacked = makeStack(snapped)
       expectPosition(snapped, [10, 10, 10])
-      expectPosition(stacked, [10, computeYAbove(stacked, snapped), 10])
+      expectPosition(stacked, [
+        10,
+        getCenterAltitudeAbove(snapped, stacked),
+        10
+      ])
       expect(behavior.snappedZone(snapped.id)).toBeNull()
 
       const args = [snapped.id, behavior.zones[0].mesh.id]
@@ -325,7 +330,7 @@ describe('AnchorBehavior', () => {
       expect(behavior.getSnappedIds()).toEqual([meshes[0].id])
       expectPosition(stacked, [
         snapped.absolutePosition.x,
-        computeYAbove(stacked, snapped),
+        getCenterAltitudeAbove(snapped, stacked),
         snapped.absolutePosition.z
       ])
       expect(recordSpy).toHaveBeenCalledTimes(1)
@@ -549,8 +554,8 @@ describe('AnchorBehavior', () => {
       })
       expectSnapped(mesh, meshes[0], 0)
       expectSnapped(mesh, meshes[1], 1)
-      expectPosition(meshes[0], [0, computeYAbove(meshes[0], mesh), 0])
-      expectPosition(meshes[1], [2, computeYAbove(meshes[1], mesh), 1])
+      expectPosition(meshes[0], [0, getCenterAltitudeAbove(mesh, meshes[0]), 0])
+      expectPosition(meshes[1], [2, getCenterAltitudeAbove(mesh, meshes[1]), 1])
       const x = 5
       const y = 3
       const z = 4
@@ -562,8 +567,12 @@ describe('AnchorBehavior', () => {
       expectPosition(mesh, [x, y, z])
       expectSnapped(mesh, meshes[0], 0)
       expectSnapped(mesh, meshes[1], 1)
-      expectPosition(meshes[0], [x, computeYAbove(meshes[0], mesh), z])
-      expectPosition(meshes[1], [x + 2, computeYAbove(meshes[1], mesh), z + 1])
+      expectPosition(meshes[0], [x, getCenterAltitudeAbove(mesh, meshes[0]), z])
+      expectPosition(meshes[1], [
+        x + 2,
+        getCenterAltitudeAbove(mesh, meshes[1]),
+        z + 1
+      ])
       expect(recordSpy).not.toHaveBeenCalled()
     })
 

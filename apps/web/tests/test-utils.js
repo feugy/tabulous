@@ -11,7 +11,7 @@ import {
   getAnimatableBehavior,
   getTargetableBehavior
 } from '../src/3d/utils/behaviors'
-import { computeYAbove } from '../src/3d/utils/gravity'
+import { getCenterAltitudeAbove } from '../src/3d/utils/gravity'
 import {
   AnchorBehaviorName,
   FlipBehaviorName,
@@ -107,7 +107,7 @@ export function expectSnapped(mesh, snapped, anchorRank = 0) {
   expect(behavior.snappedZone(snapped.id)?.mesh.id).toEqual(zone.mesh.id)
   expectPosition(snapped, [
     zone.mesh.absolutePosition.x,
-    computeYAbove(snapped, mesh),
+    getCenterAltitudeAbove(mesh, snapped),
     zone.mesh.absolutePosition.z
   ])
 }
@@ -175,7 +175,7 @@ function getIds(meshes = []) {
 function expectOnTop(meshAbove, meshBelow) {
   expectPosition(meshAbove, [
     meshBelow.absolutePosition.x,
-    computeYAbove(meshAbove, meshBelow),
+    getCenterAltitudeAbove(meshBelow, meshAbove),
     meshBelow.absolutePosition.z
   ])
 }

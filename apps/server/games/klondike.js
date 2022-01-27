@@ -21,7 +21,6 @@ const suits = ['spades', 'diamonds', 'clubs', 'hearts']
 const depth = 4.25
 const width = 3
 const height = 0.01
-const baseY = 0.025
 
 for (const suit of suits) {
   for (let index = 1; index <= 13; index++) {
@@ -30,7 +29,7 @@ for (const suit of suits) {
       id: `${suit}-${index}`,
       texture: `images/french-suited-cards/${suit}-${index}.ktx2`,
       x: 0,
-      y: baseY,
+      y: 0,
       z: 0,
       width,
       height,
@@ -41,19 +40,15 @@ for (const suit of suits) {
       },
       anchorable: {
         anchors: [
-          { z: -1, width, height, depth },
-          { z: 1, width, height, depth }
+          { id: 'bottom', z: -1, width, height, depth },
+          { id: 'top', z: 1, width, height, depth }
         ]
       },
-      movable: {
-        kind: suit
-      },
+      movable: { kind: suit },
+      stackable: { priority: 1 },
       // use all defaults
       flippable: {},
-      rotable: {},
-      stackable: {
-        priority: 1
-      }
+      rotable: {}
     })
   }
 }
@@ -73,227 +68,129 @@ meshes.push({
   texture: `images/klondike/board.ktx2`,
   x: -0.75,
   y: -0.005,
-  z: 0,
   width: 30,
   height: 0.01,
   depth: 30,
   borderRadius: 0.4,
   anchorable: {
     anchors: [
-      // stock
-      { x: -12.25, z: 11.5, width, height, depth },
-      // discard
-      { x: -8.25, z: 11.5, width, height, depth },
-      // diamonds
-      { x: -0.25, z: 11.5, width, height, depth, kinds: ['diamonds'] },
-      // clubs
-      { x: 3.75, z: 11.5, width, height, depth, kinds: ['clubs'] },
-      // hearts
-      { x: 7.75, z: 11.5, width, height, depth, kinds: ['hearts'] },
-      // spades
-      { x: 11.75, z: 11.5, width, height, depth, kinds: ['spades'] },
-      // 7 columns
-      { x: -12.25, z: 6.55, width, height, depth },
-      { x: -8.25, z: 6.55, width, height, depth },
-      { x: -4.25, z: 6.55, width, height, depth },
-      { x: -0.25, z: 6.55, width, height, depth },
-      { x: 3.75, z: 6.55, width, height, depth },
-      { x: 7.75, z: 6.55, width, height, depth },
-      { x: 11.75, z: 6.55, width, height, depth }
+      { id: 'stock', x: -12.25, z: 11.5, width, height, depth },
+      { id: 'discard', x: -8.25, z: 11.5, width, height, depth },
+      {
+        id: 'diamonds',
+        x: -0.25,
+        z: 11.5,
+        width,
+        height,
+        depth,
+        kinds: ['diamonds']
+      },
+      { id: 'clubs', x: 3.75, z: 11.5, width, height, depth, kinds: ['clubs'] },
+      {
+        id: 'hearts',
+        x: 7.75,
+        z: 11.5,
+        width,
+        height,
+        depth,
+        kinds: ['hearts']
+      },
+      {
+        id: 'spades',
+        x: 11.75,
+        z: 11.5,
+        width,
+        height,
+        depth,
+        kinds: ['spades']
+      },
+      { id: 'column-1', x: -12.25, z: 6.55, width, height, depth },
+      { id: 'column-2', x: -8.25, z: 6.55, width, height, depth },
+      { id: 'column-3', x: -4.25, z: 6.55, width, height, depth },
+      { id: 'column-4', x: -0.25, z: 6.55, width, height, depth },
+      { id: 'column-5', x: 3.75, z: 6.55, width, height, depth },
+      { id: 'column-6', x: 7.75, z: 6.55, width, height, depth },
+      { id: 'column-7', x: 11.75, z: 6.55, width, height, depth }
     ]
   }
 })
 
+const flipped = { flippable: { isFlipped: true } }
 /**
- * Pre-define slots:
- * - tiles deck
- * - for each card level, one deck and 4 un-flipped cards
- * - one for each token type
+ * Pre-define slots: 1 on first column, 2 on second column, and so on.
+ * Remainings are on discard
  * @type {import('../src/services/utils').Slot[]}
  */
 export const slots = [
-  // 1st column
-  { x: -13, y: baseY, z: 6.55, bagId: 'cards', count: 1 },
-  // 2nd column
+  { bagId: 'cards', anchorId: 'column-1', count: 1 },
+  { bagId: 'cards', anchorId: 'column-2', count: 1, ...flipped },
+  { bagId: 'cards', anchorId: 'column-2.bottom', count: 1 },
+  { bagId: 'cards', anchorId: 'column-3', count: 1, ...flipped },
+  { bagId: 'cards', anchorId: 'column-3.bottom', count: 1, ...flipped },
+  { bagId: 'cards', anchorId: 'column-3.bottom.bottom', count: 1 },
+  { bagId: 'cards', anchorId: 'column-4', count: 1, ...flipped },
+  { bagId: 'cards', anchorId: 'column-4.bottom', count: 1, ...flipped },
+  { bagId: 'cards', anchorId: 'column-4.bottom.bottom', count: 1, ...flipped },
+  { bagId: 'cards', anchorId: 'column-4.bottom.bottom.bottom', count: 1 },
+  { bagId: 'cards', anchorId: 'column-5', count: 1, ...flipped },
+  { bagId: 'cards', anchorId: 'column-5.bottom', count: 1, ...flipped },
+  { bagId: 'cards', anchorId: 'column-5.bottom.bottom', count: 1, ...flipped },
   {
-    x: -9,
-    y: baseY,
-    z: 6.55,
     bagId: 'cards',
-    flippable: { isFlipped: true },
-    count: 1
-  },
-  { x: -9, y: baseY + height * 2, z: 5, bagId: 'cards', count: 1 },
-  // 3rd column
-  {
-    x: -5,
-    y: baseY,
-    z: 6.55,
-    bagId: 'cards',
-    flippable: { isFlipped: true },
-    count: 1
+    anchorId: 'column-5.bottom.bottom.bottom',
+    count: 1,
+    ...flipped
   },
   {
-    x: -5,
-    y: baseY + height * 2,
-    z: 5,
     bagId: 'cards',
-    flippable: { isFlipped: true },
+    anchorId: 'column-5.bottom.bottom.bottom.bottom',
     count: 1
   },
-  { x: -5, y: baseY + height * 3, z: 3.75, bagId: 'cards', count: 1 },
-  // 4th column
+  { bagId: 'cards', anchorId: 'column-6', count: 1, ...flipped },
+  { bagId: 'cards', anchorId: 'column-6.bottom', count: 1, ...flipped },
+  { bagId: 'cards', anchorId: 'column-6.bottom.bottom', count: 1, ...flipped },
   {
-    x: -1,
-    y: baseY,
-    z: 6.55,
     bagId: 'cards',
-    flippable: { isFlipped: true },
-    count: 1
+    anchorId: 'column-6.bottom.bottom.bottom',
+    count: 1,
+    ...flipped
   },
   {
-    x: -1,
-    y: baseY + height * 2,
-    z: 5,
     bagId: 'cards',
-    flippable: { isFlipped: true },
-    count: 1
+    anchorId: 'column-6.bottom.bottom.bottom.bottom',
+    count: 1,
+    ...flipped
   },
   {
-    x: -1,
-    y: baseY + height * 3,
-    z: 3.75,
     bagId: 'cards',
-    flippable: { isFlipped: true },
+    anchorId: 'column-6.bottom.bottom.bottom.bottom.bottom',
     count: 1
   },
-  { x: -1, y: baseY + height * 4, z: 2.5, bagId: 'cards', count: 1 },
-  // 5th column
+  { bagId: 'cards', anchorId: 'column-7', count: 1, ...flipped },
+  { bagId: 'cards', anchorId: 'column-7.bottom', count: 1, ...flipped },
+  { bagId: 'cards', anchorId: 'column-7.bottom.bottom', count: 1, ...flipped },
   {
-    x: 3,
-    y: baseY,
-    z: 6.55,
     bagId: 'cards',
-    flippable: { isFlipped: true },
-    count: 1
+    anchorId: 'column-7.bottom.bottom.bottom',
+    count: 1,
+    ...flipped
   },
   {
-    x: 3,
-    y: baseY + height * 2,
-    z: 5,
     bagId: 'cards',
-    flippable: { isFlipped: true },
-    count: 1
+    anchorId: 'column-7.bottom.bottom.bottom.bottom',
+    count: 1,
+    ...flipped
   },
   {
-    x: 3,
-    y: baseY + height * 3,
-    z: 3.75,
     bagId: 'cards',
-    flippable: { isFlipped: true },
-    count: 1
+    anchorId: 'column-7.bottom.bottom.bottom.bottom.bottom',
+    count: 1,
+    ...flipped
   },
   {
-    x: 3,
-    y: baseY + height * 4,
-    z: 2.5,
     bagId: 'cards',
-    flippable: { isFlipped: true },
+    anchorId: 'column-7.bottom.bottom.bottom.bottom.bottom.bottom',
     count: 1
   },
-  { x: 3, y: baseY + height * 5, z: 1.25, bagId: 'cards', count: 1 },
-  // 6th column
-  {
-    x: 7,
-    y: baseY,
-    z: 6.55,
-    bagId: 'cards',
-    flippable: { isFlipped: true },
-    count: 1
-  },
-  {
-    x: 7,
-    y: baseY + height * 2,
-    z: 5,
-    bagId: 'cards',
-    flippable: { isFlipped: true },
-    count: 1
-  },
-  {
-    x: 7,
-    y: baseY + height * 3,
-    z: 3.75,
-    bagId: 'cards',
-    flippable: { isFlipped: true },
-    count: 1
-  },
-  {
-    x: 7,
-    y: baseY + height * 4,
-    z: 2.5,
-    bagId: 'cards',
-    flippable: { isFlipped: true },
-    count: 1
-  },
-  {
-    x: 7,
-    y: baseY + height * 5,
-    z: 1.25,
-    bagId: 'cards',
-    flippable: { isFlipped: true },
-    count: 1
-  },
-  { x: 7, y: baseY + height * 6, z: 0, bagId: 'cards', count: 1 },
-  // 7th column
-  {
-    x: 11,
-    y: baseY,
-    z: 6.55,
-    bagId: 'cards',
-    flippable: { isFlipped: true },
-    count: 1
-  },
-  {
-    x: 11,
-    y: baseY + height * 2,
-    z: 5,
-    bagId: 'cards',
-    flippable: { isFlipped: true },
-    count: 1
-  },
-  {
-    x: 11,
-    y: baseY + height * 3,
-    z: 3.75,
-    bagId: 'cards',
-    flippable: { isFlipped: true },
-    count: 1
-  },
-  {
-    x: 11,
-    y: baseY + height * 4,
-    z: 2.5,
-    bagId: 'cards',
-    flippable: { isFlipped: true },
-    count: 1
-  },
-  {
-    x: 11,
-    y: baseY + height * 5,
-    z: 1.25,
-    bagId: 'cards',
-    flippable: { isFlipped: true },
-    count: 1
-  },
-  {
-    x: 11,
-    y: baseY + height * 6,
-    z: 0,
-    bagId: 'cards',
-    flippable: { isFlipped: true },
-    count: 1
-  },
-  { x: 11, y: baseY + height * 8, z: -1.25, bagId: 'cards', count: 1 },
-  // stock
-  { x: -13, y: baseY, z: 11.5, bagId: 'cards', flippable: { isFlipped: true } }
+  { bagId: 'cards', anchorId: 'stock', ...flipped }
 ]

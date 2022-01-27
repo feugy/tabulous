@@ -47,10 +47,6 @@
 - allows a single connection per player (discards other JWTs)
 - logging (warning on invalid descriptors)
 
-## Klondike
-
-- snap cards on new game
-
 ## Hosting
 
 - where to store secrets?

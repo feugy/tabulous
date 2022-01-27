@@ -2,7 +2,7 @@ import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { AnchorBehaviorName } from './names'
 import { TargetBehavior } from './targetable'
-import { animateMove } from '../utils'
+import { animateMove, getAtlitudeAbove } from '../utils'
 import { controlManager, inputManager, selectionManager } from '../managers'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
@@ -262,31 +262,36 @@ async function snapToAnchor(behavior, snappedId, zone, animate = true) {
 
     // moves it to the final position
     const { x, z } = zone.mesh.getAbsolutePosition()
+    const baseY = computeBaseAltitude(mesh, snapped)
     if (animate) {
       await Promise.all(
         snappedList.map((snapped, i) =>
           sleep(i * 1.5).then(() =>
             animateMove(
               snapped,
-              new Vector3(x, highest(snapped, mesh), z),
+              new Vector3(x, baseY + snapped.absolutePosition.y, z),
               duration,
               true
             )
           )
         )
       )
-      setAnchor(behavior, zone, snapped, true)
     } else {
-      setAnchor(behavior, zone, snapped, false)
       snappedList.map(snapped =>
-        animateMove(snapped, new Vector3(x, highest(snapped, mesh), z), 0, true)
+        animateMove(
+          snapped,
+          new Vector3(x, baseY + snapped.absolutePosition.y, z),
+          0,
+          true
+        )
       )
     }
+    setAnchor(behavior, zone, snapped)
   }
 }
 
-function highest(mesh, snapped) {
-  return Math.max(mesh.absolutePosition.y, snapped.absolutePosition.y) + 0.001
+function computeBaseAltitude(mesh, snapped) {
+  return getAtlitudeAbove(mesh) - snapped.absolutePosition.y
 }
 
 function unsnapAll(behavior, ids) {
@@ -295,25 +300,13 @@ function unsnapAll(behavior, ids) {
   }
 }
 
-function setAnchor(behavior, zone, snapped, keepPosition) {
+function setAnchor(behavior, zone, snapped) {
   const {
     mesh,
     zoneBySnappedId,
     state: { anchors }
   } = behavior
-  if (!snapped.metadata) {
-    snapped.metadata = {}
-  }
-  // TODO: rename anchor to snappedToId
-  snapped.metadata.anchor = mesh.id
-
-  if (keepPosition) {
-    snapped.setParent(mesh)
-  } else {
-    snapped.parent = mesh
-    snapped.rotation = Vector3.Zero()
-    snapped.position = Vector3.Zero()
-  }
+  snapped.setParent(mesh)
   zoneBySnappedId.set(snapped.id, zone)
   const anchor = anchors[zone.anchorIndex]
   anchor.snappedId = snapped.id
@@ -325,7 +318,6 @@ function unsetAnchor(behavior, zone, snapped) {
     zoneBySnappedId,
     state: { anchors }
   } = behavior
-  snapped.metadata.anchor = undefined
   snapped.setParent(null)
   zoneBySnappedId.delete(snapped.id, zone)
   const anchor = anchors[zone.anchorIndex]
