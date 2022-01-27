@@ -45,6 +45,6 @@ You need Node.js 16+ and NPM.
 
 All the magic happens during continuous integration/deployment:
 
-1. Merge or push some code on `master` branch:
+1. Merge or push some code on `main` branch:
 1. Continuous Integration workflow kicks in, running linter, formatter and tests
 1. If it succeeds, Continuous Deployment workflow starts, build the client and server applications, packaging and uploading them to the VPS, then restarting services.

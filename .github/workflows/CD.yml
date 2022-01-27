@@ -10,8 +10,8 @@ jobs:
   buildAndDeploy:
     name: Build and deploy
 
-    # either triggered manually, or when CI completed on master branch
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'master' }}
+    # either triggered manually, or when CI completed on main branch
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
 
     runs-on: ubuntu-latest
 

@@ -112,7 +112,7 @@ First commands will need to connect with IPv4 (hence the `-4` flag) in the meant
     - add `DEPLOY_USERNAME` secret and set it to `tabulous`
     - add `DEPLOY_SSH_KEY` secret and set it to the exact content of `.ssh/id_rsa`
 
-The `CD` github workflow will trigger after a successful run of `CI` workflow, on master branch.
+The `CD` github workflow will trigger after a successful run of `CI` workflow, on main branch.
 It can also be manually triggered from the [Github action interface](https://github.com/feugy/tabulous/actions/workflows/CD.yml)
 
 _Hints_
