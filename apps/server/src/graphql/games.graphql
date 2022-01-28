@@ -8,6 +8,7 @@ type Game {
   meshes: [Mesh]!
   messages: [Message]
   cameras: [CameraPosition]
+  hands: [Hand]
   rulesBookPageCount: Int
 }
 
@@ -71,6 +72,7 @@ type Mesh {
   rotable: RotableState
   anchorable: AnchorableState
   stackable: StackableState
+  drawable: Boolean
   """
   cards, rounded tokens and rounded tiles
   """
@@ -112,11 +114,17 @@ type CameraPosition {
   hash: String!
 }
 
+type Hand {
+  playerId: ID!
+  meshes: [Mesh]!
+}
+
 input GameInput {
   id: ID!
   meshes: [MeshInput]
   messages: [MessageInput]
   cameras: [CameraPositionInput]
+  hands: [HandInput]
 }
 
 input DetailableStateInput {
@@ -179,6 +187,7 @@ input MeshInput {
   rotable: RotableStateInput
   anchorable: AnchorableStateInput
   stackable: StackableStateInput
+  drawable: Boolean
   """
   cards, rounded tokens and rounded tiles
   """
@@ -212,6 +221,11 @@ input CameraPositionInput {
   beta: Float!
   elevation: Float!
   hash: String!
+}
+
+input HandInput {
+  playerId: ID!
+  meshes: [MeshInput]!
 }
 
 extend type Query {

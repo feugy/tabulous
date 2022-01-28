@@ -13,6 +13,7 @@ import repositories from '../repositories/index.js'
  * @property {Mesh[]} meshes - game meshes.
  * @property {Message[]} messages - game discussion thread, if any.
  * @property {CameraPosition[]} cameras - player's saved camera positions, if any.
+ * @property {Hand[]} hands - player's private hands, id any.
  * @property {number} rulesBookPageCount? - number of pages in the rules book, if any.
  */
 
@@ -106,6 +107,12 @@ import repositories from '../repositories/index.js'
  * @property {number} alpha - alpha angle, in radian.
  * @property {number} beta - beta angle, in radia.
  * @property {number} elevation - altitude, in 3D coordinate.
+ */
+
+/**
+ * @typedef {object} Hand a player's private hand
+ * @property {string} playerId - owner id.
+ * @property {Mesh[]} meshes - ordered list of meshes.
  */
 
 const gameListsUpdate$ = new Subject()
