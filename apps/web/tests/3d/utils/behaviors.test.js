@@ -1,8 +1,10 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { DrawBehavior } from '../../../src/3d/behaviors/drawable'
 import {
   AnchorBehaviorName,
   DetailBehaviorName,
+  DrawBehaviorName,
   FlipBehaviorName,
   MoveBehaviorName,
   RotateBehaviorName,
@@ -207,9 +209,12 @@ describe('registerBehaviors() 3D utility', () => {
   })
 
   it('adds detailable behavior to a mesh', () => {
-    const state = true
+    const state = { frontImage: 'front.png', backImage: 'back.png' }
     registerBehaviors(box, { detailable: state })
-    expect(box.getBehaviorByName(DetailBehaviorName)).toBeDefined()
+    expect(box.getBehaviorByName(DetailBehaviorName)).toHaveProperty(
+      'state',
+      state
+    )
   })
 
   it('adds anchorable behavior to a mesh', () => {
@@ -249,10 +254,15 @@ describe('registerBehaviors() 3D utility', () => {
     )
   })
 
+  it('adds drawable behavior to a mesh', () => {
+    registerBehaviors(box, { drawable: true })
+    expect(box.getBehaviorByName(DrawBehaviorName)).toBeDefined()
+  })
+
   it('adds multiple behaviors to a mesh', () => {
     registerBehaviors(box, {
-      detailable: true,
-      movable: true,
+      detailable: {},
+      movable: {},
       stackable: { extent: 1.5 },
       anchorable: { anchors: [] },
       flippable: { isFlipped: false },
@@ -550,6 +560,12 @@ describe('serializeBehaviors() 3D utility', () => {
       rotable,
       movable,
       detailable
+    })
+  })
+
+  it('serializes drawable behavior', () => {
+    expect(serializeBehaviors([new DrawBehavior()])).toEqual({
+      drawable: true
     })
   })
 

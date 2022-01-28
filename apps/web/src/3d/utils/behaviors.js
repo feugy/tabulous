@@ -1,6 +1,7 @@
 import {
   AnchorBehavior,
   DetailBehavior,
+  DrawBehavior,
   FlipBehavior,
   MoveBehavior,
   RotateBehavior,
@@ -10,6 +11,7 @@ import {
   AnchorBehaviorName,
   AnimateBehaviorName,
   DetailBehaviorName,
+  DrawBehaviorName,
   FlipBehaviorName,
   MoveBehaviorName,
   RotateBehaviorName,
@@ -23,6 +25,7 @@ const behaviorNames = [
   [FlipBehaviorName, FlipBehavior],
   [RotateBehaviorName, RotateBehavior],
   [DetailBehaviorName, DetailBehavior],
+  [DrawBehaviorName, DrawBehavior],
   [AnchorBehaviorName, AnchorBehavior],
   [StackBehaviorName, StackBehavior]
 ]
@@ -69,7 +72,9 @@ export function restoreBehaviors(behaviors, state) {
 export function serializeBehaviors(behaviors) {
   const result = {}
   for (const behavior of behaviors) {
-    if (behavior.state) {
+    if (behavior.name === DrawBehaviorName) {
+      result[behavior.name] = true
+    } else if (behavior.state) {
       result[behavior.name] = behavior.state
     }
   }

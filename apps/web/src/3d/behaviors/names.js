@@ -2,6 +2,7 @@
 export const AnchorBehaviorName = 'anchorable'
 export const AnimateBehaviorName = 'animatable'
 export const DetailBehaviorName = 'detailable'
+export const DrawBehaviorName = 'drawable'
 export const FlipBehaviorName = 'flippable'
 export const MoveBehaviorName = 'movable'
 export const RotateBehaviorName = 'rotable'
