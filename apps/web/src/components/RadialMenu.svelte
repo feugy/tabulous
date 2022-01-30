@@ -1,3 +1,12 @@
+<script context="module">
+  import ms from 'ms'
+  const enterDuration = ms(
+    getComputedStyle(document.querySelector(':root')).getPropertyValue(
+      '--short'
+    )
+  )
+</script>
+
 <script>
   import Button from './Button.svelte'
   export let items = []
@@ -9,10 +18,6 @@
   $: left = typeof x === 'number' ? `${x}px` : x
   $: top = typeof y === 'number' ? `${y}px` : y
   $: radius = 12.5 * items.length
-
-  // TODO https://tailwindcss.com/docs/configuration#referencing-in-java-script
-  // TODO use css module?
-  const enterDuration = 100
 
   function computeItemPosition({ i }) {
     const angle = (-2 * Math.PI * (1 - i)) / items.length
@@ -56,13 +61,16 @@
   }
 
   li {
-    @apply absolute opacity-0  transform-gpu -translate-x-1/2 -translate-y-1/2;
     /* align item center on the menu's circle */
+    @apply absolute opacity-0 transform-gpu -translate-x-1/2 -translate-y-1/2;
   }
 </style>
 
 {#if open && items?.length}
-  <aside style={`left: ${left}; top: ${top}; --size:${radius * 2}px;`}>
+  <aside
+    role="menu"
+    style={`left: ${left}; top: ${top}; --size:${radius * 2}px;`}
+  >
     <ul on:pointerdown|stopPropagation on:mouseenter on:mouseleave>
       {#each items as { onClick, ...buttonProps }, i}
         {#key buttonProps}

@@ -4,7 +4,7 @@
   import { shuffle } from '../utils'
   import { getMeshScreenPosition } from '../3d/utils'
 
-  export let object
+  export let mesh
 
   let open = false
   let x = 0
@@ -14,39 +14,39 @@
 
   $: {
     actions = []
-    open = Boolean(object)
+    open = Boolean(mesh)
     if (open) {
-      ;({ x, y } = getMeshScreenPosition(object)) // eslint-disable-line no-extra-semi
-      stackSize = object.metadata.stack?.length ?? 0
-      if (object.metadata.flip) {
+      ;({ x, y } = getMeshScreenPosition(mesh)) // eslint-disable-line no-extra-semi
+      stackSize = mesh.metadata.stack?.length ?? 0
+      if (mesh.metadata.flip) {
         actions.push({
           icon: 'flip',
           title: $_('tooltips.flip'),
-          onClick: () => object.metadata.flip()
+          onClick: () => mesh.metadata.flip()
         })
       }
-      if (object.metadata.rotate) {
+      if (mesh.metadata.rotate) {
         actions.push({
           icon: 'rotate_right',
           title: $_('tooltips.rotate'),
-          onClick: () => object.metadata.rotate()
+          onClick: () => mesh.metadata.rotate()
         })
       }
-      if (object.metadata.stack?.length > 1) {
+      if (mesh.metadata.stack?.length > 1) {
         actions.push({
           icon: 'shuffle',
           title: $_('tooltips.shuffle'),
           onClick: () => {
-            const ids = object.metadata.stack.map(({ id }) => id)
-            object.metadata.reorder(shuffle(ids))
+            const ids = mesh.metadata.stack.map(({ id }) => id)
+            mesh.metadata.reorder(shuffle(ids))
           }
         })
       }
-      if (object.metadata.detail) {
+      if (mesh.metadata.detail) {
         actions.push({
           icon: 'visibility',
           title: $_('tooltips.detail'),
-          onClick: () => object.metadata.detail()
+          onClick: () => mesh.metadata.detail()
         })
       }
     }

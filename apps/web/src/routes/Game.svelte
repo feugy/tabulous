@@ -125,7 +125,7 @@
     on:contextmenu|preventDefault
   >
     <canvas bind:this={canvas} />
-    <ActionMenu object={$meshForMenu} />
+    <ActionMenu mesh={$meshForMenu} />
   </div>
   <CursorInfo size={$stackSize} halos={longInputs} />
   <MeshDetails mesh={$meshDetails} on:close={handleCloseDetails} />

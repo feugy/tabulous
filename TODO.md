@@ -1,5 +1,10 @@
 # TODO
 
+- player's hand
+  - draw by action
+  - draw by dragging
+  - draw many from stack
+
 ## Brittle tests
 
 - `InputManager › given an initialized manager() › handles multiple pointers taps`
@@ -19,6 +24,7 @@
 - rework remote moves: instead of sending individual positions, send drag start, move and stop (with selection)
 - rework target detection. Instead of using real mesh and rays use shapes overlap: each zone is a rectangle/circle on XZ plane, and the moved mesh another rectangle/circle. Check the center of the moved mesh
 - reconsider the behavior/manager split of responsibilities
+  - moves onDetailedObservable from controlManager to DetailBehavior (static property)
 - all manager managing a collection of behaviors should check their capabilities
 - game-interaction unit tests
 - component, connected-component and routes rendering tests
@@ -30,7 +36,6 @@
 
 - sort and filter catalog on game names
 - feedback on stacking
-- player's hand
 - stack actions:
   - draw multiple cards (either in hand, or in front of them)
   - distribute multiple cards to players (either in their hand, or in front of them)
