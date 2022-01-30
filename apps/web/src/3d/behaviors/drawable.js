@@ -49,7 +49,7 @@ export class DrawBehavior {
    */
   draw(playerId) {
     if (!this.mesh) return
-    this.constructor.onDetailedObservable.notifyObservers({
+    this.constructor.onDrawnObservable.notifyObservers({
       mesh: this.mesh,
       playerId
     })
@@ -80,4 +80,4 @@ export class DrawBehavior {
  * @memberof DrawBehavior
  * @static
  */
-DrawBehavior.onDetailedObservable = new Observable()
+DrawBehavior.onDrawnObservable = new Observable()

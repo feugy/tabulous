@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/svelte'
+import faker from 'faker'
 import html from 'svelte-htm'
 import { translate } from '../test-utils'
 
@@ -16,8 +17,10 @@ beforeAll(async () => {
 describe('Action Menu component', () => {
   beforeEach(jest.resetAllMocks)
 
+  const playerId = faker.datatype.uuid()
+
   function renderComponent(props = { mesh: null }) {
-    return render(html`<${ActionMenu} ...${props} />`)
+    return render(html`<${ActionMenu} playerId=${playerId} ...${props} />`)
   }
 
   it('is hidden with no mesh', () => {
@@ -31,18 +34,26 @@ describe('Action Menu component', () => {
   })
 
   it.each([
-    { title: 'flippable mesh', functionName: 'flip', icon: 'flip' },
+    { title: 'flippable mesh', functionName: 'flip', icon: 'flip', args: [] },
     {
       title: 'rotable mesh',
       functionName: 'rotate',
-      icon: 'rotate_right'
+      icon: 'rotate_right',
+      args: []
     },
     {
       title: 'detailable mesh',
       functionName: 'detail',
-      icon: 'visibility'
+      icon: 'visibility',
+      args: []
+    },
+    {
+      title: 'drawable mesh',
+      functionName: 'draw',
+      icon: 'front_hand',
+      args: [playerId]
     }
-  ])('has action for a $title', async ({ functionName, icon }) => {
+  ])('has action for a $title', async ({ functionName, icon, args }) => {
     const metadata = { [functionName]: jest.fn() }
     renderComponent({ mesh: { metadata } })
     expect(screen.getByRole('menu')).toBeInTheDocument()
@@ -55,7 +66,7 @@ describe('Action Menu component', () => {
     )
     fireEvent.click(buttons[0])
     expect(metadata[functionName]).toHaveBeenCalledTimes(1)
-    expect(metadata[functionName]).toHaveBeenCalledWith()
+    expect(metadata[functionName]).toHaveBeenCalledWith(...args)
   })
 
   it('has action and stack size for a stackable mesh', async () => {

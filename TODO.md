@@ -1,9 +1,14 @@
 # TODO
 
 - player's hand
-  - draw by action
-  - draw by dragging
+  - when drawing by a player, update game data (remove from `meshes` and add to `hands[].meshes`) and share (server, peers)
+  - display hand (new scene? new engine?)
+  - supports all actions (but draw) in hand display?
+  - play from hand
+  - draw/play by dragging
+  - run animation when drawing (must work for both dragging and menu)
   - draw many from stack
+  - give to another player
 
 ## Brittle tests
 

@@ -5,6 +5,7 @@
   import { getMeshScreenPosition } from '../3d/utils'
 
   export let mesh
+  export let playerId
 
   let open = false
   let x = 0
@@ -47,6 +48,13 @@
           icon: 'visibility',
           title: $_('tooltips.detail'),
           onClick: () => mesh.metadata.detail()
+        })
+      }
+      if (mesh.metadata.draw) {
+        actions.push({
+          icon: 'front_hand',
+          title: $_('tooltips.draw'),
+          onClick: () => mesh.metadata.draw(playerId)
         })
       }
     }

@@ -19,35 +19,35 @@ exports[`Toolshot components/ControlsHelp.tools.svelte: Components/Controls Help
         />
          
         <span>
-          Ouvre le menu
+          Ouvrir le menu
         </span>
       </div>
       <div>
         <img
-          alt="Long clic gauche sur un objet"
+          alt="Clic gauche long sur un objet"
           src="/images/help/long-left-object.png"
         />
         <img
-          alt="Long tap sur un objet"
+          alt="Tap long sur un objet"
           src="/images/help/long-pointer-object.png"
         />
          
         <span>
-          Affiche en grand
+          Afficher en grand
         </span>
       </div>
       <div>
         <img
-          alt="Tiré-déplacé avec un long clic gauche"
+          alt="Tiré-déplacé avec un clic gauche long"
           src="/images/help/long-left-drag-select.png"
         />
         <img
-          alt="Tiré-déplacé avec un long tap"
+          alt="Tiré-déplacé avec un tap long"
           src="/images/help/long-pointer-drag-select.png"
         />
          
         <span>
-          Ajoute à la sélection
+          Ajouter à la sélection
         </span>
       </div>
       <div>
@@ -61,7 +61,7 @@ exports[`Toolshot components/ControlsHelp.tools.svelte: Components/Controls Help
         />
          
         <span>
-          Vide la sélection
+          Vider la sélection
         </span>
       </div>
     </section>
@@ -82,7 +82,7 @@ exports[`Toolshot components/ControlsHelp.tools.svelte: Components/Controls Help
         />
          
         <span>
-          Déplace
+          Déplacer
         </span>
       </div>
       <div>
@@ -96,7 +96,7 @@ exports[`Toolshot components/ControlsHelp.tools.svelte: Components/Controls Help
         />
          
         <span>
-          Retourne
+          Retourner
         </span>
       </div>
       <div>
@@ -110,7 +110,7 @@ exports[`Toolshot components/ControlsHelp.tools.svelte: Components/Controls Help
         />
          
         <span>
-          Pivote
+          Pivoter
         </span>
       </div>
     </section>
@@ -131,7 +131,7 @@ exports[`Toolshot components/ControlsHelp.tools.svelte: Components/Controls Help
         />
          
         <span>
-          Déplace
+          Déplacer
         </span>
       </div>
       <div>
@@ -145,7 +145,7 @@ exports[`Toolshot components/ControlsHelp.tools.svelte: Components/Controls Help
         />
          
         <span>
-          Pivote et incline
+          Pivoter et incliner
         </span>
       </div>
       <div>
@@ -159,7 +159,7 @@ exports[`Toolshot components/ControlsHelp.tools.svelte: Components/Controls Help
         />
          
         <span>
-          Zoome
+          Zoomer
         </span>
       </div>
       <div>
@@ -169,7 +169,7 @@ exports[`Toolshot components/ControlsHelp.tools.svelte: Components/Controls Help
         />
          
         <span>
-          Enregistre la position
+          Enregistrer la position
         </span>
       </div>
       <div>
@@ -179,17 +179,17 @@ exports[`Toolshot components/ControlsHelp.tools.svelte: Components/Controls Help
         />
          
         <span>
-          Restaure la position
+          Restaurer la position
         </span>
       </div>
       <div>
         <img
-          alt="Long clic sur un emplacement de caméra"
+          alt="Clic long sur un emplacement de caméra"
           src="/images/help/update-camera.png"
         />
          
         <span>
-          Met à jour la position
+          Mettre à jour la position
         </span>
       </div>
     </section>

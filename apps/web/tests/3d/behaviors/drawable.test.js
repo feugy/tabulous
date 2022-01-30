@@ -10,9 +10,9 @@ describe('DrawBehavior', () => {
 
   beforeEach(jest.resetAllMocks)
 
-  beforeAll(() => DrawBehavior.onDetailedObservable.add(onDrawObserver))
+  beforeAll(() => DrawBehavior.onDrawnObservable.add(onDrawObserver))
 
-  afterAll(() => DrawBehavior.onDetailedObservable.remove(onDrawObserver))
+  afterAll(() => DrawBehavior.onDrawnObservable.remove(onDrawObserver))
 
   it('has initial state', () => {
     const behavior = new DrawBehavior()

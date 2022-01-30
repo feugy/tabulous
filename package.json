@@ -14,15 +14,17 @@
     "apps/*"
   ],
   "scripts": {
+    "dev:server": "npm run test:dev -w apps/server",
+    "dev:web": "npm run test:dev -w apps/web",
     "format": "prettier --write .",
     "lint": "eslint .",
     "prepare": "husky install",
     "start": "run-p -ncs start:**",
-    "start:server": "npm start --workspace apps/server",
-    "start:web": "npm start --workspace apps/web",
+    "start:server": "npm start -w apps/server",
+    "start:web": "npm start -w apps/web",
     "test": "run-s -ncs test:**",
-    "test:server": "npm t --workspace apps/server",
-    "test:web": "npm t --workspace apps/web"
+    "test:server": "npm t -w apps/server",
+    "test:web": "npm t -w apps/web"
   },
   "devDependencies": {
     "eslint": "^8.7.0",

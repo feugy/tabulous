@@ -46,10 +46,11 @@ titles:
   object-controls: Contrôler un objet
   selection-controls: Contrôler un ou plusieurs objets
 tooltips:
-  add-to-selection: Ajoute à la sélection
-  clear-selection: Vide la sélection
-  detail: Affiche en grand
-  flip: Retourne
+  add-to-selection: Ajouter à la sélection
+  clear-selection: Vider la sélection
+  detail: Afficher en grand
+  draw: Piocher
+  flip: Retourner
   game-menu: Menu des commandes
   help-controls: Contrôles de l'interface
   help-double-left-object: Double clic gauche sur un objet
@@ -58,10 +59,10 @@ tooltips:
   help-left-drag: Tiré-déplacé avec le clic gauche
   help-left-object: Clic gauche sur un objet
   help-left-outside-selection: Clic gauche en dehors de la sélection
-  help-long-left-drag-select: Tiré-déplacé avec un long clic gauche
-  help-long-left-object: Long clic gauche sur un objet
-  help-long-pointer-drag-select: Tiré-déplacé avec un long tap
-  help-long-pointer-object: Long tap sur un objet
+  help-long-left-drag-select: Tiré-déplacé avec un clic gauche long
+  help-long-left-object: Clic gauche long sur un objet
+  help-long-pointer-drag-select: Tiré-déplacé avec un tap long
+  help-long-pointer-object: Tap long sur un objet
   help-mouse-wheel: Molette de la souris
   help-new-camera: Clic sur le bouton "nouvelle caméra"
   help-pinch: Pincer
@@ -74,17 +75,17 @@ tooltips:
   help-right-object: Clic droit sur un objet
   help-two-pointers-drag: Tap avec deux doigts sur un objet
   help-two-pointers-object: Tap avec deux doigts sur un objet
-  help-update-camera: Long clic sur un emplacement de caméra
-  move: Déplace
-  open-menu: Ouvre le menu
-  pan-camera: Déplace
-  restore-camera: Restaure la position
-  rotate-camera: Pivote et incline
-  rotate: Pivote
+  help-update-camera: Clic long sur un emplacement de caméra
+  move: Déplacer
+  open-menu: Ouvrir le menu
+  pan-camera: Déplacer
+  restore-camera: Restaurer la position
+  rotate-camera: Pivoter et incliner
+  rotate: Pivoter
   rule-page: Livre de règles, page {page}
-  save-camera: Met à jour la position
-  save-new-camera: Enregistre la position
-  save-restore-camera: "{index, plural, =0 {Charge la position initiale de la camera} other {Charge (clic) ou enregistrer (clic long) la position à l'emplacement #}}"
+  save-camera: Mettre à jour la position
+  save-new-camera: Enregistrer la position
+  save-restore-camera: "{index, plural, =0 {Charger la position initiale de la camera} other {Charger (clic) ou enregistrer (clic long) la position à l'emplacement #}}"
   send-message: Envoyer à tous
   shuffle: Mélanger
-  zoom: Zoome
+  zoom: Zoomer
