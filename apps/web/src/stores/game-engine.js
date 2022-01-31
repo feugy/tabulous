@@ -34,10 +34,6 @@ export const fps = fps$.asObservable()
  */
 export const action = merge(localAction$, remoteAction$)
 
-remoteAction$.subscribe({
-  next: action => action.fn && console.log('remote action', action)
-})
-
 /**
  * Emits mesh details when the player requested them.
  * @type {Observable<import('../3d/managers').MeshDetails>}
@@ -97,7 +93,7 @@ export function initEngine({
   doubleTapDelay = 300,
   longTapDelay = 250,
   pointerThrottle = 200
-} = {}) {
+}) {
   const engine = createEngine({
     canvas,
     interaction,
@@ -117,7 +113,7 @@ export function initEngine({
   cameraSaves$.next(cameraManager.saves)
   currentCamera$.next(cameraManager.saves[0])
 
-  const mapping = [
+  const mappings = [
     { observable: controlManager.onActionObservable, subject: localAction$ },
     { observable: controlManager.onPointerObservable, subject: pointer$ },
     { observable: controlManager.onDetailedObservable, subject: meshDetails$ },
@@ -126,7 +122,8 @@ export function initEngine({
     { observable: inputManager.onLongObservable, subject: longInputs }
   ]
   // exposes Babylon observables as RX subjects
-  for (const { observable, subject } of mapping) {
+  for (const mapping of mappings) {
+    const { observable, subject } = mapping
     mapping.observer = observable.add(subject.next.bind(subject))
   }
 
@@ -171,6 +168,9 @@ export function initEngine({
   engine.onDisposeObservable.addOnce(() => {
     for (const subscription of subscriptions) {
       subscription.unsubscribe()
+    }
+    for (const { observable, observer } of mappings) {
+      observable.remove(observer)
     }
     engine$.next(null)
   })
