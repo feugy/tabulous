@@ -2,7 +2,8 @@ import { PointerEventTypes } from '@babylonjs/core/Events/pointerEvents'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { Observable } from '@babylonjs/core/Misc/observable'
 import { createPeerPointer } from '../peer-pointer'
-import { screenToGround } from '../utils'
+// '../../utils' creates a cyclic dependency in Jest
+import { screenToGround } from '../utils/vector'
 
 function getKey(action = {}) {
   return `${action?.meshId}-${action.fn?.toString() || 'pos'}`

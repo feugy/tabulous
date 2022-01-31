@@ -1,18 +1,18 @@
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import faker from 'faker'
 import { configures3dTestEngine } from '../../test-utils'
 import { DrawBehavior, DrawBehaviorName } from '../../../src/3d/behaviors'
-import faker from 'faker'
+import { controlManager } from '../../../src/3d/managers'
 
 describe('DrawBehavior', () => {
   configures3dTestEngine()
 
-  const onDrawObserver = jest.fn()
+  let recordSpy
 
-  beforeEach(jest.resetAllMocks)
-
-  beforeAll(() => DrawBehavior.onDrawnObservable.add(onDrawObserver))
-
-  afterAll(() => DrawBehavior.onDrawnObservable.remove(onDrawObserver))
+  beforeEach(() => {
+    jest.clearAllMocks()
+    recordSpy = jest.spyOn(controlManager, 'record')
+  })
 
   it('has initial state', () => {
     const behavior = new DrawBehavior()
@@ -34,7 +34,7 @@ describe('DrawBehavior', () => {
   it('can not draw in hand without mesh', () => {
     const behavior = new DrawBehavior()
     behavior.draw(faker.lorem.word())
-    expect(onDrawObserver).not.toHaveBeenCalled()
+    expect(recordSpy).not.toHaveBeenCalled()
   })
 
   it('can hydrate', () => {
@@ -66,11 +66,12 @@ describe('DrawBehavior', () => {
     it(`draws into player's hand`, () => {
       const playerId = faker.lorem.word()
       mesh.metadata.draw(playerId)
-      expect(onDrawObserver).toHaveBeenCalledTimes(1)
-      expect(onDrawObserver).toHaveBeenCalledWith(
-        { mesh, playerId },
-        expect.anything()
-      )
+      expect(recordSpy).toHaveBeenCalledTimes(1)
+      expect(recordSpy).toHaveBeenNthCalledWith(1, {
+        meshId: mesh.id,
+        fn: 'draw',
+        args: [playerId]
+      })
     })
   })
 })

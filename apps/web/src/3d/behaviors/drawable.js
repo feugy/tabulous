@@ -1,4 +1,5 @@
-import { Observable } from '@babylonjs/core/Misc/observable'
+// '../manager/control' creates a cyclic dependency in Jest
+import { controlManager } from '../managers/control'
 import { DrawBehaviorName } from './names'
 
 export class DrawBehavior {
@@ -44,14 +45,14 @@ export class DrawBehavior {
   /**
    * Draws the related mesh with an animation into the player's hand:
    * - records the action into the control manager
-   * - runs the animation
    * @param {string} playerId - drawing player id.
    */
   draw(playerId) {
     if (!this.mesh) return
-    this.constructor.onDrawnObservable.notifyObservers({
-      mesh: this.mesh,
-      playerId
+    controlManager.record({
+      meshId: this.mesh.id,
+      fn: 'draw',
+      args: [playerId]
     })
   }
 
@@ -68,16 +69,3 @@ export class DrawBehavior {
     this.mesh.metadata.draw = this.draw.bind(this)
   }
 }
-
-/**
- * @typedef {object} Draw action of drawing a given mesh.
- * @property {import('@babylonjs/core').Mesh} mesh - the drawn mesh.
- * @property {string} playerId - drawing player id.
- */
-
-/**
- * @type {Observable<Draw>} emits when drawing a mesh into a player's hand.
- * @memberof DrawBehavior
- * @static
- */
-DrawBehavior.onDrawnObservable = new Observable()
