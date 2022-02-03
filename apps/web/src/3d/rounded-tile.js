@@ -59,36 +59,44 @@ function makeCornerMesh(
  * @param {number} params.width? - tile's width (X axis).
  * @param {number} params.height? - tile's height (Y axis).
  * @param {number} params.depth? - tile's depth (Z axis).
+ * @param {import('@babylonjs/core').Scene} scene? - scene to host this rounded tile (default to last scene).
  * @returns {import('@babylonjs/core').Mesh} the created tile mesh.
  */
-export function createRoundedTile({
-  id,
-  x = 0,
-  z = 0,
-  y = 0,
-  width = 3,
-  height = 0.05,
-  depth = 3,
-  borderRadius = 0.4,
-  texture,
-  faceUV = [
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0.5, 1, 0, 0],
-    [0.5, 0, 1, 1]
-  ],
-  ...behaviorStates
-} = {}) {
-  const tileMesh = CreateBox('roundedTile', {
-    width,
-    height,
-    depth,
-    faceUV: faceUV.map(components => Vector4.FromArray(components)),
-    faceColors: [],
-    wrap: true
-  })
+export function createRoundedTile(
+  {
+    id,
+    x = 0,
+    z = 0,
+    y = 0,
+    width = 3,
+    height = 0.05,
+    depth = 3,
+    borderRadius = 0.4,
+    texture,
+    faceUV = [
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0.5, 1, 0, 0],
+      [0.5, 0, 1, 1]
+    ],
+    ...behaviorStates
+  } = {},
+  scene
+) {
+  const tileMesh = CreateBox(
+    'roundedTile',
+    {
+      width,
+      height,
+      depth,
+      faceUV: faceUV.map(components => Vector4.FromArray(components)),
+      faceColors: [],
+      wrap: true
+    },
+    scene
+  )
   const tileCSG = CSG.FromMesh(tileMesh)
   const cornerParams = {
     faceUV: Vector4.FromArray(faceUV[0]),
@@ -101,12 +109,12 @@ export function createRoundedTile({
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, true, false))
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, false, true))
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, false, false))
-  const tile = tileCSG.toMesh('roundedTile')
+  const tile = tileCSG.toMesh('roundedTile', undefined, scene)
   tile.id = id
   tileMesh.dispose()
 
-  tile.material = new StandardMaterial(id)
-  tile.material.diffuseTexture = new Texture(adaptTexture(texture))
+  tile.material = new StandardMaterial(id, scene)
+  tile.material.diffuseTexture = new Texture(adaptTexture(texture), scene)
   tile.material.diffuseTexture.hasAlpha = true
   tile.material.freeze()
   attachMaterialError(tile.material)

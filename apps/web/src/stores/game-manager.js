@@ -1,5 +1,4 @@
-import { BehaviorSubject, merge } from 'rxjs'
-import { debounceTime, filter } from 'rxjs/operators'
+import { BehaviorSubject, debounceTime, filter, merge } from 'rxjs'
 import { currentPlayer } from './players'
 import { clearThread, loadThread, serializeThread } from './discussion'
 import { action, cameraSaves, engine, loadCameraSaves } from './game-engine'
@@ -16,7 +15,6 @@ import {
 } from './peer-channels'
 import * as graphQL from '../graphql'
 import { makeLogger } from '../utils'
-import { loadMeshes, serializeMeshes } from '../3d/utils'
 
 const logger = makeLogger('game-manager')
 
@@ -54,8 +52,10 @@ let skipSharingCamera = false
 let cameras = []
 
 function load(game, engine, firstLoad) {
-  if (!firstLoad) return // TODO remove, just for testing
-  loadMeshes(engine, game.meshes, firstLoad)
+  engine.load(
+    { meshes: game.meshes, handMeshes: getPlayerHandMeshes(game, player) },
+    firstLoad
+  )
   if (game.messages) {
     loadThread(game.messages)
   }
@@ -85,7 +85,7 @@ function mergeCameras({ playerId, cameras: playerCameras }) {
 }
 
 function saveCameras(gameId) {
-  logger.info({ gameId, cameras: cameras }, `persisting game cameras`)
+  logger.info({ gameId, cameras }, `persisting game cameras`)
   runMutation(graphQL.saveGame, { game: { id: gameId, cameras } })
 }
 
@@ -95,10 +95,16 @@ function takeHostRole(gameId, engine) {
     // save scene
     action.pipe(debounceTime(1000)).subscribe(action => {
       logger.info({ gameId, action }, `persisting game scene on action`)
-      const meshes = serializeMeshes(engine)
-      runMutation(graphQL.saveGame, { game: { id: gameId, meshes } })
+      const { meshes, handMeshes } = engine.serialize()
+      const game = {
+        id: gameId,
+        meshes,
+        // TODO other player hands
+        hands: [{ playerId: player.id, meshes: handMeshes }]
+      }
+      runMutation(graphQL.saveGame, { game })
       logger.info({ gameId }, `sending scene sync`)
-      send({ type: 'game-sync', gameId, meshes })
+      send({ type: 'game-sync', ...game })
     }),
     // save discussion thread
     merge(lastMessageSent, lastMessageReceived)
@@ -138,7 +144,7 @@ function takeHostRole(gameId, engine) {
         {
           type: 'game-sync',
           gameId,
-          meshes: serializeMeshes(engine),
+          ...engine.serialize(),
           messages: serializeThread(),
           cameras
         },
@@ -274,7 +280,7 @@ export async function loadGame(gameId, engine) {
         lastMessageReceived
           .pipe(filter(({ data }) => data.type === 'game-sync'))
           .subscribe(({ data }) => {
-            logger.info({ game }, `loading game data (${data.gameId})`)
+            logger.info({ game }, `loading game data (${data.id})`)
             if (isFirstLoad) {
               clearTimeout(gameReceptionTimeout)
               // elect new host
@@ -312,4 +318,10 @@ export async function invite(gameId, playerId) {
     `invite player ${playerId} to game ${gameId}`
   )
   return Boolean(await runMutation(graphQL.invite, { gameId, playerId }))
+}
+
+function getPlayerHandMeshes(game, player) {
+  return (
+    game.hands?.find(({ playerId }) => playerId === player.id)?.meshes ?? []
+  )
 }

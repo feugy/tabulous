@@ -1,6 +1,6 @@
 import { configures3dTestEngine } from '../../test-utils'
 import { cameraManager as manager } from '../../../src/3d/managers'
-import { createTable } from '../../../src/3d'
+import { createTable } from '../../../src/3d/utils'
 
 describe('CameraManager', () => {
   let states

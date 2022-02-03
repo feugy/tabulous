@@ -1,8 +1,6 @@
 # TODO
 
 - player's hand
-  - when drawing by a player, update game data (remove from `meshes` and add to `hands[].meshes`) and share (server, peers)
-  - display hand (new scene? new engine?)
   - supports all actions (but draw) in hand display?
   - play from hand
   - draw/play by dragging
@@ -31,6 +29,7 @@
 - reconsider the behavior/manager split of responsibilities
   - moves onDetailedObservable from controlManager to DetailBehavior (static property)
 - all manager managing a collection of behaviors should check their capabilities
+- game-manager is just a gigantic mess!!! no single responsibility, global state all over the place
 - game-interaction unit tests
 - component, connected-component and routes rendering tests
 - completly disable Babylon input management

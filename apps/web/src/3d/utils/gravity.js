@@ -6,7 +6,6 @@ import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('gravity')
 
-const rayLength = 30
 const down = Vector3.Down()
 
 function findBelow(mesh, predicate) {
@@ -22,8 +21,8 @@ function findBelow(mesh, predicate) {
 
   const scene = mesh.getScene()
   for (const vertex of vertices) {
-    const hit = scene.pickWithRay(new Ray(vertex, down, rayLength), predicate)
-    if (hit.pickedMesh) {
+    const hit = scene.pickWithRay(new Ray(vertex, down), predicate)
+    if (hit?.pickedMesh) {
       const count = over.get(hit.pickedMesh) || 0
       over.set(hit.pickedMesh, count + 1)
     }

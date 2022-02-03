@@ -12,14 +12,13 @@ import { makeLogger } from '../../utils/logger'
 const logger = makeLogger('scene-loader')
 
 /**
- * Serializes engine's meshes.
- * @param {import('@babel/core').Engine} engine - 3D engine used.
+ * Serializes a scene's meshes.
+ * @param {import('@babel/core').Scene} scene - 3D scene serialized.
  * @returns {object[]} list of serialized meshes TODO.
  */
-export function serializeMeshes(engine) {
-  if (!engine.scenes.length) return
+export function serializeMeshes(scene) {
   const meshes = []
-  for (const mesh of engine.scenes[0].meshes) {
+  for (const mesh of scene?.meshes ?? []) {
     if (supportedNames.includes(mesh.name)) {
       meshes.push(mesh.metadata.serialize())
     }
@@ -29,21 +28,25 @@ export function serializeMeshes(engine) {
 }
 
 /**
- * Loads meshes into the provided engine:
+ * Creates a meshes into the provided scene:
+ * @param {object} state - hydrated mesh.
+ * @param {import('@babel/core').Scene} scene - 3D scene used.
+ * @returns {import('@babel/core').Mesh} mesh created
+ */
+export function createMeshFromState(state, scene) {
+  const { shape } = state
+  logger.debug({ state }, `create new ${shape} ${state.id}`)
+  return meshCreatorByName.get(shape)(state, scene)
+}
+
+/**
+ * Loads meshes into the provided scene:
  * - either creates new mesh, or updates existing ones, based on their ids
  * - deletes existing mesh that are not found in the provided data
- * - shows and hides Babylon's loading UI while loading asset (initial loading only)
- * @param {import('@babel/core').Engine} engine - 3D engine used.
+ * @param {import('@babel/core').Scene} scene - 3D scene used.
  * @param {object} meshes - list of loaded meshes TODO.
- * @param {boolean} [initial = true] - indicates whether this is the first loading or not.
  */
-export function loadMeshes(engine, meshes, initial = true) {
-  if (!engine.scenes.length) return
-  const [scene] = engine.scenes
-  if (initial) {
-    engine.displayLoadingUI()
-    scene.onDataLoadedObservable.addOnce(() => engine.hideLoadingUI())
-  }
+export function loadMeshes(scene, meshes) {
   const disposables = new Set(scene.meshes)
   for (const mesh of disposables) {
     if (!supportedNames.includes(mesh.name)) {
@@ -68,11 +71,16 @@ export function loadMeshes(engine, meshes, initial = true) {
       restoreBehaviors(mesh.behaviors, state)
     } else {
       logger.debug({ state }, `create new ${name} ${state.id}`)
-      mesh = meshCreatorByName.get(name)({
-        ...state,
-        anchorable: anchorable ? { ...anchorable, anchors: [] } : undefined,
-        stackable: stackable ? { ...stackable, stackIds: undefined } : undefined
-      })
+      mesh = createMeshFromState(
+        {
+          ...state,
+          anchorable: anchorable ? { ...anchorable, anchors: [] } : undefined,
+          stackable: stackable
+            ? { ...stackable, stackIds: undefined }
+            : undefined
+        },
+        scene
+      )
     }
     const stackBehavior = mesh.getBehaviorByName(StackBehaviorName)
     if (stackBehavior) {
@@ -119,6 +127,10 @@ export function loadMeshes(engine, meshes, initial = true) {
   )) {
     anchorBehavior.fromState(anchorable)
   }
+}
+
+export function loadHand() {
+  // TODO
 }
 
 const meshCreatorByName = new Map([

@@ -29,38 +29,46 @@ import {
  * @param {number} params.width? - card's width (X axis).
  * @param {number} params.height? - card's height (Y axis).
  * @param {number} params.depth? - card's depth (Z axis).
+ * @param {import('@babylonjs/core').Scene} scene? - scene to host this card (default to last scene).
  * @returns {import('@babylonjs/core').Mesh} the created card mesh.
  */
-export function createCard({
-  id,
-  x = 0,
-  z = 0,
-  y = 0,
-  width = 3,
-  height = 0.01,
-  depth = 4.25,
-  texture,
-  faceUV = [
-    [0.5, 1, 0, 0],
-    [0.5, 1, 1, 0]
-  ],
-  ...behaviorStates
-} = {}) {
-  const faces = CreatePlane(`plane-${id}`, {
-    width,
-    height: depth,
-    frontUVs: Vector4.FromArray(faceUV[0]),
-    backUVs: Vector4.FromArray(faceUV[1]),
-    sideOrientation: Mesh.DOUBLESIDE
-  })
+export function createCard(
+  {
+    id,
+    x = 0,
+    z = 0,
+    y = 0,
+    width = 3,
+    height = 0.01,
+    depth = 4.25,
+    texture,
+    faceUV = [
+      [0.5, 1, 0, 0],
+      [0.5, 1, 1, 0]
+    ],
+    ...behaviorStates
+  } = {},
+  scene
+) {
+  const faces = CreatePlane(
+    `plane-${id}`,
+    {
+      width,
+      height: depth,
+      frontUVs: Vector4.FromArray(faceUV[0]),
+      backUVs: Vector4.FromArray(faceUV[1]),
+      sideOrientation: Mesh.DOUBLESIDE
+    },
+    scene
+  )
   faces.receiveShadows = true
-  faces.material = new StandardMaterial(id)
-  faces.material.diffuseTexture = new Texture(adaptTexture(texture))
+  faces.material = new StandardMaterial(id, scene)
+  faces.material.diffuseTexture = new Texture(adaptTexture(texture), scene)
   faces.material.diffuseTexture.hasAlpha = true
   faces.material.freeze()
   attachMaterialError(faces.material)
 
-  const card = CreateBox('card', { width, height, depth })
+  const card = CreateBox('card', { width, height, depth }, scene)
   card.id = id
 
   // because planes are in 2-D, collisions with other meshes could be tricky.

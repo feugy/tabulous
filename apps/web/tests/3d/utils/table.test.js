@@ -1,10 +1,10 @@
 import faker from 'faker'
-import { createTable } from '../../src/3d'
-import { configures3dTestEngine } from '../test-utils'
+import { createTable } from '../../../src/3d/utils'
+import { configures3dTestEngine } from '../../test-utils'
 
 configures3dTestEngine()
 
-describe('createTable()', () => {
+describe('createTable() 3D utility', () => {
   it('creates a table mesh with parameters', () => {
     const width = faker.datatype.number()
     const height = faker.datatype.number()

@@ -14,6 +14,7 @@ import {
   moveManager,
   selectionManager
 } from './managers'
+import { createLights, createTable, loadMeshes, serializeMeshes } from './utils'
 
 // import '@babylonjs/inspector'
 // import '@babylonjs/core/Debug/debugLayer'
@@ -44,28 +45,82 @@ export function createEngine({
   engine.inputElement = interaction
 
   Scene.DoubleClickDelay = doubleTapDelay
+  // scene ordering is important: main scene must come last to allow ray picking scene.pickWithRay(new Ray(vertex, down))
+  const handScene = new Scene(engine)
   const scene = new Scene(engine)
+  handScene.autoClear = false
 
-  cameraManager.init({ scene })
+  cameraManager.init({ scene, handScene })
   inputManager.init({ scene, longTapDelay, doubleTapDelay })
   moveManager.init({ scene })
   controlManager.init({ scene })
   selectionManager.init({ scene })
 
-  engine.start = () => engine.runRenderLoop(scene.render.bind(scene))
+  createTable({}, scene)
+  // creates light after table, so table doesn't project shadow
+  createLights({ scene, handScene })
+
+  engine.start = () =>
+    engine.runRenderLoop(() => {
+      scene.render()
+      handScene.render()
+    })
+
+  engine.load = (gameData, initial) => {
+    if (initial) {
+      engine.displayLoadingUI()
+      scene.onDataLoadedObservable.addOnce(() => engine.hideLoadingUI())
+    }
+    loadMeshes(scene, gameData.meshes)
+    loadMeshes(handScene, gameData.handMeshes)
+  }
+
+  engine.serialize = () => {
+    return {
+      meshes: serializeMeshes(scene),
+      handMeshes: serializeMeshes(handScene)
+    }
+  }
+
   scene.onDataLoadedObservable.addOnce(() => {
     inputManager.enabled = true
+  })
+
+  interaction.addEventListener('pointerleave', handleLeave)
+
+  engine.onDisposeObservable.addOnce(() => {
+    interaction.removeEventListener('pointerleave', handleLeave)
   })
 
   function handleLeave(event) {
     inputManager.stopAll(event)
   }
-  interaction.addEventListener('pointerleave', handleLeave)
-  engine.onDisposeObservable.addOnce(() => {
-    interaction.removeEventListener('pointerleave', handleLeave)
-  })
-
   // scene.debugLayer.show({ embedMode: true })
   // new AxesViewer(scene)
   return engine
 }
+
+/**
+ * Loads meshes into the provided engine:
+ * - either creates new mesh, or updates existing ones, based on their ids
+ * - deletes existing mesh that are not found in the provided data
+ * - shows and hides Babylon's loading UI while loading asset (initial loading only)
+ * @param {import('@babel/core').Scene} scene - 3D scene used.
+ * @param {object} meshes - list of loaded meshes TODO.
+ * @param {boolean} [initial = true] - indicates whether this is the first loading or not.
+ * 
+ const onActionObserver = controlManager.onActionObservable.add(handleOnAction)
+    controlManager.onActionObservable.remove(onActionObserver)
+  
+ function handleOnAction({ meshId, fn }) {
+  const mesh = scene.getMeshById(meshId)
+  if (fn === 'draw' && mesh) {
+    const state = mesh.metadata.serialize()
+    mesh.dispose()
+    state.x = 0
+    state.y = 0
+    state.z = 0
+    createMeshFromState(state, handScene)
+  }
+}
+ */

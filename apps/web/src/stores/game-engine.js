@@ -1,7 +1,7 @@
 import { BehaviorSubject, Subject, merge } from 'rxjs'
 import { auditTime, delay, map } from 'rxjs/operators'
 import { connected, lastMessageReceived, send } from './peer-channels'
-import { createEngine, createLight, createTable } from '../3d'
+import { createEngine } from '../3d'
 import { cameraManager, controlManager, inputManager } from '../3d/managers'
 import { attachInputs } from '../utils'
 
@@ -102,10 +102,6 @@ export function initEngine({
   })
   engine.onEndFrameObservable.add(() => fps$.next(engine.getFps().toFixed()))
 
-  createTable()
-  // creates light after table, so table doesn't project shadow
-  createLight()
-
   engine$.next(engine)
   engine.start()
 
@@ -137,13 +133,13 @@ export function initEngine({
   // applies other players' update
   subscriptions.push(
     ...[
-      lastMessageReceived.subscribe(({ data }) => {
+      lastMessageReceived.subscribe(({ data, playerId }) => {
         if (data?.pointer) {
           controlManager.movePeerPointer(data)
         } else if (data?.meshId) {
           controlManager.apply(data, true)
           // expose remote actions to other store and components
-          remoteAction$.next(data)
+          remoteAction$.next({ ...data, peerId: playerId })
         }
       }),
 

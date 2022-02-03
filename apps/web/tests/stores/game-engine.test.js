@@ -1,7 +1,7 @@
 import { Observable } from '@babylonjs/core/Misc/observable'
 import * as faker from 'faker'
 import { get } from 'svelte/store'
-import { createEngine, createTable, createLight } from '../../src/3d'
+import { createEngine } from '../../src/3d'
 import {
   cameraManager,
   controlManager,
@@ -81,8 +81,6 @@ describe('initEngine()', () => {
     it('configures and starts an engine', () => {
       gameEngine.initEngine({ canvas, interaction })
       expect(engine.start).toHaveBeenCalledTimes(1)
-      expect(createTable).toHaveBeenCalledTimes(1)
-      expect(createLight).toHaveBeenCalledTimes(1)
       expect(get(gameEngine.engine)).toEqual(engine)
     })
 

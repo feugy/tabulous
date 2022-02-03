@@ -1,17 +1,25 @@
 import faker from 'faker'
-
 import { NullEngine } from '@babylonjs/core/Engines/nullEngine'
 import { Scene } from '@babylonjs/core/scene'
-import { createEngine } from '../../src/3d'
+import { createCard, createEngine } from '../../src/3d'
+
+let engine
+const canvas = document.createElement('canvas')
+const interaction = document.createElement('div')
+
+beforeEach(() => {
+  jest.spyOn(console, 'log').mockImplementationOnce(() => ({}))
+})
+
+afterEach(() => {
+  engine?.dispose()
+})
 
 describe('createEngine()', () => {
   it('initializes engine with parameters', () => {
-    jest.spyOn(console, 'log').mockImplementationOnce(() => ({}))
-    const canvas = document.createElement('canvas')
-    const interaction = document.createElement('div')
     const doubleTapDelay = faker.datatype.number()
     const longTapDelay = faker.datatype.number()
-    const engine = createEngine({
+    engine = createEngine({
       Engine: NullEngine,
       canvas,
       interaction,
@@ -24,4 +32,138 @@ describe('createEngine()', () => {
 
     // TODO input manager stopAll()
   })
+
+  describe('given an engine', () => {
+    let displayLoadingUI
+
+    beforeEach(() => {
+      engine = createEngine({
+        Engine: NullEngine,
+        canvas,
+        interaction,
+        doubleTapDelay: 100,
+        longTapDelay: 200
+      })
+      displayLoadingUI = jest.spyOn(engine, 'displayLoadingUI')
+    })
+
+    it('can load() game data', () => {
+      const mesh = {
+        shape: 'card',
+        depth: 0.2,
+        height: 4,
+        id: 'card2',
+        texture: 'https://elyse.biz',
+        width: 3,
+        x: -5,
+        y: 0,
+        z: -10
+      }
+      engine.load({ meshes: [mesh], handMeshes: [] }, false)
+      expect(engine.scenes[1].getMeshById(mesh.id)).toBeDefined()
+      expect(displayLoadingUI).not.toHaveBeenCalled()
+    })
+
+    it('can serialize() game data', () => {
+      createCard(
+        { id: 'card3', texture: 'https://elyse.biz' },
+        engine.scenes[1]
+      )
+      expect(engine.serialize()).toEqual({
+        meshes: [
+          {
+            shape: 'card',
+            depth: 4.25,
+            height: 0.01,
+            id: 'card3',
+            texture: 'https://elyse.biz',
+            faceUV: [
+              [0.5, 1, 0, 0],
+              [0.5, 1, 1, 0]
+            ],
+            width: 3,
+            x: 0,
+            y: 0,
+            z: 0
+          }
+        ],
+        handMeshes: []
+      })
+    })
+
+    it('displays loading UI on initial load only', () => {
+      const mesh = {
+        shape: 'card',
+        depth: 0.2,
+        height: 4,
+        id: 'card2',
+        texture: 'https://elyse.biz',
+        width: 3,
+        x: -5,
+        y: 0,
+        z: -10
+      }
+      engine.load({ meshes: [mesh], handMeshes: [] }, true)
+      expect(engine.scenes[1].getMeshById(mesh.id)).toBeDefined()
+      expect(displayLoadingUI).toHaveBeenCalledTimes(1)
+    })
+
+    describe('given some loaded meshes', () => {
+      beforeEach(() => {
+        engine.load({
+          meshes: [
+            { id: 'card1', shape: 'card', drawable: true },
+            { id: 'card2', shape: 'card', drawable: true },
+            { id: 'card3', shape: 'card', drawable: true }
+          ],
+          handMeshes: []
+        })
+      })
+
+      it.todo('removes drawn mesh from main scene') /*, () => {
+        const [scene] = engine.scenes
+        const drawn = scene.getMeshById('card2')
+        drawn.metadata.draw(player.id)
+        expect(scene.getMeshById(drawn.id)).toBeNull()
+        const game = engine.serialize()
+        expect(getIds(game.meshes)).toEqual(['card1', 'card3'])
+        expect(getIds(game.handMeshes)).toEqual(['card2'])
+      })*/
+
+      it.todo('creates hand when drawing first mesh')
+
+      it.todo('adds to existing hand when drawing mesh')
+
+      it.todo('adds to existing hand when drawing mesh')
+
+      it.todo('does not change hand on unknown mesh draws')
+    })
+  })
 })
+
+// it('creates hand when drawing first mesh', () => {
+//   action.next({ meshId: meshes[1].id, fn: 'draw', args: [player.id] })
+//   expect(engine.load).toHaveBeenCalledWith(
+//     { ...game, meshes: [meshes[0], meshes[2]] },
+//     false
+//   )
+//   expect(engine.load).toHaveBeenCalledTimes(1)
+//   // expect(loadHand).toHaveBeenCalledWith(engine, [meshes[1]])
+//   // expect(loadHand).toHaveBeenCalledTimes(1)
+// })
+
+// it('adds to existing hand when drawing mesh', async () => {
+//   await prepareGame({
+//     ...game,
+//     meshes: meshes.slice(1),
+//     hands: [{ playerId: player.id, meshes: [meshes[0]] }]
+//   })
+//   action.next({ meshId: meshes[1].id, fn: 'draw', args: [player.id] })
+//   expect(engine.load).toHaveBeenCalledWith(
+//     { ...game, meshes: [meshes[2]] },
+//     false
+//   )
+//   expect(engine.load).toHaveBeenCalledTimes(1)
+//   // expect(loadHand).toHaveBeenCalledWith(engine, [meshes[0], meshes[1]])
+//   // expect(loadHand).toHaveBeenCalledTimes(1)
+// })

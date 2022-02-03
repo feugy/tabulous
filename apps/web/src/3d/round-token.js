@@ -24,32 +24,40 @@ import {
  * @param {number} params.z? - initial position along the Z axis.
  * @param {number} params.diameter? - token's diameter (X+Z axis).
  * @param {number} params.height? - token's height (Y axis).
+ * @param {import('@babylonjs/core').Scene} scene? - scene to host this round token (default to last scene).
  * @returns the created token mesh.
  */
-export function createRoundToken({
-  id,
-  x = 0,
-  y = 0.05,
-  z = 0,
-  diameter = 2,
-  height = 0.1,
-  texture,
-  faceUV = [
-    [0, 0, 0.5, 1],
-    [0, 0, 0, 0],
-    [0.5, 0, 1, 1]
-  ],
-  ...behaviorStates
-} = {}) {
-  const token = CreateCylinder('roundToken', {
-    diameter,
-    height,
-    tessellation: 48,
-    faceUV: faceUV.map(components => Vector4.FromArray(components))
-  })
+export function createRoundToken(
+  {
+    id,
+    x = 0,
+    y = 0.05,
+    z = 0,
+    diameter = 2,
+    height = 0.1,
+    texture,
+    faceUV = [
+      [0, 0, 0.5, 1],
+      [0, 0, 0, 0],
+      [0.5, 0, 1, 1]
+    ],
+    ...behaviorStates
+  } = {},
+  scene
+) {
+  const token = CreateCylinder(
+    'roundToken',
+    {
+      diameter,
+      height,
+      tessellation: 48,
+      faceUV: faceUV.map(components => Vector4.FromArray(components))
+    },
+    scene
+  )
   token.id = id
-  token.material = new StandardMaterial(id)
-  token.material.diffuseTexture = new Texture(adaptTexture(texture))
+  token.material = new StandardMaterial(id, scene)
+  token.material.diffuseTexture = new Texture(adaptTexture(texture), scene)
   token.material.diffuseTexture.hasAlpha = true
   token.material.freeze()
   attachMaterialError(token.material)

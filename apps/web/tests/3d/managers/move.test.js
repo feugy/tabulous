@@ -2,7 +2,7 @@ import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
 import { configures3dTestEngine, expectPosition, sleep } from '../../test-utils'
-import { createTable } from '../../../src/3d'
+import { createTable } from '../../../src/3d/utils'
 import {
   controlManager,
   moveManager as manager,
