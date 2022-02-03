@@ -161,6 +161,7 @@ export async function createGame(kind, playerId) {
     meshes: createMeshes(descriptor),
     messages: [],
     cameras: [],
+    hands: [],
     rulesBookPageCount: descriptor.rulesBookPageCount
   })
   gameListsUpdate$.next(created.playerIds)
@@ -220,6 +221,7 @@ export async function saveGame(game, playerId) {
     return repositories.games.save({
       ...previous,
       meshes: game.meshes ?? previous.meshes,
+      hands: game.hands ?? previous.hands,
       messages: game.messages ?? previous.messages,
       cameras: game.cameras ?? previous.cameras
     })
