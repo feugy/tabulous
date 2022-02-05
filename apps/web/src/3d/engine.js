@@ -10,6 +10,7 @@ import '@babylonjs/core/Rendering/outlineRenderer'
 import {
   cameraManager,
   controlManager,
+  handManager,
   inputManager,
   moveManager,
   selectionManager
@@ -55,6 +56,7 @@ export function createEngine({
   moveManager.init({ scene })
   controlManager.init({ scene })
   selectionManager.init({ scene })
+  handManager.init({ scene, handScene })
 
   createTable({}, scene)
   // creates light after table, so table doesn't project shadow
@@ -108,19 +110,4 @@ export function createEngine({
  * @param {import('@babel/core').Scene} scene - 3D scene used.
  * @param {object} meshes - list of loaded meshes TODO.
  * @param {boolean} [initial = true] - indicates whether this is the first loading or not.
- * 
- const onActionObserver = controlManager.onActionObservable.add(handleOnAction)
-    controlManager.onActionObservable.remove(onActionObserver)
-  
- function handleOnAction({ meshId, fn }) {
-  const mesh = scene.getMeshById(meshId)
-  if (fn === 'draw' && mesh) {
-    const state = mesh.metadata.serialize()
-    mesh.dispose()
-    state.x = 0
-    state.y = 0
-    state.z = 0
-    createMeshFromState(state, handScene)
-  }
-}
  */

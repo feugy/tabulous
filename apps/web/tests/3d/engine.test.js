@@ -4,6 +4,7 @@ import { Scene } from '@babylonjs/core/scene'
 import { createCard, createEngine } from '../../src/3d'
 
 let engine
+const player = { id: faker.datatype.uuid() }
 const canvas = document.createElement('canvas')
 const interaction = document.createElement('div')
 
@@ -120,50 +121,19 @@ describe('createEngine()', () => {
         })
       })
 
-      it.todo('removes drawn mesh from main scene') /*, () => {
-        const [scene] = engine.scenes
+      it('removes drawn mesh from main scene', () => {
+        const [, scene] = engine.scenes
         const drawn = scene.getMeshById('card2')
         drawn.metadata.draw(player.id)
         expect(scene.getMeshById(drawn.id)).toBeNull()
         const game = engine.serialize()
         expect(getIds(game.meshes)).toEqual(['card1', 'card3'])
         expect(getIds(game.handMeshes)).toEqual(['card2'])
-      })*/
-
-      it.todo('creates hand when drawing first mesh')
-
-      it.todo('adds to existing hand when drawing mesh')
-
-      it.todo('adds to existing hand when drawing mesh')
-
-      it.todo('does not change hand on unknown mesh draws')
+      })
     })
   })
 })
 
-// it('creates hand when drawing first mesh', () => {
-//   action.next({ meshId: meshes[1].id, fn: 'draw', args: [player.id] })
-//   expect(engine.load).toHaveBeenCalledWith(
-//     { ...game, meshes: [meshes[0], meshes[2]] },
-//     false
-//   )
-//   expect(engine.load).toHaveBeenCalledTimes(1)
-//   // expect(loadHand).toHaveBeenCalledWith(engine, [meshes[1]])
-//   // expect(loadHand).toHaveBeenCalledTimes(1)
-// })
-
-// it('adds to existing hand when drawing mesh', async () => {
-//   await prepareGame({
-//     ...game,
-//     meshes: meshes.slice(1),
-//     hands: [{ playerId: player.id, meshes: [meshes[0]] }]
-//   })
-//   action.next({ meshId: meshes[1].id, fn: 'draw', args: [player.id] })
-//   expect(engine.load).toHaveBeenCalledWith(
-//     { ...game, meshes: [meshes[2]] },
-//     false
-//   )
-//   expect(engine.load).toHaveBeenCalledTimes(1)
-//   // expect(loadHand).toHaveBeenCalledWith(engine, [meshes[0], meshes[1]])
-//   // expect(loadHand).toHaveBeenCalledTimes(1)
-// })
+function getIds(meshes) {
+  return meshes?.map(({ id }) => id) ?? []
+}

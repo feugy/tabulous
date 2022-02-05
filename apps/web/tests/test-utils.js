@@ -42,6 +42,10 @@ export function initialize3dEngine(
 ) {
   Logger.LogLevels = Logger.NoneLogLevel
   const engine = new NullEngine(engineProps)
+  return { engine, ...initialize3dScene(engine) }
+}
+
+export function initialize3dScene(engine) {
   const scene = new Scene(engine)
   const camera = new ArcRotateCamera(
     'camera',
@@ -53,7 +57,7 @@ export function initialize3dEngine(
   camera.lockedTarget = Vector3.Zero()
   engine.runRenderLoop(() => scene.render())
   scene.updateTransformMatrix()
-  return { engine, scene, camera }
+  return { scene, camera }
 }
 
 export function disposeAllMeshes(scene) {
@@ -62,12 +66,12 @@ export function disposeAllMeshes(scene) {
   }
 }
 
-export function configures3dTestEngine(callback) {
+export function configures3dTestEngine(callback, engineProps) {
   let engine
   let scene
 
   beforeAll(() => {
-    ;({ engine, scene } = initialize3dEngine())
+    ;({ engine, scene } = initialize3dEngine(engineProps))
     callback?.({ engine, scene })
   })
 
