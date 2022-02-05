@@ -5,7 +5,7 @@ import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import {
   adaptTexture,
   attachMaterialError,
-  getHeight,
+  getDimensions,
   isContaining
 } from '../../../src/3d/utils'
 
@@ -19,27 +19,35 @@ beforeAll(() => {
 
 afterAll(() => engine.dispose())
 
-describe('getHeight() 3D utility', () => {
+describe('getDimensions() 3D utility', () => {
   it('returns the height of a box', () => {
     const height = 3
-    const box = CreateBox('box', { width: 2, height, depth: 4 })
-    expect(getHeight(box)).toEqual(height)
+    const width = 2
+    const depth = 2
+    const box = CreateBox('box', { width, height, depth })
+    expect(getDimensions(box)).toEqual({ height, width, depth })
   })
 
   it('returns the height of a positionned box', () => {
     const height = 6
-    const box = CreateBox('box', { width: 2, height, depth: 4 })
+    const width = 2
+    const depth = 4
+    const box = CreateBox('box', { width, height, depth })
     box.setAbsolutePosition(new Vector3(-3, -5, -6))
-    expect(getHeight(box)).toEqual(height)
+    expect(getDimensions(box)).toEqual({ height, width, depth })
   })
 
   it('returns the height of a rotated box', () => {
     const height = 6
-    const box = CreateBox('box', { width: 2, height, depth: 4 })
+    const width = 3
+    const depth = 4
+    const box = CreateBox('box', { width, height, depth })
     box.rotation.x = Math.PI / 4
     box.setAbsolutePosition(new Vector3(2, 4, 6))
     box.computeWorldMatrix()
-    expect(getHeight(box)).toBeGreaterThan(height)
+    expect(getDimensions(box).width).toEqual(width)
+    expect(getDimensions(box).height).toBeGreaterThan(height)
+    expect(getDimensions(box).depth).toBeGreaterThan(depth)
   })
 })
 

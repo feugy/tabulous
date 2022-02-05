@@ -10,7 +10,7 @@ import {
   targetManager
 } from '../../../src/3d/managers'
 import { MoveBehavior, TargetBehavior } from '../../../src/3d/behaviors'
-import { getHeight } from '../../../src/3d/utils'
+import { getDimensions } from '../../../src/3d/utils'
 
 describe('MoveManager', () => {
   let scene
@@ -188,7 +188,7 @@ describe('MoveManager', () => {
       it('stops when pointer is leaving table', async () => {
         manager.continue({ x: centerX * 3, y: centerY * 3 })
         await sleep()
-        expectPosition(moved, [1, getHeight(moved) / 2, 1])
+        expectPosition(moved, [1, getDimensions(moved).height / 2, 1])
         expect(recordSpy).toHaveBeenCalledTimes(1)
         expect(recordSpy).toHaveBeenCalledWith({
           meshId: moved.id,
@@ -207,7 +207,7 @@ describe('MoveManager', () => {
 
       it('descends moved mesh', async () => {
         await manager.stop()
-        expectPosition(moved, [1, getHeight(moved) / 2, 1])
+        expectPosition(moved, [1, getDimensions(moved).height / 2, 1])
         expect(recordSpy).toHaveBeenCalledTimes(1)
         expect(recordSpy).toHaveBeenCalledWith({
           meshId: moved.id,
@@ -246,7 +246,7 @@ describe('MoveManager', () => {
         await manager.stop()
         manager.continue()
         await manager.stop()
-        expectPosition(moved, [1, getHeight(moved) / 2, 1])
+        expectPosition(moved, [1, getDimensions(moved).height / 2, 1])
         expect(recordSpy).toHaveBeenCalledTimes(1)
         expect(recordSpy).toHaveBeenCalledWith({
           meshId: moved.id,
@@ -412,7 +412,7 @@ describe('MoveManager', () => {
           moved[0].absolutePosition.y,
           1 + deltaZ
         ])
-        expectPosition(moved[1], [2, getHeight(moved[1]) / 2, -1])
+        expectPosition(moved[1], [2, getDimensions(moved[1]).height / 2, -1])
         expectPosition(moved[2], [
           -3 + deltaX,
           moved[2].absolutePosition.y,
@@ -526,7 +526,7 @@ function expectZoneForMeshes(targetId, meshes) {
 function getAltitudeOnCollision(moved, obstacle) {
   return (
     moved.getBoundingInfo().boundingBox.minimumWorld.y -
-    getHeight(moved) +
+    getDimensions(moved).height +
     obstacle.getBoundingInfo().boundingBox.maximumWorld.y
   )
 }

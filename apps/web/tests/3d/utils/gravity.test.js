@@ -4,7 +4,7 @@ import faker from 'faker'
 import {
   getCenterAltitudeAbove,
   applyGravity,
-  getHeight,
+  getDimensions,
   isAbove,
   sortByElevation
 } from '../../../src/3d/utils'
@@ -56,7 +56,7 @@ describe('applyGravity() 3D utility', () => {
 
   it('positions mesh on the ground', () => {
     const box = CreateBox('box', {})
-    expect(getHeight(box)).toEqual(1)
+    expect(getDimensions(box).height).toEqual(1)
     box.setAbsolutePosition(new Vector3(x, 10, z))
     box.computeWorldMatrix()
     const box2 = CreateBox('box2', {})
@@ -68,7 +68,7 @@ describe('applyGravity() 3D utility', () => {
 
   it('positions mesh with negative position', () => {
     const box = CreateBox('box', {})
-    expect(getHeight(box)).toEqual(1)
+    expect(getDimensions(box).height).toEqual(1)
     box.setAbsolutePosition(new Vector3(x, -10, z))
     box.computeWorldMatrix()
     const box2 = CreateBox('box2', {})

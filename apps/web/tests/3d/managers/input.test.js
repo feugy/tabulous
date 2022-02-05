@@ -63,7 +63,7 @@ describe('InputManager', () => {
     })
   })
 
-  describe('given an initialized manager()', () => {
+  describe('given an initialized manager', () => {
     let meshes = [
       // x: 1048, y: 525
       { id: 'box1', position: new Vector3(1, 1, -1) },
@@ -1274,7 +1274,7 @@ describe('InputManager', () => {
     })
   })
 
-  describe('given a disabled manager()', () => {
+  describe('given a disabled manager', () => {
     beforeEach(() => manager.init({ scene, longTapDelay: 100 }))
 
     it('ignores pointer down', () => {

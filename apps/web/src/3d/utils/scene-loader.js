@@ -129,10 +129,6 @@ export function loadMeshes(scene, meshes) {
   }
 }
 
-export function loadHand() {
-  // TODO
-}
-
 const meshCreatorByName = new Map([
   ['card', createCard],
   ['roundToken', createRoundToken],

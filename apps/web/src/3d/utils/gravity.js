@@ -1,6 +1,6 @@
 import { Ray } from '@babylonjs/core/Culling/ray'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { getHeight } from './mesh'
+import { getDimensions } from './mesh'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
 
@@ -36,7 +36,7 @@ function findBelow(mesh, predicate) {
  * @returns {number} resulting Y coordinate.
  */
 export function getAtlitudeAbove(mesh) {
-  return mesh.absolutePosition.y + getHeight(mesh) * 0.5 + 0.001
+  return mesh.absolutePosition.y + getDimensions(mesh).height * 0.5 + 0.001
 }
 
 /**
@@ -47,7 +47,7 @@ export function getAtlitudeAbove(mesh) {
  * @returns {number} resulting Y coordinate.
  */
 export function getCenterAltitudeAbove(meshBelow, meshAbove) {
-  return getAtlitudeAbove(meshBelow) + getHeight(meshAbove) * 0.5
+  return getAtlitudeAbove(meshBelow) + getDimensions(meshAbove).height * 0.5
 }
 
 /**
@@ -64,7 +64,7 @@ export function applyGravity(mesh) {
   )
   mesh.computeWorldMatrix(true)
   const over = findBelow(mesh, other => other.isPickable && other !== mesh)
-  let y = getHeight(mesh) * 0.5
+  let y = getDimensions(mesh).height * 0.5
   if (over.size) {
     const ordered = sortByElevation(over.keys(), true)
     y = getCenterAltitudeAbove(ordered[0], mesh)
