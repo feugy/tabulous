@@ -1,7 +1,12 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
-import { configures3dTestEngine, sleep } from '../../test-utils'
+import {
+  configures3dTestEngine,
+  disposeAllMeshes,
+  initialize3dScene,
+  sleep
+} from '../../test-utils'
 import { inputManager as manager } from '../../../src/3d/managers'
 import { PointerEventTypes } from '@babylonjs/core'
 
@@ -9,6 +14,7 @@ const { POINTERDOWN, POINTERUP, POINTERMOVE, POINTERWHEEL } = PointerEventTypes
 
 describe('InputManager', () => {
   let scene
+  let handScene
   let taps
   let drags
   let pinches
@@ -18,6 +24,8 @@ describe('InputManager', () => {
 
   configures3dTestEngine(created => {
     scene = created.scene
+    handScene = initialize3dScene(created.engine).scene
+    handScene.autoClear = false
   })
 
   beforeEach(() => {
@@ -39,6 +47,8 @@ describe('InputManager', () => {
     manager.onLongObservable.add(long => longs.push(long))
   })
 
+  afterEach(() => disposeAllMeshes(handScene))
+
   it('has initial state', () => {
     expect(manager.enabled).toBe(false)
   })
@@ -50,64 +60,58 @@ describe('InputManager', () => {
   describe('init()', () => {
     it('assigns default properties', () => {
       const longTapDelay = faker.datatype.number()
-      manager.init({ scene, longTapDelay })
+      manager.init({ scene, handScene, longTapDelay })
       expect(manager.enabled).toBe(false)
       expect(manager.longTapDelay).toBe(longTapDelay)
     })
 
     it('assigns custom properties', () => {
       const longTapDelay = 100
-      manager.init({ scene, enabled: true, longTapDelay })
+      manager.init({ scene, handScene, enabled: true, longTapDelay })
       expect(manager.enabled).toBe(true)
       expect(manager.longTapDelay).toBe(longTapDelay)
     })
   })
 
   describe('given an initialized manager', () => {
-    let meshes = [
-      // x: 1048, y: 525
-      { id: 'box1', position: new Vector3(1, 1, -1) },
-      // x: 1024, y: 512
-      { id: 'box2', position: new Vector3(0, 0, 0) },
-      // x: 905, y: 573
-      { id: 'box3', position: new Vector3(-5, -2, -2) },
-      // x: 1152, y: 344
-      { id: 'box4', position: new Vector3(5, 5, 5) },
-      // x: 1266, y: 512
-      { id: 'box5', position: new Vector3(10, 0, 0) }
-    ]
-
-    beforeEach(() => {
-      manager.init({ scene, enabled: true, longTapDelay: 100 })
-      meshes = meshes.map(({ id, position }) => {
-        const mesh = CreateBox(id, {})
+    let meshes = beforeEach(() => {
+      manager.init({ scene, handScene, enabled: true, longTapDelay: 100 })
+      meshes = [
+        // x: 1048, y: 525
+        { id: 'box1', position: new Vector3(1, 1, -1), scene },
+        // x: 1024, y: 512
+        { id: 'box2', position: new Vector3(0, 0, 0), scene },
+        // x: 905, y: 573
+        { id: 'box3', position: new Vector3(-5, -2, -2), scene },
+        // x: 1152, y: 344
+        { id: 'box4', position: new Vector3(5, 5, 5), scene },
+        // x: 1266, y: 512
+        { id: 'box5', position: new Vector3(10, 0, 0), scene },
+        // x: 1266, y: 512
+        { id: 'box6', position: new Vector3(10, 0, 0), scene: handScene }
+      ].map(({ id, position, scene }) => {
+        const mesh = CreateBox(id, {}, scene)
         mesh.setAbsolutePosition(position)
         mesh.computeWorldMatrix()
         return mesh
       })
     })
 
-    function findMeshById(id) {
-      return id ? meshes.find(mesh => mesh.id === id) : undefined
-    }
-
     it.each([
       { title: '', pointer: { x: 1000, y: 500 } },
-      { title: ' on mesh', pointer: { x: 1266, y: 512 }, meshId: 'box5' }
+      { title: ' on mesh', pointer: { x: 905, y: 573 }, meshId: 'box3' },
+      { title: ' on hand mesh', pointer: { x: 1266, y: 512 }, meshId: 'box6' }
     ])('identifies tap$title', ({ pointer, meshId }) => {
       const pointerId = 10
       const button = 1
       triggerEvent(POINTERDOWN, { ...pointer, pointerId, button })
       const event = triggerEvent(POINTERUP, { ...pointer, pointerId, button })
       expectEvents({ taps: 1 })
-      expect(taps[0]).toEqual({
-        long: false,
-        pointers: 1,
-        type: 'tap',
-        button,
-        event,
-        mesh: findMeshById(meshId)
-      })
+      expectsDataWithMesh(
+        taps[0],
+        { long: false, pointers: 1, type: 'tap', button, event },
+        meshId
+      )
     })
 
     it.each([
@@ -120,14 +124,11 @@ describe('InputManager', () => {
       triggerEvent(POINTERMOVE, { ...move(pointer, 0, 0), pointerId })
       const event = triggerEvent(POINTERUP, { ...pointer, pointerId, button })
       expectEvents({ taps: 1 })
-      expect(taps[0]).toEqual({
-        button,
-        long: false,
-        pointers: 1,
-        type: 'tap',
-        event,
-        mesh: findMeshById(meshId)
-      })
+      expectsDataWithMesh(
+        taps[0],
+        { long: false, pointers: 1, type: 'tap', button, event },
+        meshId
+      )
     })
 
     it.each([
@@ -156,10 +157,11 @@ describe('InputManager', () => {
         )
 
         expectEvents({ taps: 1 })
-        const mesh = findMeshById(meshId)
-        expect(taps).toEqual([
-          { long: false, pointers: 2, type: 'tap', event, mesh }
-        ])
+        expectsDataWithMesh(
+          taps[0],
+          { long: false, pointers: 2, type: 'tap', event },
+          meshId
+        )
       }
     )
 
@@ -177,19 +179,15 @@ describe('InputManager', () => {
       await sleep(manager.longTapDelay * 1.1)
       const upEvent = triggerEvent(POINTERUP, { ...pointer, pointerId, button })
       expectEvents({ taps: 1, longs: 1 })
-      expect(taps[0]).toEqual({
-        button,
-        long: true,
-        pointers: 1,
-        type: 'tap',
-        event: upEvent,
-        mesh: findMeshById(meshId)
-      })
-      expect(longs[0]).toEqual({
+      expectsDataWithMesh(
+        taps[0],
+        { long: true, pointers: 1, type: 'tap', event: upEvent },
+        meshId
+      )
+      expectsDataWithMesh(longs[0], {
         pointers: 1,
         type: 'longPointer',
-        event: downEvent,
-        mesh: undefined
+        event: downEvent
       })
     })
 
@@ -215,19 +213,15 @@ describe('InputManager', () => {
           button
         })
         expectEvents({ taps: 1, longs: 1 })
-        expect(taps[0]).toEqual({
-          button,
-          long: true,
-          pointers: 1,
-          type: 'tap',
-          event: upEvent,
-          mesh: findMeshById(meshId)
-        })
-        expect(longs[0]).toEqual({
+        expectsDataWithMesh(
+          taps[0],
+          { long: true, pointers: 1, type: 'tap', button, event: upEvent },
+          meshId
+        )
+        expectsDataWithMesh(longs[0], {
           pointers: 1,
           type: 'longPointer',
-          event: downEvent,
-          mesh: undefined
+          event: downEvent
         })
       }
     )
@@ -276,17 +270,21 @@ describe('InputManager', () => {
         )
         expectEvents({ taps: 1, longs: 2 })
         const pointers = 2
-        expect(taps[0]).toEqual({
-          long: true,
+        expectsDataWithMesh(
+          taps[0],
+          { long: true, pointers, type: 'tap', event: upEvent },
+          meshId
+        )
+        expectsDataWithMesh(longs[0], {
           pointers,
-          type: 'tap',
-          event: upEvent,
-          mesh: findMeshById(meshId)
+          type: 'longPointer',
+          event: downEventA
         })
-        expect(longs).toEqual([
-          { pointers, type: 'longPointer', event: downEventA, mesh: undefined },
-          { pointers, type: 'longPointer', event: downEventB, mesh: undefined }
-        ])
+        expectsDataWithMesh(longs[1], {
+          pointers,
+          type: 'longPointer',
+          event: downEventB
+        })
       }
     )
 
@@ -296,7 +294,6 @@ describe('InputManager', () => {
     ])('identifies double tap$title', async ({ pointer, meshId }) => {
       const pointerId = 13
       const button = 2
-      const mesh = findMeshById(meshId)
       triggerEvent(POINTERDOWN, { ...pointer, pointerId, button })
       const tapEvent = triggerEvent(POINTERUP, {
         ...pointer,
@@ -315,24 +312,22 @@ describe('InputManager', () => {
         button
       })
       expectEvents({ taps: 2 })
-      expect(taps).toEqual([
-        {
-          long: false,
-          pointers: 1,
-          type: 'tap',
-          button,
-          event: tapEvent,
-          mesh
-        },
+      expectsDataWithMesh(
+        taps[0],
+        { long: false, pointers: 1, type: 'tap', button, event: tapEvent },
+        meshId
+      )
+      expectsDataWithMesh(
+        taps[1],
         {
           long: false,
           pointers: 1,
           type: 'doubletap',
           button,
-          event: doubleTapEvent,
-          mesh
-        }
-      ])
+          event: doubleTapEvent
+        },
+        meshId
+      )
     })
 
     it.each([
@@ -348,7 +343,6 @@ describe('InputManager', () => {
           pointerId,
           button
         })
-        const mesh = findMeshById(meshId)
         await sleep(manager.longTapDelay * 1.1)
         const tapEvent = triggerEvent(POINTERUP, {
           ...pointer,
@@ -364,29 +358,26 @@ describe('InputManager', () => {
           button
         })
         expectEvents({ taps: 2, longs: 1 })
-        expect(taps).toEqual([
-          {
-            long: true,
-            pointers: 1,
-            type: 'tap',
-            button,
-            event: tapEvent,
-            mesh
-          },
+        expectsDataWithMesh(
+          taps[0],
+          { long: true, pointers: 1, type: 'tap', button, event: tapEvent },
+          meshId
+        )
+        expectsDataWithMesh(
+          taps[1],
           {
             long: false,
             pointers: 1,
             type: 'doubletap',
             button,
-            event: doubleTapEvent,
-            mesh
-          }
-        ])
-        expect(longs[0]).toEqual({
+            event: doubleTapEvent
+          },
+          meshId
+        )
+        expectsDataWithMesh(longs[0], {
           pointers: 1,
           type: 'longPointer',
-          event: downEvent,
-          mesh: undefined
+          event: downEvent
         })
       }
     )
@@ -404,7 +395,6 @@ describe('InputManager', () => {
       async ({ pointerA, pointerB, meshId }) => {
         const idA = 11
         const idB = 16
-        const mesh = findMeshById(meshId)
         triggerEvent(POINTERDOWN, { ...pointerA, pointerId: idA }, 'tap')
         await sleep(10)
         triggerEvent(POINTERDOWN, { ...pointerB, pointerId: idB }, 'tap')
@@ -465,22 +455,16 @@ describe('InputManager', () => {
 
         expectEvents({ taps: 2 })
         const pointers = 2
-        expect(taps).toEqual([
-          {
-            long: false,
-            pointers,
-            event: tapEvent,
-            type: 'tap',
-            mesh
-          },
-          {
-            long: false,
-            pointers,
-            event: doubleTapEvent,
-            type: 'doubletap',
-            mesh
-          }
-        ])
+        expectsDataWithMesh(
+          taps[0],
+          { long: false, pointers, type: 'tap', event: tapEvent },
+          meshId
+        )
+        expectsDataWithMesh(
+          taps[1],
+          { long: false, pointers, type: 'doubletap', event: doubleTapEvent },
+          meshId
+        )
       }
     )
 
@@ -509,21 +493,31 @@ describe('InputManager', () => {
 
       expectEvents({ drags: 5 })
       const pointers = 1
-      const mesh = findMeshById(meshId)
-      expect(drags).toEqual([
-        {
-          long: false,
-          pointers,
-          type: 'dragStart',
-          button,
-          event: events[0],
-          mesh
-        },
-        { pointers, type: 'drag', button, event: events[1], mesh },
-        { pointers, type: 'drag', button, event: events[2], mesh },
-        { pointers, type: 'drag', button, event: events[3], mesh },
-        { pointers, type: 'dragStop', button, event: events[4], mesh }
-      ])
+      expectsDataWithMesh(
+        drags[0],
+        { long: false, pointers, type: 'dragStart', button, event: events[0] },
+        meshId
+      )
+      expectsDataWithMesh(
+        drags[1],
+        { pointers, type: 'drag', button, event: events[1] },
+        meshId
+      )
+      expectsDataWithMesh(
+        drags[2],
+        { pointers, type: 'drag', button, event: events[2] },
+        meshId
+      )
+      expectsDataWithMesh(
+        drags[3],
+        { pointers, type: 'drag', button, event: events[3] },
+        meshId
+      )
+      expectsDataWithMesh(
+        drags[4],
+        { pointers, type: 'dragStop', button, event: events[4] },
+        meshId
+      )
     })
 
     it.each([
@@ -551,26 +545,35 @@ describe('InputManager', () => {
 
       expectEvents({ drags: 5, longs: 1 })
       const pointers = 1
-      const mesh = findMeshById(meshId)
-      expect(drags).toEqual([
-        {
-          long: true,
-          pointers,
-          type: 'dragStart',
-          button,
-          event: events[0],
-          mesh
-        },
-        { pointers, type: 'drag', button, event: events[1], mesh },
-        { pointers, type: 'drag', button, event: events[2], mesh },
-        { pointers, type: 'drag', button, event: events[3], mesh },
-        { pointers, type: 'dragStop', button, event: events[4], mesh }
-      ])
-      expect(longs[0]).toEqual({
+      expectsDataWithMesh(
+        drags[0],
+        { long: true, pointers, type: 'dragStart', button, event: events[0] },
+        meshId
+      )
+      expectsDataWithMesh(
+        drags[1],
+        { pointers, type: 'drag', button, event: events[1] },
+        meshId
+      )
+      expectsDataWithMesh(
+        drags[2],
+        { pointers, type: 'drag', button, event: events[2] },
+        meshId
+      )
+      expectsDataWithMesh(
+        drags[3],
+        { pointers, type: 'drag', button, event: events[3] },
+        meshId
+      )
+      expectsDataWithMesh(
+        drags[4],
+        { pointers, type: 'dragStop', button, event: events[4] },
+        meshId
+      )
+      expectsDataWithMesh(longs[0], {
         pointers,
         type: 'longPointer',
-        event: events[0],
-        mesh: undefined
+        event: events[0]
       })
     })
 
@@ -657,19 +660,26 @@ describe('InputManager', () => {
 
         expectEvents({ drags: 4 })
         const pointers = 2
-        const mesh = findMeshById(meshId)
-        expect(drags).toEqual([
-          {
-            long: false,
-            pointers,
-            type: 'dragStart',
-            event: events[4],
-            mesh
-          },
-          { pointers, type: 'drag', event: events[6], mesh },
-          { pointers, type: 'drag', event: events[8], mesh },
-          { pointers, type: 'dragStop', event: events[9], mesh }
-        ])
+        expectsDataWithMesh(
+          drags[0],
+          { long: false, pointers, type: 'dragStart', event: events[4] },
+          meshId
+        )
+        expectsDataWithMesh(
+          drags[1],
+          { pointers, type: 'drag', event: events[6] },
+          meshId
+        )
+        expectsDataWithMesh(
+          drags[2],
+          { pointers, type: 'drag', event: events[8] },
+          meshId
+        )
+        expectsDataWithMesh(
+          drags[3],
+          { pointers, type: 'dragStop', event: events[9] },
+          meshId
+        )
       }
     )
 
@@ -763,52 +773,54 @@ describe('InputManager', () => {
 
         expectEvents({ pinches: 8 })
         const pointers = 2
-        expect(pinches).toEqual([
-          {
-            pinchDelta: pinchDeltas[0],
-            long: false,
-            pointers,
-            type: 'pinchStart',
-            event: events[2]
-          },
-          {
-            pinchDelta: pinchDeltas[0],
-            pointers,
-            type: 'pinch',
-            event: events[2]
-          },
-          {
-            pinchDelta: pinchDeltas[1],
-            pointers,
-            type: 'pinch',
-            event: events[3]
-          },
-          {
-            pinchDelta: pinchDeltas[2],
-            pointers,
-            type: 'pinch',
-            event: events[4]
-          },
-          {
-            pinchDelta: pinchDeltas[3],
-            pointers,
-            type: 'pinch',
-            event: events[5]
-          },
-          {
-            pinchDelta: pinchDeltas[4],
-            pointers,
-            type: 'pinch',
-            event: events[6]
-          },
-          {
-            pinchDelta: pinchDeltas[5],
-            pointers,
-            type: 'pinch',
-            event: events[7]
-          },
-          { pointers, type: 'pinchStop', event: events[8], mesh: undefined }
-        ])
+        expectsDataWithMesh(pinches[0], {
+          pinchDelta: pinchDeltas[0],
+          long: false,
+          pointers,
+          type: 'pinchStart',
+          event: events[2]
+        })
+        expectsDataWithMesh(pinches[1], {
+          pinchDelta: pinchDeltas[0],
+          pointers,
+          type: 'pinch',
+          event: events[2]
+        })
+        expectsDataWithMesh(pinches[2], {
+          pinchDelta: pinchDeltas[1],
+          pointers,
+          type: 'pinch',
+          event: events[3]
+        })
+        expectsDataWithMesh(pinches[3], {
+          pinchDelta: pinchDeltas[2],
+          pointers,
+          type: 'pinch',
+          event: events[4]
+        })
+        expectsDataWithMesh(pinches[4], {
+          pinchDelta: pinchDeltas[3],
+          pointers,
+          type: 'pinch',
+          event: events[5]
+        })
+        expectsDataWithMesh(pinches[5], {
+          pinchDelta: pinchDeltas[4],
+          pointers,
+          type: 'pinch',
+          event: events[6]
+        })
+        expectsDataWithMesh(pinches[6], {
+          pinchDelta: pinchDeltas[5],
+          pointers,
+          type: 'pinch',
+          event: events[7]
+        })
+        expectsDataWithMesh(pinches[7], {
+          pointers,
+          type: 'pinchStop',
+          event: events[8]
+        })
       }
     )
 
@@ -885,40 +897,52 @@ describe('InputManager', () => {
 
         expectEvents({ pinches: 6, longs: 2 })
         const pointers = 2
-        expect(pinches).toEqual([
-          {
-            pinchDelta: pinchDeltas[0],
-            long: true,
-            pointers,
-            type: 'pinchStart',
-            event: events[2]
-          },
-          {
-            pinchDelta: pinchDeltas[0],
-            pointers,
-            type: 'pinch',
-            event: events[2]
-          },
-          {
-            pinchDelta: pinchDeltas[1],
-            pointers,
-            type: 'pinch',
-            event: events[3]
-          },
-          {
-            pinchDelta: pinchDeltas[2],
-            pointers,
-            type: 'pinch',
-            event: events[4]
-          },
-          {
-            pinchDelta: pinchDeltas[3],
-            pointers,
-            type: 'pinch',
-            event: events[5]
-          },
-          { pointers, type: 'pinchStop', event: events[6] }
-        ])
+        expectsDataWithMesh(pinches[0], {
+          pinchDelta: pinchDeltas[0],
+          long: true,
+          pointers,
+          type: 'pinchStart',
+          event: events[2]
+        })
+        expectsDataWithMesh(pinches[1], {
+          pinchDelta: pinchDeltas[0],
+          pointers,
+          type: 'pinch',
+          event: events[2]
+        })
+        expectsDataWithMesh(pinches[2], {
+          pinchDelta: pinchDeltas[1],
+          pointers,
+          type: 'pinch',
+          event: events[3]
+        })
+        expectsDataWithMesh(pinches[3], {
+          pinchDelta: pinchDeltas[2],
+          pointers,
+          type: 'pinch',
+          event: events[4]
+        })
+        expectsDataWithMesh(pinches[4], {
+          pinchDelta: pinchDeltas[3],
+          pointers,
+          type: 'pinch',
+          event: events[5]
+        })
+        expectsDataWithMesh(pinches[5], {
+          pointers,
+          type: 'pinchStop',
+          event: events[6]
+        })
+        expectsDataWithMesh(longs[0], {
+          pointers,
+          type: 'longPointer',
+          event: events[0]
+        })
+        expectsDataWithMesh(longs[1], {
+          pointers,
+          type: 'longPointer',
+          event: events[1]
+        })
       }
     )
 
@@ -990,19 +1014,26 @@ describe('InputManager', () => {
 
         expectEvents({ drags: 4 })
         const pointers = 3
-        const mesh = findMeshById(meshId)
-        expect(drags).toEqual([
-          {
-            long: false,
-            pointers,
-            type: 'dragStart',
-            event: events[0],
-            mesh
-          },
-          { pointers, type: 'drag', event: events[3], mesh },
-          { pointers, type: 'drag', event: events[5], mesh },
-          { pointers, type: 'dragStop', event: events[7], mesh }
-        ])
+        expectsDataWithMesh(
+          drags[0],
+          { long: false, pointers, type: 'dragStart', event: events[0] },
+          meshId
+        )
+        expectsDataWithMesh(
+          drags[1],
+          { pointers, type: 'drag', event: events[3] },
+          meshId
+        )
+        expectsDataWithMesh(
+          drags[2],
+          { pointers, type: 'drag', event: events[5] },
+          meshId
+        )
+        expectsDataWithMesh(
+          drags[3],
+          { pointers, type: 'dragStop', event: events[7] },
+          meshId
+        )
       }
     )
 
@@ -1012,7 +1043,6 @@ describe('InputManager', () => {
     ])('identifies wheel$title', async ({ pointer, meshId }) => {
       const pointerId = 45
       const button = 3
-      const mesh = findMeshById(meshId)
       const zoomInEvent = triggerEvent(POINTERWHEEL, {
         ...pointer,
         deltaY: 10,
@@ -1029,10 +1059,16 @@ describe('InputManager', () => {
       })
 
       expectEvents({ wheels: 2 })
-      expect(wheels).toEqual([
-        { button, pointers: 0, event: zoomInEvent, type: 'wheel', mesh },
-        { button, pointers: 0, event: zoomOutEvent, type: 'wheel', mesh }
-      ])
+      expectsDataWithMesh(
+        wheels[0],
+        { pointers: 0, type: 'wheel', button, event: zoomInEvent },
+        meshId
+      )
+      expectsDataWithMesh(
+        wheels[1],
+        { pointers: 0, type: 'wheel', button, event: zoomOutEvent },
+        meshId
+      )
     })
 
     it('can stop pinch operation', async () => {
@@ -1070,28 +1106,30 @@ describe('InputManager', () => {
 
       expectEvents({ pinches: 4 })
       const pointers = 2
-      expect(pinches).toEqual([
-        {
-          pinchDelta: -16.783160829169503,
-          long: false,
-          pointers,
-          type: 'pinchStart',
-          event: events[2]
-        },
-        {
-          pinchDelta: -16.783160829169503,
-          pointers,
-          type: 'pinch',
-          event: events[2]
-        },
-        {
-          pinchDelta: -66.42494020676253,
-          pointers,
-          type: 'pinch',
-          event: events[3]
-        },
-        { pointers, type: 'pinchStop', event: finalEvent }
-      ])
+      const pinchDeltas = [-16.783160829169503, -66.42494020676253]
+      expectsDataWithMesh(pinches[1], {
+        pinchDelta: pinchDeltas[0],
+        pointers,
+        type: 'pinch',
+        event: events[2]
+      })
+      expectsDataWithMesh(pinches[1], {
+        pinchDelta: pinchDeltas[0],
+        pointers,
+        type: 'pinch',
+        event: events[2]
+      })
+      expectsDataWithMesh(pinches[2], {
+        pinchDelta: pinchDeltas[1],
+        pointers,
+        type: 'pinch',
+        event: events[3]
+      })
+      expectsDataWithMesh(pinches[3], {
+        pointers,
+        type: 'pinchStop',
+        event: finalEvent
+      })
     })
 
     it('can stop drag operation', async () => {
@@ -1111,11 +1149,25 @@ describe('InputManager', () => {
 
       expectEvents({ drags: 3 })
       const pointers = 1
-      expect(drags).toEqual([
-        { long: false, pointers, type: 'dragStart', button, event: events[0] },
-        { pointers, type: 'drag', button, event: events[1] },
-        { pointers, type: 'dragStop', button, event: finalEvent }
-      ])
+      expectsDataWithMesh(drags[0], {
+        long: false,
+        pointers,
+        type: 'dragStart',
+        button,
+        event: events[0]
+      })
+      expectsDataWithMesh(drags[1], {
+        pointers,
+        type: 'drag',
+        button,
+        event: events[1]
+      })
+      expectsDataWithMesh(drags[2], {
+        pointers,
+        type: 'dragStop',
+        button,
+        event: finalEvent
+      })
     })
 
     it('identifies hover operation', async () => {
@@ -1140,20 +1192,17 @@ describe('InputManager', () => {
 
       expectEvents({ hovers: 2 })
       const pointers = 0
-      expect(hovers).toEqual([
-        {
-          pointers,
-          mesh: meshes[0],
-          type: 'hoverStart',
-          event: events[0]
-        },
-        {
-          pointers,
-          mesh: meshes[0],
-          type: 'hoverStop',
-          event: events[2]
-        }
-      ])
+      const meshId = meshes[0].id
+      expectsDataWithMesh(
+        hovers[0],
+        { pointers, type: 'hoverStart', event: events[0] },
+        meshId
+      )
+      expectsDataWithMesh(
+        hovers[1],
+        { pointers, type: 'hoverStop', event: events[2] },
+        meshId
+      )
     })
 
     it('stops hover when starting to drag', async () => {
@@ -1180,23 +1229,33 @@ describe('InputManager', () => {
       )
 
       expectEvents({ hovers: 2, drags: 3 })
-      const mesh = findMeshById('box1')
-      expect(hovers).toEqual([
-        { pointers: 0, mesh, type: 'hoverStart', event: events[0] },
-        { pointers: 1, mesh, type: 'hoverStop', event: events[3] }
-      ])
-      expect(drags).toEqual([
-        {
-          long: false,
-          pointers: 1,
-          type: 'dragStart',
-          button,
-          event: events[2],
-          mesh
-        },
-        { pointers: 1, type: 'drag', button, event: events[3], mesh },
-        { pointers: 1, type: 'drag', button, event: events[4], mesh }
-      ])
+      const pointers = 1
+      const meshId = 'box1'
+      expectsDataWithMesh(
+        hovers[0],
+        { pointers: 0, type: 'hoverStart', event: events[0] },
+        meshId
+      )
+      expectsDataWithMesh(
+        hovers[1],
+        { pointers, type: 'hoverStop', event: events[3] },
+        meshId
+      )
+      expectsDataWithMesh(
+        drags[0],
+        { long: false, pointers, type: 'dragStart', button, event: events[2] },
+        meshId
+      )
+      expectsDataWithMesh(
+        drags[1],
+        { pointers, type: 'drag', button, event: events[3] },
+        meshId
+      )
+      expectsDataWithMesh(
+        drags[2],
+        { pointers, type: 'drag', button, event: events[4] },
+        meshId
+      )
     })
 
     it('does not find un-pickable meshes', () => {
@@ -1207,14 +1266,17 @@ describe('InputManager', () => {
       triggerEvent(POINTERDOWN, { ...pointer, pointerId, button })
       const event = triggerEvent(POINTERUP, { ...pointer, pointerId, button })
       expectEvents({ taps: 1 })
-      expect(taps[0]).toEqual({
-        long: false,
-        pointers: 1,
-        type: 'tap',
-        button,
-        event,
-        mesh: undefined
-      })
+      expectsDataWithMesh(
+        taps[0],
+        {
+          long: false,
+          pointers: 1,
+          type: 'tap',
+          button,
+          event
+        },
+        meshes[5].id
+      )
     })
 
     it('picks highest meshes on Y-order', () => {
@@ -1227,14 +1289,11 @@ describe('InputManager', () => {
       triggerEvent(POINTERDOWN, { ...pointer, pointerId, button })
       const event = triggerEvent(POINTERUP, { ...pointer, pointerId, button })
       expectEvents({ taps: 1 })
-      expect(taps[0]).toEqual({
-        long: false,
-        pointers: 1,
-        type: 'tap',
-        button,
-        event,
-        mesh
-      })
+      expectsDataWithMesh(
+        taps[0],
+        { long: false, pointers: 1, type: 'tap', button, event },
+        mesh.id
+      )
     })
 
     it('can stop hover operation', () => {
@@ -1249,10 +1308,17 @@ describe('InputManager', () => {
 
       expectEvents({ hovers: 2 })
       const pointers = 0
-      expect(hovers).toEqual([
-        { pointers, mesh: meshes[1], type: 'hoverStart', event: startEvent },
-        { pointers, mesh: meshes[1], type: 'hoverStop', event: finalEvent }
-      ])
+      const meshId = meshes[1].id
+      expectsDataWithMesh(
+        hovers[0],
+        { pointers, type: 'hoverStart', event: startEvent },
+        meshId
+      )
+      expectsDataWithMesh(
+        hovers[1],
+        { pointers, type: 'hoverStop', event: finalEvent },
+        meshId
+      )
     })
 
     it('can stop all operations', () => {
@@ -1267,10 +1333,17 @@ describe('InputManager', () => {
 
       expectEvents({ hovers: 2 })
       const pointers = 0
-      expect(hovers).toEqual([
-        { pointers, mesh: meshes[1], type: 'hoverStart', event: startEvent },
-        { pointers, mesh: meshes[1], type: 'hoverStop', event: finalEvent }
-      ])
+      const meshId = meshes[1].id
+      expectsDataWithMesh(
+        hovers[0],
+        { pointers, type: 'hoverStart', event: startEvent },
+        meshId
+      )
+      expectsDataWithMesh(
+        hovers[1],
+        { pointers, type: 'hoverStop', event: finalEvent },
+        meshId
+      )
     })
   })
 
@@ -1323,5 +1396,12 @@ describe('InputManager', () => {
     pointer.x += movementX
     pointer.y += movementY
     return { ...pointer, movementX, movementY }
+  }
+
+  function expectsDataWithMesh(actual, expected, meshId) {
+    for (const property in expected) {
+      expect(actual).toHaveProperty(property, expected[property])
+    }
+    expect(actual.mesh?.id).toEqual(meshId)
   }
 })

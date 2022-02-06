@@ -52,7 +52,7 @@ export function createEngine({
   handScene.autoClear = false
 
   cameraManager.init({ scene, handScene })
-  inputManager.init({ scene, longTapDelay, doubleTapDelay })
+  inputManager.init({ scene, handScene, longTapDelay, doubleTapDelay })
   moveManager.init({ scene })
   controlManager.init({ scene })
   selectionManager.init({ scene })
