@@ -19,6 +19,8 @@ describe('HandManager', () => {
   const verticalPadding = 1
   const cardWidth = 3
   const cardDepth = 4.25
+  const duration = 50
+  const waitDuration = duration * 4
   const viewPortDimensions = {
     width: 59.81750317696051,
     height: 47.21061769667048
@@ -45,6 +47,7 @@ describe('HandManager', () => {
     expect(manager.gap).toEqual(0)
     expect(manager.horizontalPadding).toEqual(0)
     expect(manager.verticalPadding).toEqual(0)
+    expect(manager.duration).toEqual(100)
   })
 
   describe('init()', () => {
@@ -52,18 +55,21 @@ describe('HandManager', () => {
       const gap = faker.datatype.number()
       const horizontalPadding = faker.datatype.number()
       const verticalPadding = faker.datatype.number()
+      const duration = faker.datatype.number()
       manager.init({
         scene,
         handScene,
         gap,
         horizontalPadding,
-        verticalPadding
+        verticalPadding,
+        duration
       })
       expect(manager.scene).toEqual(scene)
       expect(manager.handScene).toEqual(handScene)
       expect(manager.gap).toEqual(gap)
       expect(manager.horizontalPadding).toEqual(horizontalPadding)
       expect(manager.verticalPadding).toEqual(verticalPadding)
+      expect(manager.duration).toEqual(duration)
     })
 
     it('performs initial layout', async () => {
@@ -72,14 +78,15 @@ describe('HandManager', () => {
         handScene,
         gap,
         horizontalPadding,
-        verticalPadding
+        verticalPadding,
+        duration
       })
       const cards = [
         { id: 'box1', x: 1, y: 1, z: -1 },
         { id: 'box2', x: 0, y: 0, z: 0 },
         { id: 'box3', x: -5, y: -2, z: -2 }
       ].map(state => createMesh(state, handScene))
-      await sleep()
+      await sleep(waitDuration)
       const z = computeZ()
       expectPosition(cards[0], [-gap - cardWidth, 0, z])
       expectPosition(cards[1], [0, 0, z])
@@ -118,9 +125,9 @@ describe('HandManager', () => {
     it('moves drawn mesh to hand', async () => {
       const [, card] = cards
       card.metadata.draw()
-      await sleep()
+      await sleep(waitDuration)
       expect(scene.getMeshById(card.id)).toBeNull()
-      const newMesh = handScene.getMeshById(card.id)
+      const newMesh = getHandMesh([card])[0]
       expect(newMesh).toBeDefined()
       expectPosition(newMesh, [0, 0, computeZ()])
     })
@@ -129,7 +136,7 @@ describe('HandManager', () => {
       for (const card of cards) {
         card.metadata.draw()
       }
-      await sleep()
+      await sleep(waitDuration)
       const z = computeZ()
       let x = -viewPortDimensions.width / 2 + cardWidth / 2 + horizontalPadding
       const gap = -0.065692902
@@ -144,17 +151,10 @@ describe('HandManager', () => {
       const [, card2, , card1] = cards
       card1.metadata.draw()
       card2.metadata.draw()
-      await sleep()
-      expectPosition(handScene.getMeshById(card1.id), [
-        (cardWidth + gap) * -0.5,
-        0,
-        computeZ()
-      ])
-      expectPosition(handScene.getMeshById(card2.id), [
-        (cardWidth + gap) * 0.5,
-        0,
-        computeZ()
-      ])
+      await sleep(waitDuration)
+      const handMeshes = getHandMesh([card1, card2])
+      expectPosition(handMeshes[0], [(cardWidth + gap) * -0.5, 0, computeZ()])
+      expectPosition(handMeshes[1], [(cardWidth + gap) * 0.5, 0, computeZ()])
     })
 
     it('lays out hand when resizing engine', async () => {
@@ -162,17 +162,34 @@ describe('HandManager', () => {
       card1.metadata.draw()
       card2.metadata.draw()
       engine.onResizeObservable.notifyObservers()
-      await sleep()
-      expectPosition(handScene.getMeshById(card1.id), [
-        (cardWidth + gap) * -0.5,
-        0,
-        computeZ()
-      ])
-      expectPosition(handScene.getMeshById(card2.id), [
-        (cardWidth + gap) * 0.5,
-        0,
-        computeZ()
-      ])
+      await sleep(waitDuration)
+      const handMeshes = getHandMesh([card1, card2])
+      expectPosition(handMeshes[0], [(cardWidth + gap) * -0.5, 0, computeZ()])
+      expectPosition(handMeshes[1], [(cardWidth + gap) * 0.5, 0, computeZ()])
+    })
+
+    it('lays out hand when rotating mesh in hand', async () => {
+      const [, card2, , card1] = cards
+      card1.metadata.draw()
+      card2.metadata.draw()
+      await sleep(waitDuration)
+      const handMeshes = getHandMesh([card1, card2])
+      const positions = getPositions(handMeshes)
+      handMeshes[1].metadata.rotate()
+      await sleep(waitDuration)
+      expect(getPositions(handMeshes)).not.toEqual(positions)
+    })
+
+    it('does not lay out hand when rotating mesh in main scene', async () => {
+      const [card1, card3, card2] = cards
+      card1.metadata.draw()
+      card2.metadata.draw()
+      await sleep(waitDuration)
+      const handMeshes = getHandMesh([card1, card2])
+      const positions = getPositions(handMeshes)
+      card3.metadata.rotate()
+      await sleep(waitDuration)
+      expect(getPositions(handMeshes)).toEqual(positions)
     })
   })
 
@@ -182,8 +199,22 @@ describe('HandManager', () => {
 
   function createMesh(state, scene) {
     return createCard(
-      { width: cardWidth, depth: cardDepth, drawable: true, ...state },
+      {
+        width: cardWidth,
+        depth: cardDepth,
+        drawable: true,
+        rotable: {},
+        ...state
+      },
       scene
     )
+  }
+
+  function getHandMesh(meshes) {
+    return meshes.map(({ id }) => handScene.getMeshById(id))
+  }
+
+  function getPositions(meshes) {
+    return meshes.map(({ absolutePosition }) => absolutePosition.asArray())
   }
 })

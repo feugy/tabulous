@@ -1,5 +1,11 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { createMeshFromState, getDimensions, screenToGround } from '../utils'
+import { RotateBehaviorName } from '../behaviors'
+import {
+  animateMove,
+  createMeshFromState,
+  getDimensions,
+  screenToGround
+} from '../utils'
 import { controlManager } from './control'
 
 class HandManager {
@@ -9,10 +15,11 @@ class HandManager {
    * - handles actions from and to the main scene.
    *
    * @property {import('@babylonjs/core').Scene} scene - the main scene.
-   * @property {import('@babylonjs/core').Scene} handScene - the player hand scene.
+   * @property {import('@babylonjs/core').Scene} handScene - scene for meshes in hand.
    * @property {number} gap - gap between hand meshes, when render width allows it, in 3D coordinates.
    * @property {number} verticalPadding - vertical padding between meshes and the viewport edges, in 3D coordinates.
    * @property {number} horizontalPadding - horizontal padding between meshes and the viewport edges, in 3D coordinates.
+   * @property {number} [duration=100] - duration (in milliseconds) when moving meshes.
    */
   constructor() {
     this.scene = null
@@ -20,23 +27,38 @@ class HandManager {
     this.gap = 0
     this.verticalPadding = 0
     this.horizontalPadding = 0
+    this.duration = 100
     // private
     this.onActionObserver = null
     this.extent = { left: Vector3.Zero(), right: Vector3.Zero(), width: 0 }
+    this.meshById = new Map()
   }
 
+  /**
+   * Gives scenes to the manager.
+   * @param {object} params - parameters, including:
+   * @param {Scene} params.scene - main scene.
+   * @param {Scene} params.handScene - scene for meshes in hand.
+   * @param {Scene} [params.gap=0.5] - gap between hand meshes, when render width allows it, in 3D coordinates.
+   * @param {Scene} [params.verticalPadding=1] - vertical padding between meshes and the viewport edges, in 3D coordinates.
+   * @param {Scene} [params.horizontalPadding=2] - horizontal padding between meshes and the viewport edges, in 3D coordinates.
+   * @param {Scene} [params.duration=100] - duration (in milliseconds) when moving meshes.
+   */
   init({
     scene,
     handScene,
     gap = 0.5,
     verticalPadding = 1,
-    horizontalPadding = 2
+    horizontalPadding = 2,
+    duration = 100
   }) {
     this.scene = scene
     this.handScene = handScene
     this.gap = gap
     this.verticalPadding = verticalPadding
     this.horizontalPadding = horizontalPadding
+    this.duration = duration
+    this.meshById = new Map(this.handScene.meshes.map(mesh => [mesh.id, mesh]))
 
     const engine = this.handScene.getEngine()
     computeExtent(this, engine)
@@ -45,7 +67,7 @@ class HandManager {
     for (const { observable, handle } of [
       {
         observable: controlManager.onActionObservable,
-        handle: action => handleOnAction(this, action)
+        handle: action => handleAction(this, action)
       },
       {
         observable: engine.onResizeObservable,
@@ -56,12 +78,19 @@ class HandManager {
       },
       {
         observable: handScene.onNewMeshAddedObservable,
-        // delay so the mesh is completly added
-        handle: () => setTimeout(() => layoutMeshs(this), 0)
+        handle: added =>
+          // delay so the mesh is completly added
+          setTimeout(() => {
+            this.meshById.set(added.id, added)
+            layoutMeshs(this)
+          }, 0)
       },
       {
         observable: handScene.onMeshRemovedObservable,
-        handle: () => layoutMeshs(this)
+        handle: removed => {
+          this.meshById.delete(removed.id)
+          layoutMeshs(this)
+        }
       }
     ]) {
       const observer = observable.add(handle)
@@ -82,12 +111,21 @@ class HandManager {
  */
 export const handManager = new HandManager()
 
-function handleOnAction(manager, { meshId, fn }) {
-  const mesh = manager.scene.getMeshById(meshId)
-  if (fn === 'draw' && mesh) {
-    const state = mesh.metadata.serialize()
-    mesh.dispose()
-    createMeshFromState(state, manager.handScene)
+function handleAction(manager, { meshId, fn }) {
+  if (fn === 'draw' && manager.meshById.has(meshId)) {
+    // play from hand
+  } else if (fn === 'draw') {
+    const mesh = manager.scene.getMeshById(meshId)
+    if (mesh) {
+      const state = mesh.metadata.serialize()
+      mesh.dispose()
+      createMeshFromState(state, manager.handScene)
+    }
+  } else if (fn === 'rotate' && manager.meshById.has(meshId)) {
+    const rotable = manager.meshById
+      .get(meshId)
+      .getBehaviorByName(RotateBehaviorName)
+    setTimeout(() => layoutMeshs(manager), rotable.state.duration * 1.1)
   }
 }
 
@@ -113,6 +151,7 @@ function layoutMeshs({
   gap,
   horizontalPadding,
   verticalPadding,
+  duration,
   extent
 }) {
   const meshes = handScene.meshes.filter(({ name }) => supportedNames.has(name))
@@ -135,12 +174,14 @@ function layoutMeshs({
   let rank = 0
   for (const mesh of meshes) {
     const { width, depth } = dimensions[rank]
-    mesh.setAbsolutePosition(
+    animateMove(
+      mesh,
       new Vector3(
         x + width * 0.5,
         0,
         (extent.height - depth) * -0.5 + verticalPadding
-      )
+      ),
+      duration
     )
     x += width + effectiveGap
     rank++
