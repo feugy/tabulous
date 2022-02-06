@@ -160,18 +160,12 @@ describe('FlipBehavior', () => {
       expect(recordSpy).toHaveBeenCalledTimes(0)
       await mesh.metadata.flip()
       expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenNthCalledWith(1, {
-        meshId: mesh.id,
-        fn: 'flip'
-      })
+      expect(recordSpy).toHaveBeenNthCalledWith(1, { mesh, fn: 'flip' })
       expectFlipped(mesh)
 
       await mesh.metadata.flip()
       expect(recordSpy).toHaveBeenCalledTimes(2)
-      expect(recordSpy).toHaveBeenNthCalledWith(2, {
-        meshId: mesh.id,
-        fn: 'flip'
-      })
+      expect(recordSpy).toHaveBeenNthCalledWith(2, { mesh, fn: 'flip' })
       expectFlipped(mesh, false)
     })
 

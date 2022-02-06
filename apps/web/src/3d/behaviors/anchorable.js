@@ -163,7 +163,7 @@ export class AnchorBehavior extends TargetBehavior {
       return
     }
     controlManager.record({
-      meshId: this.mesh.id,
+      mesh: this.mesh,
       fn: 'snap',
       args: [snappedId, anchorId]
     })
@@ -191,7 +191,11 @@ export class AnchorBehavior extends TargetBehavior {
           { mesh: this.mesh, snappedId, zone },
           `release snapped ${snappedId} from ${meshId}, zone ${zone.mesh.id}`
         )
-        controlManager.record({ meshId, fn: 'unsnap', args: [releasedId] })
+        controlManager.record({
+          mesh: this.mesh,
+          fn: 'unsnap',
+          args: [releasedId]
+        })
         unsetAnchor(this, zone, released)
       }
     }

@@ -151,7 +151,7 @@ describe('StackBehavior', () => {
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
         fn: 'push',
-        meshId: mesh.id,
+        mesh,
         args: [meshes[0].id]
       })
     })
@@ -164,7 +164,7 @@ describe('StackBehavior', () => {
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
         fn: 'push',
-        meshId: mesh.id,
+        mesh,
         args: [meshes[2].id]
       })
     })
@@ -182,12 +182,12 @@ describe('StackBehavior', () => {
       expect(recordSpy).toHaveBeenCalledTimes(2)
       expect(recordSpy).toHaveBeenNthCalledWith(1, {
         fn: 'push',
-        meshId: mesh.id,
+        mesh,
         args: [meshes[0].id]
       })
       expect(recordSpy).toHaveBeenNthCalledWith(2, {
         fn: 'push',
-        meshId: mesh.id,
+        mesh,
         args: [meshes[2].id]
       })
     })
@@ -206,20 +206,14 @@ describe('StackBehavior', () => {
       expectInteractible(poped)
       expectStacked([mesh, meshes[1], meshes[0]])
       expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
-        fn: 'pop',
-        meshId: mesh.id
-      })
+      expect(recordSpy).toHaveBeenCalledWith({ fn: 'pop', mesh })
 
       poped = await mesh.metadata.pop()
       expect(poped?.id).toBe('box1')
       expectInteractible(poped)
       expectStacked([mesh, meshes[1]])
       expect(recordSpy).toHaveBeenCalledTimes(2)
-      expect(recordSpy).toHaveBeenNthCalledWith(2, {
-        fn: 'pop',
-        meshId: mesh.id
-      })
+      expect(recordSpy).toHaveBeenNthCalledWith(2, { fn: 'pop', mesh })
     })
 
     it('can pop from any stacked mesh', async () => {
@@ -230,10 +224,7 @@ describe('StackBehavior', () => {
       expectInteractible(poped)
       expectStacked([mesh, meshes[2], meshes[0]])
       expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
-        fn: 'pop',
-        meshId: mesh.id
-      })
+      expect(recordSpy).toHaveBeenCalledWith({ fn: 'pop', mesh })
     })
 
     it('pops dragged meshes', async () => {
@@ -246,10 +237,7 @@ describe('StackBehavior', () => {
       expectInteractible(meshes[1])
       expectStacked([mesh, meshes[2], meshes[0]])
       expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
-        fn: 'pop',
-        meshId: mesh.id
-      })
+      expect(recordSpy).toHaveBeenCalledWith({ fn: 'pop', mesh })
     })
 
     it('reorders stack to given order', async () => {
@@ -261,7 +249,7 @@ describe('StackBehavior', () => {
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
         fn: 'reorder',
-        meshId: mesh.id,
+        mesh,
         args: [['box0', 'box1', 'box2', 'box3'], false]
       })
     })
@@ -275,7 +263,7 @@ describe('StackBehavior', () => {
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
         fn: 'reorder',
-        meshId: mesh.id,
+        mesh,
         args: [['box2', 'box0', 'box3', 'box1'], true]
       })
     })
@@ -289,7 +277,7 @@ describe('StackBehavior', () => {
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
         fn: 'reorder',
-        meshId: mesh.id,
+        mesh,
         args: [['box0', 'box1', 'box2', 'box3'], false]
       })
     })
@@ -303,7 +291,7 @@ describe('StackBehavior', () => {
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
         fn: 'reorder',
-        meshId: mesh.id,
+        mesh,
         args: [['box3', 'box0', 'box2', 'box1'], false]
       })
     })
@@ -314,29 +302,23 @@ describe('StackBehavior', () => {
       await mesh.metadata.flipAll()
       expectStacked([meshes[2], meshes[1], meshes[0], mesh])
       expect(recordSpy).toHaveBeenCalledTimes(6)
-      expect(recordSpy).toHaveBeenNthCalledWith(1, {
-        fn: 'flipAll',
-        meshId: mesh.id
-      })
-      expect(recordSpy).toHaveBeenNthCalledWith(2, {
-        fn: 'flip',
-        meshId: mesh.id
-      })
+      expect(recordSpy).toHaveBeenNthCalledWith(1, { fn: 'flipAll', mesh })
+      expect(recordSpy).toHaveBeenNthCalledWith(2, { fn: 'flip', mesh })
       expect(recordSpy).toHaveBeenNthCalledWith(3, {
         fn: 'flip',
-        meshId: meshes[0].id
+        mesh: meshes[0]
       })
       expect(recordSpy).toHaveBeenNthCalledWith(4, {
         fn: 'flip',
-        meshId: meshes[1].id
+        mesh: meshes[1]
       })
       expect(recordSpy).toHaveBeenNthCalledWith(5, {
         fn: 'flip',
-        meshId: meshes[2].id
+        mesh: meshes[2]
       })
       expect(recordSpy).toHaveBeenNthCalledWith(6, {
         fn: 'reorder',
-        meshId: mesh.id,
+        mesh,
         args: [['box3', 'box2', 'box1', 'box0'], false]
       })
     })
@@ -345,14 +327,8 @@ describe('StackBehavior', () => {
       await mesh.metadata.flipAll()
       expectStacked([mesh])
       expect(recordSpy).toHaveBeenCalledTimes(2)
-      expect(recordSpy).toHaveBeenNthCalledWith(1, {
-        fn: 'flipAll',
-        meshId: mesh.id
-      })
-      expect(recordSpy).toHaveBeenNthCalledWith(2, {
-        fn: 'flip',
-        meshId: mesh.id
-      })
+      expect(recordSpy).toHaveBeenNthCalledWith(1, { fn: 'flipAll', mesh })
+      expect(recordSpy).toHaveBeenNthCalledWith(2, { fn: 'flip', mesh })
     })
 
     it('flips the entire stack from peer', async () => {
@@ -379,21 +355,18 @@ describe('StackBehavior', () => {
       await mesh.metadata.rotateAll()
       expectStacked([mesh, meshes[0], meshes[1], meshes[2]])
       expect(recordSpy).toHaveBeenCalledTimes(4)
-      expect(recordSpy).toHaveBeenNthCalledWith(1, {
-        fn: 'rotate',
-        meshId: mesh.id
-      })
+      expect(recordSpy).toHaveBeenNthCalledWith(1, { fn: 'rotate', mesh })
       expect(recordSpy).toHaveBeenNthCalledWith(2, {
         fn: 'rotate',
-        meshId: meshes[0].id
+        mesh: meshes[0]
       })
       expect(recordSpy).toHaveBeenNthCalledWith(3, {
         fn: 'rotate',
-        meshId: meshes[1].id
+        mesh: meshes[1]
       })
       expect(recordSpy).toHaveBeenNthCalledWith(4, {
         fn: 'rotate',
-        meshId: meshes[2].id
+        mesh: meshes[2]
       })
     })
 
@@ -401,10 +374,7 @@ describe('StackBehavior', () => {
       await mesh.metadata.rotateAll()
       expectStacked([mesh])
       expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
-        fn: 'rotate',
-        meshId: mesh.id
-      })
+      expect(recordSpy).toHaveBeenCalledWith({ fn: 'rotate', mesh })
     })
   })
 })

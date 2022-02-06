@@ -106,7 +106,7 @@ describe('initEngine()', () => {
         expect(get(gameEngine.fps)).toEqual(fps2.toFixed())
       })
 
-      it('proxies action events', () => {
+      it('sends scene actions to peers', () => {
         expect(receiveAction).not.toHaveBeenCalled()
         const data = { foo: faker.datatype.uuid() }
         controlManager.onActionObservable.notifyObservers(data)
@@ -114,6 +114,15 @@ describe('initEngine()', () => {
         expect(receiveAction).toHaveBeenCalledTimes(1)
         expect(sendToPeer).toHaveBeenCalledWith(data)
         expect(sendToPeer).toHaveBeenCalledTimes(1)
+      })
+
+      it('does not send hand actions to peers', () => {
+        expect(receiveAction).not.toHaveBeenCalled()
+        const data = { foo: faker.datatype.uuid(), fromHand: true }
+        controlManager.onActionObservable.notifyObservers(data)
+        expect(receiveAction).toHaveBeenCalledWith(data)
+        expect(receiveAction).toHaveBeenCalledTimes(1)
+        expect(sendToPeer).not.toHaveBeenCalled()
       })
 
       it('moves peer pointers on message', () => {

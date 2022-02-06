@@ -82,7 +82,7 @@ export class FlipBehavior extends AnimateBehavior {
     logger.debug({ mesh }, `start flipping ${mesh.id}`)
     this.isAnimated = true
 
-    controlManager.record({ meshId: mesh.id, fn: 'flip' })
+    controlManager.record({ mesh, fn: 'flip' })
 
     const attach = detach(mesh)
     const to = mesh.position.clone()

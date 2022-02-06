@@ -137,7 +137,7 @@ describe('MoveManager', () => {
         expectPosition(moved, [1, 1 + manager.elevation, 1])
         expect(recordSpy).toHaveBeenCalledTimes(1)
         expect(recordSpy).toHaveBeenCalledWith({
-          meshId: moved.id,
+          mesh: moved,
           pos: moved.absolutePosition.asArray()
         })
       })
@@ -156,7 +156,7 @@ describe('MoveManager', () => {
         expectPosition(moved, [1 + deltaX, 1 + manager.elevation, 1 + deltaZ])
         expect(recordSpy).toHaveBeenCalledTimes(1)
         expect(recordSpy).toHaveBeenCalledWith({
-          meshId: moved.id,
+          mesh: moved,
           pos: moved.absolutePosition.asArray()
         })
         expect(manager.getActiveZones()).toHaveLength(0)
@@ -191,7 +191,7 @@ describe('MoveManager', () => {
         expectPosition(moved, [1, getDimensions(moved).height / 2, 1])
         expect(recordSpy).toHaveBeenCalledTimes(1)
         expect(recordSpy).toHaveBeenCalledWith({
-          meshId: moved.id,
+          mesh: moved,
           pos: moved.absolutePosition.asArray()
         })
         expect(manager.getActiveZones()).toHaveLength(0)
@@ -210,7 +210,7 @@ describe('MoveManager', () => {
         expectPosition(moved, [1, getDimensions(moved).height / 2, 1])
         expect(recordSpy).toHaveBeenCalledTimes(1)
         expect(recordSpy).toHaveBeenCalledWith({
-          meshId: moved.id,
+          mesh: moved,
           pos: moved.absolutePosition.asArray()
         })
         expect(manager.getActiveZones()).toHaveLength(0)
@@ -233,7 +233,7 @@ describe('MoveManager', () => {
         ])
         expect(recordSpy).toHaveBeenCalledTimes(1)
         expect(recordSpy).toHaveBeenCalledWith({
-          meshId: moved.id,
+          mesh: moved,
           pos: moved.absolutePosition.asArray()
         })
         expect(manager.getActiveZones()).toHaveLength(0)
@@ -249,7 +249,7 @@ describe('MoveManager', () => {
         expectPosition(moved, [1, getDimensions(moved).height / 2, 1])
         expect(recordSpy).toHaveBeenCalledTimes(1)
         expect(recordSpy).toHaveBeenCalledWith({
-          meshId: moved.id,
+          mesh: moved,
           pos: moved.absolutePosition.asArray()
         })
         expect(manager.inProgress).toBe(false)
@@ -288,15 +288,15 @@ describe('MoveManager', () => {
         expectPosition(moved[2], [-3, manager.elevation, -3])
         expect(recordSpy).toHaveBeenCalledTimes(moved.length)
         expect(recordSpy).toHaveBeenNthCalledWith(1, {
-          meshId: moved[2].id,
+          mesh: moved[2],
           pos: moved[2].absolutePosition.asArray()
         })
         expect(recordSpy).toHaveBeenNthCalledWith(2, {
-          meshId: moved[0].id,
+          mesh: moved[0],
           pos: moved[0].absolutePosition.asArray()
         })
         expect(recordSpy).toHaveBeenNthCalledWith(3, {
-          meshId: moved[1].id,
+          mesh: moved[1],
           pos: moved[1].absolutePosition.asArray()
         })
         expect(manager.getActiveZones()).toHaveLength(0)
@@ -323,15 +323,15 @@ describe('MoveManager', () => {
         expectPosition(moved[2], [-3 + deltaX, manager.elevation, -3 + deltaZ])
         expect(recordSpy).toHaveBeenCalledTimes(moved.length)
         expect(recordSpy).toHaveBeenNthCalledWith(1, {
-          meshId: moved[2].id,
+          mesh: moved[2],
           pos: moved[2].absolutePosition.asArray()
         })
         expect(recordSpy).toHaveBeenNthCalledWith(2, {
-          meshId: moved[0].id,
+          mesh: moved[0],
           pos: moved[0].absolutePosition.asArray()
         })
         expect(recordSpy).toHaveBeenNthCalledWith(3, {
-          meshId: moved[1].id,
+          mesh: moved[1],
           pos: moved[1].absolutePosition.asArray()
         })
         expect(manager.getActiveZones()).toHaveLength(0)
@@ -452,7 +452,7 @@ describe('MoveManager', () => {
         expectPosition(moved[2], [-3, manager.elevation, -3])
         expect(recordSpy).toHaveBeenCalledTimes(1)
         expect(recordSpy).toHaveBeenNthCalledWith(1, {
-          meshId: moved[0].id,
+          mesh: moved[0],
           pos: moved[0].absolutePosition.asArray()
         })
         expect(manager.getActiveZones()).toHaveLength(0)
@@ -479,7 +479,7 @@ describe('MoveManager', () => {
         expectPosition(moved[2], [-3 + deltaX, manager.elevation, -3 + deltaZ])
         expect(recordSpy).toHaveBeenCalledTimes(1)
         expect(recordSpy).toHaveBeenCalledWith({
-          meshId: moved[0].id,
+          mesh: moved[0],
           pos: moved[0].absolutePosition.asArray()
         })
         expect(manager.getActiveZones()).toHaveLength(0)

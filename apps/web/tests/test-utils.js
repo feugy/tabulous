@@ -42,7 +42,14 @@ export function initialize3dEngine(
 ) {
   Logger.LogLevels = Logger.NoneLogLevel
   const engine = new NullEngine(engineProps)
-  return { engine, ...initialize3dScene(engine) }
+  const handScene = initialize3dScene(engine).scene
+  handScene.autoClear = false
+  const main = initialize3dScene(engine)
+  engine.runRenderLoop(() => {
+    main.scene.render()
+    handScene.render()
+  })
+  return { engine, ...main, handScene }
 }
 
 export function initialize3dScene(engine) {
@@ -55,7 +62,6 @@ export function initialize3dScene(engine) {
     Vector3.Zero()
   )
   camera.lockedTarget = Vector3.Zero()
-  engine.runRenderLoop(() => scene.render())
   scene.updateTransformMatrix()
   return { scene, camera }
 }
@@ -69,13 +75,18 @@ export function disposeAllMeshes(scene) {
 export function configures3dTestEngine(callback, engineProps) {
   let engine
   let scene
+  let handScene
 
   beforeAll(() => {
-    ;({ engine, scene } = initialize3dEngine(engineProps))
-    callback?.({ engine, scene })
+    const data = initialize3dEngine(engineProps)
+    ;({ engine, scene, handScene } = data)
+    callback?.(data)
   })
 
-  afterEach(() => disposeAllMeshes(scene))
+  afterEach(() => {
+    disposeAllMeshes(scene)
+    disposeAllMeshes(handScene)
+  })
 
   afterAll(() => engine.dispose())
 }

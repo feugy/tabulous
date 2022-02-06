@@ -6,7 +6,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "start": "vite --https --host",
-    "test": "jest --coverage --colors",
+    "test": "jest --coverage",
     "test:dev": "jest --watch"
   },
   "devDependencies": {

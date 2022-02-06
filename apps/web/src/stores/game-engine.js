@@ -1,5 +1,12 @@
-import { BehaviorSubject, Subject, merge } from 'rxjs'
-import { auditTime, delay, map } from 'rxjs/operators'
+import {
+  BehaviorSubject,
+  Subject,
+  auditTime,
+  delay,
+  filter,
+  map,
+  merge
+} from 'rxjs'
 import { connected, lastMessageReceived, send } from './peer-channels'
 import { createEngine } from '../3d'
 import { cameraManager, controlManager, inputManager } from '../3d/managers'
@@ -152,8 +159,8 @@ export function initEngine({
         }
       }),
 
-      // sends local action to other players
-      localAction$.subscribe(send),
+      // sends local action from main scene to other players
+      localAction$.pipe(filter(({ fromHand }) => !fromHand)).subscribe(send),
 
       // only sends pointer periodically to other players
       pointer$.pipe(auditTime(pointerThrottle)).subscribe(send)

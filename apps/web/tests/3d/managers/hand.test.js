@@ -1,11 +1,5 @@
 import * as faker from 'faker'
-import {
-  configures3dTestEngine,
-  disposeAllMeshes,
-  expectPosition,
-  initialize3dScene,
-  sleep
-} from '../../test-utils'
+import { configures3dTestEngine, expectPosition, sleep } from '../../test-utils'
 import { handManager as manager } from '../../../src/3d/managers'
 import { createCard } from '../../../src/3d/card'
 
@@ -28,9 +22,7 @@ describe('HandManager', () => {
 
   configures3dTestEngine(
     created => {
-      ;({ engine, scene } = created)
-      handScene = initialize3dScene(engine).scene
-      handScene.autoClear = false
+      ;({ scene, handScene, engine } = created)
     },
     { renderWidth: 480, renderHeight: 350 }
   )
@@ -38,8 +30,6 @@ describe('HandManager', () => {
   beforeEach(() => {
     jest.resetAllMocks()
   })
-
-  afterEach(() => disposeAllMeshes(handScene))
 
   it('has initial state', () => {
     expect(manager.scene).toBeNull()

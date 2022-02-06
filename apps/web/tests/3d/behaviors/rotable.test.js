@@ -129,18 +129,12 @@ describe('RotateBehavior', () => {
       expect(recordSpy).toHaveBeenCalledTimes(0)
       await mesh.metadata.rotate()
       expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenNthCalledWith(1, {
-        meshId: mesh.id,
-        fn: 'rotate'
-      })
+      expect(recordSpy).toHaveBeenNthCalledWith(1, { mesh, fn: 'rotate' })
       expectRotated(mesh, Math.PI * 0.5)
 
       await mesh.metadata.rotate()
       expect(recordSpy).toHaveBeenCalledTimes(2)
-      expect(recordSpy).toHaveBeenNthCalledWith(2, {
-        meshId: mesh.id,
-        fn: 'rotate'
-      })
+      expect(recordSpy).toHaveBeenNthCalledWith(2, { mesh, fn: 'rotate' })
       expectRotated(mesh, Math.PI)
     })
 

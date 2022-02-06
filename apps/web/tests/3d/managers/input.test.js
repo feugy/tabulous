@@ -1,12 +1,7 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
-import {
-  configures3dTestEngine,
-  disposeAllMeshes,
-  initialize3dScene,
-  sleep
-} from '../../test-utils'
+import { configures3dTestEngine, sleep } from '../../test-utils'
 import { inputManager as manager } from '../../../src/3d/managers'
 import { PointerEventTypes } from '@babylonjs/core'
 
@@ -24,8 +19,7 @@ describe('InputManager', () => {
 
   configures3dTestEngine(created => {
     scene = created.scene
-    handScene = initialize3dScene(created.engine).scene
-    handScene.autoClear = false
+    handScene = created.handScene
   })
 
   beforeEach(() => {
@@ -46,8 +40,6 @@ describe('InputManager', () => {
     manager.onWheelObservable.add(wheel => wheels.push(wheel))
     manager.onLongObservable.add(long => longs.push(long))
   })
-
-  afterEach(() => disposeAllMeshes(handScene))
 
   it('has initial state', () => {
     expect(manager.enabled).toBe(false)

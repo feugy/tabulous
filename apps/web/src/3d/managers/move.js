@@ -81,10 +81,7 @@ class MoveManager {
       const { x, y, z } = mesh.absolutePosition
       mesh.setAbsolutePosition(new Vector3(x, y + this.elevation, z))
       mesh.computeWorldMatrix()
-      controlManager.record({
-        meshId: mesh.id,
-        pos: mesh.absolutePosition.asArray()
-      })
+      controlManager.record({ mesh, pos: mesh.absolutePosition.asArray() })
     }
 
     // dynamically assign continue function to keep moved, zones and lastPosition in scope
@@ -146,10 +143,7 @@ class MoveManager {
           if (zone) {
             zones.add(zone)
           }
-          controlManager.record({
-            meshId: mesh.id,
-            pos: mesh.absolutePosition.asArray()
-          })
+          controlManager.record({ mesh, pos: mesh.absolutePosition.asArray() })
         }
       } else {
         logger.info(
@@ -202,7 +196,7 @@ class MoveManager {
             .then(() => animateMove(mesh, absolutePosition, duration, true))
             .then(() =>
               controlManager.record({
-                meshId: mesh.id,
+                mesh,
                 pos: mesh.absolutePosition.asArray()
               })
             )

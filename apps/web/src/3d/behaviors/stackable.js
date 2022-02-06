@@ -129,7 +129,7 @@ export class StackBehavior extends TargetBehavior {
     const { stack } = base
 
     if (!this.inhibitControl) {
-      controlManager.record({ meshId: stack[0].id, fn: 'push', args: [meshId] })
+      controlManager.record({ mesh: stack[0], fn: 'push', args: [meshId] })
     }
     const { x, z } = stack[0].absolutePosition
     const y = getCenterAltitudeAbove(stack[stack.length - 1], mesh)
@@ -169,7 +169,7 @@ export class StackBehavior extends TargetBehavior {
       `pop ${mesh.id} out of stack ${stack.map(({ id }) => id)}`
     )
     // note: all mesh in stack are uncontrollable, so we pass the poped mesh id
-    controlManager.record({ meshId: stack[0].id, fn: 'pop' })
+    controlManager.record({ mesh: stack[0], fn: 'pop' })
     return mesh
   }
 
@@ -194,7 +194,7 @@ export class StackBehavior extends TargetBehavior {
     const stack = ids.map(id => old[posById.get(id)])
 
     controlManager.record({
-      meshId: old[0].id,
+      mesh: old[0],
       fn: 'reorder',
       args: [ids, animate]
     })
@@ -280,7 +280,7 @@ export class StackBehavior extends TargetBehavior {
   async flipAll() {
     const base = this.base ?? this
 
-    controlManager.record({ meshId: base.stack[0].id, fn: 'flipAll' })
+    controlManager.record({ mesh: base.stack[0], fn: 'flipAll' })
     const ignored = []
     for (const mesh of base.stack) {
       if (controlManager.isManaging(mesh)) {

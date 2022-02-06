@@ -68,7 +68,7 @@ describe('DrawBehavior', () => {
       mesh.metadata.draw(playerId)
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenNthCalledWith(1, {
-        meshId: mesh.id,
+        mesh,
         fn: 'draw',
         args: [playerId]
       })

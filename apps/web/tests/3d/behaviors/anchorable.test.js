@@ -306,11 +306,7 @@ describe('AnchorBehavior', () => {
       expectSnapped(mesh, snapped, 0)
       expect(behavior.getSnappedIds()).toEqual([meshes[0].id])
       expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
-        fn: 'snap',
-        meshId: mesh.id,
-        args
-      })
+      expect(recordSpy).toHaveBeenCalledWith({ fn: 'snap', mesh, args })
     })
 
     it('snaps a stack of mesh', async () => {
@@ -334,11 +330,7 @@ describe('AnchorBehavior', () => {
         snapped.absolutePosition.z
       ])
       expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
-        fn: 'snap',
-        meshId: mesh.id,
-        args
-      })
+      expect(recordSpy).toHaveBeenCalledWith({ fn: 'snap', mesh, args })
     })
 
     it('snaps mesh with snapped meshes', async () => {
@@ -371,7 +363,7 @@ describe('AnchorBehavior', () => {
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
         fn: 'snap',
-        meshId: mesh.id,
+        mesh,
         args: [snapped.id, behavior.zones[1].mesh.id]
       })
     })
@@ -393,11 +385,7 @@ describe('AnchorBehavior', () => {
       expectRotated(mesh, angle)
       expectRotated(snapped, 0, angle)
       expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
-        fn: 'snap',
-        meshId: mesh.id,
-        args
-      })
+      expect(recordSpy).toHaveBeenCalledWith({ fn: 'snap', mesh, args })
     })
 
     it('updates snapped when reordering a stack', async () => {
@@ -453,7 +441,7 @@ describe('AnchorBehavior', () => {
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
         fn: 'unsnap',
-        meshId: mesh.id,
+        mesh,
         args: [snapped.id]
       })
     })
@@ -472,7 +460,7 @@ describe('AnchorBehavior', () => {
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
         fn: 'unsnap',
-        meshId: mesh.id,
+        mesh,
         args: [stacked.id]
       })
     })
@@ -493,7 +481,7 @@ describe('AnchorBehavior', () => {
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
         fn: 'unsnap',
-        meshId: mesh.id,
+        mesh,
         args: [snapped.id]
       })
     })
@@ -516,7 +504,7 @@ describe('AnchorBehavior', () => {
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
         fn: 'unsnap',
-        meshId: mesh.id,
+        mesh,
         args: [snapped.id]
       })
     })

@@ -97,7 +97,7 @@ export class RotateBehavior extends AnimateBehavior {
     logger.debug({ mesh }, `start rotating ${mesh.id}`)
     this.isAnimated = true
 
-    controlManager.record({ meshId: mesh.id, fn: 'rotate' })
+    controlManager.record({ mesh, fn: 'rotate' })
 
     const to = mesh.position.clone()
     const rotation = 0.5 * Math.PI

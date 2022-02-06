@@ -43,17 +43,13 @@ export class DrawBehavior {
   }
 
   /**
-   * Draws the related mesh with an animation into the player's hand:
+   * Draws the related mesh with an animation into and from the player's hand:
    * - records the action into the control manager
    * @param {string} playerId - drawing player id.
    */
   draw(playerId) {
     if (!this.mesh) return
-    controlManager.record({
-      meshId: this.mesh.id,
-      fn: 'draw',
-      args: [playerId]
-    })
+    controlManager.record({ mesh: this.mesh, fn: 'draw', args: [playerId] })
   }
 
   /**
