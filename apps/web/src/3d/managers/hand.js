@@ -2,8 +2,10 @@ import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { RotateBehaviorName } from '../behaviors'
 import {
   animateMove,
+  applyGravity,
   createMeshFromState,
   getDimensions,
+  isSerializable,
   screenToGround
 } from '../utils'
 import { controlManager } from './control'
@@ -30,7 +32,7 @@ class HandManager {
     this.duration = 100
     // private
     this.onActionObserver = null
-    this.extent = { left: Vector3.Zero(), right: Vector3.Zero(), width: 0 }
+    this.extent = { minX: 0, height: 0, width: 0 }
     this.meshById = new Map()
   }
 
@@ -113,11 +115,22 @@ export const handManager = new HandManager()
 
 function handleAction(manager, { meshId, fn }) {
   if (fn === 'draw' && manager.meshById.has(meshId)) {
-    // play from hand
+    let mesh = manager.handScene.getMeshById(meshId)
+    const state = {
+      ...mesh.metadata.serialize(),
+      ...getSceneCenter(manager.scene),
+      y: 100
+    }
+    mesh.dispose()
+    mesh = createMeshFromState(state, manager.scene)
+    applyGravity(mesh)
   } else if (fn === 'draw') {
     const mesh = manager.scene.getMeshById(meshId)
     if (mesh) {
-      const state = mesh.metadata.serialize()
+      const state = {
+        ...mesh.metadata.serialize(),
+        x: manager.extent.minX
+      }
       mesh.dispose()
       createMeshFromState(state, manager.handScene)
     }
@@ -131,16 +144,14 @@ function handleAction(manager, { meshId, fn }) {
 
 function computeExtent(manager, engine) {
   const { handScene } = manager
-  const size = {
-    width: engine.getRenderWidth(),
-    height: engine.getRenderHeight()
-  }
+  const size = getViewPortSize(engine)
   const topLeft = screenToGround(handScene, { x: 0, y: 0 })
   const bottomRight = screenToGround(handScene, {
     x: size.width,
     y: size.height
   })
   manager.extent = {
+    minX: topLeft.x,
     width: bottomRight.x - topLeft.x,
     height: topLeft.z - bottomRight.z
   }
@@ -154,10 +165,12 @@ function layoutMeshs({
   duration,
   extent
 }) {
-  const meshes = handScene.meshes.filter(({ name }) => supportedNames.has(name))
+  const meshes = handScene.meshes.filter(isSerializable)
   const dimensions = []
   let contentWidth = 0
-  for (const mesh of meshes) {
+  for (const mesh of meshes.sort(
+    (a, b) => a.absolutePosition.x - b.absolutePosition.x
+  )) {
     const dimension = getDimensions(mesh)
     dimensions.push(dimension)
     contentWidth += dimension.width + gap
@@ -172,20 +185,34 @@ function layoutMeshs({
       ? 0
       : (contentWidth - availableWidth) / (meshes.length - 1))
   let rank = 0
+  let y = 0
   for (const mesh of meshes) {
-    const { width, depth } = dimensions[rank]
+    const { width, height, depth } = dimensions[rank]
     animateMove(
       mesh,
       new Vector3(
         x + width * 0.5,
-        0,
+        y,
         (extent.height - depth) * -0.5 + verticalPadding
       ),
       duration
     )
     x += width + effectiveGap
+    y += height
     rank++
   }
 }
 
-const supportedNames = new Set(['card', 'rondToken', 'roundedTile'])
+function getSceneCenter(scene) {
+  const { width, height } = getViewPortSize(scene.getEngine())
+  const ray = scene.createPickingRay(width / 2, height / 2)
+  const { x, y, z } = ray.intersectsAxis('y') ?? Vector3.Zero()
+  return { x, y, z }
+}
+
+function getViewPortSize(engine) {
+  return {
+    width: engine.getRenderWidth(),
+    height: engine.getRenderHeight()
+  }
+}

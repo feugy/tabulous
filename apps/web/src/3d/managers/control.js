@@ -202,6 +202,6 @@ class ControlManager {
  */
 export const controlManager = new ControlManager()
 
-function getKey(action = {}) {
+function getKey(action) {
   return `${action?.meshId}-${action.fn?.toString() || 'pos'}`
 }

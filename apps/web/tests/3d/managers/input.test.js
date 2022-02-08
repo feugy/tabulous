@@ -80,13 +80,29 @@ describe('InputManager', () => {
         // x: 1266, y: 512
         { id: 'box5', position: new Vector3(10, 0, 0), scene },
         // x: 1266, y: 512
-        { id: 'box6', position: new Vector3(10, 0, 0), scene: handScene }
+        { id: 'box6', position: new Vector3(10, 0, 0), scene: handScene },
+        // x: 1048, y: 525
+        { id: 'box7', position: new Vector3(1, 0.5, -1), scene }
       ].map(({ id, position, scene }) => {
         const mesh = CreateBox(id, {}, scene)
         mesh.setAbsolutePosition(position)
         mesh.computeWorldMatrix()
         return mesh
       })
+    })
+
+    it('picks mesh with highest Y coordinate', () => {
+      const button = 1
+      const pointer = { x: 1048, y: 525 }
+      const pointerId = 70
+      triggerEvent(POINTERDOWN, { ...pointer, pointerId, button })
+      const event = triggerEvent(POINTERUP, { ...pointer, pointerId, button })
+      expectEvents({ taps: 1 })
+      expectsDataWithMesh(
+        taps[0],
+        { long: false, pointers: 1, type: 'tap', button, event },
+        'box1'
+      )
     })
 
     it.each([

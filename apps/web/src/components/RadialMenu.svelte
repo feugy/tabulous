@@ -1,9 +1,9 @@
 <script context="module">
   import ms from 'ms'
   const enterDuration = ms(
-    getComputedStyle(document.querySelector(':root')).getPropertyValue(
-      '--short'
-    )
+    getComputedStyle(document.querySelector(':root'))
+      .getPropertyValue('--short')
+      .trim()
   )
 </script>
 

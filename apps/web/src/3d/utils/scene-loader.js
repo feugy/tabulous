@@ -11,6 +11,23 @@ import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('scene-loader')
 
+const meshCreatorByName = new Map([
+  ['card', createCard],
+  ['roundToken', createRoundToken],
+  ['roundedTile', createRoundedTile]
+])
+
+const supportedNames = new Set([...meshCreatorByName.keys()])
+
+/**
+ * Indicates whether a mesh can be serialized and loaded
+ * @param {import('@babel/core').Mesh} mesh - tested mesh.
+ * @returns {boolean} whether this mesh could be serialized and loaded.
+ */
+export function isSerializable(mesh) {
+  return supportedNames.has(mesh.name)
+}
+
 /**
  * Serializes a scene's meshes.
  * @param {import('@babel/core').Scene} scene - 3D scene serialized.
@@ -19,7 +36,7 @@ const logger = makeLogger('scene-loader')
 export function serializeMeshes(scene) {
   const meshes = []
   for (const mesh of scene?.meshes ?? []) {
-    if (supportedNames.includes(mesh.name)) {
+    if (isSerializable(mesh)) {
       meshes.push(mesh.metadata.serialize())
     }
   }
@@ -49,7 +66,7 @@ export function createMeshFromState(state, scene) {
 export function loadMeshes(scene, meshes) {
   const disposables = new Set(scene.meshes)
   for (const mesh of disposables) {
-    if (!supportedNames.includes(mesh.name)) {
+    if (!isSerializable(mesh)) {
       disposables.delete(mesh)
     }
   }
@@ -128,14 +145,6 @@ export function loadMeshes(scene, meshes) {
     anchorBehavior.fromState(anchorable)
   }
 }
-
-const meshCreatorByName = new Map([
-  ['card', createCard],
-  ['roundToken', createRoundToken],
-  ['roundedTile', createRoundedTile]
-])
-
-const supportedNames = [...meshCreatorByName.keys()]
 
 function removeNulls(object) {
   const result = {}
