@@ -92,16 +92,20 @@ export class AnchorBehavior extends TargetBehavior {
     this.actionObserver = controlManager.onActionObservable.add(
       ({ meshId, fn, args }) => {
         const zone = this.zoneBySnappedId.get(meshId)
-        if (zone && (fn === 'reorder' || fn === 'flipAll')) {
-          const scene = this.mesh.getScene()
-          const stack = getMeshList(scene, meshId)
-          const released = stack[0]
-          const snapped =
-            fn === 'flipAll'
-              ? stack.reverse()[0]
-              : stack.find(({ id }) => id === args[0][0])
-          unsetAnchor(this, zone, released)
-          setAnchor(this, zone, snapped, true)
+        if (zone) {
+          if (fn === 'reorder' || fn === 'flipAll') {
+            const scene = this.mesh.getScene()
+            const stack = getMeshList(scene, meshId)
+            const released = stack[0]
+            const snapped =
+              fn === 'flipAll'
+                ? stack.reverse()[0]
+                : stack.find(({ id }) => id === args[0][0])
+            unsetAnchor(this, zone, released)
+            setAnchor(this, zone, snapped, true)
+          } else if (fn === 'draw') {
+            this.unsnap(meshId)
+          }
         }
       }
     )

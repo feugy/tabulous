@@ -9,6 +9,7 @@ import {
 } from '../../test-utils'
 import {
   AnchorBehavior,
+  DrawBehavior,
   FlipBehavior,
   MoveBehavior,
   RotateBehavior,
@@ -92,6 +93,7 @@ describe('StackBehavior', () => {
         box.addBehavior(
           new AnchorBehavior({ anchors: [{ x: -0.5 }, { x: 0.5 }] })
         )
+        box.addBehavior(new DrawBehavior(), true)
         controlManager.registerControlable(box)
         return box
       })
@@ -238,6 +240,24 @@ describe('StackBehavior', () => {
       expectStacked([mesh, meshes[2], meshes[0]])
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({ fn: 'pop', mesh })
+    })
+
+    it('pops drawn mesh', async () => {
+      const playerId = faker.datatype.uuid()
+      behavior.fromState({ stackIds: ['box3', 'box1', 'box2'] })
+
+      const last = meshes[1]
+
+      last.metadata.draw(playerId)
+      expectInteractible(meshes[1])
+      expectStacked([mesh, meshes[2], meshes[0]])
+      expect(recordSpy).toHaveBeenCalledTimes(2)
+      expect(recordSpy).toHaveBeenNthCalledWith(1, {
+        fn: 'draw',
+        mesh: last,
+        args: [playerId]
+      })
+      expect(recordSpy).toHaveBeenNthCalledWith(2, { fn: 'pop', mesh })
     })
 
     it('reorders stack to given order', async () => {

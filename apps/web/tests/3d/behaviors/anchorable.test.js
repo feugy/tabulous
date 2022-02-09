@@ -16,6 +16,7 @@ import {
   AnchorBehavior,
   AnchorBehaviorName,
   AnimateBehavior,
+  DrawBehavior,
   FlipBehavior,
   RotateBehavior,
   StackBehavior
@@ -100,6 +101,7 @@ describe('AnchorBehavior', () => {
       meshes = Array.from({ length: 2 }, (_, rank) => {
         const box = CreateBox(`box${rank + 1}`, {})
         box.addBehavior(new AnimateBehavior(), true)
+        box.addBehavior(new DrawBehavior(), true)
         box.setAbsolutePosition(new Vector3(rank + 10, rank + 10, rank + 10))
         box.computeWorldMatrix()
         controlManager.registerControlable(box)
@@ -503,6 +505,29 @@ describe('AnchorBehavior', () => {
       expectUnsnapped(mesh, snapped, 0)
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
+        fn: 'unsnap',
+        mesh,
+        args: [snapped.id]
+      })
+    })
+
+    it('unsnaps drawn mesh', async () => {
+      const playerId = faker.datatype.uuid()
+      const snapped = meshes[1]
+      behavior.fromState({
+        anchors: [{ width: 1, height: 2, depth: 0.5, snappedId: snapped.id }]
+      })
+      expectSnapped(mesh, snapped, 0)
+
+      snapped.metadata.draw(playerId)
+      expectUnsnapped(mesh, snapped, 0)
+      expect(recordSpy).toHaveBeenCalledTimes(2)
+      expect(recordSpy).toHaveBeenNthCalledWith(1, {
+        fn: 'draw',
+        mesh: snapped,
+        args: [playerId]
+      })
+      expect(recordSpy).toHaveBeenNthCalledWith(2, {
         fn: 'unsnap',
         mesh,
         args: [snapped.id]

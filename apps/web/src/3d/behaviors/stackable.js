@@ -50,6 +50,7 @@ export class StackBehavior extends TargetBehavior {
     // private
     this.dragObserver = null
     this.dropObserver = null
+    this.actionObserver = null
     this.base = null
     this.pushQueue = []
     this.inhibitControl = false
@@ -99,12 +100,26 @@ export class StackBehavior extends TargetBehavior {
         this.pop()
       }
     })
+
+    this.actionObserver = controlManager.onActionObservable.add(
+      ({ meshId, fn }) => {
+        const { stack } = this
+        if (
+          fn === 'draw' &&
+          stack.length > 1 &&
+          stack[stack.length - 1]?.id === meshId
+        ) {
+          this.pop()
+        }
+      }
+    )
   }
 
   /**
    * Detaches this behavior from its mesh, unsubscribing observables
    */
   detach() {
+    controlManager.onActionObservable.remove(this.actionObserver)
     inputManager.onDragObservable.remove(this.dragObserver)
     this.onDropObservable?.remove(this.dropObserver)
     super.detach()
