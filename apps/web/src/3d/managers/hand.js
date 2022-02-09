@@ -9,6 +9,7 @@ import {
   screenToGround
 } from '../utils'
 import { controlManager } from './control'
+import { inputManager } from './input'
 
 class HandManager {
   /**
@@ -31,9 +32,11 @@ class HandManager {
     this.horizontalPadding = 0
     this.duration = 100
     // private
-    this.onActionObserver = null
+    this.dragStartObserver = null
     this.extent = { minX: 0, height: 0, width: 0 }
-    this.meshById = new Map()
+    this.contentWidth = 0
+    this.dimensionsByMeshId = null
+    this.moved = null
   }
 
   /**
@@ -60,16 +63,20 @@ class HandManager {
     this.verticalPadding = verticalPadding
     this.horizontalPadding = horizontalPadding
     this.duration = duration
-    this.meshById = new Map(this.handScene.meshes.map(mesh => [mesh.id, mesh]))
 
     const engine = this.handScene.getEngine()
     computeExtent(this, engine)
+    storeMeshDimensions(this)
 
     const subscriptions = []
     for (const { observable, handle } of [
       {
         observable: controlManager.onActionObservable,
         handle: action => handleAction(this, action)
+      },
+      {
+        observable: inputManager.onDragObservable,
+        handle: action => handDrag(this, action)
       },
       {
         observable: engine.onResizeObservable,
@@ -80,17 +87,17 @@ class HandManager {
       },
       {
         observable: handScene.onNewMeshAddedObservable,
-        handle: added =>
+        handle: () =>
           // delay so the mesh is completly added
           setTimeout(() => {
-            this.meshById.set(added.id, added)
+            storeMeshDimensions(this)
             layoutMeshs(this)
           }, 0)
       },
       {
         observable: handScene.onMeshRemovedObservable,
-        handle: removed => {
-          this.meshById.delete(removed.id)
+        handle: () => {
+          storeMeshDimensions(this)
           layoutMeshs(this)
         }
       }
@@ -114,31 +121,41 @@ class HandManager {
 export const handManager = new HandManager()
 
 function handleAction(manager, { meshId, fn }) {
-  if (fn === 'draw' && manager.meshById.has(meshId)) {
-    let mesh = manager.handScene.getMeshById(meshId)
-    const state = {
-      ...mesh.metadata.serialize(),
-      ...getSceneCenter(manager.scene),
-      y: 100
-    }
-    mesh.dispose()
-    mesh = createMeshFromState(state, manager.scene)
-    applyGravity(mesh)
-  } else if (fn === 'draw') {
-    const mesh = manager.scene.getMeshById(meshId)
-    if (mesh) {
+  const handMesh = manager.handScene.getMeshById(meshId)
+  if (fn === 'draw') {
+    if (handMesh) {
       const state = {
-        ...mesh.metadata.serialize(),
-        x: manager.extent.minX
+        ...handMesh.metadata.serialize(),
+        ...getSceneCenter(manager.scene),
+        y: 100
       }
-      mesh.dispose()
-      createMeshFromState(state, manager.handScene)
+      handMesh.dispose()
+      applyGravity(createMeshFromState(state, manager.scene))
+    } else {
+      const mainMesh = manager.scene.getMeshById(meshId)
+      if (mainMesh) {
+        const state = {
+          ...mainMesh.metadata.serialize(),
+          x: manager.extent.minX
+        }
+        mainMesh.dispose()
+        createMeshFromState(state, manager.handScene)
+      }
     }
-  } else if (fn === 'rotate' && manager.meshById.has(meshId)) {
-    const rotable = manager.meshById
-      .get(meshId)
-      .getBehaviorByName(RotateBehaviorName)
+  } else if (fn === 'rotate' && handMesh) {
+    const rotable = handMesh.getBehaviorByName(RotateBehaviorName)
     setTimeout(() => layoutMeshs(manager), rotable.state.duration * 1.1)
+  }
+}
+
+function handDrag(manager, { type, mesh }) {
+  if (mesh?.getScene() === manager.handScene) {
+    if (type === 'dragStart') {
+      manager.moved = mesh
+    } else if (type === 'dragStop') {
+      manager.moved = null
+    }
+    layoutMeshs(manager)
   }
 }
 
@@ -157,25 +174,34 @@ function computeExtent(manager, engine) {
   }
 }
 
+function storeMeshDimensions(manager) {
+  manager.dimensionsByMeshId = new Map()
+  const { dimensionsByMeshId, gap, handScene } = manager
+  let contentWidth = 0
+  const meshes = handScene.meshes.filter(isSerializable)
+  for (const mesh of meshes) {
+    const dimension = getDimensions(mesh)
+    dimensionsByMeshId.set(mesh.id, dimension)
+    contentWidth += dimension.width + gap
+  }
+  contentWidth -= gap
+  manager.contentWidth = contentWidth
+}
+
 function layoutMeshs({
   handScene,
+  dimensionsByMeshId,
+  contentWidth,
+  moved,
   gap,
   horizontalPadding,
   verticalPadding,
   duration,
   extent
 }) {
-  const meshes = handScene.meshes.filter(isSerializable)
-  const dimensions = []
-  let contentWidth = 0
-  for (const mesh of meshes.sort(
-    (a, b) => a.absolutePosition.x - b.absolutePosition.x
-  )) {
-    const dimension = getDimensions(mesh)
-    dimensions.push(dimension)
-    contentWidth += dimension.width + gap
-  }
-  contentWidth -= gap
+  const meshes = [...dimensionsByMeshId.keys()]
+    .map(id => handScene.getMeshById(id))
+    .sort((a, b) => a.absolutePosition.x - b.absolutePosition.x)
   const availableWidth = extent.width - horizontalPadding * 2
   let x =
     (contentWidth <= availableWidth ? contentWidth : availableWidth) * -0.5
@@ -184,22 +210,22 @@ function layoutMeshs({
     (contentWidth <= availableWidth
       ? 0
       : (contentWidth - availableWidth) / (meshes.length - 1))
-  let rank = 0
   let y = 0
   for (const mesh of meshes) {
-    const { width, height, depth } = dimensions[rank]
-    animateMove(
-      mesh,
-      new Vector3(
-        x + width * 0.5,
-        y,
-        (extent.height - depth) * -0.5 + verticalPadding
-      ),
-      duration
-    )
+    const { width, height, depth } = dimensionsByMeshId.get(mesh.id)
+    if (mesh !== moved) {
+      animateMove(
+        mesh,
+        new Vector3(
+          x + width * 0.5,
+          y,
+          (extent.height - depth) * -0.5 + verticalPadding
+        ),
+        duration
+      )
+    }
     x += width + effectiveGap
     y += height
-    rank++
   }
 }
 
