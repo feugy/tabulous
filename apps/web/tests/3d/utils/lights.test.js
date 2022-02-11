@@ -1,11 +1,17 @@
 import { createLights } from '../../../src/3d/utils'
 import { configures3dTestEngine } from '../../test-utils'
 
-configures3dTestEngine()
+let scene
+let handScene
+
+configures3dTestEngine(created => {
+  scene = created.scene
+  handScene = created.handScene
+})
 
 describe('createLights() 3D utility', () => {
   it('creates default lights and shadow generator', () => {
-    const { light, shadowGenerator } = createLights()
+    const { light, shadowGenerator } = createLights({ scene, handScene })
     expect(light.name).toEqual('sun')
     expect(light.intensity).toEqual(0.8)
     expect(light.specular.asArray()).toEqual([0, 0, 0])

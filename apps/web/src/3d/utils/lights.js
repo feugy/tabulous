@@ -25,6 +25,7 @@ import { Vector3 } from '@babylonjs/core/Maths/math.vector'
  */
 export function createLights({ scene, handScene } = {}) {
   const light = makeDirectionalLight(scene)
+  light.position = new Vector3(0, 10, 0)
   const ambientLight = new HemisphericLight(
     'ambient',
     new Vector3(0, -1, 0),
@@ -38,11 +39,9 @@ export function createLights({ scene, handScene } = {}) {
   const handLight = makeDirectionalLight(handScene)
 
   /* istanbul ignore next */
-  light
-    .getScene()
-    .onNewMeshAddedObservable.add(mesh =>
-      shadowGenerator.getShadowMap().renderList.push(mesh)
-    )
+  scene.onNewMeshAddedObservable.add(mesh =>
+    shadowGenerator.addShadowCaster(mesh, true)
+  )
   return { light, ambientLight, handLight, shadowGenerator }
 }
 
