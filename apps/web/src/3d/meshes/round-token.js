@@ -3,13 +3,13 @@ import { Texture } from '@babylonjs/core/Materials/Textures/texture'
 import { Color3 } from '@babylonjs/core/Maths/math.color'
 import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector'
 import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
-import { controlManager } from './managers'
+import { controlManager } from '../managers/control'
 import {
   adaptTexture,
   attachMaterialError,
   registerBehaviors,
   serializeBehaviors
-} from './utils'
+} from '../utils'
 
 /**
  * Creates a round token, like a pocker one.
@@ -45,7 +45,7 @@ export function createRoundToken(
   } = {},
   scene
 ) {
-  const token = CreateCylinder(
+  const mesh = CreateCylinder(
     'roundToken',
     {
       diameter,
@@ -55,37 +55,37 @@ export function createRoundToken(
     },
     scene
   )
-  token.id = id
-  token.material = new StandardMaterial(id, scene)
-  token.material.diffuseTexture = new Texture(adaptTexture(texture), scene)
-  token.material.diffuseTexture.hasAlpha = true
-  token.material.freeze()
-  attachMaterialError(token.material)
+  mesh.id = id
+  mesh.material = new StandardMaterial(id, scene)
+  mesh.material.diffuseTexture = new Texture(adaptTexture(texture), scene)
+  mesh.material.diffuseTexture.hasAlpha = true
+  mesh.material.freeze()
+  attachMaterialError(mesh.material)
 
-  token.receiveShadows = true
-  token.setAbsolutePosition(new Vector3(x, y, z))
-  token.isPickable = false
+  mesh.receiveShadows = true
+  mesh.setAbsolutePosition(new Vector3(x, y, z))
+  mesh.isPickable = false
 
-  token.metadata = {
+  mesh.metadata = {
     serialize: () => ({
-      shape: token.name,
+      shape: mesh.name,
       id,
-      x: token.position.x,
-      y: token.position.y,
-      z: token.position.z,
+      x: mesh.position.x,
+      y: mesh.position.y,
+      z: mesh.position.z,
       texture,
       faceUV,
       diameter,
       height,
-      ...serializeBehaviors(token.behaviors)
+      ...serializeBehaviors(mesh.behaviors)
     })
   }
 
-  token.overlayColor = new Color3(0, 0.8, 0)
-  token.overlayAlpha = 0.2
+  mesh.overlayColor = new Color3(0, 0.8, 0)
+  mesh.overlayAlpha = 0.2
 
-  registerBehaviors(token, behaviorStates)
+  registerBehaviors(mesh, behaviorStates)
 
-  controlManager.registerControlable(token)
-  return token
+  controlManager.registerControlable(mesh)
+  return mesh
 }

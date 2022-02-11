@@ -1,6 +1,5 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
-import { DrawBehavior } from '../../../src/3d/behaviors/drawable'
 import {
   AnchorBehaviorName,
   DetailBehaviorName,
@@ -29,6 +28,7 @@ let box
 let AnchorBehavior
 let AnimateBehavior
 let DetailBehavior
+let DrawBehavior
 let FlipBehavior
 let MoveBehavior
 let RotateBehavior
@@ -42,6 +42,7 @@ beforeAll(async () => {
     AnchorBehavior,
     AnimateBehavior,
     DetailBehavior,
+    DrawBehavior,
     FlipBehavior,
     MoveBehavior,
     RotateBehavior,

@@ -1,9 +1,7 @@
 // mandatory side effect
 import '@babylonjs/core/Loading/loadingScreen'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { createCard } from '../card'
-import { createRoundToken } from '../round-token'
-import { createRoundedTile } from '../rounded-tile'
+import { createCard, createRoundToken, createRoundedTile } from '../meshes'
 import { restoreBehaviors } from './behaviors'
 import { AnchorBehaviorName, StackBehaviorName } from '../behaviors/names'
 // '../../utils' creates a cyclic dependency in Jest

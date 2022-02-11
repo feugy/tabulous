@@ -6,13 +6,13 @@ import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector'
 import { CSG } from '@babylonjs/core/Meshes/csg'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
-import { controlManager } from './managers'
+import { controlManager } from '../managers/control'
 import {
   adaptTexture,
   attachMaterialError,
   registerBehaviors,
   serializeBehaviors
-} from './utils'
+} from '../utils'
 
 function makeCornerMesh(
   { borderRadius, width, height, depth, faceUV },
@@ -109,42 +109,42 @@ export function createRoundedTile(
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, true, false))
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, false, true))
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, false, false))
-  const tile = tileCSG.toMesh('roundedTile', undefined, scene)
-  tile.id = id
+  const mesh = tileCSG.toMesh('roundedTile', undefined, scene)
+  mesh.id = id
   tileMesh.dispose()
 
-  tile.material = new StandardMaterial(id, scene)
-  tile.material.diffuseTexture = new Texture(adaptTexture(texture), scene)
-  tile.material.diffuseTexture.hasAlpha = true
-  tile.material.freeze()
-  attachMaterialError(tile.material)
+  mesh.material = new StandardMaterial(id, scene)
+  mesh.material.diffuseTexture = new Texture(adaptTexture(texture), scene)
+  mesh.material.diffuseTexture.hasAlpha = true
+  mesh.material.freeze()
+  attachMaterialError(mesh.material)
 
-  tile.receiveShadows = true
-  tile.setAbsolutePosition(new Vector3(x, y, z))
-  tile.isPickable = false
+  mesh.receiveShadows = true
+  mesh.setAbsolutePosition(new Vector3(x, y, z))
+  mesh.isPickable = false
 
-  tile.metadata = {
+  mesh.metadata = {
     serialize: () => ({
-      shape: tile.name,
+      shape: mesh.name,
       id,
-      x: tile.position.x,
-      y: tile.position.y,
-      z: tile.position.z,
+      x: mesh.position.x,
+      y: mesh.position.y,
+      z: mesh.position.z,
       width,
       height,
       depth,
       borderRadius,
       texture,
       faceUV,
-      ...serializeBehaviors(tile.behaviors)
+      ...serializeBehaviors(mesh.behaviors)
     })
   }
 
-  tile.overlayColor = new Color3(0, 0.8, 0)
-  tile.overlayAlpha = 0.2
+  mesh.overlayColor = new Color3(0, 0.8, 0)
+  mesh.overlayAlpha = 0.2
 
-  registerBehaviors(tile, behaviorStates)
+  registerBehaviors(mesh, behaviorStates)
 
-  controlManager.registerControlable(tile)
-  return tile
+  controlManager.registerControlable(mesh)
+  return mesh
 }

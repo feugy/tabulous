@@ -1,6 +1,7 @@
 import { Observable } from '@babylonjs/core/Misc/observable'
 import { TargetBehaviorName } from './names'
-import { targetManager } from '../managers'
+// '../managers' creates a cyclic dependency in Jest
+import { targetManager } from '../managers/target'
 
 /**
  * @typedef {object} DropZone definition of a target drop zone:

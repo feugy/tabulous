@@ -6,13 +6,13 @@ import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector'
 import { Mesh } from '@babylonjs/core/Meshes/mesh'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { CreatePlane } from '@babylonjs/core/Meshes/Builders/planeBuilder'
-import { controlManager } from './managers'
+import { controlManager } from '../managers/control'
 import {
   adaptTexture,
   attachMaterialError,
   registerBehaviors,
   serializeBehaviors
-} from './utils'
+} from '../utils'
 
 /**
  * Creates a card mesh.
@@ -68,38 +68,38 @@ export function createCard(
   faces.material.freeze()
   attachMaterialError(faces.material)
 
-  const card = CreateBox('card', { width, height, depth }, scene)
-  card.id = id
+  const mesh = CreateBox('card', { width, height, depth }, scene)
+  mesh.id = id
 
   // because planes are in 2-D, collisions with other meshes could be tricky.
   // wraps the plane with an invisible box. Box will take rays and pick operations.
-  card.visibility = 0
+  mesh.visibility = 0
   faces.rotate(Axis.X, Math.PI * 0.5)
   faces.isPickable = false
-  faces.parent = card
+  faces.parent = mesh
 
-  card.setAbsolutePosition(new Vector3(x, y, z))
-  card.isPickable = false
+  mesh.setAbsolutePosition(new Vector3(x, y, z))
+  mesh.isPickable = false
 
-  card.metadata = {
+  mesh.metadata = {
     serialize: () => ({
-      shape: card.name,
+      shape: mesh.name,
       id,
-      x: card.position.x,
-      y: card.position.y,
-      z: card.position.z,
+      x: mesh.position.x,
+      y: mesh.position.y,
+      z: mesh.position.z,
       width,
       height,
       depth,
       texture,
       faceUV,
-      ...serializeBehaviors(card.behaviors)
+      ...serializeBehaviors(mesh.behaviors)
     })
   }
 
   faces.overlayColor = new Color3(0, 0.8, 0)
   faces.overlayAlpha = 0.2
-  Object.defineProperty(card, 'renderOverlay', {
+  Object.defineProperty(mesh, 'renderOverlay', {
     get() {
       return faces.renderOverlay
     },
@@ -108,8 +108,8 @@ export function createCard(
     }
   })
 
-  registerBehaviors(card, behaviorStates)
+  registerBehaviors(mesh, behaviorStates)
 
-  controlManager.registerControlable(card)
-  return card
+  controlManager.registerControlable(mesh)
+  return mesh
 }

@@ -1,18 +1,27 @@
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
 import {
-  createCard,
-  createRoundToken,
-  createRoundedTile
-} from '../../../src/3d'
-import { MoveBehaviorName, StackBehaviorName } from '../../../src/3d/behaviors'
+  MoveBehaviorName,
+  StackBehaviorName
+} from '../../../src/3d/behaviors/names'
 import { createTable, loadMeshes, serializeMeshes } from '../../../src/3d/utils'
 import { expectPosition, initialize3dEngine } from '../../test-utils'
 
 let engine
 let scene
+let createCard
+let createRoundToken
+let createRoundedTile
 const renderWidth = 2048
 const renderHeight = 1024
+
+beforeAll(async () => {
+  engine = initialize3dEngine().engine
+  // use dynamic import to break the cyclic dependency
+  ;({ createCard, createRoundToken, createRoundedTile } = await import(
+    '../../../src/3d/meshes'
+  ))
+})
 
 afterAll(() => engine.dispose())
 

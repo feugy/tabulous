@@ -1,7 +1,8 @@
 import faker from 'faker'
 import { NullEngine } from '@babylonjs/core/Engines/nullEngine'
 import { Scene } from '@babylonjs/core/scene'
-import { createCard, createEngine } from '../../src/3d'
+import { createEngine } from '../../src/3d'
+import { createCard } from '../../src/3d/meshes'
 
 let engine
 const player = { id: faker.datatype.uuid() }

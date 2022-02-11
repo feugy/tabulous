@@ -1,7 +1,7 @@
 import { PointerEventTypes } from '@babylonjs/core/Events/pointerEvents'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { Observable } from '@babylonjs/core/Misc/observable'
-import { createPeerPointer } from '../peer-pointer'
+import { createPeerPointer } from '../meshes'
 // '../../utils' creates a cyclic dependency in Jest
 import { screenToGround } from '../utils/vector'
 

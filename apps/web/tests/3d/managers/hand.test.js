@@ -6,7 +6,7 @@ import {
   handManager as manager,
   inputManager
 } from '../../../src/3d/managers'
-import { createCard } from '../../../src/3d/card'
+import { createCard } from '../../../src/3d/meshes'
 
 describe('HandManager', () => {
   let engine

@@ -10,9 +10,9 @@ import { CreateDisc } from '@babylonjs/core/Meshes/Builders/discBuilder'
  * @returns {import('@babylonjs/core').Mesh} the created peer pointer.
  */
 export function createPeerPointer({ id }, scene) {
-  const peerPointer = CreateDisc('peer-pointer', { radius: 0.2 }, scene)
-  peerPointer.id = id
-  peerPointer.isPickable = false
-  peerPointer.rotate(Axis.X, Math.PI / 2, Space.LOCAL)
-  return peerPointer
+  const mesh = CreateDisc('peer-pointer', { radius: 0.2 }, scene)
+  mesh.id = id
+  mesh.isPickable = false
+  mesh.rotate(Axis.X, Math.PI / 2, Space.LOCAL)
+  return mesh
 }

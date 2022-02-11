@@ -1,5 +1,4 @@
-// '../manager/control' creates a cyclic dependency in Jest
-import { controlManager } from '../managers/control'
+import { controlManager } from '../managers'
 import { DrawBehaviorName } from './names'
 
 export class DrawBehavior {

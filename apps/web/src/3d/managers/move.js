@@ -1,6 +1,8 @@
 import { BoundingInfo } from '@babylonjs/core/Culling/boundingInfo'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { controlManager, selectionManager, targetManager } from '.'
+import { controlManager } from './control'
+import { selectionManager } from './selection'
+import { targetManager } from './target'
 import {
   animateMove,
   isAboveTable,
