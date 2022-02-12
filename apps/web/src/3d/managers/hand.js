@@ -1,5 +1,7 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { RotateBehaviorName } from '../behaviors'
+import { Observable } from '@babylonjs/core/Misc/observable'
+import { debounceTime, Subject } from 'rxjs'
+import { FlipBehaviorName, RotateBehaviorName } from '../behaviors'
 import {
   animateMove,
   applyGravity,
@@ -19,6 +21,7 @@ class HandManager {
    *
    * @property {import('@babylonjs/core').Scene} scene - the main scene.
    * @property {import('@babylonjs/core').Scene} handScene - scene for meshes in hand.
+   * @property {Observable} onHandChangeObservable - emits nothing on hand changes
    * @property {number} gap - gap between hand meshes, when render width allows it, in 3D coordinates.
    * @property {number} verticalPadding - vertical padding between meshes and the viewport edges, in 3D coordinates.
    * @property {number} horizontalPadding - horizontal padding between meshes and the viewport edges, in 3D coordinates.
@@ -31,12 +34,20 @@ class HandManager {
     this.verticalPadding = 0
     this.horizontalPadding = 0
     this.duration = 100
+    this.onHandChangeObservable = new Observable()
     // private
     this.dragStartObserver = null
     this.extent = { minX: 0, height: 0, width: 0 }
     this.contentWidth = 0
     this.dimensionsByMeshId = null
     this.moved = null
+    this.changes$ = new Subject()
+    this.changes$.pipe(debounceTime(10)).subscribe({
+      next: () => {
+        storeMeshDimensions(this)
+        layoutMeshs(this)
+      }
+    })
   }
 
   /**
@@ -80,25 +91,22 @@ class HandManager {
       },
       {
         observable: engine.onResizeObservable,
-        handle: () => {
-          computeExtent(this, engine)
-          layoutMeshs(this)
-        }
+        handle: () => this.changes$.next()
       },
       {
         observable: handScene.onNewMeshAddedObservable,
-        handle: () =>
-          // delay so the mesh is completly added
-          setTimeout(() => {
-            storeMeshDimensions(this)
-            layoutMeshs(this)
-          }, 0)
+        handle: added => {
+          if (isSerializable(added)) {
+            this.changes$.next()
+          }
+        }
       },
       {
         observable: handScene.onMeshRemovedObservable,
-        handle: () => {
-          storeMeshDimensions(this)
-          layoutMeshs(this)
+        handle: removed => {
+          if (isSerializable(removed)) {
+            this.changes$.next()
+          }
         }
       }
     ]) {
@@ -112,6 +120,48 @@ class HandManager {
       }
     })
   }
+
+  /**
+   * Draw a mesh either
+   * - from main scene to the current player's hand,
+   * - from the player's hand to the main scene.
+   * @param {import('@babylonjs/core').Mesh} mesh - drawn mesh
+   */
+  draw(mesh) {
+    if (mesh.getScene() === this.handScene) {
+      const state = mesh.metadata.serialize()
+      mesh.dispose()
+      mesh = createMeshFromState(
+        { ...state, ...getSceneCenter(this.scene), y: 100 },
+        this.scene
+      )
+      applyGravity(mesh)
+    } else {
+      const state = { ...mesh.metadata.serialize(), x: this.extent.minX }
+      mesh.dispose()
+      mesh = createMeshFromState(state, this.handScene)
+    }
+    controlManager.record({
+      mesh,
+      fn: 'draw',
+      args: [mesh.metadata.serialize()]
+    })
+  }
+
+  /**
+   * Applies a draw from a peer:
+   * - dispose mesh if it lives in main scene
+   * - adds it the main scene otherwise
+   * @param {object} state - the state of the drawn mesh
+   */
+  applyDraw(state) {
+    const mainMesh = this.scene.getMeshById(state.id)
+    if (mainMesh) {
+      mainMesh.dispose()
+    } else {
+      createMeshFromState(state, this.scene)
+    }
+  }
 }
 
 /**
@@ -120,31 +170,18 @@ class HandManager {
  */
 export const handManager = new HandManager()
 
-function handleAction(manager, { meshId, fn }) {
-  const handMesh = manager.handScene.getMeshById(meshId)
-  if (fn === 'draw') {
+function handleAction(manager, { fn, meshId }) {
+  if (fn === 'rotate' || fn === 'flip') {
+    const handMesh = manager.handScene.getMeshById(meshId)
     if (handMesh) {
-      const state = {
-        ...handMesh.metadata.serialize(),
-        ...getSceneCenter(manager.scene),
-        y: 100
-      }
-      handMesh.dispose()
-      applyGravity(createMeshFromState(state, manager.scene))
-    } else {
-      const mainMesh = manager.scene.getMeshById(meshId)
-      if (mainMesh) {
-        const state = {
-          ...mainMesh.metadata.serialize(),
-          x: manager.extent.minX
-        }
-        mainMesh.dispose()
-        createMeshFromState(state, manager.handScene)
-      }
+      const behavior = handMesh.getBehaviorByName(
+        fn === 'rotate' ? RotateBehaviorName : FlipBehaviorName
+      )
+      behavior.onAnimationEndObservable.addOnce(() => {
+        storeMeshDimensions(manager)
+        layoutMeshs(manager)
+      })
     }
-  } else if (fn === 'rotate' && handMesh) {
-    const rotable = handMesh.getBehaviorByName(RotateBehaviorName)
-    setTimeout(() => layoutMeshs(manager), rotable.state.duration * 1.1)
   }
 }
 
@@ -188,7 +225,7 @@ function storeMeshDimensions(manager) {
   manager.contentWidth = contentWidth
 }
 
-function layoutMeshs({
+async function layoutMeshs({
   handScene,
   dimensionsByMeshId,
   contentWidth,
@@ -197,7 +234,8 @@ function layoutMeshs({
   horizontalPadding,
   verticalPadding,
   duration,
-  extent
+  extent,
+  onHandChangeObservable
 }) {
   const meshes = [...dimensionsByMeshId.keys()]
     .map(id => handScene.getMeshById(id))
@@ -211,22 +249,27 @@ function layoutMeshs({
       ? 0
       : (contentWidth - availableWidth) / (meshes.length - 1))
   let y = 0
+  const promises = []
   for (const mesh of meshes) {
     const { width, height, depth } = dimensionsByMeshId.get(mesh.id)
     if (mesh !== moved) {
-      animateMove(
-        mesh,
-        new Vector3(
-          x + width * 0.5,
-          y,
-          (extent.height - depth) * -0.5 + verticalPadding
-        ),
-        duration
+      promises.push(
+        animateMove(
+          mesh,
+          new Vector3(
+            x + width * 0.5,
+            y,
+            (extent.height - depth) * -0.5 + verticalPadding
+          ),
+          duration
+        )
       )
     }
     x += width + effectiveGap
     y += height
   }
+  await Promise.all(promises)
+  onHandChangeObservable.notifyObservers()
 }
 
 function getSceneCenter(scene) {

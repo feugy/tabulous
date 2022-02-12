@@ -27,11 +27,11 @@
     "test:web": "npm t -w apps/web"
   },
   "devDependencies": {
-    "eslint": "^8.7.0",
-    "eslint-config-prettier": "^8.1.0",
+    "eslint": "^8.9.0",
+    "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-svelte3": "^3.4.0",
     "husky": "^7.0.4",
-    "lint-staged": "^12.3.2",
+    "lint-staged": "^12.3.3",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.5.1",
     "prettier-plugin-svelte": "^2.6.0"

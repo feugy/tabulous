@@ -54,7 +54,7 @@ export function createEngine({
   cameraManager.init({ scene, handScene })
   inputManager.init({ scene, handScene, longTapDelay, doubleTapDelay })
   moveManager.init({ scene })
-  controlManager.init({ scene })
+  controlManager.init({ scene, handScene })
   selectionManager.init({ scene })
   handManager.init({ scene, handScene })
 

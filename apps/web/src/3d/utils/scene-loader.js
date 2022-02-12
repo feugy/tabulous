@@ -86,16 +86,7 @@ export function loadMeshes(scene, meshes) {
       restoreBehaviors(mesh.behaviors, state)
     } else {
       logger.debug({ state }, `create new ${name} ${state.id}`)
-      mesh = createMeshFromState(
-        {
-          ...state,
-          anchorable: anchorable ? { ...anchorable, anchors: [] } : undefined,
-          stackable: stackable
-            ? { ...stackable, stackIds: undefined }
-            : undefined
-        },
-        scene
-      )
+      mesh = createMeshFromState(skipDelayableBehaviors(state), scene)
     }
     const stackBehavior = mesh.getBehaviorByName(StackBehaviorName)
     if (stackBehavior) {
@@ -141,6 +132,14 @@ export function loadMeshes(scene, meshes) {
     (a, b) => a.y - b.y
   )) {
     anchorBehavior.fromState(anchorable)
+  }
+}
+
+function skipDelayableBehaviors({ stackable, anchorable, ...state }) {
+  return {
+    ...state,
+    anchorable: anchorable ? { ...anchorable, anchors: [] } : undefined,
+    stackable: stackable ? { ...stackable, stackIds: undefined } : undefined
   }
 }
 

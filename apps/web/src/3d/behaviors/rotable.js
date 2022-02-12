@@ -55,21 +55,29 @@ export class RotateBehavior extends AnimateBehavior {
    * It initializes its rotation according to angle.
    * When attaching/detaching this mesh to a parent, adjust rotation angle
    * according to the parent's own rotation, so that rotating the parent
-   * will accordingly rotate the chil.
+   * will accordingly rotate the child.
    * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
    */
   attach(mesh) {
     super.attach(mesh)
     this.fromState(this.state)
 
-    const originalSetter = mesh.setParent.bind(mesh)
+    this._originalSetter = mesh.setParent.bind(mesh)
     mesh.setParent = parent => {
-      const angle = getRotatableAngle(parent ?? mesh.parent)
+      const angle = getRotatableAngle(parent ?? mesh.parent) ?? 0
       if (angle !== undefined) {
         updateAngle(this, parent ? -angle : angle)
       }
-      originalSetter(parent)
+      this._originalSetter.apply(mesh, [parent])
     }
+  }
+
+  /**
+   * Detaches this behavior from its mesh.
+   */
+  detach() {
+    this.mesh.setParent = this._originalSetter
+    super.detach()
   }
 
   /**
@@ -128,7 +136,6 @@ export class RotateBehavior extends AnimateBehavior {
           false,
           1,
           () => {
-            this.isAnimated = false
             updateAngle(this, rotation)
             mesh.rotation.y = this.state.angle
             logger.debug({ mesh }, `end rotating ${mesh.id}`)
@@ -136,6 +143,8 @@ export class RotateBehavior extends AnimateBehavior {
             mesh.position.copyFrom(to)
             applyGravity(mesh)
             mesh.isPickable = true
+            this.isAnimated = false
+            this.onAnimationEndObservable.notifyObservers()
             resolve()
           }
         )

@@ -1,4 +1,4 @@
-import { controlManager } from '../managers'
+import { handManager } from '../managers'
 import { DrawBehaviorName } from './names'
 
 export class DrawBehavior {
@@ -43,12 +43,11 @@ export class DrawBehavior {
 
   /**
    * Draws the related mesh with an animation into and from the player's hand:
-   * - records the action into the control manager
-   * @param {string} playerId - drawing player id.
+   * - records the action into the hand manager
    */
-  draw(playerId) {
+  draw() {
     if (!this.mesh) return
-    controlManager.record({ mesh: this.mesh, fn: 'draw', args: [playerId] })
+    handManager.draw(this.mesh)
   }
 
   /**

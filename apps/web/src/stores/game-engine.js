@@ -9,7 +9,12 @@ import {
 } from 'rxjs'
 import { connected, lastMessageReceived, send } from './peer-channels'
 import { createEngine } from '../3d'
-import { cameraManager, controlManager, inputManager } from '../3d/managers'
+import {
+  cameraManager,
+  controlManager,
+  handManager,
+  inputManager
+} from '../3d/managers'
 import { attachInputs } from '../utils'
 
 const engine$ = new BehaviorSubject(null)
@@ -22,6 +27,7 @@ const meshForMenu$ = new Subject()
 const stackSize$ = new Subject()
 const cameraSaves$ = new BehaviorSubject([])
 const currentCamera$ = new Subject()
+const handSaves$ = new Subject()
 
 /**
  * Emits 3D engine when available.
@@ -79,6 +85,14 @@ export const longInputs = new Subject()
 export const currentCamera = currentCamera$.asObservable()
 
 /**
+ * Emits player's hand content (an array of serialized meshes)
+ * @type {Observable<object[]>}
+ */
+export const handMeshes = handSaves$.pipe(
+  map(() => engine$.value?.serialize().handMeshes)
+)
+
+/**
  * Initialize the 3D engine, which includes:
  * - displaying loader
  * - creating a table and a light
@@ -122,7 +136,8 @@ export function initEngine({
     { observable: controlManager.onDetailedObservable, subject: meshDetails$ },
     { observable: cameraManager.onSaveObservable, subject: cameraSaves$ },
     { observable: cameraManager.onMoveObservable, subject: currentCamera$ },
-    { observable: inputManager.onLongObservable, subject: longInputs }
+    { observable: inputManager.onLongObservable, subject: longInputs },
+    { observable: handManager.onHandChangeObservable, subject: handSaves$ }
   ]
   // exposes Babylon observables as RX subjects
   for (const mapping of mappings) {
@@ -144,8 +159,11 @@ export function initEngine({
         if (data?.pointer) {
           controlManager.movePeerPointer(data)
         } else if (data?.meshId) {
-          controlManager.apply(data, true)
-          // expose remote actions to other store and components
+          if (data.fn === 'draw') {
+            handManager.applyDraw(...data.args)
+          } else {
+            controlManager.apply(data, true)
+          }
           remoteAction$.next({ ...data, peerId: playerId })
         }
       }),

@@ -5,7 +5,6 @@ import { createEngine } from '../../src/3d'
 import { createCard } from '../../src/3d/meshes'
 
 let engine
-const player = { id: faker.datatype.uuid() }
 const canvas = document.createElement('canvas')
 const interaction = document.createElement('div')
 
@@ -125,7 +124,7 @@ describe('createEngine()', () => {
       it('removes drawn mesh from main scene', () => {
         const [, scene] = engine.scenes
         const drawn = scene.getMeshById('card2')
-        drawn.metadata.draw(player.id)
+        drawn.metadata.draw()
         expect(scene.getMeshById(drawn.id)).toBeNull()
         const game = engine.serialize()
         expect(getIds(game.meshes)).toEqual(['card1', 'card3'])

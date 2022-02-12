@@ -1,12 +1,14 @@
 # TODO
 
 - player's hand
-  - supports all actions (but draw) in hand display?
-  - play from hand
+
+  - draw many from stack
   - draw/play by dragging
   - run animation when drawing (must work for both dragging and menu)
-  - draw many from stack
-  - give to another player
+  - elevates hand mesh on hover
+
+- issue: rotated mesh snapped onto rotated mesh do not appear rotated on scene loading
+- issue: snapped mesh disappears while animating when beeing rotated
 
 ## Brittle tests
 
@@ -24,6 +26,7 @@
 
 ## Refactor
 
+- jest matchers with mesh (toHaveBeenCalledWith, toHaveBeenNthCalledWith)
 - rework remote moves: instead of sending individual positions, send drag start, move and stop (with selection)
 - rework target detection. Instead of using real mesh and rays use shapes overlap: each zone is a rectangle/circle on XZ plane, and the moved mesh another rectangle/circle. Check the center of the moved mesh
 - reconsider the behavior/manager split of responsibilities
@@ -32,7 +35,7 @@
 - game-manager is just a gigantic mess!!! no single responsibility, global state all over the place
 - game-interaction unit tests
 - component, connected-component and routes rendering tests
-- completly disable Babylon input management
+- get rid of Babylon input management
 - UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
 - stackable duration override's movable duration on
 

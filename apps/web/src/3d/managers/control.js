@@ -122,11 +122,11 @@ class ControlManager {
       !this.inhibitedKeys.has(getKey({ meshId: mesh?.id, ...actionProps })) &&
       this.isManaging(mesh)
     ) {
-      const fromHand = Boolean(this.handScene === mesh.getScene())
       this.onActionObservable.notifyObservers({
         ...actionProps,
         meshId: mesh.id,
-        fromHand
+        fromHand:
+          this.handScene === mesh.getScene() && actionProps.fn !== 'draw'
       })
     }
   }

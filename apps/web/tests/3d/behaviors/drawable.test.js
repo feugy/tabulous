@@ -1,8 +1,8 @@
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
-import faker from 'faker'
 import { configures3dTestEngine } from '../../test-utils'
 import { DrawBehavior, DrawBehaviorName } from '../../../src/3d/behaviors'
 import { controlManager } from '../../../src/3d/managers'
+import { createCard } from '../../../src/3d/meshes'
 
 describe('DrawBehavior', () => {
   configures3dTestEngine()
@@ -33,7 +33,7 @@ describe('DrawBehavior', () => {
 
   it('can not draw in hand without mesh', () => {
     const behavior = new DrawBehavior()
-    behavior.draw(faker.lorem.word())
+    behavior.draw()
     expect(recordSpy).not.toHaveBeenCalled()
   })
 
@@ -49,28 +49,27 @@ describe('DrawBehavior', () => {
 
   describe('given attached to a mesh', () => {
     let mesh
-    let behavior
 
     beforeEach(() => {
-      behavior = new DrawBehavior()
-      mesh = CreateBox('box', {})
-      mesh.addBehavior(behavior, true)
+      mesh = createCard({ id: 'box', drawable: true })
     })
 
     it('attaches metadata to its mesh', () => {
-      expect(mesh.metadata).toEqual({
-        draw: expect.any(Function)
-      })
+      expect(mesh.metadata).toEqual(
+        expect.objectContaining({
+          draw: expect.any(Function)
+        })
+      )
     })
 
     it(`draws into player's hand`, () => {
-      const playerId = faker.lorem.word()
-      mesh.metadata.draw(playerId)
+      const state = mesh.metadata.serialize()
+      mesh.metadata.draw()
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenNthCalledWith(1, {
-        mesh,
+        mesh: expect.objectContaining({ id: mesh.id }),
         fn: 'draw',
-        args: [playerId]
+        args: [state]
       })
     })
   })

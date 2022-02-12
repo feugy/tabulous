@@ -119,7 +119,6 @@ export class FlipBehavior extends AnimateBehavior {
           false,
           1,
           () => {
-            this.isAnimated = false
             this.state.isFlipped = !isFlipped
             mesh.metadata.isFlipped = this.state.isFlipped
             // keep rotation between [0..2 * PI[, without modulo because it does not keep plain values
@@ -134,6 +133,8 @@ export class FlipBehavior extends AnimateBehavior {
             attach()
             applyGravity(mesh)
             mesh.isPickable = true
+            this.isAnimated = false
+            this.onAnimationEndObservable.notifyObservers()
             resolve()
           }
         )
@@ -149,7 +150,9 @@ export class FlipBehavior extends AnimateBehavior {
       throw new Error('Can not restore state without mesh')
     }
     this.state = { isFlipped, duration }
+    const attach = detach(this.mesh)
     this.mesh.rotation.z = this.state.isFlipped ? Math.PI : 0
+    attach()
     if (!this.mesh.metadata) {
       this.mesh.metadata = {}
     }

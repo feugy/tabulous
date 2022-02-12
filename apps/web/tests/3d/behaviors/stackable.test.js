@@ -16,7 +16,11 @@ import {
   StackBehavior,
   StackBehaviorName
 } from '../../../src/3d/behaviors'
-import { controlManager, inputManager } from '../../../src/3d/managers'
+import {
+  controlManager,
+  handManager,
+  inputManager
+} from '../../../src/3d/managers'
 import { getTargetableBehavior } from '../../../src/3d/utils'
 
 describe('StackBehavior', () => {
@@ -27,6 +31,9 @@ describe('StackBehavior', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     recordSpy = jest.spyOn(controlManager, 'record')
+    jest
+      .spyOn(handManager, 'draw')
+      .mockImplementation(mesh => controlManager.record({ mesh, fn: 'draw' }))
   })
 
   it('has initial state', () => {
@@ -243,20 +250,15 @@ describe('StackBehavior', () => {
     })
 
     it('pops drawn mesh', async () => {
-      const playerId = faker.datatype.uuid()
       behavior.fromState({ stackIds: ['box3', 'box1', 'box2'] })
 
       const last = meshes[1]
 
-      last.metadata.draw(playerId)
+      last.metadata.draw()
       expectInteractible(meshes[1])
       expectStacked([mesh, meshes[2], meshes[0]])
       expect(recordSpy).toHaveBeenCalledTimes(2)
-      expect(recordSpy).toHaveBeenNthCalledWith(1, {
-        fn: 'draw',
-        mesh: last,
-        args: [playerId]
-      })
+      expect(recordSpy).toHaveBeenNthCalledWith(1, { fn: 'draw', mesh: last })
       expect(recordSpy).toHaveBeenNthCalledWith(2, { fn: 'pop', mesh })
     })
 

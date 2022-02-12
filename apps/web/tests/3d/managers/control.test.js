@@ -238,9 +238,13 @@ describe('ControlManager', () => {
       manager.registerControlable(handMesh)
       manager.record({ mesh, fn: 'flip' })
       manager.record({ mesh: handMesh, fn: 'rotate' })
+      manager.record({ mesh: handMesh, fn: 'draw' })
+      manager.record({ mesh, fn: 'draw' })
       expect(actions).toEqual([
         { meshId: mesh.id, fn: 'flip', fromHand: false },
-        { meshId: handMesh.id, fn: 'rotate', fromHand: true }
+        { meshId: handMesh.id, fn: 'rotate', fromHand: true },
+        { meshId: handMesh.id, fn: 'draw', fromHand: false },
+        { meshId: mesh.id, fn: 'draw', fromHand: false }
       ])
     })
   })

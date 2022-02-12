@@ -5,7 +5,8 @@ import { createEngine } from '../../src/3d'
 import {
   cameraManager,
   controlManager,
-  inputManager
+  inputManager,
+  handManager
 } from '../../src/3d/managers'
 import {
   connected as connectedPeers,
@@ -17,11 +18,11 @@ import { sleep } from '../test-utils'
 
 jest.mock('../../src/3d')
 jest.mock('../../src/stores/peer-channels', () => {
-  const { BehaviorSubject } = require('rxjs')
+  const { BehaviorSubject, Subject } = require('rxjs')
   return {
     send: jest.fn(),
     connected: new BehaviorSubject(),
-    lastMessageReceived: new BehaviorSubject({})
+    lastMessageReceived: new Subject({})
   }
 })
 
@@ -30,6 +31,7 @@ let cameraManagerRestore
 let cameraManagerLoadSaves
 let controlManagerMovePointer
 let controlManagerPruneUnused
+let handManagerApplyDraw
 
 beforeAll(() => {
   cameraManagerSave = jest.spyOn(cameraManager, 'save')
@@ -40,6 +42,7 @@ beforeAll(() => {
     controlManager,
     'pruneUnusedPeerPointers'
   )
+  handManagerApplyDraw = jest.spyOn(handManager, 'applyDraw')
 })
 
 beforeEach(jest.resetAllMocks)
@@ -53,6 +56,7 @@ describe('initEngine()', () => {
   const receiveCameraSave = jest.fn()
   const receiveCurrentCamera = jest.fn()
   const receiveLongInput = jest.fn()
+  const receiveHandChange = jest.fn()
 
   beforeAll(async () => {
     subscriptions = [
@@ -60,7 +64,8 @@ describe('initEngine()', () => {
       gameEngine.meshDetails.subscribe({ next: receiveMeshDetail }),
       gameEngine.cameraSaves.subscribe({ next: receiveCameraSave }),
       gameEngine.currentCamera.subscribe({ next: receiveCurrentCamera }),
-      gameEngine.longInputs.subscribe({ next: receiveLongInput })
+      gameEngine.longInputs.subscribe({ next: receiveLongInput }),
+      gameEngine.handMeshes.subscribe({ next: receiveHandChange })
     ]
   })
 
@@ -72,6 +77,7 @@ describe('initEngine()', () => {
     beforeEach(() => {
       engine = create3DEngineMock()
       createEngine.mockReturnValueOnce(engine)
+      engine.serialize = jest.fn()
     })
 
     afterEach(() => {
@@ -107,7 +113,6 @@ describe('initEngine()', () => {
       })
 
       it('sends scene actions to peers', () => {
-        expect(receiveAction).not.toHaveBeenCalled()
         const data = { foo: faker.datatype.uuid() }
         controlManager.onActionObservable.notifyObservers(data)
         expect(receiveAction).toHaveBeenCalledWith(data)
@@ -117,7 +122,6 @@ describe('initEngine()', () => {
       })
 
       it('does not send hand actions to peers', () => {
-        expect(receiveAction).not.toHaveBeenCalled()
         const data = { foo: faker.datatype.uuid(), fromHand: true }
         controlManager.onActionObservable.notifyObservers(data)
         expect(receiveAction).toHaveBeenCalledWith(data)
@@ -133,12 +137,27 @@ describe('initEngine()', () => {
         expect(controlManagerMovePointer).toHaveBeenCalledTimes(1)
       })
 
+      it('handles peer draw actions', () => {
+        const state = { foo: 'bar' }
+        const action = {
+          meshId: faker.datatype.uuid(),
+          fn: 'draw',
+          args: [state]
+        }
+        lastMessageReceived.next({ data: action })
+        expect(handManagerApplyDraw).toHaveBeenCalledWith(state)
+        expect(handManagerApplyDraw).toHaveBeenCalledTimes(1)
+        expect(receiveAction).toHaveBeenCalledWith(action)
+        expect(receiveAction).toHaveBeenCalledTimes(1)
+        expect(sendToPeer).not.toHaveBeenCalled()
+      })
+
       it('receives peer actions', () => {
-        expect(receiveAction).not.toHaveBeenCalled()
         const meshId = faker.datatype.uuid()
         lastMessageReceived.next({ data: { meshId } })
         expect(receiveAction).toHaveBeenCalledWith({ meshId })
         expect(receiveAction).toHaveBeenCalledTimes(1)
+        expect(handManagerApplyDraw).not.toHaveBeenCalled()
         expect(sendToPeer).not.toHaveBeenCalled()
       })
 
@@ -157,7 +176,6 @@ describe('initEngine()', () => {
       })
 
       it('proxies mesh detail events', () => {
-        expect(receiveMeshDetail).not.toHaveBeenCalled()
         const data = { foo: faker.datatype.uuid() }
         controlManager.onDetailedObservable.notifyObservers({ data })
         expect(receiveMeshDetail).toHaveBeenCalledWith(data)
@@ -183,11 +201,18 @@ describe('initEngine()', () => {
       })
 
       it('proxies long input events', () => {
-        expect(receiveLongInput).not.toHaveBeenCalled()
         const data = { foo: faker.datatype.uuid() }
         inputManager.onLongObservable.notifyObservers(data)
         expect(receiveLongInput).toHaveBeenCalledWith(data)
         expect(receiveLongInput).toHaveBeenCalledTimes(1)
+      })
+
+      it('proxies hand change events', () => {
+        const handMeshes = [{ foo: faker.datatype.uuid() }]
+        engine.serialize.mockReturnValueOnce({ handMeshes })
+        handManager.onHandChangeObservable.notifyObservers()
+        expect(receiveHandChange).toHaveBeenCalledWith(handMeshes)
+        expect(receiveHandChange).toHaveBeenCalledTimes(1)
       })
 
       it('prunes peer pointers on conection', () => {

@@ -23,6 +23,7 @@ import {
 } from '../../../src/3d/behaviors'
 import {
   controlManager,
+  handManager,
   inputManager,
   selectionManager
 } from '../../../src/3d/managers'
@@ -36,6 +37,9 @@ describe('AnchorBehavior', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     recordSpy = jest.spyOn(controlManager, 'record')
+    jest
+      .spyOn(handManager, 'draw')
+      .mockImplementation(mesh => controlManager.record({ mesh, fn: 'draw' }))
     selectionManager.clear()
   })
 
@@ -512,20 +516,18 @@ describe('AnchorBehavior', () => {
     })
 
     it('unsnaps drawn mesh', async () => {
-      const playerId = faker.datatype.uuid()
       const snapped = meshes[1]
       behavior.fromState({
         anchors: [{ width: 1, height: 2, depth: 0.5, snappedId: snapped.id }]
       })
       expectSnapped(mesh, snapped, 0)
 
-      snapped.metadata.draw(playerId)
+      snapped.metadata.draw()
       expectUnsnapped(mesh, snapped, 0)
       expect(recordSpy).toHaveBeenCalledTimes(2)
       expect(recordSpy).toHaveBeenNthCalledWith(1, {
         fn: 'draw',
-        mesh: snapped,
-        args: [playerId]
+        mesh: snapped
       })
       expect(recordSpy).toHaveBeenNthCalledWith(2, {
         fn: 'unsnap',

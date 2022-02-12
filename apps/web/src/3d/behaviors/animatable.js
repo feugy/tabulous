@@ -1,4 +1,5 @@
 import { Animation } from '@babylonjs/core/Animations/animation'
+import { Observable } from '@babylonjs/core/Misc/observable'
 import { AnimateBehaviorName } from './names'
 import { applyGravity } from '../utils'
 
@@ -10,6 +11,7 @@ export class AnimateBehavior {
    * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
    * @property {boolean} isAnimated - true when this mesh is being animated.
    * @property {number} frameRate - number of frames per second.
+   * @property {Observable} onAnimationEndObservable - emits when animation has ended.
    *
    * @param {object} params - parameters, including:
    * @param {number} [params.frameRate=30] - number of frames per second.
@@ -18,6 +20,7 @@ export class AnimateBehavior {
     this.mesh = null
     this.isAnimated = false
     this.frameRate = frameRate ?? 30
+    this.onAnimationEndObservable = new Observable()
     // private
     this.moveAnimation = new Animation(
       'move',
@@ -96,13 +99,14 @@ export class AnimateBehavior {
           false,
           1,
           () => {
-            this.isAnimated = false
             // framed animation may not exactly end where we want, so force the final position
             mesh.position.copyFrom(to)
             if (gravity) {
               applyGravity(mesh)
             }
             mesh.isPickable = true
+            this.isAnimated = false
+            this.onAnimationEndObservable.notifyObservers()
             resolve()
           }
         )
