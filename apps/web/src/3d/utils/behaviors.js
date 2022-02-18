@@ -72,11 +72,7 @@ export function restoreBehaviors(behaviors, state) {
 export function serializeBehaviors(behaviors) {
   const result = {}
   for (const behavior of behaviors) {
-    if (behavior.name === DrawBehaviorName) {
-      result[behavior.name] = true
-    } else if (behavior.state) {
-      result[behavior.name] = behavior.state
-    }
+    result[behavior.name] = behavior.state
   }
   return result
 }

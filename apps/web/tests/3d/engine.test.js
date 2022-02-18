@@ -113,9 +113,9 @@ describe('createEngine()', () => {
       beforeEach(() => {
         engine.load({
           meshes: [
-            { id: 'card1', shape: 'card', drawable: true },
-            { id: 'card2', shape: 'card', drawable: true },
-            { id: 'card3', shape: 'card', drawable: true }
+            { id: 'card1', shape: 'card', drawable: {} },
+            { id: 'card2', shape: 'card', drawable: {} },
+            { id: 'card3', shape: 'card', drawable: {} }
           ],
           handMeshes: []
         })

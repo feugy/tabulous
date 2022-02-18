@@ -55,7 +55,9 @@ fragment mesh on Mesh {
     }
     duration
   }
-  drawable
+  drawable {
+    duration
+  }
 }
 
 mutation createGame($kind: String!) {

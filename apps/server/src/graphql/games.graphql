@@ -46,6 +46,10 @@ type AnchorableState {
   duration: Int
 }
 
+type DrawableState {
+  duration: Int
+}
+
 type Anchor {
   x: Float
   y: Float
@@ -72,7 +76,7 @@ type Mesh {
   rotable: RotableState
   anchorable: AnchorableState
   stackable: StackableState
-  drawable: Boolean
+  drawable: DrawableState
   """
   cards, rounded tokens and rounded tiles
   """
@@ -161,6 +165,10 @@ input AnchorableStateInput {
   duration: Int
 }
 
+input DrawableStateInput {
+  duration: Int
+}
+
 input AnchorInput {
   x: Float
   y: Float
@@ -187,7 +195,7 @@ input MeshInput {
   rotable: RotableStateInput
   anchorable: AnchorableStateInput
   stackable: StackableStateInput
-  drawable: Boolean
+  drawable: DrawableStateInput
   """
   cards, rounded tokens and rounded tiles
   """

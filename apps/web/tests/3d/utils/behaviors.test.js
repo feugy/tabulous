@@ -256,8 +256,12 @@ describe('registerBehaviors() 3D utility', () => {
   })
 
   it('adds drawable behavior to a mesh', () => {
-    registerBehaviors(box, { drawable: true })
-    expect(box.getBehaviorByName(DrawBehaviorName)).toBeDefined()
+    const state = { duration: 300 }
+    registerBehaviors(box, { drawable: state })
+    expect(box.getBehaviorByName(DrawBehaviorName)).toHaveProperty(
+      'state',
+      state
+    )
   })
 
   it('adds multiple behaviors to a mesh', () => {
@@ -518,6 +522,13 @@ describe('serializeBehaviors() 3D utility', () => {
     })
   })
 
+  it('serializes drawable behavior', () => {
+    const state = { duration: 415 }
+    expect(serializeBehaviors([new DrawBehavior(state)])).toEqual({
+      drawable: state
+    })
+  })
+
   it('serializes multiple behaviors', () => {
     const flippable = { isFlipped: true, duration: 123 }
     const anchorable = {
@@ -561,12 +572,6 @@ describe('serializeBehaviors() 3D utility', () => {
       rotable,
       movable,
       detailable
-    })
-  })
-
-  it('serializes drawable behavior', () => {
-    expect(serializeBehaviors([new DrawBehavior()])).toEqual({
-      drawable: true
     })
   })
 
