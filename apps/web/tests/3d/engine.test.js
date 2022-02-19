@@ -3,6 +3,8 @@ import { NullEngine } from '@babylonjs/core/Engines/nullEngine'
 import { Scene } from '@babylonjs/core/scene'
 import { createEngine } from '../../src/3d'
 import { createCard } from '../../src/3d/meshes'
+import { DrawBehaviorName } from '../../src/3d/behaviors'
+import { expectAnimationEnd } from '../test-utils'
 
 let engine
 const canvas = document.createElement('canvas')
@@ -111,20 +113,23 @@ describe('createEngine()', () => {
 
     describe('given some loaded meshes', () => {
       beforeEach(() => {
+        const duration = 200
         engine.load({
           meshes: [
-            { id: 'card1', shape: 'card', drawable: {} },
-            { id: 'card2', shape: 'card', drawable: {} },
-            { id: 'card3', shape: 'card', drawable: {} }
+            { id: 'card1', shape: 'card', drawable: { duration } },
+            { id: 'card2', shape: 'card', drawable: { duration } },
+            { id: 'card3', shape: 'card', drawable: { duration } }
           ],
           handMeshes: []
         })
+        engine.start()
       })
 
-      it('removes drawn mesh from main scene', () => {
+      it('removes drawn mesh from main scene', async () => {
         const [, scene] = engine.scenes
         const drawn = scene.getMeshById('card2')
         drawn.metadata.draw()
+        await expectAnimationEnd(drawn.getBehaviorByName(DrawBehaviorName))
         expect(scene.getMeshById(drawn.id)).toBeNull()
         const game = engine.serialize()
         expect(getIds(game.meshes)).toEqual(['card1', 'card3'])

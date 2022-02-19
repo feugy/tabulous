@@ -80,7 +80,6 @@ export class FlipBehavior extends AnimateBehavior {
       return
     }
     logger.debug({ mesh }, `start flipping ${mesh.id}`)
-    this.isAnimated = true
 
     controlManager.record({ mesh, fn: 'flip' })
 
@@ -108,6 +107,7 @@ export class FlipBehavior extends AnimateBehavior {
     ])
     // prevents interactions and collisions
     mesh.isPickable = false
+    this.isAnimated = true
     return new Promise(resolve =>
       mesh
         .getScene()

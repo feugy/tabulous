@@ -251,7 +251,7 @@ class MoveManager {
    * @param {MoveBehavior} behavior - movable behavior
    */
   unregisterMovable(behavior) {
-    if (this.meshIds.has(behavior?.mesh?.id)) {
+    if (this.meshIds.has(behavior?.mesh?.id) && !behavior.mesh.isPhantom) {
       this.meshIds.delete(behavior.mesh.id)
       this.behaviorByMeshId.delete(behavior.mesh.id)
     }

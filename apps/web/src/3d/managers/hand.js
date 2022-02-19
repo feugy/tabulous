@@ -1,7 +1,11 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { Observable } from '@babylonjs/core/Misc/observable'
 import { debounceTime, Subject } from 'rxjs'
-import { FlipBehaviorName, RotateBehaviorName } from '../behaviors'
+import {
+  DrawBehaviorName,
+  FlipBehaviorName,
+  RotateBehaviorName
+} from '../behaviors'
 import {
   animateMove,
   applyGravity,
@@ -125,20 +129,25 @@ class HandManager {
    * Draw a mesh either
    * - from main scene to the current player's hand,
    * - from the player's hand to the main scene.
-   * @param {import('@babylonjs/core').Mesh} mesh - drawn mesh
+   * @param {import('@babylonjs/core').Mesh} drawnMesh - drawn mesh
    */
-  draw(mesh) {
-    if (mesh.getScene() === this.handScene) {
-      const state = mesh.metadata.serialize()
-      mesh.dispose()
+  draw(drawnMesh) {
+    if (!drawnMesh?.getBehaviorByName(DrawBehaviorName)) {
+      return
+    }
+    let mesh
+    if (drawnMesh.getScene() === this.handScene) {
+      const state = drawnMesh.metadata.serialize()
+      drawnMesh.dispose()
       mesh = createMeshFromState(
         { ...state, ...getSceneCenter(this.scene), y: 100 },
         this.scene
       )
       applyGravity(mesh)
+      mesh.getBehaviorByName(DrawBehaviorName).animateToMain()
     } else {
-      const state = { ...mesh.metadata.serialize(), x: this.extent.minX }
-      mesh.dispose()
+      const state = { ...drawnMesh.metadata.serialize(), x: this.extent.minX }
+      drawnMesh.getBehaviorByName(DrawBehaviorName).animateToHand()
       mesh = createMeshFromState(state, this.handScene)
     }
     controlManager.record({
@@ -157,9 +166,10 @@ class HandManager {
   applyDraw(state) {
     const mainMesh = this.scene.getMeshById(state.id)
     if (mainMesh) {
-      mainMesh.dispose()
+      mainMesh.getBehaviorByName(DrawBehaviorName).animateToHand()
     } else {
-      createMeshFromState(state, this.scene)
+      const mesh = createMeshFromState(state, this.scene)
+      mesh.getBehaviorByName(DrawBehaviorName).animateToMain()
     }
   }
 }

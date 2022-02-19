@@ -210,3 +210,9 @@ export function expectInteractible(mesh, isInteractible = true) {
     }
   }
 }
+
+export async function expectAnimationEnd(behavior) {
+  await new Promise(resolve =>
+    behavior.onAnimationEndObservable.addOnce(resolve)
+  )
+}

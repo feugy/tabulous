@@ -98,6 +98,17 @@ describe('MoveManager', () => {
       manager.unregisterMovable(behavior)
       manager.unregisterMovable()
     })
+
+    it('does not unregisters a phantom mesh', () => {
+      const mesh = CreateBox('box3', {})
+      mesh.isPhantom = true
+      const behavior = new MoveBehavior()
+      mesh.addBehavior(behavior, true)
+      expect(manager.isManaging(mesh)).toBe(true)
+
+      mesh.dispose()
+      expect(manager.isManaging(mesh)).toBe(true)
+    })
   })
 
   describe('given single mesh', () => {

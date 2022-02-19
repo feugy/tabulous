@@ -10,18 +10,18 @@ import {
 import { FlipBehavior, FlipBehaviorName } from '../../../src/3d/behaviors'
 import { controlManager } from '../../../src/3d/managers'
 
+let recordSpy
+let animationEndReceived
+
+configures3dTestEngine()
+
+beforeEach(() => {
+  jest.clearAllMocks()
+  recordSpy = jest.spyOn(controlManager, 'record')
+  animationEndReceived = jest.fn()
+})
+
 describe('FlipBehavior', () => {
-  configures3dTestEngine()
-
-  let recordSpy
-  let animationEndReceived
-
-  beforeEach(() => {
-    jest.clearAllMocks()
-    recordSpy = jest.spyOn(controlManager, 'record')
-    animationEndReceived = jest.fn()
-  })
-
   it('has initial state', () => {
     const state = {
       isFlipped: faker.datatype.boolean(),

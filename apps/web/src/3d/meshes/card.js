@@ -73,7 +73,15 @@ export function createCard(
 
   // because planes are in 2-D, collisions with other meshes could be tricky.
   // wraps the plane with an invisible box. Box will take rays and pick operations.
-  mesh.visibility = 0
+  let visibility = 0
+  Object.defineProperty(mesh, 'visibility', {
+    get() {
+      return visibility
+    },
+    set(value) {
+      faces.visibility = value
+    }
+  })
   faces.rotate(Axis.X, Math.PI * 0.5)
   faces.isPickable = false
   faces.parent = mesh

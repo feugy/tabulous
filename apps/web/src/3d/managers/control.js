@@ -86,12 +86,12 @@ class ControlManager {
    * @param {import('@babel/core').Mesh} mesh - controled mesh (needs at least an id property).
    */
   registerControlable(mesh) {
-    if (!this.isManaging(mesh)) {
-      this.controlables.set(mesh.id, mesh)
-      mesh.onDisposeObservable.addOnce(() =>
-        controlManager.unregisterControlable(mesh)
-      )
-    }
+    this.controlables.set(mesh.id, mesh)
+    mesh.onDisposeObservable.addOnce(() => {
+      if (!mesh.isPhantom) {
+        this.unregisterControlable(mesh)
+      }
+    })
   }
 
   /**

@@ -2,11 +2,11 @@
 
 - player's hand
 
-  - draw many from stack
   - draw/play by dragging
-  - run animation when drawing (must work for both dragging and menu)
+  - draw many from stack
   - elevates hand mesh on hover
 
+- issue: move Manager depends on camera orientation for hand meses
 - issue: rotated mesh snapped onto rotated mesh do not appear rotated on scene loading
 - issue: snapped mesh disappears while animating when beeing rotated
 
@@ -26,6 +26,7 @@
 
 ## Refactor
 
+- use drawable's runAnimation in other animatable behaviors
 - jest matchers with mesh (toHaveBeenCalledWith, toHaveBeenNthCalledWith)
 - rework remote moves: instead of sending individual positions, send drag start, move and stop (with selection)
 - rework target detection. Instead of using real mesh and rays use shapes overlap: each zone is a rectangle/circle on XZ plane, and the moved mesh another rectangle/circle. Check the center of the moved mesh
@@ -41,6 +42,7 @@
 
 ## UI
 
+- display peer's name when running draw animations
 - sort and filter catalog on game names
 - feedback on stacking
 - stack actions:
@@ -94,14 +96,11 @@ no peer found for signal from 4717
 
 - min/max number of players allowed
 - players' positions
-- token/card enabled behaviors (overall+per item setting?)
-- personnal hand support (impact on the draw and deal commands)
 
 ## Game UI:
 
 - visual hint when receiving messages on collapsed section
 - show contextual help (for example, on hover) to indicates which commands are available
-- bottom, expansible area showing player's hand
 
 # Interaction model
 

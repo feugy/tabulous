@@ -103,18 +103,28 @@ describe('ControlManager', () => {
     })
 
     it('automatically unregisters a mesh upon disposal', () => {
-      const mesh = CreateBox('box3', {})
+      const mesh = CreateBox('box4', {})
       manager.registerControlable(mesh)
       expect(manager.isManaging(mesh)).toBe(true)
 
       mesh.dispose()
       expect(manager.isManaging(mesh)).toBe(false)
     })
+
+    it('does not unregisters a phantom mesh', () => {
+      const mesh = CreateBox('box5', {})
+      manager.registerControlable(mesh)
+      mesh.isPhantom = true
+      expect(manager.isManaging(mesh)).toBe(true)
+
+      mesh.dispose()
+      expect(manager.isManaging(mesh)).toBe(true)
+    })
   })
 
   describe('unregisterControlable()', () => {
     it('ignores uncontrolled mesh', () => {
-      const mesh = CreateBox('box3', {})
+      const mesh = CreateBox('box6', {})
       expect(manager.isManaging(mesh)).toBe(false)
 
       manager.unregisterControlable(mesh)

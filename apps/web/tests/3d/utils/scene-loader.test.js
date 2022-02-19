@@ -103,6 +103,25 @@ describe('serializeMeshes() 3D utility', () => {
         tile2.metadata.serialize()
       ])
     })
+
+    it('ignores phantom meshes', () => {
+      const tile1 = createRoundedTile({ id: 'tile1' })
+      const tile2 = createRoundedTile({
+        id: 'tile2',
+        texture: faker.internet.url(),
+        images: [faker.random.word()],
+        x: faker.datatype.number(),
+        y: faker.datatype.number(),
+        z: faker.datatype.number(),
+        borderRadius: faker.datatype.number(),
+        faceUV: [Array.from({ length: 4 }, () => faker.datatype.number())],
+        width: faker.datatype.number(),
+        height: faker.datatype.number(),
+        depth: faker.datatype.number()
+      })
+      tile1.isPhantom = true
+      expect(serializeMeshes(scene)).toEqual([tile2.metadata.serialize()])
+    })
   })
 })
 

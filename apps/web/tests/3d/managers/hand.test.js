@@ -1,8 +1,14 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import * as faker from 'faker'
-import { configures3dTestEngine, expectPosition } from '../../test-utils'
+import {
+  configures3dTestEngine,
+  disposeAllMeshes,
+  expectAnimationEnd,
+  expectPosition
+} from '../../test-utils'
 import { handManager as manager, inputManager } from '../../../src/3d/managers'
 import { createCard } from '../../../src/3d/meshes'
+import { DrawBehaviorName } from '../../../src/3d/behaviors'
 
 describe('HandManager', () => {
   let engine
@@ -29,9 +35,7 @@ describe('HandManager', () => {
     { renderWidth: 480, renderHeight: 350 }
   )
 
-  beforeEach(() => {
-    jest.resetAllMocks()
-  })
+  beforeEach(jest.resetAllMocks)
 
   it('has initial state', () => {
     expect(manager.scene).toBeNull()
@@ -107,21 +111,49 @@ describe('HandManager', () => {
       ].map(state => createMesh(state, scene))
     })
 
-    afterAll(() => manager.onHandChangeObservable.remove(changeObserver))
+    afterEach(async () => {
+      if (handScene.meshes.length) {
+        disposeAllMeshes(handScene)
+        await waitForLayout()
+      }
+    })
+
+    afterAll(() => {
+      manager.onHandChangeObservable.remove(changeObserver)
+    })
+
+    it('can not draw mesh without drawable behavior', async () => {
+      const card = createCard(
+        {
+          id: 'undrawable box',
+          width: cardWidth,
+          depth: cardDepth,
+          rotable: {},
+          flippable: {}
+        },
+        scene
+      )
+      manager.draw(card)
+      await expect(waitForLayout()).rejects.toThrow()
+      expect(scene.getMeshById(card.id)?.id).toBeDefined()
+    })
 
     it('moves drawn mesh to hand', async () => {
       const [, card] = cards
       card.metadata.draw()
       await waitForLayout()
+      await expectAnimationEnd(card.getBehaviorByName(DrawBehaviorName))
       expect(scene.getMeshById(card.id)?.id).toBeUndefined()
       const newMesh = handScene.getMeshById(card.id)
       expect(newMesh?.id).toBeDefined()
       expectPosition(newMesh, [0, 0, computeZ()])
+      expect(changeReceived).toHaveBeenCalledTimes(1)
     })
 
     it(`removes mesh drawn into another player's hand`, async () => {
       const [, card] = cards
       manager.applyDraw(card)
+      await expectAnimationEnd(card.getBehaviorByName(DrawBehaviorName))
       expect(scene.getMeshById(card.id)?.id).toBeUndefined()
       expect(handScene.meshes.length).toEqual(0)
       expect(changeReceived).not.toHaveBeenCalled()
@@ -301,6 +333,7 @@ describe('HandManager', () => {
         expect(handScene.getMeshById(card.id)?.id).toBeUndefined()
         const newMesh = scene.getMeshById(card.id)
         expect(newMesh?.id).toBeDefined()
+        await expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
         expectPosition(newMesh, [0, 0, 0])
       })
 
@@ -311,6 +344,7 @@ describe('HandManager', () => {
           shape: 'card',
           id: meshId,
           rotable: {},
+          drawable: {},
           x: 10,
           y: 3,
           z: -20
@@ -319,6 +353,7 @@ describe('HandManager', () => {
         expect(getPositions(handCards)).toEqual(positions)
         const newMesh = scene.getMeshById(meshId)
         expect(newMesh?.id).toBeDefined()
+        await expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
         expectPosition(newMesh, [10, 3, -20])
         expect(changeReceived).not.toHaveBeenCalled()
       })
@@ -331,6 +366,7 @@ describe('HandManager', () => {
         expect(handScene.getMeshById(card.id)?.id).toBeUndefined()
         const newMesh = scene.getMeshById(card.id)
         expect(newMesh?.id).toBeDefined()
+        await expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
         expectPosition(newMesh, [-17, 0, -6])
       })
 
@@ -342,6 +378,7 @@ describe('HandManager', () => {
         expect(handScene.getMeshById(card.id)?.id).toBeUndefined()
         const newMesh = scene.getMeshById(card.id)
         expect(newMesh?.id).toBeDefined()
+        await expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
         expectPosition(newMesh, [0, 0, 0])
       })
     })
@@ -356,7 +393,7 @@ describe('HandManager', () => {
       {
         width: cardWidth,
         depth: cardDepth,
-        drawable: true,
+        drawable: {},
         rotable: {},
         flippable: {},
         ...state

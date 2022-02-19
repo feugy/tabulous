@@ -34,7 +34,7 @@ export function isSerializable(mesh) {
 export function serializeMeshes(scene) {
   const meshes = []
   for (const mesh of scene?.meshes ?? []) {
-    if (isSerializable(mesh)) {
+    if (isSerializable(mesh) && !mesh.isPhantom) {
       meshes.push(mesh.metadata.serialize())
     }
   }
