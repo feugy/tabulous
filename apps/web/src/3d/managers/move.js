@@ -61,8 +61,11 @@ class MoveManager {
       return
     }
 
+    let sceneUsed = mesh.getScene()
     const moved = selectionManager.meshes.has(mesh)
-      ? [...selectionManager.meshes].filter(mesh => this.meshIds.has(mesh?.id))
+      ? [...selectionManager.meshes].filter(
+          mesh => this.meshIds.has(mesh?.id) && mesh.getScene() === sceneUsed
+        )
       : [mesh]
     const allMoved = [...moved]
     for (const mesh of allMoved) {
@@ -70,7 +73,6 @@ class MoveManager {
         moved.splice(moved.indexOf(mesh), 1)
       }
     }
-    let sceneUsed = moved[0].getScene()
     let lastPosition = screenToGround(sceneUsed, event)
     let zones = new Set()
     this.inProgress = true
