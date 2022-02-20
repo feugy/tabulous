@@ -6,7 +6,6 @@
   - draw many from stack
   - elevates hand mesh on hover
 
-- issue: move Manager depends on camera orientation for hand meses
 - issue: rotated mesh snapped onto rotated mesh do not appear rotated on scene loading
 - issue: snapped mesh disappears while animating when beeing rotated
 

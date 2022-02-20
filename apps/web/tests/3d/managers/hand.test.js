@@ -6,7 +6,11 @@ import {
   expectAnimationEnd,
   expectPosition
 } from '../../test-utils'
-import { handManager as manager, inputManager } from '../../../src/3d/managers'
+import {
+  handManager as manager,
+  inputManager,
+  controlManager
+} from '../../../src/3d/managers'
 import { createCard } from '../../../src/3d/meshes'
 import { DrawBehaviorName } from '../../../src/3d/behaviors'
 
@@ -15,6 +19,7 @@ describe('HandManager', () => {
   let scene
   let camera
   let handScene
+  let actionObserver
 
   const gap = 0.5
   const horizontalPadding = 2
@@ -27,6 +32,7 @@ describe('HandManager', () => {
     height: 47.21061769667048
   }
   const changeReceived = jest.fn()
+  const actionRecorded = jest.fn()
 
   configures3dTestEngine(
     created => {
@@ -35,7 +41,13 @@ describe('HandManager', () => {
     { renderWidth: 480, renderHeight: 350 }
   )
 
+  beforeAll(() => {
+    actionObserver = controlManager.onActionObservable.add(actionRecorded)
+  })
+
   beforeEach(jest.resetAllMocks)
+
+  afterAll(() => controlManager.onActionObservable.remove(actionObserver))
 
   it('has initial state', () => {
     expect(manager.scene).toBeNull()
@@ -90,6 +102,7 @@ describe('HandManager', () => {
       expectPosition(cards[2], [-gap - cardWidth, 0, z])
       expectPosition(cards[1], [0, 0.01, z])
       expectPosition(cards[0], [gap + cardWidth, 0.015, z])
+      expect(actionRecorded).not.toHaveBeenCalled()
     })
   })
 
@@ -136,6 +149,7 @@ describe('HandManager', () => {
       manager.draw(card)
       await expect(waitForLayout()).rejects.toThrow()
       expect(scene.getMeshById(card.id)?.id).toBeDefined()
+      expect(actionRecorded).not.toHaveBeenCalled()
     })
 
     it('moves drawn mesh to hand', async () => {
@@ -148,6 +162,16 @@ describe('HandManager', () => {
       expect(newMesh?.id).toBeDefined()
       expectPosition(newMesh, [0, 0, computeZ()])
       expect(changeReceived).toHaveBeenCalledTimes(1)
+      expect(actionRecorded).toHaveBeenCalledWith(
+        {
+          meshId: newMesh.id,
+          fn: 'draw',
+          args: [expect.any(Object)],
+          fromHand: false
+        },
+        expect.anything()
+      )
+      expect(actionRecorded).toHaveBeenCalledTimes(1)
     })
 
     it(`removes mesh drawn into another player's hand`, async () => {
@@ -157,6 +181,7 @@ describe('HandManager', () => {
       expect(scene.getMeshById(card.id)?.id).toBeUndefined()
       expect(handScene.meshes.length).toEqual(0)
       expect(changeReceived).not.toHaveBeenCalled()
+      expect(actionRecorded).not.toHaveBeenCalled()
     })
 
     it('overlaps meshes to fit available width', async () => {
@@ -271,8 +296,9 @@ describe('HandManager', () => {
       it('lays out hand when re-ordering hand meshes', async () => {
         const mesh = handCards[1]
         const positions = getPositions(handCards)
+        const z = positions[1][3]
 
-        let movedPosition = new Vector3(-1, 1, positions[1].z)
+        let movedPosition = new Vector3(-1, 1, z)
         mesh.setAbsolutePosition(movedPosition)
         mesh.computeWorldMatrix()
         inputManager.onDragObservable.notifyObservers({
@@ -286,7 +312,7 @@ describe('HandManager', () => {
           positions[2]
         ])
 
-        movedPosition = new Vector3(1, 1, positions[1].z)
+        movedPosition = new Vector3(1, 1, z)
         mesh.setAbsolutePosition(movedPosition)
         mesh.computeWorldMatrix()
         inputManager.onDragObservable.notifyObservers({ type: 'drag', mesh })
@@ -297,7 +323,7 @@ describe('HandManager', () => {
           positions[2]
         ])
 
-        movedPosition = new Vector3(4, 1, positions[1].z)
+        movedPosition = new Vector3(4, 1, z)
         mesh.setAbsolutePosition(movedPosition)
         mesh.computeWorldMatrix()
         inputManager.onDragObservable.notifyObservers({
@@ -312,11 +338,46 @@ describe('HandManager', () => {
         ])
       })
 
+      it('moves mesh to main scene by dragging', async () => {
+        const mesh = handCards[1]
+
+        let movedPosition = new Vector3(
+          mesh.absolutePosition.x,
+          mesh.absolutePosition.y + 2,
+          mesh.absolutePosition.z + cardDepth
+        )
+        mesh.setAbsolutePosition(movedPosition)
+        mesh.computeWorldMatrix()
+        inputManager.onDragObservable.notifyObservers({
+          type: 'dragStart',
+          mesh,
+          event: { x: 289.7, y: 175 }
+        })
+        await waitForLayout()
+        const unitWidth = cardWidth + gap
+        expectPosition(handCards[0], [unitWidth * -0.5, 0, computeZ()])
+        expectPosition(handCards[2], [unitWidth * 0.5, 0.01, computeZ()])
+        expect(handScene.getMeshById(mesh.id)?.id).toBeUndefined()
+        const newMesh = scene.getMeshById(mesh.id)
+        expect(newMesh?.id).toBeDefined()
+        expectPosition(newMesh, [6, 2, 0])
+        expect(actionRecorded).toHaveBeenCalledWith(
+          {
+            meshId: newMesh.id,
+            fn: 'draw',
+            args: [expect.any(Object)],
+            fromHand: false
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenCalledTimes(1)
+      })
+
       it('ignores drag operations from main scene', async () => {
         const mesh = cards[0]
         const positions = getPositions(handCards)
 
-        mesh.setAbsolutePosition(new Vector3(-1, 1, positions[1].z))
+        mesh.setAbsolutePosition(new Vector3(-1, 1, positions[1][3]))
         mesh.computeWorldMatrix()
         inputManager.onDragObservable.notifyObservers({
           type: 'dragStart',
@@ -324,6 +385,7 @@ describe('HandManager', () => {
         })
         await expect(waitForLayout()).rejects.toThrow()
         expect(getPositions(handCards)).toEqual(positions)
+        expect(actionRecorded).not.toHaveBeenCalled()
       })
 
       it('moves mesh to main scene', async () => {
@@ -335,6 +397,16 @@ describe('HandManager', () => {
         expect(newMesh?.id).toBeDefined()
         await expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
         expectPosition(newMesh, [0, 0, 0])
+        expect(actionRecorded).toHaveBeenCalledWith(
+          {
+            meshId: newMesh.id,
+            fn: 'draw',
+            args: [expect.any(Object)],
+            fromHand: false
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenCalledTimes(1)
       })
 
       it(`adds mesh from other player's hand to main scene`, async () => {
@@ -356,6 +428,7 @@ describe('HandManager', () => {
         await expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
         expectPosition(newMesh, [10, 3, -20])
         expect(changeReceived).not.toHaveBeenCalled()
+        expect(actionRecorded).not.toHaveBeenCalled()
       })
 
       it('positions mesh according to main camera angle', async () => {

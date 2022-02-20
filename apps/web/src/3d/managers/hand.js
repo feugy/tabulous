@@ -41,7 +41,7 @@ class HandManager {
     this.onHandChangeObservable = new Observable()
     // private
     this.dragStartObserver = null
-    this.extent = { minX: 0, height: 0, width: 0 }
+    this.extent = { minX: 0, height: 0, width: 0, maxZ: -Infinity }
     this.contentWidth = 0
     this.dimensionsByMeshId = null
     this.moved = null
@@ -109,6 +109,9 @@ class HandManager {
         observable: handScene.onMeshRemovedObservable,
         handle: removed => {
           if (isSerializable(removed)) {
+            if (removed === this.moved) {
+              this.moved = null
+            }
             this.changes$.next()
           }
         }
@@ -195,14 +198,32 @@ function handleAction(manager, { fn, meshId }) {
   }
 }
 
-function handDrag(manager, { type, mesh }) {
-  if (mesh?.getScene() === manager.handScene) {
+function handDrag(manager, { type, mesh, event }) {
+  const {
+    extent: { maxZ },
+    handScene
+  } = manager
+  if (mesh?.getScene() === handScene) {
+    let moved = manager.moved
     if (type === 'dragStart') {
-      manager.moved = mesh
+      moved = mesh
     } else if (type === 'dragStop') {
-      manager.moved = null
+      moved = null
     }
-    layoutMeshs(manager)
+    manager.moved = moved
+    if (moved?.absolutePosition.z > maxZ) {
+      const state = moved.metadata.serialize()
+      moved.dispose()
+      const { x, z } = screenToGround(manager.scene, event)
+      const mesh = createMeshFromState({ ...state, x, z }, manager.scene)
+      controlManager.record({
+        mesh,
+        fn: 'draw',
+        args: [mesh.metadata.serialize()]
+      })
+    } else {
+      layoutMeshs(manager)
+    }
   }
 }
 
@@ -249,6 +270,7 @@ async function layoutMeshs({
 }) {
   const meshes = [...dimensionsByMeshId.keys()]
     .map(id => handScene.getMeshById(id))
+    .filter(Boolean)
     .sort((a, b) => a.absolutePosition.x - b.absolutePosition.x)
   const availableWidth = extent.width - horizontalPadding * 2
   let x =
@@ -259,21 +281,16 @@ async function layoutMeshs({
       ? 0
       : (contentWidth - availableWidth) / (meshes.length - 1))
   let y = 0
+  extent.maxZ = -Infinity
   const promises = []
   for (const mesh of meshes) {
     const { width, height, depth } = dimensionsByMeshId.get(mesh.id)
     if (mesh !== moved) {
+      const z = (extent.height - depth) * -0.5 + verticalPadding
       promises.push(
-        animateMove(
-          mesh,
-          new Vector3(
-            x + width * 0.5,
-            y,
-            (extent.height - depth) * -0.5 + verticalPadding
-          ),
-          duration
-        )
+        animateMove(mesh, new Vector3(x + width * 0.5, y, z), duration)
       )
+      extent.maxZ = Math.max(extent.maxZ, z + depth * 0.5)
     }
     x += width + effectiveGap
     y += height
