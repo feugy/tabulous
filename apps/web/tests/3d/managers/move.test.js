@@ -14,6 +14,8 @@ import { getDimensions } from '../../../src/3d/utils'
 
 describe('MoveManager', () => {
   let scene
+  let handScene
+  let camera
   const centerX = 1024
   const centerY = 512
   let recordSpy
@@ -21,6 +23,8 @@ describe('MoveManager', () => {
 
   configures3dTestEngine(created => {
     scene = created.scene
+    handScene = created.handScene
+    camera = created.camera
   })
 
   beforeEach(() => {
@@ -56,6 +60,7 @@ describe('MoveManager', () => {
       manager.init({ scene, elevation })
       expect(manager.inProgress).toBe(false)
       expect(manager.elevation).toBe(elevation)
+      expect(manager.scene).toEqual(scene)
     })
   })
 
@@ -267,6 +272,40 @@ describe('MoveManager', () => {
         expect(drops).toHaveLength(0)
         expect(manager.getActiveZones()).toHaveLength(0)
       })
+    })
+  })
+
+  describe('given a mesh in hand', () => {
+    let moved
+    let cameraPosition
+
+    beforeAll(() => {
+      manager.init({ scene })
+      cameraPosition = camera.position.clone()
+    })
+
+    beforeEach(() => {
+      moved = createsMovable(undefined, undefined, handScene)
+    })
+
+    afterAll(() => camera.setPosition(cameraPosition))
+
+    it('moves according to hand camera', async () => {
+      scene.activeCamera.setPosition(new Vector3(10, 0, 0))
+      manager.start(moved, { x: centerX, y: centerY })
+      expect(manager.inProgress).toBe(true)
+      expectPosition(moved, [1, 1 + manager.elevation, 1])
+
+      const deltaX = 2.029703140258789
+      const deltaZ = -2.196934700012207
+      manager.continue({ x: centerX + 50, y: centerY + 50 })
+
+      expectPosition(moved, [1 + deltaX, 1 + manager.elevation, 1 + deltaZ])
+
+      await manager.stop()
+      expectPosition(moved, [3, getDimensions(moved).height / 2, -1.25])
+      expect(manager.inProgress).toBe(false)
+      expect(drops).toHaveLength(0)
     })
   })
 
@@ -498,8 +537,12 @@ describe('MoveManager', () => {
     })
   })
 
-  function createsMovable(id = 'box', position = new Vector3(1, 1, 1)) {
-    const movable = CreateBox(id, {})
+  function createsMovable(
+    id = 'box',
+    position = new Vector3(1, 1, 1),
+    sceneUsed = scene
+  ) {
+    const movable = CreateBox(id, {}, sceneUsed)
     movable.setAbsolutePosition(position)
     movable.addBehavior(new MoveBehavior(), true)
     movable.computeWorldMatrix()

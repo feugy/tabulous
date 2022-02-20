@@ -70,7 +70,8 @@ class MoveManager {
         moved.splice(moved.indexOf(mesh), 1)
       }
     }
-    let lastPosition = screenToGround(this.scene, event)
+    let sceneUsed = moved[0].getScene()
+    let lastPosition = screenToGround(sceneUsed, event)
     let zones = new Set()
     this.inProgress = true
 
@@ -94,8 +95,8 @@ class MoveManager {
       }
       zones.clear()
 
-      if (isAboveTable(this.scene, event)) {
-        const currentPosition = screenToGround(this.scene, event)
+      if (sceneUsed !== this.scene || isAboveTable(this.scene, event)) {
+        const currentPosition = screenToGround(sceneUsed, event)
         const move = currentPosition.subtract(lastPosition)
         logger.debug({ moved, event, move }, `continue move operation`)
         lastPosition = currentPosition
@@ -118,7 +119,7 @@ class MoveManager {
 
         let highest = 0
         // check possible collision, except within current selection or currently moved
-        for (const other of this.scene.meshes.filter(
+        for (const other of sceneUsed.meshes.filter(
           mesh =>
             mesh.isPickable &&
             !moved.includes(mesh) &&
