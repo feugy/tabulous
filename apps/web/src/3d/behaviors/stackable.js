@@ -361,10 +361,15 @@ export class StackBehavior extends TargetBehavior {
     }
     // builds a drop zone from the mesh's dimensions
     const { x, y, z } = this.mesh.getBoundingInfo().boundingBox.extendSizeWorld
+    const scene = this.mesh.getScene()
     const dropZone =
       this.mesh.name === 'roundToken'
-        ? CreateCylinder('drop-zone', { diameter: x * 2, height: y * 2 })
-        : CreateBox('drop-zone', { width: x * 2, height: y * 2, depth: z * 2 })
+        ? CreateCylinder('drop-zone', { diameter: x * 2, height: y * 2 }, scene)
+        : CreateBox(
+            'drop-zone',
+            { width: x * 2, height: y * 2, depth: z * 2 },
+            scene
+          )
     dropZone.parent = this.mesh
     this.addZone(
       dropZone,

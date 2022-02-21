@@ -232,7 +232,8 @@ export class AnchorBehavior extends TargetBehavior {
       i,
       { x, y, z, width, depth, height, kinds, priority, snappedId }
     ] of this.state.anchors.entries()) {
-      const dropZone = CreateBox(`anchor-${i}`, { width, depth, height })
+      const scene = this.mesh.getScene()
+      const dropZone = CreateBox(`anchor-${i}`, { width, depth, height }, scene)
       dropZone.parent = this.mesh
       dropZone.position = new Vector3(x ?? 0, y ?? 0, z ?? 0)
       dropZone.computeWorldMatrix(true)

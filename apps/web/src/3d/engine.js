@@ -13,7 +13,8 @@ import {
   handManager,
   inputManager,
   moveManager,
-  selectionManager
+  selectionManager,
+  targetManager
 } from './managers'
 import { createLights, createTable, loadMeshes, serializeMeshes } from './utils'
 
@@ -53,10 +54,11 @@ export function createEngine({
 
   cameraManager.init({ scene, handScene })
   inputManager.init({ scene, handScene, longTapDelay, doubleTapDelay })
-  moveManager.init({ scene, handScene })
+  moveManager.init({ scene })
   controlManager.init({ scene, handScene })
-  selectionManager.init({ scene, handScene })
+  selectionManager.init({ scene })
   handManager.init({ scene, handScene })
+  targetManager.init({ scene })
 
   createTable({}, scene)
   // creates light after table, so table doesn't project shadow
