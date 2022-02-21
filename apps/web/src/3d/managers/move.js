@@ -76,6 +76,20 @@ class MoveManager {
     let lastPosition = screenToGround(sceneUsed, event)
     let zones = new Set()
     this.inProgress = true
+    const actionObserver = controlManager.onActionObservable.add(
+      ({ meshId, fn }) => {
+        if (fn === 'draw') {
+          const mesh = moved.find(({ id }) => id === meshId)
+          if (mesh && mesh.getScene() !== this.scene) {
+            const newMesh = this.scene.getMeshById(meshId)
+            moved.splice(moved.indexOf(mesh), 1, newMesh)
+            sceneUsed = this.scene
+            lastPosition = newMesh.absolutePosition.clone()
+            lastPosition.y -= this.elevation
+          }
+        }
+      }
+    )
 
     logger.info(
       { moved, position: lastPosition.asArray() },
@@ -164,6 +178,9 @@ class MoveManager {
 
     // dynamically assign stop function to keep moved, zones and lastPosition in scope
     this.stop = async () => {
+      if (actionObserver) {
+        controlManager.onActionObservable.remove(actionObserver)
+      }
       if (moved.length === 0) return
 
       // trigger drop operation on all identified drop zones

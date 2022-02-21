@@ -141,7 +141,7 @@ class HandManager {
     let mesh
     if (drawnMesh.getScene() === this.handScene) {
       const state = drawnMesh.metadata.serialize()
-      drawnMesh.dispose()
+      drawnMesh.dispose(false, true)
       mesh = createMeshFromState(
         { ...state, ...getSceneCenter(this.scene), y: 100 },
         this.scene
@@ -213,7 +213,7 @@ function handDrag(manager, { type, mesh, event }) {
     manager.moved = moved
     if (moved?.absolutePosition.z > maxZ) {
       const state = moved.metadata.serialize()
-      moved.dispose()
+      moved.dispose(false, true)
       const { x, z } = screenToGround(manager.scene, event)
       const mesh = createMeshFromState({ ...state, x, z }, manager.scene)
       controlManager.record({

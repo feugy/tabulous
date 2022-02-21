@@ -39,8 +39,8 @@ function makeCornerMesh(
   const cornerCSG = CSG.FromMesh(cornerMesh).subtract(
     CSG.FromMesh(cyclinderMesh)
   )
-  cornerMesh.dispose()
-  cyclinderMesh.dispose()
+  cornerMesh.dispose(false, true)
+  cyclinderMesh.dispose(false, true)
   return cornerCSG
 }
 
@@ -111,7 +111,7 @@ export function createRoundedTile(
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, false, false))
   const mesh = tileCSG.toMesh('roundedTile', undefined, scene)
   mesh.id = id
-  tileMesh.dispose()
+  tileMesh.dispose(false, true)
 
   mesh.material = new StandardMaterial(id, scene)
   mesh.material.diffuseTexture = new Texture(adaptTexture(texture), scene)

@@ -206,7 +206,7 @@ function runAnimation(behavior, duration, disposeAtTheEnd, ...animationSpecs) {
         behavior.isAnimated = false
         onAnimationEndObservable.notifyObservers()
         if (disposeAtTheEnd) {
-          mesh.dispose()
+          mesh.dispose(false, true)
         }
         resolve()
       })
