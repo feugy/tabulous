@@ -30,6 +30,7 @@ describe('MoveManager', () => {
 
   beforeAll(() => {
     controlManager.init({ scene, handScene })
+    targetManager.init({ scene })
     actionObserver = controlManager.onActionObservable.add(actionRecorded)
   })
 

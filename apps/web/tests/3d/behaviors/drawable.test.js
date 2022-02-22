@@ -1,17 +1,19 @@
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
-import { configures3dTestEngine, expectPosition } from '../../test-utils'
+import {
+  configures3dTestEngine,
+  expectAnimationEnd,
+  expectPosition,
+  sleep
+} from '../../test-utils'
 import { DrawBehavior, DrawBehaviorName } from '../../../src/3d/behaviors'
 import { controlManager } from '../../../src/3d/managers'
 import { createCard } from '../../../src/3d/meshes'
 
-let scene
 let recordSpy
 let animationEndReceived
 
-configures3dTestEngine(created => {
-  scene = created.scene
-})
+configures3dTestEngine()
 
 beforeEach(() => {
   jest.clearAllMocks()
@@ -83,7 +85,7 @@ describe('DrawBehavior', () => {
       )
     })
 
-    it(`draws into player's hand`, () => {
+    it(`draws into player's hand`, async () => {
       const state = mesh.metadata.serialize()
       mesh.metadata.draw()
       expect(recordSpy).toHaveBeenCalledTimes(1)
@@ -92,26 +94,31 @@ describe('DrawBehavior', () => {
         fn: 'draw',
         args: [state]
       })
+      await expectAnimationEnd(behavior)
+      expect(animationEndReceived).toHaveBeenCalledTimes(1)
     })
 
-    it('dispose mesh after animating it from main to hand', async () => {
+    it('elevates and fades out mesh when animating from main to hand', async () => {
+      const { x, y, z } = mesh.absolutePosition
+      expect(mesh.getChildren()[0].visibility).toEqual(1)
       await behavior.animateToHand()
-      expect(scene.getMeshById(mesh.id)?.id).toBeUndefined()
+      expectPosition(mesh, [x, y + 3, z])
+      expect(mesh.getChildren()[0].visibility).toEqual(0)
       expect(animationEndReceived).toHaveBeenCalledTimes(1)
     })
 
     it('can not animate while animating', async () => {
-      await behavior.animateToHand()
-      await behavior.animateToMain()
-      await behavior.animateToHand()
-      await behavior.animateToMain()
+      behavior.animateToHand()
+      behavior.animateToMain()
+      behavior.animateToHand()
+      behavior.animateToMain()
+      await sleep(behavior.state.duration * 2)
       expect(animationEndReceived).toHaveBeenCalledTimes(1)
     })
 
-    it('does not dispose mesh after animating it from hand to main', async () => {
+    it('descend and fades in mesh when animating from hand to main', async () => {
       const position = mesh.absolutePosition.asArray()
       await behavior.animateToMain()
-      expect(scene.getMeshById(mesh.id)?.id).toBeDefined()
       expectPosition(mesh, position)
       expect(animationEndReceived).toHaveBeenCalledTimes(1)
     })

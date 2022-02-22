@@ -11,6 +11,7 @@ import {
   applyGravity,
   createMeshFromState,
   getDimensions,
+  getMeshScreenPosition,
   isSerializable,
   screenToGround
 } from '../utils'
@@ -41,7 +42,7 @@ class HandManager {
     this.onHandChangeObservable = new Observable()
     // private
     this.dragStartObserver = null
-    this.extent = { minX: 0, height: 0, width: 0, maxZ: -Infinity }
+    this.extent = { minX: 0, height: 0, width: 0, maxZ: -Infinity, size: {} }
     this.contentWidth = 0
     this.dimensionsByMeshId = null
     this.moved = null
@@ -140,24 +141,17 @@ class HandManager {
     }
     let mesh
     if (drawnMesh.getScene() === this.handScene) {
-      const state = drawnMesh.metadata.serialize()
-      drawnMesh.dispose(false, true)
-      mesh = createMeshFromState(
-        { ...state, ...getSceneCenter(this.scene), y: 100 },
-        this.scene
-      )
+      mesh = createMainMesh(this, drawnMesh, {
+        ...getSceneCenter(this.scene),
+        y: 100
+      })
       applyGravity(mesh)
       mesh.getBehaviorByName(DrawBehaviorName).animateToMain()
     } else {
-      const state = { ...drawnMesh.metadata.serialize(), x: this.extent.minX }
-      drawnMesh.getBehaviorByName(DrawBehaviorName).animateToHand()
-      mesh = createMeshFromState(state, this.handScene)
+      animateToHand(drawnMesh)
+      mesh = createHandMesh(this, drawnMesh, { x: this.extent.minX })
     }
-    controlManager.record({
-      mesh,
-      fn: 'draw',
-      args: [mesh.metadata.serialize()]
-    })
+    recordDraw(mesh)
   }
 
   /**
@@ -169,7 +163,7 @@ class HandManager {
   applyDraw(state) {
     const mainMesh = this.scene.getMeshById(state.id)
     if (mainMesh) {
-      mainMesh.getBehaviorByName(DrawBehaviorName).animateToHand()
+      animateToHand(mainMesh)
     } else {
       const mesh = createMeshFromState(state, this.scene)
       mesh.getBehaviorByName(DrawBehaviorName).animateToMain()
@@ -203,6 +197,7 @@ function handDrag(manager, { type, mesh, event }) {
     extent: { maxZ },
     handScene
   } = manager
+
   if (mesh?.getScene() === handScene) {
     let moved = manager.moved
     if (type === 'dragStart') {
@@ -212,19 +207,47 @@ function handDrag(manager, { type, mesh, event }) {
     }
     manager.moved = moved
     if (moved?.absolutePosition.z > maxZ) {
-      const state = moved.metadata.serialize()
-      moved.dispose(false, true)
       const { x, z } = screenToGround(manager.scene, event)
-      const mesh = createMeshFromState({ ...state, x, z }, manager.scene)
-      controlManager.record({
-        mesh,
-        fn: 'draw',
-        args: [mesh.metadata.serialize()]
-      })
+      recordDraw(createMainMesh(manager, moved, { x, z }))
     } else {
       layoutMeshs(manager)
     }
+  } else if (isMainMeshNextToHand(manager, mesh)) {
+    if (type !== 'dragStop') {
+      inputManager.stopDrag(event)
+    } else {
+      setTimeout(() => {
+        mesh.isPhantom = true
+        recordDraw(createHandMesh(manager, mesh))
+        mesh.dispose(false, true)
+      }, 0) // TODO why delay?
+    }
   }
+}
+
+function isMainMeshNextToHand({ extent: { size } }, mesh) {
+  return getMeshScreenPosition(mesh)?.y > size.height * 0.8
+}
+
+function createMainMesh({ scene }, handMesh, extraState) {
+  const state = handMesh.metadata.serialize()
+  handMesh.dispose(false, true)
+  return createMeshFromState({ ...state, ...extraState }, scene)
+}
+
+function createHandMesh({ handScene }, mainMesh, extraState = {}) {
+  return createMeshFromState(
+    { ...mainMesh.metadata.serialize(), ...extraState },
+    handScene
+  )
+}
+
+function recordDraw(mesh) {
+  controlManager.record({
+    mesh,
+    fn: 'draw',
+    args: [mesh.metadata.serialize()]
+  })
 }
 
 function computeExtent(manager, engine) {
@@ -236,6 +259,7 @@ function computeExtent(manager, engine) {
     y: size.height
   })
   manager.extent = {
+    size,
     minX: topLeft.x,
     width: bottomRight.x - topLeft.x,
     height: topLeft.z - bottomRight.z
@@ -311,4 +335,13 @@ function getViewPortSize(engine) {
     width: engine.getRenderWidth(),
     height: engine.getRenderHeight()
   }
+}
+
+function animateToHand(mesh) {
+  mesh.isPhantom = true
+  const drawable = mesh.getBehaviorByName(DrawBehaviorName)
+  drawable.onAnimationEndObservable.addOnce(() => {
+    mesh.dispose(false, true)
+  })
+  drawable.animateToHand()
 }

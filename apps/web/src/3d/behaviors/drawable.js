@@ -64,7 +64,7 @@ export class DrawBehavior extends AnimateBehavior {
 
   /**
    * Draws the related mesh with an animation into and from the player's hand:
-   * - records the action into the hand manager
+   * - delegates draw to hand manager, who will call animateToHand() or animateToMain() accordingly
    */
   draw() {
     if (!this.mesh) return
@@ -73,7 +73,6 @@ export class DrawBehavior extends AnimateBehavior {
 
   /**
    * Runs the animation to move mesh from main scene to hand.
-   * Dispose the mesh at the end
    * @async
    */
   async animateToHand() {
@@ -87,6 +86,7 @@ export class DrawBehavior extends AnimateBehavior {
     if (isAnimated || !mesh) {
       return
     }
+    this.isAnimated = true
 
     // delay so that all observer of onAction to perform: we need the mesh to be unsnapped before getting its position
     await Promise.resolve()
@@ -94,7 +94,6 @@ export class DrawBehavior extends AnimateBehavior {
     await runAnimation(
       this,
       duration,
-      true,
       { animation: fadeAnimation, keys: fadeKeys },
       { animation: moveAnimation, keys: moveKeys }
     )
@@ -120,7 +119,6 @@ export class DrawBehavior extends AnimateBehavior {
     await runAnimation(
       this,
       duration,
-      false,
       { animation: fadeAnimation, keys: fadeKeys },
       { animation: moveAnimation, keys: moveKeys }
     )
@@ -178,7 +176,7 @@ function buildAnimationKeys({ position }, invert = false) {
   }
 }
 
-function runAnimation(behavior, duration, disposeAtTheEnd, ...animationSpecs) {
+function runAnimation(behavior, duration, ...animationSpecs) {
   const { mesh, frameRate, onAnimationEndObservable } = behavior
   const lastFrame = Math.round(frameRate * (duration / 750))
   const animations = []
@@ -192,9 +190,6 @@ function runAnimation(behavior, duration, disposeAtTheEnd, ...animationSpecs) {
       keys.map(key => parse(key, lastFrame)).sort((a, b) => a.frame - b.frame)
     )
   }
-  if (disposeAtTheEnd) {
-    mesh.isPhantom = true
-  }
   // prevents interactions and collisions
   mesh.isPickable = false
   behavior.isAnimated = true
@@ -205,9 +200,6 @@ function runAnimation(behavior, duration, disposeAtTheEnd, ...animationSpecs) {
         mesh.isPickable = true
         behavior.isAnimated = false
         onAnimationEndObservable.notifyObservers()
-        if (disposeAtTheEnd) {
-          mesh.dispose(false, true)
-        }
         resolve()
       })
   )

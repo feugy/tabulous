@@ -2,9 +2,8 @@
 
 - player's hand
 
-  - draw/play by dragging
-  - draw many from stack
   - elevates hand mesh on hover
+  - draw many from stack (add stepper buttons to radial menu)
 
 - issue: rotated mesh snapped onto rotated mesh do not appear rotated on scene loading
 - issue: snapped mesh disappears while animating when beeing rotated
@@ -25,6 +24,7 @@
 
 ## Refactor
 
+- make hand configurable at game level
 - use drawable's runAnimation in other animatable behaviors
 - jest matchers with mesh (toHaveBeenCalledWith, toHaveBeenNthCalledWith)
 - rework remote moves: instead of sending individual positions, send drag start, move and stop (with selection)
