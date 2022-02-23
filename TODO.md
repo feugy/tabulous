@@ -1,8 +1,8 @@
 # TODO
 
 - draw many from stack (add stepper buttons to radial menu)
+- make hand configurable at game level
 - configurable player position at game level
-- issue: rotated mesh snapped onto rotated mesh do not appear rotated on scene loading
 
 ## Brittle tests
 
@@ -20,7 +20,6 @@
 
 ## Refactor
 
-- make hand configurable at game level
 - use drawable's runAnimation in other animatable behaviors, always use detach()/attach()
 - jest matchers with mesh (toHaveBeenCalledWith, toHaveBeenNthCalledWith)
 - rework remote moves: instead of sending individual positions, send drag start, move and stop (with selection)

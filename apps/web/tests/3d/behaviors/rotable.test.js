@@ -180,7 +180,7 @@ describe('RotateBehavior', () => {
 
       child.setParent(mesh)
       expectRotated(mesh, angle)
-      expectRotated(child, -angle, 0)
+      expectRotated(child, 0)
     })
 
     it('applies current rotation to removed child', async () => {
@@ -190,7 +190,7 @@ describe('RotateBehavior', () => {
       await child.metadata.rotate()
       child.setParent(mesh)
       expectRotated(mesh, angle)
-      expectRotated(child, 0, angle)
+      expectRotated(child, angle)
 
       child.setParent(null)
       expectRotated(mesh, angle)

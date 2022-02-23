@@ -61,15 +61,6 @@ export class RotateBehavior extends AnimateBehavior {
   attach(mesh) {
     super.attach(mesh)
     this.fromState(this.state)
-
-    this._originalSetter = mesh.setParent.bind(mesh)
-    mesh.setParent = parent => {
-      const angle = getRotatableAngle(parent ?? mesh.parent) ?? 0
-      if (angle !== undefined) {
-        updateAngle(this, parent ? -angle : angle)
-      }
-      this._originalSetter.apply(mesh, [parent])
-    }
   }
 
   /**
@@ -175,10 +166,6 @@ export class RotateBehavior extends AnimateBehavior {
 function updateAngle(behavior, rotation) {
   behavior.state.angle = (behavior.state.angle + rotation) % (2 * Math.PI)
   behavior.mesh.metadata.angle = behavior.state.angle
-}
-
-function getRotatableAngle(mesh) {
-  return mesh?.getBehaviorByName(RotateBehaviorName)?.state.angle
 }
 
 function detach(mesh) {
