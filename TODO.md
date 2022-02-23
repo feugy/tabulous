@@ -1,12 +1,8 @@
 # TODO
 
-- player's hand
-
-  - elevates hand mesh on hover
-  - draw many from stack (add stepper buttons to radial menu)
-
+- draw many from stack (add stepper buttons to radial menu)
+- configurable player position at game level
 - issue: rotated mesh snapped onto rotated mesh do not appear rotated on scene loading
-- issue: snapped mesh disappears while animating when beeing rotated
 
 ## Brittle tests
 
@@ -25,7 +21,7 @@
 ## Refactor
 
 - make hand configurable at game level
-- use drawable's runAnimation in other animatable behaviors
+- use drawable's runAnimation in other animatable behaviors, always use detach()/attach()
 - jest matchers with mesh (toHaveBeenCalledWith, toHaveBeenNthCalledWith)
 - rework remote moves: instead of sending individual positions, send drag start, move and stop (with selection)
 - rework target detection. Instead of using real mesh and rays use shapes overlap: each zone is a rectangle/circle on XZ plane, and the moved mesh another rectangle/circle. Check the center of the moved mesh
@@ -51,6 +47,7 @@
 - keyboard
 - indicates when remote stream is muted/stopped
 - zoom in/out on rules
+- always display stack size (user configurable)
 
 ## Server
 

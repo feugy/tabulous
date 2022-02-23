@@ -107,6 +107,7 @@ export class RotateBehavior extends AnimateBehavior {
 
     controlManager.record({ mesh, fn: 'rotate' })
 
+    const attach = detach(mesh)
     const to = mesh.position.clone()
     const rotation = 0.5 * Math.PI
 
@@ -141,6 +142,7 @@ export class RotateBehavior extends AnimateBehavior {
             logger.debug({ mesh }, `end rotating ${mesh.id}`)
             // framed animation may not exactly end where we want, so force the final position
             mesh.position.copyFrom(to)
+            attach()
             applyGravity(mesh)
             mesh.isPickable = true
             this.isAnimated = false
@@ -177,4 +179,19 @@ function updateAngle(behavior, rotation) {
 
 function getRotatableAngle(mesh) {
   return mesh?.getBehaviorByName(RotateBehaviorName)?.state.angle
+}
+
+function detach(mesh) {
+  let parent = mesh.parent
+  mesh.setParent(null)
+
+  const savedSetter = mesh.setParent.bind(mesh)
+  mesh.setParent = newParent => {
+    parent = newParent
+  }
+
+  return () => {
+    mesh.setParent = savedSetter
+    mesh.setParent(parent)
+  }
 }
