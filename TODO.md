@@ -1,7 +1,6 @@
 # TODO
 
 - draw many from stack (add stepper buttons to radial menu)
-- make hand configurable at game level
 - configurable player position at game level
 
 ## Brittle tests

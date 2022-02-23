@@ -7,19 +7,18 @@ import {
   sleep
 } from '../../test-utils'
 import { DrawBehavior, DrawBehaviorName } from '../../../src/3d/behaviors'
-import { controlManager } from '../../../src/3d/managers'
+import { controlManager, handManager } from '../../../src/3d/managers'
 import { createCard } from '../../../src/3d/meshes'
 
-let recordSpy
-let animationEndReceived
+const actionRecorded = jest.fn()
+const animationEndReceived = jest.fn()
 
-configures3dTestEngine()
-
-beforeEach(() => {
-  jest.clearAllMocks()
-  recordSpy = jest.spyOn(controlManager, 'record')
-  animationEndReceived = jest.fn()
+configures3dTestEngine(({ handScene, scene }) => {
+  handManager.init({ handScene, scene })
+  controlManager.onActionObservable.add(actionRecorded)
 })
+
+beforeEach(jest.resetAllMocks)
 
 describe('DrawBehavior', () => {
   it('has initial state', () => {
@@ -44,7 +43,7 @@ describe('DrawBehavior', () => {
   it('can not draw in hand without mesh', () => {
     const behavior = new DrawBehavior()
     behavior.draw()
-    expect(recordSpy).not.toHaveBeenCalled()
+    expect(actionRecorded).not.toHaveBeenCalled()
   })
 
   it('can hydrate with default state', () => {
@@ -86,14 +85,18 @@ describe('DrawBehavior', () => {
     })
 
     it(`draws into player's hand`, async () => {
-      const state = mesh.metadata.serialize()
+      const { x, ...state } = mesh.metadata.serialize() // eslint-disable-line no-unused-vars
       mesh.metadata.draw()
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenNthCalledWith(1, {
-        mesh: expect.objectContaining({ id: mesh.id }),
-        fn: 'draw',
-        args: [state]
-      })
+      expect(actionRecorded).toHaveBeenCalledWith(
+        {
+          meshId: mesh.id,
+          fn: 'draw',
+          args: [{ x: expect.any(Number), ...state }],
+          fromHand: false
+        },
+        expect.anything()
+      )
+      expect(actionRecorded).toHaveBeenCalledTimes(1)
       await expectAnimationEnd(behavior)
       expect(animationEndReceived).toHaveBeenCalledTimes(1)
     })

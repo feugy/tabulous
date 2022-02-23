@@ -72,7 +72,8 @@ function load(game, engine, firstLoad) {
   cameras = game.cameras ?? []
   engine.load(
     {
-      meshes: game.meshes,
+      ...game,
+      type: undefined,
       handMeshes: hands.find(hand => player.id === hand.playerId)?.meshes ?? []
     },
     firstLoad

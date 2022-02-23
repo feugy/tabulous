@@ -57,7 +57,6 @@ export function createEngine({
   moveManager.init({ scene })
   controlManager.init({ scene, handScene })
   selectionManager.init({ scene })
-  handManager.init({ scene, handScene })
   targetManager.init({ scene })
 
   createTable({}, scene)
@@ -74,9 +73,14 @@ export function createEngine({
     if (initial) {
       engine.displayLoadingUI()
       scene.onDataLoadedObservable.addOnce(() => engine.hideLoadingUI())
+      if (gameData.handsEnabled) {
+        handManager.init({ scene, handScene })
+      }
     }
     loadMeshes(scene, gameData.meshes)
-    loadMeshes(handScene, gameData.handMeshes)
+    if (gameData.handsEnabled) {
+      loadMeshes(handScene, gameData.handMeshes)
+    }
   }
 
   engine.serialize = () => {

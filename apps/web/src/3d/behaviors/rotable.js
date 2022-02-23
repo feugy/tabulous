@@ -172,13 +172,7 @@ function detach(mesh) {
   let parent = mesh.parent
   mesh.setParent(null)
 
-  const savedSetter = mesh.setParent.bind(mesh)
-  mesh.setParent = newParent => {
-    parent = newParent
-  }
-
   return () => {
-    mesh.setParent = savedSetter
     mesh.setParent(parent)
   }
 }

@@ -58,6 +58,20 @@ describe('HandManager', () => {
     expect(manager.verticalPadding).toEqual(0)
     expect(manager.duration).toEqual(100)
     expect(manager.onHandChangeObservable).toBeDefined()
+    expect(manager.enabled).toBe(false)
+  })
+
+  it('can not draw mesh', () => {
+    const mesh = createMesh({ id: 'box' }, scene)
+    manager.draw(mesh)
+    expect(actionRecorded).not.toHaveBeenCalled()
+  })
+
+  it('can not apply draw', () => {
+    const id = 'box'
+    manager.applyDraw({ drawable: {}, id })
+    expect(scene.getMeshById(id)?.id).toBeUndefined()
+    expect(handScene.getMeshById(id)?.id).toBeUndefined()
   })
 
   describe('init()', () => {
@@ -82,6 +96,7 @@ describe('HandManager', () => {
       expect(manager.horizontalPadding).toEqual(horizontalPadding)
       expect(manager.verticalPadding).toEqual(verticalPadding)
       expect(manager.duration).toEqual(duration)
+      expect(manager.enabled).toBe(true)
     })
 
     it('performs initial layout', async () => {

@@ -5,6 +5,7 @@ import { createEngine } from '../../src/3d'
 import { createCard } from '../../src/3d/meshes'
 import { DrawBehaviorName } from '../../src/3d/behaviors'
 import { expectAnimationEnd } from '../test-utils'
+import { handManager } from '../../src/3d/managers'
 
 let engine
 const canvas = document.createElement('canvas')
@@ -32,9 +33,9 @@ describe('createEngine()', () => {
     expect(engine.enableOfflineSupport).toBe(false)
     expect(engine.inputElement).toEqual(interaction)
     expect(Scene.DoubleClickDelay).toEqual(doubleTapDelay)
-
-    // TODO input manager stopAll()
+    expect(handManager.enabled).toBe(false)
   })
+  // TODO input manager stopAll()
 
   describe('given an engine', () => {
     let displayLoadingUI
@@ -109,19 +110,30 @@ describe('createEngine()', () => {
       engine.load({ meshes: [mesh], handMeshes: [] }, true)
       expect(engine.scenes[1].getMeshById(mesh.id)).toBeDefined()
       expect(displayLoadingUI).toHaveBeenCalledTimes(1)
+      expect(handManager.enabled).toBe(false)
+    })
+
+    it('enables hand manager on initial load', () => {
+      engine.load({ meshes: [], handMeshes: [], handsEnabled: true }, true)
+      expect(displayLoadingUI).toHaveBeenCalledTimes(1)
+      expect(handManager.enabled).toBe(true)
     })
 
     describe('given some loaded meshes', () => {
       beforeEach(() => {
         const duration = 200
-        engine.load({
-          meshes: [
-            { id: 'card1', shape: 'card', drawable: { duration } },
-            { id: 'card2', shape: 'card', drawable: { duration } },
-            { id: 'card3', shape: 'card', drawable: { duration } }
-          ],
-          handMeshes: []
-        })
+        engine.load(
+          {
+            meshes: [
+              { id: 'card1', shape: 'card', drawable: { duration } },
+              { id: 'card2', shape: 'card', drawable: { duration } },
+              { id: 'card3', shape: 'card', drawable: { duration } }
+            ],
+            handMeshes: [],
+            handsEnabled: true
+          },
+          true
+        )
         engine.start()
       })
 

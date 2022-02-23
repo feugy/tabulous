@@ -47,7 +47,6 @@ for (const suit of suits) {
       movable: { kind: suit },
       stackable: { priority: 1 },
       // use all defaults
-      drawable: {},
       flippable: {},
       rotable: {}
     })

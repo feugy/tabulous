@@ -23,6 +23,7 @@ class HandManager {
    * Creates a manager for the player's hand meshes:
    * - display and organize them in their dedicated scene.
    * - handles actions from and to the main scene.
+   * Is only enabled after having been initialized.
    *
    * @property {import('@babylonjs/core').Scene} scene - the main scene.
    * @property {import('@babylonjs/core').Scene} handScene - scene for meshes in hand.
@@ -53,6 +54,10 @@ class HandManager {
         layoutMeshs(this)
       }
     })
+  }
+
+  get enabled() {
+    return Boolean(this.handScene && this.scene)
   }
 
   /**
@@ -136,7 +141,7 @@ class HandManager {
    * @param {import('@babylonjs/core').Mesh} drawnMesh - drawn mesh
    */
   draw(drawnMesh) {
-    if (!drawnMesh?.getBehaviorByName(DrawBehaviorName)) {
+    if (!this.enabled || !drawnMesh?.getBehaviorByName(DrawBehaviorName)) {
       return
     }
     let mesh
@@ -161,12 +166,14 @@ class HandManager {
    * @param {object} state - the state of the drawn mesh
    */
   applyDraw(state) {
-    const mainMesh = this.scene.getMeshById(state.id)
-    if (mainMesh) {
-      animateToHand(mainMesh)
-    } else {
-      const mesh = createMeshFromState(state, this.scene)
-      mesh.getBehaviorByName(DrawBehaviorName).animateToMain()
+    if (this.enabled) {
+      const mainMesh = this.scene.getMeshById(state.id)
+      if (mainMesh) {
+        animateToHand(mainMesh)
+      } else {
+        const mesh = createMeshFromState(state, this.scene)
+        mesh.getBehaviorByName(DrawBehaviorName).animateToMain()
+      }
     }
   }
 }

@@ -5,6 +5,7 @@ import { configures3dTestEngine, expectPosition, sleep } from '../../test-utils'
 import { MoveBehavior, TargetBehavior } from '../../../src/3d/behaviors'
 import {
   controlManager,
+  handManager,
   moveManager as manager,
   selectionManager,
   targetManager
@@ -313,6 +314,7 @@ describe('MoveManager', () => {
 
     beforeAll(() => {
       manager.init({ scene })
+      handManager.init({ scene, handScene })
       cameraPosition = camera.position.clone()
     })
 
