@@ -69,20 +69,35 @@ export function createEngine({
       handScene.render()
     })
 
+  /**
+   * TODO doc
+   * Loads meshes into the provided engine:
+   * - either creates new mesh, or updates existing ones, based on their ids
+   * - deletes existing mesh that are not found in the provided data
+   * - shows and hides Babylon's loading UI while loading asset (initial loading only)
+   * @param {import('@babel/core').Scene} scene - 3D scene used.
+   * @param {object} meshes - list of loaded meshes TODO.
+   * @param {boolean} [initial = true] - indicates whether this is the first loading or not.
+   */
   engine.load = (gameData, initial) => {
+    const handsEnabled = hasHandsEnabled(gameData)
     if (initial) {
       engine.displayLoadingUI()
       scene.onDataLoadedObservable.addOnce(() => engine.hideLoadingUI())
-      if (gameData.handsEnabled) {
+      if (handsEnabled) {
         handManager.init({ scene, handScene })
       }
     }
     loadMeshes(scene, gameData.meshes)
-    if (gameData.handsEnabled) {
+    if (handsEnabled) {
       loadMeshes(handScene, gameData.handMeshes)
     }
   }
 
+  /**
+   * TODO doc
+   * @returns
+   */
   engine.serialize = () => {
     return {
       meshes: serializeMeshes(scene),
@@ -108,12 +123,6 @@ export function createEngine({
   return engine
 }
 
-/**
- * Loads meshes into the provided engine:
- * - either creates new mesh, or updates existing ones, based on their ids
- * - deletes existing mesh that are not found in the provided data
- * - shows and hides Babylon's loading UI while loading asset (initial loading only)
- * @param {import('@babel/core').Scene} scene - 3D scene used.
- * @param {object} meshes - list of loaded meshes TODO.
- * @param {boolean} [initial = true] - indicates whether this is the first loading or not.
- */
+function hasHandsEnabled({ meshes, handMeshes }) {
+  return handMeshes.length > 0 || meshes.some(({ drawable }) => drawable)
+}

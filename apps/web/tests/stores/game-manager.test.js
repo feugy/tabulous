@@ -122,7 +122,7 @@ describe('given a mocked game engine', () => {
         )
         expect(runQuery).toHaveBeenCalledTimes(1)
         expect(engine.load).toHaveBeenCalledWith(
-          { handMeshes: hands[1].meshes, ...game },
+          { handMeshes: hands[1].meshes, meshes },
           true
         )
         expect(engine.load).toHaveBeenCalledTimes(1)
@@ -153,7 +153,7 @@ describe('given a mocked game engine', () => {
         )
         expect(runQuery).toHaveBeenCalledTimes(1)
         expect(engine.load).toHaveBeenCalledWith(
-          { handMeshes: [], ...game },
+          { handMeshes: [], meshes },
           true
         )
         expect(engine.load).toHaveBeenCalledTimes(1)
@@ -186,7 +186,7 @@ describe('given a mocked game engine', () => {
         )
         expect(runQuery).toHaveBeenCalledTimes(1)
         expect(engine.load).toHaveBeenCalledWith(
-          { handMeshes: [], ...game },
+          { handMeshes: [], meshes },
           true
         )
         expect(engine.load).toHaveBeenCalledTimes(1)
@@ -207,7 +207,7 @@ describe('given a mocked game engine', () => {
         )
         expect(runQuery).toHaveBeenCalledTimes(1)
         expect(engine.load).toHaveBeenCalledWith(
-          { handMeshes: [], ...game },
+          { handMeshes: [], meshes },
           true
         )
         expect(engine.load).toHaveBeenCalledTimes(1)
@@ -480,7 +480,7 @@ describe('given a mocked game engine', () => {
           expect(runMutation).not.toHaveBeenCalled()
           expect(send).not.toHaveBeenCalled()
           expect(engine.load).toHaveBeenCalledWith(
-            { handMeshes: game.hands[1].meshes, ...game },
+            { handMeshes: game.hands[1].meshes, meshes },
             true
           )
           expect(engine.load).toHaveBeenCalledTimes(1)

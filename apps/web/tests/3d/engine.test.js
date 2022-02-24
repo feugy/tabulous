@@ -114,7 +114,10 @@ describe('createEngine()', () => {
     })
 
     it('enables hand manager on initial load', () => {
-      engine.load({ meshes: [], handMeshes: [], handsEnabled: true }, true)
+      engine.load(
+        { meshes: [], handMeshes: [{ id: 'box', shape: 'card' }] },
+        true
+      )
       expect(displayLoadingUI).toHaveBeenCalledTimes(1)
       expect(handManager.enabled).toBe(true)
     })
@@ -129,8 +132,7 @@ describe('createEngine()', () => {
               { id: 'card2', shape: 'card', drawable: { duration } },
               { id: 'card3', shape: 'card', drawable: { duration } }
             ],
-            handMeshes: [],
-            handsEnabled: true
+            handMeshes: []
           },
           true
         )
