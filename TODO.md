@@ -2,6 +2,7 @@
 
 - draw many from stack (add stepper buttons to radial menu)
 - configurable player position at game level
+- issue: moving the anchor does not move stacked snapped meshes
 
 ## Brittle tests
 
