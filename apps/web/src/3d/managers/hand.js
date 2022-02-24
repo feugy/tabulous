@@ -135,13 +135,17 @@ class HandManager {
   }
 
   /**
-   * Draw a mesh either
-   * - from main scene to the current player's hand,
-   * - from the player's hand to the main scene.
+   * Draw a mesh from the main scene to this player's hand, or from the hand to the main scene:
+   * - creates a mesh on the target scene (either hand or main)
+   * - run animation on the main scene (either elevates or descend)
+   * - unflips fliped mesh in hand (when relevant)
+   * - deletes old mesh from the origin scene (either main or hand)
+   * - records the action into the control manager
    * @param {import('@babylonjs/core').Mesh} drawnMesh - drawn mesh
    */
   draw(drawnMesh) {
-    if (!this.enabled || !drawnMesh?.getBehaviorByName(DrawBehaviorName)) {
+    const drawable = getDrawable(drawnMesh)
+    if (!this.enabled || !drawable) {
       return
     }
     let mesh
@@ -151,10 +155,11 @@ class HandManager {
         y: 100
       })
       applyGravity(mesh)
-      mesh.getBehaviorByName(DrawBehaviorName).animateToMain()
+      getDrawable(mesh).animateToMain()
     } else {
       animateToHand(drawnMesh)
       mesh = createHandMesh(this, drawnMesh, { x: this.extent.minX })
+      unflipIfNeeded(this, mesh)
     }
     recordDraw(mesh)
   }
@@ -172,7 +177,7 @@ class HandManager {
         animateToHand(mainMesh)
       } else {
         const mesh = createMeshFromState(state, this.scene)
-        mesh.getBehaviorByName(DrawBehaviorName).animateToMain()
+        getDrawable(mesh).animateToMain()
       }
     }
   }
@@ -223,11 +228,11 @@ function handDrag(manager, { type, mesh, event }) {
     if (type !== 'dragStop') {
       inputManager.stopDrag(event)
     } else {
-      setTimeout(() => {
-        mesh.isPhantom = true
-        recordDraw(createHandMesh(manager, mesh))
-        mesh.dispose(false, true)
-      }, 0) // TODO why delay?
+      mesh.isPhantom = true
+      const newMesh = createHandMesh(manager, mesh)
+      unflipIfNeeded(manager, newMesh)
+      recordDraw(newMesh)
+      mesh.dispose(false, true)
     }
   }
 }
@@ -346,9 +351,21 @@ function getViewPortSize(engine) {
 
 function animateToHand(mesh) {
   mesh.isPhantom = true
-  const drawable = mesh.getBehaviorByName(DrawBehaviorName)
+  const drawable = getDrawable(mesh)
   drawable.onAnimationEndObservable.addOnce(() => {
     mesh.dispose(false, true)
   })
   drawable.animateToHand()
+}
+
+function getDrawable(mesh) {
+  return mesh?.getBehaviorByName(DrawBehaviorName)
+}
+
+function unflipIfNeeded(manager, mesh) {
+  if (mesh.metadata.isFlipped && getDrawable(mesh).state.unflipOnPick) {
+    manager.onHandChangeObservable.addOnce(() => {
+      mesh.metadata.flip()
+    })
+  }
 }

@@ -22,7 +22,10 @@ beforeEach(jest.resetAllMocks)
 
 describe('DrawBehavior', () => {
   it('has initial state', () => {
-    const state = { duration: faker.datatype.number() }
+    const state = {
+      duration: faker.datatype.number(),
+      unflipOnPick: faker.datatype.boolean()
+    }
     const behavior = new DrawBehavior(state)
     const mesh = CreateBox('box', {})
 
@@ -52,7 +55,7 @@ describe('DrawBehavior', () => {
     mesh.addBehavior(behavior, true)
 
     behavior.fromState()
-    expect(behavior.state).toEqual({ duration: 750 })
+    expect(behavior.state).toEqual({ duration: 750, unflipOnPick: true })
     expect(behavior.mesh).toEqual(mesh)
     expect(mesh.metadata.draw).toBeInstanceOf(Function)
   })
@@ -69,7 +72,8 @@ describe('DrawBehavior', () => {
 
     it('can hydrate from state', () => {
       const state = {
-        duration: faker.datatype.number()
+        duration: faker.datatype.number(),
+        unflipOnPick: faker.datatype.boolean()
       }
       behavior.fromState(state)
       expect(behavior.state).toEqual(state)

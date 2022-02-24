@@ -4,6 +4,7 @@ import {
   configures3dTestEngine,
   disposeAllMeshes,
   expectAnimationEnd,
+  expectFlipped,
   expectPosition
 } from '../../test-utils'
 import {
@@ -13,7 +14,7 @@ import {
   moveManager
 } from '../../../src/3d/managers'
 import { createCard } from '../../../src/3d/meshes'
-import { DrawBehaviorName } from '../../../src/3d/behaviors'
+import { DrawBehaviorName, FlipBehaviorName } from '../../../src/3d/behaviors'
 
 describe('HandManager', () => {
   let engine
@@ -128,6 +129,7 @@ describe('HandManager', () => {
 
     beforeAll(() => {
       manager.init({ scene, handScene })
+      controlManager.init({ scene, handScene })
       changeObserver = manager.onHandChangeObservable.add(changeReceived)
     })
 
@@ -190,6 +192,58 @@ describe('HandManager', () => {
       expect(actionRecorded).toHaveBeenCalledTimes(1)
       expect(controlManager.isManaging(newMesh)).toBe(true)
       expect(moveManager.isManaging(newMesh)).toBe(true)
+    })
+
+    it('unflips flipped mesh while drawing into hand', async () => {
+      const [card] = cards
+      await card.metadata.flip()
+      actionRecorded.mockReset()
+      expectFlipped(card, true)
+      card.metadata.draw()
+      await waitForLayout()
+      const newMesh = handScene.getMeshById(card.id)
+      await Promise.all([
+        expectAnimationEnd(newMesh.getBehaviorByName(FlipBehaviorName)),
+        expectAnimationEnd(card.getBehaviorByName(DrawBehaviorName))
+      ])
+      expectFlipped(newMesh, false)
+      expect(actionRecorded).toHaveBeenCalledWith(
+        {
+          meshId: newMesh.id,
+          fn: 'draw',
+          args: [expect.any(Object)],
+          fromHand: false
+        },
+        expect.anything()
+      )
+      expect(actionRecorded).toHaveBeenCalledWith(
+        { meshId: newMesh.id, fn: 'flip', fromHand: true },
+        expect.anything()
+      )
+      expect(actionRecorded).toHaveBeenCalledTimes(2)
+    })
+
+    it('can keep flipped mesh while drawing into hand', async () => {
+      const [card] = cards
+      card.getBehaviorByName(DrawBehaviorName).state.unflipOnPick = false
+      await card.metadata.flip()
+      actionRecorded.mockReset()
+      expectFlipped(card, true)
+      card.metadata.draw()
+      await waitForLayout()
+      await expectAnimationEnd(card.getBehaviorByName(DrawBehaviorName))
+      const newMesh = handScene.getMeshById(card.id)
+      expectFlipped(newMesh, true)
+      expect(actionRecorded).toHaveBeenCalledWith(
+        {
+          meshId: newMesh.id,
+          fn: 'draw',
+          args: [expect.any(Object)],
+          fromHand: false
+        },
+        expect.anything()
+      )
+      expect(actionRecorded).toHaveBeenCalledTimes(1)
     })
 
     it(`removes mesh drawn into another player's hand`, async () => {
@@ -432,6 +486,44 @@ describe('HandManager', () => {
         expect(actionRecorded).toHaveBeenCalledTimes(1)
         expect(controlManager.isManaging(newMesh)).toBe(true)
         expect(moveManager.isManaging(newMesh)).toBe(true)
+      })
+
+      it('unflips flipped mesh while dragging into hand', async () => {
+        const [, , mesh] = cards
+        await mesh.metadata.flip()
+        actionRecorded.mockReset()
+        expectFlipped(mesh, true)
+        let movedPosition = new Vector3(1, 0, -19)
+        mesh.setAbsolutePosition(movedPosition)
+        mesh.computeWorldMatrix()
+        inputManager.onDragObservable.notifyObservers({
+          type: 'dragStart',
+          mesh,
+          event: { x: 289.7, y: 175 }
+        })
+        inputManager.onDragObservable.notifyObservers({
+          type: 'dragStop',
+          mesh,
+          event: { x: 289.7, y: 175 }
+        })
+        await waitForLayout()
+        const newMesh = handScene.getMeshById(mesh.id)
+        await expectAnimationEnd(newMesh.getBehaviorByName(FlipBehaviorName))
+        expectFlipped(newMesh, false)
+        expect(actionRecorded).toHaveBeenCalledWith(
+          {
+            meshId: newMesh.id,
+            fn: 'draw',
+            args: [expect.any(Object)],
+            fromHand: false
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenCalledWith(
+          { meshId: newMesh.id, fn: 'flip', fromHand: true },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenCalledTimes(2)
       })
 
       it('ignores drag operations from main scene', async () => {

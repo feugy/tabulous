@@ -6,6 +6,7 @@ import { DrawBehaviorName } from './names'
 
 /**
  * @typedef {object} DrawableState behavior persistent state, including:
+ * @property {boolean} [unflipOnPick=true] - unflip flipped mesh when picking them in hand.
  * @property {number} [duration=750] - duration (in milliseconds) of the draw animation.
  */
 
@@ -126,12 +127,13 @@ export class DrawBehavior extends AnimateBehavior {
 
   /**
    * Updates this behavior's state and mesh to match provided data.
+   * @param {DrawableState} state - state to update to.
    */
-  fromState({ duration = 750 } = {}) {
+  fromState({ duration = 750, unflipOnPick = true } = {}) {
     if (!this.mesh) {
       throw new Error('Can not restore state without mesh')
     }
-    this.state = { duration }
+    this.state = { duration, unflipOnPick }
     if (!this.mesh.metadata) {
       this.mesh.metadata = {}
     }
