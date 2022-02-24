@@ -19,6 +19,7 @@ formats:
       minute: 2-digit
       month: short
 games:
+  coinche: Coinche
   klondike: Solitaire
   splendor: Splendor
   riichi: Riichi Mahjong
