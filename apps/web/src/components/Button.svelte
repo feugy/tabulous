@@ -8,7 +8,7 @@
 
 <style lang="postcss">
   button {
-    @apply py-2 px-4 rounded relative bg-$primary text-$primary-lightest 
+    @apply py-2 px-4 flex justify-center items-center rounded relative bg-$primary text-$primary-lightest 
            transition-all duration-$short;
 
     &:focus {
