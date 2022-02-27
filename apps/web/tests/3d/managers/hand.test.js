@@ -26,7 +26,7 @@ describe('HandManager', () => {
 
   const gap = 0.5
   const horizontalPadding = 2
-  const verticalPadding = 1
+  const verticalPadding = 0.5
   const cardWidth = 3
   const cardDepth = 4.25
   const duration = 50
@@ -119,22 +119,28 @@ describe('HandManager', () => {
         { id: 'box3', x: -5, y: -2, z: -2 }
       ].map(state => createMesh(state, handScene))
       await waitForLayout()
+      await waitForLayout()
       const z = computeZ()
       expectPosition(cards[2], [-gap - cardWidth, 0, z])
       expectPosition(cards[1], [0, 0.01, z])
       expectPosition(cards[0], [gap + cardWidth, 0.015, z])
       expect(actionRecorded).not.toHaveBeenCalled()
+      const overlay = document.querySelector('.hand-overlay')
+      expect(overlay).toBeInTheDocument()
+      expect(overlay).not.toHaveClass('visible')
     })
   })
 
   describe('given an initialized manager', () => {
     let cards
     let changeObserver
+    let overlay
 
     beforeAll(() => {
       manager.init({ scene, handScene })
       controlManager.init({ scene, handScene })
       changeObserver = manager.onHandChangeObservable.add(changeReceived)
+      overlay = document.querySelector('.hand-overlay')
     })
 
     beforeEach(() => {
@@ -373,6 +379,7 @@ describe('HandManager', () => {
         const mesh = handCards[1]
         const positions = getPositions(handCards)
         const z = positions[1][3]
+        expect(overlay).not.toHaveClass('visible')
 
         let movedPosition = new Vector3(-1, 1, z)
         mesh.setAbsolutePosition(movedPosition)
@@ -387,6 +394,7 @@ describe('HandManager', () => {
           positions[1],
           positions[2]
         ])
+        expect(overlay).toHaveClass('visible')
 
         movedPosition = new Vector3(1, 1, z)
         mesh.setAbsolutePosition(movedPosition)
@@ -398,6 +406,7 @@ describe('HandManager', () => {
           [mesh.id, ...movedPosition.asArray()],
           positions[2]
         ])
+        expect(overlay).toHaveClass('visible')
 
         movedPosition = new Vector3(4, 1, z)
         mesh.setAbsolutePosition(movedPosition)
@@ -412,6 +421,7 @@ describe('HandManager', () => {
           [handCards[2].id, ...positions[1].slice(1)],
           [mesh.id, ...positions[2].slice(1)]
         ])
+        expect(overlay).not.toHaveClass('visible')
       })
 
       it('moves mesh to main scene by dragging', async () => {
@@ -502,6 +512,7 @@ describe('HandManager', () => {
           mesh,
           event: { x: 289.7, y: 175 }
         })
+        expect(overlay).toHaveClass('visible')
         expect(stopDrag).toHaveBeenCalledTimes(1)
         inputManager.onDragObservable.notifyObservers({
           type: 'dragStop',
@@ -509,6 +520,7 @@ describe('HandManager', () => {
           event: { x: 289.7, y: 175 }
         })
         await waitForLayout()
+        expect(overlay).not.toHaveClass('visible')
         expect(scene.getMeshById(mesh.id)?.id).toBeUndefined()
         const newMesh = handScene.getMeshById(mesh.id)
         expect(newMesh?.id).toBeDefined()

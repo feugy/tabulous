@@ -49,6 +49,7 @@ export function initialize3dEngine(
     main.scene.render()
     handScene.render()
   })
+  engine.inputElement = engineProps.interation || document.body
   return { engine, ...main, handScene }
 }
 

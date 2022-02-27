@@ -82,6 +82,16 @@
   .overlay {
     @apply flex items-center justify-center z-10;
   }
+
+  :global(.hand-overlay) {
+    @apply absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-0;
+    box-shadow: 0px -1vw 5vw -4vw rgb(0, 255, 0);
+    min-height: 10vw;
+  }
+
+  :global(.hand-overlay.visible) {
+    @apply opacity-100;
+  }
 </style>
 
 <svelte:head>
