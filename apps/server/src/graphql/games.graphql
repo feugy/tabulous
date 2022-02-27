@@ -48,6 +48,7 @@ type AnchorableState {
 
 type DrawableState {
   unflipOnPick: Boolean
+  flipOnPlay: Boolean
   duration: Int
 }
 
@@ -168,6 +169,7 @@ input AnchorableStateInput {
 
 input DrawableStateInput {
   unflipOnPick: Boolean
+  flipOnPlay: Boolean
   duration: Int
 }
 

@@ -136,12 +136,19 @@ class HandManager {
   }
 
   /**
-   * Draw a mesh from the main scene to this player's hand, or from the hand to the main scene:
-   * - creates a mesh on the target scene (either hand or main)
-   * - run animation on the main scene (either elevates or descend)
-   * - unflips fliped mesh in hand (when relevant)
-   * - deletes old mesh from the origin scene (either main or hand)
-   * - records the action into the control manager
+   * Draw a mesh from the main scene to this player's hand, or from the hand to the main scene.
+   * When drawing to hand:
+   * 1. run animation on the main scene (elevates and fades out) and dispose at the end
+   * 2. creates mesh in hand and lay the hand out
+   * 3. if required (unflipOnPick is true), unflips flippable mesh
+   * 4. records the action into the control manager
+   *
+   * When drawing to main
+   * 1. if required (flipOnPlay is true), flips flippable mesh without animation
+   * 2. disposes mesh in hand and lay the hand out
+   * 3. run animation on the main scene (fades in and descends)
+   * 4. records the action into the control manager
+   *
    * @param {import('@babylonjs/core').Mesh} drawnMesh - drawn mesh
    */
   draw(drawnMesh) {
@@ -151,16 +158,20 @@ class HandManager {
     }
     let mesh
     if (drawnMesh.getScene() === this.handScene) {
-      mesh = createMainMesh(this, drawnMesh, {
-        ...getSceneCenter(this.scene),
-        y: 100
-      })
+      mesh = createMainMesh(
+        this,
+        drawnMesh,
+        {
+          ...getSceneCenter(this.scene),
+          y: 100
+        },
+        true
+      )
       applyGravity(mesh)
       getDrawable(mesh).animateToMain()
     } else {
       animateToHand(drawnMesh)
       mesh = createHandMesh(this, drawnMesh, { x: this.extent.minX })
-      unflipIfNeeded(this, mesh)
     }
     recordDraw(mesh)
   }
@@ -235,7 +246,6 @@ function handDrag(manager, { type, mesh, event }) {
       for (const mesh of drawn) {
         mesh.isPhantom = true
         const newMesh = createHandMesh(manager, mesh)
-        unflipIfNeeded(manager, newMesh)
         recordDraw(newMesh)
         mesh.dispose(false, true)
       }
@@ -248,16 +258,19 @@ function isMainMeshNextToHand({ extent: { size } }, mesh) {
 }
 
 function createMainMesh({ scene }, handMesh, extraState) {
+  flipIfNeeded(handMesh)
   const state = handMesh.metadata.serialize()
   handMesh.dispose(false, true)
   return createMeshFromState({ ...state, ...extraState }, scene)
 }
 
-function createHandMesh({ handScene }, mainMesh, extraState = {}) {
-  return createMeshFromState(
+function createHandMesh(manager, mainMesh, extraState = {}) {
+  const newMesh = createMeshFromState(
     { ...mainMesh.metadata.serialize(), ...extraState },
-    handScene
+    manager.handScene
   )
+  unflipIfNeeded(manager, newMesh)
+  return newMesh
 }
 
 function recordDraw(mesh) {
@@ -368,10 +381,21 @@ function getDrawable(mesh) {
   return mesh?.getBehaviorByName(DrawBehaviorName)
 }
 
-function unflipIfNeeded(manager, mesh) {
+function unflipIfNeeded({ onHandChangeObservable }, mesh) {
   if (mesh.metadata.isFlipped && getDrawable(mesh).state.unflipOnPick) {
-    manager.onHandChangeObservable.addOnce(() => {
+    onHandChangeObservable.addOnce(() => {
       mesh.metadata.flip()
     })
+  }
+}
+
+function flipIfNeeded(mesh) {
+  const flippable = mesh.getBehaviorByName(FlipBehaviorName)
+  if (
+    flippable &&
+    !flippable.state.isFlipped &&
+    getDrawable(mesh).state.flipOnPlay
+  ) {
+    flippable.state.isFlipped = true
   }
 }

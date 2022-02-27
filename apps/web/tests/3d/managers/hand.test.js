@@ -451,6 +451,45 @@ describe('HandManager', () => {
         expect(moveManager.isManaging(newMesh)).toBe(true)
       })
 
+      it('can flip mesh to main scene while dragging', async () => {
+        const mesh = handCards[1]
+        mesh.getBehaviorByName(DrawBehaviorName).state.flipOnPlay = true
+        expectFlipped(mesh, false)
+
+        let movedPosition = new Vector3(
+          mesh.absolutePosition.x,
+          mesh.absolutePosition.y + 2,
+          mesh.absolutePosition.z + cardDepth
+        )
+        mesh.setAbsolutePosition(movedPosition)
+        mesh.computeWorldMatrix()
+        inputManager.onDragObservable.notifyObservers({
+          type: 'dragStart',
+          mesh,
+          event: { x: 289.7, y: 175 }
+        })
+        await waitForLayout()
+        expect(handScene.getMeshById(mesh.id)?.id).toBeUndefined()
+        const newMesh = scene.getMeshById(mesh.id)
+        expect(newMesh?.id).toBeDefined()
+        expectFlipped(newMesh, true)
+        expectPosition(newMesh, [6, 2, 0])
+        expect(actionRecorded).toHaveBeenCalledWith(
+          {
+            meshId: newMesh.id,
+            fn: 'draw',
+            args: [
+              expect.objectContaining({
+                flippable: expect.objectContaining({ isFlipped: true })
+              })
+            ],
+            fromHand: false
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenCalledTimes(1)
+      })
+
       it('moves mesh to hand by dragging', async () => {
         const mesh = cards[0]
         const stopDrag = jest.spyOn(inputManager, 'stopDrag')
@@ -623,6 +662,32 @@ describe('HandManager', () => {
         expect(actionRecorded).toHaveBeenCalledTimes(1)
         expect(controlManager.isManaging(newMesh)).toBe(true)
         expect(moveManager.isManaging(newMesh)).toBe(true)
+      })
+
+      it('can flip mesh prior to moving it to main scene', async () => {
+        const [, , card] = handCards
+        card.getBehaviorByName(DrawBehaviorName).state.flipOnPlay = true
+        expectFlipped(card, false)
+        card.metadata.draw()
+        await waitForLayout()
+        expect(handScene.getMeshById(card.id)?.id).toBeUndefined()
+        const newMesh = scene.getMeshById(card.id)
+        expect(newMesh?.id).toBeDefined()
+        expectFlipped(newMesh, true)
+        expect(actionRecorded).toHaveBeenCalledWith(
+          {
+            meshId: newMesh.id,
+            fn: 'draw',
+            args: [
+              expect.objectContaining({
+                flippable: expect.objectContaining({ isFlipped: true })
+              })
+            ],
+            fromHand: false
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenCalledTimes(1)
       })
 
       it(`adds mesh from other player's hand to main scene`, async () => {

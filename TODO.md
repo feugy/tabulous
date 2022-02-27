@@ -1,7 +1,7 @@
 # TODO
 
-- draw many from stack (add stepper buttons to radial menu)
-- configurable player position at game level
+- unstack/unsnap meshes when drawing them (multiple selection)
+- hand multiple selection
 - issue: moving the anchor does not move stacked snapped meshes
 
 ## Brittle tests
@@ -20,6 +20,7 @@
 
 ## Refactor
 
+- do we need to wrap card planes in an invisible box?
 - use drawable's runAnimation in other animatable behaviors, always use detach()/attach()
 - jest matchers with mesh (toHaveBeenCalledWith, toHaveBeenNthCalledWith)
 - rework remote moves: instead of sending individual positions, send drag start, move and stop (with selection)
@@ -36,7 +37,11 @@
 
 ## UI
 
+- support color textures
+- apply action on entire selection
+- multiple stack actions (draw, flip, rotate)
 - display peer's name when running draw animations
+- configurable player position at game level
 - sort and filter catalog on game names
 - feedback on stacking
 - stack actions:

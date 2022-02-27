@@ -256,7 +256,7 @@ describe('registerBehaviors() 3D utility', () => {
   })
 
   it('adds drawable behavior to a mesh', () => {
-    const state = { duration: 300, unflipOnPick: false }
+    const state = { duration: 300, unflipOnPick: false, flipOnPlay: true }
     registerBehaviors(box, { drawable: state })
     expect(box.getBehaviorByName(DrawBehaviorName)).toHaveProperty(
       'state',

@@ -57,6 +57,7 @@ fragment mesh on Mesh {
   }
   drawable {
     unflipOnPick
+    flipOnPlay
     duration
   }
 }
