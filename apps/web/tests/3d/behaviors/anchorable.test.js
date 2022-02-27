@@ -132,7 +132,8 @@ describe('AnchorBehavior', () => {
         expect.objectContaining({
           anchors: behavior.state.anchors,
           snap: expect.any(Function),
-          unsnap: expect.any(Function)
+          unsnap: expect.any(Function),
+          unsnapAll: expect.any(Function)
         })
       )
       expect(behavior.zones).toHaveLength(behavior.state.anchors.length)
@@ -533,6 +534,35 @@ describe('AnchorBehavior', () => {
         fn: 'unsnap',
         mesh,
         args: [snapped.id]
+      })
+    })
+
+    it('unsnaps all', async () => {
+      const [snapped1, snapped2] = meshes
+      behavior.fromState({
+        anchors: [
+          { width: 1, height: 2, depth: 0.5, x: -1, snappedId: snapped1.id },
+          { width: 1, height: 2, depth: 0.5 },
+          { width: 1, height: 2, depth: 0.5, x: 1, snappedId: snapped2.id }
+        ]
+      })
+      expectSnapped(mesh, snapped1, 0)
+      expectSnapped(mesh, snapped2, 2)
+
+      mesh.metadata.unsnapAll()
+
+      expectUnsnapped(mesh, snapped1, 0)
+      expectUnsnapped(mesh, snapped2, 2)
+      expect(recordSpy).toHaveBeenCalledTimes(2)
+      expect(recordSpy).toHaveBeenCalledWith({
+        fn: 'unsnap',
+        mesh,
+        args: [snapped1.id]
+      })
+      expect(recordSpy).toHaveBeenCalledWith({
+        fn: 'unsnap',
+        mesh,
+        args: [snapped2.id]
       })
     })
 

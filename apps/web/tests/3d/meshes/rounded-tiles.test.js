@@ -95,7 +95,8 @@ describe('createRoundedTile()', () => {
         detail: expect.any(Function),
         flip: expect.any(Function),
         snap: expect.any(Function),
-        unsnap: expect.any(Function)
+        unsnap: expect.any(Function),
+        unsnapAll: expect.any(Function)
       })
     })
 

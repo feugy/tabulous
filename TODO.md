@@ -1,7 +1,5 @@
 # TODO
 
-- unstack/unsnap meshes when drawing them (multiple selection)
-- hand multiple selection
 - issue: moving the anchor does not move stacked snapped meshes
 
 ## Brittle tests
@@ -20,8 +18,8 @@
 
 ## Refactor
 
-- do we need to wrap card planes in an invisible box?
 - use drawable's runAnimation in other animatable behaviors, always use detach()/attach()
+- do we need to wrap card planes in an invisible box?
 - jest matchers with mesh (toHaveBeenCalledWith, toHaveBeenNthCalledWith)
 - rework remote moves: instead of sending individual positions, send drag start, move and stop (with selection)
 - rework target detection. Instead of using real mesh and rays use shapes overlap: each zone is a rectangle/circle on XZ plane, and the moved mesh another rectangle/circle. Check the center of the moved mesh
@@ -37,6 +35,7 @@
 
 ## UI
 
+- hand multiple selection
 - support color textures
 - apply action on entire selection
 - multiple stack actions (draw, flip, rotate)

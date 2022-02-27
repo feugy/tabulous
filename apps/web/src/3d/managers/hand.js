@@ -18,6 +18,10 @@ import {
 import { controlManager } from './control'
 import { inputManager } from './input'
 import { selectionManager } from './selection'
+// '../../utils' creates a cyclic dependency in Jest
+import { makeLogger } from '../../utils/logger'
+
+const logger = makeLogger('hand')
 
 class HandManager {
   /**
@@ -102,12 +106,16 @@ class HandManager {
       },
       {
         observable: engine.onResizeObservable,
-        handle: () => this.changes$.next()
+        handle: () => {
+          logger.debug('detects resize')
+          this.changes$.next()
+        }
       },
       {
         observable: handScene.onNewMeshAddedObservable,
         handle: added => {
           if (isSerializable(added)) {
+            logger.info({ mesh: added }, `new mesh ${added.id} added to hand`)
             this.changes$.next()
           }
         }
@@ -116,6 +124,10 @@ class HandManager {
         observable: handScene.onMeshRemovedObservable,
         handle: removed => {
           if (isSerializable(removed)) {
+            logger.info(
+              { mesh: removed },
+              `mesh ${removed.id} removed from hand`
+            )
             if (removed === this.moved) {
               this.moved = null
             }
@@ -158,6 +170,7 @@ class HandManager {
     }
     let mesh
     if (drawnMesh.getScene() === this.handScene) {
+      logger.info({ mesh: drawnMesh }, `play mesh ${drawnMesh.id} from hand`)
       mesh = createMainMesh(
         this,
         drawnMesh,
@@ -170,6 +183,7 @@ class HandManager {
       applyGravity(mesh)
       getDrawable(mesh).animateToMain()
     } else {
+      logger.info({ mesh: drawnMesh }, `pick mesh ${drawnMesh.id} in hand`)
       animateToHand(drawnMesh)
       mesh = createHandMesh(this, drawnMesh, { x: this.extent.minX })
     }
@@ -186,9 +200,17 @@ class HandManager {
     if (this.enabled) {
       const mainMesh = this.scene.getMeshById(state.id)
       if (mainMesh) {
+        logger.info(
+          { mesh: mainMesh },
+          `another player picked ${mainMesh.id} in their hand`
+        )
         animateToHand(mainMesh)
       } else {
         const mesh = createMeshFromState(state, this.scene)
+        logger.info(
+          { mesh },
+          `another player played ${mesh.id} from their hand`
+        )
         getDrawable(mesh).animateToMain()
       }
     }
@@ -201,7 +223,8 @@ class HandManager {
  */
 export const handManager = new HandManager()
 
-function handleAction(manager, { fn, meshId }) {
+function handleAction(manager, action) {
+  const { fn, meshId } = action
   if (fn === 'rotate' || fn === 'flip') {
     const handMesh = manager.handScene.getMeshById(meshId)
     if (handMesh) {
@@ -209,6 +232,7 @@ function handleAction(manager, { fn, meshId }) {
         fn === 'rotate' ? RotateBehaviorName : FlipBehaviorName
       )
       behavior.onAnimationEndObservable.addOnce(() => {
+        logger.debug(action, 'detects hand change')
         storeMeshDimensions(manager)
         layoutMeshs(manager)
       })
@@ -232,6 +256,10 @@ function handDrag(manager, { type, mesh, event }) {
     manager.moved = moved
     if (moved?.absolutePosition.z > maxZ) {
       const { x, z } = screenToGround(manager.scene, event)
+      logger.info(
+        { mesh: moved, x, z },
+        `play mesh ${moved.id} from hand by dragging`
+      )
       recordDraw(createMainMesh(manager, moved, { x, z }))
     } else {
       layoutMeshs(manager)
@@ -243,9 +271,14 @@ function handDrag(manager, { type, mesh, event }) {
       let drawn = selectionManager.meshes.has(mesh)
         ? [...selectionManager.meshes]
         : [mesh]
+      logger.debug({ drawn }, `dragged meshes into hand`)
       for (const mesh of drawn) {
         mesh.isPhantom = true
         const newMesh = createHandMesh(manager, mesh)
+        logger.info(
+          { mesh: newMesh },
+          `pick mesh ${newMesh.id} in hand by dragging`
+        )
         recordDraw(newMesh)
         mesh.dispose(false, true)
       }
@@ -265,6 +298,7 @@ function createMainMesh({ scene }, handMesh, extraState) {
 }
 
 function createHandMesh(manager, mainMesh, extraState = {}) {
+  mainMesh.metadata.unsnapAll?.()
   const newMesh = createMeshFromState(
     { ...mainMesh.metadata.serialize(), ...extraState },
     manager.handScene
@@ -383,6 +417,7 @@ function getDrawable(mesh) {
 
 function unflipIfNeeded({ onHandChangeObservable }, mesh) {
   if (mesh.metadata.isFlipped && getDrawable(mesh).state.unflipOnPick) {
+    logger.debug({ mesh }, `un-flips ${mesh.id}`)
     onHandChangeObservable.addOnce(() => {
       mesh.metadata.flip()
     })
@@ -396,6 +431,7 @@ function flipIfNeeded(mesh) {
     !flippable.state.isFlipped &&
     getDrawable(mesh).state.flipOnPlay
   ) {
+    logger.debug({ mesh }, `flips ${mesh.id}`)
     flippable.state.isFlipped = true
   }
 }

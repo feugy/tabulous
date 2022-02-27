@@ -81,11 +81,9 @@ export class AnchorBehavior extends TargetBehavior {
             ? []
             : [...selectionManager.meshes]
           : [mesh]
-
-        unsnapAll(
-          this,
-          moved.map(({ id }) => id)
-        )
+        for (const { id } of moved) {
+          this.unsnap(id)
+        }
       }
     })
 
@@ -206,6 +204,22 @@ export class AnchorBehavior extends TargetBehavior {
   }
 
   /**
+   * Release all snapped meshes
+   */
+  unsnapAll() {
+    const {
+      mesh,
+      state: { anchors }
+    } = this
+    if (mesh) {
+      const ids = anchors.map(({ snappedId }) => snappedId).filter(Boolean)
+      for (const id of ids) {
+        this.unsnap(id)
+      }
+    }
+  }
+
+  /**
    * Returns the zone to which a given mesh is snapped
    * @param {string} meshId - id of the tested mesh
    * @returns {import('./targetable').DropZone | null} zone to which this mesh is snapped, if any
@@ -249,6 +263,7 @@ export class AnchorBehavior extends TargetBehavior {
     }
     this.mesh.metadata.snap = this.snap.bind(this)
     this.mesh.metadata.unsnap = this.unsnap.bind(this)
+    this.mesh.metadata.unsnapAll = this.unsnapAll.bind(this)
     this.mesh.metadata.anchors = this.state.anchors
   }
 }
@@ -301,12 +316,6 @@ async function snapToAnchor(behavior, snappedId, zone, animate = true) {
 
 function computeBaseAltitude(mesh, snapped) {
   return getAtlitudeAbove(mesh) - snapped.absolutePosition.y
-}
-
-function unsnapAll(behavior, ids) {
-  for (const id of ids) {
-    behavior.unsnap(id)
-  }
 }
 
 function setAnchor(behavior, zone, snapped) {
