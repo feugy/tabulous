@@ -8,28 +8,6 @@ const logger = makeLogger('gravity')
 
 const down = Vector3.Down()
 
-function findBelow(mesh, predicate) {
-  const over = new Map()
-  const { boundingBox } = mesh.getBoundingInfo()
-
-  const vertices = [mesh.absolutePosition]
-  for (const vertex of boundingBox.vectorsWorld) {
-    if (vertex.y <= vertices[0].y) {
-      vertices.push(vertex)
-    }
-  }
-
-  const scene = mesh.getScene()
-  for (const vertex of vertices) {
-    const hit = scene.pickWithRay(new Ray(vertex, down), predicate)
-    if (hit?.pickedMesh) {
-      const count = over.get(hit.pickedMesh) || 0
-      over.set(hit.pickedMesh, count + 1)
-    }
-  }
-  return over
-}
-
 /**
  * REturns the absolute altitude (Y axis) above a given mesh, including minimum spacing.
  * @param {import('@babel/core').Mesh} mesh - related mesh.
@@ -113,4 +91,26 @@ export function sortByElevation(meshes, highestFirst = false) {
       ? b.absolutePosition.y - a.absolutePosition.y
       : a.absolutePosition.y - b.absolutePosition.y
   )
+}
+
+function findBelow(mesh, predicate) {
+  const over = new Map()
+  const { boundingBox } = mesh.getBoundingInfo()
+
+  const vertices = [mesh.absolutePosition]
+  for (const vertex of boundingBox.vectorsWorld) {
+    if (vertex.y <= vertices[0].y) {
+      vertices.push(vertex)
+    }
+  }
+
+  const scene = mesh.getScene()
+  for (const vertex of vertices) {
+    const hit = scene.pickWithRay(new Ray(vertex, down), predicate)
+    if (hit?.pickedMesh) {
+      const count = over.get(hit.pickedMesh) || 0
+      over.set(hit.pickedMesh, count + 1)
+    }
+  }
+  return over
 }

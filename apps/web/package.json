@@ -7,7 +7,7 @@
     "preview": "vite preview",
     "start": "vite --https --host",
     "test": "jest --coverage",
-    "test:dev": "jest --watch"
+    "test:dev": "jest --watch --coverage"
   },
   "devDependencies": {
     "@atelier-wb/svelte": "^0.6.7",

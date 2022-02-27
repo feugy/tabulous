@@ -1,8 +1,7 @@
 import { Animation } from '@babylonjs/core/Animations/animation'
-import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { AnimateBehavior } from './animatable'
 import { RotateBehaviorName } from './names'
-import { applyGravity } from '../utils'
+import { applyGravity, runAnimation } from '../utils'
 import { controlManager } from '../managers'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
@@ -86,7 +85,6 @@ export class RotateBehavior extends AnimateBehavior {
       state: { duration, angle },
       isAnimated,
       mesh,
-      frameRate,
       rotateAnimation,
       moveAnimation
     } = this
@@ -99,48 +97,34 @@ export class RotateBehavior extends AnimateBehavior {
     controlManager.record({ mesh, fn: 'rotate' })
 
     const attach = detach(mesh)
-    const to = mesh.position.clone()
+    const [x, y, z] = mesh.position.asArray()
     const rotation = 0.5 * Math.PI
 
-    const lastFrame = Math.round(frameRate * (duration / 1000))
-    rotateAnimation.setKeys([
-      { frame: 0, value: angle },
-      { frame: lastFrame, value: angle + rotation }
-    ])
-    moveAnimation.setKeys([
-      { frame: 0, value: to },
-      {
-        frame: lastFrame * 0.5,
-        value: new Vector3(to.x, to.y + 0.5, to.z)
+    updateAngle(this, rotation)
+    await runAnimation(
+      this,
+      () => {
+        attach()
+        applyGravity(mesh)
+        logger.debug({ mesh }, `end rotating ${mesh.id}`)
       },
-      { frame: lastFrame, value: to }
-    ])
-    // prevents interactions and collisions
-    mesh.isPickable = false
-    return new Promise(resolve =>
-      mesh
-        .getScene()
-        .beginDirectAnimation(
-          mesh,
-          [rotateAnimation, moveAnimation],
-          0,
-          lastFrame,
-          false,
-          1,
-          () => {
-            updateAngle(this, rotation)
-            mesh.rotation.y = this.state.angle
-            logger.debug({ mesh }, `end rotating ${mesh.id}`)
-            // framed animation may not exactly end where we want, so force the final position
-            mesh.position.copyFrom(to)
-            attach()
-            applyGravity(mesh)
-            mesh.isPickable = true
-            this.isAnimated = false
-            this.onAnimationEndObservable.notifyObservers()
-            resolve()
-          }
-        )
+      {
+        animation: rotateAnimation,
+        duration,
+        keys: [
+          { frame: 0, values: [angle] },
+          { frame: 100, values: [angle + rotation] }
+        ]
+      },
+      {
+        animation: moveAnimation,
+        duration,
+        keys: [
+          { frame: 0, values: [x, y, z] },
+          { frame: 50, values: [x, y + 0.5, z] },
+          { frame: 100, values: [x, y, z] }
+        ]
+      }
     )
   }
 

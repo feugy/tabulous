@@ -1,7 +1,7 @@
 import { Animation } from '@babylonjs/core/Animations/animation'
 import { Observable } from '@babylonjs/core/Misc/observable'
 import { AnimateBehaviorName } from './names'
-import { applyGravity } from '../utils'
+import { applyGravity, runAnimation } from '../utils'
 
 export class AnimateBehavior {
   /**
@@ -72,44 +72,25 @@ export class AnimateBehavior {
    * @param {boolean} [gravity=true] - applies gravity at the end.
    */
   async moveTo(to, duration, gravity = true) {
-    const { isAnimated, mesh, frameRate, moveAnimation } = this
+    const { isAnimated, mesh, moveAnimation } = this
     if (isAnimated || !mesh) {
       return
     }
-    this.isAnimated = true
-    const from = mesh.position.clone()
-
-    const lastFrame = mesh.getScene().isLoading
-      ? 1
-      : Math.round(frameRate * (duration / 1000))
-    moveAnimation.setKeys([
-      { frame: 0, value: from },
-      { frame: lastFrame, value: to }
-    ])
-    // prevents interactions and collisions
-    mesh.isPickable = false
-    return new Promise(resolve =>
-      mesh
-        .getScene()
-        .beginDirectAnimation(
-          mesh,
-          [moveAnimation],
-          0,
-          lastFrame,
-          false,
-          1,
-          () => {
-            // framed animation may not exactly end where we want, so force the final position
-            mesh.position.copyFrom(to)
-            if (gravity) {
-              applyGravity(mesh)
-            }
-            mesh.isPickable = true
-            this.isAnimated = false
-            this.onAnimationEndObservable.notifyObservers()
-            resolve()
-          }
-        )
+    await runAnimation(
+      this,
+      () => {
+        if (gravity) {
+          applyGravity(mesh)
+        }
+      },
+      {
+        animation: moveAnimation,
+        duration: mesh.getScene().isLoading ? 0 : duration,
+        keys: [
+          { frame: 0, values: mesh.position.asArray() },
+          { frame: 100, values: to.asArray() }
+        ]
+      }
     )
   }
 }

@@ -91,8 +91,7 @@ describe('AnimateBehavior', () => {
       expect(mesh.absolutePosition).toEqual(
         new Vector3(position.x, 0.5, position.z)
       )
-      expect(realDuration).toBeGreaterThanOrEqual(25)
-      expect(realDuration).toBeLessThanOrEqual(75)
+      expect(realDuration).toBeLessThanOrEqual(duration * 0.1)
     })
 
     it('ignores next animations while animating', async () => {

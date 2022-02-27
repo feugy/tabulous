@@ -1,8 +1,8 @@
 import { Animation } from '@babylonjs/core/Animations/animation'
-import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { AnimateBehavior } from '.'
-import { handManager } from '../managers'
 import { DrawBehaviorName } from './names'
+import { handManager } from '../managers'
+import { runAnimation } from '../utils'
 
 /**
  * @typedef {object} DrawableState behavior persistent state, including:
@@ -95,9 +95,9 @@ export class DrawBehavior extends AnimateBehavior {
     const { fadeKeys, moveKeys } = buildAnimationKeys(mesh)
     await runAnimation(
       this,
-      duration,
-      { animation: fadeAnimation, keys: fadeKeys },
-      { animation: moveAnimation, keys: moveKeys }
+      null,
+      { animation: fadeAnimation, keys: fadeKeys, duration },
+      { animation: moveAnimation, keys: moveKeys, duration }
     )
   }
 
@@ -120,9 +120,9 @@ export class DrawBehavior extends AnimateBehavior {
     const { fadeKeys, moveKeys } = buildAnimationKeys(mesh, true)
     await runAnimation(
       this,
-      duration,
-      { animation: fadeAnimation, keys: fadeKeys },
-      { animation: moveAnimation, keys: moveKeys }
+      null,
+      { animation: fadeAnimation, duration, keys: fadeKeys },
+      { animation: moveAnimation, duration, keys: moveKeys }
     )
   }
 
@@ -176,62 +176,5 @@ function buildAnimationKeys({ position }, invert = false) {
         values: [x, y + 3, z, [0, 0, 0], [0, 0, 0]]
       }
     ]
-  }
-}
-
-function runAnimation(behavior, duration, ...animationSpecs) {
-  const { mesh, frameRate, onAnimationEndObservable } = behavior
-  const lastFrame = Math.round(frameRate * (duration / 750))
-  const animations = []
-  for (const { animation, keys } of animationSpecs) {
-    animations.push(animation)
-    const parse =
-      animation.dataType === Animation.ANIMATIONTYPE_VECTOR3
-        ? parseVector3
-        : parseFloat
-    animation.setKeys(
-      keys.map(key => parse(key, lastFrame)).sort((a, b) => a.frame - b.frame)
-    )
-  }
-  // prevents interactions and collisions
-  mesh.isPickable = false
-  behavior.isAnimated = true
-  return new Promise(resolve =>
-    mesh
-      .getScene()
-      .beginDirectAnimation(mesh, animations, 0, lastFrame, false, 1, () => {
-        mesh.isPickable = true
-        behavior.isAnimated = false
-        onAnimationEndObservable.notifyObservers()
-        resolve()
-      })
-  )
-}
-
-// inspired from Animation.parse() https://github.com/BabylonJS/Babylon.js/blob/master/src/Animations/animation.ts#L1224
-
-function parseVector3(
-  { frame, values: [x, y, z, inTangent, outTangent, interpolation] },
-  lastFrame
-) {
-  return {
-    frame: (frame * lastFrame) / 100,
-    value: Vector3.FromArray([x, y, z]),
-    inTangent: inTangent ? Vector3.FromArray(inTangent) : undefined,
-    outTangent: outTangent ? Vector3.FromArray(outTangent) : undefined,
-    interpolation: interpolation ? Vector3.FromArray(interpolation) : undefined
-  }
-}
-
-function parseFloat(
-  { frame, values: [value, inTangent, outTangent, interpolation] },
-  lastFrame
-) {
-  return {
-    frame: (frame * lastFrame) / 100,
-    value,
-    inTangent,
-    outTangent,
-    interpolation
   }
 }

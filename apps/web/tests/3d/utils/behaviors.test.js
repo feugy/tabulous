@@ -1,3 +1,4 @@
+import { Animation } from '@babylonjs/core/Animations/animation'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import {
@@ -15,6 +16,7 @@ import {
   getTargetableBehavior,
   registerBehaviors,
   restoreBehaviors,
+  runAnimation,
   serializeBehaviors
 } from '../../../src/3d/utils/behaviors'
 import {
@@ -577,5 +579,118 @@ describe('serializeBehaviors() 3D utility', () => {
 
   it('does nothing without behaviors', () => {
     expect(serializeBehaviors([])).toEqual({})
+  })
+})
+
+describe('runAnimation() 3D utility', () => {
+  let behavior
+
+  beforeEach(() => {
+    behavior = new AnimateBehavior()
+    box.addBehavior(behavior, true)
+  })
+
+  it('handles Float animated properties', async () => {
+    const duration = 100
+    const animation = new Animation(
+      'fade',
+      'visibility',
+      behavior.frameRate,
+      Animation.ANIMATIONTYPE_FLOAT,
+      Animation.ANIMATIONLOOPMODE_CONSTANT
+    )
+    await runAnimation(behavior, null, {
+      animation,
+      duration,
+      keys: [
+        { frame: 0, values: [1, undefined, 1] },
+        { frame: 50, values: [1, null, null, 3] },
+        { frame: 100, values: [0, 2] }
+      ]
+    })
+    expect(animation.getKeys()).toEqual([
+      { frame: 0, value: 1, outTangent: 1 },
+      {
+        frame: 1.5,
+        value: 1,
+        inTangent: null,
+        outTangent: null,
+        interpolation: 3
+      },
+      { frame: 3, value: 0, inTangent: 2 }
+    ])
+  })
+
+  it('handles Vector3 animated properties', async () => {
+    const duration = 100
+    const animation = new Animation(
+      'rotate',
+      'rotation',
+      behavior.frameRate,
+      Animation.ANIMATIONTYPE_VECTOR3,
+      Animation.ANIMATIONLOOPMODE_CONSTANT
+    )
+    await runAnimation(behavior, null, {
+      animation,
+      duration,
+      keys: [
+        { frame: 0, values: [1, 2, 3, undefined, [1, 1, 1]] },
+        { frame: 50, values: [2, 3, 4, null, null, [3, 3, 3]] },
+        { frame: 100, values: [3, 4, 5, [2, 2, 2]] }
+      ]
+    })
+    const finalRotation = new Vector3(3, 4, 5)
+    finalRotation._isDirty = false
+    expect(animation.getKeys()).toEqual([
+      {
+        frame: 0,
+        value: new Vector3(1, 2, 3),
+        outTangent: new Vector3(1, 1, 1)
+      },
+      {
+        frame: 1.5,
+        value: new Vector3(2, 3, 4),
+        interpolation: new Vector3(3, 3, 3)
+      },
+      { frame: 3, value: finalRotation, inTangent: new Vector3(2, 2, 2) }
+    ])
+  })
+
+  it('picks longest animations', async () => {
+    const duration = Math.floor(500 * Math.random() + 300)
+    const animation = new Animation(
+      'fade',
+      'visibility',
+      behavior.frameRate,
+      Animation.ANIMATIONTYPE_FLOAT,
+      Animation.ANIMATIONLOOPMODE_CONSTANT
+    )
+    expect(box.visibility).toEqual(1)
+    const start = Date.now()
+    await runAnimation(
+      behavior,
+      null,
+      {
+        animation,
+        duration,
+        keys: [
+          { frame: 0, values: [1] },
+          { frame: 100, values: [0] }
+        ]
+      },
+      {
+        animation: behavior.moveAnimation,
+        duration: duration * 0.5,
+        keys: [
+          { frame: 0, values: [0, 0, 0] },
+          { frame: 100, values: [10, 10, 10] }
+        ]
+      }
+    )
+    const ellapsed = Date.now() - start
+    expect(ellapsed).toBeGreaterThanOrEqual(duration * 0.75)
+    expect(ellapsed).toBeLessThanOrEqual(duration * 1.25)
+    expect(box.visibility).toEqual(0)
+    expectPosition(box, [10, 10, 10])
   })
 })
