@@ -17,6 +17,7 @@ import {
 } from '../utils'
 import { controlManager } from './control'
 import { inputManager } from './input'
+import { selectionManager } from './selection'
 
 class HandManager {
   /**
@@ -228,11 +229,16 @@ function handDrag(manager, { type, mesh, event }) {
     if (type !== 'dragStop') {
       inputManager.stopDrag(event)
     } else {
-      mesh.isPhantom = true
-      const newMesh = createHandMesh(manager, mesh)
-      unflipIfNeeded(manager, newMesh)
-      recordDraw(newMesh)
-      mesh.dispose(false, true)
+      let drawn = selectionManager.meshes.has(mesh)
+        ? [...selectionManager.meshes]
+        : [mesh]
+      for (const mesh of drawn) {
+        mesh.isPhantom = true
+        const newMesh = createHandMesh(manager, mesh)
+        unflipIfNeeded(manager, newMesh)
+        recordDraw(newMesh)
+        mesh.dispose(false, true)
+      }
     }
   }
 }

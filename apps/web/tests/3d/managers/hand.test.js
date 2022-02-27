@@ -11,7 +11,8 @@ import {
   handManager as manager,
   inputManager,
   controlManager,
-  moveManager
+  moveManager,
+  selectionManager
 } from '../../../src/3d/managers'
 import { createCard } from '../../../src/3d/meshes'
 import { DrawBehaviorName, FlipBehaviorName } from '../../../src/3d/behaviors'
@@ -47,7 +48,10 @@ describe('HandManager', () => {
     actionObserver = controlManager.onActionObservable.add(actionRecorded)
   })
 
-  beforeEach(jest.resetAllMocks)
+  beforeEach(() => {
+    jest.resetAllMocks()
+    selectionManager.clear()
+  })
 
   afterAll(() => controlManager.onActionObservable.remove(actionObserver))
 
@@ -486,6 +490,63 @@ describe('HandManager', () => {
         expect(actionRecorded).toHaveBeenCalledTimes(1)
         expect(controlManager.isManaging(newMesh)).toBe(true)
         expect(moveManager.isManaging(newMesh)).toBe(true)
+      })
+
+      it('moves all selected meshes to hand by dragging', async () => {
+        const [mesh1, mesh2] = cards
+        selectionManager.select(mesh1)
+        selectionManager.select(mesh2)
+        const stopDrag = jest.spyOn(inputManager, 'stopDrag')
+
+        let movedPosition = new Vector3(1, 0, -19)
+        mesh1.setAbsolutePosition(movedPosition)
+        mesh1.computeWorldMatrix()
+        inputManager.onDragObservable.notifyObservers({
+          type: 'dragStart',
+          mesh: mesh1,
+          event: { x: 289.7, y: 175 }
+        })
+        expect(stopDrag).toHaveBeenCalledTimes(1)
+        inputManager.onDragObservable.notifyObservers({
+          type: 'dragStop',
+          mesh: mesh1,
+          event: { x: 289.7, y: 175 }
+        })
+        await waitForLayout()
+        expect(scene.getMeshById(mesh1.id)?.id).toBeUndefined()
+        const newMesh1 = handScene.getMeshById(mesh1.id)
+        expect(newMesh1?.id).toBeDefined()
+        const newMesh2 = handScene.getMeshById(mesh2.id)
+        expect(newMesh2?.id).toBeDefined()
+        const unitWidth = cardWidth + gap
+        expectPosition(handCards[1], [unitWidth * -2, 0, computeZ()])
+        expectPosition(handCards[0], [unitWidth * -1, 0.01, computeZ()])
+        expectPosition(newMesh2, [0, 0.02, computeZ()])
+        expectPosition(newMesh1, [unitWidth * 1, 0.03, computeZ()])
+        expectPosition(handCards[2], [unitWidth * 2, 0.04, computeZ()])
+        expect(actionRecorded).toHaveBeenCalledWith(
+          {
+            meshId: mesh1.id,
+            fn: 'draw',
+            args: [expect.any(Object)],
+            fromHand: false
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenCalledWith(
+          {
+            meshId: mesh2.id,
+            fn: 'draw',
+            args: [expect.any(Object)],
+            fromHand: false
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenCalledTimes(2)
+        expect(controlManager.isManaging(newMesh1)).toBe(true)
+        expect(moveManager.isManaging(newMesh1)).toBe(true)
+        expect(controlManager.isManaging(newMesh2)).toBe(true)
+        expect(moveManager.isManaging(newMesh2)).toBe(true)
       })
 
       it('unflips flipped mesh while dragging into hand', async () => {
