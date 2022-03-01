@@ -1,13 +1,18 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
-import { configures3dTestEngine } from '../../test-utils'
-import { selectionManager as manager } from '../../../src/3d/managers'
+import { configures3dTestEngine, expectMeshes } from '../../test-utils'
+import {
+  selectionManager as manager,
+  handManager
+} from '../../../src/3d/managers'
 
 describe('SelectionManager', () => {
   let scene
+  let handScene
 
   configures3dTestEngine(created => {
     scene = created.scene
+    handScene = created.handScene
   })
 
   beforeEach(() => {
@@ -64,10 +69,10 @@ describe('SelectionManager', () => {
   })
 
   describe('given some selected meshes', () => {
-    let meshes = ['box1', 'box2']
+    let meshes
 
     beforeEach(() => {
-      meshes = meshes.map(id => {
+      meshes = ['box1', 'box2', 'box3'].map(id => {
         const mesh = CreateBox(id, {})
         manager.select(mesh)
         return mesh
@@ -78,8 +83,21 @@ describe('SelectionManager', () => {
       it('does not add the same mesh twice', () => {
         manager.select(meshes[0])
         expect(manager.meshes.has(meshes[0])).toBe(true)
-        expect(manager.meshes.size).toBe(2)
+        expect(manager.meshes.size).toBe(3)
         expectSelected(meshes[0])
+      })
+    })
+
+    describe('getSelection()', () => {
+      it('returns entire selection when it contains provided mesh', () => {
+        expectMeshes(manager.getSelection(meshes[0]), meshes)
+      })
+
+      it('returns provided mesh if it not selected', () => {
+        manager.clear()
+        manager.select(meshes[1])
+        manager.select(meshes[2])
+        expectMeshes(manager.getSelection(meshes[0]), [meshes[0]])
       })
     })
 
@@ -94,24 +112,30 @@ describe('SelectionManager', () => {
   })
 
   describe('init()', () => {
-    it('assigns scene', () => {
-      manager.init({ scene })
-      expect(manager.scene).toBeDefined()
+    it('assigns scenes', () => {
+      manager.init({ scene, handScene })
+      expect(manager.scene).toEqual(scene)
+      expect(manager.handScene).toEqual(handScene)
     })
   })
 
   describe('given some meshes', () => {
-    let meshes = [
-      { id: 'box1', position: new Vector3(1, 1, 2) },
-      { id: 'box2', position: new Vector3(0, 0, 0) },
-      { id: 'box3', position: new Vector3(-5, -2, -2) },
-      { id: 'box4', position: new Vector3(5, 5, 5) },
-      { id: 'box5', position: new Vector3(10, 0, 0) }
-    ]
+    let meshes
+
+    beforeAll(() => manager.init({ scene, handScene }))
 
     beforeEach(() => {
-      meshes = meshes.map(({ id, position }) => {
-        const mesh = CreateBox(id, {})
+      meshes = [
+        { id: 'box1', position: new Vector3(1, 1, 2), scene },
+        { id: 'box2', position: new Vector3(0, 0, 0), scene },
+        { id: 'box3', position: new Vector3(-5, -2, -2), scene },
+        { id: 'box4', position: new Vector3(5, 5, 5), scene },
+        { id: 'box5', position: new Vector3(10, 0, 0), scene },
+        { id: 'box6', position: new Vector3(10, 0, -10), scene: handScene },
+        { id: 'box7', position: new Vector3(0, 0, -10), scene: handScene },
+        { id: 'box8', position: new Vector3(-10, 0, -10), scene: handScene }
+      ].map(({ id, position, scene }) => {
+        const mesh = CreateBox(id, {}, scene)
         mesh.setAbsolutePosition(position)
         mesh.computeWorldMatrix()
         return mesh
@@ -119,7 +143,7 @@ describe('SelectionManager', () => {
     })
 
     describe('drawSelectionBox()', () => {
-      it('enables selecting contained meshes', () => {
+      it('allows selecting contained meshes on main scene', () => {
         manager.drawSelectionBox({ x: 1000, y: 550 }, { x: 1100, y: 400 })
         manager.selectWithinBox()
         expectSelection([meshes[1], meshes[0]])
@@ -130,6 +154,28 @@ describe('SelectionManager', () => {
         manager.drawSelectionBox({ x: 1100, y: 550 }, { x: 1000, y: 400 })
         manager.selectWithinBox()
         expectSelection([meshes[4], meshes[1], meshes[0]])
+      })
+
+      it('allows selecting contained meshes in hand', () => {
+        jest.spyOn(handManager, 'isPointerInHand').mockReturnValueOnce(true)
+        manager.drawSelectionBox({ x: 100, y: 400 }, { x: 1100, y: 900 })
+        manager.selectWithinBox()
+        expectSelection([meshes[6], meshes[7]])
+      })
+
+      it('clears selection from hand when selecting in main scene', () => {
+        manager.select(meshes[6])
+        manager.drawSelectionBox({ x: 1000, y: 550 }, { x: 1100, y: 400 })
+        manager.selectWithinBox()
+        expectSelection([meshes[1], meshes[0]])
+      })
+
+      it('clears selection from main when selecting in hand', () => {
+        manager.select(meshes[4])
+        jest.spyOn(handManager, 'isPointerInHand').mockReturnValueOnce(true)
+        manager.drawSelectionBox({ x: 100, y: 400 }, { x: 1100, y: 900 })
+        manager.selectWithinBox()
+        expectSelection([meshes[6], meshes[7]])
       })
     })
   })

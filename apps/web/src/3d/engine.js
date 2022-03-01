@@ -56,7 +56,7 @@ export function createEngine({
   inputManager.init({ scene, handScene, longTapDelay, doubleTapDelay })
   moveManager.init({ scene })
   controlManager.init({ scene, handScene })
-  selectionManager.init({ scene })
+  selectionManager.init({ scene, handScene })
   targetManager.init({ scene })
 
   createTable({}, scene)

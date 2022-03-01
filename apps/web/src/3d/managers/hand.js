@@ -60,7 +60,7 @@ class HandManager {
     }
     this.contentWidth = 0
     this.dimensionsByMeshId = null
-    this.moved = null
+    this.moved = []
     this.changes$ = new Subject()
     this.changes$.pipe(debounceTime(10)).subscribe({
       next: () => {
@@ -145,8 +145,9 @@ class HandManager {
               { mesh: removed },
               `mesh ${removed.id} removed from hand`
             )
-            if (removed === this.moved) {
-              this.moved = null
+            const idx = this.moved.findIndex(({ id }) => removed.id === id)
+            if (idx >= 0) {
+              this.moved.splice(idx, 1)
             }
             this.changes$.next()
           }
@@ -232,6 +233,18 @@ class HandManager {
       }
     }
   }
+
+  /**
+   * Indicates when the user pointer (in screen coordinate) is over a non-empty hand.
+   * @param {import('../utils').ScreenPosition} position - pointer or mouse event.
+   * @returns {boolean} whether the pointer is over the hand or not.
+   */
+  isPointerInHand(position) {
+    return (
+      this.handScene?.meshes.length > 0 &&
+      position?.y >= this.extent.screenHeight
+    )
+  }
 }
 
 /**
@@ -269,18 +282,23 @@ function handDrag(manager, { type, mesh, event }) {
   if (mesh?.getScene() === handScene) {
     let moved = manager.moved
     if (type === 'dragStart') {
-      moved = mesh
+      moved = selectionManager.getSelection(mesh)
     } else if (type === 'dragStop') {
-      moved = null
+      moved = []
     }
     manager.moved = moved
-    if (moved?.absolutePosition.z > extent.maxZ) {
-      const { x, z } = screenToGround(manager.scene, event)
-      logger.info(
-        { mesh: moved, x, z },
-        `play mesh ${moved.id} from hand by dragging`
-      )
-      recordDraw(createMainMesh(manager, moved, { x, z }))
+    if (moved[0]?.absolutePosition.z > extent.maxZ) {
+      const position = screenToGround(manager.scene, event)
+      const origin = moved[0].absolutePosition.x
+      for (const mesh of [...moved]) {
+        const x = position.x + mesh.absolutePosition.x - origin
+        const { z } = position
+        logger.info(
+          { mesh, x, z },
+          `play mesh ${mesh.id} from hand by dragging`
+        )
+        recordDraw(createMainMesh(manager, mesh, { x, z }))
+      }
     } else {
       layoutMeshs(manager)
     }
@@ -288,9 +306,7 @@ function handDrag(manager, { type, mesh, event }) {
     if (type !== 'dragStop') {
       inputManager.stopDrag(event)
     } else {
-      let drawn = selectionManager.meshes.has(mesh)
-        ? [...selectionManager.meshes]
-        : [mesh]
+      const drawn = selectionManager.getSelection(mesh)
       logger.debug({ drawn }, `dragged meshes into hand`)
       for (const mesh of drawn) {
         mesh.isPhantom = true
@@ -395,7 +411,7 @@ async function layoutMeshs({
   const promises = []
   for (const mesh of meshes) {
     const { width, height, depth } = dimensionsByMeshId.get(mesh.id)
-    if (mesh !== moved) {
+    if (!moved.includes(mesh)) {
       const z = (extent.height - depth) * -0.5 + verticalPadding
       promises.push(
         animateMove(mesh, new Vector3(x + width * 0.5, y, z), duration)

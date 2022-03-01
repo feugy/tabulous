@@ -34,6 +34,8 @@ describe('HandManager', () => {
     width: 59.81750317696051,
     height: 47.21061769667048
   }
+  const renderWidth = 480
+  const renderHeight = 350
   const changeReceived = jest.fn()
   const actionRecorded = jest.fn()
 
@@ -41,7 +43,7 @@ describe('HandManager', () => {
     created => {
       ;({ scene, handScene, engine, camera } = created)
     },
-    { renderWidth: 480, renderHeight: 350 }
+    { renderWidth, renderHeight }
   )
 
   beforeAll(() => {
@@ -303,6 +305,18 @@ describe('HandManager', () => {
       }
     })
 
+    it('can not have hover pointer', () => {
+      expect(
+        manager.isPointerInHand({ x: renderWidth * 0.5, y: renderHeight * 0.5 })
+      ).toBe(false)
+      expect(
+        manager.isPointerInHand({
+          x: renderWidth * 0.5,
+          y: renderHeight * 0.98
+        })
+      ).toBe(false)
+    })
+
     describe('given some meshs in hand', () => {
       let handCards
 
@@ -315,6 +329,21 @@ describe('HandManager', () => {
         await waitForLayout()
         changeReceived.mockReset()
         camera.lockedTarget = new Vector3(0, 0, 0)
+      })
+
+      it('can not have hover pointer', () => {
+        expect(
+          manager.isPointerInHand({
+            x: renderWidth * 0.5,
+            y: renderHeight * 0.5
+          })
+        ).toBe(false)
+        expect(
+          manager.isPointerInHand({
+            x: renderWidth * 0.5,
+            y: renderHeight * 0.98
+          })
+        ).toBe(true)
       })
 
       it('lays out hand when drawing more mesh to hand', async () => {
@@ -420,6 +449,50 @@ describe('HandManager', () => {
           [handCards[0].id, ...positions[0].slice(1)],
           [handCards[2].id, ...positions[1].slice(1)],
           [mesh.id, ...positions[2].slice(1)]
+        ])
+        expect(overlay).not.toHaveClass('visible')
+      })
+
+      it('can re-order an entire selection of hand meshes', async () => {
+        const [mesh1, mesh2, mesh3] = handCards
+        selectionManager.select(mesh2)
+        selectionManager.select(mesh3)
+        const positions = getPositions(handCards)
+        const z = positions[0][3]
+        expect(overlay).not.toHaveClass('visible')
+
+        inputManager.onDragObservable.notifyObservers({
+          type: 'dragStart',
+          mesh: mesh2
+        })
+        await waitForLayout()
+        expect(overlay).toHaveClass('visible')
+        expect(getPositions(handCards)).toEqual(positions)
+        const movedPosition1 = new Vector3(positions[0][1] + 10, 1, z)
+        const movedPosition2 = new Vector3(positions[2][1] + 10, 1, z)
+        mesh2.setAbsolutePosition(movedPosition1)
+        mesh2.computeWorldMatrix()
+        mesh3.setAbsolutePosition(movedPosition2)
+        mesh3.computeWorldMatrix()
+        inputManager.onDragObservable.notifyObservers({
+          type: 'drag',
+          mesh: mesh2
+        })
+        await waitForLayout()
+        expect(getPositions(handCards)).toEqual([
+          [mesh1.id, ...positions[0].slice(1)],
+          [mesh2.id, ...movedPosition1.asArray()],
+          [mesh3.id, ...movedPosition2.asArray()]
+        ])
+        inputManager.onDragObservable.notifyObservers({
+          type: 'dragStop',
+          mesh: mesh1
+        })
+        await waitForLayout()
+        expect(getPositions(handCards)).toEqual([
+          [mesh1.id, ...positions[0].slice(1)],
+          [mesh2.id, ...positions[1].slice(1)],
+          [mesh3.id, ...positions[2].slice(1)]
         ])
         expect(overlay).not.toHaveClass('visible')
       })

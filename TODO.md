@@ -31,11 +31,10 @@
 
 ## UI
 
-- hand multiple selection
 - support color textures
 - apply action on entire selection
 - multiple stack actions (draw, flip, rotate)
-- display peer's name when running draw animations
+- display peer's name when running draw animations + show peer avatar/name instead of pointer
 - configurable player position at game level
 - sort and filter catalog on game names
 - feedback on stacking

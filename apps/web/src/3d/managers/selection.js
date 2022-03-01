@@ -7,6 +7,7 @@ import { ExtrudeShape } from '@babylonjs/core/Meshes/Builders/shapeBuilder'
 import { isContaining, screenToGround, sortByElevation } from '../utils'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
+import { handManager } from './hand'
 
 const logger = makeLogger('selection')
 
@@ -23,6 +24,7 @@ class SelectionManager {
     this.meshes = new Set()
     // private
     this.scene = null
+    this.handScene = null
     this.box = null
   }
 
@@ -30,9 +32,11 @@ class SelectionManager {
    * Gives a scene to the manager.
    * @param {object} params - parameters, including:
    * @param {Scene} params.scene - scene attached to.
+   * @param {Scene} params.handScene - scene for meshes in hand.
    */
-  init({ scene }) {
+  init({ scene, handScene }) {
     this.scene = scene
+    this.handScene = handScene
   }
 
   /**
@@ -43,23 +47,27 @@ class SelectionManager {
   drawSelectionBox(start, end) {
     if (!this.scene) return
     logger.debug({ start, end }, `draw selection box`)
-    const width = start.x - end.x
-    const height = start.y - end.y
-    const { scene } = this
+    const scene = handManager.isPointerInHand(start)
+      ? this.handScene
+      : this.scene
 
     this.box?.dispose()
     const points = [
       screenToGround(scene, start),
-      screenToGround(scene, { x: start.x - width, y: start.y }),
+      screenToGround(scene, { x: start.x, y: end.y }),
       screenToGround(scene, end),
-      screenToGround(scene, { x: start.x, y: start.y - height })
+      screenToGround(scene, { x: end.x, y: start.y })
     ]
     points.push(points[0].clone())
 
-    this.box = CreateLines('selection-hint', {
-      points,
-      colors: Array.from({ length: 6 }, () => Color3.Green().toColor4())
-    })
+    this.box = CreateLines(
+      'selection-hint',
+      {
+        points,
+        colors: Array.from({ length: 6 }, () => Color3.Green().toColor4())
+      },
+      scene
+    )
     // ensure the box to be displayed "in front of" all other meshes
     this.box.renderingGroupId = 2
 
@@ -76,11 +84,15 @@ class SelectionManager {
       for (const point of points) {
         point.rotateByQuaternionAroundPointToRef(rotation, position, point)
       }
-      const box = ExtrudeShape('selection-box', {
-        shape: points,
-        path: [Vector3.Zero(), new Vector3(0, 0, 20)],
-        sideOrientation: Mesh.DOUBLESIDE
-      })
+      const box = ExtrudeShape(
+        'selection-box',
+        {
+          shape: points,
+          path: [Vector3.Zero(), new Vector3(0, 0, 20)],
+          sideOrientation: Mesh.DOUBLESIDE
+        },
+        scene
+      )
       // and finally rotate the extruded polygon back
       box.setPivotPoint(position, Space.WORLD)
       box.rotate(Axis.X, Math.PI / -2)
@@ -89,6 +101,9 @@ class SelectionManager {
       box.visibility = 0
       box.isPickable = false
 
+      if (getFirstSelected(this)?.getScene() !== scene) {
+        this.clear()
+      }
       for (const mesh of scene.meshes) {
         if (mesh.isPickable && isContaining(box, mesh)) {
           addToSelection(this, mesh)
@@ -128,6 +143,14 @@ class SelectionManager {
     }
     this.meshes.clear()
   }
+
+  /**
+   * @param {Mesh} mesh - tested mesh.
+   * @returns {Mesh[]} the tested mesh, or if it is contained in current selection, the entire selection.
+   */
+  getSelection(mesh) {
+    return this.meshes.has(mesh) ? [...this.meshes] : [mesh]
+  }
 }
 
 /**
@@ -146,4 +169,8 @@ function addToSelection(manager, mesh) {
 function reorderSelection(manager) {
   // keep selection ordered from lowest to highest: it'll guarantuee gravity application
   manager.meshes = new Set(sortByElevation(manager.meshes))
+}
+
+function getFirstSelected(manager) {
+  return manager.meshes.values().next().value
 }

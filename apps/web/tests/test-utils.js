@@ -217,3 +217,7 @@ export async function expectAnimationEnd(behavior) {
     behavior.onAnimationEndObservable.addOnce(resolve)
   )
 }
+
+export function expectMeshes(actual, expected) {
+  expect(getIds(actual)).toEqual(getIds(expected))
+}
