@@ -1,6 +1,9 @@
+import { Animation } from '@babylonjs/core/Animations/animation'
+import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import {
   AnchorBehavior,
   DetailBehavior,
+  DrawBehavior,
   FlipBehavior,
   MoveBehavior,
   RotateBehavior,
@@ -10,6 +13,7 @@ import {
   AnchorBehaviorName,
   AnimateBehaviorName,
   DetailBehaviorName,
+  DrawBehaviorName,
   FlipBehaviorName,
   MoveBehaviorName,
   RotateBehaviorName,
@@ -23,6 +27,7 @@ const behaviorNames = [
   [FlipBehaviorName, FlipBehavior],
   [RotateBehaviorName, RotateBehavior],
   [DetailBehaviorName, DetailBehavior],
+  [DrawBehaviorName, DrawBehavior],
   [AnchorBehaviorName, AnchorBehavior],
   [StackBehaviorName, StackBehavior]
 ]
@@ -69,9 +74,7 @@ export function restoreBehaviors(behaviors, state) {
 export function serializeBehaviors(behaviors) {
   const result = {}
   for (const behavior of behaviors) {
-    if (behavior.state) {
-      result[behavior.name] = behavior.state
-    }
+    result[behavior.name] = behavior.state
   }
   return result
 }
@@ -126,4 +129,101 @@ export function getTargetableBehavior(mesh) {
     mesh?.getBehaviorByName(AnchorBehaviorName) ??
     mesh?.getBehaviorByName(TargetBehaviorName)
   )
+}
+
+/**
+ * @typedef {object} AnimationSpec - an animation's specifications:
+ * @property {import('@babel/core').Animation} animation - the animation object ran (controls one property of the animated mesh).
+ * @property {object[]} keys - a list of keys for the animation object, as allowed by Babylon's Animation.Parse() methode
+ * @property {number} duration - duration in milliseconds.
+ */
+
+/**
+ * Runs in parallel a list of animations for a given AnimateBehavior.
+ * While running animations:
+ * - the behavior's isAnimated is true
+ * - the behavior's mesh is not pickable
+ *
+ * When all animation have completed:
+ * - onEnd function is synchronously invoked
+ * - the behavior's onAnimationEndObservable observers are notified.
+ *
+ * The animation keys are serialized as per Babylon's Animation Curve Editor.
+ * @async
+ * @param {import('../behaviors').AnimateBehavior} behavior - animated behavior.
+ * @param {function} onEnd - function invoked when all animations have completed.
+ * @param {AnimationSpec[]} animationSpecs - list of animation specs.
+ */
+export function runAnimation(behavior, onEnd, ...animationSpecs) {
+  const { mesh, frameRate, onAnimationEndObservable } = behavior
+  const lastFrame = buildLastFrame(frameRate, animationSpecs)
+  const animations = []
+  for (const { animation, keys } of animationSpecs) {
+    animations.push(animation)
+    const parse =
+      animation.dataType === Animation.ANIMATIONTYPE_VECTOR3
+        ? parseVector3
+        : parseFloat
+    animation.setKeys(
+      keys.map(key => parse(key, lastFrame)).sort((a, b) => a.frame - b.frame)
+    )
+  }
+  // prevents interactions and collisions
+  mesh.isPickable = false
+  behavior.isAnimated = true
+  return new Promise(resolve =>
+    mesh
+      .getScene()
+      .beginDirectAnimation(mesh, animations, 0, lastFrame, false, 1, () => {
+        mesh.isPickable = true
+        behavior.isAnimated = false
+        // framed animation may not exactly end where we want, so force the final position
+        for (const { animation } of animationSpecs) {
+          mesh[animation.targetProperty] =
+            animation.getKeys()[animation.getKeys().length - 1].value
+        }
+        mesh.computeWorldMatrix(true)
+        if (onEnd) {
+          onEnd()
+        }
+        onAnimationEndObservable.notifyObservers()
+        resolve()
+      })
+  )
+}
+
+function buildLastFrame(frameRate, animationSpecs) {
+  let maxDuration = 0
+  for (const { duration } of animationSpecs) {
+    maxDuration = Math.max(duration, maxDuration)
+  }
+  return Math.round(frameRate * (maxDuration / 1050))
+}
+
+// inspired from Animation.parse() https://github.com/BabylonJS/Babylon.js/blob/master/src/Animations/animation.ts#L1224
+
+function parseVector3(
+  { frame, values: [x, y, z, inTangent, outTangent, interpolation] },
+  lastFrame
+) {
+  return {
+    frame: (frame * lastFrame) / 100,
+    value: Vector3.FromArray([x, y, z]),
+    inTangent: inTangent ? Vector3.FromArray(inTangent) : undefined,
+    outTangent: outTangent ? Vector3.FromArray(outTangent) : undefined,
+    interpolation: interpolation ? Vector3.FromArray(interpolation) : undefined
+  }
+}
+
+function parseFloat(
+  { frame, values: [value, inTangent, outTangent, interpolation] },
+  lastFrame
+) {
+  return {
+    frame: (frame * lastFrame) / 100,
+    value,
+    inTangent,
+    outTangent,
+    interpolation
+  }
 }

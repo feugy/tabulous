@@ -48,17 +48,25 @@ export function attachInputs({
   const wheels$ = new Subject()
   const pinchs$ = new Subject()
   const meshHover$ = new Subject()
+  const details$ = new Subject()
+  const behaviorAction$ = new Subject()
 
   const mapping = [
     { observable: inputManager.onTapObservable, subject: taps$ },
     { observable: inputManager.onHoverObservable, subject: meshHover$ },
     { observable: inputManager.onDragObservable, subject: drags$ },
     { observable: inputManager.onWheelObservable, subject: wheels$ },
-    { observable: inputManager.onPinchObservable, subject: pinchs$ }
+    { observable: inputManager.onPinchObservable, subject: pinchs$ },
+    { observable: controlManager.onDetailedObservable, subject: details$ },
+    { observable: controlManager.onActionObservable, subject: behaviorAction$ }
   ]
   // proxy Babylon observables to RX subjects
   for (const { observable, subject } of mapping) {
     mapping.observer = observable.add(subject.next.bind(subject))
+  }
+
+  function resetMenu() {
+    meshForMenu$.next(null)
   }
 
   return [
@@ -70,7 +78,7 @@ export function attachInputs({
      */
     taps$.subscribe({
       next: ({ type, mesh, event }) => {
-        meshForMenu$.next(null)
+        resetMenu()
         if (mesh) {
           if (!selectionManager.meshes.has(mesh)) {
             selectionManager.clear()
@@ -163,7 +171,7 @@ export function attachInputs({
     drags$.subscribe({
       next: ({ type, mesh, button, long, pointers, event }) => {
         if (type === 'dragStart') {
-          meshForMenu$.next(null)
+          resetMenu()
           const kind = pointerKind(event, button, pointers)
           if (mesh) {
             if (!selectionManager.meshes.has(mesh)) {
@@ -258,7 +266,7 @@ export function attachInputs({
     wheels$.subscribe({
       next: ({ event }) => {
         logger.info({ event }, `zooming camera with wheel`)
-        meshForMenu$.next(null)
+        resetMenu()
         cameraManager.zoom(event.deltaY * 0.1)
       }
     }),
@@ -271,7 +279,7 @@ export function attachInputs({
     pinchs$.subscribe({
       next: ({ type, pinchDelta, event }) => {
         if (type === 'pinchStart') {
-          meshForMenu$.next(null)
+          resetMenu()
         } else if (type === 'pinch') {
           const normalized = normalize(pinchDelta, 30, 0, 15)
           if (Math.abs(normalized) > 3) {
@@ -297,6 +305,24 @@ export function attachInputs({
             stackSize$.next(null)
           }
         }
+      }),
+
+    /**
+     * Implements actions when viewing details:
+     * - closes menu
+     */
+    details$.subscribe({
+      next: resetMenu
+    }),
+
+    /**
+     * Implements actions when triggering some behavior:
+     * - closes menu unless flipping and rotating
+     */
+    behaviorAction$
+      .pipe(filter(({ fn }) => fn && fn !== 'rotate' && fn !== 'flip'))
+      .subscribe({
+        next: resetMenu
       })
   ]
 }

@@ -22,13 +22,20 @@ export function isContaining(container, mesh) {
 }
 
 /**
- * Returns a given mesh's height, that is its extend on Y axis.
+ * @typedef {object} Dimensions mesh's bounding box
+ * @property {number} height - the mesh's height.
+ * @property {number} width - the mesh's width.
+ */
+
+/**
+ * Returns a given mesh's dimension, that is its extend on Y and X axes.
  * **Requires a fresh world matrix**.
  * @param {import('@babylonjs/core').Mesh} mesh - for which we want its height.
- * @returns {number} the mesh's height, in 3D scale.
+ * @returns {Dimensions} mesh's dimensions.
  */
-export function getHeight(mesh) {
-  return mesh.getBoundingInfo().boundingBox.extendSizeWorld.y * 2
+export function getDimensions(mesh) {
+  const { x, y, z } = mesh.getBoundingInfo().boundingBox.extendSizeWorld
+  return { width: x * 2, height: y * 2, depth: z * 2 }
 }
 
 /**

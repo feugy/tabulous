@@ -15,10 +15,12 @@ describe('RotateBehavior', () => {
   configures3dTestEngine()
 
   let recordSpy
+  let animationEndReceived
 
   beforeEach(() => {
     jest.clearAllMocks()
     recordSpy = jest.spyOn(controlManager, 'record')
+    animationEndReceived = jest.fn()
   })
 
   it('has initial state', () => {
@@ -68,6 +70,7 @@ describe('RotateBehavior', () => {
     beforeEach(() => {
       behavior = createAttachedRotable({ duration: 50 })
       mesh = behavior.mesh
+      behavior.onAnimationEndObservable.add(animationEndReceived)
     })
 
     it('attaches metadata to its mesh', () => {
@@ -84,6 +87,7 @@ describe('RotateBehavior', () => {
       expect(behavior.state).toEqual(state)
       expect(behavior.mesh).toEqual(mesh)
       expectRotated(mesh, angle)
+      expect(animationEndReceived).not.toHaveBeenCalled()
     })
 
     it('rotates mesh clockwise and apply gravity', async () => {
@@ -95,6 +99,7 @@ describe('RotateBehavior', () => {
       await mesh.metadata.rotate()
       expectRotated(mesh, Math.PI * 0.5)
       expectPosition(mesh, [x, 0.5, z])
+      expect(animationEndReceived).toHaveBeenCalledTimes(1)
     })
 
     it('rotates children along with their parent mesh', async () => {
@@ -111,6 +116,7 @@ describe('RotateBehavior', () => {
       expectRotated(mesh, Math.PI * 0.5)
       expectPosition(mesh, [x, 0.5, z])
       expectRotated(child, 0, Math.PI * 0.5)
+      expect(animationEndReceived).toHaveBeenCalledTimes(1)
     })
 
     it('makes mesh unpickable while rotating', async () => {
@@ -129,19 +135,14 @@ describe('RotateBehavior', () => {
       expect(recordSpy).toHaveBeenCalledTimes(0)
       await mesh.metadata.rotate()
       expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenNthCalledWith(1, {
-        meshId: mesh.id,
-        fn: 'rotate'
-      })
+      expect(recordSpy).toHaveBeenNthCalledWith(1, { mesh, fn: 'rotate' })
       expectRotated(mesh, Math.PI * 0.5)
 
       await mesh.metadata.rotate()
       expect(recordSpy).toHaveBeenCalledTimes(2)
-      expect(recordSpy).toHaveBeenNthCalledWith(2, {
-        meshId: mesh.id,
-        fn: 'rotate'
-      })
+      expect(recordSpy).toHaveBeenNthCalledWith(2, { mesh, fn: 'rotate' })
       expectRotated(mesh, Math.PI)
+      expect(animationEndReceived).toHaveBeenCalledTimes(2)
     })
 
     it('keeps rotation within [0..2*Math.PI[', async () => {
@@ -152,6 +153,7 @@ describe('RotateBehavior', () => {
       await mesh.metadata.rotate()
       await mesh.metadata.rotate()
       expectRotated(mesh, Math.PI * 0.5)
+      expect(animationEndReceived).toHaveBeenCalledTimes(5)
     })
 
     it('can not rotate while animating', async () => {
@@ -165,6 +167,7 @@ describe('RotateBehavior', () => {
       expectPickable(mesh)
       expectRotated(mesh, Math.PI * 0.5)
       expect(recordSpy).toHaveBeenCalledTimes(1)
+      expect(animationEndReceived).toHaveBeenCalledTimes(1)
     })
 
     it('applies current rotation to added child', async () => {
@@ -177,7 +180,7 @@ describe('RotateBehavior', () => {
 
       child.setParent(mesh)
       expectRotated(mesh, angle)
-      expectRotated(child, -angle, 0)
+      expectRotated(child, 0)
     })
 
     it('applies current rotation to removed child', async () => {
@@ -187,7 +190,7 @@ describe('RotateBehavior', () => {
       await child.metadata.rotate()
       child.setParent(mesh)
       expectRotated(mesh, angle)
-      expectRotated(child, 0, angle)
+      expectRotated(child, angle)
 
       child.setParent(null)
       expectRotated(mesh, angle)

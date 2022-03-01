@@ -3,6 +3,7 @@ import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { CreateGround } from '@babylonjs/core/Meshes/Builders/groundBuilder'
 import {
   getMeshScreenPosition,
+  getScreenPosition,
   isAboveTable,
   isPositionAboveTable,
   screenToGround
@@ -201,5 +202,29 @@ describe('getMeshScreenPosition() 3D utility', () => {
   it('handles missing mesh', () => {
     expect(getMeshScreenPosition()).toBeNull()
     expect(getMeshScreenPosition(null)).toBeNull()
+  })
+})
+
+describe('getScreenPosition() 3D utility', () => {
+  it('returns screen position of centered point', () => {
+    expect(getScreenPosition(scene, Vector3.Zero())).toEqual({
+      x: renderWidth / 2,
+      y: renderHeight / 2
+    })
+  })
+
+  it('returns screen position of a point', () => {
+    const { x, y } = getScreenPosition(scene, new Vector3(10, 15, -5))
+    expect(x).toBeCloseTo(1377.798085, 5)
+    expect(y).toBeCloseTo(472.344409, 5)
+  })
+
+  it('considers camera moves', () => {
+    camera.lockedTarget = new Vector3(10, 10, 10)
+    camera.beta = Math.PI
+    scene.updateTransformMatrix()
+    const { x, y } = getScreenPosition(scene, new Vector3(10, 15, -5))
+    expect(x).toBeCloseTo(1023.999991, 5)
+    expect(y).toBeCloseTo(181.728928, 5)
   })
 })

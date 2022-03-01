@@ -14,22 +14,24 @@
     "apps/*"
   ],
   "scripts": {
+    "dev:server": "npm run test:dev -w apps/server",
+    "dev:web": "npm run test:dev -w apps/web",
     "format": "prettier --write .",
     "lint": "eslint .",
     "prepare": "husky install",
     "start": "run-p -ncs start:**",
-    "start:server": "npm start --workspace apps/server",
-    "start:web": "npm start --workspace apps/web",
+    "start:server": "npm start -w apps/server",
+    "start:web": "npm start -w apps/web",
     "test": "run-s -ncs test:**",
-    "test:server": "npm t --workspace apps/server",
-    "test:web": "npm t --workspace apps/web"
+    "test:server": "npm t -w apps/server",
+    "test:web": "npm t -w apps/web"
   },
   "devDependencies": {
-    "eslint": "^8.7.0",
-    "eslint-config-prettier": "^8.1.0",
+    "eslint": "^8.9.0",
+    "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-svelte3": "^3.4.0",
     "husky": "^7.0.4",
-    "lint-staged": "^12.3.2",
+    "lint-staged": "^12.3.3",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.5.1",
     "prettier-plugin-svelte": "^2.6.0"

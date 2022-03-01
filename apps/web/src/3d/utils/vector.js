@@ -61,10 +61,19 @@ export function getMeshScreenPosition(mesh) {
   if (!mesh || !mesh.getScene()?.activeCamera) {
     return null
   }
-  const scene = mesh.getScene()
+  return getScreenPosition(mesh.getScene(), mesh.getAbsolutePosition())
+}
+
+/**
+ * Returns screen coordinate of a 3D position given a scene's active camera.
+ * @param {import('@babylonjs/core').Scene} scene - current scene.
+ * @param {Vector3} position - 3D position.
+ * @returns {ScreenPosition} the corresponding screen position
+ */
+export function getScreenPosition(scene, position) {
   const engine = scene.getEngine()
   const { x, y } = Vector3.Project(
-    mesh.absolutePosition,
+    position,
     Matrix.Identity(),
     scene.getTransformMatrix(),
     scene.activeCamera.viewport.toGlobal(

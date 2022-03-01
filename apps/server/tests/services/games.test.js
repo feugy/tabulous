@@ -64,7 +64,8 @@ describe('given a subscription to game lists and an initialized repository', () 
         playerIds: [playerId],
         meshes: expect.any(Array),
         cameras: [],
-        messages: []
+        messages: [],
+        hands: []
       })
       await sleep()
       expect(updates).toEqual([{ playerId, games: [game] }])
@@ -113,6 +114,16 @@ describe('given a subscription to game lists and an initialized repository', () 
         expect(await saveGame({ id: game.id, meshes }, playerId)).toEqual({
           ...game,
           meshes: [game.meshes[0], game.meshes[0]],
+          cameras: [],
+          messages: []
+        })
+      })
+
+      it('can save player hands', async () => {
+        const hands = [{ playerId, meshes: [game.meshes[0]] }]
+        expect(await saveGame({ id: game.id, hands }, playerId)).toEqual({
+          ...game,
+          hands: [{ playerId, meshes: [game.meshes[0]] }],
           cameras: [],
           messages: []
         })

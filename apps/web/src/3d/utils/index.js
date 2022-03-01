@@ -1,5 +1,7 @@
 export * from './behaviors'
 export * from './gravity'
+export * from './lights'
 export * from './mesh'
 export * from './scene-loader'
+export * from './table'
 export * from './vector'

@@ -7,12 +7,17 @@ import { AnimateBehaviorName, AnimateBehavior } from '../../../src/3d/behaviors'
 describe('AnimateBehavior', () => {
   configures3dTestEngine()
 
+  const animationEndReceived = jest.fn()
+
+  beforeEach(jest.resetAllMocks)
+
   it('has initial state', () => {
     const behavior = new AnimateBehavior()
     expect(behavior.name).toEqual(AnimateBehaviorName)
     expect(behavior.mesh).toBeNull()
     expect(behavior.isAnimated).toBe(false)
     expect(behavior.frameRate).toEqual(30)
+    expect(behavior.onAnimationEndObservable).toBeDefined()
 
     const mesh = CreateBox('box', {})
     mesh.addBehavior(behavior, true)
@@ -30,7 +35,9 @@ describe('AnimateBehavior', () => {
 
   it('does not move without mesh', async () => {
     const behavior = new AnimateBehavior()
+    behavior.onAnimationEndObservable.addOnce(animationEndReceived)
     await behavior.moveTo(new Vector3(10, 5, 4), 50)
+    expect(animationEndReceived).not.toHaveBeenCalled()
   })
 
   describe('given attached to a mesh', () => {
@@ -42,6 +49,7 @@ describe('AnimateBehavior', () => {
       behavior = new AnimateBehavior()
       mesh.addBehavior(behavior, true)
       mesh.getScene()._pendingData = []
+      behavior.onAnimationEndObservable.add(animationEndReceived)
     })
 
     it('moves mesh without gravity', async () => {
@@ -54,6 +62,7 @@ describe('AnimateBehavior', () => {
       expect(mesh.absolutePosition).toEqual(position)
       expect(realDuration).toBeGreaterThanOrEqual(duration)
       expect(realDuration).toBeLessThanOrEqual(duration * 1.2)
+      expect(animationEndReceived).toHaveBeenCalledTimes(1)
     })
 
     it('moves mesh with gravity', async () => {
@@ -68,6 +77,7 @@ describe('AnimateBehavior', () => {
       )
       expect(realDuration).toBeGreaterThanOrEqual(duration)
       expect(realDuration).toBeLessThanOrEqual(duration * 1.2)
+      expect(animationEndReceived).toHaveBeenCalledTimes(1)
     })
 
     it('goes straight to last frame during loading', async () => {
@@ -81,8 +91,7 @@ describe('AnimateBehavior', () => {
       expect(mesh.absolutePosition).toEqual(
         new Vector3(position.x, 0.5, position.z)
       )
-      expect(realDuration).toBeGreaterThanOrEqual(25)
-      expect(realDuration).toBeLessThanOrEqual(75)
+      expect(realDuration).toBeLessThanOrEqual(duration * 0.1)
     })
 
     it('ignores next animations while animating', async () => {
@@ -99,6 +108,7 @@ describe('AnimateBehavior', () => {
       expect(mesh.absolutePosition).toEqual(position)
       expect(realDuration).toBeGreaterThanOrEqual(duration)
       expect(realDuration).toBeLessThanOrEqual(duration * 1.2)
+      expect(animationEndReceived).toHaveBeenCalledTimes(1)
     })
 
     it('can not animate when detached', async () => {
@@ -108,6 +118,7 @@ describe('AnimateBehavior', () => {
       await behavior.moveTo(new Vector3(10, 5, 4), 200)
       expect(mesh.absolutePosition).toEqual(Vector3.Zero())
       expect(Date.now() - startTime).toBeLessThanOrEqual(1)
+      expect(animationEndReceived).not.toHaveBeenCalled()
     })
   })
 })

@@ -58,6 +58,10 @@ export const bags = new Map([
   ['tiles', tileBag]
 ])
 
+const width = 3
+const height = 0.01
+const depth = 4.25
+
 // 3 levels of cards.
 // level 1 has 8 cards of each gem, level 2 has 6 cards of each, level 3 has 4 of each.
 for (const [level, count] of cardCountPerLevel) {
@@ -71,9 +75,9 @@ for (const [level, count] of cardCountPerLevel) {
         x: 0,
         z: 0,
         y: 0,
-        width: 3,
-        height: 0.01,
-        depth: 4.25,
+        width,
+        height,
+        depth,
         detailable: {
           frontImage: `images/splendor/HR/card-${kind}-${level}-${index}.png`,
           backImage: `images/splendor/HR/card-${level}-back.png`
@@ -81,7 +85,19 @@ for (const [level, count] of cardCountPerLevel) {
         movable: { kind: 'card' },
         flippable: {},
         rotable: {},
-        stackable: { kinds: ['card'] }
+        stackable: { kinds: ['card'], priority: 1 },
+        anchorable: {
+          anchors: [
+            {
+              id: 'bottom',
+              z: -1,
+              width,
+              height,
+              depth,
+              kinds: ['card', 'token']
+            }
+          ]
+        }
       })
       cardBags[level].push(id)
     }

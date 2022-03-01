@@ -1,6 +1,7 @@
 import { Observable } from '@babylonjs/core/Misc/observable'
 import { TargetBehaviorName } from './names'
-import { targetManager } from '../managers'
+// '../managers' creates a cyclic dependency in Jest
+import { targetManager } from '../managers/target'
 
 /**
  * @typedef {object} DropZone definition of a target drop zone:
@@ -67,7 +68,7 @@ export class TargetBehavior {
   detach() {
     targetManager.unregisterTargetable(this)
     for (const { mesh } of this.zones) {
-      mesh.dispose()
+      mesh.dispose(false, true)
     }
     this.zones = []
     this.mesh = null
@@ -99,7 +100,7 @@ export class TargetBehavior {
     const idx = this.zones.indexOf(zone)
     if (idx >= 0) {
       const [{ mesh }] = this.zones.splice(idx, 1)
-      mesh.dispose()
+      mesh.dispose(false, true)
     }
   }
 }

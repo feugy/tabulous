@@ -42,6 +42,18 @@ export function initialize3dEngine(
 ) {
   Logger.LogLevels = Logger.NoneLogLevel
   const engine = new NullEngine(engineProps)
+  const handScene = initialize3dScene(engine).scene
+  handScene.autoClear = false
+  const main = initialize3dScene(engine)
+  engine.runRenderLoop(() => {
+    main.scene.render()
+    handScene.render()
+  })
+  engine.inputElement = engineProps.interation || document.body
+  return { engine, ...main, handScene }
+}
+
+export function initialize3dScene(engine) {
   const scene = new Scene(engine)
   const camera = new ArcRotateCamera(
     'camera',
@@ -51,9 +63,8 @@ export function initialize3dEngine(
     Vector3.Zero()
   )
   camera.lockedTarget = Vector3.Zero()
-  engine.runRenderLoop(() => scene.render())
   scene.updateTransformMatrix()
-  return { engine, scene, camera }
+  return { scene, camera }
 }
 
 export function disposeAllMeshes(scene) {
@@ -62,16 +73,21 @@ export function disposeAllMeshes(scene) {
   }
 }
 
-export function configures3dTestEngine(callback) {
+export function configures3dTestEngine(callback, engineProps) {
   let engine
   let scene
+  let handScene
 
   beforeAll(() => {
-    ;({ engine, scene } = initialize3dEngine())
-    callback?.({ engine, scene })
+    const data = initialize3dEngine(engineProps)
+    ;({ engine, scene, handScene } = data)
+    callback?.(data)
   })
 
-  afterEach(() => disposeAllMeshes(scene))
+  afterEach(() => {
+    disposeAllMeshes(scene)
+    disposeAllMeshes(handScene)
+  })
 
   afterAll(() => engine.dispose())
 }
@@ -194,4 +210,14 @@ export function expectInteractible(mesh, isInteractible = true) {
       expect(zone.enabled).toBe(isInteractible)
     }
   }
+}
+
+export async function expectAnimationEnd(behavior) {
+  await new Promise(resolve =>
+    behavior.onAnimationEndObservable.addOnce(resolve)
+  )
+}
+
+export function expectMeshes(actual, expected) {
+  expect(getIds(actual)).toEqual(getIds(expected))
 }

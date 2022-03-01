@@ -1,35 +1,12 @@
 import { Ray } from '@babylonjs/core/Culling/ray'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { getHeight } from './mesh'
+import { getDimensions } from './mesh'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('gravity')
 
-const rayLength = 30
 const down = Vector3.Down()
-
-function findBelow(mesh, predicate) {
-  const over = new Map()
-  const { boundingBox } = mesh.getBoundingInfo()
-
-  const vertices = [mesh.absolutePosition]
-  for (const vertex of boundingBox.vectorsWorld) {
-    if (vertex.y <= vertices[0].y) {
-      vertices.push(vertex)
-    }
-  }
-
-  const scene = mesh.getScene()
-  for (const vertex of vertices) {
-    const hit = scene.pickWithRay(new Ray(vertex, down, rayLength), predicate)
-    if (hit.pickedMesh) {
-      const count = over.get(hit.pickedMesh) || 0
-      over.set(hit.pickedMesh, count + 1)
-    }
-  }
-  return over
-}
 
 /**
  * REturns the absolute altitude (Y axis) above a given mesh, including minimum spacing.
@@ -37,7 +14,7 @@ function findBelow(mesh, predicate) {
  * @returns {number} resulting Y coordinate.
  */
 export function getAtlitudeAbove(mesh) {
-  return mesh.absolutePosition.y + getHeight(mesh) * 0.5 + 0.001
+  return mesh.absolutePosition.y + getDimensions(mesh).height * 0.5 + 0.001
 }
 
 /**
@@ -48,7 +25,7 @@ export function getAtlitudeAbove(mesh) {
  * @returns {number} resulting Y coordinate.
  */
 export function getCenterAltitudeAbove(meshBelow, meshAbove) {
-  return getAtlitudeAbove(meshBelow) + getHeight(meshAbove) * 0.5
+  return getAtlitudeAbove(meshBelow) + getDimensions(meshAbove).height * 0.5
 }
 
 /**
@@ -65,7 +42,7 @@ export function applyGravity(mesh) {
   )
   mesh.computeWorldMatrix(true)
   const over = findBelow(mesh, other => other.isPickable && other !== mesh)
-  let y = getHeight(mesh) * 0.5
+  let y = getDimensions(mesh).height * 0.5
   if (over.size) {
     const ordered = sortByElevation(over.keys(), true)
     y = getCenterAltitudeAbove(ordered[0], mesh)
@@ -114,4 +91,26 @@ export function sortByElevation(meshes, highestFirst = false) {
       ? b.absolutePosition.y - a.absolutePosition.y
       : a.absolutePosition.y - b.absolutePosition.y
   )
+}
+
+function findBelow(mesh, predicate) {
+  const over = new Map()
+  const { boundingBox } = mesh.getBoundingInfo()
+
+  const vertices = [mesh.absolutePosition]
+  for (const vertex of boundingBox.vectorsWorld) {
+    if (vertex.y <= vertices[0].y) {
+      vertices.push(vertex)
+    }
+  }
+
+  const scene = mesh.getScene()
+  for (const vertex of vertices) {
+    const hit = scene.pickWithRay(new Ray(vertex, down), predicate)
+    if (hit?.pickedMesh) {
+      const count = over.get(hit.pickedMesh) || 0
+      over.set(hit.pickedMesh, count + 1)
+    }
+  }
+  return over
 }

@@ -1,7 +1,7 @@
 import faker from 'faker'
-import { createRoundedTile } from '../../src/3d'
-import { controlManager } from '../../src/3d/managers'
-import { configures3dTestEngine } from '../test-utils'
+import { createRoundedTile } from '../../../src/3d/meshes'
+import { controlManager } from '../../../src/3d/managers'
+import { configures3dTestEngine } from '../../test-utils'
 
 configures3dTestEngine()
 
@@ -95,7 +95,8 @@ describe('createRoundedTile()', () => {
         detail: expect.any(Function),
         flip: expect.any(Function),
         snap: expect.any(Function),
-        unsnap: expect.any(Function)
+        unsnap: expect.any(Function),
+        unsnapAll: expect.any(Function)
       })
     })
 

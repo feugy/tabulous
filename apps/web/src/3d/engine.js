@@ -10,10 +10,13 @@ import '@babylonjs/core/Rendering/outlineRenderer'
 import {
   cameraManager,
   controlManager,
+  handManager,
   inputManager,
   moveManager,
-  selectionManager
+  selectionManager,
+  targetManager
 } from './managers'
+import { createLights, createTable, loadMeshes, serializeMeshes } from './utils'
 
 // import '@babylonjs/inspector'
 // import '@babylonjs/core/Debug/debugLayer'
@@ -44,28 +47,82 @@ export function createEngine({
   engine.inputElement = interaction
 
   Scene.DoubleClickDelay = doubleTapDelay
+  // scene ordering is important: main scene must come last to allow ray picking scene.pickWithRay(new Ray(vertex, down))
+  const handScene = new Scene(engine)
   const scene = new Scene(engine)
+  handScene.autoClear = false
 
-  cameraManager.init({ scene })
-  inputManager.init({ scene, longTapDelay, doubleTapDelay })
+  cameraManager.init({ scene, handScene })
+  inputManager.init({ scene, handScene, longTapDelay, doubleTapDelay })
   moveManager.init({ scene })
-  controlManager.init({ scene })
-  selectionManager.init({ scene })
+  controlManager.init({ scene, handScene })
+  selectionManager.init({ scene, handScene })
+  targetManager.init({ scene })
 
-  engine.start = () => engine.runRenderLoop(scene.render.bind(scene))
+  createTable({}, scene)
+  // creates light after table, so table doesn't project shadow
+  createLights({ scene, handScene })
+
+  engine.start = () =>
+    engine.runRenderLoop(() => {
+      scene.render()
+      handScene.render()
+    })
+
+  /**
+   * TODO doc
+   * Loads meshes into the provided engine:
+   * - either creates new mesh, or updates existing ones, based on their ids
+   * - deletes existing mesh that are not found in the provided data
+   * - shows and hides Babylon's loading UI while loading asset (initial loading only)
+   * @param {import('@babel/core').Scene} scene - 3D scene used.
+   * @param {object} meshes - list of loaded meshes TODO.
+   * @param {boolean} [initial = true] - indicates whether this is the first loading or not.
+   */
+  engine.load = (gameData, initial) => {
+    const handsEnabled = hasHandsEnabled(gameData)
+    if (initial) {
+      engine.displayLoadingUI()
+      scene.onDataLoadedObservable.addOnce(() => engine.hideLoadingUI())
+      if (handsEnabled) {
+        handManager.init({ scene, handScene })
+      }
+    }
+    loadMeshes(scene, gameData.meshes)
+    if (handsEnabled) {
+      loadMeshes(handScene, gameData.handMeshes)
+    }
+  }
+
+  /**
+   * TODO doc
+   * @returns
+   */
+  engine.serialize = () => {
+    return {
+      meshes: serializeMeshes(scene),
+      handMeshes: serializeMeshes(handScene)
+    }
+  }
+
   scene.onDataLoadedObservable.addOnce(() => {
     inputManager.enabled = true
+  })
+
+  interaction.addEventListener('pointerleave', handleLeave)
+
+  engine.onDisposeObservable.addOnce(() => {
+    interaction.removeEventListener('pointerleave', handleLeave)
   })
 
   function handleLeave(event) {
     inputManager.stopAll(event)
   }
-  interaction.addEventListener('pointerleave', handleLeave)
-  engine.onDisposeObservable.addOnce(() => {
-    interaction.removeEventListener('pointerleave', handleLeave)
-  })
-
   // scene.debugLayer.show({ embedMode: true })
   // new AxesViewer(scene)
   return engine
+}
+
+function hasHandsEnabled({ meshes, handMeshes }) {
+  return handMeshes.length > 0 || meshes.some(({ drawable }) => drawable)
 }

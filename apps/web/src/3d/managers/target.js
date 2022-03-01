@@ -1,5 +1,5 @@
 import { Color3 } from '@babylonjs/core/Maths/math.color'
-import { selectionManager } from '.'
+import { selectionManager } from './selection'
 import { getTargetableBehavior, isAbove } from '../utils'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
@@ -13,11 +13,23 @@ class TargetManager {
    * - highlight zones
    * - drop mesh onto their relevant zones
    * Each registered behavior can have multiple zones
+   *
+   * @property {import('@babylonjs/core').Scene} scene - the main scene.
    */
   constructor() {
+    this.scene = null
     // private
     this.behaviors = new Set()
     this.droppablesByDropZone = new Map()
+  }
+
+  /**
+   * Gives scenes to the manager.
+   * @param {object} params - parameters, including:
+   * @param {Scene} params.scene - main scene.
+   */
+  init({ scene }) {
+    this.scene = scene
   }
 
   /**
@@ -69,7 +81,10 @@ class TargetManager {
     const candidates = []
     const excluded = [dragged, ...selectionManager.meshes]
     for (const targetable of this.behaviors) {
-      if (!excluded.includes(targetable.mesh)) {
+      if (
+        !excluded.includes(targetable.mesh) &&
+        targetable.mesh.getScene() === this.scene
+      ) {
         for (const zone of targetable.zones) {
           const { enabled, mesh, extent, kinds, priority } = zone
           if (

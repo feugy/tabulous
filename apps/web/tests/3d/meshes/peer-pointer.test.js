@@ -1,7 +1,7 @@
 import faker from 'faker'
-import { createPeerPointer } from '../../src/3d'
-import { controlManager } from '../../src/3d/managers'
-import { configures3dTestEngine } from '../test-utils'
+import { createPeerPointer } from '../../../src/3d/meshes'
+import { controlManager } from '../../../src/3d/managers'
+import { configures3dTestEngine } from '../../test-utils'
 
 configures3dTestEngine()
 

@@ -4,6 +4,64 @@ fragment lightPlayer on Player {
   playing
 }
 
+fragment mesh on Mesh {
+  id
+  texture
+  faceUV
+  x
+  y
+  z
+  shape
+  width
+  height
+  depth
+  diameter
+  borderRadius
+  detailable {
+    frontImage
+    backImage
+  }
+  movable {
+    duration
+    snapDistance
+    kind
+  }
+  flippable {
+    isFlipped
+    duration
+  }
+  rotable {
+    angle
+    duration
+  }
+  stackable {
+    stackIds
+    duration
+    extent
+    kinds
+    priority
+  }
+  anchorable {
+    anchors {
+      x
+      y
+      z
+      width
+      height
+      depth
+      kinds
+      priority
+      snappedId
+    }
+    duration
+  }
+  drawable {
+    unflipOnPick
+    flipOnPlay
+    duration
+  }
+}
+
 mutation createGame($kind: String!) {
   createGame(kind: $kind) {
     id
@@ -42,56 +100,7 @@ query loadGame($gameId: ID!) {
       ...lightPlayer
     }
     meshes {
-      id
-      texture
-      faceUV
-      x
-      y
-      z
-      shape
-      width
-      height
-      depth
-      diameter
-      borderRadius
-      detailable {
-        frontImage
-        backImage
-      }
-      movable {
-        duration
-        snapDistance
-        kind
-      }
-      flippable {
-        isFlipped
-        duration
-      }
-      rotable {
-        angle
-        duration
-      }
-      stackable {
-        stackIds
-        duration
-        extent
-        kinds
-        priority
-      }
-      anchorable {
-        anchors {
-          x
-          y
-          z
-          width
-          height
-          depth
-          kinds
-          priority
-          snappedId
-        }
-        duration
-      }
+      ...mesh
     }
     messages {
       playerId
@@ -106,6 +115,12 @@ query loadGame($gameId: ID!) {
       beta
       elevation
       hash
+    }
+    hands {
+      playerId
+      meshes {
+        ...mesh
+      }
     }
     rulesBookPageCount
   }

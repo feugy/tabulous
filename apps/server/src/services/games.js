@@ -13,6 +13,7 @@ import repositories from '../repositories/index.js'
  * @property {Mesh[]} meshes - game meshes.
  * @property {Message[]} messages - game discussion thread, if any.
  * @property {CameraPosition[]} cameras - player's saved camera positions, if any.
+ * @property {Hand[]} hands - player's private hands, id any.
  * @property {number} rulesBookPageCount? - number of pages in the rules book, if any.
  */
 
@@ -108,6 +109,12 @@ import repositories from '../repositories/index.js'
  * @property {number} elevation - altitude, in 3D coordinate.
  */
 
+/**
+ * @typedef {object} Hand a player's private hand
+ * @property {string} playerId - owner id.
+ * @property {Mesh[]} meshes - ordered list of meshes.
+ */
+
 const gameListsUpdate$ = new Subject()
 
 function isOwner(game, playerId) {
@@ -154,6 +161,7 @@ export async function createGame(kind, playerId) {
     meshes: createMeshes(descriptor),
     messages: [],
     cameras: [],
+    hands: [],
     rulesBookPageCount: descriptor.rulesBookPageCount
   })
   gameListsUpdate$.next(created.playerIds)
@@ -213,6 +221,7 @@ export async function saveGame(game, playerId) {
     return repositories.games.save({
       ...previous,
       meshes: game.meshes ?? previous.meshes,
+      hands: game.hands ?? previous.hands,
       messages: game.messages ?? previous.messages,
       cameras: game.cameras ?? previous.cameras
     })

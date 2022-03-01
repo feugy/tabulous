@@ -1,6 +1,8 @@
 import { BoundingInfo } from '@babylonjs/core/Culling/boundingInfo'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { controlManager, selectionManager, targetManager } from '.'
+import { controlManager } from './control'
+import { selectionManager } from './selection'
+import { targetManager } from './target'
 import {
   animateMove,
   isAboveTable,
@@ -59,8 +61,11 @@ class MoveManager {
       return
     }
 
+    let sceneUsed = mesh.getScene()
     const moved = selectionManager.meshes.has(mesh)
-      ? [...selectionManager.meshes].filter(mesh => this.meshIds.has(mesh?.id))
+      ? [...selectionManager.meshes].filter(
+          mesh => this.meshIds.has(mesh?.id) && mesh.getScene() === sceneUsed
+        )
       : [mesh]
     const allMoved = [...moved]
     for (const mesh of allMoved) {
@@ -68,9 +73,23 @@ class MoveManager {
         moved.splice(moved.indexOf(mesh), 1)
       }
     }
-    let lastPosition = screenToGround(this.scene, event)
+    let lastPosition = screenToGround(sceneUsed, event)
     let zones = new Set()
     this.inProgress = true
+    const actionObserver = controlManager.onActionObservable.add(
+      ({ meshId, fn }) => {
+        if (fn === 'draw') {
+          const mesh = moved.find(({ id }) => id === meshId)
+          if (mesh && mesh.getScene() !== this.scene) {
+            const newMesh = this.scene.getMeshById(meshId)
+            moved.splice(moved.indexOf(mesh), 1, newMesh)
+            sceneUsed = this.scene
+            lastPosition = newMesh.absolutePosition.clone()
+            lastPosition.y -= this.elevation
+          }
+        }
+      }
+    )
 
     logger.info(
       { moved, position: lastPosition.asArray() },
@@ -81,10 +100,7 @@ class MoveManager {
       const { x, y, z } = mesh.absolutePosition
       mesh.setAbsolutePosition(new Vector3(x, y + this.elevation, z))
       mesh.computeWorldMatrix()
-      controlManager.record({
-        meshId: mesh.id,
-        pos: mesh.absolutePosition.asArray()
-      })
+      controlManager.record({ mesh, pos: mesh.absolutePosition.asArray() })
     }
 
     // dynamically assign continue function to keep moved, zones and lastPosition in scope
@@ -95,8 +111,8 @@ class MoveManager {
       }
       zones.clear()
 
-      if (isAboveTable(this.scene, event)) {
-        const currentPosition = screenToGround(this.scene, event)
+      if (sceneUsed !== this.scene || isAboveTable(this.scene, event)) {
+        const currentPosition = screenToGround(sceneUsed, event)
         const move = currentPosition.subtract(lastPosition)
         logger.debug({ moved, event, move }, `continue move operation`)
         lastPosition = currentPosition
@@ -119,7 +135,7 @@ class MoveManager {
 
         let highest = 0
         // check possible collision, except within current selection or currently moved
-        for (const other of this.scene.meshes.filter(
+        for (const other of sceneUsed.meshes.filter(
           mesh =>
             mesh.isPickable &&
             !moved.includes(mesh) &&
@@ -146,10 +162,7 @@ class MoveManager {
           if (zone) {
             zones.add(zone)
           }
-          controlManager.record({
-            meshId: mesh.id,
-            pos: mesh.absolutePosition.asArray()
-          })
+          controlManager.record({ mesh, pos: mesh.absolutePosition.asArray() })
         }
       } else {
         logger.info(
@@ -165,6 +178,9 @@ class MoveManager {
 
     // dynamically assign stop function to keep moved, zones and lastPosition in scope
     this.stop = async () => {
+      if (actionObserver) {
+        controlManager.onActionObservable.remove(actionObserver)
+      }
       if (moved.length === 0) return
 
       // trigger drop operation on all identified drop zones
@@ -202,7 +218,7 @@ class MoveManager {
             .then(() => animateMove(mesh, absolutePosition, duration, true))
             .then(() =>
               controlManager.record({
-                meshId: mesh.id,
+                mesh,
                 pos: mesh.absolutePosition.asArray()
               })
             )
@@ -255,7 +271,7 @@ class MoveManager {
    * @param {MoveBehavior} behavior - movable behavior
    */
   unregisterMovable(behavior) {
-    if (this.meshIds.has(behavior?.mesh?.id)) {
+    if (this.meshIds.has(behavior?.mesh?.id) && !behavior.mesh.isPhantom) {
       this.meshIds.delete(behavior.mesh.id)
       this.behaviorByMeshId.delete(behavior.mesh.id)
     }

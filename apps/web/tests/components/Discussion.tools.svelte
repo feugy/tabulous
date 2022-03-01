@@ -4,21 +4,26 @@
   import { players, thread } from './Discussion.testdata'
 </script>
 
-<main class="w-1/3 m-auto">
-  <ToolBox
-    component={Discussion}
-    name="Components/Discussion"
-    props={{ players }}
-    events={['sendMessage']}
-    layout="centered"
-  >
-    <Tool name="Long thread" props={{ thread }} />
+<ToolBox
+  name="Components/Discussion"
+  props={{ players }}
+  events={['sendMessage']}
+  layout="centered"
+>
+  <Tool name="Long thread" props={{ thread }} let:props let:handleEvent>
+    <div class="w-1/3 m-auto h-400px">
+      <Discussion {...props} on:sendMessage={handleEvent} />
+    </div>
+  </Tool>
 
-    <Tool
-      name="short thread"
-      props={{
-        thread: [{ playerId: '369258', text: 'Aww yeah!!' }]
-      }}
-    />
-  </ToolBox>
-</main>
+  <Tool
+    name="short thread"
+    props={{
+      thread: [{ playerId: '369258', text: 'Aww yeah!!' }]
+    }}
+    let:props
+    let:handleEvent
+  >
+    <Discussion {...props} on:sendMessage={handleEvent} />
+  </Tool>
+</ToolBox>

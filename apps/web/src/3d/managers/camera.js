@@ -25,12 +25,14 @@ class CameraManager {
    *
    * @property {number} minAngle - minimum camera angle (with x/z plane), in radian
    * @property {TargetCamera} camera? - managed camera.
+   * @property {TargetCamera} handSceneCamera? - camera for the hand scene, fixed.
    * @property {CameraSave[]} saves? - list of camera state saves.
    * @property {Observable<CameraSave[]>} onSaveObservable - emits when saving new camera positions.
    * @property {Observable<CameraSave>} onMoveObservable - emits when moving current camera (target, angle or elevation).
    */
   constructor() {
     this.camera = null
+    this.handSceneCamera = null
     this.minAngle = 0
     this.saves = []
     this.onSaveObservable = new Observable()
@@ -48,13 +50,16 @@ class CameraManager {
    * @param {number} params.minY? - minimum camera altitude, in 3D coordinate
    * @param {number} params.maxY? - maximum camera altitude, in 3D coordinate
    * @param {number} params.minAngle? - minimum camera angle (with x/z plane), in radian
+   * @param {import('@babylonjs/core').Scene} params.scene? - scene to host this card (default to last scene).
    */
   init({
     y = 25,
     beta = Math.PI / 8,
     minY = 5,
     maxY = 70,
-    minAngle = Math.PI / 4
+    minAngle = Math.PI / 4,
+    scene,
+    handScene
   } = {}) {
     this.minAngle = minAngle
 
@@ -64,7 +69,8 @@ class CameraManager {
       (3 * Math.PI) / 2,
       beta,
       y,
-      Vector3.Zero()
+      Vector3.Zero(),
+      scene
     )
     this.camera.lockedTarget = Vector3.Zero()
     this.camera.allowUpsideDown = false
@@ -84,6 +90,15 @@ class CameraManager {
     })
 
     this.saves = [saveState(this.camera)]
+
+    this.handSceneCamera = new ArcRotateCamera(
+      'Camera',
+      -Math.PI / 2,
+      0,
+      20,
+      Vector3.Zero(),
+      handScene
+    )
   }
 
   /**

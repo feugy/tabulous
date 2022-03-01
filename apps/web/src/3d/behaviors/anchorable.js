@@ -81,27 +81,29 @@ export class AnchorBehavior extends TargetBehavior {
             ? []
             : [...selectionManager.meshes]
           : [mesh]
-
-        unsnapAll(
-          this,
-          moved.map(({ id }) => id)
-        )
+        for (const { id } of moved) {
+          this.unsnap(id)
+        }
       }
     })
 
     this.actionObserver = controlManager.onActionObservable.add(
       ({ meshId, fn, args }) => {
         const zone = this.zoneBySnappedId.get(meshId)
-        if (zone && (fn === 'reorder' || fn === 'flipAll')) {
-          const scene = this.mesh.getScene()
-          const stack = getMeshList(scene, meshId)
-          const released = stack[0]
-          const snapped =
-            fn === 'flipAll'
-              ? stack.reverse()[0]
-              : stack.find(({ id }) => id === args[0][0])
-          unsetAnchor(this, zone, released)
-          setAnchor(this, zone, snapped, true)
+        if (zone) {
+          if (fn === 'reorder' || fn === 'flipAll') {
+            const scene = this.mesh.getScene()
+            const stack = getMeshList(scene, meshId)
+            const released = stack[0]
+            const snapped =
+              fn === 'flipAll'
+                ? stack.reverse()[0]
+                : stack.find(({ id }) => id === args[0][0])
+            unsetAnchor(this, zone, released)
+            setAnchor(this, zone, snapped, true)
+          } else if (fn === 'draw') {
+            this.unsnap(meshId)
+          }
         }
       }
     )
@@ -163,7 +165,7 @@ export class AnchorBehavior extends TargetBehavior {
       return
     }
     controlManager.record({
-      meshId: this.mesh.id,
+      mesh: this.mesh,
       fn: 'snap',
       args: [snappedId, anchorId]
     })
@@ -191,8 +193,28 @@ export class AnchorBehavior extends TargetBehavior {
           { mesh: this.mesh, snappedId, zone },
           `release snapped ${snappedId} from ${meshId}, zone ${zone.mesh.id}`
         )
-        controlManager.record({ meshId, fn: 'unsnap', args: [releasedId] })
+        controlManager.record({
+          mesh: this.mesh,
+          fn: 'unsnap',
+          args: [releasedId]
+        })
         unsetAnchor(this, zone, released)
+      }
+    }
+  }
+
+  /**
+   * Release all snapped meshes
+   */
+  unsnapAll() {
+    const {
+      mesh,
+      state: { anchors }
+    } = this
+    if (mesh) {
+      const ids = anchors.map(({ snappedId }) => snappedId).filter(Boolean)
+      for (const id of ids) {
+        this.unsnap(id)
       }
     }
   }
@@ -224,7 +246,8 @@ export class AnchorBehavior extends TargetBehavior {
       i,
       { x, y, z, width, depth, height, kinds, priority, snappedId }
     ] of this.state.anchors.entries()) {
-      const dropZone = CreateBox(`anchor-${i}`, { width, depth, height })
+      const scene = this.mesh.getScene()
+      const dropZone = CreateBox(`anchor-${i}`, { width, depth, height }, scene)
       dropZone.parent = this.mesh
       dropZone.position = new Vector3(x ?? 0, y ?? 0, z ?? 0)
       dropZone.computeWorldMatrix(true)
@@ -240,6 +263,7 @@ export class AnchorBehavior extends TargetBehavior {
     }
     this.mesh.metadata.snap = this.snap.bind(this)
     this.mesh.metadata.unsnap = this.unsnap.bind(this)
+    this.mesh.metadata.unsnapAll = this.unsnapAll.bind(this)
     this.mesh.metadata.anchors = this.state.anchors
   }
 }
@@ -292,12 +316,6 @@ async function snapToAnchor(behavior, snappedId, zone, animate = true) {
 
 function computeBaseAltitude(mesh, snapped) {
   return getAtlitudeAbove(mesh) - snapped.absolutePosition.y
-}
-
-function unsnapAll(behavior, ids) {
-  for (const id of ids) {
-    behavior.unsnap(id)
-  }
 }
 
 function setAnchor(behavior, zone, snapped) {

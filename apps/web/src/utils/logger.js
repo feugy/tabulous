@@ -7,6 +7,7 @@ const levels = {
   'game-manager': 'warn',
   graphql: 'warn',
   gravity: 'warn',
+  hand: 'warn',
   input: 'warn',
   move: 'warn',
   players: 'warn',

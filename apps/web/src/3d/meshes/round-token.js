@@ -3,13 +3,13 @@ import { Texture } from '@babylonjs/core/Materials/Textures/texture'
 import { Color3 } from '@babylonjs/core/Maths/math.color'
 import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector'
 import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
-import { controlManager } from './managers'
+import { controlManager } from '../managers/control'
 import {
   adaptTexture,
   attachMaterialError,
   registerBehaviors,
   serializeBehaviors
-} from './utils'
+} from '../utils'
 
 /**
  * Creates a round token, like a pocker one.
@@ -24,60 +24,68 @@ import {
  * @param {number} params.z? - initial position along the Z axis.
  * @param {number} params.diameter? - token's diameter (X+Z axis).
  * @param {number} params.height? - token's height (Y axis).
+ * @param {import('@babylonjs/core').Scene} scene? - scene to host this round token (default to last scene).
  * @returns the created token mesh.
  */
-export function createRoundToken({
-  id,
-  x = 0,
-  y = 0.05,
-  z = 0,
-  diameter = 2,
-  height = 0.1,
-  texture,
-  faceUV = [
-    [0, 0, 0.5, 1],
-    [0, 0, 0, 0],
-    [0.5, 0, 1, 1]
-  ],
-  ...behaviorStates
-} = {}) {
-  const token = CreateCylinder('roundToken', {
-    diameter,
-    height,
-    tessellation: 48,
-    faceUV: faceUV.map(components => Vector4.FromArray(components))
-  })
-  token.id = id
-  token.material = new StandardMaterial(id)
-  token.material.diffuseTexture = new Texture(adaptTexture(texture))
-  token.material.diffuseTexture.hasAlpha = true
-  token.material.freeze()
-  attachMaterialError(token.material)
+export function createRoundToken(
+  {
+    id,
+    x = 0,
+    y = 0.05,
+    z = 0,
+    diameter = 2,
+    height = 0.1,
+    texture,
+    faceUV = [
+      [0, 0, 0.5, 1],
+      [0, 0, 0, 0],
+      [0.5, 0, 1, 1]
+    ],
+    ...behaviorStates
+  } = {},
+  scene
+) {
+  const mesh = CreateCylinder(
+    'roundToken',
+    {
+      diameter,
+      height,
+      tessellation: 48,
+      faceUV: faceUV.map(components => Vector4.FromArray(components))
+    },
+    scene
+  )
+  mesh.id = id
+  mesh.material = new StandardMaterial(id, scene)
+  mesh.material.diffuseTexture = new Texture(adaptTexture(texture), scene)
+  mesh.material.diffuseTexture.hasAlpha = true
+  mesh.material.freeze()
+  attachMaterialError(mesh.material)
 
-  token.receiveShadows = true
-  token.setAbsolutePosition(new Vector3(x, y, z))
-  token.isPickable = false
+  mesh.receiveShadows = true
+  mesh.setAbsolutePosition(new Vector3(x, y, z))
+  mesh.isPickable = false
 
-  token.metadata = {
+  mesh.metadata = {
     serialize: () => ({
-      shape: token.name,
+      shape: mesh.name,
       id,
-      x: token.position.x,
-      y: token.position.y,
-      z: token.position.z,
+      x: mesh.position.x,
+      y: mesh.position.y,
+      z: mesh.position.z,
       texture,
       faceUV,
       diameter,
       height,
-      ...serializeBehaviors(token.behaviors)
+      ...serializeBehaviors(mesh.behaviors)
     })
   }
 
-  token.overlayColor = new Color3(0, 0.8, 0)
-  token.overlayAlpha = 0.2
+  mesh.overlayColor = new Color3(0, 0.8, 0)
+  mesh.overlayAlpha = 0.2
 
-  registerBehaviors(token, behaviorStates)
+  registerBehaviors(mesh, behaviorStates)
 
-  controlManager.registerControlable(token)
-  return token
+  controlManager.registerControlable(mesh)
+  return mesh
 }

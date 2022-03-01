@@ -9,18 +9,18 @@ import { CreateGround } from '@babylonjs/core/Meshes/Builders/groundBuilder'
  * @param {number} params.width? - table's width (X axis).
  * @param {number} params.height? - table's height (Y axis).
  * @param {number[]} params.color? - Color4's components used as table color.
+ * @param {import('@babylonjs/core').Scene} scene? - scene to host the table (default to last scene).
  * @returns {import('@babylonjs/core').Mesh} the created table ground.
  */
-export function createTable({
-  width = 100,
-  height = 50,
-  color = [0.2, 0.2, 0.2, 1]
-} = {}) {
-  const table = CreateGround('table', { width, height })
+export function createTable(
+  { width = 100, height = 50, color = [0.2, 0.2, 0.2, 1] } = {},
+  scene
+) {
+  const table = CreateGround('table', { width, height }, scene)
   table.position.y = -0.01
   table.receiveShadows = true
 
-  table.material = new StandardMaterial('table-front')
+  table.material = new StandardMaterial('table-front', scene)
   table.material.emissiveColor = Color4.FromArray(color)
   table.isPickable = false
   return table

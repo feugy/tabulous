@@ -1,6 +1,7 @@
 export * from './anchorable'
 export * from './animatable'
 export * from './detailable'
+export * from './drawable'
 export * from './flippable'
 export * from './movable'
 export * from './names'

@@ -1,9 +1,7 @@
 // mandatory side effect
 import '@babylonjs/core/Loading/loadingScreen'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { createCard } from '../card'
-import { createRoundToken } from '../round-token'
-import { createRoundedTile } from '../rounded-tile'
+import { createCard, createRoundToken, createRoundedTile } from '../meshes'
 import { restoreBehaviors } from './behaviors'
 import { AnchorBehaviorName, StackBehaviorName } from '../behaviors/names'
 // '../../utils' creates a cyclic dependency in Jest
@@ -11,16 +9,32 @@ import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('scene-loader')
 
+const meshCreatorByName = new Map([
+  ['card', createCard],
+  ['roundToken', createRoundToken],
+  ['roundedTile', createRoundedTile]
+])
+
+const supportedNames = new Set([...meshCreatorByName.keys()])
+
 /**
- * Serializes engine's meshes.
- * @param {import('@babel/core').Engine} engine - 3D engine used.
+ * Indicates whether a mesh can be serialized and loaded
+ * @param {import('@babel/core').Mesh} mesh - tested mesh.
+ * @returns {boolean} whether this mesh could be serialized and loaded.
+ */
+export function isSerializable(mesh) {
+  return supportedNames.has(mesh.name)
+}
+
+/**
+ * Serializes a scene's meshes.
+ * @param {import('@babel/core').Scene} scene - 3D scene serialized.
  * @returns {object[]} list of serialized meshes TODO.
  */
-export function serializeMeshes(engine) {
-  if (!engine.scenes.length) return
+export function serializeMeshes(scene) {
   const meshes = []
-  for (const mesh of engine.scenes[0].meshes) {
-    if (supportedNames.includes(mesh.name)) {
+  for (const mesh of scene?.meshes ?? []) {
+    if (isSerializable(mesh) && !mesh.isPhantom) {
       meshes.push(mesh.metadata.serialize())
     }
   }
@@ -29,24 +43,28 @@ export function serializeMeshes(engine) {
 }
 
 /**
- * Loads meshes into the provided engine:
+ * Creates a meshes into the provided scene:
+ * @param {object} state - hydrated mesh.
+ * @param {import('@babel/core').Scene} scene - 3D scene used.
+ * @returns {import('@babel/core').Mesh} mesh created
+ */
+export function createMeshFromState(state, scene) {
+  const { shape } = state
+  logger.debug({ state }, `create new ${shape} ${state.id}`)
+  return meshCreatorByName.get(shape)(state, scene)
+}
+
+/**
+ * Loads meshes into the provided scene:
  * - either creates new mesh, or updates existing ones, based on their ids
  * - deletes existing mesh that are not found in the provided data
- * - shows and hides Babylon's loading UI while loading asset (initial loading only)
- * @param {import('@babel/core').Engine} engine - 3D engine used.
+ * @param {import('@babel/core').Scene} scene - 3D scene used.
  * @param {object} meshes - list of loaded meshes TODO.
- * @param {boolean} [initial = true] - indicates whether this is the first loading or not.
  */
-export function loadMeshes(engine, meshes, initial = true) {
-  if (!engine.scenes.length) return
-  const [scene] = engine.scenes
-  if (initial) {
-    engine.displayLoadingUI()
-    scene.onDataLoadedObservable.addOnce(() => engine.hideLoadingUI())
-  }
+export function loadMeshes(scene, meshes) {
   const disposables = new Set(scene.meshes)
   for (const mesh of disposables) {
-    if (!supportedNames.includes(mesh.name)) {
+    if (!isSerializable(mesh)) {
       disposables.delete(mesh)
     }
   }
@@ -68,11 +86,7 @@ export function loadMeshes(engine, meshes, initial = true) {
       restoreBehaviors(mesh.behaviors, state)
     } else {
       logger.debug({ state }, `create new ${name} ${state.id}`)
-      mesh = meshCreatorByName.get(name)({
-        ...state,
-        anchorable: anchorable ? { ...anchorable, anchors: [] } : undefined,
-        stackable: stackable ? { ...stackable, stackIds: undefined } : undefined
-      })
+      mesh = createMeshFromState(skipDelayableBehaviors(state), scene)
     }
     const stackBehavior = mesh.getBehaviorByName(StackBehaviorName)
     if (stackBehavior) {
@@ -106,7 +120,7 @@ export function loadMeshes(engine, meshes, initial = true) {
   // dispose existing ones that are not meant to stay
   for (const mesh of disposables) {
     logger.debug({ mesh }, `dispose mesh ${mesh.id}`)
-    mesh.dispose()
+    mesh.dispose(false, true)
   }
   // now that all mesh are available, restore all stacks and anchors, starting from lowest
   for (const { stackBehavior, stackable } of stackables.sort(
@@ -121,13 +135,13 @@ export function loadMeshes(engine, meshes, initial = true) {
   }
 }
 
-const meshCreatorByName = new Map([
-  ['card', createCard],
-  ['roundToken', createRoundToken],
-  ['roundedTile', createRoundedTile]
-])
-
-const supportedNames = [...meshCreatorByName.keys()]
+function skipDelayableBehaviors({ stackable, anchorable, ...state }) {
+  return {
+    ...state,
+    anchorable: anchorable ? { ...anchorable, anchors: [] } : undefined,
+    stackable: stackable ? { ...stackable, stackIds: undefined } : undefined
+  }
+}
 
 function removeNulls(object) {
   const result = {}

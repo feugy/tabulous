@@ -16,12 +16,14 @@ import {
   AnchorBehavior,
   AnchorBehaviorName,
   AnimateBehavior,
+  DrawBehavior,
   FlipBehavior,
   RotateBehavior,
   StackBehavior
 } from '../../../src/3d/behaviors'
 import {
   controlManager,
+  handManager,
   inputManager,
   selectionManager
 } from '../../../src/3d/managers'
@@ -35,6 +37,9 @@ describe('AnchorBehavior', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     recordSpy = jest.spyOn(controlManager, 'record')
+    jest
+      .spyOn(handManager, 'draw')
+      .mockImplementation(mesh => controlManager.record({ mesh, fn: 'draw' }))
     selectionManager.clear()
   })
 
@@ -100,6 +105,7 @@ describe('AnchorBehavior', () => {
       meshes = Array.from({ length: 2 }, (_, rank) => {
         const box = CreateBox(`box${rank + 1}`, {})
         box.addBehavior(new AnimateBehavior(), true)
+        box.addBehavior(new DrawBehavior(), true)
         box.setAbsolutePosition(new Vector3(rank + 10, rank + 10, rank + 10))
         box.computeWorldMatrix()
         controlManager.registerControlable(box)
@@ -126,7 +132,8 @@ describe('AnchorBehavior', () => {
         expect.objectContaining({
           anchors: behavior.state.anchors,
           snap: expect.any(Function),
-          unsnap: expect.any(Function)
+          unsnap: expect.any(Function),
+          unsnapAll: expect.any(Function)
         })
       )
       expect(behavior.zones).toHaveLength(behavior.state.anchors.length)
@@ -291,7 +298,7 @@ describe('AnchorBehavior', () => {
       expectAnchor(0, behavior.state.anchors[0], false)
       expectRotated(mesh, angle)
       expectSnapped(mesh, snapped, 0)
-      expectRotated(snapped, 0, angle)
+      expectRotated(snapped, angle)
       expect(behavior.getSnappedIds()).toEqual([snapped.id])
       expect(recordSpy).not.toHaveBeenCalled()
     })
@@ -306,11 +313,7 @@ describe('AnchorBehavior', () => {
       expectSnapped(mesh, snapped, 0)
       expect(behavior.getSnappedIds()).toEqual([meshes[0].id])
       expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
-        fn: 'snap',
-        meshId: mesh.id,
-        args
-      })
+      expect(recordSpy).toHaveBeenCalledWith({ fn: 'snap', mesh, args })
     })
 
     it('snaps a stack of mesh', async () => {
@@ -334,11 +337,7 @@ describe('AnchorBehavior', () => {
         snapped.absolutePosition.z
       ])
       expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
-        fn: 'snap',
-        meshId: mesh.id,
-        args
-      })
+      expect(recordSpy).toHaveBeenCalledWith({ fn: 'snap', mesh, args })
     })
 
     it('snaps mesh with snapped meshes', async () => {
@@ -371,7 +370,7 @@ describe('AnchorBehavior', () => {
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
         fn: 'snap',
-        meshId: mesh.id,
+        mesh,
         args: [snapped.id, behavior.zones[1].mesh.id]
       })
     })
@@ -391,13 +390,9 @@ describe('AnchorBehavior', () => {
       expectSnapped(mesh, snapped, 0)
       expect(behavior.getSnappedIds()).toEqual([meshes[0].id])
       expectRotated(mesh, angle)
-      expectRotated(snapped, 0, angle)
+      expectRotated(snapped, angle)
       expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
-        fn: 'snap',
-        meshId: mesh.id,
-        args
-      })
+      expect(recordSpy).toHaveBeenCalledWith({ fn: 'snap', mesh, args })
     })
 
     it('updates snapped when reordering a stack', async () => {
@@ -453,7 +448,7 @@ describe('AnchorBehavior', () => {
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
         fn: 'unsnap',
-        meshId: mesh.id,
+        mesh,
         args: [snapped.id]
       })
     })
@@ -472,7 +467,7 @@ describe('AnchorBehavior', () => {
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
         fn: 'unsnap',
-        meshId: mesh.id,
+        mesh,
         args: [stacked.id]
       })
     })
@@ -493,7 +488,7 @@ describe('AnchorBehavior', () => {
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
         fn: 'unsnap',
-        meshId: mesh.id,
+        mesh,
         args: [snapped.id]
       })
     })
@@ -516,8 +511,58 @@ describe('AnchorBehavior', () => {
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
         fn: 'unsnap',
-        meshId: mesh.id,
+        mesh,
         args: [snapped.id]
+      })
+    })
+
+    it('unsnaps drawn mesh', async () => {
+      const snapped = meshes[1]
+      behavior.fromState({
+        anchors: [{ width: 1, height: 2, depth: 0.5, snappedId: snapped.id }]
+      })
+      expectSnapped(mesh, snapped, 0)
+
+      snapped.metadata.draw()
+      expectUnsnapped(mesh, snapped, 0)
+      expect(recordSpy).toHaveBeenCalledTimes(2)
+      expect(recordSpy).toHaveBeenNthCalledWith(1, {
+        fn: 'draw',
+        mesh: snapped
+      })
+      expect(recordSpy).toHaveBeenNthCalledWith(2, {
+        fn: 'unsnap',
+        mesh,
+        args: [snapped.id]
+      })
+    })
+
+    it('unsnaps all', async () => {
+      const [snapped1, snapped2] = meshes
+      behavior.fromState({
+        anchors: [
+          { width: 1, height: 2, depth: 0.5, x: -1, snappedId: snapped1.id },
+          { width: 1, height: 2, depth: 0.5 },
+          { width: 1, height: 2, depth: 0.5, x: 1, snappedId: snapped2.id }
+        ]
+      })
+      expectSnapped(mesh, snapped1, 0)
+      expectSnapped(mesh, snapped2, 2)
+
+      mesh.metadata.unsnapAll()
+
+      expectUnsnapped(mesh, snapped1, 0)
+      expectUnsnapped(mesh, snapped2, 2)
+      expect(recordSpy).toHaveBeenCalledTimes(2)
+      expect(recordSpy).toHaveBeenCalledWith({
+        fn: 'unsnap',
+        mesh,
+        args: [snapped1.id]
+      })
+      expect(recordSpy).toHaveBeenCalledWith({
+        fn: 'unsnap',
+        mesh,
+        args: [snapped2.id]
       })
     })
 
@@ -529,7 +574,7 @@ describe('AnchorBehavior', () => {
       await mesh.metadata.snap(snapped.id, behavior.zones[0].mesh.id)
       expectSnapped(mesh, snapped)
       expectRotated(mesh, angle)
-      expectRotated(snapped, 0, angle)
+      expectRotated(snapped, angle)
 
       mesh.metadata.unsnap(snapped.id)
       expectUnsnapped(mesh, snapped, 0)

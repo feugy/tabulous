@@ -10,16 +10,18 @@ import {
 import { FlipBehavior, FlipBehaviorName } from '../../../src/3d/behaviors'
 import { controlManager } from '../../../src/3d/managers'
 
+let recordSpy
+let animationEndReceived
+
+configures3dTestEngine()
+
+beforeEach(() => {
+  jest.clearAllMocks()
+  recordSpy = jest.spyOn(controlManager, 'record')
+  animationEndReceived = jest.fn()
+})
+
 describe('FlipBehavior', () => {
-  configures3dTestEngine()
-
-  let recordSpy
-
-  beforeEach(() => {
-    jest.clearAllMocks()
-    recordSpy = jest.spyOn(controlManager, 'record')
-  })
-
   it('has initial state', () => {
     const state = {
       isFlipped: faker.datatype.boolean(),
@@ -67,6 +69,7 @@ describe('FlipBehavior', () => {
     beforeEach(() => {
       behavior = createAttachedFlippable({ duration: 50 })
       mesh = behavior.mesh
+      behavior.onAnimationEndObservable.add(animationEndReceived)
     })
 
     it('attaches metadata to its mesh', () => {
@@ -86,6 +89,7 @@ describe('FlipBehavior', () => {
       expect(behavior.state).toEqual(state)
       expect(behavior.mesh).toEqual(mesh)
       expectFlipped(mesh)
+      expect(animationEndReceived).not.toHaveBeenCalled()
     })
 
     it('flips mesh clockwise and apply gravity', async () => {
@@ -97,6 +101,7 @@ describe('FlipBehavior', () => {
       await mesh.metadata.flip()
       expectFlipped(mesh)
       expectPosition(mesh, [x, 0.5, z])
+      expect(animationEndReceived).toHaveBeenCalledTimes(1)
     })
 
     it('flips mesh anti-clockwise and apply gravity', async () => {
@@ -109,6 +114,7 @@ describe('FlipBehavior', () => {
       await mesh.metadata.flip()
       expectFlipped(mesh)
       expectPosition(mesh, [x, 0.5, z])
+      expect(animationEndReceived).toHaveBeenCalledTimes(1)
     })
 
     describe('given parent and children', () => {
@@ -127,6 +133,7 @@ describe('FlipBehavior', () => {
         expectFlipped(mesh)
         expectFlipped(child, false)
         expectFlipped(granChild, false)
+        expect(animationEndReceived).toHaveBeenCalledTimes(1)
       })
 
       it('flips mesh independently from its parent', async () => {
@@ -134,6 +141,7 @@ describe('FlipBehavior', () => {
         expectFlipped(mesh, false)
         expectFlipped(child)
         expectFlipped(granChild, false)
+        expect(animationEndReceived).not.toHaveBeenCalled()
       })
 
       it('flips multiple dependent meshes', async () => {
@@ -141,6 +149,7 @@ describe('FlipBehavior', () => {
         expectFlipped(mesh)
         expectFlipped(child)
         expectFlipped(granChild, false)
+        expect(animationEndReceived).toHaveBeenCalledTimes(1)
       })
     })
 
@@ -153,6 +162,7 @@ describe('FlipBehavior', () => {
 
       expectPickable(mesh)
       expectFlipped(mesh)
+      expect(animationEndReceived).toHaveBeenCalledTimes(1)
     })
 
     it('records flips to controlManager', async () => {
@@ -160,19 +170,14 @@ describe('FlipBehavior', () => {
       expect(recordSpy).toHaveBeenCalledTimes(0)
       await mesh.metadata.flip()
       expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenNthCalledWith(1, {
-        meshId: mesh.id,
-        fn: 'flip'
-      })
+      expect(recordSpy).toHaveBeenNthCalledWith(1, { mesh, fn: 'flip' })
       expectFlipped(mesh)
 
       await mesh.metadata.flip()
       expect(recordSpy).toHaveBeenCalledTimes(2)
-      expect(recordSpy).toHaveBeenNthCalledWith(2, {
-        meshId: mesh.id,
-        fn: 'flip'
-      })
+      expect(recordSpy).toHaveBeenNthCalledWith(2, { mesh, fn: 'flip' })
       expectFlipped(mesh, false)
+      expect(animationEndReceived).toHaveBeenCalledTimes(2)
     })
 
     it('flips mesh with initial rotation', async () => {
@@ -206,6 +211,7 @@ describe('FlipBehavior', () => {
       expectPickable(mesh)
       expectFlipped(mesh)
       expect(recordSpy).toHaveBeenCalledTimes(1)
+      expect(animationEndReceived).toHaveBeenCalledTimes(1)
     })
   })
 })

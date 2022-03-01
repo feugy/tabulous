@@ -1,5 +1,7 @@
 # TODO
 
+- issue: moving the anchor does not move stacked snapped meshes
+
 ## Brittle tests
 
 - `InputManager › given an initialized manager() › handles multiple pointers taps`
@@ -16,21 +18,26 @@
 
 ## Refactor
 
-- rework remote moves: instead of sending individual positions, send drag start, move and stop (with selection)
+- do we need to wrap card planes in an invisible box?
+- jest matchers with mesh (toHaveBeenCalledWith, toHaveBeenNthCalledWith)
 - rework target detection. Instead of using real mesh and rays use shapes overlap: each zone is a rectangle/circle on XZ plane, and the moved mesh another rectangle/circle. Check the center of the moved mesh
-- reconsider the behavior/manager split of responsibilities
 - all manager managing a collection of behaviors should check their capabilities
+- game-manager is just a gigantic mess!!! no single responsibility, global state all over the place
 - game-interaction unit tests
 - component, connected-component and routes rendering tests
-- completly disable Babylon input management
+- get rid of Babylon input management
 - UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
 - stackable duration override's movable duration on
 
 ## UI
 
+- support color textures
+- apply action on entire selection
+- multiple stack actions (draw, flip, rotate)
+- display peer's name when running draw animations + show peer avatar/name instead of pointer
+- configurable player position at game level
 - sort and filter catalog on game names
 - feedback on stacking
-- player's hand
 - stack actions:
   - draw multiple cards (either in hand, or in front of them)
   - distribute multiple cards to players (either in their hand, or in front of them)
@@ -38,6 +45,7 @@
 - keyboard
 - indicates when remote stream is muted/stopped
 - zoom in/out on rules
+- always display stack size (user configurable)
 
 ## Server
 
@@ -82,14 +90,11 @@ no peer found for signal from 4717
 
 - min/max number of players allowed
 - players' positions
-- token/card enabled behaviors (overall+per item setting?)
-- personnal hand support (impact on the draw and deal commands)
 
 ## Game UI:
 
 - visual hint when receiving messages on collapsed section
 - show contextual help (for example, on hover) to indicates which commands are available
-- bottom, expansible area showing player's hand
 
 # Interaction model
 

@@ -6,10 +6,11 @@ import { controlManager as manager } from '../../../src/3d/managers'
 import { AnchorBehavior, FlipBehavior } from '../../../src/3d/behaviors'
 
 describe('ControlManager', () => {
-  configures3dTestEngine()
-
+  let scene
+  let handScene
   let actions
   let mesh
+  let handMesh
   let anchorable
   let snapSpy
   let flipSpy
@@ -17,12 +18,14 @@ describe('ControlManager', () => {
   let pointer
   let currentPointer = null
 
+  configures3dTestEngine(created => ({ scene, handScene } = created))
+
   beforeEach(() => {
     jest.resetAllMocks()
     actions = []
     currentPointer = null
 
-    mesh = CreateBox('box', {})
+    mesh = CreateBox('box1', {}, scene)
     anchorable = CreateBox('box2', {})
     anchorable.addBehavior(
       new AnchorBehavior({
@@ -31,6 +34,7 @@ describe('ControlManager', () => {
       true
     )
     anchorable.addBehavior(new FlipBehavior(), true)
+    handMesh = CreateBox('box3', {}, handScene)
     snapSpy = jest.spyOn(anchorable.metadata, 'snap')
     flipSpy = jest.spyOn(anchorable.metadata, 'flip')
 
@@ -50,11 +54,8 @@ describe('ControlManager', () => {
   })
 
   describe('init()', () => {
-    let scene
-
     beforeEach(() => {
-      scene = mesh.getScene()
-      manager.init({ scene })
+      manager.init({ scene, handScene })
       expect(currentPointer).toBeNull()
     })
 
@@ -102,18 +103,28 @@ describe('ControlManager', () => {
     })
 
     it('automatically unregisters a mesh upon disposal', () => {
-      const mesh = CreateBox('box3', {})
+      const mesh = CreateBox('box4', {})
       manager.registerControlable(mesh)
       expect(manager.isManaging(mesh)).toBe(true)
 
       mesh.dispose()
       expect(manager.isManaging(mesh)).toBe(false)
     })
+
+    it('does not unregisters a phantom mesh', () => {
+      const mesh = CreateBox('box5', {})
+      manager.registerControlable(mesh)
+      mesh.isPhantom = true
+      expect(manager.isManaging(mesh)).toBe(true)
+
+      mesh.dispose()
+      expect(manager.isManaging(mesh)).toBe(true)
+    })
   })
 
   describe('unregisterControlable()', () => {
     it('ignores uncontrolled mesh', () => {
-      const mesh = CreateBox('box3', {})
+      const mesh = CreateBox('box6', {})
       expect(manager.isManaging(mesh)).toBe(false)
 
       manager.unregisterControlable(mesh)
@@ -142,7 +153,8 @@ describe('ControlManager', () => {
       expect(actions[0]).toEqual({
         meshId: anchorable.id,
         fn: 'snap',
-        args
+        args,
+        fromHand: false
       })
     })
 
@@ -151,7 +163,11 @@ describe('ControlManager', () => {
       expect(snapSpy).not.toHaveBeenCalled()
       expect(flipSpy).toHaveBeenCalledTimes(1)
       expect(actions).toHaveLength(1)
-      expect(actions[0]).toEqual({ meshId: anchorable.id, fn: 'flip' })
+      expect(actions[0]).toEqual({
+        meshId: anchorable.id,
+        fn: 'flip',
+        fromHand: false
+      })
     })
 
     it('applies an action without recording it', () => {
@@ -216,7 +232,8 @@ describe('ControlManager', () => {
 
   describe('record()', () => {
     it('ignores uncontrolled mesh', async () => {
-      manager.record({ meshId: 'box4', fn: 'flip' })
+      const mesh = CreateBox('box4', {})
+      manager.record({ mesh, fn: 'flip' })
       expect(actions).toHaveLength(0)
     })
 
@@ -224,6 +241,21 @@ describe('ControlManager', () => {
       manager.record()
       manager.record({ id: 'box', fn: 'flip' })
       expect(actions).toHaveLength(0)
+    })
+
+    it('distunguishes action from main and hand scenes', () => {
+      manager.registerControlable(mesh)
+      manager.registerControlable(handMesh)
+      manager.record({ mesh, fn: 'flip' })
+      manager.record({ mesh: handMesh, fn: 'rotate' })
+      manager.record({ mesh: handMesh, fn: 'draw' })
+      manager.record({ mesh, fn: 'draw' })
+      expect(actions).toEqual([
+        { meshId: mesh.id, fn: 'flip', fromHand: false },
+        { meshId: handMesh.id, fn: 'rotate', fromHand: true },
+        { meshId: handMesh.id, fn: 'draw', fromHand: false },
+        { meshId: mesh.id, fn: 'draw', fromHand: false }
+      ])
     })
   })
 

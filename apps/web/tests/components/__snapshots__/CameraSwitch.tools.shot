@@ -3,7 +3,7 @@
 exports[`Toolshot components/CameraSwitch.tools.svelte: Max count reached 1`] = `
 <span>
   <button
-    title="Charge la position initiale de la camera"
+    title="Charger la position initiale de la camera"
   >
     <span
       class="material-icons"
@@ -16,7 +16,7 @@ exports[`Toolshot components/CameraSwitch.tools.svelte: Max count reached 1`] = 
   </button>
    
   <button
-    title="Charge (clic) ou enregistrer (clic long) la position à l'emplacement 1"
+    title="Charger (clic) ou enregistrer (clic long) la position à l'emplacement 1"
   >
     <span
       class="material-icons"
@@ -34,7 +34,7 @@ exports[`Toolshot components/CameraSwitch.tools.svelte: Max count reached 1`] = 
   </button>
    
   <button
-    title="Charge (clic) ou enregistrer (clic long) la position à l'emplacement 2"
+    title="Charger (clic) ou enregistrer (clic long) la position à l'emplacement 2"
   >
     <span
       class="material-icons"
@@ -52,7 +52,7 @@ exports[`Toolshot components/CameraSwitch.tools.svelte: Max count reached 1`] = 
   </button>
    
   <button
-    title="Charge (clic) ou enregistrer (clic long) la position à l'emplacement 3"
+    title="Charger (clic) ou enregistrer (clic long) la position à l'emplacement 3"
   >
     <span
       class="material-icons"
@@ -77,7 +77,7 @@ exports[`Toolshot components/CameraSwitch.tools.svelte: Max count reached 1`] = 
 exports[`Toolshot components/CameraSwitch.tools.svelte: Multiple saves 1`] = `
 <span>
   <button
-    title="Charge la position initiale de la camera"
+    title="Charger la position initiale de la camera"
   >
     <span
       class="material-icons"
@@ -90,7 +90,7 @@ exports[`Toolshot components/CameraSwitch.tools.svelte: Multiple saves 1`] = `
   </button>
    
   <button
-    title="Charge (clic) ou enregistrer (clic long) la position à l'emplacement 1"
+    title="Charger (clic) ou enregistrer (clic long) la position à l'emplacement 1"
   >
     <span
       class="material-icons"
@@ -108,7 +108,7 @@ exports[`Toolshot components/CameraSwitch.tools.svelte: Multiple saves 1`] = `
   </button>
    
   <button
-    title="Charge (clic) ou enregistrer (clic long) la position à l'emplacement 2"
+    title="Charger (clic) ou enregistrer (clic long) la position à l'emplacement 2"
   >
     <span
       class="material-icons"
@@ -127,7 +127,7 @@ exports[`Toolshot components/CameraSwitch.tools.svelte: Multiple saves 1`] = `
    
    
   <button
-    title="Enregistre la position"
+    title="Enregistrer la position"
   >
     <span
       class="material-icons"
@@ -145,7 +145,7 @@ exports[`Toolshot components/CameraSwitch.tools.svelte: Multiple saves 1`] = `
 exports[`Toolshot components/CameraSwitch.tools.svelte: Multiple saves with current 1`] = `
 <span>
   <button
-    title="Charge la position initiale de la camera"
+    title="Charger la position initiale de la camera"
   >
     <span
       class="material-icons"
@@ -159,7 +159,7 @@ exports[`Toolshot components/CameraSwitch.tools.svelte: Multiple saves with curr
    
   <button
     disabled=""
-    title="Charge (clic) ou enregistrer (clic long) la position à l'emplacement 1"
+    title="Charger (clic) ou enregistrer (clic long) la position à l'emplacement 1"
   >
     <span
       class="material-icons"
@@ -177,7 +177,7 @@ exports[`Toolshot components/CameraSwitch.tools.svelte: Multiple saves with curr
   </button>
    
   <button
-    title="Charge (clic) ou enregistrer (clic long) la position à l'emplacement 2"
+    title="Charger (clic) ou enregistrer (clic long) la position à l'emplacement 2"
   >
     <span
       class="material-icons"
@@ -197,7 +197,7 @@ exports[`Toolshot components/CameraSwitch.tools.svelte: Multiple saves with curr
    
   <button
     disabled=""
-    title="Enregistre la position"
+    title="Enregistrer la position"
   >
     <span
       class="material-icons"
@@ -215,7 +215,7 @@ exports[`Toolshot components/CameraSwitch.tools.svelte: Multiple saves with curr
 exports[`Toolshot components/CameraSwitch.tools.svelte: Single save 1`] = `
 <span>
   <button
-    title="Charge la position initiale de la camera"
+    title="Charger la position initiale de la camera"
   >
     <span
       class="material-icons"
@@ -229,7 +229,7 @@ exports[`Toolshot components/CameraSwitch.tools.svelte: Single save 1`] = `
    
    
   <button
-    title="Enregistre la position"
+    title="Enregistrer la position"
   >
     <span
       class="material-icons"

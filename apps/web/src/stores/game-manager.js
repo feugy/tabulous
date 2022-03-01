@@ -1,8 +1,21 @@
-import { BehaviorSubject, merge } from 'rxjs'
-import { debounceTime, filter } from 'rxjs/operators'
+import {
+  BehaviorSubject,
+  debounceTime,
+  filter,
+  map,
+  merge,
+  switchMap,
+  take
+} from 'rxjs'
 import { currentPlayer } from './players'
 import { clearThread, loadThread, serializeThread } from './discussion'
-import { action, cameraSaves, engine, loadCameraSaves } from './game-engine'
+import {
+  action,
+  cameraSaves as cameraSaves$,
+  engine as engine$,
+  handMeshes as handMeshes$,
+  loadCameraSaves
+} from './game-engine'
 import { runQuery, runMutation, runSubscription } from './graphql-client'
 import {
   closeChannels,
@@ -16,7 +29,6 @@ import {
 } from './peer-channels'
 import * as graphQL from '../graphql'
 import { makeLogger } from '../utils'
-import { loadMeshes, serializeMeshes } from '../3d/utils'
 
 const logger = makeLogger('game-manager')
 
@@ -41,7 +53,7 @@ let player
 currentPlayer.subscribe(value => (player = value))
 
 // resets current game and clears discussion thread when disposing game engine
-engine.subscribe(engine => {
+engine$.subscribe(engine => {
   if (engine === null) {
     currentGame$.next(null)
     clearThread()
@@ -52,15 +64,23 @@ engine.subscribe(engine => {
 let skipSharingCamera = false
 // cameras for all players
 let cameras = []
+// hands for all players
+let hands = []
 
 function load(game, engine, firstLoad) {
-  if (!firstLoad) return // TODO remove, just for testing
-  loadMeshes(engine, game.meshes, firstLoad)
+  hands = game.hands ?? []
+  cameras = game.cameras ?? []
+  engine.load(
+    {
+      meshes: game.meshes,
+      handMeshes: hands.find(hand => player.id === hand.playerId)?.meshes ?? []
+    },
+    firstLoad
+  )
   if (game.messages) {
     loadThread(game.messages)
   }
-  if (game.cameras) {
-    cameras = game.cameras
+  if (cameras.length) {
     const playerCameras = cameras
       .filter(save => save.playerId === player.id)
       .sort((a, b) => a.index - b.index)
@@ -85,21 +105,37 @@ function mergeCameras({ playerId, cameras: playerCameras }) {
 }
 
 function saveCameras(gameId) {
-  logger.info({ gameId, cameras: cameras }, `persisting game cameras`)
+  logger.info({ gameId, cameras }, `persisting game cameras`)
   runMutation(graphQL.saveGame, { game: { id: gameId, cameras } })
+}
+
+function mergeHands({ playerId, meshes }) {
+  hands = [
+    ...hands.filter(hand => hand.playerId !== playerId),
+    { playerId, meshes }
+  ]
+  return hands
+}
+
+function saveHands(gameId) {
+  logger.info({ gameId, hands }, `persisting player hands`)
+  runMutation(graphQL.saveGame, { game: { id: gameId, hands } })
 }
 
 function takeHostRole(gameId, engine) {
   logger.info({ gameId }, `taking game host role`)
   return [
     // save scene
-    action.pipe(debounceTime(1000)).subscribe(action => {
-      logger.info({ gameId, action }, `persisting game scene on action`)
-      const meshes = serializeMeshes(engine)
-      runMutation(graphQL.saveGame, { game: { id: gameId, meshes } })
-      logger.info({ gameId }, `sending scene sync`)
-      send({ type: 'game-sync', gameId, meshes })
-    }),
+    action
+      .pipe(
+        filter(({ fromHand }) => !fromHand),
+        debounceTime(1000)
+      )
+      .subscribe(action => {
+        logger.info({ gameId, action }, `persisting game scene on action`)
+        const game = shareGame(gameId, engine)
+        runMutation(graphQL.saveGame, { game })
+      }),
     // save discussion thread
     merge(lastMessageSent, lastMessageReceived)
       .pipe(
@@ -112,40 +148,48 @@ function takeHostRole(gameId, engine) {
           game: { id: gameId, messages: serializeThread() }
         })
       }),
-    // save camera positions from peers
-    lastMessageReceived
-      .pipe(filter(({ data }) => data?.type === 'saveCameras'))
-      .subscribe(({ data }) => {
-        mergeCameras(data)
-        saveCameras(gameId)
-      }),
-    // save player own camera positions
-    cameraSaves.subscribe(cameras => {
-      if (skipSharingCamera) {
-        skipSharingCamera = false
-        return
-      }
-      mergeCameras({ playerId: player.id, cameras })
+    // save player hands
+    merge(
+      lastMessageReceived.pipe(filter(({ data }) => data?.type === 'saveHand')),
+      handMeshes$.pipe(
+        map(meshes => ({ data: { playerId: player.id, meshes } }))
+      )
+    ).subscribe(({ data }) => {
+      mergeHands(data)
+      saveHands(gameId)
+    }),
+    // save camera positions
+    merge(
+      lastMessageReceived.pipe(
+        filter(({ data }) => data?.type === 'saveCameras')
+      ),
+      cameraSaves$.pipe(
+        map(cameras => ({ data: { playerId: player.id, cameras } }))
+      )
+    ).subscribe(({ data }) => {
+      mergeCameras(data)
       saveCameras(gameId)
     }),
     // send game data to new peers
-    lastConnectedId.subscribe(playerId => {
-      logger.info(
-        { gameId, playerId },
-        `sending game data ${gameId} to peer ${playerId}`
-      )
-      send(
-        {
-          type: 'game-sync',
-          gameId,
-          meshes: serializeMeshes(engine),
-          messages: serializeThread(),
-          cameras
-        },
-        playerId
-      )
-    })
+    lastConnectedId.subscribe(playerId => shareGame(gameId, engine, playerId))
   ]
+}
+
+function shareGame(gameId, engine, playerId) {
+  logger.info(
+    { gameId, playerId },
+    `sending game data ${gameId} to peer${playerId ? ` ${playerId}` : 's'}`
+  )
+  const { meshes, handMeshes } = engine.serialize()
+  const game = {
+    meshes,
+    id: gameId,
+    hands: mergeHands({ playerId: player.id, meshes: handMeshes }),
+    messages: serializeThread(),
+    cameras
+  }
+  send({ type: 'game-sync', ...game }, playerId)
+  return game
 }
 
 /**
@@ -217,35 +261,24 @@ export async function loadGame(gameId, engine) {
   }
   const subscriptions = []
 
-  logger.info({ gameId }, `entering game ${gameId}`)
-  openChannels(player)
-  engine.onDisposeObservable.addOnce(() => {
-    logger.info(`closing all subscriptions and channels`)
+  function unsubscribeAll() {
+    logger.info(`closing all subscriptions`)
     for (const subscription of subscriptions) {
       subscription.unsubscribe()
     }
+    closeChannels()
+  }
+
+  logger.info({ gameId }, `entering game ${gameId}`)
+  openChannels(player)
+  engine.onDisposeObservable.addOnce(() => {
+    unsubscribeAll()
     closeChannels()
   })
 
   let game = await runQuery(graphQL.loadGame, { gameId }, false)
   currentGame$.next(game)
   listGames() // to enable receiving player updates
-
-  subscriptions.push(
-    // share camera positions with others
-    cameraSaves.subscribe(cameras => {
-      if (skipSharingCamera) {
-        skipSharingCamera = false
-        return
-      }
-      logger.info({ cameras }, `sharing camera saves with peers`)
-      send({ type: 'saveCameras', cameras, playerId: player.id })
-    }),
-    // receive camera positions from others
-    lastMessageReceived
-      .pipe(filter(({ data }) => data?.type === 'saveCameras'))
-      .subscribe(({ data }) => mergeCameras(data))
-  )
 
   if (game.players.every(({ id, playing }) => id === player.id || !playing)) {
     // is the only playing player: take the host role
@@ -266,33 +299,57 @@ export async function loadGame(gameId, engine) {
           `No game data after ${Math.floor(gameReceptionDelay / 1000)}s`
         )
         logger.error(error.message)
+        unsubscribeAll()
+        closeChannels()
         reject(error)
       }, gameReceptionDelay)
 
       let isFirstLoad = true
       subscriptions.push(
+        cameraSaves$.subscribe(cameras => {
+          if (skipSharingCamera) {
+            skipSharingCamera = false
+            return
+          }
+          logger.info({ cameras }, `sharing camera saves with peers`)
+          send({ type: 'saveCameras', cameras, playerId: player.id })
+        }),
+        handMeshes$.subscribe(meshes => {
+          logger.info({ meshes }, `sharing hand with peers`)
+          send({ type: 'saveHand', meshes, playerId: player.id })
+        }),
         lastMessageReceived
-          .pipe(filter(({ data }) => data.type === 'game-sync'))
+          .pipe(filter(({ data }) => data?.type === 'game-sync'))
           .subscribe(({ data }) => {
-            logger.info({ game }, `loading game data (${data.gameId})`)
-            if (isFirstLoad) {
-              clearTimeout(gameReceptionTimeout)
-              // elect new host
-              subscriptions.push(
-                lastDisconnectedId.subscribe(async () => {
-                  const { players } = await runQuery(graphQL.loadGamePlayers, {
-                    gameId
-                  })
-                  const nextHost = players.find(({ playing }) => playing)
-                  if (nextHost?.id === player.id) {
-                    takeHostRole(gameId, engine)
-                  }
-                })
-              )
-              resolve()
-            }
+            logger.info({ game }, `loading game data (${data.id})`)
             load(data, engine, isFirstLoad)
             isFirstLoad = false
+          }),
+        lastMessageReceived
+          .pipe(
+            filter(({ data }) => data?.type === 'game-sync'),
+            take(1)
+          )
+          .subscribe(() => {
+            clearTimeout(gameReceptionTimeout)
+            subscriptions.push(
+              lastDisconnectedId
+                .pipe(
+                  switchMap(() =>
+                    runQuery(graphQL.loadGamePlayers, { gameId })
+                  ),
+                  filter(
+                    ({ players }) =>
+                      player.id === players.find(({ playing }) => playing)?.id
+                  ),
+                  take(1)
+                )
+                .subscribe(() => {
+                  unsubscribeAll()
+                  subscriptions.push(...takeHostRole(gameId, engine))
+                })
+            )
+            resolve()
           })
       )
     })

@@ -6,13 +6,13 @@ import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector'
 import { CSG } from '@babylonjs/core/Meshes/csg'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
-import { controlManager } from './managers'
+import { controlManager } from '../managers/control'
 import {
   adaptTexture,
   attachMaterialError,
   registerBehaviors,
   serializeBehaviors
-} from './utils'
+} from '../utils'
 
 function makeCornerMesh(
   { borderRadius, width, height, depth, faceUV },
@@ -39,8 +39,8 @@ function makeCornerMesh(
   const cornerCSG = CSG.FromMesh(cornerMesh).subtract(
     CSG.FromMesh(cyclinderMesh)
   )
-  cornerMesh.dispose()
-  cyclinderMesh.dispose()
+  cornerMesh.dispose(false, true)
+  cyclinderMesh.dispose(false, true)
   return cornerCSG
 }
 
@@ -59,36 +59,44 @@ function makeCornerMesh(
  * @param {number} params.width? - tile's width (X axis).
  * @param {number} params.height? - tile's height (Y axis).
  * @param {number} params.depth? - tile's depth (Z axis).
+ * @param {import('@babylonjs/core').Scene} scene? - scene to host this rounded tile (default to last scene).
  * @returns {import('@babylonjs/core').Mesh} the created tile mesh.
  */
-export function createRoundedTile({
-  id,
-  x = 0,
-  z = 0,
-  y = 0,
-  width = 3,
-  height = 0.05,
-  depth = 3,
-  borderRadius = 0.4,
-  texture,
-  faceUV = [
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0.5, 1, 0, 0],
-    [0.5, 0, 1, 1]
-  ],
-  ...behaviorStates
-} = {}) {
-  const tileMesh = CreateBox('roundedTile', {
-    width,
-    height,
-    depth,
-    faceUV: faceUV.map(components => Vector4.FromArray(components)),
-    faceColors: [],
-    wrap: true
-  })
+export function createRoundedTile(
+  {
+    id,
+    x = 0,
+    z = 0,
+    y = 0,
+    width = 3,
+    height = 0.05,
+    depth = 3,
+    borderRadius = 0.4,
+    texture,
+    faceUV = [
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0.5, 1, 0, 0],
+      [0.5, 0, 1, 1]
+    ],
+    ...behaviorStates
+  } = {},
+  scene
+) {
+  const tileMesh = CreateBox(
+    'roundedTile',
+    {
+      width,
+      height,
+      depth,
+      faceUV: faceUV.map(components => Vector4.FromArray(components)),
+      faceColors: [],
+      wrap: true
+    },
+    scene
+  )
   const tileCSG = CSG.FromMesh(tileMesh)
   const cornerParams = {
     faceUV: Vector4.FromArray(faceUV[0]),
@@ -101,42 +109,42 @@ export function createRoundedTile({
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, true, false))
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, false, true))
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, false, false))
-  const tile = tileCSG.toMesh('roundedTile')
-  tile.id = id
-  tileMesh.dispose()
+  const mesh = tileCSG.toMesh('roundedTile', undefined, scene)
+  mesh.id = id
+  tileMesh.dispose(false, true)
 
-  tile.material = new StandardMaterial(id)
-  tile.material.diffuseTexture = new Texture(adaptTexture(texture))
-  tile.material.diffuseTexture.hasAlpha = true
-  tile.material.freeze()
-  attachMaterialError(tile.material)
+  mesh.material = new StandardMaterial(id, scene)
+  mesh.material.diffuseTexture = new Texture(adaptTexture(texture), scene)
+  mesh.material.diffuseTexture.hasAlpha = true
+  mesh.material.freeze()
+  attachMaterialError(mesh.material)
 
-  tile.receiveShadows = true
-  tile.setAbsolutePosition(new Vector3(x, y, z))
-  tile.isPickable = false
+  mesh.receiveShadows = true
+  mesh.setAbsolutePosition(new Vector3(x, y, z))
+  mesh.isPickable = false
 
-  tile.metadata = {
+  mesh.metadata = {
     serialize: () => ({
-      shape: tile.name,
+      shape: mesh.name,
       id,
-      x: tile.position.x,
-      y: tile.position.y,
-      z: tile.position.z,
+      x: mesh.position.x,
+      y: mesh.position.y,
+      z: mesh.position.z,
       width,
       height,
       depth,
       borderRadius,
       texture,
       faceUV,
-      ...serializeBehaviors(tile.behaviors)
+      ...serializeBehaviors(mesh.behaviors)
     })
   }
 
-  tile.overlayColor = new Color3(0, 0.8, 0)
-  tile.overlayAlpha = 0.2
+  mesh.overlayColor = new Color3(0, 0.8, 0)
+  mesh.overlayAlpha = 0.2
 
-  registerBehaviors(tile, behaviorStates)
+  registerBehaviors(mesh, behaviorStates)
 
-  controlManager.registerControlable(tile)
-  return tile
+  controlManager.registerControlable(mesh)
+  return mesh
 }

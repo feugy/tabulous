@@ -9,12 +9,28 @@ import { TargetBehavior } from '../../../src/3d/behaviors'
 
 describe('TargetManager', () => {
   let drops
+  let scene
+  let handScene
 
-  configures3dTestEngine()
+  configures3dTestEngine(created => {
+    scene = created.scene
+    handScene = created.handScene
+  })
 
   beforeEach(() => {
     jest.resetAllMocks()
     drops = []
+  })
+
+  it('has initial state', () => {
+    expect(manager.scene).toBeNull()
+  })
+
+  describe('init()', () => {
+    it('sets scene', () => {
+      manager.init({ scene })
+      expect(manager.scene).toEqual(scene)
+    })
   })
 
   describe('registerTargetable()', () => {
@@ -101,6 +117,20 @@ describe('TargetManager', () => {
       selectionManager.select(zone1.targetable.mesh)
       const mesh = CreateBox('box', {})
       mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
+      mesh.computeWorldMatrix()
+
+      expect(manager.findDropZone(mesh)).not.toBeDefined()
+    })
+
+    it('ignores targets when not in main scene', () => {
+      const zone3 = createsTargetZone(
+        'target1',
+        new Vector3(10, 0, 10),
+        undefined,
+        handScene
+      )
+      const mesh = CreateBox('box', {}, handScene)
+      mesh.setAbsolutePosition(zone3.mesh.absolutePosition)
       mesh.computeWorldMatrix()
 
       expect(manager.findDropZone(mesh)).not.toBeDefined()
@@ -205,15 +235,16 @@ describe('TargetManager', () => {
   function createsTargetZone(
     id,
     position = new Vector3(0, 0, 0),
-    priority = undefined
+    priority = undefined,
+    usedScene = scene
   ) {
-    const targetable = CreateBox(`targetable-${id}`, {})
+    const targetable = CreateBox(`targetable-${id}`, {}, usedScene)
     targetable.isPickable = false
     const behavior = new TargetBehavior()
     behavior.onDropObservable.add(drop => drops.push(drop))
     targetable.addBehavior(behavior, true)
 
-    const target = CreateBox(id, {})
+    const target = CreateBox(id, {}, usedScene)
     target.setAbsolutePosition(position)
     target.computeWorldMatrix()
     return behavior.addZone(target, 0.5, undefined, undefined, priority)

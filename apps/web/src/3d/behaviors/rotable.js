@@ -1,8 +1,7 @@
 import { Animation } from '@babylonjs/core/Animations/animation'
-import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { AnimateBehavior } from './animatable'
 import { RotateBehaviorName } from './names'
-import { applyGravity } from '../utils'
+import { applyGravity, runAnimation } from '../utils'
 import { controlManager } from '../managers'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
@@ -55,21 +54,20 @@ export class RotateBehavior extends AnimateBehavior {
    * It initializes its rotation according to angle.
    * When attaching/detaching this mesh to a parent, adjust rotation angle
    * according to the parent's own rotation, so that rotating the parent
-   * will accordingly rotate the chil.
+   * will accordingly rotate the child.
    * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
    */
   attach(mesh) {
     super.attach(mesh)
     this.fromState(this.state)
+  }
 
-    const originalSetter = mesh.setParent.bind(mesh)
-    mesh.setParent = parent => {
-      const angle = getRotatableAngle(parent ?? mesh.parent)
-      if (angle !== undefined) {
-        updateAngle(this, parent ? -angle : angle)
-      }
-      originalSetter(parent)
-    }
+  /**
+   * Detaches this behavior from its mesh.
+   */
+  detach() {
+    this.mesh.setParent = this._originalSetter
+    super.detach()
   }
 
   /**
@@ -87,7 +85,6 @@ export class RotateBehavior extends AnimateBehavior {
       state: { duration, angle },
       isAnimated,
       mesh,
-      frameRate,
       rotateAnimation,
       moveAnimation
     } = this
@@ -97,48 +94,37 @@ export class RotateBehavior extends AnimateBehavior {
     logger.debug({ mesh }, `start rotating ${mesh.id}`)
     this.isAnimated = true
 
-    controlManager.record({ meshId: mesh.id, fn: 'rotate' })
+    controlManager.record({ mesh, fn: 'rotate' })
 
-    const to = mesh.position.clone()
+    const attach = detach(mesh)
+    const [x, y, z] = mesh.position.asArray()
     const rotation = 0.5 * Math.PI
 
-    const lastFrame = Math.round(frameRate * (duration / 1000))
-    rotateAnimation.setKeys([
-      { frame: 0, value: angle },
-      { frame: lastFrame, value: angle + rotation }
-    ])
-    moveAnimation.setKeys([
-      { frame: 0, value: to },
-      {
-        frame: lastFrame * 0.5,
-        value: new Vector3(to.x, to.y + 0.5, to.z)
+    updateAngle(this, rotation)
+    await runAnimation(
+      this,
+      () => {
+        attach()
+        applyGravity(mesh)
+        logger.debug({ mesh }, `end rotating ${mesh.id}`)
       },
-      { frame: lastFrame, value: to }
-    ])
-    // prevents interactions and collisions
-    mesh.isPickable = false
-    return new Promise(resolve =>
-      mesh
-        .getScene()
-        .beginDirectAnimation(
-          mesh,
-          [rotateAnimation, moveAnimation],
-          0,
-          lastFrame,
-          false,
-          1,
-          () => {
-            this.isAnimated = false
-            updateAngle(this, rotation)
-            mesh.rotation.y = this.state.angle
-            logger.debug({ mesh }, `end rotating ${mesh.id}`)
-            // framed animation may not exactly end where we want, so force the final position
-            mesh.position.copyFrom(to)
-            applyGravity(mesh)
-            mesh.isPickable = true
-            resolve()
-          }
-        )
+      {
+        animation: rotateAnimation,
+        duration,
+        keys: [
+          { frame: 0, values: [angle] },
+          { frame: 100, values: [angle + rotation] }
+        ]
+      },
+      {
+        animation: moveAnimation,
+        duration,
+        keys: [
+          { frame: 0, values: [x, y, z] },
+          { frame: 50, values: [x, y + 0.5, z] },
+          { frame: 100, values: [x, y, z] }
+        ]
+      }
     )
   }
 
@@ -166,6 +152,11 @@ function updateAngle(behavior, rotation) {
   behavior.mesh.metadata.angle = behavior.state.angle
 }
 
-function getRotatableAngle(mesh) {
-  return mesh?.getBehaviorByName(RotateBehaviorName)?.state.angle
+function detach(mesh) {
+  let parent = mesh.parent
+  mesh.setParent(null)
+
+  return () => {
+    mesh.setParent(parent)
+  }
 }

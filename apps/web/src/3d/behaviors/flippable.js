@@ -1,8 +1,7 @@
 import { Animation } from '@babylonjs/core/Animations/animation'
-import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { AnimateBehavior } from './animatable'
 import { FlipBehaviorName } from './names'
-import { applyGravity } from '../utils'
+import { applyGravity, getDimensions, runAnimation } from '../utils'
 import { controlManager } from '../managers'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
@@ -72,7 +71,6 @@ export class FlipBehavior extends AnimateBehavior {
       state: { duration, isFlipped },
       isAnimated,
       mesh,
-      frameRate,
       flipAnimation,
       moveAnimation
     } = this
@@ -80,63 +78,50 @@ export class FlipBehavior extends AnimateBehavior {
       return
     }
     logger.debug({ mesh }, `start flipping ${mesh.id}`)
-    this.isAnimated = true
 
-    controlManager.record({ meshId: mesh.id, fn: 'flip' })
+    controlManager.record({ mesh, fn: 'flip' })
 
     const attach = detach(mesh)
-    const to = mesh.position.clone()
-    const [min, max] = mesh.getBoundingInfo().boundingBox.vectorsWorld
-    const width = Math.abs(min.x - max.x)
+    const [x, y, z] = mesh.position.asArray()
+    const { width } = getDimensions(mesh)
 
-    const lastFrame = Math.round(frameRate * (duration / 1000))
-    flipAnimation.setKeys([
-      { frame: 0, value: mesh.rotation.z },
-      {
-        frame: lastFrame,
-        value:
-          mesh.rotation.z + (mesh.rotation.y < Math.PI ? Math.PI : -Math.PI)
-      }
-    ])
-    moveAnimation.setKeys([
-      { frame: 0, value: to },
-      {
-        frame: lastFrame * 0.5,
-        value: new Vector3(to.x, to.y + width, to.z)
+    this.state.isFlipped = !isFlipped
+    mesh.metadata.isFlipped = this.state.isFlipped
+    await runAnimation(
+      this,
+      () => {
+        // keep rotation between [0..2 * PI[, without modulo because it does not keep plain values
+        if (mesh.rotation.z < 0) {
+          mesh.rotation.z += 2 * Math.PI
+        } else if (mesh.rotation.z >= 2 * Math.PI) {
+          mesh.rotation.z -= 2 * Math.PI
+        }
+        attach()
+        applyGravity(mesh)
+        logger.debug({ mesh }, `end flipping ${mesh.id}`)
       },
-      { frame: lastFrame, value: to }
-    ])
-    // prevents interactions and collisions
-    mesh.isPickable = false
-    return new Promise(resolve =>
-      mesh
-        .getScene()
-        .beginDirectAnimation(
-          mesh,
-          [flipAnimation, moveAnimation],
-          0,
-          lastFrame,
-          false,
-          1,
-          () => {
-            this.isAnimated = false
-            this.state.isFlipped = !isFlipped
-            mesh.metadata.isFlipped = this.state.isFlipped
-            // keep rotation between [0..2 * PI[, without modulo because it does not keep plain values
-            if (mesh.rotation.z < 0) {
-              mesh.rotation.z += 2 * Math.PI
-            } else if (mesh.rotation.z >= 2 * Math.PI) {
-              mesh.rotation.z -= 2 * Math.PI
-            }
-            logger.debug({ mesh }, `end flipping ${mesh.id}`)
-            // framed animation may not exactly end where we want, so force the final position
-            mesh.position.copyFrom(to)
-            attach()
-            applyGravity(mesh)
-            mesh.isPickable = true
-            resolve()
+      {
+        animation: flipAnimation,
+        duration,
+        keys: [
+          { frame: 0, values: [mesh.rotation.z] },
+          {
+            frame: 100,
+            values: [
+              mesh.rotation.z + (mesh.rotation.y < Math.PI ? Math.PI : -Math.PI)
+            ]
           }
-        )
+        ]
+      },
+      {
+        animation: moveAnimation,
+        duration,
+        keys: [
+          { frame: 0, values: [x, y, z] },
+          { frame: 50, values: [x, y + width, z] },
+          { frame: 100, values: [x, y, z] }
+        ]
+      }
     )
   }
 
@@ -149,7 +134,9 @@ export class FlipBehavior extends AnimateBehavior {
       throw new Error('Can not restore state without mesh')
     }
     this.state = { isFlipped, duration }
+    const attach = detach(this.mesh)
     this.mesh.rotation.z = this.state.isFlipped ? Math.PI : 0
+    attach()
     if (!this.mesh.metadata) {
       this.mesh.metadata = {}
     }

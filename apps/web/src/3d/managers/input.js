@@ -53,10 +53,11 @@ class InputManager {
    * Gives a scene to the manager, so it can bind to underlying events.
    * @param {object} params - parameters, including:
    * @param {Scene} params.scene - scene attached to.
+   * @param {Scene} params.handScene - hand scene overlay.
    * @param {number} params.longTapDelay - number of milliseconds to hold pointer down before it is considered as long.
    * @param {boolean} [params.enabled=true] - whether the input manager actively handles inputs or not.
    */
-  init({ scene, enabled = false, longTapDelay }) {
+  init({ scene, handScene, enabled = false, longTapDelay }) {
     // same finger/stylus/mouse will have same pointerId for down, move(s) and up events
     // different fingers will have different ids
     const pointers = new Map()
@@ -170,12 +171,8 @@ class InputManager {
 
       const button = event.pointerType === 'mouse' ? event.button : undefined
       // takes mesh with highest elevation, and only when they are pickable
-      const mesh = scene
-        .multiPickWithRay(
-          scene.createPickingRay(event.x, event.y),
-          mesh => mesh.isPickable
-        )
-        .sort((a, b) => a.distance - b.distance)[0]?.pickedMesh
+      const mesh =
+        findPickedMesh(handScene, event) ?? findPickedMesh(scene, event)
 
       switch (type) {
         case PointerEventTypes.POINTERDOWN: {
@@ -397,3 +394,9 @@ class InputManager {
  * @type {InputManager}
  */
 export const inputManager = new InputManager()
+
+function findPickedMesh(scene, { x, y }) {
+  return scene
+    .multiPickWithRay(scene.createPickingRay(x, y), mesh => mesh.isPickable)
+    .sort((a, b) => a.distance - b.distance)[0]?.pickedMesh
+}

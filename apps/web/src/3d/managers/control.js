@@ -1,16 +1,21 @@
 import { PointerEventTypes } from '@babylonjs/core/Events/pointerEvents'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { Observable } from '@babylonjs/core/Misc/observable'
-import { createPeerPointer } from '../peer-pointer'
-import { screenToGround } from '../utils'
-
-function getKey(action = {}) {
-  return `${action?.meshId}-${action.fn?.toString() || 'pos'}`
-}
+import { createPeerPointer } from '../meshes'
+// '../../utils' creates a cyclic dependency in Jest
+import { screenToGround } from '../utils/vector'
 
 /**
  * @typedef {object} Action applied action to a given mesh:
  * @property {string} meshId - modified mesh id.
+ * @property {string} fn? - optionnal name of the applied action (default to 'pos').
+ * @property {any[]} args? - optional argument array for this action.
+ * @property {boolean} fromHand? - indicates whether this action comes from hand or main scene.
+ */
+
+/**
+ * @typedef {object} RecordedAction applied action to a given mesh:
+ * @property {import('@babylonjs/cord').Mesh} mesh - modified mesh.
  * @property {string} fn? - optionnal name of the applied action (default to 'pos').
  * @property {any[]} args? - optional argument array for this action.
  */
@@ -43,6 +48,8 @@ class ControlManager {
     this.onPointerObservable = new Observable()
     this.onDetailedObservable = new Observable()
     // private
+    this.scene = null
+    this.handScene = null
     this.controlables = new Map()
     this.peerPointers = new Map()
     // prevents loops when applying an received action
@@ -52,18 +59,21 @@ class ControlManager {
   /**
    * Gives a scene to the manager.
    * @param {object} params - parameters, including:
-   * @param {Scene} params.scene - scene attached to.
+   * @param {Scene} params.scene - main scene.
+   * @param {Scene} params.handScene - scene for meshes in hand.
    */
-  init({ scene }) {
-    scene.onPrePointerObservable.add(({ type, localPosition }) => {
+  init({ scene, handScene }) {
+    this.scene = scene
+    this.handScene = handScene
+    this.scene.onPrePointerObservable.add(({ type, localPosition }) => {
       if (type === PointerEventTypes.POINTERMOVE) {
-        const pointer = screenToGround(scene, localPosition)?.asArray()
+        const pointer = screenToGround(this.scene, localPosition)?.asArray()
         if (pointer) {
           this.onPointerObservable.notifyObservers({ pointer })
         }
       }
     })
-    scene.onDisposeObservable.addOnce(() => {
+    this.scene.onDisposeObservable.addOnce(() => {
       this.onActionObservable.clear()
       this.onPointerObservable.clear()
       this.onDetailedObservable.clear()
@@ -76,12 +86,12 @@ class ControlManager {
    * @param {import('@babel/core').Mesh} mesh - controled mesh (needs at least an id property).
    */
   registerControlable(mesh) {
-    if (!this.isManaging(mesh)) {
-      this.controlables.set(mesh.id, mesh)
-      mesh.onDisposeObservable.addOnce(() =>
-        controlManager.unregisterControlable(mesh)
-      )
-    }
+    this.controlables.set(mesh.id, mesh)
+    mesh.onDisposeObservable.addOnce(() => {
+      if (!mesh.isPhantom) {
+        this.unregisterControlable(mesh)
+      }
+    })
   }
 
   /**
@@ -104,15 +114,20 @@ class ControlManager {
   /**
    * Records an actions from one of the controlled meshes, and notifies observers.
    * Does nothing if the source mesh is not controlled.
-   * @param {Action} action - recorded action.
+   * @param {RecordedAction} action - recorded action.
    */
-  record(action) {
-    const key = getKey(action)
+  record(action = {}) {
+    const { mesh, ...actionProps } = action
     if (
-      !this.inhibitedKeys.has(key) &&
-      this.isManaging({ id: action?.meshId })
+      !this.inhibitedKeys.has(getKey({ meshId: mesh?.id, ...actionProps })) &&
+      this.isManaging(mesh)
     ) {
-      this.onActionObservable.notifyObservers(action)
+      this.onActionObservable.notifyObservers({
+        ...actionProps,
+        meshId: mesh.id,
+        fromHand:
+          this.handScene === mesh.getScene() && actionProps.fn !== 'draw'
+      })
     }
   }
 
@@ -165,7 +180,7 @@ class ControlManager {
   pruneUnusedPeerPointers(connectedPeerIds) {
     for (const [playerId, pointer] of this.peerPointers) {
       if (!connectedPeerIds.includes(playerId)) {
-        pointer.dispose()
+        pointer.dispose(false, true)
         this.peerPointers.delete(playerId)
       }
     }
@@ -186,3 +201,7 @@ class ControlManager {
  * @type {ControlManager}
  */
 export const controlManager = new ControlManager()
+
+function getKey(action) {
+  return `${action?.meshId}-${action.fn?.toString() || 'pos'}`
+}

@@ -1,8 +1,20 @@
-import { BehaviorSubject, Subject, merge } from 'rxjs'
-import { auditTime, delay, map } from 'rxjs/operators'
+import {
+  BehaviorSubject,
+  Subject,
+  auditTime,
+  delay,
+  filter,
+  map,
+  merge
+} from 'rxjs'
 import { connected, lastMessageReceived, send } from './peer-channels'
-import { createEngine, createLight, createTable } from '../3d'
-import { cameraManager, controlManager, inputManager } from '../3d/managers'
+import { createEngine } from '../3d'
+import {
+  cameraManager,
+  controlManager,
+  handManager,
+  inputManager
+} from '../3d/managers'
 import { attachInputs } from '../utils'
 
 const engine$ = new BehaviorSubject(null)
@@ -15,6 +27,7 @@ const meshForMenu$ = new Subject()
 const stackSize$ = new Subject()
 const cameraSaves$ = new BehaviorSubject([])
 const currentCamera$ = new Subject()
+const handSaves$ = new Subject()
 
 /**
  * Emits 3D engine when available.
@@ -33,10 +46,6 @@ export const fps = fps$.asObservable()
  * @type {Observable<import('../3d/managers').Action>}
  */
 export const action = merge(localAction$, remoteAction$)
-
-remoteAction$.subscribe({
-  next: action => action.fn && console.log('remote action', action)
-})
 
 /**
  * Emits mesh details when the player requested them.
@@ -76,6 +85,14 @@ export const longInputs = new Subject()
 export const currentCamera = currentCamera$.asObservable()
 
 /**
+ * Emits player's hand content (an array of serialized meshes)
+ * @type {Observable<object[]>}
+ */
+export const handMeshes = handSaves$.pipe(
+  map(() => engine$.value?.serialize().handMeshes)
+)
+
+/**
  * Initialize the 3D engine, which includes:
  * - displaying loader
  * - creating a table and a light
@@ -97,7 +114,7 @@ export function initEngine({
   doubleTapDelay = 300,
   longTapDelay = 250,
   pointerThrottle = 200
-} = {}) {
+}) {
   const engine = createEngine({
     canvas,
     interaction,
@@ -106,10 +123,6 @@ export function initEngine({
   })
   engine.onEndFrameObservable.add(() => fps$.next(engine.getFps().toFixed()))
 
-  createTable()
-  // creates light after table, so table doesn't project shadow
-  createLight()
-
   engine$.next(engine)
   engine.start()
 
@@ -117,16 +130,18 @@ export function initEngine({
   cameraSaves$.next(cameraManager.saves)
   currentCamera$.next(cameraManager.saves[0])
 
-  const mapping = [
+  const mappings = [
     { observable: controlManager.onActionObservable, subject: localAction$ },
     { observable: controlManager.onPointerObservable, subject: pointer$ },
     { observable: controlManager.onDetailedObservable, subject: meshDetails$ },
     { observable: cameraManager.onSaveObservable, subject: cameraSaves$ },
     { observable: cameraManager.onMoveObservable, subject: currentCamera$ },
-    { observable: inputManager.onLongObservable, subject: longInputs }
+    { observable: inputManager.onLongObservable, subject: longInputs },
+    { observable: handManager.onHandChangeObservable, subject: handSaves$ }
   ]
   // exposes Babylon observables as RX subjects
-  for (const { observable, subject } of mapping) {
+  for (const mapping of mappings) {
+    const { observable, subject } = mapping
     mapping.observer = observable.add(subject.next.bind(subject))
   }
 
@@ -140,13 +155,16 @@ export function initEngine({
   // applies other players' update
   subscriptions.push(
     ...[
-      lastMessageReceived.subscribe(({ data }) => {
+      lastMessageReceived.subscribe(({ data, playerId }) => {
         if (data?.pointer) {
           controlManager.movePeerPointer(data)
         } else if (data?.meshId) {
-          controlManager.apply(data, true)
-          // expose remote actions to other store and components
-          remoteAction$.next(data)
+          if (data.fn === 'draw') {
+            handManager.applyDraw(...data.args)
+          } else {
+            controlManager.apply(data, true)
+          }
+          remoteAction$.next({ ...data, peerId: playerId })
         }
       }),
 
@@ -159,8 +177,8 @@ export function initEngine({
         }
       }),
 
-      // sends local action to other players
-      localAction$.subscribe(send),
+      // sends local action from main scene to other players
+      localAction$.pipe(filter(({ fromHand }) => !fromHand)).subscribe(send),
 
       // only sends pointer periodically to other players
       pointer$.pipe(auditTime(pointerThrottle)).subscribe(send)
@@ -171,6 +189,9 @@ export function initEngine({
   engine.onDisposeObservable.addOnce(() => {
     for (const subscription of subscriptions) {
       subscription.unsubscribe()
+    }
+    for (const { observable, observer } of mappings) {
+      observable.remove(observer)
     }
     engine$.next(null)
   })
