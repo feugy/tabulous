@@ -205,10 +205,10 @@ describe('registerBehaviors() 3D utility', () => {
   it('adds rotable behavior to a mesh', () => {
     const state = { angle: Math.PI * 0.75, duration: 321 }
     registerBehaviors(box, { rotable: state })
-    expect(box.getBehaviorByName(RotateBehaviorName)).toHaveProperty(
-      'state',
-      state
-    )
+    expect(box.getBehaviorByName(RotateBehaviorName)).toHaveProperty('state', {
+      ...state,
+      angle: 2.356194497281308
+    })
   })
 
   it('adds detailable behavior to a mesh', () => {
@@ -325,7 +325,7 @@ describe('restoreBehaviors() 3D utility', () => {
     const rotable = new RotateBehavior()
     box.addBehavior(rotable, true)
     restoreBehaviors(box.behaviors, { rotable: state })
-    expect(rotable.state).toEqual(state)
+    expect(rotable.state).toEqual({ ...state, angle: 2.356194497281308 })
   })
 
   it('restores detailable behavior', () => {
@@ -392,7 +392,7 @@ describe('restoreBehaviors() 3D utility', () => {
       ],
       duration: 415
     }
-    const rotable = { angle: Math.PI * 0.75, duration: 432 }
+    const rotable = { angle: 2.356194497281308, duration: 432 }
     const stackable = {
       stackIds: ['a426f1', '23f658'],
       extent: 1.5,
@@ -479,8 +479,11 @@ describe('serializeBehaviors() 3D utility', () => {
 
   it('serializes rotable behavior', () => {
     const state = { angle: Math.PI * 0.75, duration: 432 }
-    expect(serializeBehaviors([new RotateBehavior(state)])).toEqual({
-      rotable: state
+    const mesh = CreateBox('box1')
+    const rotable = new RotateBehavior(state)
+    mesh.addBehavior(rotable, true)
+    expect(serializeBehaviors([rotable])).toEqual({
+      rotable: { ...state, angle: 2.356194497281308 }
     })
   })
 
@@ -548,7 +551,7 @@ describe('serializeBehaviors() 3D utility', () => {
       ],
       duration: 415
     }
-    const rotable = { angle: Math.PI * 0.75, duration: 432 }
+    const rotable = { angle: 2.356194497281308, duration: 432 }
     const stackable = {
       stackIds: ['a426f1', '23f658'],
       extent: 1.5,
@@ -611,13 +614,13 @@ describe('runAnimation() 3D utility', () => {
     expect(animation.getKeys()).toEqual([
       { frame: 0, value: 1, outTangent: 1 },
       {
-        frame: 1.5,
+        frame: 3,
         value: 1,
         inTangent: null,
         outTangent: null,
         interpolation: 3
       },
-      { frame: 3, value: 0, inTangent: 2 }
+      { frame: 6, value: 0, inTangent: 2 }
     ])
   })
 
@@ -648,11 +651,11 @@ describe('runAnimation() 3D utility', () => {
         outTangent: new Vector3(1, 1, 1)
       },
       {
-        frame: 1.5,
+        frame: 3,
         value: new Vector3(2, 3, 4),
         interpolation: new Vector3(3, 3, 3)
       },
-      { frame: 3, value: finalRotation, inTangent: new Vector3(2, 2, 2) }
+      { frame: 6, value: finalRotation, inTangent: new Vector3(2, 2, 2) }
     ])
   })
 

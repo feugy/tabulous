@@ -156,8 +156,10 @@ export function expectFlipped(mesh, isFlipped = true, initialRotation = 0) {
 }
 
 export function expectRotated(mesh, angle, absoluteAngle = angle) {
-  expect(mesh.metadata.angle).toBe(angle)
-  expect(mesh.getBehaviorByName(RotateBehaviorName).state.angle).toBe(angle)
+  expect(mesh.metadata.angle).toBeCloseTo(angle)
+  expect(mesh.getBehaviorByName(RotateBehaviorName).state.angle).toBeCloseTo(
+    angle
+  )
   expectAbsoluteRotation(mesh, absoluteAngle, 'y')
 }
 

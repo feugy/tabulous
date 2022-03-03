@@ -1,3 +1,4 @@
+import { Animation } from '@babylonjs/core/Animations/animation'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
@@ -9,14 +10,20 @@ import {
 import { TargetBehavior } from './targetable'
 import { controlManager, inputManager, selectionManager } from '../managers'
 import {
-  getCenterAltitudeAbove,
   animateMove,
   applyGravity,
+  attachProperty,
+  getAnimatableBehavior,
+  getCenterAltitudeAbove,
   getTargetableBehavior,
+  isMeshFlipped,
+  isMeshInverted,
+  runAnimation,
   sortByElevation
 } from '../utils'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
+import { sleep } from '../../utils'
 
 const logger = makeLogger('stackable')
 
@@ -126,7 +133,7 @@ export class StackBehavior extends TargetBehavior {
   }
 
   /**
-   * Pushes a mesh onto this stack, or the base stack if this mesh is already stacked:
+   * Pushes a mesh (or a stack of meshes) onto this stack:
    * - records the action into the control manager (if not inhibited)
    * - disables targets and moves of all meshes but the highest one
    * - runs a move animation with gravity until completion
@@ -146,21 +153,24 @@ export class StackBehavior extends TargetBehavior {
     if (!this.inhibitControl) {
       controlManager.record({ mesh: stack[0], fn: 'push', args: [meshId] })
     }
-    const { x, z } = stack[0].absolutePosition
-    const y = getCenterAltitudeAbove(stack[stack.length - 1], mesh)
+    const { x, z } = base.mesh.absolutePosition
     logger.info(
-      { stack, mesh, x, y, z },
+      { stack, mesh, x, z },
       `push ${mesh.id} on stack ${stack.map(({ id }) => id)}`
     )
     enableLast(stack, false, this)
-    setBase(mesh, base, stack)
-    stack.push(mesh)
-    await animateMove(
-      mesh,
-      new Vector3(x, y, z),
-      this.inhibitControl ? 0 : this._state.duration,
-      true
-    )
+    const duration = this.inhibitControl ? 0 : this._state.duration
+    const meshPushed = getTargetableBehavior(mesh)?.stack ?? [mesh]
+    const last = meshPushed[meshPushed.length - 1]
+    const moves = []
+    for (const pushed of meshPushed) {
+      const y = getCenterAltitudeAbove(stack[stack.length - 1], mesh)
+      setBase(pushed, base, stack)
+      stack.push(pushed)
+      enableLast(stack, last === pushed, this)
+      moves.push(animateMove(pushed, new Vector3(x, y, z), duration, true))
+    }
+    await Promise.all(moves)
   }
 
   /**
@@ -250,33 +260,95 @@ export class StackBehavior extends TargetBehavior {
     }
 
     if (animate) {
+      const isBaseFlipped = isMeshFlipped(stack[0])
+      const isBaseInverted = isMeshInverted(stack[0])
+      const expodeDuration = this._state.duration
+      const restoreDuration = this._state.duration * 2
+      const interval = this._state.duration * 0.2
+
       // first, explode
-      const distance =
-        stack[0].getBoundingInfo().boundingBox.extendSizeWorld.x * 1.5
-      const increment = (2 * Math.PI) / stack.length
+      const positionsAndRotations = []
       await Promise.all(
-        stack.map((mesh, i) =>
-          animateMove(
-            mesh,
-            mesh.absolutePosition.add(
-              new Vector3(
-                Math.sin(i * increment) * distance,
-                i * 0.05,
-                Math.cos(i * increment) * distance
-              )
-            ),
-            this._state.duration * 2
-          ).then(() => {
-            // animateMove re-enabled interactions and collisions
-            mesh.isPickable = false
-          })
-        )
+        stack.slice(1).map((mesh, rank) => {
+          const behavior = getAnimatableBehavior(mesh)
+          const [x, y, z] = mesh.position.asArray()
+          const [pitch, yaw, roll] = mesh.rotation.asArray()
+          positionsAndRotations.push({ x, y, z, pitch, yaw, roll })
+          const isOdd = Boolean(rank % 2)
+          const rollIncline =
+            (isBaseFlipped ? -0.08 : 0.08) *
+            (isBaseInverted ? -1 : 1) *
+            (isMeshInverted(mesh) ? -1 : 1)
+          const yawIncline = isBaseInverted ? -0.03 : 0.03
+          return runAnimation(
+            behavior,
+            null,
+            {
+              animation: buildInclineAnimation(behavior.frameRate),
+              duration: expodeDuration,
+              keys: [
+                { frame: 0, values: [pitch, yaw, roll] },
+                { frame: 50, values: [pitch, yaw, roll] },
+                {
+                  frame: 100,
+                  values: [
+                    pitch,
+                    yaw + Math.PI * yawIncline * (isOdd ? -1 : 1),
+                    roll + Math.PI * rollIncline * (isOdd ? -1 : 1)
+                  ]
+                }
+              ]
+            },
+            {
+              animation: behavior.moveAnimation,
+              duration: expodeDuration,
+              keys: [
+                { frame: 0, values: [x, y, z] },
+                {
+                  frame: 100,
+                  values: [
+                    x + (isOdd ? 3 : -3),
+                    y + (isBaseFlipped ? -3 : 3),
+                    z
+                  ]
+                }
+              ]
+            }
+          )
+        })
       )
-      // then animate all cards to final positions
-      const duration = Math.max((this._state.duration * 4) / stack.length, 0.02)
-      for (const [i, mesh] of stack.entries()) {
-        await animateMove(mesh, newPositions[i], duration)
-      }
+
+      await sleep(interval * 2)
+
+      // then restore
+      await Promise.all(
+        stack.slice(1).map((mesh, rank) => {
+          const behavior = getAnimatableBehavior(mesh)
+          const { x, y, z, pitch, yaw, roll } = positionsAndRotations[rank++]
+          return sleep(rank * interval).then(() =>
+            runAnimation(
+              behavior,
+              null,
+              {
+                animation: buildInclineAnimation(behavior.frameRate),
+                duration: restoreDuration,
+                keys: [
+                  { frame: 0, values: mesh.rotation.asArray() },
+                  { frame: 100, values: [pitch, yaw, roll] }
+                ]
+              },
+              {
+                animation: behavior.moveAnimation,
+                duration: restoreDuration,
+                keys: [
+                  { frame: 0, values: mesh.position.asArray() },
+                  { frame: 100, values: [x, y, z] }
+                ]
+              }
+            )
+          )
+        })
+      )
     }
     for (const mesh of stack) {
       mesh.isPickable = true
@@ -288,14 +360,15 @@ export class StackBehavior extends TargetBehavior {
    * - records the action into the control manager
    * - flips in parallel each mesh
    * - re-order the stack so the lowest mesh becomes the highest
+   * When the base mesh is flipped, re-ordering happens first so the highest mesh doesn't change after flipping.
    *
    * Controllable meshes are unregistered during the operation to avoid triggering individual actions
    * @async
    */
   async flipAll() {
     const base = this.base ?? this
-
     controlManager.record({ mesh: base.stack[0], fn: 'flipAll' })
+
     const ignored = []
     for (const mesh of base.stack) {
       if (controlManager.isManaging(mesh)) {
@@ -303,9 +376,14 @@ export class StackBehavior extends TargetBehavior {
         ignored.push(mesh)
       }
     }
-    // we need to wait before reordering that cards reached their new place
+    const isFlipped = isMeshFlipped(base.stack[0])
+    if (isFlipped) {
+      base.reorder(base.stack.map(({ id }) => id).reverse(), false)
+    }
     await Promise.all(base.stack.map(mesh => mesh.metadata.flip?.()))
-    base.reorder(base.stack.map(({ id }) => id).reverse(), false)
+    if (!isFlipped) {
+      base.reorder(base.stack.map(({ id }) => id).reverse(), false)
+    }
     for (const mesh of ignored) {
       controlManager.registerControlable(mesh)
     }
@@ -317,7 +395,7 @@ export class StackBehavior extends TargetBehavior {
    */
   async rotateAll() {
     const base = this.base ?? this
-    await Promise.all(base.stack.map(mesh => mesh.metadata.rotate?.()))
+    await base.mesh.metadata.rotate?.()
   }
 
   /**
@@ -388,12 +466,12 @@ export class StackBehavior extends TargetBehavior {
     if (!this.mesh.metadata) {
       this.mesh.metadata = {}
     }
-    this.mesh.metadata.stack = this.stack
     this.mesh.metadata.push = this.push.bind(this)
     this.mesh.metadata.pop = this.pop.bind(this)
     this.mesh.metadata.reorder = this.reorder.bind(this)
     this.mesh.metadata.flipAll = this.flipAll.bind(this)
     this.mesh.metadata.rotateAll = this.rotateAll.bind(this)
+    attachProperty(this.mesh.metadata, 'stack', () => this.stack)
   }
 }
 
@@ -428,7 +506,17 @@ function setBase(mesh, base, stack) {
   if (targetable) {
     targetable.base = base
     targetable.stack = stack
-    mesh.metadata.stack = targetable.stack
+    mesh.setParent(base?.mesh ?? null)
   }
   return targetable
+}
+
+function buildInclineAnimation(frameRate) {
+  return new Animation(
+    'incline',
+    'rotation',
+    frameRate,
+    Animation.ANIMATIONTYPE_VECTOR3,
+    Animation.ANIMATIONLOOPMODE_CONSTANT
+  )
 }

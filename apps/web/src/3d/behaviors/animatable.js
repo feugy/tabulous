@@ -1,7 +1,7 @@
 import { Animation } from '@babylonjs/core/Animations/animation'
 import { Observable } from '@babylonjs/core/Misc/observable'
 import { AnimateBehaviorName } from './names'
-import { applyGravity, runAnimation } from '../utils'
+import { applyGravity, convertToLocal, runAnimation } from '../utils'
 
 export class AnimateBehavior {
   /**
@@ -14,12 +14,12 @@ export class AnimateBehavior {
    * @property {Observable} onAnimationEndObservable - emits when animation has ended.
    *
    * @param {object} params - parameters, including:
-   * @param {number} [params.frameRate=30] - number of frames per second.
+   * @param {number} [params.frameRate=60] - number of frames per second.
    */
   constructor({ frameRate } = {}) {
     this.mesh = null
     this.isAnimated = false
-    this.frameRate = frameRate ?? 30
+    this.frameRate = frameRate ?? 60
     this.onAnimationEndObservable = new Observable()
     // private
     this.moveAnimation = new Animation(
@@ -87,8 +87,11 @@ export class AnimateBehavior {
         animation: moveAnimation,
         duration: mesh.getScene().isLoading ? 0 : duration,
         keys: [
-          { frame: 0, values: mesh.position.asArray() },
-          { frame: 100, values: to.asArray() }
+          {
+            frame: 0,
+            values: convertToLocal(mesh.absolutePosition, mesh).asArray()
+          },
+          { frame: 100, values: convertToLocal(to, mesh).asArray() }
         ]
       }
     )

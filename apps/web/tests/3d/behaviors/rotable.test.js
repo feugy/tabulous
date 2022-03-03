@@ -25,7 +25,7 @@ describe('RotateBehavior', () => {
 
   it('has initial state', () => {
     const state = {
-      isFlipped: faker.datatype.boolean(),
+      angle: faker.datatype.number(),
       duration: faker.datatype.number()
     }
     const behavior = new RotateBehavior(state)
@@ -84,10 +84,25 @@ describe('RotateBehavior', () => {
       const angle = Math.PI * 0.5
       const state = { angle, duration: faker.datatype.number() }
       behavior.fromState(state)
-      expect(behavior.state).toEqual(state)
+      expect(behavior.state).toEqual({ ...state, angle: 1.5707963267948963 })
       expect(behavior.mesh).toEqual(mesh)
       expectRotated(mesh, angle)
       expect(animationEndReceived).not.toHaveBeenCalled()
+    })
+
+    it('can restore state on existing mesh', () => {
+      const angle = Math.PI * 0.5
+      const state = { angle, duration: faker.datatype.number() }
+      behavior.fromState(state)
+      const parent = createAttachedRotable({
+        duration: 50,
+        angle: Math.PI * 0.75
+      }).mesh
+      mesh.setParent(parent)
+      expectRotated(mesh, angle)
+
+      behavior.fromState(state)
+      expectRotated(mesh, angle)
     })
 
     it('rotates mesh clockwise and apply gravity', async () => {
@@ -115,7 +130,7 @@ describe('RotateBehavior', () => {
       await mesh.metadata.rotate()
       expectRotated(mesh, Math.PI * 0.5)
       expectPosition(mesh, [x, 0.5, z])
-      expectRotated(child, 0, Math.PI * 0.5)
+      expectRotated(child, Math.PI * 0.5)
       expect(animationEndReceived).toHaveBeenCalledTimes(1)
     })
 

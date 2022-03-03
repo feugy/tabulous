@@ -1,7 +1,12 @@
 import { Animation } from '@babylonjs/core/Animations/animation'
 import { AnimateBehavior } from './animatable'
 import { FlipBehaviorName } from './names'
-import { applyGravity, getDimensions, runAnimation } from '../utils'
+import {
+  applyGravity,
+  attachProperty,
+  getDimensions,
+  runAnimation
+} from '../utils'
 import { controlManager } from '../managers'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
@@ -86,7 +91,6 @@ export class FlipBehavior extends AnimateBehavior {
     const { width } = getDimensions(mesh)
 
     this.state.isFlipped = !isFlipped
-    mesh.metadata.isFlipped = this.state.isFlipped
     await runAnimation(
       this,
       () => {
@@ -141,7 +145,7 @@ export class FlipBehavior extends AnimateBehavior {
       this.mesh.metadata = {}
     }
     this.mesh.metadata.flip = this.flip.bind(this)
-    this.mesh.metadata.isFlipped = this.state.isFlipped
+    attachProperty(this.mesh.metadata, 'isFlipped', () => this.state.isFlipped)
   }
 }
 

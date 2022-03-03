@@ -1,7 +1,5 @@
 # TODO
 
-- issue: moving the anchor does not move stacked snapped meshes
-
 ## Brittle tests
 
 - `InputManager › given an initialized manager() › handles multiple pointers taps`
@@ -18,6 +16,7 @@
 
 ## Refactor
 
+- create Animation objects as part of runAnimation() (constant frameRate of 60)
 - do we need to wrap card planes in an invisible box?
 - jest matchers with mesh (toHaveBeenCalledWith, toHaveBeenNthCalledWith)
 - rework target detection. Instead of using real mesh and rays use shapes overlap: each zone is a rectangle/circle on XZ plane, and the moved mesh another rectangle/circle. Check the center of the moved mesh

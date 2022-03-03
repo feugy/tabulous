@@ -2,12 +2,15 @@ import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { AnchorBehaviorName } from './names'
 import { TargetBehavior } from './targetable'
-import { animateMove, getAtlitudeAbove } from '../utils'
+import {
+  animateMove,
+  attachProperty,
+  getAtlitudeAbove,
+  getTargetableBehavior
+} from '../utils'
 import { controlManager, inputManager, selectionManager } from '../managers'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
-import { StackBehaviorName } from '.'
-import { sleep } from '../../utils'
 
 const logger = makeLogger(AnchorBehaviorName)
 
@@ -61,6 +64,7 @@ export class AnchorBehavior extends TargetBehavior {
    * - the `anchors` property.
    * - the `snap()` method.
    * - the `unsnap()` method.
+   * - the `unsnapAll()` method.
    * It binds to its drop observable to snap dropped meshes on the anchor (unless the anchor is already full).
    * It binds to the drag manager to unsnap dragged meshes, when dragged independently from the current mesh
    * @param {import('@babylonjs/core').Mesh} mesh - which becomes anchorable.
@@ -94,12 +98,11 @@ export class AnchorBehavior extends TargetBehavior {
           if (fn === 'reorder' || fn === 'flipAll') {
             const scene = this.mesh.getScene()
             const stack = getMeshList(scene, meshId)
-            const released = stack[0]
             const snapped =
               fn === 'flipAll'
                 ? stack.reverse()[0]
                 : stack.find(({ id }) => id === args[0][0])
-            unsetAnchor(this, zone, released)
+            unsetAnchor(this, zone, stack[0])
             setAnchor(this, zone, snapped, true)
           } else if (fn === 'draw') {
             this.unsnap(meshId)
@@ -255,7 +258,7 @@ export class AnchorBehavior extends TargetBehavior {
       // relates the created zone with the anchor
       zone.anchorIndex = i
       if (snappedId) {
-        snapToAnchor(this, snappedId, zone, false)
+        snapToAnchor(this, snappedId, zone, true)
       }
     }
     if (!this.mesh.metadata) {
@@ -264,51 +267,36 @@ export class AnchorBehavior extends TargetBehavior {
     this.mesh.metadata.snap = this.snap.bind(this)
     this.mesh.metadata.unsnap = this.unsnap.bind(this)
     this.mesh.metadata.unsnapAll = this.unsnapAll.bind(this)
-    this.mesh.metadata.anchors = this.state.anchors
+    attachProperty(this.mesh.metadata, 'anchors', () => this.state.anchors)
   }
 }
 
-async function snapToAnchor(behavior, snappedId, zone, animate = true) {
+async function snapToAnchor(behavior, snappedId, zone, loading = false) {
   const {
     mesh,
     state: { anchors, duration }
   } = behavior
   const meshId = mesh.id
   anchors[zone.anchorIndex].snappedId = undefined
-  const snappedList = getMeshList(mesh.getScene(), snappedId)
+  const snapped = getMeshList(mesh.getScene(), snappedId)?.[0]
 
-  if (snappedList) {
-    const [snapped] = snappedList
+  if (snapped) {
     logger.info(
-      { mesh, snappedIds: snappedList.map(({ id }) => id), zone },
+      { mesh, snappedId: snapped.id, zone },
       `snap ${snapped.id} onto ${meshId}, zone ${zone.mesh.id}`
     )
 
     // moves it to the final position
     const { x, z } = zone.mesh.getAbsolutePosition()
     const baseY = computeBaseAltitude(mesh, snapped)
-    if (animate) {
-      await Promise.all(
-        snappedList.map((snapped, i) =>
-          sleep(i * 1.5).then(() =>
-            animateMove(
-              snapped,
-              new Vector3(x, baseY + snapped.absolutePosition.y, z),
-              duration,
-              true
-            )
-          )
-        )
-      )
-    } else {
-      snappedList.map(snapped =>
-        animateMove(
-          snapped,
-          new Vector3(x, baseY + snapped.absolutePosition.y, z),
-          0,
-          true
-        )
-      )
+    const move = animateMove(
+      snapped,
+      new Vector3(x, baseY + snapped.absolutePosition.y, z),
+      loading ? 0 : duration,
+      true
+    )
+    if (!loading) {
+      await move
     }
     setAnchor(behavior, zone, snapped)
   }
@@ -348,6 +336,6 @@ function getMeshList(scene, meshId) {
   if (!mesh) {
     return null
   }
-  const stackable = mesh.getBehaviorByName(StackBehaviorName)
+  const stackable = getTargetableBehavior(mesh)
   return stackable?.stack ? [...stackable.stack] : [mesh]
 }

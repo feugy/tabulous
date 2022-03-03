@@ -132,6 +132,38 @@ export function getTargetableBehavior(mesh) {
 }
 
 /**
+ * Indicates whether a mesh is flipped or not.
+ * @param {import('@babel/core').Mesh} mesh - related mesh.
+ * @returns a boolean indicating whether the mesh is flipped.
+ */
+export function isMeshFlipped(mesh) {
+  return mesh?.metadata?.isFlipped ?? false
+}
+
+/**
+ * Indicates whether a mesh has been rotated twice (its angle is PI).
+ * @param {import('@babel/core').Mesh} mesh - related mesh.
+ * @returns a boolean indicating whether the mesh is inverted.
+ */
+export function isMeshInverted(mesh) {
+  return mesh?.metadata.angle === Math.PI
+}
+
+/**
+ * Attaches a read-only property to a given metadata object.
+ * @param {object} metadata - metadata object attached to.
+ * @param {string} property - name of the created property.
+ * @param {function} getter - getter function.
+ */
+export function attachProperty(metadata, property, getter) {
+  Object.defineProperty(metadata, property, {
+    get: getter,
+    configurable: true,
+    enumerable: true
+  })
+}
+
+/**
  * @typedef {object} AnimationSpec - an animation's specifications:
  * @property {import('@babel/core').Animation} animation - the animation object ran (controls one property of the animated mesh).
  * @property {object[]} keys - a list of keys for the animation object, as allowed by Babylon's Animation.Parse() methode

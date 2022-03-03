@@ -16,7 +16,7 @@ describe('AnimateBehavior', () => {
     expect(behavior.name).toEqual(AnimateBehaviorName)
     expect(behavior.mesh).toBeNull()
     expect(behavior.isAnimated).toBe(false)
-    expect(behavior.frameRate).toEqual(30)
+    expect(behavior.frameRate).toEqual(60)
     expect(behavior.onAnimationEndObservable).toBeDefined()
 
     const mesh = CreateBox('box', {})
@@ -60,7 +60,7 @@ describe('AnimateBehavior', () => {
       await behavior.moveTo(position, duration, false)
       const realDuration = Date.now() - startTime
       expect(mesh.absolutePosition).toEqual(position)
-      expect(realDuration).toBeGreaterThanOrEqual(duration)
+      expect(realDuration).toBeGreaterThanOrEqual(duration * 0.9)
       expect(realDuration).toBeLessThanOrEqual(duration * 1.2)
       expect(animationEndReceived).toHaveBeenCalledTimes(1)
     })
@@ -75,7 +75,7 @@ describe('AnimateBehavior', () => {
       expect(mesh.absolutePosition).toEqual(
         new Vector3(position.x, 0.5, position.z)
       )
-      expect(realDuration).toBeGreaterThanOrEqual(duration)
+      expect(realDuration).toBeGreaterThanOrEqual(duration * 0.9)
       expect(realDuration).toBeLessThanOrEqual(duration * 1.2)
       expect(animationEndReceived).toHaveBeenCalledTimes(1)
     })
@@ -106,7 +106,7 @@ describe('AnimateBehavior', () => {
 
       const realDuration = Date.now() - startTime
       expect(mesh.absolutePosition).toEqual(position)
-      expect(realDuration).toBeGreaterThanOrEqual(duration)
+      expect(realDuration).toBeGreaterThanOrEqual(duration * 0.9)
       expect(realDuration).toBeLessThanOrEqual(duration * 1.2)
       expect(animationEndReceived).toHaveBeenCalledTimes(1)
     })

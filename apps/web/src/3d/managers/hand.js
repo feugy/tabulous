@@ -13,6 +13,7 @@ import {
   getDimensions,
   getMeshScreenPosition,
   getScreenPosition,
+  isMeshFlipped,
   isSerializable,
   screenToGround
 } from '../utils'
@@ -458,7 +459,7 @@ function getDrawable(mesh) {
 }
 
 function unflipIfNeeded({ onHandChangeObservable }, mesh) {
-  if (mesh.metadata.isFlipped && getDrawable(mesh).state.unflipOnPick) {
+  if (isMeshFlipped(mesh) && getDrawable(mesh).state.unflipOnPick) {
     logger.debug({ mesh }, `un-flips ${mesh.id}`)
     onHandChangeObservable.addOnce(() => {
       mesh.metadata.flip()
@@ -468,11 +469,7 @@ function unflipIfNeeded({ onHandChangeObservable }, mesh) {
 
 function flipIfNeeded(mesh) {
   const flippable = mesh.getBehaviorByName(FlipBehaviorName)
-  if (
-    flippable &&
-    !flippable.state.isFlipped &&
-    getDrawable(mesh).state.flipOnPlay
-  ) {
+  if (flippable && !isMeshFlipped(mesh) && getDrawable(mesh).state.flipOnPlay) {
     logger.debug({ mesh }, `flips ${mesh.id}`)
     flippable.state.isFlipped = true
   }

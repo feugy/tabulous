@@ -570,11 +570,11 @@ describe('AnchorBehavior', () => {
       const angle = Math.PI * 0.5
       const snapped = meshes[0]
       snapped.addBehavior(new RotateBehavior({ angle }), true)
+      expectRotated(snapped, angle)
       mesh.addBehavior(new RotateBehavior({ angle }), true)
+      expectRotated(mesh, angle)
       await mesh.metadata.snap(snapped.id, behavior.zones[0].mesh.id)
       expectSnapped(mesh, snapped)
-      expectRotated(mesh, angle)
-      expectRotated(snapped, angle)
 
       mesh.metadata.unsnap(snapped.id)
       expectUnsnapped(mesh, snapped, 0)
