@@ -12,6 +12,7 @@ import { controlManager, inputManager, selectionManager } from '../managers'
 import {
   animateMove,
   applyGravity,
+  attachFunctions,
   attachProperty,
   getAnimatableBehavior,
   getCenterAltitudeAbove,
@@ -463,15 +464,8 @@ export class StackBehavior extends TargetBehavior {
     }
     this.inhibitControl = false
 
-    if (!this.mesh.metadata) {
-      this.mesh.metadata = {}
-    }
-    this.mesh.metadata.push = this.push.bind(this)
-    this.mesh.metadata.pop = this.pop.bind(this)
-    this.mesh.metadata.reorder = this.reorder.bind(this)
-    this.mesh.metadata.flipAll = this.flipAll.bind(this)
-    this.mesh.metadata.rotateAll = this.rotateAll.bind(this)
-    attachProperty(this.mesh.metadata, 'stack', () => this.stack)
+    attachFunctions(this, 'push', 'pop', 'reorder', 'flipAll', 'rotateAll')
+    attachProperty(this, 'stack', () => this.stack)
   }
 }
 

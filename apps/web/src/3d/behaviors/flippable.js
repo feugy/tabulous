@@ -3,6 +3,7 @@ import { AnimateBehavior } from './animatable'
 import { FlipBehaviorName } from './names'
 import {
   applyGravity,
+  attachFunctions,
   attachProperty,
   getDimensions,
   runAnimation
@@ -141,11 +142,8 @@ export class FlipBehavior extends AnimateBehavior {
     const attach = detach(this.mesh)
     this.mesh.rotation.z = this.state.isFlipped ? Math.PI : 0
     attach()
-    if (!this.mesh.metadata) {
-      this.mesh.metadata = {}
-    }
-    this.mesh.metadata.flip = this.flip.bind(this)
-    attachProperty(this.mesh.metadata, 'isFlipped', () => this.state.isFlipped)
+    attachFunctions(this, 'flip')
+    attachProperty(this, 'isFlipped', () => this.state.isFlipped)
   }
 }
 

@@ -4,6 +4,7 @@ import { AnchorBehaviorName } from './names'
 import { TargetBehavior } from './targetable'
 import {
   animateMove,
+  attachFunctions,
   attachProperty,
   getAtlitudeAbove,
   getTargetableBehavior
@@ -261,13 +262,8 @@ export class AnchorBehavior extends TargetBehavior {
         snapToAnchor(this, snappedId, zone, true)
       }
     }
-    if (!this.mesh.metadata) {
-      this.mesh.metadata = {}
-    }
-    this.mesh.metadata.snap = this.snap.bind(this)
-    this.mesh.metadata.unsnap = this.unsnap.bind(this)
-    this.mesh.metadata.unsnapAll = this.unsnapAll.bind(this)
-    attachProperty(this.mesh.metadata, 'anchors', () => this.state.anchors)
+    attachFunctions(this, 'snap', 'unsnap', 'unsnapAll')
+    attachProperty(this, 'anchors', () => this.state.anchors)
   }
 }
 

@@ -3,6 +3,7 @@ import { AnimateBehavior } from './animatable'
 import { RotateBehaviorName } from './names'
 import {
   applyGravity,
+  attachFunctions,
   attachProperty,
   getAbsoluteRotation,
   runAnimation
@@ -155,10 +156,7 @@ export class RotateBehavior extends AnimateBehavior {
     this.mesh.setParent(null)
     this.mesh.rotation.y = angle
     this.mesh.setParent(parent)
-    if (!this.mesh.metadata) {
-      this.mesh.metadata = {}
-    }
-    this.mesh.metadata.rotate = this.rotate.bind(this)
-    attachProperty(this.mesh.metadata, 'angle', () => this.state.angle)
+    attachFunctions(this, 'rotate')
+    attachProperty(this, 'angle', () => this.state.angle)
   }
 }

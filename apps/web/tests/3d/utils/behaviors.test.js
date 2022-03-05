@@ -12,8 +12,12 @@ import {
 } from '../../../src/3d/behaviors/names'
 import {
   animateMove,
+  attachFunctions,
+  attachProperty,
   getAnimatableBehavior,
   getTargetableBehavior,
+  isMeshFlipped,
+  isMeshInverted,
   registerBehaviors,
   restoreBehaviors,
   runAnimation,
@@ -697,3 +701,147 @@ describe('runAnimation() 3D utility', () => {
     expectPosition(box, [10, 10, 10])
   })
 })
+
+describe('isMeshFlipped()', () => {
+  it('returns false for regular mesh', () => {
+    expect(isMeshFlipped(box)).toBe(false)
+    box.rotation.z = Math.PI
+    box.computeWorldMatrix(true)
+    expect(isMeshFlipped(box)).toBe(false)
+  })
+
+  it('returns false for un-flipped mesh', () => {
+    box.addBehavior(new FlipBehavior(), true)
+    expect(isMeshFlipped(box)).toBe(false)
+  })
+
+  it('returns true for flipped mesh', async () => {
+    box.addBehavior(new FlipBehavior({ isFlipped: true, duration: 50 }), true)
+    expect(isMeshFlipped(box)).toBe(true)
+    await box.metadata.flip()
+    expect(isMeshFlipped(box)).toBe(false)
+    await box.metadata.flip()
+    expect(isMeshFlipped(box)).toBe(true)
+  })
+})
+
+describe('isMeshInverted()', () => {
+  it('returns false for regular mesh', () => {
+    expect(isMeshInverted(box)).toBe(false)
+    box.rotation.y = Math.PI
+    box.computeWorldMatrix(true)
+    expect(isMeshInverted(box)).toBe(false)
+  })
+
+  it('returns true for inverted mesh', async () => {
+    box.addBehavior(new RotateBehavior({ angle: Math.PI, duration: 50 }), true)
+    expect(isMeshInverted(box)).toBe(true)
+    await box.metadata.rotate()
+    expect(isMeshInverted(box)).toBe(false)
+    await box.metadata.rotate()
+    expect(isMeshInverted(box)).toBe(false)
+    await box.metadata.rotate()
+    expect(isMeshInverted(box)).toBe(false)
+    await box.metadata.rotate()
+    expect(isMeshInverted(box)).toBe(true)
+  })
+
+  it('returns true for inverted child mesh', async () => {
+    const parent = CreateBox('parent')
+    parent.addBehavior(
+      new RotateBehavior({ angle: Math.PI, duration: 50 }),
+      true
+    )
+    box.addBehavior(new RotateBehavior({ duration: 50 }), true)
+    box.parent = parent
+    expect(isMeshInverted(parent)).toBe(true)
+    expect(isMeshInverted(box)).toBe(true)
+  })
+})
+
+describe('given a test behavior', () => {
+  let behavior
+
+  beforeEach(() => {
+    behavior = new TestBehavior()
+    box.addBehavior(behavior, true)
+    box.metadata = {}
+  })
+
+  describe('attachProperty()', () => {
+    it('creates metadata', () => {
+      delete box.metadata
+      const getter = jest.fn().mockReturnValue('test')
+      attachProperty(behavior, 'testProp', getter)
+      expect(box.metadata.testProp).toEqual('test')
+      expect(getter).toHaveBeenCalledTimes(1)
+    })
+
+    it('creates a getter', () => {
+      const value = Math.random()
+      const getter = jest.fn().mockReturnValue(value)
+      attachProperty(behavior, 'testProp', getter)
+      expect(box.metadata.testProp).toEqual(value)
+      expect(getter).toHaveBeenCalledTimes(1)
+    })
+
+    it('creates rewritable and enumeratable getters', () => {
+      const value = Math.random()
+      const getter = jest.fn().mockReturnValue(value)
+      attachProperty(behavior, 'testProp2', getter)
+      expect(JSON.stringify(box.metadata)).toEqual(
+        JSON.stringify({ testProp2: value })
+      )
+      attachProperty(behavior, 'testProp2', () => null)
+      expect(box.metadata.testProp2).toBeNull()
+      expect(getter).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('attachFunctions()', () => {
+    it('creates metadata', () => {
+      delete box.metadata
+      attachFunctions(behavior, 'foo')
+      expect(box.metadata.foo).toBeInstanceOf(Function)
+    })
+
+    it('attaches a single function', () => {
+      attachFunctions(behavior, 'foo')
+      expect(box.metadata.foo).toBeInstanceOf(Function)
+      expect(box.metadata.foo()).toEqual('foo')
+    })
+
+    it('attaches a multiple functions', () => {
+      attachFunctions(behavior, 'bar', 'foo')
+      expect(box.metadata.foo).toBeInstanceOf(Function)
+      expect(box.metadata.bar).toBeInstanceOf(Function)
+      expect(box.metadata.foo()).toEqual('foo')
+      expect(box.metadata.bar()).toEqual('bar')
+    })
+  })
+})
+
+class TestBehavior {
+  constructor() {
+    this.mesh = null
+    this._foo = 'foo'
+  }
+
+  init() {}
+
+  attach(mesh) {
+    this.mesh = mesh
+  }
+
+  detach() {
+    this.mesh = null
+  }
+
+  foo() {
+    return this._foo
+  }
+
+  bar() {
+    return 'bar'
+  }
+}

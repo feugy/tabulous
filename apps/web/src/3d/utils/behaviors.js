@@ -146,21 +146,40 @@ export function isMeshFlipped(mesh) {
  * @returns a boolean indicating whether the mesh is inverted.
  */
 export function isMeshInverted(mesh) {
-  return mesh?.metadata.angle === Math.PI
+  return mesh?.metadata?.angle === Math.PI ?? false
 }
 
 /**
- * Attaches a read-only property to a given metadata object.
- * @param {object} metadata - metadata object attached to.
+ * Attaches a read-only property to a given behavior's mesh metadata.
+ * Behavior must be attached to a mesh.
+ * @param {import('@babel/core').Behavior} behavior - related behavior.
  * @param {string} property - name of the created property.
  * @param {function} getter - getter function.
  */
-export function attachProperty(metadata, property, getter) {
-  Object.defineProperty(metadata, property, {
+export function attachProperty(behavior, property, getter) {
+  if (!behavior.mesh.metadata) {
+    behavior.mesh.metadata = {}
+  }
+  Object.defineProperty(behavior.mesh.metadata, property, {
     get: getter,
     configurable: true,
     enumerable: true
   })
+}
+
+/**
+ * Attaches a behavior function to its mesh's metadata.
+ * Behavior must be attached to a mesh.
+ * @param {import('@babel/core').Behavior} behavior - related behavior.
+ * @param {string[]} functionNames - one or several behavior function names.
+ */
+export function attachFunctions(behavior, ...functionNames) {
+  if (!behavior.mesh.metadata) {
+    behavior.mesh.metadata = {}
+  }
+  for (const functionName of functionNames) {
+    behavior.mesh.metadata[functionName] = behavior[functionName].bind(behavior)
+  }
 }
 
 /**
