@@ -1,3 +1,4 @@
+import { Color4 } from '@babylonjs/core/Maths/math.color'
 import faker from 'faker'
 import { createCard } from '../../../src/3d/meshes'
 import { controlManager } from '../../../src/3d/managers'
@@ -24,6 +25,19 @@ describe('createCard()', () => {
     expect(mesh.getChildren()).toHaveLength(1)
     expect(mesh.getChildren()[0].isPickable).toBe(false)
     expect(mesh.behaviors).toHaveLength(0)
+  })
+
+  it('creates a card with a single color', () => {
+    const color = '#1E282F'
+    const mesh = createCard({ texture: color })
+    const { boundingBox } = mesh.getBoundingInfo()
+    expect(mesh.name).toEqual('card')
+    expect(boundingBox.extendSize.x * 2).toEqual(3)
+    expect(boundingBox.extendSize.z * 2).toEqual(4.25)
+    expect(boundingBox.extendSize.y * 2).toEqual(0.01)
+    expect(mesh.isPickable).toBe(false)
+    const [{ material }] = mesh.getChildren()
+    expect(material.diffuseColor).toEqual(Color4.FromHexString(color))
   })
 
   describe('given a card with initial position, dimension, images and behaviors', () => {

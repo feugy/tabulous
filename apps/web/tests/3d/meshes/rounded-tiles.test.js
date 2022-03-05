@@ -1,3 +1,4 @@
+import { Color4 } from '@babylonjs/core/Maths/math.color'
 import faker from 'faker'
 import { createRoundedTile } from '../../../src/3d/meshes'
 import { controlManager } from '../../../src/3d/managers'
@@ -21,6 +22,18 @@ describe('createRoundedTile()', () => {
       serialize: expect.any(Function)
     })
     expect(mesh.behaviors).toHaveLength(0)
+  })
+
+  it('creates a card with a single color', () => {
+    const color = '#1E282F'
+    const mesh = createRoundedTile({ texture: color })
+    const { boundingBox } = mesh.getBoundingInfo()
+    expect(mesh.name).toEqual('roundedTile')
+    expect(boundingBox.extendSize.x * 2).toEqual(3)
+    expect(boundingBox.extendSize.z * 2).toEqual(3)
+    expect(boundingBox.extendSize.y * 2).toEqual(0.05)
+    expect(mesh.isPickable).toBe(false)
+    expect(mesh.material.diffuseColor).toEqual(Color4.FromHexString(color))
   })
 
   describe('given a tile with initial position, dimension, images and behaviors', () => {

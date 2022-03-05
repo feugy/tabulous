@@ -1,4 +1,7 @@
 import { Engine } from '@babylonjs/core/Engines/engine'
+import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial'
+import { Texture } from '@babylonjs/core/Materials/Textures/texture'
+import { Color3, Color4 } from '@babylonjs/core/Maths/math.color'
 
 /**
  * Indicates whether a given container completely contain the tested mesh, using their bounding boxes.
@@ -36,6 +39,31 @@ export function isContaining(container, mesh) {
 export function getDimensions(mesh) {
   const { x, y, z } = mesh.getBoundingInfo().boundingBox.extendSizeWorld
   return { width: x * 2, height: y * 2, depth: z * 2 }
+}
+
+/**
+ * Creates a material from provided texture and attaches it to a mesh.
+ * Configures mesh to receive shadows and to have an overlay color.
+ * @param {import('@babylonjs/core').Mesh} mesh - related mesh.
+ * @param {string} texture - texture url or hexadecimal string color.
+ */
+export function configureMaterial(mesh, texture) {
+  const scene = mesh.getScene()
+  const material = new StandardMaterial(`material-${mesh.id}`, scene)
+  if (texture?.startsWith('#')) {
+    material.diffuseColor = Color4.FromHexString(texture)
+    material.alpha = material.diffuseColor.a
+  } else {
+    material.diffuseTexture = new Texture(adaptTexture(texture), scene)
+    attachMaterialError(material)
+    material.diffuseTexture.hasAlpha = true
+  }
+  material.freeze()
+  mesh.material = material
+  mesh.receiveShadows = true
+
+  mesh.overlayColor = new Color3(0, 0.8, 0)
+  mesh.overlayAlpha = 0.2
 }
 
 /**

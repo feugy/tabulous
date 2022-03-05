@@ -1,15 +1,11 @@
-import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial'
-import { Texture } from '@babylonjs/core/Materials/Textures/texture'
 import { Axis } from '@babylonjs/core/Maths/math.axis'
-import { Color3 } from '@babylonjs/core/Maths/math.color'
 import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector'
 import { Mesh } from '@babylonjs/core/Meshes/mesh'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { CreatePlane } from '@babylonjs/core/Meshes/Builders/planeBuilder'
 import { controlManager } from '../managers/control'
 import {
-  adaptTexture,
-  attachMaterialError,
+  configureMaterial,
   registerBehaviors,
   serializeBehaviors
 } from '../utils'
@@ -21,7 +17,7 @@ import {
  * A card's texture must have 2 faces, back then front, aligned horizontally.
  * @param {object} params - card parameters, including (all other properties will be passed to the created mesh):
  * @param {string} params.id - card's unique id.
- * @param {string} params.texture - card's texture url.
+ * @param {string} params.texture - card's texture url or hexadecimal string color.
  * @param {number[][]} params.faceUV? - up to 2 face UV (Vector4 components), to map texture on the card.
  * @param {number} params.x? - initial position along the X axis.
  * @param {number} params.y? - initial position along the Y axis.
@@ -61,12 +57,7 @@ export function createCard(
     },
     scene
   )
-  faces.receiveShadows = true
-  faces.material = new StandardMaterial(id, scene)
-  faces.material.diffuseTexture = new Texture(adaptTexture(texture), scene)
-  faces.material.diffuseTexture.hasAlpha = true
-  faces.material.freeze()
-  attachMaterialError(faces.material)
+  configureMaterial(faces, texture)
 
   const mesh = CreateBox('card', { width, height, depth }, scene)
   mesh.id = id
@@ -105,8 +96,6 @@ export function createCard(
     })
   }
 
-  faces.overlayColor = new Color3(0, 0.8, 0)
-  faces.overlayAlpha = 0.2
   Object.defineProperty(mesh, 'renderOverlay', {
     get() {
       return faces.renderOverlay
