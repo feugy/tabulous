@@ -2,7 +2,7 @@ import { Animation } from '@babylonjs/core/Animations/animation'
 import { AnimateBehavior } from '.'
 import { DrawBehaviorName } from './names'
 import { handManager } from '../managers'
-import { runAnimation } from '../utils'
+import { attachFunctions, runAnimation } from '../utils'
 
 /**
  * @typedef {object} DrawableState behavior persistent state, including:
@@ -135,10 +135,7 @@ export class DrawBehavior extends AnimateBehavior {
       throw new Error('Can not restore state without mesh')
     }
     this.state = { duration, unflipOnPick, flipOnPlay }
-    if (!this.mesh.metadata) {
-      this.mesh.metadata = {}
-    }
-    this.mesh.metadata.draw = this.draw.bind(this)
+    attachFunctions(this, 'draw')
   }
 }
 

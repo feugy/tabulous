@@ -1,7 +1,13 @@
 import { Animation } from '@babylonjs/core/Animations/animation'
 import { AnimateBehavior } from './animatable'
 import { RotateBehaviorName } from './names'
-import { applyGravity, runAnimation } from '../utils'
+import {
+  applyGravity,
+  attachFunctions,
+  attachProperty,
+  getAbsoluteRotation,
+  runAnimation
+} from '../utils'
 import { controlManager } from '../managers'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
@@ -29,7 +35,7 @@ export class RotateBehavior extends AnimateBehavior {
    */
   constructor(state = {}) {
     super(state)
-    this.state = state
+    this._state = state
     // private
     this.rotateAnimation = new Animation(
       'rotate',
@@ -48,6 +54,17 @@ export class RotateBehavior extends AnimateBehavior {
   }
 
   /**
+   * Gets this behavior's state.
+   * @returns {RotableState} this behavior's state for serialization.
+   */
+  get state() {
+    return {
+      duration: this._state.duration,
+      angle: this.mesh ? getAbsoluteRotation(this.mesh).y : this._state.angle
+    }
+  }
+
+  /**
    * Attaches this behavior to a mesh, adding to its metadata:
    * - the `angle` property.
    * - the `rotate()` method.
@@ -59,7 +76,7 @@ export class RotateBehavior extends AnimateBehavior {
    */
   attach(mesh) {
     super.attach(mesh)
-    this.fromState(this.state)
+    this.fromState(this._state)
   }
 
   /**
@@ -82,7 +99,7 @@ export class RotateBehavior extends AnimateBehavior {
    */
   async rotate() {
     const {
-      state: { duration, angle },
+      _state: { duration },
       isAnimated,
       mesh,
       rotateAnimation,
@@ -96,24 +113,22 @@ export class RotateBehavior extends AnimateBehavior {
 
     controlManager.record({ mesh, fn: 'rotate' })
 
-    const attach = detach(mesh)
     const [x, y, z] = mesh.position.asArray()
-    const rotation = 0.5 * Math.PI
+    const [, yaw] = mesh.rotation.asArray()
 
-    updateAngle(this, rotation)
     await runAnimation(
       this,
       () => {
-        attach()
         applyGravity(mesh)
+        mesh.rotation.y = mesh.rotation.y % (2 * Math.PI)
         logger.debug({ mesh }, `end rotating ${mesh.id}`)
       },
       {
         animation: rotateAnimation,
         duration,
         keys: [
-          { frame: 0, values: [angle] },
-          { frame: 100, values: [angle + rotation] }
+          { frame: 0, values: [yaw] },
+          { frame: 100, values: [yaw + 0.5 * Math.PI] }
         ]
       },
       {
@@ -136,27 +151,12 @@ export class RotateBehavior extends AnimateBehavior {
     if (!this.mesh) {
       throw new Error('Can not restore state without mesh')
     }
-    this.state = { angle, duration }
-    this.mesh.rotation.y = this.state.angle
-    this.mesh.computeWorldMatrix(true)
-    if (!this.mesh.metadata) {
-      this.mesh.metadata = {}
-    }
-    this.mesh.metadata.rotate = this.rotate.bind(this)
-    this.mesh.metadata.angle = this.state.angle
-  }
-}
-
-function updateAngle(behavior, rotation) {
-  behavior.state.angle = (behavior.state.angle + rotation) % (2 * Math.PI)
-  behavior.mesh.metadata.angle = behavior.state.angle
-}
-
-function detach(mesh) {
-  let parent = mesh.parent
-  mesh.setParent(null)
-
-  return () => {
-    mesh.setParent(parent)
+    this._state = { duration }
+    const { parent } = this.mesh
+    this.mesh.setParent(null)
+    this.mesh.rotation.y = angle
+    this.mesh.setParent(parent)
+    attachFunctions(this, 'rotate')
+    attachProperty(this, 'angle', () => this.state.angle)
   }
 }

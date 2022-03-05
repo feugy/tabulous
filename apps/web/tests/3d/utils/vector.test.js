@@ -2,6 +2,7 @@ import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { CreateGround } from '@babylonjs/core/Meshes/Builders/groundBuilder'
 import {
+  getAbsoluteRotation,
   getMeshScreenPosition,
   getScreenPosition,
   isAboveTable,
@@ -226,5 +227,33 @@ describe('getScreenPosition() 3D utility', () => {
     const { x, y } = getScreenPosition(scene, new Vector3(10, 15, -5))
     expect(x).toBeCloseTo(1023.999991, 5)
     expect(y).toBeCloseTo(181.728928, 5)
+  })
+})
+
+describe('getAbsoluteRotation() 3D utility', () => {
+  it('returns rotation of a single mesh', () => {
+    const mesh = CreateBox('box')
+    const angle = Math.PI * 0.5
+    mesh.rotation.z = angle
+    mesh.computeWorldMatrix(true)
+    const { x, y, z } = getAbsoluteRotation(mesh)
+    expect(x).toBeCloseTo(0)
+    expect(y).toBeCloseTo(0)
+    expect(z).toBeCloseTo(angle)
+  })
+
+  it('returns rotation of a child mesh', () => {
+    const parent = CreateBox('parent')
+    const parentAngle = Math.PI * 0.5
+    parent.rotation.y = parentAngle
+    const child = CreateBox('child')
+    child.setParent(parent)
+    const childAngle = Math.PI
+    child.rotation.y = childAngle
+    parent.computeWorldMatrix(true)
+    const { x, y, z } = getAbsoluteRotation(child)
+    expect(x).toBeCloseTo(0)
+    expect(y).toBeCloseTo(parentAngle - childAngle)
+    expect(z).toBeCloseTo(0)
   })
 })

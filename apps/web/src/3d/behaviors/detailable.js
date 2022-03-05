@@ -1,5 +1,6 @@
 import { DetailBehaviorName } from './names'
 import { controlManager } from '../managers'
+import { attachFunctions, attachProperty, isMeshFlipped } from '../utils'
 
 /**
  * @typedef {object} DetailableState behavior persistent state, including:
@@ -36,8 +37,8 @@ export class DetailBehavior {
 
   /**
    * Attaches this behavior to a mesh, adding to its metadata:
-   * - `front` null image
-   * - `back` null image
+   * - `frontImage` property.
+   * - `backImage` property.
    * - the `detail()` method.
    * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
    */
@@ -62,9 +63,8 @@ export class DetailBehavior {
       mesh: this.mesh,
       data: {
         image:
-          this.state[
-            this.mesh.metadata.isFlipped ? 'backImage' : 'frontImage'
-          ] ?? null
+          this.state[isMeshFlipped(this.mesh) ? 'backImage' : 'frontImage'] ??
+          null
       }
     })
   }
@@ -78,11 +78,8 @@ export class DetailBehavior {
       throw new Error('Can not restore state without mesh')
     }
     this.state = { frontImage, backImage }
-    if (!this.mesh.metadata) {
-      this.mesh.metadata = {}
-    }
-    this.mesh.metadata.detail = this.detail.bind(this)
-    this.mesh.metadata.frontImage = this.state.frontImage
-    this.mesh.metadata.backImage = this.state.backImage
+    attachFunctions(this, 'detail')
+    attachProperty(this, 'frontImage', () => this.state.frontImage)
+    attachProperty(this, 'backImage', () => this.state.backImage)
   }
 }

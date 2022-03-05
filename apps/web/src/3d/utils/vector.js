@@ -1,5 +1,5 @@
 import { Ray } from '@babylonjs/core/Culling/ray'
-import { Matrix, Vector3 } from '@babylonjs/core/Maths/math.vector'
+import { Matrix, Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector'
 
 let table
 
@@ -82,4 +82,32 @@ export function getScreenPosition(scene, position) {
     )
   )
   return { x, y }
+}
+
+/**
+ * Converts a position in world space into a given mesh's local space.
+ * @param {Vector3} absolutePosition - absolute position to convert.
+ * @param {import('@babylonjs/core').Mesh} mesh - mesh into which position is converted.
+ * @returns {Vector3} the converted position in mesh's local space.
+ */
+export function convertToLocal(absolutePosition, mesh) {
+  if (!mesh.parent) {
+    return absolutePosition.clone()
+  }
+  const matrix = new Matrix()
+  mesh.parent.computeWorldMatrix(true).invertToRef(matrix)
+  return Vector3.TransformCoordinates(absolutePosition, matrix)
+}
+
+/**
+ * Returns mesh local rotation in world space.
+ * @param {import('@babylonjs/core').Mesh} mesh - related mesh.
+ * @returns {Vector3} absolute rotation (Euler angles).
+ */
+export function getAbsoluteRotation(mesh) {
+  const rotation = Quaternion.Identity()
+  mesh
+    .computeWorldMatrix(true)
+    .decompose(Vector3.Zero(), rotation, Vector3.Zero())
+  return rotation.toEulerAngles()
 }
