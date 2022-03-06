@@ -273,8 +273,10 @@ function handleAction(manager, action) {
 
 function handDrag(manager, { type, mesh, event }) {
   const { extent, handScene, overlay } = manager
-
   overlay.classList.remove('visible')
+  if (!hasSelectedDrawableMeshes(mesh)) {
+    return
+  }
   if (type !== 'dragStop') {
     manager.overlay.style.top = `${manager.extent.screenHeight}px`
     overlay.classList.add('visible')
@@ -317,6 +319,9 @@ function handDrag(manager, { type, mesh, event }) {
           `pick mesh ${newMesh.id} in hand by dragging`
         )
         recordDraw(newMesh)
+      }
+      // dispose at the end to avoid disposing children along with their stacks/anchors
+      for (const mesh of drawn) {
         mesh.dispose(false, true)
       }
     }
@@ -480,4 +485,13 @@ function buildOverlay(parent) {
   parent.append(overlay)
   overlay.classList.add('hand-overlay')
   return overlay
+}
+
+function hasSelectedDrawableMeshes(mesh) {
+  return (
+    Boolean(mesh) &&
+    selectionManager
+      .getSelection(mesh)
+      .some(mesh => mesh.getBehaviorByName(DrawBehaviorName))
+  )
 }

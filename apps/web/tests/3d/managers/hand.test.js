@@ -617,9 +617,12 @@ describe('HandManager', () => {
       })
 
       it('moves all selected meshes to hand by dragging', async () => {
-        const [mesh1, mesh2] = cards
+        const [mesh1, mesh2, mesh3] = cards
+        mesh3.metadata.push(mesh2.id)
         selectionManager.select(mesh1)
         selectionManager.select(mesh2)
+        selectionManager.select(mesh3)
+        actionRecorded.mockReset()
         const stopDrag = jest.spyOn(inputManager, 'stopDrag')
 
         let movedPosition = new Vector3(1, 0, -19)
@@ -642,12 +645,15 @@ describe('HandManager', () => {
         expect(newMesh1?.id).toBeDefined()
         const newMesh2 = handScene.getMeshById(mesh2.id)
         expect(newMesh2?.id).toBeDefined()
+        const newMesh3 = handScene.getMeshById(mesh3.id)
+        expect(newMesh3?.id).toBeDefined()
         const unitWidth = cardWidth + gap
-        expectPosition(handCards[1], [unitWidth * -2, 0, computeZ()])
-        expectPosition(handCards[0], [unitWidth * -1, 0.01, computeZ()])
-        expectPosition(newMesh2, [0, 0.02, computeZ()])
-        expectPosition(newMesh1, [unitWidth * 1, 0.03, computeZ()])
-        expectPosition(handCards[2], [unitWidth * 2, 0.04, computeZ()])
+        expectPosition(newMesh3, [unitWidth * -2.5, 0, computeZ()])
+        expectPosition(handCards[1], [unitWidth * -1.5, 0.01, computeZ()])
+        expectPosition(handCards[0], [unitWidth * -0.5, 0.02, computeZ()])
+        expectPosition(newMesh2, [unitWidth * 0.5, 0.03, computeZ()])
+        expectPosition(newMesh1, [unitWidth * 1.5, 0.04, computeZ()])
+        expectPosition(handCards[2], [unitWidth * 2.5, 0.05, computeZ()])
         expect(actionRecorded).toHaveBeenCalledWith(
           {
             meshId: mesh1.id,
@@ -666,11 +672,30 @@ describe('HandManager', () => {
           },
           expect.anything()
         )
-        expect(actionRecorded).toHaveBeenCalledTimes(2)
+        expect(actionRecorded).toHaveBeenCalledWith(
+          {
+            meshId: mesh3.id,
+            fn: 'draw',
+            args: [expect.any(Object)],
+            fromHand: false
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenCalledWith(
+          {
+            meshId: mesh3.id,
+            fn: 'pop',
+            fromHand: false
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenCalledTimes(4)
         expect(controlManager.isManaging(newMesh1)).toBe(true)
         expect(moveManager.isManaging(newMesh1)).toBe(true)
         expect(controlManager.isManaging(newMesh2)).toBe(true)
         expect(moveManager.isManaging(newMesh2)).toBe(true)
+        expect(controlManager.isManaging(newMesh3)).toBe(true)
+        expect(moveManager.isManaging(newMesh3)).toBe(true)
       })
 
       it('unflips flipped mesh while dragging into hand', async () => {
@@ -711,16 +736,39 @@ describe('HandManager', () => {
         expect(actionRecorded).toHaveBeenCalledTimes(2)
       })
 
-      it('ignores drag operations from main scene', async () => {
-        const mesh = cards[0]
+      it('ignores drag operations from without mesh', async () => {
         const positions = getPositions(handCards)
-
-        mesh.setAbsolutePosition(new Vector3(-1, 1, 5))
-        mesh.computeWorldMatrix()
         inputManager.onDragObservable.notifyObservers({
           type: 'dragStart',
-          mesh
+          event: { x: 289.7, y: 175 }
         })
+        expect(overlay).not.toHaveClass('visible')
+        inputManager.onDragObservable.notifyObservers({
+          type: 'dragStop',
+          event: { x: 289.7, y: 175 }
+        })
+        expect(overlay).not.toHaveClass('visible')
+        await expect(waitForLayout()).rejects.toThrow()
+        expect(getPositions(handCards)).toEqual(positions)
+        expect(actionRecorded).not.toHaveBeenCalled()
+      })
+
+      it('ignores drag operations of non-drawable meshes', async () => {
+        const [mesh] = cards
+        mesh.removeBehavior(mesh.getBehaviorByName(DrawBehaviorName))
+        const positions = getPositions(handCards)
+        inputManager.onDragObservable.notifyObservers({
+          type: 'dragStart',
+          mesh,
+          event: { x: 289.7, y: 175 }
+        })
+        expect(overlay).not.toHaveClass('visible')
+        inputManager.onDragObservable.notifyObservers({
+          type: 'dragStop',
+          mesh,
+          event: { x: 289.7, y: 175 }
+        })
+        expect(overlay).not.toHaveClass('visible')
         await expect(waitForLayout()).rejects.toThrow()
         expect(getPositions(handCards)).toEqual(positions)
         expect(actionRecorded).not.toHaveBeenCalled()
@@ -839,6 +887,7 @@ describe('HandManager', () => {
         rotable: {},
         flippable: {},
         movable: {},
+        stackable: {},
         ...state
       },
       scene
