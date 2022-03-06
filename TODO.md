@@ -30,7 +30,6 @@
 
 ## UI
 
-- only allow draw for drawable meshes (indicator)
 - apply action on entire selection
 - multiple stack actions (draw, flip, rotate)
 - display peer's name when running draw animations + show peer avatar/name instead of pointer
