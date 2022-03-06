@@ -1,15 +1,11 @@
-import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial'
-import { Texture } from '@babylonjs/core/Materials/Textures/texture'
 import { Axis } from '@babylonjs/core/Maths/math.axis'
-import { Color3 } from '@babylonjs/core/Maths/math.color'
 import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector'
 import { CSG } from '@babylonjs/core/Meshes/csg'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
 import { controlManager } from '../managers/control'
 import {
-  adaptTexture,
-  attachMaterialError,
+  configureMaterial,
   registerBehaviors,
   serializeBehaviors
 } from '../utils'
@@ -50,7 +46,7 @@ function makeCornerMesh(
  * A tile's texture must have 2 faces, back then front, aligned horizontally.
  * @param {object} params - tile parameters, including (all other properties will be passed to the created mesh):
  * @param {string} params.id - tile's unique id.
- * @param {string} params.texture - tile's texture url.
+ * @param {string} params.texture - card's texture url or hexadecimal string color.
  * @param {number[][]} params.faceUV? - up to 6 face UV (Vector4 components), to map texture on the tile.
  * @param {number} params.x? - initial position along the X axis.
  * @param {number} params.y? - initial position along the Y axis.
@@ -111,17 +107,10 @@ export function createRoundedTile(
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, false, false))
   const mesh = tileCSG.toMesh('roundedTile', undefined, scene)
   mesh.id = id
-  tileMesh.dispose(false, true)
-
-  mesh.material = new StandardMaterial(id, scene)
-  mesh.material.diffuseTexture = new Texture(adaptTexture(texture), scene)
-  mesh.material.diffuseTexture.hasAlpha = true
-  mesh.material.freeze()
-  attachMaterialError(mesh.material)
-
-  mesh.receiveShadows = true
+  configureMaterial(mesh, texture)
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.isPickable = false
+  tileMesh.dispose(false, true)
 
   mesh.metadata = {
     serialize: () => ({
@@ -139,9 +128,6 @@ export function createRoundedTile(
       ...serializeBehaviors(mesh.behaviors)
     })
   }
-
-  mesh.overlayColor = new Color3(0, 0.8, 0)
-  mesh.overlayAlpha = 0.2
 
   registerBehaviors(mesh, behaviorStates)
 

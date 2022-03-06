@@ -30,7 +30,7 @@
 
 ## UI
 
-- support color textures
+- only allow draw for drawable meshes (indicator)
 - apply action on entire selection
 - multiple stack actions (draw, flip, rotate)
 - display peer's name when running draw animations + show peer avatar/name instead of pointer
@@ -45,6 +45,7 @@
 - indicates when remote stream is muted/stopped
 - zoom in/out on rules
 - always display stack size (user configurable)
+- issue: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
 
 ## Server
 
