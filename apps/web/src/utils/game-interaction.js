@@ -30,14 +30,9 @@ function pointerKind(event, button, pointers) {
  * @param {object} params - parameters, including:
  * @param {number} params.doubleTapDelay - number of milliseconds between 2 taps to be considered as a double tap.
  * @param {Subject<import('@babylonjs/core').Mesh>} params.meshForMenu$ - subject emitting when mesh menu should be displayed and hidden.
- * @param {Subject<number?>} params.stackSize$ - subject emitting currently hovered stack size.
  * @returns {import('rxjs').Subscription[]} an array of observable subscriptions
  */
-export function attachInputs({
-  doubleTapDelay,
-  meshForMenu$,
-  stackSize$
-} = {}) {
+export function attachInputs({ doubleTapDelay, meshForMenu$ } = {}) {
   let selectionPosition
   let panPosition
   let rotatePosition
@@ -125,7 +120,6 @@ export function attachInputs({
               `display details for mesh ${mesh.id}`
             )
             mesh.metadata.detail?.()
-            stackSize$.next(null)
           } else if (kind === 'right' || kind === 'left') {
             const fn = kind === 'right' ? 'rotate' : 'flip'
             const exclude = new Set()
@@ -289,23 +283,6 @@ export function attachInputs({
         }
       }
     }),
-
-    /**
-     * Implements actions on mesh hover (with mouse):
-     * - displays stack indicator when hovering a mesh
-     * - hides stack indicator when leaving the mesh
-     */
-    meshHover$
-      .pipe(filter(({ event, mesh }) => mesh && isMouse(event)))
-      .subscribe({
-        next: ({ type, mesh }) => {
-          if (type === 'hoverStart') {
-            stackSize$.next(mesh?.metadata?.stack?.length ?? 1)
-          } else {
-            stackSize$.next(null)
-          }
-        }
-      }),
 
     /**
      * Implements actions when viewing details:

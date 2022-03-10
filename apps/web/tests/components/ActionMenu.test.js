@@ -69,7 +69,7 @@ describe('Action Menu component', () => {
     expect(metadata[functionName]).toHaveBeenCalledWith(...args)
   })
 
-  it('has action and stack size for a stackable mesh', async () => {
+  it('has action for a stackable mesh', async () => {
     const metadata = {
       stack: [{ id: '1' }, { id: '2' }, { id: '3' }],
       reorder: jest.fn()
@@ -85,7 +85,6 @@ describe('Action Menu component', () => {
     expect(metadata.reorder).toHaveBeenCalledWith(
       expect.arrayContaining(['3', '2', '1'])
     )
-    expect(screen.getByText(metadata.stack.length)).toBeInTheDocument()
   })
 
   it('displays multiple actions', async () => {
@@ -99,14 +98,5 @@ describe('Action Menu component', () => {
     expect(metadata.flip).toHaveBeenCalledTimes(1)
     expect(metadata.detail).not.toHaveBeenCalled()
     expect(metadata.rotate).not.toHaveBeenCalled()
-  })
-
-  it('has no stack size and actions for a stack of 1', async () => {
-    const metadata = { stack: [{ id: '1' }], flip() {} }
-    renderComponent({ mesh: { metadata } })
-    const buttons = screen.queryAllByRole('button')
-    expect(buttons).toHaveLength(1)
-    expect(buttons[0]).toHaveTextContent('flip')
-    expect(screen.queryByText(metadata.stack.length)).not.toBeInTheDocument()
   })
 })

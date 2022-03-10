@@ -1,7 +1,7 @@
 import { PointerEventTypes } from '@babylonjs/core/Events/pointerEvents'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
-import { configures3dTestEngine } from '../../test-utils'
+import { configures3dTestEngine, sleep } from '../../test-utils'
 import { controlManager as manager } from '../../../src/3d/managers'
 import { AnchorBehavior, FlipBehavior } from '../../../src/3d/behaviors'
 
@@ -17,8 +17,17 @@ describe('ControlManager', () => {
   let playerId
   let pointer
   let currentPointer = null
+  const controlledChangeReceived = jest.fn()
 
   configures3dTestEngine(created => ({ scene, handScene } = created))
+
+  beforeAll(() => {
+    manager.onActionObservable.add(action => actions.push(action))
+    manager.onPointerObservable.add(({ pointer }) => {
+      currentPointer = pointer
+    })
+    manager.onControlledObservable.add(controlledChangeReceived)
+  })
 
   beforeEach(() => {
     jest.resetAllMocks()
@@ -44,13 +53,7 @@ describe('ControlManager', () => {
     playerId = faker.datatype.uuid()
     manager.movePeerPointer({ playerId, pointer: [0, 0, 0] })
     pointer = manager.getPeerPointer(playerId)
-  })
-
-  beforeAll(() => {
-    manager.onActionObservable.add(action => actions.push(action))
-    manager.onPointerObservable.add(({ pointer }) => {
-      currentPointer = pointer
-    })
+    controlledChangeReceived.mockReset()
   })
 
   describe('init()', () => {
@@ -100,15 +103,21 @@ describe('ControlManager', () => {
 
       manager.registerControlable(mesh)
       expect(manager.isManaging(mesh)).toBe(true)
+      expect(controlledChangeReceived).toHaveBeenCalledTimes(1)
+      expect(controlledChangeReceived.mock.calls[0][0].has(mesh.id)).toBe(true)
     })
 
     it('automatically unregisters a mesh upon disposal', () => {
       const mesh = CreateBox('box4', {})
       manager.registerControlable(mesh)
       expect(manager.isManaging(mesh)).toBe(true)
+      expect(controlledChangeReceived).toHaveBeenCalledTimes(1)
+      expect(controlledChangeReceived.mock.calls[0][0].has(mesh.id)).toBe(true)
 
       mesh.dispose()
       expect(manager.isManaging(mesh)).toBe(false)
+      expect(controlledChangeReceived).toHaveBeenCalledTimes(2)
+      expect(controlledChangeReceived.mock.calls[1][0].has(mesh.id)).toBe(false)
     })
 
     it('does not unregisters a phantom mesh', () => {
@@ -119,6 +128,8 @@ describe('ControlManager', () => {
 
       mesh.dispose()
       expect(manager.isManaging(mesh)).toBe(true)
+      expect(controlledChangeReceived).toHaveBeenCalledTimes(1)
+      expect(controlledChangeReceived.mock.calls[0][0].has(mesh.id)).toBe(true)
     })
   })
 
@@ -129,6 +140,7 @@ describe('ControlManager', () => {
 
       manager.unregisterControlable(mesh)
       expect(manager.isManaging(mesh)).toBe(false)
+      expect(controlledChangeReceived).toHaveBeenCalledTimes(0)
     })
   })
 
@@ -141,9 +153,10 @@ describe('ControlManager', () => {
       manager.apply({ meshId: mesh.id, fn: 'flip' })
       expect(flipSpy).not.toHaveBeenCalled()
       expect(actions).toHaveLength(0)
+      expect(controlledChangeReceived).toHaveBeenCalledTimes(0)
     })
 
-    it('applies an action', () => {
+    it('applies an action', async () => {
       const args = [mesh.id, 'anchor-0']
       manager.apply({ meshId: anchorable.id, fn: 'snap', args })
       expect(snapSpy).toHaveBeenCalledTimes(1)
@@ -156,6 +169,9 @@ describe('ControlManager', () => {
         args,
         fromHand: false
       })
+      await sleep()
+      expect(controlledChangeReceived).toHaveBeenCalledTimes(2)
+      expect(controlledChangeReceived.mock.calls[0][0].has(mesh.id)).toBe(true)
     })
 
     it('applies an action without arguments', () => {
@@ -179,7 +195,7 @@ describe('ControlManager', () => {
       expect(actions).toHaveLength(0)
     })
 
-    it('applies a move', () => {
+    it('applies a move', async () => {
       const pos = [
         faker.datatype.number(),
         faker.datatype.number(),
@@ -190,21 +206,28 @@ describe('ControlManager', () => {
       expect(actions).toHaveLength(0)
       expect(snapSpy).not.toHaveBeenCalled()
       expect(flipSpy).not.toHaveBeenCalled()
+      await sleep()
+      expect(controlledChangeReceived).toHaveBeenCalledTimes(1)
+      expect(controlledChangeReceived.mock.calls[0][0].has(mesh.id)).toBe(true)
     })
 
-    it('handles unsupported messages', () => {
+    it('handles unsupported messages', async () => {
       manager.apply({ meshId: mesh.id, position: [3, 3, 3] })
       expect(mesh.absolutePosition.asArray()).toEqual([0, 0, 0])
       expect(snapSpy).not.toHaveBeenCalled()
       expect(flipSpy).not.toHaveBeenCalled()
       expect(actions).toHaveLength(0)
+      await sleep()
+      expect(controlledChangeReceived).toHaveBeenCalledTimes(1)
     })
 
-    it('handles unsupported action', () => {
+    it('handles unsupported action', async () => {
       manager.apply({ meshId: anchorable.id, fn: 'rotate' })
       expect(snapSpy).not.toHaveBeenCalled()
       expect(flipSpy).not.toHaveBeenCalled()
       expect(actions).toHaveLength(0)
+      await sleep()
+      expect(controlledChangeReceived).toHaveBeenCalledTimes(1)
     })
 
     it('handles mesh without metadata', () => {
@@ -235,12 +258,14 @@ describe('ControlManager', () => {
       const mesh = CreateBox('box4', {})
       manager.record({ mesh, fn: 'flip' })
       expect(actions).toHaveLength(0)
+      expect(controlledChangeReceived).toHaveBeenCalledTimes(0)
     })
 
     it('handled unsupported messages', async () => {
       manager.record()
       manager.record({ id: 'box', fn: 'flip' })
       expect(actions).toHaveLength(0)
+      expect(controlledChangeReceived).toHaveBeenCalledTimes(0)
     })
 
     it('distunguishes action from main and hand scenes', () => {
@@ -270,6 +295,7 @@ describe('ControlManager', () => {
       pointer = manager.getPeerPointer(playerId)
       expect(pointer).toBeDefined()
       expect(pointer.absolutePosition.asArray()).toEqual([x, 0.5, z])
+      expect(controlledChangeReceived).toHaveBeenCalledTimes(0)
     })
 
     it('moves an existing peer pointer', () => {

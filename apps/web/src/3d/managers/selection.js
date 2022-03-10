@@ -2,6 +2,7 @@ import { Axis, Space } from '@babylonjs/core/Maths/math.axis'
 import { Color3 } from '@babylonjs/core/Maths/math.color'
 import { Vector3, Quaternion } from '@babylonjs/core/Maths/math.vector'
 import { Mesh } from '@babylonjs/core/Meshes/mesh'
+import { Observable } from '@babylonjs/core/Misc/observable'
 import { CreateLines } from '@babylonjs/core/Meshes/Builders/linesBuilder'
 import { ExtrudeShape } from '@babylonjs/core/Meshes/Builders/shapeBuilder'
 import { isContaining, screenToGround, sortByElevation } from '../utils'
@@ -18,14 +19,17 @@ class SelectionManager {
    * - select all meshes contained in the selection box, highlighting them
    * - clear previous selection
    *
-   * @property {Set<import('@babylonjs/core').Mesh>} meshes - active selection of meshes
+   * @property {Set<import('@babylonjs/core').Mesh>} meshes - active selection of meshes.
+   * @property {Observable<Set<import('@babylonjs/core').Mesh>>} onSelectionObservable - emits when selection is modified.
    */
   constructor() {
     this.meshes = new Set()
+    this.onSelectionObservable = new Observable()
     // private
     this.scene = null
     this.handScene = null
     this.box = null
+    this.skipNotify = false
   }
 
   /**
@@ -102,6 +106,7 @@ class SelectionManager {
       box.isPickable = false
 
       if (getFirstSelected(this)?.getScene() !== scene) {
+        this.skipNotify = true
         this.clear()
       }
       for (const mesh of scene.meshes) {
@@ -142,6 +147,10 @@ class SelectionManager {
       }
     }
     this.meshes.clear()
+    if (!this.skipNotify) {
+      this.onSelectionObservable.notifyObservers(this.meshes)
+    }
+    this.skipNotify = false
   }
 
   /**
@@ -169,6 +178,7 @@ function addToSelection(manager, mesh) {
 function reorderSelection(manager) {
   // keep selection ordered from lowest to highest: it'll guarantuee gravity application
   manager.meshes = new Set(sortByElevation(manager.meshes))
+  manager.onSelectionObservable.notifyObservers(manager.meshes)
 }
 
 function getFirstSelected(manager) {

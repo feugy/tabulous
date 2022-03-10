@@ -11,6 +11,7 @@
     CameraSwitch,
     CursorInfo,
     GameAside,
+    Indicators,
     MeshDetails,
     Progress
   } from '../components'
@@ -22,6 +23,7 @@
     currentPlayer,
     engine,
     initEngine,
+    indicators,
     loadGame,
     longInputs,
     meshDetails,
@@ -29,7 +31,6 @@
     restoreCamera,
     saveCamera,
     sendToThread,
-    stackSize,
     thread
   } from '../stores'
 
@@ -137,8 +138,9 @@
     <canvas bind:this={canvas} />
     <ActionMenu mesh={$meshForMenu} playerId={$currentPlayer?.id} />
   </div>
-  <CursorInfo size={$stackSize} halos={longInputs} />
+  <CursorInfo halos={longInputs} />
   <MeshDetails mesh={$meshDetails} on:close={handleCloseDetails} />
+  <Indicators items={$indicators} />
 </main>
 <GameAside
   game={$currentGame}

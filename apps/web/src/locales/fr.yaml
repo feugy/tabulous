@@ -4,13 +4,15 @@ actions:
   cancel: Non
   confirm: Oui
   enter-fullscreen: Plein-écran
+  hide-indicators: Masquer les indicateurs
   invite: Inviter
   invite-player: Inviter un(e) joueur(se)
   leave-fullscreen: Quitter le plein-écran
   log-in: Entrer
   log-out: Quitter
-  quit-game: Quitter le jeu
   new-game: Nouveau
+  quit-game: Quitter le jeu,
+  show-indicators: Afficher les indicateurs
 formats:
   date:
     short-date:

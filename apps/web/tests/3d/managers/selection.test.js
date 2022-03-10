@@ -9,30 +9,38 @@ import {
 describe('SelectionManager', () => {
   let scene
   let handScene
+  const selectionChanged = jest.fn()
 
   configures3dTestEngine(created => {
     scene = created.scene
     handScene = created.handScene
   })
 
+  beforeAll(() => {
+    manager.onSelectionObservable.add(selectionChanged)
+  })
+
   beforeEach(() => {
-    jest.resetAllMocks()
     manager.clear()
+    jest.resetAllMocks()
   })
 
   it('has initial state', () => {
     expect(manager.meshes.size).toEqual(0)
+    expect(selectionChanged).not.toHaveBeenCalled()
   })
 
   describe('drawSelectionBox()', () => {
     it('does nothing without init', () => {
       manager.drawSelectionBox()
+      expect(selectionChanged).not.toHaveBeenCalled()
     })
   })
 
   describe('selectWithinBox()', () => {
     it('does nothing without init', () => {
       manager.selectWithinBox()
+      expect(selectionChanged).not.toHaveBeenCalled()
     })
   })
 
@@ -43,6 +51,9 @@ describe('SelectionManager', () => {
       expect(manager.meshes.has(mesh)).toBe(true)
       expect(manager.meshes.size).toBe(1)
       expectSelected(mesh)
+      expect(selectionChanged).toHaveBeenCalledTimes(1)
+      expect(selectionChanged.mock.calls[0][0].has(mesh)).toBe(true)
+      expect(selectionChanged.mock.calls[0][0].size).toBe(1)
     })
 
     it('reorders selection based on elevation', () => {
@@ -65,6 +76,13 @@ describe('SelectionManager', () => {
       mesh4.setAbsolutePosition(new Vector3(0, 2, 0))
       manager.select(mesh4)
       expectSelection([mesh2, mesh4, mesh1, mesh3])
+
+      expect(selectionChanged).toHaveBeenCalledTimes(4)
+      expect(selectionChanged.mock.calls[3][0].has(mesh1)).toBe(true)
+      expect(selectionChanged.mock.calls[3][0].has(mesh2)).toBe(true)
+      expect(selectionChanged.mock.calls[3][0].has(mesh3)).toBe(true)
+      expect(selectionChanged.mock.calls[3][0].has(mesh4)).toBe(true)
+      expect(selectionChanged.mock.calls[3][0].size).toBe(4)
     })
   })
 
@@ -77,6 +95,7 @@ describe('SelectionManager', () => {
         manager.select(mesh)
         return mesh
       })
+      selectionChanged.mockReset()
     })
 
     describe('select()', () => {
@@ -85,6 +104,7 @@ describe('SelectionManager', () => {
         expect(manager.meshes.has(meshes[0])).toBe(true)
         expect(manager.meshes.size).toBe(3)
         expectSelected(meshes[0])
+        expect(selectionChanged).toHaveBeenCalledTimes(1)
       })
     })
 
@@ -107,6 +127,8 @@ describe('SelectionManager', () => {
         expect(manager.meshes.size).toBe(0)
         expectSelected(meshes[0], false)
         expectSelected(meshes[1], false)
+        expect(selectionChanged).toHaveBeenCalledTimes(1)
+        expect(selectionChanged.mock.calls[0][0].size).toBe(0)
       })
     })
   })
@@ -147,6 +169,10 @@ describe('SelectionManager', () => {
         manager.drawSelectionBox({ x: 1000, y: 550 }, { x: 1100, y: 400 })
         manager.selectWithinBox()
         expectSelection([meshes[1], meshes[0]])
+        expect(selectionChanged).toHaveBeenCalledTimes(1)
+        expect(selectionChanged.mock.calls[0][0].size).toBe(2)
+        expect(selectionChanged.mock.calls[0][0].has(meshes[0])).toBe(true)
+        expect(selectionChanged.mock.calls[0][0].has(meshes[1])).toBe(true)
       })
 
       it('append to selection', () => {
@@ -161,6 +187,10 @@ describe('SelectionManager', () => {
         manager.drawSelectionBox({ x: 100, y: 400 }, { x: 1100, y: 900 })
         manager.selectWithinBox()
         expectSelection([meshes[6], meshes[7]])
+        expect(selectionChanged).toHaveBeenCalledTimes(1)
+        expect(selectionChanged.mock.calls[0][0].size).toBe(2)
+        expect(selectionChanged.mock.calls[0][0].has(meshes[6])).toBe(true)
+        expect(selectionChanged.mock.calls[0][0].has(meshes[7])).toBe(true)
       })
 
       it('clears selection from hand when selecting in main scene', () => {
