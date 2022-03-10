@@ -1,5 +1,5 @@
 import { get } from 'svelte/store'
-import { configures3dTestEngine } from '../test-utils'
+import { configures3dTestEngine, expectScreenPosition } from '../test-utils'
 import { createCard } from '../../src/3d/meshes'
 import {
   areIndicatorsVisible as areIndicatorsVisible$,
@@ -27,10 +27,6 @@ describe('Indicators store', () => {
   configures3dTestEngine()
 
   let cards
-
-  function updateControlled() {
-    controlledMeshes$.next(new Map(cards.map(card => [card.id, card])))
-  }
 
   beforeEach(() => {
     cards = [
@@ -68,11 +64,9 @@ describe('Indicators store', () => {
       )
       card3.addBehavior(new StackBehavior({ stackIds: ['card5'] }), true)
       updateControlled()
-      expect(get(indicators$)).toEqual([])
+      expectIndicators([])
       selectedMeshes$.next(new Set([card5, card3]))
-      expect(get(indicators$)).toEqual([
-        { id: card3.id, size: 2, x: 999.7801220703125, y: 512 }
-      ])
+      expectIndicators([{ id: card3.id, size: 2, x: 999.78, y: 511.954 }])
     })
 
     it('has indicators for menu mesh', () => {
@@ -83,11 +77,9 @@ describe('Indicators store', () => {
       )
       card3.addBehavior(new StackBehavior({ stackIds: ['card5'] }), true)
       updateControlled()
-      expect(get(indicators$)).toEqual([])
+      expectIndicators([])
       meshForMenu$.next(card5)
-      expect(get(indicators$)).toEqual([
-        { id: card3.id, size: 2, x: 999.7801220703125, y: 512 }
-      ])
+      expectIndicators([{ id: card3.id, size: 2, x: 999.78, y: 511.954 }])
     })
 
     it('has no indicator for un-stacked menu mesh', () => {
@@ -97,9 +89,9 @@ describe('Indicators store', () => {
         true
       )
       updateControlled()
-      expect(get(indicators$)).toEqual([])
+      expectIndicators([])
       meshForMenu$.next(card3)
-      expect(get(indicators$)).toEqual([])
+      expectIndicators([])
     })
 
     it('has indicator for selected menu mesh', () => {
@@ -110,16 +102,16 @@ describe('Indicators store', () => {
       )
       card3.addBehavior(new StackBehavior({ stackIds: ['card5'] }), true)
       updateControlled()
-      expect(get(indicators$)).toEqual([])
+      expectIndicators([])
       selectedMeshes$.next(new Set([card5, card3, card2, card1, card4]))
-      expect(get(indicators$)).toEqual([
-        { id: card1.id, size: 3, x: 1024, y: 512 },
-        { id: card3.id, size: 2, x: 999.7801220703125, y: 512 }
+      expectIndicators([
+        { id: card1.id, size: 3, x: 1024, y: 511.954 },
+        { id: card3.id, size: 2, x: 999.78, y: 511.954 }
       ])
       meshForMenu$.next(card4)
-      expect(get(indicators$)).toEqual([
-        { id: card1.id, size: 3, x: 1024, y: 512 },
-        { id: card3.id, size: 2, x: 999.7801220703125, y: 512 }
+      expectIndicators([
+        { id: card1.id, size: 3, x: 1024, y: 511.954 },
+        { id: card3.id, size: 2, x: 999.78, y: 511.954 }
       ])
     })
 
@@ -130,11 +122,9 @@ describe('Indicators store', () => {
         true
       )
       updateControlled()
-      expect(get(indicators$)).toEqual([])
+      expectIndicators([])
       toggleIndicators()
-      expect(get(indicators$)).toEqual([
-        { id: card1.id, size: 3, x: 1024, y: 512 }
-      ])
+      expectIndicators([{ id: card1.id, size: 3, x: 1024, y: 511.954 }])
     })
   })
 
@@ -153,9 +143,9 @@ describe('Indicators store', () => {
       )
       card3.addBehavior(new StackBehavior({ stackIds: ['card5'] }), true)
       updateControlled()
-      expect(get(indicators$)).toEqual([
-        { id: card1.id, size: 3, x: 1024, y: 512 },
-        { id: card3.id, size: 2, x: 999.7801220703125, y: 512 }
+      expectIndicators([
+        { id: card1.id, size: 3, x: 1024, y: 511.954 },
+        { id: card3.id, size: 2, x: 999.78, y: 511.954 }
       ])
     })
 
@@ -168,9 +158,9 @@ describe('Indicators store', () => {
       card2.addBehavior(new StackBehavior(), true)
       card3.addBehavior(new StackBehavior({ stackIds: ['card6'] }), true)
       updateControlled()
-      expect(get(indicators$)).toEqual([
-        { id: card1.id, size: 3, x: 1024, y: 512 },
-        { id: card3.id, size: 2, x: 999.7801220703125, y: 512 }
+      expectIndicators([
+        { id: card1.id, size: 3, x: 1024, y: 511.954 },
+        { id: card3.id, size: 2, x: 999.78, y: 511.954 }
       ])
     })
 
@@ -181,11 +171,24 @@ describe('Indicators store', () => {
         true
       )
       updateControlled()
-      expect(get(indicators$)).toEqual([
-        { id: card1.id, size: 3, x: 1024, y: 512 }
-      ])
+      expectIndicators([{ id: card1.id, size: 3, x: 1024, y: 511.954 }])
       toggleIndicators()
-      expect(get(indicators$)).toEqual([])
+      expectIndicators([])
     })
   })
+
+  function updateControlled() {
+    controlledMeshes$.next(new Map(cards.map(card => [card.id, card])))
+  }
+
+  function expectIndicators(expected) {
+    const indicators = get(indicators$)
+    expect(indicators).toHaveLength(expected.length)
+    for (const [rank, { x, y, size, id }] of expected.entries()) {
+      const actual = indicators[rank]
+      expect(actual).toHaveProperty('id', id)
+      expect(actual).toHaveProperty('size', size)
+      expectScreenPosition(actual, { x, y })
+    }
+  }
 })

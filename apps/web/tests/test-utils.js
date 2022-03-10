@@ -113,6 +113,11 @@ export function expectPosition(mesh, [x, y, z]) {
   expect(mesh.absolutePosition.z).toBeCloseTo(z)
 }
 
+export function expectScreenPosition(actual, { x, y }) {
+  expect(actual?.x).toBeCloseTo(x)
+  expect(actual?.y).toBeCloseTo(y)
+}
+
 export function expectSnapped(mesh, snapped, anchorRank = 0) {
   const behavior = mesh.getBehaviorByName(AnchorBehaviorName)
   const anchor = behavior.state.anchors[anchorRank]
