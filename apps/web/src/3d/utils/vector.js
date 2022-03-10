@@ -4,7 +4,7 @@ import { Matrix, Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector'
 let table
 
 /**
- * @typedef {object} ScreenPosition position on screen (2D, DOM):
+ * @typedef {object} ScreenPosition position on screen (2D, DOM)
  * @property {number} x - x coordinate.
  * @property {number} y - y coordinate.
  */

@@ -15,7 +15,7 @@ import { screenToGround } from '../utils/vector'
 
 /**
  * @typedef {object} RecordedAction applied action to a given mesh:
- * @property {import('@babylonjs/cord').Mesh} mesh - modified mesh.
+ * @property {import('@babylonjs/core').Mesh} mesh - modified mesh.
  * @property {string} fn? - optionnal name of the applied action (default to 'pos').
  * @property {any[]} args? - optional argument array for this action.
  */
@@ -42,11 +42,14 @@ class ControlManager {
    * @property {Observable<Action>} onActionObservable - emits applied actions.
    * @property {Observable<PointerPosition>} onPointerObservable - emits local pointer 3D position.
    * @property {Observable<MeshDetails>} onDetailedObservable - emits when displaying details of a given mesh.
+   * @property {Observable<Map<String, import('@babylonjs/core').Mesh>>} onControlledObservable - emits the list of controlled meshes.
    */
   constructor() {
     this.onActionObservable = new Observable()
     this.onPointerObservable = new Observable()
     this.onDetailedObservable = new Observable()
+    this.onControlledObservable = new Observable()
+
     // private
     this.scene = null
     this.handScene = null
@@ -77,6 +80,7 @@ class ControlManager {
       this.onActionObservable.clear()
       this.onPointerObservable.clear()
       this.onDetailedObservable.clear()
+      this.onControlledObservable.clear()
     })
   }
 
@@ -87,6 +91,7 @@ class ControlManager {
    */
   registerControlable(mesh) {
     this.controlables.set(mesh.id, mesh)
+    this.onControlledObservable.notifyObservers(this.controlables)
     mesh.onDisposeObservable.addOnce(() => {
       if (!mesh.isPhantom) {
         this.unregisterControlable(mesh)
@@ -100,7 +105,9 @@ class ControlManager {
    * @param {import('@babel/core').Mesh} mesh - controlled mesh (needs at least an id property).
    */
   unregisterControlable(mesh) {
-    this.controlables.delete(mesh?.id)
+    if (this.controlables.delete(mesh?.id)) {
+      this.onControlledObservable.notifyObservers(this.controlables)
+    }
   }
 
   /**
@@ -128,6 +135,7 @@ class ControlManager {
         fromHand:
           this.handScene === mesh.getScene() && actionProps.fn !== 'draw'
       })
+      this.onControlledObservable.notifyObservers(this.controlables)
     }
   }
 
@@ -153,6 +161,7 @@ class ControlManager {
     } else if (action.pos) {
       mesh.setAbsolutePosition(Vector3.FromArray(action.pos))
     }
+    this.onControlledObservable.notifyObservers(this.controlables)
     this.inhibitedKeys.delete(key)
   }
 

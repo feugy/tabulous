@@ -10,7 +10,6 @@
   let open = false
   let x = 0
   let y = 0
-  let stackSize = 0
   let actions = []
 
   $: {
@@ -18,7 +17,6 @@
     open = Boolean(mesh)
     if (open) {
       ;({ x, y } = getMeshScreenPosition(mesh)) // eslint-disable-line no-extra-semi
-      stackSize = mesh.metadata.stack?.length ?? 0
       if (mesh.metadata.flip) {
         actions.push({
           icon: 'flip',
@@ -61,16 +59,4 @@
   }
 </script>
 
-<style lang="postcss">
-  .stack {
-    @apply inline-block h-auto w-auto font-bold text-xl pointer-events-none text-$primary-lightest;
-    -webkit-text-stroke-width: 1px;
-    -webkit-text-stroke-color: var(--primary-dark);
-  }
-</style>
-
-<RadialMenu {x} {y} {open} items={actions}>
-  {#if stackSize > 1}
-    <span class="stack">{stackSize}</span>
-  {/if}
-</RadialMenu>
+<RadialMenu {x} {y} {open} items={actions} />

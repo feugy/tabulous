@@ -1,7 +1,6 @@
 <script>
   import { onDestroy } from 'svelte'
 
-  export let size
   export let halos
   let halo
   let position
@@ -37,16 +36,6 @@
 
     & > * {
       @apply absolute invisible top-0 left-0;
-    }
-  }
-
-  div.stackSize {
-    @apply inline-block h-auto w-auto -mt-8 ml-4 font-bold text-xl text-$primary-lightest;
-    -webkit-text-stroke-width: 1px;
-    -webkit-text-stroke-color: var(--primary-dark);
-
-    &.active {
-      @apply visible;
     }
   }
 
@@ -91,8 +80,5 @@
   on:pointermove={event => (position = event)}
   on:pointerdown={event => (position = event)} />
 <menu style={`left: ${position?.x}px; top: ${position?.y}px`}>
-  <div class="stackSize" class:active={size > 1}>
-    {size}
-  </div>
   <div class="halo" bind:this={halo} on:animationend={handleHaloEnd} />
 </menu>

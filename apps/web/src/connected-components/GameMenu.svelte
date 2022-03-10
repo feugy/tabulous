@@ -3,7 +3,12 @@
   import { _ } from 'svelte-intl'
   import { push } from 'svelte-spa-router'
   import { Dropdown } from '../components'
-  import { isFullscreen, toggleFullscreen } from '../stores'
+  import {
+    areIndicatorsVisible,
+    isFullscreen,
+    toggleFullscreen,
+    toggleIndicators
+  } from '../stores'
 
   const dispatch = createEventDispatcher()
 
@@ -14,6 +19,14 @@
       icon: $isFullscreen ? 'fullscreen_exit' : 'fullscreen',
       label: $_(
         $isFullscreen ? 'actions.leave-fullscreen' : 'actions.enter-fullscreen'
+      )
+    },
+    {
+      icon: $areIndicatorsVisible ? 'label_off' : 'label',
+      label: $_(
+        $areIndicatorsVisible
+          ? 'actions.hide-indicators'
+          : 'actions.show-indicators'
       )
     }
   ]
@@ -28,6 +41,8 @@
       dispatch('invite-player')
     } else if (value === options[2]) {
       toggleFullscreen()
+    } else if (value === options[3]) {
+      toggleIndicators()
     }
   }
 </script>

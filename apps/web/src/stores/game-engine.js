@@ -13,7 +13,8 @@ import {
   cameraManager,
   controlManager,
   handManager,
-  inputManager
+  inputManager,
+  selectionManager
 } from '../3d/managers'
 import { attachInputs } from '../utils'
 
@@ -24,10 +25,11 @@ const remoteAction$ = new Subject()
 const pointer$ = new Subject()
 const meshDetails$ = new Subject()
 const meshForMenu$ = new Subject()
-const stackSize$ = new Subject()
 const cameraSaves$ = new BehaviorSubject([])
 const currentCamera$ = new Subject()
 const handSaves$ = new Subject()
+const controlledMeshes$ = new BehaviorSubject(new Map())
+const selectedMeshes$ = new BehaviorSubject(new Set())
 
 /**
  * Emits 3D engine when available.
@@ -54,17 +56,24 @@ export const action = merge(localAction$, remoteAction$)
 export const meshDetails = meshDetails$.pipe(map(({ data }) => data))
 
 /**
+ * Emits the list of controlled mesh, when it changes
+ * @type {Observable<Map<string, import('@babylonjs/core').Mesh>>}
+ */
+export const controlledMeshes = controlledMeshes$.pipe(delay(1))
+// note: we delay by 1 so that mesh metadata could be updated after applying any actions
+
+/**
+ * Emits the list of controlled mesh, when it changes
+ * @type {Observable<Set<import('@babylonjs/core').Mesh>>}
+ */
+export const selectedMeshes = selectedMeshes$.asObservable()
+
+/**
  * Emits meshes player would like to open menu on.
  * @type {Observable<import('@babylonjs/core').Mesh>}
  */
 export const meshForMenu = meshForMenu$.pipe(delay(300))
 // note: we delay by 300ms so that browser does not fire a click on menu when double-tapping a mesh
-
-/**
- * Emits the stack size of the currently hovered mesh
- * @type {Observable<number?>}
- */
-export const stackSize = stackSize$.asObservable()
 
 /**
  * Emits camera saved positions.
@@ -134,6 +143,14 @@ export function initEngine({
     { observable: controlManager.onActionObservable, subject: localAction$ },
     { observable: controlManager.onPointerObservable, subject: pointer$ },
     { observable: controlManager.onDetailedObservable, subject: meshDetails$ },
+    {
+      observable: controlManager.onControlledObservable,
+      subject: controlledMeshes$
+    },
+    {
+      observable: selectionManager.onSelectionObservable,
+      subject: selectedMeshes$
+    },
     { observable: cameraManager.onSaveObservable, subject: cameraSaves$ },
     { observable: cameraManager.onMoveObservable, subject: currentCamera$ },
     { observable: inputManager.onLongObservable, subject: longInputs },
@@ -148,8 +165,7 @@ export function initEngine({
   // implements game interaction model
   const subscriptions = attachInputs({
     doubleTapDelay,
-    meshForMenu$,
-    stackSize$
+    meshForMenu$
   })
 
   // applies other players' update

@@ -89,7 +89,7 @@ class CameraManager {
       this.onMoveObservable.clear()
     })
 
-    this.saves = [saveState(this.camera)]
+    this.saves = [serialize(this.camera)]
 
     this.handSceneCamera = new ArcRotateCamera(
       'Camera',
@@ -122,8 +122,7 @@ class CameraManager {
     )
 
     if (isPositionAboveTable(scene, target)) {
-      await animate(this.camera, { target }, duration)
-      this.onMoveObservable.notifyObservers(saveState(this.camera))
+      await animate(this, { target }, duration)
     }
   }
 
@@ -141,11 +140,10 @@ class CameraManager {
 
     if ((alpha || beta) && !currentAnimation) {
       await animate(
-        this.camera,
+        this,
         { alpha: this.camera.alpha + alpha, beta: this.camera.beta + beta },
         duration
       )
-      this.onMoveObservable.notifyObservers(saveState(this.camera))
     }
   }
 
@@ -158,12 +156,7 @@ class CameraManager {
    */
   async zoom(elevation, duration = 300) {
     if (!this.camera) return
-    await animate(
-      this.camera,
-      { elevation: this.camera.radius + elevation },
-      duration
-    )
-    this.onMoveObservable.notifyObservers(saveState(this.camera))
+    await animate(this, { elevation: this.camera.radius + elevation }, duration)
   }
 
   /**
@@ -174,7 +167,7 @@ class CameraManager {
    */
   save(index = 0) {
     if (!this.camera || index < 0 || index > this.saves.length) return
-    this.saves[index] = saveState(this.camera)
+    this.saves[index] = serialize(this.camera)
     this.onSaveObservable.notifyObservers([...this.saves])
   }
 
@@ -187,14 +180,13 @@ class CameraManager {
   async restore(index = 0, duration = 300) {
     if (!this.camera || !this.saves[index]) return
     await animate(
-      this.camera,
+      this,
       {
         ...this.saves[index],
         target: Vector3.FromArray(this.saves[index].target)
       },
       duration
     )
-    this.onMoveObservable.notifyObservers(this.saves[index])
   }
 
   /**
@@ -250,8 +242,13 @@ const pan = new Animation(
 )
 
 let currentAnimation
+let cancelInterval
 
-async function animate(camera, { alpha, beta, elevation, target }, duration) {
+async function animate(
+  { camera, onMoveObservable },
+  { alpha, beta, elevation, target },
+  duration
+) {
   const lastFrame = Math.round(frameRate * (duration / 1000))
   const anims = []
   if (alpha !== undefined) {
@@ -296,22 +293,24 @@ async function animate(camera, { alpha, beta, elevation, target }, duration) {
   )
   return new Promise(resolve => {
     currentAnimation?.stop()
+    cancelInterval?.()
+    cancelInterval = scheduleInterval(() => {
+      onMoveObservable.notifyObservers(serialize(camera))
+    }, 15)
     currentAnimation = camera
       .getScene()
       .beginDirectAnimation(camera, anims, 0, lastFrame, false, 1, () => {
+        cancelInterval?.()
         currentAnimation = null
         // fix alpha to keep it within PI/2 and 5*PI/2: this ensure minimal rotation when animating positions
-        if (camera.alpha < Math.PI / 2) {
-          camera.alpha += 2 * Math.PI
-        } else if (camera.alpha > (5 * Math.PI) / 2) {
-          camera.alpha -= 2 * Math.PI
-        }
+        fixAlpha(camera)
+        onMoveObservable.notifyObservers(serialize(camera))
         resolve()
       })
   })
 }
 
-function saveState(camera) {
+function serialize(camera) {
   return addHash({
     alpha: camera[rotateAlpha.targetProperty],
     beta: camera[rotateBeta.targetProperty],
@@ -323,4 +322,27 @@ function saveState(camera) {
 function addHash(save) {
   save.hash = `${save.target[0]}-${save.target[1]}-${save.target[2]}-${save.alpha}-${save.beta}-${save.elevation}`
   return save
+}
+
+function fixAlpha(camera) {
+  if (camera.alpha < Math.PI / 2) {
+    camera.alpha += 2 * Math.PI
+  } else if (camera.alpha > (5 * Math.PI) / 2) {
+    camera.alpha -= 2 * Math.PI
+  }
+}
+
+function scheduleInterval(callback, interval) {
+  let last = 0
+  let id
+  function step(time) {
+    if (time - last >= interval) {
+      last = time
+      callback()
+    }
+    id = requestAnimationFrame(step)
+  }
+
+  id = requestAnimationFrame(step)
+  return () => cancelAnimationFrame(id)
 }
