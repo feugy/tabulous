@@ -1,10 +1,12 @@
 import { Animation } from '@babylonjs/core/Animations/animation'
+import { Vector3 } from '@babylonjs/core/Maths/math'
 import { AnimateBehavior } from './animatable'
 import { RotateBehaviorName } from './names'
 import {
   applyGravity,
   attachFunctions,
   attachProperty,
+  convertToLocal,
   getAbsoluteRotation,
   runAnimation
 } from '../utils'
@@ -136,7 +138,13 @@ export class RotateBehavior extends AnimateBehavior {
         duration,
         keys: [
           { frame: 0, values: [x, y, z] },
-          { frame: 50, values: [x, y + 0.5, z] },
+          {
+            frame: 50,
+            values: convertToLocal(
+              mesh.absolutePosition.add(new Vector3(0, 0.5, 0)),
+              mesh
+            ).asArray()
+          },
           { frame: 100, values: [x, y, z] }
         ]
       }
