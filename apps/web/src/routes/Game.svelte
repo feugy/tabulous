@@ -27,7 +27,7 @@
     loadGame,
     longInputs,
     meshDetails,
-    meshForMenu,
+    actionMenuData,
     restoreCamera,
     saveCamera,
     sendToThread,
@@ -136,7 +136,10 @@
     on:contextmenu|preventDefault
   >
     <canvas bind:this={canvas} />
-    <ActionMenu mesh={$meshForMenu} playerId={$currentPlayer?.id} />
+    <ActionMenu
+      meshes={$actionMenuData?.meshes}
+      tapped={$actionMenuData?.tapped}
+    />
   </div>
   <CursorInfo halos={longInputs} />
   <MeshDetails mesh={$meshDetails} on:close={handleCloseDetails} />

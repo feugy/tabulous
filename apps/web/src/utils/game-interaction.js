@@ -1,5 +1,4 @@
-import { interval, Subject } from 'rxjs'
-import { delayWhen, filter, scan } from 'rxjs/operators'
+import { delayWhen, filter, interval, scan, Subject } from 'rxjs'
 import {
   cameraManager,
   controlManager,
@@ -14,7 +13,7 @@ import { makeLogger } from './logger'
 const logger = makeLogger('game-interaction')
 
 function isMouse(event) {
-  return event.pointerType === 'mouse'
+  return event?.pointerType === 'mouse'
 }
 
 function pointerKind(event, button, pointers) {
@@ -29,10 +28,10 @@ function pointerKind(event, button, pointers) {
  * Attach to game engine's input manager observables to implement game interaction model.
  * @param {object} params - parameters, including:
  * @param {number} params.doubleTapDelay - number of milliseconds between 2 taps to be considered as a double tap.
- * @param {Subject<import('@babylonjs/core').Mesh>} params.meshForMenu$ - subject emitting when mesh menu should be displayed and hidden.
+ * @param {Subject<import('../stores/game-engine').ActionMenuData>} params.actionMenuData$ - subject emitting when action menu should be displayed and hidden.
  * @returns {import('rxjs').Subscription[]} an array of observable subscriptions
  */
-export function attachInputs({ doubleTapDelay, meshForMenu$ } = {}) {
+export function attachInputs({ doubleTapDelay, actionMenuData$ }) {
   let selectionPosition
   let panPosition
   let rotatePosition
@@ -61,7 +60,7 @@ export function attachInputs({ doubleTapDelay, meshForMenu$ } = {}) {
   }
 
   function resetMenu() {
-    meshForMenu$.next(null)
+    actionMenuData$.next(null)
   }
 
   return [
@@ -80,7 +79,10 @@ export function attachInputs({ doubleTapDelay, meshForMenu$ } = {}) {
           }
           if (type === 'doubletap') {
             logger.info({ mesh, event }, `display menu for mesh ${mesh.id}`)
-            meshForMenu$.next(mesh)
+            actionMenuData$.next({
+              meshes: selectionManager.getSelection(mesh),
+              tapped: mesh
+            })
           }
         } else {
           selectionManager.clear()
@@ -100,10 +102,8 @@ export function attachInputs({ doubleTapDelay, meshForMenu$ } = {}) {
         filter(({ mesh }) => mesh),
         delayWhen(({ type }) => interval(type === 'tap' ? doubleTapDelay : 0)),
         scan(
-          (previous, event) =>
-            event.type === 'tap' && previous?.type === 'doubletap'
-              ? null
-              : event,
+          (previous, data) =>
+            data.type === 'tap' && previous?.type === 'doubletap' ? null : data,
           null
         ),
         filter(data => data?.type === 'tap')
@@ -137,7 +137,7 @@ export function attachInputs({ doubleTapDelay, meshForMenu$ } = {}) {
                     { mesh: last, button, long, event },
                     `${fn}s stack of ${last.id}`
                   )
-                  controlManager.apply({ meshId: last.id, fn: `${fn}All` })
+                  last.metadata?.[`${fn}All`]()
                   for (const excluded of mesh.metadata.stack) {
                     exclude.add(excluded)
                   }
@@ -146,7 +146,7 @@ export function attachInputs({ doubleTapDelay, meshForMenu$ } = {}) {
                     { mesh, button, long, event },
                     `${fn}s mesh ${mesh.id}`
                   )
-                  controlManager.apply({ meshId: mesh.id, fn })
+                  mesh.metadata?.[fn]()
                 }
               }
             }

@@ -1,5 +1,4 @@
 import { fireEvent, render, screen } from '@testing-library/svelte'
-import faker from 'faker'
 import html from 'svelte-htm'
 import { translate } from '../test-utils'
 
@@ -17,10 +16,8 @@ beforeAll(async () => {
 describe('Action Menu component', () => {
   beforeEach(jest.resetAllMocks)
 
-  const playerId = faker.datatype.uuid()
-
-  function renderComponent(props = { mesh: null }) {
-    return render(html`<${ActionMenu} playerId=${playerId} ...${props} />`)
+  function renderComponent(props = {}) {
+    return render(html`<${ActionMenu} ...${props} />`)
   }
 
   it('is hidden with no mesh', () => {
@@ -29,7 +26,7 @@ describe('Action Menu component', () => {
   })
 
   it('displays nothing on mesh with no behavior', async () => {
-    renderComponent({ mesh: { metadata: {} } })
+    renderComponent({ meshes: [{ metadata: {} }], tapped: {} })
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 
@@ -51,11 +48,11 @@ describe('Action Menu component', () => {
       title: 'drawable mesh',
       functionName: 'draw',
       icon: 'front_hand',
-      args: [playerId]
+      args: []
     }
   ])('has action for a $title', async ({ functionName, icon, args }) => {
     const metadata = { [functionName]: jest.fn() }
-    renderComponent({ mesh: { metadata } })
+    renderComponent({ meshes: [{ metadata }], tapped: {} })
     expect(screen.getByRole('menu')).toBeInTheDocument()
     const buttons = screen.queryAllByRole('button')
     expect(buttons).toHaveLength(1)
@@ -74,7 +71,7 @@ describe('Action Menu component', () => {
       stack: [{ id: '1' }, { id: '2' }, { id: '3' }],
       reorder: jest.fn()
     }
-    renderComponent({ mesh: { metadata } })
+    renderComponent({ meshes: [{ metadata }], tapped: {} })
     expect(screen.getByRole('menu')).toBeInTheDocument()
     const buttons = screen.queryAllByRole('button')
     expect(buttons).toHaveLength(1)
@@ -89,7 +86,7 @@ describe('Action Menu component', () => {
 
   it('displays multiple actions', async () => {
     const metadata = { detail: jest.fn(), rotate: jest.fn(), flip: jest.fn() }
-    renderComponent({ mesh: { metadata } })
+    renderComponent({ meshes: [{ metadata }], tapped: {} })
     const buttons = screen.queryAllByRole('button')
     expect(buttons).toHaveLength(3)
     fireEvent.click(

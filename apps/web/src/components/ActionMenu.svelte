@@ -4,8 +4,8 @@
   import { shuffle } from '../utils'
   import { getMeshScreenPosition } from '../3d/utils'
 
-  export let mesh
-  export let playerId
+  export let meshes = []
+  export let tapped = null
 
   let open = false
   let x = 0
@@ -14,9 +14,10 @@
 
   $: {
     actions = []
-    open = Boolean(mesh)
+    open = meshes?.length >= 1 && tapped
     if (open) {
-      ;({ x, y } = getMeshScreenPosition(mesh)) // eslint-disable-line no-extra-semi
+      ;({ x, y } = getMeshScreenPosition(tapped)) // eslint-disable-line no-extra-semi
+      const [mesh] = meshes
       if (mesh.metadata.flip) {
         actions.push({
           icon: 'flip',
@@ -52,7 +53,7 @@
         actions.push({
           icon: 'front_hand',
           title: $_('tooltips.draw'),
-          onClick: () => mesh.metadata.draw(playerId)
+          onClick: () => mesh.metadata.draw()
         })
       }
     }
