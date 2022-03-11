@@ -12,7 +12,6 @@ import {
   AnchorBehavior,
   DrawBehavior,
   FlipBehavior,
-  FlipBehaviorName,
   MoveBehavior,
   RotateBehavior,
   StackBehavior,
@@ -120,8 +119,7 @@ describe('StackBehavior', () => {
           push: expect.any(Function),
           pop: expect.any(Function),
           reorder: expect.any(Function),
-          flipAll: expect.any(Function),
-          rotateAll: expect.any(Function)
+          flipAll: expect.any(Function)
         })
       )
       expect(recordSpy).not.toHaveBeenCalled()
@@ -146,8 +144,7 @@ describe('StackBehavior', () => {
           push: expect.any(Function),
           pop: expect.any(Function),
           reorder: expect.any(Function),
-          flipAll: expect.any(Function),
-          rotateAll: expect.any(Function)
+          flipAll: expect.any(Function)
         })
       )
       expect(recordSpy).not.toHaveBeenCalled()
@@ -367,7 +364,7 @@ describe('StackBehavior', () => {
 
     it('flips an entire flipped stack', async () => {
       behavior.fromState({ stackIds: ['box1', 'box2', 'box3'] })
-      await mesh.getBehaviorByName(FlipBehaviorName).flip()
+      await mesh.metadata.flip()
       expectFlipped(mesh, true)
       recordSpy.mockReset()
 
@@ -398,6 +395,7 @@ describe('StackBehavior', () => {
     it('flips an entire stack of one', async () => {
       await mesh.metadata.flipAll()
       expectStacked([mesh])
+      expectFlipped(mesh, true)
       expect(recordSpy).toHaveBeenCalledTimes(2)
       expect(recordSpy).toHaveBeenNthCalledWith(1, { fn: 'flipAll', mesh })
       expect(recordSpy).toHaveBeenNthCalledWith(2, { fn: 'flip', mesh })
@@ -424,14 +422,14 @@ describe('StackBehavior', () => {
     it('rotates the entire stack', async () => {
       behavior.fromState({ stackIds: ['box1', 'box2', 'box3'] })
 
-      await meshes[1].metadata.rotateAll()
+      await mesh.metadata.rotate()
       expectStacked([mesh, meshes[0], meshes[1], meshes[2]])
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenNthCalledWith(1, { fn: 'rotate', mesh })
     })
 
     it('rotates an entire stack of one', async () => {
-      await mesh.metadata.rotateAll()
+      await mesh.metadata.rotate()
       expectStacked([mesh])
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({ fn: 'rotate', mesh })

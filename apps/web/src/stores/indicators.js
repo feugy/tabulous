@@ -3,7 +3,7 @@ import { getMeshScreenPosition } from '../3d/utils'
 import {
   currentCamera,
   controlledMeshes,
-  actionMenuData,
+  actionMenuProps,
   selectedMeshes
 } from './game-engine'
 
@@ -36,16 +36,16 @@ export const indicators = merge(
   visible$,
   controlledMeshes,
   selectedMeshes,
-  actionMenuData,
+  actionMenuProps,
   currentCamera
 ).pipe(
   withLatestFrom(
     merge(of(new Map()), controlledMeshes),
     merge(of(new Set()), selectedMeshes),
-    merge(of(null), actionMenuData)
+    merge(of(null), actionMenuProps)
   ),
-  map(([, controlled, selected, menuData]) =>
-    getDisplayedStacks(visible$.value, controlled, selected, menuData).map(
+  map(([, controlled, selected, menuProps]) =>
+    getDisplayedStacks(visible$.value, controlled, selected, menuProps).map(
       mesh => ({
         id: mesh.id,
         size: mesh.metadata.stack.length,
@@ -67,12 +67,12 @@ function getStacks(controlled) {
   return stacks
 }
 
-function getDisplayedStacks(allVisible, controlled, selected, menuData) {
+function getDisplayedStacks(allVisible, controlled, selected, menuProps) {
   const stacks = getStacks(controlled)
   return allVisible
     ? stacks
-    : menuData?.tapped && !selected.has(menuData.tapped)
-    ? getContainingStack(stacks, menuData)
+    : menuProps?.meshes.every(mesh => !selected.has(mesh))
+    ? getContainingStack(stacks, menuProps)
     : getSelectedStacks(stacks, selected)
 }
 
@@ -86,8 +86,8 @@ function getSelectedStacks(stacks, selected) {
   return stacks.filter(mesh => selected.has(mesh))
 }
 
-function getContainingStack(stacks, menuData) {
+function getContainingStack(stacks, menuProps) {
   return stacks.filter(({ metadata }) =>
-    menuData.meshes.some(mesh => metadata.stack.includes(mesh))
+    menuProps.meshes.some(mesh => metadata.stack.includes(mesh))
   )
 }

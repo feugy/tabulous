@@ -6,7 +6,8 @@ import {
   moveManager,
   selectionManager
 } from '../3d/managers'
-import { normalize } from '.'
+import { getMeshScreenPosition } from '../3d/utils'
+import { normalize, shuffle } from '.'
 // '.' creates a cyclic dependency in Jest
 import { makeLogger } from './logger'
 
@@ -28,10 +29,10 @@ function pointerKind(event, button, pointers) {
  * Attach to game engine's input manager observables to implement game interaction model.
  * @param {object} params - parameters, including:
  * @param {number} params.doubleTapDelay - number of milliseconds between 2 taps to be considered as a double tap.
- * @param {Subject<import('../stores/game-engine').ActionMenuData>} params.actionMenuData$ - subject emitting when action menu should be displayed and hidden.
+ * @param {Subject<import('../stores/game-engine').actionMenuProps>} params.actionMenuProps$ - subject emitting when action menu should be displayed and hidden.
  * @returns {import('rxjs').Subscription[]} an array of observable subscriptions
  */
-export function attachInputs({ doubleTapDelay, actionMenuData$ }) {
+export function attachInputs({ doubleTapDelay, actionMenuProps$ }) {
   let selectionPosition
   let panPosition
   let rotatePosition
@@ -60,7 +61,7 @@ export function attachInputs({ doubleTapDelay, actionMenuData$ }) {
   }
 
   function resetMenu() {
-    actionMenuData$.next(null)
+    actionMenuProps$.next(null)
   }
 
   return [
@@ -79,10 +80,7 @@ export function attachInputs({ doubleTapDelay, actionMenuData$ }) {
           }
           if (type === 'doubletap') {
             logger.info({ mesh, event }, `display menu for mesh ${mesh.id}`)
-            actionMenuData$.next({
-              meshes: selectionManager.getSelection(mesh),
-              tapped: mesh
-            })
+            actionMenuProps$.next(computeMenuProps(mesh))
           }
         } else {
           selectionManager.clear()
@@ -111,45 +109,10 @@ export function attachInputs({ doubleTapDelay, actionMenuData$ }) {
       .subscribe({
         next: async ({ mesh, button, event, long, pointers }) => {
           const kind = pointerKind(event, button, pointers)
-          const meshes = new Set(
-            selectionManager.meshes.has(mesh) ? selectionManager.meshes : [mesh]
-          )
           if (long) {
-            logger.info(
-              { mesh, button, long, event },
-              `display details for mesh ${mesh.id}`
-            )
-            mesh.metadata.detail?.()
+            triggerAction(mesh, 'detail')
           } else if (kind === 'right' || kind === 'left') {
-            const fn = kind === 'right' ? 'rotate' : 'flip'
-            const exclude = new Set()
-            for (const mesh of meshes) {
-              if (!exclude.has(mesh)) {
-                if (
-                  mesh.metadata.stack?.length > 1 &&
-                  mesh.metadata.stack.every(mesh => meshes.has(mesh))
-                ) {
-                  // when current selection contains all mesh of a stack, we should action the entire stack
-                  // use last one since other are not controllable
-                  const last =
-                    mesh.metadata.stack[mesh.metadata.stack.length - 1]
-                  logger.info(
-                    { mesh: last, button, long, event },
-                    `${fn}s stack of ${last.id}`
-                  )
-                  last.metadata?.[`${fn}All`]()
-                  for (const excluded of mesh.metadata.stack) {
-                    exclude.add(excluded)
-                  }
-                } else {
-                  logger.info(
-                    { mesh, button, long, event },
-                    `${fn}s mesh ${mesh.id}`
-                  )
-                  mesh.metadata?.[fn]()
-                }
-              }
-            }
+            triggerActionOnSelection(mesh, kind === 'right' ? 'rotate' : 'flip')
           }
         }
       }),
@@ -303,3 +266,121 @@ export function attachInputs({ doubleTapDelay, actionMenuData$ }) {
       })
   ]
 }
+
+/**
+ * Triggers a given action against a given mesh, regardless of the current selection
+ * @param {import('@babel/core').Mesh} mesh - related mesh.
+ * @param {string} actionName - name of the triggered action.
+ */
+export function triggerAction(mesh, actionName) {
+  if (mesh?.metadata) {
+    logger.info(
+      { mesh, actionName },
+      `triggers ${actionName} on mesh ${mesh.id}`
+    )
+    mesh.metadata[actionName]?.()
+  }
+}
+
+/**
+ * Triggers a given action against a given mesh.
+ * If mesh is part of the active selection, then triggers the action on all selected meshes.
+ * When all meshes of a given stack are selected, it triggers action on stack base.
+ * @param {import('@babel/core').Mesh} mesh - related mesh.
+ * @param {string} actionName - name of the triggered action.
+ */
+export function triggerActionOnSelection(mesh, actionName) {
+  const meshes = new Set(selectionManager.getSelection(mesh))
+  const exclude = new Set()
+  for (const mesh of meshes) {
+    if (mesh?.metadata && !exclude.has(mesh)) {
+      if (
+        mesh.metadata.stack?.length > 1 &&
+        mesh.metadata.stack.every(mesh => meshes.has(mesh))
+      ) {
+        for (const excluded of mesh.metadata.stack) {
+          exclude.add(excluded)
+        }
+        triggerAction(
+          mesh.metadata.stack[0],
+          actionName === 'flip' ? 'flipAll' : actionName
+        )
+      } else {
+        triggerAction(mesh, actionName)
+      }
+    }
+  }
+}
+
+/**
+ * Computes poperties for RadialMenu component, when interacting with a given mesh.
+ * If this mesh is part of the current selection, only display relevant actions for the entire selection.
+ * Otherwise, returns relevant actions for this single mesh.
+ * @param {import('@babel/core').Mesh} mesh - interacted mesh.
+ * @returns {object} hash of properties for RadialMenu (x, y, open, items)
+ */
+export function computeMenuProps(mesh) {
+  if (!mesh) {
+    return null
+  }
+  const items = []
+  const meshes = selectionManager.getSelection(mesh)
+  for (const spec of menuActions) {
+    if (meshes.every(mesh => spec.support(mesh, meshes))) {
+      items.push(spec.build(mesh))
+    }
+  }
+  return {
+    ...getMeshScreenPosition(mesh),
+    items,
+    open: true,
+    meshes
+  }
+}
+
+const menuActions = [
+  {
+    support: mesh => Boolean(mesh.metadata.flip),
+    build: mesh => ({
+      icon: 'flip',
+      title: 'tooltips.flip',
+      onClick: () => triggerActionOnSelection(mesh, 'flip')
+    })
+  },
+  {
+    support: mesh => Boolean(mesh.metadata.rotate),
+    build: mesh => ({
+      icon: 'rotate_right',
+      title: 'tooltips.rotate',
+      onClick: () => triggerActionOnSelection(mesh, 'rotate')
+    })
+  },
+  {
+    support: mesh => mesh.metadata.stack?.length > 1,
+    build: mesh => ({
+      icon: 'shuffle',
+      title: 'tooltips.shuffle',
+      onClick: () => {
+        const ids = mesh.metadata.stack.map(({ id }) => id)
+        mesh.metadata.reorder(shuffle(ids))
+      }
+    })
+  },
+  {
+    support: (mesh, allMeshes) =>
+      allMeshes.length === 1 && Boolean(mesh.metadata.detail),
+    build: mesh => ({
+      icon: 'visibility',
+      title: 'tooltips.detail',
+      onClick: () => triggerAction(mesh, 'detail')
+    })
+  },
+  {
+    support: mesh => Boolean(mesh.metadata.draw),
+    build: mesh => ({
+      icon: 'front_hand',
+      title: 'tooltips.draw',
+      onClick: () => triggerActionOnSelection(mesh, 'draw')
+    })
+  }
+]

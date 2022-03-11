@@ -24,7 +24,7 @@ const localAction$ = new Subject()
 const remoteAction$ = new Subject()
 const pointer$ = new Subject()
 const meshDetails$ = new Subject()
-const actionMenuData$ = new Subject()
+const actionMenuProps$ = new Subject()
 const cameraSaves$ = new BehaviorSubject([])
 const currentCamera$ = new Subject()
 const handSaves$ = new Subject()
@@ -69,16 +69,19 @@ export const controlledMeshes = controlledMeshes$.pipe(delay(1))
 export const selectedMeshes = selectedMeshes$.asObservable()
 
 /**
- * @typedef {object} ActionMenuData Data for action menu
- * @property {import('@babylonjs/core').Mesh[]} meshes - meshes for which menu is displayed.
- * @property {import('@babylonjs/core').Mesh} tapped - mesh user specificaly interacted with.
+ * @typedef {object} ActionMenuProps RadialMenu properties for the action menu
+ * @property {import('@babel/core').Mesh[]} meshes - list of mesh for which menu is displayed.
+ * @property {boolean} open - whether the menu is opened or not.
+ * @property {number} x - horizontal screen coordinate.
+ * @property {number} y - vertical screen coordinate.
+ * @property {object[]} items - array of menu items (button properties)
  */
 
 /**
  * Emits meshes player would like to open menu on.
- * @type {Observable<ActionMenuData>}
+ * @type {Observable<ActionMenuProps>}
  */
-export const actionMenuData = actionMenuData$.pipe(delay(300))
+export const actionMenuProps = actionMenuProps$.pipe(delay(300))
 // note: we delay by 300ms so that browser does not fire a click on menu when double-tapping a mesh
 
 /**
@@ -171,7 +174,7 @@ export function initEngine({
   // implements game interaction model
   const subscriptions = attachInputs({
     doubleTapDelay,
-    actionMenuData$
+    actionMenuProps$
   })
 
   // applies other players' update

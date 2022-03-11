@@ -8,7 +8,7 @@ import {
 } from '../../src/stores/indicators'
 import {
   controlledMeshes as controlledMeshes$,
-  actionMenuData as actionMenuData$,
+  actionMenuProps as actionMenuProps$,
   selectedMeshes as selectedMeshes$
 } from '../../src/stores/game-engine'
 import { StackBehavior } from '../../src/3d/behaviors'
@@ -19,7 +19,7 @@ jest.mock('../../src/stores/game-engine', () => {
     currentCamera: new BehaviorSubject({}),
     controlledMeshes: new BehaviorSubject(new Map()),
     selectedMeshes: new BehaviorSubject(new Set()),
-    actionMenuData: new BehaviorSubject()
+    actionMenuProps: new BehaviorSubject()
   }
 })
 
@@ -42,7 +42,7 @@ describe('Indicators store', () => {
   afterEach(() => {
     controlledMeshes$.next(new Map())
     selectedMeshes$.next(new Set())
-    actionMenuData$.next()
+    actionMenuProps$.next()
   })
 
   it('hides indicators by default', async () => {
@@ -78,7 +78,7 @@ describe('Indicators store', () => {
       card3.addBehavior(new StackBehavior({ stackIds: ['card5'] }), true)
       updateControlled()
       expectIndicators([])
-      actionMenuData$.next({ tapped: card5, meshes: [card5] })
+      actionMenuProps$.next({ meshes: [card5] })
       expectIndicators([{ id: card3.id, size: 2, x: 999.78, y: 511.954 }])
     })
 
@@ -90,7 +90,7 @@ describe('Indicators store', () => {
       )
       updateControlled()
       expectIndicators([])
-      actionMenuData$.next({ tapped: card3, meshes: [card3] })
+      actionMenuProps$.next({ meshes: [card3] })
       expectIndicators([])
     })
 
@@ -108,7 +108,7 @@ describe('Indicators store', () => {
         { id: card1.id, size: 3, x: 1024, y: 511.954 },
         { id: card3.id, size: 2, x: 999.78, y: 511.954 }
       ])
-      actionMenuData$.next({ tapped: card4, meshes: [card4] })
+      actionMenuProps$.next({ meshes: [card4] })
       expectIndicators([
         { id: card1.id, size: 3, x: 1024, y: 511.954 },
         { id: card3.id, size: 2, x: 999.78, y: 511.954 }

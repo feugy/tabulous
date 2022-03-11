@@ -1,5 +1,8 @@
 # TODO
 
+- only shuffle single mesh
+- push entire selection on stackable mesh
+
 ## Brittle tests
 
 - `InputManager › given an initialized manager() › handles multiple pointers taps`
@@ -18,6 +21,7 @@
 
 - create Animation objects as part of runAnimation() (constant frameRate of 60)
 - do we need to wrap card planes in an invisible box?
+- custom message on jest expect (game-interaction)
 - jest matchers with mesh (toHaveBeenCalledWith, toHaveBeenNthCalledWith)
 - rework target detection. Instead of using real mesh and rays use shapes overlap: each zone is a rectangle/circle on XZ plane, and the moved mesh another rectangle/circle. Check the center of the moved mesh
 - all manager managing a collection of behaviors should check their capabilities
@@ -30,7 +34,6 @@
 
 ## UI
 
-- actions on a selection: only allow common actions
 - multiple stack actions (draw, flip, rotate)
 - display peer's name when running draw animations + show peer avatar/name instead of pointer
 - configurable player position at game level

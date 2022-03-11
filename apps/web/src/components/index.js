@@ -1,4 +1,3 @@
-export { default as ActionMenu } from './ActionMenu.svelte'
 export { default as Button } from './Button.svelte'
 export { default as CameraSwitch } from './CameraSwitch.svelte'
 export { default as CatalogItem } from './CatalogItem.svelte'

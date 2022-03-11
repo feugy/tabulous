@@ -8,6 +8,7 @@
 </script>
 
 <script>
+  import { _ } from 'svelte-intl'
   import Button from './Button.svelte'
   export let items = []
   export let open = false
@@ -17,7 +18,7 @@
 
   $: left = typeof x === 'number' ? `${x}px` : x
   $: top = typeof y === 'number' ? `${y}px` : y
-  $: radius = 12.5 * items.length
+  $: radius = 12.5 * items?.length
 
   function computeItemPosition({ i }) {
     const angle = (-2 * Math.PI * (1 - i)) / items.length
@@ -72,13 +73,13 @@
     style={`left: ${left}; top: ${top}; --size:${radius * 2}px;`}
   >
     <ul on:pointerdown|stopPropagation on:mouseenter on:mouseleave>
-      {#each items as { onClick, ...buttonProps }, i}
+      {#each items as { onClick, title, ...buttonProps }, i}
         {#key buttonProps}
           <li
             in:enter={{ i }}
             on:introend={({ target }) => handleEnterEnd({ i, target })}
           >
-            <Button {...buttonProps} on:click={onClick} />
+            <Button title={$_(title)} {...buttonProps} on:click={onClick} />
           </li>
         {/key}
       {/each}
