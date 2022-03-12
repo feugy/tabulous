@@ -1,7 +1,5 @@
 # TODO
 
-- rework action menu disappearance
-
 ## Brittle tests
 
 - `InputManager › given an initialized manager() › handles multiple pointers taps`

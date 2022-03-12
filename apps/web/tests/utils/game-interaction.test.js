@@ -423,7 +423,7 @@ describe('Game interaction model', () => {
         expectMeshActions(tapped)
       })
 
-      it('closes menu on mouse wheel', async () => {
+      it('closes menu on mouse wheel', () => {
         inputManager.onWheelObservable.notifyObservers({
           event: {
             deltaY: Math.floor(Math.random() * 100)
@@ -433,7 +433,7 @@ describe('Game interaction model', () => {
         expectMeshActions(tapped)
       })
 
-      it('closes menu on pinch start', async () => {
+      it('closes menu on pinch start', () => {
         inputManager.onPinchObservable.notifyObservers({
           type: 'pinchStart'
         })
@@ -441,16 +441,18 @@ describe('Game interaction model', () => {
         expectMeshActions(tapped)
       })
 
-      it('closes menu on another mesh action', async () => {
+      it('does not close menu on another mesh action', async () => {
+        const actionMenuProps = get(actionMenuProps$)
         controlManager.onActionObservable.notifyObservers({
           meshId: meshes[1].id,
           fn: 'draw'
         })
-        expect(get(actionMenuProps$)).toBeNull()
+        await sleep(doubleTapDelay * 1.1)
+        expect(get(actionMenuProps$)).toEqual(actionMenuProps)
         expectMeshActions(tapped)
       })
 
-      it('does not close menu on flip nor rotate', async () => {
+      it('does not close menu on flip nor rotate', () => {
         const actionMenuProps = get(actionMenuProps$)
         controlManager.onActionObservable.notifyObservers({
           meshId: tapped.id,
@@ -517,7 +519,7 @@ describe('Game interaction model', () => {
         expectMeshActions(mesh6)
       })
 
-      it('zooms camera on mouse wheel', async () => {
+      it('zooms camera on mouse wheel', () => {
         const event = { deltaY: Math.floor(Math.random() * 100) }
         inputManager.onWheelObservable.notifyObservers({ event })
         expect(cameraManager.zoom).toHaveBeenCalledTimes(1)
@@ -525,7 +527,7 @@ describe('Game interaction model', () => {
         expect(selectionManager.meshes.size).toEqual(4)
       })
 
-      it('zooms camera on pinch', async () => {
+      it('zooms camera on pinch', () => {
         inputManager.onPinchObservable.notifyObservers({
           type: 'pinch',
           pinchDelta: -20

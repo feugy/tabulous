@@ -260,17 +260,7 @@ export function attachInputs({ doubleTapDelay, actionMenuProps$ }) {
      */
     details$.subscribe({
       next: resetMenu
-    }),
-
-    /**
-     * Implements actions when triggering some behavior:
-     * - closes menu unless flipping and rotating
-     */
-    behaviorAction$
-      .pipe(filter(({ fn }) => fn && fn !== 'rotate' && fn !== 'flip'))
-      .subscribe({
-        next: resetMenu
-      })
+    })
   ]
 }
 
