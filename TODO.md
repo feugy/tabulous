@@ -1,7 +1,8 @@
 # TODO
 
-- only shuffle single mesh
 - push entire selection on stackable mesh
+- rework stack indicator after shuffle action
+- rework action menu disappearance
 
 ## Brittle tests
 

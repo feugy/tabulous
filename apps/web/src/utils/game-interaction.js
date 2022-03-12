@@ -278,7 +278,12 @@ export function triggerAction(mesh, actionName) {
       { mesh, actionName },
       `triggers ${actionName} on mesh ${mesh.id}`
     )
-    mesh.metadata[actionName]?.()
+    if (actionName === 'shuffle' && mesh.metadata.stack?.length > 1) {
+      const ids = mesh.metadata.stack.map(({ id }) => id)
+      mesh.metadata.stack[0].metadata.reorder(shuffle(ids))
+    } else {
+      mesh.metadata[actionName]?.()
+    }
   }
 }
 
@@ -356,19 +361,22 @@ const menuActions = [
     })
   },
   {
-    support: mesh => mesh.metadata.stack?.length > 1,
+    support: (mesh, selected) => {
+      const base = mesh.metadata.stack?.[0]
+      return (
+        mesh.metadata.stack?.length > 1 &&
+        selected.every(other => other.metadata.stack?.[0] === base)
+      )
+    },
     build: mesh => ({
       icon: 'shuffle',
       title: 'tooltips.shuffle',
-      onClick: () => {
-        const ids = mesh.metadata.stack.map(({ id }) => id)
-        mesh.metadata.reorder(shuffle(ids))
-      }
+      onClick: () => triggerAction(mesh, 'shuffle')
     })
   },
   {
-    support: (mesh, allMeshes) =>
-      allMeshes.length === 1 && Boolean(mesh.metadata.detail),
+    support: (mesh, selected) =>
+      selected.length === 1 && Boolean(mesh.metadata.detail),
     build: mesh => ({
       icon: 'visibility',
       title: 'tooltips.detail',

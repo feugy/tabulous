@@ -35,6 +35,8 @@ describe('Game interaction model', () => {
       { id: 'box6', absolutePosition: new Vector3(0, 0.02, 0) }
     ].map(buildMesh)
     meshes[2].metadata.stack = [meshes[2], meshes[4], meshes[5]]
+    meshes[4].metadata.stack = [...meshes[2].metadata.stack]
+    meshes[5].metadata.stack = [...meshes[2].metadata.stack]
     selectionManager.clear()
     jest.resetAllMocks()
   })
@@ -48,124 +50,138 @@ describe('Game interaction model', () => {
       expect(computeMenuProps()).toEqual(null)
     })
 
-    it.each([
-      { functionName: 'flip', icon: 'flip' },
-      { functionName: 'rotate', icon: 'rotate_right' },
-      { functionName: 'detail', icon: 'visibility' },
-      { functionName: 'draw', icon: 'front_hand' }
-    ])('can trigger $functionName action', async ({ functionName, icon }) => {
-      const mesh = { id: 'box', metadata: { [functionName]: jest.fn() } }
+    it('can trigger all actions for a single mesh', () => {
+      const [mesh] = meshes
       const menuProps = computeMenuProps(mesh)
-      expect(menuProps).toEqual({
-        items: [
-          {
-            icon,
-            title: `tooltips.${functionName}`,
-            onClick: expect.any(Function)
-          }
-        ],
-        open: true,
-        meshes: [mesh],
-        ...getMeshScreenPosition()
-      })
-      menuProps.items[0].onClick()
-      expectMeshAction(mesh, functionName)
+      expect(menuProps).toHaveProperty('open', true)
+      expect(menuProps).toHaveProperty('meshes', [mesh])
+      expect(menuProps).toHaveProperty('x', getMeshScreenPosition().x)
+      expect(menuProps).toHaveProperty('y', getMeshScreenPosition().y)
+
+      expectActionItems(menuProps, mesh, [
+        { functionName: 'flip', icon: 'flip' },
+        { functionName: 'rotate', icon: 'rotate_right' },
+        { functionName: 'detail', icon: 'visibility' },
+        { functionName: 'draw', icon: 'front_hand' }
+      ])
     })
 
-    describe('given selected meshes', () => {
-      function clearMetadata(mesh, keptAction) {
-        for (const name in mesh.metadata) {
-          if (name !== keptAction) {
-            delete mesh.metadata[name]
-          }
-        }
-      }
+    it('can trigger all actions for the last stacked mesh', () => {
+      const mesh = meshes[5]
+      const menuProps = computeMenuProps(mesh)
+      expect(menuProps).toHaveProperty('items')
+      expect(menuProps).toHaveProperty('open', true)
+      expect(menuProps).toHaveProperty('meshes', [mesh])
+      expect(menuProps).toHaveProperty('x', getMeshScreenPosition().x)
+      expect(menuProps).toHaveProperty('y', getMeshScreenPosition().y)
 
-      beforeEach(() => {
-        selectionManager.select(meshes[0])
-        selectionManager.select(meshes[2])
-        selectionManager.select(meshes[4])
-        selectionManager.select(meshes[5])
-      })
-
-      it('does not display detail action', async () => {
-        const [mesh1] = meshes
-        const menuProps = computeMenuProps(mesh1)
-        expect(menuProps).toEqual({
-          items: expect.not.arrayContaining([
-            {
-              icon: 'visibility',
-              title: 'tooltips.detail',
-              onClick: expect.any(Function)
-            }
-          ]),
-          meshes: [meshes[2], meshes[4], meshes[5], mesh1],
-          open: true,
-          ...getMeshScreenPosition()
-        })
-      })
-
-      it('can trigger flip and flipAll actions on entire selection', async () => {
-        const [mesh1, mesh2, mesh3, mesh4, mesh5, mesh6] = meshes
-        clearMetadata(mesh1, 'flip')
-        const menuProps = computeMenuProps(mesh1)
-        expect(menuProps).toEqual({
-          items: [
-            {
-              icon: 'flip',
-              title: 'tooltips.flip',
-              onClick: expect.any(Function)
-            }
-          ],
-          meshes: [mesh3, mesh5, mesh6, mesh1],
-          open: true,
-          ...getMeshScreenPosition()
-        })
-        menuProps.items[0].onClick()
-        expectMeshAction(mesh1, 'flip')
-        expectMeshAction(mesh2)
-        expectMeshAction(mesh3, 'flipAll')
-        expectMeshAction(mesh4)
-        expectMeshAction(mesh5)
-        expectMeshAction(mesh6)
-      })
-
-      it.each([
+      expectActionItems(menuProps, mesh, [
+        { functionName: 'flip', icon: 'flip' },
+        { functionName: 'rotate', icon: 'rotate_right' },
+        { functionName: 'draw', icon: 'front_hand' },
+        { functionName: 'detail', icon: 'visibility' },
         {
-          functionName: 'rotate',
-          icon: 'rotate_right'
-        },
-        {
-          functionName: 'draw',
-          icon: 'front_hand'
+          functionName: 'reorder',
+          icon: 'shuffle',
+          title: 'tooltips.shuffle',
+          triggeredMesh: meshes[2]
         }
-      ])(
-        'can trigger $functionName action on entier selection',
-        async ({ functionName, icon }) => {
-          const [mesh1, mesh2, mesh3, mesh4, mesh5, mesh6] = meshes
-          clearMetadata(mesh1, functionName)
-          const menuProps = computeMenuProps(mesh1)
-          expect(menuProps).toEqual({
-            items: [
-              {
-                icon,
-                title: `tooltips.${functionName}`,
-                onClick: expect.any(Function)
-              }
-            ],
-            meshes: [mesh3, mesh5, mesh6, mesh1],
-            open: true,
-            ...getMeshScreenPosition()
-          })
-          menuProps.items[0].onClick()
-          expectMeshAction(mesh1, functionName)
-          expectMeshAction(mesh2)
-          expectMeshAction(mesh3, functionName)
-          expectMeshAction(mesh4)
-          expectMeshAction(mesh5)
-          expectMeshAction(mesh6)
-        }
-      )
+      ])
+    })
+
+    it('can trigger all actions for a selected stack', () => {
+      const [, , mesh3, , mesh5, mesh6] = meshes
+      selectionManager.select(mesh3)
+      selectionManager.select(mesh5)
+      selectionManager.select(mesh6)
+      const menuProps = computeMenuProps(mesh6)
+      expect(menuProps).toHaveProperty('items')
+      expect(menuProps).toHaveProperty('open', true)
+      expect(menuProps).toHaveProperty('meshes', [mesh3, mesh5, mesh6])
+      expect(menuProps).toHaveProperty('x', getMeshScreenPosition().x)
+      expect(menuProps).toHaveProperty('y', getMeshScreenPosition().y)
+
+      expectActionItems(menuProps, mesh3, [
+        { functionName: 'flipAll', icon: 'flip', title: 'tooltips.flip' },
+        { functionName: 'rotate', icon: 'rotate_right' },
+        { functionName: 'reorder', icon: 'shuffle', title: 'tooltips.shuffle' },
+        { functionName: 'draw', icon: 'front_hand' }
+      ])
+    })
+
+    it('can trigger all actions for a selection of unstacked meshes', () => {
+      const [mesh1, mesh2] = meshes
+      selectionManager.select(mesh1)
+      selectionManager.select(mesh2)
+      const menuProps = computeMenuProps(mesh2)
+      expect(menuProps).toHaveProperty('items')
+      expect(menuProps).toHaveProperty('open', true)
+      expect(menuProps).toHaveProperty('meshes', [mesh2, mesh1])
+      expect(menuProps).toHaveProperty('x', getMeshScreenPosition().x)
+      expect(menuProps).toHaveProperty('y', getMeshScreenPosition().y)
+
+      expectActionItems(menuProps, mesh2, [
+        { functionName: 'flip', icon: 'flip' },
+        { functionName: 'rotate', icon: 'rotate_right' },
+        { functionName: 'draw', icon: 'front_hand' }
+      ])
+      expectMeshActions(mesh1, 'flip', 'rotate', 'draw')
+    })
+
+    it('can trigger all actions for a selection of stacks', () => {
+      const [, mesh2, mesh3, mesh4, mesh5, mesh6] = meshes
+      mesh2.metadata.stack = [mesh2, mesh4]
+      mesh4.metadata.stack = [...mesh2.metadata.stack]
+      selectionManager.select(mesh2)
+      selectionManager.select(mesh3)
+      selectionManager.select(mesh4)
+      selectionManager.select(mesh5)
+      selectionManager.select(mesh6)
+      const menuProps = computeMenuProps(mesh2)
+      expect(menuProps).toHaveProperty('items')
+      expect(menuProps).toHaveProperty('open', true)
+      expect(menuProps).toHaveProperty('meshes', [
+        mesh2,
+        mesh3,
+        mesh4,
+        mesh5,
+        mesh6
+      ])
+      expect(menuProps).toHaveProperty('x', getMeshScreenPosition().x)
+      expect(menuProps).toHaveProperty('y', getMeshScreenPosition().y)
+
+      expectActionItems(menuProps, mesh2, [
+        { functionName: 'flipAll', icon: 'flip', title: 'tooltips.flip' },
+        { functionName: 'rotate', icon: 'rotate_right' },
+        { functionName: 'draw', icon: 'front_hand' }
+      ])
+      expectMeshActions(mesh4)
+      expectMeshActions(mesh5)
+      expectMeshActions(mesh6)
+      expectMeshActions(mesh3, 'flipAll', 'rotate', 'draw')
+    })
+
+    it('can trigger all actions for a selection of stacked and unstacked meshes', () => {
+      const [mesh1, , mesh3, , mesh5, mesh6] = meshes
+      selectionManager.select(mesh1)
+      selectionManager.select(mesh3)
+      selectionManager.select(mesh5)
+      selectionManager.select(mesh6)
+      const menuProps = computeMenuProps(mesh5)
+      expect(menuProps).toHaveProperty('items')
+      expect(menuProps).toHaveProperty('open', true)
+      expect(menuProps).toHaveProperty('meshes', [mesh3, mesh5, mesh6, mesh1])
+      expect(menuProps).toHaveProperty('x', getMeshScreenPosition().x)
+      expect(menuProps).toHaveProperty('y', getMeshScreenPosition().y)
+
+      expectActionItems(menuProps, mesh3, [
+        { functionName: 'flipAll', icon: 'flip', title: 'tooltips.flip' },
+        { functionName: 'rotate', icon: 'rotate_right' },
+        { functionName: 'draw', icon: 'front_hand' }
+      ])
+      expectMeshActions(mesh5)
+      expectMeshActions(mesh6)
+      expectMeshActions(mesh1, 'flip', 'rotate', 'draw')
     })
   })
 
@@ -177,13 +193,13 @@ describe('Game interaction model', () => {
     it('handles mesh without metadata', () => {
       const mesh = { id: 'box' }
       expect(() => triggerAction(mesh, 'flip')).not.toThrow()
-      expectMeshAction(mesh)
+      expectMeshActions(mesh)
     })
 
     it('ignores unsupported action', () => {
       const [mesh] = meshes
       expect(() => triggerAction(mesh, 'unsupported')).not.toThrow()
-      expectMeshAction(mesh)
+      expectMeshActions(mesh)
     })
 
     it('triggers action on mesh', () => {
@@ -191,9 +207,9 @@ describe('Game interaction model', () => {
       selectionManager.select(mesh1)
       selectionManager.select(mesh3)
       triggerAction(mesh2, 'draw')
-      expectMeshAction(mesh1)
-      expectMeshAction(mesh2, 'draw')
-      expectMeshAction(mesh3)
+      expectMeshActions(mesh1)
+      expectMeshActions(mesh2, 'draw')
+      expectMeshActions(mesh3)
     })
 
     it('triggers action on selected mesh', () => {
@@ -201,9 +217,9 @@ describe('Game interaction model', () => {
       selectionManager.select(mesh1)
       selectionManager.select(mesh3)
       triggerAction(mesh1, 'flip')
-      expectMeshAction(mesh1, 'flip')
-      expectMeshAction(mesh2)
-      expectMeshAction(mesh3)
+      expectMeshActions(mesh1, 'flip')
+      expectMeshActions(mesh2)
+      expectMeshActions(mesh3)
     })
   })
 
@@ -215,13 +231,13 @@ describe('Game interaction model', () => {
     it('handles mesh without metadata', () => {
       const mesh = { id: 'box' }
       expect(() => triggerActionOnSelection(mesh, 'flip')).not.toThrow()
-      expectMeshAction(mesh)
+      expectMeshActions(mesh)
     })
 
     it('ignores unsupported action', () => {
       const [mesh] = meshes
       expect(() => triggerActionOnSelection(mesh, 'unsupported')).not.toThrow()
-      expectMeshAction(mesh)
+      expectMeshActions(mesh)
     })
 
     describe('given current selection', () => {
@@ -235,31 +251,31 @@ describe('Game interaction model', () => {
       it('triggers action on entire selection', () => {
         const [mesh1, mesh2, mesh3, mesh4, mesh5] = meshes
         triggerActionOnSelection(mesh1, 'draw')
-        expectMeshAction(mesh1, 'draw')
-        expectMeshAction(mesh2)
-        expectMeshAction(mesh3, 'draw')
-        expectMeshAction(mesh4)
-        expectMeshAction(mesh5)
+        expectMeshActions(mesh1, 'draw')
+        expectMeshActions(mesh2)
+        expectMeshActions(mesh3, 'draw')
+        expectMeshActions(mesh4)
+        expectMeshActions(mesh5)
       })
 
       it('triggers action on unselected mesh', () => {
         const [mesh1, mesh2, mesh3, mesh4, mesh5] = meshes
         triggerActionOnSelection(mesh2, 'draw')
-        expectMeshAction(mesh1)
-        expectMeshAction(mesh2, 'draw')
-        expectMeshAction(mesh3)
-        expectMeshAction(mesh4)
-        expectMeshAction(mesh5)
+        expectMeshActions(mesh1)
+        expectMeshActions(mesh2, 'draw')
+        expectMeshActions(mesh3)
+        expectMeshActions(mesh4)
+        expectMeshActions(mesh5)
       })
 
       it('triggers flipAll when flipping entire stacks', () => {
         const [mesh1, mesh2, mesh3, mesh4, mesh5] = meshes
         triggerActionOnSelection(mesh1, 'flip')
-        expectMeshAction(mesh1, 'flip')
-        expectMeshAction(mesh2)
-        expectMeshAction(mesh3, 'flipAll')
-        expectMeshAction(mesh4)
-        expectMeshAction(mesh5)
+        expectMeshActions(mesh1, 'flip')
+        expectMeshActions(mesh2)
+        expectMeshActions(mesh3, 'flipAll')
+        expectMeshActions(mesh4)
+        expectMeshActions(mesh5)
       })
     })
   })
@@ -288,7 +304,7 @@ describe('Game interaction model', () => {
         expect.objectContaining({ open: true })
       )
       await sleep(doubleTapDelay * 1.1)
-      expectMeshAction(mesh)
+      expectMeshActions(mesh)
     })
 
     it('flips single mesh on left click', async () => {
@@ -300,14 +316,14 @@ describe('Game interaction model', () => {
         button: 0
       })
       await sleep(doubleTapDelay * 1.1)
-      expectMeshAction(mesh, 'flip')
+      expectMeshActions(mesh, 'flip')
     })
 
     it('flips single mesh on one-finger tap', async () => {
       const [mesh] = meshes
       inputManager.onTapObservable.notifyObservers({ type: 'tap', mesh })
       await sleep(doubleTapDelay * 1.1)
-      expectMeshAction(mesh, 'flip')
+      expectMeshActions(mesh, 'flip')
     })
 
     it('rotates single mesh on right click', async () => {
@@ -319,7 +335,7 @@ describe('Game interaction model', () => {
         button: 2
       })
       await sleep(doubleTapDelay * 1.1)
-      expectMeshAction(mesh, 'rotate')
+      expectMeshActions(mesh, 'rotate')
     })
 
     it('rotates single mesh on two-finger tap', async () => {
@@ -330,7 +346,7 @@ describe('Game interaction model', () => {
         pointers: 2
       })
       await sleep(doubleTapDelay * 1.1)
-      expectMeshAction(mesh, 'rotate')
+      expectMeshActions(mesh, 'rotate')
     })
 
     it('opens details on mesh long left click and clears men', async () => {
@@ -343,7 +359,7 @@ describe('Game interaction model', () => {
         long: true
       })
       await sleep(doubleTapDelay * 1.1)
-      expectMeshAction(mesh, 'detail')
+      expectMeshActions(mesh, 'detail')
     })
 
     it('opens details on mesh long tap', async () => {
@@ -354,7 +370,7 @@ describe('Game interaction model', () => {
         long: true
       })
       await sleep(doubleTapDelay * 1.1)
-      expectMeshAction(mesh, 'detail')
+      expectMeshActions(mesh, 'detail')
     })
 
     describe('given opened menu for a single mesh', () => {
@@ -373,9 +389,9 @@ describe('Game interaction model', () => {
           long: true
         })
         await sleep(doubleTapDelay * 1.1)
-        expectMeshAction(mesh, 'detail')
+        expectMeshActions(mesh, 'detail')
         expect(get(actionMenuProps$)).toBeNull()
-        expectMeshAction(tapped)
+        expectMeshActions(tapped)
       })
 
       it('closes menu on table long left click', async () => {
@@ -387,7 +403,7 @@ describe('Game interaction model', () => {
         })
         await sleep(doubleTapDelay * 1.1)
         expect(get(actionMenuProps$)).toBeNull()
-        expectMeshAction(tapped)
+        expectMeshActions(tapped)
       })
 
       it('closes menu on table double tap', async () => {
@@ -395,7 +411,7 @@ describe('Game interaction model', () => {
         inputManager.onTapObservable.notifyObservers({ type: 'doubletap' })
         await sleep(doubleTapDelay * 1.1)
         expect(get(actionMenuProps$)).toBeNull()
-        expectMeshAction(tapped)
+        expectMeshActions(tapped)
       })
 
       it('closes menu on mouse wheel', async () => {
@@ -405,7 +421,7 @@ describe('Game interaction model', () => {
           }
         })
         expect(get(actionMenuProps$)).toBeNull()
-        expectMeshAction(tapped)
+        expectMeshActions(tapped)
       })
 
       it('closes menu on pinch start', async () => {
@@ -413,7 +429,7 @@ describe('Game interaction model', () => {
           type: 'pinchStart'
         })
         expect(get(actionMenuProps$)).toBeNull()
-        expectMeshAction(tapped)
+        expectMeshActions(tapped)
       })
 
       it('closes menu on another mesh action', async () => {
@@ -422,7 +438,7 @@ describe('Game interaction model', () => {
           fn: 'draw'
         })
         expect(get(actionMenuProps$)).toBeNull()
-        expectMeshAction(tapped)
+        expectMeshActions(tapped)
       })
 
       it('does not close menu on flip nor rotate', async () => {
@@ -437,7 +453,7 @@ describe('Game interaction model', () => {
           fn: 'rotate'
         })
         expect(get(actionMenuProps$)).toEqual(actionMenuProps)
-        expectMeshAction(tapped)
+        expectMeshActions(tapped)
       })
     })
 
@@ -468,7 +484,7 @@ describe('Game interaction model', () => {
           expect.objectContaining({ open: true })
         )
         expect(selectionManager.meshes.size).toEqual(0)
-        expectMeshAction(mesh)
+        expectMeshActions(mesh)
       })
 
       it('does not reset selection when double-tapping on a selected mesh', async () => {
@@ -486,10 +502,10 @@ describe('Game interaction model', () => {
           expect.objectContaining({ open: true })
         )
         expect(selectionManager.meshes.size).toEqual(4)
-        expectMeshAction(mesh1)
-        expectMeshAction(mesh3)
-        expectMeshAction(mesh5)
-        expectMeshAction(mesh6)
+        expectMeshActions(mesh1)
+        expectMeshActions(mesh3)
+        expectMeshActions(mesh5)
+        expectMeshActions(mesh6)
       })
 
       it('zooms camera on mouse wheel', async () => {
@@ -523,24 +539,46 @@ function buildMesh(data) {
       push: jest.fn(),
       pop: jest.fn(),
       reorder: jest.fn(),
+      flipAll: jest.fn(),
       draw: jest.fn(),
       snap: jest.fn(),
       unsnap: jest.fn(),
-      unsnapApp: jest.fn()
+      unsnapAll: jest.fn()
     }
   }
   return mesh
 }
 
-function expectMeshAction(mesh, actionName) {
+function expectMeshActions(mesh, ...actionNames) {
   for (const name in mesh.metadata) {
     const action = mesh.metadata[name]
     if (typeof action === 'function') {
-      if (name !== actionName) {
-        expect(action).not.toHaveBeenCalled()
-      } else {
+      if (actionNames.includes(name)) {
+        // console.log(`${name} expected on ${mesh.id}`)
         expect(action).toHaveBeenCalledTimes(1)
+      } else {
+        // console.log(`${name} not expected on ${mesh.id}`)
+        expect(action).not.toHaveBeenCalled()
       }
     }
+  }
+}
+
+function expectActionItems(menuProps, mesh, items) {
+  expect(menuProps.items).toHaveLength(items.length)
+  for (const { functionName, icon, title, triggeredMesh } of items) {
+    expect(menuProps.items).toEqual(
+      expect.arrayContaining([
+        {
+          icon,
+          title: title ?? `tooltips.${functionName}`,
+          onClick: expect.any(Function)
+        }
+      ])
+    )
+    menuProps.items.find(item => item.icon === icon).onClick()
+    const checkedMesh = triggeredMesh ?? mesh
+    expectMeshActions(checkedMesh, functionName)
+    checkedMesh.metadata[functionName].mockReset()
   }
 }
