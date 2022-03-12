@@ -373,6 +373,15 @@ describe('Game interaction model', () => {
       expectMeshActions(mesh, 'detail')
     })
 
+    it('does not reset an emtpy action menu', async () => {
+      inputManager.onTapObservable.notifyObservers({
+        type: 'tap',
+        long: true
+      })
+      await sleep(doubleTapDelay * 1.1)
+      expect(get(actionMenuProps$)).toBeUndefined()
+    })
+
     describe('given opened menu for a single mesh', () => {
       let tapped
 

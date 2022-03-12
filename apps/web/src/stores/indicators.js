@@ -1,9 +1,10 @@
 import { BehaviorSubject, map, merge, of, withLatestFrom } from 'rxjs'
 import { getMeshScreenPosition } from '../3d/utils'
 import {
+  action,
+  actionMenuProps,
   currentCamera,
   controlledMeshes,
-  actionMenuProps,
   selectedMeshes
 } from './game-engine'
 
@@ -33,8 +34,8 @@ export async function toggleIndicators() {
  * @type {Observable<StackIndicator & import('../3d/utils').ScreenPosition>}
  */
 export const indicators = merge(
+  action,
   visible$,
-  controlledMeshes,
   selectedMeshes,
   actionMenuProps,
   currentCamera
@@ -68,6 +69,9 @@ function getStacks(controlled) {
 }
 
 function getDisplayedStacks(allVisible, controlled, selected, menuProps) {
+  if (!allVisible && selected.size === 0 && !menuProps) {
+    return []
+  }
   const stacks = getStacks(controlled)
   return allVisible
     ? stacks

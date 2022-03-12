@@ -60,8 +60,15 @@ export function attachInputs({ doubleTapDelay, actionMenuProps$ }) {
     mapping.observer = observable.add(subject.next.bind(subject))
   }
 
+  let actionMenuProps
+  actionMenuProps$.subscribe(value => {
+    actionMenuProps = value
+  })
+
   function resetMenu() {
-    actionMenuProps$.next(null)
+    if (actionMenuProps) {
+      actionMenuProps$.next(null)
+    }
   }
 
   return [
