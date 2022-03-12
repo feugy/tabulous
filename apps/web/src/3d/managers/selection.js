@@ -146,9 +146,11 @@ class SelectionManager {
         mesh.renderOverlay = false
       }
     }
-    this.meshes.clear()
-    if (!this.skipNotify) {
-      this.onSelectionObservable.notifyObservers(this.meshes)
+    if (this.meshes.size) {
+      this.meshes.clear()
+      if (!this.skipNotify) {
+        this.onSelectionObservable.notifyObservers(this.meshes)
+      }
     }
     this.skipNotify = false
   }

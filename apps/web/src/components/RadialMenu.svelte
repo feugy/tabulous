@@ -8,19 +8,20 @@
 </script>
 
 <script>
+  import { _ } from 'svelte-intl'
   import Button from './Button.svelte'
   export let items = []
   export let open = false
   export let x = 0
   export let y = 0
-  export let angleShift = 0.2
+  export let angleShift = Math.PI * -0.5
 
   $: left = typeof x === 'number' ? `${x}px` : x
   $: top = typeof y === 'number' ? `${y}px` : y
-  $: radius = 12.5 * items.length
+  $: radius = 35 + 5 * items?.length
 
   function computeItemPosition({ i }) {
-    const angle = (-2 * Math.PI * (1 - i)) / items.length
+    const angle = (-2 * Math.PI * (items.length - i)) / items.length
     // add 1 radius because css origin is menu's top-left corner, not its center
     return {
       x: radius * (Math.cos(angle + angleShift) + 1),
@@ -72,13 +73,17 @@
     style={`left: ${left}; top: ${top}; --size:${radius * 2}px;`}
   >
     <ul on:pointerdown|stopPropagation on:mouseenter on:mouseleave>
-      {#each items as { onClick, ...buttonProps }, i}
+      {#each items as { onClick, title, ...buttonProps }, i}
         {#key buttonProps}
           <li
             in:enter={{ i }}
             on:introend={({ target }) => handleEnterEnd({ i, target })}
           >
-            <Button {...buttonProps} on:click={onClick} />
+            <Button
+              title={$_(title ?? '')}
+              {...buttonProps}
+              on:click={onClick}
+            />
           </li>
         {/key}
       {/each}

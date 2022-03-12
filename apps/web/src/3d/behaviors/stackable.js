@@ -78,7 +78,6 @@ export class StackBehavior extends TargetBehavior {
    * - a `pop()` function to programmatically pop the highest mesh from stack.
    * - a `reorder()` function to re-order the stack with animation.
    * - a `flipAll()` function to flip an entire stack with animation, inverting the stack order.
-   * - a `rotateAll()` function to rotate an entire stack with animation.
    * It binds to its drop observable to push dropped meshes to the stack.
    * It binds to the drag manager drag observable to pop the first stacked mesh when dragging it.
    * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
@@ -280,7 +279,7 @@ export class StackBehavior extends TargetBehavior {
             (isBaseFlipped ? -0.08 : 0.08) *
             (isBaseInverted ? -1 : 1) *
             (isMeshInverted(mesh) ? -1 : 1)
-          const yawIncline = isBaseInverted ? -0.03 : 0.03
+          const yawIncline = isBaseInverted ? -0.05 : 0.05
           return runAnimation(
             behavior,
             null,
@@ -379,24 +378,15 @@ export class StackBehavior extends TargetBehavior {
     }
     const isFlipped = isMeshFlipped(base.stack[0])
     if (isFlipped) {
-      base.reorder(base.stack.map(({ id }) => id).reverse(), false)
+      invertStack(base)
     }
     await Promise.all(base.stack.map(mesh => mesh.metadata.flip?.()))
     if (!isFlipped) {
-      base.reorder(base.stack.map(({ id }) => id).reverse(), false)
+      invertStack(base)
     }
     for (const mesh of ignored) {
       controlManager.registerControlable(mesh)
     }
-  }
-
-  /**
-   * Rotates entire stack (each mesh in parallel).
-   * @async
-   */
-  async rotateAll() {
-    const base = this.base ?? this
-    await base.mesh.metadata.rotate?.()
   }
 
   /**
@@ -464,7 +454,7 @@ export class StackBehavior extends TargetBehavior {
     }
     this.inhibitControl = false
 
-    attachFunctions(this, 'push', 'pop', 'reorder', 'flipAll', 'rotateAll')
+    attachFunctions(this, 'push', 'pop', 'reorder', 'flipAll')
     attachProperty(this, 'stack', () => this.stack)
   }
 }
@@ -513,4 +503,8 @@ function buildInclineAnimation(frameRate) {
     Animation.ANIMATIONTYPE_VECTOR3,
     Animation.ANIMATIONLOOPMODE_CONSTANT
   )
+}
+
+function invertStack(behavior) {
+  behavior.reorder(behavior.stack.map(({ id }) => id).reverse(), false)
 }

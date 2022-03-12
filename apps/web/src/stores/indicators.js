@@ -1,9 +1,10 @@
 import { BehaviorSubject, map, merge, of, withLatestFrom } from 'rxjs'
 import { getMeshScreenPosition } from '../3d/utils'
 import {
+  action,
+  actionMenuProps,
   currentCamera,
   controlledMeshes,
-  meshForMenu,
   selectedMeshes
 } from './game-engine'
 
@@ -33,19 +34,19 @@ export async function toggleIndicators() {
  * @type {Observable<StackIndicator & import('../3d/utils').ScreenPosition>}
  */
 export const indicators = merge(
+  action,
   visible$,
-  controlledMeshes,
   selectedMeshes,
-  meshForMenu,
+  actionMenuProps,
   currentCamera
 ).pipe(
   withLatestFrom(
     merge(of(new Map()), controlledMeshes),
     merge(of(new Set()), selectedMeshes),
-    merge(of(null), meshForMenu)
+    merge(of(null), actionMenuProps)
   ),
-  map(([, controlled, selected, menu]) =>
-    getDisplayedStacks(visible$.value, controlled, selected, menu).map(
+  map(([, controlled, selected, menuProps]) =>
+    getDisplayedStacks(visible$.value, controlled, selected, menuProps).map(
       mesh => ({
         id: mesh.id,
         size: mesh.metadata.stack.length,
@@ -67,12 +68,15 @@ function getStacks(controlled) {
   return stacks
 }
 
-function getDisplayedStacks(allVisible, controlled, selected, menu) {
+function getDisplayedStacks(allVisible, controlled, selected, menuProps) {
+  if (!allVisible && selected.size === 0 && !menuProps) {
+    return []
+  }
   const stacks = getStacks(controlled)
   return allVisible
     ? stacks
-    : menu && !selected.has(menu)
-    ? getContainingStack(stacks, menu)
+    : menuProps?.meshes.every(mesh => !selected.has(mesh))
+    ? getContainingStack(stacks, menuProps)
     : getSelectedStacks(stacks, selected)
 }
 
@@ -86,7 +90,8 @@ function getSelectedStacks(stacks, selected) {
   return stacks.filter(mesh => selected.has(mesh))
 }
 
-function getContainingStack(stacks, mesh) {
-  const stack = stacks.find(({ metadata }) => metadata.stack.includes(mesh))
-  return stack ? [stack] : []
+function getContainingStack(stacks, menuProps) {
+  return stacks.filter(({ metadata }) =>
+    menuProps.meshes.some(mesh => metadata.stack.includes(mesh))
+  )
 }

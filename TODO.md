@@ -18,11 +18,12 @@
 
 - create Animation objects as part of runAnimation() (constant frameRate of 60)
 - do we need to wrap card planes in an invisible box?
+- custom message on jest expect (game-interaction)
 - jest matchers with mesh (toHaveBeenCalledWith, toHaveBeenNthCalledWith)
 - rework target detection. Instead of using real mesh and rays use shapes overlap: each zone is a rectangle/circle on XZ plane, and the moved mesh another rectangle/circle. Check the center of the moved mesh
 - all manager managing a collection of behaviors should check their capabilities
 - game-manager is just a gigantic mess!!! no single responsibility, global state all over the place
-- game-interaction unit tests
+- game-interaction drag-related unit tests
 - component, connected-component and routes rendering tests
 - get rid of Babylon input management
 - UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
@@ -30,9 +31,8 @@
 
 ## UI
 
-- display stack size indicators (user configurable)
+- push entire selection on stackable mesh
 - multiple stack actions (draw, flip, rotate)
-- actions on a selection: only allow common actions
 - display peer's name when running draw animations + show peer avatar/name instead of pointer
 - configurable player position at game level
 - sort and filter catalog on game names

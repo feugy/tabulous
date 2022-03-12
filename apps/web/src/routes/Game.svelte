@@ -7,15 +7,16 @@
     InvitePlayerDialogue
   } from '../connected-components'
   import {
-    ActionMenu,
     CameraSwitch,
     CursorInfo,
     GameAside,
     Indicators,
     MeshDetails,
-    Progress
+    Progress,
+    RadialMenu
   } from '../components'
   import {
+    actionMenuProps,
     cameraSaves,
     connected,
     currentCamera,
@@ -27,7 +28,6 @@
     loadGame,
     longInputs,
     meshDetails,
-    meshForMenu,
     restoreCamera,
     saveCamera,
     sendToThread,
@@ -136,7 +136,7 @@
     on:contextmenu|preventDefault
   >
     <canvas bind:this={canvas} />
-    <ActionMenu mesh={$meshForMenu} playerId={$currentPlayer?.id} />
+    <RadialMenu {...$actionMenuProps || {}} />
   </div>
   <CursorInfo halos={longInputs} />
   <MeshDetails mesh={$meshDetails} on:close={handleCloseDetails} />

@@ -1,15 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Toolshot components/RadialMenu.tools.svelte: Components/Radial Menu 1`] = `
+exports[`Toolshot components/RadialMenu.tools.svelte: A few items 1`] = `
 <aside
   role="menu"
-  style="left: 25%; top: 25%; --size:100px;"
+  style="left: 25%; top: 25%; --size:90px;"
 >
   <ul>
     <li
-      style="animation: __svelte_2405188809_0 150ms linear 0ms 1 both;"
+      style="animation: __svelte_2788271409_0 150ms linear 0ms 1 both;"
     >
-      <button>
+      <button
+        title=""
+      >
         <span
           class="material-icons"
         >
@@ -23,10 +25,59 @@ exports[`Toolshot components/RadialMenu.tools.svelte: Components/Radial Menu 1`]
     </li>
     
     <li
-      style="animation: __svelte_2634457198_0 150ms linear 112.5ms 1 both;"
+      style="animation: __svelte_2425112515_0 150ms linear 112.5ms 1 both;"
     >
       <button
         class="secondary"
+        title=""
+      >
+        <span
+          class="material-icons"
+        >
+          settings
+        </span>
+        
+        
+        
+      </button>
+       
+    </li>
+    
+  </ul>
+   
+</aside>
+`;
+
+exports[`Toolshot components/RadialMenu.tools.svelte: More items 1`] = `
+<aside
+  role="menu"
+  style="left: 25%; top: 25%; --size:140px;"
+>
+  <ul>
+    <li
+      style="animation: __svelte_2460607385_0 150ms linear 0ms 1 both;"
+    >
+      <button
+        title=""
+      >
+        <span
+          class="material-icons"
+        >
+          home
+        </span>
+        
+        
+        
+      </button>
+       
+    </li>
+    
+    <li
+      style="animation: __svelte_2355381516_0 150ms linear 112.5ms 1 both;"
+    >
+      <button
+        class="secondary"
+        title=""
       >
         <span
           class="material-icons"
@@ -41,10 +92,11 @@ exports[`Toolshot components/RadialMenu.tools.svelte: Components/Radial Menu 1`]
     </li>
     
     <li
-      style="animation: __svelte_557707112_0 150ms linear 225ms 1 both;"
+      style="animation: __svelte_2019194616_0 150ms linear 225ms 1 both;"
     >
       <button
         class="secondary"
+        title=""
       >
         <span
           class="material-icons"
@@ -59,13 +111,69 @@ exports[`Toolshot components/RadialMenu.tools.svelte: Components/Radial Menu 1`]
     </li>
     
     <li
-      style="animation: __svelte_1887968062_0 150ms linear 337.5ms 1 both;"
+      style="animation: __svelte_1474045884_0 150ms linear 337.5ms 1 both;"
     >
-      <button>
+      <button
+        title=""
+      >
         <span
           class="material-icons"
         >
           lock
+        </span>
+        
+        
+        
+      </button>
+       
+    </li>
+    
+    <li
+      style="animation: __svelte_4259659453_0 150ms linear 450ms 1 both;"
+    >
+      <button
+        title=""
+      >
+        <span
+          class="material-icons"
+        >
+          flip
+        </span>
+        
+        
+        
+      </button>
+       
+    </li>
+    
+    <li
+      style="animation: __svelte_339551592_0 150ms linear 562.5ms 1 both;"
+    >
+      <button
+        title=""
+      >
+        <span
+          class="material-icons"
+        >
+          shuffle
+        </span>
+        
+        
+        
+      </button>
+       
+    </li>
+    
+    <li
+      style="animation: __svelte_4094780533_0 150ms linear 675ms 1 both;"
+    >
+      <button
+        title=""
+      >
+        <span
+          class="material-icons"
+        >
+          rotate_left
         </span>
         
         

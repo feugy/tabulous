@@ -67,7 +67,7 @@ export class AnimateBehavior {
    * Does nothing if the mesh is already being animated.
    *
    * @async
-   * @param {import('@babylonjs/core').Vector3} to - the desired new position.
+   * @param {import('@babylonjs/core').Vector3} to - the desired new absolute position.
    * @param {number} duration - move duration (in milliseconds).
    * @param {boolean} [gravity=true] - applies gravity at the end.
    */

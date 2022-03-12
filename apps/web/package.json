@@ -10,13 +10,13 @@
     "test:dev": "jest --watch --coverage"
   },
   "devDependencies": {
-    "@atelier-wb/svelte": "^0.6.7",
-    "@atelier-wb/toolshot": "^0.6.7",
-    "@atelier-wb/vite-plugin-atelier": "^0.6.7",
+    "@atelier-wb/svelte": "^0.6.9",
+    "@atelier-wb/toolshot": "^0.6.9",
+    "@atelier-wb/vite-plugin-atelier": "^0.6.9",
     "@babel/preset-env": "^7.16.11",
     "@babylonjs/core": "^5.0.0-beta.7",
-    "@babylonjs/loaders": "^5.0.0-beta.7",
     "@babylonjs/inspector": "^5.0.0-beta.7",
+    "@babylonjs/loaders": "^5.0.0-beta.7",
     "@rollup/plugin-graphql": "^1.1.0",
     "@rollup/plugin-yaml": "^3.1.0",
     "@sveltejs/vite-plugin-svelte": "^1.0.0-next.36",

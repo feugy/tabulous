@@ -130,6 +130,16 @@ describe('SelectionManager', () => {
         expect(selectionChanged).toHaveBeenCalledTimes(1)
         expect(selectionChanged.mock.calls[0][0].size).toBe(0)
       })
+
+      it('does not notify listener when clearing an empty selection', () => {
+        manager.clear()
+        expect(manager.meshes.size).toBe(0)
+        selectionChanged.mockReset()
+
+        manager.clear()
+        expect(manager.meshes.size).toBe(0)
+        expect(selectionChanged).not.toHaveBeenCalled()
+      })
     })
   })
 
