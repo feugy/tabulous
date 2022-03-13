@@ -20,6 +20,7 @@ const PinchAttemptThreshold = 3
  * @property {number} button? - the pointer button used, when relevant (depends on pointer and event types).
  * @property {boolean} long? - true indicates long press on relevant types (tap, doubletap, dragStart, pinchStart)
  * @property {number} pinchDelta? - for pinch event, how many pixels more (or less) between the two pointers since the previous event.
+ * @property {boolean} fromHand? - true when interacted mesh lies in player's hand.
  */
 
 class InputManager {
@@ -315,7 +316,8 @@ class InputManager {
               button,
               event,
               pointers: tapPointers,
-              long: pointerTimes.get(pointerId).long
+              long: pointerTimes.get(pointerId).long,
+              fromHand: mesh?.getScene() === handScene
             }
             clearLong()
             pointerTimes.clear()

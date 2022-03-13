@@ -79,7 +79,7 @@ export function attachInputs({ doubleTapDelay, actionMenuProps$ }) {
      * - double click/double tap on mesh opens its menu
      */
     taps$.subscribe({
-      next: ({ type, mesh, event }) => {
+      next: ({ type, mesh, event, fromHand }) => {
         resetMenu()
         if (mesh) {
           if (!selectionManager.meshes.has(mesh)) {
@@ -87,7 +87,7 @@ export function attachInputs({ doubleTapDelay, actionMenuProps$ }) {
           }
           if (type === 'doubletap') {
             logger.info({ mesh, event }, `display menu for mesh ${mesh.id}`)
-            actionMenuProps$.next(computeMenuProps(mesh))
+            actionMenuProps$.next(computeMenuProps(mesh, fromHand))
           }
         } else {
           selectionManager.clear()
@@ -268,19 +268,19 @@ export function attachInputs({ doubleTapDelay, actionMenuProps$ }) {
  * Triggers a given action against a given mesh, regardless of the current selection
  * @param {import('@babel/core').Mesh} mesh - related mesh.
  * @param {string} actionName - name of the triggered action.
+ * @param {any[]} parameters - optional arguments for the triggered action.
+ * @return {any} triggered action result, if any
  */
-export function triggerAction(mesh, actionName) {
+export function triggerAction(mesh, actionName, ...parameters) {
   if (mesh?.metadata) {
     logger.info(
-      { mesh, actionName },
+      { mesh, actionName, parameters },
       `triggers ${actionName} on mesh ${mesh.id}`
     )
-    if (actionName === 'shuffle' && mesh.metadata.stack?.length > 1) {
-      const ids = mesh.metadata.stack.map(({ id }) => id)
-      mesh.metadata.stack[0].metadata.reorder(shuffle(ids))
-    } else {
-      mesh.metadata[actionName]?.()
+    if (canShuffle(actionName, mesh)) {
+      return shuffleStack(mesh)
     }
+    return mesh.metadata[actionName]?.(...parameters)
   }
 }
 
@@ -319,17 +319,18 @@ export function triggerActionOnSelection(mesh, actionName) {
  * If this mesh is part of the current selection, only display relevant actions for the entire selection.
  * Otherwise, returns relevant actions for this single mesh.
  * @param {import('@babel/core').Mesh} mesh - interacted mesh.
+ * @param {boolean} fromHand - true when the clicked mesh lies in player's hand/
  * @returns {object} hash of properties for RadialMenu (x, y, open, items)
  */
-export function computeMenuProps(mesh) {
+export function computeMenuProps(mesh, fromHand = false) {
   if (!mesh) {
     return null
   }
   const items = []
   const meshes = selectionManager.getSelection(mesh)
   for (const spec of menuActions) {
-    if (meshes.every(mesh => spec.support(mesh, meshes))) {
-      items.push(spec.build(mesh))
+    if (meshes.every(mesh => spec.support(mesh, meshes, fromHand))) {
+      items.push(spec.build(mesh, meshes, fromHand))
     }
   }
   return {
@@ -382,10 +383,48 @@ const menuActions = [
   },
   {
     support: mesh => Boolean(mesh.metadata.draw),
-    build: mesh => ({
-      icon: 'front_hand',
-      title: 'tooltips.draw',
+    build: (mesh, selected, fromHand) => ({
+      icon: fromHand ? 'back_hand' : 'front_hand',
+      title: fromHand ? 'tooltips.play' : 'tooltips.draw',
       onClick: () => triggerActionOnSelection(mesh, 'draw')
+    })
+  },
+  {
+    support: canStackAll,
+    build: (mesh, selected) => ({
+      icon: 'zoom_in_map',
+      title: 'tooltips.stack-all',
+      onClick: () => stackAll(mesh, selected)
     })
   }
 ]
+
+function shuffleStack(mesh) {
+  const ids = mesh.metadata.stack.map(({ id }) => id)
+  return mesh.metadata.stack[0].metadata.reorder(shuffle(ids))
+}
+
+function canShuffle(actionName, mesh) {
+  return actionName === 'shuffle' && mesh.metadata.stack?.length > 1
+}
+
+function canStackAll(mesh, selectedMeshes, fromHand) {
+  if (fromHand || selectedMeshes.some(({ metadata }) => !metadata.stack)) {
+    return false
+  }
+  const bases = new Set(selectedMeshes.map(({ metadata }) => metadata.stack[0]))
+  for (const other of bases) {
+    if (other !== mesh.metadata.stack[0] && !mesh.metadata.canPush(other)) {
+      return false
+    }
+  }
+  return bases.size > 1
+}
+
+async function stackAll(mesh, selectedMeshes) {
+  for (const other of selectedMeshes) {
+    if (!mesh.metadata.stack.includes(other)) {
+      await triggerAction(mesh, 'push', other.id)
+    }
+  }
+}

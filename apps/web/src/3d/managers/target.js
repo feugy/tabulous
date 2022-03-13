@@ -86,12 +86,8 @@ class TargetManager {
         targetable.mesh.getScene() === this.scene
       ) {
         for (const zone of targetable.zones) {
-          const { enabled, mesh, extent, kinds, priority } = zone
-          if (
-            enabled &&
-            (!kinds || kinds.includes(kind)) &&
-            isAbove(dragged, mesh, extent)
-          ) {
+          const { mesh, extent, priority } = zone
+          if (this.canAccept(zone, kind) && isAbove(dragged, mesh, extent)) {
             candidates.push({
               targetable,
               zone,
@@ -159,6 +155,21 @@ class TargetManager {
     }
     this.clear(zone)
     return dropped
+  }
+
+  /**
+   * Determines whether a given zone can accept a given kind, based on allowed kings and enable status.
+   * Does not consider mesh position.
+   * @param {import('../behaviors').DropZone} zone - the tested zone.
+   * @param {string} kind - the tested kind.
+   * @returns {boolean} true if provided kind is acceptable.
+   */
+  canAccept(zone, kind) {
+    return (
+      Boolean(zone) &&
+      zone.enabled &&
+      (!zone.kinds || zone.kinds.includes(kind))
+    )
   }
 }
 

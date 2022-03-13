@@ -52,7 +52,7 @@ tooltips:
   add-to-selection: Ajouter à la sélection
   clear-selection: Vider la sélection
   detail: Afficher en grand
-  draw: Piocher
+  draw: Piocher dans votre main
   flip: Retourner
   game-menu: Menu des commandes
   help-controls: Contrôles de l'interface
@@ -82,6 +82,7 @@ tooltips:
   move: Déplacer
   open-menu: Ouvrir le menu
   pan-camera: Déplacer
+  play: Jouer sur la table
   restore-camera: Restaurer la position
   rotate-camera: Pivoter et incliner
   rotate: Pivoter
@@ -91,4 +92,5 @@ tooltips:
   save-restore-camera: "{index, plural, =0 {Charger la position initiale de la camera} other {Charger (clic) ou enregistrer (clic long) la position à l'emplacement #}}"
   send-message: Envoyer à tous
   shuffle: Mélanger
+  stack-all: Tout empiller
   zoom: Zoomer

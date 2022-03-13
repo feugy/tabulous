@@ -108,8 +108,13 @@ describe('InputManager', () => {
     it.each([
       { title: '', pointer: { x: 1000, y: 500 } },
       { title: ' on mesh', pointer: { x: 905, y: 573 }, meshId: 'box3' },
-      { title: ' on hand mesh', pointer: { x: 1266, y: 512 }, meshId: 'box6' }
-    ])('identifies tap$title', ({ pointer, meshId }) => {
+      {
+        title: ' on hand mesh',
+        pointer: { x: 1266, y: 512 },
+        meshId: 'box6',
+        fromHand: true
+      }
+    ])('identifies tap$title', ({ pointer, meshId, fromHand = false }) => {
       const pointerId = 10
       const button = 1
       triggerEvent(POINTERDOWN, { ...pointer, pointerId, button })
@@ -117,7 +122,7 @@ describe('InputManager', () => {
       expectEvents({ taps: 1 })
       expectsDataWithMesh(
         taps[0],
-        { long: false, pointers: 1, type: 'tap', button, event },
+        { long: false, pointers: 1, type: 'tap', button, event, fromHand },
         meshId
       )
     })

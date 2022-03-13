@@ -232,6 +232,58 @@ describe('TargetManager', () => {
     })
   })
 
+  describe('canAccept()', () => {
+    it('returns false without a zone', () => {
+      expect(manager.canAccept()).toBe(false)
+    })
+
+    describe('given a kindless zone', () => {
+      let zone
+
+      beforeEach(() => {
+        zone = { enabled: true }
+      })
+
+      it('returns true without kind', () => {
+        expect(manager.canAccept(zone)).toBe(true)
+      })
+
+      it('returns true with kind', () => {
+        expect(manager.canAccept(zone, 'die')).toBe(true)
+      })
+
+      it('returns false when disabled', () => {
+        zone.enabled = false
+        expect(manager.canAccept(zone)).toBe(false)
+      })
+    })
+
+    describe('given a zone with kind', () => {
+      let zone
+
+      beforeEach(() => {
+        zone = { enabled: true, kinds: ['card', 'token'] }
+      })
+
+      it('returns false without kind', () => {
+        expect(manager.canAccept(zone)).toBe(false)
+      })
+
+      it('returns false with unexpected kind', () => {
+        expect(manager.canAccept(zone, 'die')).toBe(false)
+      })
+
+      it('returns true with expected kind', () => {
+        expect(manager.canAccept(zone, 'token')).toBe(true)
+      })
+
+      it('returns false when disabled', () => {
+        zone.enabled = false
+        expect(manager.canAccept(zone, 'token')).toBe(false)
+      })
+    })
+  })
+
   function createsTargetZone(
     id,
     position = new Vector3(0, 0, 0),

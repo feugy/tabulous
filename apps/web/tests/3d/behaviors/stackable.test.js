@@ -13,6 +13,7 @@ import {
   DrawBehavior,
   FlipBehavior,
   MoveBehavior,
+  MoveBehaviorName,
   RotateBehavior,
   StackBehavior,
   StackBehaviorName
@@ -85,6 +86,10 @@ describe('StackBehavior', () => {
     expectStacked([mesh, stacked])
   })
 
+  it('can not push mesh', () => {
+    expect(new StackBehavior().canPush(CreateBox('box1', {}))).toBe(false)
+  })
+
   describe('given attached to a mesh', () => {
     let mesh
     let meshes = []
@@ -119,7 +124,8 @@ describe('StackBehavior', () => {
           push: expect.any(Function),
           pop: expect.any(Function),
           reorder: expect.any(Function),
-          flipAll: expect.any(Function)
+          flipAll: expect.any(Function),
+          canPush: expect.any(Function)
         })
       )
       expect(recordSpy).not.toHaveBeenCalled()
@@ -144,7 +150,8 @@ describe('StackBehavior', () => {
           push: expect.any(Function),
           pop: expect.any(Function),
           reorder: expect.any(Function),
-          flipAll: expect.any(Function)
+          flipAll: expect.any(Function),
+          canPush: expect.any(Function)
         })
       )
       expect(recordSpy).not.toHaveBeenCalled()
@@ -433,6 +440,29 @@ describe('StackBehavior', () => {
       expectStacked([mesh])
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({ fn: 'rotate', mesh })
+    })
+
+    it('can not push no mesh', () => {
+      expect(mesh.metadata.canPush()).toBe(false)
+      expect(mesh.metadata.canPush(null)).toBe(false)
+    })
+
+    it('can not push mesh with different kind', () => {
+      behavior.fromState({ kinds: ['card'] })
+      meshes[0].getBehaviorByName(MoveBehaviorName).state.kind = 'token'
+      expect(mesh.metadata.canPush(meshes[0])).toBe(false)
+      expect(mesh.metadata.canPush(meshes[1])).toBe(false)
+    })
+
+    it('can push mesh with the same kind', () => {
+      behavior.fromState({ kinds: ['card'] })
+      meshes[0].getBehaviorByName(MoveBehaviorName).state.kind = 'card'
+      expect(mesh.metadata.canPush(meshes[0])).toBe(true)
+    })
+
+    it('can push mesh with kind on kindless zone', () => {
+      meshes[0].getBehaviorByName(MoveBehaviorName).state.kind = 'card'
+      expect(mesh.metadata.canPush(meshes[0])).toBe(true)
     })
   })
 })
