@@ -138,6 +138,29 @@ describe('Game interaction model', () => {
       expectMeshActions(mesh1, 'flip', 'rotate', 'draw')
     })
 
+    it('can trigger all actions for a selection of unstacked meshes in hand', async () => {
+      const [mesh1, mesh2] = meshes
+      mesh1.metadata.stack = [mesh1]
+      mesh1.metadata.canPush.mockReturnValue(true)
+      mesh2.metadata.stack = [mesh2]
+      mesh2.metadata.canPush.mockReturnValue(true)
+      selectionManager.select(mesh1)
+      selectionManager.select(mesh2)
+      const menuProps = computeMenuProps(mesh2, true)
+      expect(menuProps).toHaveProperty('items')
+      expect(menuProps).toHaveProperty('open', true)
+      expect(menuProps).toHaveProperty('meshes', [mesh2, mesh1])
+      expect(menuProps).toHaveProperty('x', getMeshScreenPosition().x)
+      expect(menuProps).toHaveProperty('y', getMeshScreenPosition().y)
+
+      await expectActionItems(menuProps, mesh2, [
+        { functionName: 'flip', icon: 'flip' },
+        { functionName: 'rotate', icon: 'rotate_right' },
+        { functionName: 'draw', icon: 'back_hand', title: 'tooltips.play' }
+      ])
+      expectMeshActions(mesh1, 'flip', 'rotate', 'draw')
+    })
+
     it('can trigger all actions for a selection of stacks', async () => {
       const [, mesh2, mesh3, mesh4, mesh5, mesh6] = meshes
       mesh2.metadata.stack = [mesh2, mesh4]
