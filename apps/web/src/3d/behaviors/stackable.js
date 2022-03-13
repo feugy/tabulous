@@ -8,7 +8,12 @@ import {
   StackBehaviorName
 } from './names'
 import { TargetBehavior } from './targetable'
-import { controlManager, inputManager, selectionManager } from '../managers'
+import {
+  controlManager,
+  inputManager,
+  selectionManager,
+  targetManager
+} from '../managers'
 import {
   animateMove,
   applyGravity,
@@ -62,6 +67,7 @@ export class StackBehavior extends TargetBehavior {
     this.base = null
     this.pushQueue = []
     this.inhibitControl = false
+    this.dropZone = null
   }
 
   /**
@@ -130,6 +136,21 @@ export class StackBehavior extends TargetBehavior {
     inputManager.onDragObservable.remove(this.dragObserver)
     this.onDropObservable?.remove(this.dropObserver)
     super.detach()
+  }
+
+  /**
+   * Determines whether a movable mesh can be stack onto this mesh.
+   * @param {import('@babel/core').Mesh} mesh - tested (movable) mesh.
+   * @returns {boolean} true if this mesh can be stacked.
+   */
+  canPush(mesh) {
+    return (
+      Boolean(mesh) &&
+      targetManager.canAccept(
+        this.dropZone,
+        mesh.getBehaviorByName(MoveBehaviorName)?.state.kind
+      )
+    )
   }
 
   /**
@@ -425,8 +446,8 @@ export class StackBehavior extends TargetBehavior {
 
     this.stack = [this.mesh]
     // dispose previous drop zone
-    for (const zone of this.zones) {
-      this.removeZone(zone)
+    if (this.dropZone) {
+      this.removeZone(this.dropZone)
     }
     // builds a drop zone from the mesh's dimensions
     const { x, y, z } = this.mesh.getBoundingInfo().boundingBox.extendSizeWorld
@@ -440,7 +461,7 @@ export class StackBehavior extends TargetBehavior {
             scene
           )
     dropZone.parent = this.mesh
-    this.addZone(
+    this.dropZone = this.addZone(
       dropZone,
       this._state.extent,
       this._state.kinds,
@@ -454,7 +475,7 @@ export class StackBehavior extends TargetBehavior {
     }
     this.inhibitControl = false
 
-    attachFunctions(this, 'push', 'pop', 'reorder', 'flipAll')
+    attachFunctions(this, 'push', 'pop', 'reorder', 'flipAll', 'canPush')
     attachProperty(this, 'stack', () => this.stack)
   }
 }

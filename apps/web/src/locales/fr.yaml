@@ -91,4 +91,5 @@ tooltips:
   save-restore-camera: "{index, plural, =0 {Charger la position initiale de la camera} other {Charger (clic) ou enregistrer (clic long) la position à l'emplacement #}}"
   send-message: Envoyer à tous
   shuffle: Mélanger
+  stack-all: Tout empiller
   zoom: Zoomer

@@ -268,19 +268,19 @@ export function attachInputs({ doubleTapDelay, actionMenuProps$ }) {
  * Triggers a given action against a given mesh, regardless of the current selection
  * @param {import('@babel/core').Mesh} mesh - related mesh.
  * @param {string} actionName - name of the triggered action.
+ * @param {any[]} parameters - optional arguments for the triggered action.
+ * @return {any} triggered action result, if any
  */
-export function triggerAction(mesh, actionName) {
+export function triggerAction(mesh, actionName, ...parameters) {
   if (mesh?.metadata) {
     logger.info(
-      { mesh, actionName },
+      { mesh, actionName, parameters },
       `triggers ${actionName} on mesh ${mesh.id}`
     )
-    if (actionName === 'shuffle' && mesh.metadata.stack?.length > 1) {
-      const ids = mesh.metadata.stack.map(({ id }) => id)
-      mesh.metadata.stack[0].metadata.reorder(shuffle(ids))
-    } else {
-      mesh.metadata[actionName]?.()
+    if (canShuffle(actionName, mesh)) {
+      return shuffleStack(mesh)
     }
+    return mesh.metadata[actionName]?.(...parameters)
   }
 }
 
@@ -329,7 +329,7 @@ export function computeMenuProps(mesh) {
   const meshes = selectionManager.getSelection(mesh)
   for (const spec of menuActions) {
     if (meshes.every(mesh => spec.support(mesh, meshes))) {
-      items.push(spec.build(mesh))
+      items.push(spec.build(mesh, meshes))
     }
   }
   return {
@@ -387,5 +387,43 @@ const menuActions = [
       title: 'tooltips.draw',
       onClick: () => triggerActionOnSelection(mesh, 'draw')
     })
+  },
+  {
+    support: canStackAll,
+    build: (mesh, selected) => ({
+      icon: 'zoom_in_map',
+      title: 'tooltips.stack-all',
+      onClick: () => stackAll(mesh, selected)
+    })
   }
 ]
+
+function shuffleStack(mesh) {
+  const ids = mesh.metadata.stack.map(({ id }) => id)
+  return mesh.metadata.stack[0].metadata.reorder(shuffle(ids))
+}
+
+function canShuffle(actionName, mesh) {
+  return actionName === 'shuffle' && mesh.metadata.stack?.length > 1
+}
+
+function canStackAll(mesh, selectedMeshes) {
+  if (selectedMeshes.some(({ metadata }) => !metadata.stack)) {
+    return false
+  }
+  const bases = new Set(selectedMeshes.map(({ metadata }) => metadata.stack[0]))
+  for (const other of bases) {
+    if (other !== mesh.metadata.stack[0] && !mesh.metadata.canPush(other)) {
+      return false
+    }
+  }
+  return bases.size > 1
+}
+
+async function stackAll(mesh, selectedMeshes) {
+  for (const other of selectedMeshes) {
+    if (!mesh.metadata.stack.includes(other)) {
+      await triggerAction(mesh, 'push', other.id)
+    }
+  }
+}
