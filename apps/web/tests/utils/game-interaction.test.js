@@ -508,18 +508,16 @@ describe('Game interaction model', () => {
         expectMeshActions(tapped)
       })
 
-      it('does not close menu on another mesh action', async () => {
-        const actionMenuProps = get(actionMenuProps$)
+      it('closes menu on mesh draw mesh action', () => {
         controlManager.onActionObservable.notifyObservers({
-          meshId: meshes[1].id,
+          meshId: tapped.id,
           fn: 'draw'
         })
-        await sleep(doubleTapDelay * 1.1)
-        expect(get(actionMenuProps$)).toEqual(actionMenuProps)
+        expect(get(actionMenuProps$)).toBeNull()
         expectMeshActions(tapped)
       })
 
-      it('does not close menu on flip nor rotate', () => {
+      it('does not close menu on another mesh action', async () => {
         const actionMenuProps = get(actionMenuProps$)
         controlManager.onActionObservable.notifyObservers({
           meshId: tapped.id,
@@ -530,6 +528,7 @@ describe('Game interaction model', () => {
           meshId: tapped.id,
           fn: 'rotate'
         })
+        await sleep(doubleTapDelay * 1.1)
         expect(get(actionMenuProps$)).toEqual(actionMenuProps)
         expectMeshActions(tapped)
       })

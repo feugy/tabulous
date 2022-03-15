@@ -260,6 +260,14 @@ export function attachInputs({ doubleTapDelay, actionMenuProps$ }) {
      */
     details$.subscribe({
       next: resetMenu
+    }),
+
+    /**
+     * Implements actions when triggering some behavior:
+     * - closes menu when drawing
+     */
+    behaviorAction$.pipe(filter(({ fn }) => fn === 'draw')).subscribe({
+      next: resetMenu
     })
   ]
 }

@@ -13,6 +13,7 @@ import {
   getDimensions,
   getMeshScreenPosition,
   getScreenPosition,
+  isAboveTable,
   isMeshFlipped,
   isSerializable,
   screenToGround
@@ -190,15 +191,19 @@ class HandManager {
     let mesh
     if (drawnMesh.getScene() === this.handScene) {
       logger.info({ mesh: drawnMesh }, `play mesh ${drawnMesh.id} from hand`)
-      mesh = createMainMesh(
-        this,
-        drawnMesh,
-        {
-          ...getSceneCenter(this.scene),
-          y: 100
-        },
-        true
-      )
+      const screenPosition = {
+        x: getMeshScreenPosition(drawnMesh).x,
+        y: this.extent.size.height * 0.5
+      }
+      const groundPosition = screenToGround(this.scene, screenPosition)
+      if (!groundPosition || !isAboveTable(this.scene, screenPosition)) {
+        return
+      }
+      mesh = createMainMesh(this, drawnMesh, {
+        x: groundPosition.x,
+        y: 100,
+        z: groundPosition.z
+      })
       applyGravity(mesh)
       getDrawable(mesh).animateToMain()
     } else {
@@ -434,13 +439,6 @@ async function layoutMeshs({
   ).y
   await Promise.all(promises)
   onHandChangeObservable.notifyObservers()
-}
-
-function getSceneCenter(scene) {
-  const { width, height } = getViewPortSize(scene.getEngine())
-  const ray = scene.createPickingRay(width / 2, height / 2)
-  const { x, y, z } = ray.intersectsAxis('y') ?? Vector3.Zero()
-  return { x, y, z }
 }
 
 function getViewPortSize(engine) {

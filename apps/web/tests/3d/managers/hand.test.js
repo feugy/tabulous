@@ -7,6 +7,7 @@ import {
   expectFlipped,
   expectPosition
 } from '../../test-utils'
+import { DrawBehaviorName, FlipBehaviorName } from '../../../src/3d/behaviors'
 import {
   handManager as manager,
   inputManager,
@@ -15,7 +16,7 @@ import {
   selectionManager
 } from '../../../src/3d/managers'
 import { createCard } from '../../../src/3d/meshes'
-import { DrawBehaviorName, FlipBehaviorName } from '../../../src/3d/behaviors'
+import { createTable } from '../../../src/3d/utils'
 
 describe('HandManager', () => {
   let engine
@@ -53,6 +54,7 @@ describe('HandManager', () => {
   beforeEach(() => {
     jest.resetAllMocks()
     selectionManager.clear()
+    createTable({}, scene)
   })
 
   afterAll(() => controlManager.onActionObservable.remove(actionObserver))
@@ -782,7 +784,7 @@ describe('HandManager', () => {
         const newMesh = scene.getMeshById(card.id)
         expect(newMesh?.id).toBeDefined()
         await expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
-        expectPosition(newMesh, [0, 1.01, 0])
+        expectPosition(newMesh, [-4.1695, -1.9889, 0])
         expect(actionRecorded).toHaveBeenCalledWith(
           {
             meshId: newMesh.id,
@@ -857,19 +859,16 @@ describe('HandManager', () => {
         const newMesh = scene.getMeshById(card.id)
         expect(newMesh?.id).toBeDefined()
         await expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
-        expectPosition(newMesh, [-17, 0, -6])
+        expectPosition(newMesh, [-21.1695, 0, -6])
       })
 
-      it('positions mesh according to main camera angle', async () => {
+      it('cancels playing mesh to main when position is not about above table', async () => {
         camera.setPosition(new Vector3(0, 0, 0))
         const [, card] = handCards
         card.metadata.draw()
-        await waitForLayout()
-        expect(handScene.getMeshById(card.id)?.id).toBeUndefined()
-        const newMesh = scene.getMeshById(card.id)
-        expect(newMesh?.id).toBeDefined()
-        await expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
-        expectPosition(newMesh, [0, 1.01, 0])
+        await expect(waitForLayout()).rejects.toThrow
+        expect(handScene.getMeshById(card.id)?.id).toBeDefined()
+        expect(scene.getMeshById(card.id)?.id).toBeUndefined()
       })
     })
   })

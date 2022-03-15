@@ -219,7 +219,7 @@ describe('MoveManager', () => {
       })
 
       it('stops when pointer is leaving table', async () => {
-        manager.continue({ x: centerX * 3, y: centerY * 3 })
+        manager.continue({ x: centerX * 100, y: centerY * 100 })
         await sleep()
         expectPosition(moved, [1, getDimensions(moved).height / 2, 1])
         expect(actionRecorded).toHaveBeenCalledWith(
