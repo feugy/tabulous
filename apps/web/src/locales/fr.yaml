@@ -53,6 +53,7 @@ tooltips:
   clear-selection: Vider la sélection
   detail: Afficher en grand
   draw: Piocher dans votre main
+  flip-stack: Retourner la pile
   flip: Retourner
   game-menu: Menu des commandes
   help-controls: Contrôles de l'interface

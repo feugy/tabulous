@@ -33,6 +33,17 @@ describe('Radial Menu component', () => {
     expect(buttons[2]).toHaveTextContent(items[2].icon)
   })
 
+  it('uses quantity button when relevant', async () => {
+    const items = [{ icon: 'home' }, { icon: 'airlines', max: 3 }]
+    renderComponent({ items })
+    const buttons = await screen.findAllByRole('button')
+    expect(buttons.length).toBeGreaterThan(items.length)
+    expect(buttons[0]).toHaveTextContent(items[0].icon)
+    expect(buttons[1]).toHaveTextContent(items[1].icon)
+    const quantityButton = screen.queryByRole('slider')
+    expect(quantityButton).toBeInTheDocument()
+  })
+
   it('propagates button clicks', async () => {
     const items = [
       { icon: 'people', onClick: jest.fn() },

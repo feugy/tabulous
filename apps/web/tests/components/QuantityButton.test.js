@@ -34,7 +34,7 @@ describe('QuantityButton component', () => {
   it(`increments quantity with buttons`, async () => {
     quantity$.set(2)
     renderComponent()
-    fireEvent.click(screen.getByRole('button', { name: 'keyboard_arrow_up' }))
+    fireEvent.click(screen.getByRole('button', { name: 'arrow_drop_up' }))
     await tick()
     expectQuantity(3)
     expect(handleClick).not.toHaveBeenCalled()
@@ -55,7 +55,7 @@ describe('QuantityButton component', () => {
   it(`decrements quantity with buttons`, async () => {
     quantity$.set(5)
     renderComponent()
-    fireEvent.click(screen.getByRole('button', { name: 'keyboard_arrow_down' }))
+    fireEvent.click(screen.getByRole('button', { name: 'arrow_drop_down' }))
     await tick()
     expectQuantity(4)
     expect(handleClick).not.toHaveBeenCalled()
@@ -76,7 +76,7 @@ describe('QuantityButton component', () => {
 
   it(`can not drecrement below 1`, async () => {
     renderComponent()
-    fireEvent.click(screen.getByRole('button', { name: 'keyboard_arrow_down' }))
+    fireEvent.click(screen.getByRole('button', { name: 'arrow_drop_down' }))
     await tick()
     expectQuantity(1)
     expect(handleClick).not.toHaveBeenCalled()
@@ -94,7 +94,7 @@ describe('QuantityButton component', () => {
 
   it(`can not increment above max`, async () => {
     renderComponent({ max: 1 })
-    fireEvent.click(screen.getByRole('button', { name: 'keyboard_arrow_up' }))
+    fireEvent.click(screen.getByRole('button', { name: 'arrow_drop_up' }))
     await tick()
     expectQuantity(1)
     expect(handleClick).not.toHaveBeenCalled()
@@ -113,7 +113,7 @@ describe('QuantityButton component', () => {
   it(`propagates clicks`, () => {
     renderComponent()
     fireEvent.click(screen.getAllByRole('button')[0])
-    fireEvent.click(screen.getByRole('button', { name: 'keyboard_arrow_down' }))
+    fireEvent.click(screen.getByRole('button', { name: 'arrow_drop_down' }))
     expect(handleClick).toHaveBeenCalledTimes(1)
   })
 

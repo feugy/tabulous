@@ -26,7 +26,7 @@ exports[`Toolshot components/QuantityButton.tools.svelte: Default 1`] = `
         <span
           class="material-icons"
         >
-          keyboard_arrow_up
+          arrow_drop_up
         </span>
         
         
@@ -39,7 +39,7 @@ exports[`Toolshot components/QuantityButton.tools.svelte: Default 1`] = `
         <span
           class="material-icons"
         >
-          keyboard_arrow_down
+          arrow_drop_down
         </span>
         
         
@@ -79,7 +79,7 @@ exports[`Toolshot components/QuantityButton.tools.svelte: Disabled 1`] = `
         <span
           class="material-icons"
         >
-          keyboard_arrow_up
+          arrow_drop_up
         </span>
         
         
@@ -93,7 +93,7 @@ exports[`Toolshot components/QuantityButton.tools.svelte: Disabled 1`] = `
         <span
           class="material-icons"
         >
-          keyboard_arrow_down
+          arrow_drop_down
         </span>
         
         
@@ -133,7 +133,7 @@ exports[`Toolshot components/QuantityButton.tools.svelte: Secondary 1`] = `
         <span
           class="material-icons"
         >
-          keyboard_arrow_up
+          arrow_drop_up
         </span>
         
         
@@ -147,7 +147,7 @@ exports[`Toolshot components/QuantityButton.tools.svelte: Secondary 1`] = `
         <span
           class="material-icons"
         >
-          keyboard_arrow_down
+          arrow_drop_down
         </span>
         
         

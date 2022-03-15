@@ -464,6 +464,12 @@ describe('StackBehavior', () => {
       meshes[0].getBehaviorByName(MoveBehaviorName).state.kind = 'card'
       expect(mesh.metadata.canPush(meshes[0])).toBe(true)
     })
+
+    it('can push on top of a stacked the entire stack', async () => {
+      behavior.fromState({ stackIds: ['box1', 'box2'] })
+      expectStacked([mesh, meshes[0], meshes[1]])
+      expect(mesh.metadata.canPush(meshes[2])).toBe(true)
+    })
   })
 })
 

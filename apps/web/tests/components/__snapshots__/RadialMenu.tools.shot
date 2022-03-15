@@ -3,11 +3,11 @@
 exports[`Toolshot components/RadialMenu.tools.svelte: A few items 1`] = `
 <aside
   role="menu"
-  style="left: 25%; top: 25%; --size:90px;"
+  style="left: 25%; top: 25%; --size:100px;"
 >
   <ul>
     <li
-      style="animation: __svelte_2788271409_0 150ms linear 0ms 1 both;"
+      style="animation: __svelte_397341122_0 150ms linear 0ms 1 both;"
     >
       <button
         title=""
@@ -25,7 +25,7 @@ exports[`Toolshot components/RadialMenu.tools.svelte: A few items 1`] = `
     </li>
     
     <li
-      style="animation: __svelte_2425112515_0 150ms linear 112.5ms 1 both;"
+      style="animation: __svelte_2962324507_0 150ms linear 112.5ms 1 both;"
     >
       <button
         class="secondary"
@@ -51,11 +51,11 @@ exports[`Toolshot components/RadialMenu.tools.svelte: A few items 1`] = `
 exports[`Toolshot components/RadialMenu.tools.svelte: More items 1`] = `
 <aside
   role="menu"
-  style="left: 25%; top: 25%; --size:140px;"
+  style="left: 25%; top: 25%; --size:150px;"
 >
   <ul>
     <li
-      style="animation: __svelte_2460607385_0 150ms linear 0ms 1 both;"
+      style="animation: __svelte_3871932778_0 150ms linear 0ms 1 both;"
     >
       <button
         title=""
@@ -73,7 +73,7 @@ exports[`Toolshot components/RadialMenu.tools.svelte: More items 1`] = `
     </li>
     
     <li
-      style="animation: __svelte_2355381516_0 150ms linear 112.5ms 1 both;"
+      style="animation: __svelte_3040732129_0 150ms linear 112.5ms 1 both;"
     >
       <button
         class="secondary"
@@ -92,7 +92,7 @@ exports[`Toolshot components/RadialMenu.tools.svelte: More items 1`] = `
     </li>
     
     <li
-      style="animation: __svelte_2019194616_0 150ms linear 225ms 1 both;"
+      style="animation: __svelte_1023368731_0 150ms linear 225ms 1 both;"
     >
       <button
         class="secondary"
@@ -111,7 +111,7 @@ exports[`Toolshot components/RadialMenu.tools.svelte: More items 1`] = `
     </li>
     
     <li
-      style="animation: __svelte_1474045884_0 150ms linear 337.5ms 1 both;"
+      style="animation: __svelte_3264121526_0 150ms linear 337.5ms 1 both;"
     >
       <button
         title=""
@@ -129,7 +129,7 @@ exports[`Toolshot components/RadialMenu.tools.svelte: More items 1`] = `
     </li>
     
     <li
-      style="animation: __svelte_4259659453_0 150ms linear 450ms 1 both;"
+      style="animation: __svelte_4053772584_0 150ms linear 450ms 1 both;"
     >
       <button
         title=""
@@ -147,7 +147,7 @@ exports[`Toolshot components/RadialMenu.tools.svelte: More items 1`] = `
     </li>
     
     <li
-      style="animation: __svelte_339551592_0 150ms linear 562.5ms 1 both;"
+      style="animation: __svelte_756247263_0 150ms linear 562.5ms 1 both;"
     >
       <button
         title=""
@@ -165,7 +165,7 @@ exports[`Toolshot components/RadialMenu.tools.svelte: More items 1`] = `
     </li>
     
     <li
-      style="animation: __svelte_4094780533_0 150ms linear 675ms 1 both;"
+      style="animation: __svelte_2867527063_0 150ms linear 675ms 1 both;"
     >
       <button
         title=""

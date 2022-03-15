@@ -139,18 +139,19 @@ export class StackBehavior extends TargetBehavior {
   }
 
   /**
-   * Determines whether a movable mesh can be stack onto this mesh.
+   * Determines whether a movable mesh can be stack onto this mesh (or its stack).
    * @param {import('@babel/core').Mesh} mesh - tested (movable) mesh.
    * @returns {boolean} true if this mesh can be stacked.
    */
   canPush(mesh) {
-    return (
-      Boolean(mesh) &&
-      targetManager.canAccept(
-        this.dropZone,
-        mesh.getBehaviorByName(MoveBehaviorName)?.state.kind
-      )
-    )
+    const last = this.stack[this.stack.length - 1]
+    return last === this.mesh
+      ? Boolean(mesh) &&
+          targetManager.canAccept(
+            this.dropZone,
+            mesh.getBehaviorByName(MoveBehaviorName)?.state.kind
+          )
+      : last?.getBehaviorByName(StackBehaviorName).canPush(mesh) ?? false
   }
 
   /**

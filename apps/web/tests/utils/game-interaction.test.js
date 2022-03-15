@@ -34,7 +34,10 @@ describe('Game interaction model', () => {
       { id: 'box5', absolutePosition: new Vector3(0, 0.01, 0) },
       { id: 'box6', absolutePosition: new Vector3(0, 0.02, 0) }
     ].map(buildMesh)
+    meshes[0].metadata.stack = [meshes[0]]
+    meshes[1].metadata.stack = [meshes[1]]
     meshes[2].metadata.stack = [meshes[2], meshes[4], meshes[5]]
+    meshes[3].metadata.stack = [meshes[3]]
     meshes[4].metadata.stack = [...meshes[2].metadata.stack]
     meshes[5].metadata.stack = [...meshes[2].metadata.stack]
     selectionManager.clear()
@@ -76,16 +79,10 @@ describe('Game interaction model', () => {
       expect(menuProps).toHaveProperty('y', getMeshScreenPosition().y)
 
       await expectActionItems(menuProps, mesh, [
-        { functionName: 'flip', icon: 'flip' },
-        { functionName: 'rotate', icon: 'rotate_right' },
-        { functionName: 'draw', icon: 'front_hand' },
-        { functionName: 'detail', icon: 'visibility' },
-        {
-          functionName: 'reorder',
-          icon: 'shuffle',
-          title: 'tooltips.shuffle',
-          triggeredMesh: meshes[2]
-        }
+        { functionName: 'flip', icon: 'flip', max: 3 },
+        { functionName: 'rotate', icon: 'rotate_right', max: 3 },
+        { functionName: 'draw', icon: 'front_hand', max: 3 },
+        { functionName: 'detail', icon: 'visibility' }
       ])
     })
 
@@ -102,7 +99,7 @@ describe('Game interaction model', () => {
       expect(menuProps).toHaveProperty('y', getMeshScreenPosition().y)
 
       await expectActionItems(menuProps, mesh3, [
-        { functionName: 'flipAll', icon: 'flip', title: 'tooltips.flip' },
+        { functionName: 'flipAll', icon: 'flip', title: 'tooltips.flip-stack' },
         { functionName: 'rotate', icon: 'rotate_right' },
         { functionName: 'reorder', icon: 'shuffle', title: 'tooltips.shuffle' },
         { functionName: 'draw', icon: 'front_hand' }
@@ -207,9 +204,7 @@ describe('Game interaction model', () => {
 
     it('does not display stackAll action if at least one selected meshes can not be pushed', async () => {
       const [mesh1, mesh2] = meshes
-      mesh1.metadata.stack = [mesh1]
       mesh1.metadata.canPush.mockReturnValue(true)
-      mesh2.metadata.stack = [mesh2]
       mesh2.metadata.canPush.mockReturnValue(false)
       selectionManager.select(mesh1)
       selectionManager.select(mesh2)
@@ -230,6 +225,10 @@ describe('Game interaction model', () => {
 
     it('can trigger all actions for a selection of stacked and unstacked meshes', async () => {
       const [mesh1, , mesh3, , mesh5, mesh6] = meshes
+      mesh1.metadata.canPush.mockReturnValue(true)
+      mesh3.metadata.canPush.mockReturnValue(true)
+      mesh5.metadata.canPush.mockReturnValue(true)
+      mesh6.metadata.canPush.mockReturnValue(true)
       selectionManager.select(mesh1)
       selectionManager.select(mesh3)
       selectionManager.select(mesh5)
@@ -244,7 +243,14 @@ describe('Game interaction model', () => {
       await expectActionItems(menuProps, mesh3, [
         { functionName: 'flipAll', icon: 'flip', title: 'tooltips.flip' },
         { functionName: 'rotate', icon: 'rotate_right' },
-        { functionName: 'draw', icon: 'front_hand' }
+        { functionName: 'draw', icon: 'front_hand' },
+        {
+          functionName: 'push',
+          icon: 'zoom_in_map',
+          title: 'tooltips.stack-all',
+          triggeredMesh: mesh5,
+          calls: [[mesh1.id]]
+        }
       ])
       expectMeshActions(mesh5)
       expectMeshActions(mesh6)
@@ -644,13 +650,21 @@ function expectMeshActions(mesh, ...actionNames) {
 
 async function expectActionItems(menuProps, mesh, items) {
   expect(menuProps.items).toHaveLength(items.length)
-  for (const { functionName, icon, title, triggeredMesh, calls } of items) {
+  for (const {
+    functionName,
+    icon,
+    title,
+    triggeredMesh,
+    calls,
+    ...props
+  } of items) {
     expect(menuProps.items).toEqual(
       expect.arrayContaining([
         {
           icon,
           title: title ?? `tooltips.${functionName}`,
-          onClick: expect.any(Function)
+          onClick: expect.any(Function),
+          ...props
         }
       ])
     )
