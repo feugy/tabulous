@@ -74,7 +74,7 @@ describe('QuantityButton component', () => {
     expect(handleClick).not.toHaveBeenCalled()
   })
 
-  it(`can not drecrement below 1`, async () => {
+  it(`can not decrement below 1`, async () => {
     renderComponent()
     fireEvent.click(screen.getByRole('button', { name: 'arrow_drop_down' }))
     await tick()
@@ -112,9 +112,12 @@ describe('QuantityButton component', () => {
 
   it(`propagates clicks`, () => {
     renderComponent()
+    fireEvent.click(screen.getByRole('button', { name: 'arrow_drop_up' }))
     fireEvent.click(screen.getAllByRole('button')[0])
-    fireEvent.click(screen.getByRole('button', { name: 'arrow_drop_down' }))
     expect(handleClick).toHaveBeenCalledTimes(1)
+    expect(handleClick).toHaveBeenCalledWith(
+      expect.objectContaining({ detail: 2 })
+    )
   })
 
   function expectQuantity(quantity) {

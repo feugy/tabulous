@@ -1,10 +1,13 @@
 <script>
+  import { createEventDispatcher } from 'svelte'
   import Button from './Button.svelte'
 
   export let secondary = false
   export let disabled = false
   export let quantity = 1
   export let max = 1000
+
+  const dispatch = createEventDispatcher()
 
   function stepUp() {
     if (quantity < max) {
@@ -46,6 +49,11 @@
         break
     }
   }
+
+  function handleClick(event) {
+    event.stopPropagation()
+    dispatch('click', quantity)
+  }
 </script>
 
 <style lang="postcss">
@@ -82,7 +90,7 @@
     {...$$restProps}
     {disabled}
     {secondary}
-    on:click
+    on:click={handleClick}
     on:pointerdown
     on:pointerup
   >

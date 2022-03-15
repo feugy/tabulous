@@ -87,6 +87,23 @@ describe('Game interaction model', () => {
       ])
     })
 
+    it('can trigger multiple actions for the last stacked mesh', async () => {
+      const [, , mesh3, , mesh5, mesh6] = meshes
+      const menuProps = computeMenuProps(mesh6)
+      expect(menuProps).toHaveProperty('items')
+      expect(menuProps).toHaveProperty('open', true)
+      expect(menuProps).toHaveProperty('meshes', [mesh6])
+      expect(menuProps).toHaveProperty('x', getMeshScreenPosition().x)
+      expect(menuProps).toHaveProperty('y', getMeshScreenPosition().y)
+
+      await menuProps.items
+        .find(item => item.icon === 'flip')
+        .onClick({ detail: 2 })
+      expectMeshActions(mesh6, 'flip')
+      expectMeshActions(mesh5, 'flip')
+      expectMeshActions(mesh3)
+    })
+
     it('can trigger all actions for a selected stack', async () => {
       const [, , mesh3, , mesh5, mesh6] = meshes
       selectionManager.select(mesh3)
