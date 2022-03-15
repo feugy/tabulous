@@ -295,7 +295,8 @@ export function triggerAction(mesh, actionName, ...parameters) {
 /**
  * Triggers a given action against a given mesh.
  * If mesh is part of the active selection, then triggers the action on all selected meshes.
- * When all meshes of a given stack are selected, it triggers action on stack base.
+ * When the flip action is triggered on a stack, only flipAll is called on this stack's base.
+ * When the rotate action is triggered on a stack, only rotate is called on this stack's base.
  * @param {import('@babel/core').Mesh} mesh - related mesh.
  * @param {string} actionName - name of the triggered action.
  */
@@ -305,6 +306,7 @@ export function triggerActionOnSelection(mesh, actionName) {
   for (const mesh of meshes) {
     if (mesh?.metadata && !exclude.has(mesh)) {
       if (
+        (actionName === 'flip' || actionName === 'rotate') &&
         mesh.metadata.stack?.length > 1 &&
         mesh.metadata.stack.every(mesh => meshes.has(mesh))
       ) {
