@@ -31,15 +31,16 @@
 
 ## UI
 
-- multiple stack actions (draw, flip, rotate)
+- issue: rotate rotations is relative to its parent
+- issue: flip rotation is relative to its own rotate rotation
 - issue: on a stack, N-1th mesh is interactible (flip/rotate) while Nth mesh is animating (flip)
 - display peer's name when running draw animations + show peer avatar/name instead of pointer
 - configurable player position at game level
 - sort and filter catalog on game names
 - feedback on stacking
 - stack actions:
-  - draw multiple cards (either in hand, or in front of them)
-  - distribute multiple cards to players (either in their hand, or in front of them)
+  - pop multiple meshes and select them
+  - distribute multiple cards to players'hand
   - put/draw under
 - keyboard
 - indicates when remote stream is muted/stopped

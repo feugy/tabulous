@@ -202,18 +202,26 @@ export class StackBehavior extends TargetBehavior {
       { stack, mesh, x, z },
       `push ${mesh.id} on stack ${stack.map(({ id }) => id)}`
     )
-    setStatus(stack, stack.length - 1, false, this)
     const meshPushed = getTargetableBehavior(mesh)?.stack ?? [mesh]
-    const last = meshPushed[meshPushed.length - 1]
-    const moves = []
-    for (const pushed of meshPushed) {
-      const y = getCenterAltitudeAbove(stack[stack.length - 1], mesh)
-      setBase(pushed, base, stack)
-      stack.push(pushed)
-      setStatus(stack, stack.length - 1, last === pushed, this)
-      moves.push(animateMove(pushed, new Vector3(x, y, z), duration, true))
+    const rank = stack.length - 1
+    setStatus(stack, rank, false, this)
+    const y = getCenterAltitudeAbove(stack[rank], meshPushed[0])
+    stack.push(...meshPushed)
+    for (let index = rank; index < stack.length; index++) {
+      setStatus(stack, index, index === stack.length - 1, this)
     }
-    await Promise.all(moves)
+    const move = animateMove(
+      meshPushed[0],
+      new Vector3(x, y, z),
+      duration,
+      true
+    )
+    if (!this.inhibitControl) {
+      await move
+    }
+    for (const mesh of meshPushed) {
+      setBase(mesh, base, stack)
+    }
   }
 
   /**

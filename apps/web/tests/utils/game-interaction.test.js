@@ -87,7 +87,11 @@ describe('Game interaction model', () => {
       ])
     })
 
-    it('can trigger multiple actions for the last stacked mesh', async () => {
+    it.each([
+      { action: 'rotate', icon: 'rotate_right' },
+      { action: 'flip', icon: 'flip' },
+      { action: 'draw', icon: 'front_hand' }
+    ])('can $action multiple meshes on a stack', async ({ action, icon }) => {
       const [, , mesh3, , mesh5, mesh6] = meshes
       const menuProps = computeMenuProps(mesh6)
       expect(menuProps).toHaveProperty('items')
@@ -97,10 +101,10 @@ describe('Game interaction model', () => {
       expect(menuProps).toHaveProperty('y', getMeshScreenPosition().y)
 
       await menuProps.items
-        .find(item => item.icon === 'flip')
+        .find(item => item.icon === icon)
         .onClick({ detail: { quantity: 2 } })
-      expectMeshActions(mesh6, 'flip')
-      expectMeshActions(mesh5, 'flip')
+      expectMeshActions(mesh6, action)
+      expectMeshActions(mesh5, action)
       expectMeshActions(mesh3)
     })
 
@@ -213,7 +217,7 @@ describe('Game interaction model', () => {
           functionName: 'push',
           icon: 'zoom_in_map',
           title: 'tooltips.stack-all',
-          calls: [[mesh3.id], [mesh5.id], [mesh6.id]]
+          calls: [[mesh3.id]]
         }
       ])
       expectMeshActions(mesh4, 'draw')

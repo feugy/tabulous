@@ -123,13 +123,14 @@ export const handMeshes = handSaves$.pipe(
  * @param {object} params - parameters, including:
  * @param {HTMLCanvasElement} params.canvas - HTML canvas used to display the scene.
  * @param {HTMLElement} params.interaction - HTML element receiving user interaction (mouse events, taps).
- * @param {number} [params.doubleTapDelay=300] - number of milliseconds between 2 taps to be considered as a double tap.
+ * @param {number} [params.doubleTapDelay=350] - number of milliseconds between 2 pointer down events to be considered as a double one.
+ * @param {number} [params.longTapDelay=250] - number of milliseconds to hold pointer down before it is considered as long.
  * @param {number} [params.pointerThrottle=200] - number of milliseconds during which pointer will be ignored before being shared with peers.
  */
 export function initEngine({
   canvas,
   interaction,
-  doubleTapDelay = 300,
+  doubleTapDelay = 350,
   longTapDelay = 250,
   pointerThrottle = 200
 }) {

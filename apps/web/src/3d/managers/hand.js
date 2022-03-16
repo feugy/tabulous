@@ -103,11 +103,12 @@ class HandManager {
     this.duration = duration
 
     const engine = this.handScene.getEngine()
+    this.overlay?.remove()
+    this.overlay = buildOverlay(engine.inputElement)
+
     computeExtent(this, engine)
     storeMeshDimensions(this)
     layoutMeshs(this)
-    this.overlay?.remove()
-    this.overlay = buildOverlay(engine.inputElement)
 
     const subscriptions = []
     for (const { observable, handle } of [
@@ -438,9 +439,7 @@ async function layoutMeshs({
     handScene,
     new Vector3(0, 0, extent.maxZ)
   ).y
-  if (overlay) {
-    overlay.style.top = `${extent.screenHeight}px`
-  }
+  overlay.style.top = `${extent.screenHeight}px`
   await Promise.all(promises)
   onHandChangeObservable.notifyObservers()
 }

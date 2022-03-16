@@ -476,9 +476,9 @@ function shuffleStack(mesh) {
 }
 
 async function stackAll(mesh, selectedMeshes) {
-  for (const other of selectedMeshes) {
-    if (!mesh.metadata.stack.includes(other)) {
-      await triggerAction(mesh, 'push', other.id)
+  for (const base of getBaseMeshes(selectedMeshes)) {
+    if (mesh.metadata.stack[0] !== base) {
+      await triggerAction(mesh, 'push', base.id)
     }
   }
 }
