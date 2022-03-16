@@ -447,6 +447,7 @@ describe('HandManager', () => {
           mesh
         })
         await waitForLayout()
+        await waitForLayout()
         expect(getPositions(handCards)).toEqual([
           [handCards[0].id, ...positions[0].slice(1)],
           [handCards[2].id, ...positions[1].slice(1)],
@@ -490,6 +491,7 @@ describe('HandManager', () => {
           type: 'dragStop',
           mesh: mesh1
         })
+        await waitForLayout()
         await waitForLayout()
         expect(getPositions(handCards)).toEqual([
           [mesh1.id, ...positions[0].slice(1)],

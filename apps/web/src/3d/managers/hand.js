@@ -277,7 +277,7 @@ function handleAction(manager, action) {
 }
 
 function handDrag(manager, { type, mesh, event }) {
-  const { extent, handScene, overlay } = manager
+  const { extent, handScene, overlay, duration } = manager
   overlay.classList.remove('visible')
   if (!hasSelectedDrawableMeshes(mesh)) {
     return
@@ -293,6 +293,8 @@ function handDrag(manager, { type, mesh, event }) {
       moved = selectionManager.getSelection(mesh)
     } else if (type === 'dragStop') {
       moved = []
+      // final layout after all animation are over
+      setTimeout(() => layoutMeshs(manager), duration * 1.1)
     }
     manager.moved = moved
     if (moved[0]?.absolutePosition.z > extent.maxZ) {
