@@ -85,7 +85,7 @@ export class FlipBehavior extends AnimateBehavior {
     }
     logger.debug({ mesh }, `start flipping ${mesh.id}`)
 
-    controlManager.record({ mesh, fn: 'flip' })
+    controlManager.record({ mesh, fn: 'flip', duration })
 
     const attach = detach(mesh)
     const [x, y, z] = mesh.position.asArray()

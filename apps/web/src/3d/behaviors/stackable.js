@@ -66,7 +66,6 @@ export class StackBehavior extends TargetBehavior {
     this.dropObserver = null
     this.actionObserver = null
     this.base = null
-    this.pushQueue = []
     this.inhibitControl = false
     this.dropZone = null
   }
@@ -188,9 +187,15 @@ export class StackBehavior extends TargetBehavior {
 
     const base = this.base ?? this
     const { stack } = base
+    const duration = this.inhibitControl ? 0 : this._state.duration
 
     if (!this.inhibitControl) {
-      controlManager.record({ mesh: stack[0], fn: 'push', args: [meshId] })
+      controlManager.record({
+        mesh: stack[0],
+        fn: 'push',
+        args: [meshId],
+        duration
+      })
     }
     const { x, z } = base.mesh.absolutePosition
     logger.info(
@@ -198,7 +203,6 @@ export class StackBehavior extends TargetBehavior {
       `push ${mesh.id} on stack ${stack.map(({ id }) => id)}`
     )
     setStatus(stack, stack.length - 1, false, this)
-    const duration = this.inhibitControl ? 0 : this._state.duration
     const meshPushed = getTargetableBehavior(mesh)?.stack ?? [mesh]
     const last = meshPushed[meshPushed.length - 1]
     const moves = []

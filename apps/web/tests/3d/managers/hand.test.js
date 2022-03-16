@@ -231,7 +231,7 @@ describe('HandManager', () => {
         expect.anything()
       )
       expect(actionRecorded).toHaveBeenCalledWith(
-        { meshId: newMesh.id, fn: 'flip', fromHand: true },
+        { meshId: newMesh.id, fn: 'flip', fromHand: true, duration },
         expect.anything()
       )
       expect(actionRecorded).toHaveBeenCalledTimes(2)
@@ -726,7 +726,7 @@ describe('HandManager', () => {
           expect.anything()
         )
         expect(actionRecorded).toHaveBeenCalledWith(
-          { meshId: newMesh.id, fn: 'flip', fromHand: true },
+          { meshId: newMesh.id, fn: 'flip', fromHand: true, duration },
           expect.anything()
         )
         expect(actionRecorded).toHaveBeenCalledTimes(2)
@@ -878,7 +878,7 @@ describe('HandManager', () => {
         depth: cardDepth,
         drawable: {},
         rotable: {},
-        flippable: {},
+        flippable: { duration },
         movable: {},
         stackable: {},
         ...state
