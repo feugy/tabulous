@@ -268,9 +268,8 @@ function handleAction(manager, action) {
         fn === 'rotate' ? RotateBehaviorName : FlipBehaviorName
       )
       behavior.onAnimationEndObservable.addOnce(() => {
-        logger.debug(action, 'detects hand change')
-        storeMeshDimensions(manager)
-        layoutMeshs(manager)
+        logger.info(action, 'detects hand change')
+        manager.changes$.next()
       })
     }
   }
@@ -283,7 +282,6 @@ function handDrag(manager, { type, mesh, event }) {
     return
   }
   if (type !== 'dragStop') {
-    manager.overlay.style.top = `${manager.extent.screenHeight}px`
     overlay.classList.add('visible')
   }
 
@@ -293,8 +291,6 @@ function handDrag(manager, { type, mesh, event }) {
       moved = selectionManager.getSelection(mesh)
     } else if (type === 'dragStop') {
       moved = []
-      // final layout after all animation are over
-      setTimeout(() => layoutMeshs(manager), duration * 1.1)
     }
     manager.moved = moved
     if (moved[0]?.absolutePosition.z > extent.maxZ) {
@@ -309,6 +305,8 @@ function handDrag(manager, { type, mesh, event }) {
         )
         recordDraw(createMainMesh(manager, mesh, { x, z }))
       }
+      // final layout after all animation are over
+      setTimeout(() => layoutMeshs(manager), duration * 1.1)
     } else {
       layoutMeshs(manager)
     }
@@ -405,6 +403,7 @@ async function layoutMeshs({
   verticalPadding,
   duration,
   extent,
+  overlay,
   onHandChangeObservable
 }) {
   const meshes = [...dimensionsByMeshId.keys()]
@@ -439,6 +438,9 @@ async function layoutMeshs({
     handScene,
     new Vector3(0, 0, extent.maxZ)
   ).y
+  if (overlay) {
+    overlay.style.top = `${extent.screenHeight}px`
+  }
   await Promise.all(promises)
   onHandChangeObservable.notifyObservers()
 }
