@@ -52,7 +52,7 @@
 
   function handleClick(event) {
     event.stopPropagation()
-    dispatch('click', quantity)
+    dispatch('click', { quantity })
   }
 </script>
 

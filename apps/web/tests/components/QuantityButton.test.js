@@ -116,7 +116,7 @@ describe('QuantityButton component', () => {
     fireEvent.click(screen.getAllByRole('button')[0])
     expect(handleClick).toHaveBeenCalledTimes(1)
     expect(handleClick).toHaveBeenCalledWith(
-      expect.objectContaining({ detail: 2 })
+      expect.objectContaining({ detail: { quantity: 2 } })
     )
   })
 

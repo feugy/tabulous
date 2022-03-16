@@ -683,15 +683,7 @@ describe('HandManager', () => {
           },
           expect.anything()
         )
-        expect(actionRecorded).toHaveBeenCalledWith(
-          {
-            meshId: mesh3.id,
-            fn: 'pop',
-            fromHand: false
-          },
-          expect.anything()
-        )
-        expect(actionRecorded).toHaveBeenCalledTimes(4)
+        expect(actionRecorded).toHaveBeenCalledTimes(3)
         expect(controlManager.isManaging(newMesh1)).toBe(true)
         expect(moveManager.isManaging(newMesh1)).toBe(true)
         expect(controlManager.isManaging(newMesh2)).toBe(true)

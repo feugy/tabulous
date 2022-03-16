@@ -29,7 +29,7 @@ function pointerKind(event, button, pointers) {
  * Attach to game engine's input manager observables to implement game interaction model.
  * @param {object} params - parameters, including:
  * @param {number} params.doubleTapDelay - number of milliseconds between 2 taps to be considered as a double tap.
- * @param {Subject<import('../stores/game-engine').actionMenuProps>} params.actionMenuProps$ - subject emitting when action menu should be displayed and hidden.
+ * @param {Subject<import('../stores/game-engine').ActionMenuProps>} params.actionMenuProps$ - subject emitting when action menu should be displayed and hidden.
  * @returns {import('rxjs').Subscription[]} an array of observable subscriptions
  */
 export function attachInputs({ doubleTapDelay, actionMenuProps$ }) {
@@ -264,11 +264,13 @@ export function attachInputs({ doubleTapDelay, actionMenuProps$ }) {
 
     /**
      * Implements actions when triggering some behavior:
-     * - closes menu when drawing
+     * - closes menu when drawing, or modifying stack
      */
-    behaviorAction$.pipe(filter(({ fn }) => fn === 'draw')).subscribe({
-      next: resetMenu
-    })
+    behaviorAction$
+      .pipe(filter(({ fn }) => fn === 'draw' || fn === 'pop' || fn === 'push'))
+      .subscribe({
+        next: resetMenu
+      })
   ]
 }
 
@@ -366,6 +368,7 @@ export function computeMenuProps(mesh, fromHand = false) {
     ...getMeshScreenPosition(mesh),
     items,
     open: true,
+    interactedMesh: mesh,
     meshes: selectedMeshes
   }
 }
@@ -379,8 +382,8 @@ const menuActions = [
         params.isSingleStackSelected && params.selectedMeshes.length > 1
           ? 'tooltips.flip-stack'
           : 'tooltips.flip',
-      onClick: ({ detail: quantity } = {}) =>
-        triggerActionOnSelection(mesh, 'flip', quantity),
+      onClick: ({ detail } = {}) =>
+        triggerActionOnSelection(mesh, 'flip', detail?.quantity),
       max: computesMaxQuantity(mesh, params)
     })
   },
@@ -389,8 +392,8 @@ const menuActions = [
     build: (mesh, params) => ({
       icon: 'rotate_right',
       title: 'tooltips.rotate',
-      onClick: ({ detail: quantity } = {}) =>
-        triggerActionOnSelection(mesh, 'rotate', quantity),
+      onClick: ({ detail } = {}) =>
+        triggerActionOnSelection(mesh, 'rotate', detail?.quantity),
       max: computesMaxQuantity(mesh, params)
     })
   },
@@ -399,8 +402,8 @@ const menuActions = [
     build: (mesh, params) => ({
       icon: params.fromHand ? 'back_hand' : 'front_hand',
       title: params.fromHand ? 'tooltips.play' : 'tooltips.draw',
-      onClick: ({ detail: quantity } = {}) =>
-        triggerActionOnSelection(mesh, 'draw', quantity),
+      onClick: ({ detail } = {}) =>
+        triggerActionOnSelection(mesh, 'draw', detail?.quantity),
       max: computesMaxQuantity(mesh, params)
     })
   },

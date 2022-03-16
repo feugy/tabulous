@@ -21,6 +21,7 @@ import {
   attachProperty,
   getAnimatableBehavior,
   getCenterAltitudeAbove,
+  getDimensions,
   getTargetableBehavior,
   isMeshFlipped,
   isMeshInverted,
@@ -116,13 +117,29 @@ export class StackBehavior extends TargetBehavior {
 
     this.actionObserver = controlManager.onActionObservable.add(
       ({ meshId, fn }) => {
-        const { stack } = this
-        if (
-          fn === 'draw' &&
-          stack.length > 1 &&
-          stack[stack.length - 1]?.id === meshId
-        ) {
-          this.pop()
+        const {
+          stack,
+          _state: { duration }
+        } = this
+        if (fn === 'draw' && stack.length > 1) {
+          const index = stack.findIndex(({ id }) => id === meshId)
+          if (index >= 0) {
+            const [poped] = stack.splice(index, 1)
+            const shift = new Vector3(0, getDimensions(poped).height, 0)
+            setStatus([poped], 0, true, setBase(poped, null, [poped]))
+            for (
+              let rank = index === 0 ? index : index - 1;
+              rank < stack.length;
+              rank++
+            ) {
+              setStatus(stack, rank, rank === stack.length - 1, this)
+              animateMove(
+                stack[rank],
+                stack[rank].absolutePosition.subtract(shift),
+                duration
+              )
+            }
+          }
         }
       }
     )
@@ -180,7 +197,7 @@ export class StackBehavior extends TargetBehavior {
       { stack, mesh, x, z },
       `push ${mesh.id} on stack ${stack.map(({ id }) => id)}`
     )
-    enableLast(stack, false, this)
+    setStatus(stack, stack.length - 1, false, this)
     const duration = this.inhibitControl ? 0 : this._state.duration
     const meshPushed = getTargetableBehavior(mesh)?.stack ?? [mesh]
     const last = meshPushed[meshPushed.length - 1]
@@ -189,7 +206,7 @@ export class StackBehavior extends TargetBehavior {
       const y = getCenterAltitudeAbove(stack[stack.length - 1], mesh)
       setBase(pushed, base, stack)
       stack.push(pushed)
-      enableLast(stack, last === pushed, this)
+      setStatus(stack, stack.length - 1, last === pushed, this)
       moves.push(animateMove(pushed, new Vector3(x, y, z), duration, true))
     }
     await Promise.all(moves)
@@ -210,7 +227,7 @@ export class StackBehavior extends TargetBehavior {
     const mesh = stack.pop()
     setBase(mesh, null, [mesh])
     // note: no need to enable the poped mesh target: since it was last, it's always enabled
-    enableLast(stack, true, this)
+    setStatus(stack, stack.length - 1, true, this)
     logger.info(
       { stack, mesh },
       `pop ${mesh.id} out of stack ${stack.map(({ id }) => id)}`
@@ -257,8 +274,8 @@ export class StackBehavior extends TargetBehavior {
       setBase(mesh, baseBehavior, stack)
     }
     // updates targets
-    enableLast(old, false, this)
-    enableLast(stack, true, this)
+    setStatus(old, old.length - 1, false, this)
+    setStatus(stack, stack.length - 1, true, this)
 
     for (const mesh of stack) {
       // prevents interactions and collisions
@@ -481,9 +498,9 @@ export class StackBehavior extends TargetBehavior {
   }
 }
 
-function enableLast(stack, enabled, behavior) {
+function setStatus(stack, rank, enabled, behavior) {
   const operation = enabled ? 'enable' : 'disable'
-  const mesh = stack[stack.length - 1]
+  const mesh = stack[rank]
   const targetable =
     behavior.mesh === mesh ? behavior : getTargetableBehavior(mesh)
   if (targetable) {

@@ -98,7 +98,7 @@ describe('Game interaction model', () => {
 
       await menuProps.items
         .find(item => item.icon === 'flip')
-        .onClick({ detail: 2 })
+        .onClick({ detail: { quantity: 2 } })
       expectMeshActions(mesh6, 'flip')
       expectMeshActions(mesh5, 'flip')
       expectMeshActions(mesh3)
@@ -548,14 +548,17 @@ describe('Game interaction model', () => {
         expectMeshActions(tapped)
       })
 
-      it('closes menu on mesh draw mesh action', () => {
-        controlManager.onActionObservable.notifyObservers({
-          meshId: tapped.id,
-          fn: 'draw'
-        })
-        expect(get(actionMenuProps$)).toBeNull()
-        expectMeshActions(tapped)
-      })
+      it.each([{ action: 'draw' }, { action: 'pop' }, { action: 'push' }])(
+        'closes menu on mesh $action action',
+        ({ action }) => {
+          controlManager.onActionObservable.notifyObservers({
+            meshId: tapped.id,
+            fn: action
+          })
+          expect(get(actionMenuProps$)).toBeNull()
+          expectMeshActions(tapped)
+        }
+      )
 
       it('does not close menu on another mesh action', async () => {
         const actionMenuProps = get(actionMenuProps$)

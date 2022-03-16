@@ -3,6 +3,7 @@ import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
 import {
   configures3dTestEngine,
+  expectAnimationEnd,
   expectFlipped,
   expectInteractible,
   expectStacked,
@@ -23,7 +24,10 @@ import {
   handManager,
   inputManager
 } from '../../../src/3d/managers'
-import { getTargetableBehavior } from '../../../src/3d/utils'
+import {
+  getAnimatableBehavior,
+  getTargetableBehavior
+} from '../../../src/3d/utils'
 
 describe('StackBehavior', () => {
   configures3dTestEngine()
@@ -170,6 +174,7 @@ describe('StackBehavior', () => {
         args: [meshes[0].id]
       })
     })
+
     it('can push on any stacked mesh', async () => {
       behavior.fromState({ stackIds: ['box2', 'box1'] })
 
@@ -273,17 +278,26 @@ describe('StackBehavior', () => {
       expect(recordSpy).toHaveBeenCalledWith({ fn: 'pop', mesh })
     })
 
-    it('pops drawn mesh', async () => {
+    it('pops last mesh when drawn', async () => {
       behavior.fromState({ stackIds: ['box3', 'box1', 'box2'] })
 
-      const last = meshes[1]
-
-      last.metadata.draw()
+      meshes[1].metadata.draw()
       expectInteractible(meshes[1])
       expectStacked([mesh, meshes[2], meshes[0]])
-      expect(recordSpy).toHaveBeenCalledTimes(2)
-      expect(recordSpy).toHaveBeenNthCalledWith(1, { fn: 'draw', mesh: last })
-      expect(recordSpy).toHaveBeenNthCalledWith(2, { fn: 'pop', mesh })
+      expect(recordSpy).toHaveBeenCalledTimes(1)
+      expect(recordSpy).toHaveBeenCalledWith({ fn: 'draw', mesh: meshes[1] })
+    })
+
+    it('pops any mesh when drawn', async () => {
+      behavior.fromState({ stackIds: ['box3', 'box1', 'box2'] })
+
+      meshes[2].isPickable = false
+      meshes[2].metadata.draw()
+      await expectAnimationEnd(getAnimatableBehavior(meshes[0]))
+      expectInteractible(meshes[2])
+      expectStacked([mesh, meshes[0], meshes[1]])
+      expect(recordSpy).toHaveBeenCalledTimes(1)
+      expect(recordSpy).toHaveBeenCalledWith({ fn: 'draw', mesh: meshes[2] })
     })
 
     it('reorders stack to given order', async () => {
