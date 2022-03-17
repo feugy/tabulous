@@ -118,6 +118,11 @@ export class RotateBehavior extends AnimateBehavior {
     const [x, y, z] = mesh.position.asArray()
     const [, yaw] = mesh.rotation.asArray()
 
+    let rotation = 0.5 * Math.PI
+    if (mesh.parent && getAbsoluteRotation(mesh.parent).z >= Math.PI) {
+      rotation *= -1
+    }
+
     await runAnimation(
       this,
       () => {
@@ -130,7 +135,7 @@ export class RotateBehavior extends AnimateBehavior {
         duration,
         keys: [
           { frame: 0, values: [yaw] },
-          { frame: 100, values: [yaw + 0.5 * Math.PI] }
+          { frame: 100, values: [yaw + rotation] }
         ]
       },
       {

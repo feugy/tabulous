@@ -92,6 +92,8 @@ export class FlipBehavior extends AnimateBehavior {
     const { width } = getDimensions(mesh)
 
     this.state.isFlipped = !isFlipped
+    // because of JS, rotation.y may be very close to Math.PI, but not equal to it.
+    const rotation = mesh.rotation.y < Math.PI - 0.000001 ? Math.PI : -Math.PI
     await runAnimation(
       this,
       () => {
@@ -110,12 +112,7 @@ export class FlipBehavior extends AnimateBehavior {
         duration,
         keys: [
           { frame: 0, values: [mesh.rotation.z] },
-          {
-            frame: 100,
-            values: [
-              mesh.rotation.z + (mesh.rotation.y < Math.PI ? Math.PI : -Math.PI)
-            ]
-          }
+          { frame: 100, values: [mesh.rotation.z + rotation] }
         ]
       },
       {
