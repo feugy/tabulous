@@ -4,11 +4,16 @@ import faker from 'faker'
 import {
   configures3dTestEngine,
   expectAbsoluteRotation,
+  expectFlipped,
   expectPickable,
   expectPosition,
   expectRotated
 } from '../../test-utils'
-import { RotateBehavior, RotateBehaviorName } from '../../../src/3d/behaviors'
+import {
+  FlipBehavior,
+  RotateBehavior,
+  RotateBehaviorName
+} from '../../../src/3d/behaviors'
 import { controlManager } from '../../../src/3d/managers'
 
 describe('RotateBehavior', () => {
@@ -115,6 +120,27 @@ describe('RotateBehavior', () => {
       expectRotated(mesh, Math.PI * 0.5)
       expectPosition(mesh, [x, 0.5, z])
       expect(animationEndReceived).toHaveBeenCalledTimes(1)
+    })
+
+    it('rotates mesh clockwise with flipped parent', async () => {
+      const x = faker.datatype.number()
+      const z = faker.datatype.number()
+      mesh.setAbsolutePosition(new Vector3(x, 10, z))
+      mesh.addBehavior(new FlipBehavior({ isFlipped: true }), true)
+
+      const child = createAttachedRotable().mesh
+      child.addBehavior(new FlipBehavior(), true)
+      child.setParent(mesh)
+
+      expectFlipped(mesh, true)
+      expectRotated(mesh, 0)
+      expectFlipped(child, false)
+      expectRotated(child, 0)
+      await child.metadata.rotate()
+      expectFlipped(mesh, true)
+      expectRotated(mesh, 0)
+      expectFlipped(child, false)
+      expectRotated(child, Math.PI * 0.5)
     })
 
     it('rotates children along with their parent mesh', async () => {

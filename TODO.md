@@ -31,7 +31,7 @@
 
 ## UI
 
-- issue: rotate rotations is relative to its parent
+- after pushing selection to a stack, select entire stack or nothing
 - issue: flip rotation is relative to its own rotate rotation
 - issue: on a stack, N-1th mesh is interactible (flip/rotate) while Nth mesh is animating (flip)
 - display peer's name when running draw animations + show peer avatar/name instead of pointer
