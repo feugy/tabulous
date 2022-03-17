@@ -108,6 +108,33 @@ describe('Game interaction model', () => {
       expectMeshActions(mesh3)
     })
 
+    it('rotates only parent mesh when rotating as many as the stack length', async () => {
+      const [, , mesh3, , mesh5, mesh6] = meshes
+      const menuProps = computeMenuProps(mesh6)
+      expect(menuProps).toHaveProperty('items')
+      expect(menuProps).toHaveProperty('open', true)
+      expect(menuProps).toHaveProperty('meshes', [mesh6])
+      expect(menuProps).toHaveProperty('x', getMeshScreenPosition().x)
+      expect(menuProps).toHaveProperty('y', getMeshScreenPosition().y)
+
+      const rotateAction = menuProps.items.find(
+        ({ icon }) => icon === 'rotate_right'
+      )
+
+      await rotateAction.onClick({ detail: { quantity: 3 } })
+      expectMeshActions(mesh6)
+      expectMeshActions(mesh5)
+      expectMeshActions(mesh3, 'rotate')
+      mesh6.metadata.rotate.mockReset()
+      mesh5.metadata.rotate.mockReset()
+      mesh3.metadata.rotate.mockReset()
+
+      await rotateAction.onClick({ detail: { quantity: 5 } })
+      expectMeshActions(mesh6)
+      expectMeshActions(mesh5)
+      expectMeshActions(mesh3, 'rotate')
+    })
+
     it('can trigger all actions for a selected stack', async () => {
       const [, , mesh3, , mesh5, mesh6] = meshes
       selectionManager.select(mesh3)

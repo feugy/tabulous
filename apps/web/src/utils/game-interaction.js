@@ -308,10 +308,14 @@ export function triggerActionOnSelection(mesh, actionName, quantity = null) {
   if (quantity) {
     for (const baseMesh of getBaseMeshes(selectionManager.getSelection(mesh))) {
       if (baseMesh?.metadata) {
-        for (const mesh of (baseMesh.metadata.stack ?? [baseMesh]).slice(
-          -quantity
-        )) {
-          triggerAction(mesh, actionName)
+        if (isRotatingEntireStack(baseMesh, actionName, quantity)) {
+          triggerAction(baseMesh, actionName)
+        } else {
+          for (const mesh of (baseMesh.metadata.stack ?? [baseMesh]).slice(
+            -quantity
+          )) {
+            triggerAction(mesh, actionName)
+          }
         }
       }
     }
@@ -448,6 +452,13 @@ function isSingleStackSelected(mesh, selected) {
   return (
     mesh.metadata.stack?.length > 1 &&
     selected.every(other => other.metadata.stack?.[0] === base)
+  )
+}
+
+function isRotatingEntireStack(baseMesh, actionName, quantity) {
+  return (
+    actionName === 'rotate' &&
+    quantity >= (baseMesh.metadata.stack?.length ?? 1)
   )
 }
 
