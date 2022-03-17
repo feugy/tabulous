@@ -7,8 +7,12 @@ import FPSViewer from '../../src/connected-components/FPSViewer.svelte'
 import { fps } from '../../src/stores/game-engine'
 
 jest.mock('../../src/stores/game-engine', () => {
-  const { BehaviorSubject } = require('rxjs')
-  return { fps: new BehaviorSubject(), engine: new BehaviorSubject() }
+  const { BehaviorSubject, Subject } = require('rxjs')
+  return {
+    fps: new BehaviorSubject(),
+    engine: new BehaviorSubject(),
+    action: new Subject()
+  }
 })
 
 describe('FPSViewer connected component', () => {

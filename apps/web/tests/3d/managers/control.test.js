@@ -167,7 +167,8 @@ describe('ControlManager', () => {
         meshId: anchorable.id,
         fn: 'snap',
         args,
-        fromHand: false
+        fromHand: false,
+        duration: 100
       })
       await sleep()
       expect(controlledChangeReceived).toHaveBeenCalledTimes(2)
@@ -182,7 +183,8 @@ describe('ControlManager', () => {
       expect(actions[0]).toEqual({
         meshId: anchorable.id,
         fn: 'flip',
-        fromHand: false
+        fromHand: false,
+        duration: 500
       })
     })
 

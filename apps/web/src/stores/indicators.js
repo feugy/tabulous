@@ -1,4 +1,12 @@
-import { BehaviorSubject, map, merge, of, withLatestFrom } from 'rxjs'
+import {
+  BehaviorSubject,
+  delayWhen,
+  map,
+  merge,
+  of,
+  timer,
+  withLatestFrom
+} from 'rxjs'
 import { getMeshScreenPosition } from '../3d/utils'
 import {
   action,
@@ -34,7 +42,7 @@ export async function toggleIndicators() {
  * @type {Observable<StackIndicator & import('../3d/utils').ScreenPosition>}
  */
 export const indicators = merge(
-  action,
+  action.pipe(delayWhen(({ duration }) => timer((duration ?? 1) * 1.1))), // delay so meshes reached their final positions
   visible$,
   selectedMeshes,
   actionMenuProps,

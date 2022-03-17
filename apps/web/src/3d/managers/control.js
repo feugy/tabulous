@@ -10,6 +10,7 @@ import { screenToGround } from '../utils/vector'
  * @property {string} meshId - modified mesh id.
  * @property {string} fn? - optionnal name of the applied action (default to 'pos').
  * @property {any[]} args? - optional argument array for this action.
+ * @property {number} duration? - optional animation duration, in milliseconds.
  * @property {boolean} fromHand? - indicates whether this action comes from hand or main scene.
  */
 
@@ -18,6 +19,7 @@ import { screenToGround } from '../utils/vector'
  * @property {import('@babylonjs/core').Mesh} mesh - modified mesh.
  * @property {string} fn? - optionnal name of the applied action (default to 'pos').
  * @property {any[]} args? - optional argument array for this action.
+ * @property {number} duration? - optional animation duration, in milliseconds.
  */
 
 /**

@@ -85,13 +85,12 @@
   }
 
   :global(.hand-overlay) {
-    @apply absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-0;
-    box-shadow: 0px -1vw 5vw -4vw rgb(0, 255, 0);
+    @apply absolute inset-0 pointer-events-none border-solid border-t-1 border-$secondary-light;
     min-height: 10vw;
   }
 
   :global(.hand-overlay.visible) {
-    @apply opacity-100;
+    // box-shadow: 0px -1vw 5vw -4vw rgb(0, 255, 0);
   }
 </style>
 

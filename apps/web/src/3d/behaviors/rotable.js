@@ -113,7 +113,7 @@ export class RotateBehavior extends AnimateBehavior {
     logger.debug({ mesh }, `start rotating ${mesh.id}`)
     this.isAnimated = true
 
-    controlManager.record({ mesh, fn: 'rotate' })
+    controlManager.record({ mesh, fn: 'rotate', duration })
 
     const [x, y, z] = mesh.position.asArray()
     const [, yaw] = mesh.rotation.asArray()

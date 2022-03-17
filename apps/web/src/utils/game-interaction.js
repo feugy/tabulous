@@ -29,7 +29,7 @@ function pointerKind(event, button, pointers) {
  * Attach to game engine's input manager observables to implement game interaction model.
  * @param {object} params - parameters, including:
  * @param {number} params.doubleTapDelay - number of milliseconds between 2 taps to be considered as a double tap.
- * @param {Subject<import('../stores/game-engine').actionMenuProps>} params.actionMenuProps$ - subject emitting when action menu should be displayed and hidden.
+ * @param {Subject<import('../stores/game-engine').ActionMenuProps>} params.actionMenuProps$ - subject emitting when action menu should be displayed and hidden.
  * @returns {import('rxjs').Subscription[]} an array of observable subscriptions
  */
 export function attachInputs({ doubleTapDelay, actionMenuProps$ }) {
@@ -264,11 +264,13 @@ export function attachInputs({ doubleTapDelay, actionMenuProps$ }) {
 
     /**
      * Implements actions when triggering some behavior:
-     * - closes menu when drawing
+     * - closes menu when drawing, or modifying stack
      */
-    behaviorAction$.pipe(filter(({ fn }) => fn === 'draw')).subscribe({
-      next: resetMenu
-    })
+    behaviorAction$
+      .pipe(filter(({ fn }) => fn === 'draw' || fn === 'pop' || fn === 'push'))
+      .subscribe({
+        next: resetMenu
+      })
   ]
 }
 
@@ -285,7 +287,7 @@ export function triggerAction(mesh, actionName, ...parameters) {
       { mesh, actionName, parameters },
       `triggers ${actionName} on mesh ${mesh.id}`
     )
-    if (canShuffle(actionName, mesh)) {
+    if (isValidShuffleAction(actionName, mesh)) {
       return shuffleStack(mesh)
     }
     return mesh.metadata[actionName]?.(...parameters)
@@ -295,28 +297,44 @@ export function triggerAction(mesh, actionName, ...parameters) {
 /**
  * Triggers a given action against a given mesh.
  * If mesh is part of the active selection, then triggers the action on all selected meshes.
- * When all meshes of a given stack are selected, it triggers action on stack base.
+ * When N quantity is applied to a stack, action is called on the N highest meshes.
+ * When the flip action is triggered on a stack (and no quantity is provided), only flipAll is called on this stack's base.
+ * When the rotate action is triggered on a stack (and no quantity is provided), only rotate is called on this stack's base.
  * @param {import('@babel/core').Mesh} mesh - related mesh.
  * @param {string} actionName - name of the triggered action.
+ * @param {number} [quantity=null] - number of meshes of a given stack which will apply this action
  */
-export function triggerActionOnSelection(mesh, actionName) {
-  const meshes = new Set(selectionManager.getSelection(mesh))
-  const exclude = new Set()
-  for (const mesh of meshes) {
-    if (mesh?.metadata && !exclude.has(mesh)) {
-      if (
-        mesh.metadata.stack?.length > 1 &&
-        mesh.metadata.stack.every(mesh => meshes.has(mesh))
-      ) {
-        for (const excluded of mesh.metadata.stack) {
-          exclude.add(excluded)
+export function triggerActionOnSelection(mesh, actionName, quantity = null) {
+  if (quantity) {
+    for (const baseMesh of getBaseMeshes(selectionManager.getSelection(mesh))) {
+      if (baseMesh?.metadata) {
+        for (const mesh of (baseMesh.metadata.stack ?? [baseMesh]).slice(
+          -quantity
+        )) {
+          triggerAction(mesh, actionName)
         }
-        triggerAction(
-          mesh.metadata.stack[0],
-          actionName === 'flip' ? 'flipAll' : actionName
-        )
-      } else {
-        triggerAction(mesh, actionName)
+      }
+    }
+  } else {
+    const meshes = new Set(selectionManager.getSelection(mesh))
+    const exclude = new Set()
+    for (const mesh of meshes) {
+      if (mesh?.metadata && !exclude.has(mesh)) {
+        if (
+          (actionName === 'flip' || actionName === 'rotate') &&
+          mesh.metadata.stack?.length > 1 &&
+          mesh.metadata.stack.every(mesh => meshes.has(mesh))
+        ) {
+          for (const excluded of mesh.metadata.stack) {
+            exclude.add(excluded)
+          }
+          triggerAction(
+            mesh.metadata.stack[0],
+            actionName === 'flip' ? 'flipAll' : actionName
+          )
+        } else {
+          triggerAction(mesh, actionName)
+        }
       }
     }
   }
@@ -335,45 +353,71 @@ export function computeMenuProps(mesh, fromHand = false) {
     return null
   }
   const items = []
-  const meshes = selectionManager.getSelection(mesh)
+  const selectedMeshes = selectionManager.getSelection(mesh)
+  const params = {
+    selectedMeshes,
+    fromHand,
+    isSingleStackSelected: isSingleStackSelected(mesh, selectedMeshes)
+  }
   for (const spec of menuActions) {
-    if (meshes.every(mesh => spec.support(mesh, meshes, fromHand))) {
-      items.push(spec.build(mesh, meshes, fromHand))
+    if (selectedMeshes.every(mesh => spec.support(mesh, params))) {
+      items.push(spec.build(mesh, params))
     }
   }
   return {
     ...getMeshScreenPosition(mesh),
     items,
     open: true,
-    meshes
+    interactedMesh: mesh,
+    meshes: selectedMeshes
   }
 }
 
 const menuActions = [
   {
     support: mesh => Boolean(mesh.metadata.flip),
-    build: mesh => ({
+    build: (mesh, params) => ({
       icon: 'flip',
-      title: 'tooltips.flip',
-      onClick: () => triggerActionOnSelection(mesh, 'flip')
+      title:
+        params.isSingleStackSelected && params.selectedMeshes.length > 1
+          ? 'tooltips.flip-stack'
+          : 'tooltips.flip',
+      onClick: ({ detail } = {}) =>
+        triggerActionOnSelection(mesh, 'flip', detail?.quantity),
+      max: computesMaxQuantity(mesh, params)
     })
   },
   {
     support: mesh => Boolean(mesh.metadata.rotate),
-    build: mesh => ({
+    build: (mesh, params) => ({
       icon: 'rotate_right',
       title: 'tooltips.rotate',
-      onClick: () => triggerActionOnSelection(mesh, 'rotate')
+      onClick: ({ detail } = {}) =>
+        triggerActionOnSelection(mesh, 'rotate', detail?.quantity),
+      max: computesMaxQuantity(mesh, params)
     })
   },
   {
-    support: (mesh, selected) => {
-      const base = mesh.metadata.stack?.[0]
-      return (
-        mesh.metadata.stack?.length > 1 &&
-        selected.every(other => other.metadata.stack?.[0] === base)
-      )
-    },
+    support: mesh => Boolean(mesh.metadata.draw),
+    build: (mesh, params) => ({
+      icon: params.fromHand ? 'back_hand' : 'front_hand',
+      title: params.fromHand ? 'tooltips.play' : 'tooltips.draw',
+      onClick: ({ detail } = {}) =>
+        triggerActionOnSelection(mesh, 'draw', detail?.quantity),
+      max: computesMaxQuantity(mesh, params)
+    })
+  },
+  {
+    support: canStackAll,
+    build: (mesh, { selectedMeshes }) => ({
+      icon: 'zoom_in_map',
+      title: 'tooltips.stack-all',
+      onClick: () => stackAll(mesh, selectedMeshes)
+    })
+  },
+  {
+    support: (mesh, { isSingleStackSelected, selectedMeshes }) =>
+      isSingleStackSelected && selectedMeshes.length > 1,
     build: mesh => ({
       icon: 'shuffle',
       title: 'tooltips.shuffle',
@@ -381,46 +425,37 @@ const menuActions = [
     })
   },
   {
-    support: (mesh, selected) =>
-      selected.length === 1 && Boolean(mesh.metadata.detail),
+    support: (mesh, { selectedMeshes }) =>
+      selectedMeshes.length === 1 && Boolean(mesh.metadata.detail),
     build: mesh => ({
       icon: 'visibility',
       title: 'tooltips.detail',
       onClick: () => triggerAction(mesh, 'detail')
     })
-  },
-  {
-    support: mesh => Boolean(mesh.metadata.draw),
-    build: (mesh, selected, fromHand) => ({
-      icon: fromHand ? 'back_hand' : 'front_hand',
-      title: fromHand ? 'tooltips.play' : 'tooltips.draw',
-      onClick: () => triggerActionOnSelection(mesh, 'draw')
-    })
-  },
-  {
-    support: canStackAll,
-    build: (mesh, selected) => ({
-      icon: 'zoom_in_map',
-      title: 'tooltips.stack-all',
-      onClick: () => stackAll(mesh, selected)
-    })
   }
 ]
 
-function shuffleStack(mesh) {
-  const ids = mesh.metadata.stack.map(({ id }) => id)
-  return mesh.metadata.stack[0].metadata.reorder(shuffle(ids))
+function getBaseMeshes(meshes) {
+  return new Set(meshes.map(mesh => mesh?.metadata?.stack?.[0] ?? mesh))
 }
 
-function canShuffle(actionName, mesh) {
+function isValidShuffleAction(actionName, mesh) {
   return actionName === 'shuffle' && mesh.metadata.stack?.length > 1
 }
 
-function canStackAll(mesh, selectedMeshes, fromHand) {
+function isSingleStackSelected(mesh, selected) {
+  const base = mesh.metadata.stack?.[0]
+  return (
+    mesh.metadata.stack?.length > 1 &&
+    selected.every(other => other.metadata.stack?.[0] === base)
+  )
+}
+
+function canStackAll(mesh, { selectedMeshes, fromHand }) {
   if (fromHand || selectedMeshes.some(({ metadata }) => !metadata.stack)) {
     return false
   }
-  const bases = new Set(selectedMeshes.map(({ metadata }) => metadata.stack[0]))
+  const bases = getBaseMeshes(selectedMeshes)
   for (const other of bases) {
     if (other !== mesh.metadata.stack[0] && !mesh.metadata.canPush(other)) {
       return false
@@ -429,10 +464,21 @@ function canStackAll(mesh, selectedMeshes, fromHand) {
   return bases.size > 1
 }
 
+function computesMaxQuantity(mesh, { selectedMeshes }) {
+  return selectedMeshes.length === 1 && mesh.metadata.stack?.length > 1
+    ? mesh.metadata.stack.length
+    : undefined
+}
+
+function shuffleStack(mesh) {
+  const ids = mesh.metadata.stack.map(({ id }) => id)
+  return mesh.metadata.stack[0].metadata.reorder(shuffle(ids))
+}
+
 async function stackAll(mesh, selectedMeshes) {
-  for (const other of selectedMeshes) {
-    if (!mesh.metadata.stack.includes(other)) {
-      await triggerAction(mesh, 'push', other.id)
+  for (const base of getBaseMeshes(selectedMeshes)) {
+    if (mesh.metadata.stack[0] !== base) {
+      await triggerAction(mesh, 'push', base.id)
     }
   }
 }

@@ -103,11 +103,12 @@ class HandManager {
     this.duration = duration
 
     const engine = this.handScene.getEngine()
+    this.overlay?.remove()
+    this.overlay = buildOverlay(engine.inputElement)
+
     computeExtent(this, engine)
     storeMeshDimensions(this)
     layoutMeshs(this)
-    this.overlay?.remove()
-    this.overlay = buildOverlay(engine.inputElement)
 
     const subscriptions = []
     for (const { observable, handle } of [
@@ -268,22 +269,20 @@ function handleAction(manager, action) {
         fn === 'rotate' ? RotateBehaviorName : FlipBehaviorName
       )
       behavior.onAnimationEndObservable.addOnce(() => {
-        logger.debug(action, 'detects hand change')
-        storeMeshDimensions(manager)
-        layoutMeshs(manager)
+        logger.info(action, 'detects hand change')
+        manager.changes$.next()
       })
     }
   }
 }
 
 function handDrag(manager, { type, mesh, event }) {
-  const { extent, handScene, overlay } = manager
+  const { extent, handScene, overlay, duration } = manager
   overlay.classList.remove('visible')
   if (!hasSelectedDrawableMeshes(mesh)) {
     return
   }
   if (type !== 'dragStop') {
-    manager.overlay.style.top = `${manager.extent.screenHeight}px`
     overlay.classList.add('visible')
   }
 
@@ -307,6 +306,8 @@ function handDrag(manager, { type, mesh, event }) {
         )
         recordDraw(createMainMesh(manager, mesh, { x, z }))
       }
+      // final layout after all animation are over
+      setTimeout(() => layoutMeshs(manager), duration * 1.1)
     } else {
       layoutMeshs(manager)
     }
@@ -403,6 +404,7 @@ async function layoutMeshs({
   verticalPadding,
   duration,
   extent,
+  overlay,
   onHandChangeObservable
 }) {
   const meshes = [...dimensionsByMeshId.keys()]
@@ -437,6 +439,7 @@ async function layoutMeshs({
     handScene,
     new Vector3(0, 0, extent.maxZ)
   ).y
+  overlay.style.top = `${extent.screenHeight}px`
   await Promise.all(promises)
   onHandChangeObservable.notifyObservers()
 }

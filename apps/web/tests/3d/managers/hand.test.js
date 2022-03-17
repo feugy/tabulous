@@ -231,7 +231,7 @@ describe('HandManager', () => {
         expect.anything()
       )
       expect(actionRecorded).toHaveBeenCalledWith(
-        { meshId: newMesh.id, fn: 'flip', fromHand: true },
+        { meshId: newMesh.id, fn: 'flip', fromHand: true, duration },
         expect.anything()
       )
       expect(actionRecorded).toHaveBeenCalledTimes(2)
@@ -515,6 +515,7 @@ describe('HandManager', () => {
           event: { x: 289.7, y: 175 }
         })
         await waitForLayout()
+        await waitForLayout()
         expect(handScene.getMeshById(mesh.id)?.id).toBeUndefined()
         const newMesh = scene.getMeshById(mesh.id)
         expect(newMesh?.id).toBeDefined()
@@ -683,15 +684,7 @@ describe('HandManager', () => {
           },
           expect.anything()
         )
-        expect(actionRecorded).toHaveBeenCalledWith(
-          {
-            meshId: mesh3.id,
-            fn: 'pop',
-            fromHand: false
-          },
-          expect.anything()
-        )
-        expect(actionRecorded).toHaveBeenCalledTimes(4)
+        expect(actionRecorded).toHaveBeenCalledTimes(3)
         expect(controlManager.isManaging(newMesh1)).toBe(true)
         expect(moveManager.isManaging(newMesh1)).toBe(true)
         expect(controlManager.isManaging(newMesh2)).toBe(true)
@@ -732,7 +725,7 @@ describe('HandManager', () => {
           expect.anything()
         )
         expect(actionRecorded).toHaveBeenCalledWith(
-          { meshId: newMesh.id, fn: 'flip', fromHand: true },
+          { meshId: newMesh.id, fn: 'flip', fromHand: true, duration },
           expect.anything()
         )
         expect(actionRecorded).toHaveBeenCalledTimes(2)
@@ -884,7 +877,7 @@ describe('HandManager', () => {
         depth: cardDepth,
         drawable: {},
         rotable: {},
-        flippable: {},
+        flippable: { duration },
         movable: {},
         stackable: {},
         ...state
