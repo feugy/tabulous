@@ -457,8 +457,7 @@ describe('HandManager', () => {
 
       it('can re-order an entire selection of hand meshes', async () => {
         const [mesh1, mesh2, mesh3] = handCards
-        selectionManager.select(mesh2)
-        selectionManager.select(mesh3)
+        selectionManager.select(mesh2, mesh3)
         const positions = getPositions(handCards)
         const z = positions[0][3]
         expect(overlay).not.toHaveClass('visible')
@@ -622,9 +621,7 @@ describe('HandManager', () => {
       it('moves all selected meshes to hand by dragging', async () => {
         const [mesh1, mesh2, mesh3] = cards
         mesh3.metadata.push(mesh2.id)
-        selectionManager.select(mesh1)
-        selectionManager.select(mesh2)
-        selectionManager.select(mesh3)
+        selectionManager.select(mesh1, mesh2, mesh3)
         actionRecorded.mockReset()
         const stopDrag = jest.spyOn(inputManager, 'stopDrag')
 

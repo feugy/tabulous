@@ -18,7 +18,7 @@ import { sleep } from '../test-utils'
 
 jest.mock('../../src/3d/managers/camera')
 jest.mock('../../src/3d/utils/vector')
-const debug = false
+const debug = true
 
 describe('Game interaction model', () => {
   let subscriptions
@@ -137,9 +137,7 @@ describe('Game interaction model', () => {
 
     it('can trigger all actions for a selected stack', async () => {
       const [, , mesh3, , mesh5, mesh6] = meshes
-      selectionManager.select(mesh3)
-      selectionManager.select(mesh5)
-      selectionManager.select(mesh6)
+      selectionManager.select(mesh3, mesh5, mesh6)
       const menuProps = computeMenuProps(mesh6)
       expect(menuProps).toHaveProperty('items')
       expect(menuProps).toHaveProperty('open', true)
@@ -163,8 +161,7 @@ describe('Game interaction model', () => {
       mesh1.metadata.canPush.mockReturnValue(true)
       mesh2.metadata.stack = [mesh2]
       mesh2.metadata.canPush.mockReturnValue(true)
-      selectionManager.select(mesh1)
-      selectionManager.select(mesh2)
+      selectionManager.select(mesh1, mesh2)
       const menuProps = computeMenuProps(mesh2)
       expect(menuProps).toHaveProperty('items')
       expect(menuProps).toHaveProperty('open', true)
@@ -192,8 +189,7 @@ describe('Game interaction model', () => {
       mesh1.metadata.canPush.mockReturnValue(true)
       mesh2.metadata.stack = [mesh2]
       mesh2.metadata.canPush.mockReturnValue(true)
-      selectionManager.select(mesh1)
-      selectionManager.select(mesh2)
+      selectionManager.select(mesh1, mesh2)
       const menuProps = computeMenuProps(mesh2, true)
       expect(menuProps).toHaveProperty('items')
       expect(menuProps).toHaveProperty('open', true)
@@ -218,11 +214,7 @@ describe('Game interaction model', () => {
       mesh3.metadata.canPush.mockReturnValue(true)
       mesh5.metadata.canPush.mockReturnValue(true)
       mesh6.metadata.canPush.mockReturnValue(true)
-      selectionManager.select(mesh2)
-      selectionManager.select(mesh3)
-      selectionManager.select(mesh4)
-      selectionManager.select(mesh5)
-      selectionManager.select(mesh6)
+      selectionManager.select(mesh2, mesh3, mesh4, mesh5, mesh6)
       const menuProps = computeMenuProps(mesh2)
       expect(menuProps).toHaveProperty('items')
       expect(menuProps).toHaveProperty('open', true)
@@ -257,8 +249,7 @@ describe('Game interaction model', () => {
       const [mesh1, mesh2] = meshes
       mesh1.metadata.canPush.mockReturnValue(true)
       mesh2.metadata.canPush.mockReturnValue(false)
-      selectionManager.select(mesh1)
-      selectionManager.select(mesh2)
+      selectionManager.select(mesh1, mesh2)
       const menuProps = computeMenuProps(mesh2)
       expect(menuProps).toHaveProperty('items')
       expect(menuProps).toHaveProperty('open', true)
@@ -280,10 +271,7 @@ describe('Game interaction model', () => {
       mesh3.metadata.canPush.mockReturnValue(true)
       mesh5.metadata.canPush.mockReturnValue(true)
       mesh6.metadata.canPush.mockReturnValue(true)
-      selectionManager.select(mesh1)
-      selectionManager.select(mesh3)
-      selectionManager.select(mesh5)
-      selectionManager.select(mesh6)
+      selectionManager.select(mesh1, mesh3, mesh5, mesh6)
       const menuProps = computeMenuProps(mesh5)
       expect(menuProps).toHaveProperty('items')
       expect(menuProps).toHaveProperty('open', true)
@@ -328,8 +316,7 @@ describe('Game interaction model', () => {
 
     it('triggers action on mesh', () => {
       const [mesh1, mesh2, mesh3] = meshes
-      selectionManager.select(mesh1)
-      selectionManager.select(mesh3)
+      selectionManager.select(mesh1, mesh3)
       triggerAction(mesh2, 'draw')
       expectMeshActions(mesh1)
       expectMeshActions(mesh2, 'draw')
@@ -338,8 +325,7 @@ describe('Game interaction model', () => {
 
     it('triggers action on selected mesh', () => {
       const [mesh1, mesh2, mesh3] = meshes
-      selectionManager.select(mesh1)
-      selectionManager.select(mesh3)
+      selectionManager.select(mesh1, mesh3)
       triggerAction(mesh1, 'flip')
       expectMeshActions(mesh1, 'flip')
       expectMeshActions(mesh2)
@@ -366,10 +352,7 @@ describe('Game interaction model', () => {
 
     describe('given current selection', () => {
       beforeEach(() => {
-        selectionManager.select(meshes[0])
-        selectionManager.select(meshes[2])
-        selectionManager.select(meshes[4])
-        selectionManager.select(meshes[5])
+        selectionManager.select(meshes[0], meshes[2], meshes[4], meshes[5])
       })
 
       it('triggers action on the entire selection', () => {
@@ -511,13 +494,22 @@ describe('Game interaction model', () => {
       expectMeshActions(mesh, 'detail')
     })
 
-    it('does not reset an emtpy action menu', async () => {
+    it('does not reset an empty action menu', async () => {
       inputManager.onTapObservable.notifyObservers({
         type: 'tap',
         long: true
       })
       await sleep(doubleTapDelay * 1.1)
       expect(get(actionMenuProps$)).toBeUndefined()
+    })
+
+    it.only('does not alter selection when pushing onto a stack', () => {
+      controlManager.onActionObservable.notifyObservers({
+        meshId: meshes[1].id,
+        fn: 'push',
+        args: [meshes[0].id]
+      })
+      expect(selectionManager.meshes.size).toEqual(0)
     })
 
     describe('given opened menu for a single mesh', () => {
@@ -610,10 +602,7 @@ describe('Game interaction model', () => {
 
     describe('given current selection', () => {
       beforeEach(() => {
-        selectionManager.select(meshes[0])
-        selectionManager.select(meshes[2])
-        selectionManager.select(meshes[4])
-        selectionManager.select(meshes[5])
+        selectionManager.select(meshes[0], meshes[2], meshes[4], meshes[5])
       })
 
       it('clears selection when double-tapping on the table', async () => {
@@ -693,6 +682,36 @@ describe('Game interaction model', () => {
         expectMeshActions(mesh3)
         expectMeshActions(mesh5)
         expectMeshActions(mesh6)
+      })
+
+      it.only('does not alter selection when pushing an unselected mesh', () => {
+        const [mesh1, mesh2, mesh3] = meshes
+        selectionManager.clear()
+        selectionManager.select(mesh1)
+        controlManager.onActionObservable.notifyObservers({
+          meshId: mesh3.id,
+          fn: 'push',
+          args: [mesh2.id]
+        })
+        expect([...selectionManager.meshes].map(({ id }) => id)).toEqual([
+          mesh1.id
+        ])
+      })
+
+      it.only('selects the entire stack when pushing a selected mesh', () => {
+        const [mesh1, mesh2, mesh3, , mesh5, mesh6] = meshes
+        controlManager.onActionObservable.notifyObservers({
+          meshId: mesh3.id,
+          fn: 'push',
+          args: [mesh2.id]
+        })
+        expect([...selectionManager.meshes].map(({ id }) => id)).toEqual([
+          mesh3.id,
+          mesh5.id,
+          mesh6.id,
+          mesh2.id,
+          mesh1.id
+        ])
       })
 
       it('zooms camera on mouse wheel', () => {

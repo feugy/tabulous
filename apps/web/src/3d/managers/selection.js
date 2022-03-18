@@ -128,11 +128,13 @@ class SelectionManager {
   selectWithinBox() {}
 
   /**
-   * Adds an individual mesh into selection (if not already in)
-   * @param {Mesh} - mesh added to the active selection
+   * Adds meshes into selection (if not already in)
+   * @param {...Mesh} - mesh added to the active selection
    */
-  select(mesh) {
-    addToSelection(this, mesh)
+  select(...meshes) {
+    for (const mesh of meshes) {
+      addToSelection(this, mesh)
+    }
     reorderSelection(this)
   }
 

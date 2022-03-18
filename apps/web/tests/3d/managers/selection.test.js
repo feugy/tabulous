@@ -56,6 +56,18 @@ describe('SelectionManager', () => {
       expect(selectionChanged.mock.calls[0][0].size).toBe(1)
     })
 
+    it('adds multiple meshes to selection', () => {
+      const mesh1 = CreateBox('box1', {})
+      const mesh2 = CreateBox('box2', {})
+      manager.select(mesh1, mesh2)
+      expect(manager.meshes.has(mesh1)).toBe(true)
+      expect(manager.meshes.has(mesh2)).toBe(true)
+      expect(manager.meshes.size).toBe(2)
+      expectSelected(mesh1)
+      expectSelected(mesh2)
+      expect(selectionChanged).toHaveBeenCalledTimes(1)
+    })
+
     it('reorders selection based on elevation', () => {
       const mesh1 = CreateBox('box1', {})
       mesh1.setAbsolutePosition(new Vector3(0, 5, 0))
@@ -115,8 +127,7 @@ describe('SelectionManager', () => {
 
       it('returns provided mesh if it not selected', () => {
         manager.clear()
-        manager.select(meshes[1])
-        manager.select(meshes[2])
+        manager.select(meshes[1], meshes[2])
         expectMeshes(manager.getSelection(meshes[0]), [meshes[0]])
       })
     })
