@@ -1,9 +1,11 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { Scene } from '@babylonjs/core/scene'
 import faker from 'faker'
 import { configures3dTestEngine, sleep } from '../../test-utils'
 import { inputManager as manager } from '../../../src/3d/managers'
 import { PointerEventTypes } from '@babylonjs/core'
+import { StackBehavior } from '../../../src/3d/behaviors'
 
 const { POINTERDOWN, POINTERUP, POINTERMOVE, POINTERWHEEL } = PointerEventTypes
 
@@ -103,6 +105,56 @@ describe('InputManager', () => {
         { long: false, pointers: 1, type: 'tap', button, event },
         'box1'
       )
+    })
+
+    it('does not pick non-pickable meshs', () => {
+      const button = 1
+      const pointer = { x: 1048, y: 525 }
+      const pointerId = 71
+      for (const mesh of meshes) {
+        mesh.isPickable = false
+      }
+      triggerEvent(POINTERDOWN, { ...pointer, pointerId, button })
+      const event = triggerEvent(POINTERUP, { ...pointer, pointerId, button })
+      expectEvents({ taps: 1 })
+      expectsDataWithMesh(taps[0], {
+        long: false,
+        pointers: 1,
+        type: 'tap',
+        button,
+        event
+      })
+    })
+
+    it('does not pick stacked meshes unless the last', async () => {
+      const button = 1
+      const pointer = { x: 1048, y: 525 }
+      const pointerId = 71
+      meshes[0].addBehavior(new StackBehavior())
+      meshes[6].addBehavior(new StackBehavior({ stackIds: ['box1'] }))
+      triggerEvent(POINTERDOWN, { ...pointer, pointerId, button })
+      let event = triggerEvent(POINTERUP, { ...pointer, pointerId, button })
+      expectEvents({ taps: 1 })
+      expectsDataWithMesh(
+        taps[0],
+        { long: false, pointers: 1, type: 'tap', button, event },
+        'box1'
+      )
+
+      await sleep(Scene.DoubleClickDelay * 1.1)
+
+      taps = []
+      meshes[0].isPickable = false
+      triggerEvent(POINTERDOWN, { ...pointer, pointerId, button })
+      event = triggerEvent(POINTERUP, { ...pointer, pointerId, button })
+      expectEvents({ taps: 1 })
+      expectsDataWithMesh(taps[0], {
+        long: false,
+        pointers: 1,
+        type: 'tap',
+        button,
+        event
+      })
     })
 
     it.each([
@@ -313,7 +365,7 @@ describe('InputManager', () => {
         pointerId,
         button
       })
-      await sleep(scene.DoubleClickDelay * 0.8)
+      await sleep(Scene.DoubleClickDelay * 0.8)
       triggerEvent(POINTERDOWN, {
         ...move(pointer, -2, -3),
         pointerId,
@@ -362,7 +414,7 @@ describe('InputManager', () => {
           pointerId,
           button
         })
-        await sleep(scene.DoubleClickDelay * 0.8)
+        await sleep(Scene.DoubleClickDelay * 0.8)
         triggerEvent(POINTERDOWN, { ...move(pointer, 2, 5), pointerId, button })
         await sleep(10)
         const doubleTapEvent = triggerEvent(POINTERUP, {
@@ -429,7 +481,7 @@ describe('InputManager', () => {
           },
           'tap'
         )
-        await sleep(scene.DoubleClickDelay * 0.8)
+        await sleep(Scene.DoubleClickDelay * 0.8)
         triggerEvent(
           POINTERDOWN,
           {
@@ -1415,6 +1467,10 @@ describe('InputManager', () => {
     for (const property in expected) {
       expect(actual).toHaveProperty(property, expected[property])
     }
-    expect(actual.mesh?.id).toEqual(meshId)
+    if (meshId) {
+      expect(actual.mesh?.id).toEqual(meshId)
+    } else {
+      expect(actual.mesh).not.toBeDefined()
+    }
   }
 })

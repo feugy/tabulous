@@ -399,6 +399,12 @@ export const inputManager = new InputManager()
 
 function findPickedMesh(scene, { x, y }) {
   return scene
-    .multiPickWithRay(scene.createPickingRay(x, y), mesh => mesh.isPickable)
+    .multiPickWithRay(
+      scene.createPickingRay(x, y),
+      mesh =>
+        mesh.isPickable &&
+        (!mesh.metadata?.stack ||
+          mesh === mesh.metadata.stack[mesh.metadata.stack.length - 1])
+    )
     .sort((a, b) => a.distance - b.distance)[0]?.pickedMesh
 }
