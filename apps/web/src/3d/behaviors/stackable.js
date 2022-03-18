@@ -225,28 +225,57 @@ export class StackBehavior extends TargetBehavior {
   }
 
   /**
-   * Pops the highest mesh from this stack:
+   * Pops the highest mesh(es) from this stack:
    * - updates the stack array
-   * - disables targets and moves of all meshes but the highest one
+   * - enables new highest mesh's targets and moves
    * - records the action into the control manager
    *
-   * @return {import('@babylonjs/core').Mesh} the poped mesh, if any.
+   * @async
+   * @param {number} [count=1] - number of mesh poped
+   * @param {number} [withMove=false] - when set to true, moves the poped meshes aside the stack.
+   * @return {import('@babylonjs/core').Mesh[]} the poped meshes, if any.
    */
-  pop() {
+  async pop(count = 1, withMove = false) {
+    const poped = []
     const stack = this.base?.stack ?? this.stack
-    if (stack.length <= 1) return
+    if (stack.length <= 1) return poped
 
-    const mesh = stack.pop()
-    setBase(mesh, null, [mesh])
-    // note: no need to enable the poped mesh target: since it was last, it's always enabled
-    setStatus(stack, stack.length - 1, true, this)
-    logger.info(
-      { stack, mesh },
-      `pop ${mesh.id} out of stack ${stack.map(({ id }) => id)}`
-    )
+    let shift = 0
+    const moves = []
+    const duration = withMove ? this._state.duration : undefined
+    for (let times = 0; times < count; times++) {
+      const mesh = stack.pop()
+      poped.push(mesh)
+      setBase(mesh, null, [mesh])
+      // note: no need to enable the poped mesh target: since it was last, it's always enabled
+      setStatus(stack, stack.length - 1, true, this)
+      logger.info(
+        { stack, mesh },
+        `pop ${mesh.id} out of stack ${stack.map(({ id }) => id)}`
+      )
+      if (withMove) {
+        shift += getDimensions(mesh).width + 0.25
+        moves.push(
+          animateMove(
+            mesh,
+            mesh.absolutePosition.add(new Vector3(shift, 0, 0)),
+            duration,
+            true
+          )
+        )
+      }
+    }
     // note: all mesh in stack are uncontrollable, so we pass the poped mesh id
-    controlManager.record({ mesh: stack[0], fn: 'pop' })
-    return mesh
+    controlManager.record({
+      mesh: stack[0],
+      fn: 'pop',
+      args: [count, withMove],
+      duration
+    })
+    if (moves.length) {
+      await Promise.all(moves)
+    }
+    return poped
   }
 
   /**

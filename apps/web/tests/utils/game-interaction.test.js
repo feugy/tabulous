@@ -81,11 +81,18 @@ describe('Game interaction model', () => {
       expect(menuProps).toHaveProperty('meshes', [mesh])
       expect(menuProps).toHaveProperty('x', getMeshScreenPosition().x)
       expect(menuProps).toHaveProperty('y', getMeshScreenPosition().y)
+      meshes[2].metadata.pop.mockResolvedValueOnce([])
 
       await expectActionItems(menuProps, mesh, [
         { functionName: 'flip', icon: 'flip', max: 3 },
         { functionName: 'rotate', icon: 'rotate_right', max: 3 },
         { functionName: 'draw', icon: 'front_hand', max: 3 },
+        {
+          functionName: 'pop',
+          icon: 'zoom_out_map',
+          triggeredMesh: meshes[2],
+          max: 3
+        },
         { functionName: 'detail', icon: 'visibility' }
       ])
     })
@@ -136,6 +143,28 @@ describe('Game interaction model', () => {
       expectMeshActions(mesh6)
       expectMeshActions(mesh5)
       expectMeshActions(mesh3, 'rotate')
+    })
+
+    it('pops multiple mesh on stack base', async () => {
+      const [, , mesh3, , mesh5, mesh6] = meshes
+      const menuProps = computeMenuProps(mesh6)
+      expect(menuProps).toHaveProperty('items')
+      expect(menuProps).toHaveProperty('open', true)
+      expect(menuProps).toHaveProperty('meshes', [mesh6])
+      expect(menuProps).toHaveProperty('x', getMeshScreenPosition().x)
+      expect(menuProps).toHaveProperty('y', getMeshScreenPosition().y)
+      mesh3.metadata.pop.mockResolvedValueOnce([mesh6, mesh5])
+
+      const rotateAction = menuProps.items.find(
+        ({ icon }) => icon === 'zoom_out_map'
+      )
+
+      await rotateAction.onClick({ detail: { quantity: 2 } })
+      expectMeshActions(mesh6)
+      expectMeshActions(mesh5)
+      expectMeshActions(mesh3, 'pop')
+      expect(selectionManager.meshes.has(mesh5)).toBe(true)
+      expect(selectionManager.meshes.has(mesh6)).toBe(true)
     })
 
     it('can trigger all actions for a selected stack', async () => {

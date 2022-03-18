@@ -320,9 +320,9 @@ export function triggerActionOnSelection(mesh, actionName, quantity = null) {
         if (isRotatingEntireStack(baseMesh, actionName, quantity)) {
           triggerAction(baseMesh, actionName)
         } else {
-          for (const mesh of (baseMesh.metadata.stack ?? [baseMesh]).slice(
-            -quantity
-          )) {
+          for (const mesh of (baseMesh.metadata.stack ?? [baseMesh])
+            .slice(-quantity)
+            .reverse()) {
             triggerAction(mesh, actionName)
           }
         }
@@ -417,6 +417,24 @@ const menuActions = [
       title: params.fromHand ? 'tooltips.play' : 'tooltips.draw',
       onClick: ({ detail } = {}) =>
         triggerActionOnSelection(mesh, 'draw', detail?.quantity),
+      max: computesMaxQuantity(mesh, params)
+    })
+  },
+  {
+    support: (mesh, { selectedMeshes }) =>
+      mesh.metadata?.stack?.length > 1 && selectedMeshes.length === 1,
+    build: (mesh, params) => ({
+      icon: 'zoom_out_map',
+      title: 'tooltips.pop',
+      onClick: async ({ detail } = {}) =>
+        selectionManager.select(
+          ...(await triggerAction(
+            mesh.metadata.stack[0],
+            'pop',
+            detail?.quantity,
+            true
+          ))
+        ),
       max: computesMaxQuantity(mesh, params)
     })
   },
