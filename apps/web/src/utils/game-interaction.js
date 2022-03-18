@@ -265,11 +265,20 @@ export function attachInputs({ doubleTapDelay, actionMenuProps$ }) {
     /**
      * Implements actions when triggering some behavior:
      * - closes menu when drawing, or modifying stack
+     * - when pushing selected mesh onto a stack, selects the entire stack
      */
     behaviorAction$
       .pipe(filter(({ fn }) => fn === 'draw' || fn === 'pop' || fn === 'push'))
       .subscribe({
-        next: resetMenu
+        next: ({ fn, meshId, args }) => {
+          resetMenu()
+          if (
+            fn === 'push' &&
+            [...selectionManager.meshes].some(({ id }) => args[0] === id)
+          ) {
+            selectionManager.selectById(meshId)
+          }
+        }
       })
   ]
 }

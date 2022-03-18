@@ -1,4 +1,5 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { BehaviorSubject } from 'rxjs'
 import { get } from 'svelte/store'
 import {
@@ -14,17 +15,19 @@ import {
   triggerAction,
   triggerActionOnSelection
 } from '../../src/utils/game-interaction'
-import { sleep } from '../test-utils'
+import { configures3dTestEngine, sleep } from '../test-utils'
 
 jest.mock('../../src/3d/managers/camera')
 jest.mock('../../src/3d/utils/vector')
-const debug = true
+const debug = false
 
 describe('Game interaction model', () => {
   let subscriptions
   let meshes
   const actionMenuProps$ = new BehaviorSubject()
   const doubleTapDelay = 100
+
+  configures3dTestEngine(created => selectionManager.init(created))
 
   beforeEach(() => {
     meshes = [
@@ -165,7 +168,7 @@ describe('Game interaction model', () => {
       const menuProps = computeMenuProps(mesh2)
       expect(menuProps).toHaveProperty('items')
       expect(menuProps).toHaveProperty('open', true)
-      expect(menuProps).toHaveProperty('meshes', [mesh2, mesh1])
+      expect(menuProps).toHaveProperty('meshes', [mesh1, mesh2])
       expect(menuProps).toHaveProperty('x', getMeshScreenPosition().x)
       expect(menuProps).toHaveProperty('y', getMeshScreenPosition().y)
 
@@ -193,7 +196,7 @@ describe('Game interaction model', () => {
       const menuProps = computeMenuProps(mesh2, true)
       expect(menuProps).toHaveProperty('items')
       expect(menuProps).toHaveProperty('open', true)
-      expect(menuProps).toHaveProperty('meshes', [mesh2, mesh1])
+      expect(menuProps).toHaveProperty('meshes', [mesh1, mesh2])
       expect(menuProps).toHaveProperty('x', getMeshScreenPosition().x)
       expect(menuProps).toHaveProperty('y', getMeshScreenPosition().y)
 
@@ -220,8 +223,8 @@ describe('Game interaction model', () => {
       expect(menuProps).toHaveProperty('open', true)
       expect(menuProps).toHaveProperty('meshes', [
         mesh2,
-        mesh3,
         mesh4,
+        mesh3,
         mesh5,
         mesh6
       ])
@@ -253,7 +256,7 @@ describe('Game interaction model', () => {
       const menuProps = computeMenuProps(mesh2)
       expect(menuProps).toHaveProperty('items')
       expect(menuProps).toHaveProperty('open', true)
-      expect(menuProps).toHaveProperty('meshes', [mesh2, mesh1])
+      expect(menuProps).toHaveProperty('meshes', [mesh1, mesh2])
       expect(menuProps).toHaveProperty('x', getMeshScreenPosition().x)
       expect(menuProps).toHaveProperty('y', getMeshScreenPosition().y)
 
@@ -275,7 +278,7 @@ describe('Game interaction model', () => {
       const menuProps = computeMenuProps(mesh5)
       expect(menuProps).toHaveProperty('items')
       expect(menuProps).toHaveProperty('open', true)
-      expect(menuProps).toHaveProperty('meshes', [mesh3, mesh5, mesh6, mesh1])
+      expect(menuProps).toHaveProperty('meshes', [mesh1, mesh3, mesh5, mesh6])
       expect(menuProps).toHaveProperty('x', getMeshScreenPosition().x)
       expect(menuProps).toHaveProperty('y', getMeshScreenPosition().y)
 
@@ -503,7 +506,7 @@ describe('Game interaction model', () => {
       expect(get(actionMenuProps$)).toBeUndefined()
     })
 
-    it.only('does not alter selection when pushing onto a stack', () => {
+    it('does not alter selection when pushing onto a stack', () => {
       controlManager.onActionObservable.notifyObservers({
         meshId: meshes[1].id,
         fn: 'push',
@@ -684,7 +687,7 @@ describe('Game interaction model', () => {
         expectMeshActions(mesh6)
       })
 
-      it.only('does not alter selection when pushing an unselected mesh', () => {
+      it('does not alter selection when pushing an unselected mesh', () => {
         const [mesh1, mesh2, mesh3] = meshes
         selectionManager.clear()
         selectionManager.select(mesh1)
@@ -698,19 +701,24 @@ describe('Game interaction model', () => {
         ])
       })
 
-      it.only('selects the entire stack when pushing a selected mesh', () => {
+      it('selects the entire stack when pushing a selected mesh', () => {
         const [mesh1, mesh2, mesh3, , mesh5, mesh6] = meshes
+        selectionManager.clear()
+        selectionManager.select(mesh1)
+        selectionManager.select(mesh2)
+        mesh3.metadata.stack.push(mesh2)
+        mesh2.metadata.stack = [...mesh3.metadata.stack]
         controlManager.onActionObservable.notifyObservers({
           meshId: mesh3.id,
           fn: 'push',
           args: [mesh2.id]
         })
         expect([...selectionManager.meshes].map(({ id }) => id)).toEqual([
+          mesh1.id,
+          mesh2.id,
           mesh3.id,
           mesh5.id,
-          mesh6.id,
-          mesh2.id,
-          mesh1.id
+          mesh6.id
         ])
       })
 
@@ -736,22 +744,20 @@ describe('Game interaction model', () => {
 })
 
 function buildMesh(data) {
-  const mesh = {
-    ...data,
-    metadata: {
-      detail: jest.fn(),
-      flip: jest.fn(),
-      rotate: jest.fn(),
-      push: jest.fn(),
-      canPush: jest.fn(),
-      pop: jest.fn(),
-      reorder: jest.fn(),
-      flipAll: jest.fn(),
-      draw: jest.fn(),
-      snap: jest.fn(),
-      unsnap: jest.fn(),
-      unsnapAll: jest.fn()
-    }
+  const mesh = CreateBox(data.id, data)
+  mesh.metadata = {
+    detail: jest.fn(),
+    flip: jest.fn(),
+    rotate: jest.fn(),
+    push: jest.fn(),
+    canPush: jest.fn(),
+    pop: jest.fn(),
+    reorder: jest.fn(),
+    flipAll: jest.fn(),
+    draw: jest.fn(),
+    snap: jest.fn(),
+    unsnap: jest.fn(),
+    unsnapAll: jest.fn()
   }
   return mesh
 }
