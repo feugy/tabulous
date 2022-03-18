@@ -6,6 +6,7 @@ import {
   expectAnimationEnd,
   expectFlipped,
   expectInteractible,
+  expectPosition,
   expectStacked,
   sleep
 } from '../../test-utils'
@@ -235,7 +236,7 @@ describe('StackBehavior', () => {
     })
 
     it('can not pop an empty stack', async () => {
-      expect(await mesh.metadata.pop()).not.toBeDefined()
+      expect(await mesh.metadata.pop()).toEqual([])
       expectStacked([mesh])
       expect(recordSpy).not.toHaveBeenCalled()
     })
@@ -243,30 +244,102 @@ describe('StackBehavior', () => {
     it('pops last mesh from stack', async () => {
       behavior.fromState({ stackIds: ['box2', 'box1', 'box3'] })
 
-      let poped = await mesh.metadata.pop()
+      let [poped] = await mesh.metadata.pop()
       expect(poped?.id).toBe('box3')
       expectInteractible(poped)
       expectStacked([mesh, meshes[1], meshes[0]])
       expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({ fn: 'pop', mesh })
-
-      poped = await mesh.metadata.pop()
+      expect(recordSpy).toHaveBeenCalledWith({
+        fn: 'pop',
+        mesh,
+        args: [1, false]
+      })
+      ;[poped] = await mesh.metadata.pop()
       expect(poped?.id).toBe('box1')
       expectInteractible(poped)
       expectStacked([mesh, meshes[1]])
       expect(recordSpy).toHaveBeenCalledTimes(2)
-      expect(recordSpy).toHaveBeenNthCalledWith(2, { fn: 'pop', mesh })
+      expect(recordSpy).toHaveBeenNthCalledWith(2, {
+        fn: 'pop',
+        mesh,
+        args: [1, false]
+      })
+    })
+
+    it('pops and moves a single mesh from stack', async () => {
+      behavior.fromState({ stackIds: ['box2', 'box1', 'box3'] })
+
+      const [[poped]] = await Promise.all([
+        mesh.metadata.pop(1, true),
+        expectAnimationEnd(getAnimatableBehavior(meshes[2]))
+      ])
+      expect(poped?.id).toBe('box3')
+      expectInteractible(poped)
+      expectStacked([mesh, meshes[1], meshes[0]])
+      expect(recordSpy).toHaveBeenCalledTimes(1)
+      expect(recordSpy).toHaveBeenCalledWith({
+        fn: 'pop',
+        mesh,
+        args: [1, true],
+        duration: behavior.state.duration
+      })
+      expectPosition(poped, [1.25, 0.5, 0])
+    })
+
+    it('pops and moves multiple meshes from stack', async () => {
+      behavior.fromState({ stackIds: ['box2', 'box1', 'box3'] })
+
+      const [[poped1, poped2]] = await Promise.all([
+        mesh.metadata.pop(2, true),
+        expectAnimationEnd(getAnimatableBehavior(meshes[0])),
+        expectAnimationEnd(getAnimatableBehavior(meshes[2]))
+      ])
+      expect(poped1?.id).toBe('box3')
+      expectInteractible(poped1)
+      expect(poped2?.id).toBe('box1')
+      expectInteractible(poped2)
+      expectStacked([mesh, meshes[1]])
+      expect(recordSpy).toHaveBeenCalledTimes(1)
+      expect(recordSpy).toHaveBeenCalledWith({
+        fn: 'pop',
+        mesh,
+        args: [2, true],
+        duration: behavior.state.duration
+      })
+      expectPosition(poped1, [1.25, 0.5, 0])
+      expectPosition(poped2, [2.5, 0.5, 0])
+    })
+
+    it('pops multiple meshes from stack', async () => {
+      behavior.fromState({ stackIds: ['box2', 'box1', 'box3'] })
+
+      let [poped1, poped2] = await mesh.metadata.pop(2)
+      expect(poped1?.id).toBe('box3')
+      expect(poped2?.id).toBe('box1')
+      expectInteractible(poped1)
+      expectInteractible(poped2)
+      expectStacked([mesh, meshes[1]])
+      expect(recordSpy).toHaveBeenCalledTimes(1)
+      expect(recordSpy).toHaveBeenCalledWith({
+        fn: 'pop',
+        mesh,
+        args: [2, false]
+      })
     })
 
     it('can pop from any stacked mesh', async () => {
       behavior.fromState({ stackIds: ['box3', 'box1', 'box2'] })
 
-      let poped = await meshes[2].metadata.pop()
+      const [poped] = await meshes[2].metadata.pop()
       expect(poped?.id).toBe('box2')
       expectInteractible(poped)
       expectStacked([mesh, meshes[2], meshes[0]])
       expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({ fn: 'pop', mesh })
+      expect(recordSpy).toHaveBeenCalledWith({
+        fn: 'pop',
+        mesh,
+        args: [1, false]
+      })
     })
 
     it('pops dragged meshes', async () => {
@@ -279,7 +352,11 @@ describe('StackBehavior', () => {
       expectInteractible(meshes[1])
       expectStacked([mesh, meshes[2], meshes[0]])
       expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({ fn: 'pop', mesh })
+      expect(recordSpy).toHaveBeenCalledWith({
+        fn: 'pop',
+        mesh,
+        args: [1, false]
+      })
     })
 
     it('pops last mesh when drawn', async () => {

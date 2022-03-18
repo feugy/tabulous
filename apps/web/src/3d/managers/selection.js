@@ -128,12 +128,31 @@ class SelectionManager {
   selectWithinBox() {}
 
   /**
-   * Adds an individual mesh into selection (if not already in)
-   * @param {Mesh} - mesh added to the active selection
+   * Adds meshes into selection (if not already in)
+   * @param {...Mesh} - mesh added to the active selection
    */
-  select(mesh) {
-    addToSelection(this, mesh)
+  select(...meshes) {
+    for (const mesh of meshes) {
+      addToSelection(this, mesh)
+    }
     reorderSelection(this)
+  }
+
+  /**
+   * Adds meshes into selection (if not already in), by their ids.
+   * @param {...string} ids - selected mesh ids
+   */
+  selectById(...ids) {
+    const selected = []
+    for (const scene of [this.scene, this.handScene]) {
+      for (const id of ids) {
+        const mesh = scene.getMeshById(id)
+        if (mesh) {
+          selected.push(mesh)
+        }
+      }
+    }
+    this.select(...selected)
   }
 
   /**
@@ -172,8 +191,10 @@ export const selectionManager = new SelectionManager()
 
 function addToSelection(manager, mesh) {
   if (!manager.meshes.has(mesh)) {
-    manager.meshes.add(mesh)
-    mesh.renderOverlay = true
+    for (const added of mesh.metadata?.stack ?? [mesh]) {
+      manager.meshes.add(added)
+      added.renderOverlay = true
+    }
   }
 }
 

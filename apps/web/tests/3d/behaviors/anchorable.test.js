@@ -516,8 +516,7 @@ describe('AnchorBehavior', () => {
       })
       expectSnapped(mesh, snapped, 0)
 
-      selectionManager.select(snapped)
-      selectionManager.select(meshes[0])
+      selectionManager.select(snapped, meshes[0])
 
       inputManager.onDragObservable.notifyObservers({
         type: 'dragStart',
@@ -655,8 +654,7 @@ describe('AnchorBehavior', () => {
       expectSnapped(mesh, meshes[0], 0)
       expectSnapped(mesh, meshes[1], 1)
 
-      selectionManager.select(mesh)
-      selectionManager.select(meshes[0])
+      selectionManager.select(mesh, meshes[0])
 
       inputManager.onDragObservable.notifyObservers({
         type: 'dragStart',

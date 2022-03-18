@@ -5,6 +5,7 @@ import {
   selectionManager as manager,
   handManager
 } from '../../../src/3d/managers'
+import { StackBehavior } from '../../../src/3d/behaviors'
 
 describe('SelectionManager', () => {
   let scene
@@ -54,6 +55,31 @@ describe('SelectionManager', () => {
       expect(selectionChanged).toHaveBeenCalledTimes(1)
       expect(selectionChanged.mock.calls[0][0].has(mesh)).toBe(true)
       expect(selectionChanged.mock.calls[0][0].size).toBe(1)
+    })
+
+    it('adds multiple meshes to selection', () => {
+      const mesh1 = CreateBox('box1', {})
+      const mesh2 = CreateBox('box2', {})
+      manager.select(mesh1, mesh2)
+      expect(manager.meshes.has(mesh1)).toBe(true)
+      expect(manager.meshes.has(mesh2)).toBe(true)
+      expect(manager.meshes.size).toBe(2)
+      expectSelected(mesh1)
+      expectSelected(mesh2)
+      expect(selectionChanged).toHaveBeenCalledTimes(1)
+    })
+
+    it('adds an entire stack to selection', () => {
+      const mesh1 = CreateBox('box1', {})
+      const mesh2 = CreateBox('box2', {})
+      mesh1.addBehavior(new StackBehavior({ stackIds: [mesh2.id] }))
+      manager.select(mesh1)
+      expect(manager.meshes.has(mesh1)).toBe(true)
+      expect(manager.meshes.has(mesh2)).toBe(true)
+      expect(manager.meshes.size).toBe(2)
+      expectSelected(mesh1)
+      expectSelected(mesh2)
+      expect(selectionChanged).toHaveBeenCalledTimes(1)
     })
 
     it('reorders selection based on elevation', () => {
@@ -115,8 +141,7 @@ describe('SelectionManager', () => {
 
       it('returns provided mesh if it not selected', () => {
         manager.clear()
-        manager.select(meshes[1])
-        manager.select(meshes[2])
+        manager.select(meshes[1], meshes[2])
         expectMeshes(manager.getSelection(meshes[0]), [meshes[0]])
       })
     })
@@ -171,6 +196,28 @@ describe('SelectionManager', () => {
         mesh.setAbsolutePosition(position)
         mesh.computeWorldMatrix()
         return mesh
+      })
+    })
+
+    describe('selectById()', () => {
+      it('adds meshes to selection', () => {
+        manager.selectById(meshes[0].id)
+        expect(manager.meshes.has(meshes[0])).toBe(true)
+        expect(manager.meshes.size).toBe(1)
+        expectSelected(meshes[0])
+        expect(selectionChanged).toHaveBeenCalledTimes(1)
+        expect(selectionChanged.mock.calls[0][0].has(meshes[0])).toBe(true)
+        expect(selectionChanged.mock.calls[0][0].size).toBe(1)
+      })
+
+      it('adds multiple meshes to selection', () => {
+        manager.selectById(meshes[0].id, meshes[1].id)
+        expect(manager.meshes.has(meshes[0])).toBe(true)
+        expect(manager.meshes.has(meshes[1])).toBe(true)
+        expect(manager.meshes.size).toBe(2)
+        expectSelected(meshes[0])
+        expectSelected(meshes[1])
+        expect(selectionChanged).toHaveBeenCalledTimes(1)
       })
     })
 

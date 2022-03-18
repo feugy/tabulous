@@ -31,16 +31,14 @@
 
 ## UI
 
-- after pushing selection to a stack, select entire stack or nothing
-- issue: on a stack, N-1th mesh is interactible (flip/rotate) while Nth mesh is animating (flip)
+- issue: while stacking many meshes together, indicators are not always correctly positioned
+- custom mesh shapes
 - display peer's name when running draw animations + show peer avatar/name instead of pointer
 - configurable player position at game level
 - sort and filter catalog on game names
 - feedback on stacking
-- stack actions:
-  - pop multiple meshes and select them
-  - distribute multiple cards to players'hand
-  - put/draw under
+- distribute multiple cards to players'hand
+- put/draw under
 - keyboard
 - indicates when remote stream is muted/stopped
 - zoom in/out on rules

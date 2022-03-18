@@ -12,6 +12,8 @@ import { controlManager } from '../managers'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
 
+const Tolerance = 0.000001
+
 const logger = makeLogger(FlipBehaviorName)
 
 /**
@@ -92,8 +94,11 @@ export class FlipBehavior extends AnimateBehavior {
     const { width } = getDimensions(mesh)
 
     this.state.isFlipped = !isFlipped
-    // because of JS, rotation.y may be very close to Math.PI, but not equal to it.
-    const rotation = mesh.rotation.y < Math.PI - 0.000001 ? Math.PI : -Math.PI
+    // because of JS, rotation.y may be very close to Math.PI or 0, but not equal to it.
+    const rotation =
+      mesh.rotation.y < Math.PI - Tolerance && mesh.rotation.y >= -Tolerance
+        ? Math.PI
+        : -Math.PI
     await runAnimation(
       this,
       () => {

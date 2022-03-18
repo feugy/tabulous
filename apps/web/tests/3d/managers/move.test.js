@@ -397,10 +397,7 @@ describe('MoveManager', () => {
         createsMovable('box1', positions[0]),
         createsMovable('box2', positions[1])
       ]
-      for (const mesh of meshes) {
-        selectionManager.select(mesh)
-      }
-      selectionManager.select(moved)
+      selectionManager.select(...meshes, moved)
 
       manager.start(moved, { x: centerX, y: centerY })
       expect(manager.inProgress).toBe(true)
@@ -433,9 +430,7 @@ describe('MoveManager', () => {
         createsMovable('box1', new Vector3(0, 5, 0)),
         createsMovable('box2', new Vector3(-3, 0, -3))
       ]
-      for (const mesh of moved) {
-        selectionManager.select(mesh)
-      }
+      selectionManager.select(...moved)
       targets = [
         createsTarget(1, new Vector3(3, 0, 0)),
         createsTarget(2, new Vector3(-1, 0, -4.1))
@@ -632,8 +627,7 @@ describe('MoveManager', () => {
       ]
       moved[1].setParent(moved[0])
       moved[2].setParent(moved[1])
-      selectionManager.select(moved[0])
-      selectionManager.select(moved[1])
+      selectionManager.select(moved[0], moved[1])
     })
 
     describe('start()', () => {
