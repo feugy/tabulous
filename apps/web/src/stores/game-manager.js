@@ -67,16 +67,9 @@ let cameras = []
 // hands for all players
 let hands = []
 
-function load(game, engine, firstLoad) {
+async function load(game, engine, firstLoad) {
   hands = game.hands ?? []
   cameras = game.cameras ?? []
-  engine.load(
-    {
-      meshes: game.meshes,
-      handMeshes: hands.find(hand => player.id === hand.playerId)?.meshes ?? []
-    },
-    firstLoad
-  )
   if (game.messages) {
     loadThread(game.messages)
   }
@@ -89,6 +82,7 @@ function load(game, engine, firstLoad) {
       loadCameraSaves(playerCameras)
     }
   }
+  await engine.load(game, player.id, firstLoad)
 }
 
 function mergeCameras({ playerId, cameras: playerCameras }) {
@@ -282,8 +276,8 @@ export async function loadGame(gameId, engine) {
 
   if (game.players.every(({ id, playing }) => id === player.id || !playing)) {
     // is the only playing player: take the host role
-    load(game, engine, true)
     subscriptions.push(...takeHostRole(gameId, engine))
+    await load(game, engine, true)
   } else {
     return new Promise((resolve, reject) => {
       const peers = game.players.filter(
