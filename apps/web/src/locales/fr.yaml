@@ -23,6 +23,7 @@ formats:
 games:
   coinche: Coinche
   klondike: Solitaire
+  prima-ballerina: Petite danseuse étoile
   splendor: Splendor
   riichi: Riichi Mahjong
 labels:

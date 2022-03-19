@@ -2,7 +2,7 @@ import { Color4 } from '@babylonjs/core/Maths/math.color'
 import faker from 'faker'
 import { createCard } from '../../../src/3d/meshes'
 import { controlManager } from '../../../src/3d/managers'
-import { configures3dTestEngine } from '../../test-utils'
+import { configures3dTestEngine, expectPosition } from '../../test-utils'
 
 configures3dTestEngine()
 
@@ -15,9 +15,7 @@ describe('createCard()', () => {
     expect(boundingBox.extendSize.z * 2).toEqual(4.25)
     expect(boundingBox.extendSize.y * 2).toEqual(0.01)
     expect(mesh.isPickable).toBe(false)
-    expect(mesh.absolutePosition.x).toEqual(0)
-    expect(mesh.absolutePosition.y).toEqual(0)
-    expect(mesh.absolutePosition.z).toEqual(0)
+    expectPosition(mesh, [0, 0, 0])
     expect(mesh.metadata).toEqual({
       images: undefined,
       serialize: expect.any(Function)
@@ -86,9 +84,7 @@ describe('createCard()', () => {
       expect(boundingBox.extendSize.y * 2).toEqual(height)
       expect(boundingBox.extendSize.z * 2).toEqual(depth)
       expect(mesh.isPickable).toBe(true)
-      expect(mesh.absolutePosition.x).toEqual(x)
-      expect(mesh.absolutePosition.y).toEqual(y)
-      expect(mesh.absolutePosition.z).toEqual(z)
+      expectPosition(mesh, [x, y, z])
       expect(mesh.getChildren()).toHaveLength(1)
       expect(mesh.getChildren()[0].isPickable).toBe(false)
       expect(mesh.getBehaviorByName('detailable')).toBeDefined()
@@ -134,15 +130,8 @@ describe('createCard()', () => {
         depth,
         faceUV,
         detailable: behaviors.detailable,
-        rotable: {
-          ...behaviors.rotable,
-          duration: 200
-        },
-        movable: {
-          ...behaviors.movable,
-          duration: 100,
-          snapDistance: 0.25
-        }
+        rotable: { ...behaviors.rotable, duration: 200 },
+        movable: { ...behaviors.movable, duration: 100, snapDistance: 0.25 }
       })
     })
   })

@@ -8,6 +8,7 @@ import { expectAnimationEnd } from '../test-utils'
 import { handManager } from '../../src/3d/managers'
 
 let engine
+const playerId = faker.datatype.uuid()
 const canvas = document.createElement('canvas')
 const interaction = document.createElement('div')
 
@@ -51,7 +52,7 @@ describe('createEngine()', () => {
       displayLoadingUI = jest.spyOn(engine, 'displayLoadingUI')
     })
 
-    it('can load() game data', () => {
+    it('can load() game data', async () => {
       const mesh = {
         shape: 'card',
         depth: 0.2,
@@ -63,7 +64,7 @@ describe('createEngine()', () => {
         y: 0,
         z: -10
       }
-      engine.load({ meshes: [mesh], handMeshes: [] }, false)
+      await engine.load({ meshes: [mesh], hands: [] }, playerId, false)
       expect(engine.scenes[1].getMeshById(mesh.id)).toBeDefined()
       expect(displayLoadingUI).not.toHaveBeenCalled()
     })
@@ -95,7 +96,7 @@ describe('createEngine()', () => {
       })
     })
 
-    it('displays loading UI on initial load only', () => {
+    it('displays loading UI on initial load only', async () => {
       const mesh = {
         shape: 'card',
         depth: 0.2,
@@ -107,15 +108,19 @@ describe('createEngine()', () => {
         y: 0,
         z: -10
       }
-      engine.load({ meshes: [mesh], handMeshes: [] }, true)
+      await engine.load({ meshes: [mesh], hands: [] }, playerId, true)
       expect(engine.scenes[1].getMeshById(mesh.id)).toBeDefined()
       expect(displayLoadingUI).toHaveBeenCalledTimes(1)
       expect(handManager.enabled).toBe(false)
     })
 
-    it('enables hand manager on initial load', () => {
-      engine.load(
-        { meshes: [], handMeshes: [{ id: 'box', shape: 'card' }] },
+    it('enables hand manager on initial load', async () => {
+      await engine.load(
+        {
+          meshes: [],
+          hands: [{ playerId, meshes: [{ id: 'box', shape: 'card' }] }]
+        },
+        playerId,
         true
       )
       expect(displayLoadingUI).toHaveBeenCalledTimes(1)
@@ -123,17 +128,18 @@ describe('createEngine()', () => {
     })
 
     describe('given some loaded meshes', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         const duration = 200
-        engine.load(
+        await engine.load(
           {
             meshes: [
               { id: 'card1', shape: 'card', drawable: { duration } },
               { id: 'card2', shape: 'card', drawable: { duration } },
               { id: 'card3', shape: 'card', drawable: { duration } }
             ],
-            handMeshes: []
+            hands: []
           },
+          playerId,
           true
         )
         engine.start()

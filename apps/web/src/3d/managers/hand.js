@@ -386,9 +386,9 @@ function storeMeshDimensions(manager) {
   let contentWidth = 0
   const meshes = handScene.meshes.filter(isSerializable)
   for (const mesh of meshes) {
-    const dimension = getDimensions(mesh)
-    dimensionsByMeshId.set(mesh.id, dimension)
-    contentWidth += dimension.width + gap
+    const dimensions = getDimensions(mesh)
+    dimensionsByMeshId.set(mesh.id, dimensions)
+    contentWidth += dimensions.width + gap
   }
   contentWidth -= gap
   manager.contentWidth = contentWidth
@@ -427,12 +427,18 @@ async function layoutMeshs({
     if (!moved.includes(mesh)) {
       const z = (extent.height - depth) * -0.5 + verticalPadding
       promises.push(
-        animateMove(mesh, new Vector3(x + width * 0.5, y, z), duration)
+        animateMove(
+          mesh,
+          new Vector3(x + width * 0.5, y + height * 0.5, z),
+          duration
+        )
       )
       extent.maxZ = Math.max(extent.maxZ, z + depth * 0.5)
     }
     x += width + effectiveGap
-    y += height
+    if (effectiveGap < 0) {
+      y += height
+    }
   }
   extent.maxZ += verticalPadding
   extent.screenHeight = getScreenPosition(

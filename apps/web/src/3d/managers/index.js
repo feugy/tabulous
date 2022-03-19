@@ -1,5 +1,6 @@
 export * from './camera'
 export * from './control'
+export * from './custom-shape'
 export * from './hand'
 export * from './input'
 export * from './move'

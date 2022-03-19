@@ -4,8 +4,15 @@ import {
   MoveBehaviorName,
   StackBehaviorName
 } from '../../../src/3d/behaviors/names'
+import { customShapeManager } from '../../../src/3d/managers'
+import { createCustom } from '../../../src/3d/meshes'
 import { createTable, loadMeshes, serializeMeshes } from '../../../src/3d/utils'
 import { expectPosition, initialize3dEngine } from '../../test-utils'
+import pawnData from '../../fixtures/pawn.json'
+
+jest.mock('../../../src/3d/managers/custom-shape', () => ({
+  customShapeManager: new Map()
+}))
 
 let engine
 let scene
@@ -14,6 +21,7 @@ let createRoundToken
 let createRoundedTile
 const renderWidth = 2048
 const renderHeight = 1024
+const pawnFile = '/pawn.babylon'
 
 beforeAll(async () => {
   engine = initialize3dEngine().engine
@@ -21,6 +29,7 @@ beforeAll(async () => {
   ;({ createCard, createRoundToken, createRoundedTile } = await import(
     '../../../src/3d/meshes'
   ))
+  customShapeManager.set(pawnFile, btoa(JSON.stringify(pawnData)))
 })
 
 afterAll(() => engine.dispose())
@@ -102,6 +111,11 @@ describe('serializeMeshes() 3D utility', () => {
         tile1.metadata.serialize(),
         tile2.metadata.serialize()
       ])
+    })
+
+    it('serializes custom shapes', () => {
+      const pawn1 = createCustom({ id: 'pawn1', file: pawnFile })
+      expect(serializeMeshes(scene)).toEqual([pawn1.metadata.serialize()])
     })
 
     it('ignores phantom meshes', () => {
@@ -202,6 +216,15 @@ describe('loadMeshes() 3D utility', () => {
     z: 72
   }
 
+  let pawn1 = {
+    shape: 'custom',
+    id: 'pawn1',
+    file: pawnFile,
+    x: 10,
+    y: 5,
+    z: -10
+  }
+
   beforeAll(() => {
     ;({ engine, scene } = initialize3dEngine({ renderWidth, renderHeight }))
   })
@@ -239,7 +262,7 @@ describe('loadMeshes() 3D utility', () => {
   })
 
   it('adds new meshes with their behaviors', () => {
-    loadMeshes(scene, [card1, token1, tile1, card2])
+    loadMeshes(scene, [card1, token1, tile1, card2, pawn1])
     expect(scene.getMeshById(card1.id)).toBeDefined()
     expect(scene.getMeshById(card1.id).metadata.serialize()).toEqual(card1)
     expect(scene.getMeshById(card2.id)).toBeDefined()
@@ -248,6 +271,8 @@ describe('loadMeshes() 3D utility', () => {
     expect(scene.getMeshById(token1.id).metadata.serialize()).toEqual(token1)
     expect(scene.getMeshById(tile1.id)).toBeDefined()
     expect(scene.getMeshById(tile1.id).metadata.serialize()).toEqual(tile1)
+    expect(scene.getMeshById(pawn1.id)).toBeDefined()
+    expect(scene.getMeshById(pawn1.id).metadata.serialize()).toEqual(pawn1)
   })
 
   it('trims null values out', () => {
@@ -301,7 +326,14 @@ describe('loadMeshes() 3D utility', () => {
       flippable: { isFlipped: false },
       rotable: { angle: Math.PI * 2 }
     })
-    loadMeshes(scene, [card1, card2, token1, tile1])
+    const originalPawn = createCustom({
+      id: pawn1.id,
+      file: pawnFile,
+      x: 30,
+      y: 20,
+      z: 10
+    })
+    loadMeshes(scene, [card1, card2, token1, tile1, pawn1])
     expect(scene.getMeshById(card1.id)).toBeDefined()
     expect(scene.getMeshById(card1.id).metadata.serialize()).toEqual({
       ...originalCard.metadata.serialize(),
@@ -326,6 +358,13 @@ describe('loadMeshes() 3D utility', () => {
       x: tile1.x,
       y: tile1.y,
       z: tile1.z
+    })
+    expect(scene.getMeshById(pawn1.id)).toBeDefined()
+    expect(scene.getMeshById(pawn1.id).metadata.serialize()).toEqual({
+      ...originalPawn.metadata.serialize(),
+      x: pawn1.x,
+      y: pawn1.y,
+      z: pawn1.z
     })
   })
 

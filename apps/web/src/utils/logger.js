@@ -2,6 +2,7 @@ const levels = {
   anchorable: 'warn',
   camera: 'warn',
   catalog: 'warn',
+  'custom-shape': 'warn',
   flippable: 'warn',
   'game-interaction': 'warn',
   'game-manager': 'warn',

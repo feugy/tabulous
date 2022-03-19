@@ -10,6 +10,7 @@ import '@babylonjs/core/Rendering/outlineRenderer'
 import {
   cameraManager,
   controlManager,
+  customShapeManager,
   handManager,
   inputManager,
   moveManager,
@@ -70,16 +71,16 @@ export function createEngine({
     })
 
   /**
-   * TODO doc
-   * Loads meshes into the provided engine:
-   * - either creates new mesh, or updates existing ones, based on their ids
-   * - deletes existing mesh that are not found in the provided data
-   * - shows and hides Babylon's loading UI while loading asset (initial loading only)
-   * @param {import('@babel/core').Scene} scene - 3D scene used.
-   * @param {object} meshes - list of loaded meshes TODO.
-   * @param {boolean} [initial = true] - indicates whether this is the first loading or not.
+   * Load all meshes into the game engine
+   * - shows and hides Babylon's loading UI while loading assets (initial loading only)
+   * - loads data into the main scene
+   * - if needed, loads data into player's hand scene
+   * @async
+   * @param {object} gameData - serialized game data TODO.
+   * @param {string} playerId - current player id (to determine their hand).
+   * @param {boolean} initial? - set to true to show Babylon's loading UI while loading assets.
    */
-  engine.load = (gameData, initial) => {
+  engine.load = async (gameData, playerId, initial) => {
     const handsEnabled = hasHandsEnabled(gameData)
     if (initial) {
       engine.displayLoadingUI()
@@ -88,9 +89,13 @@ export function createEngine({
         handManager.init({ scene, handScene })
       }
     }
+    await customShapeManager.init(gameData)
     loadMeshes(scene, gameData.meshes)
     if (handsEnabled) {
-      loadMeshes(handScene, gameData.handMeshes)
+      loadMeshes(
+        handScene,
+        gameData.hands.find(hand => playerId === hand.playerId)?.meshes ?? []
+      )
     }
   }
 
@@ -113,6 +118,7 @@ export function createEngine({
 
   engine.onDisposeObservable.addOnce(() => {
     interaction.removeEventListener('pointerleave', handleLeave)
+    customShapeManager.clear()
   })
 
   function handleLeave(event) {
@@ -123,6 +129,9 @@ export function createEngine({
   return engine
 }
 
-function hasHandsEnabled({ meshes, handMeshes }) {
-  return handMeshes.length > 0 || meshes.some(({ drawable }) => drawable)
+function hasHandsEnabled({ meshes, hands }) {
+  return (
+    hands.some(({ meshes }) => meshes.length > 0) ||
+    meshes.some(({ drawable }) => drawable)
+  )
 }

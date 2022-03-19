@@ -32,7 +32,6 @@
 ## UI
 
 - issue: while stacking many meshes together, indicators are not always correctly positioned
-- custom mesh shapes
 - display peer's name when running draw animations + show peer avatar/name instead of pointer
 - configurable player position at game level
 - sort and filter catalog on game names
@@ -267,10 +266,11 @@ Sizes:
 - French suited cards: 360x260
 - Klondike:
   - board: 1964x980
+- Prima Ballerina cards: 1020x328
 
 ```shell
-folder=apps/web/public/images/french-suited-cards; \
-size=360x260; \
+folder=apps/web/public/images/prima-ballerina; \
+size=1020x328; \
 for file in $folder/!(*.gl1.png|!(*.png)); do \
   outFile=${file/.png/.out.png}; \
   convert -flop -strip -resize $size\! $file $outFile; \

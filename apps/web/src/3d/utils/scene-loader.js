@@ -1,7 +1,12 @@
 // mandatory side effect
 import '@babylonjs/core/Loading/loadingScreen'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { createCard, createRoundToken, createRoundedTile } from '../meshes'
+import {
+  createCard,
+  createCustom,
+  createRoundToken,
+  createRoundedTile
+} from '../meshes'
 import { restoreBehaviors } from './behaviors'
 import { AnchorBehaviorName, StackBehaviorName } from '../behaviors/names'
 // '../../utils' creates a cyclic dependency in Jest
@@ -11,6 +16,7 @@ const logger = makeLogger('scene-loader')
 
 const meshCreatorByName = new Map([
   ['card', createCard],
+  ['custom', createCustom],
   ['roundToken', createRoundToken],
   ['roundedTile', createRoundedTile]
 ])
@@ -43,8 +49,8 @@ export function serializeMeshes(scene) {
 }
 
 /**
- * Creates a meshes into the provided scene:
- * @param {object} state - hydrated mesh.
+ * Creates a meshes into the provided scene.
+ * @param {object} state - serialized mesh state.
  * @param {import('@babel/core').Scene} scene - 3D scene used.
  * @returns {import('@babel/core').Mesh} mesh created
  */
@@ -59,7 +65,7 @@ export function createMeshFromState(state, scene) {
  * - either creates new mesh, or updates existing ones, based on their ids
  * - deletes existing mesh that are not found in the provided data
  * @param {import('@babel/core').Scene} scene - 3D scene used.
- * @param {object} meshes - list of loaded meshes TODO.
+ * @param {object[]} meshes - a list of serialized meshes data TODO.
  */
 export function loadMeshes(scene, meshes) {
   const disposables = new Set(scene.meshes)

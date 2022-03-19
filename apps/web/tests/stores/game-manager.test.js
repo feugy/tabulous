@@ -77,7 +77,7 @@ beforeEach(() => {
 describe('given a mocked game engine', () => {
   const engine = {
     scenes: [],
-    load: jest.fn(),
+    load: jest.fn().mockResolvedValueOnce(),
     serialize: jest.fn().mockReturnValue({}),
     onDisposeObservable: new Observable()
   }
@@ -121,10 +121,7 @@ describe('given a mocked game engine', () => {
           false
         )
         expect(runQuery).toHaveBeenCalledTimes(1)
-        expect(engine.load).toHaveBeenCalledWith(
-          { handMeshes: hands[1].meshes, meshes },
-          true
-        )
+        expect(engine.load).toHaveBeenCalledWith(game, player.id, true)
         expect(engine.load).toHaveBeenCalledTimes(1)
         expect(loadCameraSaves).not.toHaveBeenCalled()
         expect(loadThread).not.toHaveBeenCalled()
@@ -152,10 +149,7 @@ describe('given a mocked game engine', () => {
           false
         )
         expect(runQuery).toHaveBeenCalledTimes(1)
-        expect(engine.load).toHaveBeenCalledWith(
-          { handMeshes: [], meshes },
-          true
-        )
+        expect(engine.load).toHaveBeenCalledWith(game, player.id, true)
         expect(engine.load).toHaveBeenCalledTimes(1)
         expect(loadCameraSaves).toHaveBeenCalledWith([cameras[2], cameras[0]])
         expect(loadCameraSaves).toHaveBeenCalledTimes(1)
@@ -185,10 +179,7 @@ describe('given a mocked game engine', () => {
           false
         )
         expect(runQuery).toHaveBeenCalledTimes(1)
-        expect(engine.load).toHaveBeenCalledWith(
-          { handMeshes: [], meshes },
-          true
-        )
+        expect(engine.load).toHaveBeenCalledWith(game, player.id, true)
         expect(engine.load).toHaveBeenCalledTimes(1)
         expect(loadCameraSaves).not.toHaveBeenCalled()
         expect(send).not.toHaveBeenCalled()
@@ -206,10 +197,7 @@ describe('given a mocked game engine', () => {
           false
         )
         expect(runQuery).toHaveBeenCalledTimes(1)
-        expect(engine.load).toHaveBeenCalledWith(
-          { handMeshes: [], meshes },
-          true
-        )
+        expect(engine.load).toHaveBeenCalledWith(game, player.id, true)
         expect(engine.load).toHaveBeenCalledTimes(1)
       })
 
@@ -253,6 +241,7 @@ describe('given a mocked game engine', () => {
           jest.runAllTimers()
           const expectedGame = {
             ...game,
+            cameras: [...game.cameras].sort((a, b) => +a.pos - +b.pos),
             players: undefined,
             hands: [...game.hands, { playerId: player.id, meshes: [] }]
           }
@@ -480,7 +469,8 @@ describe('given a mocked game engine', () => {
           expect(runMutation).not.toHaveBeenCalled()
           expect(send).not.toHaveBeenCalled()
           expect(engine.load).toHaveBeenCalledWith(
-            { handMeshes: game.hands[1].meshes, meshes },
+            { ...game, type: 'game-sync' },
+            player.id,
             true
           )
           expect(engine.load).toHaveBeenCalledTimes(1)
@@ -566,7 +556,7 @@ describe('given a mocked game engine', () => {
       {
         type: 'game-sync',
         id,
-        cameras,
+        cameras: [...cameras].sort((a, b) => +a.pos - +b.pos),
         meshes,
         messages,
         hands
