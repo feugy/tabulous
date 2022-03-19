@@ -96,10 +96,15 @@ type Mesh {
   rounded tiles
   """
   borderRadius: Float
+  """
+  custom
+  """
+  file: String
 }
 
 enum Shape {
   card
+  custom
   roundedTile
   roundToken
 }
@@ -217,6 +222,10 @@ input MeshInput {
   rounded tiles
   """
   borderRadius: Float
+  """
+  custom
+  """
+  file: String
 }
 
 input MessageInput {

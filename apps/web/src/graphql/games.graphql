@@ -12,6 +12,7 @@ fragment mesh on Mesh {
   y
   z
   shape
+  file
   width
   height
   depth
