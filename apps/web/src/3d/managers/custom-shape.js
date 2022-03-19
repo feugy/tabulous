@@ -82,7 +82,7 @@ async function download(file, manager) {
   logger.debug({ file }, `starts downloading ${file}`)
   try {
     const response = await fetch(file)
-    store(manager, file, await response.text())
+    store(manager, file, fixMeshNames(await response.json()))
   } catch (error) {
     const message = `failed to download custom shape file ${file}: ${error}`
     logger.error({ file, error }, message)
@@ -90,7 +90,14 @@ async function download(file, manager) {
   }
 }
 
+function fixMeshNames(content) {
+  for (const mesh of content.meshes ?? []) {
+    mesh.name = 'custom'
+  }
+  return content
+}
+
 function store({ dataByFile }, file, data) {
   logger.info({ file }, `stores data for ${file}`)
-  dataByFile.set(file, btoa(data))
+  dataByFile.set(file, btoa(JSON.stringify(data)))
 }

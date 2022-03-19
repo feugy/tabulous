@@ -8,13 +8,13 @@ const logger = makeLogger('custom-shape')
 
 const fixtures = {
   pawn: {
-    meshes: [{ name: 'Pawn', id: 'Pawn', positions: [0.2858, -0.3324] }]
+    meshes: [{ name: 'custom', id: 'Pawn', positions: [0.2858, -0.3324] }]
   },
   avatar: {
-    meshes: [{ name: 'avatar', id: 'avatar', positions: [1, 1] }]
+    meshes: [{ name: 'custom', id: 'avatar', positions: [1, 1] }]
   },
   die: {
-    meshes: [{ name: 'DIE', id: 'DIE', positions: [0, 1] }]
+    meshes: [{ name: 'custom', id: 'DIE', positions: [0, 1] }]
   }
 }
 
@@ -123,6 +123,23 @@ describe('CustomShapeManager', () => {
       })
       expect(manager.get(file)).toEqual(expectedData.pawn)
       expect(request).toHaveBeenCalledTimes(1)
+    })
+
+    it('sets mesh names to custom', async () => {
+      const file = faker.internet.url()
+      server.use(
+        rest.get(file, (req, res, ctx) =>
+          res(
+            ctx.json({
+              meshes: [
+                { name: 'OVERRIDEN', id: 'Pawn', positions: [0.2858, -0.3324] }
+              ]
+            })
+          )
+        )
+      )
+      await manager.init({ meshes: [{ shape: 'custom', file }] })
+      expect(manager.get(file)).toEqual(expectedData.pawn)
     })
   })
 
