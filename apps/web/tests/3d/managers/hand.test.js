@@ -125,9 +125,9 @@ describe('HandManager', () => {
       await waitForLayout()
       await waitForLayout()
       const z = computeZ()
-      expectPosition(cards[2], [-gap - cardWidth, 0, z])
-      expectPosition(cards[1], [0, 0.01, z])
-      expectPosition(cards[0], [gap + cardWidth, 0.015, z])
+      expectPosition(cards[2], [-gap - cardWidth, 0.005, z])
+      expectPosition(cards[1], [0, 0.005, z])
+      expectPosition(cards[0], [gap + cardWidth, 0.005, z])
       expect(actionRecorded).not.toHaveBeenCalled()
       const overlay = document.querySelector('.hand-overlay')
       expect(overlay).toBeInTheDocument()
@@ -297,7 +297,7 @@ describe('HandManager', () => {
       await waitForLayout()
       const z = computeZ()
       let x = -viewPortDimensions.width / 2 + cardWidth / 2 + horizontalPadding
-      let y = 0
+      let y = 0.005
       const gap = -0.065692902
       for (const { id } of cards) {
         const mesh = handScene.getMeshById(id)
@@ -358,9 +358,9 @@ describe('HandManager', () => {
           0,
           computeZ()
         ])
-        expectPosition(handCards[1], [unitWidth * -0.5, 0.01, computeZ()])
-        expectPosition(handCards[0], [unitWidth * 0.5, 0.02, computeZ()])
-        expectPosition(handCards[2], [unitWidth * 1.5, 0.03, computeZ()])
+        expectPosition(handCards[1], [unitWidth * -0.5, 0.005, computeZ()])
+        expectPosition(handCards[0], [unitWidth * 0.5, 0.005, computeZ()])
+        expectPosition(handCards[2], [unitWidth * 1.5, 0.005, computeZ()])
       })
 
       it('lays out hand when resizing engine', async () => {
@@ -369,27 +369,27 @@ describe('HandManager', () => {
         engine.onResizeObservable.notifyObservers()
         await waitForLayout()
         const unitWidth = cardWidth + gap
-        expectPosition(handCards[1], [-unitWidth, 0, computeZ()])
-        expectPosition(handCards[0], [0, 0.01, computeZ()])
-        expectPosition(handCards[2], [unitWidth, 0.02, computeZ()])
+        expectPosition(handCards[1], [-unitWidth, 0.005, computeZ()])
+        expectPosition(handCards[0], [0, 0.005, computeZ()])
+        expectPosition(handCards[2], [unitWidth, 0.005, computeZ()])
       })
 
       it('lays out hand when rotating mesh in hand', async () => {
         let unitWidth = cardWidth + gap
         const z = computeZ()
-        expectPosition(handCards[1], [-unitWidth, 0, z])
-        expectPosition(handCards[0], [0, 0.01, z])
-        expectPosition(handCards[2], [unitWidth, 0.02, z])
+        expectPosition(handCards[1], [-unitWidth, 0.005, z])
+        expectPosition(handCards[0], [0, 0.005, z])
+        expectPosition(handCards[2], [unitWidth, 0.005, z])
         handCards[0].metadata.rotate()
         await waitForLayout()
         unitWidth = (cardWidth + cardDepth) / 2 + gap
-        expectPosition(handCards[1], [-unitWidth, 0, z])
+        expectPosition(handCards[1], [-unitWidth, 0.005, z])
         expectPosition(handCards[0], [
           0,
-          0.01,
+          0.005,
           viewPortDimensions.height / -2 + verticalPadding + cardWidth / 2
         ])
-        expectPosition(handCards[2], [unitWidth, 0.02, z])
+        expectPosition(handCards[2], [unitWidth, 0.005, z])
       })
 
       it('lays out hand when flipping mesh in hand', async () => {
@@ -518,10 +518,10 @@ describe('HandManager', () => {
         expect(handScene.getMeshById(mesh.id)?.id).toBeUndefined()
         const newMesh = scene.getMeshById(mesh.id)
         expect(newMesh?.id).toBeDefined()
-        expectPosition(newMesh, [6, 2, 0])
+        expectPosition(newMesh, [6, 2.005, 0])
         const unitWidth = cardWidth + gap
-        expectPosition(handCards[0], [unitWidth * -0.5, 0, computeZ()])
-        expectPosition(handCards[2], [unitWidth * 0.5, 0.01, computeZ()])
+        expectPosition(handCards[0], [unitWidth * -0.5, 0.005, computeZ()])
+        expectPosition(handCards[2], [unitWidth * 0.5, 0.005, computeZ()])
         expect(actionRecorded).toHaveBeenCalledWith(
           {
             meshId: newMesh.id,
@@ -558,7 +558,7 @@ describe('HandManager', () => {
         const newMesh = scene.getMeshById(mesh.id)
         expect(newMesh?.id).toBeDefined()
         expectFlipped(newMesh, true)
-        expectPosition(newMesh, [6, 2, 0])
+        expectPosition(newMesh, [6, 2.005, 0])
         expect(actionRecorded).toHaveBeenCalledWith(
           {
             meshId: newMesh.id,
@@ -600,10 +600,10 @@ describe('HandManager', () => {
         const newMesh = handScene.getMeshById(mesh.id)
         expect(newMesh?.id).toBeDefined()
         const unitWidth = cardWidth + gap
-        expectPosition(handCards[1], [unitWidth * -1.5, 0, computeZ()])
-        expectPosition(handCards[0], [unitWidth * -0.5, 0.01, computeZ()])
-        expectPosition(newMesh, [unitWidth * 0.5, 0.02, computeZ()])
-        expectPosition(handCards[2], [unitWidth * 1.5, 0.03, computeZ()])
+        expectPosition(handCards[1], [unitWidth * -1.5, 0.005, computeZ()])
+        expectPosition(handCards[0], [unitWidth * -0.5, 0.005, computeZ()])
+        expectPosition(newMesh, [unitWidth * 0.5, 0.005, computeZ()])
+        expectPosition(handCards[2], [unitWidth * 1.5, 0.005, computeZ()])
         expect(actionRecorded).toHaveBeenCalledWith(
           {
             meshId: mesh.id,
@@ -648,12 +648,12 @@ describe('HandManager', () => {
         const newMesh3 = handScene.getMeshById(mesh3.id)
         expect(newMesh3?.id).toBeDefined()
         const unitWidth = cardWidth + gap
-        expectPosition(newMesh3, [unitWidth * -2.5, 0, computeZ()])
-        expectPosition(handCards[1], [unitWidth * -1.5, 0.01, computeZ()])
-        expectPosition(handCards[0], [unitWidth * -0.5, 0.02, computeZ()])
-        expectPosition(newMesh2, [unitWidth * 0.5, 0.03, computeZ()])
-        expectPosition(newMesh1, [unitWidth * 1.5, 0.04, computeZ()])
-        expectPosition(handCards[2], [unitWidth * 2.5, 0.05, computeZ()])
+        expectPosition(newMesh3, [unitWidth * -2.5, 0.005, computeZ()])
+        expectPosition(handCards[1], [unitWidth * -1.5, 0.005, computeZ()])
+        expectPosition(handCards[0], [unitWidth * -0.5, 0.005, computeZ()])
+        expectPosition(newMesh2, [unitWidth * 0.5, 0.005, computeZ()])
+        expectPosition(newMesh1, [unitWidth * 1.5, 0.005, computeZ()])
+        expectPosition(handCards[2], [unitWidth * 2.5, 0.005, computeZ()])
         expect(actionRecorded).toHaveBeenCalledWith(
           {
             meshId: mesh1.id,
