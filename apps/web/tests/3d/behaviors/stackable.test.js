@@ -325,20 +325,24 @@ describe('StackBehavior', () => {
       expectPosition(poped2, [2.5, 0.5, 0])
     })
 
-    it('pops multiple meshes from stack', async () => {
+    it('pops all meshes from a stack', async () => {
       behavior.fromState({ stackIds: ['box2', 'box1', 'box3'] })
 
-      let [poped1, poped2] = await mesh.metadata.pop(2)
+      let [poped1, poped2, poped3, poped4] = await mesh.metadata.pop(4)
       expect(poped1?.id).toBe('box3')
       expect(poped2?.id).toBe('box1')
+      expect(poped3?.id).toBe('box2')
+      expect(poped4?.id).toBe('box0')
       expectInteractible(poped1)
       expectInteractible(poped2)
-      expectStacked([mesh, meshes[1]])
+      expectInteractible(poped3)
+      expectInteractible(poped4)
+      expectStacked([mesh])
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
         fn: 'pop',
         mesh,
-        args: [2, false]
+        args: [4, false]
       })
     })
 

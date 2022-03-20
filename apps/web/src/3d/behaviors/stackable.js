@@ -244,7 +244,8 @@ export class StackBehavior extends TargetBehavior {
     let shift = 0
     const moves = []
     const duration = withMove ? this._state.duration : undefined
-    for (let times = 0; times < count; times++) {
+    const limit = Math.min(count, stack.length - 1)
+    for (let times = 0; times < limit; times++) {
       const mesh = stack.pop()
       poped.push(mesh)
       setBase(mesh, null, [mesh])
@@ -266,6 +267,9 @@ export class StackBehavior extends TargetBehavior {
           )
         )
       }
+    }
+    if (count > limit) {
+      poped.push(stack[0])
     }
     // note: all mesh in stack are uncontrollable, so we pass the poped mesh id
     controlManager.record({
