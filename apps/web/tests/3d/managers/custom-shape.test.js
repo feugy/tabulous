@@ -4,45 +4,45 @@ import { setupServer } from 'msw/node'
 import { customShapeManager as manager } from '../../../src/3d/managers'
 import { makeLogger } from '../../../src/utils'
 
-const logger = makeLogger('custom-shape')
-
-const fixtures = {
-  pawn: {
-    meshes: [{ name: 'custom', id: 'Pawn', positions: [0.2858, -0.3324] }]
-  },
-  avatar: {
-    meshes: [{ name: 'custom', id: 'avatar', positions: [1, 1] }]
-  },
-  die: {
-    meshes: [{ name: 'custom', id: 'DIE', positions: [0, 1] }]
-  }
-}
-
-const expectedData = Object.fromEntries(
-  Object.keys(fixtures).map(key => [key, btoa(JSON.stringify(fixtures[key]))])
-)
-
-let error
-const server = setupServer(
-  rest.get('/:name', ({ params }, res, ctx) => {
-    const data = fixtures[params.name.replace('.babylon', '')]
-    return res(data ? ctx.json(data) : ctx.status(404))
-  })
-)
-
-beforeAll(() => server.listen())
-
-beforeEach(() => {
-  jest.resetAllMocks()
-  server.resetHandlers()
-  error = jest.spyOn(logger, 'error')
-  jest.spyOn(console, 'warn').mockImplementation(() => {})
-  jest.spyOn(console, 'error').mockImplementation(() => {})
-})
-
-afterAll(() => server.close())
-
 describe('CustomShapeManager', () => {
+  const logger = makeLogger('custom-shape')
+
+  const fixtures = {
+    pawn: {
+      meshes: [{ name: 'custom', id: 'Pawn', positions: [0.2858, -0.3324] }]
+    },
+    avatar: {
+      meshes: [{ name: 'custom', id: 'avatar', positions: [1, 1] }]
+    },
+    die: {
+      meshes: [{ name: 'custom', id: 'DIE', positions: [0, 1] }]
+    }
+  }
+
+  const expectedData = Object.fromEntries(
+    Object.keys(fixtures).map(key => [key, btoa(JSON.stringify(fixtures[key]))])
+  )
+
+  let error
+  const server = setupServer(
+    rest.get('/:name', ({ params }, res, ctx) => {
+      const data = fixtures[params.name.replace('.babylon', '')]
+      return res(data ? ctx.json(data) : ctx.status(404))
+    })
+  )
+
+  beforeAll(() => server.listen())
+
+  beforeEach(() => {
+    jest.resetAllMocks()
+    server.resetHandlers()
+    error = jest.spyOn(logger, 'error')
+    jest.spyOn(console, 'warn').mockImplementation(() => {})
+    jest.spyOn(console, 'error').mockImplementation(() => {})
+  })
+
+  afterAll(() => server.close())
+
   describe('init()', () => {
     beforeEach(() => manager.clear())
 

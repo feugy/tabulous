@@ -293,10 +293,6 @@ async function animate(
   )
   return new Promise(resolve => {
     currentAnimation?.stop()
-    cancelInterval?.()
-    cancelInterval = scheduleInterval(() => {
-      onMoveObservable.notifyObservers(serialize(camera))
-    }, 15)
     currentAnimation = camera
       .getScene()
       .beginDirectAnimation(camera, anims, 0, lastFrame, false, 1, () => {
@@ -330,19 +326,4 @@ function fixAlpha(camera) {
   } else if (camera.alpha > (5 * Math.PI) / 2) {
     camera.alpha -= 2 * Math.PI
   }
-}
-
-function scheduleInterval(callback, interval) {
-  let last = 0
-  let id
-  function step(time) {
-    if (time - last >= interval) {
-      last = time
-      callback()
-    }
-    id = requestAnimationFrame(step)
-  }
-
-  id = requestAnimationFrame(step)
-  return () => cancelAnimationFrame(id)
 }

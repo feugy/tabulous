@@ -24,15 +24,14 @@ export async function toggleIndicators() {
  * @typedef {object} StackIndicator details about a stack of meshes
  * @property {string} id - base mesh id.
  * @property {number} size - number of stacked meshes.
- * @property {number} x - horizontal coordinate.
- * @property {number} y - vertical coordinate.
+ * @property {import('../3d/utils').ScreenPosition} screenPosition - position (screen coordinates).
  */
 
 /**
  * Emits visible stack indicators.
- * @type {Observable<StackIndicator & import('../3d/utils').ScreenPosition>}
+ * @type {Observable<StackIndicator>}
  */
-export const stackIndicators = merge(
+export const stackSizes = merge(
   visible$,
   selectedMeshes,
   actionMenuProps,
@@ -52,29 +51,24 @@ function getVisibleIndicators(allVisible, selected, menuProps, indicators) {
   if (!allVisible && selected.size === 0 && !menuProps) {
     return []
   }
-  return indicators.map(({ screenPosition, ...props }) => ({
-    ...props,
-    ...screenPosition
-  }))
-} /*allVisible
+  return allVisible
     ? indicators
-    : menuProps?.meshes.every(mesh => !selected.has(mesh))
-    ? getContainingStack(stacks, menuProps)
+    : hasMenu(menuProps, selected)
+    ? getMenuIndicators(menuProps, indicators)
     : getSelectedIndicators(selected, indicators)
 }
 
-function isStackBase(mesh) {
-  return (
-    mesh?.metadata?.stack?.length > 1 && mesh.metadata.stack[0].id === mesh.id
+function hasMenu(menuProps, selected) {
+  return menuProps && !selected.has(menuProps.interactedMesh)
+}
+
+function getMenuIndicators(menuProps, indicators) {
+  const indicator = indicators.find(
+    ({ mesh }) => mesh === menuProps.interactedMesh
   )
+  return indicator ? [indicator] : []
 }
 
 function getSelectedIndicators(selected, indicators) {
   return indicators.filter(({ mesh }) => selected.has(mesh))
 }
-
-function getContainingStack(stacks, menuProps) {
-  return stacks.filter(({ metadata }) =>
-    menuProps.meshes.some(mesh => metadata.stack.includes(mesh))
-  )
-}*/

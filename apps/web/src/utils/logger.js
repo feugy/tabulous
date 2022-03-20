@@ -10,6 +10,7 @@ const levels = {
   gravity: 'warn',
   hand: 'warn',
   input: 'warn',
+  indicator: 'warn',
   move: 'warn',
   players: 'warn',
   'peer-channels': 'warn',

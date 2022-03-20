@@ -1,7 +1,7 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
-import { configures3dTestEngine } from '../../test-utils'
+import { configures3dTestEngine, waitNextRender } from '../../test-utils'
 import { indicatorManager as manager } from '../../../src/3d/managers'
 
 describe('IndicatorManager', () => {
@@ -82,7 +82,7 @@ describe('IndicatorManager', () => {
       it('adds screen positions', async () => {
         const [indicator1, indicator2] = indicators
         indicator2.mesh.setAbsolutePosition(new Vector3(10, 0, 10))
-        await waitNextRender()
+        await waitNextRender(scene)
         expect(indicator1.screenPosition?.x).toBeCloseTo(1024)
         expect(indicator1.screenPosition?.y).toBeCloseTo(512)
         expect(indicator2.screenPosition?.x).toBeCloseTo(1248.979)
@@ -91,13 +91,13 @@ describe('IndicatorManager', () => {
 
       it('refreshes screen positions on render', async () => {
         const [indicator1] = indicators
-        await waitNextRender()
+        await waitNextRender(scene)
         expect(indicator1.screenPosition?.x).toBeCloseTo(1024)
         expect(indicator1.screenPosition?.y).toBeCloseTo(512)
         expect(changeReceived).not.toHaveBeenCalled()
 
         indicator1.mesh.setAbsolutePosition(new Vector3(1, 0, 1))
-        await waitNextRender()
+        await waitNextRender(scene)
         expect(indicator1.screenPosition?.x).toBeCloseTo(1048.036)
         expect(indicator1.screenPosition?.y).toBeCloseTo(489.793)
         expect(changeReceived).toHaveBeenCalledTimes(1)
@@ -106,7 +106,7 @@ describe('IndicatorManager', () => {
       describe('registerIndicator()', () => {
         it('updates existing indicators', async () => {
           const [indicator] = indicators
-          await waitNextRender()
+          await waitNextRender(scene)
           expect(changeReceived).not.toHaveBeenCalled()
           expect(manager.getById(indicator.id)).not.toHaveProperty('custom')
 
@@ -125,16 +125,10 @@ describe('IndicatorManager', () => {
           expect(changeReceived).toHaveBeenCalledTimes(1)
 
           indicator.mesh.setAbsolutePosition(new Vector3(10, 0, 10))
-          await waitNextRender()
+          await waitNextRender(scene)
           expect(changeReceived).toHaveBeenCalledTimes(1)
         })
       })
     })
-
-    async function waitNextRender() {
-      await new Promise(resolve =>
-        scene.getEngine().onEndFrameObservable.addOnce(resolve)
-      )
-    }
   })
 })

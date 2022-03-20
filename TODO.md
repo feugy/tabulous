@@ -16,6 +16,7 @@
 
 ## Refactor
 
+- selection manager should remove disposed meshes
 - create Animation objects as part of runAnimation() (constant frameRate of 60)
 - do we need to wrap card planes in an invisible box?
 - custom message on jest expect (game-interaction)
@@ -31,7 +32,7 @@
 
 ## UI
 
-- issue: while stacking many meshes together, indicators are not always correctly positioned
+- issue: error when poping all meshes of a stack
 - display peer's name when running draw animations + show peer avatar/name instead of pointer
 - configurable player position at game level
 - sort and filter catalog on game names

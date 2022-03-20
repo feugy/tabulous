@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Toolshot components/Indicators.tools.svelte: Multiple 1`] = `
+exports[`Toolshot components/StackSizes.tools.svelte: Multiple 1`] = `
 <span>
   <div
     class="indicator"
@@ -20,7 +20,7 @@ exports[`Toolshot components/Indicators.tools.svelte: Multiple 1`] = `
 </span>
 `;
 
-exports[`Toolshot components/Indicators.tools.svelte: Single 1`] = `
+exports[`Toolshot components/StackSizes.tools.svelte: Single 1`] = `
 <span>
   <div
     class="indicator"
