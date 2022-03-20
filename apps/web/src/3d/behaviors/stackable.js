@@ -11,6 +11,7 @@ import { TargetBehavior } from './targetable'
 import {
   controlManager,
   inputManager,
+  indicatorManager,
   selectionManager,
   targetManager
 } from '../managers'
@@ -247,6 +248,7 @@ export class StackBehavior extends TargetBehavior {
       const mesh = stack.pop()
       poped.push(mesh)
       setBase(mesh, null, [mesh])
+      updateIndicator(mesh, 0)
       // note: no need to enable the poped mesh target: since it was last, it's always enabled
       setStatus(stack, stack.length - 1, true, this)
       logger.info(
@@ -563,6 +565,7 @@ function setStatus(stack, rank, enabled, behavior) {
     movable.enabled = enabled
     logger.info({ mesh }, `${operation} moves for ${mesh.id}`)
   }
+  updateIndicator(mesh, enabled ? stack.length : 0)
 }
 
 function setBase(mesh, base, stack) {
@@ -573,6 +576,15 @@ function setBase(mesh, base, stack) {
     mesh.setParent(base?.mesh ?? null)
   }
   return targetable
+}
+
+function updateIndicator(mesh, size) {
+  const id = `${mesh.id}.stack-size`
+  if (size > 1) {
+    indicatorManager.registerIndicator({ id, mesh, size })
+  } else {
+    indicatorManager.unregisterIndicator({ id })
+  }
 }
 
 function buildInclineAnimation(frameRate) {

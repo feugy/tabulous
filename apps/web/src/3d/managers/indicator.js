@@ -40,17 +40,16 @@ class IndicatorManager {
    * @returns {Indicator} the registered indicator.
    */
   registerIndicator(indicator) {
-    if (!this.isManaging(indicator)) {
-      this.indicators.set(indicator.id, indicator)
-
+    const existing = this.getById(indicator)
+    if (!existing) {
       indicator.mesh.onDisposeObservable.addOnce(() =>
         this.unregisterIndicator(indicator)
       )
-
-      setPosition(indicator)
-      logger.debug({ indicator }, `registers indicator ${indicator.id}`)
-      notifyChange(this)
     }
+    this.indicators.set(indicator.id, indicator)
+    setPosition(indicator)
+    logger.debug({ indicator }, `registers indicator ${indicator.id}`)
+    notifyChange(this)
     return indicator
   }
 
@@ -72,6 +71,14 @@ class IndicatorManager {
    */
   isManaging(indicator) {
     return this.indicators.has(indicator?.id)
+  }
+
+  /**
+   * @param {string} id - requested indicator id.
+   * @returns {Indicator?} the indicator found, if any.
+   */
+  getById(id) {
+    return this.indicators.get(id)
   }
 }
 

@@ -8,6 +8,7 @@ import {
   expectInteractible,
   expectPosition,
   expectStacked,
+  expectStackIndicator,
   sleep
 } from '../../test-utils'
 import {
@@ -79,6 +80,7 @@ describe('StackBehavior', () => {
     })
     expect(behavior.mesh).toEqual(mesh)
     expect(mesh.metadata.stack).toEqual([mesh])
+    expectStackIndicator(mesh)
   })
 
   it('can hydrate with stacked mesh', () => {
@@ -254,6 +256,7 @@ describe('StackBehavior', () => {
         mesh,
         args: [1, false]
       })
+      expectStackIndicator(poped)
       ;[poped] = await mesh.metadata.pop()
       expect(poped?.id).toBe('box1')
       expectInteractible(poped)
@@ -264,6 +267,18 @@ describe('StackBehavior', () => {
         mesh,
         args: [1, false]
       })
+      expectStackIndicator(poped)
+      ;[poped] = await mesh.metadata.pop()
+      expect(poped?.id).toBe('box2')
+      expectInteractible(poped)
+      expectStacked([mesh])
+      expect(recordSpy).toHaveBeenCalledTimes(3)
+      expect(recordSpy).toHaveBeenNthCalledWith(3, {
+        fn: 'pop',
+        mesh,
+        args: [1, false]
+      })
+      expectStackIndicator(poped)
     })
 
     it('pops and moves a single mesh from stack', async () => {

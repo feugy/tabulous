@@ -38,6 +38,7 @@ describe('IndicatorManager', () => {
 
         expect(manager.registerIndicator(indicator)).toEqual(indicator)
         expect(manager.isManaging(indicator)).toBe(true)
+        expect(manager.getById(indicator.id)).toEqual(indicator)
         expect(changeReceived).toHaveBeenCalledTimes(1)
       })
 
@@ -100,6 +101,33 @@ describe('IndicatorManager', () => {
         expect(indicator1.screenPosition?.x).toBeCloseTo(1048.036)
         expect(indicator1.screenPosition?.y).toBeCloseTo(489.793)
         expect(changeReceived).toHaveBeenCalledTimes(1)
+      })
+
+      describe('registerIndicator()', () => {
+        it('updates existing indicators', async () => {
+          const [indicator] = indicators
+          await waitNextRender()
+          expect(changeReceived).not.toHaveBeenCalled()
+          expect(manager.getById(indicator.id)).not.toHaveProperty('custom')
+
+          manager.registerIndicator({ ...indicator, custom: 5 })
+          expect(manager.getById(indicator.id)).toHaveProperty('custom', 5)
+          expect(changeReceived).toHaveBeenCalledTimes(1)
+        })
+      })
+
+      describe('unregisterIndicator()', () => {
+        it('forget controlled indicators', async () => {
+          const [indicator] = indicators
+          manager.unregisterIndicator(indicator)
+          expect(manager.isManaging(indicator)).toBe(false)
+          expect(manager.getById(indicator.id)).not.toBeDefined()
+          expect(changeReceived).toHaveBeenCalledTimes(1)
+
+          indicator.mesh.setAbsolutePosition(new Vector3(10, 0, 10))
+          await waitNextRender()
+          expect(changeReceived).toHaveBeenCalledTimes(1)
+        })
       })
     })
 
