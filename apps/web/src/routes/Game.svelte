@@ -10,10 +10,10 @@
     CameraSwitch,
     CursorInfo,
     GameAside,
-    Indicators,
     MeshDetails,
     Progress,
-    RadialMenu
+    RadialMenu,
+    StackSizes
   } from '../components'
   import {
     actionMenuProps,
@@ -24,7 +24,7 @@
     currentPlayer,
     engine,
     initEngine,
-    indicators,
+    stackSizes,
     loadGame,
     longInputs,
     meshDetails,
@@ -139,7 +139,7 @@
   </div>
   <CursorInfo halos={longInputs} />
   <MeshDetails mesh={$meshDetails} on:close={handleCloseDetails} />
-  <Indicators items={$indicators} />
+  <StackSizes items={$stackSizes} />
 </main>
 <GameAside
   game={$currentGame}

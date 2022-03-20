@@ -30,7 +30,7 @@ describe('RotateBehavior', () => {
 
   it('has initial state', () => {
     const state = {
-      angle: faker.datatype.number(),
+      angle: Math.PI * 1.5,
       duration: faker.datatype.number()
     }
     const behavior = new RotateBehavior(state)
@@ -89,10 +89,22 @@ describe('RotateBehavior', () => {
       const angle = Math.PI * 0.5
       const state = { angle, duration: faker.datatype.number() }
       behavior.fromState(state)
-      expect(behavior.state).toEqual({ ...state, angle: 1.5707963267948963 })
+      expect(behavior.state).toEqual({ ...state, angle })
       expect(behavior.mesh).toEqual(mesh)
       expectRotated(mesh, angle)
       expect(animationEndReceived).not.toHaveBeenCalled()
+    })
+
+    it('rounds real angle', () => {
+      const state = { angle: Math.PI * 0.5, duration: faker.datatype.number() }
+      behavior.fromState(state)
+      expectRotated(mesh, Math.PI * 0.5)
+
+      mesh.rotation.y = Math.PI - 0.2
+      expectRotated(mesh, Math.PI, Math.PI - 0.2)
+
+      mesh.rotation.y = Math.PI * -0.5 + 0.2
+      expectRotated(mesh, Math.PI * -0.5, Math.PI * -0.5 + 0.2)
     })
 
     it('can restore state on existing mesh', () => {

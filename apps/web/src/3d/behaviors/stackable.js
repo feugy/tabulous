@@ -11,6 +11,7 @@ import { TargetBehavior } from './targetable'
 import {
   controlManager,
   inputManager,
+  indicatorManager,
   selectionManager,
   targetManager
 } from '../managers'
@@ -68,6 +69,7 @@ export class StackBehavior extends TargetBehavior {
     this.base = null
     this.inhibitControl = false
     this.dropZone = null
+    this.isReordering = false
   }
 
   /**
@@ -243,10 +245,12 @@ export class StackBehavior extends TargetBehavior {
     let shift = 0
     const moves = []
     const duration = withMove ? this._state.duration : undefined
-    for (let times = 0; times < count; times++) {
+    const limit = Math.min(count, stack.length - 1)
+    for (let times = 0; times < limit; times++) {
       const mesh = stack.pop()
       poped.push(mesh)
       setBase(mesh, null, [mesh])
+      updateIndicator(mesh, 0)
       // note: no need to enable the poped mesh target: since it was last, it's always enabled
       setStatus(stack, stack.length - 1, true, this)
       logger.info(
@@ -264,6 +268,9 @@ export class StackBehavior extends TargetBehavior {
           )
         )
       }
+    }
+    if (count > limit) {
+      poped.push(stack[0])
     }
     // note: all mesh in stack are uncontrollable, so we pass the poped mesh id
     controlManager.record({
@@ -293,7 +300,11 @@ export class StackBehavior extends TargetBehavior {
    */
   async reorder(ids, animate = true) {
     const old = this.base?.stack ?? this.stack
-    if (old.length <= 1) return
+    if (
+      old.length <= 1 ||
+      old[0].getBehaviorByName(StackBehaviorName).isReordering
+    )
+      return
 
     const posById = new Map(old.map(({ id }, i) => [id, i]))
     const stack = ids.map(id => old[posById.get(id)])
@@ -336,6 +347,7 @@ export class StackBehavior extends TargetBehavior {
         mesh.setAbsolutePosition(position)
         newPositions.push(position)
       }
+      mesh.getBehaviorByName(StackBehaviorName).isReordering = true
       last = mesh
     }
 
@@ -432,6 +444,7 @@ export class StackBehavior extends TargetBehavior {
     }
     for (const mesh of stack) {
       mesh.isPickable = true
+      mesh.getBehaviorByName(StackBehaviorName).isReordering = false
     }
   }
 
@@ -533,7 +546,7 @@ export class StackBehavior extends TargetBehavior {
       this.push(id)
     }
     this.inhibitControl = false
-
+    this.isReordering = false
     attachFunctions(this, 'push', 'pop', 'reorder', 'flipAll', 'canPush')
     attachProperty(this, 'stack', () => this.stack)
   }
@@ -563,6 +576,7 @@ function setStatus(stack, rank, enabled, behavior) {
     movable.enabled = enabled
     logger.info({ mesh }, `${operation} moves for ${mesh.id}`)
   }
+  updateIndicator(mesh, enabled ? stack.length : 0)
 }
 
 function setBase(mesh, base, stack) {
@@ -573,6 +587,15 @@ function setBase(mesh, base, stack) {
     mesh.setParent(base?.mesh ?? null)
   }
   return targetable
+}
+
+function updateIndicator(mesh, size) {
+  const id = `${mesh.id}.stack-size`
+  if (size > 1) {
+    indicatorManager.registerIndicator({ id, mesh, size })
+  } else {
+    indicatorManager.unregisterIndicator({ id })
+  }
 }
 
 function buildInclineAnimation(frameRate) {

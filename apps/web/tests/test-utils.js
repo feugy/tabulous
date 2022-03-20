@@ -18,6 +18,7 @@ import {
   MoveBehaviorName,
   RotateBehaviorName
 } from '../src/3d/behaviors/names'
+import { indicatorManager } from '../src/3d/managers'
 // mandatory side effects
 import '@babylonjs/core/Animations/animatable'
 import '@babylonjs/core/Rendering/edgesRenderer'
@@ -184,10 +185,20 @@ export function expectStacked(meshes) {
     }
     if (rank === meshes.length - 1) {
       expectInteractible(mesh, true)
+      expectStackIndicator(mesh, meshes.length === 1 ? 0 : meshes.length)
     } else {
       expectInteractible(mesh, false)
       expectOnTop(meshes[rank + 1], mesh)
+      expectStackIndicator(mesh)
     }
+  }
+}
+
+export function expectStackIndicator(mesh, size) {
+  const id = `${mesh.id}.stack-size`
+  expect(indicatorManager.isManaging({ id })).toBe(size > 0)
+  if (size) {
+    expect(indicatorManager.getById(id).size).toEqual(size)
   }
 }
 
@@ -227,4 +238,10 @@ export async function expectAnimationEnd(behavior) {
 
 export function expectMeshes(actual, expected) {
   expect(getIds(actual)).toEqual(getIds(expected))
+}
+
+export async function waitNextRender(scene) {
+  await new Promise(resolve =>
+    scene.getEngine().onEndFrameObservable.addOnce(resolve)
+  )
 }

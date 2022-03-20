@@ -13,7 +13,7 @@
   }
 </style>
 
-{#each items as { x, y, size, id } (id)}
+{#each items as { screenPosition: { x, y }, size, id } (id)}
   <div class="indicator" style="top: {y}px; left: {x}px">
     {size}
   </div>

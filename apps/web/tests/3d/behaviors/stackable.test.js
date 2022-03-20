@@ -8,6 +8,7 @@ import {
   expectInteractible,
   expectPosition,
   expectStacked,
+  expectStackIndicator,
   sleep
 } from '../../test-utils'
 import {
@@ -79,6 +80,7 @@ describe('StackBehavior', () => {
     })
     expect(behavior.mesh).toEqual(mesh)
     expect(mesh.metadata.stack).toEqual([mesh])
+    expectStackIndicator(mesh)
   })
 
   it('can hydrate with stacked mesh', () => {
@@ -254,6 +256,7 @@ describe('StackBehavior', () => {
         mesh,
         args: [1, false]
       })
+      expectStackIndicator(poped)
       ;[poped] = await mesh.metadata.pop()
       expect(poped?.id).toBe('box1')
       expectInteractible(poped)
@@ -264,6 +267,18 @@ describe('StackBehavior', () => {
         mesh,
         args: [1, false]
       })
+      expectStackIndicator(poped)
+      ;[poped] = await mesh.metadata.pop()
+      expect(poped?.id).toBe('box2')
+      expectInteractible(poped)
+      expectStacked([mesh])
+      expect(recordSpy).toHaveBeenCalledTimes(3)
+      expect(recordSpy).toHaveBeenNthCalledWith(3, {
+        fn: 'pop',
+        mesh,
+        args: [1, false]
+      })
+      expectStackIndicator(poped)
     })
 
     it('pops and moves a single mesh from stack', async () => {
@@ -310,20 +325,24 @@ describe('StackBehavior', () => {
       expectPosition(poped2, [2.5, 0.5, 0])
     })
 
-    it('pops multiple meshes from stack', async () => {
+    it('pops all meshes from a stack', async () => {
       behavior.fromState({ stackIds: ['box2', 'box1', 'box3'] })
 
-      let [poped1, poped2] = await mesh.metadata.pop(2)
+      let [poped1, poped2, poped3, poped4] = await mesh.metadata.pop(4)
       expect(poped1?.id).toBe('box3')
       expect(poped2?.id).toBe('box1')
+      expect(poped3?.id).toBe('box2')
+      expect(poped4?.id).toBe('box0')
       expectInteractible(poped1)
       expectInteractible(poped2)
-      expectStacked([mesh, meshes[1]])
+      expectInteractible(poped3)
+      expectInteractible(poped4)
+      expectStacked([mesh])
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
         fn: 'pop',
         mesh,
-        args: [2, false]
+        args: [4, false]
       })
     })
 
@@ -399,6 +418,27 @@ describe('StackBehavior', () => {
       behavior.fromState({ stackIds: ['box1', 'box2', 'box3'] })
 
       await mesh.metadata.reorder(['box2', 'box0', 'box3', 'box1'])
+
+      expectStacked([meshes[1], mesh, meshes[2], meshes[0]])
+      expect(recordSpy).toHaveBeenCalledTimes(1)
+      expect(recordSpy).toHaveBeenCalledWith({
+        fn: 'reorder',
+        mesh,
+        args: [['box2', 'box0', 'box3', 'box1'], true]
+      })
+    })
+
+    it('can not reorder while reordering', async () => {
+      behavior.fromState({ stackIds: ['box1', 'box2', 'box3'] })
+
+      const firstReordering = mesh.metadata.reorder([
+        'box2',
+        'box0',
+        'box3',
+        'box1'
+      ])
+      mesh.metadata.reorder(['box4', 'box3', 'box2', 'box1'])
+      await firstReordering
 
       expectStacked([meshes[1], mesh, meshes[2], meshes[0]])
       expect(recordSpy).toHaveBeenCalledTimes(1)

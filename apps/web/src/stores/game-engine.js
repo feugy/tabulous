@@ -13,6 +13,7 @@ import {
   cameraManager,
   controlManager,
   handManager,
+  indicatorManager,
   inputManager,
   selectionManager
 } from '../3d/managers'
@@ -28,7 +29,7 @@ const actionMenuProps$ = new Subject()
 const cameraSaves$ = new BehaviorSubject([])
 const currentCamera$ = new Subject()
 const handSaves$ = new Subject()
-const controlledMeshes$ = new BehaviorSubject(new Map())
+const indicators$ = new BehaviorSubject([])
 const selectedMeshes$ = new BehaviorSubject(new Set())
 
 /**
@@ -56,11 +57,10 @@ export const action = merge(localAction$, remoteAction$)
 export const meshDetails = meshDetails$.pipe(map(({ data }) => data))
 
 /**
- * Emits the list of controlled mesh, when it changes
- * @type {Observable<Map<string, import('@babylonjs/core').Mesh>>}
+ * Emits the list of indicators mesh, when it changes
+ * @type {Observable<import('../3d/managers').Indicator[]>}
  */
-export const controlledMeshes = controlledMeshes$.pipe(delay(1))
-// note: we delay by 1 so that mesh metadata could be updated after applying any actions
+export const indicators = indicators$.asObservable()
 
 /**
  * Emits the list of controlled mesh, when it changes
@@ -153,10 +153,7 @@ export function initEngine({
     { observable: controlManager.onActionObservable, subject: localAction$ },
     { observable: controlManager.onPointerObservable, subject: pointer$ },
     { observable: controlManager.onDetailedObservable, subject: meshDetails$ },
-    {
-      observable: controlManager.onControlledObservable,
-      subject: controlledMeshes$
-    },
+    { observable: indicatorManager.onChangeObservable, subject: indicators$ },
     {
       observable: selectionManager.onSelectionObservable,
       subject: selectedMeshes$

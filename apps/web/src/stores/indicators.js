@@ -1,22 +1,11 @@
+import { BehaviorSubject, map, merge, of, withLatestFrom } from 'rxjs'
 import {
-  BehaviorSubject,
-  delayWhen,
-  map,
-  merge,
-  of,
-  timer,
-  withLatestFrom
-} from 'rxjs'
-import { getMeshScreenPosition } from '../3d/utils'
-import {
-  action,
   actionMenuProps,
-  currentCamera,
-  controlledMeshes,
+  indicators as indicators$,
   selectedMeshes
 } from './game-engine'
 
-const visible$ = new BehaviorSubject(false)
+const visible$ = new BehaviorSubject(true)
 
 /**
  * Emits whenever the indicators are shown or hidden.
@@ -35,71 +24,51 @@ export async function toggleIndicators() {
  * @typedef {object} StackIndicator details about a stack of meshes
  * @property {string} id - base mesh id.
  * @property {number} size - number of stacked meshes.
+ * @property {import('../3d/utils').ScreenPosition} screenPosition - position (screen coordinates).
  */
 
 /**
- * Emits visible indicators.
- * @type {Observable<StackIndicator & import('../3d/utils').ScreenPosition>}
+ * Emits visible stack indicators.
+ * @type {Observable<StackIndicator>}
  */
-export const indicators = merge(
-  action.pipe(delayWhen(({ duration }) => timer((duration ?? 1) * 1.1))), // delay so meshes reached their final positions
+export const stackSizes = merge(
   visible$,
   selectedMeshes,
   actionMenuProps,
-  currentCamera
+  indicators$
 ).pipe(
   withLatestFrom(
-    merge(of(new Map()), controlledMeshes),
     merge(of(new Set()), selectedMeshes),
-    merge(of(null), actionMenuProps)
+    merge(of(null), actionMenuProps),
+    merge(of([]), indicators$)
   ),
-  map(([, controlled, selected, menuProps]) =>
-    getDisplayedStacks(visible$.value, controlled, selected, menuProps).map(
-      mesh => ({
-        id: mesh.id,
-        size: mesh.metadata.stack.length,
-        ...getMeshScreenPosition(
-          mesh.metadata.stack[mesh.metadata.stack.length - 1]
-        )
-      })
-    )
+  map(([, selected, menuProps, indicators]) =>
+    getVisibleIndicators(visible$.value, selected, menuProps, indicators)
   )
 )
 
-function getStacks(controlled) {
-  const stacks = []
-  for (const [, mesh] of controlled) {
-    if (isStackBase(mesh)) {
-      stacks.push(mesh)
-    }
-  }
-  return stacks
-}
-
-function getDisplayedStacks(allVisible, controlled, selected, menuProps) {
+function getVisibleIndicators(allVisible, selected, menuProps, indicators) {
   if (!allVisible && selected.size === 0 && !menuProps) {
     return []
   }
-  const stacks = getStacks(controlled)
   return allVisible
-    ? stacks
-    : menuProps?.meshes.every(mesh => !selected.has(mesh))
-    ? getContainingStack(stacks, menuProps)
-    : getSelectedStacks(stacks, selected)
+    ? indicators
+    : hasMenu(menuProps, selected)
+    ? getMenuIndicators(menuProps, indicators)
+    : getSelectedIndicators(selected, indicators)
 }
 
-function isStackBase(mesh) {
-  return (
-    mesh?.metadata?.stack?.length > 1 && mesh.metadata.stack[0].id === mesh.id
+function hasMenu(menuProps, selected) {
+  return menuProps && !selected.has(menuProps.interactedMesh)
+}
+
+function getMenuIndicators(menuProps, indicators) {
+  const indicator = indicators.find(
+    ({ mesh }) => mesh === menuProps.interactedMesh
   )
+  return indicator ? [indicator] : []
 }
 
-function getSelectedStacks(stacks, selected) {
-  return stacks.filter(mesh => selected.has(mesh))
-}
-
-function getContainingStack(stacks, menuProps) {
-  return stacks.filter(({ metadata }) =>
-    menuProps.meshes.some(mesh => metadata.stack.includes(mesh))
-  )
+function getSelectedIndicators(selected, indicators) {
+  return indicators.filter(({ mesh }) => selected.has(mesh))
 }
