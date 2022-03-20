@@ -428,6 +428,27 @@ describe('StackBehavior', () => {
       })
     })
 
+    it('can not reorder while reordering', async () => {
+      behavior.fromState({ stackIds: ['box1', 'box2', 'box3'] })
+
+      const firstReordering = mesh.metadata.reorder([
+        'box2',
+        'box0',
+        'box3',
+        'box1'
+      ])
+      mesh.metadata.reorder(['box4', 'box3', 'box2', 'box1'])
+      await firstReordering
+
+      expectStacked([meshes[1], mesh, meshes[2], meshes[0]])
+      expect(recordSpy).toHaveBeenCalledTimes(1)
+      expect(recordSpy).toHaveBeenCalledWith({
+        fn: 'reorder',
+        mesh,
+        args: [['box2', 'box0', 'box3', 'box1'], true]
+      })
+    })
+
     it('can reorder any stacked mesh', async () => {
       behavior.fromState({ stackIds: ['box2', 'box1', 'box3'] })
 

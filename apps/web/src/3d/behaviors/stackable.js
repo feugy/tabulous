@@ -69,6 +69,7 @@ export class StackBehavior extends TargetBehavior {
     this.base = null
     this.inhibitControl = false
     this.dropZone = null
+    this.isReordering = false
   }
 
   /**
@@ -299,7 +300,11 @@ export class StackBehavior extends TargetBehavior {
    */
   async reorder(ids, animate = true) {
     const old = this.base?.stack ?? this.stack
-    if (old.length <= 1) return
+    if (
+      old.length <= 1 ||
+      old[0].getBehaviorByName(StackBehaviorName).isReordering
+    )
+      return
 
     const posById = new Map(old.map(({ id }, i) => [id, i]))
     const stack = ids.map(id => old[posById.get(id)])
@@ -342,6 +347,7 @@ export class StackBehavior extends TargetBehavior {
         mesh.setAbsolutePosition(position)
         newPositions.push(position)
       }
+      mesh.getBehaviorByName(StackBehaviorName).isReordering = true
       last = mesh
     }
 
@@ -438,6 +444,7 @@ export class StackBehavior extends TargetBehavior {
     }
     for (const mesh of stack) {
       mesh.isPickable = true
+      mesh.getBehaviorByName(StackBehaviorName).isReordering = false
     }
   }
 
@@ -539,7 +546,7 @@ export class StackBehavior extends TargetBehavior {
       this.push(id)
     }
     this.inhibitControl = false
-
+    this.isReordering = false
     attachFunctions(this, 'push', 'pop', 'reorder', 'flipAll', 'canPush')
     attachProperty(this, 'stack', () => this.stack)
   }
