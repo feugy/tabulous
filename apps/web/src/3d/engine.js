@@ -12,6 +12,7 @@ import {
   controlManager,
   customShapeManager,
   handManager,
+  indicatorManager,
   inputManager,
   moveManager,
   selectionManager,
@@ -59,6 +60,7 @@ export function createEngine({
   controlManager.init({ scene, handScene })
   selectionManager.init({ scene, handScene })
   targetManager.init({ scene })
+  indicatorManager.init({ scene })
 
   createTable({}, scene)
   // creates light after table, so table doesn't project shadow
