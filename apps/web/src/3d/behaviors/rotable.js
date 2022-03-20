@@ -16,6 +16,8 @@ import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('rotable')
 
+const rotationStep = Math.PI * 0.5
+
 /**
  * @typedef {object} RotableState behavior persistent state, including:
  * @property {number} angle - current rotation (in radian).
@@ -60,9 +62,12 @@ export class RotateBehavior extends AnimateBehavior {
    * @returns {RotableState} this behavior's state for serialization.
    */
   get state() {
+    const angle = this.mesh
+      ? getAbsoluteRotation(this.mesh).y
+      : this._state.angle
     return {
       duration: this._state.duration,
-      angle: this.mesh ? getAbsoluteRotation(this.mesh).y : this._state.angle
+      angle: Math.round(angle / rotationStep) * rotationStep
     }
   }
 
@@ -118,7 +123,7 @@ export class RotateBehavior extends AnimateBehavior {
     const [x, y, z] = mesh.position.asArray()
     const [, yaw] = mesh.rotation.asArray()
 
-    let rotation = 0.5 * Math.PI
+    let rotation = rotationStep
     if (mesh.parent && getAbsoluteRotation(mesh.parent).z >= Math.PI) {
       rotation *= -1
     }

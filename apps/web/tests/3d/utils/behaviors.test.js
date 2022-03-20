@@ -207,12 +207,12 @@ describe('registerBehaviors() 3D utility', () => {
   })
 
   it('adds rotable behavior to a mesh', () => {
-    const state = { angle: Math.PI * 0.75, duration: 321 }
+    const state = { angle: Math.PI * 0.5, duration: 321 }
     registerBehaviors(box, { rotable: state })
-    expect(box.getBehaviorByName(RotateBehaviorName)).toHaveProperty('state', {
-      ...state,
-      angle: 2.356194497281308
-    })
+    expect(box.getBehaviorByName(RotateBehaviorName)).toHaveProperty(
+      'state',
+      state
+    )
   })
 
   it('adds detailable behavior to a mesh', () => {
@@ -325,11 +325,11 @@ describe('restoreBehaviors() 3D utility', () => {
   })
 
   it('restores rotable behavior', () => {
-    const state = { angle: Math.PI * 0.75, duration: 432 }
+    const state = { angle: Math.PI * -0.5, duration: 432 }
     const rotable = new RotateBehavior()
     box.addBehavior(rotable, true)
     restoreBehaviors(box.behaviors, { rotable: state })
-    expect(rotable.state).toEqual({ ...state, angle: 2.356194497281308 })
+    expect(rotable.state).toEqual(state)
   })
 
   it('restores detailable behavior', () => {
@@ -396,7 +396,7 @@ describe('restoreBehaviors() 3D utility', () => {
       ],
       duration: 415
     }
-    const rotable = { angle: 2.356194497281308, duration: 432 }
+    const rotable = { angle: Math.PI * -0.5, duration: 432 }
     const stackable = {
       stackIds: ['a426f1', '23f658'],
       extent: 1.5,
@@ -482,12 +482,12 @@ describe('serializeBehaviors() 3D utility', () => {
   })
 
   it('serializes rotable behavior', () => {
-    const state = { angle: Math.PI * 0.75, duration: 432 }
+    const state = { angle: Math.PI, duration: 432 }
     const mesh = CreateBox('box1')
     const rotable = new RotateBehavior(state)
     mesh.addBehavior(rotable, true)
     expect(serializeBehaviors([rotable])).toEqual({
-      rotable: { ...state, angle: 2.356194497281308 }
+      rotable: state
     })
   })
 
@@ -555,7 +555,7 @@ describe('serializeBehaviors() 3D utility', () => {
       ],
       duration: 415
     }
-    const rotable = { angle: 2.356194497281308, duration: 432 }
+    const rotable = { angle: Math.PI, duration: 432 }
     const stackable = {
       stackIds: ['a426f1', '23f658'],
       extent: 1.5,
