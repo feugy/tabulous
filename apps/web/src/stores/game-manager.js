@@ -260,7 +260,6 @@ export async function loadGame(gameId, engine) {
     for (const subscription of subscriptions) {
       subscription.unsubscribe()
     }
-    closeChannels()
   }
 
   logger.info({ gameId }, `entering game ${gameId}`)
