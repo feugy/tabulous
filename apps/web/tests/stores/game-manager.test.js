@@ -21,6 +21,7 @@ import {
   runSubscription
 } from '../../src/stores/graphql-client'
 import {
+  closeChannels,
   connectWith,
   lastConnectedId,
   lastDisconnectedId,
@@ -448,6 +449,7 @@ describe('given a mocked game engine', () => {
           expect(loadThread).not.toHaveBeenCalled()
           expect(runMutation).not.toHaveBeenCalled()
           expect(send).not.toHaveBeenCalled()
+          expect(closeChannels).toHaveBeenCalledTimes(1)
         })
 
         it('loads game data from online players', async () => {
@@ -525,6 +527,7 @@ describe('given a mocked game engine', () => {
               partner2.id
             )
             expect(send).toHaveBeenCalledTimes(1)
+            expect(closeChannels).not.toHaveBeenCalled()
           })
 
           it('does not take host role when not being the first online', async () => {

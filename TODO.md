@@ -285,6 +285,13 @@ done
 2. convert to ktx2
 3. make a png equivalent for WebGL1 engines, rotated so it match meshes's UV
 
+Some useful commands:
+
+- [remove background color](https://stackoverflow.com/a/69875689/1182976):
+  ```
+  convert in.png -alpha off -fuzz 10% -fill none -draw "matte 1,1 floodfill"  \( +clone -alpha extract -blur 0x2 -level 50x100% \) -alpha off -compose copy_opacity -composite out.png
+  ```
+
 There is no built-in way for the remote side of an WebRTC connection to know that video or audio was disabled.
 The mute/unmute events are meant for network issues. Stopping a track is definitive. Adding/removing track from stream only works locally (or would trigger re-negociation)
 
