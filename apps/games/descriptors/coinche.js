@@ -25,7 +25,7 @@ for (const suit of suits) {
       meshes.push({
         shape: 'card',
         id: `${suit}-${index}`,
-        texture: `/assets/french-suited-card/textures/${suit}-${index}.ktx2`,
+        texture: `/games/french-suited-card/textures/${suit}-${index}.ktx2`,
         x: 0,
         y: 0,
         z: 0,
