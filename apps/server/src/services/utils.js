@@ -85,7 +85,7 @@ function isRelativeAsset(path) {
 }
 
 function addAbsoluteAsset(path, gameId, assetType) {
-  return `/assets/${gameId}/${assetType}s/${path}`
+  return `/games/${gameId}/${assetType}s/${path}`
 }
 
 function randomizeBags(bags, meshById) {

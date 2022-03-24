@@ -24,7 +24,7 @@ cd apps/server
 rm -rf dist
 rm -rf node_modules
 npm install --production --no-package-lock
-tar --create --file ../../dist/server.tar.gz -z node_modules/ src/ games/ package.json 
+tar --create --file ../../dist/server.tar.gz -z node_modules/ src/ package.json 
 cd ../..
 
 # build games

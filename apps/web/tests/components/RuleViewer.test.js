@@ -19,7 +19,7 @@ describe('RuleViewer component', () => {
     renderComponent({ lastPage: 2 })
     const image = screen.queryByRole('img')
     const [previous, next] = screen.queryAllByRole('button')
-    expect(image).toHaveAttribute('src', `assets/${game}/rules/1.png`)
+    expect(image).toHaveAttribute('src', `games/${game}/rules/1.png`)
     expect(previous).toBeDisabled()
     expect(next).toBeEnabled()
     expect(handleChange).not.toHaveBeenCalled()
@@ -29,12 +29,12 @@ describe('RuleViewer component', () => {
     renderComponent({ lastPage: 2 })
     const image = screen.queryByRole('img')
     const [previous, next] = screen.queryAllByRole('button')
-    expect(image).toHaveAttribute('src', `assets/${game}/rules/1.png`)
+    expect(image).toHaveAttribute('src', `games/${game}/rules/1.png`)
     expect(handleChange).not.toHaveBeenCalled()
 
     fireEvent.click(next)
     await tick()
-    expect(image).toHaveAttribute('src', `assets/${game}/rules/2.png`)
+    expect(image).toHaveAttribute('src', `games/${game}/rules/2.png`)
     expect(previous).toBeEnabled()
     expect(next).toBeEnabled()
     expect(handleChange).toHaveBeenNthCalledWith(
@@ -44,7 +44,7 @@ describe('RuleViewer component', () => {
 
     fireEvent.click(next)
     await tick()
-    expect(image).toHaveAttribute('src', `assets/${game}/rules/3.png`)
+    expect(image).toHaveAttribute('src', `games/${game}/rules/3.png`)
     expect(previous).toBeEnabled()
     expect(next).toBeDisabled()
     expect(handleChange).toHaveBeenNthCalledWith(
@@ -58,12 +58,12 @@ describe('RuleViewer component', () => {
     renderComponent({ lastPage: 2 })
     const image = screen.queryByRole('img')
     const [previous, next] = screen.queryAllByRole('button')
-    expect(image).toHaveAttribute('src', `assets/${game}/rules/1.png`)
+    expect(image).toHaveAttribute('src', `games/${game}/rules/1.png`)
     expect(handleChange).not.toHaveBeenCalled()
 
     fireEvent.click(next)
     await tick()
-    expect(image).toHaveAttribute('src', `assets/${game}/rules/2.png`)
+    expect(image).toHaveAttribute('src', `games/${game}/rules/2.png`)
     expect(previous).toBeEnabled()
     expect(next).toBeEnabled()
     expect(handleChange).toHaveBeenNthCalledWith(
@@ -73,7 +73,7 @@ describe('RuleViewer component', () => {
 
     fireEvent.click(previous)
     await tick()
-    expect(image).toHaveAttribute('src', `assets/${game}/rules/1.png`)
+    expect(image).toHaveAttribute('src', `games/${game}/rules/1.png`)
     expect(previous).toBeDisabled()
     expect(next).toBeEnabled()
     expect(handleChange).toHaveBeenNthCalledWith(

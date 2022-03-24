@@ -126,7 +126,7 @@ export function loadConfiguration() {
     plugins: {
       graphql: { graphiql: isProduction ? null : 'playground' },
       static: {
-        pathPrefix: '/assets',
+        pathPrefix: '/games',
         path: GAMES_ASSETS_PATH ?? join('..', 'games', 'assets')
       }
     },

@@ -41,7 +41,7 @@ describe('loadConfiguration()', () => {
       https: { key, cert },
       plugins: {
         graphql: { graphiql: 'playground' },
-        static: { path: gamesAssetsPath, pathPrefix: '/assets' }
+        static: { path: gamesAssetsPath, pathPrefix: '/games' }
       },
       games: { path: gamesPath },
       data: { path: dataPath }
@@ -65,7 +65,7 @@ describe('loadConfiguration()', () => {
         graphql: { graphiql: null },
         static: {
           path: resolve(cwd(), '..', 'games', 'assets'),
-          pathPrefix: '/assets'
+          pathPrefix: '/games'
         }
       },
       games: { path: resolve(cwd(), '..', 'games', 'descriptors') },
@@ -85,7 +85,7 @@ describe('loadConfiguration()', () => {
         graphql: { graphiql: 'playground' },
         static: {
           path: resolve(cwd(), '..', 'games', 'assets'),
-          pathPrefix: '/assets'
+          pathPrefix: '/games'
         }
       },
       games: { path: resolve(cwd(), '..', 'games', 'descriptors') },

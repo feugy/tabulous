@@ -47,7 +47,7 @@ describe('createMeshes()', () => {
     const texture = faker.system.commonFileName('png')
     const descriptor = { meshes: [{ id: 1, texture }] }
     expect(createMeshes(gameId, descriptor)[0].texture).toEqual(
-      `/assets/${gameId}/textures/${texture}`
+      `/games/${gameId}/textures/${texture}`
     )
   })
 
@@ -70,7 +70,7 @@ describe('createMeshes()', () => {
     const file = faker.system.commonFileName('png')
     const descriptor = { meshes: [{ id: 1, file }] }
     expect(createMeshes(gameId, descriptor)[0].file).toEqual(
-      `/assets/${gameId}/models/${file}`
+      `/games/${gameId}/models/${file}`
     )
   })
 
@@ -86,7 +86,7 @@ describe('createMeshes()', () => {
     const frontImage = faker.system.commonFileName('png')
     const descriptor = { meshes: [{ id: 1, detailable: { frontImage } }] }
     expect(createMeshes(gameId, descriptor)[0].detailable.frontImage).toEqual(
-      `/assets/${gameId}/images/${frontImage}`
+      `/games/${gameId}/images/${frontImage}`
     )
   })
 
@@ -104,7 +104,7 @@ describe('createMeshes()', () => {
     const backImage = faker.system.commonFileName('png')
     const descriptor = { meshes: [{ id: 1, detailable: { backImage } }] }
     expect(createMeshes(gameId, descriptor)[0].detailable.backImage).toEqual(
-      `/assets/${gameId}/images/${backImage}`
+      `/games/${gameId}/images/${backImage}`
     )
   })
 
@@ -127,13 +127,13 @@ describe('createMeshes()', () => {
       meshes: [{ id: 1, texture, file, detailable: { frontImage, backImage } }]
     }
     const [mesh] = createMeshes(gameId, descriptor)
-    expect(mesh.texture).toEqual(`/assets/${gameId}/textures/${texture}`)
-    expect(mesh.file).toEqual(`/assets/${gameId}/models/${file}`)
+    expect(mesh.texture).toEqual(`/games/${gameId}/textures/${texture}`)
+    expect(mesh.file).toEqual(`/games/${gameId}/models/${file}`)
     expect(mesh.detailable.frontImage).toEqual(
-      `/assets/${gameId}/images/${frontImage}`
+      `/games/${gameId}/images/${frontImage}`
     )
     expect(mesh.detailable.backImage).toEqual(
-      `/assets/${gameId}/images/${backImage}`
+      `/games/${gameId}/images/${backImage}`
     )
   })
 

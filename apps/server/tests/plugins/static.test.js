@@ -9,7 +9,7 @@ describe('static plugin', () => {
   afterEach(() => server?.close())
 
   it('serves static files', async () => {
-    const pathPrefix = '/assets'
+    const pathPrefix = '/games'
     server = fastify({ logger: false })
     server.register(staticPlugin, {
       pathPrefix,

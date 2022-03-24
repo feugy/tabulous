@@ -17,7 +17,7 @@ describe('CatalogItem component', () => {
     renderComponent({ game })
     expect(screen.getByRole('img')).toHaveAttribute(
       'src',
-      `assets/${game.name}/catalog/cover.png`
+      `games/${game.name}/catalog/cover.png`
     )
     expect(screen.getByRole('heading')).toHaveTextContent(title)
     expect(handleClick).not.toHaveBeenCalled()

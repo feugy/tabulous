@@ -36,7 +36,7 @@ export default defineConfig({
       '^/graphql/?': {
         target: 'http://localhost:3001'
       },
-      '/assets': {
+      '/games': {
         target: 'http://localhost:3001'
       }
     }
