@@ -22,7 +22,7 @@ server {
   }
 
   location /games {
-    root /home/tabulous/games/assets;
+    alias /home/tabulous/games/assets;
   }
 
   location / {
