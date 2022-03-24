@@ -35,13 +35,36 @@ import { shuffle } from '../utils/index.js'
 
 /**
  * Creates a unique game from a game descriptor.
+ * @param {string} kind - created game's kind.
  * @param {GameDescriptor} descriptor - to create game from.
  * @returns {import('./games').Mesh[]} a list of serialized 3D meshes.
  */
-export function createMeshes(descriptor) {
+export function createMeshes(kind, descriptor) {
   const { slots } = descriptor
   const meshById = cloneAll(descriptor.meshes)
   const allMeshes = [...meshById.values()]
+  for (const mesh of allMeshes) {
+    if (isRelativeAsset(mesh.texture)) {
+      mesh.texture = addAbsoluteAsset(mesh.texture, kind, 'texture')
+    }
+    if (isRelativeAsset(mesh.file)) {
+      mesh.file = addAbsoluteAsset(mesh.file, kind, 'model')
+    }
+    if (isRelativeAsset(mesh.detailable?.frontImage)) {
+      mesh.detailable.frontImage = addAbsoluteAsset(
+        mesh.detailable.frontImage,
+        kind,
+        'image'
+      )
+    }
+    if (isRelativeAsset(mesh.detailable?.backImage)) {
+      mesh.detailable.backImage = addAbsoluteAsset(
+        mesh.detailable.backImage,
+        kind,
+        'image'
+      )
+    }
+  }
   const meshesByBagId = randomizeBags(descriptor.bags, meshById)
   for (const slot of slots ?? []) {
     fillSlot(slot, meshesByBagId, allMeshes)
@@ -55,6 +78,14 @@ function cloneAll(meshes) {
     all.set(mesh.id, merge(mesh, {}))
   }
   return all
+}
+
+function isRelativeAsset(path) {
+  return path && !path.startsWith('#') && !path.startsWith('/')
+}
+
+function addAbsoluteAsset(path, gameId, assetType) {
+  return `/assets/${gameId}/${assetType}s/${path}`
 }
 
 function randomizeBags(bags, meshById) {

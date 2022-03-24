@@ -3,6 +3,7 @@
 type Game {
   id: ID!
   kind: String!
+  locales: ItemLocales!
   created: Float!
   players: [Player]!
   meshes: [Mesh]!

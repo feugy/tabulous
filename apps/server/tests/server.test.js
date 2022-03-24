@@ -2,6 +2,7 @@ import { jest } from '@jest/globals'
 import { createServer } from 'http'
 import { join, resolve } from 'path'
 import { cwd } from 'process'
+import { fileURLToPath } from 'url'
 import repositories from '../src/repositories/index.js'
 import { startServer } from '../src/server.js'
 
@@ -31,7 +32,16 @@ describe('startServer()', () => {
     app = await startServer({
       serverUrl: { port },
       logger: { level: 'fatal' },
-      plugins: { static: { path: resolve(cwd(), 'games') } },
+      plugins: {
+        static: {
+          path: resolve(
+            fileURLToPath(import.meta.url),
+            '..',
+            'fixtures',
+            'games'
+          )
+        }
+      },
       data: { path: 'data' },
       games: { path: 'games' }
     })

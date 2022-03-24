@@ -44,6 +44,7 @@ const validate = new Ajv({ allErrors: true }).compile({
         },
         static: {
           properties: {
+            pathPrefix: { type: 'string' },
             path: { type: 'string' }
           }
         }
@@ -79,9 +80,9 @@ function makeAbsolute(path) {
 
 /**
  * Synchronously loads and validates the server configuration from environment variables:
- * - CLIENT_ROOT: folder path (relative to current working directory) containing UI static files. Defaults to '../web/dist'.
  * - DATA_PATH: folder path (relative to current working directory) containing data stores. Defaults to './data'.
- * - GAMES_PATH: folder path (relative to current working directory) containing game descriptors. Defaults to './games'.
+ * - GAMES_PATH: folder path (relative to current working directory) containing game descriptors. Defaults to '../games/descriptors'.
+ * - GAMES_ASSETS_PATH: folder path (relative to current working director) containing game publc assets. Defaults to '../games/assets'.
  * - HOST : IP4/6 address this server will listen to.
  * - HTTPS_CERT: relative or absolute path to the PEM file of your SSL certificate. Required in production, defaults to 'keys/cert.pem'.
  * - HTTPS_KEY: relative or absolute path to the PEM file of your SSL key. Rrequired in production, defaults to 'keys/privkey.pem'.
@@ -95,9 +96,9 @@ function makeAbsolute(path) {
  */
 export function loadConfiguration() {
   const {
-    CLIENT_ROOT,
     DATA_PATH,
     GAMES_PATH,
+    GAMES_ASSETS_PATH,
     HOST,
     HTTPS_CERT,
     HTTPS_KEY,
@@ -124,10 +125,13 @@ export function loadConfiguration() {
     logger: { level: LOG_LEVEL ?? 'debug' },
     plugins: {
       graphql: { graphiql: isProduction ? null : 'playground' },
-      static: { path: CLIENT_ROOT ?? join('..', 'web', 'dist') }
+      static: {
+        pathPrefix: '/assets',
+        path: GAMES_ASSETS_PATH ?? join('..', 'games', 'assets')
+      }
     },
     games: {
-      path: GAMES_PATH ?? 'games'
+      path: GAMES_PATH ?? join('..', 'games', 'descriptors')
     },
     data: {
       path: DATA_PATH ?? 'data'

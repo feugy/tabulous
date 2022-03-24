@@ -2,7 +2,8 @@ import staticPlugin from 'fastify-static'
 
 /**
  * @typedef {object} StaticOptions Static content plugin options, including:
- * @param {string} opts.path - folder absolute path containing UI static files
+ * @param {string} opts.path - folder absolute path containing static files
+ * @param {string} opts.pathPrefix - URL path prefix for the static directory
  */
 
 /**
@@ -12,7 +13,11 @@ import staticPlugin from 'fastify-static'
  * @param {StaticOptions} opts - plugin's options.
  */
 async function registerClient(app, opts) {
-  app.register(staticPlugin, { ...opts, root: opts.path })
+  app.register(staticPlugin, {
+    ...opts,
+    prefix: opts.pathPrefix,
+    root: opts.path
+  })
 }
 
 export default registerClient
