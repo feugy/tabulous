@@ -1,4 +1,6 @@
 3d models/
+apps/games/assets/
+apps/games/descriptors/
 certbot/
 coverage/
 data/
