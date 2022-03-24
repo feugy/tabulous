@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte'
-  import { _ } from 'svelte-intl'
+  import { _, locale } from 'svelte-intl'
   import { push } from 'svelte-spa-router'
   import Button from './Button.svelte'
 
@@ -41,7 +41,7 @@
 
 <article on:click={() => push(`/game/${game.id}`)}>
   <span class="title">
-    <h3>{$_(`games.${game.kind}`)}</h3>
+    <h3>{game?.locales?.[$locale]?.title}</h3>
     {#if owned}<Button secondary icon="delete" on:click={handleDelete} />{/if}
   </span>
   <span class="created">{$_('{ created, date, short-date }', game)}</span>

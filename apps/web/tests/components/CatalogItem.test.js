@@ -1,6 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import html from 'svelte-htm'
-import { translate } from '../test-utils'
 import CatalogItem from '../../src/components/CatalogItem.svelte'
 
 describe('CatalogItem component', () => {
@@ -13,15 +12,14 @@ describe('CatalogItem component', () => {
   }
 
   it(`can click on the entire card`, () => {
-    const game = { name: 'splendor' }
+    const title = 'Richii Mahjong'
+    const game = { name: 'richii', locales: { fr: { title } } }
     renderComponent({ game })
     expect(screen.getByRole('img')).toHaveAttribute(
       'src',
-      `/images/catalog/${game.name}.png`
+      `assets/${game.name}/catalog/cover.png`
     )
-    expect(screen.getByRole('heading')).toHaveTextContent(
-      translate(`games.${game.name}`)
-    )
+    expect(screen.getByRole('heading')).toHaveTextContent(title)
     expect(handleClick).not.toHaveBeenCalled()
 
     fireEvent.click(screen.getByRole('article'))

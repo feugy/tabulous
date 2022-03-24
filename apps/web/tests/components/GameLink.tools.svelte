@@ -9,6 +9,7 @@
   const game = {
     id: 'fb236220-62a3-4c97-b938-716512386153',
     kind: 'riichi',
+    locales: { fr: { title: 'Richii Mahjong' } },
     created: 1619983503676
   }
 </script>

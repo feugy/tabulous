@@ -1,6 +1,11 @@
 query listCatalog {
   listCatalog {
     name
+    locales {
+      fr {
+        title
+      }
+    }
     minAge
     minTime
   }

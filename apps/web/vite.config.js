@@ -15,7 +15,8 @@ export default defineConfig({
       url: '/atelier/',
       path: 'tests',
       setupPath: './atelier/setup',
-      uiSettings: { backgrounds: ['white', '', '#e0e0e0', '#a0a0a0', 'black'] }
+      uiSettings: { backgrounds: ['white', '', '#e0e0e0', '#a0a0a0', 'black'] },
+      publicDir: ['./tests']
     })
   ],
   optimizeDeps: {
@@ -33,6 +34,9 @@ export default defineConfig({
         ws: true
       },
       '^/graphql/?': {
+        target: 'http://localhost:3001'
+      },
+      '/assets': {
         target: 'http://localhost:3001'
       }
     }

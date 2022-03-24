@@ -1,8 +1,10 @@
 <script>
   import { createEventDispatcher } from 'svelte'
-  import { _ } from 'svelte-intl'
+  import { _, locale } from 'svelte-intl'
 
   export let game
+
+  $: title = game?.locales?.[$locale]?.title
 
   const dispatch = createEventDispatcher()
 </script>
@@ -43,10 +45,10 @@
 </style>
 
 <article on:click={() => dispatch('click', game)}>
-  <img src="/images/catalog/{game.name}.png" alt={$_(`games.${game.name}`)} />
+  <img src="assets/{game.name}/catalog/cover.png" alt={title} />
   <div class="content">
     <caption>
-      <h3>{$_(`games.${game.name}`)}</h3>
+      <h3>{title}</h3>
       <span class="characteristics">
         {#if game.minTime}<span>{$_('labels.game-min-time', game)}</span>{/if}
         {#if game.minAge}<span>{$_('labels.game-min-age', game)}</span>{/if}

@@ -91,6 +91,11 @@ subscription listGames {
     players {
       ...lightPlayer
     }
+    locales {
+      fr {
+        title
+      }
+    }
   }
 }
 
