@@ -155,10 +155,11 @@ export async function createGame(kind, playerId) {
     throw new Error(`Access to game ${kind} is restricted`)
   }
   const created = await repositories.games.save({
+    locales: { ...descriptor.locales },
     kind,
     created: Date.now(),
     playerIds: [playerId],
-    meshes: createMeshes(descriptor),
+    meshes: createMeshes(kind, descriptor),
     messages: [],
     cameras: [],
     hands: [],

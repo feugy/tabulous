@@ -1,3 +1,5 @@
+apps/games/assets/
+apps/games/descriptors/
 coverage/
 dist/
 node_modules/

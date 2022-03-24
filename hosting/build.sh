@@ -27,3 +27,7 @@ npm install --production --no-package-lock
 tar --create --file ../../dist/server.tar.gz -z node_modules/ src/ games/ package.json 
 cd ../..
 
+# build games
+cd apps/games
+tar --create --file ../../dist/games.tar.gz -z assets/ descriptors/ package.json 
+cd ../..

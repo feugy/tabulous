@@ -20,12 +20,6 @@ formats:
       hour: 2-digit
       minute: 2-digit
       month: short
-games:
-  coinche: Coinche
-  klondike: Solitaire
-  prima-ballerina: Petite danseuse étoile
-  splendor: Splendor
-  riichi: Riichi Mahjong
 labels:
   confirm-game-deletion: Souhaitez vous vraiment supprimer cette partie de {kind} ?
   game-min-age: 'age : {minAge}+'

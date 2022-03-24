@@ -1,9 +1,18 @@
 type CatalogItem {
   name: ID!
+  locales: ItemLocales!
   # minimum age in years
   minAge: Int
   # minimum time in minutes
   minTime: Int
+}
+
+type ItemLocales {
+  fr: ItemLocale
+}
+
+type ItemLocale {
+  title: String!
 }
 
 extend type Query {

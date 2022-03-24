@@ -13,12 +13,12 @@
     "ajv": "^8.9.0",
     "deepmerge": "^4.2.2",
     "dotenv": "^14.3.2",
-    "fastify": "^3.27.0",
+    "fastify": "^3.27.4",
     "fastify-plugin": "^3.0.1",
-    "fastify-static": "^4.5.0",
-    "fastify-websocket": "^4.0.0",
-    "mercurius": "^9.1.0",
-    "pino-pretty": "^7.5.1",
+    "fastify-static": "^4.6.1",
+    "fastify-websocket": "^4.2.1",
+    "mercurius": "^9.3.5",
+    "pino-pretty": "^7.5.4",
     "rxjs": "^7.5.2"
   },
   "devDependencies": {

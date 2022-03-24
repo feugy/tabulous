@@ -61,6 +61,7 @@ describe('given a subscription to game lists and an initialized repository', () 
         id: expect.any(String),
         created: expect.any(Number),
         kind,
+        locales: expect.any(Object),
         playerIds: [playerId],
         meshes: expect.any(Array),
         cameras: [],

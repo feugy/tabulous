@@ -7,7 +7,7 @@ exports[`Toolshot components/CatalogItem.tools.svelte: No age nor time 1`] = `
   <article>
     <img
       alt="Solitaire"
-      src="/images/catalog/klondike.png"
+      src="assets/klondike/catalog/cover.png"
     />
      
     <div
@@ -35,8 +35,8 @@ exports[`Toolshot components/CatalogItem.tools.svelte: With Age and time 1`] = `
 >
   <article>
     <img
-      alt="Splendor"
-      src="/images/catalog/splendor.png"
+      alt="Solitaire"
+      src="assets/klondike/catalog/cover.png"
     />
      
     <div
@@ -44,7 +44,7 @@ exports[`Toolshot components/CatalogItem.tools.svelte: With Age and time 1`] = `
     >
       <caption>
         <h3>
-          Splendor
+          Solitaire
         </h3>
          
         <span

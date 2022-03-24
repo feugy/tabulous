@@ -1,6 +1,8 @@
 <script>
   import { ToolBox, Tool } from '@atelier-wb/svelte'
   import { CatalogItem } from '../../src/components'
+
+  const locales = { fr: { title: 'Solitaire' } }
 </script>
 
 <style lang="postcss">
@@ -15,7 +17,7 @@
 <ToolBox name="Components/Catalog Item" layout="centered">
   <Tool
     name="No age nor time"
-    props={{ game: { name: 'klondike' } }}
+    props={{ game: { name: 'klondike', locales } }}
     let:props
     let:handleEvent
   >
@@ -27,7 +29,12 @@
   <Tool
     name="With Age and time"
     props={{
-      game: { name: 'splendor', minTime: 30, minAge: 10, restricted: true }
+      game: {
+        name: 'klondike',
+        locales,
+        minTime: 30,
+        minAge: 10
+      }
     }}
     let:props
     let:handleEvent

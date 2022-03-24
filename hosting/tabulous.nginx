@@ -21,6 +21,10 @@ server {
     proxy_set_header Host $host;
   }
 
+  location /assets {
+    root /home/tabulous/games/assets;
+  }
+
   location / {
     root /home/tabulous/web;
     index index.html;

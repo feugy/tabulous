@@ -9,18 +9,24 @@ describe('static plugin', () => {
   afterEach(() => server?.close())
 
   it('serves static files', async () => {
+    const pathPrefix = '/assets'
     server = fastify({ logger: false })
     server.register(staticPlugin, {
-      path: resolve(fileURLToPath(import.meta.url), '..', '..', '..', 'games')
+      pathPrefix,
+      path: resolve(
+        fileURLToPath(import.meta.url),
+        '..',
+        '..',
+        'fixtures',
+        'games'
+      )
     })
     await server.listen()
-    expect(await server.inject({ url: 'splendor.js' })).toHaveProperty(
-      'statusCode',
-      200
-    )
-    expect(await server.inject({ url: 'unknown' })).toHaveProperty(
-      'statusCode',
-      404
-    )
+    expect(
+      await server.inject({ url: `${pathPrefix}/splendor.js` })
+    ).toHaveProperty('statusCode', 200)
+    expect(
+      await server.inject({ url: `${pathPrefix}/unknown` })
+    ).toHaveProperty('statusCode', 404)
   })
 })

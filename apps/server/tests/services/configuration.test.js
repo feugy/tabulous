@@ -16,8 +16,8 @@ describe('loadConfiguration()', () => {
     const port = faker.datatype.number({ min: 0, max: 8000 })
     const host = faker.internet.ip()
     const level = faker.random.arrayElement(['fatal', 'error', 'info', 'debug'])
-    const staticPath = resolve(cwd(), faker.system.directoryPath())
     const gamesPath = faker.system.directoryPath()
+    const gamesAssetsPath = faker.system.directoryPath()
     const dataPath = faker.system.directoryPath()
     const key = faker.system.filePath()
     const cert = faker.system.filePath()
@@ -27,8 +27,8 @@ describe('loadConfiguration()', () => {
       PORT: port,
       HOST: host,
       LOG_LEVEL: level,
-      CLIENT_ROOT: staticPath,
       GAMES_PATH: gamesPath,
+      GAMES_ASSETS_PATH: gamesAssetsPath,
       DATA_PATH: dataPath,
       HTTPS_CERT: cert,
       HTTPS_KEY: key
@@ -41,7 +41,7 @@ describe('loadConfiguration()', () => {
       https: { key, cert },
       plugins: {
         graphql: { graphiql: 'playground' },
-        static: { path: staticPath }
+        static: { path: gamesAssetsPath, pathPrefix: '/assets' }
       },
       games: { path: gamesPath },
       data: { path: dataPath }
@@ -63,9 +63,12 @@ describe('loadConfiguration()', () => {
       },
       plugins: {
         graphql: { graphiql: null },
-        static: { path: resolve(cwd(), '..', 'web', 'dist') }
+        static: {
+          path: resolve(cwd(), '..', 'games', 'assets'),
+          pathPrefix: '/assets'
+        }
       },
-      games: { path: resolve(cwd(), 'games') },
+      games: { path: resolve(cwd(), '..', 'games', 'descriptors') },
       data: { path: resolve(cwd(), 'data') }
     })
   })
@@ -80,9 +83,12 @@ describe('loadConfiguration()', () => {
       https: null,
       plugins: {
         graphql: { graphiql: 'playground' },
-        static: { path: resolve(cwd(), '..', 'web', 'dist') }
+        static: {
+          path: resolve(cwd(), '..', 'games', 'assets'),
+          pathPrefix: '/assets'
+        }
       },
-      games: { path: resolve(cwd(), 'games') },
+      games: { path: resolve(cwd(), '..', 'games', 'descriptors') },
       data: { path: resolve(cwd(), 'data') }
     })
   })
@@ -105,9 +111,12 @@ describe('loadConfiguration()', () => {
     )
   })
 
-  it('considers CLIENT_ROOT relatively to current working directory', () => {
+  it('considers GAMES_ASSETS_PATH relatively to current working directory', () => {
     process.env.CLIENT_ROOT = join('.', 'test')
-    expect(loadConfiguration().plugins.static.path).toEqual(join(cwd(), 'test'))
+    process.env.GAMES_ASSETS_PATH = join('.', 'test2')
+    expect(loadConfiguration().plugins.static.path).toEqual(
+      join(cwd(), 'test2')
+    )
   })
 
   it('considers GAMES_PATH relatively to current working directory', () => {
