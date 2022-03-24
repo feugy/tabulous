@@ -8,6 +8,7 @@ mkdir -p ~/nginx
 mkdir -p ~/systemd
 mkdir -p ~/server
 mkdir -p ~/web
+mkdir -p ~/games
 
 # move configuration files
 mv -f ~/dist/tabulous.nginx ~/nginx/tabulous
@@ -18,6 +19,7 @@ mv -f ~/dist/.nvmrc ~/server
 # unpack files
 tar -x --file ~/dist/web.tar.gz -z --directory ~/web
 tar -x --file ~/dist/server.tar.gz -z --directory ~/server
+tar -x --file ~/dist/games.tar.gz -z --directory ~/games
 
 # ensures correct Node.js version
 cd ~/server
