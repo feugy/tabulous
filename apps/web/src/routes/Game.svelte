@@ -135,11 +135,11 @@
     on:contextmenu|preventDefault
   >
     <canvas bind:this={canvas} />
+    <StackSizes items={$stackSizes} />
     <RadialMenu {...$actionMenuProps || {}} />
   </div>
   <CursorInfo halos={longInputs} />
   <MeshDetails mesh={$meshDetails} on:close={handleCloseDetails} />
-  <StackSizes items={$stackSizes} />
 </main>
 <GameAside
   game={$currentGame}
