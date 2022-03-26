@@ -47,7 +47,7 @@ export function createLights({ scene, handScene } = {}) {
 
 function makeDirectionalLight(scene) {
   const light = new DirectionalLight('sun', new Vector3(0, -1, 0), scene)
-  light.intensity = 0.8
+  light.intensity = 0.95
   light.specular = Color3.Black()
   return light
 }
