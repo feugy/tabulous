@@ -45,7 +45,7 @@
 </style>
 
 <article on:click={() => dispatch('click', game)}>
-  <img src="games/{game.name}/catalog/cover.png" alt={title} />
+  <img src="games/{game.name}/catalog/cover.webp" alt={title} />
   <div class="content">
     <caption>
       <h3>{title}</h3>

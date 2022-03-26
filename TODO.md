@@ -291,6 +291,10 @@ Some useful commands:
   ```
   convert in.png -alpha off -fuzz 10% -fill none -draw "matte 1,1 floodfill"  \( +clone -alpha extract -blur 0x2 -level 50x100% \) -alpha off -compose copy_opacity -composite out.png
   ```
+- [convert all pngs to webp](https://stackoverflow.com/a/27784462/1182976);
+  ```
+  convert *.png -set filename:base "%[basename]" -define webp:lossless=true "%[filename:base].webp"
+  ```
 
 There is no built-in way for the remote side of an WebRTC connection to know that video or audio was disabled.
 The mute/unmute events are meant for network issues. Stopping a track is definitive. Adding/removing track from stream only works locally (or would trigger re-negociation)

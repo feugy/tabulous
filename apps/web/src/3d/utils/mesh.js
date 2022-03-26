@@ -74,7 +74,7 @@ export function configureMaterial(mesh, texture) {
  */
 export function adaptTexture(texture) {
   return texture && Engine.LastCreatedEngine.version === 1
-    ? texture.replace('.ktx2', '.gl1.png')
+    ? texture.replace('.ktx2', '.gl1.webp')
     : texture
 }
 

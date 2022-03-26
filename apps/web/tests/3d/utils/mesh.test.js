@@ -90,12 +90,12 @@ describe('isContaining() 3D utility', () => {
 
 describe('adaptTexture() 3D utility', () => {
   const ktx2 = 'some/path/to/texture.ktx2'
-  const png = 'some/path/to/texture.gl1.png'
+  const webp = 'some/path/to/texture.gl1.webp'
 
   describe('given an WebGL 1 engine', () => {
     it.each([
-      ['downgrades KTX2 to PNG', ktx2, png],
-      ['keeps PNG as PNG', png, png],
+      ['downgrades KTX2 to WebP', ktx2, webp],
+      ['keeps WebP as WebP', webp, webp],
       ['handles null', null, null],
       ['handles undefined', undefined, undefined]
     ])('%s', (text, original, result) => {
@@ -115,7 +115,7 @@ describe('adaptTexture() 3D utility', () => {
 
     it.each([
       ['keeps KTX2 as KTX2', ktx2, ktx2],
-      ['keeps PNG as PNG', png, png],
+      ['keeps WebP as WebP', webp, webp],
       ['handles null', null, null],
       ['handles undefined', undefined, undefined]
     ])('%s', (text, original, result) => {

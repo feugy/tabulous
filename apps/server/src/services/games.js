@@ -93,6 +93,13 @@ import repositories from '../repositories/index.js'
  */
 
 /**
+ * @typedef {object} DrawableState state for drawable meshes:
+ * @property {boolean} [unflipOnPick=true] - unflip flipped mesh when picking them in hand.
+ * @property {boolean} [flipOnPlay=false] - flip flipable meshes when playing them from hand.
+ * @property {number} [duration=750] - duration (in milliseconds) of the draw animation.
+ */
+
+/**
  * @typedef {object} Message a message in the discussion thread:
  * @property {string} playerId - sender id.
  * @property {string} text - message's textual content.
