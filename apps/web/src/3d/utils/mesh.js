@@ -68,9 +68,9 @@ export function configureMaterial(mesh, texture) {
 
 /**
  * Adapts the downloaded texture file based on the current WebGL version.
- * Since WebGL 1 does not support Khronos Texture properly, uses png files instead.
+ * Since WebGL 1 does not support Khronos Texture properly, uses webp files instead.
  * @param {string} texture - the texture file name.
- * @returns {string} if the engine is WebGL 1, the input texture with ktx2 extension replaced with png.
+ * @returns {string} if the engine is WebGL 1, the input texture with ktx2 extension replaced with webp.
  */
 export function adaptTexture(texture) {
   return texture && Engine.LastCreatedEngine.version === 1
