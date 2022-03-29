@@ -60,7 +60,7 @@ describe('AnchorBehavior', () => {
     snapped.setAbsolutePosition(new Vector3(1, 1, 1))
     const anchor = CreateBox('anchor', {})
     const behavior = new AnchorBehavior()
-    behavior.addZone(anchor, 1)
+    behavior.addZone(anchor, { extent: 1 })
 
     await behavior.snap(snapped.id, anchor.id)
     expect(snapped.absolutePosition.asArray()).toEqual([1, 1, 1])
@@ -71,7 +71,7 @@ describe('AnchorBehavior', () => {
     const snapped = CreateBox('box', {})
 
     const behavior = new AnchorBehavior()
-    behavior.addZone(CreateBox('anchor', {}), 1)
+    behavior.addZone(CreateBox('anchor', {}), { extent: 1 })
 
     behavior.unsnap(snapped.id)
     expect(recordSpy).not.toHaveBeenCalled()
@@ -82,7 +82,7 @@ describe('AnchorBehavior', () => {
     const stacked = makeStack(snapped)
 
     const behavior = new AnchorBehavior()
-    behavior.addZone(CreateBox('anchor', {}), 1)
+    behavior.addZone(CreateBox('anchor', {}), { extent: 1 })
 
     behavior.unsnap(stacked.id)
     expect(recordSpy).not.toHaveBeenCalled()

@@ -28,12 +28,17 @@ describe('TargetBehavior', () => {
   it('adds zones', () => {
     const behavior = new TargetBehavior()
     const mesh1 = CreateBox('box1', {})
-    const zone1 = behavior.addZone(mesh1, 1.2)
+    const zone1 = behavior.addZone(mesh1, { extent: 1.2 })
     expect(behavior.zones).toEqual([zone1])
     expectZone(zone1, { mesh: mesh1, extent: 1.2, enabled: true, priority: 0 })
 
     const mesh2 = CreateBox('box1', {})
-    const zone2 = behavior.addZone(mesh2, 2, ['box', 'card'], false, 10)
+    const zone2 = behavior.addZone(mesh2, {
+      extent: 2,
+      kinds: ['box', 'card'],
+      enabled: false,
+      priority: 10
+    })
     expect(behavior.zones).toEqual([zone1, zone2])
     expectZone(zone2, {
       mesh: mesh2,
@@ -53,7 +58,7 @@ describe('TargetBehavior', () => {
   it('removes added zone and disposes their mesh', () => {
     const behavior = new TargetBehavior()
     const mesh = CreateBox('box', {})
-    const zone = behavior.addZone(mesh, 1.2)
+    const zone = behavior.addZone(mesh, { extent: 1.2 })
     expect(behavior.zones).toEqual([zone])
 
     behavior.removeZone(zone)
@@ -91,9 +96,13 @@ describe('TargetBehavior', () => {
 
     it('unregisteres from manager and removes zones upon detaching', () => {
       const mesh1 = CreateBox('box1', {})
-      behavior.addZone(mesh1, 1.2)
+      behavior.addZone(mesh1, { extent: 1.2 })
       const mesh2 = CreateBox('box1', {})
-      behavior.addZone(mesh2, 2, ['box', 'card'], false)
+      behavior.addZone(mesh2, {
+        extent: 2,
+        kinds: ['box', 'card'],
+        enabled: false
+      })
 
       mesh.dispose()
       expect(behavior.mesh).toBeNull()

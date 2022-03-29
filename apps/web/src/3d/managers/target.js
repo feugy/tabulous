@@ -86,14 +86,11 @@ class TargetManager {
         targetable.mesh.getScene() === this.scene
       ) {
         for (const zone of targetable.zones) {
-          const { mesh, extent, priority } = zone
-          if (this.canAccept(zone, kind) && isAbove(dragged, mesh, extent)) {
-            candidates.push({
-              targetable,
-              zone,
-              priority,
-              y: zone.mesh.absolutePosition.y
-            })
+          if (
+            this.canAccept(zone, kind) &&
+            isAbove(dragged, zone.mesh, zone.extent)
+          ) {
+            candidates.push({ targetable, zone })
           }
         }
       }
@@ -103,8 +100,14 @@ class TargetManager {
       `${candidates.length} candidate(s) found`
     )
     if (candidates.length > 0) {
-      candidates.sort((a, b) =>
-        b.y === a.y ? b.priority - a.priority : b.y - a.y
+      candidates.sort(
+        (
+          { zone: { mesh: meshA, priority: priorityA } },
+          { zone: { mesh: meshB, priority: priorityB } }
+        ) =>
+          meshB.absolutePosition.y === meshA.absolutePosition.y
+            ? priorityB - priorityA
+            : meshB.absolutePosition.y - meshA.absolutePosition.y
       )
       const [{ targetable, zone }] = candidates
       logger.info(

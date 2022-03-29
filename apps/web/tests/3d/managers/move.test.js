@@ -704,7 +704,7 @@ describe('MoveManager', () => {
     const target = CreateBox(`target-${rank}`, {})
     target.setAbsolutePosition(position)
     target.computeWorldMatrix()
-    behavior.addZone(target, 0.5)
+    behavior.addZone(target, { extent: 0.5 })
     return target
   }
 

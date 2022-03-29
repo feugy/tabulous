@@ -533,13 +533,7 @@ export class StackBehavior extends TargetBehavior {
             scene
           )
     dropZone.parent = this.mesh
-    this.dropZone = this.addZone(
-      dropZone,
-      this._state.extent,
-      this._state.kinds,
-      this._state.enabled,
-      this._state.priority
-    )
+    this.dropZone = this.addZone(dropZone, this._state)
 
     this.inhibitControl = true
     for (const id of stackIds) {

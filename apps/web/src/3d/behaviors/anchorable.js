@@ -256,7 +256,12 @@ export class AnchorBehavior extends TargetBehavior {
       dropZone.parent = this.mesh
       dropZone.position = new Vector3(x ?? 0, y ?? 0, z ?? 0)
       dropZone.computeWorldMatrix(true)
-      const zone = this.addZone(dropZone, 0.6, kinds, true, priority)
+      const zone = this.addZone(dropZone, {
+        extent: 0.6,
+        kinds,
+        enabled: true,
+        priority
+      })
       // relates the created zone with the anchor
       zone.anchorIndex = i
       if (snappedId) {
