@@ -1,5 +1,6 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import faker from 'faker'
 import { configures3dTestEngine } from '../../test-utils'
 import {
   targetManager as manager,
@@ -82,8 +83,10 @@ describe('TargetManager', () => {
       let zone2
 
       beforeEach(() => {
-        zone1 = createsTargetZone('target1', new Vector3(5, 0, 5))
-        zone2 = createsTargetZone('target2', new Vector3(-5, 0, -5))
+        zone1 = createsTargetZone('target1', { position: new Vector3(5, 0, 5) })
+        zone2 = createsTargetZone('target2', {
+          position: new Vector3(-5, 0, -5)
+        })
       })
 
       it('returns nothing if mesh is not above any target', () => {
@@ -126,12 +129,10 @@ describe('TargetManager', () => {
       })
 
       it('ignores targets when not in main scene', () => {
-        const zone3 = createsTargetZone(
-          'target1',
-          new Vector3(10, 0, 10),
-          undefined,
-          handScene
-        )
+        const zone3 = createsTargetZone('target1', {
+          position: new Vector3(10, 0, 10),
+          scene: handScene
+        })
         const mesh = CreateBox('box', {}, handScene)
         mesh.setAbsolutePosition(zone3.mesh.absolutePosition)
         mesh.computeWorldMatrix()
@@ -157,9 +158,14 @@ describe('TargetManager', () => {
       })
 
       it('returns highest target below mesh regardless of priorities', () => {
-        createsTargetZone('target3', new Vector3(0, 0, 0), 10)
-        const zone4 = createsTargetZone('target4', new Vector3(0, 1, 0))
-        createsTargetZone('target5', new Vector3(0, 0.5, 0))
+        createsTargetZone('target3', {
+          position: new Vector3(0, 0, 0),
+          priority: 10
+        })
+        const zone4 = createsTargetZone('target4', {
+          position: new Vector3(0, 1, 0)
+        })
+        createsTargetZone('target5', { position: new Vector3(0, 0.5, 0) })
 
         const mesh = CreateBox('box', {})
         mesh.setAbsolutePosition(new Vector3(0, 5, 0))
@@ -170,8 +176,14 @@ describe('TargetManager', () => {
 
       it('returns highest priority target below mesh', () => {
         createsTargetZone('target3', new Vector3(0, 0, 0))
-        const zone4 = createsTargetZone('target4', new Vector3(0, 0, 0), 2)
-        createsTargetZone('target5', new Vector3(0, 0, 0), 1)
+        const zone4 = createsTargetZone('target4', {
+          position: new Vector3(0, 0, 0),
+          priority: 2
+        })
+        createsTargetZone('target5', {
+          position: new Vector3(0, 0, 0),
+          priority: 1
+        })
 
         const mesh = CreateBox('box', {})
         mesh.setAbsolutePosition(new Vector3(0, 5, 0))
@@ -219,6 +231,124 @@ describe('TargetManager', () => {
             mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
             mesh.computeWorldMatrix()
             manager.findDropZone(mesh, 'box')
+            return mesh
+          })
+        })
+
+        it('ignores unactive zone', () => {
+          expect(manager.dropOn(zone2)).toEqual([])
+        })
+
+        it('drops meshes on zone and clear it', () => {
+          expectVisibility(zone1, true)
+          expect(manager.dropOn(zone1)).toEqual(meshes)
+          expectVisibility(zone1, false)
+        })
+      })
+    })
+
+    describe('findPlayerZone()', () => {
+      let zone1
+      let zone2
+      let mesh
+      const playerId = faker.datatype.uuid()
+
+      beforeEach(() => {
+        zone1 = createsTargetZone('target1', {
+          position: new Vector3(5, 0, 5),
+          playerId
+        })
+        zone2 = createsTargetZone('target2', {
+          position: new Vector3(-5, 0, -5),
+          playerId: faker.datatype.uuid()
+        })
+        mesh = CreateBox('box', {})
+      })
+
+      it('ignores targets with kinds when providing no kind', () => {
+        zone1.kinds = ['card']
+        const mesh = CreateBox('box', {})
+        mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
+        mesh.computeWorldMatrix()
+
+        expect(manager.findPlayerZone(playerId, mesh)).not.toBeDefined()
+      })
+
+      it('ignores disabled targets', () => {
+        zone1.enabled = false
+        const mesh = CreateBox('box', {})
+        mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
+        mesh.computeWorldMatrix()
+
+        expect(manager.findPlayerZone(playerId, mesh)).not.toBeDefined()
+      })
+
+      it('ignores target part of the current selection', () => {
+        selectionManager.select(zone1.targetable.mesh)
+        const mesh = CreateBox('box', {})
+        mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
+        mesh.computeWorldMatrix()
+
+        expect(manager.findPlayerZone(playerId, mesh)).not.toBeDefined()
+      })
+
+      it('ignores targets when not in main scene', () => {
+        createsTargetZone('target', {
+          position: new Vector3(10, 0, 10),
+          playerId,
+          scene: handScene
+        })
+        manager.unregisterTargetable(zone1.targetable)
+        expect(manager.findPlayerZone(playerId, mesh)).not.toBeDefined()
+      })
+
+      it('returns kind-less targets for provided kind', () => {
+        expectActiveZone(manager.findPlayerZone(playerId, mesh, 'box'), zone1)
+      })
+
+      it('returns targets with matching kind', () => {
+        const zone3 = createsTargetZone('target', {
+          priority: 1,
+          playerId,
+          kinds: ['card', 'box']
+        })
+        expectActiveZone(manager.findPlayerZone(playerId, mesh, 'box'), zone3)
+      })
+
+      it('returns highest target', () => {
+        const zone3 = createsTargetZone('target3', {
+          position: new Vector3(0, 1, 0),
+          playerId
+        })
+        expectActiveZone(manager.findPlayerZone(playerId, mesh, 'box'), zone3)
+      })
+
+      describe('clear()', () => {
+        beforeEach(() => {
+          manager.findPlayerZone(playerId, mesh, 'box')
+        })
+
+        it('clears an active zone', () => {
+          expectVisibility(zone1, true)
+          manager.clear(zone1)
+          expectVisibility(zone1, false)
+          expect(manager.dropOn(zone1)).toEqual([])
+        })
+
+        it('ignores unactive zone', () => {
+          expectVisibility(zone2, false)
+          manager.clear(zone2)
+          expectVisibility(zone2, false)
+          expect(manager.dropOn(zone2)).toEqual([])
+        })
+      })
+
+      describe('dropOn()', () => {
+        let meshes = ['box1', 'box2']
+        beforeEach(() => {
+          meshes = meshes.map(id => {
+            const mesh = CreateBox(id, {})
+            manager.findPlayerZone(playerId, mesh, 'box')
             return mesh
           })
         })
@@ -290,20 +420,18 @@ describe('TargetManager', () => {
 
   function createsTargetZone(
     id,
-    position = new Vector3(0, 0, 0),
-    priority = undefined,
-    usedScene = scene
+    { position = new Vector3(0, 0, 0), scene: usedScene, ...properties }
   ) {
-    const targetable = CreateBox(`targetable-${id}`, {}, usedScene)
+    const targetable = CreateBox(`targetable-${id}`, {}, usedScene ?? scene)
     targetable.isPickable = false
     const behavior = new TargetBehavior()
     behavior.onDropObservable.add(drop => drops.push(drop))
     targetable.addBehavior(behavior, true)
 
-    const target = CreateBox(id, {}, usedScene)
+    const target = CreateBox(id, {}, usedScene ?? scene)
     target.setAbsolutePosition(position)
     target.computeWorldMatrix()
-    return behavior.addZone(target, { extent: 0.5, priority })
+    return behavior.addZone(target, { extent: 0.5, ...properties })
   }
 
   function expectActiveZone(actual, expected) {
