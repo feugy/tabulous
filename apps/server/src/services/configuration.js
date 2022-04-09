@@ -81,8 +81,7 @@ function makeAbsolute(path) {
 /**
  * Synchronously loads and validates the server configuration from environment variables:
  * - DATA_PATH: folder path (relative to current working directory) containing data stores. Defaults to './data'.
- * - GAMES_PATH: folder path (relative to current working directory) containing game descriptors. Defaults to '../games/descriptors'.
- * - GAMES_ASSETS_PATH: folder path (relative to current working director) containing game publc assets. Defaults to '../games/assets'.
+ * - GAMES_PATH: folder path (relative to current working directory) containing game descriptors and assets. Defaults to '../games/assets'.
  * - HOST : IP4/6 address this server will listen to.
  * - HTTPS_CERT: relative or absolute path to the PEM file of your SSL certificate. Required in production, defaults to 'keys/cert.pem'.
  * - HTTPS_KEY: relative or absolute path to the PEM file of your SSL key. Rrequired in production, defaults to 'keys/privkey.pem'.
@@ -98,7 +97,6 @@ export function loadConfiguration() {
   const {
     DATA_PATH,
     GAMES_PATH,
-    GAMES_ASSETS_PATH,
     HOST,
     HTTPS_CERT,
     HTTPS_KEY,
@@ -126,22 +124,19 @@ export function loadConfiguration() {
     plugins: {
       graphql: { graphiql: isProduction ? null : 'playground' },
       static: {
-        pathPrefix: '/games',
-        path: GAMES_ASSETS_PATH ?? join('..', 'games', 'assets')
+        pathPrefix: '/games'
       }
     },
     games: {
-      path: GAMES_PATH ?? join('..', 'games', 'descriptors')
+      path: GAMES_PATH ?? join('..', 'games', 'assets')
     },
     data: {
       path: DATA_PATH ?? 'data'
     }
   }
-  configuration.plugins.static.path = makeAbsolute(
-    configuration.plugins.static.path
-  )
   configuration.data.path = makeAbsolute(configuration.data.path)
   configuration.games.path = makeAbsolute(configuration.games.path)
+  configuration.plugins.static.path = configuration.games.path
 
   if (!validate(configuration)) {
     console.warn(

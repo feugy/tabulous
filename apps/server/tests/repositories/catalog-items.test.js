@@ -4,20 +4,13 @@ import { catalogItems } from '../../src/repositories/catalog-items.js'
 
 describe('Catalog Items repository', () => {
   const items = [
-    {
-      name: 'belote',
-      meshes: [{ shape: 'card', id: 'one-of-diamonds' }],
-      bags: new Map(),
-      slots: []
-    },
-    { name: 'klondike', meshes: [], bags: new Map(), slots: [] },
+    { name: 'belote', build: expect.any(Function) },
+    { name: 'klondike', build: expect.any(Function) },
     {
       name: 'splendor',
       restricted: true,
       rulesBookPageCount: 4,
-      meshes: [],
-      bags: new Map(),
-      slots: []
+      build: expect.any(Function)
     }
   ]
 

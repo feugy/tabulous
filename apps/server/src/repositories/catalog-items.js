@@ -1,5 +1,4 @@
 import { readdir } from 'fs/promises'
-import { extname } from 'path'
 import { pathToFileURL } from 'url'
 import { AbstractRepository } from './abstract-repository.js'
 
@@ -23,26 +22,31 @@ class CatalogItemRepository extends AbstractRepository {
    * @param {string} args.path - folder path containing game descriptors.
    * @throws {Error} when provided path is not a readable folder.
    */
-  async connect({ path } = {}) {
-    let files
+  async connect({ path }) {
+    let entries
     this.models = []
     this.modelsById = new Map()
     try {
-      files = await readdir(path)
+      entries = await readdir(path, { withFileTypes: true })
     } catch (err) {
       throw new Error(
         `Failed to connect Catalog Items repository: ${err.message}`
       )
     }
     const root = pathToFileURL(path)
-    // reads all descriptors
-    for (const file of files) {
-      if (extname(file) === '.js') {
-        const descriptor = await import(`${root}/${file}`)
-        const name = file.replace(/\.js$/, '')
-        const item = { name, ...descriptor }
-        this.models.push(item)
-        this.modelsById.set(name, item)
+    for (const entry of entries) {
+      if (entry.isDirectory() || entry.isSymbolicLink()) {
+        try {
+          const { name } = entry
+          const item = {
+            name,
+            ...(await import(`${root}/${entry.name}/index.js`))
+          }
+          this.models.push(item)
+          this.modelsById.set(name, item)
+        } catch {
+          // ignore folders with no index.js or invalid symbolic links
+        }
       }
     }
   }

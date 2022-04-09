@@ -166,7 +166,7 @@ export async function createGame(kind, playerId) {
     kind,
     created: Date.now(),
     playerIds: [playerId],
-    meshes: createMeshes(kind, descriptor),
+    meshes: await createMeshes(kind, descriptor),
     messages: [],
     cameras: [],
     hands: [],

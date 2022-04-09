@@ -63,6 +63,7 @@ type Anchor {
   priority: Float
   kinds: [String]
   snappedId: ID
+  playerId: ID
 }
 
 type Mesh {

@@ -56,7 +56,7 @@ describe('startServer()', () => {
     )
     expect(response.statusCode).toEqual(400)
 
-    response = await app.inject({ url: 'splendor.js' })
+    response = await app.inject({ url: 'splendor/index.js' })
     expect(response.statusCode).toEqual(200)
     expect(repositories.games.connect).toHaveBeenCalledWith({ path: 'data' })
     expect(repositories.games.connect).toHaveBeenCalledTimes(1)

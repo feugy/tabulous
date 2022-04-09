@@ -17,7 +17,6 @@ describe('loadConfiguration()', () => {
     const host = faker.internet.ip()
     const level = faker.random.arrayElement(['fatal', 'error', 'info', 'debug'])
     const gamesPath = faker.system.directoryPath()
-    const gamesAssetsPath = faker.system.directoryPath()
     const dataPath = faker.system.directoryPath()
     const key = faker.system.filePath()
     const cert = faker.system.filePath()
@@ -28,7 +27,6 @@ describe('loadConfiguration()', () => {
       HOST: host,
       LOG_LEVEL: level,
       GAMES_PATH: gamesPath,
-      GAMES_ASSETS_PATH: gamesAssetsPath,
       DATA_PATH: dataPath,
       HTTPS_CERT: cert,
       HTTPS_KEY: key
@@ -41,7 +39,7 @@ describe('loadConfiguration()', () => {
       https: { key, cert },
       plugins: {
         graphql: { graphiql: 'playground' },
-        static: { path: gamesAssetsPath, pathPrefix: '/games' }
+        static: { path: gamesPath, pathPrefix: '/games' }
       },
       games: { path: gamesPath },
       data: { path: dataPath }
@@ -68,7 +66,7 @@ describe('loadConfiguration()', () => {
           pathPrefix: '/games'
         }
       },
-      games: { path: resolve(cwd(), '..', 'games', 'descriptors') },
+      games: { path: resolve(cwd(), '..', 'games', 'assets') },
       data: { path: resolve(cwd(), 'data') }
     })
   })
@@ -88,7 +86,7 @@ describe('loadConfiguration()', () => {
           pathPrefix: '/games'
         }
       },
-      games: { path: resolve(cwd(), '..', 'games', 'descriptors') },
+      games: { path: resolve(cwd(), '..', 'games', 'assets') },
       data: { path: resolve(cwd(), 'data') }
     })
   })
@@ -111,17 +109,13 @@ describe('loadConfiguration()', () => {
     )
   })
 
-  it('considers GAMES_ASSETS_PATH relatively to current working directory', () => {
+  it('considers GAMES_PATH relatively to current working directory', () => {
     process.env.CLIENT_ROOT = join('.', 'test')
-    process.env.GAMES_ASSETS_PATH = join('.', 'test2')
+    process.env.GAMES_PATH = join('.', 'test2')
     expect(loadConfiguration().plugins.static.path).toEqual(
       join(cwd(), 'test2')
     )
-  })
-
-  it('considers GAMES_PATH relatively to current working directory', () => {
-    process.env.GAMES_PATH = './test'
-    expect(loadConfiguration().games.path).toEqual(join(cwd(), 'test'))
+    expect(loadConfiguration().games.path).toEqual(join(cwd(), 'test2'))
   })
 
   it('considers DATA_PATH relatively to current working directory', () => {
