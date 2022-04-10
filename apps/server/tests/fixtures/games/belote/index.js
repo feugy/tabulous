@@ -9,6 +9,6 @@ export function build() {
 export function addPlayer(game, player) {
   return {
     ...game,
-    hands: [{ playerId: player.id, meshes: [] }]
+    hands: [...game.hands, { playerId: player.id, meshes: [] }]
   }
 }

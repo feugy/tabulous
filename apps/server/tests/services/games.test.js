@@ -16,7 +16,9 @@ import { sleep } from '../../src/utils/time.js'
 describe('given a subscription to game lists and an initialized repository', () => {
   const updates = []
   let subscription
-  let getPlayerById
+  const player = { id: faker.datatype.uuid() }
+  const peer = { id: faker.datatype.uuid() }
+  let game
 
   beforeAll(async () => {
     subscription = gameListsUpdate.subscribe(update => updates.push(update))
@@ -25,7 +27,8 @@ describe('given a subscription to game lists and an initialized repository', () 
     await repositories.catalogItems.connect({
       path: join('tests', 'fixtures', 'games')
     })
-    getPlayerById = jest.spyOn(repositories.players, 'getById')
+    await repositories.players.save(player)
+    await repositories.players.save(peer)
   })
 
   afterAll(async () => {
@@ -36,8 +39,11 @@ describe('given a subscription to game lists and an initialized repository', () 
   })
 
   beforeEach(() => {
+    jest.restoreAllMocks()
     updates.splice(0, updates.length)
   })
+
+  afterEach(async () => deleteGame(game?.id, player.id))
 
   describe('createGame()', () => {
     it('throws an error on unknown game', async () => {
@@ -58,28 +64,25 @@ describe('given a subscription to game lists and an initialized repository', () 
 
     it('creates a game from descriptor and trigger list update', async () => {
       const kind = 'klondike'
-      const playerId = faker.datatype.uuid()
-      const game = await createGame(kind, playerId)
+      game = await createGame(kind, player.id)
       expect(game).toEqual({
         id: expect.any(String),
         created: expect.any(Number),
         kind,
         locales: expect.any(Object),
-        playerIds: [playerId],
+        playerIds: [player.id],
         meshes: expect.any(Array),
         cameras: [],
         messages: [],
         hands: []
       })
       await sleep()
-      expect(updates).toEqual([{ playerId, games: [game] }])
+      expect(updates).toEqual([{ playerId: player.id, games: [game] }])
     })
 
     it(`invokes descriptor's addPlayer when creating game`, async () => {
       const kind = 'belote'
-      const player = { id: faker.datatype.uuid() }
-      getPlayerById.mockResolvedValue(player)
-      const game = await createGame(kind, player.id)
+      game = await createGame(kind, player.id)
       expect(game).toEqual({
         id: expect.any(String),
         created: expect.any(Number),
@@ -92,22 +95,18 @@ describe('given a subscription to game lists and an initialized repository', () 
         hands: [{ playerId: player.id, meshes: [] }]
       })
       await sleep()
-      expect(updates).toEqual([{ playerId: player.id, games: [game] }])
+      expect(updates).toEqual([
+        { playerId: player.id, games: expect.arrayContaining([game]) }
+      ])
     })
   })
 
   describe('given an existing game', () => {
-    let game
-    const player = { id: faker.datatype.uuid() }
-
     beforeEach(async () => {
-      getPlayerById.mockResolvedValue(player)
       game = await createGame('klondike', player.id)
       await sleep()
       updates.splice(0, updates.length)
     })
-
-    afterEach(async () => deleteGame(game?.id, player.id))
 
     describe('loadGame()', () => {
       it('returns null on unknown game', async () => {
@@ -185,24 +184,20 @@ describe('given a subscription to game lists and an initialized repository', () 
     })
 
     describe('invite()', () => {
-      const peerId = faker.datatype.uuid()
-
-      beforeAll(() => repositories.players.save({ id: peerId }))
-
       it('returns null on unknown game', async () => {
         expect(
-          await invite(faker.datatype.uuid(), peerId, player.id)
+          await invite(faker.datatype.uuid(), peer.id, player.id)
         ).toBeNull()
         expect(updates).toHaveLength(0)
       })
 
       it('returns null on un-owned game', async () => {
-        expect(await invite(game.id, peerId, faker.datatype.uuid())).toBeNull()
+        expect(await invite(game.id, peer.id, faker.datatype.uuid())).toBeNull()
         expect(updates).toHaveLength(0)
       })
 
       it('returns null on unknown guest id', async () => {
-        getPlayerById.mockResolvedValue(null)
+        jest.spyOn(repositories.players, 'getById').mockResolvedValue(null)
         expect(
           await invite(game.id, faker.datatype.uuid(), player.id)
         ).toBeNull()
@@ -210,43 +205,51 @@ describe('given a subscription to game lists and an initialized repository', () 
       })
 
       it(`adds guest id to game's player id list and trigger list updates`, async () => {
-        const updated = await invite(game.id, peerId, player.id)
+        const updated = await invite(game.id, peer.id, player.id)
         expect(updated).toEqual({
           ...game,
-          playerIds: [player.id, peerId]
+          playerIds: [player.id, peer.id]
         })
         // only once
-        expect(await invite(game.id, peerId, player.id)).toEqual(null)
+        expect(await invite(game.id, peer.id, player.id)).toEqual(null)
         expect((await loadGame(game.id, player.id)).playerIds).toEqual([
           player.id,
-          peerId
+          peer.id
         ])
         expect(updates).toEqual([
           { playerId: player.id, games: [updated] },
-          { playerId: peerId, games: [updated] }
+          { playerId: peer.id, games: [updated] }
+        ])
+      })
+
+      it(`invokes descriptor's addPayer`, async () => {
+        await deleteGame(game.id, player.id)
+        game = await createGame('belote', player.id)
+        await sleep()
+        const updated = await invite(game.id, peer.id, player.id)
+        expect(updated.hands).toEqual([
+          ...game.hands,
+          { playerId: peer.id, meshes: [] }
         ])
       })
     })
 
     describe('listGames()', () => {
-      const peerId = faker.datatype.uuid()
       const games = []
       const getId = ({ id }) => id
 
-      beforeAll(() => repositories.players.save([{ id: peerId }, player]))
-
       beforeEach(async () => {
         games.push(game)
-        await invite(games[0].id, peerId, player.id)
+        await invite(games[0].id, peer.id, player.id)
 
         games.push(await createGame('belote', player.id))
 
         games.push(await createGame('klondike', player.id))
 
-        games.push(await createGame('belote', peerId))
-        await invite(games[3].id, player.id, peerId)
+        games.push(await createGame('belote', peer.id))
+        await invite(games[3].id, player.id, peer.id)
 
-        games.push(await createGame('belote', peerId))
+        games.push(await createGame('belote', peer.id))
       })
 
       afterEach(async () => {
@@ -268,7 +271,7 @@ describe('given a subscription to game lists and an initialized repository', () 
           [games[0], games[1], games[2], games[3]].map(getId)
         )
 
-        expect((await listGames(peerId)).map(getId)).toEqual(
+        expect((await listGames(peer.id)).map(getId)).toEqual(
           [games[0], games[3], games[4]].map(getId)
         )
       })

@@ -174,7 +174,7 @@ export async function createGame(kind, playerId) {
     rulesBookPageCount: descriptor.rulesBookPageCount
   }
   if (descriptor?.addPlayer) {
-    game = descriptor?.addPlayer(game, player)
+    game = await descriptor?.addPlayer(game, player)
   }
   const created = await repositories.games.save(game)
   gameListsUpdate$.next(created.playerIds)
@@ -258,11 +258,15 @@ export async function saveGame(game, playerId) {
  */
 export async function invite(gameId, guestId, hostId) {
   const guest = await repositories.players.getById(guestId)
-  const game = await loadGame(gameId, hostId)
-  if (!game || !guest || game.playerIds.includes(guestId)) {
+  let game = await loadGame(gameId, hostId)
+  if (!game || !guest || game.playerIds.includes(guest.id)) {
     return null
   }
-  game.playerIds.push(guestId)
+  game.playerIds.push(guest.id)
+  const descriptor = await repositories.catalogItems.getById(game.kind)
+  if (descriptor.addPlayer) {
+    game = await descriptor.addPlayer(game, guest)
+  }
   await repositories.games.save(game)
   gameListsUpdate$.next(game.playerIds)
   return game

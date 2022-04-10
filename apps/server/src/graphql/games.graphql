@@ -54,6 +54,7 @@ type DrawableState {
 }
 
 type Anchor {
+  id: ID
   x: Float
   y: Float
   z: Float
@@ -181,6 +182,7 @@ input DrawableStateInput {
 }
 
 input AnchorInput {
+  id: ID
   x: Float
   y: Float
   z: Float
@@ -190,6 +192,7 @@ input AnchorInput {
   priority: Float
   kinds: [String]
   snappedId: ID
+  playerId: ID
 }
 
 input MeshInput {
