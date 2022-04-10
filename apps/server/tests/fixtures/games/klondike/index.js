@@ -1,6 +1,6 @@
 export function build() {
   return {
-    meshes: [],
+    meshes: [{ shape: 'card', id: 'one-of-diamonds' }],
     bags: new Map(),
     slots: []
   }

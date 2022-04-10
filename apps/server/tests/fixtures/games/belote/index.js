@@ -5,3 +5,10 @@ export function build() {
     slots: []
   }
 }
+
+export function addPlayer(game, player) {
+  return {
+    ...game,
+    hands: [{ playerId: player.id, meshes: [] }]
+  }
+}

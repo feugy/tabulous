@@ -158,10 +158,11 @@ export async function createGame(kind, playerId) {
   if (!descriptor) {
     throw new Error(`Unsupported game ${kind}`)
   }
-  if (!canAccess(await repositories.players.getById(playerId), descriptor)) {
+  const player = await repositories.players.getById(playerId)
+  if (!canAccess(player, descriptor)) {
     throw new Error(`Access to game ${kind} is restricted`)
   }
-  const created = await repositories.games.save({
+  let game = {
     locales: { ...descriptor.locales },
     kind,
     created: Date.now(),
@@ -171,7 +172,11 @@ export async function createGame(kind, playerId) {
     cameras: [],
     hands: [],
     rulesBookPageCount: descriptor.rulesBookPageCount
-  })
+  }
+  if (descriptor?.addPlayer) {
+    game = descriptor?.addPlayer(game, player)
+  }
+  const created = await repositories.games.save(game)
   gameListsUpdate$.next(created.playerIds)
   return created
 }

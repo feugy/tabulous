@@ -15,7 +15,11 @@ describe('listCatalog()', () => {
   ]
 
   const items = [
-    { name: 'belote', build: expect.any(Function) },
+    {
+      name: 'belote',
+      build: expect.any(Function),
+      addPlayer: expect.any(Function)
+    },
     { name: 'klondike', build: expect.any(Function) },
     {
       name: 'splendor',
