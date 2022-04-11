@@ -13,7 +13,7 @@ import { CreateGround } from '@babylonjs/core/Meshes/Builders/groundBuilder'
  * @returns {import('@babylonjs/core').Mesh} the created table ground.
  */
 export function createTable(
-  { width = 400, height = 400, color = [0.2, 0.2, 0.2, 1] } = {},
+  { width = 400, height = 400, color = [1, 1, 1, 1] } = {},
   scene
 ) {
   const table = CreateGround('table', { width, height }, scene)
@@ -21,7 +21,7 @@ export function createTable(
   table.receiveShadows = true
 
   table.material = new StandardMaterial('table-front', scene)
-  table.material.emissiveColor = Color4.FromArray(color)
+  table.material.diffuseColor = Color4.FromArray(color)
   table.isPickable = false
   return table
 }
