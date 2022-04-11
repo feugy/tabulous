@@ -84,7 +84,7 @@ describe('createEngine()', () => {
             texture: 'https://elyse.biz',
             faceUV: [
               [0.5, 1, 0, 0],
-              [0.5, 1, 1, 0]
+              [0.5, 0, 1, 1]
             ],
             width: 3,
             x: 0,

@@ -113,10 +113,10 @@ describe('DrawBehavior', () => {
 
     it('elevates and fades out mesh when animating from main to hand', async () => {
       const { x, y, z } = mesh.absolutePosition
-      expect(mesh.getChildren()[0].visibility).toEqual(1)
+      expect(mesh.visibility).toEqual(1)
       await behavior.animateToHand()
       expectPosition(mesh, [x, y + 3, z])
-      expect(mesh.getChildren()[0].visibility).toEqual(0)
+      expect(mesh.visibility).toEqual(0)
       expect(animationEndReceived).toHaveBeenCalledTimes(1)
     })
 

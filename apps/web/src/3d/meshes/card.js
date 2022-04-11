@@ -1,8 +1,5 @@
-import { Axis } from '@babylonjs/core/Maths/math.axis'
 import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector'
-import { Mesh } from '@babylonjs/core/Meshes/mesh'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
-import { CreatePlane } from '@babylonjs/core/Meshes/Builders/planeBuilder'
 import { controlManager } from '../managers/control'
 import {
   configureMaterial,
@@ -12,7 +9,7 @@ import {
 
 /**
  * Creates a card mesh.
- * Cards are planes whith a given width and height (Babylon's depth), wrapped into a box mesh, so they could be stacked with other objects.
+ * Cards are boxes whith a given width, height and depth. Only top and back faces UVs can be specified
  * By default, the card dimension follows American poker card standard (beetween 1.39 & 1.41).
  * A card's texture must have 2 faces, back then front, aligned horizontally.
  * @param {object} params - card parameters, including (all other properties will be passed to the created mesh):
@@ -40,43 +37,32 @@ export function createCard(
     texture,
     faceUV = [
       [0.5, 1, 0, 0],
-      [0.5, 1, 1, 0]
+      [0.5, 0, 1, 1]
     ],
     ...behaviorStates
   } = {},
   scene
 ) {
-  const faces = CreatePlane(
-    `plane-${id}`,
+  const mesh = CreateBox(
+    'card',
     {
       width,
-      height: depth,
-      frontUVs: Vector4.FromArray(faceUV[0]),
-      backUVs: Vector4.FromArray(faceUV[1]),
-      sideOrientation: Mesh.DOUBLESIDE
+      height,
+      depth,
+      faceUV: [
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        ...faceUV
+      ].map(components => Vector4.FromArray(components)),
+      faceColors: [],
+      wrap: true
     },
     scene
   )
-  configureMaterial(faces, texture)
-
-  const mesh = CreateBox('card', { width, height, depth }, scene)
   mesh.id = id
-
-  // because planes are in 2-D, collisions with other meshes could be tricky.
-  // wraps the plane with an invisible box. Box will take rays and pick operations.
-  let visibility = 0
-  Object.defineProperty(mesh, 'visibility', {
-    get() {
-      return visibility
-    },
-    set(value) {
-      faces.visibility = value
-    }
-  })
-  faces.rotate(Axis.X, Math.PI * 0.5)
-  faces.isPickable = false
-  faces.parent = mesh
-
+  configureMaterial(mesh, texture)
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.isPickable = false
 
@@ -95,15 +81,6 @@ export function createCard(
       ...serializeBehaviors(mesh.behaviors)
     })
   }
-
-  Object.defineProperty(mesh, 'renderOverlay', {
-    get() {
-      return faces.renderOverlay
-    },
-    set(value) {
-      faces.renderOverlay = value
-    }
-  })
 
   registerBehaviors(mesh, behaviorStates)
 
