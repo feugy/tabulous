@@ -25,7 +25,8 @@ const logger = makeLogger(AnchorBehaviorName)
  * @property {number} depth - anchor's depth (Z axis).
  * @property {string[]} kinds? - an optional array of allowed drag kinds for this zone (allows all if not specified).
  * @property {number} priority? - priority applied when multiple targets with same altitude apply.
- * @property {string} snappedId? - the currently snapped mesh id
+ * @property {string} playerId? - when set, only player with this id can use this anchor.
+ * @property {string} snappedId? - the currently snapped mesh id.
  */
 
 /**
@@ -249,7 +250,7 @@ export class AnchorBehavior extends TargetBehavior {
     this.state = { anchors, duration }
     for (const [
       i,
-      { x, y, z, width, depth, height, kinds, priority, snappedId }
+      { x, y, z, width, depth, height, snappedId, ...zoneProps }
     ] of this.state.anchors.entries()) {
       const scene = this.mesh.getScene()
       const dropZone = CreateBox(`anchor-${i}`, { width, depth, height }, scene)
@@ -258,9 +259,8 @@ export class AnchorBehavior extends TargetBehavior {
       dropZone.computeWorldMatrix(true)
       const zone = this.addZone(dropZone, {
         extent: 0.6,
-        kinds,
         enabled: true,
-        priority
+        ...zoneProps
       })
       // relates the created zone with the anchor
       zone.anchorIndex = i

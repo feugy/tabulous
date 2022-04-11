@@ -15,9 +15,11 @@ class TargetManager {
    * Each registered behavior can have multiple zones
    *
    * @property {import('@babylonjs/core').Scene} scene - the main scene.
+   * @property {string} playerId - current player Id.
    */
   constructor() {
     this.scene = null
+    this.playerId = null
     // private
     this.behaviors = new Set()
     this.droppablesByDropZone = new Map()
@@ -27,9 +29,11 @@ class TargetManager {
    * Gives scenes to the manager.
    * @param {object} params - parameters, including:
    * @param {Scene} params.scene - main scene.
+   * @param {string} params.playerId - current player Id.
    */
-  init({ scene }) {
+  init({ scene, playerId }) {
     this.scene = scene
+    this.playerId = playerId
   }
 
   /**
@@ -68,19 +72,19 @@ class TargetManager {
    * In case several zones are valid, the one with highest priority, or with highest elevation, will prevail.
    * The found zone is highlithed, and the dragged mesh will be saved as potential droppable for this zone.
    *
-   * @param {string} playerId - a dragged mesh.
    * @param {import('@babylonjs/core').Mesh} dragged - a dragged mesh.
    * @param {string} kind - drag kind.
+   * @return {import('../behaviors').DropZone|null} matching zone, if any.
    */
-  findPlayerZone(playerId, dragged, kind) {
+  findPlayerZone(dragged, kind) {
     logger.debug(
-      { playerId, dragged, kind, b: this.behaviors },
-      `find drop zones for ${playerId} (${kind})`
+      { dragged, kind, b: this.behaviors },
+      `find drop zones for ${this.playerId} (${kind})`
     )
     const candidates = findCandidates(
       this,
       dragged,
-      zone => zone.playerId === playerId && this.canAccept(zone, kind)
+      zone => zone.playerId && this.canAccept(zone, kind)
     )
     return findMatchingZone(this, candidates, dragged, kind)
   }
@@ -93,6 +97,7 @@ class TargetManager {
    *
    * @param {import('@babylonjs/core').Mesh} dragged - a dragged mesh.
    * @param {string} kind - drag kind.
+   * @return {import('../behaviors').DropZone|null} matching zone, if any.
    */
   findDropZone(dragged, kind) {
     logger.debug(
@@ -143,7 +148,10 @@ class TargetManager {
   }
 
   /**
-   * Determines whether a given zone can accept a given kind, based on allowed kings and enable status.
+   * Determines whether a given zone can accept a given kind, based on:
+   * - allowed kinds
+   * - current player Id
+   * - enable status
    * Does not consider mesh position.
    * @param {import('../behaviors').DropZone} zone - the tested zone.
    * @param {string} kind - the tested kind.
@@ -153,6 +161,7 @@ class TargetManager {
     return (
       Boolean(zone) &&
       zone.enabled &&
+      (!zone.playerId || zone.playerId === this.playerId) &&
       (!zone.kinds || zone.kinds.includes(kind))
     )
   }

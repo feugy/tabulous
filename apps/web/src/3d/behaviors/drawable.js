@@ -110,18 +110,17 @@ export class DrawBehavior extends AnimateBehavior {
       state: { duration },
       mesh,
       isAnimated,
-      fadeAnimation,
       moveAnimation
     } = this
     if (isAnimated || !mesh) {
       return
     }
 
-    const { fadeKeys, moveKeys } = buildAnimationKeys(mesh, true)
+    const { moveKeys } = buildAnimationKeys(mesh, true)
     await runAnimation(
       this,
       null,
-      { animation: fadeAnimation, duration, keys: fadeKeys },
+      // { animation: fadeAnimation, duration, keys: fadeKeys }, bug: trouble with alpha texture
       { animation: moveAnimation, duration, keys: moveKeys }
     )
   }

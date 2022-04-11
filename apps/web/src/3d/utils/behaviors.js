@@ -237,8 +237,8 @@ export function runAnimation(behavior, onEnd, ...animationSpecs) {
         if (onEnd) {
           onEnd()
         }
-        onAnimationEndObservable.notifyObservers()
         resolve()
+        onAnimationEndObservable.notifyObservers()
       })
   )
 }

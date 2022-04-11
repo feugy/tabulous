@@ -59,7 +59,6 @@ export function createEngine({
   moveManager.init({ scene })
   controlManager.init({ scene, handScene })
   selectionManager.init({ scene, handScene })
-  targetManager.init({ scene })
   indicatorManager.init({ scene })
 
   createTable({}, scene)
@@ -86,6 +85,7 @@ export function createEngine({
     const handsEnabled = hasHandsEnabled(gameData)
     if (initial) {
       engine.displayLoadingUI()
+      targetManager.init({ scene, playerId })
       scene.onDataLoadedObservable.addOnce(() => engine.hideLoadingUI())
       if (handsEnabled) {
         handManager.init({ scene, handScene })

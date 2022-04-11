@@ -47,7 +47,7 @@ export function applyGravity(mesh) {
     const ordered = sortByElevation(over.keys(), true)
     y = getCenterAltitudeAbove(ordered[0], mesh)
     logger.info(
-      { ordered, mesh },
+      { ordered, mesh, y },
       `${mesh.id} is above ${ordered.map(({ id }) => id)}`
     )
   }

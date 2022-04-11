@@ -4,6 +4,7 @@ import { debounceTime, Subject } from 'rxjs'
 import {
   DrawBehaviorName,
   FlipBehaviorName,
+  MoveBehaviorName,
   RotateBehaviorName
 } from '../behaviors'
 import {
@@ -21,6 +22,7 @@ import {
 import { controlManager } from './control'
 import { inputManager } from './input'
 import { selectionManager } from './selection'
+import { targetManager } from './target'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
 
@@ -191,28 +193,13 @@ class HandManager {
     }
     let mesh
     if (drawnMesh.getScene() === this.handScene) {
-      logger.info({ mesh: drawnMesh }, `play mesh ${drawnMesh.id} from hand`)
-      const screenPosition = {
-        x: getMeshScreenPosition(drawnMesh).x,
-        y: this.extent.size.height * 0.5
-      }
-      const groundPosition = screenToGround(this.scene, screenPosition)
-      if (!groundPosition || !isAboveTable(this.scene, screenPosition)) {
-        return
-      }
-      mesh = createMainMesh(this, drawnMesh, {
-        x: groundPosition.x,
-        y: 100,
-        z: groundPosition.z
-      })
-      applyGravity(mesh)
-      getDrawable(mesh).animateToMain()
+      mesh = playMesh(this, drawnMesh)
     } else {
-      logger.info({ mesh: drawnMesh }, `pick mesh ${drawnMesh.id} in hand`)
-      animateToHand(drawnMesh)
-      mesh = createHandMesh(this, drawnMesh, { x: this.extent.minX })
+      mesh = pickMesh(this, drawnMesh)
     }
-    recordDraw(mesh)
+    if (mesh) {
+      recordDraw(mesh)
+    }
   }
 
   /**
@@ -501,4 +488,49 @@ function hasSelectedDrawableMeshes(mesh) {
       .getSelection(mesh)
       .some(mesh => mesh.getBehaviorByName(DrawBehaviorName))
   )
+}
+
+function playMesh(manager, drawnMesh) {
+  logger.info({ mesh: drawnMesh }, `play mesh ${drawnMesh.id} from hand`)
+  const screenPosition = {
+    x: getMeshScreenPosition(drawnMesh).x,
+    y: manager.extent.size.height * 0.5
+  }
+  const position = screenToGround(manager.scene, screenPosition)
+  if (!position || !isAboveTable(manager.scene, screenPosition)) {
+    return
+  }
+  const mesh = createMainMesh(manager, drawnMesh, {
+    x: position.x,
+    y: 100,
+    z: position.z
+  })
+  mesh.computeWorldMatrix()
+  let dropZone = targetManager.findPlayerZone(mesh)
+  if (dropZone) {
+    mesh.setAbsolutePosition(
+      dropZone.mesh.absolutePosition.add(new Vector3(0, 100, 0))
+    )
+    mesh.computeWorldMatrix()
+  } else {
+    dropZone = targetManager.findDropZone(
+      mesh,
+      mesh.getBehaviorByName(MoveBehaviorName)?.state.kind
+    )
+  }
+  applyGravity(mesh)
+  getDrawable(mesh)
+    .animateToMain()
+    .then(() => {
+      if (dropZone) {
+        targetManager.dropOn(dropZone)
+      }
+    })
+  return mesh
+}
+
+function pickMesh(manager, mesh) {
+  logger.info({ mesh }, `pick mesh ${mesh.id} in hand`)
+  animateToHand(mesh)
+  return createHandMesh(manager, mesh, { x: manager.extent.minX })
 }

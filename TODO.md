@@ -1,5 +1,12 @@
 # TODO
 
+player drop zones
+
+- when dragging mesh from hand, automatically move mesh above drop zone
+- move camera when drop zone is not in sight
+- how to deal with multiple draw meshes?
+- how to deal with multiple meshes drag from hand?
+
 ## Brittle tests
 
 - `InputManager › given an initialized manager() › handles multiple pointers taps`
@@ -16,9 +23,11 @@
 
 ## Refactor
 
+- bug: animating visibility from 0 to 1 creates trouble with texture alpha channel
+- bug: invisible meshes when playing/drawing meshes due to lenghy ktx2 loading time (babylonjs-5.0.0-rc.0+)
+- bug: moving card collides with a stack of cards
 - selection manager should remove disposed meshes
 - create Animation objects as part of runAnimation() (constant frameRate of 60)
-- do we need to wrap card planes in an invisible box?
 - custom message on jest expect (game-interaction)
 - jest matchers with mesh (toHaveBeenCalledWith, toHaveBeenNthCalledWith)
 - rework target detection. Instead of using real mesh and rays use shapes overlap: each zone is a rectangle/circle on XZ plane, and the moved mesh another rectangle/circle. Check the center of the moved mesh

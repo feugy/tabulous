@@ -25,17 +25,22 @@ describe('TargetManager', () => {
 
   it('has initial state', () => {
     expect(manager.scene).toBeNull()
+    expect(manager.playerId).toBeNull()
   })
 
   describe('init()', () => {
     it('sets scene', () => {
-      manager.init({ scene })
+      const playerId = faker.datatype.uuid()
+      manager.init({ scene, playerId })
       expect(manager.scene).toEqual(scene)
+      expect(manager.playerId).toEqual(playerId)
     })
   })
 
   describe('given an initialized manager', () => {
-    beforeAll(() => manager.init({ scene }))
+    const playerId = faker.datatype.uuid()
+
+    beforeAll(() => manager.init({ scene, playerId }))
 
     describe('registerTargetable()', () => {
       it('registers a mesh', () => {
@@ -138,6 +143,32 @@ describe('TargetManager', () => {
         mesh.computeWorldMatrix()
 
         expect(manager.findDropZone(mesh)).not.toBeDefined()
+      })
+
+      it('ignores targets with another player Id', () => {
+        const zone3 = createsTargetZone('target1', {
+          position: new Vector3(10, 0, 10),
+          playerId: faker.datatype.uuid(),
+          scene
+        })
+        const mesh = CreateBox('box', {}, scene)
+        mesh.setAbsolutePosition(zone3.mesh.absolutePosition)
+        mesh.computeWorldMatrix()
+
+        expect(manager.findDropZone(mesh)).not.toBeDefined()
+      })
+
+      it('returns targets with same playerId below mesh with kind', () => {
+        const zone3 = createsTargetZone('target1', {
+          position: new Vector3(10, 0, 10),
+          playerId,
+          scene
+        })
+        const mesh = CreateBox('box', {})
+        mesh.setAbsolutePosition(zone3.mesh.absolutePosition)
+        mesh.computeWorldMatrix()
+
+        expectActiveZone(manager.findDropZone(mesh, 'box'), zone3)
       })
 
       it('returns kind-less targets below mesh with kind', () => {
@@ -251,7 +282,6 @@ describe('TargetManager', () => {
       let zone1
       let zone2
       let mesh
-      const playerId = faker.datatype.uuid()
 
       beforeEach(() => {
         zone1 = createsTargetZone('target1', {
@@ -271,7 +301,7 @@ describe('TargetManager', () => {
         mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
         mesh.computeWorldMatrix()
 
-        expect(manager.findPlayerZone(playerId, mesh)).not.toBeDefined()
+        expect(manager.findPlayerZone(mesh)).not.toBeDefined()
       })
 
       it('ignores disabled targets', () => {
@@ -280,7 +310,7 @@ describe('TargetManager', () => {
         mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
         mesh.computeWorldMatrix()
 
-        expect(manager.findPlayerZone(playerId, mesh)).not.toBeDefined()
+        expect(manager.findPlayerZone(mesh)).not.toBeDefined()
       })
 
       it('ignores target part of the current selection', () => {
@@ -289,7 +319,7 @@ describe('TargetManager', () => {
         mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
         mesh.computeWorldMatrix()
 
-        expect(manager.findPlayerZone(playerId, mesh)).not.toBeDefined()
+        expect(manager.findPlayerZone(mesh)).not.toBeDefined()
       })
 
       it('ignores targets when not in main scene', () => {
@@ -299,11 +329,11 @@ describe('TargetManager', () => {
           scene: handScene
         })
         manager.unregisterTargetable(zone1.targetable)
-        expect(manager.findPlayerZone(playerId, mesh)).not.toBeDefined()
+        expect(manager.findPlayerZone(mesh)).not.toBeDefined()
       })
 
       it('returns kind-less targets for provided kind', () => {
-        expectActiveZone(manager.findPlayerZone(playerId, mesh, 'box'), zone1)
+        expectActiveZone(manager.findPlayerZone(mesh, 'box'), zone1)
       })
 
       it('returns targets with matching kind', () => {
@@ -312,7 +342,7 @@ describe('TargetManager', () => {
           playerId,
           kinds: ['card', 'box']
         })
-        expectActiveZone(manager.findPlayerZone(playerId, mesh, 'box'), zone3)
+        expectActiveZone(manager.findPlayerZone(mesh, 'box'), zone3)
       })
 
       it('returns highest target', () => {
@@ -320,12 +350,12 @@ describe('TargetManager', () => {
           position: new Vector3(0, 1, 0),
           playerId
         })
-        expectActiveZone(manager.findPlayerZone(playerId, mesh, 'box'), zone3)
+        expectActiveZone(manager.findPlayerZone(mesh, 'box'), zone3)
       })
 
       describe('clear()', () => {
         beforeEach(() => {
-          manager.findPlayerZone(playerId, mesh, 'box')
+          manager.findPlayerZone(mesh, 'box')
         })
 
         it('clears an active zone', () => {
@@ -348,7 +378,7 @@ describe('TargetManager', () => {
         beforeEach(() => {
           meshes = meshes.map(id => {
             const mesh = CreateBox(id, {})
-            manager.findPlayerZone(playerId, mesh, 'box')
+            manager.findPlayerZone(mesh, 'box')
             return mesh
           })
         })
