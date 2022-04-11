@@ -44,6 +44,7 @@ fragment mesh on Mesh {
   }
   anchorable {
     anchors {
+      id
       x
       y
       z
@@ -53,6 +54,7 @@ fragment mesh on Mesh {
       kinds
       priority
       snappedId
+      playerId
     }
     duration
   }
@@ -61,6 +63,38 @@ fragment mesh on Mesh {
     flipOnPlay
     duration
   }
+}
+
+fragment fullGame on Game {
+  id
+  kind
+  players {
+    ...lightPlayer
+  }
+  meshes {
+    ...mesh
+  }
+  messages {
+    playerId
+    text
+    time
+  }
+  cameras {
+    playerId
+    index
+    target
+    alpha
+    beta
+    elevation
+    hash
+  }
+  hands {
+    playerId
+    meshes {
+      ...mesh
+    }
+  }
+  rulesBookPageCount
 }
 
 mutation createGame($kind: String!) {
@@ -77,9 +111,7 @@ mutation deleteGame($gameId: ID!) {
 
 mutation invite($gameId: ID!, $playerId: ID!) {
   invite(gameId: $gameId, playerId: $playerId) {
-    players {
-      ...lightPlayer
-    }
+    ...fullGame
   }
 }
 
@@ -101,34 +133,7 @@ subscription listGames {
 
 query loadGame($gameId: ID!) {
   loadGame(gameId: $gameId) {
-    id
-    players {
-      ...lightPlayer
-    }
-    meshes {
-      ...mesh
-    }
-    messages {
-      playerId
-      text
-      time
-    }
-    cameras {
-      playerId
-      index
-      target
-      alpha
-      beta
-      elevation
-      hash
-    }
-    hands {
-      playerId
-      meshes {
-        ...mesh
-      }
-    }
-    rulesBookPageCount
+    ...fullGame
   }
 }
 

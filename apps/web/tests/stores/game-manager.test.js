@@ -6,6 +6,7 @@ import { loadThread, serializeThread } from '../../src/stores/discussion'
 import {
   action,
   cameraSaves,
+  engine as engine$,
   handMeshes as handMeshes$,
   loadCameraSaves
 } from '../../src/stores/game-engine'
@@ -83,6 +84,10 @@ describe('given a mocked game engine', () => {
     onDisposeObservable: new Observable()
   }
 
+  beforeAll(() => {
+    engine$.next(engine)
+  })
+
   afterEach(() => {
     engine.onDisposeObservable.notifyObservers()
     engine.onDisposeObservable.clear()
@@ -91,7 +96,7 @@ describe('given a mocked game engine', () => {
   describe('loadGame()', () => {
     it('does not load anything without current player', async () => {
       warn.mockImplementationOnce(() => {})
-      await loadGame(faker.datatype.uuid(), engine)
+      await loadGame(faker.datatype.uuid())
       expect(warn).toHaveBeenCalledTimes(1)
       expect(runQuery).not.toHaveBeenCalled()
       expect(engine.load).not.toHaveBeenCalled()
@@ -115,7 +120,7 @@ describe('given a mocked game engine', () => {
         ]
         const game = { id: gameId, meshes, players: [], hands }
         runQuery.mockResolvedValueOnce(game)
-        await loadGame(gameId, engine)
+        await loadGame(gameId)
         expect(runQuery).toHaveBeenCalledWith(
           graphQL.loadGame,
           { gameId },
@@ -143,7 +148,7 @@ describe('given a mocked game engine', () => {
         engine.serialize.mockReturnValueOnce({ meshes, handMeshes: [] })
         serializeThread.mockReturnValueOnce([])
         runQuery.mockResolvedValueOnce(game)
-        await loadGame(gameId, engine)
+        await loadGame(gameId)
         expect(runQuery).toHaveBeenCalledWith(
           graphQL.loadGame,
           { gameId },
@@ -173,7 +178,7 @@ describe('given a mocked game engine', () => {
         engine.serialize.mockReturnValueOnce({ meshes, handMeshes: [] })
         serializeThread.mockReturnValueOnce(messages)
         runQuery.mockResolvedValueOnce(game)
-        await loadGame(gameId, engine)
+        await loadGame(gameId)
         expect(runQuery).toHaveBeenCalledWith(
           graphQL.loadGame,
           { gameId },
@@ -191,7 +196,7 @@ describe('given a mocked game engine', () => {
         const meshes = [{ id: 'mesh2' }]
         const game = { id: gameId, meshes, players: [], hands: [] }
         runQuery.mockResolvedValueOnce(game)
-        await loadGame(gameId, engine)
+        await loadGame(gameId)
         expect(runQuery).toHaveBeenCalledWith(
           graphQL.loadGame,
           { gameId },
@@ -219,7 +224,7 @@ describe('given a mocked game engine', () => {
         beforeEach(async () => {
           jest.useFakeTimers()
           prepareGame(game)
-          await loadGame(game.id, engine)
+          await loadGame(game.id)
           jest.resetAllMocks()
           engine.serialize.mockReturnValue({ meshes, handMeshes: [] })
           serializeThread.mockReturnValue(game.messages)
@@ -431,7 +436,7 @@ describe('given a mocked game engine', () => {
         it('fails when not receiving game from online players', async () => {
           error.mockImplementationOnce(() => {})
           const errorMessage = 'No game data after 30s'
-          const promise = loadGame(game.id, engine)
+          const promise = loadGame(game.id)
           await nextPromise()
           jest.runAllTimers()
           await expect(promise).rejects.toThrow(errorMessage)
@@ -459,7 +464,7 @@ describe('given a mocked game engine', () => {
               data: { type: 'game-sync', ...game }
             })
           })
-          await loadGame(game.id, engine)
+          await loadGame(game.id)
           expect(runQuery).toHaveBeenCalledWith(
             graphQL.loadGame,
             { gameId: game.id },
@@ -490,7 +495,7 @@ describe('given a mocked game engine', () => {
                 data: { type: 'game-sync', ...game }
               })
             })
-            await loadGame(game.id, engine)
+            await loadGame(game.id)
             jest.resetAllMocks()
           })
 
@@ -551,6 +556,41 @@ describe('given a mocked game engine', () => {
     })
   })
 
+  describe('invite()', () => {
+    const game = {
+      id: faker.datatype.uuid(),
+      meshes: [],
+      players: [],
+      hands: []
+    }
+    const player = { id: faker.datatype.uuid() }
+    const guest = { id: faker.datatype.uuid() }
+
+    beforeAll(() => currentPlayer.next(player))
+
+    it('invites a given user to a game', async () => {
+      runMutation.mockResolvedValueOnce(game)
+      expect(await invite(game.id, guest.id)).toBe(true)
+      expect(runMutation).toHaveBeenCalledWith(graphQL.invite, {
+        gameId: game.id,
+        playerId: guest.id
+      })
+      expect(runMutation).toHaveBeenCalledTimes(1)
+      expect(engine.load).toHaveBeenCalledWith(game, player.id, false)
+      expect(engine.load).toHaveBeenCalledTimes(1)
+    })
+
+    it('returns false when invite was declined', async () => {
+      runMutation.mockResolvedValueOnce()
+      expect(await invite(game.id, guest.id)).toBe(false)
+      expect(runMutation).toHaveBeenCalledWith(graphQL.invite, {
+        gameId: game.id,
+        playerId: guest.id
+      })
+      expect(runMutation).toHaveBeenCalledTimes(1)
+    })
+  })
+
   function expectsFullGame({ id, cameras, messages, hands, meshes }) {
     const playerId = faker.datatype.uuid()
     send.mockReset()
@@ -594,32 +634,6 @@ describe('createGame()', () => {
     runMutation.mockResolvedValueOnce({ id })
     expect(await createGame(kind)).toEqual(id)
     expect(runMutation).toHaveBeenCalledWith(graphQL.createGame, { kind })
-    expect(runMutation).toHaveBeenCalledTimes(1)
-  })
-})
-
-describe('invite()', () => {
-  it('invites a given user to a game', async () => {
-    const playerId = faker.datatype.uuid()
-    const gameId = faker.datatype.uuid()
-    runMutation.mockResolvedValueOnce({})
-    expect(await invite(gameId, playerId)).toBe(true)
-    expect(runMutation).toHaveBeenCalledWith(graphQL.invite, {
-      gameId,
-      playerId
-    })
-    expect(runMutation).toHaveBeenCalledTimes(1)
-  })
-
-  it('returns null when invite was declined', async () => {
-    const playerId = faker.datatype.uuid()
-    const gameId = faker.datatype.uuid()
-    runMutation.mockResolvedValueOnce()
-    expect(await invite(gameId, playerId)).toBe(false)
-    expect(runMutation).toHaveBeenCalledWith(graphQL.invite, {
-      gameId,
-      playerId
-    })
     expect(runMutation).toHaveBeenCalledTimes(1)
   })
 })

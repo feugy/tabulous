@@ -53,8 +53,10 @@ let player
 currentPlayer.subscribe(value => (player = value))
 
 // resets current game and clears discussion thread when disposing game engine
-engine$.subscribe(engine => {
-  if (engine === null) {
+let engine
+engine$.subscribe(value => {
+  engine = value
+  if (value === null) {
     currentGame$.next(null)
     clearThread()
   }
@@ -67,7 +69,7 @@ let cameras = []
 // hands for all players
 let hands = []
 
-async function load(game, engine, firstLoad) {
+async function load(game, firstLoad) {
   hands = game.hands ?? []
   cameras = game.cameras ?? []
   if (game.messages) {
@@ -116,7 +118,7 @@ function saveHands(gameId) {
   runMutation(graphQL.saveGame, { game: { id: gameId, hands } })
 }
 
-function takeHostRole(gameId, engine) {
+function takeHostRole(gameId) {
   logger.info({ gameId }, `taking game host role`)
   return [
     // save scene
@@ -243,13 +245,12 @@ export async function deleteGame(gameId) {
  * Resolves when the game data has been received (either as host or regular peer).
  * @async
  * @param {string} gameId - the loaded game id.
- * @param {@babylonjs.Engine} engine - game engine used to play.
  */
-export async function loadGame(gameId, engine) {
-  if (!player) {
+export async function loadGame(gameId) {
+  if (!player || !engine) {
     logger.warn(
       { gameId },
-      `fail loading game ${gameId} as there are no current player yet`
+      `fail loading game ${gameId} as there are no current player/engine yet`
     )
     return
   }
@@ -275,8 +276,8 @@ export async function loadGame(gameId, engine) {
 
   if (game.players.every(({ id, playing }) => id === player.id || !playing)) {
     // is the only playing player: take the host role
-    subscriptions.push(...takeHostRole(gameId, engine))
-    await load(game, engine, true)
+    subscriptions.push(...takeHostRole(gameId))
+    await load(game, true)
   } else {
     return new Promise((resolve, reject) => {
       const peers = game.players.filter(
@@ -315,7 +316,7 @@ export async function loadGame(gameId, engine) {
           .pipe(filter(({ data }) => data?.type === 'game-sync'))
           .subscribe(({ data }) => {
             logger.info({ game }, `loading game data (${data.id})`)
-            load(data, engine, isFirstLoad)
+            load(data, isFirstLoad)
             isFirstLoad = false
           }),
         lastMessageReceived
@@ -339,7 +340,7 @@ export async function loadGame(gameId, engine) {
                 )
                 .subscribe(() => {
                   unsubscribeAll()
-                  subscriptions.push(...takeHostRole(gameId, engine))
+                  subscriptions.push(...takeHostRole(gameId))
                 })
             )
             resolve()
@@ -361,5 +362,10 @@ export async function invite(gameId, playerId) {
     { gameId, playerId },
     `invite player ${playerId} to game ${gameId}`
   )
-  return Boolean(await runMutation(graphQL.invite, { gameId, playerId }))
+  const game = await runMutation(graphQL.invite, { gameId, playerId })
+  if (!game) {
+    return false
+  }
+  await load(game, false)
+  return true
 }

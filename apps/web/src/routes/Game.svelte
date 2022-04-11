@@ -44,7 +44,7 @@
 
   onMount(async () => {
     initEngine({ canvas, interaction, longTapDelay })
-    loadPromise = loadGame(params.gameId, $engine)
+    loadPromise = loadGame(params.gameId)
   })
 
   onDestroy(() => $engine?.dispose())
