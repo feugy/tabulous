@@ -50,6 +50,7 @@ describe('AnimateBehavior', () => {
       mesh.addBehavior(behavior, true)
       mesh.getScene()._pendingData = []
       behavior.onAnimationEndObservable.add(animationEndReceived)
+      delete mesh.getEngine().isLoading
     })
 
     it('moves mesh without gravity', async () => {
@@ -81,7 +82,7 @@ describe('AnimateBehavior', () => {
     })
 
     it('goes straight to last frame during loading', async () => {
-      mesh.getScene()._pendingData = [true]
+      mesh.getEngine().isLoading = true
       const position = new Vector3(10, 5, 4)
       const duration = 350
       const startTime = Date.now()

@@ -26,6 +26,11 @@ import { createLights, createTable, loadMeshes, serializeMeshes } from './utils'
 // import { AxesViewer } from '@babylonjs/core/Debug/axesViewer'
 
 /**
+ * Enhanced Babylon.js' Engine
+ * @typedef {Engine} EnhancedEngine
+ */
+
+/**
  * Creates the Babylon's 3D engine, with its single scene, and its render loop.
  * Handles pointer out event, to cancel multiple selection or drag'n drop operations.
  * Note: must be called before any other 3D elements.
@@ -35,7 +40,7 @@ import { createLights, createTable, loadMeshes, serializeMeshes } from './utils'
  * @param {HTMLElement} params.interaction - HTML element receiving user interaction (mouse events, taps).
  * @param {number} params.doubleTapDelay - number of milliseconds between 2 pointer down events to be considered as a double one.
  * @param {number} params.longTapDelay - number of milliseconds to hold pointer down before it is considered as long.
- * @returns {Engine} the created 3D engine.
+ * @returns {EnhancedEngine} the created 3D engine.
  */
 export function createEngine({
   Engine = RealEngine,
@@ -71,6 +76,15 @@ export function createEngine({
       handScene.render()
     })
 
+  let isLoading = false
+
+  /**
+   * @property {boolean} isLoading - true while the loading UI is visible.
+   * @memberof EnhancedEngine
+   * @readonly
+   */
+  Object.defineProperty(engine, 'isLoading', { get: () => isLoading })
+
   /**
    * Load all meshes into the game engine
    * - shows and hides Babylon's loading UI while loading assets (initial loading only)
@@ -84,9 +98,13 @@ export function createEngine({
   engine.load = async (gameData, playerId, initial) => {
     const handsEnabled = hasHandsEnabled(gameData)
     if (initial) {
+      isLoading = true
       engine.displayLoadingUI()
       targetManager.init({ scene, playerId })
-      scene.onDataLoadedObservable.addOnce(() => engine.hideLoadingUI())
+      scene.onDataLoadedObservable.addOnce(() => {
+        engine.hideLoadingUI()
+        isLoading = false
+      })
       if (handsEnabled) {
         handManager.init({ scene, handScene })
       }

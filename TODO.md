@@ -2,7 +2,7 @@
 
 player drop zones
 
-- scene loading
+- multiple drops to player zone
 - move camera when drop zone is not in sight
 
 ## Brittle tests

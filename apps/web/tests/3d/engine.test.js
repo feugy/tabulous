@@ -65,8 +65,11 @@ describe('createEngine()', () => {
         z: -10
       }
       await engine.load({ meshes: [mesh], hands: [] }, playerId, false)
+      expect(engine.isLoading).toBe(false)
+      engine.scenes[1].onDataLoadedObservable.notifyObservers()
       expect(engine.scenes[1].getMeshById(mesh.id)).toBeDefined()
       expect(displayLoadingUI).not.toHaveBeenCalled()
+      expect(engine.isLoading).toBe(false)
     })
 
     it('can serialize() game data', () => {
@@ -108,13 +111,18 @@ describe('createEngine()', () => {
         y: 0,
         z: -10
       }
+      expect(engine.isLoading).toBe(false)
       await engine.load({ meshes: [mesh], hands: [] }, playerId, true)
+      expect(engine.isLoading).toBe(true)
+      engine.scenes[1].onDataLoadedObservable.notifyObservers()
+      expect(engine.isLoading).toBe(false)
       expect(engine.scenes[1].getMeshById(mesh.id)).toBeDefined()
       expect(displayLoadingUI).toHaveBeenCalledTimes(1)
       expect(handManager.enabled).toBe(false)
     })
 
     it('enables hand manager on initial load', async () => {
+      expect(engine.isLoading).toBe(false)
       await engine.load(
         {
           meshes: [],
@@ -123,6 +131,9 @@ describe('createEngine()', () => {
         playerId,
         true
       )
+      expect(engine.isLoading).toBe(true)
+      engine.scenes[1].onDataLoadedObservable.notifyObservers()
+      expect(engine.isLoading).toBe(false)
       expect(displayLoadingUI).toHaveBeenCalledTimes(1)
       expect(handManager.enabled).toBe(true)
     })

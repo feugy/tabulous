@@ -95,7 +95,7 @@ export async function animateMove(
   withGravity = false
 ) {
   const movable = getAnimatableBehavior(mesh)
-  if (mesh.getScene().isLoading || !movable || !duration) {
+  if (mesh.getEngine().isLoading || !movable || !duration) {
     mesh.setAbsolutePosition(absolutePosition)
     if (withGravity) {
       applyGravity(mesh)
@@ -262,10 +262,7 @@ export function detachFromParent(mesh) {
 
   const children = mesh.getChildMeshes(
     true,
-    ({ name }) =>
-      !name.startsWith('plane-') &&
-      !name.startsWith('drop-') &&
-      !name.startsWith('anchor-')
+    ({ name }) => !name.startsWith('drop-') && !name.startsWith('anchor-')
   )
   for (const child of children) {
     child.setParent(null)
