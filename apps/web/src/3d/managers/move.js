@@ -62,7 +62,7 @@ class MoveManager {
     }
 
     let sceneUsed = mesh.getScene()
-    const moved = selectionManager.meshes.has(mesh)
+    let moved = selectionManager.meshes.has(mesh)
       ? [...selectionManager.meshes].filter(
           mesh => this.meshIds.has(mesh?.id) && mesh.getScene() === sceneUsed
         )
@@ -81,11 +81,15 @@ class MoveManager {
         if (fn === 'draw') {
           const mesh = moved.find(({ id }) => id === meshId)
           if (mesh && mesh.getScene() !== this.scene) {
+            const idx = moved.indexOf(mesh)
+            moved.splice(idx, 1)
             const newMesh = this.scene.getMeshById(meshId)
-            moved.splice(moved.indexOf(mesh), 1, newMesh)
-            sceneUsed = this.scene
-            lastPosition = newMesh.absolutePosition.clone()
-            lastPosition.y -= this.elevation
+            if (newMesh) {
+              moved.splice(idx, 0, newMesh)
+              sceneUsed = this.scene
+              lastPosition = newMesh.absolutePosition.clone()
+              lastPosition.y -= this.elevation
+            }
           }
         }
       }
@@ -176,6 +180,13 @@ class MoveManager {
     // dynamically assign getActiveZones function to keep zones in scope
     this.getActiveZones = () => [...zones]
 
+    // dynamically assign exclude function to keep moved in scope
+    this.exclude = (...meshes) => {
+      moved = moved.filter(({ id }) =>
+        meshes.every(excluded => excluded?.id !== id)
+      )
+    }
+
     // dynamically assign stop function to keep moved, zones and lastPosition in scope
     this.stop = async () => {
       if (actionObserver) {
@@ -236,6 +247,13 @@ class MoveManager {
    * @param {MouseEvent|TouchEvent} event - mouse or touch event containing the screen position.
    */
   continue() {}
+
+  /**
+   * Removes some of the moved meshes.
+   * They will stay with their current position.
+   * @param {import('@babylonjs/core').Mesh...} meshes - excluded meshes.
+   */
+  exclude() {}
 
   /**
    * Stops the move operation, releasing mesh(es) on its(their) target if any, or on the table.

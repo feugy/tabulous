@@ -2,10 +2,8 @@
 
 player drop zones
 
-- when dragging mesh from hand, automatically move mesh above drop zone
+- scene loading
 - move camera when drop zone is not in sight
-- how to deal with multiple draw meshes?
-- how to deal with multiple meshes drag from hand?
 
 ## Brittle tests
 

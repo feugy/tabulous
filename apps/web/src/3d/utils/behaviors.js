@@ -243,6 +243,43 @@ export function runAnimation(behavior, onEnd, ...animationSpecs) {
   )
 }
 
+/**
+ * Because Babylon can not animate absolute position but only relative position,
+ * one needs to temporary detach an animated mesh from its parent, or rotation may alter the movements.
+ * This function detaches a given mesh, keeping its absolute position and rotation unchanged, then
+ * returns a function to re-attach to the original parent (or new, if it has changed meanwhile).
+ * @param {import('@babel/core').Mesh} mesh - detached mesh.
+ * @returns a function to re-attach to the original (or new) parent.
+ */
+export function detachFromParent(mesh) {
+  let parent = mesh.parent
+  mesh.setParent(null)
+
+  const savedSetter = mesh.setParent.bind(mesh)
+  mesh.setParent = newParent => {
+    parent = newParent
+  }
+
+  const children = mesh.getChildMeshes(
+    true,
+    ({ name }) =>
+      !name.startsWith('plane-') &&
+      !name.startsWith('drop-') &&
+      !name.startsWith('anchor-')
+  )
+  for (const child of children) {
+    child.setParent(null)
+  }
+
+  return () => {
+    mesh.setParent = savedSetter
+    mesh.setParent(parent)
+    for (const child of children) {
+      child.setParent(mesh)
+    }
+  }
+}
+
 function buildLastFrame(frameRate, animationSpecs) {
   let maxDuration = 0
   for (const { duration } of animationSpecs) {

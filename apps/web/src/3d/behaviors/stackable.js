@@ -94,10 +94,10 @@ export class StackBehavior extends TargetBehavior {
     super.attach(mesh)
     this.fromState(this._state)
 
-    this.dropObserver = this.onDropObservable.add(({ dropped }) => {
+    this.dropObserver = this.onDropObservable.add(({ dropped, immediate }) => {
       // sort all dropped meshes by elevation (lowest first)
       for (const mesh of sortByElevation(dropped)) {
-        this.push(mesh?.id)
+        this.push(mesh?.id, immediate)
       }
     })
 
@@ -182,20 +182,21 @@ export class StackBehavior extends TargetBehavior {
    *
    * @async
    * @param {string} meshId - id of the pushed mesh.
+   * @param {boolean} [immediate=false] - set to true to disable animation.
    */
-  async push(meshId) {
+  async push(meshId, immediate = false) {
     const mesh = this.stack[0].getScene().getMeshById(meshId)
     if (!mesh || this.stack.includes(mesh)) return
 
     const base = this.base ?? this
     const { stack } = base
-    const duration = this.inhibitControl ? 0 : this._state.duration
+    const duration = this.inhibitControl || immediate ? 0 : this._state.duration
 
     if (!this.inhibitControl) {
       controlManager.record({
         mesh: stack[0],
         fn: 'push',
-        args: [meshId],
+        args: [meshId, immediate],
         duration
       })
     }
@@ -218,7 +219,7 @@ export class StackBehavior extends TargetBehavior {
       duration,
       true
     )
-    if (!this.inhibitControl) {
+    if (duration) {
       await move
     }
     for (const mesh of meshPushed) {

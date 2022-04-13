@@ -308,7 +308,7 @@ describe('AnchorBehavior', () => {
       expect(snapped.absolutePosition.asArray()).toEqual([10, 10, 10])
       expect(behavior.snappedZone(snapped.id)).toBeNull()
 
-      const args = [snapped.id, behavior.zones[0].mesh.id]
+      const args = [snapped.id, behavior.zones[0].mesh.id, false]
       await mesh.metadata.snap(...args)
       expectSnapped(mesh, snapped, 0)
       expect(behavior.getSnappedIds()).toEqual([meshes[0].id])
@@ -332,7 +332,7 @@ describe('AnchorBehavior', () => {
       ])
       expect(behavior.snappedZone(snapped.id)).toBeNull()
 
-      const args = [snapped.id, behavior.zones[0].mesh.id]
+      const args = [snapped.id, behavior.zones[0].mesh.id, false]
       await mesh.metadata.snap(...args)
       expectSnapped(mesh, snapped, 0)
       expect(behavior.getSnappedIds()).toEqual([meshes[0].id])
@@ -381,7 +381,7 @@ describe('AnchorBehavior', () => {
       expect(recordSpy).toHaveBeenCalledWith({
         fn: 'snap',
         mesh,
-        args: [snapped.id, behavior.zones[1].mesh.id],
+        args: [snapped.id, behavior.zones[1].mesh.id, false],
         duration: behavior.state.duration
       })
     })
@@ -396,7 +396,7 @@ describe('AnchorBehavior', () => {
       mesh.addBehavior(new RotateBehavior({ angle }), true)
       expectRotated(mesh, angle)
 
-      const args = [snapped.id, behavior.zones[0].mesh.id]
+      const args = [snapped.id, behavior.zones[0].mesh.id, false]
       await mesh.metadata.snap(...args)
       expectSnapped(mesh, snapped, 0)
       expect(behavior.getSnappedIds()).toEqual([meshes[0].id])

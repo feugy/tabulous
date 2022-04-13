@@ -21,6 +21,7 @@ import {
 } from '../utils'
 import { controlManager } from './control'
 import { inputManager } from './input'
+import { moveManager } from './move'
 import { selectionManager } from './selection'
 import { targetManager } from './target'
 // '../../utils' creates a cyclic dependency in Jest
@@ -173,16 +174,16 @@ class HandManager {
   /**
    * Draw a mesh from the main scene to this player's hand, or from the hand to the main scene.
    * When drawing to hand:
-   * 1. run animation on the main scene (elevates and fades out) and dispose at the end
-   * 2. creates mesh in hand and lay the hand out
-   * 3. if required (unflipOnPick is true), unflips flippable mesh
-   * 4. records the action into the control manager
+   * 1. records the action into the control manager
+   * 2. run animation on the main scene (elevates and fades out) and dispose at the end
+   * 3. creates mesh in hand and lay the hand out
+   * 4. if required (unflipOnPick is true), unflips flippable mesh
    *
    * When drawing to main
-   * 1. if required (flipOnPlay is true), flips flippable mesh without animation
-   * 2. disposes mesh in hand and lay the hand out
-   * 3. run animation on the main scene (fades in and descends)
-   * 4. records the action into the control manager
+   * 1. records the action into the control manager
+   * 2. if required (flipOnPlay is true), flips flippable mesh without animation
+   * 3. disposes mesh in hand and lay the hand out
+   * 4. run animation on the main scene (fades in and descends)
    *
    * @param {import('@babylonjs/core').Mesh} drawnMesh - drawn mesh
    */
@@ -191,14 +192,11 @@ class HandManager {
     if (!this.enabled || !drawable) {
       return
     }
-    let mesh
+    recordDraw(drawnMesh)
     if (drawnMesh.getScene() === this.handScene) {
-      mesh = playMesh(this, drawnMesh)
+      playMesh(this, drawnMesh)
     } else {
-      mesh = pickMesh(this, drawnMesh)
-    }
-    if (mesh) {
-      recordDraw(mesh)
+      pickMesh(this, drawnMesh)
     }
   }
 
@@ -291,7 +289,13 @@ function handDrag(manager, { type, mesh, event }) {
           { mesh, x, z },
           `play mesh ${mesh.id} from hand by dragging`
         )
-        recordDraw(createMainMesh(manager, mesh, { x, z }))
+        const created = createMainMesh(manager, mesh, { x, z })
+        const dropZone = targetManager.findPlayerZone(created)
+        recordDraw(created)
+        if (dropZone) {
+          moveManager.exclude(created)
+          targetManager.dropOn(dropZone)
+        }
       }
       // final layout after all animation are over
       setTimeout(() => layoutMeshs(manager), duration * 1.1)
@@ -505,27 +509,20 @@ function playMesh(manager, drawnMesh) {
     y: 100,
     z: position.z
   })
-  mesh.computeWorldMatrix()
   let dropZone = targetManager.findPlayerZone(mesh)
-  if (dropZone) {
-    mesh.setAbsolutePosition(
-      dropZone.mesh.absolutePosition.add(new Vector3(0, 100, 0))
-    )
-    mesh.computeWorldMatrix()
-  } else {
+  if (!dropZone) {
+    mesh.computeWorldMatrix(true)
     dropZone = targetManager.findDropZone(
       mesh,
       mesh.getBehaviorByName(MoveBehaviorName)?.state.kind
     )
   }
-  applyGravity(mesh)
-  getDrawable(mesh)
-    .animateToMain()
-    .then(() => {
-      if (dropZone) {
-        targetManager.dropOn(dropZone)
-      }
-    })
+  if (dropZone) {
+    targetManager.dropOn(dropZone, { immediate: true })
+  } else {
+    applyGravity(mesh)
+  }
+  getDrawable(mesh).animateToMain()
   return mesh
 }
 

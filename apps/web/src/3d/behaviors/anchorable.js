@@ -75,10 +75,12 @@ export class AnchorBehavior extends TargetBehavior {
     super.attach(mesh)
     this.fromState(this.state)
 
-    this.dropObserver = this.onDropObservable.add(({ dropped, zone }) => {
-      // only considers first dropped mesh.
-      this.snap(dropped[0]?.id, zone.mesh.id)
-    })
+    this.dropObserver = this.onDropObservable.add(
+      ({ dropped, zone, immediate }) => {
+        // only considers first dropped mesh.
+        this.snap(dropped[0]?.id, zone.mesh.id, immediate)
+      }
+    )
 
     this.dragObserver = inputManager.onDragObservable.add(({ type, mesh }) => {
       if (type === 'dragStart' && mesh) {
@@ -94,7 +96,7 @@ export class AnchorBehavior extends TargetBehavior {
     })
 
     this.actionObserver = controlManager.onActionObservable.add(
-      ({ meshId, fn, args }) => {
+      ({ meshId, fn, args, fromHand }) => {
         const zone = this.zoneBySnappedId.get(meshId)
         if (zone) {
           if (fn === 'reorder' || fn === 'flipAll') {
@@ -106,7 +108,7 @@ export class AnchorBehavior extends TargetBehavior {
                 : stack.find(({ id }) => id === args[0][0])
             unsetAnchor(this, zone, stack[0])
             setAnchor(this, zone, snapped, true)
-          } else if (fn === 'draw') {
+          } else if (fn === 'draw' && !fromHand) {
             this.unsnap(meshId)
           }
         }
@@ -162,8 +164,9 @@ export class AnchorBehavior extends TargetBehavior {
    * @async
    * @param {string} snappedId - id of the snapped mesh.
    * @param {string} anchorId - id of the anchor mesh to snap onto.
+   * @param {boolean} [immediate=false] - set to true to disable animation.
    */
-  async snap(snappedId, anchorId) {
+  async snap(snappedId, anchorId, immediate = false) {
     let snapped = this.mesh?.getScene().getMeshById(snappedId)
     const zone = this.zones.find(({ mesh }) => mesh.id === anchorId)
     if (!snapped || !zone || !zone.enabled) {
@@ -172,10 +175,10 @@ export class AnchorBehavior extends TargetBehavior {
     controlManager.record({
       mesh: this.mesh,
       fn: 'snap',
-      args: [snappedId, anchorId],
-      duration: this.state.duration
+      args: [snappedId, anchorId, immediate],
+      duration: immediate ? 0 : this.state.duration
     })
-    await snapToAnchor(this, snappedId, zone)
+    await snapToAnchor(this, snappedId, zone, immediate)
   }
 
   /**
@@ -287,6 +290,7 @@ async function snapToAnchor(behavior, snappedId, zone, loading = false) {
       { mesh, snappedId: snapped.id, zone },
       `snap ${snapped.id} onto ${meshId}, zone ${zone.mesh.id}`
     )
+    setAnchor(behavior, zone, snapped)
 
     // moves it to the final position
     const { x, z } = zone.mesh.getAbsolutePosition()
@@ -300,7 +304,6 @@ async function snapToAnchor(behavior, snappedId, zone, loading = false) {
     if (!loading) {
       await move
     }
-    setAnchor(behavior, zone, snapped)
   }
 }
 

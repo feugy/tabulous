@@ -173,7 +173,7 @@ describe('StackBehavior', () => {
       expect(recordSpy).toHaveBeenCalledWith({
         fn: 'push',
         mesh,
-        args: [meshes[0].id],
+        args: [meshes[0].id, false],
         duration: behavior.state.duration
       })
     })
@@ -187,7 +187,7 @@ describe('StackBehavior', () => {
       expect(recordSpy).toHaveBeenCalledWith({
         fn: 'push',
         mesh,
-        args: [meshes[2].id],
+        args: [meshes[2].id, false],
         duration: meshes[1].getBehaviorByName(StackBehaviorName).state.duration
       })
     })
@@ -206,13 +206,13 @@ describe('StackBehavior', () => {
       expect(recordSpy).toHaveBeenNthCalledWith(1, {
         fn: 'push',
         mesh,
-        args: [meshes[0].id],
+        args: [meshes[0].id, false],
         duration: meshes[1].getBehaviorByName(StackBehaviorName).state.duration
       })
       expect(recordSpy).toHaveBeenNthCalledWith(2, {
         fn: 'push',
         mesh,
-        args: [meshes[2].id],
+        args: [meshes[2].id, false],
         duration: meshes[1].getBehaviorByName(StackBehaviorName).state.duration
       })
     })
@@ -232,7 +232,7 @@ describe('StackBehavior', () => {
       expect(recordSpy).toHaveBeenCalledWith({
         fn: 'push',
         mesh,
-        args: [meshes[1].id],
+        args: [meshes[1].id, false],
         duration: behavior.state.duration
       })
     })

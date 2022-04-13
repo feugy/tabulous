@@ -130,9 +130,10 @@ class TargetManager {
    * notifying drop observers of the corresponding Targetable behavior.
    * It clears the target.
    * @param {import('../behaviors').DropZone} zone - the zone dropped onto.
+   * @param {object} props - other properties passed to the drop zone observables
    * @returns {import('@babylonjs/core').Mesh[]} list of droppable meshes, if any.
    */
-  dropOn(zone) {
+  dropOn(zone, props = {}) {
     const dropped = this.droppablesByDropZone.get(zone) ?? []
     if (dropped.length) {
       logger.info(
@@ -141,7 +142,11 @@ class TargetManager {
           ({ id }) => id
         )}`
       )
-      zone.targetable.onDropObservable.notifyObservers({ dropped, zone })
+      zone.targetable.onDropObservable.notifyObservers({
+        dropped,
+        zone,
+        ...props
+      })
     }
     this.clear(zone)
     return dropped

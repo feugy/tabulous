@@ -2,7 +2,7 @@ import { Animation } from '@babylonjs/core/Animations/animation'
 import { AnimateBehavior } from '.'
 import { DrawBehaviorName } from './names'
 import { handManager } from '../managers'
-import { attachFunctions, runAnimation } from '../utils'
+import { attachFunctions, detachFromParent, runAnimation } from '../utils'
 
 /**
  * @typedef {object} DrawableState behavior persistent state, including:
@@ -89,13 +89,11 @@ export class DrawBehavior extends AnimateBehavior {
       return
     }
     this.isAnimated = true
-
-    // delay so that all observer of onAction to perform: we need the mesh to be unsnapped before getting its position
-    await Promise.resolve()
-    const { fadeKeys, moveKeys } = buildAnimationKeys(mesh)
+    const attach = detachFromParent(mesh)
+    const { fadeKeys, moveKeys } = await buildAnimationKeys(mesh)
     await runAnimation(
       this,
-      null,
+      () => attach(),
       { animation: fadeAnimation, keys: fadeKeys, duration },
       { animation: moveAnimation, keys: moveKeys, duration }
     )
@@ -115,11 +113,12 @@ export class DrawBehavior extends AnimateBehavior {
     if (isAnimated || !mesh) {
       return
     }
-
-    const { moveKeys } = buildAnimationKeys(mesh, true)
+    this.isAnimated = true
+    const attach = detachFromParent(mesh)
+    const { moveKeys } = await buildAnimationKeys(mesh, true)
     await runAnimation(
       this,
-      null,
+      () => attach(),
       // { animation: fadeAnimation, duration, keys: fadeKeys }, bug: trouble with alpha texture
       { animation: moveAnimation, duration, keys: moveKeys }
     )
@@ -138,8 +137,10 @@ export class DrawBehavior extends AnimateBehavior {
   }
 }
 
-function buildAnimationKeys({ position }, invert = false) {
-  const { x, y, z } = position
+async function buildAnimationKeys(mesh, invert = false) {
+  // delay so that all observer of onAction to perform: we need the mesh to be have not parents before getting its position
+  await Promise.resolve()
+  const { x, y, z } = mesh.position
   return {
     fadeKeys: [
       {
