@@ -15,7 +15,7 @@ describe('given a connected repository and several games', () => {
   ]
 
   beforeEach(async () => {
-    await games.connect()
+    await games.connect({})
     await games.save(models)
   })
 

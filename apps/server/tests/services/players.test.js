@@ -8,7 +8,7 @@ import {
 } from '../../src/services/players.js'
 
 describe('given initialized repository', () => {
-  beforeAll(() => repositories.players.connect())
+  beforeAll(() => repositories.players.connect({}))
 
   afterAll(() => repositories.players.release())
 
