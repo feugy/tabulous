@@ -41,7 +41,7 @@ describe('MaterialManager', () => {
     })
   })
 
-  describe('given an initialized manager', () => {
+  describe('given an initialized manager with 2 scenes', () => {
     const ktx2 = 'some/path/to/texture.ktx2'
     const webp = 'some/path/to/texture.gl1.webp'
 
@@ -230,6 +230,97 @@ describe('MaterialManager', () => {
       })
     })
   })
-})
 
-// TODO clear
+  describe('given an initialized manager with no hand scene', () => {
+    let box
+
+    beforeAll(() => manager.init({ scene }))
+
+    beforeEach(() => {
+      manager.clear()
+      box = CreateBox('box', {}, scene)
+    })
+
+    describe('isManaging()', () => {
+      it('returns false for unmanaged texture or color', () => {
+        expect(manager.isManaging('#0066ff66')).toBe(false)
+        expect(manager.isManaging(faker.internet.url())).toBe(false)
+      })
+
+      it('returns true for managed color', () => {
+        const color = '#0066ff66'
+        manager.configure(box, color)
+        expect(manager.isManaging(color)).toBe(true)
+      })
+
+      it('returns true for managed texture', () => {
+        const texture = faker.internet.url()
+        manager.configure(box, texture)
+        expect(manager.isManaging(texture)).toBe(true)
+      })
+    })
+
+    describe('clear()', () => {
+      it('disposes textures and materials', () => {
+        const disposeBoxMaterial = jest.fn()
+        const disposeBoxTexture = jest.fn()
+        const texture = faker.internet.url()
+        const color = '#ff6600ff'
+        manager.configure(box, texture)
+        expect(manager.isManaging(texture)).toBe(true)
+        box.material.onDisposeObservable.addOnce(disposeBoxMaterial)
+        box.material.diffuseTexture.onDisposeObservable.addOnce(
+          disposeBoxTexture
+        )
+
+        manager.clear()
+        expect(manager.isManaging(texture)).toBe(false)
+        expect(manager.isManaging(color)).toBe(false)
+        expect(disposeBoxMaterial).toHaveBeenCalledTimes(1)
+        expect(disposeBoxTexture).toHaveBeenCalledTimes(1)
+      })
+    })
+
+    describe('configure()', () => {
+      it('creates a material with a color', () => {
+        manager.configure(box, '#0066ff66')
+        expect(box.material).toBeInstanceOf(StandardMaterial)
+        expect(box.material.diffuseColor?.asArray()).toEqual([0, 0.4, 1, 0.4])
+        expect(box.material.alpha).toEqual(0.4)
+        expect(box.material.diffuseTexture).toBeNull()
+      })
+
+      it('creates a material with a texture', () => {
+        const texture = faker.internet.url()
+        manager.configure(box, texture)
+        expect(box.material).toBeInstanceOf(StandardMaterial)
+        expect(box.material.diffuseTexture).toBeInstanceOf(Texture)
+      })
+
+      it('reuses existing color material', () => {
+        const color = '#0066ff66'
+        manager.configure(box, color)
+        expect(box.material).toBeInstanceOf(StandardMaterial)
+        expect(box.material.diffuseColor?.asArray()).toEqual([0, 0.4, 1, 0.4])
+        expect(box.material.diffuseTexture).toBeNull()
+
+        const box2 = CreateBox('box2', {}, box.getScene())
+        manager.configure(box2, color)
+        expect(box2.material).toBeInstanceOf(StandardMaterial)
+        expect(box2.material === box.material).toBe(true)
+      })
+
+      it('reuses existing texture material', () => {
+        const texture = faker.internet.url()
+        manager.configure(box, texture)
+        expect(box.material).toBeInstanceOf(StandardMaterial)
+        expect(box.material.diffuseTexture).toBeInstanceOf(Texture)
+
+        const box2 = CreateBox('box2', {}, box.getScene())
+        manager.configure(box2, texture)
+        expect(box2.material).toBeInstanceOf(StandardMaterial)
+        expect(box2.material === box.material).toBe(true)
+      })
+    })
+  })
+})

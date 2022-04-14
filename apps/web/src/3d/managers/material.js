@@ -27,7 +27,7 @@ class MaterialManager {
    * Gives scenes to the manager.
    * @param {object} params - parameters, including:
    * @param {Scene} params.scene - main scene.
-   * @param {Scene} params.handScene - scene for meshes in hand.
+   * @param {Scene} params.handScene? - scene for meshes in hand.
    */
   init({ scene, handScene }) {
     this.scene = scene
@@ -47,8 +47,7 @@ class MaterialManager {
     const scene = mesh.getScene()
     const materialByUrl = getMaterialCache(this, scene)
     mesh.material =
-      materialByUrl.get(texture) ?? buildMaterial(materialByUrl, texture, scene)
-    buildMainMaterialIdNeeded(this, texture, scene)
+      materialByUrl.get(texture) ?? buildMaterials(this, texture, scene)
     mesh.receiveShadows = true
     mesh.overlayColor = new Color3(0, 0.8, 0)
     mesh.overlayAlpha = 0.2
@@ -73,9 +72,7 @@ class MaterialManager {
    * @returns {boolean} whether this material is managed or not
    */
   isManaging(texture) {
-    return (
-      this.mainMaterialByUrl.has(texture) || this.handMaterialByUrl.has(texture)
-    )
+    return this.mainMaterialByUrl.has(texture)
   }
 }
 
@@ -89,6 +86,14 @@ function getMaterialCache(manager, scene) {
   return manager.scene === scene
     ? manager.mainMaterialByUrl
     : manager.handMaterialByUrl
+}
+
+function buildMaterials(manager, url, usedScene) {
+  buildMaterial(manager.mainMaterialByUrl, url, manager.scene)
+  if (manager.handScene) {
+    buildMaterial(manager.handMaterialByUrl, url, manager.handScene)
+  }
+  return getMaterialCache(manager, usedScene).get(url)
 }
 
 function buildMaterial(materialByUrl, url, scene) {
@@ -105,16 +110,6 @@ function buildMaterial(materialByUrl, url, scene) {
   materialByUrl.set(url, material)
   material.onDisposeObservable.addOnce(() => materialByUrl.delete(url))
   return material
-}
-
-function buildMainMaterialIdNeeded(
-  { mainMaterialByUrl, handScene, scene: mainScene },
-  url,
-  scene
-) {
-  if (scene === handScene && !mainMaterialByUrl.has(url)) {
-    buildMaterial(mainMaterialByUrl, url, mainScene)
-  }
 }
 
 /**

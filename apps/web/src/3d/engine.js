@@ -66,7 +66,6 @@ export function createEngine({
   controlManager.init({ scene, handScene })
   selectionManager.init({ scene, handScene })
   indicatorManager.init({ scene })
-  materialManager.init({ scene, handScene })
 
   createTable({}, scene)
   // creates light after table, so table doesn't project shadow
@@ -103,6 +102,10 @@ export function createEngine({
       isLoading = true
       engine.displayLoadingUI()
       targetManager.init({ scene, playerId })
+      materialManager.init({
+        scene,
+        handScene: handsEnabled ? handScene : null
+      })
       scene.onDataLoadedObservable.addOnce(() => {
         engine.hideLoadingUI()
         isLoading = false

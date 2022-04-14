@@ -1,10 +1,13 @@
 import { Color4 } from '@babylonjs/core/Maths/math.color'
 import faker from 'faker'
 import { createRoundToken } from '../../../src/3d/meshes'
-import { controlManager } from '../../../src/3d/managers'
+import { controlManager, materialManager } from '../../../src/3d/managers'
 import { configures3dTestEngine } from '../../test-utils'
 
-configures3dTestEngine()
+let scene
+configures3dTestEngine(created => (scene = created.scene))
+
+beforeAll(() => materialManager.init({ scene }))
 
 describe('createRoundToken()', () => {
   it('creates a token with default values and no behavior', () => {
