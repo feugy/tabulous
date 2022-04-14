@@ -319,7 +319,7 @@ function handDrag(manager, { type, mesh, event }) {
       }
       // dispose at the end to avoid disposing children along with their stacks/anchors
       for (const mesh of drawn) {
-        mesh.dispose(false, true)
+        mesh.dispose()
       }
     }
   }
@@ -332,7 +332,7 @@ function isMainMeshNextToHand({ extent: { screenHeight } }, mesh) {
 function createMainMesh({ scene }, handMesh, extraState) {
   flipIfNeeded(handMesh)
   const state = handMesh.metadata.serialize()
-  handMesh.dispose(false, true)
+  handMesh.dispose()
   return createMeshFromState({ ...state, ...extraState }, scene)
 }
 
@@ -451,9 +451,7 @@ function getViewPortSize(engine) {
 function animateToHand(mesh) {
   mesh.isPhantom = true
   const drawable = getDrawable(mesh)
-  drawable.onAnimationEndObservable.addOnce(() => {
-    mesh.dispose(false, true)
-  })
+  drawable.onAnimationEndObservable.addOnce(() => mesh.dispose())
   drawable.animateToHand()
 }
 
@@ -529,5 +527,7 @@ function playMesh(manager, drawnMesh) {
 function pickMesh(manager, mesh) {
   logger.info({ mesh }, `pick mesh ${mesh.id} in hand`)
   animateToHand(mesh)
-  return createHandMesh(manager, mesh, { x: manager.extent.minX })
+  const { minX, minZ } = manager.extent
+  const { depth } = getDimensions(mesh)
+  return createHandMesh(manager, mesh, { x: minX, z: minZ + depth * 0.5 })
 }

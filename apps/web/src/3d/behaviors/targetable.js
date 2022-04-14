@@ -78,7 +78,7 @@ export class TargetBehavior {
   detach() {
     targetManager.unregisterTargetable(this)
     for (const { mesh } of this.zones) {
-      mesh.dispose(false, true)
+      mesh.dispose()
     }
     this.zones = []
     this.mesh = null
@@ -114,7 +114,7 @@ export class TargetBehavior {
     const idx = this.zones.indexOf(zone)
     if (idx >= 0) {
       const [{ mesh }] = this.zones.splice(idx, 1)
-      mesh.dispose(false, true)
+      mesh.dispose()
     }
   }
 }

@@ -3,12 +3,8 @@ import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector'
 import { CSG } from '@babylonjs/core/Meshes/csg'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
-import { controlManager } from '../managers/control'
-import {
-  configureMaterial,
-  registerBehaviors,
-  serializeBehaviors
-} from '../utils'
+import { controlManager, materialManager } from '../managers'
+import { registerBehaviors, serializeBehaviors } from '../utils'
 
 function makeCornerMesh(
   { borderRadius, width, height, depth, faceUV },
@@ -107,7 +103,7 @@ export function createRoundedTile(
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, false, false))
   const mesh = tileCSG.toMesh('roundedTile', undefined, scene)
   mesh.id = id
-  configureMaterial(mesh, texture)
+  materialManager.configure(mesh, texture)
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.isPickable = false
   tileMesh.dispose(false, true)

@@ -22,7 +22,6 @@ player drop zones
 ## Refactor
 
 - bug: animating visibility from 0 to 1 creates trouble with texture alpha channel
-- bug: invisible meshes when playing/drawing meshes due to lenghy ktx2 loading time (babylonjs-5.0.0-rc.0+)
 - bug: moving card collides with a stack of cards
 - selection manager should remove disposed meshes
 - create Animation objects as part of runAnimation() (constant frameRate of 60)

@@ -191,7 +191,7 @@ class ControlManager {
   pruneUnusedPeerPointers(connectedPeerIds) {
     for (const [playerId, pointer] of this.peerPointers) {
       if (!connectedPeerIds.includes(playerId)) {
-        pointer.dispose(false, true)
+        pointer.dispose()
         this.peerPointers.delete(playerId)
       }
     }

@@ -14,6 +14,7 @@ import {
   handManager,
   indicatorManager,
   inputManager,
+  materialManager,
   moveManager,
   selectionManager,
   targetManager
@@ -65,6 +66,7 @@ export function createEngine({
   controlManager.init({ scene, handScene })
   selectionManager.init({ scene, handScene })
   indicatorManager.init({ scene })
+  materialManager.init({ scene, handScene })
 
   createTable({}, scene)
   // creates light after table, so table doesn't project shadow

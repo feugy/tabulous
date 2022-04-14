@@ -1,11 +1,7 @@
 import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
-import { controlManager } from '../managers/control'
-import {
-  configureMaterial,
-  registerBehaviors,
-  serializeBehaviors
-} from '../utils'
+import { controlManager, materialManager } from '../managers'
+import { registerBehaviors, serializeBehaviors } from '../utils'
 
 /**
  * Creates a card mesh.
@@ -62,7 +58,7 @@ export function createCard(
     scene
   )
   mesh.id = id
-  configureMaterial(mesh, texture)
+  materialManager.configure(mesh, texture)
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.isPickable = false
 

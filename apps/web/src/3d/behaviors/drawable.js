@@ -119,7 +119,7 @@ export class DrawBehavior extends AnimateBehavior {
     await runAnimation(
       this,
       () => attach(),
-      // { animation: fadeAnimation, duration, keys: fadeKeys }, bug: trouble with alpha texture
+      // { animation: fadeAnimation, duration, keys: fadeKeys }, // bug: trouble with alpha texture
       { animation: moveAnimation, duration, keys: moveKeys }
     )
   }
