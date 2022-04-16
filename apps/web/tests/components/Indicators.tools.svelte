@@ -1,9 +1,9 @@
 <script>
   import { Tool, ToolBox } from '@atelier-wb/svelte'
-  import { StackSizes } from '../../src/components'
+  import { Indicators } from '../../src/components'
 </script>
 
-<ToolBox component={StackSizes} name="Components/Stack sizes" layout="centered">
+<ToolBox component={Indicators} name="Components/Indicators" layout="centered">
   <Tool
     name="Single"
     props={{

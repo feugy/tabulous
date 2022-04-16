@@ -5,6 +5,14 @@ import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('indicator')
 
+/**
+ * Details of a mesh's indicator.
+ * Other properties can be used to convey specific data
+ * @typedef {object} Indicator
+ * @property {string} id - unique id for this indicator.
+ * @property {import('@babylonjs/core').Mesh} mesh - mesh above which the indicator will be positionned.
+ */
+
 class IndicatorManager {
   /**
    * Creates a manager for indications above meshes.

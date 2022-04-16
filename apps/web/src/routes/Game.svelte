@@ -10,10 +10,10 @@
     CameraSwitch,
     CursorInfo,
     GameAside,
+    Indicators,
     MeshDetails,
     Progress,
-    RadialMenu,
-    StackSizes
+    RadialMenu
   } from '../components'
   import {
     actionMenuProps,
@@ -24,7 +24,7 @@
     currentPlayer,
     engine,
     initEngine,
-    stackSizes,
+    visibleIndicators,
     loadGame,
     longInputs,
     meshDetails,
@@ -135,7 +135,7 @@
     on:contextmenu|preventDefault
   >
     <canvas bind:this={canvas} />
-    <StackSizes items={$stackSizes} />
+    <Indicators items={$visibleIndicators} />
     <RadialMenu {...$actionMenuProps || {}} />
   </div>
   <CursorInfo halos={longInputs} />
