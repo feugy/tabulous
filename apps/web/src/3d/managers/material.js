@@ -28,13 +28,17 @@ class MaterialManager {
    * @param {object} params - parameters, including:
    * @param {Scene} params.scene - main scene.
    * @param {Scene} params.handScene? - scene for meshes in hand.
+   * @param {import('../../graphql').Game} game - loaded game data.
    */
-  init({ scene, handScene }) {
+  init({ scene, handScene }, game) {
     this.scene = scene
     this.handScene = handScene
     logger.debug('material manager initialized')
     this.clear()
     scene.onDisposeObservable.addOnce(() => this.clear())
+    if (game) {
+      preloadMaterials(this, game)
+    }
   }
 
   /**
@@ -86,6 +90,15 @@ function getMaterialCache(manager, scene) {
   return manager.scene === scene
     ? manager.mainMaterialByUrl
     : manager.handMaterialByUrl
+}
+
+function preloadMaterials(manager, game) {
+  for (const { texture } of [
+    ...game.meshes,
+    ...game.hands.flatMap(({ meshes }) => meshes)
+  ]) {
+    buildMaterials(manager, texture, manager.scene)
+  }
 }
 
 function buildMaterials(manager, url, usedScene) {

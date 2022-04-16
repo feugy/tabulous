@@ -39,6 +39,29 @@ describe('MaterialManager', () => {
       expect(manager.scene).toEqual(scene)
       expect(manager.handScene).toEqual(handScene)
     })
+
+    it('preloads game materials', () => {
+      const texture1 = faker.internet.url()
+      const texture2 = faker.internet.url()
+      const texture3 = faker.internet.url()
+      const color1 = '#0066ff66'
+      const color2 = '#ff6600ff'
+      manager.init(
+        { scene },
+        {
+          meshes: [{ texture: texture1 }, { texture: texture2 }],
+          hands: [
+            { meshes: [{ texture: texture3 }] },
+            { meshes: [{ texture: color1 }, { texture: color2 }] }
+          ]
+        }
+      )
+      expect(manager.isManaging(color1)).toBe(true)
+      expect(manager.isManaging(color2)).toBe(true)
+      expect(manager.isManaging(texture1)).toBe(true)
+      expect(manager.isManaging(texture2)).toBe(true)
+      expect(manager.isManaging(texture3)).toBe(true)
+    })
   })
 
   describe('given an initialized manager with 2 scenes', () => {

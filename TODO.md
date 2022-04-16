@@ -1,6 +1,5 @@
 # TODO
 
-- cache all textures in both scenes
 - player drop zone indicators
 
 ## Brittle tests

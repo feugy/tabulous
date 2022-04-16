@@ -102,10 +102,10 @@ export function createEngine({
       isLoading = true
       engine.displayLoadingUI()
       targetManager.init({ scene, playerId })
-      materialManager.init({
-        scene,
-        handScene: handsEnabled ? handScene : null
-      })
+      materialManager.init(
+        { scene, handScene: handsEnabled ? handScene : null },
+        gameData
+      )
       scene.onDataLoadedObservable.addOnce(() => {
         engine.hideLoadingUI()
         isLoading = false
