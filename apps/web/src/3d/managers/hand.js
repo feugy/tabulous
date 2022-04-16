@@ -13,6 +13,7 @@ import {
   createMeshFromState,
   getDimensions,
   getMeshScreenPosition,
+  getPositionAboveZone,
   getScreenPosition,
   isAboveTable,
   isMeshFlipped,
@@ -192,9 +193,9 @@ class HandManager {
     if (!this.enabled || !drawable) {
       return
     }
-    recordDraw(drawnMesh)
     if (drawnMesh.getScene() === this.handScene) {
-      playMesh(this, drawnMesh)
+      playMeshes(this, selectionManager.getSelection(drawnMesh))
+      selectionManager.clear()
     } else {
       pickMesh(this, drawnMesh)
     }
@@ -282,20 +283,50 @@ function handDrag(manager, { type, mesh, event }) {
     if (moved[0]?.absolutePosition.z > extent.maxZ) {
       const position = screenToGround(manager.scene, event)
       const origin = moved[0].absolutePosition.x
-      for (const mesh of [...moved]) {
-        const x = position.x + mesh.absolutePosition.x - origin
+      const droppedList = []
+      let saved
+      for (const movedMesh of [...moved]) {
+        const x = position.x + movedMesh.absolutePosition.x - origin
         const { z } = position
         logger.info(
-          { mesh, x, z },
-          `play mesh ${mesh.id} from hand by dragging`
+          { mesh: movedMesh, x, z },
+          `play mesh ${movedMesh.id} from hand by dragging`
         )
-        const created = createMainMesh(manager, mesh, { x, z })
-        const dropZone = targetManager.findPlayerZone(created)
-        recordDraw(created)
-        if (dropZone) {
-          moveManager.exclude(created)
-          targetManager.dropOn(dropZone)
+        const mesh = createMainMesh(manager, movedMesh, { x, z })
+        let dropZone
+        if (droppedList.length) {
+          // when first drawn mesh was dropped on player zone, tries to drop others on top of it.
+          dropZone = canDropAbove(droppedList[0], mesh)
+        } else {
+          // can first mesh be dropped on player zone?
+          dropZone = targetManager.findPlayerZone(mesh)
         }
+
+        if (dropZone) {
+          droppedList.push(mesh)
+          if (mesh === droppedList[0]) {
+            // drop mesh to final position for peers,
+            // and save data so we can play the move for local player only
+            saved = {
+              mesh,
+              position: mesh.absolutePosition.clone(),
+              duration: dropZone.targetable.state.duration
+            }
+          }
+          recordDraw(mesh, getPositionAboveZone(mesh, dropZone))
+          targetManager.dropOn(dropZone, { immediate: true })
+          mesh.setAbsolutePosition()
+        } else {
+          recordDraw(mesh)
+        }
+      }
+      if (droppedList.length) {
+        moveManager.exclude(...droppedList)
+        selectionManager.clear()
+        // play move animation for local player only
+        const current = saved.mesh.absolutePosition.clone()
+        saved.mesh.setAbsolutePosition(saved.position)
+        animateMove(saved.mesh, current, saved.duration)
       }
       // final layout after all animation are over
       setTimeout(() => layoutMeshs(manager), duration * 1.1)
@@ -346,12 +377,14 @@ function createHandMesh(manager, mainMesh, extraState = {}) {
   return newMesh
 }
 
-function recordDraw(mesh) {
-  controlManager.record({
-    mesh,
-    fn: 'draw',
-    args: [mesh.metadata.serialize()]
-  })
+function recordDraw(mesh, finalPosition) {
+  const state = mesh.metadata.serialize()
+  if (finalPosition) {
+    state.x = finalPosition.x
+    state.y = finalPosition.y
+    state.z = finalPosition.z
+  }
+  controlManager.record({ mesh, fn: 'draw', args: [state] })
 }
 
 function computeExtent(manager, engine) {
@@ -492,42 +525,82 @@ function hasSelectedDrawableMeshes(mesh) {
   )
 }
 
-function playMesh(manager, drawnMesh) {
-  logger.info({ mesh: drawnMesh }, `play mesh ${drawnMesh.id} from hand`)
-  const screenPosition = {
-    x: getMeshScreenPosition(drawnMesh).x,
-    y: manager.extent.size.height * 0.5
+function playMeshes(manager, meshes) {
+  let dropped
+  const created = []
+  for (const drawnMesh of meshes) {
+    logger.info({ mesh: drawnMesh }, `play mesh ${drawnMesh.id} from hand`)
+    const screenPosition = {
+      x: getMeshScreenPosition(drawnMesh).x,
+      y: manager.extent.size.height * 0.5
+    }
+    const position = screenToGround(manager.scene, screenPosition)
+    if (!position || !isAboveTable(manager.scene, screenPosition)) {
+      return
+    }
+    const mesh = createMainMesh(manager, drawnMesh, {
+      x: position.x,
+      y: 100,
+      z: position.z
+    })
+    created.push(mesh)
+    let dropZone
+    if (dropped) {
+      // when first drawn mesh was dropped on player zone, tries to drop others on top of it.
+      dropZone = canDropAbove(dropped, mesh)
+    } else {
+      // can first mesh be dropped on player zone?
+      dropZone = targetManager.findPlayerZone(mesh)
+      if (dropZone) {
+        dropped = mesh
+      }
+    }
+
+    if (!dropZone) {
+      // mesh can not be dropped on player zone nor first mesh, try to stack it.
+      dropZone = findStackZone(mesh)
+    }
+    if (dropZone) {
+      recordDraw(mesh, getPositionAboveZone(mesh, dropZone))
+      targetManager.dropOn(dropZone, { immediate: true })
+    } else {
+      // no possible drop: let it lie on the table.
+      applyGravity(mesh)
+      recordDraw(mesh)
+    }
   }
-  const position = screenToGround(manager.scene, screenPosition)
-  if (!position || !isAboveTable(manager.scene, screenPosition)) {
-    return
+  for (const mesh of created) {
+    getDrawable(mesh).animateToMain()
   }
-  const mesh = createMainMesh(manager, drawnMesh, {
-    x: position.x,
-    y: 100,
-    z: position.z
-  })
-  let dropZone = targetManager.findPlayerZone(mesh)
-  if (!dropZone) {
-    mesh.computeWorldMatrix(true)
-    dropZone = targetManager.findDropZone(
-      mesh,
-      mesh.getBehaviorByName(MoveBehaviorName)?.state.kind
-    )
-  }
+}
+
+function findStackZone(mesh) {
+  mesh.computeWorldMatrix(true)
+  return targetManager.findDropZone(
+    mesh,
+    mesh.getBehaviorByName(MoveBehaviorName)?.state.kind
+  )
+}
+
+function canDropAbove(baseMesh, mesh) {
+  const positionSave = mesh.absolutePosition.clone()
+  mesh.setAbsolutePosition(
+    baseMesh.absolutePosition.add(new Vector3(0, 100, 0))
+  )
+  const dropZone = findStackZone(mesh)
   if (dropZone) {
-    targetManager.dropOn(dropZone, { immediate: true })
-  } else {
-    applyGravity(mesh)
+    return dropZone
   }
-  getDrawable(mesh).animateToMain()
-  return mesh
+  mesh.setAbsolutePosition(positionSave)
+  mesh.computeWorldMatrix(true)
+  return null
 }
 
 function pickMesh(manager, mesh) {
   logger.info({ mesh }, `pick mesh ${mesh.id} in hand`)
+  recordDraw(mesh)
   animateToHand(mesh)
   const { minX, minZ } = manager.extent
   const { depth } = getDimensions(mesh)
-  return createHandMesh(manager, mesh, { x: minX, z: minZ + depth * 0.5 })
+  createHandMesh(manager, mesh, { x: minX, z: minZ + depth * 0.5 })
 }

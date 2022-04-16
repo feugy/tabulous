@@ -6,7 +6,7 @@ import {
   animateMove,
   attachFunctions,
   attachProperty,
-  getAtlitudeAbove,
+  getPositionAboveZone,
   getTargetableBehavior
 } from '../utils'
 import { controlManager, inputManager, selectionManager } from '../managers'
@@ -293,22 +293,12 @@ async function snapToAnchor(behavior, snappedId, zone, loading = false) {
     setAnchor(behavior, zone, snapped)
 
     // moves it to the final position
-    const { x, z } = zone.mesh.getAbsolutePosition()
-    const baseY = computeBaseAltitude(mesh, snapped)
-    const move = animateMove(
-      snapped,
-      new Vector3(x, baseY + snapped.absolutePosition.y, z),
-      loading ? 0 : duration,
-      true
-    )
+    const position = getPositionAboveZone(snapped, zone)
+    const move = animateMove(snapped, position, loading ? 0 : duration)
     if (!loading) {
       await move
     }
   }
-}
-
-function computeBaseAltitude(mesh, snapped) {
-  return getAtlitudeAbove(mesh) - snapped.absolutePosition.y
 }
 
 function setAnchor(behavior, zone, snapped) {

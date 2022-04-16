@@ -42,6 +42,7 @@ describe('serializeMeshes() 3D utility', () => {
 
   describe('given an scene', () => {
     beforeAll(() => {
+      jest.restoreAllMocks()
       ;({ engine, scene } = initialize3dEngine({ renderWidth, renderHeight }))
     })
 

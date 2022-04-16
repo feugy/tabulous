@@ -4,11 +4,11 @@ import {
   configures3dTestEngine,
   disposeAllMeshes,
   expectAnimationEnd,
+  expectCloseVector,
   expectFlipped,
   expectPosition,
   expectSnapped,
-  expectStacked,
-  sleep
+  expectStacked
 } from '../../test-utils'
 import { DrawBehaviorName, FlipBehaviorName } from '../../../src/3d/behaviors'
 import {
@@ -542,6 +542,10 @@ describe('HandManager', () => {
           expect.anything()
         )
         expect(actionRecorded).toHaveBeenCalledTimes(1)
+        expectCloseVector(
+          extractDrawnState(),
+          newMesh.absolutePosition.asArray()
+        )
         expect(controlManager.isManaging(newMesh)).toBe(true)
         expect(moveManager.isManaging(newMesh)).toBe(true)
       })
@@ -583,6 +587,11 @@ describe('HandManager', () => {
           expect.anything()
         )
         expect(actionRecorded).toHaveBeenCalledTimes(1)
+        expectCloseVector(
+          extractDrawnState(),
+          newMesh.absolutePosition.asArray()
+        )
+        expect(extractDrawnState().flippable.isFlipped).toBe(true)
       })
 
       it('moves mesh to hand by dragging', async () => {
@@ -784,7 +793,6 @@ describe('HandManager', () => {
         const newMesh = scene.getMeshById(card.id)
         expect(newMesh?.id).toBeDefined()
         await expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
-        expectPosition(newMesh, [-4.17, 0.01, 0])
         expect(actionRecorded).toHaveBeenCalledWith(
           {
             meshId: newMesh.id,
@@ -795,6 +803,9 @@ describe('HandManager', () => {
           expect.anything()
         )
         expect(actionRecorded).toHaveBeenCalledTimes(1)
+        const finalPosition = [-4.17, 0.01, 0]
+        expectPosition(newMesh, finalPosition)
+        expectCloseVector(extractDrawnState(), finalPosition)
         expect(controlManager.isManaging(newMesh)).toBe(true)
         expect(moveManager.isManaging(newMesh)).toBe(true)
       })
@@ -835,6 +846,10 @@ describe('HandManager', () => {
         expect(controlManager.isManaging(newMesh)).toBe(true)
         expect(moveManager.isManaging(newMesh)).toBe(true)
         expectStacked([base, newMesh])
+        expectCloseVector(
+          extractDrawnState(),
+          newMesh.absolutePosition.asArray()
+        )
       })
 
       it('can flip mesh prior to moving it to main scene', async () => {
@@ -846,6 +861,7 @@ describe('HandManager', () => {
         expect(handScene.getMeshById(card.id)?.id).toBeUndefined()
         const newMesh = scene.getMeshById(card.id)
         expect(newMesh?.id).toBeDefined()
+        await expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
         expectFlipped(newMesh, true)
         expect(actionRecorded).toHaveBeenCalledWith(
           {
@@ -861,6 +877,11 @@ describe('HandManager', () => {
           expect.anything()
         )
         expect(actionRecorded).toHaveBeenCalledTimes(1)
+        expect(extractDrawnState().flippable.isFlipped).toBe(true)
+        expectCloseVector(
+          extractDrawnState(),
+          newMesh.absolutePosition.asArray()
+        )
       })
 
       it(`adds mesh from other player's hand to main scene`, async () => {
@@ -898,6 +919,10 @@ describe('HandManager', () => {
         expect(newMesh?.id).toBeDefined()
         await expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
         expectPosition(newMesh, [-21.1695, 0, -6])
+        expectCloseVector(
+          extractDrawnState(),
+          newMesh.absolutePosition.asArray()
+        )
       })
 
       it('cancels playing mesh to main when position is not about above table', async () => {
@@ -907,6 +932,7 @@ describe('HandManager', () => {
         await expect(waitForLayout()).rejects.toThrow
         expect(handScene.getMeshById(card.id)?.id).toBeDefined()
         expect(scene.getMeshById(card.id)?.id).toBeUndefined()
+        expect(actionRecorded).not.toHaveBeenCalled()
       })
 
       describe('given a player drop zone', () => {
@@ -935,7 +961,8 @@ describe('HandManager', () => {
           const newMesh = scene.getMeshById(card.id)
           expect(newMesh?.id).toBeDefined()
           await expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
-          expect(actionRecorded).toHaveBeenCalledWith(
+          expect(actionRecorded).toHaveBeenNthCalledWith(
+            1,
             {
               meshId: newMesh.id,
               fn: 'draw',
@@ -944,7 +971,8 @@ describe('HandManager', () => {
             },
             expect.anything()
           )
-          expect(actionRecorded).toHaveBeenCalledWith(
+          expect(actionRecorded).toHaveBeenNthCalledWith(
+            2,
             {
               meshId: dropZone.id,
               fn: 'snap',
@@ -957,8 +985,74 @@ describe('HandManager', () => {
           expect(actionRecorded).toHaveBeenCalledTimes(2)
           expect(controlManager.isManaging(newMesh)).toBe(true)
           expect(moveManager.isManaging(newMesh)).toBe(true)
-          await sleep(anchorDuration * 1.4)
           expectSnapped(dropZone, newMesh)
+          expectCloseVector(
+            extractDrawnState(),
+            newMesh.absolutePosition.asArray()
+          )
+        })
+
+        it(`moves multiple drawn meshes to player's drop zone`, async () => {
+          const [mesh1, mesh2] = handCards
+          selectionManager.select(mesh1, mesh2)
+          mesh2.metadata.draw()
+          await waitForLayout()
+          expect(handScene.getMeshById(mesh1.id)?.id).toBeUndefined()
+          expect(handScene.getMeshById(mesh2.id)?.id).toBeUndefined()
+          const newMesh1 = scene.getMeshById(mesh1.id)
+          expect(newMesh1?.id).toBeDefined()
+          const newMesh2 = scene.getMeshById(mesh2.id)
+          expect(newMesh2?.id).toBeDefined()
+          expect(actionRecorded).toHaveBeenNthCalledWith(
+            1,
+            {
+              meshId: newMesh1.id,
+              fn: 'draw',
+              args: [expect.any(Object)],
+              fromHand: false
+            },
+            expect.anything()
+          )
+          expect(actionRecorded).toHaveBeenNthCalledWith(
+            2,
+            {
+              meshId: dropZone.id,
+              fn: 'snap',
+              args: [newMesh1.id, 'anchor-0', true],
+              fromHand: false,
+              duration: 0
+            },
+            expect.anything()
+          )
+          expect(actionRecorded).toHaveBeenNthCalledWith(
+            3,
+            {
+              meshId: newMesh2.id,
+              fn: 'draw',
+              args: [expect.any(Object)],
+              fromHand: false
+            },
+            expect.anything()
+          )
+          expect(actionRecorded).toHaveBeenNthCalledWith(
+            4,
+            {
+              meshId: newMesh1.id,
+              fn: 'push',
+              args: [newMesh2.id, true],
+              fromHand: false,
+              duration: 0
+            },
+            expect.anything()
+          )
+          expect(actionRecorded).toHaveBeenCalledTimes(4)
+          expect(controlManager.isManaging(newMesh1)).toBe(true)
+          expect(moveManager.isManaging(newMesh1)).toBe(true)
+          expect(controlManager.isManaging(newMesh2)).toBe(true)
+          expect(moveManager.isManaging(newMesh2)).toBe(true)
+          await expectAnimationEnd(newMesh1.getBehaviorByName(DrawBehaviorName))
+          expectSnapped(dropZone, newMesh1)
+          expectStacked([newMesh1, newMesh2])
         })
 
         it(`automatically moves mesh to player's drop zone when dragging mesh`, async () => {
@@ -980,12 +1074,14 @@ describe('HandManager', () => {
             mesh,
             event: { x: 289.7, y: 175 }
           })
+          const newMesh = scene.getMeshById(mesh.id)
+          expect(newMesh?.id).toBeDefined()
+          expectPosition(newMesh, [6, 2.005, 0])
           await waitForLayout()
           await waitForLayout()
           expect(handScene.getMeshById(mesh.id)?.id).toBeUndefined()
-          const newMesh = scene.getMeshById(mesh.id)
-          expect(newMesh?.id).toBeDefined()
-          expect(actionRecorded).toHaveBeenCalledWith(
+          expect(actionRecorded).toHaveBeenNthCalledWith(
+            1,
             {
               meshId: newMesh.id,
               fn: 'draw',
@@ -994,21 +1090,110 @@ describe('HandManager', () => {
             },
             expect.anything()
           )
-          expect(actionRecorded).toHaveBeenCalledWith(
+          expect(actionRecorded).toHaveBeenNthCalledWith(
+            2,
             {
               meshId: dropZone.id,
               fn: 'snap',
-              args: [newMesh.id, 'anchor-0', false],
+              args: [newMesh.id, 'anchor-0', true],
               fromHand: false,
-              duration: anchorDuration
+              duration: 0
             },
             expect.anything()
           )
           expect(actionRecorded).toHaveBeenCalledTimes(2)
           expect(controlManager.isManaging(newMesh)).toBe(true)
           expect(moveManager.isManaging(newMesh)).toBe(true)
-          await sleep(anchorDuration * 1.4)
           expectSnapped(dropZone, newMesh)
+          expectCloseVector(
+            extractDrawnState(),
+            newMesh.absolutePosition.asArray()
+          )
+        })
+
+        it(`automatically moves multiple dragged meshes to player's drop zone`, async () => {
+          const [mesh1, mesh2] = handCards
+          selectionManager.select(mesh1, mesh2)
+          inputManager.onDragObservable.notifyObservers({
+            type: 'dragStart',
+            mesh: mesh1,
+            event: { x: 289.7, y: 175 }
+          })
+          let movedPosition = new Vector3(
+            mesh1.absolutePosition.x,
+            mesh1.absolutePosition.y + 2,
+            mesh1.absolutePosition.z + cardDepth
+          )
+          mesh1.setAbsolutePosition(movedPosition)
+          mesh1.computeWorldMatrix()
+          inputManager.onDragObservable.notifyObservers({
+            type: 'drag',
+            mesh: mesh1,
+            event: { x: 289.7, y: 175 }
+          })
+          const newMesh1 = scene.getMeshById(mesh1.id)
+          expect(newMesh1?.id).toBeDefined()
+          const newMesh2 = scene.getMeshById(mesh2.id)
+          expect(newMesh2?.id).toBeDefined()
+          expectPosition(newMesh1, [6, 2.005, 0])
+          expectPosition(newMesh2, [6, 2.016, 0])
+          await waitForLayout()
+          await waitForLayout()
+          expect(handScene.getMeshById(mesh1.id)?.id).toBeUndefined()
+          expect(handScene.getMeshById(mesh2.id)?.id).toBeUndefined()
+          expect(actionRecorded).toHaveBeenNthCalledWith(
+            1,
+            {
+              meshId: newMesh1.id,
+              fn: 'draw',
+              args: [expect.any(Object)],
+              fromHand: false
+            },
+            expect.anything()
+          )
+          expect(actionRecorded).toHaveBeenNthCalledWith(
+            2,
+            {
+              meshId: dropZone.id,
+              fn: 'snap',
+              args: [newMesh1.id, 'anchor-0', true],
+              fromHand: false,
+              duration: 0
+            },
+            expect.anything()
+          )
+          expect(actionRecorded).toHaveBeenNthCalledWith(
+            3,
+            {
+              meshId: newMesh2.id,
+              fn: 'draw',
+              args: [expect.any(Object)],
+              fromHand: false
+            },
+            expect.anything()
+          )
+          expect(actionRecorded).toHaveBeenNthCalledWith(
+            4,
+            {
+              meshId: newMesh1.id,
+              fn: 'push',
+              args: [newMesh2.id, true],
+              fromHand: false,
+              duration: 0
+            },
+            expect.anything()
+          )
+          expect(actionRecorded).toHaveBeenCalledTimes(4)
+          expect(controlManager.isManaging(newMesh1)).toBe(true)
+          expect(moveManager.isManaging(newMesh1)).toBe(true)
+          expect(controlManager.isManaging(newMesh2)).toBe(true)
+          expect(moveManager.isManaging(newMesh2)).toBe(true)
+          expectSnapped(dropZone, newMesh1)
+          expectStacked([newMesh1, newMesh2])
+          expectCloseVector(
+            extractDrawnState(),
+            newMesh1.absolutePosition.asArray()
+          )
         })
       })
     })
@@ -1051,5 +1236,9 @@ describe('HandManager', () => {
         resolve()
       })
     })
+  }
+
+  function extractDrawnState(position = 0) {
+    return actionRecorded.mock.calls[position][0].args[0]
   }
 })

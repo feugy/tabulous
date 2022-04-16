@@ -208,17 +208,15 @@ export class StackBehavior extends TargetBehavior {
     const meshPushed = getTargetableBehavior(mesh)?.stack ?? [mesh]
     const rank = stack.length - 1
     setStatus(stack, rank, false, this)
-    const y = getCenterAltitudeAbove(stack[rank], meshPushed[0])
+    const y =
+      getFinalAltitudeAboveStack(stack) +
+      getDimensions(meshPushed[0]).height * 0.5
     stack.push(...meshPushed)
     for (let index = rank; index < stack.length; index++) {
       setStatus(stack, index, index === stack.length - 1, this)
     }
-    const move = animateMove(
-      meshPushed[0],
-      new Vector3(x, y, z),
-      duration,
-      true
-    )
+    const position = new Vector3(x, y, z)
+    const move = animateMove(meshPushed[0], position, duration)
     if (duration) {
       await move
     }
@@ -605,4 +603,12 @@ function buildInclineAnimation(frameRate) {
 
 function invertStack(behavior) {
   behavior.reorder(behavior.stack.map(({ id }) => id).reverse(), false)
+}
+
+function getFinalAltitudeAboveStack(stack) {
+  let y = stack[0].absolutePosition.y - getDimensions(stack[0]).height * 0.5
+  for (const mesh of stack) {
+    y += getDimensions(mesh).height + 0.001
+  }
+  return y
 }

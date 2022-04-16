@@ -192,7 +192,11 @@ class MoveManager {
       if (actionObserver) {
         controlManager.onActionObservable.remove(actionObserver)
       }
-      if (moved.length === 0) return
+      if (moved.length === 0) {
+        zones.clear()
+        this.inProgress = false
+        return
+      }
 
       // trigger drop operation on all identified drop zones
       const dropped = []

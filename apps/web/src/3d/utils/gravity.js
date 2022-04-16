@@ -9,11 +9,11 @@ const logger = makeLogger('gravity')
 const down = Vector3.Down()
 
 /**
- * REturns the absolute altitude (Y axis) above a given mesh, including minimum spacing.
+ * Returns the absolute altitude (Y axis) above a given mesh, including minimum spacing.
  * @param {import('@babel/core').Mesh} mesh - related mesh.
  * @returns {number} resulting Y coordinate.
  */
-export function getAtlitudeAbove(mesh) {
+export function getAltitudeAbove(mesh) {
   return mesh.absolutePosition.y + getDimensions(mesh).height * 0.5 + 0.001
 }
 
@@ -25,7 +25,7 @@ export function getAtlitudeAbove(mesh) {
  * @returns {number} resulting Y coordinate.
  */
 export function getCenterAltitudeAbove(meshBelow, meshAbove) {
-  return getAtlitudeAbove(meshBelow) + getDimensions(meshAbove).height * 0.5
+  return getAltitudeAbove(meshBelow) + getDimensions(meshAbove).height * 0.5
 }
 
 /**

@@ -159,8 +159,8 @@ describe('Indicators store', () => {
 
       await waitNextRender(scene)
       expectStackSizes([
-        { id: card4.id, size: 3, screenPosition: { x: 1024, y: 511.954 } },
-        { id: card5.id, size: 2, screenPosition: { x: 999.78, y: 511.954 } }
+        { id: card4.id, size: 3, screenPosition: { x: 1024, y: 511.796 } },
+        { id: card5.id, size: 2, screenPosition: { x: 999.78, y: 511.898 } }
       ])
     })
 

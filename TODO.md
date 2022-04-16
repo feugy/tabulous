@@ -1,9 +1,7 @@
 # TODO
 
-player drop zones
-
-- multiple drops to player zone
-- move camera when drop zone is not in sight
+- cache all textures in both scenes
+- player drop zone indicators
 
 ## Brittle tests
 
@@ -35,10 +33,12 @@ player drop zones
 - get rid of Babylon input management
 - UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
 - stackable duration override's movable duration on
+- move camera when drop zone is not in sight and dropping on it
 
 ## UI
 
 - display peer's name when running draw animations + show peer avatar/name instead of pointer
+- allow selecting preferred camera/mic with https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/enumerateDevices
 - configurable player position at game level
 - sort and filter catalog on game names
 - feedback on stacking

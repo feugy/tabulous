@@ -109,9 +109,13 @@ export function cleanDebugFile() {
 }
 
 export function expectPosition(mesh, [x, y, z]) {
-  expect(mesh.absolutePosition.x).toBeCloseTo(x)
-  expect(mesh.absolutePosition.y).toBeCloseTo(y)
-  expect(mesh.absolutePosition.z).toBeCloseTo(z)
+  expectCloseVector(mesh.absolutePosition, [x, y, z])
+}
+
+export function expectCloseVector(actual, [x, y, z]) {
+  expect(actual.x).toBeCloseTo(x)
+  expect(actual.y).toBeCloseTo(y)
+  expect(actual.z).toBeCloseTo(z)
 }
 
 export function expectScreenPosition(actual, { x, y }) {
