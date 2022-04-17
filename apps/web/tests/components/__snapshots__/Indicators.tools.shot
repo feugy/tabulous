@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Toolshot components/Indicators.tools.svelte: Multiple 1`] = `
+<span>
+  <div
+    class="indicator"
+    style="top: 100px; left: 50px;"
+  >
+    5
+     
+  </div>
+  <div
+    class="indicator"
+    style="top: 200px; left: 150px;"
+  >
+    27
+     
+  </div>
+  
+</span>
+`;
+
+exports[`Toolshot components/Indicators.tools.svelte: Player 1`] = `
+<span>
+  <div
+    class="indicator"
+    style="top: 125px; left: 150px;"
+  >
+    Gaspard
+     
+  </div>
+  
+</span>
+`;
+
+exports[`Toolshot components/Indicators.tools.svelte: Single 1`] = `
+<span>
+  <div
+    class="indicator"
+    style="top: 100px; left: 50px;"
+  >
+    5
+     
+  </div>
+  
+</span>
+`;

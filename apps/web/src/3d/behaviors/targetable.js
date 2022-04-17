@@ -1,6 +1,7 @@
 import { Observable } from '@babylonjs/core/Misc/observable'
 import { TargetBehaviorName } from './names'
 // '../managers' creates a cyclic dependency in Jest
+import { indicatorManager } from '../managers/indicator'
 import { targetManager } from '../managers/target'
 
 /**
@@ -100,6 +101,14 @@ export class TargetBehavior {
       ...properties,
       enabled: properties.enabled ?? true,
       priority: properties.priority ?? 0
+    }
+    if (properties.playerId) {
+      const id = `${properties.playerId}.drop-zone.${mesh.id}`
+      indicatorManager.registerIndicator({
+        id,
+        mesh,
+        playerId: properties.playerId
+      })
     }
     this.zones.push(zone)
     return zone

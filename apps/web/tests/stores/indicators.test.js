@@ -1,3 +1,4 @@
+import faker from 'faker'
 import { get } from 'svelte/store'
 import {
   configures3dTestEngine,
@@ -6,12 +7,13 @@ import {
 } from '../test-utils'
 import { createCard } from '../../src/3d/meshes'
 import { actionMenuProps } from '../../src/stores/game-engine'
+import { currentGame } from '../../src/stores/game-manager'
 import {
   areIndicatorsVisible as areIndicatorsVisible$,
-  stackSizes as stackSizes$,
+  visibleIndicators as visibleIndicators$,
   toggleIndicators
 } from '../../src/stores/indicators'
-import { StackBehaviorName } from '../../src/3d/behaviors'
+import { AnchorBehaviorName, StackBehaviorName } from '../../src/3d/behaviors'
 import { indicatorManager, selectionManager } from '../../src/3d/managers'
 
 jest.mock('../../src/stores/game-engine', () => {
@@ -33,15 +35,37 @@ jest.mock('../../src/stores/game-engine', () => {
   }
 })
 
+jest.mock('../../src/stores/game-manager', () => {
+  const { BehaviorSubject } = require('rxjs')
+  return { currentGame: new BehaviorSubject() }
+})
+
 describe('Indicators store', () => {
   let scene
   let cards
+  let players
 
   configures3dTestEngine(created => {
     scene = created.scene
   })
 
-  beforeAll(() => indicatorManager.init({ scene }))
+  beforeAll(() => {
+    indicatorManager.init({ scene })
+    players = [
+      {
+        id: faker.datatype.uuid(),
+        username: faker.name.findName()
+      },
+      {
+        id: faker.datatype.uuid(),
+        username: faker.name.findName()
+      },
+      {
+        id: faker.datatype.uuid(),
+        username: faker.name.findName()
+      }
+    ]
+  })
 
   beforeEach(() => {
     cards = [
@@ -51,7 +75,7 @@ describe('Indicators store', () => {
       { id: 'card4', x: 5 },
       { id: 'card5', x: -5 },
       { id: 'card6', z: 5 }
-    ].map(params => createCard({ ...params, stackable: {} }))
+    ].map(params => createCard({ ...params, stackable: {}, anchorable: {} }))
     actionMenuProps.next(null)
     selectionManager.clear()
   })
@@ -75,10 +99,14 @@ describe('Indicators store', () => {
       card3
         .getBehaviorByName(StackBehaviorName)
         .fromState({ stackIds: ['card5'] })
-      expectStackSizes([])
+      expectIndicators([])
       selectionManager.select(card5, card3)
-      expectStackSizes([
-        { id: card5.id, size: 2, screenPosition: { x: 902.9, y: 512 } }
+      expectIndicators([
+        {
+          id: `${card5.id}.stack-size`,
+          size: 2,
+          screenPosition: { x: 902.9, y: 512 }
+        }
       ])
     })
 
@@ -90,10 +118,14 @@ describe('Indicators store', () => {
       card3
         .getBehaviorByName(StackBehaviorName)
         .fromState({ stackIds: ['card5'] })
-      expectStackSizes([])
+      expectIndicators([])
       actionMenuProps.next({ interactedMesh: card5 })
-      expectStackSizes([
-        { id: card5.id, size: 2, screenPosition: { x: 902.9, y: 512 } }
+      expectIndicators([
+        {
+          id: `${card5.id}.stack-size`,
+          size: 2,
+          screenPosition: { x: 902.9, y: 512 }
+        }
       ])
     })
 
@@ -102,9 +134,9 @@ describe('Indicators store', () => {
       card1
         .getBehaviorByName(StackBehaviorName)
         .fromState({ stackIds: ['card2', 'card4'] })
-      expectStackSizes([])
+      expectIndicators([])
       actionMenuProps.next({ interactedMesh: card3 })
-      expectStackSizes([])
+      expectIndicators([])
     })
 
     it('has indicator for selected menu mesh', () => {
@@ -115,16 +147,32 @@ describe('Indicators store', () => {
       card3
         .getBehaviorByName(StackBehaviorName)
         .fromState({ stackIds: ['card5'] })
-      expectStackSizes([])
+      expectIndicators([])
       selectionManager.select(card5, card3, card2, card1, card4)
-      expectStackSizes([
-        { id: card4.id, size: 3, screenPosition: { x: 1145.099, y: 512 } },
-        { id: card5.id, size: 2, screenPosition: { x: 902.9, y: 512 } }
+      expectIndicators([
+        {
+          id: `${card4.id}.stack-size`,
+          size: 3,
+          screenPosition: { x: 1145.099, y: 512 }
+        },
+        {
+          id: `${card5.id}.stack-size`,
+          size: 2,
+          screenPosition: { x: 902.9, y: 512 }
+        }
       ])
       actionMenuProps.next({ interactedMesh: card4 })
-      expectStackSizes([
-        { id: card4.id, size: 3, screenPosition: { x: 1145.099, y: 512 } },
-        { id: card5.id, size: 2, screenPosition: { x: 902.9, y: 512 } }
+      expectIndicators([
+        {
+          id: `${card4.id}.stack-size`,
+          size: 3,
+          screenPosition: { x: 1145.099, y: 512 }
+        },
+        {
+          id: `${card5.id}.stack-size`,
+          size: 2,
+          screenPosition: { x: 902.9, y: 512 }
+        }
       ])
     })
 
@@ -133,10 +181,14 @@ describe('Indicators store', () => {
       card1
         .getBehaviorByName(StackBehaviorName)
         .fromState({ stackIds: ['card4', 'card5'] })
-      expectStackSizes([])
+      expectIndicators([])
       toggleIndicators()
-      expectStackSizes([
-        { id: card5.id, size: 3, screenPosition: { x: 902.9, y: 512 } }
+      expectIndicators([
+        {
+          id: `${card5.id}.stack-size`,
+          size: 3,
+          screenPosition: { x: 902.9, y: 512 }
+        }
       ])
     })
   })
@@ -158,9 +210,17 @@ describe('Indicators store', () => {
         .fromState({ stackIds: ['card5'] })
 
       await waitNextRender(scene)
-      expectStackSizes([
-        { id: card4.id, size: 3, screenPosition: { x: 1024, y: 511.796 } },
-        { id: card5.id, size: 2, screenPosition: { x: 999.78, y: 511.898 } }
+      expectIndicators([
+        {
+          id: `${card4.id}.stack-size`,
+          size: 3,
+          screenPosition: { x: 1024, y: 511.796 }
+        },
+        {
+          id: `${card5.id}.stack-size`,
+          size: 2,
+          screenPosition: { x: 999.78, y: 511.898 }
+        }
       ])
     })
 
@@ -170,8 +230,12 @@ describe('Indicators store', () => {
         .getBehaviorByName(StackBehaviorName)
         .fromState({ stackIds: ['card4', 'card5'] })
       card3.getBehaviorByName(StackBehaviorName).fromState({})
-      expectStackSizes([
-        { id: card5.id, size: 3, screenPosition: { x: 902.9, y: 512 } }
+      expectIndicators([
+        {
+          id: `${card5.id}.stack-size`,
+          size: 3,
+          screenPosition: { x: 902.9, y: 512 }
+        }
       ])
     })
 
@@ -180,11 +244,15 @@ describe('Indicators store', () => {
       card1
         .getBehaviorByName(StackBehaviorName)
         .fromState({ stackIds: ['card4', 'card5'] })
-      expectStackSizes([
-        { id: card5.id, size: 3, screenPosition: { x: 902.9, y: 512 } }
+      expectIndicators([
+        {
+          id: `${card5.id}.stack-size`,
+          size: 3,
+          screenPosition: { x: 902.9, y: 512 }
+        }
       ])
       toggleIndicators()
-      expectStackSizes([])
+      expectIndicators([])
     })
 
     it('updates indicators on action', async () => {
@@ -192,23 +260,78 @@ describe('Indicators store', () => {
       card1
         .getBehaviorByName(StackBehaviorName)
         .fromState({ stackIds: ['card4', 'card5'] })
-      expectStackSizes([
-        { id: card5.id, size: 3, screenPosition: { x: 902.9, y: 512 } }
+      expectIndicators([
+        {
+          id: `${card5.id}.stack-size`,
+          size: 3,
+          screenPosition: { x: 902.9, y: 512 }
+        }
       ])
       await card1.metadata.flipAll()
-      expectStackSizes([
-        { id: card1.id, size: 3, screenPosition: { x: 1024, y: 512 } }
+      expectIndicators([
+        {
+          id: `${card1.id}.stack-size`,
+          size: 3,
+          screenPosition: { x: 1024, y: 512 }
+        }
+      ])
+    })
+
+    it('has no player data on drop zones', async () => {
+      const [card] = cards
+      card
+        .getBehaviorByName(AnchorBehaviorName)
+        .fromState({ anchors: [{ playerId: players[0].id }] })
+      expectIndicators([
+        {
+          id: `${players[0].id}.drop-zone.anchor-0`,
+          screenPosition: { x: 1024, y: 512 }
+        }
       ])
     })
   })
 
-  function expectStackSizes(expected) {
-    const stackSizes = get(stackSizes$)
-    expect(stackSizes).toHaveLength(expected.length)
-    for (const [rank, { screenPosition, size, id }] of expected.entries()) {
-      const actual = stackSizes[rank]
-      expect(actual).toHaveProperty('id', `${id}.stack-size`)
-      expect(actual).toHaveProperty('size', size)
+  describe('given current game', () => {
+    beforeAll(() => {
+      currentGame.next({ players })
+      if (!get(areIndicatorsVisible$)) {
+        toggleIndicators()
+      }
+    })
+
+    it('has player indicators for drop zones', async () => {
+      const [card1, card2] = cards
+      card1
+        .getBehaviorByName(AnchorBehaviorName)
+        .fromState({ anchors: [{ playerId: players[0].id }] })
+      card2
+        .getBehaviorByName(AnchorBehaviorName)
+        .fromState({ anchors: [{ playerId: players[1].id }] })
+      expectIndicators([
+        {
+          id: `${players[0].id}.drop-zone.anchor-0`,
+          username: players[0].username,
+          screenPosition: { x: 1024, y: 512 }
+        },
+        {
+          id: `${players[1].id}.drop-zone.anchor-0`,
+          username: players[1].username,
+          screenPosition: { x: 1048.22, y: 512 }
+        }
+      ])
+    })
+  })
+
+  function expectIndicators(expected) {
+    const visibleIndicators = get(visibleIndicators$)
+    expect(visibleIndicators).toHaveLength(expected.length)
+    for (const [
+      rank,
+      { screenPosition, id, ...otherProps }
+    ] of expected.entries()) {
+      const actual = visibleIndicators[rank]
+      expect(actual).toHaveProperty('id', id)
+      expect(actual).toEqual(expect.objectContaining(otherProps))
       expectScreenPosition(actual.screenPosition, screenPosition)
     }
   }

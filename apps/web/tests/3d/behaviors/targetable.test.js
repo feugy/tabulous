@@ -2,7 +2,7 @@ import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import faker from 'faker'
 import { configures3dTestEngine } from '../../test-utils'
 import { TargetBehavior, TargetBehaviorName } from '../../../src/3d/behaviors'
-import { targetManager } from '../../../src/3d/managers'
+import { indicatorManager, targetManager } from '../../../src/3d/managers'
 
 describe('TargetBehavior', () => {
   configures3dTestEngine()
@@ -55,6 +55,21 @@ describe('TargetBehavior', () => {
     expect(mesh2.visibility).toBe(0)
   })
 
+  it('registers indicator for player drop zone', () => {
+    const meshId = 'box1'
+    const playerId = faker.datatype.uuid()
+    const id = `${playerId}.drop-zone.${meshId}`
+    expect(indicatorManager.isManaging({ id })).toBe(false)
+    const behavior = new TargetBehavior()
+    const mesh = CreateBox(meshId, {})
+    const zone = behavior.addZone(mesh, { playerId })
+    expect(behavior.zones).toEqual([zone])
+    expectZone(zone, { mesh, enabled: true, priority: 0, playerId })
+    expect(indicatorManager.isManaging({ id })).toBe(true)
+    behavior.removeZone(zone)
+    expect(indicatorManager.isManaging({ id })).toBe(false)
+  })
+
   it('removes added zone and disposes their mesh', () => {
     const behavior = new TargetBehavior()
     const mesh = CreateBox('box', {})
@@ -95,14 +110,18 @@ describe('TargetBehavior', () => {
     })
 
     it('unregisteres from manager and removes zones upon detaching', () => {
-      const mesh1 = CreateBox('box1', {})
-      behavior.addZone(mesh1, { extent: 1.2 })
+      const meshId = 'box1'
+      const playerId = faker.datatype.uuid()
+      const id = `${playerId}.drop-zone.${meshId}`
+      const mesh1 = CreateBox(meshId, {})
+      behavior.addZone(mesh1, { extent: 1.2, playerId })
       const mesh2 = CreateBox('box1', {})
       behavior.addZone(mesh2, {
         extent: 2,
         kinds: ['box', 'card'],
         enabled: false
       })
+      expect(indicatorManager.isManaging({ id })).toBe(true)
 
       mesh.dispose()
       expect(behavior.mesh).toBeNull()
@@ -110,6 +129,7 @@ describe('TargetBehavior', () => {
       expect(mesh1.isDisposed()).toBe(true)
       expect(mesh2.isDisposed()).toBe(true)
       expect(behavior.zones).toEqual([])
+      expect(indicatorManager.isManaging({ id })).toBe(false)
     })
   })
 })

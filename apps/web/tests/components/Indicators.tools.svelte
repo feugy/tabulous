@@ -11,6 +11,18 @@
     }}
   />
   <Tool
+    name="Player"
+    props={{
+      items: [
+        {
+          screenPosition: { x: 150, y: 125 },
+          username: 'Gaspard',
+          id: '123456.drop-zone.anchor-0'
+        }
+      ]
+    }}
+  />
+  <Tool
     name="Multiple"
     props={{
       items: [
