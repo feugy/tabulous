@@ -4,6 +4,7 @@
 
   export let placement = 'top'
   let currentTab
+  const playerById = new Map(players.map(player => [player.id, player]))
 </script>
 
 <style lang="postcss">
@@ -43,7 +44,7 @@
     on:change
   >
     {#if !currentTab}
-      <Discussion {players} {thread} />
+      <Discussion {playerById} {thread} />
     {/if}
     {#if currentTab === 1}
       <span class="p-4">

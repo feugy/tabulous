@@ -27,7 +27,12 @@ describe('GameAside component', () => {
   }
 
   it('only has help tab on single player game without rules book', () => {
-    renderComponent({ player, game: { players: players.slice(0, 1) } })
+    renderComponent({
+      player,
+      playerById: new Map(
+        players.slice(0, 1).map(player => [player.id, player])
+      )
+    })
     expect(extractText(screen.getAllByRole('tab'))).toEqual(['help'])
     expect(screen.getByRole('region')).toHaveAttribute('aria-expanded', 'false')
   })
@@ -35,11 +40,8 @@ describe('GameAside component', () => {
   it('has help and rules book on single player game', () => {
     renderComponent({
       player,
-      game: {
-        kind: 'splendor',
-        rulesBookPageCount: 4,
-        players: players.slice(0, 1)
-      }
+      game: { kind: 'splendor', rulesBookPageCount: 4 },
+      playerById: toMap(players.slice(0, 1))
     })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
       'auto_stories',
@@ -49,7 +51,7 @@ describe('GameAside component', () => {
   })
 
   it('has help and peer tabs on single connected game without rules book', () => {
-    renderComponent({ player, game: { players } })
+    renderComponent({ player, playerById: toMap(players) })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
       'people_alt',
       'help'
@@ -63,7 +65,8 @@ describe('GameAside component', () => {
   it('has help, rules book and peer tabs on single connected game', () => {
     renderComponent({
       player,
-      game: { kind: 'splendor', rulesBookPageCount: 4, players }
+      game: { kind: 'splendor', rulesBookPageCount: 4 },
+      playerById: toMap(players)
     })
     expect(screen.getByRole('region')).toHaveAttribute('aria-expanded', 'true')
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
@@ -77,7 +80,7 @@ describe('GameAside component', () => {
   })
 
   it('has help, peer and thread tabs on multiple connected game without rules book', () => {
-    renderComponent({ player, game: { players }, connected })
+    renderComponent({ player, playerById: toMap(players), connected })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
       'people_alt',
       'help',
@@ -101,7 +104,8 @@ describe('GameAside component', () => {
   it('has help, rules book, peer and thread tabs on multiple connected game', () => {
     renderComponent({
       player,
-      game: { kind: 'splendor', rulesBookPageCount: 4, players },
+      game: { kind: 'splendor', rulesBookPageCount: 4 },
+      playerById: toMap(players),
       connected
     })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
@@ -126,7 +130,7 @@ describe('GameAside component', () => {
   })
 
   it('has thread discussion on single connected game with thread', () => {
-    renderComponent({ player, game: { players }, thread })
+    renderComponent({ player, playerById: toMap(players), thread })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
       'people_alt',
       'help',
@@ -146,7 +150,7 @@ describe('GameAside component', () => {
   })
 
   it('has thread discussion on single connected game with thread', () => {
-    renderComponent({ player, game: { players }, thread })
+    renderComponent({ player, playerById: toMap(players), thread })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
       'people_alt',
       'help',
@@ -166,7 +170,7 @@ describe('GameAside component', () => {
   })
 
   it('sends messages', async () => {
-    renderComponent({ player, game: { players }, thread })
+    renderComponent({ player, playerById: toMap(players), thread })
 
     userEvent.type(screen.getByRole('textbox'), thread[0].text)
     await tick()
@@ -183,11 +187,8 @@ describe('GameAside component', () => {
   it('displays rules book when clicking on tab', () => {
     renderComponent({
       player,
-      game: {
-        kind: 'splendor',
-        rulesBookPageCount: 4,
-        players: players.slice(0, 1)
-      }
+      game: { kind: 'splendor', rulesBookPageCount: 4 },
+      playerById: toMap(players.slice(0, 1))
     })
 
     fireEvent.click(screen.getByRole('tab', { name: 'auto_stories' }))
@@ -203,12 +204,7 @@ describe('GameAside component', () => {
   })
 
   it('displays help book when clicking on tab', () => {
-    renderComponent({
-      player,
-      game: {
-        players: players.slice(0, 1)
-      }
-    })
+    renderComponent({ player, playerById: toMap(players.slice(0, 1)) })
 
     fireEvent.click(screen.getByRole('tab', { name: 'help' }))
 
@@ -217,3 +213,7 @@ describe('GameAside component', () => {
     ).toBeInTheDocument()
   })
 })
+
+function toMap(players) {
+  return new Map(players.map(player => [player.id, player]))
+}

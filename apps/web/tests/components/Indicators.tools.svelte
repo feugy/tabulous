@@ -31,4 +31,21 @@
       ]
     }}
   />
+  <Tool
+    name="Player and stack"
+    props={{
+      items: [
+        {
+          screenPosition: { x: 150, y: 125 },
+          username: 'Gaspard',
+          id: '123456.drop-zone.anchor-0'
+        },
+        {
+          screenPosition: { x: 150, y: 125 },
+          size: 3,
+          id: 'card2.stack-size'
+        }
+      ]
+    }}
+  />
 </ToolBox>

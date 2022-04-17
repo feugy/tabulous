@@ -3,14 +3,14 @@
 exports[`Toolshot components/Indicators.tools.svelte: Multiple 1`] = `
 <span>
   <div
-    class="indicator"
+    class="indicator "
     style="top: 100px; left: 50px;"
   >
     5
      
   </div>
   <div
-    class="indicator"
+    class="indicator "
     style="top: 200px; left: 150px;"
   >
     27
@@ -23,7 +23,7 @@ exports[`Toolshot components/Indicators.tools.svelte: Multiple 1`] = `
 exports[`Toolshot components/Indicators.tools.svelte: Player 1`] = `
 <span>
   <div
-    class="indicator"
+    class="indicator player"
     style="top: 125px; left: 150px;"
   >
     Gaspard
@@ -33,10 +33,30 @@ exports[`Toolshot components/Indicators.tools.svelte: Player 1`] = `
 </span>
 `;
 
+exports[`Toolshot components/Indicators.tools.svelte: Player and stack 1`] = `
+<span>
+  <div
+    class="indicator player"
+    style="top: 125px; left: 150px;"
+  >
+    Gaspard
+     
+  </div>
+  <div
+    class="indicator "
+    style="top: 125px; left: 150px;"
+  >
+    3
+     
+  </div>
+  
+</span>
+`;
+
 exports[`Toolshot components/Indicators.tools.svelte: Single 1`] = `
 <span>
   <div
-    class="indicator"
+    class="indicator "
     style="top: 100px; left: 50px;"
   >
     5

@@ -201,6 +201,14 @@ export const playerGames = playerGames$.asObservable()
 export const currentGame = currentGame$.asObservable()
 
 /**
+ * Emits a map of player in current game.
+ * @type {Observable<Map<string, import('../graphql').Player>>}
+ */
+export const gamePlayerById = currentGame$.pipe(
+  map(game => new Map((game?.players ?? []).map(player => [player.id, player])))
+)
+
+/**
  * Lists all games of the current player, populating `playerGames` observable.
  * @async
  */

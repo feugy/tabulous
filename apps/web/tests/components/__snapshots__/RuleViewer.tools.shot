@@ -38,7 +38,7 @@ exports[`Toolshot components/RuleViewer.tools.svelte: Components/Rule Viewer 1`]
     >
       <img
         alt="Livre de règles, page 1"
-        src="games/klondike/rules/1.webp"
+        src="games/splendor/rules/1.webp"
       />
     </div>
   </section>

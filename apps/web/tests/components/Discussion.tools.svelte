@@ -6,7 +6,7 @@
 
 <ToolBox
   name="Components/Discussion"
-  props={{ players }}
+  props={{ playerById: new Map(players.map(player => [player.id, player])) }}
   events={['sendMessage']}
   layout="centered"
 >

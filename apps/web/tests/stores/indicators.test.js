@@ -7,7 +7,7 @@ import {
 } from '../test-utils'
 import { createCard } from '../../src/3d/meshes'
 import { actionMenuProps } from '../../src/stores/game-engine'
-import { currentGame } from '../../src/stores/game-manager'
+import { gamePlayerById } from '../../src/stores/game-manager'
 import {
   areIndicatorsVisible as areIndicatorsVisible$,
   visibleIndicators as visibleIndicators$,
@@ -37,7 +37,7 @@ jest.mock('../../src/stores/game-engine', () => {
 
 jest.mock('../../src/stores/game-manager', () => {
   const { BehaviorSubject } = require('rxjs')
-  return { currentGame: new BehaviorSubject() }
+  return { gamePlayerById: new BehaviorSubject(new Map()) }
 })
 
 describe('Indicators store', () => {
@@ -293,7 +293,7 @@ describe('Indicators store', () => {
 
   describe('given current game', () => {
     beforeAll(() => {
-      currentGame.next({ players })
+      gamePlayerById.next(new Map(players.map(player => [player.id, player])))
       if (!get(areIndicatorsVisible$)) {
         toggleIndicators()
       }

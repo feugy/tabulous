@@ -13,7 +13,7 @@
   }
 
   .player {
-    @apply p-2 pt-1 pb-3 rounded-none;
+    @apply p-2 pt-1 pb-3 rounded-none -translate-y-16;
     --offset: 85%;
     clip-path: polygon(
       0% 0%,

@@ -4,21 +4,12 @@ import {
   indicators as indicators$,
   selectedMeshes
 } from './game-engine'
-import { currentGame as currentGame$ } from './game-manager'
+import { gamePlayerById as gamePlayerById$ } from './game-manager'
 
 const visible$ = new BehaviorSubject(true)
 
 let playerById = new Map()
-
-currentGame$
-  .pipe(
-    map(
-      game => new Map((game?.players ?? []).map(player => [player.id, player]))
-    )
-  )
-  .subscribe(value => {
-    playerById = value
-  })
+gamePlayerById$.subscribe(value => (playerById = value))
 
 /**
  * Emits whenever the indicators are shown or hidden.

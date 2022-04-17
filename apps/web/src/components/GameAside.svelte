@@ -6,9 +6,10 @@
   import RuleViewer from './RuleViewer.svelte'
 
   export let player
-  export let game
+  export let playerById
   export let thread
   export let connected
+  export let game = undefined
 
   let tab
   let initialWidth = '30vw'
@@ -16,25 +17,24 @@
   let discussionDimension = '15%'
   let icons = ['help']
 
+  $: otherPlayers = [...(playerById?.values() ?? [])].filter(
+    ({ id }) => id !== player.id
+  )
+
+  $: hasPeers = playerById?.size > 1
+
   $: avatars = connected?.length
     ? // current player should go first
-      [
-        player,
-        ...(game?.players.filter(({ id }) => id !== player.id) ?? [])
-      ].map((peer, i) => ({
+      [player, ...otherPlayers].map((peer, i) => ({
         player: peer,
         controllable: i === 0,
         stream: connected?.find(({ playerId }) => playerId === peer.id)?.stream
       }))
-    : game?.players.length > 1
+    : hasPeers
     ? // multiple player but none connected: remove current
-      game.players
-        .filter(({ id }) => id !== player.id)
-        .map(player => ({ player }))
+      otherPlayers.map(player => ({ player }))
     : // single player: no avatars
       []
-
-  $: hasPeers = game?.players.length > 1
 
   $: {
     icons = ['help']
@@ -86,7 +86,7 @@
             placement="bottom"
             icons={['question_answer']}
           >
-            <Discussion {thread} players={game?.players} on:sendMessage />
+            <Discussion {thread} {playerById} on:sendMessage />
           </MinimizableSection>
         {/if}
       {:else if icons[tab] === 'auto_stories'}

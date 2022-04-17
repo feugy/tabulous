@@ -23,6 +23,7 @@
     currentGame,
     currentPlayer,
     engine,
+    gamePlayerById,
     initEngine,
     visibleIndicators,
     loadGame,
@@ -144,6 +145,7 @@
 <GameAside
   game={$currentGame}
   player={$currentPlayer}
+  playerById={$gamePlayerById}
   connected={$connected}
   thread={$thread}
   on:sendMessage={({ detail }) => sendToThread(detail.text)}
