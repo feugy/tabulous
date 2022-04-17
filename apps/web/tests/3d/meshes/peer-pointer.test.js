@@ -1,4 +1,4 @@
-import faker from 'faker'
+import { faker } from '@faker-js/faker'
 import { createPeerPointer } from '../../../src/3d/meshes'
 import { controlManager } from '../../../src/3d/managers'
 import { configures3dTestEngine } from '../../test-utils'

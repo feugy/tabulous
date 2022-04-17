@@ -1,4 +1,4 @@
-import faker from 'faker'
+import { faker } from '@faker-js/faker'
 import { games } from '../../src/repositories/games.js'
 
 describe('given a connected repository and several games', () => {

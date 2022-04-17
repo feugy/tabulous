@@ -1,5 +1,5 @@
 import { Observable } from '@babylonjs/core/Misc/observable'
-import * as faker from 'faker'
+import { faker } from '@faker-js/faker'
 import { Subject } from 'rxjs'
 import * as graphQL from '../../src/graphql'
 import { loadThread, serializeThread } from '../../src/stores/discussion'

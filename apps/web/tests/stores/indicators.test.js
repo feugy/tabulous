@@ -1,4 +1,4 @@
-import faker from 'faker'
+import { faker } from '@faker-js/faker'
 import { get } from 'svelte/store'
 import {
   configures3dTestEngine,

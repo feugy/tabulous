@@ -1,4 +1,4 @@
-import * as faker from 'faker'
+import { faker } from '@faker-js/faker'
 import * as graphQL from '../../src/graphql'
 import {
   currentPlayer,

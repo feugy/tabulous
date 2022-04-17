@@ -1,5 +1,5 @@
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
-import faker from 'faker'
+import { faker } from '@faker-js/faker'
 import {
   MoveBehaviorName,
   StackBehaviorName

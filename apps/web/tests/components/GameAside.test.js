@@ -1,6 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import userEvent from '@testing-library/user-event'
-import { tick } from 'svelte'
 import html from 'svelte-htm'
 import { players, thread } from './Discussion.testdata'
 import GameAside from '../../src/components/GameAside.svelte'
@@ -172,8 +171,7 @@ describe('GameAside component', () => {
   it('sends messages', async () => {
     renderComponent({ player, playerById: toMap(players), thread })
 
-    userEvent.type(screen.getByRole('textbox'), thread[0].text)
-    await tick()
+    await userEvent.type(screen.getByRole('textbox'), thread[0].text)
     fireEvent.click(screen.getByRole('button', { type: 'submit' }))
 
     expect(handleSend).toHaveBeenCalledWith(

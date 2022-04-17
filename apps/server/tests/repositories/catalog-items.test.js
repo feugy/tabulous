@@ -1,4 +1,4 @@
-import faker from 'faker'
+import { faker } from '@faker-js/faker'
 import { join } from 'path'
 import { catalogItems } from '../../src/repositories/catalog-items.js'
 

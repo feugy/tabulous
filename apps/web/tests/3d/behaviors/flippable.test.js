@@ -1,6 +1,6 @@
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import faker from 'faker'
+import { faker } from '@faker-js/faker'
 import {
   configures3dTestEngine,
   expectFlipped,

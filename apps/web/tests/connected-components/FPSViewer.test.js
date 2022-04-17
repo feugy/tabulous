@@ -1,5 +1,5 @@
+import { faker } from '@faker-js/faker'
 import { render, screen } from '@testing-library/svelte'
-import faker from 'faker'
 import { tick } from 'svelte'
 import html from 'svelte-htm'
 import { translate } from '../test-utils'

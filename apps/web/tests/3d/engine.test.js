@@ -1,6 +1,6 @@
-import faker from 'faker'
 import { NullEngine } from '@babylonjs/core/Engines/nullEngine'
 import { Scene } from '@babylonjs/core/scene'
+import { faker } from '@faker-js/faker'
 import { createEngine } from '../../src/3d'
 import { createCard } from '../../src/3d/meshes'
 import { DrawBehaviorName } from '../../src/3d/behaviors'

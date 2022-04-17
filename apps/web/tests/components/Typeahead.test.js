@@ -1,6 +1,6 @@
+import { faker } from '@faker-js/faker'
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import userEvent from '@testing-library/user-event'
-import faker from 'faker'
 import { tick } from 'svelte'
 import { writable } from 'svelte/store'
 import html from 'svelte-htm'
@@ -51,10 +51,9 @@ describe('Typeahead component', () => {
       expect(screen.queryByRole('menu')).not.toBeInTheDocument()
 
       handleInput.mockImplementation(async () => options$.set(options))
-      userEvent.type(input, 'a')
+      await userEvent.type(input, 'a')
       expect(handleChange).not.toHaveBeenCalled()
       expect(handleInput).toHaveBeenCalledTimes(1)
-      await tick()
       expect(screen.queryByRole('menu')).toBeInTheDocument()
       const items = screen.getAllByRole('menuitem')
       expect(extractText(items)).toEqual(
@@ -66,8 +65,7 @@ describe('Typeahead component', () => {
       renderComponent()
       const input = screen.getByRole('textbox')
       handleInput.mockImplementation(async () => options$.set(options))
-      userEvent.type(input, 'a')
-      await tick()
+      await userEvent.type(input, 'a')
       expect(handleInput).toHaveBeenCalledTimes(1)
 
       fireEvent.click(screen.queryAllByRole('menuitem')[2])
@@ -81,12 +79,10 @@ describe('Typeahead component', () => {
       renderComponent()
       const input = screen.getByRole('textbox')
       handleInput.mockImplementation(async () => options$.set(options))
-      userEvent.type(input, 'a')
-      await tick()
+      await userEvent.type(input, 'a')
       expect(handleInput).toHaveBeenCalledTimes(1)
 
-      userEvent.type(input, '{arrowdown}')
-      await tick()
+      await userEvent.type(input, '{ArrowDown}')
       fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' })
       await tick()
       fireEvent.keyDown(document.activeElement, { key: 'ArrowRight' })
@@ -101,11 +97,10 @@ describe('Typeahead component', () => {
       renderComponent()
       const input = screen.getByRole('textbox')
       handleInput.mockImplementation(async () => options$.set(options))
-      userEvent.type(input, 'a{backspace}')
-      await tick()
+      await userEvent.type(input, 'a{Backspace}')
       expect(handleInput).toHaveBeenCalledTimes(2)
 
-      userEvent.type(input, value)
+      await userEvent.type(input, value)
       fireEvent.keyDown(input, { key: 'Enter' })
       expect(input).toHaveValue(value)
       expect(handleChange).toHaveBeenCalledTimes(0)
@@ -116,11 +111,10 @@ describe('Typeahead component', () => {
       renderComponent()
       const input = screen.getByRole('textbox')
       handleInput.mockImplementation(async () => options$.set(options))
-      userEvent.type(input, 'a')
-      await tick()
+      await userEvent.type(input, 'a')
       expect(handleInput).toHaveBeenCalledTimes(1)
 
-      userEvent.type(input, '{enter}')
+      await userEvent.type(input, '{Enter}')
       await sleep(100)
       expect(screen.queryByRole('menu')).toBeNull()
       expect(handleChange).toHaveBeenCalledTimes(0)

@@ -4,7 +4,7 @@ import { ShadowGenerator } from '@babylonjs/core/Lights/Shadows/shadowGenerator'
 import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial'
 import { Texture } from '@babylonjs/core/Materials/Textures/texture'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import faker from 'faker'
+import { faker } from '@faker-js/faker'
 import { configures3dTestEngine } from '../../test-utils'
 import { materialManager as manager } from '../../../src/3d/managers'
 

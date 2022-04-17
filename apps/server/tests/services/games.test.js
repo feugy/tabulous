@@ -1,5 +1,5 @@
+import { faker } from '@faker-js/faker'
 import { jest } from '@jest/globals'
-import faker from 'faker'
 import { join } from 'path'
 import repositories from '../../src/repositories/index.js'
 import {

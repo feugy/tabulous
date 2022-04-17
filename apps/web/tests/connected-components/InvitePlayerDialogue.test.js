@@ -1,6 +1,6 @@
+import { faker } from '@faker-js/faker'
 import { fireEvent, render, screen, waitFor } from '@testing-library/svelte'
 import userEvent from '@testing-library/user-event'
-import faker from 'faker'
 import { tick } from 'svelte'
 import html from 'svelte-htm'
 import { extractText, translate } from '../test-utils'
@@ -29,7 +29,7 @@ describe('InvitePlayerDialogue connected component', () => {
 
   it('does not trigger search bellow 2 characters', async () => {
     render(html`<${InvitePlayerDialogue} open game=${game} />`)
-    userEvent.type(screen.getByRole('textbox'), 'a')
+    await userEvent.type(screen.getByRole('textbox'), 'a')
     expect(searchPlayers).not.toHaveBeenCalled()
   })
 
@@ -45,7 +45,7 @@ describe('InvitePlayerDialogue connected component', () => {
     render(html`<${InvitePlayerDialogue} open game=${game} />`)
     const input = screen.getByRole('textbox')
     for (const { key, delay } of inputs) {
-      userEvent.type(input, key)
+      await userEvent.type(input, key)
       await sleep(delay)
     }
     expect(searchPlayers).toHaveBeenNthCalledWith(1, 'an')
@@ -56,7 +56,7 @@ describe('InvitePlayerDialogue connected component', () => {
   it('searches for candidate players and displays them', async () => {
     searchPlayers.mockResolvedValueOnce(candidates)
     render(html`<${InvitePlayerDialogue} open game=${game} />`)
-    userEvent.type(screen.getByRole('textbox'), name)
+    await userEvent.type(screen.getByRole('textbox'), name)
     await waitFor(() =>
       expect(extractText(screen.getAllByRole('menuitem'))).toEqual(
         candidates.map(player => player.username)
@@ -80,7 +80,7 @@ describe('InvitePlayerDialogue connected component', () => {
 
     searchPlayers.mockResolvedValueOnce(candidates)
     render(html`<${InvitePlayerDialogue} open game=${game} />`)
-    userEvent.type(screen.getByRole('textbox'), name)
+    await userEvent.type(screen.getByRole('textbox'), name)
     await waitFor(() =>
       expect(extractText(screen.getAllByRole('menuitem'))).toEqual(
         candidates.map(player => player.username)
@@ -98,7 +98,7 @@ describe('InvitePlayerDialogue connected component', () => {
     const button = screen.getByRole('button', {
       name: `connect_without_contact ${translate('actions.invite')}`
     })
-    userEvent.type(screen.getByRole('textbox'), name)
+    await userEvent.type(screen.getByRole('textbox'), name)
     await waitFor(() => expect(screen.getByRole('menu')).toBeInTheDocument())
 
     fireEvent.click(screen.getAllByRole('menuitem')[1])

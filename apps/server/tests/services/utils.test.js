@@ -1,4 +1,4 @@
-import faker from 'faker'
+import { faker } from '@faker-js/faker'
 import { createMeshes } from '../../src/services/utils.js'
 
 describe('createMeshes()', () => {

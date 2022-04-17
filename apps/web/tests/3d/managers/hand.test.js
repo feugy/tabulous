@@ -1,5 +1,5 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import * as faker from 'faker'
+import { faker } from '@faker-js/faker'
 import {
   configures3dTestEngine,
   disposeAllMeshes,

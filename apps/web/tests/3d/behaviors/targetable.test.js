@@ -1,5 +1,5 @@
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
-import faker from 'faker'
+import { faker } from '@faker-js/faker'
 import { configures3dTestEngine } from '../../test-utils'
 import { TargetBehavior, TargetBehaviorName } from '../../../src/3d/behaviors'
 import { indicatorManager, targetManager } from '../../../src/3d/managers'

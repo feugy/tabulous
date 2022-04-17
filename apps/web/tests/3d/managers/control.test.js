@@ -1,6 +1,6 @@
 import { PointerEventTypes } from '@babylonjs/core/Events/pointerEvents'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
-import faker from 'faker'
+import { faker } from '@faker-js/faker'
 import { configures3dTestEngine, sleep } from '../../test-utils'
 import { controlManager as manager } from '../../../src/3d/managers'
 import { AnchorBehavior, FlipBehavior } from '../../../src/3d/behaviors'

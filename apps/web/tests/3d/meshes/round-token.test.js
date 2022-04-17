@@ -1,5 +1,5 @@
 import { Color4 } from '@babylonjs/core/Maths/math.color'
-import faker from 'faker'
+import { faker } from '@faker-js/faker'
 import { createRoundToken } from '../../../src/3d/meshes'
 import { controlManager, materialManager } from '../../../src/3d/managers'
 import { configures3dTestEngine } from '../../test-utils'

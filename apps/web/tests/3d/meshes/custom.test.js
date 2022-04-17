@@ -1,5 +1,5 @@
 import { Color4 } from '@babylonjs/core/Maths/math.color'
-import faker from 'faker'
+import { faker } from '@faker-js/faker'
 import {
   controlManager,
   customShapeManager,

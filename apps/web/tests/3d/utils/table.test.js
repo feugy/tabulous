@@ -1,4 +1,4 @@
-import faker from 'faker'
+import { faker } from '@faker-js/faker'
 import { createTable } from '../../../src/3d/utils'
 import { configures3dTestEngine } from '../../test-utils'
 

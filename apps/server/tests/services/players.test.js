@@ -1,4 +1,4 @@
-import faker from 'faker'
+import { faker } from '@faker-js/faker'
 import repositories from '../../src/repositories/index.js'
 import {
   logIn,

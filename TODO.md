@@ -16,7 +16,6 @@
 
 ## Refactor
 
-- use @faker.js/faker
 - bug: animating visibility from 0 to 1 creates trouble with texture alpha channel
 - bug: moving card collides with a stack of cards
 - selection manager should remove disposed meshes

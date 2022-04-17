@@ -1,7 +1,7 @@
+import { faker } from '@faker-js/faker'
 import { randomUUID } from 'crypto'
 import { get } from 'svelte/store'
 import Peer from 'simple-peer-light'
-import * as faker from 'faker'
 import * as communication from '../../src/stores/peer-channels'
 import { runMutation, runSubscription } from '../../src/stores/graphql-client'
 import * as graphQL from '../../src/graphql'

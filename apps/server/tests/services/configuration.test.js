@@ -1,5 +1,5 @@
+import { faker } from '@faker-js/faker'
 import { jest } from '@jest/globals'
-import faker from 'faker'
 import { join, resolve } from 'path'
 import { cwd } from 'process'
 import { loadConfiguration } from '../../src/services/configuration.js'
