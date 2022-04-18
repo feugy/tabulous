@@ -1,10 +1,13 @@
 import { Color4 } from '@babylonjs/core/Maths/math.color'
-import faker from 'faker'
+import { faker } from '@faker-js/faker'
 import { createCard } from '../../../src/3d/meshes'
-import { controlManager } from '../../../src/3d/managers'
+import { controlManager, materialManager } from '../../../src/3d/managers'
 import { configures3dTestEngine, expectPosition } from '../../test-utils'
 
-configures3dTestEngine()
+let scene
+configures3dTestEngine(created => (scene = created.scene))
+
+beforeAll(() => materialManager.init({ scene }))
 
 describe('createCard()', () => {
   it('creates a card with default values, faces and no behavior', () => {
@@ -20,8 +23,6 @@ describe('createCard()', () => {
       images: undefined,
       serialize: expect.any(Function)
     })
-    expect(mesh.getChildren()).toHaveLength(1)
-    expect(mesh.getChildren()[0].isPickable).toBe(false)
     expect(mesh.behaviors).toHaveLength(0)
   })
 
@@ -34,8 +35,7 @@ describe('createCard()', () => {
     expect(boundingBox.extendSize.z * 2).toEqual(4.25)
     expect(boundingBox.extendSize.y * 2).toEqual(0.01)
     expect(mesh.isPickable).toBe(false)
-    const [{ material }] = mesh.getChildren()
-    expect(material.diffuseColor).toEqual(Color4.FromHexString(color))
+    expect(mesh.material.diffuseColor).toEqual(Color4.FromHexString(color))
   })
 
   describe('given a card with initial position, dimension, images and behaviors', () => {
@@ -85,8 +85,6 @@ describe('createCard()', () => {
       expect(boundingBox.extendSize.z * 2).toEqual(depth)
       expect(mesh.isPickable).toBe(true)
       expectPosition(mesh, [x, y, z])
-      expect(mesh.getChildren()).toHaveLength(1)
-      expect(mesh.getChildren()[0].isPickable).toBe(false)
       expect(mesh.getBehaviorByName('detailable')).toBeDefined()
       expect(mesh.getBehaviorByName('movable')?.state).toEqual(
         expect.objectContaining(behaviors.movable)
@@ -107,15 +105,6 @@ describe('createCard()', () => {
       expect(controlManager.isManaging(mesh)).toBe(true)
       mesh.dispose()
       expect(controlManager.isManaging(mesh)).toBe(false)
-    })
-
-    it('can render overlay', () => {
-      mesh.renderOverlay = true
-      expect(mesh.renderOverlay).toBe(true)
-      expect(mesh.getChildren()[0].renderOverlay).toBe(true)
-      mesh.renderOverlay = false
-      expect(mesh.renderOverlay).toBe(false)
-      expect(mesh.getChildren()[0].renderOverlay).toBe(false)
     })
 
     it('serialize with its state', () => {

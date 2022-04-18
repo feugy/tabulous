@@ -10,10 +10,10 @@
     CameraSwitch,
     CursorInfo,
     GameAside,
+    Indicators,
     MeshDetails,
     Progress,
-    RadialMenu,
-    StackSizes
+    RadialMenu
   } from '../components'
   import {
     actionMenuProps,
@@ -23,8 +23,9 @@
     currentGame,
     currentPlayer,
     engine,
+    gamePlayerById,
     initEngine,
-    stackSizes,
+    visibleIndicators,
     loadGame,
     longInputs,
     meshDetails,
@@ -44,7 +45,7 @@
 
   onMount(async () => {
     initEngine({ canvas, interaction, longTapDelay })
-    loadPromise = loadGame(params.gameId, $engine)
+    loadPromise = loadGame(params.gameId)
   })
 
   onDestroy(() => $engine?.dispose())
@@ -135,7 +136,7 @@
     on:contextmenu|preventDefault
   >
     <canvas bind:this={canvas} />
-    <StackSizes items={$stackSizes} />
+    <Indicators items={$visibleIndicators} />
     <RadialMenu {...$actionMenuProps || {}} />
   </div>
   <CursorInfo halos={longInputs} />
@@ -144,6 +145,7 @@
 <GameAside
   game={$currentGame}
   player={$currentPlayer}
+  playerById={$gamePlayerById}
   connected={$connected}
   thread={$thread}
   on:sendMessage={({ detail }) => sendToThread(detail.text)}

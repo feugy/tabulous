@@ -1,4 +1,4 @@
-import faker from 'faker'
+import { faker } from '@faker-js/faker'
 import { chmod, readFile, rm, stat, watch, writeFile } from 'fs/promises'
 import { tmpdir } from 'os'
 import { join } from 'path'

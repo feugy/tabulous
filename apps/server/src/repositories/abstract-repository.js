@@ -53,7 +53,7 @@ export class AbstractRepository {
    * @param {object} args - connection arguments:
    * @param {string} args.path - folder path in which data will be stored.
    */
-  async connect({ path } = {}) {
+  async connect({ path }) {
     if (path) {
       this.file = join(path, `${this.name}.json`)
       await mkdir(dirname(this.file), { recursive: true })

@@ -1,7 +1,7 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { Scene } from '@babylonjs/core/scene'
-import faker from 'faker'
+import { faker } from '@faker-js/faker'
 import { configures3dTestEngine, sleep } from '../../test-utils'
 import { inputManager as manager } from '../../../src/3d/managers'
 import { PointerEventTypes } from '@babylonjs/core'

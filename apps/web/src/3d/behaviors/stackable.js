@@ -94,10 +94,10 @@ export class StackBehavior extends TargetBehavior {
     super.attach(mesh)
     this.fromState(this._state)
 
-    this.dropObserver = this.onDropObservable.add(({ dropped }) => {
+    this.dropObserver = this.onDropObservable.add(({ dropped, immediate }) => {
       // sort all dropped meshes by elevation (lowest first)
       for (const mesh of sortByElevation(dropped)) {
-        this.push(mesh?.id)
+        this.push(mesh?.id, immediate)
       }
     })
 
@@ -182,20 +182,21 @@ export class StackBehavior extends TargetBehavior {
    *
    * @async
    * @param {string} meshId - id of the pushed mesh.
+   * @param {boolean} [immediate=false] - set to true to disable animation.
    */
-  async push(meshId) {
+  async push(meshId, immediate = false) {
     const mesh = this.stack[0].getScene().getMeshById(meshId)
     if (!mesh || this.stack.includes(mesh)) return
 
     const base = this.base ?? this
     const { stack } = base
-    const duration = this.inhibitControl ? 0 : this._state.duration
+    const duration = this.inhibitControl || immediate ? 0 : this._state.duration
 
     if (!this.inhibitControl) {
       controlManager.record({
         mesh: stack[0],
         fn: 'push',
-        args: [meshId],
+        args: [meshId, immediate],
         duration
       })
     }
@@ -207,18 +208,16 @@ export class StackBehavior extends TargetBehavior {
     const meshPushed = getTargetableBehavior(mesh)?.stack ?? [mesh]
     const rank = stack.length - 1
     setStatus(stack, rank, false, this)
-    const y = getCenterAltitudeAbove(stack[rank], meshPushed[0])
+    const y =
+      getFinalAltitudeAboveStack(stack) +
+      getDimensions(meshPushed[0]).height * 0.5
     stack.push(...meshPushed)
     for (let index = rank; index < stack.length; index++) {
       setStatus(stack, index, index === stack.length - 1, this)
     }
-    const move = animateMove(
-      meshPushed[0],
-      new Vector3(x, y, z),
-      duration,
-      true
-    )
-    if (!this.inhibitControl) {
+    const position = new Vector3(x, y, z)
+    const move = animateMove(meshPushed[0], position, duration)
+    if (duration) {
       await move
     }
     for (const mesh of meshPushed) {
@@ -533,13 +532,7 @@ export class StackBehavior extends TargetBehavior {
             scene
           )
     dropZone.parent = this.mesh
-    this.dropZone = this.addZone(
-      dropZone,
-      this._state.extent,
-      this._state.kinds,
-      this._state.enabled,
-      this._state.priority
-    )
+    this.dropZone = this.addZone(dropZone, this._state)
 
     this.inhibitControl = true
     for (const id of stackIds) {
@@ -610,4 +603,12 @@ function buildInclineAnimation(frameRate) {
 
 function invertStack(behavior) {
   behavior.reorder(behavior.stack.map(({ id }) => id).reverse(), false)
+}
+
+function getFinalAltitudeAboveStack(stack) {
+  let y = stack[0].absolutePosition.y - getDimensions(stack[0]).height * 0.5
+  for (const mesh of stack) {
+    y += getDimensions(mesh).height + 0.001
+  }
+  return y
 }

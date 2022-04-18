@@ -1,11 +1,12 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
-import faker from 'faker'
+import { faker } from '@faker-js/faker'
 import { configures3dTestEngine, expectPosition, sleep } from '../../test-utils'
 import { MoveBehavior, TargetBehavior } from '../../../src/3d/behaviors'
 import {
   controlManager,
   handManager,
+  inputManager,
   moveManager as manager,
   selectionManager,
   targetManager
@@ -349,7 +350,11 @@ describe('MoveManager', () => {
       expect(manager.inProgress).toBe(true)
       expectPosition(moved, [1, 1 + manager.elevation, 1])
 
-      moved.metadata.draw()
+      inputManager.onDragObservable.notifyObservers({
+        type: 'dragStart',
+        mesh: moved,
+        event: { x: 289.7, y: 175 }
+      })
       const deltaX = 2.029703140258789
       const deltaZ = -2.1969470977783203
       manager.continue({ x: centerX + 50, y: centerY + 50 })
@@ -579,6 +584,74 @@ describe('MoveManager', () => {
       })
     })
 
+    describe('exclude()', () => {
+      it('removes mesh from selection', () => {
+        manager.start(moved[0], { x: centerX, y: centerY })
+        actionRecorded.mockReset()
+
+        manager.exclude(moved[0], moved[2])
+
+        const deltaX = 2.029703140258789
+        const deltaZ = -2.196934700012207
+
+        manager.continue({ x: centerX + 50, y: centerY + 50 })
+        expectPosition(moved[0], [1, 1.5, 1])
+        expectPosition(moved[1], [deltaX, 5 + manager.elevation, deltaZ])
+        expectPosition(moved[2], [-3, 0.5, -3])
+        expect(actionRecorded).toHaveBeenCalledWith(
+          {
+            meshId: moved[1].id,
+            pos: moved[1].absolutePosition.asArray(),
+            fromHand: false
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenCalledTimes(1)
+        expect(manager.getActiveZones()).toHaveLength(0)
+      })
+
+      it('ignors unknow meshes', () => {
+        selectionManager.clear()
+        selectionManager.select(...moved.slice(0, 2))
+        manager.start(moved[1], { x: centerX, y: centerY })
+        actionRecorded.mockReset()
+
+        manager.exclude(moved[2])
+
+        const deltaX = 2.029703140258789
+        const deltaZ = -2.196934700012207
+
+        manager.continue({ x: centerX + 50, y: centerY + 50 })
+        expectPosition(moved[0], [
+          1 + deltaX,
+          1 + manager.elevation,
+          1 + deltaZ
+        ])
+        expectPosition(moved[1], [deltaX, 5 + manager.elevation, deltaZ])
+        expectPosition(moved[2], [-3, 0, -3])
+        expect(actionRecorded).toHaveBeenNthCalledWith(
+          1,
+          {
+            meshId: moved[0].id,
+            pos: moved[0].absolutePosition.asArray(),
+            fromHand: false
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenNthCalledWith(
+          2,
+          {
+            meshId: moved[1].id,
+            pos: moved[1].absolutePosition.asArray(),
+            fromHand: false
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenCalledTimes(2)
+        expect(manager.getActiveZones()).toHaveLength(0)
+      })
+    })
+
     describe('stop()', () => {
       beforeEach(() => {
         manager.start(moved[0], { x: centerX, y: centerY })
@@ -704,7 +777,7 @@ describe('MoveManager', () => {
     const target = CreateBox(`target-${rank}`, {})
     target.setAbsolutePosition(position)
     target.computeWorldMatrix()
-    behavior.addZone(target, 0.5)
+    behavior.addZone(target, { extent: 0.5 })
     return target
   }
 

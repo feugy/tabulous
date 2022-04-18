@@ -85,7 +85,7 @@ export class AnimateBehavior {
       },
       {
         animation: moveAnimation,
-        duration: mesh.getScene().isLoading ? 0 : duration,
+        duration: mesh.getEngine().isLoading ? 0 : duration,
         keys: [
           {
             frame: 0,

@@ -18,7 +18,7 @@
   <Tool
     component={RuleViewer}
     name="Components/Rule Viewer"
-    props={{ game: 'klondike', lastPage: 3 }}
+    props={{ game: 'splendor', lastPage: 3 }}
     events={['change']}
     layout="centered"
   />

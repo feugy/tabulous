@@ -23,7 +23,7 @@ describe('static plugin', () => {
     })
     await server.listen()
     expect(
-      await server.inject({ url: `${pathPrefix}/splendor.js` })
+      await server.inject({ url: `${pathPrefix}/splendor/index.js` })
     ).toHaveProperty('statusCode', 200)
     expect(
       await server.inject({ url: `${pathPrefix}/unknown` })

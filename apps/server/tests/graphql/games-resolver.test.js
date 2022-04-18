@@ -1,5 +1,5 @@
+import { faker } from '@faker-js/faker'
 import { jest } from '@jest/globals'
-import faker from 'faker'
 import fastify from 'fastify'
 import { Subject } from 'rxjs'
 import {

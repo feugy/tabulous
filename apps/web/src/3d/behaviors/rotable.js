@@ -87,14 +87,6 @@ export class RotateBehavior extends AnimateBehavior {
   }
 
   /**
-   * Detaches this behavior from its mesh.
-   */
-  detach() {
-    this.mesh.setParent = this._originalSetter
-    super.detach()
-  }
-
-  /**
    * Rotates the related mesh with an animation:
    * - records the action into the control manager
    * - runs the rotation animation until completion and updates the rotation angle

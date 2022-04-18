@@ -5,25 +5,17 @@
   import Input from './Input.svelte'
 
   export let thread
-  export let players
+  export let playerById
 
   const dispatch = createEventDispatcher()
   let text = ''
   let messageContainer
-  const playerById = new Map()
 
   $: if (messageContainer && thread) {
     // automatically scrolls to last when receiving a new message
     setTimeout(() => {
       messageContainer?.lastElementChild?.scrollIntoView?.()
     }, 0)
-  }
-
-  $: {
-    playerById.clear()
-    for (const player of players ?? []) {
-      playerById.set(player.id, player)
-    }
   }
 
   function handleSend() {

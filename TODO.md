@@ -16,9 +16,10 @@
 
 ## Refactor
 
+- bug: animating visibility from 0 to 1 creates trouble with texture alpha channel
+- bug: moving card collides with a stack of cards
 - selection manager should remove disposed meshes
 - create Animation objects as part of runAnimation() (constant frameRate of 60)
-- do we need to wrap card planes in an invisible box?
 - custom message on jest expect (game-interaction)
 - jest matchers with mesh (toHaveBeenCalledWith, toHaveBeenNthCalledWith)
 - rework target detection. Instead of using real mesh and rays use shapes overlap: each zone is a rectangle/circle on XZ plane, and the moved mesh another rectangle/circle. Check the center of the moved mesh
@@ -29,10 +30,12 @@
 - get rid of Babylon input management
 - UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
 - stackable duration override's movable duration on
+- move camera when drop zone is not in sight and dropping on it
 
 ## UI
 
 - display peer's name when running draw animations + show peer avatar/name instead of pointer
+- allow selecting preferred camera/mic with https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/enumerateDevices
 - configurable player position at game level
 - sort and filter catalog on game names
 - feedback on stacking

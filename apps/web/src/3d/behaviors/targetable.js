@@ -1,16 +1,27 @@
 import { Observable } from '@babylonjs/core/Misc/observable'
 import { TargetBehaviorName } from './names'
 // '../managers' creates a cyclic dependency in Jest
+import { indicatorManager } from '../managers/indicator'
 import { targetManager } from '../managers/target'
 
 /**
- * @typedef {object} DropZone definition of a target drop zone:
+ * @typedef {object} DropZone definition of a target drop zone
  * @property {TargetBehavior} targetable - the enclosing targetable behavior.
  * @property {import('@babylonjs/core').Mesh} mesh - invisible, unpickable mesh acting as drop zone.
  * @property {number} extend - units (in 3D coordinate) added to the zone's bounding box to determine.
  * @property {boolean} enabled - whether this zone is active or not.
  * @property {string[]} kinds? - an optional array of allowed drag kinds for this zone (allows all if not present).
  * @property {number} priority? - priority applied when multiple targets with same altitude apply.
+ * @property {string} playerId? - when set, only player with this id can use this anchor.
+ */
+
+/**
+ * @typedef {object} ZoneProps properties of a drop zone
+ * @property {number} extend - units (in 3D coordinate) added to the zone's bounding box to determine.
+ * @property {boolean} enabled - whether this zone is active or not.
+ * @property {string[]} kinds? - an optional array of allowed drag kinds for this zone (allows all if not present).
+ * @property {number} priority? - priority applied when multiple targets with same altitude apply.
+ * @property {string} playerId? - when set, only player with this id can use this anchor.
  */
 
 /**
@@ -68,7 +79,7 @@ export class TargetBehavior {
   detach() {
     targetManager.unregisterTargetable(this)
     for (const { mesh } of this.zones) {
-      mesh.dispose(false, true)
+      mesh.dispose()
     }
     this.zones = []
     this.mesh = null
@@ -76,17 +87,29 @@ export class TargetBehavior {
 
   /**
    * Adds a new zone to this mesh, making it invisible and unpickable.
+   * By default, zone is enabled, accepts all kind, with a priority of 0, and no playerId.
    * @param {import('@babylonjs/core').Mesh} mesh - invisible, unpickable mesh acting as drop zone.
-   * @param {number} extent - units (in 3D coordinate) added to the zone's bounding box to determine possible drops.
-   * @param {string[]} kinds? - an optional array of allowed drag kinds for this zone.
-   * @param {boolean} [enabled=true] - enables this zone.
-   * @param {number} [priority=0] - priority for this zone.
+   * @param {ZoneProps} properties - drop zone properties.
    * @returns {DropZone} the created zone.
    */
-  addZone(mesh, extent, kinds, enabled = true, priority = 0) {
+  addZone(mesh, properties) {
     mesh.visibility = 0
     mesh.isPickable = false
-    const zone = { mesh, extent, kinds, enabled, targetable: this, priority }
+    const zone = {
+      mesh,
+      targetable: this,
+      ...properties,
+      enabled: properties.enabled ?? true,
+      priority: properties.priority ?? 0
+    }
+    if (properties.playerId) {
+      const id = `${properties.playerId}.drop-zone.${mesh.id}`
+      indicatorManager.registerIndicator({
+        id,
+        mesh,
+        playerId: properties.playerId
+      })
+    }
     this.zones.push(zone)
     return zone
   }
@@ -100,7 +123,7 @@ export class TargetBehavior {
     const idx = this.zones.indexOf(zone)
     if (idx >= 0) {
       const [{ mesh }] = this.zones.splice(idx, 1)
-      mesh.dispose(false, true)
+      mesh.dispose()
     }
   }
 }

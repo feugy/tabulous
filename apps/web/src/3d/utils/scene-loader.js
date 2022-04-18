@@ -126,7 +126,7 @@ export function loadMeshes(scene, meshes) {
   // dispose existing ones that are not meant to stay
   for (const mesh of disposables) {
     logger.debug({ mesh }, `dispose mesh ${mesh.id}`)
-    mesh.dispose(false, true)
+    mesh.dispose()
   }
   // now that all mesh are available, restore all stacks and anchors, starting from lowest
   for (const { stackBehavior, stackable } of stackables.sort(

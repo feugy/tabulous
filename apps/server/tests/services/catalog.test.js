@@ -1,4 +1,4 @@
-import faker from 'faker'
+import { faker } from '@faker-js/faker'
 import { join } from 'path'
 import repositories from '../../src/repositories/index.js'
 import { listCatalog } from '../../src/services/catalog.js'
@@ -17,18 +17,15 @@ describe('listCatalog()', () => {
   const items = [
     {
       name: 'belote',
-      meshes: [{ shape: 'card', id: 'one-of-diamonds' }],
-      bags: new Map(),
-      slots: []
+      build: expect.any(Function),
+      addPlayer: expect.any(Function)
     },
-    { name: 'klondike', meshes: [], bags: new Map(), slots: [] },
+    { name: 'klondike', build: expect.any(Function) },
     {
       name: 'splendor',
       restricted: true,
       rulesBookPageCount: 4,
-      meshes: [],
-      bags: new Map(),
-      slots: []
+      build: expect.any(Function)
     }
   ]
 

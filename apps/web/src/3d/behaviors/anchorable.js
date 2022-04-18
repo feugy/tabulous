@@ -6,7 +6,7 @@ import {
   animateMove,
   attachFunctions,
   attachProperty,
-  getAtlitudeAbove,
+  getPositionAboveZone,
   getTargetableBehavior
 } from '../utils'
 import { controlManager, inputManager, selectionManager } from '../managers'
@@ -25,7 +25,8 @@ const logger = makeLogger(AnchorBehaviorName)
  * @property {number} depth - anchor's depth (Z axis).
  * @property {string[]} kinds? - an optional array of allowed drag kinds for this zone (allows all if not specified).
  * @property {number} priority? - priority applied when multiple targets with same altitude apply.
- * @property {string} snappedId? - the currently snapped mesh id
+ * @property {string} playerId? - when set, only player with this id can use this anchor.
+ * @property {string} snappedId? - the currently snapped mesh id.
  */
 
 /**
@@ -74,10 +75,12 @@ export class AnchorBehavior extends TargetBehavior {
     super.attach(mesh)
     this.fromState(this.state)
 
-    this.dropObserver = this.onDropObservable.add(({ dropped, zone }) => {
-      // only considers first dropped mesh.
-      this.snap(dropped[0]?.id, zone.mesh.id)
-    })
+    this.dropObserver = this.onDropObservable.add(
+      ({ dropped, zone, immediate }) => {
+        // only considers first dropped mesh.
+        this.snap(dropped[0]?.id, zone.mesh.id, immediate)
+      }
+    )
 
     this.dragObserver = inputManager.onDragObservable.add(({ type, mesh }) => {
       if (type === 'dragStart' && mesh) {
@@ -93,7 +96,7 @@ export class AnchorBehavior extends TargetBehavior {
     })
 
     this.actionObserver = controlManager.onActionObservable.add(
-      ({ meshId, fn, args }) => {
+      ({ meshId, fn, args, fromHand }) => {
         const zone = this.zoneBySnappedId.get(meshId)
         if (zone) {
           if (fn === 'reorder' || fn === 'flipAll') {
@@ -105,7 +108,7 @@ export class AnchorBehavior extends TargetBehavior {
                 : stack.find(({ id }) => id === args[0][0])
             unsetAnchor(this, zone, stack[0])
             setAnchor(this, zone, snapped, true)
-          } else if (fn === 'draw') {
+          } else if (fn === 'draw' && !fromHand) {
             this.unsnap(meshId)
           }
         }
@@ -161,8 +164,9 @@ export class AnchorBehavior extends TargetBehavior {
    * @async
    * @param {string} snappedId - id of the snapped mesh.
    * @param {string} anchorId - id of the anchor mesh to snap onto.
+   * @param {boolean} [immediate=false] - set to true to disable animation.
    */
-  async snap(snappedId, anchorId) {
+  async snap(snappedId, anchorId, immediate = false) {
     let snapped = this.mesh?.getScene().getMeshById(snappedId)
     const zone = this.zones.find(({ mesh }) => mesh.id === anchorId)
     if (!snapped || !zone || !zone.enabled) {
@@ -171,10 +175,10 @@ export class AnchorBehavior extends TargetBehavior {
     controlManager.record({
       mesh: this.mesh,
       fn: 'snap',
-      args: [snappedId, anchorId],
-      duration: this.state.duration
+      args: [snappedId, anchorId, immediate],
+      duration: immediate ? 0 : this.state.duration
     })
-    await snapToAnchor(this, snappedId, zone)
+    await snapToAnchor(this, snappedId, zone, immediate)
   }
 
   /**
@@ -249,14 +253,18 @@ export class AnchorBehavior extends TargetBehavior {
     this.state = { anchors, duration }
     for (const [
       i,
-      { x, y, z, width, depth, height, kinds, priority, snappedId }
+      { x, y, z, width, depth, height, snappedId, ...zoneProps }
     ] of this.state.anchors.entries()) {
       const scene = this.mesh.getScene()
       const dropZone = CreateBox(`anchor-${i}`, { width, depth, height }, scene)
       dropZone.parent = this.mesh
       dropZone.position = new Vector3(x ?? 0, y ?? 0, z ?? 0)
       dropZone.computeWorldMatrix(true)
-      const zone = this.addZone(dropZone, 0.6, kinds, true, priority)
+      const zone = this.addZone(dropZone, {
+        extent: 0.6,
+        enabled: true,
+        ...zoneProps
+      })
       // relates the created zone with the anchor
       zone.anchorIndex = i
       if (snappedId) {
@@ -282,25 +290,15 @@ async function snapToAnchor(behavior, snappedId, zone, loading = false) {
       { mesh, snappedId: snapped.id, zone },
       `snap ${snapped.id} onto ${meshId}, zone ${zone.mesh.id}`
     )
+    setAnchor(behavior, zone, snapped)
 
     // moves it to the final position
-    const { x, z } = zone.mesh.getAbsolutePosition()
-    const baseY = computeBaseAltitude(mesh, snapped)
-    const move = animateMove(
-      snapped,
-      new Vector3(x, baseY + snapped.absolutePosition.y, z),
-      loading ? 0 : duration,
-      true
-    )
+    const position = getPositionAboveZone(snapped, zone)
+    const move = animateMove(snapped, position, loading ? 0 : duration)
     if (!loading) {
       await move
     }
-    setAnchor(behavior, zone, snapped)
   }
-}
-
-function computeBaseAltitude(mesh, snapped) {
-  return getAtlitudeAbove(mesh) - snapped.absolutePosition.y
 }
 
 function setAnchor(behavior, zone, snapped) {

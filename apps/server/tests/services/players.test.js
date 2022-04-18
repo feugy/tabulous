@@ -1,4 +1,4 @@
-import faker from 'faker'
+import { faker } from '@faker-js/faker'
 import repositories from '../../src/repositories/index.js'
 import {
   logIn,
@@ -8,7 +8,7 @@ import {
 } from '../../src/services/players.js'
 
 describe('given initialized repository', () => {
-  beforeAll(() => repositories.players.connect())
+  beforeAll(() => repositories.players.connect({}))
 
   afterAll(() => repositories.players.release())
 

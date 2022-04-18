@@ -1,11 +1,7 @@
 import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector'
 import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
-import { controlManager } from '../managers/control'
-import {
-  configureMaterial,
-  registerBehaviors,
-  serializeBehaviors
-} from '../utils'
+import { controlManager, materialManager } from '../managers'
+import { registerBehaviors, serializeBehaviors } from '../utils'
 
 /**
  * Creates a round token, like a pocker one.
@@ -52,7 +48,7 @@ export function createRoundToken(
     scene
   )
   mesh.id = id
-  configureMaterial(mesh, texture)
+  materialManager.configure(mesh, texture)
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.isPickable = false
 

@@ -11,6 +11,7 @@ const levels = {
   hand: 'warn',
   input: 'warn',
   indicator: 'warn',
+  material: 'warn',
   move: 'warn',
   players: 'warn',
   'peer-channels': 'warn',

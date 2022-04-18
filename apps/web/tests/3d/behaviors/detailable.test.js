@@ -1,8 +1,8 @@
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { faker } from '@faker-js/faker'
 import { configures3dTestEngine } from '../../test-utils'
 import { DetailBehavior, DetailBehaviorName } from '../../../src/3d/behaviors'
 import { controlManager } from '../../../src/3d/managers'
-import faker from 'faker'
 
 describe('DetailBehavior', () => {
   configures3dTestEngine()

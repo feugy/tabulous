@@ -1,6 +1,6 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
-import faker from 'faker'
+import { faker } from '@faker-js/faker'
 import {
   configures3dTestEngine,
   expectFlipped,
@@ -60,7 +60,7 @@ describe('AnchorBehavior', () => {
     snapped.setAbsolutePosition(new Vector3(1, 1, 1))
     const anchor = CreateBox('anchor', {})
     const behavior = new AnchorBehavior()
-    behavior.addZone(anchor, 1)
+    behavior.addZone(anchor, { extent: 1 })
 
     await behavior.snap(snapped.id, anchor.id)
     expect(snapped.absolutePosition.asArray()).toEqual([1, 1, 1])
@@ -71,7 +71,7 @@ describe('AnchorBehavior', () => {
     const snapped = CreateBox('box', {})
 
     const behavior = new AnchorBehavior()
-    behavior.addZone(CreateBox('anchor', {}), 1)
+    behavior.addZone(CreateBox('anchor', {}), { extent: 1 })
 
     behavior.unsnap(snapped.id)
     expect(recordSpy).not.toHaveBeenCalled()
@@ -82,7 +82,7 @@ describe('AnchorBehavior', () => {
     const stacked = makeStack(snapped)
 
     const behavior = new AnchorBehavior()
-    behavior.addZone(CreateBox('anchor', {}), 1)
+    behavior.addZone(CreateBox('anchor', {}), { extent: 1 })
 
     behavior.unsnap(stacked.id)
     expect(recordSpy).not.toHaveBeenCalled()
@@ -308,7 +308,7 @@ describe('AnchorBehavior', () => {
       expect(snapped.absolutePosition.asArray()).toEqual([10, 10, 10])
       expect(behavior.snappedZone(snapped.id)).toBeNull()
 
-      const args = [snapped.id, behavior.zones[0].mesh.id]
+      const args = [snapped.id, behavior.zones[0].mesh.id, false]
       await mesh.metadata.snap(...args)
       expectSnapped(mesh, snapped, 0)
       expect(behavior.getSnappedIds()).toEqual([meshes[0].id])
@@ -332,7 +332,7 @@ describe('AnchorBehavior', () => {
       ])
       expect(behavior.snappedZone(snapped.id)).toBeNull()
 
-      const args = [snapped.id, behavior.zones[0].mesh.id]
+      const args = [snapped.id, behavior.zones[0].mesh.id, false]
       await mesh.metadata.snap(...args)
       expectSnapped(mesh, snapped, 0)
       expect(behavior.getSnappedIds()).toEqual([meshes[0].id])
@@ -381,7 +381,7 @@ describe('AnchorBehavior', () => {
       expect(recordSpy).toHaveBeenCalledWith({
         fn: 'snap',
         mesh,
-        args: [snapped.id, behavior.zones[1].mesh.id],
+        args: [snapped.id, behavior.zones[1].mesh.id, false],
         duration: behavior.state.duration
       })
     })
@@ -396,7 +396,7 @@ describe('AnchorBehavior', () => {
       mesh.addBehavior(new RotateBehavior({ angle }), true)
       expectRotated(mesh, angle)
 
-      const args = [snapped.id, behavior.zones[0].mesh.id]
+      const args = [snapped.id, behavior.zones[0].mesh.id, false]
       await mesh.metadata.snap(...args)
       expectSnapped(mesh, snapped, 0)
       expect(behavior.getSnappedIds()).toEqual([meshes[0].id])

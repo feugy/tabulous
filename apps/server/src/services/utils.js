@@ -2,15 +2,23 @@ import merge from 'deepmerge'
 import { shuffle } from '../utils/index.js'
 
 /**
- * @typedef {object} GameDescriptor static descriptor of a game's meshes.
- * Meshes could be cards, round tokens and rounded tiles. They must have an id.
+ * @typedef {object} GameDescriptor static descriptor of a game.
+ *
+ * @property {object} locales? - localized metadata like title.
+ * @property {number} rulesBookPageCount? - number of pages in the rules book, if any.
+ * @property {number} minTime? - minimum time in minutes.
+ * @property {number} minAge? - minimum age in years.
+ * @property {() => Promise<GameSetup>} build - function to build initial game
+ */
+
+/**
+ * @typedef {object} GameSetup setup for a given game instance, including meshes, bags and slots.
+ * Meshes could be cards, round tokens, rounded tiles... They must have an id.
  * Meshes can be randomized in bags, then positioned on slots.
  * Slots could be either anchors on other meshes, or mesh stacks
- *
  * @property {import('./games').Mesh[]} meshes? - all meshes.
  * @property {Map<string, string[]>} bags? - map of randomized bags, as a list of mesh ids.
  * @property {Slot[]} slots? - a list of position slots
- * @property {number} rulesBookPageCount? - number of pages in the rules book, if any.
  */
 
 /**
@@ -35,13 +43,14 @@ import { shuffle } from '../utils/index.js'
 
 /**
  * Creates a unique game from a game descriptor.
+ * @async
  * @param {string} kind - created game's kind.
  * @param {GameDescriptor} descriptor - to create game from.
  * @returns {import('./games').Mesh[]} a list of serialized 3D meshes.
  */
-export function createMeshes(kind, descriptor) {
-  const { slots } = descriptor
-  const meshById = cloneAll(descriptor.meshes)
+export async function createMeshes(kind, descriptor) {
+  const { slots, bags, meshes } = await descriptor.build()
+  const meshById = cloneAll(meshes)
   const allMeshes = [...meshById.values()]
   for (const mesh of allMeshes) {
     if (isRelativeAsset(mesh.texture)) {
@@ -65,7 +74,7 @@ export function createMeshes(kind, descriptor) {
       )
     }
   }
-  const meshesByBagId = randomizeBags(descriptor.bags, meshById)
+  const meshesByBagId = randomizeBags(bags, meshById)
   for (const slot of slots ?? []) {
     fillSlot(slot, meshesByBagId, allMeshes)
   }

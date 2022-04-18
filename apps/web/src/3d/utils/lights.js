@@ -25,19 +25,13 @@ import { Vector3 } from '@babylonjs/core/Maths/math.vector'
  */
 export function createLights({ scene, handScene } = {}) {
   const light = makeDirectionalLight(scene)
-  light.position = new Vector3(0, 10, 0)
-  const ambientLight = new HemisphericLight(
-    'ambient',
-    new Vector3(0, -1, 0),
-    scene
-  )
-  ambientLight.intensity = 0.8
+  const ambientLight = makeAmbientLight(scene)
 
   const shadowGenerator = new ShadowGenerator(1024, light)
   shadowGenerator.usePercentageCloserFiltering = true
 
-  const handLight = makeDirectionalLight(handScene)
-
+  const handLight = makeAmbientLight(handScene)
+  handLight.intensity = 1
   /* istanbul ignore next */
   scene.onNewMeshAddedObservable.add(mesh =>
     shadowGenerator.addShadowCaster(mesh, true)
@@ -47,7 +41,15 @@ export function createLights({ scene, handScene } = {}) {
 
 function makeDirectionalLight(scene) {
   const light = new DirectionalLight('sun', new Vector3(0, -1, 0), scene)
-  light.intensity = 0.95
+  light.position = new Vector3(0, 10, 0)
+  light.intensity = 1
   light.specular = Color3.Black()
+  return light
+}
+
+function makeAmbientLight(scene) {
+  const light = new HemisphericLight('ambient', new Vector3(0, -1, 0), scene)
+  light.intensity = 0.7
+  light.groundColor = Color3.White()
   return light
 }

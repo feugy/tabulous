@@ -1,132 +1,160 @@
-import faker from 'faker'
+import { faker } from '@faker-js/faker'
 import { createMeshes } from '../../src/services/utils.js'
 
 describe('createMeshes()', () => {
-  it('ignores missing mesh', () => {
+  it('ignores missing mesh', async () => {
     const ids = Array.from({ length: 3 }, (_, i) => `card-${i + 1}`)
     const descriptor = {
-      meshes: ids.map(id => ({ id })),
-      bags: new Map([['cards', ['card-null', 'card-1', 'card', 'card-2']]]),
-      slots: [{ bagId: 'cards', x: 1, y: 2, z: 3 }]
+      build: () => ({
+        meshes: ids.map(id => ({ id })),
+        bags: new Map([['cards', ['card-null', 'card-1', 'card', 'card-2']]]),
+        slots: [{ bagId: 'cards', x: 1, y: 2, z: 3 }]
+      })
     }
-    expect(createMeshes('cards', descriptor)).toEqual(
-      expect.arrayContaining(descriptor.meshes.map(expect.objectContaining))
+    expect(await createMeshes('cards', descriptor)).toEqual(
+      expect.arrayContaining(
+        descriptor.build().meshes.map(expect.objectContaining)
+      )
     )
   })
 
-  it('ignores missing bags', () => {
+  it('ignores missing bags', async () => {
     const ids = Array.from({ length: 3 }, (_, i) => `card-${i + 1}`)
     const descriptor = {
-      meshes: ids.map(id => ({ id })),
-      bags: new Map([['cards', ids]]),
-      slots: [{ bagId: 'unknown', x: 1, y: 2, z: 3 }]
+      build: () => ({
+        meshes: ids.map(id => ({ id })),
+        bags: new Map([['cards', ids]]),
+        slots: [{ bagId: 'unknown', x: 1, y: 2, z: 3 }]
+      })
     }
-    expect(createMeshes('cards', descriptor)).toEqual(descriptor.meshes)
+    expect(await createMeshes('cards', descriptor)).toEqual(
+      descriptor.build().meshes
+    )
   })
 
-  it('ignores missing slots', () => {
+  it('ignores missing slots', async () => {
     const ids = Array.from({ length: 3 }, (_, i) => `card-${i + 1}`)
     const descriptor = {
-      meshes: ids.map(id => ({ id })),
-      bags: new Map([['cards', ids]])
+      build: () => ({
+        meshes: ids.map(id => ({ id })),
+        bags: new Map([['cards', ids]])
+      })
     }
-    expect(createMeshes('cards', descriptor)).toEqual(descriptor.meshes)
+    expect(await createMeshes('cards', descriptor)).toEqual(
+      descriptor.build().meshes
+    )
   })
 
-  it('ignores no bags', () => {
+  it('ignores no bags', async () => {
     const ids = Array.from({ length: 3 }, (_, i) => `card-${i + 1}`)
     const descriptor = {
-      meshes: ids.map(id => ({ id })),
-      slots: [{ bagId: 'unknown', x: 1, y: 2, z: 3 }]
+      build: () => ({
+        meshes: ids.map(id => ({ id })),
+        slots: [{ bagId: 'unknown', x: 1, y: 2, z: 3 }]
+      })
     }
-    expect(createMeshes('cards', descriptor)).toEqual(descriptor.meshes)
+    expect(await createMeshes('cards', descriptor)).toEqual(
+      descriptor.build().meshes
+    )
   })
 
-  it('enriches mesh relative texture', () => {
+  it('enriches mesh relative texture', async () => {
     const gameId = faker.lorem.word()
     const texture = faker.system.commonFileName('png')
-    const descriptor = { meshes: [{ id: 1, texture }] }
-    expect(createMeshes(gameId, descriptor)[0].texture).toEqual(
+    const descriptor = { build: () => ({ meshes: [{ id: 1, texture }] }) }
+    expect((await createMeshes(gameId, descriptor))[0].texture).toEqual(
       `/games/${gameId}/textures/${texture}`
     )
   })
 
-  it('does not enrich mesh absolute texture', () => {
+  it('does not enrich mesh absolute texture', async () => {
     const gameId = faker.lorem.word()
     const texture = faker.system.filePath()
-    const descriptor = { meshes: [{ id: 1, texture }] }
-    expect(createMeshes(gameId, descriptor)[0].texture).toEqual(texture)
+    const descriptor = { build: () => ({ meshes: [{ id: 1, texture }] }) }
+    expect((await createMeshes(gameId, descriptor))[0].texture).toEqual(texture)
   })
 
-  it('does not enrich mesh colored texture', () => {
+  it('does not enrich mesh colored texture', async () => {
     const gameId = faker.lorem.word()
     const texture = faker.internet.color()
-    const descriptor = { meshes: [{ id: 1, texture }] }
-    expect(createMeshes(gameId, descriptor)[0].texture).toEqual(texture)
+    const descriptor = { build: () => ({ meshes: [{ id: 1, texture }] }) }
+    expect((await createMeshes(gameId, descriptor))[0].texture).toEqual(texture)
   })
 
-  it('enriches mesh relative model', () => {
+  it('enriches mesh relative model', async () => {
     const gameId = faker.lorem.word()
     const file = faker.system.commonFileName('png')
-    const descriptor = { meshes: [{ id: 1, file }] }
-    expect(createMeshes(gameId, descriptor)[0].file).toEqual(
+    const descriptor = { build: () => ({ meshes: [{ id: 1, file }] }) }
+    expect((await createMeshes(gameId, descriptor))[0].file).toEqual(
       `/games/${gameId}/models/${file}`
     )
   })
 
-  it('does not enrich mesh absolute model', () => {
+  it('does not enrich mesh absolute model', async () => {
     const gameId = faker.lorem.word()
     const file = faker.system.filePath()
-    const descriptor = { meshes: [{ id: 1, file }] }
-    expect(createMeshes(gameId, descriptor)[0].file).toEqual(file)
+    const descriptor = { build: () => ({ meshes: [{ id: 1, file }] }) }
+    expect((await createMeshes(gameId, descriptor))[0].file).toEqual(file)
   })
 
-  it('enriches mesh relative front image', () => {
+  it('enriches mesh relative front image', async () => {
     const gameId = faker.lorem.word()
     const frontImage = faker.system.commonFileName('png')
-    const descriptor = { meshes: [{ id: 1, detailable: { frontImage } }] }
-    expect(createMeshes(gameId, descriptor)[0].detailable.frontImage).toEqual(
-      `/games/${gameId}/images/${frontImage}`
-    )
+    const descriptor = {
+      build: () => ({ meshes: [{ id: 1, detailable: { frontImage } }] })
+    }
+    expect(
+      (await createMeshes(gameId, descriptor))[0].detailable.frontImage
+    ).toEqual(`/games/${gameId}/images/${frontImage}`)
   })
 
-  it('does not enrich mesh absolute front image', () => {
+  it('does not enrich mesh absolute front image', async () => {
     const gameId = faker.lorem.word()
     const frontImage = faker.system.filePath()
-    const descriptor = { meshes: [{ id: 1, detailable: { frontImage } }] }
-    expect(createMeshes(gameId, descriptor)[0].detailable.frontImage).toEqual(
-      frontImage
-    )
+    const descriptor = {
+      build: () => ({ meshes: [{ id: 1, detailable: { frontImage } }] })
+    }
+    expect(
+      (await createMeshes(gameId, descriptor))[0].detailable.frontImage
+    ).toEqual(frontImage)
   })
 
-  it('enriches mesh relative back image', () => {
+  it('enriches mesh relative back image', async () => {
     const gameId = faker.lorem.word()
     const backImage = faker.system.commonFileName('png')
-    const descriptor = { meshes: [{ id: 1, detailable: { backImage } }] }
-    expect(createMeshes(gameId, descriptor)[0].detailable.backImage).toEqual(
-      `/games/${gameId}/images/${backImage}`
-    )
+    const descriptor = {
+      build: () => ({ meshes: [{ id: 1, detailable: { backImage } }] })
+    }
+    expect(
+      (await createMeshes(gameId, descriptor))[0].detailable.backImage
+    ).toEqual(`/games/${gameId}/images/${backImage}`)
   })
 
-  it('does not enrich mesh absolute front image', () => {
+  it('does not enrich mesh absolute front image', async () => {
     const gameId = faker.lorem.word()
     const backImage = faker.system.filePath()
-    const descriptor = { meshes: [{ id: 1, detailable: { backImage } }] }
-    expect(createMeshes(gameId, descriptor)[0].detailable.backImage).toEqual(
-      backImage
-    )
+    const descriptor = {
+      build: () => ({ meshes: [{ id: 1, detailable: { backImage } }] })
+    }
+    expect(
+      (await createMeshes(gameId, descriptor))[0].detailable.backImage
+    ).toEqual(backImage)
   })
 
-  it('enriches all mesh relative assets', () => {
+  it('enriches all mesh relative assets', async () => {
     const gameId = faker.lorem.word()
     const texture = faker.system.commonFileName('png')
     const file = faker.system.commonFileName('png')
     const frontImage = faker.system.commonFileName('png')
     const backImage = faker.system.commonFileName('png')
     const descriptor = {
-      meshes: [{ id: 1, texture, file, detailable: { frontImage, backImage } }]
+      build: () => ({
+        meshes: [
+          { id: 1, texture, file, detailable: { frontImage, backImage } }
+        ]
+      })
     }
-    const [mesh] = createMeshes(gameId, descriptor)
+    const [mesh] = await createMeshes(gameId, descriptor)
     expect(mesh.texture).toEqual(`/games/${gameId}/textures/${texture}`)
     expect(mesh.file).toEqual(`/games/${gameId}/models/${file}`)
     expect(mesh.detailable.frontImage).toEqual(
@@ -140,21 +168,26 @@ describe('createMeshes()', () => {
   describe('given a descriptor with single bag and slot', () => {
     const ids = Array.from({ length: 10 }, (_, i) => `card-${i + 1}`)
     const descriptor = {
-      meshes: ids.map(id => ({ id })),
-      bags: new Map([['cards', ids]]),
-      slots: [{ bagId: 'cards', x: 1, y: 2, z: 3 }]
+      build: () => ({
+        meshes: ids.map(id => ({ id })),
+        bags: new Map([['cards', ids]]),
+        slots: [{ bagId: 'cards', x: 1, y: 2, z: 3 }]
+      })
     }
 
-    it('stacks meshes on slots with random order', () => {
-      const meshes = createMeshes('cards', descriptor)
+    it('stacks meshes on slots with random order', async () => {
+      const {
+        meshes: originals,
+        slots: [slot]
+      } = descriptor.build()
+      const meshes = await createMeshes('cards', descriptor)
       expect(meshes).toEqual(
-        expect.arrayContaining(descriptor.meshes.map(expect.objectContaining))
+        expect.arrayContaining(originals.map(expect.objectContaining))
       )
-      expect(meshes).not.toEqual(descriptor.meshes)
+      expect(meshes).not.toEqual(originals)
       expect(
         meshes.filter(({ stackable }) => stackable?.stackIds.length === 9)
       ).toHaveLength(1)
-      const slot = descriptor.slots[0]
       expect(
         meshes.every(
           ({ x, y, z }) => x === slot.x && y === slot.y && z === slot.z
@@ -162,39 +195,40 @@ describe('createMeshes()', () => {
       ).toBe(true)
     })
 
-    it('applies different slot order on different games', () => {
-      const meshes1 = createMeshes('cards', descriptor)
-      const meshes2 = createMeshes('cards', descriptor)
-      expect(meshes1).not.toEqual(descriptor.meshes)
-      expect(meshes2).not.toEqual(descriptor.meshes)
+    it('applies different slot order on different games', async () => {
+      const { meshes: originals } = descriptor.build()
+      const meshes1 = await createMeshes('cards', descriptor)
+      const meshes2 = await createMeshes('cards', descriptor)
+      expect(meshes1).not.toEqual(originals)
+      expect(meshes2).not.toEqual(originals)
       expect(meshes1).not.toEqual(meshes2)
     })
   })
 
   describe('given a descriptor with anchorable board', () => {
     const ids = Array.from({ length: 10 }, (_, i) => `card-${i + 1}`)
-    const descriptor = {
-      meshes: [
-        {
-          id: 'board',
-          anchorable: {
-            anchors: [{ id: 'first' }, { id: 'second' }, { id: 'third' }]
-          }
-        },
-        ...ids.map(id => ({
-          id,
-          anchorable: { anchors: [{ id: 'top' }, { id: 'bottom' }] }
-        }))
-      ],
-      bags: new Map([['cards', ids]])
-    }
+    const initialMeshes = [
+      {
+        id: 'board',
+        anchorable: {
+          anchors: [{ id: 'first' }, { id: 'second' }, { id: 'third' }]
+        }
+      },
+      ...ids.map(id => ({
+        id,
+        anchorable: { anchors: [{ id: 'top' }, { id: 'bottom' }] }
+      }))
+    ]
+    const bags = new Map([['cards', ids]])
 
-    it('snaps a random mesh on anchor', () => {
+    it('snaps a random mesh on anchor', async () => {
       const slots = [
         { bagId: 'cards', anchorId: 'first', count: 1, name: 'first' },
         { bagId: 'cards', anchorId: 'third', count: 1, name: 'third' }
       ]
-      const meshes = createMeshes('cards', { ...descriptor, slots })
+      const meshes = await createMeshes('cards', {
+        build: () => ({ meshes: initialMeshes, slots, bags })
+      })
       const board = meshes.find(({ id }) => id === 'board')
       expect(board).toBeDefined()
 
@@ -203,12 +237,14 @@ describe('createMeshes()', () => {
       expectSnappedByName(meshes, slots[1].name, board.anchorable.anchors[2])
     })
 
-    it('does not snap on unknown anchor', () => {
+    it('does not snap on unknown anchor', async () => {
       const slots = [
         { bagId: 'cards', anchorId: 'first', count: 1, name: 'first' },
         { bagId: 'cards', anchorId: 'unknown', count: 1, name: 'unsnapped' }
       ]
-      const meshes = createMeshes('cards', { ...descriptor, slots })
+      const meshes = await createMeshes('cards', {
+        build: () => ({ meshes: initialMeshes, slots, bags })
+      })
       const board = meshes.find(({ id }) => id === 'board')
       expect(board).toBeDefined()
 
@@ -226,13 +262,15 @@ describe('createMeshes()', () => {
       }
     })
 
-    it('snaps a random mesh on chained anchor', () => {
+    it('snaps a random mesh on chained anchor', async () => {
       const slots = [
         { bagId: 'cards', anchorId: 'second', count: 1, name: 'base' },
         { bagId: 'cards', anchorId: 'second.top', count: 1, name: 'top' },
         { bagId: 'cards', anchorId: 'second.bottom', count: 1, name: 'bottom' }
       ]
-      const meshes = createMeshes('cards', { ...descriptor, slots })
+      const meshes = await createMeshes('cards', {
+        build: () => ({ meshes: initialMeshes, slots, bags })
+      })
       const board = meshes.find(({ id }) => id === 'board')
       expect(board).toBeDefined()
 
@@ -245,7 +283,7 @@ describe('createMeshes()', () => {
       expectSnappedByName(meshes, 'bottom', base.anchorable.anchors[1])
     })
 
-    it('snaps a random mesh on long chained anchor', () => {
+    it('snaps a random mesh on long chained anchor', async () => {
       const slots = [
         { bagId: 'cards', anchorId: 'second', count: 1, name: 'base' },
         { bagId: 'cards', anchorId: 'second.top', count: 1, name: 'first' },
@@ -262,7 +300,9 @@ describe('createMeshes()', () => {
           name: 'third'
         }
       ]
-      const meshes = createMeshes('cards', { ...descriptor, slots })
+      const meshes = await createMeshes('cards', {
+        build: () => ({ meshes: initialMeshes, slots, bags })
+      })
       const board = meshes.find(({ id }) => id === 'board')
       expect(board).toBeDefined()
 
@@ -287,14 +327,16 @@ describe('createMeshes()', () => {
       expect(third.anchorable.anchors[1].snappedId).toBeUndefined()
     })
 
-    it('can stack on top of an anchor', () => {
+    it('can stack on top of an anchor', async () => {
       const slots = [
         { bagId: 'cards', anchorId: 'second', count: 3, name: 'base' }
       ]
-      const meshes = createMeshes('cards', {
-        ...descriptor,
-        meshes: [descriptor.meshes[0], ...ids.map(id => ({ id }))],
-        slots
+      const meshes = await createMeshes('cards', {
+        build: () => ({
+          meshes: [initialMeshes[0], ...ids.map(id => ({ id }))],
+          slots,
+          bags
+        })
       })
       const board = meshes.find(({ id }) => id === 'board')
       const snapped = meshes.filter(mesh => mesh.name === 'base')
@@ -310,15 +352,17 @@ describe('createMeshes()', () => {
       )
     })
 
-    it('can mix stack and anchors', () => {
+    it('can mix stack and anchors', async () => {
       const slots = [
         { bagId: 'cards', anchorId: 'second', count: 1, name: 'base' },
         { bagId: 'cards', x: 1, z: 2 }
       ]
-      const meshes = createMeshes('cards', {
-        ...descriptor,
-        meshes: [...ids.map(id => ({ id })), descriptor.meshes[0]],
-        slots
+      const meshes = await createMeshes('cards', {
+        build: () => ({
+          meshes: [...ids.map(id => ({ id })), initialMeshes[0]],
+          slots,
+          bags
+        })
       })
       const board = meshes.find(({ id }) => id === 'board')
       const base = meshes.find(mesh => mesh.name === 'base')
@@ -339,19 +383,23 @@ describe('createMeshes()', () => {
   describe('given a descriptor with multiple slots on the same bag', () => {
     const ids = Array.from({ length: 10 }, (_, i) => `card-${i + 1}`)
     const descriptor = {
-      meshes: ids.map(id => ({ id })),
-      bags: new Map([['cards', ids]]),
-      slots: [
-        { bagId: 'cards', x: 10, count: 2 },
-        { bagId: 'cards', x: 5, count: 1 },
-        { bagId: 'cards', x: 1 }
-      ]
+      build: () => ({
+        meshes: ids.map(id => ({ id })),
+        bags: new Map([['cards', ids]]),
+        slots: [
+          { bagId: 'cards', x: 10, count: 2 },
+          { bagId: 'cards', x: 5, count: 1 },
+          { bagId: 'cards', x: 1 }
+        ]
+      })
     }
 
-    it('draws meshes to fill slots', () => {
-      const meshes = createMeshes('cards', descriptor)
+    it('draws meshes to fill slots', async () => {
+      const meshes = await createMeshes('cards', descriptor)
       expect(meshes).toEqual(
-        expect.arrayContaining(descriptor.meshes.map(expect.objectContaining))
+        expect.arrayContaining(
+          descriptor.build().meshes.map(expect.objectContaining)
+        )
       )
       expect(
         meshes.filter(({ stackable }) => stackable?.stackIds.length === 1)

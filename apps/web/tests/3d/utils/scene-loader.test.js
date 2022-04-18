@@ -1,5 +1,5 @@
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
-import faker from 'faker'
+import { faker } from '@faker-js/faker'
 import {
   MoveBehaviorName,
   StackBehaviorName
@@ -42,6 +42,7 @@ describe('serializeMeshes() 3D utility', () => {
 
   describe('given an scene', () => {
     beforeAll(() => {
+      jest.restoreAllMocks()
       ;({ engine, scene } = initialize3dEngine({ renderWidth, renderHeight }))
     })
 
@@ -416,7 +417,7 @@ describe('loadMeshes() 3D utility', () => {
       width: 3,
       faceUV: [
         [0.5, 1, 0, 0],
-        [0.5, 1, 1, 0]
+        [0.5, 0, 1, 1]
       ],
       x: 0,
       y: 0,
@@ -432,7 +433,7 @@ describe('loadMeshes() 3D utility', () => {
       width: 3,
       faceUV: [
         [0.5, 1, 0, 0],
-        [0.5, 1, 1, 0]
+        [0.5, 0, 1, 1]
       ],
       movable: { duration: 100, snapDistance: 0.25 }
     })
@@ -486,7 +487,7 @@ describe('loadMeshes() 3D utility', () => {
       width: 3,
       faceUV: [
         [0.5, 1, 0, 0],
-        [0.5, 1, 1, 0]
+        [0.5, 0, 1, 1]
       ]
     })
 

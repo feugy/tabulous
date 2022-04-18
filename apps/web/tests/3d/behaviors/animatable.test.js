@@ -1,6 +1,6 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
-import faker from 'faker'
+import { faker } from '@faker-js/faker'
 import { configures3dTestEngine } from '../../test-utils'
 import { AnimateBehaviorName, AnimateBehavior } from '../../../src/3d/behaviors'
 
@@ -50,6 +50,7 @@ describe('AnimateBehavior', () => {
       mesh.addBehavior(behavior, true)
       mesh.getScene()._pendingData = []
       behavior.onAnimationEndObservable.add(animationEndReceived)
+      delete mesh.getEngine().isLoading
     })
 
     it('moves mesh without gravity', async () => {
@@ -81,7 +82,7 @@ describe('AnimateBehavior', () => {
     })
 
     it('goes straight to last frame during loading', async () => {
-      mesh.getScene()._pendingData = [true]
+      mesh.getEngine().isLoading = true
       const position = new Vector3(10, 5, 4)
       const duration = 350
       const startTime = Date.now()

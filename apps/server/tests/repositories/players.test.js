@@ -1,4 +1,4 @@
-import faker from 'faker'
+import { faker } from '@faker-js/faker'
 import { players } from '../../src/repositories/players.js'
 
 describe('given a connected repository and several players', () => {
@@ -16,7 +16,7 @@ describe('given a connected repository and several players', () => {
   ]
 
   beforeEach(async () => {
-    await players.connect()
+    await players.connect({})
     await players.save(models)
   })
 

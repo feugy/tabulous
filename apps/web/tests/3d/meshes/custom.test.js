@@ -1,12 +1,19 @@
 import { Color4 } from '@babylonjs/core/Maths/math.color'
-import faker from 'faker'
-import { controlManager, customShapeManager } from '../../../src/3d/managers'
+import { faker } from '@faker-js/faker'
+import {
+  controlManager,
+  customShapeManager,
+  materialManager
+} from '../../../src/3d/managers'
 import { createCustom } from '../../../src/3d/meshes'
 import { getDimensions } from '../../../src/3d/utils'
 import { configures3dTestEngine, expectPosition } from '../../test-utils'
 import pawnData from '../../fixtures/pawn.json'
 
-configures3dTestEngine()
+let scene
+configures3dTestEngine(created => (scene = created.scene))
+
+beforeAll(() => materialManager.init({ scene }))
 
 jest.mock('../../../src/3d/managers/custom-shape', () => ({
   customShapeManager: new Map()

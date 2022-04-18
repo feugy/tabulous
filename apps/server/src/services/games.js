@@ -158,20 +158,25 @@ export async function createGame(kind, playerId) {
   if (!descriptor) {
     throw new Error(`Unsupported game ${kind}`)
   }
-  if (!canAccess(await repositories.players.getById(playerId), descriptor)) {
+  const player = await repositories.players.getById(playerId)
+  if (!canAccess(player, descriptor)) {
     throw new Error(`Access to game ${kind} is restricted`)
   }
-  const created = await repositories.games.save({
+  let game = {
     locales: { ...descriptor.locales },
     kind,
     created: Date.now(),
     playerIds: [playerId],
-    meshes: createMeshes(kind, descriptor),
+    meshes: await createMeshes(kind, descriptor),
     messages: [],
     cameras: [],
     hands: [],
     rulesBookPageCount: descriptor.rulesBookPageCount
-  })
+  }
+  if (descriptor?.addPlayer) {
+    game = await descriptor?.addPlayer(game, player)
+  }
+  const created = await repositories.games.save(game)
   gameListsUpdate$.next(created.playerIds)
   return created
 }
@@ -253,11 +258,15 @@ export async function saveGame(game, playerId) {
  */
 export async function invite(gameId, guestId, hostId) {
   const guest = await repositories.players.getById(guestId)
-  const game = await loadGame(gameId, hostId)
-  if (!game || !guest || game.playerIds.includes(guestId)) {
+  let game = await loadGame(gameId, hostId)
+  if (!game || !guest || game.playerIds.includes(guest.id)) {
     return null
   }
-  game.playerIds.push(guestId)
+  game.playerIds.push(guest.id)
+  const descriptor = await repositories.catalogItems.getById(game.kind)
+  if (descriptor.addPlayer) {
+    game = await descriptor.addPlayer(game, guest)
+  }
   await repositories.games.save(game)
   gameListsUpdate$.next(game.playerIds)
   return game

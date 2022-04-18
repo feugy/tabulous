@@ -2,12 +2,7 @@ import { Scene } from '@babylonjs/core/scene'
 import { NullEngine } from '@babylonjs/core/Engines/nullEngine'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
-import {
-  adaptTexture,
-  attachMaterialError,
-  getDimensions,
-  isContaining
-} from '../../../src/3d/utils'
+import { getDimensions, isContaining } from '../../../src/3d/utils'
 
 let engine
 
@@ -85,78 +80,5 @@ describe('isContaining() 3D utility', () => {
     smallBox.setAbsolutePosition(new Vector3(0, 4, 0))
     smallBox.computeWorldMatrix()
     expect(isContaining(bigBox, smallBox)).toBe(false)
-  })
-})
-
-describe('adaptTexture() 3D utility', () => {
-  const ktx2 = 'some/path/to/texture.ktx2'
-  const webp = 'some/path/to/texture.gl1.webp'
-
-  describe('given an WebGL 1 engine', () => {
-    it.each([
-      ['downgrades KTX2 to WebP', ktx2, webp],
-      ['keeps WebP as WebP', webp, webp],
-      ['handles null', null, null],
-      ['handles undefined', undefined, undefined]
-    ])('%s', (text, original, result) => {
-      expect(adaptTexture(original)).toEqual(result)
-    })
-  })
-
-  describe('given an WebGL 2 engine', () => {
-    let version
-
-    beforeEach(() => {
-      version = engine._webGLVersion
-      engine._webGLVersion = 2.0
-    })
-
-    afterEach(() => (engine._webGLVersion = version))
-
-    it.each([
-      ['keeps KTX2 as KTX2', ktx2, ktx2],
-      ['keeps WebP as WebP', webp, webp],
-      ['handles null', null, null],
-      ['handles undefined', undefined, undefined]
-    ])('%s', (text, original, result) => {
-      expect(adaptTexture(original)).toEqual(result)
-    })
-  })
-})
-
-describe('attachMaterialError() 3D utility', () => {
-  let material
-  let shadowGenerator
-
-  beforeEach(() => {
-    shadowGenerator = {}
-    material = {
-      getScene: () => ({
-        lights: [
-          { getShadowGenerator: jest.fn().mockReturnValue(shadowGenerator) }
-        ]
-      })
-    }
-  })
-
-  it('disables shadow generator on material shader error', () => {
-    attachMaterialError(material)
-    expect(material.onError).toBeInstanceOf(Function)
-    expect(shadowGenerator).toEqual({})
-    material.onError(null, ['FRAGMENT SHADER'])
-    expect(shadowGenerator).toEqual({
-      usePercentageCloserFiltering: false,
-      useContactHardeningShadow: false
-    })
-  })
-
-  it('ignores all other errors', () => {
-    attachMaterialError(material)
-    expect(material.onError).toBeInstanceOf(Function)
-    expect(shadowGenerator).toEqual({})
-    material.onError(null, ['OTHER', 'ERROR'])
-    expect(shadowGenerator).toEqual({})
-    material.onError()
-    expect(shadowGenerator).toEqual({})
   })
 })

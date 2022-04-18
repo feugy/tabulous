@@ -5,6 +5,7 @@ import {
   applyGravity,
   attachFunctions,
   attachProperty,
+  detachFromParent,
   getDimensions,
   runAnimation
 } from '../utils'
@@ -89,7 +90,7 @@ export class FlipBehavior extends AnimateBehavior {
 
     controlManager.record({ mesh, fn: 'flip', duration })
 
-    const attach = detach(mesh)
+    const attach = detachFromParent(mesh)
     const [x, y, z] = mesh.position.asArray()
     const { width } = getDimensions(mesh)
 
@@ -141,39 +142,10 @@ export class FlipBehavior extends AnimateBehavior {
       throw new Error('Can not restore state without mesh')
     }
     this.state = { isFlipped, duration }
-    const attach = detach(this.mesh)
+    const attach = detachFromParent(this.mesh)
     this.mesh.rotation.z = this.state.isFlipped ? Math.PI : 0
     attach()
     attachFunctions(this, 'flip')
     attachProperty(this, 'isFlipped', () => this.state.isFlipped)
-  }
-}
-
-function detach(mesh) {
-  let parent = mesh.parent
-  mesh.setParent(null)
-
-  const savedSetter = mesh.setParent.bind(mesh)
-  mesh.setParent = newParent => {
-    parent = newParent
-  }
-
-  const children = mesh.getChildMeshes(
-    true,
-    ({ name }) =>
-      !name.startsWith('plane-') &&
-      !name.startsWith('drop-') &&
-      !name.startsWith('anchor-')
-  )
-  for (const child of children) {
-    child.setParent(null)
-  }
-
-  return () => {
-    mesh.setParent = savedSetter
-    mesh.setParent(parent)
-    for (const child of children) {
-      child.setParent(mesh)
-    }
   }
 }

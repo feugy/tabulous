@@ -1,12 +1,11 @@
 import { SceneLoader } from '@babylonjs/core/Loading/sceneLoader'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { controlManager, customShapeManager } from '../managers'
 import {
-  configureMaterial,
-  getDimensions,
-  registerBehaviors,
-  serializeBehaviors
-} from '../utils'
+  controlManager,
+  customShapeManager,
+  materialManager
+} from '../managers'
+import { getDimensions, registerBehaviors, serializeBehaviors } from '../utils'
 // mandatory side effect
 import '@babylonjs/core/Loading/Plugins'
 
@@ -52,7 +51,7 @@ export function createCustom(
   mesh.name = 'custom'
   mesh.rotationQuaternion = null
 
-  configureMaterial(mesh, texture)
+  materialManager.configure(mesh, texture)
 
   const { height } = getDimensions(mesh)
   mesh.setAbsolutePosition(new Vector3(x, y ?? height * 0.5, z))

@@ -1,5 +1,5 @@
 import { Observable } from '@babylonjs/core/Misc/observable'
-import * as faker from 'faker'
+import { faker } from '@faker-js/faker'
 import { get } from 'svelte/store'
 import { createEngine } from '../../src/3d'
 import {

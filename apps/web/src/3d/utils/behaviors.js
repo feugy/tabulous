@@ -20,7 +20,7 @@ import {
   StackBehaviorName,
   TargetBehaviorName
 } from '../behaviors/names'
-import { applyGravity } from './gravity'
+import { applyGravity, getCenterAltitudeAbove } from './gravity'
 
 const behaviorNames = [
   [MoveBehaviorName, MoveBehavior],
@@ -95,7 +95,7 @@ export async function animateMove(
   withGravity = false
 ) {
   const movable = getAnimatableBehavior(mesh)
-  if (mesh.getScene().isLoading || !movable || !duration) {
+  if (mesh.getEngine().isLoading || !movable || !duration) {
     mesh.setAbsolutePosition(absolutePosition)
     if (withGravity) {
       applyGravity(mesh)
@@ -237,9 +237,58 @@ export function runAnimation(behavior, onEnd, ...animationSpecs) {
         if (onEnd) {
           onEnd()
         }
-        onAnimationEndObservable.notifyObservers()
         resolve()
+        onAnimationEndObservable.notifyObservers()
       })
+  )
+}
+
+/**
+ * Because Babylon can not animate absolute position but only relative position,
+ * one needs to temporary detach an animated mesh from its parent, or rotation may alter the movements.
+ * This function detaches a given mesh, keeping its absolute position and rotation unchanged, then
+ * returns a function to re-attach to the original parent (or new, if it has changed meanwhile).
+ * @param {import('@babel/core').Mesh} mesh - detached mesh.
+ * @returns {function} a function to re-attach to the original (or new) parent.
+ */
+export function detachFromParent(mesh) {
+  let parent = mesh.parent
+  mesh.setParent(null)
+
+  const savedSetter = mesh.setParent.bind(mesh)
+  mesh.setParent = newParent => {
+    parent = newParent
+  }
+
+  const children = mesh.getChildMeshes(
+    true,
+    ({ name }) => !name.startsWith('drop-') && !name.startsWith('anchor-')
+  )
+  for (const child of children) {
+    child.setParent(null)
+  }
+
+  return () => {
+    mesh.setParent = savedSetter
+    mesh.setParent(parent)
+    for (const child of children) {
+      child.setParent(mesh)
+    }
+  }
+}
+
+/**
+ * Computes the final position of a given above a drop zone
+ * @param {import('@babel/core').Mesh} droppedMesh - mesh dropped above zone.
+ * @param {import('../behaviors').DropZone} zone - drop zone.
+ * @returns {Vector3} absolute position for this mesh.
+ */
+export function getPositionAboveZone(droppedMesh, zone) {
+  const { x, z } = zone.mesh.getAbsolutePosition()
+  return new Vector3(
+    x,
+    getCenterAltitudeAbove(zone.targetable.mesh, droppedMesh),
+    z
   )
 }
 

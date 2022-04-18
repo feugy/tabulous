@@ -1,6 +1,6 @@
-import faker from 'faker'
 import { NullEngine } from '@babylonjs/core/Engines/nullEngine'
 import { Scene } from '@babylonjs/core/scene'
+import { faker } from '@faker-js/faker'
 import { createEngine } from '../../src/3d'
 import { createCard } from '../../src/3d/meshes'
 import { DrawBehaviorName } from '../../src/3d/behaviors'
@@ -65,8 +65,11 @@ describe('createEngine()', () => {
         z: -10
       }
       await engine.load({ meshes: [mesh], hands: [] }, playerId, false)
+      expect(engine.isLoading).toBe(false)
+      engine.scenes[1].onDataLoadedObservable.notifyObservers()
       expect(engine.scenes[1].getMeshById(mesh.id)).toBeDefined()
       expect(displayLoadingUI).not.toHaveBeenCalled()
+      expect(engine.isLoading).toBe(false)
     })
 
     it('can serialize() game data', () => {
@@ -84,7 +87,7 @@ describe('createEngine()', () => {
             texture: 'https://elyse.biz',
             faceUV: [
               [0.5, 1, 0, 0],
-              [0.5, 1, 1, 0]
+              [0.5, 0, 1, 1]
             ],
             width: 3,
             x: 0,
@@ -108,13 +111,18 @@ describe('createEngine()', () => {
         y: 0,
         z: -10
       }
+      expect(engine.isLoading).toBe(false)
       await engine.load({ meshes: [mesh], hands: [] }, playerId, true)
+      expect(engine.isLoading).toBe(true)
+      engine.scenes[1].onDataLoadedObservable.notifyObservers()
+      expect(engine.isLoading).toBe(false)
       expect(engine.scenes[1].getMeshById(mesh.id)).toBeDefined()
       expect(displayLoadingUI).toHaveBeenCalledTimes(1)
       expect(handManager.enabled).toBe(false)
     })
 
     it('enables hand manager on initial load', async () => {
+      expect(engine.isLoading).toBe(false)
       await engine.load(
         {
           meshes: [],
@@ -123,6 +131,9 @@ describe('createEngine()', () => {
         playerId,
         true
       )
+      expect(engine.isLoading).toBe(true)
+      engine.scenes[1].onDataLoadedObservable.notifyObservers()
+      expect(engine.isLoading).toBe(false)
       expect(displayLoadingUI).toHaveBeenCalledTimes(1)
       expect(handManager.enabled).toBe(true)
     })

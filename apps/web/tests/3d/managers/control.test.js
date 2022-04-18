@@ -1,6 +1,6 @@
 import { PointerEventTypes } from '@babylonjs/core/Events/pointerEvents'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
-import faker from 'faker'
+import { faker } from '@faker-js/faker'
 import { configures3dTestEngine, sleep } from '../../test-utils'
 import { controlManager as manager } from '../../../src/3d/managers'
 import { AnchorBehavior, FlipBehavior } from '../../../src/3d/behaviors'
@@ -157,7 +157,7 @@ describe('ControlManager', () => {
     })
 
     it('applies an action', async () => {
-      const args = [mesh.id, 'anchor-0']
+      const args = [mesh.id, 'anchor-0', false]
       manager.apply({ meshId: anchorable.id, fn: 'snap', args })
       expect(snapSpy).toHaveBeenCalledTimes(1)
       expect(snapSpy).toHaveBeenCalledWith(...args)
@@ -189,7 +189,7 @@ describe('ControlManager', () => {
     })
 
     it('applies an action without recording it', () => {
-      const args = [mesh.id, 'anchor-0']
+      const args = [mesh.id, 'anchor-0', false]
       manager.apply({ meshId: anchorable.id, fn: 'snap', args }, true)
       expect(snapSpy).toHaveBeenCalledTimes(1)
       expect(snapSpy).toHaveBeenCalledWith(...args)
