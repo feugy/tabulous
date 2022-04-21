@@ -3,25 +3,27 @@ import { jest } from '@jest/globals'
 import fastify from 'fastify'
 import services from '../../src/services/index.js'
 import graphQL from '../../src/plugins/graphql.js'
+import { mockMethods } from '../test-utils.js'
 
 describe('given a started server', () => {
   let server
-  let originalServices = { ...services }
+  let restoreServices
+  const configuration = {
+    turn: { secret: faker.lorem.words() }
+  }
 
   beforeAll(async () => {
     server = fastify({ logger: false })
+    server.decorate('conf', configuration)
     server.register(graphQL)
     await server.listen()
-    // monkey patch services
-    for (const method in services) {
-      services[method] = jest.fn()
-    }
+    restoreServices = mockMethods(services)
   })
 
   beforeEach(jest.resetAllMocks)
 
   afterAll(async () => {
-    Object.assign(services, originalServices)
+    restoreServices()
     await server?.close()
   })
 
@@ -30,21 +32,58 @@ describe('given a started server', () => {
       it('logs user without authentication', async () => {
         const username = faker.name.firstName()
         const password = faker.internet.password()
+        const turnCredentials = {
+          username: faker.lorem.words(),
+          credentials: faker.internet.password()
+        }
         const id = faker.datatype.uuid()
         services.logIn.mockResolvedValueOnce({ username, id, whatever: 'foo' })
+        services.generateTurnCredentials.mockResolvedValueOnce(turnCredentials)
         const response = await server.inject({
           method: 'POST',
           url: 'graphql',
           payload: {
-            query: `mutation { logIn(username: "${username}", password: "${password}") { id username } }`
+            query: `mutation { 
+              logIn(username: "${username}", password: "${password}") { 
+                player { id username } 
+                turnCredentials { username credentials } 
+              }
+            }`
           }
         })
         expect(response.json()).toEqual({
-          data: { logIn: { id, username } }
+          data: { logIn: { player: { id, username }, turnCredentials } }
         })
         expect(response.statusCode).toEqual(200)
         expect(services.logIn).toHaveBeenCalledWith(username, password)
         expect(services.logIn).toHaveBeenCalledTimes(1)
+        expect(services.generateTurnCredentials).toHaveBeenCalledWith(
+          configuration.turn.secret
+        )
+        expect(services.generateTurnCredentials).toHaveBeenCalledTimes(1)
+      })
+
+      it('does not generates turn credentials on authentication failure', async () => {
+        const username = faker.name.firstName()
+        const password = faker.internet.password()
+        services.logIn.mockResolvedValueOnce(null)
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          payload: {
+            query: `mutation { 
+              logIn(username: "${username}", password: "${password}") {
+                player { id username } 
+                turnCredentials { username credentials } 
+              }
+            }`
+          }
+        })
+        expect(response.json()).toEqual({ data: { logIn: null } })
+        expect(response.statusCode).toEqual(200)
+        expect(services.logIn).toHaveBeenCalledWith(username, password)
+        expect(services.logIn).toHaveBeenCalledTimes(1)
+        expect(services.generateTurnCredentials).not.toHaveBeenCalled()
       })
     })
 

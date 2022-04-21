@@ -8,10 +8,6 @@ import repositories from '../repositories/index.js'
  * @property {boolean} playing - whether this player has currently joined an active game.
  */
 
-function hash(value) {
-  return createHash('sha256').update(value).digest('hex')
-}
-
 const masterPassword = hash('ehfada')
 
 /**
@@ -35,6 +31,10 @@ export async function logIn(username, password) {
     })
   }
   return player
+}
+
+function hash(value) {
+  return createHash('sha256').update(value).digest('hex')
 }
 
 /**

@@ -4,11 +4,21 @@ type Player {
   playing: Boolean!
 }
 
+type TurnCredentials {
+  username: String!
+  credentials: String!
+}
+
+type PlayerWithTurnCredentials {
+  player: Player!
+  turnCredentials: TurnCredentials!
+}
+
 type Query {
   getCurrentPlayer: Player
   searchPlayers(search: String!): [Player]
 }
 
 type Mutation {
-  logIn(username: String!, password: String!): Player
+  logIn(username: String!, password: String!): PlayerWithTurnCredentials
 }

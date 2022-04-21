@@ -43,13 +43,14 @@ describe('startServer()', () => {
         }
       },
       data: { path: 'data' },
-      games: { path: 'games' }
+      games: { path: 'games' },
+      turn: { secret: 'blabla' }
     })
 
     let response = await app.inject({
       method: 'POST',
       url: 'graphql',
-      payload: { query: 'mutation { logIn { id } }' }
+      payload: { query: 'mutation { logIn { player { id } } }' }
     })
     expect(response.json()?.errors?.[0]?.message).toMatch(
       /argument "username" of type "String!" is required/

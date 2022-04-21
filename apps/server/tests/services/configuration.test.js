@@ -20,6 +20,7 @@ describe('loadConfiguration()', () => {
     const dataPath = faker.system.directoryPath()
     const key = faker.system.filePath()
     const cert = faker.system.filePath()
+    const secret = faker.lorem.words()
 
     process.env = {
       ...process.env,
@@ -29,7 +30,8 @@ describe('loadConfiguration()', () => {
       GAMES_PATH: gamesPath,
       DATA_PATH: dataPath,
       HTTPS_CERT: cert,
-      HTTPS_KEY: key
+      HTTPS_KEY: key,
+      TURN_SECRET: secret
     }
 
     expect(loadConfiguration()).toEqual({
@@ -42,12 +44,16 @@ describe('loadConfiguration()', () => {
         static: { path: gamesPath, pathPrefix: '/games' }
       },
       games: { path: gamesPath },
-      data: { path: dataPath }
+      data: { path: dataPath },
+      turn: { secret }
     })
   })
 
   it('loads production default values', () => {
+    const secret = faker.lorem.words()
     process.env.NODE_ENV = 'production'
+    process.env.TURN_SECRET = secret
+
     expect(loadConfiguration()).toEqual({
       isProduction: true,
       serverUrl: {
@@ -67,11 +73,15 @@ describe('loadConfiguration()', () => {
         }
       },
       games: { path: resolve(cwd(), '..', 'games', 'assets') },
-      data: { path: resolve(cwd(), 'data') }
+      data: { path: resolve(cwd(), 'data') },
+      turn: { secret }
     })
   })
 
   it('loads development default values', () => {
+    const secret = faker.lorem.words()
+    process.env.TURN_SECRET = secret
+
     expect(loadConfiguration()).toEqual({
       isProduction: false,
       serverUrl: {
@@ -87,7 +97,8 @@ describe('loadConfiguration()', () => {
         }
       },
       games: { path: resolve(cwd(), '..', 'games', 'assets') },
-      data: { path: resolve(cwd(), 'data') }
+      data: { path: resolve(cwd(), 'data') },
+      turn: { secret }
     })
   })
 
@@ -110,6 +121,7 @@ describe('loadConfiguration()', () => {
   })
 
   it('considers GAMES_PATH relatively to current working directory', () => {
+    process.env.TURN_SECRET = faker.lorem.words()
     process.env.CLIENT_ROOT = join('.', 'test')
     process.env.GAMES_PATH = join('.', 'test2')
     expect(loadConfiguration().plugins.static.path).toEqual(
@@ -119,6 +131,7 @@ describe('loadConfiguration()', () => {
   })
 
   it('considers DATA_PATH relatively to current working directory', () => {
+    process.env.TURN_SECRET = faker.lorem.words()
     process.env.DATA_PATH = './test'
     expect(loadConfiguration().data.path).toEqual(join(cwd(), 'test'))
   })

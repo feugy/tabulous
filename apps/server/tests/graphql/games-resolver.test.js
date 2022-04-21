@@ -3,6 +3,7 @@ import { jest } from '@jest/globals'
 import fastify from 'fastify'
 import { Subject } from 'rxjs'
 import {
+  mockMethods,
   openGraphQLWebSocket,
   startSubscription,
   stopSubscription,
@@ -15,7 +16,7 @@ import graphQL from '../../src/plugins/graphql.js'
 describe('given a started server', () => {
   let server
   let ws
-  let originalServices = { ...services }
+  let restoreServices
   const players = [
     { id: faker.datatype.uuid(), username: faker.name.firstName() },
     { id: faker.datatype.uuid(), username: faker.name.firstName() },
@@ -27,17 +28,14 @@ describe('given a started server', () => {
     server.register(graphQL)
     await server.listen()
     ws = await openGraphQLWebSocket(server)
-    // monkey patch services
-    for (const method in services) {
-      services[method] = jest.fn()
-    }
+    restoreServices = mockMethods(services)
     services.gameListsUpdate = new Subject()
   })
 
   beforeEach(jest.resetAllMocks)
 
   afterAll(async () => {
-    Object.assign(services, originalServices)
+    restoreServices()
     try {
       ws?.close()
     } catch {

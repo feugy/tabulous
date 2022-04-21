@@ -49,6 +49,11 @@ const validate = new Ajv({ allErrors: true }).compile({
           }
         }
       }
+    },
+    turn: {
+      properties: {
+        secret: { type: 'string' }
+      }
     }
   }
 })
@@ -89,6 +94,7 @@ function makeAbsolute(path) {
  * - NODE_ENV: 'production' indicates production mode.
  * - PORT: server listening port (must be a number). Defaults to 443 in production, and 3001 otherwise.
  * - WS_ENDPOINT: url of the web socket endpoint. Defaults to '/ws'.
+ * - TURN_SECRET: secret used to generate turn credentials. Must be the same as coTURN static-auth-secret
  *
  * @returns {Configuration} the loaded configuration.
  * @throws {Error} when the provided environment variables do not match expected values.
@@ -102,7 +108,8 @@ export function loadConfiguration() {
     HTTPS_KEY,
     LOG_LEVEL,
     NODE_ENV,
-    PORT
+    PORT,
+    TURN_SECRET
   } = process.env
 
   const isProduction = /^\w*production\w*$/i.test(NODE_ENV)
@@ -132,6 +139,9 @@ export function loadConfiguration() {
     },
     data: {
       path: DATA_PATH ?? 'data'
+    },
+    turn: {
+      secret: TURN_SECRET
     }
   }
   configuration.data.path = makeAbsolute(configuration.data.path)
