@@ -35,8 +35,16 @@ describe('Catalog Items repository', () => {
       ).rejects.toThrow('Failed to connect Catalog Items repository')
     })
 
+    it('throws an invalid game descriptor', async () => {
+      await expect(
+        catalogItems.connect({
+          path: join('tests', 'fixtures', 'broken-games')
+        })
+      ).rejects.toThrow(`Cannot find module 'invalid-package'`)
+    })
+
     it('handles an folder without game descriptors', async () => {
-      await catalogItems.connect({ path: join('..', '..', 'drawings') })
+      await catalogItems.connect({ path: join('tests', 'fixtures') })
       expect(await catalogItems.list()).toEqual({
         total: 0,
         from: 0,

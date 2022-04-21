@@ -2,5 +2,8 @@
   "name": "@tabulous/games",
   "version": "0.0.1",
   "description": "Tabulous game descriptors and assets",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "@tabulous/server": "^0.0.1"
+  }
 }

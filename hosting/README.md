@@ -143,8 +143,14 @@ Tabulous server runs with sensible defaults, but still needs some configuration 
 Because such configuration should not be commited on Github, it is stored in an `.env` file
 
 - open an SSH connection to the VPS _as tabulous_: `ssh tabulous@vps-XYZ.vps.ovh.net`
-- generate some random
+
+- edit profile: `vi ~/?bashrc`
+
+  - add `export NODE_ENV=production` at the end
+  - save and reload: `source ~/.bashrc`
+
 - edit configuration file: `vi ~/server/.env`
+
   - add `TURN_SECRET=[SECRET]` with the same secret value as coTURN's `static-auth-secret`
 
 ## Maintenance
