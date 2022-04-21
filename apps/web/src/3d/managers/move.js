@@ -1,5 +1,6 @@
 import { BoundingInfo } from '@babylonjs/core/Culling/boundingInfo'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
+import { Observable } from '@babylonjs/core/Misc/observable'
 import { controlManager } from './control'
 import { selectionManager } from './selection'
 import { targetManager } from './target'
@@ -15,6 +16,11 @@ import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('move')
 
+/**
+ * @typedef {object} MoveData
+ * @property {object} mesh - moved mesh.
+ */
+
 class MoveManager {
   /**
    * Creates a manager to move meshes with MoveBehavior:
@@ -25,10 +31,12 @@ class MoveManager {
    *
    * @property {number} elevation - elevation applied to meshes while dragging them.
    * @property {boolean} inProgress - true while a move operation is in progress.
+   * @property {Observable<MoveData>} onMoveObservable - emits when moving a given mesh.
    */
   constructor() {
     this.elevation = null
     this.inProgress = false
+    this.onMoveObservable = new Observable()
     // private
     this.scene = null
     this.meshIds = new Set()
@@ -105,6 +113,7 @@ class MoveManager {
       mesh.setAbsolutePosition(new Vector3(x, y + this.elevation, z))
       mesh.computeWorldMatrix()
       controlManager.record({ mesh, pos: mesh.absolutePosition.asArray() })
+      this.notifyMove(mesh)
     }
 
     // dynamically assign continue function to keep moved, zones and lastPosition in scope
@@ -305,6 +314,16 @@ class MoveManager {
    */
   isManaging(mesh) {
     return this.meshIds.has(mesh?.id)
+  }
+
+  /**
+   * Notify listerners of moving meshes
+   * @param {...import('@babel/core').Mesh} meshes - moving meshes
+   */
+  notifyMove(...meshes) {
+    for (const mesh of meshes) {
+      this.onMoveObservable.notifyObservers({ mesh })
+    }
   }
 }
 

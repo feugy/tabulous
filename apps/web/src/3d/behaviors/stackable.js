@@ -10,8 +10,8 @@ import {
 import { TargetBehavior } from './targetable'
 import {
   controlManager,
-  inputManager,
   indicatorManager,
+  moveManager,
   selectionManager,
   targetManager
 } from '../managers'
@@ -63,7 +63,7 @@ export class StackBehavior extends TargetBehavior {
     this._state = state
     this.stack = []
     // private
-    this.dragObserver = null
+    this.moveObserver = null
     this.dropObserver = null
     this.actionObserver = null
     this.base = null
@@ -101,13 +101,12 @@ export class StackBehavior extends TargetBehavior {
       }
     })
 
-    this.dragObserver = inputManager.onDragObservable.add(({ type, mesh }) => {
+    this.moveObserver = moveManager.onMoveObservable.add(({ mesh }) => {
       // pop the last item if it's dragged, unless:
       // 1. there's only one item
       // 2. the first item is also dragged (we're dragging the whole stack)
       const { stack } = this
       if (
-        type === 'dragStart' &&
         stack.length > 1 &&
         stack[stack.length - 1] === mesh &&
         !selectionManager.meshes.has(stack[0])
@@ -151,7 +150,7 @@ export class StackBehavior extends TargetBehavior {
    */
   detach() {
     controlManager.onActionObservable.remove(this.actionObserver)
-    inputManager.onDragObservable.remove(this.dragObserver)
+    moveManager.onMoveObservable.remove(this.moveObserver)
     this.onDropObservable?.remove(this.dropObserver)
     super.detach()
   }
@@ -199,6 +198,7 @@ export class StackBehavior extends TargetBehavior {
         args: [meshId, immediate],
         duration
       })
+      moveManager.notifyMove(mesh)
     }
     const { x, z } = base.mesh.absolutePosition
     logger.info(
