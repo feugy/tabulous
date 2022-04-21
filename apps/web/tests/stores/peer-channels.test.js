@@ -3,6 +3,7 @@ import { randomUUID } from 'crypto'
 import { get } from 'svelte/store'
 import Peer from 'simple-peer-light'
 import * as communication from '../../src/stores/peer-channels'
+import { turnCredentials as turnCredentials$ } from '../../src/stores/players'
 import { runMutation, runSubscription } from '../../src/stores/graphql-client'
 import * as graphQL from '../../src/graphql'
 import { mockLogger } from '../utils.js'
@@ -10,12 +11,20 @@ import { Subject } from 'rxjs'
 
 jest.mock('simple-peer-light')
 jest.mock('../../src/stores/graphql-client')
+jest.mock('../../src/stores/players', () => {
+  const { BehaviorSubject } = require('rxjs')
+  return { turnCredentials: new BehaviorSubject() }
+})
 
 describe('Peer channels store', () => {
   const logger = mockLogger('peer-channels')
   const playerId1 = 'Paul'
   const playerId2 = 'Jack'
   const playerId3 = 'Gene'
+  const turnCredentials = {
+    username: faker.lorem.words(),
+    credentials: faker.datatype.uuid()
+  }
 
   let peers = []
   let subscriptions = []
@@ -39,6 +48,7 @@ describe('Peer channels store', () => {
         messagesReceived.push(value)
       })
     ]
+    turnCredentials$.next(turnCredentials)
   })
 
   beforeEach(() => {
@@ -105,9 +115,7 @@ describe('Peer channels store', () => {
 
       await awaitSignal.next(offer)
 
-      expect(Peer).toHaveBeenCalledWith(
-        expect.objectContaining({ initiator: false, trickle: true })
-      )
+      expectPeerOptions(false)
       expect(peers[0].signal).toHaveBeenCalledWith(offer.signal)
 
       peers[0].events.signal.mock.calls[0][0](answer)
@@ -145,9 +153,7 @@ describe('Peer channels store', () => {
 
         const connectWith = communication.connectWith(playerId3)
         await Promise.resolve()
-        expect(Peer).toHaveBeenCalledWith(
-          expect.objectContaining({ initiator: true, trickle: true })
-        )
+        expectPeerOptions()
 
         peers[0].events.signal.mock.calls[0][0](offer)
         expect(runMutation).toHaveBeenCalledWith(graphQL.sendSignal, {
@@ -183,9 +189,7 @@ describe('Peer channels store', () => {
 
         const connectWith = communication.connectWith(playerId3)
         await Promise.resolve()
-        expect(Peer).toHaveBeenCalledWith(
-          expect.objectContaining({ initiator: true, trickle: true })
-        )
+        expectPeerOptions()
 
         peers[0].events.signal.mock.calls[0][0](offer)
         expect(runMutation).toHaveBeenCalledWith(graphQL.sendSignal, {
@@ -325,4 +329,24 @@ describe('Peer channels store', () => {
       expect(messagesSent).toEqual([])
     })
   })
+
+  function expectPeerOptions(initiator = true) {
+    expect(Peer).toHaveBeenCalledWith(
+      expect.objectContaining({
+        initiator,
+        trickle: true,
+        config: {
+          iceServers: [
+            { urls: ['stun:tabulous.fr'] },
+            {
+              urls: ['turn:tabulous.fr'],
+              username: turnCredentials.username,
+              credential: turnCredentials.credentials
+            }
+          ]
+        }
+      })
+    )
+    expect(Peer).toHaveBeenCalledTimes(1)
+  }
 })

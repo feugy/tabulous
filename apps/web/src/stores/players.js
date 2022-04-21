@@ -1,27 +1,27 @@
-import { BehaviorSubject } from 'rxjs'
+import { BehaviorSubject, map } from 'rxjs'
 import { initGraphQLGlient, runQuery, runMutation } from './graphql-client'
 import * as graphQL from '../graphql'
 import { makeLogger } from '../utils'
 
 const logger = makeLogger('players')
 
-const storageKey = 'player'
+const storageKey = 'session'
 
 // we distinguish no value (undefined) and no player (null)
-const current$ = new BehaviorSubject()
+const authenticationData$ = new BehaviorSubject()
 
-current$.subscribe(player => {
-  const playerData = sessionStorage.getItem(storageKey)
+authenticationData$.subscribe(session => {
+  const sessionData = sessionStorage.getItem(storageKey)
   // skip if we receiving the same player as before
-  if (playerData && JSON.parse(playerData)?.id === player?.id) {
-    logger.debug({ player, playerData }, `skiping session save`)
+  if (sessionData && JSON.parse(session)?.player?.id === session?.player?.id) {
+    logger.debug({ session, sessionData }, `skipping session save`)
     return
   }
-  if (player) {
-    logger.info({ player }, `saving session`)
-    sessionStorage.setItem(storageKey, JSON.stringify(player))
-    initGraphQLGlient(player)
-  } else if (player === null) {
+  if (session) {
+    logger.info({ session }, `saving session`)
+    sessionStorage.setItem(storageKey, JSON.stringify(session))
+    initGraphQLGlient(session.player)
+  } else if (session === null) {
     logger.info(`clearing session storage`)
     sessionStorage.clear()
     initGraphQLGlient()
@@ -30,9 +30,19 @@ current$.subscribe(player => {
 
 /**
  * Emits currently authenticated player.
- * @type {Observable<object>}
+ * @type {Observable<import('../graphql').Player>}
  */
-export const currentPlayer = current$.asObservable()
+export const currentPlayer = authenticationData$.pipe(
+  map(data => data?.player ?? null)
+)
+
+/**
+ * Emits turn credentials obtained during authentication
+ * @type {Observable<import('../graphql').TurnCredentials>}
+ */
+export const turnCredentials = authenticationData$.pipe(
+  map(data => data?.turnCredentials ?? null)
+)
 
 /**
  * Recovers previous session by reusing data from session storage.
@@ -41,16 +51,17 @@ export const currentPlayer = current$.asObservable()
  */
 export async function recoverSession() {
   let player = null
-  const playerData = sessionStorage.getItem(storageKey)
-  if (playerData) {
+  const sessionData = sessionStorage.getItem(storageKey)
+  if (sessionData) {
     try {
-      logger.info({ playerData }, `recovering previous session`)
-      initGraphQLGlient(JSON.parse(playerData))
+      logger.info({ sessionData }, `recovering previous session`)
+      const session = JSON.parse(sessionData)
+      initGraphQLGlient(session.player)
       player = await runQuery(graphQL.getCurrentPlayer)
-      current$.next(player)
+      authenticationData$.next({ ...session, player })
     } catch (error) {
       logger.warn(
-        { error, playerData },
+        { error, playerData: sessionData },
         `failed to recover session: ${error.message}`
       )
       await logOut()
@@ -58,7 +69,10 @@ export async function recoverSession() {
   } else {
     await logOut()
   }
-  logger.info({ player: current$.value }, `session recovery complete`)
+  logger.info(
+    { session: authenticationData$.value },
+    `session recovery complete`
+  )
   return player
 }
 
@@ -71,18 +85,18 @@ export async function recoverSession() {
  */
 export async function logIn(username, password) {
   initGraphQLGlient()
-  let player = null
+  let session = null
   try {
-    player = await runMutation(graphQL.logIn, { username, password })
-    logger.info(player, `authenticating ${username}`)
+    session = await runMutation(graphQL.logIn, { username, password })
+    logger.info({ session }, `authenticating ${username}`)
   } catch (error) {
     logger.info(
       { error },
       `failed to authenticate ${username}: ${error.message}`
     )
   }
-  current$.next(player)
-  return player
+  authenticationData$.next(session)
+  return session?.player ?? null
 }
 
 /**
@@ -91,7 +105,7 @@ export async function logIn(username, password) {
  */
 export async function logOut() {
   logger.info(`logging out`)
-  current$.next(null)
+  authenticationData$.next(null)
 }
 
 /**

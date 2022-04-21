@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals'
 import WebSocket from 'ws'
 
 /**
@@ -70,4 +71,20 @@ export function stopSubscription(ws, id = 1) {
  */
 export function toGraphQLArg(object) {
   return JSON.stringify(object).replace(/"(\w+)":/g, '$1:')
+}
+
+/**
+ * Monkey patch all methods, replacing them with Jest mocks.
+ * Does not modify getters, setters and plain attributes
+ * @param {object} object - hash containing all service methods.
+ * @returns {function} revert patching when called.
+ */
+export function mockMethods(object) {
+  const original = { ...object }
+  for (const method in object) {
+    if (typeof object[method] === 'function') {
+      object[method] = jest.fn()
+    }
+  }
+  return () => Object.assign(object, original)
 }

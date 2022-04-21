@@ -5,7 +5,13 @@ fragment player on Player {
 
 mutation logIn($username: String!, $password: String!) {
   logIn(username: $username, password: $password) {
-    ...player
+    player {
+      ...player
+    }
+    turnCredentials {
+      username
+      credentials
+    }
   }
 }
 

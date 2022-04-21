@@ -2,7 +2,9 @@ import 'webrtc-adapter'
 import Peer from 'simple-peer-light'
 import { BehaviorSubject, Subject } from 'rxjs'
 import { filter, scan } from 'rxjs/operators'
+import { get } from 'svelte/store'
 import { runMutation, runSubscription } from './graphql-client'
+import { turnCredentials } from './players'
 import * as graphQL from '../graphql'
 import { makeLogger } from '../utils'
 
@@ -83,9 +85,9 @@ async function createPeer(playerId, signal) {
     const peer = new Peer({
       initiator: signal === undefined,
       stream: current.stream,
-      trickle: true, // true does not work at all
+      trickle: true,
       config: {
-        iceServers: [{ urls: 'stun:turn2.l.google.com' }]
+        iceServers: getIceServers()
       }
     })
     peer._debug = function (...args) {
@@ -205,6 +207,13 @@ function detachLocalMedia() {
   }
 }
 
+function getIceServers() {
+  const { username, credentials: credential } = get(turnCredentials)
+  return [
+    { urls: ['stun:tabulous.fr'] },
+    { urls: ['turn:tabulous.fr'], username, credential }
+  ]
+}
 /**
  * Emits last data sent to another player
  * @type {Observable<object>}
@@ -267,11 +276,6 @@ export async function openChannels(player) {
           // new peer joining
           await attachLocalMedia()
           createPeer(from, signal)
-        } else {
-          logger.warn(
-            { from, type, signal, channels },
-            `no peer found for signal from ${from}`
-          )
         }
       }
     }

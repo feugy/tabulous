@@ -10,3 +10,4 @@ node_modules/
 scans/
 .eslintcache
 debug.txt
+.env

@@ -37,8 +37,16 @@ export default {
      * @param {object} args - mutation arguments, including:
      * @param {string} data.username - username.
      * @param {string} data.password - clear password.
-     * @returns {import('../services/authentication').Player|null} authentified player or null.
+     * @param {object} context - graphQL context.
+     * @returns {import('./players.graphqk').PlayerWithTurnCredentials|null} authentified player or null.
      */
-    logIn: (obj, { username, password }) => services.logIn(username, password)
+    logIn: async (obj, { username, password }, { conf }) => {
+      const player = await services.logIn(username, password)
+      if (!player) {
+        return null
+      }
+      const turnCredentials = services.generateTurnCredentials(conf.turn.secret)
+      return { player, turnCredentials }
+    }
   }
 }
