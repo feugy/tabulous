@@ -51,11 +51,11 @@
 - use JWT as authentication token (stores player id and username)
 - allows a single connection per player (discards other JWTs)
 - logging (warning on invalid descriptors)
+- better coTURN integration (password management and rotation)
 
 ## Hosting
 
 - where to store secrets?
-- use an env file
 - deploy in a folder named after the commit SHA
 - use symlink to switch between deployments (including conf files)
 - rotates log files

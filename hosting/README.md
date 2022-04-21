@@ -68,7 +68,7 @@ First commands will need to connect with IPv4 (hence the `-4` flag) in the meant
   - open an SSH connection to the VPS: `ssh ubuntu@vps-XYZ.vps.ovh.net`
   - get Nginx: `sudo apt install nginx-full -y`
   - stop it: `sudo nginx -s quit`
-  - edits its configuration: `sudo vi /etc/nginx/nginx.conf`:
+  - edits its configuration: `sudo vi /etc/nginx/nginx.conf`
     - change `user www-data` to `user tabulous`
   - removes default NGINX site: `sudo rm /etc/nginx/sites-enabled/default`
   - creates a symbolic link for tabulous NGINX site: `sudo ln -s /home/tabulous/nginx/tabulous /etc/nginx/sites-enabled/tabulous`
@@ -97,6 +97,23 @@ First commands will need to connect with IPv4 (hence the `-4` flag) in the meant
     1.  decline sharing email address
     1.  allow all domains
 
+- install coTurn ([source](https://medium.com/@helderjbe/setting-up-a-turn-server-with-node-production-ready-8f4a4c36e64d)):
+
+  - open an SSH connection to the VPS: `ssh ubuntu@vps-XYZ.vps.ovh.net`
+  - update apt and install coTurn: `sudo apt-get -y update` & `sudo apt-get -y install coturn`
+  - enable as a service: `echo 'TURNSERVER_ENABLED=1' | sudo tee /etc/default/coturn`
+  - generate some random secret value (save it somewhere): `openssl rand -base64 32`
+  - edits its configuration: `sudo vi /etc/turnserver.conf`
+    - uncomment `#fingerprint`
+    - uncomment `#use-auth-secret`
+    - provide your new secret value for `static-auth-secret=[SECRET]`
+    - uncomment `#realm=[DOMAIN]` and change domain value for `tabulous.fr`
+    - uncomment `#total-quota=0` and change value for `100`
+    - uncomment `#no-multicast-peers`
+    - uncomment `#cert=[PATH]` and change path value for `/home/tabulous/certbot/live/tabulous.fr/fullchain.pem`
+    - uncomment `#pkey=[PATH]` and change path value for `/home/tabulous/certbot/live/tabulous.fr/privkey.pem`
+  - restart service: `sudo systemctl restart coturn`
+
 ## Continuous deployment
 
 [Inspiration](https://coderflex.com/blog/2-easy-steps-to-automate-a-deployment-in-a-vps-with-github-actions)
@@ -119,6 +136,16 @@ _Hints_
 
 Tail server logs: `journalctl -f -u tabulous`
 Tail nginx logs: `tail -f /var/log/nginx/access.log`
+
+## Tabulous Configuration
+
+Tabulous server runs with sensible defaults, but still needs some configuration through environment variables.
+Because such configuration should not be commited on Github, it is stored in an `.env` file
+
+- open an SSH connection to the VPS _as tabulous_: `ssh tabulous@vps-XYZ.vps.ovh.net`
+- generate some random
+- edit configuration file: `vi ~/server/.env`
+  - add `TURN_SECRET=[SECRET]` with the same secret value as coTURN's `static-auth-secret`
 
 ## Maintenance
 
