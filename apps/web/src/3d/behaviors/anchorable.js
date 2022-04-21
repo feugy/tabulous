@@ -9,7 +9,7 @@ import {
   getPositionAboveZone,
   getTargetableBehavior
 } from '../utils'
-import { controlManager, inputManager, selectionManager } from '../managers'
+import { controlManager, moveManager, selectionManager } from '../managers'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
 
@@ -49,7 +49,7 @@ export class AnchorBehavior extends TargetBehavior {
     this.state = state
     // private
     this.dropObserver = null
-    this.dragObserver = null
+    this.moveObserver = null
     this.actionObserver = null
     this.zoneBySnappedId = new Map()
   }
@@ -82,16 +82,14 @@ export class AnchorBehavior extends TargetBehavior {
       }
     )
 
-    this.dragObserver = inputManager.onDragObservable.add(({ type, mesh }) => {
-      if (type === 'dragStart' && mesh) {
-        let moved = selectionManager.meshes.has(mesh)
-          ? selectionManager.meshes.has(this.mesh)
-            ? []
-            : [...selectionManager.meshes]
-          : [mesh]
-        for (const { id } of moved) {
-          this.unsnap(id)
-        }
+    this.moveObserver = moveManager.onMoveObservable.add(({ mesh }) => {
+      let moved = selectionManager.meshes.has(mesh)
+        ? selectionManager.meshes.has(this.mesh)
+          ? []
+          : [...selectionManager.meshes]
+        : [mesh]
+      for (const { id } of moved) {
+        this.unsnap(id)
       }
     })
 
@@ -121,7 +119,7 @@ export class AnchorBehavior extends TargetBehavior {
    */
   detach() {
     controlManager.onActionObservable.remove(this.actionObserver)
-    inputManager.onDragObservable.remove(this.dragObserver)
+    moveManager.onMoveObservable.remove(this.moveObserver)
     this.onDropObservable?.remove(this.dropObserver)
     super.detach()
   }
@@ -178,6 +176,7 @@ export class AnchorBehavior extends TargetBehavior {
       args: [snappedId, anchorId, immediate],
       duration: immediate ? 0 : this.state.duration
     })
+    moveManager.notifyMove(snapped)
     await snapToAnchor(this, snappedId, zone, immediate)
   }
 

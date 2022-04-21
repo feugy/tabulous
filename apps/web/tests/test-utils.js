@@ -249,3 +249,10 @@ export async function waitNextRender(scene) {
     scene.getEngine().onEndFrameObservable.addOnce(resolve)
   )
 }
+
+export function expectMoveRecorded(moveRecorded, ...meshes) {
+  expect(moveRecorded).toHaveBeenCalledTimes(meshes.length)
+  for (const [rank, mesh] of meshes.entries()) {
+    expect(moveRecorded.mock.calls[rank][0]).toEqual({ mesh })
+  }
+}

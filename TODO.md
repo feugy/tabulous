@@ -16,7 +16,6 @@
 
 ## Refactor
 
-- bug: stacking all card do not release stack/anchors (no drag start operation)
 - bug: ICE failed message when peer reload their browser??
 - bug: animating visibility from 0 to 1 creates trouble with texture alpha channel
 - bug: moving card collides with a stack of cards
