@@ -1,5 +1,5 @@
 import merge from 'deepmerge'
-import { shuffle } from '../utils/index.js'
+import { shuffle } from './collections.js'
 
 /**
  * @typedef {object} GameDescriptor static descriptor of a game.
@@ -16,7 +16,7 @@ import { shuffle } from '../utils/index.js'
  * Meshes could be cards, round tokens, rounded tiles... They must have an id.
  * Meshes can be randomized in bags, then positioned on slots.
  * Slots could be either anchors on other meshes, or mesh stacks
- * @property {import('./games').Mesh[]} meshes? - all meshes.
+ * @property {import('../services/games').Mesh[]} meshes? - all meshes.
  * @property {Map<string, string[]>} bags? - map of randomized bags, as a list of mesh ids.
  * @property {Slot[]} slots? - a list of position slots
  */
@@ -46,7 +46,7 @@ import { shuffle } from '../utils/index.js'
  * @async
  * @param {string} kind - created game's kind.
  * @param {GameDescriptor} descriptor - to create game from.
- * @returns {import('./games').Mesh[]} a list of serialized 3D meshes.
+ * @returns {import('../services/games').Mesh[]} a list of serialized 3D meshes.
  */
 export async function createMeshes(kind, descriptor) {
   const { slots, bags, meshes } = await descriptor.build()
@@ -163,4 +163,65 @@ function findMeshAndAnchor(anchorId, meshes) {
     }
   }
   return null
+}
+
+/**
+ * Alter game data to draw some meshes from a given anchor into a player's hand.
+ * Automatically creates player hands if needed.
+ * If provided anchor has fewer meshes as requested, depletes it.
+ * @param {import('../services/games.js').Game} game - altered game data.
+ * @param {object} params - operation parameters:
+ * @param {string} params.playerId - player id for which meshes are drawn.
+ * @param {number} params.count - number of drawn mesh
+ * @param {string} params.fromAnchor - id of the anchor to draw from.
+ * @throws {Error} when no anchor could be found
+ */
+export function drawInHand(game, { playerId, count = 1, fromAnchor }) {
+  const hand = findOrCreateHand(game, playerId)
+  const { meshes } = game
+  const anchor = findDeepAnchor(fromAnchor, meshes)
+  if (!anchor) {
+    throw new Error(`no anchor with id '${fromAnchor}'`)
+  }
+  const stack = findMesh(anchor.snappedId, meshes)
+  if (!stack) {
+    return
+  }
+  for (let i = 0; i < count; i++) {
+    const drawn = drawMesh(stack, meshes) ?? stack
+    hand.meshes.push(drawn)
+    meshes.splice(meshes.indexOf(drawn), 1)
+    if (drawn === stack) {
+      break
+    }
+  }
+  if (stack.stackable?.stackIds.length === 0) {
+    anchor.snappedId = null
+  }
+}
+
+/**
+ * Finds the hand of a given player, optionally creating it.
+ * @param {import('../services/games').Game} game - altered game data.
+ * @param {string} playerId - player id for which hand is created.
+ * @returns  {import('../services/games').Hand} existing hand, or created one.
+ */
+export function findOrCreateHand(game, playerId) {
+  let hand = game.hands.find(hand => hand.playerId === playerId)
+  if (!hand) {
+    hand = { playerId, meshes: [] }
+    game.hands.push(hand)
+  }
+  return hand
+}
+
+function findMesh(id, meshes) {
+  return meshes.find(mesh => mesh.id === id) ?? null
+}
+
+function drawMesh(stackMesh, meshes) {
+  if (stackMesh.stackable?.stackIds.length) {
+    const id = stackMesh.stackable.stackIds.pop()
+    return findMesh(id, meshes)
+  }
 }

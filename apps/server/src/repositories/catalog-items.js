@@ -33,19 +33,23 @@ class CatalogItemRepository extends AbstractRepository {
         `Failed to connect Catalog Items repository: ${err.message}`
       )
     }
-    const root = pathToFileURL(path)
+    const root = pathToFileURL(path).pathname
     for (const entry of entries) {
       if (entry.isDirectory() || entry.isSymbolicLink()) {
+        const descriptor = `${root}/${entry.name}/index.js`
         try {
           const { name } = entry
           const item = {
             name,
-            ...(await import(`${root}/${entry.name}/index.js`))
+            ...(await import(descriptor))
           }
           this.models.push(item)
           this.modelsById.set(name, item)
-        } catch {
+        } catch (err) {
           // ignore folders with no index.js or invalid symbolic links
+          if (!err.message.includes(`Cannot find module '${descriptor}'`)) {
+            throw new Error(`Failed to load game ${entry.name}: ${err.message}`)
+          }
         }
       }
     }

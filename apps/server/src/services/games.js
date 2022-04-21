@@ -1,7 +1,7 @@
 import { Subject } from 'rxjs'
 import { concatMap, mergeMap } from 'rxjs/operators'
 import { canAccess } from './catalog.js'
-import { createMeshes } from './utils.js'
+import { createMeshes } from '../utils/index.js'
 import repositories from '../repositories/index.js'
 
 /**

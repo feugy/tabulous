@@ -1,5 +1,9 @@
 import { faker } from '@faker-js/faker'
-import { createMeshes } from '../../src/services/utils.js'
+import {
+  createMeshes,
+  drawInHand,
+  findOrCreateHand
+} from '../../src/utils/games.js'
 
 describe('createMeshes()', () => {
   it('ignores missing mesh', async () => {
@@ -419,3 +423,133 @@ function expectSnappedByName(meshes, name, anchor) {
   expect(candidates).toHaveLength(1)
   expect(anchor.snappedId).toEqual(candidates[0].id)
 }
+
+describe('drawInHand()', () => {
+  const playerId = faker.datatype.uuid()
+  let game
+
+  beforeEach(() => {
+    game = {
+      hands: [],
+      meshes: [
+        { id: 'A' },
+        {
+          id: 'B',
+          anchorable: { anchors: [{ id: 'discard', snappedId: 'C' }] }
+        },
+        { id: 'C', stackable: { stackIds: ['A', 'E', 'D'] } },
+        { id: 'D' },
+        { id: 'E' }
+      ]
+    }
+  })
+
+  it('throws error on unknown anchor', () => {
+    expect(() => drawInHand(game, { playerId, fromAnchor: 'unknown' })).toThrow(
+      `no anchor with id 'unknown'`
+    )
+  })
+
+  it('draws one mesh into a new hand', () => {
+    drawInHand(game, { playerId, fromAnchor: 'discard' })
+    expect(game).toEqual({
+      hands: [{ playerId, meshes: [{ id: 'D' }] }],
+      meshes: [
+        { id: 'A' },
+        {
+          id: 'B',
+          anchorable: { anchors: [{ id: 'discard', snappedId: 'C' }] }
+        },
+        { id: 'C', stackable: { stackIds: ['A', 'E'] } },
+        { id: 'E' }
+      ]
+    })
+  })
+
+  it('draws multiple meshes into a new hand', () => {
+    drawInHand(game, { playerId, count: 2, fromAnchor: 'discard' })
+    expect(game).toEqual({
+      hands: [{ playerId, meshes: [{ id: 'D' }, { id: 'E' }] }],
+      meshes: [
+        { id: 'A' },
+        {
+          id: 'B',
+          anchorable: { anchors: [{ id: 'discard', snappedId: 'C' }] }
+        },
+        { id: 'C', stackable: { stackIds: ['A'] } }
+      ]
+    })
+  })
+
+  it('draws until depletion into a new hand', () => {
+    drawInHand(game, { playerId, count: 10, fromAnchor: 'discard' })
+    expect(game).toEqual({
+      hands: [
+        {
+          playerId,
+          meshes: [
+            { id: 'D' },
+            { id: 'E' },
+            { id: 'A' },
+            { id: 'C', stackable: { stackIds: [] } }
+          ]
+        }
+      ],
+      meshes: [
+        {
+          id: 'B',
+          anchorable: { anchors: [{ id: 'discard', snappedId: null }] }
+        }
+      ]
+    })
+  })
+
+  it('draws nothing from empty anchor', () => {
+    game.meshes[1].anchorable.anchors[0].snappedId = null
+    drawInHand(game, { playerId, count: 2, fromAnchor: 'discard' })
+    expect(game).toEqual(
+      (game = {
+        hands: [{ playerId, meshes: [] }],
+        meshes: [
+          { id: 'A' },
+          {
+            id: 'B',
+            anchorable: { anchors: [{ id: 'discard', snappedId: null }] }
+          },
+          { id: 'C', stackable: { stackIds: ['A', 'E', 'D'] } },
+          { id: 'D' },
+          { id: 'E' }
+        ]
+      })
+    )
+  })
+})
+
+describe('findOrCreateHand()', () => {
+  it('finds existing hand', () => {
+    const playerId1 = faker.datatype.uuid()
+    const playerId2 = faker.datatype.uuid()
+
+    const game = {
+      hands: [
+        { playerId: playerId1, meshes: [{ id: 'A' }] },
+        { playerId: playerId2, meshes: [{ id: 'B' }] }
+      ]
+    }
+    expect(findOrCreateHand(game, playerId1)).toEqual(game.hands[0])
+    expect(findOrCreateHand(game, playerId2)).toEqual(game.hands[1])
+  })
+
+  it('creates new hand', () => {
+    const playerId1 = faker.datatype.uuid()
+    const playerId2 = faker.datatype.uuid()
+
+    const game = {
+      hands: [{ playerId: playerId1, meshes: [{ id: 'A' }] }]
+    }
+    const created = { playerId: playerId2, meshes: [] }
+    expect(findOrCreateHand(game, playerId1)).toEqual(game.hands[0])
+    expect(findOrCreateHand(game, playerId2)).toEqual(created)
+    expect(game.hands[1]).toEqual(created)
+  })
+})
