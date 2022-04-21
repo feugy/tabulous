@@ -9,6 +9,7 @@ mkdir -p ~/systemd
 mkdir -p ~/server
 mkdir -p ~/web
 mkdir -p ~/games
+mkdir -p ~/node_modules/@tabulous
 
 # move configuration files
 mv -f ~/dist/tabulous.nginx ~/nginx/tabulous
@@ -20,6 +21,10 @@ mv -f ~/dist/.nvmrc ~/server
 tar -x --file ~/dist/web.tar.gz -z --directory ~/web
 tar -x --file ~/dist/server.tar.gz -z --directory ~/server
 tar -x --file ~/dist/games.tar.gz -z --directory ~/games
+
+# creates modules internal links
+cd ~/node_modules/@tabulous/
+ln -s ~/server server
 
 # ensures correct Node.js version
 cd ~/server

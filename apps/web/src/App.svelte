@@ -1,5 +1,5 @@
 <script>
-  import Router, { push, replace } from 'svelte-spa-router'
+  import Router, { replace } from 'svelte-spa-router'
   import { wrap } from 'svelte-spa-router/wrap'
   import Login from './routes/Login.svelte'
   import { currentPlayer, recoverSession } from './stores'
@@ -14,10 +14,6 @@
       conditions: [isAuthenticated]
     }),
     '/*': Login
-  }
-
-  $: if ($currentPlayer === null) {
-    push('/login')
   }
 
   async function isAuthenticated() {

@@ -1,4 +1,5 @@
 import { BehaviorSubject, map } from 'rxjs'
+import { push } from 'svelte-spa-router'
 import { initGraphQLGlient, runQuery, runMutation } from './graphql-client'
 import * as graphQL from '../graphql'
 import { makeLogger } from '../utils'
@@ -13,7 +14,10 @@ const authenticationData$ = new BehaviorSubject()
 authenticationData$.subscribe(session => {
   const sessionData = sessionStorage.getItem(storageKey)
   // skip if we receiving the same player as before
-  if (sessionData && JSON.parse(session)?.player?.id === session?.player?.id) {
+  if (
+    sessionData &&
+    JSON.parse(sessionData)?.player?.id === session?.player?.id
+  ) {
     logger.debug({ session, sessionData }, `skipping session save`)
     return
   }
@@ -106,6 +110,7 @@ export async function logIn(username, password) {
 export async function logOut() {
   logger.info(`logging out`)
   authenticationData$.next(null)
+  push('/login')
 }
 
 /**

@@ -16,6 +16,8 @@
 
 ## Refactor
 
+- bug: stacking all card do not release stack/anchors (no drag start operation)
+- bug: ICE failed message when peer reload their browser??
 - bug: animating visibility from 0 to 1 creates trouble with texture alpha channel
 - bug: moving card collides with a stack of cards
 - selection manager should remove disposed meshes
@@ -66,22 +68,6 @@
 
 - moving items bellow other does not apply gravity to them
 - on vite reload, all players could become hosts or peers simultaneously
-
-# Network
-
-- SFR + proxy boulot Lionel: WebRTC failed
-- SFR Lionel: WebRTC failed
-- Bouyges téléphone Lionel: WebRTC failed
-
-```
-{
-   "from": "4717",
-   "type": "candidate",
-   "signal": "{\"type\":\"candidate\",\"candidate\":{\"candidate\":\"candidate:640089829 1 udp 2122260223 192.168.43.213 48168 typ host generation 0 ufrag +Y+q network-id 1 network-cost 10\",\"sdpMLineIndex\":0,\"sdpMid\":\"0\"}}",
-   "channels": {}
-}
-no peer found for signal from 4717
-```
 
 # Ideas
 
