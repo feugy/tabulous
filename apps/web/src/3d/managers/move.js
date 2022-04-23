@@ -130,39 +130,11 @@ class MoveManager {
         logger.debug({ moved, event, move }, `continue move operation`)
         lastPosition = currentPosition
 
-        let min
-        let max
-        // evaluates the bounding box of all moved meshes
-        for (const mesh of moved) {
-          const { minimumWorld, maximumWorld } =
-            mesh.getBoundingInfo().boundingBox
-          if (!min) {
-            min = minimumWorld
-            max = maximumWorld
-          } else {
-            min = Vector3.Minimize(min, minimumWorld)
-            max = Vector3.Maximize(max, maximumWorld)
-          }
-        }
-        const movedBoundingInfo = new BoundingInfo(min, max)
-
-        let highest = 0
-        // check possible collision, except within current selection or currently moved
-        for (const other of sceneUsed.meshes.filter(
-          mesh =>
-            mesh.isPickable &&
-            !moved.includes(mesh) &&
-            !selectionManager.meshes.has(mesh)
-        )) {
-          const otherBox = other.getBoundingInfo()
-          if (movedBoundingInfo.intersects(otherBox)) {
-            const { y } = otherBox.boundingBox.maximumWorld
-            highest = highest < y ? y : highest
-          }
-        }
-        // elevates moved mesh in case of collision
-        if (highest) {
-          move.y = highest - min.y
+        const { min, max } = computeMovedExtend(moved)
+        const boundingBoxes = findCollidingBoundingBoxes(sceneUsed, moved, min)
+        const newY = elevateWhenColliding(boundingBoxes, min, max)
+        if (newY) {
+          move.y = newY + this.elevation
         }
 
         for (const mesh of moved) {
@@ -332,3 +304,65 @@ class MoveManager {
  * @type {MoveManager}
  */
 export const moveManager = new MoveManager()
+
+function computeMovedExtend(moved) {
+  let min
+  let max
+  // evaluates the bounding box of all moved meshes
+  for (const mesh of moved) {
+    const { minimumWorld, maximumWorld } = mesh.getBoundingInfo().boundingBox
+    if (!min) {
+      min = minimumWorld
+      max = maximumWorld
+    } else {
+      min = Vector3.Minimize(min, minimumWorld)
+      max = Vector3.Maximize(max, maximumWorld)
+    }
+  }
+  return { min, max }
+}
+
+function findCollidingBoundingBoxes({ meshes }, moved, min) {
+  const boxes = []
+  for (const mesh of meshes) {
+    if (
+      mesh.isPickable &&
+      !moved.includes(mesh) &&
+      !selectionManager.meshes.has(mesh)
+    ) {
+      const box = mesh.getBoundingInfo()
+      if (box.boundingBox.maximumWorld.y >= min.y) {
+        boxes.push(box)
+      }
+    }
+  }
+  return boxes
+}
+
+function elevateWhenColliding(boundingBoxes, min, max) {
+  const movedBoundingInfo = new BoundingInfo(min, max)
+  let highest = null
+  const removed = []
+  for (const box of boundingBoxes) {
+    if (movedBoundingInfo.intersects(box)) {
+      const { maximumWorld } = box.boundingBox
+      removed.push(box)
+      highest = (highest?.y ?? 0) < maximumWorld.y ? maximumWorld : highest
+    }
+  }
+  for (const box of removed) {
+    boundingBoxes.splice(boundingBoxes.indexOf(box), 1)
+  }
+  if (highest) {
+    const y = highest.y - min.y
+    return (
+      y +
+      elevateWhenColliding(
+        boundingBoxes,
+        highest,
+        highest.add(max.subtract(min))
+      )
+    )
+  }
+  return 0
+}
