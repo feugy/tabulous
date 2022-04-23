@@ -237,6 +237,25 @@ describe('MoveManager', () => {
         ])
       })
 
+      it('elevates moved mesh above stacked obstacles', () => {
+        const obstacle1 = CreateBox('obstacle1', {})
+        obstacle1.setAbsolutePosition(1, 0.5, 1)
+        obstacle1.computeWorldMatrix()
+        const obstacle2 = CreateBox('obstacle2', {})
+        obstacle2.setAbsolutePosition(1, 2, 1)
+        obstacle2.computeWorldMatrix()
+        const obstacle3 = CreateBox('obstacle3', {})
+        obstacle3.setAbsolutePosition(1, 3.5, 1)
+        obstacle3.computeWorldMatrix()
+
+        manager.continue({ x: centerX + 20, y: centerY })
+        expectPosition(moved, [
+          1.8257662057876587,
+          getAltitudeOnCollision(moved, obstacle3),
+          1
+        ])
+      })
+
       it('stops when pointer is leaving table', async () => {
         manager.continue({ x: centerX * 100, y: centerY * 100 })
         await sleep()
@@ -580,12 +599,12 @@ describe('MoveManager', () => {
         manager.continue({ x: centerX + 20, y: centerY })
         expectPosition(moved[0], [
           1 + deltaX,
-          getAltitudeOnCollision(moved[0], obstacle1),
+          getAltitudeOnCollision(moved[0], obstacle1, 1),
           1
         ])
         expectPosition(moved[1], [
           deltaX,
-          getAltitudeOnCollision(moved[1], obstacle1),
+          getAltitudeOnCollision(moved[1], obstacle1, 5),
           0
         ])
         expectPosition(moved[2], [
@@ -826,11 +845,12 @@ function expectZoneForMeshes(targetId, meshes) {
   )
 }
 
-function getAltitudeOnCollision(moved, obstacle) {
+function getAltitudeOnCollision(moved, obstacle, offset = 0) {
   return (
-    moved.getBoundingInfo().boundingBox.minimumWorld.y -
-    getDimensions(moved).height +
-    obstacle.getBoundingInfo().boundingBox.maximumWorld.y
+    obstacle.getBoundingInfo().boundingBox.maximumWorld.y +
+    getDimensions(moved).height * 0.5 +
+    offset +
+    manager.elevation
   )
 }
 
