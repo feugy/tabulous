@@ -2,6 +2,7 @@
 import '@babylonjs/core/Loading/loadingScreen'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import {
+  createBox,
   createCard,
   createCustom,
   createRoundToken,
@@ -15,6 +16,7 @@ import { makeLogger } from '../../utils/logger'
 const logger = makeLogger('scene-loader')
 
 const meshCreatorByName = new Map([
+  ['box', createBox],
   ['card', createCard],
   ['custom', createCustom],
   ['roundToken', createRoundToken],

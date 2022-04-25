@@ -1,4 +1,3 @@
-import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
 import {
   MoveBehaviorName,
@@ -16,6 +15,7 @@ jest.mock('../../../src/3d/managers/custom-shape', () => ({
 
 let engine
 let scene
+let createBox
 let createCard
 let createRoundToken
 let createRoundedTile
@@ -26,9 +26,8 @@ const pawnFile = '/pawn.babylon'
 beforeAll(async () => {
   engine = initialize3dEngine().engine
   // use dynamic import to break the cyclic dependency
-  ;({ createCard, createRoundToken, createRoundedTile } = await import(
-    '../../../src/3d/meshes'
-  ))
+  ;({ createBox, createCard, createRoundToken, createRoundedTile } =
+    await import('../../../src/3d/meshes'))
   customShapeManager.set(pawnFile, btoa(JSON.stringify(pawnData)))
 })
 
@@ -54,6 +53,25 @@ describe('serializeMeshes() 3D utility', () => {
 
     it('can handle an empty scene', () => {
       expect(serializeMeshes(scene)).toEqual([])
+    })
+
+    it('serializes boxes', () => {
+      const box1 = createBox({ id: 'box1' })
+      const box2 = createBox({
+        id: 'box2',
+        texture: faker.internet.url(),
+        images: [faker.random.word()],
+        x: faker.datatype.number(),
+        y: faker.datatype.number(),
+        z: faker.datatype.number(),
+        width: faker.datatype.number(),
+        height: faker.datatype.number(),
+        depth: faker.datatype.number()
+      })
+      expect(serializeMeshes(scene)).toEqual([
+        box1.metadata.serialize(),
+        box2.metadata.serialize()
+      ])
     })
 
     it('serializes cards', () => {
@@ -226,6 +244,27 @@ describe('loadMeshes() 3D utility', () => {
     z: -10
   }
 
+  let box1 = {
+    shape: 'box',
+    id: 'box1',
+    texture: 'https://obviously.org',
+    height: 1,
+    width: 1,
+    depth: 1,
+    x: -2,
+    y: 1,
+    z: -5,
+    faceUV: [
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0.5, 1, 0, 0],
+      [0.5, 0, 1, 1]
+    ],
+    drawable: { duration: 750, flipOnPlay: false, unflipOnPick: true }
+  }
+
   beforeAll(() => {
     ;({ engine, scene } = initialize3dEngine({ renderWidth, renderHeight }))
   })
@@ -243,7 +282,7 @@ describe('loadMeshes() 3D utility', () => {
   it('disposes all existing cards, tokens, tiles and boxes but leaves other meshes', () => {
     createTable()
     createRoundToken({ id: 'token' })
-    CreateBox('box', { width: 10, height: 10, depth: 10 })
+    createBox({ id: 'box' })
     createRoundedTile({ id: 'tile' })
     createCard({ id: 'card' })
 
@@ -263,7 +302,7 @@ describe('loadMeshes() 3D utility', () => {
   })
 
   it('adds new meshes with their behaviors', () => {
-    loadMeshes(scene, [card1, token1, tile1, card2, pawn1])
+    loadMeshes(scene, [card1, token1, tile1, card2, pawn1, box1])
     expect(scene.getMeshById(card1.id)).toBeDefined()
     expect(scene.getMeshById(card1.id).metadata.serialize()).toEqual(card1)
     expect(scene.getMeshById(card2.id)).toBeDefined()
@@ -274,6 +313,8 @@ describe('loadMeshes() 3D utility', () => {
     expect(scene.getMeshById(tile1.id).metadata.serialize()).toEqual(tile1)
     expect(scene.getMeshById(pawn1.id)).toBeDefined()
     expect(scene.getMeshById(pawn1.id).metadata.serialize()).toEqual(pawn1)
+    expect(scene.getMeshById(box1.id)).toBeDefined()
+    expect(scene.getMeshById(box1.id).metadata.serialize()).toEqual(box1)
   })
 
   it('trims null values out', () => {
@@ -334,7 +375,13 @@ describe('loadMeshes() 3D utility', () => {
       y: 20,
       z: 10
     })
-    loadMeshes(scene, [card1, card2, token1, tile1, pawn1])
+    const originalBox = createBox({
+      id: box1.id,
+      x: 30,
+      y: 20,
+      z: 10
+    })
+    loadMeshes(scene, [card1, card2, token1, tile1, pawn1, box1])
     expect(scene.getMeshById(card1.id)).toBeDefined()
     expect(scene.getMeshById(card1.id).metadata.serialize()).toEqual({
       ...originalCard.metadata.serialize(),
@@ -366,6 +413,13 @@ describe('loadMeshes() 3D utility', () => {
       x: pawn1.x,
       y: pawn1.y,
       z: pawn1.z
+    })
+    expect(scene.getMeshById(box1.id)).toBeDefined()
+    expect(scene.getMeshById(box1.id).metadata.serialize()).toEqual({
+      ...originalBox.metadata.serialize(),
+      x: box1.x,
+      y: box1.y,
+      z: box1.z
     })
   })
 

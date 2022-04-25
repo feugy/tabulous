@@ -83,11 +83,11 @@ type Mesh {
   stackable: StackableState
   drawable: DrawableState
   """
-  cards, rounded tokens and rounded tiles
+  boxes, cards, rounded tokens and rounded tiles
   """
   height: Float
   """
-  cards and rounded tiles
+  boxes, cards and rounded tiles
   """
   width: Float
   depth: Float
@@ -106,6 +106,7 @@ type Mesh {
 }
 
 enum Shape {
+  box
   card
   custom
   roundedTile
@@ -211,11 +212,11 @@ input MeshInput {
   stackable: StackableStateInput
   drawable: DrawableStateInput
   """
-  cards, rounded tokens and rounded tiles
+  boxes, cards, rounded tokens and rounded tiles
   """
   height: Float
   """
-  cards and rounded tiles
+  boxes, cards and rounded tiles
   """
   width: Float
   depth: Float
