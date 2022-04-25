@@ -28,15 +28,15 @@ describe('createMeshes()', () => {
       build: () => ({
         meshes: ids.map(id => ({ id })),
         bags: new Map([['cards', ids]]),
-        slots: [{ bagId: 'unknown', x: 1, y: 2, z: 3 }]
+        slots: [{ bagId: 'unknown', x: 1, y: 2, z: 3 }, { bagId: 'cards' }]
       })
     }
     expect(await createMeshes('cards', descriptor)).toEqual(
-      descriptor.build().meshes
+      descriptor.build().meshes.map(expect.objectContaining)
     )
   })
 
-  it('ignores missing slots', async () => {
+  it('trims out mesh dandling in bags', async () => {
     const ids = Array.from({ length: 3 }, (_, i) => `card-${i + 1}`)
     const descriptor = {
       build: () => ({
@@ -44,9 +44,7 @@ describe('createMeshes()', () => {
         bags: new Map([['cards', ids]])
       })
     }
-    expect(await createMeshes('cards', descriptor)).toEqual(
-      descriptor.build().meshes
-    )
+    expect(await createMeshes('cards', descriptor)).toEqual([])
   })
 
   it('ignores no bags', async () => {
@@ -169,34 +167,31 @@ describe('createMeshes()', () => {
     )
   })
 
-  describe('given a descriptor with single bag and slot', () => {
+  describe('given a descriptor with a count slot and a countless slot on the same bag', () => {
     const ids = Array.from({ length: 10 }, (_, i) => `card-${i + 1}`)
     const descriptor = {
       build: () => ({
         meshes: ids.map(id => ({ id })),
         bags: new Map([['cards', ids]]),
-        slots: [{ bagId: 'cards', x: 1, y: 2, z: 3 }]
+        slots: [
+          { bagId: 'cards', x: 1, y: 2, z: 3, count: 2 },
+          { bagId: 'cards', x: 2, y: 3, z: 4 }
+        ]
       })
     }
 
     it('stacks meshes on slots with random order', async () => {
       const {
         meshes: originals,
-        slots: [slot]
+        slots: [slot1, slot2]
       } = descriptor.build()
       const meshes = await createMeshes('cards', descriptor)
       expect(meshes).toEqual(
         expect.arrayContaining(originals.map(expect.objectContaining))
       )
       expect(meshes).not.toEqual(originals)
-      expect(
-        meshes.filter(({ stackable }) => stackable?.stackIds.length === 9)
-      ).toHaveLength(1)
-      expect(
-        meshes.every(
-          ({ x, y, z }) => x === slot.x && y === slot.y && z === slot.z
-        )
-      ).toBe(true)
+      expectStackedOnSlot(meshes, slot1)
+      expectStackedOnSlot(meshes, slot2, 8)
     })
 
     it('applies different slot order on different games', async () => {
@@ -206,6 +201,61 @@ describe('createMeshes()', () => {
       expect(meshes1).not.toEqual(originals)
       expect(meshes2).not.toEqual(originals)
       expect(meshes1).not.toEqual(meshes2)
+    })
+  })
+
+  describe('given a descriptor with multiple count slots on the same bag', () => {
+    const ids = Array.from({ length: 10 }, (_, i) => `card-${i + 1}`)
+    const descriptor = {
+      build: () => ({
+        meshes: ids.map(id => ({ id })),
+        bags: new Map([['cards', ids]]),
+        slots: [
+          { bagId: 'cards', x: 1, y: 2, z: 3, count: 2 },
+          { bagId: 'cards', x: 2, y: 3, z: 4, count: 3 }
+        ]
+      })
+    }
+
+    it('removes remaining meshes after processing all slots', async () => {
+      const {
+        slots: [slot1, slot2]
+      } = descriptor.build()
+      const meshes = await createMeshes('cards', descriptor)
+      expect(meshes).toHaveLength(slot1.count + slot2.count)
+      expectStackedOnSlot(meshes, slot1)
+      expectStackedOnSlot(meshes, slot2)
+    })
+  })
+
+  describe('given a descriptor with multiple slots on the same anchor', () => {
+    const ids = Array.from({ length: 10 }, (_, i) => `card-${i + 1}`)
+    const boardId = 'board'
+    const descriptor = {
+      build: () => ({
+        meshes: [
+          ...ids.map(id => ({ id })),
+          { id: boardId, anchorable: { anchors: [{ id: 'anchor' }] } }
+        ],
+        bags: new Map([['cards', ids]]),
+        slots: [
+          { bagId: 'cards', anchorId: 'anchor', count: 2 },
+          { bagId: 'cards', anchorId: 'anchor', count: 3 },
+          { bagId: 'cards', anchorId: 'anchor' }
+        ]
+      })
+    }
+
+    it('push meshes to the same stack', async () => {
+      const {
+        slots: [slot]
+      } = descriptor.build()
+      const meshes = await createMeshes('cards', descriptor)
+      expect(meshes).toHaveLength(ids.length + 1)
+      const { id: stackId } = expectStackedOnSlot(meshes, slot, ids.length)
+      const board = meshes.find(({ id }) => id === boardId)
+      expect(board).toBeDefined()
+      expect(board.anchorable.anchors[0].snappedId).toEqual(stackId)
     })
   })
 
@@ -553,3 +603,20 @@ describe('findOrCreateHand()', () => {
     expect(game.hands[1]).toEqual(created)
   })
 })
+
+function expectStackedOnSlot(meshes, slot, count = slot.count) {
+  const stack = meshes.find(
+    ({ stackable }) => stackable?.stackIds.length === count - 1
+  )
+  expect(stack).toBeDefined()
+  const stackedMeshes = meshes.filter(
+    ({ id }) => stack.stackable.stackIds.includes(id) || id === stack.id
+  )
+  expect(stackedMeshes).toHaveLength(count)
+  expect(
+    stackedMeshes.every(
+      ({ x, y, z }) => x === slot.x && y === slot.y && z === slot.z
+    )
+  ).toBe(true)
+  return stack
+}

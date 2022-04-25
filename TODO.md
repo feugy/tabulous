@@ -53,8 +53,6 @@
 
 ## Server
 
-- drop unused meshes in bags which are not used in any slot
-- stack meshes of different slots using the same anchor
 - use JWT as authentication token (stores player id and username)
 - allows a single connection per player (discards other JWTs)
 - logging (warning on invalid descriptors)

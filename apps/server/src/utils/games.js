@@ -14,8 +14,9 @@ import { shuffle } from './collections.js'
 /**
  * @typedef {object} GameSetup setup for a given game instance, including meshes, bags and slots.
  * Meshes could be cards, round tokens, rounded tiles... They must have an id.
- * Meshes can be randomized in bags, then positioned on slots.
- * Slots could be either anchors on other meshes, or mesh stacks
+ * Use bags to randomize meshes, and use slots to assign them to given positions (and with specific properties).
+ * Slot will stack onto meshes already there, optionnaly snapping them to an anchor.
+ * Meshes remaining in bags after processing all slots will be removed.
  * @property {import('../services/games').Mesh[]} meshes? - all meshes.
  * @property {Map<string, string[]>} bags? - map of randomized bags, as a list of mesh ids.
  * @property {Slot[]} slots? - a list of position slots
@@ -34,7 +35,9 @@ import { shuffle } from './collections.js'
  * anchor "bottom", of a mesh snapped on anchor "column-2".
  * If such configuration can not be found, the slot is ignored.
  *
- * NOTICE: when using multiple slots on the same bag, slot with no count nor anchor MUST COME LAST.
+ * NOTES:
+ * 1. when using multiple slots on the same bag, slot with no count nor anchor MUST COME LAST.
+ * 2. meshes remaining in bags after processing all slots will be removed.
  *
  * @property {string} bagId - id of a bag to pick meshes.
  * @property {string} anchorId? - id of the anchor to snap to.
@@ -78,6 +81,7 @@ export async function createMeshes(kind, descriptor) {
   for (const slot of slots ?? []) {
     fillSlot(slot, meshesByBagId, allMeshes)
   }
+  removeDandlingMeshes(meshesByBagId, allMeshes)
   return allMeshes
 }
 
@@ -125,24 +129,27 @@ function fillSlot(
   allMeshes
 ) {
   const candidates = meshesByBagId.get(bagId)
-  if (candidates) {
+  if (candidates?.length) {
     const meshes = candidates.splice(0, count ?? candidates.length)
     for (const mesh of meshes) {
       Object.assign(mesh, merge(mesh, props))
     }
+    let base = meshes[0]
+    let sliced = 1
     if (anchorId) {
       const anchor = findDeepAnchor(anchorId, allMeshes)
       if (anchor) {
-        anchor.snappedId = meshes[0].id
+        if (anchor.snappedId) {
+          base = findMesh(anchor.snappedId, allMeshes)
+          sliced = 0
+        } else {
+          anchor.snappedId = base.id
+        }
       }
     }
-    if (meshes.length > 1) {
-      Object.assign(
-        meshes[0],
-        merge(meshes[0], {
-          stackable: { stackIds: meshes.slice(1).map(({ id }) => id) }
-        })
-      )
+    const stackIds = meshes.slice(sliced).map(({ id }) => id)
+    if (stackIds.length) {
+      Object.assign(base, merge(base, { stackable: { stackIds } }))
     }
   }
 }
@@ -170,6 +177,19 @@ function findMeshAndAnchor(anchorId, meshes) {
     }
   }
   return null
+}
+
+function removeDandlingMeshes(meshesByBagId, allMeshes) {
+  const removedIds = []
+  for (const [, meshes] of meshesByBagId) {
+    removedIds.push(...meshes.map(({ id }) => id))
+  }
+  for (const id of removedIds) {
+    allMeshes.splice(
+      allMeshes.findIndex(mesh => mesh.id === id),
+      1
+    )
+  }
 }
 
 /**

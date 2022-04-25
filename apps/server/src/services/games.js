@@ -162,23 +162,31 @@ export async function createGame(kind, playerId) {
   if (!canAccess(player, descriptor)) {
     throw new Error(`Access to game ${kind} is restricted`)
   }
-  let game = {
-    locales: { ...descriptor.locales },
-    kind,
-    created: Date.now(),
-    playerIds: [playerId],
-    meshes: await createMeshes(kind, descriptor),
-    messages: [],
-    cameras: [],
-    hands: [],
-    rulesBookPageCount: descriptor.rulesBookPageCount
+  try {
+    let game = {
+      locales: { ...descriptor.locales },
+      kind,
+      created: Date.now(),
+      playerIds: [playerId],
+      meshes: await createMeshes(kind, descriptor),
+      messages: [],
+      cameras: [],
+      hands: [],
+      rulesBookPageCount: descriptor.rulesBookPageCount
+    }
+    if (descriptor?.addPlayer) {
+      game = await descriptor?.addPlayer(game, player)
+    }
+    const created = await repositories.games.save(game)
+    gameListsUpdate$.next(created.playerIds)
+    return created
+  } catch (err) {
+    console.error(
+      `Error thrown while building game ${kind}: ${err.message}`,
+      err.stack
+    )
+    throw err
   }
-  if (descriptor?.addPlayer) {
-    game = await descriptor?.addPlayer(game, player)
-  }
-  const created = await repositories.games.save(game)
-  gameListsUpdate$.next(created.playerIds)
-  return created
 }
 
 /**
