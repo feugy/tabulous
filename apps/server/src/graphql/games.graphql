@@ -83,13 +83,16 @@ type Mesh {
   stackable: StackableState
   drawable: DrawableState
   """
-  boxes, cards, rounded tokens and rounded tiles
+  boxes, cards, prisms, rounded tokens and rounded tiles
   """
   height: Float
   """
-  boxes, cards and rounded tiles
+  boxes, cards, prisms, and rounded tiles
   """
   width: Float
+  """
+  boxes, cards, and rounded tiles
+  """
   depth: Float
   """
   round tokens
@@ -103,12 +106,17 @@ type Mesh {
   custom
   """
   file: String
+  """
+  prisms
+  """
+  edges: Float
 }
 
 enum Shape {
   box
   card
   custom
+  prism
   roundedTile
   roundToken
 }
@@ -212,13 +220,16 @@ input MeshInput {
   stackable: StackableStateInput
   drawable: DrawableStateInput
   """
-  boxes, cards, rounded tokens and rounded tiles
+  boxes, cards, prisms, rounded tokens and rounded tiles
   """
   height: Float
   """
-  boxes, cards and rounded tiles
+  boxes, cards, prisms, and rounded tiles
   """
   width: Float
+  """
+  boxes, cards, and rounded tiles
+  """
   depth: Float
   """
   round tokens
@@ -232,6 +243,10 @@ input MeshInput {
   custom
   """
   file: String
+  """
+  prisms
+  """
+  edges: Float
 }
 
 input MessageInput {

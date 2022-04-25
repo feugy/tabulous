@@ -34,6 +34,11 @@
 
 ## UI
 
+- resizeable/capped to 25% height hand
+- bug: when stacked, only the last mesh could be picked (drag selection, action menu)
+- bug: no re-ordering animation for stacks of non-card meshes
+- bug: a tall stack of non-card meshes, after re-order, can not be picked any more (fixed on refresh)
+- bug: gravity only considers bounding box edges and center (long vertical meshes are not picked)
 - display peer's name when running draw animations + show peer avatar/name instead of pointer
 - allow selecting preferred camera/mic with https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/enumerateDevices
 - configurable player position at game level
@@ -48,6 +53,8 @@
 
 ## Server
 
+- drop unused meshes in bags which are not used in any slot
+- stack meshes of different slots using the same anchor
 - use JWT as authentication token (stores player id and username)
 - allows a single connection per player (discards other JWTs)
 - logging (warning on invalid descriptors)

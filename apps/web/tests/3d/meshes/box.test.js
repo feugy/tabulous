@@ -20,7 +20,6 @@ describe('createBox()', () => {
     expect(mesh.isPickable).toBe(false)
     expectPosition(mesh, [0, 0.5, 0])
     expect(mesh.metadata).toEqual({
-      images: undefined,
       serialize: expect.any(Function)
     })
     expect(mesh.behaviors).toHaveLength(0)

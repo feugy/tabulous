@@ -5,6 +5,7 @@ import {
   createBox,
   createCard,
   createCustom,
+  createPrism,
   createRoundToken,
   createRoundedTile
 } from '../meshes'
@@ -19,6 +20,7 @@ const meshCreatorByName = new Map([
   ['box', createBox],
   ['card', createCard],
   ['custom', createCustom],
+  ['prism', createPrism],
   ['roundToken', createRoundToken],
   ['roundedTile', createRoundedTile]
 ])

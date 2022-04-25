@@ -1,6 +1,6 @@
 import { Color4 } from '@babylonjs/core/Maths/math.color'
 import { faker } from '@faker-js/faker'
-import { createRoundToken } from '../../../src/3d/meshes'
+import { createPrism } from '../../../src/3d/meshes'
 import { controlManager, materialManager } from '../../../src/3d/managers'
 import { configures3dTestEngine, expectPosition } from '../../test-utils'
 
@@ -9,16 +9,15 @@ configures3dTestEngine(created => (scene = created.scene))
 
 beforeAll(() => materialManager.init({ scene }))
 
-describe('createRoundToken()', () => {
-  it('creates a token with default values and no behavior', () => {
-    const mesh = createRoundToken()
+describe('createPrism()', () => {
+  it('creates a prism with default values and no behavior', () => {
+    const mesh = createPrism()
     const { boundingBox } = mesh.getBoundingInfo()
-    expect(mesh.name).toEqual('roundToken')
-    expect(boundingBox.extendSize.x * 2).toEqual(2)
-    expect(boundingBox.extendSize.z * 2).toEqual(2)
-    expect(boundingBox.extendSize.y * 2).toEqual(0.1)
+    expect(mesh.name).toEqual('prism')
+    expect(boundingBox.extendSize.x * 2).toEqual(3)
+    expect(boundingBox.extendSize.y * 2).toEqual(1)
     expect(mesh.isPickable).toBe(false)
-    expectPosition(mesh, [0, 0.05, 0])
+    expectPosition(mesh, [0, 0.5, 0])
     expect(mesh.metadata).toEqual({
       serialize: expect.any(Function)
     })
@@ -27,20 +26,20 @@ describe('createRoundToken()', () => {
 
   it('creates a card with a single color', () => {
     const color = '#1E282F'
-    const mesh = createRoundToken({ texture: color })
+    const mesh = createPrism({ texture: color })
     const { boundingBox } = mesh.getBoundingInfo()
-    expect(mesh.name).toEqual('roundToken')
-    expect(boundingBox.extendSize.x * 2).toEqual(2)
-    expect(boundingBox.extendSize.z * 2).toEqual(2)
-    expect(boundingBox.extendSize.y * 2).toEqual(0.1)
+    expect(mesh.name).toEqual('prism')
+    expect(boundingBox.extendSize.x * 2).toEqual(3)
+    expect(boundingBox.extendSize.y * 2).toEqual(1)
     expect(mesh.isPickable).toBe(false)
     expect(mesh.material.diffuseColor).toEqual(Color4.FromHexString(color))
   })
 
-  describe('given a token with initial position, dimension, images and behaviors', () => {
+  describe('given a prism with initial position, edges number, dimension, images and behaviors', () => {
     let mesh
 
-    const diameter = faker.datatype.number()
+    const width = faker.datatype.number()
+    const edges = faker.datatype.number()
     const height = faker.datatype.number()
     const id = faker.datatype.uuid()
     const x = faker.datatype.number()
@@ -61,9 +60,10 @@ describe('createRoundToken()', () => {
     }
 
     beforeEach(() => {
-      mesh = createRoundToken({
+      mesh = createPrism({
         id,
-        diameter,
+        edges,
+        width,
         height,
         x,
         y,
@@ -75,10 +75,9 @@ describe('createRoundToken()', () => {
 
     it('has all the expected data', () => {
       const { boundingBox } = mesh.getBoundingInfo()
-      expect(mesh.name).toEqual('roundToken')
+      expect(mesh.name).toEqual('prism')
       expect(mesh.id).toEqual(id)
-      expect(boundingBox.extendSize.x * 2).toEqual(diameter)
-      expect(boundingBox.extendSize.z * 2).toEqual(diameter)
+      expect(boundingBox.extendSize.x * 2).toBeCloseTo(width)
       expect(boundingBox.extendSize.y * 2).toEqual(height)
       expect(mesh.isPickable).toBe(true)
       expectPosition(mesh, [x, y, z])
@@ -98,7 +97,7 @@ describe('createRoundToken()', () => {
       })
     })
 
-    it('unregisters token from controllables on disposal', () => {
+    it('unregisters prism from controllables on disposal', () => {
       expect(controlManager.isManaging(mesh)).toBe(true)
       mesh.dispose()
       expect(controlManager.isManaging(mesh)).toBe(false)
@@ -106,13 +105,14 @@ describe('createRoundToken()', () => {
 
     it('serialize with its state', () => {
       expect(mesh.metadata.serialize()).toEqual({
-        shape: 'roundToken',
+        shape: 'prism',
         id,
         x,
         y,
         z,
         faceUV,
-        diameter,
+        width,
+        edges,
         height,
         detailable: behaviors.detailable,
         rotable: {
