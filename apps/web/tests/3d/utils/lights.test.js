@@ -16,7 +16,7 @@ describe('createLights() 3D utility', () => {
       handScene
     })
     expect(light.name).toEqual('sun')
-    expect(light.intensity).toEqual(1)
+    expect(light.intensity).toEqual(0.5)
     expect(light.specular.asArray()).toEqual([0, 0, 0])
     expect(light.direction.x).toEqual(0)
     expect(light.direction.y).toEqual(-1)

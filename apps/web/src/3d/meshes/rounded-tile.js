@@ -42,7 +42,7 @@ function makeCornerMesh(
  * A tile's texture must have 2 faces, back then front, aligned horizontally.
  * @param {object} params - tile parameters, including (all other properties will be passed to the created mesh):
  * @param {string} params.id - tile's unique id.
- * @param {string} params.texture - card's texture url or hexadecimal string color.
+ * @param {string} params.texture - tile's texture url or hexadecimal string color.
  * @param {number[][]} params.faceUV? - up to 6 face UV (Vector4 components), to map texture on the tile.
  * @param {number} params.x? - initial position along the X axis.
  * @param {number} params.y? - initial position along the Y axis.

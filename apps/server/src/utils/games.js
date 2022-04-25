@@ -93,8 +93,15 @@ function isRelativeAsset(path) {
   return path && !path.startsWith('#') && !path.startsWith('/')
 }
 
-function addAbsoluteAsset(path, gameId, assetType) {
-  return `/games/${gameId}/${assetType}s/${path}`
+/**
+ * Adds prefix to a given's game asset, including game id and asset type.
+ * @param {string} path - path to the desired asset
+ * @param {string} gameKind - kind (name) of the game
+ * @param {string} assetType - either model, texture or image
+ * @returns {string} the final, full, asset path
+ */
+export function addAbsoluteAsset(path, gameKind, assetType) {
+  return `/games/${gameKind}/${assetType}s/${path}`
 }
 
 function randomizeBags(bags, meshById) {

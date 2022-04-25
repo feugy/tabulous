@@ -16,6 +16,7 @@ fragment mesh on Mesh {
   width
   height
   depth
+  edges
   diameter
   borderRadius
   detailable {

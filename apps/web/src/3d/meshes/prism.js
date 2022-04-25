@@ -4,45 +4,45 @@ import { controlManager, materialManager } from '../managers'
 import { registerBehaviors, serializeBehaviors } from '../utils'
 
 /**
- * Creates a round token, like a pocker one.
- * Tokens are cylinders, so their position is their center.
- * A token's texture must have 3 faces, back then edge then front, aligned horizontally.
- * @param {object} params - token parameters, including (all other properties will be passed to the created mesh):
- * @param {string} params.id - token's unique id.
- * @param {string} params.texture - token's texture url or hexadecimal string color.
- * @param {number[][]} params.faceUV? - up to 3 face UV (Vector4 components), to map texture on the token.
+ * Creates a prism, with a given number of base edge (starting at 3).
+ * A prism's texture must have edges + 2 faces, starting with back and ending with front, aligned horizontally.
+ * @param {object} params - prism parameters, including (all other properties will be passed to the created mesh):
+ * @param {string} params.id - prism's unique id.
+ * @param {string} params.texture - prism's texture url or hexadecimal string color.
+ * @param {number[][]} params.faceUV? - up to 3 face UV (Vector4 components), to map texture to the prism.
  * @param {number} params.x? - initial position along the X axis.
  * @param {number} params.y? - initial position along the Y axis.
  * @param {number} params.z? - initial position along the Z axis.
- * @param {number} params.diameter? - token's diameter (X+Z axis).
- * @param {number} params.height? - token's height (Y axis).
- * @param {import('@babylonjs/core').Scene} scene? - scene to host this round token (default to last scene).
- * @returns the created token mesh.
+ * @param {number} params.width? - prism's base size (X axis, size on Z depends on the number of edges).
+ * @param {number} params.height? - prism's height (Y axis).
+ * @param {import('@babylonjs/core').Scene} scene? - scene to host this round prism (default to last scene).
+ * @returns the created prism mesh.
  */
-export function createRoundToken(
+export function createPrism(
   {
     id,
     x = 0,
-    y = 0.05,
+    y = 0.5,
     z = 0,
-    diameter = 2,
-    height = 0.1,
+    width = 3,
+    height = 1,
+    edges = 6,
     texture,
     faceUV = [
-      [0, 0, 0.5, 1],
-      [0, 0, 0, 0],
-      [0.5, 0, 1, 1]
+      [0 / 3, 0, 1 / 3, 1],
+      [1 / 3, 0, 2 / 3, 1],
+      [2 / 3, 0, 3 / 3, 1]
     ],
     ...behaviorStates
   } = {},
   scene
 ) {
   const mesh = CreateCylinder(
-    'roundToken',
+    'prism',
     {
-      diameter,
+      diameter: width,
       height,
-      tessellation: 48,
+      tessellation: edges,
       faceUV: faceUV.map(components => Vector4.FromArray(components))
     },
     scene
@@ -61,7 +61,8 @@ export function createRoundToken(
       z: mesh.position.z,
       texture,
       faceUV,
-      diameter,
+      edges,
+      width,
       height,
       ...serializeBehaviors(mesh.behaviors)
     })
