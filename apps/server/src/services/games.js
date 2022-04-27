@@ -80,7 +80,7 @@ import repositories from '../repositories/index.js'
  */
 
 /**
- * @typedef {object} Anchorable a rectangular anchor definition:
+ * @typedef {object} Anchor a rectangular anchor definition:
  * @property {string} snappedId? - id of the mesh currently snapped to this anchor.
  * @property {number} x? - 3D coordinate (relative to the parent mesh) along the X axis (horizontal).
  * @property {number} z? - 3D coordinate (relative to the parent mesh) along the Z axis (vertical).
