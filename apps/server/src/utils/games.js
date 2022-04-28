@@ -14,8 +14,9 @@ import { shuffle } from './collections.js'
 /**
  * @typedef {object} GameSetup setup for a given game instance, including meshes, bags and slots.
  * Meshes could be cards, round tokens, rounded tiles... They must have an id.
- * Meshes can be randomized in bags, then positioned on slots.
- * Slots could be either anchors on other meshes, or mesh stacks
+ * Use bags to randomize meshes, and use slots to assign them to given positions (and with specific properties).
+ * Slot will stack onto meshes already there, optionnaly snapping them to an anchor.
+ * Meshes remaining in bags after processing all slots will be removed.
  * @property {import('../services/games').Mesh[]} meshes? - all meshes.
  * @property {Map<string, string[]>} bags? - map of randomized bags, as a list of mesh ids.
  * @property {Slot[]} slots? - a list of position slots
@@ -34,7 +35,9 @@ import { shuffle } from './collections.js'
  * anchor "bottom", of a mesh snapped on anchor "column-2".
  * If such configuration can not be found, the slot is ignored.
  *
- * NOTICE: when using multiple slots on the same bag, slot with no count nor anchor MUST COME LAST.
+ * NOTES:
+ * 1. when using multiple slots on the same bag, slot with no count nor anchor MUST COME LAST.
+ * 2. meshes remaining in bags after processing all slots will be removed.
  *
  * @property {string} bagId - id of a bag to pick meshes.
  * @property {string} anchorId? - id of the anchor to snap to.
@@ -78,6 +81,7 @@ export async function createMeshes(kind, descriptor) {
   for (const slot of slots ?? []) {
     fillSlot(slot, meshesByBagId, allMeshes)
   }
+  removeDandlingMeshes(meshesByBagId, allMeshes)
   return allMeshes
 }
 
@@ -125,29 +129,35 @@ function fillSlot(
   allMeshes
 ) {
   const candidates = meshesByBagId.get(bagId)
-  if (candidates) {
+  if (candidates?.length) {
     const meshes = candidates.splice(0, count ?? candidates.length)
     for (const mesh of meshes) {
       Object.assign(mesh, merge(mesh, props))
     }
     if (anchorId) {
-      const anchor = findDeepAnchor(anchorId, allMeshes)
+      const anchor = findAnchor(anchorId, allMeshes)
       if (anchor) {
-        anchor.snappedId = meshes[0].id
+        if (anchor.snappedId) {
+          meshes.splice(0, 0, findMeshById(anchor.snappedId, allMeshes))
+        } else {
+          anchor.snappedId = meshes[0].id
+        }
       }
     }
-    if (meshes.length > 1) {
-      Object.assign(
-        meshes[0],
-        merge(meshes[0], {
-          stackable: { stackIds: meshes.slice(1).map(({ id }) => id) }
-        })
-      )
-    }
+    stackMeshes(meshes)
   }
 }
 
-function findDeepAnchor(anchorId, meshes) {
+/**
+ * Crawl all meshes to find a given anchor Alter game data to draw some meshes from a given anchor into a player's hand.
+ * @param {string} anchorId - desired anchor id.
+ * @param {import('../services/games.js').Mesh[]} meshes - list of mesh to search into.
+ * @returns {import('../services/games.js').Anchor|null} the desired anchor, or null if it can't be found.
+ */
+export function findAnchor(anchorId, meshes) {
+  if (!meshes) {
+    return null
+  }
   let candidates = [...meshes]
   let anchor
   for (let leg of anchorId.split('.')) {
@@ -172,6 +182,19 @@ function findMeshAndAnchor(anchorId, meshes) {
   return null
 }
 
+function removeDandlingMeshes(meshesByBagId, allMeshes) {
+  const removedIds = []
+  for (const [, meshes] of meshesByBagId) {
+    removedIds.push(...meshes.map(({ id }) => id))
+  }
+  for (const id of removedIds) {
+    allMeshes.splice(
+      allMeshes.findIndex(mesh => mesh.id === id),
+      1
+    )
+  }
+}
+
 /**
  * Alter game data to draw some meshes from a given anchor into a player's hand.
  * Automatically creates player hands if needed.
@@ -186,11 +209,11 @@ function findMeshAndAnchor(anchorId, meshes) {
 export function drawInHand(game, { playerId, count = 1, fromAnchor }) {
   const hand = findOrCreateHand(game, playerId)
   const { meshes } = game
-  const anchor = findDeepAnchor(fromAnchor, meshes)
+  const anchor = findAnchor(fromAnchor, meshes)
   if (!anchor) {
     throw new Error(`no anchor with id '${fromAnchor}'`)
   }
-  const stack = findMesh(anchor.snappedId, meshes)
+  const stack = findMeshById(anchor.snappedId, meshes)
   if (!stack) {
     return
   }
@@ -222,13 +245,44 @@ export function findOrCreateHand(game, playerId) {
   return hand
 }
 
-function findMesh(id, meshes) {
-  return meshes.find(mesh => mesh.id === id) ?? null
+/**
+ * Finds a mesh by id.
+ * @param {string} id - desired mesh id.
+ * @param {*} meshes - mesh list to search in.
+ * @returns {import('../services/games').Mesh|null} corresponding mesh, if any.
+ */
+export function findMeshById(id, meshes) {
+  return meshes?.find(mesh => mesh.id === id) ?? null
 }
 
 function drawMesh(stackMesh, meshes) {
   if (stackMesh.stackable?.stackIds.length) {
     const id = stackMesh.stackable.stackIds.pop()
-    return findMesh(id, meshes)
+    return findMeshById(id, meshes)
+  }
+}
+
+/**
+ * Stack all provided meshes, in order (the first becomes stack base).
+ * @param {import('../services/games').Mesh[]} meshes - stacked meshes.
+ */
+export function stackMeshes(meshes) {
+  const stackIds = meshes.slice(1).map(({ id }) => id)
+  if (stackIds.length) {
+    Object.assign(meshes[0], merge(meshes[0], { stackable: { stackIds } }))
+  }
+}
+
+/**
+ * Snap a given mesh onto the specified anchor.
+ * Search for the anchor within provided meshes.
+ * @param {string} anchorId - desired anchor id.
+ * @param {import('../services/games').Mesh} mesh? - snapped mesh, if any.
+ * @param {import('../services/games').Mesh[]} meshes - all meshes to search the anchor in.
+ */
+export function snapTo(anchorId, mesh, meshes) {
+  const anchor = findAnchor(anchorId, meshes)
+  if (anchor) {
+    anchor.snappedId = mesh?.id
   }
 }

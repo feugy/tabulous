@@ -2,8 +2,13 @@ import { faker } from '@faker-js/faker'
 import {
   createMeshes,
   drawInHand,
-  findOrCreateHand
+  findAnchor,
+  findMeshById,
+  findOrCreateHand,
+  snapTo,
+  stackMeshes
 } from '../../src/utils/games.js'
+import { cloneAsJSON } from '../test-utils.js'
 
 describe('createMeshes()', () => {
   it('ignores missing mesh', async () => {
@@ -28,15 +33,15 @@ describe('createMeshes()', () => {
       build: () => ({
         meshes: ids.map(id => ({ id })),
         bags: new Map([['cards', ids]]),
-        slots: [{ bagId: 'unknown', x: 1, y: 2, z: 3 }]
+        slots: [{ bagId: 'unknown', x: 1, y: 2, z: 3 }, { bagId: 'cards' }]
       })
     }
     expect(await createMeshes('cards', descriptor)).toEqual(
-      descriptor.build().meshes
+      descriptor.build().meshes.map(expect.objectContaining)
     )
   })
 
-  it('ignores missing slots', async () => {
+  it('trims out mesh dandling in bags', async () => {
     const ids = Array.from({ length: 3 }, (_, i) => `card-${i + 1}`)
     const descriptor = {
       build: () => ({
@@ -44,9 +49,7 @@ describe('createMeshes()', () => {
         bags: new Map([['cards', ids]])
       })
     }
-    expect(await createMeshes('cards', descriptor)).toEqual(
-      descriptor.build().meshes
-    )
+    expect(await createMeshes('cards', descriptor)).toEqual([])
   })
 
   it('ignores no bags', async () => {
@@ -169,34 +172,31 @@ describe('createMeshes()', () => {
     )
   })
 
-  describe('given a descriptor with single bag and slot', () => {
+  describe('given a descriptor with a count slot and a countless slot on the same bag', () => {
     const ids = Array.from({ length: 10 }, (_, i) => `card-${i + 1}`)
     const descriptor = {
       build: () => ({
         meshes: ids.map(id => ({ id })),
         bags: new Map([['cards', ids]]),
-        slots: [{ bagId: 'cards', x: 1, y: 2, z: 3 }]
+        slots: [
+          { bagId: 'cards', x: 1, y: 2, z: 3, count: 2 },
+          { bagId: 'cards', x: 2, y: 3, z: 4 }
+        ]
       })
     }
 
     it('stacks meshes on slots with random order', async () => {
       const {
         meshes: originals,
-        slots: [slot]
+        slots: [slot1, slot2]
       } = descriptor.build()
       const meshes = await createMeshes('cards', descriptor)
       expect(meshes).toEqual(
         expect.arrayContaining(originals.map(expect.objectContaining))
       )
       expect(meshes).not.toEqual(originals)
-      expect(
-        meshes.filter(({ stackable }) => stackable?.stackIds.length === 9)
-      ).toHaveLength(1)
-      expect(
-        meshes.every(
-          ({ x, y, z }) => x === slot.x && y === slot.y && z === slot.z
-        )
-      ).toBe(true)
+      expectStackedOnSlot(meshes, slot1)
+      expectStackedOnSlot(meshes, slot2, 8)
     })
 
     it('applies different slot order on different games', async () => {
@@ -206,6 +206,61 @@ describe('createMeshes()', () => {
       expect(meshes1).not.toEqual(originals)
       expect(meshes2).not.toEqual(originals)
       expect(meshes1).not.toEqual(meshes2)
+    })
+  })
+
+  describe('given a descriptor with multiple count slots on the same bag', () => {
+    const ids = Array.from({ length: 10 }, (_, i) => `card-${i + 1}`)
+    const descriptor = {
+      build: () => ({
+        meshes: ids.map(id => ({ id })),
+        bags: new Map([['cards', ids]]),
+        slots: [
+          { bagId: 'cards', x: 1, y: 2, z: 3, count: 2 },
+          { bagId: 'cards', x: 2, y: 3, z: 4, count: 3 }
+        ]
+      })
+    }
+
+    it('removes remaining meshes after processing all slots', async () => {
+      const {
+        slots: [slot1, slot2]
+      } = descriptor.build()
+      const meshes = await createMeshes('cards', descriptor)
+      expect(meshes).toHaveLength(slot1.count + slot2.count)
+      expectStackedOnSlot(meshes, slot1)
+      expectStackedOnSlot(meshes, slot2)
+    })
+  })
+
+  describe('given a descriptor with multiple slots on the same anchor', () => {
+    const ids = Array.from({ length: 10 }, (_, i) => `card-${i + 1}`)
+    const boardId = 'board'
+    const descriptor = {
+      build: () => ({
+        meshes: [
+          ...ids.map(id => ({ id })),
+          { id: boardId, anchorable: { anchors: [{ id: 'anchor' }] } }
+        ],
+        bags: new Map([['cards', ids]]),
+        slots: [
+          { bagId: 'cards', anchorId: 'anchor', count: 2 },
+          { bagId: 'cards', anchorId: 'anchor', count: 3 },
+          { bagId: 'cards', anchorId: 'anchor' }
+        ]
+      })
+    }
+
+    it('push meshes to the same stack', async () => {
+      const {
+        slots: [slot]
+      } = descriptor.build()
+      const meshes = await createMeshes('cards', descriptor)
+      expect(meshes).toHaveLength(ids.length + 1)
+      const { id: stackId } = expectStackedOnSlot(meshes, slot, ids.length)
+      const board = meshes.find(({ id }) => id === boardId)
+      expect(board).toBeDefined()
+      expect(board.anchorable.anchors[0].snappedId).toEqual(stackId)
     })
   })
 
@@ -525,6 +580,23 @@ describe('drawInHand()', () => {
   })
 })
 
+describe('findMeshById()', () => {
+  const meshes = Array.from({ length: 10 }, () => ({
+    id: faker.datatype.uuid()
+  }))
+
+  it('returns existing meshes', () => {
+    expect(findMeshById(meshes[5].id, meshes)).toEqual(meshes[5])
+    expect(findMeshById(meshes[8].id, meshes)).toEqual(meshes[8])
+  })
+
+  it('returns null for unknown ids', () => {
+    expect(findMeshById(faker.datatype.uuid(), meshes)).toBeNull()
+    expect(findMeshById(meshes[0].id, [])).toBeNull()
+    expect(findMeshById(meshes[0].id)).toBeNull()
+  })
+})
+
 describe('findOrCreateHand()', () => {
   it('finds existing hand', () => {
     const playerId1 = faker.datatype.uuid()
@@ -551,5 +623,154 @@ describe('findOrCreateHand()', () => {
     expect(findOrCreateHand(game, playerId1)).toEqual(game.hands[0])
     expect(findOrCreateHand(game, playerId2)).toEqual(created)
     expect(game.hands[1]).toEqual(created)
+  })
+})
+
+function expectStackedOnSlot(meshes, slot, count = slot.count) {
+  const stack = meshes.find(
+    ({ stackable }) => stackable?.stackIds.length === count - 1
+  )
+  expect(stack).toBeDefined()
+  const stackedMeshes = meshes.filter(
+    ({ id }) => stack.stackable.stackIds.includes(id) || id === stack.id
+  )
+  expect(stackedMeshes).toHaveLength(count)
+  expect(
+    stackedMeshes.every(
+      ({ x, y, z }) => x === slot.x && y === slot.y && z === slot.z
+    )
+  ).toBe(true)
+  return stack
+}
+
+describe('findAnchor()', () => {
+  const anchors = Array.from({ length: 10 }, () => ({
+    id: faker.datatype.uuid()
+  }))
+
+  const meshes = [
+    { id: 'mesh0' },
+    { id: 'mesh1', anchorable: { anchors: anchors.slice(0, 3) } },
+    { id: 'mesh2', anchorable: { anchors: [] } },
+    { id: 'mesh3', anchorable: { anchors: anchors.slice(3, 6) } },
+    { id: 'mesh4', anchorable: { anchors: anchors.slice(6) } }
+  ]
+
+  it('returns null on unknown anchor', () => {
+    expect(findAnchor(faker.datatype.uuid(), meshes)).toBeNull()
+    expect(findAnchor(anchors[0].id, [])).toBeNull()
+    expect(findAnchor(anchors[0].id)).toBeNull()
+  })
+
+  it('returns existing anchor', () => {
+    expect(findAnchor(anchors[0].id, meshes)).toEqual(anchors[0])
+    expect(findAnchor(anchors[4].id, meshes)).toEqual(anchors[4])
+    expect(findAnchor(anchors[7].id, meshes)).toEqual(anchors[7])
+  })
+
+  it('returns existing, deep, anchor', () => {
+    const meshes = [
+      { id: 'mesh0', anchorable: { anchors: [{ id: 'bottom' }] } },
+      {
+        id: 'mesh1',
+        anchorable: { anchors: [{ id: 'bottom', snappedId: 'mesh3' }] }
+      },
+      {
+        id: 'mesh2',
+        anchorable: { anchors: [{ id: 'start', snappedId: 'mesh1' }] }
+      },
+      {
+        id: 'mesh3',
+        anchorable: { anchors: [{ id: 'bottom', snappedId: 'mesh0' }] }
+      }
+    ]
+    expect(findAnchor('start.bottom', meshes)).toEqual(
+      meshes[1].anchorable.anchors[0]
+    )
+    expect(findAnchor('start.bottom.bottom', meshes)).toEqual(
+      meshes[3].anchorable.anchors[0]
+    )
+    expect(findAnchor('start.bottom.bottom.bottom', meshes)).toEqual(
+      meshes[0].anchorable.anchors[0]
+    )
+    expect(findAnchor('bottom', meshes)).toEqual(
+      meshes[0].anchorable.anchors[0]
+    )
+  })
+})
+
+describe('snapTo()', () => {
+  const meshes = [
+    { id: 'mesh0' },
+    { id: 'mesh1', anchorable: { anchors: [{ id: 'anchor1' }] } },
+    {
+      id: 'mesh2',
+      anchorable: { anchors: [{ id: 'anchor2' }, { id: 'anchor3' }] }
+    },
+    { id: 'mesh3' }
+  ]
+
+  it('snaps a mesh to an existing anchor', () => {
+    snapTo('anchor3', meshes[0], meshes)
+    expect(meshes[2]).toEqual({
+      id: 'mesh2',
+      anchorable: {
+        anchors: [{ id: 'anchor2' }, { id: 'anchor3', snappedId: 'mesh0' }]
+      }
+    })
+  })
+
+  it('ignores unknown anchor', () => {
+    const clonedMeshes = cloneAsJSON(meshes)
+    snapTo('anchor10', meshes[0], clonedMeshes)
+    expect(clonedMeshes).toEqual(meshes)
+  })
+
+  it('ignores unknown mesh', () => {
+    const clonedMeshes = cloneAsJSON(meshes)
+    snapTo('anchor1', null, clonedMeshes)
+    expect(clonedMeshes).toEqual(meshes)
+  })
+})
+
+describe('stackMeshes()', () => {
+  let meshes
+
+  beforeEach(() => {
+    meshes = [
+      { id: 'mesh0' },
+      { id: 'mesh1' },
+      { id: 'mesh2' },
+      { id: 'mesh3' },
+      { id: 'mesh4' }
+    ]
+  })
+
+  it('stacks a list of meshes in order', () => {
+    stackMeshes(meshes)
+    expect(meshes).toEqual([
+      {
+        id: 'mesh0',
+        stackable: { stackIds: ['mesh1', 'mesh2', 'mesh3', 'mesh4'] }
+      },
+      ...meshes.slice(1)
+    ])
+  })
+
+  it('stacks on top of an existing stack', () => {
+    meshes[0].stackable = { stackIds: ['mesh4', 'mesh3'] }
+    stackMeshes([meshes[0], ...meshes.slice(1, 3)])
+    expect(meshes).toEqual([
+      {
+        id: 'mesh0',
+        stackable: { stackIds: ['mesh4', 'mesh3', 'mesh1', 'mesh2'] }
+      },
+      ...meshes.slice(1)
+    ])
+  })
+
+  it('do nothing on a stack of one', () => {
+    stackMeshes(meshes.slice(0, 1))
+    expect(meshes).toEqual([{ id: 'mesh0' }, ...meshes.slice(1)])
   })
 })

@@ -1,7 +1,7 @@
 /**
  * Shuffle an array, several times, using Fisher–Yates algorithm.
  * @param {any[]} source - source array.
- * @param {number} [iterations=3] - how many times the array is shuffled.
+ * @param {number} [iterations=5] - how many times the array is shuffled.
  * @returns {any[]} a randomized copy of the source array.
  * @see {@link https://bost.ocks.org/mike/shuffle/}
  */
