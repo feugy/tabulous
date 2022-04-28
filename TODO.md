@@ -34,11 +34,16 @@
 
 ## UI
 
-- resizeable/capped to 25% height hand
+- select multiple from any any stack (not just drawable cards)
+- collapsible/resizeable/capped hand
+- lock meshes to avoid moving
 - bug: when stacked, only the last mesh could be picked (drag selection, action menu)
 - bug: no re-ordering animation for stacks of non-card meshes
 - bug: a tall stack of non-card meshes, after re-order, can not be picked any more (fixed on refresh)
 - bug: gravity only considers bounding box edges and center (long vertical meshes are not picked)
+- quatifiable (stackable) behavior
+- use `TouchEvent.scale` to detect pinches https://developer.mozilla.org/en-US/docs/Web/API/TouchEvent
+- rework interaction model https://www.unixpapa.com/js/testmouse.html
 - display peer's name when running draw animations + show peer avatar/name instead of pointer
 - allow selecting preferred camera/mic with https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/enumerateDevices
 - configurable player position at game level
@@ -49,7 +54,7 @@
 - keyboard
 - indicates when remote stream is muted/stopped
 - zoom in/out on rules
-- issue: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
+- bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
 
 ## Server
 
@@ -95,7 +100,7 @@
 | fullscreen       | _button_                           | ~/esc                             |
 | save camera      | _button_                           | shift+number, _menu action_       |
 | restore camera   | _button_                           | number, _menu action_             |
-| menu             | _N/A_                              | right click                       |
+| menu             | double left click/tap              | right click                       |
 | toggle hand      | _N/A_                              | _menu action_                     |
 | toggle interface | _N/A_                              | _menu action_                     |
 | help             | _N/A_                              | F1, _button_, _menu action_       |
@@ -111,7 +116,7 @@
 | rotate         | right click, 2 fingers tap, _menu action_ | Ctrl+left drag, Q/E/PgUp/PgDown, _menu action_   |
 | (un)lock       | _N/A_                                     | L, _menu action_                                 |
 | put under      | _N/A_                                     | U, _menu action_                                 |
-| take to hand   | _N/A_                                     | T, _move to screen bottom_, _menu action (draw)_ |
+| take to hand   | drag to hand, menu action                 | T, _move to screen bottom_, _menu action (draw)_ |
 
 | Action on Stacks    | Tabulous      | Tabletopia                              |
 | ------------------- | ------------- | --------------------------------------- |
@@ -283,9 +288,14 @@ Some useful commands:
   ```
   convert in.png -alpha off -fuzz 10% -fill none -draw "matte 1,1 floodfill"  \( +clone -alpha extract -blur 0x2 -level 50x100% \) -alpha off -compose copy_opacity -composite out.png
   ```
-- [convert all pngs to webp](https://stackoverflow.com/a/27784462/1182976);
+- [convert all pngs to webp](https://stackoverflow.com/a/27784462/1182976):
   ```
   convert *.png -set filename:base "%[basename]" -define webp:lossless=true "%[filename:base].webp"
+  ```
+- [extract a given polygon from an image](https://stackoverflow.com/a/18992215/1182976):
+  ```
+  convert -size 100x100 xc:none -draw "roundrectangle 0,0,100,100,15,15" mask.png
+  convert in.png -matte mask.png -compose DstIn -composite out.png
   ```
 
 There is no built-in way for the remote side of an WebRTC connection to know that video or audio was disabled.

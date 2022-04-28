@@ -1,7 +1,5 @@
 import { Animation } from '@babylonjs/core/Animations/animation'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
-import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
 import {
   AnchorBehaviorName,
   MoveBehaviorName,
@@ -20,6 +18,7 @@ import {
   applyGravity,
   attachFunctions,
   attachProperty,
+  buildTargetMesh,
   getAnimatableBehavior,
   getCenterAltitudeAbove,
   getDimensions,
@@ -520,19 +519,10 @@ export class StackBehavior extends TargetBehavior {
     if (this.dropZone) {
       this.removeZone(this.dropZone)
     }
-    // builds a drop zone from the mesh's dimensions
-    const { x, y, z } = this.mesh.getBoundingInfo().boundingBox.extendSizeWorld
-    const scene = this.mesh.getScene()
-    const dropZone =
-      this.mesh.name === 'roundToken'
-        ? CreateCylinder('drop-zone', { diameter: x * 2, height: y * 2 }, scene)
-        : CreateBox(
-            'drop-zone',
-            { width: x * 2, height: y * 2, depth: z * 2 },
-            scene
-          )
-    dropZone.parent = this.mesh
-    this.dropZone = this.addZone(dropZone, this._state)
+    this.dropZone = this.addZone(
+      buildTargetMesh('drop-zone', this.mesh),
+      this._state
+    )
 
     this.inhibitControl = true
     for (const id of stackIds) {

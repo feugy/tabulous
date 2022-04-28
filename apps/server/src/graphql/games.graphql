@@ -61,6 +61,8 @@ type Anchor {
   width: Float
   height: Float
   depth: Float
+  diameter: Float
+  extent: Float
   priority: Float
   kinds: [String]
   snappedId: ID
@@ -198,6 +200,8 @@ input AnchorInput {
   width: Float
   height: Float
   depth: Float
+  diameter: Float
+  extent: Float
   priority: Float
   kinds: [String]
   snappedId: ID

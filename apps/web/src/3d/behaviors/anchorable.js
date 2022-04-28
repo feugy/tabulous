@@ -1,4 +1,3 @@
-import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { AnchorBehaviorName } from './names'
 import { TargetBehavior } from './targetable'
@@ -6,6 +5,7 @@ import {
   animateMove,
   attachFunctions,
   attachProperty,
+  buildTargetMesh,
   getPositionAboveZone,
   getTargetableBehavior
 } from '../utils'
@@ -252,17 +252,25 @@ export class AnchorBehavior extends TargetBehavior {
     this.state = { anchors, duration }
     for (const [
       i,
-      { x, y, z, width, depth, height, snappedId, ...zoneProps }
+      { x, y, z, width, depth, height, diameter, snappedId, ...zoneProps }
     ] of this.state.anchors.entries()) {
-      const scene = this.mesh.getScene()
-      const dropZone = CreateBox(`anchor-${i}`, { width, depth, height }, scene)
-      dropZone.parent = this.mesh
+      const dropZone = buildTargetMesh(
+        `anchor-${i}`,
+        this.mesh,
+        diameter
+          ? { diameter, height }
+          : {
+              width,
+              depth,
+              height
+            }
+      )
       dropZone.position = new Vector3(x ?? 0, y ?? 0, z ?? 0)
       dropZone.computeWorldMatrix(true)
       const zone = this.addZone(dropZone, {
-        extent: 0.6,
         enabled: true,
-        ...zoneProps
+        ...zoneProps,
+        extent: zoneProps.extent || 0.6
       })
       // relates the created zone with the anchor
       zone.anchorIndex = i

@@ -1,5 +1,7 @@
 import { Animation } from '@babylonjs/core/Animations/animation'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
 import {
   AnchorBehavior,
   DetailBehavior,
@@ -326,4 +328,37 @@ function parseFloat(
     outTangent,
     interpolation
   }
+}
+
+/**
+ * Builds a "target" mesh that can be used as a targetable zone.
+ * It'll be assigned as a child or the provided parent.
+ * Creates a cylinder when the mesh's name is 'roundToken' or when providing dimension's diameter.
+ * Otherwise, creates a box.
+ * @param {string} name - new mesh's name
+ * @param {import('@babel/core').Mesh} parent - mesh to copy dimensions and shape from.
+ * @param {object} dimensions? - target dimensions. When specified, prevail on parent's shape:
+ * @param {number} dimensions.width - target's width.
+ * @param {number} dimensions.height - target's height.
+ * @param {number} dimensions.depth - target's depth.
+ * @param {number} dimensions.diameter - target's diameter.
+ * @returns {import('@babel/core').Mesh} created target mesh.
+ */
+export function buildTargetMesh(name, parent, dimensions) {
+  const { x, y, z } = parent.getBoundingInfo().boundingBox.extendSizeWorld
+  const scene = parent.getScene()
+  const created =
+    dimensions?.diameter || parent.name === 'roundToken'
+      ? CreateCylinder(
+          name,
+          dimensions ?? { diameter: x * 2, height: y * 2 },
+          scene
+        )
+      : CreateBox(
+          name,
+          dimensions ?? { width: x * 2, height: y * 2, depth: z * 2 },
+          scene
+        )
+  created.parent = parent
+  return created
 }

@@ -1,5 +1,6 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
 import { faker } from '@faker-js/faker'
 import {
   configures3dTestEngine,
@@ -158,6 +159,39 @@ describe('StackBehavior', () => {
 
       behavior.fromState({ duration, extent, stackIds, kinds, priority })
       expectZone(behavior, extent, false, kinds, priority)
+      expectStacked([mesh, meshes[0], meshes[2]])
+      expect(behavior.state.duration).toEqual(duration)
+      expect(behavior.state.extent).toEqual(extent)
+      expect(mesh.metadata).toEqual(
+        expect.objectContaining({
+          push: expect.any(Function),
+          pop: expect.any(Function),
+          reorder: expect.any(Function),
+          flipAll: expect.any(Function),
+          canPush: expect.any(Function)
+        })
+      )
+      expect(recordSpy).not.toHaveBeenCalled()
+    })
+
+    it('can hydrate with cylindric zone', async () => {
+      const extent = faker.datatype.number()
+      const stackIds = [meshes[0].id, meshes[2].id]
+      const duration = faker.datatype.number()
+      const kinds = ['tokens']
+      const priority = faker.datatype.number()
+      const diameter = 5
+      expect(meshes[0].absolutePosition).toEqual(Vector3.FromArray([1, 1, 1]))
+      expect(meshes[2].absolutePosition).toEqual(Vector3.FromArray([3, 3, 3]))
+      mesh.removeBehavior(behavior)
+      mesh = CreateCylinder('roundToken', { diameter })
+      mesh.addBehavior(behavior, true)
+
+      behavior.fromState({ duration, extent, stackIds, kinds, priority })
+      expectZone(behavior, extent, false, kinds, priority)
+      const { boundingBox } = behavior.zones[0].mesh.getBoundingInfo()
+      expect(boundingBox.extendSize.x * 2).toBeCloseTo(diameter)
+      expect(boundingBox.extendSize.z * 2).toBeCloseTo(diameter)
       expectStacked([mesh, meshes[0], meshes[2]])
       expect(behavior.state.duration).toEqual(duration)
       expect(behavior.state.extent).toEqual(extent)

@@ -4,10 +4,10 @@
 
 <style lang="postcss">
   .indicator {
-    @apply absolute transform-gpu -translate-y-1/2 -translate-x-1/2
+    @apply absolute transform-gpu -translate-y-1/2 -translate-x-1
             pointer-events-none 
             font-bold text-lg text-$primary-lightest
-            bg-$primary
+            bg-$primary opacity-85
             py-1 pr-2 pl-5 rounded;
     clip-path: polygon(1rem 0%, 100% 0, 100% 100%, 1rem 100%, 0% 50%);
   }
