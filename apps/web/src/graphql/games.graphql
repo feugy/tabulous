@@ -52,6 +52,8 @@ fragment mesh on Mesh {
       width
       height
       depth
+      diameter
+      extent
       kinds
       priority
       snappedId

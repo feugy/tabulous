@@ -185,6 +185,23 @@ describe('AnchorBehavior', () => {
       expectMoveRecorded(moveRecorded)
     })
 
+    it('can hydrate cylindric anchors', () => {
+      behavior.fromState({
+        anchors: [
+          { x: 1, y: 1, z: 0, diameter: 4, height: 0.5, extent: 1.2 },
+          { x: 1, y: 1, z: 0, diameter: 2, height: 0.1, extent: null }
+        ]
+      })
+      expect(behavior.state.anchors).toEqual([
+        { x: 1, y: 1, z: 0, diameter: 4, height: 0.5, extent: 1.2 },
+        { x: 1, y: 1, z: 0, diameter: 2, height: 0.1, extent: null }
+      ])
+      expectAnchor(0, behavior.state.anchors[0])
+      expectAnchor(1, behavior.state.anchors[1])
+      expect(recordSpy).not.toHaveBeenCalled()
+      expectMoveRecorded(moveRecorded)
+    })
+
     it('disposes previous anchors when hydrating', () => {
       expect(behavior.zones).toHaveLength(2)
       expect(behavior.state.anchors).toHaveLength(2)
@@ -703,7 +720,7 @@ describe('AnchorBehavior', () => {
 
     function expectAnchor(
       rank,
-      { width, height, depth, x = 0, y = 0, z = 0 },
+      { width, height, depth, diameter, x = 0, y = 0, z = 0 },
       isEnabled = true,
       kinds = undefined,
       priority = 0
@@ -714,9 +731,9 @@ describe('AnchorBehavior', () => {
       expect(zone.kinds).toEqual(kinds)
       expect(zone.priority).toEqual(priority)
       const { boundingBox } = zone.mesh.getBoundingInfo()
-      expect(boundingBox.extendSize.x * 2).toEqual(width)
-      expect(boundingBox.extendSize.y * 2).toEqual(height)
-      expect(boundingBox.extendSize.z * 2).toEqual(depth)
+      expect(boundingBox.extendSize.x * 2).toBeCloseTo(diameter ?? width)
+      expect(boundingBox.extendSize.y * 2).toBeCloseTo(height)
+      expect(boundingBox.extendSize.z * 2).toBeCloseTo(diameter ?? depth)
       expect(zone.mesh.absolutePosition.asArray()).toEqual([x, y, z])
     }
   })
