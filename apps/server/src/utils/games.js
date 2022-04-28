@@ -134,27 +134,30 @@ function fillSlot(
     for (const mesh of meshes) {
       Object.assign(mesh, merge(mesh, props))
     }
-    let base = meshes[0]
-    let sliced = 1
     if (anchorId) {
-      const anchor = findDeepAnchor(anchorId, allMeshes)
+      const anchor = findAnchor(anchorId, allMeshes)
       if (anchor) {
         if (anchor.snappedId) {
-          base = findMesh(anchor.snappedId, allMeshes)
-          sliced = 0
+          meshes.splice(0, 0, findMeshById(anchor.snappedId, allMeshes))
         } else {
-          anchor.snappedId = base.id
+          anchor.snappedId = meshes[0].id
         }
       }
     }
-    const stackIds = meshes.slice(sliced).map(({ id }) => id)
-    if (stackIds.length) {
-      Object.assign(base, merge(base, { stackable: { stackIds } }))
-    }
+    stackMeshes(meshes)
   }
 }
 
-function findDeepAnchor(anchorId, meshes) {
+/**
+ * Crawl all meshes to find a given anchor Alter game data to draw some meshes from a given anchor into a player's hand.
+ * @param {string} anchorId - desired anchor id.
+ * @param {import('../services/games.js').Mesh[]} meshes - list of mesh to search into.
+ * @returns {import('../services/games.js').Anchor|null} the desired anchor, or null if it can't be found.
+ */
+export function findAnchor(anchorId, meshes) {
+  if (!meshes) {
+    return null
+  }
   let candidates = [...meshes]
   let anchor
   for (let leg of anchorId.split('.')) {
@@ -206,11 +209,11 @@ function removeDandlingMeshes(meshesByBagId, allMeshes) {
 export function drawInHand(game, { playerId, count = 1, fromAnchor }) {
   const hand = findOrCreateHand(game, playerId)
   const { meshes } = game
-  const anchor = findDeepAnchor(fromAnchor, meshes)
+  const anchor = findAnchor(fromAnchor, meshes)
   if (!anchor) {
     throw new Error(`no anchor with id '${fromAnchor}'`)
   }
-  const stack = findMesh(anchor.snappedId, meshes)
+  const stack = findMeshById(anchor.snappedId, meshes)
   if (!stack) {
     return
   }
@@ -242,13 +245,44 @@ export function findOrCreateHand(game, playerId) {
   return hand
 }
 
-function findMesh(id, meshes) {
-  return meshes.find(mesh => mesh.id === id) ?? null
+/**
+ * Finds a mesh by id.
+ * @param {string} id - desired mesh id.
+ * @param {*} meshes - mesh list to search in.
+ * @returns {import('../services/games').Mesh|null} corresponding mesh, if any.
+ */
+export function findMeshById(id, meshes) {
+  return meshes?.find(mesh => mesh.id === id) ?? null
 }
 
 function drawMesh(stackMesh, meshes) {
   if (stackMesh.stackable?.stackIds.length) {
     const id = stackMesh.stackable.stackIds.pop()
-    return findMesh(id, meshes)
+    return findMeshById(id, meshes)
+  }
+}
+
+/**
+ * Stack all provided meshes, in order (the first becomes stack base).
+ * @param {import('../services/games').Mesh[]} meshes - stacked meshes.
+ */
+export function stackMeshes(meshes) {
+  const stackIds = meshes.slice(1).map(({ id }) => id)
+  if (stackIds.length) {
+    Object.assign(meshes[0], merge(meshes[0], { stackable: { stackIds } }))
+  }
+}
+
+/**
+ * Snap a given mesh onto the specified anchor.
+ * Search for the anchor within provided meshes.
+ * @param {string} anchorId - desired anchor id.
+ * @param {import('../services/games').Mesh} mesh? - snapped mesh, if any.
+ * @param {import('../services/games').Mesh[]} meshes - all meshes to search the anchor in.
+ */
+export function snapTo(anchorId, mesh, meshes) {
+  const anchor = findAnchor(anchorId, meshes)
+  if (anchor) {
+    anchor.snappedId = mesh?.id
   }
 }

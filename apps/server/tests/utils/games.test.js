@@ -2,8 +2,13 @@ import { faker } from '@faker-js/faker'
 import {
   createMeshes,
   drawInHand,
-  findOrCreateHand
+  findAnchor,
+  findMeshById,
+  findOrCreateHand,
+  snapTo,
+  stackMeshes
 } from '../../src/utils/games.js'
+import { cloneAsJSON } from '../test-utils.js'
 
 describe('createMeshes()', () => {
   it('ignores missing mesh', async () => {
@@ -575,6 +580,23 @@ describe('drawInHand()', () => {
   })
 })
 
+describe('findMeshById()', () => {
+  const meshes = Array.from({ length: 10 }, () => ({
+    id: faker.datatype.uuid()
+  }))
+
+  it('returns existing meshes', () => {
+    expect(findMeshById(meshes[5].id, meshes)).toEqual(meshes[5])
+    expect(findMeshById(meshes[8].id, meshes)).toEqual(meshes[8])
+  })
+
+  it('returns null for unknown ids', () => {
+    expect(findMeshById(faker.datatype.uuid(), meshes)).toBeNull()
+    expect(findMeshById(meshes[0].id, [])).toBeNull()
+    expect(findMeshById(meshes[0].id)).toBeNull()
+  })
+})
+
 describe('findOrCreateHand()', () => {
   it('finds existing hand', () => {
     const playerId1 = faker.datatype.uuid()
@@ -620,3 +642,135 @@ function expectStackedOnSlot(meshes, slot, count = slot.count) {
   ).toBe(true)
   return stack
 }
+
+describe('findAnchor()', () => {
+  const anchors = Array.from({ length: 10 }, () => ({
+    id: faker.datatype.uuid()
+  }))
+
+  const meshes = [
+    { id: 'mesh0' },
+    { id: 'mesh1', anchorable: { anchors: anchors.slice(0, 3) } },
+    { id: 'mesh2', anchorable: { anchors: [] } },
+    { id: 'mesh3', anchorable: { anchors: anchors.slice(3, 6) } },
+    { id: 'mesh4', anchorable: { anchors: anchors.slice(6) } }
+  ]
+
+  it('returns null on unknown anchor', () => {
+    expect(findAnchor(faker.datatype.uuid(), meshes)).toBeNull()
+    expect(findAnchor(anchors[0].id, [])).toBeNull()
+    expect(findAnchor(anchors[0].id)).toBeNull()
+  })
+
+  it('returns existing anchor', () => {
+    expect(findAnchor(anchors[0].id, meshes)).toEqual(anchors[0])
+    expect(findAnchor(anchors[4].id, meshes)).toEqual(anchors[4])
+    expect(findAnchor(anchors[7].id, meshes)).toEqual(anchors[7])
+  })
+
+  it('returns existing, deep, anchor', () => {
+    const meshes = [
+      { id: 'mesh0', anchorable: { anchors: [{ id: 'bottom' }] } },
+      {
+        id: 'mesh1',
+        anchorable: { anchors: [{ id: 'bottom', snappedId: 'mesh3' }] }
+      },
+      {
+        id: 'mesh2',
+        anchorable: { anchors: [{ id: 'start', snappedId: 'mesh1' }] }
+      },
+      {
+        id: 'mesh3',
+        anchorable: { anchors: [{ id: 'bottom', snappedId: 'mesh0' }] }
+      }
+    ]
+    expect(findAnchor('start.bottom', meshes)).toEqual(
+      meshes[1].anchorable.anchors[0]
+    )
+    expect(findAnchor('start.bottom.bottom', meshes)).toEqual(
+      meshes[3].anchorable.anchors[0]
+    )
+    expect(findAnchor('start.bottom.bottom.bottom', meshes)).toEqual(
+      meshes[0].anchorable.anchors[0]
+    )
+    expect(findAnchor('bottom', meshes)).toEqual(
+      meshes[0].anchorable.anchors[0]
+    )
+  })
+})
+
+describe('snapTo()', () => {
+  const meshes = [
+    { id: 'mesh0' },
+    { id: 'mesh1', anchorable: { anchors: [{ id: 'anchor1' }] } },
+    {
+      id: 'mesh2',
+      anchorable: { anchors: [{ id: 'anchor2' }, { id: 'anchor3' }] }
+    },
+    { id: 'mesh3' }
+  ]
+
+  it('snaps a mesh to an existing anchor', () => {
+    snapTo('anchor3', meshes[0], meshes)
+    expect(meshes[2]).toEqual({
+      id: 'mesh2',
+      anchorable: {
+        anchors: [{ id: 'anchor2' }, { id: 'anchor3', snappedId: 'mesh0' }]
+      }
+    })
+  })
+
+  it('ignores unknown anchor', () => {
+    const clonedMeshes = cloneAsJSON(meshes)
+    snapTo('anchor10', meshes[0], clonedMeshes)
+    expect(clonedMeshes).toEqual(meshes)
+  })
+
+  it('ignores unknown mesh', () => {
+    const clonedMeshes = cloneAsJSON(meshes)
+    snapTo('anchor1', null, clonedMeshes)
+    expect(clonedMeshes).toEqual(meshes)
+  })
+})
+
+describe('stackMeshes()', () => {
+  let meshes
+
+  beforeEach(() => {
+    meshes = [
+      { id: 'mesh0' },
+      { id: 'mesh1' },
+      { id: 'mesh2' },
+      { id: 'mesh3' },
+      { id: 'mesh4' }
+    ]
+  })
+
+  it('stacks a list of meshes in order', () => {
+    stackMeshes(meshes)
+    expect(meshes).toEqual([
+      {
+        id: 'mesh0',
+        stackable: { stackIds: ['mesh1', 'mesh2', 'mesh3', 'mesh4'] }
+      },
+      ...meshes.slice(1)
+    ])
+  })
+
+  it('stacks on top of an existing stack', () => {
+    meshes[0].stackable = { stackIds: ['mesh4', 'mesh3'] }
+    stackMeshes([meshes[0], ...meshes.slice(1, 3)])
+    expect(meshes).toEqual([
+      {
+        id: 'mesh0',
+        stackable: { stackIds: ['mesh4', 'mesh3', 'mesh1', 'mesh2'] }
+      },
+      ...meshes.slice(1)
+    ])
+  })
+
+  it('do nothing on a stack of one', () => {
+    stackMeshes(meshes.slice(0, 1))
+    expect(meshes).toEqual([{ id: 'mesh0' }, ...meshes.slice(1)])
+  })
+})

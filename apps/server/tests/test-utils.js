@@ -88,3 +88,13 @@ export function mockMethods(object) {
   }
   return () => Object.assign(object, original)
 }
+
+/**
+ * Performs a deep clone, using JSON parse and stringify
+ * This is a slow, destructive (functions, Date and Regex are lost) method, only suitable in tests
+ * @param {object} object - cloned object
+ * @returns {object} a clone
+ */
+export function cloneAsJSON(object) {
+  return JSON.parse(JSON.stringify(object))
+}

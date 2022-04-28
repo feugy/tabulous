@@ -24,9 +24,6 @@ describe('given a subscription to game lists and an initialized repository', () 
     subscription = gameListsUpdate.subscribe(update => updates.push(update))
     await repositories.games.connect({})
     await repositories.players.connect({})
-    await repositories.catalogItems.connect({
-      path: join('tests', 'fixtures', 'games')
-    })
     await repositories.players.save(player)
     await repositories.players.save(peer)
   })
@@ -38,7 +35,10 @@ describe('given a subscription to game lists and an initialized repository', () 
     await repositories.catalogItems.release()
   })
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    await repositories.catalogItems.connect({
+      path: join('tests', 'fixtures', 'games')
+    })
     jest.restoreAllMocks()
     updates.splice(0, updates.length)
   })
@@ -98,6 +98,17 @@ describe('given a subscription to game lists and an initialized repository', () 
       expect(updates).toEqual([
         { playerId: player.id, games: expect.arrayContaining([game]) }
       ])
+    })
+
+    it('throws errors from descriptor builer function', async () => {
+      jest.spyOn(console, 'error').mockImplementationOnce(() => {})
+      await repositories.catalogItems.connect({
+        path: join('tests', 'fixtures', 'invalid-games')
+      })
+      await expect(
+        createGame('throwing', faker.datatype.uuid())
+      ).rejects.toThrow(`internal build error`)
+      expect(updates).toHaveLength(0)
     })
   })
 
