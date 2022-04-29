@@ -1,6 +1,6 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { Observable } from '@babylonjs/core/Misc/observable'
-import { debounceTime, Subject } from 'rxjs'
+import { auditTime, debounceTime, Subject } from 'rxjs'
 import {
   DrawBehaviorName,
   FlipBehaviorName,
@@ -14,7 +14,6 @@ import {
   getDimensions,
   getMeshScreenPosition,
   getPositionAboveZone,
-  getScreenPosition,
   isAboveTable,
   isMeshFlipped,
   isSerializable,
@@ -43,6 +42,7 @@ class HandManager {
    * @property {number} gap - gap between hand meshes, when render width allows it, in 3D coordinates.
    * @property {number} verticalPadding - vertical padding between meshes and the viewport edges, in 3D coordinates.
    * @property {number} horizontalPadding - horizontal padding between meshes and the viewport edges, in 3D coordinates.
+   * @property {number} transitionMargin - margin (in pixel) applied to the hand scene border. Meshes dragged within this margin will be drawn or played.
    * @property {number} [duration=100] - duration (in milliseconds) when moving meshes.
    */
   constructor() {
@@ -52,6 +52,7 @@ class HandManager {
     this.verticalPadding = 0
     this.horizontalPadding = 0
     this.duration = 100
+    this.transitionMargin = 0
     this.onHandChangeObservable = new Observable()
     // private
     this.dragStartObserver = null
@@ -59,12 +60,11 @@ class HandManager {
       minX: 0,
       height: 0,
       width: 0,
-      maxZ: -Infinity,
       minZ: -Infinity,
       screenHeight: 0,
       size: {}
     }
-    this.contentWidth = 0
+    this.contentDimensions = { width: null, depth: null }
     this.dimensionsByMeshId = null
     this.moved = []
     this.changes$ = new Subject()
@@ -75,6 +75,7 @@ class HandManager {
       }
     })
     this.overlay = null
+    this.disposeResizeObserver = null
   }
 
   get enabled() {
@@ -86,10 +87,11 @@ class HandManager {
    * @param {object} params - parameters, including:
    * @param {Scene} params.scene - main scene.
    * @param {Scene} params.handScene - scene for meshes in hand.
-   * @param {Scene} [params.gap=0.5] - gap between hand meshes, when render width allows it, in 3D coordinates.
-   * @param {Scene} [params.verticalPadding=1] - vertical padding between meshes and the viewport edges, in 3D coordinates.
-   * @param {Scene} [params.horizontalPadding=2] - horizontal padding between meshes and the viewport edges, in 3D coordinates.
-   * @param {Scene} [params.duration=100] - duration (in milliseconds) when moving meshes.
+   * @param {number} [params.gap=0.5] - gap between hand meshes, when render width allows it, in 3D coordinates.
+   * @param {number} [params.verticalPadding=1] - vertical padding between meshes and the viewport edges, in 3D coordinates.
+   * @param {number} [params.horizontalPadding=2] - horizontal padding between meshes and the viewport edges, in 3D coordinates.
+   * @param {number} [params.transitionMargin=20] - margin (in pixel) applied to the hand scene border. Meshes dragged within this margin will be drawn or played.
+   * @param {number} [params.duration=100] - duration (in milliseconds) when moving meshes.
    */
   init({
     scene,
@@ -97,6 +99,7 @@ class HandManager {
     gap = 0.5,
     verticalPadding = 0.5,
     horizontalPadding = 2,
+    transitionMargin = 20,
     duration = 100
   }) {
     this.scene = scene
@@ -105,10 +108,12 @@ class HandManager {
     this.verticalPadding = verticalPadding
     this.horizontalPadding = horizontalPadding
     this.duration = duration
+    this.transitionMargin = transitionMargin
 
     const engine = this.handScene.getEngine()
     this.overlay?.remove()
-    this.overlay = buildOverlay(engine.inputElement)
+    this.disposeResizeObserver?.()
+    buildOverlay(this, engine.inputElement)
 
     computeExtent(this, engine)
     storeMeshDimensions(this)
@@ -124,6 +129,7 @@ class HandManager {
         observable: engine.onResizeObservable,
         handle: () => {
           logger.debug('detects resize')
+          computeExtent(this, engine)
           this.changes$.next()
         }
       },
@@ -169,6 +175,7 @@ class HandManager {
       for (const unsubscribe of subscriptions) {
         unsubscribe()
       }
+      this.disposeResizeObserver?.()
     })
   }
 
@@ -263,7 +270,7 @@ function handleAction(manager, action) {
 }
 
 function handDrag(manager, { type, mesh, event }) {
-  const { extent, handScene, overlay, duration } = manager
+  const { handScene, overlay, duration } = manager
   overlay.classList.remove('visible')
   if (!hasSelectedDrawableMeshes(mesh)) {
     return
@@ -280,7 +287,7 @@ function handDrag(manager, { type, mesh, event }) {
       moved = []
     }
     manager.moved = moved
-    if (moved[0]?.absolutePosition.z > extent.maxZ) {
+    if (isHandMeshNextToHand(manager, event)) {
       const position = screenToGround(manager.scene, event)
       const origin = moved[0].absolutePosition.x
       const droppedList = []
@@ -356,8 +363,18 @@ function handDrag(manager, { type, mesh, event }) {
   }
 }
 
-function isMainMeshNextToHand({ extent: { screenHeight } }, mesh) {
-  return getMeshScreenPosition(mesh)?.y > screenHeight
+function isMainMeshNextToHand(
+  { transitionMargin, extent: { screenHeight } },
+  mesh
+) {
+  return getMeshScreenPosition(mesh)?.y > screenHeight - transitionMargin
+}
+
+function isHandMeshNextToHand(
+  { transitionMargin, extent: { screenHeight } },
+  event
+) {
+  return event.y < screenHeight - transitionMargin
 }
 
 function createMainMesh({ scene }, handMesh, extraState) {
@@ -406,26 +423,27 @@ function computeExtent(manager, engine) {
 
 function storeMeshDimensions(manager) {
   manager.dimensionsByMeshId = new Map()
-  const { dimensionsByMeshId, gap, handScene } = manager
-  let contentWidth = 0
+  const { dimensionsByMeshId, gap, verticalPadding, handScene } = manager
+  let width = 0
+  let depth = 0
   const meshes = handScene.meshes.filter(isSerializable)
   for (const mesh of meshes) {
     const dimensions = getDimensions(mesh)
     dimensionsByMeshId.set(mesh.id, dimensions)
-    contentWidth += dimensions.width + gap
+    width += dimensions.width + gap
+    depth = Math.max(dimensions.depth + verticalPadding * 2, depth)
   }
-  contentWidth -= gap
-  manager.contentWidth = contentWidth
+  width -= gap
+  manager.contentDimensions = { width, depth }
 }
 
 async function layoutMeshs({
   handScene,
   dimensionsByMeshId,
-  contentWidth,
+  contentDimensions,
   moved,
   gap,
   horizontalPadding,
-  verticalPadding,
   duration,
   extent,
   overlay,
@@ -437,19 +455,24 @@ async function layoutMeshs({
     .sort((a, b) => a.absolutePosition.x - b.absolutePosition.x)
   const availableWidth = extent.width - horizontalPadding * 2
   let x =
-    (contentWidth <= availableWidth ? contentWidth : availableWidth) * -0.5
+    (contentDimensions.width <= availableWidth
+      ? contentDimensions.width
+      : availableWidth) * -0.5
   const effectiveGap =
     gap -
-    (contentWidth <= availableWidth
+    (contentDimensions.width <= availableWidth
       ? 0
-      : (contentWidth - availableWidth) / (meshes.length - 1))
+      : (contentDimensions.width - availableWidth) / (meshes.length - 1))
   let y = 0
-  extent.maxZ = extent.minZ + verticalPadding
+  extent.screenHeight =
+    extent.size.height - parseFloat(window.getComputedStyle(overlay).height)
+  const z =
+    screenToGround(handScene, { x: 0, y: extent.screenHeight }).z -
+    contentDimensions.depth * 0.5
   const promises = []
   for (const mesh of meshes) {
-    const { width, height, depth } = dimensionsByMeshId.get(mesh.id)
+    const { width, height } = dimensionsByMeshId.get(mesh.id)
     if (!moved.includes(mesh)) {
-      const z = (extent.height - depth) * -0.5 + verticalPadding
       promises.push(
         animateMove(
           mesh,
@@ -457,19 +480,12 @@ async function layoutMeshs({
           duration
         )
       )
-      extent.maxZ = Math.max(extent.maxZ, z + depth * 0.5)
     }
     x += width + effectiveGap
     if (effectiveGap < 0) {
       y += height
     }
   }
-  extent.maxZ += verticalPadding
-  extent.screenHeight = getScreenPosition(
-    handScene,
-    new Vector3(0, 0, extent.maxZ)
-  ).y
-  overlay.style.top = `${extent.screenHeight}px`
   await Promise.all(promises)
   onHandChangeObservable.notifyObservers()
 }
@@ -509,11 +525,23 @@ function flipIfNeeded(mesh) {
   }
 }
 
-function buildOverlay(parent) {
+function buildOverlay(manager, parent) {
   const overlay = document.createElement('div')
   parent.append(overlay)
   overlay.classList.add('hand-overlay')
-  return overlay
+  const resized = new Subject()
+  const resizeObserver = new ResizeObserver(() => resized.next())
+  resizeObserver.observe(overlay)
+
+  const subscription = resized
+    .pipe(auditTime(25))
+    .subscribe(() => layoutMeshs(manager))
+
+  manager.overlay = overlay
+  manager.disposeResizeObserver = () => {
+    subscription.unsubscribe()
+    resizeObserver.disconnect()
+  }
 }
 
 function hasSelectedDrawableMeshes(mesh) {

@@ -41,6 +41,7 @@ describe('HandManager', () => {
     width: 59.81750317696051,
     height: 47.21061769667048
   }
+  const transitionMargin = 20
   const renderWidth = 480
   const renderHeight = 350
   const stackDuration = 75
@@ -62,6 +63,9 @@ describe('HandManager', () => {
 
   beforeEach(() => {
     jest.resetAllMocks()
+    jest
+      .spyOn(window, 'getComputedStyle')
+      .mockImplementation(() => ({ height: `${renderHeight / 4}px` }))
     selectionManager.clear()
     createTable({}, scene)
   })
@@ -77,6 +81,7 @@ describe('HandManager', () => {
     expect(manager.duration).toEqual(100)
     expect(manager.onHandChangeObservable).toBeDefined()
     expect(manager.enabled).toBe(false)
+    expect(manager.transitionMargin).toEqual(0)
   })
 
   it('can not draw mesh', () => {
@@ -100,13 +105,15 @@ describe('HandManager', () => {
       const horizontalPadding = faker.datatype.number()
       const verticalPadding = faker.datatype.number()
       const duration = faker.datatype.number()
+      const transitionMargin = faker.datatype.number()
       manager.init({
         scene,
         handScene,
         gap,
         horizontalPadding,
         verticalPadding,
-        duration
+        duration,
+        transitionMargin
       })
       expect(manager.scene).toEqual(scene)
       expect(manager.handScene).toEqual(handScene)
@@ -115,6 +122,7 @@ describe('HandManager', () => {
       expect(manager.verticalPadding).toEqual(verticalPadding)
       expect(manager.duration).toEqual(duration)
       expect(manager.enabled).toBe(true)
+      expect(manager.transitionMargin).toEqual(transitionMargin)
     })
 
     it('performs initial layout', async () => {
@@ -124,7 +132,8 @@ describe('HandManager', () => {
         gap,
         horizontalPadding,
         verticalPadding,
-        duration
+        duration,
+        transitionMargin
       })
       const cards = [
         { id: 'box1', x: 1, y: 1, z: -1 },
@@ -384,6 +393,16 @@ describe('HandManager', () => {
         expectPosition(handCards[2], [unitWidth, 0.005, computeZ()])
       })
 
+      it('lays out hand when resizing hand overlay', async () => {
+        window.resizeObservers[0].notify()
+        window.resizeObservers[0].notify()
+        await waitForLayout()
+        const unitWidth = cardWidth + gap
+        expectPosition(handCards[1], [-unitWidth, 0.005, computeZ()])
+        expectPosition(handCards[0], [0, 0.005, computeZ()])
+        expectPosition(handCards[2], [unitWidth, 0.005, computeZ()])
+      })
+
       it('lays out hand when rotating mesh in hand', async () => {
         let unitWidth = cardWidth + gap
         const z = computeZ()
@@ -394,11 +413,7 @@ describe('HandManager', () => {
         await waitForLayout()
         unitWidth = (cardWidth + cardDepth) / 2 + gap
         expectPosition(handCards[1], [-unitWidth, 0.005, z])
-        expectPosition(handCards[0], [
-          0,
-          0.005,
-          viewPortDimensions.height / -2 + verticalPadding + cardWidth / 2
-        ])
+        expectPosition(handCards[0], [0, 0.005, z])
         expectPosition(handCards[2], [unitWidth, 0.005, z])
       })
 
@@ -427,7 +442,8 @@ describe('HandManager', () => {
         mesh.computeWorldMatrix()
         inputManager.onDragObservable.notifyObservers({
           type: 'dragStart',
-          mesh
+          mesh,
+          event: {}
         })
         await waitForLayout()
         expect(getPositions(handCards)).toEqual([
@@ -440,7 +456,11 @@ describe('HandManager', () => {
         movedPosition = new Vector3(1, 1, z)
         mesh.setAbsolutePosition(movedPosition)
         mesh.computeWorldMatrix()
-        inputManager.onDragObservable.notifyObservers({ type: 'drag', mesh })
+        inputManager.onDragObservable.notifyObservers({
+          type: 'drag',
+          mesh,
+          event: {}
+        })
         await waitForLayout()
         expect(getPositions(handCards)).toEqual([
           [handCards[0].id, ...positions[0].slice(1)],
@@ -454,7 +474,8 @@ describe('HandManager', () => {
         mesh.computeWorldMatrix()
         inputManager.onDragObservable.notifyObservers({
           type: 'dragStop',
-          mesh
+          mesh,
+          event: {}
         })
         await waitForLayout()
         expect(getPositions(handCards)).toEqual([
@@ -474,7 +495,8 @@ describe('HandManager', () => {
 
         inputManager.onDragObservable.notifyObservers({
           type: 'dragStart',
-          mesh: mesh2
+          mesh: mesh2,
+          event: {}
         })
         await waitForLayout()
         expect(overlay).toHaveClass('visible')
@@ -487,7 +509,8 @@ describe('HandManager', () => {
         mesh3.computeWorldMatrix()
         inputManager.onDragObservable.notifyObservers({
           type: 'drag',
-          mesh: mesh2
+          mesh: mesh2,
+          event: {}
         })
         await waitForLayout()
         expect(getPositions(handCards)).toEqual([
@@ -497,7 +520,8 @@ describe('HandManager', () => {
         ])
         inputManager.onDragObservable.notifyObservers({
           type: 'dragStop',
-          mesh: mesh1
+          mesh: mesh1,
+          event: {}
         })
         await waitForLayout()
         expect(getPositions(handCards)).toEqual([
@@ -803,7 +827,7 @@ describe('HandManager', () => {
           expect.anything()
         )
         expect(actionRecorded).toHaveBeenCalledTimes(1)
-        const finalPosition = [-4.17, 0.01, 0]
+        const finalPosition = [-3.89, 0.01, 0]
         expectPosition(newMesh, finalPosition)
         expectCloseVector(extractDrawnState(), finalPosition)
         expect(controlManager.isManaging(newMesh)).toBe(true)
@@ -918,7 +942,7 @@ describe('HandManager', () => {
         const newMesh = scene.getMeshById(card.id)
         expect(newMesh?.id).toBeDefined()
         await expectAnimationEnd(newMesh.getBehaviorByName(DrawBehaviorName))
-        expectPosition(newMesh, [-21.1695, 0, -6])
+        expectPosition(newMesh, [-20.89, 0, -6])
         expectCloseVector(
           extractDrawnState(),
           newMesh.absolutePosition.asArray()
@@ -1076,7 +1100,7 @@ describe('HandManager', () => {
           })
           const newMesh = scene.getMeshById(mesh.id)
           expect(newMesh?.id).toBeDefined()
-          expectPosition(newMesh, [6, 2.005, 0])
+          expectPosition(newMesh, [6, 0.005, 0])
           await waitForLayout()
           await waitForLayout()
           expect(handScene.getMeshById(mesh.id)?.id).toBeUndefined()
@@ -1135,8 +1159,8 @@ describe('HandManager', () => {
           expect(newMesh1?.id).toBeDefined()
           const newMesh2 = scene.getMeshById(mesh2.id)
           expect(newMesh2?.id).toBeDefined()
-          expectPosition(newMesh1, [6, 2.005, 0])
-          expectPosition(newMesh2, [6, 2.016, 0])
+          expectPosition(newMesh1, [6, 0.005, 0])
+          expectPosition(newMesh2, [6, 0.016, 0])
           await waitForLayout()
           await waitForLayout()
           expect(handScene.getMeshById(mesh1.id)?.id).toBeUndefined()
@@ -1200,7 +1224,7 @@ describe('HandManager', () => {
   })
 
   function computeZ() {
-    return viewPortDimensions.height / -2 + verticalPadding + cardDepth / 2
+    return -13.144563674926758
   }
 
   function createMesh(state, scene) {

@@ -366,6 +366,9 @@ describe('MoveManager', () => {
         handScene
       )
       camera.setPosition(cameraPosition)
+      jest
+        .spyOn(window, 'getComputedStyle')
+        .mockImplementation(() => ({ height: `${centerY / 2}px` }))
     })
 
     it('moves according to hand camera', async () => {
@@ -388,20 +391,28 @@ describe('MoveManager', () => {
     })
 
     it('keeps moving mesh after drawn', () => {
-      manager.start(moved, { x: centerX, y: centerY })
+      let event = { x: centerX, y: centerY }
+      manager.start(moved, event)
       expect(manager.inProgress).toBe(true)
       expectPosition(moved, [1, 1 + manager.elevation, 1])
 
       inputManager.onDragObservable.notifyObservers({
         type: 'dragStart',
         mesh: moved,
-        event: { x: 289.7, y: 175 }
+        event
       })
       const deltaX = 2.029703140258789
       const deltaZ = -2.1969470977783203
-      manager.continue({ x: centerX + 50, y: centerY + 50 })
+      event = { x: centerX + 50, y: centerY + 50 }
+      inputManager.onDragObservable.notifyObservers({
+        type: 'drag',
+        mesh: moved,
+        event
+      })
+      manager.continue(event)
 
       const mainMoved = scene.getMeshById(moved.id)
+      expect(mainMoved).not.toBeNull()
       expectPosition(mainMoved, [deltaX, manager.elevation, deltaZ])
       expect(manager.inProgress).toBe(true)
       expect(drops).toHaveLength(0)
