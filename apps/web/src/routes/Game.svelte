@@ -10,6 +10,7 @@
     CameraSwitch,
     CursorInfo,
     GameAside,
+    GameHand,
     Indicators,
     MeshDetails,
     Progress,
@@ -24,6 +25,8 @@
     currentPlayer,
     engine,
     gamePlayerById,
+    handMeshes,
+    highlightHand,
     initEngine,
     visibleIndicators,
     loadGame,
@@ -40,11 +43,12 @@
   const longTapDelay = 250
   let canvas
   let interaction
+  let hand
   let openInviteDialogue = false
   let loadPromise
 
   onMount(async () => {
-    initEngine({ canvas, interaction, longTapDelay })
+    initEngine({ canvas, interaction, longTapDelay, hand })
     loadPromise = loadGame(params.gameId)
   })
 
@@ -84,14 +88,6 @@
   .overlay {
     @apply flex items-center justify-center z-10;
   }
-
-  :global(.hand-overlay) {
-    @apply absolute inset-0 top-auto pointer-events-none border-solid border-t-1 border-$secondary-light h-1/4;
-  }
-
-  :global(.hand-overlay.visible) {
-    box-shadow: 0px -1vw 5vw -4vw rgb(0, 255, 0);
-  }
 </style>
 
 <svelte:head>
@@ -112,13 +108,6 @@
 
 <aside class="top">
   <GameMenu on:invite-player={() => (openInviteDialogue = true)} />
-  <InvitePlayerDialogue
-    game={$currentGame}
-    open={openInviteDialogue}
-    on:close={() => (openInviteDialogue = false)}
-  />
-</aside>
-<aside class="bottom">
   <CameraSwitch
     {longTapDelay}
     current={$currentCamera}
@@ -126,6 +115,11 @@
     on:longTap={() => longInputs.next()}
     on:restore={({ detail: { index } }) => restoreCamera(index)}
     on:save={({ detail: { index } }) => saveCamera(index)}
+  />
+  <InvitePlayerDialogue
+    game={$currentGame}
+    open={openInviteDialogue}
+    on:close={() => (openInviteDialogue = false)}
   />
 </aside>
 <main>
@@ -136,6 +130,11 @@
   >
     <canvas bind:this={canvas} />
     <Indicators items={$visibleIndicators} />
+    <GameHand
+      highlight={$highlightHand}
+      meshes={$handMeshes}
+      bind:node={hand}
+    />
     <RadialMenu {...$actionMenuProps || {}} />
   </div>
   <CursorInfo halos={longInputs} />

@@ -1,5 +1,7 @@
 # TODO
 
+- custom zoom range + hand zoom per game type
+
 ## Brittle tests
 
 - `InputManager › given an initialized manager() › handles multiple pointers taps`
@@ -34,8 +36,8 @@
 
 ## UI
 
-- select multiple from any any stack (not just drawable cards)
 - collapsible/resizeable/capped hand
+- select multiple from any any stack (not just drawable cards)
 - lock meshes to avoid moving
 - bug: when stacked, only the last mesh could be picked (drag selection, action menu)
 - bug: no re-ordering animation for stacks of non-card meshes
