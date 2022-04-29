@@ -11,6 +11,7 @@ let engine
 const playerId = faker.datatype.uuid()
 const canvas = document.createElement('canvas')
 const interaction = document.createElement('div')
+const hand = document.createElement('div')
 
 beforeEach(() => {
   jest.spyOn(console, 'log').mockImplementationOnce(() => ({}))
@@ -28,6 +29,7 @@ describe('createEngine()', () => {
       Engine: NullEngine,
       canvas,
       interaction,
+      hand,
       doubleTapDelay,
       longTapDelay
     })
@@ -46,6 +48,7 @@ describe('createEngine()', () => {
         Engine: NullEngine,
         canvas,
         interaction,
+        hand,
         doubleTapDelay: 100,
         longTapDelay: 200
       })

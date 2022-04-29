@@ -29,6 +29,11 @@ import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('hand')
 
+/**
+ * @typedef {object} HandState current state of the hand:
+ * @property {import('@babylonjs/core').Mesh[]} meshes - ordered list of meshes currently in hand.
+ */
+
 class HandManager {
   /**
    * Creates a manager for the player's hand meshes:
@@ -38,7 +43,9 @@ class HandManager {
    *
    * @property {import('@babylonjs/core').Scene} scene - the main scene.
    * @property {import('@babylonjs/core').Scene} handScene - scene for meshes in hand.
-   * @property {Observable} onHandChangeObservable - emits nothing on hand changes
+   * @property {Observable<HandState>} onHandChangeObservable - emits new state on hand changes.
+   * @property {Observable<Boolean>} onDraggableToHandObservable - emits a boolean when dragged may (or not) be dragged to hand.
+   * @property {HTMLElement} overlay - HTML element defining hand's available height.
    * @property {number} gap - gap between hand meshes, when render width allows it, in 3D coordinates.
    * @property {number} verticalPadding - vertical padding between meshes and the viewport edges, in 3D coordinates.
    * @property {number} horizontalPadding - horizontal padding between meshes and the viewport edges, in 3D coordinates.
@@ -54,6 +61,8 @@ class HandManager {
     this.duration = 100
     this.transitionMargin = 0
     this.onHandChangeObservable = new Observable()
+    this.onDraggableToHandObservable = new Observable()
+    this.overlay = null
     // private
     this.dragStartObserver = null
     this.extent = {
@@ -74,7 +83,6 @@ class HandManager {
         layoutMeshs(this)
       }
     })
-    this.overlay = null
     this.disposeResizeObserver = null
   }
 
@@ -87,6 +95,7 @@ class HandManager {
    * @param {object} params - parameters, including:
    * @param {Scene} params.scene - main scene.
    * @param {Scene} params.handScene - scene for meshes in hand.
+   * @param {HTMLElement} params.overlay - HTML element defining hand's available height.
    * @param {number} [params.gap=0.5] - gap between hand meshes, when render width allows it, in 3D coordinates.
    * @param {number} [params.verticalPadding=1] - vertical padding between meshes and the viewport edges, in 3D coordinates.
    * @param {number} [params.horizontalPadding=2] - horizontal padding between meshes and the viewport edges, in 3D coordinates.
@@ -96,6 +105,7 @@ class HandManager {
   init({
     scene,
     handScene,
+    overlay,
     gap = 0.5,
     verticalPadding = 0.5,
     horizontalPadding = 2,
@@ -109,22 +119,12 @@ class HandManager {
     this.horizontalPadding = horizontalPadding
     this.duration = duration
     this.transitionMargin = transitionMargin
+    this.overlay = overlay
 
-    const engine = this.handScene.getEngine()
-    this.overlay?.remove()
     this.disposeResizeObserver?.()
-    buildOverlay(this, engine.inputElement)
-
-    computeExtent(this, engine)
-    storeMeshDimensions(this)
-    layoutMeshs(this)
-
+    const engine = this.handScene.getEngine()
     const subscriptions = []
     for (const { observable, handle } of [
-      {
-        observable: engine.onDisposeObservable,
-        handle: () => this.overlay?.remove()
-      },
       {
         observable: engine.onResizeObservable,
         handle: () => {
@@ -171,12 +171,27 @@ class HandManager {
       subscriptions.push(() => observable.remove(observer))
     }
 
+    const resized = new Subject()
+    const resizeObserver = new ResizeObserver(() => resized.next())
+    resizeObserver.observe(this.overlay)
+    const subscription = resized
+      .pipe(auditTime(25))
+      .subscribe(() => layoutMeshs(this))
+    subscriptions.push(() => {
+      resizeObserver.disconnect()
+      subscription.unsubscribe()
+    })
+
     engine.onDisposeObservable.addOnce(() => {
       for (const unsubscribe of subscriptions) {
         unsubscribe()
       }
       this.disposeResizeObserver?.()
     })
+
+    computeExtent(this, engine)
+    storeMeshDimensions(this)
+    layoutMeshs(this)
   }
 
   /**
@@ -270,13 +285,13 @@ function handleAction(manager, action) {
 }
 
 function handDrag(manager, { type, mesh, event }) {
-  const { handScene, overlay, duration } = manager
-  overlay.classList.remove('visible')
+  const { handScene, duration } = manager
+  manager.onDraggableToHandObservable.notifyObservers(false)
   if (!hasSelectedDrawableMeshes(mesh)) {
     return
   }
   if (type !== 'dragStop') {
-    overlay.classList.add('visible')
+    manager.onDraggableToHandObservable.notifyObservers(true)
   }
 
   if (mesh?.getScene() === handScene) {
@@ -487,7 +502,7 @@ async function layoutMeshs({
     }
   }
   await Promise.all(promises)
-  onHandChangeObservable.notifyObservers()
+  onHandChangeObservable.notifyObservers({ meshes })
 }
 
 function getViewPortSize(engine) {
@@ -522,25 +537,6 @@ function flipIfNeeded(mesh) {
   if (flippable && !isMeshFlipped(mesh) && getDrawable(mesh).state.flipOnPlay) {
     logger.debug({ mesh }, `flips ${mesh.id}`)
     flippable.state.isFlipped = true
-  }
-}
-
-function buildOverlay(manager, parent) {
-  const overlay = document.createElement('div')
-  parent.append(overlay)
-  overlay.classList.add('hand-overlay')
-  const resized = new Subject()
-  const resizeObserver = new ResizeObserver(() => resized.next())
-  resizeObserver.observe(overlay)
-
-  const subscription = resized
-    .pipe(auditTime(25))
-    .subscribe(() => layoutMeshs(manager))
-
-  manager.overlay = overlay
-  manager.disposeResizeObserver = () => {
-    subscription.unsubscribe()
-    resizeObserver.disconnect()
   }
 }
 

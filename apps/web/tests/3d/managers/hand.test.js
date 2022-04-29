@@ -29,6 +29,7 @@ describe('HandManager', () => {
   let handScene
   let actionObserver
   let savedCameraPosition
+  const overlay = document.createElement('div')
 
   const playerId = faker.datatype.uuid()
   const gap = 0.5
@@ -45,7 +46,6 @@ describe('HandManager', () => {
   const renderWidth = 480
   const renderHeight = 350
   const stackDuration = 75
-  const changeReceived = jest.fn()
   const actionRecorded = jest.fn()
 
   configures3dTestEngine(
@@ -109,6 +109,7 @@ describe('HandManager', () => {
       manager.init({
         scene,
         handScene,
+        overlay,
         gap,
         horizontalPadding,
         verticalPadding,
@@ -129,6 +130,7 @@ describe('HandManager', () => {
       manager.init({
         scene,
         handScene,
+        overlay,
         gap,
         horizontalPadding,
         verticalPadding,
@@ -147,22 +149,23 @@ describe('HandManager', () => {
       expectPosition(cards[1], [0, 0.005, z])
       expectPosition(cards[0], [gap + cardWidth, 0.005, z])
       expect(actionRecorded).not.toHaveBeenCalled()
-      const overlay = document.querySelector('.hand-overlay')
-      expect(overlay).toBeInTheDocument()
-      expect(overlay).not.toHaveClass('visible')
     })
   })
 
   describe('given an initialized manager', () => {
     let cards
     let changeObserver
-    let overlay
+    let draggableToHandObserver
+    const changeReceived = jest.fn()
+    const draggableToHandReceived = jest.fn()
 
     beforeAll(() => {
-      manager.init({ scene, handScene })
+      manager.init({ scene, handScene, overlay })
       controlManager.init({ scene, handScene })
       changeObserver = manager.onHandChangeObservable.add(changeReceived)
-      overlay = document.querySelector('.hand-overlay')
+      draggableToHandObserver = manager.onDraggableToHandObservable.add(
+        draggableToHandReceived
+      )
     })
 
     beforeEach(() => {
@@ -183,6 +186,7 @@ describe('HandManager', () => {
 
     afterAll(() => {
       manager.onHandChangeObservable.remove(changeObserver)
+      manager.onDraggableToHandObservable.remove(draggableToHandObserver)
     })
 
     it('can not draw mesh without drawable behavior', async () => {
@@ -435,7 +439,7 @@ describe('HandManager', () => {
         const mesh = handCards[1]
         const positions = getPositions(handCards)
         const z = positions[1][3]
-        expect(overlay).not.toHaveClass('visible')
+        expect(draggableToHandReceived).not.toHaveBeenCalled()
 
         let movedPosition = new Vector3(-1, 1, z)
         mesh.setAbsolutePosition(movedPosition)
@@ -451,7 +455,12 @@ describe('HandManager', () => {
           positions[1],
           positions[2]
         ])
-        expect(overlay).toHaveClass('visible')
+        expect(draggableToHandReceived).toHaveBeenCalledTimes(2)
+        expect(draggableToHandReceived).toHaveBeenNthCalledWith(
+          2,
+          true,
+          expect.anything()
+        )
 
         movedPosition = new Vector3(1, 1, z)
         mesh.setAbsolutePosition(movedPosition)
@@ -467,7 +476,12 @@ describe('HandManager', () => {
           [mesh.id, ...movedPosition.asArray()],
           positions[2]
         ])
-        expect(overlay).toHaveClass('visible')
+        expect(draggableToHandReceived).toHaveBeenCalledTimes(4)
+        expect(draggableToHandReceived).toHaveBeenNthCalledWith(
+          4,
+          true,
+          expect.anything()
+        )
 
         movedPosition = new Vector3(4, 1, z)
         mesh.setAbsolutePosition(movedPosition)
@@ -483,7 +497,12 @@ describe('HandManager', () => {
           [handCards[2].id, ...positions[1].slice(1)],
           [mesh.id, ...positions[2].slice(1)]
         ])
-        expect(overlay).not.toHaveClass('visible')
+        expect(draggableToHandReceived).toHaveBeenCalledTimes(5)
+        expect(draggableToHandReceived).toHaveBeenNthCalledWith(
+          5,
+          false,
+          expect.anything()
+        )
       })
 
       it('can re-order an entire selection of hand meshes', async () => {
@@ -491,7 +510,7 @@ describe('HandManager', () => {
         selectionManager.select(mesh2, mesh3)
         const positions = getPositions(handCards)
         const z = positions[0][3]
-        expect(overlay).not.toHaveClass('visible')
+        expect(draggableToHandReceived).not.toHaveBeenCalled()
 
         inputManager.onDragObservable.notifyObservers({
           type: 'dragStart',
@@ -499,7 +518,13 @@ describe('HandManager', () => {
           event: {}
         })
         await waitForLayout()
-        expect(overlay).toHaveClass('visible')
+        expect(draggableToHandReceived).toHaveBeenCalledTimes(2)
+        expect(draggableToHandReceived).toHaveBeenNthCalledWith(
+          2,
+          true,
+          expect.anything()
+        )
+
         expect(getPositions(handCards)).toEqual(positions)
         const movedPosition1 = new Vector3(positions[0][1] + 10, 1, z)
         const movedPosition2 = new Vector3(positions[2][1] + 10, 1, z)
@@ -529,7 +554,12 @@ describe('HandManager', () => {
           [mesh2.id, ...positions[1].slice(1)],
           [mesh3.id, ...positions[2].slice(1)]
         ])
-        expect(overlay).not.toHaveClass('visible')
+        expect(draggableToHandReceived).toHaveBeenCalledTimes(5)
+        expect(draggableToHandReceived).toHaveBeenNthCalledWith(
+          5,
+          false,
+          expect.anything()
+        )
       })
 
       it('moves mesh to main scene by dragging', async () => {
@@ -630,7 +660,12 @@ describe('HandManager', () => {
           mesh,
           event: { x: 289.7, y: 175 }
         })
-        expect(overlay).toHaveClass('visible')
+        expect(draggableToHandReceived).toHaveBeenCalledTimes(2)
+        expect(draggableToHandReceived).toHaveBeenNthCalledWith(
+          2,
+          true,
+          expect.anything()
+        )
         expect(stopDrag).toHaveBeenCalledTimes(1)
         inputManager.onDragObservable.notifyObservers({
           type: 'dragStop',
@@ -638,7 +673,12 @@ describe('HandManager', () => {
           event: { x: 289.7, y: 175 }
         })
         await waitForLayout()
-        expect(overlay).not.toHaveClass('visible')
+        expect(draggableToHandReceived).toHaveBeenCalledTimes(3)
+        expect(draggableToHandReceived).toHaveBeenNthCalledWith(
+          3,
+          false,
+          expect.anything()
+        )
         expect(scene.getMeshById(mesh.id)?.id).toBeUndefined()
         const newMesh = handScene.getMeshById(mesh.id)
         expect(newMesh?.id).toBeDefined()
@@ -777,13 +817,23 @@ describe('HandManager', () => {
           type: 'dragStart',
           event: { x: 289.7, y: 175 }
         })
-        expect(overlay).not.toHaveClass('visible')
+        expect(draggableToHandReceived).toHaveBeenCalledTimes(1)
+        expect(draggableToHandReceived).toHaveBeenNthCalledWith(
+          1,
+          false,
+          expect.anything()
+        )
         inputManager.onDragObservable.notifyObservers({
           type: 'dragStop',
           event: { x: 289.7, y: 175 }
         })
-        expect(overlay).not.toHaveClass('visible')
         await expect(waitForLayout()).rejects.toThrow()
+        expect(draggableToHandReceived).toHaveBeenCalledTimes(2)
+        expect(draggableToHandReceived).toHaveBeenNthCalledWith(
+          2,
+          false,
+          expect.anything()
+        )
         expect(getPositions(handCards)).toEqual(positions)
         expect(actionRecorded).not.toHaveBeenCalled()
       })
@@ -797,14 +847,24 @@ describe('HandManager', () => {
           mesh,
           event: { x: 289.7, y: 175 }
         })
-        expect(overlay).not.toHaveClass('visible')
+        expect(draggableToHandReceived).toHaveBeenCalledTimes(1)
+        expect(draggableToHandReceived).toHaveBeenNthCalledWith(
+          1,
+          false,
+          expect.anything()
+        )
         inputManager.onDragObservable.notifyObservers({
           type: 'dragStop',
           mesh,
           event: { x: 289.7, y: 175 }
         })
-        expect(overlay).not.toHaveClass('visible')
         await expect(waitForLayout()).rejects.toThrow()
+        expect(draggableToHandReceived).toHaveBeenCalledTimes(2)
+        expect(draggableToHandReceived).toHaveBeenNthCalledWith(
+          2,
+          false,
+          expect.anything()
+        )
         expect(getPositions(handCards)).toEqual(positions)
         expect(actionRecorded).not.toHaveBeenCalled()
       })

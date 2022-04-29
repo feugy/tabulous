@@ -57,6 +57,7 @@ describe('initEngine()', () => {
   const receiveCurrentCamera = jest.fn()
   const receiveLongInput = jest.fn()
   const receiveHandChange = jest.fn()
+  const receiveHighlightHand = jest.fn()
 
   beforeAll(async () => {
     subscriptions = [
@@ -65,7 +66,8 @@ describe('initEngine()', () => {
       gameEngine.cameraSaves.subscribe({ next: receiveCameraSave }),
       gameEngine.currentCamera.subscribe({ next: receiveCurrentCamera }),
       gameEngine.longInputs.subscribe({ next: receiveLongInput }),
-      gameEngine.handMeshes.subscribe({ next: receiveHandChange })
+      gameEngine.handMeshes.subscribe({ next: receiveHandChange }),
+      gameEngine.highlightHand.subscribe({ next: receiveHighlightHand })
     ]
   })
 
@@ -213,6 +215,13 @@ describe('initEngine()', () => {
         handManager.onHandChangeObservable.notifyObservers()
         expect(receiveHandChange).toHaveBeenCalledWith(handMeshes)
         expect(receiveHandChange).toHaveBeenCalledTimes(1)
+      })
+
+      it('proxies hand highlight events', () => {
+        const highlight = faker.datatype.boolean()
+        handManager.onDraggableToHandObservable.notifyObservers(highlight)
+        expect(receiveHighlightHand).toHaveBeenCalledWith(highlight)
+        expect(receiveHighlightHand).toHaveBeenCalledTimes(1)
       })
 
       it('prunes peer pointers on conection', () => {

@@ -12,9 +12,10 @@ import { createCard } from '../../../src/3d/meshes'
 
 const actionRecorded = jest.fn()
 const animationEndReceived = jest.fn()
+const handOverlay = document.createElement('div')
 
 configures3dTestEngine(({ handScene, scene }) => {
-  handManager.init({ handScene, scene })
+  handManager.init({ handScene, scene, overlay: handOverlay })
   controlManager.onActionObservable.add(actionRecorded)
 })
 

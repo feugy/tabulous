@@ -39,6 +39,7 @@ import { createLights, createTable, loadMeshes, serializeMeshes } from './utils'
  * @param {import('@babylonjs/core').ThinEngine} params.Engine - Babylon's 3D Engine class used.
  * @param {HTMLCanvasElement} params.canvas - HTML canvas used to display the scene.
  * @param {HTMLElement} params.interaction - HTML element receiving user interaction (mouse events, taps).
+ * @param {HTMLElement} params.hand - HTML element holding hand.
  * @param {number} params.doubleTapDelay - number of milliseconds between 2 pointer down events to be considered as a double one.
  * @param {number} params.longTapDelay - number of milliseconds to hold pointer down before it is considered as long.
  * @returns {EnhancedEngine} the created 3D engine.
@@ -47,6 +48,7 @@ export function createEngine({
   Engine = RealEngine,
   canvas,
   interaction,
+  hand,
   doubleTapDelay,
   longTapDelay
 }) {
@@ -111,7 +113,7 @@ export function createEngine({
         isLoading = false
       })
       if (handsEnabled) {
-        handManager.init({ scene, handScene })
+        handManager.init({ scene, handScene, overlay: hand })
       }
     }
     await customShapeManager.init(gameData)
@@ -150,6 +152,7 @@ export function createEngine({
     inputManager.stopAll(event)
   }
   // scene.debugLayer.show({ embedMode: true })
+  // handScene.debugLayer.show({ embedMode: true })
   // new AxesViewer(scene)
   return engine
 }

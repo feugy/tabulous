@@ -353,10 +353,11 @@ describe('MoveManager', () => {
   describe('given a mesh in hand', () => {
     let moved
     let cameraPosition
+    const handOverlay = document.createElement('div')
 
     beforeAll(() => {
       manager.init({ scene })
-      handManager.init({ scene, handScene })
+      handManager.init({ scene, handScene, overlay: handOverlay })
       cameraPosition = camera.position.clone()
     })
 
