@@ -2,6 +2,7 @@
   import { beforeUpdate } from 'svelte'
   import MinimizableSection from './MinimizableSection.svelte'
 
+  export let visible = false
   export let meshes = []
   export let node
   export let highlight = false
@@ -22,7 +23,11 @@
 
 <style lang="postcss">
   aside {
-    @apply absolute z-100 inset-0 top-auto pointer-events-none;
+    @apply absolute z-100 inset-0 top-auto pointer-events-none hidden;
+
+    &.visible {
+      @apply block;
+    }
 
     &.highlight:before {
       @apply block relative w-full border border-solid border-opacity-50;
@@ -42,7 +47,7 @@
   }
 </style>
 
-<aside class:highlight>
+<aside class:highlight class:visible>
   <MinimizableSection
     placement="bottom"
     icons={['front_hand']}

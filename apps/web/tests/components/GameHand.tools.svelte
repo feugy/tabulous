@@ -6,13 +6,13 @@
 <ToolBox
   component={GameHand}
   name="Components/Game Hand"
-  props={{}}
+  props={{ visible: undefined, highlight: undefined, meshes: undefined }}
   events={['resize']}
 >
-  <Tool name="Default" />
+  <Tool name="Default (not visible)" />
   <Tool
     name="With some meshes"
-    props={{ meshes: [{ id: 'foo' }, { id: 'bar' }] }}
+    props={{ visible: true, meshes: [{ id: 'foo' }, { id: 'bar' }] }}
   />
-  <Tool name="Highlighted" props={{ highlight: true }} />
+  <Tool name="Highlighted" props={{ visible: true, highlight: true }} />
 </ToolBox>

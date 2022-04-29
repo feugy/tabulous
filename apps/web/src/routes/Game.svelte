@@ -26,6 +26,7 @@
     engine,
     gamePlayerById,
     handMeshes,
+    handVisible,
     highlightHand,
     initEngine,
     visibleIndicators,
@@ -50,6 +51,7 @@
   onMount(async () => {
     initEngine({ canvas, interaction, longTapDelay, hand })
     loadPromise = loadGame(params.gameId)
+    loadPromise.catch(err => console.error(err))
   })
 
   onDestroy(() => $engine?.dispose())
@@ -131,6 +133,7 @@
     <canvas bind:this={canvas} />
     <Indicators items={$visibleIndicators} />
     <GameHand
+      visible={$handVisible}
       highlight={$highlightHand}
       meshes={$handMeshes}
       bind:node={hand}

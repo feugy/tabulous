@@ -1,6 +1,7 @@
 // all BabylonJS imports must be from individual files to allow tree shaking.
 // more [here](https://doc.babylonjs.com/divingDeeper/developWithBjs/treeShaking)
 import { Engine as RealEngine } from '@babylonjs/core/Engines/engine'
+import { Observable } from '@babylonjs/core/Misc/observable'
 import { Scene } from '@babylonjs/core/scene'
 // mandatory side effects
 import '@babylonjs/core/Animations/animatable'
@@ -29,6 +30,7 @@ import { createLights, createTable, loadMeshes, serializeMeshes } from './utils'
 /**
  * Enhanced Babylon.js' Engine
  * @typedef {Engine} EnhancedEngine
+ * @property {Observable} onLoadedObservable - emits when data was successfully loaded into the engine.
  */
 
 /**
@@ -55,6 +57,7 @@ export function createEngine({
   const engine = new Engine(canvas, true)
   engine.enableOfflineSupport = false
   engine.inputElement = interaction
+  engine.onLoadedObservable = new Observable()
 
   Scene.DoubleClickDelay = doubleTapDelay
   // scene ordering is important: main scene must come last to allow ray picking scene.pickWithRay(new Ray(vertex, down))
@@ -99,6 +102,7 @@ export function createEngine({
    * @param {boolean} initial? - set to true to show Babylon's loading UI while loading assets.
    */
   engine.load = async (gameData, playerId, initial) => {
+    cameraManager.adjustZoomLevels(gameData.zoomSpec || {})
     const handsEnabled = hasHandsEnabled(gameData)
     if (initial) {
       isLoading = true
@@ -124,6 +128,7 @@ export function createEngine({
         gameData.hands.find(hand => playerId === hand.playerId)?.meshes ?? []
       )
     }
+    engine.onLoadedObservable.notifyObservers()
   }
 
   /**

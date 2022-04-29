@@ -7,21 +7,21 @@ import { DrawBehaviorName } from '../../src/3d/behaviors'
 import { expectAnimationEnd } from '../test-utils'
 import { handManager } from '../../src/3d/managers'
 
-let engine
-const playerId = faker.datatype.uuid()
-const canvas = document.createElement('canvas')
-const interaction = document.createElement('div')
-const hand = document.createElement('div')
-
-beforeEach(() => {
-  jest.spyOn(console, 'log').mockImplementationOnce(() => ({}))
-})
-
-afterEach(() => {
-  engine?.dispose()
-})
-
 describe('createEngine()', () => {
+  let engine
+  const playerId = faker.datatype.uuid()
+  const canvas = document.createElement('canvas')
+  const interaction = document.createElement('div')
+  const hand = document.createElement('div')
+
+  beforeEach(() => {
+    jest.spyOn(console, 'log').mockImplementationOnce(() => ({}))
+  })
+
+  afterEach(() => {
+    engine?.dispose()
+  })
+
   it('initializes engine with parameters', () => {
     const doubleTapDelay = faker.datatype.number()
     const longTapDelay = faker.datatype.number()
@@ -42,8 +42,11 @@ describe('createEngine()', () => {
 
   describe('given an engine', () => {
     let displayLoadingUI
+    let loadedObserver
+    const receiveLoaded = jest.fn()
 
     beforeEach(() => {
+      jest.resetAllMocks()
       engine = createEngine({
         Engine: NullEngine,
         canvas,
@@ -52,10 +55,14 @@ describe('createEngine()', () => {
         doubleTapDelay: 100,
         longTapDelay: 200
       })
+      loadedObserver = engine.onLoadedObservable.add(receiveLoaded)
       displayLoadingUI = jest.spyOn(engine, 'displayLoadingUI')
     })
 
+    afterEach(() => engine.onLoadedObservable.remove(loadedObserver))
+
     it('can load() game data', async () => {
+      expect(receiveLoaded).not.toHaveBeenCalled()
       const mesh = {
         shape: 'card',
         depth: 0.2,
@@ -67,12 +74,19 @@ describe('createEngine()', () => {
         y: 0,
         z: -10
       }
-      await engine.load({ meshes: [mesh], hands: [] }, playerId, false)
+      const promise = engine.load(
+        { meshes: [mesh], hands: [] },
+        playerId,
+        false
+      )
+      expect(receiveLoaded).not.toHaveBeenCalled()
+      await promise
       expect(engine.isLoading).toBe(false)
       engine.scenes[1].onDataLoadedObservable.notifyObservers()
       expect(engine.scenes[1].getMeshById(mesh.id)).toBeDefined()
       expect(displayLoadingUI).not.toHaveBeenCalled()
       expect(engine.isLoading).toBe(false)
+      expect(receiveLoaded).toHaveBeenCalledTimes(1)
     })
 
     it('can serialize() game data', () => {
@@ -103,6 +117,7 @@ describe('createEngine()', () => {
     })
 
     it('displays loading UI on initial load only', async () => {
+      expect(receiveLoaded).not.toHaveBeenCalled()
       const mesh = {
         shape: 'card',
         depth: 0.2,
@@ -117,11 +132,13 @@ describe('createEngine()', () => {
       expect(engine.isLoading).toBe(false)
       await engine.load({ meshes: [mesh], hands: [] }, playerId, true)
       expect(engine.isLoading).toBe(true)
+      expect(receiveLoaded).toHaveBeenCalledTimes(1)
       engine.scenes[1].onDataLoadedObservable.notifyObservers()
       expect(engine.isLoading).toBe(false)
       expect(engine.scenes[1].getMeshById(mesh.id)).toBeDefined()
       expect(displayLoadingUI).toHaveBeenCalledTimes(1)
       expect(handManager.enabled).toBe(false)
+      expect(receiveLoaded).toHaveBeenCalledTimes(1)
     })
 
     it('enables hand manager on initial load', async () => {

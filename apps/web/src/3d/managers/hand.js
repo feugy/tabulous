@@ -187,6 +187,8 @@ class HandManager {
         unsubscribe()
       }
       this.disposeResizeObserver?.()
+      this.handScene = null
+      this.scene = null
     })
 
     computeExtent(this, engine)

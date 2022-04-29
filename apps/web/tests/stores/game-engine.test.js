@@ -14,7 +14,7 @@ import {
   send as sendToPeer
 } from '../../src/stores/peer-channels'
 import * as gameEngine from '../../src/stores/game-engine'
-import { sleep } from '../test-utils'
+import { configures3dTestEngine, sleep } from '../test-utils'
 
 jest.mock('../../src/3d')
 jest.mock('../../src/stores/peer-channels', () => {
@@ -49,8 +49,11 @@ beforeEach(jest.resetAllMocks)
 
 describe('initEngine()', () => {
   let subscriptions
+  let scene
+  let handScene
   const canvas = document.createElement('canvas')
   const interaction = document.createElement('div')
+  const overlay = document.createElement('div')
   const receiveAction = jest.fn()
   const receiveMeshDetail = jest.fn()
   const receiveCameraSave = jest.fn()
@@ -58,6 +61,12 @@ describe('initEngine()', () => {
   const receiveLongInput = jest.fn()
   const receiveHandChange = jest.fn()
   const receiveHighlightHand = jest.fn()
+  const receiveHandVisible = jest.fn()
+
+  configures3dTestEngine(created => {
+    scene = created.scene
+    handScene = created.handScene
+  })
 
   beforeAll(async () => {
     subscriptions = [
@@ -67,7 +76,8 @@ describe('initEngine()', () => {
       gameEngine.currentCamera.subscribe({ next: receiveCurrentCamera }),
       gameEngine.longInputs.subscribe({ next: receiveLongInput }),
       gameEngine.handMeshes.subscribe({ next: receiveHandChange }),
-      gameEngine.highlightHand.subscribe({ next: receiveHighlightHand })
+      gameEngine.highlightHand.subscribe({ next: receiveHighlightHand }),
+      gameEngine.handVisible.subscribe({ next: receiveHandVisible })
     ]
   })
 
@@ -90,6 +100,7 @@ describe('initEngine()', () => {
       gameEngine.initEngine({ canvas, interaction })
       expect(engine.start).toHaveBeenCalledTimes(1)
       expect(get(gameEngine.engine)).toEqual(engine)
+      expect(receiveHandVisible).not.toHaveBeenCalled()
     })
 
     describe('given an initialized engine', () => {
@@ -235,6 +246,17 @@ describe('initEngine()', () => {
         expect(controlManagerPruneUnused).toHaveBeenNthCalledWith(2, [id1, id2])
         expect(controlManagerPruneUnused).toHaveBeenCalledTimes(2)
       })
+
+      it('exposes hand manager enability', () => {
+        expect(receiveHandVisible).not.toHaveBeenCalled()
+        handManager.init({ scene, handScene, overlay })
+        engine.onLoadedObservable.notifyObservers()
+        expect(receiveHandVisible).toHaveBeenNthCalledWith(1, true)
+        scene.getEngine().dispose()
+        engine.onLoadedObservable.notifyObservers()
+        expect(receiveHandVisible).toHaveBeenNthCalledWith(2, false)
+        expect(receiveHandVisible).toHaveBeenCalledTimes(2)
+      })
     })
   })
 })
@@ -276,6 +298,7 @@ function create3DEngineMock() {
   return {
     onEndFrameObservable: new Observable(),
     onDisposeObservable: new Observable(),
+    onLoadedObservable: new Observable(),
     getFps: jest.fn(),
     start: jest.fn()
   }

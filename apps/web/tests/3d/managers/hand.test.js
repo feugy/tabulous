@@ -1281,6 +1281,12 @@ describe('HandManager', () => {
         })
       })
     })
+
+    it('is not enabled after engine disposal', () => {
+      expect(manager.enabled).toBe(true)
+      engine.dispose()
+      expect(manager.enabled).toBe(false)
+    })
   })
 
   function computeZ() {
