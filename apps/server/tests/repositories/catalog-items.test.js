@@ -7,7 +7,8 @@ describe('Catalog Items repository', () => {
     {
       name: 'belote',
       build: expect.any(Function),
-      addPlayer: expect.any(Function)
+      addPlayer: expect.any(Function),
+      zoomSpec: { min: 5, max: 50 }
     },
     { name: 'klondike', build: expect.any(Function) },
     {

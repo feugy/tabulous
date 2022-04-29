@@ -15,6 +15,7 @@ import repositories from '../repositories/index.js'
  * @property {CameraPosition[]} cameras - player's saved camera positions, if any.
  * @property {Hand[]} hands - player's private hands, id any.
  * @property {number} rulesBookPageCount? - number of pages in the rules book, if any.
+ * @property {ZoomSpec} zoomSpec? - zoom specifications for main and hand scene.
  */
 
 /**
@@ -122,6 +123,14 @@ import repositories from '../repositories/index.js'
  * @property {Mesh[]} meshes - ordered list of meshes.
  */
 
+/**
+ * @typedef {object} ZoomSpec zoom specifications for main and hand scene:
+ * @property {number} min? - minimum zoom level allowed on the main scene.
+ * @property {number} max? - maximum zoom level allowed on the main scene.
+ * @property {number} initial? - initial zoom level for the main scene.
+ * @property {number} hand? - fixed zoom level for the hand scene.
+ */
+
 const gameListsUpdate$ = new Subject()
 
 function isOwner(game, playerId) {
@@ -162,17 +171,19 @@ export async function createGame(kind, playerId) {
   if (!canAccess(player, descriptor)) {
     throw new Error(`Access to game ${kind} is restricted`)
   }
+  // trim some data out of the descriptor before saving it as game properties
+  // eslint-disable-next-line no-unused-vars
+  const { name, build, addPlayer, ...gameProps } = descriptor
   try {
     let game = {
-      locales: { ...descriptor.locales },
       kind,
       created: Date.now(),
       playerIds: [playerId],
+      ...gameProps,
       meshes: await createMeshes(kind, descriptor),
       messages: [],
       cameras: [],
-      hands: [],
-      rulesBookPageCount: descriptor.rulesBookPageCount
+      hands: []
     }
     if (descriptor?.addPlayer) {
       game = await descriptor?.addPlayer(game, player)

@@ -1,6 +1,7 @@
 // all BabylonJS imports must be from individual files to allow tree shaking.
 // more [here](https://doc.babylonjs.com/divingDeeper/developWithBjs/treeShaking)
 import { Engine as RealEngine } from '@babylonjs/core/Engines/engine'
+import { Observable } from '@babylonjs/core/Misc/observable'
 import { Scene } from '@babylonjs/core/scene'
 // mandatory side effects
 import '@babylonjs/core/Animations/animatable'
@@ -29,6 +30,7 @@ import { createLights, createTable, loadMeshes, serializeMeshes } from './utils'
 /**
  * Enhanced Babylon.js' Engine
  * @typedef {Engine} EnhancedEngine
+ * @property {Observable} onLoadedObservable - emits when data was successfully loaded into the engine.
  */
 
 /**
@@ -39,6 +41,7 @@ import { createLights, createTable, loadMeshes, serializeMeshes } from './utils'
  * @param {import('@babylonjs/core').ThinEngine} params.Engine - Babylon's 3D Engine class used.
  * @param {HTMLCanvasElement} params.canvas - HTML canvas used to display the scene.
  * @param {HTMLElement} params.interaction - HTML element receiving user interaction (mouse events, taps).
+ * @param {HTMLElement} params.hand - HTML element holding hand.
  * @param {number} params.doubleTapDelay - number of milliseconds between 2 pointer down events to be considered as a double one.
  * @param {number} params.longTapDelay - number of milliseconds to hold pointer down before it is considered as long.
  * @returns {EnhancedEngine} the created 3D engine.
@@ -47,12 +50,14 @@ export function createEngine({
   Engine = RealEngine,
   canvas,
   interaction,
+  hand,
   doubleTapDelay,
   longTapDelay
 }) {
   const engine = new Engine(canvas, true)
   engine.enableOfflineSupport = false
   engine.inputElement = interaction
+  engine.onLoadedObservable = new Observable()
 
   Scene.DoubleClickDelay = doubleTapDelay
   // scene ordering is important: main scene must come last to allow ray picking scene.pickWithRay(new Ray(vertex, down))
@@ -97,6 +102,7 @@ export function createEngine({
    * @param {boolean} initial? - set to true to show Babylon's loading UI while loading assets.
    */
   engine.load = async (gameData, playerId, initial) => {
+    cameraManager.adjustZoomLevels(gameData.zoomSpec || {})
     const handsEnabled = hasHandsEnabled(gameData)
     if (initial) {
       isLoading = true
@@ -111,7 +117,7 @@ export function createEngine({
         isLoading = false
       })
       if (handsEnabled) {
-        handManager.init({ scene, handScene })
+        handManager.init({ scene, handScene, overlay: hand })
       }
     }
     await customShapeManager.init(gameData)
@@ -122,6 +128,7 @@ export function createEngine({
         gameData.hands.find(hand => playerId === hand.playerId)?.meshes ?? []
       )
     }
+    engine.onLoadedObservable.notifyObservers()
   }
 
   /**
@@ -150,6 +157,7 @@ export function createEngine({
     inputManager.stopAll(event)
   }
   // scene.debugLayer.show({ embedMode: true })
+  // handScene.debugLayer.show({ embedMode: true })
   // new AxesViewer(scene)
   return engine
 }

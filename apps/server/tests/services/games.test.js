@@ -69,7 +69,6 @@ describe('given a subscription to game lists and an initialized repository', () 
         id: expect.any(String),
         created: expect.any(Number),
         kind,
-        locales: expect.any(Object),
         playerIds: [player.id],
         meshes: expect.any(Array),
         cameras: [],
@@ -87,12 +86,12 @@ describe('given a subscription to game lists and an initialized repository', () 
         id: expect.any(String),
         created: expect.any(Number),
         kind,
-        locales: expect.any(Object),
         playerIds: [player.id],
         meshes: expect.any(Array),
         cameras: [],
         messages: [],
-        hands: [{ playerId: player.id, meshes: [] }]
+        hands: [{ playerId: player.id, meshes: [] }],
+        zoomSpec: { min: 5, max: 50 }
       })
       await sleep()
       expect(updates).toEqual([

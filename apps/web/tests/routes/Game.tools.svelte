@@ -3,8 +3,8 @@
   import Game from '../../src/routes/Game.svelte'
 </script>
 
-<Tool
-  component={Game}
-  name="Pages/Game"
-  props={{ params: { gameId: '12345' } }}
-/>
+<Tool name="Pages/Game" props={{ params: { gameId: '12345' } }} let:props>
+  <span class="overflow-hidden flex-1">
+    <Game {...props} />
+  </span>
+</Tool>

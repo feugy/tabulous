@@ -19,3 +19,29 @@ Object.defineProperty(window, 'matchMedia', {
     dispatchEvent: jest.fn()
   }))
 })
+
+const resizeObservers = []
+
+class ResizeObserver {
+  constructor(observer) {
+    this.observedNodes = new Set()
+    this.observer = observer
+    resizeObservers.push(this)
+  }
+  disconnect() {
+    this.observedNodes.clear()
+    resizeObservers.splice(resizeObservers.indexOf(this), 1)
+  }
+  observe(node) {
+    this.observedNodes.add(node)
+  }
+  unobserve(node) {
+    this.observedNodes.delete(node)
+  }
+  notify() {
+    this.observer([...this.observedNodes].map(target => ({ target })))
+  }
+}
+
+window.ResizeObserver = ResizeObserver
+window.resizeObservers = resizeObservers

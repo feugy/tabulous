@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker'
 import { configures3dTestEngine } from '../../test-utils'
 import { cameraManager as manager } from '../../../src/3d/managers'
 import { createTable } from '../../../src/3d/utils'
@@ -52,6 +53,12 @@ describe('CameraManager', () => {
   it('can not save without camera', () => {
     manager.save()
     expect(manager.saves).toHaveLength(0)
+  })
+
+  it('can not adjust zoom levels', () => {
+    expect(() => manager.adjustZoomLevels({})).toThrow(
+      'please init the camera manager prior to adjusting zoom levels'
+    )
   })
 
   describe('init()', () => {
@@ -270,6 +277,48 @@ describe('CameraManager', () => {
       expect(manager.saves).toHaveLength(1)
       expectState(manager.saves[0], { elevation: 30 })
       expect(saveUpdates).toEqual([manager.saves])
+    })
+  })
+
+  describe('adjustZoomLevels()', () => {
+    beforeEach(() => manager.init())
+
+    it('adjusts minimum main scene zoom', () => {
+      const min = faker.datatype.number()
+      manager.adjustZoomLevels({ min })
+      expect(manager.camera.lowerRadiusLimit).toEqual(min)
+    })
+
+    it('adjusts maximum main scene zoom', () => {
+      const max = faker.datatype.number()
+      manager.adjustZoomLevels({ max })
+      expect(manager.camera.upperRadiusLimit).toEqual(max)
+    })
+
+    it('adjusts current main scene zoom', () => {
+      const initial = faker.datatype.number()
+      manager.adjustZoomLevels({ initial })
+      expectState(manager.saves[0], { elevation: initial })
+      expect(manager.camera.radius).toEqual(initial)
+    })
+
+    it('adjusts current hand scene zoom', () => {
+      const hand = faker.datatype.number()
+      manager.adjustZoomLevels({ hand })
+      expect(manager.handSceneCamera.position.y).toEqual(hand)
+    })
+
+    it('adjusts all level at once', () => {
+      const hand = faker.datatype.number()
+      const min = faker.datatype.number()
+      const max = faker.datatype.number()
+      const initial = faker.datatype.number()
+      manager.adjustZoomLevels({ min, initial, max, hand })
+      expect(manager.camera.lowerRadiusLimit).toEqual(min)
+      expect(manager.camera.radius).toEqual(initial)
+      expectState(manager.saves[0], { elevation: initial })
+      expect(manager.camera.upperRadiusLimit).toEqual(max)
+      expect(manager.handSceneCamera.position.y).toEqual(hand)
     })
   })
 

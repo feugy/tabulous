@@ -1,5 +1,6 @@
 import { Animation } from '@babylonjs/core/Animations/animation'
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera'
+import { FlyCamera } from '@babylonjs/core/Cameras/flyCamera'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { Observable } from '@babylonjs/core/Misc/observable'
 import { isPositionAboveTable, screenToGround } from '../utils'
@@ -91,14 +92,44 @@ class CameraManager {
 
     this.saves = [serialize(this.camera)]
 
-    this.handSceneCamera = new ArcRotateCamera(
-      'Camera',
-      -Math.PI / 2,
-      0,
-      20,
-      Vector3.Zero(),
+    this.handSceneCamera = new FlyCamera(
+      'camera',
+      new Vector3(0, 20, 0),
       handScene
     )
+    this.handSceneCamera.rotation.x = Math.PI * 0.5
+  }
+
+  /**
+   * Adjust the main camera zoom range (when relevant), and the fixed hand zoom (when relevant).
+   * Also adjust default camera position when changing the initial zoom level.
+   * @param {object} params - game data, including:
+   * @param {number} params.min? - minimum zoom level allowed on the main scene.
+   * @param {number} params.max? - maximum zoom level allowed on the main scene.
+   * @param {number} params.initial? - initial zoom level for the main scene.
+   * @param {number} params.handZoom? - fixed zoom level for the hand scene.
+   * @throws {Error} when called prior to initialization.
+   */
+  adjustZoomLevels({ min, max, hand, initial }) {
+    const { camera, handSceneCamera } = this
+    if (!camera) {
+      throw new Error(
+        `please init the camera manager prior to adjusting zoom levels`
+      )
+    }
+    if (min) {
+      camera.lowerRadiusLimit = min
+    }
+    if (max) {
+      camera.upperRadiusLimit = max
+    }
+    if (initial) {
+      camera.radius = initial
+      this.saves[0] = serialize(camera)
+    }
+    if (hand) {
+      handSceneCamera.position.y = hand
+    }
   }
 
   /**
