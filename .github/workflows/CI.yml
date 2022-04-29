@@ -64,10 +64,10 @@ jobs:
       - name: Run UI tests
         run: npm run test:web
 
-      # - name: Send coverage to Codacy
-      #   if: always()
-      #   continue-on-error: true
-      #   uses: codacy/codacy-coverage-reporter-action@master
-      #   with:
-      #     project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-      #     coverage-reports: apps/web/coverage/clover.xml
+      - name: Send coverage to Codacy
+        if: always()
+        continue-on-error: true
+        uses: codacy/codacy-coverage-reporter-action@master
+        with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: apps/server/coverage/clover.xml,apps/web/coverage/clover.xml
