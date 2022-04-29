@@ -12,3 +12,5 @@ export function addPlayer(game, player) {
     hands: [...game.hands, { playerId: player.id, meshes: [] }]
   }
 }
+
+export const zoomSpec = { min: 5, max: 50 }
