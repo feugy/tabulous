@@ -8,3 +8,10 @@ export const locales = {
     title: 'Coinche'
   }
 }
+
+/**
+ * Scene zoom ranges and positions.
+ */
+export const zoomSpec = {
+  hand: 25
+}

@@ -101,6 +101,38 @@ class CameraManager {
   }
 
   /**
+   * Adjust the main camera zoom range (when relevant), and the fixed hand zoom (when relevant).
+   * Also adjust default camera position when changing the initial zoom level.
+   * @param {object} params - game data, including:
+   * @param {number} params.min? - minimum zoom level allowed on the main scene.
+   * @param {number} params.max? - maximum zoom level allowed on the main scene.
+   * @param {number} params.initial? - initial zoom level for the main scene.
+   * @param {number} params.handZoom? - fixed zoom level for the hand scene.
+   * @throws {Error} when called prior to initialization.
+   */
+  adjustZoomLevels({ min, max, hand, initial }) {
+    const { camera, handSceneCamera } = this
+    if (!camera) {
+      throw new Error(
+        `please init the camera manager prior to adjusting zoom levels`
+      )
+    }
+    if (min) {
+      camera.lowerRadiusLimit = min
+    }
+    if (max) {
+      camera.upperRadiusLimit = max
+    }
+    if (initial) {
+      camera.radius = initial
+      this.saves[0] = serialize(camera)
+    }
+    if (hand) {
+      handSceneCamera.position.y = hand
+    }
+  }
+
+  /**
    * Applies a given movement to the camera on x/z plane, with animation.
    * Coordinates outside the table will be ignored.
    * Ends with the animation.

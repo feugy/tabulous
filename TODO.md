@@ -1,7 +1,5 @@
 # TODO
 
-- custom zoom range + hand zoom per game type
-
 ## Brittle tests
 
 - `InputManager › given an initialized manager() › handles multiple pointers taps`
@@ -36,7 +34,6 @@
 
 ## UI
 
-- collapsible/resizeable/capped hand
 - select multiple from any any stack (not just drawable cards)
 - lock meshes to avoid moving
 - bug: when stacked, only the last mesh could be picked (drag selection, action menu)
@@ -44,6 +41,7 @@
 - bug: a tall stack of non-card meshes, after re-order, can not be picked any more (fixed on refresh)
 - bug: gravity only considers bounding box edges and center (long vertical meshes are not picked)
 - quatifiable (stackable) behavior
+- save last camera?
 - use `TouchEvent.scale` to detect pinches https://developer.mozilla.org/en-US/docs/Web/API/TouchEvent
 - rework interaction model https://www.unixpapa.com/js/testmouse.html
 - display peer's name when running draw animations + show peer avatar/name instead of pointer

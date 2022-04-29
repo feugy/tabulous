@@ -98,6 +98,12 @@ fragment fullGame on Game {
     }
   }
   rulesBookPageCount
+  zoomSpec {
+    min
+    max
+    initial
+    hand
+  }
 }
 
 mutation createGame($kind: String!) {
