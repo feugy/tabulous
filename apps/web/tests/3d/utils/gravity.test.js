@@ -1,5 +1,6 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
 import { faker } from '@faker-js/faker'
 import {
   getCenterAltitudeAbove,
@@ -122,8 +123,8 @@ describe('applyGravity() 3D utility', () => {
 })
 
 describe('isAbove() 3D utility', () => {
-  const x = faker.datatype.number()
-  const z = faker.datatype.number()
+  const x = faker.datatype.number({ min: -10, max: 10 })
+  const z = faker.datatype.number({ min: -10, max: 10 })
 
   it('finds when a mesh is hovering another one', () => {
     const box = CreateBox('box', {})
@@ -156,7 +157,119 @@ describe('isAbove() 3D utility', () => {
     box2.computeWorldMatrix()
 
     expect(isAbove(box, box2, 3)).toBe(true)
-    expect(isAbove(box, box2, 1.5)).toBe(false)
+    expect(isAbove(box, box2, 0.5)).toBe(false)
+  })
+
+  describe.each([
+    {
+      title: 'two intersecting squares',
+      buildMeshes: () =>
+        [2, 3].map((size, i) =>
+          CreateBox(`box${i + 1}`, { width: size, depth: size })
+        ),
+      results: [true, true]
+    },
+    {
+      title: 'two intersecting rectangles',
+      buildMeshes: () => [
+        CreateBox(`box1`, { width: 2, depth: 4 }),
+        CreateBox(`box2`, { width: 3, depth: 1 })
+      ],
+      results: [true, true]
+    },
+    {
+      title: 'two cylinders',
+      buildMeshes: () =>
+        [
+          CreateCylinder(`cylinder1`, { diameter: 2 }),
+          CreateCylinder(`cylinder2`, { diameter: 3 })
+        ].map(mesh => {
+          mesh.isCylindric = true
+          return mesh
+        }),
+      results: [true, false]
+    },
+    {
+      title: 'two hexagons',
+      buildMeshes: () =>
+        [
+          CreateCylinder(`hexgon1`, { tessellation: 6, diameter: 2 }),
+          CreateCylinder(`hexgon3`, { tessellation: 6, diameter: 3 })
+        ].map(mesh => {
+          mesh.isCylindric = true
+          return mesh
+        }),
+      results: [true, false]
+    },
+    {
+      title: 'a cylinder and an hexagon',
+      buildMeshes: () =>
+        [
+          CreateCylinder(`hexgon1`, { tessellation: 6, diameter: 2 }),
+          CreateCylinder(`cylinder2`, { diameter: 3 })
+        ].map(mesh => {
+          mesh.isCylindric = true
+          return mesh
+        }),
+      results: [true, false]
+    },
+    {
+      title: 'a cylinder and a square',
+      buildMeshes: () =>
+        [
+          CreateBox(`box1`, { width: 2, depth: 2 }),
+          CreateCylinder(`cylinder2`, { diameter: 2.5 })
+        ].map((mesh, i) => {
+          mesh.isCylindric = i === 1
+          return mesh
+        }),
+      results: [true, false]
+    },
+    {
+      title: 'a cylinder and a rectangle',
+      buildMeshes: () =>
+        [
+          CreateBox(`box1`, { width: 3, depth: 2 }),
+          CreateCylinder(`cylinder2`, { diameter: 2 })
+        ].map((mesh, i) => {
+          mesh.isCylindric = i === 1
+          return mesh
+        }),
+      results: [true, false]
+    },
+    {
+      title: 'a hexagon and a rectangle',
+      buildMeshes: () =>
+        [
+          CreateBox(`box1`, { width: 3, depth: 2 }),
+          CreateCylinder(`hexagon2`, { tessellation: 6, diameter: 2 })
+        ].map((mesh, i) => {
+          mesh.isCylindric = i === 1
+          return mesh
+        }),
+      results: [true, false]
+    }
+  ])(`given $title`, ({ buildMeshes, results }) => {
+    let meshes
+    beforeEach(() => (meshes = buildMeshes()))
+
+    it('detects overlap on edge', () => {
+      meshes[0].setAbsolutePosition(new Vector3(x, 10, z))
+      meshes[1].setAbsolutePosition(new Vector3(x - 2, 0, z))
+      for (const mesh of meshes) {
+        mesh.computeWorldMatrix()
+      }
+      expect(isAbove(meshes[0], meshes[1])).toBe(results[0])
+    })
+
+    it('detects overlap on corner', () => {
+      meshes[0].setAbsolutePosition(new Vector3(x, 10, z))
+      meshes[1].setAbsolutePosition(new Vector3(x + 2, 0, z - 2))
+      for (const mesh of meshes) {
+        mesh.computeWorldMatrix()
+      }
+      expect(isAbove(meshes[0], meshes[1])).toBe(results[1])
+    })
   })
 })
 

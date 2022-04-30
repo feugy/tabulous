@@ -84,22 +84,40 @@ describe('getAnimatableBehavior() 3D utility', () => {
     expect(getAnimatableBehavior(box)).toEqual(animatable)
   })
 
-  it('finds animatable over others', () => {
+  it('finds drawable', () => {
+    const drawable = new DrawBehavior()
+    box.addBehavior(drawable, true)
+    expect(getAnimatableBehavior(box)).toEqual(drawable)
+  })
+
+  it('finds flippable over others', () => {
     const flippable = new FlipBehavior()
     box.addBehavior(flippable, true)
     const animatable = new AnimateBehavior()
     box.addBehavior(animatable, true)
     const rotable = new RotateBehavior()
     box.addBehavior(rotable, true)
-    expect(getAnimatableBehavior(box)).toEqual(animatable)
+    const drawable = new DrawBehavior()
+    box.addBehavior(drawable, true)
+    expect(getAnimatableBehavior(box)).toEqual(flippable)
   })
 
-  it('finds flippable over rotable', () => {
+  it('finds drawable over rotable', () => {
+    const drawable = new DrawBehavior()
+    box.addBehavior(drawable, true)
     const rotable = new RotateBehavior()
     box.addBehavior(rotable, true)
-    const flippable = new FlipBehavior()
-    box.addBehavior(flippable, true)
-    expect(getAnimatableBehavior(box)).toEqual(flippable)
+    const animatable = new AnimateBehavior()
+    box.addBehavior(animatable, true)
+    expect(getAnimatableBehavior(box)).toEqual(drawable)
+  })
+
+  it('finds rotable over animatable', () => {
+    const rotable = new RotateBehavior()
+    box.addBehavior(rotable, true)
+    const animatable = new AnimateBehavior()
+    box.addBehavior(animatable, true)
+    expect(getAnimatableBehavior(box)).toEqual(rotable)
   })
 
   it('can returns nothing', () => {

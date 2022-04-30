@@ -114,9 +114,10 @@ export async function animateMove(
  */
 export function getAnimatableBehavior(mesh) {
   return (
-    mesh?.getBehaviorByName(AnimateBehaviorName) ??
     mesh?.getBehaviorByName(FlipBehaviorName) ??
-    mesh?.getBehaviorByName(RotateBehaviorName)
+    mesh?.getBehaviorByName(DrawBehaviorName) ??
+    mesh?.getBehaviorByName(RotateBehaviorName) ??
+    mesh?.getBehaviorByName(AnimateBehaviorName)
   )
 }
 
@@ -333,7 +334,7 @@ function parseFloat(
 /**
  * Builds a "target" mesh that can be used as a targetable zone.
  * It'll be assigned as a child or the provided parent.
- * Creates a cylinder when the mesh's name is 'roundToken' or when providing dimension's diameter.
+ * Creates a cylinder for cylindric meshes or when providing dimension's diameter.
  * Otherwise, creates a box.
  * @param {string} name - new mesh's name
  * @param {import('@babel/core').Mesh} parent - mesh to copy dimensions and shape from.
@@ -347,18 +348,19 @@ function parseFloat(
 export function buildTargetMesh(name, parent, dimensions) {
   const { x, y, z } = parent.getBoundingInfo().boundingBox.extendSizeWorld
   const scene = parent.getScene()
-  const created =
-    dimensions?.diameter || parent.name === 'roundToken'
-      ? CreateCylinder(
-          name,
-          dimensions ?? { diameter: x * 2, height: y * 2 },
-          scene
-        )
-      : CreateBox(
-          name,
-          dimensions ?? { width: x * 2, height: y * 2, depth: z * 2 },
-          scene
-        )
+  const isCylindric = dimensions?.diameter || parent.isCylindric
+  const created = isCylindric
+    ? CreateCylinder(
+        name,
+        dimensions ?? { diameter: x * 2, height: y * 2 },
+        scene
+      )
+    : CreateBox(
+        name,
+        dimensions ?? { width: x * 2, height: y * 2, depth: z * 2 },
+        scene
+      )
+  created.isCylindric = isCylindric
   created.parent = parent
   return created
 }

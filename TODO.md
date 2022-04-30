@@ -22,7 +22,6 @@
 - create Animation objects as part of runAnimation() (constant frameRate of 60)
 - custom message on jest expect (game-interaction)
 - jest matchers with mesh (toHaveBeenCalledWith, toHaveBeenNthCalledWith)
-- rework target detection. Instead of using real mesh and rays use shapes overlap: each zone is a rectangle/circle on XZ plane, and the moved mesh another rectangle/circle. Check the center of the moved mesh
 - all manager managing a collection of behaviors should check their capabilities
 - game-manager is just a gigantic mess!!! no single responsibility, global state all over the place
 - game-interaction drag-related unit tests
@@ -34,16 +33,15 @@
 
 ## UI
 
+- bug: when stacked, only the last mesh could be picked (drag selection, action menu)
+- rework interaction model https://www.unixpapa.com/js/testmouse.html
 - select multiple from any any stack (not just drawable cards)
 - lock meshes to avoid moving
-- bug: when stacked, only the last mesh could be picked (drag selection, action menu)
-- bug: no re-ordering animation for stacks of non-card meshes
+- bug: no re-ordering animation for stacks of non-flippable/rotable meshes (meshes are not animatable, movable may be a subclass of animatable)
 - bug: a tall stack of non-card meshes, after re-order, can not be picked any more (fixed on refresh)
-- bug: gravity only considers bounding box edges and center (long vertical meshes are not picked)
 - quatifiable (stackable) behavior
 - save last camera?
 - use `TouchEvent.scale` to detect pinches https://developer.mozilla.org/en-US/docs/Web/API/TouchEvent
-- rework interaction model https://www.unixpapa.com/js/testmouse.html
 - display peer's name when running draw animations + show peer avatar/name instead of pointer
 - allow selecting preferred camera/mic with https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/enumerateDevices
 - configurable player position at game level
@@ -91,32 +89,32 @@
 
 # Interaction model
 
-| Action on table  | Tabulous                           | Tabletopia                        |
-| ---------------- | ---------------------------------- | --------------------------------- |
-| zoom camera      | molette, pinch                     | molette, +/-                      |
-| move camera      | left drag, 1 finger drag           | left drag, W/A/S/D                |
-| rotate camera    | right drag, 2 fingers drag         | right drag                        |
-| multiple select  | long left drag, long 1 finger drag | Shift+left click, Shift+left drag |
-| fullscreen       | _button_                           | ~/esc                             |
-| save camera      | _button_                           | shift+number, _menu action_       |
-| restore camera   | _button_                           | number, _menu action_             |
-| menu             | double left click/tap              | right click                       |
-| toggle hand      | _N/A_                              | _menu action_                     |
-| toggle interface | _N/A_                              | _menu action_                     |
-| help             | _N/A_                              | F1, _button_, _menu action_       |
-| magnify          | _N/A_                              | Z, _menu action_                  |
+| Action on table  | Tabulous                           | Tabletopia                        | New Tabulous               |
+| ---------------- | ---------------------------------- | --------------------------------- | -------------------------- |
+| zoom camera      | molette, pinch                     | molette, +/-                      | molette, pinch             |
+| move camera      | left drag, 1 finger drag           | left drag, W/A/S/D                | right drag, 2 fingers drag |
+| rotate camera    | right drag, 2 fingers drag         | right drag                        | middle drag, 3 finger drag |
+| multiple select  | long left drag, long 1 finger drag | Shift+left click, Shift+left drag | left drag, 1 finger drag   |
+| fullscreen       | _button_                           | ~/esc                             | _button_                   |
+| save camera      | _button_                           | shift+number, _menu action_       | _button_                   |
+| restore camera   | _button_                           | number, _menu action_             | _button_                   |
+| menu             | double left click/tap              | right click                       | right click, 2 finger tap  |
+| toggle hand      | _button_                           | _menu action_                     | _button_                   |
+| toggle interface | _N/A_                              | _menu action_                     | _N/A_                      |
+| help             | _N/A_                              | F1, _button_, _menu action_       | _N/A_                      |
+| magnify          | _N/A_                              | Z, _menu action_                  | _N/A_                      |
 
-| Action on Mesh | Tabulous                                  | Tabletopia                                       |
-| -------------- | ----------------------------------------- | ------------------------------------------------ |
-| move           | left drag, 1 finger drag                  | left drag                                        |
-| select         | _N/A_                                     | left click                                       |
-| menu           | double left click, double tap             | right click                                      |
-| view details   | long left click, long tap, _menu action_  | double left click                                |
-| flip           | left click, 1 finger tap, _menu action_   | F, _menu action_                                 |
-| rotate         | right click, 2 fingers tap, _menu action_ | Ctrl+left drag, Q/E/PgUp/PgDown, _menu action_   |
-| (un)lock       | _N/A_                                     | L, _menu action_                                 |
-| put under      | _N/A_                                     | U, _menu action_                                 |
-| take to hand   | drag to hand, menu action                 | T, _move to screen bottom_, _menu action (draw)_ |
+| Action on Mesh | Tabulous                                  | Tabletopia                                     | New Tabulous                                    |
+| -------------- | ----------------------------------------- | ---------------------------------------------- | ----------------------------------------------- |
+| move           | left drag, 1 finger drag                  | left drag                                      | left drag, 1 finger drag                        |
+| select         | _N/A_                                     | left click                                     | _N/A_                                           |
+| menu           | double left click, double tap             | right click                                    | right click, 2 fingers tap                      |
+| view details   | long left click, long tap, _menu action_  | double left click                              | long left click, long tap, _menu action_        |
+| flip           | left click, 1 finger tap, _menu action_   | F, _menu action_                               | left click, 1 finger tap, _menu action_         |
+| rotate         | right click, 2 fingers tap, _menu action_ | Ctrl+left drag, Q/E/PgUp/PgDown, _menu action_ | double left click, 2 fingers tap, _menu action_ |
+| (un)lock       | _N/A_                                     | L, _menu action_                               | _N/A_                                           |
+| put under      | _N/A_                                     | U, _menu action_                               | _N/A_                                           |
+| take to hand   | drag to hand, _menu action_               | T, drag to screen bottom, _menu action (draw)_ | drag to hand, _menu action_                     |
 
 | Action on Stacks    | Tabulous      | Tabletopia                              |
 | ------------------- | ------------- | --------------------------------------- |

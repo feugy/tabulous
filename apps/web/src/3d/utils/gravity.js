@@ -1,12 +1,16 @@
-import { Ray } from '@babylonjs/core/Culling/ray'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { getDimensions } from './mesh'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
+import {
+  buildEnclosedCircle,
+  buildGroundRectangle,
+  intersectRectangles,
+  intersectCircles,
+  intersectCorners
+} from '../../utils/math'
 
 const logger = makeLogger('gravity')
-
-const down = Vector3.Down()
 
 /**
  * Returns the absolute altitude (Y axis) above a given mesh, including minimum spacing.
@@ -41,10 +45,13 @@ export function applyGravity(mesh) {
     `gravity for ${mesh.id} y: ${mesh.absolutePosition.y}`
   )
   mesh.computeWorldMatrix(true)
-  const over = findBelow(mesh, other => other.isPickable && other !== mesh)
+  const below = findBelow(
+    mesh,
+    mesh.getScene().meshes.filter(other => other.isPickable && other !== mesh)
+  )
   let y = getDimensions(mesh).height * 0.5
-  if (over.size) {
-    const ordered = sortByElevation(over.keys(), true)
+  if (below.length) {
+    const ordered = sortByElevation(below, true)
     y = getCenterAltitudeAbove(ordered[0], mesh)
     logger.info(
       { ordered, mesh, y },
@@ -59,9 +66,9 @@ export function applyGravity(mesh) {
 }
 
 /**
- * Indicates when a mesh is hovering another one (partial overlap supported).
- * Can apply a scale factor to the target.
- * Does not modifies any coordinate.
+ * Indicates when a mesh is hovering another one.
+ * Can apply a scale factor to the target: scale bellow 1 means smaller target.
+ * Does not modifies any coordinates.
  * @param {import('@babel/core').Mesh} mesh - checked mesh.
  * @param {import('@babel/core').Mesh} target - other mesh.
  * @param {number} [scale=1] - scale applied to the target.
@@ -69,13 +76,13 @@ export function applyGravity(mesh) {
  */
 export function isAbove(mesh, target, scale = 1) {
   const originalScale = target.scaling.clone()
-  target.scaling.addInPlace(new Vector3(scale, scale, scale))
+  target.scaling = new Vector3(scale, scale, scale)
   target.computeWorldMatrix(true)
 
-  const over = findBelow(mesh, other => other === target)
+  const isOver = findBelow(mesh, [target]).length === 1
   target.scaling.copyFrom(originalScale)
   target.computeWorldMatrix(true)
-  return over.get(target) >= 4
+  return isOver
 }
 
 /**
@@ -93,24 +100,45 @@ export function sortByElevation(meshes, highestFirst = false) {
   )
 }
 
-function findBelow(mesh, predicate) {
-  const over = new Map()
+function findBelow(mesh, candidates) {
+  const results = []
   const { boundingBox } = mesh.getBoundingInfo()
+  const geometries = buildGeometries(mesh, boundingBox)
 
-  const vertices = [mesh.absolutePosition]
-  for (const vertex of boundingBox.vectorsWorld) {
-    if (vertex.y <= vertices[0].y) {
-      vertices.push(vertex)
+  for (const other of candidates) {
+    const { boundingBox: otherBox } = other.getBoundingInfo()
+    if (isGloballyBelow(boundingBox, otherBox)) {
+      if (intersectGeometries(geometries, buildGeometries(other, otherBox))) {
+        results.push(other)
+      }
     }
   }
+  return results
+}
 
-  const scene = mesh.getScene()
-  for (const vertex of vertices) {
-    const hit = scene.pickWithRay(new Ray(vertex, down), predicate)
-    if (hit?.pickedMesh) {
-      const count = over.get(hit.pickedMesh) || 0
-      over.set(hit.pickedMesh, count + 1)
-    }
+function intersectGeometries([geometryA, rectangleA], [geometryB, rectangleB]) {
+  if (geometryA.center && geometryB.center) {
+    return intersectCircles(geometryA, geometryB)
   }
-  return over
+  if (geometryA.min && geometryB.min) {
+    return intersectRectangles(geometryA, geometryB)
+  }
+  if (!intersectRectangles(rectangleA, rectangleB)) {
+    return false
+  }
+  return intersectCorners(
+    geometryA.circle ? geometryB : geometryA,
+    geometryA.circle ? geometryA : geometryB
+  )
+}
+
+function buildGeometries(mesh, boundingBox) {
+  const rectangle = buildGroundRectangle(boundingBox)
+  return mesh.isCylindric
+    ? [buildEnclosedCircle(rectangle), rectangle]
+    : [rectangle, rectangle]
+}
+
+function isGloballyBelow(reference, tested) {
+  return tested.maximumWorld.y < reference.minimumWorld.y
 }

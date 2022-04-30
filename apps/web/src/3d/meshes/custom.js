@@ -47,8 +47,12 @@ export function createCustom(
   if (!mesh) {
     throw new Error(`${file} does not contain any mesh`)
   }
+  // removes and re-add mesh to ensure it is referenced with the desired name and id.
+  scene = mesh.getScene()
+  scene.removeMesh(mesh, true)
   mesh.id = id
   mesh.name = 'custom'
+  scene.addMesh(mesh, true)
   mesh.rotationQuaternion = null
 
   materialManager.configure(mesh, texture)

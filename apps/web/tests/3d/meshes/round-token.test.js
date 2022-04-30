@@ -18,6 +18,7 @@ describe('createRoundToken()', () => {
     expect(boundingBox.extendSize.z * 2).toEqual(2)
     expect(boundingBox.extendSize.y * 2).toEqual(0.1)
     expect(mesh.isPickable).toBe(false)
+    expect(mesh.isCylindric).toBe(true)
     expectPosition(mesh, [0, 0.05, 0])
     expect(mesh.metadata).toEqual({
       serialize: expect.any(Function)
