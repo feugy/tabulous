@@ -13,7 +13,7 @@ const logger = makeLogger('peer-channels')
 let signalSubscription
 let current
 let messageId = 1
-const connectDuration = 20e3
+const connectDuration = 20000
 const channels = new Map()
 const lastMessageSent$ = new Subject()
 const lastMessageReceived$ = new Subject()
