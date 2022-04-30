@@ -48,7 +48,7 @@ export function createBox(
   scene
 ) {
   const mesh = CreateBox(
-    'box',
+    id,
     {
       width,
       height,
@@ -57,7 +57,7 @@ export function createBox(
     },
     scene
   )
-  mesh.id = id
+  mesh.name = 'box'
   materialManager.configure(mesh, texture)
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.isPickable = false

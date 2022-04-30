@@ -20,7 +20,13 @@ import {
   selectionManager,
   targetManager
 } from './managers'
-import { createLights, createTable, loadMeshes, serializeMeshes } from './utils'
+import {
+  createLights,
+  createTable,
+  loadMeshes,
+  serializeMeshes,
+  ExtendedScene
+} from './utils'
 
 // import '@babylonjs/inspector'
 // import '@babylonjs/core/Debug/debugLayer'
@@ -61,8 +67,8 @@ export function createEngine({
 
   Scene.DoubleClickDelay = doubleTapDelay
   // scene ordering is important: main scene must come last to allow ray picking scene.pickWithRay(new Ray(vertex, down))
-  const handScene = new Scene(engine)
-  const scene = new Scene(engine)
+  const handScene = new ExtendedScene(engine)
+  const scene = new ExtendedScene(engine)
   handScene.autoClear = false
 
   cameraManager.init({ scene, handScene })

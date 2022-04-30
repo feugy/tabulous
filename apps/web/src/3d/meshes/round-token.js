@@ -38,7 +38,7 @@ export function createRoundToken(
   scene
 ) {
   const mesh = CreateCylinder(
-    'roundToken',
+    id,
     {
       diameter,
       height,
@@ -47,7 +47,7 @@ export function createRoundToken(
     },
     scene
   )
-  mesh.id = id
+  mesh.name = 'roundToken'
   materialManager.configure(mesh, texture)
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.isPickable = false
