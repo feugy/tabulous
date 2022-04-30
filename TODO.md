@@ -37,8 +37,6 @@
 - rework interaction model https://www.unixpapa.com/js/testmouse.html
 - select multiple from any any stack (not just drawable cards)
 - lock meshes to avoid moving
-- bug: no re-ordering animation for stacks of non-flippable/rotable meshes (meshes are not animatable, movable may be a subclass of animatable)
-- bug: a tall stack of non-card meshes, after re-order, can not be picked any more (fixed on refresh)
 - quatifiable (stackable) behavior
 - save last camera?
 - use `TouchEvent.scale` to detect pinches https://developer.mozilla.org/en-US/docs/Web/API/TouchEvent

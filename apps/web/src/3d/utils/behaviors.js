@@ -114,6 +114,7 @@ export async function animateMove(
  */
 export function getAnimatableBehavior(mesh) {
   return (
+    mesh?.getBehaviorByName(MoveBehaviorName) ??
     mesh?.getBehaviorByName(FlipBehaviorName) ??
     mesh?.getBehaviorByName(DrawBehaviorName) ??
     mesh?.getBehaviorByName(RotateBehaviorName) ??
