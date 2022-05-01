@@ -5,7 +5,6 @@ import { faker } from '@faker-js/faker'
 import { configures3dTestEngine, sleep } from '../../test-utils'
 import { inputManager as manager } from '../../../src/3d/managers'
 import { PointerEventTypes } from '@babylonjs/core'
-import { StackBehavior } from '../../../src/3d/behaviors'
 
 const { POINTERDOWN, POINTERUP, POINTERMOVE, POINTERWHEEL } = PointerEventTypes
 
@@ -116,37 +115,6 @@ describe('InputManager', () => {
       }
       triggerEvent(POINTERDOWN, { ...pointer, pointerId, button })
       const event = triggerEvent(POINTERUP, { ...pointer, pointerId, button })
-      expectEvents({ taps: 1 })
-      expectsDataWithMesh(taps[0], {
-        long: false,
-        pointers: 1,
-        type: 'tap',
-        button,
-        event
-      })
-    })
-
-    it('does not pick stacked meshes unless the last', async () => {
-      const button = 1
-      const pointer = { x: 1048, y: 525 }
-      const pointerId = 71
-      meshes[0].addBehavior(new StackBehavior())
-      meshes[6].addBehavior(new StackBehavior({ stackIds: ['box1'] }))
-      triggerEvent(POINTERDOWN, { ...pointer, pointerId, button })
-      let event = triggerEvent(POINTERUP, { ...pointer, pointerId, button })
-      expectEvents({ taps: 1 })
-      expectsDataWithMesh(
-        taps[0],
-        { long: false, pointers: 1, type: 'tap', button, event },
-        'box1'
-      )
-
-      await sleep(Scene.DoubleClickDelay * 1.1)
-
-      taps = []
-      meshes[0].isPickable = false
-      triggerEvent(POINTERDOWN, { ...pointer, pointerId, button })
-      event = triggerEvent(POINTERUP, { ...pointer, pointerId, button })
       expectEvents({ taps: 1 })
       expectsDataWithMesh(taps[0], {
         long: false,

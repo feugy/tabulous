@@ -3,11 +3,16 @@ import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
 import {
   configures3dTestEngine,
+  expectAnimationEnd,
   expectMoveRecorded,
   expectPosition,
   sleep
 } from '../../test-utils'
-import { MoveBehavior, TargetBehavior } from '../../../src/3d/behaviors'
+import {
+  MoveBehavior,
+  MoveBehaviorName,
+  TargetBehavior
+} from '../../../src/3d/behaviors'
 import {
   controlManager,
   handManager,
@@ -258,6 +263,7 @@ describe('MoveManager', () => {
 
       it('stops when pointer is leaving table', async () => {
         manager.continue({ x: centerX * 100, y: centerY * 100 })
+        await expectAnimationEnd(moved.getBehaviorByName(MoveBehaviorName))
         await sleep()
         expectPosition(moved, [1, getDimensions(moved).height / 2, 1])
         expect(actionRecorded).toHaveBeenCalledWith(

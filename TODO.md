@@ -33,7 +33,6 @@
 
 ## UI
 
-- bug: when stacked, only the last mesh could be picked (drag selection, action menu)
 - rework interaction model https://www.unixpapa.com/js/testmouse.html
 - select multiple from any any stack (not just drawable cards)
 - lock meshes to avoid moving
