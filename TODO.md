@@ -33,12 +33,10 @@
 
 ## UI
 
-- rework interaction model https://www.unixpapa.com/js/testmouse.html
 - select multiple from any any stack (not just drawable cards)
 - lock meshes to avoid moving
 - quatifiable (stackable) behavior
 - save last camera?
-- use `TouchEvent.scale` to detect pinches https://developer.mozilla.org/en-US/docs/Web/API/TouchEvent
 - display peer's name when running draw animations + show peer avatar/name instead of pointer
 - allow selecting preferred camera/mic with https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/enumerateDevices
 - configurable player position at game level
@@ -86,37 +84,39 @@
 
 # Interaction model
 
-| Action on table  | Tabulous                           | Tabletopia                        | New Tabulous               |
-| ---------------- | ---------------------------------- | --------------------------------- | -------------------------- |
-| zoom camera      | molette, pinch                     | molette, +/-                      | molette, pinch             |
-| move camera      | left drag, 1 finger drag           | left drag, W/A/S/D                | right drag, 2 fingers drag |
-| rotate camera    | right drag, 2 fingers drag         | right drag                        | middle drag, 3 finger drag |
-| multiple select  | long left drag, long 1 finger drag | Shift+left click, Shift+left drag | left drag, 1 finger drag   |
-| fullscreen       | _button_                           | ~/esc                             | _button_                   |
-| save camera      | _button_                           | shift+number, _menu action_       | _button_                   |
-| restore camera   | _button_                           | number, _menu action_             | _button_                   |
-| menu             | double left click/tap              | right click                       | right click, 2 finger tap  |
-| toggle hand      | _button_                           | _menu action_                     | _button_                   |
-| toggle interface | _N/A_                              | _menu action_                     | _N/A_                      |
-| help             | _N/A_                              | F1, _button_, _menu action_       | _N/A_                      |
-| magnify          | _N/A_                              | Z, _menu action_                  | _N/A_                      |
+| Action on table  | Tabulous                           | Tabletopia                        | New Tabulous                |
+| ---------------- | ---------------------------------- | --------------------------------- | --------------------------- |
+| zoom camera      | molette, pinch                     | molette, +/-                      | molette, pinch              |
+| move camera      | left drag, 1 finger drag           | left drag, W/A/S/D                | right drag, 2 fingers drag  |
+| rotate camera    | right drag, 2 fingers drag         | right drag                        | middle drag, 3 fingers drag |
+| multiple select  | long left drag, long 1 finger drag | Shift+left click, Shift+left drag | left drag, finger drag      |
+| fullscreen       | _button_                           | ~/esc                             | _button_                    |
+| save camera      | _button_                           | shift+number, _menu action_       | _button_                    |
+| restore camera   | _button_                           | number, _menu action_             | _button_                    |
+| menu             | double left click/tap              | right click                       | _N/A_                       |
+| toggle hand      | _button_                           | _menu action_                     | _button_                    |
+| toggle interface | _N/A_                              | _menu action_                     | _N/A_                       |
+| help             | _N/A_                              | F1, _button_, _menu action_       | _N/A_                       |
+| magnify          | _N/A_                              | Z, _menu action_                  | _N/A_                       |
 
-| Action on Mesh | Tabulous                                  | Tabletopia                                     | New Tabulous                                    |
-| -------------- | ----------------------------------------- | ---------------------------------------------- | ----------------------------------------------- |
-| move           | left drag, 1 finger drag                  | left drag                                      | left drag, 1 finger drag                        |
-| select         | _N/A_                                     | left click                                     | _N/A_                                           |
-| menu           | double left click, double tap             | right click                                    | right click, 2 fingers tap                      |
-| view details   | long left click, long tap, _menu action_  | double left click                              | long left click, long tap, _menu action_        |
-| flip           | left click, 1 finger tap, _menu action_   | F, _menu action_                               | left click, 1 finger tap, _menu action_         |
-| rotate         | right click, 2 fingers tap, _menu action_ | Ctrl+left drag, Q/E/PgUp/PgDown, _menu action_ | double left click, 2 fingers tap, _menu action_ |
-| (un)lock       | _N/A_                                     | L, _menu action_                               | _N/A_                                           |
-| put under      | _N/A_                                     | U, _menu action_                               | _N/A_                                           |
-| take to hand   | drag to hand, _menu action_               | T, drag to screen bottom, _menu action (draw)_ | drag to hand, _menu action_                     |
+| Action on Mesh | Tabulous                                  | Tabletopia                                     | New Tabulous                                 |
+| -------------- | ----------------------------------------- | ---------------------------------------------- | -------------------------------------------- |
+| move           | left drag, 1 finger drag                  | left drag                                      | left drag, 1 finger drag                     |
+| select         | _N/A_                                     | left click                                     | _N/A_                                        |
+| menu           | double left click, double tap             | right click                                    | right click, 2 fingers tap                   |
+| view details   | long left click, long tap, _menu action_  | double left click                              | long left click, long tap, _menu action_     |
+| flip           | left click, 1 finger tap, _menu action_   | F, _menu action_                               | left click, tap, _menu action_               |
+| rotate         | right click, 2 fingers tap, _menu action_ | Ctrl+left drag, Q/E/PgUp/PgDown, _menu action_ | double left click, double tap, _menu action_ |
+| (un)lock       | _N/A_                                     | L, _menu action_                               | _N/A_                                        |
+| put under      | _N/A_                                     | U, _menu action_                               | _N/A_                                        |
+| take to hand   | drag to hand, _menu action_               | T, move to screen bottom, _menu action (draw)_ | move to screen bottom, _menu action_         |
+| stack together | _menu action_                             | ??                                             | _menu action_                                |
 
 | Action on Stacks    | Tabulous      | Tabletopia                              |
 | ------------------- | ------------- | --------------------------------------- |
 | shuffle             | _menu action_ | _menu action_                           |
-| select N to hand    | _N/A_         | molette+left drag, _menu action (take)_ |
+| draw N to hand      | _menu action_ | molette+left drag, _menu action (take)_ |
+| pop N to tableottom | _menu action_ | ??                                      |
 | deal N              | _N/A_         | molette+left drag, _menu action (deal)_ |
 | stack on top        | _move over_   | _move over_                             |
 | stack at the bottom | _N/A_         | Shift+_move over_                       |

@@ -13,18 +13,6 @@ import { makeLogger } from './logger'
 
 const logger = makeLogger('game-interaction')
 
-function isMouse(event) {
-  return event?.pointerType === 'mouse'
-}
-
-function pointerKind(event, button, pointers) {
-  return button === 2 || (!isMouse(event) && pointers === 2)
-    ? 'right'
-    : button === 0 || !isMouse(event)
-    ? 'left'
-    : null
-}
-
 /**
  * Attach to game engine's input manager observables to implement game interaction model.
  * @param {object} params - parameters, including:
@@ -76,16 +64,17 @@ export function attachInputs({ doubleTapDelay, actionMenuProps$ }) {
      * Implements actions on user taps:
      * - click/tap always closes menu
      * - click/tap clears selection unless tapping/clicking it
-     * - double click/double tap on mesh opens its menu
+     * - right click on mesh opens its menu
      */
     taps$.subscribe({
-      next: ({ type, mesh, event, fromHand }) => {
+      next: ({ mesh, button, event, pointers, fromHand }) => {
         resetMenu()
         if (mesh) {
           if (!selectionManager.meshes.has(mesh)) {
             selectionManager.clear()
           }
-          if (type === 'doubletap') {
+          const kind = pointerKind(event, button, pointers)
+          if (kind === 'right') {
             logger.info({ mesh, event }, `display menu for mesh ${mesh.id}`)
             actionMenuProps$.next(computeMenuProps(mesh, fromHand))
           }
@@ -98,28 +87,35 @@ export function attachInputs({ doubleTapDelay, actionMenuProps$ }) {
     /**
      * Implements actions on mouse single clicks:
      * - single left click/tap on mesh flips it
-     * - single right click/2 fingers tap on mesh rotates it
-     * - long click/long tap on mesh opens its details (and clears stack size)
+     * - double left click/double tap on mesh rotates it
+     * - long left click/long tap on mesh opens its details (and clears stack size)
      * - any double click immediately following a single click discards the operation
      */
     taps$
       .pipe(
         filter(({ mesh }) => mesh),
         delayWhen(({ type }) => interval(type === 'tap' ? doubleTapDelay : 0)),
-        scan(
-          (previous, data) =>
-            data.type === 'tap' && previous?.type === 'doubletap' ? null : data,
-          null
-        ),
-        filter(data => data?.type === 'tap')
+        scan((previous, data) => {
+          if (data.type === 'tap' && previous?.type === 'doubletap') {
+            previous.type = 'doubletap'
+            return null
+          }
+          return data
+        }, null),
+        filter(data => data)
       )
       .subscribe({
-        next: async ({ mesh, button, event, long, pointers }) => {
+        next: async ({ type, mesh, button, event, long, pointers }) => {
           const kind = pointerKind(event, button, pointers)
-          if (long) {
-            triggerActionOnSelection(mesh, 'detail')
-          } else if (kind === 'right' || kind === 'left') {
-            triggerActionOnSelection(mesh, kind === 'right' ? 'rotate' : 'flip')
+          if (kind === 'left') {
+            if (long) {
+              triggerActionOnSelection(mesh, 'detail')
+            } else {
+              triggerActionOnSelection(
+                mesh,
+                type === 'doubletap' ? 'rotate' : 'flip'
+              )
+            }
           }
         }
       }),
@@ -128,8 +124,8 @@ export function attachInputs({ doubleTapDelay, actionMenuProps$ }) {
      * Implements actions on drag operations:
      * - starting dragging always closes menu
      * - dragging table with left click/finger selects meshes
-     * - dragging table with right click/two fingers rotates the camera
-     * - long dragging table with left click/finger selects meshes
+     * - dragging table with right click/two fingers pans the camera
+     * - dragging table with middle click/three fingers rotates the camera
      * - dragging mesh moves it
      */
     drags$.subscribe({
@@ -151,26 +147,24 @@ export function attachInputs({ doubleTapDelay, actionMenuProps$ }) {
           }
           if (!moveManager.inProgress) {
             const position = { x: event.x, y: event.y }
-            if (kind === 'right') {
+            if (kind === 'left') {
+              logger.info(
+                { button, long, pointers, event },
+                `start selecting meshes`
+              )
+              selectionPosition = position
+            } else if (kind === 'right') {
+              logger.info(
+                { button, long, pointers, event },
+                `start panning camera`
+              )
+              panPosition = position
+            } else if (kind === 'middle') {
               logger.info(
                 { button, long, pointers, event },
                 `start rotating camera`
               )
               rotatePosition = position
-            } else if (kind === 'left') {
-              if (long) {
-                logger.info(
-                  { button, long, pointers, event },
-                  `start selecting meshes`
-                )
-                selectionPosition = position
-              } else {
-                logger.info(
-                  { button, long, pointers, event },
-                  `start panning camera`
-                )
-                panPosition = position
-              }
             }
           }
         } else if (type === 'drag') {
@@ -281,6 +275,28 @@ export function attachInputs({ doubleTapDelay, actionMenuProps$ }) {
         }
       })
   ]
+}
+
+function isMouse(event) {
+  return event?.pointerType === 'mouse'
+}
+
+function pointerKind(event, button, pointers) {
+  return isMouse(event)
+    ? button === 0
+      ? 'left'
+      : button === 1
+      ? 'middle'
+      : button === 2
+      ? 'right'
+      : null
+    : pointers === 1
+    ? 'left'
+    : pointers === 3
+    ? 'middle'
+    : pointers === 2
+    ? 'right'
+    : null
 }
 
 /**
