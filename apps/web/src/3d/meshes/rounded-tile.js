@@ -101,8 +101,8 @@ export function createRoundedTile(
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, true, false))
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, false, true))
   tileCSG.subtractInPlace(makeCornerMesh(cornerParams, false, false))
-  const mesh = tileCSG.toMesh('roundedTile', undefined, scene)
-  mesh.id = id
+  const mesh = tileCSG.toMesh(id, undefined, scene)
+  mesh.name = 'roundedTile'
   materialManager.configure(mesh, texture)
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.isPickable = false

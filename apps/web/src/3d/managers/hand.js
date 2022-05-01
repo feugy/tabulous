@@ -144,10 +144,13 @@ class HandManager {
       {
         observable: handScene.onNewMeshAddedObservable,
         handle: added => {
-          if (isSerializable(added)) {
-            logger.info({ mesh: added }, `new mesh ${added.id} added to hand`)
-            this.changes$.next()
-          }
+          // delay because mesh names are set after being constructed
+          setTimeout(() => {
+            if (isSerializable(added)) {
+              logger.info({ mesh: added }, `new mesh ${added.id} added to hand`)
+              this.changes$.next()
+            }
+          }, 0)
         }
       },
       {

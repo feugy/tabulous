@@ -358,6 +358,7 @@ export class StackBehavior extends TargetBehavior {
 
       // first, explode
       const positionsAndRotations = []
+      const shift = getDimensions(stack[0]).width * 0.75
       await Promise.all(
         stack.slice(1).map((mesh, rank) => {
           const behavior = getAnimatableBehavior(mesh)
@@ -397,8 +398,8 @@ export class StackBehavior extends TargetBehavior {
                 {
                   frame: 100,
                   values: [
-                    x + (isOdd ? 3 : -3),
-                    y + (isBaseFlipped ? -3 : 3),
+                    x + (isOdd ? shift : -shift),
+                    y + (isBaseFlipped ? -shift : shift),
                     z
                   ]
                 }

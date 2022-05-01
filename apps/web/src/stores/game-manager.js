@@ -46,7 +46,7 @@ playerGames$.subscribe(games => {
 })
 
 // when joining game with connected peers, delay during which we expect to receive the game data
-const gameReceptionDelay = 30e3
+const gameReceptionDelay = 30000
 
 // stores current player
 let player

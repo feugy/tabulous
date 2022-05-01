@@ -1,3 +1,4 @@
+import { AnimateBehavior } from './animatable'
 import { MoveBehaviorName } from './names'
 import { moveManager } from '../managers'
 
@@ -8,7 +9,7 @@ import { moveManager } from '../managers'
  * @property {number} [duration=100] - duration (in milliseconds) of the snap animation.
  */
 
-export class MoveBehavior {
+export class MoveBehavior extends AnimateBehavior {
   /**
    * Creates behavior to make a mesh movable, and droppable over target zones.
    * When moving mesh, its final position will snap to a virtual grid.
@@ -21,7 +22,7 @@ export class MoveBehavior {
    * @param {MovableState} state - behavior state.
    */
   constructor(state = {}) {
-    this.mesh = null
+    super(state)
     this.state = state
     this.enabled = true
   }
@@ -34,17 +35,11 @@ export class MoveBehavior {
   }
 
   /**
-   * Does nothing.
-   * @see {@link import('@babylonjs/core').Behavior.init}
-   */
-  init() {}
-
-  /**
    * Attaches this behavior to a mesh, registering it to the drag manager
    * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
    */
   attach(mesh) {
-    this.mesh = mesh
+    super.attach(mesh)
     mesh.isPickable = true
     this.fromState(this.state)
     moveManager.registerMovable(this)
@@ -58,6 +53,7 @@ export class MoveBehavior {
       this.mesh.isPickable = false
       moveManager.unregisterMovable(this)
     }
+    super.detach()
   }
 
   /**

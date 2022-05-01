@@ -1,4 +1,16 @@
 /**
+ * @typedef {object} Rectangle A 2D rectangle defined by its minimum and maximum points.
+ * @property {import('../3d/utils').ScreenPosition} min - a 2D point representing the lowest corner of this rectangle.
+ * @property {import('../3d/utils').ScreenPosition} max - a 2D point representing the highest corner of this rectangle.
+ */
+
+/**
+ * @typedef {object} Circle A 2D circle defined by its center point and radius.
+ * @property {import('../3d/utils').ScreenPosition} center - a 2D point representing center.
+ * @property {number} radius - a radius distance.
+ */
+
+/**
  * Turn an angle from radian to degree
  * @param {number} radian - angle in radian
  * @return {number} same angle in degree
@@ -31,4 +43,85 @@ export function distance(first, second) {
   return Math.sqrt(
     Math.pow(first.x - second.x, 2) + Math.pow(first.y - second.y, 2)
   )
+}
+
+/**
+ * Projects a point in 3D space to the ground plane.
+ * @param {import('@babylonjs/core').Vector3} vector - a 3D vector object with x, y, and z coordinates.
+ * @returns {import('@babylonjs/core').Vector2} the equivalent 2D vector, where x is unchanged and resulting y is z.
+ */
+export function projectToGround({ x = 0, z = 0 } = {}) {
+  return { x, y: z }
+}
+
+/**
+ * Projects a 3D bounding box to the ground plane and return the corresponding rectangle.
+ * @param {import('@babylonjs/core').BoundingBox} box - a 3D bounding box, with its minimumWorld and maximumWorld 3D points.
+ * @returns {Rectangle} the corresponding rectangle projected to the ground plane.
+ */
+export function buildGroundRectangle({ minimumWorld, maximumWorld } = {}) {
+  return {
+    min: projectToGround(minimumWorld),
+    max: projectToGround(maximumWorld)
+  }
+}
+
+/**
+ * Returns the biggest circle fully enclosed within the provided rectangle.
+ * @param {Rectangle} rectangle - a given 2D rectangle.
+ * @returns {Circle} the enclosed 2D circle.
+ */
+export function buildEnclosedCircle({ min, max } = {}) {
+  const height = ((max?.y ?? 0) - (min?.y ?? 0)) * 0.5
+  const width = ((max?.x ?? 0) - (min?.x ?? 0)) * 0.5
+  return {
+    center: { x: (min?.x ?? 0) + width, y: (min?.y ?? 0) + height },
+    radius: Math.min(height, width)
+  }
+}
+
+/**
+ * Tells whether 2 rectangles are intersecting or not.
+ * @param {Rectangle} rectangleA - first rectangle.
+ * @param {Rectangle} rectangleB - second rectangle.
+ * @returns {boolean} true when these rectangles are intersecting with each other.
+ */
+export function intersectRectangles(
+  { min: minA, max: maxA },
+  { min: minB, max: maxB }
+) {
+  return (
+    maxA.x >= minB.x && minA.x <= maxB.x && maxA.y >= minB.y && minA.y <= maxB.y
+  )
+}
+
+/**
+ * Tells whether 2 circles are intersecting or not.
+ * @param {Circle} circleA - first circle.
+ * @param {Circle} circleB - second circle.
+ * @returns {boolean} true when these circles are intersecting with each other.
+ */
+export function intersectCircles(
+  { center: centerA, radius: radiusA },
+  { center: centerB, radius: radiusB }
+) {
+  return distance(centerA, centerB) <= radiusA + radiusB
+}
+
+export function intersectCorners({ min, max }, { center, radius }) {
+  return (
+    [min, { x: min.x, y: max.y }, max, { x: max.x, y: min.y }].some(
+      corner => distance(corner, center) <= radius
+    ) ||
+    (isBetween(center.x, min.x, max.x) &&
+      (isBetween(center.y - radius, min.y, max.y) ||
+        isBetween(center.y + radius, min.y, max.y))) ||
+    (isBetween(center.y, min.y, max.y) &&
+      (isBetween(center.x - radius, min.x, max.x) ||
+        isBetween(center.x + radius, min.x, max.x)))
+  )
+}
+
+function isBetween(number, min, max) {
+  return number >= min && number <= max
 }

@@ -17,6 +17,7 @@ describe('createPrism()', () => {
     expect(boundingBox.extendSize.x * 2).toEqual(3)
     expect(boundingBox.extendSize.y * 2).toEqual(1)
     expect(mesh.isPickable).toBe(false)
+    expect(mesh.isCylindric).toBe(true)
     expectPosition(mesh, [0, 0.5, 0])
     expect(mesh.metadata).toEqual({
       serialize: expect.any(Function)

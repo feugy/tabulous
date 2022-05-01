@@ -117,7 +117,7 @@ export function attachInputs({ doubleTapDelay, actionMenuProps$ }) {
         next: async ({ mesh, button, event, long, pointers }) => {
           const kind = pointerKind(event, button, pointers)
           if (long) {
-            triggerAction(mesh, 'detail')
+            triggerActionOnSelection(mesh, 'detail')
           } else if (kind === 'right' || kind === 'left') {
             triggerActionOnSelection(mesh, kind === 'right' ? 'rotate' : 'flip')
           }
@@ -306,6 +306,7 @@ export function triggerAction(mesh, actionName, ...parameters) {
 /**
  * Triggers a given action against a given mesh.
  * If mesh is part of the active selection, then triggers the action on all selected meshes.
+ * When action is applied on a stacked mesh (outside of active selection), it is applied to the last stacked mesh
  * When N quantity is applied to a stack, action is called on the N highest meshes.
  * When the flip action is triggered on a stack (and no quantity is provided), only flipAll is called on this stack's base.
  * When the rotate action is triggered on a stack (and no quantity is provided), only rotate is called on this stack's base.
@@ -333,6 +334,7 @@ export function triggerActionOnSelection(mesh, actionName, quantity = null) {
     const exclude = new Set()
     for (const mesh of meshes) {
       if (mesh?.metadata && !exclude.has(mesh)) {
+        const last = mesh.metadata.stack?.[mesh.metadata.stack?.length - 1]
         if (
           (actionName === 'flip' || actionName === 'rotate') &&
           mesh.metadata.stack?.length > 1 &&
@@ -345,6 +347,8 @@ export function triggerActionOnSelection(mesh, actionName, quantity = null) {
             mesh.metadata.stack[0],
             actionName === 'flip' ? 'flipAll' : actionName
           )
+        } else if (mesh.metadata.stack && mesh !== last && meshes.size === 1) {
+          triggerAction(last, actionName)
         } else {
           triggerAction(mesh, actionName)
         }

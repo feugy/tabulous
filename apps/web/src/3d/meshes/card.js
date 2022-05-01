@@ -40,7 +40,7 @@ export function createCard(
   scene
 ) {
   const mesh = CreateBox(
-    'card',
+    id,
     {
       width,
       height,
@@ -57,7 +57,7 @@ export function createCard(
     },
     scene
   )
-  mesh.id = id
+  mesh.name = 'card'
   materialManager.configure(mesh, texture)
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.isPickable = false

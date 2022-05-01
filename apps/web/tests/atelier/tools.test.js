@@ -3,6 +3,6 @@ import { join } from 'path'
 
 configureToolshot({
   folder: join(__dirname, '..'),
-  timeout: 10e3,
+  timeout: 10000,
   include: '^((?!Game).)*\\.tools\\.svelte$'
 })

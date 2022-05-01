@@ -3,11 +3,16 @@ import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
 import {
   configures3dTestEngine,
+  expectAnimationEnd,
   expectMoveRecorded,
   expectPosition,
   sleep
 } from '../../test-utils'
-import { MoveBehavior, TargetBehavior } from '../../../src/3d/behaviors'
+import {
+  MoveBehavior,
+  MoveBehaviorName,
+  TargetBehavior
+} from '../../../src/3d/behaviors'
 import {
   controlManager,
   handManager,
@@ -258,6 +263,7 @@ describe('MoveManager', () => {
 
       it('stops when pointer is leaving table', async () => {
         manager.continue({ x: centerX * 100, y: centerY * 100 })
+        await expectAnimationEnd(moved.getBehaviorByName(MoveBehaviorName))
         await sleep()
         expectPosition(moved, [1, getDimensions(moved).height / 2, 1])
         expect(actionRecorded).toHaveBeenCalledWith(
@@ -489,7 +495,7 @@ describe('MoveManager', () => {
       moved = [
         createsMovable(),
         createsMovable('box1', new Vector3(0, 5, 0)),
-        createsMovable('box2', new Vector3(-3, 0, -3))
+        createsMovable('box2', new Vector3(-3, 0.5, -3))
       ]
       selectionManager.select(...moved)
       targets = [
@@ -503,7 +509,7 @@ describe('MoveManager', () => {
         manager.start(moved[1], { x: centerX, y: centerY })
         expectPosition(moved[0], [1, 1 + manager.elevation, 1])
         expectPosition(moved[1], [0, 5 + manager.elevation, 0])
-        expectPosition(moved[2], [-3, manager.elevation, -3])
+        expectPosition(moved[2], [-3, 0.5 + manager.elevation, -3])
         expect(actionRecorded).toHaveBeenNthCalledWith(
           1,
           {
@@ -555,7 +561,11 @@ describe('MoveManager', () => {
           1 + deltaZ
         ])
         expectPosition(moved[1], [deltaX, 5 + manager.elevation, deltaZ])
-        expectPosition(moved[2], [-3 + deltaX, manager.elevation, -3 + deltaZ])
+        expectPosition(moved[2], [
+          -3 + deltaX,
+          0.5 + manager.elevation,
+          -3 + deltaZ
+        ])
         expect(actionRecorded).toHaveBeenNthCalledWith(
           1,
           {
@@ -594,7 +604,7 @@ describe('MoveManager', () => {
         expectZoneForMeshes(targets[0].id, [moved[0]])
         expectZoneForMeshes(targets[1].id, [moved[2]])
 
-        manager.continue({ x: centerX + 50, y: centerY + 30 })
+        manager.continue({ x: centerX + 50, y: centerY + 40 })
         expect(manager.getActiveZones()).toHaveLength(1)
         expectZoneForMeshes(targets[1].id, [moved[2]])
       })
@@ -611,17 +621,17 @@ describe('MoveManager', () => {
         manager.continue({ x: centerX + 20, y: centerY })
         expectPosition(moved[0], [
           1 + deltaX,
-          getAltitudeOnCollision(moved[0], obstacle1, 1),
+          getAltitudeOnCollision(moved[0], obstacle1, 0.5),
           1
         ])
         expectPosition(moved[1], [
           deltaX,
-          getAltitudeOnCollision(moved[1], obstacle1, 5),
+          getAltitudeOnCollision(moved[1], obstacle1, 4.5),
           0
         ])
         expectPosition(moved[2], [
           -3 + deltaX,
-          getAltitudeOnCollision(moved[2], obstacle1),
+          getAltitudeOnCollision(moved[2], obstacle1, 0),
           -3
         ])
       })
@@ -639,7 +649,11 @@ describe('MoveManager', () => {
           -2.5 + deltaZ
         ])
         expectPosition(moved[1], [deltaX, 5 + manager.elevation, deltaZ])
-        expectPosition(moved[2], [-3 + deltaX, manager.elevation, -3 + deltaZ])
+        expectPosition(moved[2], [
+          -3 + deltaX,
+          0.5 + manager.elevation,
+          -3 + deltaZ
+        ])
       })
     })
 
@@ -656,7 +670,7 @@ describe('MoveManager', () => {
         manager.continue({ x: centerX + 50, y: centerY + 50 })
         expectPosition(moved[0], [1, 1.5, 1])
         expectPosition(moved[1], [deltaX, 5 + manager.elevation, deltaZ])
-        expectPosition(moved[2], [-3, 0.5, -3])
+        expectPosition(moved[2], [-3, 0.5 + manager.elevation, -3])
         expect(actionRecorded).toHaveBeenCalledWith(
           {
             meshId: moved[1].id,
@@ -669,7 +683,7 @@ describe('MoveManager', () => {
         expect(manager.getActiveZones()).toHaveLength(0)
       })
 
-      it('ignors unknow meshes', () => {
+      it('ignores unknow meshes', () => {
         selectionManager.clear()
         selectionManager.select(...moved.slice(0, 2))
         manager.start(moved[1], { x: centerX, y: centerY })
@@ -687,7 +701,7 @@ describe('MoveManager', () => {
           1 + deltaZ
         ])
         expectPosition(moved[1], [deltaX, 5 + manager.elevation, deltaZ])
-        expectPosition(moved[2], [-3, 0, -3])
+        expectPosition(moved[2], [-3, 0.5, -3])
         expect(actionRecorded).toHaveBeenNthCalledWith(
           1,
           {
@@ -757,7 +771,7 @@ describe('MoveManager', () => {
       moved = [
         createsMovable(),
         createsMovable('box1', new Vector3(0, 5, 0)),
-        createsMovable('box2', new Vector3(-3, 0, -3))
+        createsMovable('box2', new Vector3(-3, 0.5, -3))
       ]
       moved[1].setParent(moved[0])
       moved[2].setParent(moved[1])
@@ -769,7 +783,7 @@ describe('MoveManager', () => {
         manager.start(moved[1], { x: centerX, y: centerY })
         expectPosition(moved[0], [1, 1 + manager.elevation, 1])
         expectPosition(moved[1], [0, 5 + manager.elevation, 0])
-        expectPosition(moved[2], [-3, manager.elevation, -3])
+        expectPosition(moved[2], [-3, 0.5 + manager.elevation, -3])
         expect(actionRecorded).toHaveBeenCalledWith(
           {
             meshId: moved[0].id,
@@ -801,7 +815,11 @@ describe('MoveManager', () => {
           1 + deltaZ
         ])
         expectPosition(moved[1], [deltaX, 5 + manager.elevation, deltaZ])
-        expectPosition(moved[2], [-3 + deltaX, manager.elevation, -3 + deltaZ])
+        expectPosition(moved[2], [
+          -3 + deltaX,
+          0.5 + manager.elevation,
+          -3 + deltaZ
+        ])
         expect(actionRecorded).toHaveBeenCalledWith(
           {
             meshId: moved[0].id,

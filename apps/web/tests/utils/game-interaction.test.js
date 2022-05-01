@@ -97,6 +97,40 @@ describe('Game interaction model', () => {
       ])
     })
 
+    it('when clicking on a single stacked mesh, triggers actions on the last stacked', async () => {
+      const [, , mesh3, , mesh5, mesh6] = meshes
+      const menuProps = computeMenuProps(mesh5)
+      expect(menuProps).toHaveProperty('items')
+      expect(menuProps).toHaveProperty('open', true)
+      expect(menuProps).toHaveProperty('meshes', [mesh5])
+      expect(menuProps).toHaveProperty('x', getMeshScreenPosition().x)
+      expect(menuProps).toHaveProperty('y', getMeshScreenPosition().y)
+      meshes[2].metadata.pop.mockResolvedValueOnce([])
+
+      await expectActionItems(menuProps, mesh5, [
+        { functionName: 'flip', icon: 'flip', max: 3, triggeredMesh: mesh6 },
+        {
+          functionName: 'rotate',
+          icon: 'rotate_right',
+          max: 3,
+          triggeredMesh: mesh6
+        },
+        {
+          functionName: 'draw',
+          icon: 'front_hand',
+          max: 3,
+          triggeredMesh: mesh6
+        },
+        {
+          functionName: 'pop',
+          icon: 'zoom_out_map',
+          triggeredMesh: mesh3,
+          max: 3
+        },
+        { functionName: 'detail', icon: 'visibility' }
+      ])
+    })
+
     it.each([
       { action: 'rotate', icon: 'rotate_right' },
       { action: 'flip', icon: 'flip' },

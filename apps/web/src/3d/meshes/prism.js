@@ -38,7 +38,7 @@ export function createPrism(
   scene
 ) {
   const mesh = CreateCylinder(
-    'prism',
+    id,
     {
       diameter: width,
       height,
@@ -47,10 +47,11 @@ export function createPrism(
     },
     scene
   )
-  mesh.id = id
+  mesh.name = 'prism'
   materialManager.configure(mesh, texture)
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.isPickable = false
+  mesh.isCylindric = true
 
   mesh.metadata = {
     serialize: () => ({

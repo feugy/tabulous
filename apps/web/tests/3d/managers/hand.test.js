@@ -172,7 +172,7 @@ describe('HandManager', () => {
       cards = [
         { id: 'box1', x: 1, y: 1, z: -1 },
         { id: 'box2', x: 0, y: 0, z: 0 },
-        { id: 'box3', x: -5, y: 0, z: -2 },
+        { id: 'box3', x: -5, y: 0, z: -10 },
         { id: 'box4', x: 5, y: 5, z: 5 }
       ].map(state => createMesh(state, scene))
     })
@@ -887,7 +887,7 @@ describe('HandManager', () => {
           expect.anything()
         )
         expect(actionRecorded).toHaveBeenCalledTimes(1)
-        const finalPosition = [-3.89, 0.01, 0]
+        const finalPosition = [-3.89, 0, 0]
         expectPosition(newMesh, finalPosition)
         expectCloseVector(extractDrawnState(), finalPosition)
         expect(controlManager.isManaging(newMesh)).toBe(true)
