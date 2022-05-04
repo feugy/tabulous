@@ -33,7 +33,8 @@
 
 ## UI
 
-- select multiple from any any stack (not just drawable cards)
+- bug: indicators are ovelapping hand meshes > do not show them below hand overlay
+- bug: popping mesh often collide with other meshes
 - lock meshes to avoid moving
 - quatifiable (stackable) behavior
 - save last camera?

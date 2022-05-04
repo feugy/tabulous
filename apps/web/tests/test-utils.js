@@ -1,4 +1,3 @@
-import { Scene } from '@babylonjs/core/scene'
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera'
 import { NullEngine } from '@babylonjs/core/Engines/nullEngine'
 import { Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector'
@@ -18,6 +17,7 @@ import {
   MoveBehaviorName,
   RotateBehaviorName
 } from '../src/3d/behaviors/names'
+import { ExtendedScene } from '../src/3d/utils/scene'
 import { indicatorManager } from '../src/3d/managers'
 // mandatory side effects
 import '@babylonjs/core/Animations/animatable'
@@ -55,7 +55,7 @@ export function initialize3dEngine(
 }
 
 export function initialize3dScene(engine) {
-  const scene = new Scene(engine)
+  const scene = new ExtendedScene(engine)
   const camera = new ArcRotateCamera(
     'camera',
     (3 * Math.PI) / 2,
@@ -253,6 +253,6 @@ export async function waitNextRender(scene) {
 export function expectMoveRecorded(moveRecorded, ...meshes) {
   expect(moveRecorded).toHaveBeenCalledTimes(meshes.length)
   for (const [rank, mesh] of meshes.entries()) {
-    expect(moveRecorded.mock.calls[rank][0]).toEqual({ mesh })
+    expect(moveRecorded.mock.calls[rank][0]?.mesh.id).toEqual(mesh.id)
   }
 }

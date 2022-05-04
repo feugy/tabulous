@@ -307,7 +307,7 @@ function handDrag(manager, { type, mesh, event }) {
       moved = []
     }
     manager.moved = moved
-    if (isHandMeshNextToHand(manager, event)) {
+    if (moved.length && isHandMeshNextToMain(manager, event)) {
       const position = screenToGround(manager.scene, event)
       const origin = moved[0].absolutePosition.x
       const droppedList = []
@@ -390,7 +390,7 @@ function isMainMeshNextToHand(
   return getMeshScreenPosition(mesh)?.y > screenHeight - transitionMargin
 }
 
-function isHandMeshNextToHand(
+function isHandMeshNextToMain(
   { transitionMargin, extent: { screenHeight } },
   event
 ) {

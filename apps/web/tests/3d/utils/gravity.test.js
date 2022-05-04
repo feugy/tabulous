@@ -254,21 +254,29 @@ describe('isAbove() 3D utility', () => {
     beforeEach(() => (meshes = buildMeshes()))
 
     it('detects overlap on edge', () => {
-      meshes[0].setAbsolutePosition(new Vector3(x, 10, z))
-      meshes[1].setAbsolutePosition(new Vector3(x - 2, 0, z))
-      for (const mesh of meshes) {
-        mesh.computeWorldMatrix()
-      }
+      setPosition([
+        { mesh: meshes[0], x, y: 10, z },
+        { mesh: meshes[1], x: x - 2, y: 0, z }
+      ])
       expect(isAbove(meshes[0], meshes[1])).toBe(results[0])
+      setPosition([
+        { mesh: meshes[1], x: x - 2, y: 10, z },
+        { mesh: meshes[0], x, y: 0, z }
+      ])
+      expect(isAbove(meshes[1], meshes[0])).toBe(results[0])
     })
 
     it('detects overlap on corner', () => {
-      meshes[0].setAbsolutePosition(new Vector3(x, 10, z))
-      meshes[1].setAbsolutePosition(new Vector3(x + 2, 0, z - 2))
-      for (const mesh of meshes) {
-        mesh.computeWorldMatrix()
-      }
+      setPosition([
+        { mesh: meshes[0], x, y: 10, z },
+        { mesh: meshes[1], x: x - 2, y: 0, z: z - 2 }
+      ])
       expect(isAbove(meshes[0], meshes[1])).toBe(results[1])
+      setPosition([
+        { mesh: meshes[1], x: x - 2, y: 10, z: z - 2 },
+        { mesh: meshes[0], x, y: 0, z }
+      ])
+      expect(isAbove(meshes[1], meshes[0])).toBe(results[1])
     })
   })
 })
@@ -285,3 +293,10 @@ describe('getCenterAltitudeAbove() 3D utility', () => {
 })
 
 // TODO rotations
+
+function setPosition(meshesAndPositions) {
+  for (const { x, y, z, mesh } of meshesAndPositions) {
+    mesh.setAbsolutePosition(new Vector3(x, y, z))
+    mesh.computeWorldMatrix()
+  }
+}

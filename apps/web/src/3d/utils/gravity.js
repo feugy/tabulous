@@ -127,8 +127,8 @@ function intersectGeometries([geometryA, rectangleA], [geometryB, rectangleB]) {
     return false
   }
   return intersectCorners(
-    geometryA.circle ? geometryB : geometryA,
-    geometryA.circle ? geometryA : geometryB
+    geometryA.center ? geometryB : geometryA,
+    geometryA.center ? geometryA : geometryB
   )
 }
 
