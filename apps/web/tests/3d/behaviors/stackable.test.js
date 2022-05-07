@@ -84,7 +84,7 @@ describe('StackBehavior', () => {
 
     behavior.fromState()
     expect(behavior.state).toEqual({
-      extent: 0.3,
+      extent: 2,
       duration: 100,
       stackIds: []
     })
@@ -132,10 +132,10 @@ describe('StackBehavior', () => {
     })
 
     it('attaches metadata to its mesh', () => {
-      expectZone(behavior, 0.3, true)
+      expectZone(behavior, 2, true)
       expectStacked([mesh])
       expect(behavior.state.duration).toEqual(10)
-      expect(behavior.state.extent).toEqual(0.3)
+      expect(behavior.state.extent).toEqual(2)
       expect(mesh.metadata).toEqual(
         expect.objectContaining({
           push: expect.any(Function),

@@ -605,7 +605,7 @@ describe('MoveManager', () => {
         expectZoneForMeshes(targets[0].id, [moved[0]])
         expectZoneForMeshes(targets[1].id, [moved[2]])
 
-        manager.continue({ x: centerX + 50, y: centerY + 40 })
+        manager.continue({ x: centerX + 50, y: centerY + 35 })
         expect(manager.getActiveZones()).toHaveLength(1)
         expectZoneForMeshes(targets[1].id, [moved[2]])
       })

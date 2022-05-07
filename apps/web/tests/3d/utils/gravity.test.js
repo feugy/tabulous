@@ -148,18 +148,6 @@ describe('isAbove() 3D utility', () => {
     expect(isAbove(box, box2)).toBe(false)
   })
 
-  it('applies scaling when detecting hovered mesh', () => {
-    const box = CreateBox('box', {})
-    box.setAbsolutePosition(new Vector3(x, 20, z))
-    box.computeWorldMatrix()
-    const box2 = CreateBox('box2', {})
-    box2.setAbsolutePosition(new Vector3(x - 1, 4, z))
-    box2.computeWorldMatrix()
-
-    expect(isAbove(box, box2, 3)).toBe(true)
-    expect(isAbove(box, box2, 0.5)).toBe(false)
-  })
-
   describe.each([
     {
       title: 'two intersecting squares',
@@ -248,6 +236,14 @@ describe('isAbove() 3D utility', () => {
           return mesh
         }),
       results: [true, false]
+    },
+    {
+      title: 'rectangles of the same size',
+      buildMeshes: () => [
+        CreateBox(`box1`, { width: 2, depth: 2 }),
+        CreateBox(`box2`, { width: 2, depth: 2 })
+      ],
+      results: [true, true]
     }
   ])(`given $title`, ({ buildMeshes, results }) => {
     let meshes
@@ -277,6 +273,19 @@ describe('isAbove() 3D utility', () => {
         { mesh: meshes[0], x, y: 0, z }
       ])
       expect(isAbove(meshes[1], meshes[0])).toBe(results[1])
+    })
+
+    it('detects overlap above', () => {
+      setPosition([
+        { mesh: meshes[0], x, y: 10, z },
+        { mesh: meshes[1], x, y: 0, z }
+      ])
+      expect(isAbove(meshes[0], meshes[1])).toBe(true)
+      setPosition([
+        { mesh: meshes[1], x, y: 10, z },
+        { mesh: meshes[0], x, y: 0, z }
+      ])
+      expect(isAbove(meshes[1], meshes[0])).toBe(true)
     })
   })
 })

@@ -392,7 +392,7 @@ describe('loadMeshes() 3D utility', () => {
     expect(mesh.getBehaviorByName(StackBehaviorName).state).toEqual({
       stackIds: [],
       duration: 100,
-      extent: 0.3
+      extent: 2
     })
   })
 

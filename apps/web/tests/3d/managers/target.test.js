@@ -111,6 +111,14 @@ describe('TargetManager', () => {
         expectActiveZone(manager.findDropZone(mesh), zone1)
       })
 
+      it('ignores an overlaping target when mesh is too far from center', () => {
+        const mesh = CreateBox('box', {})
+        mesh.setAbsolutePosition(aboveZone1.add(new Vector3(1, 0, 0)))
+        mesh.computeWorldMatrix()
+
+        expect(manager.findDropZone(mesh)).not.toBeDefined()
+      })
+
       it('ignores targets with kinds below kind-less mesh', () => {
         zone1.kinds = ['card']
         const mesh = CreateBox('box', {})

@@ -7,7 +7,7 @@ import {
   buildGroundRectangle,
   intersectRectangles,
   intersectCircles,
-  intersectCorners
+  intersectRectangleWithCircle
 } from '../../utils/math'
 
 const logger = makeLogger('gravity')
@@ -67,22 +67,13 @@ export function applyGravity(mesh) {
 
 /**
  * Indicates when a mesh is hovering another one.
- * Can apply a scale factor to the target: scale bellow 1 means smaller target.
  * Does not modifies any coordinates.
  * @param {import('@babel/core').Mesh} mesh - checked mesh.
  * @param {import('@babel/core').Mesh} target - other mesh.
- * @param {number} [scale=1] - scale applied to the target.
  * @returns {boolean} true when mesh is hovering the target.
  */
-export function isAbove(mesh, target, scale = 1) {
-  const originalScale = target.scaling.clone()
-  target.scaling = new Vector3(scale, scale, scale)
-  target.computeWorldMatrix(true)
-
-  const isOver = findBelow(mesh, [target]).length === 1
-  target.scaling.copyFrom(originalScale)
-  target.computeWorldMatrix(true)
-  return isOver
+export function isAbove(mesh, target) {
+  return findBelow(mesh, [target]).length === 1
 }
 
 /**
@@ -103,12 +94,12 @@ export function sortByElevation(meshes, highestFirst = false) {
 function findBelow(mesh, candidates) {
   const results = []
   const { boundingBox } = mesh.getBoundingInfo()
-  const geometries = buildGeometries(mesh, boundingBox)
+  const geometry = buildGeometry(mesh, boundingBox)
 
   for (const other of candidates) {
     const { boundingBox: otherBox } = other.getBoundingInfo()
     if (isGloballyBelow(boundingBox, otherBox)) {
-      if (intersectGeometries(geometries, buildGeometries(other, otherBox))) {
+      if (intersectGeometries(geometry, buildGeometry(other, otherBox))) {
         results.push(other)
       }
     }
@@ -116,29 +107,24 @@ function findBelow(mesh, candidates) {
   return results
 }
 
-function intersectGeometries([geometryA, rectangleA], [geometryB, rectangleB]) {
+function intersectGeometries(geometryA, geometryB) {
   if (geometryA.center && geometryB.center) {
     return intersectCircles(geometryA, geometryB)
   }
   if (geometryA.min && geometryB.min) {
     return intersectRectangles(geometryA, geometryB)
   }
-  if (!intersectRectangles(rectangleA, rectangleB)) {
-    return false
-  }
-  return intersectCorners(
+  return intersectRectangleWithCircle(
     geometryA.center ? geometryB : geometryA,
     geometryA.center ? geometryA : geometryB
   )
 }
 
-function buildGeometries(mesh, boundingBox) {
+function buildGeometry(mesh, boundingBox) {
   const rectangle = buildGroundRectangle(boundingBox)
-  return mesh.isCylindric
-    ? [buildEnclosedCircle(rectangle), rectangle]
-    : [rectangle, rectangle]
+  return mesh.isCylindric ? buildEnclosedCircle(rectangle) : rectangle
 }
 
 function isGloballyBelow(reference, tested) {
-  return tested.maximumWorld.y < reference.minimumWorld.y
+  return tested.maximumWorld.y <= reference.minimumWorld.y
 }

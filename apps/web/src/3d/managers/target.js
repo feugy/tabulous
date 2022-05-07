@@ -3,6 +3,7 @@ import { selectionManager } from './selection'
 import { getTargetableBehavior, isAbove } from '../utils'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
+import { distance } from '../../utils/math'
 
 const logger = makeLogger('target')
 
@@ -104,12 +105,14 @@ class TargetManager {
       { dragged, kind, b: this.behaviors },
       `find drop zones for ${dragged?.id} (${kind})`
     )
-    const candidates = findCandidates(
-      this,
-      dragged,
-      zone =>
-        this.canAccept(zone, kind) && isAbove(dragged, zone.mesh, zone.extent)
-    )
+    const candidates = findCandidates(this, dragged, zone => {
+      zone.mesh.computeWorldMatrix()
+      return (
+        this.canAccept(zone, kind) &&
+        isAbove(dragged, zone.mesh) &&
+        areCenterCloseEnough(dragged, zone)
+      )
+    })
     return findMatchingZone(this, candidates, dragged, kind)
   }
 
@@ -234,4 +237,16 @@ function highlightZone(zone) {
     zone.mesh.edgesWidth = 5.0
     zone.mesh.edgesColor = Color3.Green().toColor4()
   }
+}
+
+function areCenterCloseEnough(
+  { absolutePosition: { x, z } },
+  {
+    mesh: {
+      absolutePosition: { x: targetX, z: targetZ }
+    },
+    extent
+  }
+) {
+  return distance({ x, y: z }, { x: targetX, y: targetZ }) <= extent
 }

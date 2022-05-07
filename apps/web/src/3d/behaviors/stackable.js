@@ -40,7 +40,7 @@ const logger = makeLogger('stackable')
  * @property {string[]} kinds? - an optional array of allowed drag kinds for this zone (allows all if not specified).
  * @property {number} priority? - priority applied when multiple targets with same altitude apply.
  * @property {number} [duration=100] - duration (in milliseconds) when pushing or shuffling individual meshes.
- * @property {number} [extent=0.6] - drop zone extent zone (1 means 100% size).
+ * @property {number} [extent=2] - allowed distance between mesh and stack center when dropping.
  */
 
 export class StackBehavior extends TargetBehavior {
@@ -504,7 +504,7 @@ export class StackBehavior extends TargetBehavior {
    */
   fromState({
     stackIds = [],
-    extent = 0.3,
+    extent = 2,
     duration = 100,
     kinds,
     enabled,
