@@ -11,6 +11,7 @@ import {
 import {
   MoveBehavior,
   MoveBehaviorName,
+  StackBehavior,
   TargetBehavior
 } from '../../../src/3d/behaviors'
 import {
@@ -604,7 +605,7 @@ describe('MoveManager', () => {
         expectZoneForMeshes(targets[0].id, [moved[0]])
         expectZoneForMeshes(targets[1].id, [moved[2]])
 
-        manager.continue({ x: centerX + 50, y: centerY + 40 })
+        manager.continue({ x: centerX + 50, y: centerY + 35 })
         expect(manager.getActiveZones()).toHaveLength(1)
         expectZoneForMeshes(targets[1].id, [moved[2]])
       })
@@ -830,6 +831,98 @@ describe('MoveManager', () => {
         )
         expect(actionRecorded).toHaveBeenCalledTimes(1)
         expect(manager.getActiveZones()).toHaveLength(0)
+      })
+    })
+  })
+
+  describe('given a stack of meshes', () => {
+    let moved
+
+    beforeAll(() => manager.init({ scene }))
+
+    beforeEach(() => {
+      moved = [
+        createsMovable(),
+        createsMovable('box1', new Vector3(0, 5, 0)),
+        createsMovable('box2', new Vector3(-3, 0.5, -3))
+      ].map(movable => movable.addBehavior(new StackBehavior(), true))
+      moved[0].metadata.push(moved[1].id, true)
+      moved[0].metadata.push(moved[2].id, true)
+      actionRecorded.mockClear()
+      moveRecorded.mockClear()
+    })
+
+    afterEach(() => manager.stop())
+
+    it('can move highest mesh', () => {
+      manager.start(moved[2], { x: centerX, y: centerY })
+      expectPosition(moved[0], [1, 1, 1])
+      expectPosition(moved[1], [1, 2, 1])
+      expectPosition(moved[2], [1, 3 + manager.elevation, 1])
+      expect(actionRecorded).toHaveBeenNthCalledWith(
+        1,
+        {
+          meshId: moved[2].id,
+          pos: moved[2].absolutePosition.asArray(),
+          fromHand: false
+        },
+        expect.anything()
+      )
+      expect(actionRecorded).toHaveBeenNthCalledWith(
+        2,
+        {
+          meshId: moved[0].id,
+          fn: 'pop',
+          args: [1, false],
+          fromHand: false
+        },
+        expect.anything()
+      )
+      expect(actionRecorded).toHaveBeenCalledTimes(2)
+      expectMoveRecorded(moveRecorded, moved[2])
+    })
+
+    it('can not move base mesh', () => {
+      manager.start(moved[0], { x: centerX, y: centerY })
+      expectPosition(moved[0], [1, 1, 1])
+      expectPosition(moved[1], [1, 2, 1])
+      expectPosition(moved[2], [1, 3, 1])
+      expect(actionRecorded).not.toHaveBeenCalled()
+      expectMoveRecorded(moveRecorded)
+    })
+
+    it('can not intermediate mesh', () => {
+      manager.start(moved[1], { x: centerX, y: centerY })
+      expectPosition(moved[0], [1, 1, 1])
+      expectPosition(moved[1], [1, 2, 1])
+      expectPosition(moved[2], [1, 3, 1])
+      expect(actionRecorded).not.toHaveBeenCalled()
+      expectMoveRecorded(moveRecorded)
+    })
+
+    describe('given the entire stack is selected', () => {
+      beforeEach(() => selectionManager.select(...moved))
+
+      it.each([
+        { title: 'highest mesh', rank: 2 },
+        { title: 'intermediate mesh', rank: 1 },
+        { title: 'base mesh', rank: 0 }
+      ])('moves entire stack from $title', ({ rank }) => {
+        manager.start(moved[rank], { x: centerX, y: centerY })
+        expectPosition(moved[0], [1, 1 + manager.elevation, 1])
+        expectPosition(moved[1], [1, 2 + manager.elevation, 1])
+        expectPosition(moved[2], [1, 3 + manager.elevation, 1])
+        expect(actionRecorded).toHaveBeenNthCalledWith(
+          1,
+          {
+            meshId: moved[0].id,
+            pos: moved[0].absolutePosition.asArray(),
+            fromHand: false
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenCalledTimes(1)
+        expectMoveRecorded(moveRecorded, moved[0])
       })
     })
   })

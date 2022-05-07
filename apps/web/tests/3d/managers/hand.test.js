@@ -897,7 +897,7 @@ describe('HandManager', () => {
       it('stacks mesh when moving to main scene', async () => {
         const [, card] = handCards
         const [base] = cards
-        base.setAbsolutePosition(new Vector3(-4.17, 0, 0))
+        base.setAbsolutePosition(new Vector3(-3.89, 0, 0))
         base.computeWorldMatrix()
         card.metadata.draw()
         await waitForLayout()

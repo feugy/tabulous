@@ -3,8 +3,11 @@
   import Section from './Section.svelte'
 
   const cameraControls = [
-    { actions: ['left-drag', 'pointer-drag'], outcome: 'pan-camera' },
-    { actions: ['right-drag', 'two-pointers-drag'], outcome: 'rotate-camera' },
+    { actions: ['right-drag', 'two-pointers-drag'], outcome: 'pan-camera' },
+    {
+      actions: ['middle-drag', 'three-pointers-drag'],
+      outcome: 'rotate-camera'
+    },
     { actions: ['mouse-wheel', 'pinch'], outcome: 'zoom' },
     { actions: ['new-camera'], outcome: 'save-new-camera' },
     { actions: ['restore-camera'], outcome: 'restore-camera' },
@@ -12,12 +15,15 @@
   ]
   const objectControls = [
     {
-      actions: ['double-left-object', 'two-pointers-object'],
+      actions: ['right-object', 'two-pointers-object'],
       outcome: 'open-menu'
     },
-    { actions: ['long-left-object', 'long-pointer-object'], outcome: 'detail' },
     {
-      actions: ['long-left-drag-select', 'long-pointer-drag-select'],
+      actions: ['double-left-object', 'double-pointer-object'],
+      outcome: 'detail'
+    },
+    {
+      actions: ['left-drag-select', 'pointer-drag-select'],
       outcome: 'add-to-selection'
     },
     {
@@ -28,7 +34,7 @@
   const selectionControls = [
     { actions: ['left-drag-object', 'pointer-drag-object'], outcome: 'move' },
     { actions: ['left-object', 'pointer-object'], outcome: 'flip' },
-    { actions: ['right-object', 'two-pointers-object'], outcome: 'rotate' }
+    { actions: ['long-left-object', 'long-pointer-object'], outcome: 'rotate' }
   ]
 </script>
 
@@ -48,15 +54,15 @@
 </style>
 
 <div>
-  <h3>{$_('titles.object-controls')}</h3>
-  <section>
-    {#each objectControls as { actions, outcome }}
-      <Section {actions} {outcome} />
-    {/each}
-  </section>
   <h3>{$_('titles.selection-controls')}</h3>
   <section>
     {#each selectionControls as { actions, outcome }}
+      <Section {actions} {outcome} />
+    {/each}
+  </section>
+  <h3>{$_('titles.object-controls')}</h3>
+  <section>
+    {#each objectControls as { actions, outcome }}
       <Section {actions} {outcome} />
     {/each}
   </section>

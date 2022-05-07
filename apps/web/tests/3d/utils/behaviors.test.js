@@ -406,7 +406,7 @@ describe('restoreBehaviors() 3D utility', () => {
     restoreBehaviors(box.behaviors, { stackable: state })
     expect(stackable.state).toEqual({
       duration: 100,
-      extent: 0.3,
+      extent: 2,
       stackIds: []
     })
   })
@@ -460,7 +460,7 @@ describe('restoreBehaviors() 3D utility', () => {
     expect(box.getBehaviorByName(AnchorBehaviorName).state).toEqual(anchorable)
     expect(box.getBehaviorByName(StackBehaviorName).state).toEqual({
       duration: 100,
-      extent: 0.3,
+      extent: 2,
       stackIds: []
     })
   })
@@ -492,7 +492,7 @@ describe('restoreBehaviors() 3D utility', () => {
     })
     expect(box.getBehaviorByName(StackBehaviorName).state).toEqual({
       duration: 100,
-      extent: 0.3,
+      extent: 2,
       stackIds: []
     })
   })

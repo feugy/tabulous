@@ -1,4 +1,5 @@
 export * from './collections'
+export * from './dom'
 export * from './game-interaction'
 export * from './logger'
 export * from './math'

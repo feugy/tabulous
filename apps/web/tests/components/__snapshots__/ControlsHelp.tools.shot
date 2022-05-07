@@ -4,114 +4,121 @@ exports[`Toolshot components/ControlsHelp.tools.svelte: Components/Controls Help
 <span>
   <div>
     <h3>
-      Contrôler un objet
-    </h3>
-     
-    <section>
-      <div>
-        <img
-          alt="Double clic gauche sur un objet"
-          src="/images/help/double-left-object.png"
-        />
-        <img
-          alt="Tap avec deux doigts sur un objet"
-          src="/images/help/two-pointers-object.png"
-        />
-         
-        <span>
-          Ouvrir le menu
-        </span>
-      </div>
-      <div>
-        <img
-          alt="Clic gauche long sur un objet"
-          src="/images/help/long-left-object.png"
-        />
-        <img
-          alt="Tap long sur un objet"
-          src="/images/help/long-pointer-object.png"
-        />
-         
-        <span>
-          Afficher en grand
-        </span>
-      </div>
-      <div>
-        <img
-          alt="Tiré-déplacé avec un clic gauche long"
-          src="/images/help/long-left-drag-select.png"
-        />
-        <img
-          alt="Tiré-déplacé avec un tap long"
-          src="/images/help/long-pointer-drag-select.png"
-        />
-         
-        <span>
-          Ajouter à la sélection
-        </span>
-      </div>
-      <div>
-        <img
-          alt="Clic gauche en dehors de la sélection"
-          src="/images/help/left-outside-selection.png"
-        />
-        <img
-          alt="Tap en dehors de la sélection"
-          src="/images/help/pointer-outside-selection.png"
-        />
-         
-        <span>
-          Vider la sélection
-        </span>
-      </div>
-    </section>
-     
-    <h3>
       Contrôler un ou plusieurs objets
     </h3>
      
     <section>
       <div>
+        <span>
+          Déplacer
+          :
+        </span>
+         
         <img
           alt="Tiré-déplacé un objet avec le clic gauche"
-          src="/images/help/left-drag-object.png"
+          src="/images/help/left-drag-object.webp"
         />
         <img
           alt="Tiré-déplacé un objet avec un tap"
-          src="/images/help/pointer-drag-object.png"
+          src="/images/help/pointer-drag-object.webp"
         />
-         
-        <span>
-          Déplacer
-        </span>
       </div>
       <div>
+        <span>
+          Retourner
+          :
+        </span>
+         
         <img
           alt="Clic gauche sur un objet"
-          src="/images/help/left-object.png"
+          src="/images/help/left-object.webp"
         />
         <img
           alt="Tap sur un objet"
-          src="/images/help/pointer-object.png"
+          src="/images/help/pointer-object.webp"
         />
-         
-        <span>
-          Retourner
-        </span>
       </div>
       <div>
+        <span>
+          Pivoter
+          :
+        </span>
+         
+        <img
+          alt="Clic gauche long sur un objet"
+          src="/images/help/long-left-object.webp"
+        />
+        <img
+          alt="Tap long sur un objet"
+          src="/images/help/long-pointer-object.webp"
+        />
+      </div>
+    </section>
+     
+    <h3>
+      Contrôler un objet
+    </h3>
+     
+    <section>
+      <div>
+        <span>
+          Ouvrir le menu
+          :
+        </span>
+         
         <img
           alt="Clic droit sur un objet"
-          src="/images/help/right-object.png"
+          src="/images/help/right-object.webp"
         />
         <img
           alt="Tap avec deux doigts sur un objet"
-          src="/images/help/two-pointers-object.png"
+          src="/images/help/two-pointers-object.webp"
         />
-         
+      </div>
+      <div>
         <span>
-          Pivoter
+          Afficher en grand
+          :
         </span>
+         
+        <img
+          alt="Double clic gauche sur un objet"
+          src="/images/help/double-left-object.webp"
+        />
+        <img
+          alt="Double tap sur un objet"
+          src="/images/help/double-pointer-object.webp"
+        />
+      </div>
+      <div>
+        <span>
+          Ajouter à la sélection
+          :
+        </span>
+         
+        <img
+          alt="tooltips.help-left-drag-select"
+          src="/images/help/left-drag-select.webp"
+        />
+        <img
+          alt="tooltips.help-pointer-drag-select"
+          src="/images/help/pointer-drag-select.webp"
+        />
+      </div>
+      <div>
+        <span>
+          Vider la sélection
+          :
+        </span>
+         
+        <img
+          alt="Clic gauche en dehors de la sélection"
+          src="/images/help/left-outside-selection.webp"
+        />
+        <img
+          alt="Tap en dehors de la sélection"
+          src="/images/help/pointer-outside-selection.webp"
+        />
       </div>
     </section>
      
@@ -121,76 +128,82 @@ exports[`Toolshot components/ControlsHelp.tools.svelte: Components/Controls Help
      
     <section>
       <div>
-        <img
-          alt="Tiré-déplacé avec le clic gauche"
-          src="/images/help/left-drag.png"
-        />
-        <img
-          alt="Tiré-déplacé avec un tap"
-          src="/images/help/pointer-drag.png"
-        />
-         
         <span>
           Déplacer
+          :
         </span>
-      </div>
-      <div>
+         
         <img
           alt="Tiré-déplacé avec le clic droit"
-          src="/images/help/right-drag.png"
+          src="/images/help/right-drag.webp"
         />
         <img
           alt="Tap avec deux doigts sur un objet"
-          src="/images/help/two-pointers-drag.png"
+          src="/images/help/two-pointers-drag.webp"
         />
-         
-        <span>
-          Pivoter et incliner
-        </span>
       </div>
       <div>
+        <span>
+          Pivoter et incliner
+          :
+        </span>
+         
+        <img
+          alt="tooltips.help-middle-drag"
+          src="/images/help/middle-drag.webp"
+        />
+        <img
+          alt="tooltips.help-three-pointers-drag"
+          src="/images/help/three-pointers-drag.webp"
+        />
+      </div>
+      <div>
+        <span>
+          Zoomer
+          :
+        </span>
+         
         <img
           alt="Molette de la souris"
-          src="/images/help/mouse-wheel.png"
+          src="/images/help/mouse-wheel.webp"
         />
         <img
           alt="Pincer"
-          src="/images/help/pinch.png"
+          src="/images/help/pinch.webp"
         />
-         
-        <span>
-          Zoomer
-        </span>
       </div>
       <div>
-        <img
-          alt="Clic sur le bouton \\"nouvelle caméra\\""
-          src="/images/help/new-camera.png"
-        />
-         
         <span>
           Enregistrer la position
+          :
         </span>
+         
+        <img
+          alt="Clic sur le bouton \\"nouvelle caméra\\""
+          src="/images/help/new-camera.webp"
+        />
       </div>
       <div>
-        <img
-          alt="Clic sur un emplacement de caméra"
-          src="/images/help/restore-camera.png"
-        />
-         
         <span>
           Restaurer la position
+          :
         </span>
+         
+        <img
+          alt="Clic sur un emplacement de caméra"
+          src="/images/help/restore-camera.webp"
+        />
       </div>
       <div>
-        <img
-          alt="Clic long sur un emplacement de caméra"
-          src="/images/help/update-camera.png"
-        />
-         
         <span>
           Mettre à jour la position
+          :
         </span>
+         
+        <img
+          alt="Clic long sur un emplacement de caméra"
+          src="/images/help/update-camera.webp"
+        />
       </div>
     </section>
   </div>

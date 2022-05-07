@@ -23,6 +23,7 @@ const logger = makeLogger(AnchorBehaviorName)
  * @property {number} width - anchor's width (X axis).
  * @property {number} height - anchor's height (Y axis).
  * @property {number} depth - anchor's depth (Z axis).
+ * @property {number} [extent=2] - allowed distance between mesh and anchor center when dropping.
  * @property {string[]} kinds? - an optional array of allowed drag kinds for this zone (allows all if not specified).
  * @property {number} priority? - priority applied when multiple targets with same altitude apply.
  * @property {string} playerId? - when set, only player with this id can use this anchor.
@@ -270,7 +271,7 @@ export class AnchorBehavior extends TargetBehavior {
       const zone = this.addZone(dropZone, {
         enabled: true,
         ...zoneProps,
-        extent: zoneProps.extent || 0.6
+        extent: zoneProps.extent || 2
       })
       // relates the created zone with the anchor
       zone.anchorIndex = i

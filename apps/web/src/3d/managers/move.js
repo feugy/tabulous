@@ -62,10 +62,7 @@ class MoveManager {
    * @param {MouseEvent|TouchEvent} event - mouse or touch event containing the screen position.
    */
   start(mesh, event) {
-    if (
-      !this.meshIds.has(mesh?.id) ||
-      !this.behaviorByMeshId.get(mesh?.id).enabled
-    ) {
+    if (!this.meshIds.has(mesh?.id) || isDisabled(this, mesh)) {
       return
     }
 
@@ -365,4 +362,13 @@ function elevateWhenColliding(boundingBoxes, min, max) {
     )
   }
   return 0
+}
+
+function isDisabled({ behaviorByMeshId }, mesh) {
+  return (
+    behaviorByMeshId.get(mesh.id).enabled === false &&
+    !selectionManager.meshes.has(
+      mesh.metadata?.stack?.[mesh.metadata.stack.length - 1]
+    )
+  )
 }

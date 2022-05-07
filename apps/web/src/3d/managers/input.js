@@ -8,7 +8,8 @@ import { screenToGround } from '../utils'
 
 const logger = makeLogger('input')
 
-const PinchMovementThreshold = 6
+const PinchMovementThreshold = 10
+const PinchMinimumDistance = 200
 const PinchAttemptThreshold = 3
 
 /**
@@ -224,7 +225,10 @@ class InputManager {
 
             if (!pinch.confirmed) {
               pinch.attempts++
-              if (Math.abs(pinchDelta) > PinchMovementThreshold) {
+              if (
+                Math.abs(pinchDelta) > PinchMovementThreshold &&
+                pinch.distance >= PinchMinimumDistance
+              ) {
                 pinch.confirmed = true
                 const data = {
                   type: 'pinchStart',

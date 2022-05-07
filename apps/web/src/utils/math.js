@@ -108,20 +108,21 @@ export function intersectCircles(
   return distance(centerA, centerB) <= radiusA + radiusB
 }
 
-export function intersectCorners({ min, max }, { center, radius }) {
+/**
+ * Tells whether a given rectangle intersects with a circle.
+ * @param {Rectangle} rectangle - the checked rectangle.
+ * @param {Circle} circle - the checked rectange.
+ * @returns {boolean} true if the geometries intersects, false otherwise.
+ */
+export function intersectRectangleWithCircle({ min, max }, { center, radius }) {
+  // inspired from https://www.geeksforgeeks.org/check-if-any-point-overlaps-the-given-circle-and-rectangle/
   return (
-    [min, { x: min.x, y: max.y }, max, { x: max.x, y: min.y }].some(
-      corner => distance(corner, center) <= radius
-    ) ||
-    (isBetween(center.x, min.x, max.x) &&
-      (isBetween(center.y - radius, min.y, max.y) ||
-        isBetween(center.y + radius, min.y, max.y))) ||
-    (isBetween(center.y, min.y, max.y) &&
-      (isBetween(center.x - radius, min.x, max.x) ||
-        isBetween(center.x + radius, min.x, max.x)))
+    distance(
+      {
+        x: Math.max(min.x, Math.min(center.x, max.x)),
+        y: Math.max(min.y, Math.min(center.y, max.y))
+      },
+      center
+    ) <= radius
   )
-}
-
-function isBetween(number, min, max) {
-  return number >= min && number <= max
 }

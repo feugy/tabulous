@@ -2,8 +2,8 @@ import {
   buildEnclosedCircle,
   buildGroundRectangle,
   intersectCircles,
-  intersectCorners,
   intersectRectangles,
+  intersectRectangleWithCircle,
   projectToGround
 } from '../../src/utils'
 
@@ -200,7 +200,7 @@ describe('mathematical utilities', () => {
     })
   })
 
-  describe('intersectCorners()', () => {
+  describe('intersectRectangleWithCircle()', () => {
     const rectangle = { min: { x: 2, y: 1 }, max: { x: 6, y: 3 } }
     it.each([
       {
@@ -262,9 +262,19 @@ describe('mathematical utilities', () => {
         title: 'a circle intersecting on the top right',
         circle: { center: { x: 7, y: 4 }, radius: 1 },
         result: false
+      },
+      {
+        title: 'a circle enclosing the rectangle',
+        circle: { center: { x: 4, y: 2 }, radius: 6 },
+        result: true
+      },
+      {
+        title: 'a circle enclosed into the rectangle',
+        circle: { center: { x: 4, y: 2 }, radius: 0.75 },
+        result: true
       }
     ])('returns $result with $title', ({ circle, result }) => {
-      expect(intersectCorners(rectangle, circle)).toBe(result)
+      expect(intersectRectangleWithCircle(rectangle, circle)).toBe(result)
     })
   })
 })

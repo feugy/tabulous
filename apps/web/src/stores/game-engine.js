@@ -136,6 +136,7 @@ export const highlightHand = highlightHand$.asObservable()
  *
  * @param {object} params - parameters, as defined by createEngin(), in addition to:
  * @param {number} [params.pointerThrottle=200] - number of milliseconds during which pointer will be ignored before being shared with peers.
+ * @return {import('@babylonjs/core').Engine} the created engine.
  */
 export function initEngine({
   pointerThrottle = 200,
@@ -232,6 +233,7 @@ export function initEngine({
   })
 
   engine$.next(engine)
+  return engine
 }
 
 /**
