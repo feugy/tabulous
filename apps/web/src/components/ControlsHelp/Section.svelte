@@ -27,11 +27,11 @@
 </style>
 
 <div>
+  <span>{$_(`tooltips.${outcome}`)}: </span>
   {#each actions as action}
     <img
       alt={$_(`tooltips.help-${action}`)}
-      src={`/images/help/${action}.png`}
+      src={`/images/help/${action}.webp`}
     />
   {/each}
-  <span>{$_(`tooltips.${outcome}`)}</span>
 </div>

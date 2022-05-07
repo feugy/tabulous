@@ -505,17 +505,13 @@ describe('Game interaction model', () => {
       }
     })
 
-    it('rotates single mesh on double-tap and discards single tap', async () => {
+    it('rotates single mesh on long and discards single tap', async () => {
       const [mesh] = meshes
       inputManager.onTapObservable.notifyObservers({
         type: 'tap',
         mesh,
-        pointers: 1
-      })
-      inputManager.onTapObservable.notifyObservers({
-        type: 'doubletap',
-        mesh,
-        pointers: 1
+        pointers: 1,
+        long: true
       })
       await sleep(doubleTapDelay * 1.1)
       expect(get(actionMenuProps$)).toBeUndefined()
@@ -576,25 +572,34 @@ describe('Game interaction model', () => {
       expectMeshActions(mesh)
     })
 
-    it('opens details on mesh long left click', async () => {
+    it('opens details on mesh double left click', async () => {
       const mesh = buildMesh({ id: 'box' })
       inputManager.onTapObservable.notifyObservers({
         type: 'tap',
         mesh,
         event: { pointerType: 'mouse' },
-        button: 0,
-        long: true
+        button: 0
+      })
+      inputManager.onTapObservable.notifyObservers({
+        type: 'doubletap',
+        mesh,
+        event: { pointerType: 'mouse' },
+        button: 0
       })
       await sleep(doubleTapDelay * 1.1)
       expectMeshActions(mesh, 'detail')
     })
 
-    it('opens details on mesh long tap', async () => {
+    it('opens details on mesh double tap', async () => {
       const [mesh] = meshes
       inputManager.onTapObservable.notifyObservers({
         type: 'tap',
         mesh,
-        long: true,
+        pointers: 1
+      })
+      inputManager.onTapObservable.notifyObservers({
+        type: 'doubletap',
+        mesh,
         pointers: 1
       })
       await sleep(doubleTapDelay * 1.1)
@@ -637,7 +642,7 @@ describe('Game interaction model', () => {
           pointers: 1
         })
         await sleep(doubleTapDelay * 1.1)
-        expectMeshActions(mesh, 'detail')
+        expectMeshActions(mesh, 'rotate')
         expect(get(actionMenuProps$)).toBeNull()
         expectMeshActions(tapped)
       })
@@ -751,7 +756,7 @@ describe('Game interaction model', () => {
         expectMeshActions(mesh6)
       })
 
-      it('rotates entire selection on mesh double click', async () => {
+      it('rotates entire selection on mesh long click', async () => {
         const [mesh1, , mesh3, , mesh5, mesh6] = meshes
         mesh3.metadata.stack = [mesh3, mesh5, mesh6]
         mesh5.metadata.stack = [...mesh3.metadata.stack]
@@ -760,13 +765,8 @@ describe('Game interaction model', () => {
           type: 'tap',
           mesh: mesh1,
           event: { pointerType: 'mouse' },
-          button: 0
-        })
-        inputManager.onTapObservable.notifyObservers({
-          type: 'doubletap',
-          mesh: mesh1,
-          event: { pointerType: 'mouse' },
-          button: 0
+          button: 0,
+          long: true
         })
         await sleep(doubleTapDelay * 1.1)
         expect(selectionManager.meshes.size).toEqual(4)

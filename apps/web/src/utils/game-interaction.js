@@ -87,8 +87,8 @@ export function attachInputs({ doubleTapDelay, actionMenuProps$ }) {
     /**
      * Implements actions on mouse single clicks:
      * - single left click/tap on mesh flips it
-     * - double left click/double tap on mesh rotates it
-     * - long left click/long tap on mesh opens its details (and clears stack size)
+     * - long left click/double tap on mesh rotates it
+     * - double left click/long tap on mesh opens its details (and clears stack size)
      * - any double click immediately following a single click discards the operation
      */
     taps$
@@ -108,13 +108,10 @@ export function attachInputs({ doubleTapDelay, actionMenuProps$ }) {
         next: async ({ type, mesh, button, event, long, pointers }) => {
           const kind = pointerKind(event, button, pointers)
           if (kind === 'left') {
-            if (long) {
+            if (type === 'doubletap') {
               triggerActionOnSelection(mesh, 'detail')
             } else {
-              triggerActionOnSelection(
-                mesh,
-                type === 'doubletap' ? 'rotate' : 'flip'
-              )
+              triggerActionOnSelection(mesh, long ? 'rotate' : 'flip')
             }
           }
         }
