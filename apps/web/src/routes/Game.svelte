@@ -1,11 +1,7 @@
 <script>
   import { onMount, onDestroy } from 'svelte'
   import { _ } from 'svelte-intl'
-  import {
-    // FPSViewer,
-    GameMenu,
-    InvitePlayerDialogue
-  } from '../connected-components'
+  import { GameMenu, InvitePlayerDialogue } from '../connected-components'
   import {
     CameraSwitch,
     CursorInfo,
@@ -23,12 +19,12 @@
     currentCamera,
     currentGame,
     currentPlayer,
-    engine,
     gamePlayerById,
     handMeshes,
     handVisible,
     highlightHand,
     initEngine,
+    initIndicators,
     visibleIndicators,
     loadGame,
     longInputs,
@@ -42,6 +38,7 @@
   export let params = {}
 
   const longTapDelay = 250
+  let engine
   let canvas
   let interaction
   let hand
@@ -49,15 +46,16 @@
   let loadPromise
 
   onMount(async () => {
-    initEngine({ canvas, interaction, longTapDelay, hand })
+    engine = initEngine({ canvas, interaction, longTapDelay, hand })
+    initIndicators({ engine, canvas, hand })
     loadPromise = loadGame(params.gameId)
     loadPromise.catch(err => console.error(err))
   })
 
-  onDestroy(() => $engine?.dispose())
+  onDestroy(() => engine?.dispose())
 
   function handleResize() {
-    $engine?.resize()
+    engine?.resize()
   }
 
   function handleCloseDetails() {

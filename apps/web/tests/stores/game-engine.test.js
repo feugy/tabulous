@@ -97,9 +97,10 @@ describe('initEngine()', () => {
     })
 
     it('configures and starts an engine', () => {
-      gameEngine.initEngine({ canvas, interaction })
+      const created = gameEngine.initEngine({ canvas, interaction })
       expect(engine.start).toHaveBeenCalledTimes(1)
       expect(get(gameEngine.engine)).toEqual(engine)
+      expect(created).toEqual(engine)
       expect(receiveHandVisible).not.toHaveBeenCalled()
     })
 

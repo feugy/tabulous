@@ -3,6 +3,7 @@ import { get } from 'svelte/store'
 import {
   configures3dTestEngine,
   expectScreenPosition,
+  sleep,
   waitNextRender
 } from '../test-utils'
 import { createCard } from '../../src/3d/meshes'
@@ -10,8 +11,9 @@ import { actionMenuProps } from '../../src/stores/game-engine'
 import { gamePlayerById } from '../../src/stores/game-manager'
 import {
   areIndicatorsVisible as areIndicatorsVisible$,
-  visibleIndicators as visibleIndicators$,
-  toggleIndicators
+  initIndicators,
+  toggleIndicators,
+  visibleIndicators as visibleIndicators$
 } from '../../src/stores/indicators'
 import { AnchorBehaviorName, StackBehaviorName } from '../../src/3d/behaviors'
 import { indicatorManager, selectionManager } from '../../src/3d/managers'
@@ -41,16 +43,25 @@ jest.mock('../../src/stores/game-manager', () => {
 })
 
 describe('Indicators store', () => {
+  let engine
   let scene
   let cards
   let players
+  const renderWidth = 2048
+  const renderHeight = 1024
+  const canvas = document.createElement('div')
+  const hand = document.createElement('div')
 
-  configures3dTestEngine(created => {
-    scene = created.scene
-  })
+  configures3dTestEngine(
+    created => {
+      scene = created.scene
+      engine = created.engine
+    },
+    { renderWidth, renderHeight }
+  )
 
   beforeAll(() => {
-    indicatorManager.init({ scene })
+    initIndicators({ engine, canvas, hand })
     players = [
       {
         id: faker.datatype.uuid(),
@@ -67,7 +78,7 @@ describe('Indicators store', () => {
     ]
   })
 
-  beforeEach(() => {
+  beforeEach(async () => {
     cards = [
       { id: 'card1' },
       { id: 'card2', x: 1 },
@@ -78,6 +89,7 @@ describe('Indicators store', () => {
     ].map(params => createCard({ ...params, stackable: {}, anchorable: {} }))
     actionMenuProps.next(null)
     selectionManager.clear()
+    await notifyHandResize(10)
   })
 
   it('shows indicators by default', async () => {
@@ -289,6 +301,35 @@ describe('Indicators store', () => {
         }
       ])
     })
+
+    it('updates indicators on hand resize', async () => {
+      const [card1, , , card4, card5, card6] = cards
+      card1
+        .getBehaviorByName(StackBehaviorName)
+        .fromState({ stackIds: ['card2', 'card4'] })
+      card6
+        .getBehaviorByName(StackBehaviorName)
+        .fromState({ stackIds: ['card5'] })
+
+      const indicators = [
+        {
+          id: `${card4.id}.stack-size`,
+          size: 3,
+          screenPosition: { x: 1024, y: 511.796 }
+        },
+        {
+          id: `${card5.id}.stack-size`,
+          size: 2,
+          screenPosition: { x: 1024, y: 404.123 }
+        }
+      ]
+
+      await waitNextRender(scene)
+      expectIndicators(indicators)
+
+      await notifyHandResize(renderHeight * 0.51)
+      expectIndicators(indicators.slice(1))
+    })
   })
 
   describe('given current game', () => {
@@ -334,5 +375,14 @@ describe('Indicators store', () => {
       expect(actual).toEqual(expect.objectContaining(otherProps))
       expectScreenPosition(actual.screenPosition, screenPosition)
     }
+  }
+
+  async function notifyHandResize(height) {
+    jest.spyOn(window, 'getComputedStyle').mockImplementation(node => ({
+      height: `${node === canvas ? renderHeight : height}px`
+    }))
+    indicatorManager.init({ scene })
+    window.resizeObservers[0].notify()
+    await sleep(20)
   }
 })

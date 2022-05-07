@@ -1,6 +1,6 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { Observable } from '@babylonjs/core/Misc/observable'
-import { auditTime, debounceTime, Subject } from 'rxjs'
+import { debounceTime, Subject } from 'rxjs'
 import {
   DrawBehaviorName,
   FlipBehaviorName,
@@ -26,6 +26,7 @@ import { selectionManager } from './selection'
 import { targetManager } from './target'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
+import { getPixelDimension, observeDimension } from '../../utils/dom'
 
 const logger = makeLogger('hand')
 
@@ -174,14 +175,10 @@ class HandManager {
       subscriptions.push(() => observable.remove(observer))
     }
 
-    const resized = new Subject()
-    const resizeObserver = new ResizeObserver(() => resized.next())
-    resizeObserver.observe(this.overlay)
-    const subscription = resized
-      .pipe(auditTime(25))
-      .subscribe(() => layoutMeshs(this))
+    const { dimension$, disconnect } = observeDimension(this.overlay, 25)
+    const subscription = dimension$.subscribe(() => layoutMeshs(this))
     subscriptions.push(() => {
-      resizeObserver.disconnect()
+      disconnect()
       subscription.unsubscribe()
     })
 
@@ -484,8 +481,7 @@ async function layoutMeshs({
       ? 0
       : (contentDimensions.width - availableWidth) / (meshes.length - 1))
   let y = 0
-  extent.screenHeight =
-    extent.size.height - parseFloat(window.getComputedStyle(overlay).height)
+  extent.screenHeight = extent.size.height - getPixelDimension(overlay).height
   const z =
     screenToGround(handScene, { x: 0, y: extent.screenHeight }).z -
     contentDimensions.depth * 0.5

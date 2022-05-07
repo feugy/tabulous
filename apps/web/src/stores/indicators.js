@@ -1,4 +1,5 @@
 import { BehaviorSubject, map, merge, of, withLatestFrom } from 'rxjs'
+import { getPixelDimension, observeDimension } from '../utils/dom'
 import {
   actionMenuProps,
   indicators as indicators$,
@@ -7,9 +8,28 @@ import {
 import { gamePlayerById as gamePlayerById$ } from './game-manager'
 
 const visible$ = new BehaviorSubject(true)
+const handPosition$ = new BehaviorSubject(0)
 
 let playerById = new Map()
 gamePlayerById$.subscribe(value => (playerById = value))
+
+/**
+ * Initializes the indicators store with the hand DOM node.
+ * @param {object} params - parameters, including:
+ * @param {HTMLCanvasElement} params.canvas - HTML canvas used to display the scene.
+ * @param {HTMLElement} params.hand - HTML element holding hand.
+ */
+export function initIndicators({ engine, canvas, hand }) {
+  const { dimension$, disconnect } = observeDimension(hand)
+  const subscription = dimension$.subscribe(({ height }) => {
+    const { height: totalHeight } = getPixelDimension(canvas)
+    handPosition$.next(totalHeight - height)
+  })
+  engine.onDisposeObservable.addOnce(() => {
+    disconnect()
+    subscription.unsubscribe()
+  })
+}
 
 /**
  * Emits whenever the indicators are shown or hidden.
@@ -43,25 +63,41 @@ export const visibleIndicators = merge(
   visible$,
   selectedMeshes,
   actionMenuProps,
-  indicators$
+  indicators$,
+  handPosition$
 ).pipe(
   withLatestFrom(
     merge(of(new Set()), selectedMeshes),
     merge(of(null), actionMenuProps),
-    merge(of([]), indicators$)
+    merge(of([]), indicators$),
+    handPosition$
   ),
-  map(([, selected, menuProps, indicators]) =>
-    getVisibleIndicators(visible$.value, selected, menuProps, indicators)
+  map(([, selected, menuProps, indicators, handPosition]) =>
+    getVisibleIndicators(
+      visible$.value,
+      selected,
+      menuProps,
+      indicators,
+      handPosition
+    )
   ),
   map(enrichWithPlayerData)
 )
 
-function getVisibleIndicators(allVisible, selected, menuProps, indicators) {
+function getVisibleIndicators(
+  allVisible,
+  selected,
+  menuProps,
+  indicators,
+  handPosition
+) {
   if (!allVisible && selected.size === 0 && !menuProps) {
     return []
   }
   return allVisible
-    ? indicators
+    ? indicators.filter(
+        ({ screenPosition }) => screenPosition.y <= handPosition
+      )
     : hasMenu(menuProps, selected)
     ? getMenuIndicators(menuProps, indicators)
     : getSelectedIndicators(selected, indicators)
