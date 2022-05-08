@@ -6,6 +6,7 @@ import {
   DetailBehaviorName,
   DrawBehaviorName,
   FlipBehaviorName,
+  LockBehaviorName,
   MoveBehaviorName,
   RotateBehaviorName,
   StackBehaviorName
@@ -36,6 +37,7 @@ let AnimateBehavior
 let DetailBehavior
 let DrawBehavior
 let FlipBehavior
+let LockBehavior
 let MoveBehavior
 let RotateBehavior
 let StackBehavior
@@ -50,6 +52,7 @@ beforeAll(async () => {
     DetailBehavior,
     DrawBehavior,
     FlipBehavior,
+    LockBehavior,
     MoveBehavior,
     RotateBehavior,
     StackBehavior,
@@ -302,6 +305,15 @@ describe('registerBehaviors() 3D utility', () => {
     )
   })
 
+  it('adds lockable behavior to a mesh', () => {
+    const state = { isLocked: true }
+    registerBehaviors(box, { lockable: state })
+    expect(box.getBehaviorByName(LockBehaviorName)).toHaveProperty(
+      'state',
+      state
+    )
+  })
+
   it('adds multiple behaviors to a mesh', () => {
     registerBehaviors(box, {
       detailable: {},
@@ -309,7 +321,8 @@ describe('registerBehaviors() 3D utility', () => {
       stackable: { extent: 1.5 },
       anchorable: { anchors: [] },
       flippable: { isFlipped: false },
-      rotable: { angle: Math.PI }
+      rotable: { angle: Math.PI },
+      lockable: { isLocked: false }
     })
     expect(box.getBehaviorByName(AnchorBehaviorName)).toHaveProperty('state', {
       anchors: [],
@@ -330,12 +343,26 @@ describe('registerBehaviors() 3D utility', () => {
       duration: 100,
       extent: 1.5
     })
-    expect(box.behaviors).toHaveLength(6)
+    expect(box.getBehaviorByName(LockBehaviorName)).toHaveProperty('state', {
+      isLocked: false
+    })
+    expect(box.behaviors).toHaveLength(7)
   })
 
   it('adds nothing without parameters', () => {
     registerBehaviors(box, { animatable: true })
     expect(box.behaviors).toHaveLength(0)
+  })
+
+  it('adds lockable after all other behavior', () => {
+    registerBehaviors(box, { lockable: { isLocked: true }, movable: {} })
+    expect(box.getBehaviorByName(LockBehaviorName)).toHaveProperty('state', {
+      isLocked: true
+    })
+    expect(box.getBehaviorByName(MoveBehaviorName)).toHaveProperty(
+      'enabled',
+      false
+    )
   })
 })
 
@@ -366,10 +393,10 @@ describe('restoreBehaviors() 3D utility', () => {
 
   it('restores detailable behavior', () => {
     const state = { frontImage: 'front.png', backImage: 'back.jpg' }
-    const detailable = new DetailBehavior(state)
+    const detailable = new DetailBehavior()
     box.addBehavior(detailable, true)
     restoreBehaviors(box.behaviors, { detailable: state })
-    expect(detailable.state).toEqual(detailable.state)
+    expect(detailable.state).toEqual(state)
   })
 
   it('restores anchorable behavior', () => {
@@ -392,6 +419,14 @@ describe('restoreBehaviors() 3D utility', () => {
     box.addBehavior(anchorable, true)
     restoreBehaviors(box.behaviors, { anchorable: state })
     expect(anchorable.state).toEqual(state)
+  })
+
+  it('restores lockable behavior', () => {
+    const state = { isLocked: false }
+    const lockable = new LockBehavior()
+    box.addBehavior(lockable, true)
+    restoreBehaviors(box.behaviors, { lockable: state })
+    expect(lockable.state).toEqual(state)
   })
 
   it('does not restore stackable behavior', () => {
@@ -439,6 +474,7 @@ describe('restoreBehaviors() 3D utility', () => {
       snapDistance: 0.5,
       duration: 345
     }
+    const lockable = { isLocked: false }
     box.addBehavior(new MoveBehavior(), true)
     box.addBehavior(new FlipBehavior(), true)
     box.addBehavior(new RotateBehavior(), true)
@@ -446,13 +482,15 @@ describe('restoreBehaviors() 3D utility', () => {
     box.addBehavior(new AnchorBehavior(), true)
     box.addBehavior(new StackBehavior(), true)
     box.addBehavior(new AnimateBehavior(), true)
+    box.addBehavior(new LockBehavior(), true)
     restoreBehaviors(box.behaviors, {
       detailable: true,
       movable,
       flippable,
       anchorable,
       rotable,
-      stackable
+      stackable,
+      lockable
     })
     expect(box.getBehaviorByName(MoveBehaviorName).state).toEqual(movable)
     expect(box.getBehaviorByName(FlipBehaviorName).state).toEqual(flippable)
@@ -463,6 +501,7 @@ describe('restoreBehaviors() 3D utility', () => {
       extent: 2,
       stackIds: []
     })
+    expect(box.getBehaviorByName(LockBehaviorName).state).toEqual(lockable)
   })
 
   it('does nothing without parameters', () => {
@@ -473,6 +512,7 @@ describe('restoreBehaviors() 3D utility', () => {
     box.addBehavior(new AnchorBehavior(), true)
     box.addBehavior(new StackBehavior(), true)
     box.addBehavior(new AnimateBehavior(), true)
+    box.addBehavior(new LockBehavior(), true)
     restoreBehaviors(box.behaviors, {})
     expect(box.getBehaviorByName(MoveBehaviorName).state).toEqual({
       snapDistance: 0.25,
@@ -494,6 +534,9 @@ describe('restoreBehaviors() 3D utility', () => {
       duration: 100,
       extent: 2,
       stackIds: []
+    })
+    expect(box.getBehaviorByName(LockBehaviorName).state).toEqual({
+      isLocked: false
     })
   })
 })
@@ -570,6 +613,13 @@ describe('serializeBehaviors() 3D utility', () => {
     })
   })
 
+  it('serializes lockable behavior', () => {
+    const state = { isLocked: true }
+    expect(serializeBehaviors([new LockBehavior(state)])).toEqual({
+      lockable: state
+    })
+  })
+
   it('serializes multiple behaviors', () => {
     const flippable = { isFlipped: true, duration: 123 }
     const anchorable = {
@@ -599,6 +649,7 @@ describe('serializeBehaviors() 3D utility', () => {
       duration: 345
     }
     const detailable = { frontImage: 'front.png', backImage: 'back.jpg' }
+    const lockable = { isLocked: false }
     box.addBehavior(new MoveBehavior(movable), true)
     box.addBehavior(new FlipBehavior(flippable), true)
     box.addBehavior(new RotateBehavior(rotable), true)
@@ -606,13 +657,15 @@ describe('serializeBehaviors() 3D utility', () => {
     box.addBehavior(new AnchorBehavior(anchorable), true)
     box.addBehavior(new StackBehavior(stackable), true)
     box.addBehavior(new AnimateBehavior(), true)
+    box.addBehavior(new LockBehavior(lockable), true)
     expect(serializeBehaviors(box.behaviors)).toEqual({
       flippable,
       anchorable,
       stackable: { ...stackable, stackIds: [] },
       rotable,
       movable,
-      detailable
+      detailable,
+      lockable
     })
   })
 

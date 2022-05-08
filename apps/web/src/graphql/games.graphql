@@ -66,6 +66,9 @@ fragment mesh on Mesh {
     flipOnPlay
     duration
   }
+  lockable {
+    isLocked
+  }
 }
 
 fragment fullGame on Game {

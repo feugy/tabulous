@@ -37,7 +37,6 @@
 - bug: attached, unselected, mesh are not ignored during dragging
 - bug: a selection started in one scene cannot be completed in the other one
 - bug: popping mesh often collide with other meshes
-- lock meshes to avoid moving
 - quatifiable (stackable) behavior
 - save last camera?
 - display peer's name when running draw animations + show peer avatar/name instead of pointer
@@ -110,7 +109,7 @@
 | view details   | double left click                              | long left click, long tap, _menu action_     |
 | flip           | F, _menu action_                               | left click, tap, _menu action_               |
 | rotate         | Ctrl+left drag, Q/E/PgUp/PgDown, _menu action_ | double left click, double tap, _menu action_ |
-| (un)lock       | L, _menu action_                               | _N/A_                                        |
+| (un)lock       | L, _menu action_                               | _menu action_                                |
 | put under      | U, _menu action_                               | _N/A_                                        |
 | take to hand   | T, move to screen bottom, _menu action (draw)_ | move to screen bottom, _menu action_         |
 | stack together | ??                                             | _menu action_                                |

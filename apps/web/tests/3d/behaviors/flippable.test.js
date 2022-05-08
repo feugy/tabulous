@@ -36,6 +36,7 @@ describe('FlipBehavior', () => {
 
     mesh.addBehavior(behavior, true)
     expect(behavior.mesh).toEqual(mesh)
+    expect(recordSpy).not.toHaveBeenCalled()
   })
 
   it('can not restore state without mesh', () => {
@@ -60,6 +61,7 @@ describe('FlipBehavior', () => {
     })
     expect(behavior.mesh.rotation.z).toEqual(0)
     expect(behavior.mesh.metadata.isFlipped).toEqual(false)
+    expect(recordSpy).not.toHaveBeenCalled()
   })
 
   describe('given attached to a mesh', () => {
@@ -90,6 +92,7 @@ describe('FlipBehavior', () => {
       expect(behavior.mesh).toEqual(mesh)
       expectFlipped(mesh)
       expect(animationEndReceived).not.toHaveBeenCalled()
+      expect(recordSpy).not.toHaveBeenCalled()
     })
 
     it('flips mesh clockwise and apply gravity', async () => {

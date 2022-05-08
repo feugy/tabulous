@@ -37,6 +37,7 @@ describe('DrawBehavior', () => {
     mesh.addBehavior(behavior, true)
     expect(behavior.state).toEqual(state)
     expect(behavior.mesh).toEqual(mesh)
+    expect(actionRecorded).not.toHaveBeenCalled()
   })
 
   it('can not restore state without mesh', () => {
@@ -85,6 +86,7 @@ describe('DrawBehavior', () => {
       behavior.fromState(state)
       expect(behavior.state).toEqual(state)
       expect(behavior.mesh).toEqual(mesh)
+      expect(actionRecorded).not.toHaveBeenCalled()
     })
 
     it('attaches metadata to its mesh', () => {

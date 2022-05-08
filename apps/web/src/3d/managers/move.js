@@ -368,7 +368,9 @@ function isDisabled({ behaviorByMeshId }, mesh) {
   return (
     behaviorByMeshId.get(mesh.id).enabled === false &&
     (!mesh.metadata?.stack ||
-      mesh.metadata.stack.length === 1 ||
+      mesh.metadata.stack.every(
+        mesh => behaviorByMeshId.get(mesh.id).enabled === false
+      ) ||
       !selectionManager.meshes.has(
         mesh.metadata.stack[mesh.metadata.stack.length - 1]
       ))
