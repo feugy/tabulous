@@ -542,6 +542,38 @@ describe('MoveManager', () => {
         expect(manager.getActiveZones()).toHaveLength(0)
         expectMoveRecorded(moveRecorded, moved[2], moved[0], moved[1])
       })
+
+      it('ignores disabled, selected mesh', () => {
+        const behavior = new MoveBehavior()
+        moved[2].addBehavior(behavior, true)
+        behavior.enabled = false
+
+        manager.start(moved[1], { x: centerX, y: centerY })
+        expectPosition(moved[0], [1, 1 + manager.elevation, 1])
+        expectPosition(moved[1], [0, 5 + manager.elevation, 0])
+        expectPosition(moved[2], [-3, 0.5, -3])
+        expect(actionRecorded).toHaveBeenNthCalledWith(
+          1,
+          {
+            meshId: moved[0].id,
+            pos: moved[0].absolutePosition.asArray(),
+            fromHand: false
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenNthCalledWith(
+          2,
+          {
+            meshId: moved[1].id,
+            pos: moved[1].absolutePosition.asArray(),
+            fromHand: false
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenCalledTimes(2)
+        expect(manager.getActiveZones()).toHaveLength(0)
+        expectMoveRecorded(moveRecorded, moved[0], moved[1])
+      })
     })
 
     describe('continue()', () => {

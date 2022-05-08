@@ -74,7 +74,7 @@ class MoveManager {
       : [mesh]
     const allMoved = [...moved]
     for (const mesh of allMoved) {
-      if (allMoved.includes(mesh.parent)) {
+      if (allMoved.includes(mesh.parent) || isDisabled(this, mesh)) {
         moved.splice(moved.indexOf(mesh), 1)
       }
     }
@@ -367,8 +367,10 @@ function elevateWhenColliding(boundingBoxes, min, max) {
 function isDisabled({ behaviorByMeshId }, mesh) {
   return (
     behaviorByMeshId.get(mesh.id).enabled === false &&
-    !selectionManager.meshes.has(
-      mesh.metadata?.stack?.[mesh.metadata.stack.length - 1]
-    )
+    (!mesh.metadata?.stack ||
+      mesh.metadata.stack.length === 1 ||
+      !selectionManager.meshes.has(
+        mesh.metadata.stack[mesh.metadata.stack.length - 1]
+      ))
   )
 }
