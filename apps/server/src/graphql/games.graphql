@@ -54,6 +54,10 @@ type DrawableState {
   duration: Int
 }
 
+type LockableState {
+  isLocked: Boolean
+}
+
 type Anchor {
   id: ID
   x: Float
@@ -85,6 +89,7 @@ type Mesh {
   anchorable: AnchorableState
   stackable: StackableState
   drawable: DrawableState
+  lockable: LockableState
   """
   boxes, cards, prisms, rounded tokens and rounded tiles
   """
@@ -200,6 +205,10 @@ input DrawableStateInput {
   duration: Int
 }
 
+input LockableStateInput {
+  isLocked: Boolean
+}
+
 input AnchorInput {
   id: ID
   x: Float
@@ -231,6 +240,7 @@ input MeshInput {
   anchorable: AnchorableStateInput
   stackable: StackableStateInput
   drawable: DrawableStateInput
+  lockable: LockableStateInput
   """
   boxes, cards, prisms, rounded tokens and rounded tiles
   """

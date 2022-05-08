@@ -75,6 +75,7 @@ tooltips:
   help-two-pointers-drag: Tap avec deux doigts sur un objet
   help-two-pointers-object: Tap avec deux doigts sur un objet
   help-update-camera: Clic long sur un emplacement de caméra
+  lock: Verrouiller
   move: Déplacer
   open-menu: Ouvrir le menu
   pan-camera: Déplacer
@@ -90,4 +91,5 @@ tooltips:
   send-message: Envoyer à tous
   shuffle: Mélanger
   stack-all: Tout empiller
+  unlock: Déverrouiller
   zoom: Zoomer

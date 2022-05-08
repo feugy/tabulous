@@ -42,6 +42,7 @@ describe('RotateBehavior', () => {
 
     mesh.addBehavior(behavior, true)
     expect(behavior.mesh).toEqual(mesh)
+    expect(recordSpy).not.toHaveBeenCalled()
   })
 
   it('can not restore state without mesh', () => {
@@ -66,6 +67,7 @@ describe('RotateBehavior', () => {
     })
     expect(behavior.mesh.rotation.y).toEqual(0)
     expect(behavior.mesh.metadata.angle).toEqual(0)
+    expect(recordSpy).not.toHaveBeenCalled()
   })
 
   describe('given attached to a mesh', () => {
@@ -93,6 +95,7 @@ describe('RotateBehavior', () => {
       expect(behavior.mesh).toEqual(mesh)
       expectRotated(mesh, angle)
       expect(animationEndReceived).not.toHaveBeenCalled()
+      expect(recordSpy).not.toHaveBeenCalled()
     })
 
     it('rounds real angle', () => {

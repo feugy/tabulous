@@ -2,6 +2,7 @@ import { Animation } from '@babylonjs/core/Animations/animation'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import {
   AnchorBehaviorName,
+  LockBehaviorName,
   MoveBehaviorName,
   StackBehaviorName
 } from './names'
@@ -556,7 +557,10 @@ function setStatus(stack, rank, enabled, behavior) {
     }
   }
   const movable = mesh.getBehaviorByName(MoveBehaviorName)
-  if (movable) {
+  if (
+    movable &&
+    (!enabled || mesh.getBehaviorByName(LockBehaviorName) === null)
+  ) {
     movable.enabled = enabled
     logger.info({ mesh }, `${operation} moves for ${mesh.id}`)
   }

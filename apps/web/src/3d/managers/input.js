@@ -11,6 +11,7 @@ const logger = makeLogger('input')
 const PinchMovementThreshold = 10
 const PinchMinimumDistance = 200
 const PinchAttemptThreshold = 3
+const DragMinimumDistance = 5
 
 /**
  * @typedef {object} InputData input event data:
@@ -253,20 +254,24 @@ class InputManager {
           } else if (pointers.size) {
             if (!dragOrigin) {
               dragOrigin = [...pointers.values()][0]
-              this.stopHover(event)
-              const data = {
-                type: 'dragStart',
-                ...dragOrigin,
-                pointers: pointers.size,
-                long: pointerTimes.get(dragOrigin.event.pointerId)?.long
+              if (
+                isDifferenceEnough(dragOrigin.event, event, DragMinimumDistance)
+              ) {
+                this.stopHover(event)
+                const data = {
+                  type: 'dragStart',
+                  ...dragOrigin,
+                  pointers: pointers.size,
+                  long: pointerTimes.get(dragOrigin.event.pointerId)?.long
+                }
+                logger.info(
+                  data,
+                  `start${data.long ? ' long ' : ' '}dragging ${
+                    dragOrigin.mesh?.id ?? ''
+                  } with button ${dragOrigin.button}`
+                )
+                this.onDragObservable.notifyObservers(data)
               }
-              logger.info(
-                data,
-                `start${data.long ? ' long ' : ' '}dragging ${
-                  dragOrigin.mesh?.id ?? ''
-                } with button ${dragOrigin.button}`
-              )
-              this.onDragObservable.notifyObservers(data)
             }
 
             // when dragging with multiple pointers, only consider drag origin moves
@@ -405,4 +410,11 @@ function findPickedMesh(scene, { x, y }) {
   return scene
     .multiPickWithRay(scene.createPickingRay(x, y), mesh => mesh.isPickable)
     .sort((a, b) => a.distance - b.distance)[0]?.pickedMesh
+}
+
+function isDifferenceEnough(eventA, eventB, threshold) {
+  return (
+    Math.abs(eventA.x, eventB.x) >= threshold ||
+    Math.abs(eventA.y, eventB.y) >= threshold
+  )
 }

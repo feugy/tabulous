@@ -72,7 +72,8 @@ describe('Game interaction model', () => {
         { functionName: 'flip', icon: 'flip' },
         { functionName: 'rotate', icon: 'rotate_right' },
         { functionName: 'detail', icon: 'visibility' },
-        { functionName: 'draw', icon: 'front_hand' }
+        { functionName: 'draw', icon: 'front_hand' },
+        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
       ])
     })
 
@@ -97,7 +98,8 @@ describe('Game interaction model', () => {
           triggeredMesh: meshes[2],
           max: 3
         },
-        { functionName: 'detail', icon: 'visibility' }
+        { functionName: 'detail', icon: 'visibility' },
+        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
       ])
     })
 
@@ -132,7 +134,13 @@ describe('Game interaction model', () => {
           triggeredMesh: mesh3,
           max: 3
         },
-        { functionName: 'detail', icon: 'visibility' }
+        { functionName: 'detail', icon: 'visibility' },
+        {
+          functionName: 'toggleLock',
+          icon: 'lock',
+          title: 'tooltips.lock',
+          triggeredMesh: mesh6
+        }
       ])
     })
 
@@ -224,10 +232,11 @@ describe('Game interaction model', () => {
         { functionName: 'flipAll', icon: 'flip', title: 'tooltips.flip-stack' },
         { functionName: 'rotate', icon: 'rotate_right' },
         { functionName: 'reorder', icon: 'shuffle', title: 'tooltips.shuffle' },
-        { functionName: 'draw', icon: 'front_hand' }
+        { functionName: 'draw', icon: 'front_hand' },
+        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
       ])
-      expectMeshActions(mesh5, 'draw')
-      expectMeshActions(mesh6, 'draw')
+      expectMeshActions(mesh5, 'draw', 'toggleLock')
+      expectMeshActions(mesh6, 'draw', 'toggleLock')
     })
 
     it('can trigger all actions for a selection of unstacked meshes', async () => {
@@ -254,9 +263,10 @@ describe('Game interaction model', () => {
           icon: 'zoom_in_map',
           title: 'tooltips.stack-all',
           calls: [[mesh1.id]]
-        }
+        },
+        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
       ])
-      expectMeshActions(mesh1, 'flip', 'rotate', 'draw')
+      expectMeshActions(mesh1, 'flip', 'rotate', 'draw', 'toggleLock')
     })
 
     it('can trigger all actions for a selection of unstacked meshes in hand', async () => {
@@ -277,9 +287,10 @@ describe('Game interaction model', () => {
       await expectActionItems(menuProps, mesh2, [
         { functionName: 'flip', icon: 'flip' },
         { functionName: 'rotate', icon: 'rotate_right' },
-        { functionName: 'draw', icon: 'back_hand', title: 'tooltips.play' }
+        { functionName: 'draw', icon: 'back_hand', title: 'tooltips.play' },
+        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
       ])
-      expectMeshActions(mesh1, 'flip', 'rotate', 'draw')
+      expectMeshActions(mesh1, 'flip', 'rotate', 'draw', 'toggleLock')
     })
 
     it('can trigger all actions for a selection of stacks', async () => {
@@ -315,12 +326,13 @@ describe('Game interaction model', () => {
           icon: 'zoom_in_map',
           title: 'tooltips.stack-all',
           calls: [[mesh3.id]]
-        }
+        },
+        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
       ])
-      expectMeshActions(mesh4, 'draw')
-      expectMeshActions(mesh5, 'draw')
-      expectMeshActions(mesh6, 'draw')
-      expectMeshActions(mesh3, 'flipAll', 'rotate', 'draw')
+      expectMeshActions(mesh4, 'draw', 'toggleLock')
+      expectMeshActions(mesh5, 'draw', 'toggleLock')
+      expectMeshActions(mesh6, 'draw', 'toggleLock')
+      expectMeshActions(mesh3, 'flipAll', 'rotate', 'draw', 'toggleLock')
     })
 
     it('does not display stackAll action if at least one selected meshes can not be pushed', async () => {
@@ -339,9 +351,10 @@ describe('Game interaction model', () => {
       await expectActionItems(menuProps, mesh2, [
         { functionName: 'flip', icon: 'flip' },
         { functionName: 'rotate', icon: 'rotate_right' },
-        { functionName: 'draw', icon: 'front_hand' }
+        { functionName: 'draw', icon: 'front_hand' },
+        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
       ])
-      expectMeshActions(mesh1, 'flip', 'rotate', 'draw')
+      expectMeshActions(mesh1, 'flip', 'rotate', 'draw', 'toggleLock')
     })
 
     it('can trigger all actions for a selection of stacked and unstacked meshes', async () => {
@@ -369,11 +382,12 @@ describe('Game interaction model', () => {
           title: 'tooltips.stack-all',
           triggeredMesh: mesh5,
           calls: [[mesh1.id]]
-        }
+        },
+        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
       ])
-      expectMeshActions(mesh5, 'draw')
-      expectMeshActions(mesh6, 'draw')
-      expectMeshActions(mesh1, 'flip', 'rotate', 'draw')
+      expectMeshActions(mesh5, 'draw', 'toggleLock')
+      expectMeshActions(mesh6, 'draw', 'toggleLock')
+      expectMeshActions(mesh1, 'flip', 'rotate', 'draw', 'toggleLock')
     })
   })
 
@@ -691,17 +705,20 @@ describe('Game interaction model', () => {
         expectMeshActions(tapped)
       })
 
-      it.each([{ action: 'draw' }, { action: 'pop' }, { action: 'push' }])(
-        'closes menu on mesh $action action',
-        ({ action }) => {
-          controlManager.onActionObservable.notifyObservers({
-            meshId: tapped.id,
-            fn: action
-          })
-          expect(get(actionMenuProps$)).toBeNull()
-          expectMeshActions(tapped)
-        }
-      )
+      it.each([
+        { action: 'draw' },
+        { action: 'pop' },
+        { action: 'push' },
+        { action: 'lock' },
+        { action: 'unlock' }
+      ])('closes menu on mesh $action action', ({ action }) => {
+        controlManager.onActionObservable.notifyObservers({
+          meshId: tapped.id,
+          fn: action
+        })
+        expect(get(actionMenuProps$)).toBeNull()
+        expectMeshActions(tapped)
+      })
 
       it('does not close menu on another mesh action', async () => {
         const actionMenuProps = get(actionMenuProps$)
@@ -981,7 +998,8 @@ function buildMesh(data) {
     draw: jest.fn(),
     snap: jest.fn(),
     unsnap: jest.fn(),
-    unsnapAll: jest.fn()
+    unsnapAll: jest.fn(),
+    toggleLock: jest.fn()
   }
   return mesh
 }

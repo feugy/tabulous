@@ -180,7 +180,7 @@ export function expectAbsoluteRotation(mesh, angle, axis) {
   expect(rotation.toEulerAngles()[axis]).toBeCloseTo(angle)
 }
 
-export function expectStacked(meshes) {
+export function expectStacked(meshes, isLastMovable = true) {
   const ids = getIds(meshes.slice(1))
   for (const [rank, mesh] of meshes.entries()) {
     expect(getIds(mesh.metadata.stack)).toEqual(getIds(meshes))
@@ -188,7 +188,7 @@ export function expectStacked(meshes) {
       expect(getTargetableBehavior(mesh).state.stackIds).toEqual(ids)
     }
     if (rank === meshes.length - 1) {
-      expectInteractible(mesh, true)
+      expectInteractible(mesh, true, isLastMovable)
       expectStackIndicator(mesh, meshes.length === 1 ? 0 : meshes.length)
     } else {
       expectInteractible(mesh, false)
@@ -218,13 +218,13 @@ function expectOnTop(meshAbove, meshBelow) {
   ])
 }
 
-export function expectInteractible(mesh, isInteractible = true) {
+export function expectInteractible(mesh, isInteractible = true, isMovable) {
   for (const zone of getTargetableBehavior(mesh).zones) {
     expect(zone.enabled).toBe(isInteractible)
   }
   const movable = mesh.getBehaviorByName(MoveBehaviorName)
   if (movable) {
-    expect(movable.enabled).toBe(isInteractible)
+    expect(movable.enabled).toBe(isMovable ?? isInteractible)
   }
   const anchorable = mesh.getBehaviorByName(AnchorBehaviorName)
   if (anchorable) {

@@ -255,22 +255,22 @@ export function attachInputs({ doubleTapDelay, actionMenuProps$ }) {
 
     /**
      * Implements actions when triggering some behavior:
-     * - closes menu when drawing, or modifying stack
+     * - closes menu unless flipping or rotating
      * - when pushing selected mesh onto a stack, selects the entire stack
      */
-    behaviorAction$
-      .pipe(filter(({ fn }) => fn === 'draw' || fn === 'pop' || fn === 'push'))
-      .subscribe({
-        next: ({ fn, meshId, args }) => {
+    behaviorAction$.subscribe({
+      next: ({ fn, meshId, args }) => {
+        if (fn !== 'flip' && fn !== 'rotate') {
           resetMenu()
-          if (
-            fn === 'push' &&
-            [...selectionManager.meshes].some(({ id }) => args[0] === id)
-          ) {
-            selectionManager.selectById(meshId)
-          }
         }
-      })
+        if (
+          fn === 'push' &&
+          [...selectionManager.meshes].some(({ id }) => args[0] === id)
+        ) {
+          selectionManager.selectById(meshId)
+        }
+      }
+    })
   ]
 }
 
@@ -405,7 +405,7 @@ export function computeMenuProps(mesh, fromHand = false) {
 
 const menuActions = [
   {
-    support: mesh => Boolean(mesh.metadata.flip),
+    support: (mesh, { selectedMeshes }) => canAllDo('flip', selectedMeshes),
     build: (mesh, params) => ({
       icon: 'flip',
       title:
@@ -418,7 +418,7 @@ const menuActions = [
     })
   },
   {
-    support: mesh => Boolean(mesh.metadata.rotate),
+    support: (mesh, { selectedMeshes }) => canAllDo('rotate', selectedMeshes),
     build: (mesh, params) => ({
       icon: 'rotate_right',
       title: 'tooltips.rotate',
@@ -428,7 +428,7 @@ const menuActions = [
     })
   },
   {
-    support: mesh => Boolean(mesh.metadata.draw),
+    support: (mesh, { selectedMeshes }) => canAllDo('draw', selectedMeshes),
     build: (mesh, params) => ({
       icon: params.fromHand ? 'back_hand' : 'front_hand',
       title: params.fromHand ? 'tooltips.play' : 'tooltips.draw',
@@ -480,6 +480,15 @@ const menuActions = [
       title: 'tooltips.detail',
       onClick: () => triggerAction(mesh, 'detail')
     })
+  },
+  {
+    support: (mesh, { selectedMeshes }) =>
+      canAllDo('toggleLock', selectedMeshes),
+    build: mesh => ({
+      icon: mesh.metadata.isLocked ? 'lock_open' : 'lock',
+      title: mesh.metadata.isLocked ? 'tooltips.unlock' : 'tooltips.lock',
+      onClick: () => triggerActionOnSelection(mesh, 'toggleLock')
+    })
   }
 ]
 
@@ -517,6 +526,10 @@ function canStackAll(mesh, { selectedMeshes, fromHand }) {
     }
   }
   return bases.size > 1
+}
+
+function canAllDo(action, meshes) {
+  return meshes.every(mesh => Boolean(mesh.metadata[action]))
 }
 
 function computesMaxQuantity(mesh, { selectedMeshes }) {

@@ -17,6 +17,7 @@ import {
   AnchorBehavior,
   DrawBehavior,
   FlipBehavior,
+  LockBehavior,
   MoveBehavior,
   MoveBehaviorName,
   RotateBehavior,
@@ -69,6 +70,7 @@ describe('StackBehavior', () => {
     expect(behavior.base).toBeNull()
     expect(behavior.inhibitControl).toBe(false)
     expect(behavior.mesh).toBeNull()
+    expect(recordSpy).not.toHaveBeenCalled()
   })
 
   it('can not restore state without mesh', () => {
@@ -91,6 +93,7 @@ describe('StackBehavior', () => {
     expect(behavior.mesh).toEqual(mesh)
     expect(mesh.metadata.stack).toEqual([mesh])
     expectStackIndicator(mesh)
+    expect(recordSpy).not.toHaveBeenCalled()
   })
 
   it('can hydrate with stacked mesh', () => {
@@ -101,6 +104,7 @@ describe('StackBehavior', () => {
     mesh.addBehavior(new StackBehavior({ stackIds: [stacked.id] }), true)
     expectStacked([mesh, stacked])
     expectMoveRecorded(moveRecorded)
+    expect(recordSpy).not.toHaveBeenCalled()
   })
 
   it('can not push mesh', () => {
@@ -207,6 +211,35 @@ describe('StackBehavior', () => {
       expect(recordSpy).not.toHaveBeenCalled()
     })
 
+    it('does not enable locked meshes when hydrating', async () => {
+      const extent = faker.datatype.number()
+      const stackIds = [meshes[0].id, meshes[2].id]
+      const duration = faker.datatype.number()
+      const kinds = ['card']
+      const priority = faker.datatype.number()
+      expect(meshes[0].absolutePosition).toEqual(Vector3.FromArray([1, 1, 1]))
+      expect(meshes[2].absolutePosition).toEqual(Vector3.FromArray([3, 3, 3]))
+      mesh.addBehavior(new LockBehavior({ isLocked: true }), true)
+      meshes[0].addBehavior(new LockBehavior({ isLocked: true }), true)
+      meshes[2].addBehavior(new LockBehavior({ isLocked: true }), true)
+
+      behavior.fromState({ duration, extent, stackIds, kinds, priority })
+      expectZone(behavior, extent, false, kinds, priority)
+      expectStacked([mesh, meshes[0], meshes[2]], false)
+      expect(behavior.state.duration).toEqual(duration)
+      expect(behavior.state.extent).toEqual(extent)
+      expect(mesh.metadata).toEqual(
+        expect.objectContaining({
+          push: expect.any(Function),
+          pop: expect.any(Function),
+          reorder: expect.any(Function),
+          flipAll: expect.any(Function),
+          canPush: expect.any(Function)
+        })
+      )
+      expect(recordSpy).not.toHaveBeenCalled()
+    })
+
     it('pushes new mesh on stack', async () => {
       expectStacked([mesh])
       expect(meshes[0].absolutePosition).toEqual(Vector3.FromArray([1, 1, 1]))
@@ -236,6 +269,25 @@ describe('StackBehavior', () => {
         duration: meshes[1].getBehaviorByName(StackBehaviorName).state.duration
       })
       expectMoveRecorded(moveRecorded, meshes[2])
+    })
+
+    it('does not enable locked mesh when pushing', async () => {
+      const [other] = meshes
+      other.addBehavior(new LockBehavior({ isLocked: true }), true)
+      expectStacked([mesh])
+      expectInteractible(mesh, true)
+      expectInteractible(other, true, false)
+
+      await mesh.metadata.push(other.id)
+      expectStacked([mesh, other], false)
+      expect(recordSpy).toHaveBeenCalledTimes(1)
+      expect(recordSpy).toHaveBeenCalledWith({
+        fn: 'push',
+        mesh,
+        args: [other.id, false],
+        duration: behavior.state.duration
+      })
+      expectMoveRecorded(moveRecorded, other)
     })
 
     it('pushes dropped meshes', async () => {
@@ -450,6 +502,25 @@ describe('StackBehavior', () => {
       expectStacked([mesh, meshes[0], meshes[1]])
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({ fn: 'draw', mesh: meshes[2] })
+      expectMoveRecorded(moveRecorded)
+    })
+
+    it('does not enable locked mesh when poping', async () => {
+      meshes[2].addBehavior(new LockBehavior({ isLocked: true }), true)
+      expectInteractible(meshes[2], true, false)
+      behavior.fromState({ stackIds: ['box2', 'box1', 'box3'] })
+
+      let [poped] = await mesh.metadata.pop()
+      expect(poped?.id).toBe('box3')
+      expectInteractible(poped, true, false)
+      expectStacked([mesh, meshes[1], meshes[0]])
+      expect(recordSpy).toHaveBeenCalledTimes(1)
+      expect(recordSpy).toHaveBeenCalledWith({
+        fn: 'pop',
+        mesh,
+        args: [1, false]
+      })
+      expectStackIndicator(poped)
       expectMoveRecorded(moveRecorded)
     })
 

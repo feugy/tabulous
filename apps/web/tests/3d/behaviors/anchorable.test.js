@@ -62,6 +62,7 @@ describe('AnchorBehavior', () => {
     expect(behavior.state).toEqual(state)
     expect(behavior.zones).toEqual([])
     expect(behavior.mesh).toBeNull()
+    expect(recordSpy).not.toHaveBeenCalled()
   })
 
   it('can not snap without mesh', async () => {

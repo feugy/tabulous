@@ -7,6 +7,7 @@ import {
   DetailBehavior,
   DrawBehavior,
   FlipBehavior,
+  LockBehavior,
   MoveBehavior,
   RotateBehavior,
   StackBehavior
@@ -17,6 +18,7 @@ import {
   DetailBehaviorName,
   DrawBehaviorName,
   FlipBehaviorName,
+  LockBehaviorName,
   MoveBehaviorName,
   RotateBehaviorName,
   StackBehaviorName,
@@ -31,7 +33,9 @@ const behaviorNames = [
   [DetailBehaviorName, DetailBehavior],
   [DrawBehaviorName, DrawBehavior],
   [AnchorBehaviorName, AnchorBehavior],
-  [StackBehaviorName, StackBehavior]
+  [StackBehaviorName, StackBehavior],
+  // always applies lockable at the end so it can alter other behaviors
+  [LockBehaviorName, LockBehavior]
 ]
 
 /**
