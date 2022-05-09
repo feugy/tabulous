@@ -33,9 +33,7 @@
 
 ## UI
 
-- bug: visual stack order is wrong after flipAll + shuffle + flip 1
 - bug: attached, unselected, mesh are not ignored during dragging
-- bug: a selection started in one scene cannot be completed in the other one
 - bug: popping mesh often collide with other meshes
 - quatifiable (stackable) behavior
 - save last camera?
