@@ -29,5 +29,5 @@ cd ../..
 
 # build games
 cd apps/games
-tar --create --file ../../dist/games.tar.gz -z assets/ descriptors/ package.json 
+tar --create --file ../../dist/games.tar.gz -z assets/ package.json 
 cd ../..
