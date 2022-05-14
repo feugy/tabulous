@@ -25,7 +25,7 @@ describe('createPrism()', () => {
     expect(mesh.behaviors).toHaveLength(0)
   })
 
-  it('creates a card with a single color', () => {
+  it('creates a prism with a single color', () => {
     const color = '#1E282F'
     const mesh = createPrism({ texture: color })
     const { boundingBox } = mesh.getBoundingInfo()
@@ -46,6 +46,7 @@ describe('createPrism()', () => {
     const x = faker.datatype.number()
     const y = faker.datatype.number()
     const z = faker.datatype.number()
+    const prismRotation = faker.datatype.number()
     const faceUV = [
       Array.from({ length: 4 }, () => faker.datatype.number()),
       Array.from({ length: 4 }, () => faker.datatype.number()),
@@ -64,6 +65,7 @@ describe('createPrism()', () => {
       mesh = createPrism({
         id,
         edges,
+        prismRotation,
         width,
         height,
         x,
@@ -114,6 +116,7 @@ describe('createPrism()', () => {
         faceUV,
         width,
         edges,
+        prismRotation,
         height,
         detailable: behaviors.detailable,
         rotable: {

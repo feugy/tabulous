@@ -105,6 +105,7 @@ describe('serializeMeshes() 3D utility', () => {
         id: 'prism2',
         texture: faker.internet.url(),
         images: [faker.random.word()],
+        prismRotation: faker.datatype.number(),
         x: faker.datatype.number(),
         y: faker.datatype.number(),
         z: faker.datatype.number(),
@@ -300,6 +301,7 @@ describe('loadMeshes() 3D utility', () => {
       [1 / 3, 0, 2 / 3, 1],
       [2 / 3, 0, 3 / 3, 1]
     ],
+    prismRotation: Math.PI,
     edges: 8,
     width: 7.8,
     x: 30,

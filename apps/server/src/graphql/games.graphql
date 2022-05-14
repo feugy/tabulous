@@ -118,6 +118,7 @@ type Mesh {
   prisms
   """
   edges: Float
+  prismRotation: Float
 }
 
 enum Shape {
@@ -269,6 +270,7 @@ input MeshInput {
   prisms
   """
   edges: Float
+  prismRotation: Float
 }
 
 input MessageInput {

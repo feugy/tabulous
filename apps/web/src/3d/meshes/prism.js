@@ -1,4 +1,4 @@
-import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector'
+import { Matrix, Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector'
 import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
 import { controlManager, materialManager } from '../managers'
 import { registerBehaviors, serializeBehaviors } from '../utils'
@@ -10,6 +10,8 @@ import { registerBehaviors, serializeBehaviors } from '../utils'
  * @param {string} params.id - prism's unique id.
  * @param {string} params.texture - prism's texture url or hexadecimal string color.
  * @param {number[][]} params.faceUV? - up to 3 face UV (Vector4 components), to map texture to the prism.
+ * @param {number} params.edges? - number of edges for this prism.
+ * @param {number} params.prismRotation? - fixed rotation applied to the prism.
  * @param {number} params.x? - initial position along the X axis.
  * @param {number} params.y? - initial position along the Y axis.
  * @param {number} params.z? - initial position along the Z axis.
@@ -27,6 +29,7 @@ export function createPrism(
     width = 3,
     height = 1,
     edges = 6,
+    prismRotation = 0,
     texture,
     faceUV = [
       [0 / 3, 0, 1 / 3, 1],
@@ -49,6 +52,10 @@ export function createPrism(
   )
   mesh.name = 'prism'
   materialManager.configure(mesh, texture)
+  if (prismRotation) {
+    const rotation = Matrix.RotationYawPitchRoll(prismRotation, 0, 0)
+    mesh.bakeTransformIntoVertices(rotation)
+  }
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.isPickable = false
   mesh.isCylindric = true
@@ -63,6 +70,7 @@ export function createPrism(
       texture,
       faceUV,
       edges,
+      prismRotation,
       width,
       height,
       ...serializeBehaviors(mesh.behaviors)
