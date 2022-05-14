@@ -284,7 +284,15 @@ export async function invite(gameId, guestId, hostId) {
   game.playerIds.push(guest.id)
   const descriptor = await repositories.catalogItems.getById(game.kind)
   if (descriptor.addPlayer) {
-    game = await descriptor.addPlayer(game, guest)
+    try {
+      game = await descriptor.addPlayer(game, guest)
+    } catch (err) {
+      console.error(
+        `Error thrown while adding player to game ${game.kind} (${game.id}): ${err.message}`,
+        err.stack
+      )
+      throw err
+    }
   }
   await repositories.games.save(game)
   gameListsUpdate$.next(game.playerIds)

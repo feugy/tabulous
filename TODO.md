@@ -18,6 +18,8 @@
 
 - bug: ICE failed message when peer reload their browser??
 - bug: animating visibility from 0 to 1 creates trouble with texture alpha channel
+- group candidate target per kind for performance
+- keep anchor ids
 - selection manager should remove disposed meshes
 - create Animation objects as part of runAnimation() (constant frameRate of 60)
 - custom message on jest expect (game-interaction)

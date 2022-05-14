@@ -79,7 +79,7 @@ describe('given a subscription to game lists and an initialized repository', () 
       expect(updates).toEqual([{ playerId: player.id, games: [game] }])
     })
 
-    it(`invokes descriptor's addPlayer when creating game`, async () => {
+    it(`invokes descriptor's addPlayer() when creating game`, async () => {
       const kind = 'belote'
       game = await createGame(kind, player.id)
       expect(game).toEqual({
@@ -99,7 +99,7 @@ describe('given a subscription to game lists and an initialized repository', () 
       ])
     })
 
-    it('throws errors from descriptor builer function', async () => {
+    it(`throws errors from descriptor's build() function`, async () => {
       jest.spyOn(console, 'error').mockImplementationOnce(() => {})
       await repositories.catalogItems.connect({
         path: join('tests', 'fixtures', 'invalid-games')
@@ -232,7 +232,7 @@ describe('given a subscription to game lists and an initialized repository', () 
         ])
       })
 
-      it(`invokes descriptor's addPayer`, async () => {
+      it(`invokes descriptor's addPlayer() function`, async () => {
         await deleteGame(game.id, player.id)
         game = await createGame('belote', player.id)
         await sleep()
@@ -241,6 +241,19 @@ describe('given a subscription to game lists and an initialized repository', () 
           ...game.hands,
           { playerId: peer.id, meshes: [] }
         ])
+      })
+
+      it('throws errors from descriptor addPlayer() function', async () => {
+        jest.spyOn(console, 'error').mockImplementationOnce(() => {})
+        await deleteGame(game.id, player.id)
+        await repositories.catalogItems.connect({
+          path: join('tests', 'fixtures', 'invalid-games')
+        })
+        game = await createGame('throwing-on-player', player.id)
+        await sleep()
+        await expect(invite(game.id, peer.id, player.id)).rejects.toThrow(
+          `internal addPlayer error`
+        )
       })
     })
 
