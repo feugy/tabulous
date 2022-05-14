@@ -29,6 +29,7 @@ import {
   selectionManager
 } from '../../../src/3d/managers'
 import { animateMove, getCenterAltitudeAbove } from '../../../src/3d/utils'
+import { createRoundToken } from '../../../src/3d/meshes'
 
 describe('AnchorBehavior', () => {
   configures3dTestEngine()
@@ -199,6 +200,28 @@ describe('AnchorBehavior', () => {
       ])
       expectAnchor(0, behavior.state.anchors[0])
       expectAnchor(1, behavior.state.anchors[1])
+      expect(recordSpy).not.toHaveBeenCalled()
+      expectMoveRecorded(moveRecorded)
+    })
+
+    it('can hydrate square anchors on cylindric mesh', () => {
+      mesh.removeBehavior(behavior)
+      mesh = createRoundToken({
+        id: 'cylinder',
+        diameter: 5,
+        height: 5,
+        x: 4,
+        y: 5,
+        z: -4
+      })
+      mesh.addBehavior(behavior, true)
+      behavior.fromState({
+        anchors: [{ x: 0, y: -2, z: 0, width: 1, height: 2, depth: 3 }]
+      })
+      expect(behavior.state.anchors).toEqual([
+        { x: 0, y: -2, z: 0, width: 1, height: 2, depth: 3 }
+      ])
+      expectAnchor(0, { ...behavior.state.anchors[0], x: 4, y: 3, z: -4 })
       expect(recordSpy).not.toHaveBeenCalled()
       expectMoveRecorded(moveRecorded)
     })
@@ -735,7 +758,7 @@ describe('AnchorBehavior', () => {
       expect(boundingBox.extendSize.x * 2).toBeCloseTo(diameter ?? width)
       expect(boundingBox.extendSize.y * 2).toBeCloseTo(height)
       expect(boundingBox.extendSize.z * 2).toBeCloseTo(diameter ?? depth)
-      expect(zone.mesh.absolutePosition.asArray()).toEqual([x, y, z])
+      expectPosition(zone.mesh, [x, y, z])
     }
   })
 })

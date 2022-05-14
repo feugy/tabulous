@@ -353,7 +353,8 @@ function parseFloat(
 export function buildTargetMesh(name, parent, dimensions) {
   const { x, y, z } = parent.getBoundingInfo().boundingBox.extendSizeWorld
   const scene = parent.getScene()
-  const isCylindric = dimensions?.diameter || parent.isCylindric
+  const isCylindric =
+    dimensions?.diameter || (parent.isCylindric && !dimensions?.width)
   const created = isCylindric
     ? CreateCylinder(
         name,
