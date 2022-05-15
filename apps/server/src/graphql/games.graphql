@@ -12,6 +12,7 @@ type Game {
   hands: [Hand]
   rulesBookPageCount: Int
   zoomSpec: ZoomSpec
+  tableSpec: TableSpec
 }
 
 type DetailableState {
@@ -156,6 +157,12 @@ type ZoomSpec {
   max: Float
   initial: Float
   hand: Float
+}
+
+type TableSpec {
+  width: Float
+  height: Float
+  texture: String
 }
 
 input GameInput {

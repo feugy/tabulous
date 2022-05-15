@@ -10,6 +10,7 @@ import { shuffle } from './collections.js'
  * @property {number} minAge? - minimum age in years.
  * @property {number} rulesBookPageCount? - number of pages in the rules book, if any.
  * @property {import('../services/games').ZoomSpec} zoomSpec? - zoom specifications for main and hand scene.
+ * @property {import('../services/games').TableSpec} tableSpec? - table specifications.
  * @property {() => Promise<GameSetup>} build - function to build initial game
  */
 
