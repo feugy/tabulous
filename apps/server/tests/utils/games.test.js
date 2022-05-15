@@ -473,12 +473,6 @@ describe('createMeshes()', () => {
   })
 })
 
-function expectSnappedByName(meshes, name, anchor) {
-  const candidates = meshes.filter(mesh => name === mesh.name)
-  expect(candidates).toHaveLength(1)
-  expect(anchor.snappedId).toEqual(candidates[0].id)
-}
-
 describe('drawInHand()', () => {
   const playerId = faker.datatype.uuid()
   let game
@@ -522,9 +516,18 @@ describe('drawInHand()', () => {
   })
 
   it('draws multiple meshes into a new hand', () => {
-    drawInHand(game, { playerId, count: 2, fromAnchor: 'discard' })
+    const props = { foo: 'bar' }
+    drawInHand(game, { playerId, count: 2, fromAnchor: 'discard', props })
     expect(game).toEqual({
-      hands: [{ playerId, meshes: [{ id: 'D' }, { id: 'E' }] }],
+      hands: [
+        {
+          playerId,
+          meshes: [
+            { id: 'D', ...props },
+            { id: 'E', ...props }
+          ]
+        }
+      ],
       meshes: [
         { id: 'A' },
         {
@@ -700,18 +703,21 @@ describe('findAnchor()', () => {
 })
 
 describe('snapTo()', () => {
-  const meshes = [
-    { id: 'mesh0' },
-    { id: 'mesh1', anchorable: { anchors: [{ id: 'anchor1' }] } },
-    {
-      id: 'mesh2',
-      anchorable: { anchors: [{ id: 'anchor2' }, { id: 'anchor3' }] }
-    },
-    { id: 'mesh3' }
-  ]
+  let meshes
+  beforeEach(() => {
+    meshes = [
+      { id: 'mesh0' },
+      { id: 'mesh1', anchorable: { anchors: [{ id: 'anchor1' }] } },
+      {
+        id: 'mesh2',
+        anchorable: { anchors: [{ id: 'anchor2' }, { id: 'anchor3' }] }
+      },
+      { id: 'mesh3' }
+    ]
+  })
 
   it('snaps a mesh to an existing anchor', () => {
-    snapTo('anchor3', meshes[0], meshes)
+    expect(snapTo('anchor3', meshes[0], meshes)).toBe(true)
     expect(meshes[2]).toEqual({
       id: 'mesh2',
       anchorable: {
@@ -720,16 +726,49 @@ describe('snapTo()', () => {
     })
   })
 
+  it('stacks a mesh if anchor is in use', () => {
+    meshes[0].stackable = {}
+    meshes[1].stackable = {}
+    expect(snapTo('anchor2', meshes[0], meshes)).toBe(true)
+    expect(snapTo('anchor2', meshes[1], meshes)).toBe(true)
+    expect(meshes[2]).toEqual({
+      id: 'mesh2',
+      anchorable: {
+        anchors: [{ id: 'anchor2', snappedId: 'mesh0' }, { id: 'anchor3' }]
+      }
+    })
+    expect(meshes[0]).toEqual({
+      id: 'mesh0',
+      stackable: { stackIds: ['mesh1'] }
+    })
+  })
+
+  it('ignores unstackable mesh on an anchor in use', () => {
+    meshes[0].stackable = {}
+    expect(snapTo('anchor2', meshes[0], meshes)).toBe(true)
+    const state = cloneAsJSON(meshes)
+    expect(snapTo('anchor2', meshes[1], meshes)).toBe(false)
+    expect(state).toEqual(meshes)
+  })
+
+  it('ignores mesh on an anchor in use with unstackable mesh', () => {
+    expect(snapTo('anchor2', meshes[0], meshes)).toBe(true)
+    meshes[1].stackable = {}
+    const state = cloneAsJSON(meshes)
+    expect(snapTo('anchor2', meshes[1], meshes)).toBe(false)
+    expect(state).toEqual(meshes)
+  })
+
   it('ignores unknown anchor', () => {
-    const clonedMeshes = cloneAsJSON(meshes)
-    snapTo('anchor10', meshes[0], clonedMeshes)
-    expect(clonedMeshes).toEqual(meshes)
+    const state = cloneAsJSON(meshes)
+    expect(snapTo('anchor10', meshes[0], meshes)).toBe(false)
+    expect(state).toEqual(meshes)
   })
 
   it('ignores unknown mesh', () => {
-    const clonedMeshes = cloneAsJSON(meshes)
-    snapTo('anchor1', null, clonedMeshes)
-    expect(clonedMeshes).toEqual(meshes)
+    const state = cloneAsJSON(meshes)
+    expect(snapTo('anchor1', null, meshes)).toBe(false)
+    expect(state).toEqual(meshes)
   })
 })
 
@@ -774,3 +813,9 @@ describe('stackMeshes()', () => {
     expect(meshes).toEqual([{ id: 'mesh0' }, ...meshes.slice(1)])
   })
 })
+
+function expectSnappedByName(meshes, name, anchor) {
+  const candidates = meshes.filter(mesh => name === mesh.name)
+  expect(candidates).toHaveLength(1)
+  expect(anchor.snappedId).toEqual(candidates[0].id)
+}

@@ -134,7 +134,7 @@ function fillSlot(
   if (candidates?.length) {
     const meshes = candidates.splice(0, count ?? candidates.length)
     for (const mesh of meshes) {
-      Object.assign(mesh, merge(mesh, props))
+      mergeProps(mesh, props)
     }
     if (anchorId) {
       const anchor = findAnchor(anchorId, allMeshes)
@@ -206,9 +206,13 @@ function removeDandlingMeshes(meshesByBagId, allMeshes) {
  * @param {string} params.playerId - player id for which meshes are drawn.
  * @param {number} params.count - number of drawn mesh
  * @param {string} params.fromAnchor - id of the anchor to draw from.
+ * @param {any} params.props - other props merged into draw meshes.
  * @throws {Error} when no anchor could be found
  */
-export function drawInHand(game, { playerId, count = 1, fromAnchor }) {
+export function drawInHand(
+  game,
+  { playerId, count = 1, fromAnchor, props = {} }
+) {
   const hand = findOrCreateHand(game, playerId)
   const { meshes } = game
   const anchor = findAnchor(fromAnchor, meshes)
@@ -221,6 +225,7 @@ export function drawInHand(game, { playerId, count = 1, fromAnchor }) {
   }
   for (let i = 0; i < count; i++) {
     const drawn = drawMesh(stack, meshes) ?? stack
+    mergeProps(drawn, props)
     hand.meshes.push(drawn)
     meshes.splice(meshes.indexOf(drawn), 1)
     if (drawn === stack) {
@@ -271,20 +276,47 @@ function drawMesh(stackMesh, meshes) {
 export function stackMeshes(meshes) {
   const stackIds = meshes.slice(1).map(({ id }) => id)
   if (stackIds.length) {
-    Object.assign(meshes[0], merge(meshes[0], { stackable: { stackIds } }))
+    mergeProps(meshes[0], { stackable: { stackIds } })
   }
 }
 
 /**
  * Snap a given mesh onto the specified anchor.
  * Search for the anchor within provided meshes.
+ * If the anchor is already used, tries to stack the meshes (the current snapped mesh must be in provided meshes).
+ * Abort the operation when meshes can't be stacked.
  * @param {string} anchorId - desired anchor id.
  * @param {import('../services/games').Mesh} mesh? - snapped mesh, if any.
  * @param {import('../services/games').Mesh[]} meshes - all meshes to search the anchor in.
+ * @return {boolean} true if the mesh could be snapped or stacked. False otherwise.
  */
 export function snapTo(anchorId, mesh, meshes) {
   const anchor = findAnchor(anchorId, meshes)
-  if (anchor) {
-    anchor.snappedId = mesh?.id
+  if (!anchor || !mesh) {
+    return false
   }
+  if (anchor.snappedId) {
+    const snapped = findMeshById(anchor.snappedId, meshes)
+    if (!canStack(snapped, mesh)) {
+      return false
+    }
+    stackMeshes([snapped, mesh])
+  } else {
+    anchor.snappedId = mesh.id
+  }
+  return true
+}
+
+function canStack(base, mesh) {
+  return Boolean(base?.stackable) && Boolean(mesh?.stackable)
+}
+
+/**
+ * Deeply merge properties into an object
+ * @param {object} object - the object to extend.
+ * @param {object} props - an object deeply merged into the source.
+ * @returns {object} the extended object.
+ */
+export function mergeProps(object, props) {
+  return Object.assign(object, merge(object, props))
 }

@@ -38,7 +38,7 @@
 - bug: attached, unselected, mesh are not ignored during dragging
 - bug: popping mesh often collide with other meshes
 - quatifiable (stackable) behavior
-- save last camera?
+- per-player default camera position
 - display peer's name when running draw animations + show peer avatar/name instead of pointer
 - allow selecting preferred camera/mic with https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/enumerateDevices
 - configurable player position at game level
