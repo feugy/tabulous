@@ -252,6 +252,47 @@ describe('MaterialManager', () => {
         })
       })
     })
+
+    describe('buildOnDemand()', () => {
+      it('creates a material with a color', () => {
+        const texture = `${faker.internet.color()}ff`.toUpperCase()
+        expect(manager.isManaging(texture)).toBe(false)
+        const material = manager.buildOnDemand(texture, scene)
+        expect(material).toBeInstanceOf(StandardMaterial)
+        expect(material.diffuseColor?.toHexString()).toEqual(texture)
+        expect(material.diffuseTexture).toBeNull()
+        expect(manager.isManaging(texture)).toBe(true)
+      })
+
+      it('creates a material with a texture', () => {
+        const texture = faker.internet.url()
+        expect(manager.isManaging(texture)).toBe(false)
+        const material = manager.buildOnDemand(texture, scene)
+        expect(material).toBeInstanceOf(StandardMaterial)
+        expect(material.diffuseTexture).toBeInstanceOf(Texture)
+        expect(manager.isManaging(texture)).toBe(true)
+      })
+
+      it('reuses existing color material on the same scene', () => {
+        const texture = `${faker.internet.color()}ff`.toUpperCase()
+        expect(manager.isManaging(texture)).toBe(false)
+        const material = manager.buildOnDemand(texture, scene)
+        expect(material).toBeInstanceOf(StandardMaterial)
+
+        expect(manager.isManaging(texture)).toBe(true)
+        expect(manager.buildOnDemand(texture, scene)).toBe(material)
+      })
+
+      it('reuses existing texture material on the same scene', () => {
+        const texture = faker.internet.url()
+        expect(manager.isManaging(texture)).toBe(false)
+        const material = manager.buildOnDemand(texture, scene)
+        expect(material).toBeInstanceOf(StandardMaterial)
+
+        expect(manager.isManaging(texture)).toBe(true)
+        expect(manager.buildOnDemand(texture, scene)).toBe(material)
+      })
+    })
   })
 
   describe('given an initialized manager with no hand scene', () => {

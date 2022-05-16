@@ -108,6 +108,11 @@ fragment fullGame on Game {
     initial
     hand
   }
+  tableSpec {
+    width
+    height
+    texture
+  }
 }
 
 mutation createGame($kind: String!) {

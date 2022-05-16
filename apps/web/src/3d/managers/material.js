@@ -14,6 +14,9 @@ class MaterialManager {
    * - reuse built materials based on their texture file (or color)
    * - allows using the same texture in between hand and main scene
    * - automatically clears cache scene disposal.
+   *
+   * @property {import('@babylon/core').Scene} scene? - main scene.
+   * @property {import('@babylon/core').Scene} handScene? - hand scene.
    */
   constructor() {
     this.scene = null
@@ -55,6 +58,20 @@ class MaterialManager {
     mesh.receiveShadows = true
     mesh.overlayColor = new Color3(0, 0.8, 0)
     mesh.overlayAlpha = 0.2
+  }
+
+  /**
+   * Creates or reuse an existing material, on a given scene.
+   * It is not attached to any mesh
+   * @param {string} texture - texture url or hexadecimal string color.
+   * @param {import('@babylonjs/core').Scene} scene - scene used.
+   * @returns {StandardMaterial} the build (or reused) material.
+   */
+  buildOnDemand(texture, scene) {
+    return (
+      getMaterialCache(this, scene).get(texture) ??
+      buildMaterials(this, texture, scene)
+    )
   }
 
   /**
@@ -119,7 +136,7 @@ function buildMaterial(materialByUrl, url, scene) {
     material.diffuseTexture.hasAlpha = true
     attachMaterialError(material)
   }
-  material.freeze()
+  // material.freeze()
   materialByUrl.set(url, material)
   material.onDisposeObservable.addOnce(() => materialByUrl.delete(url))
   return material

@@ -110,7 +110,7 @@ class CameraManager {
    * @param {number} params.handZoom? - fixed zoom level for the hand scene.
    * @throws {Error} when called prior to initialization.
    */
-  adjustZoomLevels({ min, max, hand, initial }) {
+  adjustZoomLevels({ min, max, hand, initial } = {}) {
     const { camera, handSceneCamera } = this
     if (!camera) {
       throw new Error(

@@ -84,8 +84,7 @@ export function loadMeshes(scene, meshes) {
   logger.debug({ meshes }, `loads meshes`)
 
   // makes sure all meshes are created
-  for (const rawState of meshes) {
-    const state = removeNulls(rawState)
+  for (const state of meshes) {
     let mesh = scene.getMeshById(state.id)
     const { stackable, anchorable, shape: name } = state
     if (mesh) {
@@ -153,15 +152,25 @@ function skipDelayableBehaviors({ stackable, anchorable, ...state }) {
   }
 }
 
-function removeNulls(object) {
-  const result = {}
-  for (const key in object) {
-    const prop = object[key]
-    if (prop !== null) {
-      result[key] =
-        !Array.isArray(prop) && typeof prop === 'object'
-          ? removeNulls(prop)
-          : prop
+/**
+ * Recursively removes null values (graphQL doesn't return undefined, which prevents from applying default values)
+ * @param {object} object - sanitized object
+ * @returns {object} a cloned object with no null values.
+ */
+export function removeNulls(object) {
+  if (object === null) {
+    return
+  }
+  let result = object
+  if (Array.isArray(object)) {
+    result = new Array(object.length)
+    for (const [rank, item] of object.entries()) {
+      result[rank] = removeNulls(item)
+    }
+  } else if (typeof object === 'object') {
+    result = {}
+    for (const key in object) {
+      result[key] = removeNulls(object[key])
     }
   }
   return result

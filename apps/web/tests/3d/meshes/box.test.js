@@ -2,7 +2,11 @@ import { Color4 } from '@babylonjs/core/Maths/math.color'
 import { faker } from '@faker-js/faker'
 import { createBox } from '../../../src/3d/meshes'
 import { controlManager, materialManager } from '../../../src/3d/managers'
-import { configures3dTestEngine, expectPosition } from '../../test-utils'
+import {
+  configures3dTestEngine,
+  expectDimension,
+  expectPosition
+} from '../../test-utils'
 
 let scene
 configures3dTestEngine(created => (scene = created.scene))
@@ -12,11 +16,8 @@ beforeAll(() => materialManager.init({ scene }))
 describe('createBox()', () => {
   it('creates a box with default values, faces and no behavior', () => {
     const mesh = createBox()
-    const { boundingBox } = mesh.getBoundingInfo()
     expect(mesh.name).toEqual('box')
-    expect(boundingBox.extendSize.x * 2).toEqual(1)
-    expect(boundingBox.extendSize.z * 2).toEqual(1)
-    expect(boundingBox.extendSize.y * 2).toEqual(1)
+    expectDimension(mesh, [1, 1, 1])
     expect(mesh.isPickable).toBe(false)
     expectPosition(mesh, [0, 0.5, 0])
     expect(mesh.metadata).toEqual({
@@ -28,11 +29,8 @@ describe('createBox()', () => {
   it('creates a box with a single color', () => {
     const color = '#1E282F'
     const mesh = createBox({ texture: color })
-    const { boundingBox } = mesh.getBoundingInfo()
     expect(mesh.name).toEqual('box')
-    expect(boundingBox.extendSize.x * 2).toEqual(1)
-    expect(boundingBox.extendSize.z * 2).toEqual(1)
-    expect(boundingBox.extendSize.y * 2).toEqual(1)
+    expectDimension(mesh, [1, 1, 1])
     expect(mesh.isPickable).toBe(false)
     expect(mesh.material.diffuseColor).toEqual(Color4.FromHexString(color))
   })
@@ -76,12 +74,9 @@ describe('createBox()', () => {
     })
 
     it('has all the expected data', () => {
-      const { boundingBox } = mesh.getBoundingInfo()
       expect(mesh.name).toEqual('box')
       expect(mesh.id).toEqual(id)
-      expect(boundingBox.extendSize.x * 2).toEqual(width)
-      expect(boundingBox.extendSize.y * 2).toEqual(height)
-      expect(boundingBox.extendSize.z * 2).toEqual(depth)
+      expectDimension(mesh, [width, height, depth])
       expect(mesh.isPickable).toBe(true)
       expectPosition(mesh, [x, y, z])
       expect(mesh.getBehaviorByName('detailable')).toBeDefined()

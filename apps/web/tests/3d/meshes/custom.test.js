@@ -7,7 +7,11 @@ import {
 } from '../../../src/3d/managers'
 import { createCustom } from '../../../src/3d/meshes'
 import { getDimensions } from '../../../src/3d/utils'
-import { configures3dTestEngine, expectPosition } from '../../test-utils'
+import {
+  configures3dTestEngine,
+  expectDimension,
+  expectPosition
+} from '../../test-utils'
 import pawnData from '../../fixtures/pawn.json'
 
 let scene
@@ -28,12 +32,9 @@ beforeEach(() => {
 describe('createCustom()', () => {
   it('creates a custom mesh from babylon JSON data with default values, and no behavior', () => {
     const mesh = createCustom({ id: 'pawn', file })
-    const { boundingBox } = mesh.getBoundingInfo()
     expect(mesh.id).toEqual('pawn')
     expect(mesh.name).toEqual('custom')
-    expect(boundingBox.extendSize.x * 2).toBeCloseTo(5.2982)
-    expect(boundingBox.extendSize.z * 2).toBeCloseTo(2.0563)
-    expect(boundingBox.extendSize.y * 2).toBeCloseTo(6.2283)
+    expectDimension(mesh, [5.2982, 6.2283, 2.0563])
     expect(mesh.isPickable).toBe(false)
     expectPosition(mesh, [0, getDimensions(mesh).height * 0.5, 0])
     expect(mesh.metadata).toEqual({
@@ -69,11 +70,8 @@ describe('createCustom()', () => {
   it('creates a custom mesh with a single color', () => {
     const color = '#1E282F'
     const mesh = createCustom({ file, texture: color })
-    const { boundingBox } = mesh.getBoundingInfo()
     expect(mesh.name).toEqual('custom')
-    expect(boundingBox.extendSize.x * 2).toBeCloseTo(5.2982)
-    expect(boundingBox.extendSize.z * 2).toBeCloseTo(2.0563)
-    expect(boundingBox.extendSize.y * 2).toBeCloseTo(6.2283)
+    expectDimension(mesh, [5.2982, 6.2283, 2.0563])
     expect(mesh.material.diffuseColor).toEqual(Color4.FromHexString(color))
   })
 
@@ -95,12 +93,9 @@ describe('createCustom()', () => {
     })
 
     it('has all the expected data', () => {
-      const { boundingBox } = mesh.getBoundingInfo()
       expect(mesh.name).toEqual('custom')
       expect(mesh.id).toEqual(id)
-      expect(boundingBox.extendSize.x * 2).toBeCloseTo(5.2982)
-      expect(boundingBox.extendSize.z * 2).toBeCloseTo(2.0563)
-      expect(boundingBox.extendSize.y * 2).toBeCloseTo(6.2283)
+      expectDimension(mesh, [5.2982, 6.2283, 2.0563])
       expect(mesh.isPickable).toBe(true)
       expectPosition(mesh, [x, y, z])
       expect(mesh.getBehaviorByName('movable')?.state).toEqual(
