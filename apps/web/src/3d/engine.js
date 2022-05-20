@@ -29,10 +29,11 @@ import {
   removeNulls
 } from './utils'
 
+// import { AxesViewer } from '@babylonjs/core/Debug/axesViewer'
 // import '@babylonjs/inspector'
 // import '@babylonjs/core/Debug/debugLayer'
 // import '@babylonjs/core/PostProcesses'
-// import { AxesViewer } from '@babylonjs/core/Debug/axesViewer'
+const debug = false
 
 /**
  * Enhanced Babylon.js' Engine
@@ -164,7 +165,7 @@ export function createEngine({
   function handleLeave(event) {
     inputManager.stopAll(event)
   }
-  // scene.debugLayer.show({ embedMode: true })
+  debug && scene.debugLayer.show({ embedMode: true })
   // handScene.debugLayer.show({ embedMode: true })
   // new AxesViewer(scene)
   return engine

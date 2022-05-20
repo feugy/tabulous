@@ -8,7 +8,7 @@ import {
 import { gamePlayerById as gamePlayerById$ } from './game-manager'
 
 const visible$ = new BehaviorSubject(true)
-const handPosition$ = new BehaviorSubject(0)
+const handPosition$ = new BehaviorSubject(Number.POSITIVE_INFINITY)
 
 let playerById = new Map()
 gamePlayerById$.subscribe(value => (playerById = value))
