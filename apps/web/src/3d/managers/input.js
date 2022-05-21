@@ -208,8 +208,8 @@ class InputManager {
         }
 
         case PointerEventTypes.POINTERMOVE: {
-          if (event.movementX === 0 && event.movementY === 0) {
-            break
+          if (!hasMoved(pointers, event)) {
+            return
           }
           clearLong()
 
@@ -417,4 +417,9 @@ function isDifferenceEnough(eventA, eventB, threshold) {
     Math.abs(eventA.x, eventB.x) >= threshold ||
     Math.abs(eventA.y, eventB.y) >= threshold
   )
+}
+
+function hasMoved(pointers, event) {
+  const { x, y } = pointers.get(event?.pointerId)?.event ?? { x: 0, y: 0 }
+  return event?.x - x !== 0 || event?.y - y !== 0
 }
