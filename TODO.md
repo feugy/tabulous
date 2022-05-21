@@ -285,9 +285,12 @@ Some useful commands:
   ```
   convert in.png -alpha off -fuzz 10% -fill none -draw "matte 1,1 floodfill"  \( +clone -alpha extract -blur 0x2 -level 50x100% \) -alpha off -compose copy_opacity -composite out.png
   ```
-- [convert all pngs to webp](https://stackoverflow.com/a/27784462/1182976):
+- [convert all pngs/jpgs to webp](https://stackoverflow.com/a/27784462/1182976):
   ```
   convert *.png -set filename:base "%[basename]" -define webp:lossless=true "%[filename:base].webp"
+  ```
+  ```
+  convert *.jpg -set filename:base "%[basename]" -define webp -quality 90 "%[filename:base].webp"
   ```
 - [extract a given polygon from an image](https://stackoverflow.com/a/18992215/1182976):
   ```
@@ -304,3 +307,8 @@ STUN & TURN server:
 docker run -d --network=host coturn/coturn --external-ip=78.192.173.27 --relay-ip=192.168.1.45 -X -v -u tabulous:soulubat -a -f -r tabulous
 
 ```
+
+Nice sources for 3D textures:
+
+- [3DTextures](https://3dtextures.me/) (free)
+- [Architextures](https://architextures.org/textures) (copyrighted)

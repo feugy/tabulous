@@ -1,11 +1,12 @@
 import { faker } from '@faker-js/faker'
-import {
-  MoveBehaviorName,
-  StackBehaviorName
-} from '../../../src/3d/behaviors/names'
 import { customShapeManager } from '../../../src/3d/managers'
 import { createCustom } from '../../../src/3d/meshes'
-import { createTable, loadMeshes, serializeMeshes } from '../../../src/3d/utils'
+import {
+  createTable,
+  loadMeshes,
+  removeNulls,
+  serializeMeshes
+} from '../../../src/3d/utils'
 import { expectPosition, initialize3dEngine } from '../../test-utils'
 import pawnData from '../../fixtures/pawn.json'
 
@@ -368,36 +369,6 @@ describe('loadMeshes() 3D utility', () => {
     expect(scene.getMeshById(prism1.id).metadata.serialize()).toEqual(prism1)
   })
 
-  it('trims null values out', () => {
-    const id = 'card20'
-    const card = {
-      shape: 'card',
-      depth: 0.13,
-      height: 4.2,
-      id,
-      images: ['mobile'],
-      texture: 'https://elyse.biz',
-      width: 7.8,
-      x: 21,
-      y: null,
-      z: null,
-      movable: { snapDistance: 0.1, duration: null },
-      stackable: {}
-    }
-    loadMeshes(scene, [card])
-    const mesh = scene.getMeshById(id)
-    expect(mesh.absolutePosition.asArray()).toEqual([card.x, 0, 0])
-    expect(mesh.getBehaviorByName(MoveBehaviorName).state).toEqual({
-      snapDistance: card.movable.snapDistance,
-      duration: 100
-    })
-    expect(mesh.getBehaviorByName(StackBehaviorName).state).toEqual({
-      stackIds: [],
-      duration: 100,
-      extent: 2
-    })
-  })
-
   it('updates existing meshes with their behaviors', () => {
     const originalCard = createCard({
       id: card1.id,
@@ -624,5 +595,51 @@ describe('loadMeshes() 3D utility', () => {
       pos1.y + (height + 0.001) * 2,
       pos1.z
     ])
+  })
+})
+
+describe('removeNulls()', () => {
+  it('removes null from object', () => {
+    const card = {
+      texture: 'https://elyse.biz',
+      width: 7.8,
+      x: 21,
+      y: null,
+      z: null
+    }
+    expect(removeNulls(card)).toEqual({
+      ...card,
+      y: undefined,
+      z: undefined
+    })
+  })
+
+  it('removes null in arrays', () => {
+    const card = {
+      texture: 'https://elyse.biz',
+      width: null,
+      color: [1, 2, null, 3]
+    }
+    expect(removeNulls(card)).toEqual({
+      ...card,
+      width: undefined,
+      color: [1, 2, undefined, 3]
+    })
+  })
+
+  it('removes null from nested objects', () => {
+    const card = {
+      texture: 'https://elyse.biz',
+      dimensions: { width: null, height: 0.01 },
+      children: [
+        { id: 1, value: null },
+        { id: 2, value: 'foo' }
+      ]
+    }
+    expect(removeNulls(card)).toEqual({
+      texture: 'https://elyse.biz',
+      dimensions: { height: 0.01 },
+      children: [{ id: 1 }, { id: 2, value: 'foo' }]
+    })
   })
 })

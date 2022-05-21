@@ -2,7 +2,11 @@ import { Color4 } from '@babylonjs/core/Maths/math.color'
 import { faker } from '@faker-js/faker'
 import { createRoundedTile } from '../../../src/3d/meshes'
 import { controlManager, materialManager } from '../../../src/3d/managers'
-import { configures3dTestEngine } from '../../test-utils'
+import {
+  configures3dTestEngine,
+  expectDimension,
+  expectPosition
+} from '../../test-utils'
 
 let scene
 configures3dTestEngine(created => (scene = created.scene))
@@ -12,15 +16,10 @@ beforeAll(() => materialManager.init({ scene }))
 describe('createRoundedTile()', () => {
   it('creates a tile with default values and no behavior', () => {
     const mesh = createRoundedTile()
-    const { boundingBox } = mesh.getBoundingInfo()
     expect(mesh.name).toEqual('roundedTile')
-    expect(boundingBox.extendSize.x * 2).toEqual(3)
-    expect(boundingBox.extendSize.z * 2).toEqual(3)
-    expect(boundingBox.extendSize.y * 2).toEqual(0.05)
+    expectDimension(mesh, [3, 0.05, 3])
     expect(mesh.isPickable).toBe(false)
-    expect(mesh.absolutePosition.x).toEqual(0)
-    expect(mesh.absolutePosition.y).toBeCloseTo(0.05, -0.01)
-    expect(mesh.absolutePosition.z).toEqual(0)
+    expectPosition(mesh, [0, 0, 0])
     expect(mesh.metadata).toEqual({
       serialize: expect.any(Function)
     })
@@ -30,11 +29,8 @@ describe('createRoundedTile()', () => {
   it('creates a card with a single color', () => {
     const color = '#1E282F'
     const mesh = createRoundedTile({ texture: color })
-    const { boundingBox } = mesh.getBoundingInfo()
     expect(mesh.name).toEqual('roundedTile')
-    expect(boundingBox.extendSize.x * 2).toEqual(3)
-    expect(boundingBox.extendSize.z * 2).toEqual(3)
-    expect(boundingBox.extendSize.y * 2).toEqual(0.05)
+    expectDimension(mesh, [3, 0.05, 3])
     expect(mesh.isPickable).toBe(false)
     expect(mesh.material.diffuseColor).toEqual(Color4.FromHexString(color))
   })
@@ -86,16 +82,11 @@ describe('createRoundedTile()', () => {
     })
 
     it('has all the expected data', () => {
-      const { boundingBox } = mesh.getBoundingInfo()
       expect(mesh.name).toEqual('roundedTile')
       expect(mesh.id).toEqual(id)
-      expect(boundingBox.extendSize.x * 2).toEqual(width)
-      expect(boundingBox.extendSize.y * 2).toEqual(height)
-      expect(boundingBox.extendSize.z * 2).toEqual(depth)
+      expectDimension(mesh, [width, height, depth])
       expect(mesh.isPickable).toBe(false)
-      expect(mesh.absolutePosition.x).toEqual(x)
-      expect(mesh.absolutePosition.y).toEqual(y)
-      expect(mesh.absolutePosition.z).toEqual(z)
+      expectPosition(mesh, [x, y, z])
       expect(mesh.getBehaviorByName('detailable')).toBeDefined()
       expect(mesh.getBehaviorByName('anchorable')?.state).toEqual(
         expect.objectContaining(behaviors.anchorable)

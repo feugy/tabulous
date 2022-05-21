@@ -112,6 +112,14 @@ export function expectPosition(mesh, [x, y, z]) {
   expectCloseVector(mesh.absolutePosition, [x, y, z])
 }
 
+export function expectDimension(mesh, [width, height, depth]) {
+  expectCloseVector(mesh.getBoundingInfo().boundingBox.extendSize, [
+    width / 2,
+    height / 2,
+    depth / 2
+  ])
+}
+
 export function expectCloseVector(actual, [x, y, z]) {
   expect(actual.x).toBeCloseTo(x)
   expect(actual.y).toBeCloseTo(y)

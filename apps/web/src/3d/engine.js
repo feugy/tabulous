@@ -23,15 +23,17 @@ import {
 import {
   createLights,
   createTable,
+  ExtendedScene,
   loadMeshes,
   serializeMeshes,
-  ExtendedScene
+  removeNulls
 } from './utils'
 
+// import { AxesViewer } from '@babylonjs/core/Debug/axesViewer'
 // import '@babylonjs/inspector'
 // import '@babylonjs/core/Debug/debugLayer'
 // import '@babylonjs/core/PostProcesses'
-// import { AxesViewer } from '@babylonjs/core/Debug/axesViewer'
+const debug = false
 
 /**
  * Enhanced Babylon.js' Engine
@@ -78,10 +80,6 @@ export function createEngine({
   selectionManager.init({ scene, handScene })
   indicatorManager.init({ scene })
 
-  createTable({}, scene)
-  // creates light after table, so table doesn't project shadow
-  createLights({ scene, handScene })
-
   engine.start = () =>
     engine.runRenderLoop(() => {
       scene.render()
@@ -103,21 +101,26 @@ export function createEngine({
    * - loads data into the main scene
    * - if needed, loads data into player's hand scene
    * @async
-   * @param {object} gameData - serialized game data TODO.
+   * @param {object} game - serialized game data TODO.
    * @param {string} playerId - current player id (to determine their hand).
    * @param {boolean} initial? - set to true to show Babylon's loading UI while loading assets.
    */
   engine.load = async (gameData, playerId, initial) => {
-    cameraManager.adjustZoomLevels(gameData.zoomSpec || {})
-    const handsEnabled = hasHandsEnabled(gameData)
+    const game = removeNulls(gameData)
+    console.log(game)
+    cameraManager.adjustZoomLevels(game.zoomSpec)
+    const handsEnabled = hasHandsEnabled(game)
     if (initial) {
       isLoading = true
       engine.displayLoadingUI()
       targetManager.init({ scene, playerId })
       materialManager.init(
         { scene, handScene: handsEnabled ? handScene : null },
-        gameData
+        game
       )
+      createTable(game.tableSpec, scene)
+      // creates light after table, so table doesn't project shadow
+      createLights({ scene, handScene })
       scene.onDataLoadedObservable.addOnce(() => {
         engine.hideLoadingUI()
         isLoading = false
@@ -126,12 +129,12 @@ export function createEngine({
         handManager.init({ scene, handScene, overlay: hand })
       }
     }
-    await customShapeManager.init(gameData)
-    loadMeshes(scene, gameData.meshes)
+    await customShapeManager.init(game)
+    loadMeshes(scene, game.meshes)
     if (handsEnabled) {
       loadMeshes(
         handScene,
-        gameData.hands.find(hand => playerId === hand.playerId)?.meshes ?? []
+        game.hands.find(hand => playerId === hand.playerId)?.meshes ?? []
       )
     }
     engine.onLoadedObservable.notifyObservers()
@@ -162,7 +165,7 @@ export function createEngine({
   function handleLeave(event) {
     inputManager.stopAll(event)
   }
-  // scene.debugLayer.show({ embedMode: true })
+  debug && scene.debugLayer.show({ embedMode: true })
   // handScene.debugLayer.show({ embedMode: true })
   // new AxesViewer(scene)
   return engine
