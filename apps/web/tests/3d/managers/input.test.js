@@ -1397,9 +1397,7 @@ describe('InputManager', () => {
       triggerEvent(POINTERMOVE, {
         x: 1000,
         y: 500,
-        pointerId: 1,
-        movementX: 10,
-        movementY: -50
+        pointerId: 1
       })
       expectEvents()
     })
@@ -1425,10 +1423,10 @@ describe('InputManager', () => {
     expect(longs).toHaveLength(counts.longs ?? 0)
   }
 
-  function move(pointer, movementX, movementY) {
-    pointer.x += movementX
-    pointer.y += movementY
-    return { ...pointer, movementX, movementY }
+  function move(pointer, x, y) {
+    pointer.x += x
+    pointer.y += y
+    return { ...pointer }
   }
 
   function expectsDataWithMesh(actual, expected, meshId) {
