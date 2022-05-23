@@ -29,14 +29,18 @@ class MoveManager {
    * - triggers target detection while continuing the operation
    * - release mesh on table, or on their relevant target
    *
+   * Prior to move operation, the onPreMoveObservable allows to add or remove meshes to the list.
+   *
    * @property {number} elevation - elevation applied to meshes while dragging them.
    * @property {boolean} inProgress - true while a move operation is in progress.
    * @property {Observable<MoveData>} onMoveObservable - emits when moving a given mesh.
+   * @property {Observable<import('@babylonjs/core').Mesh[]>} onPreMoveObservable - emits prior to starting the operation.
    */
   constructor() {
     this.elevation = null
     this.inProgress = false
     this.onMoveObservable = new Observable()
+    this.onPreMoveObservable = new Observable()
     // private
     this.scene = null
     this.meshIds = new Set()
@@ -104,6 +108,8 @@ class MoveManager {
       { moved, position: lastPosition.asArray() },
       `start move operation`
     )
+    this.onPreMoveObservable.notifyObservers(moved)
+    moved = [...moved]
 
     for (const mesh of moved) {
       const { x, y, z } = mesh.absolutePosition
@@ -159,6 +165,11 @@ class MoveManager {
     this.getActiveZones = () => [...zones]
 
     // dynamically assign exclude function to keep moved in scope
+    this.isMoving = mesh => {
+      return moved.some(({ id }) => id === mesh?.id)
+    }
+
+    // dynamically assign exclude function to keep moved in scope
     this.exclude = (...meshes) => {
       moved = moved.filter(({ id }) =>
         meshes.every(excluded => excluded?.id !== id)
@@ -170,6 +181,10 @@ class MoveManager {
       if (actionObserver) {
         controlManager.onActionObservable.remove(actionObserver)
       }
+      this.continue = () => {}
+      this.getActiveZones = () => []
+      this.isMoving = () => false
+      this.exclude = () => {}
       if (moved.length === 0) {
         zones.clear()
         this.inProgress = false
@@ -251,6 +266,14 @@ class MoveManager {
    */
   getActiveZones() {
     return []
+  }
+
+  /**
+   * @param {import('@babylonjs/core').Mesh} mesh - tested mesh
+   * @returns {boolean} whether this mesh is being moved
+   */
+  isMoving() {
+    return false
   }
 
   /**
