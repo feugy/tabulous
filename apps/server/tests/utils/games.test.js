@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker'
 import {
   createMeshes,
+  decrement,
   drawInHand,
   findAnchor,
   findMeshById,
@@ -629,23 +630,6 @@ describe('findOrCreateHand()', () => {
   })
 })
 
-function expectStackedOnSlot(meshes, slot, count = slot.count) {
-  const stack = meshes.find(
-    ({ stackable }) => stackable?.stackIds.length === count - 1
-  )
-  expect(stack).toBeDefined()
-  const stackedMeshes = meshes.filter(
-    ({ id }) => stack.stackable.stackIds.includes(id) || id === stack.id
-  )
-  expect(stackedMeshes).toHaveLength(count)
-  expect(
-    stackedMeshes.every(
-      ({ x, y, z }) => x === slot.x && y === slot.y && z === slot.z
-    )
-  ).toBe(true)
-  return stack
-}
-
 describe('findAnchor()', () => {
   const anchors = Array.from({ length: 10 }, () => ({
     id: faker.datatype.uuid()
@@ -813,6 +797,48 @@ describe('stackMeshes()', () => {
     expect(meshes).toEqual([{ id: 'mesh0' }, ...meshes.slice(1)])
   })
 })
+
+describe('decrement()', () => {
+  it('ignores non quantifiable meshes', () => {
+    const mesh = { id: 'mesh1' }
+    expect(decrement(mesh)).toBeUndefined()
+    expect(mesh).toEqual({ id: 'mesh1' })
+  })
+
+  it('ignores quantifiable mesh of 1', () => {
+    const mesh = { id: 'mesh1', quantifiable: { quantity: 1 } }
+    expect(decrement(mesh)).toBeUndefined()
+    expect(mesh).toEqual({ id: 'mesh1', quantifiable: { quantity: 1 } })
+  })
+
+  it('decrements a quantifiable mesh by 1', () => {
+    const foo = faker.lorem.words()
+    const mesh = { id: 'mesh1', foo, quantifiable: { quantity: 6 } }
+    expect(decrement(mesh)).toEqual({
+      id: expect.stringMatching(/^mesh1-/),
+      foo,
+      quantifiable: { quantity: 1 }
+    })
+    expect(mesh).toEqual({ id: 'mesh1', foo, quantifiable: { quantity: 5 } })
+  })
+})
+
+function expectStackedOnSlot(meshes, slot, count = slot.count) {
+  const stack = meshes.find(
+    ({ stackable }) => stackable?.stackIds.length === count - 1
+  )
+  expect(stack).toBeDefined()
+  const stackedMeshes = meshes.filter(
+    ({ id }) => stack.stackable.stackIds.includes(id) || id === stack.id
+  )
+  expect(stackedMeshes).toHaveLength(count)
+  expect(
+    stackedMeshes.every(
+      ({ x, y, z }) => x === slot.x && y === slot.y && z === slot.z
+    )
+  ).toBe(true)
+  return stack
+}
 
 function expectSnappedByName(meshes, name, anchor) {
   const candidates = meshes.filter(mesh => name === mesh.name)
