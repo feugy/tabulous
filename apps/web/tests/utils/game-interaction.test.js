@@ -41,7 +41,10 @@ describe('Game interaction model', () => {
       { id: 'box3', absolutePosition: Vector3.Zero() },
       { id: 'box4', absolutePosition: Vector3.Left() },
       { id: 'box5', absolutePosition: new Vector3(0, 0.01, 0) },
-      { id: 'box6', absolutePosition: new Vector3(0, 0.02, 0) }
+      { id: 'box6', absolutePosition: new Vector3(0, 0.02, 0) },
+      { id: 'box7', absolutePosition: Vector3.Right() },
+      { id: 'box8', absolutePosition: Vector3.Backward() },
+      { id: 'box9', absolutePosition: Vector3.Forward() }
     ].map(buildMesh)
     meshes[0].metadata.stack = [meshes[0]]
     meshes[1].metadata.stack = [meshes[1]]
@@ -49,6 +52,9 @@ describe('Game interaction model', () => {
     meshes[3].metadata.stack = [meshes[3]]
     meshes[4].metadata.stack = [...meshes[2].metadata.stack]
     meshes[5].metadata.stack = [...meshes[2].metadata.stack]
+    meshes[6].metadata.quantity = 5
+    meshes[7].metadata.quantity = 1
+    meshes[8].metadata.quantity = 2
     selectionManager.clear()
     createTable()
     jest.resetAllMocks()
@@ -97,6 +103,31 @@ describe('Game interaction model', () => {
           icon: 'zoom_out_map',
           triggeredMesh: meshes[2],
           max: 3
+        },
+        { functionName: 'detail', icon: 'visibility' },
+        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
+      ])
+    })
+
+    it('can trigger all actions on quantifiable mesh', async () => {
+      const mesh = meshes[6]
+      const menuProps = computeMenuProps(mesh)
+      expect(menuProps).toHaveProperty('items')
+      expect(menuProps).toHaveProperty('open', true)
+      expect(menuProps).toHaveProperty('meshes', [mesh])
+      const { x, y } = getMeshScreenPosition(mesh)
+      expect(menuProps).toHaveProperty('x', x)
+      expect(menuProps).toHaveProperty('y', y)
+      mesh.metadata.decrement.mockResolvedValueOnce(null)
+
+      await expectActionItems(menuProps, mesh, [
+        { functionName: 'flip', icon: 'flip' },
+        { functionName: 'rotate', icon: 'rotate_right' },
+        { functionName: 'draw', icon: 'front_hand' },
+        {
+          functionName: 'decrement',
+          icon: 'splitscreen',
+          max: 4
         },
         { functionName: 'detail', icon: 'visibility' },
         { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
@@ -164,6 +195,26 @@ describe('Game interaction model', () => {
       expectMeshActions(mesh6, action)
       expectMeshActions(mesh5, action)
       expectMeshActions(mesh3)
+    })
+
+    it('can decrement multiple meshes on quantifiable', async () => {
+      const mesh = meshes[6]
+      const menuProps = computeMenuProps(mesh)
+      expect(menuProps).toHaveProperty('items')
+      expect(menuProps).toHaveProperty('open', true)
+      expect(menuProps).toHaveProperty('meshes', [mesh])
+      const { x, y } = getMeshScreenPosition(mesh)
+      expect(menuProps).toHaveProperty('x', x)
+      expect(menuProps).toHaveProperty('y', y)
+
+      const icon = 'splitscreen'
+      const action = 'decrement'
+      const quantity = 3
+      mesh.metadata.decrement.mockResolvedValueOnce(null)
+      await menuProps.items
+        .find(item => item.icon === icon)
+        .onClick({ detail: { quantity } })
+      expect(mesh.metadata[action]).toHaveBeenCalledWith(quantity, true)
     })
 
     it('rotates only parent mesh when rotating as many as the stack length', async () => {
@@ -235,6 +286,28 @@ describe('Game interaction model', () => {
         { functionName: 'draw', icon: 'front_hand' },
         { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
       ])
+      expectMeshActions(mesh5, 'draw', 'toggleLock')
+      expectMeshActions(mesh6, 'draw', 'toggleLock')
+    })
+
+    it('can trigger all actions for a selected quantifiable', async () => {
+      const [, , mesh3, , mesh5, mesh6, mesh7] = meshes
+      selectionManager.select(mesh5, mesh7, mesh6)
+      const menuProps = computeMenuProps(mesh7)
+      expect(menuProps).toHaveProperty('items')
+      expect(menuProps).toHaveProperty('open', true)
+      expect(menuProps).toHaveProperty('meshes', [mesh3, mesh5, mesh6, mesh7])
+      const { x, y } = getMeshScreenPosition(mesh7)
+      expect(menuProps).toHaveProperty('x', x)
+      expect(menuProps).toHaveProperty('y', y)
+
+      await expectActionItems(menuProps, mesh7, [
+        { functionName: 'flip', icon: 'flip' },
+        { functionName: 'rotate', icon: 'rotate_right' },
+        { functionName: 'draw', icon: 'front_hand' },
+        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
+      ])
+      expectMeshActions(mesh3, 'rotate', 'flipAll', 'draw', 'toggleLock')
       expectMeshActions(mesh5, 'draw', 'toggleLock')
       expectMeshActions(mesh6, 'draw', 'toggleLock')
     })
@@ -335,6 +408,36 @@ describe('Game interaction model', () => {
       expectMeshActions(mesh3, 'flipAll', 'rotate', 'draw', 'toggleLock')
     })
 
+    it('can trigger all actions for a selection of quantifiable', async () => {
+      const [, , , , , , mesh7, mesh8, mesh9] = meshes
+      mesh7.metadata.canIncrement.mockReturnValue(true)
+      mesh8.metadata.canIncrement.mockReturnValue(true)
+      mesh9.metadata.canIncrement.mockReturnValue(true)
+      selectionManager.select(mesh7, mesh8, mesh9)
+      const menuProps = computeMenuProps(mesh7)
+      expect(menuProps).toHaveProperty('items')
+      expect(menuProps).toHaveProperty('open', true)
+      expect(menuProps).toHaveProperty('meshes', [mesh7, mesh8, mesh9])
+      const { x, y } = getMeshScreenPosition(mesh7)
+      expect(menuProps).toHaveProperty('x', x)
+      expect(menuProps).toHaveProperty('y', y)
+
+      await expectActionItems(menuProps, mesh7, [
+        { functionName: 'flip', icon: 'flip' },
+        { functionName: 'rotate', icon: 'rotate_right' },
+        { functionName: 'draw', icon: 'front_hand' },
+        {
+          functionName: 'increment',
+          icon: 'zoom_in_map',
+          title: 'tooltips.increment',
+          calls: [[[mesh8.id, mesh9.id]]]
+        },
+        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
+      ])
+      expectMeshActions(mesh8, 'flip', 'rotate', 'draw', 'toggleLock')
+      expectMeshActions(mesh9, 'flip', 'rotate', 'draw', 'toggleLock')
+    })
+
     it('does not display stackAll action if at least one selected meshes can not be pushed', async () => {
       const [mesh1, mesh2] = meshes
       mesh1.metadata.canPush.mockReturnValue(true)
@@ -355,6 +458,28 @@ describe('Game interaction model', () => {
         { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
       ])
       expectMeshActions(mesh1, 'flip', 'rotate', 'draw', 'toggleLock')
+    })
+
+    it('does not display increment action if at least one selected meshes can not be incremented', async () => {
+      const [, , , , , , mesh7, mesh8] = meshes
+      mesh7.metadata.canIncrement.mockReturnValue(true)
+      mesh8.metadata.canIncrement.mockReturnValue(false)
+      selectionManager.select(mesh7, mesh8)
+      const menuProps = computeMenuProps(mesh8)
+      expect(menuProps).toHaveProperty('items')
+      expect(menuProps).toHaveProperty('open', true)
+      expect(menuProps).toHaveProperty('meshes', [mesh7, mesh8])
+      const { x, y } = getMeshScreenPosition(mesh8)
+      expect(menuProps).toHaveProperty('x', x)
+      expect(menuProps).toHaveProperty('y', y)
+
+      await expectActionItems(menuProps, mesh8, [
+        { functionName: 'flip', icon: 'flip' },
+        { functionName: 'rotate', icon: 'rotate_right' },
+        { functionName: 'draw', icon: 'front_hand' },
+        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
+      ])
+      expectMeshActions(mesh7, 'flip', 'rotate', 'draw', 'toggleLock')
     })
 
     it('can trigger all actions for a selection of stacked and unstacked meshes', async () => {
@@ -999,7 +1124,10 @@ function buildMesh(data) {
     snap: jest.fn(),
     unsnap: jest.fn(),
     unsnapAll: jest.fn(),
-    toggleLock: jest.fn()
+    toggleLock: jest.fn(),
+    increment: jest.fn(),
+    decrement: jest.fn(),
+    canIncrement: jest.fn()
   }
   return mesh
 }
@@ -1007,7 +1135,11 @@ function buildMesh(data) {
 function expectMeshActions(mesh, ...actionNames) {
   for (const name in mesh.metadata) {
     const action = mesh.metadata[name]
-    if (typeof action === 'function' && name !== 'canPush') {
+    if (
+      typeof action === 'function' &&
+      name !== 'canPush' &&
+      name !== 'canIncrement'
+    ) {
       if (actionNames.includes(name)) {
         debug && console.log(`${name} expected on ${mesh.id}`)
         expect(action).toHaveBeenCalled()

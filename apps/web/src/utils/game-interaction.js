@@ -414,7 +414,7 @@ const menuActions = [
           : 'tooltips.flip',
       onClick: ({ detail } = {}) =>
         triggerActionOnSelection(mesh, 'flip', detail?.quantity),
-      max: computesMaxQuantity(mesh, params)
+      max: computesStackSize(mesh, params)
     })
   },
   {
@@ -424,7 +424,7 @@ const menuActions = [
       title: 'tooltips.rotate',
       onClick: ({ detail } = {}) =>
         triggerActionOnSelection(mesh, 'rotate', detail?.quantity),
-      max: computesMaxQuantity(mesh, params)
+      max: computesStackSize(mesh, params)
     })
   },
   {
@@ -434,7 +434,7 @@ const menuActions = [
       title: params.fromHand ? 'tooltips.play' : 'tooltips.draw',
       onClick: ({ detail } = {}) =>
         triggerActionOnSelection(mesh, 'draw', detail?.quantity),
-      max: computesMaxQuantity(mesh, params)
+      max: computesStackSize(mesh, params)
     })
   },
   {
@@ -452,7 +452,20 @@ const menuActions = [
             true
           ))
         ),
-      max: computesMaxQuantity(mesh, params)
+      max: computesStackSize(mesh, params)
+    })
+  },
+  {
+    support: (mesh, { selectedMeshes }) =>
+      mesh.metadata?.quantity > 1 && selectedMeshes.length === 1,
+    build: (mesh, params) => ({
+      icon: 'splitscreen',
+      title: 'tooltips.decrement',
+      onClick: async ({ detail } = {}) =>
+        selectionManager.select(
+          await triggerAction(mesh, 'decrement', detail?.quantity, true)
+        ),
+      max: computesQuantity(mesh, params)
     })
   },
   {
@@ -461,6 +474,14 @@ const menuActions = [
       icon: 'zoom_in_map',
       title: 'tooltips.stack-all',
       onClick: () => stackAll(mesh, selectedMeshes)
+    })
+  },
+  {
+    support: canIncrement,
+    build: (mesh, { selectedMeshes }) => ({
+      icon: 'zoom_in_map',
+      title: 'tooltips.increment',
+      onClick: () => increment(mesh, selectedMeshes)
     })
   },
   {
@@ -528,13 +549,28 @@ function canStackAll(mesh, { selectedMeshes, fromHand }) {
   return bases.size > 1
 }
 
+function canIncrement(mesh, { selectedMeshes }) {
+  for (const other of selectedMeshes) {
+    if (other !== mesh && !mesh.metadata.canIncrement?.(other)) {
+      return false
+    }
+  }
+  return selectedMeshes.length > 1
+}
+
 function canAllDo(action, meshes) {
   return meshes.every(mesh => Boolean(mesh.metadata[action]))
 }
 
-function computesMaxQuantity(mesh, { selectedMeshes }) {
+function computesStackSize(mesh, { selectedMeshes }) {
   return selectedMeshes.length === 1 && mesh.metadata.stack?.length > 1
     ? mesh.metadata.stack.length
+    : undefined
+}
+
+function computesQuantity(mesh, { selectedMeshes }) {
+  return selectedMeshes.length === 1 && mesh.metadata.quantity > 1
+    ? mesh.metadata.quantity - 1
     : undefined
 }
 
@@ -549,4 +585,14 @@ async function stackAll(mesh, selectedMeshes) {
       await triggerAction(mesh, 'push', base.id)
     }
   }
+}
+
+async function increment(mesh, selectedMeshes) {
+  const ids = []
+  for (const { id } of selectedMeshes) {
+    if (mesh.id !== id) {
+      ids.push(id)
+    }
+  }
+  mesh.metadata.increment(ids)
 }
