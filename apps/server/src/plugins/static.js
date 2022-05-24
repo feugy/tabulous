@@ -1,4 +1,4 @@
-import staticPlugin from 'fastify-static'
+import staticPlugin from '@fastify/static'
 
 /**
  * @typedef {object} StaticOptions Static content plugin options, including:

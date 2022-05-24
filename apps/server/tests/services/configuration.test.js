@@ -15,7 +15,12 @@ describe('loadConfiguration()', () => {
   it('loads values from environment variables', () => {
     const port = faker.datatype.number({ min: 0, max: 8000 })
     const host = faker.internet.ip()
-    const level = faker.random.arrayElement(['fatal', 'error', 'info', 'debug'])
+    const level = faker.helpers.arrayElement([
+      'fatal',
+      'error',
+      'info',
+      'debug'
+    ])
     const gamesPath = faker.system.directoryPath()
     const dataPath = faker.system.directoryPath()
     const key = faker.system.filePath()

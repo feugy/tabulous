@@ -139,7 +139,7 @@ describe('Abstract repository', () => {
 
       describe('save()', () => {
         it('updates an existing model', async () => {
-          const model = faker.random.arrayElement(models)
+          const model = faker.helpers.arrayElement(models)
           model.count = faker.datatype.number()
           expect(await repository.save(model)).toEqual({ ...model })
           expect(await repository.getById(model.id)).toEqual({ ...model })
@@ -192,7 +192,7 @@ describe('Abstract repository', () => {
 
       describe('getById()', () => {
         it('returns a model by id', async () => {
-          const model = faker.random.arrayElement(models)
+          const model = faker.helpers.arrayElement(models)
           expect(await repository.getById(model.id)).toEqual(model)
         })
 
@@ -220,7 +220,7 @@ describe('Abstract repository', () => {
 
       describe('deleteById()', () => {
         it('deletes a model by id', async () => {
-          const model = faker.random.arrayElement(models)
+          const model = faker.helpers.arrayElement(models)
           expect(await repository.deleteById(model.id)).toEqual(model)
           expect(await repository.getById(model.id)).toBeNull()
         })

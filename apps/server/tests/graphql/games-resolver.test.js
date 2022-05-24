@@ -96,7 +96,7 @@ describe('given a started server', () => {
     describe('createGame mutation', () => {
       it('creates a new game and resolves player objects', async () => {
         const playerId = players[0].id
-        const kind = faker.random.arrayElement(['coinche', 'tarot', 'belote'])
+        const kind = faker.helpers.arrayElement(['coinche', 'tarot', 'belote'])
         const game = {
           id: faker.datatype.uuid(),
           kind,
@@ -147,7 +147,7 @@ describe('given a started server', () => {
     describe('saveGame mutation', () => {
       it('saves an existing game and resolves player objects', async () => {
         const playerId = players[0].id
-        const kind = faker.random.arrayElement(['coinche', 'tarot', 'belote'])
+        const kind = faker.helpers.arrayElement(['coinche', 'tarot', 'belote'])
         const messages = [
           {
             playerId,
