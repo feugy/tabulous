@@ -210,7 +210,15 @@ export function expectStackIndicator(mesh, size) {
   const id = `${mesh.id}.stack-size`
   expect(indicatorManager.isManaging({ id })).toBe(size > 0)
   if (size) {
-    expect(indicatorManager.getById(id).size).toEqual(size)
+    expect(indicatorManager.getById(id)?.size).toEqual(size)
+  }
+}
+
+export function expectQuantityIndicator(mesh, quantity) {
+  const id = `${mesh.id}.quantity`
+  expect(indicatorManager.isManaging({ id })).toBe(quantity > 1)
+  if (quantity > 1) {
+    expect(indicatorManager.getById(id)?.size).toEqual(quantity)
   }
 }
 
@@ -262,5 +270,26 @@ export function expectMoveRecorded(moveRecorded, ...meshes) {
   expect(moveRecorded).toHaveBeenCalledTimes(meshes.length)
   for (const [rank, mesh] of meshes.entries()) {
     expect(moveRecorded.mock.calls[rank][0]?.mesh.id).toEqual(mesh.id)
+  }
+}
+
+export function expectZone(behavior, { extent, enabled, kinds, priority = 0 }) {
+  expect(behavior.zones).toHaveLength(1)
+  expect(behavior.zones[0].extent).toEqual(extent)
+  expect(behavior.zones[0].enabled).toEqual(enabled)
+  expect(behavior.zones[0].kinds).toEqual(kinds)
+  expect(behavior.zones[0].priority).toEqual(priority)
+  expect(behavior.zones[0].mesh?.parent?.id).toEqual(behavior.mesh.id)
+}
+
+export function expectDisposed(scene, ...meshes) {
+  for (const mesh of meshes) {
+    expect(scene.getMeshById(mesh?.id)?.id).toBeUndefined()
+  }
+}
+
+export function expectNotDisposed(scene, ...meshes) {
+  for (const mesh of meshes) {
+    expect(scene.getMeshById(mesh?.id)).toBeDefined()
   }
 }

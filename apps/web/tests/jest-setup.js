@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom'
+import crypto from 'crypto'
 import 'whatwg-fetch'
 import '../src/common'
 // Babylon.js side effect imports
@@ -45,3 +46,7 @@ class ResizeObserver {
 
 window.ResizeObserver = ResizeObserver
 window.resizeObservers = resizeObservers
+
+Object.defineProperty(global.self, 'crypto', {
+  value: Object.setPrototypeOf({ subtle: crypto.subtle }, crypto)
+})

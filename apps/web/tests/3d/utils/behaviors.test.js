@@ -39,6 +39,7 @@ let DrawBehavior
 let FlipBehavior
 let LockBehavior
 let MoveBehavior
+let QuantityBehavior
 let RotateBehavior
 let StackBehavior
 let TargetBehavior
@@ -54,6 +55,7 @@ beforeAll(async () => {
     FlipBehavior,
     LockBehavior,
     MoveBehavior,
+    QuantityBehavior,
     RotateBehavior,
     StackBehavior,
     TargetBehavior
@@ -161,6 +163,12 @@ describe('getTargetableBehavior() 3D utility', () => {
     expect(getTargetableBehavior(box)).toEqual(targetable)
   })
 
+  it('finds quantifiable', () => {
+    const quantifiable = new QuantityBehavior()
+    box.addBehavior(quantifiable, true)
+    expect(getTargetableBehavior(box)).toEqual(quantifiable)
+  })
+
   it('finds stackable over others', () => {
     const anchorable = new AnchorBehavior()
     box.addBehavior(anchorable, true)
@@ -171,12 +179,20 @@ describe('getTargetableBehavior() 3D utility', () => {
     expect(getTargetableBehavior(box)).toEqual(stackable)
   })
 
-  it('finds anchorable over rotable', () => {
+  it('finds anchorable over quantifiable', () => {
+    const quantifiable = new QuantityBehavior()
+    box.addBehavior(quantifiable, true)
     const anchorable = new AnchorBehavior()
     box.addBehavior(anchorable, true)
+    expect(getTargetableBehavior(box)).toEqual(anchorable)
+  })
+
+  it('finds quantifiable over targetable', () => {
+    const quantifiable = new QuantityBehavior()
+    box.addBehavior(quantifiable, true)
     const targetable = new TargetBehavior()
     box.addBehavior(targetable, true)
-    expect(getTargetableBehavior(box)).toEqual(anchorable)
+    expect(getTargetableBehavior(box)).toEqual(quantifiable)
   })
 
   it('can returns nothing', () => {
