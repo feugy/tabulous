@@ -190,10 +190,15 @@ class SelectionManager {
 export const selectionManager = new SelectionManager()
 
 function addToSelection(manager, mesh) {
-  if (!manager.meshes.has(mesh)) {
+  if (mesh && !manager.meshes.has(mesh)) {
     for (const added of mesh.metadata?.stack ?? [mesh]) {
       manager.meshes.add(added)
       added.renderOverlay = true
+      added.onDisposeObservable.addOnce(() => {
+        manager.meshes.delete(added)
+        mesh.renderOverlay = false
+        manager.onSelectionObservable.notifyObservers(manager.meshes)
+      })
     }
   }
 }

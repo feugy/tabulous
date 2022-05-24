@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto'
 import merge from 'deepmerge'
 import { shuffle } from './collections.js'
 
@@ -320,4 +321,20 @@ function canStack(base, mesh) {
  */
 export function mergeProps(object, props) {
   return Object.assign(object, merge(object, props))
+}
+
+/**
+ * Decrements a quantifiable mesh, by creating another one (when relevant)
+ * @param {import('../services/games').Mesh} mesh - quantifiable mesh
+ * @returns {import('../services/games').Mesh} the created object, if relevant
+ */
+export function decrement(mesh) {
+  if (mesh?.quantifiable?.quantity > 1) {
+    const clone = merge(mesh, {
+      id: `${mesh.id}-${randomUUID()}`,
+      quantifiable: { quantity: 1 }
+    })
+    mesh.quantifiable.quantity--
+    return clone
+  }
 }

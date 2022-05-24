@@ -20,7 +20,6 @@
 - bug: animating visibility from 0 to 1 creates trouble with texture alpha channel
 - group candidate target per kind for performance
 - keep anchor ids
-- selection manager should remove disposed meshes
 - create Animation objects as part of runAnimation() (constant frameRate of 60)
 - custom message on jest expect (game-interaction)
 - jest matchers with mesh (toHaveBeenCalledWith, toHaveBeenNthCalledWith)
@@ -36,8 +35,6 @@
 ## UI
 
 - bug: attached, unselected, mesh are not ignored during dragging
-- bug: popping mesh often collide with other meshes
-- quatifiable (stackable) behavior
 - per-player default camera position
 - display peer's name when running draw animations + show peer avatar/name instead of pointer
 - allow selecting preferred camera/mic with https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/enumerateDevices
@@ -50,6 +47,7 @@
 - indicates when remote stream is muted/stopped
 - zoom in/out on rules
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
+- hand support for quantifiable behavior
 
 ## Server
 

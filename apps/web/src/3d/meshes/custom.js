@@ -67,9 +67,9 @@ export function createCustom(
       file,
       texture,
       id,
-      x: mesh.position.x,
-      y: mesh.position.y,
-      z: mesh.position.z,
+      x: mesh.absolutePosition.x,
+      y: mesh.absolutePosition.y,
+      z: mesh.absolutePosition.z,
       ...serializeBehaviors(mesh.behaviors)
     })
   }

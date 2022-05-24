@@ -11,6 +11,7 @@ import {
   expectPosition,
   expectStacked,
   expectStackIndicator,
+  expectZone,
   sleep
 } from '../../test-utils'
 import {
@@ -136,7 +137,7 @@ describe('StackBehavior', () => {
     })
 
     it('attaches metadata to its mesh', () => {
-      expectZone(behavior, 2, true)
+      expectZone(behavior, { extent: 2, enabled: true })
       expectStacked([mesh])
       expect(behavior.state.duration).toEqual(10)
       expect(behavior.state.extent).toEqual(2)
@@ -162,7 +163,7 @@ describe('StackBehavior', () => {
       expect(meshes[2].absolutePosition).toEqual(Vector3.FromArray([3, 3, 3]))
 
       behavior.fromState({ duration, extent, stackIds, kinds, priority })
-      expectZone(behavior, extent, false, kinds, priority)
+      expectZone(behavior, { extent, enabled: false, kinds, priority })
       expectStacked([mesh, meshes[0], meshes[2]])
       expect(behavior.state.duration).toEqual(duration)
       expect(behavior.state.extent).toEqual(extent)
@@ -192,7 +193,7 @@ describe('StackBehavior', () => {
       mesh.addBehavior(behavior, true)
 
       behavior.fromState({ duration, extent, stackIds, kinds, priority })
-      expectZone(behavior, extent, false, kinds, priority)
+      expectZone(behavior, { extent, enabled: false, kinds, priority })
       const { boundingBox } = behavior.zones[0].mesh.getBoundingInfo()
       expect(boundingBox.extendSize.x * 2).toBeCloseTo(diameter)
       expect(boundingBox.extendSize.z * 2).toBeCloseTo(diameter)
@@ -224,7 +225,7 @@ describe('StackBehavior', () => {
       meshes[2].addBehavior(new LockBehavior({ isLocked: true }), true)
 
       behavior.fromState({ duration, extent, stackIds, kinds, priority })
-      expectZone(behavior, extent, false, kinds, priority)
+      expectZone(behavior, { extent, enabled: false, kinds, priority })
       expectStacked([mesh, meshes[0], meshes[2]], false)
       expect(behavior.state.duration).toEqual(duration)
       expect(behavior.state.extent).toEqual(extent)
@@ -765,12 +766,3 @@ describe('StackBehavior', () => {
     })
   })
 })
-
-function expectZone(behavior, extent, enabled, kinds, priority = 0) {
-  expect(behavior.zones).toHaveLength(1)
-  expect(behavior.zones[0].extent).toEqual(extent)
-  expect(behavior.zones[0].enabled).toEqual(enabled)
-  expect(behavior.zones[0].kinds).toEqual(kinds)
-  expect(behavior.zones[0].priority).toEqual(priority)
-  expect(behavior.zones[0].mesh?.parent?.id).toEqual(behavior.mesh.id)
-}

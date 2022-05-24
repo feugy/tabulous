@@ -124,6 +124,17 @@ describe('SelectionManager', () => {
       selectionChanged.mockReset()
     })
 
+    it('automatically removes disposed meshes from selection', () => {
+      const [mesh1, mesh2, mesh3] = meshes
+      mesh1.dispose()
+      mesh2.dispose()
+      expect(manager.meshes.size).toBe(1)
+      expectSelected(mesh1, false)
+      expectSelected(mesh2, false)
+      expectSelected(mesh3, true)
+      expect(selectionChanged).toHaveBeenCalledTimes(2)
+    })
+
     describe('select()', () => {
       it('does not add the same mesh twice', () => {
         manager.select(meshes[0])

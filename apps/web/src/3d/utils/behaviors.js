@@ -9,6 +9,7 @@ import {
   FlipBehavior,
   LockBehavior,
   MoveBehavior,
+  QuantityBehavior,
   RotateBehavior,
   StackBehavior
 } from '../behaviors'
@@ -20,6 +21,7 @@ import {
   FlipBehaviorName,
   LockBehaviorName,
   MoveBehaviorName,
+  QuantityBehaviorName,
   RotateBehaviorName,
   StackBehaviorName,
   TargetBehaviorName
@@ -34,6 +36,7 @@ const behaviorNames = [
   [DrawBehaviorName, DrawBehavior],
   [AnchorBehaviorName, AnchorBehavior],
   [StackBehaviorName, StackBehavior],
+  [QuantityBehaviorName, QuantityBehavior],
   // always applies lockable at the end so it can alter other behaviors
   [LockBehaviorName, LockBehavior]
 ]
@@ -80,7 +83,7 @@ export function restoreBehaviors(behaviors, state) {
 export function serializeBehaviors(behaviors) {
   const result = {}
   for (const behavior of behaviors) {
-    result[behavior.name] = behavior.state
+    result[behavior.name] = behavior.state ? { ...behavior.state } : undefined
   }
   return result
 }
@@ -135,6 +138,7 @@ export function getTargetableBehavior(mesh) {
   return (
     mesh?.getBehaviorByName(StackBehaviorName) ??
     mesh?.getBehaviorByName(AnchorBehaviorName) ??
+    mesh?.getBehaviorByName(QuantityBehaviorName) ??
     mesh?.getBehaviorByName(TargetBehaviorName)
   )
 }

@@ -70,6 +70,13 @@ fragment mesh on Mesh {
   lockable {
     isLocked
   }
+  quantifiable {
+    quantity
+    duration
+    extent
+    kinds
+    priority
+  }
 }
 
 fragment fullGame on Game {

@@ -48,6 +48,7 @@ tooltips:
   clear-selection: Vider la sélection
   detail: Afficher en grand
   draw: Piocher dans votre main
+  decrement: Extraire de la pile
   flip-stack: Retourner la pile
   flip: Retourner
   game-menu: Menu des commandes
@@ -75,6 +76,7 @@ tooltips:
   help-two-pointers-drag: Tap avec deux doigts sur un objet
   help-two-pointers-object: Tap avec deux doigts sur un objet
   help-update-camera: Clic long sur un emplacement de caméra
+  increment: Tout empiler
   lock: Verrouiller
   move: Déplacer
   open-menu: Ouvrir le menu

@@ -66,9 +66,9 @@ export function createBox(
     serialize: () => ({
       shape: mesh.name,
       id,
-      x: mesh.position.x,
-      y: mesh.position.y,
-      z: mesh.position.z,
+      x: mesh.absolutePosition.x,
+      y: mesh.absolutePosition.y,
+      z: mesh.absolutePosition.z,
       texture,
       faceUV,
       width,

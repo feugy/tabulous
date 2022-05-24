@@ -308,7 +308,7 @@ describe('loadMeshes() 3D utility', () => {
     x: 30,
     y: 5,
     z: -25,
-    detailable: { frontImage: 'foo.png', backImage: 'bar.webp' },
+    quantifiable: { quantity: 1, duration: 100, extent: 2 },
     movable: { snapDistance: 0.1, duration: 100 }
   }
 
