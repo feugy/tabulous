@@ -85,6 +85,7 @@ export class StackBehavior extends TargetBehavior {
    * - a `pop()` function to programmatically pop the highest mesh from stack.
    * - a `reorder()` function to re-order the stack with animation.
    * - a `flipAll()` function to flip an entire stack with animation, inverting the stack order.
+   * - a `canPush()` function to determin whether a mesh could be pushed on this stack.
    * It binds to its drop observable to push dropped meshes to the stack.
    * It binds to the drag manager drag observable to pop the first stacked mesh when dragging it.
    * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
@@ -174,6 +175,7 @@ export class StackBehavior extends TargetBehavior {
    * Pushes a mesh (or a stack of meshes) onto this stack:
    * - records the action into the control manager (if not inhibited)
    * - disables targets and moves of all meshes but the highest one
+   * - updates stack indicators
    * - runs a move animation with gravity until completion
    * - updates the base stack array
    * Does nothing if the mesh is already on stack (or unknown).
@@ -228,11 +230,12 @@ export class StackBehavior extends TargetBehavior {
    * Pops the highest mesh(es) from this stack:
    * - updates the stack array
    * - enables new highest mesh's targets and moves
+   * - updates stack indicators
    * - records the action into the control manager
    *
    * @async
    * @param {number} [count=1] - number of mesh poped
-   * @param {number} [withMove=false] - when set to true, moves the poped meshes aside the stack.
+   * @param {boolean} [withMove=false] - when set to true, moves the poped meshes aside the stack.
    * @return {import('@babylonjs/core').Mesh[]} the poped meshes, if any.
    */
   async pop(count = 1, withMove = false) {

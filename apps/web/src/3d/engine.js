@@ -107,7 +107,6 @@ export function createEngine({
    */
   engine.load = async (gameData, playerId, initial) => {
     const game = removeNulls(gameData)
-    console.log(game)
     cameraManager.adjustZoomLevels(game.zoomSpec)
     const handsEnabled = hasHandsEnabled(game)
     if (initial) {
