@@ -1,3 +1,4 @@
+import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateGround } from '@babylonjs/core/Meshes/Builders/groundBuilder'
 import { materialManager } from '../managers/material'
 
@@ -16,7 +17,7 @@ export function createTable(
   scene
 ) {
   const table = CreateGround('table', { width: width, height: height }, scene)
-  table.position.y = -0.01
+  table.setAbsolutePosition(new Vector3(0, -0.01, 0))
   table.receiveShadows = true
   table.isPickable = false
   table.material = materialManager.buildOnDemand(texture, scene)

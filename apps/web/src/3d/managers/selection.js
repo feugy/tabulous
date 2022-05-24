@@ -101,7 +101,6 @@ class SelectionManager {
       box.setPivotPoint(position, Space.WORLD)
       box.rotate(Axis.X, Math.PI / -2)
       box.position.y = -5
-      box.computeWorldMatrix()
       box.visibility = 0
       box.isPickable = false
 

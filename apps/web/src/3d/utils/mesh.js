@@ -5,8 +5,10 @@
  * @returns {boolean} true if container contains mesh, false otherwise.
  */
 export function isContaining(container, mesh) {
+  container.computeWorldMatrix(true)
   const { maximumWorld: containerMax, minimumWorld: containerMin } =
     container.getBoundingInfo().boundingBox
+  mesh.computeWorldMatrix(true)
   const { maximumWorld: meshMax, minimumWorld: meshMin } =
     mesh.getBoundingInfo().boundingBox
   return (
@@ -32,6 +34,7 @@ export function isContaining(container, mesh) {
  * @returns {Dimensions} mesh's dimensions.
  */
 export function getDimensions(mesh) {
+  mesh.computeWorldMatrix(true)
   const { x, y, z } = mesh.getBoundingInfo().boundingBox.extendSizeWorld
   return { width: x * 2, height: y * 2, depth: z * 2 }
 }

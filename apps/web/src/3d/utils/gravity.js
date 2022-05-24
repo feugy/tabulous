@@ -44,7 +44,6 @@ export function applyGravity(mesh) {
     { y: mesh.absolutePosition.y, mesh },
     `gravity for ${mesh.id} y: ${mesh.absolutePosition.y}`
   )
-  mesh.computeWorldMatrix(true)
   const below = findBelow(
     mesh,
     mesh.getScene().meshes.filter(other => other.isPickable && other !== mesh)
@@ -61,7 +60,6 @@ export function applyGravity(mesh) {
   logger.info({ y, mesh }, `${mesh.id} assigned to y: ${y}`)
   const { x, z } = mesh.absolutePosition
   mesh.setAbsolutePosition(new Vector3(x, y, z))
-  mesh.computeWorldMatrix(true)
   return mesh.absolutePosition
 }
 
@@ -93,10 +91,11 @@ export function sortByElevation(meshes, highestFirst = false) {
 
 function findBelow(mesh, candidates) {
   const results = []
+  mesh.computeWorldMatrix(true)
   const { boundingBox } = mesh.getBoundingInfo()
   const geometry = buildGeometry(mesh, boundingBox)
-
   for (const other of candidates) {
+    other.computeWorldMatrix(true)
     const { boundingBox: otherBox } = other.getBoundingInfo()
     if (isGloballyBelow(boundingBox, otherBox)) {
       if (intersectGeometries(geometry, buildGeometry(other, otherBox))) {

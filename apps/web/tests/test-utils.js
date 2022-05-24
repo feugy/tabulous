@@ -109,6 +109,7 @@ export function cleanDebugFile() {
 }
 
 export function expectPosition(mesh, [x, y, z]) {
+  mesh.computeWorldMatrix(true)
   expectCloseVector(mesh.absolutePosition, [x, y, z])
 }
 
@@ -139,6 +140,7 @@ export function expectSnapped(mesh, snapped, anchorRank = 0) {
   expect(mesh.metadata.anchors[anchorRank].snappedId).toEqual(snapped.id)
   expectZoneEnabled(mesh, anchorRank, false)
   expect(behavior.snappedZone(snapped.id)?.mesh.id).toEqual(zone.mesh.id)
+  zone.mesh.computeWorldMatrix(true)
   expectPosition(snapped, [
     zone.mesh.absolutePosition.x,
     getCenterAltitudeAbove(mesh, snapped),

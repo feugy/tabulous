@@ -106,7 +106,6 @@ describe('TargetManager', () => {
       it('returns targets below mesh', () => {
         const mesh = CreateBox('box', {})
         mesh.setAbsolutePosition(aboveZone1)
-        mesh.computeWorldMatrix()
 
         expectActiveZone(manager.findDropZone(mesh), zone1)
       })
@@ -114,7 +113,6 @@ describe('TargetManager', () => {
       it('ignores an overlaping target when mesh is too far from center', () => {
         const mesh = CreateBox('box', {})
         mesh.setAbsolutePosition(aboveZone1.add(new Vector3(1, 0, 0)))
-        mesh.computeWorldMatrix()
 
         expect(manager.findDropZone(mesh)).not.toBeDefined()
       })
@@ -123,7 +121,6 @@ describe('TargetManager', () => {
         zone1.kinds = ['card']
         const mesh = CreateBox('box', {})
         mesh.setAbsolutePosition(aboveZone1)
-        mesh.computeWorldMatrix()
 
         expect(manager.findDropZone(mesh)).not.toBeDefined()
       })
@@ -132,7 +129,6 @@ describe('TargetManager', () => {
         zone1.enabled = false
         const mesh = CreateBox('box', {})
         mesh.setAbsolutePosition(aboveZone1)
-        mesh.computeWorldMatrix()
 
         expect(manager.findDropZone(mesh)).not.toBeDefined()
       })
@@ -141,7 +137,6 @@ describe('TargetManager', () => {
         selectionManager.select(zone1.targetable.mesh)
         const mesh = CreateBox('box', {})
         mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
-        mesh.computeWorldMatrix()
 
         expect(manager.findDropZone(mesh)).not.toBeDefined()
       })
@@ -153,7 +148,6 @@ describe('TargetManager', () => {
         })
         const mesh = CreateBox('box', {}, handScene)
         mesh.setAbsolutePosition(aboveZone3)
-        mesh.computeWorldMatrix()
 
         expect(manager.findDropZone(mesh)).not.toBeDefined()
       })
@@ -166,7 +160,6 @@ describe('TargetManager', () => {
         })
         const mesh = CreateBox('box', {}, scene)
         mesh.setAbsolutePosition(aboveZone3)
-        mesh.computeWorldMatrix()
 
         expect(manager.findDropZone(mesh)).not.toBeDefined()
       })
@@ -179,7 +172,6 @@ describe('TargetManager', () => {
         })
         const mesh = CreateBox('box', {})
         mesh.setAbsolutePosition(aboveZone3)
-        mesh.computeWorldMatrix()
 
         expectActiveZone(manager.findDropZone(mesh, 'box'), zone3)
       })
@@ -187,7 +179,6 @@ describe('TargetManager', () => {
       it('returns kind-less targets below mesh with kind', () => {
         const mesh = CreateBox('box', {})
         mesh.setAbsolutePosition(aboveZone1)
-        mesh.computeWorldMatrix()
 
         expectActiveZone(manager.findDropZone(mesh, 'box'), zone1)
       })
@@ -196,7 +187,6 @@ describe('TargetManager', () => {
         zone1.kinds = ['card', 'box']
         const mesh = CreateBox('box', {})
         mesh.setAbsolutePosition(aboveZone2)
-        mesh.computeWorldMatrix()
 
         expectActiveZone(manager.findDropZone(mesh, 'box'), zone2)
       })
@@ -213,7 +203,6 @@ describe('TargetManager', () => {
 
         const mesh = CreateBox('box', {})
         mesh.setAbsolutePosition(new Vector3(0, 5, 0))
-        mesh.computeWorldMatrix()
 
         expectActiveZone(manager.findDropZone(mesh, 'box'), zone4)
       })
@@ -231,7 +220,6 @@ describe('TargetManager', () => {
 
         const mesh = CreateBox('box', {})
         mesh.setAbsolutePosition(new Vector3(0, 5, 0))
-        mesh.computeWorldMatrix()
 
         expectActiveZone(manager.findDropZone(mesh, 'box'), zone4)
       })
@@ -240,7 +228,6 @@ describe('TargetManager', () => {
         beforeEach(() => {
           const mesh = CreateBox('box', {})
           mesh.setAbsolutePosition(aboveZone1)
-          mesh.computeWorldMatrix()
           manager.findDropZone(mesh, 'box')
         })
 
@@ -273,7 +260,6 @@ describe('TargetManager', () => {
           meshes = meshes.map(id => {
             const mesh = CreateBox(id, {})
             mesh.setAbsolutePosition(aboveZone1)
-            mesh.computeWorldMatrix()
             manager.findDropZone(mesh, 'box')
             return mesh
           })
@@ -312,7 +298,6 @@ describe('TargetManager', () => {
         zone1.kinds = ['card']
         const mesh = CreateBox('box', {})
         mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
-        mesh.computeWorldMatrix()
 
         expect(manager.findPlayerZone(mesh)).not.toBeDefined()
       })
@@ -321,7 +306,6 @@ describe('TargetManager', () => {
         zone1.enabled = false
         const mesh = CreateBox('box', {})
         mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
-        mesh.computeWorldMatrix()
 
         expect(manager.findPlayerZone(mesh)).not.toBeDefined()
       })
@@ -330,7 +314,6 @@ describe('TargetManager', () => {
         selectionManager.select(zone1.targetable.mesh)
         const mesh = CreateBox('box', {})
         mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
-        mesh.computeWorldMatrix()
 
         expect(manager.findPlayerZone(mesh)).not.toBeDefined()
       })
@@ -473,7 +456,6 @@ describe('TargetManager', () => {
 
     const target = CreateBox(id, {}, usedScene ?? scene)
     target.setAbsolutePosition(position)
-    target.computeWorldMatrix()
     return behavior.addZone(target, { extent: 0.5, ...properties })
   }
 

@@ -87,7 +87,7 @@ describe('InputManager', () => {
       ].map(({ id, position, scene }) => {
         const mesh = CreateBox(id, {}, scene)
         mesh.setAbsolutePosition(position)
-        mesh.computeWorldMatrix()
+        mesh.computeWorldMatrix(true)
         return mesh
       })
     })
@@ -1315,7 +1315,6 @@ describe('InputManager', () => {
     it('picks highest meshes on Y-order', () => {
       const mesh = CreateBox('box6', {})
       mesh.setAbsolutePosition(new Vector3(10, 1, 0))
-      mesh.computeWorldMatrix()
       const pointer = { x: 1266, y: 512 }
       const pointerId = 10
       const button = 1

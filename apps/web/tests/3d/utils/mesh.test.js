@@ -39,7 +39,6 @@ describe('getDimensions() 3D utility', () => {
     const box = CreateBox('box', { width, height, depth })
     box.rotation.x = Math.PI / 4
     box.setAbsolutePosition(new Vector3(2, 4, 6))
-    box.computeWorldMatrix()
     expect(getDimensions(box).width).toEqual(width)
     expect(getDimensions(box).height).toBeGreaterThan(height)
     expect(getDimensions(box).depth).toBeGreaterThan(depth)
@@ -57,9 +56,7 @@ describe('isContaining() 3D utility', () => {
 
   beforeEach(() => {
     bigBox.setAbsolutePosition(Vector3.Zero())
-    bigBox.computeWorldMatrix()
     smallBox.setAbsolutePosition(Vector3.Zero())
-    smallBox.computeWorldMatrix()
   })
 
   it('returns true when testing whether the big box is containing the small one', () => {
@@ -72,13 +69,11 @@ describe('isContaining() 3D utility', () => {
 
   it('returns false when testing boxes that do not interesects', () => {
     smallBox.setAbsolutePosition(new Vector3(0, 20, 0))
-    smallBox.computeWorldMatrix()
     expect(isContaining(bigBox, smallBox)).toBe(false)
   })
 
   it('returns false when testing boxes that interesects', () => {
     smallBox.setAbsolutePosition(new Vector3(0, 4, 0))
-    smallBox.computeWorldMatrix()
     expect(isContaining(bigBox, smallBox)).toBe(false)
   })
 })

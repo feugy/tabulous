@@ -119,7 +119,6 @@ describe('AnchorBehavior', () => {
         box.addBehavior(new AnimateBehavior(), true)
         box.addBehavior(new DrawBehavior(), true)
         box.setAbsolutePosition(new Vector3(rank + 10, rank + 10, rank + 10))
-        box.computeWorldMatrix()
         controlManager.registerControlable(box)
         return box
       })

@@ -205,7 +205,6 @@ describe('SelectionManager', () => {
       ].map(({ id, position, scene }) => {
         const mesh = CreateBox(id, {}, scene)
         mesh.setAbsolutePosition(position)
-        mesh.computeWorldMatrix()
         return mesh
       })
     })
