@@ -8,6 +8,7 @@ export class ExtendedScene extends Scene {
   constructor(...args) {
     super(...args)
     this.meshById = new Map()
+    this.detachControl()
   }
 
   /** @see https://doc.babylonjs.com/typedoc/classes/babylon.scene#addmesh */

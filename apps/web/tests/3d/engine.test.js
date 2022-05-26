@@ -1,11 +1,10 @@
 import { NullEngine } from '@babylonjs/core/Engines/nullEngine'
-import { Scene } from '@babylonjs/core/scene'
 import { faker } from '@faker-js/faker'
 import { createEngine } from '../../src/3d'
 import { createCard } from '../../src/3d/meshes'
 import { DrawBehaviorName } from '../../src/3d/behaviors'
 import { expectAnimationEnd } from '../test-utils'
-import { handManager } from '../../src/3d/managers'
+import { handManager, inputManager } from '../../src/3d/managers'
 
 describe('createEngine()', () => {
   let engine
@@ -13,6 +12,7 @@ describe('createEngine()', () => {
   const canvas = document.createElement('canvas')
   const interaction = document.createElement('div')
   const hand = document.createElement('div')
+  const inputInit = jest.spyOn(inputManager, 'init')
 
   beforeEach(() => {
     jest.spyOn(console, 'log').mockImplementationOnce(() => ({}))
@@ -34,9 +34,16 @@ describe('createEngine()', () => {
       longTapDelay
     })
     expect(engine.enableOfflineSupport).toBe(false)
-    expect(engine.inputElement).toEqual(interaction)
-    expect(Scene.DoubleClickDelay).toEqual(doubleTapDelay)
+    expect(engine.inputElement).toBeUndefined()
     expect(handManager.enabled).toBe(false)
+    expect(inputInit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        doubleTapDelay,
+        longTapDelay,
+        interaction
+      })
+    )
+    expect(inputInit).toHaveBeenCalledTimes(1)
   })
   // TODO input manager stopAll()
 

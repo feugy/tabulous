@@ -4,9 +4,11 @@ import { Scene } from '@babylonjs/core/scene'
 import { faker } from '@faker-js/faker'
 import { configures3dTestEngine, sleep } from '../../test-utils'
 import { inputManager as manager } from '../../../src/3d/managers'
-import { PointerEventTypes } from '@babylonjs/core'
 
-const { POINTERDOWN, POINTERUP, POINTERMOVE, POINTERWHEEL } = PointerEventTypes
+const pointerDown = 'pointerdown'
+const pointerUp = 'pointerup'
+const pointerMove = 'pointermove'
+const wheel = 'wheel'
 
 describe('InputManager', () => {
   let scene
@@ -17,6 +19,7 @@ describe('InputManager', () => {
   let hovers
   let wheels
   let longs
+  const interaction = document.createElement('div')
 
   configures3dTestEngine(created => {
     scene = created.scene
@@ -53,14 +56,20 @@ describe('InputManager', () => {
   describe('init()', () => {
     it('assigns default properties', () => {
       const longTapDelay = faker.datatype.number()
-      manager.init({ scene, handScene, longTapDelay })
+      manager.init({ scene, handScene, longTapDelay, interaction })
       expect(manager.enabled).toBe(false)
       expect(manager.longTapDelay).toBe(longTapDelay)
     })
 
     it('assigns custom properties', () => {
       const longTapDelay = 100
-      manager.init({ scene, handScene, enabled: true, longTapDelay })
+      manager.init({
+        scene,
+        handScene,
+        enabled: true,
+        longTapDelay,
+        interaction
+      })
       expect(manager.enabled).toBe(true)
       expect(manager.longTapDelay).toBe(longTapDelay)
     })
@@ -68,7 +77,13 @@ describe('InputManager', () => {
 
   describe('given an initialized manager', () => {
     let meshes = beforeEach(() => {
-      manager.init({ scene, handScene, enabled: true, longTapDelay: 100 })
+      manager.init({
+        scene,
+        handScene,
+        enabled: true,
+        longTapDelay: 100,
+        interaction
+      })
       meshes = [
         // x: 1048, y: 525
         { id: 'box1', position: new Vector3(1, 1, -1), scene },
@@ -96,8 +111,8 @@ describe('InputManager', () => {
       const button = 1
       const pointer = { x: 1048, y: 525 }
       const pointerId = 70
-      triggerEvent(POINTERDOWN, { ...pointer, pointerId, button })
-      const event = triggerEvent(POINTERUP, { ...pointer, pointerId, button })
+      triggerEvent(pointerDown, { ...pointer, pointerId, button })
+      const event = triggerEvent(pointerUp, { ...pointer, pointerId, button })
       expectEvents({ taps: 1 })
       expectsDataWithMesh(
         taps[0],
@@ -113,8 +128,8 @@ describe('InputManager', () => {
       for (const mesh of meshes) {
         mesh.isPickable = false
       }
-      triggerEvent(POINTERDOWN, { ...pointer, pointerId, button })
-      const event = triggerEvent(POINTERUP, { ...pointer, pointerId, button })
+      triggerEvent(pointerDown, { ...pointer, pointerId, button })
+      const event = triggerEvent(pointerUp, { ...pointer, pointerId, button })
       expectEvents({ taps: 1 })
       expectsDataWithMesh(taps[0], {
         long: false,
@@ -137,8 +152,8 @@ describe('InputManager', () => {
     ])('identifies tap$title', ({ pointer, meshId, fromHand = false }) => {
       const pointerId = 10
       const button = 1
-      triggerEvent(POINTERDOWN, { ...pointer, pointerId, button })
-      const event = triggerEvent(POINTERUP, { ...pointer, pointerId, button })
+      triggerEvent(pointerDown, { ...pointer, pointerId, button })
+      const event = triggerEvent(pointerUp, { ...pointer, pointerId, button })
       expectEvents({ taps: 1 })
       expectsDataWithMesh(
         taps[0],
@@ -153,9 +168,9 @@ describe('InputManager', () => {
     ])('identifies tap$title despite small movement', ({ pointer, meshId }) => {
       const pointerId = 15
       const button = 2
-      triggerEvent(POINTERDOWN, { ...pointer, pointerId, button })
-      triggerEvent(POINTERMOVE, { ...move(pointer, 0, 0), pointerId })
-      const event = triggerEvent(POINTERUP, { ...pointer, pointerId, button })
+      triggerEvent(pointerDown, { ...pointer, pointerId, button })
+      triggerEvent(pointerMove, { ...move(pointer, 0, 0), pointerId })
+      const event = triggerEvent(pointerUp, { ...pointer, pointerId, button })
       expectEvents({ taps: 1 })
       expectsDataWithMesh(
         taps[0],
@@ -177,14 +192,14 @@ describe('InputManager', () => {
       async ({ pointerA, pointerB, meshId }) => {
         const idA = 17
         const idB = 18
-        triggerEvent(POINTERDOWN, { ...pointerA, pointerId: idA }, 'tap')
+        triggerEvent(pointerDown, { ...pointerA, pointerId: idA }, 'tap')
         await sleep(10)
-        triggerEvent(POINTERDOWN, { ...pointerB, pointerId: idB }, 'tap')
+        triggerEvent(pointerDown, { ...pointerB, pointerId: idB }, 'tap')
         await sleep(10)
-        triggerEvent(POINTERUP, { ...pointerA, pointerId: idA }, 'tap')
+        triggerEvent(pointerUp, { ...pointerA, pointerId: idA }, 'tap')
         await sleep(10)
         const event = triggerEvent(
-          POINTERUP,
+          pointerUp,
           { ...pointerB, pointerId: idB },
           'tap'
         )
@@ -204,13 +219,13 @@ describe('InputManager', () => {
     ])('identifies long tap$title', async ({ pointer, meshId }) => {
       const pointerId = 20
       const button = 3
-      const downEvent = triggerEvent(POINTERDOWN, {
+      const downEvent = triggerEvent(pointerDown, {
         ...pointer,
         pointerId,
         button
       })
       await sleep(manager.longTapDelay * 1.1)
-      const upEvent = triggerEvent(POINTERUP, { ...pointer, pointerId, button })
+      const upEvent = triggerEvent(pointerUp, { ...pointer, pointerId, button })
       expectEvents({ taps: 1, longs: 1 })
       expectsDataWithMesh(
         taps[0],
@@ -232,15 +247,15 @@ describe('InputManager', () => {
       async ({ pointer, meshId }) => {
         const pointerId = 20
         const button = 3
-        const downEvent = triggerEvent(POINTERDOWN, {
+        const downEvent = triggerEvent(pointerDown, {
           ...pointer,
           pointerId,
           button
         })
-        triggerEvent(POINTERMOVE, { ...move(pointer, 0, 0), pointerId })
+        triggerEvent(pointerMove, { ...move(pointer, 0, 0), pointerId })
         await sleep(manager.longTapDelay * 1.1)
-        triggerEvent(POINTERMOVE, { ...move(pointer, 0, 0), pointerId })
-        const upEvent = triggerEvent(POINTERUP, {
+        triggerEvent(pointerMove, { ...move(pointer, 0, 0), pointerId })
+        const upEvent = triggerEvent(pointerUp, {
           ...pointer,
           pointerId,
           button
@@ -277,7 +292,7 @@ describe('InputManager', () => {
         const idA = 21
         const idB = 22
         const downEventA = triggerEvent(
-          POINTERDOWN,
+          pointerDown,
           {
             ...pointerA,
             pointerId: idA
@@ -286,7 +301,7 @@ describe('InputManager', () => {
         )
         await sleep(10)
         const downEventB = triggerEvent(
-          POINTERDOWN,
+          pointerDown,
           {
             ...pointerB,
             pointerId: idB
@@ -294,10 +309,10 @@ describe('InputManager', () => {
           'tap'
         )
         await sleep(manager.longTapDelay * 1.1)
-        triggerEvent(POINTERUP, { ...pointerA, pointerId: idA }, 'tap')
+        triggerEvent(pointerUp, { ...pointerA, pointerId: idA }, 'tap')
         await sleep(10)
         const upEvent = triggerEvent(
-          POINTERUP,
+          pointerUp,
           { ...pointerB, pointerId: idB },
           'tap'
         )
@@ -327,19 +342,19 @@ describe('InputManager', () => {
     ])('identifies double tap$title', async ({ pointer, meshId }) => {
       const pointerId = 13
       const button = 2
-      triggerEvent(POINTERDOWN, { ...pointer, pointerId, button })
-      const tapEvent = triggerEvent(POINTERUP, {
+      triggerEvent(pointerDown, { ...pointer, pointerId, button })
+      const tapEvent = triggerEvent(pointerUp, {
         ...pointer,
         pointerId,
         button
       })
       await sleep(Scene.DoubleClickDelay * 0.8)
-      triggerEvent(POINTERDOWN, {
+      triggerEvent(pointerDown, {
         ...move(pointer, -2, -3),
         pointerId,
         button
       })
-      const doubleTapEvent = triggerEvent(POINTERUP, {
+      const doubleTapEvent = triggerEvent(pointerUp, {
         ...move(pointer, -2, -3),
         pointerId,
         button
@@ -371,21 +386,21 @@ describe('InputManager', () => {
       async ({ pointer, meshId }) => {
         const pointerId = 12
         const button = 1
-        const downEvent = triggerEvent(POINTERDOWN, {
+        const downEvent = triggerEvent(pointerDown, {
           ...pointer,
           pointerId,
           button
         })
         await sleep(manager.longTapDelay * 1.1)
-        const tapEvent = triggerEvent(POINTERUP, {
+        const tapEvent = triggerEvent(pointerUp, {
           ...pointer,
           pointerId,
           button
         })
         await sleep(Scene.DoubleClickDelay * 0.8)
-        triggerEvent(POINTERDOWN, { ...move(pointer, 2, 5), pointerId, button })
+        triggerEvent(pointerDown, { ...move(pointer, 2, 5), pointerId, button })
         await sleep(10)
-        const doubleTapEvent = triggerEvent(POINTERUP, {
+        const doubleTapEvent = triggerEvent(pointerUp, {
           ...pointer,
           pointerId,
           button
@@ -428,12 +443,12 @@ describe('InputManager', () => {
       async ({ pointerA, pointerB, meshId }) => {
         const idA = 11
         const idB = 16
-        triggerEvent(POINTERDOWN, { ...pointerA, pointerId: idA }, 'tap')
+        triggerEvent(pointerDown, { ...pointerA, pointerId: idA }, 'tap')
         await sleep(10)
-        triggerEvent(POINTERDOWN, { ...pointerB, pointerId: idB }, 'tap')
+        triggerEvent(pointerDown, { ...pointerB, pointerId: idB }, 'tap')
         await sleep(20)
         triggerEvent(
-          POINTERUP,
+          pointerUp,
           {
             ...pointerA,
             pointerId: idA
@@ -442,7 +457,7 @@ describe('InputManager', () => {
         )
         await sleep(10)
         const tapEvent = triggerEvent(
-          POINTERUP,
+          pointerUp,
           {
             ...pointerB,
             pointerId: idB
@@ -451,7 +466,7 @@ describe('InputManager', () => {
         )
         await sleep(Scene.DoubleClickDelay * 0.8)
         triggerEvent(
-          POINTERDOWN,
+          pointerDown,
           {
             ...move(pointerA, -2, -3),
             pointerId: idA
@@ -460,7 +475,7 @@ describe('InputManager', () => {
         )
         await sleep(10)
         triggerEvent(
-          POINTERDOWN,
+          pointerDown,
           {
             ...move(pointerB, 5, 2),
             pointerId: idB
@@ -469,7 +484,7 @@ describe('InputManager', () => {
         )
         await sleep(20)
         triggerEvent(
-          POINTERUP,
+          pointerUp,
           {
             ...move(pointerA, -2, -3),
             pointerId: idA
@@ -478,7 +493,7 @@ describe('InputManager', () => {
         )
         await sleep(10)
         const doubleTapEvent = triggerEvent(
-          POINTERUP,
+          pointerUp,
           {
             ...move(pointerB, 5, 2),
             pointerId: idB
@@ -508,21 +523,21 @@ describe('InputManager', () => {
       const pointerId = 25
       const button = 1
       const events = []
-      events.push(triggerEvent(POINTERDOWN, { ...pointer, pointerId, button }))
+      events.push(triggerEvent(pointerDown, { ...pointer, pointerId, button }))
       await sleep(50)
       events.push(
-        triggerEvent(POINTERMOVE, { ...move(pointer, 50, -25), pointerId })
+        triggerEvent(pointerMove, { ...move(pointer, 50, -25), pointerId })
       )
       await sleep(50)
       events.push(
-        triggerEvent(POINTERMOVE, { ...move(pointer, 50, -25), pointerId })
+        triggerEvent(pointerMove, { ...move(pointer, 50, -25), pointerId })
       )
       await sleep(50)
       events.push(
-        triggerEvent(POINTERMOVE, { ...move(pointer, 50, -25), pointerId })
+        triggerEvent(pointerMove, { ...move(pointer, 50, -25), pointerId })
       )
       await sleep(50)
-      events.push(triggerEvent(POINTERUP, { ...pointer, pointerId, button }))
+      events.push(triggerEvent(pointerUp, { ...pointer, pointerId, button }))
 
       expectEvents({ drags: 5 })
       const pointers = 1
@@ -560,21 +575,21 @@ describe('InputManager', () => {
       const pointerId = 30
       const button = 1
       const events = []
-      events.push(triggerEvent(POINTERDOWN, { ...pointer, pointerId, button }))
+      events.push(triggerEvent(pointerDown, { ...pointer, pointerId, button }))
       await sleep(manager.longTapDelay * 1.1)
       events.push(
-        triggerEvent(POINTERMOVE, { ...move(pointer, 100, 0), pointerId })
+        triggerEvent(pointerMove, { ...move(pointer, 100, 0), pointerId })
       )
       await sleep(50)
       events.push(
-        triggerEvent(POINTERMOVE, { ...move(pointer, 50, 0), pointerId })
+        triggerEvent(pointerMove, { ...move(pointer, 50, 0), pointerId })
       )
       await sleep(50)
       events.push(
-        triggerEvent(POINTERMOVE, { ...move(pointer, 25, 10), pointerId })
+        triggerEvent(pointerMove, { ...move(pointer, 25, 10), pointerId })
       )
       await sleep(50)
-      events.push(triggerEvent(POINTERUP, { ...pointer, pointerId, button }))
+      events.push(triggerEvent(pointerUp, { ...pointer, pointerId, button }))
 
       expectEvents({ drags: 5, longs: 1 })
       const pointers = 1
@@ -625,22 +640,22 @@ describe('InputManager', () => {
         const idB = 36
         const events = []
         events.push(
-          triggerEvent(POINTERDOWN, { ...pointerA, pointerId: idA }, 'tap')
+          triggerEvent(pointerDown, { ...pointerA, pointerId: idA }, 'tap')
         )
         events.push(
-          triggerEvent(POINTERDOWN, { ...pointerB, pointerId: idB }, 'tap')
+          triggerEvent(pointerDown, { ...pointerB, pointerId: idB }, 'tap')
         )
         await sleep(10)
         events.push(
           triggerEvent(
-            POINTERMOVE,
+            pointerMove,
             { ...move(pointerA, 1, 0), pointerId: idA },
             'tap'
           )
         )
         events.push(
           triggerEvent(
-            POINTERMOVE,
+            pointerMove,
             { ...move(pointerB, 0, 1), pointerId: idB },
             'tap'
           )
@@ -648,14 +663,14 @@ describe('InputManager', () => {
         await sleep(10)
         events.push(
           triggerEvent(
-            POINTERMOVE,
+            pointerMove,
             { ...move(pointerA, 2, 0), pointerId: idA },
             'tap'
           )
         )
         events.push(
           triggerEvent(
-            POINTERMOVE,
+            pointerMove,
             { ...move(pointerB, 0, 2), pointerId: idB },
             'tap'
           )
@@ -663,14 +678,14 @@ describe('InputManager', () => {
         await sleep(10)
         events.push(
           triggerEvent(
-            POINTERMOVE,
+            pointerMove,
             { ...move(pointerA, 3, 0), pointerId: idA },
             'tap'
           )
         )
         events.push(
           triggerEvent(
-            POINTERMOVE,
+            pointerMove,
             { ...move(pointerB, 0, 3), pointerId: idB },
             'tap'
           )
@@ -678,17 +693,17 @@ describe('InputManager', () => {
         await sleep(10)
         events.push(
           triggerEvent(
-            POINTERMOVE,
+            pointerMove,
             { ...move(pointerA, 4, 0), pointerId: idA },
             'tap'
           )
         )
         events.push(
-          triggerEvent(POINTERUP, { ...pointerB, pointerId: idB }, 'tap')
+          triggerEvent(pointerUp, { ...pointerB, pointerId: idB }, 'tap')
         )
         await sleep(10)
         events.push(
-          triggerEvent(POINTERUP, { ...pointerA, pointerId: idA }, 'tap')
+          triggerEvent(pointerUp, { ...pointerA, pointerId: idA }, 'tap')
         )
 
         expectEvents({ drags: 4 })
@@ -741,16 +756,16 @@ describe('InputManager', () => {
         const idB = 33
         const events = []
         events.push(
-          triggerEvent(POINTERDOWN, { ...pointerA, pointerId: idA }, 'tap')
+          triggerEvent(pointerDown, { ...pointerA, pointerId: idA }, 'tap')
         )
         await sleep(10)
         events.push(
-          triggerEvent(POINTERDOWN, { ...pointerB, pointerId: idB }, 'tap')
+          triggerEvent(pointerDown, { ...pointerB, pointerId: idB }, 'tap')
         )
         await sleep(50)
         events.push(
           triggerEvent(
-            POINTERMOVE,
+            pointerMove,
             { ...move(pointerA, 50, 0), pointerId: idA },
             'tap'
           )
@@ -758,7 +773,7 @@ describe('InputManager', () => {
         await sleep(10)
         events.push(
           triggerEvent(
-            POINTERMOVE,
+            pointerMove,
             { ...move(pointerB, -50, 50), pointerId: idB },
             'tap'
           )
@@ -766,7 +781,7 @@ describe('InputManager', () => {
         await sleep(50)
         events.push(
           triggerEvent(
-            POINTERMOVE,
+            pointerMove,
             { ...move(pointerA, 30, -5), pointerId: idA },
             'tap'
           )
@@ -774,7 +789,7 @@ describe('InputManager', () => {
         await sleep(10)
         events.push(
           triggerEvent(
-            POINTERMOVE,
+            pointerMove,
             { ...move(pointerB, -30, 5), pointerId: idB },
             'tap'
           )
@@ -782,7 +797,7 @@ describe('InputManager', () => {
         await sleep(50)
         events.push(
           triggerEvent(
-            POINTERMOVE,
+            pointerMove,
             { ...move(pointerA, 15, 10), pointerId: idA },
             'tap'
           )
@@ -790,18 +805,18 @@ describe('InputManager', () => {
         await sleep(10)
         events.push(
           triggerEvent(
-            POINTERMOVE,
+            pointerMove,
             { ...move(pointerB, -15, -10), pointerId: idB },
             'tap'
           )
         )
         await sleep(50)
         events.push(
-          triggerEvent(POINTERUP, { ...pointerA, pointerId: idA }, 'tap')
+          triggerEvent(pointerUp, { ...pointerA, pointerId: idA }, 'tap')
         )
         await sleep(10)
         events.push(
-          triggerEvent(POINTERUP, { ...pointerB, pointerId: idB }, 'tap')
+          triggerEvent(pointerUp, { ...pointerB, pointerId: idB }, 'tap')
         )
 
         expectEvents({ pinches: 8 })
@@ -882,16 +897,16 @@ describe('InputManager', () => {
         const idB = 33
         const events = []
         events.push(
-          triggerEvent(POINTERDOWN, { ...pointerA, pointerId: idA }, 'tap')
+          triggerEvent(pointerDown, { ...pointerA, pointerId: idA }, 'tap')
         )
         await sleep(50)
         events.push(
-          triggerEvent(POINTERDOWN, { ...pointerB, pointerId: idB }, 'tap')
+          triggerEvent(pointerDown, { ...pointerB, pointerId: idB }, 'tap')
         )
         await sleep(manager.longTapDelay * 1.1)
         events.push(
           triggerEvent(
-            POINTERMOVE,
+            pointerMove,
             { ...move(pointerA, 50, 0), pointerId: idA },
             'tap'
           )
@@ -899,7 +914,7 @@ describe('InputManager', () => {
         await sleep(10)
         events.push(
           triggerEvent(
-            POINTERMOVE,
+            pointerMove,
             { ...move(pointerB, -50, 50), pointerId: idB },
             'tap'
           )
@@ -907,7 +922,7 @@ describe('InputManager', () => {
         await sleep(50)
         events.push(
           triggerEvent(
-            POINTERMOVE,
+            pointerMove,
             { ...move(pointerA, 30, -5), pointerId: idA },
             'tap'
           )
@@ -915,17 +930,17 @@ describe('InputManager', () => {
         await sleep(10)
         events.push(
           triggerEvent(
-            POINTERMOVE,
+            pointerMove,
             { ...move(pointerB, -30, 5), pointerId: idB },
             'tap'
           )
         )
         await sleep(50)
         events.push(
-          triggerEvent(POINTERUP, { ...pointerB, pointerId: idB }, 'tap')
+          triggerEvent(pointerUp, { ...pointerB, pointerId: idB }, 'tap')
         )
         events.push(
-          triggerEvent(POINTERUP, { ...pointerA, pointerId: idA }, 'tap')
+          triggerEvent(pointerUp, { ...pointerA, pointerId: idA }, 'tap')
         )
 
         expectEvents({ pinches: 6, longs: 2 })
@@ -992,20 +1007,20 @@ describe('InputManager', () => {
         const pointerC = { x: 500, y: 250 }
         const events = []
         events.push(
-          triggerEvent(POINTERDOWN, { ...pointerA, pointerId: idA }, 'tap')
+          triggerEvent(pointerDown, { ...pointerA, pointerId: idA }, 'tap')
         )
         await sleep(10)
         events.push(
-          triggerEvent(POINTERDOWN, { ...pointerB, pointerId: idB }, 'tap')
+          triggerEvent(pointerDown, { ...pointerB, pointerId: idB }, 'tap')
         )
         await sleep(10)
         events.push(
-          triggerEvent(POINTERDOWN, { ...pointerC, pointerId: idC }, 'tap')
+          triggerEvent(pointerDown, { ...pointerC, pointerId: idC }, 'tap')
         )
         await sleep(50)
         events.push(
           triggerEvent(
-            POINTERMOVE,
+            pointerMove,
             { ...move(pointerA, 50, 0), pointerId: idA },
             'tap'
           )
@@ -1013,7 +1028,7 @@ describe('InputManager', () => {
         await sleep(10)
         events.push(
           triggerEvent(
-            POINTERMOVE,
+            pointerMove,
             { ...move(pointerB, -50, 50), pointerId: idB },
             'tap'
           )
@@ -1021,7 +1036,7 @@ describe('InputManager', () => {
         await sleep(50)
         events.push(
           triggerEvent(
-            POINTERMOVE,
+            pointerMove,
             { ...move(pointerA, 30, -5), pointerId: idA },
             'tap'
           )
@@ -1029,20 +1044,20 @@ describe('InputManager', () => {
         await sleep(10)
         events.push(
           triggerEvent(
-            POINTERMOVE,
+            pointerMove,
             { ...move(pointerB, -30, 5), pointerId: idB },
             'tap'
           )
         )
         await sleep(10)
         events.push(
-          triggerEvent(POINTERUP, { ...pointerA, pointerId: idA }, 'tap')
+          triggerEvent(pointerUp, { ...pointerA, pointerId: idA }, 'tap')
         )
         events.push(
-          triggerEvent(POINTERUP, { ...pointerB, pointerId: idB }, 'tap')
+          triggerEvent(pointerUp, { ...pointerB, pointerId: idB }, 'tap')
         )
         events.push(
-          triggerEvent(POINTERUP, { ...pointerC, pointerId: idC }, 'tap')
+          triggerEvent(pointerUp, { ...pointerC, pointerId: idC }, 'tap')
         )
 
         expectEvents({ drags: 4 })
@@ -1076,7 +1091,7 @@ describe('InputManager', () => {
     ])('identifies wheel$title', async ({ pointer, meshId }) => {
       const pointerId = 45
       const button = 3
-      const zoomInEvent = triggerEvent(POINTERWHEEL, {
+      const zoomInEvent = triggerEvent(wheel, {
         ...pointer,
         deltaY: 10,
         pointerId,
@@ -1084,7 +1099,7 @@ describe('InputManager', () => {
       })
 
       await sleep(50)
-      const zoomOutEvent = triggerEvent(POINTERWHEEL, {
+      const zoomOutEvent = triggerEvent(wheel, {
         ...pointer,
         deltaY: -5,
         pointerId,
@@ -1111,16 +1126,16 @@ describe('InputManager', () => {
       const idB = 33
       const events = []
       events.push(
-        triggerEvent(POINTERDOWN, { ...pointerA, pointerId: idA }, 'tap')
+        triggerEvent(pointerDown, { ...pointerA, pointerId: idA }, 'tap')
       )
       await sleep(10)
       events.push(
-        triggerEvent(POINTERDOWN, { ...pointerB, pointerId: idB }, 'tap')
+        triggerEvent(pointerDown, { ...pointerB, pointerId: idB }, 'tap')
       )
       await sleep(50)
       events.push(
         triggerEvent(
-          POINTERMOVE,
+          pointerMove,
           { ...move(pointerA, 50, 0), pointerId: idA },
           'tap'
         )
@@ -1128,7 +1143,7 @@ describe('InputManager', () => {
       await sleep(30)
       events.push(
         triggerEvent(
-          POINTERMOVE,
+          pointerMove,
           { ...move(pointerB, -50, 50), pointerId: idB },
           'tap'
         )
@@ -1170,10 +1185,10 @@ describe('InputManager', () => {
       const pointerId = 25
       const button = 1
       const events = []
-      events.push(triggerEvent(POINTERDOWN, { ...pointer, pointerId, button }))
+      events.push(triggerEvent(pointerDown, { ...pointer, pointerId, button }))
       await sleep(50)
       events.push(
-        triggerEvent(POINTERMOVE, { ...move(pointer, 50, -25), pointerId })
+        triggerEvent(pointerMove, { ...move(pointer, 50, -25), pointerId })
       )
       await sleep(50)
       const finalEvent = { foo: 'bar' }
@@ -1208,19 +1223,19 @@ describe('InputManager', () => {
       const pointerId = 50
       const events = []
       events.push(
-        triggerEvent(POINTERMOVE, { ...move(pointer, 50, -25), pointerId })
+        triggerEvent(pointerMove, { ...move(pointer, 50, -25), pointerId })
       )
       await sleep(50)
       events.push(
-        triggerEvent(POINTERMOVE, { ...move(pointer, 0, -10), pointerId })
+        triggerEvent(pointerMove, { ...move(pointer, 0, -10), pointerId })
       )
       await sleep(50)
       events.push(
-        triggerEvent(POINTERMOVE, { ...move(pointer, 20, -50), pointerId })
+        triggerEvent(pointerMove, { ...move(pointer, 20, -50), pointerId })
       )
       await sleep(50)
       events.push(
-        triggerEvent(POINTERMOVE, { ...move(pointer, 50, -25), pointerId })
+        triggerEvent(pointerMove, { ...move(pointer, 50, -25), pointerId })
       )
 
       expectEvents({ hovers: 2 })
@@ -1244,21 +1259,21 @@ describe('InputManager', () => {
       const events = []
       const button = 2
       events.push(
-        triggerEvent(POINTERMOVE, { ...move(pointer, 50, -25), pointerId })
+        triggerEvent(pointerMove, { ...move(pointer, 50, -25), pointerId })
       )
       await sleep(50)
       events.push(
-        triggerEvent(POINTERMOVE, { ...move(pointer, 0, -10), pointerId })
+        triggerEvent(pointerMove, { ...move(pointer, 0, -10), pointerId })
       )
       await sleep(50)
-      events.push(triggerEvent(POINTERDOWN, { ...pointer, pointerId, button }))
+      events.push(triggerEvent(pointerDown, { ...pointer, pointerId, button }))
       await sleep(10)
       events.push(
-        triggerEvent(POINTERMOVE, { ...move(pointer, 20, -50), pointerId })
+        triggerEvent(pointerMove, { ...move(pointer, 20, -50), pointerId })
       )
       await sleep(50)
       events.push(
-        triggerEvent(POINTERMOVE, { ...move(pointer, 50, -25), pointerId })
+        triggerEvent(pointerMove, { ...move(pointer, 50, -25), pointerId })
       )
 
       expectEvents({ hovers: 2, drags: 3 })
@@ -1296,8 +1311,8 @@ describe('InputManager', () => {
       const pointer = { x: 1266, y: 512 }
       const pointerId = 10
       const button = 1
-      triggerEvent(POINTERDOWN, { ...pointer, pointerId, button })
-      const event = triggerEvent(POINTERUP, { ...pointer, pointerId, button })
+      triggerEvent(pointerDown, { ...pointer, pointerId, button })
+      const event = triggerEvent(pointerUp, { ...pointer, pointerId, button })
       expectEvents({ taps: 1 })
       expectsDataWithMesh(
         taps[0],
@@ -1318,8 +1333,8 @@ describe('InputManager', () => {
       const pointer = { x: 1266, y: 512 }
       const pointerId = 10
       const button = 1
-      triggerEvent(POINTERDOWN, { ...pointer, pointerId, button })
-      const event = triggerEvent(POINTERUP, { ...pointer, pointerId, button })
+      triggerEvent(pointerDown, { ...pointer, pointerId, button })
+      const event = triggerEvent(pointerUp, { ...pointer, pointerId, button })
       expectEvents({ taps: 1 })
       expectsDataWithMesh(
         taps[0],
@@ -1331,7 +1346,7 @@ describe('InputManager', () => {
     it('can stop hover operation', () => {
       const pointer = { x: 975, y: 535 }
       const pointerId = 50
-      const startEvent = triggerEvent(POINTERMOVE, {
+      const startEvent = triggerEvent(pointerMove, {
         ...move(pointer, 50, -25),
         pointerId
       })
@@ -1356,7 +1371,7 @@ describe('InputManager', () => {
     it('can stop all operations', () => {
       const pointer = { x: 975, y: 535 }
       const pointerId = 50
-      const startEvent = triggerEvent(POINTERMOVE, {
+      const startEvent = triggerEvent(pointerMove, {
         ...move(pointer, 50, -25),
         pointerId
       })
@@ -1380,20 +1395,20 @@ describe('InputManager', () => {
   })
 
   describe('given a disabled manager', () => {
-    beforeEach(() => manager.init({ scene, longTapDelay: 100 }))
+    beforeEach(() => manager.init({ scene, longTapDelay: 100, interaction }))
 
     it('ignores pointer down', () => {
-      triggerEvent(POINTERDOWN, { x: 1000, y: 500, pointerId: 1, button: 1 })
+      triggerEvent(pointerDown, { x: 1000, y: 500, pointerId: 1, button: 1 })
       expectEvents()
     })
 
     it('ignores pointer up', () => {
-      triggerEvent(POINTERUP, { x: 1000, y: 500, pointerId: 1, button: 1 })
+      triggerEvent(pointerUp, { x: 1000, y: 500, pointerId: 1, button: 1 })
       expectEvents()
     })
 
     it('ignores pointer move', () => {
-      triggerEvent(POINTERMOVE, {
+      triggerEvent(pointerMove, {
         x: 1000,
         y: 500,
         pointerId: 1
@@ -1402,14 +1417,16 @@ describe('InputManager', () => {
     })
 
     it('ignores wheel', () => {
-      triggerEvent(POINTERWHEEL, { x: 1000, y: 500, pointerId: 1 })
+      triggerEvent(wheel, { x: 1000, y: 500, pointerId: 1 })
       expectEvents()
     })
   })
 
   function triggerEvent(type, data, pointerType = 'mouse') {
-    const event = { type, pointerType, ...data }
-    scene.onPrePointerObservable.notifyObservers({ type, event })
+    const event = new CustomEvent(type)
+    event.pointerType = pointerType
+    Object.assign(event, data)
+    interaction.dispatchEvent(event)
     return event
   }
 

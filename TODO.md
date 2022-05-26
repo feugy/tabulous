@@ -25,9 +25,7 @@
 - jest matchers with mesh (toHaveBeenCalledWith, toHaveBeenNthCalledWith)
 - all manager managing a collection of behaviors should check their capabilities
 - game-manager is just a gigantic mess!!! no single responsibility, global state all over the place
-- game-interaction drag-related unit tests
 - component, connected-component and routes rendering tests
-- get rid of Babylon input management
 - UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
 - stackable duration override's movable duration on
 - move camera when drop zone is not in sight and dropping on it

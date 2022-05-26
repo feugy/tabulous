@@ -1,4 +1,3 @@
-import { PointerEventTypes } from '@babylonjs/core/Events/pointerEvents'
 import { Observable } from '@babylonjs/core/Misc/observable'
 import { Scene } from '@babylonjs/core/scene'
 import { distance } from '../../utils'
@@ -50,6 +49,8 @@ class InputManager {
     this.onHoverObservable = new Observable()
     this.onWheelObservable = new Observable()
     this.onLongObservable = new Observable()
+    // private
+    this.dispose = null
   }
 
   /**
@@ -60,7 +61,7 @@ class InputManager {
    * @param {number} params.longTapDelay - number of milliseconds to hold pointer down before it is considered as long.
    * @param {boolean} [params.enabled=true] - whether the input manager actively handles inputs or not.
    */
-  init({ scene, handScene, enabled = false, longTapDelay }) {
+  init({ scene, handScene, enabled = false, longTapDelay, interaction }) {
     // same finger/stylus/mouse will have same pointerId for down, move(s) and up events
     // different fingers will have different ids
     const pointers = new Map()
@@ -78,6 +79,7 @@ class InputManager {
     let tapPointers = 1
     this.enabled = enabled
     this.longTapDelay = longTapDelay
+    this.dispose?.()
 
     const startHover = (event, mesh) => {
       if (hovered !== mesh) {
@@ -154,220 +156,234 @@ class InputManager {
       }
     }
 
-    scene.onPrePointerObservable.clear()
-    scene.onPrePointerObservable.add(({ type, event }) => {
-      if (
-        !this.enabled ||
-        (type !== PointerEventTypes.POINTERDOWN &&
-          type !== PointerEventTypes.POINTERMOVE &&
-          type !== PointerEventTypes.POINTERUP &&
-          type !== PointerEventTypes.POINTERWHEEL)
-      ) {
-        return
+    function computeMetas(event) {
+      return {
+        button: event.pointerType === 'mouse' ? event.button : undefined,
+        // takes mesh with highest elevation, and only when they are pickable
+        mesh: findPickedMesh(handScene, event) ?? findPickedMesh(scene, event)
       }
+    }
+
+    const handlePointerDown = event => {
+      if (!this.enabled) return
       logger.debug(
         { event },
-        `type: ${event.type} x: ${event.x} y: ${event.y} id: ${
+        `type: pointerdown x: ${event.x} y: ${event.y} id: ${
           event.pointerId
         } ground: ${screenToGround(scene, event)}`
       )
-
-      const button = event.pointerType === 'mouse' ? event.button : undefined
-      // takes mesh with highest elevation, and only when they are pickable
-      const mesh =
-        findPickedMesh(handScene, event) ?? findPickedMesh(scene, event)
-
-      switch (type) {
-        case PointerEventTypes.POINTERDOWN: {
-          pointers.set(event.pointerId, { mesh, button, event })
-          pointerTimes.set(event.pointerId, {
-            time: Date.now(),
-            long: false,
-            deferLong: setTimeout(() => {
-              pointerTimes.get(event.pointerId).long = true
-              const data = {
-                type: 'longPointer',
-                event,
-                pointers: pointers.size
-              }
-              logger.info(data, `long pointer detected`)
-              this.onLongObservable.notifyObservers(data)
-            }, this.longTapDelay)
-          })
-
-          if (pointers.size === 2) {
-            const [first, second] = [...pointers.values()]
-            pinch.first = first
-            pinch.second = second
-            pinch.distance = distance(first.event, second.event)
-            pinch.attempts = 0
-          } else if (pointers.size > 2) {
-            this.stopPinch(event)
-          }
-          break
-        }
-
-        case PointerEventTypes.POINTERMOVE: {
-          if (!hasMoved(pointers, event)) {
-            return
-          }
-          clearLong()
-
-          if (pinch.first) {
-            const oldDistance = pinch.distance
-            // updates pinch pointers and computes new distance
-            pinch[
-              pinch.first.event.pointerId === event.pointerId
-                ? 'first'
-                : 'second'
-            ].event = event
-            pinch.distance = distance(pinch.first.event, pinch.second.event)
-            const pinchDelta = oldDistance - pinch.distance
-
-            if (!pinch.confirmed) {
-              pinch.attempts++
-              if (
-                Math.abs(pinchDelta) > PinchMovementThreshold &&
-                pinch.distance >= PinchMinimumDistance
-              ) {
-                pinch.confirmed = true
-                const data = {
-                  type: 'pinchStart',
-                  pinchDelta,
-                  event,
-                  pointers: 2,
-                  long: pointerTimes.get(event.pointerId)?.long
-                }
-                logger.info(data, `start ${data.long ? 'long ' : ' '}pinching`)
-                this.onPinchObservable.notifyObservers(data)
-              } else if (pinch.attempts > PinchAttemptThreshold) {
-                // not enough delta after N moves: it's a 2 pointer drag
-                this.stopPinch(event)
-              }
-            }
-
-            if (pinch.confirmed) {
-              const data = { type: 'pinch', pinchDelta, event, pointers: 2 }
-              logger.debug(data, `pinching by ${pinchDelta}`)
-              this.onPinchObservable.notifyObservers(data)
-            }
-          } else if (pointers.size) {
-            if (!dragOrigin) {
-              dragOrigin = [...pointers.values()][0]
-              if (
-                isDifferenceEnough(dragOrigin.event, event, DragMinimumDistance)
-              ) {
-                this.stopHover(event)
-                const data = {
-                  type: 'dragStart',
-                  ...dragOrigin,
-                  pointers: pointers.size,
-                  long: pointerTimes.get(dragOrigin.event.pointerId)?.long
-                }
-                logger.info(
-                  data,
-                  `start${data.long ? ' long ' : ' '}dragging ${
-                    dragOrigin.mesh?.id ?? ''
-                  } with button ${dragOrigin.button}`
-                )
-                this.onDragObservable.notifyObservers(data)
-              }
-            }
-
-            // when dragging with multiple pointers, only consider drag origin moves
-            if (dragOrigin?.event.pointerId === event.pointerId) {
-              const data = {
-                type: 'drag',
-                ...dragOrigin,
-                event,
-                pointers: pointers.size
-              }
-              logger.debug(
-                data,
-                `dragging ${dragOrigin.mesh?.id ?? ''} with button ${
-                  dragOrigin.button
-                }`
-              )
-              this.onDragObservable.notifyObservers(data)
-            }
-          }
-
-          if (pointers.size === 0 && !dragOrigin && !pinch.confirmed) {
-            if (mesh !== hovered) {
-              this.stopHover(event)
-            }
-            if (mesh) {
-              startHover(event, mesh)
-            }
-          }
-          break
-        }
-
-        case PointerEventTypes.POINTERUP: {
-          const { pointerId } = event
-          if (dragOrigin) {
-            this.stopDrag(event)
-          } else if (pinch.confirmed) {
-            this.stopPinch(event)
-          } else if (pointers.size > 1) {
-            // when tapping with multiple pointers, ignore all but the last
-            tapPointers = pointers.size
-            clearTimeout(pointerTimes.get(pointerId)?.deferLong)
-            pointerTimes.delete(pointerId)
-            pointers.delete(pointerId)
-          } else if (pointers.has(pointerId)) {
-            const data = {
-              type:
-                Date.now() - lastTap < Scene.DoubleClickDelay
-                  ? 'doubletap'
-                  : 'tap',
-              mesh,
-              button,
-              event,
-              pointers: tapPointers,
-              long: pointerTimes.get(pointerId).long,
-              fromHand: mesh?.getScene() === handScene
-            }
-            clearLong()
-            pointerTimes.clear()
-            pointers.clear()
-
-            logger.info(
-              data,
-              `${data.long ? 'Long ' : ' '}${data.type} on ${
-                mesh?.id ?? 'table'
-              } with button ${button}`
-            )
-            this.onTapObservable.notifyObservers(data)
-            tapPointers = 1
-            lastTap = Date.now()
-          }
-          break
-        }
-
-        case PointerEventTypes.POINTERWHEEL: {
+      const { button, mesh } = computeMetas(event)
+      pointers.set(event.pointerId, { mesh, button, event })
+      pointerTimes.set(event.pointerId, {
+        time: Date.now(),
+        long: false,
+        deferLong: setTimeout(() => {
+          pointerTimes.get(event.pointerId).long = true
           const data = {
-            type: 'wheel',
-            mesh,
-            button,
+            type: 'longPointer',
             event,
             pointers: pointers.size
           }
-          logger.info(
+          logger.info(data, `long pointer detected`)
+          this.onLongObservable.notifyObservers(data)
+        }, this.longTapDelay)
+      })
+
+      if (pointers.size === 2) {
+        const [first, second] = [...pointers.values()]
+        pinch.first = first
+        pinch.second = second
+        pinch.distance = distance(first.event, second.event)
+        pinch.attempts = 0
+      } else if (pointers.size > 2) {
+        this.stopPinch(event)
+      }
+    }
+
+    const handlePointerMove = event => {
+      if (!this.enabled) return
+      logger.debug(
+        { event },
+        `type: pointermove x: ${event.x} y: ${event.y} id: ${
+          event.pointerId
+        } ground: ${screenToGround(scene, event)}`
+      )
+      if (!hasMoved(pointers, event)) {
+        return
+      }
+      clearLong()
+      const { mesh } = computeMetas(event)
+
+      if (pinch.first) {
+        const oldDistance = pinch.distance
+        // updates pinch pointers and computes new distance
+        pinch[
+          pinch.first.event.pointerId === event.pointerId ? 'first' : 'second'
+        ].event = event
+        pinch.distance = distance(pinch.first.event, pinch.second.event)
+        const pinchDelta = oldDistance - pinch.distance
+
+        if (!pinch.confirmed) {
+          pinch.attempts++
+          if (
+            Math.abs(pinchDelta) > PinchMovementThreshold &&
+            pinch.distance >= PinchMinimumDistance
+          ) {
+            pinch.confirmed = true
+            const data = {
+              type: 'pinchStart',
+              pinchDelta,
+              event,
+              pointers: 2,
+              long: pointerTimes.get(event.pointerId)?.long
+            }
+            logger.info(data, `start ${data.long ? 'long ' : ' '}pinching`)
+            this.onPinchObservable.notifyObservers(data)
+          } else if (pinch.attempts > PinchAttemptThreshold) {
+            // not enough delta after N moves: it's a 2 pointer drag
+            this.stopPinch(event)
+          }
+        }
+
+        if (pinch.confirmed) {
+          const data = { type: 'pinch', pinchDelta, event, pointers: 2 }
+          logger.debug(data, `pinching by ${pinchDelta}`)
+          this.onPinchObservable.notifyObservers(data)
+        }
+      } else if (pointers.size) {
+        if (!dragOrigin) {
+          dragOrigin = [...pointers.values()][0]
+          if (
+            isDifferenceEnough(dragOrigin.event, event, DragMinimumDistance)
+          ) {
+            this.stopHover(event)
+            const data = {
+              type: 'dragStart',
+              ...dragOrigin,
+              pointers: pointers.size,
+              long: pointerTimes.get(dragOrigin.event.pointerId)?.long
+            }
+            logger.info(
+              data,
+              `start${data.long ? ' long ' : ' '}dragging ${
+                dragOrigin.mesh?.id ?? ''
+              } with button ${dragOrigin.button}`
+            )
+            this.onDragObservable.notifyObservers(data)
+          }
+        }
+
+        // when dragging with multiple pointers, only consider drag origin moves
+        if (dragOrigin?.event.pointerId === event.pointerId) {
+          const data = {
+            type: 'drag',
+            ...dragOrigin,
+            event,
+            pointers: pointers.size
+          }
+          logger.debug(
             data,
-            `wheel on ${mesh?.id ?? 'table'} with button ${button}`
+            `dragging ${dragOrigin.mesh?.id ?? ''} with button ${
+              dragOrigin.button
+            }`
           )
-          this.onWheelObservable.notifyObservers(data)
-          break
+          this.onDragObservable.notifyObservers(data)
         }
       }
-    })
 
+      if (pointers.size === 0 && !dragOrigin && !pinch.confirmed) {
+        if (mesh !== hovered) {
+          this.stopHover(event)
+        }
+        if (mesh) {
+          startHover(event, mesh)
+        }
+      }
+    }
+
+    const handlePointerUp = event => {
+      if (!this.enabled) return
+      logger.debug(
+        { event },
+        `type: pointerup x: ${event.x} y: ${event.y} id: ${
+          event.pointerId
+        } ground: ${screenToGround(scene, event)}`
+      )
+      const { button, mesh } = computeMetas(event)
+      const { pointerId } = event
+      if (dragOrigin) {
+        this.stopDrag(event)
+      } else if (pinch.confirmed) {
+        this.stopPinch(event)
+      } else if (pointers.size > 1) {
+        // when tapping with multiple pointers, ignore all but the last
+        tapPointers = pointers.size
+        clearTimeout(pointerTimes.get(pointerId)?.deferLong)
+        pointerTimes.delete(pointerId)
+        pointers.delete(pointerId)
+      } else if (pointers.has(pointerId)) {
+        const data = {
+          type:
+            Date.now() - lastTap < Scene.DoubleClickDelay ? 'doubletap' : 'tap',
+          mesh,
+          button,
+          event,
+          pointers: tapPointers,
+          long: pointerTimes.get(pointerId).long,
+          fromHand: mesh?.getScene() === handScene
+        }
+        clearLong()
+        pointerTimes.clear()
+        pointers.clear()
+
+        logger.info(
+          data,
+          `${data.long ? 'Long ' : ' '}${data.type} on ${
+            mesh?.id ?? 'table'
+          } with button ${button}`
+        )
+        this.onTapObservable.notifyObservers(data)
+        tapPointers = 1
+        lastTap = Date.now()
+      }
+    }
+
+    const handleWheel = event => {
+      if (!this.enabled) return
+      logger.debug(
+        { event },
+        `type: wheel x: ${event.x} y: ${event.y} id: ${
+          event.pointerId
+        } ground: ${screenToGround(scene, event)}`
+      )
+      const { button, mesh } = computeMetas(event)
+      const data = {
+        type: 'wheel',
+        mesh,
+        button,
+        event,
+        pointers: pointers.size
+      }
+      logger.info(data, `wheel on ${mesh?.id ?? 'table'} with button ${button}`)
+      this.onWheelObservable.notifyObservers(data)
+    }
+
+    interaction.addEventListener('pointerdown', handlePointerDown)
+    interaction.addEventListener('pointermove', handlePointerMove)
+    interaction.addEventListener('pointerup', handlePointerUp)
+    interaction.addEventListener('wheel', handleWheel)
+    this.dispose = () => {
+      interaction.removeEventListener('pointerdown', handlePointerDown)
+      interaction.removeEventListener('pointermove', handlePointerMove)
+      interaction.removeEventListener('pointerup', handlePointerUp)
+      interaction.removeEventListener('wheel', handleWheel)
+    }
     scene.onDisposeObservable.addOnce(() => {
       this.onTapObservable.clear()
       this.onDragObservable.clear()
       this.onHoverObservable.clear()
       this.onWheelObservable.clear()
+      this.dispose()
     })
   }
 
