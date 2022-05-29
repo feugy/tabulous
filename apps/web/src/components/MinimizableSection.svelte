@@ -203,11 +203,12 @@
 >
   <menu class:vertical class={placement}>
     <ol role="tablist" class="buttonContainer">
-      {#each innerTabs as { icon }, i}
+      {#each innerTabs as { icon, key }, i}
         <li class:active={innerTabs.length > 1 && i === currentTab}>
           <Button
             role="tab"
             aria-selected={innerTabs.length > 1 && i === currentTab}
+            badge={key}
             {icon}
             on:click={() => handleClick(i)}
           />

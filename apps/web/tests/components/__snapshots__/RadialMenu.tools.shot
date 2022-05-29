@@ -9,9 +9,7 @@ exports[`Toolshot components/RadialMenu.tools.svelte: A few items 1`] = `
     <li
       style="animation: __svelte_397341122_0 150ms linear 0ms 1 both;"
     >
-      <button
-        title=""
-      >
+      <button>
         <span
           class="material-icons"
         >
@@ -29,7 +27,6 @@ exports[`Toolshot components/RadialMenu.tools.svelte: A few items 1`] = `
     >
       <button
         class="secondary"
-        title=""
       >
         <span
           class="material-icons"
@@ -57,9 +54,7 @@ exports[`Toolshot components/RadialMenu.tools.svelte: More items 1`] = `
     <li
       style="animation: __svelte_3871932778_0 150ms linear 0ms 1 both;"
     >
-      <button
-        title=""
-      >
+      <button>
         <span
           class="material-icons"
         >
@@ -77,7 +72,6 @@ exports[`Toolshot components/RadialMenu.tools.svelte: More items 1`] = `
     >
       <button
         class="secondary"
-        title=""
       >
         <span
           class="material-icons"
@@ -96,7 +90,6 @@ exports[`Toolshot components/RadialMenu.tools.svelte: More items 1`] = `
     >
       <button
         class="secondary"
-        title=""
       >
         <span
           class="material-icons"
@@ -113,9 +106,7 @@ exports[`Toolshot components/RadialMenu.tools.svelte: More items 1`] = `
     <li
       style="animation: __svelte_3264121526_0 150ms linear 337.5ms 1 both;"
     >
-      <button
-        title=""
-      >
+      <button>
         <span
           class="material-icons"
         >
@@ -131,9 +122,7 @@ exports[`Toolshot components/RadialMenu.tools.svelte: More items 1`] = `
     <li
       style="animation: __svelte_4053772584_0 150ms linear 450ms 1 both;"
     >
-      <button
-        title=""
-      >
+      <button>
         <span
           class="material-icons"
         >
@@ -149,9 +138,7 @@ exports[`Toolshot components/RadialMenu.tools.svelte: More items 1`] = `
     <li
       style="animation: __svelte_756247263_0 150ms linear 562.5ms 1 both;"
     >
-      <button
-        title=""
-      >
+      <button>
         <span
           class="material-icons"
         >
@@ -167,9 +154,7 @@ exports[`Toolshot components/RadialMenu.tools.svelte: More items 1`] = `
     <li
       style="animation: __svelte_2867527063_0 150ms linear 675ms 1 both;"
     >
-      <button
-        title=""
-      >
+      <button>
         <span
           class="material-icons"
         >

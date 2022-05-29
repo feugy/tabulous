@@ -3,7 +3,7 @@
 exports[`Toolshot components/CameraSwitch.tools.svelte: Max count reached 1`] = `
 <span>
   <button
-    title="Charger la position initiale de la camera"
+    title="Charger la position initiale de la camera (Début)"
   >
     <span
       class="material-icons"
@@ -77,7 +77,7 @@ exports[`Toolshot components/CameraSwitch.tools.svelte: Max count reached 1`] = 
 exports[`Toolshot components/CameraSwitch.tools.svelte: Multiple saves 1`] = `
 <span>
   <button
-    title="Charger la position initiale de la camera"
+    title="Charger la position initiale de la camera (Début)"
   >
     <span
       class="material-icons"
@@ -127,7 +127,7 @@ exports[`Toolshot components/CameraSwitch.tools.svelte: Multiple saves 1`] = `
    
    
   <button
-    title="Enregistrer la position"
+    title="Enregistrer la position (Ctrl+1~9)"
   >
     <span
       class="material-icons"
@@ -145,7 +145,7 @@ exports[`Toolshot components/CameraSwitch.tools.svelte: Multiple saves 1`] = `
 exports[`Toolshot components/CameraSwitch.tools.svelte: Multiple saves with current 1`] = `
 <span>
   <button
-    title="Charger la position initiale de la camera"
+    title="Charger la position initiale de la camera (Début)"
   >
     <span
       class="material-icons"
@@ -197,7 +197,7 @@ exports[`Toolshot components/CameraSwitch.tools.svelte: Multiple saves with curr
    
   <button
     disabled=""
-    title="Enregistrer la position"
+    title="Enregistrer la position (Ctrl+1~9)"
   >
     <span
       class="material-icons"
@@ -215,7 +215,7 @@ exports[`Toolshot components/CameraSwitch.tools.svelte: Multiple saves with curr
 exports[`Toolshot components/CameraSwitch.tools.svelte: Single save 1`] = `
 <span>
   <button
-    title="Charger la position initiale de la camera"
+    title="Charger la position initiale de la camera (Début)"
   >
     <span
       class="material-icons"
@@ -229,7 +229,7 @@ exports[`Toolshot components/CameraSwitch.tools.svelte: Single save 1`] = `
    
    
   <button
-    title="Enregistrer la position"
+    title="Enregistrer la position (Ctrl+1~9)"
   >
     <span
       class="material-icons"

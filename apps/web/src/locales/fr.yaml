@@ -46,9 +46,9 @@ titles:
 tooltips:
   add-to-selection: Ajouter à la sélection
   clear-selection: Vider la sélection
-  detail: Afficher en grand
+  detail: Voir en détail
   draw: Piocher dans votre main
-  decrement: Extraire de la pile
+  decrement: Dépiller
   flip-stack: Retourner la pile
   flip: Retourner
   game-menu: Menu des commandes
@@ -76,7 +76,7 @@ tooltips:
   help-two-pointers-drag: Tap avec deux doigts sur un objet
   help-two-pointers-object: Tap avec deux doigts sur un objet
   help-update-camera: Clic long sur un emplacement de caméra
-  increment: Tout empiler
+  increment: Assembler
   lock: Verrouiller
   move: Déplacer
   open-menu: Ouvrir le menu
@@ -88,10 +88,20 @@ tooltips:
   rotate: Pivoter
   rule-page: Livre de règles, page {page}
   save-camera: Mettre à jour la position
-  save-new-camera: Enregistrer la position
-  save-restore-camera: "{index, plural, =0 {Charger la position initiale de la camera} other {Charger (clic) ou enregistrer (clic long) la position à l'emplacement #}}"
+  save-new-camera: Enregistrer la position (Ctrl+1~9)
+  save-restore-camera: "{index, plural, =0 {Charger la position initiale de la camera (Début)} other {Charger (clic) ou enregistrer (clic long) la position à l'emplacement #}}"
   send-message: Envoyer à tous
   shuffle: Mélanger
-  stack-all: Tout empiller
+  stack-all: Assembler
   unlock: Déverrouiller
   zoom: Zoomer
+shortcuts:
+  detail: v
+  draw: p
+  flip: r
+  pop: d
+  push: a
+  rotate: t
+  shuffle: m
+  toggleLock: l
+  hand: h

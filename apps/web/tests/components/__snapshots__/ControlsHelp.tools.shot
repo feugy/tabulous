@@ -77,7 +77,7 @@ exports[`Toolshot components/ControlsHelp.tools.svelte: Components/Controls Help
       </div>
       <div>
         <span>
-          Afficher en grand
+          Voir en détail
           :
         </span>
          
@@ -174,7 +174,7 @@ exports[`Toolshot components/ControlsHelp.tools.svelte: Components/Controls Help
       </div>
       <div>
         <span>
-          Enregistrer la position
+          Enregistrer la position (Ctrl+1~9)
           :
         </span>
          

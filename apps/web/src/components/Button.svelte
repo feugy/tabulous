@@ -47,7 +47,7 @@
   .badge {
     @apply absolute rounded-full leading-4 text-xs p-1 
            flex justify-center items-center bg-$disabled 
-           text-$disabled-dark -top-2 -right-2 min-w-6;
+           text-$disabled-dark -top-2 -left-2 min-w-6;
   }
 </style>
 

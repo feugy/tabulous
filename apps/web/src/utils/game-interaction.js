@@ -26,14 +26,36 @@ const cameraPositionKeys = new Set([
 ])
 
 /**
+ * Action ids that can be used in actionsByKey map.
+ */
+export const actionIds = {
+  flip: 'flip',
+  rotate: 'rotate',
+  toggleLock: 'toggleLock',
+  draw: 'draw',
+  shuffle: 'shuffle',
+  push: 'push',
+  increment: 'increment',
+  pop: 'pop',
+  decrement: 'decrement',
+  detail: 'detail'
+}
+
+/**
  * Attach to game engine's input manager observables to implement game interaction model.
  * @param {object} params - parameters, including:
  * @param {import('@babylonjs/core').Engine} - current 3D engine.
  * @param {number} params.doubleTapDelay - number of milliseconds between 2 taps to be considered as a double tap.
  * @param {Subject<import('../stores/game-engine').ActionMenuProps>} params.actionMenuProps$ - subject emitting when action menu should be displayed and hidden.
+ * @param {Map<string, string[]>} params.actionIdsByKey - map containing action name by key shortcut.
  * @returns {import('rxjs').Subscription[]} an array of observable subscriptions
  */
-export function attachInputs({ engine, doubleTapDelay, actionMenuProps$ }) {
+export function attachInputs({
+  engine,
+  doubleTapDelay,
+  actionMenuProps$,
+  actionIdsByKey
+}) {
   let selectionPosition
   let panPosition
   let rotatePosition
@@ -269,21 +291,13 @@ export function attachInputs({ engine, doubleTapDelay, actionMenuProps$ }) {
     }),
 
     /**
-     * Implements actions on mesh keys, or on selection:
-     * - F to flip
-     * - R to rotate
-     * - L to toggle lock
-     * - D to draw
-     * - S to shuffle
-     * - G to group together or increment
-     * - U to unstack or decrement
-     * - V to view details
+     * Implements actions on mesh keys, or on selection, based on actionIdsByKey map
      */
     keys$
       .pipe(
         filter(
           ({ key, meshes }) =>
-            menuActionsByKey.has(key) &&
+            actionIdsByKey.has(key) &&
             (meshes.length || selectionManager.meshes.size)
         )
       )
@@ -294,8 +308,9 @@ export function attachInputs({ engine, doubleTapDelay, actionMenuProps$ }) {
             : [selectionManager.meshes.values().next().value]
           for (const mesh of actualMeshes) {
             const params = buildSupportParams(mesh, fromHand)
-            for (const action of menuActionsByKey.get(key)) {
-              if (action.support(mesh, params)) {
+            for (const id of actionIdsByKey.get(key)) {
+              const action = menuActions.find(action => action.id === id)
+              if (action?.support(mesh, params)) {
                 action.build(mesh, params).onClick()
                 break
               }
@@ -543,6 +558,7 @@ export function computeMenuProps(mesh, fromHand = false) {
 
 const menuActions = [
   {
+    id: actionIds.flip,
     support: (mesh, { selectedMeshes }) => canAllDo('flip', selectedMeshes),
     build: (mesh, params) => ({
       icon: 'flip',
@@ -550,40 +566,44 @@ const menuActions = [
         params.isSingleStackSelected && params.selectedMeshes.length > 1
           ? 'tooltips.flip-stack'
           : 'tooltips.flip',
+      badge: 'shortcuts.flip',
       onClick: ({ detail } = {}) =>
         triggerActionOnSelection(mesh, 'flip', detail?.quantity),
       max: computesStackSize(mesh, params)
-    }),
-    key: 'f'
+    })
   },
   {
+    id: actionIds.rotate,
     support: (mesh, { selectedMeshes }) => canAllDo('rotate', selectedMeshes),
     build: (mesh, params) => ({
       icon: 'rotate_right',
       title: 'tooltips.rotate',
+      badge: 'shortcuts.rotate',
       onClick: ({ detail } = {}) =>
         triggerActionOnSelection(mesh, 'rotate', detail?.quantity),
       max: computesStackSize(mesh, params)
-    }),
-    key: 'r'
+    })
   },
   {
+    id: actionIds.draw,
     support: (mesh, { selectedMeshes }) => canAllDo('draw', selectedMeshes),
     build: (mesh, params) => ({
       icon: params.fromHand ? 'back_hand' : 'front_hand',
       title: params.fromHand ? 'tooltips.play' : 'tooltips.draw',
+      badge: 'shortcuts.draw',
       onClick: ({ detail } = {}) =>
         triggerActionOnSelection(mesh, 'draw', detail?.quantity),
       max: computesStackSize(mesh, params)
-    }),
-    key: 'd'
+    })
   },
   {
+    id: actionIds.pop,
     support: (mesh, { selectedMeshes }) =>
       mesh.metadata?.stack?.length > 1 && selectedMeshes.length === 1,
     build: (mesh, params) => ({
       icon: 'zoom_out_map',
       title: 'tooltips.pop',
+      badge: 'shortcuts.pop',
       onClick: async ({ detail } = {}) =>
         selectionManager.select(
           ...(await triggerAction(
@@ -594,79 +614,77 @@ const menuActions = [
           ))
         ),
       max: computesStackSize(mesh, params)
-    }),
-    key: 'u'
+    })
   },
   {
+    id: actionIds.decrement,
     support: (mesh, { selectedMeshes }) =>
       mesh.metadata?.quantity > 1 && selectedMeshes.length === 1,
     build: (mesh, params) => ({
-      icon: 'splitscreen',
+      icon: 'zoom_in_map',
       title: 'tooltips.decrement',
+      badge: 'shortcuts.pop',
       onClick: async ({ detail } = {}) =>
         selectionManager.select(
           await triggerAction(mesh, 'decrement', detail?.quantity, true)
         ),
       max: computesQuantity(mesh, params)
-    }),
-    key: 'u'
+    })
   },
   {
+    id: actionIds.push,
     support: canStackAll,
     build: (mesh, { selectedMeshes }) => ({
       icon: 'zoom_in_map',
       title: 'tooltips.stack-all',
+      badge: 'shortcuts.push',
       onClick: () => stackAll(mesh, selectedMeshes)
-    }),
-    key: 'g'
+    })
   },
   {
+    id: actionIds.increment,
     support: canIncrement,
     build: (mesh, { selectedMeshes }) => ({
       icon: 'zoom_in_map',
       title: 'tooltips.increment',
+      badge: 'shortcuts.push',
       onClick: () => increment(mesh, selectedMeshes)
-    }),
-    key: 'g'
+    })
   },
   {
+    id: actionIds.shuffle,
     support: (mesh, { isSingleStackSelected, selectedMeshes }) =>
       isSingleStackSelected && selectedMeshes.length > 1,
     build: mesh => ({
       icon: 'shuffle',
       title: 'tooltips.shuffle',
+      badge: 'shortcuts.shuffle',
       onClick: () => triggerAction(mesh, 'shuffle')
-    }),
-    key: 's'
+    })
   },
   {
+    id: actionIds.detail,
     support: (mesh, { selectedMeshes }) =>
       selectedMeshes.length === 1 && Boolean(mesh.metadata.detail),
     build: mesh => ({
       icon: 'visibility',
       title: 'tooltips.detail',
+      badge: 'shortcuts.detail',
       onClick: () => triggerAction(mesh, 'detail')
-    }),
-    key: 'v'
+    })
   },
   {
+    id: actionIds.toggleLock,
     support: (mesh, { selectedMeshes }) =>
       canAllDo('toggleLock', selectedMeshes),
     build: mesh => ({
       icon: mesh.metadata.isLocked ? 'lock_open' : 'lock',
       title: mesh.metadata.isLocked ? 'tooltips.unlock' : 'tooltips.lock',
+      badge: 'shortcuts.toggleLock',
       onClick: () => triggerActionOnSelection(mesh, 'toggleLock')
-    }),
-    key: 'l'
+    })
   }
 ]
-
-const menuActionsByKey = new Map(
-  menuActions.map(({ key }) => [
-    key,
-    menuActions.filter(action => action.key === key)
-  ])
-)
 
 function buildSupportParams(mesh, fromHand) {
   const selectedMeshes = selectionManager.getSelection(mesh)

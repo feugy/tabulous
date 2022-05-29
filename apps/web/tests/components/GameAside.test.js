@@ -5,6 +5,11 @@ import { players, thread } from './Discussion.testdata'
 import GameAside from '../../src/components/GameAside.svelte'
 import { extractText, translate } from '../test-utils'
 
+const helpButtonText = 'helpF1'
+const rulesButtonText = 'auto_storiesF2'
+const playersButonText = 'people_altF3'
+const discussionButtonText = 'question_answerF4'
+
 describe('GameAside component', () => {
   const handleSend = jest.fn()
   const stream = { getAudioTracks: () => [], getVideoTracks: () => [] }
@@ -32,7 +37,7 @@ describe('GameAside component', () => {
         players.slice(0, 1).map(player => [player.id, player])
       )
     })
-    expect(extractText(screen.getAllByRole('tab'))).toEqual(['help'])
+    expect(extractText(screen.getAllByRole('tab'))).toEqual([helpButtonText])
     expect(screen.getByRole('region')).toHaveAttribute('aria-expanded', 'false')
   })
 
@@ -43,8 +48,8 @@ describe('GameAside component', () => {
       playerById: toMap(players.slice(0, 1))
     })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
-      'auto_stories',
-      'help'
+      rulesButtonText,
+      helpButtonText
     ])
     expect(screen.getByRole('region')).toHaveAttribute('aria-expanded', 'false')
   })
@@ -52,8 +57,8 @@ describe('GameAside component', () => {
   it('has help and peer tabs on single connected game without rules book', () => {
     renderComponent({ player, playerById: toMap(players) })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
-      'people_alt',
-      'help'
+      playersButonText,
+      helpButtonText
     ])
     expect(screen.getByRole('region')).toHaveAttribute('aria-expanded', 'true')
     expect(extractText(screen.getAllByRole('figure'))).toEqual(
@@ -69,9 +74,9 @@ describe('GameAside component', () => {
     })
     expect(screen.getByRole('region')).toHaveAttribute('aria-expanded', 'true')
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
-      'people_alt',
-      'auto_stories',
-      'help'
+      playersButonText,
+      rulesButtonText,
+      helpButtonText
     ])
     expect(extractText(screen.getAllByRole('figure'))).toEqual(
       players.slice(1).map(({ username }) => username)
@@ -81,9 +86,9 @@ describe('GameAside component', () => {
   it('has help, peer and thread tabs on multiple connected game without rules book', () => {
     renderComponent({ player, playerById: toMap(players), connected })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
-      'people_alt',
-      'help',
-      'question_answer'
+      playersButonText,
+      helpButtonText,
+      discussionButtonText
     ])
     expect(screen.getAllByRole('region')[0]).toHaveAttribute(
       'aria-expanded',
@@ -108,10 +113,10 @@ describe('GameAside component', () => {
       connected
     })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
-      'people_alt',
-      'auto_stories',
-      'help',
-      'question_answer'
+      playersButonText,
+      rulesButtonText,
+      helpButtonText,
+      discussionButtonText
     ])
     expect(screen.getAllByRole('region')[0]).toHaveAttribute(
       'aria-expanded',
@@ -131,9 +136,9 @@ describe('GameAside component', () => {
   it('has thread discussion on single connected game with thread', () => {
     renderComponent({ player, playerById: toMap(players), thread })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
-      'people_alt',
-      'help',
-      'question_answer'
+      playersButonText,
+      helpButtonText,
+      discussionButtonText
     ])
     expect(screen.getAllByRole('region')[0]).toHaveAttribute(
       'aria-expanded',
@@ -151,9 +156,9 @@ describe('GameAside component', () => {
   it('has thread discussion on single connected game with thread', () => {
     renderComponent({ player, playerById: toMap(players), thread })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
-      'people_alt',
-      'help',
-      'question_answer'
+      playersButonText,
+      helpButtonText,
+      discussionButtonText
     ])
     expect(screen.getAllByRole('region')[0]).toHaveAttribute(
       'aria-expanded',
@@ -189,7 +194,7 @@ describe('GameAside component', () => {
       playerById: toMap(players.slice(0, 1))
     })
 
-    fireEvent.click(screen.getByRole('tab', { name: 'auto_stories' }))
+    fireEvent.click(screen.getByRole('tab', { name: 'auto_stories F2' }))
 
     expect(
       screen.getByRole('button', { name: 'navigate_before' })
@@ -204,7 +209,7 @@ describe('GameAside component', () => {
   it('displays help book when clicking on tab', () => {
     renderComponent({ player, playerById: toMap(players.slice(0, 1)) })
 
-    fireEvent.click(screen.getByRole('tab', { name: 'help' }))
+    fireEvent.click(screen.getByRole('tab', { name: 'help F1' }))
 
     expect(
       screen.getByText(translate('titles.camera-controls'))

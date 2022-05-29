@@ -13,6 +13,7 @@ import {
 } from '../../src/3d/managers'
 import { createTable, getMeshScreenPosition } from '../../src/3d/utils'
 import {
+  actionIds,
   attachInputs,
   computeMenuProps,
   triggerAction,
@@ -129,7 +130,8 @@ describe('Game interaction model', () => {
         { functionName: 'draw', icon: 'front_hand' },
         {
           functionName: 'decrement',
-          icon: 'splitscreen',
+          icon: 'zoom_in_map',
+          badge: 'shortcuts.pop',
           max: 4
         },
         { functionName: 'detail', icon: 'visibility' },
@@ -210,7 +212,7 @@ describe('Game interaction model', () => {
       expect(menuProps).toHaveProperty('x', x)
       expect(menuProps).toHaveProperty('y', y)
 
-      const icon = 'splitscreen'
+      const icon = 'zoom_in_map'
       const action = 'decrement'
       const quantity = 3
       mesh.metadata.decrement.mockResolvedValueOnce(null)
@@ -283,9 +285,19 @@ describe('Game interaction model', () => {
       expect(menuProps).toHaveProperty('y', y)
 
       await expectActionItems(menuProps, mesh3, [
-        { functionName: 'flipAll', icon: 'flip', title: 'tooltips.flip-stack' },
+        {
+          functionName: 'flipAll',
+          icon: 'flip',
+          title: 'tooltips.flip-stack',
+          badge: 'shortcuts.flip'
+        },
         { functionName: 'rotate', icon: 'rotate_right' },
-        { functionName: 'reorder', icon: 'shuffle', title: 'tooltips.shuffle' },
+        {
+          functionName: 'reorder',
+          icon: 'shuffle',
+          title: 'tooltips.shuffle',
+          badge: 'shortcuts.shuffle'
+        },
         { functionName: 'draw', icon: 'front_hand' },
         { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
       ])
@@ -394,7 +406,12 @@ describe('Game interaction model', () => {
       expect(menuProps).toHaveProperty('y', y)
 
       await expectActionItems(menuProps, mesh2, [
-        { functionName: 'flipAll', icon: 'flip', title: 'tooltips.flip' },
+        {
+          functionName: 'flipAll',
+          icon: 'flip',
+          title: 'tooltips.flip',
+          badge: 'shortcuts.flip'
+        },
         { functionName: 'rotate', icon: 'rotate_right' },
         { functionName: 'draw', icon: 'front_hand' },
         {
@@ -433,6 +450,7 @@ describe('Game interaction model', () => {
           functionName: 'increment',
           icon: 'zoom_in_map',
           title: 'tooltips.increment',
+          badge: 'shortcuts.push',
           calls: [[[mesh8.id, mesh9.id]]]
         },
         { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
@@ -501,7 +519,12 @@ describe('Game interaction model', () => {
       expect(menuProps).toHaveProperty('y', y)
 
       await expectActionItems(menuProps, mesh3, [
-        { functionName: 'flipAll', icon: 'flip', title: 'tooltips.flip' },
+        {
+          functionName: 'flipAll',
+          icon: 'flip',
+          title: 'tooltips.flip',
+          badge: 'shortcuts.flip'
+        },
         { functionName: 'rotate', icon: 'rotate_right' },
         { functionName: 'draw', icon: 'front_hand' },
         {
@@ -626,11 +649,23 @@ describe('Game interaction model', () => {
   describe('attachInputs()', () => {
     let drawSelectionBox
     let selectWithinBox
+    const actionIdsByKey = new Map([
+      ['f', [actionIds.flip]],
+      ['r', [actionIds.rotate]],
+      ['l', [actionIds.toggleLock]],
+      ['d', [actionIds.draw]],
+      ['s', [actionIds.shuffle]],
+      ['g', [actionIds.push, actionIds.increment]],
+      ['u', [actionIds.pop, actionIds.decrement]],
+      ['v', [actionIds.detail]],
+      ['k', ['unknown']]
+    ])
 
     beforeAll(
       () =>
         (subscriptions = attachInputs({
           engine,
+          actionIdsByKey,
           doubleTapDelay,
           actionMenuProps$
         }))
@@ -808,6 +843,23 @@ describe('Game interaction model', () => {
       expectMeshActions(box9, 'decrement')
       // box2 is not stackable
       expectMeshActions(box2)
+    })
+
+    it('does nothing on unsupported key', () => {
+      const [, box2, , , , , box7, , box9] = meshes
+      inputManager.onKeyObservable.notifyObservers({
+        type: 'keyDown',
+        meshes: [box7, box2, box9],
+        key: 'k'
+      })
+      expectMeshActions(box7)
+      expectMeshActions(box9)
+      expectMeshActions(box2)
+      expect(cameraManager.save).not.toHaveBeenCalled()
+      expect(cameraManager.restore).not.toHaveBeenCalled()
+      expect(cameraManager.pan).not.toHaveBeenCalled()
+      expect(cameraManager.rotate).not.toHaveBeenCalled()
+      expect(cameraManager.zoom).not.toHaveBeenCalled()
     })
 
     describe('given opened menu for a single mesh', () => {
@@ -1427,6 +1479,7 @@ async function expectActionItems(menuProps, mesh, items) {
     functionName,
     icon,
     title,
+    badge,
     triggeredMesh,
     calls,
     ...props
@@ -1436,6 +1489,7 @@ async function expectActionItems(menuProps, mesh, items) {
         {
           icon,
           title: title ?? `tooltips.${functionName}`,
+          badge: badge ?? `shortcuts.${functionName}`,
           onClick: expect.any(Function),
           ...props
         }
