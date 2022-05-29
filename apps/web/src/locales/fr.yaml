@@ -85,7 +85,7 @@ tooltips:
   pop: Dépiller
   restore-camera: Restaurer la position
   rotate-camera: Pivoter et incliner
-  rotate: Pivoter
+  rotate: Tourner de 90°
   rule-page: Livre de règles, page {page}
   save-camera: Mettre à jour la position
   save-new-camera: Enregistrer la position (Ctrl+1~9)
@@ -99,9 +99,9 @@ shortcuts:
   detail: v
   draw: p
   flip: r
+  hand: h
   pop: d
   push: a
   rotate: t
   shuffle: m
   toggleLock: l
-  hand: h

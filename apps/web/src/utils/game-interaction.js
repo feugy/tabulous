@@ -405,13 +405,6 @@ export function attachInputs({
     }),
 
     /**
-     * TODO
-     * - F1 to toggle help.
-     * - F2 to toggle hand.
-     * - F3 to toggle manual.
-     */
-
-    /**
      * Implements actions when triggering some behavior:
      * - closes menu unless flipping or rotating
      * - when pushing selected mesh onto a stack, selects the entire stack

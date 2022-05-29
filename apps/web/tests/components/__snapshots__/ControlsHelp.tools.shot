@@ -40,7 +40,7 @@ exports[`Toolshot components/ControlsHelp.tools.svelte: Components/Controls Help
       </div>
       <div>
         <span>
-          Pivoter
+          Tourner de 90°
           :
         </span>
          
