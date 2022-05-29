@@ -13,7 +13,7 @@
     props={{
       placement: 'bottom',
       minimized: true,
-      icons: ['question_answer', 'help']
+      tabs: [{ icon: 'question_answer' }, { icon: 'help' }]
     }}
   />
   <Tool name="Left" props={{ placement: 'left' }} />

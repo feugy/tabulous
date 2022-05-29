@@ -80,9 +80,6 @@
     &.top {
       @apply top-0;
     }
-    &.bottom {
-      @apply bottom-0 flex flex-col gap-2;
-    }
   }
 
   .overlay {
@@ -125,6 +122,8 @@
 <main>
   <div
     class="interaction"
+    tabindex="0"
+    autofocus
     bind:this={interaction}
     on:contextmenu|preventDefault
   >

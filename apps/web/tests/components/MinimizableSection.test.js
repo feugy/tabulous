@@ -107,7 +107,13 @@ describe('MinimizableSection component', () => {
       let tabs
 
       beforeEach(() => {
-        renderComponent({ icons: ['help', 'people', 'start'] })
+        renderComponent({
+          tabs: [
+            { icon: 'help' },
+            { icon: 'people', key: 'F11' },
+            { icon: 'start' }
+          ]
+        })
         tabs = screen.queryAllByRole('tab')
       })
 
@@ -149,6 +155,32 @@ describe('MinimizableSection component', () => {
         expect(handleChange).not.toHaveBeenCalled()
 
         fireEvent.click(tabs[1])
+        await tick()
+        expect(tabs[0]).toHaveAttribute('aria-selected', 'false')
+        expect(tabs[1]).toHaveAttribute('aria-selected', 'true')
+        expect(handleMinimize).toHaveBeenNthCalledWith(
+          2,
+          expect.objectContaining({ detail: { minimized: false } })
+        )
+
+        expect(handleMinimize).toHaveBeenCalledTimes(2)
+        expect(handleChange).toHaveBeenCalledWith(
+          expect.objectContaining({ detail: { currentTab: 1 } })
+        )
+        expect(handleChange).toHaveBeenCalledTimes(1)
+      })
+
+      it('expands and changes tab on tab key', async () => {
+        fireEvent.click(tabs[0])
+        await tick()
+        expect(tabs[0]).toHaveAttribute('aria-selected', 'true')
+        expect(handleMinimize).toHaveBeenNthCalledWith(
+          1,
+          expect.objectContaining({ detail: { minimized: true } })
+        )
+        expect(handleChange).not.toHaveBeenCalled()
+
+        fireEvent.keyDown(window, { key: 'F11' })
         await tick()
         expect(tabs[0]).toHaveAttribute('aria-selected', 'false')
         expect(tabs[1]).toHaveAttribute('aria-selected', 'true')

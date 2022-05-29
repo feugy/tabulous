@@ -50,7 +50,7 @@
 <aside class:highlight class:visible>
   <MinimizableSection
     placement="bottom"
-    icons={['front_hand']}
+    tabs={[{ icon: 'front_hand', key: 'h' }]}
     dimension="25vh"
     {minimized}><div class="hand" bind:this={node} /></MinimizableSection
   >
