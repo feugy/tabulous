@@ -9,6 +9,7 @@ const pointerDown = 'pointerdown'
 const pointerUp = 'pointerup'
 const pointerMove = 'pointermove'
 const wheel = 'wheel'
+const keyDown = 'keydown'
 
 describe('InputManager', () => {
   let scene
@@ -19,6 +20,7 @@ describe('InputManager', () => {
   let hovers
   let wheels
   let longs
+  let keys
   const interaction = document.createElement('div')
 
   configures3dTestEngine(created => {
@@ -34,6 +36,7 @@ describe('InputManager', () => {
     hovers = []
     wheels = []
     longs = []
+    keys = []
   })
 
   beforeAll(() => {
@@ -43,6 +46,7 @@ describe('InputManager', () => {
     manager.onHoverObservable.add(hover => hovers.push(hover))
     manager.onWheelObservable.add(wheel => wheels.push(wheel))
     manager.onLongObservable.add(long => longs.push(long))
+    manager.onKeyObservable.add(key => keys.push(key))
   })
 
   it('has initial state', () => {
@@ -706,7 +710,7 @@ describe('InputManager', () => {
           triggerEvent(pointerUp, { ...pointerA, pointerId: idA }, 'tap')
         )
 
-        expectEvents({ drags: 4 })
+        expectEvents({ drags: 4, hovers: meshId ? 1 : 0 })
         const pointers = 2
         expectsDataWithMesh(
           drags[0],
@@ -728,6 +732,13 @@ describe('InputManager', () => {
           { pointers, type: 'dragStop', event: events[9] },
           meshId
         )
+        if (meshId) {
+          expectsDataWithMesh(
+            hovers[0],
+            { type: 'hoverStart', event: events[2] },
+            meshId
+          )
+        }
       }
     )
 
@@ -1239,16 +1250,15 @@ describe('InputManager', () => {
       )
 
       expectEvents({ hovers: 2 })
-      const pointers = 0
       const meshId = meshes[0].id
       expectsDataWithMesh(
         hovers[0],
-        { pointers, type: 'hoverStart', event: events[0] },
+        { type: 'hoverStart', event: events[0] },
         meshId
       )
       expectsDataWithMesh(
         hovers[1],
-        { pointers, type: 'hoverStop', event: events[2] },
+        { type: 'hoverStop', event: events[2] },
         meshId
       )
     })
@@ -1281,12 +1291,12 @@ describe('InputManager', () => {
       const meshId = 'box1'
       expectsDataWithMesh(
         hovers[0],
-        { pointers: 0, type: 'hoverStart', event: events[0] },
+        { type: 'hoverStart', event: events[0] },
         meshId
       )
       expectsDataWithMesh(
         hovers[1],
-        { pointers, type: 'hoverStop', event: events[3] },
+        { type: 'hoverStop', event: events[3] },
         meshId
       )
       expectsDataWithMesh(
@@ -1343,6 +1353,95 @@ describe('InputManager', () => {
       )
     })
 
+    it('detects keys without a mesh', () => {
+      const events = [triggerEvent(keyDown, { key: 'R' })]
+
+      expectEvents({ keys: 1 })
+      expectsDataWithMesh(
+        keys[0],
+        {
+          type: 'keyDown',
+          event: events[0],
+          key: 'r'
+        },
+        []
+      )
+    })
+
+    it('includes key modifiers', () => {
+      const events = [
+        triggerEvent(keyDown, {
+          key: 'Enter',
+          altKey: true,
+          ctrlKey: true,
+          metaKey: false,
+          shiftKey: false
+        })
+      ]
+
+      expectEvents({ keys: 1 })
+      expectsDataWithMesh(
+        keys[0],
+        {
+          type: 'keyDown',
+          event: events[0],
+          modifiers: { alt: true, ctrl: true, meta: false, shift: false },
+          key: 'Enter'
+        },
+        []
+      )
+    })
+
+    it('detects keys over a mesh', () => {
+      const pointer = { x: 1000, y: 550 }
+      const pointerId = 50
+      const events = [
+        triggerEvent(pointerMove, { ...move(pointer, 50, -25), pointerId }),
+        triggerEvent(keyDown, { key: 'f' })
+      ]
+
+      expectEvents({ hovers: 1, keys: 1 })
+      const meshId = meshes[0].id
+      expectsDataWithMesh(
+        hovers[0],
+        { type: 'hoverStart', event: events[0] },
+        meshId
+      )
+      expectsDataWithMesh(
+        keys[0],
+        { type: 'keyDown', event: events[1], key: 'f' },
+        [meshId]
+      )
+    })
+
+    it('stops hovering on blur', () => {
+      const pointerId = 72
+      const events = [
+        triggerEvent(pointerMove, { x: 1050, y: 525, pointerId }),
+        triggerEvent('blur')
+      ]
+      expectEvents({ hovers: 2 })
+      const meshId = meshes[0].id
+      expectsDataWithMesh(
+        hovers[0],
+        { type: 'hoverStart', event: events[0] },
+        meshId
+      )
+      expectsDataWithMesh(
+        hovers[1],
+        { type: 'hoverStop', event: { ...events[1], pointerId } },
+        meshId
+      )
+    })
+
+    it('updates hovered on focus', () => {
+      const pointerId = 83
+      const event = triggerEvent('focus', { x: 1050, y: 525, pointerId })
+      expectEvents({ hovers: 1 })
+      const meshId = meshes[0].id
+      expectsDataWithMesh(hovers[0], { type: 'hoverStart', event }, meshId)
+    })
+
     it('can stop hover operation', () => {
       const pointer = { x: 975, y: 535 }
       const pointerId = 50
@@ -1354,16 +1453,15 @@ describe('InputManager', () => {
       manager.stopHover(finalEvent)
 
       expectEvents({ hovers: 2 })
-      const pointers = 0
       const meshId = meshes[1].id
       expectsDataWithMesh(
         hovers[0],
-        { pointers, type: 'hoverStart', event: startEvent },
+        { type: 'hoverStart', event: startEvent },
         meshId
       )
       expectsDataWithMesh(
         hovers[1],
-        { pointers, type: 'hoverStop', event: finalEvent },
+        { type: 'hoverStop', event: { ...finalEvent, pointerId } },
         meshId
       )
     })
@@ -1379,16 +1477,15 @@ describe('InputManager', () => {
       manager.stopAll(finalEvent)
 
       expectEvents({ hovers: 2 })
-      const pointers = 0
       const meshId = meshes[1].id
       expectsDataWithMesh(
         hovers[0],
-        { pointers, type: 'hoverStart', event: startEvent },
+        { type: 'hoverStart', event: startEvent },
         meshId
       )
       expectsDataWithMesh(
         hovers[1],
-        { pointers, type: 'hoverStop', event: finalEvent },
+        { type: 'hoverStop', event: { ...finalEvent, pointerId } },
         meshId
       )
     })
@@ -1420,6 +1517,21 @@ describe('InputManager', () => {
       triggerEvent(wheel, { x: 1000, y: 500, pointerId: 1 })
       expectEvents()
     })
+
+    it('ignores keys', () => {
+      triggerEvent(keyDown, { key: 'f' })
+      expectEvents()
+    })
+
+    it('ignores blur', () => {
+      triggerEvent('blur', { x: 1000, y: 500, pointerId: 1, button: 1 })
+      expectEvents()
+    })
+
+    it('ignores focus', () => {
+      triggerEvent('focus', { x: 1000, y: 500, pointerId: 1, button: 1 })
+      expectEvents()
+    })
   })
 
   function triggerEvent(type, data, pointerType = 'mouse') {
@@ -1437,6 +1549,7 @@ describe('InputManager', () => {
     expect(hovers).toHaveLength(counts.hovers ?? 0)
     expect(wheels).toHaveLength(counts.wheels ?? 0)
     expect(longs).toHaveLength(counts.longs ?? 0)
+    expect(keys).toHaveLength(counts.keys ?? 0)
   }
 
   function move(pointer, x, y) {
@@ -1449,10 +1562,14 @@ describe('InputManager', () => {
     for (const property in expected) {
       expect(actual).toHaveProperty(property, expected[property])
     }
-    if (meshId) {
-      expect(actual.mesh?.id).toEqual(meshId)
+    if (Array.isArray(meshId)) {
+      expect(actual.meshes?.map(({ id }) => id)).toEqual(meshId)
     } else {
-      expect(actual.mesh).not.toBeDefined()
+      if (meshId) {
+        expect(actual.mesh?.id).toEqual(meshId)
+      } else {
+        expect(actual.mesh).not.toBeDefined()
+      }
     }
   }
 })

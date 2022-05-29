@@ -185,7 +185,8 @@ export function initEngine({
   // implements game interaction model
   const subscriptions = attachInputs({
     doubleTapDelay,
-    actionMenuProps$
+    actionMenuProps$,
+    engine
   })
 
   // applies other players' update

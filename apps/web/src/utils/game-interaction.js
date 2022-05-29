@@ -12,15 +12,28 @@ import { normalize, shuffle } from '.'
 import { makeLogger } from './logger'
 
 const logger = makeLogger('game-interaction')
+const cameraPositionKeys = new Set([
+  'Home',
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  '9'
+])
 
 /**
  * Attach to game engine's input manager observables to implement game interaction model.
  * @param {object} params - parameters, including:
+ * @param {import('@babylonjs/core').Engine} - current 3D engine.
  * @param {number} params.doubleTapDelay - number of milliseconds between 2 taps to be considered as a double tap.
  * @param {Subject<import('../stores/game-engine').ActionMenuProps>} params.actionMenuProps$ - subject emitting when action menu should be displayed and hidden.
  * @returns {import('rxjs').Subscription[]} an array of observable subscriptions
  */
-export function attachInputs({ doubleTapDelay, actionMenuProps$ }) {
+export function attachInputs({ engine, doubleTapDelay, actionMenuProps$ }) {
   let selectionPosition
   let panPosition
   let rotatePosition
@@ -30,6 +43,7 @@ export function attachInputs({ doubleTapDelay, actionMenuProps$ }) {
   const drags$ = new Subject()
   const wheels$ = new Subject()
   const pinchs$ = new Subject()
+  const keys$ = new Subject()
   const meshHover$ = new Subject()
   const details$ = new Subject()
   const behaviorAction$ = new Subject()
@@ -40,6 +54,7 @@ export function attachInputs({ doubleTapDelay, actionMenuProps$ }) {
     { observable: inputManager.onDragObservable, subject: drags$ },
     { observable: inputManager.onWheelObservable, subject: wheels$ },
     { observable: inputManager.onPinchObservable, subject: pinchs$ },
+    { observable: inputManager.onKeyObservable, subject: keys$ },
     { observable: controlManager.onDetailedObservable, subject: details$ },
     { observable: controlManager.onActionObservable, subject: behaviorAction$ }
   ]
@@ -254,6 +269,134 @@ export function attachInputs({ doubleTapDelay, actionMenuProps$ }) {
     }),
 
     /**
+     * Implements actions on mesh keys, or on selection:
+     * - F to flip
+     * - R to rotate
+     * - L to toggle lock
+     * - D to draw
+     * - S to shuffle
+     * - G to group together or increment
+     * - U to unstack or decrement
+     * - V to view details
+     */
+    keys$
+      .pipe(
+        filter(
+          ({ key, meshes }) =>
+            menuActionsByKey.has(key) &&
+            (meshes.length || selectionManager.meshes.size)
+        )
+      )
+      .subscribe({
+        next: ({ meshes, key, fromHand }) => {
+          const actualMeshes = meshes.length
+            ? meshes
+            : [selectionManager.meshes.values().next().value]
+          for (const mesh of actualMeshes) {
+            const params = buildSupportParams(mesh, fromHand)
+            for (const action of menuActionsByKey.get(key)) {
+              if (action.support(mesh, params)) {
+                action.build(mesh, params).onClick()
+                break
+              }
+            }
+          }
+        }
+      }),
+
+    /**
+     * Implements camera pan global keys:
+     * - ArrowUp/ArrowDown to pan vertically
+     * - ArrowLeft/ArrowRight to pan horizontally
+     */
+    keys$
+      .pipe(
+        filter(
+          ({ key, modifiers }) => !modifiers?.ctrl && key.startsWith('Arrow')
+        )
+      )
+      .subscribe({
+        next: ({ key }) => {
+          const x = engine.getRenderWidth() * 0.5
+          const y = engine.getRenderHeight() * 0.5
+          let vertical = 0
+          let horizontal = 0
+          if (key === 'ArrowUp') {
+            vertical += y * 0.1
+          } else if (key === 'ArrowDown') {
+            vertical -= y * 0.1
+          } else if (key === 'ArrowLeft') {
+            horizontal += x * 0.1
+          } else if (key === 'ArrowRight') {
+            horizontal -= x * 0.1
+          }
+          cameraManager.pan({ x, y }, { x: x + horizontal, y: y + vertical })
+        }
+      }),
+
+    /**
+     * Implements camera rotation global keys:
+     * - Ctrl + ArrowUp/ArrowDown to rotate beta angle (x-axis)
+     * - Ctrl + ArrowLeft/ArrowRight to rotate alpha angle (y-axis)
+     */
+    keys$
+      .pipe(
+        filter(
+          ({ key, modifiers }) => modifiers?.ctrl && key.startsWith('Arrow')
+        )
+      )
+      .subscribe({
+        next: ({ key }) => {
+          cameraManager.rotate(
+            key === 'ArrowLeft'
+              ? Math.PI / -4
+              : key === 'ArrowRight'
+              ? Math.PI / 4
+              : 0,
+            key === 'ArrowDown'
+              ? Math.PI / 24
+              : key === 'ArrowUp'
+              ? Math.PI / -24
+              : 0
+          )
+        }
+      }),
+
+    /**
+     * Implements camera zoom global keys:
+     * - + to zoom in
+     * - - to zoom out
+     */
+    keys$.pipe(filter(({ key }) => key === '+' || key === '-')).subscribe({
+      next: ({ key }) => {
+        cameraManager.zoom(key === '+' ? -5 : 5)
+      }
+    }),
+
+    /**
+     * Implements camera position management global keys:
+     * - Home to restore default camera position
+     * - Ctrl+1~9 to save camera position
+     * - 1~9 to restore previously saved camera position
+     */
+    keys$.pipe(filter(({ key }) => cameraPositionKeys.has(key))).subscribe({
+      next: ({ key, modifiers }) => {
+        if (!modifiers?.ctrl) {
+          cameraManager.restore(key === 'Home' ? 0 : +key)
+        } else {
+          cameraManager.save(+key)
+        }
+      }
+    }),
+
+    /**
+     * TODO
+     * - F1 to toggle help.
+     * - F2 to toggle hand.
+     * - F3 to toggle manual.
+     */
+
+    /**
      * Implements actions when triggering some behavior:
      * - closes menu unless flipping or rotating
      * - when pushing selected mesh onto a stack, selects the entire stack
@@ -383,14 +526,9 @@ export function computeMenuProps(mesh, fromHand = false) {
     return null
   }
   const items = []
-  const selectedMeshes = selectionManager.getSelection(mesh)
-  const params = {
-    selectedMeshes,
-    fromHand,
-    isSingleStackSelected: isSingleStackSelected(mesh, selectedMeshes)
-  }
+  const params = buildSupportParams(mesh, fromHand)
   for (const spec of menuActions) {
-    if (selectedMeshes.every(mesh => spec.support(mesh, params))) {
+    if (params.selectedMeshes.every(mesh => spec.support(mesh, params))) {
       items.push(spec.build(mesh, params))
     }
   }
@@ -399,7 +537,7 @@ export function computeMenuProps(mesh, fromHand = false) {
     items,
     open: true,
     interactedMesh: mesh,
-    meshes: selectedMeshes
+    meshes: params.selectedMeshes
   }
 }
 
@@ -415,7 +553,8 @@ const menuActions = [
       onClick: ({ detail } = {}) =>
         triggerActionOnSelection(mesh, 'flip', detail?.quantity),
       max: computesStackSize(mesh, params)
-    })
+    }),
+    key: 'f'
   },
   {
     support: (mesh, { selectedMeshes }) => canAllDo('rotate', selectedMeshes),
@@ -425,7 +564,8 @@ const menuActions = [
       onClick: ({ detail } = {}) =>
         triggerActionOnSelection(mesh, 'rotate', detail?.quantity),
       max: computesStackSize(mesh, params)
-    })
+    }),
+    key: 'r'
   },
   {
     support: (mesh, { selectedMeshes }) => canAllDo('draw', selectedMeshes),
@@ -435,7 +575,8 @@ const menuActions = [
       onClick: ({ detail } = {}) =>
         triggerActionOnSelection(mesh, 'draw', detail?.quantity),
       max: computesStackSize(mesh, params)
-    })
+    }),
+    key: 'd'
   },
   {
     support: (mesh, { selectedMeshes }) =>
@@ -453,7 +594,8 @@ const menuActions = [
           ))
         ),
       max: computesStackSize(mesh, params)
-    })
+    }),
+    key: 'u'
   },
   {
     support: (mesh, { selectedMeshes }) =>
@@ -466,7 +608,8 @@ const menuActions = [
           await triggerAction(mesh, 'decrement', detail?.quantity, true)
         ),
       max: computesQuantity(mesh, params)
-    })
+    }),
+    key: 'u'
   },
   {
     support: canStackAll,
@@ -474,7 +617,8 @@ const menuActions = [
       icon: 'zoom_in_map',
       title: 'tooltips.stack-all',
       onClick: () => stackAll(mesh, selectedMeshes)
-    })
+    }),
+    key: 'g'
   },
   {
     support: canIncrement,
@@ -482,7 +626,8 @@ const menuActions = [
       icon: 'zoom_in_map',
       title: 'tooltips.increment',
       onClick: () => increment(mesh, selectedMeshes)
-    })
+    }),
+    key: 'g'
   },
   {
     support: (mesh, { isSingleStackSelected, selectedMeshes }) =>
@@ -491,7 +636,8 @@ const menuActions = [
       icon: 'shuffle',
       title: 'tooltips.shuffle',
       onClick: () => triggerAction(mesh, 'shuffle')
-    })
+    }),
+    key: 's'
   },
   {
     support: (mesh, { selectedMeshes }) =>
@@ -500,7 +646,8 @@ const menuActions = [
       icon: 'visibility',
       title: 'tooltips.detail',
       onClick: () => triggerAction(mesh, 'detail')
-    })
+    }),
+    key: 'v'
   },
   {
     support: (mesh, { selectedMeshes }) =>
@@ -509,9 +656,26 @@ const menuActions = [
       icon: mesh.metadata.isLocked ? 'lock_open' : 'lock',
       title: mesh.metadata.isLocked ? 'tooltips.unlock' : 'tooltips.lock',
       onClick: () => triggerActionOnSelection(mesh, 'toggleLock')
-    })
+    }),
+    key: 'l'
   }
 ]
+
+const menuActionsByKey = new Map(
+  menuActions.map(({ key }) => [
+    key,
+    menuActions.filter(action => action.key === key)
+  ])
+)
+
+function buildSupportParams(mesh, fromHand) {
+  const selectedMeshes = selectionManager.getSelection(mesh)
+  return {
+    selectedMeshes,
+    fromHand,
+    isSingleStackSelected: isSingleStackSelected(mesh, selectedMeshes)
+  }
+}
 
 function getBaseMeshes(meshes) {
   return new Set(meshes.map(mesh => mesh?.metadata?.stack?.[0] ?? mesh))

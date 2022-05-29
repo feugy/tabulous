@@ -13,14 +13,23 @@ const PinchAttemptThreshold = 3
 const DragMinimumDistance = 5
 
 /**
+ * @typedef {object} KeyModifiers modifier keys applied during the keystroke:
+ * @property {boolean} alt - true when Alt/Option key is active.
+ * @property {boolean} ctrl - true when Ctrl key is active.
+ * @property {boolean} meta - true when Windows/Command key is active.
+ * @property {boolean} shift - true when Shift key is active.
+ *
  * @typedef {object} InputData input event data:
- * @property {string} type - event type (tap, doubletap, wheel, dragStart, drag, dragStop, hoverStart, hoverStop, pinchStart, pinch, pinchStop, longPointer).
+ * @property {string} type - event type (tap, doubletap, wheel, dragStart, drag, dragStop, hoverStart, hoverStop, pinchStart, pinch, pinchStop, longPointer, keyDown).
  * @property {PointerEvent} event - the original browser event.
  * @property {number} pointers? - number of pointers used
  * @property {object} mesh? - mesh upon which event occured, when relevant.
+ * @property {object[]} meshes? - meshes upon which key event occured, when relevant.
  * @property {number} button? - the pointer button used, when relevant (depends on pointer and event types).
  * @property {boolean} long? - true indicates long press on relevant types (tap, doubletap, dragStart, pinchStart)
  * @property {number} pinchDelta? - for pinch event, how many pixels more (or less) between the two pointers since the previous event.
+ * @property {string} key? - for key event, which key was pressed @see https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_key_values
+ * @property {KeyModifier} modifiers? - for key event, active modifiers.
  * @property {boolean} fromHand? - true when interacted mesh lies in player's hand.
  */
 
@@ -40,6 +49,7 @@ class InputManager {
    * @property {Observable<InputData>} onHoverObservable - emits pointer hover start and stop events.
    * @property {Observable<InputData>} onWheelObservable - emits pointer wheel events.
    * @property {Observable<InputData>} onLongObservable - emits an event when detecting long operations (long tap/drag/pinch).
+   * @property {Observable<InputData>} onKeyObservable - emits an event when a key is pressed.
    */
   constructor() {
     this.enabled = false
@@ -49,6 +59,7 @@ class InputManager {
     this.onHoverObservable = new Observable()
     this.onWheelObservable = new Observable()
     this.onLongObservable = new Observable()
+    this.onKeyObservable = new Observable()
     // private
     this.dispose = null
   }
@@ -74,7 +85,7 @@ class InputManager {
       confirmed: false
     }
     let dragOrigin = null
-    let hovered = null
+    let hoveredByPointerId = new Map()
     let lastTap = 0
     let tapPointers = 1
     this.enabled = enabled
@@ -82,31 +93,28 @@ class InputManager {
     this.dispose?.()
 
     const startHover = (event, mesh) => {
-      if (hovered !== mesh) {
-        const data = {
-          type: 'hoverStart',
-          mesh,
-          event,
-          pointers: pointers.size
-        }
+      if (hoveredByPointerId.get(event.pointerId) !== mesh) {
+        const data = { type: 'hoverStart', mesh, event }
         logger.info(data, `start hovering ${mesh.id}`)
-        hovered = mesh
+        hoveredByPointerId.set(event.pointerId, mesh)
         this.onHoverObservable.notifyObservers(data)
       }
     }
 
     // dynamically creates stopHover to keep hovered hidden
     this.stopHover = event => {
-      if (hovered) {
-        const data = {
-          type: 'hoverStop',
-          mesh: hovered,
-          event,
-          pointers: pointers.size
+      if ('pointerId' in event) {
+        const mesh = hoveredByPointerId.get(event.pointerId)
+        if (mesh) {
+          const data = { type: 'hoverStop', mesh, event }
+          logger.info(data, `stop hovering ${mesh.id}`)
+          hoveredByPointerId.delete(event.pointerId)
+          this.onHoverObservable.notifyObservers(data)
         }
-        logger.info(data, `stop hovering ${hovered.id}`)
-        hovered = null
-        this.onHoverObservable.notifyObservers(data)
+      } else {
+        for (const pointerId of hoveredByPointerId.keys()) {
+          this.stopHover({ ...event, pointerId })
+        }
       }
     }
 
@@ -213,6 +221,12 @@ class InputManager {
       }
       clearLong()
       const { mesh } = computeMetas(event)
+      if (mesh !== hoveredByPointerId.get(event.pointerId)) {
+        this.stopHover(event)
+      }
+      if (mesh) {
+        startHover(event, mesh)
+      }
 
       if (pinch.first) {
         const oldDistance = pinch.distance
@@ -256,7 +270,6 @@ class InputManager {
           if (
             isDifferenceEnough(dragOrigin.event, event, DragMinimumDistance)
           ) {
-            this.stopHover(event)
             const data = {
               type: 'dragStart',
               ...dragOrigin,
@@ -288,15 +301,6 @@ class InputManager {
             }`
           )
           this.onDragObservable.notifyObservers(data)
-        }
-      }
-
-      if (pointers.size === 0 && !dragOrigin && !pinch.confirmed) {
-        if (mesh !== hovered) {
-          this.stopHover(event)
-        }
-        if (mesh) {
-          startHover(event, mesh)
         }
       }
     }
@@ -368,21 +372,59 @@ class InputManager {
       this.onWheelObservable.notifyObservers(data)
     }
 
+    const handleKeyDown = event => {
+      if (!this.enabled) return
+      const data = {
+        type: 'keyDown',
+        meshes: [...hoveredByPointerId.values()],
+        key: event.key.length === 1 ? event.key.toLowerCase() : event.key,
+        modifiers: {
+          alt: event.altKey,
+          ctrl: event.ctrlKey,
+          meta: event.metaKey,
+          shift: event.shiftKey
+        },
+        event
+      }
+      logger.debug(data, `type: keydown ${data.key} on (${event.mesh?.id})`)
+      this.onKeyObservable.notifyObservers(data)
+    }
+
+    const handleFocus = event => {
+      if (!this.enabled) return
+      const { mesh } = computeMetas(event)
+      if (mesh) {
+        startHover(event, mesh)
+      }
+    }
+
+    const handleBlur = event => {
+      if (!this.enabled) return
+      this.stopAll(event)
+    }
+
+    interaction.addEventListener('focus', handleFocus)
+    interaction.addEventListener('blur', handleBlur)
     interaction.addEventListener('pointerdown', handlePointerDown)
     interaction.addEventListener('pointermove', handlePointerMove)
     interaction.addEventListener('pointerup', handlePointerUp)
     interaction.addEventListener('wheel', handleWheel)
+    interaction.addEventListener('keydown', handleKeyDown)
     this.dispose = () => {
+      interaction.removeEventListener('focus', handleFocus)
+      interaction.removeEventListener('blur', handleBlur)
       interaction.removeEventListener('pointerdown', handlePointerDown)
       interaction.removeEventListener('pointermove', handlePointerMove)
       interaction.removeEventListener('pointerup', handlePointerUp)
       interaction.removeEventListener('wheel', handleWheel)
+      interaction.removeEventListener('keydown', handleKeyDown)
     }
     scene.onDisposeObservable.addOnce(() => {
       this.onTapObservable.clear()
       this.onDragObservable.clear()
       this.onHoverObservable.clear()
       this.onWheelObservable.clear()
+      this.onKeyObservable.clear()
       this.dispose()
     })
   }
