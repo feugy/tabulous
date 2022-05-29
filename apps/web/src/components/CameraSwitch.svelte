@@ -5,7 +5,7 @@
 
   export let current = null
   export let saves = []
-  export let maxCount = 6
+  export let maxCount = 9
   export let longTapDelay = 250
 
   const timeByPointerId = new Map()

@@ -11,11 +11,15 @@
   export let connected
   export let game = undefined
 
+  const helpId = 'help'
+  const playersId = 'players'
+  const rulesId = 'rules'
+
   let tab
   let initialWidth = '30vw'
   let hasPeers = false
   let discussionDimension = '15%'
-  let icons = ['help']
+  let tabs = [{ icon: 'help', id: helpId, key: 'F1' }]
 
   $: otherPlayers = [...(playerById?.values() ?? [])].filter(
     ({ id }) => id !== player.id
@@ -37,12 +41,12 @@
       []
 
   $: {
-    icons = ['help']
+    tabs = [{ icon: 'help', id: helpId, key: 'F1' }]
     if (game?.rulesBookPageCount > 1) {
-      icons.splice(0, 0, 'auto_stories')
+      tabs.splice(0, 0, { icon: 'auto_stories', id: rulesId, key: 'F2' })
     }
     if (hasPeers) {
-      icons.splice(0, 0, 'people_alt')
+      tabs.splice(0, 0, { icon: 'people_alt', id: playersId, key: 'F3' })
     }
   }
 </script>
@@ -65,18 +69,18 @@
 <aside>
   <MinimizableSection
     placement="right"
-    {icons}
+    {tabs}
     minimized={!hasPeers}
     bind:currentTab={tab}
     on:resize={() => (initialWidth = 'auto')}
   >
     <div
       class="content"
-      style="{icons[tab] === 'people_alt'
+      style="{tabs[tab]?.id === playersId
         ? 'width'
         : 'max-width'}: {initialWidth}"
     >
-      {#if icons[tab] === 'people_alt'}
+      {#if tabs[tab]?.id === playersId}
         <div class="peers">
           {#each avatars as props}<PlayerAvatar {...props} />{/each}
         </div>
@@ -84,12 +88,12 @@
           <MinimizableSection
             dimension={discussionDimension}
             placement="bottom"
-            icons={['question_answer']}
+            tabs={[{ icon: 'question_answer', key: 'F4' }]}
           >
             <Discussion {thread} {playerById} on:sendMessage />
           </MinimizableSection>
         {/if}
-      {:else if icons[tab] === 'auto_stories'}
+      {:else if tabs[tab]?.id === rulesId}
         <RuleViewer game={game?.kind} lastPage={game?.rulesBookPageCount - 1} />
       {:else}
         <ControlsHelp />

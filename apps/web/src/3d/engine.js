@@ -2,7 +2,6 @@
 // more [here](https://doc.babylonjs.com/divingDeeper/developWithBjs/treeShaking)
 import { Engine as RealEngine } from '@babylonjs/core/Engines/engine'
 import { Observable } from '@babylonjs/core/Misc/observable'
-import { Scene } from '@babylonjs/core/scene'
 // mandatory side effects
 import '@babylonjs/core/Animations/animatable'
 import '@babylonjs/core/Materials/Textures/Loaders/ktxTextureLoader'
@@ -64,17 +63,21 @@ export function createEngine({
 }) {
   const engine = new Engine(canvas, true)
   engine.enableOfflineSupport = false
-  engine.inputElement = interaction
   engine.onLoadedObservable = new Observable()
 
-  Scene.DoubleClickDelay = doubleTapDelay
   // scene ordering is important: main scene must come last to allow ray picking scene.pickWithRay(new Ray(vertex, down))
   const handScene = new ExtendedScene(engine)
   const scene = new ExtendedScene(engine)
   handScene.autoClear = false
 
   cameraManager.init({ scene, handScene })
-  inputManager.init({ scene, handScene, longTapDelay, doubleTapDelay })
+  inputManager.init({
+    scene,
+    handScene,
+    longTapDelay,
+    doubleTapDelay,
+    interaction
+  })
   moveManager.init({ scene })
   controlManager.init({ scene, handScene })
   selectionManager.init({ scene, handScene })

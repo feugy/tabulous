@@ -59,10 +59,8 @@ describe('applyGravity() 3D utility', () => {
     const box = CreateBox('box', {})
     expect(getDimensions(box).height).toEqual(1)
     box.setAbsolutePosition(new Vector3(x, 10, z))
-    box.computeWorldMatrix()
     const box2 = CreateBox('box2', {})
     box2.setAbsolutePosition(new Vector3(x + 2, 3, z))
-    box2.computeWorldMatrix()
     expect(box.absolutePosition.y).toEqual(10)
     expect(applyGravity(box).asArray()).toEqual([x, 0.5, z])
   })
@@ -71,10 +69,8 @@ describe('applyGravity() 3D utility', () => {
     const box = CreateBox('box', {})
     expect(getDimensions(box).height).toEqual(1)
     box.setAbsolutePosition(new Vector3(x, -10, z))
-    box.computeWorldMatrix()
     const box2 = CreateBox('box2', {})
     box2.setAbsolutePosition(new Vector3(x, 3, z - 2))
-    box2.computeWorldMatrix()
     expect(box.absolutePosition.y).toEqual(-10)
     expect(applyGravity(box).asArray()).toEqual([x, 0.5, z])
   })
@@ -82,10 +78,8 @@ describe('applyGravity() 3D utility', () => {
   it('positions mesh just above another one', () => {
     const box = CreateBox('box', {})
     box.setAbsolutePosition(new Vector3(x, 15, z))
-    box.computeWorldMatrix()
     const box2 = CreateBox('box2', {})
     box2.setAbsolutePosition(new Vector3(x, 3, z))
-    box2.computeWorldMatrix()
     let pos = applyGravity(box)
     expect(pos.x).toEqual(x)
     expect(pos.y).toBeCloseTo(4)
@@ -95,10 +89,8 @@ describe('applyGravity() 3D utility', () => {
   it('positions mesh above another one with partial overlap', () => {
     const box = CreateBox('box', {})
     box.setAbsolutePosition(new Vector3(x, 10, z))
-    box.computeWorldMatrix()
     const box2 = CreateBox('box2', {})
     box2.setAbsolutePosition(new Vector3(x - 0.5, 2, z - 0.5))
-    box2.computeWorldMatrix()
     let pos = applyGravity(box)
     expect(pos.x).toEqual(x)
     expect(pos.y).toBeCloseTo(3)
@@ -108,13 +100,10 @@ describe('applyGravity() 3D utility', () => {
   it('positions mesh just above several ones', () => {
     const box = CreateBox('box', {})
     box.setAbsolutePosition(new Vector3(x, 20, z))
-    box.computeWorldMatrix()
     const box2 = CreateBox('box2', {})
     box2.setAbsolutePosition(new Vector3(x - 0.5, 4, z))
-    box2.computeWorldMatrix()
     const box3 = CreateBox('box3', {})
     box3.setAbsolutePosition(new Vector3(x + 0.5, 3, z))
-    box3.computeWorldMatrix()
     let pos = applyGravity(box)
     expect(pos.x).toEqual(x)
     expect(pos.y).toBeCloseTo(5)
@@ -129,10 +118,8 @@ describe('isAbove() 3D utility', () => {
   it('finds when a mesh is hovering another one', () => {
     const box = CreateBox('box', {})
     box.setAbsolutePosition(new Vector3(x, 20, z))
-    box.computeWorldMatrix()
     const box2 = CreateBox('box2', {})
     box2.setAbsolutePosition(new Vector3(x - 0.5, 4, z))
-    box2.computeWorldMatrix()
 
     expect(isAbove(box, box2)).toBe(true)
   })
@@ -140,10 +127,8 @@ describe('isAbove() 3D utility', () => {
   it('finds when a mesh is not hovering another one', () => {
     const box = CreateBox('box', {})
     box.setAbsolutePosition(new Vector3(x, 20, z))
-    box.computeWorldMatrix()
     const box2 = CreateBox('box2', {})
     box2.setAbsolutePosition(new Vector3(x - 3, 4, z))
-    box2.computeWorldMatrix()
 
     expect(isAbove(box, box2)).toBe(false)
   })
@@ -306,6 +291,5 @@ describe('getCenterAltitudeAbove() 3D utility', () => {
 function setPosition(meshesAndPositions) {
   for (const { x, y, z, mesh } of meshesAndPositions) {
     mesh.setAbsolutePosition(new Vector3(x, y, z))
-    mesh.computeWorldMatrix()
   }
 }

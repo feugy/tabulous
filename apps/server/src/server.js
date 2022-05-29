@@ -27,7 +27,7 @@ export async function startServer(config) {
   await repositories.games.connect({ path: config.data.path })
   await repositories.catalogItems.connect({ path: config.games.path })
 
-  app.register(import('fastify-websocket'), { maxPayload: 1048576 })
+  app.register(import('@fastify/websocket'), { maxPayload: 1048576 })
   app.register(import('./plugins/graphql.js'), config.plugins.graphql)
   app.register(import('./plugins/static.js'), config.plugins.static)
 

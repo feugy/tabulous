@@ -1,5 +1,6 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { faker } from '@faker-js/faker'
 import { BehaviorSubject } from 'rxjs'
 import { get } from 'svelte/store'
 import { MoveBehavior } from '../../src/3d/behaviors'
@@ -12,6 +13,7 @@ import {
 } from '../../src/3d/managers'
 import { createTable, getMeshScreenPosition } from '../../src/3d/utils'
 import {
+  actionIds,
   attachInputs,
   computeMenuProps,
   triggerAction,
@@ -23,6 +25,7 @@ jest.mock('../../src/3d/managers/camera')
 const debug = false
 
 describe('Game interaction model', () => {
+  let engine
   let subscriptions
   let meshes
   const actionMenuProps$ = new BehaviorSubject()
@@ -32,6 +35,7 @@ describe('Game interaction model', () => {
     controlManager.init(created)
     moveManager.init(created)
     selectionManager.init(created)
+    engine = created.engine
   })
 
   beforeEach(() => {
@@ -126,7 +130,8 @@ describe('Game interaction model', () => {
         { functionName: 'draw', icon: 'front_hand' },
         {
           functionName: 'decrement',
-          icon: 'splitscreen',
+          icon: 'zoom_in_map',
+          badge: 'shortcuts.pop',
           max: 4
         },
         { functionName: 'detail', icon: 'visibility' },
@@ -207,7 +212,7 @@ describe('Game interaction model', () => {
       expect(menuProps).toHaveProperty('x', x)
       expect(menuProps).toHaveProperty('y', y)
 
-      const icon = 'splitscreen'
+      const icon = 'zoom_in_map'
       const action = 'decrement'
       const quantity = 3
       mesh.metadata.decrement.mockResolvedValueOnce(null)
@@ -280,9 +285,19 @@ describe('Game interaction model', () => {
       expect(menuProps).toHaveProperty('y', y)
 
       await expectActionItems(menuProps, mesh3, [
-        { functionName: 'flipAll', icon: 'flip', title: 'tooltips.flip-stack' },
+        {
+          functionName: 'flipAll',
+          icon: 'flip',
+          title: 'tooltips.flip-stack',
+          badge: 'shortcuts.flip'
+        },
         { functionName: 'rotate', icon: 'rotate_right' },
-        { functionName: 'reorder', icon: 'shuffle', title: 'tooltips.shuffle' },
+        {
+          functionName: 'reorder',
+          icon: 'shuffle',
+          title: 'tooltips.shuffle',
+          badge: 'shortcuts.shuffle'
+        },
         { functionName: 'draw', icon: 'front_hand' },
         { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
       ])
@@ -391,7 +406,12 @@ describe('Game interaction model', () => {
       expect(menuProps).toHaveProperty('y', y)
 
       await expectActionItems(menuProps, mesh2, [
-        { functionName: 'flipAll', icon: 'flip', title: 'tooltips.flip' },
+        {
+          functionName: 'flipAll',
+          icon: 'flip',
+          title: 'tooltips.flip',
+          badge: 'shortcuts.flip'
+        },
         { functionName: 'rotate', icon: 'rotate_right' },
         { functionName: 'draw', icon: 'front_hand' },
         {
@@ -430,6 +450,7 @@ describe('Game interaction model', () => {
           functionName: 'increment',
           icon: 'zoom_in_map',
           title: 'tooltips.increment',
+          badge: 'shortcuts.push',
           calls: [[[mesh8.id, mesh9.id]]]
         },
         { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
@@ -498,7 +519,12 @@ describe('Game interaction model', () => {
       expect(menuProps).toHaveProperty('y', y)
 
       await expectActionItems(menuProps, mesh3, [
-        { functionName: 'flipAll', icon: 'flip', title: 'tooltips.flip' },
+        {
+          functionName: 'flipAll',
+          icon: 'flip',
+          title: 'tooltips.flip',
+          badge: 'shortcuts.flip'
+        },
         { functionName: 'rotate', icon: 'rotate_right' },
         { functionName: 'draw', icon: 'front_hand' },
         {
@@ -623,19 +649,32 @@ describe('Game interaction model', () => {
   describe('attachInputs()', () => {
     let drawSelectionBox
     let selectWithinBox
-    let panCamera
-    let rotateCamera
+    const actionIdsByKey = new Map([
+      ['f', [actionIds.flip]],
+      ['r', [actionIds.rotate]],
+      ['l', [actionIds.toggleLock]],
+      ['d', [actionIds.draw]],
+      ['s', [actionIds.shuffle]],
+      ['g', [actionIds.push, actionIds.increment]],
+      ['u', [actionIds.pop, actionIds.decrement]],
+      ['v', [actionIds.detail]],
+      ['k', ['unknown']]
+    ])
 
     beforeAll(
-      () => (subscriptions = attachInputs({ doubleTapDelay, actionMenuProps$ }))
+      () =>
+        (subscriptions = attachInputs({
+          engine,
+          actionIdsByKey,
+          doubleTapDelay,
+          actionMenuProps$
+        }))
     )
 
     beforeEach(() => {
       actionMenuProps$.next()
       drawSelectionBox = jest.spyOn(selectionManager, 'drawSelectionBox')
       selectWithinBox = jest.spyOn(selectionManager, 'selectWithinBox')
-      panCamera = jest.spyOn(cameraManager, 'pan')
-      rotateCamera = jest.spyOn(cameraManager, 'rotate')
     })
 
     afterAll(() => {
@@ -762,6 +801,65 @@ describe('Game interaction model', () => {
         args: [meshes[0].id]
       })
       expect(selectionManager.meshes.size).toEqual(0)
+    })
+
+    it.each([
+      { key: 'f', action: 'flip' },
+      { key: 'r', action: 'rotate' },
+      { key: 'v', action: 'detail' },
+      { key: 'l', action: 'toggleLock' }
+    ])(`triggers mesh $action on '$key' key`, ({ key, action }) => {
+      const [box1, , , box4] = meshes
+      inputManager.onKeyObservable.notifyObservers({
+        type: 'keyDown',
+        meshes: [box1, box4],
+        key
+      })
+      expectMeshActions(box1, action)
+      expectMeshActions(box4, action)
+    })
+
+    it(`triggers mesh pop on 'u' key`, () => {
+      const [, box2, box3] = meshes
+      box3.metadata.pop.mockResolvedValue([])
+      inputManager.onKeyObservable.notifyObservers({
+        type: 'keyDown',
+        meshes: [box3, box2],
+        key: 'u'
+      })
+      expectMeshActions(box3, 'pop')
+      // box2 is not stackable
+      expectMeshActions(box2)
+    })
+
+    it(`triggers mesh decrement on 'u' key`, () => {
+      const [, box2, , , , , box7, , box9] = meshes
+      inputManager.onKeyObservable.notifyObservers({
+        type: 'keyDown',
+        meshes: [box7, box2, box9],
+        key: 'u'
+      })
+      expectMeshActions(box7, 'decrement')
+      expectMeshActions(box9, 'decrement')
+      // box2 is not stackable
+      expectMeshActions(box2)
+    })
+
+    it('does nothing on unsupported key', () => {
+      const [, box2, , , , , box7, , box9] = meshes
+      inputManager.onKeyObservable.notifyObservers({
+        type: 'keyDown',
+        meshes: [box7, box2, box9],
+        key: 'k'
+      })
+      expectMeshActions(box7)
+      expectMeshActions(box9)
+      expectMeshActions(box2)
+      expect(cameraManager.save).not.toHaveBeenCalled()
+      expect(cameraManager.restore).not.toHaveBeenCalled()
+      expect(cameraManager.pan).not.toHaveBeenCalled()
+      expect(cameraManager.rotate).not.toHaveBeenCalled()
+      expect(cameraManager.zoom).not.toHaveBeenCalled()
     })
 
     describe('given opened menu for a single mesh', () => {
@@ -986,23 +1084,293 @@ describe('Game interaction model', () => {
         ])
       })
 
-      it('zooms camera on mouse wheel', () => {
-        const event = { deltaY: Math.floor(Math.random() * 100) }
-        inputManager.onWheelObservable.notifyObservers({ event })
-        expect(cameraManager.zoom).toHaveBeenCalledTimes(1)
-        expect(cameraManager.zoom).toHaveBeenCalledWith(event.deltaY * 0.1)
-        expect(selectionManager.meshes.size).toEqual(4)
+      it.each([
+        { key: 'f', action: 'flip', stackAction: 'flipAll' },
+        { key: 'r', action: 'rotate', stackAction: 'rotate' }
+      ])(`triggers $action on '$key' key`, ({ key, action, stackAction }) => {
+        const [box1, , box3, , box5, box6] = meshes
+        inputManager.onKeyObservable.notifyObservers({
+          type: 'keyDown',
+          meshes: [],
+          key
+        })
+        expectMeshActions(box1, action)
+        expectMeshActions(box3, stackAction)
+        // box5 & box6 are stacked with box3
+        expectMeshActions(box5)
+        expectMeshActions(box6)
       })
 
-      it('zooms camera on pinch', () => {
-        inputManager.onPinchObservable.notifyObservers({
-          type: 'pinch',
-          pinchDelta: -20
+      it.each([
+        { key: 'l', action: 'toggleLock' },
+        { key: 'd', action: 'draw' }
+      ])(`triggers $action on '$key' key`, ({ key, action }) => {
+        const [box1, , box3, , box5, box6] = meshes
+        inputManager.onKeyObservable.notifyObservers({
+          type: 'keyDown',
+          meshes: [],
+          key
         })
-        expect(cameraManager.zoom).toHaveBeenCalledTimes(1)
-        expect(cameraManager.zoom).toHaveBeenCalledWith(-10)
-        expect(selectionManager.meshes.size).toEqual(4)
+        expectMeshActions(box1, action)
+        expectMeshActions(box3, action)
+        expectMeshActions(box5, action)
+        expectMeshActions(box6, action)
       })
+
+      it(`does not trigger detail on 'v' key`, () => {
+        const [box1, , box3, , box5, box6] = meshes
+        inputManager.onKeyObservable.notifyObservers({
+          type: 'keyDown',
+          meshes: [],
+          key: 'v'
+        })
+        expectMeshActions(box1)
+        expectMeshActions(box3)
+        expectMeshActions(box5)
+        expectMeshActions(box6)
+      })
+
+      it(`triggers push on 'g' key`, () => {
+        const [box1, , box3, , box5, box6] = meshes
+        box1.metadata.canPush.mockReturnValue(true)
+        box3.metadata.canPush.mockReturnValue(true)
+        box5.metadata.canPush.mockReturnValue(true)
+        box6.metadata.canPush.mockReturnValue(true)
+        inputManager.onKeyObservable.notifyObservers({
+          type: 'keyDown',
+          meshes: [],
+          key: 'g'
+        })
+        expectMeshActions(box1, 'push')
+        expectMeshActions(box3)
+        expectMeshActions(box5)
+        expectMeshActions(box6)
+      })
+
+      it(`triggers increment on 'g' key`, () => {
+        const [box1, , , , , , box7, box8] = meshes
+        selectionManager.clear()
+        selectionManager.select(box7, box8, box1)
+        box7.metadata.canIncrement.mockReturnValue(true)
+        box8.metadata.canIncrement.mockReturnValue(true)
+        inputManager.onKeyObservable.notifyObservers({
+          type: 'keyDown',
+          meshes: [],
+          key: 'g'
+        })
+        expectMeshActions(box7, 'increment')
+        // box1 is not quantifiable, box8 goes above box6
+        expectMeshActions(box8)
+        expectMeshActions(box1)
+      })
+
+      it(`does not trigger pop on 'u' key`, () => {
+        const [box1, , box3, , box5, box6] = meshes
+        box1.metadata.canPush.mockReturnValue(true)
+        box3.metadata.canPush.mockReturnValue(true)
+        box5.metadata.canPush.mockReturnValue(true)
+        box6.metadata.canPush.mockReturnValue(true)
+        inputManager.onKeyObservable.notifyObservers({
+          type: 'keyDown',
+          meshes: [],
+          key: 'u'
+        })
+        expectMeshActions(box3)
+        expectMeshActions(box1)
+        expectMeshActions(box5)
+        expectMeshActions(box6)
+      })
+
+      it(`does not trigger decrement on 'u' key`, () => {
+        const [box1, , , , , , box7, box8] = meshes
+        selectionManager.clear()
+        selectionManager.select(box7, box8, box1)
+        inputManager.onKeyObservable.notifyObservers({
+          type: 'keyDown',
+          meshes: [],
+          key: 'u'
+        })
+        expectMeshActions(box7)
+        expectMeshActions(box8)
+        expectMeshActions(box1)
+      })
+    })
+
+    it('pans camera on right click drag', () => {
+      cameraManager.pan.mockResolvedValue()
+      inputManager.onDragObservable.notifyObservers({
+        type: 'dragStart',
+        event: { pointerType: 'mouse' },
+        button: 2
+      })
+      inputManager.onDragObservable.notifyObservers({
+        type: 'drag',
+        event: { pointerType: 'mouse' },
+        button: 2
+      })
+      expect(cameraManager.pan).toHaveBeenCalled()
+      inputManager.onDragObservable.notifyObservers({
+        type: 'dragStop',
+        event: { pointerType: 'mouse' },
+        button: 2
+      })
+      expect(cameraManager.pan).toHaveBeenCalledTimes(1)
+      expect(cameraManager.rotate).not.toHaveBeenCalled()
+      expect(cameraManager.zoom).not.toHaveBeenCalled()
+      expect(drawSelectionBox).not.toHaveBeenCalled()
+      expect(selectWithinBox).not.toHaveBeenCalled()
+    })
+
+    it.each([
+      { key: 'ArrowUp', x: 0, y: 1 },
+      { key: 'ArrowLeft', x: 1, y: 0 },
+      { key: 'ArrowDown', x: 0, y: -1 },
+      { key: 'ArrowRight', x: -1, y: 0 }
+    ])(`pans camera on '$key' key`, ({ key, x, y }) => {
+      inputManager.onKeyObservable.notifyObservers({
+        type: 'keyDown',
+        meshes: [],
+        key
+      })
+      expect(cameraManager.pan).toHaveBeenCalledTimes(1)
+      expect(cameraManager.pan).toHaveBeenCalledWith(
+        {
+          x: engine.getRenderWidth() * 0.5,
+          y: engine.getRenderHeight() * 0.5
+        },
+        {
+          x: engine.getRenderWidth() * (x * 0.05 + 0.5),
+          y: engine.getRenderHeight() * (y * 0.05 + 0.5)
+        }
+      )
+      expect(cameraManager.rotate).not.toHaveBeenCalled()
+      expect(cameraManager.zoom).not.toHaveBeenCalled()
+      expect(drawSelectionBox).not.toHaveBeenCalled()
+      expect(selectWithinBox).not.toHaveBeenCalled()
+    })
+
+    it('rotates camera on middle click drag', () => {
+      inputManager.onDragObservable.notifyObservers({
+        type: 'dragStart',
+        event: { pointerType: 'mouse' },
+        button: 1
+      })
+      inputManager.onDragObservable.notifyObservers({
+        type: 'drag',
+        event: { pointerType: 'mouse' },
+        button: 1
+      })
+      expect(cameraManager.rotate).toHaveBeenCalled()
+      inputManager.onDragObservable.notifyObservers({
+        type: 'dragStop',
+        event: { pointerType: 'mouse' },
+        button: 1
+      })
+      expect(cameraManager.rotate).toHaveBeenCalledTimes(1)
+      expect(cameraManager.pan).not.toHaveBeenCalled()
+      expect(cameraManager.zoom).not.toHaveBeenCalled()
+      expect(drawSelectionBox).not.toHaveBeenCalled()
+      expect(selectWithinBox).not.toHaveBeenCalled()
+    })
+
+    it.each([
+      { key: 'ArrowUp', alpha: 0, beta: Math.PI / -24 },
+      { key: 'ArrowLeft', alpha: Math.PI / -4, beta: 0 },
+      { key: 'ArrowDown', alpha: 0, beta: Math.PI / 24 },
+      { key: 'ArrowRight', alpha: Math.PI / 4, beta: 0 }
+    ])(`rotate camera on 'ctrl+$key' key`, ({ key, alpha, beta }) => {
+      inputManager.onKeyObservable.notifyObservers({
+        type: 'keyDown',
+        meshes: [],
+        key,
+        modifiers: { ctrl: true }
+      })
+      expect(cameraManager.rotate).toHaveBeenCalledTimes(1)
+      expect(cameraManager.rotate).toHaveBeenCalledWith(alpha, beta)
+      expect(cameraManager.pan).not.toHaveBeenCalled()
+      expect(cameraManager.zoom).not.toHaveBeenCalled()
+      expect(drawSelectionBox).not.toHaveBeenCalled()
+      expect(selectWithinBox).not.toHaveBeenCalled()
+    })
+
+    it('zooms camera on mouse wheel', () => {
+      const event = { deltaY: Math.floor(Math.random() * 100) }
+      inputManager.onWheelObservable.notifyObservers({ event })
+      expect(cameraManager.zoom).toHaveBeenCalledTimes(1)
+      expect(cameraManager.zoom).toHaveBeenCalledWith(event.deltaY * 0.1)
+      expect(cameraManager.rotate).not.toHaveBeenCalled()
+      expect(cameraManager.pan).not.toHaveBeenCalled()
+    })
+
+    it('zooms camera on pinch', () => {
+      inputManager.onPinchObservable.notifyObservers({
+        type: 'pinch',
+        pinchDelta: -20
+      })
+      expect(cameraManager.zoom).toHaveBeenCalledTimes(1)
+      expect(cameraManager.zoom).toHaveBeenCalledWith(-10)
+      expect(cameraManager.rotate).not.toHaveBeenCalled()
+      expect(cameraManager.pan).not.toHaveBeenCalled()
+    })
+
+    it(`zooms camera in on '+' key`, () => {
+      inputManager.onKeyObservable.notifyObservers({
+        type: 'keyDown',
+        meshes: [],
+        key: '+'
+      })
+      expect(cameraManager.zoom).toHaveBeenCalledTimes(1)
+      expect(cameraManager.zoom).toHaveBeenCalledWith(-5)
+      expect(cameraManager.rotate).not.toHaveBeenCalled()
+      expect(cameraManager.pan).not.toHaveBeenCalled()
+    })
+
+    it(`zooms camera out on '-' key`, () => {
+      inputManager.onKeyObservable.notifyObservers({
+        type: 'keyDown',
+        meshes: [],
+        key: '-'
+      })
+      expect(cameraManager.zoom).toHaveBeenCalledTimes(1)
+      expect(cameraManager.zoom).toHaveBeenCalledWith(5)
+      expect(cameraManager.rotate).not.toHaveBeenCalled()
+      expect(cameraManager.pan).not.toHaveBeenCalled()
+    })
+
+    it(`saves camera position on 'ctrl+N' key`, () => {
+      const number = faker.datatype.number({ min: 1, max: 9 })
+      inputManager.onKeyObservable.notifyObservers({
+        type: 'keyDown',
+        meshes: [],
+        key: `${number}`,
+        modifiers: { ctrl: true }
+      })
+      expect(cameraManager.save).toHaveBeenCalledTimes(1)
+      expect(cameraManager.save).toHaveBeenCalledWith(number)
+      expect(cameraManager.restore).not.toHaveBeenCalled()
+    })
+
+    it(`restores camera to origin on 'Home' key`, () => {
+      inputManager.onKeyObservable.notifyObservers({
+        type: 'keyDown',
+        meshes: [],
+        key: 'Home'
+      })
+      expect(cameraManager.restore).toHaveBeenCalledTimes(1)
+      expect(cameraManager.restore).toHaveBeenCalledWith(0)
+      expect(cameraManager.save).not.toHaveBeenCalled()
+    })
+
+    it(`restores camera position on 'N' key`, () => {
+      const number = faker.datatype.number({ min: 1, max: 9 })
+      inputManager.onKeyObservable.notifyObservers({
+        type: 'keyDown',
+        meshes: [],
+        key: `${number}`
+      })
+      expect(cameraManager.restore).toHaveBeenCalledTimes(1)
+      expect(cameraManager.restore).toHaveBeenCalledWith(number)
+      expect(cameraManager.save).not.toHaveBeenCalled()
     })
 
     it('draws select box on left click drag', () => {
@@ -1026,55 +1394,9 @@ describe('Game interaction model', () => {
       })
       expect(drawSelectionBox).toHaveBeenCalledTimes(1)
       expect(selectWithinBox).toHaveBeenCalledTimes(1)
-      expect(panCamera).not.toHaveBeenCalled()
-      expect(rotateCamera).not.toHaveBeenCalled()
-    })
-
-    it('pans camera on right click drag', () => {
-      panCamera.mockResolvedValue()
-      inputManager.onDragObservable.notifyObservers({
-        type: 'dragStart',
-        event: { pointerType: 'mouse' },
-        button: 2
-      })
-      inputManager.onDragObservable.notifyObservers({
-        type: 'drag',
-        event: { pointerType: 'mouse' },
-        button: 2
-      })
-      expect(panCamera).toHaveBeenCalled()
-      inputManager.onDragObservable.notifyObservers({
-        type: 'dragStop',
-        event: { pointerType: 'mouse' },
-        button: 2
-      })
-      expect(panCamera).toHaveBeenCalledTimes(1)
-      expect(rotateCamera).not.toHaveBeenCalled()
-      expect(drawSelectionBox).not.toHaveBeenCalled()
-      expect(selectWithinBox).not.toHaveBeenCalled()
-    })
-
-    it('rotates camera on middle click drag', () => {
-      inputManager.onDragObservable.notifyObservers({
-        type: 'dragStart',
-        event: { pointerType: 'mouse' },
-        button: 1
-      })
-      inputManager.onDragObservable.notifyObservers({
-        type: 'drag',
-        event: { pointerType: 'mouse' },
-        button: 1
-      })
-      expect(rotateCamera).toHaveBeenCalled()
-      inputManager.onDragObservable.notifyObservers({
-        type: 'dragStop',
-        event: { pointerType: 'mouse' },
-        button: 1
-      })
-      expect(rotateCamera).toHaveBeenCalledTimes(1)
-      expect(panCamera).not.toHaveBeenCalled()
-      expect(drawSelectionBox).not.toHaveBeenCalled()
-      expect(selectWithinBox).not.toHaveBeenCalled()
+      expect(cameraManager.pan).not.toHaveBeenCalled()
+      expect(cameraManager.rotate).not.toHaveBeenCalled()
+      expect(cameraManager.zoom).not.toHaveBeenCalled()
     })
 
     it('moves mesh on left click drag', () => {
@@ -1100,8 +1422,8 @@ describe('Game interaction model', () => {
       })
 
       expect(position.asArray()).not.toEqual(mesh.absolutePosition.asArray())
-      expect(panCamera).not.toHaveBeenCalled()
-      expect(rotateCamera).not.toHaveBeenCalled()
+      expect(cameraManager.pan).not.toHaveBeenCalled()
+      expect(cameraManager.rotate).not.toHaveBeenCalled()
       expect(drawSelectionBox).not.toHaveBeenCalled()
       expect(selectWithinBox).not.toHaveBeenCalled()
     })
@@ -1157,6 +1479,7 @@ async function expectActionItems(menuProps, mesh, items) {
     functionName,
     icon,
     title,
+    badge,
     triggeredMesh,
     calls,
     ...props
@@ -1166,6 +1489,7 @@ async function expectActionItems(menuProps, mesh, items) {
         {
           icon,
           title: title ?? `tooltips.${functionName}`,
+          badge: badge ?? `shortcuts.${functionName}`,
           onClick: expect.any(Function),
           ...props
         }

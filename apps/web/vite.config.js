@@ -8,7 +8,12 @@ import windi from 'vite-plugin-windicss'
 export default defineConfig({
   plugins: [
     windi(),
-    svelte(),
+    svelte({
+      onwarn: (warning, handler) => {
+        if (warning.code === 'a11y-autofocus') return
+        handler(warning)
+      }
+    }),
     yaml(),
     graphql(),
     atelier({

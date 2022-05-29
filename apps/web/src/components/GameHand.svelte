@@ -1,5 +1,6 @@
 <script>
   import { beforeUpdate } from 'svelte'
+  import { _ } from 'svelte-intl'
   import MinimizableSection from './MinimizableSection.svelte'
 
   export let visible = false
@@ -50,7 +51,7 @@
 <aside class:highlight class:visible>
   <MinimizableSection
     placement="bottom"
-    icons={['front_hand']}
+    tabs={[{ icon: 'front_hand', key: $_('shortcuts.hand') }]}
     dimension="25vh"
     {minimized}><div class="hand" bind:this={node} /></MinimizableSection
   >

@@ -1,27 +1,42 @@
 <script>
   import { afterUpdate, createEventDispatcher } from 'svelte'
 
-  export let mesh
+  export let mesh = null
 
   const dispatch = createEventDispatcher()
   let previous
+  let isListeningKey = false
+  $: open = Boolean(mesh)
+  $: if (open) {
+    setTimeout(() => (isListeningKey = true), 100)
+  } else {
+    isListeningKey = false
+  }
 
   afterUpdate(() => {
-    if (!previous) {
-      previous = mesh
-    } else if (previous !== mesh) {
+    if (previous !== mesh) {
       dispatch(previous ? 'close' : 'open')
       previous = mesh
     }
   })
+
+  function handleClose() {
+    mesh = null
+  }
+
+  function handleKey() {
+    if (isListeningKey) {
+      handleClose()
+    }
+  }
 </script>
 
 <style lang="postcss">
   figure {
-    @apply flex absolute inset-0 justify-center pointer-events-none py-[5%] px-0;
+    @apply invisible flex absolute inset-0 justify-center pointer-events-none py-[5%] px-0;
 
     &.open {
-      @apply pointer-events-auto bg-$base-dark;
+      @apply visible pointer-events-auto bg-$base-dark;
 
       & img {
         @apply opacity-100 translate-y-0;
@@ -34,6 +49,10 @@
   }
 </style>
 
-<figure class:open={Boolean(mesh)} on:click={() => (mesh = null)}>
-  <img src={mesh?.image} alt="" />
-</figure>
+<svelte:window on:keydown={handleKey} />
+
+{#if open}
+  <figure class:open on:click={handleClose}>
+    <img src={mesh?.image} alt="" />
+  </figure>
+{/if}

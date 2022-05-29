@@ -114,7 +114,6 @@ class MoveManager {
     for (const mesh of moved) {
       const { x, y, z } = mesh.absolutePosition
       mesh.setAbsolutePosition(new Vector3(x, y + this.elevation, z))
-      mesh.computeWorldMatrix()
       controlManager.record({ mesh, pos: mesh.absolutePosition.asArray() })
       this.notifyMove(mesh)
     }
@@ -142,7 +141,6 @@ class MoveManager {
 
         for (const mesh of moved) {
           mesh.setAbsolutePosition(mesh.absolutePosition.addInPlace(move))
-          mesh.computeWorldMatrix()
           const zone = targetManager.findDropZone(
             mesh,
             this.behaviorByMeshId.get(mesh.id).state.kind
@@ -330,6 +328,7 @@ function computeMovedExtend(moved) {
   let max
   // evaluates the bounding box of all moved meshes
   for (const mesh of moved) {
+    mesh.computeWorldMatrix(true)
     const { minimumWorld, maximumWorld } = mesh.getBoundingInfo().boundingBox
     if (!min) {
       min = minimumWorld
@@ -350,6 +349,7 @@ function findCollidingBoundingBoxes({ meshes }, moved, min) {
       !moved.includes(mesh) &&
       !selectionManager.meshes.has(mesh)
     ) {
+      mesh.computeWorldMatrix(true)
       const box = mesh.getBoundingInfo()
       if (box.boundingBox.maximumWorld.y >= min.y) {
         boxes.push(box)

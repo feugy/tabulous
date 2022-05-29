@@ -296,6 +296,7 @@ export function detachFromParent(mesh) {
  * @returns {Vector3} absolute position for this mesh.
  */
 export function getPositionAboveZone(droppedMesh, zone) {
+  zone.mesh.computeWorldMatrix(true)
   const { x, z } = zone.mesh.getAbsolutePosition()
   return new Vector3(
     x,
@@ -355,6 +356,7 @@ function parseFloat(
  * @returns {import('@babel/core').Mesh} created target mesh.
  */
 export function buildTargetMesh(name, parent, dimensions) {
+  parent.computeWorldMatrix(true)
   const { x, y, z } = parent.getBoundingInfo().boundingBox.extendSizeWorld
   const scene = parent.getScene()
   const isCylindric =

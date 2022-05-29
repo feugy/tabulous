@@ -5,7 +5,7 @@
   export let minimized = false
   export let placement = 'top'
   export let dimension = undefined
-  export let icons = undefined
+  export let tabs = undefined
   export let currentTab = 0
 
   $: vertical = placement === 'top' || placement === 'bottom'
@@ -22,25 +22,28 @@
         node: 'offsetWidth',
         negate: placement === 'right'
       }
-  $: innerIcons = Array.isArray(icons)
-    ? icons
+  $: innerTabs = Array.isArray(tabs)
+    ? tabs
     : [
-        minimized
-          ? placement === 'top'
-            ? 'expand_more'
-            : placement === 'bottom'
+        {
+          icon: minimized
+            ? placement === 'top'
+              ? 'expand_more'
+              : placement === 'bottom'
+              ? 'expand_less'
+              : placement === 'left'
+              ? 'navigate_next'
+              : 'navigate_before'
+            : placement === 'top'
             ? 'expand_less'
+            : placement === 'bottom'
+            ? 'expand_more'
             : placement === 'left'
-            ? 'navigate_next'
-            : 'navigate_before'
-          : placement === 'top'
-          ? 'expand_less'
-          : placement === 'bottom'
-          ? 'expand_more'
-          : placement === 'left'
-          ? 'navigate_before'
-          : 'navigate_next'
+            ? 'navigate_before'
+            : 'navigate_next'
+        }
       ]
+  $: tabIndexPerkey = new Map(innerTabs.map(({ key }, index) => [key, index]))
 
   let dispatch = createEventDispatcher()
   let hasMoved = false
@@ -91,6 +94,14 @@
     hasMoved = false
     window.removeEventListener('pointermove', handleMove)
     window.removeEventListener('pointerup', handleUp)
+  }
+
+  function handleKey(event) {
+    const index = tabIndexPerkey.get(event.key)
+    if (index !== undefined) {
+      handleClick(index)
+      event.preventDefault()
+    }
   }
 </script>
 
@@ -180,6 +191,8 @@
   }
 </style>
 
+<svelte:window on:keydown={handleKey} />
+
 <section
   class:minimized
   class:vertical
@@ -190,18 +203,23 @@
 >
   <menu class:vertical class={placement}>
     <ol role="tablist" class="buttonContainer">
-      {#each innerIcons as icon, i}
-        <li class:active={innerIcons.length > 1 && i === currentTab}>
+      {#each innerTabs as { icon, key }, i}
+        <li class:active={innerTabs.length > 1 && i === currentTab}>
           <Button
             role="tab"
-            aria-selected={innerIcons.length > 1 && i === currentTab}
+            aria-selected={innerTabs.length > 1 && i === currentTab}
+            badge={key}
             {icon}
             on:click={() => handleClick(i)}
           />
         </li>
       {/each}
     </ol>
-    <div role="scrollbar" class="gutter" on:pointerdown={handleDown} />
+    <div
+      role="scrollbar"
+      class="gutter"
+      on:pointerdown|stopPropagation={handleDown}
+    />
   </menu>
   <span>
     <slot />

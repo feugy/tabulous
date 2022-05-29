@@ -25,9 +25,7 @@
 - jest matchers with mesh (toHaveBeenCalledWith, toHaveBeenNthCalledWith)
 - all manager managing a collection of behaviors should check their capabilities
 - game-manager is just a gigantic mess!!! no single responsibility, global state all over the place
-- game-interaction drag-related unit tests
 - component, connected-component and routes rendering tests
-- get rid of Babylon input management
 - UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
 - stackable duration override's movable duration on
 - move camera when drop zone is not in sight and dropping on it
@@ -43,11 +41,12 @@
 - feedback on stacking
 - distribute multiple cards to players'hand
 - put/draw under
-- keyboard
 - indicates when remote stream is muted/stopped
 - zoom in/out on rules
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
 - hand support for quantifiable behavior
+- fullscreen and default key (F11)
+- shortcuts cheatsheet
 
 ## Server
 
@@ -84,42 +83,42 @@
 
 # Interaction model
 
-| Action on table  | Tabletopia                        | Tabulous                    |
-| ---------------- | --------------------------------- | --------------------------- |
-| zoom camera      | molette, +/-                      | molette, pinch              |
-| move camera      | left drag, W/A/S/D                | right drag, 2 fingers drag  |
-| rotate camera    | right drag                        | middle drag, 3 fingers drag |
-| multiple select  | Shift+left click, Shift+left drag | left drag, finger drag      |
-| fullscreen       | ~/esc                             | _button_                    |
-| save camera      | shift+number, _menu action_       | _button_                    |
-| restore camera   | number, _menu action_             | _button_                    |
-| menu             | right click                       | _N/A_                       |
-| toggle hand      | _menu action_                     | _button_                    |
-| toggle interface | _menu action_                     | _N/A_                       |
-| help             | F1, _button_, _menu action_       | _N/A_                       |
-| magnify          | Z, _menu action_                  | _N/A_                       |
+| Action on table  | Tabletopia                        | Tabulous                                |
+| ---------------- | --------------------------------- | --------------------------------------- |
+| zoom camera      | +/-, molette                      | +/-, molette, pinch                     |
+| move camera      | W/A/S/D, left drag,               | arrows, right drag, 2 fingers drag      |
+| rotate camera    | right drag                        | ctrl+arrow, middle drag, 3 fingers drag |
+| multiple select  | shift+left click, shift+left drag | left drag, finger drag                  |
+| fullscreen       | ~/esc                             | _button_                                |
+| save camera      | shift+number, _menu action_       | ctrl+number, _button_                   |
+| restore camera   | number, _menu action_             | number, _button_                        |
+| menu             | right click                       | _N/A_                                   |
+| toggle hand      | _menu action_                     | H, _button_                             |
+| toggle interface | _menu action_                     | _N/A_                                   |
+| help             | F1, _button_, _menu action_       | F1, _N/A_                               |
+| magnify          | Z, _menu action_                  | _N/A_                                   |
 
-| Action on Mesh | Tabletopia                                     | Tabulous                                     |
-| -------------- | ---------------------------------------------- | -------------------------------------------- |
-| move           | left drag                                      | left drag, 1 finger drag                     |
-| select         | left click                                     | _N/A_                                        |
-| menu           | right click                                    | right click, 2 fingers tap                   |
-| view details   | double left click                              | long left click, long tap, _menu action_     |
-| flip           | F, _menu action_                               | left click, tap, _menu action_               |
-| rotate         | Ctrl+left drag, Q/E/PgUp/PgDown, _menu action_ | double left click, double tap, _menu action_ |
-| (un)lock       | L, _menu action_                               | _menu action_                                |
-| put under      | U, _menu action_                               | _N/A_                                        |
-| take to hand   | T, move to screen bottom, _menu action (draw)_ | move to screen bottom, _menu action_         |
-| stack together | ??                                             | _menu action_                                |
+| Action on Mesh | Tabletopia                                     | Tabulous                                        |
+| -------------- | ---------------------------------------------- | ----------------------------------------------- |
+| move           | left drag                                      | left drag, 1 finger drag                        |
+| select         | left click                                     | _N/A_                                           |
+| menu           | right click                                    | right click, 2 fingers tap                      |
+| view details   | double left click                              | V, long left click, long tap, _menu action_     |
+| flip           | F, _menu action_                               | F, left click, tap, _menu action_               |
+| rotate         | Ctrl+left drag, Q/E/PgUp/PgDown, _menu action_ | R, double left click, double tap, _menu action_ |
+| (un)lock       | L, _menu action_                               | L, _menu action_                                |
+| put under      | U, _menu action_                               | _N/A_                                           |
+| take to hand   | T, move to screen bottom, _menu action (draw)_ | D, move to screen bottom, _menu action_         |
+| stack together | ??                                             | G, _menu action_                                |
 
-| Action on Stacks    | Tabletopia                              | Tabulous      |
-| ------------------- | --------------------------------------- | ------------- |
-| shuffle             | _menu action_                           | _menu action_ |
-| draw N to hand      | molette+left drag, _menu action (take)_ | _menu action_ |
-| pop N to tableottom | ??                                      | _menu action_ |
-| deal N              | molette+left drag, _menu action (deal)_ | _N/A_         |
-| stack on top        | _move over_                             | _move over_   |
-| stack at the bottom | Shift+_move over_                       | _N/A_         |
+| Action on Stacks    | Tabletopia                              | Tabulous         |
+| ------------------- | --------------------------------------- | ---------------- |
+| shuffle             | _menu action_                           | S, _menu action_ |
+| draw N to hand      | molette+left drag, _menu action (take)_ | D, _menu action_ |
+| pop N to tableottom | ??                                      | U, _menu action_ |
+| deal N              | molette+left drag, _menu action (deal)_ | _N/A_            |
+| stack on top        | _move over_                             | _move over_      |
+| stack at the bottom | Shift+_move over_                       | _N/A_            |
 
 In Tabletopia, being forced to do click (either select or menu) before triggering actions (shortcut or menu) is a bummer.
 They support keyboard, but not fingers.

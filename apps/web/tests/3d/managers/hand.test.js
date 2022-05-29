@@ -443,7 +443,6 @@ describe('HandManager', () => {
 
         let movedPosition = new Vector3(-1, 1, z)
         mesh.setAbsolutePosition(movedPosition)
-        mesh.computeWorldMatrix()
         inputManager.onDragObservable.notifyObservers({
           type: 'dragStart',
           mesh,
@@ -464,7 +463,6 @@ describe('HandManager', () => {
 
         movedPosition = new Vector3(1, 1, z)
         mesh.setAbsolutePosition(movedPosition)
-        mesh.computeWorldMatrix()
         inputManager.onDragObservable.notifyObservers({
           type: 'drag',
           mesh,
@@ -485,7 +483,6 @@ describe('HandManager', () => {
 
         movedPosition = new Vector3(4, 1, z)
         mesh.setAbsolutePosition(movedPosition)
-        mesh.computeWorldMatrix()
         inputManager.onDragObservable.notifyObservers({
           type: 'dragStop',
           mesh,
@@ -529,9 +526,7 @@ describe('HandManager', () => {
         const movedPosition1 = new Vector3(positions[0][1] + 10, 1, z)
         const movedPosition2 = new Vector3(positions[2][1] + 10, 1, z)
         mesh2.setAbsolutePosition(movedPosition1)
-        mesh2.computeWorldMatrix()
         mesh3.setAbsolutePosition(movedPosition2)
-        mesh3.computeWorldMatrix()
         inputManager.onDragObservable.notifyObservers({
           type: 'drag',
           mesh: mesh2,
@@ -571,7 +566,6 @@ describe('HandManager', () => {
           mesh.absolutePosition.z + cardDepth
         )
         mesh.setAbsolutePosition(movedPosition)
-        mesh.computeWorldMatrix()
         inputManager.onDragObservable.notifyObservers({
           type: 'dragStart',
           mesh,
@@ -615,7 +609,6 @@ describe('HandManager', () => {
           mesh.absolutePosition.z + cardDepth
         )
         mesh.setAbsolutePosition(movedPosition)
-        mesh.computeWorldMatrix()
         inputManager.onDragObservable.notifyObservers({
           type: 'dragStart',
           mesh,
@@ -654,7 +647,6 @@ describe('HandManager', () => {
 
         let movedPosition = new Vector3(1, 0, -19)
         mesh.setAbsolutePosition(movedPosition)
-        mesh.computeWorldMatrix()
         inputManager.onDragObservable.notifyObservers({
           type: 'dragStart',
           mesh,
@@ -710,7 +702,6 @@ describe('HandManager', () => {
 
         let movedPosition = new Vector3(1, 0, -19)
         mesh1.setAbsolutePosition(movedPosition)
-        mesh1.computeWorldMatrix()
         inputManager.onDragObservable.notifyObservers({
           type: 'dragStart',
           mesh: mesh1,
@@ -780,7 +771,6 @@ describe('HandManager', () => {
         expectFlipped(mesh, true)
         let movedPosition = new Vector3(1, 0, -19)
         mesh.setAbsolutePosition(movedPosition)
-        mesh.computeWorldMatrix()
         inputManager.onDragObservable.notifyObservers({
           type: 'dragStart',
           mesh,
@@ -898,7 +888,6 @@ describe('HandManager', () => {
         const [, card] = handCards
         const [base] = cards
         base.setAbsolutePosition(new Vector3(-3.89, 0, 0))
-        base.computeWorldMatrix()
         card.metadata.draw()
         await waitForLayout()
         expect(handScene.getMeshById(card.id)?.id).toBeUndefined()
@@ -1152,7 +1141,6 @@ describe('HandManager', () => {
             mesh.absolutePosition.z + cardDepth
           )
           mesh.setAbsolutePosition(movedPosition)
-          mesh.computeWorldMatrix()
           inputManager.onDragObservable.notifyObservers({
             type: 'drag',
             mesh,
@@ -1209,7 +1197,6 @@ describe('HandManager', () => {
             mesh1.absolutePosition.z + cardDepth
           )
           mesh1.setAbsolutePosition(movedPosition)
-          mesh1.computeWorldMatrix()
           inputManager.onDragObservable.notifyObservers({
             type: 'drag',
             mesh: mesh1,

@@ -7,6 +7,8 @@ import {
   map,
   merge
 } from 'rxjs'
+import { get } from 'svelte/store'
+import { translate as translate$ } from 'svelte-intl'
 import { connected, lastMessageReceived, send } from './peer-channels'
 import { createEngine } from '../3d'
 import {
@@ -17,7 +19,7 @@ import {
   inputManager,
   selectionManager
 } from '../3d/managers'
-import { attachInputs } from '../utils'
+import { actionIds, attachInputs } from '../utils'
 
 const engine$ = new BehaviorSubject(null)
 const fps$ = new BehaviorSubject(0)
@@ -185,7 +187,9 @@ export function initEngine({
   // implements game interaction model
   const subscriptions = attachInputs({
     doubleTapDelay,
-    actionMenuProps$
+    actionIdsByKey: buildShortcutMap(),
+    actionMenuProps$,
+    engine
   })
 
   // applies other players' update
@@ -255,4 +259,18 @@ export function restoreCamera(...args) {
  */
 export function loadCameraSaves(...args) {
   cameraManager.loadSaves(...args)
+}
+
+function buildShortcutMap() {
+  const translate = get(translate$)
+  return new Map([
+    [translate('shortcuts.flip'), [actionIds.flip]],
+    [translate('shortcuts.rotate'), [actionIds.rotate]],
+    [translate('shortcuts.toggleLock'), [actionIds.toggleLock]],
+    [translate('shortcuts.draw'), [actionIds.draw]],
+    [translate('shortcuts.shuffle'), [actionIds.shuffle]],
+    [translate('shortcuts.push'), [actionIds.push, actionIds.increment]],
+    [translate('shortcuts.pop'), [actionIds.pop, actionIds.decrement]],
+    [translate('shortcuts.detail'), [actionIds.detail]]
+  ])
 }

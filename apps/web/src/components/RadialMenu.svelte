@@ -74,7 +74,7 @@
     style={`left: ${left}; top: ${top}; --size:${radius * 2}px;`}
   >
     <ul on:pointerdown|stopPropagation on:mouseenter on:mouseleave>
-      {#each items as { onClick, title, max, ...buttonProps }, i}
+      {#each items as { onClick, title, badge, max, ...buttonProps }, i}
         {#key buttonProps}
           <li
             in:enter={{ i }}
@@ -82,14 +82,16 @@
           >
             {#if max}
               <QuantityButton
-                title={$_(title ?? '')}
+                title={title ? $_(title) : undefined}
+                badge={badge ? $_(badge) : undefined}
                 {max}
                 {...buttonProps}
                 on:click={onClick}
               />
             {:else}
               <Button
-                title={$_(title ?? '')}
+                title={title ? $_(title) : undefined}
+                badge={badge ? $_(badge) : undefined}
                 {...buttonProps}
                 on:click={onClick}
               />

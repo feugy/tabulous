@@ -106,7 +106,6 @@ class TargetManager {
       `find drop zones for ${dragged?.id} (${kind})`
     )
     const candidates = findCandidates(this, dragged, zone => {
-      zone.mesh.computeWorldMatrix()
       return (
         this.canAccept(zone, kind) &&
         isAbove(dragged, zone.mesh) &&

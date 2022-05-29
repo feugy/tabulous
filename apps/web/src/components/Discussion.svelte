@@ -55,7 +55,7 @@
       >
     {/each}
   </div>
-  <form on:submit|preventDefault={handleSend}>
+  <form on:submit|preventDefault={handleSend} on:keydown|stopPropagation>
     <Input bind:value={text} />
     <Button
       type="submit"

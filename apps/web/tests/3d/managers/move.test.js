@@ -274,7 +274,6 @@ describe('MoveManager', () => {
       it('elevates moved when detecting a collision', () => {
         const obstacle = CreateBox('obstacle', { size: 2 })
         obstacle.setAbsolutePosition(1, 0.5, 1)
-        obstacle.computeWorldMatrix()
 
         manager.continue({ x: centerX + 20, y: centerY })
         expectPosition(moved, [
@@ -287,13 +286,10 @@ describe('MoveManager', () => {
       it('elevates moved mesh above stacked obstacles', () => {
         const obstacle1 = CreateBox('obstacle1', {})
         obstacle1.setAbsolutePosition(1, 0.5, 1)
-        obstacle1.computeWorldMatrix()
         const obstacle2 = CreateBox('obstacle2', {})
         obstacle2.setAbsolutePosition(1, 2, 1)
-        obstacle2.computeWorldMatrix()
         const obstacle3 = CreateBox('obstacle3', {})
         obstacle3.setAbsolutePosition(1, 3.5, 1)
-        obstacle3.computeWorldMatrix()
 
         manager.continue({ x: centerX + 20, y: centerY })
         expectPosition(moved, [
@@ -452,8 +448,8 @@ describe('MoveManager', () => {
         mesh: moved,
         event
       })
-      const deltaX = 2.029703140258789
-      const deltaZ = -2.1969470977783203
+      const deltaX = 2.029703219946068
+      const deltaZ = -2.1969471586981797
       event = { x: centerX + 50, y: centerY + 50 }
       inputManager.onDragObservable.notifyObservers({
         type: 'drag',
@@ -701,10 +697,8 @@ describe('MoveManager', () => {
         const deltaX = 0.8257662057876587
         const obstacle1 = CreateBox('obstacle1', { size: 2 })
         obstacle1.setAbsolutePosition(1, 0.5, 1)
-        obstacle1.computeWorldMatrix()
         const obstacle2 = CreateBox('obstacle2', { size: 2 })
         obstacle2.setAbsolutePosition(-10, 0, -10)
-        obstacle2.computeWorldMatrix()
 
         manager.continue({ x: centerX + 20, y: centerY })
         expectPosition(moved[0], [
@@ -726,7 +720,6 @@ describe('MoveManager', () => {
 
       it('does not checks collision within selection', () => {
         moved[0].setAbsolutePosition(new Vector3(-2.5, manager.elevation, -2.5))
-        moved[0].computeWorldMatrix()
         const deltaX = 2.029703140258789
         const deltaZ = -2.196934700012207
 
@@ -920,7 +913,7 @@ describe('MoveManager', () => {
         expect(actionRecorded).toHaveBeenCalledWith(
           {
             meshId: moved[0].id,
-            pos: moved[0].absolutePosition.asArray(),
+            pos: [3.029703219946068, 1.5, -1.19693470331012],
             fromHand: false
           },
           expect.anything()
@@ -1031,7 +1024,6 @@ describe('MoveManager', () => {
     const movable = CreateBox(id, {}, sceneUsed)
     movable.setAbsolutePosition(position)
     movable.addBehavior(new MoveBehavior(), true)
-    movable.computeWorldMatrix()
     controlManager.registerControlable(movable)
     return movable
   }
@@ -1045,7 +1037,6 @@ describe('MoveManager', () => {
 
     const target = CreateBox(`target-${rank}`, {})
     target.setAbsolutePosition(position)
-    target.computeWorldMatrix()
     behavior.addZone(target, { extent: 0.5 })
     return target
   }

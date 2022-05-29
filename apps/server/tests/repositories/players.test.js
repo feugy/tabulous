@@ -25,7 +25,7 @@ describe('given a connected repository and several players', () => {
   describe('Player repository', () => {
     describe('getByUsername()', () => {
       it('returns a player by username', async () => {
-        const model = faker.random.arrayElement(models)
+        const model = faker.helpers.arrayElement(models)
         expect(await players.getByUsername(model.username)).toEqual(model)
       })
 

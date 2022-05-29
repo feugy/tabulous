@@ -10,5 +10,6 @@ exports[`Toolshot components/MeshDetails.tools.svelte: Components/Mesh Details 1
       src="default"
     />
   </figure>
+  
 </span>
 `;
