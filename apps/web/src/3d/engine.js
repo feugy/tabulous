@@ -33,6 +33,7 @@ import {
 // import '@babylonjs/core/Debug/debugLayer'
 // import '@babylonjs/core/PostProcesses'
 const debug = false
+const debugHand = false
 
 /**
  * Enhanced Babylon.js' Engine
@@ -168,7 +169,7 @@ export function createEngine({
     inputManager.stopAll(event)
   }
   debug && scene.debugLayer.show({ embedMode: true })
-  // handScene.debugLayer.show({ embedMode: true })
+  debugHand && handScene.debugLayer.show({ embedMode: true })
   // new AxesViewer(scene)
   return engine
 }

@@ -1,6 +1,6 @@
 import { Animation } from '@babylonjs/core/Animations/animation'
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera'
-import { FlyCamera } from '@babylonjs/core/Cameras/flyCamera'
+import { TargetCamera } from '@babylonjs/core/Cameras/targetCamera'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { Observable } from '@babylonjs/core/Misc/observable'
 import { isPositionAboveTable, screenToGround } from '../utils'
@@ -92,12 +92,13 @@ class CameraManager {
 
     this.saves = [serialize(this.camera)]
 
-    this.handSceneCamera = new FlyCamera(
+    this.handSceneCamera = new TargetCamera(
       'camera',
       new Vector3(0, 20, 0),
       handScene
     )
-    this.handSceneCamera.rotation.x = Math.PI * 0.5
+    // providing exactly PI/2 gives unpredictable result depending on the CPU architecture
+    this.handSceneCamera.rotation.x = Math.PI / 2.00001
   }
 
   /**
