@@ -91,6 +91,7 @@ export function createEngine({
     })
 
   let isLoading = false
+  let gameSpecs = {}
 
   /**
    * @property {boolean} isLoading - true while the loading UI is visible.
@@ -113,6 +114,7 @@ export function createEngine({
     const game = removeNulls(gameData)
     cameraManager.adjustZoomLevels(game.zoomSpec)
     const handsEnabled = hasHandsEnabled(game)
+    gameSpecs = { zoomSpec: game.zoomSpec, tableSpec: game.tableSpec }
     if (initial) {
       isLoading = true
       engine.displayLoadingUI()
@@ -150,7 +152,8 @@ export function createEngine({
   engine.serialize = () => {
     return {
       meshes: serializeMeshes(scene),
-      handMeshes: serializeMeshes(handScene)
+      handMeshes: serializeMeshes(handScene),
+      ...gameSpecs
     }
   }
 

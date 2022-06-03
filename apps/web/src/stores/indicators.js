@@ -120,11 +120,10 @@ function getSelectedIndicators(selected, indicators) {
 
 function enrichWithPlayerData(indicators) {
   return indicators.map(indicator => {
-    if (indicator.playerId && !indicator.name) {
-      // do not erase indicator id with player's id
-      // eslint-disable-next-line no-unused-vars
-      const { id, ...playerData } = playerById.get(indicator.playerId) ?? {}
-      Object.assign(indicator, playerData)
+    if (indicator.playerId) {
+      const player = playerById.get(indicator.playerId) ?? {}
+      indicator.player = player
+      indicator.playerId = undefined
     }
     return indicator
   })

@@ -104,7 +104,7 @@ export class TargetBehavior {
     }
     if (properties.playerId) {
       const id = `${properties.playerId}.drop-zone.${mesh.id}`
-      indicatorManager.registerIndicator({
+      indicatorManager.registerMeshIndicator({
         id,
         mesh,
         playerId: properties.playerId

@@ -218,7 +218,9 @@ describe('given a mocked game engine', () => {
             { playerId: player.id, index: 0, pos: '10' },
             { playerId: partner1.id, index: 0, pos: '1' }
           ],
-          messages: []
+          messages: [],
+          zoomSpec: { min: 4, initial: 15 },
+          tableSpec: { width: 75, height: 50 }
         }
 
         beforeEach(async () => {
@@ -248,8 +250,10 @@ describe('given a mocked game engine', () => {
           const expectedGame = {
             ...game,
             cameras: [...game.cameras].sort((a, b) => +a.pos - +b.pos),
-            players: undefined,
-            hands: [...game.hands, { playerId: player.id, meshes: [] }]
+            hands: [...game.hands, { playerId: player.id, meshes: [] }],
+            zoomSpec: undefined,
+            tableSpec: undefined,
+            players: undefined
           }
           expect(runMutation).toHaveBeenCalledWith(graphQL.saveGame, {
             game: expectedGame

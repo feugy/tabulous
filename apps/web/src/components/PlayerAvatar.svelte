@@ -77,7 +77,7 @@
   }
 </style>
 
-<figure class:hasStream class:noImage>
+<figure class:hasStream>
   {#if hasStream}
     <figcaption>{player?.username}</figcaption>
     <!-- svelte-ignore a11y-media-has-caption -->

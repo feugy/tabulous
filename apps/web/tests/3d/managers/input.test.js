@@ -2,7 +2,11 @@ import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { Scene } from '@babylonjs/core/scene'
 import { faker } from '@faker-js/faker'
-import { configures3dTestEngine, sleep } from '../../test-utils'
+import {
+  configures3dTestEngine,
+  expectCloseVector,
+  sleep
+} from '../../test-utils'
 import { inputManager as manager } from '../../../src/3d/managers'
 
 const pointerDown = 'pointerdown'
@@ -21,6 +25,7 @@ describe('InputManager', () => {
   let wheels
   let longs
   let keys
+  let currentPointer = null
   const interaction = document.createElement('div')
 
   configures3dTestEngine(created => {
@@ -47,6 +52,7 @@ describe('InputManager', () => {
     manager.onWheelObservable.add(wheel => wheels.push(wheel))
     manager.onLongObservable.add(long => longs.push(long))
     manager.onKeyObservable.add(key => keys.push(key))
+    manager.onPointerObservable.add(pointer => (currentPointer = pointer))
   })
 
   it('has initial state', () => {
@@ -109,6 +115,13 @@ describe('InputManager', () => {
         mesh.computeWorldMatrix(true)
         return mesh
       })
+    })
+
+    it('updates current pointer position', () => {
+      triggerEvent(pointerMove, { x: 1048, y: 525 })
+      expectCloseVector({ x: 0.986, y: 0, z: -0.58 }, currentPointer)
+      triggerEvent(pointerMove, { x: 500, y: 250 })
+      expectCloseVector({ x: -23.764, y: 0, z: 12.86 }, currentPointer)
     })
 
     it('picks mesh with highest Y coordinate', () => {
@@ -1531,6 +1544,12 @@ describe('InputManager', () => {
     it('ignores focus', () => {
       triggerEvent('focus', { x: 1000, y: 500, pointerId: 1, button: 1 })
       expectEvents()
+    })
+
+    it('does not update pointer', () => {
+      currentPointer = null
+      triggerEvent(pointerMove, { x: 100, y: 200 })
+      expect(currentPointer).toBeNull()
     })
   })
 

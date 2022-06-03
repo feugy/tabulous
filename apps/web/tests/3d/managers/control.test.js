@@ -1,4 +1,3 @@
-import { PointerEventTypes } from '@babylonjs/core/Events/pointerEvents'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
 import { configures3dTestEngine, sleep } from '../../test-utils'
@@ -14,25 +13,18 @@ describe('ControlManager', () => {
   let anchorable
   let snapSpy
   let flipSpy
-  let playerId
-  let pointer
-  let currentPointer = null
   const controlledChangeReceived = jest.fn()
 
   configures3dTestEngine(created => ({ scene, handScene } = created))
 
   beforeAll(() => {
     manager.onActionObservable.add(action => actions.push(action))
-    manager.onPointerObservable.add(({ pointer }) => {
-      currentPointer = pointer
-    })
     manager.onControlledObservable.add(controlledChangeReceived)
   })
 
   beforeEach(() => {
     jest.resetAllMocks()
     actions = []
-    currentPointer = null
 
     mesh = CreateBox('box1', {}, scene)
     anchorable = CreateBox('box2', {})
@@ -49,51 +41,8 @@ describe('ControlManager', () => {
 
     manager.registerControlable(mesh)
     manager.registerControlable(anchorable)
-
-    playerId = faker.datatype.uuid()
-    manager.movePeerPointer({ playerId, pointer: [0, 0, 0] })
-    pointer = manager.getPeerPointer(playerId)
+    manager.init({ scene, handScene })
     controlledChangeReceived.mockReset()
-  })
-
-  describe('init()', () => {
-    beforeEach(() => {
-      manager.init({ scene, handScene })
-      expect(currentPointer).toBeNull()
-    })
-
-    it('propagates current player pointer position', () => {
-      scene.onPrePointerObservable.notifyObservers({
-        type: PointerEventTypes.POINTERMOVE,
-        localPosition: { x: 100, y: 200 }
-      })
-      expect(currentPointer).toEqual([
-        -42.70810574484502, 0, 15.609075959304086
-      ])
-      scene.onPrePointerObservable.notifyObservers({
-        type: PointerEventTypes.POINTERMOVE,
-        localPosition: { x: 200, y: 250 }
-      })
-      expect(currentPointer).toEqual([
-        -37.37054532106592, 0, 12.861383930145937
-      ])
-    })
-
-    it('ignores other pointer actions', () => {
-      scene.onPrePointerObservable.notifyObservers({
-        type: PointerEventTypes.POINTERDOWN,
-        localPosition: { x: 100, y: 200 }
-      })
-      expect(currentPointer).toBeNull()
-    })
-
-    it('ignores pointer moves outside of table', () => {
-      scene.onPrePointerObservable.notifyObservers({
-        type: PointerEventTypes.POINTERMOVE,
-        localPosition: { x: 100000, y: 200000 }
-      })
-      expect(currentPointer).toBeNull()
-    })
   })
 
   describe('registerControlable()', () => {
@@ -283,53 +232,6 @@ describe('ControlManager', () => {
         { meshId: handMesh.id, fn: 'draw', fromHand: false },
         { meshId: mesh.id, fn: 'draw', fromHand: false }
       ])
-    })
-  })
-
-  describe('movePeerPointer()', () => {
-    it('creates a peer pointer for new player', () => {
-      const x = faker.datatype.number()
-      const z = faker.datatype.number()
-      const playerId = faker.datatype.uuid()
-      expect(manager.getPeerPointer(playerId)).not.toBeDefined()
-
-      manager.movePeerPointer({ playerId, pointer: [x, 0, z] })
-      pointer = manager.getPeerPointer(playerId)
-      expect(pointer).toBeDefined()
-      expect(pointer.absolutePosition.asArray()).toEqual([x, 0.5, z])
-      expect(controlledChangeReceived).toHaveBeenCalledTimes(0)
-    })
-
-    it('moves an existing peer pointer', () => {
-      expect(pointer.absolutePosition.asArray()).toEqual([0, 0.5, 0])
-
-      const x = faker.datatype.number()
-      const z = faker.datatype.number()
-      manager.movePeerPointer({ playerId, pointer: [x, 0, z] })
-      expect(pointer.absolutePosition.asArray()).toEqual([x, 0.5, z])
-    })
-  })
-
-  describe('pruneUnusedPeerPointers()', () => {
-    it('removes unconnected peer pointers', () => {
-      expect(manager.getPeerPointer(playerId)).toBeDefined()
-
-      manager.pruneUnusedPeerPointers([faker.datatype.uuid()])
-      expect(manager.getPeerPointer(playerId)).not.toBeDefined()
-      expect(pointer.isDisposed()).toBe(true)
-    })
-
-    it('keeps connected peer pointer', () => {
-      const playerId2 = faker.datatype.uuid()
-      manager.movePeerPointer({ playerId: playerId2, pointer: [0, 0, 0] })
-      expect(manager.getPeerPointer(playerId2)).toBeDefined()
-      expect(manager.getPeerPointer(playerId)).toBeDefined()
-
-      manager.pruneUnusedPeerPointers([playerId2])
-      expect(manager.getPeerPointer(playerId2)).toBeDefined()
-      expect(manager.getPeerPointer(playerId)).not.toBeDefined()
-      expect(pointer.isDisposed()).toBe(true)
-      expect(manager.getPeerPointer(playerId2).isDisposed()).toBe(false)
     })
   })
 })

@@ -1,9 +1,9 @@
 import { Observable } from '@babylonjs/core/Misc/observable'
 import { Scene } from '@babylonjs/core/scene'
+import { screenToGround } from '../utils'
 import { distance } from '../../utils'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
-import { screenToGround } from '../utils'
 
 const logger = makeLogger('input')
 
@@ -50,6 +50,7 @@ class InputManager {
    * @property {Observable<InputData>} onWheelObservable - emits pointer wheel events.
    * @property {Observable<InputData>} onLongObservable - emits an event when detecting long operations (long tap/drag/pinch).
    * @property {Observable<InputData>} onKeyObservable - emits an event when a key is pressed.
+   * @property {Observable<number[]>} onPointerObservable - emits Vector3 components describing the current pointer position in 3D engine.
    */
   constructor() {
     this.enabled = false
@@ -60,6 +61,7 @@ class InputManager {
     this.onWheelObservable = new Observable()
     this.onLongObservable = new Observable()
     this.onKeyObservable = new Observable()
+    this.onPointerObservable = new Observable()
     // private
     this.dispose = null
   }
@@ -176,9 +178,7 @@ class InputManager {
       if (!this.enabled) return
       logger.debug(
         { event },
-        `type: pointerdown x: ${event.x} y: ${event.y} id: ${
-          event.pointerId
-        } ground: ${screenToGround(scene, event)}`
+        `type: pointerdown x: ${event.x} y: ${event.y} id: ${event.pointerId}`
       )
       const { button, mesh } = computeMetas(event)
       pointers.set(event.pointerId, { mesh, button, event })
@@ -209,15 +209,14 @@ class InputManager {
     }
 
     const handlePointerMove = event => {
-      if (!this.enabled) return
+      if (!this.enabled || !hasMoved(pointers, event)) return
       logger.debug(
         { event },
-        `type: pointermove x: ${event.x} y: ${event.y} id: ${
-          event.pointerId
-        } ground: ${screenToGround(scene, event)}`
+        `type: pointermove x: ${event.x} y: ${event.y} id: ${event.pointerId}`
       )
-      if (!hasMoved(pointers, event)) {
-        return
+      const pointer = screenToGround(scene, event)?.asArray()
+      if (pointer) {
+        this.onPointerObservable.notifyObservers(pointer)
       }
       clearLong()
       const { mesh } = computeMetas(event)
@@ -309,9 +308,7 @@ class InputManager {
       if (!this.enabled) return
       logger.debug(
         { event },
-        `type: pointerup x: ${event.x} y: ${event.y} id: ${
-          event.pointerId
-        } ground: ${screenToGround(scene, event)}`
+        `type: pointerup x: ${event.x} y: ${event.y} id: ${event.pointerId}`
       )
       const { button, mesh } = computeMetas(event)
       const { pointerId } = event
@@ -356,9 +353,7 @@ class InputManager {
       if (!this.enabled) return
       logger.debug(
         { event },
-        `type: wheel x: ${event.x} y: ${event.y} id: ${
-          event.pointerId
-        } ground: ${screenToGround(scene, event)}`
+        `type: wheel x: ${event.x} y: ${event.y} id: ${event.pointerId}`
       )
       const { button, mesh } = computeMetas(event)
       const data = {
@@ -425,6 +420,7 @@ class InputManager {
       this.onHoverObservable.clear()
       this.onWheelObservable.clear()
       this.onKeyObservable.clear()
+      this.onPointerObservable.clear()
       this.dispose()
     })
   }
