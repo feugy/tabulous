@@ -34,7 +34,7 @@
 
 - bug: attached, unselected, mesh are not ignored during dragging
 - per-player default camera position
-- display peer's name when running draw animations + show peer avatar/name instead of pointer
+- display peer's name when running draw animations
 - allow selecting preferred camera/mic with https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/enumerateDevices
 - configurable player position at game level
 - sort and filter catalog on game names
