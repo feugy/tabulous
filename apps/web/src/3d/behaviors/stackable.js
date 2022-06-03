@@ -579,7 +579,7 @@ function setBase(mesh, base, stack) {
 function updateIndicator(mesh, size) {
   const id = `${mesh.id}.stack-size`
   if (size > 1) {
-    indicatorManager.registerIndicator({ id, mesh, size })
+    indicatorManager.registerMeshIndicator({ id, mesh, size })
   } else {
     indicatorManager.unregisterIndicator({ id })
   }

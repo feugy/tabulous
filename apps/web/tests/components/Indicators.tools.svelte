@@ -7,17 +7,32 @@
   <Tool
     name="Single"
     props={{
-      items: [{ screenPosition: { x: 50, y: 100 }, size: 5, id: 'card1' }]
+      items: [
+        { screenPosition: { x: 50, y: 100 }, size: 5, id: 'card1', mesh: {} }
+      ]
     }}
   />
   <Tool
-    name="Player"
+    name="For player"
     props={{
       items: [
         {
           screenPosition: { x: 150, y: 125 },
-          username: 'Gaspard',
-          id: '123456.drop-zone.anchor-0'
+          player: { username: 'Gaspard' },
+          id: '123456.drop-zone.anchor-0',
+          mesh: {}
+        }
+      ]
+    }}
+  />
+  <Tool
+    name="Peer pointer"
+    props={{
+      items: [
+        {
+          screenPosition: { x: -150, y: -125 },
+          player: { username: 'Gaspard' },
+          id: 'pointer-123'
         }
       ]
     }}
@@ -26,24 +41,31 @@
     name="Multiple"
     props={{
       items: [
-        { screenPosition: { x: 50, y: 100 }, size: 5, id: 'card1' },
-        { screenPosition: { x: 150, y: 200 }, size: 27, id: 'card2' }
+        { screenPosition: { x: 50, y: 100 }, size: 5, id: 'card1', mesh: {} },
+        { screenPosition: { x: 150, y: 200 }, size: 27, id: 'card2', mesh: {} }
       ]
     }}
   />
   <Tool
-    name="Player and stack"
+    name="All kinds"
     props={{
       items: [
         {
           screenPosition: { x: 150, y: 125 },
-          username: 'Gaspard',
-          id: '123456.drop-zone.anchor-0'
+          player: { username: 'Gaspard' },
+          id: '123456.drop-zone.anchor-0',
+          mesh: {}
         },
         {
           screenPosition: { x: 150, y: 125 },
           size: 3,
-          id: 'card2.stack-size'
+          id: 'card2.stack-size',
+          mesh: {}
+        },
+        {
+          screenPosition: { x: -150, y: -125 },
+          player: { username: 'Gaspard' },
+          id: 'pointer-123'
         }
       ]
     }}

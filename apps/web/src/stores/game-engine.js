@@ -61,13 +61,13 @@ export const action = merge(localAction$, remoteAction$)
 export const meshDetails = meshDetails$.pipe(map(({ data }) => data))
 
 /**
- * Emits the list of indicators mesh, when it changes
+ * Emits the list of indicators (stack size, anchor labels, peer pointers...), when it changes.
  * @type {Observable<import('../3d/managers').Indicator[]>}
  */
 export const indicators = indicators$.asObservable()
 
 /**
- * Emits the list of controlled mesh, when it changes
+ * Emits the list of controlled mesh, when it changes.
  * @type {Observable<Set<import('@babylonjs/core').Mesh>>}
  */
 export const selectedMeshes = selectedMeshes$.asObservable()
@@ -137,11 +137,11 @@ export const highlightHand = highlightHand$.asObservable()
  * Clears all subscriptions on engine disposal.
  *
  * @param {object} params - parameters, as defined by createEngin(), in addition to:
- * @param {number} [params.pointerThrottle=200] - number of milliseconds during which pointer will be ignored before being shared with peers.
+ * @param {number} [params.pointerThrottle=150] - number of milliseconds during which pointer will be ignored before being shared with peers.
  * @return {import('@babylonjs/core').Engine} the created engine.
  */
 export function initEngine({
-  pointerThrottle = 200,
+  pointerThrottle = 150,
   doubleTapDelay = 350,
   longTapDelay = 250,
   ...engineProps
@@ -161,7 +161,6 @@ export function initEngine({
 
   const mappings = [
     { observable: controlManager.onActionObservable, subject: localAction$ },
-    { observable: controlManager.onPointerObservable, subject: pointer$ },
     { observable: controlManager.onDetailedObservable, subject: meshDetails$ },
     { observable: indicatorManager.onChangeObservable, subject: indicators$ },
     {
@@ -171,6 +170,7 @@ export function initEngine({
     { observable: cameraManager.onSaveObservable, subject: cameraSaves$ },
     { observable: cameraManager.onMoveObservable, subject: currentCamera$ },
     { observable: inputManager.onLongObservable, subject: longInputs },
+    { observable: inputManager.onPointerObservable, subject: pointer$ },
     { observable: handManager.onHandChangeObservable, subject: handSaves$ },
     {
       observable: handManager.onDraggableToHandObservable,
@@ -194,35 +194,35 @@ export function initEngine({
 
   // applies other players' update
   subscriptions.push(
-    ...[
-      lastMessageReceived.subscribe(({ data, playerId }) => {
-        if (data?.pointer) {
-          controlManager.movePeerPointer(data)
-        } else if (data?.meshId) {
-          if (data.fn === 'draw') {
-            handManager.applyDraw(...data.args)
-          } else {
-            controlManager.apply(data, true)
-          }
-          remoteAction$.next({ ...data, peerId: playerId })
+    lastMessageReceived.subscribe(({ data, playerId }) => {
+      if (data?.pointer) {
+        indicatorManager.registerPointerIndicator(playerId, data.pointer)
+      } else if (data?.meshId) {
+        if (data.fn === 'draw') {
+          handManager.applyDraw(...data.args)
+        } else {
+          controlManager.apply(data, true)
         }
-      }),
+        remoteAction$.next({ ...data, peerId: playerId })
+      }
+    }),
 
-      // prunes unused peer pointers if needed
-      connected.subscribe(players => {
-        if (players) {
-          controlManager.pruneUnusedPeerPointers(
-            players.map(({ playerId }) => playerId)
-          )
-        }
-      }),
+    // sends local action from main scene to other players
+    localAction$.pipe(filter(({ fromHand }) => !fromHand)).subscribe(send),
 
-      // sends local action from main scene to other players
-      localAction$.pipe(filter(({ fromHand }) => !fromHand)).subscribe(send),
+    // prunes unused peer pointers if needed
+    connected.subscribe(players => {
+      if (players) {
+        indicatorManager.pruneUnusedPointers(
+          players.map(({ playerId }) => playerId)
+        )
+      }
+    }),
 
-      // only sends pointer periodically to other players
-      pointer$.pipe(auditTime(pointerThrottle)).subscribe(send)
-    ]
+    // only sends pointer periodically to other players
+    pointer$
+      .pipe(auditTime(pointerThrottle))
+      .subscribe(pointer => send({ pointer }))
   )
 
   // automatic disposal

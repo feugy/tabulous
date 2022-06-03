@@ -253,7 +253,7 @@ function getQuantity(mesh) {
 function updateIndicator(mesh, size) {
   const id = `${mesh.id}.quantity`
   if (size > 1) {
-    indicatorManager.registerIndicator({ id, mesh, size })
+    indicatorManager.registerMeshIndicator({ id, mesh, size })
   } else {
     indicatorManager.unregisterIndicator({ id })
   }

@@ -6,6 +6,7 @@ import {
   cameraManager,
   controlManager,
   inputManager,
+  indicatorManager,
   handManager
 } from '../../src/3d/managers'
 import {
@@ -26,22 +27,22 @@ jest.mock('../../src/stores/peer-channels', () => {
   }
 })
 
-let cameraManagerSave
-let cameraManagerRestore
-let cameraManagerLoadSaves
-let controlManagerMovePointer
-let controlManagerPruneUnused
+let saveCamera
+let restoreCamera
+let loadCameraSaves
+let registerPointerIndicator
+let pruneUnusedPointers
 let handManagerApplyDraw
 
 beforeAll(() => {
-  cameraManagerSave = jest.spyOn(cameraManager, 'save')
-  cameraManagerRestore = jest.spyOn(cameraManager, 'restore')
-  cameraManagerLoadSaves = jest.spyOn(cameraManager, 'loadSaves')
-  controlManagerMovePointer = jest.spyOn(controlManager, 'movePeerPointer')
-  controlManagerPruneUnused = jest.spyOn(
-    controlManager,
-    'pruneUnusedPeerPointers'
+  saveCamera = jest.spyOn(cameraManager, 'save')
+  restoreCamera = jest.spyOn(cameraManager, 'restore')
+  loadCameraSaves = jest.spyOn(cameraManager, 'loadSaves')
+  registerPointerIndicator = jest.spyOn(
+    indicatorManager,
+    'registerPointerIndicator'
   )
+  pruneUnusedPointers = jest.spyOn(indicatorManager, 'pruneUnusedPointers')
   handManagerApplyDraw = jest.spyOn(handManager, 'applyDraw')
 })
 
@@ -144,11 +145,16 @@ describe('initEngine()', () => {
       })
 
       it('moves peer pointers on message', () => {
-        expect(controlManagerMovePointer).not.toHaveBeenCalled()
-        const pointer = faker.datatype.uuid()
-        lastMessageReceived.next({ data: { pointer } })
-        expect(controlManagerMovePointer).toHaveBeenCalledWith({ pointer })
-        expect(controlManagerMovePointer).toHaveBeenCalledTimes(1)
+        expect(registerPointerIndicator).not.toHaveBeenCalled()
+        const playerId = faker.datatype.uuid()
+        const pointer = [
+          faker.datatype.number({ min: 0, max: 800 }),
+          0,
+          faker.datatype.number({ min: 0, max: 800 })
+        ]
+        lastMessageReceived.next({ data: { pointer }, playerId })
+        expect(registerPointerIndicator).toHaveBeenCalledWith(playerId, pointer)
+        expect(registerPointerIndicator).toHaveBeenCalledTimes(1)
       })
 
       it('handles peer draw actions', () => {
@@ -166,6 +172,14 @@ describe('initEngine()', () => {
         expect(sendToPeer).not.toHaveBeenCalled()
       })
 
+      it('ignores other peer messages', () => {
+        lastMessageReceived.next({ data: { foo: 'bar' } })
+        expect(handManagerApplyDraw).not.toHaveBeenCalled()
+        expect(receiveAction).not.toHaveBeenCalled()
+        expect(sendToPeer).not.toHaveBeenCalled()
+        expect(registerPointerIndicator).not.toHaveBeenCalled()
+      })
+
       it('receives peer actions', () => {
         const meshId = faker.datatype.uuid()
         lastMessageReceived.next({ data: { meshId } })
@@ -179,13 +193,13 @@ describe('initEngine()', () => {
         expect(sendToPeer).not.toHaveBeenCalled()
         const data1 = { foo: 1 }
         const data2 = { foo: 2 }
-        controlManager.onPointerObservable.notifyObservers(data1)
+        inputManager.onPointerObservable.notifyObservers(data1)
         expect(sendToPeer).not.toHaveBeenCalled()
-        controlManager.onPointerObservable.notifyObservers(data2)
+        inputManager.onPointerObservable.notifyObservers(data2)
         await sleep(5)
         expect(sendToPeer).not.toHaveBeenCalled()
         await sleep(30)
-        expect(sendToPeer).toHaveBeenCalledWith(data2)
+        expect(sendToPeer).toHaveBeenCalledWith({ pointer: data2 })
         expect(sendToPeer).toHaveBeenCalledTimes(1)
       })
 
@@ -236,16 +250,16 @@ describe('initEngine()', () => {
         expect(receiveHighlightHand).toHaveBeenCalledTimes(1)
       })
 
-      it('prunes peer pointers on conection', () => {
-        expect(controlManagerPruneUnused).not.toHaveBeenCalled()
+      it('prunes peer pointers on connection', () => {
+        expect(pruneUnusedPointers).not.toHaveBeenCalled()
         const id1 = 1
         const id2 = 2
         const id3 = 3
         connectedPeers.next([{ playerId: id1 }, { playerId: id3 }])
-        expect(controlManagerPruneUnused).toHaveBeenCalledWith([id1, id3])
+        expect(pruneUnusedPointers).toHaveBeenCalledWith([id1, id3])
         connectedPeers.next([{ playerId: id1 }, { playerId: id2 }])
-        expect(controlManagerPruneUnused).toHaveBeenNthCalledWith(2, [id1, id2])
-        expect(controlManagerPruneUnused).toHaveBeenCalledTimes(2)
+        expect(pruneUnusedPointers).toHaveBeenNthCalledWith(2, [id1, id2])
+        expect(pruneUnusedPointers).toHaveBeenCalledTimes(2)
       })
 
       it('exposes hand manager enability', () => {
@@ -266,10 +280,10 @@ describe('saveCamera()', () => {
   it('invokes camera manager', () => {
     const args = ['foo', 'bar']
     gameEngine.saveCamera(...args)
-    expect(cameraManagerSave).toHaveBeenCalledWith(...args)
-    expect(cameraManagerSave).toHaveBeenCalledTimes(1)
-    expect(cameraManagerRestore).not.toHaveBeenCalled()
-    expect(cameraManagerLoadSaves).not.toHaveBeenCalled()
+    expect(saveCamera).toHaveBeenCalledWith(...args)
+    expect(saveCamera).toHaveBeenCalledTimes(1)
+    expect(restoreCamera).not.toHaveBeenCalled()
+    expect(loadCameraSaves).not.toHaveBeenCalled()
   })
 })
 
@@ -277,10 +291,10 @@ describe('restoreCamera()', () => {
   it('invokes camera manager', () => {
     const args = ['foo', 'bar']
     gameEngine.restoreCamera(...args)
-    expect(cameraManagerRestore).toHaveBeenCalledWith(...args)
-    expect(cameraManagerRestore).toHaveBeenCalledTimes(1)
-    expect(cameraManagerSave).not.toHaveBeenCalled()
-    expect(cameraManagerLoadSaves).not.toHaveBeenCalled()
+    expect(restoreCamera).toHaveBeenCalledWith(...args)
+    expect(restoreCamera).toHaveBeenCalledTimes(1)
+    expect(saveCamera).not.toHaveBeenCalled()
+    expect(loadCameraSaves).not.toHaveBeenCalled()
   })
 })
 
@@ -288,10 +302,10 @@ describe('loadCameraSaves()', () => {
   it('invokes camera manager', () => {
     const args = ['foo', 'bar']
     gameEngine.loadCameraSaves(...args)
-    expect(cameraManagerLoadSaves).toHaveBeenCalledWith(...args)
-    expect(cameraManagerLoadSaves).toHaveBeenCalledTimes(1)
-    expect(cameraManagerSave).not.toHaveBeenCalled()
-    expect(cameraManagerRestore).not.toHaveBeenCalled()
+    expect(loadCameraSaves).toHaveBeenCalledWith(...args)
+    expect(loadCameraSaves).toHaveBeenCalledTimes(1)
+    expect(saveCamera).not.toHaveBeenCalled()
+    expect(restoreCamera).not.toHaveBeenCalled()
   })
 })
 

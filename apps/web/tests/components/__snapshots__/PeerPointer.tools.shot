@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Toolshot components/PeerPointer.tools.svelte: Avatar 1`] = `
+<span>
+  <figure
+    style="--color:lime; --top:-50px; --left:0px"
+  >
+    <img
+      src="default"
+    />
+     
+    <figcaption>
+      Joe le clodo
+    </figcaption>
+  </figure>
+</span>
+`;
+
+exports[`Toolshot components/PeerPointer.tools.svelte: No avatar 1`] = `
+<span>
+  <figure
+    style="--color:lime; --top:-50px; --left:0px"
+  >
+    <img
+      src="/no-avatar.png"
+    />
+     
+    <figcaption>
+      Joe le clodo
+    </figcaption>
+  </figure>
+</span>
+`;

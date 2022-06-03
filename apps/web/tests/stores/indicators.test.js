@@ -61,6 +61,7 @@ describe('Indicators store', () => {
   )
 
   beforeAll(() => {
+    indicatorManager.init({ scene })
     initIndicators({ engine, canvas, hand })
     players = [
       {
@@ -116,12 +117,12 @@ describe('Indicators store', () => {
         {
           id: `${card4.id}.stack-size`,
           size: 3,
-          screenPosition: { x: 1145.1, y: 512 }
+          screenPosition: { x: 1024, y: 511.8 }
         },
         {
           id: `${card5.id}.stack-size`,
           size: 2,
-          screenPosition: { x: 902.9, y: 512 }
+          screenPosition: { x: 999.78, y: 511.9 }
         }
       ])
     })
@@ -385,12 +386,12 @@ describe('Indicators store', () => {
         expectIndicators([
           {
             id: `${players[0].id}.drop-zone.anchor-0`,
-            username: players[0].username,
+            player: players[0],
             screenPosition: { x: 1024, y: 512 }
           },
           {
             id: `${players[1].id}.drop-zone.anchor-0`,
-            username: players[1].username,
+            player: players[1],
             screenPosition: { x: 1048.22, y: 512 }
           }
         ])
@@ -416,7 +417,6 @@ describe('Indicators store', () => {
     jest.spyOn(window, 'getComputedStyle').mockImplementation(node => ({
       height: `${node === canvas ? renderHeight : height}px`
     }))
-    indicatorManager.init({ scene })
     window.resizeObservers[0].notify()
     await sleep(20)
   }
