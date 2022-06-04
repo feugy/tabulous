@@ -110,9 +110,12 @@ describe('Peer channels store', () => {
   })
 
   it('starts subscription for a given player', async () => {
+    const gameId = faker.datatype.uuid()
     runSubscription.mockReturnValueOnce(new Subject())
-    communication.openChannels({ id: playerId1 })
-    expect(runSubscription).toHaveBeenCalledWith(graphQL.awaitSignal)
+    communication.openChannels({ id: playerId1 }, gameId)
+    expect(runSubscription).toHaveBeenCalledWith(graphQL.awaitSignal, {
+      gameId
+    })
     expect(runSubscription).toHaveBeenCalledTimes(1)
   })
 

@@ -245,36 +245,34 @@ export const lastDisconnectedId = lastDisconnectedId$.asObservable()
  * Configures communication channels in order to honor other players' connection requests
  * @async
  * @param {object} player - current player // TODO
+ * @param {string} gameId - id of the game this player is playing.
  */
-export async function openChannels(player) {
+export async function openChannels(player, gameId) {
   current = { player }
   logger.info({ player }, 'initializing peer communication')
 
-  signalSubscription = runSubscription(graphQL.awaitSignal).subscribe(
-    async ({ from, signal, type }) => {
-      const channel = channels.get(from)
+  signalSubscription = runSubscription(graphQL.awaitSignal, {
+    gameId
+  }).subscribe(async ({ from, signal, type }) => {
+    const channel = channels.get(from)
+    if (type === 'offer') {
+      logger.info({ from, signal }, `receiving offer from server, create peer`)
+    } else if (type === 'answer') {
+      logger.info(
+        { from, signal },
+        `receiving answer from server, completing connection`
+      )
+    }
+    if (channel) {
+      // handshake or negociation
+      channel.peer.signal(signal)
+    } else {
       if (type === 'offer') {
-        logger.info(
-          { from, signal },
-          `receiving offer from server, create peer`
-        )
-      } else if (type === 'answer') {
-        logger.info(
-          { from, signal },
-          `receiving answer from server, completing connection`
-        )
-      }
-      if (channel) {
-        // handshake or negociation
-        channel.peer.signal(signal)
-      } else {
-        if (type === 'offer') {
-          // new peer joining
-          createPeer(from, signal)
-        }
+        // new peer joining
+        createPeer(from, signal)
       }
     }
-  )
+  })
 }
 
 /**
