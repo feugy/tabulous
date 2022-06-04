@@ -49,13 +49,13 @@ export default {
     awaitSignal: {
       subscribe: isAuthenticated(
         async (obj, { gameId }, { player, pubsub }) => {
-          await services.setPlaying(player.id, true)
-          services.notifyGamePlayers(gameId)
           const queue = await pubsub.subscribe(`sendSignal-${player.id}`)
           queue.once('close', async () => {
             services.setPlaying(player.id, false)
             services.notifyGamePlayers(gameId)
           })
+          await services.setPlaying(player.id, true)
+          services.notifyGamePlayers(gameId)
           return queue
         }
       )

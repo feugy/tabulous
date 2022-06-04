@@ -272,7 +272,7 @@ export async function loadGame(gameId) {
   }
 
   logger.info({ gameId }, `entering game ${gameId}`)
-  openChannels(player, gameId)
+  await openChannels(player, gameId)
   engine.onDisposeObservable.addOnce(() => {
     unsubscribeAll()
     closeChannels()

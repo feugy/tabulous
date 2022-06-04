@@ -377,11 +377,12 @@ describe('Peer channels store', () => {
         initiator,
         stream,
         trickle: true,
+        sdpTransform: expect.any(Function),
         config: {
           iceServers: [
-            { urls: ['stun:tabulous.fr'] },
+            { urls: 'stun:tabulous.fr' },
             {
-              urls: ['turn:tabulous.fr'],
+              urls: 'turn:tabulous.fr',
               username: turnCredentials.username,
               credential: turnCredentials.credentials
             }

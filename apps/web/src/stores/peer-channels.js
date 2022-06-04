@@ -7,13 +7,14 @@ import { runMutation, runSubscription } from './graphql-client'
 import { turnCredentials } from './players'
 import { acquireMediaStream, releaseMediaStream, stream$ } from './stream'
 import * as graphQL from '../graphql'
-import { makeLogger } from '../utils'
+import { makeLogger, buildSDPTransform } from '../utils'
 
 const logger = makeLogger('peer-channels')
 
 let signalSubscription
 let current
 let messageId = 1
+const bitrate = 128
 const connectDuration = 20000
 const channels = new Map()
 const streamSubscriptionByPlayerId = new Map()
@@ -97,8 +98,10 @@ async function createPeer(playerId, signal) {
           return
         }
         if (peer) {
-          peer.addStream(stream)
           peer.removeStream(peer.streams[0])
+          if (stream) {
+            peer.addStream(stream)
+          }
           return
         }
         peer = new Peer({
@@ -107,7 +110,8 @@ async function createPeer(playerId, signal) {
           trickle: true,
           config: {
             iceServers: getIceServers()
-          }
+          },
+          sdpTransform: buildSDPTransform({ bitrate })
         })
         peer._debug = function (...args) {
           // simple-peer leverages console string substitution
@@ -206,8 +210,8 @@ async function createPeer(playerId, signal) {
 function getIceServers() {
   const { username, credentials: credential } = get(turnCredentials)
   return [
-    { urls: ['stun:tabulous.fr'] },
-    { urls: ['turn:tabulous.fr'], username, credential }
+    { urls: 'stun:tabulous.fr' },
+    { urls: 'turn:tabulous.fr', username, credential }
   ]
 }
 /**
