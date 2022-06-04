@@ -21,6 +21,7 @@ const levels = {
   selection: 'warn',
   'scene-loader': 'warn',
   stackable: 'warn',
+  stream: 'warn',
   target: 'warn'
 }
 

@@ -69,11 +69,14 @@ describe('given a started server', () => {
     describe('awaitSignal subscription', () => {
       it('sends signal and triggers subscription', async () => {
         const peerId = faker.datatype.uuid()
+        const gameId = faker.datatype.uuid()
         const data = { type: 'answer', to: peerId, signal: 'whatever' }
         services.getPlayerById.mockImplementation(id => ({ id }))
         await startSubscription(
           ws,
-          'subscription { awaitSignal { type from signal } }',
+          `subscription { awaitSignal(gameId: ${toGraphQLArg(
+            gameId
+          )}) { type from signal } }`,
           peerId
         )
         const listPromise = waitOnMessage(ws)
@@ -115,18 +118,24 @@ describe('given a started server', () => {
 
       it('sets playing status based on subscription', async () => {
         const subId = faker.datatype.number()
+        const gameId = faker.datatype.uuid()
         services.getPlayerById.mockImplementation(id => ({ id }))
         await startSubscription(
           ws,
-          'subscription { awaitSignal { type from signal } }',
+          `subscription { awaitSignal(gameId: ${toGraphQLArg(
+            gameId
+          )}) { type from signal } }`,
           playerId,
           subId
         )
         expect(services.setPlaying).toHaveBeenNthCalledWith(1, playerId, true)
+        expect(services.notifyGamePlayers).toHaveBeenNthCalledWith(1, gameId)
 
         await stopSubscription(ws, subId)
         expect(services.setPlaying).toHaveBeenNthCalledWith(2, playerId, false)
+        expect(services.notifyGamePlayers).toHaveBeenNthCalledWith(2, gameId)
         expect(services.setPlaying).toHaveBeenCalledTimes(2)
+        expect(services.notifyGamePlayers).toHaveBeenCalledTimes(2)
       })
     })
   })

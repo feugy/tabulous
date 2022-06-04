@@ -5,6 +5,9 @@
 
   const connected = [{ playerId: players[0].id }, { playerId: players[2].id }]
   const playerById = new Map(players.map(player => [player.id, player]))
+  const playingPlayersById = new Map(
+    players.map(player => [player.id, { ...player, playing: true }])
+  )
   const singlePlayerById = new Map([[players[0].id, players[0]]])
 </script>
 
@@ -35,7 +38,7 @@
     props={{
       player: players[0],
       game: { kind: 'splendor', rulesBookPageCount: 4 },
-      playerById,
+      playerById: playingPlayersById,
       connected
     }}
   />

@@ -34,6 +34,7 @@ lacus vestibulum sed arcu non odio euismod lacinia.`
     disabled: false,
     valueAsText: false,
     withArrow: true,
+    openOnClick: true,
     text: 'Greet',
     icon: 'emoji_people',
     options: [
@@ -100,6 +101,33 @@ lacus vestibulum sed arcu non odio euismod lacinia.`
       text: 'player',
       icon: 'headset_mic',
       valueAsText: true,
+      options: [
+        { icon: 'play_arrow', label: 'play' },
+        { icon: 'stop', label: 'stop' },
+        { icon: 'fast_rewind', label: 'previous' },
+        { icon: 'fast_forward', label: 'next' }
+      ]
+    }}
+    let:props
+    let:handleEvent
+  >
+    <div>
+      <div>{headerText}</div>
+      <Dropdown
+        {...props}
+        on:click={handleEvent}
+        on:select={handleEvent}
+        on:close={handleEvent}
+      />
+      <div>{footerText}</div>
+    </div>
+  </Tool>
+  <Tool
+    name="Split clicks"
+    props={{
+      text: null,
+      icon: 'headset_mic',
+      openOnClick: false,
       options: [
         { icon: 'play_arrow', label: 'play' },
         { icon: 'stop', label: 'stop' },

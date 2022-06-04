@@ -28,6 +28,7 @@ import {
   lastDisconnectedId,
   lastMessageReceived,
   lastMessageSent,
+  openChannels,
   send
 } from '../../src/stores/peer-channels'
 import { currentPlayer } from '../../src/stores/players'
@@ -133,6 +134,7 @@ describe('given a mocked game engine', () => {
         expect(loadThread).not.toHaveBeenCalled()
         expect(connectWith).not.toHaveBeenCalled()
         expect(send).not.toHaveBeenCalled()
+        expect(openChannels).toHaveBeenCalledWith(player, gameId)
       })
 
       it('loads camera positions upon game loading', async () => {

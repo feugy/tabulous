@@ -39,7 +39,7 @@ let listGamesSubscription = null
 // updates current game when receiving player updates
 playerGames$.subscribe(games => {
   const current = currentGame$.value
-  const update = games.find(({ id }) => id === current?.id)
+  const update = games?.find(({ id }) => id === current?.id)
   if (current && update) {
     currentGame$.next({ ...current, ...update })
   }
@@ -272,7 +272,7 @@ export async function loadGame(gameId) {
   }
 
   logger.info({ gameId }, `entering game ${gameId}`)
-  openChannels(player)
+  openChannels(player, gameId)
   engine.onDisposeObservable.addOnce(() => {
     unsubscribeAll()
     closeChannels()

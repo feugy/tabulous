@@ -1,19 +1,32 @@
 import { faker } from '@faker-js/faker'
 import { randomUUID } from 'crypto'
+import { Subject } from 'rxjs'
 import { get } from 'svelte/store'
 import Peer from 'simple-peer-light'
+import * as graphQL from '../../src/graphql'
 import * as communication from '../../src/stores/peer-channels'
 import { turnCredentials as turnCredentials$ } from '../../src/stores/players'
+import {
+  acquireMediaStream,
+  releaseMediaStream,
+  stream$
+} from '../../src/stores/stream'
 import { runMutation, runSubscription } from '../../src/stores/graphql-client'
-import * as graphQL from '../../src/graphql'
 import { mockLogger } from '../utils.js'
-import { Subject } from 'rxjs'
 
 jest.mock('simple-peer-light')
 jest.mock('../../src/stores/graphql-client')
 jest.mock('../../src/stores/players', () => {
   const { BehaviorSubject } = require('rxjs')
   return { turnCredentials: new BehaviorSubject() }
+})
+jest.mock('../../src/stores/stream', () => {
+  const { BehaviorSubject } = require('rxjs')
+  return {
+    stream$: new BehaviorSubject(null),
+    acquireMediaStream: jest.fn(),
+    releaseMediaStream: jest.fn()
+  }
 })
 
 describe('Peer channels store', () => {
@@ -25,6 +38,7 @@ describe('Peer channels store', () => {
     username: faker.lorem.words(),
     credentials: faker.datatype.uuid()
   }
+  const stream = faker.datatype.uuid()
 
   let peers = []
   let subscriptions = []
@@ -57,7 +71,7 @@ describe('Peer channels store', () => {
     lastDisconnectedId = null
     messagesSent = []
     messagesReceived = []
-    Peer.mockImplementation(() => {
+    Peer.mockImplementation(({ stream } = {}) => {
       const peer = {
         id: randomUUID(),
         events: {},
@@ -69,10 +83,16 @@ describe('Peer channels store', () => {
         },
         signal: jest.fn(),
         send: jest.fn(),
-        destroy: jest.fn()
+        destroy: jest.fn(),
+        addStream: jest.fn(),
+        removeStream: jest.fn(),
+        streams: [stream]
       }
       peers.push(peer)
       return peer
+    })
+    acquireMediaStream.mockImplementation(async () => {
+      stream$.next(stream)
     })
   })
 
@@ -90,9 +110,12 @@ describe('Peer channels store', () => {
   })
 
   it('starts subscription for a given player', async () => {
+    const gameId = faker.datatype.uuid()
     runSubscription.mockReturnValueOnce(new Subject())
-    communication.openChannels({ id: playerId1 })
-    expect(runSubscription).toHaveBeenCalledWith(graphQL.awaitSignal)
+    communication.openChannels({ id: playerId1 }, gameId)
+    expect(runSubscription).toHaveBeenCalledWith(graphQL.awaitSignal, {
+      gameId
+    })
     expect(runSubscription).toHaveBeenCalledTimes(1)
   })
 
@@ -244,16 +267,34 @@ describe('Peer channels store', () => {
         { playerId: playerId3 }
       ])
       expect(lastDisconnectedId).toEqual(playerId2)
+      expect(releaseMediaStream).not.toHaveBeenCalled()
+    })
+
+    it('releases media stream when all peers are gone', async () => {
+      peers[0].events.close.mock.calls[0][0]()
+      expect(lastDisconnectedId).toEqual(playerId2)
+      peers[1].events.close.mock.calls[0][0]()
+      expect(lastDisconnectedId).toEqual(playerId3)
+      expect(get(communication.connected)).toEqual([])
+      expect(releaseMediaStream).toHaveBeenCalledTimes(1)
     })
 
     it('can receive peer stream', () => {
-      const stream = randomUUID()
-      peers[1].events.stream.mock.calls[0][0](stream)
+      const peerStream = randomUUID()
+      peers[1].events.stream.mock.calls[0][0](peerStream)
       expect(get(communication.connected)).toEqual([
         { playerId: playerId1 },
         { playerId: playerId2 },
-        { playerId: playerId3, stream }
+        { playerId: playerId3, stream: peerStream }
       ])
+    })
+
+    it('can change local stream', async () => {
+      const [peer1, peer2] = peers
+      const newStream = faker.datatype.uuid()
+      await stream$.next(newStream)
+      expect(peer1.addStream).toHaveBeenCalledWith(newStream)
+      expect(peer2.addStream).toHaveBeenCalledWith(newStream)
     })
 
     it('logs peer errors', async () => {
@@ -334,6 +375,7 @@ describe('Peer channels store', () => {
     expect(Peer).toHaveBeenCalledWith(
       expect.objectContaining({
         initiator,
+        stream,
         trickle: true,
         config: {
           iceServers: [
