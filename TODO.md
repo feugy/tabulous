@@ -16,7 +16,6 @@
 
 ## Refactor
 
-- bug: ICE failed message when peer reload their browser??
 - bug: animating visibility from 0 to 1 creates trouble with texture alpha channel
 - group candidate target per kind for performance
 - keep anchor ids
@@ -32,10 +31,10 @@
 
 ## UI
 
+- bug: ICE failed message when peer reload their browser??
 - bug: attached, unselected, mesh are not ignored during dragging
 - per-player default camera position
 - display peer's name when running draw animations
-- allow selecting preferred camera/mic with https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/enumerateDevices
 - configurable player position at game level
 - sort and filter catalog on game names
 - feedback on stacking
@@ -50,6 +49,7 @@
 
 ## Server
 
+- bug: on vite reload, all players could become hosts or peers simultaneously
 - use JWT as authentication token (stores player id and username)
 - allows a single connection per player (discards other JWTs)
 - logging (warning on invalid descriptors)
@@ -67,7 +67,6 @@
 # Known issues
 
 - moving items bellow other does not apply gravity to them
-- on vite reload, all players could become hosts or peers simultaneously
 
 # Ideas
 

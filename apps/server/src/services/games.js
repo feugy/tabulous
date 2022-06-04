@@ -1,5 +1,4 @@
-import { Subject } from 'rxjs'
-import { concatMap, mergeMap } from 'rxjs/operators'
+import { Subject, concatMap, mergeMap } from 'rxjs'
 import { canAccess } from './catalog.js'
 import { createMeshes } from '../utils/index.js'
 import repositories from '../repositories/index.js'
@@ -308,4 +307,15 @@ export async function invite(gameId, guestId, hostId) {
 export async function listGames(playerId) {
   return (await repositories.games.listByPlayerId(playerId, { size: 50 }))
     .results
+}
+
+/**
+ * When a player starts or stops playing, notify other players by updating their game list
+ * @param {string} gameId - the game this player starts or stops playing to.
+ */
+export async function notifyGamePlayers(gameId) {
+  const game = await repositories.games.getById(gameId)
+  if (game) {
+    gameListsUpdate$.next(game.playerIds)
+  }
 }
