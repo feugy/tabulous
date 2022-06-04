@@ -13,8 +13,8 @@
   events={['mute', 'stop']}
   layout="centered"
 >
-  <Tool name="With video" />
-  <Tool name="With uncontrollable video" props={{ controllable: false }} />
+  <Tool name="With video" props={{ controllable: true }} />
+  <Tool name="With uncontrollable video" />
   <Tool name="No video" props={{ stream: null }} />
   <Tool
     name="No video nor avatar"

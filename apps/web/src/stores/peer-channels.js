@@ -5,6 +5,7 @@ import { filter, scan } from 'rxjs/operators'
 import { get } from 'svelte/store'
 import { runMutation, runSubscription } from './graphql-client'
 import { turnCredentials } from './players'
+import { acquireMediaStream, releaseMediaStream, stream$ } from './stream'
 import * as graphQL from '../graphql'
 import { makeLogger } from '../utils'
 
@@ -15,6 +16,7 @@ let current
 let messageId = 1
 const connectDuration = 20000
 const channels = new Map()
+const streamSubscriptionByPlayerId = new Map()
 const lastMessageSent$ = new Subject()
 const lastMessageReceived$ = new Subject()
 const unorderedMessages$ = new Subject()
@@ -25,14 +27,14 @@ const lastDisconnectedId$ = new Subject()
 /**
  * @typedef {object} PeerPlayer
  * @property {string} playerId - player id
- * @property {stream} stream? - video stream from that player
+ * @property {stream} stream? - media stream from that player
  */
 
 function refreshConnected() {
   const peers = [...channels.values()].filter(({ established }) => established)
   connected$.next(
     peers.length > 0
-      ? [{ playerId: current.player.id, stream: current.stream }, ...peers].map(
+      ? [{ playerId: current.player.id }, ...peers].map(
           ({ playerId, stream }) => ({ playerId, stream })
         )
       : []
@@ -43,9 +45,11 @@ function unwire(id) {
   logger.debug({ id }, `cleaning connection to ${id}`)
   channels.get(id)?.peer?.destroy()
   channels.delete(id)
+  streamSubscriptionByPlayerId.get(id)?.unsubscribe()
+  streamSubscriptionByPlayerId.delete(id)
   refreshConnected()
   if (channels.size === 0) {
-    detachLocalMedia()
+    releaseMediaStream()
   }
   lastDisconnectedId$.next(id)
 }
@@ -82,129 +86,121 @@ unorderedMessages$
 
 async function createPeer(playerId, signal) {
   return new Promise((resolve, reject) => {
-    const peer = new Peer({
-      initiator: signal === undefined,
-      stream: current.stream,
-      trickle: true,
-      config: {
-        iceServers: getIceServers()
-      }
-    })
-    peer._debug = function (...args) {
-      // simple-peer leverages console string substitution
-      return logger.debug(...args, { peer: peer._id })
-    }
-
-    logger.debug({ peer }, `peer created`)
-    channels.set(playerId, {
-      peer,
-      lastMessageId: 0,
+    let peer
+    let isFirst = true
+    streamSubscriptionByPlayerId.set(
       playerId,
-      established: false
-    })
+      stream$.subscribe(stream => {
+        if (isFirst) {
+          // stream$ is a BehaviorSubject: it'll immediately call the subscriber, while we want to await for actual value
+          isFirst = false
+          return
+        }
+        if (peer) {
+          peer.addStream(stream)
+          peer.removeStream(peer.streams[0])
+          return
+        }
+        peer = new Peer({
+          initiator: signal === undefined,
+          stream,
+          trickle: true,
+          config: {
+            iceServers: getIceServers()
+          }
+        })
+        peer._debug = function (...args) {
+          // simple-peer leverages console string substitution
+          return logger.debug(...args, { peer: peer._id })
+        }
 
-    const connectTimeout = setTimeout(() => {
-      const error = new Error(
-        `Failed to establish connection after ${Math.floor(
-          connectDuration / 1000
-        )}`
-      )
-      logger.error(error.message)
-      unwire(playerId)
-      reject(error)
-    }, connectDuration)
+        logger.debug({ peer }, `peer created`)
+        channels.set(playerId, {
+          peer,
+          lastMessageId: 0,
+          playerId,
+          established: false
+        })
 
-    peer.on('error', error =>
-      logger.warn(
-        { peer, error },
-        `peer ${playerId} encounter an error: ${error.message}`
-      )
-    )
+        const connectTimeout = setTimeout(() => {
+          const error = new Error(
+            `Failed to establish connection after ${Math.floor(
+              connectDuration / 1000
+            )}`
+          )
+          logger.error(error.message)
+          unwire(playerId)
+          reject(error)
+        }, connectDuration)
 
-    peer.on('close', () => {
-      clearTimeout(connectTimeout)
-      logger.info({ peer }, `connection to ${playerId} closed`)
-      unwire(playerId)
-    })
-
-    peer.on('stream', stream => {
-      logger.debug({ peer }, `receiving stream from ${playerId}`)
-      channels.get(playerId).stream = stream
-      refreshConnected()
-    })
-
-    peer.on('signal', signal => {
-      const type = signal?.type
-      logger.debug(
-        { peer, signal },
-        `${signal.type} ready, sharing with server`
-      )
-      runMutation(graphQL.sendSignal, {
-        signal: { type, to: playerId, signal: JSON.stringify(signal) }
-      })
-    })
-
-    peer.on('data', stringData => {
-      const data = JSON.parse(stringData)
-      logger.debug({ data, peer }, `data from ${playerId}`)
-
-      const { lastMessageId } = channels.get(playerId)
-      if (data.messageId !== lastMessageId + 1 && lastMessageId > 0) {
-        logger.error(
-          `Invalid message ids: received ${data.messageId}, expecting: ${lastMessageId}`
+        peer.on('error', error =>
+          logger.warn(
+            { peer, error },
+            `peer ${playerId} encounter an error: ${error.message}`
+          )
         )
-        unorderedMessages$.next({ data, playerId })
-      } else {
-        lastMessageReceived$.next({ data, playerId })
-      }
-      // stores higher last only, so unorderedMessage could get lower ones
-      if (data.messageId > lastMessageId) {
-        channels.get(playerId).lastMessageId = data.messageId
-      }
-    })
 
-    peer.on('connect', () => {
-      clearTimeout(connectTimeout)
-      logger.info(
-        { peers: channels },
-        `connection established with ${playerId}`
-      )
-      channels.get(playerId).established = true
-      refreshConnected()
-      lastConnectedId$.next(playerId)
-      resolve(peer)
-    })
+        peer.on('close', () => {
+          clearTimeout(connectTimeout)
+          logger.info({ peer }, `connection to ${playerId} closed`)
+          unwire(playerId)
+        })
 
-    if (signal) {
-      peer.signal(signal)
-    }
-  })
-}
+        peer.on('stream', stream => {
+          logger.debug({ peer }, `receiving stream from ${playerId}`)
+          channels.get(playerId).stream = stream
+          refreshConnected()
+        })
 
-async function attachLocalMedia() {
-  if (!current || current.stream) return
-  if (navigator.mediaDevices) {
-    logger.info(`attaching local media to current peer`)
-    try {
-      current.stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true
+        peer.on('signal', signal => {
+          const type = signal?.type
+          logger.debug(
+            { peer, signal },
+            `${signal.type} ready, sharing with server`
+          )
+          runMutation(graphQL.sendSignal, {
+            signal: { type, to: playerId, signal: JSON.stringify(signal) }
+          })
+        })
+
+        peer.on('data', stringData => {
+          const data = JSON.parse(stringData)
+          logger.debug({ data, peer }, `data from ${playerId}`)
+
+          const { lastMessageId } = channels.get(playerId)
+          if (data.messageId !== lastMessageId + 1 && lastMessageId > 0) {
+            logger.error(
+              `Invalid message ids: received ${data.messageId}, expecting: ${lastMessageId}`
+            )
+            unorderedMessages$.next({ data, playerId })
+          } else {
+            lastMessageReceived$.next({ data, playerId })
+          }
+          // stores higher last only, so unorderedMessage could get lower ones
+          if (data.messageId > lastMessageId) {
+            channels.get(playerId).lastMessageId = data.messageId
+          }
+        })
+
+        peer.on('connect', () => {
+          clearTimeout(connectTimeout)
+          logger.info(
+            { peers: channels },
+            `connection established with ${playerId}`
+          )
+          channels.get(playerId).established = true
+          refreshConnected()
+          lastConnectedId$.next(playerId)
+          resolve(peer)
+        })
+
+        if (signal) {
+          peer.signal(signal)
+        }
       })
-      logger.debug(`media successfully attached`)
-    } catch (error) {
-      current.stream = null
-      logger.warn({ error }, `Failed to access media devices: ${error.message}`)
-    }
-  }
-}
-
-function detachLocalMedia() {
-  if (current?.stream) {
-    for (const track of current.stream.getTracks()) {
-      track.stop()
-    }
-    current.stream = undefined
-  }
+    )
+    acquireMediaStream()
+  })
 }
 
 function getIceServers() {
@@ -274,7 +270,6 @@ export async function openChannels(player) {
       } else {
         if (type === 'offer') {
           // new peer joining
-          await attachLocalMedia()
           createPeer(from, signal)
         }
       }
@@ -295,7 +290,6 @@ export async function connectWith(playerId) {
     { to: playerId, from: current.player.id },
     `establishing connection with peer ${playerId}`
   )
-  await attachLocalMedia()
   return await createPeer(playerId)
 }
 
@@ -309,7 +303,7 @@ export function closeChannels() {
   for (const id of [...channels.keys()]) {
     unwire(id)
   }
-  detachLocalMedia()
+  releaseMediaStream()
   current = null
   signalSubscription?.unsubscribe()
   signalSubscription = null

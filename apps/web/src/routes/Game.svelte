@@ -13,11 +13,15 @@
     RadialMenu
   } from '../components'
   import {
+    acquireMediaStream,
     actionMenuProps,
+    cameraDevices$,
     cameraSaves,
     connected,
+    currentCameraDevice$,
     currentCamera,
     currentGame,
+    currentMicDevice$,
     currentPlayer,
     gamePlayerById,
     handMeshes,
@@ -28,10 +32,12 @@
     visibleIndicators,
     loadGame,
     longInputs,
+    micDevices$,
     meshDetails,
     restoreCamera,
     saveCamera,
     sendToThread,
+    stream$,
     thread
   } from '../stores'
 
@@ -120,6 +126,7 @@
   />
 </aside>
 <main>
+  <!-- svelte-ignore a11y-autofocus -->
   <div
     class="interaction"
     tabindex="0"
@@ -142,9 +149,17 @@
 </main>
 <GameAside
   game={$currentGame}
+  localDevices={{
+    stream: $stream$,
+    currentMic: $currentMicDevice$,
+    mics: $micDevices$,
+    currentCamera: $currentCameraDevice$,
+    cameras: $cameraDevices$
+  }}
   player={$currentPlayer}
   playerById={$gamePlayerById}
   connected={$connected}
   thread={$thread}
+  on:select={({ detail }) => acquireMediaStream(detail)}
   on:sendMessage={({ detail }) => sendToThread(detail.text)}
 />

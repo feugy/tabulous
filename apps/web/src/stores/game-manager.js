@@ -40,6 +40,7 @@ let listGamesSubscription = null
 playerGames$.subscribe(games => {
   const current = currentGame$.value
   const update = games.find(({ id }) => id === current?.id)
+  console.log('game updates', current, update)
   if (current && update) {
     currentGame$.next({ ...current, ...update })
   }
@@ -216,6 +217,7 @@ export async function listGames() {
   if (listGamesSubscription) {
     listGamesSubscription.unsubscribe()
   }
+  console.log('list games')
   listGamesSubscription = runSubscription(graphQL.listGames).subscribe(
     playerGames$
   )

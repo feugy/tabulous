@@ -1,8 +1,12 @@
 <script>
-  import { Button } from '.'
-  export let stream = null
+  import { Dropdown } from '.'
   export let player = null
-  export let controllable = true
+  export let controllable = false
+  export let stream = null
+  export let currentCamera = null
+  export let cameras = []
+  export let currentMic = null
+  export let mics = []
 
   let video
   let noImage = false
@@ -84,14 +88,28 @@
     <video class:stopped autoplay muted={controllable} bind:this={video} />
     <legend>
       {#if controllable}
-        {#if hasAudio}<Button
+        {#if hasAudio}
+          <Dropdown
+            valueAsText={false}
+            openOnClick={false}
             icon={!muted ? 'mic' : 'mic_off'}
+            value={currentMic}
+            options={mics}
             on:click={toggleMic}
-          />{/if}
-        {#if hasVideo}<Button
+            on:select
+          />
+        {/if}
+        {#if hasVideo}
+          <Dropdown
+            valueAsText={false}
+            openOnClick={false}
             icon={!stopped ? 'videocam' : 'videocam_off'}
+            value={currentCamera}
+            options={cameras}
             on:click={toggleVideo}
-          />{/if}
+            on:select
+          />
+        {/if}
       {/if}
     </legend>
   {:else}

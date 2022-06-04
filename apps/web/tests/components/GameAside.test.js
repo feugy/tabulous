@@ -17,7 +17,19 @@ describe('GameAside component', () => {
     { playerId: players[0].id, stream },
     { playerId: players[2].id, stream }
   ]
+  const playingPlayers = [
+    players[0],
+    players[1],
+    { ...players[2], playing: true }
+  ]
   const [player] = players
+  const localDevices = {
+    stream,
+    currentCamera: null,
+    cameras: [],
+    currentMic: null,
+    mics: []
+  }
 
   beforeEach(jest.resetAllMocks)
 
@@ -25,6 +37,7 @@ describe('GameAside component', () => {
     return render(html`<${GameAside}
       connected=${[]}
       thread=${[]}
+      localDevices=${localDevices}
       ...${props}
       on:sendMessage=${handleSend}
     />`)
@@ -60,7 +73,7 @@ describe('GameAside component', () => {
       playersButonText,
       helpButtonText
     ])
-    expect(screen.getByRole('region')).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByRole('region')).toHaveAttribute('aria-expanded', 'false')
     expect(extractText(screen.getAllByRole('figure'))).toEqual(
       players.slice(1).map(({ username }) => username)
     )
@@ -72,7 +85,7 @@ describe('GameAside component', () => {
       game: { kind: 'splendor', rulesBookPageCount: 4 },
       playerById: toMap(players)
     })
-    expect(screen.getByRole('region')).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByRole('region')).toHaveAttribute('aria-expanded', 'false')
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
       playersButonText,
       rulesButtonText,
@@ -84,7 +97,7 @@ describe('GameAside component', () => {
   })
 
   it('has help, peer and thread tabs on multiple connected game without rules book', () => {
-    renderComponent({ player, playerById: toMap(players), connected })
+    renderComponent({ player, playerById: toMap(playingPlayers), connected })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
       playersButonText,
       helpButtonText,
@@ -109,7 +122,7 @@ describe('GameAside component', () => {
     renderComponent({
       player,
       game: { kind: 'splendor', rulesBookPageCount: 4 },
-      playerById: toMap(players),
+      playerById: toMap(playingPlayers),
       connected
     })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
@@ -142,7 +155,7 @@ describe('GameAside component', () => {
     ])
     expect(screen.getAllByRole('region')[0]).toHaveAttribute(
       'aria-expanded',
-      'true'
+      'false'
     )
 
     const avatars = screen.getAllByRole('figure')
@@ -162,7 +175,7 @@ describe('GameAside component', () => {
     ])
     expect(screen.getAllByRole('region')[0]).toHaveAttribute(
       'aria-expanded',
-      'true'
+      'false'
     )
 
     const avatars = screen.getAllByRole('figure')

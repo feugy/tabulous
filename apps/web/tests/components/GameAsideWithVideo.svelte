@@ -1,22 +1,34 @@
 <script>
   import { GameAside } from '../../src/components'
 
-  export let stream
-  export let connected
-
-  $: if (stream === undefined) {
-    navigator.mediaDevices
-      .getUserMedia({ video: true, audio: true })
-      .then(data => {
-        stream = data
-      })
+  let localDevices = {
+    stream: null,
+    currentCamera: null,
+    cameras: [],
+    currentMic: null,
+    mics: []
   }
 
-  $: connectedWithStream = connected
-    ? [{ ...connected[0], stream }, ...connected.slice(1)]
-    : connected
-
-  $: console.log(connectedWithStream)
+  $: if (!localDevices.stream) {
+    navigator.mediaDevices?.enumerateDevices().then(devices =>
+      navigator.mediaDevices
+        .getUserMedia({ video: true, audio: true })
+        .then(stream => {
+          const mics = devices.filter(
+            ({ kind, label }) =>
+              kind === 'audioinput' && !label.startsWith('Monitor of')
+          )
+          const cameras = devices.filter(({ kind }) => kind === 'videoinput')
+          localDevices = {
+            mics,
+            cameras,
+            currentMic: mics[0],
+            currentCamera: cameras[0],
+            stream
+          }
+        })
+    )
+  }
 </script>
 
-<GameAside {...$$restProps} connected={connectedWithStream} on:sendToThread />
+<GameAside {...$$restProps} {localDevices} current on:sendToThread />
