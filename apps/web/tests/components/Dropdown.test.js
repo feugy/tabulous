@@ -1,5 +1,4 @@
 import { fireEvent, render, screen } from '@testing-library/svelte'
-import { tick } from 'svelte'
 import html from 'svelte-htm'
 import Dropdown from '../../src/components/Dropdown.svelte'
 import { sleep } from '../../src/utils/index.js'
@@ -8,6 +7,7 @@ import { extractText } from '../test-utils'
 describe('Dropdown component', () => {
   const handleClose = jest.fn()
   const handleSelect = jest.fn()
+  const handleClick = jest.fn()
 
   beforeEach(jest.resetAllMocks)
 
@@ -17,6 +17,7 @@ describe('Dropdown component', () => {
         ...${props}
         on:close=${handleClose}
         on:select=${handleSelect}
+        on:click=${handleClick}
       />`
     )
   }
@@ -32,8 +33,7 @@ describe('Dropdown component', () => {
       renderComponent({ options })
       const button = screen.getByRole('button')
       expect(screen.queryByRole('menu')).not.toBeInTheDocument()
-      fireEvent.click(button)
-      await tick()
+      await fireEvent.click(button)
 
       expect(screen.queryByRole('menu')).toBeInTheDocument()
       const items = screen.getAllByRole('menuitem')
@@ -42,6 +42,7 @@ describe('Dropdown component', () => {
       )
       expect(handleSelect).not.toHaveBeenCalled()
       expect(handleClose).not.toHaveBeenCalled()
+      expect(handleClick).toHaveBeenCalledTimes(0)
     })
 
     it('displays value as text', async () => {
@@ -50,10 +51,8 @@ describe('Dropdown component', () => {
       const button = screen.getByRole('button')
       expect(button).toHaveTextContent(value)
 
-      fireEvent.click(button)
-      await tick()
-      fireEvent.click(screen.queryAllByRole('menuitem')[0])
-      await tick()
+      await fireEvent.click(button)
+      await fireEvent.click(screen.queryAllByRole('menuitem')[0])
 
       expect(button).toHaveTextContent(options[0].label ?? options[0])
       expect(handleSelect).toHaveBeenCalledWith(
@@ -61,53 +60,86 @@ describe('Dropdown component', () => {
       )
       expect(handleSelect).toHaveBeenCalledTimes(1)
       expect(handleClose).toHaveBeenCalledTimes(1)
+      expect(handleClick).toHaveBeenCalledTimes(0)
     })
 
     it('selects option with mouse', async () => {
       renderComponent({ options })
       const button = screen.getByRole('button')
-      fireEvent.click(button)
-      await tick()
-      fireEvent.click(screen.queryAllByRole('menuitem')[2])
-      await tick()
+      await fireEvent.click(button)
+      await fireEvent.click(screen.queryAllByRole('menuitem')[2])
 
       expect(handleSelect).toHaveBeenCalledWith(
         expect.objectContaining({ detail: options[2] })
       )
       expect(handleSelect).toHaveBeenCalledTimes(1)
       expect(handleClose).toHaveBeenCalledTimes(1)
+      expect(handleClick).toHaveBeenCalledTimes(0)
     })
 
     it('selects option with keyboard', async () => {
       renderComponent({ options })
       const button = screen.getByRole('button')
-      fireEvent.click(button)
-      await tick()
-      fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' })
-      await tick()
-      fireEvent.keyDown(document.activeElement, { key: 'ArrowRight' })
-      await tick()
+      await fireEvent.click(button)
+      await fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' })
+      await fireEvent.keyDown(document.activeElement, { key: 'ArrowRight' })
 
       expect(handleSelect).toHaveBeenCalledWith(
         expect.objectContaining({ detail: options[1] })
       )
       expect(handleSelect).toHaveBeenCalledTimes(1)
       expect(handleClose).toHaveBeenCalledTimes(1)
+      expect(handleClick).toHaveBeenCalledTimes(0)
     })
 
-    it('closes menu on click', async () => {
+    it('does not select the current option', async () => {
       renderComponent({ options })
       const button = screen.getByRole('button')
-      fireEvent.click(button)
-      await tick()
+      await fireEvent.click(button)
+      await fireEvent.click(screen.queryAllByRole('menuitem')[2])
+      await fireEvent.click(button)
+      await fireEvent.click(screen.queryAllByRole('menuitem')[2])
+
+      expect(handleSelect).toHaveBeenCalledWith(
+        expect.objectContaining({ detail: options[2] })
+      )
+      expect(handleSelect).toHaveBeenCalledTimes(1)
+      expect(handleClose).toHaveBeenCalledTimes(2)
+      expect(handleClick).toHaveBeenCalledTimes(0)
+    })
+
+    it('can split button and arrow clicks', async () => {
+      renderComponent({ options, openOnClick: false })
+      const arrow = screen.getByText('arrow_drop_down')
+      const button = screen.getByRole('button')
+      await fireEvent.click(arrow)
       expect(screen.queryByRole('menu')).toBeInTheDocument()
 
       fireEvent.click(window)
       await sleep(100)
       expect(screen.queryByRole('menu')).toBeNull()
 
-      fireEvent.click(button)
-      await tick()
+      await fireEvent.click(button)
+      expect(screen.queryByRole('menu')).toBeNull()
+
+      fireEvent.click(window)
+      await sleep(100)
+      expect(screen.queryByRole('menu')).toBeNull()
+      expect(handleClose).toHaveBeenCalledTimes(1)
+      expect(handleClick).toHaveBeenCalledTimes(1)
+    })
+
+    it('closes menu on click', async () => {
+      renderComponent({ options })
+      const button = screen.getByRole('button')
+      await fireEvent.click(button)
+      expect(screen.queryByRole('menu')).toBeInTheDocument()
+
+      fireEvent.click(window)
+      await sleep(100)
+      expect(screen.queryByRole('menu')).toBeNull()
+
+      await fireEvent.click(button)
       expect(screen.queryByRole('menu')).toBeInTheDocument()
 
       fireEvent.click(button)
@@ -115,6 +147,18 @@ describe('Dropdown component', () => {
       expect(screen.queryByRole('menu')).toBeNull()
       expect(handleSelect).toHaveBeenCalledTimes(0)
       expect(handleClose).toHaveBeenCalledTimes(2)
+      expect(handleClick).toHaveBeenCalledTimes(0)
+    })
+
+    it('has no arrow on single option', async () => {
+      renderComponent({ options: options.slice(0, 1) })
+      expect(screen.queryByText('arrow_drop_down')).toBeNull()
+      await fireEvent.click(screen.getByRole('button'))
+      expect(screen.queryAllByRole('menuitem')).toHaveLength(1)
+
+      expect(handleSelect).not.toHaveBeenCalled()
+      expect(handleClose).not.toHaveBeenCalled()
+      expect(handleClick).toHaveBeenCalledTimes(0)
     })
   })
 })

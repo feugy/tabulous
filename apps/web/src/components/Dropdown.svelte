@@ -9,6 +9,7 @@
   export let withArrow = true
   export let text = null
   export let open = false
+  export let openOnClick = true
 
   const dispatch = createEventDispatcher()
   let menu
@@ -19,7 +20,22 @@
     text = value ? value.label || value : text
   }
 
+  function handleSelect({ detail }) {
+    if (value !== detail) {
+      value = detail
+      dispatch('select', value)
+    }
+  }
+
   function handleClick() {
+    if (openOnClick) {
+      handleArrowClick()
+    } else {
+      dispatch('click')
+    }
+  }
+
+  function handleArrowClick() {
     open = !open
     if (!open) {
       dispatch('close')
@@ -44,8 +60,12 @@
   aria-expanded={open}
 >
   <Button {...$$restProps} {text} on:click={handleClick}>
-    {#if withArrow}
-      <i class:iconOnly class="material-icons arrow">
+    {#if withArrow && options.length > 1}
+      <i
+        class:iconOnly
+        class="material-icons arrow"
+        on:click|stopPropagation={handleArrowClick}
+      >
         {`arrow_drop_${open ? 'up' : 'down'}`}
       </i>
     {/if}
@@ -54,12 +74,11 @@
     {anchor}
     {open}
     {options}
-    bind:value
+    {value}
     takesFocus
     bind:ref={menu}
     on:close
-    on:select
     on:close={() => (open = false)}
-    on:select={({ detail }) => (value = detail)}
+    on:select={handleSelect}
   />
 </span>
