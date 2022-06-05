@@ -34,6 +34,7 @@ const logger = makeLogger('game-manager')
 
 const playerGames$ = new BehaviorSubject([])
 const currentGame$ = new BehaviorSubject()
+const hostId$ = new BehaviorSubject(null)
 let listGamesSubscription = null
 
 // updates current game when receiving player updates
@@ -120,6 +121,7 @@ function saveHands(gameId) {
 
 function takeHostRole(gameId) {
   logger.info({ gameId }, `taking game host role`)
+  setHostId(player.id)
   return [
     // save scene
     action
@@ -204,8 +206,16 @@ export const currentGame = currentGame$.asObservable()
  * Emits a map of player in current game.
  * @type {Observable<Map<string, import('../graphql').Player>>}
  */
-export const gamePlayerById = currentGame$.pipe(
-  map(game => new Map((game?.players ?? []).map(player => [player.id, player])))
+export const gamePlayerById = merge(currentGame$, hostId$).pipe(
+  map(
+    () =>
+      new Map(
+        (currentGame$.value?.players ?? []).map(player => [
+          player.id,
+          { ...player, isHost: player.id === hostId$.value }
+        ])
+      )
+  )
 )
 
 /**
@@ -271,15 +281,15 @@ export async function loadGame(gameId) {
     }
   }
 
-  logger.info({ gameId }, `entering game ${gameId}`)
-  await openChannels(player, gameId)
   engine.onDisposeObservable.addOnce(() => {
     unsubscribeAll()
     closeChannels()
   })
-
+  setHostId(null)
+  logger.info({ gameId }, `entering game ${gameId}`)
   let game = await runQuery(graphQL.loadGame, { gameId }, false)
   currentGame$.next(game)
+  openChannels(player, gameId)
   listGames() // to enable receiving player updates
 
   if (game.players.every(({ id, playing }) => id === player.id || !playing)) {
@@ -322,8 +332,9 @@ export async function loadGame(gameId) {
         }),
         lastMessageReceived
           .pipe(filter(({ data }) => data?.type === 'game-sync'))
-          .subscribe(({ data }) => {
-            logger.info({ game }, `loading game data (${data.id})`)
+          .subscribe(({ data, playerId }) => {
+            logger.info({ game, playerId }, `loading game data (${data.id})`)
+            setHostId(playerId)
             load(data, isFirstLoad)
             isFirstLoad = false
           }),
@@ -376,4 +387,10 @@ export async function invite(gameId, playerId) {
   }
   await load(game, false)
   return true
+}
+
+function setHostId(id) {
+  if (hostId$.value !== id) {
+    hostId$.next(id)
+  }
 }

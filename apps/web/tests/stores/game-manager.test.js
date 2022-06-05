@@ -13,6 +13,7 @@ import {
 import {
   createGame,
   deleteGame,
+  gamePlayerById,
   invite,
   loadGame
 } from '../../src/stores/game-manager'
@@ -66,9 +67,14 @@ jest.mock('../../src/stores/discussion')
 jest.mock('../../src/3d/utils')
 
 const logger = makeLogger('game-manager')
-
+const gamePlayerByIdReceived = jest.fn()
+let subscription
 let warn
 let error
+
+beforeAll(
+  () => (subscription = gamePlayerById.subscribe(gamePlayerByIdReceived))
+)
 
 beforeEach(() => {
   jest.resetAllMocks()
@@ -76,6 +82,8 @@ beforeEach(() => {
   warn = jest.spyOn(logger, 'warn')
   error = jest.spyOn(logger, 'error')
 })
+
+afterAll(() => subscription.unsubscribe())
 
 describe('given a mocked game engine', () => {
   const engine = {
@@ -85,9 +93,7 @@ describe('given a mocked game engine', () => {
     onDisposeObservable: new Observable()
   }
 
-  beforeAll(() => {
-    engine$.next(engine)
-  })
+  beforeAll(() => engine$.next(engine))
 
   afterEach(() => {
     engine.onDisposeObservable.notifyObservers()
@@ -101,6 +107,7 @@ describe('given a mocked game engine', () => {
       expect(warn).toHaveBeenCalledTimes(1)
       expect(runQuery).not.toHaveBeenCalled()
       expect(engine.load).not.toHaveBeenCalled()
+      expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(0)
     })
 
     describe('with current player', () => {
@@ -108,9 +115,10 @@ describe('given a mocked game engine', () => {
       const partner1 = { id: faker.datatype.uuid() }
       const partner2 = { id: faker.datatype.uuid() }
 
-      beforeAll(() => currentPlayer.next(player))
-
-      beforeEach(() => runSubscription.mockReturnValue(new Subject()))
+      beforeEach(() => {
+        currentPlayer.next(player)
+        runSubscription.mockReturnValue(new Subject())
+      })
 
       it('loads game data into the game engine', async () => {
         const gameId = faker.datatype.uuid()
@@ -119,7 +127,7 @@ describe('given a mocked game engine', () => {
           { playerId: 'anotherPlayerId', meshes: [{ id: 'mesh2' }] },
           { playerId: player.id, meshes: [{ id: 'mesh3' }] }
         ]
-        const game = { id: gameId, meshes, players: [], hands }
+        const game = { id: gameId, meshes, players: [player], hands }
         runQuery.mockResolvedValueOnce(game)
         await loadGame(gameId)
         expect(runQuery).toHaveBeenCalledWith(
@@ -135,6 +143,15 @@ describe('given a mocked game engine', () => {
         expect(connectWith).not.toHaveBeenCalled()
         expect(send).not.toHaveBeenCalled()
         expect(openChannels).toHaveBeenCalledWith(player, gameId)
+        expect(gamePlayerByIdReceived).toHaveBeenNthCalledWith(
+          1,
+          new Map([[player.id, { ...player, isHost: false }]])
+        )
+        expect(gamePlayerByIdReceived).toHaveBeenNthCalledWith(
+          2,
+          new Map([[player.id, { ...player, isHost: true }]])
+        )
+        expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(2)
       })
 
       it('loads camera positions upon game loading', async () => {
@@ -467,7 +484,8 @@ describe('given a mocked game engine', () => {
           connectWith.mockImplementationOnce(async () => {
             await nextPromise()
             lastMessageReceived.next({
-              data: { type: 'game-sync', ...game }
+              data: { type: 'game-sync', ...game },
+              playerId: partner1.id
             })
           })
           await loadGame(game.id)
@@ -491,6 +509,25 @@ describe('given a mocked game engine', () => {
           expect(loadCameraSaves).toHaveBeenCalledTimes(1)
           expect(loadThread).toHaveBeenCalledWith(game.messages)
           expect(loadThread).toHaveBeenCalledTimes(1)
+          expect(gamePlayerByIdReceived).toHaveBeenNthCalledWith(
+            1,
+            new Map(
+              game.players.map(player => [
+                player.id,
+                { ...player, isHost: false }
+              ])
+            )
+          )
+          expect(gamePlayerByIdReceived).toHaveBeenNthCalledWith(
+            2,
+            new Map(
+              game.players.map(player => [
+                player.id,
+                { ...player, isHost: player.id === partner1.id }
+              ])
+            )
+          )
+          expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(2)
         })
 
         describe('with disconnecting host', () => {
@@ -498,7 +535,8 @@ describe('given a mocked game engine', () => {
             connectWith.mockImplementationOnce(async () => {
               await nextPromise()
               lastMessageReceived.next({
-                data: { type: 'game-sync', ...game }
+                data: { type: 'game-sync', ...game },
+                playerId: partner1.id
               })
             })
             await loadGame(game.id)
@@ -539,6 +577,16 @@ describe('given a mocked game engine', () => {
             )
             expect(send).toHaveBeenCalledTimes(1)
             expect(closeChannels).not.toHaveBeenCalled()
+            expect(gamePlayerByIdReceived).toHaveBeenNthCalledWith(
+              1,
+              new Map([
+                [player.id, { ...player, isHost: true }],
+                // playing status will be updated with game list subscription
+                [partner1.id, { ...partner1, isHost: false, playing: true }],
+                [partner2.id, { ...partner2, isHost: false }]
+              ])
+            )
+            expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(1)
           })
 
           it('does not take host role when not being the first online', async () => {
@@ -556,6 +604,7 @@ describe('given a mocked game engine', () => {
             expect(runQuery).toHaveBeenCalledTimes(1)
             lastConnectedId.next(partner2.id)
             expect(send).not.toHaveBeenCalled()
+            expect(gamePlayerByIdReceived).not.toHaveBeenCalled()
           })
         })
       })
@@ -627,9 +676,9 @@ describe('given a mocked game engine', () => {
 
   // because of fake timers, we can't use sleep
   async function nextPromise() {
-    await Promise.resolve()
-    await Promise.resolve()
-    await Promise.resolve()
+    for (let i = 0; i < 3; i++) {
+      await Promise.resolve()
+    }
   }
 })
 
