@@ -1,4 +1,5 @@
 <script>
+  import { _ } from 'svelte-intl'
   import { Dropdown } from '.'
   export let player = null
   export let controllable = false
@@ -79,6 +80,10 @@
       @apply opacity-0;
     }
   }
+
+  label {
+    @apply absolute z-10 top-2 right-2 bg-$primary-lightest px-2 py-1 text-xs;
+  }
 </style>
 
 <figure class:hasStream>
@@ -123,5 +128,8 @@
     {#if noImage || !hasImage}
       <figcaption class:noImage>{player?.username}</figcaption>
     {/if}
+  {/if}
+  {#if player?.isHost}
+    <label>{$_('host')}</label>
   {/if}
 </figure>

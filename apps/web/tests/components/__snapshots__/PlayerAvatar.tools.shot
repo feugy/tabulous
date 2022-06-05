@@ -11,6 +11,10 @@ exports[`Toolshot components/PlayerAvatar.tools.svelte: No video 1`] = `
       Joe le clodo
     </figcaption>
     
+     
+    <label>
+      host
+    </label>
   </figure>
 </span>
 `;
@@ -26,6 +30,10 @@ exports[`Toolshot components/PlayerAvatar.tools.svelte: No video nor avatar 1`] 
       Joe le clodo
     </figcaption>
     
+     
+    <label>
+      host
+    </label>
   </figure>
 </span>
 `;
@@ -41,6 +49,10 @@ exports[`Toolshot components/PlayerAvatar.tools.svelte: With uncontrollable vide
       Joe le clodo
     </figcaption>
     
+     
+    <label>
+      host
+    </label>
   </figure>
 </span>
 `;
@@ -56,6 +68,10 @@ exports[`Toolshot components/PlayerAvatar.tools.svelte: With video 1`] = `
       Joe le clodo
     </figcaption>
     
+     
+    <label>
+      host
+    </label>
   </figure>
 </span>
 `;

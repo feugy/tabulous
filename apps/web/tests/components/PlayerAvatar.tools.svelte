@@ -3,7 +3,7 @@
   import PlayerAvatarWithVideo from './PlayerAvatarWithVideo.svelte'
   import avatar from './avatar.png'
 
-  let player = { username: 'Joe le clodo', avatar }
+  let player = { username: 'Joe le clodo', avatar, isHost: true }
 </script>
 
 <ToolBox
