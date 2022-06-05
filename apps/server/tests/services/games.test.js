@@ -9,7 +9,6 @@ import {
   invite,
   listGames,
   loadGame,
-  notifyGamePlayers,
   saveGame
 } from '../../src/services/games.js'
 import { sleep } from '../../src/utils/time.js'
@@ -317,30 +316,6 @@ describe('given a subscription to game lists and an initialized repository', () 
         expect(await deleteGame(game.id, player.id)).toEqual(game)
         expect(await loadGame(game.id, player.id)).toBeNull()
         expect(updates).toEqual([{ playerId: player.id, games: [] }])
-      })
-    })
-
-    describe('notifyGamePlayers()', () => {
-      beforeEach(async () => {
-        await invite(game.id, peer.id, player.id)
-        await sleep()
-        updates.splice(0, updates.length)
-      })
-
-      it('ignores unknown game', async () => {
-        const gameId = faker.datatype.uuid()
-        await notifyGamePlayers(gameId)
-        await sleep()
-        expect(updates).toHaveLength(0)
-      })
-
-      it('updates all players', async () => {
-        await notifyGamePlayers(game.id)
-        await sleep()
-        expect(updates).toEqual([
-          { playerId: player.id, games: [game] },
-          { playerId: peer.id, games: [game] }
-        ])
       })
     })
   })

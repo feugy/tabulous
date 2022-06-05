@@ -7,13 +7,11 @@ import { runMutation, runSubscription } from './graphql-client'
 import { turnCredentials } from './players'
 import { acquireMediaStream, releaseMediaStream, stream$ } from './stream'
 import * as graphQL from '../graphql'
-import { makeLogger } from '../utils'
+import { makeLogger, buildSDPTransform } from '../utils'
 
 const logger = makeLogger('peer-channels')
 
-let signalSubscription
-let current
-let messageId = 1
+const bitrate = 128
 const connectDuration = 20000
 const channels = new Map()
 const streamSubscriptionByPlayerId = new Map()
@@ -23,6 +21,9 @@ const unorderedMessages$ = new Subject()
 const connected$ = new BehaviorSubject([])
 const lastConnectedId$ = new Subject()
 const lastDisconnectedId$ = new Subject()
+let signalSubscription
+let current
+let messageId = 1
 
 /**
  * @typedef {object} PeerPlayer
@@ -97,8 +98,10 @@ async function createPeer(playerId, signal) {
           return
         }
         if (peer) {
-          peer.addStream(stream)
           peer.removeStream(peer.streams[0])
+          if (stream) {
+            peer.addStream(stream)
+          }
           return
         }
         peer = new Peer({
@@ -107,7 +110,8 @@ async function createPeer(playerId, signal) {
           trickle: true,
           config: {
             iceServers: getIceServers()
-          }
+          },
+          sdpTransform: buildSDPTransform({ bitrate })
         })
         peer._debug = function (...args) {
           // simple-peer leverages console string substitution
@@ -206,8 +210,8 @@ async function createPeer(playerId, signal) {
 function getIceServers() {
   const { username, credentials: credential } = get(turnCredentials)
   return [
-    { urls: ['stun:tabulous.fr'] },
-    { urls: ['turn:tabulous.fr'], username, credential }
+    { urls: 'stun:tabulous.fr' },
+    { urls: 'turn:tabulous.fr', username, credential }
   ]
 }
 /**
@@ -245,34 +249,36 @@ export const lastDisconnectedId = lastDisconnectedId$.asObservable()
  * Configures communication channels in order to honor other players' connection requests
  * @async
  * @param {object} player - current player // TODO
- * @param {string} gameId - id of the game this player is playing.
  */
-export async function openChannels(player, gameId) {
+export async function openChannels(player) {
   current = { player }
   logger.info({ player }, 'initializing peer communication')
 
-  signalSubscription = runSubscription(graphQL.awaitSignal, {
-    gameId
-  }).subscribe(async ({ from, signal, type }) => {
-    const channel = channels.get(from)
-    if (type === 'offer') {
-      logger.info({ from, signal }, `receiving offer from server, create peer`)
-    } else if (type === 'answer') {
-      logger.info(
-        { from, signal },
-        `receiving answer from server, completing connection`
-      )
-    }
-    if (channel) {
-      // handshake or negociation
-      channel.peer.signal(signal)
-    } else {
+  signalSubscription = runSubscription(graphQL.awaitSignal).subscribe(
+    async ({ from, signal, type }) => {
+      const channel = channels.get(from)
       if (type === 'offer') {
-        // new peer joining
-        createPeer(from, signal)
+        logger.info(
+          { from, signal },
+          `receiving offer from server, create peer`
+        )
+      } else if (type === 'answer') {
+        logger.info(
+          { from, signal },
+          `receiving answer from server, completing connection`
+        )
+      }
+      if (channel) {
+        // handshake or negociation
+        channel.peer.signal(signal)
+      } else {
+        if (type === 'offer') {
+          // new peer joining
+          createPeer(from, signal)
+        }
       }
     }
-  })
+  )
 }
 
 /**

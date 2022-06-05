@@ -129,13 +129,10 @@ describe('given a started server', () => {
           subId
         )
         expect(services.setPlaying).toHaveBeenNthCalledWith(1, playerId, true)
-        expect(services.notifyGamePlayers).toHaveBeenNthCalledWith(1, gameId)
 
         await stopSubscription(ws, subId)
         expect(services.setPlaying).toHaveBeenNthCalledWith(2, playerId, false)
-        expect(services.notifyGamePlayers).toHaveBeenNthCalledWith(2, gameId)
         expect(services.setPlaying).toHaveBeenCalledTimes(2)
-        expect(services.notifyGamePlayers).toHaveBeenCalledTimes(2)
       })
     })
   })

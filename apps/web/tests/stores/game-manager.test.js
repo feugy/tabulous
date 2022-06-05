@@ -13,6 +13,7 @@ import {
 import {
   createGame,
   deleteGame,
+  gamePlayerById,
   invite,
   loadGame
 } from '../../src/stores/game-manager'
@@ -66,9 +67,14 @@ jest.mock('../../src/stores/discussion')
 jest.mock('../../src/3d/utils')
 
 const logger = makeLogger('game-manager')
-
+const gamePlayerByIdReceived = jest.fn()
+let subscription
 let warn
 let error
+
+beforeAll(
+  () => (subscription = gamePlayerById.subscribe(gamePlayerByIdReceived))
+)
 
 beforeEach(() => {
   jest.resetAllMocks()
@@ -76,6 +82,8 @@ beforeEach(() => {
   warn = jest.spyOn(logger, 'warn')
   error = jest.spyOn(logger, 'error')
 })
+
+afterAll(() => subscription.unsubscribe())
 
 describe('given a mocked game engine', () => {
   const engine = {
@@ -85,9 +93,7 @@ describe('given a mocked game engine', () => {
     onDisposeObservable: new Observable()
   }
 
-  beforeAll(() => {
-    engine$.next(engine)
-  })
+  beforeAll(() => engine$.next(engine))
 
   afterEach(() => {
     engine.onDisposeObservable.notifyObservers()
@@ -101,6 +107,7 @@ describe('given a mocked game engine', () => {
       expect(warn).toHaveBeenCalledTimes(1)
       expect(runQuery).not.toHaveBeenCalled()
       expect(engine.load).not.toHaveBeenCalled()
+      expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(0)
     })
 
     describe('with current player', () => {
@@ -108,9 +115,10 @@ describe('given a mocked game engine', () => {
       const partner1 = { id: faker.datatype.uuid() }
       const partner2 = { id: faker.datatype.uuid() }
 
-      beforeAll(() => currentPlayer.next(player))
-
-      beforeEach(() => runSubscription.mockReturnValue(new Subject()))
+      beforeEach(() => {
+        currentPlayer.next(player)
+        runSubscription.mockReturnValue(new Subject())
+      })
 
       it('loads game data into the game engine', async () => {
         const gameId = faker.datatype.uuid()
@@ -119,7 +127,11 @@ describe('given a mocked game engine', () => {
           { playerId: 'anotherPlayerId', meshes: [{ id: 'mesh2' }] },
           { playerId: player.id, meshes: [{ id: 'mesh3' }] }
         ]
-        const game = { id: gameId, meshes, players: [], hands }
+        const game = { id: gameId, meshes, players: [player], hands }
+        engine.serialize.mockReturnValue({
+          meshes,
+          handMeshes: hands[1].meshes
+        })
         runQuery.mockResolvedValueOnce(game)
         await loadGame(gameId)
         expect(runQuery).toHaveBeenCalledWith(
@@ -133,18 +145,26 @@ describe('given a mocked game engine', () => {
         expect(loadCameraSaves).not.toHaveBeenCalled()
         expect(loadThread).not.toHaveBeenCalled()
         expect(connectWith).not.toHaveBeenCalled()
-        expect(send).not.toHaveBeenCalled()
-        expect(openChannels).toHaveBeenCalledWith(player, gameId)
+        expect(send).toHaveBeenCalledWith(
+          { type: 'game-sync', ...game, players: undefined, cameras: [] },
+          undefined
+        )
+        expect(send).toHaveBeenCalledTimes(1)
+        expect(openChannels).toHaveBeenCalledWith(player)
+        expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(
+          new Map([[player.id, { ...player, isHost: true, playing: true }]])
+        )
+        expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(3)
       })
 
       it('loads camera positions upon game loading', async () => {
         const gameId = faker.datatype.uuid()
         const meshes = [{ id: 'mesh1' }]
-        const hands = []
+        const hands = [{ playerId: player.id, meshes: [] }]
         const cameras = [
-          { playerId: player.id, index: 1, pos: '10' },
-          { playerId: partner1.id, index: 0, pos: '1' },
-          { playerId: player.id, index: 0, pos: '20' }
+          { playerId: player.id, index: 1 },
+          { playerId: partner1.id, index: 0 },
+          { playerId: player.id, index: 0 }
         ]
         const game = { id: gameId, meshes, players: [], hands, cameras }
         engine.serialize.mockReturnValueOnce({ meshes, handMeshes: [] })
@@ -161,13 +181,23 @@ describe('given a mocked game engine', () => {
         expect(engine.load).toHaveBeenCalledTimes(1)
         expect(loadCameraSaves).toHaveBeenCalledWith([cameras[2], cameras[0]])
         expect(loadCameraSaves).toHaveBeenCalledTimes(1)
-        expect(send).not.toHaveBeenCalled()
+        expect(send).toHaveBeenCalledWith(
+          {
+            type: 'game-sync',
+            ...game,
+            players: undefined,
+            messages: [],
+            cameras
+          },
+          undefined
+        )
+        expect(send).toHaveBeenCalledTimes(1)
       })
 
       it('loads message thread upon game loading', async () => {
         const gameId = faker.datatype.uuid()
         const meshes = [{ id: 'mesh1' }]
-        const hands = []
+        const hands = [{ playerId: player.id, meshes: [] }]
         const messages = ['coucou', 'yeah']
         const game = {
           id: gameId,
@@ -190,13 +220,18 @@ describe('given a mocked game engine', () => {
         expect(engine.load).toHaveBeenCalledWith(game, player.id, true)
         expect(engine.load).toHaveBeenCalledTimes(1)
         expect(loadCameraSaves).not.toHaveBeenCalled()
-        expect(send).not.toHaveBeenCalled()
+        expect(send).toHaveBeenCalledWith(
+          { type: 'game-sync', ...game, players: undefined },
+          undefined
+        )
+        expect(send).toHaveBeenCalledTimes(1)
       })
 
       it('loads game data without player hand', async () => {
         const gameId = faker.datatype.uuid()
         const meshes = [{ id: 'mesh2' }]
         const game = { id: gameId, meshes, players: [], hands: [] }
+        engine.serialize.mockReturnValueOnce({ meshes, handMeshes: [] })
         runQuery.mockResolvedValueOnce(game)
         await loadGame(gameId)
         expect(runQuery).toHaveBeenCalledWith(
@@ -217,8 +252,8 @@ describe('given a mocked game engine', () => {
           players: [player, partner1],
           hands: [{ playerId: partner2.id, meshes: [{ id: 'mesh4' }] }],
           cameras: [
-            { playerId: player.id, index: 0, pos: '10' },
-            { playerId: partner1.id, index: 0, pos: '1' }
+            { playerId: player.id, index: 0 },
+            { playerId: partner1.id, index: 0 }
           ],
           messages: [],
           zoomSpec: { min: 4, initial: 15 },
@@ -228,16 +263,16 @@ describe('given a mocked game engine', () => {
         beforeEach(async () => {
           jest.useFakeTimers()
           prepareGame(game)
-          await loadGame(game.id)
-          jest.resetAllMocks()
           engine.serialize.mockReturnValue({ meshes, handMeshes: [] })
+          await loadGame(game.id)
+          jest.clearAllMocks()
           serializeThread.mockReturnValue(game.messages)
         })
 
         afterEach(jest.useRealTimers)
 
         it('sends game data to joining player', () => {
-          expectsFullGame({
+          connectPeerAndExpectGameSync({
             ...game,
             hands: [...game.hands, { playerId: player.id, meshes: [] }]
           })
@@ -251,7 +286,7 @@ describe('given a mocked game engine', () => {
           jest.runAllTimers()
           const expectedGame = {
             ...game,
-            cameras: [...game.cameras].sort((a, b) => +a.pos - +b.pos),
+            cameras: [...game.cameras],
             hands: [...game.hands, { playerId: player.id, meshes: [] }],
             zoomSpec: undefined,
             tableSpec: undefined,
@@ -267,7 +302,7 @@ describe('given a mocked game engine', () => {
             undefined
           )
           expect(send).toHaveBeenCalledTimes(1)
-          expectsFullGame(expectedGame)
+          connectPeerAndExpectGameSync(expectedGame)
         })
 
         it('saves message thread upon reception', () => {
@@ -328,7 +363,7 @@ describe('given a mocked game engine', () => {
           expect(runMutation).toHaveBeenCalledTimes(1)
           expect(serializeThread).toHaveBeenCalledTimes(1)
           expect(send).not.toHaveBeenCalled()
-          expectsFullGame({
+          connectPeerAndExpectGameSync({
             ...game,
             messages,
             hands: [...game.hands, { playerId: player.id, meshes: [] }]
@@ -347,7 +382,7 @@ describe('given a mocked game engine', () => {
             game: { id: game.id, cameras }
           })
           expect(runMutation).toHaveBeenCalledTimes(1)
-          expectsFullGame({
+          connectPeerAndExpectGameSync({
             ...game,
             cameras,
             hands: [...game.hands, { playerId: player.id, meshes: [] }]
@@ -402,6 +437,7 @@ describe('given a mocked game engine', () => {
             id: game.id,
             hands: [
               ...game.hands,
+              { playerId: player.id, meshes: [] },
               { playerId: partner1.id, meshes: handMeshes }
             ]
           }
@@ -419,7 +455,11 @@ describe('given a mocked game engine', () => {
         const game = {
           id: faker.datatype.uuid(),
           meshes,
-          players: [player, { playing: true, ...partner1 }, partner2],
+          players: [
+            { playing: true, ...player },
+            { playing: true, ...partner1 },
+            partner2
+          ],
           hands: [
             { playerId: 'anotherPlayerId', meshes: [{ id: 'mesh2' }] },
             { playerId: player.id, meshes: [{ id: 'mesh3' }] }
@@ -463,34 +503,85 @@ describe('given a mocked game engine', () => {
           expect(closeChannels).toHaveBeenCalledTimes(1)
         })
 
-        it('loads game data from online players', async () => {
-          connectWith.mockImplementationOnce(async () => {
-            await nextPromise()
-            lastMessageReceived.next({
-              data: { type: 'game-sync', ...game }
+        describe('with a loaded game', () => {
+          beforeEach(async () => {
+            connectWith.mockImplementationOnce(async () => {
+              await nextPromise()
+              lastMessageReceived.next({
+                data: { type: 'game-sync', ...game },
+                playerId: partner1.id
+              })
             })
+            await loadGame(game.id)
           })
-          await loadGame(game.id)
-          expect(runQuery).toHaveBeenCalledWith(
-            graphQL.loadGame,
-            { gameId: game.id },
-            false
-          )
-          expect(runQuery).toHaveBeenCalledTimes(1)
-          expect(connectWith).toHaveBeenCalledWith(partner1.id)
-          expect(connectWith).toHaveBeenCalledTimes(1)
-          expect(runMutation).not.toHaveBeenCalled()
-          expect(send).not.toHaveBeenCalled()
-          expect(engine.load).toHaveBeenCalledWith(
-            { ...game, type: 'game-sync' },
-            player.id,
-            true
-          )
-          expect(engine.load).toHaveBeenCalledTimes(1)
-          expect(loadCameraSaves).toHaveBeenCalledWith(game.cameras.slice(0, 1))
-          expect(loadCameraSaves).toHaveBeenCalledTimes(1)
-          expect(loadThread).toHaveBeenCalledWith(game.messages)
-          expect(loadThread).toHaveBeenCalledTimes(1)
+
+          it('loads game data from online players', async () => {
+            expect(runQuery).toHaveBeenCalledWith(
+              graphQL.loadGame,
+              { gameId: game.id },
+              false
+            )
+            expect(runQuery).toHaveBeenCalledTimes(1)
+            expect(connectWith).toHaveBeenCalledWith(partner1.id)
+            expect(connectWith).toHaveBeenCalledTimes(1)
+            expect(runMutation).not.toHaveBeenCalled()
+            expect(send).not.toHaveBeenCalled()
+            expect(engine.load).toHaveBeenCalledWith(
+              { ...game, type: 'game-sync' },
+              player.id,
+              true
+            )
+            expect(engine.load).toHaveBeenCalledTimes(1)
+            expect(loadCameraSaves).toHaveBeenCalledWith(
+              game.cameras.slice(0, 1)
+            )
+            expect(loadCameraSaves).toHaveBeenCalledTimes(1)
+            expect(loadThread).toHaveBeenCalledWith(game.messages)
+            expect(loadThread).toHaveBeenCalledTimes(1)
+            expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(
+              new Map(
+                game.players.map(gamer => [
+                  gamer.id,
+                  {
+                    ...gamer,
+                    isHost: gamer.id === partner1.id,
+                    playing: gamer.id === player.id
+                  }
+                ])
+              )
+            )
+            expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(3)
+          })
+
+          it('share hand with other peers', async () => {
+            jest.clearAllMocks()
+            const handMeshes = meshes.slice(0, 1)
+            handMeshes$.next(handMeshes)
+            expect(engine.serialize).not.toHaveBeenCalled()
+            expect(send).toHaveBeenCalledWith({
+              meshes: handMeshes,
+              playerId: player.id,
+              type: 'saveHand'
+            })
+            expect(send).toHaveBeenCalledTimes(1)
+            expect(loadCameraSaves).not.toHaveBeenCalled()
+            expect(runMutation).not.toHaveBeenCalled()
+          })
+
+          it('share cameras with other peers', async () => {
+            jest.clearAllMocks()
+            const cameras = [{ pos: 'a' }, { pos: 'b' }]
+            cameraSaves.next(cameras)
+            expect(engine.serialize).not.toHaveBeenCalled()
+            expect(send).toHaveBeenCalledWith({
+              cameras,
+              playerId: player.id,
+              type: 'saveCameras'
+            })
+            expect(send).toHaveBeenCalledTimes(1)
+            expect(loadCameraSaves).not.toHaveBeenCalled()
+            expect(runMutation).not.toHaveBeenCalled()
+          })
         })
 
         describe('with disconnecting host', () => {
@@ -498,11 +589,12 @@ describe('given a mocked game engine', () => {
             connectWith.mockImplementationOnce(async () => {
               await nextPromise()
               lastMessageReceived.next({
-                data: { type: 'game-sync', ...game }
+                data: { type: 'game-sync', ...game },
+                playerId: partner1.id
               })
             })
             await loadGame(game.id)
-            jest.resetAllMocks()
+            jest.clearAllMocks()
           })
 
           it('takes host role when being the first online', async () => {
@@ -513,19 +605,8 @@ describe('given a mocked game engine', () => {
                 ({ playerId }) => playerId === player.id
               ).meshes
             })
-            runQuery.mockResolvedValue({
-              players: [
-                { playing: true, ...player },
-                { playing: true, ...partner1 }
-              ]
-            })
             lastDisconnectedId.next(partner1.id)
             await nextPromise()
-            expect(runQuery).toHaveBeenCalledWith(graphQL.loadGamePlayers, {
-              gameId: game.id
-            })
-            expect(runQuery).toHaveBeenCalledTimes(1)
-            lastConnectedId.next(partner2.id)
             expect(send).toHaveBeenCalledWith(
               {
                 type: 'game-sync',
@@ -535,27 +616,34 @@ describe('given a mocked game engine', () => {
                 messages: [],
                 hands: game.hands
               },
-              partner2.id
+              undefined
             )
             expect(send).toHaveBeenCalledTimes(1)
             expect(closeChannels).not.toHaveBeenCalled()
+            expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(
+              new Map([
+                [player.id, { ...player, isHost: true, playing: true }],
+                [partner1.id, { ...partner1, isHost: false, playing: false }],
+                [partner2.id, { ...partner2, isHost: false, playing: false }]
+              ])
+            )
+            expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(2)
           })
 
           it('does not take host role when not being the first online', async () => {
-            runQuery.mockResolvedValue({
-              players: [
-                { playing: true, ...partner1 },
-                { playing: true, ...player }
-              ]
-            })
+            currentPlayer.next(partner2)
             lastDisconnectedId.next(partner1.id)
             await nextPromise()
-            expect(runQuery).toHaveBeenCalledWith(graphQL.loadGamePlayers, {
-              gameId: game.id
-            })
-            expect(runQuery).toHaveBeenCalledTimes(1)
-            lastConnectedId.next(partner2.id)
             expect(send).not.toHaveBeenCalled()
+            expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(
+              new Map([
+                // this player will become host when they'll send their first update
+                [player.id, { ...player, isHost: false, playing: true }],
+                [partner1.id, { ...partner1, isHost: true, playing: false }],
+                [partner2.id, { ...partner2, isHost: false, playing: false }]
+              ])
+            )
+            expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(1)
           })
         })
       })
@@ -597,7 +685,13 @@ describe('given a mocked game engine', () => {
     })
   })
 
-  function expectsFullGame({ id, cameras, messages, hands, meshes }) {
+  function connectPeerAndExpectGameSync({
+    id,
+    cameras,
+    messages,
+    hands,
+    meshes
+  }) {
     const playerId = faker.datatype.uuid()
     send.mockReset()
     lastConnectedId.next(playerId)
@@ -605,7 +699,7 @@ describe('given a mocked game engine', () => {
       {
         type: 'game-sync',
         id,
-        cameras: [...cameras].sort((a, b) => +a.pos - +b.pos),
+        cameras: [...cameras].sort((a, b) => +a.index - +b.index),
         meshes,
         messages,
         hands
@@ -627,9 +721,9 @@ describe('given a mocked game engine', () => {
 
   // because of fake timers, we can't use sleep
   async function nextPromise() {
-    await Promise.resolve()
-    await Promise.resolve()
-    await Promise.resolve()
+    for (let i = 0; i < 3; i++) {
+      await Promise.resolve()
+    }
   }
 })
 

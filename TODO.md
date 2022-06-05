@@ -31,6 +31,7 @@
 
 ## UI
 
+- peer notifications: joining, joined, left, error (stop waiting when navigating away)
 - bug: ICE failed message when peer reload their browser??
 - bug: attached, unselected, mesh are not ignored during dragging
 - per-player default camera position
@@ -49,7 +50,6 @@
 
 ## Server
 
-- bug: on vite reload, all players could become hosts or peers simultaneously
 - use JWT as authentication token (stores player id and username)
 - allows a single connection per player (discards other JWTs)
 - logging (warning on invalid descriptors)

@@ -110,12 +110,9 @@ describe('Peer channels store', () => {
   })
 
   it('starts subscription for a given player', async () => {
-    const gameId = faker.datatype.uuid()
     runSubscription.mockReturnValueOnce(new Subject())
-    communication.openChannels({ id: playerId1 }, gameId)
-    expect(runSubscription).toHaveBeenCalledWith(graphQL.awaitSignal, {
-      gameId
-    })
+    communication.openChannels({ id: playerId1 })
+    expect(runSubscription).toHaveBeenCalledWith(graphQL.awaitSignal)
     expect(runSubscription).toHaveBeenCalledTimes(1)
   })
 
@@ -377,11 +374,12 @@ describe('Peer channels store', () => {
         initiator,
         stream,
         trickle: true,
+        sdpTransform: expect.any(Function),
         config: {
           iceServers: [
-            { urls: ['stun:tabulous.fr'] },
+            { urls: 'stun:tabulous.fr' },
             {
-              urls: ['turn:tabulous.fr'],
+              urls: 'turn:tabulous.fr',
               username: turnCredentials.username,
               credential: turnCredentials.credentials
             }

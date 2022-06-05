@@ -33,7 +33,11 @@
   $: avatars = connected?.length
     ? // current player should go first
       [
-        { player, controllable: true, ...localDevices },
+        {
+          player: playerById?.get(player.id),
+          controllable: true,
+          ...localDevices
+        },
         ...otherPlayers.map(player => ({
           player,
           stream: connected?.find(({ playerId }) => playerId === player.id)
