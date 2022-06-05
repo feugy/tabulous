@@ -4,7 +4,7 @@ module.exports = {
   testEnvironment: 'jsdom',
   transform: {
     '^.+\\.js$': [
-      'babel-jest',
+      '<rootDir>/tests/jest-transformer.js',
       {
         presets: [['@babel/preset-env', { targets: { node: 'current' } }]]
       }

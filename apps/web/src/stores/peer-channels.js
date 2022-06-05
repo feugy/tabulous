@@ -11,9 +11,6 @@ import { makeLogger, buildSDPTransform } from '../utils'
 
 const logger = makeLogger('peer-channels')
 
-let signalSubscription
-let current
-let messageId = 1
 const bitrate = 128
 const connectDuration = 20000
 const channels = new Map()
@@ -24,6 +21,9 @@ const unorderedMessages$ = new Subject()
 const connected$ = new BehaviorSubject([])
 const lastConnectedId$ = new Subject()
 const lastDisconnectedId$ = new Subject()
+let signalSubscription
+let current
+let messageId = 1
 
 /**
  * @typedef {object} PeerPlayer
@@ -249,34 +249,36 @@ export const lastDisconnectedId = lastDisconnectedId$.asObservable()
  * Configures communication channels in order to honor other players' connection requests
  * @async
  * @param {object} player - current player // TODO
- * @param {string} gameId - id of the game this player is playing.
  */
-export async function openChannels(player, gameId) {
+export async function openChannels(player) {
   current = { player }
   logger.info({ player }, 'initializing peer communication')
 
-  signalSubscription = runSubscription(graphQL.awaitSignal, {
-    gameId
-  }).subscribe(async ({ from, signal, type }) => {
-    const channel = channels.get(from)
-    if (type === 'offer') {
-      logger.info({ from, signal }, `receiving offer from server, create peer`)
-    } else if (type === 'answer') {
-      logger.info(
-        { from, signal },
-        `receiving answer from server, completing connection`
-      )
-    }
-    if (channel) {
-      // handshake or negociation
-      channel.peer.signal(signal)
-    } else {
+  signalSubscription = runSubscription(graphQL.awaitSignal).subscribe(
+    async ({ from, signal, type }) => {
+      const channel = channels.get(from)
       if (type === 'offer') {
-        // new peer joining
-        createPeer(from, signal)
+        logger.info(
+          { from, signal },
+          `receiving offer from server, create peer`
+        )
+      } else if (type === 'answer') {
+        logger.info(
+          { from, signal },
+          `receiving answer from server, completing connection`
+        )
+      }
+      if (channel) {
+        // handshake or negociation
+        channel.peer.signal(signal)
+      } else {
+        if (type === 'offer') {
+          // new peer joining
+          createPeer(from, signal)
+        }
       }
     }
-  })
+  )
 }
 
 /**

@@ -162,14 +162,6 @@ query loadGame($gameId: ID!) {
   }
 }
 
-query loadGamePlayers($gameId: ID!) {
-  loadGame(gameId: $gameId) {
-    players {
-      ...lightPlayer
-    }
-  }
-}
-
 mutation saveGame($game: GameInput!) {
   saveGame(game: $game) {
     id

@@ -116,7 +116,7 @@ describe('given a started server', () => {
         expect(services.getPlayerById).toHaveBeenCalledTimes(2)
       })
 
-      it('unsets playing status when closing subscription', async () => {
+      it('sets playing status based on subscription', async () => {
         const subId = faker.datatype.number()
         const gameId = faker.datatype.uuid()
         services.getPlayerById.mockImplementation(id => ({ id }))
