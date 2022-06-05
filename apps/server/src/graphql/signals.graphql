@@ -15,5 +15,5 @@ extend type Mutation {
 }
 
 type Subscription {
-  awaitSignal(gameId: ID!): Signal
+  awaitSignal: Signal
 }
