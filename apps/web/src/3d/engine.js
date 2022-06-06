@@ -38,7 +38,8 @@ const debugHand = false
 /**
  * Enhanced Babylon.js' Engine
  * @typedef {Engine} EnhancedEngine
- * @property {Observable} onLoadedObservable - emits when data was successfully loaded into the engine.
+ * @property {boolean} isLoading - indicates whether the engine is still loading data and materials.
+ * @property {Observable<boolean>} onLoadingObservable - emits while data and materials are being loaded.
  */
 
 /**
@@ -64,7 +65,7 @@ export function createEngine({
 }) {
   const engine = new Engine(canvas, true)
   engine.enableOfflineSupport = false
-  engine.onLoadedObservable = new Observable()
+  engine.onLoadingObservable = new Observable()
 
   // scene ordering is important: main scene must come last to allow ray picking scene.pickWithRay(new Ray(vertex, down))
   const handScene = new ExtendedScene(engine)
@@ -117,6 +118,7 @@ export function createEngine({
     gameSpecs = { zoomSpec: game.zoomSpec, tableSpec: game.tableSpec }
     if (initial) {
       isLoading = true
+      engine.onLoadingObservable.notifyObservers(isLoading)
       engine.displayLoadingUI()
       targetManager.init({ scene, playerId })
       materialManager.init(
@@ -129,6 +131,7 @@ export function createEngine({
       scene.onDataLoadedObservable.addOnce(() => {
         engine.hideLoadingUI()
         isLoading = false
+        engine.onLoadingObservable.notifyObservers(isLoading)
       })
       if (handsEnabled) {
         handManager.init({ scene, handScene, overlay: hand })
@@ -142,7 +145,6 @@ export function createEngine({
         game.hands.find(hand => playerId === hand.playerId)?.meshes ?? []
       )
     }
-    engine.onLoadedObservable.notifyObservers()
   }
 
   /**

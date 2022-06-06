@@ -49,7 +49,7 @@
 
 <style lang="postcss">
   aside {
-    @apply absolute z-10 top-0 right-0 bottom-0 bg-$base-lightest;
+    @apply bg-$base-lightest;
   }
 
   .content {

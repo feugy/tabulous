@@ -24,7 +24,7 @@
 
 <style lang="postcss">
   aside {
-    @apply absolute z-100 inset-0 top-auto pointer-events-none hidden;
+    @apply absolute inset-0 top-auto pointer-events-none hidden;
 
     &.visible {
       @apply block;

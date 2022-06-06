@@ -127,7 +127,7 @@
     --offset: -42px;
 
     & .buttonContainer {
-      @apply relative flex flex-col top-2 -right-2 z-30 gap-2 pointer-events-auto;
+      @apply relative flex flex-col top-6 -right-2 z-30 gap-2 pointer-events-auto;
 
       & .active {
         @apply transform-gpu scale-125;
@@ -160,7 +160,7 @@
       @apply w-full h-auto flex-col;
 
       & .buttonContainer {
-        @apply flex-row top-auto right-auto left-2 -bottom-2;
+        @apply flex-row top-auto right-auto left-6 -bottom-2;
       }
 
       & .gutter {

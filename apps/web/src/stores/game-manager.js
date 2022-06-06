@@ -365,15 +365,15 @@ function shareGame(peerId) {
     { gameId },
     `sending game data ${gameId} to peer${peerId ? ` ${peerId}` : 's'}`
   )
-  const { handMeshes, ...gameData } = engine.serialize()
+  const { handMeshes, meshes, ...specs } = engine.serialize()
   const game = {
-    ...gameData,
     id: gameId,
+    meshes,
     hands: mergeHands({ playerId: player.id, meshes: handMeshes }),
     messages: serializeThread(),
     cameras
   }
-  send({ type: 'game-sync', ...game }, peerId)
+  send({ type: 'game-sync', ...specs, ...game }, peerId)
   return game
 }
 
