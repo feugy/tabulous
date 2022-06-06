@@ -33,7 +33,7 @@
 
 <style lang="postcss">
   figure {
-    @apply invisible flex absolute inset-0 justify-center pointer-events-none py-[5%] px-0;
+    @apply invisible flex absolute z-10 inset-0 justify-center pointer-events-none py-[5%] px-0;
 
     &.open {
       @apply visible pointer-events-auto bg-$base-dark;

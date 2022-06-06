@@ -1,34 +1,11 @@
 <script>
+  import { onDestroy, onMount } from 'svelte'
   import { GameAside } from '../../src/components'
+  import { acquireMediaStream, releaseMediaStream } from '../../src/stores'
 
-  let localDevices = {
-    stream: null,
-    currentCamera: null,
-    cameras: [],
-    currentMic: null,
-    mics: []
-  }
-
-  $: if (!localDevices.stream) {
-    navigator.mediaDevices?.enumerateDevices().then(devices =>
-      navigator.mediaDevices
-        .getUserMedia({ video: true, audio: true })
-        .then(stream => {
-          const mics = devices.filter(
-            ({ kind, label }) =>
-              kind === 'audioinput' && !label.startsWith('Monitor of')
-          )
-          const cameras = devices.filter(({ kind }) => kind === 'videoinput')
-          localDevices = {
-            mics,
-            cameras,
-            currentMic: mics[0],
-            currentCamera: cameras[0],
-            stream
-          }
-        })
-    )
-  }
+  // Because Atelier loads all the tool files at startup, we need this file to only acquire and release media on demand.
+  onMount(acquireMediaStream)
+  onDestroy(releaseMediaStream)
 </script>
 
-<GameAside {...$$restProps} {localDevices} current on:sendToThread />
+<GameAside {...$$restProps} on:sendMessage />

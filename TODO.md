@@ -41,7 +41,6 @@
 - feedback on stacking
 - distribute multiple cards to players'hand
 - put/draw under
-- indicates when remote stream is muted/stopped
 - zoom in/out on rules
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
 - hand support for quantifiable behavior

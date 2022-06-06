@@ -34,7 +34,7 @@ const handSaves$ = new Subject()
 const indicators$ = new BehaviorSubject([])
 const selectedMeshes$ = new BehaviorSubject(new Set())
 const highlightHand$ = new BehaviorSubject(false)
-const engineLoaded$ = new Subject()
+const engineLoading$ = new Subject()
 
 /**
  * Emits 3D engine when available.
@@ -110,7 +110,10 @@ export const currentCamera = currentCamera$.asObservable()
  * Emits a boolean when hand should be enabled or not.
  * @type {Observable<boolean>}
  */
-export const handVisible = engineLoaded$.pipe(map(() => handManager.enabled))
+export const handVisible = engineLoading$.pipe(
+  filter(loading => !loading),
+  map(() => handManager.enabled)
+)
 
 /**
  * Emits player's hand content (an array of serialized meshes).
@@ -176,7 +179,7 @@ export function initEngine({
       observable: handManager.onDraggableToHandObservable,
       subject: highlightHand$
     },
-    { observable: engine.onLoadedObservable, subject: engineLoaded$ }
+    { observable: engine.onLoadingObservable, subject: engineLoading$ }
   ]
   // exposes Babylon observables as RX subjects
   for (const mapping of mappings) {

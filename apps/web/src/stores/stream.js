@@ -1,15 +1,16 @@
-import { BehaviorSubject } from 'rxjs'
+import { BehaviorSubject, Subject } from 'rxjs'
 import { makeLogger } from '../utils'
 
 const logger = makeLogger('stream')
 const lastCameraStorageKey = 'lastCameraId'
 const lastMicStorageKey = 'lastMicId'
 
-let stream = new BehaviorSubject(null)
-let cameras = new BehaviorSubject([])
-let mics = new BehaviorSubject([])
-let currentCamera = new BehaviorSubject(null)
-let currentMic = new BehaviorSubject(null)
+const stream = new BehaviorSubject(null)
+const cameras = new BehaviorSubject([])
+const mics = new BehaviorSubject([])
+const currentCamera = new BehaviorSubject(null)
+const currentMic = new BehaviorSubject(null)
+const streamChange$ = new Subject()
 navigator.mediaDevices?.addEventListener('devicechange', enumerateDevices)
 
 /**
@@ -23,28 +24,40 @@ export const stream$ = stream.asObservable()
  * Empty until acquiring the first media stream.
  * @type {Observable<MediaDeviceInfo>}
  */
-export const currentCameraDevice$ = currentCamera.asObservable()
+export const currentCamera$ = currentCamera.asObservable()
 
 /**
  * Emits a list of available cameras.
  * Empty until acquiring the first media stream.
  * @type {Observable<MediaDeviceInfo[]>}
  */
-export const cameraDevices$ = cameras.asObservable()
+export const cameras$ = cameras.asObservable()
 
 /**
  * Emits when user select a different microphone.
  * Empty until acquiring the first media stream.
  * @type {Observable<MediaDeviceInfo>}
  */
-export const currentMicDevice$ = currentMic.asObservable()
+export const currentMic$ = currentMic.asObservable()
 
 /**
  * Emits a list of available microphones.
  * Empty until acquiring the first media stream.
  * @type {Observable<MediaDeviceInfo[]>}
  */
-export const micDevices$ = mics.asObservable()
+export const mics$ = mics.asObservable()
+
+/**
+ * @typedef {object} MediaState - new state of the local media stream.
+ * @property {boolean} muted - true when microphone has been muted.
+ * @property {boolean} stopped - true when video has been stopped.
+ */
+
+/**
+ * Emits when the local media has been muted, unmutted, stopped or resumed
+ * @type {Observable<MediaState>}
+ */
+export const localStreamChange$ = streamChange$.asObservable()
 
 /**
  * Acquires local video and audio stream.
@@ -87,6 +100,17 @@ export function releaseMediaStream() {
   stopStream(stream.value)
   if (stream.value) {
     resetAll()
+  }
+}
+
+/**
+ * Records a change in the local media stream state.
+ * Emits on localStreamChange$.
+ * @param {MediaState} state - new state for the current video stream.
+ */
+export function recordStreamChange(state) {
+  if (stream.value) {
+    streamChange$.next(state)
   }
 }
 

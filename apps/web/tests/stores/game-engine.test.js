@@ -265,10 +265,10 @@ describe('initEngine()', () => {
       it('exposes hand manager enability', () => {
         expect(receiveHandVisible).not.toHaveBeenCalled()
         handManager.init({ scene, handScene, overlay })
-        engine.onLoadedObservable.notifyObservers()
+        engine.onLoadingObservable.notifyObservers(false)
         expect(receiveHandVisible).toHaveBeenNthCalledWith(1, true)
         scene.getEngine().dispose()
-        engine.onLoadedObservable.notifyObservers()
+        engine.onLoadingObservable.notifyObservers(false)
         expect(receiveHandVisible).toHaveBeenNthCalledWith(2, false)
         expect(receiveHandVisible).toHaveBeenCalledTimes(2)
       })
@@ -313,7 +313,7 @@ function create3DEngineMock() {
   return {
     onEndFrameObservable: new Observable(),
     onDisposeObservable: new Observable(),
-    onLoadedObservable: new Observable(),
+    onLoadingObservable: new Observable(),
     getFps: jest.fn(),
     start: jest.fn()
   }

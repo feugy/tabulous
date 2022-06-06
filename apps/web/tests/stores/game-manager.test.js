@@ -263,7 +263,11 @@ describe('given a mocked game engine', () => {
         beforeEach(async () => {
           jest.useFakeTimers()
           prepareGame(game)
-          engine.serialize.mockReturnValue({ meshes, handMeshes: [] })
+          engine.serialize.mockReturnValue({
+            ...game,
+            meshes,
+            handMeshes: []
+          })
           await loadGame(game.id)
           jest.clearAllMocks()
           serializeThread.mockReturnValue(game.messages)
@@ -283,26 +287,26 @@ describe('given a mocked game engine', () => {
         it('saves game data after some actions', () => {
           action.next({ data: {} })
           action.next({ data: {} })
+          const hands = [...game.hands, { playerId: player.id, meshes: [] }]
           jest.runAllTimers()
-          const expectedGame = {
-            ...game,
-            cameras: [...game.cameras],
-            hands: [...game.hands, { playerId: player.id, meshes: [] }],
-            zoomSpec: undefined,
-            tableSpec: undefined,
-            players: undefined
-          }
           expect(runMutation).toHaveBeenCalledWith(graphQL.saveGame, {
-            game: expectedGame
+            game: {
+              ...game,
+              cameras: [...game.cameras],
+              hands,
+              zoomSpec: undefined,
+              tableSpec: undefined,
+              players: undefined
+            }
           })
           expect(runMutation).toHaveBeenCalledTimes(1)
           expect(engine.serialize).toHaveBeenCalledTimes(1)
           expect(send).toHaveBeenCalledWith(
-            { type: 'game-sync', ...expectedGame },
+            { type: 'game-sync', ...game, hands },
             undefined
           )
           expect(send).toHaveBeenCalledTimes(1)
-          connectPeerAndExpectGameSync(expectedGame)
+          connectPeerAndExpectGameSync({ ...game, hands })
         })
 
         it('saves message thread upon reception', () => {
@@ -315,9 +319,8 @@ describe('given a mocked game engine', () => {
           })
           serializeThread.mockReturnValue(messages)
           jest.runAllTimers()
-          const expectedGame = { id: game.id, messages }
           expect(runMutation).toHaveBeenCalledWith(graphQL.saveGame, {
-            game: expectedGame
+            game: { id: game.id, messages }
           })
           expect(runMutation).toHaveBeenCalledTimes(1)
           expect(serializeThread).toHaveBeenCalledTimes(1)
@@ -334,9 +337,8 @@ describe('given a mocked game engine', () => {
           })
           serializeThread.mockReturnValue(messages)
           jest.runAllTimers()
-          const expectedGame = { id: game.id, messages }
           expect(runMutation).toHaveBeenCalledWith(graphQL.saveGame, {
-            game: expectedGame
+            game: { id: game.id, messages }
           })
           expect(runMutation).toHaveBeenCalledTimes(1)
           expect(serializeThread).toHaveBeenCalledTimes(1)
@@ -356,9 +358,8 @@ describe('given a mocked game engine', () => {
           })
           serializeThread.mockReturnValue(messages)
           jest.runAllTimers()
-          const expectedGame = { id: game.id, messages }
           expect(runMutation).toHaveBeenCalledWith(graphQL.saveGame, {
-            game: expectedGame
+            game: { id: game.id, messages }
           })
           expect(runMutation).toHaveBeenCalledTimes(1)
           expect(serializeThread).toHaveBeenCalledTimes(1)
@@ -685,24 +686,15 @@ describe('given a mocked game engine', () => {
     })
   })
 
-  function connectPeerAndExpectGameSync({
-    id,
-    cameras,
-    messages,
-    hands,
-    meshes
-  }) {
+  function connectPeerAndExpectGameSync({ cameras, ...gameData }) {
     const playerId = faker.datatype.uuid()
     send.mockReset()
     lastConnectedId.next(playerId)
     expect(send).toHaveBeenCalledWith(
       {
         type: 'game-sync',
-        id,
         cameras: [...cameras].sort((a, b) => +a.index - +b.index),
-        meshes,
-        messages,
-        hands
+        ...gameData
       },
       playerId
     )

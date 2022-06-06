@@ -1,20 +1,29 @@
 <script>
-  import { Tool, ToolBox } from '@atelier-wb/svelte'
-  import PlayerAvatarWithVideo from './PlayerAvatarWithVideo.svelte'
+  import { Tool, ToolBox, recordEvent } from '@atelier-wb/svelte'
+  import PlayerAvatar from './PlayerAvatarWithVideo.svelte'
+  import {
+    currentCamera$,
+    currentMic$,
+    localStreamChange$
+  } from '../../src/stores'
   import avatar from './avatar.png'
 
   let player = { username: 'Joe le clodo', avatar, isHost: true }
+
+  localStreamChange$.subscribe(state => recordEvent('change', state))
+  currentMic$.subscribe(mic => recordEvent('select-mic', mic?.toJSON()))
+  currentCamera$.subscribe(camera =>
+    recordEvent('select-camera', camera?.toJSON())
+  )
 </script>
 
 <ToolBox
   name="Components/Player Avatar"
-  component={PlayerAvatarWithVideo}
-  props={{ player }}
-  events={['mute', 'stop']}
+  component={PlayerAvatar}
+  props={{ player, muted: false, stopped: false }}
   layout="centered"
 >
-  <Tool name="With video" props={{ controllable: true }} />
-  <Tool name="With uncontrollable video" />
+  <Tool name="Local" props={{ isLocal: true }} />
   <Tool name="No video" props={{ stream: null }} />
   <Tool
     name="No video nor avatar"

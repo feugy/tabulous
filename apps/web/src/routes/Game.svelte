@@ -13,15 +13,11 @@
     RadialMenu
   } from '../components'
   import {
-    acquireMediaStream,
     actionMenuProps,
-    cameraDevices$,
     cameraSaves,
     connected,
-    currentCameraDevice$,
     currentCamera,
     currentGame,
-    currentMicDevice$,
     currentPlayer,
     gamePlayerById,
     handMeshes,
@@ -32,14 +28,13 @@
     visibleIndicators,
     loadGame,
     longInputs,
-    micDevices$,
     meshDetails,
     restoreCamera,
     saveCamera,
     sendToThread,
-    stream$,
     thread
   } from '../stores'
+  import { observeDimension } from '../utils'
 
   export let params = {}
 
@@ -50,19 +45,29 @@
   let hand
   let openInviteDialogue = false
   let loadPromise
+  let dimensionObserver
+  let dimensionSubscription
 
   onMount(async () => {
     engine = initEngine({ canvas, interaction, longTapDelay, hand })
     initIndicators({ engine, canvas, hand })
     loadPromise = loadGame(params.gameId)
     loadPromise.catch(err => console.error(err))
+    dimensionObserver = observeDimension(interaction, 0)
+    dimensionSubscription = dimensionObserver.dimension$.subscribe(
+      ({ width, height }) => {
+        canvas.style.width = `${width}px`
+        canvas.style.height = `${height}px`
+        engine?.resize()
+      }
+    )
   })
 
-  onDestroy(() => engine?.dispose())
-
-  function handleResize() {
-    engine?.resize()
-  }
+  onDestroy(() => {
+    engine?.dispose()
+    dimensionObserver?.disconnect()
+    dimensionSubscription?.unsubscribe()
+  })
 
   function handleCloseDetails() {
     interaction?.focus()
@@ -70,22 +75,23 @@
 </script>
 
 <style lang="postcss">
-  main {
-    @apply relative h-full;
+  main,
+  .overlay {
+    @apply absolute inset-0 flex items-stretch overflow-hidden;
   }
 
-  .interaction,
-  .overlay,
-  canvas {
-    @apply absolute w-full h-full top-0 left-0 z-0 select-none;
+  .interaction {
+    @apply select-none flex-1 relative;
     touch-action: none;
   }
 
-  aside {
-    @apply absolute z-10 left-0 p-2;
-    &.top {
-      @apply top-0;
-    }
+  canvas {
+    @apply absolute top-0 left-0 select-none h-full w-full;
+    touch-action: none;
+  }
+
+  aside.top {
+    @apply absolute z-10 top-0 left-0 p-2;
   }
 
   .overlay {
@@ -97,8 +103,6 @@
   <title>{$_('page-titles.game')}</title>
 </svelte:head>
 
-<svelte:window on:resize={handleResize} />
-
 {#await loadPromise}
   <div class="overlay">
     <Progress />
@@ -108,7 +112,6 @@
     {error.message ?? error}
   </div>
 {/await}
-
 <aside class="top">
   <GameMenu on:invite-player={() => (openInviteDialogue = true)} />
   <CameraSwitch
@@ -142,24 +145,16 @@
       meshes={$handMeshes}
       bind:node={hand}
     />
-    <RadialMenu {...$actionMenuProps || {}} />
+    <MeshDetails mesh={$meshDetails} on:close={handleCloseDetails} />
   </div>
+  <RadialMenu {...$actionMenuProps || {}} />
   <CursorInfo halos={longInputs} />
-  <MeshDetails mesh={$meshDetails} on:close={handleCloseDetails} />
+  <GameAside
+    game={$currentGame}
+    player={$currentPlayer}
+    playerById={$gamePlayerById}
+    connected={$connected}
+    thread={$thread}
+    on:sendMessage={({ detail }) => sendToThread(detail.text)}
+  />
 </main>
-<GameAside
-  game={$currentGame}
-  localDevices={{
-    stream: $stream$,
-    currentMic: $currentMicDevice$,
-    mics: $micDevices$,
-    currentCamera: $currentCameraDevice$,
-    cameras: $cameraDevices$
-  }}
-  player={$currentPlayer}
-  playerById={$gamePlayerById}
-  connected={$connected}
-  thread={$thread}
-  on:select={({ detail }) => acquireMediaStream(detail)}
-  on:sendMessage={({ detail }) => sendToThread(detail.text)}
-/>

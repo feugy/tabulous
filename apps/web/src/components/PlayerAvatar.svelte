@@ -1,135 +1,136 @@
 <script>
   import { _ } from 'svelte-intl'
+  import {
+    acquireMediaStream,
+    cameras$,
+    currentCamera$,
+    currentMic$,
+    mics$,
+    recordStreamChange,
+    stream$
+  } from '../stores/stream'
   import { Dropdown } from '.'
+
   export let player = null
-  export let controllable = false
   export let stream = null
-  export let currentCamera = null
-  export let cameras = []
-  export let currentMic = null
-  export let mics = []
+  export let isLocal = false
+  export let muted = false
+  export let stopped = false
 
   let video
-  let noImage = false
-  let hasImage = false
   let hasAudio = false
-  let muted = false
   let hasVideo = false
-  let stopped = false
 
-  $: hasStream = Boolean(stream)
+  $: if (isLocal && !$stream$) {
+    acquireMediaStream()
+  }
+
+  $: mediaStream = isLocal ? $stream$ : stream
+  $: hasStream = Boolean(mediaStream) && !stopped
+  $: hasAvatar = Boolean(player?.avatar)
 
   $: if (hasStream && video) {
-    video.srcObject = stream
-    hasAudio = stream.getAudioTracks().length > 0
-    muted = !hasAudio
-    hasVideo = stream.getVideoTracks().length > 0
-    stopped = !hasVideo
+    video.srcObject = mediaStream
+    hasAudio = mediaStream.getAudioTracks().length > 0
+    hasVideo = mediaStream.getVideoTracks().length > 0
   }
 
   function toggleMic() {
     muted = !muted
-    for (const track of stream.getAudioTracks()) {
+    for (const track of mediaStream.getAudioTracks()) {
       track.enabled = !muted
     }
+    recordStreamChange({ muted, stopped })
   }
 
   function toggleVideo() {
     stopped = !stopped
-    for (const track of stream.getVideoTracks()) {
+    for (const track of mediaStream.getVideoTracks()) {
       track.enabled = !stopped
     }
+    recordStreamChange({ muted, stopped })
+  }
+
+  function selectMedia({ detail: media }) {
+    acquireMediaStream(media)
   }
 </script>
 
 <style lang="postcss">
   figure {
-    @apply inline-flex relative items-center justify-center;
-    width: 150px;
-    height: 150px;
+    @apply inline-flex relative items-center justify-center w-full h-full;
 
     &.hasStream {
-      @apply overflow-hidden bg-black w-full h-full;
-    }
-  }
-
-  figcaption {
-    @apply absolute top-0 left-0 w-full h-full flex items-center justify-center p-4 rounded-full text-$primary-lightest;
-
-    &.noImage {
-      @apply bg-$base-dark;
-    }
-  }
-
-  legend {
-    @apply absolute bottom-4 left-1/2 transform-gpu -translate-x-1/2 flex gap-2 z-10;
-  }
-
-  img {
-    @apply rounded-full border-5 border-$primary-light bg-$primary-lightest h-full;
-
-    &.noImage {
-      @apply opacity-0;
+      @apply overflow-hidden bg-black;
     }
   }
 
   video {
-    @apply z-10;
+    @apply w-full;
+  }
 
-    &.stopped {
-      @apply opacity-0;
+  img {
+    @apply rounded-full border-5 border-$primary-light bg-$primary-lightest;
+    width: 150px;
+    height: 150px;
+  }
+
+  figcaption {
+    @apply flex items-center justify-center p-4 rounded-full text-$primary-lightest bg-$base-dark m-4;
+    width: 150px;
+    height: 150px;
+  }
+
+  legend {
+    @apply absolute bottom-4 left-1/2 transform-gpu -translate-x-1/2 flex gap-2 z-10;
+
+    .muted {
+      @apply text-$accent-warm bg-$primary-lightest rounded-full p-2;
     }
   }
 
   label {
-    @apply absolute z-10 top-2 right-2 bg-$primary-lightest px-2 py-1 text-xs;
+    @apply absolute top-2 right-2 bg-$primary-lightest px-2 py-1 text-xs;
   }
 </style>
 
 <figure class:hasStream>
-  {#if hasStream}
-    <figcaption>{player?.username}</figcaption>
-    <!-- svelte-ignore a11y-media-has-caption -->
-    <video class:stopped autoplay muted={controllable} bind:this={video} />
-    <legend>
-      {#if controllable}
-        {#if hasAudio}
-          <Dropdown
-            valueAsText={false}
-            openOnClick={false}
-            icon={!muted ? 'mic' : 'mic_off'}
-            value={currentMic}
-            options={mics}
-            on:click={toggleMic}
-            on:select
-          />
-        {/if}
-        {#if hasVideo}
-          <Dropdown
-            valueAsText={false}
-            openOnClick={false}
-            icon={!stopped ? 'videocam' : 'videocam_off'}
-            value={currentCamera}
-            options={cameras}
-            on:click={toggleVideo}
-            on:select
-          />
-        {/if}
-      {/if}
-    </legend>
-  {:else}
-    <!-- svelte-ignore a11y-missing-attribute -->
-    <img
-      class:noImage
-      src={player?.avatar ?? '/no-avatar.png'}
-      on:load={() => (hasImage = true)}
-      on:error={() => (noImage = true)}
-    />
-    {#if noImage || !hasImage}
-      <figcaption class:noImage>{player?.username}</figcaption>
-    {/if}
-  {/if}
+  {#if hasStream}<!-- svelte-ignore a11y-media-has-caption --><video
+      autoplay
+      muted={isLocal}
+      bind:this={video}
+    />{:else if hasAvatar}<!-- svelte-ignore a11y-missing-attribute --><img
+      src={player?.avatar}
+    />{:else}<figcaption>{player?.username}</figcaption>{/if}
   {#if player?.isHost}
     <label>{$_('host')}</label>
   {/if}
+  <legend>
+    {#if isLocal}
+      {#if hasAudio}
+        <Dropdown
+          valueAsText={false}
+          openOnClick={false}
+          icon={!muted ? 'mic' : 'mic_off'}
+          value={$currentMic$}
+          options={$mics$}
+          on:click={toggleMic}
+          on:select={selectMedia}
+        />
+      {/if}
+      {#if hasVideo}
+        <Dropdown
+          valueAsText={false}
+          openOnClick={false}
+          icon={!stopped ? 'videocam' : 'videocam_off'}
+          value={$currentCamera$}
+          options={$cameras$}
+          on:click={toggleVideo}
+          on:select={selectMedia}
+        />
+      {/if}
+    {:else if muted}
+      <span class="material-icons muted">mic_off</span>
+    {/if}
+  </legend>
 </figure>
