@@ -13,15 +13,11 @@
     RadialMenu
   } from '../components'
   import {
-    acquireMediaStream,
     actionMenuProps,
-    cameraDevices$,
     cameraSaves,
     connected,
-    currentCameraDevice$,
     currentCamera,
     currentGame,
-    currentMicDevice$,
     currentPlayer,
     gamePlayerById,
     handMeshes,
@@ -32,12 +28,10 @@
     visibleIndicators,
     loadGame,
     longInputs,
-    micDevices$,
     meshDetails,
     restoreCamera,
     saveCamera,
     sendToThread,
-    stream$,
     thread
   } from '../stores'
 
@@ -149,17 +143,9 @@
 </main>
 <GameAside
   game={$currentGame}
-  localDevices={{
-    stream: $stream$,
-    currentMic: $currentMicDevice$,
-    mics: $micDevices$,
-    currentCamera: $currentCameraDevice$,
-    cameras: $cameraDevices$
-  }}
   player={$currentPlayer}
   playerById={$gamePlayerById}
   connected={$connected}
   thread={$thread}
-  on:select={({ detail }) => acquireMediaStream(detail)}
   on:sendMessage={({ detail }) => sendToThread(detail.text)}
 />

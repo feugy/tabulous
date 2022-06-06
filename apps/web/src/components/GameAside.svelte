@@ -6,7 +6,6 @@
   import RuleViewer from './RuleViewer.svelte'
 
   export let player
-  export let localDevices
   export let playerById
   export let thread
   export let connected
@@ -30,25 +29,13 @@
 
   $: hasConnectedPeers = otherPlayers.some(({ playing }) => playing)
 
-  $: avatars = connected?.length
-    ? // current player should go first
-      [
-        {
-          player: playerById?.get(player.id),
-          controllable: true,
-          ...localDevices
-        },
-        ...otherPlayers.map(player => ({
-          player,
-          stream: connected?.find(({ playerId }) => playerId === player.id)
-            ?.stream
-        }))
-      ]
-    : hasPeers
-    ? // multiple player but none connected: remove current
-      otherPlayers.map(player => ({ player }))
-    : // single player: no avatars
-      []
+  $: peers = hasPeers
+    ? otherPlayers.map(player => ({
+        player,
+        stream: connected?.find(({ playerId }) => playerId === player.id)
+          ?.stream
+      }))
+    : []
 
   $: {
     tabs = [{ icon: 'help', id: helpId, key: 'F1' }]
@@ -92,7 +79,10 @@
     >
       {#if tabs[tab]?.id === playersId}
         <div class="peers">
-          {#each avatars as props}<PlayerAvatar {...props} on:select />{/each}
+          {#if connected?.length}
+            <PlayerAvatar player={playerById.get(player.id)} isLocal={true} />
+          {/if}
+          {#each peers as props}<PlayerAvatar {...props} />{/each}
         </div>
         {#if connected?.length || thread?.length}
           <MinimizableSection

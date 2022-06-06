@@ -1,6 +1,6 @@
 <script>
   import { Tool, ToolBox } from '@atelier-wb/svelte'
-  import GameAside from './GameAsideWithVideo.svelte'
+  import { GameAside } from '../../src/components'
   import { thread, players } from './Discussion.testdata'
 
   const connected = [{ playerId: players[0].id }, { playerId: players[2].id }]
@@ -14,13 +14,12 @@
 <ToolBox
   component={GameAside}
   name="Components/Game Aside"
-  props={{}}
-  events={['sendToThread']}
+  props={{ player: players[0], playerById, connected: [], thread: [] }}
+  events={['sendMessage']}
 >
   <Tool
     name="No peers"
     props={{
-      player: players[0],
       game: { kind: 'splendor', rulesBookPageCount: 4 },
       playerById: singlePlayerById
     }}
@@ -28,26 +27,21 @@
   <Tool
     name="Single connected"
     props={{
-      player: players[0],
-      game: { kind: 'splendor', rulesBookPageCount: 4 },
-      playerById
+      game: { kind: 'splendor', rulesBookPageCount: 4 }
     }}
   />
   <Tool
     name="Multiple connected"
     props={{
-      player: players[0],
       game: { kind: 'splendor', rulesBookPageCount: 4 },
       playerById: playingPlayersById,
-      connected
+      connected,
+      thread
     }}
   />
   <Tool
     name="No peers, no rules book"
-    props={{ player: players[0], playerById: singlePlayerById }}
+    props={{ playerById: singlePlayerById }}
   />
-  <Tool
-    name="Single connected, no rules book, thread"
-    props={{ player: players[0], playerById, thread }}
-  />
+  <Tool name="Single connected, no rules book, thread" props={{ thread }} />
 </ToolBox>

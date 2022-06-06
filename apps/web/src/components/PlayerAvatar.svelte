@@ -1,13 +1,20 @@
 <script>
+  import { onDestroy } from 'svelte'
   import { _ } from 'svelte-intl'
+  import {
+    acquireMediaStream,
+    cameras$,
+    currentCamera$,
+    currentMic$,
+    mics$,
+    recordStreamChange,
+    releaseMediaStream,
+    stream$
+  } from '../stores/stream'
   import { Dropdown } from '.'
   export let player = null
-  export let controllable = false
   export let stream = null
-  export let currentCamera = null
-  export let cameras = []
-  export let currentMic = null
-  export let mics = []
+  export let isLocal = false
 
   let video
   let noImage = false
@@ -17,28 +24,41 @@
   let hasVideo = false
   let stopped = false
 
-  $: hasStream = Boolean(stream)
+  onDestroy(releaseMediaStream)
+
+  $: if (isLocal && !$stream$) {
+    acquireMediaStream()
+  }
+
+  $: mediaStream = isLocal ? $stream$ : stream
+  $: hasStream = Boolean(mediaStream)
 
   $: if (hasStream && video) {
-    video.srcObject = stream
-    hasAudio = stream.getAudioTracks().length > 0
+    video.srcObject = mediaStream
+    hasAudio = mediaStream.getAudioTracks().length > 0
     muted = !hasAudio
-    hasVideo = stream.getVideoTracks().length > 0
+    hasVideo = mediaStream.getVideoTracks().length > 0
     stopped = !hasVideo
   }
 
   function toggleMic() {
     muted = !muted
-    for (const track of stream.getAudioTracks()) {
+    for (const track of mediaStream.getAudioTracks()) {
       track.enabled = !muted
     }
+    recordStreamChange({ muted, stopped })
   }
 
   function toggleVideo() {
     stopped = !stopped
-    for (const track of stream.getVideoTracks()) {
+    for (const track of mediaStream.getVideoTracks()) {
       track.enabled = !stopped
     }
+    recordStreamChange({ muted, stopped })
+  }
+
+  function selectMedia({ detail: media }) {
+    acquireMediaStream(media)
   }
 </script>
 
@@ -90,18 +110,18 @@
   {#if hasStream}
     <figcaption>{player?.username}</figcaption>
     <!-- svelte-ignore a11y-media-has-caption -->
-    <video class:stopped autoplay muted={controllable} bind:this={video} />
+    <video class:stopped autoplay muted={isLocal} bind:this={video} />
     <legend>
-      {#if controllable}
+      {#if isLocal}
         {#if hasAudio}
           <Dropdown
             valueAsText={false}
             openOnClick={false}
             icon={!muted ? 'mic' : 'mic_off'}
-            value={currentMic}
-            options={mics}
+            value={$currentMic$}
+            options={$mics$}
             on:click={toggleMic}
-            on:select
+            on:select={selectMedia}
           />
         {/if}
         {#if hasVideo}
@@ -109,10 +129,10 @@
             valueAsText={false}
             openOnClick={false}
             icon={!stopped ? 'videocam' : 'videocam_off'}
-            value={currentCamera}
-            options={cameras}
+            value={$currentCamera$}
+            options={$cameras$}
             on:click={toggleVideo}
-            on:select
+            on:select={selectMedia}
           />
         {/if}
       {/if}

@@ -1,9 +1,23 @@
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import userEvent from '@testing-library/user-event'
 import html from 'svelte-htm'
-import { players, thread } from './Discussion.testdata'
 import GameAside from '../../src/components/GameAside.svelte'
+import { stream$ } from '../../src/stores/stream'
 import { extractText, translate } from '../test-utils'
+import { players, thread } from './Discussion.testdata'
+
+jest.mock('../../src/stores/stream', () => {
+  const { BehaviorSubject } = require('rxjs')
+  return {
+    acquireMediaStream: jest.fn(),
+    releaseMediaStream: jest.fn(),
+    stream$: new BehaviorSubject(null),
+    currentCamera$: new BehaviorSubject(null),
+    cameras$: new BehaviorSubject([]),
+    currentMic$: new BehaviorSubject(null),
+    mics$: new BehaviorSubject([])
+  }
+})
 
 const helpButtonText = 'helpF1'
 const rulesButtonText = 'auto_storiesF2'
@@ -23,21 +37,19 @@ describe('GameAside component', () => {
     { ...players[2], playing: true }
   ]
   const [player] = players
-  const localDevices = {
-    stream,
-    currentCamera: null,
-    cameras: [],
-    currentMic: null,
-    mics: []
-  }
 
-  beforeEach(jest.resetAllMocks)
+  beforeEach(() => {
+    jest.resetAllMocks()
+    stream$.next({
+      getAudioTracks: jest.fn().mockReturnValue([]),
+      getVideoTracks: jest.fn().mockReturnValue([])
+    })
+  })
 
   function renderComponent(props = {}) {
     return render(html`<${GameAside}
       connected=${[]}
       thread=${[]}
-      localDevices=${localDevices}
       ...${props}
       on:sendMessage=${handleSend}
     />`)
