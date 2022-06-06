@@ -32,8 +32,7 @@
   $: peers = hasPeers
     ? otherPlayers.map(player => ({
         player,
-        stream: connected?.find(({ playerId }) => playerId === player.id)
-          ?.stream
+        ...(connected?.find(({ playerId }) => playerId === player.id) ?? {})
       }))
     : []
 
@@ -58,7 +57,7 @@
   }
 
   .peers {
-    @apply grid flex-1 gap-2 place-items-center grid-flow-col;
+    @apply grid flex-1 place-items-center grid-flow-col;
     grid-template-rows: repeat(auto-fit, minmax(150px, 1fr));
   }
 </style>
@@ -82,7 +81,9 @@
           {#if connected?.length}
             <PlayerAvatar player={playerById.get(player.id)} isLocal={true} />
           {/if}
-          {#each peers as props}<PlayerAvatar {...props} />{/each}
+          {#each peers as { playerId, ...props } (props.player.id)}
+            <PlayerAvatar {...props} />
+          {/each}
         </div>
         {#if connected?.length || thread?.length}
           <MinimizableSection

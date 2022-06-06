@@ -1,5 +1,9 @@
 # TODO
 
+- double player avatar name
+- do not release media on playeravatar destroy
+- gameaside should have same z-index as game canvas
+
 ## Brittle tests
 
 - `InputManager › given an initialized manager() › handles multiple pointers taps`

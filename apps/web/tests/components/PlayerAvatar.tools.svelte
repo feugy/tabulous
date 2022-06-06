@@ -1,10 +1,10 @@
 <script>
   import { Tool, ToolBox, recordEvent } from '@atelier-wb/svelte'
-  import { PlayerAvatar } from '../../src/components'
+  import PlayerAvatar from './PlayerAvatarWithVideo.svelte'
   import {
-    localStreamChange$,
+    currentCamera$,
     currentMic$,
-    currentCamera$
+    localStreamChange$
   } from '../../src/stores'
   import avatar from './avatar.png'
 
@@ -20,7 +20,7 @@
 <ToolBox
   name="Components/Player Avatar"
   component={PlayerAvatar}
-  props={{ player }}
+  props={{ player, muted: false, stopped: false }}
   layout="centered"
 >
   <Tool name="Local" props={{ isLocal: true }} />

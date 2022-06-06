@@ -1,6 +1,6 @@
 <script>
   import { Tool, ToolBox } from '@atelier-wb/svelte'
-  import { GameAside } from '../../src/components'
+  import GameAside from './GameAsideWithVideo.svelte'
   import { thread, players } from './Discussion.testdata'
 
   const connected = [{ playerId: players[0].id }, { playerId: players[2].id }]

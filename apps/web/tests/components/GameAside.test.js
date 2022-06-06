@@ -122,9 +122,7 @@ describe('GameAside component', () => {
 
     const avatars = screen.getAllByRole('figure')
 
-    expect(extractText(avatars)).toEqual(
-      players.map(({ username }) => username)
-    )
+    expect(extractText(avatars)).toEqual(['', players[1].username, ''])
     expect(avatars[0]).toHaveClass('hasStream')
     expect(avatars[1]).not.toHaveClass('hasStream')
     expect(avatars[2]).toHaveClass('hasStream')
@@ -150,9 +148,7 @@ describe('GameAside component', () => {
 
     const avatars = screen.getAllByRole('figure')
 
-    expect(extractText(avatars)).toEqual(
-      players.map(({ username }) => username)
-    )
+    expect(extractText(avatars)).toEqual(['', players[1].username, ''])
     expect(avatars[0]).toHaveClass('hasStream')
     expect(avatars[1]).not.toHaveClass('hasStream')
     expect(avatars[2]).toHaveClass('hasStream')

@@ -8,11 +8,13 @@ import * as communication from '../../src/stores/peer-channels'
 import { turnCredentials as turnCredentials$ } from '../../src/stores/players'
 import {
   acquireMediaStream,
+  localStreamChange$,
   releaseMediaStream,
   stream$
 } from '../../src/stores/stream'
 import { runMutation, runSubscription } from '../../src/stores/graphql-client'
 import { mockLogger } from '../utils.js'
+import { sleep } from '../../src/utils'
 
 jest.mock('simple-peer-light')
 jest.mock('../../src/stores/graphql-client')
@@ -21,11 +23,12 @@ jest.mock('../../src/stores/players', () => {
   return { turnCredentials: new BehaviorSubject() }
 })
 jest.mock('../../src/stores/stream', () => {
-  const { BehaviorSubject } = require('rxjs')
+  const { BehaviorSubject, Subject } = require('rxjs')
   return {
     stream$: new BehaviorSubject(null),
     acquireMediaStream: jest.fn(),
-    releaseMediaStream: jest.fn()
+    releaseMediaStream: jest.fn(),
+    localStreamChange$: new Subject()
   }
 })
 
@@ -321,6 +324,28 @@ describe('Peer channels store', () => {
       ])
     })
 
+    it('can receive stream state changes', () => {
+      const state1 = { muted: true, stopped: faker.datatype.boolean() }
+      const state2 = { muted: false, stopped: faker.datatype.boolean() }
+      peers[0].events.data.mock.calls[0][0](
+        JSON.stringify({ type: 'control', streamState: state1, messageId: 1 })
+      )
+      expect(get(communication.connected)).toEqual([
+        { playerId: playerId1 },
+        { playerId: playerId2, ...state1 },
+        { playerId: playerId3 }
+      ])
+      peers[1].events.data.mock.calls[0][0](
+        JSON.stringify({ type: 'control', streamState: state2, messageId: 1 })
+      )
+      expect(messagesReceived).toEqual([])
+      expect(get(communication.connected)).toEqual([
+        { playerId: playerId1 },
+        { playerId: playerId2, ...state1 },
+        { playerId: playerId3, ...state2 }
+      ])
+    })
+
     it('reorders received message', async () => {
       const msg1 = { message: randomUUID(), messageId: 1 }
       const msg2 = { message: randomUUID(), messageId: 2 }
@@ -340,23 +365,42 @@ describe('Peer channels store', () => {
 
     it('sends message to all connected peers', () => {
       const data = { message: randomUUID() }
-      const sentData = JSON.stringify({ ...data, messageId: 1 })
+      const sentData = { ...data, messageId: expect.any(Number) }
       communication.send(data)
-      expect(peers[0].send).toHaveBeenCalledWith(sentData)
-      expect(peers[1].send).toHaveBeenCalledWith(sentData)
       expect(peers[0].send).toHaveBeenCalledTimes(1)
+      expect(JSON.parse(peers[0].send.mock.calls[0][0])).toEqual(sentData)
       expect(peers[1].send).toHaveBeenCalledTimes(1)
+      expect(JSON.parse(peers[1].send.mock.calls[0][0])).toEqual(sentData)
       expect(messagesSent).toEqual([{ data, playerId: playerId1 }])
     })
 
     it('sends message to a given peer', () => {
       const data = { content: randomUUID() }
-      const sentData = JSON.stringify({ ...data, messageId: 2 })
+      const sentData = { ...data, messageId: expect.any(Number) }
       communication.send(data, playerId3)
-      expect(peers[1].send).toHaveBeenCalledWith(sentData)
       expect(peers[0].send).not.toHaveBeenCalled()
       expect(peers[1].send).toHaveBeenCalledTimes(1)
+      expect(JSON.parse(peers[1].send.mock.calls[0][0])).toEqual(sentData)
       expect(messagesSent).toEqual([{ data, playerId: playerId1 }])
+    })
+
+    it('sends local media state updates to all', async () => {
+      const streamState = {
+        muted: faker.datatype.boolean(),
+        stopped: faker.datatype.boolean()
+      }
+      const sentData = {
+        type: 'control',
+        streamState,
+        messageId: expect.any(Number)
+      }
+      localStreamChange$.next(streamState)
+      await sleep(50)
+      expect(peers[0].send).toHaveBeenCalledTimes(1)
+      expect(JSON.parse(peers[0].send.mock.calls[0][0])).toEqual(sentData)
+      expect(peers[1].send).toHaveBeenCalledTimes(1)
+      expect(JSON.parse(peers[1].send.mock.calls[0][0])).toEqual(sentData)
+      expect(messagesSent).toEqual([])
     })
 
     it('does not send message to unknown peer', () => {
