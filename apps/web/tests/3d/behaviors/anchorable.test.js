@@ -4,6 +4,7 @@ import { faker } from '@faker-js/faker'
 import {
   configures3dTestEngine,
   expectFlipped,
+  expectMeshFeedback,
   expectMoveRecorded,
   expectPosition,
   expectRotated,
@@ -25,6 +26,7 @@ import {
 import {
   controlManager,
   handManager,
+  indicatorManager,
   moveManager,
   selectionManager
 } from '../../../src/3d/managers'
@@ -32,19 +34,23 @@ import { animateMove, getCenterAltitudeAbove } from '../../../src/3d/utils'
 import { createRoundToken } from '../../../src/3d/meshes'
 
 describe('AnchorBehavior', () => {
-  configures3dTestEngine()
+  configures3dTestEngine(created => (scene = created.scene))
 
   const moveRecorded = jest.fn()
+  let scene
   let recordSpy
+  let registerFeedbackSpy
   let moveObserver
 
   beforeAll(() => {
     moveObserver = moveManager.onMoveObservable.add(moveRecorded)
+    indicatorManager.init({ scene })
   })
 
   beforeEach(() => {
     jest.clearAllMocks()
     recordSpy = jest.spyOn(controlManager, 'record')
+    registerFeedbackSpy = jest.spyOn(indicatorManager, 'registerFeedback')
     jest
       .spyOn(handManager, 'draw')
       .mockImplementation(mesh => controlManager.record({ mesh, fn: 'draw' }))
@@ -64,6 +70,7 @@ describe('AnchorBehavior', () => {
     expect(behavior.zones).toEqual([])
     expect(behavior.mesh).toBeNull()
     expect(recordSpy).not.toHaveBeenCalled()
+    expect(registerFeedbackSpy).not.toHaveBeenCalled()
   })
 
   it('can not snap without mesh', async () => {
@@ -77,6 +84,7 @@ describe('AnchorBehavior', () => {
     expect(snapped.absolutePosition.asArray()).toEqual([1, 1, 1])
     expect(recordSpy).not.toHaveBeenCalled()
     expectMoveRecorded(moveRecorded)
+    expect(registerFeedbackSpy).not.toHaveBeenCalled()
   })
 
   it('can not unsnap a mesh not previously snapped', () => {
@@ -87,6 +95,7 @@ describe('AnchorBehavior', () => {
 
     behavior.unsnap(snapped.id)
     expect(recordSpy).not.toHaveBeenCalled()
+    expect(registerFeedbackSpy).not.toHaveBeenCalled()
   })
 
   it('can not unsnap a stack of mesh not previously snapped', () => {
@@ -98,6 +107,7 @@ describe('AnchorBehavior', () => {
 
     behavior.unsnap(stacked.id)
     expect(recordSpy).not.toHaveBeenCalled()
+    expect(registerFeedbackSpy).not.toHaveBeenCalled()
   })
 
   it('can not restore state without mesh', () => {
@@ -152,6 +162,7 @@ describe('AnchorBehavior', () => {
       expectAnchor(1, behavior.state.anchors[1])
       expect(behavior.getSnappedIds()).toEqual([])
       expect(recordSpy).not.toHaveBeenCalled()
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('can hydrate from state', () => {
@@ -184,6 +195,7 @@ describe('AnchorBehavior', () => {
       expectAnchor(2, behavior.state.anchors[2], true, ['cards'], 1)
       expect(recordSpy).not.toHaveBeenCalled()
       expectMoveRecorded(moveRecorded)
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('can hydrate cylindric anchors', () => {
@@ -201,6 +213,7 @@ describe('AnchorBehavior', () => {
       expectAnchor(1, behavior.state.anchors[1])
       expect(recordSpy).not.toHaveBeenCalled()
       expectMoveRecorded(moveRecorded)
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('can hydrate square anchors on cylindric mesh', () => {
@@ -223,6 +236,7 @@ describe('AnchorBehavior', () => {
       expectAnchor(0, { ...behavior.state.anchors[0], x: 4, y: 3, z: -4 })
       expect(recordSpy).not.toHaveBeenCalled()
       expectMoveRecorded(moveRecorded)
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('disposes previous anchors when hydrating', () => {
@@ -248,6 +262,7 @@ describe('AnchorBehavior', () => {
       expectAnchor(0, behavior.state.anchors[0])
       expect(previousAnchors.every(mesh => mesh.isDisposed())).toBe(true)
       expect(recordSpy).not.toHaveBeenCalled()
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('discards unknown snapped meshes when hydrating', () => {
@@ -269,6 +284,7 @@ describe('AnchorBehavior', () => {
       expectAnchor(0, behavior.state.anchors[0])
       expect(behavior.getSnappedIds()).toEqual([])
       expect(recordSpy).not.toHaveBeenCalled()
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('snaps meshes when hydrating', () => {
@@ -292,6 +308,7 @@ describe('AnchorBehavior', () => {
       expect(behavior.getSnappedIds()).toEqual([meshes[0].id])
       expect(recordSpy).not.toHaveBeenCalled()
       expectMoveRecorded(moveRecorded)
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('snaps flippable meshes when hydrating', () => {
@@ -322,6 +339,7 @@ describe('AnchorBehavior', () => {
       expectFlipped(snapped)
       expect(behavior.getSnappedIds()).toEqual([snapped.id])
       expect(recordSpy).not.toHaveBeenCalled()
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('snaps rotable meshes when hydrating', () => {
@@ -353,6 +371,7 @@ describe('AnchorBehavior', () => {
       expectRotated(snapped, angle)
       expect(behavior.getSnappedIds()).toEqual([snapped.id])
       expect(recordSpy).not.toHaveBeenCalled()
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('snaps mesh', async () => {
@@ -372,6 +391,7 @@ describe('AnchorBehavior', () => {
         duration: behavior.state.duration
       })
       expectMoveRecorded(moveRecorded, snapped)
+      expectMeshFeedback(registerFeedbackSpy, 'snap', behavior.zones[0].mesh)
     })
 
     it('snaps a stack of mesh', async () => {
@@ -402,6 +422,7 @@ describe('AnchorBehavior', () => {
         duration: behavior.state.duration
       })
       expectMoveRecorded(moveRecorded, snapped)
+      expectMeshFeedback(registerFeedbackSpy, 'snap', behavior.zones[0].mesh)
     })
 
     it('snaps mesh with snapped meshes', async () => {
@@ -419,6 +440,7 @@ describe('AnchorBehavior', () => {
       expectSnapped(snapped, snappedOfSnapped, 0)
       expect(behavior.getSnappedIds()).toEqual([meshes[0].id])
       expectMoveRecorded(moveRecorded, snapped)
+      expectMeshFeedback(registerFeedbackSpy, 'snap', behavior.zones[0].mesh)
     })
 
     it('snaps dropped mesh', async () => {
@@ -440,6 +462,7 @@ describe('AnchorBehavior', () => {
         duration: behavior.state.duration
       })
       expectMoveRecorded(moveRecorded, snapped)
+      expectMeshFeedback(registerFeedbackSpy, 'snap', behavior.zones[1].mesh)
     })
 
     it('keeps rotation when snaping rotated mesh', async () => {
@@ -465,6 +488,9 @@ describe('AnchorBehavior', () => {
         args,
         duration: behavior.state.duration
       })
+      expectMeshFeedback(registerFeedbackSpy, 'snap', {
+        absolutePosition: Vector3.FromArray([0.25, 0.75, 0.5])
+      })
     })
 
     it('updates snapped when reordering a stack', async () => {
@@ -479,6 +505,7 @@ describe('AnchorBehavior', () => {
       await stacked.metadata.reorder([stacked.id, snapped.id])
       expectStacked([stacked, snapped])
       expectSnapped(mesh, stacked, 0)
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('updates snapped when flipping an entire stack', async () => {
@@ -493,6 +520,7 @@ describe('AnchorBehavior', () => {
       await stacked.metadata.flipAll()
       expectStacked([stacked, snapped])
       expectSnapped(mesh, stacked, 0)
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('does not snap on an busy anchor', async () => {
@@ -505,6 +533,7 @@ describe('AnchorBehavior', () => {
       await mesh.metadata.snap(meshes[1].id, behavior.zones[0].mesh.id)
       expectSnapped(mesh, snapped, 0)
       expect(recordSpy).not.toHaveBeenCalled()
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('unsnaps mesh', async () => {
@@ -524,6 +553,7 @@ describe('AnchorBehavior', () => {
         args: [snapped.id]
       })
       expectMoveRecorded(moveRecorded)
+      expectMeshFeedback(registerFeedbackSpy, 'unsnap', behavior.zones[0].mesh)
     })
 
     it('unsnaps a stack of mesh', async () => {
@@ -543,6 +573,7 @@ describe('AnchorBehavior', () => {
         mesh,
         args: [stacked.id]
       })
+      expectMeshFeedback(registerFeedbackSpy, 'unsnap', behavior.zones[0].mesh)
     })
 
     it('unsnaps dragged mesh', async () => {
@@ -561,6 +592,7 @@ describe('AnchorBehavior', () => {
         mesh,
         args: [snapped.id]
       })
+      expectMeshFeedback(registerFeedbackSpy, 'unsnap', behavior.zones[0].mesh)
     })
 
     it('unsnaps dragged selection', async () => {
@@ -580,6 +612,7 @@ describe('AnchorBehavior', () => {
         mesh,
         args: [snapped.id]
       })
+      expectMeshFeedback(registerFeedbackSpy, 'unsnap', behavior.zones[0].mesh)
     })
 
     it('unsnaps drawn mesh', async () => {
@@ -601,6 +634,7 @@ describe('AnchorBehavior', () => {
         mesh,
         args: [snapped.id]
       })
+      expectMeshFeedback(registerFeedbackSpy, 'unsnap', behavior.zones[0].mesh)
     })
 
     it('unsnaps all', async () => {
@@ -631,6 +665,12 @@ describe('AnchorBehavior', () => {
         args: [snapped2.id]
       })
       expectMoveRecorded(moveRecorded)
+      expectMeshFeedback(
+        registerFeedbackSpy,
+        'unsnap',
+        behavior.zones[0].mesh,
+        behavior.zones[2].mesh
+      )
     })
 
     it('keeps rotation when unsnaping rotated mesh', async () => {
@@ -642,11 +682,13 @@ describe('AnchorBehavior', () => {
       expectRotated(mesh, angle)
       await mesh.metadata.snap(snapped.id, behavior.zones[0].mesh.id)
       expectSnapped(mesh, snapped)
+      registerFeedbackSpy.mockClear()
 
       mesh.metadata.unsnap(snapped.id)
       expectUnsnapped(mesh, snapped, 0)
       expectRotated(mesh, angle)
       expectRotated(snapped, angle)
+      expectMeshFeedback(registerFeedbackSpy, 'unsnap', behavior.zones[0].mesh)
     })
 
     it('moves all when dragging current mesh', async () => {
@@ -685,6 +727,7 @@ describe('AnchorBehavior', () => {
         z + 1
       ])
       expect(recordSpy).not.toHaveBeenCalled()
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('moves all when dragging selection with current mesh', () => {
@@ -712,6 +755,7 @@ describe('AnchorBehavior', () => {
       expectSnapped(mesh, meshes[0], 0)
       expectSnapped(mesh, meshes[1], 1)
       expect(recordSpy).not.toHaveBeenCalled()
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('can disable all anchors', () => {
