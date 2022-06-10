@@ -7,6 +7,7 @@ import {
   expectAnimationEnd,
   expectFlipped,
   expectInteractible,
+  expectMeshFeedback,
   expectMoveRecorded,
   expectPosition,
   expectStacked,
@@ -28,6 +29,7 @@ import {
 import {
   controlManager,
   handManager,
+  indicatorManager,
   moveManager
 } from '../../../src/3d/managers'
 import {
@@ -36,19 +38,23 @@ import {
 } from '../../../src/3d/utils'
 
 describe('StackBehavior', () => {
-  configures3dTestEngine()
+  configures3dTestEngine(created => (scene = created.scene))
 
   const moveRecorded = jest.fn()
   let recordSpy
+  let registerFeedbackSpy
   let moveObserver
+  let scene
 
   beforeAll(() => {
     moveObserver = moveManager.onMoveObservable.add(moveRecorded)
+    indicatorManager.init({ scene })
   })
 
   beforeEach(() => {
     jest.clearAllMocks()
     recordSpy = jest.spyOn(controlManager, 'record')
+    registerFeedbackSpy = jest.spyOn(indicatorManager, 'registerFeedback')
     jest
       .spyOn(handManager, 'draw')
       .mockImplementation(mesh => controlManager.record({ mesh, fn: 'draw' }))
@@ -72,6 +78,7 @@ describe('StackBehavior', () => {
     expect(behavior.inhibitControl).toBe(false)
     expect(behavior.mesh).toBeNull()
     expect(recordSpy).not.toHaveBeenCalled()
+    expect(registerFeedbackSpy).not.toHaveBeenCalled()
   })
 
   it('can not restore state without mesh', () => {
@@ -95,6 +102,7 @@ describe('StackBehavior', () => {
     expect(mesh.metadata.stack).toEqual([mesh])
     expectStackIndicator(mesh)
     expect(recordSpy).not.toHaveBeenCalled()
+    expect(registerFeedbackSpy).not.toHaveBeenCalled()
   })
 
   it('can hydrate with stacked mesh', () => {
@@ -106,6 +114,7 @@ describe('StackBehavior', () => {
     expectStacked([mesh, stacked])
     expectMoveRecorded(moveRecorded)
     expect(recordSpy).not.toHaveBeenCalled()
+    expect(registerFeedbackSpy).not.toHaveBeenCalled()
   })
 
   it('can not push mesh', () => {
@@ -151,6 +160,7 @@ describe('StackBehavior', () => {
         })
       )
       expect(recordSpy).not.toHaveBeenCalled()
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('can hydrate from state', async () => {
@@ -177,6 +187,7 @@ describe('StackBehavior', () => {
         })
       )
       expect(recordSpy).not.toHaveBeenCalled()
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('can hydrate with cylindric zone', async () => {
@@ -210,6 +221,7 @@ describe('StackBehavior', () => {
         })
       )
       expect(recordSpy).not.toHaveBeenCalled()
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('does not enable locked meshes when hydrating', async () => {
@@ -239,6 +251,7 @@ describe('StackBehavior', () => {
         })
       )
       expect(recordSpy).not.toHaveBeenCalled()
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('pushes new mesh on stack', async () => {
@@ -255,6 +268,7 @@ describe('StackBehavior', () => {
         duration: behavior.state.duration
       })
       expectMoveRecorded(moveRecorded, meshes[0])
+      expectMeshFeedback(registerFeedbackSpy, 'push', meshes[0])
     })
 
     it('can push on any stacked mesh', async () => {
@@ -270,6 +284,7 @@ describe('StackBehavior', () => {
         duration: meshes[1].getBehaviorByName(StackBehaviorName).state.duration
       })
       expectMoveRecorded(moveRecorded, meshes[2])
+      expectMeshFeedback(registerFeedbackSpy, 'push', meshes[2])
     })
 
     it('does not enable locked mesh when pushing', async () => {
@@ -289,6 +304,7 @@ describe('StackBehavior', () => {
         duration: behavior.state.duration
       })
       expectMoveRecorded(moveRecorded, other)
+      expectMeshFeedback(registerFeedbackSpy, 'push', other)
     })
 
     it('pushes dropped meshes', async () => {
@@ -315,6 +331,7 @@ describe('StackBehavior', () => {
         duration: meshes[1].getBehaviorByName(StackBehaviorName).state.duration
       })
       expectMoveRecorded(moveRecorded, meshes[0], meshes[2])
+      expectMeshFeedback(registerFeedbackSpy, 'push', meshes[0], meshes[2])
     })
 
     it('pushes a stack of meshes on stack', async () => {
@@ -336,6 +353,7 @@ describe('StackBehavior', () => {
         duration: behavior.state.duration
       })
       expectMoveRecorded(moveRecorded, meshes[1])
+      expectMeshFeedback(registerFeedbackSpy, 'push', meshes[1])
     })
 
     it('can not pop an empty stack', async () => {
@@ -343,6 +361,7 @@ describe('StackBehavior', () => {
       expectStacked([mesh])
       expect(recordSpy).not.toHaveBeenCalled()
       expectMoveRecorded(moveRecorded)
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('pops last mesh from stack', async () => {
@@ -359,6 +378,7 @@ describe('StackBehavior', () => {
         args: [1, false]
       })
       expectStackIndicator(poped)
+      expectMeshFeedback(registerFeedbackSpy, 'pop', poped)
       ;[poped] = await mesh.metadata.pop()
       expect(poped?.id).toBe('box1')
       expectInteractible(poped)
@@ -370,6 +390,7 @@ describe('StackBehavior', () => {
         args: [1, false]
       })
       expectStackIndicator(poped)
+      expectMeshFeedback(registerFeedbackSpy, 'pop', poped)
       ;[poped] = await mesh.metadata.pop()
       expect(poped?.id).toBe('box2')
       expectInteractible(poped)
@@ -381,6 +402,7 @@ describe('StackBehavior', () => {
         args: [1, false]
       })
       expectStackIndicator(poped)
+      expectMeshFeedback(registerFeedbackSpy, 'pop', poped)
       expectMoveRecorded(moveRecorded)
     })
 
@@ -402,6 +424,7 @@ describe('StackBehavior', () => {
         duration: behavior.state.duration
       })
       expectPosition(poped, [1.25, 0.5, 0])
+      expectMeshFeedback(registerFeedbackSpy, 'pop', poped)
       expectMoveRecorded(moveRecorded)
     })
 
@@ -427,6 +450,7 @@ describe('StackBehavior', () => {
       })
       expectPosition(poped1, [1.25, 0.5, 0])
       expectPosition(poped2, [2.5, 0.5, 0])
+      expectMeshFeedback(registerFeedbackSpy, 'pop', poped1)
       expectMoveRecorded(moveRecorded)
     })
 
@@ -449,6 +473,7 @@ describe('StackBehavior', () => {
         mesh,
         args: [4, false]
       })
+      expectMeshFeedback(registerFeedbackSpy, 'pop', poped1)
       expectMoveRecorded(moveRecorded)
     })
 
@@ -465,6 +490,7 @@ describe('StackBehavior', () => {
         mesh,
         args: [1, false]
       })
+      expectMeshFeedback(registerFeedbackSpy, 'pop', poped)
       expectMoveRecorded(moveRecorded)
     })
 
@@ -480,6 +506,7 @@ describe('StackBehavior', () => {
         mesh,
         args: [1, false]
       })
+      expectMeshFeedback(registerFeedbackSpy, 'pop', meshes[1])
     })
 
     it('pops last mesh when drawn', async () => {
@@ -491,6 +518,7 @@ describe('StackBehavior', () => {
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({ fn: 'draw', mesh: meshes[1] })
       expectMoveRecorded(moveRecorded)
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('pops any mesh when drawn', async () => {
@@ -504,6 +532,7 @@ describe('StackBehavior', () => {
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({ fn: 'draw', mesh: meshes[2] })
       expectMoveRecorded(moveRecorded)
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('does not enable locked mesh when poping', async () => {
@@ -523,6 +552,7 @@ describe('StackBehavior', () => {
       })
       expectStackIndicator(poped)
       expectMoveRecorded(moveRecorded)
+      expectMeshFeedback(registerFeedbackSpy, 'pop', poped)
     })
 
     it('reorders stack to given order', async () => {
@@ -538,6 +568,7 @@ describe('StackBehavior', () => {
         args: [['box0', 'box1', 'box2', 'box3'], false]
       })
       expectMoveRecorded(moveRecorded)
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('reorders with animation', async () => {
@@ -553,6 +584,7 @@ describe('StackBehavior', () => {
         args: [['box2', 'box0', 'box3', 'box1'], true]
       })
       expectMoveRecorded(moveRecorded)
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('can not reorder while reordering', async () => {
@@ -574,6 +606,7 @@ describe('StackBehavior', () => {
         mesh,
         args: [['box2', 'box0', 'box3', 'box1'], true]
       })
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('can reorder any stacked mesh', async () => {
@@ -588,6 +621,7 @@ describe('StackBehavior', () => {
         mesh,
         args: [['box0', 'box1', 'box2', 'box3'], false]
       })
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('can move current mesh while reordering', async () => {
@@ -602,6 +636,7 @@ describe('StackBehavior', () => {
         mesh,
         args: [['box3', 'box0', 'box2', 'box1'], false]
       })
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('flips the entire stack', async () => {
@@ -637,6 +672,7 @@ describe('StackBehavior', () => {
         args: [['box3', 'box2', 'box1', 'box0'], false]
       })
       expectMoveRecorded(moveRecorded)
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('flips an entire flipped stack', async () => {
@@ -675,6 +711,7 @@ describe('StackBehavior', () => {
         duration: 100
       })
       expectMoveRecorded(moveRecorded)
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('flips an entire stack of one', async () => {
@@ -689,6 +726,7 @@ describe('StackBehavior', () => {
         duration: 100
       })
       expectMoveRecorded(moveRecorded)
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('flips the entire stack from peer', async () => {
@@ -708,6 +746,7 @@ describe('StackBehavior', () => {
       await sleep(200)
       expectStacked([meshes[2], meshes[1], meshes[0], mesh])
       expectMoveRecorded(moveRecorded)
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('rotates the entire stack', async () => {
@@ -722,6 +761,7 @@ describe('StackBehavior', () => {
         duration: 100
       })
       expectMoveRecorded(moveRecorded)
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('rotates an entire stack of one', async () => {
@@ -734,6 +774,7 @@ describe('StackBehavior', () => {
         duration: 100
       })
       expectMoveRecorded(moveRecorded)
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('can not push no mesh', () => {

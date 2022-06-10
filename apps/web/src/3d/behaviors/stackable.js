@@ -221,6 +221,12 @@ export class StackBehavior extends TargetBehavior {
     if (duration) {
       await move
     }
+    if (!this.inhibitControl) {
+      indicatorManager.registerFeedback({
+        action: 'push',
+        position: meshPushed[0].absolutePosition.asArray()
+      })
+    }
     for (const mesh of meshPushed) {
       setBase(mesh, base, stack)
     }
@@ -283,6 +289,10 @@ export class StackBehavior extends TargetBehavior {
     if (moves.length) {
       await Promise.all(moves)
     }
+    indicatorManager.registerFeedback({
+      action: 'pop',
+      position: poped[0].absolutePosition.asArray()
+    })
     return poped
   }
 
