@@ -594,7 +594,7 @@ const menuActions = [
     support: (mesh, { selectedMeshes }) =>
       mesh.metadata?.stack?.length > 1 && selectedMeshes.length === 1,
     build: (mesh, params) => ({
-      icon: 'zoom_out_map',
+      icon: 'redo',
       title: 'tooltips.pop',
       badge: 'shortcuts.pop',
       onClick: async ({ detail } = {}) =>
@@ -614,7 +614,7 @@ const menuActions = [
     support: (mesh, { selectedMeshes }) =>
       mesh.metadata?.quantity > 1 && selectedMeshes.length === 1,
     build: (mesh, params) => ({
-      icon: 'zoom_in_map',
+      icon: 'redo',
       title: 'tooltips.decrement',
       badge: 'shortcuts.pop',
       onClick: async ({ detail } = {}) =>
@@ -628,7 +628,7 @@ const menuActions = [
     id: actionIds.push,
     support: canStackAll,
     build: (mesh, { selectedMeshes }) => ({
-      icon: 'zoom_in_map',
+      icon: 'layers',
       title: 'tooltips.stack-all',
       badge: 'shortcuts.push',
       onClick: () => stackAll(mesh, selectedMeshes)
@@ -638,7 +638,7 @@ const menuActions = [
     id: actionIds.increment,
     support: canIncrement,
     build: (mesh, { selectedMeshes }) => ({
-      icon: 'zoom_in_map',
+      icon: 'layers',
       title: 'tooltips.increment',
       badge: 'shortcuts.push',
       onClick: () => increment(mesh, selectedMeshes)

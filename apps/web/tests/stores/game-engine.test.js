@@ -158,16 +158,20 @@ describe('initEngine()', () => {
       })
 
       it('handles peer draw actions', () => {
+        const playerId = faker.datatype.uuid()
         const state = { foo: 'bar' }
         const action = {
           meshId: faker.datatype.uuid(),
           fn: 'draw',
           args: [state]
         }
-        lastMessageReceived.next({ data: action })
-        expect(handManagerApplyDraw).toHaveBeenCalledWith(state)
+        lastMessageReceived.next({ data: action, playerId })
+        expect(handManagerApplyDraw).toHaveBeenCalledWith(state, playerId)
         expect(handManagerApplyDraw).toHaveBeenCalledTimes(1)
-        expect(receiveAction).toHaveBeenCalledWith(action)
+        expect(receiveAction).toHaveBeenCalledWith({
+          ...action,
+          peerId: playerId
+        })
         expect(receiveAction).toHaveBeenCalledTimes(1)
         expect(sendToPeer).not.toHaveBeenCalled()
       })

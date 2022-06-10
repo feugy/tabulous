@@ -202,7 +202,7 @@ export function initEngine({
         indicatorManager.registerPointerIndicator(playerId, data.pointer)
       } else if (data?.meshId) {
         if (data.fn === 'draw') {
-          handManager.applyDraw(...data.args)
+          handManager.applyDraw(...data.args, playerId)
         } else {
           controlManager.apply(data, true)
         }
