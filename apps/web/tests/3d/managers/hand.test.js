@@ -6,6 +6,7 @@ import {
   expectAnimationEnd,
   expectCloseVector,
   expectFlipped,
+  expectMeshFeedback,
   expectPosition,
   expectSnapped,
   expectStacked
@@ -17,7 +18,8 @@ import {
   controlManager,
   moveManager,
   selectionManager,
-  targetManager
+  targetManager,
+  indicatorManager
 } from '../../../src/3d/managers'
 import { createCard } from '../../../src/3d/meshes'
 import { createTable } from '../../../src/3d/utils'
@@ -29,6 +31,7 @@ describe('HandManager', () => {
   let handScene
   let actionObserver
   let savedCameraPosition
+  let registerFeedbackSpy
   const overlay = document.createElement('div')
 
   const playerId = faker.datatype.uuid()
@@ -58,6 +61,7 @@ describe('HandManager', () => {
   beforeAll(() => {
     savedCameraPosition = camera.position.clone()
     targetManager.init({ scene, playerId })
+    indicatorManager.init({ scene })
     actionObserver = controlManager.onActionObservable.add(actionRecorded)
   })
 
@@ -66,6 +70,7 @@ describe('HandManager', () => {
     jest
       .spyOn(window, 'getComputedStyle')
       .mockImplementation(() => ({ height: `${renderHeight / 4}px` }))
+    registerFeedbackSpy = jest.spyOn(indicatorManager, 'registerFeedback')
     selectionManager.clear()
     createTable({}, scene)
   })
@@ -88,6 +93,7 @@ describe('HandManager', () => {
     const mesh = createMesh({ id: 'box' }, scene)
     manager.draw(mesh)
     expect(actionRecorded).not.toHaveBeenCalled()
+    expect(registerFeedbackSpy).not.toHaveBeenCalled()
   })
 
   it('can not apply draw', () => {
@@ -95,6 +101,8 @@ describe('HandManager', () => {
     manager.applyDraw({ drawable: {}, id })
     expect(scene.getMeshById(id)?.id).toBeUndefined()
     expect(handScene.getMeshById(id)?.id).toBeUndefined()
+    expect(registerFeedbackSpy).not.toHaveBeenCalled()
+    expect(registerFeedbackSpy).not.toHaveBeenCalled()
   })
 
   describe('init()', () => {
@@ -149,6 +157,7 @@ describe('HandManager', () => {
       expectPosition(cards[1], [0, 0.005, z])
       expectPosition(cards[0], [gap + cardWidth, 0.005, z])
       expect(actionRecorded).not.toHaveBeenCalled()
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
   })
 
@@ -204,6 +213,7 @@ describe('HandManager', () => {
       await expect(waitForLayout()).rejects.toThrow()
       expect(scene.getMeshById(card.id)?.id).toBeDefined()
       expect(actionRecorded).not.toHaveBeenCalled()
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('moves drawn mesh to hand', async () => {
@@ -228,6 +238,7 @@ describe('HandManager', () => {
       expect(actionRecorded).toHaveBeenCalledTimes(1)
       expect(controlManager.isManaging(newMesh)).toBe(true)
       expect(moveManager.isManaging(newMesh)).toBe(true)
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('unflips flipped mesh while drawing into hand', async () => {
@@ -257,6 +268,7 @@ describe('HandManager', () => {
         expect.anything()
       )
       expect(actionRecorded).toHaveBeenCalledTimes(2)
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it('can keep flipped mesh while drawing into hand', async () => {
@@ -280,16 +292,22 @@ describe('HandManager', () => {
         expect.anything()
       )
       expect(actionRecorded).toHaveBeenCalledTimes(1)
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
     it(`removes mesh drawn into another player's hand`, async () => {
-      const [, card] = cards
-      manager.applyDraw(card)
+      const [, , card] = cards
+      const playerId = faker.datatype.uuid()
+      manager.applyDraw(card.metadata.serialize(), playerId)
       await expectAnimationEnd(card.getBehaviorByName(DrawBehaviorName))
       expect(scene.getMeshById(card.id)?.id).toBeUndefined()
       expect(handScene.meshes.length).toEqual(0)
       expect(changeReceived).not.toHaveBeenCalled()
       expect(actionRecorded).not.toHaveBeenCalled()
+      expect(registerFeedbackSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ playerId })
+      )
+      expectMeshFeedback(registerFeedbackSpy, 'draw', [-5, 0, -10])
     })
 
     it('overlaps meshes to fit available width', async () => {
@@ -882,6 +900,7 @@ describe('HandManager', () => {
         expectCloseVector(extractDrawnState(), finalPosition)
         expect(controlManager.isManaging(newMesh)).toBe(true)
         expect(moveManager.isManaging(newMesh)).toBe(true)
+        expect(registerFeedbackSpy).not.toHaveBeenCalled()
       })
 
       it('stacks mesh when moving to main scene', async () => {
@@ -923,6 +942,11 @@ describe('HandManager', () => {
           extractDrawnState(),
           newMesh.absolutePosition.asArray()
         )
+        expectMeshFeedback(
+          registerFeedbackSpy,
+          'push',
+          [-3.890000104904175, 0.010999999999995451, 0]
+        )
       })
 
       it('can flip mesh prior to moving it to main scene', async () => {
@@ -955,21 +979,26 @@ describe('HandManager', () => {
           extractDrawnState(),
           newMesh.absolutePosition.asArray()
         )
+        expect(registerFeedbackSpy).not.toHaveBeenCalled()
       })
 
       it(`adds mesh from other player's hand to main scene`, async () => {
         const positions = getPositions(handCards)
+        const playerId = faker.datatype.uuid()
         const meshId = 'box5'
-        manager.applyDraw({
-          shape: 'card',
-          id: meshId,
-          rotable: {},
-          drawable: {},
-          movable: {},
-          x: 10,
-          y: 3,
-          z: -20
-        })
+        manager.applyDraw(
+          {
+            shape: 'card',
+            id: meshId,
+            rotable: {},
+            drawable: {},
+            movable: {},
+            x: 10,
+            y: 3,
+            z: -20
+          },
+          playerId
+        )
         expect(handScene.getMeshById(meshId)?.id).toBeUndefined()
         expect(getPositions(handCards)).toEqual(positions)
         const newMesh = scene.getMeshById(meshId)
@@ -980,6 +1009,10 @@ describe('HandManager', () => {
         expect(actionRecorded).not.toHaveBeenCalled()
         expect(controlManager.isManaging(newMesh)).toBe(true)
         expect(moveManager.isManaging(newMesh)).toBe(true)
+        expect(registerFeedbackSpy).toHaveBeenCalledWith(
+          expect.objectContaining({ playerId })
+        )
+        expectMeshFeedback(registerFeedbackSpy, 'draw', [10, 3, -20])
       })
 
       it('positions mesh according to main camera angle', async () => {
@@ -996,6 +1029,7 @@ describe('HandManager', () => {
           extractDrawnState(),
           newMesh.absolutePosition.asArray()
         )
+        expect(registerFeedbackSpy).not.toHaveBeenCalled()
       })
 
       it('cancels playing mesh to main when position is not about above table', async () => {
@@ -1006,6 +1040,7 @@ describe('HandManager', () => {
         expect(handScene.getMeshById(card.id)?.id).toBeDefined()
         expect(scene.getMeshById(card.id)?.id).toBeUndefined()
         expect(actionRecorded).not.toHaveBeenCalled()
+        expect(registerFeedbackSpy).not.toHaveBeenCalled()
       })
 
       describe('given a player drop zone', () => {
@@ -1063,6 +1098,7 @@ describe('HandManager', () => {
             extractDrawnState(),
             newMesh.absolutePosition.asArray()
           )
+          expectMeshFeedback(registerFeedbackSpy, 'snap', dropZone)
         })
 
         it(`moves multiple drawn meshes to player's drop zone`, async () => {

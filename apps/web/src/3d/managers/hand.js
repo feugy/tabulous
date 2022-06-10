@@ -20,6 +20,7 @@ import {
   screenToGround
 } from '../utils'
 import { controlManager } from './control'
+import { indicatorManager } from './indicator'
 import { inputManager } from './input'
 import { moveManager } from './move'
 import { selectionManager } from './selection'
@@ -229,9 +230,10 @@ class HandManager {
    * Applies a draw from a peer:
    * - dispose mesh if it lives in main scene
    * - adds it the main scene otherwise
-   * @param {object} state - the state of the drawn mesh
+   * @param {object} state - the state of the drawn mesh.
+   * @param {string} playerId - id of the peer who drawn mesh.
    */
-  applyDraw(state) {
+  applyDraw(state, playerId) {
     if (this.enabled) {
       const mainMesh = this.scene.getMeshById(state.id)
       if (mainMesh) {
@@ -248,6 +250,11 @@ class HandManager {
         )
         getDrawable(mesh).animateToMain()
       }
+      indicatorManager.registerFeedback({
+        action: 'draw',
+        playerId,
+        position: [state.x, state.y, state.z]
+      })
     }
   }
 

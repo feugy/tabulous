@@ -488,9 +488,7 @@ describe('AnchorBehavior', () => {
         args,
         duration: behavior.state.duration
       })
-      expectMeshFeedback(registerFeedbackSpy, 'snap', {
-        absolutePosition: Vector3.FromArray([0.25, 0.75, 0.5])
-      })
+      expectMeshFeedback(registerFeedbackSpy, 'snap', [0.25, 0.75, 0.5])
     })
 
     it('updates snapped when reordering a stack', async () => {
