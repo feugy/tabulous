@@ -1,22 +1,30 @@
 import { faker } from '@faker-js/faker'
-import { configures3dTestEngine } from '../../test-utils'
+import { configures3dTestEngine, expectMeshFeedback } from '../../test-utils'
 import {
   LockBehavior,
   LockBehaviorName,
   MoveBehaviorName,
   StackBehaviorName
 } from '../../../src/3d/behaviors'
-import { controlManager } from '../../../src/3d/managers'
+import { controlManager, indicatorManager } from '../../../src/3d/managers'
 import { createBox } from '../../../src/3d/meshes'
 
 describe('LockBehavior', () => {
   const actionRecorded = jest.fn()
+  let registerFeedbackSpy
+  let scene
 
-  configures3dTestEngine()
+  configures3dTestEngine(created => (scene = created.scene))
 
-  beforeAll(() => controlManager.onActionObservable.add(actionRecorded))
+  beforeAll(() => {
+    controlManager.onActionObservable.add(actionRecorded)
+    indicatorManager.init({ scene })
+  })
 
-  beforeEach(jest.resetAllMocks)
+  beforeEach(() => {
+    jest.resetAllMocks()
+    registerFeedbackSpy = jest.spyOn(indicatorManager, 'registerFeedback')
+  })
 
   it('has initial state', () => {
     const state = {
@@ -31,6 +39,7 @@ describe('LockBehavior', () => {
 
     mesh.addBehavior(behavior, true)
     expect(behavior.mesh).toEqual(mesh)
+    expect(registerFeedbackSpy).not.toHaveBeenCalled()
   })
 
   it('can not restore state without mesh', () => {
@@ -56,6 +65,7 @@ describe('LockBehavior', () => {
     expect(behavior.mesh).toEqual(mesh)
     expect(getMovable(mesh).enabled).toBe(!isLocked)
     expect(actionRecorded).not.toHaveBeenCalled()
+    expect(registerFeedbackSpy).not.toHaveBeenCalled()
   })
 
   it('can hydrate with default state', () => {
@@ -67,6 +77,7 @@ describe('LockBehavior', () => {
     expect(behavior.mesh).toEqual(mesh)
     expect(getMovable(mesh).enabled).toBe(true)
     expect(actionRecorded).not.toHaveBeenCalled()
+    expect(registerFeedbackSpy).not.toHaveBeenCalled()
   })
 
   describe('given attached to mesh with no behavior', () => {
@@ -99,6 +110,7 @@ describe('LockBehavior', () => {
         },
         expect.anything()
       )
+      expectMeshFeedback(registerFeedbackSpy, 'unlock', mesh)
     })
   })
 
@@ -135,6 +147,7 @@ describe('LockBehavior', () => {
         },
         expect.anything()
       )
+      expectMeshFeedback(registerFeedbackSpy, 'lock', mesh)
       mesh.metadata.toggleLock()
       expect(companion.enabled).toBe(true)
       expect(behavior.state.isLocked).toBe(false)
@@ -148,6 +161,7 @@ describe('LockBehavior', () => {
         },
         expect.anything()
       )
+      expectMeshFeedback(registerFeedbackSpy, 'unlock', mesh)
     })
   })
 
@@ -172,9 +186,11 @@ describe('LockBehavior', () => {
       mesh.metadata.toggleLock()
       expect(movable.enabled).toBe(false)
       expect(lockable.state.isLocked).toBe(true)
+      expectMeshFeedback(registerFeedbackSpy, 'lock', mesh)
       mesh.metadata.toggleLock()
       expect(movable.enabled).toBe(true)
       expect(lockable.state.isLocked).toBe(false)
+      expectMeshFeedback(registerFeedbackSpy, 'unlock', mesh)
       expect(actionRecorded).toHaveBeenCalledTimes(2)
     })
 
@@ -193,9 +209,11 @@ describe('LockBehavior', () => {
         mesh.metadata.toggleLock()
         expect(movable.enabled).toBe(false)
         expect(lockable.state.isLocked).toBe(true)
+        expectMeshFeedback(registerFeedbackSpy, 'lock', mesh)
         mesh.metadata.toggleLock()
         expect(movable.enabled).toBe(false)
         expect(lockable.state.isLocked).toBe(false)
+        expectMeshFeedback(registerFeedbackSpy, 'unlock', mesh)
         expect(actionRecorded).toHaveBeenCalledTimes(2)
       })
 
@@ -207,9 +225,11 @@ describe('LockBehavior', () => {
         mesh.metadata.toggleLock()
         expect(movable.enabled).toBe(false)
         expect(lockable.state.isLocked).toBe(true)
+        expectMeshFeedback(registerFeedbackSpy, 'lock', mesh)
         mesh.metadata.toggleLock()
         expect(movable.enabled).toBe(false)
         expect(lockable.state.isLocked).toBe(false)
+        expectMeshFeedback(registerFeedbackSpy, 'unlock', mesh)
         expect(actionRecorded).toHaveBeenCalledTimes(2)
       })
 
@@ -221,9 +241,11 @@ describe('LockBehavior', () => {
         mesh.metadata.toggleLock()
         expect(movable.enabled).toBe(false)
         expect(lockable.state.isLocked).toBe(true)
+        expectMeshFeedback(registerFeedbackSpy, 'lock', mesh)
         mesh.metadata.toggleLock()
         expect(movable.enabled).toBe(true)
         expect(lockable.state.isLocked).toBe(false)
+        expectMeshFeedback(registerFeedbackSpy, 'unlock', mesh)
         expect(actionRecorded).toHaveBeenCalledTimes(2)
       })
     })
