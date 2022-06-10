@@ -31,6 +31,66 @@ exports[`Toolshot components/Indicators.tools.svelte: All kinds 1`] = `
   </figure>
   
   
+  <div
+    style="top: 200px; left: 50px;"
+  >
+    <span
+      class="material-icons"
+    >
+      layers
+    </span>
+    
+  </div>
+  
+  
+  <div
+    style="top: 200px; left: 100px;"
+  >
+    <span
+      class="material-icons"
+    >
+      
+    </span>
+    Jane
+  </div>
+  
+  
+</span>
+`;
+
+exports[`Toolshot components/Indicators.tools.svelte: Feedback for action 1`] = `
+<span>
+  
+  <div
+    style="top: 200px; left: 50px;"
+  >
+    <span
+      class="material-icons"
+    >
+      layers
+    </span>
+    
+  </div>
+  
+  
+</span>
+`;
+
+exports[`Toolshot components/Indicators.tools.svelte: Feedback for player 1`] = `
+<span>
+  
+  <div
+    style="top: 200px; left: 50px;"
+  >
+    <span
+      class="material-icons"
+    >
+      
+    </span>
+    Jane
+  </div>
+  
+  
 </span>
 `;
 

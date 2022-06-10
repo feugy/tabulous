@@ -126,6 +126,13 @@ describe('Indicators store', () => {
         }
       ])
     })
+
+    it('has feedback', async () => {
+      const indicator = { position: [1, 0, -1], isFeedback: true }
+      indicatorManager.registerFeedback(indicator)
+      await waitNextRender(scene)
+      expectIndicators([indicator])
+    })
   })
 
   describe('given hand container', () => {
@@ -136,6 +143,13 @@ describe('Indicators store', () => {
         if (get(areIndicatorsVisible$)) {
           toggleIndicators()
         }
+      })
+
+      it('has feedback', async () => {
+        const indicator = { position: [1, 0, -1], isFeedback: true }
+        indicatorManager.registerFeedback(indicator)
+        await waitNextRender(scene)
+        expectIndicators([indicator])
       })
 
       it('has indicators for each selected mesh', () => {
