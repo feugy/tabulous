@@ -61,6 +61,8 @@ describe('IndicatorManager', () => {
     })
 
     describe('registerPointerIndicator()', () => {
+      afterEach(() => manager.pruneUnusedPointers([]))
+
       it('registers a new pointer', () => {
         const playerId = faker.datatype.uuid()
         const position = [-10, 0, -5]
@@ -74,6 +76,49 @@ describe('IndicatorManager', () => {
         expect(manager.isManaging(indicator)).toBe(true)
         expect(manager.getById(indicator.id)).toEqual(indicator)
         expectChanged([indicator])
+      })
+    })
+
+    describe('registerFeedback()', () => {
+      it('registers a new feedback', () => {
+        const indicator = {
+          position: mesh.absolutePosition.asArray(),
+          fn: 'push'
+        }
+        expect(manager.isManaging(indicator)).toBe(false)
+
+        manager.registerFeedback(indicator)
+        expect(indicator.isFeedback).toBe(true)
+        expect(indicator.id).toBeDefined()
+        expect(indicator.screenPosition?.x).toBeCloseTo(1024)
+        expect(indicator.screenPosition?.y).toBeCloseTo(512)
+        expect(manager.isManaging(indicator)).toBe(false)
+        expect(manager.getById(indicator.id)).toBeUndefined()
+        expectChanged([indicator])
+      })
+
+      it('does not notify for out-of-screen feedback', () => {
+        const indicator = {
+          position: [10000, 0, 10000],
+          fn: 'push'
+        }
+        expect(manager.isManaging(indicator)).toBe(false)
+
+        manager.registerFeedback(indicator)
+        expect(indicator.isFeedback).toBe(true)
+        expect(indicator.id).toBeDefined()
+        expect(indicator.screenPosition?.x).toBeCloseTo(4147.67)
+        expect(indicator.screenPosition?.y).toBeCloseTo(-2373.89)
+        expect(manager.isManaging(indicator)).toBe(false)
+        expect(manager.getById(indicator.id)).toBeUndefined()
+        expect(changeReceived).not.toHaveBeenCalled()
+      })
+
+      it('ignores postion-less indicators', () => {
+        manager.registerFeedback()
+        manager.registerFeedback({})
+        manager.registerFeedback({ position: mesh.absolutePosition })
+        expect(changeReceived).not.toHaveBeenCalled()
       })
     })
 
@@ -92,6 +137,7 @@ describe('IndicatorManager', () => {
       let indicators
       const playerIds = [faker.datatype.uuid(), faker.datatype.uuid()]
       let pointers
+      let feedback
 
       beforeEach(() => {
         manager.init({ scene })
@@ -113,6 +159,8 @@ describe('IndicatorManager', () => {
             )
           )
         )
+        feedback = { position: indicators[0].mesh.absolutePosition, fn: 'snap' }
+        manager.registerFeedback(feedback)
         changeReceived.mockReset()
       })
 
