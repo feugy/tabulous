@@ -224,6 +224,25 @@ export function expectQuantityIndicator(mesh, quantity) {
   }
 }
 
+export function expectMeshFeedback(
+  registerFeedbackSpy,
+  action,
+  ...meshesOrPositions
+) {
+  for (const meshOrPosition of meshesOrPositions) {
+    expect(registerFeedbackSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action,
+        position: Array.isArray(meshOrPosition)
+          ? meshOrPosition
+          : meshOrPosition.absolutePosition.asArray()
+      })
+    )
+  }
+  expect(registerFeedbackSpy).toHaveBeenCalledTimes(meshesOrPositions.length)
+  registerFeedbackSpy.mockClear()
+}
+
 function getIds(meshes = []) {
   return meshes.map(({ id }) => id)
 }

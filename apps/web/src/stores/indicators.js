@@ -12,6 +12,8 @@ const handPosition$ = new BehaviorSubject(Number.POSITIVE_INFINITY)
 
 let playerById = new Map()
 gamePlayerById$.subscribe(value => (playerById = value))
+let engine
+let currentFeedbackById = new Map()
 
 /**
  * Initializes the indicators store with the hand DOM node.
@@ -19,8 +21,11 @@ gamePlayerById$.subscribe(value => (playerById = value))
  * @param {HTMLCanvasElement} params.canvas - HTML canvas used to display the scene.
  * @param {HTMLElement} params.hand - HTML element holding hand.
  */
-export function initIndicators({ engine, canvas, hand }) {
+export function initIndicators(params) {
+  engine = params.engine
+  const { canvas, hand } = params
   const { dimension$, disconnect } = observeDimension(hand)
+  currentFeedbackById = new Map()
   const subscription = dimension$.subscribe(({ height }) => {
     const { height: totalHeight } = getPixelDimension(canvas)
     handPosition$.next(totalHeight - height)
@@ -45,19 +50,11 @@ export async function toggleIndicators() {
 }
 
 /**
- * Positioned indicator above a given mesh.
- * Other properties can be used to convey specific data
- * @typedef {object} Indicator positioned mesh indicators
- * @property {string} id - base mesh id.
- * @property {import('../3d/utils').ScreenPosition} screenPosition - position (screen coordinates).
- */
-
-/**
  * Emits visible indicators:
  * - all of them when visible is set,
  * - the ones above selected meshes,
  * - the ones above mesh with action menu.
- * @type {Observable<Indicator>}
+ * @type {Observable<import('../3d/managers').Indicator[]>}
  */
 export const visibleIndicators = merge(
   visible$,
@@ -69,7 +66,7 @@ export const visibleIndicators = merge(
   withLatestFrom(
     merge(of(new Set()), selectedMeshes),
     merge(of(null), actionMenuProps),
-    merge(of([]), indicators$),
+    merge(of([]), indicators$).pipe(map(memorizeFeedback)),
     handPosition$
   ),
   map(([, selected, menuProps, indicators, handPosition]) =>
@@ -91,9 +88,6 @@ function getVisibleIndicators(
   indicators,
   handPosition
 ) {
-  if (!allVisible && selected.size === 0 && !menuProps) {
-    return []
-  }
   return allVisible
     ? indicators.filter(
         ({ screenPosition }) => screenPosition.y <= handPosition
@@ -108,14 +102,15 @@ function hasMenu(menuProps, selected) {
 }
 
 function getMenuIndicators(menuProps, indicators) {
-  const indicator = indicators.find(
-    ({ mesh }) => mesh === menuProps.interactedMesh
+  return indicators.filter(
+    ({ isFeedback, mesh }) => isFeedback || mesh === menuProps.interactedMesh
   )
-  return indicator ? [indicator] : []
 }
 
 function getSelectedIndicators(selected, indicators) {
-  return indicators.filter(({ mesh }) => selected.has(mesh))
+  return indicators.filter(
+    ({ isFeedback, mesh }) => isFeedback || selected.has(mesh)
+  )
 }
 
 function enrichWithPlayerData(indicators) {
@@ -127,4 +122,27 @@ function enrichWithPlayerData(indicators) {
     }
     return indicator
   })
+}
+
+function memorizeFeedback(indicators) {
+  const results = []
+  const now = Date.now()
+  for (const indicator of indicators) {
+    if (indicator.isFeedback) {
+      if (!currentFeedbackById.has(indicator.id)) {
+        currentFeedbackById.set(indicator.id, indicator)
+        indicator.start = now
+      }
+    } else {
+      results.push(indicator)
+    }
+  }
+  for (const [id, feedback] of currentFeedbackById) {
+    if (now - feedback.start < 3000) {
+      results.push(feedback)
+    } else {
+      currentFeedbackById.delete(id)
+    }
+  }
+  return results
 }

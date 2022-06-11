@@ -62,7 +62,6 @@ describe('Indicators store', () => {
 
   beforeAll(() => {
     indicatorManager.init({ scene })
-    initIndicators({ engine, canvas, hand })
     players = [
       {
         id: faker.datatype.uuid(),
@@ -80,6 +79,7 @@ describe('Indicators store', () => {
   })
 
   beforeEach(async () => {
+    initIndicators({ engine, canvas, hand })
     cards = [
       { id: 'card1' },
       { id: 'card2', x: 1 },
@@ -152,6 +152,23 @@ describe('Indicators store', () => {
         expectIndicators([indicator])
       })
 
+      it('retains feedback for 3 seconds', async () => {
+        const indicator = { position: [1, 0, -1], isFeedback: true }
+        indicatorManager.registerFeedback(indicator)
+        await waitNextRender(scene)
+        expectIndicators([indicator])
+        indicatorManager.onChangeObservable.notifyObservers([])
+        await sleep(1100)
+        await waitNextRender(scene)
+        expectIndicators([indicator])
+        await sleep(1100)
+        await waitNextRender(scene)
+        expectIndicators([indicator])
+        await sleep(1100)
+        await waitNextRender(scene)
+        expectIndicators()
+      })
+
       it('has indicators for each selected mesh', () => {
         const [card1, , card3, , card5] = cards
         card1
@@ -160,7 +177,7 @@ describe('Indicators store', () => {
         card3
           .getBehaviorByName(StackBehaviorName)
           .fromState({ stackIds: ['card5'] })
-        expectIndicators([])
+        expectIndicators()
         selectionManager.select(card5, card3)
         expectIndicators([
           {
@@ -179,7 +196,7 @@ describe('Indicators store', () => {
         card3
           .getBehaviorByName(StackBehaviorName)
           .fromState({ stackIds: ['card5'] })
-        expectIndicators([])
+        expectIndicators()
         actionMenuProps.next({ interactedMesh: card5 })
         expectIndicators([
           {
@@ -195,9 +212,9 @@ describe('Indicators store', () => {
         card1
           .getBehaviorByName(StackBehaviorName)
           .fromState({ stackIds: ['card2', 'card4'] })
-        expectIndicators([])
+        expectIndicators()
         actionMenuProps.next({ interactedMesh: card3 })
-        expectIndicators([])
+        expectIndicators()
       })
 
       it('has indicator for selected menu mesh', () => {
@@ -208,7 +225,7 @@ describe('Indicators store', () => {
         card3
           .getBehaviorByName(StackBehaviorName)
           .fromState({ stackIds: ['card5'] })
-        expectIndicators([])
+        expectIndicators()
         selectionManager.select(card5, card3, card2, card1, card4)
         expectIndicators([
           {
@@ -242,7 +259,7 @@ describe('Indicators store', () => {
         card1
           .getBehaviorByName(StackBehaviorName)
           .fromState({ stackIds: ['card4', 'card5'] })
-        expectIndicators([])
+        expectIndicators()
         toggleIndicators()
         expectIndicators([
           {
@@ -313,7 +330,7 @@ describe('Indicators store', () => {
           }
         ])
         toggleIndicators()
-        expectIndicators([])
+        expectIndicators()
       })
 
       it('updates indicators on action', async () => {
@@ -413,7 +430,7 @@ describe('Indicators store', () => {
     })
   })
 
-  function expectIndicators(expected) {
+  function expectIndicators(expected = []) {
     const visibleIndicators = get(visibleIndicators$)
     expect(visibleIndicators).toHaveLength(expected.length)
     for (const [
