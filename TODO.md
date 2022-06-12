@@ -1,7 +1,5 @@
 # TODO
 
-- issue: peer name when inviting and just joining
-
 ## Brittle tests
 
 - `InputManager › given an initialized manager() › handles multiple pointers taps`

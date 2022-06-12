@@ -51,7 +51,9 @@ export function initGraphQLGlient(player) {
 export async function runMutation(query, variables) {
   if (!client) throw new Error('Client is not initialized yet')
   logger.info({ query, variables }, 'run graphQL mutation')
-  const { data } = await client.mutation(query, variables).toPromise()
+  const { data } = await client
+    .mutation(query, variables, { requestPolicy: 'network-only' })
+    .toPromise()
   logger.info({ query, variables, data }, 'receiving graphQL mutation results')
   const keys = Object.keys(data || {})
   return keys.length !== 1 ? data : data[keys[0]]

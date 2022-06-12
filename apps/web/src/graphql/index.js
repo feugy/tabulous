@@ -2,6 +2,7 @@ import { listCatalog } from './catalog.graphql'
 import {
   createGame,
   deleteGame,
+  getGamePlayers,
   invite,
   listGames,
   loadGame,
@@ -16,6 +17,7 @@ export {
   createGame,
   deleteGame,
   getCurrentPlayer,
+  getGamePlayers,
   invite,
   listCatalog,
   listGames,

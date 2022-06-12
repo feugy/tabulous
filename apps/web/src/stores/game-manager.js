@@ -385,8 +385,13 @@ function unsubscribeCurrentGame() {
   currentGameSubscriptions.splice(0, currentGameSubscriptions.length)
 }
 
-function handlePeerConnection(playerId) {
+async function handlePeerConnection(playerId) {
   playingIds$.next([...playingIds$.value, playerId])
+  const game = currentGame$.value
+  if (!game.players.some(({ id }) => id === playerId)) {
+    const { players } = await runQuery(graphQL.getGamePlayers, game)
+    currentGame$.next({ ...game, players })
+  }
   if (player.id === hostId$.value) {
     shareGame(playerId)
   }
