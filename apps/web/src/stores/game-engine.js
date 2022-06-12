@@ -5,7 +5,8 @@ import {
   delay,
   filter,
   map,
-  merge
+  merge,
+  withLatestFrom
 } from 'rxjs'
 import { get } from 'svelte/store'
 import { translate as translate$ } from 'svelte-intl'
@@ -64,7 +65,10 @@ export const meshDetails = meshDetails$.pipe(map(({ data }) => data))
  * Emits the list of indicators (stack size, anchor labels, peer pointers...), when it changes.
  * @type {Observable<import('../3d/managers').Indicator[]>}
  */
-export const indicators = indicators$.asObservable()
+export const indicators = merge(indicators$, engineLoading$).pipe(
+  withLatestFrom(indicators$, engineLoading$),
+  map(([, indicators, isLoading]) => (isLoading ? [] : indicators))
+)
 
 /**
  * Emits the list of controlled mesh, when it changes.

@@ -27,6 +27,7 @@ import {
   serializeMeshes,
   removeNulls
 } from './utils'
+import { sleep } from '../utils'
 
 // import { AxesViewer } from '@babylonjs/core/Debug/axesViewer'
 // import '@babylonjs/inspector'
@@ -128,9 +129,11 @@ export function createEngine({
       createTable(game.tableSpec, scene)
       // creates light after table, so table doesn't project shadow
       createLights({ scene, handScene })
-      scene.onDataLoadedObservable.addOnce(() => {
+      scene.onDataLoadedObservable.addOnce(async () => {
         engine.hideLoadingUI()
         isLoading = false
+        // slight delay to let the UI disappear
+        await sleep(100)
         engine.onLoadingObservable.notifyObservers(isLoading)
       })
       if (handsEnabled) {
