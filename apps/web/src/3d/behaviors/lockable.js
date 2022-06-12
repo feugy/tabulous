@@ -1,6 +1,6 @@
 import { LockBehaviorName, MoveBehaviorName } from './names'
 import { attachFunctions, attachProperty } from '../utils'
-import { controlManager } from '../managers'
+import { controlManager, indicatorManager } from '../managers'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
 
@@ -66,6 +66,10 @@ export class LockBehavior {
       return
     }
     controlManager.record({ mesh, fn: 'toggleLock' })
+    indicatorManager.registerFeedback({
+      action: state.isLocked ? 'unlock' : 'lock',
+      position: mesh.absolutePosition.asArray()
+    })
     state.isLocked = !state.isLocked
     for (const name of [MoveBehaviorName]) {
       setEnabled(mesh, name, !state.isLocked)

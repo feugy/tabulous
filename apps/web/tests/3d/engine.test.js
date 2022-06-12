@@ -5,6 +5,7 @@ import { createCard } from '../../src/3d/meshes'
 import { DrawBehaviorName } from '../../src/3d/behaviors'
 import { expectAnimationEnd } from '../test-utils'
 import { handManager, inputManager } from '../../src/3d/managers'
+import { sleep } from '../../src/utils'
 
 describe('createEngine()', () => {
   let engine
@@ -154,6 +155,7 @@ describe('createEngine()', () => {
       expect(receiveLoading).toHaveBeenCalledTimes(1)
       receiveLoading.mockClear()
       engine.scenes[1].onDataLoadedObservable.notifyObservers()
+      await sleep(150)
       expect(engine.isLoading).toBe(false)
       expect(engine.scenes[1].getMeshById(mesh.id)).toBeDefined()
       expect(displayLoadingUI).toHaveBeenCalledTimes(1)

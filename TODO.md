@@ -31,21 +31,21 @@
 
 ## UI
 
-- peer notifications: joining, joined, left, error (stop waiting when navigating away)
+- bug: when a peer becomes host, camera & hand saves are broken
 - bug: ICE failed message when peer reload their browser??
 - bug: attached, unselected, mesh are not ignored during dragging
-- per-player default camera position
-- display peer's name when running draw animations
-- configurable player position at game level
-- sort and filter catalog on game names
-- feedback on stacking
-- distribute multiple cards to players'hand
-- put/draw under
+
+- per-player default camera position & configurable player position at game level
+- distribute multiple meshes to players'hand
 - zoom in/out on rules
+- shortcuts cheatsheet
+- peer notifications: joining, joined, left, error (stop waiting when navigating away)
+- create account (password)
+- invite to game
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
 - hand support for quantifiable behavior
+- put/draw under
 - fullscreen and default key (F11)
-- shortcuts cheatsheet
 
 ## Server
 

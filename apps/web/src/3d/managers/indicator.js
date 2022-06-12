@@ -9,10 +9,13 @@ const logger = makeLogger('indicator')
 
 /**
  * Details of an indicator (could be for a mesh, or peer pointer).
- * Other properties can be used to convey specific data (like mesh, playerId...)
+ * Other properties can be used to convey specific data (like mesh, playerId...).
+ * Feedback are special, temporary indicators. The manager assign them a unique id, and will not notify
+ * them only once. `getById()` on a feedback will always return false.
  * @typedef {object} Indicator
  * @property {string} id - unique id for this indicator.
- * @property {import('../utils').ScreenPosition} screenPosition - 2D position
+ * @property {import('../utils').ScreenPosition} screenPosition - 2D position.
+ * @property {boolean} isFeedback - indicates temporary feedback.
  */
 
 class IndicatorManager {
@@ -94,6 +97,20 @@ class IndicatorManager {
   }
 
   /**
+   * Registers a temporary indicator, or feedback.
+   * @param {Indicator} indicator
+   */
+  registerFeedback(indicator) {
+    if (Array.isArray(indicator?.position)) {
+      indicator.id = crypto.randomUUID()
+      indicator.isFeedback = true
+      logger.debug({ indicator }, `registers feedback`)
+      setPointerPosition(indicator, this)
+      notifyChange(this, [indicator, ...this.indicators.values()])
+    }
+  }
+
+  /**
    * Unregisters an indicator.
    * Does nothing on a unknown indicator.
    * @param {Indicator} indicator - controlled indicator.
@@ -101,7 +118,7 @@ class IndicatorManager {
   unregisterIndicator(indicator) {
     if (this.indicators.delete(indicator?.id)) {
       logger.debug({ indicator }, `unregisters indicator ${indicator?.id}`)
-      notifyChange(this)
+      notifyChange(this, undefined, true)
     }
   }
 
@@ -178,14 +195,20 @@ function setPointerPosition(indicator, { scene }) {
   return hasChanged
 }
 
-function notifyChange(manager) {
-  const indicators = []
-  for (const indicator of manager.indicators.values()) {
+function notifyChange(
+  manager,
+  indicators = manager.indicators.values(),
+  notifyEmpty = false
+) {
+  const visibleIndicators = []
+  for (const indicator of indicators) {
     if (isInFrustum(manager, indicator)) {
-      indicators.push(indicator)
+      visibleIndicators.push(indicator)
     }
   }
-  manager.onChangeObservable.notifyObservers(indicators)
+  if (visibleIndicators.length || notifyEmpty) {
+    manager.onChangeObservable.notifyObservers(visibleIndicators)
+  }
 }
 
 function isInFrustum({ scene }, { mesh, position }) {

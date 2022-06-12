@@ -111,9 +111,18 @@ describe('given a mocked game engine', () => {
     })
 
     describe('with current player', () => {
-      const player = { id: faker.datatype.uuid() }
-      const partner1 = { id: faker.datatype.uuid() }
-      const partner2 = { id: faker.datatype.uuid() }
+      const player = {
+        id: faker.datatype.uuid(),
+        username: faker.name.firstName()
+      }
+      const partner1 = {
+        id: faker.datatype.uuid(),
+        username: faker.name.firstName()
+      }
+      const partner2 = {
+        id: faker.datatype.uuid(),
+        username: faker.name.firstName()
+      }
 
       beforeEach(() => {
         currentPlayer.next(player)
@@ -275,16 +284,50 @@ describe('given a mocked game engine', () => {
 
         afterEach(jest.useRealTimers)
 
-        it('sends game data to joining player', () => {
-          connectPeerAndExpectGameSync({
-            ...game,
-            hands: [...game.hands, { playerId: player.id, meshes: [] }]
-          })
+        it('sends game data to joining player', async () => {
+          await connectPeerAndExpectGameSync(
+            {
+              ...game,
+              hands: [...game.hands, { playerId: player.id, meshes: [] }]
+            },
+            partner1.id
+          )
           expect(engine.serialize).toHaveBeenCalledTimes(1)
           expect(serializeThread).toHaveBeenCalledTimes(1)
+          expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(
+            new Map([
+              [player.id, { ...player, isHost: true, playing: true }],
+              [partner1.id, { ...partner1, isHost: false, playing: true }]
+            ])
+          )
+          expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(1)
+          expect(runQuery).not.toHaveBeenCalled()
         })
 
-        it('saves game data after some actions', () => {
+        it('sends game data to newly invited player', async () => {
+          runQuery.mockResolvedValueOnce({
+            players: [player, partner1, partner2]
+          })
+          await connectPeerAndExpectGameSync(
+            {
+              ...game,
+              hands: [...game.hands, { playerId: player.id, meshes: [] }]
+            },
+            partner2.id
+          )
+          expect(engine.serialize).toHaveBeenCalledTimes(1)
+          expect(serializeThread).toHaveBeenCalledTimes(1)
+          expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(
+            new Map([
+              [player.id, { ...player, isHost: true, playing: true }],
+              [partner1.id, { ...partner1, isHost: false, playing: false }],
+              [partner2.id, { ...partner2, isHost: false, playing: true }]
+            ])
+          )
+          expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(2)
+        })
+
+        it('saves game data after some actions', async () => {
           action.next({ data: {} })
           action.next({ data: {} })
           const hands = [...game.hands, { playerId: player.id, meshes: [] }]
@@ -306,7 +349,7 @@ describe('given a mocked game engine', () => {
             undefined
           )
           expect(send).toHaveBeenCalledTimes(1)
-          connectPeerAndExpectGameSync({ ...game, hands })
+          await connectPeerAndExpectGameSync({ ...game, hands }, partner1.id)
         })
 
         it('saves message thread upon reception', () => {
@@ -345,7 +388,7 @@ describe('given a mocked game engine', () => {
           expect(send).not.toHaveBeenCalled()
         })
 
-        it('saves message ordered thread', () => {
+        it('saves message ordered thread', async () => {
           const messages = ['hej!', 'hallo!!', 'salut!!!']
           lastMessageSent.next({
             data: { type: 'message', message: messages[0] }
@@ -364,14 +407,17 @@ describe('given a mocked game engine', () => {
           expect(runMutation).toHaveBeenCalledTimes(1)
           expect(serializeThread).toHaveBeenCalledTimes(1)
           expect(send).not.toHaveBeenCalled()
-          connectPeerAndExpectGameSync({
-            ...game,
-            messages,
-            hands: [...game.hands, { playerId: player.id, meshes: [] }]
-          })
+          await connectPeerAndExpectGameSync(
+            {
+              ...game,
+              messages,
+              hands: [...game.hands, { playerId: player.id, meshes: [] }]
+            },
+            partner1.id
+          )
         })
 
-        it('merges and saves its camera positions', () => {
+        it('merges and saves its camera positions', async () => {
           const playerCameras = [{ pos: 'a' }, { pos: 'b' }]
           cameraSaves.next(playerCameras)
           const cameras = [
@@ -383,11 +429,14 @@ describe('given a mocked game engine', () => {
             game: { id: game.id, cameras }
           })
           expect(runMutation).toHaveBeenCalledTimes(1)
-          connectPeerAndExpectGameSync({
-            ...game,
-            cameras,
-            hands: [...game.hands, { playerId: player.id, meshes: [] }]
-          })
+          await connectPeerAndExpectGameSync(
+            {
+              ...game,
+              cameras,
+              hands: [...game.hands, { playerId: player.id, meshes: [] }]
+            },
+            partner1.id
+          )
         })
 
         it('merges and saves other cameras', () => {
@@ -686,10 +735,13 @@ describe('given a mocked game engine', () => {
     })
   })
 
-  function connectPeerAndExpectGameSync({ cameras, ...gameData }) {
-    const playerId = faker.datatype.uuid()
+  async function connectPeerAndExpectGameSync(
+    { cameras, ...gameData },
+    playerId
+  ) {
     send.mockReset()
     lastConnectedId.next(playerId)
+    await nextPromise()
     expect(send).toHaveBeenCalledWith(
       {
         type: 'game-sync',

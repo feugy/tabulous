@@ -17,6 +17,7 @@ import {
 import {
   controlManager,
   handManager,
+  indicatorManager,
   inputManager,
   moveManager as manager,
   selectionManager,
@@ -48,6 +49,7 @@ describe('MoveManager', () => {
   beforeAll(() => {
     controlManager.init({ scene, handScene })
     targetManager.init({ scene })
+    indicatorManager.init({ scene })
     actionObserver = controlManager.onActionObservable.add(actionRecorded)
     moveObserver = manager.onMoveObservable.add(moveRecorded)
     preMoveObserver = manager.onPreMoveObservable.add(preMoveRecorded)

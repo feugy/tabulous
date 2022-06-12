@@ -102,12 +102,7 @@ describe('Game interaction model', () => {
         { functionName: 'flip', icon: 'flip', max: 3 },
         { functionName: 'rotate', icon: 'rotate_right', max: 3 },
         { functionName: 'draw', icon: 'front_hand', max: 3 },
-        {
-          functionName: 'pop',
-          icon: 'zoom_out_map',
-          triggeredMesh: meshes[2],
-          max: 3
-        },
+        { functionName: 'pop', icon: 'redo', triggeredMesh: meshes[2], max: 3 },
         { functionName: 'detail', icon: 'visibility' },
         { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
       ])
@@ -130,7 +125,7 @@ describe('Game interaction model', () => {
         { functionName: 'draw', icon: 'front_hand' },
         {
           functionName: 'decrement',
-          icon: 'zoom_in_map',
+          icon: 'redo',
           badge: 'shortcuts.pop',
           max: 4
         },
@@ -166,7 +161,7 @@ describe('Game interaction model', () => {
         },
         {
           functionName: 'pop',
-          icon: 'zoom_out_map',
+          icon: 'redo',
           triggeredMesh: mesh3,
           max: 3
         },
@@ -212,7 +207,7 @@ describe('Game interaction model', () => {
       expect(menuProps).toHaveProperty('x', x)
       expect(menuProps).toHaveProperty('y', y)
 
-      const icon = 'zoom_in_map'
+      const icon = 'redo'
       const action = 'decrement'
       const quantity = 3
       mesh.metadata.decrement.mockResolvedValueOnce(null)
@@ -261,9 +256,7 @@ describe('Game interaction model', () => {
       expect(menuProps).toHaveProperty('y', y)
       mesh3.metadata.pop.mockResolvedValueOnce([mesh6, mesh5])
 
-      const rotateAction = menuProps.items.find(
-        ({ icon }) => icon === 'zoom_out_map'
-      )
+      const rotateAction = menuProps.items.find(({ icon }) => icon === 'redo')
 
       await rotateAction.onClick({ detail: { quantity: 2 } })
       expectMeshActions(mesh6)
@@ -348,7 +341,7 @@ describe('Game interaction model', () => {
         { functionName: 'draw', icon: 'front_hand' },
         {
           functionName: 'push',
-          icon: 'zoom_in_map',
+          icon: 'layers',
           title: 'tooltips.stack-all',
           calls: [[mesh1.id]]
         },
@@ -416,7 +409,7 @@ describe('Game interaction model', () => {
         { functionName: 'draw', icon: 'front_hand' },
         {
           functionName: 'push',
-          icon: 'zoom_in_map',
+          icon: 'layers',
           title: 'tooltips.stack-all',
           calls: [[mesh3.id]]
         },
@@ -448,7 +441,7 @@ describe('Game interaction model', () => {
         { functionName: 'draw', icon: 'front_hand' },
         {
           functionName: 'increment',
-          icon: 'zoom_in_map',
+          icon: 'layers',
           title: 'tooltips.increment',
           badge: 'shortcuts.push',
           calls: [[[mesh8.id, mesh9.id]]]
@@ -529,7 +522,7 @@ describe('Game interaction model', () => {
         { functionName: 'draw', icon: 'front_hand' },
         {
           functionName: 'push',
-          icon: 'zoom_in_map',
+          icon: 'layers',
           title: 'tooltips.stack-all',
           triggeredMesh: mesh5,
           calls: [[mesh1.id]]

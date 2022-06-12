@@ -9,7 +9,12 @@ import {
   getPositionAboveZone,
   getTargetableBehavior
 } from '../utils'
-import { controlManager, moveManager, selectionManager } from '../managers'
+import {
+  controlManager,
+  indicatorManager,
+  moveManager,
+  selectionManager
+} from '../managers'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
 
@@ -177,6 +182,10 @@ export class AnchorBehavior extends TargetBehavior {
       args: [snappedId, anchorId, immediate],
       duration: immediate ? 0 : this.state.duration
     })
+    indicatorManager.registerFeedback({
+      action: 'snap',
+      position: zone.mesh.absolutePosition.asArray()
+    })
     moveManager.notifyMove(snapped)
     await snapToAnchor(this, snappedId, zone, immediate)
   }
@@ -207,6 +216,10 @@ export class AnchorBehavior extends TargetBehavior {
           mesh: this.mesh,
           fn: 'unsnap',
           args: [releasedId]
+        })
+        indicatorManager.registerFeedback({
+          action: 'unsnap',
+          position: zone.mesh.absolutePosition.asArray()
         })
       }
     }

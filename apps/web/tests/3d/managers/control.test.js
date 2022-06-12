@@ -1,7 +1,10 @@
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
 import { configures3dTestEngine, sleep } from '../../test-utils'
-import { controlManager as manager } from '../../../src/3d/managers'
+import {
+  controlManager as manager,
+  indicatorManager
+} from '../../../src/3d/managers'
 import { AnchorBehavior, FlipBehavior } from '../../../src/3d/behaviors'
 
 describe('ControlManager', () => {
@@ -18,6 +21,7 @@ describe('ControlManager', () => {
   configures3dTestEngine(created => ({ scene, handScene } = created))
 
   beforeAll(() => {
+    indicatorManager.init({ scene })
     manager.onActionObservable.add(action => actions.push(action))
     manager.onControlledObservable.add(controlledChangeReceived)
   })

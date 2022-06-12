@@ -10,7 +10,7 @@
             pointer-events-none 
             font-bold text-lg text-$primary-lightest
             bg-$primary opacity-85
-            py-1 pr-2 pl-5 rounded;
+            py-1 pr-2 pl-5 rounded z-10;
     clip-path: polygon(1rem 0%, 100% 0, 100% 100%, 1rem 100%, 0% 50%);
 
     &.centered {
