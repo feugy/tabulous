@@ -404,7 +404,7 @@ function handlePeerDisconnection(playerId) {
     currentGameSubscriptions.push(
       lastConnectedId.subscribe(handlePeerConnection),
       lastDisconnectedId.subscribe(handlePeerDisconnection),
-      ...takeHostRole(currentGame$.value)
+      ...takeHostRole(currentGame$.value.id)
     )
   }
 }

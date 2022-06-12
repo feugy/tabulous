@@ -678,6 +678,20 @@ describe('given a mocked game engine', () => {
               ])
             )
             expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(2)
+            jest.clearAllMocks()
+            const newcamera = { pos: 'a' }
+            cameraSaves.next([newcamera])
+            expect(runMutation).toHaveBeenCalledWith(graphQL.saveGame, {
+              game: {
+                id: game.id,
+                cameras: [
+                  game.cameras[1],
+                  game.cameras[2],
+                  { playerId: player.id, index: 0, ...newcamera }
+                ]
+              }
+            })
+            expect(runMutation).toHaveBeenCalledTimes(1)
           })
 
           it('does not take host role when not being the first online', async () => {

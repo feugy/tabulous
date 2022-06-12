@@ -31,7 +31,6 @@
 
 ## UI
 
-- bug: when a peer becomes host, camera & hand saves are broken
 - bug: ICE failed message when peer reload their browser??
 - bug: attached, unselected, mesh are not ignored during dragging
 
