@@ -21,10 +21,6 @@
   let hasAudio = false
   let hasVideo = false
 
-  $: if (isLocal && !$stream$) {
-    acquireMediaStream()
-  }
-
   $: mediaStream = isLocal ? $stream$ : stream
   $: hasStream = Boolean(mediaStream) && !stopped
   $: hasAvatar = Boolean(player?.avatar)

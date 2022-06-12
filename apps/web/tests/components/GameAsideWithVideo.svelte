@@ -8,4 +8,7 @@
   onDestroy(releaseMediaStream)
 </script>
 
-<GameAside {...$$restProps} on:sendMessage />
+<main class="flex w-full h-screen">
+  <section class="flex-1" />
+  <GameAside {...$$restProps} on:sendMessage />
+</main>
