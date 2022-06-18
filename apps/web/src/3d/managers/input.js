@@ -1,5 +1,5 @@
-import { Observable } from '@babylonjs/core/Misc/observable'
-import { Scene } from '@babylonjs/core/scene'
+import { Observable } from '@babylonjs/core/Misc/observable.js'
+import { Scene } from '@babylonjs/core/scene.js'
 import { screenToGround } from '../utils'
 import { distance } from '../../utils'
 // '../../utils' creates a cyclic dependency in Jest

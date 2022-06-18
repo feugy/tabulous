@@ -1,9 +1,12 @@
+import { browser } from '$app/env'
 import { BehaviorSubject } from 'rxjs'
 import { makeLogger } from '../utils'
 
 const logger = makeLogger('fullscreen')
 
-const fullscreen$ = new BehaviorSubject(Boolean(document.fullscreenElement))
+const fullscreen$ = new BehaviorSubject(
+  browser ? Boolean(document.fullscreenElement) : false
+)
 
 /**
  * Emits whenever the application enters or leaves the fullscreen mode

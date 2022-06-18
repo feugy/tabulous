@@ -1,6 +1,6 @@
-import { BoundingBox } from '@babylonjs/core/Culling/boundingBox'
-import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { Observable } from '@babylonjs/core/Misc/observable'
+import { BoundingBox } from '@babylonjs/core/Culling/boundingBox.js'
+import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
+import { Observable } from '@babylonjs/core/Misc/observable.js'
 import { getMeshScreenPosition, getScreenPosition } from '../utils'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'

@@ -1,6 +1,6 @@
 <script>
   import { afterUpdate, createEventDispatcher, onMount } from 'svelte'
-  import Portal from 'svelte-portal'
+  import Portal from 'svelte-portal/src/Portal.svelte'
   import Button from './Button.svelte'
   import Pane from './Pane.svelte'
 

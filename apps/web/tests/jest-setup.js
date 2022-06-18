@@ -2,8 +2,19 @@ import '@testing-library/jest-dom'
 import crypto from 'crypto'
 import 'whatwg-fetch'
 import '../src/common'
+import { init } from '../.svelte-kit/runtime/client/singletons'
 // Babylon.js side effect imports
 import '@babylonjs/core/Materials/standardMaterial'
+
+init({
+  client: {
+    goto: jest.fn(),
+    invalidate: jest.fn(),
+    prefetch: jest.fn(),
+    before_navigate: jest.fn(),
+    after_navigate: jest.fn()
+  }
+})
 
 document.querySelector(':root').style.setProperty('--short', '150ms')
 

@@ -1,5 +1,5 @@
-import { SceneLoader } from '@babylonjs/core/Loading/sceneLoader'
-import { Vector3 } from '@babylonjs/core/Maths/math.vector'
+import { SceneLoader } from '@babylonjs/core/Loading/sceneLoader.js'
+import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import {
   controlManager,
   customShapeManager,
@@ -7,7 +7,7 @@ import {
 } from '../managers'
 import { getDimensions, registerBehaviors, serializeBehaviors } from '../utils'
 // mandatory side effect
-import '@babylonjs/core/Loading/Plugins'
+import '@babylonjs/core/Loading/index.js'
 
 /**
  * Creates a custom mesh by importing .babylon format.

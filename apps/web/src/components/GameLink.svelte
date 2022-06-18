@@ -1,7 +1,7 @@
 <script>
+  import { goto } from '$app/navigation'
   import { createEventDispatcher } from 'svelte'
   import { _, locale } from 'svelte-intl'
-  import { push } from 'svelte-spa-router'
   import Button from './Button.svelte'
 
   export let game
@@ -39,7 +39,7 @@
   }
 </style>
 
-<article on:click={() => push(`/game/${game.id}`)}>
+<article on:click={() => goto(`/game/${game.id}`)}>
   <span class="title">
     <h3>{game?.locales?.[$locale]?.title}</h3>
     {#if owned}<Button secondary icon="delete" on:click={handleDelete} />{/if}

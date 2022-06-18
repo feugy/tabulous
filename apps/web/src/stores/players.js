@@ -1,5 +1,6 @@
+import { browser } from '$app/env'
+import { goto } from '$app/navigation'
 import { BehaviorSubject, map } from 'rxjs'
-import { push } from 'svelte-spa-router'
 import { initGraphQLGlient, runQuery, runMutation } from './graphql-client'
 import * as graphQL from '../graphql'
 import { makeLogger } from '../utils'
@@ -11,26 +12,28 @@ const storageKey = 'session'
 // we distinguish no value (undefined) and no player (null)
 const authenticationData$ = new BehaviorSubject()
 
-authenticationData$.subscribe(session => {
-  const sessionData = sessionStorage.getItem(storageKey)
-  // skip if we receiving the same player as before
-  if (
-    sessionData &&
-    JSON.parse(sessionData)?.player?.id === session?.player?.id
-  ) {
-    logger.debug({ session, sessionData }, `skipping session save`)
-    return
-  }
-  if (session) {
-    logger.info({ session }, `saving session`)
-    sessionStorage.setItem(storageKey, JSON.stringify(session))
-    initGraphQLGlient(session.player)
-  } else if (session === null) {
-    logger.info(`clearing session storage`)
-    sessionStorage.clear()
-    initGraphQLGlient()
-  }
-})
+if (browser) {
+  authenticationData$.subscribe(session => {
+    const sessionData = sessionStorage.getItem(storageKey)
+    // skip if we receiving the same player as before
+    if (
+      sessionData &&
+      JSON.parse(sessionData)?.player?.id === session?.player?.id
+    ) {
+      logger.debug({ session, sessionData }, `skipping session save`)
+      return
+    }
+    if (session) {
+      logger.info({ session }, `saving session`)
+      sessionStorage.setItem(storageKey, JSON.stringify(session))
+      initGraphQLGlient(session.player)
+    } else if (session === null) {
+      logger.info(`clearing session storage`)
+      sessionStorage.clear()
+      initGraphQLGlient()
+    }
+  })
+}
 
 /**
  * Emits currently authenticated player.
@@ -110,7 +113,7 @@ export async function logIn(username, password) {
 export async function logOut() {
   logger.info(`logging out`)
   authenticationData$.next(null)
-  push('/login')
+  goto('/login')
 }
 
 /**

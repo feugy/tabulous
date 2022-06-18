@@ -1,4 +1,4 @@
-import { Animation } from '@babylonjs/core/Animations/animation'
+import { Animation } from '@babylonjs/core/Animations/animation.js'
 import { AnimateBehavior } from '.'
 import { DrawBehaviorName } from './names'
 import { handManager } from '../managers'

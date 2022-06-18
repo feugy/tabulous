@@ -8,7 +8,10 @@ import InvitePlayerDialogue from '../../src/connected-components/InvitePlayerDia
 import { invite, searchPlayers } from '../../src/stores'
 import { sleep } from '../../src/utils'
 
-jest.mock('../../src/stores')
+jest.mock('../../src/stores', () => {
+  require('../../.svelte-kit/runtime/client/singletons').init({ client: {} })
+  return { invite: jest.fn(), searchPlayers: jest.fn() }
+})
 
 describe('InvitePlayerDialogue connected component', () => {
   beforeEach(jest.resetAllMocks)

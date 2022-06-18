@@ -1,10 +1,10 @@
-module.exports = {
+const conf = {
   rootDir: './',
   testMatch: ['<rootDir>/tests/**/*.test.js'],
   testEnvironment: 'jsdom',
   transform: {
     '^.+\\.js$': [
-      '<rootDir>/tests/jest-transformer.js',
+      '<rootDir>/tests/jest-transformer.cjs',
       {
         presets: [['@babel/preset-env', { targets: { node: 'current' } }]]
       }
@@ -14,11 +14,13 @@ module.exports = {
     '^.+\\.ya?ml$': 'jest-yaml-transform'
   },
   transformIgnorePatterns: [
-    'node_modules\\/(?!@babylonjs|simple-peer-light|svelte-spa-router|svelte-portal|@atelier-wb)'
+    'node_modules\\/(?!@babylonjs|simple-peer-light|svelte-portal|@atelier-wb)'
   ],
   moduleNameMapper: {
     '^.+\\.png$': 'identity-obj-proxy',
-    '^.+\\.(post)?css$': 'identity-obj-proxy'
+    '^.+\\.(post)?css$': 'identity-obj-proxy',
+    '^\\$lib(.*)$': '<rootDir>/src/lib$1',
+    '^\\$app(.*)$': '<rootDir>/.svelte-kit/runtime/app$1'
   },
   moduleFileExtensions: ['js', 'svelte', 'graphql'],
   setupFilesAfterEnv: ['<rootDir>/tests/jest-setup.js'],
@@ -29,3 +31,5 @@ module.exports = {
   coverageDirectory: './coverage',
   collectCoverageFrom: ['<rootDir>/src/**/*.js', '<rootDir>/src/**/*.svelte']
 }
+
+export default conf

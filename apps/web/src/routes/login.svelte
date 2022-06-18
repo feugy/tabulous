@@ -1,6 +1,7 @@
 <script>
+  import { goto } from '$app/navigation'
+  import { page } from '$app/stores'
   import { _ } from 'svelte-intl'
-  import { replace, querystring } from 'svelte-spa-router'
   import { Button, Input, Pane } from '../components'
   import { logIn } from '../stores'
 
@@ -21,8 +22,8 @@
   async function handleLogin() {
     try {
       await logIn(username, password)
-      const redirect = new URLSearchParams($querystring).get('redirect')
-      replace(redirect || '/home')
+      const redirect = $page.url.searchParams.get('redirect')
+      goto(redirect || '/home', { replaceState: true })
     } catch {
       // TODO login failure
     }

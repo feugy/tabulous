@@ -1,12 +1,12 @@
 // all BabylonJS imports must be from individual files to allow tree shaking.
 // more [here](https://doc.babylonjs.com/divingDeeper/developWithBjs/treeShaking)
-import { Engine as RealEngine } from '@babylonjs/core/Engines/engine'
-import { Observable } from '@babylonjs/core/Misc/observable'
+import { Engine as RealEngine } from '@babylonjs/core/Engines/engine.js'
+import { Observable } from '@babylonjs/core/Misc/observable.js'
 // mandatory side effects
-import '@babylonjs/core/Animations/animatable'
-import '@babylonjs/core/Materials/Textures/Loaders/ktxTextureLoader'
-import '@babylonjs/core/Rendering/edgesRenderer'
-import '@babylonjs/core/Rendering/outlineRenderer'
+import '@babylonjs/core/Animations/animatable.js'
+import '@babylonjs/core/Materials/Textures/Loaders/ktxTextureLoader.js'
+import '@babylonjs/core/Rendering/edgesRenderer.js'
+import '@babylonjs/core/Rendering/outlineRenderer.js'
 import {
   cameraManager,
   controlManager,
@@ -29,10 +29,10 @@ import {
 } from './utils'
 import { sleep } from '../utils'
 
-// import { AxesViewer } from '@babylonjs/core/Debug/axesViewer'
-// import '@babylonjs/inspector'
-// import '@babylonjs/core/Debug/debugLayer'
-// import '@babylonjs/core/PostProcesses'
+// import { AxesViewer } from '@babylonjs/core/Debug/axesViewer.js'
+// import '@babylonjs/inspector.js'
+// import '@babylonjs/core/Debug/debugLayer.js'
+// import '@babylonjs/core/PostProcesses.js'
 const debug = false
 const debugHand = false
 
@@ -48,7 +48,7 @@ const debugHand = false
  * Handles pointer out event, to cancel multiple selection or drag'n drop operations.
  * Note: must be called before any other 3D elements.
  * @param {object} params - parameters, including:
- * @param {import('@babylonjs/core').ThinEngine} params.Engine - Babylon's 3D Engine class used.
+ * @param {import('@babylonjs/core').ThinEngine} params.Engine - Babylon.js's 3D Engine class used.
  * @param {HTMLCanvasElement} params.canvas - HTML canvas used to display the scene.
  * @param {HTMLElement} params.interaction - HTML element receiving user interaction (mouse events, taps).
  * @param {HTMLElement} params.hand - HTML element holding hand.

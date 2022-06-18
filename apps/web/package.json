@@ -2,17 +2,18 @@
   "name": "@tabulous/web",
   "version": "0.0.1",
   "description": "Tabulous web application",
+  "type": "module",
   "scripts": {
-    "build": "vite build",
-    "preview": "vite preview",
-    "start": "vite --https --host",
+    "build": "svelte-kit build",
+    "preview": "svelte-kit preview --https --host -o",
+    "start": "svelte-kit dev --https --host -o",
     "test": "jest --coverage",
     "test:dev": "jest --watch --coverage"
   },
   "devDependencies": {
-    "@atelier-wb/svelte": "^0.6.9",
-    "@atelier-wb/toolshot": "^0.6.9",
-    "@atelier-wb/vite-plugin-atelier": "^0.6.9",
+    "@atelier-wb/svelte": "^0.7.0",
+    "@atelier-wb/toolshot": "^0.7.0",
+    "@atelier-wb/vite-plugin-atelier": "^0.7.0",
     "@babel/preset-env": "^7.18.0",
     "@babylonjs/core": "^5.7.0",
     "@babylonjs/inspector": "^5.7.0",
@@ -20,6 +21,8 @@
     "@faker-js/faker": "^7.0.1",
     "@rollup/plugin-graphql": "^1.1.0",
     "@rollup/plugin-yaml": "^3.1.0",
+    "@sveltejs/adapter-static": "^1.0.0-next.34",
+    "@sveltejs/kit": "^1.0.0-next.350",
     "@sveltejs/vite-plugin-svelte": "^1.0.0-next.44",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/svelte": "^3.1.1",
@@ -49,12 +52,9 @@
     "svelte-intl": "^1.1.4",
     "svelte-portal": "^2.1.2",
     "svelte-preprocess": "^4.10.6",
-    "svelte-spa-router": "^3.2.0",
     "svelte-windicss-preprocess": "^4.2.6",
-    "vite": "^2.9.9",
     "vite-plugin-windicss": "^1.8.4",
     "webrtc-adapter": "^8.1.1",
-    "whatwg-fetch": "^3.6.2",
-    "windicss": "^3.5.4"
+    "whatwg-fetch": "^3.6.2"
   }
 }

@@ -1,4 +1,4 @@
-import { Vector3 } from '@babylonjs/core/Maths/math.vector'
+import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import { AnchorBehaviorName } from './names'
 import { TargetBehavior } from './targetable'
 import {

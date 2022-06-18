@@ -1,13 +1,15 @@
 <script context="module">
-  const selector = navigator.userAgent.includes('jsdom')
-    ? 'focus'
-    : 'focus-within'
+  import { browser } from '$app/env'
+  let selector = 'focus-within'
+  if (browser) {
+    selector = navigator.userAgent.includes('jsdom') ? 'focus' : 'focus-within'
+  }
 </script>
 
 <script>
   import { createEventDispatcher } from 'svelte'
   import { slide } from 'svelte/transition'
-  import Portal from 'svelte-portal'
+  import Portal from 'svelte-portal/src/Portal.svelte'
 
   export let anchor
   export let options

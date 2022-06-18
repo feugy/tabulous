@@ -1,5 +1,9 @@
+<script context="module">
+</script>
+
 <script>
-  import { push } from 'svelte-spa-router'
+  import { goto } from '$app/navigation'
+  import { onMount } from 'svelte'
   import { _ } from 'svelte-intl'
   import {
     CatalogItem,
@@ -19,10 +23,10 @@
 
   let gameToDelete = null
 
-  listGames()
+  onMount(() => listGames())
 
   async function handleNewGame({ detail: { name } }) {
-    push(`/game/${await createGame(name)}`)
+    goto(`/game/${await createGame(name)}`)
   }
 
   async function handleDeleteGame({ detail: game }) {
@@ -56,7 +60,7 @@
 
   section {
     @apply grid mx-auto my-8 gap-8 grid-cols-1 w-10/12;
-    @apply xs:grid-cols-2 sm:grid-cols-3 lg:w-9/12 xl:w-7/12;
+    @apply sm:grid-cols-3 lg:w-9/12 xl:w-7/12;
   }
 
   .no-games {

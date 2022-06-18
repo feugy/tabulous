@@ -1,5 +1,5 @@
-import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector'
-import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
+import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector.js'
+import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder.js'
 import { controlManager, materialManager } from '../managers'
 import { registerBehaviors, serializeBehaviors } from '../utils'
 

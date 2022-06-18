@@ -1,7 +1,8 @@
 <script>
+  import { page } from '$app/stores'
   import { onMount, onDestroy } from 'svelte'
   import { _ } from 'svelte-intl'
-  import { GameMenu, InvitePlayerDialogue } from '../connected-components'
+  import { GameMenu, InvitePlayerDialogue } from '../../connected-components'
   import {
     CameraSwitch,
     CursorInfo,
@@ -11,7 +12,7 @@
     MeshDetails,
     Progress,
     RadialMenu
-  } from '../components'
+  } from '../../components'
   import {
     actionMenuProps,
     cameraSaves,
@@ -33,10 +34,8 @@
     saveCamera,
     sendToThread,
     thread
-  } from '../stores'
-  import { observeDimension } from '../utils'
-
-  export let params = {}
+  } from '../../stores'
+  import { observeDimension } from '../../utils'
 
   const longTapDelay = 250
   let engine
@@ -51,7 +50,7 @@
   onMount(async () => {
     engine = initEngine({ canvas, interaction, longTapDelay, hand })
     initIndicators({ engine, canvas, hand })
-    loadPromise = loadGame(params.gameId)
+    loadPromise = loadGame($page.params.gameId)
     loadPromise.catch(err => console.error(err))
     dimensionObserver = observeDimension(interaction, 0)
     dimensionSubscription = dimensionObserver.dimension$.subscribe(

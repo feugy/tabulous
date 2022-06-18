@@ -1,6 +1,6 @@
 // mandatory side effect
-import '@babylonjs/core/Loading/loadingScreen'
-import { Vector3 } from '@babylonjs/core/Maths/math.vector'
+import '@babylonjs/core/Loading/loadingScreen.js'
+import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import {
   createBox,
   createCard,

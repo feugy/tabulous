@@ -1,7 +1,7 @@
-import { Animation } from '@babylonjs/core/Animations/animation'
-import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
-import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
+import { Animation } from '@babylonjs/core/Animations/animation.js'
+import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder.js'
+import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder.js'
 import {
   AnchorBehavior,
   DetailBehavior,

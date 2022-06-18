@@ -7,10 +7,14 @@ module.exports = {
     const transformer = createTransformer(...args)
     const originalProcess = transformer.process
     transformer.process = function (...args) {
-      if (args[1].endsWith('game-manager.js')) {
+      if (
+        args[1].endsWith('game-manager.js') ||
+        args[1].includes('.svelte-kit')
+      ) {
         args[0] = args[0]
           .replace(/import\.meta\.hot\.on/g, '(function(){})')
           .replace(/import\.meta\.hot/g, 'false')
+          .replace(/import\.meta/g, '{ env: {} }')
       }
       return originalProcess(...args)
     }
