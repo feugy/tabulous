@@ -9,7 +9,7 @@
 <script>
   import { createEventDispatcher } from 'svelte'
   import { slide } from 'svelte/transition'
-  import Portal from 'svelte-portal/src/Portal.svelte'
+  import Portal from 'svelte-portal'
 
   export let anchor
   export let options

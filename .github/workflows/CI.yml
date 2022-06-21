@@ -62,7 +62,9 @@ jobs:
         run: npm run test:server
 
       - name: Run UI tests
-        run: npm run test:web
+        run: |
+          timeout 2 npm -w @tabulous/web run build
+          npm run test:web
 
       - name: Send coverage to Codacy
         if: always()

@@ -9,7 +9,7 @@ import { invite, searchPlayers } from '../../src/stores'
 import { sleep } from '../../src/utils'
 
 jest.mock('../../src/stores', () => {
-  require('@sveltejs/kit/assets/client/singletons').init({ client: {} })
+  require('../../.svelte-kit/runtime/client/singletons').init({ client: {} })
   return { invite: jest.fn(), searchPlayers: jest.fn() }
 })
 
