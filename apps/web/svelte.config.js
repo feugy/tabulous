@@ -2,8 +2,7 @@ import atelier from '@atelier-wb/vite-plugin-atelier'
 import graphql from '@rollup/plugin-graphql'
 import yaml from '@rollup/plugin-yaml'
 import adapter from '@sveltejs/adapter-static'
-import { windi } from 'svelte-windicss-preprocess'
-import windiVite from 'vite-plugin-windicss'
+import windi from 'vite-plugin-windicss'
 
 // This file is used by
 // - jest-transform-svelte
@@ -11,7 +10,10 @@ import windiVite from 'vite-plugin-windicss'
 // - svelte kit
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-  preprocess: [windi({})],
+  onwarn(warning, defaultHandler) {
+    if (warning.code === 'a11y-autofocus') return
+    defaultHandler(warning)
+  },
   kit: {
     adapter: adapter({ pages: 'dist', assets: 'dist', fallback: 'index.html' }),
     files: {
@@ -22,9 +24,9 @@ const config = {
     },
     vite: {
       plugins: [
+        windi(),
         yaml(),
         graphql(),
-        windiVite(),
         atelier({
           url: '/atelier/',
           path: 'tests',

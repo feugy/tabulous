@@ -6,6 +6,7 @@ exports[`Toolshot components/PeerPointer.tools.svelte: Avatar 1`] = `
     style="--color:lime; --top:-50px; --left:0px"
   >
     <img
+      alt="Pointer of player Joe le clodo"
       src="default"
     />
      
@@ -22,7 +23,7 @@ exports[`Toolshot components/PeerPointer.tools.svelte: No avatar 1`] = `
     style="--color:lime; --top:-50px; --left:0px"
   >
     <img
-      src="/no-avatar.png"
+      alt="Pointer of player Joe le clodo"
     />
      
     <figcaption>

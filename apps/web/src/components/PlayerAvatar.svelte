@@ -85,21 +85,24 @@
     }
   }
 
-  label {
+  .host {
     @apply absolute top-2 right-2 bg-$primary-lightest px-2 py-1 text-xs;
   }
 </style>
 
 <figure class:hasStream>
-  {#if hasStream}<!-- svelte-ignore a11y-media-has-caption --><video
+  {#if hasStream}<video
       autoplay
       muted={isLocal}
       bind:this={video}
-    />{:else if hasAvatar}<!-- svelte-ignore a11y-missing-attribute --><img
+    />{:else if hasAvatar}<img
+      alt="Avatar for player {player?.username}"
       src={player?.avatar}
-    />{:else}<figcaption>{player?.username}</figcaption>{/if}
+    />{:else}<figcaption>
+      {player?.username}
+    </figcaption>{/if}
   {#if player?.isHost}
-    <label>{$_('host')}</label>
+    <span class="host">{$_('host')}</span>
   {/if}
   <legend>
     {#if isLocal}

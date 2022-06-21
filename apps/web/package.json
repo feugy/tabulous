@@ -51,8 +51,6 @@
     "svelte-htm": "^1.1.1",
     "svelte-intl": "^1.1.4",
     "svelte-portal": "^2.1.2",
-    "svelte-preprocess": "^4.10.6",
-    "svelte-windicss-preprocess": "^4.2.6",
     "vite-plugin-windicss": "^1.8.4",
     "webrtc-adapter": "^8.1.1",
     "whatwg-fetch": "^3.6.2"

@@ -41,10 +41,10 @@
 <figure
   style={`--color:${color}; --top:${screenPosition.y}px; --left:${screenPosition.x}px`}
 >
-  <!-- svelte-ignore a11y-missing-attribute -->
   <img
     class:hasImage
-    src={player.avatar ?? '/no-avatar.png'}
+    src={player.avatar}
+    alt="Pointer of player {player.username}"
     on:load={() => (hasImage = true)}
   />
   {#if !hasImage}
