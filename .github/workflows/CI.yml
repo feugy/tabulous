@@ -63,7 +63,8 @@ jobs:
 
       - name: Run UI tests
         run: |
-          timeout 2 npm -w @tabulous/web run build
+          mkdir -p apps/web/.svelte-kit/runtime
+          cp -r node_modules/@sveltejs/kit/assets/* apps/web/.svelte-kit/runtime
           npm run test:web
 
       - name: Send coverage to Codacy
