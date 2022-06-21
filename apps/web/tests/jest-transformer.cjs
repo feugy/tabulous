@@ -9,7 +9,7 @@ module.exports = {
     transformer.process = function (...args) {
       if (
         args[1].endsWith('game-manager.js') ||
-        args[1].includes('.svelte-kit')
+        args[1].includes('@sveltejs/kit')
       ) {
         args[0] = args[0]
           .replace(/import\.meta\.hot\.on/g, '(function(){})')

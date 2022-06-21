@@ -14,13 +14,13 @@ const conf = {
     '^.+\\.ya?ml$': 'jest-yaml-transform'
   },
   transformIgnorePatterns: [
-    'node_modules\\/(?!@babylonjs|simple-peer-light|svelte-portal|@atelier-wb)'
+    'node_modules\\/(?!@babylonjs|simple-peer-light|svelte-portal|@atelier-wb|@sveltejs)'
   ],
   moduleNameMapper: {
     '^.+\\.png$': 'identity-obj-proxy',
     '^.+\\.(post)?css$': 'identity-obj-proxy',
     '^\\$lib(.*)$': '<rootDir>/src/lib$1',
-    '^\\$app(.*)$': '<rootDir>/.svelte-kit/runtime/app$1'
+    '^\\$app(.*)$': '<rootDir>/../../node_modules/@sveltejs/kit/assets/app$1'
   },
   moduleFileExtensions: ['js', 'svelte', 'graphql'],
   setupFilesAfterEnv: ['<rootDir>/tests/jest-setup.js'],

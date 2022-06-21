@@ -11,7 +11,6 @@
       !(await recoverSession())
     ) {
       const location = new URL('/login', url.href)
-      console.log('redirect', location)
       location.searchParams.set('redirect', url.href.replace(url.origin, ''))
       return { status: 302, redirect: location.href }
     }
