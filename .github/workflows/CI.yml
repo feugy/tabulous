@@ -62,7 +62,10 @@ jobs:
         run: npm run test:server
 
       - name: Run UI tests
-        run: npm run test:web
+        run: |
+          mkdir -p apps/web/.svelte-kit/runtime
+          cp -r node_modules/@sveltejs/kit/assets/* apps/web/.svelte-kit/runtime
+          npm run test:web
 
       - name: Send coverage to Codacy
         if: always()

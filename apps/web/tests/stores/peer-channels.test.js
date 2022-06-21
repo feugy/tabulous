@@ -162,9 +162,9 @@ describe('Peer channels store', () => {
     })
 
     describe('connectWith()', () => {
-      beforeEach(jest.useFakeTimers)
+      beforeEach(() => jest.useFakeTimers())
 
-      afterEach(jest.useRealTimers)
+      afterEach(() => jest.useRealTimers())
 
       it('opens WebRTC peer, sends offer through WebSocket and accept answer', async () => {
         const offer = { type: 'offer', data: faker.lorem.words() }

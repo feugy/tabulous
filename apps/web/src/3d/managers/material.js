@@ -1,7 +1,7 @@
-import { Engine } from '@babylonjs/core/Engines/engine'
-import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial'
-import { Texture } from '@babylonjs/core/Materials/Textures/texture'
-import { Color3, Color4 } from '@babylonjs/core/Maths/math.color'
+import { Engine } from '@babylonjs/core/Engines/engine.js'
+import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial.js'
+import { Texture } from '@babylonjs/core/Materials/Textures/texture.js'
+import { Color3, Color4 } from '@babylonjs/core/Maths/math.color.js'
 // '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
 

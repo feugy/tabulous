@@ -1,4 +1,4 @@
-import { Scene } from '@babylonjs/core/scene'
+import { Scene } from '@babylonjs/core/scene.js'
 
 /**
  * Optimized version of Babylon's Scene that uses map to reference meshes by id.

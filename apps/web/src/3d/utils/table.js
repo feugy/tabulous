@@ -1,5 +1,5 @@
-import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { CreateGround } from '@babylonjs/core/Meshes/Builders/groundBuilder'
+import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
+import { CreateGround } from '@babylonjs/core/Meshes/Builders/groundBuilder.js'
 import { materialManager } from '../managers/material'
 
 /**

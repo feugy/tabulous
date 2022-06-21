@@ -4,12 +4,15 @@ exports[`Toolshot components/PlayerAvatar.tools.svelte: Local 1`] = `
 <span>
   <figure>
     <img
+      alt="Avatar for player Joe le clodo"
       src="default"
     />
      
-    <label>
+    <span
+      class="host"
+    >
       host
-    </label>
+    </span>
      
     <legend>
        
@@ -23,12 +26,15 @@ exports[`Toolshot components/PlayerAvatar.tools.svelte: No video 1`] = `
 <span>
   <figure>
     <img
+      alt="Avatar for player Joe le clodo"
       src="default"
     />
      
-    <label>
+    <span
+      class="host"
+    >
       host
-    </label>
+    </span>
      
     <legend />
   </figure>
@@ -42,9 +48,11 @@ exports[`Toolshot components/PlayerAvatar.tools.svelte: No video nor avatar 1`] 
       Joe le clodo
     </figcaption>
      
-    <label>
+    <span
+      class="host"
+    >
       host
-    </label>
+    </span>
      
     <legend />
   </figure>

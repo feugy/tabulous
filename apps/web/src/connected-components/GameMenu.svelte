@@ -1,7 +1,7 @@
 <script>
+  import { goto } from '$app/navigation'
   import { createEventDispatcher } from 'svelte'
   import { _ } from 'svelte-intl'
-  import { push } from 'svelte-spa-router'
   import { Dropdown } from '../components'
   import {
     areIndicatorsVisible,
@@ -36,7 +36,7 @@
       if ($isFullscreen) {
         toggleFullscreen()
       }
-      push('/home')
+      goto('/home')
     } else if (value === options[1]) {
       dispatch('invite-player')
     } else if (value === options[2]) {

@@ -1,8 +1,8 @@
-import { Axis } from '@babylonjs/core/Maths/math.axis'
-import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector'
-import { CSG } from '@babylonjs/core/Meshes/csg'
-import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
-import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
+import { Axis } from '@babylonjs/core/Maths/math.axis.js'
+import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector.js'
+import { CSG } from '@babylonjs/core/Meshes/csg.js'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder.js'
+import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder.js'
 import { controlManager, materialManager } from '../managers'
 import { registerBehaviors, serializeBehaviors } from '../utils'
 

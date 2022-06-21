@@ -1,10 +1,14 @@
 <script context="module">
+  import { browser } from '$app/env'
   import ms from 'ms'
-  const enterDuration = ms(
-    getComputedStyle(document.querySelector(':root'))
-      .getPropertyValue('--short')
-      .trim()
-  )
+  let enterDuration = 0
+  if (browser) {
+    enterDuration = ms(
+      getComputedStyle(document.querySelector(':root'))
+        .getPropertyValue('--short')
+        .trim()
+    )
+  }
 </script>
 
 <script>

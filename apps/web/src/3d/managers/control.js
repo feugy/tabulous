@@ -1,5 +1,5 @@
-import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { Observable } from '@babylonjs/core/Misc/observable'
+import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
+import { Observable } from '@babylonjs/core/Misc/observable.js'
 
 /**
  * @typedef {object} Action applied action to a given mesh:

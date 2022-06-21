@@ -22,7 +22,7 @@ exports[`Toolshot components/Indicators.tools.svelte: All kinds 1`] = `
     style="--color:#979797; --top:-125px; --left:-150px"
   >
     <img
-      src="/no-avatar.png"
+      alt="Pointer of player Gaspard"
     />
      
     <figcaption>
@@ -135,7 +135,7 @@ exports[`Toolshot components/Indicators.tools.svelte: Peer pointer 1`] = `
     style="--color:#979797; --top:-125px; --left:-150px"
   >
     <img
-      src="/no-avatar.png"
+      alt="Pointer of player Gaspard"
     />
      
     <figcaption>

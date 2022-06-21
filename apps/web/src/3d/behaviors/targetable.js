@@ -1,4 +1,4 @@
-import { Observable } from '@babylonjs/core/Misc/observable'
+import { Observable } from '@babylonjs/core/Misc/observable.js'
 import { TargetBehaviorName } from './names'
 // '../managers' creates a cyclic dependency in Jest
 import { indicatorManager } from '../managers/indicator'

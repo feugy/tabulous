@@ -1,5 +1,5 @@
 // This file is used by
-// - vite
+// - svelte-kit
 // - svelte-windi-preprocess
 module.exports = {
   plugins: [require('postcss-nested'), require('autoprefixer')]

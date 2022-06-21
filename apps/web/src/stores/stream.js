@@ -1,3 +1,4 @@
+import { browser } from '$app/env'
 import { BehaviorSubject, Subject } from 'rxjs'
 import { makeLogger } from '../utils'
 
@@ -11,7 +12,9 @@ const mics = new BehaviorSubject([])
 const currentCamera = new BehaviorSubject(null)
 const currentMic = new BehaviorSubject(null)
 const streamChange$ = new Subject()
-navigator.mediaDevices?.addEventListener('devicechange', enumerateDevices)
+if (browser) {
+  navigator.mediaDevices?.addEventListener('devicechange', enumerateDevices)
+}
 
 /**
  * Emits the local media stream, that is audio and video allowed and selected by user

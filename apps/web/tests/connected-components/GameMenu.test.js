@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/svelte'
+import { goto } from '$app/navigation'
 import { tick } from 'svelte'
 import html from 'svelte-htm'
-import { push } from 'svelte-spa-router'
 import { translate } from '../test-utils'
 import GameMenu from '../../src/connected-components/GameMenu.svelte'
 import {
@@ -11,7 +11,6 @@ import {
   toggleIndicators
 } from '../../src/stores'
 
-jest.mock('svelte-spa-router')
 jest.mock('../../src/stores/fullscreen', () => {
   const { BehaviorSubject } = require('rxjs')
   return {
@@ -61,7 +60,7 @@ describe('GameMenu connected component', () => {
     expect(toggleFullscreen).not.toHaveBeenCalled()
     expect(toggleIndicators).not.toHaveBeenCalled()
     expect(handleInvitePlayer).not.toHaveBeenCalled()
-    expect(push).not.toHaveBeenCalled()
+    expect(goto).not.toHaveBeenCalled()
   })
 
   it('displays leave fullscreen options', async () => {
@@ -90,7 +89,7 @@ describe('GameMenu connected component', () => {
     expect(toggleFullscreen).toHaveBeenCalledTimes(1)
     expect(toggleIndicators).not.toHaveBeenCalled()
     expect(handleInvitePlayer).not.toHaveBeenCalled()
-    expect(push).not.toHaveBeenCalled()
+    expect(goto).not.toHaveBeenCalled()
   })
 
   it('can invite player', async () => {
@@ -101,7 +100,7 @@ describe('GameMenu connected component', () => {
     expect(handleInvitePlayer).toHaveBeenCalledTimes(1)
     expect(toggleFullscreen).not.toHaveBeenCalled()
     expect(toggleIndicators).not.toHaveBeenCalled()
-    expect(push).not.toHaveBeenCalled()
+    expect(goto).not.toHaveBeenCalled()
   })
 
   it('can go back home', async () => {
@@ -110,7 +109,7 @@ describe('GameMenu connected component', () => {
     expect(toggleFullscreen).not.toHaveBeenCalled()
     expect(toggleIndicators).not.toHaveBeenCalled()
     expect(handleInvitePlayer).not.toHaveBeenCalled()
-    expect(push).toHaveBeenCalledTimes(1)
+    expect(goto).toHaveBeenCalledTimes(1)
   })
 
   it('leaves fullscreen when going back home', async () => {
@@ -120,7 +119,7 @@ describe('GameMenu connected component', () => {
     expect(toggleFullscreen).toHaveBeenCalledTimes(1)
     expect(toggleIndicators).not.toHaveBeenCalled()
     expect(handleInvitePlayer).not.toHaveBeenCalled()
-    expect(push).toHaveBeenCalledTimes(1)
+    expect(goto).toHaveBeenCalledTimes(1)
   })
 
   it('can hide indicators', async () => {
@@ -129,6 +128,6 @@ describe('GameMenu connected component', () => {
     expect(toggleFullscreen).not.toHaveBeenCalled()
     expect(toggleIndicators).toHaveBeenCalledTimes(1)
     expect(handleInvitePlayer).not.toHaveBeenCalled()
-    expect(push).not.toHaveBeenCalled()
+    expect(goto).not.toHaveBeenCalled()
   })
 })

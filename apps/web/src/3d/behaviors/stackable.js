@@ -1,5 +1,5 @@
-import { Animation } from '@babylonjs/core/Animations/animation'
-import { Vector3 } from '@babylonjs/core/Maths/math.vector'
+import { Animation } from '@babylonjs/core/Animations/animation.js'
+import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import {
   AnchorBehaviorName,
   MoveBehaviorName,

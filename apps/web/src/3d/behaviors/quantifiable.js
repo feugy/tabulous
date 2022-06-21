@@ -1,4 +1,4 @@
-import { Vector3 } from '@babylonjs/core/Maths/math.vector'
+import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import { MoveBehaviorName, QuantityBehaviorName } from './names'
 import { TargetBehavior } from './targetable'
 import {
