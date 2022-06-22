@@ -4,6 +4,10 @@
   export let screenPosition = { x: 0, y: 0 }
 </script>
 
+<div style="top: {screenPosition.y}px; left: {screenPosition.x}px">
+  <span class="material-icons">{icon}</span>{content}
+</div>
+
 <style lang="postcss">
   div {
     @apply absolute transform-gpu pointer-events-none opacity-0 z-20 text-xl text-$base-lightest font-extrabold;
@@ -30,7 +34,3 @@
     }
   }
 </style>
-
-<div style="top: {screenPosition.y}px; left: {screenPosition.x}px">
-  <span class="material-icons">{icon}</span>{content}
-</div>

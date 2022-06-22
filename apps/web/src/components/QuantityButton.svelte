@@ -56,35 +56,6 @@
   }
 </script>
 
-<style lang="postcss">
-  span {
-    @apply inline-flex items-center justify-center;
-
-    & > :global(button:first-child) {
-      @apply pr-1 pl-3 rounded-r-none;
-    }
-  }
-
-  strong {
-    @apply font-normal pl-2;
-    line-height: 2rem;
-  }
-
-  div {
-    @apply flex flex-col;
-
-    & :global(.material-icons) {
-      font-size: 20px;
-    }
-    & > :global(button[data-up]) {
-      @apply pt-1 pb-0 pl-1 pr-2 rounded-l-none rounded-br-none;
-    }
-    & > :global(button[data-down]) {
-      @apply pt-0 pb-1 pl-1 pr-2 rounded-l-none rounded-tr-none;
-    }
-  }
-</style>
-
 <span role="slider" on:keyup|stopPropagation={handleKeys}>
   <Button
     {...$$restProps}
@@ -113,3 +84,32 @@
     />
   </div>
 </span>
+
+<style lang="postcss">
+  span {
+    @apply inline-flex items-center justify-center;
+
+    & > :global(button:first-child) {
+      @apply pr-1 pl-3 rounded-r-none;
+    }
+  }
+
+  strong {
+    @apply font-normal pl-2;
+    line-height: 2rem;
+  }
+
+  div {
+    @apply flex flex-col;
+
+    & :global(.material-icons) {
+      font-size: 20px;
+    }
+    & > :global(button[data-up]) {
+      @apply pt-1 pb-0 pl-1 pr-2 rounded-l-none rounded-br-none;
+    }
+    & > :global(button[data-down]) {
+      @apply pt-0 pb-1 pl-1 pr-2 rounded-l-none rounded-tr-none;
+    }
+  }
+</style>

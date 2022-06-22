@@ -30,24 +30,6 @@
   }
 </script>
 
-<style lang="postcss">
-  main {
-    @apply flex flex-col p-4 h-full lg:w-1/2 lg:mx-auto;
-  }
-
-  h1 {
-    @apply inline-block;
-  }
-
-  .row {
-    @apply flex my-4 items-center gap-2;
-  }
-
-  .actions {
-    @apply flex justify-center;
-  }
-</style>
-
 <svelte:head>
   <title>{$_('page-titles.log-in')}</title>
 </svelte:head>
@@ -81,3 +63,21 @@
     </form>
   </Pane>
 </main>
+
+<style lang="postcss">
+  main {
+    @apply flex flex-col p-4 h-full lg:w-1/2 lg:mx-auto;
+  }
+
+  h1 {
+    @apply inline-block;
+  }
+
+  .row {
+    @apply flex my-4 items-center gap-2;
+  }
+
+  .actions {
+    @apply flex justify-center;
+  }
+</style>

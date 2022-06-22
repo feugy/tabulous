@@ -38,21 +38,6 @@
   ]
 </script>
 
-<style lang="postcss">
-  div {
-    @apply flex-1 p-2 h-full overflow-auto;
-  }
-
-  section {
-    @apply grid flex-1 max-h-full items-center gap-6 p-2;
-    grid-template-columns: repeat(auto-fit, minmax(15vw, 1fr));
-  }
-
-  h3 {
-    @apply text-xl border-b border-$secondary-light mx-2 pb-1 pt-4;
-  }
-</style>
-
 <div>
   <h3>{$_('titles.selection-controls')}</h3>
   <section>
@@ -73,3 +58,18 @@
     {/each}
   </section>
 </div>
+
+<style lang="postcss">
+  div {
+    @apply flex-1 p-2 h-full overflow-auto;
+  }
+
+  section {
+    @apply grid flex-1 max-h-full items-center gap-6 p-2;
+    grid-template-columns: repeat(auto-fit, minmax(15vw, 1fr));
+  }
+
+  h3 {
+    @apply text-xl border-b border-$secondary-light mx-2 pb-1 pt-4;
+  }
+</style>

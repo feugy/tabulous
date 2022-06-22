@@ -6,6 +6,20 @@
   let hasImage = false
 </script>
 
+<figure
+  style={`--color:${color}; --top:${screenPosition.y}px; --left:${screenPosition.x}px`}
+>
+  <img
+    class:hasImage
+    src={player.avatar}
+    alt="Pointer of player {player.username}"
+    on:load={() => (hasImage = true)}
+  />
+  {#if !hasImage}
+    <figcaption>{player.username}</figcaption>
+  {/if}
+</figure>
+
 <style lang="postcss">
   figure {
     @apply absolute flex relative 
@@ -37,17 +51,3 @@
     }
   }
 </style>
-
-<figure
-  style={`--color:${color}; --top:${screenPosition.y}px; --left:${screenPosition.x}px`}
->
-  <img
-    class:hasImage
-    src={player.avatar}
-    alt="Pointer of player {player.username}"
-    on:load={() => (hasImage = true)}
-  />
-  {#if !hasImage}
-    <figcaption>{player.username}</figcaption>
-  {/if}
-</figure>

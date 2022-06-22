@@ -54,24 +54,6 @@
   }
 </script>
 
-<style lang="postcss">
-  aside {
-    @apply absolute rounded-full border-2 flex items-center 
-           justify-center border-$primary-light transform-gpu -translate-x-1/2 -translate-y-1/2;
-    width: var(--size);
-    height: var(--size);
-  }
-
-  ul {
-    @position relative;
-  }
-
-  li {
-    /* align item center on the menu's circle */
-    @apply absolute opacity-0 transform-gpu -translate-x-1/2 -translate-y-1/2;
-  }
-</style>
-
 {#if open && items?.length}
   <aside
     role="menu"
@@ -107,3 +89,21 @@
     <slot />
   </aside>
 {/if}
+
+<style lang="postcss">
+  aside {
+    @apply absolute rounded-full border-2 flex items-center 
+           justify-center border-$primary-light transform-gpu -translate-x-1/2 -translate-y-1/2;
+    width: var(--size);
+    height: var(--size);
+  }
+
+  ul {
+    @position relative;
+  }
+
+  li {
+    /* align item center on the menu's circle */
+    @apply absolute opacity-0 transform-gpu -translate-x-1/2 -translate-y-1/2;
+  }
+</style>

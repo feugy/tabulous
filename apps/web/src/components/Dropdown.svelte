@@ -43,16 +43,6 @@
   }
 </script>
 
-<style lang="postcss">
-  .wrapper {
-    @apply relative inline-block;
-  }
-
-  .arrow {
-    @apply ml-2 -mr-2;
-  }
-</style>
-
 <span
   class="wrapper"
   bind:this={anchor}
@@ -82,3 +72,13 @@
     on:select={handleSelect}
   />
 </span>
+
+<style lang="postcss">
+  .wrapper {
+    @apply relative inline-block;
+  }
+
+  .arrow {
+    @apply ml-2 -mr-2;
+  }
+</style>

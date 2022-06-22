@@ -105,6 +105,41 @@
   }
 </script>
 
+<svelte:window on:keydown={handleKey} />
+
+<section
+  class:minimized
+  class:vertical
+  bind:this={node}
+  aria-expanded={!minimized}
+  aria-label="minimizable"
+  style="{props.style}: {innerDimension};"
+>
+  <menu class:vertical class={placement}>
+    <ol role="tablist" class="buttonContainer">
+      {#each innerTabs as { icon, key }, i}
+        <li class:active={innerTabs.length > 1 && i === currentTab}>
+          <Button
+            role="tab"
+            aria-selected={innerTabs.length > 1 && i === currentTab}
+            badge={key}
+            {icon}
+            on:click={() => handleClick(i)}
+          />
+        </li>
+      {/each}
+    </ol>
+    <div
+      role="scrollbar"
+      class="gutter"
+      on:pointerdown|stopPropagation={handleDown}
+    />
+  </menu>
+  <span>
+    <slot />
+  </span>
+</section>
+
 <style lang="postcss">
   section {
     @apply relative flex items-stretch justify-items-stretch h-full z-10 min-w-min max-w-full;
@@ -190,38 +225,3 @@
     @apply flex-1 overflow-hidden;
   }
 </style>
-
-<svelte:window on:keydown={handleKey} />
-
-<section
-  class:minimized
-  class:vertical
-  bind:this={node}
-  aria-expanded={!minimized}
-  aria-label="minimizable"
-  style="{props.style}: {innerDimension};"
->
-  <menu class:vertical class={placement}>
-    <ol role="tablist" class="buttonContainer">
-      {#each innerTabs as { icon, key }, i}
-        <li class:active={innerTabs.length > 1 && i === currentTab}>
-          <Button
-            role="tab"
-            aria-selected={innerTabs.length > 1 && i === currentTab}
-            badge={key}
-            {icon}
-            on:click={() => handleClick(i)}
-          />
-        </li>
-      {/each}
-    </ol>
-    <div
-      role="scrollbar"
-      class="gutter"
-      on:pointerdown|stopPropagation={handleDown}
-    />
-  </menu>
-  <span>
-    <slot />
-  </span>
-</section>

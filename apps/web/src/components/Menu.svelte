@@ -164,38 +164,6 @@
   }
 </script>
 
-<style lang="postcss">
-  ul {
-    @apply absolute rounded z-20 text-sm shadow-md bg-$base-lightest;
-  }
-
-  li {
-    @apply p-2 whitespace-nowrap flex items-center;
-
-    &:first-of-type {
-      @apply rounded-t;
-    }
-
-    &:last-of-type {
-      @apply rounded-b;
-    }
-
-    &:not(.disabled) {
-      &:hover,
-      &:focus {
-        @apply cursor-pointer outline-none text-$primary-lightest bg-$primary-dark;
-      }
-      &.current {
-        @apply text-$primary-lightest bg-$primary;
-      }
-    }
-
-    & > i {
-      @apply mr-2 text-base;
-    }
-  }
-</style>
-
 <svelte:window
   on:click|capture={handleInteraction}
   on:resize|capture={handleVisible}
@@ -243,3 +211,35 @@
     </ul>
   </Portal>
 {/if}
+
+<style lang="postcss">
+  ul {
+    @apply absolute rounded z-20 text-sm shadow-md bg-$base-lightest;
+  }
+
+  li {
+    @apply p-2 whitespace-nowrap flex items-center;
+
+    &:first-of-type {
+      @apply rounded-t;
+    }
+
+    &:last-of-type {
+      @apply rounded-b;
+    }
+
+    &:not(.disabled) {
+      &:hover,
+      &:focus {
+        @apply cursor-pointer outline-none text-$primary-lightest bg-$primary-dark;
+      }
+      &.current {
+        @apply text-$primary-lightest bg-$primary;
+      }
+    }
+
+    & > i {
+      @apply mr-2 text-base;
+    }
+  }
+</style>

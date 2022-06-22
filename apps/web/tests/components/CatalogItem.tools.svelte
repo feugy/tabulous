@@ -5,15 +5,6 @@
   const locales = { fr: { title: 'Solitaire' } }
 </script>
 
-<style lang="postcss">
-  .catalog-item-viewer {
-    :global(& .tool-preview) {
-      @apply grid gap-6 p-6;
-      grid-auto-columns: minmax(75px, 300px);
-    }
-  }
-</style>
-
 <ToolBox name="Components/Catalog Item" layout="centered">
   <Tool
     name="No age nor time"
@@ -44,3 +35,12 @@
     </span>
   </Tool>
 </ToolBox>
+
+<style lang="postcss">
+  .catalog-item-viewer {
+    :global(& .tool-preview) {
+      @apply grid gap-6 p-6;
+      grid-auto-columns: minmax(75px, 300px);
+    }
+  }
+</style>

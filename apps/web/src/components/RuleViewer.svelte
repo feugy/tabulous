@@ -15,21 +15,6 @@
   }
 </script>
 
-<style lang="postcss">
-  section {
-    @apply flex flex-col flex-1 max-h-full max-w-full items-center gap-2 p-2;
-  }
-  .image-container {
-    @apply max-h-full overflow-hidden text-center;
-  }
-  img {
-    @apply inline-block max-h-full;
-  }
-  menu {
-    @apply flex gap-2 m-0 p-0 items-center;
-  }
-</style>
-
 <section>
   <menu>
     <Button
@@ -53,3 +38,18 @@
     {/if}
   </div>
 </section>
+
+<style lang="postcss">
+  section {
+    @apply flex flex-col flex-1 max-h-full max-w-full items-center gap-2 p-2;
+  }
+  .image-container {
+    @apply max-h-full overflow-hidden text-center;
+  }
+  img {
+    @apply inline-block max-h-full;
+  }
+  menu {
+    @apply flex gap-2 m-0 p-0 items-center;
+  }
+</style>

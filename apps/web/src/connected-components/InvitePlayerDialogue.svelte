@@ -57,12 +57,6 @@
   }
 </script>
 
-<style lang="postcss">
-  div {
-    @apply flex;
-  }
-</style>
-
 <Dialogue
   {title}
   {open}
@@ -89,3 +83,9 @@
     />
   </svelte:fragment>
 </Dialogue>
+
+<style lang="postcss">
+  div {
+    @apply flex;
+  }
+</style>

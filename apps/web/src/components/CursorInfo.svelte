@@ -30,6 +30,13 @@
   }
 </script>
 
+<svelte:body
+  on:pointermove={event => (position = event)}
+  on:pointerdown={event => (position = event)} />
+<menu style={`left: ${position?.x}px; top: ${position?.y}px`}>
+  <div class="halo" bind:this={halo} on:animationend={handleHaloEnd} />
+</menu>
+
 <style lang="postcss">
   menu {
     @apply absolute pointer-events-none m-0;
@@ -75,10 +82,3 @@
     }
   }
 </style>
-
-<svelte:body
-  on:pointermove={event => (position = event)}
-  on:pointerdown={event => (position = event)} />
-<menu style={`left: ${position?.x}px; top: ${position?.y}px`}>
-  <div class="halo" bind:this={halo} on:animationend={handleHaloEnd} />
-</menu>

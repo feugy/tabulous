@@ -31,6 +31,14 @@
   }
 </script>
 
+<svelte:window on:keydown={handleKey} />
+
+{#if open}
+  <figure class:open on:click={handleClose}>
+    <img src={mesh?.image} alt="" />
+  </figure>
+{/if}
+
 <style lang="postcss">
   figure {
     @apply invisible flex absolute z-10 inset-0 justify-center pointer-events-none py-[5%] px-0;
@@ -48,11 +56,3 @@
     @apply h-full w-auto opacity-0 transition-all duration-500 transform-gpu translate-y-10;
   }
 </style>
-
-<svelte:window on:keydown={handleKey} />
-
-{#if open}
-  <figure class:open on:click={handleClose}>
-    <img src={mesh?.image} alt="" />
-  </figure>
-{/if}

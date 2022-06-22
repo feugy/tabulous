@@ -24,6 +24,25 @@
   }
 </script>
 
+<div class="discussion">
+  <div class="messages" bind:this={messageContainer}>
+    {#each thread || [] as { playerId, text }}
+      <span class="from">{playerById.get(playerId)?.username ?? ''}</span><span
+        class="message">{text}</span
+      >
+    {/each}
+  </div>
+  <form on:submit|preventDefault={handleSend} on:keydown|stopPropagation>
+    <Input bind:value={text} />
+    <Button
+      type="submit"
+      disabled={text?.trim().length === 0}
+      title={$_('tooltips.send-message')}
+      icon="send"
+    />
+  </form>
+</div>
+
 <style lang="postcss">
   .discussion {
     @apply flex flex-col overflow-auto p-2 shadow-md justify-end h-full bg-$base-lighter;
@@ -46,22 +65,3 @@
     @apply flex gap-4 items-center;
   }
 </style>
-
-<div class="discussion">
-  <div class="messages" bind:this={messageContainer}>
-    {#each thread || [] as { playerId, text }}
-      <span class="from">{playerById.get(playerId)?.username ?? ''}</span><span
-        class="message">{text}</span
-      >
-    {/each}
-  </div>
-  <form on:submit|preventDefault={handleSend} on:keydown|stopPropagation>
-    <Input bind:value={text} />
-    <Button
-      type="submit"
-      disabled={text?.trim().length === 0}
-      title={$_('tooltips.send-message')}
-      icon="send"
-    />
-  </form>
-</div>

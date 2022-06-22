@@ -48,12 +48,6 @@
   }
 </script>
 
-<style lang="postcss">
-  .wrapper {
-    @apply relative inline-block flex-grow;
-  }
-</style>
-
 <span
   class="wrapper"
   bind:this={anchor}
@@ -90,3 +84,9 @@
     on:select={({ detail }) => (value = detail)}
   />
 </span>
+
+<style lang="postcss">
+  .wrapper {
+    @apply relative inline-block flex-grow;
+  }
+</style>

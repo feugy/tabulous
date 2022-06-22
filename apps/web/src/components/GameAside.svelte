@@ -47,21 +47,6 @@
   }
 </script>
 
-<style lang="postcss">
-  aside {
-    @apply bg-$base-lightest;
-  }
-
-  .content {
-    @apply flex flex-col h-full items-stretch;
-  }
-
-  .peers {
-    @apply grid flex-1 place-items-center grid-flow-col;
-    grid-template-rows: repeat(auto-fit, minmax(150px, 1fr));
-  }
-</style>
-
 <aside>
   <MinimizableSection
     placement="right"
@@ -102,3 +87,18 @@
     </div>
   </MinimizableSection>
 </aside>
+
+<style lang="postcss">
+  aside {
+    @apply bg-$base-lightest;
+  }
+
+  .content {
+    @apply flex flex-col h-full items-stretch;
+  }
+
+  .peers {
+    @apply grid flex-1 place-items-center grid-flow-col;
+    grid-template-rows: repeat(auto-fit, minmax(150px, 1fr));
+  }
+</style>

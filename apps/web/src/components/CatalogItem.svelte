@@ -9,6 +9,19 @@
   const dispatch = createEventDispatcher()
 </script>
 
+<article on:click={() => dispatch('click', game)}>
+  <img src="games/{game.name}/catalog/cover.webp" alt={title} />
+  <div class="content">
+    <caption>
+      <h3>{title}</h3>
+      <span class="characteristics">
+        {#if game.minTime}<span>{$_('labels.game-min-time', game)}</span>{/if}
+        {#if game.minAge}<span>{$_('labels.game-min-age', game)}</span>{/if}
+      </span>
+    </caption>
+  </div>
+</article>
+
 <style lang="postcss">
   article {
     @apply inline-grid h-64 shadow-md cursor-pointer flex-1 rounded 
@@ -43,16 +56,3 @@
     @apply flex w-full justify-around;
   }
 </style>
-
-<article on:click={() => dispatch('click', game)}>
-  <img src="games/{game.name}/catalog/cover.webp" alt={title} />
-  <div class="content">
-    <caption>
-      <h3>{title}</h3>
-      <span class="characteristics">
-        {#if game.minTime}<span>{$_('labels.game-min-time', game)}</span>{/if}
-        {#if game.minAge}<span>{$_('labels.game-min-age', game)}</span>{/if}
-      </span>
-    </caption>
-  </div>
-</article>

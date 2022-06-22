@@ -14,6 +14,21 @@
   }
 </script>
 
+<fieldset>
+  {#if placeholder}<legend class:has-value={!!value}>{placeholder}</legend>{/if}
+  <input
+    {...$$restProps}
+    bind:value
+    bind:this={ref}
+    on:focus
+    on:blur
+    on:input
+    on:keyup
+    on:keydown
+    on:keyup={handleKey}
+  />
+</fieldset>
+
 <style lang="postcss">
   fieldset {
     @apply relative flex-grow my-2;
@@ -39,18 +54,3 @@
     }
   }
 </style>
-
-<fieldset>
-  {#if placeholder}<legend class:has-value={!!value}>{placeholder}</legend>{/if}
-  <input
-    {...$$restProps}
-    bind:value
-    bind:this={ref}
-    on:focus
-    on:blur
-    on:input
-    on:keyup
-    on:keydown
-    on:keyup={handleKey}
-  />
-</fieldset>

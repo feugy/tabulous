@@ -20,6 +20,19 @@
   }
 </script>
 
+<article on:click={() => goto(`/game/${game.id}`)}>
+  <span class="title">
+    <h3>{game?.locales?.[$locale]?.title}</h3>
+    {#if owned}<Button secondary icon="delete" on:click={handleDelete} />{/if}
+  </span>
+  <span class="created">{$_('{ created, date, short-date }', game)}</span>
+  {#if !isSingle}
+    <span class="players"
+      >{$_('labels.peer-players', { names: peerNames.join(', ') })}</span
+    >
+  {/if}
+</article>
+
 <style lang="postcss">
   article {
     @apply inline-flex flex-col p-6 rounded shadow-md cursor-pointer 
@@ -38,16 +51,3 @@
     @apply text-xl flex-1;
   }
 </style>
-
-<article on:click={() => goto(`/game/${game.id}`)}>
-  <span class="title">
-    <h3>{game?.locales?.[$locale]?.title}</h3>
-    {#if owned}<Button secondary icon="delete" on:click={handleDelete} />{/if}
-  </span>
-  <span class="created">{$_('{ created, date, short-date }', game)}</span>
-  {#if !isSingle}
-    <span class="players"
-      >{$_('labels.peer-players', { names: peerNames.join(', ') })}</span
-    >
-  {/if}
-</article>

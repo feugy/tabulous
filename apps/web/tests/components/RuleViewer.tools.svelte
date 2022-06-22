@@ -3,6 +3,16 @@
   import { RuleViewer } from '../../src/components'
 </script>
 
+<div class="rule-viewer">
+  <Tool
+    component={RuleViewer}
+    name="Components/Rule Viewer"
+    props={{ game: 'splendor', lastPage: 3 }}
+    events={['change']}
+    layout="centered"
+  />
+</div>
+
 <style lang="postcss">
   .rule-viewer {
     @apply flex h-full overflow-auto;
@@ -13,13 +23,3 @@
     }
   }
 </style>
-
-<div class="rule-viewer">
-  <Tool
-    component={RuleViewer}
-    name="Components/Rule Viewer"
-    props={{ game: 'splendor', lastPage: 3 }}
-    events={['change']}
-    layout="centered"
-  />
-</div>

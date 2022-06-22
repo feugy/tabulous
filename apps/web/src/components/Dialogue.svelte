@@ -39,6 +39,29 @@
   }
 </script>
 
+<svelte:body on:keyup={handleKeyup} />
+<Portal>
+  <div class="filter" class:open />
+  <div class="backdrop" class:open on:click={close}>
+    {#if closable}
+      <span class="close-container">
+        <Button icon="close" on:click={close} />
+      </span>
+    {/if}
+    <article role="dialog" on:click|stopPropagation>
+      <Pane>
+        <header class="heading">{title}</header>
+        <div class="content">
+          <slot />
+        </div>
+        <footer>
+          <slot name="buttons" />
+        </footer>
+      </Pane>
+    </article>
+  </div>
+</Portal>
+
 <style lang="postcss">
   .backdrop,
   .filter {
@@ -80,26 +103,3 @@
     @apply mt-4 text-center;
   }
 </style>
-
-<svelte:body on:keyup={handleKeyup} />
-<Portal>
-  <div class="filter" class:open />
-  <div class="backdrop" class:open on:click={close}>
-    {#if closable}
-      <span class="close-container">
-        <Button icon="close" on:click={close} />
-      </span>
-    {/if}
-    <article role="dialog" on:click|stopPropagation>
-      <Pane>
-        <header class="heading">{title}</header>
-        <div class="content">
-          <slot />
-        </div>
-        <footer>
-          <slot name="buttons" />
-        </footer>
-      </Pane>
-    </article>
-  </div>
-</Portal>

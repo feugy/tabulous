@@ -4,6 +4,13 @@
   export let centered = false
 </script>
 
+<div
+  class:centered
+  style="top: {screenPosition.y}px; left: {screenPosition.x}px"
+>
+  {content}
+</div>
+
 <style lang="postcss">
   div {
     @apply absolute transform-gpu -translate-y-1/2 -translate-x-1
@@ -28,10 +35,3 @@
     }
   }
 </style>
-
-<div
-  class:centered
-  style="top: {screenPosition.y}px; left: {screenPosition.x}px"
->
-  {content}
-</div>

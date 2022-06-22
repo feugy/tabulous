@@ -73,31 +73,6 @@
   }
 </script>
 
-<style lang="postcss">
-  main,
-  .overlay {
-    @apply absolute inset-0 flex items-stretch overflow-hidden;
-  }
-
-  .interaction {
-    @apply select-none flex-1 relative;
-    touch-action: none;
-  }
-
-  canvas {
-    @apply absolute top-0 left-0 select-none h-full w-full;
-    touch-action: none;
-  }
-
-  aside.top {
-    @apply absolute z-10 top-0 left-0 p-2;
-  }
-
-  .overlay {
-    @apply flex items-center justify-center z-10;
-  }
-</style>
-
 <svelte:head>
   <title>{$_('page-titles.game')}</title>
 </svelte:head>
@@ -156,3 +131,28 @@
     on:sendMessage={({ detail }) => sendToThread(detail.text)}
   />
 </main>
+
+<style lang="postcss">
+  main,
+  .overlay {
+    @apply absolute inset-0 flex items-stretch overflow-hidden;
+  }
+
+  .interaction {
+    @apply select-none flex-1 relative;
+    touch-action: none;
+  }
+
+  canvas {
+    @apply absolute top-0 left-0 select-none h-full w-full;
+    touch-action: none;
+  }
+
+  aside.top {
+    @apply absolute z-10 top-0 left-0 p-2;
+  }
+
+  .overlay {
+    @apply flex items-center justify-center z-10;
+  }
+</style>

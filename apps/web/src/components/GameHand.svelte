@@ -22,6 +22,15 @@
   })
 </script>
 
+<aside class:highlight class:visible>
+  <MinimizableSection
+    placement="bottom"
+    tabs={[{ icon: 'front_hand', key: $_('shortcuts.hand') }]}
+    dimension="25vh"
+    {minimized}><div class="hand" bind:this={node} /></MinimizableSection
+  >
+</aside>
+
 <style lang="postcss">
   aside {
     @apply absolute inset-0 top-auto pointer-events-none hidden;
@@ -47,12 +56,3 @@
     @apply flex flex-col h-full items-stretch;
   }
 </style>
-
-<aside class:highlight class:visible>
-  <MinimizableSection
-    placement="bottom"
-    tabs={[{ icon: 'front_hand', key: $_('shortcuts.hand') }]}
-    dimension="25vh"
-    {minimized}><div class="hand" bind:this={node} /></MinimizableSection
-  >
-</aside>

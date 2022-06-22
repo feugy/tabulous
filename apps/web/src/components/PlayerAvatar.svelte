@@ -52,44 +52,6 @@
   }
 </script>
 
-<style lang="postcss">
-  figure {
-    @apply inline-flex relative items-center justify-center w-full h-full;
-
-    &.hasStream {
-      @apply overflow-hidden bg-black;
-    }
-  }
-
-  video {
-    @apply w-full;
-  }
-
-  img {
-    @apply rounded-full border-5 border-$primary-light bg-$primary-lightest;
-    width: 150px;
-    height: 150px;
-  }
-
-  figcaption {
-    @apply flex items-center justify-center p-4 rounded-full text-$primary-lightest bg-$base-dark m-4;
-    width: 150px;
-    height: 150px;
-  }
-
-  legend {
-    @apply absolute bottom-4 left-1/2 transform-gpu -translate-x-1/2 flex gap-2 z-10;
-
-    .muted {
-      @apply text-$accent-warm bg-$primary-lightest rounded-full p-2;
-    }
-  }
-
-  .host {
-    @apply absolute top-2 right-2 bg-$primary-lightest px-2 py-1 text-xs;
-  }
-</style>
-
 <figure class:hasStream>
   {#if hasStream}<video
       autoplay
@@ -133,3 +95,41 @@
     {/if}
   </legend>
 </figure>
+
+<style lang="postcss">
+  figure {
+    @apply inline-flex relative items-center justify-center w-full h-full;
+
+    &.hasStream {
+      @apply overflow-hidden bg-black;
+    }
+  }
+
+  video {
+    @apply w-full;
+  }
+
+  img {
+    @apply rounded-full border-5 border-$primary-light bg-$primary-lightest;
+    width: 150px;
+    height: 150px;
+  }
+
+  figcaption {
+    @apply flex items-center justify-center p-4 rounded-full text-$primary-lightest bg-$base-dark m-4;
+    width: 150px;
+    height: 150px;
+  }
+
+  legend {
+    @apply absolute bottom-4 left-1/2 transform-gpu -translate-x-1/2 flex gap-2 z-10;
+
+    .muted {
+      @apply text-$accent-warm bg-$primary-lightest rounded-full p-2;
+    }
+  }
+
+  .host {
+    @apply absolute top-2 right-2 bg-$primary-lightest px-2 py-1 text-xs;
+  }
+</style>

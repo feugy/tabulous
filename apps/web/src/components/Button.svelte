@@ -6,6 +6,20 @@
   export let ref = null
 </script>
 
+<button
+  {...$$restProps}
+  class:secondary
+  bind:this={ref}
+  on:click
+  on:pointerup
+  on:pointerdown
+  >{#if icon}<span class="material-icons">{icon}</span>{/if}{#if text}<span
+      class="text">{text}</span
+    >{/if}{#if badge != undefined}<span class="badge"
+      >{badge > 999 ? `+999` : badge}</span
+    >{/if}<slot /></button
+>
+
 <style lang="postcss">
   button {
     @apply py-2 px-4 inline-flex justify-center items-center rounded relative bg-$primary text-$primary-lightest 
@@ -50,17 +64,3 @@
            text-$disabled-dark -top-2 -left-2 min-w-6;
   }
 </style>
-
-<button
-  {...$$restProps}
-  class:secondary
-  bind:this={ref}
-  on:click
-  on:pointerup
-  on:pointerdown
-  >{#if icon}<span class="material-icons">{icon}</span>{/if}{#if text}<span
-      class="text">{text}</span
-    >{/if}{#if badge != undefined}<span class="badge"
-      >{badge > 999 ? `+999` : badge}</span
-    >{/if}<slot /></button
->

@@ -38,33 +38,6 @@
   }
 </script>
 
-<style lang="postcss">
-  main {
-    @apply flex flex-col h-full w-full;
-  }
-
-  h1 {
-    @apply text-3xl py-4;
-  }
-
-  h2 {
-    @apply text-2xl py-4 lg:w-3/4 lg:mx-auto;
-  }
-
-  div {
-    @apply flex-1 overflow-y-auto px-4 pb-4;
-  }
-
-  section {
-    @apply grid mx-auto my-8 gap-8 grid-cols-1 w-10/12;
-    @apply sm:grid-cols-3 lg:w-9/12 xl:w-7/12;
-  }
-
-  .no-games {
-    @apply italic;
-  }
-</style>
-
 <svelte:head>
   <title>{$_('page-titles.home')}</title>
 </svelte:head>
@@ -110,3 +83,30 @@
     on:close={handleDeletionClose}
   />
 {/if}
+
+<style lang="postcss">
+  main {
+    @apply flex flex-col h-full w-full;
+  }
+
+  h1 {
+    @apply text-3xl py-4;
+  }
+
+  h2 {
+    @apply text-2xl py-4 lg:w-3/4 lg:mx-auto;
+  }
+
+  div {
+    @apply flex-1 overflow-y-auto px-4 pb-4;
+  }
+
+  section {
+    @apply grid mx-auto my-8 gap-8 grid-cols-1 w-10/12;
+    @apply sm:grid-cols-3 lg:w-9/12 xl:w-7/12;
+  }
+
+  .no-games {
+    @apply italic;
+  }
+</style>

@@ -4,6 +4,16 @@
   export let outcome = ''
 </script>
 
+<div>
+  <span>{$_(`tooltips.${outcome}`)}: </span>
+  {#each actions as action}
+    <img
+      alt={$_(`tooltips.help-${action}`)}
+      src={`/images/help/${action}.webp`}
+    />
+  {/each}
+</div>
+
 <style lang="postcss">
   div {
     @apply inline-flex items-center;
@@ -25,13 +35,3 @@
     @apply flex-1 pl-2;
   }
 </style>
-
-<div>
-  <span>{$_(`tooltips.${outcome}`)}: </span>
-  {#each actions as action}
-    <img
-      alt={$_(`tooltips.help-${action}`)}
-      src={`/images/help/${action}.webp`}
-    />
-  {/each}
-</div>
