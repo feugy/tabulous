@@ -27,6 +27,13 @@ server {
 
   location / {
     root /home/tabulous/web;
-    index index.html;
+    try_files $uri @index;
+  }
+
+  location @index {
+    root /home/tabulous/web;
+    add_header Cache-Control no-cache;
+    expires 0;
+    try_files /index.html =404;
   }
 }
