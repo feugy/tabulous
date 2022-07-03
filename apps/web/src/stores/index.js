@@ -1,3 +1,4 @@
+export * from './configuration'
 export * from './catalog'
 export * from './discussion'
 export * from './fullscreen'

@@ -3,15 +3,16 @@ const conf = {
   testMatch: ['<rootDir>/tests/**/*.test.js'],
   testEnvironment: 'jsdom',
   transform: {
+    '^.+\\.svg$': '<rootDir>/tests/jest/svg.js',
     '^.+\\.js$': [
-      '<rootDir>/tests/js-transformer.js',
+      '<rootDir>/tests/jest/javascript.js',
       {
         presets: [['@babel/preset-env', { targets: { node: 'current' } }]]
       }
     ],
-    '^.+\\.graphql$': '<rootDir>/tests/graphql-transformer.cjs',
+    '^.+\\.graphql$': '<rootDir>/tests/jest/graphql.cjs',
     '^.+\\.svelte$': 'jest-transform-svelte',
-    '^.+\\.ya?ml$': '<rootDir>/tests/yaml-transformer.js'
+    '^.+\\.ya?ml$': '<rootDir>/tests/jest/yaml.js'
   },
   transformIgnorePatterns: [
     'node_modules\\/(?!@babylonjs|simple-peer-light|@atelier-wb|htm|svelte-portal)'
@@ -23,7 +24,7 @@ const conf = {
     '^\\$app(.*)$': '<rootDir>/.svelte-kit/runtime/app$1'
   },
   moduleFileExtensions: ['js', 'svelte', 'graphql'],
-  setupFilesAfterEnv: ['<rootDir>/tests/jest-setup.js'],
+  setupFilesAfterEnv: ['<rootDir>/tests/jest/setup.js'],
   watchPlugins: [
     'jest-watch-typeahead/filename',
     'jest-watch-typeahead/testname'

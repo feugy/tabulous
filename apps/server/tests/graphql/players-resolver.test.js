@@ -1,19 +1,23 @@
 import { faker } from '@faker-js/faker'
+import cookiePlugin from '@fastify/cookie'
 import { jest } from '@jest/globals'
 import fastify from 'fastify'
 import services from '../../src/services/index.js'
 import graphQL from '../../src/plugins/graphql.js'
-import { mockMethods } from '../test-utils.js'
+import { mockMethods, parseCookie, signToken } from '../test-utils.js'
+import { createVerifier } from 'fast-jwt'
 
 describe('given a started server', () => {
   let server
   let restoreServices
   const configuration = {
-    turn: { secret: faker.lorem.words() }
+    turn: { secret: faker.lorem.words() },
+    auth: { jwt: { key: faker.datatype.uuid() } }
   }
 
   beforeAll(async () => {
     server = fastify({ logger: false })
+    server.register(cookiePlugin)
     server.decorate('conf', configuration)
     server.register(graphQL)
     await server.listen()
@@ -31,13 +35,17 @@ describe('given a started server', () => {
     describe('logIn mutation', () => {
       it('logs user without authentication', async () => {
         const username = faker.name.firstName()
-        const password = faker.internet.password()
+        const password = 'ehfada'
         const turnCredentials = {
           username: faker.lorem.words(),
           credentials: faker.internet.password()
         }
         const id = faker.datatype.uuid()
-        services.logIn.mockResolvedValueOnce({ username, id, whatever: 'foo' })
+        services.connect.mockResolvedValueOnce({
+          username,
+          id,
+          whatever: 'foo'
+        })
         services.generateTurnCredentials.mockResolvedValueOnce(turnCredentials)
         const response = await server.inject({
           method: 'POST',
@@ -45,18 +53,37 @@ describe('given a started server', () => {
           payload: {
             query: `mutation { 
               logIn(username: "${username}", password: "${password}") { 
+                token
                 player { id username } 
                 turnCredentials { username credentials } 
               }
             }`
           }
         })
-        expect(response.json()).toEqual({
-          data: { logIn: { player: { id, username }, turnCredentials } }
-        })
         expect(response.statusCode).toEqual(200)
-        expect(services.logIn).toHaveBeenCalledWith(username, password)
-        expect(services.logIn).toHaveBeenCalledTimes(1)
+        expect(response.headers).toHaveProperty('set-cookie')
+        const cookie = parseCookie(response.headers['set-cookie'])
+        expect(cookie).toEqual({
+          token: expect.any(String),
+          Path: '/',
+          HttpOnly: true,
+          Secure: true,
+          SameSite: 'Strict'
+        })
+        expect(
+          createVerifier({ key: configuration.auth.jwt.key })(cookie.token)
+        ).toMatchObject({ id })
+        expect(response.json()).toEqual({
+          data: {
+            logIn: {
+              token: cookie.token,
+              player: { id, username },
+              turnCredentials
+            }
+          }
+        })
+        expect(services.connect).toHaveBeenCalledWith({ username })
+        expect(services.connect).toHaveBeenCalledTimes(1)
         expect(services.generateTurnCredentials).toHaveBeenCalledWith(
           configuration.turn.secret
         )
@@ -66,7 +93,6 @@ describe('given a started server', () => {
       it('does not generates turn credentials on authentication failure', async () => {
         const username = faker.name.firstName()
         const password = faker.internet.password()
-        services.logIn.mockResolvedValueOnce(null)
         const response = await server.inject({
           method: 'POST',
           url: 'graphql',
@@ -79,10 +105,12 @@ describe('given a started server', () => {
             }`
           }
         })
-        expect(response.json()).toEqual({ data: { logIn: null } })
+        expect(response.json()).toMatchObject({
+          data: { logIn: null },
+          errors: [{ message: 'forbidden' }]
+        })
         expect(response.statusCode).toEqual(200)
-        expect(services.logIn).toHaveBeenCalledWith(username, password)
-        expect(services.logIn).toHaveBeenCalledTimes(1)
+        expect(services.connect).not.toHaveBeenCalled()
         expect(services.generateTurnCredentials).not.toHaveBeenCalled()
       })
     })
@@ -96,20 +124,41 @@ describe('given a started server', () => {
           username,
           foo: 'bar'
         })
+        const turnCredentials = {
+          username: faker.lorem.words(),
+          credentials: faker.internet.password()
+        }
+        services.generateTurnCredentials.mockResolvedValueOnce(turnCredentials)
+        const token = signToken(id, configuration.auth.jwt.key)
         const response = await server.inject({
           method: 'POST',
           url: 'graphql',
-          headers: { authorization: `Bearer ${id}` },
+          headers: {
+            cookie: `token=${token}`
+          },
           payload: {
-            query: `query { getCurrentPlayer { id username } }`
+            query: `query {
+              getCurrentPlayer { 
+                token
+                player { id username }
+                turnCredentials { username credentials }
+              }
+            }`
           }
         })
         expect(response.json()).toEqual({
-          data: { getCurrentPlayer: { id, username } }
+          data: {
+            getCurrentPlayer: {
+              token,
+              player: { id, username },
+              turnCredentials
+            }
+          }
         })
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).toHaveBeenCalledWith(id)
         expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.generateTurnCredentials).toHaveBeenCalledTimes(1)
       })
 
       it('does not return current player without authentication details', async () => {
@@ -117,7 +166,7 @@ describe('given a started server', () => {
           method: 'POST',
           url: 'graphql',
           payload: {
-            query: `query { getCurrentPlayer { id username } }`
+            query: `query { getCurrentPlayer { player { id username } } }`
           }
         })
         expect(response.json()).toEqual({
@@ -134,9 +183,11 @@ describe('given a started server', () => {
         const response = await server.inject({
           method: 'POST',
           url: 'graphql',
-          headers: { authorization: `Bearer ${id}` },
+          headers: {
+            cookie: `token=${signToken(id, configuration.auth.jwt.key)}`
+          },
           payload: {
-            query: `query { getCurrentPlayer { id username } }`
+            query: `query { getCurrentPlayer { player { id username } } }`
           }
         })
         expect(response.json()).toEqual({
@@ -167,7 +218,12 @@ describe('given a started server', () => {
         const response = await server.inject({
           method: 'POST',
           url: 'graphql',
-          headers: { authorization: `Bearer ${players[0].id}` },
+          headers: {
+            cookie: `token=${signToken(
+              players[0].id,
+              configuration.auth.jwt.key
+            )}`
+          },
           payload: {
             query: `query { searchPlayers(search: "${search}") { id username } }`
           }
@@ -181,6 +237,21 @@ describe('given a started server', () => {
           players[0].id
         )
         expect(services.searchPlayers).toHaveBeenCalledTimes(1)
+      })
+    })
+
+    describe('logOut mutation', () => {
+      it('logs authenticated user', async () => {
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          payload: { query: `mutation { logOut }` }
+        })
+        expect(response.json()).toEqual({ data: { logOut: null } })
+        expect(response.statusCode).toEqual(200)
+        expect(response.headers['set-cookie']).toBe(
+          `token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT`
+        )
       })
     })
   })

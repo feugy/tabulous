@@ -8,6 +8,7 @@ const factory = {
     const originalProcess = transformer.process
     transformer.process = function (...args) {
       if (
+        args[1].endsWith('configuration.js') ||
         args[1].endsWith('game-manager.js') ||
         args[1].includes('.svelte-kit')
       ) {

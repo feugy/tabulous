@@ -1,4 +1,4 @@
-import { createHash } from 'crypto'
+import { randomUUID } from 'crypto'
 import repositories from '../repositories/index.js'
 
 /**
@@ -8,33 +8,28 @@ import repositories from '../repositories/index.js'
  * @property {boolean} playing - whether this player has currently joined an active game.
  */
 
-const masterPassword = hash('ehfada')
+/**
+ * @typedef {object} UserDetails details for a given user, as provided by authentication providers
+ * @property {string} username - player user name.
+ */
 
 /**
- * Logs a given user into Tabulous.
- * The password HAS TO match the expected value.
- * Unknown players will be created on the flight.
+ * Connects a given user into Tabulous, from any authentication provider.
+ * New players will be created on the fly.
  * @async
- * @param {string} username - the player's username.
- * @returns {Player|null} the authenticated player, or null if the passwords don't match.
+ * @param {UserDetails} userDetails - details provided by authentication provider.
+ * @returns {Player} the authenticated player.
  */
-export async function logIn(username, password) {
-  if (masterPassword !== hash(password)) {
-    return null
-  }
-  const player = await repositories.players.getByUsername(username)
+export async function connect(userDetails) {
+  const player = await repositories.players.getByUsername(userDetails?.username)
   if (!player) {
     return repositories.players.save({
-      id: `${Math.floor(Math.random() * 9000 + 1000)}`,
-      username,
+      ...userDetails,
+      id: randomUUID(),
       playing: false
     })
   }
   return player
-}
-
-function hash(value) {
-  return createHash('sha256').update(value).digest('hex')
 }
 
 /**

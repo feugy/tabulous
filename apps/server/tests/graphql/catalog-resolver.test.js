@@ -1,6 +1,8 @@
 import { faker } from '@faker-js/faker'
+import cookiePlugin from '@fastify/cookie'
 import { jest } from '@jest/globals'
 import fastify from 'fastify'
+import { signToken } from '../test-utils'
 
 // Note fully working, but gives an idea
 jest.unstable_mockModule('../../src/services/index.js', () => ({
@@ -16,11 +18,16 @@ describe('given a started server', () => {
   const player = { id: faker.datatype.uuid(), username: faker.name.firstName() }
   const items = [{ name: 'belote' }, { name: 'splendor' }, { name: 'klondike' }]
   const gamesPath = faker.system.directoryPath()
+  const configuration = {
+    games: { path: gamesPath },
+    auth: { jwt: { key: faker.datatype.uuid() } }
+  }
 
   beforeAll(async () => {
     const graphQL = await import('../../src/plugins/graphql.js')
     server = fastify({ logger: false })
-    server.decorate('conf', { games: { path: gamesPath } })
+    server.register(cookiePlugin)
+    server.decorate('conf', configuration)
     server.register(graphQL)
     await server.listen()
     services = (await import('../../src/services/index.js')).default
@@ -39,7 +46,9 @@ describe('given a started server', () => {
         const response = await server.inject({
           method: 'POST',
           url: 'graphql',
-          headers: { authorization: `Bearer ${player.id}` },
+          headers: {
+            cookie: `token=${signToken(player.id, configuration.auth.jwt.key)}`
+          },
           payload: { query: `{ listCatalog { name } }` }
         })
 
@@ -57,7 +66,9 @@ describe('given a started server', () => {
         const response = await server.inject({
           method: 'POST',
           url: 'graphql',
-          headers: { authorization: `Bearer ${player.id}` },
+          headers: {
+            cookie: `token=${signToken(player.id, configuration.auth.jwt.key)}`
+          },
           payload: {
             query: `{ listCatalog { name } }`
           }

@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker'
 import repositories from '../../src/repositories/index.js'
 import {
-  logIn,
+  connect,
   getPlayerById,
   searchPlayers,
   setPlaying
@@ -12,28 +12,21 @@ describe('given initialized repository', () => {
 
   afterAll(() => repositories.players.release())
 
-  describe('logIn()', () => {
-    it('authenticates player and returns details', async () => {
+  describe('connect()', () => {
+    it('creates new user', async () => {
       const username = faker.name.firstName()
-      expect(await logIn(username, 'ehfada')).toEqual({
+      const avatar = faker.internet.avatar()
+      expect(await connect({ username, avatar })).toEqual({
         id: expect.any(String),
         username,
+        avatar,
         playing: false
       })
     })
 
-    it('rejects invalid password', async () => {
-      const username = faker.name.firstName()
-      const password = faker.internet.password()
-      expect(await logIn(username, password)).toBeNull()
-    })
-
     it('returns the same object from the same credentials', async () => {
       const username = faker.name.firstName()
-      const password = 'ehfada'
-      expect(await logIn(username, password)).toEqual(
-        await logIn(username, password)
-      )
+      expect(await connect({ username })).toEqual(await connect({ username }))
     })
   })
 
@@ -48,7 +41,7 @@ describe('given initialized repository', () => {
 
     beforeAll(async () => {
       for (const [i, player] of players.entries()) {
-        players[i] = await logIn(player.username, 'ehfada')
+        players[i] = await connect(player)
       }
     })
 

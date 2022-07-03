@@ -1,9 +1,11 @@
 import { faker } from '@faker-js/faker'
+import cookiePlugin from '@fastify/cookie'
 import { jest } from '@jest/globals'
 import fastify from 'fastify'
 import {
   mockMethods,
   openGraphQLWebSocket,
+  signToken,
   startSubscription,
   stopSubscription,
   toGraphQLArg,
@@ -17,9 +19,14 @@ describe('given a started server', () => {
   let ws
   let restoreServices
   const playerId = faker.datatype.uuid()
+  const configuration = {
+    auth: { jwt: { key: faker.datatype.uuid() } }
+  }
 
   beforeAll(async () => {
     server = fastify({ logger: false })
+    server.decorate('conf', configuration)
+    server.register(cookiePlugin)
     server.register(graphQL)
     await server.listen()
     ws = await openGraphQLWebSocket(server)
@@ -77,14 +84,16 @@ describe('given a started server', () => {
           `subscription { awaitSignal(gameId: ${toGraphQLArg(
             gameId
           )}) { type from signal } }`,
-          peerId
+          signToken(peerId, configuration.auth.jwt.key)
         )
         const listPromise = waitOnMessage(ws)
 
         const response = await server.inject({
           method: 'POST',
           url: 'graphql',
-          headers: { authorization: `Bearer ${playerId}` },
+          headers: {
+            cookie: `token=${signToken(playerId, configuration.auth.jwt.key)}`
+          },
           payload: {
             query: `mutation { 
   sendSignal(signal: ${toGraphQLArg(data)}) {
@@ -125,7 +134,7 @@ describe('given a started server', () => {
           `subscription { awaitSignal(gameId: ${toGraphQLArg(
             gameId
           )}) { type from signal } }`,
-          playerId,
+          signToken(playerId, configuration.auth.jwt.key),
           subId
         )
         expect(services.setPlaying).toHaveBeenNthCalledWith(1, playerId, true)

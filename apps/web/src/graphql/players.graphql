@@ -3,21 +3,30 @@ fragment player on Player {
   username
 }
 
+fragment authentication on PlayerWithTurnCredentials {
+  token
+  player {
+    ...player
+  }
+  turnCredentials {
+    username
+    credentials
+  }
+}
+
 mutation logIn($username: String!, $password: String!) {
   logIn(username: $username, password: $password) {
-    player {
-      ...player
-    }
-    turnCredentials {
-      username
-      credentials
-    }
+    ...authentication
   }
+}
+
+mutation logOut {
+  logOut
 }
 
 query getCurrentPlayer {
   getCurrentPlayer {
-    ...player
+    ...authentication
   }
 }
 

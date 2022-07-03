@@ -9,10 +9,16 @@ actions:
   invite-player: Inviter un(e) joueur(se)
   leave-fullscreen: Quitter le plein-écran
   log-in: Entrer
+  log-in-github: Continuer avec Github
+  log-in-google: Continuer avec Google
+  log-in-others: Autres options
+  log-in-password: Continuer avec un mot de passe
   log-out: Quitter
   new-game: Nouveau
   quit-game: Quitter le jeu,
   show-indicators: Afficher les indicateurs
+errors:
+  login-failure: Pseudo ou mot de passe incorrect. Merci de réessayer.
 formats:
   date:
     short-date:

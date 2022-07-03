@@ -38,8 +38,9 @@ const validate = new Ajv({ allErrors: true }).compile({
     plugins: {
       properties: {
         graphql: {
-          properties: {
-            graphiql: { type: 'string', nullable: true }
+          optionalProperties: {
+            graphiql: { type: 'string', nullable: true },
+            allowedOrigin: { type: 'string' }
           }
         },
         static: {
@@ -53,6 +54,30 @@ const validate = new Ajv({ allErrors: true }).compile({
     turn: {
       properties: {
         secret: { type: 'string' }
+      }
+    },
+    auth: {
+      properties: {
+        jwt: {
+          properties: {
+            key: { type: 'string' }
+          }
+        },
+        domain: { type: 'string' }
+      },
+      optionalProperties: {
+        github: {
+          properties: {
+            id: { type: 'string' },
+            secret: { type: 'string' }
+          }
+        },
+        google: {
+          properties: {
+            id: { type: 'string' },
+            secret: { type: 'string' }
+          }
+        }
       }
     }
   }
@@ -78,6 +103,7 @@ function makeAbsolute(path) {
  * @property {object} plugins - options for all plugin used:
  * @property {import('../plugins/graphql').GraphQLOptions} plugins.graphql - options for the GraphQL plugin.
  * @property {import('../plugins/static').StaticOptions} plugins.static - options for the static files plugin.
+ * @property {import('../plugins/auth').AuthOptions} plugins.auth - options for the authentication plugin.
  * @see {@link https://nodejs.org/docs/latest-v16.x/api/net.html#net_server_listen_options_callback}
  * @see {@link https://nodejs.org/docs/latest-v16.x/api/tls.html#tls_tls_createsecurecontext_options}
  * @see {@link https://github.com/pinojs/pino/blob/master/docs/api.md#options}
@@ -94,7 +120,13 @@ function makeAbsolute(path) {
  * - NODE_ENV: 'production' indicates production mode.
  * - PORT: server listening port (must be a number). Defaults to 443 in production, and 3001 otherwise.
  * - WS_ENDPOINT: url of the web socket endpoint. Defaults to '/ws'.
- * - TURN_SECRET: secret used to generate turn credentials. Must be the same as coTURN static-auth-secret
+ * - JWT_KEY: key used to sign JWT sent to the client.
+ * - TURN_SECRET: secret used to generate turn credentials. Must be the same as coTURN static-auth-secret.
+ * - DOMAIN_URL: public facing domain (full url) for authentication redirections. Defaults to https://tabulous.fr in production, and https://localhost:3000 otherwise
+ * - GITHUB_ID: Optional Github OAuth application ID used to identify players.
+ * - GITHUB_SECRET: Optional Github OAuth application secret used to identify players.
+ * - GOOGLE_ID: Optional Google OAuth application ID used to identify players.
+ * - GOOGLE_SECRET: Optional Google OAuth application secret used to identify players.
  *
  * @returns {Configuration} the loaded configuration.
  * @throws {Error} when the provided environment variables do not match expected values.
@@ -109,10 +141,19 @@ export function loadConfiguration() {
     LOG_LEVEL,
     NODE_ENV,
     PORT,
-    TURN_SECRET
+    JWT_KEY,
+    TURN_SECRET,
+    DOMAIN_URL,
+    GITHUB_ID,
+    GITHUB_SECRET,
+    GOOGLE_ID,
+    GOOGLE_SECRET
   } = process.env
 
   const isProduction = /^\w*production\w*$/i.test(NODE_ENV)
+  const publicDomain = isProduction
+    ? 'https://tabulous.fr'
+    : 'https://localhost:3000'
 
   const configuration = {
     isProduction,
@@ -129,7 +170,10 @@ export function loadConfiguration() {
         : null,
     logger: { level: LOG_LEVEL ?? 'debug' },
     plugins: {
-      graphql: { graphiql: isProduction ? null : 'playground' },
+      graphql: {
+        graphiql: isProduction ? null : 'playground',
+        allowedOrigin: publicDomain
+      },
       static: {
         pathPrefix: '/games'
       }
@@ -142,7 +186,19 @@ export function loadConfiguration() {
     },
     turn: {
       secret: TURN_SECRET
+    },
+    auth: {
+      jwt: {
+        key: JWT_KEY ?? (isProduction ? undefined : 'dummy-test-key')
+      },
+      domain: DOMAIN_URL ?? publicDomain
     }
+  }
+  if (GITHUB_ID && GITHUB_SECRET) {
+    configuration.auth.github = { id: GITHUB_ID, secret: GITHUB_SECRET }
+  }
+  if (GOOGLE_ID && GOOGLE_SECRET) {
+    configuration.auth.google = { id: GOOGLE_ID, secret: GOOGLE_SECRET }
   }
   configuration.data.path = makeAbsolute(configuration.data.path)
   configuration.games.path = makeAbsolute(configuration.games.path)

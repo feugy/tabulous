@@ -1,10 +1,12 @@
 import { faker } from '@faker-js/faker'
+import cookiePlugin from '@fastify/cookie'
 import { jest } from '@jest/globals'
 import fastify from 'fastify'
 import { Subject } from 'rxjs'
 import {
   mockMethods,
   openGraphQLWebSocket,
+  signToken,
   startSubscription,
   stopSubscription,
   toGraphQLArg,
@@ -22,9 +24,14 @@ describe('given a started server', () => {
     { id: faker.datatype.uuid(), username: faker.name.firstName() },
     { id: faker.datatype.uuid(), username: faker.name.firstName() }
   ]
+  const configuration = {
+    auth: { jwt: { key: faker.datatype.uuid() } }
+  }
 
   beforeAll(async () => {
     server = fastify({ logger: false })
+    server.decorate('conf', configuration)
+    server.register(cookiePlugin)
     server.register(graphQL)
     await server.listen()
     ws = await openGraphQLWebSocket(server)
@@ -62,7 +69,9 @@ describe('given a started server', () => {
         const response = await server.inject({
           method: 'POST',
           url: 'graphql',
-          headers: { authorization: `Bearer ${playerId}` },
+          headers: {
+            cookie: `token=${signToken(playerId, configuration.auth.jwt.key)}`
+          },
           payload: {
             query: `{
   loadGame(gameId: "${game.id}") {
@@ -111,7 +120,9 @@ describe('given a started server', () => {
         const response = await server.inject({
           method: 'POST',
           url: 'graphql',
-          headers: { authorization: `Bearer ${playerId}` },
+          headers: {
+            cookie: `token=${signToken(playerId, configuration.auth.jwt.key)}`
+          },
           payload: {
             query: `mutation {
   createGame(kind: "${kind}") {
@@ -170,7 +181,9 @@ describe('given a started server', () => {
         const response = await server.inject({
           method: 'POST',
           url: 'graphql',
-          headers: { authorization: `Bearer ${playerId}` },
+          headers: {
+            cookie: `token=${signToken(playerId, configuration.auth.jwt.key)}`
+          },
           payload: {
             query: `mutation {
   saveGame(game: ${toGraphQLArg({ id: game.id, messages, meshes: [] })}) {
@@ -229,7 +242,9 @@ describe('given a started server', () => {
         const response = await server.inject({
           method: 'POST',
           url: 'graphql',
-          headers: { authorization: `Bearer ${playerId}` },
+          headers: {
+            cookie: `token=${signToken(playerId, configuration.auth.jwt.key)}`
+          },
           payload: {
             query: `mutation {
   invite(gameId: "${game.id}", playerId: "${peerId}") {
@@ -283,7 +298,9 @@ describe('given a started server', () => {
         const response = await server.inject({
           method: 'POST',
           url: 'graphql',
-          headers: { authorization: `Bearer ${playerId}` },
+          headers: {
+            cookie: `token=${signToken(playerId, configuration.auth.jwt.key)}`
+          },
           payload: {
             query: `mutation {
   deleteGame(gameId: "${game.id}") {
@@ -343,7 +360,7 @@ describe('given a started server', () => {
         const start = startSubscription(
           ws,
           'subscription { listGames { id created players { id username } } }',
-          playerId
+          signToken(playerId, configuration.auth.jwt.key)
         )
         const data = waitOnMessage(ws, data => data.type === 'data')
         await start
@@ -401,7 +418,7 @@ describe('given a started server', () => {
         const start = startSubscription(
           ws,
           'subscription { listGames { id created players { id username } } }',
-          playerId
+          signToken(playerId, configuration.auth.jwt.key)
         )
         const data = waitOnMessage(ws, data => data.type === 'data')
         await start
