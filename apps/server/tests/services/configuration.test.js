@@ -57,7 +57,10 @@ describe('loadConfiguration()', () => {
       logger: { level },
       https: { key, cert },
       plugins: {
-        graphql: { graphiql: 'playground' },
+        graphql: {
+          graphiql: 'playground',
+          allowedOrigin: 'https://localhost:3000'
+        },
         static: { path: gamesPath, pathPrefix: '/games' }
       },
       games: { path: gamesPath },
@@ -96,7 +99,7 @@ describe('loadConfiguration()', () => {
         key: 'keys/privkey.pem'
       },
       plugins: {
-        graphql: { graphiql: null },
+        graphql: { graphiql: null, allowedOrigin: 'https://tabulous.fr' },
         static: {
           path: resolve(cwd(), '..', 'games', 'assets'),
           pathPrefix: '/games'
@@ -134,7 +137,10 @@ describe('loadConfiguration()', () => {
         logger: { level: 'debug' },
         https: null,
         plugins: {
-          graphql: { graphiql: 'playground' },
+          graphql: {
+            graphiql: 'playground',
+            allowedOrigin: 'https://localhost:3000'
+          },
           static: {
             path: resolve(cwd(), '..', 'games', 'assets'),
             pathPrefix: '/games'

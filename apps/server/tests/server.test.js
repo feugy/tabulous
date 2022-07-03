@@ -99,7 +99,10 @@ describe('startServer()', () => {
       plugins: { static: { path: resolve(cwd(), 'games') } },
       data: { path: 'data' },
       games: { path: 'games' },
-      auth: { github: { id: 'github_client_id', secret: 'github_secret' } }
+      auth: {
+        jwt: { key: 'dummy-test-key' },
+        github: { id: 'github_client_id', secret: 'github_secret' }
+      }
     }
     app = await startServer(conf)
     expect(app.conf).toEqual(conf)
