@@ -10,16 +10,20 @@
     "test:dev": "NODE_OPTIONS=\"--experimental-vm-modules --no-warnings\" jest --watch"
   },
   "dependencies": {
+    "@fastify/cookie": "^7.0.0",
     "@fastify/static": "^6.4.0",
     "@fastify/websocket": "^6.0.1",
+    "@isaacs/ttlcache": "^1.0.5",
     "ajv": "^8.11.0",
     "deepmerge": "^4.2.2",
     "dotenv": "^16.0.1",
+    "fast-jwt": "^1.6.0",
     "fastify": "^4.1.0",
     "fastify-plugin": "^3.0.1",
     "mercurius": "^10.0.0",
     "pino-pretty": "^8.0.0",
-    "rxjs": "^7.5.2"
+    "rxjs": "^7.5.2",
+    "undici": "^5.5.1"
   },
   "devDependencies": {
     "@faker-js/faker": "^7.3.0",

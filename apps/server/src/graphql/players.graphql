@@ -10,15 +10,17 @@ type TurnCredentials {
 }
 
 type PlayerWithTurnCredentials {
+  token: String!
   player: Player!
   turnCredentials: TurnCredentials!
 }
 
 type Query {
-  getCurrentPlayer: Player
+  getCurrentPlayer: PlayerWithTurnCredentials
   searchPlayers(search: String!): [Player]
 }
 
 type Mutation {
   logIn(username: String!, password: String!): PlayerWithTurnCredentials
+  logOut: Boolean
 }

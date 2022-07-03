@@ -10,11 +10,12 @@ const logger = makeLogger('players')
 const storageKey = 'session'
 
 // we distinguish no value (undefined) and no player (null)
-const authenticationData$ = new BehaviorSubject()
+const session$ = new BehaviorSubject()
 
 if (browser) {
-  authenticationData$.subscribe(session => {
+  session$.subscribe(session => {
     const sessionData = sessionStorage.getItem(storageKey)
+    initGraphQLGlient(session?.token)
     // skip if we receiving the same player as before
     if (
       sessionData &&
@@ -26,11 +27,9 @@ if (browser) {
     if (session) {
       logger.info({ session }, `saving session`)
       sessionStorage.setItem(storageKey, JSON.stringify(session))
-      initGraphQLGlient(session.player)
     } else if (session === null) {
       logger.info(`clearing session storage`)
       sessionStorage.clear()
-      initGraphQLGlient()
     }
   })
 }
@@ -39,60 +38,47 @@ if (browser) {
  * Emits currently authenticated player.
  * @type {Observable<import('../graphql').Player>}
  */
-export const currentPlayer = authenticationData$.pipe(
-  map(data => data?.player ?? null)
-)
+export const currentPlayer = session$.pipe(map(data => data?.player ?? null))
 
 /**
  * Emits turn credentials obtained during authentication
  * @type {Observable<import('../graphql').TurnCredentials>}
  */
-export const turnCredentials = authenticationData$.pipe(
+export const turnCredentials = session$.pipe(
   map(data => data?.turnCredentials ?? null)
 )
 
 /**
- * Recovers previous session by reusing data from session storage.
+ * Recovers previous session by calling server (leverage http-only cookie).
  * @async
- * @returns {object|null} the authenticated player in case of success, or null.
+ * @returns {object|null} the recovered session in case of success, or null.
  */
 export async function recoverSession() {
-  let player = null
-  const sessionData = sessionStorage.getItem(storageKey)
-  if (sessionData) {
-    try {
-      logger.info({ sessionData }, `recovering previous session`)
-      const session = JSON.parse(sessionData)
-      initGraphQLGlient(session.player)
-      player = await runQuery(graphQL.getCurrentPlayer)
-      authenticationData$.next({ ...session, player })
-    } catch (error) {
-      logger.warn(
-        { error, playerData: sessionData },
-        `failed to recover session: ${error.message}`
-      )
-      await logOut()
-    }
-  } else {
+  let session = null
+  try {
+    logger.info(`recovering previous session`)
+    initGraphQLGlient()
+    session = await runQuery(graphQL.getCurrentPlayer)
+    session$.next(session)
+  } catch (error) {
+    logger.warn({ error }, `failed to recover session: ${error.message}`)
     await logOut()
   }
-  logger.info(
-    { session: authenticationData$.value },
-    `session recovery complete`
-  )
-  return player
+  logger.info({ session }, `session recovery complete`)
+  return session
 }
 
 /**
- * Logs a player in.
+ * Logs a player in with username/password method.
+ * Populates currentPlayer and turnCredentials stores.
  * @async
  * @param {string} username - username of the authenticating player.
  * @param {string} password - clear password.
- * @returns {object|null} the authenticated player object, if any.
+ * @throws {Error} when authentication was rejected
  */
 export async function logIn(username, password) {
-  initGraphQLGlient()
   let session = null
+  let authenticationError
   try {
     session = await runMutation(graphQL.logIn, { username, password })
     logger.info({ session }, `authenticating ${username}`)
@@ -101,9 +87,12 @@ export async function logIn(username, password) {
       { error },
       `failed to authenticate ${username}: ${error.message}`
     )
+    authenticationError = error
   }
-  authenticationData$.next(session)
-  return session?.player ?? null
+  session$.next(session)
+  if (authenticationError) {
+    throw authenticationError
+  }
 }
 
 /**
@@ -112,7 +101,8 @@ export async function logIn(username, password) {
  */
 export async function logOut() {
   logger.info(`logging out`)
-  authenticationData$.next(null)
+  await runMutation(graphQL.logOut)
+  session$.next(null)
   goto('/login')
 }
 

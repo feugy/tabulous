@@ -14,19 +14,16 @@ const logger = makeLogger('graphql')
 let client
 
 /**
- * Configures GraphQL client, potentially for current player
- * @param {object} player - current player, if available, containing:
- * @param {string}  player.id - player id
- * // TODO url
+ * Configures GraphQL client.
+ * Must be called prior to any graphql query, mutation or subscription.
+ * @param {string} bearer - data used for authenticating graphQL subscriptions
  */
-export function initGraphQLGlient(player) {
-  const headers = {}
+export function initGraphQLGlient(bearer) {
   const exchanges = [...defaultExchanges]
-  if (player) {
-    headers.authorization = `Bearer ${player.id}`
+  if (bearer) {
     const wsClient = new createWSClient({
       url: `${location.origin.replace('http', 'ws')}/graphql`,
-      connectionParams: { bearer: player.id }
+      connectionParams: { bearer }
     })
     exchanges.push(
       subscriptionExchange({
@@ -39,20 +36,19 @@ export function initGraphQLGlient(player) {
     )
   }
 
-  logger.info({ player }, 'initialize GraphQL client')
-  client = createClient({
-    url: '/graphql',
-    fetchOptions: () => ({ headers }),
-    maskTypename: true,
-    exchanges
-  })
+  logger.info({ bearer }, 'initialize GraphQL client')
+  client = createClient({ url: '/graphql', maskTypename: true, exchanges })
 }
 
 export async function runMutation(query, variables) {
   if (!client) throw new Error('Client is not initialized yet')
   logger.info({ query, variables }, 'run graphQL mutation')
-  const { data } = await client.mutation(query, variables).toPromise()
-  logger.info({ query, variables, data }, 'receiving graphQL mutation results')
+  const { data, error } = await client.mutation(query, variables).toPromise()
+  logger.info(
+    { query, variables, data, error },
+    'receiving graphQL mutation results'
+  )
+  processErrors(error)
   const keys = Object.keys(data || {})
   return keys.length !== 1 ? data : data[keys[0]]
 }
@@ -60,7 +56,7 @@ export async function runMutation(query, variables) {
 export async function runQuery(query, variables, cache = true) {
   if (!client) throw new Error('Client is not initialized yet')
   logger.info({ query, variables, cache }, 'run graphQL query')
-  const { data } = await client
+  const { data, error } = await client
     .query(
       query,
       variables,
@@ -68,9 +64,10 @@ export async function runQuery(query, variables, cache = true) {
     )
     .toPromise()
   logger.info(
-    { query, variables, cache, data },
+    { query, variables, cache, data, error },
     'receiving graphQL query results'
   )
+  processErrors(error)
   const keys = Object.keys(data || {})
   return keys.length !== 1 ? data : data[keys[0]]
 }
@@ -102,4 +99,13 @@ export function runSubscription(subscription, variables) {
       return keys.length !== 1 ? data : data[keys[0]]
     })
   )
+}
+
+function processErrors(combinedError) {
+  if (combinedError?.networkError) {
+    throw new Error(combinedError.networkError)
+  }
+  if (combinedError?.graphQLErrors) {
+    throw new Error(combinedError.graphQLErrors[0].message)
+  }
 }

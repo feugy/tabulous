@@ -1,6 +1,7 @@
 <script>
   import { Tool, ToolBox } from '@atelier-wb/svelte'
   import { Button } from '../../src/components'
+  import GithubLogo from '../../public/images/github-logo.svg'
 </script>
 
 <ToolBox
@@ -14,7 +15,22 @@
     name="Primary with text and icon"
     props={{ text: 'Hello!', icon: 'emoji_people' }}
   />
+  <Tool
+    name="Primary with text and image icon"
+    props={{ text: 'Hello!' }}
+    let:props
+    let:handleEvent
+  >
+    <Button {...props} on:click={handleEvent}>
+      <GithubLogo slot="icon" /></Button
+    >
+  </Tool>
   <Tool name="Primary with icon only" props={{ icon: 'videogame_asset' }} />
+  <Tool name="Primary image icon only" let:handleEvent>
+    <Button on:click={handleEvent}>
+      <GithubLogo slot="icon" /></Button
+    >
+  </Tool>
   <Tool name="Primary with text" props={{ text: 'Hello!' }} />
   <Tool
     name="Secondary with text and icon"

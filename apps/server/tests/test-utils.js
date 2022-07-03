@@ -1,4 +1,5 @@
 import { jest } from '@jest/globals'
+import { createSigner } from 'fast-jwt'
 import WebSocket from 'ws'
 
 /**
@@ -97,4 +98,28 @@ export function mockMethods(object) {
  */
 export function cloneAsJSON(object) {
   return JSON.parse(JSON.stringify(object))
+}
+
+/**
+ * Simple utility to parse cookie into a plain object.
+ * @param {string} cookieString - set-cookie content as a string.
+ * @returns {object} the parsed object.
+ */
+export function parseCookie(cookieString) {
+  const cookie = {}
+  for (const part of cookieString.split(';')) {
+    const [name, value] = part.split('=')
+    cookie[name.trim()] = value ? decodeURIComponent(value.trim()) : true
+  }
+  return cookie
+}
+
+/**
+ * For testing purposes, signs a player id in a valid JWT.
+ * @param {string} playerId - signed player id.
+ * @param {string} key - key used to sign the token.
+ * @returns {string} jwt that can be used as a token.
+ */
+export function signToken(playerId, key) {
+  return createSigner({ key })({ id: playerId })
 }

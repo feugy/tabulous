@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom'
 import crypto from 'crypto'
 import 'whatwg-fetch'
-import '../src/common'
-import { init } from '../.svelte-kit/runtime/client/singletons'
+import '../../src/common'
+import { init } from '../../.svelte-kit/runtime/client/singletons'
 // Babylon.js side effect imports
 import '@babylonjs/core/Materials/standardMaterial'
 

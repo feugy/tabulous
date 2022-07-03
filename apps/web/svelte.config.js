@@ -3,6 +3,7 @@ import graphql from '@rollup/plugin-graphql'
 import yaml from '@rollup/plugin-yaml'
 import adapter from '@sveltejs/adapter-static'
 import windi from 'vite-plugin-windicss'
+import { svelteSVG } from 'rollup-plugin-svelte-svg'
 
 // This file is used by
 // - jest-transform-svelte
@@ -23,8 +24,10 @@ const config = {
       default: false
     },
     vite: {
+      envPrefix: 'WEB_',
       plugins: [
         windi(),
+        svelteSVG({ enforce: 'pre' }),
         yaml(),
         graphql(),
         atelier({
@@ -52,6 +55,9 @@ const config = {
           '/graphql': {
             target: 'http://localhost:3001',
             ws: true
+          },
+          '^/auth/?': {
+            target: 'http://localhost:3001'
           },
           '^/graphql/?': {
             target: 'http://localhost:3001'

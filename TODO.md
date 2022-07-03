@@ -1,5 +1,17 @@
 # TODO
 
+Roadmap
+
+- server: game ownership
+- server: catalog query with and without own games
+- games: generic card game
+- web: publicly accessible catalog
+- lawyer council
+- web: terms & condition
+- web: cookie policy
+- server + web: first log-in with T&C
+- games: public games
+
 ## Brittle tests
 
 - `InputManager › given an initialized manager() › handles multiple pointers taps`
@@ -33,28 +45,26 @@
 
 - bug: ICE failed message when peer reload their browser??
 - bug: attached, unselected, mesh are not ignored during dragging
+- bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
 
 - per-player default camera position & configurable player position at game level
 - distribute multiple meshes to players'hand
 - zoom in/out on rules
 - shortcuts cheatsheet
 - peer notifications: joining, joined, left, error (stop waiting when navigating away)
-- create account (password)
-- invite to game
-- bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
 - hand support for quantifiable behavior
 - put/draw under
 - fullscreen and default key (F11)
 
 ## Server
 
-- use JWT as authentication token (stores player id and username)
 - allows a single connection per player (discards other JWTs)
 - logging (warning on invalid descriptors)
 - better coTURN integration (password management and rotation)
 
 ## Hosting
 
+- host UI on vercel, server on OVH
 - where to store secrets?
 - deploy in a folder named after the commit SHA
 - use symlink to switch between deployments (including conf files)

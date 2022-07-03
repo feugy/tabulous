@@ -13,8 +13,9 @@
   on:click
   on:pointerup
   on:pointerdown
-  >{#if icon}<span class="material-icons">{icon}</span>{/if}{#if text}<span
-      class="text">{text}</span
+  >{#if icon}<span class="material-icons">{icon}</span
+    >{:else if $$slots.icon}<span class="icon"><slot name="icon" /></span
+    >{/if}{#if text}<span class="text">{text}</span
     >{/if}{#if badge != undefined}<span class="badge"
       >{badge > 999 ? `+999` : badge}</span
     >{/if}<slot /></button
@@ -51,11 +52,15 @@
     }
   }
 
-  .material-icons {
+  .material-icons,
+  .icon {
     @apply -mx-2;
     & + .text {
       @apply ml-4;
     }
+  }
+  .icon:not(:last-child) {
+    @apply -ml-1;
   }
 
   .badge {
