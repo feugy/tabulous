@@ -20,11 +20,10 @@ tar --create --file ../../../dist/web.tar.gz -z *
 cd ../../..
 
 # build server
-cd apps/server
-rm -rf dist
 rm -rf node_modules
-npm install --production --no-package-lock
-tar --create --file ../../dist/server.tar.gz -z node_modules/ src/ package.json 
+npm ci --production -w @tabulous/server
+cd apps/server
+tar --create --file ../../dist/server.tar.gz -z ../../node_modules/ src/ package.json 
 cd ../..
 
 # build games
