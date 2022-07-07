@@ -1,5 +1,3 @@
-export const restricted = true
-export const rulesBookPageCount = 4
 export function build() {
   return {
     meshes: [],
@@ -7,3 +5,7 @@ export function build() {
     slots: []
   }
 }
+
+export const rulesBookPageCount = 4
+
+export const copyright = { authors: [{ name: 'Marc André' }] }

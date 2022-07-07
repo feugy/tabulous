@@ -17,3 +17,19 @@ export function isAuthenticated(resolver) {
     return resolver(obj, args, context)
   }
 }
+
+/**
+ * Wraps a graphQL resolver with a function checking `isAdmin` property of the player in graphQL context.
+ * The wrapped function can be registered as a graphQL resolver.
+ * It will throws an 403 error when current player is not an admin.
+ * @param {function} resolver - graphQL resolver function
+ * @returns {function} the wrapped graphQL resolver function
+ */
+export function isAdmin(resolver) {
+  return isAuthenticated((obj, args, context) => {
+    if (!context.player.isAdmin) {
+      throw new ErrorWithProps('Forbidden', { code: 403 })
+    }
+    return resolver(obj, args, context)
+  })
+}

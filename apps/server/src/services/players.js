@@ -6,6 +6,8 @@ import repositories from '../repositories/index.js'
  * @property {string} id - unique id.
  * @property {string} username - player user name.
  * @property {boolean} playing - whether this player has currently joined an active game.
+ * @property {boolean} [isAdmin] - whether this player has elevated priviledges or not.
+ * @property {string[]} [catalog] - list of copyrighted games this player has accessed to.
  */
 
 /**
