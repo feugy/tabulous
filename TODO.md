@@ -2,7 +2,6 @@
 
 Roadmap
 
-- server: game ownership
 - server: catalog query with and without own games
 - games: generic card game
 - web: publicly accessible catalog

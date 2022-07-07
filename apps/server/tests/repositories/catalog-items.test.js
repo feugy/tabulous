@@ -5,6 +5,13 @@ import { catalogItems } from '../../src/repositories/catalog-items.js'
 describe('Catalog Items repository', () => {
   const items = [
     {
+      name: '6-takes',
+      build: expect.any(Function),
+      copyright: {
+        authors: [{ name: 'Wolfgang Kramer' }]
+      }
+    },
+    {
       name: 'belote',
       build: expect.any(Function),
       addPlayer: expect.any(Function),
@@ -13,9 +20,11 @@ describe('Catalog Items repository', () => {
     { name: 'klondike', build: expect.any(Function) },
     {
       name: 'splendor',
-      restricted: true,
       rulesBookPageCount: 4,
-      build: expect.any(Function)
+      build: expect.any(Function),
+      copyright: {
+        authors: [{ name: 'Marc André' }]
+      }
     }
   ]
 
@@ -62,7 +71,7 @@ describe('Catalog Items repository', () => {
       describe('list()', () => {
         it('lists all items within folder', async () => {
           expect(await catalogItems.list()).toEqual({
-            total: 3,
+            total: 4,
             from: 0,
             size: Number.POSITIVE_INFINITY,
             results: items

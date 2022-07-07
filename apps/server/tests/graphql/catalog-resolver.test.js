@@ -8,7 +8,9 @@ import { signToken } from '../test-utils'
 jest.unstable_mockModule('../../src/services/index.js', () => ({
   default: {
     getPlayerById: jest.fn(),
-    listCatalog: jest.fn()
+    listCatalog: jest.fn(),
+    grantAccess: jest.fn(),
+    revokeAccess: jest.fn()
   }
 }))
 
@@ -16,6 +18,11 @@ describe('given a started server', () => {
   let server
   let services
   const player = { id: faker.datatype.uuid(), username: faker.name.firstName() }
+  const admin = {
+    id: faker.datatype.uuid(),
+    username: faker.name.firstName(),
+    isAdmin: true
+  }
   const items = [{ name: 'belote' }, { name: 'splendor' }, { name: 'klondike' }]
   const gamesPath = faker.system.directoryPath()
   const configuration = {
@@ -82,6 +89,226 @@ describe('given a started server', () => {
         expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
         expect(services.getPlayerById).toHaveBeenCalledTimes(1)
         expect(services.listCatalog).not.toHaveBeenCalled()
+      })
+    })
+
+    describe('grantAccess mutation', () => {
+      it('returns true for granted player', async () => {
+        services.getPlayerById.mockResolvedValueOnce(admin)
+        services.grantAccess.mockResolvedValueOnce(player)
+
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            cookie: `token=${signToken(admin.id, configuration.auth.jwt.key)}`
+          },
+          payload: {
+            query: `mutation { 
+              grantAccess(playerId: "${player.id}", itemName: "${items[0].name}")
+            }`
+          }
+        })
+
+        expect(response.json()).toEqual({ data: { grantAccess: true } })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(1, admin.id)
+        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.grantAccess).toHaveBeenCalledWith(
+          player.id,
+          items[0].name
+        )
+        expect(services.grantAccess).toHaveBeenCalledTimes(1)
+      })
+
+      it('returns false when no item were granted', async () => {
+        services.getPlayerById.mockResolvedValueOnce(admin)
+        services.grantAccess.mockResolvedValueOnce(null)
+
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            cookie: `token=${signToken(admin.id, configuration.auth.jwt.key)}`
+          },
+          payload: {
+            query: `mutation { 
+              grantAccess(playerId: "${player.id}", itemName: "${items[0].name}")
+            }`
+          }
+        })
+
+        expect(response.json()).toEqual({ data: { grantAccess: false } })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(1, admin.id)
+        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.grantAccess).toHaveBeenCalledWith(
+          player.id,
+          items[0].name
+        )
+        expect(services.grantAccess).toHaveBeenCalledTimes(1)
+      })
+
+      it('denies anonymous access', async () => {
+        services.getPlayerById.mockResolvedValueOnce(null)
+
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            cookie: `token=${signToken(player.id, configuration.auth.jwt.key)}`
+          },
+          payload: {
+            query: `mutation { 
+              grantAccess(playerId: "${admin.id}", itemName: "${items[0].name}")
+            }`
+          }
+        })
+
+        expect(response.json()).toEqual({
+          data: { grantAccess: null },
+          errors: [expect.objectContaining({ message: 'Unauthorized' })]
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
+        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.grantAccess).not.toHaveBeenCalled()
+      })
+
+      it('denies un-priviledge access', async () => {
+        services.getPlayerById.mockResolvedValueOnce(player)
+
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            cookie: `token=${signToken(player.id, configuration.auth.jwt.key)}`
+          },
+          payload: {
+            query: `mutation { 
+              grantAccess(playerId: "${admin.id}", itemName: "${items[0].name}")
+            }`
+          }
+        })
+
+        expect(response.json()).toEqual({
+          data: { grantAccess: null },
+          errors: [expect.objectContaining({ message: 'Forbidden' })]
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
+        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.grantAccess).not.toHaveBeenCalled()
+      })
+    })
+
+    describe('revokeAccess mutation', () => {
+      it('returns true for revoked access', async () => {
+        services.getPlayerById.mockResolvedValueOnce(admin)
+        services.revokeAccess.mockResolvedValueOnce(player)
+
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            cookie: `token=${signToken(admin.id, configuration.auth.jwt.key)}`
+          },
+          payload: {
+            query: `mutation { 
+              revokeAccess(playerId: "${player.id}", itemName: "${items[0].name}")
+            }`
+          }
+        })
+
+        expect(response.json()).toEqual({ data: { revokeAccess: true } })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(1, admin.id)
+        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.revokeAccess).toHaveBeenCalledWith(
+          player.id,
+          items[0].name
+        )
+        expect(services.revokeAccess).toHaveBeenCalledTimes(1)
+      })
+
+      it('returns no items when no item were revoke', async () => {
+        services.getPlayerById.mockResolvedValueOnce(admin)
+        services.revokeAccess.mockResolvedValueOnce(null)
+
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            cookie: `token=${signToken(admin.id, configuration.auth.jwt.key)}`
+          },
+          payload: {
+            query: `mutation { 
+              revokeAccess(playerId: "${player.id}", itemName: "${items[0].name}")
+            }`
+          }
+        })
+
+        expect(response.json()).toEqual({ data: { revokeAccess: false } })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(1, admin.id)
+        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.revokeAccess).toHaveBeenCalledWith(
+          player.id,
+          items[0].name
+        )
+        expect(services.revokeAccess).toHaveBeenCalledTimes(1)
+      })
+
+      it('denies anonymous access', async () => {
+        services.getPlayerById.mockResolvedValueOnce(null)
+
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            cookie: `token=${signToken(player.id, configuration.auth.jwt.key)}`
+          },
+          payload: {
+            query: `mutation { 
+              revokeAccess(playerId: "${admin.id}", itemName: "${items[0].name}")
+            }`
+          }
+        })
+
+        expect(response.json()).toEqual({
+          data: { revokeAccess: null },
+          errors: [expect.objectContaining({ message: 'Unauthorized' })]
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
+        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.revokeAccess).not.toHaveBeenCalled()
+      })
+
+      it('denies un-priviledge access', async () => {
+        services.getPlayerById.mockResolvedValueOnce(player)
+
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            cookie: `token=${signToken(player.id, configuration.auth.jwt.key)}`
+          },
+          payload: {
+            query: `mutation { 
+              revokeAccess(playerId: "${admin.id}", itemName: "${items[0].name}")
+            }`
+          }
+        })
+
+        expect(response.json()).toEqual({
+          data: { revokeAccess: null },
+          errors: [expect.objectContaining({ message: 'Forbidden' })]
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
+        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.revokeAccess).not.toHaveBeenCalled()
       })
     })
   })

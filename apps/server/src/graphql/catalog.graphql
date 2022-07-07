@@ -1,6 +1,7 @@
 type CatalogItem {
   name: ID!
   locales: ItemLocales!
+  copyright: Copyright
   # minimum age in years
   minAge: Int
   # minimum time in minutes
@@ -15,6 +16,21 @@ type ItemLocale {
   title: String!
 }
 
+type Copyright {
+  authors: [GameAuthor]!
+  designers: [GameAuthor]
+  publishers: [GameAuthor]
+}
+
+type GameAuthor {
+  name: String!
+}
+
 extend type Query {
   listCatalog: [CatalogItem]
+}
+
+extend type Mutation {
+  grantAccess(playerId: ID!, itemName: ID!): Boolean
+  revokeAccess(playerId: ID!, itemName: ID!): Boolean
 }
