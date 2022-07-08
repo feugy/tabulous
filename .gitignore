@@ -11,4 +11,5 @@ scans/
 .eslintcache
 debug.txt
 .env
+.env.*
 .svelte-kit

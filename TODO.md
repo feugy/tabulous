@@ -2,6 +2,7 @@
 
 Roadmap
 
+- cli: administrative operations (tests)
 - server: catalog query with and without own games
 - games: generic card game
 - web: publicly accessible catalog
