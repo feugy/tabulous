@@ -149,8 +149,11 @@ Because such configuration should not be commited on Github, it is stored in an 
   - add `export NODE_ENV=production` at the end
   - save and reload: `source ~/.bashrc`
 
+- generate some random secret value (save it somewhere): `openssl rand -base64 32`
 - edit configuration file: `vi ~/server/.env`
 
+  - add `NODE_ENV=production`
+  - add `JWT_KEY=[SECRET]` with the secret you just generated
   - add `TURN_SECRET=[SECRET]` with the same secret value as coTURN's `static-auth-secret`
 
 ## Maintenance
