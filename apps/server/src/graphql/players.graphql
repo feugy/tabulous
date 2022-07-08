@@ -17,7 +17,7 @@ type PlayerWithTurnCredentials {
 
 type Query {
   getCurrentPlayer: PlayerWithTurnCredentials
-  searchPlayers(search: String!): [Player]
+  searchPlayers(search: String!, includeCurrent: Boolean): [Player]
 }
 
 type Mutation {

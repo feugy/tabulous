@@ -234,7 +234,8 @@ describe('given a started server', () => {
         expect(response.statusCode).toEqual(200)
         expect(services.searchPlayers).toHaveBeenCalledWith(
           search,
-          players[0].id
+          players[0].id,
+          true
         )
         expect(services.searchPlayers).toHaveBeenCalledTimes(1)
       })
