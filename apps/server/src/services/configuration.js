@@ -134,38 +134,38 @@ function makeAbsolute(path) {
 export function loadConfiguration() {
   const {
     DATA_PATH,
-    GAMES_PATH,
-    HOST,
-    HTTPS_CERT,
-    HTTPS_KEY,
-    LOG_LEVEL,
-    NODE_ENV,
-    PORT,
-    JWT_KEY,
-    TURN_SECRET,
     DOMAIN_URL,
+    GAMES_PATH,
     GITHUB_ID,
     GITHUB_SECRET,
     GOOGLE_ID,
-    GOOGLE_SECRET
+    GOOGLE_SECRET,
+    HOST,
+    HTTPS_CERT,
+    HTTPS_KEY,
+    JWT_KEY,
+    LOG_LEVEL,
+    NODE_ENV,
+    PORT,
+    TURN_SECRET
   } = process.env
 
   const isProduction = /^\w*production\w*$/i.test(NODE_ENV)
-  const publicDomain = isProduction
-    ? 'https://tabulous.fr'
-    : 'https://localhost:3000'
+  const publicDomain =
+    DOMAIN_URL ??
+    (isProduction ? 'https://www.tabulous.fr' : 'https://localhost:3000')
 
   const configuration = {
     isProduction,
     serverUrl: {
       host: HOST ?? (isProduction ? '0.0.0.0' : undefined),
-      port: PORT ? Number(PORT) : isProduction ? 443 : 3001
+      port: PORT ? Number(PORT) : 3001
     },
     https:
-      (HTTPS_KEY && HTTPS_CERT) || isProduction
+      HTTPS_KEY && HTTPS_CERT
         ? {
-            key: HTTPS_KEY ?? join('keys', 'privkey.pem'),
-            cert: HTTPS_CERT ?? join('keys', 'cert.pem')
+            key: HTTPS_KEY,
+            cert: HTTPS_CERT
           }
         : null,
     logger: { level: LOG_LEVEL ?? 'debug' },
@@ -191,7 +191,7 @@ export function loadConfiguration() {
       jwt: {
         key: JWT_KEY ?? (isProduction ? undefined : 'dummy-test-key')
       },
-      domain: DOMAIN_URL ?? publicDomain
+      domain: publicDomain
     }
   }
   if (GITHUB_ID && GITHUB_SECRET) {

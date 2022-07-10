@@ -35,20 +35,20 @@ describe('loadConfiguration()', () => {
 
     process.env = {
       ...process.env,
-      PORT: port,
-      HOST: host,
-      LOG_LEVEL: level,
-      GAMES_PATH: gamesPath,
       DATA_PATH: dataPath,
-      HTTPS_CERT: cert,
-      HTTPS_KEY: key,
-      TURN_SECRET: turnSecret,
-      JWT_KEY: jwtKey,
+      DOMAIN_URL: domain,
+      GAMES_PATH: gamesPath,
       GITHUB_ID: githubId,
       GITHUB_SECRET: githubSecret,
       GOOGLE_ID: googleId,
       GOOGLE_SECRET: googleSecret,
-      DOMAIN_URL: domain
+      HOST: host,
+      HTTPS_CERT: cert,
+      HTTPS_KEY: key,
+      JWT_KEY: jwtKey,
+      LOG_LEVEL: level,
+      PORT: port,
+      TURN_SECRET: turnSecret
     }
 
     expect(loadConfiguration()).toEqual({
@@ -59,7 +59,7 @@ describe('loadConfiguration()', () => {
       plugins: {
         graphql: {
           graphiql: 'playground',
-          allowedOrigin: 'https://localhost:3000'
+          allowedOrigin: domain
         },
         static: { path: gamesPath, pathPrefix: '/games' }
       },
@@ -91,15 +91,12 @@ describe('loadConfiguration()', () => {
       isProduction: true,
       serverUrl: {
         host: '0.0.0.0',
-        port: 443
+        port: 3001
       },
       logger: { level: 'debug' },
-      https: {
-        cert: 'keys/cert.pem',
-        key: 'keys/privkey.pem'
-      },
+      https: null,
       plugins: {
-        graphql: { graphiql: null, allowedOrigin: 'https://tabulous.fr' },
+        graphql: { graphiql: null, allowedOrigin: 'https://www.tabulous.fr' },
         static: {
           path: resolve(cwd(), '..', 'games', 'assets'),
           pathPrefix: '/games'
@@ -109,7 +106,7 @@ describe('loadConfiguration()', () => {
       data: { path: resolve(cwd(), 'data') },
       turn: { secret: turnSecret },
       auth: {
-        domain: 'https://tabulous.fr',
+        domain: 'https://www.tabulous.fr',
         jwt: { key: jwtKey },
         github: { id: githubId, secret: githubSecret },
         google: { id: googleId, secret: googleSecret }
