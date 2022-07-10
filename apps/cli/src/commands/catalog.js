@@ -3,6 +3,8 @@ import { gql } from '@urql/core'
 import chalkTemplate from 'chalk-template'
 import {
   attachFormater,
+  cliName,
+  commonArgSpec,
   findUser,
   getGraphQLClient,
   parseArgv,
@@ -43,15 +45,18 @@ const listCatalogQuery = gql`
 /**
  * Triggers catalog command
  * @param {string[]} argv - array of parsed arguments (without executable and current file).
- * @returns {Promise<CatalogResult>} this user catalog of accessible games.
+ * @returns {Promise<CatalogResult|string>} this user catalog of accessible games.
  */
 export default async function catalogCommand(argv) {
-  return catalog(
-    parseArgv(argv, {
-      '--username': RequiredString,
-      '-u': '--username'
-    })
-  )
+  const args = parseArgv(argv, {
+    ...commonArgSpec,
+    '--username': RequiredString,
+    '-u': '--username'
+  })
+  if (args.help) {
+    return help()
+  }
+  return catalog(args)
 }
 
 /**
@@ -99,4 +104,15 @@ function formatCatalog({ games }) {
   output.push(chalkTemplate`
 ${games.length} {dim accessible game(s)}`)
   return output.join('\n')
+}
+
+function help() {
+  return chalkTemplate`
+  {bold ${cliName}} [options] catalog
+  Lists accessible games
+  {dim Options:}
+    --username/-u             Username for which catalog is fetched
+    --production/-p           Loads configuration from .env.local
+    --help/-h                 Display help for this command
+`
 }

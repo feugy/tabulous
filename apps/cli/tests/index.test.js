@@ -18,13 +18,13 @@ describe('Tabulous CLI', () => {
     cli = (await import('../src/index.mjs')).default
   })
 
-  it('prints help on unknown command', () => {
-    cli(['unknown'])
+  it('prints help on unknown command', async () => {
+    await cli(['unknown'])
     expect(output.stdout).toContain('tabulous [options] <command>')
   })
 
-  it('prints help by default', () => {
-    cli([])
+  it('prints help by default', async () => {
+    await cli([])
     expect(output.stdout).toContain('tabulous [options] <command>')
   })
 

@@ -40,3 +40,14 @@ export function parseArgv(argv = [], spec) {
 export function shiftCommand(argv, command) {
   return argv.filter(arg => arg !== command)
 }
+
+/**
+ * Spec for common arguments.
+ * @typedef {object}
+ */
+export const commonArgSpec = {
+  '--help': Boolean,
+  '--production': Boolean,
+  '-h': '--help',
+  '-p': '--production'
+}

@@ -37,6 +37,23 @@ describe('User grant command', () => {
     )
   })
 
+  it('displays help and support common options', async () => {
+    const username = faker.name.findName()
+    const gameName = faker.commerce.productName()
+    expect(stripAnsi(await grant(['-h', '-u', username, '-p', gameName])))
+      .toEqual(`
+  tabulous [options] grant [game-name]
+  Grants access to a copyrighted game
+  Commands:
+    [game-name]               Name of the granted game
+  Options:
+    --username/-u             Username for which catalog is fetched
+    --production/-p           Loads configuration from .env.local
+    --help/-h                 Display help for this command
+`)
+    expect(mockQuery).not.toHaveBeenCalled()
+  })
+
   describe('given existing players', () => {
     const player = {
       id: faker.datatype.uuid(),

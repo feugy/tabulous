@@ -7,7 +7,7 @@ import { config } from 'dotenv'
 import { resolve } from 'path'
 import { cwd } from 'process'
 import * as commands from './commands/index.js'
-import { parseArgv, shiftCommand } from './util/args.js'
+import { commonArgSpec, parseArgv, shiftCommand } from './util/args.js'
 import chalkTemplate from 'chalk-template'
 import { printWithFormaters } from './util/formaters.js'
 
@@ -16,18 +16,13 @@ import { printWithFormaters } from './util/formaters.js'
  * @param {string[]} argv - array of parsed arguments (without executable and current file).
  */
 export default async function main(argv) {
-  const args = parseArgv(argv, {
-    '--help': Boolean,
-    '--production': Boolean,
-    '-h': '--help',
-    '-p': '--production'
-  })
+  const args = parseArgv(argv, commonArgSpec)
   loadEnv(args)
   printProductionMessage(args)
 
   const [name, command] = findCommand(args)
   if (!command) {
-    commands.help()
+    await invokeCommand(commands.help, [], '')
   } else {
     await invokeCommand(command, argv, name)
   }
@@ -55,7 +50,7 @@ async function invokeCommand(command, argv, name) {
     printWithFormaters(results)
   } catch (err) {
     console.log(chalkTemplate`{bold {redBright error}}: ${err.message}`)
-    commands.help()
+    console.log(commands.help())
   }
 }
 

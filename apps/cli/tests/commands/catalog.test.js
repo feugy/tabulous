@@ -28,6 +28,19 @@ describe('User catalog command', () => {
     await expect(catalog([])).rejects.toThrow('no username provided')
   })
 
+  it('displays help and support common options', async () => {
+    const username = faker.name.findName()
+    expect(stripAnsi(await catalog(['-h', '-u', username, '-p']))).toEqual(`
+  tabulous [options] catalog
+  Lists accessible games
+  Options:
+    --username/-u             Username for which catalog is fetched
+    --production/-p           Loads configuration from .env.local
+    --help/-h                 Display help for this command
+`)
+    expect(mockQuery).not.toHaveBeenCalled()
+  })
+
   it('returns a serializable list of games', async () => {
     const player = {
       id: faker.datatype.uuid(),

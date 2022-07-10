@@ -1,21 +1,18 @@
+import stripAnsi from 'strip-ansi'
 import { help } from '../../src/commands/help.js'
-import { mockConsole } from '../test-util.js'
 
 describe('help command', () => {
-  const output = mockConsole()
-
   it('prints help on console', () => {
-    help()
-    expect(output.stdout).toContain(`
+    expect(stripAnsi(help())).toContain(`
   tabulous [options] <command>
   Commands:
-    catalog                   List accessible game
-    grant [game-name]         Grant access to a copyright game
-    revoke [game-name]        Revoke access to a copyright game
+    catalog                   Lists accessible games
+    grant [game-name]         Grants access to a copyrighted game
+    revoke [game-name]        Revokes access to a copyrighted game
   Options:
-    --help/-h                 Display help for a given command or subcommand
     --username/-u             Username for which command is run
-    --production/-p           Load configuration from .env.local
+    --production/-p           Loads configuration from .env.local
+    --help/-h                 Displays help for a given command
 `)
   })
 })

@@ -1,20 +1,21 @@
 // @ts-check
-import chalk from 'chalk'
+import chalkTemplate from 'chalk-template'
 import { cliName } from '../util/index.js'
 
 /**
- * Prints help message on console.
+ * Returns general help message.
+ * @return {string} the general help message
  */
 export function help() {
-  console.log(`
-  ${chalk.bold(`${cliName}`)} [options] <command>
-  ${chalk.dim('Commands:')}
-    catalog                   List accessible game
-    grant [game-name]         Grant access to a copyright game
-    revoke [game-name]        Revoke access to a copyright game
-  ${chalk.dim('Options:')}
-    --help/-h                 Display help for a given command or subcommand
+  return chalkTemplate`
+  {bold ${cliName}} [options] <command>
+  {dim Commands:}
+    catalog                   Lists accessible games
+    grant [game-name]         Grants access to a copyrighted game
+    revoke [game-name]        Revokes access to a copyrighted game
+  {dim Options:}
     --username/-u             Username for which command is run
-    --production/-p           Load configuration from .env.local
-`)
+    --production/-p           Loads configuration from .env.local
+    --help/-h                 Displays help for a given command
+`
 }
