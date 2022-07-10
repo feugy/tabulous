@@ -3,6 +3,7 @@ import { gql } from '@urql/core'
 import chalkTemplate from 'chalk-template'
 import {
   attachFormater,
+  commonArgSpec,
   findUser,
   getGraphQLClient,
   parseArgv,
@@ -26,6 +27,7 @@ export default async function revokeCommand(argv) {
     username,
     command: [gameName]
   } = parseArgv(argv, {
+    ...commonArgSpec,
     '--username': RequiredString,
     '-u': '--username'
   })
