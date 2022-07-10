@@ -64,13 +64,14 @@ export async function setPlaying(playerId, playing) {
  * Excludes current player from results, and returns nothing unless search text is at least 2 characters
  * @param {string} search - searched text.
  * @param {string} playerId - the current player id.
+ * @param {boolean} [excludeCurrent=true] - whether to exclude current player from results.
  * @returns {Player[]} list of matching players.
  */
-export async function searchPlayers(search, playerId) {
+export async function searchPlayers(search, playerId, excludeCurrent = true) {
   if ((search ?? '').trim().length < 2) return []
   const { results } = await repositories.players.searchByUsername({
     search,
     size: 50
   })
-  return results.filter(({ id }) => id !== playerId)
+  return excludeCurrent ? results.filter(({ id }) => id !== playerId) : results
 }

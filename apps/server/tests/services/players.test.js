@@ -102,8 +102,12 @@ describe('given initialized repository', () => {
         ])
       })
 
-      it('excludes current player from results', async () => {
+      it('excludes current player from results, on demand', async () => {
         expect(await searchPlayers('man', players[3].id)).toEqual([players[1]])
+        expect(await searchPlayers('man', players[3].id, false)).toEqual([
+          players[1],
+          players[3]
+        ])
       })
 
       it('excludes nothing bellow 2 characters', async () => {

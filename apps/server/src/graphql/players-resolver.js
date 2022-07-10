@@ -31,8 +31,9 @@ export default {
      * @param {object} context - graphQL context.
      * @returns {import('../services/authentication').Player[]} list (potentially empty) of matching players.
      */
-    searchPlayers: isAuthenticated((obj, { search }, { player }) =>
-      services.searchPlayers(search, player.id)
+    searchPlayers: isAuthenticated(
+      (obj, { search, includeCurrent }, { player }) =>
+        services.searchPlayers(search, player.id, !includeCurrent)
     )
   },
 

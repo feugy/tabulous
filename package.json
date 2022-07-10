@@ -14,6 +14,7 @@
     "apps/*"
   ],
   "scripts": {
+    "dev:cli": "npm run test:dev -w apps/cli",
     "dev:server": "npm run test:dev -w apps/server",
     "dev:web": "npm run test:dev -w apps/web",
     "format": "prettier --write .",
@@ -23,6 +24,7 @@
     "start:server": "npm start -w apps/server",
     "start:web": "npm start -w apps/web",
     "test": "run-s -ncs test:**",
+    "test:cli": "npm t -w apps/cli",
     "test:server": "npm t -w apps/server",
     "test:web": "npm t -w apps/web"
   },

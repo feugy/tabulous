@@ -1,0 +1,33 @@
+{
+  "name": "@tabulous/cli",
+  "version": "0.0.1",
+  "description": "Tabulous utility Command Line Interface",
+  "type": "module",
+  "bin": {
+    "tabulous": "./src/index.mjs"
+  },
+  "main": "./src/index.mjs",
+  "scripts": {
+    "test": "NODE_OPTIONS=\"--experimental-vm-modules --no-warnings\" jest --coverage --colors",
+    "test:dev": "NODE_OPTIONS=\"--experimental-vm-modules --no-warnings\" jest --watch"
+  },
+  "dependencies": {
+    "@urql/core": "^2.5.0",
+    "add": "^2.0.6",
+    "ajv": "^8.11.0",
+    "arg": "^5.0.2",
+    "chalk": "^5.0.1",
+    "chalk-template": "^0.4.0",
+    "dotenv": "^16.0.1",
+    "es-main": "^1.2.0",
+    "fast-jwt": "^1.6.0",
+    "graphql": "^16.5.0",
+    "lodash.camelcase": "^4.3.0",
+    "undici": "^5.6.0"
+  },
+  "devDependencies": {
+    "jest": "^28.1.2",
+    "jest-watch-typeahead": "^1.1.0",
+    "strip-ansi": "^7.0.1"
+  }
+}
