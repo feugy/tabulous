@@ -46,10 +46,9 @@ describe('given a started server', () => {
 
   describe('Catalog GraphQL resolver', () => {
     describe('listCatalog query', () => {
+      beforeEach(() => services.listCatalog.mockResolvedValueOnce(items))
       it('returns catalog for current player', async () => {
         services.getPlayerById.mockResolvedValueOnce(player)
-        services.listCatalog.mockResolvedValueOnce(items)
-
         const response = await server.inject({
           method: 'POST',
           url: 'graphql',
@@ -67,9 +66,8 @@ describe('given a started server', () => {
         expect(services.listCatalog).toHaveBeenCalledTimes(1)
       })
 
-      it('denies anonymous access', async () => {
+      it('returns public catalog on invalid token', async () => {
         services.getPlayerById.mockResolvedValueOnce(null)
-
         const response = await server.inject({
           method: 'POST',
           url: 'graphql',
@@ -82,13 +80,31 @@ describe('given a started server', () => {
         })
 
         expect(response.json()).toEqual({
-          data: { listCatalog: null },
-          errors: [expect.objectContaining({ message: 'Unauthorized' })]
+          data: { listCatalog: items }
         })
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
         expect(services.getPlayerById).toHaveBeenCalledTimes(1)
-        expect(services.listCatalog).not.toHaveBeenCalled()
+        expect(services.listCatalog).toHaveBeenCalledWith(null)
+        expect(services.listCatalog).toHaveBeenCalledTimes(1)
+      })
+
+      it('returns public catalog without token', async () => {
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          payload: {
+            query: `{ listCatalog { name } }`
+          }
+        })
+
+        expect(response.json()).toEqual({
+          data: { listCatalog: items }
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).not.toHaveBeenCalled()
+        expect(services.listCatalog).toHaveBeenCalledWith(null)
+        expect(services.listCatalog).toHaveBeenCalledTimes(1)
       })
     })
 

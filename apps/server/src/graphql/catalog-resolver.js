@@ -1,4 +1,4 @@
-import { isAdmin, isAuthenticated } from './utils.js'
+import { isAdmin } from './utils.js'
 import services from '../services/index.js'
 
 export default {
@@ -12,9 +12,7 @@ export default {
      * @param {object} context - graphQL context.
      * @returns {import('./catalog.graphql').CatalogItem} list of catalog items.
      */
-    listCatalog: isAuthenticated((obj, args, { player }) =>
-      services.listCatalog(player)
-    )
+    listCatalog: (obj, args, { player }) => services.listCatalog(player)
   },
   Mutation: {
     /**
