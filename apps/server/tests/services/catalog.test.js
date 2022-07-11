@@ -17,6 +17,11 @@ describe('Catalog service', () => {
     {
       id: faker.datatype.uuid(),
       username: faker.name.findName()
+    },
+    {
+      id: faker.datatype.uuid(),
+      username: faker.name.findName(),
+      catalog: ['6-takes']
     }
   ]
 
@@ -63,7 +68,11 @@ describe('Catalog service', () => {
     })
 
     it(`omits restricted games`, async () => {
-      expect(await listCatalog(players[1])).toEqual([items[1], items[2]])
+      expect(await listCatalog(players[2])).toEqual(items.slice(0, 3))
+    })
+
+    it(`returns publicly-available games without player`, async () => {
+      expect(await listCatalog(null)).toEqual([items[1], items[2]])
     })
   })
 
