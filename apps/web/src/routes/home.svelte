@@ -1,6 +1,5 @@
 <script>
   import { goto } from '$app/navigation'
-  import { onMount } from 'svelte'
   import { _ } from 'svelte-intl'
   import {
     CatalogItem,
@@ -11,7 +10,6 @@
   import { Header } from '../connected-components'
   import {
     currentPlayer,
-    createGame,
     deleteGame,
     listCatalog,
     listGames,
@@ -19,11 +17,20 @@
   } from '../stores'
 
   let gameToDelete = null
+  let catalog = null
+  let hasLoggedPlayer = false
 
-  onMount(() => listGames())
+  $: if ($currentPlayer) {
+    hasLoggedPlayer = true
+    listGames()
+    fetchCatalog()
+  } else {
+    hasLoggedPlayer = false
+    fetchCatalog()
+  }
 
   async function handleNewGame({ detail: { name } }) {
-    goto(`/game/${await createGame(name)}`)
+    goto(`/game/new?name=${encodeURIComponent(name)}`, { replaceState: true })
   }
 
   async function handleDeleteGame({ detail: game }) {
@@ -36,6 +43,10 @@
     }
     gameToDelete = null
   }
+
+  async function fetchCatalog() {
+    catalog = await listCatalog()
+  }
 </script>
 
 <svelte:head>
@@ -44,31 +55,36 @@
 
 <main>
   <Header>
-    <h1>{$_('titles.home', $currentPlayer)}</h1>
+    <h1>
+      {$_(hasLoggedPlayer ? 'titles.home' : 'titles.welcome', $currentPlayer)}
+    </h1>
   </Header>
 
   <div>
-    <h2>{$_('titles.your-games')}</h2>
-    <section>
-      {#each $playerGames.sort((a, b) => b.created - a.created) as game (game.id)}
-        <GameLink
-          {game}
-          playerId={$currentPlayer?.id}
-          on:delete={handleDeleteGame}
-        />
-      {:else}
-        <span class="no-games">{$_('labels.no-games-yet')}</span>
-      {/each}
-    </section>
+    {#if hasLoggedPlayer}
+      <h2>{$_('titles.your-games')}</h2>
+      <section data-testid="games">
+        {#each $playerGames.sort((a, b) => b.created - a.created) as game (game.id)}
+          <GameLink
+            {game}
+            playerId={$currentPlayer?.id}
+            on:delete={handleDeleteGame}
+          />
+        {:else}
+          <span class="no-games">{$_('labels.no-games-yet')}</span>
+        {/each}
+      </section>
+    {/if}
 
     <h2>{$_('titles.catalog')}</h2>
-    <section>
-      {#await listCatalog()}
+    <section data-testid="catalog">
+      {#if !catalog}
         <Progress />
-      {:then catalog}
+      {:else}
         {#each catalog as game}
-          <CatalogItem {game} on:click={handleNewGame} />{/each}
-      {/await}
+          <CatalogItem {game} on:click={handleNewGame} />
+        {/each}
+      {/if}
     </section>
   </div>
 </main>

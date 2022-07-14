@@ -1,11 +1,16 @@
 <script>
+  import { goto } from '$app/navigation'
   import { Button } from '../components'
-  import { logOut } from '../stores'
+  import { currentPlayer, logOut } from '../stores'
 </script>
 
 <header>
   <nav>
-    <Button icon="directions_run" secondary on:click={logOut} />
+    {#if $currentPlayer}
+      <Button icon="directions_run" secondary on:click={logOut} />
+    {:else}
+      <Button icon="login" secondary on:click={() => goto('/login')} />
+    {/if}
   </nav>
   <div>
     <slot />
