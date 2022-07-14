@@ -14,20 +14,11 @@ const session$ = new BehaviorSubject()
 
 if (browser) {
   session$.subscribe(session => {
-    const sessionData = sessionStorage.getItem(storageKey)
     initGraphQLGlient(session?.token)
-    // skip if we receiving the same player as before
-    if (
-      sessionData &&
-      JSON.parse(sessionData)?.player?.id === session?.player?.id
-    ) {
-      logger.debug({ session, sessionData }, `skipping session save`)
-      return
-    }
     if (session) {
       logger.info({ session }, `saving session`)
       sessionStorage.setItem(storageKey, JSON.stringify(session))
-    } else if (session === null) {
+    } else {
       logger.info(`clearing session storage`)
       sessionStorage.clear()
     }
@@ -62,7 +53,7 @@ export async function recoverSession() {
     session$.next(session)
   } catch (error) {
     logger.warn({ error }, `failed to recover session: ${error.message}`)
-    await logOut()
+    await clearSession()
   }
   logger.info({ session }, `session recovery complete`)
   return session
@@ -101,9 +92,8 @@ export async function logIn(username, password) {
  */
 export async function logOut() {
   logger.info(`logging out`)
-  await runMutation(graphQL.logOut)
-  session$.next(null)
-  goto('/login')
+  clearSession()
+  goto('/')
 }
 
 /**
@@ -115,4 +105,9 @@ export async function logOut() {
 export async function searchPlayers(search) {
   logger.info({ search }, `searches for ${search}`)
   return runQuery(graphQL.searchPlayers, { search })
+}
+
+async function clearSession() {
+  await runMutation(graphQL.logOut)
+  session$.next(null)
 }

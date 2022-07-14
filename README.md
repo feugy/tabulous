@@ -25,23 +25,11 @@ You need Node.js 16+ and NPM.
    ```
 1. Then, run in dev or production mode.
 
-### Run locally
-
-1. Build the client application:
-   ```shell
-   npm run build --workspace apps/web
-   ```
-1. Run the server (requires access to port 443, and valid SSL certificate PEM files):
-   ```shell
-   NODE_ENV=production node apps/server
-   ```
-1. Open https://localhost in your browser.
-
 ### Develop
 
 1. Start in watch mode (both server and client):
    ```shell
-   npm run dev
+   npm start
    ```
 1. Your favorite browser should open and display a warning about self-signed SSL certificate. Bypass it, and start developping.
 

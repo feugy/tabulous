@@ -50,6 +50,7 @@ titles:
   log-in: Bienvenue !
   object-controls: Contrôler un objet
   selection-controls: Contrôler un ou plusieurs objets
+  welcome: Bienvenue sur Tabulous !
 tooltips:
   add-to-selection: Ajouter à la sélection
   clear-selection: Vider la sélection

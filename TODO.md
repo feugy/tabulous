@@ -2,9 +2,7 @@
 
 Roadmap
 
-- server: catalog query with and without own games
 - games: generic card game
-- web: publicly accessible catalog
 - lawyer council
 - web: terms & condition
 - web: cookie policy

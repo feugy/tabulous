@@ -4,9 +4,9 @@
   "description": "Tabulous web application",
   "type": "module",
   "scripts": {
-    "build": "svelte-kit build",
-    "preview": "svelte-kit preview --https --host -o",
-    "start": "svelte-kit dev --https --host -o",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "vite dev --open",
     "test": "jest --coverage",
     "test:dev": "jest --watch --coverage"
   },
@@ -22,7 +22,7 @@
     "@rollup/plugin-graphql": "^1.1.0",
     "@rollup/plugin-yaml": "^3.1.0",
     "@sveltejs/adapter-static": "^1.0.0-next.34",
-    "@sveltejs/kit": "^1.0.0-next.350",
+    "@sveltejs/kit": "^1.0.0-next.367",
     "@sveltejs/vite-plugin-svelte": "^1.0.0-next.44",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/svelte": "^3.1.3",
