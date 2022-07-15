@@ -2,6 +2,7 @@ import atelier from '@atelier-wb/vite-plugin-atelier'
 import graphql from '@rollup/plugin-graphql'
 import yaml from '@rollup/plugin-yaml'
 import { sveltekit } from '@sveltejs/kit/vite'
+import basicSsl from '@vitejs/plugin-basic-ssl'
 import windi from 'vite-plugin-windicss'
 import { svelteSVG } from 'rollup-plugin-svelte-svg'
 
@@ -11,6 +12,7 @@ import { svelteSVG } from 'rollup-plugin-svelte-svg'
 const config = {
   envPrefix: 'WEB_',
   plugins: [
+    basicSsl(),
     sveltekit(),
     windi(),
     svelteSVG({ enforce: 'pre' }),
@@ -34,7 +36,7 @@ const config = {
   },
   server: {
     https: true,
-    host: '0.0.0.0',
+    port: 3000,
     proxy: {
       '/ws': {
         target: 'http://localhost:3001',
