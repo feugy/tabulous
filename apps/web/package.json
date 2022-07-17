@@ -41,6 +41,8 @@
     "graphql-ws": "^5.9.0",
     "identity-obj-proxy": "^3.0.0",
     "istanbul-lib-coverage": "^3.2.0",
+    "istanbul-lib-report": "^3.0.0",
+    "istanbul-reports": "^3.1.5",
     "jest": "^28.1.1",
     "jest-environment-jsdom": "^28.1.1",
     "jest-transform-svelte": "^2.1.1",

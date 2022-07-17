@@ -13,4 +13,3 @@ debug.txt
 .env
 .env.*
 .svelte-kit
-.nyc_output
