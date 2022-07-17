@@ -1,10 +1,10 @@
 /** @type {import('@playwright/test').PlaywrightTestConfig} */
 const config = {
-  testDir: 'integration',
+  testDir: 'tests/integration',
   use: {
     baseURL: 'https://localhost:3000',
     ignoreHTTPSErrors: true,
-    browserName: 'firefox'
+    browserName: 'chromium'
   },
   webServer: {
     // reuseExistingServer: true,

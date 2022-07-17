@@ -1,10 +1,7 @@
 // @ts-check
-import { expect, test as it } from '@playwright/test'
 import { faker } from '@faker-js/faker'
 import { HomePage } from './pages/home.js'
-import { mockGraphQL } from './utils/graphql.js'
-
-const describe = it.describe
+import { expect, it, describe, mockGraphQL } from './utils/index.js'
 
 describe('Home page', () => {
   it('displays public catalog', async ({ page }) => {

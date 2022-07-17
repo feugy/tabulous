@@ -1,15 +1,16 @@
+// @ts-check
 import atelier from '@atelier-wb/vite-plugin-atelier'
 import graphql from '@rollup/plugin-graphql'
 import yaml from '@rollup/plugin-yaml'
 import { sveltekit } from '@sveltejs/kit/vite'
 import basicSsl from '@vitejs/plugin-basic-ssl'
+import { defineConfig } from 'vite'
 import windi from 'vite-plugin-windicss'
 import { svelteSVG } from 'rollup-plugin-svelte-svg'
 
 // This file is used by
 // - vite
-/** @type {import('vite').UserConfig} */
-const config = {
+export default defineConfig(({ mode }) => ({
   envPrefix: 'WEB_',
   plugins: [
     basicSsl(),
@@ -28,6 +29,9 @@ const config = {
       publicDir: ['./tests']
     })
   ],
+  build: {
+    sourcemap: mode === 'integration' ? 'inline' : false
+  },
   ssr: {
     noExternal: ['simple-peer-light']
   },
@@ -61,6 +65,4 @@ const config = {
     port: 3000,
     strictPort: true
   }
-}
-
-export default config
+}))

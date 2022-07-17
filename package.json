@@ -26,7 +26,8 @@
     "test": "run-s -ncs test:**",
     "test:cli": "npm t -w apps/cli",
     "test:server": "npm t -w apps/server",
-    "test:web": "npm t -w apps/web"
+    "test:web": "npm t -w apps/web",
+    "test:integration": "npm run test:integration -w apps/web"
   },
   "devDependencies": {
     "eslint": "^8.18.0",

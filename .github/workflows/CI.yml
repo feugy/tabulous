@@ -64,11 +64,17 @@ jobs:
       - name: Run server test
         run: npm run test:server
 
-      - name: Run UI tests
+      - name: Run UI unit tests
         run: |
           mkdir -p apps/web/.svelte-kit/runtime
           cp -r node_modules/@sveltejs/kit/assets/* apps/web/.svelte-kit/runtime
           npm run test:web
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Run UI integration tests
+        run: npm run test:integration
 
       - name: Send coverage to Codacy
         if: always()
