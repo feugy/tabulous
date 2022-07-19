@@ -74,7 +74,9 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run UI integration tests
-        run: npm run test:integration
+        run: |
+          echo -e "WEB_USE_GITHUB_PROVIDER=true\nWEB_USE_GOOGLE_PROVIDER=true" > apps/web/.env
+          npm run test:integration
 
       - name: Send coverage to Codacy
         if: always()

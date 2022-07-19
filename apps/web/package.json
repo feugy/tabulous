@@ -9,8 +9,9 @@
     "start": "vite dev --open",
     "test": "jest --coverage",
     "test:dev": "jest --watch --coverage",
-    "test:integration": "run-s test:integration:*",
+    "test:integration": "run-s test:integration:prepare test:integration:run",
     "test:integration:prepare": "vite build --mode integration",
+    "test:integration:show": "playwright show-report coverage/integration",
     "test:integration:run": "playwright test"
   },
   "devDependencies": {

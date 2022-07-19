@@ -1,5 +1,6 @@
 // @ts-check
 import { expect } from '@playwright/test'
+import { translate } from '../utils/index.js'
 
 export class HomePage {
   /**
@@ -18,7 +19,9 @@ export class HomePage {
     /**
      * @type {import('@playwright/test').Locator}
      */
-    this.gamesHeading = page.locator('h2', { hasText: 'Parties en cours' })
+    this.gamesHeading = page.locator(
+      `h2:has-text("${translate('titles.your-games')}")`
+    )
     /**
      * @type {import('@playwright/test').Locator}
      */
@@ -26,7 +29,9 @@ export class HomePage {
     /**
      * @type {import('@playwright/test').Locator}
      */
-    this.catalogHeading = page.locator('h2', { hasText: 'Jeux disponibles' })
+    this.catalogHeading = page.locator(
+      `h2:has-text("${translate('titles.catalog')}")`
+    )
     /**
      * @type {import('@playwright/test').Locator}
      */
@@ -37,13 +42,21 @@ export class HomePage {
     this.catalogItemHeadings = this.catalogItems.filter({
       has: page.locator('h3')
     })
+    /**
+     * @type {import('@playwright/test').Locator}
+     */
+    this.loginButton = page.locator('header button:has-text("login")')
+    /**
+     * @type {import('@playwright/test').Locator}
+     */
+    this.logoutButton = page.locator('header button:has-text("directions_run")')
   }
 
   /**
-   * Navigates to the home page.
+   * Navigates to the page.
    * @async
    */
-  async goto() {
+  async goTo() {
     await this.page.goto('/home')
     await this.page.waitForLoadState()
   }
@@ -61,8 +74,10 @@ export class HomePage {
    * @async
    */
   async isAnonymous() {
-    await expect(this.heading).toContainText('Bienvenue sur Tabulous !')
-    await expect(this.gamesHeading).not.toBeVisible()
+    await expect(this.heading).toContainText(translate('titles.welcome'))
+    await expect(this.gamesHeading).toBeHidden()
+    await expect(this.loginButton).toBeVisible()
+    await expect(this.logoutButton).toBeHidden()
   }
 
   /**
@@ -71,7 +86,29 @@ export class HomePage {
    * @param {string} username - display name for this user.
    */
   async isAuthenticated(username) {
-    await expect(this.heading).toContainText(`Bonjour ${username} !`)
+    await expect(this.heading).toContainText(
+      translate('titles.home', { username })
+    )
     await expect(this.gamesHeading).toBeVisible()
+    await expect(this.loginButton).toBeHidden()
+    await expect(this.logoutButton).toBeVisible()
+  }
+
+  /**
+   * Navigates to login by clicking on the header button
+   */
+  async goToLogin() {
+    await this.loginButton.click()
+    await this.page.waitForLoadState()
+    await expect(this.page).toHaveURL('/login')
+  }
+
+  /**
+   * Logs the user out by clicking on the header button
+   */
+  async logOut() {
+    await this.logoutButton.click()
+    await expect(this.page).toHaveURL('/home')
+    await this.isAnonymous()
   }
 }

@@ -1,13 +1,20 @@
 /** @type {import('@playwright/test').PlaywrightTestConfig} */
 const config = {
   testDir: 'tests/integration',
+  reporter: [
+    ['list'],
+    process.env.CI
+      ? ['github']
+      : ['html', { open: 'never', outputFolder: 'coverage/integration' }]
+  ],
   use: {
     baseURL: 'https://localhost:3000',
     ignoreHTTPSErrors: true,
-    browserName: 'chromium'
+    browserName: 'chromium',
+    locale: 'fr-FR',
+    video: 'retain-on-failure'
   },
   webServer: {
-    // reuseExistingServer: true,
     command: 'npm run preview',
     url: 'https://localhost:3000',
     ignoreHTTPSErrors: true,
