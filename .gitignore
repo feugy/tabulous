@@ -13,3 +13,4 @@ debug.txt
 .env
 .env.*
 .svelte-kit
+test-results
