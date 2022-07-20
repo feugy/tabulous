@@ -33,7 +33,7 @@
     {#if game}
       <img
         alt={$_('tooltips.rule-page', { page: page + 1 })}
-        src={`games/${game}/rules/${page + 1}.webp`}
+        src={`/games/${game}/rules/${page + 1}.webp`}
       />
     {/if}
   </div>

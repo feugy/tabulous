@@ -22,8 +22,8 @@ export function createTable(
   table.isPickable = false
   table.material = materialManager.buildOnDemand(texture, scene)
   if (table.material?.diffuseTexture) {
-    table.material.diffuseTexture.uScale = 15
-    table.material.diffuseTexture.vScale = 15
+    table.material.diffuseTexture.uScale = 5
+    table.material.diffuseTexture.vScale = 5
   }
   return table
 }

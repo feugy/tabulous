@@ -30,7 +30,7 @@
   }
 
   async function handleNewGame({ detail: { name } }) {
-    goto(`/game/new?name=${encodeURIComponent(name)}`, { replaceState: true })
+    goto(`/game/new?name=${encodeURIComponent(name)}`)
   }
 
   async function handleDeleteGame({ detail: game }) {

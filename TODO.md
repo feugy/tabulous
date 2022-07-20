@@ -25,7 +25,7 @@ Roadmap
 
 ## Refactor
 
-- bug: animating visibility from 0 to 1 creates trouble with texture alpha channel
+- ts-check all the things!
 - group candidate target per kind for performance
 - keep anchor ids
 - create Animation objects as part of runAnimation() (constant frameRate of 60)
@@ -40,10 +40,13 @@ Roadmap
 
 ## UI
 
+- bug: animating visibility from 0 to 1 creates trouble with texture alpha channel
 - bug: ICE failed message when peer reload their browser??
 - bug: attached, unselected, mesh are not ignored during dragging
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
-- per-player default camera position & configurable player position at game level
+- load player-specific default camera on load (and when joining)
+- error when maximum number of players is reached
+- option to invite players with url
 - distribute multiple meshes to players'hand
 - zoom in/out on rules
 - shortcuts cheatsheet
@@ -54,6 +57,9 @@ Roadmap
 
 ## Server
 
+- per-player default camera position & configurable player position at game level
+- maximum number of players per game
+- invite players who have no account yet
 - allows a single connection per player (discards other JWTs)
 - logging (warning on invalid descriptors)
 - better coTURN integration (password management and rotation)
