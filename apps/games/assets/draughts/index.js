@@ -6,6 +6,8 @@ export const locales = {
   }
 }
 
+export const rulesBookPageCount = 4
+
 export const minTime = 30
 
 export const minAge = 6
