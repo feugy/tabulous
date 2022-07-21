@@ -14,14 +14,74 @@ exports[`Toolshot components/CatalogItem.tools.svelte: No age nor time 1`] = `
       class="content"
     >
       <caption>
-        <h3>
-          Solitaire
-        </h3>
+        <div
+          class="title"
+        >
+          <h3>
+            Solitaire
+          </h3>
+           
+          <details
+            class="hidden"
+          >
+            <summary>
+              <strong>
+                Créé par : 
+              </strong>
+              undefined
+            </summary>
+             
+            <p>
+              <strong>
+                Illustré par : 
+              </strong>
+              undefined
+            </p>
+             
+            <p>
+              <strong>
+                Distribué par : 
+              </strong>
+              undefined
+            </p>
+          </details>
+        </div>
          
         <span
           class="characteristics"
         >
+          <span
+            class="hidden"
+          >
+            <span
+              class="material-icons"
+            >
+              people
+            </span>
+            undefined
+          </span>
            
+          <span
+            class="hidden"
+          >
+            <span
+              class="material-icons"
+            >
+              access_time
+            </span>
+            undefined'
+          </span>
+           
+          <span
+            class="hidden"
+          >
+            <span
+              class="material-icons"
+            >
+              person
+            </span>
+            undefined+
+          </span>
         </span>
       </caption>
     </div>
@@ -29,7 +89,7 @@ exports[`Toolshot components/CatalogItem.tools.svelte: No age nor time 1`] = `
 </span>
 `;
 
-exports[`Toolshot components/CatalogItem.tools.svelte: With Age and time 1`] = `
+exports[`Toolshot components/CatalogItem.tools.svelte: With characteristics 1`] = `
 <span
   class="catalog-item-viewer"
 >
@@ -43,19 +103,148 @@ exports[`Toolshot components/CatalogItem.tools.svelte: With Age and time 1`] = `
       class="content"
     >
       <caption>
-        <h3>
-          Solitaire
-        </h3>
+        <div
+          class="title"
+        >
+          <h3>
+            Solitaire
+          </h3>
+           
+          <details
+            class="hidden"
+          >
+            <summary>
+              <strong>
+                Créé par : 
+              </strong>
+              undefined
+            </summary>
+             
+            <p>
+              <strong>
+                Illustré par : 
+              </strong>
+              undefined
+            </p>
+             
+            <p>
+              <strong>
+                Distribué par : 
+              </strong>
+              undefined
+            </p>
+          </details>
+        </div>
          
         <span
           class="characteristics"
         >
           <span>
-            temps : 30'
+            <span
+              class="material-icons"
+            >
+              people
+            </span>
+            2
           </span>
            
           <span>
-            age : 10+
+            <span
+              class="material-icons"
+            >
+              access_time
+            </span>
+            30'
+          </span>
+           
+          <span>
+            <span
+              class="material-icons"
+            >
+              person
+            </span>
+            10+
+          </span>
+        </span>
+      </caption>
+    </div>
+  </article>
+</span>
+`;
+
+exports[`Toolshot components/CatalogItem.tools.svelte: With characteristics and copyright 1`] = `
+<span
+  class="catalog-item-viewer"
+>
+  <article>
+    <img
+      alt="Solitaire"
+      src="games/klondike/catalog/cover.webp"
+    />
+     
+    <div
+      class="content"
+    >
+      <caption>
+        <div
+          class="title"
+        >
+          <h3>
+            Solitaire
+          </h3>
+           
+          <details>
+            <summary>
+              <strong>
+                Créé par : 
+              </strong>
+              John Doe, Jane Lark
+            </summary>
+             
+            <p>
+              <strong>
+                Illustré par : 
+              </strong>
+              Amy Banks, Mark Loom
+            </p>
+             
+            <p>
+              <strong>
+                Distribué par : 
+              </strong>
+              Awesome games, Games from elsewhere
+            </p>
+          </details>
+        </div>
+         
+        <span
+          class="characteristics"
+        >
+          <span>
+            <span
+              class="material-icons"
+            >
+              people
+            </span>
+            2-4
+          </span>
+           
+          <span>
+            <span
+              class="material-icons"
+            >
+              access_time
+            </span>
+            30'
+          </span>
+           
+          <span>
+            <span
+              class="material-icons"
+            >
+              person
+            </span>
+            10+
           </span>
         </span>
       </caption>

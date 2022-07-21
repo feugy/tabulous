@@ -7,16 +7,64 @@
   $: title = game?.locales?.[$locale]?.title
 
   const dispatch = createEventDispatcher()
+
+  function formatCopyright(field) {
+    return game?.copyright?.[field].map(({ name }) => name).join(', ')
+  }
+
+  function formatSeats() {
+    return game
+      ? game.minSeats === game.maxSeats
+        ? game.minSeats
+        : `${game.minSeats}-${game.maxSeats}`
+      : ''
+  }
+
+  function cancelEvent(event) {
+    event.stopImmediatePropagation()
+  }
 </script>
 
 <article on:click={() => dispatch('click', game)}>
   <img src="games/{game.name}/catalog/cover.webp" alt={title} />
   <div class="content">
     <caption>
-      <h3>{title}</h3>
+      <div class="title">
+        <h3>{title}</h3>
+        <details class:hidden={!game.copyright} on:click={cancelEvent}>
+          <summary
+            ><strong>{$_('labels.game-authors')}</strong>{formatCopyright(
+              'authors'
+            )}</summary
+          >
+          <p>
+            <strong>{$_('labels.game-designers')}</strong>{formatCopyright(
+              'designers'
+            )}
+          </p>
+          <p>
+            <strong>{$_('labels.game-publishers')}</strong>{formatCopyright(
+              'publishers'
+            )}
+          </p>
+        </details>
+      </div>
       <span class="characteristics">
-        {#if game.minTime}<span>{$_('labels.game-min-time', game)}</span>{/if}
-        {#if game.minAge}<span>{$_('labels.game-min-age', game)}</span>{/if}
+        <span class:hidden={!game.maxSeats && !game.minSeats}
+          ><span class="material-icons">people</span>{formatSeats()}</span
+        >
+        <span class:hidden={!game.minTime}
+          ><span class="material-icons">access_time</span>{$_(
+            'labels.game-min-time',
+            game
+          )}</span
+        >
+        <span class:hidden={!game.minAge}
+          ><span class="material-icons">person</span>{$_(
+            'labels.game-min-age',
+            game
+          )}</span
+        >
       </span>
     </caption>
   </div>
@@ -44,15 +92,27 @@
   }
 
   caption {
-    @apply flex flex-col flex-nowrap w-full gap-4 p-4 
-           opacity-80 items-center bg-$primary text-$primary-lightest;
+    @apply flex flex-nowrap w-full gap-4 p-4 
+           opacity-80 bg-$primary text-$primary-lightest;
+  }
+
+  .title {
+    @apply flex-1 text-left;
   }
 
   h3 {
-    @apply text-xl flex-1;
+    @apply text-xl;
+  }
+
+  strong {
+    @apply italic font-normal;
   }
 
   .characteristics {
-    @apply flex w-full justify-around;
+    @apply flex flex-col gap-2;
+
+    & .material-icons {
+      @apply mr-2;
+    }
   }
 </style>
