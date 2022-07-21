@@ -8,4 +8,6 @@ export function build() {
 
 export const rulesBookPageCount = 4
 
+export const maxSeats = 4
+
 export const copyright = { authors: [{ name: 'Marc André' }] }

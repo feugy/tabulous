@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker'
 import { jest } from '@jest/globals'
 import { join } from 'path'
 import repositories from '../../src/repositories/index.js'
+import { grantAccess, revokeAccess } from '../../src/services/catalog.js'
 import {
   createGame,
   deleteGame,
@@ -39,6 +40,7 @@ describe('given a subscription to game lists and an initialized repository', () 
     await repositories.catalogItems.connect({
       path: join('tests', 'fixtures', 'games')
     })
+    await revokeAccess(player.id, 'splendor')
     jest.restoreAllMocks()
     updates.splice(0, updates.length)
   })
@@ -253,6 +255,28 @@ describe('given a subscription to game lists and an initialized repository', () 
         await sleep()
         await expect(invite(game.id, peer.id, player.id)).rejects.toThrow(
           `internal addPlayer error`
+        )
+      })
+
+      it('throws when the maximum number of players was reached', async () => {
+        await grantAccess(player.id, 'splendor')
+        await deleteGame(game.id, player.id)
+        game = await createGame('splendor', player.id) // it has 4 seats
+        const guestIds = (
+          await repositories.players.save([
+            { id: faker.datatype.uuid() },
+            { id: faker.datatype.uuid() },
+            { id: faker.datatype.uuid() }
+          ])
+        ).map(({ id }) => id)
+        for (let rank = 0; rank < guestIds.length; rank++) {
+          expect(await invite(game.id, guestIds[rank], player.id)).toEqual({
+            ...game,
+            playerIds: [player.id, ...guestIds.slice(0, rank + 1)]
+          })
+        }
+        await expect(invite(game.id, peer.id, player.id)).rejects.toThrow(
+          `no more available seats`
         )
       })
     })

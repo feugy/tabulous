@@ -21,6 +21,7 @@ describe('Catalog Items repository', () => {
     {
       name: 'splendor',
       rulesBookPageCount: 4,
+      maxSeats: 4,
       build: expect.any(Function),
       copyright: {
         authors: [{ name: 'Marc André' }]

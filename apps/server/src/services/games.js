@@ -267,18 +267,23 @@ export async function saveGame(game, playerId) {
  * - the inviting player does not own the game
  * - the guest is already part of the game players
  * - the guest id is invalid
+ * The operation will abort and throws when this game has no more availabe seats.
  * Updates game lists of all related players.
  * @async
  * @param {string} gameId - shared game id.
  * @param {string} guestId - invited player id.
  * @param {string} hostId - inviting player id.
  * @returns {Game|null} updated game, or null if the player can not be invited.
+ * @throws {Error} when there are no available seats
  */
 export async function invite(gameId, guestId, hostId) {
   const guest = await repositories.players.getById(guestId)
   let game = await loadGame(gameId, hostId)
   if (!game || !guest || game.playerIds.includes(guest.id)) {
     return null
+  }
+  if (game.maxSeats && game.playerIds.length >= game.maxSeats) {
+    throw new Error('no more available seats')
   }
   game.playerIds.push(guest.id)
   const descriptor = await repositories.catalogItems.getById(game.kind)
