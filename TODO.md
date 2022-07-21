@@ -58,7 +58,6 @@ Roadmap
 ## Server
 
 - per-player default camera position & configurable player position at game level
-- maximum number of players per game
 - invite players who have no account yet
 - allows a single connection per player (discards other JWTs)
 - logging (warning on invalid descriptors)
