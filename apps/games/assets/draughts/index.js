@@ -12,6 +12,10 @@ export const minTime = 30
 
 export const minAge = 6
 
+export const minSeats = 2
+
+export const maxSeats = 2
+
 export const tableSpec = {
   texture: '/images/tables/wood-4.webp',
   width: 100,
