@@ -70,6 +70,7 @@ describe('given a subscription to game lists and an initialized repository', () 
       expect(game).toEqual({
         id: expect.any(String),
         created: expect.any(Number),
+        availableSeats: 1,
         kind,
         playerIds: [player.id],
         meshes: expect.any(Array),
@@ -87,6 +88,7 @@ describe('given a subscription to game lists and an initialized repository', () 
       expect(game).toEqual({
         id: expect.any(String),
         created: expect.any(Number),
+        availableSeats: 1,
         kind,
         playerIds: [player.id],
         meshes: expect.any(Array),
@@ -220,6 +222,7 @@ describe('given a subscription to game lists and an initialized repository', () 
         const updated = await invite(game.id, peer.id, player.id)
         expect(updated).toEqual({
           ...game,
+          availableSeats: 0,
           playerIds: [player.id, peer.id]
         })
         // only once
@@ -269,11 +272,14 @@ describe('given a subscription to game lists and an initialized repository', () 
             { id: faker.datatype.uuid() }
           ])
         ).map(({ id }) => id)
+        let availableSeats = game.availableSeats
         for (let rank = 0; rank < guestIds.length; rank++) {
           expect(await invite(game.id, guestIds[rank], player.id)).toEqual({
             ...game,
+            availableSeats: availableSeats - 1,
             playerIds: [player.id, ...guestIds.slice(0, rank + 1)]
           })
+          availableSeats--
         }
         await expect(invite(game.id, peer.id, player.id)).rejects.toThrow(
           `no more available seats`
