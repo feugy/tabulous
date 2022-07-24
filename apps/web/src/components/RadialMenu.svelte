@@ -6,7 +6,7 @@
     enterDuration = ms(
       getComputedStyle(document.querySelector(':root'))
         .getPropertyValue('--short')
-        .trim()
+        .trim() || '0ms'
     )
   }
 </script>
