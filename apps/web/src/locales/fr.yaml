@@ -15,7 +15,7 @@ actions:
   log-in-password: Continuer avec un mot de passe
   log-out: Quitter
   new-game: Nouveau
-  quit-game: Quitter le jeu,
+  quit-game: Quitter le jeu
   show-indicators: Afficher les indicateurs
 errors:
   login-failure: Pseudo ou mot de passe incorrect. Merci de réessayer.

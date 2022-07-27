@@ -142,6 +142,7 @@ export async function invite(gameId, playerId) {
   if (!game) {
     return false
   }
+  currentGame$.next(game)
   await load(game, false)
   return true
 }

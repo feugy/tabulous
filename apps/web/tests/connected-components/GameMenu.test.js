@@ -6,6 +6,7 @@ import { translate } from '../test-utils'
 import GameMenu from '../../src/connected-components/GameMenu.svelte'
 import {
   areIndicatorsVisible,
+  currentGame,
   isFullscreen,
   toggleFullscreen,
   toggleIndicators
@@ -23,6 +24,12 @@ jest.mock('../../src/stores/indicators', () => {
   return {
     areIndicatorsVisible: new BehaviorSubject(false),
     toggleIndicators: jest.fn()
+  }
+})
+jest.mock('../../src/stores/game-manager', () => {
+  const { BehaviorSubject } = require('rxjs')
+  return {
+    currentGame: new BehaviorSubject({ availableSeats: 1 })
   }
 })
 
@@ -47,16 +54,12 @@ describe('GameMenu connected component', () => {
   it('has relevant options', async () => {
     await renderAndOpenComponent()
     expect(screen.getByRole('button')).toHaveTextContent('menu')
-    const items = screen.getAllByRole('menuitem')
-    expect(items).toHaveLength(4)
-    expect(items[0]).toHaveTextContent('home')
-    expect(items[1]).toHaveTextContent('connect_without_contact')
-    expect(items[2]).toHaveTextContent(
-      `fullscreen ${translate('actions.enter-fullscreen')}`
-    )
-    expect(items[3]).toHaveTextContent(
-      `label_off ${translate('actions.hide-indicators')}`
-    )
+    expect(selectHomeOption()).toBeInTheDocument()
+    expect(selectInviteOption()).toBeInTheDocument()
+    expect(selectEnterFullscreenOption()).toBeInTheDocument()
+    expect(selectExitFullscreenOption()).not.toBeInTheDocument()
+    expect(selectHideIndicatorsOption()).toBeInTheDocument()
+    expect(selectShowIndicatorsOption()).not.toBeInTheDocument()
     expect(toggleFullscreen).not.toHaveBeenCalled()
     expect(toggleIndicators).not.toHaveBeenCalled()
     expect(handleInvitePlayer).not.toHaveBeenCalled()
@@ -66,26 +69,20 @@ describe('GameMenu connected component', () => {
   it('displays leave fullscreen options', async () => {
     isFullscreen.next(true)
     await renderAndOpenComponent()
-    const items = screen.getAllByRole('menuitem')
-    expect(items).toHaveLength(4)
-    expect(items[2]).toHaveTextContent(
-      `fullscreen_exit ${translate('actions.leave-fullscreen')}`
-    )
+    expect(selectExitFullscreenOption()).toBeInTheDocument()
+    expect(selectEnterFullscreenOption()).not.toBeInTheDocument()
   })
 
   it('displays show indicators options', async () => {
     areIndicatorsVisible.next(false)
     await renderAndOpenComponent()
-    const items = screen.getAllByRole('menuitem')
-    expect(items).toHaveLength(4)
-    expect(items[3]).toHaveTextContent(
-      `label ${translate('actions.show-indicators')}`
-    )
+    expect(selectShowIndicatorsOption()).toBeInTheDocument()
+    expect(selectHideIndicatorsOption()).not.toBeInTheDocument()
   })
 
   it('can enter fullscreen', async () => {
     await renderAndOpenComponent()
-    fireEvent.click(screen.getByRole('menuitem', { name: /^fullscreen/ }))
+    fireEvent.click(selectEnterFullscreenOption())
     expect(toggleFullscreen).toHaveBeenCalledTimes(1)
     expect(toggleIndicators).not.toHaveBeenCalled()
     expect(handleInvitePlayer).not.toHaveBeenCalled()
@@ -94,40 +91,81 @@ describe('GameMenu connected component', () => {
 
   it('can invite player', async () => {
     await renderAndOpenComponent()
-    fireEvent.click(
-      screen.getByRole('menuitem', { name: /^connect_without_contact/ })
-    )
+    fireEvent.click(selectInviteOption())
     expect(handleInvitePlayer).toHaveBeenCalledTimes(1)
     expect(toggleFullscreen).not.toHaveBeenCalled()
     expect(toggleIndicators).not.toHaveBeenCalled()
     expect(goto).not.toHaveBeenCalled()
   })
 
-  it('can go back home', async () => {
+  it('hides player invite when all seats are used', async () => {
+    currentGame.next({ availableSeats: 0 })
     await renderAndOpenComponent()
-    fireEvent.click(screen.getByRole('menuitem', { name: /^home/ }))
-    expect(toggleFullscreen).not.toHaveBeenCalled()
-    expect(toggleIndicators).not.toHaveBeenCalled()
-    expect(handleInvitePlayer).not.toHaveBeenCalled()
-    expect(goto).toHaveBeenCalledTimes(1)
+    expect(selectInviteOption()).not.toBeInTheDocument()
   })
 
-  it('leaves fullscreen when going back home', async () => {
-    isFullscreen.next(true)
+  it('can go back home', async () => {
     await renderAndOpenComponent()
-    fireEvent.click(screen.getByRole('menuitem', { name: /^home/ }))
-    expect(toggleFullscreen).toHaveBeenCalledTimes(1)
+    fireEvent.click(selectHomeOption())
+    expect(toggleFullscreen).not.toHaveBeenCalled()
     expect(toggleIndicators).not.toHaveBeenCalled()
     expect(handleInvitePlayer).not.toHaveBeenCalled()
     expect(goto).toHaveBeenCalledTimes(1)
   })
 
   it('can hide indicators', async () => {
+    jest.resetAllMocks()
     await renderAndOpenComponent()
-    fireEvent.click(screen.getByRole('menuitem', { name: /^label_off/ }))
+    fireEvent.click(selectHideIndicatorsOption())
     expect(toggleFullscreen).not.toHaveBeenCalled()
     expect(toggleIndicators).toHaveBeenCalledTimes(1)
     expect(handleInvitePlayer).not.toHaveBeenCalled()
     expect(goto).not.toHaveBeenCalled()
   })
+
+  it('leaves fullscreen when going back home', async () => {
+    isFullscreen.next(true)
+    await renderAndOpenComponent()
+    fireEvent.click(selectHomeOption())
+    expect(toggleFullscreen).toHaveBeenCalledTimes(1)
+    expect(toggleIndicators).not.toHaveBeenCalled()
+    expect(handleInvitePlayer).not.toHaveBeenCalled()
+    expect(goto).toHaveBeenCalledTimes(1)
+  })
 })
+
+function selectHomeOption() {
+  return screen.queryByRole('menuitem', {
+    name: `home ${translate('actions.quit-game')}`
+  })
+}
+
+function selectInviteOption() {
+  return screen.queryByRole('menuitem', {
+    name: `connect_without_contact ${translate('actions.invite-player')}`
+  })
+}
+
+function selectEnterFullscreenOption() {
+  return screen.queryByRole('menuitem', {
+    name: `fullscreen ${translate('actions.enter-fullscreen')}`
+  })
+}
+
+function selectExitFullscreenOption() {
+  return screen.queryByRole('menuitem', {
+    name: `fullscreen_exit ${translate('actions.leave-fullscreen')}`
+  })
+}
+
+function selectHideIndicatorsOption() {
+  return screen.queryByRole('menuitem', {
+    name: `label_off ${translate('actions.hide-indicators')}`
+  })
+}
+
+function selectShowIndicatorsOption() {
+  return screen.queryByRole('menuitem', {
+    name: `label ${translate('actions.show-indicators')}`
+  })
+}

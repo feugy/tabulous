@@ -44,8 +44,8 @@ Roadmap
 - bug: ICE failed message when peer reload their browser??
 - bug: attached, unselected, mesh are not ignored during dragging
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
+- click on stack size to select all
 - load player-specific default camera on load (and when joining)
-- error when maximum number of players is reached
 - option to invite players with url
 - distribute multiple meshes to players'hand
 - zoom in/out on rules
