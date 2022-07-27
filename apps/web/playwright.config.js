@@ -19,7 +19,8 @@ const config = {
     url: 'https://localhost:3000',
     ignoreHTTPSErrors: true,
     timeout: 30000
-  }
+  },
+  workers: 1
 }
 
 export default config

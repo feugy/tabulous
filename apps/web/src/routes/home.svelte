@@ -63,7 +63,7 @@
   <div>
     {#if hasLoggedPlayer}
       <h2>{$_('titles.your-games')}</h2>
-      <section data-testid="games">
+      <section aria-roledescription="games">
         {#each $playerGames.sort((a, b) => b.created - a.created) as game (game.id)}
           <GameLink
             {game}
@@ -77,7 +77,7 @@
     {/if}
 
     <h2>{$_('titles.catalog')}</h2>
-    <section data-testid="catalog">
+    <section aria-roledescription="catalog">
       {#if !catalog}
         <Progress />
       {:else}

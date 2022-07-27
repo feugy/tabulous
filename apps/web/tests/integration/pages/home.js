@@ -15,41 +15,47 @@ export class HomePage {
     /**
      * @type {import('@playwright/test').Locator}
      */
-    this.heading = page.locator('h1')
+    this.heading = page.locator('role=heading[level=1]')
     /**
      * @type {import('@playwright/test').Locator}
      */
-    this.gamesHeading = page.locator(
-      `h2:has-text("${translate('titles.your-games')}")`
-    )
-    /**
-     * @type {import('@playwright/test').Locator}
-     */
-    this.games = page.locator('section[data-testid="games"] > article')
-    /**
-     * @type {import('@playwright/test').Locator}
-     */
-    this.catalogHeading = page.locator(
-      `h2:has-text("${translate('titles.catalog')}")`
-    )
-    /**
-     * @type {import('@playwright/test').Locator}
-     */
-    this.catalogItems = page.locator('section[data-testid="catalog"] > article')
-    /**
-     * @type {import('@playwright/test').Locator}
-     */
-    this.catalogItemHeadings = this.catalogItems.filter({
-      has: page.locator('h3')
+    this.gamesHeading = page.locator('role=heading', {
+      hasText: translate('titles.your-games')
     })
     /**
      * @type {import('@playwright/test').Locator}
      */
-    this.loginButton = page.locator('header button:has-text("login")')
+    this.games = page.locator('[aria-roledescription="games"] >> role=article')
     /**
      * @type {import('@playwright/test').Locator}
      */
-    this.logoutButton = page.locator('header button:has-text("directions_run")')
+    this.catalogHeading = page.locator('role=heading', {
+      hasText: translate('titles.catalog')
+    })
+    /**
+     * @type {import('@playwright/test').Locator}
+     */
+    this.catalogItems = page.locator(
+      '[aria-roledescription="catalog"] >> role=article'
+    )
+    /**
+     * @type {import('@playwright/test').Locator}
+     */
+    this.catalogItemHeadings = this.catalogItems.filter({
+      has: page.locator('role=heading[level=3]')
+    })
+    /**
+     * @type {import('@playwright/test').Locator}
+     */
+    this.loginButton = page.locator('header >> role=button', {
+      hasText: 'login'
+    })
+    /**
+     * @type {import('@playwright/test').Locator}
+     */
+    this.logoutButton = page.locator('header >> role=button', {
+      hasText: 'directions_run'
+    })
   }
 
   /**
