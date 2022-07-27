@@ -1,5 +1,6 @@
 <script>
   import { afterUpdate, createEventDispatcher, onMount } from 'svelte'
+  import { fade } from 'svelte/transition'
   import Portal from 'svelte-portal'
   import Button from './Button.svelte'
   import Pane from './Pane.svelte'
@@ -41,45 +42,38 @@
 
 <svelte:body on:keyup={handleKeyup} />
 <Portal>
-  <div class="filter" class:open />
-  <div class="backdrop" class:open on:click={close}>
-    {#if closable}
-      <span class="close-container">
-        <Button icon="close" on:click={close} />
-      </span>
-    {/if}
-    <article role="dialog" on:click|stopPropagation>
-      <Pane>
-        <header class="heading">{title}</header>
-        <div class="content">
-          <slot />
-        </div>
-        <footer>
-          <slot name="buttons" />
-        </footer>
-      </Pane>
-    </article>
-  </div>
+  {#if open}
+    <div class="filter" transition:fade />
+    <div class="backdrop" transition:fade on:click={close}>
+      {#if closable}
+        <span class="close-container">
+          <Button icon="close" on:click={close} />
+        </span>
+      {/if}
+      <article role="dialog" on:click|stopPropagation>
+        <Pane>
+          <header class="heading">{title}</header>
+          <div class="content">
+            <slot />
+          </div>
+          <footer>
+            <slot name="buttons" />
+          </footer>
+        </Pane>
+      </article>
+    </div>
+  {/if}
 </Portal>
 
 <style lang="postcss">
   .backdrop,
   .filter {
     @apply fixed flex items-center justify-center 
-           inset-0 m-0 z-10 p-10 opacity-0 
-           transition duration-$short pointer-events-none;
-
-    &.open {
-      @apply opacity-100 pointer-events-auto;
-    }
+           inset-0 m-0 z-10 p-10;
   }
 
   .filter {
-    @apply bg-$base-dark delay-150;
-
-    &.open {
-      @apply opacity-90 backdrop-filter backdrop-blur-sm;
-    }
+    @apply bg-$base-dark delay-150 opacity-90 backdrop-filter backdrop-blur-sm;
   }
 
   .close-container {

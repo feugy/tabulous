@@ -5,6 +5,7 @@
   import { Dropdown } from '../components'
   import {
     areIndicatorsVisible,
+    currentGame,
     isFullscreen,
     toggleFullscreen,
     toggleIndicators
@@ -12,14 +13,26 @@
 
   const dispatch = createEventDispatcher()
 
+  const homeAction = 'home'
+  const inviteAction = 'invite'
+  const fullscreenAction = 'fullscreen'
+  const indicatorsAction = 'indicators'
+
   $: options = [
-    { icon: 'home', label: $_('actions.quit-game') },
-    { icon: 'connect_without_contact', label: $_('actions.invite-player') },
+    { icon: 'home', label: $_('actions.quit-game'), value: homeAction },
+    ($currentGame?.availableSeats ?? 0) > 0
+      ? {
+          icon: 'connect_without_contact',
+          label: $_('actions.invite-player'),
+          value: inviteAction
+        }
+      : undefined,
     {
       icon: $isFullscreen ? 'fullscreen_exit' : 'fullscreen',
       label: $_(
         $isFullscreen ? 'actions.leave-fullscreen' : 'actions.enter-fullscreen'
-      )
+      ),
+      value: fullscreenAction
     },
     {
       icon: $areIndicatorsVisible ? 'label_off' : 'label',
@@ -27,21 +40,22 @@
         $areIndicatorsVisible
           ? 'actions.hide-indicators'
           : 'actions.show-indicators'
-      )
+      ),
+      value: indicatorsAction
     }
-  ]
+  ].filter(Boolean)
 
-  function handleSelect({ detail: value }) {
-    if (value === options[0]) {
+  function handleSelect({ detail: { value } }) {
+    if (value === homeAction) {
       if ($isFullscreen) {
         toggleFullscreen()
       }
       goto('/home')
-    } else if (value === options[1]) {
+    } else if (value === inviteAction) {
       dispatch('invite-player')
-    } else if (value === options[2]) {
+    } else if (value === fullscreenAction) {
       toggleFullscreen()
-    } else if (value === options[3]) {
+    } else if (value === indicatorsAction) {
       toggleIndicators()
     }
   }

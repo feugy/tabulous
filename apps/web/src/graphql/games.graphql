@@ -85,6 +85,7 @@ fragment fullGame on Game {
   players {
     ...lightPlayer
   }
+  availableSeats
   meshes {
     ...mesh
   }

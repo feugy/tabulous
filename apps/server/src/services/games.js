@@ -172,13 +172,14 @@ export async function createGame(kind, playerId) {
   }
   // trim some data out of the descriptor before saving it as game properties
   // eslint-disable-next-line no-unused-vars
-  const { name, build, addPlayer, ...gameProps } = descriptor
+  const { name, build, addPlayer, maxSeats, ...gameProps } = descriptor
   try {
     let game = {
       kind,
       created: Date.now(),
       playerIds: [playerId],
       ...gameProps,
+      availableSeats: (maxSeats ?? 2) - 1,
       meshes: await createMeshes(kind, descriptor),
       messages: [],
       cameras: [],
@@ -282,9 +283,10 @@ export async function invite(gameId, guestId, hostId) {
   if (!game || !guest || game.playerIds.includes(guest.id)) {
     return null
   }
-  if (game.maxSeats && game.playerIds.length >= game.maxSeats) {
+  if (game.availableSeats <= 0) {
     throw new Error('no more available seats')
   }
+  game.availableSeats--
   game.playerIds.push(guest.id)
   const descriptor = await repositories.catalogItems.getById(game.kind)
   if (descriptor.addPlayer) {

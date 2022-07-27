@@ -16,15 +16,15 @@ export class LoginPage {
     /**
      * @type {import('@playwright/test').Locator}
      */
-    this.githubButton = page.locator(
-      `button:has-text("${translate('actions.log-in-github')}")`
-    )
+    this.githubButton = page.locator('role=button', {
+      hasText: translate('actions.log-in-github')
+    })
     /**
      * @type {import('@playwright/test').Locator}
      */
-    this.googleButton = page.locator(
-      `button:has-text("${translate('actions.log-in-google')}")`
-    )
+    this.googleButton = page.locator('role=button', {
+      hasText: translate('actions.log-in-google')
+    })
     /**
      * @type {import('@playwright/test').Locator}
      */
@@ -32,21 +32,17 @@ export class LoginPage {
     /**
      * @type {import('@playwright/test').Locator}
      */
-    this.usernameInput = page.locator('input:not([data-testid])')
+    this.usernameInput = page.locator('role=textbox >> nth=0')
     /**
      * @type {import('@playwright/test').Locator}
      */
-    this.passwordInput = page.locator('input[data-testid="password"]')
+    this.passwordInput = page.locator('role=textbox >> nth=1')
     /**
      * @type {import('@playwright/test').Locator}
      */
-    this.passwordButton = page.locator(
-      `button:has-text("${translate('actions.log-in')}")`
-    )
-    /**
-     * @type {import('@playwright/test').Locator}
-     */
-    this.errorMessage = page.locator('.error')
+    this.passwordButton = page.locator('role=button', {
+      hasText: translate('actions.log-in')
+    })
   }
 
   /**

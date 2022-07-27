@@ -2,6 +2,8 @@ type CatalogItem {
   name: ID!
   locales: ItemLocales!
   copyright: Copyright
+  minSeats: Int
+  maxSeats: Int
   # minimum age in years
   minAge: Int
   # minimum time in minutes

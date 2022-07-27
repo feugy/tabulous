@@ -15,7 +15,7 @@ actions:
   log-in-password: Continuer avec un mot de passe
   log-out: Quitter
   new-game: Nouveau
-  quit-game: Quitter le jeu,
+  quit-game: Quitter le jeu
   show-indicators: Afficher les indicateurs
 errors:
   login-failure: Pseudo ou mot de passe incorrect. Merci de réessayer.
@@ -28,8 +28,11 @@ formats:
       month: short
 labels:
   confirm-game-deletion: Souhaitez vous vraiment supprimer cette partie de {kind} ?
-  game-min-age: 'age : {minAge}+'
-  game-min-time: "temps : {minTime}'"
+  game-authors: 'Créé par : '
+  game-designers: 'Illustré par : '
+  game-publishers: 'Distribué par : '
+  game-min-age: '{minAge}+'
+  game-min-time: "{minTime}'"
   host: hôte
   no-games-yet: Rien pour l'instant ! Choisissez un jeu disponible.
   peer-players: avec {names}

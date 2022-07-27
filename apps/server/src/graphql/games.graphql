@@ -11,7 +11,7 @@ type Game {
   cameras: [CameraPosition]
   hands: [Hand]
   rulesBookPageCount: Int
-  maxSeats: Int
+  availableSeats: Int
   zoomSpec: ZoomSpec
   tableSpec: TableSpec
 }
