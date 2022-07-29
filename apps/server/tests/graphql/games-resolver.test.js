@@ -332,6 +332,8 @@ describe('given a started server', () => {
     })
 
     describe('listGames subscription', () => {
+      afterEach(() => stopSubscription(ws))
+
       it('lists player games on subscription', async () => {
         const playerId = players[0].id
         const games = [
@@ -401,7 +403,6 @@ describe('given a started server', () => {
           games[2].playerIds
         )
         expect(services.getPlayerById).toHaveBeenCalledTimes(4)
-        await stopSubscription(ws)
       })
 
       it('ignores game list updates for other players', async () => {
@@ -451,7 +452,100 @@ describe('given a started server', () => {
         expect(services.getPlayerById).toHaveBeenCalledTimes(2)
         expect(services.listGames).toHaveBeenCalledWith(playerId)
         expect(services.listGames).toHaveBeenCalledTimes(1)
-        await stopSubscription(ws)
+      })
+    })
+
+    describe('receiveGameUpdates subscription', () => {
+      const playerId = players[0].id
+      const games = [
+        {
+          id: faker.datatype.uuid(),
+          created: faker.date.past().getTime(),
+          playerIds: [playerId]
+        },
+        {
+          id: faker.datatype.uuid(),
+          created: faker.date.past().getTime(),
+          playerIds: [playerId, players[1].id]
+        },
+        {
+          id: faker.datatype.uuid(),
+          created: faker.date.past().getTime(),
+          playerIds: [players[1].id, players[2].id]
+        }
+      ]
+
+      beforeEach(() => {
+        services.getPlayerById.mockImplementation(async ids =>
+          Array.isArray(ids)
+            ? players.filter(({ id }) => ids.includes(id))
+            : players.find(({ id }) => id === ids)
+        )
+      })
+
+      afterEach(() => stopSubscription(ws))
+
+      it('sends updates on game change', async () => {
+        await startSubscription(
+          ws,
+          `subscription { 
+            receiveGameUpdates(gameId: "${games[0].id}") { 
+              id
+              created
+              players { id username }
+            } 
+          }`,
+          signToken(playerId, configuration.auth.jwt.key)
+        )
+        const data = waitOnMessage(ws, data => data.type === 'data')
+        services.gameListsUpdate.next({ playerId, games: games.slice(0, 2) })
+        expect(await data).toEqual(
+          expect.objectContaining({
+            payload: {
+              data: {
+                receiveGameUpdates: {
+                  ...games[0],
+                  playerIds: undefined,
+                  players: players.slice(0, 1)
+                }
+              }
+            }
+          })
+        )
+        expect(services.listGames).not.toHaveBeenCalled()
+        expect(services.getPlayerById).toHaveBeenCalledWith(playerId)
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(2, [playerId])
+        expect(services.getPlayerById).toHaveBeenCalledTimes(2)
+      })
+
+      it('ignores updates from other players', async () => {
+        await startSubscription(
+          ws,
+          `subscription { 
+            receiveGameUpdates(gameId: "${games[0].id}") { 
+              id 
+              created
+              players { id username }
+            } 
+          }`,
+          signToken(playerId, configuration.auth.jwt.key)
+        )
+        const data = waitOnMessage(ws, data => data.type === 'data')
+        services.gameListsUpdate.next({
+          playerId: players[1].id,
+          games: games.slice(1)
+        })
+        await expect(
+          Promise.race([
+            data,
+            new Promise((resolve, reject) =>
+              setTimeout(reject, 500, new Error('timeout'))
+            )
+          ])
+        ).rejects.toThrow('timeout')
+        expect(services.listGames).not.toHaveBeenCalled()
+        expect(services.getPlayerById).toHaveBeenCalledWith(playerId)
+        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
       })
     })
   })
