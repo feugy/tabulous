@@ -128,6 +128,7 @@ export async function deleteGame(gameId) {
 
 /**
  * Invites another player to a given game.
+ * Does not alter the current game: instead game updates should come from server or host.
  * @async
  * @param {string} gameId - the shared game id.
  * @param {string} playerId - the invited player id.
@@ -142,8 +143,6 @@ export async function invite(gameId, playerId) {
   if (!game) {
     return false
   }
-  currentGame$.next(game)
-  await load(game, false)
   return true
 }
 
@@ -260,6 +259,7 @@ export async function loadGame(gameId) {
 }
 
 async function load(game, firstLoad) {
+  currentGame$.next(game)
   hands = game.hands ?? []
   cameras = game.cameras ?? []
   if (game.messages) {
@@ -313,6 +313,9 @@ function takeHostRole(gameId) {
   hostId$.next(player.id)
   shareGame()
   return [
+    runSubscription(graphQL.receiveGameUpdates, { gameId }).subscribe(
+      handleServerUpdate
+    ),
     // save scene
     action
       .pipe(
@@ -360,13 +363,18 @@ function takeHostRole(gameId) {
   ]
 }
 
+async function handleServerUpdate(game) {
+  await load(game, false)
+  shareGame()
+}
+
 function shareGame(peerId) {
-  const gameId = currentGame$.value.id
+  const { id: gameId, ...otherGameData } = currentGame$.value
   logger.info(
     { gameId },
     `sending game data ${gameId} to peer${peerId ? ` ${peerId}` : 's'}`
   )
-  const { handMeshes, meshes, ...specs } = engine.serialize()
+  const { handMeshes, meshes } = engine.serialize()
   const game = {
     id: gameId,
     meshes,
@@ -374,7 +382,7 @@ function shareGame(peerId) {
     messages: serializeThread(),
     cameras
   }
-  send({ type: 'game-sync', ...specs, ...game }, peerId)
+  send({ type: 'game-sync', ...otherGameData, ...game }, peerId)
   return game
 }
 

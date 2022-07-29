@@ -6,6 +6,7 @@ import {
   invite,
   listGames,
   loadGame,
+  receiveGameUpdates,
   saveGame
 } from './games.graphql'
 import {
@@ -29,6 +30,7 @@ export {
   loadGame,
   logIn,
   logOut,
+  receiveGameUpdates,
   saveGame,
   searchPlayers,
   sendSignal

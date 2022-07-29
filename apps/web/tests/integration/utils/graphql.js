@@ -26,7 +26,7 @@ export async function mockGraphQL(page, mocks) {
   const responsesPerOperation = initResponses(mocks)
   const rankPerOperation = new Map()
 
-  const handler = (route, request) => {
+  const handler = async (route, request) => {
     const { operationName: operation } = request.postDataJSON()
     let responses = responsesPerOperation.get(operation)
     if (!responses) {
@@ -37,7 +37,9 @@ export async function mockGraphQL(page, mocks) {
     route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify({ data: { [operation]: responses[rank] } })
+      body: JSON.stringify({
+        data: { [operation]: await invokeOrReturn(responses[rank]) }
+      })
     })
     if (rank < responses.length - 1) {
       rankPerOperation.set(operation, rank + 1)
@@ -51,6 +53,10 @@ export async function mockGraphQL(page, mocks) {
     restore: () => page.unroute(graphQLURL, handler),
     clear: () => rankPerOperation.clear()
   }
+}
+
+function invokeOrReturn(data) {
+  return typeof data === 'function' ? data() : data
 }
 
 function initResponses(mocks) {

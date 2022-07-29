@@ -333,4 +333,5 @@ extend type Mutation {
 
 extend type Subscription {
   listGames: [Game]
+  receiveGameUpdates(gameId: ID!): Game
 }
