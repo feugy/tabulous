@@ -25,7 +25,7 @@ describe('Game page', () => {
   }
 
   it('removes invite option after using the last seats', async ({ page }) => {
-    await mockGraphQL(page, {
+    const { sendToSubscription } = await mockGraphQL(page, {
       getCurrentPlayer: {
         token: faker.datatype.uuid(),
         player,
@@ -37,10 +37,17 @@ describe('Game page', () => {
       loadGame: game,
       saveGame: { id: game.id },
       searchPlayers: [[player2]],
-      invite: {
-        ...game,
-        availableSeats: 0,
-        players: [player, player2]
+      invite: () => {
+        sendToSubscription({
+          data: {
+            receiveGameUpdates: {
+              ...game,
+              availableSeats: 0,
+              players: [player, player2]
+            }
+          }
+        })
+        return game
       }
     })
 

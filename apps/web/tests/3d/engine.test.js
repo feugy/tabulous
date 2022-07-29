@@ -117,24 +117,6 @@ describe('createEngine()', () => {
       })
     })
 
-    it('proxies zoom and table specs', async () => {
-      const zoomSpec = { min: 2, initial: 30 }
-      const tableSpec = { width: 100, height: 50 }
-      const foo = { bar: true }
-      await engine.load(
-        { meshes: [], hands: [], tableSpec, zoomSpec, foo },
-        playerId,
-        false
-      )
-      expect(engine.serialize()).toEqual({
-        meshes: [],
-        handMeshes: [],
-        zoomSpec,
-        tableSpec,
-        foo: undefined
-      })
-    })
-
     it('displays loading UI on initial load only', async () => {
       expect(receiveLoading).not.toHaveBeenCalled()
       const mesh = {

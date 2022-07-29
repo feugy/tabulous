@@ -93,6 +93,8 @@ describe('given a mocked game engine', () => {
     onDisposeObservable: new Observable()
   }
 
+  const gameUpdates$ = new Subject()
+
   beforeAll(() => engine$.next(engine))
 
   afterEach(() => {
@@ -106,6 +108,7 @@ describe('given a mocked game engine', () => {
       await loadGame(faker.datatype.uuid())
       expect(warn).toHaveBeenCalledTimes(1)
       expect(runQuery).not.toHaveBeenCalled()
+      expect(runSubscription).not.toHaveBeenCalled()
       expect(engine.load).not.toHaveBeenCalled()
       expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(0)
     })
@@ -149,13 +152,18 @@ describe('given a mocked game engine', () => {
           false
         )
         expect(runQuery).toHaveBeenCalledTimes(1)
+        expect(runSubscription).toHaveBeenCalledWith(
+          graphQL.receiveGameUpdates,
+          { gameId }
+        )
+        expect(runSubscription).toHaveBeenCalledTimes(1)
         expect(engine.load).toHaveBeenCalledWith(game, player.id, true)
         expect(engine.load).toHaveBeenCalledTimes(1)
         expect(loadCameraSaves).not.toHaveBeenCalled()
         expect(loadThread).not.toHaveBeenCalled()
         expect(connectWith).not.toHaveBeenCalled()
         expect(send).toHaveBeenCalledWith(
-          { type: 'game-sync', ...game, players: undefined, cameras: [] },
+          { type: 'game-sync', ...game, cameras: [] },
           undefined
         )
         expect(send).toHaveBeenCalledTimes(1)
@@ -163,7 +171,7 @@ describe('given a mocked game engine', () => {
         expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(
           new Map([[player.id, { ...player, isHost: true, playing: true }]])
         )
-        expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(3)
+        expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(4)
       })
 
       it('loads camera positions upon game loading', async () => {
@@ -194,7 +202,6 @@ describe('given a mocked game engine', () => {
           {
             type: 'game-sync',
             ...game,
-            players: undefined,
             messages: [],
             cameras
           },
@@ -230,7 +237,7 @@ describe('given a mocked game engine', () => {
         expect(engine.load).toHaveBeenCalledTimes(1)
         expect(loadCameraSaves).not.toHaveBeenCalled()
         expect(send).toHaveBeenCalledWith(
-          { type: 'game-sync', ...game, players: undefined },
+          { type: 'game-sync', ...game },
           undefined
         )
         expect(send).toHaveBeenCalledTimes(1)
@@ -304,6 +311,38 @@ describe('given a mocked game engine', () => {
           expect(runQuery).not.toHaveBeenCalled()
         })
 
+        it('sends game data on server update', async () => {
+          gameUpdates$.next(game)
+          expect(engine.load).toHaveBeenCalledWith(game, player.id, false)
+          expect(engine.load).toHaveBeenCalledTimes(1)
+          expect(loadCameraSaves).toHaveBeenCalledTimes(1)
+          expect(loadThread).toHaveBeenCalledTimes(1)
+          expect(connectWith).not.toHaveBeenCalled()
+          await nextPromise()
+          expect(send).toHaveBeenCalledWith(
+            {
+              type: 'game-sync',
+              ...game,
+              cameras: expect.arrayContaining(game.cameras),
+              hands: [...game.hands, { playerId: player.id, meshes: [] }]
+            },
+            undefined
+          )
+          expect(send).toHaveBeenCalledTimes(1)
+          expect(openChannels).not.toHaveBeenCalled()
+          expect(gamePlayerByIdReceived).toHaveBeenCalledWith(
+            new Map([
+              [player.id, { ...player, isHost: true, playing: true }],
+              [partner1.id, { ...partner1, isHost: false, playing: false }]
+            ])
+          )
+          expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(1)
+          expect(engine.serialize).toHaveBeenCalledTimes(1)
+          expect(serializeThread).toHaveBeenCalledTimes(1)
+          expect(runQuery).not.toHaveBeenCalled()
+          expect(runSubscription).not.toHaveBeenCalled()
+        })
+
         it('sends game data to newly invited player', async () => {
           runQuery.mockResolvedValueOnce({
             players: [player, partner1, partner2]
@@ -311,6 +350,7 @@ describe('given a mocked game engine', () => {
           await connectPeerAndExpectGameSync(
             {
               ...game,
+              players: [...game.players, partner2],
               hands: [...game.hands, { playerId: player.id, meshes: [] }]
             },
             partner2.id
@@ -553,7 +593,7 @@ describe('given a mocked game engine', () => {
           expect(closeChannels).toHaveBeenCalledTimes(1)
         })
 
-        describe('with a loaded game', () => {
+        describe('with loaded game for peers', () => {
           beforeEach(async () => {
             connectWith.mockImplementationOnce(async () => {
               await nextPromise()
@@ -600,7 +640,8 @@ describe('given a mocked game engine', () => {
                 ])
               )
             )
-            expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(3)
+            expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(4)
+            expect(runSubscription).not.toHaveBeenCalled()
           })
 
           it('share hand with other peers', async () => {
@@ -661,10 +702,8 @@ describe('given a mocked game engine', () => {
               {
                 type: 'game-sync',
                 id: game.id,
-                cameras: game.cameras,
-                meshes: game.meshes,
-                messages: [],
-                hands: game.hands
+                ...game,
+                messages: []
               },
               undefined
             )
@@ -678,6 +717,11 @@ describe('given a mocked game engine', () => {
               ])
             )
             expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(2)
+            expect(runSubscription).toHaveBeenCalledWith(
+              graphQL.receiveGameUpdates,
+              { gameId: game.id }
+            )
+            expect(runSubscription).toHaveBeenCalledTimes(1)
             jest.clearAllMocks()
             const newcamera = { pos: 'a' }
             cameraSaves.next([newcamera])
@@ -708,6 +752,7 @@ describe('given a mocked game engine', () => {
               ])
             )
             expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(1)
+            expect(runSubscription).not.toHaveBeenCalled()
           })
         })
       })
@@ -734,8 +779,7 @@ describe('given a mocked game engine', () => {
         playerId: guest.id
       })
       expect(runMutation).toHaveBeenCalledTimes(1)
-      expect(engine.load).toHaveBeenCalledWith(game, player.id, false)
-      expect(engine.load).toHaveBeenCalledTimes(1)
+      expect(engine.load).not.toHaveBeenCalled()
     })
 
     it('returns false when invite was declined', async () => {
@@ -746,6 +790,7 @@ describe('given a mocked game engine', () => {
         playerId: guest.id
       })
       expect(runMutation).toHaveBeenCalledTimes(1)
+      expect(engine.load).not.toHaveBeenCalled()
     })
   })
 
@@ -769,7 +814,9 @@ describe('given a mocked game engine', () => {
 
   function prepareGame(game) {
     engine.onDisposeObservable.notifyObservers()
-    runSubscription.mockReturnValue(new Subject())
+    runSubscription.mockImplementation(subscription =>
+      subscription === graphQL.receiveGameUpdates ? gameUpdates$ : null
+    )
     runQuery.mockResolvedValueOnce({
       ...game,
       meshes: [...game.meshes],

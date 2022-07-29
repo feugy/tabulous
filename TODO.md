@@ -58,7 +58,6 @@ Roadmap
 
 ## Server
 
-- when game is altered on server side (a player is joining) push game-sync to all connected peers (replaces invite result)
 - per-player default camera position & configurable player position at game level
 - invite players who have no account yet
 - allows a single connection per player (discards other JWTs)

@@ -157,6 +157,12 @@ subscription listGames {
   }
 }
 
+subscription receiveGameUpdates($gameId: ID!) {
+  receiveGameUpdates(gameId: $gameId) {
+    ...fullGame
+  }
+}
+
 query loadGame($gameId: ID!) {
   loadGame(gameId: $gameId) {
     ...fullGame
