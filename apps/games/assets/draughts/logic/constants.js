@@ -24,3 +24,15 @@ export const faceUVs = {
     [0, 0, 0, 0]
   ]
 }
+
+export const cameraPositions = {
+  [blackId]: {
+    alpha: Math.PI / 2,
+    target: [0, 0, 2],
+    elevation: 37
+  },
+  [whiteId]: {
+    target: [0, 0, -2],
+    elevation: 37
+  }
+}
