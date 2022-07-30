@@ -9,7 +9,7 @@ describe('CameraManager', () => {
   const defaults = {
     alpha: (3 * Math.PI) / 2,
     beta: Math.PI / 8,
-    elevation: 25,
+    elevation: 35,
     minY: 5,
     maxY: 70,
     target: [0, 0, 0]
@@ -99,29 +99,26 @@ describe('CameraManager', () => {
 
     it('moves camera horizontally', async () => {
       await manager.pan({ x: 200, y: 0 }, { x: 300, y: 0 })
-      expectState(states[states.length - 1], { x: -5.00541008199442 })
+      expectState(states[states.length - 1], { target: [-5.00541008199442] })
       await manager.pan({ x: 300, y: 0 }, { x: 100, y: 0 }, 200)
-      expectState(states[states.length - 1], { x: 5.00541008199442 })
+      expectState(states[states.length - 1], { target: [5.00541008199442] })
     })
 
     it('moves camera vertically', async () => {
       await manager.pan({ y: 200, x: 0 }, { y: 300, x: 0 })
       expectState(states[states.length - 1], {
-        x: -1.7454683819307633,
-        z: 5.394053194394996
+        target: [-1.7454683819307633, 0, 5.394053194394996]
       })
       await manager.pan({ y: 200, x: 0 }, { y: 0, x: 0 }, 200)
       expectState(states[states.length - 1], {
-        x: 2.17973574652175,
-        z: -6.736077655819695
+        target: [2.17973574652175, 0, -6.736077655819695]
       })
     })
 
     it('does not move outside of the table', async () => {
       await manager.pan({ y: 0, x: 0 }, { y: 300, x: 300 })
       expectState(states[states.length - 1], {
-        x: -19.025572919340163,
-        z: 17.52418404460969
+        target: [-19.025572919340163, 0, 17.52418404460969]
       })
       await manager.pan({ y: 0, x: 0 }, { y: 300, x: 300 })
       //TODO
@@ -150,8 +147,7 @@ describe('CameraManager', () => {
       await manager.rotate(Math.PI / 4)
       await panPromise
       expectState(states[states.length - 1], {
-        x: -19.025572919340163,
-        z: 17.52418404460969
+        target: [-19.025572919340163, 0, 17.52418404460969]
       })
       // TODO
     })
@@ -169,16 +165,16 @@ describe('CameraManager', () => {
 
     it('zooms in', async () => {
       await manager.zoom(-3)
-      expectState(states[states.length - 1], { elevation: 22 })
+      expectState(states[states.length - 1], { elevation: 32 })
       await manager.zoom(-5, 200)
-      expectState(states[states.length - 1], { elevation: 17 })
+      expectState(states[states.length - 1], { elevation: 27 })
     })
 
     it('zooms out', async () => {
       await manager.zoom(5)
-      expectState(states[states.length - 1], { elevation: 30 })
+      expectState(states[states.length - 1], { elevation: 40 })
       await manager.zoom(8, 200)
-      expectState(states[states.length - 1], { elevation: 38 })
+      expectState(states[states.length - 1], { elevation: 48 })
     })
 
     it.skip('can not zoom outside boundaries', async () => {
@@ -212,7 +208,7 @@ describe('CameraManager', () => {
       expect(saveUpdates[1]).toHaveLength(3)
       expectState(saveUpdates[1][0])
       expectState(saveUpdates[1][1])
-      expectState(saveUpdates[1][2], { elevation: 30 })
+      expectState(saveUpdates[1][2], { elevation: 40 })
       expect(manager.saves).toEqual(saveUpdates[1])
     })
 
@@ -221,7 +217,7 @@ describe('CameraManager', () => {
       manager.save()
       expect(saveUpdates).toHaveLength(1)
       expect(saveUpdates[0]).toHaveLength(1)
-      expectState(saveUpdates[0][0], { elevation: 30 })
+      expectState(saveUpdates[0][0], { elevation: 40 })
       expect(manager.saves).toEqual(saveUpdates[0])
     })
   })
@@ -257,26 +253,44 @@ describe('CameraManager', () => {
   describe('loadStates()', () => {
     beforeEach(() => manager.init())
 
-    it('resets all states', async () => {
+    it('resets all states and loads first position', async () => {
       await manager.rotate(Math.PI / 4)
       manager.save(1)
       expect(manager.saves).toHaveLength(2)
       expectState(manager.saves[0])
       expectState(manager.saves[1], { alpha: (7 * Math.PI) / 4 })
       saveUpdates = []
-
-      manager.loadSaves([
+      const saves = [
+        {
+          alpha: Math.PI / 2,
+          beta: Math.PI / 4,
+          elevation: 35,
+          target: [0, 0, -5],
+          hash: `0-0--5-${Math.PI / 2}-${Math.PI / 4}-35`
+        },
         {
           alpha: defaults.alpha,
           beta: defaults.beta,
           elevation: 30,
           target: [0, 0, 0],
           hash: `0-0-0-${defaults.alpha}-${defaults.beta}-30`
+        },
+        {
+          alpha: defaults.alpha,
+          beta: defaults.beta,
+          elevation: 25,
+          target: [3, 0, 0],
+          hash: `3-0-0-${defaults.alpha}-${defaults.beta}-25`
         }
-      ])
-      expect(manager.saves).toHaveLength(1)
-      expectState(manager.saves[0], { elevation: 30 })
-      expect(saveUpdates).toEqual([manager.saves])
+      ]
+
+      await manager.loadSaves(saves)
+      expect(manager.saves).toHaveLength(saves.length)
+      expectState(manager.saves[0], saves[0])
+      expectState(manager.saves[1], saves[1])
+      expectState(manager.saves[2], saves[2])
+      expectState(states[states.length - 1], saves[0])
+      expect(saveUpdates).toEqual([saves])
     })
   })
 
@@ -295,13 +309,6 @@ describe('CameraManager', () => {
       expect(manager.camera.upperRadiusLimit).toEqual(max)
     })
 
-    it('adjusts current main scene zoom', () => {
-      const initial = faker.datatype.number()
-      manager.adjustZoomLevels({ initial })
-      expectState(manager.saves[0], { elevation: initial })
-      expect(manager.camera.radius).toEqual(initial)
-    })
-
     it('adjusts current hand scene zoom', () => {
       const hand = faker.datatype.number()
       manager.adjustZoomLevels({ hand })
@@ -312,23 +319,20 @@ describe('CameraManager', () => {
       const hand = faker.datatype.number()
       const min = faker.datatype.number()
       const max = faker.datatype.number()
-      const initial = faker.datatype.number()
-      manager.adjustZoomLevels({ min, initial, max, hand })
+      manager.adjustZoomLevels({ min, max, hand })
       expect(manager.camera.lowerRadiusLimit).toEqual(min)
-      expect(manager.camera.radius).toEqual(initial)
-      expectState(manager.saves[0], { elevation: initial })
       expect(manager.camera.upperRadiusLimit).toEqual(max)
       expect(manager.handSceneCamera.position.y).toEqual(hand)
     })
   })
 
-  function expectState(state, { alpha, beta, elevation, x, y, z } = {}) {
+  function expectState(state, { alpha, beta, elevation, target = [] } = {}) {
     expect(state.alpha).toBeCloseTo(alpha ?? defaults.alpha)
     expect(state.beta).toBeCloseTo(beta ?? defaults.beta)
     expect(state.elevation).toEqual(elevation ?? defaults.elevation)
-    expect(state.target[0]).toBeCloseTo(x ?? defaults.target[0])
-    expect(state.target[1]).toBeCloseTo(y ?? defaults.target[1])
-    expect(state.target[2]).toBeCloseTo(z ?? defaults.target[2])
+    expect(state.target[0]).toBeCloseTo(target[0] ?? defaults.target[0])
+    expect(state.target[1]).toBeCloseTo(target[1] ?? defaults.target[1])
+    expect(state.target[2]).toBeCloseTo(target[2] ?? defaults.target[2])
     expect(state.hash).toEqual(
       `${state.target.join('-')}-${state.alpha}-${state.beta}-${
         state.elevation

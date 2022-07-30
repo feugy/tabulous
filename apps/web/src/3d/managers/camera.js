@@ -54,7 +54,7 @@ class CameraManager {
    * @param {import('@babylonjs/core').Scene} params.scene? - scene to host this card (default to last scene).
    */
   init({
-    y = 25,
+    y = 35,
     beta = Math.PI / 8,
     minY = 5,
     maxY = 70,
@@ -103,15 +103,13 @@ class CameraManager {
 
   /**
    * Adjust the main camera zoom range (when relevant), and the fixed hand zoom (when relevant).
-   * Also adjust default camera position when changing the initial zoom level.
    * @param {object} params - game data, including:
    * @param {number} params.min? - minimum zoom level allowed on the main scene.
    * @param {number} params.max? - maximum zoom level allowed on the main scene.
-   * @param {number} params.initial? - initial zoom level for the main scene.
    * @param {number} params.handZoom? - fixed zoom level for the hand scene.
    * @throws {Error} when called prior to initialization.
    */
-  adjustZoomLevels({ min, max, hand, initial } = {}) {
+  adjustZoomLevels({ min, max, hand } = {}) {
     const { camera, handSceneCamera } = this
     if (!camera) {
       throw new Error(
@@ -123,10 +121,6 @@ class CameraManager {
     }
     if (max) {
       camera.upperRadiusLimit = max
-    }
-    if (initial) {
-      camera.radius = initial
-      this.saves[0] = serialize(camera)
     }
     if (hand) {
       handSceneCamera.position.y = hand
@@ -223,11 +217,13 @@ class CameraManager {
 
   /**
    * Loads saved position and notifies observers.
+   * Restores the first position.
    * @param {CameraSave[]} saves - an array of save position.
    */
-  loadSaves(saves) {
+  async loadSaves(saves) {
     this.saves = saves
     this.onSaveObservable.notifyObservers([...this.saves])
+    await this.restore()
   }
 }
 
