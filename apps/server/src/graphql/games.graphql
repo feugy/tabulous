@@ -165,7 +165,6 @@ type Hand {
 type ZoomSpec {
   min: Float
   max: Float
-  initial: Float
   hand: Float
 }
 
