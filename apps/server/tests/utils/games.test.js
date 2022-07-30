@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker'
 import {
   createMeshes,
+  buildCameraPosition,
   decrement,
   drawInHand,
   findAnchor,
@@ -820,6 +821,51 @@ describe('decrement()', () => {
       quantifiable: { quantity: 1 }
     })
     expect(mesh).toEqual({ id: 'mesh1', foo, quantifiable: { quantity: 5 } })
+  })
+})
+
+describe('buildCameraPosition()', () => {
+  it('applies all defaults', () => {
+    const playerId = faker.datatype.uuid()
+    expect(buildCameraPosition({ playerId })).toEqual({
+      playerId,
+      index: 0,
+      target: [0, 0, 0],
+      alpha: (Math.PI * 3) / 2,
+      beta: Math.PI / 8,
+      elevation: 35,
+      hash: '0-0-0-4.71238898038469-0.39269908169872414-35'
+    })
+  })
+
+  it('throws on missing player id', () => {
+    expect(() => buildCameraPosition({})).toThrow(
+      'camera position requires playerId'
+    )
+  })
+
+  it('uses provided data and computes hash', () => {
+    const playerId = faker.datatype.uuid()
+    const index = faker.datatype.number()
+    const alpha = faker.datatype.number()
+    const beta = faker.datatype.number()
+    const elevation = faker.datatype.number()
+    const target = [
+      faker.datatype.number(),
+      faker.datatype.number(),
+      faker.datatype.number()
+    ]
+    expect(
+      buildCameraPosition({ playerId, index, alpha, beta, elevation, target })
+    ).toEqual({
+      playerId,
+      index,
+      target,
+      alpha,
+      beta,
+      elevation,
+      hash: `${target[0]}-${target[1]}-${target[2]}-${alpha}-${beta}-${elevation}`
+    })
   })
 })
 

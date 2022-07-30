@@ -113,7 +113,6 @@ fragment fullGame on Game {
   zoomSpec {
     min
     max
-    initial
     hand
   }
   tableSpec {

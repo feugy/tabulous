@@ -1,4 +1,5 @@
 export * from './logic/build.js'
+export * from './logic/players.js'
 
 export const locales = {
   fr: {

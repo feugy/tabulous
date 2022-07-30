@@ -1,4 +1,5 @@
 export * from './logic/build.js'
+export * from './logic/players.js'
 
 export const locales = {
   fr: {
@@ -22,4 +23,4 @@ export const tableSpec = {
   height: 100
 }
 
-export const zoomSpec = { initial: 40, min: 20 }
+export const zoomSpec = { min: 20 }

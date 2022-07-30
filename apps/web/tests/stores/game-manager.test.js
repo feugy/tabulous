@@ -315,9 +315,9 @@ describe('given a mocked game engine', () => {
           gameUpdates$.next(game)
           expect(engine.load).toHaveBeenCalledWith(game, player.id, false)
           expect(engine.load).toHaveBeenCalledTimes(1)
-          expect(loadCameraSaves).toHaveBeenCalledTimes(1)
           expect(loadThread).toHaveBeenCalledTimes(1)
           expect(connectWith).not.toHaveBeenCalled()
+          expect(loadCameraSaves).not.toHaveBeenCalled()
           await nextPromise()
           expect(send).toHaveBeenCalledWith(
             {

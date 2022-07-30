@@ -338,3 +338,52 @@ export function decrement(mesh) {
     return clone
   }
 }
+
+/**
+ * @typedef {object} CameraPosition a saved Arc rotate camera position
+ * @property {string} hash - hash for this position, to ease comparisons and change detections.
+ * @property {string} playerId - id of the player for who this camera position is relevant.
+ * @property {number} index - 0-based index for this saved position.
+ * @property {number[]} target - 3D cooordinates of the camera target, as per Babylon's specs.
+ * @property {number} alpha  - the longitudinal rotation, in radians.
+ * @property {number} beta - the longitudinal rotation, in radians.
+ * @property {number} elevation - the distance from the target (Babylon's radius).
+ * @see https://doc.babylonjs.com/divingDeeper/cameras/camera_introduction#arc-rotate-camera
+ */
+
+/**
+ * Builds a camera save for a given player, with default values:
+ * - alpha = PI * 3/2 (south)
+ * - beta = PI / 8 (slightly elevated from ground)
+ * - elevation = 35
+ * - target = [0,0,0] (the origin)
+ * - index = 0 (default camera position)
+ * It adds the hash.
+ * @param {Partial<CameraPosition>} cameraPosition - a partial camera position without hash.
+ * @returns {CameraPosition} the built camera position.
+ */
+export function buildCameraPosition({
+  playerId,
+  index = 0,
+  target = [0, 0, 0],
+  alpha = (3 * Math.PI) / 2,
+  beta = Math.PI / 8,
+  elevation = 35
+} = {}) {
+  if (!playerId) {
+    throw new Error('camera position requires playerId')
+  }
+  return addHash({
+    playerId,
+    index,
+    target,
+    alpha,
+    beta,
+    elevation
+  })
+}
+
+function addHash(camera) {
+  camera.hash = `${camera.target[0]}-${camera.target[1]}-${camera.target[2]}-${camera.alpha}-${camera.beta}-${camera.elevation}`
+  return camera
+}

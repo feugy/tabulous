@@ -265,7 +265,7 @@ async function load(game, firstLoad) {
   if (game.messages) {
     loadThread(game.messages)
   }
-  if (cameras.length) {
+  if (cameras.length && firstLoad) {
     const playerCameras = cameras
       .filter(save => save.playerId === player.id)
       .sort((a, b) => a.index - b.index)
