@@ -14,6 +14,23 @@ server {
   server_name tabulous.fr www.tabulous.fr tabulous.games www.tabulous.games;
 
   location /graphql {
+    if ($request_method = 'OPTIONS') {
+      add_header 'Access-Control-Allow-Origin' 'https://localhost:3000';
+      add_header 'Access-Control-Allow-Credentials' 'true';
+      add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+      add_header 'Access-Control-Allow-Headers' 'Content-Type, *';
+      add_header 'Access-Control-Max-Age' 1728000;
+      add_header 'Content-Type' 'text/plain; charset=utf-8';
+      add_header 'Content-Length' 0;
+      return 204;
+    } 
+    
+    add_header 'Access-Control-Allow-Origin' 'https://localhost:3000';
+    add_header 'Access-Control-Allow-Credentials' 'true';
+    add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+    add_header 'Access-Control-Allow-Headers' 'Content-Type, *';
+    add_header 'Access-Control-Expose-Headers' '*' always;
+
     proxy_pass http://localhost:3001;
     proxy_http_version 1.1;
     proxy_set_header Upgrade $http_upgrade;
@@ -22,12 +39,46 @@ server {
   }
 
   location /auth/ {
+    if ($request_method = 'OPTIONS') {
+      add_header 'Access-Control-Allow-Origin' 'https://localhost:3000';
+      add_header 'Access-Control-Allow-Credentials' 'true';
+      add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+      add_header 'Access-Control-Allow-Headers' 'Content-Type, *';
+      add_header 'Access-Control-Max-Age' 1728000;
+      add_header 'Content-Type' 'text/plain; charset=utf-8';
+      add_header 'Content-Length' 0;
+      return 204;
+    } 
+    
+    add_header 'Access-Control-Allow-Origin' 'https://localhost:3000';
+    add_header 'Access-Control-Allow-Credentials' 'true';
+    add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+    add_header 'Access-Control-Allow-Headers' 'Content-Type, *';
+    add_header 'Access-Control-Expose-Headers' '*' always;
+
     proxy_pass http://localhost:3001/;
     proxy_http_version 1.1;
     proxy_set_header Host $host;
   }
 
   location /games {
+    if ($request_method = 'OPTIONS') {
+      add_header 'Access-Control-Allow-Origin' 'https://localhost:3000';
+      add_header 'Access-Control-Allow-Credentials' 'true';
+      add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+      add_header 'Access-Control-Allow-Headers' 'Content-Type, *';
+      add_header 'Access-Control-Max-Age' 1728000;
+      add_header 'Content-Type' 'text/plain; charset=utf-8';
+      add_header 'Content-Length' 0;
+      return 204;
+    } 
+    
+    add_header 'Access-Control-Allow-Origin' 'https://localhost:3000';
+    add_header 'Access-Control-Allow-Credentials' 'true';
+    add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+    add_header 'Access-Control-Allow-Headers' 'Content-Type, *';
+    add_header 'Access-Control-Expose-Headers' '*' always;
+
     alias /home/tabulous/games/assets;
   }
 
