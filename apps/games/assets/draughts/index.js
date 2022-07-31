@@ -18,7 +18,7 @@ export const minSeats = 2
 export const maxSeats = 2
 
 export const tableSpec = {
-  texture: '/images/tables/wood-4.webp',
+  texture: '/table-textures/wood-4.webp',
   width: 100,
   height: 100
 }

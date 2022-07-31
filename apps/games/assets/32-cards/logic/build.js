@@ -33,7 +33,7 @@ function buildCards() {
         meshes.push({
           shape: 'card',
           id: `${suit}-${index}`,
-          texture: `/games/french-suited-card/textures/${suit}-${index}.ktx2`,
+          texture: `/french-suited-card/textures/${suit}-${index}.ktx2`,
           ...sizes.card,
           flippable: { isFlipped: true },
           movable: {},

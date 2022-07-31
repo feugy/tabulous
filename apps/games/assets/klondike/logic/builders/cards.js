@@ -7,11 +7,11 @@ export function buildCards() {
       meshes.push({
         shape: 'card',
         id: `${suit}-${index}`,
-        texture: `/games/french-suited-card/textures/${suit}-${index}.ktx2`,
+        texture: `/french-suited-card/textures/${suit}-${index}.ktx2`,
         ...sizes.card,
         detailable: {
-          frontImage: `/games/french-suited-card/images/${suit}-${index}.svg`,
-          backImage: `/games/french-suited-card/images/back.svg`
+          frontImage: `/french-suited-card/images/${suit}-${index}.svg`,
+          backImage: `/french-suited-card/images/back.svg`
         },
         anchorable: {
           anchors: [
