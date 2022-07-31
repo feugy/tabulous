@@ -109,7 +109,7 @@ function isRelativeAsset(path) {
  * @returns {string} the final, full, asset path
  */
 export function addAbsoluteAsset(path, gameKind, assetType) {
-  return `/games/${gameKind}/${assetType}s/${path}`
+  return `/${gameKind}/${assetType}s/${path}`
 }
 
 function randomizeBags(bags, meshById) {
