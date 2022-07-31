@@ -14,3 +14,4 @@ debug.txt
 .env.*
 .svelte-kit
 test-results
+.vercel
