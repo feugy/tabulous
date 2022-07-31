@@ -2,6 +2,7 @@
   import { createEventDispatcher } from 'svelte'
   import { _ } from 'svelte-intl'
   import Button from './Button.svelte'
+  import { gameAssetsUrl } from '../utils'
 
   export let page = 0
   export let lastPage = 0
@@ -33,7 +34,7 @@
     {#if game}
       <img
         alt={$_('tooltips.rule-page', { page: page + 1 })}
-        src={`/games/${game}/rules/${page + 1}.webp`}
+        src={`${gameAssetsUrl}/${game}/rules/${page + 1}.webp`}
       />
     {/if}
   </div>

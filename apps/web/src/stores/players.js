@@ -3,10 +3,9 @@ import { goto } from '$app/navigation'
 import { BehaviorSubject, map } from 'rxjs'
 import { initGraphQLGlient, runQuery, runMutation } from './graphql-client'
 import * as graphQL from '../graphql'
-import { makeLogger } from '../utils'
+import { makeLogger, graphQlUrl } from '../utils'
 
 const logger = makeLogger('players')
-
 const storageKey = 'session'
 
 // we distinguish no value (undefined) and no player (null)
@@ -14,7 +13,7 @@ const session$ = new BehaviorSubject()
 
 if (browser) {
   session$.subscribe(session => {
-    initGraphQLGlient(session?.token)
+    initGraphQLGlient(graphQlUrl, session?.token)
     if (session) {
       logger.info({ session }, `saving session`)
       sessionStorage.setItem(storageKey, JSON.stringify(session))
@@ -48,7 +47,7 @@ export async function recoverSession() {
   let session = null
   try {
     logger.info(`recovering previous session`)
-    initGraphQLGlient()
+    initGraphQLGlient(graphQlUrl)
     session = await runQuery(graphQL.getCurrentPlayer)
     session$.next(session)
   } catch (error) {

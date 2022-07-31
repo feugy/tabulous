@@ -4,6 +4,7 @@ import CatalogItem from '../../src/components/CatalogItem.svelte'
 
 describe('CatalogItem component', () => {
   const handleClick = jest.fn()
+  const gameAssetsUrl = 'https://localhost:3000/games'
 
   beforeEach(jest.resetAllMocks)
 
@@ -17,7 +18,7 @@ describe('CatalogItem component', () => {
     renderComponent({ game })
     expect(screen.getByRole('img')).toHaveAttribute(
       'src',
-      `games/${game.name}/catalog/cover.webp`
+      `${gameAssetsUrl}/${game.name}/catalog/cover.webp`
     )
     expect(screen.getByRole('heading')).toHaveTextContent(title)
     expect(handleClick).not.toHaveBeenCalled()

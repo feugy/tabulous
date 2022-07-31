@@ -12,12 +12,14 @@ describe('MaterialManager', () => {
   let scene
   let handScene
   let engine
+  const gameAssetsUrl = 'https://localhost:3000'
 
   configures3dTestEngine(created => ({ scene, handScene, engine } = created))
 
   it('has initial state', () => {
     expect(manager.scene).toBeNull()
     expect(manager.handScene).toBeNull()
+    expect(manager.gameAssetsUrl).toBe('')
   })
 
   describe('isManaging()', () => {
@@ -35,7 +37,7 @@ describe('MaterialManager', () => {
 
   describe('init()', () => {
     it('configures scenes', () => {
-      manager.init({ scene, handScene })
+      manager.init({ scene, handScene, gameAssetsUrl })
       expect(manager.scene).toEqual(scene)
       expect(manager.handScene).toEqual(handScene)
     })
@@ -47,7 +49,7 @@ describe('MaterialManager', () => {
       const color1 = '#0066ff66'
       const color2 = '#ff6600ff'
       manager.init(
-        { scene },
+        { scene, gameAssetsUrl },
         {
           meshes: [{ texture: texture1 }, { texture: texture2 }],
           hands: [
@@ -65,13 +67,13 @@ describe('MaterialManager', () => {
   })
 
   describe('given an initialized manager with 2 scenes', () => {
-    const ktx2 = 'some/path/to/texture.ktx2'
-    const webp = 'some/path/to/texture.gl1.webp'
+    const ktx2 = '/some/path/to/texture.ktx2'
+    const webp = '/some/path/to/texture.gl1.webp'
 
     let box
     let handBox
 
-    beforeAll(() => manager.init({ scene, handScene }))
+    beforeAll(() => manager.init({ scene, handScene, gameAssetsUrl }))
 
     beforeEach(() => {
       manager.clear()
@@ -190,11 +192,18 @@ describe('MaterialManager', () => {
         {
           text: 'downgrades KTX2 texture to WebP',
           original: ktx2,
-          result: webp
+          result: `${gameAssetsUrl}${webp}`
         },
-        { text: 'keeps WebP texture as WebP', result: webp },
+        {
+          text: 'keeps WebP texture as WebP',
+          original: webp,
+          result: `${gameAssetsUrl}${webp}`
+        },
         { text: 'handles null texture', result: null },
-        { text: 'handles undefined texture', result: undefined }
+        {
+          text: 'handles undefined texture',
+          result: undefined
+        }
       ])('$text', ({ original, result }) => {
         manager.configure(box, original ?? result)
         expect(box.material.diffuseTexture.url).toEqual(result)
@@ -211,8 +220,16 @@ describe('MaterialManager', () => {
         afterEach(() => (engine._webGLVersion = version))
 
         it.each([
-          { text: 'keeps KTX2 texture to WebP', result: ktx2 },
-          { text: 'keeps WebP texture as WebP', result: webp },
+          {
+            text: 'keeps KTX2 texture to WebP',
+            original: ktx2,
+            result: `${gameAssetsUrl}${ktx2}`
+          },
+          {
+            text: 'keeps WebP texture as WebP',
+            original: webp,
+            result: `${gameAssetsUrl}${webp}`
+          },
           { text: 'handles null texture', result: null },
           { text: 'handles undefined texture', result: undefined }
         ])('$text', ({ original, result }) => {

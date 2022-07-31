@@ -8,7 +8,8 @@ describe('MeshDetails component', () => {
   const handleClose = jest.fn()
   const handleOpen = jest.fn()
 
-  const mesh1 = { image: 'image1.webp' }
+  const mesh1 = { image: '/image1.webp' }
+  const gameAssetsUrl = 'https://localhost:3000/games'
 
   function renderComponent(props = {}) {
     return render(
@@ -26,7 +27,7 @@ describe('MeshDetails component', () => {
     renderComponent({ mesh: mesh1 })
     const image = screen.queryByRole('img')
     expect(image).toBeInTheDocument()
-    expect(image).toHaveAttribute('src', mesh1.image)
+    expect(image).toHaveAttribute('src', `${gameAssetsUrl}${mesh1.image}`)
     expect(handleOpen).toHaveBeenCalledTimes(1)
     expect(handleClose).not.toHaveBeenCalled()
   })
