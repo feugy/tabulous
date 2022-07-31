@@ -68,7 +68,7 @@ describe('given a started server', () => {
           Path: '/',
           HttpOnly: true,
           Secure: true,
-          SameSite: 'Strict'
+          SameSite: 'None'
         })
         expect(
           createVerifier({ key: configuration.auth.jwt.key })(cookie.token)

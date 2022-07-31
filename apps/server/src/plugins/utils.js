@@ -37,7 +37,7 @@ export function setTokenCookie(reply, player, signerOptions) {
   reply.setCookie('token', token, {
     path: '/',
     secure: true,
-    sameSite: true,
+    sameSite: 'none',
     httpOnly: true
   })
   return token

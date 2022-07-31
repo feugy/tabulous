@@ -127,7 +127,7 @@ describe('auth plugin', () => {
           Path: '/',
           HttpOnly: true,
           Secure: true,
-          SameSite: 'Strict'
+          SameSite: 'None'
         })
         expect(createVerifier(jwtOptions)(cookie.token)).toMatchObject({
           id: player.id
