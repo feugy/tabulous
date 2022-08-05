@@ -127,7 +127,7 @@ function makeAbsolute(path) {
  * - PORT: server listening port (must be a number). Defaults to 443 in production, and 3001 otherwise.
  * - JWT_KEY: key used to sign JWT sent to the client.
  * - TURN_SECRET: secret used to generate turn credentials. Must be the same as coTURN static-auth-secret.
- * - DOMAIN_URL: public facing domain (full url) for authentication redirections. Defaults to https://tabulous.fr in production, and https://localhost:3000 otherwise
+ * - AUTH_DOMAIN: public facing domain (full url) for authentication redirections. Defaults to https://auth.tabulous.fr in production, and http://localhost:3001 otherwise
  * - ALLOWED_ORIGINS_REGEXP: regular expression for allowed domains, used in CORS and authentication redirections.
  * - GITHUB_ID: Optional Github OAuth application ID used to identify players.
  * - GITHUB_SECRET: Optional Github OAuth application secret used to identify players.
@@ -140,7 +140,7 @@ function makeAbsolute(path) {
 export function loadConfiguration() {
   const {
     DATA_PATH,
-    DOMAIN_URL,
+    AUTH_DOMAIN,
     ALLOWED_ORIGINS_REGEXP,
     GAMES_PATH,
     GITHUB_ID,
@@ -162,7 +162,7 @@ export function loadConfiguration() {
     ALLOWED_ORIGINS_REGEXP ??
     (isProduction
       ? '^https:\\/\\/(?:(?:.+\\.)?tabulous\\.(?:fr|games)|tabulous(?:-.+)?\\.vercel\\.app)'
-      : '^https:\\/\\/localhost:3000')
+      : '^https?:\\/\\/localhost:\\d+')
 
   const configuration = {
     isProduction,
@@ -204,8 +204,8 @@ export function loadConfiguration() {
         key: JWT_KEY ?? (isProduction ? undefined : 'dummy-test-key')
       },
       domain:
-        DOMAIN_URL ??
-        (isProduction ? 'https://tabulous.fr' : 'https://localhost:3000'),
+        AUTH_DOMAIN ??
+        (isProduction ? 'https://auth.tabulous.fr' : 'http://localhost:3001'),
       allowedOrigins
     }
   }

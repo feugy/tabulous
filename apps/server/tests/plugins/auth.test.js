@@ -87,14 +87,14 @@ describe('auth plugin', () => {
         expect(response.statusCode).toBe(302)
         expect(response.headers.location).toBe(`${url}/`)
         expect(services[serviceName].buildAuthUrl).toHaveBeenCalledWith(
-          `http://localhost:80/`
+          `http://localhost:80`
         )
         expect(services[serviceName].buildAuthUrl).toHaveBeenCalledTimes(1)
       })
 
       it(`redirects to ${name} for with a redirect`, async () => {
         const url = faker.internet.url()
-        const redirect = `/${faker.internet.domainWord()}`
+        const redirect = `http://localhost:80/${faker.internet.domainWord()}`
         services[serviceName].buildAuthUrl.mockReturnValueOnce(url)
         const response = await server.inject(
           `/auth/${name}/connect?redirect=${redirect}`
@@ -102,7 +102,7 @@ describe('auth plugin', () => {
         expect(response.statusCode).toBe(302)
         expect(response.headers.location).toBe(url)
         expect(services[serviceName].buildAuthUrl).toHaveBeenCalledWith(
-          `http://localhost:80${redirect}`
+          redirect
         )
         expect(services[serviceName].buildAuthUrl).toHaveBeenCalledTimes(1)
       })
@@ -117,6 +117,18 @@ describe('auth plugin', () => {
         expect(response.statusCode).toBe(401)
         expect(await response.json()).toEqual({
           error: `Forbidden origin http://${origin}`
+        })
+        expect(services[serviceName].buildAuthUrl).not.toHaveBeenCalled()
+      })
+
+      it(`fails to redirects to another origin`, async () => {
+        const redirect = faker.internet.url()
+        const response = await server.inject({
+          url: `/auth/${name}/connect?redirect=${redirect}`
+        })
+        expect(response.statusCode).toBe(401)
+        expect(await response.json()).toEqual({
+          error: `Forbidden redirect domain ${redirect}`
         })
         expect(services[serviceName].buildAuthUrl).not.toHaveBeenCalled()
       })

@@ -45,8 +45,13 @@ export default async function registerAuth(app, options) {
           if (!allowedOriginsRegExp.test(origin)) {
             return reply.code(401).send({ error: `Forbidden origin ${origin}` })
           }
+          if (redirect && !allowedOriginsRegExp.test(redirect)) {
+            return reply
+              .code(401)
+              .send({ error: `Forbidden redirect domain ${redirect}` })
+          }
           return reply.redirect(
-            service.buildAuthUrl(`${origin}${redirect ?? '/'}`).toString()
+            service.buildAuthUrl(redirect ?? origin).toString()
           )
         }
       )
