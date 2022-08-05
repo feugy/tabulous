@@ -7,7 +7,7 @@ exports[`Toolshot components/MeshDetails.tools.svelte: Components/Mesh Details 1
   >
     <img
       alt=""
-      src="default"
+      src="https://localhost:3000/games/french-suited-card/images/hearts-12.svg"
     />
   </figure>
   

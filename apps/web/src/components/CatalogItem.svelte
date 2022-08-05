@@ -1,6 +1,7 @@
 <script>
   import { createEventDispatcher } from 'svelte'
   import { _, locale } from 'svelte-intl'
+  import { gameAssetsUrl } from '../utils'
 
   export let game
 
@@ -26,7 +27,7 @@
 </script>
 
 <article on:click={() => dispatch('click', game)}>
-  <img src="games/{game.name}/catalog/cover.webp" alt={title} />
+  <img src="{gameAssetsUrl}/{game.name}/catalog/cover.webp" alt={title} />
   <div class="content">
     <caption>
       <div class="title">

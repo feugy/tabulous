@@ -72,7 +72,7 @@ describe('createMeshes()', () => {
     const texture = faker.system.commonFileName('png')
     const descriptor = { build: () => ({ meshes: [{ id: 1, texture }] }) }
     expect((await createMeshes(gameId, descriptor))[0].texture).toEqual(
-      `/games/${gameId}/textures/${texture}`
+      `/${gameId}/textures/${texture}`
     )
   })
 
@@ -95,7 +95,7 @@ describe('createMeshes()', () => {
     const file = faker.system.commonFileName('png')
     const descriptor = { build: () => ({ meshes: [{ id: 1, file }] }) }
     expect((await createMeshes(gameId, descriptor))[0].file).toEqual(
-      `/games/${gameId}/models/${file}`
+      `/${gameId}/models/${file}`
     )
   })
 
@@ -114,7 +114,7 @@ describe('createMeshes()', () => {
     }
     expect(
       (await createMeshes(gameId, descriptor))[0].detailable.frontImage
-    ).toEqual(`/games/${gameId}/images/${frontImage}`)
+    ).toEqual(`/${gameId}/images/${frontImage}`)
   })
 
   it('does not enrich mesh absolute front image', async () => {
@@ -136,7 +136,7 @@ describe('createMeshes()', () => {
     }
     expect(
       (await createMeshes(gameId, descriptor))[0].detailable.backImage
-    ).toEqual(`/games/${gameId}/images/${backImage}`)
+    ).toEqual(`/${gameId}/images/${backImage}`)
   })
 
   it('does not enrich mesh absolute front image', async () => {
@@ -164,14 +164,12 @@ describe('createMeshes()', () => {
       })
     }
     const [mesh] = await createMeshes(gameId, descriptor)
-    expect(mesh.texture).toEqual(`/games/${gameId}/textures/${texture}`)
-    expect(mesh.file).toEqual(`/games/${gameId}/models/${file}`)
+    expect(mesh.texture).toEqual(`/${gameId}/textures/${texture}`)
+    expect(mesh.file).toEqual(`/${gameId}/models/${file}`)
     expect(mesh.detailable.frontImage).toEqual(
-      `/games/${gameId}/images/${frontImage}`
+      `/${gameId}/images/${frontImage}`
     )
-    expect(mesh.detailable.backImage).toEqual(
-      `/games/${gameId}/images/${backImage}`
-    )
+    expect(mesh.detailable.backImage).toEqual(`/${gameId}/images/${backImage}`)
   })
 
   describe('given a descriptor with a count slot and a countless slot on the same bag', () => {

@@ -28,6 +28,7 @@ export async function startServer(config) {
   await repositories.catalogItems.connect({ path: config.games.path })
 
   app.register(import('@fastify/cookie'), { secret: config.auth.jwt.key })
+  app.register(import('./plugins/cors.js'), config.plugins.cors)
   app.register(import('./plugins/graphql.js'), config.plugins.graphql)
   app.register(import('./plugins/static.js'), config.plugins.static)
   app.register(import('./plugins/auth.js'), { prefix: '/auth', ...config.auth })

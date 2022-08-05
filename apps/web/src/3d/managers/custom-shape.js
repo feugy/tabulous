@@ -6,17 +6,28 @@ const logger = makeLogger('custom-shape')
 class CustomShapeManager {
   /**
    * Creates a manager to download and cache custom mesh shapes.
+   * @property {string} gameAssetsUrl? - base url hosting the game shape files.
    */
   constructor() {
+    this.gameAssetsUrl = ''
     // private
     this.dataByFile = new Map()
   }
 
-  async init({ meshes, hands }) {
+  /**
+   * Initialize manager with scene and configuration values.
+   * @param {object} params - parameters, including:
+   * @param {array]} params.meshes - list of meshes.
+   * @param {array} params.hands? - list of hand meshes
+   * @param {string} params.gameAssetsUrl? - base url hosting the game shape files.
+   * @param {import('../../graphql').Game} game - loaded game data.
+   */
+  async init({ gameAssetsUrl, meshes, hands }) {
     logger.debug(
       { files: [...this.dataByFile.keys()] },
       'init custom shape manager'
     )
+    this.gameAssetsUrl = gameAssetsUrl ?? ''
     const files = new Set([
       ...extractFiles(meshes),
       ...(hands ?? []).flatMap(({ meshes }) => extractFiles(meshes))
@@ -81,7 +92,7 @@ function extractFiles(meshes) {
 async function download(file, manager) {
   logger.debug({ file }, `starts downloading ${file}`)
   try {
-    const response = await fetch(file)
+    const response = await fetch(`${manager.gameAssetsUrl}${file}`)
     store(manager, file, fixMeshNames(await response.json()))
   } catch (error) {
     const message = `failed to download custom shape file ${file}: ${error}`

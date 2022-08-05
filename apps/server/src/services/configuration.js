@@ -40,13 +40,18 @@ const validate = new Ajv({ allErrors: true }).compile({
         graphql: {
           optionalProperties: {
             graphiql: { type: 'string', nullable: true },
-            allowedOrigin: { type: 'string' }
+            allowedOrigins: { type: 'string' }
           }
         },
         static: {
           properties: {
             pathPrefix: { type: 'string' },
             path: { type: 'string' }
+          }
+        },
+        cors: {
+          properties: {
+            allowedOrigins: { type: 'string' }
           }
         }
       }
@@ -63,7 +68,8 @@ const validate = new Ajv({ allErrors: true }).compile({
             key: { type: 'string' }
           }
         },
-        domain: { type: 'string' }
+        domain: { type: 'string' },
+        allowedOrigins: { type: 'string' }
       },
       optionalProperties: {
         github: {
@@ -119,10 +125,10 @@ function makeAbsolute(path) {
  * - LOG_LEVEL: logger level used, one of 'trace', 'debug', 'info', 'warn', 'error', 'fatal'. Defaults to 'debug'.
  * - NODE_ENV: 'production' indicates production mode.
  * - PORT: server listening port (must be a number). Defaults to 443 in production, and 3001 otherwise.
- * - WS_ENDPOINT: url of the web socket endpoint. Defaults to '/ws'.
  * - JWT_KEY: key used to sign JWT sent to the client.
  * - TURN_SECRET: secret used to generate turn credentials. Must be the same as coTURN static-auth-secret.
  * - DOMAIN_URL: public facing domain (full url) for authentication redirections. Defaults to https://tabulous.fr in production, and https://localhost:3000 otherwise
+ * - ALLOWED_ORIGINS_REGEXP: regular expression for allowed domains, used in CORS and authentication redirections.
  * - GITHUB_ID: Optional Github OAuth application ID used to identify players.
  * - GITHUB_SECRET: Optional Github OAuth application secret used to identify players.
  * - GOOGLE_ID: Optional Google OAuth application ID used to identify players.
@@ -135,6 +141,7 @@ export function loadConfiguration() {
   const {
     DATA_PATH,
     DOMAIN_URL,
+    ALLOWED_ORIGINS_REGEXP,
     GAMES_PATH,
     GITHUB_ID,
     GITHUB_SECRET,
@@ -151,9 +158,11 @@ export function loadConfiguration() {
   } = process.env
 
   const isProduction = /^\w*production\w*$/i.test(NODE_ENV)
-  const publicDomain =
-    DOMAIN_URL ??
-    (isProduction ? 'https://www.tabulous.fr' : 'https://localhost:3000')
+  const allowedOrigins =
+    ALLOWED_ORIGINS_REGEXP ??
+    (isProduction
+      ? '^https:\\/\\/(?:(?:.+\\.)?tabulous\\.(?:fr|games)|.+-feugy\\.vercel\\.app)'
+      : '^https:\\/\\/localhost:3000')
 
   const configuration = {
     isProduction,
@@ -172,10 +181,13 @@ export function loadConfiguration() {
     plugins: {
       graphql: {
         graphiql: isProduction ? null : 'playground',
-        allowedOrigin: publicDomain
+        allowedOrigins
       },
       static: {
         pathPrefix: '/games'
+      },
+      cors: {
+        allowedOrigins
       }
     },
     games: {
@@ -191,7 +203,10 @@ export function loadConfiguration() {
       jwt: {
         key: JWT_KEY ?? (isProduction ? undefined : 'dummy-test-key')
       },
-      domain: publicDomain
+      domain:
+        DOMAIN_URL ??
+        (isProduction ? 'https://tabulous.fr' : 'https://localhost:3000'),
+      allowedOrigins
     }
   }
   if (GITHUB_ID && GITHUB_SECRET) {

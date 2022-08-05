@@ -5,7 +5,7 @@ import { getAuthenticatedPlayer } from './utils.js'
 /**
  * @typedef {import('mercurius').MercuriusOptions} GraphQLOptions graphQL plugin options.
  * You can use any of Mercurius options but `schema`, `resolvers`, `loaders` and `context` which are computed.
- * @property {string} allowedOrigin - origin allowed for web socket connections
+ * @property {string} allowedOrigin - regular expression for allowed domains during web socket connections
  */
 
 /**
@@ -18,6 +18,7 @@ import { getAuthenticatedPlayer } from './utils.js'
  * @param {GraphQLOptions} opts - plugin options.
  */
 export default async function registerGraphQL(app, opts) {
+  const allowedOriginsRegExp = new RegExp(opts.allowedOrigins)
   app.register(mercurius, {
     ...opts,
     schema,
@@ -32,15 +33,15 @@ export default async function registerGraphQL(app, opts) {
         return { player, conf: app.conf }
       },
       // checks Origin header (https://appcheck-ng.com/cross-site-hijacking)
-      verifyClient: ({ origin }) => origin === opts.allowedOrigin
+      verifyClient: ({ origin }) => allowedOriginsRegExp.test(origin)
     },
-    context: async request => ({
-      player: await getAuthenticatedPlayer(
-        request.cookies.token,
-        app.conf.auth.jwt.key
-      ),
-      token: request.cookies.token,
-      conf: app.conf
-    })
+    context: async request => {
+      const { token } = request.cookies ?? {}
+      return {
+        player: await getAuthenticatedPlayer(token, app.conf.auth.jwt.key),
+        token,
+        conf: app.conf
+      }
+    }
   })
 }

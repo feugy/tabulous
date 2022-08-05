@@ -16,13 +16,14 @@ let client
 /**
  * Configures GraphQL client.
  * Must be called prior to any graphql query, mutation or subscription.
+ * @param {string} graphQLUrl - url of the GraphQL endpoint
  * @param {string} bearer - data used for authenticating graphQL subscriptions
  */
-export function initGraphQLGlient(bearer) {
+export function initGraphQLGlient(graphQLUrl, bearer) {
   const exchanges = [...defaultExchanges]
   if (bearer) {
     const wsClient = new createWSClient({
-      url: `${location.origin.replace('http', 'ws')}/graphql`,
+      url: graphQLUrl.replace('http', 'ws'),
       connectionParams: { bearer }
     })
     exchanges.push(
@@ -37,7 +38,14 @@ export function initGraphQLGlient(bearer) {
   }
 
   logger.info({ bearer }, 'initialize GraphQL client')
-  client = createClient({ url: '/graphql', maskTypename: true, exchanges })
+  client = createClient({
+    url: graphQLUrl,
+    fetchOptions: {
+      credentials: 'include'
+    },
+    maskTypename: true,
+    exchanges
+  })
 }
 
 export async function runMutation(query, variables) {

@@ -27,6 +27,7 @@ First commands will need to connect with IPv4 (hence the `-4` flag) in the meant
 - grant it the right to restart services:
   - open sudoer configuration file: `sudo visudo`
   - add: `tabulous ALL=NOPASSWD:/usr/bin/systemctl`
+  - add: `tabulous ALL=NOPASSWD:/usr/bin/journalctl`
   - add: `tabulous ALL=NOPASSWD:/usr/sbin/nginx`
 
 ## Connectivity

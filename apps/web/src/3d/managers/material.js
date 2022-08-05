@@ -17,25 +17,29 @@ class MaterialManager {
    *
    * @property {import('@babylon/core').Scene} scene? - main scene.
    * @property {import('@babylon/core').Scene} handScene? - hand scene.
+   * @property {string} gameAssetsUrl? - base url hosting the game textures.
    */
   constructor() {
     this.scene = null
     this.handScene = null
+    this.gameAssetsUrl = ''
     // private
     this.mainMaterialByUrl = new Map()
     this.handMaterialByUrl = new Map()
   }
 
   /**
-   * Gives scenes to the manager.
+   * Initialize manager with scene and configuration values.
    * @param {object} params - parameters, including:
    * @param {Scene} params.scene - main scene.
    * @param {Scene} params.handScene? - scene for meshes in hand.
+   * @param {string} params.gameAssetsUrl? - base url hosting the game assets (textures).
    * @param {import('../../graphql').Game} game - loaded game data.
    */
-  init({ scene, handScene }, game) {
+  init({ scene, handScene, gameAssetsUrl }, game) {
     this.scene = scene
     this.handScene = handScene
+    this.gameAssetsUrl = gameAssetsUrl ?? ''
     logger.debug('material manager initialized')
     this.clear()
     scene.onDisposeObservable.addOnce(() => this.clear())
@@ -119,20 +123,27 @@ function preloadMaterials(manager, game) {
 }
 
 function buildMaterials(manager, url, usedScene) {
-  buildMaterial(manager.mainMaterialByUrl, url, manager.scene)
-  if (manager.handScene) {
-    buildMaterial(manager.handMaterialByUrl, url, manager.handScene)
+  const {
+    gameAssetsUrl,
+    scene,
+    handScene,
+    mainMaterialByUrl,
+    handMaterialByUrl
+  } = manager
+  buildMaterial(mainMaterialByUrl, gameAssetsUrl, url, scene)
+  if (handScene) {
+    buildMaterial(handMaterialByUrl, gameAssetsUrl, url, handScene)
   }
   return getMaterialCache(manager, usedScene).get(url)
 }
 
-function buildMaterial(materialByUrl, url, scene) {
+function buildMaterial(materialByUrl, baseUrl, url, scene) {
   const material = new StandardMaterial(url, scene)
   if (url?.startsWith('#')) {
     material.diffuseColor = Color4.FromHexString(url)
     material.alpha = material.diffuseColor.a
   } else {
-    material.diffuseTexture = new Texture(adaptTextureUrl(url), scene)
+    material.diffuseTexture = new Texture(adaptTextureUrl(baseUrl, url), scene)
     material.diffuseTexture.hasAlpha = true
     attachMaterialError(material)
   }
@@ -145,13 +156,16 @@ function buildMaterial(materialByUrl, url, scene) {
 /**
  * Adapts the downloaded texture file based on the current WebGL version.
  * Since WebGL 1 does not support Khronos Texture properly, uses webp files instead.
+ * @param {string} base - base Url, without any trailing slash.
  * @param {string} texture - the texture file name.
  * @returns {string} if the engine is WebGL 1, the input texture with ktx2 extension replaced with webp.
  */
-function adaptTextureUrl(texture) {
-  return texture && Engine.LastCreatedEngine.version === 1
-    ? texture.replace('.ktx2', '.gl1.webp')
-    : texture
+function adaptTextureUrl(base, texture) {
+  return !texture
+    ? texture
+    : Engine.LastCreatedEngine.version === 1
+    ? `${base}${texture.replace('.ktx2', '.gl1.webp')}`
+    : `${base}${texture}`
 }
 
 /**

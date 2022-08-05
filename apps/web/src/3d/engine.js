@@ -27,7 +27,7 @@ import {
   serializeMeshes,
   removeNulls
 } from './utils'
-import { sleep } from '../utils'
+import { gameAssetsUrl, sleep } from '../utils'
 
 // import { AxesViewer } from '@babylonjs/core/Debug/axesViewer.js'
 // import '@babylonjs/inspector.js'
@@ -121,7 +121,7 @@ export function createEngine({
       engine.displayLoadingUI()
       targetManager.init({ scene, playerId })
       materialManager.init(
-        { scene, handScene: handsEnabled ? handScene : null },
+        { gameAssetsUrl, scene, handScene: handsEnabled ? handScene : null },
         game
       )
       createTable(game.tableSpec, scene)
@@ -138,7 +138,7 @@ export function createEngine({
         handManager.init({ scene, handScene, overlay: hand })
       }
     }
-    await customShapeManager.init(game)
+    await customShapeManager.init({ ...game, gameAssetsUrl })
     loadMeshes(scene, game.meshes)
     if (handsEnabled) {
       loadMeshes(

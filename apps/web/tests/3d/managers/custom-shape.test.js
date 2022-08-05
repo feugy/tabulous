@@ -6,6 +6,7 @@ import { makeLogger } from '../../../src/utils'
 
 describe('CustomShapeManager', () => {
   const logger = makeLogger('custom-shape')
+  const gameAssetsUrl = 'https://localhost:3000'
 
   const fixtures = {
     pawn: {
@@ -25,7 +26,7 @@ describe('CustomShapeManager', () => {
 
   let error
   const server = setupServer(
-    rest.get('/:name', ({ params }, res, ctx) => {
+    rest.get(`${gameAssetsUrl}/:name`, ({ params }, res, ctx) => {
       const data = fixtures[params.name.replace('.babylon', '')]
       return res(data ? ctx.json(data) : ctx.status(404))
     })
@@ -47,24 +48,33 @@ describe('CustomShapeManager', () => {
     beforeEach(() => manager.clear())
 
     it('downloads all required mesh shapes', async () => {
-      const file = faker.internet.url()
+      const file = `/${faker.lorem.word()}`
       server.use(
-        rest.get(file, (req, res, ctx) => res(ctx.json(fixtures.pawn)))
+        rest.get(`${gameAssetsUrl}${file}`, (req, res, ctx) =>
+          res(ctx.json(fixtures.pawn))
+        )
       )
-      await manager.init({ meshes: [{ shape: 'custom', file }] })
+      await manager.init({ gameAssetsUrl, meshes: [{ shape: 'custom', file }] })
       expect(manager.get(file)).toEqual(expectedData.pawn)
     })
 
     it('downloads shapes for hand meshes', async () => {
-      const file1 = faker.internet.url()
-      const file2 = faker.internet.url()
-      const file3 = faker.internet.url()
+      const file1 = `/${faker.lorem.word()}`
+      const file2 = `/${faker.lorem.word()}`
+      const file3 = `/${faker.lorem.word()}`
       server.use(
-        rest.get(file1, (req, res, ctx) => res(ctx.json(fixtures.pawn))),
-        rest.get(file2, (req, res, ctx) => res(ctx.json(fixtures.avatar))),
-        rest.get(file3, (req, res, ctx) => res(ctx.json(fixtures.die)))
+        rest.get(`${gameAssetsUrl}${file1}`, (req, res, ctx) =>
+          res(ctx.json(fixtures.pawn))
+        ),
+        rest.get(`${gameAssetsUrl}${file2}`, (req, res, ctx) =>
+          res(ctx.json(fixtures.avatar))
+        ),
+        rest.get(`${gameAssetsUrl}${file3}`, (req, res, ctx) =>
+          res(ctx.json(fixtures.die))
+        )
       )
       await manager.init({
+        gameAssetsUrl,
         hands: [
           {
             meshes: [
@@ -81,12 +91,15 @@ describe('CustomShapeManager', () => {
     })
 
     it('ignores non-custom meshes', async () => {
-      const file1 = faker.internet.url()
-      const file2 = faker.internet.url()
+      const file1 = `/${faker.lorem.word()}`
+      const file2 = `/${faker.lorem.word()}`
       server.use(
-        rest.get(file2, (req, res, ctx) => res(ctx.json(fixtures.pawn)))
+        rest.get(`${gameAssetsUrl}${file2}`, (req, res, ctx) =>
+          res(ctx.json(fixtures.pawn))
+        )
       )
       await manager.init({
+        gameAssetsUrl,
         meshes: [
           { shape: 'card', file: file1 },
           { shape: 'custom', file: file2 }
@@ -97,25 +110,29 @@ describe('CustomShapeManager', () => {
     })
 
     it('throws on network errors', async () => {
-      const file = faker.internet.url()
+      const file = `/${faker.lorem.word()}`
       await expect(
-        manager.init({ meshes: [{ shape: 'custom', file: file }] })
+        manager.init({
+          gameAssetsUrl,
+          meshes: [{ shape: 'custom', file: file }]
+        })
       ).rejects.toThrow(`failed to download custom shape file ${file}`)
       expect(() => manager.get(file)).toThrow()
       expect(error).toHaveBeenCalled()
     })
 
     it('downloads the same file only once', async () => {
-      const file = faker.internet.url()
+      const file = `/${faker.lorem.word()}`
       const request = jest.fn()
 
       server.use(
-        rest.get(file, (req, res, ctx) => {
+        rest.get(`${gameAssetsUrl}${file}`, (req, res, ctx) => {
           request()
           return res(ctx.json(fixtures.pawn))
         })
       )
       await manager.init({
+        gameAssetsUrl,
         meshes: [
           { shape: 'custom', file: file },
           { shape: 'custom', file: file }
@@ -126,9 +143,9 @@ describe('CustomShapeManager', () => {
     })
 
     it('sets mesh names to custom', async () => {
-      const file = faker.internet.url()
+      const file = `/${faker.lorem.word()}`
       server.use(
-        rest.get(file, (req, res, ctx) =>
+        rest.get(`${gameAssetsUrl}${file}`, (req, res, ctx) =>
           res(
             ctx.json({
               meshes: [
@@ -138,7 +155,7 @@ describe('CustomShapeManager', () => {
           )
         )
       )
-      await manager.init({ meshes: [{ shape: 'custom', file }] })
+      await manager.init({ gameAssetsUrl, meshes: [{ shape: 'custom', file }] })
       expect(manager.get(file)).toEqual(expectedData.pawn)
     })
   })
@@ -152,6 +169,7 @@ describe('CustomShapeManager', () => {
       jest.resetAllMocks()
       server.resetHandlers()
       await manager.init({
+        gameAssetsUrl,
         meshes: [
           { shape: 'custom', file: pawnPath },
           { shape: 'custom', file: avatarPath }
@@ -160,11 +178,16 @@ describe('CustomShapeManager', () => {
     })
 
     describe('init()', () => {
-      it('appends to reviously cached files', async () => {
+      it('appends to previously cached files', async () => {
         server.use(
-          rest.get(diePath, (req, res, ctx) => res(ctx.json(fixtures.die)))
+          rest.get(`${gameAssetsUrl}${diePath}`, (req, res, ctx) =>
+            res(ctx.json(fixtures.die))
+          )
         )
-        await manager.init({ meshes: [{ shape: 'custom', file: diePath }] })
+        await manager.init({
+          gameAssetsUrl,
+          meshes: [{ shape: 'custom', file: diePath }]
+        })
         expect(manager.get(pawnPath)).toEqual(expectedData.pawn)
         expect(manager.get(avatarPath)).toEqual(expectedData.avatar)
         expect(manager.get(diePath)).toEqual(expectedData.die)
