@@ -65,7 +65,6 @@ Roadmap
 
 ## Hosting
 
-- bug: page reload on vercel gives a 404
 - where to store secrets?
 - deploy in a folder named after the commit SHA
 - use symlink to switch between deployments (including conf files)

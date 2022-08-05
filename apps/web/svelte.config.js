@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-static'
+import vercel from '@sveltejs/adapter-vercel'
 
 // This file is used by
 // - jest-transform-svelte
@@ -11,7 +11,7 @@ const config = {
     defaultHandler(warning)
   },
   kit: {
-    adapter: adapter({ pages: 'dist', assets: 'dist', fallback: 'index.html' }),
+    adapter: vercel({ edge: true }),
     files: {
       assets: 'public'
     }
