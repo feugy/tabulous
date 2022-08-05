@@ -90,7 +90,8 @@ describe('loadConfiguration()', () => {
       GOOGLE_ID: googleId,
       GOOGLE_SECRET: googleSecret
     }
-    const allowedOrigins = '^https:\\/\\/(?:.+\\.)?tabulous\\.(?:fr|games)'
+    const allowedOrigins =
+      '^https:\\/\\/(?:(?:.+\\.)?tabulous\\.(?:fr|games)|.+-feugy\\.vercel\\.app)'
 
     expect(loadConfiguration()).toEqual({
       isProduction: true,
