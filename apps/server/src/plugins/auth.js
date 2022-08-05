@@ -3,7 +3,8 @@ import { setTokenCookie } from './utils.js'
 
 /**
  * @typedef {object} AuthOptions authentication plugin options, including:
- * @param {string} domain - Public facing domain (full url) for authentication redirections.
+ * @param {string} domain - public facing domain (full url) for authentication redirections.
+ * @param {string} allowedOrigins - regular expression for allowed domains during authentication.
  * @param {import('fast-jwt').SignerOptions} jwt - options used to encrypt JWT token sent as cookies: needs 'key' at least.
  * @param {OAuth2ProviderOptions} github - Github authentication provider options.
  * @param {OAuth2ProviderOptions} google - Google authentication provider options.
@@ -23,6 +24,7 @@ import { setTokenCookie } from './utils.js'
  */
 export default async function registerAuth(app, options) {
   const { githubAuth, googleAuth, connect } = services
+  const allowedOriginsRegExp = new RegExp(options.allowedOrigins)
 
   for (const { service, provider } of [
     { service: githubAuth, provider: 'github' },
@@ -36,8 +38,17 @@ export default async function registerAuth(app, options) {
         }/${provider}/callback`
       })
 
-      app.get(`/${provider}/connect`, ({ query: { redirect } }, reply) =>
-        reply.redirect(service.buildAuthUrl(redirect).toString())
+      app.get(
+        `/${provider}/connect`,
+        ({ query: { redirect }, hostname, protocol }, reply) => {
+          const origin = `${protocol}://${hostname}`
+          if (!allowedOriginsRegExp.test(origin)) {
+            return reply.code(401).send({ error: `Forbidden origin ${origin}` })
+          }
+          return reply.redirect(
+            service.buildAuthUrl(`${origin}${redirect ?? '/'}`).toString()
+          )
+        }
       )
 
       app.get(

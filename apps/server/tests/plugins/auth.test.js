@@ -25,8 +25,9 @@ jest.unstable_mockModule('../../src/services/players.js', () => ({
 }))
 
 describe('auth plugin', () => {
-  const domain = faker.internet.url()
+  const domain = 'https://localhost:3000'
   const jwtOptions = { key: faker.datatype.uuid() }
+  const allowedOrigins = `http:\\/\\/localhost:80`
   let server
   let authPlugin
   let services
@@ -42,7 +43,7 @@ describe('auth plugin', () => {
     { name: 'github', serviceName: 'githubAuth', options: { foo: 'bar' } },
     { name: 'google', serviceName: 'googleAuth', options: { foo: 'baz' } }
   ])('given options for $name provider', ({ name, serviceName, options }) => {
-    describe('given a no server', () => {
+    describe('given no server', () => {
       afterEach(() => server?.close())
 
       it(`initializes ${name} service`, async () => {
@@ -50,6 +51,7 @@ describe('auth plugin', () => {
         server.register(cookiePlugin)
         server.register(authPlugin, {
           domain,
+          allowedOrigins,
           jwt: jwtOptions,
           [name]: options
         })
@@ -69,6 +71,7 @@ describe('auth plugin', () => {
         server.register(authPlugin, {
           prefix: '/auth',
           domain,
+          allowedOrigins,
           jwt: jwtOptions,
           [name]: options
         })
@@ -84,14 +87,14 @@ describe('auth plugin', () => {
         expect(response.statusCode).toBe(302)
         expect(response.headers.location).toBe(`${url}/`)
         expect(services[serviceName].buildAuthUrl).toHaveBeenCalledWith(
-          undefined
+          `http://localhost:80/`
         )
         expect(services[serviceName].buildAuthUrl).toHaveBeenCalledTimes(1)
       })
 
       it(`redirects to ${name} for with a redirect`, async () => {
         const url = faker.internet.url()
-        const redirect = faker.internet.domainWord()
+        const redirect = `/${faker.internet.domainWord()}`
         services[serviceName].buildAuthUrl.mockReturnValueOnce(url)
         const response = await server.inject(
           `/auth/${name}/connect?redirect=${redirect}`
@@ -99,9 +102,23 @@ describe('auth plugin', () => {
         expect(response.statusCode).toBe(302)
         expect(response.headers.location).toBe(url)
         expect(services[serviceName].buildAuthUrl).toHaveBeenCalledWith(
-          redirect
+          `http://localhost:80${redirect}`
         )
         expect(services[serviceName].buildAuthUrl).toHaveBeenCalledTimes(1)
+      })
+
+      it(`fails to redirects from another origin`, async () => {
+        const redirect = `/${faker.internet.domainWord()}`
+        const origin = faker.internet.domainWord()
+        const response = await server.inject({
+          url: `/auth/${name}/connect?redirect=${redirect}`,
+          headers: { host: origin }
+        })
+        expect(response.statusCode).toBe(401)
+        expect(await response.json()).toEqual({
+          error: `Forbidden origin http://${origin}`
+        })
+        expect(services[serviceName].buildAuthUrl).not.toHaveBeenCalled()
       })
 
       it(`connects user authenticated on ${name}`, async () => {

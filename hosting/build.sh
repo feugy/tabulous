@@ -21,7 +21,7 @@ cd ../../..
 
 # build server
 rm -rf node_modules
-npm ci --production -w @tabulous/server
+npm ci --production --ignore-scripts -w @tabulous/server
 cd apps/server
 tar --create --file ../../dist/server.tar.gz -z ../../node_modules/ src/ package.json 
 cd ../..
