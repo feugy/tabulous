@@ -4,6 +4,7 @@
   import Button from './Button.svelte'
   import Input from './Input.svelte'
   import Pane from './Pane.svelte'
+  import { authUrl } from '../utils'
   import GithubLogo from '../../public/images/github-logo.svg'
   import GoogleLogo from '../../public/images/google-logo.svg'
 
@@ -36,7 +37,7 @@
   }
 
   function handleConnectWith(provider) {
-    let url = `/auth/${provider}/connect`
+    let url = `${authUrl}/${provider}/connect`
     if (redirect) {
       url += '?' + new URLSearchParams({ redirect }).toString()
     }
