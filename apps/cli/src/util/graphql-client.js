@@ -23,10 +23,7 @@ export function getGraphQLClient() {
 }
 
 function initClient(options) {
-  const client = createClient({
-    ...options,
-    url: `${options.url}/graphql`
-  })
+  const client = createClient(options)
 
   setGlobalDispatcher(
     new Agent({
