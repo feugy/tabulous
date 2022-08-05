@@ -13,11 +13,10 @@ import {
   runMutation,
   runQuery
 } from '../../src/stores/graphql-client'
+import { graphQlUrl } from '../../src/utils'
 import { mockLogger } from '../utils'
 
 jest.mock('../../src/stores/graphql-client')
-
-const graphQLUrl = 'https://localhost:3000/graphql'
 
 describe('searchPlayers()', () => {
   it('search players by user name', async () => {
@@ -68,7 +67,7 @@ describe('given a subscription to current player', () => {
       expect(playerChanged).toHaveBeenCalledTimes(1)
       expect(turnCredentialsChanged).toHaveBeenCalledWith(turnCredentials)
       expect(turnCredentialsChanged).toHaveBeenCalledTimes(1)
-      expect(initGraphQLGlient).toHaveBeenCalledWith(graphQLUrl, token)
+      expect(initGraphQLGlient).toHaveBeenCalledWith(graphQlUrl, token)
       expect(initGraphQLGlient).toHaveBeenCalledTimes(1)
     })
 
@@ -85,7 +84,7 @@ describe('given a subscription to current player', () => {
       expect(playerChanged).toHaveBeenCalledTimes(1)
       expect(turnCredentialsChanged).toHaveBeenCalledWith(null)
       expect(turnCredentialsChanged).toHaveBeenCalledTimes(1)
-      expect(initGraphQLGlient).toHaveBeenCalledWith(graphQLUrl, undefined)
+      expect(initGraphQLGlient).toHaveBeenCalledWith(graphQlUrl, undefined)
       expect(initGraphQLGlient).toHaveBeenCalledTimes(1)
     })
   })
@@ -109,7 +108,7 @@ describe('given a subscription to current player', () => {
         expect(playerChanged).toHaveBeenCalledTimes(1)
         expect(turnCredentialsChanged).toHaveBeenCalledWith(null)
         expect(turnCredentialsChanged).toHaveBeenCalledTimes(1)
-        expect(initGraphQLGlient).toHaveBeenCalledWith(graphQLUrl, undefined)
+        expect(initGraphQLGlient).toHaveBeenCalledWith(graphQlUrl, undefined)
         expect(initGraphQLGlient).toHaveBeenCalledTimes(1)
       })
     })
@@ -127,10 +126,10 @@ describe('given a subscription to current player', () => {
         expect(playerChanged).toHaveBeenCalledTimes(1)
         expect(turnCredentialsChanged).toHaveBeenCalledWith(null)
         expect(turnCredentialsChanged).toHaveBeenCalledTimes(1)
-        expect(initGraphQLGlient).toHaveBeenNthCalledWith(1, graphQLUrl)
+        expect(initGraphQLGlient).toHaveBeenNthCalledWith(1, graphQlUrl)
         expect(initGraphQLGlient).toHaveBeenNthCalledWith(
           2,
-          graphQLUrl,
+          graphQlUrl,
           undefined
         )
         expect(initGraphQLGlient).toHaveBeenCalledTimes(2)
@@ -147,8 +146,8 @@ describe('given a subscription to current player', () => {
         expect(playerChanged).toHaveBeenCalledTimes(1)
         expect(turnCredentialsChanged).toHaveBeenCalledWith(turnCredentials)
         expect(turnCredentialsChanged).toHaveBeenCalledTimes(1)
-        expect(initGraphQLGlient).toHaveBeenNthCalledWith(1, graphQLUrl)
-        expect(initGraphQLGlient).toHaveBeenNthCalledWith(2, graphQLUrl, token)
+        expect(initGraphQLGlient).toHaveBeenNthCalledWith(1, graphQlUrl)
+        expect(initGraphQLGlient).toHaveBeenNthCalledWith(2, graphQlUrl, token)
         expect(initGraphQLGlient).toHaveBeenCalledTimes(2)
         expect(logger.warn).not.toHaveBeenCalled()
       })

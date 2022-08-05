@@ -1,10 +1,10 @@
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import html from 'svelte-htm'
 import CatalogItem from '../../src/components/CatalogItem.svelte'
+import { gameAssetsUrl } from '../../src/utils'
 
 describe('CatalogItem component', () => {
   const handleClick = jest.fn()
-  const gameAssetsUrl = 'https://localhost:3000/games'
 
   beforeEach(jest.resetAllMocks)
 

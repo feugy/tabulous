@@ -46,6 +46,6 @@ server {
   location / {
     add_header 'Access-Control-Allow-Origin' '*' always;
     add_header 'Access-Control-Allow-Methods' 'GET' always;
-    alias /home/tabulous/games;
+    alias /home/tabulous/games/;
   }
 }

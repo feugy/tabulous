@@ -3,8 +3,9 @@ import { createTransformer } from 'babel-jest'
 const env = {
   WEB_USE_GITHUB_PROVIDER: 'true',
   WEB_USE_GOOGLE_PROVIDER: 'true',
-  WEB_GRAPHQL_URL: 'https://localhost:3000/graphql',
-  WEB_GAME_ASSETS_URL: 'https://localhost:3000/games'
+  WEB_GRAPHQL_URL: 'https//localhost:3001/graphql',
+  WEB_GAME_ASSETS_URL: 'http://localhost:3001/games',
+  WEB_AUTH_URL: 'http://localhost:3001/auth'
 }
 
 // Because Jest is not running ESM, import.meta will not be defined
