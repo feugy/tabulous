@@ -37,7 +37,7 @@ describe('loadConfiguration()', () => {
     process.env = {
       ...process.env,
       DATA_PATH: dataPath,
-      DOMAIN_URL: domain,
+      AUTH_DOMAIN: domain,
       ALLOWED_ORIGINS_REGEXP: allowedOrigins,
       GAMES_PATH: gamesPath,
       GITHUB_ID: githubId,
@@ -91,7 +91,7 @@ describe('loadConfiguration()', () => {
       GOOGLE_SECRET: googleSecret
     }
     const allowedOrigins =
-      '^https:\\/\\/(?:(?:.+\\.)?tabulous\\.(?:fr|games)|.+-feugy\\.vercel\\.app)'
+      '^https:\\/\\/(?:(?:.+\\.)?tabulous\\.(?:fr|games)|tabulous(?:-.+)?\\.vercel\\.app)'
 
     expect(loadConfiguration()).toEqual({
       isProduction: true,
@@ -104,16 +104,16 @@ describe('loadConfiguration()', () => {
       plugins: {
         graphql: { graphiql: null, allowedOrigins },
         static: {
-          path: resolve(cwd(), '..', 'games', 'assets'),
+          path: resolve(cwd(), '..', 'games'),
           pathPrefix: '/games'
         },
         cors: { allowedOrigins }
       },
-      games: { path: resolve(cwd(), '..', 'games', 'assets') },
+      games: { path: resolve(cwd(), '..', 'games') },
       data: { path: resolve(cwd(), 'data') },
       turn: { secret: turnSecret },
       auth: {
-        domain: 'https://tabulous.fr',
+        domain: 'https://auth.tabulous.fr',
         allowedOrigins,
         jwt: { key: jwtKey },
         github: { id: githubId, secret: githubSecret },
@@ -134,7 +134,7 @@ describe('loadConfiguration()', () => {
     })
 
     it('loads development default values', () => {
-      const allowedOrigins = '^https:\\/\\/localhost:3000'
+      const allowedOrigins = '^https?:\\/\\/localhost:\\d+'
 
       expect(loadConfiguration()).toEqual({
         isProduction: false,
@@ -149,17 +149,17 @@ describe('loadConfiguration()', () => {
             allowedOrigins
           },
           static: {
-            path: resolve(cwd(), '..', 'games', 'assets'),
+            path: resolve(cwd(), '..', 'games'),
             pathPrefix: '/games'
           },
           cors: { allowedOrigins }
         },
-        games: { path: resolve(cwd(), '..', 'games', 'assets') },
+        games: { path: resolve(cwd(), '..', 'games') },
         data: { path: resolve(cwd(), 'data') },
         turn: { secret: turnSecret },
         auth: {
           jwt: { key: 'dummy-test-key' },
-          domain: 'https://localhost:3000',
+          domain: 'http://localhost:3001',
           allowedOrigins
         }
       })
@@ -173,8 +173,8 @@ describe('loadConfiguration()', () => {
       }
 
       expect(loadConfiguration().auth).toEqual({
-        domain: 'https://localhost:3000',
-        allowedOrigins: '^https:\\/\\/localhost:3000',
+        domain: 'http://localhost:3001',
+        allowedOrigins: '^https?:\\/\\/localhost:\\d+',
         jwt: { key: 'dummy-test-key' },
         github: { id: githubId, secret: githubSecret }
       })
@@ -188,8 +188,8 @@ describe('loadConfiguration()', () => {
       }
 
       expect(loadConfiguration().auth).toEqual({
-        domain: 'https://localhost:3000',
-        allowedOrigins: '^https:\\/\\/localhost:3000',
+        domain: 'http://localhost:3001',
+        allowedOrigins: '^https?:\\/\\/localhost:\\d+',
         jwt: { key: 'dummy-test-key' },
         google: { id: googleId, secret: googleSecret }
       })

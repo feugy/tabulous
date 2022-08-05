@@ -5,17 +5,19 @@ import { tick } from 'svelte'
 import { writable } from 'svelte/store'
 import html from 'svelte-htm'
 import LogInForm from '../../src/components/LogInForm.svelte'
+import { authUrl } from '../../src/utils'
 import { translate } from '../test-utils'
 
 describe('LogIn component', () => {
   const username$ = writable()
   const password$ = writable()
   const handleSubmit = jest.fn()
+  const origin = 'https://localhost:3000'
 
   beforeAll(() => {
     global.window = Object.create(window)
     Object.defineProperty(window, 'location', {
-      value: { href: '' }
+      value: { href: '', origin }
     })
   })
 
@@ -65,11 +67,13 @@ describe('LogIn component', () => {
           name: translate(`actions.log-in-${provider}`)
         })
       )
-      expect(global.window.location.href).toEqual(`/auth/${provider}/connect`)
+      expect(global.window.location.href).toEqual(
+        `${authUrl}/${provider}/connect?redirect=${encodeURIComponent(origin)}`
+      )
     })
 
     it(`navigates to ${provider} authentication with redirect`, async () => {
-      const redirect = faker.internet.url()
+      const redirect = `/${faker.internet.domainWord()}`
       renderComponent({ ...props, redirect })
       await fireEvent.click(
         screen.getByRole('button', {
@@ -77,7 +81,9 @@ describe('LogIn component', () => {
         })
       )
       expect(global.window.location.href).toEqual(
-        `/auth/${provider}/connect?redirect=${encodeURIComponent(redirect)}`
+        `${authUrl}/${provider}/connect?redirect=${encodeURIComponent(
+          `${origin}${redirect}`
+        )}`
       )
     })
 

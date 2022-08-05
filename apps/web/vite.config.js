@@ -40,26 +40,7 @@ export default defineConfig(({ mode }) => ({
   },
   server: {
     https: true,
-    port: 3000,
-    proxy: {
-      '/ws': {
-        target: 'http://localhost:3001',
-        ws: true
-      },
-      '/graphql': {
-        target: 'http://localhost:3001',
-        ws: true
-      },
-      '^/auth/?': {
-        target: 'http://localhost:3001'
-      },
-      '^/graphql/?': {
-        target: 'http://localhost:3001'
-      },
-      '/games': {
-        target: 'http://localhost:3001'
-      }
-    }
+    port: 3000
   },
   preview: {
     port: 3000,

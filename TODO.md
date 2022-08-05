@@ -2,7 +2,6 @@
 
 Roadmap
 
-- get rid of apps/games/assets intermediate folder
 - games: generic card game
 - lawyer council
 - web: terms & condition
@@ -66,7 +65,7 @@ Roadmap
 
 ## Hosting
 
-- host UI on vercel, server on OVH
+- bug: page reload on vercel gives a 404
 - where to store secrets?
 - deploy in a folder named after the commit SHA
 - use symlink to switch between deployments (including conf files)

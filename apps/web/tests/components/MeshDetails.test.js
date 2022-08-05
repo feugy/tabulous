@@ -2,14 +2,13 @@ import { fireEvent, render, screen } from '@testing-library/svelte'
 import { tick } from 'svelte'
 import html from 'svelte-htm'
 import MeshDetails from '../../src/components/MeshDetails.svelte'
-import { sleep } from '../../src/utils'
+import { gameAssetsUrl, sleep } from '../../src/utils'
 
 describe('MeshDetails component', () => {
   const handleClose = jest.fn()
   const handleOpen = jest.fn()
 
   const mesh1 = { image: '/image1.webp' }
-  const gameAssetsUrl = 'https://localhost:3000/games'
 
   function renderComponent(props = {}) {
     return render(

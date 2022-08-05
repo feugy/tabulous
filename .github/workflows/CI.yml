@@ -81,6 +81,7 @@ jobs:
         env:
           WEB_GAME_ASSETS_URL: https://localhost:3000/games
           WEB_GRAPHQL_URL: https://localhost:3000/graphql
+          WEB_AUTH_URL: https://localhost:3000/auth
           WEB_USE_GITHUB_PROVIDER: true
           WEB_USE_GOOGLE_PROVIDER: true
 
