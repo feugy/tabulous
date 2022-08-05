@@ -2,7 +2,6 @@
 
 Roadmap
 
-- get rid of apps/games/assets intermediate folder
 - games: generic card game
 - lawyer council
 - web: terms & condition

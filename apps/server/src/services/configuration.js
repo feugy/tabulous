@@ -118,7 +118,7 @@ function makeAbsolute(path) {
 /**
  * Synchronously loads and validates the server configuration from environment variables:
  * - DATA_PATH: folder path (relative to current working directory) containing data stores. Defaults to './data'.
- * - GAMES_PATH: folder path (relative to current working directory) containing game descriptors and assets. Defaults to '../games/assets'.
+ * - GAMES_PATH: folder path (relative to current working directory) containing game descriptors and assets. Defaults to '../games'.
  * - HOST : IP4/6 address this server will listen to.
  * - HTTPS_CERT: relative or absolute path to the PEM file of your SSL certificate. Required in production, defaults to 'keys/cert.pem'.
  * - HTTPS_KEY: relative or absolute path to the PEM file of your SSL key. Rrequired in production, defaults to 'keys/privkey.pem'.
@@ -161,7 +161,7 @@ export function loadConfiguration() {
   const allowedOrigins =
     ALLOWED_ORIGINS_REGEXP ??
     (isProduction
-      ? '^https:\\/\\/(?:(?:.+\\.)?tabulous\\.(?:fr|games)|.+-feugy\\.vercel\\.app)'
+      ? '^https:\\/\\/(?:(?:.+\\.)?tabulous\\.(?:fr|games)|tabulous(?:-.+)?\\.vercel\\.app)'
       : '^https:\\/\\/localhost:3000')
 
   const configuration = {
@@ -191,7 +191,7 @@ export function loadConfiguration() {
       }
     },
     games: {
-      path: GAMES_PATH ?? join('..', 'games', 'assets')
+      path: GAMES_PATH ?? join('..', 'games')
     },
     data: {
       path: DATA_PATH ?? 'data'

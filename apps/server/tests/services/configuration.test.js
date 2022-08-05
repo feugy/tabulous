@@ -91,7 +91,7 @@ describe('loadConfiguration()', () => {
       GOOGLE_SECRET: googleSecret
     }
     const allowedOrigins =
-      '^https:\\/\\/(?:(?:.+\\.)?tabulous\\.(?:fr|games)|.+-feugy\\.vercel\\.app)'
+      '^https:\\/\\/(?:(?:.+\\.)?tabulous\\.(?:fr|games)|tabulous(?:-.+)?\\.vercel\\.app)'
 
     expect(loadConfiguration()).toEqual({
       isProduction: true,
@@ -104,12 +104,12 @@ describe('loadConfiguration()', () => {
       plugins: {
         graphql: { graphiql: null, allowedOrigins },
         static: {
-          path: resolve(cwd(), '..', 'games', 'assets'),
+          path: resolve(cwd(), '..', 'games'),
           pathPrefix: '/games'
         },
         cors: { allowedOrigins }
       },
-      games: { path: resolve(cwd(), '..', 'games', 'assets') },
+      games: { path: resolve(cwd(), '..', 'games') },
       data: { path: resolve(cwd(), 'data') },
       turn: { secret: turnSecret },
       auth: {
@@ -149,12 +149,12 @@ describe('loadConfiguration()', () => {
             allowedOrigins
           },
           static: {
-            path: resolve(cwd(), '..', 'games', 'assets'),
+            path: resolve(cwd(), '..', 'games'),
             pathPrefix: '/games'
           },
           cors: { allowedOrigins }
         },
-        games: { path: resolve(cwd(), '..', 'games', 'assets') },
+        games: { path: resolve(cwd(), '..', 'games') },
         data: { path: resolve(cwd(), 'data') },
         turn: { secret: turnSecret },
         auth: {
