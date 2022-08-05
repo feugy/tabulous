@@ -37,10 +37,9 @@
   }
 
   function handleConnectWith(provider) {
-    let url = `${authUrl}/${provider}/connect`
-    if (redirect) {
-      url += '?' + new URLSearchParams({ redirect }).toString()
-    }
+    let url = `${authUrl}/${provider}/connect?${new URLSearchParams({
+      redirect: window.location.origin + (redirect || '')
+    }).toString()}`
     window.location.href = url
   }
 
