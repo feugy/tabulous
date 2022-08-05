@@ -13,12 +13,6 @@ cp hosting/tabulous.nginx dist/
 cp hosting/tabulous.systemd dist/
 cp .nvmrc dist/
 
-# build UI
-npm run build --workspace apps/web
-cd apps/web/dist
-tar --create --file ../../../dist/web.tar.gz -z *
-cd ../../..
-
 # build server
 rm -rf node_modules
 npm ci --production --ignore-scripts -w @tabulous/server
@@ -28,5 +22,5 @@ cd ../..
 
 # build games
 cd apps/games
-tar --create --file ../../dist/games.tar.gz -z assets/ package.json 
+tar --create --file ../../dist/games.tar.gz -z *
 cd ../..

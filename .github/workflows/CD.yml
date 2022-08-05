@@ -35,9 +35,6 @@ jobs:
 
       - name: Build artifacts
         run: ./hosting/build.sh
-        env:
-          WEB_GAME_ASSETS_URL: https://tabulous.fr/games
-          WEB_GRAPHQL_URL: https://tabulous.fr/graphql
 
       - name: Upload to VPS and trigger deployment
         run: ./hosting/upload.sh

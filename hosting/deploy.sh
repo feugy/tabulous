@@ -7,7 +7,6 @@ set -x
 mkdir -p ~/nginx
 mkdir -p ~/systemd
 mkdir -p ~/server
-mkdir -p ~/web
 mkdir -p ~/games
 mkdir -p ~/node_modules/@tabulous
 
@@ -18,7 +17,6 @@ mv -f ~/dist/start.sh ~/server
 mv -f ~/dist/.nvmrc ~/server
 
 # unpack files
-tar -x --file ~/dist/web.tar.gz -z --directory ~/web
 tar -x --file ~/dist/server.tar.gz -z --directory ~/server
 tar -x --file ~/dist/games.tar.gz -z --directory ~/games
 
