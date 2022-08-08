@@ -13,6 +13,10 @@ import { getAuthenticatedPlayer } from './utils.js'
  * it provides context to resovers, with:
  * - the player object, as `player`
  * - the server full configuration, as `conf`
+ * - the JWT token, if any, as `token`
+ * Request authentication expects a Bearer token ("Bearer " + a valid JWT).
+ * In the case of GraphQL subscription, bearer is expected on the connection payload message.
+ * In the case of GraphQL queries and mutations, bearer is expected in the Authorization header
  * @async
  * @param {import('fastify').FastifyInstance} app - a fastify application.
  * @param {GraphQLOptions} opts - plugin options.
@@ -27,7 +31,7 @@ export default async function registerGraphQL(app, opts) {
     subscription: {
       async onConnect({ payload }) {
         const player = await getAuthenticatedPlayer(
-          payload?.bearer.replace('Bearer ', ''),
+          extractBearer(payload?.bearer),
           app.conf.auth.jwt.key
         )
         return { player, conf: app.conf }
@@ -36,7 +40,7 @@ export default async function registerGraphQL(app, opts) {
       verifyClient: ({ origin }) => allowedOriginsRegExp.test(origin)
     },
     context: async request => {
-      const { token } = request.cookies ?? {}
+      const token = extractBearer(request.headers.authorization)
       return {
         player: await getAuthenticatedPlayer(token, app.conf.auth.jwt.key),
         token,
@@ -44,4 +48,8 @@ export default async function registerGraphQL(app, opts) {
       }
     }
   })
+}
+
+function extractBearer(value) {
+  return (value ?? '').replace('Bearer ', '')
 }

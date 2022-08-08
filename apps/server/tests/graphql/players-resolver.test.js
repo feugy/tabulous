@@ -1,10 +1,9 @@
 import { faker } from '@faker-js/faker'
-import cookiePlugin from '@fastify/cookie'
 import { jest } from '@jest/globals'
 import fastify from 'fastify'
 import services from '../../src/services/index.js'
 import graphQL from '../../src/plugins/graphql.js'
-import { mockMethods, parseCookie, signToken } from '../test-utils.js'
+import { mockMethods, signToken } from '../test-utils.js'
 import { createVerifier } from 'fast-jwt'
 
 describe('given a started server', () => {
@@ -17,7 +16,6 @@ describe('given a started server', () => {
 
   beforeAll(async () => {
     server = fastify({ logger: false })
-    server.register(cookiePlugin)
     server.decorate('conf', configuration)
     server.register(graphQL)
     await server.listen()
@@ -61,27 +59,19 @@ describe('given a started server', () => {
           }
         })
         expect(response.statusCode).toEqual(200)
-        expect(response.headers).toHaveProperty('set-cookie')
-        const cookie = parseCookie(response.headers['set-cookie'])
-        expect(cookie).toEqual({
-          token: expect.any(String),
-          Path: '/',
-          HttpOnly: true,
-          Secure: true,
-          SameSite: 'None'
-        })
-        expect(
-          createVerifier({ key: configuration.auth.jwt.key })(cookie.token)
-        ).toMatchObject({ id })
         expect(response.json()).toEqual({
           data: {
             logIn: {
-              token: cookie.token,
+              token: expect.any(String),
               player: { id, username },
               turnCredentials
             }
           }
         })
+        const { token } = response.json().data.logIn
+        expect(
+          createVerifier({ key: configuration.auth.jwt.key })(token)
+        ).toMatchObject({ id })
         expect(services.connect).toHaveBeenCalledWith({ username })
         expect(services.connect).toHaveBeenCalledTimes(1)
         expect(services.generateTurnCredentials).toHaveBeenCalledWith(
@@ -133,9 +123,7 @@ describe('given a started server', () => {
         const response = await server.inject({
           method: 'POST',
           url: 'graphql',
-          headers: {
-            cookie: `token=${token}`
-          },
+          headers: { authorization: `Bearer ${token}` },
           payload: {
             query: `query {
               getCurrentPlayer { 
@@ -184,7 +172,7 @@ describe('given a started server', () => {
           method: 'POST',
           url: 'graphql',
           headers: {
-            cookie: `token=${signToken(id, configuration.auth.jwt.key)}`
+            authorization: `Bearer ${signToken(id, configuration.auth.jwt.key)}`
           },
           payload: {
             query: `query { getCurrentPlayer { player { id username } } }`
@@ -219,7 +207,7 @@ describe('given a started server', () => {
           method: 'POST',
           url: 'graphql',
           headers: {
-            cookie: `token=${signToken(
+            authorization: `Bearer ${signToken(
               players[0].id,
               configuration.auth.jwt.key
             )}`
@@ -238,21 +226,6 @@ describe('given a started server', () => {
           true
         )
         expect(services.searchPlayers).toHaveBeenCalledTimes(1)
-      })
-    })
-
-    describe('logOut mutation', () => {
-      it('logs authenticated user', async () => {
-        const response = await server.inject({
-          method: 'POST',
-          url: 'graphql',
-          payload: { query: `mutation { logOut }` }
-        })
-        expect(response.json()).toEqual({ data: { logOut: null } })
-        expect(response.statusCode).toEqual(200)
-        expect(response.headers['set-cookie']).toBe(
-          `token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT`
-        )
       })
     })
   })

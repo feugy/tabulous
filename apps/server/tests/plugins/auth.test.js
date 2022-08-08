@@ -1,9 +1,7 @@
 import { faker } from '@faker-js/faker'
-import cookiePlugin from '@fastify/cookie'
 import { jest } from '@jest/globals'
 import fastify from 'fastify'
 import { createVerifier } from 'fast-jwt'
-import { parseCookie } from '../test-utils.js'
 
 // Note fully working, but gives an idea
 jest.unstable_mockModule('../../src/services/auth/github.js', () => ({
@@ -48,7 +46,6 @@ describe('auth plugin', () => {
 
       it(`initializes ${name} service`, async () => {
         server = fastify({ logger: false })
-        server.register(cookiePlugin)
         server.register(authPlugin, {
           domain,
           allowedOrigins,
@@ -67,7 +64,6 @@ describe('auth plugin', () => {
     describe('given a started server', () => {
       beforeAll(async () => {
         server = fastify({ logger: false })
-        server.register(cookiePlugin)
         server.register(authPlugin, {
           prefix: '/auth',
           domain,
@@ -138,7 +134,7 @@ describe('auth plugin', () => {
         const state = faker.datatype.uuid()
         const player = { id: faker.datatype.uuid() }
         const user = { foo: faker.lorem.words() }
-        const location = '/home'
+        const location = 'http://example.com/home'
         services[serviceName].authenticateUser.mockResolvedValueOnce({
           location,
           user
@@ -148,17 +144,11 @@ describe('auth plugin', () => {
           `/auth/${name}/callback?code=${code}&state=${state}`
         )
         expect(response.statusCode).toBe(302)
-        expect(response.headers.location).toBe(location)
-        expect(response.headers).toHaveProperty('set-cookie')
-        const cookie = parseCookie(response.headers['set-cookie'])
-        expect(cookie).toEqual({
-          token: expect.any(String),
-          Path: '/',
-          HttpOnly: true,
-          Secure: true,
-          SameSite: 'None'
-        })
-        expect(createVerifier(jwtOptions)(cookie.token)).toMatchObject({
+        expect(response.headers.location).toMatch(`${location}?token=`)
+        const token = new URL(response.headers.location).searchParams.get(
+          'token'
+        )
+        expect(createVerifier(jwtOptions)(token)).toMatchObject({
           id: player.id
         })
         expect(services[serviceName].authenticateUser).toHaveBeenCalledWith(
@@ -188,7 +178,6 @@ describe('auth plugin', () => {
           error: 'Internal Server Error',
           message: 'boom'
         })
-        expect(response.headers['set-cookie']).toBeUndefined()
         expect(services[serviceName].authenticateUser).toHaveBeenCalledWith(
           code,
           state

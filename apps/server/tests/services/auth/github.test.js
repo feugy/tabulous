@@ -85,7 +85,7 @@ describe('Github authentication service', () => {
             return { access_token: token }
           })
         githubApiMock.intercept({ path: '/user' }).reply(200, req => {
-          userInvoked(parseHeaders(req).authorization)
+          userInvoked(req.headers.authorization)
           return user
         })
         const state = githubAuth.storeFinalLocation(location)
@@ -146,7 +146,7 @@ describe('Github authentication service', () => {
             return { access_token: token }
           })
         githubApiMock.intercept({ path: '/user' }).reply(500, req => {
-          userInvoked(parseHeaders(req).authorization)
+          userInvoked(req.headers.authorization)
           return 'server error'
         })
         const state = githubAuth.storeFinalLocation(location)
@@ -177,16 +177,3 @@ describe('Github authentication service', () => {
     })
   })
 })
-
-function parseHeaders(req) {
-  let headerName = null
-  return req.headers.reduce((headers, value) => {
-    if (headerName) {
-      headers[headerName] = value
-      headerName = null
-    } else {
-      headerName = value
-    }
-    return headers
-  }, {})
-}
