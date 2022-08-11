@@ -31,7 +31,9 @@ exports[`Toolshot components/LogInForm.tools.svelte: Default state 1`] = `
           Autres options
         </summary>
          
-        <form>
+        <form
+          method="POST"
+        >
           <div
             class="row"
           >
@@ -40,7 +42,9 @@ exports[`Toolshot components/LogInForm.tools.svelte: Default state 1`] = `
                 Pseudo
               </legend>
                
-              <input />
+              <input
+                name="username"
+              />
             </fieldset>
           </div>
            
@@ -54,6 +58,7 @@ exports[`Toolshot components/LogInForm.tools.svelte: Default state 1`] = `
                
               <input
                 data-testid="password"
+                name="password"
                 type="password"
               />
             </fieldset>
@@ -81,6 +86,12 @@ exports[`Toolshot components/LogInForm.tools.svelte: Default state 1`] = `
               
             </button>
           </div>
+           
+          <input
+            name="redirect"
+            type="hidden"
+            value=""
+          />
         </form>
       </details>
     </div>
@@ -142,7 +153,9 @@ exports[`Toolshot components/LogInForm.tools.svelte: With Github provider 1`] = 
           Continuer avec un mot de passe
         </summary>
          
-        <form>
+        <form
+          method="POST"
+        >
           <div
             class="row"
           >
@@ -151,7 +164,9 @@ exports[`Toolshot components/LogInForm.tools.svelte: With Github provider 1`] = 
                 Pseudo
               </legend>
                
-              <input />
+              <input
+                name="username"
+              />
             </fieldset>
           </div>
            
@@ -165,6 +180,7 @@ exports[`Toolshot components/LogInForm.tools.svelte: With Github provider 1`] = 
                
               <input
                 data-testid="password"
+                name="password"
                 type="password"
               />
             </fieldset>
@@ -192,6 +208,12 @@ exports[`Toolshot components/LogInForm.tools.svelte: With Github provider 1`] = 
               
             </button>
           </div>
+           
+          <input
+            name="redirect"
+            type="hidden"
+            value=""
+          />
         </form>
       </details>
     </div>
@@ -253,7 +275,9 @@ exports[`Toolshot components/LogInForm.tools.svelte: With Google provider 1`] = 
           Continuer avec un mot de passe
         </summary>
          
-        <form>
+        <form
+          method="POST"
+        >
           <div
             class="row"
           >
@@ -262,7 +286,9 @@ exports[`Toolshot components/LogInForm.tools.svelte: With Google provider 1`] = 
                 Pseudo
               </legend>
                
-              <input />
+              <input
+                name="username"
+              />
             </fieldset>
           </div>
            
@@ -276,6 +302,7 @@ exports[`Toolshot components/LogInForm.tools.svelte: With Google provider 1`] = 
                
               <input
                 data-testid="password"
+                name="password"
                 type="password"
               />
             </fieldset>
@@ -303,6 +330,12 @@ exports[`Toolshot components/LogInForm.tools.svelte: With Google provider 1`] = 
               
             </button>
           </div>
+           
+          <input
+            name="redirect"
+            type="hidden"
+            value=""
+          />
         </form>
       </details>
     </div>
@@ -390,7 +423,9 @@ exports[`Toolshot components/LogInForm.tools.svelte: With all providers 1`] = `
           Continuer avec un mot de passe
         </summary>
          
-        <form>
+        <form
+          method="POST"
+        >
           <div
             class="row"
           >
@@ -399,7 +434,9 @@ exports[`Toolshot components/LogInForm.tools.svelte: With all providers 1`] = `
                 Pseudo
               </legend>
                
-              <input />
+              <input
+                name="username"
+              />
             </fieldset>
           </div>
            
@@ -413,6 +450,7 @@ exports[`Toolshot components/LogInForm.tools.svelte: With all providers 1`] = `
                
               <input
                 data-testid="password"
+                name="password"
                 type="password"
               />
             </fieldset>
@@ -440,6 +478,12 @@ exports[`Toolshot components/LogInForm.tools.svelte: With all providers 1`] = `
               
             </button>
           </div>
+           
+          <input
+            name="redirect"
+            type="hidden"
+            value=""
+          />
         </form>
       </details>
     </div>
@@ -467,7 +511,6 @@ exports[`Toolshot components/LogInForm.tools.svelte: With password error 1`] = `
         open=""
       >
         <summary
-          class="hidden"
           title="password-toggle"
         >
           <span
@@ -478,7 +521,9 @@ exports[`Toolshot components/LogInForm.tools.svelte: With password error 1`] = `
           Autres options
         </summary>
          
-        <form>
+        <form
+          method="POST"
+        >
           <div
             class="row"
           >
@@ -489,7 +534,9 @@ exports[`Toolshot components/LogInForm.tools.svelte: With password error 1`] = `
                 Pseudo
               </legend>
                
-              <input />
+              <input
+                name="username"
+              />
             </fieldset>
           </div>
            
@@ -505,6 +552,7 @@ exports[`Toolshot components/LogInForm.tools.svelte: With password error 1`] = `
                
               <input
                 data-testid="password"
+                name="password"
                 type="password"
               />
             </fieldset>
@@ -515,6 +563,12 @@ exports[`Toolshot components/LogInForm.tools.svelte: With password error 1`] = `
           >
             Authentication failed!
           </div>
+           
+          <input
+            name="redirect"
+            type="hidden"
+            value=""
+          />
         </form>
       </details>
     </div>
@@ -553,7 +607,9 @@ exports[`Toolshot components/LogInForm.tools.svelte: with password values 1`] = 
           Autres options
         </summary>
          
-        <form>
+        <form
+          method="POST"
+        >
           <div
             class="row"
           >
@@ -564,7 +620,9 @@ exports[`Toolshot components/LogInForm.tools.svelte: with password values 1`] = 
                 Pseudo
               </legend>
                
-              <input />
+              <input
+                name="username"
+              />
             </fieldset>
           </div>
            
@@ -580,6 +638,7 @@ exports[`Toolshot components/LogInForm.tools.svelte: with password values 1`] = 
                
               <input
                 data-testid="password"
+                name="password"
                 type="password"
               />
             </fieldset>
@@ -606,6 +665,12 @@ exports[`Toolshot components/LogInForm.tools.svelte: with password values 1`] = 
               
             </button>
           </div>
+           
+          <input
+            name="redirect"
+            type="hidden"
+            value=""
+          />
         </form>
       </details>
     </div>
