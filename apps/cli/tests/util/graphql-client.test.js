@@ -24,14 +24,14 @@ describe('getGraphQLClient()', () => {
 
     const client = getGraphQLClient()
     expect(client).toBeDefined()
-    expect(client.url).toEqual(`${url}/graphql`)
+    expect(client.url).toEqual(url)
     expect(loadConfiguration).toHaveBeenCalledTimes(1)
   })
 
   it('reuses existing client', () => {
     const client = getGraphQLClient()
     expect(client).toBeDefined()
-    expect(client.url).toEqual(`${url}/graphql`)
+    expect(client.url).toEqual(url)
     expect(loadConfiguration).not.toHaveBeenCalled()
   })
 
@@ -57,7 +57,7 @@ describe('getGraphQLClient()', () => {
       const jwt = faker.datatype.uuid()
 
       networkMock
-        .intercept({ method: 'POST', path: '/graphql' })
+        .intercept({ method: 'POST', path: '/' })
         .reply(200, ({ headers, body }) => {
           graphQLRequest({ body: JSON.parse(body), headers })
           return { errors: [{ message: error.message }], data: null }
@@ -84,12 +84,9 @@ describe('getGraphQLClient()', () => {
       }
 
       networkMock
-        .intercept({ method: 'POST', path: '/graphql' })
+        .intercept({ method: 'POST', path: '/' })
         .reply(200, ({ headers, body }) => {
-          graphQLRequest({
-            body: JSON.parse(body),
-            headers: parseHeaders(headers)
-          })
+          graphQLRequest({ body: JSON.parse(body), headers })
           return { data }
         })
 
@@ -115,7 +112,7 @@ describe('getGraphQLClient()', () => {
           variables: { username }
         },
         headers: expect.objectContaining({
-          cookie: `token=${jwt}`
+          authorization: `Bearer ${jwt}`
         })
       })
     })
@@ -128,12 +125,9 @@ describe('getGraphQLClient()', () => {
       }
 
       networkMock
-        .intercept({ method: 'POST', path: '/graphql' })
+        .intercept({ method: 'POST', path: '/' })
         .reply(200, ({ headers, body }) => {
-          graphQLRequest({
-            body: JSON.parse(body),
-            headers: parseHeaders(headers)
-          })
+          graphQLRequest({ body: JSON.parse(body), headers })
           return { data }
         })
 
@@ -159,22 +153,9 @@ describe('getGraphQLClient()', () => {
           variables: { username }
         },
         headers: expect.objectContaining({
-          cookie: `token=${jwt}`
+          authorization: `Bearer ${jwt}`
         })
       })
     })
   })
 })
-
-function parseHeaders(headers) {
-  let headerName = null
-  return headers.reduce((headers, value) => {
-    if (headerName) {
-      headers[headerName] = value
-      headerName = null
-    } else {
-      headerName = value
-    }
-    return headers
-  }, {})
-}
