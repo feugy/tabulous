@@ -5,7 +5,6 @@ import { get } from 'svelte/store'
 import Peer from 'simple-peer-light'
 import * as graphQL from '../../src/graphql'
 import * as communication from '../../src/stores/peer-channels'
-import { turnCredentials as turnCredentials$ } from '../../src/stores/players'
 import {
   acquireMediaStream,
   localStreamChange$,
@@ -18,10 +17,6 @@ import { sleep } from '../../src/utils'
 
 jest.mock('simple-peer-light')
 jest.mock('../../src/stores/graphql-client')
-jest.mock('../../src/stores/players', () => {
-  const { BehaviorSubject } = require('rxjs')
-  return { turnCredentials: new BehaviorSubject() }
-})
 jest.mock('../../src/stores/stream', () => {
   const { BehaviorSubject, Subject } = require('rxjs')
   return {
@@ -65,7 +60,6 @@ describe('Peer channels store', () => {
         messagesReceived.push(value)
       })
     ]
-    turnCredentials$.next(turnCredentials)
   })
 
   beforeEach(() => {
@@ -107,14 +101,14 @@ describe('Peer channels store', () => {
   afterAll(() => subscriptions.forEach(sub => sub.unsubscribe()))
 
   it('can not connect with peer until WebSocket is open', () => {
-    communication.connectWith(playerId3)
+    communication.connectWith(playerId3, turnCredentials)
     expect(get(communication.connected)).toEqual([])
     expect(Peer).not.toHaveBeenCalled()
   })
 
   it('starts subscription for a given player', async () => {
     runSubscription.mockReturnValueOnce(new Subject())
-    communication.openChannels({ id: playerId1 })
+    communication.openChannels({ id: playerId1 }, turnCredentials)
     expect(runSubscription).toHaveBeenCalledWith(graphQL.awaitSignal)
     expect(runSubscription).toHaveBeenCalledTimes(1)
   })
@@ -124,7 +118,7 @@ describe('Peer channels store', () => {
 
     beforeEach(() => {
       runSubscription.mockReturnValueOnce(awaitSignal)
-      communication.openChannels({ id: playerId1 })
+      communication.openChannels({ id: playerId1 }, turnCredentials)
     })
 
     it('opens WebRTC peer when receiving an offer, and sends the answer through mutation', async () => {
@@ -174,7 +168,10 @@ describe('Peer channels store', () => {
           signal: faker.lorem.words()
         }
 
-        const connectWith = communication.connectWith(playerId3)
+        const connectWith = communication.connectWith(
+          playerId3,
+          turnCredentials
+        )
         await Promise.resolve()
         expectPeerOptions()
 
@@ -210,7 +207,10 @@ describe('Peer channels store', () => {
           signal: faker.lorem.words()
         }
 
-        const connectWith = communication.connectWith(playerId3)
+        const connectWith = communication.connectWith(
+          playerId3,
+          turnCredentials
+        )
         await Promise.resolve()
         expectPeerOptions()
 
@@ -242,7 +242,7 @@ describe('Peer channels store', () => {
 
     beforeEach(async () => {
       runSubscription.mockReturnValueOnce(awaitSignal)
-      communication.openChannels({ id: playerId1 })
+      communication.openChannels({ id: playerId1 }, turnCredentials)
 
       await awaitSignal.next({ type: 'offer', from: playerId2 })
       peers[0].events.signal.mock.calls[0][0]({ type: 'answer' })
