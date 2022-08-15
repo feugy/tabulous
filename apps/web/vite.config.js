@@ -39,7 +39,6 @@ export default defineConfig(({ mode }) => ({
     exclude: ['@urql/svelte', '@atelier-wb/ui']
   },
   server: {
-    https: true,
     port: 3000
   },
   preview: {

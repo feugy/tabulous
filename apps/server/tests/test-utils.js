@@ -101,20 +101,6 @@ export function cloneAsJSON(object) {
 }
 
 /**
- * Simple utility to parse cookie into a plain object.
- * @param {string} cookieString - set-cookie content as a string.
- * @returns {object} the parsed object.
- */
-export function parseCookie(cookieString) {
-  const cookie = {}
-  for (const part of cookieString.split(';')) {
-    const [name, value] = part.split('=')
-    cookie[name.trim()] = value ? decodeURIComponent(value.trim()) : true
-  }
-  return cookie
-}
-
-/**
  * For testing purposes, signs a player id in a valid JWT.
  * @param {string} playerId - signed player id.
  * @param {string} key - key used to sign the token.

@@ -1,5 +1,5 @@
 <script>
-  import { page } from '$app/stores'
+  import { page, session } from '$app/stores'
   import { onMount, onDestroy } from 'svelte'
   import { _ } from 'svelte-intl'
   import { GameMenu, InvitePlayerDialogue } from '../../connected-components'
@@ -19,7 +19,6 @@
     connected,
     currentCamera,
     currentGame,
-    currentPlayer,
     gamePlayerById,
     handMeshes,
     handVisible,
@@ -50,7 +49,7 @@
   onMount(async () => {
     engine = initEngine({ canvas, interaction, longTapDelay, hand })
     initIndicators({ engine, canvas, hand })
-    loadPromise = loadGame($page.params.gameId)
+    loadPromise = loadGame($page.params.gameId, $session)
     loadPromise.catch(err => console.error(err))
     dimensionObserver = observeDimension(interaction, 0)
     dimensionSubscription = dimensionObserver.dimension$.subscribe(
@@ -125,7 +124,7 @@
   <CursorInfo halos={longInputs} />
   <GameAside
     game={$currentGame}
-    player={$currentPlayer}
+    player={$session.user}
     playerById={$gamePlayerById}
     connected={$connected}
     thread={$thread}

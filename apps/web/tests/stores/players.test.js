@@ -1,12 +1,11 @@
 import { faker } from '@faker-js/faker'
+import { goto } from '$app/navigation'
 import * as graphQL from '../../src/graphql'
 import {
-  currentPlayer as currentPlayer$,
   logIn,
   logOut,
   recoverSession,
-  searchPlayers,
-  turnCredentials as turnCredentials$
+  searchPlayers
 } from '../../src/stores/players'
 import {
   initGraphQLGlient,
@@ -14,9 +13,19 @@ import {
   runQuery
 } from '../../src/stores/graphql-client'
 import { graphQlUrl } from '../../src/utils'
-import { mockLogger } from '../utils'
 
 jest.mock('../../src/stores/graphql-client')
+
+const username = faker.name.firstName()
+const password = faker.internet.password()
+const player = { id: faker.datatype.uuid(), username }
+const turnCredentials = {
+  username: faker.lorem.words(),
+  credentials: faker.datatype.uuid()
+}
+const token = faker.datatype.uuid()
+
+beforeEach(jest.resetAllMocks)
 
 describe('searchPlayers()', () => {
   it('search players by user name', async () => {
@@ -29,128 +38,71 @@ describe('searchPlayers()', () => {
   })
 })
 
-describe('given a subscription to current player', () => {
-  const logger = mockLogger('players')
-  let subscriptions
-  const playerChanged = jest.fn()
-  const turnCredentialsChanged = jest.fn()
-  const username = faker.name.firstName()
-  const password = faker.internet.password()
-  const player = { id: faker.datatype.uuid(), username }
-  const turnCredentials = {
-    username: faker.lorem.words(),
-    credentials: faker.datatype.uuid()
-  }
-  const token = faker.datatype.uuid()
-
-  beforeAll(() => {
-    subscriptions = [
-      currentPlayer$.subscribe(playerChanged),
-      turnCredentials$.subscribe(turnCredentialsChanged)
-    ]
+describe('logIn()', () => {
+  it('returns session on success', async () => {
+    const session = { token, player, turnCredentials }
+    runMutation.mockResolvedValueOnce(session)
+    expect(await logIn(username, password)).toEqual(session)
+    expect(runMutation).toHaveBeenCalledWith(graphQL.logIn, {
+      username,
+      password
+    })
+    expect(runMutation).toHaveBeenCalledTimes(1)
+    expect(goto).not.toHaveBeenCalled()
   })
 
-  beforeEach(jest.resetAllMocks)
-
-  afterAll(() => subscriptions.forEach(sub => sub.unsubscribe()))
-
-  describe('logIn()', () => {
-    it('sets current player and turn credentials on success', async () => {
-      runMutation.mockResolvedValueOnce({ token, player, turnCredentials })
-      await logIn(username, password)
-      expect(runMutation).toHaveBeenCalledWith(graphQL.logIn, {
-        username,
-        password
-      })
-      expect(runMutation).toHaveBeenCalledTimes(1)
-      expect(playerChanged).toHaveBeenCalledWith(player)
-      expect(playerChanged).toHaveBeenCalledTimes(1)
-      expect(turnCredentialsChanged).toHaveBeenCalledWith(turnCredentials)
-      expect(turnCredentialsChanged).toHaveBeenCalledTimes(1)
-      expect(initGraphQLGlient).toHaveBeenCalledWith(graphQlUrl, token)
-      expect(initGraphQLGlient).toHaveBeenCalledTimes(1)
+  it('throws on failure', async () => {
+    const error = new Error('forbidden')
+    runMutation.mockRejectedValueOnce(error)
+    await expect(logIn(username, password)).rejects.toThrow(error)
+    expect(runMutation).toHaveBeenCalledWith(graphQL.logIn, {
+      username,
+      password
     })
+    expect(runMutation).toHaveBeenCalledTimes(1)
+    expect(goto).not.toHaveBeenCalled()
+  })
+})
 
-    it('reset current player on failure', async () => {
-      const error = new Error('forbidden')
-      runMutation.mockRejectedValueOnce(error)
-      await expect(logIn(username, password)).rejects.toThrow(error)
-      expect(runMutation).toHaveBeenCalledWith(graphQL.logIn, {
-        username,
-        password
-      })
-      expect(runMutation).toHaveBeenCalledTimes(1)
-      expect(playerChanged).toHaveBeenCalledWith(null)
-      expect(playerChanged).toHaveBeenCalledTimes(1)
-      expect(turnCredentialsChanged).toHaveBeenCalledWith(null)
-      expect(turnCredentialsChanged).toHaveBeenCalledTimes(1)
-      expect(initGraphQLGlient).toHaveBeenCalledWith(graphQlUrl, undefined)
-      expect(initGraphQLGlient).toHaveBeenCalledTimes(1)
+describe('logOut()', () => {
+  it('navigates to logout endpoint', async () => {
+    await logOut()
+    expect(goto).toHaveBeenCalledWith(`/logout`)
+    expect(goto).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('recoverSession()', () => {
+  it('returns null on invalid session', async () => {
+    const bearer = faker.datatype.uuid()
+    runQuery.mockRejectedValueOnce(new Error('forbidden'))
+    expect(await recoverSession(fetch, bearer)).toBeNull()
+    expect(runQuery).toHaveBeenCalledWith(graphQL.getCurrentPlayer)
+    expect(runQuery).toHaveBeenCalledTimes(1)
+    expect(initGraphQLGlient).toHaveBeenCalledWith({
+      graphQlUrl,
+      fetch,
+      bearer,
+      subscriptionSupport: false
     })
+    expect(initGraphQLGlient).toHaveBeenCalledTimes(1)
+    expect(goto).not.toHaveBeenCalled()
   })
 
-  describe('given an authenticated player', () => {
-    beforeEach(async () => {
-      runMutation.mockResolvedValueOnce({ token, player, turnCredentials })
-      await logIn(username, password)
-      runMutation.mockReset()
-      playerChanged.mockReset()
-      turnCredentialsChanged.mockReset()
-      initGraphQLGlient.mockReset()
+  it('returns session on success', async () => {
+    const bearer = faker.datatype.uuid()
+    const session = { token, player, turnCredentials }
+    runQuery.mockResolvedValueOnce(session)
+    expect(await recoverSession(fetch, bearer)).toEqual(session)
+    expect(runQuery).toHaveBeenCalledWith(graphQL.getCurrentPlayer)
+    expect(runQuery).toHaveBeenCalledTimes(1)
+    expect(initGraphQLGlient).toHaveBeenCalledWith({
+      graphQlUrl,
+      fetch,
+      bearer,
+      subscriptionSupport: false
     })
-
-    describe('logOut()', () => {
-      it('clears current player', async () => {
-        await logOut()
-        expect(runMutation).toHaveBeenCalledWith(graphQL.logOut)
-        expect(runMutation).toHaveBeenCalledTimes(1)
-        expect(playerChanged).toHaveBeenCalledWith(null)
-        expect(playerChanged).toHaveBeenCalledTimes(1)
-        expect(turnCredentialsChanged).toHaveBeenCalledWith(null)
-        expect(turnCredentialsChanged).toHaveBeenCalledTimes(1)
-        expect(initGraphQLGlient).toHaveBeenCalledWith(graphQlUrl, undefined)
-        expect(initGraphQLGlient).toHaveBeenCalledTimes(1)
-      })
-    })
-
-    describe('recoverSession()', () => {
-      it('logs player out on invalid session', async () => {
-        runQuery.mockRejectedValueOnce(new Error('forbidden'))
-        runMutation.mockResolvedValueOnce()
-        await recoverSession()
-        expect(runQuery).toHaveBeenCalledWith(graphQL.getCurrentPlayer)
-        expect(runQuery).toHaveBeenCalledTimes(1)
-        expect(runMutation).toHaveBeenCalledWith(graphQL.logOut)
-        expect(runMutation).toHaveBeenCalledTimes(1)
-        expect(playerChanged).toHaveBeenCalledWith(null)
-        expect(playerChanged).toHaveBeenCalledTimes(1)
-        expect(turnCredentialsChanged).toHaveBeenCalledWith(null)
-        expect(turnCredentialsChanged).toHaveBeenCalledTimes(1)
-        expect(initGraphQLGlient).toHaveBeenNthCalledWith(1, graphQlUrl)
-        expect(initGraphQLGlient).toHaveBeenNthCalledWith(
-          2,
-          graphQlUrl,
-          undefined
-        )
-        expect(initGraphQLGlient).toHaveBeenCalledTimes(2)
-        expect(logger.warn).toHaveBeenCalledTimes(1)
-      })
-
-      it('authenticates player with valid data', async () => {
-        runQuery.mockResolvedValueOnce({ token, player, turnCredentials })
-        await recoverSession()
-        expect(runQuery).toHaveBeenCalledWith(graphQL.getCurrentPlayer)
-        expect(runQuery).toHaveBeenCalledTimes(1)
-        expect(runMutation).not.toHaveBeenCalled()
-        expect(playerChanged).toHaveBeenCalledWith(player)
-        expect(playerChanged).toHaveBeenCalledTimes(1)
-        expect(turnCredentialsChanged).toHaveBeenCalledWith(turnCredentials)
-        expect(turnCredentialsChanged).toHaveBeenCalledTimes(1)
-        expect(initGraphQLGlient).toHaveBeenNthCalledWith(1, graphQlUrl)
-        expect(initGraphQLGlient).toHaveBeenNthCalledWith(2, graphQlUrl, token)
-        expect(initGraphQLGlient).toHaveBeenCalledTimes(2)
-        expect(logger.warn).not.toHaveBeenCalled()
-      })
-    })
+    expect(initGraphQLGlient).toHaveBeenCalledTimes(1)
+    expect(goto).not.toHaveBeenCalled()
   })
 })

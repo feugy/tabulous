@@ -114,6 +114,7 @@ export class HomePage {
    */
   async logOut() {
     await this.logoutButton.click()
+    await this.page.waitForLoadState()
     await expect(this.page).toHaveURL('/home')
     await this.isAnonymous()
   }

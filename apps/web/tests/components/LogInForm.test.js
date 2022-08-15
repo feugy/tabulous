@@ -11,7 +11,6 @@ import { translate } from '../test-utils'
 describe('LogIn component', () => {
   const username$ = writable()
   const password$ = writable()
-  const handleSubmit = jest.fn()
   const origin = 'https://localhost:3000'
 
   beforeAll(() => {
@@ -35,7 +34,6 @@ describe('LogIn component', () => {
         bind:username=${username$}
         bind:password=${password$}
         ...${props}
-        on:submit=${handleSubmit}
       />`
     )
   }
@@ -146,28 +144,6 @@ describe('LogIn component', () => {
       expect(screen.getByRole('button')).toBeDisabled()
     })
 
-    it('submits username and password', async () => {
-      const username = faker.name.findName()
-      const password = faker.internet.password()
-      renderComponent()
-      const button = screen.getByRole('button')
-      expect(button).toBeDisabled()
-      expect(handleSubmit).not.toHaveBeenCalled()
-
-      username$.set(username)
-      password$.set(password)
-      await tick()
-      expect(button).toBeEnabled()
-      await fireEvent.click(button)
-
-      expect(handleSubmit).toHaveBeenCalledWith(
-        expect.objectContaining({
-          detail: { username, password }
-        })
-      )
-      expect(handleSubmit).toHaveBeenCalledTimes(1)
-    })
-
     it.each([
       {
         title: 'username change',
@@ -182,7 +158,7 @@ describe('LogIn component', () => {
         }
       }
     ])('hides error on $title', async ({ change }) => {
-      const error = faker.name.findName()
+      const error = faker.name.fullName()
       renderComponent({ error })
       expect(screen.queryByRole('button')).not.toBeInTheDocument()
       expect(screen.getByText(error)).toBeInTheDocument()
@@ -191,7 +167,6 @@ describe('LogIn component', () => {
       await tick()
       expect(screen.getByRole('button')).toBeInTheDocument()
       expect(screen.queryByText(error)).not.toBeInTheDocument()
-      expect(handleSubmit).not.toHaveBeenCalled()
     })
   })
 })

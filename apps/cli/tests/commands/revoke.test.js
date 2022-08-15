@@ -40,7 +40,7 @@ describe('User revokes command', () => {
   describe('given existing players', () => {
     const player = {
       id: faker.datatype.uuid(),
-      username: faker.name.findName()
+      username: faker.name.fullName()
     }
     const gameName = faker.commerce.productName()
 

@@ -1,5 +1,4 @@
 <script>
-  import { createEventDispatcher } from 'svelte'
   import { _ } from 'svelte-intl'
   import Button from './Button.svelte'
   import Input from './Input.svelte'
@@ -16,8 +15,6 @@
   export let withGoogle = false
   export let withGithub = false
 
-  const dispatch = createEventDispatcher()
-
   $: hasProviders = withGoogle || withGithub
   $: disabled =
     !username ||
@@ -27,10 +24,6 @@
 
   let details
   let isPasswordOpen = false
-
-  function handleLogin() {
-    dispatch('submit', { username, password })
-  }
 
   function resetError() {
     error = null
@@ -67,7 +60,7 @@
     {/if}
     <details
       bind:this={details}
-      open={!hasProviders}
+      open={!hasProviders || !!error}
       on:toggle={handleTogglePassword}
     >
       <summary class:hidden={!hasProviders} title="password-toggle">
@@ -77,9 +70,10 @@
           isPasswordOpen ? 'actions.log-in-others' : 'actions.log-in-password'
         )}
       </summary>
-      <form on:submit|preventDefault={handleLogin}>
+      <form method="POST">
         <div class="row">
           <Input
+            name="username"
             placeholder={$_('placeholders.username')}
             bind:value={username}
             bind:ref={inputRef}
@@ -88,6 +82,7 @@
         </div>
         <div class="row">
           <Input
+            name="password"
             type="password"
             placeholder={$_('placeholders.password')}
             data-testid="password"
@@ -107,6 +102,7 @@
             />
           </div>
         {/if}
+        <input type="hidden" name="redirect" value={redirect} />
       </form>
     </details>
   </div>

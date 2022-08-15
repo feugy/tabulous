@@ -1,5 +1,4 @@
 import { faker } from '@faker-js/faker'
-import cookiePlugin from '@fastify/cookie'
 import { jest } from '@jest/globals'
 import fastify from 'fastify'
 import { signToken } from '../test-utils'
@@ -33,7 +32,6 @@ describe('given a started server', () => {
   beforeAll(async () => {
     const graphQL = await import('../../src/plugins/graphql.js')
     server = fastify({ logger: false })
-    server.register(cookiePlugin)
     server.decorate('conf', configuration)
     server.register(graphQL)
     await server.listen()
@@ -53,7 +51,10 @@ describe('given a started server', () => {
           method: 'POST',
           url: 'graphql',
           headers: {
-            cookie: `token=${signToken(player.id, configuration.auth.jwt.key)}`
+            authorization: `Bearer ${signToken(
+              player.id,
+              configuration.auth.jwt.key
+            )}`
           },
           payload: { query: `{ listCatalog { name } }` }
         })
@@ -72,7 +73,10 @@ describe('given a started server', () => {
           method: 'POST',
           url: 'graphql',
           headers: {
-            cookie: `token=${signToken(player.id, configuration.auth.jwt.key)}`
+            authorization: `Bearer ${signToken(
+              player.id,
+              configuration.auth.jwt.key
+            )}`
           },
           payload: {
             query: `{ listCatalog { name } }`
@@ -117,7 +121,10 @@ describe('given a started server', () => {
           method: 'POST',
           url: 'graphql',
           headers: {
-            cookie: `token=${signToken(admin.id, configuration.auth.jwt.key)}`
+            authorization: `Bearer ${signToken(
+              admin.id,
+              configuration.auth.jwt.key
+            )}`
           },
           payload: {
             query: `mutation { 
@@ -145,7 +152,10 @@ describe('given a started server', () => {
           method: 'POST',
           url: 'graphql',
           headers: {
-            cookie: `token=${signToken(admin.id, configuration.auth.jwt.key)}`
+            authorization: `Bearer ${signToken(
+              admin.id,
+              configuration.auth.jwt.key
+            )}`
           },
           payload: {
             query: `mutation { 
@@ -172,7 +182,10 @@ describe('given a started server', () => {
           method: 'POST',
           url: 'graphql',
           headers: {
-            cookie: `token=${signToken(player.id, configuration.auth.jwt.key)}`
+            authorization: `Bearer ${signToken(
+              player.id,
+              configuration.auth.jwt.key
+            )}`
           },
           payload: {
             query: `mutation { 
@@ -198,7 +211,10 @@ describe('given a started server', () => {
           method: 'POST',
           url: 'graphql',
           headers: {
-            cookie: `token=${signToken(player.id, configuration.auth.jwt.key)}`
+            authorization: `Bearer ${signToken(
+              player.id,
+              configuration.auth.jwt.key
+            )}`
           },
           payload: {
             query: `mutation { 
@@ -227,7 +243,10 @@ describe('given a started server', () => {
           method: 'POST',
           url: 'graphql',
           headers: {
-            cookie: `token=${signToken(admin.id, configuration.auth.jwt.key)}`
+            authorization: `Bearer ${signToken(
+              admin.id,
+              configuration.auth.jwt.key
+            )}`
           },
           payload: {
             query: `mutation { 
@@ -255,7 +274,10 @@ describe('given a started server', () => {
           method: 'POST',
           url: 'graphql',
           headers: {
-            cookie: `token=${signToken(admin.id, configuration.auth.jwt.key)}`
+            authorization: `Bearer ${signToken(
+              admin.id,
+              configuration.auth.jwt.key
+            )}`
           },
           payload: {
             query: `mutation { 
@@ -282,7 +304,10 @@ describe('given a started server', () => {
           method: 'POST',
           url: 'graphql',
           headers: {
-            cookie: `token=${signToken(player.id, configuration.auth.jwt.key)}`
+            authorization: `Bearer ${signToken(
+              player.id,
+              configuration.auth.jwt.key
+            )}`
           },
           payload: {
             query: `mutation { 
@@ -308,7 +333,10 @@ describe('given a started server', () => {
           method: 'POST',
           url: 'graphql',
           headers: {
-            cookie: `token=${signToken(player.id, configuration.auth.jwt.key)}`
+            authorization: `Bearer ${signToken(
+              player.id,
+              configuration.auth.jwt.key
+            )}`
           },
           payload: {
             query: `mutation { 

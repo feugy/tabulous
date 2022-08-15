@@ -28,7 +28,7 @@ describe('getGraphQLClient()', () => {
   it('returns existing user', async () => {
     const player = {
       id: faker.datatype.uuid(),
-      username: faker.name.findName()
+      username: faker.name.fullName()
     }
     mockQuery.mockResolvedValue({ searchPlayers: [player] })
 
@@ -41,14 +41,14 @@ describe('getGraphQLClient()', () => {
   })
 
   it('throws on user not found', async () => {
-    const username = faker.name.findName()
+    const username = faker.name.fullName()
     mockQuery.mockResolvedValue({ searchPlayers: [] })
 
     await expect(findUser(username)).rejects.toThrow('no user found')
   })
 
   it('can return null on demand', async () => {
-    const username = faker.name.findName()
+    const username = faker.name.fullName()
     mockQuery.mockResolvedValue({ searchPlayers: [] })
 
     expect(await findUser(username, false)).toBeNull()

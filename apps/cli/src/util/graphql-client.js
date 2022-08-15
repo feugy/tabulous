@@ -23,10 +23,7 @@ export function getGraphQLClient() {
 }
 
 function initClient(options) {
-  const client = createClient({
-    ...options,
-    url: `${options.url}/graphql`
-  })
+  const client = createClient(options)
 
   setGlobalDispatcher(
     new Agent({
@@ -38,7 +35,7 @@ function initClient(options) {
 
   async function runQuery(type, args) {
     const jwt = args.pop()
-    fetchOptions = { headers: { cookie: `token=${jwt}` } }
+    fetchOptions = { headers: { authorization: `Bearer ${jwt}` } }
     const { data, error } = await client[type](...args).toPromise()
     if (error) {
       throw error

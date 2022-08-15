@@ -3,12 +3,7 @@
   import { LogInForm } from '../../src/components'
 </script>
 
-<ToolBox
-  component={LogInForm}
-  name="Components/Log-in Form"
-  events={['submit']}
-  layout="padded"
->
+<ToolBox component={LogInForm} name="Components/Log-in Form" layout="padded">
   <Tool name="Default state" />
   <Tool
     name="with password values"
@@ -17,6 +12,7 @@
   <Tool
     name="With password error"
     props={{
+      withGoogle: true,
       username: 'John',
       password: 'abcd',
       error: 'Authentication failed!'

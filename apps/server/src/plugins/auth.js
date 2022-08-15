@@ -1,11 +1,11 @@
 import services from '../services/index.js'
-import { setTokenCookie } from './utils.js'
+import { makeToken } from './utils.js'
 
 /**
  * @typedef {object} AuthOptions authentication plugin options, including:
  * @param {string} domain - public facing domain (full url) for authentication redirections.
  * @param {string} allowedOrigins - regular expression for allowed domains during authentication.
- * @param {import('fast-jwt').SignerOptions} jwt - options used to encrypt JWT token sent as cookies: needs 'key' at least.
+ * @param {import('fast-jwt').SignerOptions} jwt - options used to encrypt JWT token: needs 'key' at least.
  * @param {OAuth2ProviderOptions} github - Github authentication provider options.
  * @param {OAuth2ProviderOptions} google - Google authentication provider options.
  */
@@ -61,8 +61,9 @@ export default async function registerAuth(app, options) {
         async ({ query: { code, state } }, reply) => {
           const { location, user } = await service.authenticateUser(code, state)
           const player = await connect({ ...user, provider })
-          setTokenCookie(reply, player, options.jwt)
-          return reply.redirect(location)
+          const url = new URL(location)
+          url.searchParams.append('token', makeToken(player, options.jwt))
+          return reply.redirect(url.toString())
         }
       )
     }

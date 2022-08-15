@@ -11,16 +11,16 @@ describe('Catalog service', () => {
   const players = [
     {
       id: faker.datatype.uuid(),
-      username: faker.name.findName(),
+      username: faker.name.fullName(),
       catalog: ['splendor', '6-takes']
     },
     {
       id: faker.datatype.uuid(),
-      username: faker.name.findName()
+      username: faker.name.fullName()
     },
     {
       id: faker.datatype.uuid(),
-      username: faker.name.findName(),
+      username: faker.name.fullName(),
       catalog: ['6-takes']
     }
   ]
@@ -82,7 +82,7 @@ describe('Catalog service', () => {
       const gameName = items[3].name
       const player = await repositories.players.save({
         id: faker.datatype.uuid(),
-        name: faker.name.findName(),
+        name: faker.name.fullName(),
         catalog: [items[2].name]
       })
       expect(await grantAccess(player.id, gameName)).toEqual({
@@ -96,7 +96,7 @@ describe('Catalog service', () => {
       const gameName = items[0].name
       const player = await repositories.players.save({
         id: faker.datatype.uuid(),
-        name: faker.name.findName()
+        name: faker.name.fullName()
       })
       expect(await grantAccess(player.id, gameName)).toEqual({
         ...player,
@@ -109,7 +109,7 @@ describe('Catalog service', () => {
       const gameName = items[3].name
       const player = await repositories.players.save({
         id: faker.datatype.uuid(),
-        name: faker.name.findName(),
+        name: faker.name.fullName(),
         catalog: [gameName]
       })
       expect(await grantAccess(player.id, gameName)).toBeNull()
@@ -123,7 +123,7 @@ describe('Catalog service', () => {
       const gameName = items[1].name
       const player = await repositories.players.save({
         id: faker.datatype.uuid(),
-        name: faker.name.findName(),
+        name: faker.name.fullName(),
         catalog: [gameName]
       })
       expect(await grantAccess(player.id, gameName)).toBeNull()
@@ -137,7 +137,7 @@ describe('Catalog service', () => {
       const gameName = faker.datatype.uuid()
       const player = await repositories.players.save({
         id: faker.datatype.uuid(),
-        name: faker.name.findName(),
+        name: faker.name.fullName(),
         catalog: [gameName]
       })
       expect(await grantAccess(player.id, gameName)).toBeNull()
@@ -157,7 +157,7 @@ describe('Catalog service', () => {
       const gameName = items[3].name
       const player = await repositories.players.save({
         id: faker.datatype.uuid(),
-        name: faker.name.findName(),
+        name: faker.name.fullName(),
         catalog: [items[2].name, gameName]
       })
       expect(await revokeAccess(player.id, gameName)).toEqual({
@@ -171,7 +171,7 @@ describe('Catalog service', () => {
       const gameName = items[3].name
       const player = await repositories.players.save({
         id: faker.datatype.uuid(),
-        name: faker.name.findName(),
+        name: faker.name.fullName(),
         catalog: [items[0].name]
       })
       expect(await revokeAccess(player.id, gameName)).toBeNull()
@@ -185,7 +185,7 @@ describe('Catalog service', () => {
       const gameName = items[1].name
       const player = await repositories.players.save({
         id: faker.datatype.uuid(),
-        name: faker.name.findName(),
+        name: faker.name.fullName(),
         catalog: [gameName]
       })
       expect(await revokeAccess(player.id, gameName)).toBeNull()
@@ -199,7 +199,7 @@ describe('Catalog service', () => {
       const gameName = faker.datatype.uuid()
       const player = await repositories.players.save({
         id: faker.datatype.uuid(),
-        name: faker.name.findName(),
+        name: faker.name.fullName(),
         catalog: [gameName]
       })
       expect(await revokeAccess(player.id, gameName)).toBeNull()

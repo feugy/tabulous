@@ -1,5 +1,4 @@
 import { faker } from '@faker-js/faker'
-import cookiePlugin from '@fastify/cookie'
 import { jest } from '@jest/globals'
 import fastify from 'fastify'
 import {
@@ -26,7 +25,6 @@ describe('given a started server', () => {
   beforeAll(async () => {
     server = fastify({ logger: false })
     server.decorate('conf', configuration)
-    server.register(cookiePlugin)
     server.register(graphQL)
     await server.listen()
     ws = await openGraphQLWebSocket(server)
@@ -92,7 +90,10 @@ describe('given a started server', () => {
           method: 'POST',
           url: 'graphql',
           headers: {
-            cookie: `token=${signToken(playerId, configuration.auth.jwt.key)}`
+            authorization: `Bearer ${signToken(
+              playerId,
+              configuration.auth.jwt.key
+            )}`
           },
           payload: {
             query: `mutation { 

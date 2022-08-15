@@ -19,6 +19,12 @@ export class GamePage {
     /**
      * @type {import('@playwright/test').Locator}
      */
+    this.defaultCameraButton = page.locator('role=button', {
+      hasText: 'videocam'
+    })
+    /**
+     * @type {import('@playwright/test').Locator}
+     */
     this.inviteMenuItem = page.locator('role=menuitem', {
       hasText: `connect_without_contact ${translate('actions.invite-player')}`
     })
@@ -54,6 +60,7 @@ export class GamePage {
    */
   async getStarted() {
     await expect(this.menuButton).toBeVisible()
+    await expect(this.defaultCameraButton).toBeVisible()
   }
 
   /**

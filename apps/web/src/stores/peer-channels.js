@@ -1,9 +1,7 @@
 import 'webrtc-adapter'
 import Peer from 'simple-peer-light'
 import { auditTime, BehaviorSubject, Subject, filter, scan } from 'rxjs'
-import { get } from 'svelte/store'
 import { runMutation, runSubscription } from './graphql-client'
-import { turnCredentials } from './players'
 import {
   acquireMediaStream,
   releaseMediaStream,
@@ -72,8 +70,9 @@ export const lastDisconnectedId = lastDisconnectedId$.asObservable()
  * Configures communication channels in order to honor other players' connection requests
  * @async
  * @param {object} player - current player // TODO
+ * @param {object} turnCredentials - turn credentials from session.
  */
-export async function openChannels(player) {
+export async function openChannels(player, turnCredentials) {
   current = { player }
   logger.info({ player }, 'initializing peer communication')
 
@@ -100,7 +99,7 @@ export async function openChannels(player) {
       } else {
         if (type === 'offer') {
           // new peer joining
-          createPeer(from, signal)
+          createPeer(turnCredentials, from, signal)
         }
       }
     }
@@ -110,17 +109,18 @@ export async function openChannels(player) {
 /**
  * Connects with another player, asking to attach media if necessary.
  * @async
- * @param {string} playerId - id of the player to connect with
- * @returns {Peer} - connection, in case of success
- * @throws {Error} when no connected peer is matching provided id
+ * @param {string} playerId - id of the player to connect with.
+ * @param {object} turnCredentials - turn credentials from session.
+ * @returns {Peer} - connection, in case of success.
+ * @throws {Error} when no connected peer is matching provided id.
  */
-export async function connectWith(playerId) {
+export async function connectWith(playerId, turnCredentials) {
   if (!signalSubscription || !current) return
   logger.info(
     { to: playerId, from: current.player.id },
     `establishing connection with peer ${playerId}`
   )
-  return await createPeer(playerId)
+  return await createPeer(turnCredentials, playerId)
 }
 
 /**
@@ -202,7 +202,7 @@ function unwire(id) {
   lastDisconnectedId$.next(id)
 }
 
-async function createPeer(playerId, signal) {
+async function createPeer(turnCredentials, playerId, signal) {
   return new Promise((resolve, reject) => {
     let peer
     let isFirst = true
@@ -226,7 +226,7 @@ async function createPeer(playerId, signal) {
           stream,
           trickle: true,
           config: {
-            iceServers: getIceServers()
+            iceServers: getIceServers(turnCredentials)
           },
           sdpTransform: buildSDPTransform({ bitrate })
         })
@@ -373,8 +373,7 @@ function buildConnectHandler({ connectTimeout, playerId, peer, resolve }) {
   }
 }
 
-function getIceServers() {
-  const { username, credentials: credential } = get(turnCredentials)
+function getIceServers({ username, credentials: credential }) {
   return [
     { urls: 'stun:tabulous.fr' },
     { urls: 'turn:tabulous.fr', username, credential }

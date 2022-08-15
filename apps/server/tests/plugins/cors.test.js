@@ -1,6 +1,5 @@
 import { faker } from '@faker-js/faker'
 import fastify from 'fastify'
-import cookiePlugin from '@fastify/cookie'
 import corsPlugin from '../../src/plugins/cors.js'
 import graphqlPlugin from '../../src/plugins/graphql.js'
 
@@ -14,7 +13,6 @@ describe('cors plugin', () => {
     server = fastify({ logger: false })
     server.decorate('conf', { auth: { jwt: { key: faker.datatype.uuid() } } })
     server.register(corsPlugin, { allowedOrigins })
-    server.register(cookiePlugin)
     server.register(graphqlPlugin, { allowedOrigins })
 
     const origin = 'https://toto.com'
@@ -45,11 +43,11 @@ describe('cors plugin', () => {
       url,
       method: 'POST',
       headers: { origin, 'Contant-Type': 'application/json' },
-      body: { query: `mutation logOut { logOut }` }
+      body: { query: `query list { listCatalog { name } }` }
     })
     expect(response).toMatchObject({
       statusCode: 200,
-      body: JSON.stringify({ data: { logOut: null } })
+      body: JSON.stringify({ data: { listCatalog: [] } })
     })
     expect(response.headers).toHaveProperty(
       'access-control-allow-origin',

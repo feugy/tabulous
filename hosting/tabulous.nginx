@@ -1,4 +1,19 @@
 server {
+    if ($host = graphql.tabulous.fr) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    if ($host = games.tabulous.fr) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    if ($host = auth.tabulous.fr) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
   listen 80 default_server;
   listen [::]:80 default_server;
 
@@ -8,8 +23,8 @@ server {
 
 server {
   listen 443 ssl;
-  ssl_certificate /etc/letsencrypt/live/tabulous.fr/fullchain.pem;
-  ssl_certificate_key /etc/letsencrypt/live/tabulous.fr/privkey.pem;
+  ssl_certificate /etc/letsencrypt/live/auth.tabulous.fr/fullchain.pem; # managed by Certbot
+  ssl_certificate_key /etc/letsencrypt/live/auth.tabulous.fr/privkey.pem; # managed by Certbot
 
   server_name graphql.tabulous.fr;
 
@@ -24,13 +39,13 @@ server {
 
 server {
   listen 443 ssl;
-  ssl_certificate /etc/letsencrypt/live/tabulous.fr/fullchain.pem;
-  ssl_certificate_key /etc/letsencrypt/live/tabulous.fr/privkey.pem;
+  ssl_certificate /etc/letsencrypt/live/auth.tabulous.fr/fullchain.pem; # managed by Certbot
+  ssl_certificate_key /etc/letsencrypt/live/auth.tabulous.fr/privkey.pem; # managed by Certbot
 
   server_name auth.tabulous.fr;
 
   location / {
-    proxy_pass http://localhost:3001/auth;
+    proxy_pass http://localhost:3001/auth/;
     proxy_http_version 1.1;
     proxy_set_header Host $host;
   }
@@ -38,8 +53,8 @@ server {
 
 server {
   listen 443 ssl;
-  ssl_certificate /etc/letsencrypt/live/tabulous.fr/fullchain.pem;
-  ssl_certificate_key /etc/letsencrypt/live/tabulous.fr/privkey.pem;
+  ssl_certificate /etc/letsencrypt/live/auth.tabulous.fr/fullchain.pem; # managed by Certbot
+  ssl_certificate_key /etc/letsencrypt/live/auth.tabulous.fr/privkey.pem; # managed by Certbot
 
   server_name games.tabulous.fr;
 

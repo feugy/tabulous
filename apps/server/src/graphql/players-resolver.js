@@ -1,5 +1,5 @@
 import { createHash } from 'crypto'
-import { setTokenCookie } from '../plugins/utils.js'
+import { makeToken } from '../plugins/utils.js'
 import services from '../services/index.js'
 import { isAuthenticated } from './utils.js'
 
@@ -40,7 +40,7 @@ export default {
   Mutation: {
     /**
      * Authenticates an user from their username.
-     * Sets id cookie to allow browser issueing authenticated requests.
+     * Returns a token to allow browser issueing authenticated requests.
      * @async
      * @param {object} obj - graphQL object.
      * @param {object} args - mutation arguments, including:
@@ -49,21 +49,14 @@ export default {
      * @param {object} context - graphQL context.
      * @returns {import('./players.graphqk').PlayerWithTurnCredentials} authentified player with turn credentials.
      */
-    logIn: async (obj, { username, password }, { conf, reply }) => {
+    logIn: async (obj, { username, password }, { conf }) => {
       if (masterPassword !== hash(password)) {
         throw new Error('forbidden')
       }
       const player = await services.connect({ username })
       const turnCredentials = services.generateTurnCredentials(conf.turn.secret)
-      const token = setTokenCookie(reply, player, conf.auth.jwt)
+      const token = makeToken(player, conf.auth.jwt)
       return { token, player, turnCredentials }
-    },
-
-    /**
-     * Clears out authentication cookie
-     */
-    logOut: (obj, args, { reply }) => {
-      reply.clearCookie('token')
     }
   }
 }

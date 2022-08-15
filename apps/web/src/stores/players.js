@@ -1,58 +1,30 @@
-import { browser } from '$app/env'
 import { goto } from '$app/navigation'
-import { BehaviorSubject, map } from 'rxjs'
 import { initGraphQLGlient, runQuery, runMutation } from './graphql-client'
 import * as graphQL from '../graphql'
 import { makeLogger, graphQlUrl } from '../utils'
 
 const logger = makeLogger('players')
-const storageKey = 'session'
-
-// we distinguish no value (undefined) and no player (null)
-const session$ = new BehaviorSubject()
-
-if (browser) {
-  session$.subscribe(session => {
-    initGraphQLGlient(graphQlUrl, session?.token)
-    if (session) {
-      logger.info({ session }, `saving session`)
-      sessionStorage.setItem(storageKey, JSON.stringify(session))
-    } else {
-      logger.info(`clearing session storage`)
-      sessionStorage.clear()
-    }
-  })
-}
 
 /**
- * Emits currently authenticated player.
- * @type {Observable<import('../graphql').Player>}
- */
-export const currentPlayer = session$.pipe(map(data => data?.player ?? null))
-
-/**
- * Emits turn credentials obtained during authentication
- * @type {Observable<import('../graphql').TurnCredentials>}
- */
-export const turnCredentials = session$.pipe(
-  map(data => data?.turnCredentials ?? null)
-)
-
-/**
- * Recovers previous session by calling server (leverage http-only cookie).
+ * Recovers previous session by calling server.
  * @async
+ * @param {function} fetch - the fetch implementation used to initialize GraphQL client.
+ * @param {string} bearer - the Bearer authorization value used to recover session.
  * @returns {object|null} the recovered session in case of success, or null.
  */
-export async function recoverSession() {
+export async function recoverSession(fetch, bearer) {
   let session = null
   try {
     logger.info(`recovering previous session`)
-    initGraphQLGlient(graphQlUrl)
+    initGraphQLGlient({
+      graphQlUrl,
+      fetch,
+      bearer,
+      subscriptionSupport: false
+    })
     session = await runQuery(graphQL.getCurrentPlayer)
-    session$.next(session)
   } catch (error) {
-    logger.warn({ error }, `failed to recover session: ${error.message}`)
-    await clearSession()
+    logger.debug({ error }, `failed to recover session: ${error.message}`)
   }
   logger.info({ session }, `session recovery complete`)
   return session
@@ -60,39 +32,32 @@ export async function recoverSession() {
 
 /**
  * Logs a player in with username/password method.
- * Populates currentPlayer and turnCredentials stores.
  * @async
  * @param {string} username - username of the authenticating player.
  * @param {string} password - clear password.
  * @throws {Error} when authentication was rejected
  */
 export async function logIn(username, password) {
-  let session = null
-  let authenticationError
   try {
-    session = await runMutation(graphQL.logIn, { username, password })
+    const session = await runMutation(graphQL.logIn, { username, password })
     logger.info({ session }, `authenticating ${username}`)
+    return session
   } catch (error) {
     logger.info(
       { error },
       `failed to authenticate ${username}: ${error.message}`
     )
-    authenticationError = error
-  }
-  session$.next(session)
-  if (authenticationError) {
-    throw authenticationError
+    throw error
   }
 }
 
 /**
- * Logs current player out.
+ * Navigates to the logout url which clear cookie and redirect to home page.
  * @async
  */
 export async function logOut() {
   logger.info(`logging out`)
-  clearSession()
-  goto('/')
+  return goto('/logout')
 }
 
 /**
@@ -104,9 +69,4 @@ export async function logOut() {
 export async function searchPlayers(search) {
   logger.info({ search }, `searches for ${search}`)
   return runQuery(graphQL.searchPlayers, { search })
-}
-
-async function clearSession() {
-  await runMutation(graphQL.logOut)
-  session$.next(null)
 }

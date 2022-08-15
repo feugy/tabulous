@@ -24,14 +24,14 @@ describe('getGraphQLClient()', () => {
 
     const client = getGraphQLClient()
     expect(client).toBeDefined()
-    expect(client.url).toEqual(`${url}/graphql`)
+    expect(client.url).toEqual(url)
     expect(loadConfiguration).toHaveBeenCalledTimes(1)
   })
 
   it('reuses existing client', () => {
     const client = getGraphQLClient()
     expect(client).toBeDefined()
-    expect(client.url).toEqual(`${url}/graphql`)
+    expect(client.url).toEqual(url)
     expect(loadConfiguration).not.toHaveBeenCalled()
   })
 
@@ -53,11 +53,11 @@ describe('getGraphQLClient()', () => {
 
     it('throws returned errors', async () => {
       const error = new Error('boom')
-      const username = faker.name.findName()
+      const username = faker.name.fullName()
       const jwt = faker.datatype.uuid()
 
       networkMock
-        .intercept({ method: 'POST', path: '/graphql' })
+        .intercept({ method: 'POST', path: '/' })
         .reply(200, ({ headers, body }) => {
           graphQLRequest({ body: JSON.parse(body), headers })
           return { errors: [{ message: error.message }], data: null }
@@ -75,21 +75,18 @@ describe('getGraphQLClient()', () => {
     })
 
     it('runs query', async () => {
-      const username = faker.name.findName()
+      const username = faker.name.fullName()
       const jwt = faker.datatype.uuid()
       const data = {
         searchPlayers: [
-          { id: faker.datatype.uuid(), name: faker.name.findName() }
+          { id: faker.datatype.uuid(), name: faker.name.fullName() }
         ]
       }
 
       networkMock
-        .intercept({ method: 'POST', path: '/graphql' })
+        .intercept({ method: 'POST', path: '/' })
         .reply(200, ({ headers, body }) => {
-          graphQLRequest({
-            body: JSON.parse(body),
-            headers: parseHeaders(headers)
-          })
+          graphQLRequest({ body: JSON.parse(body), headers })
           return { data }
         })
 
@@ -115,25 +112,22 @@ describe('getGraphQLClient()', () => {
           variables: { username }
         },
         headers: expect.objectContaining({
-          cookie: `token=${jwt}`
+          authorization: `Bearer ${jwt}`
         })
       })
     })
 
     it('runs mutation', async () => {
-      const username = faker.name.findName()
+      const username = faker.name.fullName()
       const jwt = faker.datatype.uuid()
       const data = {
-        addNewUser: [{ id: faker.datatype.uuid(), name: faker.name.findName() }]
+        addNewUser: [{ id: faker.datatype.uuid(), name: faker.name.fullName() }]
       }
 
       networkMock
-        .intercept({ method: 'POST', path: '/graphql' })
+        .intercept({ method: 'POST', path: '/' })
         .reply(200, ({ headers, body }) => {
-          graphQLRequest({
-            body: JSON.parse(body),
-            headers: parseHeaders(headers)
-          })
+          graphQLRequest({ body: JSON.parse(body), headers })
           return { data }
         })
 
@@ -159,22 +153,9 @@ describe('getGraphQLClient()', () => {
           variables: { username }
         },
         headers: expect.objectContaining({
-          cookie: `token=${jwt}`
+          authorization: `Bearer ${jwt}`
         })
       })
     })
   })
 })
-
-function parseHeaders(headers) {
-  let headerName = null
-  return headers.reduce((headers, value) => {
-    if (headerName) {
-      headers[headerName] = value
-      headerName = null
-    } else {
-      headerName = value
-    }
-    return headers
-  }, {})
-}

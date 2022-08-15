@@ -1,5 +1,4 @@
 import { BehaviorSubject, debounceTime, filter, map, merge } from 'rxjs'
-import { currentPlayer } from './players'
 import { clearThread, loadThread, serializeThread } from './discussion'
 import {
   action,
@@ -32,30 +31,6 @@ const hostId$ = new BehaviorSubject(null)
 const playingIds$ = new BehaviorSubject([])
 
 let delayOnLoad = () => {}
-
-/* istanbul ignore if */
-if (import.meta.hot) {
-  const delayKey = 'loadGameDelay'
-
-  delayOnLoad = async () => {
-    const delay = sessionStorage.getItem(delayKey)
-    if (delay) {
-      await sleep(+delay)
-      sessionStorage.removeItem(delayKey)
-    }
-  }
-
-  import.meta.hot.on('vite:beforeUpdate', ({ updates }) => {
-    if (updates.some(({ path }) => path.includes('Game.svelte'))) {
-      if (hostId$.value && hostId$.value !== player?.id) {
-        console.warn(
-          'Since there are multiple connected players, HMR is slightly delayed to let host reconnect'
-        )
-        sessionStorage.setItem(delayKey, 3000)
-      }
-    }
-  })
-}
 
 /**
  * Emits the list of current player's games.
@@ -149,10 +124,6 @@ export async function invite(gameId, playerId) {
 const currentGameSubscriptions = []
 let listGamesSubscription = null
 
-// stores current player
-let player
-currentPlayer.subscribe(value => (player = value))
-
 let engine
 engine$.subscribe(value => (engine = value))
 
@@ -172,12 +143,13 @@ let hands = []
  * Resolves when the game data has been received (either as host or regular peer).
  * @async
  * @param {string} gameId - the loaded game id.
+ * @param {object} session - the session details.
  */
-export async function loadGame(gameId) {
-  if (!player || !engine) {
+export async function loadGame(gameId, { user, turnCredentials }) {
+  if (!engine) {
     logger.warn(
       { gameId },
-      `fail loading game ${gameId} as there are no current player/engine yet`
+      `fail loading game ${gameId} as there are no current engine yet`
     )
     return
   }
@@ -193,31 +165,56 @@ export async function loadGame(gameId) {
     clearThread()
   })
 
+  const currentPlayerId = user.id
+
+  /* istanbul ignore if */
+  if (!delayOnLoad && import.meta.hot) {
+    const delayKey = 'loadGameDelay'
+
+    delayOnLoad = async () => {
+      const delay = sessionStorage.getItem(delayKey)
+      if (delay) {
+        await sleep(+delay)
+        sessionStorage.removeItem(delayKey)
+      }
+    }
+
+    import.meta.hot.on('vite:beforeUpdate', ({ updates }) => {
+      if (updates.some(({ path }) => path.includes('Game.svelte'))) {
+        if (hostId$.value && hostId$.value !== currentPlayerId) {
+          console.warn(
+            'Since there are multiple connected players, HMR is slightly delayed to let host reconnect'
+          )
+          sessionStorage.setItem(delayKey, 3000)
+        }
+      }
+    })
+  }
   await delayOnLoad()
 
   logger.info({ gameId }, `entering game ${gameId}`)
   let game = await runQuery(graphQL.loadGame, { gameId }, false)
   currentGame$.next(game)
-  playingIds$.next([player.id])
-  openChannels(player)
+  playingIds$.next([currentPlayerId])
+  openChannels(user, turnCredentials)
 
-  if (isSinglePlaying()) {
+  if (isSinglePlaying(currentPlayerId)) {
     // is the only playing player: take the host role
-    const loadPromise = load(game, true)
+    const loadPromise = load(game, currentPlayerId, true)
     currentGameSubscriptions.push(
-      lastConnectedId.subscribe(handlePeerConnection),
-      lastDisconnectedId.subscribe(handlePeerDisconnection),
-      ...takeHostRole(gameId)
+      lastConnectedId.subscribe(handlePeerConnection(currentPlayerId)),
+      lastDisconnectedId.subscribe(handlePeerDisconnection(currentPlayerId)),
+      ...takeHostRole(gameId, currentPlayerId)
     )
     await loadPromise
   } else {
     return new Promise((resolve, reject) => {
       const peers = game.players.filter(
-        ({ id, playing }) => id !== player.id && playing
+        ({ id, playing }) => id !== currentPlayerId && playing
       )
       logger.info({ peers }, `connecting to other players`)
       for (const peer of peers) {
-        connectWith(peer.id)
+        connectWith(peer.id, turnCredentials)
       }
 
       const gameReceptionTimeout = setTimeout(() => {
@@ -232,10 +229,10 @@ export async function loadGame(gameId) {
 
       let isFirstLoad = true
       currentGameSubscriptions.push(
-        lastConnectedId.subscribe(handlePeerConnection),
-        lastDisconnectedId.subscribe(handlePeerDisconnection),
-        cameraSaves$.subscribe(shareCameras),
-        handMeshes$.subscribe(shareHand),
+        lastConnectedId.subscribe(handlePeerConnection(currentPlayerId)),
+        lastDisconnectedId.subscribe(handlePeerDisconnection(currentPlayerId)),
+        cameraSaves$.subscribe(shareCameras(currentPlayerId)),
+        handMeshes$.subscribe(shareHand(currentPlayerId)),
         lastMessageReceived
           .pipe(filter(({ data }) => data?.type === 'game-sync'))
           .subscribe(({ data, playerId }) => {
@@ -246,7 +243,7 @@ export async function loadGame(gameId) {
             if (hostId$.value !== playerId) {
               hostId$.next(playerId)
             }
-            load(data, isFirstLoad)
+            load(data, currentPlayerId, isFirstLoad)
             if (isFirstLoad) {
               clearTimeout(gameReceptionTimeout)
               resolve()
@@ -258,7 +255,7 @@ export async function loadGame(gameId) {
   }
 }
 
-async function load(game, firstLoad) {
+async function load(game, currentPlayerId, firstLoad) {
   currentGame$.next(game)
   hands = game.hands ?? []
   cameras = game.cameras ?? []
@@ -267,14 +264,14 @@ async function load(game, firstLoad) {
   }
   if (cameras.length && firstLoad) {
     const playerCameras = cameras
-      .filter(save => save.playerId === player.id)
+      .filter(save => save.playerId === currentPlayerId)
       .sort((a, b) => a.index - b.index)
     if (playerCameras.length) {
       skipSharingCamera = true
       loadCameraSaves(playerCameras)
     }
   }
-  await engine.load(game, player.id, firstLoad)
+  await engine.load(game, currentPlayerId, firstLoad)
 }
 
 function mergeCameras({ playerId, cameras: playerCameras }) {
@@ -308,13 +305,13 @@ function saveHands(gameId) {
   runMutation(graphQL.saveGame, { game: { id: gameId, hands } })
 }
 
-function takeHostRole(gameId) {
+function takeHostRole(gameId, currentPlayerId) {
   logger.info({ gameId }, `taking game host role`)
-  hostId$.next(player.id)
-  shareGame()
+  hostId$.next(currentPlayerId)
+  shareGame(currentPlayerId)
   return [
     runSubscription(graphQL.receiveGameUpdates, { gameId }).subscribe(
-      handleServerUpdate
+      handleServerUpdate(currentPlayerId)
     ),
     // save scene
     action
@@ -324,7 +321,7 @@ function takeHostRole(gameId) {
       )
       .subscribe(action => {
         logger.info({ gameId, action }, `persisting game scene on action`)
-        runMutation(graphQL.saveGame, { game: shareGame() })
+        runMutation(graphQL.saveGame, { game: shareGame(currentPlayerId) })
       }),
     // save discussion thread
     merge(lastMessageSent, lastMessageReceived)
@@ -342,7 +339,7 @@ function takeHostRole(gameId) {
     merge(
       lastMessageReceived.pipe(filter(({ data }) => data?.type === 'saveHand')),
       handMeshes$.pipe(
-        map(meshes => ({ data: { playerId: player.id, meshes } }))
+        map(meshes => ({ data: { playerId: currentPlayerId, meshes } }))
       )
     ).subscribe(({ data }) => {
       mergeHands(data)
@@ -354,7 +351,7 @@ function takeHostRole(gameId) {
         filter(({ data }) => data?.type === 'saveCameras')
       ),
       cameraSaves$.pipe(
-        map(cameras => ({ data: { playerId: player.id, cameras } }))
+        map(cameras => ({ data: { playerId: currentPlayerId, cameras } }))
       )
     ).subscribe(({ data }) => {
       mergeCameras(data)
@@ -363,12 +360,14 @@ function takeHostRole(gameId) {
   ]
 }
 
-async function handleServerUpdate(game) {
-  await load(game, false)
-  shareGame()
+function handleServerUpdate(currentPlayerId) {
+  return async function (game) {
+    await load(game, currentPlayerId, false)
+    shareGame(currentPlayerId)
+  }
 }
 
-function shareGame(peerId) {
+function shareGame(currentPlayerId, peerId) {
   const { id: gameId, ...otherGameData } = currentGame$.value
   logger.info(
     { gameId },
@@ -378,7 +377,7 @@ function shareGame(peerId) {
   const game = {
     id: gameId,
     meshes,
-    hands: mergeHands({ playerId: player.id, meshes: handMeshes }),
+    hands: mergeHands({ playerId: currentPlayerId, meshes: handMeshes }),
     messages: serializeThread(),
     cameras
   }
@@ -394,56 +393,64 @@ function unsubscribeCurrentGame() {
   currentGameSubscriptions.splice(0, currentGameSubscriptions.length)
 }
 
-async function handlePeerConnection(playerId) {
-  playingIds$.next([...playingIds$.value, playerId])
-  const game = currentGame$.value
-  if (!game.players.some(({ id }) => id === playerId)) {
-    const { players } = await runQuery(graphQL.getGamePlayers, game)
-    currentGame$.next({ ...game, players })
-  }
-  if (player.id === hostId$.value) {
-    shareGame(playerId)
-  }
-}
-
-function handlePeerDisconnection(playerId) {
-  playingIds$.next(playingIds$.value.filter(id => id !== playerId))
-  if (playerId === hostId$.value && isNextPlaying()) {
-    unsubscribeCurrentGame()
-    currentGameSubscriptions.push(
-      lastConnectedId.subscribe(handlePeerConnection),
-      lastDisconnectedId.subscribe(handlePeerDisconnection),
-      ...takeHostRole(currentGame$.value.id)
-    )
+function handlePeerConnection(currentPlayerId) {
+  return async function (playerId) {
+    playingIds$.next([...playingIds$.value, playerId])
+    const game = currentGame$.value
+    if (!game.players.some(({ id }) => id === playerId)) {
+      const { players } = await runQuery(graphQL.getGamePlayers, game)
+      currentGame$.next({ ...game, players })
+    }
+    if (currentPlayerId === hostId$.value) {
+      shareGame(currentPlayerId, playerId)
+    }
   }
 }
 
-function shareCameras(cameras) {
-  if (skipSharingCamera) {
-    skipSharingCamera = false
-    return
+function handlePeerDisconnection(currentPlayerId) {
+  return function (playerId) {
+    playingIds$.next(playingIds$.value.filter(id => id !== playerId))
+    if (playerId === hostId$.value && isNextPlaying(currentPlayerId)) {
+      unsubscribeCurrentGame()
+      currentGameSubscriptions.push(
+        lastConnectedId.subscribe(handlePeerConnection(currentPlayerId)),
+        lastDisconnectedId.subscribe(handlePeerDisconnection(currentPlayerId)),
+        ...takeHostRole(currentGame$.value.id, currentPlayerId)
+      )
+    }
   }
-  logger.info({ cameras }, `sharing camera saves with peers`)
-  send({ type: 'saveCameras', cameras, playerId: player.id })
 }
 
-function shareHand(meshes) {
-  logger.info({ meshes }, `sharing hand with peers`)
-  send({ type: 'saveHand', meshes, playerId: player.id })
+function shareCameras(currentPlayerId) {
+  return function (cameras) {
+    if (skipSharingCamera) {
+      skipSharingCamera = false
+      return
+    }
+    logger.info({ cameras }, `sharing camera saves with peers`)
+    send({ type: 'saveCameras', cameras, playerId: currentPlayerId })
+  }
 }
 
-function isSinglePlaying() {
+function shareHand(currentPlayerId) {
+  return function (meshes) {
+    logger.info({ meshes }, `sharing hand with peers`)
+    send({ type: 'saveHand', meshes, playerId: currentPlayerId })
+  }
+}
+
+function isSinglePlaying(currentPlayerId) {
   return currentGame$.value.players.every(
-    ({ id, playing }) => id === player.id || !playing
+    ({ id, playing }) => id === currentPlayerId || !playing
   )
 }
 
-function isNextPlaying() {
+function isNextPlaying(currentPlayerId) {
   const { players } = currentGame$.value
   const playingIds = playingIds$.value
   return (
     players
       .map(player => ({ ...player, playing: playingIds.includes(player.id) }))
-      .find(({ playing }) => playing)?.id === player.id
+      .find(({ playing }) => playing)?.id === currentPlayerId
   )
 }

@@ -20,10 +20,6 @@ mutation logIn($username: String!, $password: String!) {
   }
 }
 
-mutation logOut {
-  logOut
-}
-
 query getCurrentPlayer {
   getCurrentPlayer {
     ...authentication
