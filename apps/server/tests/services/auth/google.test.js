@@ -77,7 +77,7 @@ describe('Google authentication service', () => {
         const location = faker.internet.url()
         const code = faker.datatype.number({ min: 9999 }).toString()
         const user = {
-          given_name: faker.name.findName(),
+          given_name: faker.name.fullName(),
           picture: faker.internet.avatar(),
           email: faker.internet.email()
         }

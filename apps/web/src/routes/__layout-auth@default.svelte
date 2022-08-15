@@ -1,6 +1,5 @@
 <script context="module">
   export async function load({ url, session }) {
-    console.log('>> auth layout', url.origin, session)
     if (url.pathname !== '/login' && !session.user) {
       return {
         status: 302,

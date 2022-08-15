@@ -38,7 +38,7 @@ describe('User grant command', () => {
   })
 
   it('displays help and support common options', async () => {
-    const username = faker.name.findName()
+    const username = faker.name.fullName()
     const gameName = faker.commerce.productName()
     expect(stripAnsi(await grant(['-h', '-u', username, '-p', gameName])))
       .toEqual(`
@@ -57,7 +57,7 @@ describe('User grant command', () => {
   describe('given existing players', () => {
     const player = {
       id: faker.datatype.uuid(),
-      username: faker.name.findName()
+      username: faker.name.fullName()
     }
     const gameName = faker.commerce.productName()
 

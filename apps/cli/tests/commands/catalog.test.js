@@ -29,7 +29,7 @@ describe('User catalog command', () => {
   })
 
   it('displays help and support common options', async () => {
-    const username = faker.name.findName()
+    const username = faker.name.fullName()
     expect(stripAnsi(await catalog(['-h', '-u', username, '-p']))).toEqual(`
   tabulous [options] catalog
   Lists accessible games
@@ -44,7 +44,7 @@ describe('User catalog command', () => {
   it('returns a serializable list of games', async () => {
     const player = {
       id: faker.datatype.uuid(),
-      username: faker.name.findName()
+      username: faker.name.fullName()
     }
     const games = [
       { name: 'chess', title: 'Echecs', copyright: '' },
@@ -62,7 +62,7 @@ describe('User catalog command', () => {
         locales: name === 'splendor' ? {} : { fr: { title } },
         copyright:
           copyright !== ''
-            ? { authors: [{ name: faker.name.findName() }] }
+            ? { authors: [{ name: faker.name.fullName() }] }
             : undefined
       }))
     })

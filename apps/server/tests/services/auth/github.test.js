@@ -73,7 +73,7 @@ describe('Github authentication service', () => {
         const location = faker.internet.url()
         const code = faker.datatype.number({ min: 9999 })
         const user = {
-          login: faker.name.findName(),
+          login: faker.name.fullName(),
           avatar_url: faker.internet.avatar(),
           email: faker.internet.email()
         }

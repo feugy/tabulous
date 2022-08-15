@@ -53,7 +53,7 @@ describe('getGraphQLClient()', () => {
 
     it('throws returned errors', async () => {
       const error = new Error('boom')
-      const username = faker.name.findName()
+      const username = faker.name.fullName()
       const jwt = faker.datatype.uuid()
 
       networkMock
@@ -75,11 +75,11 @@ describe('getGraphQLClient()', () => {
     })
 
     it('runs query', async () => {
-      const username = faker.name.findName()
+      const username = faker.name.fullName()
       const jwt = faker.datatype.uuid()
       const data = {
         searchPlayers: [
-          { id: faker.datatype.uuid(), name: faker.name.findName() }
+          { id: faker.datatype.uuid(), name: faker.name.fullName() }
         ]
       }
 
@@ -118,10 +118,10 @@ describe('getGraphQLClient()', () => {
     })
 
     it('runs mutation', async () => {
-      const username = faker.name.findName()
+      const username = faker.name.fullName()
       const jwt = faker.datatype.uuid()
       const data = {
-        addNewUser: [{ id: faker.datatype.uuid(), name: faker.name.findName() }]
+        addNewUser: [{ id: faker.datatype.uuid(), name: faker.name.fullName() }]
       }
 
       networkMock
