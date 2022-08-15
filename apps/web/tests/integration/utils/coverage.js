@@ -31,17 +31,23 @@ export async function initializeCoverage() {
 
 export async function extendCoverage(coverageMap, coverageData) {
   for (const entry of coverageData) {
-    const converter = v8toIstanbul(
-      entry.url.replace(previewURL, distFolder),
-      0,
-      { source: entry.source }
-    )
-    await converter.load()
-    converter.applyCoverage(entry.functions)
-    const coverageData = converter.toIstanbul()
-    for (const path in coverageData) {
-      if (isPathIncludedInCoverage(path)) {
-        coverageMap.addFileCoverage(coverageData[path])
+    if (!entry.url.includes('node_modules')) {
+      try {
+        const converter = v8toIstanbul(
+          entry.url.replace(previewURL, distFolder),
+          0,
+          { source: entry.source }
+        )
+        await converter.load()
+        converter.applyCoverage(entry.functions)
+        const coverageData = converter.toIstanbul()
+        for (const path in coverageData) {
+          if (isPathIncludedInCoverage(path)) {
+            coverageMap.addFileCoverage(coverageData[path])
+          }
+        }
+      } catch (err) {
+        console.warn(`coverage failed for ${entry.url}:`, err.message)
       }
     }
   }

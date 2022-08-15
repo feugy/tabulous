@@ -1,17 +1,17 @@
 // @ts-check
 import { faker } from '@faker-js/faker'
 import { GamePage } from './pages/index.js'
-import { expect, it, describe, mockGraphQL } from './utils/index.js'
+import { expect, it, describe, mockGraphQl } from './utils/index.js'
 
 describe('Game page', () => {
   const player = {
     id: faker.datatype.uuid(),
-    username: faker.name.findName()
+    username: faker.name.fullName()
   }
 
   const player2 = {
     id: faker.datatype.uuid(),
-    username: faker.name.findName()
+    username: faker.name.fullName()
   }
 
   const game = {
@@ -24,8 +24,18 @@ describe('Game page', () => {
     players: [player]
   }
 
+  it('redirects to login without authentication', async ({ page }) => {
+    await mockGraphQl(page, { getCurrentPlayer: null, loadGame: null })
+
+    const gamePage = new GamePage(page)
+    await gamePage.goTo(game.id)
+    await expect(page).toHaveURL(
+      `/login?redirect=${encodeURIComponent(`/game/${game.id}`)}`
+    )
+  })
+
   it('removes invite option after using the last seats', async ({ page }) => {
-    const { sendToSubscription } = await mockGraphQL(page, {
+    const { sendToSubscription, setTokenCookie } = await mockGraphQl(page, {
       getCurrentPlayer: {
         token: faker.datatype.uuid(),
         player,
@@ -50,8 +60,7 @@ describe('Game page', () => {
         return game
       }
     })
-
-    await page.route('games/**', route => route.fulfill())
+    await setTokenCookie()
 
     const gamePage = new GamePage(page)
     await gamePage.goTo(game.id)

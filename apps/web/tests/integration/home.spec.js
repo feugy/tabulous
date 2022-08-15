@@ -1,12 +1,12 @@
 // @ts-check
 import { faker } from '@faker-js/faker'
 import { HomePage, LoginPage } from './pages/index.js'
-import { expect, it, describe, mockGraphQL } from './utils/index.js'
+import { expect, it, describe, mockGraphQl } from './utils/index.js'
 
 describe('Home page', () => {
   const catalog = [
     {
-      name: 'coinche',
+      name: '32-cards',
       locales: { fr: { title: 'Jeu de 32 cartes' } },
       minAge: null,
       minTime: null
@@ -25,9 +25,11 @@ describe('Home page', () => {
     }
   ]
 
+  const publicCatalog = catalog.slice(0, 2)
+
   const player = {
     id: faker.datatype.uuid(),
-    username: faker.name.findName()
+    username: faker.name.fullName()
   }
   const password = faker.internet.password()
 
@@ -52,22 +54,19 @@ describe('Home page', () => {
   it('updates catalog and display games after authentication', async ({
     page
   }) => {
-    const publicCatalog = catalog.slice(0, 2)
-    const { onSubscription, sendToSubscription } = await mockGraphQL(page, {
-      listCatalog: [publicCatalog, catalog],
-      getCurrentPlayer: null,
-      logOut: null,
-      logIn: {
-        token: faker.datatype.uuid(),
-        player,
-        turnCredentials: {
-          username: 'bob',
-          credentials: faker.internet.password()
-        }
+    const authentication = {
+      token: faker.datatype.uuid(),
+      player,
+      turnCredentials: {
+        username: 'bob',
+        credentials: faker.internet.password()
       }
+    }
+    const { onSubscription, sendToSubscription } = await mockGraphQl(page, {
+      listCatalog: [publicCatalog, publicCatalog, catalog],
+      getCurrentPlayer: authentication,
+      logIn: authentication
     })
-
-    await page.route('games/**', route => route.fulfill())
 
     const homePage = new HomePage(page)
     await homePage.goTo()
@@ -96,20 +95,20 @@ describe('Home page', () => {
   it('displays private catalog and games when already authenticated', async ({
     page
   }) => {
-    const { onSubscription, sendToSubscription } = await mockGraphQL(page, {
-      listCatalog: [catalog],
-      getCurrentPlayer: {
-        token: faker.datatype.uuid(),
-        player,
-        turnCredentials: {
-          username: 'bob',
-          credentials: faker.internet.password()
+    const { onSubscription, sendToSubscription, setTokenCookie } =
+      await mockGraphQl(page, {
+        listCatalog: [catalog],
+        getCurrentPlayer: {
+          token: faker.datatype.uuid(),
+          player,
+          turnCredentials: {
+            username: 'bob',
+            credentials: faker.internet.password()
+          }
         }
-      }
-    })
-
+      })
     onSubscription(() => sendToSubscription({ data: { listGames: games } }))
-    await page.route('games/**', route => route.fulfill())
+    await setTokenCookie()
 
     const homePage = new HomePage(page)
     await homePage.goTo()
@@ -120,6 +119,34 @@ describe('Home page', () => {
     )
     await expect(homePage.games).toHaveText(
       games.map(({ locales }) => new RegExp(locales.fr.title))
+    )
+  })
+
+  it('displays public catalog after log out', async ({ page }) => {
+    const { onSubscription, sendToSubscription, setTokenCookie } =
+      await mockGraphQl(page, {
+        listCatalog: [catalog, publicCatalog],
+        getCurrentPlayer: {
+          token: faker.datatype.uuid(),
+          player,
+          turnCredentials: {
+            username: 'bob',
+            credentials: faker.internet.password()
+          }
+        }
+      })
+    onSubscription(() => sendToSubscription({ data: { listGames: games } }))
+    await setTokenCookie()
+
+    const homePage = new HomePage(page)
+    await homePage.goTo()
+    await homePage.getStarted()
+    await homePage.isAuthenticated(player.username)
+    await new Promise(resolve => setTimeout(resolve, 500)) // TODO remove
+
+    await homePage.logOut()
+    await expect(homePage.catalogItemHeadings).toHaveText(
+      publicCatalog.map(({ locales }) => new RegExp(locales.fr.title))
     )
   })
 })

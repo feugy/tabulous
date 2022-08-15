@@ -30,7 +30,10 @@ const conf = {
     'jest-watch-typeahead/testname'
   ],
   coverageDirectory: './coverage',
-  collectCoverageFrom: ['<rootDir>/src/**/*.js', '<rootDir>/src/**/*.svelte']
+  collectCoverageFrom: ['<rootDir>/src/**/*.js', '<rootDir>/src/**/*.svelte'],
+  globals: {
+    __SVELTEKIT_DEV__: true
+  }
 }
 
 export default conf

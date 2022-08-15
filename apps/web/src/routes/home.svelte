@@ -1,5 +1,6 @@
 <script>
   import { goto } from '$app/navigation'
+  import { session } from '$app/stores'
   import { _ } from 'svelte-intl'
   import {
     CatalogItem,
@@ -8,24 +9,18 @@
     Progress
   } from '../components'
   import { Header } from '../connected-components'
-  import {
-    currentPlayer,
-    deleteGame,
-    listCatalog,
-    listGames,
-    playerGames
-  } from '../stores'
+  import { deleteGame, listCatalog, listGames, playerGames } from '../stores'
 
   let gameToDelete = null
   let catalog = null
-  let hasLoggedPlayer = false
+  let hasUser = false
 
-  $: if ($currentPlayer) {
-    hasLoggedPlayer = true
+  $: if ($session.user) {
+    hasUser = true
     listGames()
     fetchCatalog()
   } else {
-    hasLoggedPlayer = false
+    hasUser = false
     fetchCatalog()
   }
 
@@ -56,18 +51,18 @@
 <main>
   <Header>
     <h1>
-      {$_(hasLoggedPlayer ? 'titles.home' : 'titles.welcome', $currentPlayer)}
+      {$_(hasUser ? 'titles.home' : 'titles.welcome', $session.user)}
     </h1>
   </Header>
 
   <div>
-    {#if hasLoggedPlayer}
+    {#if hasUser}
       <h2>{$_('titles.your-games')}</h2>
       <section aria-roledescription="games">
         {#each $playerGames.sort((a, b) => b.created - a.created) as game (game.id)}
           <GameLink
             {game}
-            playerId={$currentPlayer?.id}
+            playerId={$session.user?.id}
             on:delete={handleDeleteGame}
           />
         {:else}

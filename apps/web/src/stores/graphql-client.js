@@ -16,33 +16,43 @@ let client
 /**
  * Configures GraphQL client.
  * Must be called prior to any graphql query, mutation or subscription.
- * @param {string} graphQLUrl - url of the GraphQL endpoint
- * @param {string} bearer - data used for authenticating graphQL subscriptions
+ * @param {object} options - client options, including:
+ * @param {string} options.graphQLUrl - url of the GraphQL endpoint.
+ * @param {function} options.fetch - fetch implementation used to initialize the client.
+ * @param {string} options.bearer - data used for authenticating graphQL subscriptions and queries.
  */
-export function initGraphQLGlient(graphQLUrl, bearer) {
+export function initGraphQLGlient({
+  graphQlUrl,
+  bearer,
+  fetch,
+  subscriptionSupport = true
+}) {
   const exchanges = [...defaultExchanges]
+  const headers = {}
   if (bearer) {
-    const wsClient = new createWSClient({
-      url: graphQLUrl.replace('http', 'ws'),
-      connectionParams: { bearer }
-    })
-    exchanges.push(
-      subscriptionExchange({
-        forwardSubscription: operation => ({
-          subscribe: sink => ({
-            unsubscribe: wsClient.subscribe(operation, sink)
+    headers.authorization = bearer
+    if (subscriptionSupport) {
+      const wsClient = new createWSClient({
+        url: graphQlUrl.replace('http', 'ws'),
+        connectionParams: { bearer }
+      })
+      exchanges.push(
+        subscriptionExchange({
+          forwardSubscription: operation => ({
+            subscribe: sink => ({
+              unsubscribe: wsClient.subscribe(operation, sink)
+            })
           })
         })
-      })
-    )
+      )
+    }
   }
 
   logger.info({ bearer }, 'initialize GraphQL client')
   client = createClient({
-    url: graphQLUrl,
-    fetchOptions: {
-      credentials: 'include'
-    },
+    url: graphQlUrl,
+    fetch,
+    fetchOptions: () => ({ headers }),
     maskTypename: true,
     exchanges
   })

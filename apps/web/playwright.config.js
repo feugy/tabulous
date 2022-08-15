@@ -1,9 +1,12 @@
+const isCI = !!process.env.CI
+
 /** @type {import('@playwright/test').PlaywrightTestConfig} */
 const config = {
   testDir: 'tests/integration',
+  quiet: !isCI,
   reporter: [
     ['list'],
-    process.env.CI
+    isCI
       ? ['github']
       : ['html', { open: 'never', outputFolder: 'coverage/integration' }]
   ],

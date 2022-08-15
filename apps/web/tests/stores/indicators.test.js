@@ -65,15 +65,15 @@ describe('Indicators store', () => {
     players = [
       {
         id: faker.datatype.uuid(),
-        username: faker.name.findName()
+        username: faker.name.fullName()
       },
       {
         id: faker.datatype.uuid(),
-        username: faker.name.findName()
+        username: faker.name.fullName()
       },
       {
         id: faker.datatype.uuid(),
-        username: faker.name.findName()
+        username: faker.name.fullName()
       }
     ]
   })
