@@ -27,7 +27,7 @@ formats:
       minute: 2-digit
       month: short
 labels:
-  confirm-game-deletion: Souhaitez vous vraiment supprimer cette partie de {kind} ?
+  confirm-game-deletion: Souhaitez vous vraiment supprimer cette partie de "{title}" ?
   game-authors: 'Créé par : '
   game-designers: 'Illustré par : '
   game-publishers: 'Distribué par : '

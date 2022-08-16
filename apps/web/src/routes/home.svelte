@@ -1,7 +1,7 @@
 <script>
   import { goto } from '$app/navigation'
   import { session } from '$app/stores'
-  import { _ } from 'svelte-intl'
+  import { _, locale } from 'svelte-intl'
   import {
     CatalogItem,
     ConfirmDialogue,
@@ -88,9 +88,7 @@
   <ConfirmDialogue
     open
     title={$_('titles.confirm-game-deletion')}
-    message={$_('labels.confirm-game-deletion', {
-      kind: $_(`games.${gameToDelete.kind}`)
-    })}
+    message={$_('labels.confirm-game-deletion', gameToDelete.locales[$locale])}
     on:close={handleDeletionClose}
   />
 {/if}

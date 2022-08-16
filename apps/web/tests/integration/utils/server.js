@@ -12,7 +12,7 @@ const gameAssetsFolder = join(
   fileURLToPath(import.meta.url),
   '../../../../../games'
 )
-const debug = !!process.env.PWDEBUG
+const debug = !!process.env.PWDEBUG || !!process.env.CI
 
 let server = null
 // Store the current server context, that is, the mocks for current test.
@@ -29,6 +29,7 @@ let serverContext = null
  * @typedef {object} GraphQlMockResult
  * @property {string[]} subscriptionIds - list of current GraphQL subscription ids.
  * @property {function} onSubscription - registers a unique callback called when receiving GraphQL subscription.
+ * @property {function} onQuery - registers a unique callback called when receiving GraphQL queries (and mutations).
  * @property {function} sendToSubscription - sends a GraphQL response payload to the subscription.
  * @property {function} setTokenCookie - sets token cookie so SvelteKit server can issue requests to the mocked server.
  */
@@ -63,30 +64,31 @@ export async function mockGraphQl(page, mocks) {
       prefix: '/games/'
     })
 
-    server.post(graphQlRoute, async request => {
-      // @ts-ignore request.body is not typed
-      const { operationName: operation } = request.body
-      let responses = serverContext.responsesPerOperation.get(operation)
-      if (!responses) {
-        responses = [null]
-        console.error(`Unexpected grapqhQL request ${operation}`)
-      }
-      const rank = serverContext.rankPerOperation.get(operation) ?? 0
-      if (rank < responses.length - 1) {
-        serverContext.rankPerOperation.set(operation, rank + 1)
-      }
-      debug &&
-        console.log(
-          `returning response #${rank} for ${operation}:`,
-          responses[rank]
-        )
-      return {
-        data: { [operation]: await invokeOrReturn(responses[rank]) }
-      }
-    })
-
     server.register(websocket)
+
     server.register(async function (server) {
+      server.post(graphQlRoute, async request => {
+        serverContext.onQuery?.(request.body)
+        // @ts-ignore request.body is not typed
+        const { operationName: operation } = request.body
+        let responses = serverContext.responsesPerOperation.get(operation)
+        if (!responses) {
+          responses = [null]
+          console.error(`Unexpected grapqhQL request ${operation}`)
+        }
+        const rank = serverContext.rankPerOperation.get(operation) ?? 0
+        if (rank < responses.length - 1) {
+          serverContext.rankPerOperation.set(operation, rank + 1)
+        }
+        debug &&
+          console.log(
+            `returning response #${rank} for ${operation}:`,
+            responses[rank]
+          )
+        return {
+          data: { [operation]: await invokeOrReturn(responses[rank]) }
+        }
+      })
       server.get(graphQlRoute, { websocket: true }, connection => {
         function sendInWebSocket(payload) {
           serverContext.wsConnection?.socket.send(JSON.stringify(payload))
@@ -128,6 +130,7 @@ export async function mockGraphQl(page, mocks) {
     subscriptionIds: [],
     wsConnection: null,
     onSubscription: null,
+    onQuery: null,
     async setTokenCookie() {
       await page.context().addCookies([
         {
@@ -147,6 +150,7 @@ export async function mockGraphQl(page, mocks) {
       return serverContext.subscriptionIds
     },
     onSubscription: handler => (serverContext.onSubscription = handler),
+    onQuery: handler => (serverContext.onQuery = handler),
     sendToSubscription(...args) {
       return serverContext.sendToSubscription(...args)
     },

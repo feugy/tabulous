@@ -1,7 +1,8 @@
 // @ts-check
 import { faker } from '@faker-js/faker'
+import { fn } from 'jest-mock'
 import { HomePage, LoginPage } from './pages/index.js'
-import { expect, it, describe, mockGraphQl } from './utils/index.js'
+import { expect, it, describe, mockGraphQl, translate } from './utils/index.js'
 
 describe('Home page', () => {
   const catalog = [
@@ -34,17 +35,25 @@ describe('Home page', () => {
   const password = faker.internet.password()
 
   const recent = faker.date.recent(1).getTime()
+  const recent2 = faker.date.recent(2, recent).getTime()
   const games = [
     {
       id: faker.datatype.uuid(),
       created: recent,
       kind: 'dune-imperium',
-      players: [{ id: '1789', username: 'Dams' }],
+      players: [{ id: '1789', username: 'Dams' }, player],
       locales: { fr: { title: 'Dune Imperium' } }
     },
     {
       id: faker.datatype.uuid(),
-      created: faker.date.recent(2, recent).getTime(),
+      created: recent2,
+      kind: 'terraforming-mars',
+      players: [player],
+      locales: { fr: { title: 'Terraforming Mars' } }
+    },
+    {
+      id: faker.datatype.uuid(),
+      created: faker.date.recent(3, recent2).getTime(),
       kind: 'terraforming-mars',
       players: [{ id: '1789', username: 'Dams' }],
       locales: { fr: { title: 'Terraforming Mars' } }
@@ -147,6 +156,47 @@ describe('Home page', () => {
     await homePage.logOut()
     await expect(homePage.catalogItemHeadings).toHaveText(
       publicCatalog.map(({ locales }) => new RegExp(locales.fr.title))
+    )
+  })
+
+  it('confirms before deleting a game', async ({ page }) => {
+    const queryReceived = fn()
+    const { onQuery, onSubscription, sendToSubscription, setTokenCookie } =
+      await mockGraphQl(page, {
+        listCatalog: [catalog],
+        getCurrentPlayer: {
+          token: faker.datatype.uuid(),
+          player,
+          turnCredentials: {
+            username: 'bob',
+            credentials: faker.internet.password()
+          }
+        }
+      })
+    onSubscription(() => sendToSubscription({ data: { listGames: games } }))
+    await setTokenCookie()
+
+    const homePage = new HomePage(page)
+    await homePage.goTo()
+    await homePage.getStarted()
+    await homePage.deleteGame(games[1].locales.fr.title)
+    await expect(
+      homePage.deleteGameDialogue.locator(
+        `text=${translate('labels.confirm-game-deletion', games[1].locales.fr)}`
+      )
+    ).toBeVisible()
+
+    onQuery(queryReceived)
+    await homePage.deleteGameDialogue
+      .locator(`role=button >> text=${translate('actions.confirm')}`)
+      .click()
+    await expect(homePage.deleteGameDialogue).not.toBeVisible()
+    // @ts-ignore toHaveBeenCalledWith is not defined
+    expect(queryReceived).toHaveBeenCalledWith(
+      expect.objectContaining({
+        operationName: 'deleteGame',
+        variables: { gameId: games[1].id }
+      })
     )
   })
 })
