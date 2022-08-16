@@ -1,9 +1,10 @@
 const isCI = !!process.env.CI
+const isDebug = !!process.env.PWDEBUG
 
 /** @type {import('@playwright/test').PlaywrightTestConfig} */
 const config = {
   testDir: 'tests/integration',
-  quiet: !isCI,
+  quiet: !isCI && !isDebug,
   reporter: [
     ['list'],
     isCI
