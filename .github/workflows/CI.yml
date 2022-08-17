@@ -19,19 +19,14 @@ jobs:
       - name: Check code out
         uses: actions/checkout@v3
 
-      - name: Set Node.js 16.x up
+      - name: Set Node.js up
         uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version-file: '.nvmrc'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Check linter violations
-        run: npm run lint
-
-      - name: Check code format
-        run: npm run format -- --check
 
   cli_tests:
     name: CLI tests
@@ -43,10 +38,11 @@ jobs:
       - name: Check code out
         uses: actions/checkout@v2
 
-      - name: Set Node.js 16.x up
+      - name: Set Node.js up
         uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version-file: '.nvmrc'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
@@ -72,10 +68,11 @@ jobs:
       - name: Check code out
         uses: actions/checkout@v2
 
-      - name: Set Node.js 16.x up
+      - name: Set Node.js up
         uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version-file: '.nvmrc'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
@@ -101,10 +98,11 @@ jobs:
       - name: Check code out
         uses: actions/checkout@v2
 
-      - name: Set Node.js 16.x up
+      - name: Set Node.js up
         uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version-file: '.nvmrc'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
@@ -136,10 +134,11 @@ jobs:
       - name: Check code out
         uses: actions/checkout@v2
 
-      - name: Set Node.js 16.x up
+      - name: Set Node.js up
         uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version-file: '.nvmrc'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
