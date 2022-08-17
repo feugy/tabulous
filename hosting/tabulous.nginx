@@ -1,17 +1,17 @@
 server {
-    if ($host = graphql.tabulous.fr) {
-        return 301 https://$host$request_uri;
-    } # managed by Certbot
+  if ($host = graphql.tabulous.fr) {
+      return 301 https://$host$request_uri;
+  } # managed by Certbot
 
 
-    if ($host = games.tabulous.fr) {
-        return 301 https://$host$request_uri;
-    } # managed by Certbot
+  if ($host = games.tabulous.fr) {
+      return 301 https://$host$request_uri;
+  } # managed by Certbot
 
 
-    if ($host = auth.tabulous.fr) {
-        return 301 https://$host$request_uri;
-    } # managed by Certbot
+  if ($host = auth.tabulous.fr) {
+      return 301 https://$host$request_uri;
+  } # managed by Certbot
 
 
   listen 80 default_server;

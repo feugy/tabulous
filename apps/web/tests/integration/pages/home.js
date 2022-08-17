@@ -56,6 +56,14 @@ export class HomePage {
     this.logoutButton = page.locator('header >> role=button', {
       hasText: 'directions_run'
     })
+    /**
+     * @type {import('@playwright/test').Locator}
+     */
+    this.deleteGameDialogue = page.locator('role=dialog', {
+      has: this.page.locator(
+        `text="${translate('titles.confirm-game-deletion')}"`
+      )
+    })
   }
 
   /**
@@ -117,5 +125,24 @@ export class HomePage {
     await this.page.waitForLoadState()
     await expect(this.page).toHaveURL('/home')
     await this.isAnonymous()
+  }
+
+  /**
+   * Deletes a game by titles
+   * @param {string} title - deleted game's title.
+   * @param {number} rank - 0-based rank, in case of multiple matching games.
+   */
+  async deleteGame(title, rank = 0) {
+    const game = this.games
+      .filter({
+        has: this.page.locator(`role=heading[level=3] >> text=${title}`)
+      })
+      .nth(rank)
+    await expect(
+      game,
+      `no game link with title "${title}" and rank #${rank} found`
+    ).toBeDefined()
+    await game.locator('role=button >> text=delete').click()
+    await expect(this.deleteGameDialogue).toBeVisible()
   }
 }

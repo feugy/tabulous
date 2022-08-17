@@ -3,6 +3,7 @@ import fastify from 'fastify'
 import cors from '@fastify/cors'
 import staticPlugin from '@fastify/static'
 import websocket from '@fastify/websocket'
+import chalk from 'chalk-template'
 import { join } from 'path'
 import { fileURLToPath } from 'url'
 import { faker } from '@faker-js/faker'
@@ -12,7 +13,7 @@ const gameAssetsFolder = join(
   fileURLToPath(import.meta.url),
   '../../../../../games'
 )
-const debug = !!process.env.PWDEBUG
+const debug = !!process.env.PWDEBUG || !!process.env.CI
 
 let server = null
 // Store the current server context, that is, the mocks for current test.
@@ -29,6 +30,7 @@ let serverContext = null
  * @typedef {object} GraphQlMockResult
  * @property {string[]} subscriptionIds - list of current GraphQL subscription ids.
  * @property {function} onSubscription - registers a unique callback called when receiving GraphQL subscription.
+ * @property {function} onQuery - registers a unique callback called when receiving GraphQL queries (and mutations).
  * @property {function} sendToSubscription - sends a GraphQL response payload to the subscription.
  * @property {function} setTokenCookie - sets token cookie so SvelteKit server can issue requests to the mocked server.
  */
@@ -50,7 +52,16 @@ export async function mockGraphQl(page, mocks) {
   const browserContext = page.context()
 
   if (!server) {
-    server = fastify({ logger: debug ? { level: 'trace' } : false })
+    const log = (reqId, ...args) =>
+      debug &&
+      console.log(
+        chalk`{blueBright mock-server ${reqId ? `[${reqId}] ` : ''}}-`,
+        ...args
+      )
+    const logError = (reqId, ...args) =>
+      console.log(chalk`{red.bold red mock-server [${reqId}]} -`, ...args)
+
+    server = fastify()
     server.register(cors, {
       origin: /.*/,
       methods: ['GET', 'POST'],
@@ -62,64 +73,96 @@ export async function mockGraphQl(page, mocks) {
       root: gameAssetsFolder,
       prefix: '/games/'
     })
+    server.addHook('onResponse', async (request, reply) => {
+      log(
+        request.id,
+        chalk`{greenBright ${reply.statusCode}} ${request.method} ${request.url}`
+      )
+    })
+    server.addHook('onError', async (request, reply, error) => {
+      logError(
+        request.id,
+        chalk`{red ${reply.statusCode}} ${request.method} ${request.url}`,
+        error
+      )
+    })
+    server.register(websocket)
 
-    server.post(graphQlRoute, async request => {
-      // @ts-ignore request.body is not typed
-      const { operationName: operation } = request.body
-      let responses = serverContext.responsesPerOperation.get(operation)
-      if (!responses) {
-        responses = [null]
-        console.error(`Unexpected grapqhQL request ${operation}`)
-      }
-      const rank = serverContext.rankPerOperation.get(operation) ?? 0
-      if (rank < responses.length - 1) {
-        serverContext.rankPerOperation.set(operation, rank + 1)
-      }
-      debug &&
-        console.log(
-          `returning response #${rank} for ${operation}:`,
+    server.register(async function (server) {
+      server.get(
+        graphQlRoute,
+        { websocket: true },
+        (connection, { id: reqId }) => {
+          log(reqId, `upgrading to WS connection`)
+          function sendInWebSocket(payload) {
+            serverContext.wsConnection?.socket.send(JSON.stringify(payload))
+          }
+
+          connection.socket.on('message', async buffer => {
+            const message = JSON.parse(buffer.toString())
+            log(reqId, `receiving WS message:`, message)
+            if (message.type === 'connection_init') {
+              serverContext.wsConnection = connection
+              serverContext.sendToSubscription = (payload, id) => {
+                id =
+                  id ||
+                  serverContext.subscriptionIds[
+                    serverContext.subscriptionIds.length - 1
+                  ]
+                log(
+                  reqId,
+                  chalk`sending WS message {blueBright ${id}}:`,
+                  payload
+                )
+                sendInWebSocket({ type: 'next', id, payload })
+              }
+              sendInWebSocket({ type: 'connection_ack' })
+            } else if (message.type === 'ping') {
+              sendInWebSocket({ type: 'pong' })
+            } else if (message.type === 'subscribe') {
+              serverContext.subscriptionIds.push(message.id)
+              serverContext.onSubscription?.(message)
+            }
+          })
+        }
+      )
+
+      server.post(graphQlRoute, async request => {
+        serverContext.onQuery?.(request.body)
+        // @ts-ignore request.body is not typed
+        const { operationName: operation } = request.body
+        let responses = serverContext.responsesPerOperation.get(operation)
+        if (!responses) {
+          responses = [null]
+          logError(
+            request.id,
+            chalk`unexpected grapqhQL request {red ${operation}}`
+          )
+        }
+        const rank = serverContext.rankPerOperation.get(operation) ?? 0
+        if (rank < responses.length - 1) {
+          serverContext.rankPerOperation.set(operation, rank + 1)
+        }
+        log(
+          request.id,
+          chalk`returning response #${rank} for {bold ${operation}}:`,
           responses[rank]
         )
-      return {
-        data: { [operation]: await invokeOrReturn(responses[rank]) }
-      }
-    })
-
-    server.register(websocket)
-    server.register(async function (server) {
-      server.get(graphQlRoute, { websocket: true }, connection => {
-        function sendInWebSocket(payload) {
-          serverContext.wsConnection?.socket.send(JSON.stringify(payload))
+        return {
+          data: { [operation]: await invokeOrReturn(responses[rank]) }
         }
-
-        connection.socket.on('message', async buffer => {
-          const message = JSON.parse(buffer.toString())
-          debug && console.log(`receiving WS message:`, message)
-          if (message.type === 'connection_init') {
-            serverContext.wsConnection = connection
-            serverContext.sendToSubscription = (payload, id) => {
-              id =
-                id ||
-                serverContext.subscriptionIds[
-                  serverContext.subscriptionIds.length - 1
-                ]
-              debug && console.log(`sending WS message:`, payload, id)
-              sendInWebSocket({ type: 'next', id, payload })
-            }
-            sendInWebSocket({ type: 'connection_ack' })
-          } else if (message.type === 'ping') {
-            sendInWebSocket({ type: 'pong' })
-          } else if (message.type === 'subscribe') {
-            serverContext.subscriptionIds.push(message.id)
-            serverContext.onSubscription?.(message)
-          }
-        })
       })
     })
 
     browserContext.browser()?.once('disconnected', () => server.close())
-    await server.listen({ port: 3001 })
-    debug && console.log('mock server listening to', server.server.address())
+    await server.listen({ port: 3001, host: '0.0.0.0' })
+    log(
+      null,
+      chalk`mock server listening to {greenBright ${
+        // @ts-ignore address is not null
+        server.server.address().port
+      }}`
+    )
   }
 
   serverContext = {
@@ -128,6 +171,7 @@ export async function mockGraphQl(page, mocks) {
     subscriptionIds: [],
     wsConnection: null,
     onSubscription: null,
+    onQuery: null,
     async setTokenCookie() {
       await page.context().addCookies([
         {
@@ -147,6 +191,7 @@ export async function mockGraphQl(page, mocks) {
       return serverContext.subscriptionIds
     },
     onSubscription: handler => (serverContext.onSubscription = handler),
+    onQuery: handler => (serverContext.onQuery = handler),
     sendToSubscription(...args) {
       return serverContext.sendToSubscription(...args)
     },
