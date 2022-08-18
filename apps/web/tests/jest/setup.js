@@ -6,6 +6,46 @@ import { init } from '../../.svelte-kit/runtime/client/singletons'
 // Babylon.js side effect imports
 import '@babylonjs/core/Materials/standardMaterial'
 
+const jestExpect = expect
+// freely inspired from Playwright's expect
+// @see https://github.com/microsoft/playwright/blob/main/packages/playwright-test/src/expect.ts
+global.expect = function (actual, message) {
+  if (!message) {
+    return jestExpect(actual)
+  }
+  const get = (target, matcherName, receiver) => {
+    let matcher = Reflect.get(target, matcherName, receiver)
+    if (matcher === undefined) {
+      throw new Error(`expect: Property '${matcherName}' not found.`)
+    }
+    if (typeof matcher !== 'function') {
+      return new Proxy(matcher, { get })
+    }
+    function reportError(error) {
+      error.message = `${message}\n\n${error.message}`
+      const stackFrames = error.stack.split('\n')
+      error.stack = stackFrames
+        .filter(frame => !frame.startsWith('    at Proxy.call'))
+        .join('\n')
+      throw error
+    }
+    return (...args) => {
+      try {
+        const result = matcher.call(target, ...args)
+        if (result instanceof Promise) {
+          return result.catch(reportError)
+        } else {
+          return result
+        }
+      } catch (error) {
+        reportError(error)
+      }
+    }
+  }
+  return new Proxy(jestExpect(actual), { get })
+}
+Object.assign(global.expect, jestExpect)
+
 init({
   client: {
     goto: jest.fn(),

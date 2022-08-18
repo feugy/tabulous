@@ -339,9 +339,9 @@ describe('HandManager', () => {
       let x = -viewPortDimensions.width / 2 + cardWidth / 2 + horizontalPadding
       let y = 0.005
       const gap = -0.065692902
-      for (const { id } of cards) {
+      for (const [rank, { id }] of cards.entries()) {
         const mesh = handScene.getMeshById(id)
-        expectPosition(mesh, [x, y, z])
+        expectPosition(mesh, [x, y, z], `card #${rank}`)
         x += cardWidth + gap
         y += 0.01
       }

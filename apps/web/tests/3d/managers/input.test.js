@@ -1578,9 +1578,7 @@ describe('InputManager', () => {
   }
 
   function expectsDataWithMesh(actual, expected, meshId) {
-    for (const property in expected) {
-      expect(actual).toHaveProperty(property, expected[property])
-    }
+    expect(actual).toMatchObject(expected)
     if (Array.isArray(meshId)) {
       expect(actual.meshes?.map(({ id }) => id)).toEqual(meshId)
     } else {

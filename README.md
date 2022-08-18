@@ -1,10 +1,11 @@
 # Tabulous
 
+[![Vercel](https://vercelbadge.vercel.app/api/feugy/tabulous)][production]
 [![GitHub](https://img.shields.io/github/license/feugy/tabulous)][license]
 [![CI](https://github.com/feugy/tabulous/actions/workflows/CI.yml/badge.svg)](https://github.com/feugy/atelier/tabulous/workflows/CI.yml)
 [![Codacy](https://app.codacy.com/project/badge/Grade/36bc5e1d473746f09656d1ffc8dec813)](https://www.codacy.com/gh/feugy/tabulous/dashboard?utm_source=github.com&utm_medium=referral&utm_content=feugy/tabulous&utm_campaign=Badge_Grade)
 
-Tabulous is virtual table-top game engine: [see it on tabulous.fr](https://tabulous.fr).
+Tabulous is virtual table-top game engine: [see it on tabulous.fr][production].
 
 Meet your friends online to play your favorite games!
 
@@ -49,4 +50,5 @@ All the magic happens during continuous integration/deployment:
 1. Continuous Integration workflow kicks in, running linter, formatter and tests
 1. If it succeeds, Continuous Deployment workflow starts, build the client and server applications, packaging and uploading them to the VPS, then restarting services.
 
+[production]: https://tabulous.fr
 [license]: https://github.com/feugy/tabulous/blob/main/LICENSE

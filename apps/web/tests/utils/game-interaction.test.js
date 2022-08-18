@@ -22,7 +22,6 @@ import {
 import { configures3dTestEngine, sleep } from '../test-utils'
 
 jest.mock('../../src/3d/managers/camera')
-const debug = false
 
 describe('Game interaction model', () => {
   let engine
@@ -1456,11 +1455,9 @@ function expectMeshActions(mesh, ...actionNames) {
       name !== 'canIncrement'
     ) {
       if (actionNames.includes(name)) {
-        debug && console.log(`${name} expected on ${mesh.id}`)
-        expect(action).toHaveBeenCalled()
+        expect(action, `${name} on ${mesh.id}`).toHaveBeenCalled()
       } else {
-        debug && console.log(`${name} not expected on ${mesh.id}`)
-        expect(action).not.toHaveBeenCalled()
+        expect(action, `${name} on ${mesh.id}`).not.toHaveBeenCalled()
       }
     }
   }
@@ -1468,16 +1465,11 @@ function expectMeshActions(mesh, ...actionNames) {
 
 async function expectActionItems(menuProps, mesh, items) {
   expect(menuProps.items).toHaveLength(items.length)
-  for (const {
-    functionName,
-    icon,
-    title,
-    badge,
-    triggeredMesh,
-    calls,
-    ...props
-  } of items) {
-    expect(menuProps.items).toEqual(
+  for (const [
+    rank,
+    { functionName, icon, title, badge, triggeredMesh, calls, ...props }
+  ] of items.entries()) {
+    expect(menuProps.items, `for menu item #${rank}`).toEqual(
       expect.arrayContaining([
         {
           icon,
@@ -1490,14 +1482,15 @@ async function expectActionItems(menuProps, mesh, items) {
     )
     await menuProps.items.find(item => item.icon === icon).onClick()
     const checkedMesh = triggeredMesh ?? mesh
-    expect(checkedMesh.metadata[functionName]).toHaveBeenCalledTimes(
-      calls?.length ?? 1
-    )
+    expect(
+      checkedMesh.metadata[functionName],
+      `${functionName} metadata`
+    ).toHaveBeenCalledTimes(calls?.length ?? 1)
     for (const [rank, parameters] of (calls ?? []).entries()) {
-      expect(checkedMesh.metadata[functionName]).toHaveBeenNthCalledWith(
-        rank + 1,
-        ...parameters
-      )
+      expect(
+        checkedMesh.metadata[functionName],
+        `${functionName} metadata`
+      ).toHaveBeenNthCalledWith(rank + 1, ...parameters)
     }
     checkedMesh.metadata[functionName].mockReset()
   }

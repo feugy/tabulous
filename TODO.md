@@ -29,7 +29,6 @@ Roadmap
 - group candidate target per kind for performance
 - keep anchor ids
 - create Animation objects as part of runAnimation() (constant frameRate of 60)
-- custom message on jest expect (game-interaction)
 - jest matchers with mesh (toHaveBeenCalledWith, toHaveBeenNthCalledWith)
 - all manager managing a collection of behaviors should check their capabilities
 - game-manager is just a gigantic mess!!! no single responsibility, global state all over the place
