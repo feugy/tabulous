@@ -108,9 +108,9 @@ export function cleanDebugFile() {
   rmSync(debugFile, { force: true })
 }
 
-export function expectPosition(mesh, [x, y, z]) {
+export function expectPosition(mesh, [x, y, z], message) {
   mesh.computeWorldMatrix(true)
-  expectCloseVector(mesh.absolutePosition, [x, y, z])
+  expectCloseVector(mesh.absolutePosition, [x, y, z], message)
 }
 
 export function expectDimension(mesh, [width, height, depth]) {
@@ -121,15 +121,15 @@ export function expectDimension(mesh, [width, height, depth]) {
   ])
 }
 
-export function expectCloseVector(actual, [x, y, z]) {
-  expect(actual.x).toBeCloseTo(x)
-  expect(actual.y).toBeCloseTo(y)
-  expect(actual.z).toBeCloseTo(z)
+export function expectCloseVector(actual, [x, y, z], message) {
+  expect(actual.x, message).toBeCloseTo(x)
+  expect(actual.y, message).toBeCloseTo(y)
+  expect(actual.z, message).toBeCloseTo(z)
 }
 
-export function expectScreenPosition(actual, { x, y }) {
-  expect(actual?.x).toBeCloseTo(x)
-  expect(actual?.y).toBeCloseTo(y)
+export function expectScreenPosition(actual, { x, y }, message) {
+  expect(actual?.x, message).toBeCloseTo(x)
+  expect(actual?.y, message).toBeCloseTo(y)
 }
 
 export function expectSnapped(mesh, snapped, anchorRank = 0) {
@@ -193,9 +193,15 @@ export function expectAbsoluteRotation(mesh, angle, axis) {
 export function expectStacked(meshes, isLastMovable = true) {
   const ids = getIds(meshes.slice(1))
   for (const [rank, mesh] of meshes.entries()) {
-    expect(getIds(mesh.metadata.stack)).toEqual(getIds(meshes))
+    expect(
+      getIds(mesh.metadata.stack),
+      `metadata stack of mesh #${rank}`
+    ).toEqual(getIds(meshes))
     if (rank === 0) {
-      expect(getTargetableBehavior(mesh).state.stackIds).toEqual(ids)
+      expect(
+        getTargetableBehavior(mesh).state.stackIds,
+        `state stackIds of mesh #${rank}`
+      ).toEqual(ids)
     }
     if (rank === meshes.length - 1) {
       expectInteractible(mesh, true, isLastMovable)
@@ -256,8 +262,8 @@ function expectOnTop(meshAbove, meshBelow) {
 }
 
 export function expectInteractible(mesh, isInteractible = true, isMovable) {
-  for (const zone of getTargetableBehavior(mesh).zones) {
-    expect(zone.enabled).toBe(isInteractible)
+  for (const [rank, zone] of getTargetableBehavior(mesh).zones.entries()) {
+    expect(zone.enabled, `zone #${rank} enable status`).toBe(isInteractible)
   }
   const movable = mesh.getBehaviorByName(MoveBehaviorName)
   if (movable) {
@@ -265,8 +271,10 @@ export function expectInteractible(mesh, isInteractible = true, isMovable) {
   }
   const anchorable = mesh.getBehaviorByName(AnchorBehaviorName)
   if (anchorable) {
-    for (const zone of anchorable.zones) {
-      expect(zone.enabled).toBe(isInteractible)
+    for (const [rank, zone] of anchorable.zones.entries()) {
+      expect(zone.enabled, `anchorable zone #${rank} enable status`).toBe(
+        isInteractible
+      )
     }
   }
 }
@@ -290,7 +298,10 @@ export async function waitNextRender(scene) {
 export function expectMoveRecorded(moveRecorded, ...meshes) {
   expect(moveRecorded).toHaveBeenCalledTimes(meshes.length)
   for (const [rank, mesh] of meshes.entries()) {
-    expect(moveRecorded.mock.calls[rank][0]?.mesh.id).toEqual(mesh.id)
+    expect(
+      moveRecorded.mock.calls[rank][0]?.mesh.id,
+      `move #${rank} should be for mesh id ${mesh.id}`
+    ).toEqual(mesh.id)
   }
 }
 
@@ -305,12 +316,18 @@ export function expectZone(behavior, { extent, enabled, kinds, priority = 0 }) {
 
 export function expectDisposed(scene, ...meshes) {
   for (const mesh of meshes) {
-    expect(scene.getMeshById(mesh?.id)?.id).toBeUndefined()
+    expect(
+      scene.getMeshById(mesh?.id)?.id,
+      `mesh id ${mesh?.id} should be disposed`
+    ).toBeUndefined()
   }
 }
 
 export function expectNotDisposed(scene, ...meshes) {
   for (const mesh of meshes) {
-    expect(scene.getMeshById(mesh?.id)).toBeDefined()
+    expect(
+      scene.getMeshById(mesh?.id)?.id,
+      `mesh id ${mesh?.id} should not be disposed`
+    ).toBeDefined()
   }
 }

@@ -282,11 +282,11 @@ function expectSelection(expectedMeshes) {
   expect([...manager.meshes].map(({ id }) => id)).toEqual(
     expectedMeshes.map(({ id }) => id)
   )
-  for (const mesh of expectedMeshes) {
-    expectSelected(mesh, true)
+  for (const [rank, mesh] of expectedMeshes.entries()) {
+    expectSelected(mesh, true, `mesh #${rank} selection status`)
   }
 }
 
-function expectSelected(mesh, isSelected = true) {
-  expect(mesh.renderOverlay).toBe(isSelected)
+function expectSelected(mesh, isSelected = true, message) {
+  expect(mesh.renderOverlay, message).toBe(isSelected)
 }

@@ -438,9 +438,15 @@ describe('Indicators store', () => {
       { screenPosition, id, ...otherProps }
     ] of expected.entries()) {
       const actual = visibleIndicators[rank]
-      expect(actual).toHaveProperty('id', id)
-      expect(actual).toEqual(expect.objectContaining(otherProps))
-      expectScreenPosition(actual.screenPosition, screenPosition)
+      expect(actual, `indicator #${rank}`).toHaveProperty('id', id)
+      expect(actual, `indicator #${rank}`).toEqual(
+        expect.objectContaining(otherProps)
+      )
+      expectScreenPosition(
+        actual.screenPosition,
+        screenPosition,
+        `indicator #${rank}`
+      )
     }
   }
 
