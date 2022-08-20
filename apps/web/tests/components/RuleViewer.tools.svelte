@@ -10,16 +10,25 @@
     props={{ game: 'splendor', lastPage: 3 }}
     events={['change']}
     layout="centered"
-  />
+    let:props
+    let:handleEvent
+  >
+    <RuleViewer {...props} on:change={handleEvent} />
+  </Tool>
 </div>
 
 <style lang="postcss">
   .rule-viewer {
-    @apply flex h-full overflow-auto;
-    max-width: 100vh;
+    @apply flex overflow-hidden;
+    width: 50vw;
+    height: 100vh;
 
     :global(& .tool-preview) {
-      @apply overflow-auto p-2;
+      @apply p-2;
+    }
+
+    :global(& .tool) {
+      @apply w-full;
     }
   }
 </style>

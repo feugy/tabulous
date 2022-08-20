@@ -39,7 +39,6 @@ Roadmap
 
 ## UI
 
-- bug: delete confirmation message has the wrong term
 - bug: animating visibility from 0 to 1 creates trouble with texture alpha channel
 - bug: ICE failed message when peer reload their browser??
 - bug: attached, unselected, mesh are not ignored during dragging
@@ -48,7 +47,6 @@ Roadmap
 - collect player preferences when joining a game (requires to alter & reload game when joining rather than inviting)
 - option to invite players with url
 - distribute multiple meshes to players'hand
-- zoom in/out on rules
 - shortcuts cheatsheet
 - peer notifications: joining, joined, left, error (stop waiting when navigating away)
 - hand support for quantifiable behavior

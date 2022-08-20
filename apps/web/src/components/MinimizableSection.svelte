@@ -142,7 +142,7 @@
 
 <style lang="postcss">
   section {
-    @apply relative flex items-stretch justify-items-stretch h-full z-10 min-w-min max-w-full;
+    @apply relative flex items-stretch justify-items-stretch h-full z-10 min-w-50 max-w-full;
 
     &:not(.vertical).minimized {
       @apply min-w-0 !w-0;

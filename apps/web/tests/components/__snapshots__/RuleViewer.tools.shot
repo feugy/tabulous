@@ -1,46 +1,44 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Toolshot components/RuleViewer.tools.svelte: Components/Rule Viewer 1`] = `
-<span>
-  <section>
-    <menu>
-      <button
-        disabled=""
-      >
-        <span
-          class="material-icons"
-        >
-          navigate_before
-        </span>
-        
-        
-        
-      </button>
-       
-      1
-      /
-      4
-       
-      <button>
-        <span
-          class="material-icons"
-        >
-          navigate_next
-        </span>
-        
-        
-        
-      </button>
-    </menu>
-     
-    <div
-      class="image-container"
+<section>
+  <menu>
+    <button
+      disabled=""
     >
-      <img
-        alt="Livre de règles, page 1"
-        src="http://localhost:3001/games/splendor/rules/1.webp"
-      />
-    </div>
-  </section>
-</span>
+      <span
+        class="material-icons"
+      >
+        navigate_before
+      </span>
+      
+      
+      
+    </button>
+     
+    1
+    /
+    4
+     
+    <button>
+      <span
+        class="material-icons"
+      >
+        navigate_next
+      </span>
+      
+      
+      
+    </button>
+  </menu>
+   
+  <div
+    class="image-container"
+  >
+    <img
+      alt="Livre de règles, page 1"
+      src="http://localhost:3001/games/splendor/rules/1.webp"
+    />
+  </div>
+</section>
 `;
