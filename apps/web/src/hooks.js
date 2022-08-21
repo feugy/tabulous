@@ -4,6 +4,9 @@ import { recoverSession } from './stores/players'
 /** @type {import('@sveltejs/kit').Handle} */
 export async function handle({ event, resolve }) {
   const { url, request, locals } = event
+  if (url.pathname === '/logout') {
+    return logOutAndRedirect()
+  }
   if (url.searchParams.has('token')) {
     return extractTokenAndRedirect(url)
   }
@@ -18,27 +21,28 @@ export async function handle({ event, resolve }) {
   return setCookie(await resolve(event), locals.session?.token)
 }
 
-/** @type {import('@sveltejs/kit').GetSession} */
-export async function getSession(event) {
-  const { bearer, session } = event.locals
-  return {
-    bearer,
-    user: session?.player ?? null,
-    turnCredentials: session?.turnCredentials ?? null
-  }
-}
-
 function extractToken(request) {
   return cookie.parse(request.headers.get('cookie') || '').token
 }
 
+function logOutAndRedirect() {
+  return setCookie(
+    new Response(null, {
+      status: 308,
+      headers: { location: '/home' }
+    })
+  )
+}
+
 function extractTokenAndRedirect(url) {
   const token = url.searchParams.get('token')
+  const location = url.searchParams.has('redirect') ?? url
   url.searchParams.delete('token')
+  url.searchParams.delete('redirect')
   return setCookie(
     new Response(null, {
       status: 303,
-      headers: { location: url }
+      headers: { location }
     }),
     token
   )

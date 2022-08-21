@@ -24,6 +24,8 @@ Roadmap
 
 ## Refactor
 
+- write tools for routes?
+- fetches as much data as possible in load() functions
 - ts-check all the things!
 - removes nginx to directly use the node server?
 - group candidate target per kind for performance

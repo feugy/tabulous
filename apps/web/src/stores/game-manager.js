@@ -145,7 +145,10 @@ let hands = []
  * @param {string} gameId - the loaded game id.
  * @param {object} session - the session details.
  */
-export async function loadGame(gameId, { user, turnCredentials }) {
+export async function loadGame(
+  gameId,
+  { player: currentPlayer, turnCredentials }
+) {
   if (!engine) {
     logger.warn(
       { gameId },
@@ -165,7 +168,7 @@ export async function loadGame(gameId, { user, turnCredentials }) {
     clearThread()
   })
 
-  const currentPlayerId = user.id
+  const currentPlayerId = currentPlayer.id
 
   /* istanbul ignore if */
   if (!delayOnLoad && import.meta.hot) {
@@ -196,7 +199,7 @@ export async function loadGame(gameId, { user, turnCredentials }) {
   let game = await runQuery(graphQL.loadGame, { gameId }, false)
   currentGame$.next(game)
   playingIds$.next([currentPlayerId])
-  openChannels(user, turnCredentials)
+  openChannels(currentPlayer, turnCredentials)
 
   if (isSinglePlaying(currentPlayerId)) {
     // is the only playing player: take the host role

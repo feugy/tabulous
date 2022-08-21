@@ -108,10 +108,7 @@ jobs:
         run: npm ci
 
       - name: Run UI unit tests
-        run: |
-          mkdir -p apps/web/.svelte-kit/runtime
-          cp -r node_modules/@sveltejs/kit/assets/* apps/web/.svelte-kit/runtime
-          npm run test:web
+        run: npm run test:web
         env:
           WEB_GAME_ASSETS_URL: https://localhost:3000/games
           WEB_GRAPHQL_URL: https://localhost:3000/graphql

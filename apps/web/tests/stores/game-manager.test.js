@@ -90,7 +90,7 @@ afterAll(() => subscription.unsubscribe())
 it('loadGame() does nothing without engine', async () => {
   warn.mockImplementationOnce(() => {})
   await loadGame(faker.datatype.uuid(), {
-    user: { id: faker.datatype.uuid() },
+    player: { id: faker.datatype.uuid() },
     turnCredentials
   })
   expect(warn).toHaveBeenCalledTimes(1)
@@ -141,7 +141,7 @@ describe('given a mocked game engine', () => {
         handMeshes: hands[1].meshes
       })
       runQuery.mockResolvedValueOnce(game)
-      await loadGame(gameId, { user: player, turnCredentials })
+      await loadGame(gameId, { player, turnCredentials })
       expect(runQuery).toHaveBeenCalledWith(graphQL.loadGame, { gameId }, false)
       expect(runQuery).toHaveBeenCalledTimes(1)
       expect(runSubscription).toHaveBeenCalledWith(graphQL.receiveGameUpdates, {
@@ -178,7 +178,7 @@ describe('given a mocked game engine', () => {
       engine.serialize.mockReturnValueOnce({ meshes, handMeshes: [] })
       serializeThread.mockReturnValueOnce([])
       runQuery.mockResolvedValueOnce(game)
-      await loadGame(gameId, { user: player, turnCredentials })
+      await loadGame(gameId, { player, turnCredentials })
       expect(runQuery).toHaveBeenCalledWith(graphQL.loadGame, { gameId }, false)
       expect(runQuery).toHaveBeenCalledTimes(1)
       expect(engine.load).toHaveBeenCalledWith(game, player.id, true)
@@ -213,7 +213,7 @@ describe('given a mocked game engine', () => {
       engine.serialize.mockReturnValueOnce({ meshes, handMeshes: [] })
       serializeThread.mockReturnValueOnce(messages)
       runQuery.mockResolvedValueOnce(game)
-      await loadGame(gameId, { user: player, turnCredentials })
+      await loadGame(gameId, { player, turnCredentials })
       expect(runQuery).toHaveBeenCalledWith(graphQL.loadGame, { gameId }, false)
       expect(runQuery).toHaveBeenCalledTimes(1)
       expect(engine.load).toHaveBeenCalledWith(game, player.id, true)
@@ -232,7 +232,7 @@ describe('given a mocked game engine', () => {
       const game = { id: gameId, meshes, players: [], hands: [] }
       engine.serialize.mockReturnValueOnce({ meshes, handMeshes: [] })
       runQuery.mockResolvedValueOnce(game)
-      await loadGame(gameId, { user: player, turnCredentials })
+      await loadGame(gameId, { player, turnCredentials })
       expect(runQuery).toHaveBeenCalledWith(graphQL.loadGame, { gameId }, false)
       expect(runQuery).toHaveBeenCalledTimes(1)
       expect(engine.load).toHaveBeenCalledWith(game, player.id, true)
@@ -263,7 +263,7 @@ describe('given a mocked game engine', () => {
           meshes,
           handMeshes: []
         })
-        await loadGame(game.id, { user: player, turnCredentials })
+        await loadGame(game.id, { player, turnCredentials })
         jest.clearAllMocks()
         serializeThread.mockReturnValue(game.messages)
       })
@@ -551,7 +551,7 @@ describe('given a mocked game engine', () => {
       it('fails when not receiving game from online players', async () => {
         error.mockImplementationOnce(() => {})
         const errorMessage = 'No game data after 30s'
-        const promise = loadGame(game.id, { user: player, turnCredentials })
+        const promise = loadGame(game.id, { player, turnCredentials })
         await nextPromise()
         jest.runAllTimers()
         await expect(promise).rejects.toThrow(errorMessage)
@@ -581,7 +581,7 @@ describe('given a mocked game engine', () => {
               playerId: partner1.id
             })
           })
-          await loadGame(game.id, { user: player, turnCredentials })
+          await loadGame(game.id, { player, turnCredentials })
         })
 
         it('loads game data from online players', async () => {
@@ -661,7 +661,7 @@ describe('given a mocked game engine', () => {
               playerId: partner1.id
             })
           })
-          await loadGame(game.id, { user: player, turnCredentials })
+          await loadGame(game.id, { player, turnCredentials })
           jest.clearAllMocks()
         })
 

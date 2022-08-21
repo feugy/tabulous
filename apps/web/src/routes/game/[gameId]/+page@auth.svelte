@@ -1,8 +1,8 @@
 <script>
-  import { page, session } from '$app/stores'
+  import { page } from '$app/stores'
   import { onMount, onDestroy } from 'svelte'
   import { _ } from 'svelte-intl'
-  import { GameMenu, InvitePlayerDialogue } from '../../connected-components'
+  import { GameMenu, InvitePlayerDialogue } from '../../../connected-components'
   import {
     CameraSwitch,
     CursorInfo,
@@ -12,7 +12,7 @@
     MeshDetails,
     Progress,
     RadialMenu
-  } from '../../components'
+  } from '../../../components'
   import {
     actionMenuProps,
     cameraSaves,
@@ -33,8 +33,11 @@
     saveCamera,
     sendToThread,
     thread
-  } from '../../stores'
-  import { observeDimension } from '../../utils'
+  } from '../../../stores'
+  import { observeDimension } from '../../../utils'
+
+  /** @type {import('./$types').PageData} */
+  export let data = {}
 
   const longTapDelay = 250
   let engine
@@ -49,7 +52,7 @@
   onMount(async () => {
     engine = initEngine({ canvas, interaction, longTapDelay, hand })
     initIndicators({ engine, canvas, hand })
-    loadPromise = loadGame($page.params.gameId, $session)
+    loadPromise = loadGame($page.params.gameId, data.session)
     loadPromise.catch(err => console.error(err))
     dimensionObserver = observeDimension(interaction, 0)
     dimensionSubscription = dimensionObserver.dimension$.subscribe(
@@ -124,7 +127,7 @@
   <CursorInfo halos={longInputs} />
   <GameAside
     game={$currentGame}
-    player={$session.user}
+    player={data.session.player}
     playerById={$gamePlayerById}
     connected={$connected}
     thread={$thread}
