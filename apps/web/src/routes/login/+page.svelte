@@ -1,10 +1,10 @@
 <script>
   import { page } from '$app/stores'
   import { _ } from 'svelte-intl'
-  import { LogInForm } from '../components'
-  import { flags } from '../stores'
+  import { LogInForm } from '../../components'
+  import { flags } from '../../stores'
 
-  export let error = null
+  export let errors = null
 
   let inputRef = null
   const redirect = $page.url.searchParams.get('redirect') ?? '/home'
@@ -21,7 +21,7 @@
 <main>
   <LogInForm
     bind:inputRef
-    error={error ? $_('errors.login-failure') : undefined}
+    error={errors ? $_('errors.login-failure') : undefined}
     {redirect}
     withGithub={$flags.useGithubProvider}
     withGoogle={$flags.useGoogleProvider}

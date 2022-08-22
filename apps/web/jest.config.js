@@ -15,15 +15,17 @@ const conf = {
     '^.+\\.ya?ml$': '<rootDir>/tests/jest/yaml.js'
   },
   transformIgnorePatterns: [
-    'node_modules\\/(?!@babylonjs|simple-peer-light|@atelier-wb|htm|svelte-portal)'
+    'node_modules\\/(?!@babylonjs|simple-peer-light|@atelier-wb|htm|svelte-portal|@sveltejs)'
   ],
   moduleNameMapper: {
     '^.+\\.png$': 'identity-obj-proxy',
     '^.+\\.(post)?css$': 'identity-obj-proxy',
     '^\\$lib(.*)$': '<rootDir>/src/lib$1',
-    '^\\$app(.*)$': '<rootDir>/.svelte-kit/runtime/app$1'
+    '^\\$app(.*)$':
+      '<rootDir>/../../node_modules/@sveltejs/kit/src/runtime/app$1'
   },
   moduleFileExtensions: ['js', 'svelte', 'graphql'],
+  setupFiles: ['<rootDir>/tests/jest/setup.pre.js'],
   setupFilesAfterEnv: ['<rootDir>/tests/jest/setup.js'],
   watchPlugins: [
     'jest-watch-typeahead/filename',

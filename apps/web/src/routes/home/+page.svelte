@@ -1,26 +1,28 @@
 <script>
   import { goto } from '$app/navigation'
-  import { session } from '$app/stores'
   import { _, locale } from 'svelte-intl'
   import {
     CatalogItem,
     ConfirmDialogue,
     GameLink,
     Progress
-  } from '../components'
-  import { Header } from '../connected-components'
-  import { deleteGame, listCatalog, listGames, playerGames } from '../stores'
+  } from '../../components'
+  import { Header } from '../../connected-components'
+  import { deleteGame, listCatalog, listGames, playerGames } from '../../stores'
+
+  /** @type {import('./$types').PageData} */
+  export let data = {}
 
   let gameToDelete = null
   let catalog = null
-  let hasUser = false
+  let user = null
 
-  $: if ($session.user) {
-    hasUser = true
+  $: if (data.session?.player) {
+    user = data.session.player
     listGames()
     fetchCatalog()
   } else {
-    hasUser = false
+    user = null
     fetchCatalog()
   }
 
@@ -49,22 +51,18 @@
 </svelte:head>
 
 <main>
-  <Header>
+  <Header {user}>
     <h1>
-      {$_(hasUser ? 'titles.home' : 'titles.welcome', $session.user)}
+      {$_(user ? 'titles.home' : 'titles.welcome', user)}
     </h1>
   </Header>
 
   <div>
-    {#if hasUser}
+    {#if user}
       <h2>{$_('titles.your-games')}</h2>
       <section aria-roledescription="games">
         {#each $playerGames.sort((a, b) => b.created - a.created) as game (game.id)}
-          <GameLink
-            {game}
-            playerId={$session.user?.id}
-            on:delete={handleDeleteGame}
-          />
+          <GameLink {game} playerId={user.id} on:delete={handleDeleteGame} />
         {:else}
           <span class="no-games">{$_('labels.no-games-yet')}</span>
         {/each}

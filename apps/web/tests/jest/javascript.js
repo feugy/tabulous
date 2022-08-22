@@ -15,7 +15,7 @@ const factory = {
     const transformer = createTransformer(...args)
     const originalProcess = transformer.process
     transformer.process = function (...args) {
-      if (args[1].includes('apps/web/') || args[1].includes('.svelte-kit')) {
+      if (args[1].includes('apps/web/') || args[1].includes('@sveltejs/kit')) {
         args[0] = args[0]
           .replace(/import\.meta\.hot\.on/g, '(function(){})')
           .replace(/import\.meta\.hot/g, 'false')
