@@ -21,7 +21,7 @@ let client
  * @param {function} options.fetch - fetch implementation used to initialize the client.
  * @param {string} options.bearer - data used for authenticating graphQL subscriptions and queries.
  */
-export function initGraphQLGlient({
+export function initGraphQlClient({
   graphQlUrl,
   bearer,
   fetch,

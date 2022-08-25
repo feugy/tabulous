@@ -8,7 +8,7 @@ import {
   searchPlayers
 } from '../../src/stores/players'
 import {
-  initGraphQLGlient,
+  initGraphQlClient,
   runMutation,
   runQuery
 } from '../../src/stores/graphql-client'
@@ -79,13 +79,13 @@ describe('recoverSession()', () => {
     expect(await recoverSession(fetch, bearer)).toBeNull()
     expect(runQuery).toHaveBeenCalledWith(graphQL.getCurrentPlayer)
     expect(runQuery).toHaveBeenCalledTimes(1)
-    expect(initGraphQLGlient).toHaveBeenCalledWith({
+    expect(initGraphQlClient).toHaveBeenCalledWith({
       graphQlUrl,
       fetch,
       bearer,
       subscriptionSupport: false
     })
-    expect(initGraphQLGlient).toHaveBeenCalledTimes(1)
+    expect(initGraphQlClient).toHaveBeenCalledTimes(1)
     expect(goto).not.toHaveBeenCalled()
   })
 
@@ -96,13 +96,13 @@ describe('recoverSession()', () => {
     expect(await recoverSession(fetch, bearer)).toEqual(session)
     expect(runQuery).toHaveBeenCalledWith(graphQL.getCurrentPlayer)
     expect(runQuery).toHaveBeenCalledTimes(1)
-    expect(initGraphQLGlient).toHaveBeenCalledWith({
+    expect(initGraphQlClient).toHaveBeenCalledWith({
       graphQlUrl,
       fetch,
       bearer,
       subscriptionSupport: false
     })
-    expect(initGraphQLGlient).toHaveBeenCalledTimes(1)
+    expect(initGraphQlClient).toHaveBeenCalledTimes(1)
     expect(goto).not.toHaveBeenCalled()
   })
 })

@@ -1,5 +1,5 @@
 import { goto } from '$app/navigation'
-import { initGraphQLGlient, runQuery, runMutation } from './graphql-client'
+import { initGraphQlClient, runQuery, runMutation } from './graphql-client'
 import * as graphQL from '../graphql'
 import { makeLogger, graphQlUrl } from '../utils'
 
@@ -16,7 +16,7 @@ export async function recoverSession(fetch, bearer) {
   let session = null
   try {
     logger.info(`recovering previous session`)
-    initGraphQLGlient({
+    initGraphQlClient({
       graphQlUrl,
       fetch,
       bearer,

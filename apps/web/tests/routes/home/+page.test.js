@@ -1,15 +1,20 @@
 import { render, screen, waitFor } from '@testing-library/svelte'
 import html from 'svelte-htm'
 import HomePage from '../../../src/routes/home/+page.svelte'
-import { initGraphQLGlient } from '../../../src/stores'
-import { graphQlUrl } from '../../../src/utils'
-import { configureGraphQlServer } from '../../test-utils'
+import { runQuery } from '../../../src/stores/graphql-client'
+
+jest.mock('../../../src/stores/graphql-client', () => {
+  const { jest } = require('@jest/globals')
+  const { BehaviorSubject } = require('rxjs')
+  const sub = new BehaviorSubject([])
+  return {
+    initGraphQlClient: jest.fn(),
+    runQuery: jest.fn(),
+    runSubscription: jest.fn().mockReturnValue(sub)
+  }
+})
 
 describe('/home route', () => {
-  const mocks = { handleGraphQl: jest.fn() }
-
-  configureGraphQlServer(mocks)
-
   const games = [
     {
       name: '32-cards',
@@ -31,12 +36,8 @@ describe('/home route', () => {
     }
   ]
 
-  beforeEach(() => {
-    initGraphQLGlient({ graphQlUrl, fetch })
-  })
-
   it('displays anonymous catalog', async () => {
-    mocks.handleGraphQl.mockReturnValue(games.slice(0, 2))
+    runQuery.mockResolvedValue(games.slice(0, 2))
     const { container } = render(html`<${HomePage} data=${{}} />`)
     await waitFor(() =>
       expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
@@ -45,7 +46,7 @@ describe('/home route', () => {
   })
 
   it('displays connected catalog', async () => {
-    mocks.handleGraphQl.mockReturnValueOnce(games)
+    runQuery.mockResolvedValueOnce(games)
     const player = { username: 'John Doo' }
     const { container } = render(
       html`<${HomePage} data=${{ session: { player } }} />`

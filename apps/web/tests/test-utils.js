@@ -8,7 +8,6 @@ import { appendFileSync, rmSync } from 'fs'
 import { get } from 'svelte/store'
 import { _ } from 'svelte-intl'
 import { inspect } from 'util'
-import { isPortFree } from './utils'
 import {
   getAnimatableBehavior,
   getTargetableBehavior
@@ -360,24 +359,10 @@ export async function configureGraphQlServer(mocks) {
       }
     })
     const port = 3001
-    await waitForPort(port, 30000)
     await server.listen({ port })
   }, 31000)
 
   afterAll(() => {
     server.close()
   })
-}
-
-async function waitForPort(port, milliseconds) {
-  const start = Date.now()
-  while (Date.now() - start < milliseconds) {
-    try {
-      await isPortFree(port)
-      return
-    } catch {
-      await sleep(500)
-    }
-  }
-  throw new Error(`port ${port} is already used since 30', stop waiting`)
 }

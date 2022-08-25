@@ -1,4 +1,4 @@
-import { initGraphQLGlient } from '../../stores/graphql-client'
+import { initGraphQlClient } from '../../stores/graphql-client'
 import { logIn } from '../../stores/players'
 import { graphQlUrl } from '../../utils/env'
 
@@ -17,7 +17,7 @@ export async function POST({ request, locals, fetch }) {
         }
       }
     }
-    initGraphQLGlient({ graphQlUrl, fetch, subscriptionSupport: false })
+    initGraphQlClient({ graphQlUrl, fetch, subscriptionSupport: false })
     locals.session = await logIn(username, password)
     return {
       status: 303,

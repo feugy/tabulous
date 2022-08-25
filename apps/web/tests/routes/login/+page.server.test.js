@@ -1,11 +1,16 @@
 import { faker } from '@faker-js/faker'
 import { POST } from '../../../src/routes/login/+page.server'
-import { configureGraphQlServer } from '../../test-utils'
+import { runMutation } from '../../../src/stores/graphql-client'
+
+jest.mock('../../../src/stores/graphql-client', () => {
+  const { jest } = require('@jest/globals')
+  return {
+    initGraphQlClient: jest.fn(),
+    runMutation: jest.fn()
+  }
+})
 
 describe('POST /login route action', () => {
-  const mocks = { handleGraphQl: jest.fn() }
-  configureGraphQlServer(mocks)
-
   it('redirects to home and set session on success', async () => {
     const username = faker.name.fullName()
     const password = faker.internet.password()
@@ -14,7 +19,7 @@ describe('POST /login route action', () => {
     }
     const locals = {}
     const request = buildsRequest({ username, password })
-    mocks.handleGraphQl.mockReturnValueOnce(session)
+    runMutation.mockResolvedValueOnce(session)
 
     expect(await POST({ request, locals, fetch })).toEqual({
       status: 303,
@@ -33,7 +38,7 @@ describe('POST /login route action', () => {
     const locals = {}
     const redirect = `/${faker.internet.domainName()}`
     const request = buildsRequest({ username, password, redirect })
-    mocks.handleGraphQl.mockReturnValueOnce(session)
+    runMutation.mockResolvedValueOnce(session)
 
     expect(await POST({ request, locals, fetch })).toEqual({
       status: 303,
@@ -75,7 +80,7 @@ describe('POST /login route action', () => {
     const locals = {}
     const request = buildsRequest({ username, password })
     const error = new Error('wrong credentials')
-    mocks.handleGraphQl.mockRejectedValueOnce(error)
+    runMutation.mockRejectedValueOnce(error)
 
     expect(await POST({ request, locals, fetch })).toEqual({
       status: 401,
