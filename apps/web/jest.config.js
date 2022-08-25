@@ -25,7 +25,6 @@ const conf = {
       '<rootDir>/../../node_modules/@sveltejs/kit/src/runtime/app$1'
   },
   moduleFileExtensions: ['js', 'svelte', 'graphql'],
-  setupFiles: ['<rootDir>/tests/jest/setup.pre.js'],
   setupFilesAfterEnv: ['<rootDir>/tests/jest/setup.js'],
   watchPlugins: [
     'jest-watch-typeahead/filename',
@@ -34,7 +33,8 @@ const conf = {
   coverageDirectory: './coverage',
   collectCoverageFrom: ['<rootDir>/src/**/*.js', '<rootDir>/src/**/*.svelte'],
   globals: {
-    __SVELTEKIT_DEV__: true
+    __SVELTEKIT_DEV__: true,
+    __SVELTEKIT_APP_VERSION_POLL_INTERVAL__: 0
   }
 }
 

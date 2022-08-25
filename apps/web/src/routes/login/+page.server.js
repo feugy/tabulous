@@ -1,13 +1,12 @@
-import { initGraphQLGlient } from '../../stores/graphql-client'
+import { initGraphQlClient } from '../../stores/graphql-client'
 import { logIn } from '../../stores/players'
 import { graphQlUrl } from '../../utils/env'
 
 /** @type {import('./$types').Action} */
 export async function POST({ request, locals, fetch }) {
   try {
-    const { username, password, redirect } = Object.fromEntries(
-      (await request.formData()).entries()
-    )
+    const form = await request.formData()
+    const { username, password, redirect } = Object.fromEntries(form.entries())
     if (
       redirect &&
       (redirect.startsWith('http') || !redirect.startsWith('/'))
@@ -18,7 +17,7 @@ export async function POST({ request, locals, fetch }) {
         }
       }
     }
-    initGraphQLGlient({ graphQlUrl, fetch, subscriptionSupport: false })
+    initGraphQlClient({ graphQlUrl, fetch, subscriptionSupport: false })
     locals.session = await logIn(username, password)
     return {
       status: 303,

@@ -2,6 +2,8 @@ import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera'
 import { NullEngine } from '@babylonjs/core/Engines/nullEngine'
 import { Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { Logger } from '@babylonjs/core/Misc/logger'
+import cors from '@fastify/cors'
+import fastify from 'fastify'
 import { appendFileSync, rmSync } from 'fs'
 import { get } from 'svelte/store'
 import { _ } from 'svelte-intl'
@@ -330,4 +332,37 @@ export function expectNotDisposed(scene, ...meshes) {
       `mesh id ${mesh?.id} should not be disposed`
     ).toBeDefined()
   }
+}
+
+export async function configureGraphQlServer(mocks) {
+  let server
+
+  beforeAll(async () => {
+    server = fastify()
+    server.register(cors, {
+      origin: /.*/,
+      methods: ['GET', 'POST'],
+      maxAge: 120,
+      strictPreflight: true,
+      credentials: true
+    })
+    server.post('/graphql', async request => {
+      const { operationName: operation } = request.body
+      try {
+        return {
+          data: {
+            [operation]: (await mocks?.handleGraphQl?.(request.body)) ?? {}
+          }
+        }
+      } catch (error) {
+        return { errors: [error.message] }
+      }
+    })
+    const port = 3001
+    await server.listen({ port })
+  }, 31000)
+
+  afterAll(() => {
+    server.close()
+  })
 }
