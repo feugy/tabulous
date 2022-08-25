@@ -1,38 +1,14 @@
 import { jest } from '@jest/globals'
 import { faker } from '@faker-js/faker'
-import cors from '@fastify/cors'
-import fastify from 'fastify'
 import { handle } from '../src/hooks'
+import { configureGraphQlServer } from './test-utils'
 
 describe('Sveltekit handle() hook', () => {
-  let server
-  let mockGraphQlResponse
+  const mocks = {
+    handleGraphQl: jest.fn()
+  }
 
-  beforeAll(async () => {
-    server = fastify()
-    server.register(cors, {
-      origin: /.*/,
-      methods: ['GET', 'POST'],
-      maxAge: 120,
-      strictPreflight: true,
-      credentials: true
-    })
-    server.post('/graphql', async request => {
-      const { operationName: operation } = request.body
-      return {
-        data: {
-          [operation]: (await mockGraphQlResponse?.(request.body)) ?? {}
-        }
-      }
-    })
-    await server.listen({ port: 3001 })
-  })
-
-  beforeEach(jest.resetAllMocks)
-
-  afterAll(() => {
-    server.close()
-  })
+  configureGraphQlServer(mocks)
 
   it('removes token cookie', async () => {
     const response = await handle(buildHandleInput())
@@ -83,7 +59,7 @@ describe('Sveltekit handle() hook', () => {
       token,
       player: { id: faker.datatype.number(), username: faker.name.fullName() }
     }
-    mockGraphQlResponse = () => session
+    mocks.handleGraphQl.mockReturnValue(session)
 
     const request = new Request()
     request.headers.set(

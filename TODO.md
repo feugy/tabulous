@@ -24,7 +24,7 @@ Roadmap
 
 ## Refactor
 
-- write tools for routes?
+- better testing setup? [vitest](https://github.com/sveltejs/kit/discussions/5285), or even [manual](https://github.com/sveltejs/kit/issues/19#issuecomment-1041134457)
 - fetches as much data as possible in load() functions
 - ts-check all the things!
 - removes nginx to directly use the node server?
