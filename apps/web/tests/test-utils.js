@@ -360,18 +360,18 @@ export async function configureGraphQlServer(mocks) {
       }
     })
     const port = 3001
-    await waitForPort(port)
+    await waitForPort(port, 30000)
     await server.listen({ port })
-  })
+  }, 31000)
 
   afterAll(() => {
     server.close()
   })
 }
 
-export async function waitForPort(port) {
+async function waitForPort(port, milliseconds) {
   const start = Date.now()
-  while (Date.now() - start < 30000) {
+  while (Date.now() - start < milliseconds) {
     try {
       await isPortFree(port)
       return
