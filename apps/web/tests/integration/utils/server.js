@@ -59,7 +59,7 @@ export async function mockGraphQl(page, mocks) {
         ...args
       )
     const logError = (reqId, ...args) =>
-      console.log(chalk`{red.bold red mock-server [${reqId}]} -`, ...args)
+      console.log(chalk`{red.bold mock-server [${reqId}]} -`, ...args)
 
     server = fastify()
     server.register(cors, {

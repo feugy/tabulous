@@ -25,18 +25,11 @@ import { makeLogger, sleep } from '../utils'
 const gameReceptionDelay = 30000
 const logger = makeLogger('game-manager')
 
-const playerGames$ = new BehaviorSubject([])
 const currentGame$ = new BehaviorSubject()
 const hostId$ = new BehaviorSubject(null)
 const playingIds$ = new BehaviorSubject([])
 
 let delayOnLoad = () => {}
-
-/**
- * Emits the list of current player's games.
- * @type {Observable<object>} TODO
- */
-export const playerGames = playerGames$.asObservable()
 
 /**
  * Emits the player current game, or undefined.
@@ -66,16 +59,28 @@ export const gamePlayerById = merge(hostId$, playingIds$, currentGame$).pipe(
 )
 
 /**
- * Lists all games of the current player, populating `playerGames` observable.
- * @async
+ * Lists all current games.
+ * @returns {Promise<import('../graphql').Game[]>} a list of current games for the authenticated user.
  */
 export async function listGames() {
+  logger.info('list current games')
+  return runQuery(graphQL.listGames)
+}
+
+/**
+ * Subscribes to current game list updates, to keep the list fresh.
+ * @param {import('../graphql').Game[]} currentGames - current game list.
+ * @returns {Observable<import('../graphql').Game[]>} an observable containing up-to-date current games.
+ */
+export function receiveGameListUpdates(currentGames) {
   if (listGamesSubscription) {
     listGamesSubscription.unsubscribe()
   }
-  listGamesSubscription = runSubscription(graphQL.listGames).subscribe(
-    playerGames$
-  )
+  const currentGames$ = new BehaviorSubject(currentGames || [])
+  listGamesSubscription = runSubscription(
+    graphQL.receiveGameListUpdates
+  ).subscribe(currentGames$)
+  return currentGames$.asObservable()
 }
 
 /**

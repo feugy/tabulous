@@ -122,6 +122,20 @@ fragment fullGame on Game {
   }
 }
 
+fragment currentGame on Game {
+  id
+  created
+  kind
+  players {
+    ...lightPlayer
+  }
+  locales {
+    fr {
+      title
+    }
+  }
+}
+
 mutation createGame($kind: String!) {
   createGame(kind: $kind) {
     id
@@ -140,19 +154,15 @@ mutation invite($gameId: ID!, $playerId: ID!) {
   }
 }
 
-subscription listGames {
+query listGames {
   listGames {
-    id
-    created
-    kind
-    players {
-      ...lightPlayer
-    }
-    locales {
-      fr {
-        title
-      }
-    }
+    ...currentGame
+  }
+}
+
+subscription receiveGameListUpdates {
+  receiveGameListUpdates {
+    ...currentGame
   }
 }
 

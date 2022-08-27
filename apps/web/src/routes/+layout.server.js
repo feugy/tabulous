@@ -1,4 +1,5 @@
-/** @type {import('./$types').LayoutServerData} */
-export function load({ locals: { bearer = null, session = null } }) {
+/** @type {import('./$types').LayoutServerLoad} */
+export function load({ locals }) {
+  const { bearer = null, session = null } = locals
   return { bearer, session }
 }
