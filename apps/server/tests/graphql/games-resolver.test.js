@@ -51,6 +51,22 @@ describe('given a started server', () => {
 
   describe('Games GraphQL resolver', () => {
     describe('loadGame query', () => {
+      it('fails on unauthenticated requests', async () => {
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          payload: {
+            query: `{ loadGame(gameId: "${faker.datatype.uuid()}") { id } }`
+          }
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.listGames).not.toHaveBeenCalled()
+        expect(await response.json()).toMatchObject({
+          data: { loadGame: null },
+          errors: [{ message: 'Unauthorized' }]
+        })
+      })
+
       it('loads game details and resolves player objects', async () => {
         const playerId = players[0].id
         const game = {
@@ -103,7 +119,117 @@ describe('given a started server', () => {
       })
     })
 
+    describe('listGames query', () => {
+      it('fails on unauthenticated requests', async () => {
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          payload: {
+            query: `{ listGames { id } }`
+          }
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.listGames).not.toHaveBeenCalled()
+        expect(await response.json()).toMatchObject({
+          data: { listGames: null },
+          errors: [{ message: 'Unauthorized' }]
+        })
+      })
+
+      it('returns current games', async () => {
+        const playerId = players[0].id
+        const games = [
+          {
+            id: faker.datatype.uuid(),
+            created: faker.date.past().getTime(),
+            playerIds: [playerId]
+          },
+          {
+            id: faker.datatype.uuid(),
+            created: faker.date.past().getTime(),
+            playerIds: [playerId, players[1].id]
+          },
+          {
+            id: faker.datatype.uuid(),
+            created: faker.date.past().getTime(),
+            playerIds: [playerId, players[2].id]
+          }
+        ]
+        services.getPlayerById.mockImplementation(async ids =>
+          Array.isArray(ids)
+            ? players.filter(({ id }) => ids.includes(id))
+            : players.find(({ id }) => id === ids)
+        )
+        services.listGames.mockResolvedValueOnce(games)
+
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            authorization: `Bearer ${signToken(
+              playerId,
+              configuration.auth.jwt.key
+            )}`
+          },
+          payload: {
+            query: `{ listGames { id created players { id username } } }`
+          }
+        })
+
+        expect(response.json()).toEqual({
+          data: {
+            listGames: [
+              { ...games[0], playerIds: undefined, players: [players[0]] },
+              {
+                ...games[1],
+                playerIds: undefined,
+                players: [players[0], players[1]]
+              },
+              {
+                ...games[2],
+                playerIds: undefined,
+                players: [players[0], players[2]]
+              }
+            ]
+          }
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.listGames).toHaveBeenCalledWith(playerId)
+        expect(services.listGames).toHaveBeenCalledTimes(1)
+        expect(services.getPlayerById).toHaveBeenCalledWith(playerId)
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(
+          2,
+          games[0].playerIds
+        )
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(
+          3,
+          games[1].playerIds
+        )
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(
+          4,
+          games[2].playerIds
+        )
+        expect(services.getPlayerById).toHaveBeenCalledTimes(4)
+      })
+    })
+
     describe('createGame mutation', () => {
+      it('fails on unauthenticated requests', async () => {
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          payload: {
+            query: `mutation { createGame(kind: "draughts") { id } }`
+          }
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.listGames).not.toHaveBeenCalled()
+        expect(await response.json()).toMatchObject({
+          data: { createGame: null },
+          errors: [{ message: 'Unauthorized' }]
+        })
+      })
+
       it('creates a new game and resolves player objects', async () => {
         const playerId = players[0].id
         const kind = faker.helpers.arrayElement(['coinche', 'tarot', 'belote'])
@@ -160,6 +286,22 @@ describe('given a started server', () => {
     })
 
     describe('saveGame mutation', () => {
+      it('fails on unauthenticated requests', async () => {
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          payload: {
+            query: `mutation { saveGame(game: { id: "1" }) { id } }`
+          }
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.listGames).not.toHaveBeenCalled()
+        expect(await response.json()).toMatchObject({
+          data: { saveGame: null },
+          errors: [{ message: 'Unauthorized' }]
+        })
+      })
+
       it('saves an existing game and resolves player objects', async () => {
         const playerId = players[0].id
         const kind = faker.helpers.arrayElement(['coinche', 'tarot', 'belote'])
@@ -232,6 +374,22 @@ describe('given a started server', () => {
     })
 
     describe('invite mutation', () => {
+      it('fails on unauthenticated requests', async () => {
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          payload: {
+            query: `mutation { invite(gameId: "1234", playerId: "abcd") { id } }`
+          }
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.listGames).not.toHaveBeenCalled()
+        expect(await response.json()).toMatchObject({
+          data: { invite: null },
+          errors: [{ message: 'Unauthorized' }]
+        })
+      })
+
       it('invites another player to an existing game and resolves player objects', async () => {
         const playerId = players[0].id
         const peerId = players[1].id
@@ -292,6 +450,22 @@ describe('given a started server', () => {
     })
 
     describe('deleteGame mutation', () => {
+      it('fails on unauthenticated requests', async () => {
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          payload: {
+            query: `mutation { deleteGame(gameId: "${faker.datatype.uuid()}") { id } }`
+          }
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.listGames).not.toHaveBeenCalled()
+        expect(await response.json()).toMatchObject({
+          data: { deleteGame: null },
+          errors: [{ message: 'Unauthorized' }]
+        })
+      })
+
       it('deletes an existing game and resolves player objects', async () => {
         const playerId = players[0].id
         const game = {
@@ -344,127 +518,70 @@ describe('given a started server', () => {
       })
     })
 
-    describe('listGames subscription', () => {
-      afterEach(() => stopSubscription(ws))
+    describe('receiveGameListUpdates subscription', () => {
+      const playerId = players[0].id
+      const game = {
+        id: faker.datatype.uuid(),
+        created: Date.now(),
+        playerIds: [playerId]
+      }
 
-      it('lists player games on subscription', async () => {
-        const playerId = players[0].id
-        const games = [
-          {
-            id: faker.datatype.uuid(),
-            created: faker.date.past().getTime(),
-            playerIds: [playerId]
-          },
-          {
-            id: faker.datatype.uuid(),
-            created: faker.date.past().getTime(),
-            playerIds: [playerId, players[1].id]
-          },
-          {
-            id: faker.datatype.uuid(),
-            created: faker.date.past().getTime(),
-            playerIds: [playerId, players[2].id]
-          }
-        ]
+      beforeEach(() => {
         services.getPlayerById.mockImplementation(async ids =>
           Array.isArray(ids)
             ? players.filter(({ id }) => ids.includes(id))
             : players.find(({ id }) => id === ids)
         )
-        services.listGames.mockResolvedValueOnce(games)
-        const start = startSubscription(
-          ws,
-          'subscription { listGames { id created players { id username } } }',
-          signToken(playerId, configuration.auth.jwt.key)
-        )
-        const data = waitOnMessage(ws, data => data.type === 'data')
-        await start
-        expect(await data).toEqual(
-          expect.objectContaining({
-            payload: {
-              data: {
-                listGames: [
-                  { ...games[0], playerIds: undefined, players: [players[0]] },
-                  {
-                    ...games[1],
-                    playerIds: undefined,
-                    players: [players[0], players[1]]
-                  },
-                  {
-                    ...games[2],
-                    playerIds: undefined,
-                    players: [players[0], players[2]]
-                  }
-                ]
-              }
-            }
-          })
-        )
-        expect(services.listGames).toHaveBeenCalledWith(playerId)
-        expect(services.listGames).toHaveBeenCalledTimes(1)
-        expect(services.getPlayerById).toHaveBeenCalledWith(playerId)
-        expect(services.getPlayerById).toHaveBeenNthCalledWith(
-          2,
-          games[0].playerIds
-        )
-        expect(services.getPlayerById).toHaveBeenNthCalledWith(
-          3,
-          games[1].playerIds
-        )
-        expect(services.getPlayerById).toHaveBeenNthCalledWith(
-          4,
-          games[2].playerIds
-        )
-        expect(services.getPlayerById).toHaveBeenCalledTimes(4)
       })
 
-      it('ignores game list updates for other players', async () => {
-        const playerId = players[0].id
-        const game = {
-          id: faker.datatype.uuid(),
-          created: Date.now(),
-          playerIds: [playerId]
-        }
-        services.getPlayerById
-          .mockResolvedValueOnce(players[0])
-          .mockResolvedValueOnce([players[0]])
-        services.listGames.mockResolvedValueOnce([])
-        const start = startSubscription(
+      afterEach(() => stopSubscription(ws))
+
+      it('senfs update for current player', async () => {
+        await startSubscription(
           ws,
-          'subscription { listGames { id created players { id username } } }',
+          'subscription { receiveGameListUpdates { id created players { id username } } }',
           signToken(playerId, configuration.auth.jwt.key)
         )
         const data = waitOnMessage(ws, data => data.type === 'data')
-        await start
-        expect(await data).toEqual(
-          expect.objectContaining({ payload: { data: { listGames: [] } } })
-        )
-
-        const nextData = waitOnMessage(ws, data => data.type === 'data')
-        services.gameListsUpdate.next({ playerId: players[1].id, games: [] })
-
         services.gameListsUpdate.next({ playerId, games: [game] })
 
-        expect(await nextData).toEqual(
+        expect(await data).toEqual(
           expect.objectContaining({
             payload: {
               data: {
-                listGames: [
+                receiveGameListUpdates: [
                   { ...game, playerIds: undefined, players: [players[0]] }
                 ]
               }
             }
           })
         )
-
         expect(services.getPlayerById).toHaveBeenNthCalledWith(1, playerId)
         expect(services.getPlayerById).toHaveBeenNthCalledWith(
           2,
           game.playerIds
         )
         expect(services.getPlayerById).toHaveBeenCalledTimes(2)
-        expect(services.listGames).toHaveBeenCalledWith(playerId)
-        expect(services.listGames).toHaveBeenCalledTimes(1)
+      })
+
+      it('ignores game list updates for other players', async () => {
+        await startSubscription(
+          ws,
+          'subscription { receiveGameListUpdates { id created players { id username } } }',
+          signToken(playerId, configuration.auth.jwt.key)
+        )
+        const data = waitOnMessage(ws, data => data.type === 'data')
+        services.gameListsUpdate.next({ playerId: players[1].id, games: [] })
+        await expect(
+          Promise.race([
+            data,
+            new Promise((resolve, reject) =>
+              setTimeout(reject, 500, new Error('timeout'))
+            )
+          ])
+        ).rejects.toThrow('timeout')
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(1, playerId)
+        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
       })
     })
 
@@ -525,7 +642,6 @@ describe('given a started server', () => {
             }
           })
         )
-        expect(services.listGames).not.toHaveBeenCalled()
         expect(services.getPlayerById).toHaveBeenCalledWith(playerId)
         expect(services.getPlayerById).toHaveBeenNthCalledWith(2, [playerId])
         expect(services.getPlayerById).toHaveBeenCalledTimes(2)
@@ -556,7 +672,6 @@ describe('given a started server', () => {
             )
           ])
         ).rejects.toThrow('timeout')
-        expect(services.listGames).not.toHaveBeenCalled()
         expect(services.getPlayerById).toHaveBeenCalledWith(playerId)
         expect(services.getPlayerById).toHaveBeenCalledTimes(1)
       })

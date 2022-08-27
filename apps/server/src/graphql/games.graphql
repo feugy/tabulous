@@ -320,6 +320,7 @@ input HandInput {
 }
 
 extend type Query {
+  listGames: [Game]
   loadGame(gameId: ID!): Game
 }
 
@@ -331,6 +332,6 @@ extend type Mutation {
 }
 
 extend type Subscription {
-  listGames: [Game]
+  receiveGameListUpdates: [Game]
   receiveGameUpdates(gameId: ID!): Game
 }
