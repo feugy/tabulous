@@ -1,29 +1,21 @@
 <script>
   import { goto } from '$app/navigation'
   import { _, locale } from 'svelte-intl'
-  import {
-    CatalogItem,
-    ConfirmDialogue,
-    GameLink,
-    Progress
-  } from '../../components'
+  import { readable } from 'svelte/store'
+  import { CatalogItem, ConfirmDialogue, GameLink } from '../../components'
   import { Header } from '../../connected-components'
-  import { deleteGame, listCatalog, listGames, playerGames } from '../../stores'
+  import { deleteGame, receiveGameListUpdates } from '../../stores'
 
   /** @type {import('./$types').PageData} */
   export let data = {}
 
   let gameToDelete = null
-  let catalog = null
   let user = null
+  let currentGames$ = readable(data.currentGames || [])
 
-  $: if (data.session?.player) {
+  if (data.session?.player) {
     user = data.session.player
-    listGames()
-    fetchCatalog()
-  } else {
-    user = null
-    fetchCatalog()
+    currentGames$ = receiveGameListUpdates(data.currentGames)
   }
 
   async function handleNewGame({ detail: { name } }) {
@@ -39,10 +31,6 @@
       await deleteGame(gameToDelete.id)
     }
     gameToDelete = null
-  }
-
-  async function fetchCatalog() {
-    catalog = await listCatalog()
   }
 </script>
 
@@ -61,7 +49,7 @@
     {#if user}
       <h2>{$_('titles.your-games')}</h2>
       <section aria-roledescription="games">
-        {#each $playerGames.sort((a, b) => b.created - a.created) as game (game.id)}
+        {#each $currentGames$.sort((a, b) => b.created - a.created) as game (game.id)}
           <GameLink {game} playerId={user.id} on:delete={handleDeleteGame} />
         {:else}
           <span class="no-games">{$_('labels.no-games-yet')}</span>
@@ -71,13 +59,9 @@
 
     <h2>{$_('titles.catalog')}</h2>
     <section aria-roledescription="catalog">
-      {#if !catalog}
-        <Progress />
-      {:else}
-        {#each catalog as game}
-          <CatalogItem {game} on:click={handleNewGame} />
-        {/each}
-      {/if}
+      {#each data.catalog as game}
+        <CatalogItem {game} on:click={handleNewGame} />
+      {/each}
     </section>
   </div>
 </main>

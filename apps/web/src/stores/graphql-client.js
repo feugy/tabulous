@@ -6,7 +6,7 @@ import {
 import { createClient as createWSClient } from 'graphql-ws'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
-import { pipe, subscribe } from 'wonka'
+import { filter, pipe, subscribe } from 'wonka'
 import { makeLogger } from '../utils'
 
 const logger = makeLogger('graphql')
@@ -29,6 +29,7 @@ export function initGraphQlClient({
 }) {
   const exchanges = [...defaultExchanges]
   const headers = {}
+  let hasSubscriptionExchange = false
   if (bearer) {
     headers.authorization = bearer
     if (subscriptionSupport) {
@@ -36,6 +37,7 @@ export function initGraphQlClient({
         url: graphQlUrl.replace('http', 'ws'),
         connectionParams: { bearer }
       })
+      hasSubscriptionExchange = true
       exchanges.push(
         subscriptionExchange({
           forwardSubscription: operation => ({
@@ -47,7 +49,15 @@ export function initGraphQlClient({
       )
     }
   }
-
+  if (!hasSubscriptionExchange) {
+    // dummy exchange to avoid warnings
+    exchanges.push(
+      ref => ops$ =>
+        ref.forward(
+          filter(operation => operation?.kind !== 'subscription')(ops$)
+        )
+    )
+  }
   logger.info({ bearer }, 'initialize GraphQL client')
   client = createClient({
     url: graphQlUrl,

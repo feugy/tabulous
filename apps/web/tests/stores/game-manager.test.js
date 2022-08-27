@@ -1,6 +1,7 @@
 import { Observable } from '@babylonjs/core/Misc/observable'
 import { faker } from '@faker-js/faker'
 import { Subject } from 'rxjs'
+import { get } from 'svelte/store'
 import * as graphQL from '../../src/graphql'
 import { loadThread, serializeThread } from '../../src/stores/discussion'
 import {
@@ -15,7 +16,9 @@ import {
   deleteGame,
   gamePlayerById,
   invite,
-  loadGame
+  listGames,
+  loadGame,
+  receiveGameListUpdates
 } from '../../src/stores/game-manager'
 import {
   runQuery,
@@ -834,5 +837,47 @@ describe('deleteGame()', () => {
     expect(await deleteGame(gameId)).toBeUndefined()
     expect(runMutation).toHaveBeenCalledWith(graphQL.deleteGame, { gameId })
     expect(runMutation).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('listGames()', () => {
+  it('list all games', async () => {
+    const games = [
+      { id: faker.datatype.uuid(), created: faker.date.past().getTime() },
+      { id: faker.datatype.uuid(), created: faker.date.past().getTime() },
+      { id: faker.datatype.uuid(), created: faker.date.past().getTime() }
+    ]
+    runQuery.mockResolvedValueOnce(games)
+    expect(await listGames()).toEqual(games)
+    expect(runQuery).toHaveBeenCalledWith(graphQL.listGames)
+    expect(runQuery).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('receiveGameListUpdates()', () => {
+  const games = [
+    { id: faker.datatype.uuid(), created: faker.date.past().getTime() },
+    { id: faker.datatype.uuid(), created: faker.date.past().getTime() },
+    { id: faker.datatype.uuid(), created: faker.date.past().getTime() }
+  ]
+
+  it('initializes observable with provided list', () => {
+    runSubscription.mockReturnValue(new Subject())
+    const gameList$ = receiveGameListUpdates(games.slice(0, 1))
+    expect(get(gameList$)).toEqual(games.slice(0, 1))
+  })
+
+  it('updates observable with received list', () => {
+    const updatesReceived = jest.fn()
+    const sendUpdate = new Subject()
+    runSubscription.mockReturnValue(sendUpdate)
+    const gameList$ = receiveGameListUpdates()
+    gameList$.subscribe(updatesReceived)
+    expect(updatesReceived).toHaveBeenCalledWith([])
+    expect(updatesReceived).toHaveBeenCalledTimes(1)
+
+    sendUpdate.next(games)
+    expect(updatesReceived).toHaveBeenNthCalledWith(2, games)
+    expect(updatesReceived).toHaveBeenCalledTimes(2)
   })
 })

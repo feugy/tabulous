@@ -11,8 +11,7 @@ const logger = makeLogger('players')
 
 /**
  * List all catalog items.
- * @async
- * @returns {CatalogItem[]} a list of catalog items.
+ * @returns {Promise<CatalogItem[]>} a list of catalog items.
  */
 export async function listCatalog() {
   logger.info('list catalog')

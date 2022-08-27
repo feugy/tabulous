@@ -6,6 +6,7 @@ import {
   invite,
   listGames,
   loadGame,
+  receiveGameListUpdates,
   receiveGameUpdates,
   saveGame
 } from './games.graphql'
@@ -24,6 +25,7 @@ export {
   listGames,
   loadGame,
   logIn,
+  receiveGameListUpdates,
   receiveGameUpdates,
   saveGame,
   searchPlayers,

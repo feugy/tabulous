@@ -27,6 +27,18 @@ export default {
 
   Query: {
     /**
+     * Returns the list of current games.
+     * Requires valid authentication.
+     * @param {object} obj - graphQL object.
+     * @param {object} args - subscription arguments.
+     * @param {object} context - graphQL context.
+     * @returns {import('../services/games').Game[]} list of current games.
+     */
+    listGames: isAuthenticated(async (obj, args, { player }) =>
+      services.listGames(player.id)
+    ),
+
+    /**
      * Returns details for a current player's game.
      * Requires valid authentication.
      * @async
@@ -102,29 +114,26 @@ export default {
 
   Subscription: {
     /**
-     * Sends the full list of games to a given player when they change.
-     * The list is immediately sent on subscription.
+     * Sends the full list of current games to a given player when they change.
      * Requires valid authentication.
      * @param {object} obj - graphQL object.
      * @param {object} args - subscription arguments.
      * @param {object} context - graphQL context.
      */
-    listGames: {
+    receiveGameListUpdates: {
       subscribe: isAuthenticated(async (obj, args, { player, pubsub }) => {
         const topic = `listGames-${player.id}`
         const subscription = services.gameListsUpdate
           .pipe(filter(({ playerId }) => playerId === player.id))
           .subscribe(({ games }) =>
-            pubsub.publish({ topic, payload: { listGames: games } })
+            pubsub.publish({
+              topic,
+              payload: { receiveGameListUpdates: games }
+            })
           )
 
         const queue = await pubsub.subscribe(topic)
         queue.once('close', () => subscription.unsubscribe())
-        services
-          .listGames(player.id)
-          .then(games =>
-            pubsub.publish({ topic, payload: { listGames: games } })
-          )
         return queue
       })
     },

@@ -197,7 +197,6 @@ exports[`/home route displays anonymous catalog 1`] = `
               </caption>
             </div>
           </article>
-          
         </section>
       </div>
     </main>
@@ -243,11 +242,41 @@ exports[`/home route displays connected catalog 1`] = `
         <section
           aria-roledescription="games"
         >
-          <span
-            class="no-games"
-          >
-            Rien pour l'instant ! Choisissez un jeu disponible.
-          </span>
+          
+          <article>
+            <span
+              class="title"
+            >
+              <h3>
+                Jeu de 32 cartes
+              </h3>
+               
+              <button
+                class="secondary"
+              >
+                <span
+                  class="material-icons"
+                >
+                  delete
+                </span>
+                
+                
+                
+              </button>
+            </span>
+             
+            <span
+              class="created"
+            >
+              15 juil., 10:15
+            </span>
+             
+            <span
+              class="players"
+            >
+              avec 
+            </span>
+          </article>
         </section>
          
         <h2>
@@ -495,7 +524,6 @@ exports[`/home route displays connected catalog 1`] = `
               </caption>
             </div>
           </article>
-          
         </section>
       </div>
     </main>
