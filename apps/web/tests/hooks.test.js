@@ -14,9 +14,7 @@ describe('Sveltekit handle() hook', () => {
     const response = await handle(buildHandleInput())
     expect(response.status).toBe(200)
     expect(response.headers.get('set-cookie')).toBe(
-      `token=; Path=/; Expires=${new Date(
-        1
-      ).toUTCString()}; HttpOnly; Secure; SameSite=Strict`
+      `token=; Path=/; Expires=${new Date(1).toUTCString()}; HttpOnly; Secure`
     )
   })
 
@@ -31,7 +29,7 @@ describe('Sveltekit handle() hook', () => {
     expect(response.status).toBe(303)
     expect(response.headers.get('location')).toBe(pathname)
     expect(response.headers.get('set-cookie')).toBe(
-      `token=${token}; Path=/; HttpOnly; Secure; SameSite=Strict`
+      `token=${token}; Path=/; HttpOnly; Secure`
     )
   })
 
@@ -49,7 +47,7 @@ describe('Sveltekit handle() hook', () => {
     expect(response.status).toBe(303)
     expect(response.headers.get('location')).toBe(desired)
     expect(response.headers.get('set-cookie')).toBe(
-      `token=${token}; Path=/; HttpOnly; Secure; SameSite=Strict`
+      `token=${token}; Path=/; HttpOnly; Secure`
     )
   })
 
@@ -62,15 +60,12 @@ describe('Sveltekit handle() hook', () => {
     mocks.handleGraphQl.mockReturnValue(session)
 
     const request = new Request()
-    request.headers.set(
-      'cookie',
-      `token=${token}; Path=/; HttpOnly; Secure; SameSite=Strict`
-    )
+    request.headers.set('cookie', `token=${token}; Path=/; HttpOnly; Secure`)
     const input = buildHandleInput({ request })
     const response = await handle(input)
     expect(response.status).toBe(200)
     expect(response.headers.get('set-cookie')).toBe(
-      `token=${token}; Path=/; HttpOnly; Secure; SameSite=Strict`
+      `token=${token}; Path=/; HttpOnly; Secure`
     )
     expect(input.event.locals.bearer).toBe(`Bearer ${token}`)
     expect(input.event.locals.session).toEqual(session)
@@ -78,12 +73,10 @@ describe('Sveltekit handle() hook', () => {
 
   it('unsets cookie and redirects on logout', async () => {
     const response = await handle(buildHandleInput({ url: '/logout' }))
-    expect(response.status).toBe(308)
+    expect(response.status).toBe(307)
     expect(response.headers.get('location')).toBe('/home')
     expect(response.headers.get('set-cookie')).toBe(
-      `token=; Path=/; Expires=${new Date(
-        1
-      ).toUTCString()}; HttpOnly; Secure; SameSite=Strict`
+      `token=; Path=/; Expires=${new Date(1).toUTCString()}; HttpOnly; Secure`
     )
   })
 })
