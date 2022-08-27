@@ -4,8 +4,8 @@
   import Input from './Input.svelte'
   import Pane from './Pane.svelte'
   import { authUrl } from '../utils'
-  import GithubLogo from '../../public/images/github-logo.svg'
-  import GoogleLogo from '../../public/images/google-logo.svg'
+  import GithubLogo from '../svg/github-logo.svg'
+  import GoogleLogo from '../svg/google-logo.svg'
 
   export let username = ''
   export let password = ''
