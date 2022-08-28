@@ -46,7 +46,7 @@ exports[`/home route displays anonymous catalog 1`] = `
             <div
               class="content"
             >
-              <caption>
+              <legend>
                 <div
                   class="title"
                 >
@@ -116,7 +116,7 @@ exports[`/home route displays anonymous catalog 1`] = `
                     null+
                   </span>
                 </span>
-              </caption>
+              </legend>
             </div>
           </article>
           <article>
@@ -128,7 +128,7 @@ exports[`/home route displays anonymous catalog 1`] = `
             <div
               class="content"
             >
-              <caption>
+              <legend>
                 <div
                   class="title"
                 >
@@ -194,7 +194,7 @@ exports[`/home route displays anonymous catalog 1`] = `
                     7+
                   </span>
                 </span>
-              </caption>
+              </legend>
             </div>
           </article>
         </section>
@@ -295,7 +295,7 @@ exports[`/home route displays connected catalog 1`] = `
             <div
               class="content"
             >
-              <caption>
+              <legend>
                 <div
                   class="title"
                 >
@@ -365,7 +365,7 @@ exports[`/home route displays connected catalog 1`] = `
                     null+
                   </span>
                 </span>
-              </caption>
+              </legend>
             </div>
           </article>
           <article>
@@ -377,7 +377,7 @@ exports[`/home route displays connected catalog 1`] = `
             <div
               class="content"
             >
-              <caption>
+              <legend>
                 <div
                   class="title"
                 >
@@ -443,7 +443,7 @@ exports[`/home route displays connected catalog 1`] = `
                     7+
                   </span>
                 </span>
-              </caption>
+              </legend>
             </div>
           </article>
           <article>
@@ -455,7 +455,7 @@ exports[`/home route displays connected catalog 1`] = `
             <div
               class="content"
             >
-              <caption>
+              <legend>
                 <div
                   class="title"
                 >
@@ -521,7 +521,7 @@ exports[`/home route displays connected catalog 1`] = `
                     10+
                   </span>
                 </span>
-              </caption>
+              </legend>
             </div>
           </article>
         </section>
