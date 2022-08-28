@@ -45,7 +45,7 @@ const listCatalogQuery = gql`
 /**
  * Triggers catalog command
  * @param {string[]} argv - array of parsed arguments (without executable and current file).
- * @returns {Promise<CatalogResult|string>} this user catalog of accessible games.
+ * @returns {Promise<CatalogResult|string>} this user catalog of accessible games (or help message).
  */
 export default async function catalogCommand(argv) {
   const args = parseArgv(argv, {
@@ -66,7 +66,7 @@ export default async function catalogCommand(argv) {
 
 /**
  * List all available games of a given user.
- * @param {CatalogArgs} args - username
+ * @param {CatalogArgs} args - catalog arguments.
  * @returns {Promise<CatalogResult>} this user catalog of accessible games.
  */
 export async function catalog({ username }) {
@@ -112,7 +112,7 @@ function help() {
   Lists accessible games
   {dim Options:}
     --username/-u             Username for which catalog is fetched
-    --production/-p           Loads configuration from .env.local
+    --production/-p           Loads configuration from .env.prod
     --help/-h                 Display help for this command
 `
 }

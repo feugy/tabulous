@@ -48,7 +48,7 @@ describe('User grant command', () => {
     [game-name]               Name of the granted game
   Options:
     --username/-u             Username for which catalog is fetched
-    --production/-p           Loads configuration from .env.local
+    --production/-p           Loads configuration from .env.prod
     --help/-h                 Display help for this command
 `)
     expect(mockQuery).not.toHaveBeenCalled()

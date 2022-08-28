@@ -83,7 +83,7 @@ function help() {
     [game-name]               Name of the granted game
   {dim Options:}
     --username/-u             Username for which catalog is fetched
-    --production/-p           Loads configuration from .env.local
+    --production/-p           Loads configuration from .env.prod
     --help/-h                 Display help for this command
 `
 }

@@ -1,3 +1,4 @@
+export { default as addPlayer } from './add-player.js'
 export { default as catalog } from './catalog.js'
 export { default as grant } from './grant.js'
 export { help } from './help.js'
