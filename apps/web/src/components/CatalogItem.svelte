@@ -29,7 +29,7 @@
 <article on:click={() => dispatch('click', game)}>
   <img src="{gameAssetsUrl}/{game.name}/catalog/cover.webp" alt={title} />
   <div class="content">
-    <caption>
+    <legend>
       <div class="title">
         <h3>{title}</h3>
         <details class:hidden={!game.copyright} on:click={cancelEvent}>
@@ -67,7 +67,7 @@
           )}</span
         >
       </span>
-    </caption>
+    </legend>
   </div>
 </article>
 
@@ -92,7 +92,7 @@
     grid-area: full;
   }
 
-  caption {
+  legend {
     @apply flex flex-nowrap w-full gap-4 p-4 
            opacity-80 bg-$primary text-$primary-lightest;
   }

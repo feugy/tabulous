@@ -13,7 +13,7 @@ exports[`Toolshot components/CatalogItem.tools.svelte: No age nor time 1`] = `
     <div
       class="content"
     >
-      <caption>
+      <legend>
         <div
           class="title"
         >
@@ -83,7 +83,7 @@ exports[`Toolshot components/CatalogItem.tools.svelte: No age nor time 1`] = `
             undefined+
           </span>
         </span>
-      </caption>
+      </legend>
     </div>
   </article>
 </span>
@@ -102,7 +102,7 @@ exports[`Toolshot components/CatalogItem.tools.svelte: With characteristics 1`] 
     <div
       class="content"
     >
-      <caption>
+      <legend>
         <div
           class="title"
         >
@@ -166,7 +166,7 @@ exports[`Toolshot components/CatalogItem.tools.svelte: With characteristics 1`] 
             10+
           </span>
         </span>
-      </caption>
+      </legend>
     </div>
   </article>
 </span>
@@ -185,7 +185,7 @@ exports[`Toolshot components/CatalogItem.tools.svelte: With characteristics and 
     <div
       class="content"
     >
-      <caption>
+      <legend>
         <div
           class="title"
         >
@@ -247,7 +247,7 @@ exports[`Toolshot components/CatalogItem.tools.svelte: With characteristics and 
             10+
           </span>
         </span>
-      </caption>
+      </legend>
     </div>
   </article>
 </span>
