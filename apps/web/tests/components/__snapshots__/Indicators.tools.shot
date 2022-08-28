@@ -19,10 +19,13 @@ exports[`Toolshot components/Indicators.tools.svelte: All kinds 1`] = `
   
   
   <figure
-    style="--color:#979797; --top:-125px; --left:-150px"
+    class="positioned"
+    style="--dimension: 60px; --color: null; --top: -125px; --left: -150px; --border-width: 3px"
   >
     <img
-      alt="Pointer of player Gaspard"
+      alt="avatar for Gaspard"
+      height="60"
+      width="60"
     />
      
     <figcaption>
@@ -132,10 +135,13 @@ exports[`Toolshot components/Indicators.tools.svelte: Peer pointer 1`] = `
 <span>
   
   <figure
-    style="--color:#979797; --top:-125px; --left:-150px"
+    class="positioned"
+    style="--dimension: 60px; --color: null; --top: -125px; --left: -150px; --border-width: 3px"
   >
     <img
-      alt="Pointer of player Gaspard"
+      alt="avatar for Gaspard"
+      height="60"
+      width="60"
     />
      
     <figcaption>

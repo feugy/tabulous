@@ -91,11 +91,11 @@ exports[`/login route displays all options 1`] = `
               >
                 <fieldset>
                   <legend>
-                    Pseudo
+                    Identifiant
                   </legend>
                    
                   <input
-                    name="username"
+                    name="id"
                   />
                 </fieldset>
               </div>
@@ -246,11 +246,11 @@ exports[`/login route expands login panel and show all options 1`] = `
               >
                 <fieldset>
                   <legend>
-                    Pseudo
+                    Identifiant
                   </legend>
                    
                   <input
-                    name="username"
+                    name="id"
                   />
                 </fieldset>
               </div>

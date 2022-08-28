@@ -54,8 +54,14 @@ export class HomePage {
     /**
      * @type {import('@playwright/test').Locator}
      */
-    this.logoutButton = page.locator('header >> role=button', {
-      hasText: 'directions_run'
+    this.accountDropdown = page.locator('header >> role=button', {
+      has: page.locator('figure')
+    })
+    /**
+     * @type {import('@playwright/test').Locator}
+     */
+    this.logOutMenuItem = page.locator('role=menuitem', {
+      hasText: translate('actions.log-out')
     })
     /**
      * @type {import('@playwright/test').Locator}
@@ -92,7 +98,7 @@ export class HomePage {
     await expect(this.heading).toContainText(translate('titles.welcome'))
     await expect(this.gamesHeading).toBeHidden()
     await expect(this.loginButton).toBeVisible()
-    await expect(this.logoutButton).toBeHidden()
+    await expect(this.accountDropdown).toBeHidden()
   }
 
   /**
@@ -106,7 +112,7 @@ export class HomePage {
     )
     await expect(this.gamesHeading).toBeVisible()
     await expect(this.loginButton).toBeHidden()
-    await expect(this.logoutButton).toBeVisible()
+    await expect(this.accountDropdown).toBeVisible()
   }
 
   /**
@@ -123,7 +129,8 @@ export class HomePage {
    * Logs the user out by clicking on the header button
    */
   async logOut() {
-    await this.logoutButton.click()
+    await this.accountDropdown.click()
+    await this.logOutMenuItem.click()
     await this.page.waitForLoadState()
     await expect(this.page).toHaveURL('/home')
     await this.isAnonymous()

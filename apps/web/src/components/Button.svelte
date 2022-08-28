@@ -3,12 +3,14 @@
   export let icon = null
   export let badge = null
   export let secondary = false
+  export let transparent = false
   export let ref = null
 </script>
 
 <button
   {...$$restProps}
   class:secondary
+  class:transparent
   bind:this={ref}
   on:click
   on:pointerup
@@ -43,12 +45,18 @@
   button.secondary {
     @apply bg-$secondary text-$secondary-lightest;
 
-    &:focus {
-      @apply bg-$secondary-light;
-    }
-
+    &:focus,
     &:hover:not(:disabled) {
       @apply bg-$secondary-light;
+    }
+  }
+
+  button.transparent {
+    @apply bg-transparent text-$secondary-darkest;
+
+    &:focus,
+    &:hover:not(:disabled) {
+      @apply bg-transparent;
     }
   }
 

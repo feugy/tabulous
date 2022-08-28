@@ -5,15 +5,12 @@
 
 <ToolBox component={LogInForm} name="Components/Log-in Form" layout="padded">
   <Tool name="Default state" />
-  <Tool
-    name="with password values"
-    props={{ username: 'John', password: 'abcd' }}
-  />
+  <Tool name="with password values" props={{ id: 'John', password: 'abcd' }} />
   <Tool
     name="With password error"
     props={{
       withGoogle: true,
-      username: 'John',
+      id: 'John',
       password: 'abcd',
       error: 'Authentication failed!'
     }}

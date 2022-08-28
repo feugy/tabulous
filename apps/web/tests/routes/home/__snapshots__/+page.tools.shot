@@ -6,6 +6,19 @@ exports[`Toolshot routes/home/+page.tools.svelte: Anonymous 1`] = `
   <main>
     <header>
       <nav>
+        <span>
+          <ol>
+            <li>
+              <a>
+                Accueil
+              </a>
+            </li>
+             
+            
+          </ol>
+          
+        </span>
+         
         <button
           class="secondary"
         >
@@ -45,7 +58,7 @@ exports[`Toolshot routes/home/+page.tools.svelte: Anonymous 1`] = `
           <div
             class="content"
           >
-            <caption>
+            <legend>
               <div
                 class="title"
               >
@@ -113,7 +126,7 @@ exports[`Toolshot routes/home/+page.tools.svelte: Anonymous 1`] = `
                   undefined+
                 </span>
               </span>
-            </caption>
+            </legend>
           </div>
         </article>
         <article>
@@ -125,7 +138,7 @@ exports[`Toolshot routes/home/+page.tools.svelte: Anonymous 1`] = `
           <div
             class="content"
           >
-            <caption>
+            <legend>
               <div
                 class="title"
               >
@@ -189,7 +202,7 @@ exports[`Toolshot routes/home/+page.tools.svelte: Anonymous 1`] = `
                   6+
                 </span>
               </span>
-            </caption>
+            </legend>
           </div>
         </article>
         <article>
@@ -201,7 +214,7 @@ exports[`Toolshot routes/home/+page.tools.svelte: Anonymous 1`] = `
           <div
             class="content"
           >
-            <caption>
+            <legend>
               <div
                 class="title"
               >
@@ -265,7 +278,7 @@ exports[`Toolshot routes/home/+page.tools.svelte: Anonymous 1`] = `
                   7+
                 </span>
               </span>
-            </caption>
+            </legend>
           </div>
         </article>
       </section>
@@ -282,18 +295,49 @@ exports[`Toolshot routes/home/+page.tools.svelte: Authenticated 1`] = `
   <main>
     <header>
       <nav>
-        <button
-          class="secondary"
+        <span>
+          <ol>
+            <li>
+              <a>
+                Accueil
+              </a>
+            </li>
+             
+            
+          </ol>
+          
+        </span>
+         
+        <span
+          aria-expanded="false"
+          aria-haspopup="menu"
+          class="wrapper"
         >
-          <span
-            class="material-icons"
+          <button
+            class="transparent"
           >
-            directions_run
-          </span>
+            
+            
+            
+            <figure
+              style="--dimension: 30px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 0px"
+            >
+              <img
+                alt="avatar for Jane Doe"
+                height="30"
+                width="30"
+              />
+               
+              <figcaption>
+                JD
+              </figcaption>
+            </figure>
+             
+            
+          </button>
+           
           
-          
-          
-        </button>
+        </span>
       </nav>
        
       <div>
@@ -382,7 +426,7 @@ exports[`Toolshot routes/home/+page.tools.svelte: Authenticated 1`] = `
           <div
             class="content"
           >
-            <caption>
+            <legend>
               <div
                 class="title"
               >
@@ -444,7 +488,7 @@ exports[`Toolshot routes/home/+page.tools.svelte: Authenticated 1`] = `
                   13+
                 </span>
               </span>
-            </caption>
+            </legend>
           </div>
         </article>
         <article>
@@ -456,7 +500,7 @@ exports[`Toolshot routes/home/+page.tools.svelte: Authenticated 1`] = `
           <div
             class="content"
           >
-            <caption>
+            <legend>
               <div
                 class="title"
               >
@@ -518,7 +562,7 @@ exports[`Toolshot routes/home/+page.tools.svelte: Authenticated 1`] = `
                   10+
                 </span>
               </span>
-            </caption>
+            </legend>
           </div>
         </article>
         <article>
@@ -530,7 +574,7 @@ exports[`Toolshot routes/home/+page.tools.svelte: Authenticated 1`] = `
           <div
             class="content"
           >
-            <caption>
+            <legend>
               <div
                 class="title"
               >
@@ -598,7 +642,7 @@ exports[`Toolshot routes/home/+page.tools.svelte: Authenticated 1`] = `
                   undefined+
                 </span>
               </span>
-            </caption>
+            </legend>
           </div>
         </article>
         <article>
@@ -610,7 +654,7 @@ exports[`Toolshot routes/home/+page.tools.svelte: Authenticated 1`] = `
           <div
             class="content"
           >
-            <caption>
+            <legend>
               <div
                 class="title"
               >
@@ -674,7 +718,7 @@ exports[`Toolshot routes/home/+page.tools.svelte: Authenticated 1`] = `
                   6+
                 </span>
               </span>
-            </caption>
+            </legend>
           </div>
         </article>
         <article>
@@ -686,7 +730,7 @@ exports[`Toolshot routes/home/+page.tools.svelte: Authenticated 1`] = `
           <div
             class="content"
           >
-            <caption>
+            <legend>
               <div
                 class="title"
               >
@@ -750,7 +794,7 @@ exports[`Toolshot routes/home/+page.tools.svelte: Authenticated 1`] = `
                   7+
                 </span>
               </span>
-            </caption>
+            </legend>
           </div>
         </article>
       </section>

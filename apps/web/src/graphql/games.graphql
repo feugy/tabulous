@@ -1,6 +1,7 @@
 fragment lightPlayer on Player {
   id
   username
+  avatar
   playing
 }
 

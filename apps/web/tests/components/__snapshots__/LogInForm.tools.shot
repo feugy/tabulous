@@ -39,11 +39,11 @@ exports[`Toolshot components/LogInForm.tools.svelte: Default state 1`] = `
           >
             <fieldset>
               <legend>
-                Pseudo
+                Identifiant
               </legend>
                
               <input
-                name="username"
+                name="id"
               />
             </fieldset>
           </div>
@@ -161,11 +161,11 @@ exports[`Toolshot components/LogInForm.tools.svelte: With Github provider 1`] = 
           >
             <fieldset>
               <legend>
-                Pseudo
+                Identifiant
               </legend>
                
               <input
-                name="username"
+                name="id"
               />
             </fieldset>
           </div>
@@ -283,11 +283,11 @@ exports[`Toolshot components/LogInForm.tools.svelte: With Google provider 1`] = 
           >
             <fieldset>
               <legend>
-                Pseudo
+                Identifiant
               </legend>
                
               <input
-                name="username"
+                name="id"
               />
             </fieldset>
           </div>
@@ -431,11 +431,11 @@ exports[`Toolshot components/LogInForm.tools.svelte: With all providers 1`] = `
           >
             <fieldset>
               <legend>
-                Pseudo
+                Identifiant
               </legend>
                
               <input
-                name="username"
+                name="id"
               />
             </fieldset>
           </div>
@@ -531,11 +531,11 @@ exports[`Toolshot components/LogInForm.tools.svelte: With password error 1`] = `
               <legend
                 class="has-value"
               >
-                Pseudo
+                Identifiant
               </legend>
                
               <input
-                name="username"
+                name="id"
               />
             </fieldset>
           </div>
@@ -617,11 +617,11 @@ exports[`Toolshot components/LogInForm.tools.svelte: with password values 1`] = 
               <legend
                 class="has-value"
               >
-                Pseudo
+                Identifiant
               </legend>
                
               <input
-                name="username"
+                name="id"
               />
             </fieldset>
           </div>

@@ -54,4 +54,8 @@
     <Button {...props} on:click={handleEvent} />
     <div>Nouveau(x) message(s).</div>
   </Tool>
+  <Tool
+    name="Transparent with text"
+    props={{ transparent: true, text: 'Hello!' }}
+  />
 </ToolBox>

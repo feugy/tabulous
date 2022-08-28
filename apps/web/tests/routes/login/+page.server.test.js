@@ -12,13 +12,13 @@ jest.mock('../../../src/stores/graphql-client', () => {
 
 describe('POST /login route action', () => {
   it('redirects to home and set session on success', async () => {
-    const username = faker.name.fullName()
+    const id = faker.datatype.number()
     const password = faker.internet.password()
     const session = {
-      player: { id: faker.datatype.number(), username }
+      player: { id, username: faker.name.fullName() }
     }
     const locals = {}
-    const request = buildsRequest({ username, password })
+    const request = buildsRequest({ id, password })
     runMutation.mockResolvedValueOnce(session)
 
     expect(await POST({ request, locals, fetch })).toEqual({
@@ -30,14 +30,14 @@ describe('POST /login route action', () => {
   })
 
   it('redirects to desired page on success', async () => {
-    const username = faker.name.fullName()
+    const id = faker.datatype.number()
     const password = faker.internet.password()
     const session = {
-      player: { id: faker.datatype.number(), username }
+      player: { id, username: faker.name.fullName() }
     }
     const locals = {}
     const redirect = `/${faker.internet.domainName()}`
-    const request = buildsRequest({ username, password, redirect })
+    const request = buildsRequest({ id, password, redirect })
     runMutation.mockResolvedValueOnce(session)
 
     expect(await POST({ request, locals, fetch })).toEqual({
@@ -49,11 +49,11 @@ describe('POST /login route action', () => {
   })
 
   it('denies redirection to other sites', async () => {
-    const username = faker.name.fullName()
+    const id = faker.datatype.number()
     const password = faker.internet.password()
     const locals = {}
     const redirect = faker.internet.url()
-    const request = buildsRequest({ username, password, redirect })
+    const request = buildsRequest({ id, password, redirect })
 
     expect(await POST({ request, locals, fetch })).toEqual({
       errors: { redirect: `'${redirect}' should be an absolute path` }
@@ -62,11 +62,11 @@ describe('POST /login route action', () => {
   })
 
   it('denies redirection to relative url', async () => {
-    const username = faker.name.fullName()
+    const id = faker.datatype.number()
     const password = faker.internet.password()
     const locals = {}
     const redirect = '../home'
-    const request = buildsRequest({ username, password, redirect })
+    const request = buildsRequest({ id, password, redirect })
 
     expect(await POST({ request, locals, fetch })).toEqual({
       errors: { redirect: `'${redirect}' should be an absolute path` }
@@ -75,10 +75,10 @@ describe('POST /login route action', () => {
   })
 
   it('returns forbidden error on invalid credentials', async () => {
-    const username = faker.name.fullName()
+    const id = faker.datatype.number()
     const password = faker.internet.password()
     const locals = {}
-    const request = buildsRequest({ username, password })
+    const request = buildsRequest({ id, password })
     const error = new Error('wrong credentials')
     runMutation.mockRejectedValueOnce(error)
 
@@ -90,9 +90,9 @@ describe('POST /login route action', () => {
   })
 })
 
-function buildsRequest({ username, password, redirect }) {
+function buildsRequest({ id, password, redirect }) {
   const body = new URLSearchParams()
-  body.append('username', username)
+  body.append('id', id)
   body.append('password', password)
   if (redirect) {
     body.append('redirect', redirect)

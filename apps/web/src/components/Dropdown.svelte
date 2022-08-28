@@ -50,6 +50,7 @@
   aria-expanded={open}
 >
   <Button {...$$restProps} {text} on:click={handleClick}>
+    <slot name="icon" />
     {#if withArrow && options.length > 1}
       <i
         class:iconOnly

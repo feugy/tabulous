@@ -6,7 +6,7 @@ import { graphQlUrl } from '../../utils/env'
 export async function POST({ request, locals, fetch }) {
   try {
     const form = await request.formData()
-    const { username, password, redirect } = Object.fromEntries(form.entries())
+    const { id, password, redirect } = Object.fromEntries(form.entries())
     if (
       redirect &&
       (redirect.startsWith('http') || !redirect.startsWith('/'))
@@ -18,7 +18,7 @@ export async function POST({ request, locals, fetch }) {
       }
     }
     initGraphQlClient({ graphQlUrl, fetch, subscriptionSupport: false })
-    locals.session = await logIn(username, password)
+    locals.session = await logIn(id, password)
     return {
       status: 303,
       location: redirect || '/home'

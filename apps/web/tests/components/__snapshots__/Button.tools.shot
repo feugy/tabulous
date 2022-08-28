@@ -159,6 +159,23 @@ exports[`Toolshot components/Button.tools.svelte: Secondary with text and icon 1
 </span>
 `;
 
+exports[`Toolshot components/Button.tools.svelte: Transparent with text 1`] = `
+<span>
+  <button
+    class="transparent"
+  >
+    
+    <span
+      class="text"
+    >
+      Hello!
+    </span>
+    
+    
+  </button>
+</span>
+`;
+
 exports[`Toolshot components/Button.tools.svelte: With badge 1`] = `
 <div>
   Vous avez...

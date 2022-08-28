@@ -1,15 +1,41 @@
 <script>
   import { goto } from '$app/navigation'
-  import { Button } from '../components'
+  import { _ } from 'svelte-intl'
+  import { Button, Breadcrumb, Dropdown, PlayerThumbnail } from '../components'
   import { logOut } from '../stores'
 
   export let user
+  export let breadcrumb
+
+  const menu = [
+    {
+      icon: 'settings',
+      label: $_('actions.go-to-account'),
+      act: () => goto('/account')
+    },
+    { icon: 'directions_run', label: $_('actions.log-out'), act: logOut }
+  ]
+
+  function handleSelectMenuItem({ detail: item }) {
+    item.act()
+  }
 </script>
 
 <header>
   <nav>
+    <span>
+      <Breadcrumb steps={breadcrumb} />
+    </span>
     {#if user}
-      <Button icon="directions_run" secondary on:click={logOut} />
+      <Dropdown
+        transparent
+        valueAsText={false}
+        withArrow={false}
+        on:select={handleSelectMenuItem}
+        options={menu}
+      >
+        <PlayerThumbnail slot="icon" player={user} dimension={30} />
+      </Dropdown>
     {:else}
       <Button icon="login" secondary on:click={() => goto('/login')} />
     {/if}
@@ -28,6 +54,10 @@
     @apply relative lg:w-3/4 lg:mx-auto;
   }
   nav {
-    @apply flex justify-end lg:w-3/4 lg:mx-auto;
+    @apply flex lg:w-3/4 lg:mx-auto items-center;
+
+    > span {
+      @apply flex-1;
+    }
   }
 </style>

@@ -4,6 +4,7 @@ actions:
   cancel: Non
   confirm: Oui
   enter-fullscreen: Plein-écran
+  go-to-account: Paramètres
   hide-indicators: Masquer les indicateurs
   invite: Inviter
   invite-player: Inviter un(e) joueur(se)
@@ -27,6 +28,8 @@ formats:
       minute: 2-digit
       month: short
 labels:
+  account: Paramètres
+  avatar: 'Avatar : '
   confirm-game-deletion: Souhaitez vous vraiment supprimer cette partie de "{title}" ?
   game-authors: 'Créé par : '
   game-designers: 'Illustré par : '
@@ -34,16 +37,24 @@ labels:
   game-min-age: '{minAge}+'
   game-min-time: "{minTime}'"
   host: hôte
+  home: Accueil
+  manual-provider: Vous avez un compte manuel dont l'identifiant de connextion est "{id}"
   no-games-yet: Rien pour l'instant ! Choisissez un jeu disponible.
+  oauth-provider: Vous avez relié ce compte à votre adresse "{email}"
   peer-players: avec {names}
+  username: "Nom d'affichage : "
 page-titles:
+  account: Tabulous • Paramètres
   game: Tabulous • Jeu
   home: Tabulous • Accueil
   log-in: Tabulous • Connection
 placeholders:
-  username: Pseudo
   password: Mot de passe
+  playerId: Identifiant
+  username: Pseudo
 titles:
+  account: Vos paramètres
+  auth-provider: Votre compte
   camera-controls: Contrôler la caméra
   catalog: Jeux disponibles
   confirm-game-deletion: Suppression de la partie
@@ -53,6 +64,7 @@ titles:
   log-in: Bienvenue !
   object-controls: Contrôler un objet
   selection-controls: Contrôler un ou plusieurs objets
+  username: Votre peusdo
   welcome: Bienvenue sur Tabulous !
 tooltips:
   add-to-selection: Ajouter à la sélection

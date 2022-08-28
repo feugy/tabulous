@@ -90,11 +90,11 @@ exports[`Toolshot routes/login/+page.tools.svelte: Default 1`] = `
             >
               <fieldset>
                 <legend>
-                  Pseudo
+                  Identifiant
                 </legend>
                  
                 <input
-                  name="username"
+                  name="id"
                 />
               </fieldset>
             </div>
@@ -191,11 +191,11 @@ exports[`Toolshot routes/login/+page.tools.svelte: With errors 1`] = `
             >
               <fieldset>
                 <legend>
-                  Pseudo
+                  Identifiant
                 </legend>
                  
                 <input
-                  name="username"
+                  name="id"
                 />
               </fieldset>
             </div>

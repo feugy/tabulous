@@ -1,12 +1,15 @@
 fragment player on Player {
   id
   username
+  avatar
 }
 
 fragment authentication on PlayerWithTurnCredentials {
   token
   player {
     ...player
+    provider
+    email
   }
   turnCredentials {
     username
@@ -14,8 +17,8 @@ fragment authentication on PlayerWithTurnCredentials {
   }
 }
 
-mutation logIn($username: String!, $password: String!) {
-  logIn(username: $username, password: $password) {
+mutation logIn($id: ID!, $password: String!) {
+  logIn(id: $id, password: $password) {
     ...authentication
   }
 }

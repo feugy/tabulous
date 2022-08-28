@@ -31,22 +31,19 @@ export async function recoverSession(fetch, bearer) {
 }
 
 /**
- * Logs a player in with username/password method.
+ * Logs a player in with id/password method.
  * @async
- * @param {string} username - username of the authenticating player.
+ * @param {string} id - the authenticating player id.
  * @param {string} password - clear password.
  * @throws {Error} when authentication was rejected
  */
-export async function logIn(username, password) {
+export async function logIn(id, password) {
   try {
-    const session = await runMutation(graphQL.logIn, { username, password })
-    logger.info({ session }, `authenticating ${username}`)
+    const session = await runMutation(graphQL.logIn, { id, password })
+    logger.info({ session }, `authenticating ${id}`)
     return session
   } catch (error) {
-    logger.info(
-      { error },
-      `failed to authenticate ${username}: ${error.message}`
-    )
+    logger.info({ error }, `failed to authenticate ${id}: ${error.message}`)
     throw error
   }
 }
