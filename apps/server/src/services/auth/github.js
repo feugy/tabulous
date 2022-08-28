@@ -78,6 +78,11 @@ async function fetchUser(token) {
   return response.json()
 }
 
-function mapToUserDetails({ login: username, avatar_url: avatar, email }) {
-  return { username, avatar, email }
+function mapToUserDetails({
+  id: providerId,
+  login: username,
+  avatar_url: avatar,
+  email
+}) {
+  return { username, avatar, email, providerId }
 }

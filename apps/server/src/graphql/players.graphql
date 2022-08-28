@@ -4,6 +4,7 @@ type Player {
   playing: Boolean!
   avatar: String
   provider: String
+  email: String
 }
 
 type TurnCredentials {

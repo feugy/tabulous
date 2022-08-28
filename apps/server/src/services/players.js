@@ -17,11 +17,28 @@ import repositories from '../repositories/index.js'
 
 /**
  * Creates a new player account, saving user details as they are provided.
- * It adds an id if not already provided.
+ * If the incomind data contains provider & providerId fields, it first search for an existing acccount.
+ * In this situation, the existing data is updated with incomind data, except id, username and avatar,
+ * which are kept as is.
+ * In case no id is provided, a new one is created.
  * @param {UserDetails} userDetails - creation details.
  * @returns {Promise<Player>} the creates player.
  */
 export async function addPlayer(userDetails) {
+  if (userDetails.provider) {
+    const existing = await repositories.players.getByProviderDetails(
+      userDetails
+    )
+    if (existing) {
+      userDetails = {
+        ...existing,
+        ...userDetails,
+        avatar: existing.avatar,
+        username: existing.username,
+        id: existing.id
+      }
+    }
+  }
   return repositories.players.save({
     id: randomUUID(),
     ...userDetails,
