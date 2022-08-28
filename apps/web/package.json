@@ -6,7 +6,7 @@
   "scripts": {
     "build": "vite build",
     "preview": "vite preview",
-    "start": "vite dev --open",
+    "start": "vite dev --open https://localhost:3000",
     "test": "jest --coverage",
     "test:dev": "jest --watch --coverage",
     "test:integration": "run-s test:integration:prepare test:integration:run",

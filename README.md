@@ -16,19 +16,24 @@ Meet your friends online to play your favorite games!
 You need Node.js 16+ and NPM.
 
 1. Checkout the code:
+
    ```shell
    git clone git@github.com:feugy/tabulous.git
    cd tabulous
    ```
+
 1. Fetch dependencies:
+
    ```shell
    npm i
    ```
+
 1. Then, run in dev or production mode.
 
 ### Develop
 
 1. Creates `apps/web/.env` file with the following content:
+
    ```shell
    # WEB_USE_GITHUB_PROVIDER=true
    # WEB_USE_GOOGLE_PROVIDER=true
@@ -36,10 +41,19 @@ You need Node.js 16+ and NPM.
    WEB_GAME_ASSETS_URL=http://localhost:3001/games
    WEB_AUTH_URL=http://localhost:3001/auth
    ```
+
+1. Creates `apps/server/.env` file with the following content:
+
+   ```shell
+   TURN_SECRET=abcd1234
+   ```
+
 1. Start in watch mode (both server and client):
+
    ```shell
    npm start
    ```
+
 1. Your favorite browser should open and display a warning about self-signed SSL certificate. Bypass it, and start developping.
 
 ### Production
