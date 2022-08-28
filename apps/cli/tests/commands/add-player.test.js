@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { jest } from '@jest/globals'
+import kebabCase from 'lodash.kebabcase'
 import stripAnsi from 'strip-ansi'
 import { applyFormaters } from '../../src/util/formaters.js'
 import { signToken } from '../../src/util/jwt.js'
@@ -66,7 +67,11 @@ player ${username} added with id ${id}`
     )
     expect(mockQuery).toHaveBeenCalledWith(
       expect.anything(),
-      { username, password },
+      {
+        id: expect.stringMatching(new RegExp(`${kebabCase(username)}-\\d+`)),
+        username,
+        password
+      },
       signToken()
     )
     expect(mockQuery).toHaveBeenCalledTimes(1)

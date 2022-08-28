@@ -1,5 +1,6 @@
 // @ts-check
 import { gql } from '@urql/core'
+import kebabCase from 'lodash.kebabcase'
 import chalkTemplate from 'chalk-template'
 import {
   attachFormater,
@@ -23,8 +24,8 @@ import {
  */
 
 const addPlayerMutation = gql`
-  mutation addPlayerMutation($username: String!, $password: String!) {
-    addPlayer(username: $username, password: $password) {
+  mutation addPlayerMutation($id: ID!, $username: String!, $password: String!) {
+    addPlayer(id: $id, username: $username, password: $password) {
       id
       username
     }
@@ -63,7 +64,11 @@ export default async function addPlayerCommand(argv) {
 export async function addPlayer({ username, password }) {
   const { addPlayer: player } = await getGraphQLClient().mutation(
     addPlayerMutation,
-    { username, password },
+    {
+      id: `${kebabCase(username)}-${Math.floor(Math.random() * 10000)})`,
+      username,
+      password
+    },
     signToken()
   )
   return attachFormater({ player }, formatPlayer)
