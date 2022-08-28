@@ -1,9 +1,7 @@
-import { createHash } from 'crypto'
 import { makeToken } from '../plugins/utils.js'
 import services from '../services/index.js'
-import { isAuthenticated } from './utils.js'
-
-const masterPassword = hash('ehfada')
+import { isAdmin, isAuthenticated } from './utils.js'
+import { hash } from '../utils/index.js'
 
 export default {
   Query: {
@@ -39,28 +37,35 @@ export default {
 
   Mutation: {
     /**
-     * Authenticates an user from their username.
+     * Create a new player account that can connect with a password value.
+     * The clear password provided is hashed before being stored.
+     * Requires authentication and elevated privileges.
+     * @param {object} obj - graphQL object.
+     * @param {object} args - query arguments.
+     * @returns {Promise<import('../services/authentication').Player>} the created player.
+     */
+    addPlayer: isAdmin(async (obj, { id, username, password }) =>
+      services.addPlayer({ id, username, password: hash(password) })
+    ),
+
+    /**
+     * Authenticates an user from their user id.
      * Returns a token to allow browser issueing authenticated requests.
-     * @async
      * @param {object} obj - graphQL object.
      * @param {object} args - mutation arguments, including:
-     * @param {string} data.username - username.
+     * @param {string} data.id - user account id.
      * @param {string} data.password - clear password.
      * @param {object} context - graphQL context.
-     * @returns {import('./players.graphqk').PlayerWithTurnCredentials} authentified player with turn credentials.
+     * @returns {Promise<import('./players.graphqk').PlayerWithTurnCredentials>} authentified player with turn credentials.
      */
-    logIn: async (obj, { username, password }, { conf }) => {
-      if (masterPassword !== hash(password)) {
+    logIn: async (obj, { id, password }, { conf }) => {
+      const player = await services.getPlayerById(id)
+      if (!player || !player.password || hash(password) !== player.password) {
         throw new Error('forbidden')
       }
-      const player = await services.connect({ username })
       const turnCredentials = services.generateTurnCredentials(conf.turn.secret)
       const token = makeToken(player, conf.auth.jwt)
       return { token, player, turnCredentials }
     }
   }
-}
-
-function hash(value) {
-  return createHash('sha256').update(value).digest('hex')
 }

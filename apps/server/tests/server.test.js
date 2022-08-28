@@ -59,7 +59,7 @@ describe('startServer()', () => {
       payload: { query: 'mutation { logIn { player { id } } }' }
     })
     expect(response.json()?.errors?.[0]?.message).toMatch(
-      /argument "username" of type "String!" is required/
+      /argument "id" of type "ID!" is required/
     )
     expect(response.statusCode).toEqual(400)
 

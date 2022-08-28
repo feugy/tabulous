@@ -3,6 +3,7 @@ import { jest } from '@jest/globals'
 import fastify from 'fastify'
 import services from '../../src/services/index.js'
 import graphQL from '../../src/plugins/graphql.js'
+import { hash } from '../../src/utils/index.js'
 import { mockMethods, signToken } from '../test-utils.js'
 import { createVerifier } from 'fast-jwt'
 
@@ -30,17 +31,93 @@ describe('given a started server', () => {
   })
 
   describe('Player GraphQL resolver', () => {
+    const player = {
+      id: faker.datatype.uuid(),
+      username: faker.name.firstName(),
+      password: faker.internet.password()
+    }
+    const admin = {
+      id: faker.datatype.uuid(),
+      username: faker.name.firstName(),
+      isAdmin: true
+    }
+
+    describe('addPlayer mutation', () => {
+      it('denies un-privilege access', async () => {
+        services.getPlayerById.mockResolvedValueOnce(player)
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            authorization: `Bearer ${signToken(
+              player.id,
+              configuration.auth.jwt.key
+            )}`
+          },
+          payload: {
+            query: `mutation { 
+              addPlayer(id:"${player.id}", username: "${player.username}", password: "${player.password}") { id username }
+            }`
+          }
+        })
+
+        expect(response.json()).toEqual({
+          data: { addPlayer: null },
+          errors: [expect.objectContaining({ message: 'Forbidden' })]
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
+        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.addPlayer).not.toHaveBeenCalled()
+      })
+
+      it('creates new player account', async () => {
+        services.getPlayerById.mockResolvedValueOnce(admin)
+        services.addPlayer.mockResolvedValueOnce(player)
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            authorization: `Bearer ${signToken(
+              admin.id,
+              configuration.auth.jwt.key
+            )}`
+          },
+          payload: {
+            query: `mutation { 
+              addPlayer(id:"${player.id}", username: "${player.username}", password: "${player.password}") { id username }
+            }`
+          }
+        })
+
+        expect(response.json()).toEqual({
+          data: { addPlayer: { ...player, password: undefined } }
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(1, admin.id)
+        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.addPlayer).toHaveBeenCalledWith({
+          id: player.id,
+          username: player.username,
+          password: hash(player.password)
+        })
+        expect(services.addPlayer).toHaveBeenCalledTimes(1)
+      })
+    })
+
     describe('logIn mutation', () => {
+      const password = faker.internet.password()
+
       it('logs user without authentication', async () => {
         const username = faker.name.firstName()
-        const password = 'ehfada'
         const turnCredentials = {
           username: faker.lorem.words(),
           credentials: faker.internet.password()
         }
         const id = faker.datatype.uuid()
-        services.connect.mockResolvedValueOnce({
+        services.getPlayerById.mockResolvedValueOnce({
           username,
+          password: hash(password),
           id,
           whatever: 'foo'
         })
@@ -50,7 +127,7 @@ describe('given a started server', () => {
           url: 'graphql',
           payload: {
             query: `mutation { 
-              logIn(username: "${username}", password: "${password}") { 
+              logIn(id: "${id}", password: "${password}") { 
                 token
                 player { id username } 
                 turnCredentials { username credentials } 
@@ -72,23 +149,40 @@ describe('given a started server', () => {
         expect(
           createVerifier({ key: configuration.auth.jwt.key })(token)
         ).toMatchObject({ id })
-        expect(services.connect).toHaveBeenCalledWith({ username })
-        expect(services.connect).toHaveBeenCalledTimes(1)
+        expect(services.getPlayerById).toHaveBeenCalledWith(id)
+        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
         expect(services.generateTurnCredentials).toHaveBeenCalledWith(
           configuration.turn.secret
         )
         expect(services.generateTurnCredentials).toHaveBeenCalledTimes(1)
       })
 
-      it('does not generates turn credentials on authentication failure', async () => {
-        const username = faker.name.firstName()
-        const password = faker.internet.password()
+      it.each([
+        { title: 'unfound account', user: null, password },
+        {
+          title: 'account with no password',
+          password,
+          user: { id: faker.datatype.uuid() }
+        },
+        {
+          title: 'account with different password',
+          password,
+          user: { id: faker.datatype.uuid(), password: 'whatever' }
+        },
+        {
+          title: 'empty password provided',
+          password: '',
+          user: { id: faker.datatype.uuid(), password }
+        }
+      ])('does not generates turn credentials on $title', async ({ user }) => {
+        const id = faker.name.firstName()
+        services.getPlayerById.mockResolvedValueOnce(user)
         const response = await server.inject({
           method: 'POST',
           url: 'graphql',
           payload: {
             query: `mutation { 
-              logIn(username: "${username}", password: "${password}") {
+              logIn(id: "${id}", password: "${password}") {
                 player { id username } 
                 turnCredentials { username credentials } 
               }
@@ -100,7 +194,8 @@ describe('given a started server', () => {
           errors: [{ message: 'forbidden' }]
         })
         expect(response.statusCode).toEqual(200)
-        expect(services.connect).not.toHaveBeenCalled()
+        expect(services.getPlayerById).toHaveBeenCalledWith(id)
+        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
         expect(services.generateTurnCredentials).not.toHaveBeenCalled()
       })
     })

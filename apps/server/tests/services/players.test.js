@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker'
 import repositories from '../../src/repositories/index.js'
 import {
-  connect,
+  addPlayer,
   getPlayerById,
   searchPlayers,
   setPlaying
@@ -12,21 +12,30 @@ describe('given initialized repository', () => {
 
   afterAll(() => repositories.players.release())
 
-  describe('connect()', () => {
-    it('creates new user', async () => {
+  describe('addPlayer()', () => {
+    it('assigns a new id', async () => {
       const username = faker.name.firstName()
+      const password = faker.internet.password()
       const avatar = faker.internet.avatar()
-      expect(await connect({ username, avatar })).toEqual({
+      expect(await addPlayer({ username, password, avatar })).toEqual({
         id: expect.any(String),
-        username,
+        password,
         avatar,
+        username,
         playing: false
       })
     })
 
-    it('returns the same object from the same credentials', async () => {
+    it('reuses provided id', async () => {
       const username = faker.name.firstName()
-      expect(await connect({ username })).toEqual(await connect({ username }))
+      const id = faker.datatype.uuid()
+      const avatar = faker.internet.avatar()
+      expect(await addPlayer({ username, id, avatar })).toEqual({
+        id,
+        avatar,
+        username,
+        playing: false
+      })
     })
   })
 
@@ -41,7 +50,7 @@ describe('given initialized repository', () => {
 
     beforeAll(async () => {
       for (const [i, player] of players.entries()) {
-        players[i] = await connect(player)
+        players[i] = await addPlayer(player)
       }
     })
 
