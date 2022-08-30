@@ -188,6 +188,7 @@ describe('Home page', () => {
     await new Promise(resolve => setTimeout(resolve, 500)) // TODO remove
 
     await homePage.logOut()
+    await expect(page).toHaveURL('/home')
     await homePage.isAnonymous()
     await expect(homePage.catalogItemHeadings).toHaveText(
       publicCatalog.map(({ locales }) => new RegExp(locales.fr.title))
@@ -235,5 +236,28 @@ describe('Home page', () => {
         variables: { gameId: games[1].id }
       })
     )
+  })
+
+  it('can navigates to account page', async ({ page }) => {
+    const { setTokenCookie } = await mockGraphQl(page, {
+      listCatalog: [catalog],
+      listGames: [games],
+      getCurrentPlayer: {
+        token: faker.datatype.uuid(),
+        player,
+        turnCredentials: {
+          username: 'bob',
+          credentials: faker.internet.password()
+        }
+      }
+    })
+    await setTokenCookie()
+
+    const homePage = new HomePage(page)
+    await homePage.goTo()
+    await homePage.getStarted()
+
+    await homePage.goToAccount()
+    await expect(page).toHaveURL('/account')
   })
 })

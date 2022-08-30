@@ -1,4 +1,5 @@
 // @ts-check
-export * from './game.js'
-export * from './home.js'
-export * from './login.js'
+export { AccountPage } from './account.js'
+export { GamePage } from './game.js'
+export { HomePage } from './home.js'
+export { LoginPage } from './login.js'

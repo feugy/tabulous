@@ -2,7 +2,6 @@
 
 Roadmap
 
-- account page integration tests
 - lawyer council
 - web: terms & condition
 - web: cookie policy
