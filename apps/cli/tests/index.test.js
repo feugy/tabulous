@@ -5,15 +5,19 @@ import { mockConsole } from './test-util.js'
 
 const mockCatalog = jest.fn()
 const mockAddPlayer = jest.fn()
+const mockGrant = jest.fn()
 
 jest.unstable_mockModule('../src/commands/catalog.js', () => ({
   default: mockCatalog,
   catalog: jest.fn()
 }))
-
 jest.unstable_mockModule('../src/commands/add-player.js', () => ({
   default: mockAddPlayer,
   addPlayer: jest.fn()
+}))
+jest.unstable_mockModule('../src/commands/grant.js', () => ({
+  default: mockGrant,
+  grant: jest.fn()
 }))
 
 describe('Tabulous CLI', () => {
@@ -71,5 +75,15 @@ describe('Tabulous CLI', () => {
     mockAddPlayer.mockResolvedValue(result)
     await cli(['add-player'])
     expect(output.stdout).toContain(inspect(result))
+  })
+
+  it('handles specific and general options', async () => {
+    const result = { foo: 'bar' }
+    const username = 'user'
+    const game = 'game'
+    mockGrant.mockResolvedValue(result)
+    await cli(['-p', '-u', username, 'grant', game])
+    expect(output.stdout).toContain(inspect(result))
+    expect(mockGrant).toHaveBeenCalledWith(['-p', '-u', username, game])
   })
 })
