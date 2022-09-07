@@ -25,6 +25,22 @@ class PlayerRepository extends AbstractRepository {
   }
 
   /**
+   * Finds a player by their provider and providerId details.
+   * @async
+   * @param {string} provider - desired provider.
+   * @param {any} providerId - desired providerId.
+   * @returns {object|null} the corresponding player or null.
+   */
+  async getByProviderDetails({ provider, providerId }) {
+    for (const [, player] of this.modelsById) {
+      if (player.provider === provider && player.providerId === providerId) {
+        return player
+      }
+    }
+    return null
+  }
+
+  /**
    * Finds players containing a given seed in their username.
    * @async
    * @param {object} args - search arguments, including:

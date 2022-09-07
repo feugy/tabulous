@@ -9,7 +9,8 @@
     recordStreamChange,
     stream$
   } from '../stores/stream'
-  import { Dropdown } from '.'
+  import Dropdown from './Dropdown.svelte'
+  import PlayerThumbnail from './PlayerThumbnail.svelte'
 
   export let player = null
   export let stream = null
@@ -23,7 +24,6 @@
 
   $: mediaStream = isLocal ? $stream$ : stream
   $: hasStream = Boolean(mediaStream) && !stopped
-  $: hasAvatar = Boolean(player?.avatar)
 
   $: if (hasStream && video) {
     video.srcObject = mediaStream
@@ -52,17 +52,12 @@
   }
 </script>
 
-<figure class:hasStream>
+<section data-testid="player-avatar" class:hasStream>
   {#if hasStream}<video
       autoplay
       muted={isLocal}
       bind:this={video}
-    />{:else if hasAvatar}<img
-      alt="Avatar for player {player?.username}"
-      src={player?.avatar}
-    />{:else}<figcaption>
-      {player?.username}
-    </figcaption>{/if}
+    />{:else}<PlayerThumbnail {player} dimension={150} />{/if}
   {#if player?.isHost}
     <span class="host">{$_('host')}</span>
   {/if}
@@ -94,10 +89,10 @@
       <span class="material-icons muted">mic_off</span>
     {/if}
   </legend>
-</figure>
+</section>
 
 <style lang="postcss">
-  figure {
+  section {
     @apply inline-flex relative items-center justify-center w-full h-full;
 
     &.hasStream {
@@ -107,18 +102,6 @@
 
   video {
     @apply w-full;
-  }
-
-  img {
-    @apply rounded-full border-5 border-$primary-light bg-$primary-lightest;
-    width: 150px;
-    height: 150px;
-  }
-
-  figcaption {
-    @apply flex items-center justify-center p-4 rounded-full text-$primary-lightest bg-$base-dark m-4;
-    width: 150px;
-    height: 150px;
   }
 
   legend {

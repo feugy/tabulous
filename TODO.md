@@ -2,7 +2,6 @@
 
 Roadmap
 
-- games: generic card game
 - lawyer council
 - web: terms & condition
 - web: cookie policy
@@ -25,7 +24,6 @@ Roadmap
 ## Refactor
 
 - better testing setup? [vitest](https://github.com/sveltejs/kit/discussions/5285), or even [manual](https://github.com/sveltejs/kit/issues/19#issuecomment-1041134457)
-- fetches as much data as possible in load() functions
 - ts-check all the things!
 - removes nginx to directly use the node server?
 - group candidate target per kind for performance
@@ -71,23 +69,23 @@ Roadmap
 - notifies on deployment failures/success
 - automate SSH renewal with certbot
 
-# Known issues
+## Known issues
 
 - moving items bellow other does not apply gravity to them
 
-# Ideas
+## Ideas
 
-## Game setup
+### Game setup
 
 - min/max number of players allowed
 - players' positions
 
-## Game UI:
+### Game UI:
 
 - visual hint when receiving messages on collapsed section
 - show contextual help (for example, on hover) to indicates which commands are available
 
-# Interaction model
+## Interaction model
 
 | Action on table  | Tabletopia                        | Tabulous                                |
 | ---------------- | --------------------------------- | --------------------------------------- |
@@ -129,7 +127,7 @@ Roadmap
 In Tabletopia, being forced to do click (either select or menu) before triggering actions (shortcut or menu) is a bummer.
 They support keyboard, but not fingers.
 
-# Game lifecycle
+## Game lifecycle
 
 1. player A calls `createGame(kind)`
 1. server creates a game id, loads scene descriptor, adds player A to the player list, returns the game id
@@ -140,7 +138,7 @@ They support keyboard, but not fingers.
 1. server returns the game scene descriptor and player list
 1. player B tries to connect with all players already connected (see connection handshake)
 
-## The host role
+### The host role
 
 The host player is in charge of:
 
@@ -195,21 +193,14 @@ Follow official Let's Encrypt [instructions](https://certbot.eff.org/lets-encryp
 
 Here there are, copied from `hosting/certbot/live/tabulous.fr/` to `keys/\` folder.
 
-# Server data operations
+## Player migration
 
-- create player
-- find one/several players by id
-- search players by their username
-- update player's playing boolean (or full player)
-- create full game
-- find one game by id
-- find games which player ids contains an id
-- update full game
-- delete game
-- list game descriptors
-- find one/several game descriptors by id
+When introducing user own password, several data changes where needed:
 
-# Various learnings
+- add password hash to existing accounts: `"password": "ba5ad8fd3d20cefebf58272fe833c925061097d79237e7363fef45802fddd6c9c57434e8a125378257a569a90dd45456620262a2ea21be49ed7e716d5503beee"`
+- change their ids sed -i 's/"1789"/"dams-1789"/g' ./apps/server/data/\*.json
+
+## Various learnings
 
 Physics engine aren't great: they are all pretty deprecated. [Cannon-es can not be used yet](https://github.com/BabylonJS/Babylon.js/issues/9810).
 When stacked, card are always bouncing.
@@ -315,3 +306,5 @@ Nice sources for 3D textures:
 
 - [3DTextures](https://3dtextures.me/) (free)
 - [Architextures](https://architextures.org/textures) (copyrighted)
+
+Run playwright in debug mode, on a given file: `PWDEBUG=1 npm -w apps/web run test:integration:run -- home.spec`

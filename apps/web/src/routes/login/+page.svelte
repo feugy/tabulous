@@ -7,7 +7,7 @@
   export let errors = null
 
   let inputRef = null
-  const redirect = $page.url.searchParams.get('redirect') ?? '/home'
+  const redirect = $page.url?.searchParams.get('redirect') ?? '/home'
 
   $: if (inputRef) {
     inputRef.focus()

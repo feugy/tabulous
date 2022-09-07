@@ -86,7 +86,7 @@ describe('GameAside component', () => {
       helpButtonText
     ])
     expect(screen.getByRole('region')).toHaveAttribute('aria-expanded', 'false')
-    expect(extractText(screen.getAllByRole('figure'))).toEqual(
+    expect(extractText(screen.getAllByTestId('player-avatar'))).toEqual(
       players.slice(1).map(({ username }) => username)
     )
   })
@@ -103,7 +103,7 @@ describe('GameAside component', () => {
       rulesButtonText,
       helpButtonText
     ])
-    expect(extractText(screen.getAllByRole('figure'))).toEqual(
+    expect(extractText(screen.getAllByTestId('player-avatar'))).toEqual(
       players.slice(1).map(({ username }) => username)
     )
   })
@@ -120,7 +120,7 @@ describe('GameAside component', () => {
       'true'
     )
 
-    const avatars = screen.getAllByRole('figure')
+    const avatars = screen.getAllByTestId('player-avatar')
 
     expect(extractText(avatars)).toEqual(['', players[1].username, ''])
     expect(avatars[0]).toHaveClass('hasStream')
@@ -146,7 +146,7 @@ describe('GameAside component', () => {
       'true'
     )
 
-    const avatars = screen.getAllByRole('figure')
+    const avatars = screen.getAllByTestId('player-avatar')
 
     expect(extractText(avatars)).toEqual(['', players[1].username, ''])
     expect(avatars[0]).toHaveClass('hasStream')
@@ -166,7 +166,7 @@ describe('GameAside component', () => {
       'false'
     )
 
-    const avatars = screen.getAllByRole('figure')
+    const avatars = screen.getAllByTestId('player-avatar')
 
     expect(extractText(avatars)).toEqual(
       players.slice(1).map(({ username }) => username)
@@ -186,7 +186,7 @@ describe('GameAside component', () => {
       'false'
     )
 
-    const avatars = screen.getAllByRole('figure')
+    const avatars = screen.getAllByTestId('player-avatar')
 
     expect(extractText(avatars)).toEqual(
       players.slice(1).map(({ username }) => username)

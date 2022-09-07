@@ -2,14 +2,40 @@ import { faker } from '@faker-js/faker'
 import { players } from '../../src/repositories/players.js'
 
 describe('given a connected repository and several players', () => {
+  const provider1 = 'oauth'
+  const provider2 = 'oauth2'
+  const providerId1 = faker.datatype.number()
+  const providerId2 = faker.datatype.number()
+  const providerId3 = faker.datatype.number()
+
   const models = [
-    { id: faker.datatype.uuid(), username: 'Jane' },
+    {
+      id: faker.datatype.uuid(),
+      username: 'Jane',
+      provider: provider1,
+      providerId: providerId1
+    },
     { id: faker.datatype.uuid(), username: 'Paul' },
-    { id: faker.datatype.uuid(), username: 'Andrew' },
+    {
+      id: faker.datatype.uuid(),
+      username: 'Andrew',
+      provider: provider1,
+      providerId: providerId2
+    },
     { id: faker.datatype.uuid(), username: 'Diana' },
-    { id: faker.datatype.uuid(), username: 'Bruce' },
+    {
+      id: faker.datatype.uuid(),
+      username: 'Bruce',
+      provider: provider2,
+      providerId: providerId1
+    },
     { id: faker.datatype.uuid(), username: 'Clark' },
-    { id: faker.datatype.uuid(), username: 'Peter' },
+    {
+      id: faker.datatype.uuid(),
+      username: 'Peter',
+      provider: provider2,
+      providerId: providerId3
+    },
     { id: faker.datatype.uuid(), username: 'Patience' },
     { id: faker.datatype.uuid(), username: 'Carol' },
     { id: faker.datatype.uuid(), username: 'Anthony' }
@@ -31,6 +57,35 @@ describe('given a connected repository and several players', () => {
 
       it('returns null on unknown unsername', async () => {
         expect(await players.getByUsername(faker.lorem.word())).toBeNull()
+      })
+    })
+
+    describe('getByProviderDetails()', () => {
+      it('returns a player by provider and providerId', async () => {
+        expect(
+          await players.getByProviderDetails({
+            provider: provider2,
+            providerId: providerId1
+          })
+        ).toEqual(models[4])
+      })
+
+      it('returns null on unknown providerId', async () => {
+        expect(
+          await players.getByProviderDetails({
+            provider: provider1,
+            providerId: providerId3
+          })
+        ).toBeNull()
+      })
+
+      it('returns null on unknown provider', async () => {
+        expect(
+          await players.getByProviderDetails({
+            provider: 'oath3',
+            providerId: providerId1
+          })
+        ).toBeNull()
       })
     })
 

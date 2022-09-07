@@ -12,7 +12,7 @@ describe('@auth layout server loader', () => {
     const location = `/game/${faker.datatype.uuid()}`
     const url = new URL(location, 'https://example.org')
     await expect(load({ url, locals: {} })).rejects.toThrow(
-      '302 redirection to /login?redirect='
+      '307 redirection to /login?redirect='
     )
   })
 

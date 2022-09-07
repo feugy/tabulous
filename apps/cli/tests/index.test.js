@@ -4,10 +4,16 @@ import { attachFormater } from '../src/util/formaters.js'
 import { mockConsole } from './test-util.js'
 
 const mockCatalog = jest.fn()
+const mockAddPlayer = jest.fn()
 
 jest.unstable_mockModule('../src/commands/catalog.js', () => ({
   default: mockCatalog,
   catalog: jest.fn()
+}))
+
+jest.unstable_mockModule('../src/commands/add-player.js', () => ({
+  default: mockAddPlayer,
+  addPlayer: jest.fn()
 }))
 
 describe('Tabulous CLI', () => {
@@ -58,5 +64,12 @@ describe('Tabulous CLI', () => {
     expect(output.stdout).not.toContain(inspect(result))
     expect(formater).toHaveBeenCalledWith(result)
     expect(formater).toHaveBeenCalledTimes(1)
+  })
+
+  it('supports kebab-case commands', async () => {
+    const result = { foo: 'bar' }
+    mockAddPlayer.mockResolvedValue(result)
+    await cli(['add-player'])
+    expect(output.stdout).toContain(inspect(result))
   })
 })

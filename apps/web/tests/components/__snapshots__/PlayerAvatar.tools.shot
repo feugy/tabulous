@@ -2,11 +2,21 @@
 
 exports[`Toolshot components/PlayerAvatar.tools.svelte: Local 1`] = `
 <span>
-  <figure>
-    <img
-      alt="Avatar for player Joe le clodo"
-      src="default"
-    />
+  <section
+    data-testid="player-avatar"
+  >
+    <figure
+      style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+    >
+      <img
+        alt="avatar for Joe le clodo"
+        class="hasImage"
+        height="150"
+        src="default"
+        width="150"
+      />
+       
+    </figure>
      
     <span
       class="host"
@@ -18,17 +28,27 @@ exports[`Toolshot components/PlayerAvatar.tools.svelte: Local 1`] = `
        
       
     </legend>
-  </figure>
+  </section>
 </span>
 `;
 
 exports[`Toolshot components/PlayerAvatar.tools.svelte: No video 1`] = `
 <span>
-  <figure>
-    <img
-      alt="Avatar for player Joe le clodo"
-      src="default"
-    />
+  <section
+    data-testid="player-avatar"
+  >
+    <figure
+      style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+    >
+      <img
+        alt="avatar for Joe le clodo"
+        class="hasImage"
+        height="150"
+        src="default"
+        width="150"
+      />
+       
+    </figure>
      
     <span
       class="host"
@@ -37,16 +57,28 @@ exports[`Toolshot components/PlayerAvatar.tools.svelte: No video 1`] = `
     </span>
      
     <legend />
-  </figure>
+  </section>
 </span>
 `;
 
 exports[`Toolshot components/PlayerAvatar.tools.svelte: No video nor avatar 1`] = `
 <span>
-  <figure>
-    <figcaption>
-      Joe le clodo
-    </figcaption>
+  <section
+    data-testid="player-avatar"
+  >
+    <figure
+      style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+    >
+      <img
+        alt="avatar for Joe le clodo"
+        height="150"
+        width="150"
+      />
+       
+      <figcaption>
+        Joe le clodo
+      </figcaption>
+    </figure>
      
     <span
       class="host"
@@ -55,6 +87,6 @@ exports[`Toolshot components/PlayerAvatar.tools.svelte: No video nor avatar 1`] 
     </span>
      
     <legend />
-  </figure>
+  </section>
 </span>
 `;

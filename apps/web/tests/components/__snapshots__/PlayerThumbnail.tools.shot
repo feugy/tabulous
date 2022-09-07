@@ -1,0 +1,91 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Toolshot components/PlayerThumbnail.tools.svelte: Avatar 1`] = `
+<span>
+  <figure
+    style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+  >
+    <img
+      alt="avatar for Joe le clodo"
+      class="hasImage"
+      height="150"
+      src="default"
+      width="150"
+    />
+     
+  </figure>
+</span>
+`;
+
+exports[`Toolshot components/PlayerThumbnail.tools.svelte: Positioned text 1`] = `
+<span>
+  <figure
+    class="positioned colored"
+    style="--dimension: 60px; --color: red; --top: -50px; --left: 0px; --border-width: 3px"
+  >
+    <img
+      alt="avatar for Joe le clodo"
+      height="60"
+      width="60"
+    />
+     
+    <figcaption>
+      Joe le clodo
+    </figcaption>
+  </figure>
+</span>
+`;
+
+exports[`Toolshot components/PlayerThumbnail.tools.svelte: Positionned avatar 1`] = `
+<span>
+  <figure
+    class="positioned colored"
+    style="--dimension: 60px; --color: lime; --top: -50px; --left: 0px; --border-width: 3px"
+  >
+    <img
+      alt="avatar for Joe le clodo"
+      class="hasImage"
+      height="60"
+      src="default"
+      width="60"
+    />
+     
+  </figure>
+</span>
+`;
+
+exports[`Toolshot components/PlayerThumbnail.tools.svelte: Small text 1`] = `
+<span>
+  <figure
+    style="--dimension: 50px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+  >
+    <img
+      alt="avatar for Joe le clodo"
+      height="50"
+      width="50"
+    />
+     
+    <figcaption>
+      JLC
+    </figcaption>
+  </figure>
+</span>
+`;
+
+exports[`Toolshot components/PlayerThumbnail.tools.svelte: Text 1`] = `
+<span>
+  <figure
+    style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+  >
+    <img
+      alt="avatar for Joe le clodo"
+      height="150"
+      width="150"
+    />
+     
+    <figcaption>
+      Joe le clodo
+    </figcaption>
+  </figure>
+</span>
+`;

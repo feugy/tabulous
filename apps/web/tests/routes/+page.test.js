@@ -8,6 +8,6 @@ jest.mock('@sveltejs/kit', () => ({
 
 describe('/ route server loader', () => {
   it('always redirects to home page', async () => {
-    expect(load).toThrow('301 redirection to /home')
+    expect(load).toThrow('307 redirection to /home')
   })
 })

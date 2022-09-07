@@ -75,7 +75,8 @@ describe('Github authentication service', () => {
         const user = {
           login: faker.name.fullName(),
           avatar_url: faker.internet.avatar(),
-          email: faker.internet.email()
+          email: faker.internet.email(),
+          id: faker.datatype.number()
         }
         const token = faker.datatype.uuid()
         githubMock
@@ -95,7 +96,8 @@ describe('Github authentication service', () => {
           user: {
             username: user.login,
             avatar: user.avatar_url,
-            email: user.email
+            email: user.email,
+            providerId: user.id
           }
         })
         expect(accessTokenInvoked).toHaveBeenCalledWith({

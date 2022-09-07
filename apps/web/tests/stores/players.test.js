@@ -16,9 +16,10 @@ import { graphQlUrl } from '../../src/utils'
 
 jest.mock('../../src/stores/graphql-client')
 
+const id = faker.datatype.uuid()
 const username = faker.name.firstName()
 const password = faker.internet.password()
-const player = { id: faker.datatype.uuid(), username }
+const player = { id, username }
 const turnCredentials = {
   username: faker.lorem.words(),
   credentials: faker.datatype.uuid()
@@ -42,9 +43,9 @@ describe('logIn()', () => {
   it('returns session on success', async () => {
     const session = { token, player, turnCredentials }
     runMutation.mockResolvedValueOnce(session)
-    expect(await logIn(username, password)).toEqual(session)
+    expect(await logIn(id, password)).toEqual(session)
     expect(runMutation).toHaveBeenCalledWith(graphQL.logIn, {
-      username,
+      id,
       password
     })
     expect(runMutation).toHaveBeenCalledTimes(1)
@@ -54,9 +55,9 @@ describe('logIn()', () => {
   it('throws on failure', async () => {
     const error = new Error('forbidden')
     runMutation.mockRejectedValueOnce(error)
-    await expect(logIn(username, password)).rejects.toThrow(error)
+    await expect(logIn(id, password)).rejects.toThrow(error)
     expect(runMutation).toHaveBeenCalledWith(graphQL.logIn, {
-      username,
+      id,
       password
     })
     expect(runMutation).toHaveBeenCalledTimes(1)

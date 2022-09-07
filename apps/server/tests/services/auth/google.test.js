@@ -79,7 +79,8 @@ describe('Google authentication service', () => {
         const user = {
           given_name: faker.name.fullName(),
           picture: faker.internet.avatar(),
-          email: faker.internet.email()
+          email: faker.internet.email(),
+          sub: faker.datatype.uuid()
         }
         const token = signJWT(user)
         googleApiMock
@@ -95,7 +96,8 @@ describe('Google authentication service', () => {
           user: {
             username: user.given_name,
             avatar: user.picture,
-            email: user.email
+            email: user.email,
+            providerId: user.sub
           }
         })
         expect(accessTokenInvoked).toHaveBeenCalledWith({

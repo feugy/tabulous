@@ -11,7 +11,7 @@
   const owned = game.players[0]?.id === playerId
   const isSingle = game.players.length === 1
   const peerNames = game.players
-    .filter(({ id }) => id !== playerId)
+    .filter(player => player && player.id !== playerId)
     .map(({ username }) => username)
 
   function handleDelete(event) {

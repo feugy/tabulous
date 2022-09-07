@@ -1,3 +1,5 @@
+process.env.TZ = 'CET'
+
 const conf = {
   rootDir: './',
   testMatch: ['<rootDir>/tests/**/*.test.js'],

@@ -2,44 +2,34 @@
 import { expect } from '@playwright/test'
 import { translate } from '../utils/index.js'
 
+/**
+ * @typedef {import('@playwright/test').Page} Page
+ * @typedef {import('@playwright/test').Locator} Locator
+ */
+
 export class LoginPage {
   /**
    * Represent the login page for testing.
-   * @param {import('@playwright/test').Page} page - the actual page.
+   * @param {Page} page - the actual page.
    */
   constructor(page) {
-    /**
-     * @type {import('@playwright/test').Page}
-     */
+    /**  @type {Page}     */
     this.page = page
-
-    /**
-     * @type {import('@playwright/test').Locator}
-     */
+    /** @type {Locator} */
     this.githubButton = page.locator('role=button', {
       hasText: translate('actions.log-in-github')
     })
-    /**
-     * @type {import('@playwright/test').Locator}
-     */
+    /** @type {Locator} */
     this.googleButton = page.locator('role=button', {
       hasText: translate('actions.log-in-google')
     })
-    /**
-     * @type {import('@playwright/test').Locator}
-     */
+    /** @type {Locator} */
     this.passwordDetails = page.locator('details')
-    /**
-     * @type {import('@playwright/test').Locator}
-     */
+    /** @type {Locator} */
     this.usernameInput = page.locator('role=textbox >> nth=0')
-    /**
-     * @type {import('@playwright/test').Locator}
-     */
+    /** @type {Locator} */
     this.passwordInput = page.locator('role=textbox >> nth=1')
-    /**
-     * @type {import('@playwright/test').Locator}
-     */
+    /** @type {Locator} */
     this.passwordButton = page.locator('role=button', {
       hasText: translate('actions.log-in')
     })
@@ -47,7 +37,6 @@ export class LoginPage {
 
   /**
    * Expects connect buttons heading visibility.
-   * @async
    */
   async getStarted() {
     await expect(this.googleButton).toBeVisible()

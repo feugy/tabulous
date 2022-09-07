@@ -4,10 +4,10 @@
   import Input from './Input.svelte'
   import Pane from './Pane.svelte'
   import { authUrl } from '../utils'
-  import GithubLogo from '../../public/images/github-logo.svg'
-  import GoogleLogo from '../../public/images/google-logo.svg'
+  import GithubLogo from '../svg/github-logo.svg'
+  import GoogleLogo from '../svg/google-logo.svg'
 
-  export let username = ''
+  export let id = ''
   export let password = ''
   export let redirect = null
   export let inputRef = null
@@ -17,10 +17,7 @@
 
   $: hasProviders = withGoogle || withGithub
   $: disabled =
-    !username ||
-    username.trim().length === 0 ||
-    !password ||
-    password.trim().length <= 3
+    !id || id.trim().length === 0 || !password || password.trim().length <= 3
 
   let details
   let isPasswordOpen = false
@@ -60,7 +57,7 @@
     {/if}
     <details
       bind:this={details}
-      open={!hasProviders || !!error}
+      open={!hasProviders || !!error || id || password}
       on:toggle={handleTogglePassword}
     >
       <summary class:hidden={!hasProviders} title="password-toggle">
@@ -73,9 +70,9 @@
       <form method="POST">
         <div class="row">
           <Input
-            name="username"
-            placeholder={$_('placeholders.username')}
-            bind:value={username}
+            name="id"
+            placeholder={$_('placeholders.playerId')}
+            bind:value={id}
             bind:ref={inputRef}
             on:input={resetError}
           />

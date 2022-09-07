@@ -16,29 +16,40 @@ import repositories from '../repositories/index.js'
  */
 
 /**
- * Connects a given user into Tabulous, from any authentication provider.
- * New players will be created on the fly.
- * @async
- * @param {UserDetails} userDetails - details provided by authentication provider.
- * @returns {Player} the authenticated player.
+ * Creates a new player account, saving user details as they are provided.
+ * If the incomind data contains provider & providerId fields, it first search for an existing acccount.
+ * In this situation, the existing data is updated with incomind data, except id, username and avatar,
+ * which are kept as is.
+ * In case no id is provided, a new one is created.
+ * @param {UserDetails} userDetails - creation details.
+ * @returns {Promise<Player>} the creates player.
  */
-export async function connect(userDetails) {
-  const player = await repositories.players.getByUsername(userDetails?.username)
-  if (!player) {
-    return repositories.players.save({
-      ...userDetails,
-      id: randomUUID(),
-      playing: false
-    })
+export async function addPlayer(userDetails) {
+  if (userDetails.provider) {
+    const existing = await repositories.players.getByProviderDetails(
+      userDetails
+    )
+    if (existing) {
+      userDetails = {
+        ...existing,
+        ...userDetails,
+        avatar: existing.avatar,
+        username: existing.username,
+        id: existing.id
+      }
+    }
   }
-  return player
+  return repositories.players.save({
+    id: randomUUID(),
+    ...userDetails,
+    playing: false
+  })
 }
 
 /**
  * Returns a single or several player from their id.
- * @async
  * @param {string|string[]} playerId - desired player id(s).
- * @returns {object|null|[object|null]} matching player(s), or null(s).
+ * @returns {Promise<object|null|[object|null]>} matching player(s), or null(s).
  */
 export async function getPlayerById(playerId) {
   return repositories.players.getById(playerId)
@@ -49,7 +60,7 @@ export async function getPlayerById(playerId) {
  * Does nothing when no player is matching the given id.
  * @param {string} playerId - related player id.
  * @param {boolean} playing - new value for the flag.
- * @returns {Player|null} the modified player.
+ * @returns {Promise<Player|null>} the modified player.
  */
 export async function setPlaying(playerId, playing) {
   const player = await getPlayerById(playerId)
@@ -65,7 +76,7 @@ export async function setPlaying(playerId, playing) {
  * @param {string} search - searched text.
  * @param {string} playerId - the current player id.
  * @param {boolean} [excludeCurrent=true] - whether to exclude current player from results.
- * @returns {Player[]} list of matching players.
+ * @returns {Promise<Player[]>} list of matching players.
  */
 export async function searchPlayers(search, playerId, excludeCurrent = true) {
   if ((search ?? '').trim().length < 2) return []

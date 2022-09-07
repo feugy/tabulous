@@ -23,7 +23,7 @@ import { makeToken } from './utils.js'
  * @param {OAuth2ProviderOptions} options - plugin's options.
  */
 export default async function registerAuth(app, options) {
-  const { githubAuth, googleAuth, connect } = services
+  const { githubAuth, googleAuth, addPlayer } = services
   const allowedOriginsRegExp = new RegExp(options.allowedOrigins)
 
   for (const { service, provider } of [
@@ -60,7 +60,7 @@ export default async function registerAuth(app, options) {
         `/${provider}/callback`,
         async ({ query: { code, state } }, reply) => {
           const { location, user } = await service.authenticateUser(code, state)
-          const player = await connect({ ...user, provider })
+          const player = await addPlayer({ ...user, provider })
           const url = new URL(location)
           url.searchParams.append('token', makeToken(player, options.jwt))
           return reply.redirect(url.toString())

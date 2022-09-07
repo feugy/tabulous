@@ -39,9 +39,9 @@ describe('createPrism()', () => {
   describe('given a prism with initial position, edges number, dimension, images and behaviors', () => {
     let mesh
 
-    const width = faker.datatype.number()
-    const edges = faker.datatype.number()
-    const height = faker.datatype.number()
+    const width = faker.datatype.number({ min: 3, max: 5 })
+    const edges = faker.datatype.number({ min: 8, max: 20 })
+    const height = faker.datatype.number({ min: 5, max: 8 })
     const id = faker.datatype.uuid()
     const x = faker.datatype.number()
     const y = faker.datatype.number()
@@ -80,7 +80,7 @@ describe('createPrism()', () => {
       const { boundingBox } = mesh.getBoundingInfo()
       expect(mesh.name).toEqual('prism')
       expect(mesh.id).toEqual(id)
-      expect(boundingBox.extendSize.x * 2).toBeCloseTo(width)
+      expect(boundingBox.extendSize.x * 2).toBeCloseTo(width, 0)
       expect(boundingBox.extendSize.y * 2).toEqual(height)
       expect(mesh.isPickable).toBe(true)
       expectPosition(mesh, [x, y, z])

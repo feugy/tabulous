@@ -2,6 +2,9 @@ type Player {
   id: ID!
   username: String!
   playing: Boolean!
+  avatar: String
+  provider: String
+  email: String
 }
 
 type TurnCredentials {
@@ -21,5 +24,6 @@ type Query {
 }
 
 type Mutation {
-  logIn(username: String!, password: String!): PlayerWithTurnCredentials
+  addPlayer(id: ID!, username: String!, password: String!): Player
+  logIn(id: ID!, password: String!): PlayerWithTurnCredentials
 }

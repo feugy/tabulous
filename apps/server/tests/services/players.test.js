@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker'
 import repositories from '../../src/repositories/index.js'
 import {
-  connect,
+  addPlayer,
   getPlayerById,
   searchPlayers,
   setPlaying
@@ -12,21 +12,94 @@ describe('given initialized repository', () => {
 
   afterAll(() => repositories.players.release())
 
-  describe('connect()', () => {
-    it('creates new user', async () => {
+  describe('addPlayer()', () => {
+    it('assigns a new id', async () => {
       const username = faker.name.firstName()
+      const password = faker.internet.password()
       const avatar = faker.internet.avatar()
-      expect(await connect({ username, avatar })).toEqual({
+      expect(await addPlayer({ username, password, avatar })).toEqual({
         id: expect.any(String),
-        username,
+        password,
         avatar,
+        username,
         playing: false
       })
     })
 
-    it('returns the same object from the same credentials', async () => {
+    it('reuses provided id', async () => {
       const username = faker.name.firstName()
-      expect(await connect({ username })).toEqual(await connect({ username }))
+      const id = faker.datatype.uuid()
+      const avatar = faker.internet.avatar()
+      expect(await addPlayer({ username, id, avatar })).toEqual({
+        id,
+        avatar,
+        username,
+        playing: false
+      })
+    })
+
+    it('creates new account from provider', async () => {
+      const username = faker.name.firstName()
+      const id = faker.datatype.uuid()
+      const email = faker.internet.email()
+      const avatar = faker.internet.avatar()
+      const providerId = faker.datatype.number()
+      const provider = 'oauth2'
+      await repositories.players.save({
+        id,
+        username,
+        email,
+        provider,
+        providerId,
+        avatar
+      })
+      const update = {
+        providerId,
+        provider: 'oauth',
+        avatar: faker.internet.avatar(),
+        email: faker.internet.email(),
+        username: faker.name.fullName()
+      }
+      const created = await addPlayer(update)
+      expect(created).toEqual({
+        ...update,
+        id: expect.any(String),
+        playing: false
+      })
+      expect(created.id).not.toEqual(id)
+    })
+
+    it('upserts existing account from provider', async () => {
+      const username = faker.name.firstName()
+      const id = faker.datatype.uuid()
+      const email = faker.internet.email()
+      const avatar = faker.internet.avatar()
+      const providerId = faker.datatype.number()
+      const provider = 'oauth2'
+      await repositories.players.save({
+        id,
+        username,
+        email,
+        provider,
+        providerId,
+        avatar
+      })
+      const update = {
+        providerId,
+        provider,
+        avatar: faker.internet.avatar(),
+        email: faker.internet.email(),
+        username: faker.name.fullName()
+      }
+      expect(await addPlayer(update)).toEqual({
+        id,
+        avatar,
+        username,
+        provider,
+        providerId,
+        email: update.email,
+        playing: false
+      })
     })
   })
 
@@ -41,7 +114,7 @@ describe('given initialized repository', () => {
 
     beforeAll(async () => {
       for (const [i, player] of players.entries()) {
-        players[i] = await connect(player)
+        players[i] = await addPlayer(player)
       }
     })
 

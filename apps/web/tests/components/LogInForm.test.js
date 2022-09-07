@@ -9,7 +9,7 @@ import { authUrl } from '../../src/utils'
 import { translate } from '../test-utils'
 
 describe('LogIn component', () => {
-  const username$ = writable()
+  const id$ = writable()
   const password$ = writable()
   const origin = 'https://localhost:3000'
 
@@ -22,7 +22,7 @@ describe('LogIn component', () => {
 
   beforeEach(() => {
     jest.resetAllMocks()
-    username$.set()
+    id$.set()
     password$.set()
   })
 
@@ -31,7 +31,7 @@ describe('LogIn component', () => {
   function renderComponent(props = {}) {
     return render(
       html`<${LogInForm}
-        bind:username=${username$}
+        bind:id=${id$}
         bind:password=${password$}
         ...${props}
       />`
@@ -122,19 +122,19 @@ describe('LogIn component', () => {
     })
 
     it.each([
-      { title: 'empty username', init: () => password$.set('abcd') },
-      { title: 'empty password', init: () => username$.set('jane') },
+      { title: 'empty id', init: () => password$.set('abcd') },
+      { title: 'empty password', init: () => id$.set('jane') },
       {
         title: 'blank password',
         init: () => {
-          username$.set('jane')
+          id$.set('jane')
           password$.set('  ')
         }
       },
       {
-        title: 'blank username',
+        title: 'blank id',
         init: () => {
-          username$.set('   ')
+          id$.set('   ')
           password$.set('abcd')
         }
       }
@@ -146,7 +146,7 @@ describe('LogIn component', () => {
 
     it.each([
       {
-        title: 'username change',
+        title: 'id change',
         async change() {
           await fireEvent.input(screen.getByRole('textbox'))
         }

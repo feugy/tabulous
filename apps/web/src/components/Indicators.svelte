@@ -1,7 +1,7 @@
 <script>
   import Feedback from './Feedback.svelte'
   import Label from './Label.svelte'
-  import PeerPointer from './PeerPointer.svelte'
+  import PlayerThumbnail from './PlayerThumbnail.svelte'
   export let items = []
 
   function computeLabel(player, { size }) {
@@ -39,6 +39,6 @@
       content={computeLabel(player, rest)}
     />
   {:else}
-    <PeerPointer {screenPosition} {player} />
+    <PlayerThumbnail {screenPosition} {player} />
   {/if}
 {/each}

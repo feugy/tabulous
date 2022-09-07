@@ -19,7 +19,7 @@ jest.unstable_mockModule('../../src/services/auth/google.js', () => ({
   }
 }))
 jest.unstable_mockModule('../../src/services/players.js', () => ({
-  connect: jest.fn()
+  addPlayer: jest.fn()
 }))
 
 describe('auth plugin', () => {
@@ -139,7 +139,7 @@ describe('auth plugin', () => {
           location,
           user
         })
-        services.connect.mockResolvedValueOnce(player)
+        services.addPlayer.mockResolvedValueOnce(player)
         const response = await server.inject(
           `/auth/${name}/callback?code=${code}&state=${state}`
         )
@@ -156,11 +156,11 @@ describe('auth plugin', () => {
           state
         )
         expect(services[serviceName].authenticateUser).toHaveBeenCalledTimes(1)
-        expect(services.connect).toHaveBeenCalledWith({
+        expect(services.addPlayer).toHaveBeenCalledWith({
           ...user,
           provider: name
         })
-        expect(services.connect).toHaveBeenCalledTimes(1)
+        expect(services.addPlayer).toHaveBeenCalledTimes(1)
       })
 
       it(`returns an error when ${name} authentication fails`, async () => {
@@ -183,7 +183,7 @@ describe('auth plugin', () => {
           state
         )
         expect(services[serviceName].authenticateUser).toHaveBeenCalledTimes(1)
-        expect(services.connect).not.toHaveBeenCalled()
+        expect(services.addPlayer).not.toHaveBeenCalled()
       })
     })
   })

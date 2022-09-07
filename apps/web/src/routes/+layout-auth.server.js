@@ -7,7 +7,7 @@ export async function load(args) {
   const { url } = args
   if (!data.session) {
     throw redirect(
-      302,
+      307,
       `/login?redirect=${encodeURIComponent(url.href.replace(url.origin, ''))}`
     )
   }

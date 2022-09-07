@@ -4,6 +4,7 @@
 
 import esMain from 'es-main'
 import { config } from 'dotenv'
+import camelCase from 'lodash.camelcase'
 import { resolve } from 'path'
 import { cwd } from 'process'
 import * as commands from './commands/index.js'
@@ -40,7 +41,9 @@ function printProductionMessage({ production }) {
 
 function findCommand(args) {
   return (
-    Object.entries(commands).find(([name]) => args.command.includes(name)) ?? []
+    Object.entries(commands).find(([name]) =>
+      camelCase(args.command).includes(name)
+    ) ?? []
   )
 }
 

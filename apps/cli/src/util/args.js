@@ -21,11 +21,13 @@ export function parseArgv(argv = [], spec) {
       value
     ])
   )
-  for (const name in spec) {
-    const friendlyName = camelCase(name)
-    // @ts-ignore
-    if (spec[name].required && !(friendlyName in args)) {
-      throw new Error(`no ${friendlyName} provided`)
+  if (!args.help) {
+    for (const name in spec) {
+      const friendlyName = camelCase(name)
+      // @ts-ignore
+      if (spec[name].required && !(friendlyName in args)) {
+        throw new Error(`no ${friendlyName} provided`)
+      }
     }
   }
   return args

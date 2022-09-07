@@ -66,6 +66,11 @@ async function fetchUserData(code, { id, secret, redirect }) {
   return decodeJwt((await response.json()).id_token)
 }
 
-function mapToUserDetails({ given_name: username, picture: avatar, email }) {
-  return { username, avatar, email }
+function mapToUserDetails({
+  sub: providerId,
+  given_name: username,
+  picture: avatar,
+  email
+}) {
+  return { username, avatar, email, providerId }
 }

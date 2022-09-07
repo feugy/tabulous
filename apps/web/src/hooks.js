@@ -28,7 +28,7 @@ function extractToken(request) {
 function logOutAndRedirect() {
   return setCookie(
     new Response(null, {
-      status: 308,
+      status: 307,
       headers: { location: '/home' }
     })
   )
@@ -52,8 +52,7 @@ function setCookie(response, token) {
   const cookieOptions = {
     path: '/',
     secure: true,
-    httpOnly: true,
-    sameSite: true
+    httpOnly: true
   }
   if (!token) {
     cookieOptions.expires = new Date(1)

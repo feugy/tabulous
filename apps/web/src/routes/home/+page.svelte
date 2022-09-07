@@ -39,7 +39,7 @@
 </svelte:head>
 
 <main>
-  <Header {user}>
+  <Header {user} breadcrumb={[{ label: $_('labels.home') }]}>
     <h1>
       {$_(user ? 'titles.home' : 'titles.welcome', user)}
     </h1>
