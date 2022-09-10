@@ -40,11 +40,8 @@ function printProductionMessage({ production }) {
 }
 
 function findCommand(args) {
-  return (
-    Object.entries(commands).find(([name]) =>
-      camelCase(args.command).includes(name)
-    ) ?? []
-  )
+  const command = args.command.map(arg => camelCase(arg))
+  return Object.entries(commands).find(([name]) => command.includes(name)) ?? []
 }
 
 async function invokeCommand(command, argv, name) {
