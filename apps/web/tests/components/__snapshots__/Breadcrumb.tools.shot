@@ -1,5 +1,65 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Empty 1`] = `
+<span>
+  
+</span>
+`;
+
+exports[`Multiple entries 1`] = `
+<span>
+  <ol>
+    <li>
+      <a
+        href="/"
+      >
+        home
+      </a>
+    </li>
+     
+    <li>
+      &gt;
+    </li>
+    
+    <li>
+      <a
+        href="/account"
+      >
+        account
+      </a>
+    </li>
+     
+    <li>
+      &gt;
+    </li>
+    
+    <li>
+      <a>
+        details
+      </a>
+    </li>
+     
+    
+  </ol>
+  
+</span>
+`;
+
+exports[`Single entry 1`] = `
+<span>
+  <ol>
+    <li>
+      <a>
+        home
+      </a>
+    </li>
+     
+    
+  </ol>
+  
+</span>
+`;
+
 exports[`Toolshot components/Breadcrumb.tools.svelte: Empty 1`] = `
 <span>
   

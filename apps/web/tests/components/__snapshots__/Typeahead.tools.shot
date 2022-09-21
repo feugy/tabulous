@@ -35,3 +35,39 @@ exports[`Toolshot components/Typeahead.tools.svelte: With objects 1`] = `
   </span>
 </span>
 `;
+
+exports[`With labels 1`] = `
+<span>
+  <span
+    aria-haspopup="menu"
+    class="wrapper"
+  >
+    <fieldset>
+       
+      <input
+        type="text"
+      />
+    </fieldset>
+     
+    
+  </span>
+</span>
+`;
+
+exports[`With objects 1`] = `
+<span>
+  <span
+    aria-haspopup="menu"
+    class="wrapper"
+  >
+    <fieldset>
+       
+      <input
+        type="text"
+      />
+    </fieldset>
+     
+    
+  </span>
+</span>
+`;

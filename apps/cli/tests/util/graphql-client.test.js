@@ -24,14 +24,12 @@ describe('getGraphQLClient()', () => {
 
     const client = getGraphQLClient()
     expect(client).toBeDefined()
-    expect(client.url).toEqual(url)
     expect(loadConfiguration).toHaveBeenCalledTimes(1)
   })
 
   it('reuses existing client', () => {
     const client = getGraphQLClient()
     expect(client).toBeDefined()
-    expect(client.url).toEqual(url)
     expect(loadConfiguration).not.toHaveBeenCalled()
   })
 

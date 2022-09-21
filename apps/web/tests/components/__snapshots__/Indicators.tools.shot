@@ -1,5 +1,171 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`All kinds 1`] = `
+<span>
+  
+  <div
+    class="centered"
+    style="top: 125px; left: 150px;"
+  >
+    Gaspard
+  </div>
+  
+  
+  <div
+    style="top: 125px; left: 150px;"
+  >
+    3
+  </div>
+  
+  
+  <figure
+    class="positioned"
+    style="--dimension: 60px; --color: null; --top: -125px; --left: -150px; --border-width: 3px"
+  >
+    <img
+      alt="avatar for Gaspard"
+      height="60"
+      width="60"
+    />
+     
+    <figcaption>
+      Gaspard
+    </figcaption>
+  </figure>
+  
+  
+  <div
+    style="top: 200px; left: 50px;"
+  >
+    <span
+      class="material-icons"
+    >
+      layers
+    </span>
+    
+  </div>
+  
+  
+  <div
+    style="top: 200px; left: 100px;"
+  >
+    <span
+      class="material-icons"
+    >
+      
+    </span>
+    Jane
+  </div>
+  
+  
+</span>
+`;
+
+exports[`Feedback for action 1`] = `
+<span>
+  
+  <div
+    style="top: 200px; left: 50px;"
+  >
+    <span
+      class="material-icons"
+    >
+      layers
+    </span>
+    
+  </div>
+  
+  
+</span>
+`;
+
+exports[`Feedback for player 1`] = `
+<span>
+  
+  <div
+    style="top: 200px; left: 50px;"
+  >
+    <span
+      class="material-icons"
+    >
+      
+    </span>
+    Jane
+  </div>
+  
+  
+</span>
+`;
+
+exports[`For player 1`] = `
+<span>
+  
+  <div
+    class="centered"
+    style="top: 125px; left: 150px;"
+  >
+    Gaspard
+  </div>
+  
+  
+</span>
+`;
+
+exports[`Multiple 1`] = `
+<span>
+  
+  <div
+    style="top: 100px; left: 50px;"
+  >
+    5
+  </div>
+  
+  
+  <div
+    style="top: 200px; left: 150px;"
+  >
+    27
+  </div>
+  
+  
+</span>
+`;
+
+exports[`Peer pointer 1`] = `
+<span>
+  
+  <figure
+    class="positioned"
+    style="--dimension: 60px; --color: null; --top: -125px; --left: -150px; --border-width: 3px"
+  >
+    <img
+      alt="avatar for Gaspard"
+      height="60"
+      width="60"
+    />
+     
+    <figcaption>
+      Gaspard
+    </figcaption>
+  </figure>
+  
+  
+</span>
+`;
+
+exports[`Single 1`] = `
+<span>
+  
+  <div
+    style="top: 100px; left: 50px;"
+  >
+    5
+  </div>
+  
+  
+</span>
+`;
+
 exports[`Toolshot components/Indicators.tools.svelte: All kinds 1`] = `
 <span>
   

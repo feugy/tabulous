@@ -5,5 +5,5 @@
 
 <ToolBox component={LoginPage} name="Routes/login">
   <Tool name="Default" />
-  <Tool name="With errors" props={{ errors: [{ message: 'Forbidden' }] }} />
+  <Tool name="With errors" props={{ form: [{ message: 'Forbidden' }] }} />
 </ToolBox>

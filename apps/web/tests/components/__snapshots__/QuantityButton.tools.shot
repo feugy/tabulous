@@ -1,5 +1,163 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Default 1`] = `
+<span>
+  <span
+    role="slider"
+  >
+    <button>
+      <span
+        class="material-icons"
+      >
+        front_hand
+      </span>
+      
+      
+      
+      <strong>
+        1
+      </strong>
+    </button>
+     
+    <div>
+      <button
+        data-up="true"
+      >
+        <span
+          class="material-icons"
+        >
+          arrow_drop_up
+        </span>
+        
+        
+        
+      </button>
+       
+      <button
+        data-down="true"
+      >
+        <span
+          class="material-icons"
+        >
+          arrow_drop_down
+        </span>
+        
+        
+        
+      </button>
+    </div>
+  </span>
+</span>
+`;
+
+exports[`Disabled 1`] = `
+<span>
+  <span
+    role="slider"
+  >
+    <button
+      disabled=""
+    >
+      <span
+        class="material-icons"
+      >
+        stop
+      </span>
+      
+      
+      
+      <strong>
+        1
+      </strong>
+    </button>
+     
+    <div>
+      <button
+        data-up="true"
+        disabled=""
+      >
+        <span
+          class="material-icons"
+        >
+          arrow_drop_up
+        </span>
+        
+        
+        
+      </button>
+       
+      <button
+        data-down="true"
+        disabled=""
+      >
+        <span
+          class="material-icons"
+        >
+          arrow_drop_down
+        </span>
+        
+        
+        
+      </button>
+    </div>
+  </span>
+</span>
+`;
+
+exports[`Secondary 1`] = `
+<span>
+  <span
+    role="slider"
+  >
+    <button
+      class="secondary"
+    >
+      <span
+        class="material-icons"
+      >
+        send
+      </span>
+      
+      
+      
+      <strong>
+        1
+      </strong>
+    </button>
+     
+    <div>
+      <button
+        class="secondary"
+        data-up="true"
+      >
+        <span
+          class="material-icons"
+        >
+          arrow_drop_up
+        </span>
+        
+        
+        
+      </button>
+       
+      <button
+        class="secondary"
+        data-down="true"
+      >
+        <span
+          class="material-icons"
+        >
+          arrow_drop_down
+        </span>
+        
+        
+        
+      </button>
+    </div>
+  </span>
+</span>
+`;
+
 exports[`Toolshot components/QuantityButton.tools.svelte: Default 1`] = `
 <span>
   <span

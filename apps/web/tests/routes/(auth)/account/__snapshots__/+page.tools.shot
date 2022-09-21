@@ -1,0 +1,229 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Manual account 1`] = `
+<span>
+   
+  <main>
+    <header>
+      <nav>
+        <span>
+          <ol>
+            <li>
+              <a
+                href="/home"
+              >
+                Accueil
+              </a>
+            </li>
+             
+            <li>
+              &gt;
+            </li>
+            
+            <li>
+              <a>
+                Paramètres
+              </a>
+            </li>
+             
+            
+          </ol>
+          
+        </span>
+         
+        <span
+          aria-expanded="false"
+          aria-haspopup="menu"
+          class="wrapper"
+        >
+          <button
+            class="transparent"
+          >
+            
+            
+            
+            <figure
+              style="--dimension: 30px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 0px"
+            >
+              <img
+                alt="avatar for Jane Doe"
+                class="hasImage"
+                height="30"
+                src="https://avatars.dicebear.com/api/micah/tabulous-avatar-4.svg"
+                width="30"
+              />
+               
+            </figure>
+             
+            
+          </button>
+           
+          
+        </span>
+      </nav>
+       
+      <div>
+        <h1>
+          Vos paramètres
+        </h1>
+      </div>
+    </header>
+     
+    <section>
+      <h2>
+        Votre compte
+      </h2>
+       
+      <fieldset>
+        <div>
+          Vous avez un compte manuel dont l'identifiant de connextion est "jane-doe-123"
+        </div>
+         
+        <label
+          for="username"
+        >
+          Nom d'affichage : 
+        </label>
+         
+        <fieldset>
+           
+          <input
+            name="username"
+          />
+        </fieldset>
+         
+        <span>
+          Avatar : 
+        </span>
+         
+        <figure
+          style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+        >
+          <img
+            alt="avatar for Jane Doe"
+            class="hasImage"
+            height="150"
+            src="https://avatars.dicebear.com/api/micah/tabulous-avatar-4.svg"
+            width="150"
+          />
+           
+        </figure>
+      </fieldset>
+    </section>
+  </main>
+</span>
+`;
+
+exports[`OAuth account 1`] = `
+<span>
+   
+  <main>
+    <header>
+      <nav>
+        <span>
+          <ol>
+            <li>
+              <a
+                href="/home"
+              >
+                Accueil
+              </a>
+            </li>
+             
+            <li>
+              &gt;
+            </li>
+            
+            <li>
+              <a>
+                Paramètres
+              </a>
+            </li>
+             
+            
+          </ol>
+          
+        </span>
+         
+        <span
+          aria-expanded="false"
+          aria-haspopup="menu"
+          class="wrapper"
+        >
+          <button
+            class="transparent"
+          >
+            
+            
+            
+            <figure
+              style="--dimension: 30px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 0px"
+            >
+              <img
+                alt="avatar for John Clark"
+                class="hasImage"
+                height="30"
+                src="https://avatars.dicebear.com/api/micah/tabulous-avatar-10.svg"
+                width="30"
+              />
+               
+            </figure>
+             
+            
+          </button>
+           
+          
+        </span>
+      </nav>
+       
+      <div>
+        <h1>
+          Vos paramètres
+        </h1>
+      </div>
+    </header>
+     
+    <section>
+      <h2>
+        Votre compte
+      </h2>
+       
+      <fieldset>
+        <div>
+          Vous avez relié ce compte à votre adresse "john.clark@gmail.com"
+        </div>
+         
+        <label
+          for="username"
+        >
+          Nom d'affichage : 
+        </label>
+         
+        <fieldset>
+           
+          <input
+            name="username"
+          />
+        </fieldset>
+         
+        <span>
+          Avatar : 
+        </span>
+         
+        <figure
+          style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+        >
+          <img
+            alt="avatar for John Clark"
+            class="hasImage"
+            height="150"
+            src="https://avatars.dicebear.com/api/micah/tabulous-avatar-10.svg"
+            width="150"
+          />
+           
+        </figure>
+      </fieldset>
+    </section>
+  </main>
+</span>
+`;

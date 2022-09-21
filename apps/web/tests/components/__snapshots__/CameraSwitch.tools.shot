@@ -1,5 +1,249 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Max count reached 1`] = `
+<span>
+  <button
+    title="Charger la position initiale de la camera (Début)"
+  >
+    <span
+      class="material-icons"
+    >
+      videocam
+    </span>
+    
+    
+    
+  </button>
+   
+  <button
+    title="Charger (clic) ou enregistrer (clic long) la position à l'emplacement 1"
+  >
+    <span
+      class="material-icons"
+    >
+      videocam
+    </span>
+    
+    
+    <span
+      class="badge"
+    >
+      1
+    </span>
+    
+  </button>
+   
+  <button
+    title="Charger (clic) ou enregistrer (clic long) la position à l'emplacement 2"
+  >
+    <span
+      class="material-icons"
+    >
+      videocam
+    </span>
+    
+    
+    <span
+      class="badge"
+    >
+      2
+    </span>
+    
+  </button>
+   
+  <button
+    title="Charger (clic) ou enregistrer (clic long) la position à l'emplacement 3"
+  >
+    <span
+      class="material-icons"
+    >
+      videocam
+    </span>
+    
+    
+    <span
+      class="badge"
+    >
+      3
+    </span>
+    
+  </button>
+   
+   
+  
+</span>
+`;
+
+exports[`Multiple saves 1`] = `
+<span>
+  <button
+    title="Charger la position initiale de la camera (Début)"
+  >
+    <span
+      class="material-icons"
+    >
+      videocam
+    </span>
+    
+    
+    
+  </button>
+   
+  <button
+    title="Charger (clic) ou enregistrer (clic long) la position à l'emplacement 1"
+  >
+    <span
+      class="material-icons"
+    >
+      videocam
+    </span>
+    
+    
+    <span
+      class="badge"
+    >
+      1
+    </span>
+    
+  </button>
+   
+  <button
+    title="Charger (clic) ou enregistrer (clic long) la position à l'emplacement 2"
+  >
+    <span
+      class="material-icons"
+    >
+      videocam
+    </span>
+    
+    
+    <span
+      class="badge"
+    >
+      2
+    </span>
+    
+  </button>
+   
+   
+  <button
+    title="Enregistrer la position (Ctrl+1~9)"
+  >
+    <span
+      class="material-icons"
+    >
+      video_call
+    </span>
+    
+    
+    
+  </button>
+  
+</span>
+`;
+
+exports[`Multiple saves with current 1`] = `
+<span>
+  <button
+    title="Charger la position initiale de la camera (Début)"
+  >
+    <span
+      class="material-icons"
+    >
+      videocam
+    </span>
+    
+    
+    
+  </button>
+   
+  <button
+    disabled=""
+    title="Charger (clic) ou enregistrer (clic long) la position à l'emplacement 1"
+  >
+    <span
+      class="material-icons"
+    >
+      videocam
+    </span>
+    
+    
+    <span
+      class="badge"
+    >
+      1
+    </span>
+    
+  </button>
+   
+  <button
+    title="Charger (clic) ou enregistrer (clic long) la position à l'emplacement 2"
+  >
+    <span
+      class="material-icons"
+    >
+      videocam
+    </span>
+    
+    
+    <span
+      class="badge"
+    >
+      2
+    </span>
+    
+  </button>
+   
+   
+  <button
+    disabled=""
+    title="Enregistrer la position (Ctrl+1~9)"
+  >
+    <span
+      class="material-icons"
+    >
+      video_call
+    </span>
+    
+    
+    
+  </button>
+  
+</span>
+`;
+
+exports[`Single save 1`] = `
+<span>
+  <button
+    title="Charger la position initiale de la camera (Début)"
+  >
+    <span
+      class="material-icons"
+    >
+      videocam
+    </span>
+    
+    
+    
+  </button>
+   
+   
+  <button
+    title="Enregistrer la position (Ctrl+1~9)"
+  >
+    <span
+      class="material-icons"
+    >
+      video_call
+    </span>
+    
+    
+    
+  </button>
+  
+</span>
+`;
+
 exports[`Toolshot components/CameraSwitch.tools.svelte: Max count reached 1`] = `
 <span>
   <button

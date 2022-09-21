@@ -1,7 +1,7 @@
 <script>
   import { _ } from 'svelte-intl'
-  import { Header } from '../../connected-components'
-  import { PlayerThumbnail, Input } from '../../components'
+  import { Header } from '../../../connected-components'
+  import { PlayerThumbnail, Input } from '../../../components'
 
   export let data = {}
   const user = data.session.player

@@ -30,7 +30,7 @@
     "test:integration": "npm run test:integration -w apps/web"
   },
   "devDependencies": {
-    "eslint": "^8.18.0",
+    "eslint": "^8.23.1",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-svelte3": "^4.0.0",
     "husky": "^8.0.1",

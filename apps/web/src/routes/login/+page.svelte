@@ -4,7 +4,8 @@
   import { LogInForm } from '../../components'
   import { flags } from '../../stores'
 
-  export let errors = null
+  /** @type {import('./$types').ActionData} */
+  export let form = null
 
   let inputRef = null
   const redirect = $page.url?.searchParams.get('redirect') ?? '/home'
@@ -21,7 +22,7 @@
 <main>
   <LogInForm
     bind:inputRef
-    error={errors ? $_('errors.login-failure') : undefined}
+    error={form ? $_('errors.login-failure') : undefined}
     {redirect}
     withGithub={$flags.useGithubProvider}
     withGoogle={$flags.useGoogleProvider}

@@ -1,6 +1,6 @@
 <script>
   import { Tool, ToolBox } from '@atelier-wb/svelte'
-  import AccountPage from '../../../src/routes/account/+page@auth.svelte'
+  import AccountPage from '../../../../src/routes/(auth)/account/+page.svelte'
 
   const manualPlayer = {
     id: 'jane-doe-123',

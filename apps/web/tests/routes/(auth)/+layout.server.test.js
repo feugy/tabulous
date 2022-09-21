@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker'
-import { load } from '../../src/routes/+layout-auth.server'
+import { load } from '../../../src/routes/(auth)/+layout.server'
 
 jest.mock('@sveltejs/kit', () => ({
   redirect(status, location) {
