@@ -25,9 +25,7 @@ export default defineConfig(({ mode }) => ({
       setupPath: './atelier/setup',
       uiSettings: {
         backgrounds: ['white', '', '#e0e0e0', '#a0a0a0', 'black']
-      },
-      publicDir: ['./tests'],
-      outDir: null
+      }
     })
   ],
   build: {
