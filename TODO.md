@@ -2,7 +2,6 @@
 
 Roadmap
 
-- web: missing avatar displays "avatar for" instead of initials
 - lawyer council
 - web: terms & condition
 - web: cookie policy
