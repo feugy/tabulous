@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Toolshot components/MeshDetails.tools.svelte: Components/Mesh Details 1`] = `
+exports[`Components/Mesh Details 1`] = `
 <span>
   <figure
     class="open"

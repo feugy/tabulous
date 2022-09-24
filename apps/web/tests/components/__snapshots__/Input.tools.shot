@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Toolshot components/Input.tools.svelte: No value 1`] = `
+exports[`No value 1`] = `
 <span>
   <fieldset>
     <legend>
@@ -12,7 +12,7 @@ exports[`Toolshot components/Input.tools.svelte: No value 1`] = `
 </span>
 `;
 
-exports[`Toolshot components/Input.tools.svelte: With initial value 1`] = `
+exports[`With initial value 1`] = `
 <span>
   <fieldset>
     <legend

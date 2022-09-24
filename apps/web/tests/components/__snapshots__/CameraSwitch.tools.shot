@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Toolshot components/CameraSwitch.tools.svelte: Max count reached 1`] = `
+exports[`Max count reached 1`] = `
 <span>
   <button
     title="Charger la position initiale de la camera (Début)"
@@ -74,7 +74,7 @@ exports[`Toolshot components/CameraSwitch.tools.svelte: Max count reached 1`] = 
 </span>
 `;
 
-exports[`Toolshot components/CameraSwitch.tools.svelte: Multiple saves 1`] = `
+exports[`Multiple saves 1`] = `
 <span>
   <button
     title="Charger la position initiale de la camera (Début)"
@@ -142,7 +142,7 @@ exports[`Toolshot components/CameraSwitch.tools.svelte: Multiple saves 1`] = `
 </span>
 `;
 
-exports[`Toolshot components/CameraSwitch.tools.svelte: Multiple saves with current 1`] = `
+exports[`Multiple saves with current 1`] = `
 <span>
   <button
     title="Charger la position initiale de la camera (Début)"
@@ -212,7 +212,7 @@ exports[`Toolshot components/CameraSwitch.tools.svelte: Multiple saves with curr
 </span>
 `;
 
-exports[`Toolshot components/CameraSwitch.tools.svelte: Single save 1`] = `
+exports[`Single save 1`] = `
 <span>
   <button
     title="Charger la position initiale de la camera (Début)"

@@ -1,4 +1,4 @@
-import { browser } from '$app/env'
+import { browser } from '$app/environment'
 import { BehaviorSubject } from 'rxjs'
 import { makeLogger } from '../utils'
 

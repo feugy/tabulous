@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Toolshot components/Typeahead.tools.svelte: With labels 1`] = `
+exports[`With labels 1`] = `
 <span>
   <span
     aria-haspopup="menu"
@@ -18,7 +18,7 @@ exports[`Toolshot components/Typeahead.tools.svelte: With labels 1`] = `
 </span>
 `;
 
-exports[`Toolshot components/Typeahead.tools.svelte: With objects 1`] = `
+exports[`With objects 1`] = `
 <span>
   <span
     aria-haspopup="menu"

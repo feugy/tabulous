@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals'
 import { faker } from '@faker-js/faker'
-import { handle } from '../src/hooks'
+import { handle } from '../src/hooks.server'
 import { configureGraphQlServer } from './test-utils'
 
 describe('Sveltekit handle() hook', () => {
@@ -14,7 +14,9 @@ describe('Sveltekit handle() hook', () => {
     const response = await handle(buildHandleInput())
     expect(response.status).toBe(200)
     expect(response.headers.get('set-cookie')).toBe(
-      `token=; Path=/; Expires=${new Date(1).toUTCString()}; HttpOnly; Secure`
+      `token=; Path=/; Expires=${new Date(
+        1
+      ).toUTCString()}; HttpOnly; Secure; SameSite=None`
     )
   })
 
@@ -29,7 +31,7 @@ describe('Sveltekit handle() hook', () => {
     expect(response.status).toBe(303)
     expect(response.headers.get('location')).toBe(pathname)
     expect(response.headers.get('set-cookie')).toBe(
-      `token=${token}; Path=/; HttpOnly; Secure`
+      `token=${token}; Path=/; HttpOnly; Secure; SameSite=None`
     )
   })
 
@@ -47,7 +49,7 @@ describe('Sveltekit handle() hook', () => {
     expect(response.status).toBe(303)
     expect(response.headers.get('location')).toBe(desired)
     expect(response.headers.get('set-cookie')).toBe(
-      `token=${token}; Path=/; HttpOnly; Secure`
+      `token=${token}; Path=/; HttpOnly; Secure; SameSite=None`
     )
   })
 
@@ -65,7 +67,7 @@ describe('Sveltekit handle() hook', () => {
     const response = await handle(input)
     expect(response.status).toBe(200)
     expect(response.headers.get('set-cookie')).toBe(
-      `token=${token}; Path=/; HttpOnly; Secure`
+      `token=${token}; Path=/; HttpOnly; Secure; SameSite=None`
     )
     expect(input.event.locals.bearer).toBe(`Bearer ${token}`)
     expect(input.event.locals.session).toEqual(session)
@@ -76,7 +78,9 @@ describe('Sveltekit handle() hook', () => {
     expect(response.status).toBe(307)
     expect(response.headers.get('location')).toBe('/home')
     expect(response.headers.get('set-cookie')).toBe(
-      `token=; Path=/; Expires=${new Date(1).toUTCString()}; HttpOnly; Secure`
+      `token=; Path=/; Expires=${new Date(
+        1
+      ).toUTCString()}; HttpOnly; Secure; SameSite=None`
     )
   })
 })

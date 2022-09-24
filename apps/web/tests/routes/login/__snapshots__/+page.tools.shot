@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Toolshot routes/login/+page.tools.svelte: Default 1`] = `
+exports[`Default 1`] = `
 <span>
    
   <main>
@@ -151,7 +151,7 @@ exports[`Toolshot routes/login/+page.tools.svelte: Default 1`] = `
 </span>
 `;
 
-exports[`Toolshot routes/login/+page.tools.svelte: With errors 1`] = `
+exports[`With errors 1`] = `
 <span>
    
   <main>

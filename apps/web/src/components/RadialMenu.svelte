@@ -1,5 +1,5 @@
 <script context="module">
-  import { browser } from '$app/env'
+  import { browser } from '$app/environment'
   import ms from 'ms'
   let enterDuration = 0
   if (browser) {

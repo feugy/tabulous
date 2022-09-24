@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Toolshot components/ConfirmDialogue.tools.svelte: Components/Confirm Dialogue 1`] = `
+exports[`Components/Confirm Dialogue 1`] = `
 <dl>
   <dt>
     Raoul Wolfoni

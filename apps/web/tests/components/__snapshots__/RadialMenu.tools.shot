@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Toolshot components/RadialMenu.tools.svelte: A few items 1`] = `
+exports[`A few items 1`] = `
 <aside
   role="menu"
   style="left: 25%; top: 25%; --size:100px;"
@@ -45,7 +45,7 @@ exports[`Toolshot components/RadialMenu.tools.svelte: A few items 1`] = `
 </aside>
 `;
 
-exports[`Toolshot components/RadialMenu.tools.svelte: More items 1`] = `
+exports[`More items 1`] = `
 <aside
   role="menu"
   style="left: 25%; top: 25%; --size:150px;"

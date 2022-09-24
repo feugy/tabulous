@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Toolshot components/Button.tools.svelte: Primary image icon only 1`] = `
+exports[`Primary image icon only 1`] = `
 <button>
   <span
     class="icon"
@@ -24,7 +24,7 @@ exports[`Toolshot components/Button.tools.svelte: Primary image icon only 1`] = 
 </button>
 `;
 
-exports[`Toolshot components/Button.tools.svelte: Primary with icon only 1`] = `
+exports[`Primary with icon only 1`] = `
 <span>
   <button>
     <span
@@ -39,7 +39,7 @@ exports[`Toolshot components/Button.tools.svelte: Primary with icon only 1`] = `
 </span>
 `;
 
-exports[`Toolshot components/Button.tools.svelte: Primary with text 1`] = `
+exports[`Primary with text 1`] = `
 <span>
   <button>
     
@@ -54,7 +54,7 @@ exports[`Toolshot components/Button.tools.svelte: Primary with text 1`] = `
 </span>
 `;
 
-exports[`Toolshot components/Button.tools.svelte: Primary with text and icon 1`] = `
+exports[`Primary with text and icon 1`] = `
 <span>
   <button>
     <span
@@ -74,7 +74,7 @@ exports[`Toolshot components/Button.tools.svelte: Primary with text and icon 1`]
 </span>
 `;
 
-exports[`Toolshot components/Button.tools.svelte: Primary with text and image icon 1`] = `
+exports[`Primary with text and image icon 1`] = `
 <button>
   <span
     class="icon"
@@ -103,7 +103,7 @@ exports[`Toolshot components/Button.tools.svelte: Primary with text and image ic
 </button>
 `;
 
-exports[`Toolshot components/Button.tools.svelte: Secondary with icon only 1`] = `
+exports[`Secondary with icon only 1`] = `
 <span>
   <button
     class="secondary"
@@ -120,7 +120,7 @@ exports[`Toolshot components/Button.tools.svelte: Secondary with icon only 1`] =
 </span>
 `;
 
-exports[`Toolshot components/Button.tools.svelte: Secondary with text 1`] = `
+exports[`Secondary with text 1`] = `
 <span>
   <button
     class="secondary"
@@ -137,7 +137,7 @@ exports[`Toolshot components/Button.tools.svelte: Secondary with text 1`] = `
 </span>
 `;
 
-exports[`Toolshot components/Button.tools.svelte: Secondary with text and icon 1`] = `
+exports[`Secondary with text and icon 1`] = `
 <span>
   <button
     class="secondary"
@@ -159,7 +159,7 @@ exports[`Toolshot components/Button.tools.svelte: Secondary with text and icon 1
 </span>
 `;
 
-exports[`Toolshot components/Button.tools.svelte: Transparent with text 1`] = `
+exports[`Transparent with text 1`] = `
 <span>
   <button
     class="transparent"
@@ -176,7 +176,7 @@ exports[`Toolshot components/Button.tools.svelte: Transparent with text 1`] = `
 </span>
 `;
 
-exports[`Toolshot components/Button.tools.svelte: With badge 1`] = `
+exports[`With badge 1`] = `
 <div>
   Vous avez...
 </div>

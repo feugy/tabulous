@@ -2,7 +2,10 @@
   import { page } from '$app/stores'
   import { onMount, onDestroy } from 'svelte'
   import { _ } from 'svelte-intl'
-  import { GameMenu, InvitePlayerDialogue } from '../../../connected-components'
+  import {
+    GameMenu,
+    InvitePlayerDialogue
+  } from '../../../../connected-components'
   import {
     CameraSwitch,
     CursorInfo,
@@ -12,7 +15,7 @@
     MeshDetails,
     Progress,
     RadialMenu
-  } from '../../../components'
+  } from '../../../../components'
   import {
     actionMenuProps,
     cameraSaves,
@@ -33,8 +36,8 @@
     saveCamera,
     sendToThread,
     thread
-  } from '../../../stores'
-  import { observeDimension } from '../../../utils'
+  } from '../../../../stores'
+  import { observeDimension } from '../../../../utils'
 
   /** @type {import('./$types').PageData} */
   export let data = {}

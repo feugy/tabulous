@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Toolshot components/CatalogItem.tools.svelte: No age nor time 1`] = `
+exports[`No age nor time 1`] = `
 <span
   class="catalog-item-viewer"
 >
@@ -89,7 +89,7 @@ exports[`Toolshot components/CatalogItem.tools.svelte: No age nor time 1`] = `
 </span>
 `;
 
-exports[`Toolshot components/CatalogItem.tools.svelte: With characteristics 1`] = `
+exports[`With characteristics 1`] = `
 <span
   class="catalog-item-viewer"
 >
@@ -172,7 +172,7 @@ exports[`Toolshot components/CatalogItem.tools.svelte: With characteristics 1`] 
 </span>
 `;
 
-exports[`Toolshot components/CatalogItem.tools.svelte: With characteristics and copyright 1`] = `
+exports[`With characteristics and copyright 1`] = `
 <span
   class="catalog-item-viewer"
 >

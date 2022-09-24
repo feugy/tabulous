@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Toolshot components/Indicators.tools.svelte: All kinds 1`] = `
+exports[`All kinds 1`] = `
 <span>
   
   <div
@@ -61,7 +61,7 @@ exports[`Toolshot components/Indicators.tools.svelte: All kinds 1`] = `
 </span>
 `;
 
-exports[`Toolshot components/Indicators.tools.svelte: Feedback for action 1`] = `
+exports[`Feedback for action 1`] = `
 <span>
   
   <div
@@ -79,7 +79,7 @@ exports[`Toolshot components/Indicators.tools.svelte: Feedback for action 1`] = 
 </span>
 `;
 
-exports[`Toolshot components/Indicators.tools.svelte: Feedback for player 1`] = `
+exports[`Feedback for player 1`] = `
 <span>
   
   <div
@@ -97,7 +97,7 @@ exports[`Toolshot components/Indicators.tools.svelte: Feedback for player 1`] = 
 </span>
 `;
 
-exports[`Toolshot components/Indicators.tools.svelte: For player 1`] = `
+exports[`For player 1`] = `
 <span>
   
   <div
@@ -111,7 +111,7 @@ exports[`Toolshot components/Indicators.tools.svelte: For player 1`] = `
 </span>
 `;
 
-exports[`Toolshot components/Indicators.tools.svelte: Multiple 1`] = `
+exports[`Multiple 1`] = `
 <span>
   
   <div
@@ -131,7 +131,7 @@ exports[`Toolshot components/Indicators.tools.svelte: Multiple 1`] = `
 </span>
 `;
 
-exports[`Toolshot components/Indicators.tools.svelte: Peer pointer 1`] = `
+exports[`Peer pointer 1`] = `
 <span>
   
   <figure
@@ -153,7 +153,7 @@ exports[`Toolshot components/Indicators.tools.svelte: Peer pointer 1`] = `
 </span>
 `;
 
-exports[`Toolshot components/Indicators.tools.svelte: Single 1`] = `
+exports[`Single 1`] = `
 <span>
   
   <div

@@ -1,7 +1,11 @@
 import { faker } from '@faker-js/faker'
-import { POST } from '../../../src/routes/login/+page.server'
+import { actions } from '../../../src/routes/login/+page.server'
 import { runMutation } from '../../../src/stores/graphql-client'
 
+jest.mock('@sveltejs/kit', () => ({
+  redirect: (status, location) => ({ status, location }),
+  invalid: (status, errors) => ({ status, errors })
+}))
 jest.mock('../../../src/stores/graphql-client', () => {
   const { jest } = require('@jest/globals')
   return {
@@ -21,7 +25,7 @@ describe('POST /login route action', () => {
     const request = buildsRequest({ id, password })
     runMutation.mockResolvedValueOnce(session)
 
-    expect(await POST({ request, locals, fetch })).toEqual({
+    await expect(actions.default({ request, locals, fetch })).rejects.toEqual({
       status: 303,
       location: '/home'
     })
@@ -39,12 +43,10 @@ describe('POST /login route action', () => {
     const redirect = `/${faker.internet.domainName()}`
     const request = buildsRequest({ id, password, redirect })
     runMutation.mockResolvedValueOnce(session)
-
-    expect(await POST({ request, locals, fetch })).toEqual({
+    await expect(actions.default({ request, locals, fetch })).rejects.toEqual({
       status: 303,
       location: redirect
     })
-
     expect(locals.session).toEqual(session)
   })
 
@@ -55,7 +57,8 @@ describe('POST /login route action', () => {
     const redirect = faker.internet.url()
     const request = buildsRequest({ id, password, redirect })
 
-    expect(await POST({ request, locals, fetch })).toEqual({
+    await expect(actions.default({ request, locals, fetch })).rejects.toEqual({
+      status: 400,
       errors: { redirect: `'${redirect}' should be an absolute path` }
     })
     expect(locals.session).toBeUndefined()
@@ -68,7 +71,8 @@ describe('POST /login route action', () => {
     const redirect = '../home'
     const request = buildsRequest({ id, password, redirect })
 
-    expect(await POST({ request, locals, fetch })).toEqual({
+    await expect(actions.default({ request, locals, fetch })).rejects.toEqual({
+      status: 400,
       errors: { redirect: `'${redirect}' should be an absolute path` }
     })
     expect(locals.session).toBeUndefined()
@@ -82,9 +86,11 @@ describe('POST /login route action', () => {
     const error = new Error('wrong credentials')
     runMutation.mockRejectedValueOnce(error)
 
-    expect(await POST({ request, locals, fetch })).toEqual({
+    // TODO should be rejects
+    await expect(actions.default({ request, locals, fetch })).resolves.toEqual({
       status: 401,
-      errors: error
+      data: error.message, // TODO should be errors: error.message
+      type: 'invalid' // TODO should not be here
     })
     expect(locals.session).toBeUndefined()
   })

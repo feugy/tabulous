@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Toolshot components/Dropdown.tools.svelte: Icon only 1`] = `
+exports[`Icon only 1`] = `
 <div>
   <div>
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
@@ -59,7 +59,7 @@ lacus vestibulum sed arcu non odio euismod lacinia.
 </div>
 `;
 
-exports[`Toolshot components/Dropdown.tools.svelte: Left aligned 1`] = `
+exports[`Left aligned 1`] = `
 <div>
   <div>
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
@@ -123,7 +123,7 @@ lacus vestibulum sed arcu non odio euismod lacinia.
 </div>
 `;
 
-exports[`Toolshot components/Dropdown.tools.svelte: Right aligned 1`] = `
+exports[`Right aligned 1`] = `
 <div
   class="text-right"
 >
@@ -189,7 +189,7 @@ lacus vestibulum sed arcu non odio euismod lacinia.
 </div>
 `;
 
-exports[`Toolshot components/Dropdown.tools.svelte: Split clicks 1`] = `
+exports[`Split clicks 1`] = `
 <div>
   <div>
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
@@ -248,7 +248,7 @@ lacus vestibulum sed arcu non odio euismod lacinia.
 </div>
 `;
 
-exports[`Toolshot components/Dropdown.tools.svelte: Value as text 1`] = `
+exports[`Value as text 1`] = `
 <div>
   <div>
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod

@@ -25,8 +25,7 @@ export default defineConfig(({ mode }) => ({
       setupPath: './atelier/setup',
       uiSettings: {
         backgrounds: ['white', '', '#e0e0e0', '#a0a0a0', 'black']
-      },
-      publicDir: ['./tests']
+      }
     })
   ],
   build: {
@@ -42,6 +41,8 @@ export default defineConfig(({ mode }) => ({
     port: 3000
   },
   preview: {
+    // https://github.com/vitejs/vite/issues/4403#issuecomment-1007023263
+    proxy: { 'http://localhost:3000': 'http://localhost:3000' },
     port: 3000,
     strictPort: true
   }

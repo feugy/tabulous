@@ -1,5 +1,5 @@
 import { redirect } from '@sveltejs/kit'
-import { load as defaultLoad } from './+layout.server'
+import { load as defaultLoad } from '../+layout.server'
 
 /** @type {import('./$types').LayoutServerLoad} */
 export async function load(args) {

@@ -1,32 +1,32 @@
+import { redirect, invalid } from '@sveltejs/kit'
 import { initGraphQlClient } from '../../stores/graphql-client'
 import { logIn } from '../../stores/players'
 import { graphQlUrl } from '../../utils/env'
 
-/** @type {import('./$types').Action} */
-export async function POST({ request, locals, fetch }) {
-  try {
+export const actions = {
+  /** @type {import('./$types').Action} */
+  default: async ({ request, locals, fetch }) => {
     const form = await request.formData()
-    const { id, password, redirect } = Object.fromEntries(form.entries())
+    const {
+      id,
+      password,
+      redirect: location
+    } = Object.fromEntries(form.entries())
     if (
-      redirect &&
-      (redirect.startsWith('http') || !redirect.startsWith('/'))
+      location &&
+      (location.startsWith('http') || !location.startsWith('/'))
     ) {
-      return {
-        errors: {
-          redirect: `'${redirect}' should be an absolute path`
-        }
-      }
+      throw invalid(400, {
+        redirect: `'${location}' should be an absolute path`
+      })
     }
-    initGraphQlClient({ graphQlUrl, fetch, subscriptionSupport: false })
-    locals.session = await logIn(id, password)
-    return {
-      status: 303,
-      location: redirect || '/home'
+    try {
+      initGraphQlClient({ graphQlUrl, fetch, subscriptionSupport: false })
+      locals.session = await logIn(id, password)
+    } catch (error) {
+      return { type: 'invalid', status: 401, data: error.message }
+      // throw invalid(401, error.message)
     }
-  } catch (error) {
-    return {
-      status: 401,
-      errors: error
-    }
+    throw redirect(303, location || '/home')
   }
 }

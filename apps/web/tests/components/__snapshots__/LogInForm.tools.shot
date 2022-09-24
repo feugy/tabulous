@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Toolshot components/LogInForm.tools.svelte: Default state 1`] = `
+exports[`Default state 1`] = `
 <span>
   <div
     class="pane"
@@ -99,7 +99,7 @@ exports[`Toolshot components/LogInForm.tools.svelte: Default state 1`] = `
 </span>
 `;
 
-exports[`Toolshot components/LogInForm.tools.svelte: With Github provider 1`] = `
+exports[`With Github provider 1`] = `
 <span>
   <div
     class="pane"
@@ -221,7 +221,7 @@ exports[`Toolshot components/LogInForm.tools.svelte: With Github provider 1`] = 
 </span>
 `;
 
-exports[`Toolshot components/LogInForm.tools.svelte: With Google provider 1`] = `
+exports[`With Google provider 1`] = `
 <span>
   <div
     class="pane"
@@ -343,7 +343,7 @@ exports[`Toolshot components/LogInForm.tools.svelte: With Google provider 1`] = 
 </span>
 `;
 
-exports[`Toolshot components/LogInForm.tools.svelte: With all providers 1`] = `
+exports[`With all providers 1`] = `
 <span>
   <div
     class="pane"
@@ -491,7 +491,7 @@ exports[`Toolshot components/LogInForm.tools.svelte: With all providers 1`] = `
 </span>
 `;
 
-exports[`Toolshot components/LogInForm.tools.svelte: With password error 1`] = `
+exports[`With password error 1`] = `
 <span>
   <div
     class="pane"
@@ -576,7 +576,7 @@ exports[`Toolshot components/LogInForm.tools.svelte: With password error 1`] = `
 </span>
 `;
 
-exports[`Toolshot components/LogInForm.tools.svelte: with password values 1`] = `
+exports[`with password values 1`] = `
 <span>
   <div
     class="pane"

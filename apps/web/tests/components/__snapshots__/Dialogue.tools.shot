@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Toolshot components/Dialogue.tools.svelte: Components/Dialogue 1`] = `
+exports[`Components/Dialogue 1`] = `
 <main>
   <div>
     Vous savez quelle différence il y a entre un con et un voleur ?

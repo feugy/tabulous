@@ -2,12 +2,13 @@ import { Scene } from '@babylonjs/core/scene'
 import { NullEngine } from '@babylonjs/core/Engines/nullEngine'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { Logger } from '@babylonjs/core/Misc/logger'
 import { getDimensions, isContaining } from '../../../src/3d/utils'
 
 let engine
 
 beforeAll(() => {
-  jest.spyOn(console, 'log').mockImplementationOnce(() => {})
+  Logger.LogLevels = 0
   engine = new NullEngine()
   new Scene(engine)
 })

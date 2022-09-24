@@ -4,6 +4,7 @@ certbot/
 coverage/
 data/
 dist/
+dist-atelier/
 keys/
 node_modules/
 scans/

@@ -52,7 +52,8 @@ function setCookie(response, token) {
   const cookieOptions = {
     path: '/',
     secure: true,
-    httpOnly: true
+    httpOnly: true,
+    sameSite: 'None'
   }
   if (!token) {
     cookieOptions.expires = new Date(1)

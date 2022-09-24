@@ -42,7 +42,6 @@ afterAll(() => engine.dispose())
 
 describe('serializeMeshes() 3D utility', () => {
   it('handles empty scene', () => {
-    jest.spyOn(console, 'log').mockImplementationOnce(() => {})
     expect(serializeMeshes()).toEqual([])
   })
 

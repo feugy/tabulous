@@ -1,4 +1,5 @@
 import { NullEngine } from '@babylonjs/core/Engines/nullEngine'
+import { Logger } from '@babylonjs/core/Misc/logger'
 import { faker } from '@faker-js/faker'
 import { createEngine } from '../../src/3d'
 import { createCard } from '../../src/3d/meshes'
@@ -15,9 +16,7 @@ describe('createEngine()', () => {
   const hand = document.createElement('div')
   const inputInit = jest.spyOn(inputManager, 'init')
 
-  beforeEach(() => {
-    jest.spyOn(console, 'log').mockImplementationOnce(() => ({}))
-  })
+  beforeEach(() => (Logger.LogLevels = 0))
 
   afterEach(() => {
     engine?.dispose()

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Toolshot components/MinimizableSection.tools.svelte: Bottom 1`] = `
+exports[`Bottom 1`] = `
 <span>
   <aside
     class="bottom"
@@ -9,6 +9,7 @@ exports[`Toolshot components/MinimizableSection.tools.svelte: Bottom 1`] = `
       aria-expanded="true"
       aria-label="minimizable"
       class="vertical"
+      id="minimizable-section-5"
       style="height: auto;"
     >
       <menu
@@ -37,6 +38,7 @@ exports[`Toolshot components/MinimizableSection.tools.svelte: Bottom 1`] = `
         </ol>
          
         <div
+          aria-controls="minimizable-section-5"
           class="gutter"
           role="scrollbar"
         />
@@ -173,7 +175,7 @@ Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire,
 </span>
 `;
 
-exports[`Toolshot components/MinimizableSection.tools.svelte: Left 1`] = `
+exports[`Left 1`] = `
 <span>
   <aside
     class="left"
@@ -181,6 +183,7 @@ exports[`Toolshot components/MinimizableSection.tools.svelte: Left 1`] = `
     <section
       aria-expanded="true"
       aria-label="minimizable"
+      id="minimizable-section-2"
       style="width: auto;"
     >
       <menu
@@ -209,6 +212,7 @@ exports[`Toolshot components/MinimizableSection.tools.svelte: Left 1`] = `
         </ol>
          
         <div
+          aria-controls="minimizable-section-2"
           class="gutter"
           role="scrollbar"
         />
@@ -345,7 +349,7 @@ Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire,
 </span>
 `;
 
-exports[`Toolshot components/MinimizableSection.tools.svelte: Multiple, custom tabs 1`] = `
+exports[`Multiple, custom tabs 1`] = `
 <span>
   <aside
     class="bottom"
@@ -354,6 +358,7 @@ exports[`Toolshot components/MinimizableSection.tools.svelte: Multiple, custom t
       aria-expanded="false"
       aria-label="minimizable"
       class="minimized vertical"
+      id="minimizable-section-1"
       style="height: auto;"
     >
       <menu
@@ -400,6 +405,7 @@ exports[`Toolshot components/MinimizableSection.tools.svelte: Multiple, custom t
         </ol>
          
         <div
+          aria-controls="minimizable-section-1"
           class="gutter"
           role="scrollbar"
         />
@@ -536,7 +542,7 @@ Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire,
 </span>
 `;
 
-exports[`Toolshot components/MinimizableSection.tools.svelte: Right 1`] = `
+exports[`Right 1`] = `
 <span>
   <aside
     class="right"
@@ -544,6 +550,7 @@ exports[`Toolshot components/MinimizableSection.tools.svelte: Right 1`] = `
     <section
       aria-expanded="true"
       aria-label="minimizable"
+      id="minimizable-section-3"
       style="width: auto;"
     >
       <menu
@@ -572,6 +579,7 @@ exports[`Toolshot components/MinimizableSection.tools.svelte: Right 1`] = `
         </ol>
          
         <div
+          aria-controls="minimizable-section-3"
           class="gutter"
           role="scrollbar"
         />
@@ -708,7 +716,7 @@ Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire,
 </span>
 `;
 
-exports[`Toolshot components/MinimizableSection.tools.svelte: Top 1`] = `
+exports[`Top 1`] = `
 <span>
   <aside
     class="top"
@@ -717,6 +725,7 @@ exports[`Toolshot components/MinimizableSection.tools.svelte: Top 1`] = `
       aria-expanded="true"
       aria-label="minimizable"
       class="vertical"
+      id="minimizable-section-4"
       style="height: auto;"
     >
       <menu
@@ -745,6 +754,7 @@ exports[`Toolshot components/MinimizableSection.tools.svelte: Top 1`] = `
         </ol>
          
         <div
+          aria-controls="minimizable-section-4"
           class="gutter"
           role="scrollbar"
         />

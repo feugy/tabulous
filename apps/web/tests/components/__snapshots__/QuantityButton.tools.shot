@@ -1,8 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Toolshot components/QuantityButton.tools.svelte: Default 1`] = `
+exports[`Default 1`] = `
 <span>
   <span
+    aria-valuenow="1"
     role="slider"
   >
     <button>
@@ -50,9 +51,10 @@ exports[`Toolshot components/QuantityButton.tools.svelte: Default 1`] = `
 </span>
 `;
 
-exports[`Toolshot components/QuantityButton.tools.svelte: Disabled 1`] = `
+exports[`Disabled 1`] = `
 <span>
   <span
+    aria-valuenow="1"
     role="slider"
   >
     <button
@@ -104,9 +106,10 @@ exports[`Toolshot components/QuantityButton.tools.svelte: Disabled 1`] = `
 </span>
 `;
 
-exports[`Toolshot components/QuantityButton.tools.svelte: Secondary 1`] = `
+exports[`Secondary 1`] = `
 <span>
   <span
+    aria-valuenow="1"
     role="slider"
   >
     <button

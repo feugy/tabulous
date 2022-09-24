@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Toolshot components/PlayerThumbnail.tools.svelte: Avatar 1`] = `
+exports[`Avatar 1`] = `
 <span>
   <figure
     style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
@@ -17,7 +17,7 @@ exports[`Toolshot components/PlayerThumbnail.tools.svelte: Avatar 1`] = `
 </span>
 `;
 
-exports[`Toolshot components/PlayerThumbnail.tools.svelte: Positioned text 1`] = `
+exports[`Positioned text 1`] = `
 <span>
   <figure
     class="positioned colored"
@@ -36,7 +36,7 @@ exports[`Toolshot components/PlayerThumbnail.tools.svelte: Positioned text 1`] =
 </span>
 `;
 
-exports[`Toolshot components/PlayerThumbnail.tools.svelte: Positionned avatar 1`] = `
+exports[`Positionned avatar 1`] = `
 <span>
   <figure
     class="positioned colored"
@@ -54,7 +54,7 @@ exports[`Toolshot components/PlayerThumbnail.tools.svelte: Positionned avatar 1`
 </span>
 `;
 
-exports[`Toolshot components/PlayerThumbnail.tools.svelte: Small text 1`] = `
+exports[`Small text 1`] = `
 <span>
   <figure
     style="--dimension: 50px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
@@ -72,7 +72,7 @@ exports[`Toolshot components/PlayerThumbnail.tools.svelte: Small text 1`] = `
 </span>
 `;
 
-exports[`Toolshot components/PlayerThumbnail.tools.svelte: Text 1`] = `
+exports[`Text 1`] = `
 <span>
   <figure
     style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"

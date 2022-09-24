@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Toolshot components/PlayerAvatar.tools.svelte: Local 1`] = `
+exports[`Local 1`] = `
 <span>
   <section
     data-testid="player-avatar"
@@ -32,7 +32,7 @@ exports[`Toolshot components/PlayerAvatar.tools.svelte: Local 1`] = `
 </span>
 `;
 
-exports[`Toolshot components/PlayerAvatar.tools.svelte: No video 1`] = `
+exports[`No video 1`] = `
 <span>
   <section
     data-testid="player-avatar"
@@ -61,7 +61,7 @@ exports[`Toolshot components/PlayerAvatar.tools.svelte: No video 1`] = `
 </span>
 `;
 
-exports[`Toolshot components/PlayerAvatar.tools.svelte: No video nor avatar 1`] = `
+exports[`No video nor avatar 1`] = `
 <span>
   <section
     data-testid="player-avatar"

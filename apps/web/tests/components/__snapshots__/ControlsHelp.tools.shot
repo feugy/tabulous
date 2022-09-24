@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Toolshot components/ControlsHelp.tools.svelte: Components/Controls Help 1`] = `
+exports[`Components/Controls Help 1`] = `
 <span>
   <div>
     <h3>

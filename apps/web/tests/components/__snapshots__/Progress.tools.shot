@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Toolshot components/Progress.tools.svelte: Components/Progress 1`] = `
+exports[`Components/Progress 1`] = `
 <span>
   <svg
     class="animate-spin"

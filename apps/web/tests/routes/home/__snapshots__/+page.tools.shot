@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Toolshot routes/home/+page.tools.svelte: Anonymous 1`] = `
+exports[`Anonymous 1`] = `
 <span>
    
   <main>
@@ -289,7 +289,7 @@ exports[`Toolshot routes/home/+page.tools.svelte: Anonymous 1`] = `
 </span>
 `;
 
-exports[`Toolshot routes/home/+page.tools.svelte: Authenticated 1`] = `
+exports[`Authenticated 1`] = `
 <span>
    
   <main>

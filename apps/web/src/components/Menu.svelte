@@ -1,5 +1,5 @@
 <script context="module">
-  import { browser } from '$app/env'
+  import { browser } from '$app/environment'
   let selector = 'focus-within'
   if (browser) {
     selector = navigator.userAgent.includes('jsdom') ? 'focus' : 'focus-within'

@@ -56,7 +56,11 @@
   }
 </script>
 
-<span role="slider" on:keyup|stopPropagation={handleKeys}>
+<span
+  role="slider"
+  aria-valuenow={quantity}
+  on:keyup|stopPropagation={handleKeys}
+>
   <Button
     {...$$restProps}
     {disabled}

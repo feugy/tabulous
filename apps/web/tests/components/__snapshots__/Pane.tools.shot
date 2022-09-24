@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Toolshot components/Pane.tools.svelte: Components/Pane 1`] = `
+exports[`Components/Pane 1`] = `
 <span>
   <div
     class="pane"

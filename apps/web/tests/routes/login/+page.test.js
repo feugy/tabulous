@@ -17,7 +17,7 @@ describe('/login route', () => {
 
   it('expands login panel and show all options', async () => {
     const { container } = render(
-      html`<${LoginPage} errors=${'wrong password'} />`
+      html`<${LoginPage} form=${'wrong password'} />`
     )
     expect(container).toMatchSnapshot()
   })
