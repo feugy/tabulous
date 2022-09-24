@@ -37,6 +37,23 @@ describe('User revokes command', () => {
     )
   })
 
+  it('displays help and support common options', async () => {
+    const username = faker.name.fullName()
+    const gameName = faker.commerce.productName()
+    expect(stripAnsi(await revoke(['-h', '-u', username, '-p', gameName])))
+      .toEqual(`
+  tabulous [options] revoke [game-name]
+  Revokes access to a copyrighted game
+  Commands:
+    [game-name]               Name of the revoked game
+  Options:
+    --username/-u             Username for which catalog is fetched
+    --production/-p           Loads configuration from .env.prod
+    --help/-h                 Display help for this command
+`)
+    expect(mockQuery).not.toHaveBeenCalled()
+  })
+
   describe('given existing players', () => {
     const player = {
       id: faker.datatype.uuid(),

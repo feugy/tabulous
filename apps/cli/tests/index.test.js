@@ -38,12 +38,20 @@ describe('Tabulous CLI', () => {
     expect(output.stdout).toContain('tabulous [options] <command>')
   })
 
-  it('displays error and help', async () => {
+  it('displays help on unknown command', async () => {
+    await cli(['unknown'])
+    expect(output.stdout).toContain(`error: unknown command "unknown"`)
+    expect(output.stdout).toContain('tabulous [options] <command>\n  Commands')
+  })
+
+  it('displays command help on error', async () => {
     const error = new Error('no username provided')
+    const commandHelpMessage = 'command custom help message'
     mockCatalog.mockRejectedValue(error)
+    mockCatalog.help = jest.fn().mockReturnValueOnce(commandHelpMessage)
     await cli(['catalog'])
     expect(output.stdout).toContain(`error: ${error.message}`)
-    expect(output.stdout).toContain('tabulous [options] <command>')
+    expect(output.stdout).toContain(commandHelpMessage)
   })
 
   it('prints production message when relevant', async () => {

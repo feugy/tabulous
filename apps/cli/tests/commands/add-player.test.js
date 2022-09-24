@@ -68,7 +68,7 @@ player ${username} added with id ${id}`
     expect(mockQuery).toHaveBeenCalledWith(
       expect.anything(),
       {
-        id: expect.stringMatching(new RegExp(`${kebabCase(username)}-\\d+`)),
+        id: expect.stringMatching(new RegExp(`^${kebabCase(username)}-\\d+$`)),
         username,
         password
       },

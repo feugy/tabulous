@@ -65,7 +65,7 @@ export async function addPlayer({ username, password }) {
   const { addPlayer: player } = await getGraphQLClient().mutation(
     addPlayerMutation,
     {
-      id: `${kebabCase(username)}-${Math.floor(Math.random() * 10000)})`,
+      id: `${kebabCase(username)}-${Math.floor(Math.random() * 10000)}`,
       username,
       password
     },
@@ -89,3 +89,4 @@ function help() {
     --help/-h                 Display help for this command
 `
 }
+addPlayerCommand.help = help

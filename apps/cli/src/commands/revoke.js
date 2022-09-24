@@ -3,6 +3,7 @@ import { gql } from '@urql/core'
 import chalkTemplate from 'chalk-template'
 import {
   attachFormater,
+  cliName,
   commonArgSpec,
   findUser,
   getGraphQLClient,
@@ -20,21 +21,22 @@ const revokeAccessMutation = gql`
 /**
  * Triggers the revoke command.
  * @param {string[]} argv - array of parsed arguments (without executable and current file).
- * @returns {Promise<Boolean>} whether the operation succeeded.
+ * @returns {Promise<Boolean|string>} whether the operation succeeded.
  */
 export default async function revokeCommand(argv) {
-  const {
-    username,
-    command: [gameName]
-  } = parseArgv(argv, {
+  const args = parseArgv(argv, {
     ...commonArgSpec,
     '--username': RequiredString,
     '-u': '--username'
   })
+  const gameName = args.command?.[0]
   if (!gameName) {
     throw new Error('no game-name provided')
   }
-  return revoke({ username, gameName })
+  if (args.help) {
+    return help()
+  }
+  return revoke({ username: args.username, gameName })
 }
 
 /**
@@ -71,3 +73,17 @@ function formatRevokation({ revokeAccess }) {
     ? chalkTemplate`🚷 access {green revoked}\n`
     : chalkTemplate`🔶 {yellow no changes}\n`
 }
+
+function help() {
+  return chalkTemplate`
+  {bold ${cliName}} [options] revoke [game-name]
+  Revokes access to a copyrighted game
+  {dim Commands:}
+    [game-name]               Name of the revoked game
+  {dim Options:}
+    --username/-u             Username for which catalog is fetched
+    --production/-p           Loads configuration from .env.prod
+    --help/-h                 Display help for this command
+`
+}
+revokeCommand.help = help

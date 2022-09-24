@@ -116,3 +116,4 @@ function help() {
     --help/-h                 Display help for this command
 `
 }
+catalogCommand.help = help
