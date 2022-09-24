@@ -1,14 +1,11 @@
 import { faker } from '@faker-js/faker'
-import { jest } from '@jest/globals'
 import { signToken } from '../../src/util/jwt.js'
 
-const mockQuery = jest.fn()
-const mockMutation = jest.fn()
+const mockQuery = vi.fn()
+const mockMutation = vi.fn()
 
-jest.unstable_mockModule('../../src/util/graphql-client.js', () => ({
-  getGraphQLClient: jest
-    .fn()
-    .mockReturnValue({ query: mockQuery, mockMutation })
+vi.mock('../../src/util/graphql-client.js', () => ({
+  getGraphQLClient: vi.fn().mockReturnValue({ query: mockQuery, mockMutation })
 }))
 
 describe('getGraphQLClient()', () => {
@@ -23,7 +20,7 @@ describe('getGraphQLClient()', () => {
     ;({ findUser } = await import('../../src/util/find-user.js'))
   })
 
-  beforeEach(jest.clearAllMocks)
+  beforeEach(vi.clearAllMocks)
 
   it('returns existing user', async () => {
     const player = {

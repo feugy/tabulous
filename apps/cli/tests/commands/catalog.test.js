@@ -1,13 +1,12 @@
 import { faker } from '@faker-js/faker'
-import { jest } from '@jest/globals'
 import stripAnsi from 'strip-ansi'
 import { applyFormaters } from '../../src/util/formaters.js'
 import { signToken } from '../../src/util/jwt.js'
 
-const mockQuery = jest.fn()
+const mockQuery = vi.fn()
 
-jest.unstable_mockModule('../../src/util/graphql-client.js', () => ({
-  getGraphQLClient: jest.fn().mockReturnValue({ query: mockQuery })
+vi.mock('../../src/util/graphql-client.js', () => ({
+  getGraphQLClient: vi.fn().mockReturnValue({ query: mockQuery })
 }))
 
 describe('User catalog command', () => {
@@ -22,7 +21,7 @@ describe('User catalog command', () => {
     catalog = (await import('../../src/commands/catalog.js')).default
   })
 
-  beforeEach(jest.clearAllMocks)
+  beforeEach(vi.clearAllMocks)
 
   it('throws on missing username', async () => {
     await expect(catalog([])).rejects.toThrow('no username provided')

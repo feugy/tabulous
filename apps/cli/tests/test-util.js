@@ -1,4 +1,3 @@
-import { jest } from '@jest/globals'
 import stripAnsi from 'strip-ansi'
 import { inspect } from 'util'
 
@@ -11,7 +10,7 @@ export function mockConsole() {
 
   beforeEach(() => {
     output.stdout = ''
-    jest.spyOn(console, 'log').mockImplementation((...args) => {
+    vi.spyOn(console, 'log').mockImplementation((...args) => {
       output.stdout += args
         .map(obj => {
           const content =
@@ -23,7 +22,7 @@ export function mockConsole() {
     })
   })
 
-  afterEach(jest.resetAllMocks)
+  afterEach(vi.resetAllMocks)
 
   return output
 }

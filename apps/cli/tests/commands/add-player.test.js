@@ -1,14 +1,13 @@
 import { faker } from '@faker-js/faker'
-import { jest } from '@jest/globals'
 import kebabCase from 'lodash.kebabcase'
 import stripAnsi from 'strip-ansi'
 import { applyFormaters } from '../../src/util/formaters.js'
 import { signToken } from '../../src/util/jwt.js'
 
-const mockQuery = jest.fn()
+const mockQuery = vi.fn()
 
-jest.unstable_mockModule('../../src/util/graphql-client.js', () => ({
-  getGraphQLClient: jest.fn().mockReturnValue({ mutation: mockQuery })
+vi.mock('../../src/util/graphql-client.js', () => ({
+  getGraphQLClient: vi.fn().mockReturnValue({ mutation: mockQuery })
 }))
 
 describe('Player addition command', () => {
@@ -23,7 +22,7 @@ describe('Player addition command', () => {
     addPlayer = (await import('../../src/commands/add-player.js')).default
   })
 
-  beforeEach(jest.clearAllMocks)
+  beforeEach(vi.clearAllMocks)
 
   it('throws on missing username', async () => {
     await expect(addPlayer([])).rejects.toThrow('no username provided')

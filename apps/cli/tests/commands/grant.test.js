@@ -1,14 +1,13 @@
 import { faker } from '@faker-js/faker'
-import { jest } from '@jest/globals'
 import stripAnsi from 'strip-ansi'
 import { applyFormaters } from '../../src/util/formaters.js'
 import { signToken } from '../../src/util/jwt.js'
 
-const mockQuery = jest.fn()
-const mockMutation = jest.fn()
+const mockQuery = vi.fn()
+const mockMutation = vi.fn()
 
-jest.unstable_mockModule('../../src/util/graphql-client.js', () => ({
-  getGraphQLClient: jest
+vi.mock('../../src/util/graphql-client.js', () => ({
+  getGraphQLClient: vi
     .fn()
     .mockReturnValue({ query: mockQuery, mutation: mockMutation })
 }))
@@ -25,7 +24,7 @@ describe('User grant command', () => {
     grant = (await import('../../src/commands/grant.js')).default
   })
 
-  beforeEach(jest.clearAllMocks)
+  beforeEach(vi.clearAllMocks)
 
   it('throws on missing username', async () => {
     await expect(grant([])).rejects.toThrow('no username provided')

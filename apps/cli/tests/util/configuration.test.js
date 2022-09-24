@@ -1,5 +1,4 @@
 import { faker } from '@faker-js/faker'
-import { jest } from '@jest/globals'
 import { loadConfiguration } from '../../src/util/configuration.js'
 
 describe('loadConfiguration()', () => {
@@ -8,7 +7,7 @@ describe('loadConfiguration()', () => {
 
   beforeEach(() => {
     process.env = { ...envSave }
-    jest.spyOn(console, 'warn').mockImplementation(() => {})
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
   })
 
   it('loads values from environment variables', () => {
