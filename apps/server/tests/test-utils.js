@@ -1,4 +1,3 @@
-import { jest } from '@jest/globals'
 import { createSigner } from 'fast-jwt'
 import WebSocket from 'ws'
 
@@ -75,7 +74,7 @@ export function toGraphQLArg(object) {
 }
 
 /**
- * Monkey patch all methods, replacing them with Jest mocks.
+ * Monkey patch all methods, replacing them with vi mocks.
  * Does not modify getters, setters and plain attributes
  * @param {object} object - hash containing all service methods.
  * @returns {function} revert patching when called.
@@ -84,7 +83,7 @@ export function mockMethods(object) {
   const original = { ...object }
   for (const method in object) {
     if (typeof object[method] === 'function') {
-      object[method] = jest.fn()
+      object[method] = vi.fn()
     }
   }
   return () => Object.assign(object, original)

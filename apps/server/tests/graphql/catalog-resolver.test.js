@@ -1,15 +1,13 @@
 import { faker } from '@faker-js/faker'
-import { jest } from '@jest/globals'
 import fastify from 'fastify'
 import { signToken } from '../test-utils'
 
-// Note fully working, but gives an idea
-jest.unstable_mockModule('../../src/services/index.js', () => ({
+vi.mock('../../src/services/index.js', () => ({
   default: {
-    getPlayerById: jest.fn(),
-    listCatalog: jest.fn(),
-    grantAccess: jest.fn(),
-    revokeAccess: jest.fn()
+    getPlayerById: vi.fn(),
+    listCatalog: vi.fn(),
+    grantAccess: vi.fn(),
+    revokeAccess: vi.fn()
   }
 }))
 
@@ -38,7 +36,7 @@ describe('given a started server', () => {
     services = (await import('../../src/services/index.js')).default
   })
 
-  beforeEach(jest.resetAllMocks)
+  beforeEach(vi.resetAllMocks)
 
   afterAll(() => server?.close())
 

@@ -47,7 +47,11 @@ class CatalogItemRepository extends AbstractRepository {
           this.modelsById.set(name, item)
         } catch (err) {
           // ignore folders with no index.js or invalid symbolic links
-          if (!err.message.includes(`Cannot find module '${descriptor}'`)) {
+          // vite-node loader (used for tests) has a different error message than node.js
+          if (
+            !err.message.includes(`Cannot find module '${descriptor}'`) &&
+            !err.message.includes(`Failed to load ${descriptor}`)
+          ) {
             throw new Error(`Failed to load game ${entry.name}: ${err.message}`)
           }
         }

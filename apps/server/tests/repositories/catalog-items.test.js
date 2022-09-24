@@ -51,7 +51,7 @@ describe('Catalog Items repository', () => {
         catalogItems.connect({
           path: join('tests', 'fixtures', 'broken-games')
         })
-      ).rejects.toThrow(`Cannot find module 'invalid-package'`)
+      ).rejects.toThrow(`Failed to load invalid-package`)
     })
 
     it('handles an folder without game descriptors', async () => {

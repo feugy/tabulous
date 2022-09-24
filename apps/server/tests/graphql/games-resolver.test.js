@@ -1,5 +1,4 @@
 import { faker } from '@faker-js/faker'
-import { jest } from '@jest/globals'
 import fastify from 'fastify'
 import { Subject } from 'rxjs'
 import {
@@ -37,7 +36,7 @@ describe('given a started server', () => {
     services.gameListsUpdate = new Subject()
   })
 
-  beforeEach(jest.resetAllMocks)
+  beforeEach(vi.resetAllMocks)
 
   afterAll(async () => {
     restoreServices()

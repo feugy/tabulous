@@ -1,5 +1,4 @@
 import { faker } from '@faker-js/faker'
-import { jest } from '@jest/globals'
 import { createSigner } from 'fast-jwt'
 import { MockAgent, setGlobalDispatcher } from 'undici'
 import { googleAuth } from '../../../src/services/auth/google.js'
@@ -68,10 +67,10 @@ describe('Google authentication service', () => {
     })
 
     describe('authenticateUser()', () => {
-      const accessTokenInvoked = jest.fn()
+      const accessTokenInvoked = vi.fn()
       const signJWT = createSigner({ key: 'whatever' })
 
-      beforeEach(jest.resetAllMocks)
+      beforeEach(vi.resetAllMocks)
 
       it('returns user details', async () => {
         const location = faker.internet.url()
