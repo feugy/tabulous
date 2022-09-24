@@ -1,3 +1,7 @@
+<script context="module">
+  let nextId = 1
+</script>
+
 <script>
   import { createEventDispatcher } from 'svelte'
   import Button from './Button.svelte'
@@ -7,6 +11,8 @@
   export let dimension = undefined
   export let tabs = undefined
   export let currentTab = 0
+
+  const id = `minimizable-section-${nextId++}`
 
   $: vertical = placement === 'top' || placement === 'bottom'
   $: props = vertical
@@ -108,6 +114,7 @@
 <svelte:window on:keydown={handleKey} />
 
 <section
+  {id}
   class:minimized
   class:vertical
   bind:this={node}
@@ -131,6 +138,8 @@
     </ol>
     <div
       role="scrollbar"
+      aria-controls={id}
+      aria-valuenow={size}
       class="gutter"
       on:pointerdown|stopPropagation={handleDown}
     />

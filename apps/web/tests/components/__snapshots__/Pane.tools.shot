@@ -7,11 +7,3 @@ exports[`Components/Pane 1`] = `
   />
 </span>
 `;
-
-exports[`Toolshot components/Pane.tools.svelte: Components/Pane 1`] = `
-<span>
-  <div
-    class="pane"
-  />
-</span>
-`;

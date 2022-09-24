@@ -15,19 +15,3 @@ exports[`Components/Dialogue 1`] = `
   </div>
 </main>
 `;
-
-exports[`Toolshot components/Dialogue.tools.svelte: Components/Dialogue 1`] = `
-<main>
-  <div>
-    Vous savez quelle différence il y a entre un con et un voleur ?
-  </div>
-   
-  <div>
-    Non...
-  </div>
-   
-  <div>
-    Un voleur de temps en temps ça se repose.
-  </div>
-</main>
-`;

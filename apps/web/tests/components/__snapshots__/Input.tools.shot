@@ -12,32 +12,6 @@ exports[`No value 1`] = `
 </span>
 `;
 
-exports[`Toolshot components/Input.tools.svelte: No value 1`] = `
-<span>
-  <fieldset>
-    <legend>
-      Please enter value
-    </legend>
-     
-    <input />
-  </fieldset>
-</span>
-`;
-
-exports[`Toolshot components/Input.tools.svelte: With initial value 1`] = `
-<span>
-  <fieldset>
-    <legend
-      class="has-value"
-    >
-      Please enter value
-    </legend>
-     
-    <input />
-  </fieldset>
-</span>
-`;
-
 exports[`With initial value 1`] = `
 <span>
   <fieldset>
