@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^7.5.0",
+    "@vitest/coverage-c8": "^0.23.4",
     "nodemon": "^2.0.20",
     "vitest": "^0.23.4",
     "ws": "^8.8.0"

@@ -1,11 +1,10 @@
 import { SceneLoader } from '@babylonjs/core/Loading/sceneLoader.js'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
-import {
-  controlManager,
-  customShapeManager,
-  materialManager
-} from '../managers'
-import { getDimensions, registerBehaviors, serializeBehaviors } from '../utils'
+import { controlManager } from '../managers/control'
+import { customShapeManager } from '../managers/custom-shape'
+import { materialManager } from '../managers/material'
+import { registerBehaviors, serializeBehaviors } from '../utils/behaviors'
+import { getDimensions } from '../utils/mesh'
 // mandatory side effect
 import '@babylonjs/core/Loading/index.js'
 

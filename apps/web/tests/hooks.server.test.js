@@ -1,11 +1,10 @@
-import { jest } from '@jest/globals'
 import { faker } from '@faker-js/faker'
 import { handle } from '../src/hooks.server'
 import { configureGraphQlServer } from './test-utils'
 
 describe('Sveltekit handle() hook', () => {
   const mocks = {
-    handleGraphQl: jest.fn()
+    handleGraphQl: vi.fn()
   }
 
   configureGraphQlServer(mocks)
@@ -96,6 +95,6 @@ function buildHandleInput({
       locals: {},
       request
     },
-    resolve: jest.fn().mockResolvedValue(response)
+    resolve: vi.fn().mockResolvedValue(response)
   }
 }

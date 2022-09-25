@@ -1,27 +1,48 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Manual account 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
    
-  <main>
-    <header>
-      <nav>
-        <span>
-          <ol>
-            <li>
+  <main
+    class="s-GQCXmK5OKySU"
+  >
+    <header
+      class="s-IEV6mBVyuaCJ"
+    >
+      <nav
+        class="s-IEV6mBVyuaCJ"
+      >
+        <span
+          class="s-IEV6mBVyuaCJ"
+        >
+          <ol
+            class="s-x5nEMCoiqeIy"
+          >
+            <li
+              class="s-x5nEMCoiqeIy"
+            >
               <a
+                class="s-x5nEMCoiqeIy"
                 href="/home"
               >
                 Accueil
               </a>
             </li>
              
-            <li>
+            <li
+              class="s-x5nEMCoiqeIy"
+            >
               &gt;
             </li>
             
-            <li>
-              <a>
+            <li
+              class="s-x5nEMCoiqeIy"
+            >
+              <a
+                class="s-x5nEMCoiqeIy"
+              >
                 Paramètres
               </a>
             </li>
@@ -29,113 +50,163 @@ exports[`Manual account 1`] = `
             
           </ol>
           
+          <!--&lt;Breadcrumb&gt;-->
         </span>
          
         <span
           aria-expanded="false"
           aria-haspopup="menu"
-          class="wrapper"
+          class="wrapper s-rGIwyFRHo8D9"
         >
           <button
-            class="transparent"
+            class="transparent s-NMyTiX1zi6rz"
           >
             
             
             
             <figure
+              class="s-engCJu8q-fNe"
               style="--dimension: 30px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 0px"
             >
               <img
                 alt="avatar for Jane Doe"
-                class="hasImage"
+                class="s-engCJu8q-fNe hasImage"
                 height="30"
                 src="https://avatars.dicebear.com/api/micah/tabulous-avatar-4.svg"
                 width="30"
               />
                
             </figure>
+            <!--&lt;PlayerThumbnail&gt;-->
              
             
           </button>
+          <!--&lt;Button&gt;-->
            
           
+          <!--&lt;Menu&gt;-->
         </span>
+        <!--&lt;Dropdown&gt;-->
       </nav>
        
-      <div>
-        <h1>
+      <div
+        class="s-IEV6mBVyuaCJ"
+      >
+        <h1
+          class="s-GQCXmK5OKySU"
+        >
           Vos paramètres
         </h1>
       </div>
     </header>
+    <!--&lt;Header&gt;-->
      
-    <section>
-      <h2>
+    <section
+      class="s-GQCXmK5OKySU"
+    >
+      <h2
+        class="s-GQCXmK5OKySU"
+      >
         Votre compte
       </h2>
        
-      <fieldset>
-        <div>
+      <fieldset
+        class="s-GQCXmK5OKySU"
+      >
+        <div
+          class="s-GQCXmK5OKySU"
+        >
           Vous avez un compte manuel dont l'identifiant de connextion est "jane-doe-123"
         </div>
          
         <label
+          class="s-GQCXmK5OKySU"
           for="username"
         >
           Nom d'affichage : 
         </label>
          
-        <fieldset>
+        <fieldset
+          class="s-Fe6WNbR-55zp"
+        >
            
           <input
+            class="s-Fe6WNbR-55zp"
             name="username"
           />
         </fieldset>
+        <!--&lt;Input&gt;-->
          
-        <span>
+        <span
+          class="s-GQCXmK5OKySU"
+        >
           Avatar : 
         </span>
          
         <figure
+          class="s-engCJu8q-fNe"
           style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
         >
           <img
             alt="avatar for Jane Doe"
-            class="hasImage"
+            class="s-engCJu8q-fNe hasImage"
             height="150"
             src="https://avatars.dicebear.com/api/micah/tabulous-avatar-4.svg"
             width="150"
           />
            
         </figure>
+        <!--&lt;PlayerThumbnail&gt;-->
       </fieldset>
     </section>
   </main>
+  <!--&lt;+page&gt;-->
 </span>
 `;
 
 exports[`OAuth account 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
    
-  <main>
-    <header>
-      <nav>
-        <span>
-          <ol>
-            <li>
+  <main
+    class="s-GQCXmK5OKySU"
+  >
+    <header
+      class="s-IEV6mBVyuaCJ"
+    >
+      <nav
+        class="s-IEV6mBVyuaCJ"
+      >
+        <span
+          class="s-IEV6mBVyuaCJ"
+        >
+          <ol
+            class="s-x5nEMCoiqeIy"
+          >
+            <li
+              class="s-x5nEMCoiqeIy"
+            >
               <a
+                class="s-x5nEMCoiqeIy"
                 href="/home"
               >
                 Accueil
               </a>
             </li>
              
-            <li>
+            <li
+              class="s-x5nEMCoiqeIy"
+            >
               &gt;
             </li>
             
-            <li>
-              <a>
+            <li
+              class="s-x5nEMCoiqeIy"
+            >
+              <a
+                class="s-x5nEMCoiqeIy"
+              >
                 Paramètres
               </a>
             </li>
@@ -143,87 +214,116 @@ exports[`OAuth account 1`] = `
             
           </ol>
           
+          <!--&lt;Breadcrumb&gt;-->
         </span>
          
         <span
           aria-expanded="false"
           aria-haspopup="menu"
-          class="wrapper"
+          class="wrapper s-rGIwyFRHo8D9"
         >
           <button
-            class="transparent"
+            class="transparent s-NMyTiX1zi6rz"
           >
             
             
             
             <figure
+              class="s-engCJu8q-fNe"
               style="--dimension: 30px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 0px"
             >
               <img
                 alt="avatar for John Clark"
-                class="hasImage"
+                class="s-engCJu8q-fNe hasImage"
                 height="30"
                 src="https://avatars.dicebear.com/api/micah/tabulous-avatar-10.svg"
                 width="30"
               />
                
             </figure>
+            <!--&lt;PlayerThumbnail&gt;-->
              
             
           </button>
+          <!--&lt;Button&gt;-->
            
           
+          <!--&lt;Menu&gt;-->
         </span>
+        <!--&lt;Dropdown&gt;-->
       </nav>
        
-      <div>
-        <h1>
+      <div
+        class="s-IEV6mBVyuaCJ"
+      >
+        <h1
+          class="s-GQCXmK5OKySU"
+        >
           Vos paramètres
         </h1>
       </div>
     </header>
+    <!--&lt;Header&gt;-->
      
-    <section>
-      <h2>
+    <section
+      class="s-GQCXmK5OKySU"
+    >
+      <h2
+        class="s-GQCXmK5OKySU"
+      >
         Votre compte
       </h2>
        
-      <fieldset>
-        <div>
+      <fieldset
+        class="s-GQCXmK5OKySU"
+      >
+        <div
+          class="s-GQCXmK5OKySU"
+        >
           Vous avez relié ce compte à votre adresse "john.clark@gmail.com"
         </div>
          
         <label
+          class="s-GQCXmK5OKySU"
           for="username"
         >
           Nom d'affichage : 
         </label>
          
-        <fieldset>
+        <fieldset
+          class="s-Fe6WNbR-55zp"
+        >
            
           <input
+            class="s-Fe6WNbR-55zp"
             name="username"
           />
         </fieldset>
+        <!--&lt;Input&gt;-->
          
-        <span>
+        <span
+          class="s-GQCXmK5OKySU"
+        >
           Avatar : 
         </span>
          
         <figure
+          class="s-engCJu8q-fNe"
           style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
         >
           <img
             alt="avatar for John Clark"
-            class="hasImage"
+            class="s-engCJu8q-fNe hasImage"
             height="150"
             src="https://avatars.dicebear.com/api/micah/tabulous-avatar-10.svg"
             width="150"
           />
            
         </figure>
+        <!--&lt;PlayerThumbnail&gt;-->
       </fieldset>
     </section>
   </main>
+  <!--&lt;+page&gt;-->
 </span>
 `;

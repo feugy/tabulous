@@ -1,13 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Components/Progress 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
   <svg
-    class="animate-spin"
+    class="animate-spin s-GSPH2LpcdUHQ"
     role="progressbar"
     viewBox="22 22 44 44"
   >
     <circle
+      class="s-GSPH2LpcdUHQ"
       cx="44"
       cy="44"
       fill="none"
@@ -15,5 +18,6 @@ exports[`Components/Progress 1`] = `
       stroke-width="3.6"
     />
   </svg>
+  <!--&lt;Progress&gt;-->
 </span>
 `;

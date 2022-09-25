@@ -18,7 +18,7 @@ describe('CameraManager', () => {
   configures3dTestEngine()
 
   beforeEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
     createTable()
     states = []
     saveUpdates = []

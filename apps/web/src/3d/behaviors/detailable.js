@@ -1,6 +1,10 @@
 import { DetailBehaviorName } from './names'
-import { controlManager } from '../managers'
-import { attachFunctions, attachProperty, isMeshFlipped } from '../utils'
+import { controlManager } from '../managers/control'
+import {
+  attachFunctions,
+  attachProperty,
+  isMeshFlipped
+} from '../utils/behaviors'
 
 /**
  * @typedef {object} DetailableState behavior persistent state, including:

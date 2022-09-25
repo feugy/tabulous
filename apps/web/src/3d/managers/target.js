@@ -1,7 +1,7 @@
 import { Color3 } from '@babylonjs/core/Maths/math.color.js'
 import { selectionManager } from './selection'
-import { getTargetableBehavior, isAbove } from '../utils'
-// '../../utils' creates a cyclic dependency in Jest
+import { getTargetableBehavior } from '../utils/behaviors'
+import { isAbove } from '../utils/gravity'
 import { makeLogger } from '../../utils/logger'
 import { distance } from '../../utils/math'
 

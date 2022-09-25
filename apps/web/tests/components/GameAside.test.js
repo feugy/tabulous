@@ -6,11 +6,11 @@ import { stream$ } from '../../src/stores/stream'
 import { extractText, translate } from '../test-utils'
 import { players, thread } from './Discussion.testdata'
 
-jest.mock('../../src/stores/stream', () => {
+vi.mock('../../src/stores/stream', () => {
   const { BehaviorSubject } = require('rxjs')
   return {
-    acquireMediaStream: jest.fn(),
-    releaseMediaStream: jest.fn(),
+    acquireMediaStream: vi.fn(),
+    releaseMediaStream: vi.fn(),
     stream$: new BehaviorSubject(null),
     currentCamera$: new BehaviorSubject(null),
     cameras$: new BehaviorSubject([]),
@@ -25,7 +25,7 @@ const playersButonText = 'people_altF3'
 const discussionButtonText = 'question_answerF4'
 
 describe('GameAside component', () => {
-  const handleSend = jest.fn()
+  const handleSend = vi.fn()
   const stream = { getAudioTracks: () => [], getVideoTracks: () => [] }
   const connected = [
     { playerId: players[0].id, stream },
@@ -39,10 +39,10 @@ describe('GameAside component', () => {
   const [player] = players
 
   beforeEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
     stream$.next({
-      getAudioTracks: jest.fn().mockReturnValue([]),
-      getVideoTracks: jest.fn().mockReturnValue([])
+      getAudioTracks: vi.fn().mockReturnValue([]),
+      getVideoTracks: vi.fn().mockReturnValue([])
     })
   })
 

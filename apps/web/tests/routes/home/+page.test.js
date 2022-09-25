@@ -1,14 +1,14 @@
 import { load } from '../../../src/routes/home/+page'
 import { listGames, listCatalog } from '../../../src/stores'
 
-jest.mock('../../../src/stores', () => ({
-  receiveGameListUpdates: jest.fn(),
-  listCatalog: jest.fn(),
-  listGames: jest.fn()
+vi.mock('../../../src/stores', () => ({
+  receiveGameListUpdates: vi.fn(),
+  listCatalog: vi.fn(),
+  listGames: vi.fn()
 }))
 
 describe('/home route loader', () => {
-  beforeEach(jest.clearAllMocks)
+  beforeEach(vi.clearAllMocks)
 
   it('loads catalog only for anonymous user', async () => {
     const parent = async () => ({ session: null })

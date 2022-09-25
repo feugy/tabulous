@@ -6,10 +6,10 @@ import {
   moveManager,
   selectionManager
 } from '../3d/managers'
-import { getMeshScreenPosition } from '../3d/utils'
-import { normalize, shuffle } from '.'
-// '.' creates a cyclic dependency in Jest
+import { getMeshScreenPosition } from '../3d/utils/vector'
+import { shuffle } from './collections'
 import { makeLogger } from './logger'
+import { normalize } from './math'
 
 const logger = makeLogger('game-interaction')
 const cameraPositionKeys = new Set([

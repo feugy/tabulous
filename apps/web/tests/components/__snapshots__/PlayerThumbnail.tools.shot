@@ -1,91 +1,118 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Avatar 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
   <figure
+    class="s-engCJu8q-fNe"
     style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
   >
     <img
       alt="avatar for Joe le clodo"
-      class="hasImage"
+      class="s-engCJu8q-fNe hasImage"
       height="150"
-      src="default"
+      src="/tests/components/avatar.png"
       width="150"
     />
      
   </figure>
+  <!--&lt;PlayerThumbnail&gt;-->
 </span>
 `;
 
 exports[`Positioned text 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
   <figure
-    class="positioned colored"
+    class="s-engCJu8q-fNe positioned colored"
     style="--dimension: 60px; --color: red; --top: -50px; --left: 0px; --border-width: 3px"
   >
     <img
       alt="avatar for Joe le clodo"
+      class="s-engCJu8q-fNe"
       height="60"
       width="60"
     />
      
-    <figcaption>
+    <figcaption
+      class="s-engCJu8q-fNe"
+    >
       Joe le clodo
     </figcaption>
   </figure>
+  <!--&lt;PlayerThumbnail&gt;-->
 </span>
 `;
 
 exports[`Positionned avatar 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
   <figure
-    class="positioned colored"
+    class="s-engCJu8q-fNe positioned colored"
     style="--dimension: 60px; --color: lime; --top: -50px; --left: 0px; --border-width: 3px"
   >
     <img
       alt="avatar for Joe le clodo"
-      class="hasImage"
+      class="s-engCJu8q-fNe hasImage"
       height="60"
-      src="default"
+      src="/tests/components/avatar.png"
       width="60"
     />
      
   </figure>
+  <!--&lt;PlayerThumbnail&gt;-->
 </span>
 `;
 
 exports[`Small text 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
   <figure
+    class="s-engCJu8q-fNe"
     style="--dimension: 50px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
   >
     <img
       alt="avatar for Joe le clodo"
+      class="s-engCJu8q-fNe"
       height="50"
       width="50"
     />
      
-    <figcaption>
+    <figcaption
+      class="s-engCJu8q-fNe"
+    >
       JLC
     </figcaption>
   </figure>
+  <!--&lt;PlayerThumbnail&gt;-->
 </span>
 `;
 
 exports[`Text 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
   <figure
+    class="s-engCJu8q-fNe"
     style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
   >
     <img
       alt="avatar for Joe le clodo"
+      class="s-engCJu8q-fNe"
       height="150"
       width="150"
     />
      
-    <figcaption>
+    <figcaption
+      class="s-engCJu8q-fNe"
+    >
       Joe le clodo
     </figcaption>
   </figure>
+  <!--&lt;PlayerThumbnail&gt;-->
 </span>
 `;

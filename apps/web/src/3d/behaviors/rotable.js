@@ -1,17 +1,15 @@
 import { Animation } from '@babylonjs/core/Animations/animation.js'
 import { Vector3 } from '@babylonjs/core/Maths/math.js'
 import { AnimateBehavior } from './animatable'
+import { controlManager } from '../managers/control'
 import { RotateBehaviorName } from './names'
 import {
-  applyGravity,
   attachFunctions,
   attachProperty,
-  convertToLocal,
-  getAbsoluteRotation,
   runAnimation
-} from '../utils'
-import { controlManager } from '../managers'
-// '../../utils' creates a cyclic dependency in Jest
+} from '../utils/behaviors'
+import { applyGravity } from '../utils/gravity'
+import { convertToLocal, getAbsoluteRotation } from '../utils/vector'
 import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('rotable')

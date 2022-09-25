@@ -1,6 +1,10 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import { AnchorBehaviorName } from './names'
 import { TargetBehavior } from './targetable'
+import { controlManager } from '../managers/control'
+import { indicatorManager } from '../managers/indicator'
+import { moveManager } from '../managers/move'
+import { selectionManager } from '../managers/selection'
 import {
   animateMove,
   attachFunctions,
@@ -8,14 +12,7 @@ import {
   buildTargetMesh,
   getPositionAboveZone,
   getTargetableBehavior
-} from '../utils'
-import {
-  controlManager,
-  indicatorManager,
-  moveManager,
-  selectionManager
-} from '../managers'
-// '../../utils' creates a cyclic dependency in Jest
+} from '../utils/behaviors'
 import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger(AnchorBehaviorName)

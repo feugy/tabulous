@@ -9,12 +9,12 @@ import { sleep } from '../../src/utils/index.js'
 import { extractText } from '../test-utils'
 
 describe('Typeahead component', () => {
-  const handleInput = jest.fn()
-  const handleChange = jest.fn()
+  const handleInput = vi.fn()
+  const handleChange = vi.fn()
   const value$ = writable()
   const options$ = writable()
 
-  beforeEach(jest.resetAllMocks)
+  beforeEach(vi.resetAllMocks)
 
   function renderComponent(props = {}) {
     return render(

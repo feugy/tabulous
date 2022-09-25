@@ -10,7 +10,7 @@ import { StackBehavior } from '../../../src/3d/behaviors'
 describe('SelectionManager', () => {
   let scene
   let handScene
-  const selectionChanged = jest.fn()
+  const selectionChanged = vi.fn()
 
   configures3dTestEngine(created => {
     scene = created.scene
@@ -23,7 +23,7 @@ describe('SelectionManager', () => {
 
   beforeEach(() => {
     manager.clear()
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   it('has initial state', () => {
@@ -250,7 +250,7 @@ describe('SelectionManager', () => {
       })
 
       it('allows selecting contained meshes in hand', () => {
-        jest.spyOn(handManager, 'isPointerInHand').mockReturnValueOnce(true)
+        vi.spyOn(handManager, 'isPointerInHand').mockReturnValueOnce(true)
         manager.drawSelectionBox({ x: 100, y: 400 }, { x: 1100, y: 900 })
         manager.selectWithinBox()
         expectSelection([meshes[6], meshes[7]])
@@ -269,7 +269,7 @@ describe('SelectionManager', () => {
 
       it('clears selection from main when selecting in hand', () => {
         manager.select(meshes[4])
-        jest.spyOn(handManager, 'isPointerInHand').mockReturnValueOnce(true)
+        vi.spyOn(handManager, 'isPointerInHand').mockReturnValueOnce(true)
         manager.drawSelectionBox({ x: 100, y: 400 }, { x: 1100, y: 900 })
         manager.selectWithinBox()
         expectSelection([meshes[6], meshes[7]])

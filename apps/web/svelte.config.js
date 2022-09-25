@@ -1,7 +1,6 @@
 import vercel from '@sveltejs/adapter-vercel'
 
 // This file is used by
-// - jest-transform-svelte
 // - "Svelte for VS Code" plugin
 // - svelte kit
 /** @type {import('@sveltejs/kit').Config} */

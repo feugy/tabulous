@@ -34,7 +34,7 @@ describe('InputManager', () => {
   })
 
   beforeEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
     taps = []
     drags = []
     pinches = []

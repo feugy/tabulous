@@ -19,7 +19,7 @@ configures3dTestEngine(created => (scene = created.scene))
 
 beforeAll(() => materialManager.init({ scene }))
 
-jest.mock('../../../src/3d/managers/custom-shape', () => ({
+vi.mock('../../../src/3d/managers/custom-shape', () => ({
   customShapeManager: new Map()
 }))
 

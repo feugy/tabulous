@@ -1,30 +1,33 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Default state 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
   <div
-    class="pane"
+    class="pane s-j2LTsWktqK_4"
   >
     <h1
-      class="heading"
+      class="heading s-SCChDaxcTxWF"
     >
       Bienvenue !
     </h1>
      
     <div
-      class="container"
+      class="container s-SCChDaxcTxWF"
     >
        
        
       <details
+        class="s-SCChDaxcTxWF"
         open=""
       >
         <summary
-          class="hidden"
+          class="s-SCChDaxcTxWF hidden"
           title="password-toggle"
         >
           <span
-            class="material-icons"
+            class="material-icons s-SCChDaxcTxWF"
           >
             arrow_back
           </span>
@@ -32,62 +35,78 @@ exports[`Default state 1`] = `
         </summary>
          
         <form
+          class="s-SCChDaxcTxWF"
           method="POST"
         >
           <div
-            class="row"
+            class="row s-SCChDaxcTxWF"
           >
-            <fieldset>
-              <legend>
+            <fieldset
+              class="s-Fe6WNbR-55zp"
+            >
+              <legend
+                class="s-Fe6WNbR-55zp"
+              >
                 Identifiant
               </legend>
                
               <input
+                class="s-Fe6WNbR-55zp"
                 name="id"
               />
             </fieldset>
+            <!--&lt;Input&gt;-->
           </div>
            
           <div
-            class="row"
+            class="row s-SCChDaxcTxWF"
           >
-            <fieldset>
-              <legend>
+            <fieldset
+              class="s-Fe6WNbR-55zp"
+            >
+              <legend
+                class="s-Fe6WNbR-55zp"
+              >
                 Mot de passe
               </legend>
                
               <input
+                class="s-Fe6WNbR-55zp"
                 data-testid="password"
                 name="password"
                 type="password"
               />
             </fieldset>
+            <!--&lt;Input&gt;-->
           </div>
            
           <div
-            class="actions"
+            class="actions s-SCChDaxcTxWF"
           >
             <button
+              class="s-NMyTiX1zi6rz"
               disabled=""
               type="submit"
             >
               <span
-                class="material-icons"
+                class="material-icons s-NMyTiX1zi6rz"
               >
                 emoji_people
               </span>
               
               <span
-                class="text"
+                class="text s-NMyTiX1zi6rz"
               >
                 Entrer
               </span>
               
               
             </button>
+            <!--&lt;Button&gt;-->
           </div>
            
           <input
+            class="s-SCChDaxcTxWF"
             name="redirect"
             type="hidden"
             value=""
@@ -96,26 +115,32 @@ exports[`Default state 1`] = `
       </details>
     </div>
   </div>
+  <!--&lt;Pane&gt;-->
+  <!--&lt;LogInForm&gt;-->
 </span>
 `;
 
 exports[`With Github provider 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
   <div
-    class="pane"
+    class="pane s-j2LTsWktqK_4"
   >
     <h1
-      class="heading"
+      class="heading s-SCChDaxcTxWF"
     >
       Bienvenue !
     </h1>
      
     <div
-      class="container"
+      class="container s-SCChDaxcTxWF"
     >
-      <button>
+      <button
+        class="s-NMyTiX1zi6rz"
+      >
         <span
-          class="icon"
+          class="icon s-NMyTiX1zi6rz"
         >
           <svg
             height="20"
@@ -129,24 +154,29 @@ exports[`With Github provider 1`] = `
               fill="currentColor"
             />
           </svg>
+          <!--&lt;Github-logo.svg.rollup-plugin&gt;-->
         </span>
         
         <span
-          class="text"
+          class="text s-NMyTiX1zi6rz"
         >
           Continuer avec Github
         </span>
         
         
       </button>
+      <!--&lt;Button&gt;-->
        
        
-      <details>
+      <details
+        class="s-SCChDaxcTxWF"
+      >
         <summary
+          class="s-SCChDaxcTxWF"
           title="password-toggle"
         >
           <span
-            class="material-icons"
+            class="material-icons s-SCChDaxcTxWF"
           >
             arrow_forward
           </span>
@@ -154,62 +184,78 @@ exports[`With Github provider 1`] = `
         </summary>
          
         <form
+          class="s-SCChDaxcTxWF"
           method="POST"
         >
           <div
-            class="row"
+            class="row s-SCChDaxcTxWF"
           >
-            <fieldset>
-              <legend>
+            <fieldset
+              class="s-Fe6WNbR-55zp"
+            >
+              <legend
+                class="s-Fe6WNbR-55zp"
+              >
                 Identifiant
               </legend>
                
               <input
+                class="s-Fe6WNbR-55zp"
                 name="id"
               />
             </fieldset>
+            <!--&lt;Input&gt;-->
           </div>
            
           <div
-            class="row"
+            class="row s-SCChDaxcTxWF"
           >
-            <fieldset>
-              <legend>
+            <fieldset
+              class="s-Fe6WNbR-55zp"
+            >
+              <legend
+                class="s-Fe6WNbR-55zp"
+              >
                 Mot de passe
               </legend>
                
               <input
+                class="s-Fe6WNbR-55zp"
                 data-testid="password"
                 name="password"
                 type="password"
               />
             </fieldset>
+            <!--&lt;Input&gt;-->
           </div>
            
           <div
-            class="actions"
+            class="actions s-SCChDaxcTxWF"
           >
             <button
+              class="s-NMyTiX1zi6rz"
               disabled=""
               type="submit"
             >
               <span
-                class="material-icons"
+                class="material-icons s-NMyTiX1zi6rz"
               >
                 emoji_people
               </span>
               
               <span
-                class="text"
+                class="text s-NMyTiX1zi6rz"
               >
                 Entrer
               </span>
               
               
             </button>
+            <!--&lt;Button&gt;-->
           </div>
            
           <input
+            class="s-SCChDaxcTxWF"
             name="redirect"
             type="hidden"
             value=""
@@ -218,27 +264,33 @@ exports[`With Github provider 1`] = `
       </details>
     </div>
   </div>
+  <!--&lt;Pane&gt;-->
+  <!--&lt;LogInForm&gt;-->
 </span>
 `;
 
 exports[`With Google provider 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
   <div
-    class="pane"
+    class="pane s-j2LTsWktqK_4"
   >
     <h1
-      class="heading"
+      class="heading s-SCChDaxcTxWF"
     >
       Bienvenue !
     </h1>
      
     <div
-      class="container"
+      class="container s-SCChDaxcTxWF"
     >
        
-      <button>
+      <button
+        class="s-NMyTiX1zi6rz"
+      >
         <span
-          class="icon"
+          class="icon s-NMyTiX1zi6rz"
         >
           <svg
             height="18"
@@ -252,23 +304,28 @@ exports[`With Google provider 1`] = `
               fill-rule="evenodd"
             />
           </svg>
+          <!--&lt;Google-logo.svg.rollup-plugin&gt;-->
         </span>
         
         <span
-          class="text"
+          class="text s-NMyTiX1zi6rz"
         >
           Continuer avec Google
         </span>
         
         
       </button>
+      <!--&lt;Button&gt;-->
        
-      <details>
+      <details
+        class="s-SCChDaxcTxWF"
+      >
         <summary
+          class="s-SCChDaxcTxWF"
           title="password-toggle"
         >
           <span
-            class="material-icons"
+            class="material-icons s-SCChDaxcTxWF"
           >
             arrow_forward
           </span>
@@ -276,62 +333,78 @@ exports[`With Google provider 1`] = `
         </summary>
          
         <form
+          class="s-SCChDaxcTxWF"
           method="POST"
         >
           <div
-            class="row"
+            class="row s-SCChDaxcTxWF"
           >
-            <fieldset>
-              <legend>
+            <fieldset
+              class="s-Fe6WNbR-55zp"
+            >
+              <legend
+                class="s-Fe6WNbR-55zp"
+              >
                 Identifiant
               </legend>
                
               <input
+                class="s-Fe6WNbR-55zp"
                 name="id"
               />
             </fieldset>
+            <!--&lt;Input&gt;-->
           </div>
            
           <div
-            class="row"
+            class="row s-SCChDaxcTxWF"
           >
-            <fieldset>
-              <legend>
+            <fieldset
+              class="s-Fe6WNbR-55zp"
+            >
+              <legend
+                class="s-Fe6WNbR-55zp"
+              >
                 Mot de passe
               </legend>
                
               <input
+                class="s-Fe6WNbR-55zp"
                 data-testid="password"
                 name="password"
                 type="password"
               />
             </fieldset>
+            <!--&lt;Input&gt;-->
           </div>
            
           <div
-            class="actions"
+            class="actions s-SCChDaxcTxWF"
           >
             <button
+              class="s-NMyTiX1zi6rz"
               disabled=""
               type="submit"
             >
               <span
-                class="material-icons"
+                class="material-icons s-NMyTiX1zi6rz"
               >
                 emoji_people
               </span>
               
               <span
-                class="text"
+                class="text s-NMyTiX1zi6rz"
               >
                 Entrer
               </span>
               
               
             </button>
+            <!--&lt;Button&gt;-->
           </div>
            
           <input
+            class="s-SCChDaxcTxWF"
             name="redirect"
             type="hidden"
             value=""
@@ -340,26 +413,32 @@ exports[`With Google provider 1`] = `
       </details>
     </div>
   </div>
+  <!--&lt;Pane&gt;-->
+  <!--&lt;LogInForm&gt;-->
 </span>
 `;
 
 exports[`With all providers 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
   <div
-    class="pane"
+    class="pane s-j2LTsWktqK_4"
   >
     <h1
-      class="heading"
+      class="heading s-SCChDaxcTxWF"
     >
       Bienvenue !
     </h1>
      
     <div
-      class="container"
+      class="container s-SCChDaxcTxWF"
     >
-      <button>
+      <button
+        class="s-NMyTiX1zi6rz"
+      >
         <span
-          class="icon"
+          class="icon s-NMyTiX1zi6rz"
         >
           <svg
             height="20"
@@ -373,20 +452,24 @@ exports[`With all providers 1`] = `
               fill="currentColor"
             />
           </svg>
+          <!--&lt;Github-logo.svg.rollup-plugin&gt;-->
         </span>
         
         <span
-          class="text"
+          class="text s-NMyTiX1zi6rz"
         >
           Continuer avec Github
         </span>
         
         
       </button>
+      <!--&lt;Button&gt;-->
        
-      <button>
+      <button
+        class="s-NMyTiX1zi6rz"
+      >
         <span
-          class="icon"
+          class="icon s-NMyTiX1zi6rz"
         >
           <svg
             height="18"
@@ -400,23 +483,28 @@ exports[`With all providers 1`] = `
               fill-rule="evenodd"
             />
           </svg>
+          <!--&lt;Google-logo.svg.rollup-plugin&gt;-->
         </span>
         
         <span
-          class="text"
+          class="text s-NMyTiX1zi6rz"
         >
           Continuer avec Google
         </span>
         
         
       </button>
+      <!--&lt;Button&gt;-->
        
-      <details>
+      <details
+        class="s-SCChDaxcTxWF"
+      >
         <summary
+          class="s-SCChDaxcTxWF"
           title="password-toggle"
         >
           <span
-            class="material-icons"
+            class="material-icons s-SCChDaxcTxWF"
           >
             arrow_forward
           </span>
@@ -424,62 +512,78 @@ exports[`With all providers 1`] = `
         </summary>
          
         <form
+          class="s-SCChDaxcTxWF"
           method="POST"
         >
           <div
-            class="row"
+            class="row s-SCChDaxcTxWF"
           >
-            <fieldset>
-              <legend>
+            <fieldset
+              class="s-Fe6WNbR-55zp"
+            >
+              <legend
+                class="s-Fe6WNbR-55zp"
+              >
                 Identifiant
               </legend>
                
               <input
+                class="s-Fe6WNbR-55zp"
                 name="id"
               />
             </fieldset>
+            <!--&lt;Input&gt;-->
           </div>
            
           <div
-            class="row"
+            class="row s-SCChDaxcTxWF"
           >
-            <fieldset>
-              <legend>
+            <fieldset
+              class="s-Fe6WNbR-55zp"
+            >
+              <legend
+                class="s-Fe6WNbR-55zp"
+              >
                 Mot de passe
               </legend>
                
               <input
+                class="s-Fe6WNbR-55zp"
                 data-testid="password"
                 name="password"
                 type="password"
               />
             </fieldset>
+            <!--&lt;Input&gt;-->
           </div>
            
           <div
-            class="actions"
+            class="actions s-SCChDaxcTxWF"
           >
             <button
+              class="s-NMyTiX1zi6rz"
               disabled=""
               type="submit"
             >
               <span
-                class="material-icons"
+                class="material-icons s-NMyTiX1zi6rz"
               >
                 emoji_people
               </span>
               
               <span
-                class="text"
+                class="text s-NMyTiX1zi6rz"
               >
                 Entrer
               </span>
               
               
             </button>
+            <!--&lt;Button&gt;-->
           </div>
            
           <input
+            class="s-SCChDaxcTxWF"
             name="redirect"
             type="hidden"
             value=""
@@ -488,33 +592,39 @@ exports[`With all providers 1`] = `
       </details>
     </div>
   </div>
+  <!--&lt;Pane&gt;-->
+  <!--&lt;LogInForm&gt;-->
 </span>
 `;
 
 exports[`With password error 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
   <div
-    class="pane"
+    class="pane s-j2LTsWktqK_4"
   >
     <h1
-      class="heading"
+      class="heading s-SCChDaxcTxWF"
     >
       Bienvenue !
     </h1>
      
     <div
-      class="container"
+      class="container s-SCChDaxcTxWF"
     >
        
        
       <details
+        class="s-SCChDaxcTxWF"
         open=""
       >
         <summary
+          class="s-SCChDaxcTxWF"
           title="password-toggle"
         >
           <span
-            class="material-icons"
+            class="material-icons s-SCChDaxcTxWF"
           >
             arrow_back
           </span>
@@ -522,49 +632,59 @@ exports[`With password error 1`] = `
         </summary>
          
         <form
+          class="s-SCChDaxcTxWF"
           method="POST"
         >
           <div
-            class="row"
+            class="row s-SCChDaxcTxWF"
           >
-            <fieldset>
+            <fieldset
+              class="s-Fe6WNbR-55zp"
+            >
               <legend
-                class="has-value"
+                class="s-Fe6WNbR-55zp has-value"
               >
                 Identifiant
               </legend>
                
               <input
+                class="s-Fe6WNbR-55zp"
                 name="id"
               />
             </fieldset>
+            <!--&lt;Input&gt;-->
           </div>
            
           <div
-            class="row"
+            class="row s-SCChDaxcTxWF"
           >
-            <fieldset>
+            <fieldset
+              class="s-Fe6WNbR-55zp"
+            >
               <legend
-                class="has-value"
+                class="s-Fe6WNbR-55zp has-value"
               >
                 Mot de passe
               </legend>
                
               <input
+                class="s-Fe6WNbR-55zp"
                 data-testid="password"
                 name="password"
                 type="password"
               />
             </fieldset>
+            <!--&lt;Input&gt;-->
           </div>
            
           <div
-            class="error"
+            class="error s-SCChDaxcTxWF"
           >
             Authentication failed!
           </div>
            
           <input
+            class="s-SCChDaxcTxWF"
             name="redirect"
             type="hidden"
             value=""
@@ -573,34 +693,39 @@ exports[`With password error 1`] = `
       </details>
     </div>
   </div>
+  <!--&lt;Pane&gt;-->
+  <!--&lt;LogInForm&gt;-->
 </span>
 `;
 
 exports[`with password values 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
   <div
-    class="pane"
+    class="pane s-j2LTsWktqK_4"
   >
     <h1
-      class="heading"
+      class="heading s-SCChDaxcTxWF"
     >
       Bienvenue !
     </h1>
      
     <div
-      class="container"
+      class="container s-SCChDaxcTxWF"
     >
        
        
       <details
+        class="s-SCChDaxcTxWF"
         open=""
       >
         <summary
-          class="hidden"
+          class="s-SCChDaxcTxWF hidden"
           title="password-toggle"
         >
           <span
-            class="material-icons"
+            class="material-icons s-SCChDaxcTxWF"
           >
             arrow_back
           </span>
@@ -608,65 +733,77 @@ exports[`with password values 1`] = `
         </summary>
          
         <form
+          class="s-SCChDaxcTxWF"
           method="POST"
         >
           <div
-            class="row"
+            class="row s-SCChDaxcTxWF"
           >
-            <fieldset>
+            <fieldset
+              class="s-Fe6WNbR-55zp"
+            >
               <legend
-                class="has-value"
+                class="s-Fe6WNbR-55zp has-value"
               >
                 Identifiant
               </legend>
                
               <input
+                class="s-Fe6WNbR-55zp"
                 name="id"
               />
             </fieldset>
+            <!--&lt;Input&gt;-->
           </div>
            
           <div
-            class="row"
+            class="row s-SCChDaxcTxWF"
           >
-            <fieldset>
+            <fieldset
+              class="s-Fe6WNbR-55zp"
+            >
               <legend
-                class="has-value"
+                class="s-Fe6WNbR-55zp has-value"
               >
                 Mot de passe
               </legend>
                
               <input
+                class="s-Fe6WNbR-55zp"
                 data-testid="password"
                 name="password"
                 type="password"
               />
             </fieldset>
+            <!--&lt;Input&gt;-->
           </div>
            
           <div
-            class="actions"
+            class="actions s-SCChDaxcTxWF"
           >
             <button
+              class="s-NMyTiX1zi6rz"
               type="submit"
             >
               <span
-                class="material-icons"
+                class="material-icons s-NMyTiX1zi6rz"
               >
                 emoji_people
               </span>
               
               <span
-                class="text"
+                class="text s-NMyTiX1zi6rz"
               >
                 Entrer
               </span>
               
               
             </button>
+            <!--&lt;Button&gt;-->
           </div>
            
           <input
+            class="s-SCChDaxcTxWF"
             name="redirect"
             type="hidden"
             value=""
@@ -675,5 +812,7 @@ exports[`with password values 1`] = `
       </details>
     </div>
   </div>
+  <!--&lt;Pane&gt;-->
+  <!--&lt;LogInForm&gt;-->
 </span>
 `;

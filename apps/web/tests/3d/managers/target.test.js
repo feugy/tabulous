@@ -19,7 +19,7 @@ describe('TargetManager', () => {
   })
 
   beforeEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
     drops = []
   })
 

@@ -1,15 +1,31 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Anonymous 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
    
-  <main>
-    <header>
-      <nav>
-        <span>
-          <ol>
-            <li>
-              <a>
+  <main
+    class="s-A-bC3Hke5zSn"
+  >
+    <header
+      class="s-IEV6mBVyuaCJ"
+    >
+      <nav
+        class="s-IEV6mBVyuaCJ"
+      >
+        <span
+          class="s-IEV6mBVyuaCJ"
+        >
+          <ol
+            class="s-x5nEMCoiqeIy"
+          >
+            <li
+              class="s-x5nEMCoiqeIy"
+            >
+              <a
+                class="s-x5nEMCoiqeIy"
+              >
                 Accueil
               </a>
             </li>
@@ -17,13 +33,14 @@ exports[`Anonymous 1`] = `
             
           </ol>
           
+          <!--&lt;Breadcrumb&gt;-->
         </span>
          
         <button
-          class="secondary"
+          class="secondary s-NMyTiX1zi6rz"
         >
           <span
-            class="material-icons"
+            class="material-icons s-NMyTiX1zi6rz"
           >
             login
           </span>
@@ -31,60 +48,90 @@ exports[`Anonymous 1`] = `
           
           
         </button>
+        <!--&lt;Button&gt;-->
       </nav>
        
-      <div>
-        <h1>
+      <div
+        class="s-IEV6mBVyuaCJ"
+      >
+        <h1
+          class="s-A-bC3Hke5zSn"
+        >
           Bienvenue sur Tabulous !
         </h1>
       </div>
     </header>
+    <!--&lt;Header&gt;-->
      
-    <div>
+    <div
+      class="s-A-bC3Hke5zSn"
+    >
        
-      <h2>
+      <h2
+        class="s-A-bC3Hke5zSn"
+      >
         Jeux disponibles
       </h2>
        
       <section
         aria-roledescription="catalog"
+        class="s-A-bC3Hke5zSn"
       >
-        <article>
+        <article
+          class="s-hGRcS-4InB4p"
+        >
           <img
             alt="Jeu de 32 cartes"
+            class="s-hGRcS-4InB4p"
             src="http://localhost:3001/games/32-cards/catalog/cover.webp"
           />
            
           <div
-            class="content"
+            class="content s-hGRcS-4InB4p"
           >
-            <legend>
+            <legend
+              class="s-hGRcS-4InB4p"
+            >
               <div
-                class="title"
+                class="title s-hGRcS-4InB4p"
               >
-                <h3>
+                <h3
+                  class="s-hGRcS-4InB4p"
+                >
                   Jeu de 32 cartes
                 </h3>
                  
                 <details
-                  class="hidden"
+                  class="s-hGRcS-4InB4p hidden"
                 >
-                  <summary>
-                    <strong>
+                  <summary
+                    class="s-hGRcS-4InB4p"
+                  >
+                    <strong
+                      class="s-hGRcS-4InB4p"
+                    >
                       Créé par : 
                     </strong>
                     undefined
                   </summary>
                    
-                  <p>
-                    <strong>
+                  <p
+                    class="s-hGRcS-4InB4p"
+                  >
+                    <strong
+                      class="s-hGRcS-4InB4p"
+                    >
                       Illustré par : 
                     </strong>
                     undefined
                   </p>
                    
-                  <p>
-                    <strong>
+                  <p
+                    class="s-hGRcS-4InB4p"
+                  >
+                    <strong
+                      class="s-hGRcS-4InB4p"
+                    >
                       Distribué par : 
                     </strong>
                     undefined
@@ -93,11 +140,13 @@ exports[`Anonymous 1`] = `
               </div>
                
               <span
-                class="characteristics"
+                class="characteristics s-hGRcS-4InB4p"
               >
-                <span>
+                <span
+                  class="s-hGRcS-4InB4p"
+                >
                   <span
-                    class="material-icons"
+                    class="material-icons s-hGRcS-4InB4p"
                   >
                     people
                   </span>
@@ -105,10 +154,10 @@ exports[`Anonymous 1`] = `
                 </span>
                  
                 <span
-                  class="hidden"
+                  class="s-hGRcS-4InB4p hidden"
                 >
                   <span
-                    class="material-icons"
+                    class="material-icons s-hGRcS-4InB4p"
                   >
                     access_time
                   </span>
@@ -116,10 +165,10 @@ exports[`Anonymous 1`] = `
                 </span>
                  
                 <span
-                  class="hidden"
+                  class="s-hGRcS-4InB4p hidden"
                 >
                   <span
-                    class="material-icons"
+                    class="material-icons s-hGRcS-4InB4p"
                   >
                     person
                   </span>
@@ -129,42 +178,62 @@ exports[`Anonymous 1`] = `
             </legend>
           </div>
         </article>
-        <article>
+        <!--&lt;CatalogItem&gt;-->
+        <article
+          class="s-hGRcS-4InB4p"
+        >
           <img
             alt="Dames"
+            class="s-hGRcS-4InB4p"
             src="http://localhost:3001/games/draughts/catalog/cover.webp"
           />
            
           <div
-            class="content"
+            class="content s-hGRcS-4InB4p"
           >
-            <legend>
+            <legend
+              class="s-hGRcS-4InB4p"
+            >
               <div
-                class="title"
+                class="title s-hGRcS-4InB4p"
               >
-                <h3>
+                <h3
+                  class="s-hGRcS-4InB4p"
+                >
                   Dames
                 </h3>
                  
                 <details
-                  class="hidden"
+                  class="s-hGRcS-4InB4p hidden"
                 >
-                  <summary>
-                    <strong>
+                  <summary
+                    class="s-hGRcS-4InB4p"
+                  >
+                    <strong
+                      class="s-hGRcS-4InB4p"
+                    >
                       Créé par : 
                     </strong>
                     undefined
                   </summary>
                    
-                  <p>
-                    <strong>
+                  <p
+                    class="s-hGRcS-4InB4p"
+                  >
+                    <strong
+                      class="s-hGRcS-4InB4p"
+                    >
                       Illustré par : 
                     </strong>
                     undefined
                   </p>
                    
-                  <p>
-                    <strong>
+                  <p
+                    class="s-hGRcS-4InB4p"
+                  >
+                    <strong
+                      class="s-hGRcS-4InB4p"
+                    >
                       Distribué par : 
                     </strong>
                     undefined
@@ -173,29 +242,35 @@ exports[`Anonymous 1`] = `
               </div>
                
               <span
-                class="characteristics"
+                class="characteristics s-hGRcS-4InB4p"
               >
-                <span>
+                <span
+                  class="s-hGRcS-4InB4p"
+                >
                   <span
-                    class="material-icons"
+                    class="material-icons s-hGRcS-4InB4p"
                   >
                     people
                   </span>
                   2
                 </span>
                  
-                <span>
+                <span
+                  class="s-hGRcS-4InB4p"
+                >
                   <span
-                    class="material-icons"
+                    class="material-icons s-hGRcS-4InB4p"
                   >
                     access_time
                   </span>
                   30'
                 </span>
                  
-                <span>
+                <span
+                  class="s-hGRcS-4InB4p"
+                >
                   <span
-                    class="material-icons"
+                    class="material-icons s-hGRcS-4InB4p"
                   >
                     person
                   </span>
@@ -205,42 +280,62 @@ exports[`Anonymous 1`] = `
             </legend>
           </div>
         </article>
-        <article>
+        <!--&lt;CatalogItem&gt;-->
+        <article
+          class="s-hGRcS-4InB4p"
+        >
           <img
             alt="Solitaire"
+            class="s-hGRcS-4InB4p"
             src="http://localhost:3001/games/klondike/catalog/cover.webp"
           />
            
           <div
-            class="content"
+            class="content s-hGRcS-4InB4p"
           >
-            <legend>
+            <legend
+              class="s-hGRcS-4InB4p"
+            >
               <div
-                class="title"
+                class="title s-hGRcS-4InB4p"
               >
-                <h3>
+                <h3
+                  class="s-hGRcS-4InB4p"
+                >
                   Solitaire
                 </h3>
                  
                 <details
-                  class="hidden"
+                  class="s-hGRcS-4InB4p hidden"
                 >
-                  <summary>
-                    <strong>
+                  <summary
+                    class="s-hGRcS-4InB4p"
+                  >
+                    <strong
+                      class="s-hGRcS-4InB4p"
+                    >
                       Créé par : 
                     </strong>
                     undefined
                   </summary>
                    
-                  <p>
-                    <strong>
+                  <p
+                    class="s-hGRcS-4InB4p"
+                  >
+                    <strong
+                      class="s-hGRcS-4InB4p"
+                    >
                       Illustré par : 
                     </strong>
                     undefined
                   </p>
                    
-                  <p>
-                    <strong>
+                  <p
+                    class="s-hGRcS-4InB4p"
+                  >
+                    <strong
+                      class="s-hGRcS-4InB4p"
+                    >
                       Distribué par : 
                     </strong>
                     undefined
@@ -249,29 +344,35 @@ exports[`Anonymous 1`] = `
               </div>
                
               <span
-                class="characteristics"
+                class="characteristics s-hGRcS-4InB4p"
               >
-                <span>
+                <span
+                  class="s-hGRcS-4InB4p"
+                >
                   <span
-                    class="material-icons"
+                    class="material-icons s-hGRcS-4InB4p"
                   >
                     people
                   </span>
                   1
                 </span>
                  
-                <span>
+                <span
+                  class="s-hGRcS-4InB4p"
+                >
                   <span
-                    class="material-icons"
+                    class="material-icons s-hGRcS-4InB4p"
                   >
                     access_time
                   </span>
                   15'
                 </span>
                  
-                <span>
+                <span
+                  class="s-hGRcS-4InB4p"
+                >
                   <span
-                    class="material-icons"
+                    class="material-icons s-hGRcS-4InB4p"
                   >
                     person
                   </span>
@@ -281,24 +382,42 @@ exports[`Anonymous 1`] = `
             </legend>
           </div>
         </article>
+        <!--&lt;CatalogItem&gt;-->
       </section>
     </div>
   </main>
    
   
+  <!--&lt;+page&gt;-->
 </span>
 `;
 
 exports[`Authenticated 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
    
-  <main>
-    <header>
-      <nav>
-        <span>
-          <ol>
-            <li>
-              <a>
+  <main
+    class="s-A-bC3Hke5zSn"
+  >
+    <header
+      class="s-IEV6mBVyuaCJ"
+    >
+      <nav
+        class="s-IEV6mBVyuaCJ"
+      >
+        <span
+          class="s-IEV6mBVyuaCJ"
+        >
+          <ol
+            class="s-x5nEMCoiqeIy"
+          >
+            <li
+              class="s-x5nEMCoiqeIy"
+            >
+              <a
+                class="s-x5nEMCoiqeIy"
+              >
                 Accueil
               </a>
             </li>
@@ -306,69 +425,92 @@ exports[`Authenticated 1`] = `
             
           </ol>
           
+          <!--&lt;Breadcrumb&gt;-->
         </span>
          
         <span
           aria-expanded="false"
           aria-haspopup="menu"
-          class="wrapper"
+          class="wrapper s-rGIwyFRHo8D9"
         >
           <button
-            class="transparent"
+            class="transparent s-NMyTiX1zi6rz"
           >
             
             
             
             <figure
+              class="s-engCJu8q-fNe"
               style="--dimension: 30px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 0px"
             >
               <img
                 alt="avatar for Jane Doe"
+                class="s-engCJu8q-fNe"
                 height="30"
                 width="30"
               />
                
-              <figcaption>
+              <figcaption
+                class="s-engCJu8q-fNe"
+              >
                 JD
               </figcaption>
             </figure>
+            <!--&lt;PlayerThumbnail&gt;-->
              
             
           </button>
+          <!--&lt;Button&gt;-->
            
           
+          <!--&lt;Menu&gt;-->
         </span>
+        <!--&lt;Dropdown&gt;-->
       </nav>
        
-      <div>
-        <h1>
+      <div
+        class="s-IEV6mBVyuaCJ"
+      >
+        <h1
+          class="s-A-bC3Hke5zSn"
+        >
           Bonjour Jane Doe !
         </h1>
       </div>
     </header>
+    <!--&lt;Header&gt;-->
      
-    <div>
-      <h2>
+    <div
+      class="s-A-bC3Hke5zSn"
+    >
+      <h2
+        class="s-A-bC3Hke5zSn"
+      >
         Parties en cours
       </h2>
        
       <section
         aria-roledescription="games"
+        class="s-A-bC3Hke5zSn"
       >
         
-        <article>
+        <article
+          class="s-lt2MTuasm2zx"
+        >
           <span
-            class="title"
+            class="title s-lt2MTuasm2zx"
           >
-            <h3>
+            <h3
+              class="s-lt2MTuasm2zx"
+            >
               Jeu de 32 cartes
             </h3>
              
             <button
-              class="secondary"
+              class="secondary s-NMyTiX1zi6rz"
             >
               <span
-                class="material-icons"
+                class="material-icons s-NMyTiX1zi6rz"
               >
                 delete
               </span>
@@ -376,81 +518,112 @@ exports[`Authenticated 1`] = `
               
               
             </button>
+            <!--&lt;Button&gt;-->
           </span>
            
           <span
-            class="created"
+            class="created s-lt2MTuasm2zx"
           >
             02 août, 09:13
           </span>
            
         </article>
+        <!--&lt;GameLink&gt;-->
         
-        <article>
+        <article
+          class="s-lt2MTuasm2zx"
+        >
           <span
-            class="title"
+            class="title s-lt2MTuasm2zx"
           >
-            <h3>
+            <h3
+              class="s-lt2MTuasm2zx"
+            >
               6 qui prend !
             </h3>
              
           </span>
            
           <span
-            class="created"
+            class="created s-lt2MTuasm2zx"
           >
             29 juil., 08:17
           </span>
            
           <span
-            class="players"
+            class="players s-lt2MTuasm2zx"
           >
             avec Dams, Célia
           </span>
         </article>
+        <!--&lt;GameLink&gt;-->
       </section>
        
-      <h2>
+      <h2
+        class="s-A-bC3Hke5zSn"
+      >
         Jeux disponibles
       </h2>
        
       <section
         aria-roledescription="catalog"
+        class="s-A-bC3Hke5zSn"
       >
-        <article>
+        <article
+          class="s-hGRcS-4InB4p"
+        >
           <img
             alt="Dune Imperium"
+            class="s-hGRcS-4InB4p"
             src="http://localhost:3001/games/dune-imperium/catalog/cover.webp"
           />
            
           <div
-            class="content"
+            class="content s-hGRcS-4InB4p"
           >
-            <legend>
+            <legend
+              class="s-hGRcS-4InB4p"
+            >
               <div
-                class="title"
+                class="title s-hGRcS-4InB4p"
               >
-                <h3>
+                <h3
+                  class="s-hGRcS-4InB4p"
+                >
                   Dune Imperium
                 </h3>
                  
-                <details>
-                  <summary>
-                    <strong>
+                <details
+                  class="s-hGRcS-4InB4p"
+                >
+                  <summary
+                    class="s-hGRcS-4InB4p"
+                  >
+                    <strong
+                      class="s-hGRcS-4InB4p"
+                    >
                       Créé par : 
                     </strong>
                     Paul Dennen
                   </summary>
                    
-                  <p>
-                    <strong>
+                  <p
+                    class="s-hGRcS-4InB4p"
+                  >
+                    <strong
+                      class="s-hGRcS-4InB4p"
+                    >
                       Illustré par : 
                     </strong>
                     Clay Brooks, Nate Storm, Raul Ramos, Brett Nienburg, Atila Guzey, Derek Herring, Kenan Jackson
                   </p>
                    
-                  <p>
-                    <strong>
+                  <p
+                    class="s-hGRcS-4InB4p"
+                  >
+                    <strong
+                      class="s-hGRcS-4InB4p"
+                    >
                       Distribué par : 
                     </strong>
                     Dire Wolf Digital, Gale Force Nine, Lucky Duck, Legendary
@@ -459,29 +632,35 @@ exports[`Authenticated 1`] = `
               </div>
                
               <span
-                class="characteristics"
+                class="characteristics s-hGRcS-4InB4p"
               >
-                <span>
+                <span
+                  class="s-hGRcS-4InB4p"
+                >
                   <span
-                    class="material-icons"
+                    class="material-icons s-hGRcS-4InB4p"
                   >
                     people
                   </span>
                   1-4
                 </span>
                  
-                <span>
+                <span
+                  class="s-hGRcS-4InB4p"
+                >
                   <span
-                    class="material-icons"
+                    class="material-icons s-hGRcS-4InB4p"
                   >
                     access_time
                   </span>
                   90'
                 </span>
                  
-                <span>
+                <span
+                  class="s-hGRcS-4InB4p"
+                >
                   <span
-                    class="material-icons"
+                    class="material-icons s-hGRcS-4InB4p"
                   >
                     person
                   </span>
@@ -491,40 +670,62 @@ exports[`Authenticated 1`] = `
             </legend>
           </div>
         </article>
-        <article>
+        <!--&lt;CatalogItem&gt;-->
+        <article
+          class="s-hGRcS-4InB4p"
+        >
           <img
             alt="6 qui prend !"
+            class="s-hGRcS-4InB4p"
             src="http://localhost:3001/games/6-takes/catalog/cover.webp"
           />
            
           <div
-            class="content"
+            class="content s-hGRcS-4InB4p"
           >
-            <legend>
+            <legend
+              class="s-hGRcS-4InB4p"
+            >
               <div
-                class="title"
+                class="title s-hGRcS-4InB4p"
               >
-                <h3>
+                <h3
+                  class="s-hGRcS-4InB4p"
+                >
                   6 qui prend !
                 </h3>
                  
-                <details>
-                  <summary>
-                    <strong>
+                <details
+                  class="s-hGRcS-4InB4p"
+                >
+                  <summary
+                    class="s-hGRcS-4InB4p"
+                  >
+                    <strong
+                      class="s-hGRcS-4InB4p"
+                    >
                       Créé par : 
                     </strong>
                     Wolfgang Kramer
                   </summary>
                    
-                  <p>
-                    <strong>
+                  <p
+                    class="s-hGRcS-4InB4p"
+                  >
+                    <strong
+                      class="s-hGRcS-4InB4p"
+                    >
                       Illustré par : 
                     </strong>
                     Franz vohwinkel
                   </p>
                    
-                  <p>
-                    <strong>
+                  <p
+                    class="s-hGRcS-4InB4p"
+                  >
+                    <strong
+                      class="s-hGRcS-4InB4p"
+                    >
                       Distribué par : 
                     </strong>
                     Amigo, Gigamic
@@ -533,29 +734,35 @@ exports[`Authenticated 1`] = `
               </div>
                
               <span
-                class="characteristics"
+                class="characteristics s-hGRcS-4InB4p"
               >
-                <span>
+                <span
+                  class="s-hGRcS-4InB4p"
+                >
                   <span
-                    class="material-icons"
+                    class="material-icons s-hGRcS-4InB4p"
                   >
                     people
                   </span>
                   2-8
                 </span>
                  
-                <span>
+                <span
+                  class="s-hGRcS-4InB4p"
+                >
                   <span
-                    class="material-icons"
+                    class="material-icons s-hGRcS-4InB4p"
                   >
                     access_time
                   </span>
                   15'
                 </span>
                  
-                <span>
+                <span
+                  class="s-hGRcS-4InB4p"
+                >
                   <span
-                    class="material-icons"
+                    class="material-icons s-hGRcS-4InB4p"
                   >
                     person
                   </span>
@@ -565,42 +772,62 @@ exports[`Authenticated 1`] = `
             </legend>
           </div>
         </article>
-        <article>
+        <!--&lt;CatalogItem&gt;-->
+        <article
+          class="s-hGRcS-4InB4p"
+        >
           <img
             alt="Jeu de 32 cartes"
+            class="s-hGRcS-4InB4p"
             src="http://localhost:3001/games/32-cards/catalog/cover.webp"
           />
            
           <div
-            class="content"
+            class="content s-hGRcS-4InB4p"
           >
-            <legend>
+            <legend
+              class="s-hGRcS-4InB4p"
+            >
               <div
-                class="title"
+                class="title s-hGRcS-4InB4p"
               >
-                <h3>
+                <h3
+                  class="s-hGRcS-4InB4p"
+                >
                   Jeu de 32 cartes
                 </h3>
                  
                 <details
-                  class="hidden"
+                  class="s-hGRcS-4InB4p hidden"
                 >
-                  <summary>
-                    <strong>
+                  <summary
+                    class="s-hGRcS-4InB4p"
+                  >
+                    <strong
+                      class="s-hGRcS-4InB4p"
+                    >
                       Créé par : 
                     </strong>
                     undefined
                   </summary>
                    
-                  <p>
-                    <strong>
+                  <p
+                    class="s-hGRcS-4InB4p"
+                  >
+                    <strong
+                      class="s-hGRcS-4InB4p"
+                    >
                       Illustré par : 
                     </strong>
                     undefined
                   </p>
                    
-                  <p>
-                    <strong>
+                  <p
+                    class="s-hGRcS-4InB4p"
+                  >
+                    <strong
+                      class="s-hGRcS-4InB4p"
+                    >
                       Distribué par : 
                     </strong>
                     undefined
@@ -609,11 +836,13 @@ exports[`Authenticated 1`] = `
               </div>
                
               <span
-                class="characteristics"
+                class="characteristics s-hGRcS-4InB4p"
               >
-                <span>
+                <span
+                  class="s-hGRcS-4InB4p"
+                >
                   <span
-                    class="material-icons"
+                    class="material-icons s-hGRcS-4InB4p"
                   >
                     people
                   </span>
@@ -621,10 +850,10 @@ exports[`Authenticated 1`] = `
                 </span>
                  
                 <span
-                  class="hidden"
+                  class="s-hGRcS-4InB4p hidden"
                 >
                   <span
-                    class="material-icons"
+                    class="material-icons s-hGRcS-4InB4p"
                   >
                     access_time
                   </span>
@@ -632,10 +861,10 @@ exports[`Authenticated 1`] = `
                 </span>
                  
                 <span
-                  class="hidden"
+                  class="s-hGRcS-4InB4p hidden"
                 >
                   <span
-                    class="material-icons"
+                    class="material-icons s-hGRcS-4InB4p"
                   >
                     person
                   </span>
@@ -645,42 +874,62 @@ exports[`Authenticated 1`] = `
             </legend>
           </div>
         </article>
-        <article>
+        <!--&lt;CatalogItem&gt;-->
+        <article
+          class="s-hGRcS-4InB4p"
+        >
           <img
             alt="Dames"
+            class="s-hGRcS-4InB4p"
             src="http://localhost:3001/games/draughts/catalog/cover.webp"
           />
            
           <div
-            class="content"
+            class="content s-hGRcS-4InB4p"
           >
-            <legend>
+            <legend
+              class="s-hGRcS-4InB4p"
+            >
               <div
-                class="title"
+                class="title s-hGRcS-4InB4p"
               >
-                <h3>
+                <h3
+                  class="s-hGRcS-4InB4p"
+                >
                   Dames
                 </h3>
                  
                 <details
-                  class="hidden"
+                  class="s-hGRcS-4InB4p hidden"
                 >
-                  <summary>
-                    <strong>
+                  <summary
+                    class="s-hGRcS-4InB4p"
+                  >
+                    <strong
+                      class="s-hGRcS-4InB4p"
+                    >
                       Créé par : 
                     </strong>
                     undefined
                   </summary>
                    
-                  <p>
-                    <strong>
+                  <p
+                    class="s-hGRcS-4InB4p"
+                  >
+                    <strong
+                      class="s-hGRcS-4InB4p"
+                    >
                       Illustré par : 
                     </strong>
                     undefined
                   </p>
                    
-                  <p>
-                    <strong>
+                  <p
+                    class="s-hGRcS-4InB4p"
+                  >
+                    <strong
+                      class="s-hGRcS-4InB4p"
+                    >
                       Distribué par : 
                     </strong>
                     undefined
@@ -689,29 +938,35 @@ exports[`Authenticated 1`] = `
               </div>
                
               <span
-                class="characteristics"
+                class="characteristics s-hGRcS-4InB4p"
               >
-                <span>
+                <span
+                  class="s-hGRcS-4InB4p"
+                >
                   <span
-                    class="material-icons"
+                    class="material-icons s-hGRcS-4InB4p"
                   >
                     people
                   </span>
                   2
                 </span>
                  
-                <span>
+                <span
+                  class="s-hGRcS-4InB4p"
+                >
                   <span
-                    class="material-icons"
+                    class="material-icons s-hGRcS-4InB4p"
                   >
                     access_time
                   </span>
                   30'
                 </span>
                  
-                <span>
+                <span
+                  class="s-hGRcS-4InB4p"
+                >
                   <span
-                    class="material-icons"
+                    class="material-icons s-hGRcS-4InB4p"
                   >
                     person
                   </span>
@@ -721,42 +976,62 @@ exports[`Authenticated 1`] = `
             </legend>
           </div>
         </article>
-        <article>
+        <!--&lt;CatalogItem&gt;-->
+        <article
+          class="s-hGRcS-4InB4p"
+        >
           <img
             alt="Solitaire"
+            class="s-hGRcS-4InB4p"
             src="http://localhost:3001/games/klondike/catalog/cover.webp"
           />
            
           <div
-            class="content"
+            class="content s-hGRcS-4InB4p"
           >
-            <legend>
+            <legend
+              class="s-hGRcS-4InB4p"
+            >
               <div
-                class="title"
+                class="title s-hGRcS-4InB4p"
               >
-                <h3>
+                <h3
+                  class="s-hGRcS-4InB4p"
+                >
                   Solitaire
                 </h3>
                  
                 <details
-                  class="hidden"
+                  class="s-hGRcS-4InB4p hidden"
                 >
-                  <summary>
-                    <strong>
+                  <summary
+                    class="s-hGRcS-4InB4p"
+                  >
+                    <strong
+                      class="s-hGRcS-4InB4p"
+                    >
                       Créé par : 
                     </strong>
                     undefined
                   </summary>
                    
-                  <p>
-                    <strong>
+                  <p
+                    class="s-hGRcS-4InB4p"
+                  >
+                    <strong
+                      class="s-hGRcS-4InB4p"
+                    >
                       Illustré par : 
                     </strong>
                     undefined
                   </p>
                    
-                  <p>
-                    <strong>
+                  <p
+                    class="s-hGRcS-4InB4p"
+                  >
+                    <strong
+                      class="s-hGRcS-4InB4p"
+                    >
                       Distribué par : 
                     </strong>
                     undefined
@@ -765,29 +1040,35 @@ exports[`Authenticated 1`] = `
               </div>
                
               <span
-                class="characteristics"
+                class="characteristics s-hGRcS-4InB4p"
               >
-                <span>
+                <span
+                  class="s-hGRcS-4InB4p"
+                >
                   <span
-                    class="material-icons"
+                    class="material-icons s-hGRcS-4InB4p"
                   >
                     people
                   </span>
                   1
                 </span>
                  
-                <span>
+                <span
+                  class="s-hGRcS-4InB4p"
+                >
                   <span
-                    class="material-icons"
+                    class="material-icons s-hGRcS-4InB4p"
                   >
                     access_time
                   </span>
                   15'
                 </span>
                  
-                <span>
+                <span
+                  class="s-hGRcS-4InB4p"
+                >
                   <span
-                    class="material-icons"
+                    class="material-icons s-hGRcS-4InB4p"
                   >
                     person
                   </span>
@@ -797,10 +1078,12 @@ exports[`Authenticated 1`] = `
             </legend>
           </div>
         </article>
+        <!--&lt;CatalogItem&gt;-->
       </section>
     </div>
   </main>
    
   
+  <!--&lt;+page&gt;-->
 </span>
 `;

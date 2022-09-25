@@ -1,6 +1,6 @@
 import * as peerChannels from '../../src/stores/peer-channels'
 
-jest.mock('../../src/stores/peer-channels', () => {
+vi.mock('../../src/stores/peer-channels', () => {
   const { Subject } = require('rxjs')
   const lastMessageSent = new Subject()
   return {

@@ -12,6 +12,7 @@ describe('LogIn component', () => {
   const id$ = writable()
   const password$ = writable()
   const origin = 'https://localhost:3000'
+  const windowSav = global.window
 
   beforeAll(() => {
     global.window = Object.create(window)
@@ -21,12 +22,14 @@ describe('LogIn component', () => {
   })
 
   beforeEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
     id$.set()
     password$.set()
   })
 
-  afterAll(() => (global.window = undefined))
+  afterAll(() => {
+    global.window = windowSav
+  })
 
   function renderComponent(props = {}) {
     return render(

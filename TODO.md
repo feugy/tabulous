@@ -9,18 +9,6 @@ Roadmap
 
 ## Brittle tests
 
-- `InputManager › given an initialized manager() › handles multiple pointers taps`
-
-  > `expect(received).toHaveLength(expected)` line 1319 (1 long received)
-
-- `Dropdown component › given textual options › closes menu on click`
-
-  > `expect(received).toBeNull()` line 115 (menu does exist)
-
-- `Typeahead component › given object options › closes menu with keyboard and opens on focus`
-
-  > `expect(received).toBeNull()` line 126 (menu does exist)
-
 ## Refactor
 
 - better testing setup? [vitest](https://github.com/sveltejs/kit/discussions/5285), or even [manual](https://github.com/sveltejs/kit/issues/19#issuecomment-1041134457)

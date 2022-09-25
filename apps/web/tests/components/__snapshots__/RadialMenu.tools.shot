@@ -2,16 +2,22 @@
 
 exports[`A few items 1`] = `
 <aside
+  class="s-rtlBPQxKceeD"
   role="menu"
   style="left: 25%; top: 25%; --size:100px;"
 >
-  <ul>
+  <ul
+    class="s-rtlBPQxKceeD"
+  >
     <li
+      class="s-rtlBPQxKceeD"
       style="animation: __svelte_397341122_0 150ms linear 0ms 1 both;"
     >
-      <button>
+      <button
+        class="s-NMyTiX1zi6rz"
+      >
         <span
-          class="material-icons"
+          class="material-icons s-NMyTiX1zi6rz"
         >
           home
         </span>
@@ -19,17 +25,19 @@ exports[`A few items 1`] = `
         
         
       </button>
+      <!--&lt;Button&gt;-->
        
     </li>
     
     <li
+      class="s-rtlBPQxKceeD"
       style="animation: __svelte_2962324507_0 150ms linear 112.5ms 1 both;"
     >
       <button
-        class="secondary"
+        class="secondary s-NMyTiX1zi6rz"
       >
         <span
-          class="material-icons"
+          class="material-icons s-NMyTiX1zi6rz"
         >
           settings
         </span>
@@ -37,6 +45,7 @@ exports[`A few items 1`] = `
         
         
       </button>
+      <!--&lt;Button&gt;-->
        
     </li>
     
@@ -47,16 +56,22 @@ exports[`A few items 1`] = `
 
 exports[`More items 1`] = `
 <aside
+  class="s-rtlBPQxKceeD"
   role="menu"
   style="left: 25%; top: 25%; --size:150px;"
 >
-  <ul>
+  <ul
+    class="s-rtlBPQxKceeD"
+  >
     <li
+      class="s-rtlBPQxKceeD"
       style="animation: __svelte_3871932778_0 150ms linear 0ms 1 both;"
     >
-      <button>
+      <button
+        class="s-NMyTiX1zi6rz"
+      >
         <span
-          class="material-icons"
+          class="material-icons s-NMyTiX1zi6rz"
         >
           home
         </span>
@@ -64,17 +79,19 @@ exports[`More items 1`] = `
         
         
       </button>
+      <!--&lt;Button&gt;-->
        
     </li>
     
     <li
+      class="s-rtlBPQxKceeD"
       style="animation: __svelte_3040732129_0 150ms linear 112.5ms 1 both;"
     >
       <button
-        class="secondary"
+        class="secondary s-NMyTiX1zi6rz"
       >
         <span
-          class="material-icons"
+          class="material-icons s-NMyTiX1zi6rz"
         >
           settings
         </span>
@@ -82,17 +99,19 @@ exports[`More items 1`] = `
         
         
       </button>
+      <!--&lt;Button&gt;-->
        
     </li>
     
     <li
+      class="s-rtlBPQxKceeD"
       style="animation: __svelte_1023368731_0 150ms linear 225ms 1 both;"
     >
       <button
-        class="secondary"
+        class="secondary s-NMyTiX1zi6rz"
       >
         <span
-          class="material-icons"
+          class="material-icons s-NMyTiX1zi6rz"
         >
           face
         </span>
@@ -100,15 +119,19 @@ exports[`More items 1`] = `
         
         
       </button>
+      <!--&lt;Button&gt;-->
        
     </li>
     
     <li
+      class="s-rtlBPQxKceeD"
       style="animation: __svelte_3264121526_0 150ms linear 337.5ms 1 both;"
     >
-      <button>
+      <button
+        class="s-NMyTiX1zi6rz"
+      >
         <span
-          class="material-icons"
+          class="material-icons s-NMyTiX1zi6rz"
         >
           lock
         </span>
@@ -116,15 +139,19 @@ exports[`More items 1`] = `
         
         
       </button>
+      <!--&lt;Button&gt;-->
        
     </li>
     
     <li
+      class="s-rtlBPQxKceeD"
       style="animation: __svelte_4053772584_0 150ms linear 450ms 1 both;"
     >
-      <button>
+      <button
+        class="s-NMyTiX1zi6rz"
+      >
         <span
-          class="material-icons"
+          class="material-icons s-NMyTiX1zi6rz"
         >
           flip
         </span>
@@ -132,15 +159,19 @@ exports[`More items 1`] = `
         
         
       </button>
+      <!--&lt;Button&gt;-->
        
     </li>
     
     <li
+      class="s-rtlBPQxKceeD"
       style="animation: __svelte_756247263_0 150ms linear 562.5ms 1 both;"
     >
-      <button>
+      <button
+        class="s-NMyTiX1zi6rz"
+      >
         <span
-          class="material-icons"
+          class="material-icons s-NMyTiX1zi6rz"
         >
           shuffle
         </span>
@@ -148,15 +179,19 @@ exports[`More items 1`] = `
         
         
       </button>
+      <!--&lt;Button&gt;-->
        
     </li>
     
     <li
+      class="s-rtlBPQxKceeD"
       style="animation: __svelte_2867527063_0 150ms linear 675ms 1 both;"
     >
-      <button>
+      <button
+        class="s-NMyTiX1zi6rz"
+      >
         <span
-          class="material-icons"
+          class="material-icons s-NMyTiX1zi6rz"
         >
           rotate_left
         </span>
@@ -164,6 +199,7 @@ exports[`More items 1`] = `
         
         
       </button>
+      <!--&lt;Button&gt;-->
        
     </li>
     

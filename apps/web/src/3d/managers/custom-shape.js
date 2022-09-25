@@ -1,4 +1,3 @@
-// '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('custom-shape')

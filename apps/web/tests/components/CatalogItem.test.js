@@ -4,9 +4,9 @@ import CatalogItem from '../../src/components/CatalogItem.svelte'
 import { gameAssetsUrl } from '../../src/utils'
 
 describe('CatalogItem component', () => {
-  const handleClick = jest.fn()
+  const handleClick = vi.fn()
 
-  beforeEach(jest.resetAllMocks)
+  beforeEach(vi.resetAllMocks)
 
   function renderComponent(props = {}) {
     return render(html`<${CatalogItem} ...${props} on:click=${handleClick} />`)

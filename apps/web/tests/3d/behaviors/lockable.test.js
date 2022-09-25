@@ -10,7 +10,7 @@ import { controlManager, indicatorManager } from '../../../src/3d/managers'
 import { createBox } from '../../../src/3d/meshes'
 
 describe('LockBehavior', () => {
-  const actionRecorded = jest.fn()
+  const actionRecorded = vi.fn()
   let registerFeedbackSpy
   let scene
 
@@ -22,8 +22,8 @@ describe('LockBehavior', () => {
   })
 
   beforeEach(() => {
-    jest.resetAllMocks()
-    registerFeedbackSpy = jest.spyOn(indicatorManager, 'registerFeedback')
+    vi.resetAllMocks()
+    registerFeedbackSpy = vi.spyOn(indicatorManager, 'registerFeedback')
   })
 
   it('has initial state', () => {

@@ -16,7 +16,7 @@ describe('ControlManager', () => {
   let anchorable
   let snapSpy
   let flipSpy
-  const controlledChangeReceived = jest.fn()
+  const controlledChangeReceived = vi.fn()
 
   configures3dTestEngine(created => ({ scene, handScene } = created))
 
@@ -27,7 +27,7 @@ describe('ControlManager', () => {
   })
 
   beforeEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
     actions = []
 
     mesh = CreateBox('box1', {}, scene)
@@ -40,8 +40,8 @@ describe('ControlManager', () => {
     )
     anchorable.addBehavior(new FlipBehavior(), true)
     handMesh = CreateBox('box3', {}, handScene)
-    snapSpy = jest.spyOn(anchorable.metadata, 'snap')
-    flipSpy = jest.spyOn(anchorable.metadata, 'flip')
+    snapSpy = vi.spyOn(anchorable.metadata, 'snap')
+    flipSpy = vi.spyOn(anchorable.metadata, 'flip')
 
     manager.registerControlable(mesh)
     manager.registerControlable(anchorable)
@@ -101,7 +101,7 @@ describe('ControlManager', () => {
     it('ignores uncontrolled mesh', () => {
       const mesh = CreateBox('box', {})
       mesh.addBehavior(new FlipBehavior(), true)
-      const flipSpy = jest.spyOn(mesh.metadata, 'flip')
+      const flipSpy = vi.spyOn(mesh.metadata, 'flip')
 
       manager.apply({ meshId: mesh.id, fn: 'flip' })
       expect(flipSpy).not.toHaveBeenCalled()

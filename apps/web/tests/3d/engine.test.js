@@ -14,9 +14,11 @@ describe('createEngine()', () => {
   const canvas = document.createElement('canvas')
   const interaction = document.createElement('div')
   const hand = document.createElement('div')
-  const inputInit = jest.spyOn(inputManager, 'init')
+  const inputInit = vi.spyOn(inputManager, 'init')
 
-  beforeEach(() => (Logger.LogLevels = 0))
+  beforeEach(() => {
+    Logger.LogLevels = 0
+  })
 
   afterEach(() => {
     engine?.dispose()
@@ -50,10 +52,10 @@ describe('createEngine()', () => {
   describe('given an engine', () => {
     let displayLoadingUI
     let loadingObserver
-    const receiveLoading = jest.fn()
+    const receiveLoading = vi.fn()
 
     beforeEach(() => {
-      jest.resetAllMocks()
+      vi.resetAllMocks()
       engine = createEngine({
         Engine: NullEngine,
         canvas,
@@ -63,7 +65,7 @@ describe('createEngine()', () => {
         longTapDelay: 200
       })
       loadingObserver = engine.onLoadingObservable.add(receiveLoading)
-      displayLoadingUI = jest.spyOn(engine, 'displayLoadingUI')
+      displayLoadingUI = vi.spyOn(engine, 'displayLoadingUI')
     })
 
     afterEach(() => engine.onLoadingObservable.remove(loadingObserver))

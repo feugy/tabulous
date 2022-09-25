@@ -1,31 +1,42 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Default 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
   <span
     aria-valuenow="1"
+    class="s-6VEvz9s88k9v"
     role="slider"
   >
-    <button>
+    <button
+      class="s-NMyTiX1zi6rz"
+    >
       <span
-        class="material-icons"
+        class="material-icons s-NMyTiX1zi6rz"
       >
         front_hand
       </span>
       
       
       
-      <strong>
+      <strong
+        class="s-6VEvz9s88k9v"
+      >
         1
       </strong>
     </button>
+    <!--&lt;Button&gt;-->
      
-    <div>
+    <div
+      class="s-6VEvz9s88k9v"
+    >
       <button
+        class="s-NMyTiX1zi6rz"
         data-up="true"
       >
         <span
-          class="material-icons"
+          class="material-icons s-NMyTiX1zi6rz"
         >
           arrow_drop_up
         </span>
@@ -33,12 +44,14 @@ exports[`Default 1`] = `
         
         
       </button>
+      <!--&lt;Button&gt;-->
        
       <button
+        class="s-NMyTiX1zi6rz"
         data-down="true"
       >
         <span
-          class="material-icons"
+          class="material-icons s-NMyTiX1zi6rz"
         >
           arrow_drop_down
         </span>
@@ -46,40 +59,52 @@ exports[`Default 1`] = `
         
         
       </button>
+      <!--&lt;Button&gt;-->
     </div>
   </span>
+  <!--&lt;QuantityButton&gt;-->
 </span>
 `;
 
 exports[`Disabled 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
   <span
     aria-valuenow="1"
+    class="s-6VEvz9s88k9v"
     role="slider"
   >
     <button
+      class="s-NMyTiX1zi6rz"
       disabled=""
     >
       <span
-        class="material-icons"
+        class="material-icons s-NMyTiX1zi6rz"
       >
         stop
       </span>
       
       
       
-      <strong>
+      <strong
+        class="s-6VEvz9s88k9v"
+      >
         1
       </strong>
     </button>
+    <!--&lt;Button&gt;-->
      
-    <div>
+    <div
+      class="s-6VEvz9s88k9v"
+    >
       <button
+        class="s-NMyTiX1zi6rz"
         data-up="true"
         disabled=""
       >
         <span
-          class="material-icons"
+          class="material-icons s-NMyTiX1zi6rz"
         >
           arrow_drop_up
         </span>
@@ -87,13 +112,15 @@ exports[`Disabled 1`] = `
         
         
       </button>
+      <!--&lt;Button&gt;-->
        
       <button
+        class="s-NMyTiX1zi6rz"
         data-down="true"
         disabled=""
       >
         <span
-          class="material-icons"
+          class="material-icons s-NMyTiX1zi6rz"
         >
           arrow_drop_down
         </span>
@@ -101,40 +128,50 @@ exports[`Disabled 1`] = `
         
         
       </button>
+      <!--&lt;Button&gt;-->
     </div>
   </span>
+  <!--&lt;QuantityButton&gt;-->
 </span>
 `;
 
 exports[`Secondary 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
   <span
     aria-valuenow="1"
+    class="s-6VEvz9s88k9v"
     role="slider"
   >
     <button
-      class="secondary"
+      class="secondary s-NMyTiX1zi6rz"
     >
       <span
-        class="material-icons"
+        class="material-icons s-NMyTiX1zi6rz"
       >
         send
       </span>
       
       
       
-      <strong>
+      <strong
+        class="s-6VEvz9s88k9v"
+      >
         1
       </strong>
     </button>
+    <!--&lt;Button&gt;-->
      
-    <div>
+    <div
+      class="s-6VEvz9s88k9v"
+    >
       <button
-        class="secondary"
+        class="secondary s-NMyTiX1zi6rz"
         data-up="true"
       >
         <span
-          class="material-icons"
+          class="material-icons s-NMyTiX1zi6rz"
         >
           arrow_drop_up
         </span>
@@ -142,13 +179,14 @@ exports[`Secondary 1`] = `
         
         
       </button>
+      <!--&lt;Button&gt;-->
        
       <button
-        class="secondary"
+        class="secondary s-NMyTiX1zi6rz"
         data-down="true"
       >
         <span
-          class="material-icons"
+          class="material-icons s-NMyTiX1zi6rz"
         >
           arrow_drop_down
         </span>
@@ -156,7 +194,9 @@ exports[`Secondary 1`] = `
         
         
       </button>
+      <!--&lt;Button&gt;-->
     </div>
   </span>
+  <!--&lt;QuantityButton&gt;-->
 </span>
 `;

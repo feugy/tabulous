@@ -1,7 +1,8 @@
 import { Matrix, Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector.js'
 import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder.js'
-import { controlManager, materialManager } from '../managers'
-import { registerBehaviors, serializeBehaviors } from '../utils'
+import { controlManager } from '../managers/control'
+import { materialManager } from '../managers/material'
+import { registerBehaviors, serializeBehaviors } from '../utils/behaviors'
 
 /**
  * Creates a prism, with a given number of base edge (starting at 3).

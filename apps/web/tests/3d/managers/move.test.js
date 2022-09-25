@@ -29,9 +29,9 @@ import { createTable, getDimensions } from '../../../src/3d/utils'
 describe('MoveManager', () => {
   const centerX = 1024
   const centerY = 512
-  const actionRecorded = jest.fn()
-  const moveRecorded = jest.fn()
-  const preMoveRecorded = jest.fn()
+  const actionRecorded = vi.fn()
+  const moveRecorded = vi.fn()
+  const preMoveRecorded = vi.fn()
   let scene
   let handScene
   let camera
@@ -56,7 +56,7 @@ describe('MoveManager', () => {
   })
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     createTable()
     drops = []
     selectionManager.clear()
@@ -415,9 +415,9 @@ describe('MoveManager', () => {
         handScene
       )
       camera.setPosition(cameraPosition)
-      jest
-        .spyOn(window, 'getComputedStyle')
-        .mockImplementation(() => ({ height: `${centerY / 2}px` }))
+      vi.spyOn(window, 'getComputedStyle').mockImplementation(() => ({
+        height: `${centerY / 2}px`
+      }))
     })
 
     it('moves according to hand camera', async () => {

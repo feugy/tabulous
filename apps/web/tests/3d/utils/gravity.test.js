@@ -232,7 +232,9 @@ describe('isAbove() 3D utility', () => {
     }
   ])(`given $title`, ({ buildMeshes, results }) => {
     let meshes
-    beforeEach(() => (meshes = buildMeshes()))
+    beforeEach(() => {
+      meshes = buildMeshes()
+    })
 
     it('detects overlap on edge', () => {
       setPosition([

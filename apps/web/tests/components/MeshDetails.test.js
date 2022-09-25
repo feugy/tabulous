@@ -5,8 +5,8 @@ import MeshDetails from '../../src/components/MeshDetails.svelte'
 import { gameAssetsUrl, sleep } from '../../src/utils'
 
 describe('MeshDetails component', () => {
-  const handleClose = jest.fn()
-  const handleOpen = jest.fn()
+  const handleClose = vi.fn()
+  const handleOpen = vi.fn()
 
   const mesh1 = { image: '/image1.webp' }
 
@@ -20,7 +20,7 @@ describe('MeshDetails component', () => {
     )
   }
 
-  beforeEach(jest.resetAllMocks)
+  beforeEach(vi.resetAllMocks)
 
   it('displays a mesh image', async () => {
     renderComponent({ mesh: mesh1 })

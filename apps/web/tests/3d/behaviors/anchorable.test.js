@@ -36,7 +36,7 @@ import { createRoundToken } from '../../../src/3d/meshes'
 describe('AnchorBehavior', () => {
   configures3dTestEngine(created => (scene = created.scene))
 
-  const moveRecorded = jest.fn()
+  const moveRecorded = vi.fn()
   let scene
   let recordSpy
   let registerFeedbackSpy
@@ -48,12 +48,12 @@ describe('AnchorBehavior', () => {
   })
 
   beforeEach(() => {
-    jest.clearAllMocks()
-    recordSpy = jest.spyOn(controlManager, 'record')
-    registerFeedbackSpy = jest.spyOn(indicatorManager, 'registerFeedback')
-    jest
-      .spyOn(handManager, 'draw')
-      .mockImplementation(mesh => controlManager.record({ mesh, fn: 'draw' }))
+    vi.clearAllMocks()
+    recordSpy = vi.spyOn(controlManager, 'record')
+    registerFeedbackSpy = vi.spyOn(indicatorManager, 'registerFeedback')
+    vi.spyOn(handManager, 'draw').mockImplementation(mesh =>
+      controlManager.record({ mesh, fn: 'draw' })
+    )
     selectionManager.clear()
   })
 

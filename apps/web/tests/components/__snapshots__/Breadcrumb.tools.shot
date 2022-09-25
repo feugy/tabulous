@@ -1,40 +1,61 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Empty 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
   
+  <!--&lt;Breadcrumb&gt;-->
 </span>
 `;
 
 exports[`Multiple entries 1`] = `
-<span>
-  <ol>
-    <li>
+<span
+  class="s-J5GgeKLL-Nki"
+>
+  <ol
+    class="s-x5nEMCoiqeIy"
+  >
+    <li
+      class="s-x5nEMCoiqeIy"
+    >
       <a
+        class="s-x5nEMCoiqeIy"
         href="/"
       >
         home
       </a>
     </li>
      
-    <li>
+    <li
+      class="s-x5nEMCoiqeIy"
+    >
       &gt;
     </li>
     
-    <li>
+    <li
+      class="s-x5nEMCoiqeIy"
+    >
       <a
+        class="s-x5nEMCoiqeIy"
         href="/account"
       >
         account
       </a>
     </li>
      
-    <li>
+    <li
+      class="s-x5nEMCoiqeIy"
+    >
       &gt;
     </li>
     
-    <li>
-      <a>
+    <li
+      class="s-x5nEMCoiqeIy"
+    >
+      <a
+        class="s-x5nEMCoiqeIy"
+      >
         details
       </a>
     </li>
@@ -42,14 +63,23 @@ exports[`Multiple entries 1`] = `
     
   </ol>
   
+  <!--&lt;Breadcrumb&gt;-->
 </span>
 `;
 
 exports[`Single entry 1`] = `
-<span>
-  <ol>
-    <li>
-      <a>
+<span
+  class="s-J5GgeKLL-Nki"
+>
+  <ol
+    class="s-x5nEMCoiqeIy"
+  >
+    <li
+      class="s-x5nEMCoiqeIy"
+    >
+      <a
+        class="s-x5nEMCoiqeIy"
+      >
         home
       </a>
     </li>
@@ -57,5 +87,6 @@ exports[`Single entry 1`] = `
     
   </ol>
   
+  <!--&lt;Breadcrumb&gt;-->
 </span>
 `;

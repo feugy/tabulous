@@ -11,7 +11,6 @@ import {
 } from '../meshes'
 import { restoreBehaviors } from './behaviors'
 import { AnchorBehaviorName, StackBehaviorName } from '../behaviors/names'
-// '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('scene-loader')

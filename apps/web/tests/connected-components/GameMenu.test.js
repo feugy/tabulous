@@ -12,21 +12,21 @@ import {
   toggleIndicators
 } from '../../src/stores'
 
-jest.mock('../../src/stores/fullscreen', () => {
+vi.mock('../../src/stores/fullscreen', () => {
   const { BehaviorSubject } = require('rxjs')
   return {
     isFullscreen: new BehaviorSubject(false),
-    toggleFullscreen: jest.fn()
+    toggleFullscreen: vi.fn()
   }
 })
-jest.mock('../../src/stores/indicators', () => {
+vi.mock('../../src/stores/indicators', () => {
   const { BehaviorSubject } = require('rxjs')
   return {
     areIndicatorsVisible: new BehaviorSubject(false),
-    toggleIndicators: jest.fn()
+    toggleIndicators: vi.fn()
   }
 })
-jest.mock('../../src/stores/game-manager', () => {
+vi.mock('../../src/stores/game-manager', () => {
   const { BehaviorSubject } = require('rxjs')
   return {
     currentGame: new BehaviorSubject({ availableSeats: 1 })
@@ -34,10 +34,10 @@ jest.mock('../../src/stores/game-manager', () => {
 })
 
 describe('GameMenu connected component', () => {
-  const handleInvitePlayer = jest.fn()
+  const handleInvitePlayer = vi.fn()
 
   beforeEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
     isFullscreen.next(false)
     areIndicatorsVisible.next(true)
   })
@@ -114,7 +114,7 @@ describe('GameMenu connected component', () => {
   })
 
   it('can hide indicators', async () => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
     await renderAndOpenComponent()
     fireEvent.click(selectHideIndicatorsOption())
     expect(toggleFullscreen).not.toHaveBeenCalled()

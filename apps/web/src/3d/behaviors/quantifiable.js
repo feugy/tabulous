@@ -1,22 +1,19 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import { MoveBehaviorName, QuantityBehaviorName } from './names'
 import { TargetBehavior } from './targetable'
-import {
-  controlManager,
-  indicatorManager,
-  moveManager,
-  selectionManager,
-  targetManager
-} from '../managers'
+import { controlManager } from '../managers/control'
+import { indicatorManager } from '../managers/indicator'
+import { moveManager } from '../managers/move'
+import { selectionManager } from '../managers/selection'
+import { targetManager } from '../managers/target'
 import {
   animateMove,
   attachFunctions,
   attachProperty,
-  buildTargetMesh,
-  createMeshFromState,
-  getCenterAltitudeAbove
-} from '../utils'
-// '../../utils' creates a cyclic dependency in Jest
+  buildTargetMesh
+} from '../utils/behaviors'
+import { getCenterAltitudeAbove } from '../utils/gravity'
+import { createMeshFromState } from '../utils/scene-loader'
 import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('quantifiable')

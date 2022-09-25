@@ -5,10 +5,10 @@ import RuleViewer from '../../src/components/RuleViewer.svelte'
 import { gameAssetsUrl } from '../../src/utils'
 
 describe('RuleViewer component', () => {
-  const handleChange = jest.fn()
+  const handleChange = vi.fn()
   const game = 'cards'
 
-  beforeEach(jest.resetAllMocks)
+  beforeEach(vi.resetAllMocks)
 
   function renderComponent(props = {}) {
     return render(

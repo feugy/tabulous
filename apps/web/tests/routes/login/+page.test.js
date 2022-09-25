@@ -2,7 +2,7 @@ import { render } from '@testing-library/svelte'
 import html from 'svelte-htm'
 import LoginPage from '../../../src/routes/login/+page.svelte'
 
-jest.mock('$app/stores', () => {
+vi.mock('$app/stores', () => {
   const { BehaviorSubject } = require('rxjs')
   return {
     page: new BehaviorSubject({ url: new URL('http://localhost/login') })

@@ -4,14 +4,10 @@ import { Observable } from '@babylonjs/core/Misc/observable.js'
 import { controlManager } from './control'
 import { selectionManager } from './selection'
 import { targetManager } from './target'
-import {
-  animateMove,
-  isAboveTable,
-  screenToGround,
-  sortByElevation
-} from '../utils'
-import { sleep } from '../../utils'
-// '../../utils' creates a cyclic dependency in Jest
+import { animateMove } from '../utils/behaviors'
+import { sortByElevation } from '../utils/gravity'
+import { isAboveTable, screenToGround } from '../utils/vector'
+import { sleep } from '../../utils/time'
 import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('move')

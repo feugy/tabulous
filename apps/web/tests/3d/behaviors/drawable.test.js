@@ -10,8 +10,8 @@ import { DrawBehavior, DrawBehaviorName } from '../../../src/3d/behaviors'
 import { controlManager, handManager } from '../../../src/3d/managers'
 import { createCard } from '../../../src/3d/meshes'
 
-const actionRecorded = jest.fn()
-const animationEndReceived = jest.fn()
+const actionRecorded = vi.fn()
+const animationEndReceived = vi.fn()
 const handOverlay = document.createElement('div')
 
 configures3dTestEngine(({ handScene, scene }) => {
@@ -19,7 +19,7 @@ configures3dTestEngine(({ handScene, scene }) => {
   controlManager.onActionObservable.add(actionRecorded)
 })
 
-beforeEach(jest.resetAllMocks)
+beforeEach(vi.resetAllMocks)
 
 describe('DrawBehavior', () => {
   it('has initial state', () => {

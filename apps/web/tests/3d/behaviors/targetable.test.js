@@ -7,7 +7,7 @@ import { indicatorManager, targetManager } from '../../../src/3d/managers'
 describe('TargetBehavior', () => {
   configures3dTestEngine()
 
-  beforeEach(jest.resetAllMocks)
+  beforeEach(vi.resetAllMocks)
 
   it('has initial state', () => {
     const state = {

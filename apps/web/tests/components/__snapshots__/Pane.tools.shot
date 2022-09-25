@@ -1,9 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Components/Pane 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
   <div
-    class="pane"
+    class="pane s-j2LTsWktqK_4"
   />
+  <!--&lt;Pane&gt;-->
 </span>
 `;

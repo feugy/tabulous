@@ -15,14 +15,14 @@ import { runMutation, runSubscription } from '../../src/stores/graphql-client'
 import { mockLogger } from '../utils.js'
 import { sleep } from '../../src/utils'
 
-jest.mock('simple-peer-light')
-jest.mock('../../src/stores/graphql-client')
-jest.mock('../../src/stores/stream', () => {
+vi.mock('simple-peer-light')
+vi.mock('../../src/stores/graphql-client')
+vi.mock('../../src/stores/stream', () => {
   const { BehaviorSubject, Subject } = require('rxjs')
   return {
     stream$: new BehaviorSubject(null),
-    acquireMediaStream: jest.fn(),
-    releaseMediaStream: jest.fn(),
+    acquireMediaStream: vi.fn(),
+    releaseMediaStream: vi.fn(),
     localStreamChange$: new Subject()
   }
 })
@@ -63,7 +63,7 @@ describe('Peer channels store', () => {
   })
 
   beforeEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
     lastConnectedId = null
     lastDisconnectedId = null
     messagesSent = []
@@ -74,15 +74,15 @@ describe('Peer channels store', () => {
         events: {},
         on: (event, handler) => {
           if (!peer.events[event]) {
-            peer.events[event] = jest.fn()
+            peer.events[event] = vi.fn()
           }
           peer.events[event](handler)
         },
-        signal: jest.fn(),
-        send: jest.fn(),
-        destroy: jest.fn(),
-        addStream: jest.fn(),
-        removeStream: jest.fn(),
+        signal: vi.fn(),
+        send: vi.fn(),
+        destroy: vi.fn(),
+        addStream: vi.fn(),
+        removeStream: vi.fn(),
         streams: [stream]
       }
       peers.push(peer)
@@ -156,9 +156,11 @@ describe('Peer channels store', () => {
     })
 
     describe('connectWith()', () => {
-      beforeEach(() => jest.useFakeTimers())
+      beforeEach(() => {
+        vi.useFakeTimers()
+      })
 
-      afterEach(() => jest.useRealTimers())
+      afterEach(() => vi.useRealTimers())
 
       it('opens WebRTC peer, sends offer through WebSocket and accept answer', async () => {
         const offer = { type: 'offer', data: faker.lorem.words() }
@@ -225,7 +227,7 @@ describe('Peer channels store', () => {
 
         await awaitSignal.next(answer)
 
-        jest.runAllTimers()
+        vi.runAllTimers()
         expect(get(communication.connected)).toEqual([])
         expect(Peer).toHaveBeenCalledTimes(1)
         expect(peers[0].signal).not.toHaveBeenCalled()

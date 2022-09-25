@@ -1,8 +1,12 @@
 import { Animation } from '@babylonjs/core/Animations/animation.js'
-import { AnimateBehavior } from '.'
+import { AnimateBehavior } from './animatable'
 import { DrawBehaviorName } from './names'
-import { handManager } from '../managers'
-import { attachFunctions, detachFromParent, runAnimation } from '../utils'
+import { handManager } from '../managers/hand'
+import {
+  attachFunctions,
+  detachFromParent,
+  runAnimation
+} from '../utils/behaviors'
 
 /**
  * @typedef {object} DrawableState behavior persistent state, including:

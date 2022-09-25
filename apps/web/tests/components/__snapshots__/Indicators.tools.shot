@@ -1,167 +1,214 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`All kinds 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
   
   <div
-    class="centered"
+    class="s-WFVnM7df3-nu centered"
     style="top: 125px; left: 150px;"
   >
     Gaspard
   </div>
+  <!--&lt;Label&gt;-->
   
   
   <div
+    class="s-WFVnM7df3-nu"
     style="top: 125px; left: 150px;"
   >
     3
   </div>
+  <!--&lt;Label&gt;-->
   
   
   <figure
-    class="positioned"
+    class="s-engCJu8q-fNe positioned"
     style="--dimension: 60px; --color: null; --top: -125px; --left: -150px; --border-width: 3px"
   >
     <img
       alt="avatar for Gaspard"
+      class="s-engCJu8q-fNe"
       height="60"
       width="60"
     />
      
-    <figcaption>
+    <figcaption
+      class="s-engCJu8q-fNe"
+    >
       Gaspard
     </figcaption>
   </figure>
+  <!--&lt;PlayerThumbnail&gt;-->
   
   
   <div
+    class="s-8tykIykLMKjy"
     style="top: 200px; left: 50px;"
   >
     <span
-      class="material-icons"
+      class="material-icons s-8tykIykLMKjy"
     >
       layers
     </span>
     
   </div>
+  <!--&lt;Feedback&gt;-->
   
   
   <div
+    class="s-8tykIykLMKjy"
     style="top: 200px; left: 100px;"
   >
     <span
-      class="material-icons"
+      class="material-icons s-8tykIykLMKjy"
     >
       
     </span>
     Jane
   </div>
+  <!--&lt;Feedback&gt;-->
   
   
+  <!--&lt;Indicators&gt;-->
 </span>
 `;
 
 exports[`Feedback for action 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
   
   <div
+    class="s-8tykIykLMKjy"
     style="top: 200px; left: 50px;"
   >
     <span
-      class="material-icons"
+      class="material-icons s-8tykIykLMKjy"
     >
       layers
     </span>
     
   </div>
+  <!--&lt;Feedback&gt;-->
   
   
+  <!--&lt;Indicators&gt;-->
 </span>
 `;
 
 exports[`Feedback for player 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
   
   <div
+    class="s-8tykIykLMKjy"
     style="top: 200px; left: 50px;"
   >
     <span
-      class="material-icons"
+      class="material-icons s-8tykIykLMKjy"
     >
       
     </span>
     Jane
   </div>
+  <!--&lt;Feedback&gt;-->
   
   
+  <!--&lt;Indicators&gt;-->
 </span>
 `;
 
 exports[`For player 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
   
   <div
-    class="centered"
+    class="s-WFVnM7df3-nu centered"
     style="top: 125px; left: 150px;"
   >
     Gaspard
   </div>
+  <!--&lt;Label&gt;-->
   
   
+  <!--&lt;Indicators&gt;-->
 </span>
 `;
 
 exports[`Multiple 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
   
   <div
+    class="s-WFVnM7df3-nu"
     style="top: 100px; left: 50px;"
   >
     5
   </div>
+  <!--&lt;Label&gt;-->
   
   
   <div
+    class="s-WFVnM7df3-nu"
     style="top: 200px; left: 150px;"
   >
     27
   </div>
+  <!--&lt;Label&gt;-->
   
   
+  <!--&lt;Indicators&gt;-->
 </span>
 `;
 
 exports[`Peer pointer 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
   
   <figure
-    class="positioned"
+    class="s-engCJu8q-fNe positioned"
     style="--dimension: 60px; --color: null; --top: -125px; --left: -150px; --border-width: 3px"
   >
     <img
       alt="avatar for Gaspard"
+      class="s-engCJu8q-fNe"
       height="60"
       width="60"
     />
      
-    <figcaption>
+    <figcaption
+      class="s-engCJu8q-fNe"
+    >
       Gaspard
     </figcaption>
   </figure>
+  <!--&lt;PlayerThumbnail&gt;-->
   
   
+  <!--&lt;Indicators&gt;-->
 </span>
 `;
 
 exports[`Single 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
   
   <div
+    class="s-WFVnM7df3-nu"
     style="top: 100px; left: 50px;"
   >
     5
   </div>
+  <!--&lt;Label&gt;-->
   
   
+  <!--&lt;Indicators&gt;-->
 </span>
 `;

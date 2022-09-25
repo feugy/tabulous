@@ -1,16 +1,15 @@
 import { Animation } from '@babylonjs/core/Animations/animation.js'
 import { AnimateBehavior } from './animatable'
 import { FlipBehaviorName } from './names'
+import { controlManager } from '../managers/control'
 import {
-  applyGravity,
   attachFunctions,
   attachProperty,
   detachFromParent,
-  getDimensions,
   runAnimation
-} from '../utils'
-import { controlManager } from '../managers'
-// '../../utils' creates a cyclic dependency in Jest
+} from '../utils/behaviors'
+import { applyGravity } from '../utils/gravity'
+import { getDimensions } from '../utils/mesh'
 import { makeLogger } from '../../utils/logger'
 
 const Tolerance = 0.000001

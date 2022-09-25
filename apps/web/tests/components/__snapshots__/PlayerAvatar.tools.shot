@@ -1,92 +1,122 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Local 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
   <section
+    class="s-ab4pMJzf-5--"
     data-testid="player-avatar"
   >
     <figure
+      class="s-engCJu8q-fNe"
       style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
     >
       <img
         alt="avatar for Joe le clodo"
-        class="hasImage"
+        class="s-engCJu8q-fNe hasImage"
         height="150"
-        src="default"
+        src="/tests/components/avatar.png"
         width="150"
       />
        
     </figure>
+    <!--&lt;PlayerThumbnail&gt;-->
      
     <span
-      class="host"
+      class="host s-ab4pMJzf-5--"
     >
       host
     </span>
      
-    <legend>
+    <legend
+      class="s-ab4pMJzf-5--"
+    >
        
       
     </legend>
   </section>
+  <!--&lt;PlayerAvatar&gt;-->
+  <!--&lt;PlayerAvatarWithVideo&gt;-->
 </span>
 `;
 
 exports[`No video 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
   <section
+    class="s-ab4pMJzf-5--"
     data-testid="player-avatar"
   >
     <figure
+      class="s-engCJu8q-fNe"
       style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
     >
       <img
         alt="avatar for Joe le clodo"
-        class="hasImage"
+        class="s-engCJu8q-fNe hasImage"
         height="150"
-        src="default"
+        src="/tests/components/avatar.png"
         width="150"
       />
        
     </figure>
+    <!--&lt;PlayerThumbnail&gt;-->
      
     <span
-      class="host"
+      class="host s-ab4pMJzf-5--"
     >
       host
     </span>
      
-    <legend />
+    <legend
+      class="s-ab4pMJzf-5--"
+    />
   </section>
+  <!--&lt;PlayerAvatar&gt;-->
+  <!--&lt;PlayerAvatarWithVideo&gt;-->
 </span>
 `;
 
 exports[`No video nor avatar 1`] = `
-<span>
+<span
+  class="s-J5GgeKLL-Nki"
+>
   <section
+    class="s-ab4pMJzf-5--"
     data-testid="player-avatar"
   >
     <figure
+      class="s-engCJu8q-fNe"
       style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
     >
       <img
         alt="avatar for Joe le clodo"
+        class="s-engCJu8q-fNe"
         height="150"
         width="150"
       />
        
-      <figcaption>
+      <figcaption
+        class="s-engCJu8q-fNe"
+      >
         Joe le clodo
       </figcaption>
     </figure>
+    <!--&lt;PlayerThumbnail&gt;-->
      
     <span
-      class="host"
+      class="host s-ab4pMJzf-5--"
     >
       host
     </span>
      
-    <legend />
+    <legend
+      class="s-ab4pMJzf-5--"
+    />
   </section>
+  <!--&lt;PlayerAvatar&gt;-->
+  <!--&lt;PlayerAvatarWithVideo&gt;-->
 </span>
 `;
