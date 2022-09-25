@@ -19,14 +19,22 @@ jobs:
       - name: Check code out
         uses: actions/checkout@v3
 
+      - name: Intall Pnpm
+        uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+
       - name: Set Node.js up
         uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install
+
+      - name: Run linter
+        run: pnpm lint
 
   cli_tests:
     name: CLI tests
@@ -38,17 +46,22 @@ jobs:
       - name: Check code out
         uses: actions/checkout@v2
 
+      - name: Intall Pnpm
+        uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+
       - name: Set Node.js up
         uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install
 
       - name: Run CLI test
-        run: npm run test:cli
+        run: pnpm test:cli
 
       - name: Send coverage to Codacy
         if: always()
@@ -68,17 +81,22 @@ jobs:
       - name: Check code out
         uses: actions/checkout@v2
 
+      - name: Intall Pnpm
+        uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+
       - name: Set Node.js up
         uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install
 
       - name: Run server test
-        run: npm run test:server
+        run: pnpm test:server
 
       - name: Send coverage to Codacy
         if: always()
@@ -98,20 +116,25 @@ jobs:
       - name: Check code out
         uses: actions/checkout@v2
 
+      - name: Intall Pnpm
+        uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+
       - name: Set Node.js up
         uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install
 
       - name: Run UI unit tests
-        run: npm run test:web
+        run: pnpm test:web
         env:
-          WEB_GAME_ASSETS_URL: https://localhost:3000/games
-          WEB_GRAPHQL_URL: https://localhost:3000/graphql
+          WEB_GAME_ASSETS_URL: http://localhost:3001/games
+          WEB_GRAPHQL_URL: http://localhost:3001/graphql
 
       - name: Send coverage to Codacy
         if: always()
@@ -131,20 +154,25 @@ jobs:
       - name: Check code out
         uses: actions/checkout@v2
 
+      - name: Intall Pnpm
+        uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+
       - name: Set Node.js up
         uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install
 
       - name: Install Playwright
-        run: npx playwright install --with-deps chromium
+        run: pnpm dlx playwright install --with-deps chromium
 
       - name: Run UI integration tests
-        run: npm run test:integration
+        run: pnpm test:integration
         env:
           WEB_GAME_ASSETS_URL: http://localhost:3001/games
           WEB_GRAPHQL_URL: http://localhost:3001/graphql

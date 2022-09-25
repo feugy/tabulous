@@ -27,7 +27,7 @@
     "undici": "^5.10.0"
   },
   "devDependencies": {
-    "@vitest/coverage-c8": "^0.23.4",
+    "@faker-js/faker": "^7.5.0",
     "strip-ansi": "^7.0.1",
     "vitest": "^0.23.4"
   }

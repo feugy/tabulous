@@ -2,7 +2,7 @@
 
 exports[`Bottom 1`] = `
 <span
-  class="s-J5GgeKLL-Nki"
+  class="s-AqyHvxbI5m5P"
 >
   <aside
     class="bottom s-Hw7hm9C7K1_q"
@@ -197,7 +197,7 @@ Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire,
 
 exports[`Left 1`] = `
 <span
-  class="s-J5GgeKLL-Nki"
+  class="s-AqyHvxbI5m5P"
 >
   <aside
     class="left s-Hw7hm9C7K1_q"
@@ -392,7 +392,7 @@ Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire,
 
 exports[`Multiple, custom tabs 1`] = `
 <span
-  class="s-J5GgeKLL-Nki"
+  class="s-AqyHvxbI5m5P"
 >
   <aside
     class="bottom s-Hw7hm9C7K1_q"
@@ -607,7 +607,7 @@ Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire,
 
 exports[`Right 1`] = `
 <span
-  class="s-J5GgeKLL-Nki"
+  class="s-AqyHvxbI5m5P"
 >
   <aside
     class="right s-Hw7hm9C7K1_q"
@@ -802,7 +802,7 @@ Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire,
 
 exports[`Top 1`] = `
 <span
-  class="s-J5GgeKLL-Nki"
+  class="s-AqyHvxbI5m5P"
 >
   <aside
     class="top s-Hw7hm9C7K1_q"

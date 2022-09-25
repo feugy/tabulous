@@ -2,7 +2,7 @@
 
 exports[`Local 1`] = `
 <span
-  class="s-J5GgeKLL-Nki"
+  class="s-AqyHvxbI5m5P"
 >
   <section
     class="s-ab4pMJzf-5--"
@@ -43,7 +43,7 @@ exports[`Local 1`] = `
 
 exports[`No video 1`] = `
 <span
-  class="s-J5GgeKLL-Nki"
+  class="s-AqyHvxbI5m5P"
 >
   <section
     class="s-ab4pMJzf-5--"
@@ -81,7 +81,7 @@ exports[`No video 1`] = `
 
 exports[`No video nor avatar 1`] = `
 <span
-  class="s-J5GgeKLL-Nki"
+  class="s-AqyHvxbI5m5P"
 >
   <section
     class="s-ab4pMJzf-5--"

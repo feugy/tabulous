@@ -60,7 +60,7 @@ describe('Sveltekit handle() hook', () => {
     }
     mocks.handleGraphQl.mockReturnValue(session)
 
-    const request = new Request()
+    const request = new Request('https://localhost:3000')
     request.headers.set('cookie', `token=${token}; Path=/; HttpOnly; Secure`)
     const input = buildHandleInput({ request })
     const response = await handle(input)
@@ -86,7 +86,7 @@ describe('Sveltekit handle() hook', () => {
 
 function buildHandleInput({
   url = '/',
-  request = new Request(),
+  request = new Request('https://localhost:3000'),
   response = new Response()
 } = {}) {
   return {

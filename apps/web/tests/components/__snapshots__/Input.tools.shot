@@ -2,7 +2,7 @@
 
 exports[`No value 1`] = `
 <span
-  class="s-J5GgeKLL-Nki"
+  class="s-AqyHvxbI5m5P"
 >
   <fieldset
     class="s-Fe6WNbR-55zp"
@@ -23,7 +23,7 @@ exports[`No value 1`] = `
 
 exports[`With initial value 1`] = `
 <span
-  class="s-J5GgeKLL-Nki"
+  class="s-AqyHvxbI5m5P"
 >
   <fieldset
     class="s-Fe6WNbR-55zp"

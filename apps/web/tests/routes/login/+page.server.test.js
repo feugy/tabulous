@@ -100,5 +100,5 @@ function buildsRequest({ id, password, redirect }) {
   if (redirect) {
     body.append('redirect', redirect)
   }
-  return new Request('/login', { method: 'POST', body })
+  return new Request('https://localhost:3000/login', { method: 'POST', body })
 }

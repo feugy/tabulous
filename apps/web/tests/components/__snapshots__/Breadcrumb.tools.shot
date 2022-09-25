@@ -2,7 +2,7 @@
 
 exports[`Empty 1`] = `
 <span
-  class="s-J5GgeKLL-Nki"
+  class="s-AqyHvxbI5m5P"
 >
   
   <!--&lt;Breadcrumb&gt;-->
@@ -11,7 +11,7 @@ exports[`Empty 1`] = `
 
 exports[`Multiple entries 1`] = `
 <span
-  class="s-J5GgeKLL-Nki"
+  class="s-AqyHvxbI5m5P"
 >
   <ol
     class="s-x5nEMCoiqeIy"
@@ -69,7 +69,7 @@ exports[`Multiple entries 1`] = `
 
 exports[`Single entry 1`] = `
 <span
-  class="s-J5GgeKLL-Nki"
+  class="s-AqyHvxbI5m5P"
 >
   <ol
     class="s-x5nEMCoiqeIy"
