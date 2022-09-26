@@ -2,7 +2,7 @@
 
 exports[`Max count reached 1`] = `
 <span
-  class="s-AqyHvxbI5m5P"
+  class="s-XkPssRjFbj8C"
 >
   <button
     class="s-NMyTiX1zi6rz"
@@ -87,7 +87,7 @@ exports[`Max count reached 1`] = `
 
 exports[`Multiple saves 1`] = `
 <span
-  class="s-AqyHvxbI5m5P"
+  class="s-XkPssRjFbj8C"
 >
   <button
     class="s-NMyTiX1zi6rz"
@@ -166,7 +166,7 @@ exports[`Multiple saves 1`] = `
 
 exports[`Multiple saves with current 1`] = `
 <span
-  class="s-AqyHvxbI5m5P"
+  class="s-XkPssRjFbj8C"
 >
   <button
     class="s-NMyTiX1zi6rz"
@@ -247,7 +247,7 @@ exports[`Multiple saves with current 1`] = `
 
 exports[`Single save 1`] = `
 <span
-  class="s-AqyHvxbI5m5P"
+  class="s-XkPssRjFbj8C"
 >
   <button
     class="s-NMyTiX1zi6rz"

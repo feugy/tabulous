@@ -2,7 +2,7 @@
 
 exports[`Default state 1`] = `
 <span
-  class="s-AqyHvxbI5m5P"
+  class="s-XkPssRjFbj8C"
 >
   <div
     class="pane s-j2LTsWktqK_4"
@@ -122,7 +122,7 @@ exports[`Default state 1`] = `
 
 exports[`With Github provider 1`] = `
 <span
-  class="s-AqyHvxbI5m5P"
+  class="s-XkPssRjFbj8C"
 >
   <div
     class="pane s-j2LTsWktqK_4"
@@ -271,7 +271,7 @@ exports[`With Github provider 1`] = `
 
 exports[`With Google provider 1`] = `
 <span
-  class="s-AqyHvxbI5m5P"
+  class="s-XkPssRjFbj8C"
 >
   <div
     class="pane s-j2LTsWktqK_4"
@@ -420,7 +420,7 @@ exports[`With Google provider 1`] = `
 
 exports[`With all providers 1`] = `
 <span
-  class="s-AqyHvxbI5m5P"
+  class="s-XkPssRjFbj8C"
 >
   <div
     class="pane s-j2LTsWktqK_4"
@@ -599,7 +599,7 @@ exports[`With all providers 1`] = `
 
 exports[`With password error 1`] = `
 <span
-  class="s-AqyHvxbI5m5P"
+  class="s-XkPssRjFbj8C"
 >
   <div
     class="pane s-j2LTsWktqK_4"
@@ -700,7 +700,7 @@ exports[`With password error 1`] = `
 
 exports[`with password values 1`] = `
 <span
-  class="s-AqyHvxbI5m5P"
+  class="s-XkPssRjFbj8C"
 >
   <div
     class="pane s-j2LTsWktqK_4"

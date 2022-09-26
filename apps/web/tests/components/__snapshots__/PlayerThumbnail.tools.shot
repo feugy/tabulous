@@ -2,7 +2,7 @@
 
 exports[`Avatar 1`] = `
 <span
-  class="s-AqyHvxbI5m5P"
+  class="s-XkPssRjFbj8C"
 >
   <figure
     class="s-engCJu8q-fNe"
@@ -23,7 +23,7 @@ exports[`Avatar 1`] = `
 
 exports[`Positioned text 1`] = `
 <span
-  class="s-AqyHvxbI5m5P"
+  class="s-XkPssRjFbj8C"
 >
   <figure
     class="s-engCJu8q-fNe positioned colored"
@@ -48,7 +48,7 @@ exports[`Positioned text 1`] = `
 
 exports[`Positionned avatar 1`] = `
 <span
-  class="s-AqyHvxbI5m5P"
+  class="s-XkPssRjFbj8C"
 >
   <figure
     class="s-engCJu8q-fNe positioned colored"
@@ -69,7 +69,7 @@ exports[`Positionned avatar 1`] = `
 
 exports[`Small text 1`] = `
 <span
-  class="s-AqyHvxbI5m5P"
+  class="s-XkPssRjFbj8C"
 >
   <figure
     class="s-engCJu8q-fNe"
@@ -94,7 +94,7 @@ exports[`Small text 1`] = `
 
 exports[`Text 1`] = `
 <span
-  class="s-AqyHvxbI5m5P"
+  class="s-XkPssRjFbj8C"
 >
   <figure
     class="s-engCJu8q-fNe"

@@ -31,7 +31,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --ignore-scripts
 
       - name: Run linter
         run: pnpm lint
@@ -58,10 +58,12 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --ignore-scripts
 
       - name: Run CLI test
         run: pnpm test:cli
+        env:
+          TZ: CET
 
       - name: Send coverage to Codacy
         if: always()
@@ -93,10 +95,12 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --ignore-scripts
 
       - name: Run server test
         run: pnpm test:server
+        env:
+          TZ: CET
 
       - name: Send coverage to Codacy
         if: always()
@@ -128,13 +132,17 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --ignore-scripts
 
       - name: Run UI unit tests
         run: pnpm test:web
         env:
-          WEB_GAME_ASSETS_URL: http://localhost:3001/games
+          TZ: CET
+          WEB_USE_GITHUB_PROVIDER: true
+          WEB_USE_GOOGLE_PROVIDER: true
           WEB_GRAPHQL_URL: http://localhost:3001/graphql
+          WEB_GAME_ASSETS_URL: http://localhost:3001/games
+          WEB_AUTH_URL: http://localhost:3001/auth
 
       - name: Send coverage to Codacy
         if: always()
@@ -166,7 +174,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --ignore-scripts
 
       - name: Install Playwright
         run: pnpm dlx playwright install --with-deps chromium
@@ -174,6 +182,7 @@ jobs:
       - name: Run UI integration tests
         run: pnpm test:integration
         env:
+          TZ: CET
           WEB_GAME_ASSETS_URL: http://localhost:3001/games
           WEB_GRAPHQL_URL: http://localhost:3001/graphql
           WEB_AUTH_URL: http://localhost:3001/auth

@@ -2,7 +2,7 @@
 
 exports[`Default 1`] = `
 <span
-  class="s-AqyHvxbI5m5P"
+  class="s-XkPssRjFbj8C"
 >
   <span
     aria-valuenow="1"
@@ -68,7 +68,7 @@ exports[`Default 1`] = `
 
 exports[`Disabled 1`] = `
 <span
-  class="s-AqyHvxbI5m5P"
+  class="s-XkPssRjFbj8C"
 >
   <span
     aria-valuenow="1"
@@ -137,7 +137,7 @@ exports[`Disabled 1`] = `
 
 exports[`Secondary 1`] = `
 <span
-  class="s-AqyHvxbI5m5P"
+  class="s-XkPssRjFbj8C"
 >
   <span
     aria-valuenow="1"

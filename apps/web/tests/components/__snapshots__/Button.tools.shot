@@ -29,7 +29,7 @@ exports[`Primary image icon only 1`] = `
 
 exports[`Primary with icon only 1`] = `
 <span
-  class="s-AqyHvxbI5m5P"
+  class="s-XkPssRjFbj8C"
 >
   <button
     class="s-NMyTiX1zi6rz"
@@ -49,7 +49,7 @@ exports[`Primary with icon only 1`] = `
 
 exports[`Primary with text 1`] = `
 <span
-  class="s-AqyHvxbI5m5P"
+  class="s-XkPssRjFbj8C"
 >
   <button
     class="s-NMyTiX1zi6rz"
@@ -69,7 +69,7 @@ exports[`Primary with text 1`] = `
 
 exports[`Primary with text and icon 1`] = `
 <span
-  class="s-AqyHvxbI5m5P"
+  class="s-XkPssRjFbj8C"
 >
   <button
     class="s-NMyTiX1zi6rz"
@@ -126,7 +126,7 @@ exports[`Primary with text and image icon 1`] = `
 
 exports[`Secondary with icon only 1`] = `
 <span
-  class="s-AqyHvxbI5m5P"
+  class="s-XkPssRjFbj8C"
 >
   <button
     class="secondary s-NMyTiX1zi6rz"
@@ -146,7 +146,7 @@ exports[`Secondary with icon only 1`] = `
 
 exports[`Secondary with text 1`] = `
 <span
-  class="s-AqyHvxbI5m5P"
+  class="s-XkPssRjFbj8C"
 >
   <button
     class="secondary s-NMyTiX1zi6rz"
@@ -166,7 +166,7 @@ exports[`Secondary with text 1`] = `
 
 exports[`Secondary with text and icon 1`] = `
 <span
-  class="s-AqyHvxbI5m5P"
+  class="s-XkPssRjFbj8C"
 >
   <button
     class="secondary s-NMyTiX1zi6rz"
@@ -191,7 +191,7 @@ exports[`Secondary with text and icon 1`] = `
 
 exports[`Transparent with text 1`] = `
 <span
-  class="s-AqyHvxbI5m5P"
+  class="s-XkPssRjFbj8C"
 >
   <button
     class="transparent s-NMyTiX1zi6rz"
