@@ -7,9 +7,9 @@ import { AnimateBehaviorName, AnimateBehavior } from '../../../src/3d/behaviors'
 describe('AnimateBehavior', () => {
   configures3dTestEngine()
 
-  const animationEndReceived = jest.fn()
+  const animationEndReceived = vi.fn()
 
-  beforeEach(jest.resetAllMocks)
+  beforeEach(vi.resetAllMocks)
 
   it('has initial state', () => {
     const behavior = new AnimateBehavior()

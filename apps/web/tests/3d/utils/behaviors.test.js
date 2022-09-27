@@ -872,7 +872,7 @@ describe('given a test behavior', () => {
   describe('attachProperty()', () => {
     it('creates metadata', () => {
       delete box.metadata
-      const getter = jest.fn().mockReturnValue('test')
+      const getter = vi.fn().mockReturnValue('test')
       attachProperty(behavior, 'testProp', getter)
       expect(box.metadata.testProp).toEqual('test')
       expect(getter).toHaveBeenCalledTimes(1)
@@ -880,7 +880,7 @@ describe('given a test behavior', () => {
 
     it('creates a getter', () => {
       const value = Math.random()
-      const getter = jest.fn().mockReturnValue(value)
+      const getter = vi.fn().mockReturnValue(value)
       attachProperty(behavior, 'testProp', getter)
       expect(box.metadata.testProp).toEqual(value)
       expect(getter).toHaveBeenCalledTimes(1)
@@ -888,7 +888,7 @@ describe('given a test behavior', () => {
 
     it('creates rewritable and enumeratable getters', () => {
       const value = Math.random()
-      const getter = jest.fn().mockReturnValue(value)
+      const getter = vi.fn().mockReturnValue(value)
       attachProperty(behavior, 'testProp2', getter)
       expect(JSON.stringify(box.metadata)).toEqual(
         JSON.stringify({ testProp2: value })

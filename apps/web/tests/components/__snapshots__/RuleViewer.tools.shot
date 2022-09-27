@@ -2,15 +2,20 @@
 
 exports[`Components/Rule Viewer 1`] = `
 <div
-  class="rule-viewer"
+  class="rule-viewer s-cvrx33phINUN"
 >
-  <section>
-    <menu>
+  <section
+    class="s-HS2qv-2i033g"
+  >
+    <menu
+      class="s-HS2qv-2i033g"
+    >
       <button
+        class="s-NMyTiX1zi6rz"
         disabled=""
       >
         <span
-          class="material-icons"
+          class="material-icons s-NMyTiX1zi6rz"
         >
           navigate_before
         </span>
@@ -18,14 +23,17 @@ exports[`Components/Rule Viewer 1`] = `
         
         
       </button>
+      <!--&lt;Button&gt;-->
        
       1
       /
       4
        
-      <button>
+      <button
+        class="s-NMyTiX1zi6rz"
+      >
         <span
-          class="material-icons"
+          class="material-icons s-NMyTiX1zi6rz"
         >
           navigate_next
         </span>
@@ -33,16 +41,19 @@ exports[`Components/Rule Viewer 1`] = `
         
         
       </button>
+      <!--&lt;Button&gt;-->
     </menu>
      
     <div
-      class="image-container"
+      class="image-container s-HS2qv-2i033g"
     >
       <img
         alt="Livre de règles, page 1"
+        class="s-HS2qv-2i033g"
         src="http://localhost:3001/games/splendor/rules/1.webp"
       />
     </div>
   </section>
+  <!--&lt;RuleViewer&gt;-->
 </div>
 `;

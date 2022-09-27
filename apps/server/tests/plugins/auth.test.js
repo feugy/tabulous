@@ -1,25 +1,23 @@
 import { faker } from '@faker-js/faker'
-import { jest } from '@jest/globals'
 import fastify from 'fastify'
 import { createVerifier } from 'fast-jwt'
 
-// Note fully working, but gives an idea
-jest.unstable_mockModule('../../src/services/auth/github.js', () => ({
+vi.mock('../../src/services/auth/github.js', () => ({
   githubAuth: {
-    init: jest.fn(),
-    buildAuthUrl: jest.fn(),
-    authenticateUser: jest.fn()
+    init: vi.fn(),
+    buildAuthUrl: vi.fn(),
+    authenticateUser: vi.fn()
   }
 }))
-jest.unstable_mockModule('../../src/services/auth/google.js', () => ({
+vi.mock('../../src/services/auth/google.js', () => ({
   googleAuth: {
-    init: jest.fn(),
-    buildAuthUrl: jest.fn(),
-    authenticateUser: jest.fn()
+    init: vi.fn(),
+    buildAuthUrl: vi.fn(),
+    authenticateUser: vi.fn()
   }
 }))
-jest.unstable_mockModule('../../src/services/players.js', () => ({
-  addPlayer: jest.fn()
+vi.mock('../../src/services/players.js', () => ({
+  addPlayer: vi.fn()
 }))
 
 describe('auth plugin', () => {
@@ -35,7 +33,7 @@ describe('auth plugin', () => {
     services = (await import('../../src/services/index.js')).default
   })
 
-  beforeEach(jest.resetAllMocks)
+  beforeEach(vi.resetAllMocks)
 
   describe.each([
     { name: 'github', serviceName: 'githubAuth', options: { foo: 'bar' } },

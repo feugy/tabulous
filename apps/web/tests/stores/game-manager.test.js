@@ -37,55 +37,55 @@ import {
 } from '../../src/stores/peer-channels'
 import { makeLogger } from '../../src/utils'
 
-jest.mock('../../src/stores/graphql-client')
-jest.mock('../../src/stores/game-engine', () => {
+vi.mock('../../src/stores/graphql-client')
+vi.mock('../../src/stores/game-engine', () => {
   const { BehaviorSubject, Subject } = require('rxjs')
   return {
     action: new Subject(),
     cameraSaves: new Subject(),
     handMeshes: new Subject(),
     engine: new BehaviorSubject(),
-    loadCameraSaves: jest.fn()
+    loadCameraSaves: vi.fn()
   }
 })
-jest.mock('../../src/stores/peer-channels', () => {
+vi.mock('../../src/stores/peer-channels', () => {
   const { Subject } = require('rxjs')
   return {
-    closeChannels: jest.fn(),
-    connectWith: jest.fn(),
+    closeChannels: vi.fn(),
+    connectWith: vi.fn(),
     lastConnectedId: new Subject(),
     lastDisconnectedId: new Subject(),
     lastMessageReceived: new Subject({}),
     lastMessageSent: new Subject({}),
-    send: jest.fn(),
-    openChannels: jest.fn()
+    send: vi.fn(),
+    openChannels: vi.fn()
   }
 })
-jest.mock('../../src/stores/discussion')
-jest.mock('../../src/3d/utils')
+vi.mock('../../src/stores/discussion')
+vi.mock('../../src/3d/utils')
 
 const logger = makeLogger('game-manager')
-const gamePlayerByIdReceived = jest.fn()
+const gamePlayerByIdReceived = vi.fn()
 const turnCredentials = { turn: 'credentials' }
 const engine = {
   scenes: [],
-  load: jest.fn().mockResolvedValueOnce(),
-  serialize: jest.fn().mockReturnValue({}),
+  load: vi.fn().mockResolvedValueOnce(),
+  serialize: vi.fn().mockReturnValue({}),
   onDisposeObservable: new Observable()
 }
 let subscription
 let warn
 let error
 
-beforeAll(
-  () => (subscription = gamePlayerById.subscribe(gamePlayerByIdReceived))
-)
+beforeAll(() => {
+  subscription = gamePlayerById.subscribe(gamePlayerByIdReceived)
+})
 
 beforeEach(() => {
-  jest.resetAllMocks()
+  vi.resetAllMocks()
   loadCameraSaves.mockImplementation(data => cameraSaves.next(data))
-  warn = jest.spyOn(logger, 'warn')
-  error = jest.spyOn(logger, 'error')
+  warn = vi.spyOn(logger, 'warn')
+  error = vi.spyOn(logger, 'error')
 })
 
 afterAll(() => subscription.unsubscribe())
@@ -259,7 +259,7 @@ describe('given a mocked game engine', () => {
       }
 
       beforeEach(async () => {
-        jest.useFakeTimers()
+        vi.useFakeTimers()
         prepareGame(game)
         engine.serialize.mockReturnValue({
           ...game,
@@ -267,11 +267,11 @@ describe('given a mocked game engine', () => {
           handMeshes: []
         })
         await loadGame(game.id, { player, turnCredentials })
-        jest.clearAllMocks()
+        vi.clearAllMocks()
         serializeThread.mockReturnValue(game.messages)
       })
 
-      afterEach(jest.useRealTimers)
+      afterEach(() => vi.useRealTimers())
 
       it('sends game data to joining player', async () => {
         await connectPeerAndExpectGameSync(
@@ -353,7 +353,7 @@ describe('given a mocked game engine', () => {
         action.next({ data: {} })
         action.next({ data: {} })
         const hands = [...game.hands, { playerId: player.id, meshes: [] }]
-        jest.runAllTimers()
+        vi.runAllTimers()
         expect(runMutation).toHaveBeenCalledWith(graphQL.saveGame, {
           game: {
             ...game,
@@ -383,7 +383,7 @@ describe('given a mocked game engine', () => {
           data: { type: 'message', message: messages[1] }
         })
         serializeThread.mockReturnValue(messages)
-        jest.runAllTimers()
+        vi.runAllTimers()
         expect(runMutation).toHaveBeenCalledWith(graphQL.saveGame, {
           game: { id: game.id, messages }
         })
@@ -401,7 +401,7 @@ describe('given a mocked game engine', () => {
           data: { type: 'message', message: messages[1] }
         })
         serializeThread.mockReturnValue(messages)
-        jest.runAllTimers()
+        vi.runAllTimers()
         expect(runMutation).toHaveBeenCalledWith(graphQL.saveGame, {
           game: { id: game.id, messages }
         })
@@ -422,7 +422,7 @@ describe('given a mocked game engine', () => {
           data: { type: 'message', message: messages[2] }
         })
         serializeThread.mockReturnValue(messages)
-        jest.runAllTimers()
+        vi.runAllTimers()
         expect(runMutation).toHaveBeenCalledWith(graphQL.saveGame, {
           game: { id: game.id, messages }
         })
@@ -545,18 +545,18 @@ describe('given a mocked game engine', () => {
       }
 
       beforeEach(() => {
-        jest.useFakeTimers()
+        vi.useFakeTimers()
         prepareGame(game)
       })
 
-      afterEach(jest.useRealTimers)
+      afterEach(() => vi.useRealTimers())
 
       it('fails when not receiving game from online players', async () => {
         error.mockImplementationOnce(() => {})
         const errorMessage = 'No game data after 30s'
         const promise = loadGame(game.id, { player, turnCredentials })
         await nextPromise()
-        jest.runAllTimers()
+        vi.runAllTimers()
         await expect(promise).rejects.toThrow(errorMessage)
         expect(error).toHaveBeenCalledWith(errorMessage)
         expect(runQuery).toHaveBeenCalledWith(
@@ -625,7 +625,7 @@ describe('given a mocked game engine', () => {
         })
 
         it('share hand with other peers', async () => {
-          jest.clearAllMocks()
+          vi.clearAllMocks()
           const handMeshes = meshes.slice(0, 1)
           handMeshes$.next(handMeshes)
           expect(engine.serialize).not.toHaveBeenCalled()
@@ -640,7 +640,7 @@ describe('given a mocked game engine', () => {
         })
 
         it('share cameras with other peers', async () => {
-          jest.clearAllMocks()
+          vi.clearAllMocks()
           const cameras = [{ pos: 'a' }, { pos: 'b' }]
           cameraSaves.next(cameras)
           expect(engine.serialize).not.toHaveBeenCalled()
@@ -665,7 +665,7 @@ describe('given a mocked game engine', () => {
             })
           })
           await loadGame(game.id, { player, turnCredentials })
-          jest.clearAllMocks()
+          vi.clearAllMocks()
         })
 
         it('takes host role when being the first online', async () => {
@@ -702,7 +702,7 @@ describe('given a mocked game engine', () => {
             { gameId: game.id }
           )
           expect(runSubscription).toHaveBeenCalledTimes(1)
-          jest.clearAllMocks()
+          vi.clearAllMocks()
           const newcamera = { pos: 'a' }
           cameraSaves.next([newcamera])
           expect(runMutation).toHaveBeenCalledWith(graphQL.saveGame, {
@@ -868,7 +868,7 @@ describe('receiveGameListUpdates()', () => {
   })
 
   it('updates observable with received list', () => {
-    const updatesReceived = jest.fn()
+    const updatesReceived = vi.fn()
     const sendUpdate = new Subject()
     runSubscription.mockReturnValue(sendUpdate)
     const gameList$ = receiveGameListUpdates()

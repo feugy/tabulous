@@ -13,7 +13,7 @@ Meet your friends online to play your favorite games!
 
 ## How to use
 
-You need Node.js 16+ and NPM.
+You need git, Node.js 16 and PNPM.
 
 1. Checkout the code:
 
@@ -25,7 +25,8 @@ You need Node.js 16+ and NPM.
 1. Fetch dependencies:
 
    ```shell
-   npm i
+   fnm
+   pnpm i
    ```
 
 1. Then, run in dev or production mode.
@@ -51,7 +52,7 @@ You need Node.js 16+ and NPM.
 1. Start in watch mode (both server and client):
 
    ```shell
-   npm start
+   pnpm start
    ```
 
 1. Your favorite browser should open and display a warning about self-signed SSL certificate. Bypass it, and start developping.

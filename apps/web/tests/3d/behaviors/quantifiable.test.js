@@ -29,8 +29,8 @@ describe('QuantityBehavior', () => {
   configures3dTestEngine(created => (scene = created.scene))
 
   beforeEach(() => {
-    jest.clearAllMocks()
-    recordSpy = jest.spyOn(controlManager, 'record')
+    vi.clearAllMocks()
+    recordSpy = vi.spyOn(controlManager, 'record')
   })
 
   it('has initial state', () => {

@@ -14,7 +14,7 @@ import {
 } from '../../src/stores/graphql-client'
 import { graphQlUrl } from '../../src/utils'
 
-jest.mock('../../src/stores/graphql-client')
+vi.mock('../../src/stores/graphql-client')
 
 const id = faker.datatype.uuid()
 const username = faker.name.firstName()
@@ -26,7 +26,7 @@ const turnCredentials = {
 }
 const token = faker.datatype.uuid()
 
-beforeEach(jest.resetAllMocks)
+beforeEach(vi.resetAllMocks)
 
 describe('searchPlayers()', () => {
   it('search players by user name', async () => {

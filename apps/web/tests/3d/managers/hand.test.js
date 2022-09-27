@@ -49,7 +49,7 @@ describe('HandManager', () => {
   const renderWidth = 480
   const renderHeight = 350
   const stackDuration = 75
-  const actionRecorded = jest.fn()
+  const actionRecorded = vi.fn()
 
   configures3dTestEngine(
     created => {
@@ -66,11 +66,11 @@ describe('HandManager', () => {
   })
 
   beforeEach(() => {
-    jest.resetAllMocks()
-    jest
-      .spyOn(window, 'getComputedStyle')
-      .mockImplementation(() => ({ height: `${renderHeight / 4}px` }))
-    registerFeedbackSpy = jest.spyOn(indicatorManager, 'registerFeedback')
+    vi.resetAllMocks()
+    vi.spyOn(window, 'getComputedStyle').mockImplementation(() => ({
+      height: `${renderHeight / 4}px`
+    }))
+    registerFeedbackSpy = vi.spyOn(indicatorManager, 'registerFeedback')
     selectionManager.clear()
     createTable({}, scene)
   })
@@ -165,8 +165,8 @@ describe('HandManager', () => {
     let cards
     let changeObserver
     let draggableToHandObserver
-    const changeReceived = jest.fn()
-    const draggableToHandReceived = jest.fn()
+    const changeReceived = vi.fn()
+    const draggableToHandReceived = vi.fn()
 
     beforeAll(() => {
       manager.init({ scene, handScene, overlay })
@@ -661,7 +661,7 @@ describe('HandManager', () => {
 
       it('moves mesh to hand by dragging', async () => {
         const mesh = cards[0]
-        const stopDrag = jest.spyOn(inputManager, 'stopDrag')
+        const stopDrag = vi.spyOn(inputManager, 'stopDrag')
 
         let movedPosition = new Vector3(1, 0, -19)
         mesh.setAbsolutePosition(movedPosition)
@@ -716,7 +716,7 @@ describe('HandManager', () => {
         mesh3.metadata.push(mesh2.id)
         selectionManager.select(mesh1, mesh2, mesh3)
         actionRecorded.mockReset()
-        const stopDrag = jest.spyOn(inputManager, 'stopDrag')
+        const stopDrag = vi.spyOn(inputManager, 'stopDrag')
 
         let movedPosition = new Vector3(1, 0, -19)
         mesh1.setAbsolutePosition(movedPosition)

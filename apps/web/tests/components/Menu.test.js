@@ -6,11 +6,11 @@ import Menu from '../../src/components/Menu.svelte'
 describe('Menu component', () => {
   const value$ = writable()
   const ref$ = writable()
-  const handleClose = jest.fn()
-  const handleSelect = jest.fn()
+  const handleClose = vi.fn()
+  const handleSelect = vi.fn()
 
   beforeEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
     value$.set()
   })
 

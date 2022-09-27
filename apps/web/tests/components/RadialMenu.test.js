@@ -3,7 +3,7 @@ import html from 'svelte-htm'
 import RadialMenu from '../../src/components/RadialMenu.svelte'
 
 describe('Radial Menu component', () => {
-  beforeEach(jest.resetAllMocks)
+  beforeEach(vi.resetAllMocks)
 
   function renderComponent(props = {}) {
     return render(html`<${RadialMenu} open=${true} ...${props} />`)
@@ -46,10 +46,10 @@ describe('Radial Menu component', () => {
 
   it('propagates button clicks', async () => {
     const items = [
-      { icon: 'people', onClick: jest.fn() },
-      { icon: 'chevron_right', onClick: jest.fn() },
-      { icon: 'brush', onClick: jest.fn() },
-      { icon: 'air', onClick: jest.fn() }
+      { icon: 'people', onClick: vi.fn() },
+      { icon: 'chevron_right', onClick: vi.fn() },
+      { icon: 'brush', onClick: vi.fn() },
+      { icon: 'air', onClick: vi.fn() }
     ]
     renderComponent({ items })
     const button = await screen.findByRole('button', { name: items[2].icon })

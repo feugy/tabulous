@@ -5,11 +5,11 @@ import html from 'svelte-htm'
 import QuantityButton from '../../src/components/QuantityButton.svelte'
 
 describe('QuantityButton component', () => {
-  const handleClick = jest.fn()
+  const handleClick = vi.fn()
   const quantity$ = writable()
 
   beforeEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
     quantity$.set(1)
   })
 

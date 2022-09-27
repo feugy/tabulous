@@ -4,6 +4,6 @@
   "description": "Tabulous game descriptors and assets",
   "type": "module",
   "dependencies": {
-    "@tabulous/server": "^0.0.1"
+    "@tabulous/server": "workspace:*"
   }
 }

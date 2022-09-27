@@ -7,6 +7,9 @@ module.exports = {
     jest: true
   },
   plugins: ['svelte3'],
+  globals: {
+    vi: true
+  },
   overrides: [
     {
       files: ['*.svelte'],

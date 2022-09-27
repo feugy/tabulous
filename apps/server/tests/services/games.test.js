@@ -1,5 +1,4 @@
 import { faker } from '@faker-js/faker'
-import { jest } from '@jest/globals'
 import { join } from 'path'
 import repositories from '../../src/repositories/index.js'
 import { grantAccess, revokeAccess } from '../../src/services/catalog.js'
@@ -41,7 +40,7 @@ describe('given a subscription to game lists and an initialized repository', () 
       path: join('tests', 'fixtures', 'games')
     })
     await revokeAccess(player.id, 'splendor')
-    jest.restoreAllMocks()
+    vi.restoreAllMocks()
     updates.splice(0, updates.length)
   })
 
@@ -104,7 +103,7 @@ describe('given a subscription to game lists and an initialized repository', () 
     })
 
     it(`throws errors from descriptor's build() function`, async () => {
-      jest.spyOn(console, 'error').mockImplementationOnce(() => {})
+      vi.spyOn(console, 'error').mockImplementationOnce(() => {})
       await repositories.catalogItems.connect({
         path: join('tests', 'fixtures', 'invalid-games')
       })
@@ -211,7 +210,7 @@ describe('given a subscription to game lists and an initialized repository', () 
       })
 
       it('returns null on unknown guest id', async () => {
-        jest.spyOn(repositories.players, 'getById').mockResolvedValue(null)
+        vi.spyOn(repositories.players, 'getById').mockResolvedValue(null)
         expect(
           await invite(game.id, faker.datatype.uuid(), player.id)
         ).toBeNull()
@@ -249,7 +248,7 @@ describe('given a subscription to game lists and an initialized repository', () 
       })
 
       it('throws errors from descriptor addPlayer() function', async () => {
-        jest.spyOn(console, 'error').mockImplementationOnce(() => {})
+        vi.spyOn(console, 'error').mockImplementationOnce(() => {})
         await deleteGame(game.id, player.id)
         await repositories.catalogItems.connect({
           path: join('tests', 'fixtures', 'invalid-games')

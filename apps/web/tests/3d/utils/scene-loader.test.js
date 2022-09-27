@@ -10,7 +10,7 @@ import {
 import { expectPosition, initialize3dEngine } from '../../test-utils'
 import pawnData from '../../fixtures/pawn.json'
 
-jest.mock('../../../src/3d/managers/custom-shape', () => ({
+vi.mock('../../../src/3d/managers/custom-shape', () => ({
   customShapeManager: new Map()
 }))
 
@@ -47,7 +47,7 @@ describe('serializeMeshes() 3D utility', () => {
 
   describe('given an scene', () => {
     beforeAll(() => {
-      jest.restoreAllMocks()
+      vi.restoreAllMocks()
       ;({ engine, scene } = initialize3dEngine({ renderWidth, renderHeight }))
     })
 

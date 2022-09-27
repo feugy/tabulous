@@ -19,7 +19,7 @@ const config = {
     video: 'retain-on-failure'
   },
   webServer: {
-    command: 'npm run preview',
+    command: 'pnpm preview',
     url: 'https://localhost:3000',
     ignoreHTTPSErrors: true,
     timeout: 30000

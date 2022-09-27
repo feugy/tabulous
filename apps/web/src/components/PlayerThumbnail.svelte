@@ -6,7 +6,7 @@
   export let screenPosition = null
   export let color = null
 
-  let hasImage = player?.avatar
+  $: hasImage = player?.avatar
   let caption = dimension < 60 ? abbreviate(player?.username) : player?.username
 
   function formatVariables() {

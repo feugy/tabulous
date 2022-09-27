@@ -1,23 +1,22 @@
-import { jest } from '@jest/globals'
 import { inspect } from 'util'
 import { attachFormater } from '../src/util/formaters.js'
 import { mockConsole } from './test-util.js'
 
-const mockCatalog = jest.fn()
-const mockAddPlayer = jest.fn()
-const mockGrant = jest.fn()
+const mockCatalog = vi.fn()
+const mockAddPlayer = vi.fn()
+const mockGrant = vi.fn()
 
-jest.unstable_mockModule('../src/commands/catalog.js', () => ({
+vi.mock('../src/commands/catalog.js', () => ({
   default: mockCatalog,
-  catalog: jest.fn()
+  catalog: vi.fn()
 }))
-jest.unstable_mockModule('../src/commands/add-player.js', () => ({
+vi.mock('../src/commands/add-player.js', () => ({
   default: mockAddPlayer,
-  addPlayer: jest.fn()
+  addPlayer: vi.fn()
 }))
-jest.unstable_mockModule('../src/commands/grant.js', () => ({
+vi.mock('../src/commands/grant.js', () => ({
   default: mockGrant,
-  grant: jest.fn()
+  grant: vi.fn()
 }))
 
 describe('Tabulous CLI', () => {
@@ -38,12 +37,20 @@ describe('Tabulous CLI', () => {
     expect(output.stdout).toContain('tabulous [options] <command>')
   })
 
-  it('displays error and help', async () => {
+  it('displays help on unknown command', async () => {
+    await cli(['unknown'])
+    expect(output.stdout).toContain(`error: unknown command "unknown"`)
+    expect(output.stdout).toContain('tabulous [options] <command>\n  Commands')
+  })
+
+  it('displays command help on error', async () => {
     const error = new Error('no username provided')
+    const commandHelpMessage = 'command custom help message'
     mockCatalog.mockRejectedValue(error)
+    mockCatalog.help = vi.fn().mockReturnValueOnce(commandHelpMessage)
     await cli(['catalog'])
     expect(output.stdout).toContain(`error: ${error.message}`)
-    expect(output.stdout).toContain('tabulous [options] <command>')
+    expect(output.stdout).toContain(commandHelpMessage)
   })
 
   it('prints production message when relevant', async () => {
@@ -61,7 +68,7 @@ describe('Tabulous CLI', () => {
   it('prints command result with formaters', async () => {
     const result = { foo: 'bar' }
     const formatedResult = 'this result was formated'
-    const formater = jest.fn().mockReturnValue(formatedResult)
+    const formater = vi.fn().mockReturnValue(formatedResult)
     mockCatalog.mockResolvedValue(attachFormater(result, formater))
     await cli(['catalog'])
     expect(output.stdout).toContain(formatedResult)

@@ -2,7 +2,6 @@
 
 Roadmap
 
-- web: missing avatar displays "avatar for" instead of initials
 - lawyer council
 - web: terms & condition
 - web: cookie policy
@@ -10,20 +9,9 @@ Roadmap
 
 ## Brittle tests
 
-- `InputManager › given an initialized manager() › handles multiple pointers taps`
-
-  > `expect(received).toHaveLength(expected)` line 1319 (1 long received)
-
-- `Dropdown component › given textual options › closes menu on click`
-
-  > `expect(received).toBeNull()` line 115 (menu does exist)
-
-- `Typeahead component › given object options › closes menu with keyboard and opens on focus`
-
-  > `expect(received).toBeNull()` line 126 (menu does exist)
-
 ## Refactor
 
+- use node 18 when msw/interceptor will [handle it](https://github.com/mswjs/interceptors/pull/283)
 - better testing setup? [vitest](https://github.com/sveltejs/kit/discussions/5285), or even [manual](https://github.com/sveltejs/kit/issues/19#issuecomment-1041134457)
 - ts-check all the things!
 - removes nginx to directly use the node server?
@@ -308,4 +296,4 @@ Nice sources for 3D textures:
 - [3DTextures](https://3dtextures.me/) (free)
 - [Architextures](https://architextures.org/textures) (copyrighted)
 
-Run playwright in debug mode, on a given file: `PWDEBUG=1 npm -w apps/web run test:integration:run -- home.spec`
+Run playwright in debug mode, on a given file: `PWDEBUG=1 pnpm --filter web test:integration:run -- home.spec`

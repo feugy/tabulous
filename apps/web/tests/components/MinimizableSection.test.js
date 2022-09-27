@@ -4,11 +4,11 @@ import html from 'svelte-htm'
 import MinimizableSection from '../../src/components/MinimizableSection.svelte'
 
 describe('MinimizableSection component', () => {
-  const handleMinimize = jest.fn()
-  const handleChange = jest.fn()
-  const handleResize = jest.fn()
+  const handleMinimize = vi.fn()
+  const handleChange = vi.fn()
+  const handleResize = vi.fn()
 
-  beforeEach(jest.resetAllMocks)
+  beforeEach(vi.resetAllMocks)
 
   describe.each([
     ['top', 75],

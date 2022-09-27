@@ -2,44 +2,63 @@
 
 exports[`No age nor time 1`] = `
 <span
-  class="catalog-item-viewer"
+  class="catalog-item-viewer s-q3jgxPFCAYQV"
 >
-  <article>
+  <article
+    class="s-hGRcS-4InB4p"
+  >
     <img
       alt="Solitaire"
+      class="s-hGRcS-4InB4p"
       src="http://localhost:3001/games/klondike/catalog/cover.webp"
     />
      
     <div
-      class="content"
+      class="content s-hGRcS-4InB4p"
     >
-      <legend>
+      <legend
+        class="s-hGRcS-4InB4p"
+      >
         <div
-          class="title"
+          class="title s-hGRcS-4InB4p"
         >
-          <h3>
+          <h3
+            class="s-hGRcS-4InB4p"
+          >
             Solitaire
           </h3>
            
           <details
-            class="hidden"
+            class="s-hGRcS-4InB4p hidden"
           >
-            <summary>
-              <strong>
+            <summary
+              class="s-hGRcS-4InB4p"
+            >
+              <strong
+                class="s-hGRcS-4InB4p"
+              >
                 Créé par : 
               </strong>
               undefined
             </summary>
              
-            <p>
-              <strong>
+            <p
+              class="s-hGRcS-4InB4p"
+            >
+              <strong
+                class="s-hGRcS-4InB4p"
+              >
                 Illustré par : 
               </strong>
               undefined
             </p>
              
-            <p>
-              <strong>
+            <p
+              class="s-hGRcS-4InB4p"
+            >
+              <strong
+                class="s-hGRcS-4InB4p"
+              >
                 Distribué par : 
               </strong>
               undefined
@@ -48,13 +67,13 @@ exports[`No age nor time 1`] = `
         </div>
          
         <span
-          class="characteristics"
+          class="characteristics s-hGRcS-4InB4p"
         >
           <span
-            class="hidden"
+            class="s-hGRcS-4InB4p hidden"
           >
             <span
-              class="material-icons"
+              class="material-icons s-hGRcS-4InB4p"
             >
               people
             </span>
@@ -62,10 +81,10 @@ exports[`No age nor time 1`] = `
           </span>
            
           <span
-            class="hidden"
+            class="s-hGRcS-4InB4p hidden"
           >
             <span
-              class="material-icons"
+              class="material-icons s-hGRcS-4InB4p"
             >
               access_time
             </span>
@@ -73,10 +92,10 @@ exports[`No age nor time 1`] = `
           </span>
            
           <span
-            class="hidden"
+            class="s-hGRcS-4InB4p hidden"
           >
             <span
-              class="material-icons"
+              class="material-icons s-hGRcS-4InB4p"
             >
               person
             </span>
@@ -86,49 +105,69 @@ exports[`No age nor time 1`] = `
       </legend>
     </div>
   </article>
+  <!--&lt;CatalogItem&gt;-->
 </span>
 `;
 
 exports[`With characteristics 1`] = `
 <span
-  class="catalog-item-viewer"
+  class="catalog-item-viewer s-q3jgxPFCAYQV"
 >
-  <article>
+  <article
+    class="s-hGRcS-4InB4p"
+  >
     <img
       alt="Solitaire"
+      class="s-hGRcS-4InB4p"
       src="http://localhost:3001/games/klondike/catalog/cover.webp"
     />
      
     <div
-      class="content"
+      class="content s-hGRcS-4InB4p"
     >
-      <legend>
+      <legend
+        class="s-hGRcS-4InB4p"
+      >
         <div
-          class="title"
+          class="title s-hGRcS-4InB4p"
         >
-          <h3>
+          <h3
+            class="s-hGRcS-4InB4p"
+          >
             Solitaire
           </h3>
            
           <details
-            class="hidden"
+            class="s-hGRcS-4InB4p hidden"
           >
-            <summary>
-              <strong>
+            <summary
+              class="s-hGRcS-4InB4p"
+            >
+              <strong
+                class="s-hGRcS-4InB4p"
+              >
                 Créé par : 
               </strong>
               undefined
             </summary>
              
-            <p>
-              <strong>
+            <p
+              class="s-hGRcS-4InB4p"
+            >
+              <strong
+                class="s-hGRcS-4InB4p"
+              >
                 Illustré par : 
               </strong>
               undefined
             </p>
              
-            <p>
-              <strong>
+            <p
+              class="s-hGRcS-4InB4p"
+            >
+              <strong
+                class="s-hGRcS-4InB4p"
+              >
                 Distribué par : 
               </strong>
               undefined
@@ -137,29 +176,35 @@ exports[`With characteristics 1`] = `
         </div>
          
         <span
-          class="characteristics"
+          class="characteristics s-hGRcS-4InB4p"
         >
-          <span>
+          <span
+            class="s-hGRcS-4InB4p"
+          >
             <span
-              class="material-icons"
+              class="material-icons s-hGRcS-4InB4p"
             >
               people
             </span>
             2
           </span>
            
-          <span>
+          <span
+            class="s-hGRcS-4InB4p"
+          >
             <span
-              class="material-icons"
+              class="material-icons s-hGRcS-4InB4p"
             >
               access_time
             </span>
             30'
           </span>
            
-          <span>
+          <span
+            class="s-hGRcS-4InB4p"
+          >
             <span
-              class="material-icons"
+              class="material-icons s-hGRcS-4InB4p"
             >
               person
             </span>
@@ -169,47 +214,69 @@ exports[`With characteristics 1`] = `
       </legend>
     </div>
   </article>
+  <!--&lt;CatalogItem&gt;-->
 </span>
 `;
 
 exports[`With characteristics and copyright 1`] = `
 <span
-  class="catalog-item-viewer"
+  class="catalog-item-viewer s-q3jgxPFCAYQV"
 >
-  <article>
+  <article
+    class="s-hGRcS-4InB4p"
+  >
     <img
       alt="Solitaire"
+      class="s-hGRcS-4InB4p"
       src="http://localhost:3001/games/klondike/catalog/cover.webp"
     />
      
     <div
-      class="content"
+      class="content s-hGRcS-4InB4p"
     >
-      <legend>
+      <legend
+        class="s-hGRcS-4InB4p"
+      >
         <div
-          class="title"
+          class="title s-hGRcS-4InB4p"
         >
-          <h3>
+          <h3
+            class="s-hGRcS-4InB4p"
+          >
             Solitaire
           </h3>
            
-          <details>
-            <summary>
-              <strong>
+          <details
+            class="s-hGRcS-4InB4p"
+          >
+            <summary
+              class="s-hGRcS-4InB4p"
+            >
+              <strong
+                class="s-hGRcS-4InB4p"
+              >
                 Créé par : 
               </strong>
               John Doe, Jane Lark
             </summary>
              
-            <p>
-              <strong>
+            <p
+              class="s-hGRcS-4InB4p"
+            >
+              <strong
+                class="s-hGRcS-4InB4p"
+              >
                 Illustré par : 
               </strong>
               Amy Banks, Mark Loom
             </p>
              
-            <p>
-              <strong>
+            <p
+              class="s-hGRcS-4InB4p"
+            >
+              <strong
+                class="s-hGRcS-4InB4p"
+              >
                 Distribué par : 
               </strong>
               Awesome games, Games from elsewhere
@@ -218,29 +285,35 @@ exports[`With characteristics and copyright 1`] = `
         </div>
          
         <span
-          class="characteristics"
+          class="characteristics s-hGRcS-4InB4p"
         >
-          <span>
+          <span
+            class="s-hGRcS-4InB4p"
+          >
             <span
-              class="material-icons"
+              class="material-icons s-hGRcS-4InB4p"
             >
               people
             </span>
             2-4
           </span>
            
-          <span>
+          <span
+            class="s-hGRcS-4InB4p"
+          >
             <span
-              class="material-icons"
+              class="material-icons s-hGRcS-4InB4p"
             >
               access_time
             </span>
             30'
           </span>
            
-          <span>
+          <span
+            class="s-hGRcS-4InB4p"
+          >
             <span
-              class="material-icons"
+              class="material-icons s-hGRcS-4InB4p"
             >
               person
             </span>
@@ -250,5 +323,6 @@ exports[`With characteristics and copyright 1`] = `
       </legend>
     </div>
   </article>
+  <!--&lt;CatalogItem&gt;-->
 </span>
 `;

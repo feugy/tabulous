@@ -1,32 +1,32 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import { Observable } from '@babylonjs/core/Misc/observable.js'
 import { debounceTime, Subject } from 'rxjs'
-import {
-  DrawBehaviorName,
-  FlipBehaviorName,
-  MoveBehaviorName,
-  RotateBehaviorName
-} from '../behaviors'
-import {
-  animateMove,
-  applyGravity,
-  createMeshFromState,
-  getDimensions,
-  getMeshScreenPosition,
-  getPositionAboveZone,
-  isAboveTable,
-  isMeshFlipped,
-  isSerializable,
-  screenToGround
-} from '../utils'
 import { controlManager } from './control'
 import { indicatorManager } from './indicator'
 import { inputManager } from './input'
 import { moveManager } from './move'
 import { selectionManager } from './selection'
 import { targetManager } from './target'
-// '../../utils' creates a cyclic dependency in Jest
 import { makeLogger } from '../../utils/logger'
+import {
+  DrawBehaviorName,
+  FlipBehaviorName,
+  MoveBehaviorName,
+  RotateBehaviorName
+} from '../behaviors/names'
+import {
+  animateMove,
+  getPositionAboveZone,
+  isMeshFlipped
+} from '../utils/behaviors'
+import { applyGravity } from '../utils/gravity'
+import { getDimensions } from '../utils/mesh'
+import { createMeshFromState, isSerializable } from '../utils/scene-loader'
+import {
+  getMeshScreenPosition,
+  isAboveTable,
+  screenToGround
+} from '../utils/vector'
 import { getPixelDimension, observeDimension } from '../../utils/dom'
 
 const logger = makeLogger('hand')

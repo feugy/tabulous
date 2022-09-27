@@ -1,4 +1,4 @@
-// we use constants instead of static class fields to break cyclic dependencies which Jest struggles with.
+// we use constants instead of static class fields to break cyclic dependencies.
 export const AnchorBehaviorName = 'anchorable'
 export const AnimateBehaviorName = 'animatable'
 export const DetailBehaviorName = 'detailable'

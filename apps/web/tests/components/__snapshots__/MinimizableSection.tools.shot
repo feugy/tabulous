@@ -1,892 +1,971 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Bottom 1`] = `
-<span>
-  <aside
-    class="bottom"
+<aside
+  class="bottom s-Hw7hm9C7K1_q"
+>
+  <section
+    aria-expanded="true"
+    aria-label="minimizable"
+    class="s-vqhOCvFa7LzI vertical"
+    id="minimizable-section-5"
+    style="height: auto;"
   >
-    <section
-      aria-expanded="true"
-      aria-label="minimizable"
-      class="vertical"
-      id="minimizable-section-5"
-      style="height: auto;"
+    <menu
+      class="bottom s-vqhOCvFa7LzI vertical"
     >
-      <menu
-        class="bottom vertical"
+      <ol
+        class="buttonContainer s-vqhOCvFa7LzI"
+        role="tablist"
       >
-        <ol
-          class="buttonContainer"
-          role="tablist"
+        <li
+          class="s-vqhOCvFa7LzI"
         >
-          <li>
-            <button
-              aria-selected="false"
-              role="tab"
-            >
-              <span
-                class="material-icons"
-              >
-                expand_more
-              </span>
-              
-              
-              
-            </button>
-             
-          </li>
-        </ol>
-         
-        <div
-          aria-controls="minimizable-section-5"
-          class="gutter"
-          role="scrollbar"
-        />
-      </menu>
-       
-      <span>
-        <div
-          class="discussion"
-        >
-          <div
-            class="messages"
+          <button
+            aria-selected="false"
+            class="s-NMyTiX1zi6rz"
+            role="tab"
           >
             <span
-              class="from"
+              class="material-icons s-NMyTiX1zi6rz"
             >
-              Fernand Naudin
+              expand_more
             </span>
-            <span
-              class="message"
-            >
-              Qu'est-ce qui se passe encore ?
-            </span>
-            <span
-              class="from"
-            >
-              Maître Folage
-            </span>
-            <span
-              class="message"
-            >
-              Notre ami va se faire un plaisir de vous l'expliquer.
-            </span>
-            <span
-              class="from"
-            >
-              Pascal
-            </span>
-            <span
-              class="message"
-            >
-              Les Volfoni ont organisé à la péniche une petite réunion des cadres, façon meeting, si vous voyez ce que je veux dire.
-M'enfin quoi, on parle dans votre dos.
-            </span>
-            <span
-              class="from"
-            >
-              Fernand Naudin
-            </span>
-            <span
-              class="message"
-            >
-              Et tu tiens ça d'où ?
-            </span>
-            <span
-              class="from"
-            >
-              Pascal
-            </span>
-            <span
-              class="message"
-            >
-              Je ne peux pas le dire, j'ai promis. Ce serait mal.
-            </span>
-            <span
-              class="from"
-            >
-              Fernand Naudin
-            </span>
-            <span
-              class="message"
-            >
-              Alors ?
-            </span>
-            <span
-              class="from"
-            >
-              Maître Folage
-            </span>
-            <span
-              class="message"
-            >
-              Eh bien. Euh. Y'a deux solutions : ou on se dérange, ou on méprise. 
-Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire, bien sûr.
-            </span>
-            <span
-              class="from"
-            >
-              Fernand Naudin
-            </span>
-            <span
-              class="message"
-            >
-              Bon, on va y aller, hmm ?
-            </span>
-            <span
-              class="from"
-            >
-              Pascal
-            </span>
-            <span
-              class="message"
-            >
-              Monsieur Fernand, y'a peut-être une place pour moi dans votre auto. Des fois que la réunion devienne houleuse ... J'ai une présence tranquillisante.
-            </span>
-          </div>
+            
+            
+            
+          </button>
+          <!--&lt;Button&gt;-->
            
-          <form>
-            <fieldset>
-               
-              <input />
-            </fieldset>
-             
-            <button
-              disabled=""
-              title="Envoyer à tous"
-              type="submit"
-            >
-              <span
-                class="material-icons"
-              >
-                send
-              </span>
-              
-              
-              
-            </button>
-          </form>
+        </li>
+      </ol>
+       
+      <div
+        aria-controls="minimizable-section-5"
+        class="gutter s-vqhOCvFa7LzI"
+        role="scrollbar"
+      />
+    </menu>
+     
+    <span
+      class="s-vqhOCvFa7LzI"
+    >
+      <div
+        class="discussion s-4DrpFHLJm4IA"
+      >
+        <div
+          class="messages s-4DrpFHLJm4IA"
+        >
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Fernand Naudin
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Qu'est-ce qui se passe encore ?
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Maître Folage
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Notre ami va se faire un plaisir de vous l'expliquer.
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Pascal
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Les Volfoni ont organisé à la péniche une petite réunion des cadres, façon meeting, si vous voyez ce que je veux dire.
+M'enfin quoi, on parle dans votre dos.
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Fernand Naudin
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Et tu tiens ça d'où ?
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Pascal
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Je ne peux pas le dire, j'ai promis. Ce serait mal.
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Fernand Naudin
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Alors ?
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Maître Folage
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Eh bien. Euh. Y'a deux solutions : ou on se dérange, ou on méprise. 
+Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire, bien sûr.
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Fernand Naudin
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Bon, on va y aller, hmm ?
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Pascal
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Monsieur Fernand, y'a peut-être une place pour moi dans votre auto. Des fois que la réunion devienne houleuse ... J'ai une présence tranquillisante.
+          </span>
         </div>
          
-        
-      </span>
-    </section>
-  </aside>
-</span>
+        <form
+          class="s-4DrpFHLJm4IA"
+        >
+          <fieldset
+            class="s-Fe6WNbR-55zp"
+          >
+             
+            <input
+              class="s-Fe6WNbR-55zp"
+            />
+          </fieldset>
+          <!--&lt;Input&gt;-->
+           
+          <button
+            class="s-NMyTiX1zi6rz"
+            disabled=""
+            title="Envoyer à tous"
+            type="submit"
+          >
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              send
+            </span>
+            
+            
+            
+          </button>
+          <!--&lt;Button&gt;-->
+        </form>
+      </div>
+      <!--&lt;Discussion&gt;-->
+       
+      
+    </span>
+  </section>
+  <!--&lt;MinimizableSection&gt;-->
+</aside>
 `;
 
 exports[`Left 1`] = `
-<span>
-  <aside
-    class="left"
+<aside
+  class="left s-Hw7hm9C7K1_q"
+>
+  <section
+    aria-expanded="true"
+    aria-label="minimizable"
+    class="s-vqhOCvFa7LzI"
+    id="minimizable-section-2"
+    style="width: auto;"
   >
-    <section
-      aria-expanded="true"
-      aria-label="minimizable"
-      id="minimizable-section-2"
-      style="width: auto;"
+    <menu
+      class="left s-vqhOCvFa7LzI"
     >
-      <menu
-        class="left"
+      <ol
+        class="buttonContainer s-vqhOCvFa7LzI"
+        role="tablist"
       >
-        <ol
-          class="buttonContainer"
-          role="tablist"
+        <li
+          class="s-vqhOCvFa7LzI"
         >
-          <li>
-            <button
-              aria-selected="false"
-              role="tab"
-            >
-              <span
-                class="material-icons"
-              >
-                navigate_before
-              </span>
-              
-              
-              
-            </button>
-             
-          </li>
-        </ol>
-         
-        <div
-          aria-controls="minimizable-section-2"
-          class="gutter"
-          role="scrollbar"
-        />
-      </menu>
-       
-      <span>
-        <div
-          class="discussion"
-        >
-          <div
-            class="messages"
+          <button
+            aria-selected="false"
+            class="s-NMyTiX1zi6rz"
+            role="tab"
           >
             <span
-              class="from"
+              class="material-icons s-NMyTiX1zi6rz"
             >
-              Fernand Naudin
+              navigate_before
             </span>
-            <span
-              class="message"
-            >
-              Qu'est-ce qui se passe encore ?
-            </span>
-            <span
-              class="from"
-            >
-              Maître Folage
-            </span>
-            <span
-              class="message"
-            >
-              Notre ami va se faire un plaisir de vous l'expliquer.
-            </span>
-            <span
-              class="from"
-            >
-              Pascal
-            </span>
-            <span
-              class="message"
-            >
-              Les Volfoni ont organisé à la péniche une petite réunion des cadres, façon meeting, si vous voyez ce que je veux dire.
-M'enfin quoi, on parle dans votre dos.
-            </span>
-            <span
-              class="from"
-            >
-              Fernand Naudin
-            </span>
-            <span
-              class="message"
-            >
-              Et tu tiens ça d'où ?
-            </span>
-            <span
-              class="from"
-            >
-              Pascal
-            </span>
-            <span
-              class="message"
-            >
-              Je ne peux pas le dire, j'ai promis. Ce serait mal.
-            </span>
-            <span
-              class="from"
-            >
-              Fernand Naudin
-            </span>
-            <span
-              class="message"
-            >
-              Alors ?
-            </span>
-            <span
-              class="from"
-            >
-              Maître Folage
-            </span>
-            <span
-              class="message"
-            >
-              Eh bien. Euh. Y'a deux solutions : ou on se dérange, ou on méprise. 
-Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire, bien sûr.
-            </span>
-            <span
-              class="from"
-            >
-              Fernand Naudin
-            </span>
-            <span
-              class="message"
-            >
-              Bon, on va y aller, hmm ?
-            </span>
-            <span
-              class="from"
-            >
-              Pascal
-            </span>
-            <span
-              class="message"
-            >
-              Monsieur Fernand, y'a peut-être une place pour moi dans votre auto. Des fois que la réunion devienne houleuse ... J'ai une présence tranquillisante.
-            </span>
-          </div>
+            
+            
+            
+          </button>
+          <!--&lt;Button&gt;-->
            
-          <form>
-            <fieldset>
-               
-              <input />
-            </fieldset>
-             
-            <button
-              disabled=""
-              title="Envoyer à tous"
-              type="submit"
-            >
-              <span
-                class="material-icons"
-              >
-                send
-              </span>
-              
-              
-              
-            </button>
-          </form>
+        </li>
+      </ol>
+       
+      <div
+        aria-controls="minimizable-section-2"
+        class="gutter s-vqhOCvFa7LzI"
+        role="scrollbar"
+      />
+    </menu>
+     
+    <span
+      class="s-vqhOCvFa7LzI"
+    >
+      <div
+        class="discussion s-4DrpFHLJm4IA"
+      >
+        <div
+          class="messages s-4DrpFHLJm4IA"
+        >
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Fernand Naudin
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Qu'est-ce qui se passe encore ?
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Maître Folage
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Notre ami va se faire un plaisir de vous l'expliquer.
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Pascal
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Les Volfoni ont organisé à la péniche une petite réunion des cadres, façon meeting, si vous voyez ce que je veux dire.
+M'enfin quoi, on parle dans votre dos.
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Fernand Naudin
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Et tu tiens ça d'où ?
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Pascal
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Je ne peux pas le dire, j'ai promis. Ce serait mal.
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Fernand Naudin
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Alors ?
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Maître Folage
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Eh bien. Euh. Y'a deux solutions : ou on se dérange, ou on méprise. 
+Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire, bien sûr.
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Fernand Naudin
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Bon, on va y aller, hmm ?
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Pascal
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Monsieur Fernand, y'a peut-être une place pour moi dans votre auto. Des fois que la réunion devienne houleuse ... J'ai une présence tranquillisante.
+          </span>
         </div>
          
-        
-      </span>
-    </section>
-  </aside>
-</span>
+        <form
+          class="s-4DrpFHLJm4IA"
+        >
+          <fieldset
+            class="s-Fe6WNbR-55zp"
+          >
+             
+            <input
+              class="s-Fe6WNbR-55zp"
+            />
+          </fieldset>
+          <!--&lt;Input&gt;-->
+           
+          <button
+            class="s-NMyTiX1zi6rz"
+            disabled=""
+            title="Envoyer à tous"
+            type="submit"
+          >
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              send
+            </span>
+            
+            
+            
+          </button>
+          <!--&lt;Button&gt;-->
+        </form>
+      </div>
+      <!--&lt;Discussion&gt;-->
+       
+      
+    </span>
+  </section>
+  <!--&lt;MinimizableSection&gt;-->
+</aside>
 `;
 
 exports[`Multiple, custom tabs 1`] = `
-<span>
-  <aside
-    class="bottom"
+<aside
+  class="bottom s-Hw7hm9C7K1_q"
+>
+  <section
+    aria-expanded="false"
+    aria-label="minimizable"
+    class="s-vqhOCvFa7LzI minimized vertical"
+    id="minimizable-section-1"
+    style="height: auto;"
   >
-    <section
-      aria-expanded="false"
-      aria-label="minimizable"
-      class="minimized vertical"
-      id="minimizable-section-1"
-      style="height: auto;"
+    <menu
+      class="bottom s-vqhOCvFa7LzI vertical"
     >
-      <menu
-        class="bottom vertical"
+      <ol
+        class="buttonContainer s-vqhOCvFa7LzI"
+        role="tablist"
       >
-        <ol
-          class="buttonContainer"
-          role="tablist"
+        <li
+          class="s-vqhOCvFa7LzI active"
         >
-          <li
-            class="active"
-          >
-            <button
-              aria-selected="true"
-              role="tab"
-            >
-              <span
-                class="material-icons"
-              >
-                question_answer
-              </span>
-              
-              
-              
-            </button>
-             
-          </li>
-          <li>
-            <button
-              aria-selected="false"
-              role="tab"
-            >
-              <span
-                class="material-icons"
-              >
-                help
-              </span>
-              
-              
-              
-            </button>
-             
-          </li>
-        </ol>
-         
-        <div
-          aria-controls="minimizable-section-1"
-          class="gutter"
-          role="scrollbar"
-        />
-      </menu>
-       
-      <span>
-        <div
-          class="discussion"
-        >
-          <div
-            class="messages"
+          <button
+            aria-selected="true"
+            class="s-NMyTiX1zi6rz"
+            role="tab"
           >
             <span
-              class="from"
+              class="material-icons s-NMyTiX1zi6rz"
             >
-              Fernand Naudin
+              question_answer
             </span>
-            <span
-              class="message"
-            >
-              Qu'est-ce qui se passe encore ?
-            </span>
-            <span
-              class="from"
-            >
-              Maître Folage
-            </span>
-            <span
-              class="message"
-            >
-              Notre ami va se faire un plaisir de vous l'expliquer.
-            </span>
-            <span
-              class="from"
-            >
-              Pascal
-            </span>
-            <span
-              class="message"
-            >
-              Les Volfoni ont organisé à la péniche une petite réunion des cadres, façon meeting, si vous voyez ce que je veux dire.
-M'enfin quoi, on parle dans votre dos.
-            </span>
-            <span
-              class="from"
-            >
-              Fernand Naudin
-            </span>
-            <span
-              class="message"
-            >
-              Et tu tiens ça d'où ?
-            </span>
-            <span
-              class="from"
-            >
-              Pascal
-            </span>
-            <span
-              class="message"
-            >
-              Je ne peux pas le dire, j'ai promis. Ce serait mal.
-            </span>
-            <span
-              class="from"
-            >
-              Fernand Naudin
-            </span>
-            <span
-              class="message"
-            >
-              Alors ?
-            </span>
-            <span
-              class="from"
-            >
-              Maître Folage
-            </span>
-            <span
-              class="message"
-            >
-              Eh bien. Euh. Y'a deux solutions : ou on se dérange, ou on méprise. 
-Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire, bien sûr.
-            </span>
-            <span
-              class="from"
-            >
-              Fernand Naudin
-            </span>
-            <span
-              class="message"
-            >
-              Bon, on va y aller, hmm ?
-            </span>
-            <span
-              class="from"
-            >
-              Pascal
-            </span>
-            <span
-              class="message"
-            >
-              Monsieur Fernand, y'a peut-être une place pour moi dans votre auto. Des fois que la réunion devienne houleuse ... J'ai une présence tranquillisante.
-            </span>
-          </div>
+            
+            
+            
+          </button>
+          <!--&lt;Button&gt;-->
            
-          <form>
-            <fieldset>
-               
-              <input />
-            </fieldset>
-             
-            <button
-              disabled=""
-              title="Envoyer à tous"
-              type="submit"
+        </li>
+        <li
+          class="s-vqhOCvFa7LzI"
+        >
+          <button
+            aria-selected="false"
+            class="s-NMyTiX1zi6rz"
+            role="tab"
+          >
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
             >
-              <span
-                class="material-icons"
-              >
-                send
-              </span>
-              
-              
-              
-            </button>
-          </form>
+              help
+            </span>
+            
+            
+            
+          </button>
+          <!--&lt;Button&gt;-->
+           
+        </li>
+      </ol>
+       
+      <div
+        aria-controls="minimizable-section-1"
+        class="gutter s-vqhOCvFa7LzI"
+        role="scrollbar"
+      />
+    </menu>
+     
+    <span
+      class="s-vqhOCvFa7LzI"
+    >
+      <div
+        class="discussion s-4DrpFHLJm4IA"
+      >
+        <div
+          class="messages s-4DrpFHLJm4IA"
+        >
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Fernand Naudin
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Qu'est-ce qui se passe encore ?
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Maître Folage
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Notre ami va se faire un plaisir de vous l'expliquer.
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Pascal
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Les Volfoni ont organisé à la péniche une petite réunion des cadres, façon meeting, si vous voyez ce que je veux dire.
+M'enfin quoi, on parle dans votre dos.
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Fernand Naudin
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Et tu tiens ça d'où ?
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Pascal
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Je ne peux pas le dire, j'ai promis. Ce serait mal.
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Fernand Naudin
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Alors ?
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Maître Folage
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Eh bien. Euh. Y'a deux solutions : ou on se dérange, ou on méprise. 
+Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire, bien sûr.
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Fernand Naudin
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Bon, on va y aller, hmm ?
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Pascal
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Monsieur Fernand, y'a peut-être une place pour moi dans votre auto. Des fois que la réunion devienne houleuse ... J'ai une présence tranquillisante.
+          </span>
         </div>
          
-        
-      </span>
-    </section>
-  </aside>
-</span>
+        <form
+          class="s-4DrpFHLJm4IA"
+        >
+          <fieldset
+            class="s-Fe6WNbR-55zp"
+          >
+             
+            <input
+              class="s-Fe6WNbR-55zp"
+            />
+          </fieldset>
+          <!--&lt;Input&gt;-->
+           
+          <button
+            class="s-NMyTiX1zi6rz"
+            disabled=""
+            title="Envoyer à tous"
+            type="submit"
+          >
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              send
+            </span>
+            
+            
+            
+          </button>
+          <!--&lt;Button&gt;-->
+        </form>
+      </div>
+      <!--&lt;Discussion&gt;-->
+       
+      
+    </span>
+  </section>
+  <!--&lt;MinimizableSection&gt;-->
+</aside>
 `;
 
 exports[`Right 1`] = `
-<span>
-  <aside
-    class="right"
+<aside
+  class="right s-Hw7hm9C7K1_q"
+>
+  <section
+    aria-expanded="true"
+    aria-label="minimizable"
+    class="s-vqhOCvFa7LzI"
+    id="minimizable-section-3"
+    style="width: auto;"
   >
-    <section
-      aria-expanded="true"
-      aria-label="minimizable"
-      id="minimizable-section-3"
-      style="width: auto;"
+    <menu
+      class="right s-vqhOCvFa7LzI"
     >
-      <menu
-        class="right"
+      <ol
+        class="buttonContainer s-vqhOCvFa7LzI"
+        role="tablist"
       >
-        <ol
-          class="buttonContainer"
-          role="tablist"
+        <li
+          class="s-vqhOCvFa7LzI"
         >
-          <li>
-            <button
-              aria-selected="false"
-              role="tab"
-            >
-              <span
-                class="material-icons"
-              >
-                navigate_next
-              </span>
-              
-              
-              
-            </button>
-             
-          </li>
-        </ol>
-         
-        <div
-          aria-controls="minimizable-section-3"
-          class="gutter"
-          role="scrollbar"
-        />
-      </menu>
-       
-      <span>
-        <div
-          class="discussion"
-        >
-          <div
-            class="messages"
+          <button
+            aria-selected="false"
+            class="s-NMyTiX1zi6rz"
+            role="tab"
           >
             <span
-              class="from"
+              class="material-icons s-NMyTiX1zi6rz"
             >
-              Fernand Naudin
+              navigate_next
             </span>
-            <span
-              class="message"
-            >
-              Qu'est-ce qui se passe encore ?
-            </span>
-            <span
-              class="from"
-            >
-              Maître Folage
-            </span>
-            <span
-              class="message"
-            >
-              Notre ami va se faire un plaisir de vous l'expliquer.
-            </span>
-            <span
-              class="from"
-            >
-              Pascal
-            </span>
-            <span
-              class="message"
-            >
-              Les Volfoni ont organisé à la péniche une petite réunion des cadres, façon meeting, si vous voyez ce que je veux dire.
-M'enfin quoi, on parle dans votre dos.
-            </span>
-            <span
-              class="from"
-            >
-              Fernand Naudin
-            </span>
-            <span
-              class="message"
-            >
-              Et tu tiens ça d'où ?
-            </span>
-            <span
-              class="from"
-            >
-              Pascal
-            </span>
-            <span
-              class="message"
-            >
-              Je ne peux pas le dire, j'ai promis. Ce serait mal.
-            </span>
-            <span
-              class="from"
-            >
-              Fernand Naudin
-            </span>
-            <span
-              class="message"
-            >
-              Alors ?
-            </span>
-            <span
-              class="from"
-            >
-              Maître Folage
-            </span>
-            <span
-              class="message"
-            >
-              Eh bien. Euh. Y'a deux solutions : ou on se dérange, ou on méprise. 
-Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire, bien sûr.
-            </span>
-            <span
-              class="from"
-            >
-              Fernand Naudin
-            </span>
-            <span
-              class="message"
-            >
-              Bon, on va y aller, hmm ?
-            </span>
-            <span
-              class="from"
-            >
-              Pascal
-            </span>
-            <span
-              class="message"
-            >
-              Monsieur Fernand, y'a peut-être une place pour moi dans votre auto. Des fois que la réunion devienne houleuse ... J'ai une présence tranquillisante.
-            </span>
-          </div>
+            
+            
+            
+          </button>
+          <!--&lt;Button&gt;-->
            
-          <form>
-            <fieldset>
-               
-              <input />
-            </fieldset>
-             
-            <button
-              disabled=""
-              title="Envoyer à tous"
-              type="submit"
-            >
-              <span
-                class="material-icons"
-              >
-                send
-              </span>
-              
-              
-              
-            </button>
-          </form>
+        </li>
+      </ol>
+       
+      <div
+        aria-controls="minimizable-section-3"
+        class="gutter s-vqhOCvFa7LzI"
+        role="scrollbar"
+      />
+    </menu>
+     
+    <span
+      class="s-vqhOCvFa7LzI"
+    >
+      <div
+        class="discussion s-4DrpFHLJm4IA"
+      >
+        <div
+          class="messages s-4DrpFHLJm4IA"
+        >
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Fernand Naudin
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Qu'est-ce qui se passe encore ?
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Maître Folage
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Notre ami va se faire un plaisir de vous l'expliquer.
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Pascal
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Les Volfoni ont organisé à la péniche une petite réunion des cadres, façon meeting, si vous voyez ce que je veux dire.
+M'enfin quoi, on parle dans votre dos.
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Fernand Naudin
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Et tu tiens ça d'où ?
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Pascal
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Je ne peux pas le dire, j'ai promis. Ce serait mal.
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Fernand Naudin
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Alors ?
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Maître Folage
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Eh bien. Euh. Y'a deux solutions : ou on se dérange, ou on méprise. 
+Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire, bien sûr.
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Fernand Naudin
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Bon, on va y aller, hmm ?
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Pascal
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Monsieur Fernand, y'a peut-être une place pour moi dans votre auto. Des fois que la réunion devienne houleuse ... J'ai une présence tranquillisante.
+          </span>
         </div>
          
-        
-      </span>
-    </section>
-  </aside>
-</span>
+        <form
+          class="s-4DrpFHLJm4IA"
+        >
+          <fieldset
+            class="s-Fe6WNbR-55zp"
+          >
+             
+            <input
+              class="s-Fe6WNbR-55zp"
+            />
+          </fieldset>
+          <!--&lt;Input&gt;-->
+           
+          <button
+            class="s-NMyTiX1zi6rz"
+            disabled=""
+            title="Envoyer à tous"
+            type="submit"
+          >
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              send
+            </span>
+            
+            
+            
+          </button>
+          <!--&lt;Button&gt;-->
+        </form>
+      </div>
+      <!--&lt;Discussion&gt;-->
+       
+      
+    </span>
+  </section>
+  <!--&lt;MinimizableSection&gt;-->
+</aside>
 `;
 
 exports[`Top 1`] = `
-<span>
-  <aside
-    class="top"
+<aside
+  class="top s-Hw7hm9C7K1_q"
+>
+  <section
+    aria-expanded="true"
+    aria-label="minimizable"
+    class="s-vqhOCvFa7LzI vertical"
+    id="minimizable-section-4"
+    style="height: auto;"
   >
-    <section
-      aria-expanded="true"
-      aria-label="minimizable"
-      class="vertical"
-      id="minimizable-section-4"
-      style="height: auto;"
+    <menu
+      class="top s-vqhOCvFa7LzI vertical"
     >
-      <menu
-        class="top vertical"
+      <ol
+        class="buttonContainer s-vqhOCvFa7LzI"
+        role="tablist"
       >
-        <ol
-          class="buttonContainer"
-          role="tablist"
+        <li
+          class="s-vqhOCvFa7LzI"
         >
-          <li>
-            <button
-              aria-selected="false"
-              role="tab"
-            >
-              <span
-                class="material-icons"
-              >
-                expand_less
-              </span>
-              
-              
-              
-            </button>
-             
-          </li>
-        </ol>
-         
-        <div
-          aria-controls="minimizable-section-4"
-          class="gutter"
-          role="scrollbar"
-        />
-      </menu>
-       
-      <span>
-        <div
-          class="discussion"
-        >
-          <div
-            class="messages"
+          <button
+            aria-selected="false"
+            class="s-NMyTiX1zi6rz"
+            role="tab"
           >
             <span
-              class="from"
+              class="material-icons s-NMyTiX1zi6rz"
             >
-              Fernand Naudin
+              expand_less
             </span>
-            <span
-              class="message"
-            >
-              Qu'est-ce qui se passe encore ?
-            </span>
-            <span
-              class="from"
-            >
-              Maître Folage
-            </span>
-            <span
-              class="message"
-            >
-              Notre ami va se faire un plaisir de vous l'expliquer.
-            </span>
-            <span
-              class="from"
-            >
-              Pascal
-            </span>
-            <span
-              class="message"
-            >
-              Les Volfoni ont organisé à la péniche une petite réunion des cadres, façon meeting, si vous voyez ce que je veux dire.
-M'enfin quoi, on parle dans votre dos.
-            </span>
-            <span
-              class="from"
-            >
-              Fernand Naudin
-            </span>
-            <span
-              class="message"
-            >
-              Et tu tiens ça d'où ?
-            </span>
-            <span
-              class="from"
-            >
-              Pascal
-            </span>
-            <span
-              class="message"
-            >
-              Je ne peux pas le dire, j'ai promis. Ce serait mal.
-            </span>
-            <span
-              class="from"
-            >
-              Fernand Naudin
-            </span>
-            <span
-              class="message"
-            >
-              Alors ?
-            </span>
-            <span
-              class="from"
-            >
-              Maître Folage
-            </span>
-            <span
-              class="message"
-            >
-              Eh bien. Euh. Y'a deux solutions : ou on se dérange, ou on méprise. 
-Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire, bien sûr.
-            </span>
-            <span
-              class="from"
-            >
-              Fernand Naudin
-            </span>
-            <span
-              class="message"
-            >
-              Bon, on va y aller, hmm ?
-            </span>
-            <span
-              class="from"
-            >
-              Pascal
-            </span>
-            <span
-              class="message"
-            >
-              Monsieur Fernand, y'a peut-être une place pour moi dans votre auto. Des fois que la réunion devienne houleuse ... J'ai une présence tranquillisante.
-            </span>
-          </div>
+            
+            
+            
+          </button>
+          <!--&lt;Button&gt;-->
            
-          <form>
-            <fieldset>
-               
-              <input />
-            </fieldset>
-             
-            <button
-              disabled=""
-              title="Envoyer à tous"
-              type="submit"
-            >
-              <span
-                class="material-icons"
-              >
-                send
-              </span>
-              
-              
-              
-            </button>
-          </form>
+        </li>
+      </ol>
+       
+      <div
+        aria-controls="minimizable-section-4"
+        class="gutter s-vqhOCvFa7LzI"
+        role="scrollbar"
+      />
+    </menu>
+     
+    <span
+      class="s-vqhOCvFa7LzI"
+    >
+      <div
+        class="discussion s-4DrpFHLJm4IA"
+      >
+        <div
+          class="messages s-4DrpFHLJm4IA"
+        >
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Fernand Naudin
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Qu'est-ce qui se passe encore ?
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Maître Folage
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Notre ami va se faire un plaisir de vous l'expliquer.
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Pascal
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Les Volfoni ont organisé à la péniche une petite réunion des cadres, façon meeting, si vous voyez ce que je veux dire.
+M'enfin quoi, on parle dans votre dos.
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Fernand Naudin
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Et tu tiens ça d'où ?
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Pascal
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Je ne peux pas le dire, j'ai promis. Ce serait mal.
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Fernand Naudin
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Alors ?
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Maître Folage
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Eh bien. Euh. Y'a deux solutions : ou on se dérange, ou on méprise. 
+Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire, bien sûr.
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Fernand Naudin
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Bon, on va y aller, hmm ?
+          </span>
+          <span
+            class="from s-4DrpFHLJm4IA"
+          >
+            Pascal
+          </span>
+          <span
+            class="message s-4DrpFHLJm4IA"
+          >
+            Monsieur Fernand, y'a peut-être une place pour moi dans votre auto. Des fois que la réunion devienne houleuse ... J'ai une présence tranquillisante.
+          </span>
         </div>
          
-        
-      </span>
-    </section>
-  </aside>
-</span>
+        <form
+          class="s-4DrpFHLJm4IA"
+        >
+          <fieldset
+            class="s-Fe6WNbR-55zp"
+          >
+             
+            <input
+              class="s-Fe6WNbR-55zp"
+            />
+          </fieldset>
+          <!--&lt;Input&gt;-->
+           
+          <button
+            class="s-NMyTiX1zi6rz"
+            disabled=""
+            title="Envoyer à tous"
+            type="submit"
+          >
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              send
+            </span>
+            
+            
+            
+          </button>
+          <!--&lt;Button&gt;-->
+        </form>
+      </div>
+      <!--&lt;Discussion&gt;-->
+       
+      
+    </span>
+  </section>
+  <!--&lt;MinimizableSection&gt;-->
+</aside>
 `;

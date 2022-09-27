@@ -15,9 +15,9 @@ cp .nvmrc dist/
 
 # build server
 rm -rf node_modules
-npm ci --production --ignore-scripts -w @tabulous/server
-cd apps/server
-tar --create --file ../../dist/server.tar.gz -z ../../node_modules/ src/ package.json 
+pnpm --filter server --prod deploy dist/server
+cd dist/server
+tar --create -h --file ../server.tar.gz -z node_modules/ src/ package.json 
 cd ../..
 
 # build games

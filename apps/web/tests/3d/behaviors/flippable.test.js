@@ -16,9 +16,9 @@ let animationEndReceived
 configures3dTestEngine()
 
 beforeEach(() => {
-  jest.clearAllMocks()
-  recordSpy = jest.spyOn(controlManager, 'record')
-  animationEndReceived = jest.fn()
+  vi.clearAllMocks()
+  recordSpy = vi.spyOn(controlManager, 'record')
+  animationEndReceived = vi.fn()
 })
 
 describe('FlipBehavior', () => {

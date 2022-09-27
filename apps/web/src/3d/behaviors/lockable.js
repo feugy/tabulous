@@ -1,7 +1,7 @@
 import { LockBehaviorName, MoveBehaviorName } from './names'
-import { attachFunctions, attachProperty } from '../utils'
-import { controlManager, indicatorManager } from '../managers'
-// '../../utils' creates a cyclic dependency in Jest
+import { controlManager } from '../managers/control'
+import { indicatorManager } from '../managers/indicator'
+import { attachFunctions, attachProperty } from '../utils/behaviors'
 import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger(LockBehaviorName)

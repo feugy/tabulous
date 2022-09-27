@@ -1,11 +1,10 @@
-import { jest } from '@jest/globals'
 import { createServer } from 'http'
 import { join, resolve } from 'path'
 import { cwd } from 'process'
 import { fileURLToPath } from 'url'
 import repositories from '../src/repositories/index.js'
 import { startServer } from '../src/server.js'
-// mandatory side effect for Jest to load auth plugin
+// mandatory side effect for vi to load auth plugin
 import '../src/plugins/utils.js'
 
 describe('startServer()', () => {
@@ -13,15 +12,13 @@ describe('startServer()', () => {
   let port
 
   beforeAll(() => {
-    jest.spyOn(repositories.games, 'connect').mockImplementation(() => {})
-    jest.spyOn(repositories.players, 'connect').mockImplementation(() => {})
-    jest
-      .spyOn(repositories.catalogItems, 'connect')
-      .mockImplementation(() => {})
+    vi.spyOn(repositories.games, 'connect').mockImplementation(() => {})
+    vi.spyOn(repositories.players, 'connect').mockImplementation(() => {})
+    vi.spyOn(repositories.catalogItems, 'connect').mockImplementation(() => {})
   })
 
   beforeEach(async () => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
     const dummy = createServer()
     await dummy.listen()
     port = dummy.address().port

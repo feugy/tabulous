@@ -8,8 +8,8 @@
   },
   "main": "./src/index.mjs",
   "scripts": {
-    "test": "NODE_OPTIONS=\"--experimental-vm-modules --no-warnings\" jest --coverage --colors",
-    "test:dev": "NODE_OPTIONS=\"--experimental-vm-modules --no-warnings\" jest --watch"
+    "test": "vitest run --coverage",
+    "test:dev": "vitest dev"
   },
   "dependencies": {
     "@urql/core": "^3.0.3",
@@ -27,8 +27,8 @@
     "undici": "^5.10.0"
   },
   "devDependencies": {
-    "jest": "^29.0.3",
-    "jest-watch-typeahead": "^2.2.0",
-    "strip-ansi": "^7.0.1"
+    "@faker-js/faker": "^7.5.0",
+    "strip-ansi": "^7.0.1",
+    "vitest": "^0.23.4"
   }
 }

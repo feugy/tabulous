@@ -23,7 +23,7 @@ export default async function main(argv) {
 
   const [name, command] = findCommand(args)
   if (!command) {
-    await invokeCommand(commands.help, [], '')
+    printErrorAndHelp(new Error(`unknown command "${argv.join(' ')}"`))
   } else {
     await invokeCommand(command, argv, name)
   }
@@ -49,9 +49,13 @@ async function invokeCommand(command, argv, name) {
     const results = await command(shiftCommand(argv, name))
     printWithFormaters(results)
   } catch (err) {
-    console.log(chalkTemplate`{bold {redBright error}}: ${err.message}`)
-    console.log(commands.help())
+    printErrorAndHelp(err, command)
   }
+}
+
+function printErrorAndHelp(err, command = commands) {
+  console.log(chalkTemplate`{bold {redBright error}}: ${err.message}`)
+  console.log(command.help())
 }
 
 /* istanbul ignore next */

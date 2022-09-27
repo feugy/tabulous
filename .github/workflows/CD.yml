@@ -15,23 +15,25 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [16.x]
-
     steps:
       - name: Check code out
         uses: actions/checkout@v3
         with:
           lfs: true
 
-      - name: Set Node.js ${{ matrix.node-version }} up
+      - name: Intall Pnpm
+        uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+
+      - name: Set Node.js up
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm ci --ignore-scripts
+        run: pnpm install --ignore-scripts
 
       - name: Build artifacts
         run: ./hosting/build.sh

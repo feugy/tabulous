@@ -95,7 +95,9 @@ describe('isAboveTable() 3D utility', () => {
   })
 
   describe('given a table mesh', () => {
-    beforeAll(() => (table = CreateGround('table', { width, height })))
+    beforeAll(() => {
+      table = CreateGround('table', { width, height })
+    })
 
     afterAll(() => table.dispose())
 
@@ -149,7 +151,9 @@ describe('isPositionAboveTable() 3D utility', () => {
   })
 
   describe('given a table mesh', () => {
-    beforeAll(() => (table = CreateGround('table', { width, height })))
+    beforeAll(() => {
+      table = CreateGround('table', { width, height })
+    })
 
     afterAll(() => table.dispose())
 

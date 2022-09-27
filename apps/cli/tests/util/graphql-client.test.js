@@ -1,9 +1,8 @@
 import { faker } from '@faker-js/faker'
-import { jest } from '@jest/globals'
 import { MockAgent, setGlobalDispatcher } from 'undici'
 
-jest.unstable_mockModule('../../src/util/configuration.js', () => ({
-  loadConfiguration: jest.fn()
+vi.mock('../../src/util/configuration.js', () => ({
+  loadConfiguration: vi.fn()
 }))
 
 describe('getGraphQLClient()', () => {
@@ -17,7 +16,7 @@ describe('getGraphQLClient()', () => {
     ;({ getGraphQLClient } = await import('../../src/util/graphql-client.js'))
   })
 
-  beforeEach(jest.clearAllMocks)
+  beforeEach(vi.clearAllMocks)
 
   it('builds client from configuration', () => {
     loadConfiguration.mockReturnValue({ url, jwt: { key: jwtKey } })
@@ -37,7 +36,7 @@ describe('getGraphQLClient()', () => {
     let client
     let mockAgent
     let networkMock
-    const graphQLRequest = jest.fn()
+    const graphQLRequest = vi.fn()
 
     beforeAll(() => {
       client = getGraphQLClient()
@@ -47,7 +46,7 @@ describe('getGraphQLClient()', () => {
       networkMock = mockAgent.get(url)
     })
 
-    beforeEach(jest.clearAllMocks)
+    beforeEach(vi.clearAllMocks)
 
     it('throws returned errors', async () => {
       const error = new Error('boom')

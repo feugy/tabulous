@@ -9,13 +9,13 @@ describe('Logger', () => {
   let error
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     const noop = () => {}
-    trace = jest.spyOn(console, 'trace').mockImplementation(noop)
-    log = jest.spyOn(console, 'log').mockImplementation(noop)
-    info = jest.spyOn(console, 'info').mockImplementation(noop)
-    warn = jest.spyOn(console, 'warn').mockImplementation(noop)
-    error = jest.spyOn(console, 'error').mockImplementation(noop)
+    trace = vi.spyOn(console, 'trace').mockImplementation(noop)
+    log = vi.spyOn(console, 'log').mockImplementation(noop)
+    info = vi.spyOn(console, 'info').mockImplementation(noop)
+    warn = vi.spyOn(console, 'warn').mockImplementation(noop)
+    error = vi.spyOn(console, 'error').mockImplementation(noop)
   })
 
   it('creates a logger and reuse the same instance', async () => {

@@ -1,92 +1,104 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Local 1`] = `
-<span>
-  <section
-    data-testid="player-avatar"
+<section
+  class="s-ab4pMJzf-5--"
+  data-testid="player-avatar"
+>
+  <figure
+    class="s-engCJu8q-fNe"
+    style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
   >
-    <figure
-      style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
-    >
-      <img
-        alt="avatar for Joe le clodo"
-        class="hasImage"
-        height="150"
-        src="default"
-        width="150"
-      />
-       
-    </figure>
+    <img
+      alt="avatar for Joe le clodo"
+      class="s-engCJu8q-fNe hasImage"
+      height="150"
+      src="/tests/components/avatar.png"
+      width="150"
+    />
      
-    <span
-      class="host"
-    >
-      host
-    </span>
+  </figure>
+  <!--&lt;PlayerThumbnail&gt;-->
+   
+  <span
+    class="host s-ab4pMJzf-5--"
+  >
+    host
+  </span>
+   
+  <legend
+    class="s-ab4pMJzf-5--"
+  >
      
-    <legend>
-       
-      
-    </legend>
-  </section>
-</span>
+    
+  </legend>
+</section>
 `;
 
 exports[`No video 1`] = `
-<span>
-  <section
-    data-testid="player-avatar"
+<section
+  class="s-ab4pMJzf-5--"
+  data-testid="player-avatar"
+>
+  <figure
+    class="s-engCJu8q-fNe"
+    style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
   >
-    <figure
-      style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
-    >
-      <img
-        alt="avatar for Joe le clodo"
-        class="hasImage"
-        height="150"
-        src="default"
-        width="150"
-      />
-       
-    </figure>
+    <img
+      alt="avatar for Joe le clodo"
+      class="s-engCJu8q-fNe hasImage"
+      height="150"
+      src="/tests/components/avatar.png"
+      width="150"
+    />
      
-    <span
-      class="host"
-    >
-      host
-    </span>
-     
-    <legend />
-  </section>
-</span>
+  </figure>
+  <!--&lt;PlayerThumbnail&gt;-->
+   
+  <span
+    class="host s-ab4pMJzf-5--"
+  >
+    host
+  </span>
+   
+  <legend
+    class="s-ab4pMJzf-5--"
+  />
+</section>
 `;
 
 exports[`No video nor avatar 1`] = `
-<span>
-  <section
-    data-testid="player-avatar"
+<section
+  class="s-ab4pMJzf-5--"
+  data-testid="player-avatar"
+>
+  <figure
+    class="s-engCJu8q-fNe"
+    style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
   >
-    <figure
-      style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
-    >
-      <img
-        alt="avatar for Joe le clodo"
-        height="150"
-        width="150"
-      />
-       
-      <figcaption>
-        Joe le clodo
-      </figcaption>
-    </figure>
+    <img
+      alt="avatar for Joe le clodo"
+      class="s-engCJu8q-fNe"
+      height="150"
+      width="150"
+    />
      
-    <span
-      class="host"
+    <figcaption
+      class="s-engCJu8q-fNe"
     >
-      host
-    </span>
-     
-    <legend />
-  </section>
-</span>
+      Joe le clodo
+    </figcaption>
+  </figure>
+  <!--&lt;PlayerThumbnail&gt;-->
+   
+  <span
+    class="host s-ab4pMJzf-5--"
+  >
+    host
+  </span>
+   
+  <legend
+    class="s-ab4pMJzf-5--"
+  />
+</section>
 `;

@@ -4,11 +4,11 @@ export function mockLogger(name) {
   const logger = makeLogger(name)
   const noop = () => {}
   return {
-    trace: jest.spyOn(logger, 'trace').mockImplementation(noop),
-    debug: jest.spyOn(logger, 'debug').mockImplementation(noop),
-    log: jest.spyOn(logger, 'log').mockImplementation(noop),
-    info: jest.spyOn(logger, 'info').mockImplementation(noop),
-    warn: jest.spyOn(logger, 'warn').mockImplementation(noop),
-    error: jest.spyOn(logger, 'error') // .mockImplementation(noop)
+    trace: vi.spyOn(logger, 'trace').mockImplementation(noop),
+    debug: vi.spyOn(logger, 'debug').mockImplementation(noop),
+    log: vi.spyOn(logger, 'log').mockImplementation(noop),
+    info: vi.spyOn(logger, 'info').mockImplementation(noop),
+    warn: vi.spyOn(logger, 'warn').mockImplementation(noop),
+    error: vi.spyOn(logger, 'error') // .mockImplementation(noop)
   }
 }

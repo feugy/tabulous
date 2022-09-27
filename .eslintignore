@@ -2,6 +2,7 @@ apps/games/assets/
 apps/games/descriptors/
 coverage/
 dist/
+dist-atelier/
 node_modules/
 scans/
 !.storybook/

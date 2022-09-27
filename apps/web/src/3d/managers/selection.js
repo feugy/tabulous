@@ -5,10 +5,11 @@ import { Mesh } from '@babylonjs/core/Meshes/mesh.js'
 import { Observable } from '@babylonjs/core/Misc/observable.js'
 import { CreateLines } from '@babylonjs/core/Meshes/Builders/linesBuilder.js'
 import { ExtrudeShape } from '@babylonjs/core/Meshes/Builders/shapeBuilder.js'
-import { isContaining, screenToGround, sortByElevation } from '../utils'
-// '../../utils' creates a cyclic dependency in Jest
-import { makeLogger } from '../../utils/logger'
 import { handManager } from './hand'
+import { sortByElevation } from '../utils/gravity'
+import { isContaining } from '../utils/mesh'
+import { screenToGround } from '../utils/vector'
+import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('selection')
 

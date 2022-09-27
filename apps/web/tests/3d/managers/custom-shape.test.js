@@ -35,11 +35,11 @@ describe('CustomShapeManager', () => {
   beforeAll(() => server.listen())
 
   beforeEach(() => {
-    jest.resetAllMocks()
+    vi.resetAllMocks()
     server.resetHandlers()
-    error = jest.spyOn(logger, 'error')
-    jest.spyOn(console, 'warn').mockImplementation(() => {})
-    jest.spyOn(console, 'error').mockImplementation(() => {})
+    error = vi.spyOn(logger, 'error')
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    vi.spyOn(console, 'error').mockImplementation(() => {})
   })
 
   afterAll(() => server.close())
@@ -123,7 +123,7 @@ describe('CustomShapeManager', () => {
 
     it('downloads the same file only once', async () => {
       const file = `/${faker.lorem.word()}`
-      const request = jest.fn()
+      const request = vi.fn()
 
       server.use(
         rest.get(`${gameAssetsUrl}${file}`, (req, res, ctx) => {
@@ -166,7 +166,7 @@ describe('CustomShapeManager', () => {
     const diePath = '/die.babylon'
 
     beforeEach(async () => {
-      jest.resetAllMocks()
+      vi.resetAllMocks()
       server.resetHandlers()
       await manager.init({
         gameAssetsUrl,

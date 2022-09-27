@@ -7,11 +7,13 @@ import { controlManager } from '../../../src/3d/managers'
 describe('DetailBehavior', () => {
   configures3dTestEngine()
 
-  const onDetailedObserver = jest.fn()
+  const onDetailedObserver = vi.fn()
 
-  beforeEach(jest.resetAllMocks)
+  beforeEach(vi.resetAllMocks)
 
-  beforeAll(() => controlManager.onDetailedObservable.add(onDetailedObserver))
+  beforeAll(() => {
+    controlManager.onDetailedObservable.add(onDetailedObserver)
+  })
 
   afterAll(() => controlManager.onDetailedObservable.remove(onDetailedObserver))
 

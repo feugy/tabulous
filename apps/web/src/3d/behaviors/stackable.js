@@ -6,31 +6,30 @@ import {
   StackBehaviorName
 } from './names'
 import { TargetBehavior } from './targetable'
-import {
-  controlManager,
-  indicatorManager,
-  moveManager,
-  selectionManager,
-  targetManager
-} from '../managers'
+import { controlManager } from '../managers/control'
+import { indicatorManager } from '../managers/indicator'
+import { moveManager } from '../managers/move'
+import { selectionManager } from '../managers/selection'
+import { targetManager } from '../managers/target'
 import {
   animateMove,
-  applyGravity,
   attachFunctions,
   attachProperty,
   buildTargetMesh,
   getAnimatableBehavior,
-  getCenterAltitudeAbove,
-  getDimensions,
   getTargetableBehavior,
   isMeshFlipped,
   isMeshInverted,
-  runAnimation,
+  runAnimation
+} from '../utils/behaviors'
+import {
+  applyGravity,
+  getCenterAltitudeAbove,
   sortByElevation
-} from '../utils'
-// '../../utils' creates a cyclic dependency in Jest
+} from '../utils/gravity'
+import { getDimensions } from '../utils/mesh'
 import { makeLogger } from '../../utils/logger'
-import { sleep } from '../../utils'
+import { sleep } from '../../utils/time'
 
 const logger = makeLogger('stackable')
 

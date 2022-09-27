@@ -1,6 +1,6 @@
 import { load } from '../../src/routes/+page'
 
-jest.mock('@sveltejs/kit', () => ({
+vi.mock('@sveltejs/kit', () => ({
   redirect(status, location) {
     return new Error(`${status} redirection to ${location}`)
   }

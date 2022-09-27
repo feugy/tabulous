@@ -1,9 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Primary image icon only 1`] = `
-<button>
+<button
+  class="s-NMyTiX1zi6rz"
+>
   <span
-    class="icon"
+    class="icon s-NMyTiX1zi6rz"
   >
     <svg
       height="20"
@@ -17,6 +19,7 @@ exports[`Primary image icon only 1`] = `
         fill="currentColor"
       />
     </svg>
+    <!--&lt;Github-logo.svg.rollup-plugin&gt;-->
   </span>
   
   
@@ -25,59 +28,61 @@ exports[`Primary image icon only 1`] = `
 `;
 
 exports[`Primary with icon only 1`] = `
-<span>
-  <button>
-    <span
-      class="material-icons"
-    >
-      videogame_asset
-    </span>
-    
-    
-    
-  </button>
-</span>
+<button
+  class="s-NMyTiX1zi6rz"
+>
+  <span
+    class="material-icons s-NMyTiX1zi6rz"
+  >
+    videogame_asset
+  </span>
+  
+  
+  
+</button>
 `;
 
 exports[`Primary with text 1`] = `
-<span>
-  <button>
-    
-    <span
-      class="text"
-    >
-      Hello!
-    </span>
-    
-    
-  </button>
-</span>
+<button
+  class="s-NMyTiX1zi6rz"
+>
+  
+  <span
+    class="text s-NMyTiX1zi6rz"
+  >
+    Hello!
+  </span>
+  
+  
+</button>
 `;
 
 exports[`Primary with text and icon 1`] = `
-<span>
-  <button>
-    <span
-      class="material-icons"
-    >
-      emoji_people
-    </span>
-    
-    <span
-      class="text"
-    >
-      Hello!
-    </span>
-    
-    
-  </button>
-</span>
+<button
+  class="s-NMyTiX1zi6rz"
+>
+  <span
+    class="material-icons s-NMyTiX1zi6rz"
+  >
+    emoji_people
+  </span>
+  
+  <span
+    class="text s-NMyTiX1zi6rz"
+  >
+    Hello!
+  </span>
+  
+  
+</button>
 `;
 
 exports[`Primary with text and image icon 1`] = `
-<button>
+<button
+  class="s-NMyTiX1zi6rz"
+>
   <span
-    class="icon"
+    class="icon s-NMyTiX1zi6rz"
   >
     <svg
       height="20"
@@ -91,10 +96,11 @@ exports[`Primary with text and image icon 1`] = `
         fill="currentColor"
       />
     </svg>
+    <!--&lt;Github-logo.svg.rollup-plugin&gt;-->
   </span>
   
   <span
-    class="text"
+    class="text s-NMyTiX1zi6rz"
   >
     Hello!
   </span>
@@ -104,80 +110,99 @@ exports[`Primary with text and image icon 1`] = `
 `;
 
 exports[`Secondary with icon only 1`] = `
-<span>
-  <button
-    class="secondary"
+<button
+  class="secondary s-NMyTiX1zi6rz"
+>
+  <span
+    class="material-icons s-NMyTiX1zi6rz"
   >
-    <span
-      class="material-icons"
-    >
-      videogame_asset
-    </span>
-    
-    
-    
-  </button>
-</span>
+    videogame_asset
+  </span>
+  
+  
+  
+</button>
 `;
 
 exports[`Secondary with text 1`] = `
-<span>
-  <button
-    class="secondary"
+<button
+  class="secondary s-NMyTiX1zi6rz"
+>
+  
+  <span
+    class="text s-NMyTiX1zi6rz"
   >
-    
-    <span
-      class="text"
-    >
-      Hello!
-    </span>
-    
-    
-  </button>
-</span>
+    Hello!
+  </span>
+  
+  
+</button>
 `;
 
 exports[`Secondary with text and icon 1`] = `
-<span>
-  <button
-    class="secondary"
+<button
+  class="secondary s-NMyTiX1zi6rz"
+>
+  <span
+    class="material-icons s-NMyTiX1zi6rz"
   >
-    <span
-      class="material-icons"
-    >
-      emoji_people
-    </span>
-    
-    <span
-      class="text"
-    >
-      Hello!
-    </span>
-    
-    
-  </button>
-</span>
+    emoji_people
+  </span>
+  
+  <span
+    class="text s-NMyTiX1zi6rz"
+  >
+    Hello!
+  </span>
+  
+  
+</button>
 `;
 
 exports[`Transparent with text 1`] = `
-<span>
-  <button
-    class="transparent"
+<button
+  class="transparent s-NMyTiX1zi6rz"
+>
+  
+  <span
+    class="text s-NMyTiX1zi6rz"
   >
-    
-    <span
-      class="text"
-    >
-      Hello!
-    </span>
-    
-    
-  </button>
-</span>
+    Hello!
+  </span>
+  
+  
+</button>
 `;
 
 exports[`With badge 1`] = `
-<div>
-  Vous avez...
-</div>
+HTMLCollection [
+  <div>
+    Vous avez...
+  </div>,
+  <button
+    class="s-NMyTiX1zi6rz"
+  >
+    <span
+      class="material-icons s-NMyTiX1zi6rz"
+    >
+      email
+    </span>
+    
+    <span
+      class="text s-NMyTiX1zi6rz"
+    >
+      Inbox
+    </span>
+    
+    <span
+      class="badge s-NMyTiX1zi6rz"
+    >
+      5
+    </span>
+    
+  </button>,
+  <div>
+    Nouveau(x) message(s).
+  </div>,
+]
 `;

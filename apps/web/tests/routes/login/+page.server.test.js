@@ -2,17 +2,14 @@ import { faker } from '@faker-js/faker'
 import { actions } from '../../../src/routes/login/+page.server'
 import { runMutation } from '../../../src/stores/graphql-client'
 
-jest.mock('@sveltejs/kit', () => ({
+vi.mock('@sveltejs/kit', () => ({
   redirect: (status, location) => ({ status, location }),
   invalid: (status, errors) => ({ status, errors })
 }))
-jest.mock('../../../src/stores/graphql-client', () => {
-  const { jest } = require('@jest/globals')
-  return {
-    initGraphQlClient: jest.fn(),
-    runMutation: jest.fn()
-  }
-})
+vi.mock('../../../src/stores/graphql-client', () => ({
+  initGraphQlClient: vi.fn(),
+  runMutation: vi.fn()
+}))
 
 describe('POST /login route action', () => {
   it('redirects to home and set session on success', async () => {
@@ -103,5 +100,5 @@ function buildsRequest({ id, password, redirect }) {
   if (redirect) {
     body.append('redirect', redirect)
   }
-  return new Request('/login', { method: 'POST', body })
+  return new Request('https://localhost:3000/login', { method: 'POST', body })
 }

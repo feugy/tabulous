@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker'
 import { load } from '../../../src/routes/(auth)/+layout.server'
 
-jest.mock('@sveltejs/kit', () => ({
+vi.mock('@sveltejs/kit', () => ({
   redirect(status, location) {
     return new Error(`${status} redirection to ${location}`)
   }

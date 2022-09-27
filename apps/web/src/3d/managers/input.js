@@ -1,8 +1,7 @@
 import { Observable } from '@babylonjs/core/Misc/observable.js'
 import { Scene } from '@babylonjs/core/scene.js'
-import { screenToGround } from '../utils'
-import { distance } from '../../utils'
-// '../../utils' creates a cyclic dependency in Jest
+import { screenToGround } from '../utils/vector'
+import { distance } from '../../utils/math'
 import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('input')

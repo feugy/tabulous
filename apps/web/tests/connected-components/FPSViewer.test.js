@@ -6,7 +6,7 @@ import { translate } from '../test-utils'
 import FPSViewer from '../../src/connected-components/FPSViewer.svelte'
 import { fps } from '../../src/stores/game-engine'
 
-jest.mock('../../src/stores/game-engine', () => {
+vi.mock('../../src/stores/game-engine', () => {
   const { BehaviorSubject, Subject } = require('rxjs')
   return {
     fps: new BehaviorSubject(),
@@ -16,7 +16,7 @@ jest.mock('../../src/stores/game-engine', () => {
 })
 
 describe('FPSViewer connected component', () => {
-  beforeEach(jest.resetAllMocks)
+  beforeEach(vi.resetAllMocks)
 
   it('displays current frame per seconds', async () => {
     const fps1 = faker.datatype.number()

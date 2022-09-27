@@ -87,3 +87,4 @@ function help() {
     --help/-h                 Display help for this command
 `
 }
+grantCommand.htelp = help

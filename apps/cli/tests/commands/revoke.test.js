@@ -1,14 +1,13 @@
 import { faker } from '@faker-js/faker'
-import { jest } from '@jest/globals'
 import stripAnsi from 'strip-ansi'
 import { applyFormaters } from '../../src/util/formaters.js'
 import { signToken } from '../../src/util/jwt.js'
 
-const mockQuery = jest.fn()
-const mockMutation = jest.fn()
+const mockQuery = vi.fn()
+const mockMutation = vi.fn()
 
-jest.unstable_mockModule('../../src/util/graphql-client.js', () => ({
-  getGraphQLClient: jest
+vi.mock('../../src/util/graphql-client.js', () => ({
+  getGraphQLClient: vi
     .fn()
     .mockReturnValue({ query: mockQuery, mutation: mockMutation })
 }))
@@ -25,7 +24,7 @@ describe('User revokes command', () => {
     revoke = (await import('../../src/commands/revoke.js')).default
   })
 
-  beforeEach(jest.clearAllMocks)
+  beforeEach(vi.clearAllMocks)
 
   it('throws on missing username', async () => {
     await expect(revoke([])).rejects.toThrow('no username provided')
@@ -35,6 +34,23 @@ describe('User revokes command', () => {
     await expect(revoke(['-u', 'someone'])).rejects.toThrow(
       'no game-name provided'
     )
+  })
+
+  it('displays help and support common options', async () => {
+    const username = faker.name.fullName()
+    const gameName = faker.commerce.productName()
+    expect(stripAnsi(await revoke(['-h', '-u', username, '-p', gameName])))
+      .toEqual(`
+  tabulous [options] revoke [game-name]
+  Revokes access to a copyrighted game
+  Commands:
+    [game-name]               Name of the revoked game
+  Options:
+    --username/-u             Username for which catalog is fetched
+    --production/-p           Loads configuration from .env.prod
+    --help/-h                 Display help for this command
+`)
+    expect(mockQuery).not.toHaveBeenCalled()
   })
 
   describe('given existing players', () => {

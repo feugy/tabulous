@@ -1,15 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Components/Mesh Details 1`] = `
-<span>
-  <figure
-    class="open"
-  >
-    <img
-      alt=""
-      src="http://localhost:3001/games/french-suited-card/images/hearts-12.svg"
-    />
-  </figure>
-  
-</span>
+<figure
+  class="s-D7tefI0YoztI open"
+>
+  <img
+    alt=""
+    class="s-D7tefI0YoztI"
+    src="http://localhost:3001/games/french-suited-card/images/hearts-12.svg"
+  />
+</figure>
 `;

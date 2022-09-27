@@ -23,9 +23,9 @@ describe('RotateBehavior', () => {
   let animationEndReceived
 
   beforeEach(() => {
-    jest.clearAllMocks()
-    recordSpy = jest.spyOn(controlManager, 'record')
-    animationEndReceived = jest.fn()
+    vi.clearAllMocks()
+    recordSpy = vi.spyOn(controlManager, 'record')
+    animationEndReceived = vi.fn()
   })
 
   it('has initial state', () => {

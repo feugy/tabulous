@@ -10,7 +10,7 @@ describe('IndicatorManager', () => {
     scene = created.scene
   })
 
-  beforeEach(jest.resetAllMocks)
+  beforeEach(vi.resetAllMocks)
 
   it('has initial state', async () => {
     expect(manager.onChangeObservable).toBeDefined()
@@ -26,7 +26,7 @@ describe('IndicatorManager', () => {
 
   describe('given initialised', () => {
     let mesh
-    const changeReceived = jest.fn()
+    const changeReceived = vi.fn()
 
     beforeAll(() => {
       manager.init({ scene })
@@ -296,7 +296,7 @@ describe('IndicatorManager', () => {
       expect(changeReceived).toHaveBeenCalledTimes(1)
       const changed = changeReceived.mock.calls[0][0]
       expect(changed).toHaveLength(indicators.length)
-      // do not compare mesh because Jest fail to serialize them
+      // do not compare mesh because vi fail to serialize them
       // eslint-disable-next-line no-unused-vars
       expect(changed).toMatchObject(indicators.map(({ mesh, ...rest }) => rest))
       changeReceived.mockReset()

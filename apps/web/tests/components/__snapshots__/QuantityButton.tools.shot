@@ -1,162 +1,187 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Default 1`] = `
-<span>
-  <span
-    aria-valuenow="1"
-    role="slider"
+<span
+  aria-valuenow="1"
+  class="s-6VEvz9s88k9v"
+  role="slider"
+>
+  <button
+    class="s-NMyTiX1zi6rz"
   >
-    <button>
+    <span
+      class="material-icons s-NMyTiX1zi6rz"
+    >
+      front_hand
+    </span>
+    
+    
+    
+    <strong
+      class="s-6VEvz9s88k9v"
+    >
+      1
+    </strong>
+  </button>
+  <!--&lt;Button&gt;-->
+   
+  <div
+    class="s-6VEvz9s88k9v"
+  >
+    <button
+      class="s-NMyTiX1zi6rz"
+      data-up="true"
+    >
       <span
-        class="material-icons"
+        class="material-icons s-NMyTiX1zi6rz"
       >
-        front_hand
+        arrow_drop_up
       </span>
       
       
       
-      <strong>
-        1
-      </strong>
     </button>
+    <!--&lt;Button&gt;-->
      
-    <div>
-      <button
-        data-up="true"
+    <button
+      class="s-NMyTiX1zi6rz"
+      data-down="true"
+    >
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
       >
-        <span
-          class="material-icons"
-        >
-          arrow_drop_up
-        </span>
-        
-        
-        
-      </button>
-       
-      <button
-        data-down="true"
-      >
-        <span
-          class="material-icons"
-        >
-          arrow_drop_down
-        </span>
-        
-        
-        
-      </button>
-    </div>
-  </span>
+        arrow_drop_down
+      </span>
+      
+      
+      
+    </button>
+    <!--&lt;Button&gt;-->
+  </div>
 </span>
 `;
 
 exports[`Disabled 1`] = `
-<span>
-  <span
-    aria-valuenow="1"
-    role="slider"
+<span
+  aria-valuenow="1"
+  class="s-6VEvz9s88k9v"
+  role="slider"
+>
+  <button
+    class="s-NMyTiX1zi6rz"
+    disabled=""
+  >
+    <span
+      class="material-icons s-NMyTiX1zi6rz"
+    >
+      stop
+    </span>
+    
+    
+    
+    <strong
+      class="s-6VEvz9s88k9v"
+    >
+      1
+    </strong>
+  </button>
+  <!--&lt;Button&gt;-->
+   
+  <div
+    class="s-6VEvz9s88k9v"
   >
     <button
+      class="s-NMyTiX1zi6rz"
+      data-up="true"
       disabled=""
     >
       <span
-        class="material-icons"
+        class="material-icons s-NMyTiX1zi6rz"
       >
-        stop
+        arrow_drop_up
       </span>
       
       
       
-      <strong>
-        1
-      </strong>
     </button>
+    <!--&lt;Button&gt;-->
      
-    <div>
-      <button
-        data-up="true"
-        disabled=""
+    <button
+      class="s-NMyTiX1zi6rz"
+      data-down="true"
+      disabled=""
+    >
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
       >
-        <span
-          class="material-icons"
-        >
-          arrow_drop_up
-        </span>
-        
-        
-        
-      </button>
-       
-      <button
-        data-down="true"
-        disabled=""
-      >
-        <span
-          class="material-icons"
-        >
-          arrow_drop_down
-        </span>
-        
-        
-        
-      </button>
-    </div>
-  </span>
+        arrow_drop_down
+      </span>
+      
+      
+      
+    </button>
+    <!--&lt;Button&gt;-->
+  </div>
 </span>
 `;
 
 exports[`Secondary 1`] = `
-<span>
-  <span
-    aria-valuenow="1"
-    role="slider"
+<span
+  aria-valuenow="1"
+  class="s-6VEvz9s88k9v"
+  role="slider"
+>
+  <button
+    class="secondary s-NMyTiX1zi6rz"
+  >
+    <span
+      class="material-icons s-NMyTiX1zi6rz"
+    >
+      send
+    </span>
+    
+    
+    
+    <strong
+      class="s-6VEvz9s88k9v"
+    >
+      1
+    </strong>
+  </button>
+  <!--&lt;Button&gt;-->
+   
+  <div
+    class="s-6VEvz9s88k9v"
   >
     <button
-      class="secondary"
+      class="secondary s-NMyTiX1zi6rz"
+      data-up="true"
     >
       <span
-        class="material-icons"
+        class="material-icons s-NMyTiX1zi6rz"
       >
-        send
+        arrow_drop_up
       </span>
       
       
       
-      <strong>
-        1
-      </strong>
     </button>
+    <!--&lt;Button&gt;-->
      
-    <div>
-      <button
-        class="secondary"
-        data-up="true"
+    <button
+      class="secondary s-NMyTiX1zi6rz"
+      data-down="true"
+    >
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
       >
-        <span
-          class="material-icons"
-        >
-          arrow_drop_up
-        </span>
-        
-        
-        
-      </button>
-       
-      <button
-        class="secondary"
-        data-down="true"
-      >
-        <span
-          class="material-icons"
-        >
-          arrow_drop_down
-        </span>
-        
-        
-        
-      </button>
-    </div>
-  </span>
+        arrow_drop_down
+      </span>
+      
+      
+      
+    </button>
+    <!--&lt;Button&gt;-->
+  </div>
 </span>
 `;

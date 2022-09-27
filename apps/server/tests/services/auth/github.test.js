@@ -1,5 +1,4 @@
 import { faker } from '@faker-js/faker'
-import { jest } from '@jest/globals'
 import { MockAgent, setGlobalDispatcher } from 'undici'
 import { githubAuth } from '../../../src/services/auth/github.js'
 
@@ -64,10 +63,10 @@ describe('Github authentication service', () => {
     })
 
     describe('authenticateUser()', () => {
-      const accessTokenInvoked = jest.fn()
-      const userInvoked = jest.fn()
+      const accessTokenInvoked = vi.fn()
+      const userInvoked = vi.fn()
 
-      beforeEach(jest.resetAllMocks)
+      beforeEach(vi.resetAllMocks)
 
       it('returns user details', async () => {
         const location = faker.internet.url()

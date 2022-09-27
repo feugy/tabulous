@@ -135,7 +135,9 @@ describe('Abstract repository', () => {
         { id: faker.datatype.uuid(), baz: faker.lorem.word() }
       ]
 
-      beforeEach(() => repository.save(models))
+      beforeEach(() => {
+        repository.save(models)
+      })
 
       describe('save()', () => {
         it('updates an existing model', async () => {

@@ -45,5 +45,14 @@ export default defineConfig(({ mode }) => ({
     proxy: { 'http://localhost:3000': 'http://localhost:3000' },
     port: 3000,
     strictPort: true
+  },
+  test: {
+    include: ['**/*.test.js'],
+    deps: {
+      inline: ['msw', 'svelte-hyperscript', 'whatwg-fetch']
+    },
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['tests/setup']
   }
 }))

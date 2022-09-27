@@ -17,11 +17,11 @@ import {
 import * as gameEngine from '../../src/stores/game-engine'
 import { configures3dTestEngine, sleep } from '../test-utils'
 
-jest.mock('../../src/3d')
-jest.mock('../../src/stores/peer-channels', () => {
+vi.mock('../../src/3d')
+vi.mock('../../src/stores/peer-channels', () => {
   const { BehaviorSubject, Subject } = require('rxjs')
   return {
-    send: jest.fn(),
+    send: vi.fn(),
     connected: new BehaviorSubject(),
     lastMessageReceived: new Subject({})
   }
@@ -35,18 +35,18 @@ let pruneUnusedPointers
 let handManagerApplyDraw
 
 beforeAll(() => {
-  saveCamera = jest.spyOn(cameraManager, 'save')
-  restoreCamera = jest.spyOn(cameraManager, 'restore')
-  loadCameraSaves = jest.spyOn(cameraManager, 'loadSaves')
-  registerPointerIndicator = jest.spyOn(
+  saveCamera = vi.spyOn(cameraManager, 'save')
+  restoreCamera = vi.spyOn(cameraManager, 'restore')
+  loadCameraSaves = vi.spyOn(cameraManager, 'loadSaves')
+  registerPointerIndicator = vi.spyOn(
     indicatorManager,
     'registerPointerIndicator'
   )
-  pruneUnusedPointers = jest.spyOn(indicatorManager, 'pruneUnusedPointers')
-  handManagerApplyDraw = jest.spyOn(handManager, 'applyDraw')
+  pruneUnusedPointers = vi.spyOn(indicatorManager, 'pruneUnusedPointers')
+  handManagerApplyDraw = vi.spyOn(handManager, 'applyDraw')
 })
 
-beforeEach(jest.resetAllMocks)
+beforeEach(vi.resetAllMocks)
 
 describe('initEngine()', () => {
   let subscriptions
@@ -55,14 +55,14 @@ describe('initEngine()', () => {
   const canvas = document.createElement('canvas')
   const interaction = document.createElement('div')
   const overlay = document.createElement('div')
-  const receiveAction = jest.fn()
-  const receiveMeshDetail = jest.fn()
-  const receiveCameraSave = jest.fn()
-  const receiveCurrentCamera = jest.fn()
-  const receiveLongInput = jest.fn()
-  const receiveHandChange = jest.fn()
-  const receiveHighlightHand = jest.fn()
-  const receiveHandVisible = jest.fn()
+  const receiveAction = vi.fn()
+  const receiveMeshDetail = vi.fn()
+  const receiveCameraSave = vi.fn()
+  const receiveCurrentCamera = vi.fn()
+  const receiveLongInput = vi.fn()
+  const receiveHandChange = vi.fn()
+  const receiveHighlightHand = vi.fn()
+  const receiveHandVisible = vi.fn()
 
   configures3dTestEngine(created => {
     scene = created.scene
@@ -90,7 +90,7 @@ describe('initEngine()', () => {
     beforeEach(() => {
       engine = create3DEngineMock()
       createEngine.mockReturnValueOnce(engine)
-      engine.serialize = jest.fn()
+      engine.serialize = vi.fn()
     })
 
     afterEach(() => {
@@ -318,7 +318,7 @@ function create3DEngineMock() {
     onEndFrameObservable: new Observable(),
     onDisposeObservable: new Observable(),
     onLoadingObservable: new Observable(),
-    getFps: jest.fn(),
-    start: jest.fn()
+    getFps: vi.fn(),
+    start: vi.fn()
   }
 }

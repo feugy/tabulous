@@ -112,9 +112,9 @@ describe('MaterialManager', () => {
 
     describe('clear()', () => {
       it('disposes textures and materials', () => {
-        const disposeBoxMaterial = jest.fn()
-        const disposeBoxTexture = jest.fn()
-        const disposeHandBoxMaterial = jest.fn()
+        const disposeBoxMaterial = vi.fn()
+        const disposeBoxTexture = vi.fn()
+        const disposeHandBoxMaterial = vi.fn()
         const texture = faker.internet.url()
         const color = '#ff6600ff'
         manager.configure(box, texture)
@@ -217,7 +217,9 @@ describe('MaterialManager', () => {
           engine._webGLVersion = 2.0
         })
 
-        afterEach(() => (engine._webGLVersion = version))
+        afterEach(() => {
+          engine._webGLVersion = version
+        })
 
         it.each([
           {
@@ -343,8 +345,8 @@ describe('MaterialManager', () => {
 
     describe('clear()', () => {
       it('disposes textures and materials', () => {
-        const disposeBoxMaterial = jest.fn()
-        const disposeBoxTexture = jest.fn()
+        const disposeBoxMaterial = vi.fn()
+        const disposeBoxTexture = vi.fn()
         const texture = faker.internet.url()
         const color = '#ff6600ff'
         manager.configure(box, texture)

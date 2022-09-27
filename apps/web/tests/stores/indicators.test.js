@@ -16,14 +16,13 @@ import {
   visibleIndicators as visibleIndicators$
 } from '../../src/stores/indicators'
 import { AnchorBehaviorName, StackBehaviorName } from '../../src/3d/behaviors'
-import { indicatorManager, selectionManager } from '../../src/3d/managers'
+import { indicatorManager } from '../../src/3d/managers/indicator'
+import { selectionManager } from '../../src/3d/managers/selection'
 
-jest.mock('../../src/stores/game-engine', () => {
-  const { BehaviorSubject } = require('rxjs')
-  const {
-    indicatorManager,
-    selectionManager
-  } = require('../../src/3d/managers')
+vi.mock('../../src/stores/game-engine', async () => {
+  const { BehaviorSubject } = await import('rxjs')
+  const { indicatorManager } = await import('../../src/3d/managers/indicator')
+  const { selectionManager } = await import('../../src/3d/managers/selection')
   const indicators = new BehaviorSubject([])
   const selectedMeshes = new BehaviorSubject(new Set())
   indicatorManager.onChangeObservable.add(indicators.next.bind(indicators))
@@ -37,8 +36,8 @@ jest.mock('../../src/stores/game-engine', () => {
   }
 })
 
-jest.mock('../../src/stores/game-manager', () => {
-  const { BehaviorSubject } = require('rxjs')
+vi.mock('../../src/stores/game-manager', async () => {
+  const { BehaviorSubject } = await import('rxjs')
   return { gamePlayerById: new BehaviorSubject(new Map()) }
 })
 
@@ -451,7 +450,7 @@ describe('Indicators store', () => {
   }
 
   async function notifyHandResize(height) {
-    jest.spyOn(window, 'getComputedStyle').mockImplementation(node => ({
+    vi.spyOn(window, 'getComputedStyle').mockImplementation(node => ({
       height: `${node === canvas ? renderHeight : height}px`
     }))
     window.resizeObservers[0].notify()

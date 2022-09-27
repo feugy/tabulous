@@ -1,37 +1,43 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`With labels 1`] = `
-<span>
-  <span
-    aria-haspopup="menu"
-    class="wrapper"
+<span
+  aria-haspopup="menu"
+  class="wrapper s-JM3fRWrV7jJU"
+>
+  <fieldset
+    class="s-Fe6WNbR-55zp"
   >
-    <fieldset>
-       
-      <input
-        type="text"
-      />
-    </fieldset>
      
-    
-  </span>
+    <input
+      class="s-Fe6WNbR-55zp"
+      type="text"
+    />
+  </fieldset>
+  <!--&lt;Input&gt;-->
+   
+  
+  <!--&lt;Menu&gt;-->
 </span>
 `;
 
 exports[`With objects 1`] = `
-<span>
-  <span
-    aria-haspopup="menu"
-    class="wrapper"
+<span
+  aria-haspopup="menu"
+  class="wrapper s-JM3fRWrV7jJU"
+>
+  <fieldset
+    class="s-Fe6WNbR-55zp"
   >
-    <fieldset>
-       
-      <input
-        type="text"
-      />
-    </fieldset>
      
-    
-  </span>
+    <input
+      class="s-Fe6WNbR-55zp"
+      type="text"
+    />
+  </fieldset>
+  <!--&lt;Input&gt;-->
+   
+  
+  <!--&lt;Menu&gt;-->
 </span>
 `;

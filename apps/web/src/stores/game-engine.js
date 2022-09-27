@@ -124,7 +124,7 @@ export const handVisible = engineLoading$.pipe(
  * @type {Observable<object[]>}
  */
 export const handMeshes = handSaves$.pipe(
-  map(() => engine$.value?.serialize().handMeshes)
+  map(() => engine$.value?.serialize()?.handMeshes)
 )
 
 /**

@@ -1,91 +1,93 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Avatar 1`] = `
-<span>
-  <figure
-    style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
-  >
-    <img
-      alt="avatar for Joe le clodo"
-      class="hasImage"
-      height="150"
-      src="default"
-      width="150"
-    />
-     
-  </figure>
-</span>
+<figure
+  class="s-engCJu8q-fNe"
+  style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+>
+  <img
+    alt="avatar for Joe le clodo"
+    class="s-engCJu8q-fNe hasImage"
+    height="150"
+    src="/tests/components/avatar.png"
+    width="150"
+  />
+   
+</figure>
 `;
 
 exports[`Positioned text 1`] = `
-<span>
-  <figure
-    class="positioned colored"
-    style="--dimension: 60px; --color: red; --top: -50px; --left: 0px; --border-width: 3px"
+<figure
+  class="s-engCJu8q-fNe positioned colored"
+  style="--dimension: 60px; --color: red; --top: -50px; --left: 0px; --border-width: 3px"
+>
+  <img
+    alt="avatar for Joe le clodo"
+    class="s-engCJu8q-fNe"
+    height="60"
+    width="60"
+  />
+   
+  <figcaption
+    class="s-engCJu8q-fNe"
   >
-    <img
-      alt="avatar for Joe le clodo"
-      height="60"
-      width="60"
-    />
-     
-    <figcaption>
-      Joe le clodo
-    </figcaption>
-  </figure>
-</span>
+    Joe le clodo
+  </figcaption>
+</figure>
 `;
 
 exports[`Positionned avatar 1`] = `
-<span>
-  <figure
-    class="positioned colored"
-    style="--dimension: 60px; --color: lime; --top: -50px; --left: 0px; --border-width: 3px"
-  >
-    <img
-      alt="avatar for Joe le clodo"
-      class="hasImage"
-      height="60"
-      src="default"
-      width="60"
-    />
-     
-  </figure>
-</span>
+<figure
+  class="s-engCJu8q-fNe positioned colored"
+  style="--dimension: 60px; --color: lime; --top: -50px; --left: 0px; --border-width: 3px"
+>
+  <img
+    alt="avatar for Joe le clodo"
+    class="s-engCJu8q-fNe hasImage"
+    height="60"
+    src="/tests/components/avatar.png"
+    width="60"
+  />
+   
+</figure>
 `;
 
 exports[`Small text 1`] = `
-<span>
-  <figure
-    style="--dimension: 50px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+<figure
+  class="s-engCJu8q-fNe"
+  style="--dimension: 50px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+>
+  <img
+    alt="avatar for Joe le clodo"
+    class="s-engCJu8q-fNe"
+    height="50"
+    width="50"
+  />
+   
+  <figcaption
+    class="s-engCJu8q-fNe"
   >
-    <img
-      alt="avatar for Joe le clodo"
-      height="50"
-      width="50"
-    />
-     
-    <figcaption>
-      JLC
-    </figcaption>
-  </figure>
-</span>
+    JLC
+  </figcaption>
+</figure>
 `;
 
 exports[`Text 1`] = `
-<span>
-  <figure
-    style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+<figure
+  class="s-engCJu8q-fNe"
+  style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+>
+  <img
+    alt="avatar for Joe le clodo"
+    class="s-engCJu8q-fNe"
+    height="150"
+    width="150"
+  />
+   
+  <figcaption
+    class="s-engCJu8q-fNe"
   >
-    <img
-      alt="avatar for Joe le clodo"
-      height="150"
-      width="150"
-    />
-     
-    <figcaption>
-      Joe le clodo
-    </figcaption>
-  </figure>
-</span>
+    Joe le clodo
+  </figcaption>
+</figure>
 `;

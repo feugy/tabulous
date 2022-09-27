@@ -15,12 +15,12 @@ import { mockLogger } from '../utils.js'
 
 describe('Media Stream store', () => {
   const logger = mockLogger('stream')
-  const camerasReceived = jest.fn()
-  const currentCameraReceived = jest.fn()
-  const currentMicReceived = jest.fn()
-  const micsReceived = jest.fn()
-  const streamReceived = jest.fn()
-  const localStreamChangeReceived = jest.fn()
+  const camerasReceived = vi.fn()
+  const currentCameraReceived = vi.fn()
+  const currentMicReceived = vi.fn()
+  const micsReceived = vi.fn()
+  const streamReceived = vi.fn()
+  const localStreamChangeReceived = vi.fn()
   const noMediaMessage = 'does not support media devices'
   const unauthorizedMediaMessage = 'Failed to access media devices'
   let subscriptions
@@ -36,7 +36,7 @@ describe('Media Stream store', () => {
     ]
   })
 
-  beforeEach(jest.resetAllMocks)
+  beforeEach(vi.resetAllMocks)
 
   afterAll(() => {
     for (const subscription of subscriptions) {
@@ -102,11 +102,9 @@ describe('Media Stream store', () => {
   describe('given acquireMediaStream() got unauthorized media', () => {
     beforeEach(async () => {
       navigator.mediaDevices = {
-        addEventListener: jest.fn(),
-        enumerateDevices: jest
-          .fn()
-          .mockRejectedValue(new Error('unauthorized')),
-        getUserMedia: jest.fn().mockRejectedValue(new Error('unauthorized'))
+        addEventListener: vi.fn(),
+        enumerateDevices: vi.fn().mockRejectedValue(new Error('unauthorized')),
+        getUserMedia: vi.fn().mockRejectedValue(new Error('unauthorized'))
       }
       await acquireMediaStream()
     })
@@ -154,7 +152,7 @@ describe('Media Stream store', () => {
   describe('given acquireMediaStream() got authorized media', () => {
     const stream = {
       id: faker.datatype.uuid(),
-      getTracks: jest.fn()
+      getTracks: vi.fn()
     }
 
     const devices = [
@@ -172,9 +170,9 @@ describe('Media Stream store', () => {
     beforeEach(async () => {
       releaseMediaStream()
       navigator.mediaDevices = {
-        addEventListener: jest.fn(),
-        enumerateDevices: jest.fn().mockResolvedValue(devices),
-        getUserMedia: jest.fn().mockResolvedValue(stream)
+        addEventListener: vi.fn(),
+        enumerateDevices: vi.fn().mockResolvedValue(devices),
+        getUserMedia: vi.fn().mockResolvedValue(stream)
       }
       localStorage.clear()
       await acquireMediaStream()
@@ -194,7 +192,7 @@ describe('Media Stream store', () => {
     })
 
     it('uses desired camera', async () => {
-      jest.clearAllMocks()
+      vi.clearAllMocks()
       await acquireMediaStream(devices[1])
       expect(get(stream$)).toEqual(stream)
       expectCurrentMic(devices[3])
@@ -207,7 +205,7 @@ describe('Media Stream store', () => {
     })
 
     it('uses desired microphone', async () => {
-      jest.clearAllMocks()
+      vi.clearAllMocks()
       await acquireMediaStream(devices[4])
       expect(get(stream$)).toEqual(stream)
       expectCurrentMic(devices[4])
@@ -220,7 +218,7 @@ describe('Media Stream store', () => {
     })
 
     it('reuses last microphone and camera', async () => {
-      jest.clearAllMocks()
+      vi.clearAllMocks()
       localStorage.lastCameraId = devices[1].deviceId
       localStorage.lastMicId = devices[4].deviceId
       await acquireMediaStream()
@@ -235,7 +233,7 @@ describe('Media Stream store', () => {
     })
 
     it(`defaults to first device when last can't be found`, async () => {
-      jest.clearAllMocks()
+      vi.clearAllMocks()
       localStorage.lastCameraId = faker.datatype.uuid()
       localStorage.lastMicId = faker.datatype.uuid()
       await acquireMediaStream()
@@ -258,7 +256,7 @@ describe('Media Stream store', () => {
       beforeEach(() => acquireMediaStream())
 
       it('resets all', () => {
-        const tracks = [{ stop: jest.fn() }, { stop: jest.fn() }]
+        const tracks = [{ stop: vi.fn() }, { stop: vi.fn() }]
         stream.getTracks.mockReturnValue(tracks)
         releaseMediaStream()
         expect(tracks[0].stop).toHaveBeenCalledTimes(1)

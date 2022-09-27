@@ -3,7 +3,6 @@ import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
 import { BehaviorSubject } from 'rxjs'
 import { get } from 'svelte/store'
-import { MoveBehavior } from '../../src/3d/behaviors'
 import {
   cameraManager,
   controlManager,
@@ -21,7 +20,9 @@ import {
 } from '../../src/utils/game-interaction'
 import { configures3dTestEngine, sleep } from '../test-utils'
 
-jest.mock('../../src/3d/managers/camera')
+vi.mock('../../src/3d/managers/camera')
+
+let MoveBehavior
 
 describe('Game interaction model', () => {
   let engine
@@ -35,6 +36,10 @@ describe('Game interaction model', () => {
     moveManager.init(created)
     selectionManager.init(created)
     engine = created.engine
+  })
+
+  beforeAll(async () => {
+    ;({ MoveBehavior } = await import('../../src/3d/behaviors/movable'))
   })
 
   beforeEach(() => {
@@ -60,7 +65,7 @@ describe('Game interaction model', () => {
     meshes[8].metadata.quantity = 2
     selectionManager.clear()
     createTable()
-    jest.resetAllMocks()
+    vi.resetAllMocks()
   })
 
   describe('computeMenuProps()', () => {
@@ -653,20 +658,19 @@ describe('Game interaction model', () => {
       ['k', ['unknown']]
     ])
 
-    beforeAll(
-      () =>
-        (subscriptions = attachInputs({
-          engine,
-          actionIdsByKey,
-          doubleTapDelay,
-          actionMenuProps$
-        }))
-    )
+    beforeAll(() => {
+      subscriptions = attachInputs({
+        engine,
+        actionIdsByKey,
+        doubleTapDelay,
+        actionMenuProps$
+      })
+    })
 
     beforeEach(() => {
       actionMenuProps$.next()
-      drawSelectionBox = jest.spyOn(selectionManager, 'drawSelectionBox')
-      selectWithinBox = jest.spyOn(selectionManager, 'selectWithinBox')
+      drawSelectionBox = vi.spyOn(selectionManager, 'drawSelectionBox')
+      selectWithinBox = vi.spyOn(selectionManager, 'selectWithinBox')
     })
 
     afterAll(() => {
@@ -1426,22 +1430,22 @@ function buildMesh(data) {
   const mesh = CreateBox(data.id, data)
   mesh.addBehavior(new MoveBehavior(), true)
   mesh.metadata = {
-    detail: jest.fn(),
-    flip: jest.fn(),
-    rotate: jest.fn(),
-    push: jest.fn(),
-    canPush: jest.fn(),
-    pop: jest.fn(),
-    reorder: jest.fn(),
-    flipAll: jest.fn(),
-    draw: jest.fn(),
-    snap: jest.fn(),
-    unsnap: jest.fn(),
-    unsnapAll: jest.fn(),
-    toggleLock: jest.fn(),
-    increment: jest.fn(),
-    decrement: jest.fn(),
-    canIncrement: jest.fn()
+    detail: vi.fn(),
+    flip: vi.fn(),
+    rotate: vi.fn(),
+    push: vi.fn(),
+    canPush: vi.fn(),
+    pop: vi.fn(),
+    reorder: vi.fn(),
+    flipAll: vi.fn(),
+    draw: vi.fn(),
+    snap: vi.fn(),
+    unsnap: vi.fn(),
+    unsnapAll: vi.fn(),
+    toggleLock: vi.fn(),
+    increment: vi.fn(),
+    decrement: vi.fn(),
+    canIncrement: vi.fn()
   }
   return mesh
 }

@@ -2,17 +2,15 @@ import { Animation } from '@babylonjs/core/Animations/animation.js'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder.js'
 import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder.js'
-import {
-  AnchorBehavior,
-  DetailBehavior,
-  DrawBehavior,
-  FlipBehavior,
-  LockBehavior,
-  MoveBehavior,
-  QuantityBehavior,
-  RotateBehavior,
-  StackBehavior
-} from '../behaviors'
+import { AnchorBehavior } from '../behaviors/anchorable'
+import { DetailBehavior } from '../behaviors/detailable'
+import { DrawBehavior } from '../behaviors/drawable'
+import { FlipBehavior } from '../behaviors/flippable'
+import { LockBehavior } from '../behaviors/lockable'
+import { MoveBehavior } from '../behaviors/movable'
+import { QuantityBehavior } from '../behaviors/quantifiable'
+import { RotateBehavior } from '../behaviors/rotable'
+import { StackBehavior } from '../behaviors/stackable'
 import {
   AnchorBehaviorName,
   AnimateBehaviorName,

@@ -8,12 +8,12 @@ import InvitePlayerDialogue from '../../src/connected-components/InvitePlayerDia
 import { invite, searchPlayers } from '../../src/stores'
 import { sleep } from '../../src/utils'
 
-jest.mock('../../src/stores', () => {
-  return { invite: jest.fn(), searchPlayers: jest.fn() }
+vi.mock('../../src/stores', () => {
+  return { invite: vi.fn(), searchPlayers: vi.fn() }
 })
 
 describe('InvitePlayerDialogue connected component', () => {
-  beforeEach(jest.resetAllMocks)
+  beforeEach(vi.resetAllMocks)
   const name = faker.name.firstName()
   const game = { id: faker.datatype.uuid(), players: [] }
   const candidates = [

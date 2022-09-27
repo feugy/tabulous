@@ -5,11 +5,11 @@ import { sleep } from '../../src/utils/index.js'
 import { extractText } from '../test-utils'
 
 describe('Dropdown component', () => {
-  const handleClose = jest.fn()
-  const handleSelect = jest.fn()
-  const handleClick = jest.fn()
+  const handleClose = vi.fn()
+  const handleSelect = vi.fn()
+  const handleClick = vi.fn()
 
-  beforeEach(jest.resetAllMocks)
+  beforeEach(vi.resetAllMocks)
 
   function renderComponent(props = {}) {
     return render(
