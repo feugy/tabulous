@@ -1,209 +1,229 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`A few items 1`] = `
-<aside
-  class="s-rtlBPQxKceeD"
-  role="menu"
-  style="left: 25%; top: 25%; --size:100px;"
->
-  <ul
+HTMLCollection [
+  <aside
     class="s-rtlBPQxKceeD"
+    role="menu"
+    style="left: 25%; top: 25%; --size:100px;"
   >
-    <li
+    <ul
       class="s-rtlBPQxKceeD"
-      style="animation: __svelte_397341122_0 150ms linear 0ms 1 both;"
     >
-      <button
-        class="s-NMyTiX1zi6rz"
+      <li
+        class="s-rtlBPQxKceeD"
+        style="animation: __svelte_397341122_0 150ms linear 0ms 1 both;"
       >
-        <span
-          class="material-icons s-NMyTiX1zi6rz"
+        <button
+          class="s-NMyTiX1zi6rz"
         >
-          home
-        </span>
-        
-        
-        
-      </button>
-      <!--&lt;Button&gt;-->
-       
-    </li>
-    
-    <li
-      class="s-rtlBPQxKceeD"
-      style="animation: __svelte_2962324507_0 150ms linear 112.5ms 1 both;"
-    >
-      <button
-        class="secondary s-NMyTiX1zi6rz"
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            home
+          </span>
+          
+          
+          
+        </button>
+        <!--&lt;Button&gt;-->
+         
+      </li>
+      
+      <li
+        class="s-rtlBPQxKceeD"
+        style="animation: __svelte_2962324507_0 150ms linear 112.5ms 1 both;"
       >
-        <span
-          class="material-icons s-NMyTiX1zi6rz"
+        <button
+          class="secondary s-NMyTiX1zi6rz"
         >
-          settings
-        </span>
-        
-        
-        
-      </button>
-      <!--&lt;Button&gt;-->
-       
-    </li>
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            settings
+          </span>
+          
+          
+          
+        </button>
+        <!--&lt;Button&gt;-->
+         
+      </li>
+      
+    </ul>
+     
+  </aside>,
+  <button
+    class="s-NMyTiX1zi6rz"
+  >
     
-  </ul>
-   
-</aside>
+    
+    
+    Close
+  </button>,
+]
 `;
 
 exports[`More items 1`] = `
-<aside
-  class="s-rtlBPQxKceeD"
-  role="menu"
-  style="left: 25%; top: 25%; --size:150px;"
->
-  <ul
+HTMLCollection [
+  <aside
     class="s-rtlBPQxKceeD"
+    role="menu"
+    style="left: 25%; top: 25%; --size:150px;"
   >
-    <li
+    <ul
       class="s-rtlBPQxKceeD"
-      style="animation: __svelte_3871932778_0 150ms linear 0ms 1 both;"
     >
-      <button
-        class="s-NMyTiX1zi6rz"
+      <li
+        class="s-rtlBPQxKceeD"
+        style="animation: __svelte_3871932778_0 150ms linear 0ms 1 both;"
       >
-        <span
-          class="material-icons s-NMyTiX1zi6rz"
+        <button
+          class="s-NMyTiX1zi6rz"
         >
-          home
-        </span>
-        
-        
-        
-      </button>
-      <!--&lt;Button&gt;-->
-       
-    </li>
-    
-    <li
-      class="s-rtlBPQxKceeD"
-      style="animation: __svelte_3040732129_0 150ms linear 112.5ms 1 both;"
-    >
-      <button
-        class="secondary s-NMyTiX1zi6rz"
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            home
+          </span>
+          
+          
+          
+        </button>
+        <!--&lt;Button&gt;-->
+         
+      </li>
+      
+      <li
+        class="s-rtlBPQxKceeD"
+        style="animation: __svelte_3040732129_0 150ms linear 112.5ms 1 both;"
       >
-        <span
-          class="material-icons s-NMyTiX1zi6rz"
+        <button
+          class="secondary s-NMyTiX1zi6rz"
         >
-          settings
-        </span>
-        
-        
-        
-      </button>
-      <!--&lt;Button&gt;-->
-       
-    </li>
-    
-    <li
-      class="s-rtlBPQxKceeD"
-      style="animation: __svelte_1023368731_0 150ms linear 225ms 1 both;"
-    >
-      <button
-        class="secondary s-NMyTiX1zi6rz"
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            settings
+          </span>
+          
+          
+          
+        </button>
+        <!--&lt;Button&gt;-->
+         
+      </li>
+      
+      <li
+        class="s-rtlBPQxKceeD"
+        style="animation: __svelte_1023368731_0 150ms linear 225ms 1 both;"
       >
-        <span
-          class="material-icons s-NMyTiX1zi6rz"
+        <button
+          class="secondary s-NMyTiX1zi6rz"
         >
-          face
-        </span>
-        
-        
-        
-      </button>
-      <!--&lt;Button&gt;-->
-       
-    </li>
-    
-    <li
-      class="s-rtlBPQxKceeD"
-      style="animation: __svelte_3264121526_0 150ms linear 337.5ms 1 both;"
-    >
-      <button
-        class="s-NMyTiX1zi6rz"
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            face
+          </span>
+          
+          
+          
+        </button>
+        <!--&lt;Button&gt;-->
+         
+      </li>
+      
+      <li
+        class="s-rtlBPQxKceeD"
+        style="animation: __svelte_3264121526_0 150ms linear 337.5ms 1 both;"
       >
-        <span
-          class="material-icons s-NMyTiX1zi6rz"
+        <button
+          class="s-NMyTiX1zi6rz"
         >
-          lock
-        </span>
-        
-        
-        
-      </button>
-      <!--&lt;Button&gt;-->
-       
-    </li>
-    
-    <li
-      class="s-rtlBPQxKceeD"
-      style="animation: __svelte_4053772584_0 150ms linear 450ms 1 both;"
-    >
-      <button
-        class="s-NMyTiX1zi6rz"
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            lock
+          </span>
+          
+          
+          
+        </button>
+        <!--&lt;Button&gt;-->
+         
+      </li>
+      
+      <li
+        class="s-rtlBPQxKceeD"
+        style="animation: __svelte_4053772584_0 150ms linear 450ms 1 both;"
       >
-        <span
-          class="material-icons s-NMyTiX1zi6rz"
+        <button
+          class="s-NMyTiX1zi6rz"
         >
-          flip
-        </span>
-        
-        
-        
-      </button>
-      <!--&lt;Button&gt;-->
-       
-    </li>
-    
-    <li
-      class="s-rtlBPQxKceeD"
-      style="animation: __svelte_756247263_0 150ms linear 562.5ms 1 both;"
-    >
-      <button
-        class="s-NMyTiX1zi6rz"
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            flip
+          </span>
+          
+          
+          
+        </button>
+        <!--&lt;Button&gt;-->
+         
+      </li>
+      
+      <li
+        class="s-rtlBPQxKceeD"
+        style="animation: __svelte_756247263_0 150ms linear 562.5ms 1 both;"
       >
-        <span
-          class="material-icons s-NMyTiX1zi6rz"
+        <button
+          class="s-NMyTiX1zi6rz"
         >
-          shuffle
-        </span>
-        
-        
-        
-      </button>
-      <!--&lt;Button&gt;-->
-       
-    </li>
-    
-    <li
-      class="s-rtlBPQxKceeD"
-      style="animation: __svelte_2867527063_0 150ms linear 675ms 1 both;"
-    >
-      <button
-        class="s-NMyTiX1zi6rz"
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            shuffle
+          </span>
+          
+          
+          
+        </button>
+        <!--&lt;Button&gt;-->
+         
+      </li>
+      
+      <li
+        class="s-rtlBPQxKceeD"
+        style="animation: __svelte_2867527063_0 150ms linear 675ms 1 both;"
       >
-        <span
-          class="material-icons s-NMyTiX1zi6rz"
+        <button
+          class="s-NMyTiX1zi6rz"
         >
-          rotate_left
-        </span>
-        
-        
-        
-      </button>
-      <!--&lt;Button&gt;-->
-       
-    </li>
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            rotate_left
+          </span>
+          
+          
+          
+        </button>
+        <!--&lt;Button&gt;-->
+         
+      </li>
+      
+    </ul>
+     
+  </aside>,
+  <button
+    class="s-NMyTiX1zi6rz"
+  >
     
-  </ul>
-   
-</aside>
+    
+    
+    Close
+  </button>,
+]
 `;

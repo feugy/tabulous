@@ -1,43 +1,33 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`No value 1`] = `
-<span
-  class="s-XkPssRjFbj8C"
+<fieldset
+  class="s-Fe6WNbR-55zp"
 >
-  <fieldset
+  <legend
     class="s-Fe6WNbR-55zp"
   >
-    <legend
-      class="s-Fe6WNbR-55zp"
-    >
-      Please enter value
-    </legend>
-     
-    <input
-      class="s-Fe6WNbR-55zp"
-    />
-  </fieldset>
-  <!--&lt;Input&gt;-->
-</span>
+    Please enter value
+  </legend>
+   
+  <input
+    class="s-Fe6WNbR-55zp"
+  />
+</fieldset>
 `;
 
 exports[`With initial value 1`] = `
-<span
-  class="s-XkPssRjFbj8C"
+<fieldset
+  class="s-Fe6WNbR-55zp"
 >
-  <fieldset
-    class="s-Fe6WNbR-55zp"
+  <legend
+    class="s-Fe6WNbR-55zp has-value"
   >
-    <legend
-      class="s-Fe6WNbR-55zp has-value"
-    >
-      Please enter value
-    </legend>
-     
-    <input
-      class="s-Fe6WNbR-55zp"
-    />
-  </fieldset>
-  <!--&lt;Input&gt;-->
-</span>
+    Please enter value
+  </legend>
+   
+  <input
+    class="s-Fe6WNbR-55zp"
+  />
+</fieldset>
 `;

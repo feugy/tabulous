@@ -112,9 +112,9 @@ importers:
 
   apps/web:
     specifiers:
-      '@atelier-wb/svelte': ^0.8.1
-      '@atelier-wb/toolshot': ^0.8.1
-      '@atelier-wb/vite-plugin-atelier': ^0.8.1
+      '@atelier-wb/svelte': ^0.9.0
+      '@atelier-wb/toolshot': ^0.9.0
+      '@atelier-wb/vite-plugin-atelier': ^0.9.0
       '@babylonjs/core': ^5.24.0
       '@babylonjs/inspector': ^5.24.0
       '@babylonjs/loaders': ^5.24.0
@@ -172,9 +172,9 @@ importers:
       whatwg-fetch: ^3.6.2
       wonka: ^6.1.0
     devDependencies:
-      '@atelier-wb/svelte': 0.8.1_svelte@3.50.1
-      '@atelier-wb/toolshot': 0.8.1_svelte@3.50.1
-      '@atelier-wb/vite-plugin-atelier': 0.8.1_vite@3.1.3
+      '@atelier-wb/svelte': 0.9.0_svelte@3.50.1
+      '@atelier-wb/toolshot': 0.9.0_svelte@3.50.1
+      '@atelier-wb/vite-plugin-atelier': 0.9.0_vite@3.1.3
       '@babylonjs/core': 5.25.0
       '@babylonjs/inspector': 5.25.0_f3q23tanie4ucxh42l7o3d25m4
       '@babylonjs/loaders': 5.25.0_@babylonjs+core@5.25.0
@@ -250,16 +250,16 @@ packages:
     resolution: {integrity: sha512-CQkeV+oJxUazwjlHD0/3ZD08QWKuGQkhnrKo3e6ly5pd48VUpXbb77q0xMU4+vc2CkJnDS02Eq/M9ugyX20XZA==}
     dev: true
 
-  /@atelier-wb/svelte/0.8.1_svelte@3.50.1:
-    resolution: {integrity: sha512-D0aXqkQGlxTTMVpjUep8/ZOmRgsIWLyKQCfMovu2SfUDQB2ttfKOTR57RR4830EktDnArbpG6tjFgXGMOfwUlQ==}
+  /@atelier-wb/svelte/0.9.0_svelte@3.50.1:
+    resolution: {integrity: sha512-DfLuJRuusJZ7Tma4CjjraEHI9qDJTD01W4l1g1sHsqtMpmS+aaHQ7Ii3utcIyFgUrZgatRn6aznfyKKR7eebQw==}
     peerDependencies:
       svelte: '>=3.44.3'
     dependencies:
       svelte: 3.50.1
     dev: true
 
-  /@atelier-wb/toolshot/0.8.1_svelte@3.50.1:
-    resolution: {integrity: sha512-t+60kByauwnJpMJrKC0WsTzgfMXfFShAb3Qqq8BLfOkjOGDir1Wv2z9KT8/Q6pI4bvS4eEcdxobWzF1JBNrtaA==}
+  /@atelier-wb/toolshot/0.9.0_svelte@3.50.1:
+    resolution: {integrity: sha512-omatpHmop9wUKbOTRUtX8sZu18Nssenq7FOTj1OlrYvffZ3Txq7WSIJcbPk1pg/K7bo9DGlE6/8zXH9DRl7EXA==}
     peerDependencies:
       svelte: '>=3.50.0'
     dependencies:
@@ -286,16 +286,16 @@ packages:
       - utf-8-validate
     dev: true
 
-  /@atelier-wb/ui/0.8.1:
-    resolution: {integrity: sha512-beSAiCtVd8ismWPQOfFJYZ4Zcot4qVPxdcN/RrYkTQBX5VKfJv0WLKbxExK/kwuxWQBwt+kfASH+KY7L1W8t4w==}
+  /@atelier-wb/ui/0.9.0:
+    resolution: {integrity: sha512-1eGE7skZze8Ms6T34a9iX31v/XfUpafC1WRPt7W6+XzKzqDExDyjLzuRS3yKeaOWSQ8PQTreCE+hB6HpROuZvw==}
     dev: true
 
-  /@atelier-wb/vite-plugin-atelier/0.8.1_vite@3.1.3:
-    resolution: {integrity: sha512-kR9gByppBU/EnYw/ovt4U8XMvJN8x84wLQ7KUP/PDcsjraJmW6blY/KKZIbLH6ffG4gruFXprTDUg7idisEAUA==}
+  /@atelier-wb/vite-plugin-atelier/0.9.0_vite@3.1.3:
+    resolution: {integrity: sha512-sBzOmXOXCKZ5/k2xhTA0o15d62UONPvUUQ+oBQQFuiHpZANlKbmHaqbYCeJsTbVLwu14zRc/Tq/q2POI/13RjQ==}
     peerDependencies:
       vite: '>=3.1.0'
     dependencies:
-      '@atelier-wb/ui': 0.8.1
+      '@atelier-wb/ui': 0.9.0
       ajv: 8.11.0
       sirv: 2.0.2
       vite: 3.1.3
@@ -727,7 +727,7 @@ packages:
     resolution: {integrity: sha512-IRnids8lblQ8e1i8h4JLyfJmebXE+ohcj8x8X/+Ew6ZB4H0Ui05z5YL6q5FOcl0zItVpu4adRzeyVNNUwmduIg==}
     dependencies:
       ajv: 8.11.0
-      ajv-formats: 2.1.1
+      ajv-formats: 2.1.1_ajv@8.11.0
       fast-uri: 2.1.0
 
   /@fastify/cors/8.1.0:
@@ -895,7 +895,7 @@ packages:
       '@jest/schemas': 29.0.0
       '@types/istanbul-lib-coverage': 2.0.4
       '@types/istanbul-reports': 3.0.1
-      '@types/node': 18.7.21
+      '@types/node': 18.7.22
       '@types/yargs': 17.0.13
       chalk: 4.1.2
     dev: true
@@ -1224,7 +1224,7 @@ packages:
   /@types/graceful-fs/4.1.5:
     resolution: {integrity: sha512-anKkLmZZ+xm4p8JWBf4hElkM4XR+EZeA2M9BAkkTldmcyDY4mbdIJnRghDJH3Ov5ooY7/UAoENtmdMSkaAd7Cw==}
     dependencies:
-      '@types/node': 18.7.21
+      '@types/node': 18.7.22
     dev: true
 
   /@types/istanbul-lib-coverage/2.0.4:
@@ -1264,6 +1264,10 @@ packages:
 
   /@types/node/18.7.22:
     resolution: {integrity: sha512-TsmoXYd4zrkkKjJB0URF/mTIKPl+kVcbqClB2F/ykU7vil1BfWZVndOnpEIozPv4fURD28gyPFeIkW2G+KXOvw==}
+    dev: true
+
+  /@types/node/18.7.23:
+    resolution: {integrity: sha512-DWNcCHolDq0ZKGizjx2DZjR/PqsYwAcYUJmfMWqtVU2MBMG5Mo+xFZrhGId5r/O5HOuMPyQEcM6KUBp5lBZZBg==}
     dev: true
 
   /@types/prettier/2.7.1:
@@ -1474,8 +1478,10 @@ packages:
       clean-stack: 2.2.0
       indent-string: 4.0.0
 
-  /ajv-formats/2.1.1:
+  /ajv-formats/2.1.1_ajv@8.11.0:
     resolution: {integrity: sha512-Wx0Kx52hxE7C18hkMEggYlEifqWZtYaRgouJor+WMdPnQyEK13vgEWyVNup7SoeeoLMsr4kf5h6dOW11I15MUA==}
+    peerDependencies:
+      ajv: ^8.0.0
     peerDependenciesMeta:
       ajv:
         optional: true
@@ -2830,7 +2836,7 @@ packages:
     dependencies:
       '@fastify/deepmerge': 1.1.0
       ajv: 8.11.0
-      ajv-formats: 2.1.1
+      ajv-formats: 2.1.1_ajv@8.11.0
       fast-deep-equal: 3.1.3
       fast-uri: 2.1.0
       rfdc: 1.3.0
@@ -3682,7 +3688,7 @@ packages:
     dependencies:
       '@jest/types': 29.0.3
       '@types/graceful-fs': 4.1.5
-      '@types/node': 18.7.21
+      '@types/node': 18.7.22
       anymatch: 3.1.2
       fb-watchman: 2.0.2
       graceful-fs: 4.2.10
@@ -3762,7 +3768,7 @@ packages:
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
     dependencies:
       '@jest/types': 29.0.3
-      '@types/node': 18.7.21
+      '@types/node': 18.7.22
       chalk: 4.1.2
       ci-info: 3.4.0
       graceful-fs: 4.2.10
@@ -3773,7 +3779,7 @@ packages:
     resolution: {integrity: sha512-Tl/YWUugQOjoTYwjKdfJWkSOfhufJHO5LhXTSZC3TRoQKO+fuXnZAdoXXBlpLXKGODBL3OvdUasfDD4PcMe6ng==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
     dependencies:
-      '@types/node': 18.7.21
+      '@types/node': 18.7.22
       merge-stream: 2.0.0
       supports-color: 8.1.1
     dev: true
@@ -5686,7 +5692,7 @@ packages:
     dependencies:
       '@types/chai': 4.3.3
       '@types/chai-subset': 1.3.3
-      '@types/node': 18.7.22
+      '@types/node': 18.7.23
       chai: 4.3.6
       debug: 4.3.4
       local-pkg: 0.4.2
@@ -5727,7 +5733,7 @@ packages:
     dependencies:
       '@types/chai': 4.3.3
       '@types/chai-subset': 1.3.3
-      '@types/node': 18.7.21
+      '@types/node': 18.7.22
       chai: 4.3.6
       debug: 4.3.4
       jsdom: 20.0.0

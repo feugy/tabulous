@@ -2,54 +2,42 @@
 
 exports[`With labels 1`] = `
 <span
-  class="s-XkPssRjFbj8C"
+  aria-haspopup="menu"
+  class="wrapper s-JM3fRWrV7jJU"
 >
-  <span
-    aria-haspopup="menu"
-    class="wrapper s-JM3fRWrV7jJU"
+  <fieldset
+    class="s-Fe6WNbR-55zp"
   >
-    <fieldset
-      class="s-Fe6WNbR-55zp"
-    >
-       
-      <input
-        class="s-Fe6WNbR-55zp"
-        type="text"
-      />
-    </fieldset>
-    <!--&lt;Input&gt;-->
      
-    
-    <!--&lt;Menu&gt;-->
-  </span>
-  <!--&lt;Typeahead&gt;-->
-  <!--&lt;Typeahead&gt;-->
+    <input
+      class="s-Fe6WNbR-55zp"
+      type="text"
+    />
+  </fieldset>
+  <!--&lt;Input&gt;-->
+   
+  
+  <!--&lt;Menu&gt;-->
 </span>
 `;
 
 exports[`With objects 1`] = `
 <span
-  class="s-XkPssRjFbj8C"
+  aria-haspopup="menu"
+  class="wrapper s-JM3fRWrV7jJU"
 >
-  <span
-    aria-haspopup="menu"
-    class="wrapper s-JM3fRWrV7jJU"
+  <fieldset
+    class="s-Fe6WNbR-55zp"
   >
-    <fieldset
-      class="s-Fe6WNbR-55zp"
-    >
-       
-      <input
-        class="s-Fe6WNbR-55zp"
-        type="text"
-      />
-    </fieldset>
-    <!--&lt;Input&gt;-->
      
-    
-    <!--&lt;Menu&gt;-->
-  </span>
-  <!--&lt;Typeahead&gt;-->
-  <!--&lt;Typeahead&gt;-->
+    <input
+      class="s-Fe6WNbR-55zp"
+      type="text"
+    />
+  </fieldset>
+  <!--&lt;Input&gt;-->
+   
+  
+  <!--&lt;Menu&gt;-->
 </span>
 `;

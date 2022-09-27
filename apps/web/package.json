@@ -16,9 +16,9 @@
     "test:integration:run": "playwright test"
   },
   "devDependencies": {
-    "@atelier-wb/svelte": "^0.8.1",
-    "@atelier-wb/toolshot": "^0.8.1",
-    "@atelier-wb/vite-plugin-atelier": "^0.8.1",
+    "@atelier-wb/svelte": "^0.9.0",
+    "@atelier-wb/toolshot": "^0.9.0",
+    "@atelier-wb/vite-plugin-atelier": "^0.9.0",
     "@babylonjs/core": "^5.24.0",
     "@babylonjs/inspector": "^5.24.0",
     "@babylonjs/loaders": "^5.24.0",

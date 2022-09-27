@@ -1,122 +1,104 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Local 1`] = `
-<span
-  class="s-XkPssRjFbj8C"
+<section
+  class="s-ab4pMJzf-5--"
+  data-testid="player-avatar"
 >
-  <section
-    class="s-ab4pMJzf-5--"
-    data-testid="player-avatar"
+  <figure
+    class="s-engCJu8q-fNe"
+    style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
   >
-    <figure
-      class="s-engCJu8q-fNe"
-      style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
-    >
-      <img
-        alt="avatar for Joe le clodo"
-        class="s-engCJu8q-fNe hasImage"
-        height="150"
-        src="/tests/components/avatar.png"
-        width="150"
-      />
-       
-    </figure>
-    <!--&lt;PlayerThumbnail&gt;-->
+    <img
+      alt="avatar for Joe le clodo"
+      class="s-engCJu8q-fNe hasImage"
+      height="150"
+      src="/tests/components/avatar.png"
+      width="150"
+    />
      
-    <span
-      class="host s-ab4pMJzf-5--"
-    >
-      host
-    </span>
+  </figure>
+  <!--&lt;PlayerThumbnail&gt;-->
+   
+  <span
+    class="host s-ab4pMJzf-5--"
+  >
+    host
+  </span>
+   
+  <legend
+    class="s-ab4pMJzf-5--"
+  >
      
-    <legend
-      class="s-ab4pMJzf-5--"
-    >
-       
-      
-    </legend>
-  </section>
-  <!--&lt;PlayerAvatar&gt;-->
-  <!--&lt;PlayerAvatarWithVideo&gt;-->
-</span>
+    
+  </legend>
+</section>
 `;
 
 exports[`No video 1`] = `
-<span
-  class="s-XkPssRjFbj8C"
+<section
+  class="s-ab4pMJzf-5--"
+  data-testid="player-avatar"
 >
-  <section
-    class="s-ab4pMJzf-5--"
-    data-testid="player-avatar"
+  <figure
+    class="s-engCJu8q-fNe"
+    style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
   >
-    <figure
-      class="s-engCJu8q-fNe"
-      style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
-    >
-      <img
-        alt="avatar for Joe le clodo"
-        class="s-engCJu8q-fNe hasImage"
-        height="150"
-        src="/tests/components/avatar.png"
-        width="150"
-      />
-       
-    </figure>
-    <!--&lt;PlayerThumbnail&gt;-->
-     
-    <span
-      class="host s-ab4pMJzf-5--"
-    >
-      host
-    </span>
-     
-    <legend
-      class="s-ab4pMJzf-5--"
+    <img
+      alt="avatar for Joe le clodo"
+      class="s-engCJu8q-fNe hasImage"
+      height="150"
+      src="/tests/components/avatar.png"
+      width="150"
     />
-  </section>
-  <!--&lt;PlayerAvatar&gt;-->
-  <!--&lt;PlayerAvatarWithVideo&gt;-->
-</span>
+     
+  </figure>
+  <!--&lt;PlayerThumbnail&gt;-->
+   
+  <span
+    class="host s-ab4pMJzf-5--"
+  >
+    host
+  </span>
+   
+  <legend
+    class="s-ab4pMJzf-5--"
+  />
+</section>
 `;
 
 exports[`No video nor avatar 1`] = `
-<span
-  class="s-XkPssRjFbj8C"
+<section
+  class="s-ab4pMJzf-5--"
+  data-testid="player-avatar"
 >
-  <section
-    class="s-ab4pMJzf-5--"
-    data-testid="player-avatar"
+  <figure
+    class="s-engCJu8q-fNe"
+    style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
   >
-    <figure
+    <img
+      alt="avatar for Joe le clodo"
       class="s-engCJu8q-fNe"
-      style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
-    >
-      <img
-        alt="avatar for Joe le clodo"
-        class="s-engCJu8q-fNe"
-        height="150"
-        width="150"
-      />
-       
-      <figcaption
-        class="s-engCJu8q-fNe"
-      >
-        Joe le clodo
-      </figcaption>
-    </figure>
-    <!--&lt;PlayerThumbnail&gt;-->
-     
-    <span
-      class="host s-ab4pMJzf-5--"
-    >
-      host
-    </span>
-     
-    <legend
-      class="s-ab4pMJzf-5--"
+      height="150"
+      width="150"
     />
-  </section>
-  <!--&lt;PlayerAvatar&gt;-->
-  <!--&lt;PlayerAvatarWithVideo&gt;-->
-</span>
+     
+    <figcaption
+      class="s-engCJu8q-fNe"
+    >
+      Joe le clodo
+    </figcaption>
+  </figure>
+  <!--&lt;PlayerThumbnail&gt;-->
+   
+  <span
+    class="host s-ab4pMJzf-5--"
+  >
+    host
+  </span>
+   
+  <legend
+    class="s-ab4pMJzf-5--"
+  />
+</section>
 `;

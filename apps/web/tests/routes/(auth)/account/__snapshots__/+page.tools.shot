@@ -1,329 +1,317 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Manual account 1`] = `
-<span
-  class="s-XkPssRjFbj8C"
+<main
+  class="s-GQCXmK5OKySU"
 >
-   
-  <main
-    class="s-GQCXmK5OKySU"
+  <header
+    class="s-IEV6mBVyuaCJ"
   >
-    <header
+    <nav
       class="s-IEV6mBVyuaCJ"
     >
-      <nav
+      <span
         class="s-IEV6mBVyuaCJ"
       >
-        <span
-          class="s-IEV6mBVyuaCJ"
+        <ol
+          class="s-x5nEMCoiqeIy"
         >
-          <ol
+          <li
             class="s-x5nEMCoiqeIy"
           >
-            <li
+            <a
               class="s-x5nEMCoiqeIy"
+              href="/home"
             >
-              <a
-                class="s-x5nEMCoiqeIy"
-                href="/home"
-              >
-                Accueil
-              </a>
-            </li>
-             
-            <li
-              class="s-x5nEMCoiqeIy"
-            >
-              &gt;
-            </li>
-            
-            <li
-              class="s-x5nEMCoiqeIy"
-            >
-              <a
-                class="s-x5nEMCoiqeIy"
-              >
-                Paramètres
-              </a>
-            </li>
-             
-            
-          </ol>
-          
-          <!--&lt;Breadcrumb&gt;-->
-        </span>
-         
-        <span
-          aria-expanded="false"
-          aria-haspopup="menu"
-          class="wrapper s-rGIwyFRHo8D9"
-        >
-          <button
-            class="transparent s-NMyTiX1zi6rz"
+              Accueil
+            </a>
+          </li>
+           
+          <li
+            class="s-x5nEMCoiqeIy"
           >
-            
-            
-            
-            <figure
-              class="s-engCJu8q-fNe"
-              style="--dimension: 30px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 0px"
+            &gt;
+          </li>
+          
+          <li
+            class="s-x5nEMCoiqeIy"
+          >
+            <a
+              class="s-x5nEMCoiqeIy"
             >
-              <img
-                alt="avatar for Jane Doe"
-                class="s-engCJu8q-fNe hasImage"
-                height="30"
-                src="https://avatars.dicebear.com/api/micah/tabulous-avatar-4.svg"
-                width="30"
-              />
-               
-            </figure>
-            <!--&lt;PlayerThumbnail&gt;-->
-             
-            
-          </button>
-          <!--&lt;Button&gt;-->
+              Paramètres
+            </a>
+          </li>
            
           
-          <!--&lt;Menu&gt;-->
-        </span>
-        <!--&lt;Dropdown&gt;-->
-      </nav>
+        </ol>
+        
+        <!--&lt;Breadcrumb&gt;-->
+      </span>
        
-      <div
-        class="s-IEV6mBVyuaCJ"
+      <span
+        aria-expanded="false"
+        aria-haspopup="menu"
+        class="wrapper s-rGIwyFRHo8D9"
       >
-        <h1
-          class="s-GQCXmK5OKySU"
+        <button
+          class="transparent s-NMyTiX1zi6rz"
         >
-          Vos paramètres
-        </h1>
-      </div>
-    </header>
-    <!--&lt;Header&gt;-->
+          
+          
+          
+          <figure
+            class="s-engCJu8q-fNe"
+            style="--dimension: 30px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 0px"
+          >
+            <img
+              alt="avatar for Jane Doe"
+              class="s-engCJu8q-fNe hasImage"
+              height="30"
+              src="https://avatars.dicebear.com/api/micah/tabulous-avatar-4.svg"
+              width="30"
+            />
+             
+          </figure>
+          <!--&lt;PlayerThumbnail&gt;-->
+           
+          
+        </button>
+        <!--&lt;Button&gt;-->
+         
+        
+        <!--&lt;Menu&gt;-->
+      </span>
+      <!--&lt;Dropdown&gt;-->
+    </nav>
      
-    <section
+    <div
+      class="s-IEV6mBVyuaCJ"
+    >
+      <h1
+        class="s-GQCXmK5OKySU"
+      >
+        Vos paramètres
+      </h1>
+    </div>
+  </header>
+  <!--&lt;Header&gt;-->
+   
+  <section
+    class="s-GQCXmK5OKySU"
+  >
+    <h2
       class="s-GQCXmK5OKySU"
     >
-      <h2
+      Votre compte
+    </h2>
+     
+    <fieldset
+      class="s-GQCXmK5OKySU"
+    >
+      <div
         class="s-GQCXmK5OKySU"
       >
-        Votre compte
-      </h2>
+        Vous avez un compte manuel dont l'identifiant de connextion est "jane-doe-123"
+      </div>
+       
+      <label
+        class="s-GQCXmK5OKySU"
+        for="username"
+      >
+        Nom d'affichage : 
+      </label>
        
       <fieldset
+        class="s-Fe6WNbR-55zp"
+      >
+         
+        <input
+          class="s-Fe6WNbR-55zp"
+          name="username"
+        />
+      </fieldset>
+      <!--&lt;Input&gt;-->
+       
+      <span
         class="s-GQCXmK5OKySU"
       >
-        <div
-          class="s-GQCXmK5OKySU"
-        >
-          Vous avez un compte manuel dont l'identifiant de connextion est "jane-doe-123"
-        </div>
+        Avatar : 
+      </span>
+       
+      <figure
+        class="s-engCJu8q-fNe"
+        style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+      >
+        <img
+          alt="avatar for Jane Doe"
+          class="s-engCJu8q-fNe hasImage"
+          height="150"
+          src="https://avatars.dicebear.com/api/micah/tabulous-avatar-4.svg"
+          width="150"
+        />
          
-        <label
-          class="s-GQCXmK5OKySU"
-          for="username"
-        >
-          Nom d'affichage : 
-        </label>
-         
-        <fieldset
-          class="s-Fe6WNbR-55zp"
-        >
-           
-          <input
-            class="s-Fe6WNbR-55zp"
-            name="username"
-          />
-        </fieldset>
-        <!--&lt;Input&gt;-->
-         
-        <span
-          class="s-GQCXmK5OKySU"
-        >
-          Avatar : 
-        </span>
-         
-        <figure
-          class="s-engCJu8q-fNe"
-          style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
-        >
-          <img
-            alt="avatar for Jane Doe"
-            class="s-engCJu8q-fNe hasImage"
-            height="150"
-            src="https://avatars.dicebear.com/api/micah/tabulous-avatar-4.svg"
-            width="150"
-          />
-           
-        </figure>
-        <!--&lt;PlayerThumbnail&gt;-->
-      </fieldset>
-    </section>
-  </main>
-  <!--&lt;+page&gt;-->
-</span>
+      </figure>
+      <!--&lt;PlayerThumbnail&gt;-->
+    </fieldset>
+  </section>
+</main>
 `;
 
 exports[`OAuth account 1`] = `
-<span
-  class="s-XkPssRjFbj8C"
+<main
+  class="s-GQCXmK5OKySU"
 >
-   
-  <main
-    class="s-GQCXmK5OKySU"
+  <header
+    class="s-IEV6mBVyuaCJ"
   >
-    <header
+    <nav
       class="s-IEV6mBVyuaCJ"
     >
-      <nav
+      <span
         class="s-IEV6mBVyuaCJ"
       >
-        <span
-          class="s-IEV6mBVyuaCJ"
+        <ol
+          class="s-x5nEMCoiqeIy"
         >
-          <ol
+          <li
             class="s-x5nEMCoiqeIy"
           >
-            <li
+            <a
               class="s-x5nEMCoiqeIy"
+              href="/home"
             >
-              <a
-                class="s-x5nEMCoiqeIy"
-                href="/home"
-              >
-                Accueil
-              </a>
-            </li>
-             
-            <li
-              class="s-x5nEMCoiqeIy"
-            >
-              &gt;
-            </li>
-            
-            <li
-              class="s-x5nEMCoiqeIy"
-            >
-              <a
-                class="s-x5nEMCoiqeIy"
-              >
-                Paramètres
-              </a>
-            </li>
-             
-            
-          </ol>
-          
-          <!--&lt;Breadcrumb&gt;-->
-        </span>
-         
-        <span
-          aria-expanded="false"
-          aria-haspopup="menu"
-          class="wrapper s-rGIwyFRHo8D9"
-        >
-          <button
-            class="transparent s-NMyTiX1zi6rz"
+              Accueil
+            </a>
+          </li>
+           
+          <li
+            class="s-x5nEMCoiqeIy"
           >
-            
-            
-            
-            <figure
-              class="s-engCJu8q-fNe"
-              style="--dimension: 30px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 0px"
+            &gt;
+          </li>
+          
+          <li
+            class="s-x5nEMCoiqeIy"
+          >
+            <a
+              class="s-x5nEMCoiqeIy"
             >
-              <img
-                alt="avatar for John Clark"
-                class="s-engCJu8q-fNe hasImage"
-                height="30"
-                src="https://avatars.dicebear.com/api/micah/tabulous-avatar-10.svg"
-                width="30"
-              />
-               
-            </figure>
-            <!--&lt;PlayerThumbnail&gt;-->
-             
-            
-          </button>
-          <!--&lt;Button&gt;-->
+              Paramètres
+            </a>
+          </li>
            
           
-          <!--&lt;Menu&gt;-->
-        </span>
-        <!--&lt;Dropdown&gt;-->
-      </nav>
+        </ol>
+        
+        <!--&lt;Breadcrumb&gt;-->
+      </span>
        
-      <div
-        class="s-IEV6mBVyuaCJ"
+      <span
+        aria-expanded="false"
+        aria-haspopup="menu"
+        class="wrapper s-rGIwyFRHo8D9"
       >
-        <h1
-          class="s-GQCXmK5OKySU"
+        <button
+          class="transparent s-NMyTiX1zi6rz"
         >
-          Vos paramètres
-        </h1>
-      </div>
-    </header>
-    <!--&lt;Header&gt;-->
+          
+          
+          
+          <figure
+            class="s-engCJu8q-fNe"
+            style="--dimension: 30px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 0px"
+          >
+            <img
+              alt="avatar for John Clark"
+              class="s-engCJu8q-fNe hasImage"
+              height="30"
+              src="https://avatars.dicebear.com/api/micah/tabulous-avatar-10.svg"
+              width="30"
+            />
+             
+          </figure>
+          <!--&lt;PlayerThumbnail&gt;-->
+           
+          
+        </button>
+        <!--&lt;Button&gt;-->
+         
+        
+        <!--&lt;Menu&gt;-->
+      </span>
+      <!--&lt;Dropdown&gt;-->
+    </nav>
      
-    <section
+    <div
+      class="s-IEV6mBVyuaCJ"
+    >
+      <h1
+        class="s-GQCXmK5OKySU"
+      >
+        Vos paramètres
+      </h1>
+    </div>
+  </header>
+  <!--&lt;Header&gt;-->
+   
+  <section
+    class="s-GQCXmK5OKySU"
+  >
+    <h2
       class="s-GQCXmK5OKySU"
     >
-      <h2
+      Votre compte
+    </h2>
+     
+    <fieldset
+      class="s-GQCXmK5OKySU"
+    >
+      <div
         class="s-GQCXmK5OKySU"
       >
-        Votre compte
-      </h2>
+        Vous avez relié ce compte à votre adresse "john.clark@gmail.com"
+      </div>
+       
+      <label
+        class="s-GQCXmK5OKySU"
+        for="username"
+      >
+        Nom d'affichage : 
+      </label>
        
       <fieldset
+        class="s-Fe6WNbR-55zp"
+      >
+         
+        <input
+          class="s-Fe6WNbR-55zp"
+          name="username"
+        />
+      </fieldset>
+      <!--&lt;Input&gt;-->
+       
+      <span
         class="s-GQCXmK5OKySU"
       >
-        <div
-          class="s-GQCXmK5OKySU"
-        >
-          Vous avez relié ce compte à votre adresse "john.clark@gmail.com"
-        </div>
+        Avatar : 
+      </span>
+       
+      <figure
+        class="s-engCJu8q-fNe"
+        style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+      >
+        <img
+          alt="avatar for John Clark"
+          class="s-engCJu8q-fNe hasImage"
+          height="150"
+          src="https://avatars.dicebear.com/api/micah/tabulous-avatar-10.svg"
+          width="150"
+        />
          
-        <label
-          class="s-GQCXmK5OKySU"
-          for="username"
-        >
-          Nom d'affichage : 
-        </label>
-         
-        <fieldset
-          class="s-Fe6WNbR-55zp"
-        >
-           
-          <input
-            class="s-Fe6WNbR-55zp"
-            name="username"
-          />
-        </fieldset>
-        <!--&lt;Input&gt;-->
-         
-        <span
-          class="s-GQCXmK5OKySU"
-        >
-          Avatar : 
-        </span>
-         
-        <figure
-          class="s-engCJu8q-fNe"
-          style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
-        >
-          <img
-            alt="avatar for John Clark"
-            class="s-engCJu8q-fNe hasImage"
-            height="150"
-            src="https://avatars.dicebear.com/api/micah/tabulous-avatar-10.svg"
-            width="150"
-          />
-           
-        </figure>
-        <!--&lt;PlayerThumbnail&gt;-->
-      </fieldset>
-    </section>
-  </main>
-  <!--&lt;+page&gt;-->
-</span>
+      </figure>
+      <!--&lt;PlayerThumbnail&gt;-->
+    </fieldset>
+  </section>
+</main>
 `;

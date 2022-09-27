@@ -1,1089 +1,1073 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Anonymous 1`] = `
-<span
-  class="s-XkPssRjFbj8C"
+<main
+  class="s-A-bC3Hke5zSn"
 >
-   
-  <main
-    class="s-A-bC3Hke5zSn"
+  <header
+    class="s-IEV6mBVyuaCJ"
   >
-    <header
+    <nav
       class="s-IEV6mBVyuaCJ"
     >
-      <nav
+      <span
         class="s-IEV6mBVyuaCJ"
       >
-        <span
-          class="s-IEV6mBVyuaCJ"
+        <ol
+          class="s-x5nEMCoiqeIy"
         >
-          <ol
+          <li
             class="s-x5nEMCoiqeIy"
           >
-            <li
+            <a
               class="s-x5nEMCoiqeIy"
             >
-              <a
-                class="s-x5nEMCoiqeIy"
-              >
-                Accueil
-              </a>
-            </li>
-             
-            
-          </ol>
+              Accueil
+            </a>
+          </li>
+           
           
-          <!--&lt;Breadcrumb&gt;-->
-        </span>
-         
-        <button
-          class="secondary s-NMyTiX1zi6rz"
-        >
-          <span
-            class="material-icons s-NMyTiX1zi6rz"
-          >
-            login
-          </span>
-          
-          
-          
-        </button>
-        <!--&lt;Button&gt;-->
-      </nav>
+        </ol>
+        
+        <!--&lt;Breadcrumb&gt;-->
+      </span>
        
-      <div
-        class="s-IEV6mBVyuaCJ"
+      <button
+        class="secondary s-NMyTiX1zi6rz"
       >
-        <h1
-          class="s-A-bC3Hke5zSn"
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
         >
-          Bienvenue sur Tabulous !
-        </h1>
-      </div>
-    </header>
-    <!--&lt;Header&gt;-->
+          login
+        </span>
+        
+        
+        
+      </button>
+      <!--&lt;Button&gt;-->
+    </nav>
      
     <div
+      class="s-IEV6mBVyuaCJ"
+    >
+      <h1
+        class="s-A-bC3Hke5zSn"
+      >
+        Bienvenue sur Tabulous !
+      </h1>
+    </div>
+  </header>
+  <!--&lt;Header&gt;-->
+   
+  <div
+    class="s-A-bC3Hke5zSn"
+  >
+     
+    <h2
       class="s-A-bC3Hke5zSn"
     >
-       
-      <h2
-        class="s-A-bC3Hke5zSn"
+      Jeux disponibles
+    </h2>
+     
+    <section
+      aria-roledescription="catalog"
+      class="s-A-bC3Hke5zSn"
+    >
+      <article
+        class="s-hGRcS-4InB4p"
       >
-        Jeux disponibles
-      </h2>
-       
-      <section
-        aria-roledescription="catalog"
-        class="s-A-bC3Hke5zSn"
+        <img
+          alt="Jeu de 32 cartes"
+          class="s-hGRcS-4InB4p"
+          src="http://localhost:3001/games/32-cards/catalog/cover.webp"
+        />
+         
+        <div
+          class="content s-hGRcS-4InB4p"
+        >
+          <legend
+            class="s-hGRcS-4InB4p"
+          >
+            <div
+              class="title s-hGRcS-4InB4p"
+            >
+              <h3
+                class="s-hGRcS-4InB4p"
+              >
+                Jeu de 32 cartes
+              </h3>
+               
+              <details
+                class="s-hGRcS-4InB4p hidden"
+              >
+                <summary
+                  class="s-hGRcS-4InB4p"
+                >
+                  <strong
+                    class="s-hGRcS-4InB4p"
+                  >
+                    Créé par : 
+                  </strong>
+                  undefined
+                </summary>
+                 
+                <p
+                  class="s-hGRcS-4InB4p"
+                >
+                  <strong
+                    class="s-hGRcS-4InB4p"
+                  >
+                    Illustré par : 
+                  </strong>
+                  undefined
+                </p>
+                 
+                <p
+                  class="s-hGRcS-4InB4p"
+                >
+                  <strong
+                    class="s-hGRcS-4InB4p"
+                  >
+                    Distribué par : 
+                  </strong>
+                  undefined
+                </p>
+              </details>
+            </div>
+             
+            <span
+              class="characteristics s-hGRcS-4InB4p"
+            >
+              <span
+                class="s-hGRcS-4InB4p"
+              >
+                <span
+                  class="material-icons s-hGRcS-4InB4p"
+                >
+                  people
+                </span>
+                2-8
+              </span>
+               
+              <span
+                class="s-hGRcS-4InB4p hidden"
+              >
+                <span
+                  class="material-icons s-hGRcS-4InB4p"
+                >
+                  access_time
+                </span>
+                undefined'
+              </span>
+               
+              <span
+                class="s-hGRcS-4InB4p hidden"
+              >
+                <span
+                  class="material-icons s-hGRcS-4InB4p"
+                >
+                  person
+                </span>
+                undefined+
+              </span>
+            </span>
+          </legend>
+        </div>
+      </article>
+      <!--&lt;CatalogItem&gt;-->
+      <article
+        class="s-hGRcS-4InB4p"
       >
-        <article
+        <img
+          alt="Dames"
           class="s-hGRcS-4InB4p"
+          src="http://localhost:3001/games/draughts/catalog/cover.webp"
+        />
+         
+        <div
+          class="content s-hGRcS-4InB4p"
         >
-          <img
-            alt="Jeu de 32 cartes"
+          <legend
             class="s-hGRcS-4InB4p"
-            src="http://localhost:3001/games/32-cards/catalog/cover.webp"
-          />
-           
-          <div
-            class="content s-hGRcS-4InB4p"
           >
-            <legend
-              class="s-hGRcS-4InB4p"
+            <div
+              class="title s-hGRcS-4InB4p"
             >
-              <div
-                class="title s-hGRcS-4InB4p"
+              <h3
+                class="s-hGRcS-4InB4p"
               >
-                <h3
+                Dames
+              </h3>
+               
+              <details
+                class="s-hGRcS-4InB4p hidden"
+              >
+                <summary
                   class="s-hGRcS-4InB4p"
                 >
-                  Jeu de 32 cartes
-                </h3>
+                  <strong
+                    class="s-hGRcS-4InB4p"
+                  >
+                    Créé par : 
+                  </strong>
+                  undefined
+                </summary>
                  
-                <details
-                  class="s-hGRcS-4InB4p hidden"
+                <p
+                  class="s-hGRcS-4InB4p"
                 >
-                  <summary
+                  <strong
                     class="s-hGRcS-4InB4p"
                   >
-                    <strong
-                      class="s-hGRcS-4InB4p"
-                    >
-                      Créé par : 
-                    </strong>
-                    undefined
-                  </summary>
-                   
-                  <p
+                    Illustré par : 
+                  </strong>
+                  undefined
+                </p>
+                 
+                <p
+                  class="s-hGRcS-4InB4p"
+                >
+                  <strong
                     class="s-hGRcS-4InB4p"
                   >
-                    <strong
-                      class="s-hGRcS-4InB4p"
-                    >
-                      Illustré par : 
-                    </strong>
-                    undefined
-                  </p>
-                   
-                  <p
-                    class="s-hGRcS-4InB4p"
-                  >
-                    <strong
-                      class="s-hGRcS-4InB4p"
-                    >
-                      Distribué par : 
-                    </strong>
-                    undefined
-                  </p>
-                </details>
-              </div>
+                    Distribué par : 
+                  </strong>
+                  undefined
+                </p>
+              </details>
+            </div>
+             
+            <span
+              class="characteristics s-hGRcS-4InB4p"
+            >
+              <span
+                class="s-hGRcS-4InB4p"
+              >
+                <span
+                  class="material-icons s-hGRcS-4InB4p"
+                >
+                  people
+                </span>
+                2
+              </span>
                
               <span
-                class="characteristics s-hGRcS-4InB4p"
+                class="s-hGRcS-4InB4p"
               >
                 <span
-                  class="s-hGRcS-4InB4p"
+                  class="material-icons s-hGRcS-4InB4p"
                 >
-                  <span
-                    class="material-icons s-hGRcS-4InB4p"
-                  >
-                    people
-                  </span>
-                  2-8
+                  access_time
                 </span>
-                 
-                <span
-                  class="s-hGRcS-4InB4p hidden"
-                >
-                  <span
-                    class="material-icons s-hGRcS-4InB4p"
-                  >
-                    access_time
-                  </span>
-                  undefined'
-                </span>
-                 
-                <span
-                  class="s-hGRcS-4InB4p hidden"
-                >
-                  <span
-                    class="material-icons s-hGRcS-4InB4p"
-                  >
-                    person
-                  </span>
-                  undefined+
-                </span>
+                30'
               </span>
-            </legend>
-          </div>
-        </article>
-        <!--&lt;CatalogItem&gt;-->
-        <article
-          class="s-hGRcS-4InB4p"
-        >
-          <img
-            alt="Dames"
-            class="s-hGRcS-4InB4p"
-            src="http://localhost:3001/games/draughts/catalog/cover.webp"
-          />
-           
-          <div
-            class="content s-hGRcS-4InB4p"
-          >
-            <legend
-              class="s-hGRcS-4InB4p"
-            >
-              <div
-                class="title s-hGRcS-4InB4p"
-              >
-                <h3
-                  class="s-hGRcS-4InB4p"
-                >
-                  Dames
-                </h3>
-                 
-                <details
-                  class="s-hGRcS-4InB4p hidden"
-                >
-                  <summary
-                    class="s-hGRcS-4InB4p"
-                  >
-                    <strong
-                      class="s-hGRcS-4InB4p"
-                    >
-                      Créé par : 
-                    </strong>
-                    undefined
-                  </summary>
-                   
-                  <p
-                    class="s-hGRcS-4InB4p"
-                  >
-                    <strong
-                      class="s-hGRcS-4InB4p"
-                    >
-                      Illustré par : 
-                    </strong>
-                    undefined
-                  </p>
-                   
-                  <p
-                    class="s-hGRcS-4InB4p"
-                  >
-                    <strong
-                      class="s-hGRcS-4InB4p"
-                    >
-                      Distribué par : 
-                    </strong>
-                    undefined
-                  </p>
-                </details>
-              </div>
                
               <span
-                class="characteristics s-hGRcS-4InB4p"
+                class="s-hGRcS-4InB4p"
               >
                 <span
-                  class="s-hGRcS-4InB4p"
+                  class="material-icons s-hGRcS-4InB4p"
                 >
-                  <span
-                    class="material-icons s-hGRcS-4InB4p"
-                  >
-                    people
-                  </span>
-                  2
+                  person
                 </span>
-                 
-                <span
-                  class="s-hGRcS-4InB4p"
-                >
-                  <span
-                    class="material-icons s-hGRcS-4InB4p"
-                  >
-                    access_time
-                  </span>
-                  30'
-                </span>
-                 
-                <span
-                  class="s-hGRcS-4InB4p"
-                >
-                  <span
-                    class="material-icons s-hGRcS-4InB4p"
-                  >
-                    person
-                  </span>
-                  6+
-                </span>
+                6+
               </span>
-            </legend>
-          </div>
-        </article>
-        <!--&lt;CatalogItem&gt;-->
-        <article
+            </span>
+          </legend>
+        </div>
+      </article>
+      <!--&lt;CatalogItem&gt;-->
+      <article
+        class="s-hGRcS-4InB4p"
+      >
+        <img
+          alt="Solitaire"
           class="s-hGRcS-4InB4p"
+          src="http://localhost:3001/games/klondike/catalog/cover.webp"
+        />
+         
+        <div
+          class="content s-hGRcS-4InB4p"
         >
-          <img
-            alt="Solitaire"
+          <legend
             class="s-hGRcS-4InB4p"
-            src="http://localhost:3001/games/klondike/catalog/cover.webp"
-          />
-           
-          <div
-            class="content s-hGRcS-4InB4p"
           >
-            <legend
-              class="s-hGRcS-4InB4p"
+            <div
+              class="title s-hGRcS-4InB4p"
             >
-              <div
-                class="title s-hGRcS-4InB4p"
+              <h3
+                class="s-hGRcS-4InB4p"
               >
-                <h3
+                Solitaire
+              </h3>
+               
+              <details
+                class="s-hGRcS-4InB4p hidden"
+              >
+                <summary
                   class="s-hGRcS-4InB4p"
                 >
-                  Solitaire
-                </h3>
+                  <strong
+                    class="s-hGRcS-4InB4p"
+                  >
+                    Créé par : 
+                  </strong>
+                  undefined
+                </summary>
                  
-                <details
-                  class="s-hGRcS-4InB4p hidden"
+                <p
+                  class="s-hGRcS-4InB4p"
                 >
-                  <summary
+                  <strong
                     class="s-hGRcS-4InB4p"
                   >
-                    <strong
-                      class="s-hGRcS-4InB4p"
-                    >
-                      Créé par : 
-                    </strong>
-                    undefined
-                  </summary>
-                   
-                  <p
+                    Illustré par : 
+                  </strong>
+                  undefined
+                </p>
+                 
+                <p
+                  class="s-hGRcS-4InB4p"
+                >
+                  <strong
                     class="s-hGRcS-4InB4p"
                   >
-                    <strong
-                      class="s-hGRcS-4InB4p"
-                    >
-                      Illustré par : 
-                    </strong>
-                    undefined
-                  </p>
-                   
-                  <p
-                    class="s-hGRcS-4InB4p"
-                  >
-                    <strong
-                      class="s-hGRcS-4InB4p"
-                    >
-                      Distribué par : 
-                    </strong>
-                    undefined
-                  </p>
-                </details>
-              </div>
+                    Distribué par : 
+                  </strong>
+                  undefined
+                </p>
+              </details>
+            </div>
+             
+            <span
+              class="characteristics s-hGRcS-4InB4p"
+            >
+              <span
+                class="s-hGRcS-4InB4p"
+              >
+                <span
+                  class="material-icons s-hGRcS-4InB4p"
+                >
+                  people
+                </span>
+                1
+              </span>
                
               <span
-                class="characteristics s-hGRcS-4InB4p"
+                class="s-hGRcS-4InB4p"
               >
                 <span
-                  class="s-hGRcS-4InB4p"
+                  class="material-icons s-hGRcS-4InB4p"
                 >
-                  <span
-                    class="material-icons s-hGRcS-4InB4p"
-                  >
-                    people
-                  </span>
-                  1
+                  access_time
                 </span>
-                 
-                <span
-                  class="s-hGRcS-4InB4p"
-                >
-                  <span
-                    class="material-icons s-hGRcS-4InB4p"
-                  >
-                    access_time
-                  </span>
-                  15'
-                </span>
-                 
-                <span
-                  class="s-hGRcS-4InB4p"
-                >
-                  <span
-                    class="material-icons s-hGRcS-4InB4p"
-                  >
-                    person
-                  </span>
-                  7+
-                </span>
+                15'
               </span>
-            </legend>
-          </div>
-        </article>
-        <!--&lt;CatalogItem&gt;-->
-      </section>
-    </div>
-  </main>
-   
-  
-  <!--&lt;+page&gt;-->
-</span>
+               
+              <span
+                class="s-hGRcS-4InB4p"
+              >
+                <span
+                  class="material-icons s-hGRcS-4InB4p"
+                >
+                  person
+                </span>
+                7+
+              </span>
+            </span>
+          </legend>
+        </div>
+      </article>
+      <!--&lt;CatalogItem&gt;-->
+    </section>
+  </div>
+</main>
 `;
 
 exports[`Authenticated 1`] = `
-<span
-  class="s-XkPssRjFbj8C"
+<main
+  class="s-A-bC3Hke5zSn"
 >
-   
-  <main
-    class="s-A-bC3Hke5zSn"
+  <header
+    class="s-IEV6mBVyuaCJ"
   >
-    <header
+    <nav
       class="s-IEV6mBVyuaCJ"
     >
-      <nav
+      <span
         class="s-IEV6mBVyuaCJ"
       >
-        <span
-          class="s-IEV6mBVyuaCJ"
+        <ol
+          class="s-x5nEMCoiqeIy"
         >
-          <ol
+          <li
             class="s-x5nEMCoiqeIy"
           >
-            <li
+            <a
               class="s-x5nEMCoiqeIy"
             >
-              <a
-                class="s-x5nEMCoiqeIy"
-              >
-                Accueil
-              </a>
-            </li>
-             
-            
-          </ol>
+              Accueil
+            </a>
+          </li>
+           
           
-          <!--&lt;Breadcrumb&gt;-->
-        </span>
-         
-        <span
-          aria-expanded="false"
-          aria-haspopup="menu"
-          class="wrapper s-rGIwyFRHo8D9"
+        </ol>
+        
+        <!--&lt;Breadcrumb&gt;-->
+      </span>
+       
+      <span
+        aria-expanded="false"
+        aria-haspopup="menu"
+        class="wrapper s-rGIwyFRHo8D9"
+      >
+        <button
+          class="transparent s-NMyTiX1zi6rz"
         >
-          <button
-            class="transparent s-NMyTiX1zi6rz"
+          
+          
+          
+          <figure
+            class="s-engCJu8q-fNe"
+            style="--dimension: 30px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 0px"
           >
-            
-            
-            
-            <figure
+            <img
+              alt="avatar for Jane Doe"
               class="s-engCJu8q-fNe"
-              style="--dimension: 30px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 0px"
-            >
-              <img
-                alt="avatar for Jane Doe"
-                class="s-engCJu8q-fNe"
-                height="30"
-                width="30"
-              />
-               
-              <figcaption
-                class="s-engCJu8q-fNe"
-              >
-                JD
-              </figcaption>
-            </figure>
-            <!--&lt;PlayerThumbnail&gt;-->
+              height="30"
+              width="30"
+            />
              
+            <figcaption
+              class="s-engCJu8q-fNe"
+            >
+              JD
+            </figcaption>
+          </figure>
+          <!--&lt;PlayerThumbnail&gt;-->
+           
+          
+        </button>
+        <!--&lt;Button&gt;-->
+         
+        
+        <!--&lt;Menu&gt;-->
+      </span>
+      <!--&lt;Dropdown&gt;-->
+    </nav>
+     
+    <div
+      class="s-IEV6mBVyuaCJ"
+    >
+      <h1
+        class="s-A-bC3Hke5zSn"
+      >
+        Bonjour Jane Doe !
+      </h1>
+    </div>
+  </header>
+  <!--&lt;Header&gt;-->
+   
+  <div
+    class="s-A-bC3Hke5zSn"
+  >
+    <h2
+      class="s-A-bC3Hke5zSn"
+    >
+      Parties en cours
+    </h2>
+     
+    <section
+      aria-roledescription="games"
+      class="s-A-bC3Hke5zSn"
+    >
+      
+      <article
+        class="s-lt2MTuasm2zx"
+      >
+        <span
+          class="title s-lt2MTuasm2zx"
+        >
+          <h3
+            class="s-lt2MTuasm2zx"
+          >
+            Jeu de 32 cartes
+          </h3>
+           
+          <button
+            class="secondary s-NMyTiX1zi6rz"
+          >
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              delete
+            </span>
+            
+            
             
           </button>
           <!--&lt;Button&gt;-->
-           
-          
-          <!--&lt;Menu&gt;-->
         </span>
-        <!--&lt;Dropdown&gt;-->
-      </nav>
-       
-      <div
-        class="s-IEV6mBVyuaCJ"
-      >
-        <h1
-          class="s-A-bC3Hke5zSn"
+         
+        <span
+          class="created s-lt2MTuasm2zx"
         >
-          Bonjour Jane Doe !
-        </h1>
-      </div>
-    </header>
-    <!--&lt;Header&gt;-->
+          02 août, 09:13
+        </span>
+         
+      </article>
+      <!--&lt;GameLink&gt;-->
+      
+      <article
+        class="s-lt2MTuasm2zx"
+      >
+        <span
+          class="title s-lt2MTuasm2zx"
+        >
+          <h3
+            class="s-lt2MTuasm2zx"
+          >
+            6 qui prend !
+          </h3>
+           
+        </span>
+         
+        <span
+          class="created s-lt2MTuasm2zx"
+        >
+          29 juil., 08:17
+        </span>
+         
+        <span
+          class="players s-lt2MTuasm2zx"
+        >
+          avec Dams, Célia
+        </span>
+      </article>
+      <!--&lt;GameLink&gt;-->
+    </section>
      
-    <div
+    <h2
       class="s-A-bC3Hke5zSn"
     >
-      <h2
-        class="s-A-bC3Hke5zSn"
+      Jeux disponibles
+    </h2>
+     
+    <section
+      aria-roledescription="catalog"
+      class="s-A-bC3Hke5zSn"
+    >
+      <article
+        class="s-hGRcS-4InB4p"
       >
-        Parties en cours
-      </h2>
-       
-      <section
-        aria-roledescription="games"
-        class="s-A-bC3Hke5zSn"
-      >
-        
-        <article
-          class="s-lt2MTuasm2zx"
+        <img
+          alt="Dune Imperium"
+          class="s-hGRcS-4InB4p"
+          src="http://localhost:3001/games/dune-imperium/catalog/cover.webp"
+        />
+         
+        <div
+          class="content s-hGRcS-4InB4p"
         >
-          <span
-            class="title s-lt2MTuasm2zx"
+          <legend
+            class="s-hGRcS-4InB4p"
           >
-            <h3
-              class="s-lt2MTuasm2zx"
+            <div
+              class="title s-hGRcS-4InB4p"
             >
-              Jeu de 32 cartes
-            </h3>
+              <h3
+                class="s-hGRcS-4InB4p"
+              >
+                Dune Imperium
+              </h3>
+               
+              <details
+                class="s-hGRcS-4InB4p"
+              >
+                <summary
+                  class="s-hGRcS-4InB4p"
+                >
+                  <strong
+                    class="s-hGRcS-4InB4p"
+                  >
+                    Créé par : 
+                  </strong>
+                  Paul Dennen
+                </summary>
+                 
+                <p
+                  class="s-hGRcS-4InB4p"
+                >
+                  <strong
+                    class="s-hGRcS-4InB4p"
+                  >
+                    Illustré par : 
+                  </strong>
+                  Clay Brooks, Nate Storm, Raul Ramos, Brett Nienburg, Atila Guzey, Derek Herring, Kenan Jackson
+                </p>
+                 
+                <p
+                  class="s-hGRcS-4InB4p"
+                >
+                  <strong
+                    class="s-hGRcS-4InB4p"
+                  >
+                    Distribué par : 
+                  </strong>
+                  Dire Wolf Digital, Gale Force Nine, Lucky Duck, Legendary
+                </p>
+              </details>
+            </div>
              
-            <button
-              class="secondary s-NMyTiX1zi6rz"
+            <span
+              class="characteristics s-hGRcS-4InB4p"
             >
               <span
-                class="material-icons s-NMyTiX1zi6rz"
+                class="s-hGRcS-4InB4p"
               >
-                delete
+                <span
+                  class="material-icons s-hGRcS-4InB4p"
+                >
+                  people
+                </span>
+                1-4
               </span>
-              
-              
-              
-            </button>
-            <!--&lt;Button&gt;-->
-          </span>
-           
-          <span
-            class="created s-lt2MTuasm2zx"
-          >
-            02 août, 09:13
-          </span>
-           
-        </article>
-        <!--&lt;GameLink&gt;-->
-        
-        <article
-          class="s-lt2MTuasm2zx"
+               
+              <span
+                class="s-hGRcS-4InB4p"
+              >
+                <span
+                  class="material-icons s-hGRcS-4InB4p"
+                >
+                  access_time
+                </span>
+                90'
+              </span>
+               
+              <span
+                class="s-hGRcS-4InB4p"
+              >
+                <span
+                  class="material-icons s-hGRcS-4InB4p"
+                >
+                  person
+                </span>
+                13+
+              </span>
+            </span>
+          </legend>
+        </div>
+      </article>
+      <!--&lt;CatalogItem&gt;-->
+      <article
+        class="s-hGRcS-4InB4p"
+      >
+        <img
+          alt="6 qui prend !"
+          class="s-hGRcS-4InB4p"
+          src="http://localhost:3001/games/6-takes/catalog/cover.webp"
+        />
+         
+        <div
+          class="content s-hGRcS-4InB4p"
         >
-          <span
-            class="title s-lt2MTuasm2zx"
+          <legend
+            class="s-hGRcS-4InB4p"
           >
-            <h3
-              class="s-lt2MTuasm2zx"
+            <div
+              class="title s-hGRcS-4InB4p"
             >
-              6 qui prend !
-            </h3>
+              <h3
+                class="s-hGRcS-4InB4p"
+              >
+                6 qui prend !
+              </h3>
+               
+              <details
+                class="s-hGRcS-4InB4p"
+              >
+                <summary
+                  class="s-hGRcS-4InB4p"
+                >
+                  <strong
+                    class="s-hGRcS-4InB4p"
+                  >
+                    Créé par : 
+                  </strong>
+                  Wolfgang Kramer
+                </summary>
+                 
+                <p
+                  class="s-hGRcS-4InB4p"
+                >
+                  <strong
+                    class="s-hGRcS-4InB4p"
+                  >
+                    Illustré par : 
+                  </strong>
+                  Franz vohwinkel
+                </p>
+                 
+                <p
+                  class="s-hGRcS-4InB4p"
+                >
+                  <strong
+                    class="s-hGRcS-4InB4p"
+                  >
+                    Distribué par : 
+                  </strong>
+                  Amigo, Gigamic
+                </p>
+              </details>
+            </div>
              
-          </span>
-           
-          <span
-            class="created s-lt2MTuasm2zx"
-          >
-            29 juil., 08:17
-          </span>
-           
-          <span
-            class="players s-lt2MTuasm2zx"
-          >
-            avec Dams, Célia
-          </span>
-        </article>
-        <!--&lt;GameLink&gt;-->
-      </section>
-       
-      <h2
-        class="s-A-bC3Hke5zSn"
+            <span
+              class="characteristics s-hGRcS-4InB4p"
+            >
+              <span
+                class="s-hGRcS-4InB4p"
+              >
+                <span
+                  class="material-icons s-hGRcS-4InB4p"
+                >
+                  people
+                </span>
+                2-8
+              </span>
+               
+              <span
+                class="s-hGRcS-4InB4p"
+              >
+                <span
+                  class="material-icons s-hGRcS-4InB4p"
+                >
+                  access_time
+                </span>
+                15'
+              </span>
+               
+              <span
+                class="s-hGRcS-4InB4p"
+              >
+                <span
+                  class="material-icons s-hGRcS-4InB4p"
+                >
+                  person
+                </span>
+                10+
+              </span>
+            </span>
+          </legend>
+        </div>
+      </article>
+      <!--&lt;CatalogItem&gt;-->
+      <article
+        class="s-hGRcS-4InB4p"
       >
-        Jeux disponibles
-      </h2>
-       
-      <section
-        aria-roledescription="catalog"
-        class="s-A-bC3Hke5zSn"
+        <img
+          alt="Jeu de 32 cartes"
+          class="s-hGRcS-4InB4p"
+          src="http://localhost:3001/games/32-cards/catalog/cover.webp"
+        />
+         
+        <div
+          class="content s-hGRcS-4InB4p"
+        >
+          <legend
+            class="s-hGRcS-4InB4p"
+          >
+            <div
+              class="title s-hGRcS-4InB4p"
+            >
+              <h3
+                class="s-hGRcS-4InB4p"
+              >
+                Jeu de 32 cartes
+              </h3>
+               
+              <details
+                class="s-hGRcS-4InB4p hidden"
+              >
+                <summary
+                  class="s-hGRcS-4InB4p"
+                >
+                  <strong
+                    class="s-hGRcS-4InB4p"
+                  >
+                    Créé par : 
+                  </strong>
+                  undefined
+                </summary>
+                 
+                <p
+                  class="s-hGRcS-4InB4p"
+                >
+                  <strong
+                    class="s-hGRcS-4InB4p"
+                  >
+                    Illustré par : 
+                  </strong>
+                  undefined
+                </p>
+                 
+                <p
+                  class="s-hGRcS-4InB4p"
+                >
+                  <strong
+                    class="s-hGRcS-4InB4p"
+                  >
+                    Distribué par : 
+                  </strong>
+                  undefined
+                </p>
+              </details>
+            </div>
+             
+            <span
+              class="characteristics s-hGRcS-4InB4p"
+            >
+              <span
+                class="s-hGRcS-4InB4p"
+              >
+                <span
+                  class="material-icons s-hGRcS-4InB4p"
+                >
+                  people
+                </span>
+                2-8
+              </span>
+               
+              <span
+                class="s-hGRcS-4InB4p hidden"
+              >
+                <span
+                  class="material-icons s-hGRcS-4InB4p"
+                >
+                  access_time
+                </span>
+                undefined'
+              </span>
+               
+              <span
+                class="s-hGRcS-4InB4p hidden"
+              >
+                <span
+                  class="material-icons s-hGRcS-4InB4p"
+                >
+                  person
+                </span>
+                undefined+
+              </span>
+            </span>
+          </legend>
+        </div>
+      </article>
+      <!--&lt;CatalogItem&gt;-->
+      <article
+        class="s-hGRcS-4InB4p"
       >
-        <article
+        <img
+          alt="Dames"
           class="s-hGRcS-4InB4p"
+          src="http://localhost:3001/games/draughts/catalog/cover.webp"
+        />
+         
+        <div
+          class="content s-hGRcS-4InB4p"
         >
-          <img
-            alt="Dune Imperium"
+          <legend
             class="s-hGRcS-4InB4p"
-            src="http://localhost:3001/games/dune-imperium/catalog/cover.webp"
-          />
-           
-          <div
-            class="content s-hGRcS-4InB4p"
           >
-            <legend
-              class="s-hGRcS-4InB4p"
+            <div
+              class="title s-hGRcS-4InB4p"
             >
-              <div
-                class="title s-hGRcS-4InB4p"
+              <h3
+                class="s-hGRcS-4InB4p"
               >
-                <h3
+                Dames
+              </h3>
+               
+              <details
+                class="s-hGRcS-4InB4p hidden"
+              >
+                <summary
                   class="s-hGRcS-4InB4p"
                 >
-                  Dune Imperium
-                </h3>
+                  <strong
+                    class="s-hGRcS-4InB4p"
+                  >
+                    Créé par : 
+                  </strong>
+                  undefined
+                </summary>
                  
-                <details
+                <p
                   class="s-hGRcS-4InB4p"
                 >
-                  <summary
+                  <strong
                     class="s-hGRcS-4InB4p"
                   >
-                    <strong
-                      class="s-hGRcS-4InB4p"
-                    >
-                      Créé par : 
-                    </strong>
-                    Paul Dennen
-                  </summary>
-                   
-                  <p
+                    Illustré par : 
+                  </strong>
+                  undefined
+                </p>
+                 
+                <p
+                  class="s-hGRcS-4InB4p"
+                >
+                  <strong
                     class="s-hGRcS-4InB4p"
                   >
-                    <strong
-                      class="s-hGRcS-4InB4p"
-                    >
-                      Illustré par : 
-                    </strong>
-                    Clay Brooks, Nate Storm, Raul Ramos, Brett Nienburg, Atila Guzey, Derek Herring, Kenan Jackson
-                  </p>
-                   
-                  <p
-                    class="s-hGRcS-4InB4p"
-                  >
-                    <strong
-                      class="s-hGRcS-4InB4p"
-                    >
-                      Distribué par : 
-                    </strong>
-                    Dire Wolf Digital, Gale Force Nine, Lucky Duck, Legendary
-                  </p>
-                </details>
-              </div>
+                    Distribué par : 
+                  </strong>
+                  undefined
+                </p>
+              </details>
+            </div>
+             
+            <span
+              class="characteristics s-hGRcS-4InB4p"
+            >
+              <span
+                class="s-hGRcS-4InB4p"
+              >
+                <span
+                  class="material-icons s-hGRcS-4InB4p"
+                >
+                  people
+                </span>
+                2
+              </span>
                
               <span
-                class="characteristics s-hGRcS-4InB4p"
+                class="s-hGRcS-4InB4p"
               >
                 <span
-                  class="s-hGRcS-4InB4p"
+                  class="material-icons s-hGRcS-4InB4p"
                 >
-                  <span
-                    class="material-icons s-hGRcS-4InB4p"
-                  >
-                    people
-                  </span>
-                  1-4
+                  access_time
                 </span>
-                 
-                <span
-                  class="s-hGRcS-4InB4p"
-                >
-                  <span
-                    class="material-icons s-hGRcS-4InB4p"
-                  >
-                    access_time
-                  </span>
-                  90'
-                </span>
-                 
-                <span
-                  class="s-hGRcS-4InB4p"
-                >
-                  <span
-                    class="material-icons s-hGRcS-4InB4p"
-                  >
-                    person
-                  </span>
-                  13+
-                </span>
+                30'
               </span>
-            </legend>
-          </div>
-        </article>
-        <!--&lt;CatalogItem&gt;-->
-        <article
-          class="s-hGRcS-4InB4p"
-        >
-          <img
-            alt="6 qui prend !"
-            class="s-hGRcS-4InB4p"
-            src="http://localhost:3001/games/6-takes/catalog/cover.webp"
-          />
-           
-          <div
-            class="content s-hGRcS-4InB4p"
-          >
-            <legend
-              class="s-hGRcS-4InB4p"
-            >
-              <div
-                class="title s-hGRcS-4InB4p"
-              >
-                <h3
-                  class="s-hGRcS-4InB4p"
-                >
-                  6 qui prend !
-                </h3>
-                 
-                <details
-                  class="s-hGRcS-4InB4p"
-                >
-                  <summary
-                    class="s-hGRcS-4InB4p"
-                  >
-                    <strong
-                      class="s-hGRcS-4InB4p"
-                    >
-                      Créé par : 
-                    </strong>
-                    Wolfgang Kramer
-                  </summary>
-                   
-                  <p
-                    class="s-hGRcS-4InB4p"
-                  >
-                    <strong
-                      class="s-hGRcS-4InB4p"
-                    >
-                      Illustré par : 
-                    </strong>
-                    Franz vohwinkel
-                  </p>
-                   
-                  <p
-                    class="s-hGRcS-4InB4p"
-                  >
-                    <strong
-                      class="s-hGRcS-4InB4p"
-                    >
-                      Distribué par : 
-                    </strong>
-                    Amigo, Gigamic
-                  </p>
-                </details>
-              </div>
                
               <span
-                class="characteristics s-hGRcS-4InB4p"
+                class="s-hGRcS-4InB4p"
               >
                 <span
-                  class="s-hGRcS-4InB4p"
+                  class="material-icons s-hGRcS-4InB4p"
                 >
-                  <span
-                    class="material-icons s-hGRcS-4InB4p"
-                  >
-                    people
-                  </span>
-                  2-8
+                  person
                 </span>
-                 
-                <span
-                  class="s-hGRcS-4InB4p"
-                >
-                  <span
-                    class="material-icons s-hGRcS-4InB4p"
-                  >
-                    access_time
-                  </span>
-                  15'
-                </span>
-                 
-                <span
-                  class="s-hGRcS-4InB4p"
-                >
-                  <span
-                    class="material-icons s-hGRcS-4InB4p"
-                  >
-                    person
-                  </span>
-                  10+
-                </span>
+                6+
               </span>
-            </legend>
-          </div>
-        </article>
-        <!--&lt;CatalogItem&gt;-->
-        <article
+            </span>
+          </legend>
+        </div>
+      </article>
+      <!--&lt;CatalogItem&gt;-->
+      <article
+        class="s-hGRcS-4InB4p"
+      >
+        <img
+          alt="Solitaire"
           class="s-hGRcS-4InB4p"
+          src="http://localhost:3001/games/klondike/catalog/cover.webp"
+        />
+         
+        <div
+          class="content s-hGRcS-4InB4p"
         >
-          <img
-            alt="Jeu de 32 cartes"
+          <legend
             class="s-hGRcS-4InB4p"
-            src="http://localhost:3001/games/32-cards/catalog/cover.webp"
-          />
-           
-          <div
-            class="content s-hGRcS-4InB4p"
           >
-            <legend
-              class="s-hGRcS-4InB4p"
+            <div
+              class="title s-hGRcS-4InB4p"
             >
-              <div
-                class="title s-hGRcS-4InB4p"
+              <h3
+                class="s-hGRcS-4InB4p"
               >
-                <h3
+                Solitaire
+              </h3>
+               
+              <details
+                class="s-hGRcS-4InB4p hidden"
+              >
+                <summary
                   class="s-hGRcS-4InB4p"
                 >
-                  Jeu de 32 cartes
-                </h3>
+                  <strong
+                    class="s-hGRcS-4InB4p"
+                  >
+                    Créé par : 
+                  </strong>
+                  undefined
+                </summary>
                  
-                <details
-                  class="s-hGRcS-4InB4p hidden"
+                <p
+                  class="s-hGRcS-4InB4p"
                 >
-                  <summary
+                  <strong
                     class="s-hGRcS-4InB4p"
                   >
-                    <strong
-                      class="s-hGRcS-4InB4p"
-                    >
-                      Créé par : 
-                    </strong>
-                    undefined
-                  </summary>
-                   
-                  <p
+                    Illustré par : 
+                  </strong>
+                  undefined
+                </p>
+                 
+                <p
+                  class="s-hGRcS-4InB4p"
+                >
+                  <strong
                     class="s-hGRcS-4InB4p"
                   >
-                    <strong
-                      class="s-hGRcS-4InB4p"
-                    >
-                      Illustré par : 
-                    </strong>
-                    undefined
-                  </p>
-                   
-                  <p
-                    class="s-hGRcS-4InB4p"
-                  >
-                    <strong
-                      class="s-hGRcS-4InB4p"
-                    >
-                      Distribué par : 
-                    </strong>
-                    undefined
-                  </p>
-                </details>
-              </div>
+                    Distribué par : 
+                  </strong>
+                  undefined
+                </p>
+              </details>
+            </div>
+             
+            <span
+              class="characteristics s-hGRcS-4InB4p"
+            >
+              <span
+                class="s-hGRcS-4InB4p"
+              >
+                <span
+                  class="material-icons s-hGRcS-4InB4p"
+                >
+                  people
+                </span>
+                1
+              </span>
                
               <span
-                class="characteristics s-hGRcS-4InB4p"
+                class="s-hGRcS-4InB4p"
               >
                 <span
-                  class="s-hGRcS-4InB4p"
+                  class="material-icons s-hGRcS-4InB4p"
                 >
-                  <span
-                    class="material-icons s-hGRcS-4InB4p"
-                  >
-                    people
-                  </span>
-                  2-8
+                  access_time
                 </span>
-                 
-                <span
-                  class="s-hGRcS-4InB4p hidden"
-                >
-                  <span
-                    class="material-icons s-hGRcS-4InB4p"
-                  >
-                    access_time
-                  </span>
-                  undefined'
-                </span>
-                 
-                <span
-                  class="s-hGRcS-4InB4p hidden"
-                >
-                  <span
-                    class="material-icons s-hGRcS-4InB4p"
-                  >
-                    person
-                  </span>
-                  undefined+
-                </span>
+                15'
               </span>
-            </legend>
-          </div>
-        </article>
-        <!--&lt;CatalogItem&gt;-->
-        <article
-          class="s-hGRcS-4InB4p"
-        >
-          <img
-            alt="Dames"
-            class="s-hGRcS-4InB4p"
-            src="http://localhost:3001/games/draughts/catalog/cover.webp"
-          />
-           
-          <div
-            class="content s-hGRcS-4InB4p"
-          >
-            <legend
-              class="s-hGRcS-4InB4p"
-            >
-              <div
-                class="title s-hGRcS-4InB4p"
-              >
-                <h3
-                  class="s-hGRcS-4InB4p"
-                >
-                  Dames
-                </h3>
-                 
-                <details
-                  class="s-hGRcS-4InB4p hidden"
-                >
-                  <summary
-                    class="s-hGRcS-4InB4p"
-                  >
-                    <strong
-                      class="s-hGRcS-4InB4p"
-                    >
-                      Créé par : 
-                    </strong>
-                    undefined
-                  </summary>
-                   
-                  <p
-                    class="s-hGRcS-4InB4p"
-                  >
-                    <strong
-                      class="s-hGRcS-4InB4p"
-                    >
-                      Illustré par : 
-                    </strong>
-                    undefined
-                  </p>
-                   
-                  <p
-                    class="s-hGRcS-4InB4p"
-                  >
-                    <strong
-                      class="s-hGRcS-4InB4p"
-                    >
-                      Distribué par : 
-                    </strong>
-                    undefined
-                  </p>
-                </details>
-              </div>
                
               <span
-                class="characteristics s-hGRcS-4InB4p"
+                class="s-hGRcS-4InB4p"
               >
                 <span
-                  class="s-hGRcS-4InB4p"
+                  class="material-icons s-hGRcS-4InB4p"
                 >
-                  <span
-                    class="material-icons s-hGRcS-4InB4p"
-                  >
-                    people
-                  </span>
-                  2
+                  person
                 </span>
-                 
-                <span
-                  class="s-hGRcS-4InB4p"
-                >
-                  <span
-                    class="material-icons s-hGRcS-4InB4p"
-                  >
-                    access_time
-                  </span>
-                  30'
-                </span>
-                 
-                <span
-                  class="s-hGRcS-4InB4p"
-                >
-                  <span
-                    class="material-icons s-hGRcS-4InB4p"
-                  >
-                    person
-                  </span>
-                  6+
-                </span>
+                7+
               </span>
-            </legend>
-          </div>
-        </article>
-        <!--&lt;CatalogItem&gt;-->
-        <article
-          class="s-hGRcS-4InB4p"
-        >
-          <img
-            alt="Solitaire"
-            class="s-hGRcS-4InB4p"
-            src="http://localhost:3001/games/klondike/catalog/cover.webp"
-          />
-           
-          <div
-            class="content s-hGRcS-4InB4p"
-          >
-            <legend
-              class="s-hGRcS-4InB4p"
-            >
-              <div
-                class="title s-hGRcS-4InB4p"
-              >
-                <h3
-                  class="s-hGRcS-4InB4p"
-                >
-                  Solitaire
-                </h3>
-                 
-                <details
-                  class="s-hGRcS-4InB4p hidden"
-                >
-                  <summary
-                    class="s-hGRcS-4InB4p"
-                  >
-                    <strong
-                      class="s-hGRcS-4InB4p"
-                    >
-                      Créé par : 
-                    </strong>
-                    undefined
-                  </summary>
-                   
-                  <p
-                    class="s-hGRcS-4InB4p"
-                  >
-                    <strong
-                      class="s-hGRcS-4InB4p"
-                    >
-                      Illustré par : 
-                    </strong>
-                    undefined
-                  </p>
-                   
-                  <p
-                    class="s-hGRcS-4InB4p"
-                  >
-                    <strong
-                      class="s-hGRcS-4InB4p"
-                    >
-                      Distribué par : 
-                    </strong>
-                    undefined
-                  </p>
-                </details>
-              </div>
-               
-              <span
-                class="characteristics s-hGRcS-4InB4p"
-              >
-                <span
-                  class="s-hGRcS-4InB4p"
-                >
-                  <span
-                    class="material-icons s-hGRcS-4InB4p"
-                  >
-                    people
-                  </span>
-                  1
-                </span>
-                 
-                <span
-                  class="s-hGRcS-4InB4p"
-                >
-                  <span
-                    class="material-icons s-hGRcS-4InB4p"
-                  >
-                    access_time
-                  </span>
-                  15'
-                </span>
-                 
-                <span
-                  class="s-hGRcS-4InB4p"
-                >
-                  <span
-                    class="material-icons s-hGRcS-4InB4p"
-                  >
-                    person
-                  </span>
-                  7+
-                </span>
-              </span>
-            </legend>
-          </div>
-        </article>
-        <!--&lt;CatalogItem&gt;-->
-      </section>
-    </div>
-  </main>
-   
-  
-  <!--&lt;+page&gt;-->
-</span>
+            </span>
+          </legend>
+        </div>
+      </article>
+      <!--&lt;CatalogItem&gt;-->
+    </section>
+  </div>
+</main>
 `;
