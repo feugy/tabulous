@@ -22,5 +22,5 @@ cd ../..
 
 # build games
 cd apps/games
-tar --create --file ../../dist/games.tar.gz -z *
+tar --create -h --file ../../dist/games.tar.gz -z *
 cd ../..
