@@ -14,13 +14,14 @@ cp hosting/tabulous.systemd dist/
 cp .nvmrc dist/
 
 # build server
-rm -rf node_modules
+rm -rf node_modules apps/*/node_modules
 pnpm --filter server --prod deploy dist/server
 cd dist/server
-tar --create -h --file ../server.tar.gz -z node_modules/ src/ package.json 
+tar --create --file ../server.tar.gz -z node_modules/ src/ package.json 
 cd ../..
+rm -rd dist/server
 
 # build games
 cd apps/games
-tar --create -h --file ../../dist/games.tar.gz -z *
+tar --create --file ../../dist/games.tar.gz -z *
 cd ../..
