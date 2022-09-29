@@ -28,10 +28,12 @@ Roadmap
 
 ## UI
 
+- bug: menu z-order is bellow indicators
 - bug: animating visibility from 0 to 1 creates trouble with texture alpha channel
 - bug: ICE failed message when peer reload their browser??
 - bug: attached, unselected, mesh are not ignored during dragging
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
+- drop zones should depend on the flipped status
 - click on stack size to select all/select stack on push?
 - collect player preferences when joining a game (requires to alter & reload game when joining rather than inviting)
 - option to invite players with url

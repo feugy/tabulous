@@ -224,7 +224,7 @@ async function createPeer(turnCredentials, playerId, signal) {
         peer = new Peer({
           initiator: signal === undefined,
           stream,
-          trickle: true,
+          trickle: false,
           config: {
             iceServers: getIceServers(turnCredentials)
           },
@@ -373,9 +373,15 @@ function buildConnectHandler({ connectTimeout, playerId, peer, resolve }) {
   }
 }
 
-function getIceServers({ username, credentials: credential }) {
+function getIceServers(/*{ username, credentials: credential }*/) {
   return [
-    { urls: 'stun:tabulous.fr' },
-    { urls: 'turn:tabulous.fr', username, credential }
+    // { urls: 'stun:tabulous.fr' },
+    // { urls: 'turn:tabulous.fr:3478', username, credential }
+    { urls: 'stun:openrelay.metered.ca:80' },
+    {
+      urls: 'turn:openrelay.metered.ca:80',
+      username: 'openrelayproject',
+      credential: 'openrelayproject'
+    }
   ]
 }
