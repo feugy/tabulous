@@ -15,7 +15,7 @@ const levels = {
   material: 'warn',
   move: 'warn',
   players: 'warn',
-  'peer-channels': 'warn',
+  'peer-channels': 'debug',
   quantifiable: 'warn',
   rotable: 'warn',
   selection: 'warn',

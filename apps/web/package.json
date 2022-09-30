@@ -63,7 +63,6 @@
     "postcss-nested": "^5.0.6",
     "rollup-plugin-svelte-svg": "^1.0.0-beta.6",
     "rxjs": "^7.5.2",
-    "simple-peer-light": "^9.10.0",
     "svelte": "^3.50.1",
     "svelte-htm": "^1.1.1",
     "svelte-intl": "^1.1.4",

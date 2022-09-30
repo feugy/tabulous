@@ -159,7 +159,6 @@ importers:
       postcss-nested: ^5.0.6
       rollup-plugin-svelte-svg: ^1.0.0-beta.6
       rxjs: ^7.5.2
-      simple-peer-light: ^9.10.0
       svelte: ^3.50.1
       svelte-htm: ^1.1.1
       svelte-intl: ^1.1.4
@@ -219,7 +218,6 @@ importers:
       postcss-nested: 5.0.6_postcss@8.4.16
       rollup-plugin-svelte-svg: 1.0.0-beta.6_svelte@3.50.1
       rxjs: 7.5.6
-      simple-peer-light: 9.10.0
       svelte: 3.50.1
       svelte-htm: 1.1.1_svelte@3.50.1
       svelte-intl: 1.1.4_o4b7x6lrgs2dxm5ss6j2sion54
@@ -727,7 +725,7 @@ packages:
     resolution: {integrity: sha512-IRnids8lblQ8e1i8h4JLyfJmebXE+ohcj8x8X/+Ew6ZB4H0Ui05z5YL6q5FOcl0zItVpu4adRzeyVNNUwmduIg==}
     dependencies:
       ajv: 8.11.0
-      ajv-formats: 2.1.1_ajv@8.11.0
+      ajv-formats: 2.1.1
       fast-uri: 2.1.0
 
   /@fastify/cors/8.1.0:
@@ -1478,10 +1476,8 @@ packages:
       clean-stack: 2.2.0
       indent-string: 4.0.0
 
-  /ajv-formats/2.1.1_ajv@8.11.0:
+  /ajv-formats/2.1.1:
     resolution: {integrity: sha512-Wx0Kx52hxE7C18hkMEggYlEifqWZtYaRgouJor+WMdPnQyEK13vgEWyVNup7SoeeoLMsr4kf5h6dOW11I15MUA==}
-    peerDependencies:
-      ajv: ^8.0.0
     peerDependenciesMeta:
       ajv:
         optional: true
@@ -2836,7 +2832,7 @@ packages:
     dependencies:
       '@fastify/deepmerge': 1.1.0
       ajv: 8.11.0
-      ajv-formats: 2.1.1_ajv@8.11.0
+      ajv-formats: 2.1.1
       fast-deep-equal: 3.1.3
       fast-uri: 2.1.0
       rfdc: 1.3.0
@@ -5101,10 +5097,6 @@ packages:
 
   /signal-exit/3.0.7:
     resolution: {integrity: sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ==}
-    dev: true
-
-  /simple-peer-light/9.10.0:
-    resolution: {integrity: sha512-E0INlXmVy2XvVkyMallKYQlcTAD8S0ov+goSVDGD2k9vwkjBCOyFmESoUsv0Pi7P3nSh6TuMIIi+S/YRok9WLg==}
     dev: true
 
   /simple-update-notifier/1.0.7:
