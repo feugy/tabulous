@@ -9,14 +9,14 @@ import {
   localStreamChange$
 } from './stream'
 import * as graphQL from '../graphql'
-import { makeLogger, buildSDPTransform } from '../utils'
+import { makeLogger, PeerConnection } from '../utils'
 
 const logger = makeLogger('peer-channels')
 
 const bitrate = 128
 const connectDuration = 20000
 const controlType = 'control'
-const channels = new Map()
+const connections = new Map()
 const streamSubscriptionByPlayerId = new Map()
 const lastMessageSent$ = new Subject()
 const lastMessageReceived$ = new Subject()
@@ -79,34 +79,48 @@ export async function openChannels(player, turnCredentials) {
   streamChangeSubscription = localStreamChange$
     .pipe(auditTime(10))
     .subscribe(streamState => send({ type: controlType, streamState }))
-  signalSubscription = runSubscription(graphQL.awaitSignal).subscribe(
-    async ({ from, signal: signalRaw, type }) => {
-      const signal = JSON.parse(signalRaw)
-      logger.debug({ from, signal, type }, `receiving ${type} from server`)
-      const channel = channels.get(from)
-      if (channel) {
-        channel.handleSignal(type, signal)
-      } else {
-        if (type === 'offer') {
+
+  return new Promise(resolve => {
+    signalSubscription = runSubscription(graphQL.awaitSignal).subscribe(
+      async ({ from, signal: signalRaw, type }) => {
+        logger.debug({ from, signalRaw, type }, `receiving ${type} from server`)
+        const signal = JSON.parse(signalRaw)
+        if (type === 'ready') {
+          resolve()
+        } else if (type === 'offer') {
+          unwire(from)
           // new peer joining
-          createPeer(
+          const peer = new PeerConnection({
+            bitrate,
             turnCredentials,
-            from,
-            (peer, to, type, signal) => {
-              logger.debug(
-                { peer, type, signal },
-                `${type} ready, sharing with server`
-              )
+            sendSignal(playerId, type, signal) {
               runMutation(graphQL.sendSignal, {
-                signal: { type, to, signal: JSON.stringify(signal) }
+                signal: { type, to: playerId, signal: JSON.stringify(signal) }
               })
             },
-            signal
-          )
+            onData: buildDataHandler(from),
+            onClose: () => {
+              logger.warn({ peer }, `connection terminated with peer ${from}`)
+              unwire(from)
+            }
+          })
+          connections.set(from, peer)
+          try {
+            await peer.connect(from, signal)
+            refreshConnected()
+            lastConnectedId$.next(from)
+          } catch (error) {
+            logger.warn(
+              { peer, error },
+              `failed to connect with peer ${from}: ${error.message}`
+            )
+          }
+        } else {
+          connections.get(from)?.handleSignal(type, signal)
         }
       }
-    }
-  )
+    )
+  })
 }
 
 /**
@@ -114,7 +128,6 @@ export async function openChannels(player, turnCredentials) {
  * @async
  * @param {string} playerId - id of the player to connect with.
  * @param {object} turnCredentials - turn credentials from session.
- * @returns {Peer} - connection, in case of success.
  * @throws {Error} when no connected peer is matching provided id.
  */
 export async function connectWith(playerId, turnCredentials) {
@@ -123,16 +136,33 @@ export async function connectWith(playerId, turnCredentials) {
     { to: playerId, from: current.player.id },
     `establishing connection with peer ${playerId}`
   )
-  return await createPeer(
+  const peer = new PeerConnection({
+    bitrate,
     turnCredentials,
-    playerId,
-    (peer, to, type, signal) => {
-      logger.debug({ peer, type, signal }, `${type} ready, sharing with server`)
+    sendSignal(playerId, type, signal) {
       runMutation(graphQL.sendSignal, {
-        signal: { type, to, signal: JSON.stringify(signal) }
+        signal: { type, to: playerId, signal: JSON.stringify(signal) }
       })
+    },
+    onData: buildDataHandler(playerId),
+    onClose: () => {
+      logger.warn({ peer }, `connection terminated with peer ${playerId}`)
+      unwire(playerId)
     }
-  )
+  })
+  connections.set(playerId, peer)
+  try {
+    await peer.connect(playerId)
+    refreshConnected()
+    lastConnectedId$.next(playerId)
+    return peer
+  } catch (error) {
+    logger.warn(
+      { peer, error },
+      `failed to connect with peer ${playerId}: ${error.message}`
+    )
+    throw error
+  }
 }
 
 /**
@@ -142,7 +172,7 @@ export async function connectWith(playerId, turnCredentials) {
 export function closeChannels() {
   logger.info(`closing peer communication`)
   // copies all keys as we're about to alter the collection
-  for (const id of [...channels.keys()]) {
+  for (const id of [...connections.keys()]) {
     unwire(id)
   }
   releaseMediaStream()
@@ -160,20 +190,19 @@ export function closeChannels() {
  * @param {string} [playerId] - targeted player id. Do not provide to broacast data
  */
 export function send(data, playerId = null) {
-  if (!current?.player || (playerId && !channels.has(playerId))) {
+  if (!current?.player || (playerId && !connections.has(playerId))) {
     return
   }
   if (data?.type !== controlType) {
     lastMessageSent$.next({ data, playerId: current.player.id })
   }
   const destination = playerId
-    ? new Map([[playerId, channels.get(playerId)]])
-    : channels
-  for (const [playerId, { peer, established, write }] of destination) {
-    if (established) {
-      logger.debug({ data, peer }, `sending data to ${playerId}`)
+    ? new Map([[playerId, connections.get(playerId)]])
+    : connections
+  for (const [playerId, peer] of destination) {
+    if (peer.established) {
       try {
-        write(JSON.stringify({ ...data, messageId }))
+        peer.sendData({ ...data, messageId })
       } catch (error) {
         logger.warn(
           { error, peer, data },
@@ -187,14 +216,16 @@ export function send(data, playerId = null) {
 }
 
 function refreshConnected() {
-  const peers = [...channels.values()].filter(({ established }) => established)
+  const peers = [...connections.values()].filter(
+    ({ established }) => established
+  )
   connected$.next(
     peers.length > 0
       ? [{ playerId: current.player.id }, ...peers].map(
           ({ playerId, stream, streamState }) => ({
             playerId,
             stream,
-            ...(streamState ?? {})
+            ...(streamState || {})
           })
         )
       : []
@@ -203,194 +234,15 @@ function refreshConnected() {
 
 function unwire(id) {
   logger.debug({ id }, `cleaning connection to ${id}`)
-  channels.get(id)?.peer?.destroy()
-  channels.delete(id)
+  connections.get(id)?.destroy()
+  connections.delete(id)
   streamSubscriptionByPlayerId.get(id)?.unsubscribe()
   streamSubscriptionByPlayerId.delete(id)
   refreshConnected()
-  if (channels.size === 0) {
+  if (connections.size === 0) {
     releaseMediaStream()
   }
   lastDisconnectedId$.next(id)
-}
-
-async function createPeer(
-  turnCredentials,
-  playerId,
-  sendSignal,
-  signal = null
-) {
-  let peer
-  let dataChannel
-  return new Promise((resolve, reject) => {
-    /*let isFirst = true
-    streamSubscriptionByPlayerId.set(
-      playerId,
-      stream$.subscribe(async stream => {*/
-    /*if (isFirst) {
-          // stream$ is a BehaviorSubject: it'll immediately call the subscriber, while we want to await for actual value
-          isFirst = false
-          return
-        }
-        if (peer) {
-          peer.removeStream(peer.streams[0])
-          if (stream) {
-            peer.addStream(stream)
-          }
-          return
-        }*/
-    peer = new RTCPeerConnection({
-      iceServers: getIceServers(turnCredentials)
-    })
-
-    channels.set(playerId, {
-      write(data) {
-        dataChannel?.send(data)
-      },
-      async handleSignal(type, signal) {
-        logger.debug({ peer, type, signal }, `receiving ${type} from server`)
-        if (type === 'answer') {
-          try {
-            await peer.setRemoteDescription(new RTCSessionDescription(signal))
-          } catch (error) {
-            logger.warn(
-              { peer, type, signal, error },
-              `failed setting remote description`,
-              error
-            )
-            // TODO close?
-          }
-        } else if (type === 'candidate') {
-          try {
-            await peer.addIceCandidate(new RTCIceCandidate(signal))
-          } catch (error) {
-            logger.warn(
-              { peer, type, signal },
-              `failed adding ICE candidate`,
-              error
-            )
-          }
-        }
-      },
-      lastMessageId: 0,
-      playerId,
-      established: false
-    })
-
-    peer.addEventListener('icecandidate', ({ candidate }) => {
-      if (candidate) {
-        sendSignal(peer, playerId, 'candidate', candidate)
-      }
-    })
-    peer.addEventListener('connectionstatechange', () => {
-      const { connectionState } = peer
-      logger.info(
-        { peer, connectionState },
-        `connection is now ${connectionState}`
-      )
-      if (connectionState === 'closed' || connectionState === 'failed') {
-        reject(new Error('could not establish connection'))
-      }
-    })
-
-    if (!signal) {
-      // is an initiator
-      dataChannel = peer.createDataChannel('data')
-      dataChannel.addEventListener(
-        'message',
-        buildDataHandler({ peer, playerId })
-      )
-      dataChannel.addEventListener(
-        'open',
-        buildConnectHandler({ connectTimeout: 0, playerId, peer, resolve })
-      )
-      peer
-        .createOffer()
-        .then(offer => {
-          peer.setLocalDescription(offer)
-          sendSignal(peer, playerId, 'offer', offer)
-        })
-        .catch(error => {
-          logger.warn(
-            { peer, error },
-            `failed to create offer: ${error.message}`
-          )
-          // TODO close connection
-        })
-    } else {
-      peer
-        .setRemoteDescription(new RTCSessionDescription(signal))
-        .catch(error => {
-          logger.warn(
-            { peer, type: 'offer', signal, error },
-            `failed setting remove description answer: ${error.message}`
-          )
-          // TODO close connection ?
-        })
-      peer
-        .createAnswer()
-        .then(answer => {
-          peer.setLocalDescription(answer)
-          sendSignal(peer, playerId, 'answer', answer)
-        })
-        .catch(error => {
-          logger.warn(
-            { peer, error },
-            `failed to create answer: ${error.message}`
-          )
-          // TODO close connection
-        })
-      peer.addEventListener('datachannel', event => {
-        dataChannel = event.channel
-        dataChannel.addEventListener(
-          'message',
-          buildDataHandler({ peer, playerId })
-        )
-        dataChannel.addEventListener(
-          'open',
-          buildConnectHandler({ connectTimeout: 0, playerId, peer, resolve })
-        )
-      })
-    }
-    /*})
-    )
-    acquireMediaStream()*/
-  })
-}
-
-function buildErrorHandler({ peer, playerId }) {
-  return function handleClose(error) {
-    logger.warn(
-      { peer, error },
-      `peer ${playerId} encounter an error: ${error.message}`
-    )
-  }
-}
-
-function buildCloseHandler({ peer, playerId, connectTimeout }) {
-  return function handleClose() {
-    clearTimeout(connectTimeout)
-    logger.info({ peer }, `connection to ${playerId} closed`)
-    unwire(playerId)
-  }
-}
-
-function buildStreamHandler({ peer, playerId }) {
-  return function handleStream(stream) {
-    logger.debug({ peer }, `receiving stream from ${playerId}`)
-    channels.get(playerId).stream = stream
-    refreshConnected()
-  }
-}
-
-function buildSignalHandler({ peer, playerId }) {
-  return function handleSignal(signal) {
-    const type = signal?.type
-    logger.debug({ peer, signal }, `${signal.type} ready, sharing with server`)
-    runMutation(graphQL.sendSignal, {
-      signal: { type, to: playerId, signal: JSON.stringify(signal) }
-    })
-  }
 }
 
 unorderedMessages$
@@ -423,13 +275,9 @@ unorderedMessages$
     unorderedMessages$.next(null)
   })
 
-function buildDataHandler({ peer, playerId }) {
-  // typeof https://developer.mozilla.org/en-US/docs/Web/API/RTCDataChannel/message_event
-  return function handleData(event) {
-    const data = JSON.parse(event.data)
-    logger.debug({ data, peer }, `data from ${playerId}`)
-
-    const { lastMessageId } = channels.get(playerId)
+function buildDataHandler(playerId) {
+  return function handleData(data) {
+    const { lastMessageId } = connections.get(playerId)
     if (data.messageId !== lastMessageId + 1 && lastMessageId > 0) {
       logger.error(
         `Invalid message ids: received ${data.messageId}, expecting: ${lastMessageId}`
@@ -437,7 +285,7 @@ function buildDataHandler({ peer, playerId }) {
       unorderedMessages$.next({ data, playerId })
     } else {
       if (data?.type === controlType) {
-        channels.get(playerId).streamState = data.streamState
+        connections.get(playerId).streamState = data.streamState
         refreshConnected()
       } else {
         lastMessageReceived$.next({ data, playerId })
@@ -445,29 +293,7 @@ function buildDataHandler({ peer, playerId }) {
     }
     // stores higher last only, so unorderedMessage could get lower ones
     if (data.messageId > lastMessageId) {
-      channels.get(playerId).lastMessageId = data.messageId
+      connections.get(playerId).lastMessageId = data.messageId
     }
   }
-}
-
-function buildConnectHandler({ connectTimeout, playerId, peer, resolve }) {
-  return function handleConnect() {
-    clearTimeout(connectTimeout)
-    logger.info({ peers: channels }, `connection established with ${playerId}`)
-    channels.get(playerId).established = true
-    refreshConnected()
-    lastConnectedId$.next(playerId)
-    resolve(peer)
-  }
-}
-
-function getIceServers({ username, credentials: credential }) {
-  return [
-    { urls: 'stun:openrelay.metered.ca:80' }, // 'stun:tabulous.fr' },
-    {
-      urls: 'turn:openrelay.metered.ca:80',
-      username: 'openrelayproject',
-      credential: 'openrelayproject'
-    } // turn:tabulous.fr', username, credential }
-  ]
 }

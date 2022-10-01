@@ -27,7 +27,7 @@ vi.mock('../../src/stores/stream', () => {
   }
 })
 
-describe('Peer channels store', () => {
+describe.skip('Peer channels store', () => {
   const logger = mockLogger('peer-channels')
   const playerId1 = 'Paul'
   const playerId2 = 'Jack'
