@@ -25,7 +25,7 @@
   }
 </script>
 
-{#each items as { screenPosition, id, mesh, player, isFeedback, ...rest } (id)}
+{#each items as { screenPosition, id, mesh, player, isFeedback, ...rest } ({ id, screenPosition })}
   {#if isFeedback}
     <Feedback
       {screenPosition}
