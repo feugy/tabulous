@@ -556,6 +556,7 @@ describe('given a mocked game engine', () => {
         const errorMessage = 'No game data after 30s'
         const promise = loadGame(game.id, { player, turnCredentials })
         await nextPromise()
+        await nextPromise()
         vi.runAllTimers()
         await expect(promise).rejects.toThrow(errorMessage)
         expect(error).toHaveBeenCalledWith(errorMessage)
