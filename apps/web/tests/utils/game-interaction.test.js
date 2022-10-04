@@ -907,13 +907,16 @@ describe('Game interaction model', () => {
       })
 
       it('closes menu on mouse wheel', () => {
+        const preventDefault = vi.fn()
         inputManager.onWheelObservable.notifyObservers({
           event: {
-            deltaY: Math.floor(Math.random() * 100)
+            deltaY: Math.floor(Math.random() * 100),
+            preventDefault
           }
         })
         expect(get(actionMenuProps$)).toBeNull()
         expectMeshActions(tapped)
+        expect(preventDefault).toHaveBeenCalledTimes(1)
       })
 
       it('closes menu on pinch start', () => {
@@ -1245,22 +1248,29 @@ describe('Game interaction model', () => {
       expect(selectWithinBox).not.toHaveBeenCalled()
     })
 
-    it('rotates camera on middle click drag', () => {
+    it.each([
+      { title: 'middle click', event: { pointerType: 'mouse' }, button: 1 },
+      {
+        title: 'meta key + any click',
+        event: { pointerType: 'mouse', metaKey: true },
+        button: 0
+      }
+    ])('rotates camera on $title drag', ({ event, button }) => {
       inputManager.onDragObservable.notifyObservers({
         type: 'dragStart',
-        event: { pointerType: 'mouse' },
-        button: 1
+        event,
+        button
       })
       inputManager.onDragObservable.notifyObservers({
         type: 'drag',
-        event: { pointerType: 'mouse' },
-        button: 1
+        event,
+        button
       })
       expect(cameraManager.rotate).toHaveBeenCalled()
       inputManager.onDragObservable.notifyObservers({
         type: 'dragStop',
-        event: { pointerType: 'mouse' },
-        button: 1
+        event,
+        button
       })
       expect(cameraManager.rotate).toHaveBeenCalledTimes(1)
       expect(cameraManager.pan).not.toHaveBeenCalled()
@@ -1290,12 +1300,14 @@ describe('Game interaction model', () => {
     })
 
     it('zooms camera on mouse wheel', () => {
-      const event = { deltaY: Math.floor(Math.random() * 100) }
+      const preventDefault = vi.fn()
+      const event = { deltaY: Math.floor(Math.random() * 100), preventDefault }
       inputManager.onWheelObservable.notifyObservers({ event })
       expect(cameraManager.zoom).toHaveBeenCalledTimes(1)
-      expect(cameraManager.zoom).toHaveBeenCalledWith(event.deltaY * 0.1)
+      expect(cameraManager.zoom).toHaveBeenCalledWith(event.deltaY)
       expect(cameraManager.rotate).not.toHaveBeenCalled()
       expect(cameraManager.pan).not.toHaveBeenCalled()
+      expect(preventDefault).toHaveBeenCalledTimes(1)
     })
 
     it('zooms camera on pinch', () => {

@@ -257,9 +257,10 @@ export function attachInputs({
      */
     wheels$.subscribe({
       next: ({ event }) => {
+        event.preventDefault()
         logger.info({ event }, `zooming camera with wheel`)
         resetMenu()
-        cameraManager.zoom(event.deltaY * 0.1)
+        cameraManager.zoom(event.deltaY)
       }
     }),
 
@@ -431,10 +432,10 @@ function isMouse(event) {
 
 function pointerKind(event, button, pointers) {
   return isMouse(event)
-    ? button === 0
-      ? 'left'
-      : button === 1
+    ? event.metaKey || button === 1
       ? 'middle'
+      : button === 0
+      ? 'left'
       : button === 2
       ? 'right'
       : null
