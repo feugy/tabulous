@@ -65,8 +65,8 @@ export const localStreamChange$ = streamChange$.asObservable()
 /**
  * Acquires local video and audio stream.
  * Asks end user for permission, and populates `stream$` observable.
- * Does nothing when stream is already attached
  * @param {MediaDeviceInfo} desired? - desired device.
+ * @return {MediaStream} the acquired stream , if any
  */
 export async function acquireMediaStream(desired) {
   logger.debug({ desired }, `acquiring local media steam`)
@@ -82,8 +82,10 @@ export async function acquireMediaStream(desired) {
       currentCamera.next(video)
       currentMic.next(audio)
       saveLastMediaIds({ audio, video })
-      stream.next(await navigator.mediaDevices.getUserMedia({ audio, video }))
+      const result = await navigator.mediaDevices.getUserMedia({ audio, video })
+      stream.next(result)
       logger.info(`media successfully attached`)
+      return result
     } catch (error) {
       logger.warn({ error }, `Failed to access media devices: ${error.message}`)
       resetAll()

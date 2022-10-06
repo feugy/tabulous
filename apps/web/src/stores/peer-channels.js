@@ -1,11 +1,9 @@
-/* eslint-disable no-unused-vars */
 import 'webrtc-adapter'
 import { auditTime, BehaviorSubject, Subject, filter, scan } from 'rxjs'
 import { runMutation, runSubscription } from './graphql-client'
 import {
   acquireMediaStream,
   releaseMediaStream,
-  stream$,
   localStreamChange$
 } from './stream'
 import * as graphQL from '../graphql'
@@ -14,7 +12,6 @@ import { makeLogger, PeerConnection } from '../utils'
 const logger = makeLogger('peer-channels')
 
 const bitrate = 128
-const connectDuration = 20000
 const controlType = 'control'
 const connections = new Map()
 const streamSubscriptionByPlayerId = new Map()
@@ -28,6 +25,36 @@ let signalSubscription
 let streamChangeSubscription
 let current
 let messageId = 1
+
+unorderedMessages$
+  .pipe(
+    // orders message, lower id first
+    scan(
+      (list, last) =>
+        last === null
+          ? null
+          : [...list, last].sort((a, b) => a.data.messageId - b.data.messageId),
+      []
+    ),
+    filter(list => {
+      // no list or list of one? do not emit
+      if (list === null || list.length === 1) {
+        return false
+      }
+      // emit only if all messages are in order
+      return list.every(
+        ({ data: { messageId } }, i) =>
+          i === 0 || list[i - 1].data.messageId === messageId - 1
+      )
+    })
+  )
+  .subscribe(list => {
+    // processes each ordered message, and clears list
+    for (const data of list) {
+      lastMessageReceived$.next(data)
+    }
+    unorderedMessages$.next(null)
+  })
 
 /**
  * @typedef {object} PeerPlayer
@@ -87,8 +114,7 @@ export async function openChannels(player, turnCredentials) {
         const signal = JSON.parse(signalRaw)
         if (type === 'ready') {
           resolve()
-        } else if (type === 'offer') {
-          unwire(from)
+        } else if (type === 'offer' && !connections.has(from)) {
           // new peer joining
           const peer = new PeerConnection({
             bitrate,
@@ -99,6 +125,7 @@ export async function openChannels(player, turnCredentials) {
               })
             },
             onData: buildDataHandler(from),
+            onRemoteStream: buildStreamHandler(from),
             onClose: () => {
               logger.warn({ peer }, `connection terminated with peer ${from}`)
               unwire(from)
@@ -109,6 +136,7 @@ export async function openChannels(player, turnCredentials) {
             await peer.connect(from, signal)
             refreshConnected()
             lastConnectedId$.next(from)
+            peer.attach(await acquireMediaStream())
           } catch (error) {
             logger.warn(
               { peer, error },
@@ -145,12 +173,14 @@ export async function connectWith(playerId, turnCredentials) {
       })
     },
     onData: buildDataHandler(playerId),
+    onRemoteStream: buildStreamHandler(playerId),
     onClose: () => {
       logger.warn({ peer }, `connection terminated with peer ${playerId}`)
       unwire(playerId)
     }
   })
   connections.set(playerId, peer)
+  peer.attach(await acquireMediaStream())
   try {
     await peer.connect(playerId)
     refreshConnected()
@@ -225,7 +255,7 @@ function refreshConnected() {
           ({ playerId, stream, streamState }) => ({
             playerId,
             stream,
-            ...(streamState || {})
+            streamState
           })
         )
       : []
@@ -245,36 +275,6 @@ function unwire(id) {
   lastDisconnectedId$.next(id)
 }
 
-unorderedMessages$
-  .pipe(
-    // orders message, lower id first
-    scan(
-      (list, last) =>
-        last === null
-          ? null
-          : [...list, last].sort((a, b) => a.data.messageId - b.data.messageId),
-      []
-    ),
-    filter(list => {
-      // no list or list of one? do not emit
-      if (list === null || list.length === 1) {
-        return false
-      }
-      // emit only if all messages are in order
-      return list.every(
-        ({ data: { messageId } }, i) =>
-          i === 0 || list[i - 1].data.messageId === messageId - 1
-      )
-    })
-  )
-  .subscribe(list => {
-    // processes each ordered message, and clears list
-    for (const data of list) {
-      lastMessageReceived$.next(data)
-    }
-    unorderedMessages$.next(null)
-  })
-
 function buildDataHandler(playerId) {
   return function handleData(data) {
     const { lastMessageId } = connections.get(playerId)
@@ -285,7 +285,7 @@ function buildDataHandler(playerId) {
       unorderedMessages$.next({ data, playerId })
     } else {
       if (data?.type === controlType) {
-        connections.get(playerId).streamState = data.streamState
+        connections.get(playerId).streamState = data.streamState ?? {}
         refreshConnected()
       } else {
         lastMessageReceived$.next({ data, playerId })
@@ -295,5 +295,13 @@ function buildDataHandler(playerId) {
     if (data.messageId > lastMessageId) {
       connections.get(playerId).lastMessageId = data.messageId
     }
+  }
+}
+
+function buildStreamHandler(playerId) {
+  return function handleRemoteStream(stream) {
+    logger.debug({ from: playerId }, `receiving stream from ${playerId}`)
+    connections.get(playerId).stream = stream
+    refreshConnected()
   }
 }

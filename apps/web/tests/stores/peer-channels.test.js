@@ -2,7 +2,6 @@ import { faker } from '@faker-js/faker'
 import { randomUUID } from 'crypto'
 import { Subject } from 'rxjs'
 import { get } from 'svelte/store'
-import Peer from 'simple-peer-light'
 import * as graphQL from '../../src/graphql'
 import * as communication from '../../src/stores/peer-channels'
 import {
@@ -13,9 +12,9 @@ import {
 } from '../../src/stores/stream'
 import { runMutation, runSubscription } from '../../src/stores/graphql-client'
 import { mockLogger } from '../utils.js'
-import { sleep } from '../../src/utils'
+import { sleep, PeerConnection } from '../../src/utils'
 
-vi.mock('simple-peer-light')
+vi.mock('../../src/utils/peer-connection')
 vi.mock('../../src/stores/graphql-client')
 vi.mock('../../src/stores/stream', () => {
   const { BehaviorSubject, Subject } = require('rxjs')
@@ -68,22 +67,15 @@ describe.skip('Peer channels store', () => {
     lastDisconnectedId = null
     messagesSent = []
     messagesReceived = []
-    Peer.mockImplementation(({ stream } = {}) => {
+
+    PeerConnection.mockImplementation(({ onData, sendSignal, onClose }) => {
       const peer = {
-        id: randomUUID(),
-        events: {},
-        on: (event, handler) => {
-          if (!peer.events[event]) {
-            peer.events[event] = vi.fn()
-          }
-          peer.events[event](handler)
-        },
-        signal: vi.fn(),
-        send: vi.fn(),
+        established: false,
+        connect: vi.fn(),
         destroy: vi.fn(),
-        addStream: vi.fn(),
-        removeStream: vi.fn(),
-        streams: [stream]
+        handleSignal: vi.fn(),
+        sendData: vi.fn(),
+        onData: vi.fn()
       }
       peers.push(peer)
       return peer
@@ -103,7 +95,7 @@ describe.skip('Peer channels store', () => {
   it('can not connect with peer until WebSocket is open', () => {
     communication.connectWith(playerId3, turnCredentials)
     expect(get(communication.connected)).toEqual([])
-    expect(Peer).not.toHaveBeenCalled()
+    expect(PeerConnection).not.toHaveBeenCalled()
   })
 
   it('starts subscription for a given player', async () => {
@@ -121,36 +113,25 @@ describe.skip('Peer channels store', () => {
       communication.openChannels({ id: playerId1 }, turnCredentials)
     })
 
-    it('opens WebRTC peer when receiving an offer, and sends the answer through mutation', async () => {
-      const offer = {
+    it.only('opens WebRTC peer when receiving an offer, and sends the answer through mutation', async () => {
+      const offer = { type: 'offer', signal: faker.lorem.words() }
+      expect(PeerConnection).not.toHaveBeenCalled()
+
+      await awaitSignal.next({
         type: 'offer',
         from: playerId2,
-        signal: faker.lorem.words()
-      }
-      const answer = { type: 'answer', data: faker.lorem.words() }
-      expect(Peer).not.toHaveBeenCalled()
-
-      await awaitSignal.next(offer)
-
-      expectPeerOptions(false)
-      expect(peers[0].signal).toHaveBeenCalledWith(offer.signal)
-
-      peers[0].events.signal.mock.calls[0][0](answer)
-      expect(runMutation).toHaveBeenCalledWith(graphQL.sendSignal, {
-        signal: {
-          type: 'answer',
-          to: offer.from,
-          signal: JSON.stringify(answer)
-        }
+        signal: JSON.stringify(offer)
       })
 
-      peers[0].events.connect.mock.calls[0][0]()
+      expectPeerOptions(false)
+      expect(peers[0].connect).toHaveBeenCalledWith(playerId2, offer)
+
       expect(get(communication.connected)).toEqual([
         { playerId: playerId1 },
         { playerId: playerId2 }
       ])
       expect(lastConnectedId).toEqual(playerId2)
-      expect(Peer).toHaveBeenCalledTimes(1)
+      expect(PeerConnection).toHaveBeenCalledTimes(1)
       expect(peers[0].events.signal).toHaveBeenCalledTimes(1)
       expect(runMutation).toHaveBeenCalledTimes(1)
     })
@@ -239,7 +220,7 @@ describe.skip('Peer channels store', () => {
     })
   })
 
-  describe('given connected peers', () => {
+  describe.skip('given connected peers', () => {
     const awaitSignal = new Subject()
 
     beforeEach(async () => {
@@ -415,24 +396,9 @@ describe.skip('Peer channels store', () => {
   })
 
   function expectPeerOptions(initiator = true) {
-    expect(Peer).toHaveBeenCalledWith(
-      expect.objectContaining({
-        initiator,
-        stream,
-        trickle: true,
-        sdpTransform: expect.any(Function),
-        config: {
-          iceServers: [
-            { urls: 'stun:tabulous.fr' },
-            {
-              urls: 'turn:tabulous.fr',
-              username: turnCredentials.username,
-              credential: turnCredentials.credentials
-            }
-          ]
-        }
-      })
+    expect(PeerConnection).toHaveBeenCalledWith(
+      expect.objectContaining({ turnCredentials })
     )
-    expect(Peer).toHaveBeenCalledTimes(1)
+    expect(PeerConnection).toHaveBeenCalledTimes(1)
   }
 })
