@@ -2,7 +2,6 @@
 
 Roadmap
 
-- lawyer council
 - web: terms & condition
 - web: cookie policy
 - server + web: first log-in with T&C
@@ -284,16 +283,14 @@ Some useful commands:
 There is no built-in way for the remote side of an WebRTC connection to know that video or audio was disabled.
 The mute/unmute events are meant for network issues. Stopping a track is definitive. Adding/removing track from stream only works locally (or would trigger re-negociation)
 
-STUN & TURN server:
-
-```shell
-docker run -d --network=host coturn/coturn --external-ip=78.192.173.27 --relay-ip=192.168.1.45 -X -v -u tabulous:soulubat -a -f -r tabulous
-
-```
-
 Nice sources for 3D textures:
 
 - [3DTextures](https://3dtextures.me/) (free)
 - [Architextures](https://architextures.org/textures) (copyrighted)
 
 Run playwright in debug mode, on a given file: `PWDEBUG=1 pnpm --filter web test:integration:run -- home.spec`
+
+WebRTC recent (2021) changes now allows [perfect negociation](https://w3c.github.io/webrtc-pc/#perfect-negotiation-example), which highly simplifies.
+
+`enumerateDevice` has a limitation: when user never allowed it yet, it's returning empty labels.
+There's no good way to solve it, and it's an [ongoing discussion](https://github.com/w3c/mediacapture-main/issues/874)

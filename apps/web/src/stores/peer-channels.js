@@ -4,7 +4,8 @@ import { runMutation, runSubscription } from './graphql-client'
 import {
   acquireMediaStream,
   releaseMediaStream,
-  localStreamChange$
+  localStreamChange$,
+  stream$
 } from './stream'
 import * as graphQL from '../graphql'
 import { makeLogger, PeerConnection } from '../utils'
@@ -21,8 +22,7 @@ const unorderedMessages$ = new Subject()
 const connected$ = new BehaviorSubject([])
 const lastConnectedId$ = new Subject()
 const lastDisconnectedId$ = new Subject()
-let signalSubscription
-let streamChangeSubscription
+let subscriptions = []
 let current
 let messageId = 1
 
@@ -55,12 +55,6 @@ unorderedMessages$
     }
     unorderedMessages$.next(null)
   })
-
-/**
- * @typedef {object} PeerPlayer
- * @property {string} playerId - player id
- * @property {stream} stream? - media stream from that player
- */
 
 /**
  * Emits last data sent to another player
@@ -103,50 +97,62 @@ export async function openChannels(player, turnCredentials) {
   current = { player }
   logger.info({ player }, 'initializing peer communication')
 
-  streamChangeSubscription = localStreamChange$
-    .pipe(auditTime(10))
-    .subscribe(streamState => send({ type: controlType, streamState }))
+  subscriptions = [
+    localStreamChange$
+      .pipe(auditTime(10))
+      .subscribe(state => send({ type: controlType, state })),
+    stream$.subscribe(stream => {
+      for (const peer of connections.values()) {
+        peer.attach(stream)
+      }
+    })
+  ]
 
   return new Promise(resolve => {
-    signalSubscription = runSubscription(graphQL.awaitSignal).subscribe(
-      async ({ from, signal: signalRaw, type }) => {
-        logger.debug({ from, signalRaw, type }, `receiving ${type} from server`)
-        const signal = JSON.parse(signalRaw)
-        if (type === 'ready') {
-          resolve()
-        } else if (type === 'offer' && !connections.has(from)) {
-          // new peer joining
-          const peer = new PeerConnection({
-            bitrate,
-            turnCredentials,
-            sendSignal(playerId, type, signal) {
-              runMutation(graphQL.sendSignal, {
-                signal: { type, to: playerId, signal: JSON.stringify(signal) }
-              })
-            },
-            onData: buildDataHandler(from),
-            onRemoteStream: buildStreamHandler(from),
-            onClose: () => {
-              logger.warn({ peer }, `connection terminated with peer ${from}`)
-              unwire(from)
+    subscriptions.push(
+      runSubscription(graphQL.awaitSignal).subscribe(
+        async ({ from, signal: signalRaw, type }) => {
+          logger.debug(
+            { from, signalRaw, type },
+            `receiving ${type} from server`
+          )
+          const signal = JSON.parse(signalRaw)
+          if (type === 'ready') {
+            resolve()
+          } else if (type === 'offer' && !connections.has(from)) {
+            // new peer joining
+            const peer = new PeerConnection({
+              bitrate,
+              turnCredentials,
+              sendSignal(playerId, type, signal) {
+                runMutation(graphQL.sendSignal, {
+                  signal: { type, to: playerId, signal: JSON.stringify(signal) }
+                })
+              },
+              onData: buildDataHandler(from),
+              onRemoteStream: buildStreamHandler(from),
+              onClose: () => {
+                logger.warn({ peer }, `connection terminated with peer ${from}`)
+                unwire(from)
+              }
+            })
+            connections.set(from, peer)
+            try {
+              await peer.connect(from, signal)
+              refreshConnected()
+              lastConnectedId$.next(from)
+              await acquireMediaStream()
+            } catch (error) {
+              logger.warn(
+                { peer, error },
+                `failed to connect with peer ${from}: ${error.message}`
+              )
             }
-          })
-          connections.set(from, peer)
-          try {
-            await peer.connect(from, signal)
-            refreshConnected()
-            lastConnectedId$.next(from)
-            peer.attach(await acquireMediaStream())
-          } catch (error) {
-            logger.warn(
-              { peer, error },
-              `failed to connect with peer ${from}: ${error.message}`
-            )
+          } else {
+            connections.get(from)?.handleSignal(type, signal)
           }
-        } else {
-          connections.get(from)?.handleSignal(type, signal)
         }
-      }
+      )
     )
   })
 }
@@ -159,7 +165,7 @@ export async function openChannels(player, turnCredentials) {
  * @throws {Error} when no connected peer is matching provided id.
  */
 export async function connectWith(playerId, turnCredentials) {
-  if (!signalSubscription || !current) return
+  if (!subscriptions.length || !current) return
   logger.info(
     { to: playerId, from: current.player.id },
     `establishing connection with peer ${playerId}`
@@ -180,7 +186,7 @@ export async function connectWith(playerId, turnCredentials) {
     }
   })
   connections.set(playerId, peer)
-  peer.attach(await acquireMediaStream())
+  await acquireMediaStream()
   try {
     await peer.connect(playerId)
     refreshConnected()
@@ -207,10 +213,10 @@ export function closeChannels() {
   }
   releaseMediaStream()
   current = null
-  signalSubscription?.unsubscribe()
-  signalSubscription = null
-  streamChangeSubscription?.unsubscribe()
-  streamChangeSubscription = null
+  for (const subscription of subscriptions) {
+    subscription?.unsubscribe()
+  }
+  subscriptions = []
 }
 
 /**
@@ -252,11 +258,7 @@ function refreshConnected() {
   connected$.next(
     peers.length > 0
       ? [{ playerId: current.player.id }, ...peers].map(
-          ({ playerId, stream, streamState }) => ({
-            playerId,
-            stream,
-            streamState
-          })
+          ({ playerId, remote }) => ({ playerId, ...remote })
         )
       : []
   )
@@ -285,7 +287,7 @@ function buildDataHandler(playerId) {
       unorderedMessages$.next({ data, playerId })
     } else {
       if (data?.type === controlType) {
-        connections.get(playerId).streamState = data.streamState ?? {}
+        connections.get(playerId).setRemote(data.state)
         refreshConnected()
       } else {
         lastMessageReceived$.next({ data, playerId })
@@ -301,7 +303,7 @@ function buildDataHandler(playerId) {
 function buildStreamHandler(playerId) {
   return function handleRemoteStream(stream) {
     logger.debug({ from: playerId }, `receiving stream from ${playerId}`)
-    connections.get(playerId).stream = stream
+    connections.get(playerId).setRemote({ stream })
     refreshConnected()
   }
 }

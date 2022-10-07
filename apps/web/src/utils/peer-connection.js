@@ -19,8 +19,11 @@ export class PeerConnection {
     this.onRemoteStream = onRemoteStream
     this.onData = onData
     this.onClose = onClose
-    this.stream = undefined
-    this.streamState = {}
+    this.remote = {
+      stream: undefined,
+      muted: false,
+      stopped: false
+    }
     this.polite = false
     this.makingOffer = false
     this.ignoreOffer = false
@@ -83,8 +86,8 @@ export class PeerConnection {
 
       this.connection.ontrack = ({ track, streams }) => {
         track.onunmute = () => {
-          this.stream = streams[0]
-          this.onRemoteStream(this.stream)
+          this.remote.stream = streams[0]
+          this.onRemoteStream(this.remote.stream)
         }
       }
 
@@ -167,6 +170,10 @@ export class PeerConnection {
     }
   }
 
+  setRemote(remote = {}) {
+    Object.assign(this.remote, remote)
+  }
+
   sendData(data) {
     logger.trace(serialize(this, { data }), `sending data to ${this.playerId}`)
     try {
@@ -219,12 +226,15 @@ function serialize(
     playerId,
     polite,
     established,
-    stream,
-    streamState
+    remote
   },
   extra
 ) {
   return {
+    playerId,
+    polite,
+    established,
+    remote,
     connection: {
       connectionState,
       iceConnectionState,
@@ -234,11 +244,6 @@ function serialize(
       remoteDescription
     },
     dataChannel: { binaryType, readyState, reliable },
-    playerId,
-    polite,
-    established,
-    stream,
-    streamState,
     ...extra
   }
 }
