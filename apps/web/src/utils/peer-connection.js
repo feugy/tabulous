@@ -188,8 +188,8 @@ export class PeerConnection {
 
 function getIceServers({ username, credentials: credential }) {
   return [
-    { urls: 'stun:tabulous.fr' },
-    { urls: 'turn:tabulous.fr', username, credential }
+    { urls: 'stun:coturn.tabulous.fr' },
+    { urls: 'turn:coturn.tabulous.fr', username, credential }
     // { urls: 'stun:openrelay.metered.ca:80' },
     // {
     //   urls: 'turn:openrelay.metered.ca:80',
