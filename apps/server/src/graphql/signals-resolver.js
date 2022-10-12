@@ -50,6 +50,12 @@ export default {
       subscribe: isAuthenticated(async (obj, args, { player, pubsub }) => {
         const queue = await pubsub.subscribe(`sendSignal-${player.id}`)
         queue.once('close', () => services.setPlaying(player.id, false))
+        pubsub.publish({
+          topic: `sendSignal-${player.id}`,
+          payload: {
+            awaitSignal: { type: 'ready', from: 'server', signal: '{}' }
+          }
+        })
         services.setPlaying(player.id, true)
         return queue
       })

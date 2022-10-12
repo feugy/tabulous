@@ -1143,6 +1143,27 @@ describe('InputManager', () => {
       )
     })
 
+    it('discards horizontal wheel events', async () => {
+      const pointer = { x: 1000, y: 500 }
+      const pointerId = 54
+      triggerEvent(wheel, {
+        ...pointer,
+        deltaY: 2,
+        deltaX: 2,
+        pointerId
+      })
+
+      await sleep(50)
+      triggerEvent(wheel, {
+        ...pointer,
+        deltaY: -2,
+        deltaX: -0.3,
+        pointerId
+      })
+
+      expectEvents()
+    })
+
     it('can stop pinch operation', async () => {
       const pointerA = { x: 1000, y: 500 }
       const pointerB = { x: 900, y: 850 }

@@ -16,6 +16,7 @@ const levels = {
   move: 'warn',
   players: 'warn',
   'peer-channels': 'warn',
+  'peer-connection': 'warn',
   quantifiable: 'warn',
   rotable: 'warn',
   selection: 'warn',

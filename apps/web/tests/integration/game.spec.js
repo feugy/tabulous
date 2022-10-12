@@ -35,32 +35,41 @@ describe('Game page', () => {
   })
 
   it('removes invite option after using the last seats', async ({ page }) => {
-    const { sendToSubscription, setTokenCookie } = await mockGraphQl(page, {
-      getCurrentPlayer: {
-        token: faker.datatype.uuid(),
-        player,
-        turnCredentials: {
-          username: 'bob',
-          credentials: faker.internet.password()
-        }
-      },
-      loadGame: game,
-      saveGame: { id: game.id },
-      searchPlayers: [[player2]],
-      invite: () => {
-        sendToSubscription({
-          data: {
-            receiveGameUpdates: {
-              ...game,
-              availableSeats: 0,
-              players: [player, player2]
-            }
+    const { sendToSubscription, setTokenCookie, onSubscription } =
+      await mockGraphQl(page, {
+        getCurrentPlayer: {
+          token: faker.datatype.uuid(),
+          player,
+          turnCredentials: {
+            username: 'bob',
+            credentials: faker.internet.password()
           }
+        },
+        loadGame: game,
+        saveGame: { id: game.id },
+        searchPlayers: [[player2]],
+        invite: () => {
+          sendToSubscription({
+            data: {
+              receiveGameUpdates: {
+                ...game,
+                availableSeats: 0,
+                players: [player, player2]
+              }
+            }
+          })
+          return game
+        }
+      })
+    await setTokenCookie()
+
+    onSubscription(({ payload: { query } }) => {
+      if (query.startsWith('subscription awaitSignal')) {
+        sendToSubscription({
+          data: { awaitSignal: { type: 'ready', signal: '{}' } }
         })
-        return game
       }
     })
-    await setTokenCookie()
 
     const gamePage = new GamePage(page)
     await gamePage.goTo(game.id)

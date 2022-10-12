@@ -28,6 +28,7 @@
     highlightHand,
     initEngine,
     initIndicators,
+    visibleFeedbacks,
     visibleIndicators,
     loadGame,
     longInputs,
@@ -65,6 +66,9 @@
         engine?.resize()
       }
     )
+    window.addEventListener('beforeunload', () => {
+      engine?.dispose()
+    })
   })
 
   onDestroy(() => {
@@ -117,7 +121,7 @@
     on:contextmenu|preventDefault
   >
     <canvas bind:this={canvas} />
-    <Indicators items={$visibleIndicators} />
+    <Indicators items={$visibleIndicators} feedbacks={$visibleFeedbacks} />
     <GameHand
       visible={$handVisible}
       highlight={$highlightHand}

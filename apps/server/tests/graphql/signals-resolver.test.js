@@ -83,7 +83,7 @@ describe('given a started server', () => {
           )}) { type from signal } }`,
           signToken(peerId, configuration.auth.jwt.key)
         )
-        const listPromise = waitOnMessage(ws)
+        const signalPromise = waitOnMessage(ws)
 
         const response = await server.inject({
           method: 'POST',
@@ -115,7 +115,7 @@ describe('given a started server', () => {
           }
         })
         expect(response.statusCode).toEqual(200)
-        await expect(listPromise).resolves.toEqual(
+        await expect(signalPromise).resolves.toEqual(
           expect.objectContaining({
             payload: { data: { awaitSignal: response.json().data.sendSignal } }
           })
@@ -142,6 +142,31 @@ describe('given a started server', () => {
         await stopSubscription(ws, subId)
         expect(services.setPlaying).toHaveBeenNthCalledWith(2, playerId, false)
         expect(services.setPlaying).toHaveBeenCalledTimes(2)
+      })
+
+      it('sends ready signal upon subscription', async () => {
+        const subId = faker.datatype.number()
+        const gameId = faker.datatype.uuid()
+        services.getPlayerById.mockImplementation(id => ({ id }))
+        const startPromise = startSubscription(
+          ws,
+          `subscription { awaitSignal(gameId: ${toGraphQLArg(
+            gameId
+          )}) { type from signal } }`,
+          signToken(playerId, configuration.auth.jwt.key),
+          subId
+        )
+        const signalPromise = waitOnMessage(ws, ({ type }) => type === 'data')
+        await startPromise
+        await expect(signalPromise).resolves.toEqual(
+          expect.objectContaining({
+            payload: {
+              data: {
+                awaitSignal: { from: 'server', signal: '{}', type: 'ready' }
+              }
+            }
+          })
+        )
       })
     })
   })

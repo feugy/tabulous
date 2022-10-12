@@ -40,10 +40,9 @@
   <Tool
     name="Feedback for action"
     props={{
-      items: [
+      feedbacks: [
         {
           screenPosition: { x: 50, y: 200 },
-          isFeedback: true,
           action: 'push',
           id: '1234'
         }
@@ -53,10 +52,9 @@
   <Tool
     name="Feedback for player"
     props={{
-      items: [
+      feedbacks: [
         {
           screenPosition: { x: 50, y: 200 },
-          isFeedback: true,
           player: { username: 'Jane' },
           id: '1234'
         }
@@ -92,16 +90,16 @@
           screenPosition: { x: -150, y: -125 },
           player: { username: 'Gaspard' },
           id: 'pointer-123'
-        },
+        }
+      ],
+      feedbacks: [
         {
           screenPosition: { x: 50, y: 200 },
-          isFeedback: true,
           action: 'push',
           id: '1234'
         },
         {
           screenPosition: { x: 100, y: 200 },
-          isFeedback: true,
           player: { username: 'Jane' },
           id: '2345'
         }

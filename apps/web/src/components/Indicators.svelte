@@ -3,6 +3,7 @@
   import Label from './Label.svelte'
   import PlayerThumbnail from './PlayerThumbnail.svelte'
   export let items = []
+  export let feedbacks = []
 
   function computeLabel(player, { size }) {
     return player?.username ?? size
@@ -25,14 +26,8 @@
   }
 </script>
 
-{#each items as { screenPosition, id, mesh, player, isFeedback, ...rest } (id)}
-  {#if isFeedback}
-    <Feedback
-      {screenPosition}
-      icon={computeFeedback(rest)}
-      content={player?.username ?? ''}
-    />
-  {:else if mesh}
+{#each items as { screenPosition, id, mesh, player, ...rest } ({ id, screenPosition })}
+  {#if mesh}
     <Label
       {screenPosition}
       centered={!!player}
@@ -41,4 +36,11 @@
   {:else}
     <PlayerThumbnail {screenPosition} {player} />
   {/if}
+{/each}
+{#each feedbacks as { screenPosition, id, player, ...rest } (id)}
+  <Feedback
+    {screenPosition}
+    icon={computeFeedback(rest)}
+    content={player?.username ?? ''}
+  />
 {/each}

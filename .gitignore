@@ -15,3 +15,4 @@ debug.txt
 .svelte-kit
 test-results
 .vercel
+upload-manually.sh

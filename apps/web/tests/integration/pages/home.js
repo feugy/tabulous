@@ -42,7 +42,7 @@ export const HomePage = mixin(
       })
       /** @type {Locator} */
       this.loginButton = page.locator('header >> role=button', {
-        hasText: 'login'
+        hasText: 'account_circle'
       })
       /** @type {Locator} */
       this.deleteGameDialogue = page.locator('role=dialog', {

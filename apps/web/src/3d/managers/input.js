@@ -209,7 +209,7 @@ class InputManager {
 
     const handlePointerMove = event => {
       if (!this.enabled || !hasMoved(pointers, event)) return
-      logger.debug(
+      logger.trace(
         { event },
         `type: pointermove x: ${event.x} y: ${event.y} id: ${event.pointerId}`
       )
@@ -349,7 +349,7 @@ class InputManager {
     }
 
     const handleWheel = event => {
-      if (!this.enabled) return
+      if (!this.enabled || event.deltaX) return
       logger.debug(
         { event },
         `type: wheel x: ${event.x} y: ${event.y} id: ${event.pointerId}`

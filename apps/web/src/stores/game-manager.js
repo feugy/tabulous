@@ -204,7 +204,7 @@ export async function loadGame(
   let game = await runQuery(graphQL.loadGame, { gameId }, false)
   currentGame$.next(game)
   playingIds$.next([currentPlayerId])
-  openChannels(currentPlayer, turnCredentials)
+  await openChannels(currentPlayer, turnCredentials)
 
   if (isSinglePlaying(currentPlayerId)) {
     // is the only playing player: take the host role

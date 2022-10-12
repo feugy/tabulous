@@ -2,7 +2,6 @@
 
 Roadmap
 
-- lawyer council
 - web: terms & condition
 - web: cookie policy
 - server + web: first log-in with T&C
@@ -11,8 +10,9 @@ Roadmap
 
 ## Refactor
 
+- graphQL: remove signal type and make signal optional
+- add tests for web/src/utils/peer-connection
 - use node 18 when msw/interceptor will [handle it](https://github.com/mswjs/interceptors/pull/283)
-- better testing setup? [vitest](https://github.com/sveltejs/kit/discussions/5285), or even [manual](https://github.com/sveltejs/kit/issues/19#issuecomment-1041134457)
 - ts-check all the things!
 - removes nginx to directly use the node server?
 - group candidate target per kind for performance
@@ -29,9 +29,9 @@ Roadmap
 ## UI
 
 - bug: animating visibility from 0 to 1 creates trouble with texture alpha channel
-- bug: ICE failed message when peer reload their browser??
 - bug: attached, unselected, mesh are not ignored during dragging
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
+- is this right? given an active selection, when it anchrs with other items, then items are part of the selection
 - click on stack size to select all/select stack on push?
 - collect player preferences when joining a game (requires to alter & reload game when joining rather than inviting)
 - option to invite players with url
@@ -44,6 +44,7 @@ Roadmap
 
 ## Server
 
+- database
 - invite players who have no account yet
 - allows a single connection per player (discards other JWTs)
 - logging (warning on invalid descriptors)
@@ -284,16 +285,14 @@ Some useful commands:
 There is no built-in way for the remote side of an WebRTC connection to know that video or audio was disabled.
 The mute/unmute events are meant for network issues. Stopping a track is definitive. Adding/removing track from stream only works locally (or would trigger re-negociation)
 
-STUN & TURN server:
-
-```shell
-docker run -d --network=host coturn/coturn --external-ip=78.192.173.27 --relay-ip=192.168.1.45 -X -v -u tabulous:soulubat -a -f -r tabulous
-
-```
-
 Nice sources for 3D textures:
 
 - [3DTextures](https://3dtextures.me/) (free)
 - [Architextures](https://architextures.org/textures) (copyrighted)
 
 Run playwright in debug mode, on a given file: `PWDEBUG=1 pnpm --filter web test:integration:run -- home.spec`
+
+WebRTC recent (2021) changes now allows [perfect negociation](https://w3c.github.io/webrtc-pc/#perfect-negotiation-example), which highly simplifies.
+
+`enumerateDevice` has a limitation: when user never allowed it yet, it's returning empty labels.
+There's no good way to solve it, and it's an [ongoing discussion](https://github.com/w3c/mediacapture-main/issues/874)

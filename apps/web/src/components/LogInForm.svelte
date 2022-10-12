@@ -89,16 +89,15 @@
         </div>
         {#if error}
           <div class="error">{error}</div>
-        {:else}
-          <div class="actions">
-            <Button
-              text={$_('actions.log-in')}
-              icon="emoji_people"
-              type="submit"
-              {disabled}
-            />
-          </div>
         {/if}
+        <div class="actions">
+          <Button
+            text={$_('actions.log-in')}
+            icon="emoji_people"
+            type="submit"
+            {disabled}
+          />
+        </div>
         <input type="hidden" name="redirect" value={redirect} />
       </form>
     </details>
