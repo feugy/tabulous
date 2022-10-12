@@ -139,6 +139,7 @@ exports[`Default 1`] = `
             <!--&lt;Input&gt;-->
           </div>
            
+           
           <div
             class="actions s-SCChDaxcTxWF"
           >
@@ -263,6 +264,31 @@ exports[`With errors 1`] = `
             class="error s-SCChDaxcTxWF"
           >
             Pseudo ou mot de passe incorrect. Merci de réessayer.
+          </div>
+           
+          <div
+            class="actions s-SCChDaxcTxWF"
+          >
+            <button
+              class="s-NMyTiX1zi6rz"
+              disabled=""
+              type="submit"
+            >
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                emoji_people
+              </span>
+              
+              <span
+                class="text s-NMyTiX1zi6rz"
+              >
+                Entrer
+              </span>
+              
+              
+            </button>
+            <!--&lt;Button&gt;-->
           </div>
            
           <input

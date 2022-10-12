@@ -77,6 +77,7 @@ exports[`Default state 1`] = `
           <!--&lt;Input&gt;-->
         </div>
          
+         
         <div
           class="actions s-SCChDaxcTxWF"
         >
@@ -220,6 +221,7 @@ exports[`With Github provider 1`] = `
           <!--&lt;Input&gt;-->
         </div>
          
+         
         <div
           class="actions s-SCChDaxcTxWF"
         >
@@ -362,6 +364,7 @@ exports[`With Google provider 1`] = `
           </fieldset>
           <!--&lt;Input&gt;-->
         </div>
+         
          
         <div
           class="actions s-SCChDaxcTxWF"
@@ -536,6 +539,7 @@ exports[`With all providers 1`] = `
           <!--&lt;Input&gt;-->
         </div>
          
+         
         <div
           class="actions s-SCChDaxcTxWF"
         >
@@ -656,6 +660,31 @@ exports[`With password error 1`] = `
           Authentication failed!
         </div>
          
+        <div
+          class="actions s-SCChDaxcTxWF"
+        >
+          <button
+            class="s-NMyTiX1zi6rz"
+            disabled=""
+            type="submit"
+          >
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              emoji_people
+            </span>
+            
+            <span
+              class="text s-NMyTiX1zi6rz"
+            >
+              Entrer
+            </span>
+            
+            
+          </button>
+          <!--&lt;Button&gt;-->
+        </div>
+         
         <input
           class="s-SCChDaxcTxWF"
           name="redirect"
@@ -744,6 +773,7 @@ exports[`with password values 1`] = `
           </fieldset>
           <!--&lt;Input&gt;-->
         </div>
+         
          
         <div
           class="actions s-SCChDaxcTxWF"

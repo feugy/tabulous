@@ -29,12 +29,11 @@ Roadmap
 ## UI
 
 - bug: multiple feedback firing all at once
-- bug: given an active selection, when it anchrs with other items, then items are part of the selection
-- bug: no enter button when an error message is visible
 - bug: animating visibility from 0 to 1 creates trouble with texture alpha channel
 - bug: ICE failed message when peer reload their browser??
 - bug: attached, unselected, mesh are not ignored during dragging
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
+- is this right? given an active selection, when it anchrs with other items, then items are part of the selection
 - click on stack size to select all/select stack on push?
 - collect player preferences when joining a game (requires to alter & reload game when joining rather than inviting)
 - option to invite players with url
