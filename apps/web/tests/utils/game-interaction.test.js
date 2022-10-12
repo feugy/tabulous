@@ -1304,7 +1304,7 @@ describe('Game interaction model', () => {
       const event = { deltaY: Math.floor(Math.random() * 100), preventDefault }
       inputManager.onWheelObservable.notifyObservers({ event })
       expect(cameraManager.zoom).toHaveBeenCalledTimes(1)
-      expect(cameraManager.zoom).toHaveBeenCalledWith(event.deltaY)
+      expect(cameraManager.zoom).toHaveBeenCalledWith(event.deltaY * 0.1)
       expect(cameraManager.rotate).not.toHaveBeenCalled()
       expect(cameraManager.pan).not.toHaveBeenCalled()
       expect(preventDefault).toHaveBeenCalledTimes(1)

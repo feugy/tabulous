@@ -260,7 +260,7 @@ export function attachInputs({
         event.preventDefault()
         logger.info({ event }, `zooming camera with wheel`)
         resetMenu()
-        cameraManager.zoom(event.deltaY)
+        cameraManager.zoom(event.deltaY * 0.1)
       }
     }),
 
