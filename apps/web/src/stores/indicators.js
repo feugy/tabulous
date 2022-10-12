@@ -13,7 +13,7 @@ const handPosition$ = new BehaviorSubject(Number.POSITIVE_INFINITY)
 let playerById = new Map()
 gamePlayerById$.subscribe(value => (playerById = value))
 let engine
-let currentFeedbackById = new Map()
+let feedbackById = new Map()
 
 /**
  * Initializes the indicators store with the hand DOM node.
@@ -25,7 +25,7 @@ export function initIndicators(params) {
   engine = params.engine
   const { canvas, hand } = params
   const { dimension$, disconnect } = observeDimension(hand)
-  currentFeedbackById = new Map()
+  feedbackById = new Map()
   const subscription = dimension$.subscribe(({ height }) => {
     const { height: totalHeight } = getPixelDimension(canvas)
     handPosition$.next(totalHeight - height)
@@ -50,8 +50,8 @@ export async function toggleIndicators() {
 }
 
 /**
- * Emits visible indicators:
- * - all of them when visible is set,
+ * Emits visible indicators (but feedback):
+ * - all of them when `visible` is set,
  * - the ones above selected meshes,
  * - the ones above mesh with action menu.
  * @type {Observable<import('../3d/managers').Indicator[]>}
@@ -66,7 +66,7 @@ export const visibleIndicators = merge(
   withLatestFrom(
     merge(of(new Set()), selectedMeshes),
     merge(of(null), actionMenuProps),
-    merge(of([]), indicators$).pipe(map(memorizeFeedback)),
+    merge(of([]), indicators$),
     handPosition$
   ),
   map(([, selected, menuProps, indicators, handPosition]) =>
@@ -81,6 +81,18 @@ export const visibleIndicators = merge(
   map(enrichWithPlayerData)
 )
 
+/**
+ * Emits visible feedbacks, dependeing on `visible` state.
+ * @type {Observable<import('../3d/managers').Indicator[]>}
+ */
+export const visibleFeedbacks = merge(visible$, indicators$).pipe(
+  withLatestFrom(merge(of([]), indicators$)),
+  map(([, indicators]) =>
+    visible$.value ? memorizeAndMergeFeedback(indicators) : []
+  ),
+  map(enrichWithPlayerData)
+)
+
 function getVisibleIndicators(
   allVisible,
   selected,
@@ -90,7 +102,8 @@ function getVisibleIndicators(
 ) {
   return allVisible
     ? indicators.filter(
-        ({ screenPosition }) => screenPosition.y <= handPosition
+        ({ screenPosition, isFeedback }) =>
+          !isFeedback && screenPosition.y <= handPosition
       )
     : hasMenu(menuProps, selected)
     ? getMenuIndicators(menuProps, indicators)
@@ -102,15 +115,11 @@ function hasMenu(menuProps, selected) {
 }
 
 function getMenuIndicators(menuProps, indicators) {
-  return indicators.filter(
-    ({ isFeedback, mesh }) => isFeedback || mesh === menuProps.interactedMesh
-  )
+  return indicators.filter(({ mesh }) => mesh === menuProps.interactedMesh)
 }
 
 function getSelectedIndicators(selected, indicators) {
-  return indicators.filter(
-    ({ isFeedback, mesh }) => isFeedback || selected.has(mesh)
-  )
+  return indicators.filter(({ mesh }) => selected.has(mesh))
 }
 
 function enrichWithPlayerData(indicators) {
@@ -124,24 +133,23 @@ function enrichWithPlayerData(indicators) {
   })
 }
 
-function memorizeFeedback(indicators) {
+function memorizeAndMergeFeedback(indicators) {
   const results = []
   const now = Date.now()
-  for (const indicator of indicators) {
-    if (indicator.isFeedback) {
-      if (!currentFeedbackById.has(indicator.id)) {
-        currentFeedbackById.set(indicator.id, indicator)
-        indicator.start = now
-      }
-    } else {
-      results.push(indicator)
-    }
-  }
-  for (const [id, feedback] of currentFeedbackById) {
+  for (const [id, feedback] of feedbackById) {
     if (now - feedback.start < 3000) {
       results.push(feedback)
     } else {
-      currentFeedbackById.delete(id)
+      feedbackById.delete(id)
+    }
+  }
+  for (const indicator of indicators) {
+    if (indicator.isFeedback) {
+      if (!feedbackById.has(indicator.id)) {
+        indicator.start = now
+        results.push(indicator)
+        feedbackById.set(indicator.id, indicator)
+      }
     }
   }
   return results

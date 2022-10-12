@@ -10,9 +10,9 @@ Roadmap
 
 ## Refactor
 
+- graphQL: remove signal type and make signal optional
 - add tests for web/src/utils/peer-connection
 - use node 18 when msw/interceptor will [handle it](https://github.com/mswjs/interceptors/pull/283)
-- better testing setup? [vitest](https://github.com/sveltejs/kit/discussions/5285), or even [manual](https://github.com/sveltejs/kit/issues/19#issuecomment-1041134457)
 - ts-check all the things!
 - removes nginx to directly use the node server?
 - group candidate target per kind for performance
@@ -28,7 +28,6 @@ Roadmap
 
 ## UI
 
-- bug: multiple feedback firing all at once
 - bug: animating visibility from 0 to 1 creates trouble with texture alpha channel
 - bug: attached, unselected, mesh are not ignored during dragging
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
@@ -45,6 +44,7 @@ Roadmap
 
 ## Server
 
+- database
 - invite players who have no account yet
 - allows a single connection per player (discards other JWTs)
 - logging (warning on invalid descriptors)

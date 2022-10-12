@@ -13,6 +13,7 @@ import {
   areIndicatorsVisible as areIndicatorsVisible$,
   initIndicators,
   toggleIndicators,
+  visibleFeedbacks as visibleFeedbacks$,
   visibleIndicators as visibleIndicators$
 } from '../../src/stores/indicators'
 import { AnchorBehaviorName, StackBehaviorName } from '../../src/3d/behaviors'
@@ -130,7 +131,7 @@ describe('Indicators store', () => {
       const indicator = { position: [1, 0, -1], isFeedback: true }
       indicatorManager.registerFeedback(indicator)
       await waitNextRender(scene)
-      expectIndicators([indicator])
+      expectFeedbacks([indicator])
     })
   })
 
@@ -144,28 +145,11 @@ describe('Indicators store', () => {
         }
       })
 
-      it('has feedback', async () => {
+      it('has no feedback', async () => {
         const indicator = { position: [1, 0, -1], isFeedback: true }
         indicatorManager.registerFeedback(indicator)
         await waitNextRender(scene)
-        expectIndicators([indicator])
-      })
-
-      it('retains feedback for 3 seconds', async () => {
-        const indicator = { position: [1, 0, -1], isFeedback: true }
-        indicatorManager.registerFeedback(indicator)
-        await waitNextRender(scene)
-        expectIndicators([indicator])
-        indicatorManager.onChangeObservable.notifyObservers([])
-        await sleep(1100)
-        await waitNextRender(scene)
-        expectIndicators([indicator])
-        await sleep(1100)
-        await waitNextRender(scene)
-        expectIndicators([indicator])
-        await sleep(1100)
-        await waitNextRender(scene)
-        expectIndicators()
+        expectFeedbacks([])
       })
 
       it('has indicators for each selected mesh', () => {
@@ -275,6 +259,30 @@ describe('Indicators store', () => {
         if (!get(areIndicatorsVisible$)) {
           toggleIndicators()
         }
+      })
+
+      it('has feedback', async () => {
+        const indicator = { position: [1, 0, -1], isFeedback: true }
+        indicatorManager.registerFeedback(indicator)
+        await waitNextRender(scene)
+        expectFeedbacks([indicator])
+      })
+
+      it('retains feedback for 3 seconds', async () => {
+        const indicator = { position: [1, 0, -1], isFeedback: true }
+        indicatorManager.registerFeedback(indicator)
+        await waitNextRender(scene)
+        expectFeedbacks([indicator])
+        indicatorManager.onChangeObservable.notifyObservers([])
+        await sleep(1100)
+        await waitNextRender(scene)
+        expectFeedbacks([indicator])
+        await sleep(1100)
+        await waitNextRender(scene)
+        expectFeedbacks([indicator])
+        await sleep(1100)
+        await waitNextRender(scene)
+        expectFeedbacks()
       })
 
       it('has indicators for each stackable mesh', async () => {
@@ -430,13 +438,20 @@ describe('Indicators store', () => {
   })
 
   function expectIndicators(expected = []) {
-    const visibleIndicators = get(visibleIndicators$)
-    expect(visibleIndicators).toHaveLength(expected.length)
+    expectObjectOnScreen(expected, get(visibleIndicators$))
+  }
+
+  function expectFeedbacks(expected = []) {
+    expectObjectOnScreen(expected, get(visibleFeedbacks$))
+  }
+
+  function expectObjectOnScreen(expected = [], actuals) {
+    expect(actuals).toHaveLength(expected.length)
     for (const [
       rank,
       { screenPosition, id, ...otherProps }
     ] of expected.entries()) {
-      const actual = visibleIndicators[rank]
+      const actual = actuals[rank]
       expect(actual, `indicator #${rank}`).toHaveProperty('id', id)
       expect(actual, `indicator #${rank}`).toEqual(
         expect.objectContaining(otherProps)
