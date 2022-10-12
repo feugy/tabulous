@@ -58,7 +58,7 @@ describe('startServer()', () => {
     expect(response.json()?.errors?.[0]?.message).toMatch(
       /argument "id" of type "ID!" is required/
     )
-    expect(response.statusCode).toEqual(400)
+    expect(response.statusCode).toEqual(200)
 
     response = await app.inject({ url: 'splendor/index.js' })
     expect(response.statusCode).toEqual(200)
