@@ -178,7 +178,7 @@ describe('Media Stream store', () => {
       await acquireMediaStream()
     })
 
-    it('returns streamn, sets current devices and save ids in local storage', async () => {
+    it('returns stream, sets current devices and save ids in local storage', async () => {
       expect(get(stream$)).toEqual(stream)
       expectCurrentMic(devices[3])
       expect(get(mics$)).toEqual(mics)
@@ -253,8 +253,6 @@ describe('Media Stream store', () => {
     })
 
     describe('releaseMediaStream()', () => {
-      beforeEach(() => acquireMediaStream())
-
       it('resets all', () => {
         const tracks = [{ stop: vi.fn() }, { stop: vi.fn() }]
         stream.getTracks.mockReturnValue(tracks)

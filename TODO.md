@@ -10,6 +10,7 @@ Roadmap
 
 ## Refactor
 
+- add tests for web/src/utils/peer-connection
 - use node 18 when msw/interceptor will [handle it](https://github.com/mswjs/interceptors/pull/283)
 - better testing setup? [vitest](https://github.com/sveltejs/kit/discussions/5285), or even [manual](https://github.com/sveltejs/kit/issues/19#issuecomment-1041134457)
 - ts-check all the things!
@@ -27,6 +28,9 @@ Roadmap
 
 ## UI
 
+- bug: multiple feedback firing all at once
+- bug: given an active selection, when it anchrs with other items, then items are part of the selection
+- bug: no enter button when an error message is visible
 - bug: animating visibility from 0 to 1 creates trouble with texture alpha channel
 - bug: ICE failed message when peer reload their browser??
 - bug: attached, unselected, mesh are not ignored during dragging
