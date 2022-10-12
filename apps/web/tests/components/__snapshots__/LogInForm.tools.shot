@@ -665,7 +665,6 @@ exports[`With password error 1`] = `
         >
           <button
             class="s-NMyTiX1zi6rz"
-            disabled=""
             type="submit"
           >
             <span

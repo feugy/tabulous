@@ -37,7 +37,7 @@
         <PlayerThumbnail slot="icon" player={user} dimension={30} />
       </Dropdown>
     {:else}
-      <Button icon="login" secondary on:click={() => goto('/login')} />
+      <Button icon="account_circle" secondary on:click={() => goto('/login')} />
     {/if}
   </nav>
   <div>
