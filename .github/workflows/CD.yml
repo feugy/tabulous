@@ -22,7 +22,7 @@ jobs:
           lfs: true
 
       - name: Intall Pnpm
-        uses: pnpm/action-setup@v2.2.2
+        uses: pnpm/action-setup@v2
         with:
           version: 7
 
