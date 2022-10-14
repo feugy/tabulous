@@ -2,14 +2,17 @@ import { makeLogger } from './logger'
 import { buildSDPTransform } from './webrtc'
 
 const logger = makeLogger('peer-connection')
+const controlType = 'stream-control'
 
 export class PeerConnection {
   constructor({
     turnCredentials,
     bitrate,
+    local,
     sendSignal,
     onData,
     onRemoteStream,
+    onRemoteState,
     onClose
   }) {
     this.lastMessageId = 0
@@ -17,6 +20,7 @@ export class PeerConnection {
     this.dataChannel = undefined
     this.sendSignal = sendSignal
     this.onRemoteStream = onRemoteStream
+    this.onRemoteState = onRemoteState
     this.onData = onData
     this.onClose = onClose
     this.remote = {
@@ -24,6 +28,7 @@ export class PeerConnection {
       muted: false,
       stopped: false
     }
+    this.local = local || { stream: undefined, muted: false, stopped: false }
     this.polite = false
     this.makingOffer = false
     this.ignoreOffer = false
@@ -33,11 +38,30 @@ export class PeerConnection {
     })
   }
 
+  hasLocalStream() {
+    return !!this.local.stream
+  }
+
   connect(playerId, description) {
     this.playerId = playerId
-    logger.info(serialize(this), `connecting with ${playerId}}`)
+    logger.info(serialize(this), `connecting with ${playerId}`)
 
     return new Promise((resolve, reject) => {
+      let channelConnected = false
+      let dataConnected = false
+      const resolveWhenReady = () => {
+        if (dataConnected && channelConnected) {
+          logger.info(
+            serialize(this),
+            `connection established with ${playerId}`
+          )
+          this.dataChannel.onopen = undefined
+          this.established = true
+          this.setLocalState(this.local)
+          resolve()
+        }
+      }
+
       this.connection.onnegotiationneeded = async () => {
         try {
           this.makingOffer = true
@@ -52,7 +76,7 @@ export class PeerConnection {
         } catch (error) {
           logger.warn(
             serialize(this, { error }),
-            `failed to description: ${error.message}`
+            `failed to send description: ${error.message}`
           )
         } finally {
           this.makingOffer = false
@@ -74,7 +98,10 @@ export class PeerConnection {
       this.connection.onconnectionstatechange = () => {
         const { connectionState: state } = this.connection
         logger.debug(serialize(this, { state }), `connection is now ${state}`)
-        if (state === 'closed') {
+        if (state === 'connected') {
+          channelConnected = true
+          resolveWhenReady()
+        } else if (state === 'closed') {
           const wasEstablised = this.established
           this.established = false
           this.onClose()
@@ -109,16 +136,23 @@ export class PeerConnection {
         }
         const data = JSON.parse(event.data)
         logger.trace(serialize(this, { data }), `data from ${playerId}`)
-        this.onData(data)
+        if (data.type === controlType) {
+          Object.assign(this.remote, data.state)
+          this.onRemoteState(data.state)
+        } else {
+          this.onData(data)
+        }
       }
 
       this.dataChannel.onopen = () => {
-        logger.info(serialize(this), `connection established with ${playerId}`)
-        this.dataChannel.onopen = undefined
-        this.established = true
-        resolve()
+        logger.debug(serialize(this), `data channel opened with ${playerId}`)
+        dataConnected = true
+        resolveWhenReady()
       }
 
+      if (this.local.stream) {
+        this.attachLocalStream(this.local.stream)
+      }
       if (description) {
         this.polite = true
         this.handleSignal(description.type, description)
@@ -162,12 +196,18 @@ export class PeerConnection {
     }
   }
 
-  attach(stream) {
+  attachLocalStream(stream) {
     if (stream) {
+      this.local.stream = stream
       for (const track of stream.getTracks()) {
         this.connection.addTrack(track, stream)
       }
     }
+  }
+
+  setLocalState({ muted, stopped }) {
+    this.local = { ...this.local, muted, stopped }
+    this.sendData({ type: controlType, state: { muted, stopped } })
   }
 
   setRemote(remote = {}) {

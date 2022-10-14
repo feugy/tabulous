@@ -15,6 +15,7 @@ const streamChange$ = new Subject()
 if (browser) {
   navigator.mediaDevices?.addEventListener('devicechange', enumerateDevices)
 }
+let acquireInProgress = null
 
 /**
  * Emits the local media stream, that is audio and video allowed and selected by user
@@ -65,13 +66,24 @@ export const localStreamChange$ = streamChange$.asObservable()
 /**
  * Acquires local video and audio stream.
  * Asks end user for permission, and populates `stream$` observable.
+ * Supports concurrent calls: first call will asynchronously acquire stream,
+ * while concurrent calls will wait and reuse the same result.
  * @param {MediaDeviceInfo} desired? - desired device.
  * @return {MediaStream} the acquired stream , if any
  */
 export async function acquireMediaStream(desired) {
   logger.debug({ desired }, `acquiring local media steam`)
   stopStream(stream.value)
-  if (navigator.mediaDevices) {
+  if (!navigator.mediaDevices) {
+    logger.info(`This browser does not support media devices`)
+    resetAll()
+    return
+  }
+  if (acquireInProgress) {
+    return acquireInProgress
+  }
+
+  async function acquire() {
     try {
       const last = loadLastMediaIds()
       if (mics.value.length === 0 && cameras.value.length === 0) {
@@ -90,10 +102,12 @@ export async function acquireMediaStream(desired) {
       logger.warn({ error }, `Failed to access media devices: ${error.message}`)
       resetAll()
     }
-  } else {
-    logger.info(`This browser does not support media devices`)
-    resetAll()
   }
+
+  acquireInProgress = acquire()
+  const result = await acquireInProgress
+  acquireInProgress = null
+  return result
 }
 
 /**
