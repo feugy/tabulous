@@ -191,6 +191,17 @@ describe('Media Stream store', () => {
       expect(localStreamChangeReceived).not.toHaveBeenCalled()
     })
 
+    it('returns the same stream to all "parallel" acquisition requests', async () => {
+      navigator.mediaDevices.getUserMedia.mockClear()
+      const streams = await Promise.all(
+        Array.from({ length: 3 }, acquireMediaStream)
+      )
+      expect(streams[0]).toBe(streams[1])
+      expect(streams[0]).toBe(streams[2])
+      expect(get(stream$)).toEqual(streams[0])
+      expect(navigator.mediaDevices.getUserMedia).toHaveBeenCalledTimes(1)
+    })
+
     it('uses desired camera', async () => {
       vi.clearAllMocks()
       await acquireMediaStream(devices[1])

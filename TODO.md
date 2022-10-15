@@ -31,6 +31,7 @@ Roadmap
 - bug: animating visibility from 0 to 1 creates trouble with texture alpha channel
 - bug: attached, unselected, mesh are not ignored during dragging
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
+- hide non-connected participants
 - is this right? given an active selection, when it anchrs with other items, then items are part of the selection
 - click on stack size to select all/select stack on push?
 - collect player preferences when joining a game (requires to alter & reload game when joining rather than inviting)
@@ -44,6 +45,7 @@ Roadmap
 
 ## Server
 
+- bug: timezone used for Serverside rendering is wrong
 - database
 - invite players who have no account yet
 - allows a single connection per player (discards other JWTs)
@@ -225,7 +227,7 @@ Removing server to only allow peer communication is really hard:
 I started with SSE to push game invites to players, and Websocket to keep the signaling server independant from the app logic, but it's too many sockets for the same user.
 GraphQL subscriptions over WS are perfect to implement both usecases.
 
-Enabling tree shaking in Babylon.js is [cumbersom](https://doc.babylonjs.com/divingDeeper/developWithBjs/treeShaking), but really effective:
+Enabling tree shaking in Babylon.js is [cumbersome](https://doc.babylonjs.com/divingDeeper/developWithBjs/treeShaking), but really effective:
 Final code went from 1417 modules to 674 (53% less) and the vendor.js file from 3782.23kb to 1389.03 (63% less).
 
 Running game with Babylon's debug panel kills `setTimeout()`. Something under the hood must monkey patch it.
@@ -293,6 +295,9 @@ Nice sources for 3D textures:
 Run playwright in debug mode, on a given file: `PWDEBUG=1 pnpm --filter web test:integration:run -- home.spec`
 
 WebRTC recent (2021) changes now allows [perfect negociation](https://w3c.github.io/webrtc-pc/#perfect-negotiation-example), which highly simplifies.
+Thus, connecting RTCDataChanel and RTCPeerConnection may happen in random order. One must wait for both event and then consider connection to be established.
+One must not acquire Media stream in parallel, because it actually holds different copies of the stream, which must be released independently.
+It is simpler to acquire once, and return the same result to all "parallel" requesters.
 
 `enumerateDevice` has a limitation: when user never allowed it yet, it's returning empty labels.
 There's no good way to solve it, and it's an [ongoing discussion](https://github.com/w3c/mediacapture-main/issues/874)

@@ -13,7 +13,6 @@ import { makeLogger, PeerConnection } from '../utils'
 const logger = makeLogger('peer-channels')
 
 const bitrate = 128
-const controlType = 'control'
 const connections = new Map()
 const streamSubscriptionByPlayerId = new Map()
 const lastMessageSent$ = new Subject()
@@ -25,6 +24,8 @@ const lastDisconnectedId$ = new Subject()
 let subscriptions = []
 let current
 let messageId = 1
+let local = {}
+resetLocalState()
 
 unorderedMessages$
   .pipe(
@@ -97,13 +98,18 @@ export async function openChannels(player, turnCredentials) {
   current = { player }
   logger.info({ player }, 'initializing peer communication')
 
+  resetLocalState()
   subscriptions = [
-    localStreamChange$
-      .pipe(auditTime(10))
-      .subscribe(state => send({ type: controlType, state })),
-    stream$.subscribe(stream => {
+    localStreamChange$.pipe(auditTime(10)).subscribe(state => {
+      Object.assign(local, state)
       for (const peer of connections.values()) {
-        peer.attach(stream)
+        peer.setLocalState(state)
+      }
+    }),
+    stream$.subscribe(stream => {
+      local.stream = stream
+      for (const peer of connections.values()) {
+        peer.attachLocalStream(local.stream)
       }
     })
   ]
@@ -122,6 +128,7 @@ export async function openChannels(player, turnCredentials) {
           } else if (type === 'offer' && !connections.has(from)) {
             // new peer joining
             const peer = new PeerConnection({
+              local,
               bitrate,
               turnCredentials,
               sendSignal(playerId, type, signal) {
@@ -131,6 +138,7 @@ export async function openChannels(player, turnCredentials) {
               },
               onData: buildDataHandler(from),
               onRemoteStream: buildStreamHandler(from),
+              onRemoteState: () => refreshConnected(),
               onClose: () => {
                 logger.warn({ peer }, `connection terminated with peer ${from}`)
                 unwire(from)
@@ -141,7 +149,9 @@ export async function openChannels(player, turnCredentials) {
               await peer.connect(from, signal)
               refreshConnected()
               lastConnectedId$.next(from)
-              await acquireMediaStream()
+              if (!peer.hasLocalStream()) {
+                await acquireMediaStream()
+              }
             } catch (error) {
               logger.warn(
                 { peer, error },
@@ -170,7 +180,11 @@ export async function connectWith(playerId, turnCredentials) {
     { to: playerId, from: current.player.id },
     `establishing connection with peer ${playerId}`
   )
+  if (!local.stream) {
+    local.stream = await acquireMediaStream()
+  }
   const peer = new PeerConnection({
+    local,
     bitrate,
     turnCredentials,
     sendSignal(playerId, type, signal) {
@@ -180,13 +194,13 @@ export async function connectWith(playerId, turnCredentials) {
     },
     onData: buildDataHandler(playerId),
     onRemoteStream: buildStreamHandler(playerId),
+    onRemoteState: () => refreshConnected(),
     onClose: () => {
       logger.warn({ peer }, `connection terminated with peer ${playerId}`)
       unwire(playerId)
     }
   })
   connections.set(playerId, peer)
-  await acquireMediaStream()
   try {
     await peer.connect(playerId)
     refreshConnected()
@@ -229,9 +243,7 @@ export function send(data, playerId = null) {
   if (!current?.player || (playerId && !connections.has(playerId))) {
     return
   }
-  if (data?.type !== controlType) {
-    lastMessageSent$.next({ data, playerId: current.player.id })
-  }
+  lastMessageSent$.next({ data, playerId: current.player.id })
   const destination = playerId
     ? new Map([[playerId, connections.get(playerId)]])
     : connections
@@ -286,12 +298,7 @@ function buildDataHandler(playerId) {
       )
       unorderedMessages$.next({ data, playerId })
     } else {
-      if (data?.type === controlType) {
-        connections.get(playerId).setRemote(data.state)
-        refreshConnected()
-      } else {
-        lastMessageReceived$.next({ data, playerId })
-      }
+      lastMessageReceived$.next({ data, playerId })
     }
     // stores higher last only, so unorderedMessage could get lower ones
     if (data.messageId > lastMessageId) {
@@ -305,5 +312,13 @@ function buildStreamHandler(playerId) {
     logger.debug({ from: playerId }, `receiving stream from ${playerId}`)
     connections.get(playerId).setRemote({ stream })
     refreshConnected()
+  }
+}
+
+function resetLocalState() {
+  local = {
+    stream: null,
+    muted: false,
+    stopped: false
   }
 }
