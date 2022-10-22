@@ -95,6 +95,7 @@ export class AbstractRepository {
       await new Promise((resolve, reject) => {
         this.client = new Redis(url, {
           enableAutoPipelining: true,
+          enableReadyCheck: false,
           showFriendlyErrorStack: !isProduction
         })
         this.client.once('connect', () => {
