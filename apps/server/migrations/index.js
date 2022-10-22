@@ -1,33 +1,37 @@
+// @ts-check
 import { readdir } from 'node:fs/promises'
 import { dirname } from 'node:path'
 import { parseArgs } from 'node:util'
 import { fileURLToPath } from 'node:url'
 import { config } from 'dotenv'
 import Redis from 'ioredis'
-import { loadConfiguration } from '../src/services/configuration.js'
 import repositories from '../src/repositories/index.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const migrationfileRexExp = /^\d+-.+\.js$/
 const versionKey = 'migration:versions'
+
+/** @type {import('node:util').ParseArgsConfig} */
 const options = {
-  version: {
-    type: 'string',
-    short: 'v'
+  options: {
+    version: {
+      type: 'string',
+      short: 'v'
+    }
   }
 }
 
 async function main() {
   const {
     values: { version }
-  } = parseArgs({ options })
-  let desired = parseInt(version)
+  } = parseArgs(options)
+  let desired = parseInt(version + '')
   if (version && (isNaN(desired) || desired < 0)) {
     throw new Error(`desired version '${version}' is not a positive number`)
   }
-  const conf = loadConfiguration()
-  await initRepositories(conf)
-  const redis = await initRedisClient(conf.data)
+  const redis = await initRepositories(
+    process.env.REDIS_URL ?? 'redis://localhost:6379'
+  )
 
   const applied = await readAppliedVersions(redis)
   const available = await readAvailableVersions(__dirname)
@@ -56,13 +60,10 @@ async function main() {
 config()
 await main()
 
-async function initRepositories(conf) {
-  await repositories.players.connect(conf.data)
-  await repositories.games.connect(conf.data)
-}
-
-async function initRedisClient(conf) {
-  return new Redis(conf.data)
+async function initRepositories(url) {
+  await repositories.players.connect({ url })
+  await repositories.games.connect({ url })
+  return new Redis(url, { enableReadyCheck: false })
 }
 
 async function readAppliedVersions(redis) {
