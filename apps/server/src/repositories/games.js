@@ -92,7 +92,6 @@ class GameRepository extends AbstractRepository {
 
   /**
    * Lists all games of a given player.
-   * **Note**: this only returns lightweigth models.
    * @async
    * @param {object} playerId - id of the player for which games are returned.
    * @returns {object[]} this player's games.

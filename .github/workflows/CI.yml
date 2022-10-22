@@ -102,9 +102,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --ignore-scripts
 
-      - name: Run migrations
-        run: pnpm migrate
-
       - name: Run server test
         run: pnpm test:server
         env:
@@ -191,9 +188,6 @@ jobs:
 
       - name: Install Playwright
         run: pnpm playwright install chromium
-
-      - name: Run migrations
-        run: pnpm migrate
 
       - name: Run UI integration tests
         run: pnpm test:integration

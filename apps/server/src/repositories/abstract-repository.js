@@ -127,7 +127,7 @@ export class AbstractRepository {
   }
 
   /**
-   * Lists all models.
+   * Lists all models with pagination.
    * @async
    * @param {object} args - list arguments, including:
    * @param {number} [args.from = 0] - 0-based index of the first result
@@ -151,12 +151,12 @@ export class AbstractRepository {
    * @param {string|string[]} id - desired id(s).
    * @returns {object|null|(object|null)[]} matching model(s), or null(s).
    */
-  async getById(id, ...internals) {
+  async getById(id) {
     const ids = Array.isArray(id) ? id : [id]
     const results = []
     if (this.client && ids.length) {
       for (const id of ids) {
-        results.push(await this._fetchModel(this._buildKey(id), ...internals))
+        results.push(await this._fetchModel(this._buildKey(id)))
       }
     }
     return Array.isArray(id) ? results : results[0]
