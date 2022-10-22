@@ -17,7 +17,7 @@ cp .nvmrc dist/
 rm -rf node_modules apps/*/node_modules
 pnpm --filter server --prod deploy dist/server
 cd dist/server
-tar --create --file ../server.tar.gz -z node_modules/ src/ package.json 
+tar --create --file ../server.tar.gz -z node_modules/ src/ migrations/ package.json 
 cd ../..
 rm -rd dist/server
 

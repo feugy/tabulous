@@ -11,6 +11,8 @@ describe('loadConfiguration()', () => {
   const githubSecret = faker.internet.password()
   const googleId = faker.datatype.uuid()
   const googleSecret = faker.internet.password()
+  const redisUrl = faker.internet.url()
+  const pubsubUrl = faker.internet.url()
 
   beforeEach(() => {
     process.env = { ...envSave }
@@ -27,7 +29,6 @@ describe('loadConfiguration()', () => {
       'debug'
     ])
     const gamesPath = faker.system.directoryPath()
-    const dataPath = faker.system.directoryPath()
     const key = faker.system.filePath()
     const cert = faker.system.filePath()
     const domain = faker.internet.url()
@@ -35,7 +36,6 @@ describe('loadConfiguration()', () => {
 
     process.env = {
       ...process.env,
-      DATA_PATH: dataPath,
       AUTH_DOMAIN: domain,
       ALLOWED_ORIGINS_REGEXP: allowedOrigins,
       GAMES_PATH: gamesPath,
@@ -49,7 +49,9 @@ describe('loadConfiguration()', () => {
       JWT_KEY: jwtKey,
       LOG_LEVEL: level,
       PORT: port,
-      TURN_SECRET: turnSecret
+      TURN_SECRET: turnSecret,
+      REDIS_URL: redisUrl,
+      PUBSUB_URL: pubsubUrl
     }
 
     expect(loadConfiguration()).toEqual({
@@ -60,13 +62,14 @@ describe('loadConfiguration()', () => {
       plugins: {
         graphql: {
           graphiql: 'playground',
-          allowedOrigins
+          allowedOrigins,
+          pubsubUrl
         },
         static: { path: gamesPath, pathPrefix: '/games' },
         cors: { allowedOrigins }
       },
       games: { path: gamesPath },
-      data: { path: dataPath },
+      data: { url: redisUrl },
       turn: { secret: turnSecret },
       auth: {
         domain,
@@ -87,7 +90,9 @@ describe('loadConfiguration()', () => {
       GITHUB_ID: githubId,
       GITHUB_SECRET: githubSecret,
       GOOGLE_ID: googleId,
-      GOOGLE_SECRET: googleSecret
+      GOOGLE_SECRET: googleSecret,
+      REDIS_URL: redisUrl,
+      PUBSUB_URL: pubsubUrl
     }
     const allowedOrigins =
       '^https:\\/\\/(?:(?:.+\\.)?tabulous\\.(?:fr|games)|tabulous(?:-.+)?\\.vercel\\.app)'
@@ -101,7 +106,7 @@ describe('loadConfiguration()', () => {
       logger: { level: 'debug' },
       https: null,
       plugins: {
-        graphql: { graphiql: null, allowedOrigins },
+        graphql: { graphiql: null, allowedOrigins, pubsubUrl },
         static: {
           path: resolve(cwd(), '..', 'games'),
           pathPrefix: '/games'
@@ -109,7 +114,9 @@ describe('loadConfiguration()', () => {
         cors: { allowedOrigins }
       },
       games: { path: resolve(cwd(), '..', 'games') },
-      data: { path: resolve(cwd(), 'data') },
+      data: {
+        url: redisUrl
+      },
       turn: { secret: turnSecret },
       auth: {
         domain: 'https://auth.tabulous.fr',
@@ -125,6 +132,10 @@ describe('loadConfiguration()', () => {
     process.env.NODE_ENV = 'production'
     expect(loadConfiguration).toThrow(`/turn must have property 'secret'`)
     expect(loadConfiguration).toThrow(`/auth/jwt must have property 'key'`)
+    expect(loadConfiguration).toThrow(`/data must have property 'url'`)
+    expect(loadConfiguration).toThrow(
+      `/plugins/graphql must have property 'pubsubUrl'`
+    )
   })
 
   describe('given required environment values', () => {
@@ -145,7 +156,8 @@ describe('loadConfiguration()', () => {
         plugins: {
           graphql: {
             graphiql: 'playground',
-            allowedOrigins
+            allowedOrigins,
+            pubsubUrl: 'redis://127.0.0.1:6379'
           },
           static: {
             path: resolve(cwd(), '..', 'games'),
@@ -154,7 +166,7 @@ describe('loadConfiguration()', () => {
           cors: { allowedOrigins }
         },
         games: { path: resolve(cwd(), '..', 'games') },
-        data: { path: resolve(cwd(), 'data') },
+        data: { url: 'redis://127.0.0.1:6379' },
         turn: { secret: turnSecret },
         auth: {
           jwt: { key: 'dummy-test-key' },
@@ -219,12 +231,6 @@ describe('loadConfiguration()', () => {
         join(cwd(), 'test2')
       )
       expect(loadConfiguration().games.path).toEqual(join(cwd(), 'test2'))
-    })
-
-    it('considers DATA_PATH relatively to current working directory', () => {
-      process.env.TURN_SECRET = faker.lorem.words()
-      process.env.DATA_PATH = './test'
-      expect(loadConfiguration().data.path).toEqual(join(cwd(), 'test'))
     })
   })
 })

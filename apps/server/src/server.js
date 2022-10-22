@@ -23,9 +23,9 @@ export async function startServer(config) {
   })
 
   app.decorate('conf', config)
-  await repositories.players.connect({ path: config.data.path })
-  await repositories.games.connect({ path: config.data.path })
-  await repositories.catalogItems.connect({ path: config.games.path })
+  await repositories.players.connect(config.data)
+  await repositories.games.connect(config.data)
+  await repositories.catalogItems.connect(config.games)
 
   app.register(import('./plugins/cors.js'), config.plugins.cors)
   app.register(import('./plugins/graphql.js'), config.plugins.graphql)

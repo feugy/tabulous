@@ -46,7 +46,6 @@ Roadmap
 ## Server
 
 - bug: timezone used for Serverside rendering is wrong
-- database
 - invite players who have no account yet
 - allows a single connection per player (discards other JWTs)
 - logging (warning on invalid descriptors)

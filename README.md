@@ -13,7 +13,7 @@ Meet your friends online to play your favorite games!
 
 ## How to use
 
-You need git, Node.js 16 and PNPM.
+You need [git], [Node.js 16][node], [PNPM] and [Redis]
 
 1. Checkout the code:
 
@@ -67,3 +67,7 @@ All the magic happens during continuous integration/deployment:
 
 [production]: https://tabulous.fr
 [license]: https://github.com/feugy/tabulous/blob/main/LICENSE
+[git]: https://git-scm.com/downloads
+[redis]: https://redis.io/docs/getting-started/installation/
+[node]: https://nodejs.org/en/download/
+[pnpm]: https://pnpm.io/installation

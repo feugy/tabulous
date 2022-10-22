@@ -123,7 +123,7 @@ fragment fullGame on Game {
   }
 }
 
-fragment currentGame on Game {
+fragment lightGame on Game {
   id
   created
   kind
@@ -157,13 +157,13 @@ mutation invite($gameId: ID!, $playerId: ID!) {
 
 query listGames {
   listGames {
-    ...currentGame
+    ...lightGame
   }
 }
 
 subscription receiveGameListUpdates {
   receiveGameListUpdates {
-    ...currentGame
+    ...lightGame
   }
 }
 

@@ -6,6 +6,7 @@ import {
   listCatalog,
   revokeAccess
 } from '../../src/services/catalog.js'
+import { clearDatabase, getRedisTestUrl } from '../test-utils.js'
 
 describe('Catalog service', () => {
   const players = [
@@ -51,15 +52,20 @@ describe('Catalog service', () => {
     }
   ]
 
+  const redisUrl = getRedisTestUrl()
+
   beforeAll(() =>
     repositories.catalogItems.connect({
       path: join('tests', 'fixtures', 'games')
     })
   )
 
-  beforeEach(() => repositories.players.connect({}))
+  beforeEach(() => repositories.players.connect({ url: redisUrl }))
 
-  afterEach(() => repositories.players.release())
+  afterEach(async () => {
+    await repositories.players.release()
+    await clearDatabase(redisUrl)
+  })
 
   afterAll(() => repositories.catalogItems.release())
 
@@ -85,11 +91,14 @@ describe('Catalog service', () => {
         name: faker.name.fullName(),
         catalog: [items[2].name]
       })
-      expect(await grantAccess(player.id, gameName)).toEqual({
+      const grantedPlayer = {
         ...player,
         catalog: [items[2].name, gameName]
-      })
-      expect(await repositories.players.getById(player.id)).toEqual(player)
+      }
+      expect(await grantAccess(player.id, gameName)).toEqual(grantedPlayer)
+      expect(await repositories.players.getById(player.id)).toEqual(
+        grantedPlayer
+      )
     })
 
     it(`creates user catalog on demand`, async () => {
@@ -98,11 +107,14 @@ describe('Catalog service', () => {
         id: faker.datatype.uuid(),
         name: faker.name.fullName()
       })
-      expect(await grantAccess(player.id, gameName)).toEqual({
+      const grantedPlayer = {
         ...player,
         catalog: [gameName]
-      })
-      expect(await repositories.players.getById(player.id)).toEqual(player)
+      }
+      expect(await grantAccess(player.id, gameName)).toEqual(grantedPlayer)
+      expect(await repositories.players.getById(player.id)).toEqual(
+        grantedPlayer
+      )
     })
 
     it(`does not grant the same game twice`, async () => {
@@ -113,10 +125,7 @@ describe('Catalog service', () => {
         catalog: [gameName]
       })
       expect(await grantAccess(player.id, gameName)).toBeNull()
-      expect(await repositories.players.getById(player.id)).toEqual({
-        ...player,
-        catalog: [gameName]
-      })
+      expect(await repositories.players.getById(player.id)).toEqual(player)
     })
 
     it(`ignores non-copyrighted games`, async () => {
@@ -127,10 +136,7 @@ describe('Catalog service', () => {
         catalog: [gameName]
       })
       expect(await grantAccess(player.id, gameName)).toBeNull()
-      expect(await repositories.players.getById(player.id)).toEqual({
-        ...player,
-        catalog: [gameName]
-      })
+      expect(await repositories.players.getById(player.id)).toEqual(player)
     })
 
     it(`ignores unknnown games`, async () => {
@@ -141,10 +147,7 @@ describe('Catalog service', () => {
         catalog: [gameName]
       })
       expect(await grantAccess(player.id, gameName)).toBeNull()
-      expect(await repositories.players.getById(player.id)).toEqual({
-        ...player,
-        catalog: [gameName]
-      })
+      expect(await repositories.players.getById(player.id)).toEqual(player)
     })
 
     it(`ignores unknnown player`, async () => {
@@ -160,11 +163,14 @@ describe('Catalog service', () => {
         name: faker.name.fullName(),
         catalog: [items[2].name, gameName]
       })
-      expect(await revokeAccess(player.id, gameName)).toEqual({
+      const revokedPlayer = {
         ...player,
         catalog: [items[2].name]
-      })
-      expect(await repositories.players.getById(player.id)).toEqual(player)
+      }
+      expect(await revokeAccess(player.id, gameName)).toEqual(revokedPlayer)
+      expect(await repositories.players.getById(player.id)).toEqual(
+        revokedPlayer
+      )
     })
 
     it(`does not revokes a games not granted`, async () => {
@@ -175,10 +181,7 @@ describe('Catalog service', () => {
         catalog: [items[0].name]
       })
       expect(await revokeAccess(player.id, gameName)).toBeNull()
-      expect(await repositories.players.getById(player.id)).toEqual({
-        ...player,
-        catalog: [items[0].name]
-      })
+      expect(await repositories.players.getById(player.id)).toEqual(player)
     })
 
     it(`ignores non-copyrighted games`, async () => {
@@ -189,10 +192,7 @@ describe('Catalog service', () => {
         catalog: [gameName]
       })
       expect(await revokeAccess(player.id, gameName)).toBeNull()
-      expect(await repositories.players.getById(player.id)).toEqual({
-        ...player,
-        catalog: [gameName]
-      })
+      expect(await repositories.players.getById(player.id)).toEqual(player)
     })
 
     it(`ignores unknnown games`, async () => {
@@ -203,10 +203,7 @@ describe('Catalog service', () => {
         catalog: [gameName]
       })
       expect(await revokeAccess(player.id, gameName)).toBeNull()
-      expect(await repositories.players.getById(player.id)).toEqual({
-        ...player,
-        catalog: [gameName]
-      })
+      expect(await repositories.players.getById(player.id)).toEqual(player)
     })
 
     it(`ignores unknnown player`, async () => {

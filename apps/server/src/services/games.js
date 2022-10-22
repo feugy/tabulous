@@ -312,8 +312,7 @@ export async function invite(gameId, guestId, hostId) {
  * @returns {Game[]} a list of games (could be empty).
  */
 export async function listGames(playerId) {
-  return (await repositories.games.listByPlayerId(playerId, { size: 50 }))
-    .results
+  return repositories.games.listByPlayerId(playerId)
 }
 
 /**

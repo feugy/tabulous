@@ -80,6 +80,34 @@ describe('Catalog Items repository', () => {
         })
       })
 
+      describe('getById()', () => {
+        it('returns a model by id', async () => {
+          const model = faker.helpers.arrayElement(items)
+          expect(await catalogItems.getById(model.name)).toEqual(model)
+        })
+
+        it('returns null on unknown id', async () => {
+          expect(await catalogItems.getById(faker.datatype.uuid())).toBeNull()
+        })
+
+        it('returns several models by ids', async () => {
+          expect(
+            await catalogItems.getById(items.map(({ name }) => name).reverse())
+          ).toEqual([...items].reverse())
+        })
+
+        it('returns null on unknown ids', async () => {
+          expect(
+            await catalogItems.getById([
+              faker.datatype.uuid(),
+              items[2].name,
+              faker.datatype.uuid(),
+              items[1].name
+            ])
+          ).toEqual([null, items[2], null, items[1]])
+        })
+      })
+
       describe('save()', () => {
         it('throws error as it is not supported', async () => {
           await expect(catalogItems.save()).rejects.toThrow(

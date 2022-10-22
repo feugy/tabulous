@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { join } from 'path'
+import { setTimeout } from 'timers/promises'
 import repositories from '../../src/repositories/index.js'
 import { grantAccess, revokeAccess } from '../../src/services/catalog.js'
 import {
@@ -11,9 +12,10 @@ import {
   loadGame,
   saveGame
 } from '../../src/services/games.js'
-import { sleep } from '../../src/utils/time.js'
+import { clearDatabase, getRedisTestUrl } from '../test-utils.js'
 
 describe('given a subscription to game lists and an initialized repository', () => {
+  const redisUrl = getRedisTestUrl()
   const updates = []
   let subscription
   const player = { id: faker.datatype.uuid() }
@@ -22,8 +24,8 @@ describe('given a subscription to game lists and an initialized repository', () 
 
   beforeAll(async () => {
     subscription = gameListsUpdate.subscribe(update => updates.push(update))
-    await repositories.games.connect({})
-    await repositories.players.connect({})
+    await repositories.games.connect({ url: redisUrl })
+    await repositories.players.connect({ url: redisUrl })
     await repositories.players.save(player)
     await repositories.players.save(peer)
   })
@@ -33,6 +35,7 @@ describe('given a subscription to game lists and an initialized repository', () 
     await repositories.games.release()
     await repositories.players.release()
     await repositories.catalogItems.release()
+    await clearDatabase(redisUrl)
   })
 
   beforeEach(async () => {
@@ -52,6 +55,7 @@ describe('given a subscription to game lists and an initialized repository', () 
       await expect(createGame(kind, faker.datatype.uuid())).rejects.toThrow(
         `Unsupported game ${kind}`
       )
+      await setTimeout(50)
       expect(updates).toHaveLength(0)
     })
 
@@ -60,6 +64,7 @@ describe('given a subscription to game lists and an initialized repository', () 
       await expect(createGame(kind, faker.datatype.uuid())).rejects.toThrow(
         `Access to game ${kind} is restricted`
       )
+      await setTimeout(50)
       expect(updates).toHaveLength(0)
     })
 
@@ -77,7 +82,7 @@ describe('given a subscription to game lists and an initialized repository', () 
         messages: [],
         hands: []
       })
-      await sleep()
+      await setTimeout(50)
       expect(updates).toEqual([{ playerId: player.id, games: [game] }])
     })
 
@@ -96,7 +101,7 @@ describe('given a subscription to game lists and an initialized repository', () 
         hands: [{ playerId: player.id, meshes: [] }],
         zoomSpec: { min: 5, max: 50 }
       })
-      await sleep()
+      await setTimeout(50)
       expect(updates).toEqual([
         { playerId: player.id, games: expect.arrayContaining([game]) }
       ])
@@ -110,6 +115,7 @@ describe('given a subscription to game lists and an initialized repository', () 
       await expect(
         createGame('throwing', faker.datatype.uuid())
       ).rejects.toThrow(`internal build error`)
+      await setTimeout(50)
       expect(updates).toHaveLength(0)
     })
   })
@@ -117,7 +123,7 @@ describe('given a subscription to game lists and an initialized repository', () 
   describe('given an existing game', () => {
     beforeEach(async () => {
       game = await createGame('klondike', player.id)
-      await sleep()
+      await setTimeout(50)
       updates.splice(0, updates.length)
     })
 
@@ -201,11 +207,13 @@ describe('given a subscription to game lists and an initialized repository', () 
         expect(
           await invite(faker.datatype.uuid(), peer.id, player.id)
         ).toBeNull()
+        await setTimeout(50)
         expect(updates).toHaveLength(0)
       })
 
       it('returns null on un-owned game', async () => {
         expect(await invite(game.id, peer.id, faker.datatype.uuid())).toBeNull()
+        await setTimeout(50)
         expect(updates).toHaveLength(0)
       })
 
@@ -214,6 +222,7 @@ describe('given a subscription to game lists and an initialized repository', () 
         expect(
           await invite(game.id, faker.datatype.uuid(), player.id)
         ).toBeNull()
+        await setTimeout(50)
         expect(updates).toHaveLength(0)
       })
 
@@ -230,6 +239,7 @@ describe('given a subscription to game lists and an initialized repository', () 
           player.id,
           peer.id
         ])
+        await setTimeout(50)
         expect(updates).toEqual([
           { playerId: player.id, games: [updated] },
           { playerId: peer.id, games: [updated] }
@@ -239,7 +249,7 @@ describe('given a subscription to game lists and an initialized repository', () 
       it(`invokes descriptor's addPlayer() function`, async () => {
         await deleteGame(game.id, player.id)
         game = await createGame('belote', player.id)
-        await sleep()
+        await setTimeout()
         const updated = await invite(game.id, peer.id, player.id)
         expect(updated.hands).toEqual([
           ...game.hands,
@@ -254,7 +264,7 @@ describe('given a subscription to game lists and an initialized repository', () 
           path: join('tests', 'fixtures', 'invalid-games')
         })
         game = await createGame('throwing-on-player', player.id)
-        await sleep()
+        await setTimeout()
         await expect(invite(game.id, peer.id, player.id)).rejects.toThrow(
           `internal addPlayer error`
         )
@@ -320,11 +330,11 @@ describe('given a subscription to game lists and an initialized repository', () 
 
       it('returns all game of a player', async () => {
         expect((await listGames(player.id)).map(getId)).toEqual(
-          [games[0], games[1], games[2], games[3]].map(getId)
+          [games[0], games[1], games[2], games[3]].map(getId).sort()
         )
 
         expect((await listGames(peer.id)).map(getId)).toEqual(
-          [games[0], games[3], games[4]].map(getId)
+          [games[0], games[3], games[4]].map(getId).sort()
         )
       })
     })
@@ -332,18 +342,21 @@ describe('given a subscription to game lists and an initialized repository', () 
     describe('deleteGame()', () => {
       it('returns null on unknown game', async () => {
         expect(await deleteGame(faker.datatype.uuid(), player.id)).toBeNull()
+        await setTimeout(50)
         expect(updates).toHaveLength(0)
       })
 
       it('returns null on un-owned game', async () => {
         expect(await deleteGame(game.id, faker.datatype.uuid())).toBeNull()
         expect(await loadGame(game.id, player.id)).toBeDefined()
+        await setTimeout(50)
         expect(updates).toHaveLength(0)
       })
 
       it('returns deleted game and trigger list update', async () => {
         expect(await deleteGame(game.id, player.id)).toEqual(game)
         expect(await loadGame(game.id, player.id)).toBeNull()
+        await setTimeout(50)
         expect(updates).toEqual([{ playerId: player.id, games: [] }])
       })
     })

@@ -32,12 +32,15 @@ const validate = new Ajv({ allErrors: true }).compile({
     },
     data: {
       properties: {
-        path: { type: 'string' }
+        url: { type: 'string' }
       }
     },
     plugins: {
       properties: {
         graphql: {
+          properties: {
+            pubsubUrl: { type: 'string' }
+          },
           optionalProperties: {
             graphiql: { type: 'string', nullable: true },
             allowedOrigins: { type: 'string' }
@@ -104,6 +107,8 @@ function makeAbsolute(path) {
  * @property {string} https.cert - relative or absolute path to the PEM file of your SSL certificate.
  * @property {object} logger - Pino logger options, including:
  * @property {string} logger.level - level used for logging.
+ * @property {object} data - configuration to connect to the database:
+ * @property {string} data.url - database connection string.
  * @property {object} games - game engine properties, including;
  * @property {string} games.path - folder path (relative to current working directory) containing game descriptors.
  * @property {object} plugins - options for all plugin used:
@@ -117,15 +122,17 @@ function makeAbsolute(path) {
 
 /**
  * Synchronously loads and validates the server configuration from environment variables:
- * - DATA_PATH: folder path (relative to current working directory) containing data stores. Defaults to './data'.
+ * - REDIS_URL: connection URL, including credentials, to connect to Redis database. Required in production, defaults to 'redis://127.0.0.1:6379' otherwise
+ * - PUBSUB_URL: connection URL, including credentials, to connect to PubSub provider. Required in production, defaults to 'redis://127.0.0.1:6379' otherwise
+ * - GOOGLE_SECRET: Optional Google OAuth application secret used to identify players.
  * - GAMES_PATH: folder path (relative to current working directory) containing game descriptors and assets. Defaults to '../games'.
  * - HOST : IP4/6 address this server will listen to.
- * - HTTPS_CERT: relative or absolute path to the PEM file of your SSL certificate. Required in production, defaults to 'keys/cert.pem'.
- * - HTTPS_KEY: relative or absolute path to the PEM file of your SSL key. Rrequired in production, defaults to 'keys/privkey.pem'.
+ * - HTTPS_CERT: relative or absolute path to the PEM file of your SSL certificate.
+ * - HTTPS_KEY: relative or absolute path to the PEM file of your SSL key.
  * - LOG_LEVEL: logger level used, one of 'trace', 'debug', 'info', 'warn', 'error', 'fatal'. Defaults to 'debug'.
  * - NODE_ENV: 'production' indicates production mode.
  * - PORT: server listening port (must be a number). Defaults to 443 in production, and 3001 otherwise.
- * - JWT_KEY: key used to sign JWT sent to the client.
+ * - JWT_KEY: key used to sign JWT sent to the client. Required in production.
  * - TURN_SECRET: secret used to generate turn credentials. Must be the same as coTURN static-auth-secret.
  * - AUTH_DOMAIN: public facing domain (full url) for authentication redirections. Defaults to https://auth.tabulous.fr in production, and http://localhost:3001 otherwise
  * - ALLOWED_ORIGINS_REGEXP: regular expression for allowed domains, used in CORS and authentication redirections.
@@ -139,7 +146,6 @@ function makeAbsolute(path) {
  */
 export function loadConfiguration() {
   const {
-    DATA_PATH,
     AUTH_DOMAIN,
     ALLOWED_ORIGINS_REGEXP,
     GAMES_PATH,
@@ -154,6 +160,8 @@ export function loadConfiguration() {
     LOG_LEVEL,
     NODE_ENV,
     PORT,
+    PUBSUB_URL,
+    REDIS_URL,
     TURN_SECRET
   } = process.env
 
@@ -181,7 +189,9 @@ export function loadConfiguration() {
     plugins: {
       graphql: {
         graphiql: isProduction ? null : 'playground',
-        allowedOrigins
+        allowedOrigins,
+        pubsubUrl:
+          PUBSUB_URL ?? (isProduction ? undefined : 'redis://127.0.0.1:6379')
       },
       static: {
         pathPrefix: '/games'
@@ -194,7 +204,7 @@ export function loadConfiguration() {
       path: GAMES_PATH ?? join('..', 'games')
     },
     data: {
-      path: DATA_PATH ?? 'data'
+      url: REDIS_URL ?? (isProduction ? undefined : 'redis://127.0.0.1:6379')
     },
     turn: {
       secret: TURN_SECRET
@@ -215,7 +225,6 @@ export function loadConfiguration() {
   if (GOOGLE_ID && GOOGLE_SECRET) {
     configuration.auth.google = { id: GOOGLE_ID, secret: GOOGLE_SECRET }
   }
-  configuration.data.path = makeAbsolute(configuration.data.path)
   configuration.games.path = makeAbsolute(configuration.games.path)
   configuration.plugins.static.path = configuration.games.path
 
