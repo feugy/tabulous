@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import fastify from 'fastify'
+import { setTimeout } from 'timers/promises'
 import {
   mockMethods,
   openGraphQLWebSocket,
@@ -11,11 +12,13 @@ import {
 } from '../test-utils.js'
 import services from '../../src/services/index.js'
 import graphQL from '../../src/plugins/graphql.js'
+import { clearDatabase, getRedisTestUrl } from '../test-utils.js'
 
 describe('given a started server', () => {
   let server
   let ws
   let restoreServices
+  const pubsubUrl = getRedisTestUrl()
   const playerId = faker.datatype.uuid()
   const configuration = {
     auth: { jwt: { key: faker.datatype.uuid() } }
@@ -24,7 +27,7 @@ describe('given a started server', () => {
   beforeAll(async () => {
     server = fastify({ logger: false })
     server.decorate('conf', configuration)
-    server.register(graphQL)
+    server.register(graphQL, { pubsubUrl })
     await server.listen()
     ws = await openGraphQLWebSocket(server)
     restoreServices = mockMethods(services)
@@ -40,6 +43,7 @@ describe('given a started server', () => {
       // ignore closure errors
     }
     await server?.close()
+    await clearDatabase()
   })
 
   describe('Signal GraphQL resolver', () => {
@@ -137,6 +141,7 @@ describe('given a started server', () => {
           signToken(playerId, configuration.auth.jwt.key),
           subId
         )
+        await setTimeout(500)
         expect(services.setPlaying).toHaveBeenNthCalledWith(1, playerId, true)
 
         await stopSubscription(ws, subId)

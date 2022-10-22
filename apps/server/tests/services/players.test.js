@@ -6,11 +6,17 @@ import {
   searchPlayers,
   setPlaying
 } from '../../src/services/players.js'
+import { clearDatabase, getRedisTestUrl } from '../test-utils.js'
 
 describe('given initialized repository', () => {
-  beforeAll(() => repositories.players.connect({}))
+  const redisUrl = getRedisTestUrl()
 
-  afterAll(() => repositories.players.release())
+  beforeAll(() => repositories.players.connect({ url: redisUrl }))
+
+  afterAll(async () => {
+    await clearDatabase(redisUrl)
+    await repositories.players.release()
+  })
 
   describe('addPlayer()', () => {
     it('assigns a new id', async () => {
@@ -105,10 +111,10 @@ describe('given initialized repository', () => {
 
   describe('given some players', () => {
     const players = [
-      { username: 'Wolverine' },
-      { username: 'SuperMan' },
-      { username: 'Docteur Strange' },
-      { username: 'Spiderman' },
+      { username: 'Adam Destine' },
+      { username: 'Batman' },
+      { username: 'Adaptoid' },
+      { username: 'Adversary' },
       { username: 'Hulk' }
     ]
 
@@ -169,16 +175,20 @@ describe('given initialized repository', () => {
 
     describe('searchPlayers()', () => {
       it('returns matching players', async () => {
-        expect(await searchPlayers('man', players[0].id)).toEqual([
-          players[1],
-          players[3]
+        expect(await searchPlayers('ada', players[3].id)).toEqual([
+          players[0],
+          players[2]
         ])
       })
 
       it('excludes current player from results, on demand', async () => {
-        expect(await searchPlayers('man', players[3].id)).toEqual([players[1]])
-        expect(await searchPlayers('man', players[3].id, false)).toEqual([
-          players[1],
+        expect(await searchPlayers('ad', players[3].id)).toEqual([
+          players[0],
+          players[2]
+        ])
+        expect(await searchPlayers('ad', players[3].id, false)).toEqual([
+          players[0],
+          players[2],
           players[3]
         ])
       })

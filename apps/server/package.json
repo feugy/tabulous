@@ -5,6 +5,7 @@
   "type": "module",
   "main": "./src",
   "scripts": {
+    "migrate": "node migrations",
     "start": "nodemon . | pino-pretty -c -t",
     "test": "vitest run --coverage",
     "test:dev": "vitest dev"
@@ -20,7 +21,9 @@
     "fast-jwt": "^1.7.1",
     "fastify": "^4.8.1",
     "fastify-plugin": "^4.2.1",
+    "ioredis": "^5.2.3",
     "mercurius": "^11.0.1",
+    "mqemitter-redis": "^5.0.0",
     "pino-pretty": "^9.1.1",
     "rxjs": "^7.5.7",
     "undici": "^5.11.0"

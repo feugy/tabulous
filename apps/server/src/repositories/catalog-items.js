@@ -25,7 +25,7 @@ class CatalogItemRepository extends AbstractRepository {
   async connect({ path }) {
     let entries
     this.models = []
-    this.modelsById = new Map()
+    this.modelsByName = new Map()
     try {
       entries = await readdir(path, { withFileTypes: true })
     } catch (err) {
@@ -44,7 +44,7 @@ class CatalogItemRepository extends AbstractRepository {
             ...(await import(descriptor))
           }
           this.models.push(item)
-          this.modelsById.set(name, item)
+          this.modelsByName.set(name, item)
         } catch (err) {
           // ignore folders with no index.js or invalid symbolic links
           // vite-node loader (used for tests) has a different error message than node.js
@@ -76,11 +76,26 @@ class CatalogItemRepository extends AbstractRepository {
    */
   async list() {
     return {
-      total: this.modelsById.size,
+      total: this.models.length,
       from: 0,
       size: Number.POSITIVE_INFINITY,
       results: this.models
     }
+  }
+
+  /**
+   * Get a single or several model by their id.
+   * @async
+   * @param {string|string[]} id - desired id(s).
+   * @returns {object|null|(object|null)[]} matching model(s), or null(s).
+   */
+  async getById(id) {
+    const ids = Array.isArray(id) ? id : [id]
+    const results = []
+    for (const id of ids) {
+      results.push(this.modelsByName.get(id) ?? null)
+    }
+    return Array.isArray(id) ? results : results[0]
   }
 
   /**

@@ -1,11 +1,18 @@
 import { faker } from '@faker-js/faker'
-import { chmod, readFile, rm, stat, watch, writeFile } from 'fs/promises'
-import { tmpdir } from 'os'
-import { join } from 'path'
+import Redis from 'ioredis'
+import { it } from 'vitest'
 import { AbstractRepository } from '../../src/repositories/abstract-repository.js'
-import { sleep } from '../../src/utils/index.js'
+import { getRedisTestUrl, clearDatabase } from '../test-utils.js'
 
 describe('Abstract repository', () => {
+  const redisUrl = getRedisTestUrl()
+
+  afterEach(() => clearDatabase(redisUrl))
+
+  class TestRepository extends AbstractRepository {
+    static fields = [{ name: 'count', deserialize: parseInt }]
+  }
+
   it('can not build a nameless repository', () => {
     expect(() => new AbstractRepository({})).toThrow(
       'every repository needs a name'
@@ -14,93 +21,57 @@ describe('Abstract repository', () => {
 
   describe('connect()', () => {
     let repository
-    let file
-    const ac = new AbortController()
-    const path = tmpdir()
+    const testClient = new Redis(redisUrl)
 
     beforeEach(() => {
-      repository = new AbstractRepository({
-        name: faker.lorem.word(),
-        saveDelay: 10
-      })
-      file = join(path, `${repository.name}.json`)
+      repository = new TestRepository({ name: faker.lorem.word() })
     })
 
-    afterEach(() => {
-      ac.abort()
-      return rm(file, { force: true })
-    })
-
-    it('reads model from storage file', async () => {
+    it('reads existing models', async () => {
       const models = [
         { id: faker.datatype.uuid(), foo: faker.lorem.word() },
         { id: faker.datatype.uuid(), bar: faker.lorem.word() }
       ]
+      for (const model of models) {
+        await testClient.hset(`${repository.name}:${model.id}`, model)
+      }
 
-      await writeFile(
-        file,
-        JSON.stringify(models.map(model => [model.id, model]))
-      )
-
-      await repository.connect({ path })
+      await repository.connect({ url: redisUrl, isProduction: false })
       expect(await repository.getById(models.map(({ id }) => id))).toEqual(
         models
       )
     })
 
-    it('handles unexisting file and creates it', async () => {
-      await rm(file, { force: true })
-      const watcher = watch(file, { signal: ac.signal })
-
-      await repository.connect({ path })
-      expect(await repository.list()).toEqual(
-        expect.objectContaining({ total: 0 })
-      )
-
-      await watcher
-      await expect(stat(file)).resolves.toBeDefined()
-    })
-
-    it('throws errors on unwritable file', async () => {
-      await writeFile(file, '')
-      await chmod(file, 0o200)
-      await expect(repository.connect({ path })).rejects.toThrow(
-        `Failed to connect repository ${repository.name}`
-      )
+    it('throws errors on unreachable database', async () => {
+      await expect(
+        repository.connect({ url: '127.0.0.1:65000', isProduction: false })
+      ).rejects.toThrow(`Failed to connect repository ${repository.name}`)
     })
 
     it('starts saving data into storage file', async () => {
       const id1 = faker.datatype.uuid()
       const id2 = faker.datatype.uuid()
-      await rm(file, { force: true })
-      await repository.connect({ path })
+      await repository.connect({ url: redisUrl, isProduction: false })
 
-      const watcher = watch(file, { signal: ac.signal })
+      const model1 = { id: id1, foo: faker.lorem.word() }
+      expect(await repository.save(model1)).toEqual(model1)
+      expect(await repository.getById(model1.id)).toEqual(model1)
 
-      await repository.save({ id: id1, foo: faker.lorem.word() })
-      await watcher
-      await sleep(10)
-      const { length } = await readFile(file, 'utf8')
-      expect(length).toBeGreaterThan(0)
-
-      await repository.save({ id: id2, bar: faker.lorem.word() })
-      await watcher
-      await sleep(10)
-      expect((await readFile(file, 'utf8')).length).toBeGreaterThan(length)
+      const model2 = { id: id2, bar: faker.lorem.word() }
+      expect(await repository.save(model2)).toEqual(model2)
+      expect(await repository.getById(model2.id)).toEqual(model2)
 
       await repository.deleteById([id1, id2])
-      await watcher
-      await sleep(10)
-      expect((await readFile(file, 'utf8')).length).toBeLessThan(length)
+      expect(await repository.getById(id1)).toBeNull()
+      expect(await repository.getById(id2)).toBeNull()
     })
   })
 
   describe('given a connected repository', () => {
-    const repository = new AbstractRepository({ name: 'test' })
+    const repository = new TestRepository({ name: 'test' })
 
     beforeEach(async () => {
-      await rm(join(tmpdir(), 'test.json'), { force: true })
-      await repository.connect({ path: tmpdir() })
+      await repository.connect({ url: redisUrl, isProduction: false })
     })
 
     afterEach(() => repository.release())
@@ -135,8 +106,8 @@ describe('Abstract repository', () => {
         { id: faker.datatype.uuid(), baz: faker.lorem.word() }
       ]
 
-      beforeEach(() => {
-        repository.save(models)
+      beforeEach(async () => {
+        await repository.save(models)
       })
 
       describe('save()', () => {
@@ -190,6 +161,32 @@ describe('Abstract repository', () => {
             results: []
           })
         })
+
+        it('reflects additions and deletions', async () => {
+          expect(await repository.list({ from: 0, size: 10 })).toEqual({
+            total: models.length,
+            from: 0,
+            size: 10,
+            results: models
+          })
+          const [model1, model2] = await repository.save([
+            { id: faker.datatype.uuid(), foo: faker.lorem.word() },
+            { id: faker.datatype.uuid(), bar: faker.lorem.word() }
+          ])
+          expect(await repository.list({ from: 0, size: 10 })).toEqual({
+            total: 5,
+            from: 0,
+            size: 10,
+            results: [...models, model1, model2]
+          })
+          await repository.deleteById([models[1].id, model1.id])
+          expect(await repository.list({ from: 0, size: 10 })).toEqual({
+            total: 3,
+            from: 0,
+            size: 10,
+            results: [models[0], models[2], model2]
+          })
+        })
       })
 
       describe('getById()', () => {
@@ -236,7 +233,12 @@ describe('Abstract repository', () => {
             await repository.deleteById(models.map(({ id }) => id))
           ).toEqual(models)
           expect(await repository.list()).toEqual(
-            expect.objectContaining({ total: 0, results: [] })
+            expect.objectContaining({
+              total: 0,
+              from: 0,
+              size: 10,
+              results: []
+            })
           )
         })
 

@@ -94,6 +94,11 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'pnpm'
 
+      - name: Start Redis
+        uses: supercharge/redis-github-action@1.4.0
+        with:
+          redis-version: 6
+
       - name: Install dependencies
         run: pnpm install --ignore-scripts
 
@@ -172,6 +177,11 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: 'pnpm'
+
+      - name: Start Redis
+        uses: supercharge/redis-github-action@1.4.0
+        with:
+          redis-version: 6
 
       - name: Install dependencies
         run: pnpm install --ignore-scripts

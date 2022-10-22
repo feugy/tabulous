@@ -30,6 +30,10 @@ set +x
 nvm install
 set -x
 
+# run migrations
+cd ~/server
+node migrations
+
 # restart all
 sudo nginx -s reload
 sudo systemctl daemon-reload 

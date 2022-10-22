@@ -115,6 +115,23 @@ First commands will need to connect with IPv4 (hence the `-4` flag) in the meant
     - uncomment `#pkey=[PATH]` and change path value for `/home/tabulous/certbot/live/tabulous.fr/privkey.pem`
   - restart service: `sudo systemctl restart coturn`
 
+- install Redis:
+
+  - open an SSH connection to the VPS: `ssh ubuntu@vps-XYZ.vps.ovh.net`
+  - install Redis: `sudo apt install -y redis`
+  - configure redis:
+    1. `sudo vi /etc/redis/redis.conf`
+    1. change line `supervised no` to `superivsed auto`
+    1. uncomment line `aclfile /etc/redis/users.acl`
+    1. save and quit
+    1. generate 2 random secrets values (save them somewhere): `tr -cd '[:alnum:]' < /dev/urandom | fold -w30 | head -n 2`
+    1. add these:
+       - `user default off`
+       - `user USERNAME on allkeys +@keyspace +@list +@set +@sortedset +@hash +@string +@transaction >PASSWORD_1`
+       - `user USERNAME_2 on +@pubsub >PASSWORD_2`
+    1. save and quit
+  - restart redis to apply changes: `sudo systemctl restart redis`
+
 ## Continuous deployment
 
 [Inspiration](https://coderflex.com/blog/2-easy-steps-to-automate-a-deployment-in-a-vps-with-github-actions)
@@ -156,6 +173,8 @@ Because such configuration should not be commited on Github, it is stored in an 
   - add `NODE_ENV=production`
   - add `JWT_KEY=[SECRET]` with the secret you just generated
   - add `TURN_SECRET=[SECRET]` with the same secret value as coTURN's `static-auth-secret`
+  - add `REDIS_URL=redis://[USER]:[SECRET]@localhost:6379` with the first user and secret from `/etc/redis/users.acl`
+  - add `PUBSUB_URL=redis://[USER]:[SECRET]@localhost:6379` with the second user and password from `/etc/redis/users.acl`
 
 ## Maintenance
 

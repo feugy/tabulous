@@ -1,4 +1,5 @@
 import mercurius from 'mercurius'
+import redis from 'mqemitter-redis'
 import { schema, resolvers, loaders } from '../graphql/index.js'
 import { getAuthenticatedPlayer } from './utils.js'
 
@@ -6,6 +7,7 @@ import { getAuthenticatedPlayer } from './utils.js'
  * @typedef {import('mercurius').MercuriusOptions} GraphQLOptions graphQL plugin options.
  * You can use any of Mercurius options but `schema`, `resolvers`, `loaders` and `context` which are computed.
  * @property {string} allowedOrigin - regular expression for allowed domains during web socket connections
+ * @property {string} pubsubUrl - regular expression for allowed domains during web socket connections
  */
 
 /**
@@ -21,14 +23,18 @@ import { getAuthenticatedPlayer } from './utils.js'
  * @param {import('fastify').FastifyInstance} app - a fastify application.
  * @param {GraphQLOptions} opts - plugin options.
  */
-export default async function registerGraphQL(app, opts) {
-  const allowedOriginsRegExp = new RegExp(opts.allowedOrigins)
-  app.register(mercurius, {
+export default async function registerGraphQL(
+  app,
+  { allowedOrigins, pubsubUrl, ...opts }
+) {
+  const allowedOriginsRegExp = new RegExp(allowedOrigins)
+  await app.register(mercurius, {
     ...opts,
     schema,
     resolvers,
     loaders,
     subscription: {
+      emitter: redis({ connectionString: pubsubUrl }),
       async onConnect({ payload }) {
         const player = await getAuthenticatedPlayer(
           extractBearer(payload?.bearer),

@@ -1,4 +1,5 @@
 import { createSigner } from 'fast-jwt'
+import Redis from 'ioredis'
 import WebSocket from 'ws'
 
 /**
@@ -107,4 +108,21 @@ export function cloneAsJSON(object) {
  */
 export function signToken(playerId, key) {
   return createSigner({ key })({ id: playerId })
+}
+
+/**
+ * Returns an URL to a random database, between 15 and 1, on a Redis instance.
+ * @returns {string} url to the redis database.
+ */
+export function getRedisTestUrl() {
+  return `redis://localhost:6379/${Math.floor(Math.random() * (15 - 1) + 1)}`
+}
+
+/**
+ * Synchronously removes all keys from a given Redis database.
+ * @param {string} url to the redis database.
+ * @returns {Promise<void>} resolves when done.
+ */
+export async function clearDatabase(databaseUrl) {
+  await new Redis(databaseUrl).flushdb()
 }
