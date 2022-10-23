@@ -66,6 +66,7 @@
     "svelte": "^3.51.0",
     "svelte-htm": "^1.1.1",
     "svelte-intl": "^1.1.4",
+    "svelte-markdown": "^0.2.3",
     "svelte-portal": "^2.2.0",
     "v8-to-istanbul": "^9.0.1",
     "vite": "^3.1.7",
