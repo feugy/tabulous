@@ -2,8 +2,6 @@
 
 Roadmap
 
-- web: terms & condition
-- web: cookie policy
 - server + web: first log-in with T&C
 - server + web: limit number of games
 - server + web: friend list

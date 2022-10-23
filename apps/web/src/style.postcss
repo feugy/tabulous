@@ -17,7 +17,7 @@
   --primary-vivid: #; */
 
   --primary-lightest: #fcfcfc;
-  /* --primary-lighter: #; */
+  --primary-lighter: #f0f0f0;
   --primary-light: #979797;
   --primary: #7a7a7a;
   --primary-dark: #606060;
@@ -55,6 +55,23 @@ body {
   @apply font-sans h-full m-0 bg-$base-lighter text-$ink;
 }
 
+body {
+  @apply relative flex flex-col h-max min-h-full overflow-auto;
+
+  & > :first-child {
+    @apply flex-1;
+  }
+}
+
 .heading {
   @apply text-3xl border-b mb-4 border-$primary-dark;
+}
+
+a[href] {
+  @apply text-$primary;
+
+  &:hover,
+  &:visited {
+    @apply underline;
+  }
 }

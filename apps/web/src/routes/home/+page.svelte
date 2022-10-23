@@ -89,7 +89,7 @@
   }
 
   main {
-    @apply flex flex-col h-full w-full pb-8;
+    @apply flex flex-col w-full pb-8;
   }
 
   section {

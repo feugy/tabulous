@@ -17,6 +17,7 @@ actions:
   log-out: Quitter
   new-game: Nouveau
   quit-game: Quitter le jeu
+  scroll-to-top: Défiler jusqu'en haut
   show-indicators: Afficher les indicateurs
 errors:
   login-failure: Pseudo ou mot de passe incorrect. Merci de réessayer.
@@ -31,6 +32,7 @@ labels:
   account: Paramètres
   avatar: 'Avatar : '
   confirm-game-deletion: Souhaitez vous vraiment supprimer cette partie de "{title}" ?
+  copyright: Tabulous.fr. Tous droits réservés.
   game-authors: 'Créé par : '
   game-designers: 'Illustré par : '
   game-publishers: 'Distribué par : '
@@ -54,6 +56,84 @@ placeholders:
   password: Mot de passe
   playerId: Identifiant
   username: Pseudo
+titles:
+  account: Vos paramètres
+  auth-provider: Votre compte
+  camera-controls: Contrôler la caméra
+  catalog: Jeux disponibles
+  confirm-game-deletion: Suppression de la partie
+  your-games: Parties en cours
+  home: Bonjour {username} !
+  invite: Qui vas tu inviter ?
+  legal: Mentions légales
+  log-in: Bienvenue !
+  object-controls: Contrôler un objet
+  selection-controls: Contrôler un ou plusieurs objets
+  terms-of-service: Conditions générales d’utilisation
+  username: Votre peusdo
+  welcome: Bienvenue sur Tabulous !
+tooltips:
+  add-to-selection: Ajouter à la sélection
+  clear-selection: Vider la sélection
+  detail: Voir en détail
+  draw: Piocher dans votre main
+  decrement: Dépiller
+  flip-stack: Retourner la pile
+  flip: Retourner
+  game-menu: Menu des commandes
+  help-controls: Contrôles de l'interface
+  help-double-left-object: Double clic gauche sur un objet
+  help-double-pointer-object: Double tap sur un objet
+  help-left-drag-object: Tiré-déplacé un objet avec le clic gauche
+  help-left-drag: Tiré-déplacé avec le clic gauche
+  help-left-object: Clic gauche sur un objet
+  help-left-outside-selection: Clic gauche en dehors de la sélection
+  help-long-left-drag-select: Tiré-déplacé avec un clic gauche long
+  help-long-left-object: Clic gauche long sur un objet
+  help-long-pointer-drag-select: Tiré-déplacé avec un tap long
+  help-long-pointer-object: Tap long sur un objet
+  help-mouse-wheel: Molette de la souris
+  help-new-camera: Clic sur le bouton "nouvelle caméra"
+  help-pinch: Pincer
+  help-pointer-drag-object: Tiré-déplacé un objet avec un tap
+  help-pointer-drag: Tiré-déplacé avec un tap
+  help-pointer-object: Tap sur un objet
+  help-pointer-outside-selection: Tap en dehors de la sélection
+  help-restore-camera: Clic sur un emplacement de caméra
+  help-right-drag: Tiré-déplacé avec le clic droit
+  help-right-object: Clic droit sur un objet
+  help-two-pointers-drag: Tap avec deux doigts sur un objet
+  help-two-pointers-object: Tap avec deux doigts sur un objet
+  help-update-camera: Clic long sur un emplacement de caméra
+  increment: Assembler
+  lock: Verrouiller
+  move: Déplacer
+  open-menu: Ouvrir le menu
+  pan-camera: Déplacer
+  play: Jouer sur la table
+  pop: Dépiller
+  restore-camera: Restaurer la position
+  rotate-camera: Pivoter et incliner
+  rotate: Tourner de 90°
+  rule-page: Livre de règles, page {page}
+  save-camera: Mettre à jour la position
+  save-new-camera: Enregistrer la position (Ctrl+1~9)
+  save-restore-camera: "{index, plural, =0 {Charger la position initiale de la camera (Début)} other {Charger (clic) ou enregistrer (clic long) la position à l'emplacement #}}"
+  send-message: Envoyer à tous
+  shuffle: Mélanger
+  stack-all: Assembler
+  unlock: Déverrouiller
+  zoom: Zoomer
+shortcuts:
+  detail: v
+  draw: p
+  flip: r
+  hand: h
+  pop: d
+  push: a
+  rotate: t
+  shuffle: m
+  toggleLock: l
 markdown:
   legal: |
     La plateforme de jeux en ligne accessible à l’adresse [tabulous.fr](https://tabulous.fr) (ci-après la « **Plateforme** ») est éditée par une personne physique à titre non professionnel et non commercial (ci-après « l’**Editeur** »). 
@@ -209,82 +289,3 @@ markdown:
     ## Article 9 - Loi applicable et Tribunal compétent
 
     Les présentes CGU sont soumises au droit français. Tout litige pouvant résulter de l’interprétation et/ ou de l’exécution des présentes CGU sera de la compétence des juridictions françaises.
-
-titles:
-  account: Vos paramètres
-  auth-provider: Votre compte
-  camera-controls: Contrôler la caméra
-  catalog: Jeux disponibles
-  confirm-game-deletion: Suppression de la partie
-  your-games: Parties en cours
-  home: Bonjour {username} !
-  invite: Qui vas tu inviter ?
-  legal: Mentions légales
-  log-in: Bienvenue !
-  object-controls: Contrôler un objet
-  selection-controls: Contrôler un ou plusieurs objets
-  terms-of-service: Conditions générales d’utilisation
-  username: Votre peusdo
-  welcome: Bienvenue sur Tabulous !
-tooltips:
-  add-to-selection: Ajouter à la sélection
-  clear-selection: Vider la sélection
-  detail: Voir en détail
-  draw: Piocher dans votre main
-  decrement: Dépiller
-  flip-stack: Retourner la pile
-  flip: Retourner
-  game-menu: Menu des commandes
-  help-controls: Contrôles de l'interface
-  help-double-left-object: Double clic gauche sur un objet
-  help-double-pointer-object: Double tap sur un objet
-  help-left-drag-object: Tiré-déplacé un objet avec le clic gauche
-  help-left-drag: Tiré-déplacé avec le clic gauche
-  help-left-object: Clic gauche sur un objet
-  help-left-outside-selection: Clic gauche en dehors de la sélection
-  help-long-left-drag-select: Tiré-déplacé avec un clic gauche long
-  help-long-left-object: Clic gauche long sur un objet
-  help-long-pointer-drag-select: Tiré-déplacé avec un tap long
-  help-long-pointer-object: Tap long sur un objet
-  help-mouse-wheel: Molette de la souris
-  help-new-camera: Clic sur le bouton "nouvelle caméra"
-  help-pinch: Pincer
-  help-pointer-drag-object: Tiré-déplacé un objet avec un tap
-  help-pointer-drag: Tiré-déplacé avec un tap
-  help-pointer-object: Tap sur un objet
-  help-pointer-outside-selection: Tap en dehors de la sélection
-  help-restore-camera: Clic sur un emplacement de caméra
-  help-right-drag: Tiré-déplacé avec le clic droit
-  help-right-object: Clic droit sur un objet
-  help-two-pointers-drag: Tap avec deux doigts sur un objet
-  help-two-pointers-object: Tap avec deux doigts sur un objet
-  help-update-camera: Clic long sur un emplacement de caméra
-  increment: Assembler
-  lock: Verrouiller
-  move: Déplacer
-  open-menu: Ouvrir le menu
-  pan-camera: Déplacer
-  play: Jouer sur la table
-  pop: Dépiller
-  restore-camera: Restaurer la position
-  rotate-camera: Pivoter et incliner
-  rotate: Tourner de 90°
-  rule-page: Livre de règles, page {page}
-  save-camera: Mettre à jour la position
-  save-new-camera: Enregistrer la position (Ctrl+1~9)
-  save-restore-camera: "{index, plural, =0 {Charger la position initiale de la camera (Début)} other {Charger (clic) ou enregistrer (clic long) la position à l'emplacement #}}"
-  send-message: Envoyer à tous
-  shuffle: Mélanger
-  stack-all: Assembler
-  unlock: Déverrouiller
-  zoom: Zoomer
-shortcuts:
-  detail: v
-  draw: p
-  flip: r
-  hand: h
-  pop: d
-  push: a
-  rotate: t
-  shuffle: m
-  toggleLock: l

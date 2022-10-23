@@ -15,6 +15,8 @@
 
 <style lang="postcss">
   section {
+    @apply inline-block;
+
     h1 {
       @apply text-3xl underline underline-$primary-light mt-8 mb-6;
     }
@@ -38,15 +40,6 @@
 
     :global(h3) {
       @apply mx-4 text-base;
-    }
-
-    :global(a) {
-      @apply text-$primary;
-
-      &:hover,
-      &:visited {
-        @apply underline;
-      }
     }
   }
 </style>

@@ -25,7 +25,7 @@
 
 <style lang="postcss">
   main {
-    @apply flex flex-col h-full w-full pb-8;
+    @apply flex flex-col w-full pb-8;
 
     :global(> *) {
       @apply px-2 mx-auto w-3/4 <lg:w-full;
