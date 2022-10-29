@@ -21,6 +21,7 @@ actions:
   show-indicators: Afficher les indicateurs
 errors:
   login-failure: Pseudo ou mot de passe incorrect. Merci de réessayer.
+# https://github.com/format-message/format-message/tree/master/packages/format-message#formatmessagesetupoptions
 formats:
   date:
     short-date:
@@ -28,6 +29,8 @@ formats:
       hour: 2-digit
       minute: 2-digit
       month: short
+    date-only:
+      dateStyle: medium
 labels:
   account: Paramètres
   avatar: 'Avatar : '
@@ -40,6 +43,7 @@ labels:
   game-min-time: "{minTime}'"
   host: hôte
   home: Accueil
+  last-updated: 'Dernière mise à jour : { published, date, date-only }'
   manual-provider: Vous avez un compte manuel dont l'identifiant de connextion est "{id}"
   no-games-yet: Rien pour l'instant ! Choisissez un jeu disponible.
   oauth-provider: Vous avez relié ce compte à votre adresse "{email}"
@@ -155,7 +159,7 @@ markdown:
 
     En sus des termes définis ci-dessus, les termes suivants auront la signification suivante : 
 
-    « **Compte** » désigne le compte créer par l’Utilisateur afin d’accéder aux Jeux disponibles sur la Plateforme. 
+    « **Compte** » désigne le compte utilisateur créer afin d’accéder aux Jeux disponibles sur la Plateforme. 
 
     « **Contenu** » désigne tout contenu, donnée, information, vidéo, image, enregistrement, propos, paroles, commentaire, message, document, publié par un Utilisateur sur le Chat.
 
@@ -165,7 +169,7 @@ markdown:
 
     « **Joueur(s)** » désigne toute personne ayant créé un Compte.
 
-    « **Services Tiers** » désigne tout  service tiers au moyen desquels l’Utilisateur peut choisir de se connecter à la Plateforme (par exemple Facebook, Google, Discord, Twitch, etc).
+    « **Services** Tiers » désigne tout  service tiers au moyen desquels l’Utilisateur peut choisir de se connecter à la Plateforme (par exemple Facebook, Google, Discord, Twitch, etc).
 
     « **Utilisateur(s)** » désigne tout internaute navigant sur la Plateforme en qualité de Joueur ou de Visiteur. 
 
@@ -181,15 +185,15 @@ markdown:
 
     ### 3.2 Création d’un Compte
 
-    Afin de pouvoir accéder aux Jeux disponibles sur la Plateforme en vue d’y jouer, l’Utilisateur doit se connecter à la Plateforme via le recours à un Service Tiers. 
+    Afin de pouvoir accéder aux Jeux disponibles sur la Plateforme en vue d’y jouer, l’Utilisateur doit s’inscrire et se connecter à la Plateforme via le recours à un Service Tiers. 
 
     La collecte, l'utilisation et la divulgation des informations de l’Utilisateur induites pas ces actions seront soumises à la politique de confidentialité du Service Tiers choisi par l’Utilisateur. Lorsque cela est permis par la politique de confidentialité, l’Editeur se verra communiquer les nom, prénom, avatar et pseudonyme de l’Utilisateur. 
 
     En vertu du protocole OAuth2 utilisé pour se connecter au Service Tiers, l'Utilisateur sera notifié des informations transmises à l’Editeur. En cas d’opposition de l’Utilisateur à l’utilisation de ces données, la Plateforme ne lui sera pas accessible. 
 
-    Une fois la connexion à la Plateforme faite via le recours à un Service Tiers, l’Editeur se chargera de créer un Compte en utilisant ses nom, prénom, avatar et pseudonyme. 
+    Une fois l’inscription et la connexion à la Plateforme faite via le recours à un Service Tiers, un Compte est créé. 
 
-    Lors de la création du Compte, l’Utilisateur déclare au moyen d’une case à cocher qu’il est âgé de plus de 15 ans ou qu’il a été autorisé par l’un de ses parents ou le titulaire de l’autorité parentale à l’utilisation de ses noms, prénoms, adresse mail, avatar et pseudonyme (ci-après les « Données Personnelles du Mineur ») pour créer le Compte, accéder à la Plateforme et jouer aux Jeux.
+    Lors de la première connexion à la Plateforme, l’Utilisateur déclare au moyen d’une case à cocher qu’il est âgé de plus de 15 ans ou qu’il a été autorisé par l’un de ses parents ou le titulaire de l’autorité parentale à l’utilisation de ses noms, prénoms, adresse mail, avatar et pseudonyme (ci-après les « **Données Personnelles du Mineur** ») pour créer le Compte, accéder à la Plateforme et jouer aux Jeux.
 
     ### 3.3 Jeux en mode multi-joueurs
 
@@ -199,7 +203,7 @@ markdown:
 
     Lors de la tenue d’une partie de Jeu en mode multi-joueurs, un Chat est mis à la disposition des Joueurs afin de leur permettre d’échanger tout Contenu par écrit ou par visio. 
 
-    Ce Contenu n’est accessible que par les Joueurs d’une même partie. Tout Contenu est accessible tant que le Joueur conserve la partie de Jeux à l’occasion de laquelle le Contenu a été échangé et ce jusqu’à ce que le Joueur décide de supprimer la partie de jeu. Par exception, le Contenu en visio ne fait l’objet d’aucun enregistrement. .
+    Ce Contenu n’est accessible que par les Joueurs d’une même partie. Tout Contenu est accessible tant que le Joueur conserve la partie de Jeux à l’occasion de laquelle le Contenu a été échangé et ce jusqu’à ce que le Joueur décide de supprimer la partie de jeu. Par exception, le Contenu en visio ne fait l’objet d’aucun enregistrement. 
 
     ## Article 4 - Garantie et responsabilité de l’Editeur
 
@@ -278,7 +282,7 @@ markdown:
 
     A défaut de cet accord, l’Utilisateur de moins de 15 ans ne pourra créer un Compte et accéder à la Plateforme.
 
-    Les Données Personnelles du Mineur sont collectées uniquement aux fins de création du Compte afin de permettre d’accéder à la Plateforme et de jouer à un Jeu.[FH1] 
+    Les Données Personnelles du Mineur sont collectées uniquement aux fins de création du Compte afin de permettre d’accéder à la Plateforme et de jouer à un Jeu.
 
     Les Données Personnelles du Mineur ne sont jamais partagées avec des tiers ni revendues.
 

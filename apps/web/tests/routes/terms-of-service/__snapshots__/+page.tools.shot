@@ -450,7 +450,7 @@ La Plateforme est hébergée par :
       
       
       <!--&lt;Parser&gt;-->
-       » désigne le compte créer par l’Utilisateur afin d’accéder aux Jeux disponibles sur la Plateforme. 
+       » désigne le compte utilisateur créer afin d’accéder aux Jeux disponibles sur la Plateforme. 
       
       <!--&lt;Text&gt;-->
       
@@ -658,7 +658,7 @@ La Plateforme est hébergée par :
       
       <!--&lt;Parser&gt;-->
       <strong>
-        Services Tiers
+        Services
         
         <!--&lt;Text&gt;-->
         
@@ -675,7 +675,7 @@ La Plateforme est hébergée par :
       
       
       <!--&lt;Parser&gt;-->
-       » désigne tout  service tiers au moyen desquels l’Utilisateur peut choisir de se connecter à la Plateforme (par exemple Facebook, Google, Discord, Twitch, etc).
+       Tiers » désigne tout  service tiers au moyen desquels l’Utilisateur peut choisir de se connecter à la Plateforme (par exemple Facebook, Google, Discord, Twitch, etc).
       
       <!--&lt;Text&gt;-->
       
@@ -888,7 +888,7 @@ La Plateforme est hébergée par :
     
     <!--&lt;Parser&gt;-->
     <p>
-      Afin de pouvoir accéder aux Jeux disponibles sur la Plateforme en vue d’y jouer, l’Utilisateur doit se connecter à la Plateforme via le recours à un Service Tiers. 
+      Afin de pouvoir accéder aux Jeux disponibles sur la Plateforme en vue d’y jouer, l’Utilisateur doit s’inscrire et se connecter à la Plateforme via le recours à un Service Tiers. 
       
       <!--&lt;Text&gt;-->
       
@@ -948,7 +948,7 @@ La Plateforme est hébergée par :
     
     <!--&lt;Parser&gt;-->
     <p>
-      Une fois la connexion à la Plateforme faite via le recours à un Service Tiers, l’Editeur se chargera de créer un Compte en utilisant ses nom, prénom, avatar et pseudonyme. 
+      Une fois l’inscription et la connexion à la Plateforme faite via le recours à un Service Tiers, un Compte est créé. 
       
       <!--&lt;Text&gt;-->
       
@@ -968,7 +968,32 @@ La Plateforme est hébergée par :
     
     <!--&lt;Parser&gt;-->
     <p>
-      Lors de la création du Compte, l’Utilisateur déclare au moyen d’une case à cocher qu’il est âgé de plus de 15 ans ou qu’il a été autorisé par l’un de ses parents ou le titulaire de l’autorité parentale à l’utilisation de ses noms, prénoms, adresse mail, avatar et pseudonyme (ci-après les « Données Personnelles du Mineur ») pour créer le Compte, accéder à la Plateforme et jouer aux Jeux.
+      Lors de la première connexion à la Plateforme, l’Utilisateur déclare au moyen d’une case à cocher qu’il est âgé de plus de 15 ans ou qu’il a été autorisé par l’un de ses parents ou le titulaire de l’autorité parentale à l’utilisation de ses noms, prénoms, adresse mail, avatar et pseudonyme (ci-après les « 
+      
+      <!--&lt;Text&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      <strong>
+        Données Personnelles du Mineur
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </strong>
+      <!--&lt;Strong&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+       ») pour créer le Compte, accéder à la Plateforme et jouer aux Jeux.
       
       <!--&lt;Text&gt;-->
       
@@ -1070,7 +1095,7 @@ La Plateforme est hébergée par :
     
     <!--&lt;Parser&gt;-->
     <p>
-      Ce Contenu n’est accessible que par les Joueurs d’une même partie. Tout Contenu est accessible tant que le Joueur conserve la partie de Jeux à l’occasion de laquelle le Contenu a été échangé et ce jusqu’à ce que le Joueur décide de supprimer la partie de jeu. Par exception, le Contenu en visio ne fait l’objet d’aucun enregistrement. .
+      Ce Contenu n’est accessible que par les Joueurs d’une même partie. Tout Contenu est accessible tant que le Joueur conserve la partie de Jeux à l’occasion de laquelle le Contenu a été échangé et ce jusqu’à ce que le Joueur décide de supprimer la partie de jeu. Par exception, le Contenu en visio ne fait l’objet d’aucun enregistrement. 
       
       <!--&lt;Text&gt;-->
       
@@ -2083,7 +2108,7 @@ La Plateforme est hébergée par :
     
     <!--&lt;Parser&gt;-->
     <p>
-      Les Données Personnelles du Mineur sont collectées uniquement aux fins de création du Compte afin de permettre d’accéder à la Plateforme et de jouer à un Jeu.[FH1] 
+      Les Données Personnelles du Mineur sont collectées uniquement aux fins de création du Compte afin de permettre d’accéder à la Plateforme et de jouer à un Jeu.
       
       <!--&lt;Text&gt;-->
       
@@ -2232,6 +2257,12 @@ La Plateforme est hébergée par :
     
     <!--&lt;Parser&gt;-->
     <!--&lt;SvelteMarkdown&gt;-->
+     
+    <div
+      class="published s-hBkQY443626L"
+    >
+      Dernière mise à jour : 1 nov. 2022
+    </div>
   </section>
   <!--&lt;TermsOfService&gt;-->
 </main>
@@ -2712,7 +2743,7 @@ La Plateforme est hébergée par :
       
       
       <!--&lt;Parser&gt;-->
-       » désigne le compte créer par l’Utilisateur afin d’accéder aux Jeux disponibles sur la Plateforme. 
+       » désigne le compte utilisateur créer afin d’accéder aux Jeux disponibles sur la Plateforme. 
       
       <!--&lt;Text&gt;-->
       
@@ -2920,7 +2951,7 @@ La Plateforme est hébergée par :
       
       <!--&lt;Parser&gt;-->
       <strong>
-        Services Tiers
+        Services
         
         <!--&lt;Text&gt;-->
         
@@ -2937,7 +2968,7 @@ La Plateforme est hébergée par :
       
       
       <!--&lt;Parser&gt;-->
-       » désigne tout  service tiers au moyen desquels l’Utilisateur peut choisir de se connecter à la Plateforme (par exemple Facebook, Google, Discord, Twitch, etc).
+       Tiers » désigne tout  service tiers au moyen desquels l’Utilisateur peut choisir de se connecter à la Plateforme (par exemple Facebook, Google, Discord, Twitch, etc).
       
       <!--&lt;Text&gt;-->
       
@@ -3150,7 +3181,7 @@ La Plateforme est hébergée par :
     
     <!--&lt;Parser&gt;-->
     <p>
-      Afin de pouvoir accéder aux Jeux disponibles sur la Plateforme en vue d’y jouer, l’Utilisateur doit se connecter à la Plateforme via le recours à un Service Tiers. 
+      Afin de pouvoir accéder aux Jeux disponibles sur la Plateforme en vue d’y jouer, l’Utilisateur doit s’inscrire et se connecter à la Plateforme via le recours à un Service Tiers. 
       
       <!--&lt;Text&gt;-->
       
@@ -3210,7 +3241,7 @@ La Plateforme est hébergée par :
     
     <!--&lt;Parser&gt;-->
     <p>
-      Une fois la connexion à la Plateforme faite via le recours à un Service Tiers, l’Editeur se chargera de créer un Compte en utilisant ses nom, prénom, avatar et pseudonyme. 
+      Une fois l’inscription et la connexion à la Plateforme faite via le recours à un Service Tiers, un Compte est créé. 
       
       <!--&lt;Text&gt;-->
       
@@ -3230,7 +3261,32 @@ La Plateforme est hébergée par :
     
     <!--&lt;Parser&gt;-->
     <p>
-      Lors de la création du Compte, l’Utilisateur déclare au moyen d’une case à cocher qu’il est âgé de plus de 15 ans ou qu’il a été autorisé par l’un de ses parents ou le titulaire de l’autorité parentale à l’utilisation de ses noms, prénoms, adresse mail, avatar et pseudonyme (ci-après les « Données Personnelles du Mineur ») pour créer le Compte, accéder à la Plateforme et jouer aux Jeux.
+      Lors de la première connexion à la Plateforme, l’Utilisateur déclare au moyen d’une case à cocher qu’il est âgé de plus de 15 ans ou qu’il a été autorisé par l’un de ses parents ou le titulaire de l’autorité parentale à l’utilisation de ses noms, prénoms, adresse mail, avatar et pseudonyme (ci-après les « 
+      
+      <!--&lt;Text&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      <strong>
+        Données Personnelles du Mineur
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </strong>
+      <!--&lt;Strong&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+       ») pour créer le Compte, accéder à la Plateforme et jouer aux Jeux.
       
       <!--&lt;Text&gt;-->
       
@@ -3332,7 +3388,7 @@ La Plateforme est hébergée par :
     
     <!--&lt;Parser&gt;-->
     <p>
-      Ce Contenu n’est accessible que par les Joueurs d’une même partie. Tout Contenu est accessible tant que le Joueur conserve la partie de Jeux à l’occasion de laquelle le Contenu a été échangé et ce jusqu’à ce que le Joueur décide de supprimer la partie de jeu. Par exception, le Contenu en visio ne fait l’objet d’aucun enregistrement. .
+      Ce Contenu n’est accessible que par les Joueurs d’une même partie. Tout Contenu est accessible tant que le Joueur conserve la partie de Jeux à l’occasion de laquelle le Contenu a été échangé et ce jusqu’à ce que le Joueur décide de supprimer la partie de jeu. Par exception, le Contenu en visio ne fait l’objet d’aucun enregistrement. 
       
       <!--&lt;Text&gt;-->
       
@@ -4345,7 +4401,7 @@ La Plateforme est hébergée par :
     
     <!--&lt;Parser&gt;-->
     <p>
-      Les Données Personnelles du Mineur sont collectées uniquement aux fins de création du Compte afin de permettre d’accéder à la Plateforme et de jouer à un Jeu.[FH1] 
+      Les Données Personnelles du Mineur sont collectées uniquement aux fins de création du Compte afin de permettre d’accéder à la Plateforme et de jouer à un Jeu.
       
       <!--&lt;Text&gt;-->
       
@@ -4494,6 +4550,12 @@ La Plateforme est hébergée par :
     
     <!--&lt;Parser&gt;-->
     <!--&lt;SvelteMarkdown&gt;-->
+     
+    <div
+      class="published s-hBkQY443626L"
+    >
+      Dernière mise à jour : 1 nov. 2022
+    </div>
   </section>
   <!--&lt;TermsOfService&gt;-->
 </main>

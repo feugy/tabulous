@@ -11,6 +11,12 @@
 
   <h1>{$_('titles.terms-of-service')}</h1>
   <SvelteMarkdown source={$_('markdown.terms-of-service')} {options} />
+
+  <div class="published">
+    {$_('labels.last-updated', {
+      published: new Date('2022-11-01T00:00:00.000Z')
+    })}
+  </div>
 </section>
 
 <style lang="postcss">
@@ -41,5 +47,9 @@
     :global(h3) {
       @apply mx-4 text-base;
     }
+  }
+
+  div {
+    @apply pt-16;
   }
 </style>
