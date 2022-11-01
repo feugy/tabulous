@@ -5,7 +5,7 @@
   const player = { id: 'abc123', username: 'Jane Doe' }
 </script>
 
-<ToolBox component={TermsOfServicePage} name="Routes/Terms of Service">
+<ToolBox component={TermsOfServicePage} name="Routes/terms-of-service">
   <Tool name="Anonymous" />
   <Tool
     name="Connected"

@@ -4,11 +4,11 @@ import userEvent from '@testing-library/user-event'
 import { tick } from 'svelte'
 import { writable } from 'svelte/store'
 import html from 'svelte-htm'
-import LogInForm from '../../src/components/LogInForm.svelte'
-import { authUrl } from '../../src/utils'
-import { translate } from '../test-utils'
+import Form from '../../../src/routes/login/Form.svelte'
+import { authUrl } from '../../../src/utils'
+import { translate } from '../../test-utils'
 
-describe('LogIn component', () => {
+describe('Login Form component', () => {
   const id$ = writable()
   const password$ = writable()
   const origin = 'https://localhost:3000'
@@ -33,11 +33,7 @@ describe('LogIn component', () => {
 
   function renderComponent(props = {}) {
     return render(
-      html`<${LogInForm}
-        bind:id=${id$}
-        bind:password=${password$}
-        ...${props}
-      />`
+      html`<${Form} bind:id=${id$} bind:password=${password$} ...${props} />`
     )
   }
 

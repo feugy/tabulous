@@ -11,13 +11,13 @@ exports[`/login route > displays all options 1`] = `
         class="pane s-j2LTsWktqK_4"
       >
         <h1
-          class="heading s-SCChDaxcTxWF"
+          class="heading s-OEREYjlWzGh2"
         >
           Bienvenue !
         </h1>
          
         <div
-          class="container s-SCChDaxcTxWF"
+          class="container s-OEREYjlWzGh2"
         >
           <button
             class="s-NMyTiX1zi6rz"
@@ -82,14 +82,14 @@ exports[`/login route > displays all options 1`] = `
           <!--&lt;Button&gt;-->
            
           <details
-            class="s-SCChDaxcTxWF"
+            class="s-OEREYjlWzGh2"
           >
             <summary
-              class="s-SCChDaxcTxWF"
+              class="s-OEREYjlWzGh2"
               title="password-toggle"
             >
               <span
-                class="material-icons s-SCChDaxcTxWF"
+                class="material-icons s-OEREYjlWzGh2"
               >
                 arrow_forward
               </span>
@@ -97,11 +97,11 @@ exports[`/login route > displays all options 1`] = `
             </summary>
              
             <form
-              class="s-SCChDaxcTxWF"
+              class="s-OEREYjlWzGh2"
               method="POST"
             >
               <div
-                class="row s-SCChDaxcTxWF"
+                class="row s-OEREYjlWzGh2"
               >
                 <fieldset
                   class="s-Fe6WNbR-55zp"
@@ -121,7 +121,7 @@ exports[`/login route > displays all options 1`] = `
               </div>
                
               <div
-                class="row s-SCChDaxcTxWF"
+                class="row s-OEREYjlWzGh2"
               >
                 <fieldset
                   class="s-Fe6WNbR-55zp"
@@ -144,7 +144,7 @@ exports[`/login route > displays all options 1`] = `
                
                
               <div
-                class="actions s-SCChDaxcTxWF"
+                class="actions s-OEREYjlWzGh2"
               >
                 <button
                   class="s-NMyTiX1zi6rz"
@@ -169,7 +169,7 @@ exports[`/login route > displays all options 1`] = `
               </div>
                
               <input
-                class="s-SCChDaxcTxWF"
+                class="s-OEREYjlWzGh2"
                 name="redirect"
                 type="hidden"
                 value="/home"
@@ -179,7 +179,7 @@ exports[`/login route > displays all options 1`] = `
         </div>
       </div>
       <!--&lt;Pane&gt;-->
-      <!--&lt;LogInForm&gt;-->
+      <!--&lt;Form&gt;-->
     </main>
     <!--&lt;+page&gt;-->
   </div>
@@ -197,13 +197,13 @@ exports[`/login route > expands login panel and show all options 1`] = `
         class="pane s-j2LTsWktqK_4"
       >
         <h1
-          class="heading s-SCChDaxcTxWF"
+          class="heading s-OEREYjlWzGh2"
         >
           Bienvenue !
         </h1>
          
         <div
-          class="container s-SCChDaxcTxWF"
+          class="container s-OEREYjlWzGh2"
         >
           <button
             class="s-NMyTiX1zi6rz"
@@ -268,15 +268,15 @@ exports[`/login route > expands login panel and show all options 1`] = `
           <!--&lt;Button&gt;-->
            
           <details
-            class="s-SCChDaxcTxWF"
+            class="s-OEREYjlWzGh2"
             open=""
           >
             <summary
-              class="s-SCChDaxcTxWF"
+              class="s-OEREYjlWzGh2"
               title="password-toggle"
             >
               <span
-                class="material-icons s-SCChDaxcTxWF"
+                class="material-icons s-OEREYjlWzGh2"
               >
                 arrow_forward
               </span>
@@ -284,11 +284,11 @@ exports[`/login route > expands login panel and show all options 1`] = `
             </summary>
              
             <form
-              class="s-SCChDaxcTxWF"
+              class="s-OEREYjlWzGh2"
               method="POST"
             >
               <div
-                class="row s-SCChDaxcTxWF"
+                class="row s-OEREYjlWzGh2"
               >
                 <fieldset
                   class="s-Fe6WNbR-55zp"
@@ -308,7 +308,7 @@ exports[`/login route > expands login panel and show all options 1`] = `
               </div>
                
               <div
-                class="row s-SCChDaxcTxWF"
+                class="row s-OEREYjlWzGh2"
               >
                 <fieldset
                   class="s-Fe6WNbR-55zp"
@@ -330,13 +330,13 @@ exports[`/login route > expands login panel and show all options 1`] = `
               </div>
                
               <div
-                class="error s-SCChDaxcTxWF"
+                class="error s-OEREYjlWzGh2"
               >
                 Pseudo ou mot de passe incorrect. Merci de réessayer.
               </div>
                
               <div
-                class="actions s-SCChDaxcTxWF"
+                class="actions s-OEREYjlWzGh2"
               >
                 <button
                   class="s-NMyTiX1zi6rz"
@@ -361,7 +361,7 @@ exports[`/login route > expands login panel and show all options 1`] = `
               </div>
                
               <input
-                class="s-SCChDaxcTxWF"
+                class="s-OEREYjlWzGh2"
                 name="redirect"
                 type="hidden"
                 value="/home"
@@ -371,7 +371,7 @@ exports[`/login route > expands login panel and show all options 1`] = `
         </div>
       </div>
       <!--&lt;Pane&gt;-->
-      <!--&lt;LogInForm&gt;-->
+      <!--&lt;Form&gt;-->
     </main>
     <!--&lt;+page&gt;-->
   </div>

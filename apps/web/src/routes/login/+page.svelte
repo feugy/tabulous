@@ -1,7 +1,7 @@
 <script>
   import { page } from '$app/stores'
   import { _ } from 'svelte-intl'
-  import { LogInForm } from '../../components'
+  import Form from './Form.svelte'
   import { flags } from '../../stores'
 
   /** @type {import('./$types').ActionData} */
@@ -20,7 +20,7 @@
 </svelte:head>
 
 <main>
-  <LogInForm
+  <Form
     bind:inputRef
     error={form ? $_('errors.login-failure') : undefined}
     {redirect}
