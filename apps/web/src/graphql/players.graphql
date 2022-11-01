@@ -10,6 +10,7 @@ fragment authentication on PlayerWithTurnCredentials {
     ...player
     provider
     email
+    termsAccepted
   }
   turnCredentials {
     username

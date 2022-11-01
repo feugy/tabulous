@@ -322,5 +322,39 @@ describe('given a started server', () => {
         expect(services.searchPlayers).toHaveBeenCalledTimes(1)
       })
     })
+
+    describe('acceptTerms mutation', () => {
+      it('sets terms accepted flag', async () => {
+        const username = faker.name.firstName()
+        const id = faker.datatype.uuid()
+        const player = { id, username }
+        services.getPlayerById.mockResolvedValueOnce(player)
+        services.acceptTerms.mockResolvedValueOnce({
+          ...player,
+          termsAccepted: true
+        })
+        const token = signToken(id, configuration.auth.jwt.key)
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: { authorization: `Bearer ${token}` },
+          payload: {
+            query: `mutation {
+              acceptTerms { id username termsAccepted }
+            }`
+          }
+        })
+        expect(response.json()).toEqual({
+          data: {
+            acceptTerms: { id, username, termsAccepted: true }
+          }
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).toHaveBeenCalledWith(id)
+        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.acceptTerms).toHaveBeenCalledWith(player)
+        expect(services.acceptTerms).toHaveBeenCalledTimes(1)
+      })
+    })
   })
 })

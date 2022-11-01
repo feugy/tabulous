@@ -66,6 +66,17 @@ export default {
       const turnCredentials = services.generateTurnCredentials(conf.turn.secret)
       const token = makeToken(player, conf.auth.jwt)
       return { token, player, turnCredentials }
-    }
+    },
+
+    /**
+     * Record an user accepting the terms of service.
+     * @param {object} obj - graphQL object.
+     * @param {object} args - mutation arguments, empty.
+     * @param {object} context - graphQL context.
+     * @returns {Promise<import('./players.graphqk').Player>} authentified player with turn credentials.
+     */
+    acceptTerms: isAuthenticated((obj, args, { player }) =>
+      services.acceptTerms(player)
+    )
   }
 }

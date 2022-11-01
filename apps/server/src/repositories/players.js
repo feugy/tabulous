@@ -8,6 +8,7 @@ class PlayerRepository extends AbstractRepository {
   static fields = [
     { name: 'playing', deserialize: deserializeBoolean },
     { name: 'isAdmin', deserialize: deserializeBoolean },
+    { name: 'termsAccepted', deserialize: deserializeBoolean },
     { name: 'catalog', deserialize: deserializeArray }
   ]
 
