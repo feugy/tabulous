@@ -1,0 +1,129 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Default 1`] = `
+<form
+  class="s-oausCIIttb36"
+>
+  <fieldset
+    class="s-oausCIIttb36"
+  >
+    <input
+      class="s-oausCIIttb36"
+      disabled=""
+      id="accept"
+      required=""
+      type="checkbox"
+    />
+     
+    <label
+      class="s-oausCIIttb36"
+      for="accept"
+    >
+      J'ai lu et accepté les Conditions Générales d'Utilisation
+    </label>
+  </fieldset>
+   
+  <fieldset
+    class="s-oausCIIttb36"
+  >
+    <input
+      class="s-oausCIIttb36"
+      disabled=""
+      id="age"
+      required=""
+      type="checkbox"
+    />
+     
+    <label
+      class="s-oausCIIttb36"
+      for="age"
+    >
+      J'ai plus de 15 ans, ou l'accord de mes parents/mes tuteurs
+    </label>
+  </fieldset>
+   
+  <button
+    class="s-NMyTiX1zi6rz"
+    disabled=""
+    type="submit"
+  >
+    <span
+      class="material-icons s-NMyTiX1zi6rz"
+    >
+      emoji_people
+    </span>
+    
+    <span
+      class="text s-NMyTiX1zi6rz"
+    >
+      Entrer
+    </span>
+    
+    
+  </button>
+  <!--&lt;Button&gt;-->
+</form>
+`;
+
+exports[`Enabled 1`] = `
+<form
+  class="s-oausCIIttb36"
+>
+  <fieldset
+    class="s-oausCIIttb36"
+  >
+    <input
+      class="s-oausCIIttb36"
+      id="accept"
+      required=""
+      type="checkbox"
+    />
+     
+    <label
+      class="s-oausCIIttb36"
+      for="accept"
+    >
+      J'ai lu et accepté les Conditions Générales d'Utilisation
+    </label>
+  </fieldset>
+   
+  <fieldset
+    class="s-oausCIIttb36"
+  >
+    <input
+      class="s-oausCIIttb36"
+      id="age"
+      required=""
+      type="checkbox"
+    />
+     
+    <label
+      class="s-oausCIIttb36"
+      for="age"
+    >
+      J'ai plus de 15 ans, ou l'accord de mes parents/mes tuteurs
+    </label>
+  </fieldset>
+   
+  <button
+    class="s-NMyTiX1zi6rz"
+    disabled=""
+    type="submit"
+  >
+    <span
+      class="material-icons s-NMyTiX1zi6rz"
+    >
+      emoji_people
+    </span>
+    
+    <span
+      class="text s-NMyTiX1zi6rz"
+    >
+      Entrer
+    </span>
+    
+    
+  </button>
+  <!--&lt;Button&gt;-->
+</form>
+`;

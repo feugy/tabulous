@@ -32,6 +32,7 @@ formats:
     date-only:
       dateStyle: medium
 labels:
+  accept-terms: Conditions Générales d'Utilisation
   account: Paramètres
   avatar: 'Avatar : '
   confirm-game-deletion: Souhaitez vous vraiment supprimer cette partie de "{title}" ?
@@ -47,15 +48,19 @@ labels:
   manual-provider: Vous avez un compte manuel dont l'identifiant de connextion est "{id}"
   no-games-yet: Rien pour l'instant ! Choisissez un jeu disponible.
   oauth-provider: Vous avez relié ce compte à votre adresse "{email}"
+  old-enough: J'ai plus de 15 ans, ou l'accord de mes parents/mes tuteurs
   peer-players: avec {names}
-  terms-of-service: Mentions Légales & Condition Générales d'Utilisation
+  terms-accepted: J'ai lu et accepté les Conditions Générales d'Utilisation
+  terms-intro: Ici, nous ne sommes pas des sauvages ! Pour profiter de Tabulous, merci d'approuver les conditions d'utilisation.
+  terms-of-service: Mentions Légales & Conditions Générales d'Utilisation
   username: "Nom d'affichage : "
 page-titles:
+  accept-terms: Tabulous • Conditions Générales d'Utilisation
   account: Tabulous • Paramètres
   game: Tabulous • Jeu
   home: Tabulous • Accueil
   log-in: Tabulous • Connection
-  terms-of-service: Tabulous • Mentions Légales & Condition Générales d'Utilisation
+  terms-of-service: Tabulous • Mentions Légales & Conditions Générales d'Utilisation
 placeholders:
   password: Mot de passe
   playerId: Identifiant

@@ -1,0 +1,1985 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Default 1`] = `
+<div
+  class="viewport s-YaAZ_0mStVrA"
+>
+  <div
+    class="s-vliZNtvr_DWl"
+  >
+    <section
+      class="s-VFBuvOTIAoad"
+    >
+       
+      <h2
+        id="article-1---objet"
+      >
+        Article 1 - Objet
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </h2>
+      
+      <!--&lt;Heading&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        Les présentes conditions générales d’utilisation (ci-après « CGU ») ont pour objet de définir les conditions dans lesquelles toute personne (ci-après l’« Utilisateur ») peut accéder, consulter ou utiliser la Plateforme.
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        En accédant, consultant ou utilisant la Plateforme, l’Utilisateur s’engage à accepter sans réserve les CGU et à en respecter les termes. Dans l’hypothèse où l’Utilisateur refuse tout ou partie des CGU, il lui est demandé de cesser tout usage de la Plateforme. 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        Les présentes CGU sont susceptibles d’être modifiées à tout moment sans préavis. L’Utilisateur devra en conséquence vérifier régulièrement la Plateforme pour rester informé de tout changement ou mise à jour des CGU. 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <h2
+        id="article-2---définitions"
+      >
+        Article 2 - Définitions
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </h2>
+      
+      <!--&lt;Heading&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        En sus des termes définis ci-dessus, les termes suivants auront la signification suivante : 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        « 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        <strong>
+          Compte
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+        </strong>
+        <!--&lt;Strong&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+         » désigne le compte utilisateur créer afin d’accéder aux Jeux disponibles sur la Plateforme. 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        « 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        <strong>
+          Contenu
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+        </strong>
+        <!--&lt;Strong&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+         » désigne tout contenu, donnée, information, vidéo, image, enregistrement, propos, paroles, commentaire, message, document, publié par un Utilisateur sur le Chat.
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        « 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        <strong>
+          Chat
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+        </strong>
+        <!--&lt;Strong&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+         » désigne le système de messagerie écrite et de visio accessible par les Utilisateurs lors d’une partie d’un Jeux.
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        « 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        <strong>
+          Jeux
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+        </strong>
+        <!--&lt;Strong&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+         » désigne les jeux mis à la disposition des Utilisateurs sur la Plateforme.
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        « 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        <strong>
+          Joueur(s)
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+        </strong>
+        <!--&lt;Strong&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+         » désigne toute personne ayant créé un Compte.
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        « 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        <strong>
+          Services
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+        </strong>
+        <!--&lt;Strong&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+         Tiers » désigne tout  service tiers au moyen desquels l’Utilisateur peut choisir de se connecter à la Plateforme (par exemple Facebook, Google, Discord, Twitch, etc).
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        « 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        <strong>
+          Utilisateur(s)
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+        </strong>
+        <!--&lt;Strong&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+         » désigne tout internaute navigant sur la Plateforme en qualité de Joueur ou de Visiteur. 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        « 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        <strong>
+          Visiteur(s)
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+        </strong>
+        <!--&lt;Strong&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+         » désigne tout internaute navigant sur la Plateforme sans y avoir créé un Compte. 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <h2
+        id="article-3---utilisation-de-la-plateforme"
+      >
+        Article 3 - Utilisation de la Plateforme
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </h2>
+      
+      <!--&lt;Heading&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      <h3
+        id="31-accès-gratuit"
+      >
+        3.1 Accès gratuit
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </h3>
+      
+      <!--&lt;Heading&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        La Plateforme est accessible gratuitement par tout Utilisateur disposant d’un accès à internet. 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        Tous les frais supportés par l’Utilisateur pour accéder à la Plateforme demeurent à sa charge. 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <h3
+        id="32-création-dun-compte"
+      >
+        3.2 Création d’un Compte
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </h3>
+      
+      <!--&lt;Heading&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        Afin de pouvoir accéder aux Jeux disponibles sur la Plateforme en vue d’y jouer, l’Utilisateur doit s’inscrire et se connecter à la Plateforme via le recours à un Service Tiers. 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        La collecte, l'utilisation et la divulgation des informations de l’Utilisateur induites pas ces actions seront soumises à la politique de confidentialité du Service Tiers choisi par l’Utilisateur. Lorsque cela est permis par la politique de confidentialité, l’Editeur se verra communiquer les nom, prénom, avatar et pseudonyme de l’Utilisateur. 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        En vertu du protocole OAuth2 utilisé pour se connecter au Service Tiers, l'Utilisateur sera notifié des informations transmises à l’Editeur. En cas d’opposition de l’Utilisateur à l’utilisation de ces données, la Plateforme ne lui sera pas accessible. 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        Une fois l’inscription et la connexion à la Plateforme faite via le recours à un Service Tiers, un Compte est créé. 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        Lors de la première connexion à la Plateforme, l’Utilisateur déclare au moyen d’une case à cocher qu’il est âgé de plus de 15 ans ou qu’il a été autorisé par l’un de ses parents ou le titulaire de l’autorité parentale à l’utilisation de ses noms, prénoms, adresse mail, avatar et pseudonyme (ci-après les « 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        <strong>
+          Données Personnelles du Mineur
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+        </strong>
+        <!--&lt;Strong&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+         ») pour créer le Compte, accéder à la Plateforme et jouer aux Jeux.
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <h3
+        id="33-jeux-en-mode-multi-joueurs"
+      >
+        3.3 Jeux en mode multi-joueurs
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </h3>
+      
+      <!--&lt;Heading&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        Les Jeux mis à la disposition des Joueurs peuvent être joués en mode multi-joueurs, chaque Joueur pouvant créer une partie de jeu en invitant le(s) Joueur(s) de son choix, sous réserve de l’acceptation du Joueur invité à participer la partie de jeu. 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <h3
+        id="34-chat"
+      >
+        3.4 Chat
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </h3>
+      
+      <!--&lt;Heading&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        Lors de la tenue d’une partie de Jeu en mode multi-joueurs, un Chat est mis à la disposition des Joueurs afin de leur permettre d’échanger tout Contenu par écrit ou par visio. 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        Ce Contenu n’est accessible que par les Joueurs d’une même partie. Tout Contenu est accessible tant que le Joueur conserve la partie de Jeux à l’occasion de laquelle le Contenu a été échangé et ce jusqu’à ce que le Joueur décide de supprimer la partie de jeu. Par exception, le Contenu en visio ne fait l’objet d’aucun enregistrement. 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <h2
+        id="article-4---garantie-et-responsabilité-de-lediteur"
+      >
+        Article 4 - Garantie et responsabilité de l’Editeur
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </h2>
+      
+      <!--&lt;Heading&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      <h3
+        id="41-fonctionnement-de-la-plateforme"
+      >
+        4.1 Fonctionnement de la Plateforme
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </h3>
+      
+      <!--&lt;Heading&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        L’Editeur met en œuvre tous les moyens raisonnables à sa disposition pour assurer la disponibilité de la Plateforme 7 jours sur 7 et 24 heures sur 24, à l’exception de cas de force majeure et d’opérations de maintenance ou de problèmes affectant les réseaux de télécommunications. 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        Ainsi, l’Editeur ne saurait être tenu pour responsable : 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <ul>
+        <li>
+          de tout problème de connexion internet imputable à tout équipement et/ou opérateur auxquels a recours l’Utilisateur ;  
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+           
+        </li>
+        <!--&lt;ListItem&gt;-->
+        
+        <li>
+          en cas d’indisponibilité pour des raisons d’actualisation et de maintenance de la Plateforme ou de tout dysfonctionnement du réseau ou des serveurs ; 
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+           
+        </li>
+        <!--&lt;ListItem&gt;-->
+        
+        <li>
+          en cas de défaillance, panne, difficulté ou interruption de fonctionnement, empêchant l’accès à la Plateforme ou à une de ses fonctionnalités ; 
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+           
+        </li>
+        <!--&lt;ListItem&gt;-->
+        
+        <li>
+          de la modification, de l’interruption ou de la suppression de la Plateforme ; 
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+           
+        </li>
+        <!--&lt;ListItem&gt;-->
+        
+        <li>
+          des atteintes à la sécurité informatique qui ne seraient pas dues de son fait, pouvant causer des dommages aux matériels informatiques des Utilisateurs ; 
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+           
+        </li>
+        <!--&lt;ListItem&gt;-->
+        
+        <li>
+          de la présence de virus sur la Plateforme qui ne serait due de son propre fait.
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+           
+        </li>
+        <!--&lt;ListItem&gt;-->
+        
+        
+      </ul>
+      
+      <!--&lt;List&gt;-->
+      
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        Il appartient à l’Utilisateur de prendre toutes les mesures appropriées pour protéger son matériel de la contamination par d’éventuels virus ou programmes malfaisants. 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <h3
+        id="42-liens-vers-des-sites-tiers"
+      >
+        4.2 Liens vers des sites tiers
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </h3>
+      
+      <!--&lt;Heading&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        La Plateforme peut contenir des liens vers d’autres sites qui ne sont pas exploités par l’Editeur. 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        L’Editeur ne peut en aucune manière être tenu responsable de la mise à disposition de ces liens permettant l’accès à des sites et sources externes, et ne peut supporter aucune responsabilité quant aux contenus, publicités, produits, services ou tout autre matériel disponible sur ou à partir de ces sites ou sources externes qui ne sont ni vérifiées ni approuvées par celui-ci.
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <h3
+        id="43-comportement-des-utilisateurs"
+      >
+        4.3 Comportement des Utilisateurs
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </h3>
+      
+      <!--&lt;Heading&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        L’Editeur ne saurait être tenu responsable des conséquences de la violation par un Utilisateur de ses obligations au titre des CGU, du non-respect des obligations de l’Utilisateur et des éventuels dommages causés par un Utilisateur à un autre, notamment du fait du Contenu partagé sur le Chat lors de parties de jeu en mode multi-joueurs. 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        Il appartient à chaque Utilisateur de signaler tout Contenu qu’il estime inapproprié à l’Editeur en adressant un signalement écrit à l’adresse suivante : 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        <a
+          href="mailto:support@tabulous.fr"
+        >
+          support@tabulous.fr
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+        </a>
+        <!--&lt;Link&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        . 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <h2
+        id="article-5---obligations-de-lutilisateur"
+      >
+        Article 5 - Obligations de l’Utilisateur
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </h2>
+      
+      <!--&lt;Heading&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      <h3
+        id="51-obligation-de-lutilisateur"
+      >
+        5.1 Obligation de l’Utilisateur
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </h3>
+      
+      <!--&lt;Heading&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        L’Utilisateur s’engage à :  
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <ul>
+        <li>
+          utiliser la Plateforme conformément aux présentes CGU ; 
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+           
+        </li>
+        <!--&lt;ListItem&gt;-->
+        
+        <li>
+          ne publier, télécharger, transmettre ou rendre disponible sur le Chat aucun Contenu à caractère diffamatoire, injurieux, obscène, pornographique, vulgaire, offensant, agressif, déplacé, violent, menaçant, harcelant, raciste, xénophobe, incitant à la violence, à la discrimination ou à la haine, encourageant les activités ou l’usage de substances illégales ou, plus généralement, contraires aux finalités de la Plateforme, de nature à porter atteinte aux droits de l’Editeur ou d’un tiers et s’interdit d’utiliser la Plateforme pour réaliser des opérations illicites et/ou frauduleuses ; 
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+           
+        </li>
+        <!--&lt;ListItem&gt;-->
+        
+        <li>
+          se conformer aux lois et réglementations applicables ; 
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+           
+        </li>
+        <!--&lt;ListItem&gt;-->
+        
+        <li>
+          s’abstenir de créer un nouveau Compte en cas de suppression du Compte par l’Editeur du fait du manquement de l’Utilisateur à l’une de ses obligations ; 
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+           
+        </li>
+        <!--&lt;ListItem&gt;-->
+        
+        <li>
+          ne pas utiliser des logiciels ou appareils manuels ou automates, robots de codage ou autres moyens pour accéder, explorer, extraire ou indexer toute page de la Plateforme ni pour jouer aux Jeux disponibles sur la Plateforme; 
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+           
+        </li>
+        <!--&lt;ListItem&gt;-->
+        
+        <li>
+          ne pas interférer ou interrompre le fonctionnement de la Plateforme ; 
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+           
+        </li>
+        <!--&lt;ListItem&gt;-->
+        
+        <li>
+          ne pas détourner la finalité de la Plateforme pour faire de la propagande ou du prosélytisme, de la prospection ou du racolage et à ne pas utiliser la Plateforme à des fins commerciales, politiques ou de publicité.
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+           
+        </li>
+        <!--&lt;ListItem&gt;-->
+        
+        
+      </ul>
+      
+      <!--&lt;List&gt;-->
+      
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        L’Utilisateur reconnaît qu’il est seul responsable du Contenu qu’il publie, télécharge, transmet, communique ou rend disponible aux Utilisateurs ainsi que de tout document ou information qu’il transmet aux Utilisateurs.
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        A ce titre, l’Utilisateur garantit l’Editeur contre tout recours, de quelque nature qu’il soit, fondé directement ou indirectement sur le caractère illicite ou contraire aux CGU d’un Contenu.
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <h3
+        id="52-sanctions-à-légard-de-lutilisateur"
+      >
+        5.2 Sanctions à l’égard de l’Utilisateur
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </h3>
+      
+      <!--&lt;Heading&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        En cas de manquement de l’Utilisateur à ses obligations, l’Editeur se réserve le droit de suspendre ou d’exclure l’Utilisateur et/ou de supprimer son Compte, et ce sans préjudice des éventuelles demandes de dédommagement de la part de l’Editeur ou d’un tiers.
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        Il est rappelé que les violations des obligations prévues à l’article 5.1 peuvent conduire à des poursuites civiles et pénales. 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <h2
+        id="article-6---propriété-intellectuelle"
+      >
+        Article 6 - Propriété intellectuelle
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </h2>
+      
+      <!--&lt;Heading&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        La Plateforme est la propriété exclusive de l’Editeur. 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        Plus généralement, tous les droits de propriété intellectuelle afférents à la Plateforme notamment l’architecture générale de la Plateforme, les Jeux, les textes, graphismes, photos, musiques, vidéos, logos, images, dessins et fichiers informatiques ou tout autre élément composant la Plateforme appartiennent à l’Editeur. 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        Les présentes CGU n’emportent aucune cession de droits de propriété intellectuelle attachés à la Plateforme ou à ses éléments. 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <h2
+        id="article-7--cookies"
+      >
+        Article 7 – Cookies
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </h2>
+      
+      <!--&lt;Heading&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        La Plateforme utilise des cookies pour permettre aux Joueurs de rester connectés pendant l’utilisation de la Plateforme. 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        Il s’agit de cookies nécessaires au bon fonctionnement de la Plateforme. 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <h2
+        id="article-8--données-personnelles"
+      >
+        Article 8 – Données Personnelles
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </h2>
+      
+      <!--&lt;Heading&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        L’Editeur étant une personne physique qui met à la disposition des Utilisateurs la Plateforme gratuitement et à des fins non professionnelles, les dispositions du RGPD ne sont pas applicables.
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        Conformément à l’article 45 de la loi Informatique et Libertés, les Données Personnelles du Mineur ne peuvent être collectées, utilisées ni conservées par l’Editeur sans l’accord des parents ou du titulaire de l’autorité parentale.
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        Cet accord est donné lors de la création du Compte.
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        A défaut de cet accord, l’Utilisateur de moins de 15 ans ne pourra créer un Compte et accéder à la Plateforme.
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        Les Données Personnelles du Mineur sont collectées uniquement aux fins de création du Compte afin de permettre d’accéder à la Plateforme et de jouer à un Jeu.
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        Les Données Personnelles du Mineur ne sont jamais partagées avec des tiers ni revendues.
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        Les Données Personnelles du Mineur sont conservées par l’Editeur pendant la durée strictement nécessaire à la réalisation de la finalité pour laquelle elles ont été collectées. Après cette période, toutes les Données Personnelles du Mineur seront supprimées ou rendues anonymes.
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        Un parent ou un titulaire de l’autorité parentale peut contrôler, supprimer, modifier ou s’opposer à la collecte des Données Personnelles du Mineur concernant son enfant en adressant une demande à l’adresse suivante : 
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        <a
+          href="mailto:support@tabulous.fr"
+        >
+          support@tabulous.fr
+          
+          <!--&lt;Text&gt;-->
+          
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+          
+          <!--&lt;Parser&gt;-->
+          
+        </a>
+        <!--&lt;Link&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        .
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      <!--&lt;Parser&gt;-->
+      <h2
+        id="article-9---loi-applicable-et-tribunal-compétent"
+      >
+        Article 9 - Loi applicable et Tribunal compétent
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </h2>
+      
+      <!--&lt;Heading&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      <p>
+        Les présentes CGU sont soumises au droit français. Tout litige pouvant résulter de l’interprétation et/ ou de l’exécution des présentes CGU sera de la compétence des juridictions françaises.
+        
+        <!--&lt;Text&gt;-->
+        
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+        
+        <!--&lt;Parser&gt;-->
+        
+      </p>
+      <!--&lt;Paragraph&gt;-->
+      
+      
+      
+      <!--&lt;Parser&gt;-->
+      
+      
+      <!--&lt;Parser&gt;-->
+      <!--&lt;SvelteMarkdown&gt;-->
+    </section>
+    <!--&lt;Markdown&gt;-->
+     
+    <div
+      class="s-hBkQY443626L"
+    >
+      Dernière mise à jour : 1 nov. 2022
+    </div>
+    <!--&lt;TermsOfService&gt;-->
+     
+    <hr
+      class="s-vliZNtvr_DWl"
+    />
+  </div>
+  <!--&lt;ScrollableTerms&gt;-->
+</div>
+`;

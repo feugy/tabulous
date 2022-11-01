@@ -1,6 +1,6 @@
 <script>
   import { _ } from 'svelte-intl'
-  import { TermsOfService } from '../../components'
+  import { Markdown, TermsOfService } from '../../components'
   import { Header } from '../../connected-components'
 
   /** @type {import('./$types').PageData} */
@@ -19,6 +19,8 @@
       { label: $_('labels.terms-of-service') }
     ]}
   />
+
+  <Markdown titleKey="titles.legal" contentKey="markdown.legal" />
 
   <TermsOfService />
 </main>
