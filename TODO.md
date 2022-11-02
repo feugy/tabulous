@@ -2,7 +2,6 @@
 
 Roadmap
 
-- bug: clear redis on restart?
 - server + web: limit number of games (+ display on CLI)
 - server + web: friend list
 
