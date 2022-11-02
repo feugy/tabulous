@@ -130,6 +130,8 @@ import repositories from '../repositories/index.js'
  * @property {number} hand? - fixed zoom level for the hand scene.
  */
 
+const maxOwnedGames = 6
+
 const gameListsUpdate$ = new Subject()
 
 function isOwner(game, playerId) {
@@ -155,11 +157,12 @@ export const gameListsUpdate = gameListsUpdate$.pipe(
  * Creates a new game of a given kind, registering the creator as a player.
  * It instanciate an unique set, based on the descriptor's bags and slots.
  * Updates the creator's game list.
- * @async
  * @param {string} kind - game's kind.
  * @param {string} playerId - creating player id.
- * @returns {Game} the created game.
+ * @returns {Promise<Game>} the created game.
  * @throws {Error} when no descriptor could be found for this kind.
+ * @throws {Error} when this game is restricted and was not granted to player.
+ * @throws {Error} when player already owns too many games.
  */
 export async function createGame(kind, playerId) {
   const descriptor = await repositories.catalogItems.getById(kind)
@@ -170,6 +173,12 @@ export async function createGame(kind, playerId) {
   if (!canAccess(player, descriptor)) {
     throw new Error(`Access to game ${kind} is restricted`)
   }
+
+  const ownedCount = await countOwnGames(playerId)
+  if (ownedCount >= maxOwnedGames) {
+    throw new Error(`You own ${ownedCount} games, you can not create more`)
+  }
+
   // trim some data out of the descriptor before saving it as game properties
   // eslint-disable-next-line no-unused-vars
   const { name, build, addPlayer, maxSeats, ...gameProps } = descriptor
@@ -206,10 +215,9 @@ export async function createGame(kind, playerId) {
  * - no game could match this game id
  * - the player does not own the game
  * Updates game lists of all related players.
- * @async
  * @param {string} gameId - loaded game id.
  * @param {string} playerId - player id.
- * @returns {Game|null} the deleted game, or null.
+ * @returns {Promise<Game|null>} the deleted game, or null.
  */
 export async function deleteGame(gameId, playerId) {
   const game = await loadGame(gameId, playerId)
@@ -225,10 +233,9 @@ export async function deleteGame(gameId, playerId) {
  * The operation will abort and return null when:
  * - no game could match this game id
  * - the player does not own the game
- * @async
  * @param {string} gameId - loaded game id.
  * @param {string} playerId - player id.
- * @returns {Game|null} the loaded game, or null.
+ * @returns {Promise<Game|null>} the loaded game, or null.
  */
 export async function loadGame(gameId, playerId) {
   const game = await repositories.games.getById(gameId)
@@ -242,10 +249,9 @@ export async function loadGame(gameId, playerId) {
  * Saves an existing game.
  * The operation will abort and return null when:
  * - the player does not own the game
- * @async
  * @param {Game} game - saved game.
  * @param {string} playerId - owner id.
- * @returns {Game|null} the saved game, or null.
+ * @returns {Promise<Game|null>} the saved game, or null.
  */
 export async function saveGame(game, playerId) {
   const previous = await loadGame(game?.id, playerId)
@@ -270,11 +276,10 @@ export async function saveGame(game, playerId) {
  * - the guest id is invalid
  * The operation will abort and throws when this game has no more availabe seats.
  * Updates game lists of all related players.
- * @async
  * @param {string} gameId - shared game id.
  * @param {string} guestId - invited player id.
  * @param {string} hostId - inviting player id.
- * @returns {Game|null} updated game, or null if the player can not be invited.
+ * @returns {Promise<Game|null>} updated game, or null if the player can not be invited.
  * @throws {Error} when there are no available seats
  */
 export async function invite(gameId, guestId, hostId) {
@@ -306,10 +311,9 @@ export async function invite(gameId, guestId, hostId) {
 }
 
 /**
- * Lists up to 50 games this players is in.
- * @async
+ * Lists all games this players is in.
  * @param {string} playerId - player id.
- * @returns {Game[]} a list of games (could be empty).
+ * @returns {Promise<Game[]>} a list of games (could be empty).
  */
 export async function listGames(playerId) {
   return repositories.games.listByPlayerId(playerId)
@@ -318,10 +322,23 @@ export async function listGames(playerId) {
 /**
  * When a player starts or stops playing, notify other players by updating their game list
  * @param {string} gameId - the game this player starts or stops playing to.
+ * @return {Promise<void>}
  */
 export async function notifyGamePlayers(gameId) {
   const game = await repositories.games.getById(gameId)
   if (game) {
     gameListsUpdate$.next(game.playerIds)
   }
+}
+
+/**
+ * Count the number of games a given player owns.
+ * @param {string} playerId - id of the desired player.
+ * @returns {Promise<number>} the number of owned games.
+ */
+export async function countOwnGames(playerId) {
+  return (await listGames(playerId)).reduce(
+    (count, { playerIds: [ownerId] }) => count + (ownerId === playerId ? 1 : 0),
+    0
+  )
 }

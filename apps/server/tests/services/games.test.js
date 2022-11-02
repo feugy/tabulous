@@ -1,9 +1,11 @@
 import { faker } from '@faker-js/faker'
 import { join } from 'path'
 import { setTimeout } from 'timers/promises'
+import { describe } from 'vitest'
 import repositories from '../../src/repositories/index.js'
 import { grantAccess, revokeAccess } from '../../src/services/catalog.js'
 import {
+  countOwnGames,
   createGame,
   deleteGame,
   gameListsUpdate,
@@ -68,6 +70,20 @@ describe('given a subscription to game lists and an initialized repository', () 
       expect(updates).toHaveLength(0)
     })
 
+    it('throws an error when cap reached', async () => {
+      const player = { id: faker.datatype.uuid() }
+      const kind = 'klondike'
+      const actualCount = 10
+      for (let rank = 0; rank < actualCount; rank++) {
+        await repositories.games.save({ kind, playerIds: [player.id] })
+      }
+      await expect(createGame(kind, player.id)).rejects.toThrow(
+        `You own ${actualCount} games, you can not create more`
+      )
+      await setTimeout(50)
+      expect(updates).toHaveLength(0)
+    })
+
     it('creates a game from descriptor and trigger list update', async () => {
       const kind = 'klondike'
       game = await createGame(kind, player.id)
@@ -117,6 +133,48 @@ describe('given a subscription to game lists and an initialized repository', () 
       ).rejects.toThrow(`internal build error`)
       await setTimeout(50)
       expect(updates).toHaveLength(0)
+    })
+  })
+
+  describe('countOwnedGames()', () => {
+    const games = []
+
+    afterEach(async () => {
+      await repositories.games.deleteById(games.map(({ id }) => id))
+      games.splice(0, games.length)
+    })
+
+    it('handles no owned games', async () => {
+      await expect(await countOwnGames(player.id)).toBe(0)
+    })
+
+    it('handles unknown player', async () => {
+      await expect(await countOwnGames(faker.datatype.uuid())).toBe(0)
+    })
+
+    it('counts owned games', async () => {
+      const count = 4
+      for (let rank = 0; rank < count; rank++) {
+        games.push(await repositories.games.save({ playerIds: [player.id] }))
+      }
+      for (let rank = 0; rank < 3; rank++) {
+        games.push(await repositories.games.save({ playerIds: [peer.id] }))
+      }
+      await expect(await countOwnGames(player.id)).toBe(count)
+    })
+
+    it('igores invitations', async () => {
+      const count = 3
+      games.push(
+        await repositories.games.save({ playerIds: [peer.id, player.id] })
+      )
+      for (let rank = 0; rank < count; rank++) {
+        games.push(await repositories.games.save({ playerIds: [player.id] }))
+      }
+      games.push(
+        await repositories.games.save({ playerIds: [peer.id, player.id] })
+      )
+      await expect(await countOwnGames(player.id)).toBe(count)
     })
   })
 
@@ -315,12 +373,7 @@ describe('given a subscription to game lists and an initialized repository', () 
       })
 
       afterEach(async () => {
-        for (const {
-          id,
-          playerIds: [ownerId]
-        } of games) {
-          await deleteGame(id, ownerId)
-        }
+        await repositories.games.deleteById(games.map(({ id }) => id))
         games.splice(0, games.length)
       })
 
