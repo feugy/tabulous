@@ -2,7 +2,10 @@
 
 Roadmap
 
+- bug: clear redis on restart?
 - server + web: first log-in with T&C
+  - e2e test accept terms
+- cli: display player data (including terms)
 - server + web: limit number of games
 - server + web: friend list
 
