@@ -35,7 +35,7 @@ export default async function grantCommand(argv) {
     throw new Error('no game-name provided')
   }
   if (args.help) {
-    return help()
+    return grantCommand.help()
   }
   return grant({ username: args.username, gameName })
 }
@@ -75,7 +75,7 @@ function formatGrant({ grantAccess }) {
     : chalkTemplate`🔶 {yellow no changes}\n`
 }
 
-function help() {
+grantCommand.help = function help() {
   return chalkTemplate`
   {bold ${cliName}} [options] grant [game-name]
   Grants access to a copyrighted game
@@ -87,4 +87,3 @@ function help() {
     --help/-h                 Display help for this command
 `
 }
-grantCommand.htelp = help

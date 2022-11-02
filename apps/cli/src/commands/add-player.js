@@ -45,7 +45,7 @@ export default async function addPlayerCommand(argv) {
     '--password': RequiredString
   })
   if (args.help) {
-    return help()
+    return addPlayerCommand.help()
   }
   return addPlayer(args)
 }
@@ -78,7 +78,7 @@ function formatPlayer({ player }) {
   return chalkTemplate`player {bold ${player.username}} added with id {bold ${player.id}}`
 }
 
-function help() {
+addPlayerCommand.help = function help() {
   return chalkTemplate`
   {bold ${cliName}} [options] add-player
   Creates a new player account
@@ -89,4 +89,3 @@ function help() {
     --help/-h                 Display help for this command
 `
 }
-addPlayerCommand.help = help

@@ -34,7 +34,7 @@ export default async function revokeCommand(argv) {
     throw new Error('no game-name provided')
   }
   if (args.help) {
-    return help()
+    return revokeCommand.help()
   }
   return revoke({ username: args.username, gameName })
 }
@@ -74,7 +74,7 @@ function formatRevokation({ revokeAccess }) {
     : chalkTemplate`🔶 {yellow no changes}\n`
 }
 
-function help() {
+revokeCommand.help = function help() {
   return chalkTemplate`
   {bold ${cliName}} [options] revoke [game-name]
   Revokes access to a copyrighted game
@@ -86,4 +86,3 @@ function help() {
     --help/-h                 Display help for this command
 `
 }
-revokeCommand.help = help
