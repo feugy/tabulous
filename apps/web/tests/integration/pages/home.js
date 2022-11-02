@@ -75,7 +75,7 @@ export const HomePage = mixin(
     /**
      * Expects the page to display elements for an anonymous visitor.
      */
-    async isAnonymous() {
+    async expectAnonymous() {
       await expect(this.heading).toContainText(translate('titles.welcome'))
       await expect(this.gamesHeading).toBeHidden()
       await expect(this.loginButton).toBeVisible()
@@ -87,7 +87,7 @@ export const HomePage = mixin(
      * Expects the page to display elements for an authenticated user.
      * @param {string} username - display name for this user.
      */
-    async isAuthenticated(username) {
+    async expectAuthenticated(username) {
       await expect(this.heading).toContainText(
         translate('titles.home', { username })
       )
