@@ -1,7 +1,11 @@
 // @ts-check
 import { expect } from '@playwright/test'
 import { translate } from '../utils/index.js'
-import { mixin, AuthenticatedHeaderMixin } from './mixins.js'
+import {
+  mixin,
+  AuthenticatedHeaderMixin,
+  TermsSupportedMixin
+} from './mixins.js'
 
 /**
  * @typedef {import('@playwright/test').Page} Page
@@ -46,5 +50,6 @@ export const AccountPage = mixin(
       await expect(this.heading).toBeVisible()
     }
   },
-  AuthenticatedHeaderMixin
+  AuthenticatedHeaderMixin,
+  TermsSupportedMixin
 )

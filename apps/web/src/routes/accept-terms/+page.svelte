@@ -1,4 +1,5 @@
 <script>
+  import { page } from '$app/stores'
   import { _ } from 'svelte-intl'
   import Form from './Form.svelte'
   import ScrollableTerms from './ScrollableTerms.svelte'
@@ -6,6 +7,8 @@
 
   /** @type {import('./$types').PageData} */
   export let data = {}
+
+  const redirect = $page.url?.searchParams.get('redirect')
 
   let disabled = true
 </script>
@@ -25,7 +28,7 @@
   <h1>{$_('titles.welcome')}</h1>
   <p>{$_('labels.terms-intro')}</p>
   <ScrollableTerms on:end={() => (disabled = false)} />
-  <Form {disabled} />
+  <Form {disabled} {redirect} />
 </main>
 
 <style lang="postcss">

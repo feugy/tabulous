@@ -1,5 +1,6 @@
 // @ts-check
 import { translate } from '../utils/index.js'
+import { expect } from '../utils/index.js'
 
 /**
  * @typedef {import('@playwright/test').Page} Page
@@ -54,6 +55,32 @@ export const AuthenticatedHeaderMixin = {
     await this.page.waitForLoadState()
   }
 }
+
+export const TermsSupportedMixin = {
+  construct(page) {
+    return {
+      /** @type {Locator} */
+      acceptTermsCheckbox: page.locator('[type=checkbox][id=accept]'),
+      /** @type {Locator} */
+      oldEnoughCheckbox: page.locator('[type=checkbox][id=age]')
+    }
+  },
+
+  /**
+   * Checks redirection to the accept terms page.
+   * @param {Locator} missingElement - locator of an element that would have been visible when there is no redirection.
+   * @param {string} originalUrl - url when there is no redirection.
+   */
+  async expectRedirectedToTerms(missingElement, originalUrl) {
+    await expect(this.page).toHaveURL(
+      `/accept-terms?redirect=${encodeURIComponent(originalUrl)}`
+    )
+    await expect(missingElement).toBeHidden()
+    await expect(this.acceptTermsCheckbox).toBeVisible()
+    await expect(this.oldEnoughCheckbox).toBeVisible()
+  }
+}
+
 /**
  * @template T
  * @typedef {new(page: Page) => T} Constructor
@@ -66,7 +93,7 @@ export const AuthenticatedHeaderMixin = {
  */
 
 /**
- * @type {<B, P1, M1>(BaseConstructor: Constructor<B>, mixin1: Mixin<P1, M1>) => { new(page: Page): B & P1 & M1 }}
+ * @type {<B>(BaseConstructor: Constructor<B>, ...mixins: Mixin<?, ?>[]) => { new(page: Page): B & ? }}
  */
 export function mixin(BaseConstructor, ...mixins) {
   // @ts-ignore
@@ -85,6 +112,5 @@ export function mixin(BaseConstructor, ...mixins) {
   for (const { construct, ...mixin } of mixins) {
     Object.assign(Augmented.prototype, mixin)
   }
-  // @ts-ignore
   return Augmented
 }

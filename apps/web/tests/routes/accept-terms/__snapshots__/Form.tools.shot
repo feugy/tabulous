@@ -3,6 +3,7 @@
 exports[`Default 1`] = `
 <form
   class="s-oausCIIttb36"
+  method="POST"
 >
   <fieldset
     class="s-oausCIIttb36"
@@ -11,8 +12,10 @@ exports[`Default 1`] = `
       class="s-oausCIIttb36"
       disabled=""
       id="accept"
+      name="accept"
       required=""
       type="checkbox"
+      value="true"
     />
      
     <label
@@ -30,17 +33,26 @@ exports[`Default 1`] = `
       class="s-oausCIIttb36"
       disabled=""
       id="age"
+      name="age"
       required=""
       type="checkbox"
+      value="true"
     />
      
     <label
       class="s-oausCIIttb36"
       for="age"
     >
-      J'ai plus de 15 ans, ou l'accord de mes parents/mes tuteurs
+      Je déclare avoir plus de 15 ans ou être autorisé(e) par l’un de mes parents
     </label>
   </fieldset>
+   
+  <input
+    class="s-oausCIIttb36"
+    name="redirect"
+    type="hidden"
+    value=""
+  />
    
   <button
     class="s-NMyTiX1zi6rz"
@@ -68,6 +80,7 @@ exports[`Default 1`] = `
 exports[`Enabled 1`] = `
 <form
   class="s-oausCIIttb36"
+  method="POST"
 >
   <fieldset
     class="s-oausCIIttb36"
@@ -75,8 +88,10 @@ exports[`Enabled 1`] = `
     <input
       class="s-oausCIIttb36"
       id="accept"
+      name="accept"
       required=""
       type="checkbox"
+      value="true"
     />
      
     <label
@@ -93,17 +108,26 @@ exports[`Enabled 1`] = `
     <input
       class="s-oausCIIttb36"
       id="age"
+      name="age"
       required=""
       type="checkbox"
+      value="true"
     />
      
     <label
       class="s-oausCIIttb36"
       for="age"
     >
-      J'ai plus de 15 ans, ou l'accord de mes parents/mes tuteurs
+      Je déclare avoir plus de 15 ans ou être autorisé(e) par l’un de mes parents
     </label>
   </fieldset>
+   
+  <input
+    class="s-oausCIIttb36"
+    name="redirect"
+    type="hidden"
+    value=""
+  />
    
   <button
     class="s-NMyTiX1zi6rz"

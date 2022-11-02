@@ -35,3 +35,10 @@ query searchPlayers($search: String!) {
     ...player
   }
 }
+
+mutation acceptTerms {
+  acceptTerms {
+    ...player
+    termsAccepted
+  }
+}

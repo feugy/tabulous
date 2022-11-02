@@ -67,3 +67,12 @@ export async function searchPlayers(search) {
   logger.info({ search }, `searches for ${search}`)
   return runQuery(graphQL.searchPlayers, { search })
 }
+
+/**
+ * Accept terms for the current player.
+ * @async
+ * @returns {object} the current player, updated.
+ */
+export async function acceptTerms() {
+  return runMutation(graphQL.acceptTerms)
+}

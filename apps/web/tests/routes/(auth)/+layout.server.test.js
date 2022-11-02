@@ -16,9 +16,26 @@ describe('@auth layout server loader', () => {
     )
   })
 
-  it('accepts session', async () => {
+  it('redirects to terms on first connection', async () => {
     const session = {
       player: { id: faker.datatype.number(), username: faker.name.fullName() }
+    }
+    const location = `/game/${faker.datatype.uuid()}`
+    const url = new URL(location, 'https://example.org')
+    await expect(load({ url, locals: { session } })).rejects.toThrow(
+      `307 redirection to /accept-terms?redirect=${encodeURIComponent(
+        location
+      )}`
+    )
+  })
+
+  it('accepts session', async () => {
+    const session = {
+      player: {
+        id: faker.datatype.number(),
+        username: faker.name.fullName(),
+        termsAccepted: true
+      }
     }
     const location = `/game/${faker.datatype.uuid()}`
     const url = new URL(location, 'https://example.org')

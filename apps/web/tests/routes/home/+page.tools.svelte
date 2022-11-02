@@ -4,7 +4,11 @@
   import { initGraphQlClient } from '../../../src/stores'
   import { graphQlUrl } from '../../../src/utils'
 
-  const player = { id: 'abc123', username: 'Jane Doe' }
+  const player = {
+    id: 'abc123',
+    username: 'Jane Doe',
+    termsAccepted: true
+  }
   const publicCatalog = [
     {
       name: '32-cards',

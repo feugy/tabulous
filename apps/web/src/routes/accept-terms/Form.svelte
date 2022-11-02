@@ -3,6 +3,7 @@
   import { Button } from '../../components'
 
   export let disabled = true
+  export let redirect = ''
 
   let acceptInput
   let ageInput
@@ -13,11 +14,13 @@
   }
 </script>
 
-<form on:change={handleChange} on:submit|preventDefault>
+<form on:change={handleChange} method="POST">
   <fieldset>
     <input
       type="checkbox"
       id="accept"
+      name="accept"
+      value="true"
       bind:this={acceptInput}
       {disabled}
       required={true}
@@ -28,12 +31,15 @@
     <input
       type="checkbox"
       id="age"
+      name="age"
+      value="true"
       bind:this={ageInput}
       {disabled}
       required={true}
     />
     <label for="age">{$_('labels.old-enough')}</label>
   </fieldset>
+  <input type="hidden" name="redirect" value={redirect} />
   <Button
     text={$_('actions.log-in')}
     icon="emoji_people"

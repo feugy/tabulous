@@ -31,7 +31,8 @@ describe('Home page', () => {
 
   const player = {
     id: faker.datatype.uuid(),
-    username: faker.name.fullName()
+    username: faker.name.fullName(),
+    termsAccepted: true
   }
   const password = faker.internet.password()
 
@@ -260,5 +261,23 @@ describe('Home page', () => {
 
     await homePage.goToAccount()
     await expect(page).toHaveURL('/account')
+  })
+
+  it('redirect to terms on the first connection', async ({ page }) => {
+    const { setTokenCookie } = await mockGraphQl(page, {
+      getCurrentPlayer: {
+        token: faker.datatype.uuid(),
+        player: { ...player, termsAccepted: undefined },
+        turnCredentials: {
+          username: 'bob',
+          credentials: faker.internet.password()
+        }
+      }
+    })
+    await setTokenCookie()
+
+    const homePage = new HomePage(page)
+    await homePage.goTo()
+    await homePage.expectRedirectedToTerms(homePage.gamesHeading, '/home')
   })
 })

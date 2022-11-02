@@ -169,7 +169,7 @@ exports[`Default 1`] = `
             class="s-OEREYjlWzGh2"
             name="redirect"
             type="hidden"
-            value="/home"
+            value=""
           />
         </form>
       </details>
@@ -295,7 +295,7 @@ exports[`With errors 1`] = `
             class="s-OEREYjlWzGh2"
             name="redirect"
             type="hidden"
-            value="/home"
+            value=""
           />
         </form>
       </details>

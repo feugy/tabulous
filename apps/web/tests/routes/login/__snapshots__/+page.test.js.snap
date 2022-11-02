@@ -172,7 +172,7 @@ exports[`/login route > displays all options 1`] = `
                 class="s-OEREYjlWzGh2"
                 name="redirect"
                 type="hidden"
-                value="/home"
+                value=""
               />
             </form>
           </details>
@@ -364,7 +364,7 @@ exports[`/login route > expands login panel and show all options 1`] = `
                 class="s-OEREYjlWzGh2"
                 name="redirect"
                 type="hidden"
-                value="/home"
+                value=""
               />
             </form>
           </details>

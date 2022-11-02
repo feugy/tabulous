@@ -7,8 +7,27 @@ describe('Account page', () => {
   const player = {
     id: faker.datatype.uuid(),
     username: faker.name.fullName(),
-    avatar: faker.internet.avatar()
+    avatar: faker.internet.avatar(),
+    termsAccepted: true
   }
+
+  it('redirects to terms on the first connection', async ({ page }) => {
+    const { setTokenCookie } = await mockGraphQl(page, {
+      getCurrentPlayer: {
+        token: faker.datatype.uuid(),
+        player: { ...player, termsAccepted: undefined },
+        turnCredentials: {
+          username: 'bob',
+          credentials: faker.internet.password()
+        }
+      }
+    })
+    await setTokenCookie()
+
+    const accountPage = new AccountPage(page)
+    await accountPage.goTo()
+    await accountPage.expectRedirectedToTerms(accountPage.heading, '/account')
+  })
 
   it('displays player username and avatar', async ({ page }) => {
     const { setTokenCookie } = await mockGraphQl(page, {

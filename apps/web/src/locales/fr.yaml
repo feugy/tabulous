@@ -48,7 +48,7 @@ labels:
   manual-provider: Vous avez un compte manuel dont l'identifiant de connextion est "{id}"
   no-games-yet: Rien pour l'instant ! Choisissez un jeu disponible.
   oauth-provider: Vous avez relié ce compte à votre adresse "{email}"
-  old-enough: J'ai plus de 15 ans, ou l'accord de mes parents/mes tuteurs
+  old-enough: Je déclare avoir plus de 15 ans ou être autorisé(e) par l’un de mes parents
   peer-players: avec {names}
   terms-accepted: J'ai lu et accepté les Conditions Générales d'Utilisation
   terms-intro: Ici, nous ne sommes pas des sauvages ! Pour profiter de Tabulous, merci d'approuver les conditions d'utilisation.
