@@ -1,14 +1,14 @@
 <script>
   import { page } from '$app/stores'
   import { _ } from 'svelte-intl'
-  import { LogInForm } from '../../components'
+  import Form from './Form.svelte'
   import { flags } from '../../stores'
 
   /** @type {import('./$types').ActionData} */
   export let form = null
 
   let inputRef = null
-  const redirect = $page.url?.searchParams.get('redirect') ?? '/home'
+  const redirect = $page.url?.searchParams.get('redirect')
 
   $: if (inputRef) {
     inputRef.focus()
@@ -20,7 +20,7 @@
 </svelte:head>
 
 <main>
-  <LogInForm
+  <Form
     bind:inputRef
     error={form ? $_('errors.login-failure') : undefined}
     {redirect}

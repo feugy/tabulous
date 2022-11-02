@@ -1,6 +1,8 @@
 import { faker } from '@faker-js/faker'
+import { expect } from 'vitest'
 import repositories from '../../src/repositories/index.js'
 import {
+  acceptTerms,
   addPlayer,
   getPlayerById,
   searchPlayers,
@@ -104,6 +106,36 @@ describe('given initialized repository', () => {
         provider,
         providerId,
         email: update.email,
+        playing: false
+      })
+    })
+  })
+
+  describe('acceptTerms()', () => {
+    it('sets termsAccepted flag', async () => {
+      const player = {
+        id: faker.datatype.uuid(),
+        username: faker.name.firstName(),
+        password: faker.internet.password()
+      }
+      expect(await acceptTerms(player)).toEqual({
+        ...player,
+        termsAccepted: true
+      })
+      expect(await getPlayerById(player.id)).toEqual({
+        ...player,
+        termsAccepted: true
+      })
+    })
+
+    it('reuses provided id', async () => {
+      const username = faker.name.firstName()
+      const id = faker.datatype.uuid()
+      const avatar = faker.internet.avatar()
+      expect(await addPlayer({ username, id, avatar })).toEqual({
+        id,
+        avatar,
+        username,
         playing: false
       })
     })

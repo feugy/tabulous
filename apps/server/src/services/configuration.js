@@ -42,7 +42,7 @@ const validate = new Ajv({ allErrors: true }).compile({
             pubsubUrl: { type: 'string' }
           },
           optionalProperties: {
-            graphiql: { type: 'string', nullable: true },
+            graphiql: { type: 'boolean', nullable: true },
             allowedOrigins: { type: 'string' }
           }
         },
@@ -188,7 +188,7 @@ export function loadConfiguration() {
     logger: { level: LOG_LEVEL ?? 'debug' },
     plugins: {
       graphql: {
-        graphiql: isProduction ? null : 'playground',
+        graphiql: isProduction ? null : true,
         allowedOrigins,
         pubsubUrl:
           PUBSUB_URL ?? (isProduction ? undefined : 'redis://127.0.0.1:6379')

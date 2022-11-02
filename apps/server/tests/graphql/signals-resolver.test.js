@@ -43,7 +43,7 @@ describe('given a started server', () => {
       // ignore closure errors
     }
     await server?.close()
-    await clearDatabase()
+    await clearDatabase(pubsubUrl)
   })
 
   describe('Signal GraphQL resolver', () => {

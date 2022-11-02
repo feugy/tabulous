@@ -101,6 +101,32 @@ if (typeof window !== 'undefined') {
   window.ResizeObserver = ResizeObserver
   window.resizeObservers = resizeObservers
 
+  const intersectionObservers = []
+
+  class IntersectionObserver {
+    constructor(observer) {
+      this.observedNodes = new Set()
+      this.observer = observer
+      intersectionObservers.push(this)
+    }
+    disconnect() {
+      this.observedNodes.clear()
+      intersectionObservers.splice(resizeObservers.indexOf(this), 1)
+    }
+    observe(node) {
+      this.observedNodes.add(node)
+    }
+    unobserve(node) {
+      this.observedNodes.delete(node)
+    }
+    notify(entries) {
+      this.observer([...this.observedNodes].map(() => entries))
+    }
+  }
+
+  window.IntersectionObserver = IntersectionObserver
+  window.intersectionObservers = intersectionObservers
+
   Object.defineProperty(global.self, 'crypto', {
     value: Object.setPrototypeOf({ subtle: crypto.subtle }, crypto)
   })

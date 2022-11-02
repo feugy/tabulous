@@ -2,7 +2,11 @@
 import { expect } from '@playwright/test'
 import { sleep } from '../../../src/utils/time.js'
 import { translate } from '../utils/index.js'
-import { mixin, AuthenticatedHeaderMixin } from './mixins.js'
+import {
+  mixin,
+  AuthenticatedHeaderMixin,
+  TermsSupportedMixin
+} from './mixins.js'
 
 /**
  * @typedef {import('@playwright/test').Page} Page
@@ -71,7 +75,7 @@ export const HomePage = mixin(
     /**
      * Expects the page to display elements for an anonymous visitor.
      */
-    async isAnonymous() {
+    async expectAnonymous() {
       await expect(this.heading).toContainText(translate('titles.welcome'))
       await expect(this.gamesHeading).toBeHidden()
       await expect(this.loginButton).toBeVisible()
@@ -83,7 +87,7 @@ export const HomePage = mixin(
      * Expects the page to display elements for an authenticated user.
      * @param {string} username - display name for this user.
      */
-    async isAuthenticated(username) {
+    async expectAuthenticated(username) {
       await expect(this.heading).toContainText(
         translate('titles.home', { username })
       )
@@ -123,5 +127,6 @@ export const HomePage = mixin(
       await expect(this.deleteGameDialogue).toBeVisible()
     }
   },
-  AuthenticatedHeaderMixin
+  AuthenticatedHeaderMixin,
+  TermsSupportedMixin
 )

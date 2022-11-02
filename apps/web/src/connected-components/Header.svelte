@@ -47,7 +47,7 @@
 
 <style lang="postcss">
   header {
-    @apply w-full pt-4 px-4 bg-$secondary-light;
+    @apply w-full py-4 px-4 bg-$secondary-light sticky top-0 z-10 opacity-80;
   }
 
   div {

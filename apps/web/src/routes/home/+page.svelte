@@ -76,10 +76,6 @@
 {/if}
 
 <style lang="postcss">
-  main {
-    @apply flex flex-col h-full w-full;
-  }
-
   h1 {
     @apply text-3xl py-4;
   }
@@ -90,6 +86,10 @@
 
   div {
     @apply flex-1 overflow-y-auto px-4 pb-4;
+  }
+
+  main {
+    @apply flex flex-col w-full pb-8;
   }
 
   section {

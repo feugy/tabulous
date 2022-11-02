@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker'
 import { goto } from '$app/navigation'
 import * as graphQL from '../../src/graphql'
 import {
+  acceptTerms,
   logIn,
   logOut,
   recoverSession,
@@ -105,5 +106,14 @@ describe('recoverSession()', () => {
     })
     expect(initGraphQlClient).toHaveBeenCalledTimes(1)
     expect(goto).not.toHaveBeenCalled()
+  })
+})
+
+describe('acceptTerms()', () => {
+  it('returns player on success', async () => {
+    runMutation.mockResolvedValueOnce(player)
+    expect(await acceptTerms()).toEqual(player)
+    expect(runMutation).toHaveBeenCalledWith(graphQL.acceptTerms)
+    expect(runMutation).toHaveBeenCalledTimes(1)
   })
 })

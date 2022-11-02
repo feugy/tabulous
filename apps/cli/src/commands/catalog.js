@@ -54,7 +54,7 @@ export default async function catalogCommand(argv) {
     '-u': '--username'
   })
   if (args.help) {
-    return help()
+    return catalogCommand.help()
   }
   return catalog(args)
 }
@@ -106,7 +106,7 @@ ${games.length} {dim accessible game(s)}`)
   return output.join('\n')
 }
 
-function help() {
+catalogCommand.help = function help() {
   return chalkTemplate`
   {bold ${cliName}} [options] catalog
   Lists accessible games
@@ -116,4 +116,3 @@ function help() {
     --help/-h                 Display help for this command
 `
 }
-catalogCommand.help = help

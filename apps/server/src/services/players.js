@@ -86,3 +86,12 @@ export async function searchPlayers(search, playerId, excludeCurrent = true) {
   })
   return excludeCurrent ? results.filter(({ id }) => id !== playerId) : results
 }
+
+/**
+ * Records a player accepting terms of service.
+ * @param {Player} player - the corresponding player.
+ * @returns {Promise<Player>} the player, updates.
+ */
+export async function acceptTerms(player) {
+  return repositories.players.save({ ...player, termsAccepted: true })
+}

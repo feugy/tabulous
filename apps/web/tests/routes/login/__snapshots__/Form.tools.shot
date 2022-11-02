@@ -5,26 +5,26 @@ exports[`Default state 1`] = `
   class="pane s-j2LTsWktqK_4"
 >
   <h1
-    class="heading s-SCChDaxcTxWF"
+    class="heading s-OEREYjlWzGh2"
   >
     Bienvenue !
   </h1>
    
   <div
-    class="container s-SCChDaxcTxWF"
+    class="container s-OEREYjlWzGh2"
   >
      
      
     <details
-      class="s-SCChDaxcTxWF"
+      class="s-OEREYjlWzGh2"
       open=""
     >
       <summary
-        class="s-SCChDaxcTxWF hidden"
+        class="s-OEREYjlWzGh2 hidden"
         title="password-toggle"
       >
         <span
-          class="material-icons s-SCChDaxcTxWF"
+          class="material-icons s-OEREYjlWzGh2"
         >
           arrow_back
         </span>
@@ -32,11 +32,11 @@ exports[`Default state 1`] = `
       </summary>
        
       <form
-        class="s-SCChDaxcTxWF"
+        class="s-OEREYjlWzGh2"
         method="POST"
       >
         <div
-          class="row s-SCChDaxcTxWF"
+          class="row s-OEREYjlWzGh2"
         >
           <fieldset
             class="s-Fe6WNbR-55zp"
@@ -56,7 +56,7 @@ exports[`Default state 1`] = `
         </div>
          
         <div
-          class="row s-SCChDaxcTxWF"
+          class="row s-OEREYjlWzGh2"
         >
           <fieldset
             class="s-Fe6WNbR-55zp"
@@ -79,7 +79,7 @@ exports[`Default state 1`] = `
          
          
         <div
-          class="actions s-SCChDaxcTxWF"
+          class="actions s-OEREYjlWzGh2"
         >
           <button
             class="s-NMyTiX1zi6rz"
@@ -104,7 +104,7 @@ exports[`Default state 1`] = `
         </div>
          
         <input
-          class="s-SCChDaxcTxWF"
+          class="s-OEREYjlWzGh2"
           name="redirect"
           type="hidden"
           value=""
@@ -120,13 +120,13 @@ exports[`With Github provider 1`] = `
   class="pane s-j2LTsWktqK_4"
 >
   <h1
-    class="heading s-SCChDaxcTxWF"
+    class="heading s-OEREYjlWzGh2"
   >
     Bienvenue !
   </h1>
    
   <div
-    class="container s-SCChDaxcTxWF"
+    class="container s-OEREYjlWzGh2"
   >
     <button
       class="s-NMyTiX1zi6rz"
@@ -161,14 +161,14 @@ exports[`With Github provider 1`] = `
      
      
     <details
-      class="s-SCChDaxcTxWF"
+      class="s-OEREYjlWzGh2"
     >
       <summary
-        class="s-SCChDaxcTxWF"
+        class="s-OEREYjlWzGh2"
         title="password-toggle"
       >
         <span
-          class="material-icons s-SCChDaxcTxWF"
+          class="material-icons s-OEREYjlWzGh2"
         >
           arrow_forward
         </span>
@@ -176,11 +176,11 @@ exports[`With Github provider 1`] = `
       </summary>
        
       <form
-        class="s-SCChDaxcTxWF"
+        class="s-OEREYjlWzGh2"
         method="POST"
       >
         <div
-          class="row s-SCChDaxcTxWF"
+          class="row s-OEREYjlWzGh2"
         >
           <fieldset
             class="s-Fe6WNbR-55zp"
@@ -200,7 +200,7 @@ exports[`With Github provider 1`] = `
         </div>
          
         <div
-          class="row s-SCChDaxcTxWF"
+          class="row s-OEREYjlWzGh2"
         >
           <fieldset
             class="s-Fe6WNbR-55zp"
@@ -223,7 +223,7 @@ exports[`With Github provider 1`] = `
          
          
         <div
-          class="actions s-SCChDaxcTxWF"
+          class="actions s-OEREYjlWzGh2"
         >
           <button
             class="s-NMyTiX1zi6rz"
@@ -248,7 +248,7 @@ exports[`With Github provider 1`] = `
         </div>
          
         <input
-          class="s-SCChDaxcTxWF"
+          class="s-OEREYjlWzGh2"
           name="redirect"
           type="hidden"
           value=""
@@ -264,13 +264,13 @@ exports[`With Google provider 1`] = `
   class="pane s-j2LTsWktqK_4"
 >
   <h1
-    class="heading s-SCChDaxcTxWF"
+    class="heading s-OEREYjlWzGh2"
   >
     Bienvenue !
   </h1>
    
   <div
-    class="container s-SCChDaxcTxWF"
+    class="container s-OEREYjlWzGh2"
   >
      
     <button
@@ -305,14 +305,14 @@ exports[`With Google provider 1`] = `
     <!--&lt;Button&gt;-->
      
     <details
-      class="s-SCChDaxcTxWF"
+      class="s-OEREYjlWzGh2"
     >
       <summary
-        class="s-SCChDaxcTxWF"
+        class="s-OEREYjlWzGh2"
         title="password-toggle"
       >
         <span
-          class="material-icons s-SCChDaxcTxWF"
+          class="material-icons s-OEREYjlWzGh2"
         >
           arrow_forward
         </span>
@@ -320,11 +320,11 @@ exports[`With Google provider 1`] = `
       </summary>
        
       <form
-        class="s-SCChDaxcTxWF"
+        class="s-OEREYjlWzGh2"
         method="POST"
       >
         <div
-          class="row s-SCChDaxcTxWF"
+          class="row s-OEREYjlWzGh2"
         >
           <fieldset
             class="s-Fe6WNbR-55zp"
@@ -344,7 +344,7 @@ exports[`With Google provider 1`] = `
         </div>
          
         <div
-          class="row s-SCChDaxcTxWF"
+          class="row s-OEREYjlWzGh2"
         >
           <fieldset
             class="s-Fe6WNbR-55zp"
@@ -367,7 +367,7 @@ exports[`With Google provider 1`] = `
          
          
         <div
-          class="actions s-SCChDaxcTxWF"
+          class="actions s-OEREYjlWzGh2"
         >
           <button
             class="s-NMyTiX1zi6rz"
@@ -392,7 +392,7 @@ exports[`With Google provider 1`] = `
         </div>
          
         <input
-          class="s-SCChDaxcTxWF"
+          class="s-OEREYjlWzGh2"
           name="redirect"
           type="hidden"
           value=""
@@ -408,13 +408,13 @@ exports[`With all providers 1`] = `
   class="pane s-j2LTsWktqK_4"
 >
   <h1
-    class="heading s-SCChDaxcTxWF"
+    class="heading s-OEREYjlWzGh2"
   >
     Bienvenue !
   </h1>
    
   <div
-    class="container s-SCChDaxcTxWF"
+    class="container s-OEREYjlWzGh2"
   >
     <button
       class="s-NMyTiX1zi6rz"
@@ -479,14 +479,14 @@ exports[`With all providers 1`] = `
     <!--&lt;Button&gt;-->
      
     <details
-      class="s-SCChDaxcTxWF"
+      class="s-OEREYjlWzGh2"
     >
       <summary
-        class="s-SCChDaxcTxWF"
+        class="s-OEREYjlWzGh2"
         title="password-toggle"
       >
         <span
-          class="material-icons s-SCChDaxcTxWF"
+          class="material-icons s-OEREYjlWzGh2"
         >
           arrow_forward
         </span>
@@ -494,11 +494,11 @@ exports[`With all providers 1`] = `
       </summary>
        
       <form
-        class="s-SCChDaxcTxWF"
+        class="s-OEREYjlWzGh2"
         method="POST"
       >
         <div
-          class="row s-SCChDaxcTxWF"
+          class="row s-OEREYjlWzGh2"
         >
           <fieldset
             class="s-Fe6WNbR-55zp"
@@ -518,7 +518,7 @@ exports[`With all providers 1`] = `
         </div>
          
         <div
-          class="row s-SCChDaxcTxWF"
+          class="row s-OEREYjlWzGh2"
         >
           <fieldset
             class="s-Fe6WNbR-55zp"
@@ -541,7 +541,7 @@ exports[`With all providers 1`] = `
          
          
         <div
-          class="actions s-SCChDaxcTxWF"
+          class="actions s-OEREYjlWzGh2"
         >
           <button
             class="s-NMyTiX1zi6rz"
@@ -566,7 +566,7 @@ exports[`With all providers 1`] = `
         </div>
          
         <input
-          class="s-SCChDaxcTxWF"
+          class="s-OEREYjlWzGh2"
           name="redirect"
           type="hidden"
           value=""
@@ -582,26 +582,26 @@ exports[`With password error 1`] = `
   class="pane s-j2LTsWktqK_4"
 >
   <h1
-    class="heading s-SCChDaxcTxWF"
+    class="heading s-OEREYjlWzGh2"
   >
     Bienvenue !
   </h1>
    
   <div
-    class="container s-SCChDaxcTxWF"
+    class="container s-OEREYjlWzGh2"
   >
      
      
     <details
-      class="s-SCChDaxcTxWF"
+      class="s-OEREYjlWzGh2"
       open=""
     >
       <summary
-        class="s-SCChDaxcTxWF"
+        class="s-OEREYjlWzGh2"
         title="password-toggle"
       >
         <span
-          class="material-icons s-SCChDaxcTxWF"
+          class="material-icons s-OEREYjlWzGh2"
         >
           arrow_back
         </span>
@@ -609,11 +609,11 @@ exports[`With password error 1`] = `
       </summary>
        
       <form
-        class="s-SCChDaxcTxWF"
+        class="s-OEREYjlWzGh2"
         method="POST"
       >
         <div
-          class="row s-SCChDaxcTxWF"
+          class="row s-OEREYjlWzGh2"
         >
           <fieldset
             class="s-Fe6WNbR-55zp"
@@ -633,7 +633,7 @@ exports[`With password error 1`] = `
         </div>
          
         <div
-          class="row s-SCChDaxcTxWF"
+          class="row s-OEREYjlWzGh2"
         >
           <fieldset
             class="s-Fe6WNbR-55zp"
@@ -655,13 +655,13 @@ exports[`With password error 1`] = `
         </div>
          
         <div
-          class="error s-SCChDaxcTxWF"
+          class="error s-OEREYjlWzGh2"
         >
           Authentication failed!
         </div>
          
         <div
-          class="actions s-SCChDaxcTxWF"
+          class="actions s-OEREYjlWzGh2"
         >
           <button
             class="s-NMyTiX1zi6rz"
@@ -685,7 +685,7 @@ exports[`With password error 1`] = `
         </div>
          
         <input
-          class="s-SCChDaxcTxWF"
+          class="s-OEREYjlWzGh2"
           name="redirect"
           type="hidden"
           value=""
@@ -701,26 +701,26 @@ exports[`with password values 1`] = `
   class="pane s-j2LTsWktqK_4"
 >
   <h1
-    class="heading s-SCChDaxcTxWF"
+    class="heading s-OEREYjlWzGh2"
   >
     Bienvenue !
   </h1>
    
   <div
-    class="container s-SCChDaxcTxWF"
+    class="container s-OEREYjlWzGh2"
   >
      
      
     <details
-      class="s-SCChDaxcTxWF"
+      class="s-OEREYjlWzGh2"
       open=""
     >
       <summary
-        class="s-SCChDaxcTxWF hidden"
+        class="s-OEREYjlWzGh2 hidden"
         title="password-toggle"
       >
         <span
-          class="material-icons s-SCChDaxcTxWF"
+          class="material-icons s-OEREYjlWzGh2"
         >
           arrow_back
         </span>
@@ -728,11 +728,11 @@ exports[`with password values 1`] = `
       </summary>
        
       <form
-        class="s-SCChDaxcTxWF"
+        class="s-OEREYjlWzGh2"
         method="POST"
       >
         <div
-          class="row s-SCChDaxcTxWF"
+          class="row s-OEREYjlWzGh2"
         >
           <fieldset
             class="s-Fe6WNbR-55zp"
@@ -752,7 +752,7 @@ exports[`with password values 1`] = `
         </div>
          
         <div
-          class="row s-SCChDaxcTxWF"
+          class="row s-OEREYjlWzGh2"
         >
           <fieldset
             class="s-Fe6WNbR-55zp"
@@ -775,7 +775,7 @@ exports[`with password values 1`] = `
          
          
         <div
-          class="actions s-SCChDaxcTxWF"
+          class="actions s-OEREYjlWzGh2"
         >
           <button
             class="s-NMyTiX1zi6rz"
@@ -799,7 +799,7 @@ exports[`with password values 1`] = `
         </div>
          
         <input
-          class="s-SCChDaxcTxWF"
+          class="s-OEREYjlWzGh2"
           name="redirect"
           type="hidden"
           value=""

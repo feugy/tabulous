@@ -61,7 +61,7 @@ describe('loadConfiguration()', () => {
       https: { key, cert },
       plugins: {
         graphql: {
-          graphiql: 'playground',
+          graphiql: true,
           allowedOrigins,
           pubsubUrl
         },
@@ -155,7 +155,7 @@ describe('loadConfiguration()', () => {
         https: null,
         plugins: {
           graphql: {
-            graphiql: 'playground',
+            graphiql: true,
             allowedOrigins,
             pubsubUrl: 'redis://127.0.0.1:6379'
           },

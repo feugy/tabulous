@@ -10,6 +10,7 @@ fragment authentication on PlayerWithTurnCredentials {
     ...player
     provider
     email
+    termsAccepted
   }
   turnCredentials {
     username
@@ -32,5 +33,12 @@ query getCurrentPlayer {
 query searchPlayers($search: String!) {
   searchPlayers(search: $search) {
     ...player
+  }
+}
+
+mutation acceptTerms {
+  acceptTerms {
+    ...player
+    termsAccepted
   }
 }

@@ -31,7 +31,8 @@ describe('Home page', () => {
 
   const player = {
     id: faker.datatype.uuid(),
-    username: faker.name.fullName()
+    username: faker.name.fullName(),
+    termsAccepted: true
   }
   const password = faker.internet.password()
 
@@ -82,7 +83,7 @@ describe('Home page', () => {
     const homePage = new HomePage(page)
     await homePage.goTo()
     await homePage.getStarted()
-    await homePage.isAnonymous()
+    await homePage.expectAnonymous()
     await expect(homePage.catalogItemHeadings).toHaveText(
       publicCatalog.map(({ locales }) => new RegExp(locales.fr.title))
     )
@@ -93,7 +94,7 @@ describe('Home page', () => {
     await loginPage.getStarted()
     await loginPage.logInWithPassword({ username: player.username, password })
 
-    await homePage.isAuthenticated(player.username)
+    await homePage.expectAuthenticated(player.username)
     await expect(homePage.catalogItemHeadings).toHaveText(
       catalog.map(({ locales }) => new RegExp(locales.fr.title))
     )
@@ -122,7 +123,7 @@ describe('Home page', () => {
     const homePage = new HomePage(page)
     await homePage.goTo()
     await homePage.getStarted()
-    await homePage.isAuthenticated(player.username)
+    await homePage.expectAuthenticated(player.username)
     await expect(homePage.catalogItemHeadings).toHaveText(
       catalog.map(({ locales }) => new RegExp(locales.fr.title))
     )
@@ -151,7 +152,7 @@ describe('Home page', () => {
     await homePage.goTo()
     await homePage.goTo()
     await homePage.getStarted()
-    await homePage.isAuthenticated(player.username)
+    await homePage.expectAuthenticated(player.username)
     await expect(homePage.catalogItemHeadings).toHaveText(
       catalog.map(({ locales }) => new RegExp(locales.fr.title))
     )
@@ -185,12 +186,12 @@ describe('Home page', () => {
     const homePage = new HomePage(page)
     await homePage.goTo()
     await homePage.getStarted()
-    await homePage.isAuthenticated(player.username)
+    await homePage.expectAuthenticated(player.username)
     await new Promise(resolve => setTimeout(resolve, 500)) // TODO remove
 
     await homePage.logOut()
     await expect(page).toHaveURL('/home')
-    await homePage.isAnonymous()
+    await homePage.expectAnonymous()
     await expect(homePage.catalogItemHeadings).toHaveText(
       publicCatalog.map(({ locales }) => new RegExp(locales.fr.title))
     )
@@ -260,5 +261,40 @@ describe('Home page', () => {
 
     await homePage.goToAccount()
     await expect(page).toHaveURL('/account')
+  })
+
+  it('can accept terms of service on the first connection', async ({
+    page
+  }) => {
+    const { setTokenCookie } = await mockGraphQl(page, {
+      getCurrentPlayer: [
+        {
+          token: faker.datatype.uuid(),
+          player: { ...player, termsAccepted: undefined },
+          turnCredentials: {
+            username: 'bob',
+            credentials: faker.internet.password()
+          }
+        },
+        {
+          token: faker.datatype.uuid(),
+          player,
+          turnCredentials: {
+            username: 'bob',
+            credentials: faker.internet.password()
+          }
+        }
+      ],
+      listCatalog: [publicCatalog, publicCatalog, catalog],
+      listGames: [games]
+    })
+    await setTokenCookie()
+
+    const homePage = new HomePage(page)
+    await homePage.goTo()
+    await homePage.expectRedirectedToTerms(homePage.gamesHeading, '/home')
+
+    await homePage.acceptTerms()
+    await homePage.expectAuthenticated(player.username)
   })
 })

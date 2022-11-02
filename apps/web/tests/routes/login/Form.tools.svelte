@@ -1,9 +1,9 @@
 <script>
   import { Tool, ToolBox } from '@atelier-wb/svelte'
-  import { LogInForm } from '../../src/components'
+  import Form from '../../../src/routes/login/Form.svelte'
 </script>
 
-<ToolBox component={LogInForm} name="Components/Log-in Form" layout="padded">
+<ToolBox component={Form} name="Routes/login/Form" layout="padded">
   <Tool name="Default state" />
   <Tool name="with password values" props={{ id: 'John', password: 'abcd' }} />
   <Tool

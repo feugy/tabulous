@@ -34,7 +34,8 @@ describe('given a connected repository and several players', () => {
         username: 'Adam Destine',
         provider: provider1,
         providerId: providerId2,
-        catalog: ['klondike', 'draughts']
+        catalog: ['klondike', 'draughts'],
+        termsAccepted: true
       },
       {
         id: faker.datatype.uuid(),
@@ -82,6 +83,9 @@ describe('given a connected repository and several players', () => {
         expect(await players.getById(models[1].id)).toMatchObject({
           isAdmin: true,
           playing: false
+        })
+        expect(await players.getById(models[2].id)).toMatchObject({
+          termsAccepted: true
         })
       })
 

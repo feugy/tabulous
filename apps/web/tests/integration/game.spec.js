@@ -6,7 +6,8 @@ import { expect, it, describe, mockGraphQl } from './utils/index.js'
 describe('Game page', () => {
   const player = {
     id: faker.datatype.uuid(),
-    username: faker.name.fullName()
+    username: faker.name.fullName(),
+    termsAccepted: true
   }
 
   const player2 = {
@@ -23,6 +24,27 @@ describe('Game page', () => {
     hands: [],
     players: [player]
   }
+
+  it('redirect to terms on the first connection', async ({ page }) => {
+    const { setTokenCookie } = await mockGraphQl(page, {
+      getCurrentPlayer: {
+        token: faker.datatype.uuid(),
+        player: { ...player, termsAccepted: undefined },
+        turnCredentials: {
+          username: 'bob',
+          credentials: faker.internet.password()
+        }
+      }
+    })
+    await setTokenCookie()
+
+    const gamePage = new GamePage(page)
+    await gamePage.goTo(game.id)
+    await gamePage.expectRedirectedToTerms(
+      gamePage.menuButton,
+      `/game/${game.id}`
+    )
+  })
 
   it('redirects to login without authentication', async ({ page }) => {
     await mockGraphQl(page, { getCurrentPlayer: null, loadGame: null })

@@ -9,7 +9,7 @@ vi.mock('../../src/util/graphql-client.js', () => ({
   getGraphQLClient: vi.fn().mockReturnValue({ query: mockQuery })
 }))
 
-describe('User catalog command', () => {
+describe('Player catalog command', () => {
   let catalog
   const adminUserId = faker.datatype.uuid()
   const jwtKey = faker.datatype.uuid()
