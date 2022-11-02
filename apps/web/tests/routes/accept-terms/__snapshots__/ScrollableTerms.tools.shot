@@ -6,6 +6,7 @@ exports[`Default 1`] = `
 >
   <div
     class="s-vliZNtvr_DWl"
+    data-test-id="scrollable-terms"
   >
     <section
       class="s-VFBuvOTIAoad"

@@ -22,8 +22,8 @@ describe('POST /accept-terms route action', () => {
   beforeEach(() => {
     vi.resetAllMocks()
     locals = {
+      bearer,
       session: {
-        bearer,
         player: { id: faker.datatype.uuid(), username: faker.name.fullName() }
       }
     }
