@@ -12,7 +12,7 @@ vi.mock('../../src/util/graphql-client.js', () => ({
     .mockReturnValue({ query: mockQuery, mutation: mockMutation })
 }))
 
-describe('User revokes command', () => {
+describe('Player game revokation command', () => {
   let revoke
   const adminUserId = faker.datatype.uuid()
   const jwtKey = faker.datatype.uuid()

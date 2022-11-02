@@ -7,7 +7,13 @@ const findUserQuery = gql`
   query findUserByUsername($username: String!) {
     searchPlayers(search: $username, includeCurrent: true) {
       id
+      isAdmin
       username
+      email
+      avatar
+      provider
+      termsAccepted
+      playing
     }
   }
 `

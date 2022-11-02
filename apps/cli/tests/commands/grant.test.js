@@ -12,7 +12,7 @@ vi.mock('../../src/util/graphql-client.js', () => ({
     .mockReturnValue({ query: mockQuery, mutation: mockMutation })
 }))
 
-describe('User grant command', () => {
+describe('Player game granting command', () => {
   let grant
   const adminUserId = faker.datatype.uuid()
   const jwtKey = faker.datatype.uuid()

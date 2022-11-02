@@ -6,6 +6,7 @@ type Player {
   provider: String
   email: String
   termsAccepted: Boolean
+  isAdmin: Boolean
 }
 
 type TurnCredentials {
