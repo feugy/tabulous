@@ -33,9 +33,7 @@ export default async function registerAuth(app, options) {
     if (options[provider]) {
       service.init({
         ...options[provider],
-        redirect: `${options.domain}${
-          options.prefix ?? ''
-        }/${provider}/callback`
+        redirect: `${options.domain}/${provider}/callback`
       })
 
       app.get(
