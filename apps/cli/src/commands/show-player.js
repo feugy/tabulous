@@ -1,12 +1,15 @@
 // @ts-check
+import { gql } from '@urql/core'
 import chalkTemplate from 'chalk-template'
 import {
   attachFormater,
   cliName,
   commonArgSpec,
   findUser,
+  getGraphQLClient,
   parseArgv,
-  RequiredString
+  RequiredString,
+  signToken
 } from '../util/index.js'
 
 /**
@@ -18,6 +21,18 @@ import {
  * @property {string} email
  * @property {boolean} termsAccepted
  */
+
+const listGamesQuery = gql`
+  query listGamesQuery {
+    listGames {
+      id
+      kind
+      players {
+        id
+      }
+    }
+  }
+`
 
 /**
  * Triggers show player command.
@@ -47,7 +62,18 @@ export default async function showPlayerCommand(argv) {
  * @returns {Promise<PlayerDetails>} found player details.
  */
 export async function showPlayer({ username }) {
-  return attachFormater(await findUser(username), formatPlayerDetails)
+  const player = attachFormater(await findUser(username), formatPlayerDetails)
+  const { listGames: games } = await getGraphQLClient().query(
+    listGamesQuery,
+    signToken(player.id)
+  )
+  return attachFormater(
+    {
+      ...player,
+      games
+    },
+    formatGames
+  )
 }
 
 function formatPlayerDetails({
@@ -65,6 +91,25 @@ function formatPlayerDetails({
 {dim provider:}       ${provider || 'manual'}
 {dim terms accepted:} ${!!termsAccepted}
 {dim is playing:}     ${!!playing}`
+}
+
+function formatGames({ id, games }) {
+  console.log(games)
+  const { owned, invited } = games.reduce(
+    (counts, { players: [owner] }) => {
+      if (owner?.id === id) {
+        counts.owned++
+      } else {
+        counts.invited++
+      }
+      return counts
+    },
+    { owned: 0, invited: 0 }
+  )
+  return chalkTemplate`
+{dim total games:}    ${games.length}
+{dim owned games:}    ${owned}
+{dim invited games:}  ${invited}`
 }
 
 showPlayerCommand.help = function help() {

@@ -32,7 +32,7 @@ export default {
      * @param {object} obj - graphQL object.
      * @param {object} args - subscription arguments.
      * @param {object} context - graphQL context.
-     * @returns {import('../services/games').Game[]} list of current games.
+     * @returns {Promise<import('../services/games').Game[]>} list of current games.
      */
     listGames: isAuthenticated(async (obj, args, { player }) =>
       services.listGames(player.id)
@@ -41,12 +41,11 @@ export default {
     /**
      * Returns details for a current player's game.
      * Requires valid authentication.
-     * @async
      * @param {object} obj - graphQL object.
      * @param {object} args - query arguments, including:
      * @param {string} args.gameId - game's id.
      * @param {object} context - graphQL context.
-     * @returns {import('../services/games').Game|null} loaded game details, or null.
+     * @returns {Promise<import('../services/games').Game|null>} loaded game details, or null.
      */
     loadGame: isAuthenticated((obj, { gameId }, { player }) =>
       services.loadGame(gameId, player.id)
@@ -57,12 +56,11 @@ export default {
     /**
      * Instanciates a new game for the a current player (who becomes its owner).
      * Requires valid authentication.
-     * @async
      * @param {object} obj - graphQL object.
      * @param {object} args - mutation arguments, including:
      * @param {string} args.kind - created game kind.
      * @param {object} context - graphQL context.
-     * @returns {import('../services/games').Game|null} created game details, or null.
+     * @returns {Promise<import('../services/games').Game|null>} created game details, or null.
      */
     createGame: isAuthenticated((obj, { kind }, { player }) =>
       services.createGame(kind, player.id)
@@ -71,12 +69,11 @@ export default {
     /**
      * Saves a current player's existing game details.
      * Requires valid authentication.
-     * @async
      * @param {object} obj - graphQL object.
      * @param {object} args - mutation arguments, including:
      * @param {import('./games.graphql').GameInput} args.game - partial game update.
      * @param {object} context - graphQL context.
-     * @returns {import('../services/games').Game|null} created game details, or null.
+     * @returns {Promise<import('../services/games').Game|null>} created game details, or null.
      */
     saveGame: isAuthenticated((obj, { game }, { player }) =>
       services.saveGame(game, player.id)
@@ -85,12 +82,11 @@ export default {
     /**
      * Deletes a current player's existing game.
      * Requires valid authentication.
-     * @async
      * @param {object} obj - graphQL object.
      * @param {object} args - mutation arguments, including:
      * @param {string} args.gameId - game's id.
      * @param {object} context - graphQL context.
-     * @returns {import('../services/games').Game|null} deleted game details, or null.
+     * @returns {Promise<import('../services/games').Game|null>} deleted game details, or null.
      */
     deleteGame: isAuthenticated((obj, { gameId }, { player }) =>
       services.deleteGame(gameId, player.id)
@@ -99,13 +95,12 @@ export default {
     /**
      * Invites another player to a current player's game.
      * Requires valid authentication.
-     * @async
      * @param {object} obj - graphQL object.
      * @param {object} args - mutation arguments, including:
      * @param {string} args.gameId - game's id.
      * @param {string} args.playerId - invited player id
      * @param {object} context - graphQL context.
-     * @returns {import('../services/games').Game|null} saved game details, or null.
+     * @returns {Promise<import('../services/games').Game|null>} saved game details, or null.
      */
     invite: isAuthenticated((obj, { gameId, playerId }, { player }) =>
       services.invite(gameId, playerId, player.id)
