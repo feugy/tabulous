@@ -169,7 +169,7 @@ export function loadConfiguration() {
   const allowedOrigins =
     ALLOWED_ORIGINS_REGEXP ??
     (isProduction
-      ? '^https:\\/\\/(?:(?:.+\\.)?tabulous\\.(?:fr|games)|tabulous(?:-.+)?\\.vercel\\.app)'
+      ? '^https?:\\/\\/(?:(?:.+\\.)?tabulous\\.(?:fr|games)|tabulous(?:-.+)?\\.vercel\\.app)'
       : '^https?:\\/\\/localhost:\\d+')
 
   const configuration = {

@@ -95,7 +95,7 @@ describe('loadConfiguration()', () => {
       PUBSUB_URL: pubsubUrl
     }
     const allowedOrigins =
-      '^https:\\/\\/(?:(?:.+\\.)?tabulous\\.(?:fr|games)|tabulous(?:-.+)?\\.vercel\\.app)'
+      '^https?:\\/\\/(?:(?:.+\\.)?tabulous\\.(?:fr|games)|tabulous(?:-.+)?\\.vercel\\.app)'
 
     expect(loadConfiguration()).toEqual({
       isProduction: true,
