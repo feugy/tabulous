@@ -215,7 +215,9 @@ export function loadConfiguration() {
       },
       domain:
         AUTH_DOMAIN ??
-        (isProduction ? 'https://auth.tabulous.fr' : 'http://localhost:3001'),
+        (isProduction
+          ? 'https://auth.tabulous.fr'
+          : 'http://localhost:3001/auth'),
       allowedOrigins
     }
   }

@@ -94,7 +94,6 @@ function formatPlayerDetails({
 }
 
 function formatGames({ id, games }) {
-  console.log(games)
   const { owned, invited } = games.reduce(
     (counts, { players: [owner] }) => {
       if (owner?.id === id) {

@@ -170,7 +170,7 @@ describe('loadConfiguration()', () => {
         turn: { secret: turnSecret },
         auth: {
           jwt: { key: 'dummy-test-key' },
-          domain: 'http://localhost:3001',
+          domain: 'http://localhost:3001/auth',
           allowedOrigins
         }
       })
@@ -184,7 +184,7 @@ describe('loadConfiguration()', () => {
       }
 
       expect(loadConfiguration().auth).toEqual({
-        domain: 'http://localhost:3001',
+        domain: 'http://localhost:3001/auth',
         allowedOrigins: '^https?:\\/\\/localhost:\\d+',
         jwt: { key: 'dummy-test-key' },
         github: { id: githubId, secret: githubSecret }
@@ -199,7 +199,7 @@ describe('loadConfiguration()', () => {
       }
 
       expect(loadConfiguration().auth).toEqual({
-        domain: 'http://localhost:3001',
+        domain: 'http://localhost:3001/auth',
         allowedOrigins: '^https?:\\/\\/localhost:\\d+',
         jwt: { key: 'dummy-test-key' },
         google: { id: googleId, secret: googleSecret }
