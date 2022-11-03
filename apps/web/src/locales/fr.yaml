@@ -21,6 +21,8 @@ actions:
   show-indicators: Afficher les indicateurs
 errors:
   login-failure: Pseudo ou mot de passe incorrect. Merci de réessayer.
+  too-many-games: Vous avez déjà {count} parties en cours, vous ne pouvez pas en créer davantage.
+  restricted-game: Ce jeu n'est pas accessible
 # https://github.com/format-message/format-message/tree/master/packages/format-message#formatmessagesetupoptions
 formats:
   date:
@@ -57,6 +59,7 @@ labels:
 page-titles:
   accept-terms: Tabulous • Conditions Générales d'Utilisation
   account: Tabulous • Paramètres
+  create-game: Tabulous • Nouvelle partie
   game: Tabulous • Jeu
   home: Tabulous • Accueil
   log-in: Tabulous • Connection
@@ -71,6 +74,7 @@ titles:
   camera-controls: Contrôler la caméra
   catalog: Jeux disponibles
   confirm-game-deletion: Suppression de la partie
+  create-game: Nouvelle partie
   your-games: Parties en cours
   home: Bonjour {username} !
   invite: Qui vas tu inviter ?

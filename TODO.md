@@ -2,7 +2,7 @@
 
 Roadmap
 
-- server + web: limit number of games (+ display on CLI)
+- server + web: set usernamd + avatar
 - server + web: friend list
 
 ## Brittle tests

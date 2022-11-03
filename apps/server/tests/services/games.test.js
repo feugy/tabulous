@@ -163,7 +163,7 @@ describe('given a subscription to game lists and an initialized repository', () 
       await expect(await countOwnGames(player.id)).toBe(count)
     })
 
-    it('igores invitations', async () => {
+    it('ignores invitations', async () => {
       const count = 3
       games.push(
         await repositories.games.save({ playerIds: [peer.id, player.id] })

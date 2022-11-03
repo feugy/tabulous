@@ -18,38 +18,15 @@ vi.mock('$app/navigation', () => {
 
 vi.mock('$app/stores', async () => {
   const { readable, writable } = await import('svelte/store')
-  const getStores = () => ({
+  const stores = {
     navigating: readable(null),
-    page: readable({ url: new URL('http://localhost'), params: {} }),
+    page: writable({ url: new URL('http://localhost'), params: {} }),
     session: writable(null),
     updated: readable(false)
-  })
-  const page = {
-    subscribe(fn) {
-      return getStores().page.subscribe(fn)
-    }
-  }
-  const navigating = {
-    subscribe(fn) {
-      return getStores().navigating.subscribe(fn)
-    }
-  }
-  const session = {
-    subscribe(fn) {
-      return getStores().session.subscribe(fn)
-    }
-  }
-  const updated = {
-    subscribe(fn) {
-      return getStores().updated.subscribe(fn)
-    }
   }
   return {
-    getStores,
-    navigating,
-    page,
-    session,
-    updated
+    getStores: () => stores,
+    ...stores
   }
 })
 
