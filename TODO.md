@@ -1,10 +1,5 @@
 # TODO
 
-Roadmap
-
-- server + web: set usernamd + avatar
-- server + web: friend list
-
 ## Brittle tests
 
 ## Refactor
@@ -27,15 +22,19 @@ Roadmap
 
 ## UI
 
+- bug: no rules on game creation?
 - bug: animating visibility from 0 to 1 creates trouble with texture alpha channel
 - bug: attached, unselected, mesh are not ignored during dragging
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
 - hide non-connected participants
+- loading spinner on game/new
+- updates avatar
 - is this right? given an active selection, when it anchrs with other items, then items are part of the selection
 - click on stack size to select all/select stack on push?
 - collect player preferences when joining a game (requires to alter & reload game when joining rather than inviting)
 - option to invite players with url
 - distribute multiple meshes to players'hand
+- select multiple meshes in hand
 - shortcuts cheatsheet
 - peer notifications: joining, joined, left, error (stop waiting when navigating away)
 - hand support for quantifiable behavior

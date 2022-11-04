@@ -1,4 +1,3 @@
-import { randomUUID } from 'crypto'
 import repositories from '../repositories/index.js'
 
 /**
@@ -6,44 +5,38 @@ import repositories from '../repositories/index.js'
  * @property {string} id - unique id.
  * @property {string} username - player user name.
  * @property {boolean} playing - whether this player has currently joined an active game.
+ * @property {string} [avatar] - avatar used for display.
+ * @property {string} [provider] - player's authentication provider, when relevant.
+ * @property {string} [providerId] - authentication provider own id, when relevant.
+ * @property {string} [email] - email from authentication provider, when relevant.
+ * @property {boolean} [termsAccepted] - whether this player has accepted terms of service, or not.
  * @property {boolean} [isAdmin] - whether this player has elevated priviledges or not.
  * @property {string[]} [catalog] - list of copyrighted games this player has accessed to.
  */
 
 /**
- * @typedef {object} UserDetails details for a given user, as provided by authentication providers
- * @property {string} username - player user name.
- */
-
-/**
- * Creates a new player account, saving user details as they are provided.
- * If the incomind data contains provider & providerId fields, it first search for an existing acccount.
- * In this situation, the existing data is updated with incomind data, except id, username and avatar,
- * which are kept as is.
+ * Creates or updates a player account, saving user details as they are provided.
+ * If the incomind data contains provider & providerId fields, it keeps previous id, avatar and username.
  * In case no id is provided, a new one is created.
- * @param {UserDetails} userDetails - creation details.
+ * @param {Partial<Player>} userDetails - creation details.
  * @returns {Promise<Player>} the creates player.
  */
-export async function addPlayer(userDetails) {
-  if (userDetails.provider) {
+export async function upsertPlayer(userDetails) {
+  if (userDetails.provider && userDetails.providerId) {
     const existing = await repositories.players.getByProviderDetails(
       userDetails
     )
     if (existing) {
-      userDetails = {
-        ...existing,
-        ...userDetails,
-        avatar: existing.avatar,
-        username: existing.username,
-        id: existing.id
-      }
+      delete userDetails.avatar
+      delete userDetails.username
+      userDetails.id = existing.id
     }
+  } else {
+    delete userDetails.provider
+    delete userDetails.providerId
+    delete userDetails.email
   }
-  return repositories.players.save({
-    id: randomUUID(),
-    ...userDetails,
-    playing: false
-  })
+  return repositories.players.save(userDetails)
 }
 
 /**
