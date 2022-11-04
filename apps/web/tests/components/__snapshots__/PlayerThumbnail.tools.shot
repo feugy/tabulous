@@ -55,7 +55,7 @@ exports[`Positionned avatar 1`] = `
 exports[`Small text 1`] = `
 <figure
   class="s-engCJu8q-fNe"
-  style="--dimension: 50px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+  style="--dimension: 50px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 0px"
 >
   <img
     alt="avatar for Joe le clodo"
@@ -65,9 +65,9 @@ exports[`Small text 1`] = `
   />
    
   <figcaption
-    class="s-engCJu8q-fNe"
+    class="s-engCJu8q-fNe abbreviated"
   >
-    JLC
+    JL
   </figcaption>
 </figure>
 `;

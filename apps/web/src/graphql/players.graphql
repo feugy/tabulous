@@ -42,3 +42,9 @@ mutation acceptTerms {
     termsAccepted
   }
 }
+
+mutation updateCurrentPlayer($username: String) {
+  updateCurrentPlayer(username: $username) {
+    ...player
+  }
+}

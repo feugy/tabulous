@@ -7,10 +7,9 @@ const logger = makeLogger('players')
 
 /**
  * Recovers previous session by calling server.
- * @async
  * @param {function} fetch - the fetch implementation used to initialize GraphQL client.
  * @param {string} bearer - the Bearer authorization value used to recover session.
- * @returns {object|null} the recovered session in case of success, or null.
+ * @returns {Promise<object|null>} the recovered session in case of success, or null.
  */
 export async function recoverSession(fetch, bearer) {
   let session = null
@@ -32,9 +31,9 @@ export async function recoverSession(fetch, bearer) {
 
 /**
  * Logs a player in with id/password method.
- * @async
  * @param {string} id - the authenticating player id.
  * @param {string} password - clear password.
+ * @returns {Promise<void>}
  * @throws {Error} when authentication was rejected
  */
 export async function logIn(id, password) {
@@ -50,7 +49,7 @@ export async function logIn(id, password) {
 
 /**
  * Navigates to the logout url which clear cookie and redirect to home page.
- * @async
+ * @returns {Promise<void>}
  */
 export async function logOut() {
   logger.info(`logging out`)
@@ -59,9 +58,8 @@ export async function logOut() {
 
 /**
  * Searches for player whom username contains the searched text.
- * @async
  * @param {string} search - searched text.
- * @returns {object[]} a list (possibly empty) of matching candidates.
+ * @returns {Promise<object[]>} a list (possibly empty) of matching candidates.
  */
 export async function searchPlayers(search) {
   logger.info({ search }, `searches for ${search}`)
@@ -70,9 +68,17 @@ export async function searchPlayers(search) {
 
 /**
  * Accept terms for the current player.
- * @async
- * @returns {object} the current player, updated.
+ * @returns {Promise<object>} the current player, updated.
  */
 export async function acceptTerms() {
   return runMutation(graphQL.acceptTerms)
+}
+
+/**
+ * Updates user details for the current player.
+ * @param {string} username - the desired username, if any.
+ * @returns {Promise<object>} the current player, updated.
+ */
+export async function updateCurrentPlayer(username) {
+  return runMutation(graphQL.updateCurrentPlayer, { username })
 }

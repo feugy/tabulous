@@ -14,4 +14,8 @@
     props={{ placeholder: 'Please enter value', value: 'initial value' }}
   />
   <Tool name="No value" props={{ placeholder: 'Please enter value' }} />
+  <Tool
+    name="Disabled"
+    props={{ placeholder: 'Please enter value', disabled: true }}
+  />
 </ToolBox>

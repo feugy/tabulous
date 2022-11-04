@@ -6,8 +6,9 @@
   export let screenPosition = null
   export let color = null
 
+  $: isShort = dimension < 60
   $: hasImage = player?.avatar
-  let caption = dimension < 60 ? abbreviate(player?.username) : player?.username
+  $: caption = isShort ? abbreviate(player?.username) : player?.username
 
   function formatVariables() {
     return [
@@ -15,7 +16,7 @@
       `--color: ${color}`,
       `--top: ${screenPosition?.y}px`,
       `--left: ${screenPosition?.x}px`,
-      `--border-width: ${dimension < 50 ? 0 : dimension < 100 ? 3 : 5}px`
+      `--border-width: ${isShort ? 0 : dimension < 100 ? 3 : 5}px`
     ].join('; ')
   }
 </script>
@@ -34,7 +35,7 @@
     on:load={() => (hasImage = true)}
   />
   {#if !hasImage}
-    <figcaption>{caption}</figcaption>
+    <figcaption class:abbreviated={isShort}>{caption}</figcaption>
   {/if}
 </figure>
 
@@ -64,6 +65,10 @@
 
   figcaption {
     @apply flex items-center justify-center p-1 text-$primary-lightest text-center;
+
+    &.abbreviated {
+      @apply whitespace-nowrap;
+    }
   }
 
   img {

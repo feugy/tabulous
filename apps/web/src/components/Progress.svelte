@@ -1,14 +1,29 @@
-<svg class="animate-spin" role="progressbar" viewBox="22 22 44 44">
-  <circle cx="44" cy="44" r="20.2" fill="none" stroke-width="3.6" />
+<script>
+  export let radius = 35
+</script>
+
+<svg
+  class="animate-spin"
+  role="progressbar"
+  viewBox="0 0 {radius * 4} {radius * 4}"
+  width={radius * 2}
+>
+  <circle
+    cx={radius * 2}
+    cy={radius * 2}
+    r={radius}
+    fill="none"
+    stroke-width={radius / 5.6}
+    stroke-dasharray="{radius * 4}px, {radius * 10}px"
+  />
 </svg>
 
 <style lang="postcss">
   svg {
-    @apply inline-block w-10 h-10 m-4;
+    @apply inline-block;
   }
 
   circle {
     @apply stroke-$primary stroke-offset-0;
-    stroke-dasharray: 80px, 200px;
   }
 </style>

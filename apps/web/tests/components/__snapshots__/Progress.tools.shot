@@ -4,15 +4,17 @@ exports[`Components/Progress 1`] = `
 <svg
   class="animate-spin s-GSPH2LpcdUHQ"
   role="progressbar"
-  viewBox="22 22 44 44"
+  viewBox="0 0 120 120"
+  width="60"
 >
   <circle
     class="s-GSPH2LpcdUHQ"
-    cx="44"
-    cy="44"
+    cx="60"
+    cy="60"
     fill="none"
-    r="20.2"
-    stroke-width="3.6"
+    r="30"
+    stroke-dasharray="120px, 300px"
+    stroke-width="5.357142857142858"
   />
 </svg>
 `;

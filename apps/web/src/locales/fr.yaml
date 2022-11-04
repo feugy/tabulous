@@ -22,7 +22,8 @@ actions:
 errors:
   login-failure: Pseudo ou mot de passe incorrect. Merci de réessayer.
   too-many-games: Vous avez déjà {count} parties en cours, vous ne pouvez pas en créer davantage.
-  restricted-game: Ce jeu n'est pas accessible
+  restricted-game: Ce jeu n'est pas accessible.
+  username-used: Ce pseudo est déjà utilisé, veillez en choisir un autre.
 # https://github.com/format-message/format-message/tree/master/packages/format-message#formatmessagesetupoptions
 formats:
   date:
@@ -55,7 +56,7 @@ labels:
   terms-accepted: J'ai lu et accepté les Conditions Générales d'Utilisation
   terms-intro: Ici, nous ne sommes pas des sauvages ! Pour profiter de Tabulous, merci d'approuver les conditions d'utilisation.
   terms-of-service: Mentions Légales & Conditions Générales d'Utilisation
-  username: "Nom d'affichage : "
+  username: 'Pseudo : '
 page-titles:
   accept-terms: Tabulous • Conditions Générales d'Utilisation
   account: Tabulous • Paramètres

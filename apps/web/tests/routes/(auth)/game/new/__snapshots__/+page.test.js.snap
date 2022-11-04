@@ -1,6 +1,6 @@
 // Vitest Snapshot v1
 
-exports[`/login route > displays error game is restricted 1`] = `
+exports[`/game/new route > displays error game is restricted 1`] = `
 <body>
   <div>
      
@@ -79,7 +79,7 @@ exports[`/login route > displays error game is restricted 1`] = `
         <p
           class="s-1rlJbZ_1rgK_"
         >
-          Ce jeu n'est pas accessible
+          Ce jeu n'est pas accessible.
         </p>
          
         <a
@@ -112,7 +112,7 @@ exports[`/login route > displays error game is restricted 1`] = `
 </body>
 `;
 
-exports[`/login route > displays error when too many games where created 1`] = `
+exports[`/game/new route > displays error when too many games where created 1`] = `
 <body>
   <div>
      

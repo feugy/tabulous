@@ -119,19 +119,28 @@ exports[`Manual account 1`] = `
         class="s-GQCXmK5OKySU"
         for="username"
       >
-        Nom d'affichage : 
+        Pseudo : 
       </label>
        
-      <fieldset
-        class="s-Fe6WNbR-55zp"
+      <span
+        class="with-progress s-GQCXmK5OKySU"
       >
-         
-        <input
+        <fieldset
           class="s-Fe6WNbR-55zp"
-          name="username"
+        >
+           
+          <input
+            class="s-Fe6WNbR-55zp"
+            name="username"
+          />
+        </fieldset>
+        <!--&lt;Input&gt;-->
+         
+        <span
+          class="s-GQCXmK5OKySU"
         />
-      </fieldset>
-      <!--&lt;Input&gt;-->
+         
+      </span>
        
       <span
         class="s-GQCXmK5OKySU"
@@ -277,19 +286,28 @@ exports[`OAuth account 1`] = `
         class="s-GQCXmK5OKySU"
         for="username"
       >
-        Nom d'affichage : 
+        Pseudo : 
       </label>
        
-      <fieldset
-        class="s-Fe6WNbR-55zp"
+      <span
+        class="with-progress s-GQCXmK5OKySU"
       >
-         
-        <input
+        <fieldset
           class="s-Fe6WNbR-55zp"
-          name="username"
+        >
+           
+          <input
+            class="s-Fe6WNbR-55zp"
+            name="username"
+          />
+        </fieldset>
+        <!--&lt;Input&gt;-->
+         
+        <span
+          class="s-GQCXmK5OKySU"
         />
-      </fieldset>
-      <!--&lt;Input&gt;-->
+         
+      </span>
        
       <span
         class="s-GQCXmK5OKySU"

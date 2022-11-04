@@ -1,10 +1,43 @@
 <script>
+  import { invalidateAll } from '$app/navigation'
+  import { debounceTime, from, switchMap, Subject, finalize, tap } from 'rxjs'
+  import { onDestroy } from 'svelte'
   import { _ } from 'svelte-intl'
   import { Header } from '../../../connected-components'
-  import { PlayerThumbnail, Input } from '../../../components'
+  import { Input, PlayerThumbnail, Progress } from '../../../components'
+  import { updateCurrentPlayer } from '../../../stores'
+  import { translateError } from '../../../utils'
 
+  /** @type {import('./$types').PageData} */
   export let data = {}
-  const user = data.session.player
+
+  const username$ = new Subject()
+  let user = data.session.player
+  let isSaving = false
+  let usernameError = null
+
+  const saveSubscription = username$
+    .pipe(
+      tap(() => (usernameError = null)),
+      debounceTime(200),
+      switchMap(username => {
+        isSaving = true
+        user.username = username
+        return from(
+          updateCurrentPlayer(username)
+            // updates page data with new user details
+            .then(invalidateAll)
+            .catch(error => (usernameError = error))
+        ).pipe(finalize(() => (isSaving = false)))
+      })
+    )
+    .subscribe()
+
+  onDestroy(() => saveSubscription.unsubscribe())
+
+  function handleSave({ target }) {
+    username$.next(target.value)
+  }
 </script>
 
 <svelte:head>
@@ -32,7 +65,20 @@
         <div>{$_('labels.manual-provider', user)}</div>
       {/if}
       <label for="username">{$_('labels.username')}</label>
-      <Input name="username" value={user.username} />
+      <span class="with-progress">
+        <Input
+          name="username"
+          value={user.username}
+          disabled={isSaving}
+          on:input={handleSave}
+        />
+        <span
+          >{#if isSaving}<Progress radius={24} />{/if}</span
+        >
+        {#if usernameError}
+          <span class="error">{translateError($_, usernameError)}</span>
+        {/if}
+      </span>
       <span>{$_('labels.avatar')}</span>
       <PlayerThumbnail player={user} dimension={150} />
     </fieldset>
@@ -62,5 +108,13 @@
     div {
       @apply col-span-2;
     }
+  }
+
+  .with-progress {
+    @apply grid grid-cols-[1fr,auto] items-center;
+  }
+
+  .error {
+    @apply text-$accent-warm;
   }
 </style>
