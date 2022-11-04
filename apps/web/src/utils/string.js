@@ -26,6 +26,8 @@ export function translateError(svelteIntl, error) {
     return svelteIntl('errors.restricted-game')
   } else if (/^Username already used/.test(message)) {
     return svelteIntl('errors.username-used')
+  } else if (/^Username too short/.test(message)) {
+    return svelteIntl('errors.username-too-short')
   }
   const match = message.match(/^You own (\d+) games/)
   if (match) {

@@ -5,6 +5,7 @@ import graphQL from '../../src/plugins/graphql.js'
 import { hash } from '../../src/utils/index.js'
 import { mockMethods, signToken } from '../test-utils.js'
 import { createVerifier } from 'fast-jwt'
+import { it } from 'vitest'
 
 describe('given a started server', () => {
   let server
@@ -397,5 +398,87 @@ describe('given a started server', () => {
         expect(services.upsertPlayer).toHaveBeenCalledTimes(1)
       })
     })
+
+    it.each([
+      {
+        title: 'leading and trailing spaces',
+        input: '   trimmed   ',
+        username: 'trimmed'
+      },
+      {
+        title: 'regular letters and number',
+        input: `2pack`,
+        username: '2pack'
+      },
+      {
+        title: 'punctuations and symbols',
+        input: `&(-_)=^$*,;:!<~#{[|\`@]¨¤>£}%§/.?¿£µ»×÷`,
+        username: '-_*#'
+      },
+      {
+        title: 'funky letters',
+        input: `ÀÝßàþÿĀāĦħŊŋžſƀƁƾƿɏȯșȆǪḀṬẞỘỼ`,
+        username: 'ÀÝßàþÿĀāĦħŊŋžſƀƁƾƿɏȯșȆǪḀṬẞỘỼ'
+      },
+      {
+        title: 'emojis',
+        input: `🥷🙈👏`,
+        username: '🥷🙈👏'
+      }
+    ])('maps $title "$input" as "$username"', async ({ username, input }) => {
+      services.getPlayerById.mockResolvedValueOnce(player)
+      services.upsertPlayer.mockImplementation(player => player)
+      const response = await server.inject({
+        method: 'POST',
+        url: 'graphql',
+        headers: {
+          authorization: `Bearer ${signToken(
+            player.id,
+            configuration.auth.jwt.key
+          )}`
+        },
+        payload: {
+          query: `mutation { 
+            updateCurrentPlayer(username: "${input}") { username }
+          }`
+        }
+      })
+      expect(
+        response.json()?.data?.updateCurrentPlayer?.username,
+        JSON.stringify(response.json())
+      ).toEqual(username)
+      expect(response.statusCode).toEqual(200)
+      expect(services.upsertPlayer).toHaveBeenCalledWith({
+        id: player.id,
+        username
+      })
+    })
+
+    it('rejects username smaller than 3 characters', async () => {
+      services.getPlayerById.mockResolvedValueOnce(player)
+      const response = await server.inject({
+        method: 'POST',
+        url: 'graphql',
+        headers: {
+          authorization: `Bearer ${signToken(
+            player.id,
+            configuration.auth.jwt.key
+          )}`
+        },
+        payload: {
+          query: `mutation { 
+            updateCurrentPlayer(username: "  x s  ") { username }
+          }`
+        }
+      })
+      expect(response.json()).toMatchObject({
+        data: { updateCurrentPlayer: null },
+        errors: [{ message: 'Username too short' }]
+      })
+      expect(response.statusCode).toEqual(200)
+      expect(services.upsertPlayer).not.toHaveBeenCalled()
+    })
+
+    it.todo('rejects username already used')
   })
 })

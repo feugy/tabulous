@@ -95,8 +95,21 @@ export default {
      * @param {object} context - graphQL context.
      * @returns {Promise<Player>} the updated player.
      */
-    updateCurrentPlayer: isAuthenticated(async (obj, args, { player }) =>
-      services.upsertPlayer({ id: player.id, ...args })
+    updateCurrentPlayer: isAuthenticated(
+      async (obj, { username, avatar }, { player }) => {
+        const sanitizedUsername =
+          username
+            .match(/\p{sc=Latin}|\p{Number}|\p{Emoji}|-|_/giu)
+            ?.join('') ?? ''
+        if (sanitizedUsername.length < 3) {
+          throw new Error('Username too short')
+        }
+        return services.upsertPlayer({
+          id: player.id,
+          username: sanitizedUsername,
+          avatar
+        })
+      }
     )
   }
 }

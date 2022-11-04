@@ -43,13 +43,14 @@ describe('string utilities', () => {
   describe('translateError()', () => {
     const formatMessage = get(_)
 
-    it('translates "restricted access" error', () => {
-      expect(
-        translateError(
-          formatMessage,
-          new Error('Access to game klondike is restricted')
-        )
-      ).toEqual(translate('errors.restricted-game'))
+    it.each([
+      { error: 'Access to game is restricted', key: 'errors.restricted-game' },
+      { error: 'Username already used', key: 'errors.username-used' },
+      { error: 'Username too short', key: 'errors.username-too-short' }
+    ])('translates "$error" error', ({ error, key }) => {
+      expect(translateError(formatMessage, new Error(error))).toEqual(
+        translate(key)
+      )
     })
 
     it('translates "too many owned games" error', () => {
@@ -59,12 +60,6 @@ describe('string utilities', () => {
           new Error('You own 10 games, you can not create more')
         )
       ).toEqual(translate('errors.too-many-games', { count: 10 }))
-    })
-
-    it('translates "Username already used" error', () => {
-      expect(
-        translateError(formatMessage, new Error('Username already used'))
-      ).toEqual(translate('errors.username-used'))
     })
 
     it('consider string as error message', () => {
