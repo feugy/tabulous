@@ -19,14 +19,14 @@
   const saveSubscription = username$
     .pipe(
       tap(() => (usernameError = null)),
-      debounceTime(200),
+      debounceTime(500),
       switchMap(username => {
         isSaving = true
-        user.username = username
         return from(
           updateCurrentPlayer(username)
             // updates page data with new user details
             .then(invalidateAll)
+            .then(() => (user.username = username))
             .catch(error => (usernameError = error))
         ).pipe(finalize(() => (isSaving = false)))
       })

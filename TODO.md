@@ -2,8 +2,22 @@
 
 ## Brittle tests
 
+- tests/atelier/tools.test.js > Toolshot > components/RadialMenu.tools.svelte
+  > Error: expect(received).toMatchSnapshot()
+  >
+  > Snapshot name: `More items 1`
+- expectEvents tests/3d/managers/input.test.js:1591:19
+  >     1589|     expect(hovers).toHaveLength(counts.hovers ?? 0)
+  >     1590|     expect(wheels).toHaveLength(counts.wheels ?? 0)
+  >     1591|     expect(longs).toHaveLength(counts.longs ?? 0)
+  >         |                   ^
+  >     1592|     expect(keys).toHaveLength(counts.keys ?? 0)
+
 ## Refactor
 
+- explicit vitest import
+- automatically sort imports
+- fix all sveltekit warnings
 - graphQL: remove signal type and make signal optional
 - add tests for web/src/utils/peer-connection
 - use node 18 when msw/interceptor will [handle it](https://github.com/mswjs/interceptors/pull/283)

@@ -9,8 +9,8 @@
 
   const dispatch = createEventDispatcher()
   const owned = game.players[0]?.id === playerId
-  const isSingle = game.players.length === 1
-  const peerNames = game.players
+  $: isSingle = game.players.length === 1
+  $: peerNames = game.players
     .filter(player => player && player.id !== playerId)
     .map(({ username }) => username)
 

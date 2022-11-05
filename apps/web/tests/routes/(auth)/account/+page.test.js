@@ -30,7 +30,7 @@ describe('/account route', () => {
     expectEditable()
     expect(updateCurrentPlayer).not.toHaveBeenCalled()
     expect(invalidateAll).not.toHaveBeenCalled()
-    await sleep(250)
+    await sleep(550)
     expectEditable()
     expect(usernameInput).toHaveValue(username)
     expect(updateCurrentPlayer).toHaveBeenCalledWith(username)
@@ -49,7 +49,7 @@ describe('/account route', () => {
     await userEvent.type(usernameInput, `{Control>}A{/Control}${username}`)
 
     expectEditable()
-    await sleep(250)
+    await sleep(550)
     expectProgress()
     expect(invalidateAll).not.toHaveBeenCalled()
     await sleep(100)
@@ -66,7 +66,7 @@ describe('/account route', () => {
     render(html`<${AccountPage} data=${{ session: { player } }} />`)
     const usernameInput = screen.getByRole('textbox')
     await userEvent.type(usernameInput, `{Control>}A{/Control}${username}`)
-    await sleep(250)
+    await sleep(550)
     expectEditable()
     expect(screen.queryByText(error)).toBeInTheDocument()
     expect(invalidateAll).not.toHaveBeenCalled()
@@ -75,7 +75,7 @@ describe('/account route', () => {
       usernameInput,
       `{Control>}A{/Control}${player.username}`
     )
-    await sleep(250)
+    await sleep(550)
     expect(screen.queryByText(error)).not.toBeInTheDocument()
     expectEditable()
     expect(updateCurrentPlayer).toHaveBeenNthCalledWith(1, username)
