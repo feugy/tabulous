@@ -59,6 +59,24 @@ describe('given initialized repository', () => {
       })
     })
 
+    it('checks username unicity when creating new account from provider', async () => {
+      const username = faker.name.fullName()
+      await repositories.players.save({ username })
+      const creation = {
+        providerId: faker.datatype.uuid(),
+        provider: 'oauth',
+        avatar: faker.internet.avatar(),
+        email: faker.internet.email(),
+        username
+      }
+      const created = await upsertPlayer(creation)
+      expect(created).toEqual({
+        ...creation,
+        username: `${username} @${creation.provider}`,
+        id: expect.any(String)
+      })
+    })
+
     it('ignores id, avatar and username when updating with provider & providerId', async () => {
       const original = await repositories.players.save({
         username: faker.name.firstName(),

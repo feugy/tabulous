@@ -30,6 +30,11 @@ export async function upsertPlayer(userDetails) {
       delete userDetails.avatar
       delete userDetails.username
       userDetails.id = existing.id
+    } else {
+      const { username, provider } = userDetails
+      if (await isUsernameUsed(username)) {
+        userDetails.username = `${username} @${provider}`
+      }
     }
   } else {
     delete userDetails.provider
