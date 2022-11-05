@@ -1,5 +1,6 @@
 import { createSigner } from 'fast-jwt'
 import Redis from 'ioredis'
+import { readFileSync, writeFileSync } from 'node:fs'
 import WebSocket from 'ws'
 
 /**
@@ -110,12 +111,22 @@ export function signToken(playerId, key) {
   return createSigner({ key })({ id: playerId })
 }
 
+const lastDBFile = '.last-db'
+
 /**
- * Returns an URL to a random database, between 15 and 1, on a Redis instance.
+ * Returns an URL a new Redis database, between 1 and 15.
  * @returns {string} url to the redis database.
  */
 export function getRedisTestUrl() {
-  return `redis://localhost:6379/${Math.floor(Math.random() * (15 - 1) + 1)}`
+  let lastDatabase = 0
+  try {
+    lastDatabase = parseInt(readFileSync(lastDBFile, 'utf-8'))
+  } catch {
+    lastDatabase = 0
+  }
+  lastDatabase = lastDatabase % 15 === 0 ? 1 : lastDatabase + 1
+  writeFileSync(lastDBFile, lastDatabase.toString())
+  return `redis://localhost:6379/${lastDatabase}`
 }
 
 /**

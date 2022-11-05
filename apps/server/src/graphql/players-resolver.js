@@ -107,11 +107,11 @@ export default {
         if (await services.isUsernameUsed(sanitizedUsername, player.id)) {
           throw new Error('Username already used')
         }
-        const updated = await services.upsertPlayer({
-          id: player.id,
-          username: sanitizedUsername,
-          avatar
-        })
+        const update = { id: player.id, username: sanitizedUsername }
+        if (avatar) {
+          update.avatar = avatar
+        }
+        const updated = await services.upsertPlayer(update)
         services.notifyRelatedPlayers(player.id)
         return updated
       }
