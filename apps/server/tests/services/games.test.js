@@ -1,6 +1,16 @@
 import { faker } from '@faker-js/faker'
 import { join } from 'path'
 import { setTimeout } from 'timers/promises'
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest'
 
 import repositories from '../../src/repositories/index.js'
 import { grantAccess, revokeAccess } from '../../src/services/catalog.js'

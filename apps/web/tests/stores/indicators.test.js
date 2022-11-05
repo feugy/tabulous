@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { get } from 'svelte/store'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AnchorBehaviorName, StackBehaviorName } from '../../src/3d/behaviors'
 import { indicatorManager } from '../../src/3d/managers/indicator'

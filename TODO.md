@@ -15,8 +15,6 @@
 
 ## Refactor
 
-- explicit vitest import
-- automatically sort imports
 - fix all sveltekit warnings
 - graphQL: remove signal type and make signal optional
 - add tests for web/src/utils/peer-connection

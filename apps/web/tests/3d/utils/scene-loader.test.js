@@ -1,4 +1,13 @@
 import { faker } from '@faker-js/faker'
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest'
 
 import { customShapeManager } from '../../../src/3d/managers'
 import { createCustom } from '../../../src/3d/meshes'

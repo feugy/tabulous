@@ -1,6 +1,16 @@
 import { faker } from '@faker-js/faker'
 import fastify from 'fastify'
 import { Subject } from 'rxjs'
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest'
 
 import graphQL from '../../src/plugins/graphql.js'
 import services from '../../src/services/index.js'

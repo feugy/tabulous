@@ -12,6 +12,7 @@ import { appendFileSync, rmSync } from 'fs'
 import { get } from 'svelte/store'
 import { _ } from 'svelte-intl'
 import { inspect } from 'util'
+import { afterAll, afterEach, beforeAll, expect } from 'vitest'
 
 import {
   AnchorBehaviorName,

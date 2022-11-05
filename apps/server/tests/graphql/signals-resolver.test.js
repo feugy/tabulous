@@ -1,6 +1,15 @@
 import { faker } from '@faker-js/faker'
 import fastify from 'fastify'
 import { setTimeout } from 'timers/promises'
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest'
 
 import graphQL from '../../src/plugins/graphql.js'
 import services from '../../src/services/index.js'

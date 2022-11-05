@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { MockAgent, setGlobalDispatcher } from 'undici'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { githubAuth } from '../../../src/services/auth/github.js'
 

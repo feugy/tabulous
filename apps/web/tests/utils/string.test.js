@@ -1,5 +1,6 @@
 import { get } from 'svelte/store'
 import { _ } from 'svelte-intl'
+import { describe, expect, it } from 'vitest'
 
 import { abbreviate, translateError } from '../../src/utils'
 import { translate } from '../test-utils'

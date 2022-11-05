@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import html from 'svelte-htm'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import CatalogItem from '../../src/components/CatalogItem.svelte'
 import { gameAssetsUrl } from '../../src/utils'

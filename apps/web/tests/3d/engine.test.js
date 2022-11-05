@@ -1,6 +1,7 @@
 import { NullEngine } from '@babylonjs/core/Engines/nullEngine'
 import { Logger } from '@babylonjs/core/Misc/logger'
 import { faker } from '@faker-js/faker'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { createEngine } from '../../src/3d'
 import { DrawBehaviorName } from '../../src/3d/behaviors'

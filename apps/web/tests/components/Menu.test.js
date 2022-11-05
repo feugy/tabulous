@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/svelte'
 import { get, writable } from 'svelte/store'
 import html from 'svelte-htm'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import Menu from '../../src/components/Menu.svelte'
 

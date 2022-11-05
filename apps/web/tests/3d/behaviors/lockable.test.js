@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
   LockBehavior,

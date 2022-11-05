@@ -1,5 +1,6 @@
 import { Color4 } from '@babylonjs/core/Maths/math.color'
 import { faker } from '@faker-js/faker'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
   controlManager,

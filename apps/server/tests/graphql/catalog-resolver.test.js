@@ -1,5 +1,14 @@
 import { faker } from '@faker-js/faker'
 import fastify from 'fastify'
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest'
 
 import { signToken } from '../test-utils'
 

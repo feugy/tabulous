@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { beforeAll, describe, expect, it } from 'vitest'
 
 import { materialManager } from '../../../src/3d/managers'
 import { createTable } from '../../../src/3d/utils'

@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { describe, expect, it, vi } from 'vitest'
 
 import { load } from '../../../src/routes/(auth)/+layout.server'
 

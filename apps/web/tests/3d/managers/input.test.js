@@ -2,6 +2,7 @@ import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { Scene } from '@babylonjs/core/scene'
 import { faker } from '@faker-js/faker'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { inputManager as manager } from '../../../src/3d/managers'
 import {

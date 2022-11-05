@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { describe, expect, it, vi } from 'vitest'
 
 import { handle } from '../src/hooks.server'
 import { configureGraphQlServer } from './test-utils'

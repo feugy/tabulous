@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import { load } from '../../../src/routes/home/+page'
 import { listCatalog, listGames } from '../../../src/stores'
 

@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/svelte'
 import userEvent from '@testing-library/user-event'
 import { tick } from 'svelte'
 import html from 'svelte-htm'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import InvitePlayerDialogue from '../../src/connected-components/InvitePlayerDialogue.svelte'
 import { invite, searchPlayers } from '../../src/stores'

@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker'
 import { createSigner } from 'fast-jwt'
 import { MockAgent, setGlobalDispatcher } from 'undici'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { googleAuth } from '../../../src/services/auth/google.js'
 

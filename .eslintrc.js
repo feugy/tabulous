@@ -3,13 +3,9 @@ module.exports = {
   env: {
     browser: true,
     es2022: true,
-    node: true,
-    jest: true
+    node: true
   },
   plugins: ['svelte3', 'simple-import-sort'],
-  globals: {
-    vi: true
-  },
   overrides: [
     {
       files: ['*.svelte'],

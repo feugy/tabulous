@@ -1,5 +1,6 @@
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
+import { beforeEach, describe, expect, it } from 'vitest'
 
 import { MoveBehavior, MoveBehaviorName } from '../../../src/3d/behaviors'
 import { moveManager } from '../../../src/3d/managers'

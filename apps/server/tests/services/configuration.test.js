@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker'
 import { join, resolve } from 'path'
 import { cwd } from 'process'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { loadConfiguration } from '../../src/services/configuration.js'
 

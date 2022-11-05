@@ -1,5 +1,6 @@
 import { render } from '@testing-library/svelte'
 import html from 'svelte-htm'
+import { describe, expect, it, vi } from 'vitest'
 
 import LoginPage from '../../../src/routes/login/+page.svelte'
 

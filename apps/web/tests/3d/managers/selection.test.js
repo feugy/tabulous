@@ -1,5 +1,6 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { StackBehavior } from '../../../src/3d/behaviors'
 import {

@@ -3,6 +3,7 @@ import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { Logger } from '@babylonjs/core/Misc/logger'
 import { Scene } from '@babylonjs/core/scene'
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
 import { getDimensions, isContaining } from '../../../src/3d/utils'
 

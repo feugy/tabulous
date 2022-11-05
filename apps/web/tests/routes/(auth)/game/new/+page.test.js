@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker'
 import { render } from '@testing-library/svelte'
 import { get } from 'svelte/store'
 import html from 'svelte-htm'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { goto } from '$app/navigation'
 import { page } from '$app/stores'

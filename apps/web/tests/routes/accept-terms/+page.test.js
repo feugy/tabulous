@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import html from 'svelte-htm'
-import { expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 import AcceptTermsPage from '../../../src/routes/accept-terms/+page.svelte'
 import { translate } from '../../test-utils'
