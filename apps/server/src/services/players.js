@@ -81,6 +81,22 @@ export async function searchPlayers(search, playerId, excludeCurrent = true) {
 }
 
 /**
+ * Indicates whether a given username is already used.
+ * This is case insensitive, accent insensitive, and does not considere non-letters (emojis).
+ * It can include a player id from the results.
+ * @param {string} username - tested username.
+ * @param {string} excludedId - id of excluded player.
+ * @returns {Promise<boolean>} whether this username is already in use, or not.
+ */
+export async function isUsernameUsed(username, excludedId) {
+  const { results } = await repositories.players.searchByUsername({
+    search: username,
+    exact: true
+  })
+  return results.filter(({ id }) => id !== excludedId).length > 0
+}
+
+/**
  * Records a player accepting terms of service.
  * @param {Player} player - the corresponding player.
  * @returns {Promise<Player>} the player, updates.

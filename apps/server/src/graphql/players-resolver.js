@@ -104,11 +104,16 @@ export default {
         if (sanitizedUsername.length < 3) {
           throw new Error('Username too short')
         }
-        return services.upsertPlayer({
+        if (await services.isUsernameUsed(sanitizedUsername, player.id)) {
+          throw new Error('Username already used')
+        }
+        const updated = await services.upsertPlayer({
           id: player.id,
           username: sanitizedUsername,
           avatar
         })
+        services.notifyRelatedPlayers(player.id)
+        return updated
       }
     )
   }

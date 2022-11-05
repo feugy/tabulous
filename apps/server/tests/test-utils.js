@@ -124,5 +124,8 @@ export function getRedisTestUrl() {
  * @returns {Promise<void>} resolves when done.
  */
 export async function clearDatabase(databaseUrl) {
+  if (!databaseUrl) {
+    throw new Error('you forgot to specificy a database url')
+  }
   await new Redis(databaseUrl).flushdb()
 }

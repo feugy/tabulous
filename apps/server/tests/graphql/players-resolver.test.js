@@ -5,7 +5,6 @@ import graphQL from '../../src/plugins/graphql.js'
 import { hash } from '../../src/utils/index.js'
 import { mockMethods, signToken } from '../test-utils.js'
 import { createVerifier } from 'fast-jwt'
-import { it } from 'vitest'
 
 describe('given a started server', () => {
   let server
@@ -364,11 +363,12 @@ describe('given a started server', () => {
           username: faker.name.firstName(),
           avatar: faker.internet.avatar()
         }
-        services.getPlayerById.mockResolvedValueOnce(player)
         services.upsertPlayer.mockResolvedValueOnce({
           id: player.id,
           ...update
         })
+        services.getPlayerById.mockResolvedValueOnce(player)
+        services.searchPlayers.mockResolvedValueOnce([])
         const response = await server.inject({
           method: 'POST',
           url: 'graphql',
@@ -396,6 +396,8 @@ describe('given a started server', () => {
           ...update
         })
         expect(services.upsertPlayer).toHaveBeenCalledTimes(1)
+        expect(services.notifyRelatedPlayers).toHaveBeenCalledWith(player.id)
+        expect(services.notifyRelatedPlayers).toHaveBeenCalledTimes(1)
       })
     })
 
@@ -427,6 +429,7 @@ describe('given a started server', () => {
       }
     ])('maps $title "$input" as "$username"', async ({ username, input }) => {
       services.getPlayerById.mockResolvedValueOnce(player)
+      services.isUsernameUsed.mockResolvedValueOnce(false)
       services.upsertPlayer.mockImplementation(player => player)
       const response = await server.inject({
         method: 'POST',
@@ -456,6 +459,7 @@ describe('given a started server', () => {
 
     it('rejects username smaller than 3 characters', async () => {
       services.getPlayerById.mockResolvedValueOnce(player)
+      services.isUsernameUsed.mockResolvedValueOnce(false)
       const response = await server.inject({
         method: 'POST',
         url: 'graphql',
@@ -477,8 +481,34 @@ describe('given a started server', () => {
       })
       expect(response.statusCode).toEqual(200)
       expect(services.upsertPlayer).not.toHaveBeenCalled()
+      expect(services.notifyRelatedPlayers).not.toHaveBeenCalled()
     })
 
-    it.todo('rejects username already used')
+    it('rejects username already used', async () => {
+      services.getPlayerById.mockResolvedValueOnce(player)
+      services.isUsernameUsed.mockResolvedValueOnce(true)
+      const response = await server.inject({
+        method: 'POST',
+        url: 'graphql',
+        headers: {
+          authorization: `Bearer ${signToken(
+            player.id,
+            configuration.auth.jwt.key
+          )}`
+        },
+        payload: {
+          query: `mutation { 
+            updateCurrentPlayer(username: "${admin.username}") { username }
+          }`
+        }
+      })
+      expect(response.json()).toMatchObject({
+        data: { updateCurrentPlayer: null },
+        errors: [{ message: 'Username already used' }]
+      })
+      expect(response.statusCode).toEqual(200)
+      expect(services.upsertPlayer).not.toHaveBeenCalled()
+      expect(services.notifyRelatedPlayers).not.toHaveBeenCalled()
+    })
   })
 })

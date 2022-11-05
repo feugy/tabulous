@@ -1,5 +1,4 @@
 import { faker } from '@faker-js/faker'
-import { describe, expect, it } from 'vitest'
 import { players } from '../../src/repositories/players.js'
 import { clearDatabase, getRedisTestUrl } from '../test-utils.js'
 
@@ -57,7 +56,7 @@ describe('given a connected repository and several players', () => {
       },
       { id: faker.datatype.uuid(), username: 'Agent Moebius' },
       { id: faker.datatype.uuid(), username: 'Agent' },
-      { id: faker.datatype.uuid(), username: 'Agent X' }
+      { id: faker.datatype.uuid(), username: 'AgentX' }
     ]
     await players.save(models)
   })
@@ -179,7 +178,7 @@ describe('given a connected repository and several players', () => {
           total: 3,
           from: 0,
           size: 10,
-          results: [models[7], models[9], models[8]]
+          results: [models[7], models[8], models[9]]
         })
       })
 
@@ -192,7 +191,7 @@ describe('given a connected repository and several players', () => {
         })
       })
 
-      it('returns players containing seed regardless od diacritics', async () => {
+      it('returns players containing seed regardless of diacritics', async () => {
         expect(await players.searchByUsername({ search: 'Adv' })).toEqual({
           total: 1,
           from: 0,
@@ -204,6 +203,17 @@ describe('given a connected repository and several players', () => {
           from: 0,
           size: 10,
           results: [models[5]]
+        })
+      })
+
+      it('returns exact results', async () => {
+        expect(
+          await players.searchByUsername({ search: 'agent', exact: true })
+        ).toEqual({
+          total: 1,
+          from: 0,
+          size: 10,
+          results: [models[8]]
         })
       })
 
@@ -223,7 +233,7 @@ describe('given a connected repository and several players', () => {
           total: 6,
           from: 2,
           size: 3,
-          results: [models[5], models[7], models[9]]
+          results: [models[5], models[7], models[8]]
         })
 
         expect(
@@ -232,7 +242,7 @@ describe('given a connected repository and several players', () => {
           total: 6,
           from: 4,
           size: 2,
-          results: [models[9], models[8]]
+          results: [models[8], models[9]]
         })
       })
 

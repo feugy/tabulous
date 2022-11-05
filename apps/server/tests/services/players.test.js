@@ -3,6 +3,7 @@ import repositories from '../../src/repositories/index.js'
 import {
   acceptTerms,
   getPlayerById,
+  isUsernameUsed,
   searchPlayers,
   setPlaying,
   upsertPlayer
@@ -58,7 +59,7 @@ describe('given initialized repository', () => {
       })
     })
 
-    it.only('ignores id, avatar and username when updating with provider & providerId', async () => {
+    it('ignores id, avatar and username when updating with provider & providerId', async () => {
       const original = await repositories.players.save({
         username: faker.name.firstName(),
         email: faker.internet.email(),
@@ -224,6 +225,25 @@ describe('given initialized repository', () => {
         expect(await searchPlayers(null, players[0].id)).toEqual([])
         expect(await searchPlayers(' a ', players[0].id)).toEqual([])
         expect(await searchPlayers('a', players[0].id)).toEqual([])
+      })
+    })
+
+    describe('isUsernameUsed()', () => {
+      it('returns true for used value', async () => {
+        expect(await isUsernameUsed('adaptoid')).toBe(true)
+        expect(await isUsernameUsed('adversary')).toBe(true)
+      })
+
+      it('returns true for un-used value', async () => {
+        expect(await isUsernameUsed('adaptoi')).toBe(false)
+        expect(await isUsernameUsed('adversari')).toBe(false)
+      })
+
+      it('can exclude a given id', async () => {
+        expect(await isUsernameUsed('adaptoid', players[2].id)).toBe(false)
+        expect(await isUsernameUsed('adversary', faker.datatype.uuid())).toBe(
+          true
+        )
       })
     })
   })
