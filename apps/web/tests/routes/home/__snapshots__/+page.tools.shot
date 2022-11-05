@@ -490,6 +490,8 @@ exports[`Authenticated 1`] = `
       
       <article
         class="s-lt2MTuasm2zx"
+        role="link"
+        tabindex="0"
       >
         <span
           class="title s-lt2MTuasm2zx"
@@ -526,6 +528,8 @@ exports[`Authenticated 1`] = `
       
       <article
         class="s-lt2MTuasm2zx"
+        role="link"
+        tabindex="0"
       >
         <span
           class="title s-lt2MTuasm2zx"

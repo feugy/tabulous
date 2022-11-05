@@ -11,10 +11,9 @@
     name="No age nor time"
     props={{ game: { name: 'klondike', locales } }}
     let:props
-    let:handleEvent
   >
     <span class="catalog-item-viewer">
-      <CatalogItem {...props} on:select={handleEvent} />
+      <CatalogItem {...props} />
     </span>
   </Tool>
 
@@ -31,10 +30,9 @@
       }
     }}
     let:props
-    let:handleEvent
   >
     <span class="catalog-item-viewer">
-      <CatalogItem {...props} on:select={handleEvent} />
+      <CatalogItem {...props} />
     </span>
   </Tool>
 
@@ -59,10 +57,9 @@
       }
     }}
     let:props
-    let:handleEvent
   >
     <span class="catalog-item-viewer">
-      <CatalogItem {...props} on:select={handleEvent} />
+      <CatalogItem {...props} />
     </span>
   </Tool>
 </ToolBox>

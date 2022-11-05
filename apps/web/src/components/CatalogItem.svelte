@@ -1,14 +1,13 @@
 <script>
-  import { createEventDispatcher } from 'svelte'
   import { _, locale } from 'svelte-intl'
+
+  import { goto } from '$app/navigation'
 
   import { gameAssetsUrl } from '../utils'
 
   export let game
 
   $: title = game?.locales?.[$locale]?.title
-
-  const dispatch = createEventDispatcher()
 
   function formatCopyright(field) {
     return game?.copyright?.[field].map(({ name }) => name).join(', ')
@@ -23,13 +22,12 @@
   }
 
   function handleClick() {
-    dispatch('select', game)
+    goto(`/game/new?name=${encodeURIComponent(game.name)}`)
   }
 
-  function handleKeydown({ key }) {
-    console.log('got key', key)
-    if (key === ' ' || key === 'Enter') {
-      console.log('consider click')
+  function handleKeydown(event) {
+    if (event.key === ' ' || event.key === 'Enter') {
+      event.preventDefault()
       handleClick()
     }
   }

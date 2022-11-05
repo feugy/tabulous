@@ -30,16 +30,14 @@ export const HomePage = mixin(
         hasText: translate('titles.your-games')
       })
       /** @type {Locator} */
-      this.games = page.locator(
-        '[aria-roledescription="games"] >> role=article'
-      )
+      this.games = page.locator('[aria-roledescription="games"] >> role=link')
       /** @type {Locator} */
       this.catalogHeading = page.locator('role=heading', {
         hasText: translate('titles.catalog')
       })
       /** @type {Locator} */
       this.catalogItems = page.locator(
-        '[aria-roledescription="catalog"] >> role=article'
+        '[aria-roledescription="catalog"] >> role=link'
       )
       /** @type {Locator} */
       this.catalogItemHeadings = this.catalogItems.filter({

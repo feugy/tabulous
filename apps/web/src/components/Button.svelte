@@ -13,6 +13,8 @@
   class:transparent
   bind:this={ref}
   on:click
+  on:keyup
+  on:keydown
   on:pointerup
   on:pointerdown
   >{#if icon}<span class="material-icons">{icon}</span
