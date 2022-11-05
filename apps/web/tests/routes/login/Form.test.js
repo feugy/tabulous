@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { tick } from 'svelte'
 import { writable } from 'svelte/store'
 import html from 'svelte-htm'
+
 import Form from '../../../src/routes/login/Form.svelte'
 import { authUrl } from '../../../src/utils'
 import { translate } from '../../test-utils'

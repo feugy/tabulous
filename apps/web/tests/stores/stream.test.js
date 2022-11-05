@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { get } from 'svelte/store'
+
 import {
   acquireMediaStream,
   cameras$,

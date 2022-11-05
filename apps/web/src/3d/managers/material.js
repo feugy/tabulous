@@ -1,9 +1,11 @@
 // mandatory side effect
 import '@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent.js'
+
 import { Engine } from '@babylonjs/core/Engines/engine.js'
 import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial.js'
 import { Texture } from '@babylonjs/core/Materials/Textures/texture.js'
 import { Color3, Color4 } from '@babylonjs/core/Maths/math.color.js'
+
 import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('material')

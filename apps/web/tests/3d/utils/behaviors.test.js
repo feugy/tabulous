@@ -1,6 +1,7 @@
 import { Animation } from '@babylonjs/core/Animations/animation'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+
 import {
   AnchorBehaviorName,
   DetailBehaviorName,

@@ -1,13 +1,7 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
-import {
-  configures3dTestEngine,
-  expectAnimationEnd,
-  expectMoveRecorded,
-  expectPosition,
-  sleep
-} from '../../test-utils'
+
 import {
   MoveBehavior,
   MoveBehaviorName,
@@ -25,6 +19,13 @@ import {
 } from '../../../src/3d/managers'
 import { createCard } from '../../../src/3d/meshes'
 import { createTable, getDimensions } from '../../../src/3d/utils'
+import {
+  configures3dTestEngine,
+  expectAnimationEnd,
+  expectMoveRecorded,
+  expectPosition,
+  sleep
+} from '../../test-utils'
 
 describe('MoveManager', () => {
   const centerX = 1024

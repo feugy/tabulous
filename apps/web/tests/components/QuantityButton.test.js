@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/svelte'
 import { tick } from 'svelte'
 import { get, writable } from 'svelte/store'
 import html from 'svelte-htm'
+
 import QuantityButton from '../../src/components/QuantityButton.svelte'
 
 describe('QuantityButton component', () => {

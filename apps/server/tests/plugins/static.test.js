@@ -1,6 +1,7 @@
 import fastify from 'fastify'
 import { resolve } from 'path'
 import { fileURLToPath } from 'url'
+
 import staticPlugin from '../../src/plugins/static.js'
 
 describe('static plugin', () => {

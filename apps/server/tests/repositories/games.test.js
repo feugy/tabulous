@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { describe, expect, it } from 'vitest'
+
 import { games } from '../../src/repositories/games.js'
 import { clearDatabase, getRedisTestUrl } from '../test-utils.js'
 

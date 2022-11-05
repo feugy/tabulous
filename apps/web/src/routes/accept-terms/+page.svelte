@@ -1,9 +1,11 @@
 <script>
-  import { page } from '$app/stores'
   import { _ } from 'svelte-intl'
+
+  import { page } from '$app/stores'
+
+  import { Header } from '../../connected-components'
   import Form from './Form.svelte'
   import ScrollableTerms from './ScrollableTerms.svelte'
-  import { Header } from '../../connected-components'
 
   /** @type {import('./$types').PageData} */
   export let data = {}

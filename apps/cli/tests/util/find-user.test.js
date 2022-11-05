@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+
 import { signToken } from '../../src/util/jwt.js'
 
 const mockQuery = vi.fn()

@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+
 import { OAuth2Provider } from '../../../src/services/auth/oauth2.js'
 
 describe('OAuth2 authentication provider', () => {

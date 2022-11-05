@@ -1,9 +1,10 @@
 import { Color3 } from '@babylonjs/core/Maths/math.color.js'
-import { selectionManager } from './selection'
-import { getTargetableBehavior } from '../utils/behaviors'
-import { isAbove } from '../utils/gravity'
+
 import { makeLogger } from '../../utils/logger'
 import { distance } from '../../utils/math'
+import { getTargetableBehavior } from '../utils/behaviors'
+import { isAbove } from '../utils/gravity'
+import { selectionManager } from './selection'
 
 const logger = makeLogger('target')
 

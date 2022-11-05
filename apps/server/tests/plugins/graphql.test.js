@@ -1,5 +1,6 @@
 import fastify from 'fastify'
 import WebSocket from 'ws'
+
 import graphql from '../../src/plugins/graphql.js'
 
 describe('graphql plugin', () => {

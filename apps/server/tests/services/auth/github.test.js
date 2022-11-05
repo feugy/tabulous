@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { MockAgent, setGlobalDispatcher } from 'undici'
+
 import { githubAuth } from '../../../src/services/auth/github.js'
 
 describe('Github authentication service', () => {

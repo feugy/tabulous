@@ -1,7 +1,9 @@
 <script>
-  import { goto } from '$app/navigation'
-  import { _, locale } from 'svelte-intl'
   import { readable } from 'svelte/store'
+  import { _, locale } from 'svelte-intl'
+
+  import { goto } from '$app/navigation'
+
   import { CatalogItem, ConfirmDialogue, GameLink } from '../../components'
   import { Header } from '../../connected-components'
   import { deleteGame, receiveGameListUpdates } from '../../stores'

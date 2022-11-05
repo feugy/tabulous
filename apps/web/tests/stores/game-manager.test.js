@@ -2,6 +2,7 @@ import { Observable } from '@babylonjs/core/Misc/observable'
 import { faker } from '@faker-js/faker'
 import { Subject } from 'rxjs'
 import { get } from 'svelte/store'
+
 import * as graphQL from '../../src/graphql'
 import { loadThread, serializeThread } from '../../src/stores/discussion'
 import {
@@ -21,8 +22,8 @@ import {
   receiveGameListUpdates
 } from '../../src/stores/game-manager'
 import {
-  runQuery,
   runMutation,
+  runQuery,
   runSubscription
 } from '../../src/stores/graphql-client'
 import {

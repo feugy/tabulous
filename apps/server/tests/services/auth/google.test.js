@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker'
 import { createSigner } from 'fast-jwt'
 import { MockAgent, setGlobalDispatcher } from 'undici'
+
 import { googleAuth } from '../../../src/services/auth/google.js'
 
 describe('Google authentication service', () => {

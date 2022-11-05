@@ -1,7 +1,8 @@
 <script>
   import { Tool, ToolBox } from '@atelier-wb/svelte'
+
+  import { players, thread } from './Discussion.testdata'
   import GameAside from './GameAsideWithVideo.svelte'
-  import { thread, players } from './Discussion.testdata'
 
   const connected = [{ playerId: players[0].id }, { playerId: players[2].id }]
   const playerById = new Map(players.map(player => [player.id, player]))

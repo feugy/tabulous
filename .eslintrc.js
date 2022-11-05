@@ -6,7 +6,7 @@ module.exports = {
     node: true,
     jest: true
   },
-  plugins: ['svelte3'],
+  plugins: ['svelte3', 'simple-import-sort'],
   globals: {
     vi: true
   },
@@ -23,5 +23,9 @@ module.exports = {
   parserOptions: {
     sourceType: 'module',
     ecmaVersion: 2022
+  },
+  rules: {
+    'simple-import-sort/imports': 'error',
+    'simple-import-sort/exports': 'error'
   }
 }

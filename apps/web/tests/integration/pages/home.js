@@ -1,10 +1,11 @@
 // @ts-check
 import { expect } from '@playwright/test'
+
 import { sleep } from '../../../src/utils/time.js'
 import { translate } from '../utils/index.js'
 import {
-  mixin,
   AuthenticatedHeaderMixin,
+  mixin,
   TermsSupportedMixin
 } from './mixins.js'
 

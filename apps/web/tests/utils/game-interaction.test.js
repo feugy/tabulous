@@ -3,6 +3,7 @@ import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
 import { BehaviorSubject } from 'rxjs'
 import { get } from 'svelte/store'
+
 import {
   cameraManager,
   controlManager,

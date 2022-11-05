@@ -1,12 +1,13 @@
 <script>
-  import { Tool, ToolBox, recordEvent } from '@atelier-wb/svelte'
-  import PlayerAvatar from './PlayerAvatarWithVideo.svelte'
+  import { recordEvent, Tool, ToolBox } from '@atelier-wb/svelte'
+
   import {
     currentCamera$,
     currentMic$,
     localStreamChange$
   } from '../../src/stores'
   import avatar from './avatar.png'
+  import PlayerAvatar from './PlayerAvatarWithVideo.svelte'
 
   let player = { username: 'Joe le clodo', avatar, isHost: true }
 

@@ -1,4 +1,5 @@
 import stripAnsi from 'strip-ansi'
+
 import { help } from '../../src/commands/help.js'
 
 describe('help command', () => {

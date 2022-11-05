@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+
 import { buildSDPTransform } from '../../src/utils'
 
 describe('webRTC utilities', () => {

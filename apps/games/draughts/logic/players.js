@@ -1,4 +1,5 @@
 import { buildCameraPosition } from '@tabulous/server/src/utils/index.js'
+
 import { blackId, cameraPositions, whiteId } from './constants.js'
 
 export function addPlayer(game, player) {

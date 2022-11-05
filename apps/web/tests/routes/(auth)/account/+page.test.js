@@ -1,11 +1,13 @@
+import { faker } from '@faker-js/faker'
 import { render, screen } from '@testing-library/svelte'
 import userEvent from '@testing-library/user-event'
-import { faker } from '@faker-js/faker'
-import { invalidateAll } from '$app/navigation'
 import html from 'svelte-htm'
-import { updateCurrentPlayer } from '../../../../src/stores'
-import AccountPage from '../../../../src/routes/(auth)/account/+page.svelte'
 import { expect } from 'vitest'
+
+import { invalidateAll } from '$app/navigation'
+
+import AccountPage from '../../../../src/routes/(auth)/account/+page.svelte'
+import { updateCurrentPlayer } from '../../../../src/stores'
 import { sleep, translate } from '../../../test-utils'
 
 vi.mock('../../../../src/stores')

@@ -2,12 +2,13 @@ import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { Scene } from '@babylonjs/core/scene'
 import { faker } from '@faker-js/faker'
+
+import { inputManager as manager } from '../../../src/3d/managers'
 import {
   configures3dTestEngine,
   expectCloseVector,
   sleep
 } from '../../test-utils'
-import { inputManager as manager } from '../../../src/3d/managers'
 
 const pointerDown = 'pointerdown'
 const pointerUp = 'pointerup'

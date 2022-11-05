@@ -1,5 +1,5 @@
-export * from './configuration'
 export * from './catalog'
+export * from './configuration'
 export * from './discussion'
 export * from './fullscreen'
 export * from './game-engine'

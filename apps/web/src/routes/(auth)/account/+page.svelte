@@ -1,10 +1,12 @@
 <script>
-  import { invalidateAll } from '$app/navigation'
-  import { debounceTime, from, switchMap, Subject, finalize, tap } from 'rxjs'
+  import { debounceTime, finalize, from, Subject, switchMap, tap } from 'rxjs'
   import { onDestroy } from 'svelte'
   import { _ } from 'svelte-intl'
-  import { Header } from '../../../connected-components'
+
+  import { invalidateAll } from '$app/navigation'
+
   import { Input, PlayerThumbnail, Progress } from '../../../components'
+  import { Header } from '../../../connected-components'
   import { updateCurrentPlayer } from '../../../stores'
   import { translateError } from '../../../utils'
 

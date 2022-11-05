@@ -1,7 +1,8 @@
 import { faker } from '@faker-js/faker'
+
 import {
-  createMeshes,
   buildCameraPosition,
+  createMeshes,
   decrement,
   drawInHand,
   findAnchor,

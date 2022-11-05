@@ -1,11 +1,12 @@
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
-import { configures3dTestEngine, sleep } from '../../test-utils'
+
+import { AnchorBehavior, FlipBehavior } from '../../../src/3d/behaviors'
 import {
   controlManager as manager,
   indicatorManager
 } from '../../../src/3d/managers'
-import { AnchorBehavior, FlipBehavior } from '../../../src/3d/behaviors'
+import { configures3dTestEngine, sleep } from '../../test-utils'
 
 describe('ControlManager', () => {
   let scene

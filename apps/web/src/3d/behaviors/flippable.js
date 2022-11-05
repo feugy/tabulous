@@ -1,6 +1,6 @@
 import { Animation } from '@babylonjs/core/Animations/animation.js'
-import { AnimateBehavior } from './animatable'
-import { FlipBehaviorName } from './names'
+
+import { makeLogger } from '../../utils/logger'
 import { controlManager } from '../managers/control'
 import {
   attachFunctions,
@@ -10,7 +10,8 @@ import {
 } from '../utils/behaviors'
 import { applyGravity } from '../utils/gravity'
 import { getDimensions } from '../utils/mesh'
-import { makeLogger } from '../../utils/logger'
+import { AnimateBehavior } from './animatable'
+import { FlipBehaviorName } from './names'
 
 const Tolerance = 0.000001
 

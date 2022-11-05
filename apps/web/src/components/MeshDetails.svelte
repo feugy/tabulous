@@ -1,5 +1,6 @@
 <script>
   import { afterUpdate, createEventDispatcher } from 'svelte'
+
   import { gameAssetsUrl } from '../utils'
 
   export let mesh = null

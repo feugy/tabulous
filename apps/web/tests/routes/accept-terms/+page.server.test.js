@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { beforeEach, expect, vi } from 'vitest'
+
 import { actions } from '../../../src/routes/accept-terms/+page.server'
 import {
   initGraphQlClient,

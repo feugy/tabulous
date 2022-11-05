@@ -1,6 +1,7 @@
 <script>
   import { createEventDispatcher } from 'svelte'
   import { _, locale } from 'svelte-intl'
+
   import { gameAssetsUrl } from '../utils'
 
   export let game

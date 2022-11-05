@@ -1,10 +1,11 @@
 import { faker } from '@faker-js/faker'
+import { createVerifier } from 'fast-jwt'
 import fastify from 'fastify'
-import services from '../../src/services/index.js'
+
 import graphQL from '../../src/plugins/graphql.js'
+import services from '../../src/services/index.js'
 import { hash } from '../../src/utils/index.js'
 import { mockMethods, signToken } from '../test-utils.js'
-import { createVerifier } from 'fast-jwt'
 
 describe('given a started server', () => {
   let server

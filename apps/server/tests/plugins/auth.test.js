@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker'
-import fastify from 'fastify'
 import { createVerifier } from 'fast-jwt'
+import fastify from 'fastify'
 
 vi.mock('../../src/services/auth/github.js', () => ({
   githubAuth: {

@@ -1,8 +1,9 @@
 import { Observable } from '@babylonjs/core/Misc/observable.js'
 import { Scene } from '@babylonjs/core/scene.js'
-import { screenToGround } from '../utils/vector'
-import { distance } from '../../utils/math'
+
 import { makeLogger } from '../../utils/logger'
+import { distance } from '../../utils/math'
+import { screenToGround } from '../utils/vector'
 
 const logger = makeLogger('input')
 

@@ -1,7 +1,8 @@
 import { Color4 } from '@babylonjs/core/Maths/math.color'
 import { faker } from '@faker-js/faker'
-import { createCard } from '../../../src/3d/meshes'
+
 import { controlManager, materialManager } from '../../../src/3d/managers'
+import { createCard } from '../../../src/3d/meshes'
 import {
   configures3dTestEngine,
   expectDimension,

@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker'
 import kebabCase from 'lodash.kebabcase'
 import stripAnsi from 'strip-ansi'
+
 import { applyFormaters } from '../../src/util/formaters.js'
 import { signToken } from '../../src/util/jwt.js'
 

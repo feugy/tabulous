@@ -1,5 +1,6 @@
 <script>
   import { Tool, ToolBox } from '@atelier-wb/svelte'
+
   import ScrollableTerms from '../../../src/routes/accept-terms/ScrollableTerms.svelte'
 </script>
 

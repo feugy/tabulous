@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+
 import { materialManager } from '../../../src/3d/managers'
 import { createTable } from '../../../src/3d/utils'
 import { configures3dTestEngine } from '../../test-utils'

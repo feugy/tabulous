@@ -1,7 +1,9 @@
 <script>
-  import { goto } from '$app/navigation'
   import { createEventDispatcher } from 'svelte'
   import { _, locale } from 'svelte-intl'
+
+  import { goto } from '$app/navigation'
+
   import Button from './Button.svelte'
 
   export let game

@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import fastify from 'fastify'
+
 import { signToken } from '../test-utils'
 
 vi.mock('../../src/services/index.js', () => ({

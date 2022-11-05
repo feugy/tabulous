@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { createHmac } from 'crypto'
+
 import { generateTurnCredentials } from '../../src/services/turn-credentials'
 
 describe('generateTurnCredentials()', () => {

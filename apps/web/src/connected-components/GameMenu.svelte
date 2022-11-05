@@ -1,7 +1,9 @@
 <script>
-  import { goto } from '$app/navigation'
   import { createEventDispatcher } from 'svelte'
   import { _ } from 'svelte-intl'
+
+  import { goto } from '$app/navigation'
+
   import { Dropdown } from '../components'
   import {
     areIndicatorsVisible,

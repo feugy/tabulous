@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker'
 import { join, resolve } from 'path'
 import { cwd } from 'process'
+
 import { loadConfiguration } from '../../src/services/configuration.js'
 
 describe('loadConfiguration()', () => {

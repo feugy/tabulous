@@ -1,4 +1,5 @@
 import { inspect } from 'util'
+
 import { attachFormater } from '../src/util/formaters.js'
 import { mockConsole } from './test-util.js'
 

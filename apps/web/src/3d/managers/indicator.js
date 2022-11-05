@@ -1,8 +1,9 @@
 import { BoundingBox } from '@babylonjs/core/Culling/boundingBox.js'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import { Observable } from '@babylonjs/core/Misc/observable.js'
-import { getMeshScreenPosition, getScreenPosition } from '../utils/vector'
+
 import { makeLogger } from '../../utils/logger'
+import { getMeshScreenPosition, getScreenPosition } from '../utils/vector'
 
 const logger = makeLogger('indicator')
 

@@ -1,4 +1,5 @@
 import { browser } from '$app/environment'
+
 import { initGraphQlClient } from '../stores'
 import { graphQlUrl } from '../utils'
 

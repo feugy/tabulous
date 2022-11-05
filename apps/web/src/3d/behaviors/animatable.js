@@ -1,9 +1,10 @@
 import { Animation } from '@babylonjs/core/Animations/animation.js'
 import { Observable } from '@babylonjs/core/Misc/observable.js'
-import { AnimateBehaviorName } from './names'
+
 import { runAnimation } from '../utils/behaviors'
 import { applyGravity } from '../utils/gravity'
 import { convertToLocal } from '../utils/vector'
+import { AnimateBehaviorName } from './names'
 
 export class AnimateBehavior {
   /**

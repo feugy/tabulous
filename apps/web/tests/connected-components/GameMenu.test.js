@@ -1,8 +1,9 @@
 import { fireEvent, render, screen } from '@testing-library/svelte'
-import { goto } from '$app/navigation'
 import { tick } from 'svelte'
 import html from 'svelte-htm'
-import { translate } from '../test-utils'
+
+import { goto } from '$app/navigation'
+
 import GameMenu from '../../src/connected-components/GameMenu.svelte'
 import {
   areIndicatorsVisible,
@@ -11,6 +12,7 @@ import {
   toggleFullscreen,
   toggleIndicators
 } from '../../src/stores'
+import { translate } from '../test-utils'
 
 vi.mock('../../src/stores/fullscreen', () => {
   const { BehaviorSubject } = require('rxjs')

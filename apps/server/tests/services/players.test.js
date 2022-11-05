@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { expect } from 'vitest'
+
 import repositories from '../../src/repositories/index.js'
 import {
   acceptTerms,

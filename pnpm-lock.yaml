@@ -7,6 +7,7 @@ importers:
       '@vitest/coverage-c8': ^0.23.4
       eslint: ^8.25.0
       eslint-config-prettier: ^8.5.0
+      eslint-plugin-simple-import-sort: ^8.0.0
       eslint-plugin-svelte3: ^4.0.0
       husky: ^8.0.1
       lint-staged: ^13.0.3
@@ -20,6 +21,7 @@ importers:
       '@vitest/coverage-c8': 0.23.4
       eslint: 8.25.0
       eslint-config-prettier: 8.5.0_eslint@8.25.0
+      eslint-plugin-simple-import-sort: 8.0.0_eslint@8.25.0
       eslint-plugin-svelte3: 4.0.0_pr36k4f4yzzzfpayao7l7fkqni
       husky: 8.0.1
       lint-staged: 13.0.3
@@ -2622,6 +2624,14 @@ packages:
     hasBin: true
     peerDependencies:
       eslint: '>=7.0.0'
+    dependencies:
+      eslint: 8.25.0
+    dev: true
+
+  /eslint-plugin-simple-import-sort/8.0.0_eslint@8.25.0:
+    resolution: {integrity: sha512-bXgJQ+lqhtQBCuWY/FUWdB27j4+lqcvXv5rUARkzbeWLwea+S5eBZEQrhnO+WgX3ZoJHVj0cn943iyXwByHHQw==}
+    peerDependencies:
+      eslint: '>=5.0.0'
     dependencies:
       eslint: 8.25.0
     dev: true

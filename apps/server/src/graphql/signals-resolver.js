@@ -1,5 +1,5 @@
-import { isAuthenticated } from './utils.js'
 import services from '../services/index.js'
+import { isAuthenticated } from './utils.js'
 
 /**
  * The implemented protocol is:

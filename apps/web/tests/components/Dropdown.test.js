@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import html from 'svelte-htm'
+
 import Dropdown from '../../src/components/Dropdown.svelte'
 import { sleep } from '../../src/utils/index.js'
 import { extractText } from '../test-utils'

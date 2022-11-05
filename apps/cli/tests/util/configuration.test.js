@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+
 import { loadConfiguration } from '../../src/util/configuration.js'
 
 describe('loadConfiguration()', () => {

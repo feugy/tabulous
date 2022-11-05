@@ -1,5 +1,6 @@
 import { Color4 } from '@babylonjs/core/Maths/math.color'
 import { faker } from '@faker-js/faker'
+
 import {
   controlManager,
   customShapeManager,
@@ -7,12 +8,12 @@ import {
 } from '../../../src/3d/managers'
 import { createCustom } from '../../../src/3d/meshes'
 import { getDimensions } from '../../../src/3d/utils'
+import pawnData from '../../fixtures/pawn.json'
 import {
   configures3dTestEngine,
   expectDimension,
   expectPosition
 } from '../../test-utils'
-import pawnData from '../../fixtures/pawn.json'
 
 let scene
 configures3dTestEngine(created => (scene = created.scene))

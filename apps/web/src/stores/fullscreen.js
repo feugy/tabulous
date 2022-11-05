@@ -1,5 +1,7 @@
-import { browser } from '$app/environment'
 import { BehaviorSubject } from 'rxjs'
+
+import { browser } from '$app/environment'
+
 import { makeLogger } from '../utils'
 
 const logger = makeLogger('fullscreen')

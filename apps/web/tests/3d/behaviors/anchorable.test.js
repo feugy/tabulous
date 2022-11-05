@@ -1,19 +1,7 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
-import {
-  configures3dTestEngine,
-  expectFlipped,
-  expectMeshFeedback,
-  expectMoveRecorded,
-  expectPosition,
-  expectRotated,
-  expectSnapped,
-  expectStacked,
-  expectUnsnapped,
-  expectZoneEnabled,
-  sleep
-} from '../../test-utils'
+
 import {
   AnchorBehavior,
   AnchorBehaviorName,
@@ -30,8 +18,21 @@ import {
   moveManager,
   selectionManager
 } from '../../../src/3d/managers'
-import { animateMove, getCenterAltitudeAbove } from '../../../src/3d/utils'
 import { createRoundToken } from '../../../src/3d/meshes'
+import { animateMove, getCenterAltitudeAbove } from '../../../src/3d/utils'
+import {
+  configures3dTestEngine,
+  expectFlipped,
+  expectMeshFeedback,
+  expectMoveRecorded,
+  expectPosition,
+  expectRotated,
+  expectSnapped,
+  expectStacked,
+  expectUnsnapped,
+  expectZoneEnabled,
+  sleep
+} from '../../test-utils'
 
 describe('AnchorBehavior', () => {
   configures3dTestEngine(created => (scene = created.scene))

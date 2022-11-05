@@ -1,8 +1,8 @@
-import { LockBehaviorName, MoveBehaviorName } from './names'
+import { makeLogger } from '../../utils/logger'
 import { controlManager } from '../managers/control'
 import { indicatorManager } from '../managers/indicator'
 import { attachFunctions, attachProperty } from '../utils/behaviors'
-import { makeLogger } from '../../utils/logger'
+import { LockBehaviorName, MoveBehaviorName } from './names'
 
 const logger = makeLogger(LockBehaviorName)
 

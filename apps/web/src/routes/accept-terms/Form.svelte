@@ -1,5 +1,6 @@
 <script>
   import { _ } from 'svelte-intl'
+
   import { Button } from '../../components'
 
   export let disabled = true

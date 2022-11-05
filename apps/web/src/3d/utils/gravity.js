@@ -1,13 +1,14 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
-import { getDimensions } from './mesh'
+
 import { makeLogger } from '../../utils/logger'
 import {
   buildEnclosedCircle,
   buildGroundRectangle,
-  intersectRectangles,
   intersectCircles,
+  intersectRectangles,
   intersectRectangleWithCircle
 } from '../../utils/math'
+import { getDimensions } from './mesh'
 
 const logger = makeLogger('gravity')
 

@@ -3,8 +3,9 @@ import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera.js'
 import { TargetCamera } from '@babylonjs/core/Cameras/targetCamera.js'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import { Observable } from '@babylonjs/core/Misc/observable.js'
-import { isPositionAboveTable, screenToGround } from '../utils/vector'
+
 import { makeLogger } from '../../utils/logger'
+import { isPositionAboveTable, screenToGround } from '../utils/vector'
 
 /**
  * @typedef {object} CameraSave camera state save, including:

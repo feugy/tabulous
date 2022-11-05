@@ -1,5 +1,6 @@
 <script>
   import { Tool, ToolBox } from '@atelier-wb/svelte'
+
   import { Discussion } from '../../src/components'
   import { players, thread } from './Discussion.testdata'
 </script>

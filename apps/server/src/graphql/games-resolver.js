@@ -1,6 +1,7 @@
 import { filter } from 'rxjs/operators'
-import { isAuthenticated } from './utils.js'
+
 import services from '../services/index.js'
+import { isAuthenticated } from './utils.js'
 
 export default {
   loaders: {

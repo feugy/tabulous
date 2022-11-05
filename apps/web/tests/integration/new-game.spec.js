@@ -1,7 +1,8 @@
 // @ts-check
 import { faker } from '@faker-js/faker'
+
 import { GamePage, NewGamePage } from './pages/index.js'
-import { expect, it, describe, mockGraphQl } from './utils/index.js'
+import { describe, expect, it, mockGraphQl } from './utils/index.js'
 
 describe('New game page', () => {
   const player = {

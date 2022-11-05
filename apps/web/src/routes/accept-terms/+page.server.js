@@ -1,4 +1,5 @@
-import { redirect, invalid } from '@sveltejs/kit'
+import { invalid, redirect } from '@sveltejs/kit'
+
 import { initGraphQlClient } from '../../stores/graphql-client'
 import { acceptTerms } from '../../stores/players'
 import { graphQlUrl } from '../../utils/env'

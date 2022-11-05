@@ -1,17 +1,19 @@
 // mandatory side effect
 import '@babylonjs/core/Loading/loadingScreen.js'
+
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
+
+import { makeLogger } from '../../utils/logger'
+import { AnchorBehaviorName, StackBehaviorName } from '../behaviors/names'
 import {
   createBox,
   createCard,
   createCustom,
   createPrism,
-  createRoundToken,
-  createRoundedTile
+  createRoundedTile,
+  createRoundToken
 } from '../meshes'
 import { restoreBehaviors } from './behaviors'
-import { AnchorBehaviorName, StackBehaviorName } from '../behaviors/names'
-import { makeLogger } from '../../utils/logger'
 
 const logger = makeLogger('scene-loader')
 

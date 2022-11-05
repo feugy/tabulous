@@ -1,7 +1,7 @@
 // @ts-check
 import {
-  mixin,
   AuthenticatedHeaderMixin,
+  mixin,
   TermsSupportedMixin
 } from './mixins.js'
 

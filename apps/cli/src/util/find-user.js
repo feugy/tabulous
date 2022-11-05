@@ -1,5 +1,6 @@
 // @ts-check
 import { gql } from '@urql/core'
+
 import { getGraphQLClient } from './graphql-client.js'
 import { signToken } from './jwt.js'
 

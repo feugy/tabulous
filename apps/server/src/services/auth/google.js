@@ -1,5 +1,6 @@
 import { createDecoder } from 'fast-jwt'
 import { fetch, FormData } from 'undici'
+
 import { OAuth2Provider } from './oauth2.js'
 
 const urls = {

@@ -1,5 +1,6 @@
 <script>
-  import { createEventDispatcher, onMount, onDestroy } from 'svelte'
+  import { createEventDispatcher, onDestroy, onMount } from 'svelte'
+
   import { TermsOfService } from '../../components'
 
   const dispatch = createEventDispatcher()

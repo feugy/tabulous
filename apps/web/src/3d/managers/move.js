@@ -1,14 +1,15 @@
 import { BoundingInfo } from '@babylonjs/core/Culling/boundingInfo.js'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import { Observable } from '@babylonjs/core/Misc/observable.js'
-import { controlManager } from './control'
-import { selectionManager } from './selection'
-import { targetManager } from './target'
+
+import { makeLogger } from '../../utils/logger'
+import { sleep } from '../../utils/time'
 import { animateMove } from '../utils/behaviors'
 import { sortByElevation } from '../utils/gravity'
 import { isAboveTable, screenToGround } from '../utils/vector'
-import { sleep } from '../../utils/time'
-import { makeLogger } from '../../utils/logger'
+import { controlManager } from './control'
+import { selectionManager } from './selection'
+import { targetManager } from './target'
 
 const logger = makeLogger('move')
 

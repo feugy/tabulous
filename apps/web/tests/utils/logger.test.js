@@ -1,4 +1,5 @@
 import { randomUUID } from 'crypto'
+
 import { makeLogger } from '../../src/utils/logger'
 
 describe('Logger', () => {

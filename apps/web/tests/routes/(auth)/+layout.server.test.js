@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+
 import { load } from '../../../src/routes/(auth)/+layout.server'
 
 vi.mock('@sveltejs/kit', () => ({

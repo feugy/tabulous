@@ -1,7 +1,8 @@
 import { goto } from '$app/navigation'
-import { initGraphQlClient, runQuery, runMutation } from './graphql-client'
+
 import * as graphQL from '../graphql'
-import { makeLogger, graphQlUrl } from '../utils'
+import { graphQlUrl, makeLogger } from '../utils'
+import { initGraphQlClient, runMutation, runQuery } from './graphql-client'
 
 const logger = makeLogger('players')
 

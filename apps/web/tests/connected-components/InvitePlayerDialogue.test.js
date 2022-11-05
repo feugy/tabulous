@@ -3,10 +3,11 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/svelte'
 import userEvent from '@testing-library/user-event'
 import { tick } from 'svelte'
 import html from 'svelte-htm'
-import { extractText, translate } from '../test-utils'
+
 import InvitePlayerDialogue from '../../src/connected-components/InvitePlayerDialogue.svelte'
 import { invite, searchPlayers } from '../../src/stores'
 import { sleep } from '../../src/utils'
+import { extractText, translate } from '../test-utils'
 
 vi.mock('../../src/stores', () => {
   return { invite: vi.fn(), searchPlayers: vi.fn() }

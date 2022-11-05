@@ -2,6 +2,7 @@
   import { afterUpdate, createEventDispatcher, onMount } from 'svelte'
   import { fade } from 'svelte/transition'
   import Portal from 'svelte-portal'
+
   import Button from './Button.svelte'
   import Pane from './Pane.svelte'
 

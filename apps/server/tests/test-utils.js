@@ -1,6 +1,7 @@
+import { readFileSync, writeFileSync } from 'node:fs'
+
 import { createSigner } from 'fast-jwt'
 import Redis from 'ioredis'
-import { readFileSync, writeFileSync } from 'node:fs'
 import WebSocket from 'ws'
 
 /**

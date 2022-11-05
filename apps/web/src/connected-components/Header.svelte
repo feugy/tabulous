@@ -1,7 +1,9 @@
 <script>
-  import { goto } from '$app/navigation'
   import { _ } from 'svelte-intl'
-  import { Button, Breadcrumb, Dropdown, PlayerThumbnail } from '../components'
+
+  import { goto } from '$app/navigation'
+
+  import { Breadcrumb, Button, Dropdown, PlayerThumbnail } from '../components'
   import { logOut } from '../stores'
 
   export let user

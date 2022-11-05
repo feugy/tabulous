@@ -1,8 +1,8 @@
 import { Animation } from '@babylonjs/core/Animations/animation.js'
 import { Vector3 } from '@babylonjs/core/Maths/math.js'
-import { AnimateBehavior } from './animatable'
+
+import { makeLogger } from '../../utils/logger'
 import { controlManager } from '../managers/control'
-import { RotateBehaviorName } from './names'
 import {
   attachFunctions,
   attachProperty,
@@ -10,7 +10,8 @@ import {
 } from '../utils/behaviors'
 import { applyGravity } from '../utils/gravity'
 import { convertToLocal, getAbsoluteRotation } from '../utils/vector'
-import { makeLogger } from '../../utils/logger'
+import { AnimateBehavior } from './animatable'
+import { RotateBehaviorName } from './names'
 
 const logger = makeLogger('rotable')
 

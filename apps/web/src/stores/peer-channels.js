@@ -1,14 +1,16 @@
 import 'webrtc-adapter'
-import { auditTime, BehaviorSubject, Subject, filter, scan } from 'rxjs'
+
+import { auditTime, BehaviorSubject, filter, scan, Subject } from 'rxjs'
+
+import * as graphQL from '../graphql'
+import { makeLogger, PeerConnection } from '../utils'
 import { runMutation, runSubscription } from './graphql-client'
 import {
   acquireMediaStream,
-  releaseMediaStream,
   localStreamChange$,
+  releaseMediaStream,
   stream$
 } from './stream'
-import * as graphQL from '../graphql'
-import { makeLogger, PeerConnection } from '../utils'
 
 const logger = makeLogger('peer-channels')
 

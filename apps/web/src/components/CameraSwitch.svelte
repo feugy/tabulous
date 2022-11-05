@@ -1,6 +1,7 @@
 <script>
   import { createEventDispatcher } from 'svelte'
   import { _ } from 'svelte-intl'
+
   import Button from './Button.svelte'
 
   export let current = null

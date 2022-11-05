@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { tick } from 'svelte'
 import { writable } from 'svelte/store'
 import html from 'svelte-htm'
+
 import Typeahead from '../../src/components/Typeahead.svelte'
 import { sleep } from '../../src/utils/index.js'
 import { extractText } from '../test-utils'

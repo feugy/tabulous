@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { join } from 'path'
+
 import { catalogItems } from '../../src/repositories/catalog-items.js'
 
 describe('Catalog Items repository', () => {

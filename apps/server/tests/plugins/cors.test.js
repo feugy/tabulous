@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import fastify from 'fastify'
+
 import corsPlugin from '../../src/plugins/cors.js'
 import graphqlPlugin from '../../src/plugins/graphql.js'
 

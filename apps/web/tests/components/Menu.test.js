@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/svelte'
 import { get, writable } from 'svelte/store'
 import html from 'svelte-htm'
+
 import Menu from '../../src/components/Menu.svelte'
 
 describe('Menu component', () => {

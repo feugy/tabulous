@@ -1,6 +1,7 @@
 // @ts-check
 import { createClient } from '@urql/core'
 import { Agent, fetch, setGlobalDispatcher } from 'undici'
+
 import { loadConfiguration } from './configuration.js'
 
 let client

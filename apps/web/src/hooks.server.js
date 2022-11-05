@@ -1,4 +1,5 @@
 import cookie from 'cookie'
+
 import { recoverSession } from './stores/players'
 
 /** @type {import('@sveltejs/kit').Handle} */

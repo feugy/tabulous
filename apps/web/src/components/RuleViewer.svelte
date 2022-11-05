@@ -1,8 +1,9 @@
 <script>
   import { createEventDispatcher } from 'svelte'
   import { _ } from 'svelte-intl'
-  import Button from './Button.svelte'
+
   import { gameAssetsUrl } from '../utils'
+  import Button from './Button.svelte'
 
   export let page = 0
   export let lastPage = 0
