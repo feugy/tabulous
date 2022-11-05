@@ -62,7 +62,7 @@
     <h2>{$_('titles.catalog')}</h2>
     <section aria-roledescription="catalog">
       {#each data.catalog as game}
-        <CatalogItem {game} on:click={handleNewGame} />
+        <CatalogItem {game} on:select={handleNewGame} />
       {/each}
     </section>
   </div>

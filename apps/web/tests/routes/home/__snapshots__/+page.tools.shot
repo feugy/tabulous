@@ -75,6 +75,8 @@ exports[`Anonymous 1`] = `
     >
       <article
         class="s-hGRcS-4InB4p"
+        role="link"
+        tabindex="0"
       >
         <img
           alt="Jeu de 32 cartes"
@@ -177,6 +179,8 @@ exports[`Anonymous 1`] = `
       <!--&lt;CatalogItem&gt;-->
       <article
         class="s-hGRcS-4InB4p"
+        role="link"
+        tabindex="0"
       >
         <img
           alt="Dames"
@@ -279,6 +283,8 @@ exports[`Anonymous 1`] = `
       <!--&lt;CatalogItem&gt;-->
       <article
         class="s-hGRcS-4InB4p"
+        role="link"
+        tabindex="0"
       >
         <img
           alt="Solitaire"
@@ -559,6 +565,8 @@ exports[`Authenticated 1`] = `
     >
       <article
         class="s-hGRcS-4InB4p"
+        role="link"
+        tabindex="0"
       >
         <img
           alt="Dune Imperium"
@@ -661,6 +669,8 @@ exports[`Authenticated 1`] = `
       <!--&lt;CatalogItem&gt;-->
       <article
         class="s-hGRcS-4InB4p"
+        role="link"
+        tabindex="0"
       >
         <img
           alt="6 qui prend !"
@@ -763,6 +773,8 @@ exports[`Authenticated 1`] = `
       <!--&lt;CatalogItem&gt;-->
       <article
         class="s-hGRcS-4InB4p"
+        role="link"
+        tabindex="0"
       >
         <img
           alt="Jeu de 32 cartes"
@@ -865,6 +877,8 @@ exports[`Authenticated 1`] = `
       <!--&lt;CatalogItem&gt;-->
       <article
         class="s-hGRcS-4InB4p"
+        role="link"
+        tabindex="0"
       >
         <img
           alt="Dames"
@@ -967,6 +981,8 @@ exports[`Authenticated 1`] = `
       <!--&lt;CatalogItem&gt;-->
       <article
         class="s-hGRcS-4InB4p"
+        role="link"
+        tabindex="0"
       >
         <img
           alt="Solitaire"

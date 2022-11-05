@@ -22,18 +22,35 @@
       : ''
   }
 
-  function cancelEvent(event) {
-    event.stopImmediatePropagation()
+  function handleClick() {
+    dispatch('select', game)
+  }
+
+  function handleKeydown({ key }) {
+    console.log('got key', key)
+    if (key === ' ' || key === 'Enter') {
+      console.log('consider click')
+      handleClick()
+    }
   }
 </script>
 
-<article on:click={() => dispatch('click', game)}>
+<article
+  role="link"
+  tabindex={0}
+  on:click={handleClick}
+  on:keydown={handleKeydown}
+>
   <img src="{gameAssetsUrl}/{game.name}/catalog/cover.webp" alt={title} />
   <div class="content">
     <legend>
       <div class="title">
         <h3>{title}</h3>
-        <details class:hidden={!game.copyright} on:click={cancelEvent}>
+        <details
+          class:hidden={!game.copyright}
+          on:click|stopPropagation
+          on:keydown|stopPropagation
+        >
           <summary
             ><strong>{$_('labels.game-authors')}</strong>{formatCopyright(
               'authors'

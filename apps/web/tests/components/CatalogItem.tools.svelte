@@ -14,7 +14,7 @@
     let:handleEvent
   >
     <span class="catalog-item-viewer">
-      <CatalogItem {...props} on:click={handleEvent} />
+      <CatalogItem {...props} on:select={handleEvent} />
     </span>
   </Tool>
 
@@ -34,7 +34,7 @@
     let:handleEvent
   >
     <span class="catalog-item-viewer">
-      <CatalogItem {...props} on:click={handleEvent} />
+      <CatalogItem {...props} on:select={handleEvent} />
     </span>
   </Tool>
 
@@ -62,7 +62,7 @@
     let:handleEvent
   >
     <span class="catalog-item-viewer">
-      <CatalogItem {...props} on:click={handleEvent} />
+      <CatalogItem {...props} on:select={handleEvent} />
     </span>
   </Tool>
 </ToolBox>
