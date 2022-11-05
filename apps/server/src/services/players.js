@@ -31,9 +31,9 @@ export async function upsertPlayer(userDetails) {
       delete userDetails.username
       userDetails.id = existing.id
     } else {
-      const { username, provider } = userDetails
+      const { username } = userDetails
       if (await isUsernameUsed(username)) {
-        userDetails.username = `${username} @${provider}`
+        userDetails.username = `${username}-${Math.floor(Math.random() * 1000)}`
       }
     }
   } else {

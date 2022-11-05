@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { expect } from 'vitest'
 import repositories from '../../src/repositories/index.js'
 import {
   acceptTerms,
@@ -72,7 +73,7 @@ describe('given initialized repository', () => {
       const created = await upsertPlayer(creation)
       expect(created).toEqual({
         ...creation,
-        username: `${username} @${creation.provider}`,
+        username: expect.stringMatching(new RegExp(`^${username}-\\d+`)),
         id: expect.any(String)
       })
     })
