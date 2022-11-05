@@ -1,14 +1,23 @@
 # TODO
 
-Roadmap
-
-- server + web: set usernamd + avatar
-- server + web: friend list
-
 ## Brittle tests
+
+- tests/atelier/tools.test.js > Toolshot > components/RadialMenu.tools.svelte
+  > Error: expect(received).toMatchSnapshot()
+  >
+  > Snapshot name: `More items 1`
+- expectEvents tests/3d/managers/input.test.js:1591:19
+  >     1589|     expect(hovers).toHaveLength(counts.hovers ?? 0)
+  >     1590|     expect(wheels).toHaveLength(counts.wheels ?? 0)
+  >     1591|     expect(longs).toHaveLength(counts.longs ?? 0)
+  >         |                   ^
+  >     1592|     expect(keys).toHaveLength(counts.keys ?? 0)
 
 ## Refactor
 
+- explicit vitest import
+- automatically sort imports
+- fix all sveltekit warnings
 - graphQL: remove signal type and make signal optional
 - add tests for web/src/utils/peer-connection
 - use node 18 when msw/interceptor will [handle it](https://github.com/mswjs/interceptors/pull/283)
@@ -27,15 +36,19 @@ Roadmap
 
 ## UI
 
+- bug: no rules on game creation?
 - bug: animating visibility from 0 to 1 creates trouble with texture alpha channel
 - bug: attached, unselected, mesh are not ignored during dragging
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
 - hide non-connected participants
+- loading spinner on game/new
+- updates avatar
 - is this right? given an active selection, when it anchrs with other items, then items are part of the selection
 - click on stack size to select all/select stack on push?
 - collect player preferences when joining a game (requires to alter & reload game when joining rather than inviting)
 - option to invite players with url
 - distribute multiple meshes to players'hand
+- select multiple meshes in hand
 - shortcuts cheatsheet
 - peer notifications: joining, joined, left, error (stop waiting when navigating away)
 - hand support for quantifiable behavior

@@ -1,5 +1,22 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Disabled 1`] = `
+<fieldset
+  class="s-Fe6WNbR-55zp"
+>
+  <legend
+    class="s-Fe6WNbR-55zp disabled"
+  >
+    Please enter value
+  </legend>
+   
+  <input
+    class="s-Fe6WNbR-55zp"
+    disabled=""
+  />
+</fieldset>
+`;
+
 exports[`No value 1`] = `
 <fieldset
   class="s-Fe6WNbR-55zp"

@@ -15,4 +15,5 @@ debug.txt
 .svelte-kit
 test-results
 .vercel
+.last-db
 upload-manually.sh

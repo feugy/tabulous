@@ -109,23 +109,24 @@ class PlayerRepository extends AbstractRepository {
   }
 
   /**
-   * Finds players starting with a given text in their username.
+   * Finds players starting with a (or being the same exact) text in their username.
    * @async
    * @param {object} args - search arguments, including:
    * @param {string} args.search - searched text
    * @param {number} [args.from = 0] - 0-based index of the first result
    * @param {number} [args.size = 10] - maximum number of models returned after first results.
+   * @param {number} [args.exact = false] - for exact search.
    * @returns {import('./abstract-repository').Page} a given page of matching players.
    */
-  async searchByUsername({ search, from = 0, size = 10 } = {}) {
+  async searchByUsername({ search, from = 0, size = 10, exact = false } = {}) {
     let results = []
     let total = 0
     if (this.client) {
       const seed = normalizeString(search)
       const matching = await this.client.zrangebylex(
         this.usernameAutocompleteKey,
-        `[${seed}`,
-        `[${seed}{`
+        `[${seed}${exact ? ':' : ''}`,
+        `[${seed}${exact ? ':{' : '{'}`
       )
       total = matching.length
       results = await this.getById(

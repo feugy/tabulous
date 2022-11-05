@@ -29,4 +29,5 @@ type Mutation {
   addPlayer(id: ID!, username: String!, password: String!): Player
   logIn(id: ID!, password: String!): PlayerWithTurnCredentials
   acceptTerms: Player
+  updateCurrentPlayer(username: String, avatar: String): Player
 }

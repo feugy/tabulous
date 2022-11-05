@@ -70,7 +70,8 @@ function mapToUserDetails({
   sub: providerId,
   given_name: username,
   picture: avatar,
-  email
+  email,
+  name
 }) {
-  return { username, avatar, email, providerId }
+  return { username, avatar, email, providerId, fullName: name || username }
 }

@@ -10,7 +10,7 @@ import { sleep } from '../../../../test-utils'
 
 vi.mock('../../../../../src/stores')
 
-describe('/login route', () => {
+describe('/game/new route', () => {
   const game = {
     id: faker.datatype.uuid(),
     name: faker.commerce.productMaterial()

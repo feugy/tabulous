@@ -82,7 +82,8 @@ function mapToUserDetails({
   id: providerId,
   login: username,
   avatar_url: avatar,
-  email
+  email,
+  name
 }) {
-  return { username, avatar, email, providerId }
+  return { username, avatar, email, providerId, fullName: name || username }
 }

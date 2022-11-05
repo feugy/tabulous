@@ -7,6 +7,7 @@
   import { Button } from '../../../../components'
   import { Header } from '../../../../connected-components'
   import { createGame } from '../../../../stores'
+  import { translateError } from '../../../../utils'
 
   /** @type {import('./$types').PageData} */
   export let data = {}
@@ -19,24 +20,12 @@
       try {
         goto(await createGame(gameName), { replaceState: true })
       } catch (err) {
-        error = translateError(err.message)
+        error = translateError(get(_), err)
       }
     } else {
       goto('/home')
     }
   })
-
-  function translateError(message) {
-    const translate = get(_)
-    if (/^Access to game/.test(message)) {
-      return translate('errors.restricted-game')
-    }
-    const match = message.match(/^You own (\d+) games/)
-    if (match) {
-      return translate('errors.too-many-games', { count: match[1] })
-    }
-    return null
-  }
 </script>
 
 <svelte:head>

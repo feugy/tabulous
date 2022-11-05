@@ -1,39 +1,4 @@
-import { listCatalog } from './catalog.graphql'
-import {
-  createGame,
-  deleteGame,
-  getGamePlayers,
-  invite,
-  listGames,
-  loadGame,
-  receiveGameListUpdates,
-  receiveGameUpdates,
-  saveGame
-} from './games.graphql'
-import {
-  acceptTerms,
-  getCurrentPlayer,
-  logIn,
-  searchPlayers
-} from './players.graphql'
-import { sendSignal, awaitSignal } from './signals.graphql'
-
-// jest transformers don't allow export all from graphql files
-export {
-  acceptTerms,
-  awaitSignal,
-  createGame,
-  deleteGame,
-  getCurrentPlayer,
-  getGamePlayers,
-  invite,
-  listCatalog,
-  listGames,
-  loadGame,
-  logIn,
-  receiveGameListUpdates,
-  receiveGameUpdates,
-  saveGame,
-  searchPlayers,
-  sendSignal
-}
+export * from './catalog.graphql'
+export * from './games.graphql'
+export * from './players.graphql'
+export * from './signals.graphql'

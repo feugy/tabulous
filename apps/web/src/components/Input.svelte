@@ -4,6 +4,7 @@
   export let placeholder = null
   export let value = ''
   export let ref = null
+  export let disabled = false
 
   const dispatch = createEventDispatcher()
 
@@ -15,11 +16,15 @@
 </script>
 
 <fieldset>
-  {#if placeholder}<legend class:has-value={!!value}>{placeholder}</legend>{/if}
+  {#if placeholder}<legend
+      class:has-value={!!value}
+      class:disabled={disabled === true}>{placeholder}</legend
+    >{/if}
   <input
     {...$$restProps}
     bind:value
     bind:this={ref}
+    {disabled}
     on:focus
     on:blur
     on:input
@@ -44,6 +49,10 @@
     &.has-value {
       @apply transform-gpu -translate-y-4 scale-75;
     }
+
+    &.disabled {
+      @apply text-$disabled;
+    }
   }
 
   input {
@@ -51,6 +60,9 @@
 
     &:focus {
       @apply outline-none border-$primary-light;
+    }
+    &:disabled {
+      @apply text-$disabled;
     }
   }
 </style>

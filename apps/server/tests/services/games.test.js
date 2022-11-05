@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { join } from 'path'
 import { setTimeout } from 'timers/promises'
-import { describe } from 'vitest'
 import repositories from '../../src/repositories/index.js'
 import { grantAccess, revokeAccess } from '../../src/services/catalog.js'
 import {
@@ -12,6 +11,7 @@ import {
   invite,
   listGames,
   loadGame,
+  notifyRelatedPlayers,
   saveGame
 } from '../../src/services/games.js'
 import { clearDatabase, getRedisTestUrl } from '../test-utils.js'
@@ -20,16 +20,16 @@ describe('given a subscription to game lists and an initialized repository', () 
   const redisUrl = getRedisTestUrl()
   const updates = []
   let subscription
-  const player = { id: faker.datatype.uuid() }
-  const peer = { id: faker.datatype.uuid() }
+  const player = { id: 'player' }
+  const peer = { id: 'peer-1' }
+  const peer2 = { id: 'peer-2' }
   let game
 
   beforeAll(async () => {
     subscription = gameListsUpdate.subscribe(update => updates.push(update))
     await repositories.games.connect({ url: redisUrl })
     await repositories.players.connect({ url: redisUrl })
-    await repositories.players.save(player)
-    await repositories.players.save(peer)
+    await repositories.players.save([player, peer, peer2])
   })
 
   afterAll(async () => {
@@ -411,6 +411,95 @@ describe('given a subscription to game lists and an initialized repository', () 
         expect(await loadGame(game.id, player.id)).toBeNull()
         await setTimeout(50)
         expect(updates).toEqual([{ playerId: player.id, games: [] }])
+      })
+    })
+
+    describe('notifyRelatedPlayers()', () => {
+      const games = []
+
+      afterEach(async () => {
+        await repositories.games.deleteById(games.map(({ id }) => id))
+        games.splice(0, games.length)
+      })
+
+      it('does nothing for players with no games', async () => {
+        await notifyRelatedPlayers(faker.datatype.uuid())
+        await setTimeout(50)
+        expect(updates).toHaveLength(0)
+      })
+
+      it('does not notify the specified player', async () => {
+        await notifyRelatedPlayers(player.id)
+        await setTimeout(50)
+        expect(updates).toHaveLength(0)
+      })
+
+      it('notifies players invited by the specified player', async () => {
+        games.push(
+          await invite(
+            (
+              await createGame('belote', player.id)
+            ).id,
+            peer.id,
+            player.id
+          )
+        )
+        games.push(
+          await invite(
+            (
+              await createGame('belote', peer2.id)
+            ).id,
+            player.id,
+            peer2.id
+          )
+        )
+        await setTimeout(50)
+        updates.splice(0, updates.length)
+
+        await notifyRelatedPlayers(player.id)
+        await setTimeout(50)
+        const peer1Update = updates.find(({ playerId }) => playerId === peer.id)
+        expect(peer1Update?.games).toEqual([expect.objectContaining(games[0])])
+        const peer2Update = updates.find(
+          ({ playerId }) => playerId === peer2.id
+        )
+        expect(peer2Update?.games).toEqual([expect.objectContaining(games[1])])
+        expect(updates).toHaveLength(2)
+      })
+
+      it('does not notify the same peer multiple times', async () => {
+        games.push(
+          await invite(
+            (
+              await createGame('belote', player.id)
+            ).id,
+            peer.id,
+            player.id
+          )
+        )
+        games.push(
+          await invite(
+            (
+              await createGame('belote', player.id)
+            ).id,
+            peer.id,
+            player.id
+          )
+        )
+        await setTimeout(50)
+        updates.splice(0, updates.length)
+
+        await notifyRelatedPlayers(player.id)
+        await setTimeout(50)
+        const peer1Update = updates.find(({ playerId }) => playerId === peer.id)
+        expect(peer1Update?.games).toContainEqual(
+          expect.objectContaining(games[0])
+        )
+        expect(peer1Update?.games).toContainEqual(
+          expect.objectContaining(games[1])
+        )
+        expect(peer1Update?.games).toHaveLength(2)
+        expect(updates).toHaveLength(1)
       })
     })
   })

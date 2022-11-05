@@ -12,7 +12,8 @@ vi.mock('$app/environment', () => ({ browser: true }))
 
 vi.mock('$app/navigation', () => {
   return {
-    goto: vi.fn()
+    goto: vi.fn(),
+    invalidateAll: vi.fn()
   }
 })
 

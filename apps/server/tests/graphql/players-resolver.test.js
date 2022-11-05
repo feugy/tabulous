@@ -67,12 +67,12 @@ describe('given a started server', () => {
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
         expect(services.getPlayerById).toHaveBeenCalledTimes(1)
-        expect(services.addPlayer).not.toHaveBeenCalled()
+        expect(services.upsertPlayer).not.toHaveBeenCalled()
       })
 
       it('creates new player account', async () => {
         services.getPlayerById.mockResolvedValueOnce(admin)
-        services.addPlayer.mockResolvedValueOnce(player)
+        services.upsertPlayer.mockResolvedValueOnce(player)
         const response = await server.inject({
           method: 'POST',
           url: 'graphql',
@@ -95,12 +95,12 @@ describe('given a started server', () => {
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).toHaveBeenNthCalledWith(1, admin.id)
         expect(services.getPlayerById).toHaveBeenCalledTimes(1)
-        expect(services.addPlayer).toHaveBeenCalledWith({
+        expect(services.upsertPlayer).toHaveBeenCalledWith({
           id: player.id,
           username: player.username,
           password: hash(player.password)
         })
-        expect(services.addPlayer).toHaveBeenCalledTimes(1)
+        expect(services.upsertPlayer).toHaveBeenCalledTimes(1)
       })
     })
 
@@ -355,6 +355,160 @@ describe('given a started server', () => {
         expect(services.acceptTerms).toHaveBeenCalledWith(player)
         expect(services.acceptTerms).toHaveBeenCalledTimes(1)
       })
+    })
+
+    describe('updateCurrentPlayer mutation', () => {
+      it('updates current player details', async () => {
+        const update = {
+          username: faker.name.firstName(),
+          avatar: faker.internet.avatar()
+        }
+        services.upsertPlayer.mockResolvedValueOnce({
+          id: player.id,
+          ...update
+        })
+        services.getPlayerById.mockResolvedValueOnce(player)
+        services.searchPlayers.mockResolvedValueOnce([])
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            authorization: `Bearer ${signToken(
+              player.id,
+              configuration.auth.jwt.key
+            )}`
+          },
+          payload: {
+            query: `mutation { 
+              updateCurrentPlayer(username: "${update.username}", avatar: "${update.avatar}") { id username avatar }
+            }`
+          }
+        })
+
+        expect(response.json()).toEqual({
+          data: { updateCurrentPlayer: { id: player.id, ...update } }
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
+        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.upsertPlayer).toHaveBeenCalledWith({
+          id: player.id,
+          ...update
+        })
+        expect(services.upsertPlayer).toHaveBeenCalledTimes(1)
+        expect(services.notifyRelatedPlayers).toHaveBeenCalledWith(player.id)
+        expect(services.notifyRelatedPlayers).toHaveBeenCalledTimes(1)
+      })
+    })
+
+    it.each([
+      {
+        title: 'leading and trailing spaces',
+        input: '   trimmed   ',
+        username: 'trimmed'
+      },
+      {
+        title: 'regular letters and number',
+        input: `2pack`,
+        username: '2pack'
+      },
+      {
+        title: 'punctuations and symbols',
+        input: `&(-_)=^$*,;:!<~#{[|\`@]¨¤>£}%§/.?¿£µ»×÷`,
+        username: '-_*#'
+      },
+      {
+        title: 'funky letters',
+        input: `ÀÝßàþÿĀāĦħŊŋžſƀƁƾƿɏȯșȆǪḀṬẞỘỼ`,
+        username: 'ÀÝßàþÿĀāĦħŊŋžſƀƁƾƿɏȯșȆǪḀṬẞỘỼ'
+      },
+      {
+        title: 'emojis',
+        input: `🥷🙈👏`,
+        username: '🥷🙈👏'
+      }
+    ])('maps $title "$input" as "$username"', async ({ username, input }) => {
+      services.getPlayerById.mockResolvedValueOnce(player)
+      services.isUsernameUsed.mockResolvedValueOnce(false)
+      services.upsertPlayer.mockImplementation(player => player)
+      const response = await server.inject({
+        method: 'POST',
+        url: 'graphql',
+        headers: {
+          authorization: `Bearer ${signToken(
+            player.id,
+            configuration.auth.jwt.key
+          )}`
+        },
+        payload: {
+          query: `mutation { 
+            updateCurrentPlayer(username: "${input}") { username }
+          }`
+        }
+      })
+      expect(
+        response.json()?.data?.updateCurrentPlayer?.username,
+        JSON.stringify(response.json())
+      ).toEqual(username)
+      expect(response.statusCode).toEqual(200)
+      expect(services.upsertPlayer).toHaveBeenCalledWith({
+        id: player.id,
+        username
+      })
+    })
+
+    it('rejects username smaller than 3 characters', async () => {
+      services.getPlayerById.mockResolvedValueOnce(player)
+      services.isUsernameUsed.mockResolvedValueOnce(false)
+      const response = await server.inject({
+        method: 'POST',
+        url: 'graphql',
+        headers: {
+          authorization: `Bearer ${signToken(
+            player.id,
+            configuration.auth.jwt.key
+          )}`
+        },
+        payload: {
+          query: `mutation { 
+            updateCurrentPlayer(username: "  x s  ") { username }
+          }`
+        }
+      })
+      expect(response.json()).toMatchObject({
+        data: { updateCurrentPlayer: null },
+        errors: [{ message: 'Username too short' }]
+      })
+      expect(response.statusCode).toEqual(200)
+      expect(services.upsertPlayer).not.toHaveBeenCalled()
+      expect(services.notifyRelatedPlayers).not.toHaveBeenCalled()
+    })
+
+    it('rejects username already used', async () => {
+      services.getPlayerById.mockResolvedValueOnce(player)
+      services.isUsernameUsed.mockResolvedValueOnce(true)
+      const response = await server.inject({
+        method: 'POST',
+        url: 'graphql',
+        headers: {
+          authorization: `Bearer ${signToken(
+            player.id,
+            configuration.auth.jwt.key
+          )}`
+        },
+        payload: {
+          query: `mutation { 
+            updateCurrentPlayer(username: "${admin.username}") { username }
+          }`
+        }
+      })
+      expect(response.json()).toMatchObject({
+        data: { updateCurrentPlayer: null },
+        errors: [{ message: 'Username already used' }]
+      })
+      expect(response.statusCode).toEqual(200)
+      expect(services.upsertPlayer).not.toHaveBeenCalled()
+      expect(services.notifyRelatedPlayers).not.toHaveBeenCalled()
     })
   })
 })

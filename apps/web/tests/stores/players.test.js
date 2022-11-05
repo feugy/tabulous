@@ -6,7 +6,8 @@ import {
   logIn,
   logOut,
   recoverSession,
-  searchPlayers
+  searchPlayers,
+  updateCurrentPlayer
 } from '../../src/stores/players'
 import {
   initGraphQlClient,
@@ -114,6 +115,18 @@ describe('acceptTerms()', () => {
     runMutation.mockResolvedValueOnce(player)
     expect(await acceptTerms()).toEqual(player)
     expect(runMutation).toHaveBeenCalledWith(graphQL.acceptTerms)
+    expect(runMutation).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('updateCurrentPlayer()', () => {
+  it('returns player on success', async () => {
+    const username = faker.name.fullName()
+    runMutation.mockResolvedValueOnce(player)
+    expect(await updateCurrentPlayer(username)).toEqual(player)
+    expect(runMutation).toHaveBeenCalledWith(graphQL.updateCurrentPlayer, {
+      username
+    })
     expect(runMutation).toHaveBeenCalledTimes(1)
   })
 })

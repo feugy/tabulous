@@ -17,7 +17,7 @@ vi.mock('../../src/services/auth/google.js', () => ({
   }
 }))
 vi.mock('../../src/services/players.js', () => ({
-  addPlayer: vi.fn()
+  upsertPlayer: vi.fn()
 }))
 
 describe('auth plugin', () => {
@@ -137,7 +137,7 @@ describe('auth plugin', () => {
           location,
           user
         })
-        services.addPlayer.mockResolvedValueOnce(player)
+        services.upsertPlayer.mockResolvedValueOnce(player)
         const response = await server.inject(
           `/auth/${name}/callback?code=${code}&state=${state}`
         )
@@ -154,11 +154,11 @@ describe('auth plugin', () => {
           state
         )
         expect(services[serviceName].authenticateUser).toHaveBeenCalledTimes(1)
-        expect(services.addPlayer).toHaveBeenCalledWith({
+        expect(services.upsertPlayer).toHaveBeenCalledWith({
           ...user,
           provider: name
         })
-        expect(services.addPlayer).toHaveBeenCalledTimes(1)
+        expect(services.upsertPlayer).toHaveBeenCalledTimes(1)
       })
 
       it(`returns an error when ${name} authentication fails`, async () => {
@@ -181,7 +181,7 @@ describe('auth plugin', () => {
           state
         )
         expect(services[serviceName].authenticateUser).toHaveBeenCalledTimes(1)
-        expect(services.addPlayer).not.toHaveBeenCalled()
+        expect(services.upsertPlayer).not.toHaveBeenCalled()
       })
     })
   })

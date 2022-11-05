@@ -320,14 +320,20 @@ export async function listGames(playerId) {
 }
 
 /**
- * When a player starts or stops playing, notify other players by updating their game list
- * @param {string} gameId - the game this player starts or stops playing to.
+ * Updates game lists including a given player id. Usefull when updating a player's username.
+ * @param {string} playerId - the player id which is triggering the update.
  * @return {Promise<void>}
  */
-export async function notifyGamePlayers(gameId) {
-  const game = await repositories.games.getById(gameId)
-  if (game) {
-    gameListsUpdate$.next(game.playerIds)
+export async function notifyRelatedPlayers(playerId) {
+  const playerIds = new Set()
+  for (const game of await listGames(playerId)) {
+    for (const playerId of game.playerIds) {
+      playerIds.add(playerId)
+    }
+  }
+  playerIds.delete(playerId)
+  if (playerIds.size) {
+    gameListsUpdate$.next([...playerIds])
   }
 }
 
