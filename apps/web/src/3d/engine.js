@@ -43,6 +43,7 @@ const debugHand = false
  * @typedef {Engine} EnhancedEngine
  * @property {boolean} isLoading - indicates whether the engine is still loading data and materials.
  * @property {Observable<boolean>} onLoadingObservable - emits while data and materials are being loaded.
+ * @property {Observable<void>} onBeforeDisposeObservable - emits just before disposing the engien, to allow synchronous access to its content.
  */
 
 /**
@@ -69,6 +70,7 @@ export function createEngine({
   const engine = new Engine(canvas, true)
   engine.enableOfflineSupport = false
   engine.onLoadingObservable = new Observable()
+  engine.onBeforeDisposeObservable = new Observable()
 
   // scene ordering is important: main scene must come last to allow ray picking scene.pickWithRay(new Ray(vertex, down))
   const handScene = new ExtendedScene(engine)
@@ -178,6 +180,12 @@ export function createEngine({
   debug && scene.debugLayer.show({ embedMode: true })
   debugHand && handScene.debugLayer.show({ embedMode: true })
   // new AxesViewer(scene)
+
+  const dispose = engine.dispose
+  engine.dispose = function (...args) {
+    engine.onBeforeDisposeObservable.notifyObservers()
+    dispose.call(engine, ...args)
+  }
   return engine
 }
 

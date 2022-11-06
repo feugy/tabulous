@@ -318,6 +318,14 @@ function takeHostRole(gameId, currentPlayerId) {
   logger.info({ gameId }, `taking game host role`)
   hostId$.next(currentPlayerId)
   shareGame(currentPlayerId)
+
+  engine.onBeforeDisposeObservable.addOnce(() => {
+    logger.info(
+      { gameId, currentPlayerId },
+      `persisting game before disposing engine`
+    )
+    runMutation(graphQL.saveGame, { game: serializeGame(currentPlayerId) })
+  })
   return [
     runSubscription(graphQL.receiveGameUpdates, { gameId }).subscribe(
       handleServerUpdate(currentPlayerId)
@@ -376,20 +384,24 @@ function handleServerUpdate(currentPlayerId) {
   }
 }
 
+function serializeGame(currentPlayerId) {
+  const { handMeshes, meshes } = engine.serialize()
+  return {
+    id: currentGame$.value.id,
+    meshes,
+    hands: mergeHands({ playerId: currentPlayerId, meshes: handMeshes }),
+    messages: serializeThread(),
+    cameras
+  }
+}
+
 function shareGame(currentPlayerId, peerId) {
   const { id: gameId, ...otherGameData } = currentGame$.value
   logger.info(
     { gameId },
     `sending game data ${gameId} to peer${peerId ? ` ${peerId}` : 's'}`
   )
-  const { handMeshes, meshes } = engine.serialize()
-  const game = {
-    id: gameId,
-    meshes,
-    hands: mergeHands({ playerId: currentPlayerId, meshes: handMeshes }),
-    messages: serializeThread(),
-    cameras
-  }
+  const game = serializeGame(currentPlayerId)
   send({ type: 'game-sync', ...otherGameData, ...game }, peerId)
   return game
 }
