@@ -25,7 +25,7 @@
 
   $: left = typeof x === 'number' ? `${x}px` : x
   $: top = typeof y === 'number' ? `${y}px` : y
-  $: radius = 40 + 5 * items?.length
+  $: radius = 55 + 5 * items?.length
 
   function computeItemPosition({ i }) {
     const angle = (-2 * Math.PI * (items.length - i)) / items.length
