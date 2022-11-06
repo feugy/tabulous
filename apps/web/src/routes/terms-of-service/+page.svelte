@@ -1,5 +1,6 @@
 <script>
   import { _ } from 'svelte-intl'
+
   import { Markdown, TermsOfService } from '../../components'
   import { Header } from '../../connected-components'
 

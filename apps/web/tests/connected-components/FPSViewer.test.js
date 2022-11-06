@@ -2,9 +2,11 @@ import { faker } from '@faker-js/faker'
 import { render, screen } from '@testing-library/svelte'
 import { tick } from 'svelte'
 import html from 'svelte-htm'
-import { translate } from '../test-utils'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import FPSViewer from '../../src/connected-components/FPSViewer.svelte'
 import { fps } from '../../src/stores/game-engine'
+import { translate } from '../test-utils'
 
 vi.mock('../../src/stores/game-engine', () => {
   const { BehaviorSubject, Subject } = require('rxjs')

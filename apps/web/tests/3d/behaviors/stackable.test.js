@@ -3,18 +3,15 @@ import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
 import { faker } from '@faker-js/faker'
 import {
-  configures3dTestEngine,
-  expectAnimationEnd,
-  expectFlipped,
-  expectInteractible,
-  expectMeshFeedback,
-  expectMoveRecorded,
-  expectPosition,
-  expectStacked,
-  expectStackIndicator,
-  expectZone,
-  sleep
-} from '../../test-utils'
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest'
+
 import {
   AnchorBehavior,
   DrawBehavior,
@@ -36,6 +33,19 @@ import {
   getAnimatableBehavior,
   getTargetableBehavior
 } from '../../../src/3d/utils'
+import {
+  configures3dTestEngine,
+  expectAnimationEnd,
+  expectFlipped,
+  expectInteractible,
+  expectMeshFeedback,
+  expectMoveRecorded,
+  expectPosition,
+  expectStacked,
+  expectStackIndicator,
+  expectZone,
+  sleep
+} from '../../test-utils'
 
 describe('StackBehavior', () => {
   configures3dTestEngine(created => (scene = created.scene))

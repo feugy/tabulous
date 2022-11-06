@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { MockAgent, setGlobalDispatcher } from 'undici'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('../../src/util/configuration.js', () => ({
   loadConfiguration: vi.fn()

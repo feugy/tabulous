@@ -1,5 +1,6 @@
 <script>
   import { Tool } from '@atelier-wb/svelte'
+
   import { ConfirmDialogue } from '../../src/components'
 </script>
 

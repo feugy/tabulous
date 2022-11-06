@@ -1,6 +1,16 @@
 import { faker } from '@faker-js/faker'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest'
+
 import { customShapeManager as manager } from '../../../src/3d/managers'
 import { makeLogger } from '../../../src/utils'
 

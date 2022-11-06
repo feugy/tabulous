@@ -1,12 +1,14 @@
 import { NullEngine } from '@babylonjs/core/Engines/nullEngine'
 import { Logger } from '@babylonjs/core/Misc/logger'
 import { faker } from '@faker-js/faker'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
 import { createEngine } from '../../src/3d'
-import { createCard } from '../../src/3d/meshes'
 import { DrawBehaviorName } from '../../src/3d/behaviors'
-import { expectAnimationEnd } from '../test-utils'
 import { handManager, inputManager } from '../../src/3d/managers'
+import { createCard } from '../../src/3d/meshes'
 import { sleep } from '../../src/utils'
+import { expectAnimationEnd } from '../test-utils'
 
 describe('createEngine()', () => {
   let engine

@@ -1,6 +1,8 @@
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import { tick } from 'svelte'
 import html from 'svelte-htm'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import RuleViewer from '../../src/components/RuleViewer.svelte'
 import { gameAssetsUrl } from '../../src/utils'
 

@@ -4,9 +4,9 @@ import graphql from '@rollup/plugin-graphql'
 import yaml from '@rollup/plugin-yaml'
 import { sveltekit } from '@sveltejs/kit/vite'
 import basicSsl from '@vitejs/plugin-basic-ssl'
+import { svelteSVG } from 'rollup-plugin-svelte-svg'
 import { defineConfig } from 'vite'
 import windi from 'vite-plugin-windicss'
-import { svelteSVG } from 'rollup-plugin-svelte-svg'
 
 // This file is used by
 // - vite
@@ -51,7 +51,7 @@ export default defineConfig(({ mode }) => ({
     deps: {
       inline: ['msw', 'svelte-hyperscript', 'whatwg-fetch']
     },
-    globals: true,
+    globals: true, // needed for Atelier
     environment: 'jsdom',
     setupFiles: ['tests/setup']
   }

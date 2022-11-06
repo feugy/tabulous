@@ -1,6 +1,6 @@
+import { moveManager } from '../managers/move'
 import { AnimateBehavior } from './animatable'
 import { MoveBehaviorName } from './names'
-import { moveManager } from '../managers/move'
 
 /**
  * @typedef {object} MovableState behavior persistent state, including:

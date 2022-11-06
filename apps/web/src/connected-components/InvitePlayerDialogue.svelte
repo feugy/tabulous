@@ -1,8 +1,9 @@
 <script>
-  import { onMount } from 'svelte'
-  import { _ } from 'svelte-intl'
   import { Subject } from 'rxjs'
   import { debounceTime, map, switchMap } from 'rxjs/operators'
+  import { onMount } from 'svelte'
+  import { _ } from 'svelte-intl'
+
   import { Button, Dialogue, Typeahead } from '../components'
   import { invite, searchPlayers } from '../stores'
 

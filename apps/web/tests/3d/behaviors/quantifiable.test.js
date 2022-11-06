@@ -1,14 +1,6 @@
 import { faker } from '@faker-js/faker'
-import {
-  configures3dTestEngine,
-  expectAnimationEnd,
-  expectDisposed,
-  expectNotDisposed,
-  expectPosition,
-  expectQuantityIndicator,
-  expectZone,
-  sleep
-} from '../../test-utils'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
 import {
   MoveBehaviorName,
   QuantityBehavior,
@@ -19,8 +11,18 @@ import {
   moveManager,
   selectionManager
 } from '../../../src/3d/managers'
-import { getTargetableBehavior } from '../../../src/3d/utils'
 import { createBox, createRoundToken } from '../../../src/3d/meshes'
+import { getTargetableBehavior } from '../../../src/3d/utils'
+import {
+  configures3dTestEngine,
+  expectAnimationEnd,
+  expectDisposed,
+  expectNotDisposed,
+  expectPosition,
+  expectQuantityIndicator,
+  expectZone,
+  sleep
+} from '../../test-utils'
 
 describe('QuantityBehavior', () => {
   let scene

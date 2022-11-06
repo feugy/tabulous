@@ -2,6 +2,19 @@ import { faker } from '@faker-js/faker'
 import fastify from 'fastify'
 import { Subject } from 'rxjs'
 import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest'
+
+import graphQL from '../../src/plugins/graphql.js'
+import services from '../../src/services/index.js'
+import {
   mockMethods,
   openGraphQLWebSocket,
   signToken,
@@ -10,8 +23,6 @@ import {
   toGraphQLArg,
   waitOnMessage
 } from '../test-utils.js'
-import services from '../../src/services/index.js'
-import graphQL from '../../src/plugins/graphql.js'
 
 describe('given a started server', () => {
   let server

@@ -1,6 +1,7 @@
 import mercurius from 'mercurius'
 import redis from 'mqemitter-redis'
-import { schema, resolvers, loaders } from '../graphql/index.js'
+
+import { loaders, resolvers, schema } from '../graphql/index.js'
 import { getAuthenticatedPlayer } from './utils.js'
 
 /**

@@ -1,8 +1,10 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { AnimateBehavior, AnimateBehaviorName } from '../../../src/3d/behaviors'
 import { configures3dTestEngine } from '../../test-utils'
-import { AnimateBehaviorName, AnimateBehavior } from '../../../src/3d/behaviors'
 
 describe('AnimateBehavior', () => {
   configures3dTestEngine()

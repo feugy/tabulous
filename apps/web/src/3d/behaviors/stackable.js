@@ -1,11 +1,8 @@
 import { Animation } from '@babylonjs/core/Animations/animation.js'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
-import {
-  AnchorBehaviorName,
-  MoveBehaviorName,
-  StackBehaviorName
-} from './names'
-import { TargetBehavior } from './targetable'
+
+import { makeLogger } from '../../utils/logger'
+import { sleep } from '../../utils/time'
 import { controlManager } from '../managers/control'
 import { indicatorManager } from '../managers/indicator'
 import { moveManager } from '../managers/move'
@@ -28,8 +25,12 @@ import {
   sortByElevation
 } from '../utils/gravity'
 import { getDimensions } from '../utils/mesh'
-import { makeLogger } from '../../utils/logger'
-import { sleep } from '../../utils/time'
+import {
+  AnchorBehaviorName,
+  MoveBehaviorName,
+  StackBehaviorName
+} from './names'
+import { TargetBehavior } from './targetable'
 
 const logger = makeLogger('stackable')
 

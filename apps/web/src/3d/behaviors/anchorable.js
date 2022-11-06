@@ -1,6 +1,6 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
-import { AnchorBehaviorName } from './names'
-import { TargetBehavior } from './targetable'
+
+import { makeLogger } from '../../utils/logger'
 import { controlManager } from '../managers/control'
 import { indicatorManager } from '../managers/indicator'
 import { moveManager } from '../managers/move'
@@ -13,7 +13,8 @@ import {
   getPositionAboveZone,
   getTargetableBehavior
 } from '../utils/behaviors'
-import { makeLogger } from '../../utils/logger'
+import { AnchorBehaviorName } from './names'
+import { TargetBehavior } from './targetable'
 
 const logger = makeLogger(AnchorBehaviorName)
 

@@ -1,12 +1,8 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import { Observable } from '@babylonjs/core/Misc/observable.js'
 import { debounceTime, Subject } from 'rxjs'
-import { controlManager } from './control'
-import { indicatorManager } from './indicator'
-import { inputManager } from './input'
-import { moveManager } from './move'
-import { selectionManager } from './selection'
-import { targetManager } from './target'
+
+import { getPixelDimension, observeDimension } from '../../utils/dom'
 import { makeLogger } from '../../utils/logger'
 import {
   DrawBehaviorName,
@@ -27,7 +23,12 @@ import {
   isAboveTable,
   screenToGround
 } from '../utils/vector'
-import { getPixelDimension, observeDimension } from '../../utils/dom'
+import { controlManager } from './control'
+import { indicatorManager } from './indicator'
+import { inputManager } from './input'
+import { moveManager } from './move'
+import { selectionManager } from './selection'
+import { targetManager } from './target'
 
 const logger = makeLogger('hand')
 

@@ -1,12 +1,12 @@
 // @ts-check
-import fastify from 'fastify'
+import { faker } from '@faker-js/faker'
 import cors from '@fastify/cors'
 import staticPlugin from '@fastify/static'
 import websocket from '@fastify/websocket'
 import chalk from 'chalk-template'
+import fastify from 'fastify'
 import { join } from 'path'
 import { fileURLToPath } from 'url'
-import { faker } from '@faker-js/faker'
 
 const graphQlRoute = '/graphql'
 const gameAssetsFolder = join(

@@ -4,6 +4,16 @@ import { faker } from '@faker-js/faker'
 import { BehaviorSubject } from 'rxjs'
 import { get } from 'svelte/store'
 import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest'
+
+import {
   cameraManager,
   controlManager,
   inputManager,

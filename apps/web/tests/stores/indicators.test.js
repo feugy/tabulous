@@ -1,11 +1,10 @@
 import { faker } from '@faker-js/faker'
 import { get } from 'svelte/store'
-import {
-  configures3dTestEngine,
-  expectScreenPosition,
-  sleep,
-  waitNextRender
-} from '../test-utils'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { AnchorBehaviorName, StackBehaviorName } from '../../src/3d/behaviors'
+import { indicatorManager } from '../../src/3d/managers/indicator'
+import { selectionManager } from '../../src/3d/managers/selection'
 import { createCard } from '../../src/3d/meshes'
 import { actionMenuProps } from '../../src/stores/game-engine'
 import { gamePlayerById } from '../../src/stores/game-manager'
@@ -16,9 +15,12 @@ import {
   visibleFeedbacks as visibleFeedbacks$,
   visibleIndicators as visibleIndicators$
 } from '../../src/stores/indicators'
-import { AnchorBehaviorName, StackBehaviorName } from '../../src/3d/behaviors'
-import { indicatorManager } from '../../src/3d/managers/indicator'
-import { selectionManager } from '../../src/3d/managers/selection'
+import {
+  configures3dTestEngine,
+  expectScreenPosition,
+  sleep,
+  waitNextRender
+} from '../test-utils'
 
 vi.mock('../../src/stores/game-engine', async () => {
   const { BehaviorSubject } = await import('rxjs')

@@ -1,6 +1,14 @@
 import { faker } from '@faker-js/faker'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import { goto } from '$app/navigation'
+
 import * as graphQL from '../../src/graphql'
+import {
+  initGraphQlClient,
+  runMutation,
+  runQuery
+} from '../../src/stores/graphql-client'
 import {
   acceptTerms,
   logIn,
@@ -9,11 +17,6 @@ import {
   searchPlayers,
   updateCurrentPlayer
 } from '../../src/stores/players'
-import {
-  initGraphQlClient,
-  runMutation,
-  runQuery
-} from '../../src/stores/graphql-client'
 import { graphQlUrl } from '../../src/utils'
 
 vi.mock('../../src/stores/graphql-client')

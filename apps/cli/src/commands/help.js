@@ -1,5 +1,6 @@
 // @ts-check
 import chalkTemplate from 'chalk-template'
+
 import { cliName } from '../util/index.js'
 
 /**

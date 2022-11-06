@@ -1,10 +1,11 @@
-import matchers from '@testing-library/jest-dom/matchers'
-import { expect, vi } from 'vitest'
-import crypto from 'crypto'
-import 'whatwg-fetch'
-import '../src/common'
 // Babylon.js side effect imports
 import '@babylonjs/core/Materials/standardMaterial'
+import 'whatwg-fetch'
+import '../src/common'
+
+import matchers from '@testing-library/jest-dom/matchers'
+import crypto from 'crypto'
+import { expect, vi } from 'vitest'
 
 expect.extend(matchers)
 

@@ -1,3 +1,5 @@
+import { vi } from 'vitest'
+
 import { makeLogger } from '../src/utils/logger'
 
 export function mockLogger(name) {

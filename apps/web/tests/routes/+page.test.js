@@ -1,3 +1,5 @@
+import { describe, expect, it, vi } from 'vitest'
+
 import { load } from '../../src/routes/+page'
 
 vi.mock('@sveltejs/kit', () => ({

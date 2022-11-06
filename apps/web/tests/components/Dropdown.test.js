@@ -1,5 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import html from 'svelte-htm'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import Dropdown from '../../src/components/Dropdown.svelte'
 import { sleep } from '../../src/utils/index.js'
 import { extractText } from '../test-utils'
@@ -31,7 +33,7 @@ describe('Dropdown component', () => {
   ])('given %s options', (title, options) => {
     it('displays menu on click', async () => {
       renderComponent({ options })
-      const button = screen.getByRole('button')
+      const button = screen.getAllByRole('button')[0]
       expect(screen.queryByRole('menu')).not.toBeInTheDocument()
       await fireEvent.click(button)
 
@@ -48,7 +50,7 @@ describe('Dropdown component', () => {
     it('displays value as text', async () => {
       let value = options[2].label ?? options[2]
       renderComponent({ value, options, valueAsText: true })
-      const button = screen.getByRole('button')
+      const button = screen.getAllByRole('button')[0]
       expect(button).toHaveTextContent(value)
 
       await fireEvent.click(button)
@@ -65,7 +67,7 @@ describe('Dropdown component', () => {
 
     it('selects option with mouse', async () => {
       renderComponent({ options })
-      const button = screen.getByRole('button')
+      const button = screen.getAllByRole('button')[0]
       await fireEvent.click(button)
       await fireEvent.click(screen.queryAllByRole('menuitem')[2])
 
@@ -79,7 +81,7 @@ describe('Dropdown component', () => {
 
     it('selects option with keyboard', async () => {
       renderComponent({ options })
-      const button = screen.getByRole('button')
+      const button = screen.getAllByRole('button')[0]
       await fireEvent.click(button)
       await fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' })
       await fireEvent.keyDown(document.activeElement, { key: 'ArrowRight' })
@@ -94,7 +96,7 @@ describe('Dropdown component', () => {
 
     it('does not select the current option', async () => {
       renderComponent({ options })
-      const button = screen.getByRole('button')
+      const button = screen.getAllByRole('button')[0]
       await fireEvent.click(button)
       await fireEvent.click(screen.queryAllByRole('menuitem')[2])
       await fireEvent.click(button)
@@ -110,8 +112,7 @@ describe('Dropdown component', () => {
 
     it('can split button and arrow clicks', async () => {
       renderComponent({ options, openOnClick: false })
-      const arrow = screen.getByText('arrow_drop_down')
-      const button = screen.getByRole('button')
+      const [button, arrow] = screen.getAllByRole('button')
       await fireEvent.click(arrow)
       expect(screen.queryByRole('menu')).toBeInTheDocument()
 
@@ -131,7 +132,7 @@ describe('Dropdown component', () => {
 
     it('closes menu on click', async () => {
       renderComponent({ options })
-      const button = screen.getByRole('button')
+      const button = screen.getAllByRole('button')[0]
       await fireEvent.click(button)
       expect(screen.queryByRole('menu')).toBeInTheDocument()
 
@@ -152,7 +153,7 @@ describe('Dropdown component', () => {
 
     it('has no arrow on single option', async () => {
       renderComponent({ options: options.slice(0, 1) })
-      expect(screen.queryByText('arrow_drop_down')).toBeNull()
+      expect(screen.getAllByRole('button')).toHaveLength(1)
       await fireEvent.click(screen.getByRole('button'))
       expect(screen.queryAllByRole('menuitem')).toHaveLength(1)
 

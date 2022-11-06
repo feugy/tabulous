@@ -1,14 +1,16 @@
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { DrawBehavior, DrawBehaviorName } from '../../../src/3d/behaviors'
+import { controlManager, handManager } from '../../../src/3d/managers'
+import { createCard } from '../../../src/3d/meshes'
 import {
   configures3dTestEngine,
   expectAnimationEnd,
   expectPosition,
   sleep
 } from '../../test-utils'
-import { DrawBehavior, DrawBehaviorName } from '../../../src/3d/behaviors'
-import { controlManager, handManager } from '../../../src/3d/managers'
-import { createCard } from '../../../src/3d/meshes'
 
 const actionRecorded = vi.fn()
 const animationEndReceived = vi.fn()

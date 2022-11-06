@@ -6,7 +6,7 @@
 <footer>
   <section>© {year} {$_('labels.copyright')}</section>
   <a href="/terms-of-service">{$_('labels.terms-of-service')}</a>
-  <a href="#" title={$_('actions.scroll-to-top')}
+  <a href="#top" title={$_('actions.scroll-to-top')}
     ><i class="material-icons">vertical_align_top</i></a
   >
 </footer>

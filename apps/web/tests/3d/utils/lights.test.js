@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest'
+
 import { createLights } from '../../../src/3d/utils'
 import { configures3dTestEngine } from '../../test-utils'
 

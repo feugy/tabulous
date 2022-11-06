@@ -1,5 +1,6 @@
 <script>
-  import { ToolBox, Tool } from '@atelier-wb/svelte'
+  import { Tool, ToolBox } from '@atelier-wb/svelte'
+
   import { GameLink } from '../../src/components'
   const players = [
     { id: '170ec20e-5dfe-407b-acb4-13ae0eb1a40a', username: 'Chandra' },

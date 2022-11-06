@@ -1,12 +1,14 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
-import { configures3dTestEngine } from '../../test-utils'
-import {
-  targetManager as manager,
-  selectionManager
-} from '../../../src/3d/managers'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+
 import { TargetBehavior } from '../../../src/3d/behaviors'
+import {
+  selectionManager,
+  targetManager as manager
+} from '../../../src/3d/managers'
+import { configures3dTestEngine } from '../../test-utils'
 
 describe('TargetManager', () => {
   let drops

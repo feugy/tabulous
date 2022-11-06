@@ -1,5 +1,6 @@
 <script>
-  import { Tool, ToolBox, recordEvent } from '@atelier-wb/svelte'
+  import { recordEvent, Tool, ToolBox } from '@atelier-wb/svelte'
+
   import { Button, RadialMenu } from '../../src/components'
 
   let open = true

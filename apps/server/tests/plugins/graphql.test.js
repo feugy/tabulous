@@ -1,5 +1,7 @@
 import fastify from 'fastify'
+import { afterEach, describe, expect, it } from 'vitest'
 import WebSocket from 'ws'
+
 import graphql from '../../src/plugins/graphql.js'
 
 describe('graphql plugin', () => {

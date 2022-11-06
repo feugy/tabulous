@@ -1,4 +1,5 @@
 import { BehaviorSubject, map, merge, of, withLatestFrom } from 'rxjs'
+
 import { getPixelDimension, observeDimension } from '../utils/dom'
 import {
   actionMenuProps,

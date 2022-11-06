@@ -1,6 +1,8 @@
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import userEvent from '@testing-library/user-event'
 import html from 'svelte-htm'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import GameAside from '../../src/components/GameAside.svelte'
 import { stream$ } from '../../src/stores/stream'
 import { extractText, translate } from '../test-utils'

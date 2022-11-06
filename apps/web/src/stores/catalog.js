@@ -1,6 +1,6 @@
-import { runQuery } from './graphql-client'
 import * as graphQL from '../graphql'
 import { makeLogger } from '../utils'
+import { runQuery } from './graphql-client'
 
 const logger = makeLogger('players')
 

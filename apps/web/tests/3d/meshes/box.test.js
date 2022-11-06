@@ -1,7 +1,9 @@
 import { Color4 } from '@babylonjs/core/Maths/math.color'
 import { faker } from '@faker-js/faker'
-import { createBox } from '../../../src/3d/meshes'
+import { beforeAll, beforeEach, describe, expect, it } from 'vitest'
+
 import { controlManager, materialManager } from '../../../src/3d/managers'
+import { createBox } from '../../../src/3d/meshes'
 import {
   configures3dTestEngine,
   expectDimension,

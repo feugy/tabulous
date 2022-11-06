@@ -1,5 +1,6 @@
 <script>
   import { _ } from 'svelte-intl'
+
   import { fps } from '../stores'
 </script>
 

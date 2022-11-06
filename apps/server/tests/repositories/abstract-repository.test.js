@@ -1,8 +1,9 @@
 import { faker } from '@faker-js/faker'
 import Redis from 'ioredis'
-import { it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+
 import { AbstractRepository } from '../../src/repositories/abstract-repository.js'
-import { getRedisTestUrl, clearDatabase } from '../test-utils.js'
+import { clearDatabase, getRedisTestUrl } from '../test-utils.js'
 
 describe('Abstract repository', () => {
   const redisUrl = getRedisTestUrl()

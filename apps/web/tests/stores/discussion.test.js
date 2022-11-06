@@ -1,3 +1,5 @@
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+
 import * as peerChannels from '../../src/stores/peer-channels'
 
 vi.mock('../../src/stores/peer-channels', () => {

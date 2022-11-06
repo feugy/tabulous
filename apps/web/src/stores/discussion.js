@@ -1,5 +1,6 @@
 import { BehaviorSubject, merge } from 'rxjs'
 import { filter } from 'rxjs/operators'
+
 import { lastMessageReceived, lastMessageSent, send } from './peer-channels'
 
 const resetSymbol = Symbol('reset-chat')

@@ -1,5 +1,6 @@
 <script>
   import { Tool, ToolBox } from '@atelier-wb/svelte'
+
   import { PlayerThumbnail } from '../../src/components'
   import avatar from './avatar.png'
 

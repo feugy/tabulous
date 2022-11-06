@@ -1,6 +1,29 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
 import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest'
+
+import { DrawBehaviorName, FlipBehaviorName } from '../../../src/3d/behaviors'
+import {
+  controlManager,
+  handManager as manager,
+  indicatorManager,
+  inputManager,
+  moveManager,
+  selectionManager,
+  targetManager
+} from '../../../src/3d/managers'
+import { createCard } from '../../../src/3d/meshes'
+import { createTable } from '../../../src/3d/utils'
+import {
   configures3dTestEngine,
   disposeAllMeshes,
   expectAnimationEnd,
@@ -11,18 +34,6 @@ import {
   expectSnapped,
   expectStacked
 } from '../../test-utils'
-import { DrawBehaviorName, FlipBehaviorName } from '../../../src/3d/behaviors'
-import {
-  handManager as manager,
-  inputManager,
-  controlManager,
-  moveManager,
-  selectionManager,
-  targetManager,
-  indicatorManager
-} from '../../../src/3d/managers'
-import { createCard } from '../../../src/3d/meshes'
-import { createTable } from '../../../src/3d/utils'
 
 describe('HandManager', () => {
   let engine

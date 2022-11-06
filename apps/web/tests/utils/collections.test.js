@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest'
+
 import * as collections from '../../src/utils/collections'
 
 describe('Collection utils', () => {

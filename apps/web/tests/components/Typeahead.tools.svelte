@@ -1,5 +1,6 @@
 <script>
-  import { ToolBox, Tool } from '@atelier-wb/svelte'
+  import { Tool, ToolBox } from '@atelier-wb/svelte'
+
   import Typeahead from './Typeahead.svelte'
 </script>
 

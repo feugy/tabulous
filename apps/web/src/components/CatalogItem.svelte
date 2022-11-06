@@ -1,13 +1,13 @@
 <script>
-  import { createEventDispatcher } from 'svelte'
   import { _, locale } from 'svelte-intl'
+
+  import { goto } from '$app/navigation'
+
   import { gameAssetsUrl } from '../utils'
 
   export let game
 
   $: title = game?.locales?.[$locale]?.title
-
-  const dispatch = createEventDispatcher()
 
   function formatCopyright(field) {
     return game?.copyright?.[field].map(({ name }) => name).join(', ')
@@ -21,18 +21,29 @@
       : ''
   }
 
-  function cancelEvent(event) {
-    event.stopImmediatePropagation()
+  function handleClick() {
+    goto(`/game/new?name=${encodeURIComponent(game.name)}`)
+  }
+
+  function handleKey(event) {
+    if (event.key === ' ' || event.key === 'Enter') {
+      event.preventDefault()
+      handleClick()
+    }
   }
 </script>
 
-<article on:click={() => dispatch('click', game)}>
+<article role="link" tabindex={0} on:click={handleClick} on:keyup={handleKey}>
   <img src="{gameAssetsUrl}/{game.name}/catalog/cover.webp" alt={title} />
   <div class="content">
     <legend>
       <div class="title">
         <h3>{title}</h3>
-        <details class:hidden={!game.copyright} on:click={cancelEvent}>
+        <details
+          class:hidden={!game.copyright}
+          on:click|stopPropagation
+          on:keyup|stopPropagation
+        >
           <summary
             ><strong>{$_('labels.game-authors')}</strong>{formatCopyright(
               'authors'

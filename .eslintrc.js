@@ -3,13 +3,9 @@ module.exports = {
   env: {
     browser: true,
     es2022: true,
-    node: true,
-    jest: true
+    node: true
   },
-  plugins: ['svelte3'],
-  globals: {
-    vi: true
-  },
+  plugins: ['svelte3', 'simple-import-sort'],
   overrides: [
     {
       files: ['*.svelte'],
@@ -23,5 +19,9 @@ module.exports = {
   parserOptions: {
     sourceType: 'module',
     ecmaVersion: 2022
+  },
+  rules: {
+    'simple-import-sort/imports': 'error',
+    'simple-import-sort/exports': 'error'
   }
 }

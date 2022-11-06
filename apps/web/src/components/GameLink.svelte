@@ -1,7 +1,9 @@
 <script>
-  import { goto } from '$app/navigation'
   import { createEventDispatcher } from 'svelte'
   import { _, locale } from 'svelte-intl'
+
+  import { goto } from '$app/navigation'
+
   import Button from './Button.svelte'
 
   export let game
@@ -18,12 +20,28 @@
     dispatch('delete', game)
     event.stopPropagation()
   }
+
+  function handleClick() {
+    goto(`/game/${game.id}`)
+  }
+
+  function handleKey(event) {
+    if (event.key === ' ' || event.key === 'Enter') {
+      event.preventDefault()
+      handleClick()
+    }
+  }
 </script>
 
-<article on:click={() => goto(`/game/${game.id}`)}>
+<article role="link" tabindex="0" on:click={handleClick} on:keyup={handleKey}>
   <span class="title">
     <h3>{game?.locales?.[$locale]?.title}</h3>
-    {#if owned}<Button secondary icon="delete" on:click={handleDelete} />{/if}
+    {#if owned}<Button
+        secondary
+        icon="delete"
+        on:click={handleDelete}
+        on:keyup={event => event.stopPropagation()}
+      />{/if}
   </span>
   <span class="created">{$_('{ created, date, short-date }', game)}</span>
   {#if !isSingle}

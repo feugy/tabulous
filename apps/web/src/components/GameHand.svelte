@@ -1,6 +1,7 @@
 <script>
   import { beforeUpdate } from 'svelte'
   import { _ } from 'svelte-intl'
+
   import MinimizableSection from './MinimizableSection.svelte'
 
   export let visible = false

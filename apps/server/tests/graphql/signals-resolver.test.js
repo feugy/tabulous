@@ -2,6 +2,18 @@ import { faker } from '@faker-js/faker'
 import fastify from 'fastify'
 import { setTimeout } from 'timers/promises'
 import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest'
+
+import graphQL from '../../src/plugins/graphql.js'
+import services from '../../src/services/index.js'
+import {
   mockMethods,
   openGraphQLWebSocket,
   signToken,
@@ -10,8 +22,6 @@ import {
   toGraphQLArg,
   waitOnMessage
 } from '../test-utils.js'
-import services from '../../src/services/index.js'
-import graphQL from '../../src/plugins/graphql.js'
 import { clearDatabase, getRedisTestUrl } from '../test-utils.js'
 
 describe('given a started server', () => {

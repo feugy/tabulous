@@ -1,4 +1,6 @@
 import { faker } from '@faker-js/faker'
+import { describe, expect, it } from 'vitest'
+
 import { OAuth2Provider } from '../../../src/services/auth/oauth2.js'
 
 describe('OAuth2 authentication provider', () => {

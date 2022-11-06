@@ -1,7 +1,7 @@
 <script>
-  import { goto } from '$app/navigation'
-  import { _, locale } from 'svelte-intl'
   import { readable } from 'svelte/store'
+  import { _, locale } from 'svelte-intl'
+
   import { CatalogItem, ConfirmDialogue, GameLink } from '../../components'
   import { Header } from '../../connected-components'
   import { deleteGame, receiveGameListUpdates } from '../../stores'
@@ -16,10 +16,6 @@
   if (data.session?.player) {
     user = data.session.player
     currentGames$ = receiveGameListUpdates(data.currentGames)
-  }
-
-  async function handleNewGame({ detail: { name } }) {
-    goto(`/game/new?name=${encodeURIComponent(name)}`)
   }
 
   async function handleDeleteGame({ detail: game }) {
@@ -60,7 +56,7 @@
     <h2>{$_('titles.catalog')}</h2>
     <section aria-roledescription="catalog">
       {#each data.catalog as game}
-        <CatalogItem {game} on:click={handleNewGame} />
+        <CatalogItem {game} />
       {/each}
     </section>
   </div>

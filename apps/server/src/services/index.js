@@ -1,8 +1,8 @@
-import * as conf from './configuration.js'
-import * as catalog from './catalog.js'
-import * as games from './games.js'
 import * as githubAuth from './auth/github.js'
 import * as googleAuth from './auth/google.js'
+import * as catalog from './catalog.js'
+import * as conf from './configuration.js'
+import * as games from './games.js'
 import * as players from './players.js'
 import * as turnCredentials from './turn-credentials.js'
 

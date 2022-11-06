@@ -1,5 +1,6 @@
-import { readFile } from 'fs/promises'
 import fastify from 'fastify'
+import { readFile } from 'fs/promises'
+
 import repositories from './repositories/index.js'
 
 /**

@@ -6,6 +6,8 @@ exports[`No age nor time 1`] = `
 >
   <article
     class="s-hGRcS-4InB4p"
+    role="link"
+    tabindex="0"
   >
     <img
       alt="Solitaire"
@@ -115,6 +117,8 @@ exports[`With characteristics 1`] = `
 >
   <article
     class="s-hGRcS-4InB4p"
+    role="link"
+    tabindex="0"
   >
     <img
       alt="Solitaire"
@@ -224,6 +228,8 @@ exports[`With characteristics and copyright 1`] = `
 >
   <article
     class="s-hGRcS-4InB4p"
+    role="link"
+    tabindex="0"
   >
     <img
       alt="Solitaire"

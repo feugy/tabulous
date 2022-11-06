@@ -2,6 +2,7 @@
   import { afterUpdate, createEventDispatcher, onMount } from 'svelte'
   import { fade } from 'svelte/transition'
   import Portal from 'svelte-portal'
+
   import Button from './Button.svelte'
   import Pane from './Pane.svelte'
 
@@ -44,13 +45,18 @@
 <Portal>
   {#if open}
     <div class="filter" transition:fade />
-    <div class="backdrop" transition:fade on:click={close}>
+    <div
+      class="backdrop"
+      transition:fade
+      on:click={close}
+      on:keyup={handleKeyup}
+    >
       {#if closable}
         <span class="close-container">
           <Button icon="close" on:click={close} />
         </span>
       {/if}
-      <article role="dialog" on:click|stopPropagation>
+      <article role="dialog" on:click|stopPropagation on:keyup|stopPropagation>
         <Pane>
           <header class="heading">{title}</header>
           <div class="content">

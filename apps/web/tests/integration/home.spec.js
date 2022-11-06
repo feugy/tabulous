@@ -1,9 +1,10 @@
 // @ts-check
 import { faker } from '@faker-js/faker'
 // note: we can't import the full vitest because it mockeypatches Jest symbols, which Playwright doesn't like
-import { fn } from 'vitest/dist/spy.mjs'
+import { fn } from 'vitest/dist/spy.js'
+
 import { HomePage, LoginPage } from './pages/index.js'
-import { expect, it, describe, mockGraphQl, translate } from './utils/index.js'
+import { describe, expect, it, mockGraphQl, translate } from './utils/index.js'
 
 describe('Home page', () => {
   const catalog = [

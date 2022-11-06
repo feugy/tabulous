@@ -4,6 +4,7 @@
 
 <script>
   import { createEventDispatcher } from 'svelte'
+
   import Button from './Button.svelte'
 
   export let minimized = false

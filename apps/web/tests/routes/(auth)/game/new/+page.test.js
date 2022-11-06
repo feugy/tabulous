@@ -1,11 +1,14 @@
+import { faker } from '@faker-js/faker'
 import { render } from '@testing-library/svelte'
+import { get } from 'svelte/store'
+import html from 'svelte-htm'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import { goto } from '$app/navigation'
 import { page } from '$app/stores'
-import { faker } from '@faker-js/faker'
-import html from 'svelte-htm'
-import { get } from 'svelte/store'
-import { createGame } from '../../../../../src/stores'
+
 import NewGamePage from '../../../../../src/routes/(auth)/game/new/+page.svelte'
+import { createGame } from '../../../../../src/stores'
 import { sleep } from '../../../../test-utils'
 
 vi.mock('../../../../../src/stores')

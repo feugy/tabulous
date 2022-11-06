@@ -1,15 +1,16 @@
 import { Axis, Space } from '@babylonjs/core/Maths/math.axis.js'
 import { Color3 } from '@babylonjs/core/Maths/math.color.js'
-import { Vector3, Quaternion } from '@babylonjs/core/Maths/math.vector.js'
-import { Mesh } from '@babylonjs/core/Meshes/mesh.js'
-import { Observable } from '@babylonjs/core/Misc/observable.js'
+import { Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import { CreateLines } from '@babylonjs/core/Meshes/Builders/linesBuilder.js'
 import { ExtrudeShape } from '@babylonjs/core/Meshes/Builders/shapeBuilder.js'
-import { handManager } from './hand'
+import { Mesh } from '@babylonjs/core/Meshes/mesh.js'
+import { Observable } from '@babylonjs/core/Misc/observable.js'
+
+import { makeLogger } from '../../utils/logger'
 import { sortByElevation } from '../utils/gravity'
 import { isContaining } from '../utils/mesh'
 import { screenToGround } from '../utils/vector'
-import { makeLogger } from '../../utils/logger'
+import { handManager } from './hand'
 
 const logger = makeLogger('selection')
 

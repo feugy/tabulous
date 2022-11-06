@@ -1,5 +1,6 @@
 import stripAnsi from 'strip-ansi'
 import { inspect } from 'util'
+import { afterEach, beforeEach, vi } from 'vitest'
 
 const debug = false
 

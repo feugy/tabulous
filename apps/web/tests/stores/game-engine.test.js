@@ -1,20 +1,31 @@
 import { Observable } from '@babylonjs/core/Misc/observable'
 import { faker } from '@faker-js/faker'
 import { get } from 'svelte/store'
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest'
+
 import { createEngine } from '../../src/3d'
 import {
   cameraManager,
   controlManager,
-  inputManager,
+  handManager,
   indicatorManager,
-  handManager
+  inputManager
 } from '../../src/3d/managers'
+import * as gameEngine from '../../src/stores/game-engine'
 import {
   connected as connectedPeers,
   lastMessageReceived,
   send as sendToPeer
 } from '../../src/stores/peer-channels'
-import * as gameEngine from '../../src/stores/game-engine'
 import { configures3dTestEngine, sleep } from '../test-utils'
 
 vi.mock('../../src/3d')

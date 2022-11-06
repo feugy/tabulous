@@ -1,7 +1,8 @@
 import { Observable } from '@babylonjs/core/Misc/observable.js'
-import { TargetBehaviorName } from './names'
+
 import { indicatorManager } from '../managers/indicator'
 import { targetManager } from '../managers/target'
+import { TargetBehaviorName } from './names'
 
 /**
  * @typedef {object} DropZone definition of a target drop zone

@@ -1,5 +1,5 @@
 <script>
-  import { MinimizableSection, Discussion } from '../../src/components'
+  import { Discussion, MinimizableSection } from '../../src/components'
   import { players, thread } from './Discussion.testdata'
 
   export let placement = 'top'

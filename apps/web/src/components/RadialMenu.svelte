@@ -1,6 +1,7 @@
 <script context="module">
-  import { browser } from '$app/environment'
   import ms from 'ms'
+
+  import { browser } from '$app/environment'
   let enterDuration = 0
   if (browser) {
     enterDuration = ms(
@@ -13,6 +14,7 @@
 
 <script>
   import { _ } from 'svelte-intl'
+
   import Button from './Button.svelte'
   import QuantityButton from './QuantityButton.svelte'
   export let items = []

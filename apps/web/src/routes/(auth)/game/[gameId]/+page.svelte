@@ -1,11 +1,9 @@
 <script>
-  import { page } from '$app/stores'
-  import { onMount, onDestroy } from 'svelte'
+  import { onDestroy, onMount } from 'svelte'
   import { _ } from 'svelte-intl'
-  import {
-    GameMenu,
-    InvitePlayerDialogue
-  } from '../../../../connected-components'
+
+  import { page } from '$app/stores'
+
   import {
     CameraSwitch,
     CursorInfo,
@@ -16,6 +14,10 @@
     Progress,
     RadialMenu
   } from '../../../../components'
+  import {
+    GameMenu,
+    InvitePlayerDialogue
+  } from '../../../../connected-components'
   import {
     actionMenuProps,
     cameraSaves,
@@ -28,15 +30,15 @@
     highlightHand,
     initEngine,
     initIndicators,
-    visibleFeedbacks,
-    visibleIndicators,
     loadGame,
     longInputs,
     meshDetails,
     restoreCamera,
     saveCamera,
     sendToThread,
-    thread
+    thread,
+    visibleFeedbacks,
+    visibleIndicators
   } from '../../../../stores'
   import { observeDimension } from '../../../../utils'
 
@@ -112,7 +114,7 @@
   />
 </aside>
 <main>
-  <!-- svelte-ignore a11y-autofocus -->
+  <!-- svelte-ignore a11y-autofocus a11y-no-noninteractive-tabindex -->
   <div
     class="interaction"
     tabindex="0"

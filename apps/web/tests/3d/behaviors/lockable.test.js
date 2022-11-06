@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker'
-import { configures3dTestEngine, expectMeshFeedback } from '../../test-utils'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+
 import {
   LockBehavior,
   LockBehaviorName,
@@ -8,6 +9,7 @@ import {
 } from '../../../src/3d/behaviors'
 import { controlManager, indicatorManager } from '../../../src/3d/managers'
 import { createBox } from '../../../src/3d/meshes'
+import { configures3dTestEngine, expectMeshFeedback } from '../../test-utils'
 
 describe('LockBehavior', () => {
   const actionRecorded = vi.fn()

@@ -1,5 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import html from 'svelte-htm'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import RadialMenu from '../../src/components/RadialMenu.svelte'
 
 describe('Radial Menu component', () => {

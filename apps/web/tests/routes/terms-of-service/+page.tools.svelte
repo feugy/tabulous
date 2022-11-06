@@ -1,5 +1,6 @@
 <script>
   import { Tool, ToolBox } from '@atelier-wb/svelte'
+
   import TermsOfServicePage from '../../../src/routes/terms-of-service/+page.svelte'
 
   const player = { id: 'abc123', username: 'Jane Doe' }

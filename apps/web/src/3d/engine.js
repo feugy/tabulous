@@ -1,12 +1,15 @@
 // all BabylonJS imports must be from individual files to allow tree shaking.
 // more [here](https://doc.babylonjs.com/divingDeeper/developWithBjs/treeShaking)
-import { Engine as RealEngine } from '@babylonjs/core/Engines/engine.js'
-import { Observable } from '@babylonjs/core/Misc/observable.js'
 // mandatory side effects
 import '@babylonjs/core/Animations/animatable.js'
 import '@babylonjs/core/Materials/Textures/Loaders/ktxTextureLoader.js'
 import '@babylonjs/core/Rendering/edgesRenderer.js'
 import '@babylonjs/core/Rendering/outlineRenderer.js'
+
+import { Engine as RealEngine } from '@babylonjs/core/Engines/engine.js'
+import { Observable } from '@babylonjs/core/Misc/observable.js'
+
+import { gameAssetsUrl, sleep } from '../utils'
 import {
   cameraManager,
   controlManager,
@@ -24,10 +27,9 @@ import {
   createTable,
   ExtendedScene,
   loadMeshes,
-  serializeMeshes,
-  removeNulls
+  removeNulls,
+  serializeMeshes
 } from './utils'
-import { gameAssetsUrl, sleep } from '../utils'
 
 // import { AxesViewer } from '@babylonjs/core/Debug/axesViewer.js'
 // import '@babylonjs/inspector.js'

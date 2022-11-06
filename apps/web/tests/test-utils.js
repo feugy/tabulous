@@ -1,3 +1,7 @@
+// mandatory side effects
+import '@babylonjs/core/Animations/animatable'
+import '@babylonjs/core/Rendering/edgesRenderer'
+
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera'
 import { NullEngine } from '@babylonjs/core/Engines/nullEngine'
 import { Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector'
@@ -8,22 +12,21 @@ import { appendFileSync, rmSync } from 'fs'
 import { get } from 'svelte/store'
 import { _ } from 'svelte-intl'
 import { inspect } from 'util'
-import {
-  getAnimatableBehavior,
-  getTargetableBehavior
-} from '../src/3d/utils/behaviors'
-import { getCenterAltitudeAbove } from '../src/3d/utils/gravity'
+import { afterAll, afterEach, beforeAll, expect } from 'vitest'
+
 import {
   AnchorBehaviorName,
   FlipBehaviorName,
   MoveBehaviorName,
   RotateBehaviorName
 } from '../src/3d/behaviors/names'
-import { ExtendedScene } from '../src/3d/utils/scene'
 import { indicatorManager } from '../src/3d/managers'
-// mandatory side effects
-import '@babylonjs/core/Animations/animatable'
-import '@babylonjs/core/Rendering/edgesRenderer'
+import {
+  getAnimatableBehavior,
+  getTargetableBehavior
+} from '../src/3d/utils/behaviors'
+import { getCenterAltitudeAbove } from '../src/3d/utils/gravity'
+import { ExtendedScene } from '../src/3d/utils/scene'
 
 export function translate(...args) {
   return get(_)(...args)

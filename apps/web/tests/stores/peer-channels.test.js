@@ -3,7 +3,19 @@ import { randomUUID } from 'crypto'
 import EventEmitter, { once } from 'events'
 import { Subject } from 'rxjs'
 import { get } from 'svelte/store'
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest'
+
 import * as graphQL from '../../src/graphql'
+import { runMutation, runSubscription } from '../../src/stores/graphql-client'
 import * as communication from '../../src/stores/peer-channels'
 import {
   acquireMediaStream,
@@ -11,9 +23,8 @@ import {
   releaseMediaStream,
   stream$
 } from '../../src/stores/stream'
-import { runMutation, runSubscription } from '../../src/stores/graphql-client'
+import { PeerConnection, sleep } from '../../src/utils'
 import { mockLogger } from '../utils.js'
-import { sleep, PeerConnection } from '../../src/utils'
 
 let peers = []
 

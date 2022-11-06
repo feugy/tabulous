@@ -1,5 +1,7 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import { load } from '../../../src/routes/home/+page'
-import { listGames, listCatalog } from '../../../src/stores'
+import { listCatalog, listGames } from '../../../src/stores'
 
 vi.mock('../../../src/stores', () => ({
   receiveGameListUpdates: vi.fn(),

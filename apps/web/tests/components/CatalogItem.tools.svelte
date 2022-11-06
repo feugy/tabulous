@@ -1,5 +1,6 @@
 <script>
-  import { ToolBox, Tool } from '@atelier-wb/svelte'
+  import { Tool, ToolBox } from '@atelier-wb/svelte'
+
   import { CatalogItem } from '../../src/components'
 
   const locales = { fr: { title: 'Solitaire' } }
@@ -10,10 +11,9 @@
     name="No age nor time"
     props={{ game: { name: 'klondike', locales } }}
     let:props
-    let:handleEvent
   >
     <span class="catalog-item-viewer">
-      <CatalogItem {...props} on:click={handleEvent} />
+      <CatalogItem {...props} />
     </span>
   </Tool>
 
@@ -30,10 +30,9 @@
       }
     }}
     let:props
-    let:handleEvent
   >
     <span class="catalog-item-viewer">
-      <CatalogItem {...props} on:click={handleEvent} />
+      <CatalogItem {...props} />
     </span>
   </Tool>
 
@@ -58,10 +57,9 @@
       }
     }}
     let:props
-    let:handleEvent
   >
     <span class="catalog-item-viewer">
-      <CatalogItem {...props} on:click={handleEvent} />
+      <CatalogItem {...props} />
     </span>
   </Tool>
 </ToolBox>

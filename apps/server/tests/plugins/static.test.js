@@ -1,6 +1,8 @@
 import fastify from 'fastify'
 import { resolve } from 'path'
 import { fileURLToPath } from 'url'
+import { afterEach, describe, expect, it } from 'vitest'
+
 import staticPlugin from '../../src/plugins/static.js'
 
 describe('static plugin', () => {

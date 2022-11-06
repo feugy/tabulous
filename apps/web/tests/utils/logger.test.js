@@ -1,4 +1,6 @@
 import { randomUUID } from 'crypto'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import { makeLogger } from '../../src/utils/logger'
 
 describe('Logger', () => {

@@ -1,5 +1,6 @@
 // @ts-check
 import { createSigner } from 'fast-jwt'
+
 import { loadConfiguration } from './configuration.js'
 
 /**

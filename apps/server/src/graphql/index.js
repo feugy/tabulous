@@ -1,11 +1,12 @@
+import merge from 'deepmerge'
+import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
 import { fileURLToPath } from 'url'
-import merge from 'deepmerge'
+
 import catalogResolvers from './catalog-resolver.js'
 import gameResolvers from './games-resolver.js'
 import playerResolvers from './players-resolver.js'
 import signalResolvers from './signals-resolver.js'
-import { readFileSync } from 'fs'
 
 const folder = dirname(fileURLToPath(import.meta.url))
 
@@ -24,7 +25,7 @@ const { loaders, ...resolvers } = merge.all([
   signalResolvers
 ])
 
-export { schema, resolvers, loaders }
+export { loaders, resolvers, schema }
 
 function loadTypeDefs(fileName) {
   return readFileSync(join(folder, fileName)).toString()

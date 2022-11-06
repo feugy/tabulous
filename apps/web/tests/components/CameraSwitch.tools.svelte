@@ -1,5 +1,6 @@
 <script>
   import { Tool, ToolBox } from '@atelier-wb/svelte'
+
   import { CameraSwitch } from '../../src/components'
 </script>
 

@@ -7,6 +7,7 @@ import { createClient as createWSClient } from 'graphql-ws'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import { filter, pipe, subscribe } from 'wonka'
+
 import { makeLogger } from '../utils'
 
 const logger = makeLogger('graphql')

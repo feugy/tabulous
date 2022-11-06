@@ -1,5 +1,6 @@
 <script>
   import { onDestroy, onMount } from 'svelte'
+
   import { PlayerAvatar } from '../../src/components'
   import { acquireMediaStream, releaseMediaStream } from '../../src/stores'
 

@@ -1,4 +1,7 @@
 import { BehaviorSubject, debounceTime, filter, map, merge } from 'rxjs'
+
+import * as graphQL from '../graphql'
+import { makeLogger, sleep } from '../utils'
 import { clearThread, loadThread, serializeThread } from './discussion'
 import {
   action,
@@ -7,7 +10,7 @@ import {
   handMeshes as handMeshes$,
   loadCameraSaves
 } from './game-engine'
-import { runQuery, runMutation, runSubscription } from './graphql-client'
+import { runMutation, runQuery, runSubscription } from './graphql-client'
 import {
   closeChannels,
   connectWith,
@@ -15,11 +18,9 @@ import {
   lastDisconnectedId,
   lastMessageReceived,
   lastMessageSent,
-  send,
-  openChannels
+  openChannels,
+  send
 } from './peer-channels'
-import * as graphQL from '../graphql'
-import { makeLogger, sleep } from '../utils'
 
 // when joining game with connected peers, delay during which we expect to receive the game data
 const gameReceptionDelay = 30000

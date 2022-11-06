@@ -1,11 +1,22 @@
+// mandatory side effect for vi to load auth plugin
+import '../src/plugins/utils.js'
+
 import { createServer } from 'http'
 import { join, resolve } from 'path'
 import { cwd } from 'process'
 import { fileURLToPath } from 'url'
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest'
+
 import repositories from '../src/repositories/index.js'
 import { startServer } from '../src/server.js'
-// mandatory side effect for vi to load auth plugin
-import '../src/plugins/utils.js'
 
 describe('startServer()', () => {
   let app

@@ -1,5 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte'
+
   import Button from './Button.svelte'
 
   export let secondary = false

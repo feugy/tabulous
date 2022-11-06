@@ -1,7 +1,8 @@
 // @ts-check
 import { gql } from '@urql/core'
-import kebabCase from 'lodash.kebabcase'
 import chalkTemplate from 'chalk-template'
+import kebabCase from 'lodash.kebabcase'
+
 import {
   attachFormater,
   cliName,

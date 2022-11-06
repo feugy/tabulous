@@ -1,4 +1,14 @@
 import { faker } from '@faker-js/faker'
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest'
+
 import { customShapeManager } from '../../../src/3d/managers'
 import { createCustom } from '../../../src/3d/meshes'
 import {
@@ -7,8 +17,8 @@ import {
   removeNulls,
   serializeMeshes
 } from '../../../src/3d/utils'
-import { expectPosition, initialize3dEngine } from '../../test-utils'
 import pawnData from '../../fixtures/pawn.json'
+import { expectPosition, initialize3dEngine } from '../../test-utils'
 
 vi.mock('../../../src/3d/managers/custom-shape', () => ({
   customShapeManager: new Map()

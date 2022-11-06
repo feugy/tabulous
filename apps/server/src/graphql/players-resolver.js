@@ -1,7 +1,7 @@
 import { makeToken } from '../plugins/utils.js'
 import services from '../services/index.js'
-import { isAdmin, isAuthenticated } from './utils.js'
 import { hash } from '../utils/index.js'
+import { isAdmin, isAuthenticated } from './utils.js'
 
 /**
  * @typedef {import('./players.graphql').PlayerWithTurnCredentials} PlayerWithTurnCredentials

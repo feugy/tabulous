@@ -1,9 +1,11 @@
 <script>
-  import { goto } from '$app/navigation'
-  import { page } from '$app/stores'
   import { onMount } from 'svelte'
   import { get } from 'svelte/store'
   import { _ } from 'svelte-intl'
+
+  import { goto } from '$app/navigation'
+  import { page } from '$app/stores'
+
   import { Button } from '../../../../components'
   import { Header } from '../../../../connected-components'
   import { createGame } from '../../../../stores'

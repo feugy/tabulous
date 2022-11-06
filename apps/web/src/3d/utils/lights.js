@@ -1,5 +1,6 @@
 // mandatory side effect
 import '@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent.js'
+
 import { DirectionalLight } from '@babylonjs/core/Lights/directionalLight.js'
 import { HemisphericLight } from '@babylonjs/core/Lights/hemisphericLight.js'
 import { ShadowGenerator } from '@babylonjs/core/Lights/Shadows/shadowGenerator.js'

@@ -1,8 +1,10 @@
 <script>
-  import { page } from '$app/stores'
   import { _ } from 'svelte-intl'
-  import Form from './Form.svelte'
+
+  import { page } from '$app/stores'
+
   import { flags } from '../../stores'
+  import Form from './Form.svelte'
 
   /** @type {import('./$types').ActionData} */
   export let form = null

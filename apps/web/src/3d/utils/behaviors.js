@@ -2,15 +2,13 @@ import { Animation } from '@babylonjs/core/Animations/animation.js'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder.js'
 import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder.js'
+
 import { AnchorBehavior } from '../behaviors/anchorable'
 import { DetailBehavior } from '../behaviors/detailable'
 import { DrawBehavior } from '../behaviors/drawable'
 import { FlipBehavior } from '../behaviors/flippable'
 import { LockBehavior } from '../behaviors/lockable'
 import { MoveBehavior } from '../behaviors/movable'
-import { QuantityBehavior } from '../behaviors/quantifiable'
-import { RotateBehavior } from '../behaviors/rotable'
-import { StackBehavior } from '../behaviors/stackable'
 import {
   AnchorBehaviorName,
   AnimateBehaviorName,
@@ -24,20 +22,30 @@ import {
   StackBehaviorName,
   TargetBehaviorName
 } from '../behaviors/names'
+import { QuantityBehavior } from '../behaviors/quantifiable'
+import { RotateBehavior } from '../behaviors/rotable'
+import { StackBehavior } from '../behaviors/stackable'
 import { applyGravity, getCenterAltitudeAbove } from './gravity'
 
-const behaviorNames = [
-  [MoveBehaviorName, MoveBehavior],
-  [FlipBehaviorName, FlipBehavior],
-  [RotateBehaviorName, RotateBehavior],
-  [DetailBehaviorName, DetailBehavior],
-  [DrawBehaviorName, DrawBehavior],
-  [AnchorBehaviorName, AnchorBehavior],
-  [StackBehaviorName, StackBehavior],
-  [QuantityBehaviorName, QuantityBehavior],
-  // always applies lockable at the end so it can alter other behaviors
-  [LockBehaviorName, LockBehavior]
-]
+let constructors = null
+
+function getConstructors() {
+  if (constructors === null) {
+    constructors = [
+      [MoveBehaviorName, MoveBehavior],
+      [FlipBehaviorName, FlipBehavior],
+      [RotateBehaviorName, RotateBehavior],
+      [DetailBehaviorName, DetailBehavior],
+      [DrawBehaviorName, DrawBehavior],
+      [AnchorBehaviorName, AnchorBehavior],
+      [StackBehaviorName, StackBehavior],
+      [QuantityBehaviorName, QuantityBehavior],
+      // always applies lockable at the end so it can alter other behaviors
+      [LockBehaviorName, LockBehavior]
+    ]
+  }
+  return constructors
+}
 
 /**
  * Looks into the given parameters, and creates relevant behaviors according to its content.
@@ -50,7 +58,7 @@ const behaviorNames = [
  */
 export function registerBehaviors(mesh, params) {
   const registered = {}
-  for (const [name, constructor] of behaviorNames) {
+  for (const [name, constructor] of getConstructors()) {
     if (params[name]) {
       registered[name] = new constructor(params[name])
       mesh.addBehavior(registered[name], true)

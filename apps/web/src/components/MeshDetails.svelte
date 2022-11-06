@@ -1,5 +1,6 @@
 <script>
   import { afterUpdate, createEventDispatcher } from 'svelte'
+
   import { gameAssetsUrl } from '../utils'
 
   export let mesh = null
@@ -35,7 +36,7 @@
 <svelte:window on:keydown={handleKey} />
 
 {#if open}
-  <figure class:open on:click={handleClose}>
+  <figure class:open on:click={handleClose} on:keyup={handleKey}>
     <img src="{gameAssetsUrl}{mesh?.image}" alt="" />
   </figure>
 {/if}

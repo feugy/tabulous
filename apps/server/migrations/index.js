@@ -1,10 +1,12 @@
 // @ts-check
 import { readdir } from 'node:fs/promises'
 import { dirname } from 'node:path'
-import { parseArgs } from 'node:util'
 import { fileURLToPath } from 'node:url'
+import { parseArgs } from 'node:util'
+
 import { config } from 'dotenv'
 import Redis from 'ioredis'
+
 import repositories from '../src/repositories/index.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))

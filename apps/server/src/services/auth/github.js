@@ -1,4 +1,5 @@
 import { fetch } from 'undici'
+
 import { OAuth2Provider } from './oauth2.js'
 
 const urls = {
