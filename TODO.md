@@ -51,6 +51,27 @@
       }
   ```
 
+- tests/connected-components/InvitePlayerDialogue.test.js > InvitePlayerDialogue connected component > debounce searches
+
+```
+AssertionError: expected 2nd "spy" call to have been called with [ 'anima' ]
+❯ tests/connected-components/InvitePlayerDialogue.test.js:56:27
+    54|     }
+    55|     expect(searchPlayers).toHaveBeenNthCalledWith(1, 'an')
+    56|     expect(searchPlayers).toHaveBeenNthCalledWith(2, 'anima')
+      |                           ^
+    57|     expect(searchPlayers).toHaveBeenCalledTimes(2)
+    58|   })
+
+  - Expected  - 1
+  + Received  + 1
+
+    Array [
+  -   "anima",
+  +   "anim",
+    ]
+```
+
 ## Refactor
 
 - graphQL: remove signal type and make signal optional
@@ -83,7 +104,6 @@
 - collect player preferences when joining a game (requires to alter & reload game when joining rather than inviting)
 - option to invite players with url
 - distribute multiple meshes to players'hand
-- select multiple meshes in hand
 - shortcuts cheatsheet
 - peer notifications: joining, joined, left, error (stop waiting when navigating away)
 - hand support for quantifiable behavior

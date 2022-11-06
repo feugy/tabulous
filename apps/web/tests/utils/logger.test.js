@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker'
 import { randomUUID } from 'crypto'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -62,5 +63,44 @@ describe('Logger', () => {
     expect(info).not.toHaveBeenCalledTimes(1)
     expect(warn).toHaveBeenCalledTimes(1)
     expect(error).toHaveBeenCalledTimes(1)
+  })
+
+  describe('configureLoggers()', () => {
+    it('can change log level at runtime', () => {
+      const logger = makeLogger('flippable')
+      logger.debug(faker.lorem.words())
+      expect(log).not.toHaveBeenCalled()
+
+      expect(configureLoggers({ flippable: 'debug' })).toMatchObject({
+        flippable: 'debug'
+      })
+      const message = faker.lorem.words()
+      logger.debug(message)
+      expect(log).toHaveBeenCalledWith(message)
+      expect(log).toHaveBeenCalledTimes(1)
+      expect(warn).not.toHaveBeenCalled()
+    })
+
+    it('reports unknown logger', () => {
+      const logger = faker.commerce.productMaterial()
+
+      expect(configureLoggers({ [logger]: 'debug' })).not.toHaveProperty(
+        logger,
+        'debug'
+      )
+      expect(warn).toHaveBeenCalledWith(`ignoring unknown logger ${logger}`)
+    })
+
+    it('reports unknown level', () => {
+      const level = faker.commerce.productMaterial()
+
+      expect(configureLoggers({ anchorable: level })).not.toHaveProperty(
+        'anchorable',
+        level
+      )
+      expect(warn).toHaveBeenCalledWith(
+        `ignoring unknown level for anchorable: ${level}`
+      )
+    })
   })
 })
