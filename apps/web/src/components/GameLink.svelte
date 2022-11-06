@@ -25,7 +25,7 @@
     goto(`/game/${game.id}`)
   }
 
-  function handleKeydown(event) {
+  function handleKey(event) {
     if (event.key === ' ' || event.key === 'Enter') {
       event.preventDefault()
       handleClick()
@@ -33,19 +33,14 @@
   }
 </script>
 
-<article
-  role="link"
-  tabindex="0"
-  on:click={handleClick}
-  on:keydown={handleKeydown}
->
+<article role="link" tabindex="0" on:click={handleClick} on:keyup={handleKey}>
   <span class="title">
     <h3>{game?.locales?.[$locale]?.title}</h3>
     {#if owned}<Button
         secondary
         icon="delete"
         on:click={handleDelete}
-        on:keydown={event => event.stopPropagation()}
+        on:keyup={event => event.stopPropagation()}
       />{/if}
   </span>
   <span class="created">{$_('{ created, date, short-date }', game)}</span>

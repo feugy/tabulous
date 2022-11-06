@@ -114,7 +114,7 @@
   />
 </aside>
 <main>
-  <!-- svelte-ignore a11y-autofocus -->
+  <!-- svelte-ignore a11y-autofocus a11y-no-noninteractive-tabindex -->
   <div
     class="interaction"
     tabindex="0"

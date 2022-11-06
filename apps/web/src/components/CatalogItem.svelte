@@ -25,7 +25,7 @@
     goto(`/game/new?name=${encodeURIComponent(game.name)}`)
   }
 
-  function handleKeydown(event) {
+  function handleKey(event) {
     if (event.key === ' ' || event.key === 'Enter') {
       event.preventDefault()
       handleClick()
@@ -33,12 +33,7 @@
   }
 </script>
 
-<article
-  role="link"
-  tabindex={0}
-  on:click={handleClick}
-  on:keydown={handleKeydown}
->
+<article role="link" tabindex={0} on:click={handleClick} on:keyup={handleKey}>
   <img src="{gameAssetsUrl}/{game.name}/catalog/cover.webp" alt={title} />
   <div class="content">
     <legend>
@@ -47,7 +42,7 @@
         <details
           class:hidden={!game.copyright}
           on:click|stopPropagation
-          on:keydown|stopPropagation
+          on:keyup|stopPropagation
         >
           <summary
             ><strong>{$_('labels.game-authors')}</strong>{formatCopyright(

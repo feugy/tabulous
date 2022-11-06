@@ -3,19 +3,56 @@
 ## Brittle tests
 
 - tests/atelier/tools.test.js > Toolshot > components/RadialMenu.tools.svelte
-  > Error: expect(received).toMatchSnapshot()
-  >
-  > Snapshot name: `More items 1`
+
+  ```
+  Error: expect(received).toMatchSnapshot()
+
+  Snapshot name: `More items 1`
+  ```
+
 - expectEvents tests/3d/managers/input.test.js:1591:19
-  >     1589|     expect(hovers).toHaveLength(counts.hovers ?? 0)
-  >     1590|     expect(wheels).toHaveLength(counts.wheels ?? 0)
-  >     1591|     expect(longs).toHaveLength(counts.longs ?? 0)
-  >         |                   ^
-  >     1592|     expect(keys).toHaveLength(counts.keys ?? 0)
+  ```
+  1589|     expect(hovers).toHaveLength(counts.hovers ?? 0)
+  1590|     expect(wheels).toHaveLength(counts.wheels ?? 0)
+  1591|     expect(longs).toHaveLength(counts.longs ?? 0)
+      |                   ^
+  1592|     expect(keys).toHaveLength(counts.keys ?? 0)
+  ```
+- tests/3d/managers/input.test.js > InputManager > given an initialized manager > handles multiple pointers double taps
+
+  ```
+  AssertionError: expected { type: 'tap', mesh: undefined, …(5) } o match object { long: false, pointers: 2, …(2) }
+  ❯ expectsDataWithMesh tests/3d/managers/input.test.js:1604:20
+      1602|
+      1603|   function expectsDataWithMesh(actual, expected, eshId) {
+      1604|     expect(actual).toMatchObject(expected)
+          |                    ^
+      1605|     if (Array.isArray(meshId)) {
+      1606|       expect(actual.meshes?.map(({ id }) => id)).oEqual(meshId)
+  ❯ tests/3d/managers/input.test.js:530:9
+    - Expected  - 1
+    + Received  + 4
+
+      Object {
+    +   "button": undefined,
+        "event": CustomEvent {
+          "isTrusted": false,
+          "pointerId": 16,
+          "pointerType": "tap",
+          "x": 360,
+          "y": 954,
+        },
+    +   "fromHand": false,
+        "long": false,
+    +   "mesh": undefined,
+        "pointers": 2,
+    -   "type": "doubletap",
+    +   "type": "tap",
+      }
+  ```
 
 ## Refactor
 
-- fix all sveltekit warnings
 - graphQL: remove signal type and make signal optional
 - add tests for web/src/utils/peer-connection
 - use node 18 when msw/interceptor will [handle it](https://github.com/mswjs/interceptors/pull/283)

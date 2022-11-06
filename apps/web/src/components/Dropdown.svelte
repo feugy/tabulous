@@ -42,6 +42,13 @@
       dispatch('close')
     }
   }
+
+  function handleKey(event) {
+    if (event.key === ' ' || event.key === 'Enter') {
+      event.preventDefault()
+      handleArrowClick()
+    }
+  }
 </script>
 
 <span
@@ -54,9 +61,12 @@
     <slot name="icon" />
     {#if withArrow && options.length > 1}
       <i
+        role="button"
         class:iconOnly
         class="material-icons arrow"
+        class:split={!openOnClick}
         on:click|stopPropagation={handleArrowClick}
+        on:keyup|stopPropagation={handleKey}
       >
         {`arrow_drop_${open ? 'up' : 'down'}`}
       </i>
@@ -82,5 +92,9 @@
 
   .arrow {
     @apply ml-2 -mr-2;
+
+    &.split {
+      @apply border border-$primary-lightest border-t-transparent border-r-transparent border-b-transparent ml-4;
+    }
   }
 </style>
