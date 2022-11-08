@@ -82,7 +82,8 @@ const engine = {
   scenes: [],
   load: vi.fn().mockResolvedValueOnce(),
   serialize: vi.fn().mockReturnValue({}),
-  onDisposeObservable: new Observable()
+  onDisposeObservable: new Observable(),
+  onBeforeDisposeObservable: new Observable()
 }
 let subscription
 let warn
@@ -122,6 +123,7 @@ describe('given a mocked game engine', () => {
   afterEach(() => {
     engine.onDisposeObservable.notifyObservers()
     engine.onDisposeObservable.clear()
+    engine.onBeforeDisposeObservable.clear()
   })
 
   describe('loadGame()', () => {
@@ -358,6 +360,24 @@ describe('given a mocked game engine', () => {
           ])
         )
         expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(2)
+      })
+
+      it('saves game data on dispose', async () => {
+        engine.onBeforeDisposeObservable.notifyObservers()
+        const hands = [...game.hands, { playerId: player.id, meshes: [] }]
+        expect(runMutation).toHaveBeenCalledWith(graphQL.saveGame, {
+          game: {
+            ...game,
+            cameras: [...game.cameras],
+            hands,
+            zoomSpec: undefined,
+            tableSpec: undefined,
+            players: undefined
+          }
+        })
+        expect(runMutation).toHaveBeenCalledTimes(1)
+        expect(engine.serialize).toHaveBeenCalledTimes(1)
+        expect(send).not.toHaveBeenCalled()
       })
 
       it('saves game data after some actions', async () => {

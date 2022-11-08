@@ -5,14 +5,14 @@ HTMLCollection [
   <aside
     class="s-rtlBPQxKceeD"
     role="menu"
-    style="left: 25%; top: 25%; --size:100px;"
+    style="left: 25%; top: 25%; --size:130px;"
   >
     <ul
       class="s-rtlBPQxKceeD"
     >
       <li
         class="s-rtlBPQxKceeD"
-        style="animation: __svelte_397341122_0 150ms linear 0ms 1 both;"
+        style="animation: __svelte_3505074470_0 150ms linear 0ms 1 both;"
       >
         <button
           class="s-NMyTiX1zi6rz"
@@ -32,7 +32,7 @@ HTMLCollection [
       
       <li
         class="s-rtlBPQxKceeD"
-        style="animation: __svelte_2962324507_0 150ms linear 112.5ms 1 both;"
+        style="animation: __svelte_3890762829_0 150ms linear 112.5ms 1 both;"
       >
         <button
           class="secondary s-NMyTiX1zi6rz"
@@ -69,14 +69,14 @@ HTMLCollection [
   <aside
     class="s-rtlBPQxKceeD"
     role="menu"
-    style="left: 25%; top: 25%; --size:150px;"
+    style="left: 25%; top: 25%; --size:180px;"
   >
     <ul
       class="s-rtlBPQxKceeD"
     >
       <li
         class="s-rtlBPQxKceeD"
-        style="animation: __svelte_3871932778_0 150ms linear 0ms 1 both;"
+        style="animation: __svelte_3019659111_0 150ms linear 0ms 1 both;"
       >
         <button
           class="s-NMyTiX1zi6rz"
@@ -96,7 +96,7 @@ HTMLCollection [
       
       <li
         class="s-rtlBPQxKceeD"
-        style="animation: __svelte_3040732129_0 150ms linear 112.5ms 1 both;"
+        style="animation: __svelte_1277330016_0 150ms linear 112.5ms 1 both;"
       >
         <button
           class="secondary s-NMyTiX1zi6rz"
@@ -116,7 +116,7 @@ HTMLCollection [
       
       <li
         class="s-rtlBPQxKceeD"
-        style="animation: __svelte_1023368731_0 150ms linear 225ms 1 both;"
+        style="animation: __svelte_2128706359_0 150ms linear 225ms 1 both;"
       >
         <button
           class="secondary s-NMyTiX1zi6rz"
@@ -136,7 +136,7 @@ HTMLCollection [
       
       <li
         class="s-rtlBPQxKceeD"
-        style="animation: __svelte_3264121526_0 150ms linear 337.5ms 1 both;"
+        style="animation: __svelte_4140758231_0 150ms linear 337.5ms 1 both;"
       >
         <button
           class="s-NMyTiX1zi6rz"
@@ -156,7 +156,7 @@ HTMLCollection [
       
       <li
         class="s-rtlBPQxKceeD"
-        style="animation: __svelte_4053772584_0 150ms linear 450ms 1 both;"
+        style="animation: __svelte_63569755_0 150ms linear 450ms 1 both;"
       >
         <button
           class="s-NMyTiX1zi6rz"
@@ -176,7 +176,7 @@ HTMLCollection [
       
       <li
         class="s-rtlBPQxKceeD"
-        style="animation: __svelte_756247263_0 150ms linear 562.5ms 1 both;"
+        style="animation: __svelte_4220652078_0 150ms linear 562.5ms 1 both;"
       >
         <button
           class="s-NMyTiX1zi6rz"
@@ -196,7 +196,7 @@ HTMLCollection [
       
       <li
         class="s-rtlBPQxKceeD"
-        style="animation: __svelte_2867527063_0 150ms linear 675ms 1 both;"
+        style="animation: __svelte_2315107558_0 150ms linear 675ms 1 both;"
       >
         <button
           class="s-NMyTiX1zi6rz"

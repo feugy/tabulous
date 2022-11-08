@@ -42,9 +42,10 @@ const loggers = new Map()
 function noop() {}
 
 function getImplementation(name, level) {
-  return levelMap[level] <= levelMap[levels[name] || 'info']
-    ? console[level].bind(console)
-    : noop
+  return (...args) =>
+    levelMap[level] <= levelMap[levels[name] || 'info']
+      ? console[level](...args)
+      : noop
 }
 
 export function makeLogger(name) {
@@ -59,4 +60,23 @@ export function makeLogger(name) {
     })
   }
   return loggers.get(name)
+}
+
+/**
+ * Allows changing logger levels at runtime.
+ * Performs basic validation to avoid setting unknown loggers, or configuring unsupported level.
+ * @param {object} newLevels - partial logger level map, merged into the current map.
+ * @returns {object} the new, merged logger level map.
+ */
+globalThis.configureLoggers = function (newLevels) {
+  for (const logger in newLevels) {
+    if (!(logger in levels)) {
+      console.warn(`ignoring unknown logger ${logger}`)
+      newLevels[logger] = undefined
+    } else if (!(newLevels[logger] in levelMap)) {
+      console.warn(`ignoring unknown level for ${logger}: ${newLevels[logger]}`)
+      newLevels[logger] = undefined
+    }
+  }
+  return Object.assign(levels, newLevels)
 }

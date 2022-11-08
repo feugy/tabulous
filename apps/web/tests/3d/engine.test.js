@@ -166,6 +166,22 @@ describe('createEngine()', () => {
       expect(handManager.enabled).toBe(true)
     })
 
+    it('invokes observer before disposing', () => {
+      const ordering = []
+      const handleBeforeDispose = vi
+        .fn()
+        .mockImplementation(() => ordering.push('beforeDispose'))
+      const handleDispose = vi
+        .fn()
+        .mockImplementation(() => ordering.push('dispose'))
+      engine.onBeforeDisposeObservable.addOnce(handleBeforeDispose)
+      engine.onDisposeObservable.addOnce(handleDispose)
+      engine.dispose()
+      expect(handleBeforeDispose).toHaveBeenCalledTimes(1)
+      expect(handleDispose).toHaveBeenCalledTimes(1)
+      expect(ordering).toEqual(['beforeDispose', 'dispose'])
+    })
+
     describe('given some loaded meshes', () => {
       beforeEach(async () => {
         const duration = 200

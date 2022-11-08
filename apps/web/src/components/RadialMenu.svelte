@@ -25,7 +25,7 @@
 
   $: left = typeof x === 'number' ? `${x}px` : x
   $: top = typeof y === 'number' ? `${y}px` : y
-  $: radius = 40 + 5 * items?.length
+  $: radius = 55 + 5 * items?.length
 
   function computeItemPosition({ i }) {
     const angle = (-2 * Math.PI * (items.length - i)) / items.length
@@ -94,7 +94,7 @@
 
 <style lang="postcss">
   aside {
-    @apply absolute rounded-full border-2 flex items-center 
+    @apply absolute rounded-full border-2 flex items-center z-10
            justify-center border-$primary-light transform-gpu -translate-x-1/2 -translate-y-1/2;
     width: var(--size);
     height: var(--size);

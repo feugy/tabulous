@@ -39,7 +39,8 @@ describe('given initialized repository', () => {
         id: expect.any(String),
         password,
         avatar,
-        username
+        username,
+        playing: false
       })
     })
 
@@ -50,7 +51,8 @@ describe('given initialized repository', () => {
       expect(await upsertPlayer({ username, id, avatar })).toEqual({
         id,
         avatar,
-        username
+        username,
+        playing: false
       })
     })
 
@@ -107,6 +109,7 @@ describe('given initialized repository', () => {
       }
       expect(await upsertPlayer(update)).toEqual({
         ...original,
+        playing: false,
         email: update.email
       })
     })
