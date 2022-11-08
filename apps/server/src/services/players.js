@@ -41,6 +41,7 @@ export async function upsertPlayer(userDetails) {
     delete userDetails.providerId
     delete userDetails.email
   }
+  userDetails.playing = false
   return repositories.players.save(userDetails)
 }
 
