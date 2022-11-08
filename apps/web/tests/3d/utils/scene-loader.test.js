@@ -9,16 +9,21 @@ import {
   vi
 } from 'vitest'
 
-import { customShapeManager } from '../../../src/3d/managers'
+import { customShapeManager, handManager } from '../../../src/3d/managers'
 import { createCustom } from '../../../src/3d/meshes'
 import {
   createTable,
+  getAnimatableBehavior,
   loadMeshes,
   removeNulls,
   serializeMeshes
 } from '../../../src/3d/utils'
 import pawnData from '../../fixtures/pawn.json'
-import { expectPosition, initialize3dEngine } from '../../test-utils'
+import {
+  expectAnimationEnd,
+  expectPosition,
+  initialize3dEngine
+} from '../../test-utils'
 
 vi.mock('../../../src/3d/managers/custom-shape', () => ({
   customShapeManager: new Map()
@@ -26,6 +31,7 @@ vi.mock('../../../src/3d/managers/custom-shape', () => ({
 
 let engine
 let scene
+let handScene
 let createBox
 let createCard
 let createPrism
@@ -51,20 +57,35 @@ beforeAll(async () => {
 afterAll(() => engine.dispose())
 
 describe('serializeMeshes() 3D utility', () => {
+  const overlay = document.createElement('div')
+  const renderWidth = 480
+  const renderHeight = 350
+
   it('handles empty scene', () => {
     expect(serializeMeshes()).toEqual([])
   })
 
   describe('given an scene', () => {
     beforeAll(() => {
-      vi.restoreAllMocks()
-      ;({ engine, scene } = initialize3dEngine({ renderWidth, renderHeight }))
+      ;({ engine, scene, handScene } = initialize3dEngine(
+        {
+          renderWidth,
+          renderHeight
+        },
+        { renderWidth, renderHeight }
+      ))
+      handManager.init({ scene, handScene, overlay })
     })
 
     beforeEach(() => {
+      vi.restoreAllMocks()
+      vi.spyOn(window, 'getComputedStyle').mockImplementation(() => ({
+        height: `${renderHeight / 4}px`
+      }))
       for (const mesh of [...scene.meshes]) {
         mesh.dispose()
       }
+      createTable({}, scene)
     })
 
     it('can handle an empty scene', () => {
@@ -190,6 +211,38 @@ describe('serializeMeshes() 3D utility', () => {
       })
       tile1.isPhantom = true
       expect(serializeMeshes(scene)).toEqual([tile2.metadata.serialize()])
+    })
+
+    it('keep tracks of meshes transitioning between scenes', async () => {
+      const mesh = createCard({ id: 'card1', drawable: {} })
+      const serialized = {
+        ...mesh.metadata.serialize(),
+        x: expect.any(Number),
+        y: expect.any(Number),
+        z: expect.any(Number)
+      }
+      handManager.draw(mesh)
+
+      expect(serializeMeshes(scene)).toEqual([])
+      expect(serializeMeshes(handScene)).toEqual([serialized])
+
+      await expectAnimationEnd(getAnimatableBehavior(mesh))
+
+      expect(serializeMeshes(scene)).toEqual([])
+      expect(serializeMeshes(handScene)).toEqual([serialized])
+
+      const handMesh = handScene.getMeshById(mesh.id)
+      handManager.draw(handMesh)
+
+      expect(serializeMeshes(scene)).toEqual([serialized])
+      expect(serializeMeshes(handScene)).toEqual([])
+
+      await expectAnimationEnd(
+        getAnimatableBehavior(scene.getMeshById(mesh.id))
+      )
+
+      expect(serializeMeshes(scene)).toEqual([serialized])
+      expect(serializeMeshes(handScene)).toEqual([])
     })
   })
 })

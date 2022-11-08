@@ -68,6 +68,7 @@
         engine?.resize()
       }
     )
+    window.addEventListener('beforeunload', () => engine?.dispose())
   })
 
   onDestroy(() => {
