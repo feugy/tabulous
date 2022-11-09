@@ -87,13 +87,17 @@ export class AnchorBehavior extends TargetBehavior {
     )
 
     this.moveObserver = moveManager.onMoveObservable.add(({ mesh }) => {
-      let moved = selectionManager.meshes.has(mesh)
-        ? selectionManager.meshes.has(this.mesh)
-          ? []
-          : [...selectionManager.meshes]
-        : [mesh]
-      for (const { id } of moved) {
-        this.unsnap(id)
+      // unsnap the moved mesh, unless:
+      // 1. it is not snapped!
+      // 2. it is moved together with the current mesh
+      if (
+        this.zoneBySnappedId.has(mesh?.id) &&
+        !(
+          selectionManager.meshes.has(mesh) &&
+          selectionManager.meshes.has(this.mesh)
+        )
+      ) {
+        this.unsnap(mesh.id)
       }
     })
 

@@ -603,26 +603,6 @@ describe('AnchorBehavior', () => {
       expectMeshFeedback(registerFeedbackSpy, 'unsnap', behavior.zones[0].mesh)
     })
 
-    it('unsnaps dragged selection', async () => {
-      const snapped = meshes[1]
-      behavior.fromState({
-        anchors: [{ width: 1, height: 2, depth: 0.5, snappedId: snapped.id }]
-      })
-      expectSnapped(mesh, snapped, 0)
-
-      selectionManager.select(snapped, meshes[0])
-
-      moveManager.notifyMove(meshes[0])
-      expectUnsnapped(mesh, snapped, 0)
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({
-        fn: 'unsnap',
-        mesh,
-        args: [snapped.id]
-      })
-      expectMeshFeedback(registerFeedbackSpy, 'unsnap', behavior.zones[0].mesh)
-    })
-
     it('unsnaps drawn mesh', async () => {
       const snapped = meshes[1]
       behavior.fromState({
@@ -791,6 +771,39 @@ describe('AnchorBehavior', () => {
       behavior.enable()
       expectZoneEnabled(mesh, 0)
       expectZoneEnabled(mesh, 1, false)
+    })
+
+    it('snaps individual meshes of a selection', async () => {
+      const [snapped1, snapped2] = meshes
+      behavior.fromState({
+        anchors: [
+          { width: 1, height: 2, depth: 0.5 },
+          {
+            width: 1,
+            height: 2,
+            depth: 0.5,
+            x: 2,
+            y: 3,
+            z: 1
+          }
+        ]
+      })
+      expectUnsnapped(mesh, snapped1, 0)
+      expectUnsnapped(mesh, snapped2, 1)
+
+      selectionManager.select(...meshes)
+
+      await Promise.all([
+        mesh.metadata.snap(snapped1.id, behavior.zones[0].mesh.id),
+        mesh.metadata.snap(snapped2.id, behavior.zones[1].mesh.id)
+      ])
+
+      console.log(behavior.state)
+      expectSnapped(mesh, snapped1, 0)
+      expectSnapped(mesh, snapped2, 1)
+      expect(behavior.getSnappedIds()).toEqual([snapped1.id, snapped2.id])
+      expect(recordSpy).toHaveBeenCalledTimes(2)
+      expectMoveRecorded(moveRecorded, snapped1, snapped2)
     })
 
     function expectAnchor(
