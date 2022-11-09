@@ -80,7 +80,7 @@ class TargetManager {
    */
   findPlayerZone(dragged, kind) {
     logger.debug(
-      { dragged, kind, b: this.behaviors },
+      { dragged, kind },
       `find drop zones for ${this.playerId} (${kind})`
     )
     const candidates = findCandidates(
@@ -103,7 +103,7 @@ class TargetManager {
    */
   findDropZone(dragged, kind) {
     logger.debug(
-      { dragged, kind, b: this.behaviors },
+      { dragged, kind },
       `find drop zones for ${dragged?.id} (${kind})`
     )
     const candidates = findCandidates(this, dragged, zone => {
