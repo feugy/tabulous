@@ -21,7 +21,7 @@
     clip-path: polygon(1rem 0%, 100% 0, 100% 100%, 1rem 100%, 0% 50%);
 
     &.centered {
-      @apply p-2 pt-1 pb-3 rounded-none -translate-y-16;
+      @apply p-2 pt-1 pb-3 rounded-none -translate-y-[100%] -translate-x-[50%];
       --offset: 85%;
       clip-path: polygon(
         0% 0%,
