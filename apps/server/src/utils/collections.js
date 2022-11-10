@@ -21,3 +21,16 @@ export function shuffle(source = [], iterations = 5) {
 
   return result
 }
+
+/**
+ * Pick a random value amongst candidates, ignoring some of the candidates.
+ * @param { any[]} candidates - possible candidates.
+ * @param {any[]} [ignored=[]] - ignored candidates.
+ * @returns {any} one of the candidates
+ */
+export function pickRandom(candidates = [], ignored = []) {
+  const actualCandidates = candidates.filter(
+    candidate => !ignored.includes(candidate)
+  )
+  return actualCandidates[Math.floor(Math.random() * actualCandidates.length)]
+}

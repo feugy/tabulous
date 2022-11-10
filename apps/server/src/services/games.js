@@ -1,7 +1,7 @@
 import { concatMap, mergeMap, Subject } from 'rxjs'
 
 import repositories from '../repositories/index.js'
-import { createMeshes } from '../utils/index.js'
+import { createMeshes, pickRandom } from '../utils/index.js'
 import { canAccess } from './catalog.js'
 
 /**
@@ -133,6 +133,19 @@ import { canAccess } from './catalog.js'
 
 const maxOwnedGames = 6
 
+// https://colorkit.co/color-palette-generator/4297a0-ff4500-239646-9c3096-578c64-bf963d-e42256-83746e-2f435a/
+const colors = [
+  '#4297a0',
+  '#ff4500',
+  '#239646',
+  '#9c3096',
+  '#578c64',
+  '#bf963d',
+  '#e42256',
+  '#83746e',
+  '#2f435a'
+]
+
 const gameListsUpdate$ = new Subject()
 
 function isOwner(game, playerId) {
@@ -184,20 +197,22 @@ export async function createGame(kind, playerId) {
   // eslint-disable-next-line no-unused-vars
   const { name, build, addPlayer, maxSeats, ...gameProps } = descriptor
   try {
-    let game = {
-      kind,
-      created: Date.now(),
-      playerIds: [playerId],
-      ...gameProps,
-      availableSeats: (maxSeats ?? 2) - 1,
-      meshes: await createMeshes(kind, descriptor),
-      messages: [],
-      cameras: [],
-      hands: []
-    }
-    if (descriptor?.addPlayer) {
-      game = await descriptor?.addPlayer(game, player)
-    }
+    const game = await enrichWithPlayer(
+      descriptor,
+      {
+        ...gameProps,
+        kind,
+        created: Date.now(),
+        playerIds: [],
+        availableSeats: (maxSeats ?? 2) - 1,
+        meshes: await createMeshes(kind, descriptor),
+        messages: [],
+        cameras: [],
+        hands: [],
+        preferences: []
+      },
+      player
+    )
     const created = await repositories.games.save(game)
     gameListsUpdate$.next(created.playerIds)
     return created
@@ -293,21 +308,38 @@ export async function invite(gameId, guestId, hostId) {
     throw new Error('no more available seats')
   }
   game.availableSeats--
-  game.playerIds.push(guest.id)
-  const descriptor = await repositories.catalogItems.getById(game.kind)
-  if (descriptor.addPlayer) {
-    try {
-      game = await descriptor.addPlayer(game, guest)
-    } catch (err) {
-      console.error(
-        `Error thrown while adding player to game ${game.kind} (${game.id}): ${err.message}`,
-        err.stack
-      )
-      throw err
-    }
+  try {
+    game = await enrichWithPlayer(
+      await repositories.catalogItems.getById(game.kind),
+      game,
+      guest
+    )
+  } catch (err) {
+    console.error(
+      `Error thrown while adding player to game ${game.kind} (${game.id}): ${err.message}`,
+      err.stack
+    )
+    throw err
   }
   await repositories.games.save(game)
   gameListsUpdate$.next(game.playerIds)
+  return game
+}
+
+async function enrichWithPlayer(descriptor, game, guest) {
+  game.playerIds.push(guest.id)
+  game.preferences.push({
+    playerId: guest.id,
+    color: pickRandom(
+      colors,
+      game.preferences.map(({ color }) => color)
+    )
+  })
+  if (!descriptor?.addPlayer) {
+    return game
+  }
+  game = await descriptor.addPlayer(game, guest)
+  game.preferences
   return game
 }
 

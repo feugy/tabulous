@@ -107,7 +107,8 @@ describe('given a subscription to game lists and an initialized repository', () 
         meshes: expect.any(Array),
         cameras: [],
         messages: [],
-        hands: []
+        hands: [],
+        preferences: [{ playerId: player.id, color: expect.any(String) }]
       })
       await setTimeout(50)
       expect(updates).toEqual([{ playerId: player.id, games: [game] }])
@@ -126,6 +127,7 @@ describe('given a subscription to game lists and an initialized repository', () 
         cameras: [],
         messages: [],
         hands: [{ playerId: player.id, meshes: [] }],
+        preferences: [{ playerId: player.id, color: expect.any(String) }],
         zoomSpec: { min: 5, max: 50 }
       })
       await setTimeout(50)
@@ -295,12 +297,16 @@ describe('given a subscription to game lists and an initialized repository', () 
         expect(updates).toHaveLength(0)
       })
 
-      it(`adds guest id to game's player id list and trigger list updates`, async () => {
+      it(`adds guest id to game's player id and preference lists, and trigger list updates`, async () => {
         const updated = await invite(game.id, peer.id, player.id)
         expect(updated).toEqual({
           ...game,
           availableSeats: 0,
-          playerIds: [player.id, peer.id]
+          playerIds: [player.id, peer.id],
+          preferences: [
+            { playerId: player.id, color: expect.any(String) },
+            { playerId: peer.id, color: expect.any(String) }
+          ]
         })
         // only once
         expect(await invite(game.id, peer.id, player.id)).toEqual(null)
@@ -351,11 +357,17 @@ describe('given a subscription to game lists and an initialized repository', () 
           ])
         ).map(({ id }) => id)
         let availableSeats = game.availableSeats
+        let playerIds
         for (let rank = 0; rank < guestIds.length; rank++) {
+          playerIds = [player.id, ...guestIds.slice(0, rank + 1)]
           expect(await invite(game.id, guestIds[rank], player.id)).toEqual({
             ...game,
             availableSeats: availableSeats - 1,
-            playerIds: [player.id, ...guestIds.slice(0, rank + 1)]
+            playerIds,
+            preferences: playerIds.map(playerId => ({
+              playerId,
+              color: expect.any(String)
+            }))
           })
           availableSeats--
         }
