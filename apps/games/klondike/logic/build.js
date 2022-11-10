@@ -44,7 +44,7 @@ function makeColumnSlots() {
         bagId,
         anchorId,
         count: 1,
-        flippable: row !== column ? { isFlipped: true } : undefined
+        flippable: { isFlipped: row !== column }
       })
     }
   }
