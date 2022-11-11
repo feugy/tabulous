@@ -87,7 +87,6 @@ export function createEngine({
   })
   moveManager.init({ scene })
   controlManager.init({ scene, handScene })
-  selectionManager.init({ scene, handScene })
   indicatorManager.init({ scene })
 
   engine.start = () =>
@@ -113,9 +112,10 @@ export function createEngine({
    * @async
    * @param {object} game - serialized game data TODO.
    * @param {string} playerId - current player id (to determine their hand).
+   * @param {string} color - hexadecimal string of the current player color.
    * @param {boolean} initial? - set to true to show Babylon's loading UI while loading assets.
    */
-  engine.load = async (gameData, playerId, initial) => {
+  engine.load = async (gameData, playerId, color, initial) => {
     const game = removeNulls(gameData)
     cameraManager.adjustZoomLevels(game.zoomSpec)
     const handsEnabled = hasHandsEnabled(game)
@@ -123,7 +123,18 @@ export function createEngine({
       isLoading = true
       engine.onLoadingObservable.notifyObservers(isLoading)
       engine.displayLoadingUI()
-      targetManager.init({ scene, playerId })
+
+      selectionManager.init({
+        scene,
+        handScene,
+        color,
+        overlayAlpha: 0.2
+      })
+      targetManager.init({
+        scene,
+        playerId,
+        color
+      })
       materialManager.init(
         { gameAssetsUrl, scene, handScene: handsEnabled ? handScene : null },
         game

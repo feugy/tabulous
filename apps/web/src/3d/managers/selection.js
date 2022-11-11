@@ -1,5 +1,5 @@
 import { Axis, Space } from '@babylonjs/core/Maths/math.axis.js'
-import { Color3 } from '@babylonjs/core/Maths/math.color.js'
+import { Color4 } from '@babylonjs/core/Maths/math.color.js'
 import { Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import { CreateLines } from '@babylonjs/core/Meshes/Builders/linesBuilder.js'
 import { ExtrudeShape } from '@babylonjs/core/Meshes/Builders/shapeBuilder.js'
@@ -32,6 +32,8 @@ class SelectionManager {
     this.handScene = null
     this.box = null
     this.skipNotify = false
+    this.color = Color4.FromHexString('#00ff00')
+    this.overlayColor = Color4.FromHexString('#00ff00ff')
   }
 
   /**
@@ -39,10 +41,15 @@ class SelectionManager {
    * @param {object} params - parameters, including:
    * @param {Scene} params.scene - scene attached to.
    * @param {Scene} params.handScene - scene for meshes in hand.
+   * @param {string} params.color - hexadecimal color string used for selection box, and selected mesh overlay.
+   * @param {number} params.overlayAlpha - [0-1] transparency used for selected mesh overlay
    */
-  init({ scene, handScene }) {
+  init({ scene, handScene, color, overlayAlpha }) {
     this.scene = scene
     this.handScene = handScene
+    this.color = Color4.FromHexString(color)
+    this.overlayColor = Color4.FromHexString(color)
+    this.overlayColor.a = overlayAlpha
   }
 
   /**
@@ -70,7 +77,7 @@ class SelectionManager {
       'selection-hint',
       {
         points,
-        colors: Array.from({ length: 6 }, () => Color3.Green().toColor4())
+        colors: Array.from({ length: 6 }, () => this.color)
       },
       scene
     )
@@ -112,7 +119,7 @@ class SelectionManager {
       }
       for (const mesh of scene.meshes) {
         if (mesh.isPickable && isContaining(box, mesh)) {
-          addToSelection(this, mesh)
+          addToSelection(this, mesh, this.overlayColor)
         }
       }
       reorderSelection(this)
@@ -130,20 +137,22 @@ class SelectionManager {
 
   /**
    * Adds meshes into selection (if not already in)
-   * @param {...Mesh} - mesh added to the active selection
+   * @param {Mesh[]} - array of meshes added to the active selection
+   * @param {Color4} [overlayColor] - color used for mesh overlay, default to manager's color.
    */
-  select(...meshes) {
+  select(meshes, overlayColor) {
     for (const mesh of meshes) {
-      addToSelection(this, mesh)
+      addToSelection(this, mesh, overlayColor ?? this.overlayColor)
     }
     reorderSelection(this)
   }
 
   /**
    * Adds meshes into selection (if not already in), by their ids.
-   * @param {...string} ids - selected mesh ids
+   * @param {string[]} ids - selected mesh ids
+   * @param {Color4} [overlayColor] - color used for mesh overlay, default to manager's color.
    */
-  selectById(...ids) {
+  selectById(ids, overlayColor) {
     const selected = []
     for (const scene of [this.scene, this.handScene]) {
       for (const id of ids) {
@@ -153,7 +162,7 @@ class SelectionManager {
         }
       }
     }
-    this.select(...selected)
+    this.select(selected, overlayColor ?? this.overlayColor)
   }
 
   /**
@@ -190,10 +199,12 @@ class SelectionManager {
  */
 export const selectionManager = new SelectionManager()
 
-function addToSelection(manager, mesh) {
+function addToSelection(manager, mesh, color) {
   if (mesh && !manager.meshes.has(mesh)) {
     for (const added of mesh.metadata?.stack ?? [mesh]) {
       manager.meshes.add(added)
+      added.overlayColor = color
+      added.overlayAlpha = color.a
       added.renderOverlay = true
       added.onDisposeObservable.addOnce(() => {
         manager.meshes.delete(added)

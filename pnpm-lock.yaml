@@ -140,6 +140,7 @@ importers:
       autoprefixer: ^10.4.13
       chalk: ^5.1.2
       chalk-template: ^0.4.0
+      colorjs.io: 0.4.1-patch.1
       cookie: ^0.5.0
       dotenv: ^16.0.3
       earcut: ^2.2.4
@@ -198,6 +199,7 @@ importers:
       autoprefixer: 10.4.13_postcss@8.4.18
       chalk: 5.1.2
       chalk-template: 0.4.0
+      colorjs.io: 0.4.1-patch.1
       cookie: 0.5.0
       dotenv: 16.0.3
       earcut: 2.2.4
@@ -728,7 +730,7 @@ packages:
     resolution: {integrity: sha512-69JnK7Cot+ktn7LD5TikP3b7psBPX55tYpQa8WSumt8r117PCa2zwHnImfBtRWYExreJlI48hr0WZaVrTBGj7w==}
     dependencies:
       ajv: 8.11.0
-      ajv-formats: 2.1.1_ajv@8.11.0
+      ajv-formats: 2.1.1
       fast-uri: 2.1.0
 
   /@fastify/cors/8.1.1:
@@ -1471,10 +1473,8 @@ packages:
       clean-stack: 2.2.0
       indent-string: 4.0.0
 
-  /ajv-formats/2.1.1_ajv@8.11.0:
+  /ajv-formats/2.1.1:
     resolution: {integrity: sha512-Wx0Kx52hxE7C18hkMEggYlEifqWZtYaRgouJor+WMdPnQyEK13vgEWyVNup7SoeeoLMsr4kf5h6dOW11I15MUA==}
-    peerDependencies:
-      ajv: ^8.0.0
     peerDependenciesMeta:
       ajv:
         optional: true
@@ -1978,6 +1978,10 @@ packages:
 
   /colorette/2.0.19:
     resolution: {integrity: sha512-3tlv/dIP7FWvj3BsbHrGLJ6l/oKh1O3TcgBqMn+yyCagOxc23fyzDS6HypQbgxWbkpDnf52p1LuR4eWDQ/K9WQ==}
+
+  /colorjs.io/0.4.1-patch.1:
+    resolution: {integrity: sha512-7UWunVDvnUtWRvGD0hEuGyxIvZvw4QbV8/Hz5fhePZdzyvZ8/Ze3mVGxa/8B084jZGBKJDX0ZwHPL/FDn7PZZA==}
+    dev: true
 
   /combined-stream/1.0.8:
     resolution: {integrity: sha512-FQN4MRfuJeHf7cBbBMJFXhKSDq+2kAArBlmRBvcvFE5BB1HZKXtSFASDhdlz9zOYwxh8lDdnvmMOe/+5cdoEdg==}
@@ -2834,7 +2838,7 @@ packages:
     dependencies:
       '@fastify/deepmerge': 1.1.0
       ajv: 8.11.0
-      ajv-formats: 2.1.1_ajv@8.11.0
+      ajv-formats: 2.1.1
       fast-deep-equal: 3.1.3
       fast-uri: 2.1.0
       rfdc: 1.3.0

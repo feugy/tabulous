@@ -163,7 +163,7 @@ describe('Indicators store', () => {
           .getBehaviorByName(StackBehaviorName)
           .fromState({ stackIds: ['card5'] })
         expectIndicators()
-        selectionManager.select(card5, card3)
+        selectionManager.select([card5, card3])
         expectIndicators([
           {
             id: `${card5.id}.stack-size`,
@@ -211,7 +211,7 @@ describe('Indicators store', () => {
           .getBehaviorByName(StackBehaviorName)
           .fromState({ stackIds: ['card5'] })
         expectIndicators()
-        selectionManager.select(card5, card3, card2, card1, card4)
+        selectionManager.select([card5, card3, card2, card1, card4])
         expectIndicators([
           {
             id: `${card4.id}.stack-size`,

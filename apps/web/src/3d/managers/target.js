@@ -1,4 +1,5 @@
-import { Color3 } from '@babylonjs/core/Maths/math.color.js'
+import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial.js'
+import { Color3, Color4 } from '@babylonjs/core/Maths/math.color.js'
 
 import { makeLogger } from '../../utils/logger'
 import { distance } from '../../utils/math'
@@ -32,10 +33,14 @@ class TargetManager {
    * @param {object} params - parameters, including:
    * @param {Scene} params.scene - main scene.
    * @param {string} params.playerId - current player Id.
+   * @param {string} params.color - hexadecimal color string used for highlighting targets.
    */
-  init({ scene, playerId }) {
+  init({ scene, playerId, color }) {
     this.scene = scene
     this.playerId = playerId
+    this.material = new StandardMaterial('target-material', scene)
+    this.material.diffuseColor = Color3.FromHexString(color)
+    this.material.alpha = 0.5
   }
 
   /**
@@ -88,7 +93,7 @@ class TargetManager {
       dragged,
       zone => zone.playerId && this.canAccept(zone, kind)
     )
-    return findMatchingZone(this, candidates, dragged, kind)
+    return findAndHighlightZone(this, candidates, dragged, kind)
   }
 
   /**
@@ -113,7 +118,7 @@ class TargetManager {
         areCenterCloseEnough(dragged, zone)
       )
     })
-    return findMatchingZone(this, candidates, dragged, kind)
+    return findAndHighlightZone(this, candidates, dragged, kind)
   }
 
   /**
@@ -203,13 +208,13 @@ function findCandidates({ behaviors, scene }, dragged, isMatching) {
   return candidates
 }
 
-function findMatchingZone(manager, candidates, dragged, kind) {
+function findAndHighlightZone(manager, candidates, dragged, kind) {
   if (candidates.length > 0) {
     const [match] = sortCandidates(candidates)
     const { targetable, zone } = match
     const droppables = manager.droppablesByDropZone.get(zone) ?? []
     manager.droppablesByDropZone.set(zone, [...droppables, dragged])
-    highlightZone(zone)
+    highlightZone(zone, manager.material)
     logger.info(
       { zone, dragged },
       `found drop zone ${targetable.mesh?.id} for ${dragged?.id} (${kind})`
@@ -230,12 +235,16 @@ function sortCandidates(candidates) {
   )
 }
 
-function highlightZone(zone) {
+function highlightZone(zone, material) {
   if (zone?.mesh?.visibility === 0) {
-    zone.mesh.visibility = 0.1
+    zone.mesh.material = material
+    zone.mesh.visibility = 1
     zone.mesh.enableEdgesRendering()
     zone.mesh.edgesWidth = 5.0
-    zone.mesh.edgesColor = Color3.Green().toColor4()
+    zone.mesh.edgesColor = Color4.FromArray([
+      ...material.diffuseColor.asArray(),
+      1
+    ])
   }
 }
 

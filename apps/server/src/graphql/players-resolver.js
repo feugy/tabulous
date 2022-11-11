@@ -97,6 +97,7 @@ export default {
      */
     updateCurrentPlayer: isAuthenticated(
       async (obj, { username, avatar }, { player }) => {
+        // https://en.wikipedia.org/wiki/Latin_script_in_Unicode
         const sanitizedUsername =
           username
             .match(/\p{sc=Latin}|\p{Number}|\p{Emoji}|-|_/giu)

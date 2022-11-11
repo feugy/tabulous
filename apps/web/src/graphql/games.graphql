@@ -110,6 +110,10 @@ fragment fullGame on Game {
       ...mesh
     }
   }
+  preferences {
+    playerId
+    color
+  }
   rulesBookPageCount
   zoomSpec {
     min

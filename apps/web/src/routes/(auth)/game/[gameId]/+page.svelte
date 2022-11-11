@@ -33,6 +33,7 @@
     loadGame,
     longInputs,
     meshDetails,
+    playerColor,
     restoreCamera,
     saveCamera,
     sendToThread,
@@ -126,6 +127,7 @@
       visible={$handVisible}
       highlight={$highlightHand}
       meshes={$handMeshes}
+      color={$playerColor}
       bind:node={hand}
     />
     <MeshDetails mesh={$meshDetails} on:close={handleCloseDetails} />

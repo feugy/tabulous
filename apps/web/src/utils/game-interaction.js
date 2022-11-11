@@ -420,7 +420,7 @@ export function attachInputs({
           fn === 'push' &&
           [...selectionManager.meshes].some(({ id }) => args[0] === id)
         ) {
-          selectionManager.selectById(meshId)
+          selectionManager.selectById([meshId])
         }
       }
     })
@@ -601,12 +601,12 @@ const menuActions = [
       badge: 'shortcuts.pop',
       onClick: async ({ detail } = {}) =>
         selectionManager.select(
-          ...(await triggerAction(
+          await triggerAction(
             mesh.metadata.stack[0],
             'pop',
             detail?.quantity,
             true
-          ))
+          )
         ),
       max: computesStackSize(mesh, params)
     })
@@ -620,9 +620,9 @@ const menuActions = [
       title: 'tooltips.decrement',
       badge: 'shortcuts.pop',
       onClick: async ({ detail } = {}) =>
-        selectionManager.select(
+        selectionManager.select([
           await triggerAction(mesh, 'decrement', detail?.quantity, true)
-        ),
+        ]),
       max: computesQuantity(mesh, params)
     })
   },

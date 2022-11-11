@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { shuffle } from '../../src/utils/index.js'
+import { pickRandom, shuffle } from '../../src/utils/index.js'
 
 describe('shuffle()', () => {
   it('randomizes elements of an array, leaving source array unmodified', () => {
@@ -23,5 +23,23 @@ describe('shuffle()', () => {
     expect(shuffle()).toEqual([])
     expect(shuffle(null)).toEqual([])
     expect(shuffle([])).toEqual([])
+  })
+})
+
+describe('pickRandom()', () => {
+  it('picks a random element with no ignored ones', () => {
+    const colors = ['red', 'green', 'blue']
+    for (let i = 0; i < 30; i++) {
+      const color = pickRandom(colors)
+      expect(color).toBeTruthy()
+      expect(colors).toContain(color)
+    }
+  })
+
+  it('does not pick any of the ignored ones', () => {
+    const colors = ['red', 'green', 'blue']
+    for (let i = 0; i < 30; i++) {
+      expect(pickRandom(colors, ['red', 'blue'])).toBe('green')
+    }
   })
 })

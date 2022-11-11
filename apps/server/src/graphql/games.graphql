@@ -10,6 +10,7 @@ type Game {
   messages: [Message]
   cameras: [CameraPosition]
   hands: [Hand]
+  preferences: [PlayerPreference]
   rulesBookPageCount: Int
   availableSeats: Int
   zoomSpec: ZoomSpec
@@ -160,6 +161,11 @@ type CameraPosition {
 type Hand {
   playerId: ID!
   meshes: [Mesh]!
+}
+
+type PlayerPreference {
+  playerId: ID!
+  color: String
 }
 
 type ZoomSpec {
