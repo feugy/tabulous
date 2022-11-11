@@ -35,8 +35,10 @@
   }
 
   function select(option) {
-    value = option
-    dispatch('select', value)
+    if (option !== value) {
+      value = option
+      dispatch('select', value)
+    }
     toggleVisibility()
   }
 

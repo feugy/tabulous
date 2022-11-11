@@ -21,13 +21,6 @@
     text = value ? value.label || value : text
   }
 
-  function handleSelect({ detail }) {
-    if (value !== detail) {
-      value = detail
-      dispatch('select', value)
-    }
-  }
-
   function handleClick() {
     if (openOnClick) {
       handleArrowClick()
@@ -76,12 +69,12 @@
     {anchor}
     {open}
     {options}
-    {value}
     takesFocus
+    bind:value
     bind:ref={menu}
     on:close
+    on:select
     on:close={() => (open = false)}
-    on:select={handleSelect}
   />
 </span>
 
