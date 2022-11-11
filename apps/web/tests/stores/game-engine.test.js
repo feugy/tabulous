@@ -18,7 +18,8 @@ import {
   controlManager,
   handManager,
   indicatorManager,
-  inputManager
+  inputManager,
+  selectionManager
 } from '../../src/3d/managers'
 import * as gameEngine from '../../src/stores/game-engine'
 import {
@@ -67,6 +68,7 @@ describe('initEngine()', () => {
   const interaction = document.createElement('div')
   const overlay = document.createElement('div')
   const receiveAction = vi.fn()
+  const receiveSelection = vi.fn()
   const receiveMeshDetail = vi.fn()
   const receiveCameraSave = vi.fn()
   const receiveCurrentCamera = vi.fn()
@@ -89,7 +91,8 @@ describe('initEngine()', () => {
       gameEngine.longInputs.subscribe({ next: receiveLongInput }),
       gameEngine.handMeshes.subscribe({ next: receiveHandChange }),
       gameEngine.highlightHand.subscribe({ next: receiveHighlightHand }),
-      gameEngine.handVisible.subscribe({ next: receiveHandVisible })
+      gameEngine.handVisible.subscribe({ next: receiveHandVisible }),
+      gameEngine.selectedMeshes.subscribe({ next: receiveSelection })
     ]
   })
 
@@ -119,6 +122,7 @@ describe('initEngine()', () => {
     describe('given an initialized engine', () => {
       beforeEach(() => {
         gameEngine.initEngine({ canvas, interaction, pointerThrottle: 10 })
+        sendToPeer.mockReset()
       })
 
       it('reset engine observable on disposal', () => {
@@ -153,6 +157,21 @@ describe('initEngine()', () => {
         expect(receiveAction).toHaveBeenCalledWith(data)
         expect(receiveAction).toHaveBeenCalledTimes(1)
         expect(sendToPeer).not.toHaveBeenCalled()
+      })
+
+      it('sends selection to peers', () => {
+        const data = new Set([{ id: 'mesh1' }, { id: 'mesh2' }])
+        selectionManager.onSelectionObservable.notifyObservers(data)
+        expect(receiveSelection).toHaveBeenNthCalledWith(1, data)
+        expect(sendToPeer).toHaveBeenNthCalledWith(1, {
+          selectedIds: ['mesh1', 'mesh2']
+        })
+
+        selectionManager.onSelectionObservable.notifyObservers(new Set())
+        expect(receiveSelection).toHaveBeenNthCalledWith(2, new Set())
+        expect(sendToPeer).toHaveBeenNthCalledWith(2, { selectedIds: [] })
+        expect(receiveSelection).toHaveBeenCalledTimes(2)
+        expect(sendToPeer).toHaveBeenCalledTimes(2)
       })
 
       it('moves peer pointers on message', () => {

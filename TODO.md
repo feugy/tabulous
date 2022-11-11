@@ -92,7 +92,6 @@ AssertionError: expected 2nd "spy" call to have been called with [ 'anima' ]
 
 ## UI
 
-- bug: can't type 'h' in invite dialogue (considered as shortcut)
 - bug: animating visibility from 0 to 1 creates trouble with texture alpha channel
 - bug: attached, unselected mesh are not ignored during dragging
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered

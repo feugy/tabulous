@@ -218,6 +218,15 @@ export function initEngine({
     // sends local action from main scene to other players
     localAction$.pipe(filter(({ fromHand }) => !fromHand)).subscribe(send),
 
+    // send local selection to other players
+    selectedMeshes$.subscribe(selected => {
+      const selectedIds = []
+      for (const { id } of selected) {
+        selectedIds.push(id)
+      }
+      send({ selectedIds })
+    }),
+
     // prunes unused peer pointers if needed
     connected.subscribe(players => {
       if (players) {
