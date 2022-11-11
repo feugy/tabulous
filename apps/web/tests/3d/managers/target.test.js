@@ -20,6 +20,8 @@ describe('TargetManager', () => {
     handScene = created.handScene
   })
 
+  beforeAll(() => selectionManager.init({ scene, color: '#FF00FF' }))
+
   beforeEach(() => {
     vi.resetAllMocks()
     drops = []
@@ -33,7 +35,9 @@ describe('TargetManager', () => {
   describe('init()', () => {
     it('sets scene', () => {
       const playerId = faker.datatype.uuid()
-      manager.init({ scene, playerId })
+      const color = faker.color.rgb()
+      const overlayAlpha = Math.random()
+      manager.init({ scene, playerId, color, overlayAlpha })
       expect(manager.scene).toEqual(scene)
       expect(manager.playerId).toEqual(playerId)
     })
@@ -41,8 +45,9 @@ describe('TargetManager', () => {
 
   describe('given an initialized manager', () => {
     const playerId = faker.datatype.uuid()
+    const color = '#00FF00'
 
-    beforeAll(() => manager.init({ scene, playerId }))
+    beforeAll(() => manager.init({ scene, playerId, color, overlayAlpha: 0.2 }))
 
     describe('registerTargetable()', () => {
       it('registers a mesh', () => {
@@ -109,7 +114,7 @@ describe('TargetManager', () => {
         const mesh = CreateBox('box', {})
         mesh.setAbsolutePosition(aboveZone1)
 
-        expectActiveZone(manager.findDropZone(mesh), zone1)
+        expectActiveZone(manager.findDropZone(mesh), zone1, color)
       })
 
       it('ignores an overlaping target when mesh is too far from center', () => {
@@ -136,7 +141,7 @@ describe('TargetManager', () => {
       })
 
       it('ignores target part of the current selection', () => {
-        selectionManager.select(zone1.targetable.mesh)
+        selectionManager.select([zone1.targetable.mesh])
         const mesh = CreateBox('box', {})
         mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
 
@@ -175,14 +180,14 @@ describe('TargetManager', () => {
         const mesh = CreateBox('box', {})
         mesh.setAbsolutePosition(aboveZone3)
 
-        expectActiveZone(manager.findDropZone(mesh, 'box'), zone3)
+        expectActiveZone(manager.findDropZone(mesh, 'box'), zone3, color)
       })
 
       it('returns kind-less targets below mesh with kind', () => {
         const mesh = CreateBox('box', {})
         mesh.setAbsolutePosition(aboveZone1)
 
-        expectActiveZone(manager.findDropZone(mesh, 'box'), zone1)
+        expectActiveZone(manager.findDropZone(mesh, 'box'), zone1, color)
       })
 
       it('returns targets below mesh with matching kind', () => {
@@ -190,7 +195,7 @@ describe('TargetManager', () => {
         const mesh = CreateBox('box', {})
         mesh.setAbsolutePosition(aboveZone2)
 
-        expectActiveZone(manager.findDropZone(mesh, 'box'), zone2)
+        expectActiveZone(manager.findDropZone(mesh, 'box'), zone2, color)
       })
 
       it('returns highest target below mesh regardless of priorities', () => {
@@ -206,7 +211,7 @@ describe('TargetManager', () => {
         const mesh = CreateBox('box', {})
         mesh.setAbsolutePosition(new Vector3(0, 5, 0))
 
-        expectActiveZone(manager.findDropZone(mesh, 'box'), zone4)
+        expectActiveZone(manager.findDropZone(mesh, 'box'), zone4, color)
       })
 
       it('returns highest priority target below mesh', () => {
@@ -223,7 +228,7 @@ describe('TargetManager', () => {
         const mesh = CreateBox('box', {})
         mesh.setAbsolutePosition(new Vector3(0, 5, 0))
 
-        expectActiveZone(manager.findDropZone(mesh, 'box'), zone4)
+        expectActiveZone(manager.findDropZone(mesh, 'box'), zone4, color)
       })
 
       describe('clear()', () => {
@@ -313,7 +318,7 @@ describe('TargetManager', () => {
       })
 
       it('ignores target part of the current selection', () => {
-        selectionManager.select(zone1.targetable.mesh)
+        selectionManager.select([zone1.targetable.mesh])
         const mesh = CreateBox('box', {})
         mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
 
@@ -331,7 +336,7 @@ describe('TargetManager', () => {
       })
 
       it('returns kind-less targets for provided kind', () => {
-        expectActiveZone(manager.findPlayerZone(mesh, 'box'), zone1)
+        expectActiveZone(manager.findPlayerZone(mesh, 'box'), zone1, color)
       })
 
       it('returns targets with matching kind', () => {
@@ -340,7 +345,7 @@ describe('TargetManager', () => {
           playerId,
           kinds: ['card', 'box']
         })
-        expectActiveZone(manager.findPlayerZone(mesh, 'box'), zone3)
+        expectActiveZone(manager.findPlayerZone(mesh, 'box'), zone3, color)
       })
 
       it('returns highest target', () => {
@@ -348,7 +353,7 @@ describe('TargetManager', () => {
           position: new Vector3(0, 1, 0),
           playerId
         })
-        expectActiveZone(manager.findPlayerZone(mesh, 'box'), zone3)
+        expectActiveZone(manager.findPlayerZone(mesh, 'box'), zone3, color)
       })
 
       describe('clear()', () => {
@@ -461,12 +466,13 @@ describe('TargetManager', () => {
     return behavior.addZone(target, { extent: 0.5, ...properties })
   }
 
-  function expectActiveZone(actual, expected) {
+  function expectActiveZone(actual, expected, color) {
     expect(actual.mesh.id).toEqual(expected.mesh.id)
     expectVisibility(actual, true)
+    expect(actual.mesh.material?.diffuseColor?.toHexString()).toEqual(color)
   }
 
   function expectVisibility(zone, isVisible) {
-    expect(zone.mesh.visibility).toEqual(isVisible ? 0.1 : 0)
+    expect(zone.mesh.visibility).toEqual(isVisible ? 1 : 0)
   }
 })

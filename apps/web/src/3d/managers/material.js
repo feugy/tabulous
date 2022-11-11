@@ -4,7 +4,7 @@ import '@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent.js'
 import { Engine } from '@babylonjs/core/Engines/engine.js'
 import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial.js'
 import { Texture } from '@babylonjs/core/Materials/Textures/texture.js'
-import { Color3, Color4 } from '@babylonjs/core/Maths/math.color.js'
+import { Color4 } from '@babylonjs/core/Maths/math.color.js'
 
 import { makeLogger } from '../../utils/logger'
 
@@ -63,8 +63,6 @@ class MaterialManager {
     mesh.material =
       materialByUrl.get(texture) ?? buildMaterials(this, texture, scene)
     mesh.receiveShadows = true
-    mesh.overlayColor = new Color3(0, 0.8, 0)
-    mesh.overlayAlpha = 0.2
   }
 
   /**

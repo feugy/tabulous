@@ -71,7 +71,7 @@ describe('HandManager', () => {
 
   beforeAll(() => {
     savedCameraPosition = camera.position.clone()
-    targetManager.init({ scene, playerId })
+    targetManager.init({ scene, playerId, color: '#00ff00' })
     indicatorManager.init({ scene })
     actionObserver = controlManager.onActionObservable.add(actionRecorded)
   })
@@ -533,7 +533,7 @@ describe('HandManager', () => {
 
       it('can re-order an entire selection of hand meshes', async () => {
         const [mesh1, mesh2, mesh3] = handCards
-        selectionManager.select(mesh2, mesh3)
+        selectionManager.select([mesh2, mesh3])
         const positions = getPositions(handCards)
         const z = positions[0][3]
         expect(draggableToHandReceived).not.toHaveBeenCalled()
@@ -725,7 +725,7 @@ describe('HandManager', () => {
       it('moves all selected meshes to hand by dragging', async () => {
         const [mesh1, mesh2, mesh3] = cards
         mesh3.metadata.push(mesh2.id)
-        selectionManager.select(mesh1, mesh2, mesh3)
+        selectionManager.select([mesh1, mesh2, mesh3])
         actionRecorded.mockReset()
         const stopDrag = vi.spyOn(inputManager, 'stopDrag')
 
@@ -1114,7 +1114,7 @@ describe('HandManager', () => {
 
         it(`moves multiple drawn meshes to player's drop zone`, async () => {
           const [mesh1, mesh2] = handCards
-          selectionManager.select(mesh1, mesh2)
+          selectionManager.select([mesh1, mesh2])
           mesh2.metadata.draw()
           await waitForLayout()
           expect(handScene.getMeshById(mesh1.id)?.id).toBeUndefined()
@@ -1232,7 +1232,7 @@ describe('HandManager', () => {
 
         it(`automatically moves multiple dragged meshes to player's drop zone`, async () => {
           const [mesh1, mesh2] = handCards
-          selectionManager.select(mesh1, mesh2)
+          selectionManager.select([mesh1, mesh2])
           inputManager.onDragObservable.notifyObservers({
             type: 'dragStart',
             mesh: mesh1,

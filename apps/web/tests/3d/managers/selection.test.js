@@ -1,5 +1,6 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { faker } from '@faker-js/faker'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { StackBehavior } from '../../../src/3d/behaviors'
@@ -50,7 +51,7 @@ describe('SelectionManager', () => {
   describe('select()', () => {
     it('adds meshes to selection', () => {
       const mesh = CreateBox('box1', {})
-      manager.select(mesh)
+      manager.select([mesh])
       expect(manager.meshes.has(mesh)).toBe(true)
       expect(manager.meshes.size).toBe(1)
       expectSelected(mesh)
@@ -62,7 +63,7 @@ describe('SelectionManager', () => {
     it('adds multiple meshes to selection', () => {
       const mesh1 = CreateBox('box1', {})
       const mesh2 = CreateBox('box2', {})
-      manager.select(mesh1, mesh2)
+      manager.select([mesh1, mesh2])
       expect(manager.meshes.has(mesh1)).toBe(true)
       expect(manager.meshes.has(mesh2)).toBe(true)
       expect(manager.meshes.size).toBe(2)
@@ -75,7 +76,7 @@ describe('SelectionManager', () => {
       const mesh1 = CreateBox('box1', {})
       const mesh2 = CreateBox('box2', {})
       mesh1.addBehavior(new StackBehavior({ stackIds: [mesh2.id] }))
-      manager.select(mesh1)
+      manager.select([mesh1])
       expect(manager.meshes.has(mesh1)).toBe(true)
       expect(manager.meshes.has(mesh2)).toBe(true)
       expect(manager.meshes.size).toBe(2)
@@ -87,22 +88,22 @@ describe('SelectionManager', () => {
     it('reorders selection based on elevation', () => {
       const mesh1 = CreateBox('box1', {})
       mesh1.setAbsolutePosition(new Vector3(0, 5, 0))
-      manager.select(mesh1)
+      manager.select([mesh1])
       expectSelection([mesh1])
 
       const mesh2 = CreateBox('box2', {})
       mesh2.setAbsolutePosition(new Vector3(0, -2, 0))
-      manager.select(mesh2)
+      manager.select([mesh2])
       expectSelection([mesh2, mesh1])
 
       const mesh3 = CreateBox('box3', {})
       mesh3.setAbsolutePosition(new Vector3(0, 7, 0))
-      manager.select(mesh3)
+      manager.select([mesh3])
       expectSelection([mesh2, mesh1, mesh3])
 
       const mesh4 = CreateBox('box4', {})
       mesh4.setAbsolutePosition(new Vector3(0, 2, 0))
-      manager.select(mesh4)
+      manager.select([mesh4])
       expectSelection([mesh2, mesh4, mesh1, mesh3])
 
       expect(selectionChanged).toHaveBeenCalledTimes(4)
@@ -120,9 +121,9 @@ describe('SelectionManager', () => {
     beforeEach(() => {
       meshes = ['box1', 'box2', 'box3'].map(id => {
         const mesh = CreateBox(id, {})
-        manager.select(mesh)
         return mesh
       })
+      manager.select(meshes)
       selectionChanged.mockReset()
     })
 
@@ -139,7 +140,7 @@ describe('SelectionManager', () => {
 
     describe('select()', () => {
       it('does not add the same mesh twice', () => {
-        manager.select(meshes[0])
+        manager.select([meshes[0]])
         expect(manager.meshes.has(meshes[0])).toBe(true)
         expect(manager.meshes.size).toBe(3)
         expectSelected(meshes[0])
@@ -154,7 +155,7 @@ describe('SelectionManager', () => {
 
       it('returns provided mesh if it not selected', () => {
         manager.clear()
-        manager.select(meshes[1], meshes[2])
+        manager.select([meshes[1], meshes[2]])
         expectMeshes(manager.getSelection(meshes[0]), [meshes[0]])
       })
     })
@@ -183,16 +184,22 @@ describe('SelectionManager', () => {
 
   describe('init()', () => {
     it('assigns scenes', () => {
-      manager.init({ scene, handScene })
+      const color = faker.color.rgb().toUpperCase()
+      const overlayAlpha = 0.7
+      manager.init({ scene, handScene, color, overlayAlpha })
       expect(manager.scene).toEqual(scene)
       expect(manager.handScene).toEqual(handScene)
+      expect(manager.color?.toHexString()).toEqual(`${color}FF`)
+      expect(manager.overlayColor?.toHexString()).toEqual(`${color}B3`)
     })
   })
 
   describe('given some meshes', () => {
     let meshes
 
-    beforeAll(() => manager.init({ scene, handScene }))
+    beforeAll(() =>
+      manager.init({ scene, handScene, color: '#0000ff', overlayAlpha: 0.3 })
+    )
 
     beforeEach(() => {
       meshes = [
@@ -213,7 +220,7 @@ describe('SelectionManager', () => {
 
     describe('selectById()', () => {
       it('adds meshes to selection', () => {
-        manager.selectById(meshes[0].id)
+        manager.selectById([meshes[0].id])
         expect(manager.meshes.has(meshes[0])).toBe(true)
         expect(manager.meshes.size).toBe(1)
         expectSelected(meshes[0])
@@ -223,7 +230,7 @@ describe('SelectionManager', () => {
       })
 
       it('adds multiple meshes to selection', () => {
-        manager.selectById(meshes[0].id, meshes[1].id)
+        manager.selectById([meshes[0].id, meshes[1].id])
         expect(manager.meshes.has(meshes[0])).toBe(true)
         expect(manager.meshes.has(meshes[1])).toBe(true)
         expect(manager.meshes.size).toBe(2)
@@ -245,7 +252,7 @@ describe('SelectionManager', () => {
       })
 
       it('append to selection', () => {
-        manager.select(meshes[4])
+        manager.select([meshes[4]])
         manager.drawSelectionBox({ x: 1100, y: 550 }, { x: 1000, y: 400 })
         manager.selectWithinBox()
         expectSelection([meshes[4], meshes[1], meshes[0]])
@@ -263,14 +270,14 @@ describe('SelectionManager', () => {
       })
 
       it('clears selection from hand when selecting in main scene', () => {
-        manager.select(meshes[6])
+        manager.select([meshes[6]])
         manager.drawSelectionBox({ x: 1000, y: 550 }, { x: 1100, y: 400 })
         manager.selectWithinBox()
         expectSelection([meshes[1], meshes[0]])
       })
 
       it('clears selection from main when selecting in hand', () => {
-        manager.select(meshes[4])
+        manager.select([meshes[4]])
         vi.spyOn(handManager, 'isPointerInHand').mockReturnValueOnce(true)
         manager.drawSelectionBox({ x: 100, y: 400 }, { x: 1100, y: 900 })
         manager.selectWithinBox()

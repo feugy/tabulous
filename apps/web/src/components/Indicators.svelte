@@ -34,7 +34,7 @@
       content={computeLabel(player, rest)}
     />
   {:else}
-    <PlayerThumbnail {screenPosition} {player} />
+    <PlayerThumbnail {screenPosition} {player} color={player?.color} />
   {/if}
 {/each}
 {#each feedbacks as { screenPosition, id, player, ...rest } (id)}

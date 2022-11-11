@@ -54,6 +54,7 @@ describe('createEngine()', () => {
   describe('given an engine', () => {
     let displayLoadingUI
     let loadingObserver
+    const color = '#f0f'
     const receiveLoading = vi.fn()
 
     beforeEach(() => {
@@ -85,7 +86,7 @@ describe('createEngine()', () => {
         y: 0,
         z: -10
       }
-      await engine.load({ meshes: [mesh], hands: [] }, playerId, false)
+      await engine.load({ meshes: [mesh], hands: [] }, playerId, color, false)
       engine.scenes[1].onDataLoadedObservable.notifyObservers()
       expect(engine.scenes[1].getMeshById(mesh.id)).toBeDefined()
       expect(displayLoadingUI).not.toHaveBeenCalled()
@@ -134,7 +135,7 @@ describe('createEngine()', () => {
         z: -10
       }
       expect(engine.isLoading).toBe(false)
-      await engine.load({ meshes: [mesh], hands: [] }, playerId, true)
+      await engine.load({ meshes: [mesh], hands: [] }, playerId, color, true)
       expect(engine.isLoading).toBe(true)
       expect(receiveLoading).toHaveBeenCalledWith(true, expect.anything())
       expect(receiveLoading).toHaveBeenCalledTimes(1)
@@ -157,6 +158,7 @@ describe('createEngine()', () => {
           hands: [{ playerId, meshes: [{ id: 'box', shape: 'card' }] }]
         },
         playerId,
+        color,
         true
       )
       expect(engine.isLoading).toBe(true)
@@ -195,6 +197,7 @@ describe('createEngine()', () => {
             hands: []
           },
           playerId,
+          color,
           true
         )
         engine.start()

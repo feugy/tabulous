@@ -1,7 +1,20 @@
-import { BehaviorSubject, debounceTime, filter, map, merge } from 'rxjs'
+import {
+  BehaviorSubject,
+  combineLatest,
+  debounceTime,
+  filter,
+  map,
+  merge
+} from 'rxjs'
 
 import * as graphQL from '../graphql'
-import { makeLogger, sleep } from '../utils'
+import {
+  findPlayerColor,
+  findPlayerPreferences,
+  makeHighlightColor,
+  makeLogger,
+  sleep
+} from '../utils'
 import { clearThread, loadThread, serializeThread } from './discussion'
 import {
   action,
@@ -39,6 +52,14 @@ let delayOnLoad = () => {}
 export const currentGame = currentGame$.asObservable()
 
 /**
+ * Emits the player current color.
+ * @type {Observable<string>}
+ */
+export const playerColor = combineLatest([currentGame$, playingIds$]).pipe(
+  map(([game, playingIds]) => findPlayerColor(game, playingIds[0]))
+)
+
+/**
  * Emits a map of player in current game.
  * @type {Observable<Map<string, import('../graphql').Player>>}
  */
@@ -50,6 +71,7 @@ export const gamePlayerById = merge(hostId$, playingIds$, currentGame$).pipe(
       for (const player of game.players) {
         playerById.set(player.id, {
           ...player,
+          ...findPlayerPreferences(game, player.id),
           playing: playingIds$.value.includes(player.id),
           isHost: hostId$.value === player.id
         })
@@ -280,7 +302,12 @@ async function load(game, currentPlayerId, firstLoad) {
       loadCameraSaves(playerCameras)
     }
   }
-  await engine.load(game, currentPlayerId, firstLoad)
+  await engine.load(
+    game,
+    currentPlayerId,
+    makeHighlightColor(findPlayerColor(game, currentPlayerId)),
+    firstLoad
+  )
 }
 
 function mergeCameras({ playerId, cameras: playerCameras }) {

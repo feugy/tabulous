@@ -59,7 +59,7 @@ describe('MoveManager', () => {
 
   beforeAll(() => {
     controlManager.init({ scene, handScene })
-    targetManager.init({ scene })
+    targetManager.init({ scene, color: '#0000ff' })
     indicatorManager.init({ scene })
     actionObserver = controlManager.onActionObservable.add(actionRecorded)
     moveObserver = manager.onMoveObservable.add(moveRecorded)
@@ -516,7 +516,7 @@ describe('MoveManager', () => {
         createMovable('box1', positions[0]),
         createMovable('box2', positions[1])
       ]
-      selectionManager.select(...meshes, moved)
+      selectionManager.select([...meshes, moved])
 
       manager.start(moved, { x: centerX, y: centerY })
       expect(manager.inProgress).toBe(true)
@@ -550,7 +550,7 @@ describe('MoveManager', () => {
         createMovable('box1', new Vector3(0, 5, 0)),
         createMovable('box2', new Vector3(-3, 0.5, -3))
       ]
-      selectionManager.select(...moved)
+      selectionManager.select(moved)
       targets = [
         createsTarget(1, new Vector3(3, 0, 0)),
         createsTarget(2, new Vector3(-1, 0, -4.1))
@@ -785,7 +785,7 @@ describe('MoveManager', () => {
 
       it('ignores unknow meshes', () => {
         selectionManager.clear()
-        selectionManager.select(...moved.slice(0, 2))
+        selectionManager.select(moved.slice(0, 2))
         manager.start(moved[1], { x: centerX, y: centerY })
         actionRecorded.mockReset()
 
@@ -878,7 +878,7 @@ describe('MoveManager', () => {
       ]
       moved[1].setParent(moved[0])
       moved[2].setParent(moved[1])
-      selectionManager.select(moved[0], moved[1])
+      selectionManager.select([moved[0], moved[1]])
     })
 
     describe('start()', () => {
@@ -1003,7 +1003,7 @@ describe('MoveManager', () => {
     })
 
     describe('given the entire stack is selected', () => {
-      beforeEach(() => selectionManager.select(...moved))
+      beforeEach(() => selectionManager.select(moved))
 
       it.each([
         { title: 'highest mesh', rank: 2 },

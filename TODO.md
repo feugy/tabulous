@@ -92,9 +92,9 @@ AssertionError: expected 2nd "spy" call to have been called with [ 'anima' ]
 
 ## UI
 
-- bug: no rules on game creation?
+- bug: can't type 'h' in invite dialogue (considered as shortcut)
 - bug: animating visibility from 0 to 1 creates trouble with texture alpha channel
-- bug: attached, unselected, mesh are not ignored during dragging
+- bug: attached, unselected mesh are not ignored during dragging
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
 - show peers' selection
 - make peers' selection uncontrollable
@@ -102,7 +102,7 @@ AssertionError: expected 2nd "spy" call to have been called with [ 'anima' ]
 - hide non-connected participants
 - loading spinner on game/new
 - updates avatar
-- is this right? given an active selection, when it anchrs with other items, then items are part of the selection
+- is this right? given an active selection, when it anchors with other items, then items are part of the selection
 - click on stack size to select all/select stack on push?
 - collect player preferences when joining a game (requires to alter & reload game when joining rather than inviting)
 - option to invite players with url

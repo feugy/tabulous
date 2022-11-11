@@ -8,6 +8,7 @@
   export let meshes = []
   export let node
   export let highlight = false
+  export let color = '#00ff00'
 
   let meshCount = meshes?.length ?? 0
   let minimized = meshCount === 0
@@ -23,7 +24,7 @@
   })
 </script>
 
-<aside class:highlight class:visible>
+<aside class:highlight class:visible style="--color: {color}">
   <MinimizableSection
     placement="bottom"
     tabs={[{ icon: 'front_hand', key: $_('shortcuts.hand') }]}
@@ -46,7 +47,7 @@
       border-top-width: 50px;
       border-image: radial-gradient(
           farthest-side ellipse at bottom center,
-          rgba(0, 255, 0, var(--tw-border-opacity)),
+          var(--color),
           rgba(0, 0, 0, 0)
         )
         100% 0 0 0;

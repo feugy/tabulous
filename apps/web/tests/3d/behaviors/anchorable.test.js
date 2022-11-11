@@ -736,7 +736,7 @@ describe('AnchorBehavior', () => {
       expectSnapped(mesh, meshes[0], 0)
       expectSnapped(mesh, meshes[1], 1)
 
-      selectionManager.select(mesh, meshes[0])
+      selectionManager.select([mesh, meshes[0]])
 
       moveManager.notifyMove(mesh)
 
@@ -791,14 +791,13 @@ describe('AnchorBehavior', () => {
       expectUnsnapped(mesh, snapped1, 0)
       expectUnsnapped(mesh, snapped2, 1)
 
-      selectionManager.select(...meshes)
+      selectionManager.select(meshes)
 
       await Promise.all([
         mesh.metadata.snap(snapped1.id, behavior.zones[0].mesh.id),
         mesh.metadata.snap(snapped2.id, behavior.zones[1].mesh.id)
       ])
 
-      console.log(behavior.state)
       expectSnapped(mesh, snapped1, 0)
       expectSnapped(mesh, snapped2, 1)
       expect(behavior.getSnappedIds()).toEqual([snapped1.id, snapped2.id])
