@@ -26,11 +26,25 @@ export function findPlayerColor(game, playerId) {
 }
 
 /**
- * Mutates a player color so it could be used for highlighting meshes and actions.
- * @param {string} color - player's color as hexadecimal string.
- * @returns {string} the highlighted hexadecimal color string.
+ * Builds a map of colors by player id, which can be used for highlighting meshes and actions.
+ * @param {object} game - game date, including preferences and players arrays.
+ * @returns {Map<string, string>} the highlighted hexadecimal color strings by their player ids.
  */
-export function makeHighlightColor(color) {
+export function buildPlayerColors(game) {
+  return new Map(
+    game.players.map(({ id }) => [
+      id,
+      makeHighlightColor(findPlayerColor(game, id))
+    ])
+  )
+}
+
+/**
+ * Turns a plain color into a more bright and contrasted color for highlight purposes
+ * @param {string} color - hexadecimal color strings.
+ * @returns {string} hexadecimal color string for a righter equivalent.
+ */
+function makeHighlightColor(color) {
   return new Color(color)
     .set('hsl.l', 50)
     .toString({ format: 'hex', collapse: false })

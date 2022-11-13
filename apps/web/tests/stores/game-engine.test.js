@@ -24,6 +24,7 @@ import {
 import * as gameEngine from '../../src/stores/game-engine'
 import {
   connected as connectedPeers,
+  lastDisconnectedId,
   lastMessageReceived,
   send as sendToPeer
 } from '../../src/stores/peer-channels'
@@ -35,7 +36,8 @@ vi.mock('../../src/stores/peer-channels', () => {
   return {
     send: vi.fn(),
     connected: new BehaviorSubject(),
-    lastMessageReceived: new Subject({})
+    lastMessageReceived: new Subject({}),
+    lastDisconnectedId: new Subject()
   }
 })
 
@@ -76,6 +78,7 @@ describe('initEngine()', () => {
   const receiveHandChange = vi.fn()
   const receiveHighlightHand = vi.fn()
   const receiveHandVisible = vi.fn()
+  const receiveRemoteSelection = vi.fn()
 
   configures3dTestEngine(created => {
     scene = created.scene
@@ -92,7 +95,8 @@ describe('initEngine()', () => {
       gameEngine.handMeshes.subscribe({ next: receiveHandChange }),
       gameEngine.highlightHand.subscribe({ next: receiveHighlightHand }),
       gameEngine.handVisible.subscribe({ next: receiveHandVisible }),
-      gameEngine.selectedMeshes.subscribe({ next: receiveSelection })
+      gameEngine.selectedMeshes.subscribe({ next: receiveSelection }),
+      gameEngine.remoteSelection.subscribe({ next: receiveRemoteSelection })
     ]
   })
 
@@ -172,6 +176,34 @@ describe('initEngine()', () => {
         expect(sendToPeer).toHaveBeenNthCalledWith(2, { selectedIds: [] })
         expect(receiveSelection).toHaveBeenCalledTimes(2)
         expect(sendToPeer).toHaveBeenCalledTimes(2)
+        expect(receiveRemoteSelection).not.toHaveBeenCalled()
+      })
+
+      it('handles remote selection', () => {
+        vi.spyOn(selectionManager, 'apply').mockImplementationOnce(() => {})
+        const playerId = faker.datatype.uuid()
+        const selectedIds = ['mesh1', 'mesh2']
+        lastMessageReceived.next({ data: { selectedIds }, playerId })
+
+        expect(receiveSelection).not.toHaveBeenCalled()
+        expect(receiveRemoteSelection).toHaveBeenCalledWith({
+          playerId,
+          selectedIds
+        })
+        expect(receiveRemoteSelection).toHaveBeenCalledTimes(1)
+      })
+
+      it('clears remote selection on peer disconnection', () => {
+        vi.spyOn(selectionManager, 'apply').mockImplementationOnce(() => {})
+        const playerId = faker.datatype.uuid()
+        lastDisconnectedId.next(playerId)
+
+        expect(receiveSelection).not.toHaveBeenCalled()
+        expect(receiveRemoteSelection).toHaveBeenCalledWith({
+          playerId,
+          selectedIds: []
+        })
+        expect(receiveRemoteSelection).toHaveBeenCalledTimes(1)
       })
 
       it('moves peer pointers on message', () => {

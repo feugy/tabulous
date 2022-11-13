@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
 
 import {
+  buildPlayerColors,
   findPlayerColor,
-  findPlayerPreferences,
-  makeHighlightColor
+  findPlayerPreferences
 } from '../../src/utils/game'
 
 describe('Game utils', () => {
@@ -52,17 +52,54 @@ describe('Game utils', () => {
     })
   })
 
-  describe('makeHighlightColor()', () => {
+  describe('buildPlayerColors()', () => {
+    it('builds a map of player colors', () => {
+      expect(
+        buildPlayerColors({
+          players: [{ id: 'a' }, { id: 'b' }, { id: 'c' }],
+          preferences: [
+            { playerId: 'a', color: '#ff0000' },
+            { playerId: 'c', color: '#0000ff' },
+            { playerId: 'd', color: '#00ff00' }
+          ]
+        })
+      ).toEqual(
+        new Map([
+          ['a', '#ff0000'],
+          ['b', '#ff4500'],
+          ['c', '#0000ff']
+        ])
+      )
+    })
+
     it('does not change already light color', () => {
-      expect(makeHighlightColor('#ff0000')).toEqual('#ff0000')
+      const playerId = 'a'
+      expect(
+        buildPlayerColors({
+          players: [{ id: playerId }],
+          preferences: [{ playerId, color: '#ff0000' }]
+        })
+      ).toEqual(new Map([[playerId, '#ff0000']]))
     })
 
     it('returns an expanded hex color string', () => {
-      expect(makeHighlightColor('#f00')).toEqual('#ff0000')
+      const playerId = 'a'
+      expect(
+        buildPlayerColors({
+          players: [{ id: playerId }],
+          preferences: [{ playerId, color: '#f00' }]
+        })
+      ).toEqual(new Map([[playerId, '#ff0000']]))
     })
 
     it('increases color lightness', () => {
-      expect(makeHighlightColor('#123456')).toEqual('#2c80d3')
+      const playerId = 'a'
+      expect(
+        buildPlayerColors({
+          players: [{ id: playerId }],
+          preferences: [{ playerId, color: '#123456' }]
+        })
+      ).toEqual(new Map([[playerId, '#2c80d3']]))
     })
   })
 })

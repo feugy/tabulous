@@ -20,7 +20,9 @@ import {
   cameraSaves,
   engine as engine$,
   handMeshes as handMeshes$,
-  loadCameraSaves
+  loadCameraSaves,
+  remoteSelection,
+  selectedMeshes
 } from '../../src/stores/game-engine'
 import {
   createGame,
@@ -48,9 +50,9 @@ import {
   send
 } from '../../src/stores/peer-channels'
 import {
+  buildPlayerColors,
   findPlayerColor,
   findPlayerPreferences,
-  makeHighlightColor,
   makeLogger
 } from '../../src/utils'
 
@@ -62,7 +64,9 @@ vi.mock('../../src/stores/game-engine', () => {
     cameraSaves: new Subject(),
     handMeshes: new Subject(),
     engine: new BehaviorSubject(),
-    loadCameraSaves: vi.fn()
+    loadCameraSaves: vi.fn(),
+    selectedMeshes: new BehaviorSubject([]),
+    remoteSelection: new Subject()
   }
 })
 vi.mock('../../src/stores/peer-channels', () => {
@@ -92,7 +96,6 @@ const engine = {
   onDisposeObservable: new Observable(),
   onBeforeDisposeObservable: new Observable()
 }
-const defaultColor = makeHighlightColor('#ff4500')
 let subscriptions
 let warn
 let error
@@ -171,6 +174,7 @@ describe('given a mocked game engine', () => {
         { playerId: player.id, color }
       ]
       const game = { id: gameId, meshes, players: [player], hands, preferences }
+      const colorByPlayerId = buildPlayerColors(game)
       engine.serialize.mockReturnValue({
         meshes,
         handMeshes: hands[1].meshes
@@ -183,13 +187,18 @@ describe('given a mocked game engine', () => {
         gameId
       })
       expect(runSubscription).toHaveBeenCalledTimes(1)
-      expect(engine.load).toHaveBeenCalledWith(game, player.id, color, true)
+      expect(engine.load).toHaveBeenCalledWith(
+        game,
+        player.id,
+        colorByPlayerId,
+        true
+      )
       expect(engine.load).toHaveBeenCalledTimes(1)
       expect(loadCameraSaves).not.toHaveBeenCalled()
       expect(loadThread).not.toHaveBeenCalled()
       expect(connectWith).not.toHaveBeenCalled()
       expect(send).toHaveBeenCalledWith(
-        { type: 'game-sync', ...game, cameras: [] },
+        { type: 'game-sync', ...game, cameras: [], selections: [] },
         undefined
       )
       expect(send).toHaveBeenCalledTimes(1)
@@ -225,7 +234,7 @@ describe('given a mocked game engine', () => {
       expect(engine.load).toHaveBeenCalledWith(
         game,
         player.id,
-        defaultColor,
+        buildPlayerColors(game),
         true
       )
       expect(engine.load).toHaveBeenCalledTimes(1)
@@ -236,7 +245,8 @@ describe('given a mocked game engine', () => {
           type: 'game-sync',
           ...game,
           messages: [],
-          cameras
+          cameras,
+          selections: []
         },
         undefined
       )
@@ -265,13 +275,13 @@ describe('given a mocked game engine', () => {
       expect(engine.load).toHaveBeenCalledWith(
         game,
         player.id,
-        defaultColor,
+        buildPlayerColors(game),
         true
       )
       expect(engine.load).toHaveBeenCalledTimes(1)
       expect(loadCameraSaves).not.toHaveBeenCalled()
       expect(send).toHaveBeenCalledWith(
-        { type: 'game-sync', ...game },
+        { type: 'game-sync', ...game, selections: [] },
         undefined
       )
       expect(send).toHaveBeenCalledTimes(1)
@@ -289,7 +299,7 @@ describe('given a mocked game engine', () => {
       expect(engine.load).toHaveBeenCalledWith(
         game,
         player.id,
-        defaultColor,
+        buildPlayerColors(game),
         true
       )
       expect(engine.load).toHaveBeenCalledTimes(1)
@@ -323,6 +333,7 @@ describe('given a mocked game engine', () => {
       beforeEach(async () => {
         vi.useFakeTimers()
         prepareGame(game)
+        selectedMeshes.next([])
         engine.serialize.mockReturnValue({
           ...game,
           meshes,
@@ -373,10 +384,11 @@ describe('given a mocked game engine', () => {
 
       it('sends game data on server update', async () => {
         gameUpdates$.next(game)
+        selectedMeshes.next([{ id: 'mesh1' }])
         expect(engine.load).toHaveBeenCalledWith(
           game,
           player.id,
-          findPlayerPreferences(game, player.id).color,
+          buildPlayerColors(game),
           false
         )
         expect(engine.load).toHaveBeenCalledTimes(1)
@@ -389,7 +401,8 @@ describe('given a mocked game engine', () => {
             type: 'game-sync',
             ...game,
             cameras: expect.arrayContaining(game.cameras),
-            hands: [...game.hands, { playerId: player.id, meshes: [] }]
+            hands: [...game.hands, { playerId: player.id, meshes: [] }],
+            selections: [{ playerId: player.id, selectedIds: ['mesh1'] }]
           },
           undefined
         )
@@ -510,7 +523,12 @@ describe('given a mocked game engine', () => {
         expect(runMutation).toHaveBeenCalledTimes(1)
         expect(engine.serialize).toHaveBeenCalledTimes(1)
         expect(send).toHaveBeenCalledWith(
-          { type: 'game-sync', ...game, hands },
+          {
+            type: 'game-sync',
+            ...game,
+            hands,
+            selections: [{ playerId: player.id, selectedIds: [] }]
+          },
           undefined
         )
         expect(send).toHaveBeenCalledTimes(1)
@@ -663,6 +681,39 @@ describe('given a mocked game engine', () => {
         expect(engine.serialize).not.toHaveBeenCalled()
         expect(send).not.toHaveBeenCalled()
       })
+
+      it('merges and shares current player selections', async () => {
+        selectedMeshes.next([{ id: 'mesh1' }, { id: 'mesh3' }, { id: 'mesh2' }])
+        await connectPeerAndExpectGameSync(
+          {
+            ...game,
+            selections: [
+              { playerId: player.id, selectedIds: ['mesh1', 'mesh3', 'mesh2'] }
+            ],
+            hands: [...game.hands, { playerId: player.id, meshes: [] }]
+          },
+          partner1.id
+        )
+      })
+
+      it('merges and shares remote peer selections', async () => {
+        selectedMeshes.next([{ id: 'mesh1' }])
+        remoteSelection.next({
+          selectedIds: ['mesh2', 'mesh3'],
+          playerId: partner2.id
+        })
+        await connectPeerAndExpectGameSync(
+          {
+            ...game,
+            selections: [
+              { playerId: player.id, selectedIds: ['mesh1'] },
+              { playerId: partner2.id, selectedIds: ['mesh2', 'mesh3'] }
+            ],
+            hands: [...game.hands, { playerId: player.id, meshes: [] }]
+          },
+          partner1.id
+        )
+      })
     })
 
     describe('with online players', () => {
@@ -750,7 +801,7 @@ describe('given a mocked game engine', () => {
           expect(engine.load).toHaveBeenCalledWith(
             { ...game, type: 'game-sync' },
             player.id,
-            findPlayerPreferences(game, player.id).color,
+            buildPlayerColors(game),
             true
           )
           expect(engine.load).toHaveBeenCalledTimes(1)
@@ -834,7 +885,8 @@ describe('given a mocked game engine', () => {
               type: 'game-sync',
               id: game.id,
               ...game,
-              messages: []
+              messages: [],
+              selections: []
             },
             undefined
           )
@@ -983,7 +1035,7 @@ describe('given a mocked game engine', () => {
   })
 
   async function connectPeerAndExpectGameSync(
-    { cameras, ...gameData },
+    { cameras, selections, ...gameData },
     playerId
   ) {
     send.mockReset()
@@ -993,7 +1045,10 @@ describe('given a mocked game engine', () => {
       {
         type: 'game-sync',
         cameras: [...cameras].sort((a, b) => +a.index - +b.index),
-        ...gameData
+        ...gameData,
+        selections: selections ?? [
+          { playerId: gameData.players[0].id, selectedIds: [] }
+        ]
       },
       playerId
     )

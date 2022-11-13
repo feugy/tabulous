@@ -112,10 +112,10 @@ export function createEngine({
    * @async
    * @param {object} game - serialized game data TODO.
    * @param {string} playerId - current player id (to determine their hand).
-   * @param {string} color - hexadecimal string of the current player color.
+   * @param {Map<string, string>} colorByPlayerId - map of hexadecimal color string for each player Id.
    * @param {boolean} initial? - set to true to show Babylon's loading UI while loading assets.
    */
-  engine.load = async (gameData, playerId, color, initial) => {
+  engine.load = async (gameData, playerId, colorByPlayerId, initial) => {
     const game = removeNulls(gameData)
     cameraManager.adjustZoomLevels(game.zoomSpec)
     const handsEnabled = hasHandsEnabled(game)
@@ -124,16 +124,11 @@ export function createEngine({
       engine.onLoadingObservable.notifyObservers(isLoading)
       engine.displayLoadingUI()
 
-      selectionManager.init({
-        scene,
-        handScene,
-        color,
-        overlayAlpha: 0.2
-      })
+      selectionManager.init({ scene, handScene })
       targetManager.init({
         scene,
         playerId,
-        color
+        color: colorByPlayerId.get(playerId)
       })
       materialManager.init(
         { gameAssetsUrl, scene, handScene: handsEnabled ? handScene : null },
@@ -153,6 +148,8 @@ export function createEngine({
         handManager.init({ scene, handScene, overlay: hand })
       }
     }
+    selectionManager.updateColors(playerId, colorByPlayerId, 0.2)
+
     await customShapeManager.init({ ...game, gameAssetsUrl })
     loadMeshes(scene, game.meshes)
     if (handsEnabled) {
@@ -160,6 +157,13 @@ export function createEngine({
         handScene,
         game.hands.find(hand => playerId === hand.playerId)?.meshes ?? []
       )
+    }
+    if (gameData.selections) {
+      for (const { playerId: peerId, selectedIds } of gameData.selections) {
+        if (peerId !== playerId) {
+          selectionManager.apply(selectedIds, peerId)
+        }
+      }
     }
   }
 
