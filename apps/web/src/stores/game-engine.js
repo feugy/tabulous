@@ -21,12 +21,18 @@ import {
   selectionManager
 } from '../3d/managers'
 import { actionIds, attachInputs } from '../utils'
-import { connected, lastMessageReceived, send } from './peer-channels'
+import {
+  connected,
+  lastDisconnectedId,
+  lastMessageReceived,
+  send
+} from './peer-channels'
 
 const engine$ = new BehaviorSubject(null)
 const fps$ = new BehaviorSubject(0)
 const localAction$ = new Subject()
 const remoteAction$ = new Subject()
+const remoteSelection$ = new Subject()
 const pointer$ = new Subject()
 const meshDetails$ = new Subject()
 const actionMenuProps$ = new Subject()
@@ -55,6 +61,12 @@ export const fps = fps$.asObservable()
  * @type {Observable<import('../3d/managers').Action>}
  */
 export const action = merge(localAction$, remoteAction$)
+
+/**
+ * Emits selections received by peer players
+ * @type {Observable<object>} TODOC playerId: string selectedIds: string[]
+ */
+export const remoteSelection = remoteSelection$.asObservable()
 
 /**
  * Emits mesh details when the player requested them.
@@ -140,8 +152,8 @@ export const highlightHand = highlightHand$.asObservable()
  * - creating a table and a light
  * - saving initial camera position
  * - binding to user input event to implement game interaction
- * - sending current player actions and point moves with other peers
- * - receiving peer messages to apply their actions and move their pointers
+ * - sending current player actions, selection and pointer moves to other peers
+ * - receiving peer messages to apply their actions, show their selection and move their pointerspeers
  * Clears all subscriptions on engine disposal.
  *
  * @param {object} params - parameters, as defined by createEngin(), in addition to:
@@ -205,6 +217,8 @@ export function initEngine({
     lastMessageReceived.subscribe(({ data, playerId }) => {
       if (data?.pointer) {
         indicatorManager.registerPointerIndicator(playerId, data.pointer)
+      } else if (Array.isArray(data?.selectedIds)) {
+        applyRemoteSelection(data.selectedIds, playerId)
       } else if (data?.meshId) {
         if (data.fn === 'draw') {
           handManager.applyDraw(...data.args, playerId)
@@ -217,6 +231,20 @@ export function initEngine({
 
     // sends local action from main scene to other players
     localAction$.pipe(filter(({ fromHand }) => !fromHand)).subscribe(send),
+
+    // send local selection to other players
+    selectedMeshes$.subscribe(selected => {
+      const selectedIds = []
+      for (const { id } of selected) {
+        selectedIds.push(id)
+      }
+      send({ selectedIds })
+    }),
+
+    // removes peer selection when they leave
+    lastDisconnectedId.subscribe(playerId =>
+      applyRemoteSelection([], playerId)
+    ),
 
     // prunes unused peer pointers if needed
     connected.subscribe(players => {
@@ -246,6 +274,11 @@ export function initEngine({
 
   engine$.next(engine)
   return engine
+}
+
+function applyRemoteSelection(selectedIds, playerId) {
+  selectionManager.apply(selectedIds, playerId)
+  remoteSelection$.next({ selectedIds, playerId })
 }
 
 /**

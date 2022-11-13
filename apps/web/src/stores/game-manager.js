@@ -9,9 +9,9 @@ import {
 
 import * as graphQL from '../graphql'
 import {
+  buildPlayerColors,
   findPlayerColor,
   findPlayerPreferences,
-  makeHighlightColor,
   makeLogger,
   sleep
 } from '../utils'
@@ -21,7 +21,9 @@ import {
   cameraSaves as cameraSaves$,
   engine as engine$,
   handMeshes as handMeshes$,
-  loadCameraSaves
+  loadCameraSaves,
+  remoteSelection,
+  selectedMeshes
 } from './game-engine'
 import { runMutation, runQuery, runSubscription } from './graphql-client'
 import {
@@ -161,6 +163,8 @@ let skipSharingCamera = false
 let cameras = []
 // hands for all players
 let hands = []
+// active selections for all players
+let selections = []
 
 /**
  * Fetches an existing game from server, loading it into the provided Babylon.js engine.
@@ -193,12 +197,13 @@ export async function loadGame(
     skipSharingCamera = false
     cameras = []
     hands = []
+    selections = []
     clearThread()
   })
 
   const currentPlayerId = currentPlayer.id
 
-  /* istanbul ignore if */
+  /* c8 ignore start */
   if (!delayOnLoad && import.meta.hot) {
     const delayKey = 'loadGameDelay'
 
@@ -222,6 +227,7 @@ export async function loadGame(
     })
   }
   await delayOnLoad()
+  /* c8 ignore stop */
 
   logger.info({ gameId }, `entering game ${gameId}`)
   let game = await runQuery(graphQL.loadGame, { gameId }, false)
@@ -290,6 +296,7 @@ async function load(game, currentPlayerId, firstLoad) {
   currentGame$.next(game)
   hands = game.hands ?? []
   cameras = game.cameras ?? []
+  selections = game.selections ?? []
   if (game.messages) {
     loadThread(game.messages)
   }
@@ -302,12 +309,7 @@ async function load(game, currentPlayerId, firstLoad) {
       loadCameraSaves(playerCameras)
     }
   }
-  await engine.load(
-    game,
-    currentPlayerId,
-    makeHighlightColor(findPlayerColor(game, currentPlayerId)),
-    firstLoad
-  )
+  await engine.load(game, currentPlayerId, buildPlayerColors(game), firstLoad)
 }
 
 function mergeCameras({ playerId, cameras: playerCameras }) {
@@ -339,6 +341,14 @@ function mergeHands({ playerId, meshes }) {
 function saveHands(gameId) {
   logger.info({ gameId, hands }, `persisting player hands`)
   runMutation(graphQL.saveGame, { game: { id: gameId, hands } })
+}
+
+function mergeSelections({ playerId, selectedIds }) {
+  selections = [
+    ...selections.filter(selection => selection.playerId !== playerId),
+    { playerId, selectedIds }
+  ]
+  return selections
 }
 
 function takeHostRole(gameId, currentPlayerId) {
@@ -400,7 +410,17 @@ function takeHostRole(gameId, currentPlayerId) {
     ).subscribe(({ data }) => {
       mergeCameras(data)
       saveCameras(gameId)
-    })
+    }),
+    // keeps active selections
+    merge(
+      selectedMeshes.pipe(
+        map(selected => ({
+          playerId: currentPlayerId,
+          selectedIds: [...selected].map(({ id }) => id)
+        }))
+      ),
+      remoteSelection
+    ).subscribe(mergeSelections)
   ]
 }
 
@@ -429,7 +449,7 @@ function shareGame(currentPlayerId, peerId) {
     `sending game data ${gameId} to peer${peerId ? ` ${peerId}` : 's'}`
   )
   const game = serializeGame(currentPlayerId)
-  send({ type: 'game-sync', ...otherGameData, ...game }, peerId)
+  send({ type: 'game-sync', ...otherGameData, ...game, selections }, peerId)
   return game
 }
 

@@ -49,6 +49,7 @@
       class="backdrop"
       transition:fade
       on:click={close}
+      on:keydown|stopPropagation
       on:keyup={handleKeyup}
     >
       {#if closable}
@@ -56,7 +57,11 @@
           <Button icon="close" on:click={close} />
         </span>
       {/if}
-      <article role="dialog" on:click|stopPropagation on:keyup|stopPropagation>
+      <article
+        role="dialog"
+        on:click|stopPropagation
+        on:keyup|stopPropagation={handleKeyup}
+      >
         <Pane>
           <header class="heading">{title}</header>
           <div class="content">

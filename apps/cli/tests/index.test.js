@@ -26,7 +26,7 @@ describe('Tabulous CLI', () => {
   let cli
 
   beforeAll(async () => {
-    cli = (await import('../src/index.mjs')).default
+    cli = (await import('../src/index.js')).default
   })
 
   it('prints help on unknown command', async () => {

@@ -5,7 +5,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { createEngine } from '../../src/3d'
 import { DrawBehaviorName } from '../../src/3d/behaviors'
-import { handManager, inputManager } from '../../src/3d/managers'
+import {
+  handManager,
+  inputManager,
+  selectionManager,
+  targetManager
+} from '../../src/3d/managers'
 import { createCard } from '../../src/3d/meshes'
 import { sleep } from '../../src/utils'
 import { expectAnimationEnd } from '../test-utils'
@@ -13,10 +18,15 @@ import { expectAnimationEnd } from '../test-utils'
 describe('createEngine()', () => {
   let engine
   const playerId = faker.datatype.uuid()
+  const peerId1 = faker.datatype.uuid()
+  const peerId2 = faker.datatype.uuid()
   const canvas = document.createElement('canvas')
   const interaction = document.createElement('div')
   const hand = document.createElement('div')
   const inputInit = vi.spyOn(inputManager, 'init')
+  const updateColors = vi.spyOn(selectionManager, 'updateColors')
+  const applySelection = vi.spyOn(selectionManager, 'apply')
+  const targetInit = vi.spyOn(targetManager, 'init')
 
   beforeEach(() => {
     Logger.LogLevels = 0
@@ -48,13 +58,16 @@ describe('createEngine()', () => {
       })
     )
     expect(inputInit).toHaveBeenCalledTimes(1)
+    expect(targetInit).not.toHaveBeenCalled()
+    expect(updateColors).not.toHaveBeenCalled()
+    expect(applySelection).not.toHaveBeenCalled()
   })
   // TODO input manager stopAll()
 
   describe('given an engine', () => {
     let displayLoadingUI
     let loadingObserver
-    const color = '#f0f'
+    const colorByPlayerId = new Map([[playerId, '#f0f']])
     const receiveLoading = vi.fn()
 
     beforeEach(() => {
@@ -73,8 +86,12 @@ describe('createEngine()', () => {
 
     afterEach(() => engine.onLoadingObservable.remove(loadingObserver))
 
-    it('can load() game data', async () => {
-      expect(receiveLoading).not.toHaveBeenCalled()
+    it('can load() game data, including colors and peers selections', async () => {
+      const selections = [
+        { playerId: peerId2, selectedIds: ['4'] },
+        { playerId, selectedIds: ['1', '2'] },
+        { playerId: peerId1, selectedIds: ['3'] }
+      ]
       const mesh = {
         shape: 'card',
         depth: 0.2,
@@ -86,12 +103,31 @@ describe('createEngine()', () => {
         y: 0,
         z: -10
       }
-      await engine.load({ meshes: [mesh], hands: [] }, playerId, color, false)
+      await engine.load(
+        { meshes: [mesh], hands: [], selections },
+        playerId,
+        colorByPlayerId,
+        false
+      )
       engine.scenes[1].onDataLoadedObservable.notifyObservers()
       expect(engine.scenes[1].getMeshById(mesh.id)).toBeDefined()
       expect(displayLoadingUI).not.toHaveBeenCalled()
       expect(engine.isLoading).toBe(false)
-      expect(receiveLoading).toHaveBeenCalledTimes(0)
+      expect(updateColors).toHaveBeenCalledWith(playerId, colorByPlayerId)
+      expect(updateColors).toHaveBeenCalledTimes(1)
+      expect(receiveLoading).not.toHaveBeenCalled()
+      expect(targetInit).not.toHaveBeenCalled()
+      expect(applySelection).toHaveBeenNthCalledWith(
+        1,
+        selections[0].selectedIds,
+        peerId2
+      )
+      expect(applySelection).toHaveBeenNthCalledWith(
+        2,
+        selections[2].selectedIds,
+        peerId1
+      )
+      expect(applySelection).toHaveBeenCalledTimes(2)
     })
 
     it('can serialize() game data', () => {
@@ -122,7 +158,11 @@ describe('createEngine()', () => {
     })
 
     it('displays loading UI on initial load only', async () => {
-      expect(receiveLoading).not.toHaveBeenCalled()
+      const selections = [
+        { playerId: peerId2, selectedIds: ['4'] },
+        { playerId, selectedIds: ['1', '2'] },
+        { playerId: peerId1, selectedIds: ['3'] }
+      ]
       const mesh = {
         shape: 'card',
         depth: 0.2,
@@ -135,7 +175,12 @@ describe('createEngine()', () => {
         z: -10
       }
       expect(engine.isLoading).toBe(false)
-      await engine.load({ meshes: [mesh], hands: [] }, playerId, color, true)
+      await engine.load(
+        { meshes: [mesh], hands: [], selections },
+        playerId,
+        colorByPlayerId,
+        true
+      )
       expect(engine.isLoading).toBe(true)
       expect(receiveLoading).toHaveBeenCalledWith(true, expect.anything())
       expect(receiveLoading).toHaveBeenCalledTimes(1)
@@ -148,6 +193,23 @@ describe('createEngine()', () => {
       expect(handManager.enabled).toBe(false)
       expect(receiveLoading).toHaveBeenCalledWith(false, expect.anything())
       expect(receiveLoading).toHaveBeenCalledTimes(1)
+      expect(targetInit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          color: colorByPlayerId.get(playerId)
+        })
+      )
+      expect(targetInit).toHaveBeenCalledTimes(1)
+      expect(applySelection).toHaveBeenNthCalledWith(
+        1,
+        selections[0].selectedIds,
+        peerId2
+      )
+      expect(applySelection).toHaveBeenNthCalledWith(
+        2,
+        selections[2].selectedIds,
+        peerId1
+      )
+      expect(applySelection).toHaveBeenCalledTimes(2)
     })
 
     it('enables hand manager on initial load', async () => {
@@ -158,7 +220,7 @@ describe('createEngine()', () => {
           hands: [{ playerId, meshes: [{ id: 'box', shape: 'card' }] }]
         },
         playerId,
-        color,
+        colorByPlayerId,
         true
       )
       expect(engine.isLoading).toBe(true)
@@ -197,10 +259,11 @@ describe('createEngine()', () => {
             hands: []
           },
           playerId,
-          color,
+          colorByPlayerId,
           true
         )
         engine.start()
+        updateColors.mockReset()
       })
 
       it('removes drawn mesh from main scene', async () => {
@@ -212,6 +275,23 @@ describe('createEngine()', () => {
         const game = engine.serialize()
         expect(getIds(game.meshes)).toEqual(['card1', 'card3'])
         expect(getIds(game.handMeshes)).toEqual(['card2'])
+      })
+
+      it('updates color on subsequent loads', async () => {
+        const updatedColorByPlayerId = new Map([
+          ...colorByPlayerId.entries(),
+          [faker.datatype.uuid(), '#123456']
+        ])
+        await engine.load(
+          { ...engine.serialize(), hands: [] },
+          playerId,
+          updatedColorByPlayerId
+        )
+        expect(updateColors).toHaveBeenCalledWith(
+          playerId,
+          updatedColorByPlayerId
+        )
+        expect(updateColors).toHaveBeenCalledTimes(1)
       })
     })
   })

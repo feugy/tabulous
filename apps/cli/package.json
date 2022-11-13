@@ -4,14 +4,15 @@
   "description": "Tabulous utility Command Line Interface",
   "type": "module",
   "bin": {
-    "tabulous": "./src/index.mjs"
+    "tabulous": "./src/index.js"
   },
-  "main": "./src/index.mjs",
+  "main": "./src/index.js",
   "scripts": {
     "test": "vitest run --coverage",
     "test:dev": "vitest dev"
   },
   "dependencies": {
+    "@tabulous/cli": "^0.0.1",
     "@urql/core": "^3.0.5",
     "add": "^2.0.6",
     "ajv": "^8.11.0",

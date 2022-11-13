@@ -113,10 +113,11 @@
   />
 </aside>
 <main>
-  <!-- svelte-ignore a11y-autofocus a11y-no-noninteractive-tabindex -->
+  <!-- svelte-ignore a11y-autofocus -->
   <div
     class="interaction"
     tabindex="0"
+    role="textbox"
     autofocus
     bind:this={interaction}
     on:contextmenu|preventDefault

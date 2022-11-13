@@ -133,17 +133,16 @@ import { canAccess } from './catalog.js'
 
 const maxOwnedGames = 6
 
-// https://colorkit.co/color-palette-generator/4297a0-ff4500-239646-9c3096-578c64-bf963d-e42256-83746e-2f435a/
+// https://colorkit.co/color-palette-generator/9c3096-ff4500-239646-2349a9-686467-bf963d-a82424-1a85a2/
 const colors = [
-  '#4297a0',
-  '#ff4500',
-  '#239646',
-  '#9c3096',
-  '#578c64',
-  '#bf963d',
-  '#e42256',
-  '#83746e',
-  '#2f435a'
+  '#9c3096', // violet
+  '#ff4500', // orange-foncé
+  '#239646', // vert
+  '#2349a9', // bleu
+  '#686467', // gris
+  '#bf963d', // marron
+  '#a82424', // rouge
+  '#1a85a2' // cyan
 ]
 
 const gameListsUpdate$ = new Subject()

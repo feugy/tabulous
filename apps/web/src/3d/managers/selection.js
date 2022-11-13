@@ -25,7 +25,9 @@ class SelectionManager {
    * @property {Observable<Set<import('@babylonjs/core').Mesh>>} onSelectionObservable - emits when selection is modified.
    */
   constructor() {
-    this.meshes = new Set()
+    // we need to keep this set immutable, because it is referenced when adding to it
+    const meshes = new Set()
+    Object.defineProperty(this, 'meshes', { get: () => meshes })
     this.onSelectionObservable = new Observable()
     // private
     this.scene = null
@@ -33,7 +35,7 @@ class SelectionManager {
     this.box = null
     this.skipNotify = false
     this.color = Color4.FromHexString('#00ff00')
-    this.overlayColor = Color4.FromHexString('#00ff00ff')
+    this.selectionByPeerId = new Map()
   }
 
   /**
@@ -41,15 +43,25 @@ class SelectionManager {
    * @param {object} params - parameters, including:
    * @param {Scene} params.scene - scene attached to.
    * @param {Scene} params.handScene - scene for meshes in hand.
-   * @param {string} params.color - hexadecimal color string used for selection box, and selected mesh overlay.
-   * @param {number} params.overlayAlpha - [0-1] transparency used for selected mesh overlay
    */
-  init({ scene, handScene, color, overlayAlpha }) {
+  init({ scene, handScene }) {
     this.scene = scene
     this.handScene = handScene
-    this.color = Color4.FromHexString(color)
-    this.overlayColor = Color4.FromHexString(color)
-    this.overlayColor.a = overlayAlpha
+  }
+
+  /**
+   * Updates colors to reflect players in game.
+   * @param {string} playerId - current player id, to find selection box color.
+   * @param {Map<string, string>} colorByPlayerId - map of hexadecimal color strings used for selection box, and selected mesh overlay, by player id.
+   */
+  updateColors(playerId, colorByPlayerId) {
+    this.colorByPlayerId = new Map(
+      [...colorByPlayerId.entries()].map(([playerId, color]) => [
+        playerId,
+        Color4.FromHexString(color)
+      ])
+    )
+    this.color = this.colorByPlayerId.get(playerId)
   }
 
   /**
@@ -117,9 +129,16 @@ class SelectionManager {
         this.skipNotify = true
         this.clear()
       }
+      const allSelections = [this.meshes, ...this.selectionByPeerId.values()]
       for (const mesh of scene.meshes) {
         if (mesh.isPickable && isContaining(box, mesh)) {
-          addToSelection(this, mesh, this.overlayColor)
+          addToSelection(
+            allSelections,
+            this.meshes,
+            this.onSelectionObservable,
+            mesh,
+            this.color
+          )
         }
       }
       reorderSelection(this)
@@ -136,23 +155,35 @@ class SelectionManager {
   selectWithinBox() {}
 
   /**
-   * Adds meshes into selection (if not already in)
+   * Adds meshes into selection (if not already in).
+   * Ignores mesh already selected by other players.
    * @param {Mesh[]} - array of meshes added to the active selection
-   * @param {Color4} [overlayColor] - color used for mesh overlay, default to manager's color.
+   * @param {Color4} [color] - color used to highlight mesh, default to manager's color.
    */
-  select(meshes, overlayColor) {
+  select(meshes, color) {
+    const allSelections = [this.meshes, ...this.selectionByPeerId.values()]
+    const oldSize = this.meshes.size
     for (const mesh of meshes) {
-      addToSelection(this, mesh, overlayColor ?? this.overlayColor)
+      addToSelection(
+        allSelections,
+        this.meshes,
+        this.onSelectionObservable,
+        mesh,
+        color ?? this.color
+      )
     }
-    reorderSelection(this)
+    if (this.meshes.size !== oldSize) {
+      reorderSelection(this)
+    }
   }
 
   /**
    * Adds meshes into selection (if not already in), by their ids.
+   * Ignores mesh already selected by other players.
    * @param {string[]} ids - selected mesh ids
-   * @param {Color4} [overlayColor] - color used for mesh overlay, default to manager's color.
+   * @param {Color4} [color] - color used to highlight mesh, default to manager's color.
    */
-  selectById(ids, overlayColor) {
+  selectById(ids, color) {
     const selected = []
     for (const scene of [this.scene, this.handScene]) {
       for (const id of ids) {
@@ -162,7 +193,7 @@ class SelectionManager {
         }
       }
     }
-    this.select(selected, overlayColor ?? this.overlayColor)
+    this.select(selected, color ?? this.color)
   }
 
   /**
@@ -172,11 +203,8 @@ class SelectionManager {
     if (this.meshes.size) {
       logger.info({ meshes: this.meshes }, `reset multiple selection`)
       for (const mesh of this.meshes) {
-        mesh.renderOverlay = false
+        removeFromSelection(this.meshes, mesh)
       }
-    }
-    if (this.meshes.size) {
-      this.meshes.clear()
       if (!this.skipNotify) {
         this.onSelectionObservable.notifyObservers(this.meshes)
       }
@@ -191,6 +219,36 @@ class SelectionManager {
   getSelection(mesh) {
     return this.meshes.has(mesh) ? [...this.meshes] : [mesh]
   }
+
+  /**
+   * Applies selection from peer players: highlight selected meshes with the player's own color.
+   * Ignores meshes that are part of current player's selection.
+   * @async
+   * @param {string[]} meshIds - ids of selected meshes.
+   * @param {string} playerId - id of the peer selecting these meshes.s.
+   */
+  apply(meshIds, playerId) {
+    if (!playerId) {
+      return
+    }
+    const selection = this.selectionByPeerId.get(playerId) ?? new Set()
+    for (const mesh of selection) {
+      removeFromSelection(selection, mesh)
+    }
+    const allSelections = [this.meshes, ...this.selectionByPeerId.values()]
+    for (const id of meshIds) {
+      addToSelection(
+        allSelections,
+        selection,
+        null,
+        this.scene.getMeshById(id),
+        this.colorByPlayerId.get(playerId)
+      )
+    }
+    if (selection.size) {
+      this.selectionByPeerId.set(playerId, selection)
+    }
+  }
 }
 
 /**
@@ -199,25 +257,37 @@ class SelectionManager {
  */
 export const selectionManager = new SelectionManager()
 
-function addToSelection(manager, mesh, color) {
-  if (mesh && !manager.meshes.has(mesh)) {
+function addToSelection(allSelections, selection, observable, mesh, color) {
+  if (mesh && !allSelections.find(selection => selection.has(mesh))) {
     for (const added of mesh.metadata?.stack ?? [mesh]) {
-      manager.meshes.add(added)
+      selection.add(added)
       added.overlayColor = color
-      added.overlayAlpha = color.a
+      added.overlayAlpha = 0.5
+      added.edgesWidth = 3.0
+      added.edgesColor = color
       added.renderOverlay = true
+      added.enableEdgesRendering()
       added.onDisposeObservable.addOnce(() => {
-        manager.meshes.delete(added)
-        mesh.renderOverlay = false
-        manager.onSelectionObservable.notifyObservers(manager.meshes)
+        removeFromSelection(selection, added)
+        observable?.notifyObservers(selection)
       })
     }
   }
 }
 
+function removeFromSelection(selection, mesh) {
+  selection.delete(mesh)
+  mesh.renderOverlay = false
+  mesh.disableEdgesRendering()
+}
+
 function reorderSelection(manager) {
   // keep selection ordered from lowest to highest: it'll guarantuee gravity application
-  manager.meshes = new Set(sortByElevation(manager.meshes))
+  const ordered = sortByElevation(manager.meshes)
+  manager.meshes.clear()
+  for (const mesh of ordered) {
+    manager.meshes.add(mesh)
+  }
   manager.onSelectionObservable.notifyObservers(manager.meshes)
 }
 

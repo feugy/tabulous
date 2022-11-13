@@ -19,7 +19,7 @@
       items: [
         {
           screenPosition: { x: 150, y: 125 },
-          player: { username: 'Gaspard' },
+          player: { username: 'Gaspard', color: '#967d3e' },
           id: '123456.drop-zone.anchor-0',
           mesh: {}
         }
@@ -31,8 +31,8 @@
     props={{
       items: [
         {
-          screenPosition: { x: -150, y: -125 },
-          player: { username: 'Gaspard' },
+          screenPosition: { x: -150, y: 125 },
+          player: { username: 'Gaspard', color: '#567cdc' },
           id: 'pointer-123'
         }
       ]
@@ -56,7 +56,7 @@
       feedbacks: [
         {
           screenPosition: { x: 50, y: 200 },
-          player: { username: 'Jane' },
+          player: { username: 'Jane', color: '#ffa280' },
           id: '1234'
         }
       ]
@@ -77,19 +77,19 @@
       items: [
         {
           screenPosition: { x: 150, y: 125 },
-          player: { username: 'Gaspard' },
+          player: { username: 'Gaspard', color: 'cyan' },
           id: '123456.drop-zone.anchor-0',
           mesh: {}
         },
         {
-          screenPosition: { x: 150, y: 125 },
+          screenPosition: { x: 150, y: 140 },
           size: 3,
           id: 'card2.stack-size',
           mesh: {}
         },
         {
-          screenPosition: { x: -150, y: -125 },
-          player: { username: 'Gaspard' },
+          screenPosition: { x: -150, y: 125 },
+          player: { username: 'Gaspard', color: 'purple' },
           id: 'pointer-123'
         }
       ],
@@ -101,7 +101,7 @@
         },
         {
           screenPosition: { x: 100, y: 200 },
-          player: { username: 'Jane' },
+          player: { username: 'Jane', color: '#369d2b' },
           id: '2345'
         }
       ]

@@ -1,15 +1,15 @@
 #!/usr/bin/env -S node --no-warnings
 // @ts-check
-// this file is using mjs for istanbul to stop complaining about import.meta
 
-import esMain from 'es-main'
+import chalkTemplate from 'chalk-template'
 import { config } from 'dotenv'
+import esMain from 'es-main'
 import camelCase from 'lodash.camelcase'
 import { resolve } from 'path'
 import { cwd } from 'process'
+
 import * as commands from './commands/index.js'
 import { commonArgSpec, parseArgv, shiftCommand } from './util/args.js'
-import chalkTemplate from 'chalk-template'
 import { printWithFormaters } from './util/formaters.js'
 
 /**
@@ -58,7 +58,7 @@ function printErrorAndHelp(err, command = commands) {
   console.log(command.help())
 }
 
-/* istanbul ignore next */
+/* c8 ignore next 3 */
 if (esMain(import.meta)) {
   main(process.argv.slice(2))
 }

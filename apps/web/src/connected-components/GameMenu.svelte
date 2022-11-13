@@ -19,14 +19,15 @@
   const inviteAction = 'invite'
   const fullscreenAction = 'fullscreen'
   const indicatorsAction = 'indicators'
+  let value = null
 
   $: options = [
-    { icon: 'home', label: $_('actions.quit-game'), value: homeAction },
+    { icon: 'home', label: $_('actions.quit-game'), id: homeAction },
     ($currentGame?.availableSeats ?? 0) > 0
       ? {
           icon: 'connect_without_contact',
           label: $_('actions.invite-player'),
-          value: inviteAction
+          id: inviteAction
         }
       : undefined,
     {
@@ -34,7 +35,7 @@
       label: $_(
         $isFullscreen ? 'actions.leave-fullscreen' : 'actions.enter-fullscreen'
       ),
-      value: fullscreenAction
+      id: fullscreenAction
     },
     {
       icon: $areIndicatorsVisible ? 'label_off' : 'label',
@@ -43,23 +44,24 @@
           ? 'actions.hide-indicators'
           : 'actions.show-indicators'
       ),
-      value: indicatorsAction
+      id: indicatorsAction
     }
   ].filter(Boolean)
 
-  function handleSelect({ detail: { value } }) {
-    if (value === homeAction) {
+  function handleSelect() {
+    if (value?.id === homeAction) {
       if ($isFullscreen) {
         toggleFullscreen()
       }
       goto('/home')
-    } else if (value === inviteAction) {
+    } else if (value?.id === inviteAction) {
       dispatch('invite-player')
-    } else if (value === fullscreenAction) {
+    } else if (value?.id === fullscreenAction) {
       toggleFullscreen()
-    } else if (value === indicatorsAction) {
+    } else if (value?.id === indicatorsAction) {
       toggleIndicators()
     }
+    setTimeout(() => (value = null), 0)
   }
 </script>
 
@@ -69,5 +71,6 @@
   withArrow={false}
   valueAsText={false}
   {options}
+  bind:value
   on:select={handleSelect}
 />
