@@ -4,7 +4,6 @@
   export let player = {}
   export let dimension = 60
   export let screenPosition = null
-  export let color = null
 
   $: isShort = dimension < 60
   $: hasImage = player?.avatar
@@ -13,7 +12,7 @@
   function formatVariables() {
     return [
       `--dimension: ${dimension}px`,
-      `--color: ${color}`,
+      `--color: ${player?.color}`,
       `--top: ${screenPosition?.y}px`,
       `--left: ${screenPosition?.x}px`,
       `--border-width: ${isShort ? 0 : dimension < 100 ? 3 : 5}px`
@@ -23,7 +22,7 @@
 
 <figure
   class:positioned={!!screenPosition}
-  class:colored={!!color}
+  class:colored={!!player?.color}
   style={formatVariables()}
 >
   <img

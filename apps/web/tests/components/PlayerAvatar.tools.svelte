@@ -9,7 +9,7 @@
   import avatar from './avatar.png'
   import PlayerAvatar from './PlayerAvatarWithVideo.svelte'
 
-  let player = { username: 'Joe le clodo', avatar, isHost: true }
+  let player = { username: 'Joe le clodo', avatar, color: 'red', isHost: true }
 
   localStreamChange$.subscribe(state => recordEvent('change', state))
   currentMic$.subscribe(mic => recordEvent('select-mic', mic?.toJSON()))
@@ -28,6 +28,9 @@
   <Tool name="No video" props={{ stream: null }} />
   <Tool
     name="No video nor avatar"
-    props={{ stream: null, player: { ...player, avatar: undefined } }}
+    props={{
+      stream: null,
+      player: { ...player, color: null, avatar: undefined }
+    }}
   />
 </ToolBox>
