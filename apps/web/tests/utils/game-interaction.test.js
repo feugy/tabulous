@@ -1205,10 +1205,12 @@ describe('Game interaction model', () => {
     })
 
     it('pans camera on right click drag', () => {
+      selectionManager.select([meshes[0]])
       cameraManager.pan.mockResolvedValue()
       inputManager.onDragObservable.notifyObservers({
         type: 'dragStart',
         event: { pointerType: 'mouse' },
+        mesh: meshes[1],
         button: 2
       })
       inputManager.onDragObservable.notifyObservers({
@@ -1227,6 +1229,7 @@ describe('Game interaction model', () => {
       expect(cameraManager.zoom).not.toHaveBeenCalled()
       expect(drawSelectionBox).not.toHaveBeenCalled()
       expect(selectWithinBox).not.toHaveBeenCalled()
+      expect(selectionManager.meshes.size).toBe(1)
     })
 
     it.each([
@@ -1265,9 +1268,11 @@ describe('Game interaction model', () => {
         button: 0
       }
     ])('rotates camera on $title drag', ({ event, button }) => {
+      selectionManager.select([meshes[0]])
       inputManager.onDragObservable.notifyObservers({
         type: 'dragStart',
         event,
+        mesh: meshes[1],
         button
       })
       inputManager.onDragObservable.notifyObservers({
@@ -1286,6 +1291,7 @@ describe('Game interaction model', () => {
       expect(cameraManager.zoom).not.toHaveBeenCalled()
       expect(drawSelectionBox).not.toHaveBeenCalled()
       expect(selectWithinBox).not.toHaveBeenCalled()
+      expect(selectionManager.meshes.size).toBe(1)
     })
 
     it.each([
@@ -1309,14 +1315,16 @@ describe('Game interaction model', () => {
     })
 
     it('zooms camera on mouse wheel', () => {
+      selectionManager.select([meshes[0]])
       const preventDefault = vi.fn()
       const event = { deltaY: Math.floor(Math.random() * 100), preventDefault }
-      inputManager.onWheelObservable.notifyObservers({ event })
+      inputManager.onWheelObservable.notifyObservers({ event, mesh: meshes[1] })
       expect(cameraManager.zoom).toHaveBeenCalledTimes(1)
       expect(cameraManager.zoom).toHaveBeenCalledWith(event.deltaY * 0.1)
       expect(cameraManager.rotate).not.toHaveBeenCalled()
       expect(cameraManager.pan).not.toHaveBeenCalled()
       expect(preventDefault).toHaveBeenCalledTimes(1)
+      expect(selectionManager.meshes.size).toBe(1)
     })
 
     it('zooms camera on pinch', () => {

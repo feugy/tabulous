@@ -4,7 +4,10 @@ import { Scene } from '@babylonjs/core/scene'
 import { faker } from '@faker-js/faker'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { inputManager as manager } from '../../../src/3d/managers'
+import {
+  inputManager as manager,
+  selectionManager
+} from '../../../src/3d/managers'
 import {
   configures3dTestEngine,
   expectCloseVector,
@@ -55,6 +58,7 @@ describe('InputManager', () => {
     manager.onLongObservable.add(long => longs.push(long))
     manager.onKeyObservable.add(key => keys.push(key))
     manager.onPointerObservable.add(pointer => (currentPointer = pointer))
+    selectionManager.init({ scene, handScene })
   })
 
   it('has initial state', () => {
@@ -140,13 +144,33 @@ describe('InputManager', () => {
       )
     })
 
-    it('does not pick non-pickable meshs', () => {
+    it('does not pick non-pickable meshes', () => {
       const button = 1
       const pointer = { x: 1048, y: 525 }
       const pointerId = 71
       for (const mesh of meshes) {
         mesh.isPickable = false
       }
+      triggerEvent(pointerDown, { ...pointer, pointerId, button })
+      const event = triggerEvent(pointerUp, { ...pointer, pointerId, button })
+      expectEvents({ taps: 1 })
+      expectsDataWithMesh(taps[0], {
+        long: false,
+        pointers: 1,
+        type: 'tap',
+        button,
+        event
+      })
+    })
+
+    it('does not pick meshes selected by peers', () => {
+      const button = 1
+      const pointer = { x: 1048, y: 525 }
+      const pointerId = 71
+      selectionManager.apply(
+        meshes.map(({ id }) => id),
+        faker.datatype.uuid()
+      )
       triggerEvent(pointerDown, { ...pointer, pointerId, button })
       const event = triggerEvent(pointerUp, { ...pointer, pointerId, button })
       expectEvents({ taps: 1 })

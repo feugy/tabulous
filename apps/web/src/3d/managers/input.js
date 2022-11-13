@@ -4,6 +4,7 @@ import { Scene } from '@babylonjs/core/scene.js'
 import { makeLogger } from '../../utils/logger'
 import { distance } from '../../utils/math'
 import { screenToGround } from '../utils/vector'
+import { selectionManager } from './selection'
 
 const logger = makeLogger('input')
 
@@ -462,7 +463,10 @@ export const inputManager = new InputManager()
 
 function findPickedMesh(scene, { x, y }) {
   return scene
-    .multiPickWithRay(scene.createPickingRay(x, y), mesh => mesh.isPickable)
+    .multiPickWithRay(
+      scene.createPickingRay(x, y),
+      mesh => mesh.isPickable && !selectionManager.isSelectedByPeer(mesh)
+    )
     .sort((a, b) => a.distance - b.distance)[0]?.pickedMesh
 }
 

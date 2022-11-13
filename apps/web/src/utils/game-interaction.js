@@ -169,10 +169,10 @@ export function attachInputs({
           resetMenu()
           const kind = pointerKind(event, button, pointers)
           if (mesh) {
-            if (!selectionManager.meshes.has(mesh)) {
-              selectionManager.clear()
-            }
             if (kind === 'left') {
+              if (!selectionManager.meshes.has(mesh)) {
+                selectionManager.clear()
+              }
               logger.info(
                 { mesh, button, long, pointers, event },
                 `start moving mesh ${mesh.id}`
