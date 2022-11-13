@@ -95,7 +95,6 @@ AssertionError: expected 2nd "spy" call to have been called with [ 'anima' ]
 - bug: animating visibility from 0 to 1 creates trouble with texture alpha channel
 - bug: attached, unselected mesh are not ignored during dragging
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
-- make peers' selection uncontrollable
 - detailable/stackable behavior: preview a stack of meshes
 - hide non-connected participants
 - loading spinner on game/new

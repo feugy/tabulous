@@ -187,36 +187,6 @@ describe('SelectionManager', () => {
         expect(meshes[2].renderOverlay).toBeUndefined()
         expect(selectionChanged).not.toHaveBeenCalled()
       })
-
-      describe('given meshes selected by peer', () => {
-        beforeEach(() => {
-          manager.apply([meshes[0].id, meshes[1].id], peer1.id)
-          manager.select([meshes[2]])
-          selectionChanged.mockClear()
-        })
-
-        it('removes selected mesh', () => {
-          manager.apply([meshes[0].id], peer1.id)
-          expectSelected(meshes[0], colorByPlayerId.get(peer1.id))
-          expectSelected(meshes[1], null, false)
-          expectSelection([meshes[2]], colorByPlayerId.get(playerId))
-          expect(selectionChanged).not.toHaveBeenCalled()
-        })
-
-        it('ignores meshes selected by peers', () => {
-          manager.apply([meshes[0].id], peer2.id)
-          expectSelected(meshes[0], colorByPlayerId.get(peer1.id), true)
-          expectSelected(meshes[1], colorByPlayerId.get(peer1.id), true)
-          expectSelection([meshes[2]], colorByPlayerId.get(playerId))
-          expect(selectionChanged).not.toHaveBeenCalled()
-        })
-
-        it('ignores meshes from current selection', () => {
-          manager.apply([meshes[2].id], peer2.id)
-          expectSelection([meshes[2]], colorByPlayerId.get(playerId))
-          expect(selectionChanged).not.toHaveBeenCalled()
-        })
-      })
     })
 
     describe('given some selected meshes', () => {
@@ -237,6 +207,19 @@ describe('SelectionManager', () => {
         expectSelected(mesh2, colorByPlayerId.get(playerId), false)
         expectSelected(mesh3, colorByPlayerId.get(playerId), true)
         expect(selectionChanged).toHaveBeenCalledTimes(2)
+      })
+
+      describe('isSelectedByPeer()', () => {
+        it('returns false for meshes of the active selection', () => {
+          expect(manager.isSelectedByPeer(meshes[0])).toBe(false)
+          expect(manager.isSelectedByPeer(meshes[1])).toBe(false)
+          expect(manager.isSelectedByPeer(meshes[2])).toBe(false)
+        })
+
+        it('returns false for unselected meshes', () => {
+          expect(manager.isSelectedByPeer(meshes[3])).toBe(false)
+          expect(manager.isSelectedByPeer(meshes[4])).toBe(false)
+        })
       })
 
       describe('select()', () => {
@@ -279,6 +262,60 @@ describe('SelectionManager', () => {
           manager.clear()
           expect(manager.meshes.size).toBe(0)
           expect(selectionChanged).not.toHaveBeenCalled()
+        })
+      })
+    })
+
+    describe('given some meshes selected by peer', () => {
+      let meshes
+
+      beforeEach(() => {
+        meshes = ['box1', 'box2', 'box3', 'box4', 'box5'].map(id =>
+          CreateBox(id, {})
+        )
+        manager.apply([meshes[0].id, meshes[1].id], peer1.id)
+        manager.select([meshes[2]])
+        manager.apply([meshes[3].id], peer2.id)
+        selectionChanged.mockReset()
+      })
+
+      describe('apply()', () => {
+        it('removes selected mesh', () => {
+          manager.apply([meshes[0].id], peer1.id)
+          expectSelected(meshes[0], colorByPlayerId.get(peer1.id))
+          expectSelected(meshes[1], null, false)
+          expectSelection([meshes[2]], colorByPlayerId.get(playerId))
+          expect(selectionChanged).not.toHaveBeenCalled()
+        })
+
+        it('ignores meshes selected by peers', () => {
+          manager.apply([meshes[0].id], peer2.id)
+          expectSelected(meshes[0], colorByPlayerId.get(peer1.id), true)
+          expectSelected(meshes[1], colorByPlayerId.get(peer1.id), true)
+          expectSelection([meshes[2]], colorByPlayerId.get(playerId))
+          expect(selectionChanged).not.toHaveBeenCalled()
+        })
+
+        it('ignores meshes from current selection', () => {
+          manager.apply([meshes[2].id], peer2.id)
+          expectSelection([meshes[2]], colorByPlayerId.get(playerId))
+          expect(selectionChanged).not.toHaveBeenCalled()
+        })
+      })
+
+      describe('isSelectedByPeer()', () => {
+        it('returns true for peer-selected meshes', () => {
+          expect(manager.isSelectedByPeer(meshes[0])).toBe(true)
+          expect(manager.isSelectedByPeer(meshes[1])).toBe(true)
+          expect(manager.isSelectedByPeer(meshes[3])).toBe(true)
+        })
+
+        it('returns false for meshes of the active selection', () => {
+          expect(manager.isSelectedByPeer(meshes[2])).toBe(false)
+        })
+
+        it('returns false for unselected meshes', () => {
+          expect(manager.isSelectedByPeer(meshes[4])).toBe(false)
         })
       })
     })

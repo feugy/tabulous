@@ -57,6 +57,16 @@ You need [git], [Node.js 16][node], [PNPM] and [Redis]
 
 1. Your favorite browser should open and display a warning about self-signed SSL certificate. Bypass it, and start developping.
 
+### Test
+
+The entire unit test suite (all projects) runs with `pnpm t`/`pnpm test`.
+
+Run a given project unit test suite with `pnpm test:FOLDER_NAME` (`pnpm test:web`, `pnpm test:server`...).
+
+Run a given project watch mode with `pnpm dev:FOLDER_NAME` (`pnpm dev:web`, `pnpm dev:server`...).
+
+Run a single test file with `pnpm --filter FOLDER_NAME test/dev FILE_NAME` (`pnpm --filter web dev 3d/engine`, `pnpm --filter server test players-resolver`...).
+
 ### Production
 
 All the magic happens during continuous integration/deployment:

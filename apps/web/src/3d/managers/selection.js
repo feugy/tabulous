@@ -47,6 +47,8 @@ class SelectionManager {
   init({ scene, handScene }) {
     this.scene = scene
     this.handScene = handScene
+    this.color = Color4.FromHexString('#00ff00ff')
+    this.colorByPlayerId = new Map()
   }
 
   /**
@@ -248,6 +250,15 @@ class SelectionManager {
     if (selection.size) {
       this.selectionByPeerId.set(playerId, selection)
     }
+  }
+
+  isSelectedByPeer(mesh) {
+    for (const selection of this.selectionByPeerId.values()) {
+      if (selection.has(mesh)) {
+        return true
+      }
+    }
+    return false
   }
 }
 
