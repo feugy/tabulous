@@ -148,7 +148,7 @@ export function createEngine({
         handManager.init({ scene, handScene, overlay: hand })
       }
     }
-    selectionManager.updateColors(playerId, colorByPlayerId, 0.2)
+    selectionManager.updateColors(playerId, colorByPlayerId)
 
     await customShapeManager.init({ ...game, gameAssetsUrl })
     loadMeshes(scene, game.meshes)

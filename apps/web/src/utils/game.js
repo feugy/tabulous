@@ -1,5 +1,3 @@
-import Color from 'colorjs.io'
-
 /**
  * Find game preferences of a given player.
  * @param {object} game - game date, including preferences and players arrays.
@@ -31,21 +29,5 @@ export function findPlayerColor(game, playerId) {
  * @returns {Map<string, string>} the highlighted hexadecimal color strings by their player ids.
  */
 export function buildPlayerColors(game) {
-  return new Map(
-    game.players.map(({ id }) => [
-      id,
-      makeHighlightColor(findPlayerColor(game, id))
-    ])
-  )
-}
-
-/**
- * Turns a plain color into a more bright and contrasted color for highlight purposes
- * @param {string} color - hexadecimal color strings.
- * @returns {string} hexadecimal color string for a righter equivalent.
- */
-function makeHighlightColor(color) {
-  return new Color(color)
-    .set('hsl.l', 50)
-    .toString({ format: 'hex', collapse: false })
+  return new Map(game.players.map(({ id }) => [id, findPlayerColor(game, id)]))
 }

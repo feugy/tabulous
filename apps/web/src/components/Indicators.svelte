@@ -32,6 +32,7 @@
       {screenPosition}
       centered={!!player}
       content={computeLabel(player, rest)}
+      color={player?.color}
     />
   {:else}
     <PlayerThumbnail {screenPosition} {player} color={player?.color} />
@@ -42,5 +43,6 @@
     {screenPosition}
     icon={computeFeedback(rest)}
     content={player?.username ?? ''}
+    color={player?.color}
   />
 {/each}

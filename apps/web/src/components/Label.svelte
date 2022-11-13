@@ -1,12 +1,13 @@
 <script>
   export let content
   export let screenPosition = { x: 0, y: 0 }
+  export let color = '#7a7a7a'
   export let centered = false
 </script>
 
 <div
   class:centered
-  style="top: {screenPosition.y}px; left: {screenPosition.x}px"
+  style="top: {screenPosition.y}px; left: {screenPosition.x}px; --color:{color}"
 >
   {content}
 </div>
@@ -15,10 +16,10 @@
   div {
     @apply absolute transform-gpu -translate-y-1/2 -translate-x-1
             pointer-events-none 
-            font-bold text-lg text-$primary-lightest
-            bg-$primary opacity-85
+            text-lg text-$primary-lightest opacity-85
             py-1 pr-2 pl-5 rounded z-10;
     clip-path: polygon(1rem 0%, 100% 0, 100% 100%, 1rem 100%, 0% 50%);
+    background-color: var(--color);
 
     &.centered {
       @apply p-2 pt-1 pb-3 rounded-none -translate-y-[100%] -translate-x-[50%];

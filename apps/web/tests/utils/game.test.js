@@ -71,35 +71,5 @@ describe('Game utils', () => {
         ])
       )
     })
-
-    it('does not change already light color', () => {
-      const playerId = 'a'
-      expect(
-        buildPlayerColors({
-          players: [{ id: playerId }],
-          preferences: [{ playerId, color: '#ff0000' }]
-        })
-      ).toEqual(new Map([[playerId, '#ff0000']]))
-    })
-
-    it('returns an expanded hex color string', () => {
-      const playerId = 'a'
-      expect(
-        buildPlayerColors({
-          players: [{ id: playerId }],
-          preferences: [{ playerId, color: '#f00' }]
-        })
-      ).toEqual(new Map([[playerId, '#ff0000']]))
-    })
-
-    it('increases color lightness', () => {
-      const playerId = 'a'
-      expect(
-        buildPlayerColors({
-          players: [{ id: playerId }],
-          preferences: [{ playerId, color: '#123456' }]
-        })
-      ).toEqual(new Map([[playerId, '#2c80d3']]))
-    })
   })
 })

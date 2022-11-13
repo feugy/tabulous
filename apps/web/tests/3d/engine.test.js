@@ -113,7 +113,7 @@ describe('createEngine()', () => {
       expect(engine.scenes[1].getMeshById(mesh.id)).toBeDefined()
       expect(displayLoadingUI).not.toHaveBeenCalled()
       expect(engine.isLoading).toBe(false)
-      expect(updateColors).toHaveBeenCalledWith(playerId, colorByPlayerId, 0.2)
+      expect(updateColors).toHaveBeenCalledWith(playerId, colorByPlayerId)
       expect(updateColors).toHaveBeenCalledTimes(1)
       expect(receiveLoading).not.toHaveBeenCalled()
       expect(targetInit).not.toHaveBeenCalled()
@@ -289,8 +289,7 @@ describe('createEngine()', () => {
         )
         expect(updateColors).toHaveBeenCalledWith(
           playerId,
-          updatedColorByPlayerId,
-          0.2
+          updatedColorByPlayerId
         )
         expect(updateColors).toHaveBeenCalledTimes(1)
       })

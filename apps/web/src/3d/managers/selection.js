@@ -35,7 +35,6 @@ class SelectionManager {
     this.box = null
     this.skipNotify = false
     this.color = Color4.FromHexString('#00ff00')
-    this.overlayColor = Color4.FromHexString('#00ff00ff')
     this.selectionByPeerId = new Map()
   }
 
@@ -54,18 +53,15 @@ class SelectionManager {
    * Updates colors to reflect players in game.
    * @param {string} playerId - current player id, to find selection box color.
    * @param {Map<string, string>} colorByPlayerId - map of hexadecimal color strings used for selection box, and selected mesh overlay, by player id.
-   * @param {number} overlayAlpha - [0-1] transparency used for selected mesh overlay
    */
-  updateColors(playerId, colorByPlayerId, overlayAlpha) {
-    this.overlayColorByPlayerId = new Map(
-      [...colorByPlayerId.entries()].map(([playerId, color]) => {
-        const overlayColor = Color4.FromHexString(color)
-        overlayColor.a = overlayAlpha
-        return [playerId, overlayColor]
-      })
+  updateColors(playerId, colorByPlayerId) {
+    this.colorByPlayerId = new Map(
+      [...colorByPlayerId.entries()].map(([playerId, color]) => [
+        playerId,
+        Color4.FromHexString(color)
+      ])
     )
-    this.overlayColor = this.overlayColorByPlayerId.get(playerId)
-    this.color = Color4.FromHexString(colorByPlayerId.get(playerId))
+    this.color = this.colorByPlayerId.get(playerId)
   }
 
   /**
@@ -141,7 +137,7 @@ class SelectionManager {
             this.meshes,
             this.onSelectionObservable,
             mesh,
-            this.overlayColor
+            this.color
           )
         }
       }
@@ -162,9 +158,9 @@ class SelectionManager {
    * Adds meshes into selection (if not already in).
    * Ignores mesh already selected by other players.
    * @param {Mesh[]} - array of meshes added to the active selection
-   * @param {Color4} [overlayColor] - color used for mesh overlay, default to manager's color.
+   * @param {Color4} [color] - color used to highlight mesh, default to manager's color.
    */
-  select(meshes, overlayColor) {
+  select(meshes, color) {
     const allSelections = [this.meshes, ...this.selectionByPeerId.values()]
     const oldSize = this.meshes.size
     for (const mesh of meshes) {
@@ -173,7 +169,7 @@ class SelectionManager {
         this.meshes,
         this.onSelectionObservable,
         mesh,
-        overlayColor ?? this.overlayColor
+        color ?? this.color
       )
     }
     if (this.meshes.size !== oldSize) {
@@ -185,9 +181,9 @@ class SelectionManager {
    * Adds meshes into selection (if not already in), by their ids.
    * Ignores mesh already selected by other players.
    * @param {string[]} ids - selected mesh ids
-   * @param {Color4} [overlayColor] - color used for mesh overlay, default to manager's color.
+   * @param {Color4} [color] - color used to highlight mesh, default to manager's color.
    */
-  selectById(ids, overlayColor) {
+  selectById(ids, color) {
     const selected = []
     for (const scene of [this.scene, this.handScene]) {
       for (const id of ids) {
@@ -197,7 +193,7 @@ class SelectionManager {
         }
       }
     }
-    this.select(selected, overlayColor ?? this.overlayColor)
+    this.select(selected, color ?? this.color)
   }
 
   /**
@@ -207,11 +203,8 @@ class SelectionManager {
     if (this.meshes.size) {
       logger.info({ meshes: this.meshes }, `reset multiple selection`)
       for (const mesh of this.meshes) {
-        mesh.renderOverlay = false
+        removeFromSelection(this.meshes, mesh)
       }
-    }
-    if (this.meshes.size) {
-      this.meshes.clear()
       if (!this.skipNotify) {
         this.onSelectionObservable.notifyObservers(this.meshes)
       }
@@ -240,9 +233,8 @@ class SelectionManager {
     }
     const selection = this.selectionByPeerId.get(playerId) ?? new Set()
     for (const mesh of selection) {
-      mesh.renderOverlay = false
+      removeFromSelection(selection, mesh)
     }
-    selection.clear()
     const allSelections = [this.meshes, ...this.selectionByPeerId.values()]
     for (const id of meshIds) {
       addToSelection(
@@ -250,7 +242,7 @@ class SelectionManager {
         selection,
         null,
         this.scene.getMeshById(id),
-        this.overlayColorByPlayerId.get(playerId)
+        this.colorByPlayerId.get(playerId)
       )
     }
     if (selection.size) {
@@ -270,15 +262,23 @@ function addToSelection(allSelections, selection, observable, mesh, color) {
     for (const added of mesh.metadata?.stack ?? [mesh]) {
       selection.add(added)
       added.overlayColor = color
-      added.overlayAlpha = color.a
+      added.overlayAlpha = 0.5
+      added.edgesWidth = 3.0
+      added.edgesColor = color
       added.renderOverlay = true
+      added.enableEdgesRendering()
       added.onDisposeObservable.addOnce(() => {
-        selection.delete(added)
-        mesh.renderOverlay = false
+        removeFromSelection(selection, added)
         observable?.notifyObservers(selection)
       })
     }
   }
+}
+
+function removeFromSelection(selection, mesh) {
+  selection.delete(mesh)
+  mesh.renderOverlay = false
+  mesh.disableEdgesRendering()
 }
 
 function reorderSelection(manager) {

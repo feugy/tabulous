@@ -68,7 +68,6 @@ describe('SelectionManager', () => {
       const overlayAlpha = 0.7
       manager.updateColors(playerId, colorByPlayerId, overlayAlpha)
       expect(manager.color?.toHexString()).toEqual(`${color}FF`)
-      expect(manager.overlayColor?.toHexString()).toEqual(`${color}B3`)
     })
   })
 
@@ -409,7 +408,8 @@ function expectSelection(expectedMeshes, color) {
 function expectSelected(mesh, color, isSelected = true, message) {
   if (isSelected) {
     expect(mesh.renderOverlay, message).toBe(true)
-    expect(mesh.overlayColor?.toHexString()).toBe(`${color}33`)
+    expect(mesh.edgesColor?.toHexString()).toBe(`${color}FF`)
+    expect(mesh.overlayColor?.toHexString()).toBe(`${color}FF`)
   } else {
     expect(mesh.renderOverlay, message).toBeFalsy()
   }
