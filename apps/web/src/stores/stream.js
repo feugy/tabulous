@@ -141,7 +141,7 @@ async function enumerateDevices() {
   const micDevices = []
   const cameraDevices = []
   for (const device of devices) {
-    if (!device.label.startsWith('Monitor of')) {
+    if (device?.kind && !device?.label.startsWith('Monitor of')) {
       if (device.kind === 'audioinput') {
         micDevices.push(device)
         logger.debug(device, `found mic ${device.label}`)
@@ -158,7 +158,7 @@ async function enumerateDevices() {
 function getDesiredOrDefault(desired, lastId, devices) {
   const defaultDevice =
     devices.find(({ deviceId }) => deviceId === lastId) || devices[0]
-  return desired?.kind === defaultDevice.kind ? desired : defaultDevice
+  return desired?.kind === defaultDevice?.kind ? desired : defaultDevice
 }
 
 function stopStream(stream) {
@@ -175,8 +175,12 @@ function loadLastMediaIds() {
 }
 
 function saveLastMediaIds({ audio, video }) {
-  localStorage.setItem(lastCameraStorageKey, video.deviceId)
-  localStorage.setItem(lastMicStorageKey, audio.deviceId)
+  if (video) {
+    localStorage.setItem(lastCameraStorageKey, video.deviceId)
+  }
+  if (audio) {
+    localStorage.setItem(lastMicStorageKey, audio.deviceId)
+  }
 }
 
 function resetAll() {
