@@ -51,10 +51,18 @@
 
   .messages {
     @apply grid overflow-y-auto;
-    grid-template-columns: min-content 1fr;
+    grid-template-columns: fit-content(6rem) 1fr;
 
     & > * {
       @apply pb-2;
+    }
+
+    & > .message {
+      overflow-wrap: anywhere;
+    }
+
+    & > .from {
+      word-break: break-word;
     }
   }
 

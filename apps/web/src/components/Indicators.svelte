@@ -35,7 +35,7 @@
       color={player?.color}
     />
   {:else}
-    <PlayerThumbnail {screenPosition} {player} color={player?.color} />
+    <PlayerThumbnail {screenPosition} {player} />
   {/if}
 {/each}
 {#each feedbacks as { screenPosition, id, player, ...rest } (id)}

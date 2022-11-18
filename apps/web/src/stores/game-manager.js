@@ -36,6 +36,7 @@ import {
   openChannels,
   send
 } from './peer-channels'
+import { toastInfo } from './toaster'
 
 // when joining game with connected peers, delay during which we expect to receive the game data
 const gameReceptionDelay = 30000
@@ -46,6 +47,7 @@ const hostId$ = new BehaviorSubject(null)
 const playingIds$ = new BehaviorSubject([])
 
 let delayOnLoad = () => {}
+let playerById = new Map()
 
 /**
  * Emits the player current game, or undefined.
@@ -67,7 +69,7 @@ export const playerColor = combineLatest([currentGame$, playingIds$]).pipe(
  */
 export const gamePlayerById = merge(hostId$, playingIds$, currentGame$).pipe(
   map(() => {
-    const playerById = new Map()
+    playerById = new Map()
     const game = currentGame$.value
     if (game) {
       for (const player of game.players) {
@@ -472,11 +474,21 @@ function handlePeerConnection(currentPlayerId) {
     if (currentPlayerId === hostId$.value) {
       shareGame(currentPlayerId, playerId)
     }
+    toastInfo({
+      icon: 'person_add_alt_1',
+      contentKey: 'labels.player-joined',
+      player: playerById.get(playerId) ?? {}
+    })
   }
 }
 
 function handlePeerDisconnection(currentPlayerId) {
   return function (playerId) {
+    toastInfo({
+      icon: 'person_remove',
+      contentKey: 'labels.player-left',
+      player: playerById.get(playerId) ?? {}
+    })
     playingIds$.next(playingIds$.value.filter(id => id !== playerId))
     if (playerId === hostId$.value && isNextPlaying(currentPlayerId)) {
       unsubscribeCurrentGame()

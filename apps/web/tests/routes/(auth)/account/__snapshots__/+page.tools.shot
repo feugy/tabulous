@@ -62,7 +62,7 @@ exports[`Manual account 1`] = `
           
           <figure
             class="s-engCJu8q-fNe"
-            style="--dimension: 30px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 0px"
+            style="--dimension: 30px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 0px"
           >
             <img
               alt="avatar for Jane Doe"
@@ -150,7 +150,7 @@ exports[`Manual account 1`] = `
        
       <figure
         class="s-engCJu8q-fNe"
-        style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+        style="--dimension: 150px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
       >
         <img
           alt="avatar for Jane Doe"
@@ -229,7 +229,7 @@ exports[`OAuth account 1`] = `
           
           <figure
             class="s-engCJu8q-fNe"
-            style="--dimension: 30px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 0px"
+            style="--dimension: 30px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 0px"
           >
             <img
               alt="avatar for John Clark"
@@ -317,7 +317,7 @@ exports[`OAuth account 1`] = `
        
       <figure
         class="s-engCJu8q-fNe"
-        style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+        style="--dimension: 150px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
       >
         <img
           alt="avatar for John Clark"

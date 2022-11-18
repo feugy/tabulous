@@ -1,8 +1,10 @@
 <script>
   import '../common'
-
-  import { PageFooter } from '../components'
+  
+  import { PageFooter, Toaster } from '../components'
+  import { lastToast } from '../stores'
 </script>
 
 <slot />
+<Toaster message={$lastToast} />
 <PageFooter />

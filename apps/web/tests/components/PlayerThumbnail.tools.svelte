@@ -5,7 +5,7 @@
   import avatar from './avatar.png'
 
   const player = { username: 'Joe le clodo' }
-  const screenPosition = { x: 0, y: -50 }
+  const screenPosition = { x: 0, y: 150 }
   const dimension = 150
 </script>
 
@@ -20,7 +20,10 @@
   <Tool name="Small text" props={{ dimension: 50 }} />
   <Tool
     name="Positionned avatar"
-    props={{ player: { ...player, avatar }, color: 'lime', screenPosition }}
+    props={{ player: { ...player, avatar, color: 'lime' }, screenPosition }}
   />
-  <Tool name="Positioned text" props={{ color: 'red', screenPosition }} />
+  <Tool
+    name="Positioned text"
+    props={{ player: { ...player, color: 'red' }, screenPosition }}
+  />
 </ToolBox>

@@ -9,7 +9,7 @@
   props={{
     open: true,
     closable: true,
-    title: 'Magnique!'
+    title: 'Magnifique!'
   }}
   let:props
   let:handleEvent

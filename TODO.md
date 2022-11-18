@@ -105,7 +105,6 @@ AssertionError: expected 2nd "spy" call to have been called with [ 'anima' ]
 - option to invite players with url
 - distribute multiple meshes to players'hand
 - shortcuts cheatsheet
-- peer notifications: joining, joined, left, error (stop waiting when navigating away)
 - hand support for quantifiable behavior
 - put/draw under
 - fullscreen and default key (F11)

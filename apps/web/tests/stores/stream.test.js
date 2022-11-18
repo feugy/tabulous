@@ -171,6 +171,9 @@ describe('Media Stream store', () => {
       { kind: 'audioinput', deviceId: 'idC', label: 'Monitor of main mic' },
       { kind: 'audioinput', deviceId: 'idD', label: 'main mic' },
       { kind: 'audioinput', deviceId: 'idE', label: 'ambiant mic' },
+      {},
+      null,
+      undefined,
       { kind: 'unknown', deviceId: 'idF', label: 'unknown' }
     ]
 
@@ -271,6 +274,46 @@ describe('Media Stream store', () => {
     it('does not enumerate devices twice', async () => {
       await acquireMediaStream()
       expect(navigator.mediaDevices.enumerateDevices).toHaveBeenCalledTimes(1)
+    })
+
+    it('handles no camera at all', async () => {
+      navigator.mediaDevices.enumerateDevices.mockResolvedValue(
+        devices.slice(2, 5)
+      )
+      releaseMediaStream()
+      vi.clearAllMocks()
+      localStorage.clear()
+      await acquireMediaStream()
+      expect(get(stream$)).toEqual(stream)
+      expectCurrentMic(mics[0])
+      expect(get(mics$)).toEqual(mics)
+      expect(get(currentCamera$)).toBeUndefined()
+      expect(get(cameras$)).toEqual([])
+      expect(logger.warn).not.toHaveBeenCalled()
+      expect(streamReceived).toHaveBeenCalledTimes(1)
+      expect(camerasReceived).toHaveBeenCalledTimes(1)
+      expect(micsReceived).toHaveBeenCalledTimes(1)
+      expect(localStreamChangeReceived).not.toHaveBeenCalled()
+    })
+
+    it('handles no audio at all', async () => {
+      navigator.mediaDevices.enumerateDevices.mockResolvedValue(
+        devices.slice(0, 2)
+      )
+      releaseMediaStream()
+      vi.clearAllMocks()
+      localStorage.clear()
+      await acquireMediaStream()
+      expect(get(stream$)).toEqual(stream)
+      expect(get(currentMic$)).toBeUndefined()
+      expect(get(mics$)).toEqual([])
+      expectCurrentCamera(cameras[0])
+      expect(get(cameras$)).toEqual(cameras)
+      expect(logger.warn).not.toHaveBeenCalled()
+      expect(streamReceived).toHaveBeenCalledTimes(1)
+      expect(camerasReceived).toHaveBeenCalledTimes(1)
+      expect(micsReceived).toHaveBeenCalledTimes(1)
+      expect(localStreamChangeReceived).not.toHaveBeenCalled()
     })
 
     describe('releaseMediaStream()', () => {

@@ -6,8 +6,8 @@ exports[`Local 1`] = `
   data-testid="player-avatar"
 >
   <figure
-    class="s-engCJu8q-fNe"
-    style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+    class="s-engCJu8q-fNe colored"
+    style="--dimension: 150px; --color: red; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
   >
     <img
       alt="avatar for Joe le clodo"
@@ -41,8 +41,8 @@ exports[`No video 1`] = `
   data-testid="player-avatar"
 >
   <figure
-    class="s-engCJu8q-fNe"
-    style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+    class="s-engCJu8q-fNe colored"
+    style="--dimension: 150px; --color: red; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
   >
     <img
       alt="avatar for Joe le clodo"

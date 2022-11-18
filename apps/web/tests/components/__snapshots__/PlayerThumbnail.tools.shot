@@ -3,7 +3,7 @@
 exports[`Avatar 1`] = `
 <figure
   class="s-engCJu8q-fNe"
-  style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+  style="--dimension: 150px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
 >
   <img
     alt="avatar for Joe le clodo"
@@ -19,7 +19,7 @@ exports[`Avatar 1`] = `
 exports[`Positioned text 1`] = `
 <figure
   class="s-engCJu8q-fNe positioned colored"
-  style="--dimension: 60px; --color: red; --top: -50px; --left: 0px; --border-width: 3px"
+  style="--dimension: 60px; --color: red; --top: 150px; --left: 0px; --border-width: 3px"
 >
   <img
     alt="avatar for Joe le clodo"
@@ -39,7 +39,7 @@ exports[`Positioned text 1`] = `
 exports[`Positionned avatar 1`] = `
 <figure
   class="s-engCJu8q-fNe positioned colored"
-  style="--dimension: 60px; --color: lime; --top: -50px; --left: 0px; --border-width: 3px"
+  style="--dimension: 60px; --color: lime; --top: 150px; --left: 0px; --border-width: 3px"
 >
   <img
     alt="avatar for Joe le clodo"
@@ -55,7 +55,7 @@ exports[`Positionned avatar 1`] = `
 exports[`Small text 1`] = `
 <figure
   class="s-engCJu8q-fNe"
-  style="--dimension: 50px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 0px"
+  style="--dimension: 50px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 0px"
 >
   <img
     alt="avatar for Joe le clodo"
@@ -75,7 +75,7 @@ exports[`Small text 1`] = `
 exports[`Text 1`] = `
 <figure
   class="s-engCJu8q-fNe"
-  style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+  style="--dimension: 150px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
 >
   <img
     alt="avatar for Joe le clodo"

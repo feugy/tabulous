@@ -4,7 +4,7 @@
 
   import { CatalogItem, ConfirmDialogue, GameLink } from '../../components'
   import { Header } from '../../connected-components'
-  import { deleteGame, receiveGameListUpdates } from '../../stores'
+  import { deleteGame, receiveGameListUpdates,toastInfo } from '../../stores'
 
   /** @type {import('./$types').PageData} */
   export let data = {}
@@ -26,6 +26,7 @@
     if (confirmed) {
       await deleteGame(gameToDelete.id)
     }
+    toastInfo({ contentKey: 'labels.game-deleted' })
     gameToDelete = null
   }
 </script>
