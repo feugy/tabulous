@@ -49,12 +49,14 @@ import {
   openChannels,
   send
 } from '../../src/stores/peer-channels'
+import { lastToast } from '../../src/stores/toaster'
 import {
   buildPlayerColors,
   findPlayerColor,
   findPlayerPreferences,
   makeLogger
 } from '../../src/utils'
+import { translate } from '../test-utils'
 
 vi.mock('../../src/stores/graphql-client')
 vi.mock('../../src/stores/game-engine', () => {
@@ -88,6 +90,7 @@ vi.mock('../../src/3d/utils')
 const logger = makeLogger('game-manager')
 const gamePlayerByIdReceived = vi.fn()
 const playerColorReceived = vi.fn()
+const toastReceived = vi.fn()
 const turnCredentials = { turn: 'credentials' }
 const engine = {
   scenes: [],
@@ -103,7 +106,8 @@ let error
 beforeAll(() => {
   subscriptions = [
     gamePlayerById.subscribe(gamePlayerByIdReceived),
-    playerColor.subscribe(playerColorReceived)
+    playerColor.subscribe(playerColorReceived),
+    lastToast.subscribe(toastReceived)
   ]
 })
 
@@ -213,6 +217,7 @@ describe('given a mocked game engine', () => {
         findPlayerColor(game, player.id)
       )
       expect(playerColorReceived).toHaveBeenCalledTimes(3)
+      expect(toastReceived).not.toHaveBeenCalled()
     })
 
     it('loads camera positions upon game loading', async () => {
@@ -380,6 +385,11 @@ describe('given a mocked game engine', () => {
         )
         expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(1)
         expect(runQuery).not.toHaveBeenCalled()
+        expect(toastReceived).toHaveBeenCalledWith({
+          content: translate('labels.player-joined', { player: partner1 }),
+          icon: 'person_add_alt_1'
+        })
+        expect(toastReceived).toHaveBeenCalledTimes(1)
       })
 
       it('sends game data on server update', async () => {
@@ -483,6 +493,11 @@ describe('given a mocked game engine', () => {
           ])
         )
         expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(2)
+        expect(toastReceived).toHaveBeenCalledWith({
+          content: translate('labels.player-joined', { player: partner2 }),
+          icon: 'person_add_alt_1'
+        })
+        expect(toastReceived).toHaveBeenCalledTimes(1)
       })
 
       it('saves game data on dispose', async () => {
@@ -930,6 +945,12 @@ describe('given a mocked game engine', () => {
             { gameId: game.id }
           )
           expect(runSubscription).toHaveBeenCalledTimes(1)
+          expect(toastReceived).toHaveBeenCalledWith({
+            content: translate('labels.player-left', { player: partner1 }),
+            icon: 'person_remove'
+          })
+          expect(toastReceived).toHaveBeenCalledTimes(1)
+
           vi.clearAllMocks()
           const newcamera = { pos: 'a' }
           cameraSaves.next([newcamera])
@@ -960,6 +981,7 @@ describe('given a mocked game engine', () => {
             playerId: partner1.id
           })
           lastConnectedId.next(partner2.id)
+          toastReceived.mockClear()
           lastDisconnectedId.next(partner1.id)
           await nextPromise()
           expect(send).not.toHaveBeenCalled()
@@ -997,6 +1019,11 @@ describe('given a mocked game engine', () => {
           )
           expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(3)
           expect(runSubscription).not.toHaveBeenCalled()
+          expect(toastReceived).toHaveBeenCalledWith({
+            content: translate('labels.player-left', { player: partner1 }),
+            icon: 'person_remove'
+          })
+          expect(toastReceived).toHaveBeenCalledTimes(1)
         })
       })
     })

@@ -21,7 +21,7 @@
 
 <style lang="postcss">
   div {
-    @apply transform-gpu opacity-0 p-4 shadow-md flex items-center;
+    @apply transform-gpu opacity-0 py-2 px-3 shadow-md flex items-center;
     background-color: var(--bg-color);
     animation: showAndHide var(--duration) cubic-bezier(0, 0, 0.2, 1.5);
 

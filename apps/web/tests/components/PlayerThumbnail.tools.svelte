@@ -22,5 +22,8 @@
     name="Positionned avatar"
     props={{ player: { ...player, avatar, color: 'lime' }, screenPosition }}
   />
-  <Tool name="Positioned text" props={{ color: 'red', screenPosition }} />
+  <Tool
+    name="Positioned text"
+    props={{ player: { ...player, color: 'red' }, screenPosition }}
+  />
 </ToolBox>

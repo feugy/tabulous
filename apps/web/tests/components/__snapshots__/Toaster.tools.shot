@@ -23,7 +23,7 @@ exports[`Text only 1`] = `
   
   <div
     class="s-qGWxPda9kJl2"
-    style="--bg-color: #fcfcfc; --duration: 5s; --close-duration: 0.5s;"
+    style="--bg-color: #fcfcfc; --duration: 4s; --close-duration: 0.4s;"
   >
     <span
       class="material-icons s-qGWxPda9kJl2"
@@ -62,7 +62,7 @@ exports[`Text, color and icon 1`] = `
   
   <div
     class="s-qGWxPda9kJl2"
-    style="--bg-color: #41d26d; --duration: 5s; --close-duration: 0.5s;"
+    style="--bg-color: #41d26d; --duration: 4s; --close-duration: 0.4s;"
   >
     <span
       class="material-icons s-qGWxPda9kJl2"
