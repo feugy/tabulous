@@ -1,3 +1,7 @@
+import { createHash } from 'node:crypto'
+
+import { fetch } from 'undici'
+
 import repositories from '../repositories/index.js'
 
 /**
@@ -16,29 +20,39 @@ import repositories from '../repositories/index.js'
 
 /**
  * Creates or updates a player account, saving user details as they are provided.
- * If the incomind data contains provider & providerId fields, it keeps previous id, avatar and username.
+ * If the incoming data contains provider & providerId fields, it keeps previous id, avatar and username.
  * In case no id is provided, a new one is created.
  * @param {Partial<Player>} userDetails - creation details.
  * @returns {Promise<Player>} the creates player.
  */
 export async function upsertPlayer(userDetails) {
   if (userDetails.provider && userDetails.providerId) {
+    // data comes from an external provider
     const existing = await repositories.players.getByProviderDetails(
       userDetails
     )
-    if (existing) {
-      delete userDetails.avatar
-      delete userDetails.username
-      userDetails.id = existing.id
-    } else {
+    if (!existing) {
+      // first connection
       const { username } = userDetails
       if (await isUsernameUsed(username)) {
         userDetails.username = `${username}-${Math.floor(Math.random() * 1000)}`
       }
+      if (!userDetails.avatar) {
+        userDetails.avatar = await findGravatar(userDetails)
+      }
+    } else {
+      // subsequent connections
+      delete userDetails.avatar
+      delete userDetails.username
+      userDetails.id = existing.id
     }
   } else {
+    // data comes from the user
     delete userDetails.provider
     delete userDetails.providerId
+    if (userDetails.avatar === 'gravatar') {
+      userDetails.avatar = await findGravatar(userDetails)
+    }
     delete userDetails.email
   }
   userDetails.playing = false
@@ -109,4 +123,18 @@ export async function isUsernameUsed(username, excludedId) {
  */
 export async function acceptTerms(player) {
   return repositories.players.save({ ...player, termsAccepted: true })
+}
+
+async function findGravatar(userDetails) {
+  if (!userDetails.email) {
+    return undefined
+  }
+  // https://fr.gravatar.com/site/implement/hash/
+  const hash = createHash('md5')
+    .update(userDetails.email.trim().toLowerCase())
+    .digest('hex')
+  // https://fr.gravatar.com/site/implement/images/
+  const avatar = `https://www.gravatar.com/avatar/${hash}?s=96&r=g&d=404`
+  const response = await fetch(avatar)
+  return response.status === 200 ? avatar : undefined
 }
