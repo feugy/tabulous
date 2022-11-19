@@ -1,7 +1,9 @@
 fps _: 'FPS : {value}'
 
 actions:
+  back: Retour
   cancel: Non
+  change-avatar: Changer
   confirm: Oui
   enter-fullscreen: Plein-écran
   go-to-account: Paramètres
@@ -17,6 +19,7 @@ actions:
   log-out: Quitter
   new-game: Nouveau
   quit-game: Quitter le jeu
+  save: Sauver
   scroll-to-top: Défiler jusqu'en haut
   show-indicators: Afficher les indicateurs
 errors:
@@ -70,6 +73,7 @@ page-titles:
   log-in: Tabulous • Connection
   terms-of-service: Tabulous • Mentions Légales & Conditions Générales d'Utilisation
 placeholders:
+  avatar: Url
   password: Mot de passe
   playerId: Identifiant
   username: Pseudo
@@ -78,6 +82,7 @@ titles:
   auth-provider: Votre compte
   camera-controls: Contrôler la caméra
   catalog: Jeux disponibles
+  change-avatar: Choisissez votre nouvel avatar
   confirm-game-deletion: Suppression de la partie
   create-game: Nouvelle partie
   your-games: Parties en cours
@@ -92,6 +97,7 @@ titles:
   welcome: Bienvenue sur Tabulous !
 tooltips:
   add-to-selection: Ajouter à la sélection
+  change-avatar: Si vous avez associé un gravatar à votre email, tappez "gravatar". Videz le champ pour supprimer votre avatar.
   clear-selection: Vider la sélection
   detail: Voir en détail
   draw: Piocher dans votre main

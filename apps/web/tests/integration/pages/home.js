@@ -60,7 +60,7 @@ export const HomePage = mixin(
      */
     async goTo() {
       await this.page.goto('/home')
-      await this.page.waitForLoadState()
+      await this.page.waitForLoadState('networkidle')
     }
 
     /**

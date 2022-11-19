@@ -34,14 +34,14 @@
     }
   }
 
-  function handleKeyup({ key }) {
+  function handleKey({ key }) {
     if (key === 'Escape') {
       close()
     }
   }
 </script>
 
-<svelte:body on:keyup={handleKeyup} />
+<svelte:body on:keyup={handleKey} />
 <Portal>
   {#if open}
     <div class="filter" transition:fade />
@@ -50,7 +50,7 @@
       transition:fade
       on:click={close}
       on:keydown|stopPropagation
-      on:keyup={handleKeyup}
+      on:keyup={handleKey}
     >
       {#if closable}
         <span class="close-container">
@@ -60,7 +60,7 @@
       <article
         role="dialog"
         on:click|stopPropagation
-        on:keyup|stopPropagation={handleKeyup}
+        on:keyup|stopPropagation={handleKey}
       >
         <Pane>
           <header class="heading">{title}</header>
@@ -97,7 +97,7 @@
   }
 
   .content {
-    @apply overflow-y-auto;
+    @apply overflow-y-auto mt-4;
   }
 
   header {
@@ -105,6 +105,6 @@
   }
 
   footer {
-    @apply mt-4 text-center;
+    @apply mt-8 text-center;
   }
 </style>

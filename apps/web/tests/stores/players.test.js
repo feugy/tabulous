@@ -125,10 +125,12 @@ describe('acceptTerms()', () => {
 describe('updateCurrentPlayer()', () => {
   it('returns player on success', async () => {
     const username = faker.name.fullName()
+    const avatar = faker.internet.avatar()
     runMutation.mockResolvedValueOnce(player)
-    expect(await updateCurrentPlayer(username)).toEqual(player)
+    expect(await updateCurrentPlayer(username, avatar)).toEqual(player)
     expect(runMutation).toHaveBeenCalledWith(graphQL.updateCurrentPlayer, {
-      username
+      username,
+      avatar
     })
     expect(runMutation).toHaveBeenCalledTimes(1)
   })

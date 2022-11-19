@@ -40,6 +40,7 @@ export class LoginPage {
    * Expects connect buttons heading visibility.
    */
   async getStarted() {
+    await this.page.waitForLoadState('networkidle')
     await expect(this.googleButton).toBeVisible()
     await expect(this.githubButton).toBeVisible()
     await expect(this.passwordDetails).toBeVisible()

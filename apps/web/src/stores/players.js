@@ -78,8 +78,9 @@ export async function acceptTerms() {
 /**
  * Updates user details for the current player.
  * @param {string} username - the desired username, if any.
+ * @param {string} avatar - the desired avatar, if any.
  * @returns {Promise<object>} the current player, updated.
  */
-export async function updateCurrentPlayer(username) {
-  return runMutation(graphQL.updateCurrentPlayer, { username })
+export async function updateCurrentPlayer(username, avatar) {
+  return runMutation(graphQL.updateCurrentPlayer, { username, avatar })
 }

@@ -27,7 +27,7 @@ export const NewGamePage = mixin(
      */
     async goTo(gameKind) {
       await this.page.goto(`/game/new?name=${gameKind}`)
-      await this.page.waitForLoadState()
+      await this.page.waitForLoadState('networkidle')
     }
   },
   AuthenticatedHeaderMixin,

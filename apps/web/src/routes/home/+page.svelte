@@ -4,7 +4,7 @@
 
   import { CatalogItem, ConfirmDialogue, GameLink } from '../../components'
   import { Header } from '../../connected-components'
-  import { deleteGame, receiveGameListUpdates,toastInfo } from '../../stores'
+  import { deleteGame, receiveGameListUpdates, toastInfo } from '../../stores'
 
   /** @type {import('./$types').PageData} */
   export let data = {}

@@ -6,11 +6,13 @@
   import Dialogue from './Dialogue.svelte'
 
   export let open
-  export let message
+  export let message = ''
+  export let cancelText = $_('actions.cancel')
+  export let confirmText = $_('actions.confirm')
 
+  const dispatch = createEventDispatcher()
   let confirmed = null
   let cancelButtonRef = null
-  const dispatch = createEventDispatcher()
 
   $: if (cancelButtonRef) {
     cancelButtonRef.focus()
@@ -20,6 +22,7 @@
     event.stopImmediatePropagation()
     dispatch('close', confirmed ?? false)
     confirmed = null
+    open = false
   }
 </script>
 
@@ -29,12 +32,12 @@
   <svelte:fragment slot="buttons">
     <Button
       secondary
-      text={$_('actions.cancel')}
+      text={cancelText}
       bind:ref={cancelButtonRef}
       on:click={() => (open = false)}
     />
     <Button
-      text={$_('actions.confirm')}
+      text={confirmText}
       on:click={() => {
         confirmed = true
         open = false
