@@ -51,7 +51,11 @@ export async function upsertPlayer(userDetails) {
     delete userDetails.provider
     delete userDetails.providerId
     if (userDetails.avatar === 'gravatar') {
-      userDetails.avatar = await findGravatar(userDetails)
+      const existing = await repositories.players.getById(userDetails.id)
+      userDetails.avatar = await findGravatar({
+        ...(existing || {}),
+        ...userDetails
+      })
     }
     delete userDetails.email
   }

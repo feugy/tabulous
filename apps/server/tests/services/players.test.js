@@ -56,7 +56,7 @@ describe('given initialized repository', () => {
       })
     })
 
-    it('fetches user gavatar when requested', async () => {
+    it('fetches user gravatar when requested', async () => {
       const details = {
         id: faker.datatype.uuid(),
         avatar: 'gravatar',
@@ -69,7 +69,21 @@ describe('given initialized repository', () => {
       })
     })
 
-    it('does no fetch user gavatar without email', async () => {
+    it('fetches user gravatar when requested on an existing account', async () => {
+      const original = await repositories.players.save({
+        username: faker.name.fullName(),
+        email: 'damien.simoninfeugas@gmail.com',
+        playing: false
+      })
+      expect(
+        await upsertPlayer({ id: original.id, avatar: 'gravatar' })
+      ).toEqual({
+        ...original,
+        avatar: `https://www.gravatar.com/avatar/0440c0a8bc7e7dbbb8cec0585ca3c25c?s=96&r=g&d=404`
+      })
+    })
+
+    it('does no fetch user gravatar without email', async () => {
       const details = {
         id: faker.datatype.uuid(),
         avatar: 'gravatar',
@@ -109,7 +123,7 @@ describe('given initialized repository', () => {
       })
     })
 
-    it('does not use an unexisting gavatar', async () => {
+    it('does not use an unexisting gravatar', async () => {
       const creation = {
         providerId: faker.datatype.uuid(),
         provider: 'oauth',

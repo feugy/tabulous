@@ -109,7 +109,7 @@ export default {
           throw new Error('Username already used')
         }
         const update = { id: player.id, username: sanitizedUsername }
-        if (avatar) {
+        if (avatar !== undefined) {
           update.avatar = avatar
         }
         const updated = await services.upsertPlayer(update)
