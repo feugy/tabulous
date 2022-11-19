@@ -13,6 +13,7 @@ exports[`Local 1`] = `
       alt="avatar for Joe le clodo"
       class="s-engCJu8q-fNe hasImage"
       height="150"
+      referrerpolicy="no-referrer"
       src="/tests/components/avatar.png"
       width="150"
     />
@@ -48,6 +49,7 @@ exports[`No video 1`] = `
       alt="avatar for Joe le clodo"
       class="s-engCJu8q-fNe hasImage"
       height="150"
+      referrerpolicy="no-referrer"
       src="/tests/components/avatar.png"
       width="150"
     />
@@ -80,6 +82,7 @@ exports[`No video nor avatar 1`] = `
       alt="avatar for Joe le clodo"
       class="s-engCJu8q-fNe"
       height="150"
+      referrerpolicy="no-referrer"
       width="150"
     />
      

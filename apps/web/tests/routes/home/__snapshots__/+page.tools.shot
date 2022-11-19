@@ -441,6 +441,7 @@ exports[`Authenticated 1`] = `
               alt="avatar for Jane Doe"
               class="s-engCJu8q-fNe"
               height="30"
+              referrerpolicy="no-referrer"
               width="30"
             />
              

@@ -68,6 +68,7 @@ exports[`Manual account 1`] = `
               alt="avatar for Jane Doe"
               class="s-engCJu8q-fNe hasImage"
               height="30"
+              referrerpolicy="no-referrer"
               src="https://avatars.dicebear.com/api/micah/tabulous-avatar-4.svg"
               width="30"
             />
@@ -156,6 +157,7 @@ exports[`Manual account 1`] = `
           alt="avatar for Jane Doe"
           class="s-engCJu8q-fNe hasImage"
           height="150"
+          referrerpolicy="no-referrer"
           src="https://avatars.dicebear.com/api/micah/tabulous-avatar-4.svg"
           width="150"
         />
@@ -235,6 +237,7 @@ exports[`OAuth account 1`] = `
               alt="avatar for John Clark"
               class="s-engCJu8q-fNe hasImage"
               height="30"
+              referrerpolicy="no-referrer"
               src="https://avatars.dicebear.com/api/micah/tabulous-avatar-10.svg"
               width="30"
             />
@@ -323,6 +326,7 @@ exports[`OAuth account 1`] = `
           alt="avatar for John Clark"
           class="s-engCJu8q-fNe hasImage"
           height="150"
+          referrerpolicy="no-referrer"
           src="https://avatars.dicebear.com/api/micah/tabulous-avatar-10.svg"
           width="150"
         />
