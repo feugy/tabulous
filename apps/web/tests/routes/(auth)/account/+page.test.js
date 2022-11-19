@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker'
-import { render, screen } from '@testing-library/svelte'
+import { fireEvent, render, screen, within } from '@testing-library/svelte'
 import userEvent from '@testing-library/user-event'
 import html from 'svelte-htm'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -15,6 +15,7 @@ vi.mock('../../../../src/stores')
 describe('/account route', () => {
   const player = {
     id: faker.datatype.uuid(),
+    avatar: faker.internet.avatar(),
     username: 'Batman'
   }
 
@@ -83,6 +84,57 @@ describe('/account route', () => {
     expect(updateCurrentPlayer).toHaveBeenNthCalledWith(1, username)
     expect(updateCurrentPlayer).toHaveBeenNthCalledWith(2, player.username)
     expect(updateCurrentPlayer).toHaveBeenCalledTimes(2)
+  })
+
+  it('can change the avatar', async () => {
+    const newAvatar = faker.internet.avatar()
+    updateCurrentPlayer.mockResolvedValueOnce({ ...player, avatar: newAvatar })
+    render(html`<${AccountPage} data=${{ session: { player } }} />`)
+    await fireEvent.click(
+      screen.getByRole('button', { name: translate('actions.change-avatar') })
+    )
+
+    const dialogue = screen.getByRole('dialog')
+    expect(dialogue).toBeInTheDocument()
+
+    const input = within(dialogue).getByRole('textbox')
+    expect(input).toHaveValue(player.avatar)
+
+    await userEvent.type(input, `{Control>}A{/Control}${newAvatar}{Enter}`)
+    await sleep(100)
+
+    for (const thumbnail of screen.getAllByRole('img')) {
+      expect(thumbnail).toHaveAttribute('src', newAvatar)
+    }
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(updateCurrentPlayer).toHaveBeenCalledWith(player.username, newAvatar)
+    expect(updateCurrentPlayer).toHaveBeenCalledTimes(1)
+  })
+
+  it('can close avatar dialogue', async () => {
+    const newAvatar = faker.internet.avatar()
+    render(html`<${AccountPage} data=${{ session: { player } }} />`)
+    await fireEvent.click(
+      screen.getByRole('button', { name: translate('actions.change-avatar') })
+    )
+
+    const dialogue = screen.getByRole('dialog')
+    expect(dialogue).toBeInTheDocument()
+
+    const input = within(dialogue).getByRole('textbox')
+    expect(input).toHaveValue(player.avatar)
+
+    await userEvent.type(input, `{Control>}A{/Control}${newAvatar}`)
+    await fireEvent.click(
+      within(dialogue).getByRole('button', { name: translate('actions.back') })
+    )
+    await sleep(100)
+
+    for (const thumbnail of screen.getAllByRole('img')) {
+      expect(thumbnail).toHaveAttribute('src', player.avatar)
+    }
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(updateCurrentPlayer).not.toHaveBeenCalled()
   })
 })
 

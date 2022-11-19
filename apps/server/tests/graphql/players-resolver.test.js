@@ -520,5 +520,45 @@ describe('given a started server', () => {
       expect(services.upsertPlayer).not.toHaveBeenCalled()
       expect(services.notifyRelatedPlayers).not.toHaveBeenCalled()
     })
+
+    it('set avatar', async () => {
+      const username = faker.name.firstName()
+      services.upsertPlayer.mockResolvedValueOnce({
+        id: player.id,
+        username
+      })
+      services.getPlayerById.mockResolvedValueOnce(player)
+      services.searchPlayers.mockResolvedValueOnce([])
+      const response = await server.inject({
+        method: 'POST',
+        url: 'graphql',
+        headers: {
+          authorization: `Bearer ${signToken(
+            player.id,
+            configuration.auth.jwt.key
+          )}`
+        },
+        payload: {
+          query: `mutation { 
+            updateCurrentPlayer(username: "${username}", avatar: "") { id username avatar }
+          }`
+        }
+      })
+
+      expect(response.json()).toEqual({
+        data: { updateCurrentPlayer: { id: player.id, username, avatar: null } }
+      })
+      expect(response.statusCode).toEqual(200)
+      expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
+      expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+      expect(services.upsertPlayer).toHaveBeenCalledWith({
+        id: player.id,
+        username,
+        avatar: ''
+      })
+      expect(services.upsertPlayer).toHaveBeenCalledTimes(1)
+      expect(services.notifyRelatedPlayers).toHaveBeenCalledWith(player.id)
+      expect(services.notifyRelatedPlayers).toHaveBeenCalledTimes(1)
+    })
   })
 })

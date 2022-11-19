@@ -31,6 +31,7 @@
     width={dimension}
     height={dimension}
     alt="avatar for {player?.username}"
+    referrerpolicy="no-referrer"
     on:load={() => (hasImage = true)}
   />
   {#if !hasImage}

@@ -5,10 +5,11 @@
 
   import { invalidateAll } from '$app/navigation'
 
-  import { Input, PlayerThumbnail, Progress } from '../../../components'
+  import { Button, Input, PlayerThumbnail, Progress } from '../../../components'
   import { Header } from '../../../connected-components'
   import { updateCurrentPlayer } from '../../../stores'
   import { translateError } from '../../../utils'
+  import AvatarDialogue from './AvatarDialogue.svelte'
 
   /** @type {import('./$types').PageData} */
   export let data = {}
@@ -17,6 +18,8 @@
   let user = data.session.player
   let isSaving = false
   let usernameError = null
+  let openAvatarDialogue = false
+  let avatar = user.avatar
 
   const saveSubscription = username$
     .pipe(
@@ -39,6 +42,13 @@
 
   function handleSave({ target }) {
     username$.next(target.value)
+  }
+
+  async function handleCloseAvatarDialogue({ detail: confirmed }) {
+    if (confirmed) {
+      user.avatar = (await updateCurrentPlayer(user.username, avatar)).avatar
+    }
+    avatar = user.avatar
   }
 </script>
 
@@ -82,7 +92,18 @@
         {/if}
       </span>
       <span>{$_('labels.avatar')}</span>
-      <PlayerThumbnail player={user} dimension={150} />
+      <span class="aligned">
+        <PlayerThumbnail player={user} dimension={150} />
+        <Button
+          text={$_('actions.change-avatar')}
+          on:click={() => (openAvatarDialogue = true)}
+        />
+        <AvatarDialogue
+          bind:open={openAvatarDialogue}
+          bind:avatar
+          on:close={handleCloseAvatarDialogue}
+        />
+      </span>
     </fieldset>
   </section>
 </main>
@@ -114,6 +135,10 @@
 
   .with-progress {
     @apply grid grid-cols-[1fr,auto] items-center;
+  }
+
+  .aligned {
+    @apply flex items-center gap-4;
   }
 
   .error {

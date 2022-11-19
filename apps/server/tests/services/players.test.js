@@ -56,6 +56,45 @@ describe('given initialized repository', () => {
       })
     })
 
+    it('fetches user gravatar when requested', async () => {
+      const details = {
+        id: faker.datatype.uuid(),
+        avatar: 'gravatar',
+        email: ' Damien.SimoninFeugas@gmail.com ',
+        username: faker.name.fullName()
+      }
+      expect(await upsertPlayer(details)).toEqual({
+        ...details,
+        avatar: `https://www.gravatar.com/avatar/0440c0a8bc7e7dbbb8cec0585ca3c25c?s=96&r=g&d=404`
+      })
+    })
+
+    it('fetches user gravatar when requested on an existing account', async () => {
+      const original = await repositories.players.save({
+        username: faker.name.fullName(),
+        email: 'damien.simoninfeugas@gmail.com',
+        playing: false
+      })
+      expect(
+        await upsertPlayer({ id: original.id, avatar: 'gravatar' })
+      ).toEqual({
+        ...original,
+        avatar: `https://www.gravatar.com/avatar/0440c0a8bc7e7dbbb8cec0585ca3c25c?s=96&r=g&d=404`
+      })
+    })
+
+    it('does no fetch user gravatar without email', async () => {
+      const details = {
+        id: faker.datatype.uuid(),
+        avatar: 'gravatar',
+        username: faker.name.fullName()
+      }
+      expect(await upsertPlayer(details)).toEqual({
+        ...details,
+        avatar: undefined
+      })
+    })
+
     it('creates new account from provider', async () => {
       const creation = {
         providerId: faker.datatype.uuid(),
@@ -64,9 +103,36 @@ describe('given initialized repository', () => {
         email: faker.internet.email(),
         username: faker.name.fullName()
       }
-      const created = await upsertPlayer(creation)
-      expect(created).toEqual({
+      expect(await upsertPlayer(creation)).toEqual({
         ...creation,
+        id: expect.any(String)
+      })
+    })
+
+    it('default to an existing gravatar when creating from provider', async () => {
+      const creation = {
+        providerId: faker.datatype.uuid(),
+        provider: 'oauth',
+        email: ' Damien.SimoninFeugas@gmail.com ',
+        username: faker.name.fullName()
+      }
+      expect(await upsertPlayer(creation)).toEqual({
+        ...creation,
+        avatar: `https://www.gravatar.com/avatar/0440c0a8bc7e7dbbb8cec0585ca3c25c?s=96&r=g&d=404`,
+        id: expect.any(String)
+      })
+    })
+
+    it('does not use an unexisting gravatar', async () => {
+      const creation = {
+        providerId: faker.datatype.uuid(),
+        provider: 'oauth',
+        email: ' MyEmailAddress@example.com ',
+        username: faker.name.fullName()
+      }
+      expect(await upsertPlayer(creation)).toEqual({
+        ...creation,
+        avatar: undefined,
         id: expect.any(String)
       })
     })
@@ -81,8 +147,7 @@ describe('given initialized repository', () => {
         email: faker.internet.email(),
         username
       }
-      const created = await upsertPlayer(creation)
-      expect(created).toEqual({
+      expect(await upsertPlayer(creation)).toEqual({
         ...creation,
         username: expect.stringMatching(new RegExp(`^${username}-\\d+`)),
         id: expect.any(String)

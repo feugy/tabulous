@@ -68,6 +68,7 @@ exports[`Manual account 1`] = `
               alt="avatar for Jane Doe"
               class="s-engCJu8q-fNe hasImage"
               height="30"
+              referrerpolicy="no-referrer"
               src="https://avatars.dicebear.com/api/micah/tabulous-avatar-4.svg"
               width="30"
             />
@@ -148,20 +149,45 @@ exports[`Manual account 1`] = `
         Avatar : 
       </span>
        
-      <figure
-        class="s-engCJu8q-fNe"
-        style="--dimension: 150px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+      <span
+        class="aligned s-GQCXmK5OKySU"
       >
-        <img
-          alt="avatar for Jane Doe"
-          class="s-engCJu8q-fNe hasImage"
-          height="150"
-          src="https://avatars.dicebear.com/api/micah/tabulous-avatar-4.svg"
-          width="150"
-        />
+        <figure
+          class="s-engCJu8q-fNe"
+          style="--dimension: 150px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+        >
+          <img
+            alt="avatar for Jane Doe"
+            class="s-engCJu8q-fNe hasImage"
+            height="150"
+            referrerpolicy="no-referrer"
+            src="https://avatars.dicebear.com/api/micah/tabulous-avatar-4.svg"
+            width="150"
+          />
+           
+        </figure>
+        <!--&lt;PlayerThumbnail&gt;-->
          
-      </figure>
-      <!--&lt;PlayerThumbnail&gt;-->
+        <button
+          class="s-NMyTiX1zi6rz"
+        >
+          
+          <span
+            class="text s-NMyTiX1zi6rz"
+          >
+            Changer
+          </span>
+          
+          
+        </button>
+        <!--&lt;Button&gt;-->
+         
+         
+        <!--&lt;Portal&gt;-->
+        <!--&lt;Dialogue&gt;-->
+        <!--&lt;ConfirmDialogue&gt;-->
+        <!--&lt;AvatarDialogue&gt;-->
+      </span>
     </fieldset>
   </section>
 </main>
@@ -235,6 +261,7 @@ exports[`OAuth account 1`] = `
               alt="avatar for John Clark"
               class="s-engCJu8q-fNe hasImage"
               height="30"
+              referrerpolicy="no-referrer"
               src="https://avatars.dicebear.com/api/micah/tabulous-avatar-10.svg"
               width="30"
             />
@@ -315,20 +342,45 @@ exports[`OAuth account 1`] = `
         Avatar : 
       </span>
        
-      <figure
-        class="s-engCJu8q-fNe"
-        style="--dimension: 150px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+      <span
+        class="aligned s-GQCXmK5OKySU"
       >
-        <img
-          alt="avatar for John Clark"
-          class="s-engCJu8q-fNe hasImage"
-          height="150"
-          src="https://avatars.dicebear.com/api/micah/tabulous-avatar-10.svg"
-          width="150"
-        />
+        <figure
+          class="s-engCJu8q-fNe"
+          style="--dimension: 150px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+        >
+          <img
+            alt="avatar for John Clark"
+            class="s-engCJu8q-fNe hasImage"
+            height="150"
+            referrerpolicy="no-referrer"
+            src="https://avatars.dicebear.com/api/micah/tabulous-avatar-10.svg"
+            width="150"
+          />
+           
+        </figure>
+        <!--&lt;PlayerThumbnail&gt;-->
          
-      </figure>
-      <!--&lt;PlayerThumbnail&gt;-->
+        <button
+          class="s-NMyTiX1zi6rz"
+        >
+          
+          <span
+            class="text s-NMyTiX1zi6rz"
+          >
+            Changer
+          </span>
+          
+          
+        </button>
+        <!--&lt;Button&gt;-->
+         
+         
+        <!--&lt;Portal&gt;-->
+        <!--&lt;Dialogue&gt;-->
+        <!--&lt;ConfirmDialogue&gt;-->
+        <!--&lt;AvatarDialogue&gt;-->
+      </span>
     </fieldset>
   </section>
 </main>

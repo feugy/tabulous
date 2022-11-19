@@ -44,7 +44,7 @@ export const GamePage = mixin(
      */
     async goTo(gameId) {
       await this.page.goto(`/game/${gameId}`)
-      await this.page.waitForLoadState()
+      await this.page.waitForLoadState('networkidle')
     }
 
     /**

@@ -1,5 +1,5 @@
 const isCI = !!process.env.CI
-const isDebug = !!process.env.PWDEBUG
+const isDebug = !!process.env.PWDEBUG || !!process.env.DEBUG
 
 /** @type {import('@playwright/test').PlaywrightTestConfig} */
 const config = {

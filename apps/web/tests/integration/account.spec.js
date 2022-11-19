@@ -50,6 +50,51 @@ describe('Account page', () => {
     await expect(accountPage.avatarImage).toHaveAttribute('src', player.avatar)
   })
 
+  it('can configure gravatar', async ({ page }) => {
+    const gravatar = `https://www.gravatar.com/avatar/0440c0a8bc7e7dbbb8cec0585ca3c25c?s=96`
+    const { setTokenCookie } = await mockGraphQl(page, {
+      getCurrentPlayer: {
+        token: faker.datatype.uuid(),
+        player,
+        turnCredentials: {
+          username: 'bob',
+          credentials: faker.internet.password()
+        }
+      },
+      updateCurrentPlayer: { ...player, avatar: gravatar }
+    })
+    await setTokenCookie()
+
+    const accountPage = new AccountPage(page)
+    await accountPage.goTo()
+    await accountPage.getStarted()
+    await accountPage.saveAvatar('gravatar')
+    await expect(accountPage.usernameInput).toHaveValue(player.username)
+    await expect(accountPage.avatarImage).toHaveAttribute('src', gravatar)
+  })
+
+  it('can clear avatar', async ({ page }) => {
+    const { setTokenCookie } = await mockGraphQl(page, {
+      getCurrentPlayer: {
+        token: faker.datatype.uuid(),
+        player,
+        turnCredentials: {
+          username: 'bob',
+          credentials: faker.internet.password()
+        }
+      },
+      updateCurrentPlayer: { ...player, avatar: null }
+    })
+    await setTokenCookie()
+
+    const accountPage = new AccountPage(page)
+    await accountPage.goTo()
+    await accountPage.getStarted()
+    await accountPage.saveAvatar(null)
+    await expect(accountPage.usernameInput).toHaveValue(player.username)
+    await expect(accountPage.avatarImage).toBeHidden()
+  })
+
   it('navigates back to home page', async ({ page }) => {
     const { setTokenCookie } = await mockGraphQl(page, {
       getCurrentPlayer: {

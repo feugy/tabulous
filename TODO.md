@@ -96,9 +96,8 @@ AssertionError: expected 2nd "spy" call to have been called with [ 'anima' ]
 - bug: attached, unselected mesh are not ignored during dragging
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
 - detailable/stackable behavior: preview a stack of meshes
-- hide non-connected participants
+- hide/distinguish non-connected participants
 - loading spinner on game/new
-- updates avatar
 - is this right? given an active selection, when it anchors with other items, then items are part of the selection
 - click on stack size to select all/select stack on push?
 - collect player preferences when joining a game (requires to alter & reload game when joining rather than inviting)
