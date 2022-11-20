@@ -60,21 +60,16 @@ describe('given a started server', () => {
     describe('sendSignal mutation', () => {
       it('can not send signal without authentication', async () => {
         const signal = {
-          type: 'offer',
           to: faker.datatype.uuid(),
-          signal: '--'
+          data: JSON.stringify({ type: 'offer' })
         }
         const response = await server.inject({
           method: 'POST',
           url: 'graphql',
           payload: {
-            query: `mutation { 
-  sendSignal(signal: ${toGraphQLArg(signal)}) {
-    type
-    from
-    signal
-  }
-}`
+            query: `mutation { sendSignal(signal: ${toGraphQLArg(
+              signal
+            )}) { from data } }`
           }
         })
         expect(response.json().errors).toEqual([
@@ -88,13 +83,13 @@ describe('given a started server', () => {
       it('sends signal and triggers subscription', async () => {
         const peerId = faker.datatype.uuid()
         const gameId = faker.datatype.uuid()
-        const data = { type: 'answer', to: peerId, signal: 'whatever' }
+        const signal = { to: peerId, data: '{"type": "answer"}' }
         services.getPlayerById.mockImplementation(id => ({ id }))
         await startSubscription(
           ws,
           `subscription { awaitSignal(gameId: ${toGraphQLArg(
             gameId
-          )}) { type from signal } }`,
+          )}) { from data } }`,
           signToken(peerId, configuration.auth.jwt.key)
         )
         const signalPromise = waitOnMessage(ws)
@@ -109,23 +104,15 @@ describe('given a started server', () => {
             )}`
           },
           payload: {
-            query: `mutation { 
-  sendSignal(signal: ${toGraphQLArg(data)}) {
-    type
-    from
-    signal
-  }
-}`
+            query: `mutation { sendSignal(signal: ${toGraphQLArg(
+              signal
+            )}) { from data } }`
           }
         })
 
         expect(response.json()).toEqual({
           data: {
-            sendSignal: {
-              type: data.type,
-              from: playerId,
-              signal: data.signal
-            }
+            sendSignal: { from: playerId, data: signal.data }
           }
         })
         expect(response.statusCode).toEqual(200)
@@ -147,7 +134,7 @@ describe('given a started server', () => {
           ws,
           `subscription { awaitSignal(gameId: ${toGraphQLArg(
             gameId
-          )}) { type from signal } }`,
+          )}) { from data } }`,
           signToken(playerId, configuration.auth.jwt.key),
           subId
         )
@@ -167,7 +154,7 @@ describe('given a started server', () => {
           ws,
           `subscription { awaitSignal(gameId: ${toGraphQLArg(
             gameId
-          )}) { type from signal } }`,
+          )}) { from data } }`,
           signToken(playerId, configuration.auth.jwt.key),
           subId
         )
@@ -177,7 +164,7 @@ describe('given a started server', () => {
           expect.objectContaining({
             payload: {
               data: {
-                awaitSignal: { from: 'server', signal: '{}', type: 'ready' }
+                awaitSignal: { from: 'server', data: '{"type":"ready"}' }
               }
             }
           })

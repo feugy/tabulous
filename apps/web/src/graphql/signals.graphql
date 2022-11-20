@@ -1,13 +1,12 @@
 mutation sendSignal($signal: SignalInput) {
   sendSignal(signal: $signal) {
-    type
+    from
   }
 }
 
 subscription awaitSignal {
   awaitSignal {
     from
-    type
-    signal
+    data
   }
 }

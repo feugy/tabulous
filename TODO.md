@@ -74,7 +74,6 @@ AssertionError: expected 2nd "spy" call to have been called with [ 'anima' ]
 
 ## Refactor
 
-- graphQL: remove signal type and make signal optional
 - add tests for web/src/utils/peer-connection
 - use node 18 when msw/interceptor will [handle it](https://github.com/mswjs/interceptors/pull/283)
 - ts-check all the things!
