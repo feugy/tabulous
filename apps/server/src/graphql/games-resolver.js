@@ -5,10 +5,11 @@ import { isAuthenticated } from './utils.js'
 
 export default {
   loaders: {
+    /**
+     * Loads player and guest details on the fly.
+     * Disable cache since playing statuses are volatile
+     */
     Game: {
-      /**
-       * Loads player details of each game.
-       */
       players: {
         async loader(queries) {
           return Promise.all(
@@ -18,10 +19,18 @@ export default {
             )
           )
         },
-        // disable cache since playing statuses are volatile
-        opts: {
-          cache: false
-        }
+        opts: { cache: false }
+      },
+      guests: {
+        async loader(queries) {
+          return Promise.all(
+            queries.map(
+              ({ obj: { guestIds, guests } }) =>
+                guests ?? services.getPlayerById(guestIds)
+            )
+          )
+        },
+        opts: { cache: false }
       }
     }
   },
