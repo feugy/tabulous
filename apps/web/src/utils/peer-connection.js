@@ -72,7 +72,7 @@ export class PeerConnection {
             serialize(this, { description }),
             `sending ${description.type} to ${playerId}`
           )
-          this.sendSignal(playerId, description.type, description)
+          this.sendSignal(playerId, description)
         } catch (error) {
           logger.warn(
             serialize(this, { error }),
@@ -85,7 +85,7 @@ export class PeerConnection {
 
       this.connection.onicecandidate = ({ candidate }) => {
         if (candidate) {
-          this.sendSignal(playerId, 'candidate', candidate)
+          this.sendSignal(playerId, candidate)
         }
       }
 
@@ -155,18 +155,15 @@ export class PeerConnection {
       }
       if (description) {
         this.polite = true
-        this.handleSignal(description.type, description)
+        this.handleSignal(description)
       }
     })
   }
 
-  async handleSignal(type, signal) {
-    logger.debug(
-      serialize(this, { type, signal }),
-      `receiving ${type} from server`
-    )
+  async handleSignal(signal) {
+    logger.debug(serialize(this, { signal }), `receiving signal from server`)
     try {
-      if (type === 'candidate') {
+      if (!signal.type) {
         try {
           await this.connection.addIceCandidate(signal)
         } catch (err) {
@@ -175,21 +172,21 @@ export class PeerConnection {
           }
         }
       } else {
-        this.ignoreOffer = !this.polite && hasOfferCollistion(type, this)
+        this.ignoreOffer = !this.polite && hasOfferCollistion(signal.type, this)
         if (this.ignoreOffer) {
           return
         }
         await this.connection.setRemoteDescription(signal)
-        if (type === 'offer') {
+        if (signal.type === 'offer') {
           await this.connection.setLocalDescription()
           const description = this.connection.localDescription
           // TODO description.sdp = this.transformSdp(description.sdp)
-          this.sendSignal(this.playerId, description.type, description)
+          this.sendSignal(this.playerId, description)
         }
       }
     } catch (error) {
       logger.warn(
-        serialize(this, { type, signal, error }),
+        serialize(this, { signal, error }),
         `failed handling remote signal`,
         error
       )

@@ -53,7 +53,10 @@ export default {
         pubsub.publish({
           topic: `sendSignal-${player.id}`,
           payload: {
-            awaitSignal: { type: 'ready', from: 'server', signal: '{}' }
+            awaitSignal: {
+              from: 'server',
+              data: JSON.stringify({ type: 'ready' })
+            }
           }
         })
         services.setPlaying(player.id, true)

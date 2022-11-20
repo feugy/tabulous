@@ -118,53 +118,48 @@ export async function openChannels(player, turnCredentials) {
 
   return new Promise(resolve => {
     subscriptions.push(
-      runSubscription(graphQL.awaitSignal).subscribe(
-        async ({ from, signal: signalRaw, type }) => {
-          logger.debug(
-            { from, signalRaw, type },
-            `receiving ${type} from server`
-          )
-          const signal = JSON.parse(signalRaw)
-          if (type === 'ready') {
-            resolve()
-          } else if (type === 'offer' && !connections.has(from)) {
-            // new peer joining
-            const peer = new PeerConnection({
-              local,
-              bitrate,
-              turnCredentials,
-              sendSignal(playerId, type, signal) {
-                runMutation(graphQL.sendSignal, {
-                  signal: { type, to: playerId, signal: JSON.stringify(signal) }
-                })
-              },
-              onData: buildDataHandler(from),
-              onRemoteStream: buildStreamHandler(from),
-              onRemoteState: () => refreshConnected(),
-              onClose: () => {
-                logger.warn({ peer }, `connection terminated with peer ${from}`)
-                unwire(from)
-              }
-            })
-            connections.set(from, peer)
-            try {
-              await peer.connect(from, signal)
-              refreshConnected()
-              lastConnectedId$.next(from)
-              if (!peer.hasLocalStream()) {
-                await acquireMediaStream()
-              }
-            } catch (error) {
-              logger.warn(
-                { peer, error },
-                `failed to connect with peer ${from}: ${error.message}`
-              )
+      runSubscription(graphQL.awaitSignal).subscribe(async ({ from, data }) => {
+        const signal = JSON.parse(data)
+        logger.debug({ from, signal }, `receiving ${signal.type} from server`)
+        if (signal.type === 'ready') {
+          resolve()
+        } else if (signal.type === 'offer' && !connections.has(from)) {
+          // new peer joining
+          const peer = new PeerConnection({
+            local,
+            bitrate,
+            turnCredentials,
+            sendSignal(playerId, signal) {
+              runMutation(graphQL.sendSignal, {
+                signal: { to: playerId, data: JSON.stringify(signal) }
+              })
+            },
+            onData: buildDataHandler(from),
+            onRemoteStream: buildStreamHandler(from),
+            onRemoteState: () => refreshConnected(),
+            onClose: () => {
+              logger.warn({ peer }, `connection terminated with peer ${from}`)
+              unwire(from)
             }
-          } else {
-            connections.get(from)?.handleSignal(type, signal)
+          })
+          connections.set(from, peer)
+          try {
+            await peer.connect(from, signal)
+            refreshConnected()
+            lastConnectedId$.next(from)
+            if (!peer.hasLocalStream()) {
+              await acquireMediaStream()
+            }
+          } catch (error) {
+            logger.warn(
+              { peer, error },
+              `failed to connect with peer ${from}: ${error.message}`
+            )
           }
+        } else {
+          connections.get(from)?.handleSignal(signal)
         }
-      )
+      })
     )
   })
 }
@@ -189,9 +184,9 @@ export async function connectWith(playerId, turnCredentials) {
     local,
     bitrate,
     turnCredentials,
-    sendSignal(playerId, type, signal) {
+    sendSignal(playerId, signal) {
       runMutation(graphQL.sendSignal, {
-        signal: { type, to: playerId, signal: JSON.stringify(signal) }
+        signal: { to: playerId, data: JSON.stringify(signal) }
       })
     },
     onData: buildDataHandler(playerId),

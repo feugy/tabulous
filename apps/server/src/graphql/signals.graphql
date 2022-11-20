@@ -1,13 +1,11 @@
 type Signal {
-  type: String!
   from: ID!
-  signal: String!
+  data: String!
 }
 
 input SignalInput {
-  type: String!
   to: ID!
-  signal: String!
+  data: String!
 }
 
 extend type Mutation {

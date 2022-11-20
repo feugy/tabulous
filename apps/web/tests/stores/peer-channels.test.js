@@ -138,7 +138,7 @@ describe('Peer channels store', () => {
       .openChannels({ id: playerId1 }, turnCredentials)
       .then(() => (done = true))
     expect(done).toBe(false)
-    awaitSignal.next({ type: 'ready', signal: JSON.stringify({}) })
+    awaitSignal.next({ data: JSON.stringify({ type: 'ready' }) })
     await openPromise
     expect(done).toBe(true)
     expect(runSubscription).toHaveBeenCalledWith(graphQL.awaitSignal)
@@ -156,16 +156,16 @@ describe('Peer channels store', () => {
     })
 
     it('opens WebRTC peer when receiving an offer, and sends the answer through mutation', async () => {
-      const offer = { type: 'offer', signal: faker.lorem.words() }
-      const candidate = { type: 'candidate', signal: faker.lorem.words() }
-      const answer = { type: 'answer', signal: faker.lorem.words() }
+      const offer = { type: 'offer', data: faker.lorem.words() }
+      const candidate = { data: `candidate-${faker.lorem.words()}` }
+      const answer = { type: 'answer', data: faker.lorem.words() }
       expect(PeerConnection).not.toHaveBeenCalled()
       const emitter = new EventEmitter()
       PeerConnection.prototype.connect.mockImplementationOnce(async function (
         playerId
       ) {
         this.playerId = playerId
-        this.sendSignal(playerId, answer.type, answer)
+        this.sendSignal(playerId, answer)
         this.handleSignal.mockImplementation((...args) =>
           this.sendSignal(playerId, ...args)
         )
@@ -174,14 +174,12 @@ describe('Peer channels store', () => {
       })
 
       awaitSignal.next({
-        type: 'offer',
         from: playerId2,
-        signal: JSON.stringify(offer)
+        data: JSON.stringify(offer)
       })
       awaitSignal.next({
-        type: 'candidate',
         from: playerId2,
-        signal: JSON.stringify(candidate)
+        data: JSON.stringify(candidate)
       })
 
       expect(acquireMediaStream).not.toHaveBeenCalled()
@@ -198,16 +196,14 @@ describe('Peer channels store', () => {
       expectPeerOptions()
       expect(runMutation).toHaveBeenCalledWith(graphQL.sendSignal, {
         signal: {
-          type: 'answer',
           to: playerId2,
-          signal: JSON.stringify(answer)
+          data: JSON.stringify(answer)
         }
       })
       expect(runMutation).toHaveBeenCalledWith(graphQL.sendSignal, {
         signal: {
-          type: 'candidate',
           to: playerId2,
-          signal: JSON.stringify(candidate)
+          data: JSON.stringify(candidate)
         }
       })
       expect(runMutation).toHaveBeenCalledTimes(2)
@@ -217,14 +213,13 @@ describe('Peer channels store', () => {
     })
 
     it('reports errors during peer connection', async () => {
-      const offer = { type: 'offer', signal: faker.lorem.words() }
+      const offer = { type: 'offer', data: faker.lorem.words() }
       const error = new Error('boom')
       PeerConnection.prototype.connect.mockRejectedValueOnce(error)
 
       awaitSignal.next({
-        type: 'offer',
         from: playerId3,
-        signal: JSON.stringify(offer)
+        data: JSON.stringify(offer)
       })
       await sleep()
 
@@ -238,7 +233,7 @@ describe('Peer channels store', () => {
     })
 
     it('cleans up on peer disconnection', async () => {
-      const offer = { type: 'offer', signal: faker.lorem.words() }
+      const offer = { type: 'offer', data: faker.lorem.words() }
       PeerConnection.prototype.connect.mockImplementationOnce(async function (
         playerId
       ) {
@@ -247,9 +242,8 @@ describe('Peer channels store', () => {
       })
 
       awaitSignal.next({
-        type: 'offer',
         from: playerId2,
-        signal: JSON.stringify(offer)
+        data: JSON.stringify(offer)
       })
       await sleep()
 
@@ -270,13 +264,13 @@ describe('Peer channels store', () => {
 
     describe('connectWith()', () => {
       it('opens WebRTC peer, sends offer through WebSocket and accept answer', async () => {
-        const offer = { type: 'offer', signal: faker.lorem.words() }
+        const offer = { type: 'offer', data: faker.lorem.words() }
         const emitter = new EventEmitter()
         PeerConnection.prototype.connect.mockImplementationOnce(async function (
           playerId
         ) {
           this.playerId = playerId
-          this.sendSignal(playerId, offer.type, offer)
+          this.sendSignal(playerId, offer)
           await once(emitter, 'ready')
           this.established = true
         })
@@ -290,9 +284,8 @@ describe('Peer channels store', () => {
 
         expect(runMutation).toHaveBeenCalledWith(graphQL.sendSignal, {
           signal: {
-            type: 'offer',
             to: playerId3,
-            signal: JSON.stringify(offer)
+            data: JSON.stringify(offer)
           }
         })
 
@@ -340,7 +333,7 @@ describe('Peer channels store', () => {
         { id: playerId1 },
         turnCredentials
       )
-      awaitSignal.next({ type: 'ready', signal: '{}' })
+      awaitSignal.next({ data: JSON.stringify({ type: 'ready' }) })
       await openPromise
       await communication.connectWith(playerId2, turnCredentials)
       await communication.connectWith(playerId3, turnCredentials)
