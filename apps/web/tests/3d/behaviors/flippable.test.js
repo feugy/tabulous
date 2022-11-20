@@ -1,10 +1,10 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
+import { FlipBehavior, FlipBehaviorName } from '@src/3d/behaviors'
+import { controlManager } from '@src/3d/managers'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { FlipBehavior, FlipBehaviorName } from '../../../src/3d/behaviors'
-import { controlManager } from '../../../src/3d/managers'
 import {
   configures3dTestEngine,
   expectFlipped,

@@ -1,8 +1,6 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { CreateGround } from '@babylonjs/core/Meshes/Builders/groundBuilder'
-import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
-
 import {
   getAbsoluteRotation,
   getMeshScreenPosition,
@@ -10,7 +8,9 @@ import {
   isAboveTable,
   isPositionAboveTable,
   screenToGround
-} from '../../../src/3d/utils'
+} from '@src/3d/utils'
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
+
 import { initialize3dEngine } from '../../test-utils'
 
 let engine

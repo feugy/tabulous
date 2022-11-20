@@ -1,10 +1,9 @@
 <script>
+  import { Button, Input, Pane } from '@src/components'
+  import GithubLogo from '@src/svg/github-logo.svg'
+  import GoogleLogo from '@src/svg/google-logo.svg'
+  import { authUrl } from '@src/utils'
   import { _ } from 'svelte-intl'
-
-  import { Button, Input, Pane } from '../../components'
-  import GithubLogo from '../../svg/github-logo.svg'
-  import GoogleLogo from '../../svg/google-logo.svg'
-  import { authUrl } from '../../utils'
 
   export let id = ''
   export let password = ''

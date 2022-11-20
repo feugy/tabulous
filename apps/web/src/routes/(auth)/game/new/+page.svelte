@@ -1,15 +1,13 @@
 <script>
+  import { Button, Header } from '@src/components'
+  import { createGame } from '@src/stores'
+  import { translateError } from '@src/utils'
   import { onMount } from 'svelte'
   import { get } from 'svelte/store'
   import { _ } from 'svelte-intl'
 
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
-
-  import { Button } from '../../../../components'
-  import { Header } from '../../../../connected-components'
-  import { createGame } from '../../../../stores'
-  import { translateError } from '../../../../utils'
 
   /** @type {import('./$types').PageData} */
   export let data = {}

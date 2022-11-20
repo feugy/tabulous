@@ -1,14 +1,13 @@
 import { faker } from '@faker-js/faker'
+import Typeahead from '@src/components/Typeahead.svelte'
+import { sleep } from '@src/utils/index.js'
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import userEvent from '@testing-library/user-event'
+import { extractText } from '@tests/test-utils'
 import { tick } from 'svelte'
 import { writable } from 'svelte/store'
 import html from 'svelte-htm'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-
-import Typeahead from '../../src/components/Typeahead.svelte'
-import { sleep } from '../../src/utils/index.js'
-import { extractText } from '../test-utils'
 
 describe('Typeahead component', () => {
   const handleInput = vi.fn()

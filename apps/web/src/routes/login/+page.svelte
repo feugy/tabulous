@@ -1,9 +1,9 @@
 <script>
+  import { flags } from '@src/stores'
   import { _ } from 'svelte-intl'
 
   import { page } from '$app/stores'
 
-  import { flags } from '../../stores'
   import Form from './Form.svelte'
 
   /** @type {import('./$types').ActionData} */

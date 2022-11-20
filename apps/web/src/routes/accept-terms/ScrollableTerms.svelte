@@ -1,7 +1,6 @@
 <script>
+  import { TermsOfService } from '@src/components'
   import { createEventDispatcher, onDestroy, onMount } from 'svelte'
-
-  import { TermsOfService } from '../../components'
 
   const dispatch = createEventDispatcher()
   let delimiter

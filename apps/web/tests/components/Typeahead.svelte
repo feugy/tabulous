@@ -1,5 +1,5 @@
 <script>
-  import { Typeahead } from '../../src/components'
+  import { Typeahead } from '@src/components'
 
   export let withObject = false
   let options

@@ -1,6 +1,21 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
+import {
+  cameraManager,
+  controlManager,
+  inputManager,
+  moveManager,
+  selectionManager
+} from '@src/3d/managers'
+import { createTable, getMeshScreenPosition } from '@src/3d/utils'
+import {
+  actionIds,
+  attachInputs,
+  computeMenuProps,
+  triggerAction,
+  triggerActionOnSelection
+} from '@src/utils/game-interaction'
 import { BehaviorSubject } from 'rxjs'
 import { get } from 'svelte/store'
 import {
@@ -13,24 +28,9 @@ import {
   vi
 } from 'vitest'
 
-import {
-  cameraManager,
-  controlManager,
-  inputManager,
-  moveManager,
-  selectionManager
-} from '../../src/3d/managers'
-import { createTable, getMeshScreenPosition } from '../../src/3d/utils'
-import {
-  actionIds,
-  attachInputs,
-  computeMenuProps,
-  triggerAction,
-  triggerActionOnSelection
-} from '../../src/utils/game-interaction'
 import { configures3dTestEngine, sleep } from '../test-utils'
 
-vi.mock('../../src/3d/managers/camera')
+vi.mock('@src/3d/managers/camera')
 
 let MoveBehavior
 
@@ -49,7 +49,7 @@ describe('Game interaction model', () => {
   })
 
   beforeAll(async () => {
-    ;({ MoveBehavior } = await import('../../src/3d/behaviors/movable'))
+    ;({ MoveBehavior } = await import('@src/3d/behaviors/movable'))
   })
 
   beforeEach(() => {

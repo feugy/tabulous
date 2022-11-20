@@ -1,7 +1,6 @@
 <script>
   import { Tool, ToolBox } from '@atelier-wb/svelte'
-
-  import LoginPage from '../../../src/routes/login/+page.svelte'
+  import LoginPage from '@src/routes/login/+page.svelte'
 </script>
 
 <ToolBox component={LoginPage} name="Routes/login">

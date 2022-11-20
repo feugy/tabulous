@@ -1,14 +1,14 @@
 import { Color4 } from '@babylonjs/core/Maths/math.color'
 import { faker } from '@faker-js/faker'
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
-
 import {
   controlManager,
   customShapeManager,
   materialManager
-} from '../../../src/3d/managers'
-import { createCustom } from '../../../src/3d/meshes'
-import { getDimensions } from '../../../src/3d/utils'
+} from '@src/3d/managers'
+import { createCustom } from '@src/3d/meshes'
+import { getDimensions } from '@src/3d/utils'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+
 import pawnData from '../../fixtures/pawn.json'
 import {
   configures3dTestEngine,
@@ -21,7 +21,7 @@ configures3dTestEngine(created => (scene = created.scene))
 
 beforeAll(() => materialManager.init({ scene }))
 
-vi.mock('../../../src/3d/managers/custom-shape', () => ({
+vi.mock('@src/3d/managers/custom-shape', () => ({
   customShapeManager: new Map()
 }))
 

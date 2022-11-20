@@ -1,5 +1,49 @@
 import { Observable } from '@babylonjs/core/Misc/observable'
 import { faker } from '@faker-js/faker'
+import * as graphQL from '@src/graphql'
+import { loadThread, serializeThread } from '@src/stores/discussion'
+import {
+  action,
+  cameraSaves,
+  engine as engine$,
+  handMeshes as handMeshes$,
+  loadCameraSaves,
+  remoteSelection,
+  selectedMeshes
+} from '@src/stores/game-engine'
+import {
+  createGame,
+  deleteGame,
+  gamePlayerById,
+  invite,
+  listGames,
+  loadGame,
+  playerColor,
+  receiveGameListUpdates
+} from '@src/stores/game-manager'
+import {
+  runMutation,
+  runQuery,
+  runSubscription
+} from '@src/stores/graphql-client'
+import {
+  closeChannels,
+  connectWith,
+  lastConnectedId,
+  lastDisconnectedId,
+  lastMessageReceived,
+  lastMessageSent,
+  openChannels,
+  send
+} from '@src/stores/peer-channels'
+import { lastToast } from '@src/stores/toaster'
+import {
+  buildPlayerColors,
+  findPlayerColor,
+  findPlayerPreferences,
+  makeLogger
+} from '@src/utils'
+import { translate } from '@tests/test-utils'
 import { Subject } from 'rxjs'
 import { get } from 'svelte/store'
 import {
@@ -13,53 +57,8 @@ import {
   vi
 } from 'vitest'
 
-import * as graphQL from '../../src/graphql'
-import { loadThread, serializeThread } from '../../src/stores/discussion'
-import {
-  action,
-  cameraSaves,
-  engine as engine$,
-  handMeshes as handMeshes$,
-  loadCameraSaves,
-  remoteSelection,
-  selectedMeshes
-} from '../../src/stores/game-engine'
-import {
-  createGame,
-  deleteGame,
-  gamePlayerById,
-  invite,
-  listGames,
-  loadGame,
-  playerColor,
-  receiveGameListUpdates
-} from '../../src/stores/game-manager'
-import {
-  runMutation,
-  runQuery,
-  runSubscription
-} from '../../src/stores/graphql-client'
-import {
-  closeChannels,
-  connectWith,
-  lastConnectedId,
-  lastDisconnectedId,
-  lastMessageReceived,
-  lastMessageSent,
-  openChannels,
-  send
-} from '../../src/stores/peer-channels'
-import { lastToast } from '../../src/stores/toaster'
-import {
-  buildPlayerColors,
-  findPlayerColor,
-  findPlayerPreferences,
-  makeLogger
-} from '../../src/utils'
-import { translate } from '../test-utils'
-
-vi.mock('../../src/stores/graphql-client')
-vi.mock('../../src/stores/game-engine', () => {
+vi.mock('@src/stores/graphql-client')
+vi.mock('@src/stores/game-engine', () => {
   const { BehaviorSubject, Subject } = require('rxjs')
   return {
     action: new Subject(),
@@ -71,7 +70,7 @@ vi.mock('../../src/stores/game-engine', () => {
     remoteSelection: new Subject()
   }
 })
-vi.mock('../../src/stores/peer-channels', () => {
+vi.mock('@src/stores/peer-channels', () => {
   const { Subject } = require('rxjs')
   return {
     closeChannels: vi.fn(),
@@ -84,8 +83,8 @@ vi.mock('../../src/stores/peer-channels', () => {
     openChannels: vi.fn()
   }
 })
-vi.mock('../../src/stores/discussion')
-vi.mock('../../src/3d/utils')
+vi.mock('@src/stores/discussion')
+vi.mock('@src/3d/utils')
 
 const logger = makeLogger('game-manager')
 const gamePlayerByIdReceived = vi.fn()

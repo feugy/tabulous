@@ -3,16 +3,6 @@ import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
 import { faker } from '@faker-js/faker'
 import {
-  afterAll,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi
-} from 'vitest'
-
-import {
   AnchorBehavior,
   DrawBehavior,
   FlipBehavior,
@@ -22,17 +12,24 @@ import {
   RotateBehavior,
   StackBehavior,
   StackBehaviorName
-} from '../../../src/3d/behaviors'
+} from '@src/3d/behaviors'
 import {
   controlManager,
   handManager,
   indicatorManager,
   moveManager
-} from '../../../src/3d/managers'
+} from '@src/3d/managers'
+import { getAnimatableBehavior, getTargetableBehavior } from '@src/3d/utils'
 import {
-  getAnimatableBehavior,
-  getTargetableBehavior
-} from '../../../src/3d/utils'
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest'
+
 import {
   configures3dTestEngine,
   expectAnimationEnd,

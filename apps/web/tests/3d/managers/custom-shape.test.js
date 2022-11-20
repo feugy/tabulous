@@ -1,4 +1,6 @@
 import { faker } from '@faker-js/faker'
+import { customShapeManager as manager } from '@src/3d/managers'
+import { makeLogger } from '@src/utils'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
 import {
@@ -10,9 +12,6 @@ import {
   it,
   vi
 } from 'vitest'
-
-import { customShapeManager as manager } from '../../../src/3d/managers'
-import { makeLogger } from '../../../src/utils'
 
 describe('CustomShapeManager', () => {
   const logger = makeLogger('custom-shape')

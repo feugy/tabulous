@@ -1,5 +1,7 @@
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
+import { DetailBehavior, DetailBehaviorName } from '@src/3d/behaviors'
+import { controlManager } from '@src/3d/managers'
 import {
   afterAll,
   beforeAll,
@@ -10,8 +12,6 @@ import {
   vi
 } from 'vitest'
 
-import { DetailBehavior, DetailBehaviorName } from '../../../src/3d/behaviors'
-import { controlManager } from '../../../src/3d/managers'
 import { configures3dTestEngine } from '../../test-utils'
 
 describe('DetailBehavior', () => {

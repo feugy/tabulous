@@ -7,26 +7,40 @@ import { NullEngine } from '@babylonjs/core/Engines/nullEngine'
 import { Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { Logger } from '@babylonjs/core/Misc/logger'
 import cors from '@fastify/cors'
+import {
+  AnchorBehaviorName,
+  FlipBehaviorName,
+  MoveBehaviorName,
+  RotateBehaviorName
+} from '@src/3d/behaviors/names'
+import { indicatorManager } from '@src/3d/managers'
+import {
+  getAnimatableBehavior,
+  getTargetableBehavior
+} from '@src/3d/utils/behaviors'
+import { getCenterAltitudeAbove } from '@src/3d/utils/gravity'
+import { ExtendedScene } from '@src/3d/utils/scene'
+import { makeLogger } from '@src/utils/logger'
 import fastify from 'fastify'
 import { appendFileSync, rmSync } from 'fs'
 import { get } from 'svelte/store'
 import { _ } from 'svelte-intl'
 import { inspect } from 'util'
 import { afterAll, afterEach, beforeAll, expect } from 'vitest'
+import { vi } from 'vitest'
 
-import {
-  AnchorBehaviorName,
-  FlipBehaviorName,
-  MoveBehaviorName,
-  RotateBehaviorName
-} from '../src/3d/behaviors/names'
-import { indicatorManager } from '../src/3d/managers'
-import {
-  getAnimatableBehavior,
-  getTargetableBehavior
-} from '../src/3d/utils/behaviors'
-import { getCenterAltitudeAbove } from '../src/3d/utils/gravity'
-import { ExtendedScene } from '../src/3d/utils/scene'
+export function mockLogger(name) {
+  const logger = makeLogger(name)
+  const noop = () => {}
+  return {
+    trace: vi.spyOn(logger, 'trace').mockImplementation(noop),
+    debug: vi.spyOn(logger, 'debug').mockImplementation(noop),
+    log: vi.spyOn(logger, 'log').mockImplementation(noop),
+    info: vi.spyOn(logger, 'info').mockImplementation(noop),
+    warn: vi.spyOn(logger, 'warn').mockImplementation(noop),
+    error: vi.spyOn(logger, 'error') // .mockImplementation(noop)
+  }
+}
 
 export function translate(...args) {
   return get(_)(...args)

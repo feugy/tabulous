@@ -1,4 +1,15 @@
 import { faker } from '@faker-js/faker'
+import * as graphQL from '@src/graphql'
+import { runMutation, runSubscription } from '@src/stores/graphql-client'
+import * as communication from '@src/stores/peer-channels'
+import {
+  acquireMediaStream,
+  localStreamChange$,
+  releaseMediaStream,
+  stream$
+} from '@src/stores/stream'
+import { PeerConnection, sleep } from '@src/utils'
+import { mockLogger } from '@tests/test-utils'
 import { randomUUID } from 'crypto'
 import EventEmitter, { once } from 'events'
 import { Subject } from 'rxjs'
@@ -14,21 +25,9 @@ import {
   vi
 } from 'vitest'
 
-import * as graphQL from '../../src/graphql'
-import { runMutation, runSubscription } from '../../src/stores/graphql-client'
-import * as communication from '../../src/stores/peer-channels'
-import {
-  acquireMediaStream,
-  localStreamChange$,
-  releaseMediaStream,
-  stream$
-} from '../../src/stores/stream'
-import { PeerConnection, sleep } from '../../src/utils'
-import { mockLogger } from '../utils.js'
-
 let peers = []
 
-vi.mock('../../src/utils/peer-connection', () => {
+vi.mock('@src/utils/peer-connection', () => {
   const PeerConnection = vi.fn().mockImplementation(function (options) {
     Object.assign(this, options)
     this.local = {}
@@ -61,8 +60,8 @@ vi.mock('../../src/utils/peer-connection', () => {
   return { PeerConnection }
 })
 
-vi.mock('../../src/stores/graphql-client')
-vi.mock('../../src/stores/stream', () => {
+vi.mock('@src/stores/graphql-client')
+vi.mock('@src/stores/stream', () => {
   const { BehaviorSubject, Subject } = require('rxjs')
   return {
     stream$: new BehaviorSubject(null),

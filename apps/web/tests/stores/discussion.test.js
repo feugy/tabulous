@@ -1,8 +1,7 @@
+import * as peerChannels from '@src/stores/peer-channels'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import * as peerChannels from '../../src/stores/peer-channels'
-
-vi.mock('../../src/stores/peer-channels', () => {
+vi.mock('@src/stores/peer-channels', () => {
   const { Subject } = require('rxjs')
   const lastMessageSent = new Subject()
   return {
@@ -22,7 +21,7 @@ describe('Discussion store', () => {
   const text5 = 'message 5'
 
   beforeAll(async () => {
-    discussion = await import('../../src/stores/discussion')
+    discussion = await import('@src/stores/discussion')
   })
 
   beforeEach(() => {

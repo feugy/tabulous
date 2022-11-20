@@ -1,9 +1,9 @@
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
+import { TargetBehavior, TargetBehaviorName } from '@src/3d/behaviors'
+import { indicatorManager, targetManager } from '@src/3d/managers'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { TargetBehavior, TargetBehaviorName } from '../../../src/3d/behaviors'
-import { indicatorManager, targetManager } from '../../../src/3d/managers'
 import { configures3dTestEngine } from '../../test-utils'
 
 describe('TargetBehavior', () => {

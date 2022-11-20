@@ -1,14 +1,13 @@
 import { faker } from '@faker-js/faker'
+import { actions } from '@src/routes/login/+page.server'
+import { runMutation } from '@src/stores/graphql-client'
 import { describe, expect, it, vi } from 'vitest'
-
-import { actions } from '../../../src/routes/login/+page.server'
-import { runMutation } from '../../../src/stores/graphql-client'
 
 vi.mock('@sveltejs/kit', () => ({
   redirect: (status, location) => ({ status, location }),
   invalid: (status, errors) => ({ status, errors })
 }))
-vi.mock('../../../src/stores/graphql-client', () => ({
+vi.mock('@src/stores/graphql-client', () => ({
   initGraphQlClient: vi.fn(),
   runMutation: vi.fn()
 }))

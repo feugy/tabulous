@@ -2,6 +2,23 @@ import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
 import {
+  MoveBehavior,
+  MoveBehaviorName,
+  StackBehavior,
+  TargetBehavior
+} from '@src/3d/behaviors'
+import {
+  controlManager,
+  handManager,
+  indicatorManager,
+  inputManager,
+  moveManager as manager,
+  selectionManager,
+  targetManager
+} from '@src/3d/managers'
+import { createCard } from '@src/3d/meshes'
+import { createTable, getDimensions } from '@src/3d/utils'
+import {
   afterAll,
   afterEach,
   beforeAll,
@@ -12,23 +29,6 @@ import {
   vi
 } from 'vitest'
 
-import {
-  MoveBehavior,
-  MoveBehaviorName,
-  StackBehavior,
-  TargetBehavior
-} from '../../../src/3d/behaviors'
-import {
-  controlManager,
-  handManager,
-  indicatorManager,
-  inputManager,
-  moveManager as manager,
-  selectionManager,
-  targetManager
-} from '../../../src/3d/managers'
-import { createCard } from '../../../src/3d/meshes'
-import { createTable, getDimensions } from '../../../src/3d/utils'
 import {
   configures3dTestEngine,
   expectAnimationEnd,

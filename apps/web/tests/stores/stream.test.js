@@ -1,15 +1,4 @@
 import { faker } from '@faker-js/faker'
-import { get } from 'svelte/store'
-import {
-  afterAll,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi
-} from 'vitest'
-
 import {
   acquireMediaStream,
   cameras$,
@@ -20,8 +9,18 @@ import {
   recordStreamChange,
   releaseMediaStream,
   stream$
-} from '../../src/stores/stream'
-import { mockLogger } from '../utils.js'
+} from '@src/stores/stream'
+import { mockLogger } from '@tests/test-utils'
+import { get } from 'svelte/store'
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest'
 
 describe('Media Stream store', () => {
   const logger = mockLogger('stream')

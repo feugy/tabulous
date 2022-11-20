@@ -5,13 +5,13 @@ exports[`Manual account 1`] = `
   class="s-GQCXmK5OKySU"
 >
   <header
-    class="s-IEV6mBVyuaCJ"
+    class="s-c1MG4BWNDc59"
   >
     <nav
-      class="s-IEV6mBVyuaCJ"
+      class="s-c1MG4BWNDc59"
     >
       <span
-        class="s-IEV6mBVyuaCJ"
+        class="s-c1MG4BWNDc59"
       >
         <ol
           class="s-x5nEMCoiqeIy"
@@ -87,7 +87,7 @@ exports[`Manual account 1`] = `
     </nav>
      
     <div
-      class="s-IEV6mBVyuaCJ"
+      class="s-c1MG4BWNDc59"
     >
       <h1
         class="s-GQCXmK5OKySU"
@@ -198,13 +198,13 @@ exports[`OAuth account 1`] = `
   class="s-GQCXmK5OKySU"
 >
   <header
-    class="s-IEV6mBVyuaCJ"
+    class="s-c1MG4BWNDc59"
   >
     <nav
-      class="s-IEV6mBVyuaCJ"
+      class="s-c1MG4BWNDc59"
     >
       <span
-        class="s-IEV6mBVyuaCJ"
+        class="s-c1MG4BWNDc59"
       >
         <ol
           class="s-x5nEMCoiqeIy"
@@ -280,7 +280,7 @@ exports[`OAuth account 1`] = `
     </nav>
      
     <div
-      class="s-IEV6mBVyuaCJ"
+      class="s-c1MG4BWNDc59"
     >
       <h1
         class="s-GQCXmK5OKySU"

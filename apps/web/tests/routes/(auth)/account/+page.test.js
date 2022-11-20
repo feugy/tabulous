@@ -1,16 +1,15 @@
 import { faker } from '@faker-js/faker'
+import AccountPage from '@src/routes/(auth)/account/+page.svelte'
+import { updateCurrentPlayer } from '@src/stores'
 import { fireEvent, render, screen, within } from '@testing-library/svelte'
 import userEvent from '@testing-library/user-event'
+import { sleep, translate } from '@tests/test-utils'
 import html from 'svelte-htm'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { invalidateAll } from '$app/navigation'
 
-import AccountPage from '../../../../src/routes/(auth)/account/+page.svelte'
-import { updateCurrentPlayer } from '../../../../src/stores'
-import { sleep, translate } from '../../../test-utils'
-
-vi.mock('../../../../src/stores')
+vi.mock('@src/stores')
 
 describe('/account route', () => {
   const player = {

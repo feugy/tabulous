@@ -1,7 +1,6 @@
 <script>
   import { Tool, ToolBox } from '@atelier-wb/svelte'
-
-  import { Dropdown } from '../../src/components'
+  import { Dropdown } from '@src/components'
 
   const headerText = `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
 tempor incididunt ut labore et dolore magna aliqua. Commodo nulla facilisi

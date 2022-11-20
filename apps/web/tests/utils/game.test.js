@@ -1,10 +1,9 @@
-import { describe, expect, it } from 'vitest'
-
 import {
   buildPlayerColors,
   findPlayerColor,
   findPlayerPreferences
-} from '../../src/utils/game'
+} from '@src/utils/game'
+import { describe, expect, it } from 'vitest'
 
 describe('Game utils', () => {
   const game = {

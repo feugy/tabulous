@@ -8,13 +8,13 @@ exports[`/game/new route > displays error game is restricted 1`] = `
       class="s-1rlJbZ_1rgK_"
     >
       <header
-        class="s-IEV6mBVyuaCJ"
+        class="s-c1MG4BWNDc59"
       >
         <nav
-          class="s-IEV6mBVyuaCJ"
+          class="s-c1MG4BWNDc59"
         >
           <span
-            class="s-IEV6mBVyuaCJ"
+            class="s-c1MG4BWNDc59"
           >
             <ol
               class="s-x5nEMCoiqeIy"
@@ -68,7 +68,7 @@ exports[`/game/new route > displays error game is restricted 1`] = `
         </nav>
          
         <div
-          class="s-IEV6mBVyuaCJ"
+          class="s-c1MG4BWNDc59"
         />
       </header>
       <!--&lt;Header&gt;-->
@@ -120,13 +120,13 @@ exports[`/game/new route > displays error when too many games where created 1`] 
       class="s-1rlJbZ_1rgK_"
     >
       <header
-        class="s-IEV6mBVyuaCJ"
+        class="s-c1MG4BWNDc59"
       >
         <nav
-          class="s-IEV6mBVyuaCJ"
+          class="s-c1MG4BWNDc59"
         >
           <span
-            class="s-IEV6mBVyuaCJ"
+            class="s-c1MG4BWNDc59"
           >
             <ol
               class="s-x5nEMCoiqeIy"
@@ -180,7 +180,7 @@ exports[`/game/new route > displays error when too many games where created 1`] 
         </nav>
          
         <div
-          class="s-IEV6mBVyuaCJ"
+          class="s-c1MG4BWNDc59"
         />
       </header>
       <!--&lt;Header&gt;-->

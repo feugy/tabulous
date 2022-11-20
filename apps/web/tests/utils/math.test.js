@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest'
-
 import {
   buildEnclosedCircle,
   buildGroundRectangle,
@@ -7,7 +5,8 @@ import {
   intersectRectangles,
   intersectRectangleWithCircle,
   projectToGround
-} from '../../src/utils'
+} from '@src/utils'
+import { describe, expect, it } from 'vitest'
 
 describe('mathematical utilities', () => {
   describe('projectToGround()', () => {

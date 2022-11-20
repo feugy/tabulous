@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker'
+import { cameraManager as manager } from '@src/3d/managers'
+import { createTable } from '@src/3d/utils'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { cameraManager as manager } from '../../../src/3d/managers'
-import { createTable } from '../../../src/3d/utils'
 import { configures3dTestEngine } from '../../test-utils'
 
 describe('CameraManager', () => {

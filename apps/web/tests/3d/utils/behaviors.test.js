@@ -2,17 +2,6 @@ import { Animation } from '@babylonjs/core/Animations/animation'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi
-} from 'vitest'
-
-import {
   AnchorBehaviorName,
   DetailBehaviorName,
   DrawBehaviorName,
@@ -21,7 +10,7 @@ import {
   MoveBehaviorName,
   RotateBehaviorName,
   StackBehaviorName
-} from '../../../src/3d/behaviors/names'
+} from '@src/3d/behaviors/names'
 import {
   animateMove,
   attachFunctions,
@@ -34,7 +23,18 @@ import {
   restoreBehaviors,
   runAnimation,
   serializeBehaviors
-} from '../../../src/3d/utils/behaviors'
+} from '@src/3d/utils/behaviors'
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest'
+
 import {
   disposeAllMeshes,
   expectPosition,
@@ -70,7 +70,7 @@ beforeAll(async () => {
     RotateBehavior,
     StackBehavior,
     TargetBehavior
-  } = await import('../../../src/3d/behaviors'))
+  } = await import('@src/3d/behaviors'))
 })
 
 beforeEach(() => {

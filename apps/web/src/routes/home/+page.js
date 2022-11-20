@@ -1,4 +1,4 @@
-import { listCatalog, listGames } from '../../stores'
+import { listCatalog, listGames } from '@src/stores'
 
 /** @type {import('./$types').PageLoad} */
 export async function load({ parent }) {

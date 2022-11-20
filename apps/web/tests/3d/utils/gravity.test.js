@@ -2,15 +2,15 @@ import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
 import { faker } from '@faker-js/faker'
-import { beforeEach, describe, expect, it } from 'vitest'
-
 import {
   applyGravity,
   getCenterAltitudeAbove,
   getDimensions,
   isAbove,
   sortByElevation
-} from '../../../src/3d/utils'
+} from '@src/3d/utils'
+import { beforeEach, describe, expect, it } from 'vitest'
+
 import { configures3dTestEngine } from '../../test-utils'
 
 configures3dTestEngine()

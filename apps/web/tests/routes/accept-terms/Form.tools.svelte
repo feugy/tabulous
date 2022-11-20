@@ -1,7 +1,6 @@
 <script>
   import { Tool, ToolBox } from '@atelier-wb/svelte'
-
-  import Form from '../../../src/routes/accept-terms/Form.svelte'
+  import Form from '@src/routes/accept-terms/Form.svelte'
 </script>
 
 <ToolBox

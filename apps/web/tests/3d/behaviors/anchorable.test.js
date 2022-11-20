@@ -2,6 +2,24 @@ import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
 import {
+  AnchorBehavior,
+  AnchorBehaviorName,
+  AnimateBehavior,
+  DrawBehavior,
+  FlipBehavior,
+  RotateBehavior,
+  StackBehavior
+} from '@src/3d/behaviors'
+import {
+  controlManager,
+  handManager,
+  indicatorManager,
+  moveManager,
+  selectionManager
+} from '@src/3d/managers'
+import { createRoundToken } from '@src/3d/meshes'
+import { animateMove, getCenterAltitudeAbove } from '@src/3d/utils'
+import {
   afterAll,
   beforeAll,
   beforeEach,
@@ -11,24 +29,6 @@ import {
   vi
 } from 'vitest'
 
-import {
-  AnchorBehavior,
-  AnchorBehaviorName,
-  AnimateBehavior,
-  DrawBehavior,
-  FlipBehavior,
-  RotateBehavior,
-  StackBehavior
-} from '../../../src/3d/behaviors'
-import {
-  controlManager,
-  handManager,
-  indicatorManager,
-  moveManager,
-  selectionManager
-} from '../../../src/3d/managers'
-import { createRoundToken } from '../../../src/3d/meshes'
-import { animateMove, getCenterAltitudeAbove } from '../../../src/3d/utils'
 import {
   configures3dTestEngine,
   expectFlipped,

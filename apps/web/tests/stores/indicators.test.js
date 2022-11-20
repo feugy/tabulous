@@ -1,31 +1,30 @@
 import { faker } from '@faker-js/faker'
-import { get } from 'svelte/store'
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
-
-import { AnchorBehaviorName, StackBehaviorName } from '../../src/3d/behaviors'
-import { indicatorManager } from '../../src/3d/managers/indicator'
-import { selectionManager } from '../../src/3d/managers/selection'
-import { createCard } from '../../src/3d/meshes'
-import { actionMenuProps } from '../../src/stores/game-engine'
-import { gamePlayerById } from '../../src/stores/game-manager'
+import { AnchorBehaviorName, StackBehaviorName } from '@src/3d/behaviors'
+import { indicatorManager } from '@src/3d/managers/indicator'
+import { selectionManager } from '@src/3d/managers/selection'
+import { createCard } from '@src/3d/meshes'
+import { actionMenuProps } from '@src/stores/game-engine'
+import { gamePlayerById } from '@src/stores/game-manager'
 import {
   areIndicatorsVisible as areIndicatorsVisible$,
   initIndicators,
   toggleIndicators,
   visibleFeedbacks as visibleFeedbacks$,
   visibleIndicators as visibleIndicators$
-} from '../../src/stores/indicators'
+} from '@src/stores/indicators'
 import {
   configures3dTestEngine,
   expectScreenPosition,
   sleep,
   waitNextRender
-} from '../test-utils'
+} from '@tests/test-utils'
+import { get } from 'svelte/store'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-vi.mock('../../src/stores/game-engine', async () => {
+vi.mock('@src/stores/game-engine', async () => {
   const { BehaviorSubject } = await import('rxjs')
-  const { indicatorManager } = await import('../../src/3d/managers/indicator')
-  const { selectionManager } = await import('../../src/3d/managers/selection')
+  const { indicatorManager } = await import('@src/3d/managers/indicator')
+  const { selectionManager } = await import('@src/3d/managers/selection')
   const indicators = new BehaviorSubject([])
   const selectedMeshes = new BehaviorSubject(new Set())
   indicatorManager.onChangeObservable.add(indicators.next.bind(indicators))
@@ -39,7 +38,7 @@ vi.mock('../../src/stores/game-engine', async () => {
   }
 })
 
-vi.mock('../../src/stores/game-manager', async () => {
+vi.mock('@src/stores/game-manager', async () => {
   const { BehaviorSubject } = await import('rxjs')
   return { gamePlayerById: new BehaviorSubject(new Map()) }
 })

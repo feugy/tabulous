@@ -1,7 +1,6 @@
 <script>
   import { Tool, ToolBox } from '@atelier-wb/svelte'
-
-  import AvatarDialogue from '../../../../src/routes/(auth)/account/AvatarDialogue.svelte'
+  import AvatarDialogue from '@src/routes/(auth)/account/AvatarDialogue.svelte'
 </script>
 
 <ToolBox

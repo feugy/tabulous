@@ -1,4 +1,13 @@
 import { faker } from '@faker-js/faker'
+import { customShapeManager, handManager } from '@src/3d/managers'
+import { createCustom } from '@src/3d/meshes'
+import {
+  createTable,
+  getAnimatableBehavior,
+  loadMeshes,
+  removeNulls,
+  serializeMeshes
+} from '@src/3d/utils'
 import {
   afterAll,
   beforeAll,
@@ -9,15 +18,6 @@ import {
   vi
 } from 'vitest'
 
-import { customShapeManager, handManager } from '../../../src/3d/managers'
-import { createCustom } from '../../../src/3d/meshes'
-import {
-  createTable,
-  getAnimatableBehavior,
-  loadMeshes,
-  removeNulls,
-  serializeMeshes
-} from '../../../src/3d/utils'
 import pawnData from '../../fixtures/pawn.json'
 import {
   expectAnimationEnd,
@@ -25,7 +25,7 @@ import {
   initialize3dEngine
 } from '../../test-utils'
 
-vi.mock('../../../src/3d/managers/custom-shape', () => ({
+vi.mock('@src/3d/managers/custom-shape', () => ({
   customShapeManager: new Map()
 }))
 
@@ -50,7 +50,7 @@ beforeAll(async () => {
     createPrism,
     createRoundToken,
     createRoundedTile
-  } = await import('../../../src/3d/meshes'))
+  } = await import('@src/3d/meshes'))
   customShapeManager.set(pawnFile, btoa(JSON.stringify(pawnData)))
 })
 
