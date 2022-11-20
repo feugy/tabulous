@@ -7,7 +7,8 @@ import {
 class GameRepository extends AbstractRepository {
   static fields = [
     { name: 'created', deserialize: deserializeNumber },
-    { name: 'playerIds', deserialize: deserializeArray }
+    { name: 'playerIds', deserialize: deserializeArray },
+    { name: 'guestIds', deserialize: deserializeArray }
   ]
 
   /**
@@ -40,11 +41,12 @@ class GameRepository extends AbstractRepository {
    * @param {AbstractRepository.SaveModelContext} context - contextual information.
    */
   _saveModel({ transaction, model, key }) {
-    const { id, created, playerIds, ...otherFields } = model
+    const { id, created, playerIds, guestIds, ...otherFields } = model
     transaction.hset(key, {
       id,
       created,
       playerIds,
+      guestIds,
       otherFields: JSON.stringify(otherFields)
     })
   }
@@ -67,7 +69,10 @@ class GameRepository extends AbstractRepository {
   _enrichSaveTransaction(context) {
     const transaction = super._enrichSaveTransaction(context)
     for (const game of context.models) {
-      for (const playerId of game?.playerIds ?? []) {
+      for (const playerId of [
+        ...(game?.playerIds ?? []),
+        ...(game?.guestIds ?? [])
+      ]) {
         transaction.sadd(this._buildPlayerKey(playerId), game.id)
       }
     }
@@ -83,7 +88,10 @@ class GameRepository extends AbstractRepository {
   _enrichDeleteTransaction(context) {
     const transaction = super._enrichDeleteTransaction(context)
     for (const game of context.models) {
-      for (const playerId of game?.playerIds ?? []) {
+      for (const playerId of [
+        ...(game?.playerIds ?? []),
+        ...(game?.guestIds ?? [])
+      ]) {
         transaction.srem(this._buildPlayerKey(playerId), game.id)
       }
     }
