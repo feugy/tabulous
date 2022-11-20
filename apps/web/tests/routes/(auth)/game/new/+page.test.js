@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker'
 import NewGamePage from '@src/routes/(auth)/game/new/+page.svelte'
 import { createGame } from '@src/stores'
-import { render } from '@testing-library/svelte'
+import { render, screen } from '@testing-library/svelte'
 import { sleep } from '@tests/test-utils'
 import { get } from 'svelte/store'
 import html from 'svelte-htm'
@@ -20,6 +20,12 @@ describe('/game/new route', () => {
 
   beforeEach(vi.resetAllMocks)
 
+  it('displays loader while creating game', async () => {
+    get(page).url.searchParams.set('name', game.name)
+    render(html`<${NewGamePage} />`)
+    expect(screen.getByRole('progressbar')).toBeInTheDocument()
+  })
+
   it('displays error when too many games where created', async () => {
     get(page).url.searchParams.set('name', game.name)
     createGame.mockRejectedValueOnce(
@@ -27,6 +33,7 @@ describe('/game/new route', () => {
     )
     const { container } = render(html`<${NewGamePage} />`)
     await sleep()
+    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
     expect(createGame).toHaveBeenCalledWith(game.name)
     expect(container).toMatchSnapshot()
     expect(goto).not.toHaveBeenCalled()
@@ -37,6 +44,7 @@ describe('/game/new route', () => {
     createGame.mockRejectedValueOnce(new Error('Access to game is restricted'))
     const { container } = render(html`<${NewGamePage} />`)
     await sleep()
+    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
     expect(createGame).toHaveBeenCalledWith(game.name)
     expect(container).toMatchSnapshot()
     expect(goto).not.toHaveBeenCalled()
