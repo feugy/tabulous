@@ -1,8 +1,7 @@
+import { initGraphQlClient } from '@src/stores/graphql-client'
+import { logIn } from '@src/stores/players'
+import { graphQlUrl } from '@src/utils/env'
 import { invalid, redirect } from '@sveltejs/kit'
-
-import { initGraphQlClient } from '../../stores/graphql-client'
-import { logIn } from '../../stores/players'
-import { graphQlUrl } from '../../utils/env'
 
 export const actions = {
   /** @type {import('./$types').Action} */

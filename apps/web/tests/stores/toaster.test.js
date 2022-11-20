@@ -1,3 +1,5 @@
+import { lastToast, toastInfo } from '@src/stores/toaster'
+import { translate } from '@tests/test-utils.js'
 import {
   afterAll,
   beforeAll,
@@ -7,9 +9,6 @@ import {
   it,
   vi
 } from 'vitest'
-
-import { lastToast, toastInfo } from '../../src/stores/toaster'
-import { translate } from '../test-utils.js'
 
 describe('Toaster store', () => {
   const messageReceived = vi.fn()

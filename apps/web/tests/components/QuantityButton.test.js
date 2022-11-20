@@ -1,10 +1,9 @@
+import QuantityButton from '@src/components/QuantityButton.svelte'
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import { tick } from 'svelte'
 import { get, writable } from 'svelte/store'
 import html from 'svelte-htm'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-
-import QuantityButton from '../../src/components/QuantityButton.svelte'
 
 describe('QuantityButton component', () => {
   const handleClick = vi.fn()

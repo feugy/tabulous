@@ -1,8 +1,6 @@
 <script>
+  import { Header, Markdown, TermsOfService } from '@src/components'
   import { _ } from 'svelte-intl'
-
-  import { Markdown, TermsOfService } from '../../components'
-  import { Header } from '../../connected-components'
 
   /** @type {import('./$types').PageData} */
   export let data = {}

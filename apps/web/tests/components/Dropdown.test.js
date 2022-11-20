@@ -1,10 +1,9 @@
+import Dropdown from '@src/components/Dropdown.svelte'
+import { sleep } from '@src/utils'
 import { fireEvent, render, screen } from '@testing-library/svelte'
+import { extractText } from '@tests/test-utils'
 import html from 'svelte-htm'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-
-import Dropdown from '../../src/components/Dropdown.svelte'
-import { sleep } from '../../src/utils/index.js'
-import { extractText } from '../test-utils'
 
 describe('Dropdown component', () => {
   const handleClose = vi.fn()

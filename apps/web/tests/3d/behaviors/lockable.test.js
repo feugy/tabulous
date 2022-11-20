@@ -1,14 +1,14 @@
 import { faker } from '@faker-js/faker'
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
-
 import {
   LockBehavior,
   LockBehaviorName,
   MoveBehaviorName,
   StackBehaviorName
-} from '../../../src/3d/behaviors'
-import { controlManager, indicatorManager } from '../../../src/3d/managers'
-import { createBox } from '../../../src/3d/meshes'
+} from '@src/3d/behaviors'
+import { controlManager, indicatorManager } from '@src/3d/managers'
+import { createBox } from '@src/3d/meshes'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+
 import { configures3dTestEngine, expectMeshFeedback } from '../../test-utils'
 
 describe('LockBehavior', () => {

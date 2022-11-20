@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker'
+import { handle } from '@src/hooks.server'
 import { describe, expect, it, vi } from 'vitest'
 
-import { handle } from '../src/hooks.server'
 import { configureGraphQlServer } from './test-utils'
 
 describe('Sveltekit handle() hook', () => {

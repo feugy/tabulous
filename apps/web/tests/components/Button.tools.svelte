@@ -1,8 +1,7 @@
 <script>
   import { Tool, ToolBox } from '@atelier-wb/svelte'
-
-  import { Button } from '../../src/components'
-  import GithubLogo from '../../src/svg/github-logo.svg'
+  import { Button } from '@src/components'
+  import GithubLogo from '@src/svg/github-logo.svg'
 </script>
 
 <ToolBox

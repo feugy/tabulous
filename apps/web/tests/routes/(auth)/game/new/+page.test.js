@@ -1,5 +1,8 @@
 import { faker } from '@faker-js/faker'
+import NewGamePage from '@src/routes/(auth)/game/new/+page.svelte'
+import { createGame } from '@src/stores'
 import { render } from '@testing-library/svelte'
+import { sleep } from '@tests/test-utils'
 import { get } from 'svelte/store'
 import html from 'svelte-htm'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -7,11 +10,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { goto } from '$app/navigation'
 import { page } from '$app/stores'
 
-import NewGamePage from '../../../../../src/routes/(auth)/game/new/+page.svelte'
-import { createGame } from '../../../../../src/stores'
-import { sleep } from '../../../../test-utils'
-
-vi.mock('../../../../../src/stores')
+vi.mock('@src/stores')
 
 describe('/game/new route', () => {
   const game = {

@@ -1,14 +1,10 @@
 import { faker } from '@faker-js/faker'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-
-import { goto } from '$app/navigation'
-
-import * as graphQL from '../../src/graphql'
+import * as graphQL from '@src/graphql'
 import {
   initGraphQlClient,
   runMutation,
   runQuery
-} from '../../src/stores/graphql-client'
+} from '@src/stores/graphql-client'
 import {
   acceptTerms,
   logIn,
@@ -16,10 +12,13 @@ import {
   recoverSession,
   searchPlayers,
   updateCurrentPlayer
-} from '../../src/stores/players'
-import { graphQlUrl } from '../../src/utils'
+} from '@src/stores/players'
+import { graphQlUrl } from '@src/utils'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-vi.mock('../../src/stores/graphql-client')
+import { goto } from '$app/navigation'
+
+vi.mock('@src/stores/graphql-client')
 
 const id = faker.datatype.uuid()
 const username = faker.name.firstName()

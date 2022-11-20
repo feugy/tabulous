@@ -1,4 +1,6 @@
 // @ts-check
+import { resolve } from 'node:path'
+
 import atelier from '@atelier-wb/vite-plugin-atelier'
 import graphql from '@rollup/plugin-graphql'
 import yaml from '@rollup/plugin-yaml'
@@ -45,6 +47,12 @@ export default defineConfig(({ mode }) => ({
     proxy: { 'http://localhost:3000': 'http://localhost:3000' },
     port: 3000,
     strictPort: true
+  },
+  resolve: {
+    alias: {
+      '@src': resolve(__dirname, './src'),
+      '@tests': resolve(__dirname, './tests')
+    }
   },
   test: {
     include: ['**/*.test.js'],

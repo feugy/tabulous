@@ -1,9 +1,9 @@
 <script>
+  import { Header } from '@src/components'
   import { _ } from 'svelte-intl'
 
   import { page } from '$app/stores'
 
-  import { Header } from '../../connected-components'
   import Form from './Form.svelte'
   import ScrollableTerms from './ScrollableTerms.svelte'
 

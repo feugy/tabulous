@@ -1,7 +1,6 @@
 <script>
   import { Tool, ToolBox } from '@atelier-wb/svelte'
-
-  import { Breadcrumb } from '../../src/components'
+  import { Breadcrumb } from '@src/components'
 </script>
 
 <ToolBox component={Breadcrumb} name="Components/Breadcrumb" layout="centered">

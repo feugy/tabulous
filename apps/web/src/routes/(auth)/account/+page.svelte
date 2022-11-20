@@ -1,14 +1,19 @@
 <script>
+  import {
+    Button,
+    Header,
+    Input,
+    PlayerThumbnail,
+    Progress
+  } from '@src/components'
+  import { updateCurrentPlayer } from '@src/stores'
+  import { translateError } from '@src/utils'
   import { debounceTime, finalize, from, Subject, switchMap, tap } from 'rxjs'
   import { onDestroy } from 'svelte'
   import { _ } from 'svelte-intl'
 
   import { invalidateAll } from '$app/navigation'
 
-  import { Button, Input, PlayerThumbnail, Progress } from '../../../components'
-  import { Header } from '../../../connected-components'
-  import { updateCurrentPlayer } from '../../../stores'
-  import { translateError } from '../../../utils'
   import AvatarDialogue from './AvatarDialogue.svelte'
 
   /** @type {import('./$types').PageData} */

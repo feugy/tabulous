@@ -1,6 +1,9 @@
 import { faker } from '@faker-js/faker'
+import Form from '@src/routes/login/Form.svelte'
+import { authUrl } from '@src/utils'
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import userEvent from '@testing-library/user-event'
+import { translate } from '@tests/test-utils'
 import { tick } from 'svelte'
 import { writable } from 'svelte/store'
 import html from 'svelte-htm'
@@ -13,10 +16,6 @@ import {
   it,
   vi
 } from 'vitest'
-
-import Form from '../../../src/routes/login/Form.svelte'
-import { authUrl } from '../../../src/utils'
-import { translate } from '../../test-utils'
 
 describe('Login Form component', () => {
   const id$ = writable()

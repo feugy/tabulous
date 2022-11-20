@@ -1,9 +1,9 @@
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
+import { MoveBehavior, MoveBehaviorName } from '@src/3d/behaviors'
+import { moveManager } from '@src/3d/managers'
 import { beforeEach, describe, expect, it } from 'vitest'
 
-import { MoveBehavior, MoveBehaviorName } from '../../../src/3d/behaviors'
-import { moveManager } from '../../../src/3d/managers'
 import { configures3dTestEngine } from '../../test-utils'
 
 describe('MoveBehavior', () => {

@@ -1,13 +1,10 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
+import { StackBehavior } from '@src/3d/behaviors'
+import { handManager, selectionManager as manager } from '@src/3d/managers'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { StackBehavior } from '../../../src/3d/behaviors'
-import {
-  handManager,
-  selectionManager as manager
-} from '../../../src/3d/managers'
 import { configures3dTestEngine, expectMeshes } from '../../test-utils'
 
 describe('SelectionManager', () => {

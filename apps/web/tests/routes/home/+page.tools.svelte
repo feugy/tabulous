@@ -1,9 +1,8 @@
 <script>
   import { Tool, ToolBox } from '@atelier-wb/svelte'
-
-  import HomePage from '../../../src/routes/home/+page.svelte'
-  import { initGraphQlClient } from '../../../src/stores'
-  import { graphQlUrl } from '../../../src/utils'
+  import HomePage from '@src/routes/home/+page.svelte'
+  import { initGraphQlClient } from '@src/stores'
+  import { graphQlUrl } from '@src/utils'
 
   const player = {
     id: 'abc123',

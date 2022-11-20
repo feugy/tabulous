@@ -1,23 +1,5 @@
 <script>
-  import { onDestroy, onMount } from 'svelte'
-  import { _ } from 'svelte-intl'
-
-  import { page } from '$app/stores'
-
-  import {
-    CameraSwitch,
-    CursorInfo,
-    GameAside,
-    GameHand,
-    Indicators,
-    MeshDetails,
-    Progress,
-    RadialMenu
-  } from '../../../../components'
-  import {
-    GameMenu,
-    InvitePlayerDialogue
-  } from '../../../../connected-components'
+  import { Progress } from '@src/components'
   import {
     actionMenuProps,
     cameraSaves,
@@ -40,8 +22,22 @@
     thread,
     visibleFeedbacks,
     visibleIndicators
-  } from '../../../../stores'
-  import { observeDimension } from '../../../../utils'
+  } from '@src/stores'
+  import { observeDimension } from '@src/utils'
+  import { onDestroy, onMount } from 'svelte'
+  import { _ } from 'svelte-intl'
+
+  import { page } from '$app/stores'
+
+  import CameraSwitch from './CameraSwitch.svelte'
+  import CursorInfo from './CursorInfo.svelte'
+  import GameAside from './GameAside.svelte'
+  import GameHand from './GameHand.svelte'
+  import GameMenu from './GameMenu.svelte'
+  import Indicators from './Indicators.svelte'
+  import InvitePlayerDialogue from './InvitePlayerDialogue.svelte'
+  import MeshDetails from './MeshDetails.svelte'
+  import RadialMenu from './RadialMenu.svelte'
 
   /** @type {import('./$types').PageData} */
   export let data = {}

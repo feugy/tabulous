@@ -1,8 +1,7 @@
 <script>
   import { Tool, ToolBox } from '@atelier-wb/svelte'
   import { faker } from '@faker-js/faker'
-
-  import { Button, Toaster } from '../../src/components'
+  import { Button, Toaster } from '@src/components'
 
   let message = null
   const icons = [

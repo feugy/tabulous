@@ -1,9 +1,8 @@
+import AcceptTermsPage from '@src/routes/accept-terms/+page.svelte'
 import { fireEvent, render, screen } from '@testing-library/svelte'
+import { translate } from '@tests/test-utils'
 import html from 'svelte-htm'
 import { describe, expect, it } from 'vitest'
-
-import AcceptTermsPage from '../../../src/routes/accept-terms/+page.svelte'
-import { translate } from '../../test-utils'
 
 describe('/accept-terms route', () => {
   it('enables checkboxes on scroll', () => {

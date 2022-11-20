@@ -82,10 +82,8 @@ AssertionError: expected 2nd "spy" call to have been called with [ 'anima' ]
 - group candidate target per kind for performance
 - keep anchor ids
 - create Animation objects as part of runAnimation() (constant frameRate of 60)
-- jest matchers with mesh (toHaveBeenCalledWith, toHaveBeenNthCalledWith)
 - all manager managing a collection of behaviors should check their capabilities
 - game-manager is just a gigantic mess!!! no single responsibility, global state all over the place
-- component, connected-component and routes rendering tests
 - UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
 - stackable duration override's movable duration on
 - move camera when drop zone is not in sight and dropping on it
@@ -102,10 +100,11 @@ AssertionError: expected 2nd "spy" call to have been called with [ 'anima' ]
 - click on stack size to select all/select stack on push?
 - collect player preferences when joining a game (requires to alter & reload game when joining rather than inviting)
 - option to invite players with url
-- distribute multiple meshes to players'hand
+- distribute multiple meshes to players' hand
 - shortcuts cheatsheet
 - hand support for quantifiable behavior
 - put/draw under
+- "box" space for unusued/undesired meshes
 - fullscreen and default key (F11)
 
 ## Server

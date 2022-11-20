@@ -1,7 +1,8 @@
 // @ts-check
+import { setTimeout } from 'node:timers/promises'
+
 import { expect } from '@playwright/test'
 
-import { sleep } from '../../../src/utils/time.js'
 import { translate } from '../utils/index.js'
 import {
   AuthenticatedHeaderMixin,
@@ -67,7 +68,7 @@ export const HomePage = mixin(
      * Expects catalog heading visibility.
      */
     async getStarted() {
-      await sleep(500)
+      await setTimeout(500)
       await expect(this.catalogHeading).toBeVisible()
     }
 
@@ -100,7 +101,7 @@ export const HomePage = mixin(
      * Navigates to login by clicking on the header button
      */
     async goToLogin() {
-      await sleep(500)
+      await setTimeout(500)
       await this.loginButton.click()
       await this.page.waitForLoadState()
       await expect(this.page).toHaveURL('/login')
@@ -121,7 +122,7 @@ export const HomePage = mixin(
         game,
         `no game link with title "${title}" and rank #${rank} found`
       ).toBeDefined()
-      await sleep(500)
+      await setTimeout(500)
       await game.locator('role=button >> text=delete').click()
       await expect(this.deleteGameDialogue).toBeVisible()
     }

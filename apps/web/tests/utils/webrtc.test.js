@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker'
+import { buildSDPTransform } from '@src/utils'
 import { describe, expect, it } from 'vitest'
-
-import { buildSDPTransform } from '../../src/utils'
 
 describe('webRTC utilities', () => {
   const bitrate = faker.datatype.number()

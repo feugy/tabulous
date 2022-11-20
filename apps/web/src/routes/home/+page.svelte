@@ -1,10 +1,11 @@
 <script>
+  import { ConfirmDialogue, Header } from '@src/components'
+  import { deleteGame, receiveGameListUpdates, toastInfo } from '@src/stores'
   import { readable } from 'svelte/store'
   import { _, locale } from 'svelte-intl'
 
-  import { CatalogItem, ConfirmDialogue, GameLink } from '../../components'
-  import { Header } from '../../connected-components'
-  import { deleteGame, receiveGameListUpdates, toastInfo } from '../../stores'
+  import CatalogItem from './CatalogItem.svelte'
+  import GameLink from './GameLink.svelte'
 
   /** @type {import('./$types').PageData} */
   export let data = {}

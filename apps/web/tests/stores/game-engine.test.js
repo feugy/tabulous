@@ -1,5 +1,22 @@
 import { Observable } from '@babylonjs/core/Misc/observable'
 import { faker } from '@faker-js/faker'
+import { createEngine } from '@src/3d'
+import {
+  cameraManager,
+  controlManager,
+  handManager,
+  indicatorManager,
+  inputManager,
+  selectionManager
+} from '@src/3d/managers'
+import * as gameEngine from '@src/stores/game-engine'
+import {
+  connected as connectedPeers,
+  lastDisconnectedId,
+  lastMessageReceived,
+  send as sendToPeer
+} from '@src/stores/peer-channels'
+import { configures3dTestEngine, sleep } from '@tests/test-utils'
 import { get } from 'svelte/store'
 import {
   afterAll,
@@ -12,26 +29,8 @@ import {
   vi
 } from 'vitest'
 
-import { createEngine } from '../../src/3d'
-import {
-  cameraManager,
-  controlManager,
-  handManager,
-  indicatorManager,
-  inputManager,
-  selectionManager
-} from '../../src/3d/managers'
-import * as gameEngine from '../../src/stores/game-engine'
-import {
-  connected as connectedPeers,
-  lastDisconnectedId,
-  lastMessageReceived,
-  send as sendToPeer
-} from '../../src/stores/peer-channels'
-import { configures3dTestEngine, sleep } from '../test-utils'
-
-vi.mock('../../src/3d')
-vi.mock('../../src/stores/peer-channels', () => {
+vi.mock('@src/3d')
+vi.mock('@src/stores/peer-channels', () => {
   const { BehaviorSubject, Subject } = require('rxjs')
   return {
     send: vi.fn(),

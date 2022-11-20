@@ -1,7 +1,7 @@
-import { browser } from '$app/environment'
+import { initGraphQlClient } from '@src/stores'
+import { graphQlUrl } from '@src/utils'
 
-import { initGraphQlClient } from '../stores'
-import { graphQlUrl } from '../utils'
+import { browser } from '$app/environment'
 
 /** @type {import('./$types').LayoutLoad} */
 export function load({ data }) {

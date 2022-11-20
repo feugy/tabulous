@@ -1,9 +1,8 @@
+import MinimizableSection from '@src/components/MinimizableSection.svelte'
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import { tick } from 'svelte'
 import html from 'svelte-htm'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-
-import MinimizableSection from '../../src/components/MinimizableSection.svelte'
 
 describe('MinimizableSection component', () => {
   const handleMinimize = vi.fn()

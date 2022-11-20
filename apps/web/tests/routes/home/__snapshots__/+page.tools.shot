@@ -5,13 +5,13 @@ exports[`Anonymous 1`] = `
   class="s-A-bC3Hke5zSn"
 >
   <header
-    class="s-IEV6mBVyuaCJ"
+    class="s-c1MG4BWNDc59"
   >
     <nav
-      class="s-IEV6mBVyuaCJ"
+      class="s-c1MG4BWNDc59"
     >
       <span
-        class="s-IEV6mBVyuaCJ"
+        class="s-c1MG4BWNDc59"
       >
         <ol
           class="s-x5nEMCoiqeIy"
@@ -48,7 +48,7 @@ exports[`Anonymous 1`] = `
     </nav>
      
     <div
-      class="s-IEV6mBVyuaCJ"
+      class="s-c1MG4BWNDc59"
     >
       <h1
         class="s-A-bC3Hke5zSn"
@@ -74,39 +74,39 @@ exports[`Anonymous 1`] = `
       class="s-A-bC3Hke5zSn"
     >
       <article
-        class="s-hGRcS-4InB4p"
+        class="s-Z6y0dSYOFWU8"
         role="link"
         tabindex="0"
       >
         <img
           alt="Jeu de 32 cartes"
-          class="s-hGRcS-4InB4p"
+          class="s-Z6y0dSYOFWU8"
           src="http://localhost:3001/games/32-cards/catalog/cover.webp"
         />
          
         <div
-          class="content s-hGRcS-4InB4p"
+          class="content s-Z6y0dSYOFWU8"
         >
           <legend
-            class="s-hGRcS-4InB4p"
+            class="s-Z6y0dSYOFWU8"
           >
             <div
-              class="title s-hGRcS-4InB4p"
+              class="title s-Z6y0dSYOFWU8"
             >
               <h3
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 Jeu de 32 cartes
               </h3>
                
               <details
-                class="s-hGRcS-4InB4p hidden"
+                class="s-Z6y0dSYOFWU8 hidden"
               >
                 <summary
-                  class="s-hGRcS-4InB4p"
+                  class="s-Z6y0dSYOFWU8"
                 >
                   <strong
-                    class="s-hGRcS-4InB4p"
+                    class="s-Z6y0dSYOFWU8"
                   >
                     Créé par : 
                   </strong>
@@ -114,10 +114,10 @@ exports[`Anonymous 1`] = `
                 </summary>
                  
                 <p
-                  class="s-hGRcS-4InB4p"
+                  class="s-Z6y0dSYOFWU8"
                 >
                   <strong
-                    class="s-hGRcS-4InB4p"
+                    class="s-Z6y0dSYOFWU8"
                   >
                     Illustré par : 
                   </strong>
@@ -125,10 +125,10 @@ exports[`Anonymous 1`] = `
                 </p>
                  
                 <p
-                  class="s-hGRcS-4InB4p"
+                  class="s-Z6y0dSYOFWU8"
                 >
                   <strong
-                    class="s-hGRcS-4InB4p"
+                    class="s-Z6y0dSYOFWU8"
                   >
                     Distribué par : 
                   </strong>
@@ -138,13 +138,13 @@ exports[`Anonymous 1`] = `
             </div>
              
             <span
-              class="characteristics s-hGRcS-4InB4p"
+              class="characteristics s-Z6y0dSYOFWU8"
             >
               <span
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 <span
-                  class="material-icons s-hGRcS-4InB4p"
+                  class="material-icons s-Z6y0dSYOFWU8"
                 >
                   people
                 </span>
@@ -152,10 +152,10 @@ exports[`Anonymous 1`] = `
               </span>
                
               <span
-                class="s-hGRcS-4InB4p hidden"
+                class="s-Z6y0dSYOFWU8 hidden"
               >
                 <span
-                  class="material-icons s-hGRcS-4InB4p"
+                  class="material-icons s-Z6y0dSYOFWU8"
                 >
                   access_time
                 </span>
@@ -163,10 +163,10 @@ exports[`Anonymous 1`] = `
               </span>
                
               <span
-                class="s-hGRcS-4InB4p hidden"
+                class="s-Z6y0dSYOFWU8 hidden"
               >
                 <span
-                  class="material-icons s-hGRcS-4InB4p"
+                  class="material-icons s-Z6y0dSYOFWU8"
                 >
                   person
                 </span>
@@ -178,39 +178,39 @@ exports[`Anonymous 1`] = `
       </article>
       <!--&lt;CatalogItem&gt;-->
       <article
-        class="s-hGRcS-4InB4p"
+        class="s-Z6y0dSYOFWU8"
         role="link"
         tabindex="0"
       >
         <img
           alt="Dames"
-          class="s-hGRcS-4InB4p"
+          class="s-Z6y0dSYOFWU8"
           src="http://localhost:3001/games/draughts/catalog/cover.webp"
         />
          
         <div
-          class="content s-hGRcS-4InB4p"
+          class="content s-Z6y0dSYOFWU8"
         >
           <legend
-            class="s-hGRcS-4InB4p"
+            class="s-Z6y0dSYOFWU8"
           >
             <div
-              class="title s-hGRcS-4InB4p"
+              class="title s-Z6y0dSYOFWU8"
             >
               <h3
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 Dames
               </h3>
                
               <details
-                class="s-hGRcS-4InB4p hidden"
+                class="s-Z6y0dSYOFWU8 hidden"
               >
                 <summary
-                  class="s-hGRcS-4InB4p"
+                  class="s-Z6y0dSYOFWU8"
                 >
                   <strong
-                    class="s-hGRcS-4InB4p"
+                    class="s-Z6y0dSYOFWU8"
                   >
                     Créé par : 
                   </strong>
@@ -218,10 +218,10 @@ exports[`Anonymous 1`] = `
                 </summary>
                  
                 <p
-                  class="s-hGRcS-4InB4p"
+                  class="s-Z6y0dSYOFWU8"
                 >
                   <strong
-                    class="s-hGRcS-4InB4p"
+                    class="s-Z6y0dSYOFWU8"
                   >
                     Illustré par : 
                   </strong>
@@ -229,10 +229,10 @@ exports[`Anonymous 1`] = `
                 </p>
                  
                 <p
-                  class="s-hGRcS-4InB4p"
+                  class="s-Z6y0dSYOFWU8"
                 >
                   <strong
-                    class="s-hGRcS-4InB4p"
+                    class="s-Z6y0dSYOFWU8"
                   >
                     Distribué par : 
                   </strong>
@@ -242,13 +242,13 @@ exports[`Anonymous 1`] = `
             </div>
              
             <span
-              class="characteristics s-hGRcS-4InB4p"
+              class="characteristics s-Z6y0dSYOFWU8"
             >
               <span
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 <span
-                  class="material-icons s-hGRcS-4InB4p"
+                  class="material-icons s-Z6y0dSYOFWU8"
                 >
                   people
                 </span>
@@ -256,10 +256,10 @@ exports[`Anonymous 1`] = `
               </span>
                
               <span
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 <span
-                  class="material-icons s-hGRcS-4InB4p"
+                  class="material-icons s-Z6y0dSYOFWU8"
                 >
                   access_time
                 </span>
@@ -267,10 +267,10 @@ exports[`Anonymous 1`] = `
               </span>
                
               <span
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 <span
-                  class="material-icons s-hGRcS-4InB4p"
+                  class="material-icons s-Z6y0dSYOFWU8"
                 >
                   person
                 </span>
@@ -282,39 +282,39 @@ exports[`Anonymous 1`] = `
       </article>
       <!--&lt;CatalogItem&gt;-->
       <article
-        class="s-hGRcS-4InB4p"
+        class="s-Z6y0dSYOFWU8"
         role="link"
         tabindex="0"
       >
         <img
           alt="Solitaire"
-          class="s-hGRcS-4InB4p"
+          class="s-Z6y0dSYOFWU8"
           src="http://localhost:3001/games/klondike/catalog/cover.webp"
         />
          
         <div
-          class="content s-hGRcS-4InB4p"
+          class="content s-Z6y0dSYOFWU8"
         >
           <legend
-            class="s-hGRcS-4InB4p"
+            class="s-Z6y0dSYOFWU8"
           >
             <div
-              class="title s-hGRcS-4InB4p"
+              class="title s-Z6y0dSYOFWU8"
             >
               <h3
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 Solitaire
               </h3>
                
               <details
-                class="s-hGRcS-4InB4p hidden"
+                class="s-Z6y0dSYOFWU8 hidden"
               >
                 <summary
-                  class="s-hGRcS-4InB4p"
+                  class="s-Z6y0dSYOFWU8"
                 >
                   <strong
-                    class="s-hGRcS-4InB4p"
+                    class="s-Z6y0dSYOFWU8"
                   >
                     Créé par : 
                   </strong>
@@ -322,10 +322,10 @@ exports[`Anonymous 1`] = `
                 </summary>
                  
                 <p
-                  class="s-hGRcS-4InB4p"
+                  class="s-Z6y0dSYOFWU8"
                 >
                   <strong
-                    class="s-hGRcS-4InB4p"
+                    class="s-Z6y0dSYOFWU8"
                   >
                     Illustré par : 
                   </strong>
@@ -333,10 +333,10 @@ exports[`Anonymous 1`] = `
                 </p>
                  
                 <p
-                  class="s-hGRcS-4InB4p"
+                  class="s-Z6y0dSYOFWU8"
                 >
                   <strong
-                    class="s-hGRcS-4InB4p"
+                    class="s-Z6y0dSYOFWU8"
                   >
                     Distribué par : 
                   </strong>
@@ -346,13 +346,13 @@ exports[`Anonymous 1`] = `
             </div>
              
             <span
-              class="characteristics s-hGRcS-4InB4p"
+              class="characteristics s-Z6y0dSYOFWU8"
             >
               <span
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 <span
-                  class="material-icons s-hGRcS-4InB4p"
+                  class="material-icons s-Z6y0dSYOFWU8"
                 >
                   people
                 </span>
@@ -360,10 +360,10 @@ exports[`Anonymous 1`] = `
               </span>
                
               <span
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 <span
-                  class="material-icons s-hGRcS-4InB4p"
+                  class="material-icons s-Z6y0dSYOFWU8"
                 >
                   access_time
                 </span>
@@ -371,10 +371,10 @@ exports[`Anonymous 1`] = `
               </span>
                
               <span
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 <span
-                  class="material-icons s-hGRcS-4InB4p"
+                  class="material-icons s-Z6y0dSYOFWU8"
                 >
                   person
                 </span>
@@ -395,13 +395,13 @@ exports[`Authenticated 1`] = `
   class="s-A-bC3Hke5zSn"
 >
   <header
-    class="s-IEV6mBVyuaCJ"
+    class="s-c1MG4BWNDc59"
   >
     <nav
-      class="s-IEV6mBVyuaCJ"
+      class="s-c1MG4BWNDc59"
     >
       <span
-        class="s-IEV6mBVyuaCJ"
+        class="s-c1MG4BWNDc59"
       >
         <ol
           class="s-x5nEMCoiqeIy"
@@ -464,7 +464,7 @@ exports[`Authenticated 1`] = `
     </nav>
      
     <div
-      class="s-IEV6mBVyuaCJ"
+      class="s-c1MG4BWNDc59"
     >
       <h1
         class="s-A-bC3Hke5zSn"
@@ -490,15 +490,15 @@ exports[`Authenticated 1`] = `
     >
       
       <article
-        class="s-lt2MTuasm2zx"
+        class="s-QQoQzhRq8NK6"
         role="link"
         tabindex="0"
       >
         <span
-          class="title s-lt2MTuasm2zx"
+          class="title s-QQoQzhRq8NK6"
         >
           <h3
-            class="s-lt2MTuasm2zx"
+            class="s-QQoQzhRq8NK6"
           >
             Jeu de 32 cartes
           </h3>
@@ -519,7 +519,7 @@ exports[`Authenticated 1`] = `
         </span>
          
         <span
-          class="created s-lt2MTuasm2zx"
+          class="created s-QQoQzhRq8NK6"
         >
           02 août, 09:13
         </span>
@@ -528,15 +528,15 @@ exports[`Authenticated 1`] = `
       <!--&lt;GameLink&gt;-->
       
       <article
-        class="s-lt2MTuasm2zx"
+        class="s-QQoQzhRq8NK6"
         role="link"
         tabindex="0"
       >
         <span
-          class="title s-lt2MTuasm2zx"
+          class="title s-QQoQzhRq8NK6"
         >
           <h3
-            class="s-lt2MTuasm2zx"
+            class="s-QQoQzhRq8NK6"
           >
             6 qui prend !
           </h3>
@@ -544,13 +544,13 @@ exports[`Authenticated 1`] = `
         </span>
          
         <span
-          class="created s-lt2MTuasm2zx"
+          class="created s-QQoQzhRq8NK6"
         >
           29 juil., 08:17
         </span>
          
         <span
-          class="players s-lt2MTuasm2zx"
+          class="players s-QQoQzhRq8NK6"
         >
           avec Dams, Célia
         </span>
@@ -569,39 +569,39 @@ exports[`Authenticated 1`] = `
       class="s-A-bC3Hke5zSn"
     >
       <article
-        class="s-hGRcS-4InB4p"
+        class="s-Z6y0dSYOFWU8"
         role="link"
         tabindex="0"
       >
         <img
           alt="Dune Imperium"
-          class="s-hGRcS-4InB4p"
+          class="s-Z6y0dSYOFWU8"
           src="http://localhost:3001/games/dune-imperium/catalog/cover.webp"
         />
          
         <div
-          class="content s-hGRcS-4InB4p"
+          class="content s-Z6y0dSYOFWU8"
         >
           <legend
-            class="s-hGRcS-4InB4p"
+            class="s-Z6y0dSYOFWU8"
           >
             <div
-              class="title s-hGRcS-4InB4p"
+              class="title s-Z6y0dSYOFWU8"
             >
               <h3
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 Dune Imperium
               </h3>
                
               <details
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 <summary
-                  class="s-hGRcS-4InB4p"
+                  class="s-Z6y0dSYOFWU8"
                 >
                   <strong
-                    class="s-hGRcS-4InB4p"
+                    class="s-Z6y0dSYOFWU8"
                   >
                     Créé par : 
                   </strong>
@@ -609,10 +609,10 @@ exports[`Authenticated 1`] = `
                 </summary>
                  
                 <p
-                  class="s-hGRcS-4InB4p"
+                  class="s-Z6y0dSYOFWU8"
                 >
                   <strong
-                    class="s-hGRcS-4InB4p"
+                    class="s-Z6y0dSYOFWU8"
                   >
                     Illustré par : 
                   </strong>
@@ -620,10 +620,10 @@ exports[`Authenticated 1`] = `
                 </p>
                  
                 <p
-                  class="s-hGRcS-4InB4p"
+                  class="s-Z6y0dSYOFWU8"
                 >
                   <strong
-                    class="s-hGRcS-4InB4p"
+                    class="s-Z6y0dSYOFWU8"
                   >
                     Distribué par : 
                   </strong>
@@ -633,13 +633,13 @@ exports[`Authenticated 1`] = `
             </div>
              
             <span
-              class="characteristics s-hGRcS-4InB4p"
+              class="characteristics s-Z6y0dSYOFWU8"
             >
               <span
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 <span
-                  class="material-icons s-hGRcS-4InB4p"
+                  class="material-icons s-Z6y0dSYOFWU8"
                 >
                   people
                 </span>
@@ -647,10 +647,10 @@ exports[`Authenticated 1`] = `
               </span>
                
               <span
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 <span
-                  class="material-icons s-hGRcS-4InB4p"
+                  class="material-icons s-Z6y0dSYOFWU8"
                 >
                   access_time
                 </span>
@@ -658,10 +658,10 @@ exports[`Authenticated 1`] = `
               </span>
                
               <span
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 <span
-                  class="material-icons s-hGRcS-4InB4p"
+                  class="material-icons s-Z6y0dSYOFWU8"
                 >
                   person
                 </span>
@@ -673,39 +673,39 @@ exports[`Authenticated 1`] = `
       </article>
       <!--&lt;CatalogItem&gt;-->
       <article
-        class="s-hGRcS-4InB4p"
+        class="s-Z6y0dSYOFWU8"
         role="link"
         tabindex="0"
       >
         <img
           alt="6 qui prend !"
-          class="s-hGRcS-4InB4p"
+          class="s-Z6y0dSYOFWU8"
           src="http://localhost:3001/games/6-takes/catalog/cover.webp"
         />
          
         <div
-          class="content s-hGRcS-4InB4p"
+          class="content s-Z6y0dSYOFWU8"
         >
           <legend
-            class="s-hGRcS-4InB4p"
+            class="s-Z6y0dSYOFWU8"
           >
             <div
-              class="title s-hGRcS-4InB4p"
+              class="title s-Z6y0dSYOFWU8"
             >
               <h3
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 6 qui prend !
               </h3>
                
               <details
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 <summary
-                  class="s-hGRcS-4InB4p"
+                  class="s-Z6y0dSYOFWU8"
                 >
                   <strong
-                    class="s-hGRcS-4InB4p"
+                    class="s-Z6y0dSYOFWU8"
                   >
                     Créé par : 
                   </strong>
@@ -713,10 +713,10 @@ exports[`Authenticated 1`] = `
                 </summary>
                  
                 <p
-                  class="s-hGRcS-4InB4p"
+                  class="s-Z6y0dSYOFWU8"
                 >
                   <strong
-                    class="s-hGRcS-4InB4p"
+                    class="s-Z6y0dSYOFWU8"
                   >
                     Illustré par : 
                   </strong>
@@ -724,10 +724,10 @@ exports[`Authenticated 1`] = `
                 </p>
                  
                 <p
-                  class="s-hGRcS-4InB4p"
+                  class="s-Z6y0dSYOFWU8"
                 >
                   <strong
-                    class="s-hGRcS-4InB4p"
+                    class="s-Z6y0dSYOFWU8"
                   >
                     Distribué par : 
                   </strong>
@@ -737,13 +737,13 @@ exports[`Authenticated 1`] = `
             </div>
              
             <span
-              class="characteristics s-hGRcS-4InB4p"
+              class="characteristics s-Z6y0dSYOFWU8"
             >
               <span
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 <span
-                  class="material-icons s-hGRcS-4InB4p"
+                  class="material-icons s-Z6y0dSYOFWU8"
                 >
                   people
                 </span>
@@ -751,10 +751,10 @@ exports[`Authenticated 1`] = `
               </span>
                
               <span
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 <span
-                  class="material-icons s-hGRcS-4InB4p"
+                  class="material-icons s-Z6y0dSYOFWU8"
                 >
                   access_time
                 </span>
@@ -762,10 +762,10 @@ exports[`Authenticated 1`] = `
               </span>
                
               <span
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 <span
-                  class="material-icons s-hGRcS-4InB4p"
+                  class="material-icons s-Z6y0dSYOFWU8"
                 >
                   person
                 </span>
@@ -777,39 +777,39 @@ exports[`Authenticated 1`] = `
       </article>
       <!--&lt;CatalogItem&gt;-->
       <article
-        class="s-hGRcS-4InB4p"
+        class="s-Z6y0dSYOFWU8"
         role="link"
         tabindex="0"
       >
         <img
           alt="Jeu de 32 cartes"
-          class="s-hGRcS-4InB4p"
+          class="s-Z6y0dSYOFWU8"
           src="http://localhost:3001/games/32-cards/catalog/cover.webp"
         />
          
         <div
-          class="content s-hGRcS-4InB4p"
+          class="content s-Z6y0dSYOFWU8"
         >
           <legend
-            class="s-hGRcS-4InB4p"
+            class="s-Z6y0dSYOFWU8"
           >
             <div
-              class="title s-hGRcS-4InB4p"
+              class="title s-Z6y0dSYOFWU8"
             >
               <h3
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 Jeu de 32 cartes
               </h3>
                
               <details
-                class="s-hGRcS-4InB4p hidden"
+                class="s-Z6y0dSYOFWU8 hidden"
               >
                 <summary
-                  class="s-hGRcS-4InB4p"
+                  class="s-Z6y0dSYOFWU8"
                 >
                   <strong
-                    class="s-hGRcS-4InB4p"
+                    class="s-Z6y0dSYOFWU8"
                   >
                     Créé par : 
                   </strong>
@@ -817,10 +817,10 @@ exports[`Authenticated 1`] = `
                 </summary>
                  
                 <p
-                  class="s-hGRcS-4InB4p"
+                  class="s-Z6y0dSYOFWU8"
                 >
                   <strong
-                    class="s-hGRcS-4InB4p"
+                    class="s-Z6y0dSYOFWU8"
                   >
                     Illustré par : 
                   </strong>
@@ -828,10 +828,10 @@ exports[`Authenticated 1`] = `
                 </p>
                  
                 <p
-                  class="s-hGRcS-4InB4p"
+                  class="s-Z6y0dSYOFWU8"
                 >
                   <strong
-                    class="s-hGRcS-4InB4p"
+                    class="s-Z6y0dSYOFWU8"
                   >
                     Distribué par : 
                   </strong>
@@ -841,13 +841,13 @@ exports[`Authenticated 1`] = `
             </div>
              
             <span
-              class="characteristics s-hGRcS-4InB4p"
+              class="characteristics s-Z6y0dSYOFWU8"
             >
               <span
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 <span
-                  class="material-icons s-hGRcS-4InB4p"
+                  class="material-icons s-Z6y0dSYOFWU8"
                 >
                   people
                 </span>
@@ -855,10 +855,10 @@ exports[`Authenticated 1`] = `
               </span>
                
               <span
-                class="s-hGRcS-4InB4p hidden"
+                class="s-Z6y0dSYOFWU8 hidden"
               >
                 <span
-                  class="material-icons s-hGRcS-4InB4p"
+                  class="material-icons s-Z6y0dSYOFWU8"
                 >
                   access_time
                 </span>
@@ -866,10 +866,10 @@ exports[`Authenticated 1`] = `
               </span>
                
               <span
-                class="s-hGRcS-4InB4p hidden"
+                class="s-Z6y0dSYOFWU8 hidden"
               >
                 <span
-                  class="material-icons s-hGRcS-4InB4p"
+                  class="material-icons s-Z6y0dSYOFWU8"
                 >
                   person
                 </span>
@@ -881,39 +881,39 @@ exports[`Authenticated 1`] = `
       </article>
       <!--&lt;CatalogItem&gt;-->
       <article
-        class="s-hGRcS-4InB4p"
+        class="s-Z6y0dSYOFWU8"
         role="link"
         tabindex="0"
       >
         <img
           alt="Dames"
-          class="s-hGRcS-4InB4p"
+          class="s-Z6y0dSYOFWU8"
           src="http://localhost:3001/games/draughts/catalog/cover.webp"
         />
          
         <div
-          class="content s-hGRcS-4InB4p"
+          class="content s-Z6y0dSYOFWU8"
         >
           <legend
-            class="s-hGRcS-4InB4p"
+            class="s-Z6y0dSYOFWU8"
           >
             <div
-              class="title s-hGRcS-4InB4p"
+              class="title s-Z6y0dSYOFWU8"
             >
               <h3
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 Dames
               </h3>
                
               <details
-                class="s-hGRcS-4InB4p hidden"
+                class="s-Z6y0dSYOFWU8 hidden"
               >
                 <summary
-                  class="s-hGRcS-4InB4p"
+                  class="s-Z6y0dSYOFWU8"
                 >
                   <strong
-                    class="s-hGRcS-4InB4p"
+                    class="s-Z6y0dSYOFWU8"
                   >
                     Créé par : 
                   </strong>
@@ -921,10 +921,10 @@ exports[`Authenticated 1`] = `
                 </summary>
                  
                 <p
-                  class="s-hGRcS-4InB4p"
+                  class="s-Z6y0dSYOFWU8"
                 >
                   <strong
-                    class="s-hGRcS-4InB4p"
+                    class="s-Z6y0dSYOFWU8"
                   >
                     Illustré par : 
                   </strong>
@@ -932,10 +932,10 @@ exports[`Authenticated 1`] = `
                 </p>
                  
                 <p
-                  class="s-hGRcS-4InB4p"
+                  class="s-Z6y0dSYOFWU8"
                 >
                   <strong
-                    class="s-hGRcS-4InB4p"
+                    class="s-Z6y0dSYOFWU8"
                   >
                     Distribué par : 
                   </strong>
@@ -945,13 +945,13 @@ exports[`Authenticated 1`] = `
             </div>
              
             <span
-              class="characteristics s-hGRcS-4InB4p"
+              class="characteristics s-Z6y0dSYOFWU8"
             >
               <span
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 <span
-                  class="material-icons s-hGRcS-4InB4p"
+                  class="material-icons s-Z6y0dSYOFWU8"
                 >
                   people
                 </span>
@@ -959,10 +959,10 @@ exports[`Authenticated 1`] = `
               </span>
                
               <span
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 <span
-                  class="material-icons s-hGRcS-4InB4p"
+                  class="material-icons s-Z6y0dSYOFWU8"
                 >
                   access_time
                 </span>
@@ -970,10 +970,10 @@ exports[`Authenticated 1`] = `
               </span>
                
               <span
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 <span
-                  class="material-icons s-hGRcS-4InB4p"
+                  class="material-icons s-Z6y0dSYOFWU8"
                 >
                   person
                 </span>
@@ -985,39 +985,39 @@ exports[`Authenticated 1`] = `
       </article>
       <!--&lt;CatalogItem&gt;-->
       <article
-        class="s-hGRcS-4InB4p"
+        class="s-Z6y0dSYOFWU8"
         role="link"
         tabindex="0"
       >
         <img
           alt="Solitaire"
-          class="s-hGRcS-4InB4p"
+          class="s-Z6y0dSYOFWU8"
           src="http://localhost:3001/games/klondike/catalog/cover.webp"
         />
          
         <div
-          class="content s-hGRcS-4InB4p"
+          class="content s-Z6y0dSYOFWU8"
         >
           <legend
-            class="s-hGRcS-4InB4p"
+            class="s-Z6y0dSYOFWU8"
           >
             <div
-              class="title s-hGRcS-4InB4p"
+              class="title s-Z6y0dSYOFWU8"
             >
               <h3
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 Solitaire
               </h3>
                
               <details
-                class="s-hGRcS-4InB4p hidden"
+                class="s-Z6y0dSYOFWU8 hidden"
               >
                 <summary
-                  class="s-hGRcS-4InB4p"
+                  class="s-Z6y0dSYOFWU8"
                 >
                   <strong
-                    class="s-hGRcS-4InB4p"
+                    class="s-Z6y0dSYOFWU8"
                   >
                     Créé par : 
                   </strong>
@@ -1025,10 +1025,10 @@ exports[`Authenticated 1`] = `
                 </summary>
                  
                 <p
-                  class="s-hGRcS-4InB4p"
+                  class="s-Z6y0dSYOFWU8"
                 >
                   <strong
-                    class="s-hGRcS-4InB4p"
+                    class="s-Z6y0dSYOFWU8"
                   >
                     Illustré par : 
                   </strong>
@@ -1036,10 +1036,10 @@ exports[`Authenticated 1`] = `
                 </p>
                  
                 <p
-                  class="s-hGRcS-4InB4p"
+                  class="s-Z6y0dSYOFWU8"
                 >
                   <strong
-                    class="s-hGRcS-4InB4p"
+                    class="s-Z6y0dSYOFWU8"
                   >
                     Distribué par : 
                   </strong>
@@ -1049,13 +1049,13 @@ exports[`Authenticated 1`] = `
             </div>
              
             <span
-              class="characteristics s-hGRcS-4InB4p"
+              class="characteristics s-Z6y0dSYOFWU8"
             >
               <span
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 <span
-                  class="material-icons s-hGRcS-4InB4p"
+                  class="material-icons s-Z6y0dSYOFWU8"
                 >
                   people
                 </span>
@@ -1063,10 +1063,10 @@ exports[`Authenticated 1`] = `
               </span>
                
               <span
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 <span
-                  class="material-icons s-hGRcS-4InB4p"
+                  class="material-icons s-Z6y0dSYOFWU8"
                 >
                   access_time
                 </span>
@@ -1074,10 +1074,10 @@ exports[`Authenticated 1`] = `
               </span>
                
               <span
-                class="s-hGRcS-4InB4p"
+                class="s-Z6y0dSYOFWU8"
               >
                 <span
-                  class="material-icons s-hGRcS-4InB4p"
+                  class="material-icons s-Z6y0dSYOFWU8"
                 >
                   person
                 </span>

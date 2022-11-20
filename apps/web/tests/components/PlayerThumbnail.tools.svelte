@@ -1,8 +1,7 @@
 <script>
   import { Tool, ToolBox } from '@atelier-wb/svelte'
-
-  import { PlayerThumbnail } from '../../src/components'
-  import avatar from './avatar.png'
+  import { PlayerThumbnail } from '@src/components'
+  import avatar from '@tests/fixtures/avatar.png'
 
   const player = { username: 'Joe le clodo' }
   const screenPosition = { x: 0, y: 150 }

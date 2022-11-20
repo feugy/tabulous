@@ -1,18 +1,14 @@
 import { faker } from '@faker-js/faker'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-
 import {
   MoveBehaviorName,
   QuantityBehavior,
   QuantityBehaviorName
-} from '../../../src/3d/behaviors'
-import {
-  controlManager,
-  moveManager,
-  selectionManager
-} from '../../../src/3d/managers'
-import { createBox, createRoundToken } from '../../../src/3d/meshes'
-import { getTargetableBehavior } from '../../../src/3d/utils'
+} from '@src/3d/behaviors'
+import { controlManager, moveManager, selectionManager } from '@src/3d/managers'
+import { createBox, createRoundToken } from '@src/3d/meshes'
+import { getTargetableBehavior } from '@src/3d/utils'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
 import {
   configures3dTestEngine,
   expectAnimationEnd,

@@ -1,8 +1,7 @@
+import { makeLogger } from '@src/utils'
 import { BehaviorSubject, Subject } from 'rxjs'
 
 import { browser } from '$app/environment'
-
-import { makeLogger } from '../utils'
 
 const logger = makeLogger('stream')
 const lastCameraStorageKey = 'lastCameraId'

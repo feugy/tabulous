@@ -1,7 +1,6 @@
 <script>
   import { Tool } from '@atelier-wb/svelte'
-
-  import { Dialogue } from '../../src/components'
+  import { Dialogue } from '@src/components'
 </script>
 
 <Tool

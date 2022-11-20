@@ -5,13 +5,13 @@ exports[`Default 1`] = `
   class="s-Lb22KZKZneUz"
 >
   <header
-    class="s-IEV6mBVyuaCJ"
+    class="s-c1MG4BWNDc59"
   >
     <nav
-      class="s-IEV6mBVyuaCJ"
+      class="s-c1MG4BWNDc59"
     >
       <span
-        class="s-IEV6mBVyuaCJ"
+        class="s-c1MG4BWNDc59"
       >
         <ol
           class="s-x5nEMCoiqeIy"
@@ -65,7 +65,7 @@ exports[`Default 1`] = `
     </nav>
      
     <div
-      class="s-IEV6mBVyuaCJ"
+      class="s-c1MG4BWNDc59"
     />
   </header>
   <!--&lt;Header&gt;-->

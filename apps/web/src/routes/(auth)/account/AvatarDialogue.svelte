@@ -1,8 +1,7 @@
 <script>
+  import { ConfirmDialogue, Input } from '@src/components'
   import { createEventDispatcher } from 'svelte'
   import { _ } from 'svelte-intl'
-
-  import { ConfirmDialogue, Input } from '../../../components'
 
   export let open
   export let avatar

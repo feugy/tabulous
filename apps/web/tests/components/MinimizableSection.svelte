@@ -1,6 +1,7 @@
 <script>
-  import { Discussion, MinimizableSection } from '../../src/components'
-  import { players, thread } from './Discussion.testdata'
+  import { MinimizableSection } from '@src/components'
+  import Discussion from '@src/routes/(auth)/game/[gameId]/Discussion.svelte'
+  import { players, thread } from '@tests/fixtures/Discussion.testdata'
 
   export let placement = 'top'
   let currentTab

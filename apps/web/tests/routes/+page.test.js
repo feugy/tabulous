@@ -1,6 +1,5 @@
+import { load } from '@src/routes/+page'
 import { describe, expect, it, vi } from 'vitest'
-
-import { load } from '../../src/routes/+page'
 
 vi.mock('@sveltejs/kit', () => ({
   redirect(status, location) {
