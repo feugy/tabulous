@@ -89,7 +89,7 @@ describe('Game page', () => {
     onSubscription(({ payload: { query } }) => {
       if (query.startsWith('subscription awaitSignal')) {
         sendToSubscription({
-          data: { awaitSignal: { type: 'ready', signal: '{}' } }
+          data: { awaitSignal: { data: JSON.stringify({ type: 'ready' }) } }
         })
       }
     })
