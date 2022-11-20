@@ -1,5 +1,5 @@
 <script>
-  import { Button, Header } from '@src/components'
+  import { Button, Header, Progress } from '@src/components'
   import { createGame } from '@src/stores'
   import { translateError } from '@src/utils'
   import { onMount } from 'svelte'
@@ -43,8 +43,12 @@
   <section>
     {#if error}
       <p>{error}</p>
+      <a href="/home"><Button text={$_('labels.home')} icon="arrow_back" /></a>
+    {:else}
+      <div>
+        <Progress />
+      </div>
     {/if}
-    <a href="/home"><Button text={$_('labels.home')} icon="arrow_back" /></a>
   </section>
 </main>
 
@@ -54,10 +58,14 @@
   }
 
   section {
-    @apply flex flex-col lg:w-3/4 lg:mx-auto;
+    @apply flex flex-col lg:w-3/4 lg:mx-auto py-8;
   }
 
   p {
-    @apply text-2xl pt-8 pb-4;
+    @apply text-2xl pb-4;
+  }
+
+  div {
+    @apply flex flex-col items-center;
   }
 </style>

@@ -1,6 +1,16 @@
 import '../../src/common'
 import './styles.postcss'
 
-import { init } from '../../node_modules/@sveltejs/kit/src/runtime/client/singletons'
+import * as svelteClient from '../../node_modules/@sveltejs/kit/src/runtime/client/singletons'
 
-init({ client: {} })
+svelteClient.init({ client: {} })
+
+/**
+ * Allows configuring svelte's page store with a given url
+ * @param {string} url - relative url for this page.
+ */
+export function setSvelteUrl(url) {
+  const fullUrl = new URL(url, 'https://example.com')
+  svelteClient.stores.url.set(fullUrl)
+  svelteClient.stores.page.set({ url: fullUrl })
+}
