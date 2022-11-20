@@ -1,5 +1,7 @@
 # TODO
 
+collect player preferences when joining a game (requires to alter & reload game when joining rather than inviting)
+
 ## Brittle tests
 
 - tests/atelier/tools.test.js > Toolshot > components/RadialMenu.tools.svelte
@@ -96,7 +98,6 @@ AssertionError: expected 2nd "spy" call to have been called with [ 'anima' ]
 - hide/distinguish non-connected participants
 - is this right? given an active selection, when it anchors with other items, then items are part of the selection
 - click on stack size to select all/select stack on push?
-- collect player preferences when joining a game (requires to alter & reload game when joining rather than inviting)
 - option to invite players with url
 - distribute multiple meshes to players' hand
 - shortcuts cheatsheet
