@@ -147,10 +147,6 @@ const colors = [
 
 const gameListsUpdate$ = new Subject()
 
-function isOwner(game, playerId) {
-  return game && game.playerIds.includes(playerId)
-}
-
 /**
  * @typedef {object} GameListUpdate an updated list of player games.
  * @property {string} playerId - the corresponding player id.
@@ -195,33 +191,22 @@ export async function createGame(kind, playerId) {
   // trim some data out of the descriptor before saving it as game properties
   // eslint-disable-next-line no-unused-vars
   const { name, build, addPlayer, maxSeats, ...gameProps } = descriptor
-  try {
-    const game = await enrichWithPlayer(
-      descriptor,
-      {
-        ...gameProps,
-        kind,
-        created: Date.now(),
-        playerIds: [],
-        availableSeats: (maxSeats ?? 2) - 1,
-        meshes: await createMeshes(kind, descriptor),
-        messages: [],
-        cameras: [],
-        hands: [],
-        preferences: []
-      },
-      player
-    )
-    const created = await repositories.games.save(game)
-    gameListsUpdate$.next(created.playerIds)
-    return created
-  } catch (err) {
-    console.error(
-      `Error thrown while building game ${kind}: ${err.message}`,
-      err.stack
-    )
-    throw err
-  }
+  const game = await repositories.games.save({
+    ...gameProps,
+    kind,
+    created: Date.now(),
+    playerIds: [],
+    guestIds: [playerId],
+    availableSeats: maxSeats ?? 2,
+    meshes: await createMeshes(kind, descriptor),
+    messages: [],
+    cameras: [],
+    hands: [],
+    preferences: []
+  })
+  notifyAllPeers(game)
+  // TODO return expected preferences
+  return game
 }
 
 /**
@@ -235,29 +220,71 @@ export async function createGame(kind, playerId) {
  * @returns {Promise<Game|null>} the deleted game, or null.
  */
 export async function deleteGame(gameId, playerId) {
-  const game = await loadGame(gameId, playerId)
-  if (game) {
-    await repositories.games.deleteById(gameId)
-    gameListsUpdate$.next(game.playerIds)
+  const game = await repositories.games.getById(gameId)
+  if (!isOwner(game, playerId)) {
+    return null
   }
+  await repositories.games.deleteById(gameId)
+  notifyAllPeers(game)
   return game
 }
 
 /**
  * Loads a game for a given player.
+ * If the player is a guest, it will add it to the list of actual players.
  * The operation will abort and return null when:
- * - no game could match this game id
- * - the player does not own the game
+ * - no game could match this game id.
+ * - the player does not own the game.
  * @param {string} gameId - loaded game id.
  * @param {string} playerId - player id.
  * @returns {Promise<Game|null>} the loaded game, or null.
+ * @throws {Error} when player is a guest and the game has no more availabe seats.
+ * @throws {Error} when player is a guest and an error occured while adding them.
  */
 export async function loadGame(gameId, playerId) {
-  const game = await repositories.games.getById(gameId)
-  if (!isOwner(game, playerId)) {
+  let game = await repositories.games.getById(gameId)
+  if (isOwner(game, playerId)) {
+    return game
+  }
+  if (!isGuest(game, playerId)) {
     return null
   }
+  // TODO return expected preferences if any
+  // TODO validates provided preferences if any
+  if (game.availableSeats <= 0) {
+    throw new Error('no more available seats')
+  }
+  game.availableSeats--
+  const player = await repositories.players.getById(playerId)
+  try {
+    game = await enrichWithPlayer(
+      await repositories.catalogItems.getById(game.kind),
+      game,
+      player
+      // TODO preferences
+    )
+  } catch (err) {
+    console.error(
+      `Error thrown while adding player to game ${game.kind} (${game.id}): ${err.message}`,
+      err.stack
+    )
+    throw err
+  }
+  game = await repositories.games.save(game)
+  notifyAllPeers(game)
   return game
+}
+
+function isOwner(game, playerId) {
+  return game?.playerIds.includes(playerId)
+}
+
+function isGuest(game, guestId) {
+  return game?.guestIds.indexOf(guestId) >= 0
+}
+
+function notifyAllPeers(game) {
+  gameListsUpdate$.next([...game.playerIds, ...game.guestIds])
 }
 
 /**
@@ -269,17 +296,17 @@ export async function loadGame(gameId, playerId) {
  * @returns {Promise<Game|null>} the saved game, or null.
  */
 export async function saveGame(game, playerId) {
-  const previous = await loadGame(game?.id, playerId)
-  if (previous) {
-    return repositories.games.save({
-      ...previous,
-      meshes: game.meshes ?? previous.meshes,
-      hands: game.hands ?? previous.hands,
-      messages: game.messages ?? previous.messages,
-      cameras: game.cameras ?? previous.cameras
-    })
+  const previous = await repositories.games.getById(game?.id)
+  if (!isOwner(previous, playerId)) {
+    return null
   }
-  return null
+  return repositories.games.save({
+    ...previous,
+    meshes: game.meshes ?? previous.meshes,
+    hands: game.hands ?? previous.hands,
+    messages: game.messages ?? previous.messages,
+    cameras: game.cameras ?? previous.cameras
+  })
 }
 
 /**
@@ -287,46 +314,33 @@ export async function saveGame(game, playerId) {
  * The operation will abort and return null when:
  * - no game could match this game id
  * - the inviting player does not own the game
- * - the guest is already part of the game players
+ * - the guest was already invited
  * - the guest id is invalid
- * The operation will abort and throws when this game has no more availabe seats.
  * Updates game lists of all related players.
  * @param {string} gameId - shared game id.
  * @param {string} guestId - invited player id.
  * @param {string} hostId - inviting player id.
  * @returns {Promise<Game|null>} updated game, or null if the player can not be invited.
- * @throws {Error} when there are no available seats
  */
 export async function invite(gameId, guestId, hostId) {
   const guest = await repositories.players.getById(guestId)
-  let game = await loadGame(gameId, hostId)
-  if (!game || !guest || game.playerIds.includes(guest.id)) {
+  const game = await repositories.games.getById(gameId)
+  if (
+    !isOwner(game, hostId) ||
+    !guest ||
+    [...game.playerIds, ...game.guestIds].includes(guest.id)
+  ) {
     return null
   }
-  if (game.availableSeats <= 0) {
-    throw new Error('no more available seats')
-  }
-  game.availableSeats--
-  try {
-    game = await enrichWithPlayer(
-      await repositories.catalogItems.getById(game.kind),
-      game,
-      guest
-    )
-  } catch (err) {
-    console.error(
-      `Error thrown while adding player to game ${game.kind} (${game.id}): ${err.message}`,
-      err.stack
-    )
-    throw err
-  }
+  game.guestIds.push(guest.id)
   await repositories.games.save(game)
-  gameListsUpdate$.next(game.playerIds)
+  notifyAllPeers(game)
   return game
 }
 
 async function enrichWithPlayer(descriptor, game, guest) {
   game.playerIds.push(guest.id)
+  game.guestIds.splice(game.guestIds.indexOf(guest.id), 1)
   game.preferences.push({
     playerId: guest.id,
     color: pickRandom(
@@ -338,7 +352,6 @@ async function enrichWithPlayer(descriptor, game, guest) {
     return game
   }
   game = await descriptor.addPlayer(game, guest)
-  game.preferences
   return game
 }
 
@@ -359,7 +372,7 @@ export async function listGames(playerId) {
 export async function notifyRelatedPlayers(playerId) {
   const playerIds = new Set()
   for (const game of await listGames(playerId)) {
-    for (const playerId of game.playerIds) {
+    for (const playerId of [...game.playerIds, ...game.guestIds]) {
       playerIds.add(playerId)
     }
   }
