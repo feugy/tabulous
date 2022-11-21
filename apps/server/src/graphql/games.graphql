@@ -6,6 +6,7 @@ type Game {
   locales: ItemLocales!
   created: Float!
   players: [Player]!
+  guests: [Player]!
   meshes: [Mesh]!
   messages: [Message]
   cameras: [CameraPosition]

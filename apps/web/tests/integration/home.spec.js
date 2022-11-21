@@ -45,6 +45,7 @@ describe('Home page', () => {
       created: recent,
       kind: 'dune-imperium',
       players: [{ id: '1789', username: 'Dams' }, player],
+      guests: [],
       locales: { fr: { title: 'Dune Imperium' } }
     },
     {
@@ -52,6 +53,7 @@ describe('Home page', () => {
       created: recent2,
       kind: 'terraforming-mars',
       players: [player],
+      guests: [],
       locales: { fr: { title: 'Terraforming Mars' } }
     },
     {
@@ -59,6 +61,7 @@ describe('Home page', () => {
       created: faker.date.recent(3, recent2).getTime(),
       kind: 'terraforming-mars',
       players: [{ id: '1789', username: 'Dams' }],
+      guests: [],
       locales: { fr: { title: 'Terraforming Mars' } }
     }
   ]

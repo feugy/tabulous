@@ -524,6 +524,7 @@ exports[`Authenticated 1`] = `
           02 août, 09:13
         </span>
          
+         
       </article>
       <!--&lt;GameLink&gt;-->
       
@@ -550,9 +551,15 @@ exports[`Authenticated 1`] = `
         </span>
          
         <span
-          class="players s-QQoQzhRq8NK6"
+          class="s-QQoQzhRq8NK6"
         >
           avec Dams, Célia
+        </span>
+         
+        <span
+          class="guests s-QQoQzhRq8NK6"
+        >
+          invités: Hugo
         </span>
       </article>
       <!--&lt;GameLink&gt;-->

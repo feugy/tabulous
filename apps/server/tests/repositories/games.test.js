@@ -16,33 +16,39 @@ describe('given a connected repository and several games', () => {
     await games.connect({ url: redisUrl })
     models = [
       {
-        id: faker.datatype.uuid(),
+        id: 'model-0',
         playerIds: [playerId1],
+        guestIds: [],
         created: Date.now()
       },
       {
-        id: faker.datatype.uuid(),
+        id: 'model-1',
         playerIds: [playerId2],
+        guestIds: [playerId3],
         created: Date.now()
       },
       {
-        id: faker.datatype.uuid(),
-        playerIds: [playerId2, playerId1],
+        id: 'model-2',
+        playerIds: [],
+        guestIds: [playerId2, playerId1],
         created: Date.now()
       },
       {
-        id: faker.datatype.uuid(),
+        id: 'model-3',
         playerIds: [playerId1, playerId2],
+        guestIds: [],
         created: Date.now()
       },
       {
-        id: faker.datatype.uuid(),
+        id: 'model-4',
         playerIds: [playerId2],
+        guestIds: [],
         created: Date.now()
       },
       {
-        id: faker.datatype.uuid(),
+        id: 'model-5',
         playerIds: [playerId2],
+        guestIds: [],
         created: Date.now(),
         // other fields,
         kind: 'draughts',
@@ -73,14 +79,15 @@ describe('given a connected repository and several games', () => {
 
       it('hydrates arrays', async () => {
         expect(await games.getById(models[1].id)).toMatchObject({
-          playerIds: [playerId2]
+          playerIds: [playerId2],
+          guestIds: [playerId3]
         })
       })
 
       it('hydrates multiple properties', async () => {
         expect(await games.getById(models[2].id)).toMatchObject({
           created: models[2].created,
-          playerIds: [playerId2, playerId1]
+          guestIds: [playerId2, playerId1]
         })
       })
 
@@ -130,7 +137,7 @@ describe('given a connected repository and several games', () => {
           ])
         )
         expect(await games.listByPlayerId(playerId3)).toEqual(
-          sortResults([models[0]])
+          sortResults([models[0], models[1]])
         )
       })
 
@@ -138,26 +145,34 @@ describe('given a connected repository and several games', () => {
         expect(await games.listByPlayerId(playerId1)).toEqual(
           sortResults([models[0], models[2], models[3]])
         )
-        const [model1] = await games.save([
+        const [added1, added2] = await games.save([
           {
-            id: faker.datatype.uuid(),
-            playerIds: [playerId1, playerId3],
+            id: 'added-1',
+            playerIds: [playerId1],
+            guestIds: [playerId3],
             created: Date.now(),
             kind: 'draughts'
           },
           {
-            id: faker.datatype.uuid(),
+            id: 'added-2',
             playerIds: [playerId3],
+            guestIds: [],
             created: Date.now(),
             kind: 'klondike'
           }
         ])
         expect(await games.listByPlayerId(playerId1)).toEqual(
-          sortResults([models[0], models[2], models[3], model1])
+          sortResults([models[0], models[2], models[3], added1])
         )
-        await games.deleteById([models[0].id, model1.id])
+        expect(await games.listByPlayerId(playerId3)).toEqual(
+          sortResults([models[1], added1, added2])
+        )
+        await games.deleteById([models[0].id, added1.id, added2.id])
         expect(await games.listByPlayerId(playerId1)).toEqual(
           sortResults([models[2], models[3]])
+        )
+        expect(await games.listByPlayerId(playerId3)).toEqual(
+          sortResults([models[1]])
         )
       })
     })

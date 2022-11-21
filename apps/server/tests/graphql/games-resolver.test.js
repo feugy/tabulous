@@ -29,9 +29,14 @@ describe('given a started server', () => {
   let ws
   let restoreServices
   const players = [
-    { id: faker.datatype.uuid(), username: faker.name.firstName() },
-    { id: faker.datatype.uuid(), username: faker.name.firstName() },
-    { id: faker.datatype.uuid(), username: faker.name.firstName() }
+    { id: 'player-0', username: faker.name.firstName() },
+    { id: 'player-1', username: faker.name.firstName() },
+    { id: 'player-2', username: faker.name.firstName() }
+  ]
+  const guests = [
+    { id: 'guest-0', username: faker.name.firstName() },
+    { id: 'guest-1', username: faker.name.firstName() },
+    { id: 'guest-2', username: faker.name.firstName() }
   ]
   const configuration = {
     auth: { jwt: { key: faker.datatype.uuid() } }
@@ -83,11 +88,13 @@ describe('given a started server', () => {
           id: faker.datatype.uuid(),
           kind: 'tarot',
           created: faker.date.past().getTime(),
-          playerIds: players.map(({ id }) => id)
+          playerIds: players.map(({ id }) => id),
+          guestIds: guests.map(({ id }) => id)
         }
         services.getPlayerById
           .mockResolvedValueOnce(players[0])
           .mockResolvedValueOnce(players)
+          .mockResolvedValueOnce(guests)
         services.loadGame.mockResolvedValueOnce(game)
 
         const response = await server.inject({
@@ -109,13 +116,25 @@ describe('given a started server', () => {
       id
       username
     }
+    guests {
+      id
+      username
+    }
   }
 }`
           }
         })
 
         expect(response.json()).toEqual({
-          data: { loadGame: { ...game, playerIds: undefined, players } }
+          data: {
+            loadGame: {
+              ...game,
+              playerIds: undefined,
+              players,
+              guestIds: undefined,
+              guests
+            }
+          }
         })
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).toHaveBeenNthCalledWith(1, playerId)
@@ -123,7 +142,8 @@ describe('given a started server', () => {
           2,
           game.playerIds
         )
-        expect(services.getPlayerById).toHaveBeenCalledTimes(2)
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(3, game.guestIds)
+        expect(services.getPlayerById).toHaveBeenCalledTimes(3)
         expect(services.loadGame).toHaveBeenCalledWith(game.id, playerId)
         expect(services.loadGame).toHaveBeenCalledTimes(1)
       })
