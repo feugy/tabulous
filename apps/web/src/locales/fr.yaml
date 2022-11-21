@@ -58,6 +58,7 @@ labels:
   oauth-provider: Vous avez relié ce compte à votre adresse "{email}"
   old-enough: Je déclare avoir plus de 15 ans ou être autorisé(e) par l’un de mes parents
   peer-players: avec {names}
+  peer-guests: 'invités: {names}'
   player-joined: '{player.username} a rejoint la partie !'
   player-left: '{player.username} a quitté la partie'
   terms-accepted: J'ai lu et accepté les Conditions Générales d'Utilisation

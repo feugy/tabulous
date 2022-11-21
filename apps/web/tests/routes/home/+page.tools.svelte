@@ -85,6 +85,7 @@
         player,
         { id: '8850', username: 'Célia', playing: false }
       ],
+      guests: [{ id: '3432', username: 'Hugo', playing: false }],
       locales: { fr: { title: '6 qui prend !' } }
     },
     {
@@ -92,6 +93,7 @@
       created: 1659424383964,
       kind: '32-cards',
       players: [player],
+      guests: [],
       locales: { fr: { title: 'Jeu de 32 cartes' } }
     }
   ]

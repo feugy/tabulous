@@ -10,10 +10,14 @@
 
   const dispatch = createEventDispatcher()
   const owned = game.players[0]?.id === playerId
-  $: isSingle = game.players.length === 1
-  $: peerNames = game.players
-    .filter(player => player && player.id !== playerId)
-    .map(({ username }) => username)
+  $: peerNames = extractNames(game.players)
+  $: guestNames = extractNames(game.guests)
+
+  function extractNames(array) {
+    return array
+      .filter(player => player && player.id !== playerId)
+      .map(({ username }) => username)
+  }
 
   function handleDelete(event) {
     dispatch('delete', game)
@@ -43,9 +47,12 @@
       />{/if}
   </span>
   <span class="created">{$_('{ created, date, short-date }', game)}</span>
-  {#if !isSingle}
-    <span class="players"
-      >{$_('labels.peer-players', { names: peerNames.join(', ') })}</span
+  {#if peerNames.length}
+    <span>{$_('labels.peer-players', { names: peerNames.join(', ') })}</span>
+  {/if}
+  {#if guestNames.length}
+    <span class="guests"
+      >{$_('labels.peer-guests', { names: guestNames.join(', ') })}</span
     >
   {/if}
 </article>
@@ -62,6 +69,10 @@
 
   .title {
     @apply inline-flex flex-nowrap items-center gap-4 mb-2;
+  }
+
+  .guests {
+    @apply text-$primary;
   }
 
   h3 {
