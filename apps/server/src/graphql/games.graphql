@@ -326,13 +326,27 @@ input HandInput {
   meshes: [MeshInput]!
 }
 
+type GameParameters {
+  schemaString: String!
+  error: String
+  id: ID!
+  kind: String!
+  locales: ItemLocales!
+  players: [Player]!
+  guests: [Player]!
+  preferences: [PlayerPreference]
+  rulesBookPageCount: Int
+}
+
+union GameOrParameters = Game | GameParameters
+
 extend type Query {
   listGames: [Game]
-  loadGame(gameId: ID!): Game
 }
 
 extend type Mutation {
   createGame(kind: String!): Game
+  joinGame(gameId: ID!, parameters: String): GameOrParameters
   saveGame(game: GameInput!): Game
   deleteGame(gameId: ID!): Game
   invite(gameId: ID!, playerId: ID!): Game

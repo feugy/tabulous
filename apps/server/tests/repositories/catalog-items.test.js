@@ -19,6 +19,12 @@ describe('Catalog Items repository', () => {
       addPlayer: expect.any(Function),
       zoomSpec: { min: 5, max: 50 }
     },
+    {
+      name: 'draughts',
+      build: expect.any(Function),
+      addPlayer: expect.any(Function),
+      askForParameters: expect.any(Function)
+    },
     { name: 'klondike', build: expect.any(Function) },
     {
       name: 'splendor',
@@ -74,7 +80,7 @@ describe('Catalog Items repository', () => {
       describe('list()', () => {
         it('lists all items within folder', async () => {
           expect(await catalogItems.list()).toEqual({
-            total: 4,
+            total: items.length,
             from: 0,
             size: Number.POSITIVE_INFINITY,
             results: items

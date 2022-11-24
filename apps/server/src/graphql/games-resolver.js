@@ -3,35 +3,36 @@ import { filter } from 'rxjs/operators'
 import services from '../services/index.js'
 import { isAuthenticated } from './utils.js'
 
+/** @typedef {import('../services/games').Game} Game */
+/** @typedef {import('../services/games').GameParameters} GameParameters */
+
+function buildPlayerLoader(name) {
+  return {
+    async loader(queries) {
+      return Promise.all(
+        queries.map(
+          ({ obj }) =>
+            obj[`${name}s`] ?? services.getPlayerById(obj[`${name}Ids`])
+        )
+      )
+    },
+    // disable cache since playing statuses are volatile
+    opts: { cache: false }
+  }
+}
+
 export default {
   loaders: {
     /**
      * Loads player and guest details on the fly.
-     * Disable cache since playing statuses are volatile
      */
     Game: {
-      players: {
-        async loader(queries) {
-          return Promise.all(
-            queries.map(
-              ({ obj: { playerIds, players } }) =>
-                players ?? services.getPlayerById(playerIds)
-            )
-          )
-        },
-        opts: { cache: false }
-      },
-      guests: {
-        async loader(queries) {
-          return Promise.all(
-            queries.map(
-              ({ obj: { guestIds, guests } }) =>
-                guests ?? services.getPlayerById(guestIds)
-            )
-          )
-        },
-        opts: { cache: false }
-      }
+      players: buildPlayerLoader('player'),
+      guests: buildPlayerLoader('guest')
+    },
+    GameParameters: {
+      players: buildPlayerLoader('player'),
+      guests: buildPlayerLoader('guest')
     }
   },
 
@@ -42,23 +43,10 @@ export default {
      * @param {object} obj - graphQL object.
      * @param {object} args - subscription arguments.
      * @param {object} context - graphQL context.
-     * @returns {Promise<import('../services/games').Game[]>} list of current games.
+     * @returns {Promise<Game[]>} list of current games.
      */
     listGames: isAuthenticated(async (obj, args, { player }) =>
       services.listGames(player.id)
-    ),
-
-    /**
-     * Returns details for a current player's game.
-     * Requires valid authentication.
-     * @param {object} obj - graphQL object.
-     * @param {object} args - query arguments, including:
-     * @param {string} args.gameId - game's id.
-     * @param {object} context - graphQL context.
-     * @returns {Promise<import('../services/games').Game|null>} loaded game details, or null.
-     */
-    loadGame: isAuthenticated((obj, { gameId }, { player }) =>
-      services.loadGame(gameId, player.id)
     )
   },
 
@@ -70,10 +58,37 @@ export default {
      * @param {object} args - mutation arguments, including:
      * @param {string} args.kind - created game kind.
      * @param {object} context - graphQL context.
-     * @returns {Promise<import('../services/games').Game|null>} created game details, or null.
+     * @returns {Promise<String|null>} created game details, or null.
      */
     createGame: isAuthenticated((obj, { kind }, { player }) =>
-      services.createGame(kind, player.id)
+      services.createGame(kind, player)
+    ),
+
+    /**
+     * Joins a game, potentially with parameters (for guests).
+     * May returns other parameters if provided values disn't suffice, or the actual game content.
+     * Requires valid authentication.
+     * @param {object} obj - graphQL object.
+     * @param {object} args - mutation arguments, including:
+     * @param {string} args.gameId - game's id.
+     * @param {string} args.parameters - player's provided parameters
+     * @param {object} context - graphQL context.
+     * @returns {Promise<Game|GameParameters|null>} joined game in case of success, new required parameters, or null.
+     */
+    joinGame: isAuthenticated(
+      (obj, { gameId, parameters: paramString }, { player }) => {
+        let parameters = null
+        if (paramString) {
+          try {
+            parameters = JSON.parse(paramString)
+          } catch (err) {
+            throw new Error(
+              `Failed to parse provided parameters: ${err.message}`
+            )
+          }
+        }
+        return services.joinGame(gameId, player, parameters)
+      }
     ),
 
     /**
@@ -83,7 +98,7 @@ export default {
      * @param {object} args - mutation arguments, including:
      * @param {import('./games.graphql').GameInput} args.game - partial game update.
      * @param {object} context - graphQL context.
-     * @returns {Promise<import('../services/games').Game|null>} created game details, or null.
+     * @returns {Promise<Game|null>} created game details, or null.
      */
     saveGame: isAuthenticated((obj, { game }, { player }) =>
       services.saveGame(game, player.id)
@@ -96,7 +111,7 @@ export default {
      * @param {object} args - mutation arguments, including:
      * @param {string} args.gameId - game's id.
      * @param {object} context - graphQL context.
-     * @returns {Promise<import('../services/games').Game|null>} deleted game details, or null.
+     * @returns {Promise<Game|null>} deleted game details, or null.
      */
     deleteGame: isAuthenticated((obj, { gameId }, { player }) =>
       services.deleteGame(gameId, player.id)
@@ -108,12 +123,12 @@ export default {
      * @param {object} obj - graphQL object.
      * @param {object} args - mutation arguments, including:
      * @param {string} args.gameId - game's id.
-     * @param {string} args.playerId - invited player id
+     * @param {string} args.playerId - guest player id
      * @param {object} context - graphQL context.
-     * @returns {Promise<import('../services/games').Game|null>} saved game details, or null.
+     * @returns {Promise<Game|null>} saved game details, or null.
      */
-    invite: isAuthenticated((obj, { gameId, playerId }, { player }) =>
-      services.invite(gameId, playerId, player.id)
+    invite: isAuthenticated((obj, { gameId, playerId: guestId }, { player }) =>
+      services.invite(gameId, guestId, player.id)
     )
   },
 
@@ -166,5 +181,16 @@ export default {
         }
       )
     }
+  },
+
+  GameOrParameters: {
+    // distinguishes returned Game from GameParameters
+    resolveType(obj) {
+      return obj?.schema ? 'GameParameters' : 'Game'
+    }
+  },
+
+  GameParameters: {
+    schemaString: obj => JSON.stringify(obj.schema)
   }
 }
