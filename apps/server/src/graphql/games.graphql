@@ -6,7 +6,6 @@ type Game {
   locales: ItemLocales!
   created: Float!
   players: [Player]!
-  guests: [Player]!
   meshes: [Mesh]!
   messages: [Message]
   cameras: [CameraPosition]
@@ -333,7 +332,6 @@ type GameParameters {
   kind: String!
   locales: ItemLocales!
   players: [Player]!
-  guests: [Player]!
   preferences: [PlayerPreference]
   rulesBookPageCount: Int
 }

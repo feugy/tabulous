@@ -41,10 +41,11 @@ class GameRepository extends AbstractRepository {
    * @param {AbstractRepository.SaveModelContext} context - contextual information.
    */
   _saveModel({ transaction, model, key }) {
-    const { id, created, playerIds, guestIds, ...otherFields } = model
+    const { id, created, playerIds, guestIds, ownerId, ...otherFields } = model
     transaction.hset(key, {
       id,
       created,
+      ownerId,
       playerIds,
       guestIds,
       otherFields: JSON.stringify(otherFields)

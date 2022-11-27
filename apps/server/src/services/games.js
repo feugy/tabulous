@@ -203,6 +203,7 @@ export async function createGame(kind, player) {
     ...gameProps,
     kind,
     created: Date.now(),
+    ownerId: player.id,
     playerIds: [],
     guestIds: [player.id],
     availableSeats: maxSeats ?? 2,
@@ -254,7 +255,7 @@ export async function deleteGame(gameId, playerId) {
  */
 export async function joinGame(gameId, player, parameters) {
   let game = await repositories.games.getById(gameId)
-  if (isOwner(game, player.id)) {
+  if (isPlayer(game, player.id)) {
     return game
   }
   if (!isGuest(game, player?.id)) {
@@ -297,6 +298,10 @@ export async function joinGame(gameId, player, parameters) {
 }
 
 function isOwner(game, playerId) {
+  return game?.ownerId === playerId
+}
+
+function isPlayer(game, playerId) {
   return game?.playerIds.includes(playerId)
 }
 
@@ -331,7 +336,7 @@ function validateParameters(schema, parameters) {
  */
 export async function saveGame(game, playerId) {
   const previous = await repositories.games.getById(game?.id)
-  if (!isOwner(previous, playerId)) {
+  if (!isPlayer(previous, playerId)) {
     return null
   }
   return repositories.games.save({
@@ -360,7 +365,7 @@ export async function invite(gameId, guestId, hostId) {
   const guest = await repositories.players.getById(guestId)
   const game = await repositories.games.getById(gameId)
   if (
-    !isOwner(game, hostId) ||
+    !isPlayer(game, hostId) ||
     !guest ||
     [...game.playerIds, ...game.guestIds].includes(guest.id)
   ) {

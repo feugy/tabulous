@@ -17,36 +17,42 @@ describe('given a connected repository and several games', () => {
     models = [
       {
         id: 'model-0',
+        ownerId: playerId1,
         playerIds: [playerId1],
         guestIds: [],
         created: Date.now()
       },
       {
         id: 'model-1',
+        ownerId: playerId2,
         playerIds: [playerId2],
         guestIds: [playerId3],
         created: Date.now()
       },
       {
         id: 'model-2',
+        ownerId: playerId2,
         playerIds: [],
         guestIds: [playerId2, playerId1],
         created: Date.now()
       },
       {
         id: 'model-3',
+        ownerId: playerId1,
         playerIds: [playerId1, playerId2],
         guestIds: [],
         created: Date.now()
       },
       {
         id: 'model-4',
+        ownerId: playerId2,
         playerIds: [playerId2],
         guestIds: [],
         created: Date.now()
       },
       {
         id: 'model-5',
+        ownerId: playerId2,
         playerIds: [playerId2],
         guestIds: [],
         created: Date.now(),
@@ -148,6 +154,7 @@ describe('given a connected repository and several games', () => {
         const [added1, added2] = await games.save([
           {
             id: 'added-1',
+            ownerId: playerId1,
             playerIds: [playerId1],
             guestIds: [playerId3],
             created: Date.now(),
@@ -155,6 +162,7 @@ describe('given a connected repository and several games', () => {
           },
           {
             id: 'added-2',
+            ownerId: playerId3,
             playerIds: [playerId3],
             guestIds: [],
             created: Date.now(),

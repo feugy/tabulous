@@ -88,13 +88,13 @@ describe('given a started server', () => {
           id: faker.datatype.uuid(),
           kind: 'tarot',
           created: faker.date.past().getTime(),
+          ownerId: player.id,
           playerIds: players.map(({ id }) => id),
           guestIds: guests.map(({ id }) => id)
         }
         services.getPlayerById
           .mockResolvedValueOnce(player)
-          .mockResolvedValueOnce(players)
-          .mockResolvedValueOnce(guests)
+          .mockResolvedValueOnce(players.concat(guests))
         services.joinGame.mockResolvedValueOnce(game)
 
         const response = await server.inject({
@@ -116,10 +116,8 @@ describe('given a started server', () => {
       players {
         id
         username
-      }
-      guests {
-        id
-        username
+        isGuest
+        isOwner
       }
     } ... on GameParameters { 
       id 
@@ -133,10 +131,14 @@ describe('given a started server', () => {
           data: {
             joinGame: {
               ...game,
+              ownerId: undefined,
               playerIds: undefined,
-              players,
               guestIds: undefined,
-              guests
+              players: [...players, ...guests].map(obj => ({
+                ...obj,
+                isGuest: guests.includes(obj),
+                isOwner: obj === player
+              }))
             }
           }
         })
@@ -144,10 +146,9 @@ describe('given a started server', () => {
         expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
         expect(services.getPlayerById).toHaveBeenNthCalledWith(
           2,
-          game.playerIds
+          game.playerIds.concat(game.guestIds)
         )
-        expect(services.getPlayerById).toHaveBeenNthCalledWith(3, game.guestIds)
-        expect(services.getPlayerById).toHaveBeenCalledTimes(3)
+        expect(services.getPlayerById).toHaveBeenCalledTimes(2)
         expect(services.joinGame).toHaveBeenCalledWith(game.id, player, null)
         expect(services.joinGame).toHaveBeenCalledTimes(1)
       })
@@ -157,14 +158,14 @@ describe('given a started server', () => {
         const gameParameters = {
           id: faker.datatype.uuid(),
           schema: {},
+          ownerId: player.id,
           playerIds: players.map(({ id }) => id),
           guestIds: guests.map(({ id }) => id)
         }
         const value = faker.lorem.words()
         services.getPlayerById
           .mockResolvedValueOnce(player)
-          .mockResolvedValueOnce(players)
-          .mockResolvedValueOnce(guests)
+          .mockResolvedValueOnce(players.concat(guests))
         services.joinGame.mockResolvedValueOnce(gameParameters)
 
         const response = await server.inject({
@@ -187,10 +188,8 @@ describe('given a started server', () => {
                 players {
                   id
                   username
-                }
-                guests {
-                  id
-                  username
+                  isGuest
+                  isOwner
                 }
               } 
             } 
@@ -203,9 +202,12 @@ describe('given a started server', () => {
             joinGame: {
               id: gameParameters.id,
               playerIds: undefined,
-              players,
               guestIds: undefined,
-              guests
+              players: [...players, ...guests].map(obj => ({
+                ...obj,
+                isGuest: guests.includes(obj),
+                isOwner: obj === player
+              }))
             }
           }
         })
@@ -213,13 +215,9 @@ describe('given a started server', () => {
         expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
         expect(services.getPlayerById).toHaveBeenNthCalledWith(
           2,
-          gameParameters.playerIds
+          gameParameters.playerIds.concat(gameParameters.guestIds)
         )
-        expect(services.getPlayerById).toHaveBeenNthCalledWith(
-          3,
-          gameParameters.guestIds
-        )
-        expect(services.getPlayerById).toHaveBeenCalledTimes(3)
+        expect(services.getPlayerById).toHaveBeenCalledTimes(2)
         expect(services.joinGame).toHaveBeenCalledWith(
           gameParameters.id,
           player,
@@ -282,17 +280,23 @@ describe('given a started server', () => {
           {
             id: faker.datatype.uuid(),
             created: faker.date.past().getTime(),
-            playerIds: [playerId]
+            ownerId: playerId,
+            playerIds: [playerId],
+            guestIds: []
           },
           {
             id: faker.datatype.uuid(),
             created: faker.date.past().getTime(),
-            playerIds: [playerId, players[1].id]
+            ownerId: playerId,
+            playerIds: [players[1].id],
+            guestIds: [playerId]
           },
           {
             id: faker.datatype.uuid(),
             created: faker.date.past().getTime(),
-            playerIds: [playerId, players[2].id]
+            ownerId: playerId,
+            playerIds: [playerId, players[2].id],
+            guestIds: []
           }
         ]
         services.getPlayerById.mockImplementation(async ids =>
@@ -312,23 +316,39 @@ describe('given a started server', () => {
             )}`
           },
           payload: {
-            query: `{ listGames { id created players { id username } } }`
+            query: `{ listGames { id created players { id username isOwner isGuest } } }`
           }
         })
 
         expect(response.json()).toEqual({
           data: {
             listGames: [
-              { ...games[0], playerIds: undefined, players: [players[0]] },
+              {
+                ...games[0],
+                playerIds: undefined,
+                guestIds: undefined,
+                ownerId: undefined,
+                players: [{ ...players[0], isGuest: false, isOwner: true }]
+              },
               {
                 ...games[1],
                 playerIds: undefined,
-                players: [players[0], players[1]]
+                guestIds: undefined,
+                ownerId: undefined,
+                players: [
+                  { ...players[0], isGuest: true, isOwner: true },
+                  { ...players[1], isGuest: false, isOwner: false }
+                ]
               },
               {
                 ...games[2],
                 playerIds: undefined,
-                players: [players[0], players[2]]
+                guestIds: undefined,
+                ownerId: undefined,
+                players: [
+                  { ...players[0], isGuest: false, isOwner: true },
+                  { ...players[2], isGuest: false, isOwner: false }
+                ]
               }
             ]
           }
@@ -341,10 +361,10 @@ describe('given a started server', () => {
           2,
           games[0].playerIds
         )
-        expect(services.getPlayerById).toHaveBeenNthCalledWith(
-          3,
-          games[1].playerIds
-        )
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(3, [
+          ...games[1].playerIds,
+          ...games[1].guestIds
+        ])
         expect(services.getPlayerById).toHaveBeenNthCalledWith(
           4,
           games[2].playerIds
@@ -377,7 +397,8 @@ describe('given a started server', () => {
           id: faker.datatype.uuid(),
           kind,
           created: Date.now(),
-          playerIds: [playerId]
+          playerIds: [playerId],
+          guestIds: []
         }
         services.getPlayerById
           .mockResolvedValueOnce(players[0])
@@ -410,7 +431,12 @@ describe('given a started server', () => {
 
         expect(response.json()).toEqual({
           data: {
-            createGame: { ...game, playerIds: undefined, players: [players[0]] }
+            createGame: {
+              ...game,
+              guestIds: undefined,
+              playerIds: undefined,
+              players: [players[0]]
+            }
           }
         })
         expect(response.statusCode).toEqual(200)
@@ -457,6 +483,7 @@ describe('given a started server', () => {
           kind,
           created: faker.date.past().getTime(),
           playerIds: players.map(({ id }) => id),
+          guestIds: [],
           messages
         }
         services.getPlayerById
@@ -495,7 +522,12 @@ describe('given a started server', () => {
 
         expect(response.json()).toEqual({
           data: {
-            saveGame: { ...game, playerIds: undefined, players }
+            saveGame: {
+              ...game,
+              playerIds: undefined,
+              guestIds: undefined,
+              players
+            }
           }
         })
         expect(response.statusCode).toEqual(200)
@@ -537,7 +569,8 @@ describe('given a started server', () => {
           id: faker.datatype.uuid(),
           kind: 'belote',
           created: faker.date.past().getTime(),
-          playerIds: [playerId, peerId]
+          playerIds: [playerId, peerId],
+          guestIds: []
         }
         services.getPlayerById
           .mockResolvedValueOnce(players[0])
@@ -573,6 +606,7 @@ describe('given a started server', () => {
             invite: {
               ...game,
               playerIds: undefined,
+              guestIds: undefined,
               players: players.slice(0, 2)
             }
           }
@@ -612,7 +646,8 @@ describe('given a started server', () => {
           id: faker.datatype.uuid(),
           kind: 'coinche',
           created: faker.date.past().getTime(),
-          playerIds: players.map(({ id }) => id)
+          playerIds: players.map(({ id }) => id),
+          guestIds: []
         }
         services.getPlayerById
           .mockResolvedValueOnce(players[0])
@@ -644,7 +679,14 @@ describe('given a started server', () => {
         })
 
         expect(response.json()).toEqual({
-          data: { deleteGame: { ...game, playerIds: undefined, players } }
+          data: {
+            deleteGame: {
+              ...game,
+              playerIds: undefined,
+              guestIds: undefined,
+              players
+            }
+          }
         })
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).toHaveBeenNthCalledWith(1, playerId)
@@ -663,7 +705,8 @@ describe('given a started server', () => {
       const game = {
         id: faker.datatype.uuid(),
         created: Date.now(),
-        playerIds: [playerId]
+        playerIds: [playerId],
+        guestIds: []
       }
 
       beforeEach(() => {
@@ -690,7 +733,12 @@ describe('given a started server', () => {
             payload: {
               data: {
                 receiveGameListUpdates: [
-                  { ...game, playerIds: undefined, players: [players[0]] }
+                  {
+                    ...game,
+                    playerIds: undefined,
+                    guestIds: undefined,
+                    players: [players[0]]
+                  }
                 ]
               }
             }
@@ -731,17 +779,20 @@ describe('given a started server', () => {
         {
           id: faker.datatype.uuid(),
           created: faker.date.past().getTime(),
-          playerIds: [playerId]
+          playerIds: [playerId],
+          guestIds: []
         },
         {
           id: faker.datatype.uuid(),
           created: faker.date.past().getTime(),
-          playerIds: [playerId, players[1].id]
+          playerIds: [playerId, players[1].id],
+          guestIds: []
         },
         {
           id: faker.datatype.uuid(),
           created: faker.date.past().getTime(),
-          playerIds: [players[1].id, players[2].id]
+          playerIds: [players[1].id, players[2].id],
+          guestIds: []
         }
       ]
 
@@ -776,6 +827,7 @@ describe('given a started server', () => {
                 receiveGameUpdates: {
                   ...games[0],
                   playerIds: undefined,
+                  guestIds: undefined,
                   players: players.slice(0, 1)
                 }
               }

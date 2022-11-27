@@ -6,13 +6,22 @@ import { isAuthenticated } from './utils.js'
 /** @typedef {import('../services/games').Game} Game */
 /** @typedef {import('../services/games').GameParameters} GameParameters */
 
-function buildPlayerLoader(name) {
+function buildPlayerLoader() {
   return {
     async loader(queries) {
       return Promise.all(
         queries.map(
           ({ obj }) =>
-            obj[`${name}s`] ?? services.getPlayerById(obj[`${name}Ids`])
+            obj.players ??
+            services
+              .getPlayerById([...obj.playerIds, ...obj.guestIds])
+              .then(players =>
+                players.map(player => ({
+                  ...player,
+                  isGuest: obj.guestIds.includes(player.id),
+                  isOwner: obj.ownerId === player.id
+                }))
+              )
         )
       )
     },
@@ -27,12 +36,10 @@ export default {
      * Loads player and guest details on the fly.
      */
     Game: {
-      players: buildPlayerLoader('player'),
-      guests: buildPlayerLoader('guest')
+      players: buildPlayerLoader()
     },
     GameParameters: {
-      players: buildPlayerLoader('player'),
-      guests: buildPlayerLoader('guest')
+      players: buildPlayerLoader()
     }
   },
 
