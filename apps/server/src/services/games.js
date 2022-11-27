@@ -365,7 +365,7 @@ export async function invite(gameId, guestId, hostId) {
   const guest = await repositories.players.getById(guestId)
   const game = await repositories.games.getById(gameId)
   if (
-    !isPlayer(game, hostId) ||
+    (!isPlayer(game, hostId) && !isOwner(game, hostId)) ||
     !guest ||
     [...game.playerIds, ...game.guestIds].includes(guest.id)
   ) {
@@ -400,7 +400,7 @@ async function enrichWithPlayer({ descriptor, game, guest, parameters }) {
  * @returns {Promise<Game[]>} a list of games (could be empty).
  */
 export async function listGames(playerId) {
-  return repositories.games.listByPlayerId(playerId)
+  return (await repositories.games.listByPlayerId(playerId)).filter(Boolean)
 }
 
 /**

@@ -16,7 +16,7 @@ function buildPlayerLoader() {
             services
               .getPlayerById([...obj.playerIds, ...obj.guestIds])
               .then(players =>
-                players.map(player => ({
+                players.filter(Boolean).map(player => ({
                   ...player,
                   isGuest: obj.guestIds.includes(player.id),
                   isOwner: obj.ownerId === player.id

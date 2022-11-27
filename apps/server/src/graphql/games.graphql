@@ -334,6 +334,7 @@ type GameParameters {
   players: [Player]!
   preferences: [PlayerPreference]
   rulesBookPageCount: Int
+  availableSeats: Int
 }
 
 union GameOrParameters = Game | GameParameters
