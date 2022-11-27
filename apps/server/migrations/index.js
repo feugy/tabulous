@@ -49,8 +49,9 @@ async function main() {
     next <= Math.min(desired, available.length);
     next++
   ) {
-    await applyMigration(available[next - 1])
-    incremented.push(next - 1)
+    const rank = next - 1
+    await applyMigration(available[rank])
+    incremented.push(available[rank])
   }
   console.log('[migration] all available migrations applied')
   if (incremented.length) {
@@ -69,23 +70,11 @@ async function initRepositories(url) {
 }
 
 async function readAppliedVersions(redis) {
-  const pairs = await redis.zrange(versionKey, 0, -1, 'WITHSCORES')
-  return pairs.reduce((versions, value, rank) => {
-    if (rank % 0) {
-      versions._tmp = value
-    } else {
-      versions[value] = versions._tmp
-      versions._tmp = undefined
-    }
-    return versions
-  }, [])
+  return redis.smembers(versionKey)
 }
 
 async function updateAppliedVersions(redis, incremented) {
-  await redis.zadd(
-    versionKey,
-    ...incremented.flatMap(version => [version, 'ok'])
-  )
+  await redis.sadd(versionKey, incremented)
 }
 
 async function readAvailableVersions(folder) {
