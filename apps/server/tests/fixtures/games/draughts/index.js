@@ -6,25 +6,22 @@ export function build() {
   }
 }
 
-export function askForParameters({ game }) {
-  if (game.playerIds.length === 0) {
-    return {
-      properties: {
-        side: {
-          enum: ['white', 'black'],
-          metadata: {
-            locales: {
-              fr: {
-                name: 'Couleur',
-                side: { white: 'Blancs', black: 'Noirs' }
-              }
-            }
-          }
+export function askForParameters({ game: { preferences } }) {
+  const usedValues = preferences.map(({ side }) => side)
+  return {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      side: {
+        type: 'string',
+        enum: ['white', 'black'].filter(value => !usedValues.includes(value)),
+        metadata: {
+          fr: { name: 'Couleur', white: 'Blancs', black: 'Noirs' }
         }
       }
-    }
+    },
+    required: ['side']
   }
-  return null
 }
 
 export function addPlayer(game, player, parameters) {

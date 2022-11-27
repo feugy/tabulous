@@ -1,4 +1,4 @@
-import Ajv from 'ajv/dist/jtd.js'
+import Ajv from 'ajv/dist/2020.js'
 import { concatMap, mergeMap, Subject } from 'rxjs'
 
 import repositories from '../repositories/index.js'
@@ -321,7 +321,9 @@ async function getParameterSchema({ descriptor, game, player }) {
 function validateParameters(schema, parameters) {
   if (schema && !ajv.validate(schema, parameters)) {
     return ajv.errors
-      .map(({ instancePath, message }) => `${instancePath} ${message}`)
+      .map(({ instancePath, message }) =>
+        [instancePath, message].filter(Boolean).join(' ')
+      )
       .join('\n')
   }
 }

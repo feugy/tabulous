@@ -605,16 +605,15 @@ describe('given a subscription to game lists and an initialized repository', () 
 
   describe('given a created game with parameters', () => {
     const schema = {
+      type: 'object',
+      additionalProperties: false,
+      required: ['side'],
       properties: {
         side: {
+          type: 'string',
           enum: ['white', 'black'],
           metadata: {
-            locales: {
-              fr: {
-                name: 'Couleur',
-                side: { white: 'Blancs', black: 'Noirs' }
-              }
-            }
+            fr: { name: 'Couleur', white: 'Blancs', black: 'Noirs' }
           }
         }
       }
@@ -633,7 +632,7 @@ describe('given a subscription to game lists and an initialized repository', () 
       updates.splice(0)
     })
 
-    describe('joinGame()', () => {
+    describe.only('joinGame()', () => {
       it('returns game parameters', async () => {
         expect(await joinGame(game.id, player)).toEqual({ schema, ...game })
       })
@@ -644,7 +643,7 @@ describe('given a subscription to game lists and an initialized repository', () 
         ).toEqual({
           schema,
           error:
-            '/side must be equal to one of the allowed values\n/foo must NOT have additional properties',
+            'must NOT have additional properties\n/side must be equal to one of the allowed values',
           ...game
         })
       })
