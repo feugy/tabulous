@@ -1,5 +1,6 @@
 <script>
   import { Dropdown } from '@src/components'
+  import { gameAssetsUrl } from '@src/utils'
   import { _, locale } from 'svelte-intl'
 
   export let name
@@ -8,7 +9,8 @@
 
   $: options = property?.enum?.map(value => ({
     value,
-    label: translate(value) ?? value
+    label: translate(value) ?? value,
+    image: property.metadata?.images?.[value]
   }))
 
   $: if (!value) {
@@ -20,13 +22,26 @@
   }
 </script>
 
-<fieldset on:click|preventDefault on:keyup|preventDefault>
-  <label for={name}>{translate('name')}{$_('labels.colon')}</label>
+<label for={name}>{translate('name')}{$_('labels.colon')}</label>
+<span on:click|preventDefault on:keyup|preventDefault>
   <Dropdown id={name} {options} bind:value />
-</fieldset>
+  {#if value?.image}
+    <img src="{gameAssetsUrl}{value.image}" alt="" />
+  {/if}
+</span>
 
 <style lang="postcss">
   label {
-    @apply mr-4;
+    @apply leading-[2.5] text-right;
+  }
+
+  span {
+    @apply flex items-start;
+  }
+
+  img {
+    @apply inline-block ml-4;
+    max-width: 33vw;
+    max-height: 50vh;
   }
 </style>

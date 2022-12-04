@@ -38,19 +38,24 @@
             enum: ['black', 'white'],
             metadata: {
               fr: {
-                name: 'Couleur',
-                white: 'Blancs',
-                black: 'Noirs'
+                name: 'Couleur'
               }
             }
           },
           position: {
-            enum: ['top', 'left', 'right', 'bottom'],
+            enum: ['clubs', 'diamonds', 'spades', 'hearts'],
             metadata: {
               fr: {
-                name: 'Position',
-                top: 'Haut',
-                left: 'Gauche'
+                name: 'Suite',
+                clubs: 'Trèfle',
+                diamonds: 'Carreau',
+                spades: 'Pique',
+                hearts: 'Coeur'
+              },
+              images: {
+                clubs: '/french-suited-card/images/clubs-1.svg',
+                spades: '/french-suited-card/images/spades-1.svg',
+                hearts: '/french-suited-card/images/hearts-1.svg'
               }
             }
           }

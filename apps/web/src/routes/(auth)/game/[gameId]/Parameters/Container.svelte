@@ -2,7 +2,7 @@
   import { Button, Pane } from '@src/components'
   import { createEventDispatcher } from 'svelte'
   import { _ } from 'svelte-intl'
-  
+
   import Choice from './Choice.svelte'
 
   export let schema = {}
@@ -43,7 +43,7 @@
   }
 
   section {
-    @apply min-w-min whitespace-nowrap flex flex-col gap-4 my-8;
+    @apply min-w-min gap-4 my-8 grid grid-cols-[1fr,auto];
   }
 
   div {
