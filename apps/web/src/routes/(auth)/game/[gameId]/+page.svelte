@@ -12,7 +12,7 @@
     highlightHand,
     initEngine,
     initIndicators,
-    loadGame,
+    joinGame,
     longInputs,
     meshDetails,
     playerColor,
@@ -20,6 +20,7 @@
     saveCamera,
     sendToThread,
     thread,
+    toastError,
     visibleFeedbacks,
     visibleIndicators
   } from '@src/stores'
@@ -27,6 +28,7 @@
   import { onDestroy, onMount } from 'svelte'
   import { _ } from 'svelte-intl'
 
+  import { goto } from '$app/navigation'
   import { page } from '$app/stores'
 
   import CameraSwitch from './CameraSwitch.svelte'
@@ -37,6 +39,7 @@
   import Indicators from './Indicators.svelte'
   import InvitePlayerDialogue from './InvitePlayerDialogue.svelte'
   import MeshDetails from './MeshDetails.svelte'
+  import Parameters from './Parameters'
   import RadialMenu from './RadialMenu.svelte'
 
   /** @type {import('./$types').PageData} */
@@ -48,15 +51,15 @@
   let interaction
   let hand
   let openInviteDialogue = false
-  let loadPromise
+  let joinPromise
   let dimensionObserver
   let dimensionSubscription
+  let gameParameters
 
   onMount(async () => {
     engine = initEngine({ canvas, interaction, longTapDelay, hand })
     initIndicators({ engine, canvas, hand })
-    loadPromise = loadGame($page.params.gameId, data.session)
-    loadPromise.catch(err => console.error(err))
+    askForGame()
     dimensionObserver = observeDimension(interaction, 0)
     dimensionSubscription = dimensionObserver.dimension$.subscribe(
       ({ width, height }) => {
@@ -74,8 +77,28 @@
     dimensionSubscription?.unsubscribe()
   })
 
+  function askForGame(parameters) {
+    gameParameters = null
+    joinPromise = joinGame($page.params.gameId, data.session, parameters)
+      .then(result => {
+        if (result?.schemaString) {
+          gameParameters = {
+            schema: JSON.parse(result.schemaString)
+          }
+        }
+      })
+      .catch(err => {
+        toastError({ content: err.message })
+        goto('/home')
+      })
+  }
+
   function handleCloseDetails() {
     interaction?.focus()
+  }
+
+  function handleSubmitParameters({ detail: parameters }) {
+    askForGame(parameters)
   }
 </script>
 
@@ -83,13 +106,9 @@
   <title>{$_('page-titles.game')}</title>
 </svelte:head>
 
-{#await loadPromise}
+{#await joinPromise}
   <div class="overlay">
     <Progress />
-  </div>
-{:catch error}
-  <div class="overlay">
-    {error.message ?? error}
   </div>
 {/await}
 <aside class="top">
@@ -127,6 +146,12 @@
       color={$playerColor}
       bind:node={hand}
     />
+    {#if gameParameters}
+      <Parameters
+        schema={gameParameters.schema}
+        on:submit={handleSubmitParameters}
+      />
+    {/if}
     <MeshDetails mesh={$meshDetails} on:close={handleCloseDetails} />
   </div>
   <RadialMenu {...$actionMenuProps || {}} />
@@ -145,6 +170,10 @@
   main,
   .overlay {
     @apply absolute inset-0 flex items-stretch overflow-hidden;
+  }
+
+  main {
+    container-type: inline-size;
   }
 
   .interaction {

@@ -1,0 +1,160 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Guests only 1`] = `
+<article
+  class="s-QQoQzhRq8NK6"
+  role="link"
+  tabindex="0"
+>
+  <span
+    class="title s-QQoQzhRq8NK6"
+  >
+    <h3
+      class="s-QQoQzhRq8NK6"
+    >
+      Richii Mahjong
+    </h3>
+     
+  </span>
+   
+  <span
+    class="created s-QQoQzhRq8NK6"
+  >
+    02 mai, 21:25
+  </span>
+   
+   
+  <span
+    class="guests s-QQoQzhRq8NK6"
+  >
+    invités: John, Georges
+  </span>
+</article>
+`;
+
+exports[`Invited 1`] = `
+<article
+  class="s-QQoQzhRq8NK6"
+  role="link"
+  tabindex="0"
+>
+  <span
+    class="title s-QQoQzhRq8NK6"
+  >
+    <h3
+      class="s-QQoQzhRq8NK6"
+    >
+      Richii Mahjong
+    </h3>
+     
+  </span>
+   
+  <span
+    class="created s-QQoQzhRq8NK6"
+  >
+    02 mai, 21:25
+  </span>
+   
+  <span
+    class="s-QQoQzhRq8NK6"
+  >
+    avec Chandra, Timothé
+  </span>
+   
+  <span
+    class="guests s-QQoQzhRq8NK6"
+  >
+    invités: John, Georges
+  </span>
+</article>
+`;
+
+exports[`Owned 1`] = `
+<article
+  class="s-QQoQzhRq8NK6"
+  role="link"
+  tabindex="0"
+>
+  <span
+    class="title s-QQoQzhRq8NK6"
+  >
+    <h3
+      class="s-QQoQzhRq8NK6"
+    >
+      Richii Mahjong
+    </h3>
+     
+    <button
+      class="secondary s-NMyTiX1zi6rz"
+    >
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
+      >
+        delete
+      </span>
+      
+      
+      
+    </button>
+    <!--&lt;Button&gt;-->
+  </span>
+   
+  <span
+    class="created s-QQoQzhRq8NK6"
+  >
+    02 mai, 21:25
+  </span>
+   
+  <span
+    class="s-QQoQzhRq8NK6"
+  >
+    avec Sarah, Timothé
+  </span>
+   
+  <span
+    class="guests s-QQoQzhRq8NK6"
+  >
+    invités: John, Georges
+  </span>
+</article>
+`;
+
+exports[`Single owned 1`] = `
+<article
+  class="s-QQoQzhRq8NK6"
+  role="link"
+  tabindex="0"
+>
+  <span
+    class="title s-QQoQzhRq8NK6"
+  >
+    <h3
+      class="s-QQoQzhRq8NK6"
+    >
+      Richii Mahjong
+    </h3>
+     
+    <button
+      class="secondary s-NMyTiX1zi6rz"
+    >
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
+      >
+        delete
+      </span>
+      
+      
+      
+    </button>
+    <!--&lt;Button&gt;-->
+  </span>
+   
+  <span
+    class="created s-QQoQzhRq8NK6"
+  >
+    02 mai, 21:25
+  </span>
+   
+   
+</article>
+`;

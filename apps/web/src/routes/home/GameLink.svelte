@@ -9,15 +9,13 @@
   export let playerId
 
   const dispatch = createEventDispatcher()
-  const owned = game.players[0]?.id === playerId
-  $: peerNames = extractNames(game.players)
-  $: guestNames = extractNames(game.guests)
-
-  function extractNames(array) {
-    return array
-      .filter(player => player && player.id !== playerId)
-      .map(({ username }) => username)
-  }
+  const owned = game.players.find(player => player?.isOwner)?.id === playerId
+  $: peerNames = game.players
+    .filter(player => player && !player.isGuest && player.id !== playerId)
+    .map(({ username }) => username)
+  $: guestNames = game.players
+    .filter(player => player && player.isGuest && player.id !== playerId)
+    .map(({ username }) => username)
 
   function handleDelete(event) {
     dispatch('delete', game)

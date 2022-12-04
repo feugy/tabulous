@@ -58,8 +58,8 @@
         class:iconOnly
         class="material-icons arrow"
         class:split={!openOnClick}
-        on:click|stopPropagation={handleArrowClick}
-        on:keyup|stopPropagation={handleKey}
+        on:click|stopPropagation|preventDefault={handleArrowClick}
+        on:keyup|stopPropagation|preventDefault={handleKey}
       >
         {`arrow_drop_${open ? 'up' : 'down'}`}
       </i>

@@ -8,6 +8,7 @@ _.subscribe(value => (translate = value))
 /**
  * @typedef {object} ToastInfo
  * @property {string} contentKey - i18n key used for content.
+ * @property {string} content - already translated content.
  * @property {icon} [icon] - optional icon name used.
  * @property {color} [color] - optional background color used.
  * @property {...any} [args] - other argument passed to i18n formatMessage().
@@ -30,10 +31,22 @@ export const lastToast = lastToast$.asObservable()
  * Toast an informative message to the player.
  * @param {ToastInfo} info - toasted message.
  */
-export function toastInfo({ contentKey, icon, color, ...args }) {
+export function toastInfo({ contentKey, content, icon, color, ...args }) {
   lastToast$.next({
     icon: icon ?? 'info_outline',
     color,
-    content: translate(contentKey, args)
+    content: content ?? translate(contentKey, args)
+  })
+}
+
+/**
+ * Toast an error message to the player.
+ * @param {ToastInfo} error - toasted message.
+ */
+export function toastError({ contentKey, content, icon, color, ...args }) {
+  lastToast$.next({
+    icon: icon ?? 'error_outline',
+    color: color ?? 'var(--accent-warm)',
+    content: content ?? translate(contentKey, args)
   })
 }

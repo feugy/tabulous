@@ -50,6 +50,12 @@ describe('Catalog service', () => {
       addPlayer: expect.any(Function),
       zoomSpec: { min: 5, max: 50 }
     },
+    {
+      name: 'draughts',
+      build: expect.any(Function),
+      addPlayer: expect.any(Function),
+      askForParameters: expect.any(Function)
+    },
     { name: 'klondike', build: expect.any(Function) },
     {
       name: 'splendor',
@@ -85,17 +91,17 @@ describe('Catalog service', () => {
     })
 
     it(`omits restricted games`, async () => {
-      expect(await listCatalog(players[2])).toEqual(items.slice(0, 3))
+      expect(await listCatalog(players[2])).toEqual(items.slice(0, 4))
     })
 
     it(`returns publicly-available games without player`, async () => {
-      expect(await listCatalog(null)).toEqual([items[1], items[2]])
+      expect(await listCatalog(null)).toEqual([items[1], items[2], items[3]])
     })
   })
 
   describe('grantAccess()', () => {
     it(`grants access to a given item`, async () => {
-      const gameName = items[3].name
+      const gameName = items[4].name
       const player = await repositories.players.save({
         id: faker.datatype.uuid(),
         name: faker.name.fullName(),
@@ -167,7 +173,7 @@ describe('Catalog service', () => {
 
   describe('revokeAccess()', () => {
     it(`revokes access to a given item`, async () => {
-      const gameName = items[3].name
+      const gameName = items[4].name
       const player = await repositories.players.save({
         id: faker.datatype.uuid(),
         name: faker.name.fullName(),

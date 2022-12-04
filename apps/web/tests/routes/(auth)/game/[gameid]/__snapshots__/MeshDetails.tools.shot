@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Routes/game/[gameId]/Mesh Details 1`] = `
+<figure
+  class="s-Yswckynttum3 open"
+>
+  <img
+    alt=""
+    class="s-Yswckynttum3"
+    src="http://localhost:3001/games/french-suited-card/images/hearts-12.svg"
+  />
+</figure>
+`;

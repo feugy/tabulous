@@ -91,7 +91,7 @@
 
 <style lang="postcss">
   aside {
-    @apply bg-$base-lightest;
+    @apply bg-$base-lightest z-0;
   }
 
   .content {

@@ -291,8 +291,8 @@ export class AbstractRepository {
 }
 
 /**
- * Deserializer for boolean values
- * @param {string} value - serialzied boolean.
+ * Deserializer for boolean values.
+ * @param {string} value - serialized boolean.
  * @returns {boolean} the corresponding boolean.
  */
 export function deserializeBoolean(value) {
@@ -300,15 +300,15 @@ export function deserializeBoolean(value) {
 }
 
 /**
- * Deserializer for number values
- * @param {string} value - serialzied number.
+ * Deserializer for number values.
+ * @param {string} value - serialized number.
  * @returns {number} the corresponding number.
  */
 export const deserializeNumber = parseFloat
 
 /**
- * Deserializer for array values
- * @param {string} value - serialzied array.
+ * Deserializer for array values.
+ * @param {string} value - serialized array.
  * @returns {array} the corresponding array.
  */
 export function deserializeArray(value) {

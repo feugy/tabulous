@@ -36,6 +36,10 @@ export const GamePage = mixin(
       this.inviteButton = this.inviteDialogue.locator('role=button')
       /** @type {Locator} */
       this.searchInput = this.inviteDialogue.locator('role=textbox')
+      /** @type {Locator} */
+      this.parametersDialogue = page.locator('role=dialog', {
+        has: this.page.locator(`text="${translate('titles.game-parameters')}"`)
+      })
     }
 
     /**

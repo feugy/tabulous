@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker'
 // note: we can't import the full vitest because it mockeypatches Jest symbols, which Playwright doesn't like
 import { fn } from 'vitest/dist/spy.js'
 
-import { HomePage, LoginPage } from './pages/index.js'
+import { GamePage, HomePage, LoginPage } from './pages/index.js'
 import { describe, expect, it, mockGraphQl, translate } from './utils/index.js'
 
 describe('Home page', () => {
@@ -44,16 +44,17 @@ describe('Home page', () => {
       id: faker.datatype.uuid(),
       created: recent,
       kind: 'dune-imperium',
-      players: [{ id: '1789', username: 'Dams' }, player],
-      guests: [],
+      players: [
+        { id: '1789', username: 'Dams' },
+        { ...player, isOwner: true }
+      ],
       locales: { fr: { title: 'Dune Imperium' } }
     },
     {
       id: faker.datatype.uuid(),
       created: recent2,
       kind: 'terraforming-mars',
-      players: [player],
-      guests: [],
+      players: [{ ...player, isOwner: true }],
       locales: { fr: { title: 'Terraforming Mars' } }
     },
     {
@@ -61,7 +62,6 @@ describe('Home page', () => {
       created: faker.date.recent(3, recent2).getTime(),
       kind: 'terraforming-mars',
       players: [{ id: '1789', username: 'Dams' }],
-      guests: [],
       locales: { fr: { title: 'Terraforming Mars' } }
     }
   ]
@@ -300,5 +300,40 @@ describe('Home page', () => {
 
     await homePage.acceptTerms()
     await homePage.expectAuthenticated(player.username)
+  })
+
+  it('can create a new game', async ({ page }) => {
+    const game = {
+      id: faker.datatype.uuid(),
+      kind: catalog[1].name,
+      availableSeats: 1,
+      meshes: [],
+      cameras: [],
+      hands: [],
+      players: [player]
+    }
+    const { setTokenCookie } = await mockGraphQl(page, {
+      listCatalog: [catalog],
+      listGames: [games],
+      getCurrentPlayer: {
+        token: faker.datatype.uuid(),
+        player,
+        turnCredentials: {
+          username: 'bob',
+          credentials: faker.internet.password()
+        }
+      },
+      createGame: game,
+      loadGame: game
+    })
+    await setTokenCookie()
+
+    const homePage = new HomePage(page)
+    await homePage.goTo()
+    await homePage.getStarted()
+
+    await homePage.createGame(catalog[1].locales.fr.title)
+    await expect(page).toHaveURL(`/game/${game.id}`)
+    await new GamePage(page).getStarted()
   })
 })

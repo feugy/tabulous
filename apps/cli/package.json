@@ -12,20 +12,20 @@
     "test:dev": "vitest dev"
   },
   "dependencies": {
-    "@tabulous/cli": "^0.0.1",
+    "@tabulous/cli": "workspace:^0.0.1",
     "@urql/core": "^3.0.5",
     "add": "^2.0.6",
-    "ajv": "^8.11.0",
+    "ajv": "^8.11.2",
     "arg": "^5.0.2",
     "chalk": "^5.1.2",
     "chalk-template": "^0.4.0",
     "dotenv": "^16.0.3",
     "es-main": "^1.2.0",
-    "fast-jwt": "^1.7.1",
+    "fast-jwt": "^2.0.2",
     "graphql": "^16.6.0",
     "lodash.camelcase": "^4.3.0",
     "lodash.kebabcase": "^4.1.1",
-    "undici": "^5.12.0"
+    "undici": "^5.13.0"
   },
   "devDependencies": {
     "strip-ansi": "^7.0.1"

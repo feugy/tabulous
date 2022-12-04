@@ -1,7 +1,5 @@
 # TODO
 
-collect player preferences when joining a game (requires to alter & reload game when joining rather than inviting)
-
 ## Brittle tests
 
 - tests/atelier/tools.test.js > Toolshot > components/RadialMenu.tools.svelte
@@ -104,6 +102,7 @@ AssertionError: expected 2nd "spy" call to have been called with [ 'anima' ]
 - hand support for quantifiable behavior
 - put/draw under
 - "box" space for unusued/undesired meshes
+- command to "switch place" around the table, for games like Belote
 - fullscreen and default key (F11)
 
 ## Server
@@ -363,3 +362,6 @@ It is simpler to acquire once, and return the same result to all "parallel" requ
 
 `enumerateDevice` has a limitation: when user never allowed it yet, it's returning empty labels.
 There's no good way to solve it, and it's an [ongoing discussion](https://github.com/w3c/mediacapture-main/issues/874)
+
+Game parameters need the ability to express contraints in between parameters (second parameter options depends on selected value for first parameter).
+JSON Type Definition [does not allow conditionals](https://ajv.js.org/guide/schema-language.html#json-type-definition-2), and scafolding UI component out of [Joi schema](https://joi.dev/api/?v=17.7.0#anydescribe) is too complicated, so let's use [JSON Schema](https://ajv.js.org/json-schema.html#if-then-else)

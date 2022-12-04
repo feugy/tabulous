@@ -68,7 +68,7 @@ export const HomePage = mixin(
      * Expects catalog heading visibility.
      */
     async getStarted() {
-      await setTimeout(500)
+      await this.page.waitForLoadState('networkidle')
       await expect(this.catalogHeading).toBeVisible()
     }
 
@@ -125,6 +125,18 @@ export const HomePage = mixin(
       await setTimeout(500)
       await game.locator('role=button >> text=delete').click()
       await expect(this.deleteGameDialogue).toBeVisible()
+    }
+
+    /**
+     * Creates a game by its localized title.
+     * @param {string} title - created game's title.
+     */
+    async createGame(title) {
+      await this.catalogItems
+        .filter({
+          has: this.page.locator(`text="${title}"`)
+        })
+        .click()
     }
   },
   AuthenticatedHeaderMixin,
