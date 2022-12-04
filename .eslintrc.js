@@ -5,7 +5,7 @@ module.exports = {
     es2022: true,
     node: true
   },
-  plugins: ['svelte3', 'simple-import-sort'],
+  plugins: ['svelte3', 'simple-import-sort', 'vitest'],
   overrides: [
     {
       files: ['*.svelte'],
@@ -22,6 +22,7 @@ module.exports = {
   },
   rules: {
     'simple-import-sort/imports': 'error',
-    'simple-import-sort/exports': 'error'
+    'simple-import-sort/exports': 'error',
+    'vitest/no-focused-tests': 'error'
   }
 }
