@@ -8,14 +8,15 @@ actions:
   enter-fullscreen: Plein-écran
   go-to-account: Paramètres
   hide-indicators: Masquer les indicateurs
-  invite: Inviter
   invite-player: Inviter un(e) joueur(se)
+  invite: Inviter
+  join-game: Jouer
   leave-fullscreen: Quitter le plein-écran
-  log-in: Entrer
   log-in-github: Continuer avec Github
   log-in-google: Continuer avec Google
   log-in-others: Autres options
   log-in-password: Continuer avec un mot de passe
+  log-in: Entrer
   log-out: Quitter
   new-game: Nouveau
   quit-game: Quitter le jeu
@@ -24,10 +25,10 @@ actions:
   show-indicators: Afficher les indicateurs
 errors:
   login-failure: Pseudo ou mot de passe incorrect. Merci de réessayer.
-  too-many-games: Vous avez déjà {count} parties en cours, vous ne pouvez pas en créer davantage.
   restricted-game: Ce jeu n'est pas accessible.
-  username-used: Ce pseudo est déjà utilisé, veillez en choisir un autre.
+  too-many-games: Vous avez déjà {count} parties en cours, vous ne pouvez pas en créer davantage.
   username-too-short: Votre pseudo doit avoir au moins 3 charactères.
+  username-used: Ce pseudo est déjà utilisé, veillez en choisir un autre.
 # https://github.com/format-message/format-message/tree/master/packages/format-message#formatmessagesetupoptions
 formats:
   date:
@@ -42,23 +43,24 @@ labels:
   accept-terms: Conditions Générales d'Utilisation
   account: Paramètres
   avatar: 'Avatar : '
+  colon: ' : '
   confirm-game-deletion: Souhaitez vous vraiment supprimer cette partie de "{title}" ?
   copyright: Tabulous.fr. Tous droits réservés.
   game-authors: 'Créé par : '
   game-deleted: Partie supprimée !
   game-designers: 'Illustré par : '
-  game-publishers: 'Distribué par : '
   game-min-age: '{minAge}+'
   game-min-time: "{minTime}'"
-  host: hôte
+  game-publishers: 'Distribué par : '
   home: Accueil
+  host: hôte
   last-updated: 'Dernière mise à jour : { published, date, date-only }'
   manual-provider: Vous avez un compte manuel dont l'identifiant de connextion est "{id}"
   no-games-yet: Rien pour l'instant ! Choisissez un jeu disponible.
   oauth-provider: Vous avez relié ce compte à votre adresse "{email}"
   old-enough: Je déclare avoir plus de 15 ans ou être autorisé(e) par l’un de mes parents
-  peer-players: avec {names}
   peer-guests: 'invités: {names}'
+  peer-players: avec {names}
   player-joined: '{player.username} a rejoint la partie !'
   player-left: '{player.username} a quitté la partie'
   terms-accepted: J'ai lu et accepté les Conditions Générales d'Utilisation
@@ -86,7 +88,7 @@ titles:
   change-avatar: Choisissez votre nouvel avatar
   confirm-game-deletion: Suppression de la partie
   create-game: Nouvelle partie
-  your-games: Parties en cours
+  game-parameters: A vos marques...
   home: Bonjour {username} !
   invite: Qui vas tu inviter ?
   legal: Mentions légales
@@ -96,13 +98,14 @@ titles:
   terms-of-service: Conditions générales d’utilisation
   username: Votre peusdo
   welcome: Bienvenue sur Tabulous !
+  your-games: Parties en cours
 tooltips:
   add-to-selection: Ajouter à la sélection
   change-avatar: Si vous avez associé un gravatar à votre email, tappez "gravatar". Videz le champ pour supprimer votre avatar.
   clear-selection: Vider la sélection
+  decrement: Dépiller
   detail: Voir en détail
   draw: Piocher dans votre main
-  decrement: Dépiller
   flip-stack: Retourner la pile
   flip: Retourner
   game-menu: Menu des commandes

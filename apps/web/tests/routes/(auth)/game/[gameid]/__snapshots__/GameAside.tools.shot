@@ -1,0 +1,1497 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Multiple connected 1`] = `
+<main
+  class="flex w-full h-screen"
+>
+  <section
+    class="flex-1"
+  />
+   
+  <aside
+    class="s-SgNA803GJPfe"
+  >
+    <section
+      aria-expanded="true"
+      aria-label="minimizable"
+      class="s-vqhOCvFa7LzI"
+      id="minimizable-section-8"
+      style="width: auto;"
+    >
+      <menu
+        class="right s-vqhOCvFa7LzI"
+      >
+        <ol
+          class="buttonContainer s-vqhOCvFa7LzI"
+          role="tablist"
+        >
+          <li
+            class="s-vqhOCvFa7LzI active"
+          >
+            <button
+              aria-selected="true"
+              class="s-NMyTiX1zi6rz"
+              role="tab"
+            >
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                people_alt
+              </span>
+              
+              
+              <span
+                class="badge s-NMyTiX1zi6rz"
+              >
+                F3
+              </span>
+              
+            </button>
+            <!--&lt;Button&gt;-->
+             
+          </li>
+          <li
+            class="s-vqhOCvFa7LzI"
+          >
+            <button
+              aria-selected="false"
+              class="s-NMyTiX1zi6rz"
+              role="tab"
+            >
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                auto_stories
+              </span>
+              
+              
+              <span
+                class="badge s-NMyTiX1zi6rz"
+              >
+                F2
+              </span>
+              
+            </button>
+            <!--&lt;Button&gt;-->
+             
+          </li>
+          <li
+            class="s-vqhOCvFa7LzI"
+          >
+            <button
+              aria-selected="false"
+              class="s-NMyTiX1zi6rz"
+              role="tab"
+            >
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                help
+              </span>
+              
+              
+              <span
+                class="badge s-NMyTiX1zi6rz"
+              >
+                F1
+              </span>
+              
+            </button>
+            <!--&lt;Button&gt;-->
+             
+          </li>
+        </ol>
+         
+        <div
+          aria-controls="minimizable-section-8"
+          class="gutter s-vqhOCvFa7LzI"
+          role="scrollbar"
+        />
+      </menu>
+       
+      <span
+        class="s-vqhOCvFa7LzI"
+      >
+        <div
+          class="content s-SgNA803GJPfe"
+          style="width: 30vw"
+        >
+          <div
+            class="peers s-SgNA803GJPfe"
+          >
+            <section
+              class="s-oO6dIPzQcPRb"
+              data-testid="player-avatar"
+            >
+              <figure
+                class="s-engCJu8q-fNe colored"
+                style="--dimension: 150px; --color: #9c3096; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+              >
+                <img
+                  alt="avatar for Fernand Naudin"
+                  class="s-engCJu8q-fNe"
+                  height="150"
+                  referrerpolicy="no-referrer"
+                  width="150"
+                />
+                 
+                <figcaption
+                  class="s-engCJu8q-fNe"
+                >
+                  Fernand Naudin
+                </figcaption>
+              </figure>
+              <!--&lt;PlayerThumbnail&gt;-->
+               
+               
+              <legend
+                class="s-oO6dIPzQcPRb"
+              >
+                 
+                
+              </legend>
+            </section>
+            <!--&lt;PlayerAvatar&gt;-->
+             
+            
+            <section
+              class="s-oO6dIPzQcPRb"
+              data-testid="player-avatar"
+            >
+              <figure
+                class="s-engCJu8q-fNe colored"
+                style="--dimension: 150px; --color: #ff4500; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+              >
+                <img
+                  alt="avatar for Maître Folage"
+                  class="s-engCJu8q-fNe"
+                  height="150"
+                  referrerpolicy="no-referrer"
+                  width="150"
+                />
+                 
+                <figcaption
+                  class="s-engCJu8q-fNe"
+                >
+                  Maître Folage
+                </figcaption>
+              </figure>
+              <!--&lt;PlayerThumbnail&gt;-->
+               
+               
+              <legend
+                class="s-oO6dIPzQcPRb"
+              />
+            </section>
+            <!--&lt;PlayerAvatar&gt;-->
+            
+            <section
+              class="s-oO6dIPzQcPRb"
+              data-testid="player-avatar"
+            >
+              <figure
+                class="s-engCJu8q-fNe colored"
+                style="--dimension: 150px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+              >
+                <img
+                  alt="avatar for Pascal"
+                  class="s-engCJu8q-fNe"
+                  height="150"
+                  referrerpolicy="no-referrer"
+                  width="150"
+                />
+                 
+                <figcaption
+                  class="s-engCJu8q-fNe"
+                >
+                  Pascal
+                </figcaption>
+              </figure>
+              <!--&lt;PlayerThumbnail&gt;-->
+               
+               
+              <legend
+                class="s-oO6dIPzQcPRb"
+              />
+            </section>
+            <!--&lt;PlayerAvatar&gt;-->
+          </div>
+           
+          <section
+            aria-expanded="true"
+            aria-label="minimizable"
+            class="s-vqhOCvFa7LzI vertical"
+            id="minimizable-section-9"
+            style="height: 15%;"
+          >
+            <menu
+              class="bottom s-vqhOCvFa7LzI vertical"
+            >
+              <ol
+                class="buttonContainer s-vqhOCvFa7LzI"
+                role="tablist"
+              >
+                <li
+                  class="s-vqhOCvFa7LzI"
+                >
+                  <button
+                    aria-selected="false"
+                    class="s-NMyTiX1zi6rz"
+                    role="tab"
+                  >
+                    <span
+                      class="material-icons s-NMyTiX1zi6rz"
+                    >
+                      question_answer
+                    </span>
+                    
+                    
+                    <span
+                      class="badge s-NMyTiX1zi6rz"
+                    >
+                      F4
+                    </span>
+                    
+                  </button>
+                  <!--&lt;Button&gt;-->
+                   
+                </li>
+              </ol>
+               
+              <div
+                aria-controls="minimizable-section-9"
+                class="gutter s-vqhOCvFa7LzI"
+                role="scrollbar"
+              />
+            </menu>
+             
+            <span
+              class="s-vqhOCvFa7LzI"
+            >
+              <div
+                class="discussion s-vwbhBuhy0jW4"
+              >
+                <div
+                  class="messages s-vwbhBuhy0jW4"
+                >
+                  <span
+                    class="from s-vwbhBuhy0jW4"
+                  >
+                    Fernand Naudin
+                  </span>
+                  <span
+                    class="message s-vwbhBuhy0jW4"
+                  >
+                    Qu'est-ce qui se passe encore ?
+                  </span>
+                  <span
+                    class="from s-vwbhBuhy0jW4"
+                  >
+                    Maître Folage
+                  </span>
+                  <span
+                    class="message s-vwbhBuhy0jW4"
+                  >
+                    Notre ami va se faire un plaisir de vous l'expliquer.
+                  </span>
+                  <span
+                    class="from s-vwbhBuhy0jW4"
+                  >
+                    Pascal
+                  </span>
+                  <span
+                    class="message s-vwbhBuhy0jW4"
+                  >
+                    Les Volfoni ont organisé à la péniche une petite réunion des cadres, façon meeting, si vous voyez ce que je veux dire.
+M'enfin quoi, on parle dans votre dos.
+                  </span>
+                  <span
+                    class="from s-vwbhBuhy0jW4"
+                  >
+                    Fernand Naudin
+                  </span>
+                  <span
+                    class="message s-vwbhBuhy0jW4"
+                  >
+                    Et tu tiens ça d'où ?
+                  </span>
+                  <span
+                    class="from s-vwbhBuhy0jW4"
+                  >
+                    Pascal
+                  </span>
+                  <span
+                    class="message s-vwbhBuhy0jW4"
+                  >
+                    Je ne peux pas le dire, j'ai promis. Ce serait mal.
+                  </span>
+                  <span
+                    class="from s-vwbhBuhy0jW4"
+                  >
+                    Fernand Naudin
+                  </span>
+                  <span
+                    class="message s-vwbhBuhy0jW4"
+                  >
+                    Alors ?
+                  </span>
+                  <span
+                    class="from s-vwbhBuhy0jW4"
+                  >
+                    Maître Folage
+                  </span>
+                  <span
+                    class="message s-vwbhBuhy0jW4"
+                  >
+                    Eh bien. Euh. Y'a deux solutions : ou on se dérange, ou on méprise. 
+Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire, bien sûr.
+                  </span>
+                  <span
+                    class="from s-vwbhBuhy0jW4"
+                  >
+                    Fernand Naudin
+                  </span>
+                  <span
+                    class="message s-vwbhBuhy0jW4"
+                  >
+                    Bon, on va y aller, hmm ?
+                  </span>
+                  <span
+                    class="from s-vwbhBuhy0jW4"
+                  >
+                    Pascal
+                  </span>
+                  <span
+                    class="message s-vwbhBuhy0jW4"
+                  >
+                    Monsieur Fernand, y'a peut-être une place pour moi dans votre auto. Des fois que la réunion devienne houleuse ... J'ai une présence tranquillisante.
+                  </span>
+                </div>
+                 
+                <form
+                  class="s-vwbhBuhy0jW4"
+                >
+                  <fieldset
+                    class="s-Fe6WNbR-55zp"
+                  >
+                     
+                    <input
+                      class="s-Fe6WNbR-55zp"
+                    />
+                  </fieldset>
+                  <!--&lt;Input&gt;-->
+                   
+                  <button
+                    class="s-NMyTiX1zi6rz"
+                    disabled=""
+                    title="Envoyer à tous"
+                    type="submit"
+                  >
+                    <span
+                      class="material-icons s-NMyTiX1zi6rz"
+                    >
+                      send
+                    </span>
+                    
+                    
+                    
+                  </button>
+                  <!--&lt;Button&gt;-->
+                </form>
+              </div>
+              <!--&lt;Discussion&gt;-->
+            </span>
+          </section>
+          <!--&lt;MinimizableSection&gt;-->
+          
+        </div>
+      </span>
+    </section>
+    <!--&lt;MinimizableSection&gt;-->
+  </aside>
+  <!--&lt;GameAside&gt;-->
+</main>
+`;
+
+exports[`No peers 1`] = `
+<main
+  class="flex w-full h-screen"
+>
+  <section
+    class="flex-1"
+  />
+   
+  <aside
+    class="s-SgNA803GJPfe"
+  >
+    <section
+      aria-expanded="false"
+      aria-label="minimizable"
+      class="s-vqhOCvFa7LzI minimized"
+      id="minimizable-section-6"
+      style="width: auto;"
+    >
+      <menu
+        class="right s-vqhOCvFa7LzI"
+      >
+        <ol
+          class="buttonContainer s-vqhOCvFa7LzI"
+          role="tablist"
+        >
+          <li
+            class="s-vqhOCvFa7LzI active"
+          >
+            <button
+              aria-selected="true"
+              class="s-NMyTiX1zi6rz"
+              role="tab"
+            >
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                auto_stories
+              </span>
+              
+              
+              <span
+                class="badge s-NMyTiX1zi6rz"
+              >
+                F2
+              </span>
+              
+            </button>
+            <!--&lt;Button&gt;-->
+             
+          </li>
+          <li
+            class="s-vqhOCvFa7LzI"
+          >
+            <button
+              aria-selected="false"
+              class="s-NMyTiX1zi6rz"
+              role="tab"
+            >
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                help
+              </span>
+              
+              
+              <span
+                class="badge s-NMyTiX1zi6rz"
+              >
+                F1
+              </span>
+              
+            </button>
+            <!--&lt;Button&gt;-->
+             
+          </li>
+        </ol>
+         
+        <div
+          aria-controls="minimizable-section-6"
+          class="gutter s-vqhOCvFa7LzI"
+          role="scrollbar"
+        />
+      </menu>
+       
+      <span
+        class="s-vqhOCvFa7LzI"
+      >
+        <div
+          class="content s-SgNA803GJPfe"
+          style="max-width: 30vw"
+        >
+          <section
+            class="s-pX3FslpvGiLr"
+          >
+            <menu
+              class="s-pX3FslpvGiLr"
+            >
+              <button
+                class="s-NMyTiX1zi6rz"
+                disabled=""
+              >
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  navigate_before
+                </span>
+                
+                
+                
+              </button>
+              <!--&lt;Button&gt;-->
+               
+              1
+              /
+              4
+               
+              <button
+                class="s-NMyTiX1zi6rz"
+              >
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  navigate_next
+                </span>
+                
+                
+                
+              </button>
+              <!--&lt;Button&gt;-->
+            </menu>
+             
+            <div
+              class="image-container s-pX3FslpvGiLr"
+            >
+              <img
+                alt="Livre de règles, page 1"
+                class="s-pX3FslpvGiLr"
+                src="http://localhost:3001/games/splendor/rules/1.webp"
+              />
+            </div>
+          </section>
+          <!--&lt;RuleViewer&gt;-->
+        </div>
+      </span>
+    </section>
+    <!--&lt;MinimizableSection&gt;-->
+  </aside>
+  <!--&lt;GameAside&gt;-->
+</main>
+`;
+
+exports[`No peers, no rules book 1`] = `
+<main
+  class="flex w-full h-screen"
+>
+  <section
+    class="flex-1"
+  />
+   
+  <aside
+    class="s-SgNA803GJPfe"
+  >
+    <section
+      aria-expanded="false"
+      aria-label="minimizable"
+      class="s-vqhOCvFa7LzI minimized"
+      id="minimizable-section-10"
+      style="width: auto;"
+    >
+      <menu
+        class="right s-vqhOCvFa7LzI"
+      >
+        <ol
+          class="buttonContainer s-vqhOCvFa7LzI"
+          role="tablist"
+        >
+          <li
+            class="s-vqhOCvFa7LzI"
+          >
+            <button
+              aria-selected="false"
+              class="s-NMyTiX1zi6rz"
+              role="tab"
+            >
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                help
+              </span>
+              
+              
+              <span
+                class="badge s-NMyTiX1zi6rz"
+              >
+                F1
+              </span>
+              
+            </button>
+            <!--&lt;Button&gt;-->
+             
+          </li>
+        </ol>
+         
+        <div
+          aria-controls="minimizable-section-10"
+          class="gutter s-vqhOCvFa7LzI"
+          role="scrollbar"
+        />
+      </menu>
+       
+      <span
+        class="s-vqhOCvFa7LzI"
+      >
+        <div
+          class="content s-SgNA803GJPfe"
+          style="max-width: 30vw"
+        >
+          <div
+            class="s-z1Q6GECZQiDV"
+          >
+            <h3
+              class="s-z1Q6GECZQiDV"
+            >
+              Contrôler un ou plusieurs objets
+            </h3>
+             
+            <section
+              class="s-z1Q6GECZQiDV"
+            >
+              <div
+                class="s-0nPg0M2wSeXX"
+              >
+                <span
+                  class="s-0nPg0M2wSeXX"
+                >
+                  Déplacer
+                  :
+                </span>
+                 
+                <img
+                  alt="Tiré-déplacé un objet avec le clic gauche"
+                  class="s-0nPg0M2wSeXX"
+                  src="/images/help/left-drag-object.webp"
+                />
+                <img
+                  alt="Tiré-déplacé un objet avec un tap"
+                  class="s-0nPg0M2wSeXX"
+                  src="/images/help/pointer-drag-object.webp"
+                />
+              </div>
+              <!--&lt;ControlsHelpSection&gt;-->
+              <div
+                class="s-0nPg0M2wSeXX"
+              >
+                <span
+                  class="s-0nPg0M2wSeXX"
+                >
+                  Retourner
+                  :
+                </span>
+                 
+                <img
+                  alt="Clic gauche sur un objet"
+                  class="s-0nPg0M2wSeXX"
+                  src="/images/help/left-object.webp"
+                />
+                <img
+                  alt="Tap sur un objet"
+                  class="s-0nPg0M2wSeXX"
+                  src="/images/help/pointer-object.webp"
+                />
+              </div>
+              <!--&lt;ControlsHelpSection&gt;-->
+              <div
+                class="s-0nPg0M2wSeXX"
+              >
+                <span
+                  class="s-0nPg0M2wSeXX"
+                >
+                  Tourner de 90°
+                  :
+                </span>
+                 
+                <img
+                  alt="Clic gauche long sur un objet"
+                  class="s-0nPg0M2wSeXX"
+                  src="/images/help/long-left-object.webp"
+                />
+                <img
+                  alt="Tap long sur un objet"
+                  class="s-0nPg0M2wSeXX"
+                  src="/images/help/long-pointer-object.webp"
+                />
+              </div>
+              <!--&lt;ControlsHelpSection&gt;-->
+            </section>
+             
+            <h3
+              class="s-z1Q6GECZQiDV"
+            >
+              Contrôler un objet
+            </h3>
+             
+            <section
+              class="s-z1Q6GECZQiDV"
+            >
+              <div
+                class="s-0nPg0M2wSeXX"
+              >
+                <span
+                  class="s-0nPg0M2wSeXX"
+                >
+                  Ouvrir le menu
+                  :
+                </span>
+                 
+                <img
+                  alt="Clic droit sur un objet"
+                  class="s-0nPg0M2wSeXX"
+                  src="/images/help/right-object.webp"
+                />
+                <img
+                  alt="Tap avec deux doigts sur un objet"
+                  class="s-0nPg0M2wSeXX"
+                  src="/images/help/two-pointers-object.webp"
+                />
+              </div>
+              <!--&lt;ControlsHelpSection&gt;-->
+              <div
+                class="s-0nPg0M2wSeXX"
+              >
+                <span
+                  class="s-0nPg0M2wSeXX"
+                >
+                  Voir en détail
+                  :
+                </span>
+                 
+                <img
+                  alt="Double clic gauche sur un objet"
+                  class="s-0nPg0M2wSeXX"
+                  src="/images/help/double-left-object.webp"
+                />
+                <img
+                  alt="Double tap sur un objet"
+                  class="s-0nPg0M2wSeXX"
+                  src="/images/help/double-pointer-object.webp"
+                />
+              </div>
+              <!--&lt;ControlsHelpSection&gt;-->
+              <div
+                class="s-0nPg0M2wSeXX"
+              >
+                <span
+                  class="s-0nPg0M2wSeXX"
+                >
+                  Ajouter à la sélection
+                  :
+                </span>
+                 
+                <img
+                  alt="tooltips.help-left-drag-select"
+                  class="s-0nPg0M2wSeXX"
+                  src="/images/help/left-drag-select.webp"
+                />
+                <img
+                  alt="tooltips.help-pointer-drag-select"
+                  class="s-0nPg0M2wSeXX"
+                  src="/images/help/pointer-drag-select.webp"
+                />
+              </div>
+              <!--&lt;ControlsHelpSection&gt;-->
+              <div
+                class="s-0nPg0M2wSeXX"
+              >
+                <span
+                  class="s-0nPg0M2wSeXX"
+                >
+                  Vider la sélection
+                  :
+                </span>
+                 
+                <img
+                  alt="Clic gauche en dehors de la sélection"
+                  class="s-0nPg0M2wSeXX"
+                  src="/images/help/left-outside-selection.webp"
+                />
+                <img
+                  alt="Tap en dehors de la sélection"
+                  class="s-0nPg0M2wSeXX"
+                  src="/images/help/pointer-outside-selection.webp"
+                />
+              </div>
+              <!--&lt;ControlsHelpSection&gt;-->
+            </section>
+             
+            <h3
+              class="s-z1Q6GECZQiDV"
+            >
+              Contrôler la caméra
+            </h3>
+             
+            <section
+              class="s-z1Q6GECZQiDV"
+            >
+              <div
+                class="s-0nPg0M2wSeXX"
+              >
+                <span
+                  class="s-0nPg0M2wSeXX"
+                >
+                  Déplacer
+                  :
+                </span>
+                 
+                <img
+                  alt="Tiré-déplacé avec le clic droit"
+                  class="s-0nPg0M2wSeXX"
+                  src="/images/help/right-drag.webp"
+                />
+                <img
+                  alt="Tap avec deux doigts sur un objet"
+                  class="s-0nPg0M2wSeXX"
+                  src="/images/help/two-pointers-drag.webp"
+                />
+              </div>
+              <!--&lt;ControlsHelpSection&gt;-->
+              <div
+                class="s-0nPg0M2wSeXX"
+              >
+                <span
+                  class="s-0nPg0M2wSeXX"
+                >
+                  Pivoter et incliner
+                  :
+                </span>
+                 
+                <img
+                  alt="tooltips.help-middle-drag"
+                  class="s-0nPg0M2wSeXX"
+                  src="/images/help/middle-drag.webp"
+                />
+                <img
+                  alt="tooltips.help-three-pointers-drag"
+                  class="s-0nPg0M2wSeXX"
+                  src="/images/help/three-pointers-drag.webp"
+                />
+              </div>
+              <!--&lt;ControlsHelpSection&gt;-->
+              <div
+                class="s-0nPg0M2wSeXX"
+              >
+                <span
+                  class="s-0nPg0M2wSeXX"
+                >
+                  Zoomer
+                  :
+                </span>
+                 
+                <img
+                  alt="Molette de la souris"
+                  class="s-0nPg0M2wSeXX"
+                  src="/images/help/mouse-wheel.webp"
+                />
+                <img
+                  alt="Pincer"
+                  class="s-0nPg0M2wSeXX"
+                  src="/images/help/pinch.webp"
+                />
+              </div>
+              <!--&lt;ControlsHelpSection&gt;-->
+              <div
+                class="s-0nPg0M2wSeXX"
+              >
+                <span
+                  class="s-0nPg0M2wSeXX"
+                >
+                  Enregistrer la position (Ctrl+1~9)
+                  :
+                </span>
+                 
+                <img
+                  alt="Clic sur le bouton \\"nouvelle caméra\\""
+                  class="s-0nPg0M2wSeXX"
+                  src="/images/help/new-camera.webp"
+                />
+              </div>
+              <!--&lt;ControlsHelpSection&gt;-->
+              <div
+                class="s-0nPg0M2wSeXX"
+              >
+                <span
+                  class="s-0nPg0M2wSeXX"
+                >
+                  Restaurer la position
+                  :
+                </span>
+                 
+                <img
+                  alt="Clic sur un emplacement de caméra"
+                  class="s-0nPg0M2wSeXX"
+                  src="/images/help/restore-camera.webp"
+                />
+              </div>
+              <!--&lt;ControlsHelpSection&gt;-->
+              <div
+                class="s-0nPg0M2wSeXX"
+              >
+                <span
+                  class="s-0nPg0M2wSeXX"
+                >
+                  Mettre à jour la position
+                  :
+                </span>
+                 
+                <img
+                  alt="Clic long sur un emplacement de caméra"
+                  class="s-0nPg0M2wSeXX"
+                  src="/images/help/update-camera.webp"
+                />
+              </div>
+              <!--&lt;ControlsHelpSection&gt;-->
+            </section>
+          </div>
+          <!--&lt;ControlsHelp&gt;-->
+        </div>
+      </span>
+    </section>
+    <!--&lt;MinimizableSection&gt;-->
+  </aside>
+  <!--&lt;GameAside&gt;-->
+</main>
+`;
+
+exports[`Single connected 1`] = `
+<main
+  class="flex w-full h-screen"
+>
+  <section
+    class="flex-1"
+  />
+   
+  <aside
+    class="s-SgNA803GJPfe"
+  >
+    <section
+      aria-expanded="false"
+      aria-label="minimizable"
+      class="s-vqhOCvFa7LzI minimized"
+      id="minimizable-section-7"
+      style="width: auto;"
+    >
+      <menu
+        class="right s-vqhOCvFa7LzI"
+      >
+        <ol
+          class="buttonContainer s-vqhOCvFa7LzI"
+          role="tablist"
+        >
+          <li
+            class="s-vqhOCvFa7LzI active"
+          >
+            <button
+              aria-selected="true"
+              class="s-NMyTiX1zi6rz"
+              role="tab"
+            >
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                people_alt
+              </span>
+              
+              
+              <span
+                class="badge s-NMyTiX1zi6rz"
+              >
+                F3
+              </span>
+              
+            </button>
+            <!--&lt;Button&gt;-->
+             
+          </li>
+          <li
+            class="s-vqhOCvFa7LzI"
+          >
+            <button
+              aria-selected="false"
+              class="s-NMyTiX1zi6rz"
+              role="tab"
+            >
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                auto_stories
+              </span>
+              
+              
+              <span
+                class="badge s-NMyTiX1zi6rz"
+              >
+                F2
+              </span>
+              
+            </button>
+            <!--&lt;Button&gt;-->
+             
+          </li>
+          <li
+            class="s-vqhOCvFa7LzI"
+          >
+            <button
+              aria-selected="false"
+              class="s-NMyTiX1zi6rz"
+              role="tab"
+            >
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                help
+              </span>
+              
+              
+              <span
+                class="badge s-NMyTiX1zi6rz"
+              >
+                F1
+              </span>
+              
+            </button>
+            <!--&lt;Button&gt;-->
+             
+          </li>
+        </ol>
+         
+        <div
+          aria-controls="minimizable-section-7"
+          class="gutter s-vqhOCvFa7LzI"
+          role="scrollbar"
+        />
+      </menu>
+       
+      <span
+        class="s-vqhOCvFa7LzI"
+      >
+        <div
+          class="content s-SgNA803GJPfe"
+          style="width: 30vw"
+        >
+          <div
+            class="peers s-SgNA803GJPfe"
+          >
+             
+            
+            <section
+              class="s-oO6dIPzQcPRb"
+              data-testid="player-avatar"
+            >
+              <figure
+                class="s-engCJu8q-fNe colored"
+                style="--dimension: 150px; --color: #ff4500; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+              >
+                <img
+                  alt="avatar for Maître Folage"
+                  class="s-engCJu8q-fNe"
+                  height="150"
+                  referrerpolicy="no-referrer"
+                  width="150"
+                />
+                 
+                <figcaption
+                  class="s-engCJu8q-fNe"
+                >
+                  Maître Folage
+                </figcaption>
+              </figure>
+              <!--&lt;PlayerThumbnail&gt;-->
+               
+               
+              <legend
+                class="s-oO6dIPzQcPRb"
+              />
+            </section>
+            <!--&lt;PlayerAvatar&gt;-->
+            
+            <section
+              class="s-oO6dIPzQcPRb"
+              data-testid="player-avatar"
+            >
+              <figure
+                class="s-engCJu8q-fNe colored"
+                style="--dimension: 150px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+              >
+                <img
+                  alt="avatar for Pascal"
+                  class="s-engCJu8q-fNe"
+                  height="150"
+                  referrerpolicy="no-referrer"
+                  width="150"
+                />
+                 
+                <figcaption
+                  class="s-engCJu8q-fNe"
+                >
+                  Pascal
+                </figcaption>
+              </figure>
+              <!--&lt;PlayerThumbnail&gt;-->
+               
+               
+              <legend
+                class="s-oO6dIPzQcPRb"
+              />
+            </section>
+            <!--&lt;PlayerAvatar&gt;-->
+          </div>
+           
+          
+        </div>
+      </span>
+    </section>
+    <!--&lt;MinimizableSection&gt;-->
+  </aside>
+  <!--&lt;GameAside&gt;-->
+</main>
+`;
+
+exports[`Single connected, no rules book, thread 1`] = `
+<main
+  class="flex w-full h-screen"
+>
+  <section
+    class="flex-1"
+  />
+   
+  <aside
+    class="s-SgNA803GJPfe"
+  >
+    <section
+      aria-expanded="false"
+      aria-label="minimizable"
+      class="s-vqhOCvFa7LzI minimized"
+      id="minimizable-section-11"
+      style="width: auto;"
+    >
+      <menu
+        class="right s-vqhOCvFa7LzI"
+      >
+        <ol
+          class="buttonContainer s-vqhOCvFa7LzI"
+          role="tablist"
+        >
+          <li
+            class="s-vqhOCvFa7LzI active"
+          >
+            <button
+              aria-selected="true"
+              class="s-NMyTiX1zi6rz"
+              role="tab"
+            >
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                people_alt
+              </span>
+              
+              
+              <span
+                class="badge s-NMyTiX1zi6rz"
+              >
+                F3
+              </span>
+              
+            </button>
+            <!--&lt;Button&gt;-->
+             
+          </li>
+          <li
+            class="s-vqhOCvFa7LzI"
+          >
+            <button
+              aria-selected="false"
+              class="s-NMyTiX1zi6rz"
+              role="tab"
+            >
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                help
+              </span>
+              
+              
+              <span
+                class="badge s-NMyTiX1zi6rz"
+              >
+                F1
+              </span>
+              
+            </button>
+            <!--&lt;Button&gt;-->
+             
+          </li>
+        </ol>
+         
+        <div
+          aria-controls="minimizable-section-11"
+          class="gutter s-vqhOCvFa7LzI"
+          role="scrollbar"
+        />
+      </menu>
+       
+      <span
+        class="s-vqhOCvFa7LzI"
+      >
+        <div
+          class="content s-SgNA803GJPfe"
+          style="width: 30vw"
+        >
+          <div
+            class="peers s-SgNA803GJPfe"
+          >
+             
+            
+            <section
+              class="s-oO6dIPzQcPRb"
+              data-testid="player-avatar"
+            >
+              <figure
+                class="s-engCJu8q-fNe colored"
+                style="--dimension: 150px; --color: #ff4500; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+              >
+                <img
+                  alt="avatar for Maître Folage"
+                  class="s-engCJu8q-fNe"
+                  height="150"
+                  referrerpolicy="no-referrer"
+                  width="150"
+                />
+                 
+                <figcaption
+                  class="s-engCJu8q-fNe"
+                >
+                  Maître Folage
+                </figcaption>
+              </figure>
+              <!--&lt;PlayerThumbnail&gt;-->
+               
+               
+              <legend
+                class="s-oO6dIPzQcPRb"
+              />
+            </section>
+            <!--&lt;PlayerAvatar&gt;-->
+            
+            <section
+              class="s-oO6dIPzQcPRb"
+              data-testid="player-avatar"
+            >
+              <figure
+                class="s-engCJu8q-fNe colored"
+                style="--dimension: 150px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+              >
+                <img
+                  alt="avatar for Pascal"
+                  class="s-engCJu8q-fNe"
+                  height="150"
+                  referrerpolicy="no-referrer"
+                  width="150"
+                />
+                 
+                <figcaption
+                  class="s-engCJu8q-fNe"
+                >
+                  Pascal
+                </figcaption>
+              </figure>
+              <!--&lt;PlayerThumbnail&gt;-->
+               
+               
+              <legend
+                class="s-oO6dIPzQcPRb"
+              />
+            </section>
+            <!--&lt;PlayerAvatar&gt;-->
+          </div>
+           
+          <section
+            aria-expanded="true"
+            aria-label="minimizable"
+            class="s-vqhOCvFa7LzI vertical"
+            id="minimizable-section-12"
+            style="height: 15%;"
+          >
+            <menu
+              class="bottom s-vqhOCvFa7LzI vertical"
+            >
+              <ol
+                class="buttonContainer s-vqhOCvFa7LzI"
+                role="tablist"
+              >
+                <li
+                  class="s-vqhOCvFa7LzI"
+                >
+                  <button
+                    aria-selected="false"
+                    class="s-NMyTiX1zi6rz"
+                    role="tab"
+                  >
+                    <span
+                      class="material-icons s-NMyTiX1zi6rz"
+                    >
+                      question_answer
+                    </span>
+                    
+                    
+                    <span
+                      class="badge s-NMyTiX1zi6rz"
+                    >
+                      F4
+                    </span>
+                    
+                  </button>
+                  <!--&lt;Button&gt;-->
+                   
+                </li>
+              </ol>
+               
+              <div
+                aria-controls="minimizable-section-12"
+                class="gutter s-vqhOCvFa7LzI"
+                role="scrollbar"
+              />
+            </menu>
+             
+            <span
+              class="s-vqhOCvFa7LzI"
+            >
+              <div
+                class="discussion s-vwbhBuhy0jW4"
+              >
+                <div
+                  class="messages s-vwbhBuhy0jW4"
+                >
+                  <span
+                    class="from s-vwbhBuhy0jW4"
+                  >
+                    Fernand Naudin
+                  </span>
+                  <span
+                    class="message s-vwbhBuhy0jW4"
+                  >
+                    Qu'est-ce qui se passe encore ?
+                  </span>
+                  <span
+                    class="from s-vwbhBuhy0jW4"
+                  >
+                    Maître Folage
+                  </span>
+                  <span
+                    class="message s-vwbhBuhy0jW4"
+                  >
+                    Notre ami va se faire un plaisir de vous l'expliquer.
+                  </span>
+                  <span
+                    class="from s-vwbhBuhy0jW4"
+                  >
+                    Pascal
+                  </span>
+                  <span
+                    class="message s-vwbhBuhy0jW4"
+                  >
+                    Les Volfoni ont organisé à la péniche une petite réunion des cadres, façon meeting, si vous voyez ce que je veux dire.
+M'enfin quoi, on parle dans votre dos.
+                  </span>
+                  <span
+                    class="from s-vwbhBuhy0jW4"
+                  >
+                    Fernand Naudin
+                  </span>
+                  <span
+                    class="message s-vwbhBuhy0jW4"
+                  >
+                    Et tu tiens ça d'où ?
+                  </span>
+                  <span
+                    class="from s-vwbhBuhy0jW4"
+                  >
+                    Pascal
+                  </span>
+                  <span
+                    class="message s-vwbhBuhy0jW4"
+                  >
+                    Je ne peux pas le dire, j'ai promis. Ce serait mal.
+                  </span>
+                  <span
+                    class="from s-vwbhBuhy0jW4"
+                  >
+                    Fernand Naudin
+                  </span>
+                  <span
+                    class="message s-vwbhBuhy0jW4"
+                  >
+                    Alors ?
+                  </span>
+                  <span
+                    class="from s-vwbhBuhy0jW4"
+                  >
+                    Maître Folage
+                  </span>
+                  <span
+                    class="message s-vwbhBuhy0jW4"
+                  >
+                    Eh bien. Euh. Y'a deux solutions : ou on se dérange, ou on méprise. 
+Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire, bien sûr.
+                  </span>
+                  <span
+                    class="from s-vwbhBuhy0jW4"
+                  >
+                    Fernand Naudin
+                  </span>
+                  <span
+                    class="message s-vwbhBuhy0jW4"
+                  >
+                    Bon, on va y aller, hmm ?
+                  </span>
+                  <span
+                    class="from s-vwbhBuhy0jW4"
+                  >
+                    Pascal
+                  </span>
+                  <span
+                    class="message s-vwbhBuhy0jW4"
+                  >
+                    Monsieur Fernand, y'a peut-être une place pour moi dans votre auto. Des fois que la réunion devienne houleuse ... J'ai une présence tranquillisante.
+                  </span>
+                </div>
+                 
+                <form
+                  class="s-vwbhBuhy0jW4"
+                >
+                  <fieldset
+                    class="s-Fe6WNbR-55zp"
+                  >
+                     
+                    <input
+                      class="s-Fe6WNbR-55zp"
+                    />
+                  </fieldset>
+                  <!--&lt;Input&gt;-->
+                   
+                  <button
+                    class="s-NMyTiX1zi6rz"
+                    disabled=""
+                    title="Envoyer à tous"
+                    type="submit"
+                  >
+                    <span
+                      class="material-icons s-NMyTiX1zi6rz"
+                    >
+                      send
+                    </span>
+                    
+                    
+                    
+                  </button>
+                  <!--&lt;Button&gt;-->
+                </form>
+              </div>
+              <!--&lt;Discussion&gt;-->
+            </span>
+          </section>
+          <!--&lt;MinimizableSection&gt;-->
+          
+        </div>
+      </span>
+    </section>
+    <!--&lt;MinimizableSection&gt;-->
+  </aside>
+  <!--&lt;GameAside&gt;-->
+</main>
+`;

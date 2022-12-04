@@ -3,6 +3,8 @@ fragment lightPlayer on Player {
   username
   avatar
   playing
+  isGuest
+  isOwner
 }
 
 fragment mesh on Mesh {
@@ -86,9 +88,6 @@ fragment fullGame on Game {
   players {
     ...lightPlayer
   }
-  guests {
-    ...lightPlayer
-  }
   availableSeats
   meshes {
     ...mesh
@@ -137,9 +136,6 @@ fragment lightGame on Game {
   players {
     ...lightPlayer
   }
-  guests {
-    ...lightPlayer
-  }
   locales {
     fr {
       title
@@ -183,19 +179,44 @@ subscription receiveGameUpdates($gameId: ID!) {
   }
 }
 
-query loadGame($gameId: ID!) {
-  loadGame(gameId: $gameId) {
-    ...fullGame
-  }
-}
-
-query getGamePlayers($id: ID!) {
-  loadGame(gameId: $id) {
-    players {
-      ...lightPlayer
+mutation joinGame($gameId: ID!, $parameters: String) {
+  joinGame(gameId: $gameId, parameters: $parameters) {
+    ... on Game {
+      ...fullGame
+    }
+    ... on GameParameters {
+      schemaString
+      error
+      id
+      kind
+      players {
+        ...lightPlayer
+      }
+      preferences {
+        playerId
+        color
+      }
+      rulesBookPageCount
+      availableSeats
     }
   }
 }
+
+mutation getGamePlayers($id: ID!) {
+  joinGame(gameId: $id) {
+    ... on Game {
+      players {
+        ...lightPlayer
+      }
+    }
+    ... on GameParameters {
+      players {
+        ...lightPlayer
+      }
+    }
+  }
+}
+
 mutation saveGame($game: GameInput!) {
   saveGame(game: $game) {
     id

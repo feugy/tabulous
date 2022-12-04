@@ -2,6 +2,7 @@
 import { faker } from '@faker-js/faker'
 
 import { GamePage } from './pages/index.js'
+import { translate } from './utils/index.js'
 import { describe, expect, it, mockGraphQl } from './utils/index.js'
 
 describe('Game page', () => {
@@ -48,7 +49,7 @@ describe('Game page', () => {
   })
 
   it('redirects to login without authentication', async ({ page }) => {
-    await mockGraphQl(page, { getCurrentPlayer: null, loadGame: null })
+    await mockGraphQl(page, { getCurrentPlayer: null, joinGame: null })
 
     const gamePage = new GamePage(page)
     await gamePage.goTo(game.id)
@@ -68,7 +69,7 @@ describe('Game page', () => {
             credentials: faker.internet.password()
           }
         },
-        loadGame: game,
+        joinGame: game,
         saveGame: { id: game.id },
         searchPlayers: [[player2]],
         invite: () => {
@@ -104,5 +105,53 @@ describe('Game page', () => {
     await gamePage.invite(player2.username)
     await gamePage.openMenu()
     expect(gamePage.inviteMenuItem).not.toBeVisible()
+  })
+
+  it('collects game parameters on first game', async ({ page }) => {
+    const schema = {
+      type: 'object',
+      additionalProperties: false,
+      properties: { side: { type: 'string', enum: ['white', 'black'] } },
+      required: ['side']
+    }
+    const { sendToSubscription, setTokenCookie, onSubscription } =
+      await mockGraphQl(page, {
+        getCurrentPlayer: {
+          token: faker.datatype.uuid(),
+          player,
+          turnCredentials: {
+            username: 'bob',
+            credentials: faker.internet.password()
+          }
+        },
+        joinGame: [
+          {
+            ...game,
+            players: [{ ...player, isGuest: true }],
+            schemaString: JSON.stringify(schema)
+          },
+          game
+        ],
+        saveGame: { id: game.id }
+      })
+    await setTokenCookie()
+
+    onSubscription(({ payload: { query } }) => {
+      if (query.startsWith('subscription awaitSignal')) {
+        sendToSubscription({
+          data: { awaitSignal: { data: JSON.stringify({ type: 'ready' }) } }
+        })
+      }
+    })
+
+    const gamePage = new GamePage(page)
+    await gamePage.goTo(game.id)
+    await gamePage.getStarted()
+
+    await expect(gamePage.parametersDialogue).toBeVisible()
+    await gamePage.parametersDialogue
+      .locator('role=button', { hasText: translate('actions.join-game') })
+      .click()
+    await expect(gamePage.parametersDialogue).not.toBeVisible()
   })
 })

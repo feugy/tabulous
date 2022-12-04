@@ -1,8 +1,17 @@
 <script>
   import { ConfirmDialogue, Header } from '@src/components'
-  import { deleteGame, receiveGameListUpdates, toastInfo } from '@src/stores'
+  import {
+    createGame,
+    deleteGame,
+    receiveGameListUpdates,
+    toastError,
+    toastInfo
+  } from '@src/stores'
+  import { translateError } from '@src/utils'
   import { readable } from 'svelte/store'
   import { _, locale } from 'svelte-intl'
+
+  import { goto } from '$app/navigation'
 
   import CatalogItem from './CatalogItem.svelte'
   import GameLink from './GameLink.svelte'
@@ -26,9 +35,17 @@
   async function handleDeletionClose({ detail: confirmed } = {}) {
     if (confirmed) {
       await deleteGame(gameToDelete.id)
+      toastInfo({ contentKey: 'labels.game-deleted' })
     }
-    toastInfo({ contentKey: 'labels.game-deleted' })
     gameToDelete = null
+  }
+
+  async function handleCreateGame({ detail: name }) {
+    try {
+      goto(`/game/${await createGame(name)}`)
+    } catch (err) {
+      toastError({ content: translateError($_, err) })
+    }
   }
 </script>
 
@@ -58,7 +75,7 @@
     <h2>{$_('titles.catalog')}</h2>
     <section aria-roledescription="catalog">
       {#each data.catalog as game}
-        <CatalogItem {game} />
+        <CatalogItem {game} on:select={handleCreateGame} />
       {/each}
     </section>
   </div>

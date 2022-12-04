@@ -1,0 +1,59 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Routes/game/[gameId]/Rule Viewer 1`] = `
+<div
+  class="rule-viewer s-FlO5xIYQ_Hxi"
+>
+  <section
+    class="s-pX3FslpvGiLr"
+  >
+    <menu
+      class="s-pX3FslpvGiLr"
+    >
+      <button
+        class="s-NMyTiX1zi6rz"
+        disabled=""
+      >
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          navigate_before
+        </span>
+        
+        
+        
+      </button>
+      <!--&lt;Button&gt;-->
+       
+      1
+      /
+      4
+       
+      <button
+        class="s-NMyTiX1zi6rz"
+      >
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          navigate_next
+        </span>
+        
+        
+        
+      </button>
+      <!--&lt;Button&gt;-->
+    </menu>
+     
+    <div
+      class="image-container s-pX3FslpvGiLr"
+    >
+      <img
+        alt="Livre de règles, page 1"
+        class="s-pX3FslpvGiLr"
+        src="http://localhost:3001/games/splendor/rules/1.webp"
+      />
+    </div>
+  </section>
+  <!--&lt;RuleViewer&gt;-->
+</div>
+`;

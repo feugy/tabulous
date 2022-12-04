@@ -1,0 +1,196 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Default (not visible) 1`] = `
+<aside
+  class="s-RiErekuzeGm1"
+  style="--color: #00ff00;"
+>
+  <section
+    aria-expanded="false"
+    aria-label="minimizable"
+    class="s-vqhOCvFa7LzI minimized vertical"
+    id="minimizable-section-13"
+    style="height: 25vh;"
+  >
+    <menu
+      class="bottom s-vqhOCvFa7LzI vertical"
+    >
+      <ol
+        class="buttonContainer s-vqhOCvFa7LzI"
+        role="tablist"
+      >
+        <li
+          class="s-vqhOCvFa7LzI"
+        >
+          <button
+            aria-selected="false"
+            class="s-NMyTiX1zi6rz"
+            role="tab"
+          >
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              front_hand
+            </span>
+            
+            
+            <span
+              class="badge s-NMyTiX1zi6rz"
+            >
+              h
+            </span>
+            
+          </button>
+          <!--&lt;Button&gt;-->
+           
+        </li>
+      </ol>
+       
+      <div
+        aria-controls="minimizable-section-13"
+        class="gutter s-vqhOCvFa7LzI"
+        role="scrollbar"
+      />
+    </menu>
+     
+    <span
+      class="s-vqhOCvFa7LzI"
+    >
+      <div
+        class="hand s-RiErekuzeGm1"
+      />
+    </span>
+  </section>
+  <!--&lt;MinimizableSection&gt;-->
+</aside>
+`;
+
+exports[`Highlighted 1`] = `
+<aside
+  class="s-RiErekuzeGm1 highlight visible"
+  style="--color: #00ff00;"
+>
+  <section
+    aria-expanded="false"
+    aria-label="minimizable"
+    class="s-vqhOCvFa7LzI minimized vertical"
+    id="minimizable-section-15"
+    style="height: 25vh;"
+  >
+    <menu
+      class="bottom s-vqhOCvFa7LzI vertical"
+    >
+      <ol
+        class="buttonContainer s-vqhOCvFa7LzI"
+        role="tablist"
+      >
+        <li
+          class="s-vqhOCvFa7LzI"
+        >
+          <button
+            aria-selected="false"
+            class="s-NMyTiX1zi6rz"
+            role="tab"
+          >
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              front_hand
+            </span>
+            
+            
+            <span
+              class="badge s-NMyTiX1zi6rz"
+            >
+              h
+            </span>
+            
+          </button>
+          <!--&lt;Button&gt;-->
+           
+        </li>
+      </ol>
+       
+      <div
+        aria-controls="minimizable-section-15"
+        class="gutter s-vqhOCvFa7LzI"
+        role="scrollbar"
+      />
+    </menu>
+     
+    <span
+      class="s-vqhOCvFa7LzI"
+    >
+      <div
+        class="hand s-RiErekuzeGm1"
+      />
+    </span>
+  </section>
+  <!--&lt;MinimizableSection&gt;-->
+</aside>
+`;
+
+exports[`With some meshes 1`] = `
+<aside
+  class="s-RiErekuzeGm1 visible"
+  style="--color: #00ff00;"
+>
+  <section
+    aria-expanded="true"
+    aria-label="minimizable"
+    class="s-vqhOCvFa7LzI vertical"
+    id="minimizable-section-14"
+    style="height: 25vh;"
+  >
+    <menu
+      class="bottom s-vqhOCvFa7LzI vertical"
+    >
+      <ol
+        class="buttonContainer s-vqhOCvFa7LzI"
+        role="tablist"
+      >
+        <li
+          class="s-vqhOCvFa7LzI"
+        >
+          <button
+            aria-selected="false"
+            class="s-NMyTiX1zi6rz"
+            role="tab"
+          >
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              front_hand
+            </span>
+            
+            
+            <span
+              class="badge s-NMyTiX1zi6rz"
+            >
+              h
+            </span>
+            
+          </button>
+          <!--&lt;Button&gt;-->
+           
+        </li>
+      </ol>
+       
+      <div
+        aria-controls="minimizable-section-14"
+        class="gutter s-vqhOCvFa7LzI"
+        role="scrollbar"
+      />
+    </menu>
+     
+    <span
+      class="s-vqhOCvFa7LzI"
+    >
+      <div
+        class="hand s-RiErekuzeGm1"
+      />
+    </span>
+  </section>
+  <!--&lt;MinimizableSection&gt;-->
+</aside>
+`;

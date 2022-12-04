@@ -1,0 +1,223 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Multiple choices 1`] = `
+<form
+  class="s-_xyHwNw5vPU9"
+  role="dialog"
+>
+  <div
+    class="pane s-j2LTsWktqK_4"
+  >
+    <header
+      class="heading s-_xyHwNw5vPU9"
+    >
+      En préparation...
+    </header>
+     
+    <section
+      class="s-_xyHwNw5vPU9"
+    >
+      <fieldset
+        class="s-AFGyPIu2lLfy"
+      >
+        <label
+          class="s-AFGyPIu2lLfy"
+          for="side"
+        >
+          Couleur
+           : 
+        </label>
+         
+        <span
+          aria-expanded="false"
+          aria-haspopup="menu"
+          class="wrapper s-rGIwyFRHo8D9"
+        >
+          <button
+            class="s-NMyTiX1zi6rz"
+            id="side"
+          >
+            
+            <span
+              class="text s-NMyTiX1zi6rz"
+            >
+              Noirs
+            </span>
+            
+            
+             
+            <i
+              class="material-icons arrow s-rGIwyFRHo8D9"
+              role="button"
+            >
+              arrow_drop_down
+            </i>
+            
+          </button>
+          <!--&lt;Button&gt;-->
+           
+          
+          <!--&lt;Menu&gt;-->
+        </span>
+        <!--&lt;Dropdown&gt;-->
+      </fieldset>
+      <!--&lt;Choice&gt;-->
+      
+      <fieldset
+        class="s-AFGyPIu2lLfy"
+      >
+        <label
+          class="s-AFGyPIu2lLfy"
+          for="position"
+        >
+          Position
+           : 
+        </label>
+         
+        <span
+          aria-expanded="false"
+          aria-haspopup="menu"
+          class="wrapper s-rGIwyFRHo8D9"
+        >
+          <button
+            class="s-NMyTiX1zi6rz"
+            id="position"
+          >
+            
+            <span
+              class="text s-NMyTiX1zi6rz"
+            >
+              Haut
+            </span>
+            
+            
+             
+            <i
+              class="material-icons arrow s-rGIwyFRHo8D9"
+              role="button"
+            >
+              arrow_drop_down
+            </i>
+            
+          </button>
+          <!--&lt;Button&gt;-->
+           
+          
+          <!--&lt;Menu&gt;-->
+        </span>
+        <!--&lt;Dropdown&gt;-->
+      </fieldset>
+      <!--&lt;Choice&gt;-->
+      
+    </section>
+     
+    <div
+      class="s-_xyHwNw5vPU9"
+    >
+      <button
+        class="s-NMyTiX1zi6rz"
+        type="submit"
+      >
+        
+        <span
+          class="text s-NMyTiX1zi6rz"
+        >
+          Jouer
+        </span>
+        
+        
+      </button>
+      <!--&lt;Button&gt;-->
+    </div>
+  </div>
+  <!--&lt;Pane&gt;-->
+</form>
+`;
+
+exports[`Single choice 1`] = `
+<form
+  class="s-_xyHwNw5vPU9"
+  role="dialog"
+>
+  <div
+    class="pane s-j2LTsWktqK_4"
+  >
+    <header
+      class="heading s-_xyHwNw5vPU9"
+    >
+      En préparation...
+    </header>
+     
+    <section
+      class="s-_xyHwNw5vPU9"
+    >
+      <fieldset
+        class="s-AFGyPIu2lLfy"
+      >
+        <label
+          class="s-AFGyPIu2lLfy"
+          for="side"
+        >
+          Couleur
+           : 
+        </label>
+         
+        <span
+          aria-expanded="false"
+          aria-haspopup="menu"
+          class="wrapper s-rGIwyFRHo8D9"
+        >
+          <button
+            class="s-NMyTiX1zi6rz"
+            id="side"
+          >
+            
+            <span
+              class="text s-NMyTiX1zi6rz"
+            >
+              Noirs
+            </span>
+            
+            
+             
+            <i
+              class="material-icons arrow s-rGIwyFRHo8D9"
+              role="button"
+            >
+              arrow_drop_down
+            </i>
+            
+          </button>
+          <!--&lt;Button&gt;-->
+           
+          
+          <!--&lt;Menu&gt;-->
+        </span>
+        <!--&lt;Dropdown&gt;-->
+      </fieldset>
+      <!--&lt;Choice&gt;-->
+      
+    </section>
+     
+    <div
+      class="s-_xyHwNw5vPU9"
+    >
+      <button
+        class="s-NMyTiX1zi6rz"
+        type="submit"
+      >
+        
+        <span
+          class="text s-NMyTiX1zi6rz"
+        >
+          Jouer
+        </span>
+        
+        
+      </button>
+      <!--&lt;Button&gt;-->
+    </div>
+  </div>
+  <!--&lt;Pane&gt;-->
+</form>
+`;

@@ -35,6 +35,6 @@
 
 <style lang="postcss">
   div {
-    @apply flex flex-col items-end absolute z-20 top-12 right-8;
+    @apply flex flex-col items-end fixed z-20 top-12 right-8;
   }
 </style>

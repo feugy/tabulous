@@ -81,19 +81,18 @@
       created: 1659075476987,
       kind: '6-takes',
       players: [
-        { id: '1789', username: 'Dams', playing: false },
+        { id: '1789', username: 'Dams', playing: false, isGuest: false },
         player,
-        { id: '8850', username: 'Célia', playing: false }
+        { id: '8850', username: 'Célia', playing: false, isGuest: false },
+        { id: '3432', username: 'Hugo', playing: false, isGuest: true }
       ],
-      guests: [{ id: '3432', username: 'Hugo', playing: false }],
       locales: { fr: { title: '6 qui prend !' } }
     },
     {
       id: 'b9c5b5e7-1ab2-4849-8490-fa13dcd0840e',
       created: 1659424383964,
       kind: '32-cards',
-      players: [player],
-      guests: [],
+      players: [{ ...player, isOwner: true }],
       locales: { fr: { title: 'Jeu de 32 cartes' } }
     }
   ]

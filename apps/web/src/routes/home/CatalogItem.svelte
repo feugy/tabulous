@@ -1,11 +1,11 @@
 <script>
   import { gameAssetsUrl } from '@src/utils'
+  import { createEventDispatcher } from 'svelte'
   import { _, locale } from 'svelte-intl'
-
-  import { goto } from '$app/navigation'
 
   export let game
 
+  const dispatch = createEventDispatcher()
   $: title = game?.locales?.[$locale]?.title
 
   function formatCopyright(field) {
@@ -21,7 +21,7 @@
   }
 
   function handleClick() {
-    goto(`/game/new?name=${encodeURIComponent(game.name)}`)
+    dispatch('select', game.name)
   }
 
   function handleKey(event) {

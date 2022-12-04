@@ -5,13 +5,15 @@ import userEvent from '@testing-library/user-event'
 import html from 'svelte-htm'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { goto } from '$app/navigation'
-
 describe('/home CatalogItem component', () => {
-  beforeEach(vi.resetAllMocks)
+  const handleSelect = vi.fn()
+
+  beforeEach(vi.clearAllMocks)
 
   function renderComponent(props = {}) {
-    return render(html`<${CatalogItem} ...${props} />`)
+    return render(
+      html`<${CatalogItem} ...${props} on:select=${handleSelect} />`
+    )
   }
 
   it(`can click on the entire card`, async () => {
@@ -25,10 +27,10 @@ describe('/home CatalogItem component', () => {
     expect(screen.getByRole('heading')).toHaveTextContent(title)
 
     await fireEvent.click(screen.getByRole('link'))
-    expect(goto).toHaveBeenCalledWith(
-      `/game/new?name=${encodeURIComponent(game.name)}`
+    expect(handleSelect).toHaveBeenCalledWith(
+      expect.objectContaining({ detail: game.name })
     )
-    expect(goto).toHaveBeenCalledTimes(1)
+    expect(handleSelect).toHaveBeenCalledTimes(1)
   })
 
   it(`can select the entire card with keyboard`, async () => {
@@ -37,16 +39,14 @@ describe('/home CatalogItem component', () => {
     renderComponent({ game })
 
     await userEvent.keyboard('[Tab][Enter]')
-    expect(goto).toHaveBeenNthCalledWith(
-      1,
-      `/game/new?name=${encodeURIComponent(game.name)}`
+    expect(handleSelect).toHaveBeenCalledWith(
+      expect.objectContaining({ detail: game.name })
     )
 
     await userEvent.keyboard(' ')
-    expect(goto).toHaveBeenNthCalledWith(
-      2,
-      `/game/new?name=${encodeURIComponent(game.name)}`
+    expect(handleSelect).toHaveBeenCalledWith(
+      expect.objectContaining({ detail: game.name })
     )
-    expect(goto).toHaveBeenCalledTimes(2)
+    expect(handleSelect).toHaveBeenCalledTimes(2)
   })
 })
