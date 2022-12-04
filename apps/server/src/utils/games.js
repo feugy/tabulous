@@ -388,3 +388,34 @@ function addHash(camera) {
   camera.hash = `${camera.target[0]}-${camera.target[1]}-${camera.target[2]}-${camera.alpha}-${camera.beta}-${camera.elevation}`
   return camera
 }
+
+/**
+ * Loads a game descriptor's parameter schema.
+ * If defined, enriches any image found;
+ * @param {object} args - arguments, including:
+ * @param {object} args.descriptor - game descriptor.
+ * @param {object} args.game - current game's data.
+ * @param {object} args.player - player for which descriptor is retrieved.
+ * @returns {Promise<object|null>} the parameter schema, or null.
+ */
+export async function getParameterSchema({ descriptor, game, player }) {
+  const schema = await descriptor.askForParameters?.({ game, player })
+  if (!schema) {
+    return null
+  }
+  // TODO validates schema's compliance
+  for (const property of Object.values(schema.properties)) {
+    if (property.metadata?.images) {
+      for (const [name, image] of Object.entries(property.metadata.images)) {
+        if (isRelativeAsset(image)) {
+          property.metadata.images[name] = addAbsoluteAsset(
+            image,
+            game.kind,
+            'image'
+          )
+        }
+      }
+    }
+  }
+  return schema ? { ...game, schema } : null
+}

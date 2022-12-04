@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { vi } from 'vitest'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import {
@@ -9,6 +10,7 @@ import {
   findAnchor,
   findMeshById,
   findOrCreateHand,
+  getParameterSchema,
   snapTo,
   stackMeshes
 } from '../../src/utils/games.js'
@@ -865,6 +867,114 @@ describe('buildCameraPosition()', () => {
       beta,
       elevation,
       hash: `${target[0]}-${target[1]}-${target[2]}-${alpha}-${beta}-${elevation}`
+    })
+  })
+})
+
+describe('getParameterSchema()', () => {
+  const askForParameters = vi.fn()
+  const kind = faker.lorem.word()
+  const game = { kind, meshes: [{ id: faker.datatype.uuid() }] }
+  const player = { id: faker.datatype.uuid(), name: faker.name.fullName() }
+
+  beforeEach(vi.resetAllMocks)
+
+  it('enriches game data with parameters', async () => {
+    const schema = {
+      type: 'object',
+      properties: {
+        side: {
+          type: 'string',
+          enum: ['white', 'black']
+        }
+      }
+    }
+    askForParameters.mockResolvedValue(schema)
+    expect(
+      await getParameterSchema({
+        descriptor: { askForParameters },
+        game,
+        player
+      })
+    ).toEqual({ ...game, schema })
+    expect(askForParameters).toHaveBeenCalledWith({ game, player })
+  })
+
+  it('handles missing askForParameters()', async () => {
+    expect(
+      await getParameterSchema({ descriptor: {}, game, player })
+    ).toBeNull()
+  })
+
+  it('handles no schema', async () => {
+    askForParameters.mockResolvedValue(null)
+    expect(
+      await getParameterSchema({
+        descriptor: { askForParameters },
+        game,
+        player
+      })
+    ).toBeNull()
+    expect(askForParameters).toHaveBeenCalledWith({ game, player })
+  })
+
+  it('enriches image metadatas', async () => {
+    const { schema } = await getParameterSchema({
+      descriptor: {
+        askForParameters: () => ({
+          type: 'object',
+          properties: {
+            suite: {
+              type: 'string',
+              enum: ['clubs', 'spades'],
+              metadata: {
+                images: {
+                  clubs: 'clubs.png',
+                  spades: 'spades.png'
+                }
+              }
+            },
+            side: {
+              type: 'string',
+              enum: ['white', 'black']
+            }
+          }
+        })
+      },
+      game,
+      player
+    })
+    expect(schema.properties.suite.metadata.images).toEqual({
+      clubs: `/${kind}/images/clubs.png`,
+      spades: `/${kind}/images/spades.png`
+    })
+  })
+
+  it('does not enrich image absolute metadata', async () => {
+    const { schema } = await getParameterSchema({
+      descriptor: {
+        askForParameters: () => ({
+          type: 'object',
+          properties: {
+            suite: {
+              type: 'string',
+              enum: ['clubs', 'spades'],
+              metadata: {
+                images: {
+                  clubs: '/clubs.png',
+                  spades: '#spades.png'
+                }
+              }
+            }
+          }
+        })
+      },
+      game,
+      player
+    })
+    expect(schema.properties.suite.metadata.images).toEqual({
+      clubs: `/clubs.png`,
+      spades: `#spades.png`
     })
   })
 })

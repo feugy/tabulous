@@ -2,7 +2,7 @@ import Ajv from 'ajv/dist/2020.js'
 import { concatMap, mergeMap, Subject } from 'rxjs'
 
 import repositories from '../repositories/index.js'
-import { createMeshes, pickRandom } from '../utils/index.js'
+import { createMeshes, getParameterSchema, pickRandom } from '../utils/index.js'
 import { canAccess } from './catalog.js'
 
 /**
@@ -311,11 +311,6 @@ function isGuest(game, guestId) {
 
 function notifyAllPeers(game) {
   gameListsUpdate$.next([...game.playerIds, ...game.guestIds])
-}
-
-async function getParameterSchema({ descriptor, game, player }) {
-  const schema = await descriptor.askForParameters?.({ game, player })
-  return schema ? { ...game, schema } : null
 }
 
 function validateParameters(schema, parameters) {
