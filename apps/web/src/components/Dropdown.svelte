@@ -80,7 +80,7 @@
 
 <style lang="postcss">
   .wrapper {
-    @apply relative inline-block;
+    @apply relative inline-block h-min;
   }
 
   .arrow {
