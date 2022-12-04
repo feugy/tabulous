@@ -632,7 +632,7 @@ describe('given a subscription to game lists and an initialized repository', () 
       updates.splice(0)
     })
 
-    describe.only('joinGame()', () => {
+    describe('joinGame()', () => {
       it('returns game parameters', async () => {
         expect(await joinGame(game.id, player)).toEqual({ schema, ...game })
       })
