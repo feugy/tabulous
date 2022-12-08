@@ -154,7 +154,7 @@ const colors = [
 
 const gameListsUpdate$ = new Subject()
 
-const ajv = new Ajv({ allErrors: true, strictSchema: false })
+const ajv = new Ajv({ $data: true, allErrors: true, strictSchema: false })
 
 /**
  * @typedef {object} GameListUpdate an updated list of player games.
