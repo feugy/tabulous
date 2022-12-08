@@ -18,7 +18,7 @@
 
   $: iconOnly = !valueAsText && !text
   $: if (valueAsText) {
-    text = value ? value.label || value : text
+    text = value && options?.includes(value) ? value.label || value : null
   }
 
   function handleClick() {

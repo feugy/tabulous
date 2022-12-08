@@ -26,6 +26,13 @@ potenti nullam ac tortor vitae. Sem nulla pharetra diam sit amet. Egestas
 pretium aenean pharetra magna ac placerat vestibulum lectus. Ut porttitor
 leo a diam sollicitudin tempor id. Eget nullam non nisi est. Ullamcorper a
 lacus vestibulum sed arcu non odio euismod lacinia.`
+
+  const objectOptions = [
+    { icon: 'play_arrow', label: 'play' },
+    { icon: 'stop', label: 'stop' },
+    { icon: 'fast_rewind', label: 'previous' },
+    { icon: 'fast_forward', label: 'next' }
+  ]
 </script>
 
 <ToolBox
@@ -74,12 +81,7 @@ lacus vestibulum sed arcu non odio euismod lacinia.`
     props={{
       text: null,
       icon: 'headset_mic',
-      options: [
-        { icon: 'play_arrow', label: 'play' },
-        { icon: 'stop', label: 'stop' },
-        { icon: 'fast_rewind', label: 'previous' },
-        { icon: 'fast_forward', label: 'next' }
-      ]
+      options: objectOptions
     }}
     let:props
     let:handleEvent
@@ -101,12 +103,30 @@ lacus vestibulum sed arcu non odio euismod lacinia.`
       text: 'player',
       icon: 'headset_mic',
       valueAsText: true,
-      options: [
-        { icon: 'play_arrow', label: 'play' },
-        { icon: 'stop', label: 'stop' },
-        { icon: 'fast_rewind', label: 'previous' },
-        { icon: 'fast_forward', label: 'next' }
-      ]
+      value: objectOptions[2],
+      options: objectOptions
+    }}
+    let:props
+    let:handleEvent
+  >
+    <div>
+      <div>{headerText}</div>
+      <Dropdown
+        {...props}
+        on:click={handleEvent}
+        on:select={handleEvent}
+        on:close={handleEvent}
+      />
+      <div>{footerText}</div>
+    </div>
+  </Tool>
+  <Tool
+    name="Invalid value"
+    props={{
+      value: { icon: 'headset_mic', label: 'headset' },
+      icon: 'headset_mic',
+      valueAsText: true,
+      options: objectOptions
     }}
     let:props
     let:handleEvent

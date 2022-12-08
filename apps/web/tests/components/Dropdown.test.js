@@ -24,15 +24,25 @@ describe('Dropdown component', () => {
   }
 
   describe.each([
-    ['textual', ['Salut !', 'Hello!', 'Hallo !']],
-    [
-      'object',
-      [{ label: 'Salut !' }, { label: 'Hello!' }, { label: 'Hallo !' }]
-    ]
-  ])('given %s options', (title, options) => {
+    {
+      title: 'textual',
+      options: ['Salut !', 'Hello!', 'Hallo !'],
+      invalid: 'Hej'
+    },
+    {
+      title: 'object',
+      options: [
+        { label: 'Salut !' },
+        { label: 'Hello!' },
+        { label: 'Hallo !' }
+      ],
+      invalid: { label: 'Hello!' }
+    }
+  ])('given $title options', ({ options, invalid }) => {
     it('displays menu on click', async () => {
       renderComponent({ options })
       const button = screen.getAllByRole('button')[0]
+      expect(button).toHaveTextContent('arrow_drop_down')
       expect(screen.queryByRole('menu')).not.toBeInTheDocument()
       await fireEvent.click(button)
 
@@ -47,10 +57,10 @@ describe('Dropdown component', () => {
     })
 
     it('displays value as text', async () => {
-      let value = options[2].label ?? options[2]
+      let value = options[2]
       renderComponent({ value, options, valueAsText: true })
       const button = screen.getAllByRole('button')[0]
-      expect(button).toHaveTextContent(value)
+      expect(button).toHaveTextContent(options[2]?.label || value)
 
       await fireEvent.click(button)
       await fireEvent.click(screen.queryAllByRole('menuitem')[0])
@@ -61,6 +71,23 @@ describe('Dropdown component', () => {
       )
       expect(handleSelect).toHaveBeenCalledTimes(1)
       expect(handleClose).toHaveBeenCalledTimes(1)
+      expect(handleClick).toHaveBeenCalledTimes(0)
+    })
+
+    it('can not display an invalid value', async () => {
+      renderComponent({ value: invalid, options, valueAsText: true })
+      const button = screen.getAllByRole('button')[0]
+      expect(button).toHaveTextContent('arrow_drop_down')
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+      await fireEvent.click(button)
+
+      expect(screen.queryByRole('menu')).toBeInTheDocument()
+      const items = screen.getAllByRole('menuitem')
+      expect(extractText(items)).toEqual(
+        options.map(option => option.label ?? option)
+      )
+      expect(handleSelect).not.toHaveBeenCalled()
+      expect(handleClose).not.toHaveBeenCalled()
       expect(handleClick).toHaveBeenCalledTimes(0)
     })
 
