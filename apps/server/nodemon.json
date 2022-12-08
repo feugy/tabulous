@@ -1,4 +1,4 @@
 {
   "ignore": ["data/*"],
-  "watch": ["src", "../games/assets"]
+  "watch": ["src", "../games"]
 }
