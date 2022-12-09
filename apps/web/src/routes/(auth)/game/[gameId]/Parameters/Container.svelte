@@ -3,20 +3,16 @@
   import { createEventDispatcher } from 'svelte'
   import { _ } from 'svelte-intl'
 
-  import Choice from './Choice.svelte'
+  import { buildComponents } from './utils'
 
   export let schema = {}
 
-  $: properties = Object.entries(schema?.properties ?? {})
+  let values = {}
+  $: components = buildComponents(values, schema)
 
   const dispatch = createEventDispatcher()
-  let selected = {}
 
   function handleSubmit() {
-    const values = {}
-    for (const [name, { value }] of Object.entries(selected)) {
-      values[name] = value
-    }
     dispatch('submit', values)
   }
 </script>
@@ -25,10 +21,8 @@
   <Pane>
     <header class="heading">{$_('titles.game-parameters')}</header>
     <section>
-      {#each properties as [name, property]}
-        {#if property.enum}
-          <Choice {property} {name} bind:value={selected[name]} />
-        {/if}
+      {#each components as { name, component, property }}
+        <svelte:component this={component} {property} {name} bind:values />
       {/each}
     </section>
     <div>

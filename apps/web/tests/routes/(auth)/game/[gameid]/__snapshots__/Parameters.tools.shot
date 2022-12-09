@@ -21,21 +21,21 @@ exports[`Multiple choices 1`] = `
         class="s-AFGyPIu2lLfy"
         for="side"
       >
-        Couleur
-         : 
+        Couleur : 
       </label>
        
       <span
         class="s-AFGyPIu2lLfy"
       >
         <span
-          aria-expanded="false"
-          aria-haspopup="menu"
           class="wrapper s-rGIwyFRHo8D9"
         >
           <button
+            aria-expanded="false"
+            aria-haspopup="menu"
             class="s-NMyTiX1zi6rz"
             id="side"
+            role="combobox"
           >
             
             <span
@@ -49,6 +49,7 @@ exports[`Multiple choices 1`] = `
             <i
               class="material-icons arrow s-rGIwyFRHo8D9"
               role="button"
+              tabindex="-1"
             >
               arrow_drop_down
             </i>
@@ -68,21 +69,21 @@ exports[`Multiple choices 1`] = `
         class="s-AFGyPIu2lLfy"
         for="position"
       >
-        Suite
-         : 
+        Suite : 
       </label>
        
       <span
         class="s-AFGyPIu2lLfy"
       >
         <span
-          aria-expanded="false"
-          aria-haspopup="menu"
           class="wrapper s-rGIwyFRHo8D9"
         >
           <button
+            aria-expanded="false"
+            aria-haspopup="menu"
             class="s-NMyTiX1zi6rz"
             id="position"
+            role="combobox"
           >
             
             <span
@@ -96,6 +97,7 @@ exports[`Multiple choices 1`] = `
             <i
               class="material-icons arrow s-rGIwyFRHo8D9"
               role="button"
+              tabindex="-1"
             >
               arrow_drop_down
             </i>
@@ -162,21 +164,21 @@ exports[`Single choice 1`] = `
         class="s-AFGyPIu2lLfy"
         for="side"
       >
-        Couleur
-         : 
+        Couleur : 
       </label>
        
       <span
         class="s-AFGyPIu2lLfy"
       >
         <span
-          aria-expanded="false"
-          aria-haspopup="menu"
           class="wrapper s-rGIwyFRHo8D9"
         >
           <button
+            aria-expanded="false"
+            aria-haspopup="menu"
             class="s-NMyTiX1zi6rz"
             id="side"
+            role="combobox"
           >
             
             <span
@@ -190,6 +192,7 @@ exports[`Single choice 1`] = `
             <i
               class="material-icons arrow s-rGIwyFRHo8D9"
               role="button"
+              tabindex="-1"
             >
               arrow_drop_down
             </i>
