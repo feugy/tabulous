@@ -48,14 +48,14 @@ describe('GameMenu connected component', () => {
     const results = render(
       html`<${GameMenu} ...${props} on:invite-player=${handleInvitePlayer} />`
     )
-    fireEvent.click(screen.getByRole('button'))
+    fireEvent.click(screen.getByRole('combobox'))
     await tick()
     return results
   }
 
   it('has relevant options', async () => {
     await renderAndOpenComponent()
-    expect(screen.getByRole('button')).toHaveTextContent('menu')
+    expect(screen.getByRole('combobox')).toHaveTextContent('menu')
     expect(selectHomeOption()).toBeInTheDocument()
     expect(selectInviteOption()).toBeInTheDocument()
     expect(selectEnterFullscreenOption()).toBeInTheDocument()

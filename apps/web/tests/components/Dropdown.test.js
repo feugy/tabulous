@@ -41,7 +41,7 @@ describe('Dropdown component', () => {
   ])('given $title options', ({ options, invalid }) => {
     it('displays menu on click', async () => {
       renderComponent({ options })
-      const button = screen.getAllByRole('button')[0]
+      const button = screen.getAllByRole('combobox')[0]
       expect(button).toHaveTextContent('arrow_drop_down')
       expect(screen.queryByRole('menu')).not.toBeInTheDocument()
       await fireEvent.click(button)
@@ -59,7 +59,7 @@ describe('Dropdown component', () => {
     it('displays value as text', async () => {
       let value = options[2]
       renderComponent({ value, options, valueAsText: true })
-      const button = screen.getAllByRole('button')[0]
+      const button = screen.getAllByRole('combobox')[0]
       expect(button).toHaveTextContent(options[2]?.label || value)
 
       await fireEvent.click(button)
@@ -76,7 +76,7 @@ describe('Dropdown component', () => {
 
     it('can not display an invalid value', async () => {
       renderComponent({ value: invalid, options, valueAsText: true })
-      const button = screen.getAllByRole('button')[0]
+      const button = screen.getAllByRole('combobox')[0]
       expect(button).toHaveTextContent('arrow_drop_down')
       expect(screen.queryByRole('menu')).not.toBeInTheDocument()
       await fireEvent.click(button)
@@ -93,7 +93,7 @@ describe('Dropdown component', () => {
 
     it('selects option with mouse', async () => {
       renderComponent({ options })
-      const button = screen.getAllByRole('button')[0]
+      const button = screen.getAllByRole('combobox')[0]
       await fireEvent.click(button)
       await fireEvent.click(screen.queryAllByRole('menuitem')[2])
 
@@ -107,7 +107,7 @@ describe('Dropdown component', () => {
 
     it('selects option with keyboard', async () => {
       renderComponent({ options })
-      const button = screen.getAllByRole('button')[0]
+      const button = screen.getAllByRole('combobox')[0]
       await fireEvent.click(button)
       await fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' })
       await fireEvent.keyDown(document.activeElement, { key: 'ArrowRight' })
@@ -122,7 +122,7 @@ describe('Dropdown component', () => {
 
     it('does not select the current option', async () => {
       renderComponent({ options })
-      const button = screen.getAllByRole('button')[0]
+      const button = screen.getAllByRole('combobox')[0]
       await fireEvent.click(button)
       await fireEvent.click(screen.queryAllByRole('menuitem')[2])
       await fireEvent.click(button)
@@ -138,7 +138,8 @@ describe('Dropdown component', () => {
 
     it('can split button and arrow clicks', async () => {
       renderComponent({ options, openOnClick: false })
-      const [button, arrow] = screen.getAllByRole('button')
+      const button = screen.getByRole('combobox')
+      const arrow = screen.getByRole('button')
       await fireEvent.click(arrow)
       expect(screen.queryByRole('menu')).toBeInTheDocument()
 
@@ -158,7 +159,7 @@ describe('Dropdown component', () => {
 
     it('closes menu on click', async () => {
       renderComponent({ options })
-      const button = screen.getAllByRole('button')[0]
+      const button = screen.getByRole('combobox')
       await fireEvent.click(button)
       expect(screen.queryByRole('menu')).toBeInTheDocument()
 
@@ -179,8 +180,8 @@ describe('Dropdown component', () => {
 
     it('has no arrow on single option', async () => {
       renderComponent({ options: options.slice(0, 1) })
-      expect(screen.getAllByRole('button')).toHaveLength(1)
-      await fireEvent.click(screen.getByRole('button'))
+      expect(screen.queryByRole('button')).not.toBeInTheDocument()
+      await fireEvent.click(screen.getByRole('combobox'))
       expect(screen.queryAllByRole('menuitem')).toHaveLength(1)
 
       expect(handleSelect).not.toHaveBeenCalled()

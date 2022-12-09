@@ -44,17 +44,20 @@
   }
 </script>
 
-<span
-  class="wrapper"
-  bind:this={anchor}
-  aria-haspopup="menu"
-  aria-expanded={open}
->
-  <Button {...$$restProps} {text} on:click={handleClick}>
+<span class="wrapper" bind:this={anchor}>
+  <Button
+    {...$$restProps}
+    {text}
+    role="combobox"
+    aria-haspopup="menu"
+    aria-expanded={open}
+    on:click={handleClick}
+  >
     <slot name="icon" />
     {#if withArrow && options.length > 1}
       <i
         role="button"
+        tabindex={openOnClick ? -1 : 0}
         class:iconOnly
         class="material-icons arrow"
         class:split={!openOnClick}

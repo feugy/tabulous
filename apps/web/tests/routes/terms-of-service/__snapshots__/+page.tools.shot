@@ -2324,12 +2324,13 @@ exports[`Connected 1`] = `
       </span>
        
       <span
-        aria-expanded="false"
-        aria-haspopup="menu"
         class="wrapper s-rGIwyFRHo8D9"
       >
         <button
+          aria-expanded="false"
+          aria-haspopup="menu"
           class="transparent s-NMyTiX1zi6rz"
+          role="combobox"
         >
           
           

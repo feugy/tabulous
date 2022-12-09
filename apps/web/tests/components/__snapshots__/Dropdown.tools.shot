@@ -16,12 +16,13 @@ erat pellentesque adipiscing commodo elit at imperdiet.
   </div>
    
   <span
-    aria-expanded="false"
-    aria-haspopup="menu"
     class="wrapper s-rGIwyFRHo8D9"
   >
     <button
+      aria-expanded="false"
+      aria-haspopup="menu"
       class="s-NMyTiX1zi6rz"
+      role="combobox"
     >
       <span
         class="material-icons s-NMyTiX1zi6rz"
@@ -35,6 +36,7 @@ erat pellentesque adipiscing commodo elit at imperdiet.
       <i
         class="material-icons arrow s-rGIwyFRHo8D9 iconOnly"
         role="button"
+        tabindex="-1"
       >
         arrow_drop_down
       </i>
@@ -81,12 +83,13 @@ erat pellentesque adipiscing commodo elit at imperdiet.
   </div>
    
   <span
-    aria-expanded="false"
-    aria-haspopup="menu"
     class="wrapper s-rGIwyFRHo8D9"
   >
     <button
+      aria-expanded="false"
+      aria-haspopup="menu"
       class="s-NMyTiX1zi6rz"
+      role="combobox"
     >
       <span
         class="material-icons s-NMyTiX1zi6rz"
@@ -100,6 +103,7 @@ erat pellentesque adipiscing commodo elit at imperdiet.
       <i
         class="material-icons arrow s-rGIwyFRHo8D9"
         role="button"
+        tabindex="-1"
       >
         arrow_drop_down
       </i>
@@ -146,12 +150,13 @@ erat pellentesque adipiscing commodo elit at imperdiet.
   </div>
    
   <span
-    aria-expanded="false"
-    aria-haspopup="menu"
     class="wrapper s-rGIwyFRHo8D9"
   >
     <button
+      aria-expanded="false"
+      aria-haspopup="menu"
       class="s-NMyTiX1zi6rz"
+      role="combobox"
     >
       <span
         class="material-icons s-NMyTiX1zi6rz"
@@ -170,6 +175,7 @@ erat pellentesque adipiscing commodo elit at imperdiet.
       <i
         class="material-icons arrow s-rGIwyFRHo8D9"
         role="button"
+        tabindex="-1"
       >
         arrow_drop_down
       </i>
@@ -218,12 +224,13 @@ erat pellentesque adipiscing commodo elit at imperdiet.
   </div>
    
   <span
-    aria-expanded="false"
-    aria-haspopup="menu"
     class="wrapper s-rGIwyFRHo8D9"
   >
     <button
+      aria-expanded="false"
+      aria-haspopup="menu"
       class="s-NMyTiX1zi6rz"
+      role="combobox"
     >
       <span
         class="material-icons s-NMyTiX1zi6rz"
@@ -242,6 +249,7 @@ erat pellentesque adipiscing commodo elit at imperdiet.
       <i
         class="material-icons arrow s-rGIwyFRHo8D9"
         role="button"
+        tabindex="-1"
       >
         arrow_drop_down
       </i>
@@ -288,12 +296,13 @@ erat pellentesque adipiscing commodo elit at imperdiet.
   </div>
    
   <span
-    aria-expanded="false"
-    aria-haspopup="menu"
     class="wrapper s-rGIwyFRHo8D9"
   >
     <button
+      aria-expanded="false"
+      aria-haspopup="menu"
       class="s-NMyTiX1zi6rz"
+      role="combobox"
     >
       <span
         class="material-icons s-NMyTiX1zi6rz"
@@ -307,6 +316,7 @@ erat pellentesque adipiscing commodo elit at imperdiet.
       <i
         class="material-icons arrow s-rGIwyFRHo8D9 iconOnly split"
         role="button"
+        tabindex="0"
       >
         arrow_drop_down
       </i>
@@ -353,12 +363,13 @@ erat pellentesque adipiscing commodo elit at imperdiet.
   </div>
    
   <span
-    aria-expanded="false"
-    aria-haspopup="menu"
     class="wrapper s-rGIwyFRHo8D9"
   >
     <button
+      aria-expanded="false"
+      aria-haspopup="menu"
       class="s-NMyTiX1zi6rz"
+      role="combobox"
     >
       <span
         class="material-icons s-NMyTiX1zi6rz"
@@ -377,6 +388,7 @@ erat pellentesque adipiscing commodo elit at imperdiet.
       <i
         class="material-icons arrow s-rGIwyFRHo8D9"
         role="button"
+        tabindex="-1"
       >
         arrow_drop_down
       </i>
