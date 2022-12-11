@@ -2,7 +2,12 @@ import Ajv from 'ajv/dist/2020.js'
 import { concatMap, mergeMap, Subject } from 'rxjs'
 
 import repositories from '../repositories/index.js'
-import { createMeshes, getParameterSchema, pickRandom } from '../utils/index.js'
+import {
+  createMeshes,
+  enrichAssets,
+  getParameterSchema,
+  pickRandom
+} from '../utils/index.js'
 import { canAccess } from './catalog.js'
 
 /**
@@ -199,20 +204,22 @@ export async function createGame(kind, player) {
   // eslint-disable-next-line no-unused-vars
   const { name, build, addPlayer, askForParameters, maxSeats, ...gameProps } =
     descriptor
-  const game = await repositories.games.save({
-    ...gameProps,
-    kind,
-    created: Date.now(),
-    ownerId: player.id,
-    playerIds: [],
-    guestIds: [player.id],
-    availableSeats: maxSeats ?? 2,
-    meshes: await createMeshes(kind, descriptor),
-    messages: [],
-    cameras: [],
-    hands: [],
-    preferences: []
-  })
+  const game = await repositories.games.save(
+    enrichAssets({
+      ...gameProps,
+      kind,
+      created: Date.now(),
+      ownerId: player.id,
+      playerIds: [],
+      guestIds: [player.id],
+      availableSeats: maxSeats ?? 2,
+      meshes: await createMeshes(kind, descriptor),
+      messages: [],
+      cameras: [],
+      hands: [],
+      preferences: []
+    })
+  )
   notifyAllPeers(game)
   return game
 }
@@ -387,8 +394,7 @@ async function enrichWithPlayer({ descriptor, game, guest, parameters }) {
   if (!descriptor?.addPlayer) {
     return game
   }
-  game = await descriptor.addPlayer(game, guest, parameters)
-  return game
+  return enrichAssets(await descriptor.addPlayer(game, guest, parameters))
 }
 
 /**

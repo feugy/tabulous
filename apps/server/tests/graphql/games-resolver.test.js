@@ -28,6 +28,7 @@ describe('given a started server', () => {
   let server
   let ws
   let restoreServices
+  vi.spyOn(console, 'warn').mockImplementation(() => {})
   const players = [
     { id: 'player-0', username: faker.name.firstName() },
     { id: 'player-1', username: faker.name.firstName() },

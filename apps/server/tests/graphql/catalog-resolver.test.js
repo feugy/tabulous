@@ -24,6 +24,7 @@ vi.mock('../../src/services/index.js', () => ({
 describe('given a started server', () => {
   let server
   let services
+  vi.spyOn(console, 'warn').mockImplementation(() => {})
   const player = { id: faker.datatype.uuid(), username: faker.name.firstName() }
   const admin = {
     id: faker.datatype.uuid(),
