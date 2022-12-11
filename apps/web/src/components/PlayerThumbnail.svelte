@@ -8,6 +8,7 @@
   $: isShort = dimension < 60
   $: hasImage = player?.avatar
   $: caption = isShort ? abbreviate(player?.username) : player?.username
+  $: style = formatVariables()
 
   function formatVariables() {
     return [
@@ -23,7 +24,7 @@
 <figure
   class:positioned={!!screenPosition}
   class:colored={!!player?.color}
-  style={formatVariables()}
+  {style}
 >
   <img
     class:hasImage
