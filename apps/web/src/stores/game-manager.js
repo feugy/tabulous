@@ -253,48 +253,55 @@ export async function joinGame(
       connectWith(peer.id, turnCredentials)
     }
   }
-  if (isNextHost(currentPlayerId)) {
-    const promise = load(game, currentPlayerId, true)
+  const isHost = isNextHost(currentPlayerId)
+  if (isGameParameter(game)) {
+    if (isHost) {
+      currentGameSubscriptions.push(
+        ...takeHostRole(gameId, currentPlayerId, false)
+      )
+    }
+    return game
+  }
+  if (isHost) {
+    const loadComplete = load(game, currentPlayerId, true)
     currentGameSubscriptions.push(...takeHostRole(gameId, currentPlayerId))
-    await promise
+    await loadComplete
     return null
   }
-  return isGameParameter(game)
-    ? game
-    : new Promise((resolve, reject) => {
-        const gameReceptionTimeout = setTimeout(() => {
-          const error = new Error(
-            `No game data after ${Math.floor(gameReceptionDelay / 1000)}s`
-          )
-          logger.error(error.message)
-          unsubscribeCurrentGame()
-          closeChannels()
-          reject(error)
-        }, gameReceptionDelay)
+  return new Promise((resolve, reject) => {
+    const gameReceptionTimeout = setTimeout(() => {
+      const error = new Error(
+        `No game data after ${Math.floor(gameReceptionDelay / 1000)}s`
+      )
+      logger.error(error.message)
+      unsubscribeCurrentGame()
+      closeChannels()
+      reject(error)
+    }, gameReceptionDelay)
 
-        let isFirstLoad = true
-        currentGameSubscriptions.push(
-          cameraSaves$.subscribe(shareCameras(currentPlayerId)),
-          handMeshes$.subscribe(shareHand(currentPlayerId)),
-          lastMessageReceived
-            .pipe(filter(({ data }) => data?.type === 'game-sync'))
-            .subscribe(({ data, playerId }) => {
-              logger.info(
-                { game: data, playerId },
-                `loading game data (${data.id})`
-              )
-              if (hostId$.value !== playerId) {
-                hostId$.next(playerId)
-              }
-              load(data, currentPlayerId, isFirstLoad)
-              if (isFirstLoad) {
-                clearTimeout(gameReceptionTimeout)
-                resolve()
-              }
-              isFirstLoad = false
-            })
-        )
-      })
+    let isFirstLoad = true
+    currentGameSubscriptions.push(
+      cameraSaves$.subscribe(shareCameras(currentPlayerId)),
+      handMeshes$.subscribe(shareHand(currentPlayerId)),
+      lastMessageReceived
+        .pipe(filter(({ data }) => data?.type === 'game-sync'))
+        .subscribe(({ data, playerId }) => {
+          logger.info(
+            { game: data, playerId },
+            `loading game data (${data.id})`
+          )
+          if (hostId$.value !== playerId) {
+            hostId$.next(playerId)
+          }
+          load(data, currentPlayerId, isFirstLoad)
+          if (isFirstLoad) {
+            clearTimeout(gameReceptionTimeout)
+            resolve()
+          }
+          isFirstLoad = false
+        })
+    )
+  })
 }
 
 async function load(game, currentPlayerId, firstLoad) {
@@ -356,10 +363,12 @@ function mergeSelections({ playerId, selectedIds }) {
   return selections
 }
 
-function takeHostRole(gameId, currentPlayerId) {
+function takeHostRole(gameId, currentPlayerId, shouldShareGame = true) {
   logger.info({ gameId }, `taking game host role`)
   hostId$.next(currentPlayerId)
-  shareGame(currentPlayerId)
+  if (shouldShareGame) {
+    shareGame(currentPlayerId)
+  }
 
   engine.onBeforeDisposeObservable.addOnce(() => {
     logger.info(

@@ -220,6 +220,39 @@ describe('given a mocked game engine', () => {
       expect(toastReceived).not.toHaveBeenCalled()
     })
 
+    it('does not load data when receiving game parameters', async () => {
+      const gameId = faker.datatype.uuid()
+      const game = {
+        id: gameId,
+        players: [player],
+        schemaString: '{}'
+      }
+      runMutation.mockResolvedValueOnce(game)
+      expect(await joinGame(gameId, { player, turnCredentials })).toEqual(game)
+      expect(runMutation).toHaveBeenCalledWith(graphQL.joinGame, {
+        gameId,
+        parameters: undefined
+      })
+      expect(runMutation).toHaveBeenCalledTimes(1)
+      expect(runSubscription).toHaveBeenCalledWith(graphQL.receiveGameUpdates, {
+        gameId
+      })
+      expect(runSubscription).toHaveBeenCalledTimes(1)
+      expect(engine.load).not.toHaveBeenCalled()
+      expect(loadCameraSaves).not.toHaveBeenCalled()
+      expect(loadThread).not.toHaveBeenCalled()
+      expect(connectWith).not.toHaveBeenCalled()
+      expect(send).not.toHaveBeenCalled()
+      expect(openChannels).toHaveBeenCalledWith(player, turnCredentials)
+      expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(
+        new Map([[player.id, { ...player, isHost: true, playing: true }]])
+      )
+      expect(playerColorReceived).toHaveBeenLastCalledWith(
+        findPlayerColor(game, player.id)
+      )
+      expect(toastReceived).not.toHaveBeenCalled()
+    })
+
     it('loads camera positions upon game loading', async () => {
       const gameId = faker.datatype.uuid()
       const meshes = [{ id: 'mesh1' }]
