@@ -33,9 +33,6 @@ export default defineConfig(({ mode }) => ({
   build: {
     sourcemap: mode === 'integration' ? 'inline' : false
   },
-  ssr: {
-    noExternal: ['simple-peer-light']
-  },
   optimizeDeps: {
     exclude: ['@urql/svelte', '@atelier-wb/ui']
   },

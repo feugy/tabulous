@@ -1,5 +1,7 @@
 # TODO
 
+bug: can not start game when no authenticated
+
 ## Brittle tests
 
 - tests/atelier/tools.test.js > Toolshot > components/RadialMenu.tools.svelte
