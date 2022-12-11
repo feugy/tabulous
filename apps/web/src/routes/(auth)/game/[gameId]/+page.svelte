@@ -88,6 +88,7 @@
         }
       })
       .catch(err => {
+        console.error(err)
         toastError({ content: err.message })
         goto('/home')
       })

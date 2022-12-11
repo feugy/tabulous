@@ -12,7 +12,7 @@
 
   const dispatch = createEventDispatcher()
   let dimension = { width: 0, height: 0 }
-  let zoom = 1
+  let zoom = minZoom
   let pos = null
   let container = null
   let image = null
