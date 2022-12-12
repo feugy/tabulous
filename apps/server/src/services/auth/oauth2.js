@@ -29,7 +29,7 @@ export class OAuth2Provider {
   }
 
   /**
-   * Store final location for 10' and return a unique key that can be used as CSRF token.
+   * Store final location for 1h and return a unique key that can be used as CSRF token.
    * Intended for subclasses.
    * @param {string} [location='/'] - the stored location
    * @returns {string} key to access this location
