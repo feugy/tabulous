@@ -23,10 +23,10 @@ describe('Sveltekit handle() hook', () => {
 
   it('redirects and sets cookie when token is in the search query', async () => {
     const token = faker.datatype.uuid()
-    const pathname = `/${faker.internet.domainWord()}`
+    const pathname = `/current-${faker.internet.domainWord()}?data=${faker.lorem.word()}`
     const response = await handle(
       buildHandleInput({
-        url: `${pathname}?token=${token}`
+        url: `${pathname}&token=${token}`
       })
     )
     expect(response.status).toBe(303)
@@ -38,8 +38,8 @@ describe('Sveltekit handle() hook', () => {
 
   it('redirects to desired url when token is in the search query', async () => {
     const token = faker.datatype.uuid()
-    const pathname = `/${faker.internet.domainWord()}`
-    const desired = `/${faker.internet.domainWord()}`
+    const pathname = `/current-${faker.internet.domainWord()}`
+    const desired = `/redirected-${faker.internet.domainWord()}?data=${faker.lorem.word()}`
     const response = await handle(
       buildHandleInput({
         url: `${pathname}?token=${token}&redirect=${encodeURIComponent(

@@ -37,9 +37,10 @@ function logOutAndRedirect() {
 
 function extractTokenAndRedirect(url) {
   const token = url.searchParams.get('token')
-  const location = url.searchParams.get('redirect') ?? url.pathname
+  const redirect = url.searchParams.get('redirect')
   url.searchParams.delete('token')
   url.searchParams.delete('redirect')
+  const location = redirect ?? url.href.replace(url.origin, '')
   return setCookie(
     new Response(null, {
       status: 303,
