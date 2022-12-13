@@ -53,6 +53,14 @@ export default async function registerGraphQL(
         token,
         conf: app.conf
       }
+    },
+    errorFormatter: (execution, context) => {
+      for (const error of execution.errors) {
+        console.warn(error.stack)
+      }
+      const response = mercurius.defaultErrorFormatter(execution, context)
+      response.statusCode = 200
+      return response
     }
   })
 }

@@ -11,7 +11,7 @@ export class AuthenticatedHeaderMixin {
   constructor(page) {
     this.page = page
     /** @type {Locator} */
-    this.accountDropdown = page.locator('header >> role=button', {
+    this.accountDropdown = page.locator('header >> role=combobox', {
       has: page.locator('figure')
     })
     /** @type {Locator} */

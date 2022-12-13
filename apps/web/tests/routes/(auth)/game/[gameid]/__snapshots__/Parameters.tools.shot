@@ -17,31 +17,31 @@ exports[`Multiple choices 1`] = `
     <section
       class="s-_xyHwNw5vPU9"
     >
-      <fieldset
+      <label
+        class="s-AFGyPIu2lLfy"
+        for="side"
+      >
+        Couleur : 
+      </label>
+       
+      <span
         class="s-AFGyPIu2lLfy"
       >
-        <label
-          class="s-AFGyPIu2lLfy"
-          for="side"
-        >
-          Couleur
-           : 
-        </label>
-         
         <span
-          aria-expanded="false"
-          aria-haspopup="menu"
           class="wrapper s-rGIwyFRHo8D9"
         >
           <button
+            aria-expanded="false"
+            aria-haspopup="menu"
             class="s-NMyTiX1zi6rz"
             id="side"
+            role="combobox"
           >
             
             <span
               class="text s-NMyTiX1zi6rz"
             >
-              Noirs
+              black
             </span>
             
             
@@ -49,6 +49,7 @@ exports[`Multiple choices 1`] = `
             <i
               class="material-icons arrow s-rGIwyFRHo8D9"
               role="button"
+              tabindex="-1"
             >
               arrow_drop_down
             </i>
@@ -60,34 +61,35 @@ exports[`Multiple choices 1`] = `
           <!--&lt;Menu&gt;-->
         </span>
         <!--&lt;Dropdown&gt;-->
-      </fieldset>
+         
+      </span>
       <!--&lt;Choice&gt;-->
       
-      <fieldset
+      <label
+        class="s-AFGyPIu2lLfy"
+        for="position"
+      >
+        Suite : 
+      </label>
+       
+      <span
         class="s-AFGyPIu2lLfy"
       >
-        <label
-          class="s-AFGyPIu2lLfy"
-          for="position"
-        >
-          Position
-           : 
-        </label>
-         
         <span
-          aria-expanded="false"
-          aria-haspopup="menu"
           class="wrapper s-rGIwyFRHo8D9"
         >
           <button
+            aria-expanded="false"
+            aria-haspopup="menu"
             class="s-NMyTiX1zi6rz"
             id="position"
+            role="combobox"
           >
             
             <span
               class="text s-NMyTiX1zi6rz"
             >
-              Haut
+              Trèfle
             </span>
             
             
@@ -95,6 +97,7 @@ exports[`Multiple choices 1`] = `
             <i
               class="material-icons arrow s-rGIwyFRHo8D9"
               role="button"
+              tabindex="-1"
             >
               arrow_drop_down
             </i>
@@ -106,7 +109,13 @@ exports[`Multiple choices 1`] = `
           <!--&lt;Menu&gt;-->
         </span>
         <!--&lt;Dropdown&gt;-->
-      </fieldset>
+         
+        <img
+          alt=""
+          class="s-AFGyPIu2lLfy"
+          src="http://localhost:3001/games/french-suited-card/images/clubs-1.svg"
+        />
+      </span>
       <!--&lt;Choice&gt;-->
       
     </section>
@@ -151,25 +160,25 @@ exports[`Single choice 1`] = `
     <section
       class="s-_xyHwNw5vPU9"
     >
-      <fieldset
+      <label
+        class="s-AFGyPIu2lLfy"
+        for="side"
+      >
+        Couleur : 
+      </label>
+       
+      <span
         class="s-AFGyPIu2lLfy"
       >
-        <label
-          class="s-AFGyPIu2lLfy"
-          for="side"
-        >
-          Couleur
-           : 
-        </label>
-         
         <span
-          aria-expanded="false"
-          aria-haspopup="menu"
           class="wrapper s-rGIwyFRHo8D9"
         >
           <button
+            aria-expanded="false"
+            aria-haspopup="menu"
             class="s-NMyTiX1zi6rz"
             id="side"
+            role="combobox"
           >
             
             <span
@@ -183,6 +192,7 @@ exports[`Single choice 1`] = `
             <i
               class="material-icons arrow s-rGIwyFRHo8D9"
               role="button"
+              tabindex="-1"
             >
               arrow_drop_down
             </i>
@@ -194,7 +204,8 @@ exports[`Single choice 1`] = `
           <!--&lt;Menu&gt;-->
         </span>
         <!--&lt;Dropdown&gt;-->
-      </fieldset>
+         
+      </span>
       <!--&lt;Choice&gt;-->
       
     </section>

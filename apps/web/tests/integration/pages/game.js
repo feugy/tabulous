@@ -19,7 +19,7 @@ export const GamePage = mixin(
       /** @type {Page} */
       this.page = page
       /** @type {Locator} */
-      this.menuButton = page.locator('role=button', { hasText: 'menu' })
+      this.menuButton = page.locator('role=combobox', { hasText: 'menu' })
       /** @type {Locator} */
       this.defaultCameraButton = page.locator('role=button', {
         hasText: 'videocam'

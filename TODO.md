@@ -365,3 +365,5 @@ There's no good way to solve it, and it's an [ongoing discussion](https://github
 
 Game parameters need the ability to express contraints in between parameters (second parameter options depends on selected value for first parameter).
 JSON Type Definition [does not allow conditionals](https://ajv.js.org/guide/schema-language.html#json-type-definition-2), and scafolding UI component out of [Joi schema](https://joi.dev/api/?v=17.7.0#anydescribe) is too complicated, so let's use [JSON Schema](https://ajv.js.org/json-schema.html#if-then-else)
+
+[online JSON schema playground](https://extendsclass.com/json-schema-validator.html)

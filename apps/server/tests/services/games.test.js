@@ -106,7 +106,9 @@ describe('given a subscription to game lists and an initialized repository', () 
         ownerId: player.id,
         playerIds: [],
         guestIds: [player.id],
-        meshes: expect.any(Array),
+        meshes: [
+          expect.objectContaining({ texture: `/${kind}/textures/test.ktx2` })
+        ],
         cameras: [],
         messages: [],
         hands: [],
@@ -196,6 +198,7 @@ describe('given a subscription to game lists and an initialized repository', () 
       it('automatically joins a game without parameters', async () => {
         expect(await joinGame(game.id, player)).toEqual({
           ...game,
+          meshes: [...game.meshes, expect.any(Object)],
           availableSeats: 1,
           guestIds: [],
           playerIds: [player.id],
@@ -214,7 +217,14 @@ describe('given a subscription to game lists and an initialized repository', () 
           ownerId: player.id,
           playerIds: [player.id],
           guestIds: [],
-          meshes: expect.any(Array),
+          meshes: [
+            expect.objectContaining({
+              texture: `/${game.kind}/textures/test.ktx2`
+            }),
+            expect.objectContaining({
+              texture: `/${game.kind}/textures/test2.ktx2`
+            })
+          ],
           cameras: [],
           messages: [],
           hands: [{ playerId: player.id, meshes: [] }],
@@ -268,6 +278,7 @@ describe('given a subscription to game lists and an initialized repository', () 
           const updated = await joinGame(game.id, peer)
           expect(updated).toEqual({
             ...game,
+            meshes: [...game.meshes, expect.any(Object)],
             availableSeats: 0,
             playerIds: [player.id, peer.id],
             hands: [
@@ -344,7 +355,7 @@ describe('given a subscription to game lists and an initialized repository', () 
           const meshes = [...game.meshes, game.meshes[0]]
           expect(await saveGame({ id: game.id, meshes }, player.id)).toEqual({
             ...game,
-            meshes: [game.meshes[0], game.meshes[0]],
+            meshes: [game.meshes[0], expect.anything(), game.meshes[0]],
             cameras: [],
             messages: []
           })

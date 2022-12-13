@@ -1,7 +1,6 @@
 <script>
   import { ConfirmDialogue, Header } from '@src/components'
   import {
-    createGame,
     deleteGame,
     receiveGameListUpdates,
     toastError,
@@ -11,7 +10,9 @@
   import { readable } from 'svelte/store'
   import { _, locale } from 'svelte-intl'
 
+  import { browser } from '$app/environment'
   import { goto } from '$app/navigation'
+  import { page } from '$app/stores'
 
   import CatalogItem from './CatalogItem.svelte'
   import GameLink from './GameLink.svelte'
@@ -28,6 +29,15 @@
     currentGames$ = receiveGameListUpdates(data.currentGames)
   }
 
+  $: if (browser && $page.url.searchParams.get('game-name')) {
+    $page.url.searchParams.delete('game-name')
+    goto($page.url.toString())
+  }
+
+  $: if (data.creationError) {
+    toastError({ content: translateError($_, data.creationError) })
+  }
+
   async function handleDeleteGame({ detail: game }) {
     gameToDelete = game
   }
@@ -41,10 +51,11 @@
   }
 
   async function handleCreateGame({ detail: name }) {
-    try {
-      goto(`/game/${await createGame(name)}`)
-    } catch (err) {
-      toastError({ content: translateError($_, err) })
+    const creationUrl = `/home?game-name=${encodeURIComponent(name)}`
+    if (user) {
+      goto(creationUrl)
+    } else {
+      goto(`login?redirect=${encodeURIComponent(creationUrl)}`)
     }
   }
 </script>

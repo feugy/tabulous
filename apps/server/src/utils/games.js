@@ -3,6 +3,10 @@ import merge from 'deepmerge'
 
 import { shuffle } from './collections.js'
 
+/** @typedef {import('../services/games.js').Game} Game */
+/** @typedef {import('../services/games.js').Mesh} Mesh */
+/** @typedef {import('../services/games.js').Anchor} Anchor */
+
 /**
  * @typedef {object} GameDescriptor static descriptor of a game.
  *
@@ -60,28 +64,6 @@ export async function createMeshes(kind, descriptor) {
   const { slots, bags, meshes } = await descriptor.build()
   const meshById = cloneAll(meshes)
   const allMeshes = [...meshById.values()]
-  for (const mesh of allMeshes) {
-    if (isRelativeAsset(mesh.texture)) {
-      mesh.texture = addAbsoluteAsset(mesh.texture, kind, 'texture')
-    }
-    if (isRelativeAsset(mesh.file)) {
-      mesh.file = addAbsoluteAsset(mesh.file, kind, 'model')
-    }
-    if (isRelativeAsset(mesh.detailable?.frontImage)) {
-      mesh.detailable.frontImage = addAbsoluteAsset(
-        mesh.detailable.frontImage,
-        kind,
-        'image'
-      )
-    }
-    if (isRelativeAsset(mesh.detailable?.backImage)) {
-      mesh.detailable.backImage = addAbsoluteAsset(
-        mesh.detailable.backImage,
-        kind,
-        'image'
-      )
-    }
-  }
   const meshesByBagId = randomizeBags(bags, meshById)
   for (const slot of slots ?? []) {
     fillSlot(slot, meshesByBagId, allMeshes)
@@ -98,18 +80,47 @@ function cloneAll(meshes) {
   return all
 }
 
+/**
+ * Walk through all game meshes (main scene and player hands)
+ * to enrich their assets (textures, images, models) with absoluyte paths.
+ * @param {Game} game - altered game data.
+ * @returns {Game} the altered game data.
+ */
+export function enrichAssets(game) {
+  const allMeshes = [
+    ...game.meshes,
+    ...game.hands.flatMap(({ meshes }) => meshes)
+  ]
+  for (const mesh of allMeshes) {
+    if (isRelativeAsset(mesh.texture)) {
+      mesh.texture = addAbsoluteAsset(mesh.texture, game.kind, 'texture')
+    }
+    if (isRelativeAsset(mesh.file)) {
+      mesh.file = addAbsoluteAsset(mesh.file, game.kind, 'model')
+    }
+    if (isRelativeAsset(mesh.detailable?.frontImage)) {
+      mesh.detailable.frontImage = addAbsoluteAsset(
+        mesh.detailable.frontImage,
+        game.kind,
+        'image'
+      )
+    }
+    if (isRelativeAsset(mesh.detailable?.backImage)) {
+      mesh.detailable.backImage = addAbsoluteAsset(
+        mesh.detailable.backImage,
+        game.kind,
+        'image'
+      )
+    }
+  }
+  return game
+}
+
 function isRelativeAsset(path) {
   return path && !path.startsWith('#') && !path.startsWith('/')
 }
 
-/**
- * Adds prefix to a given's game asset, including game id and asset type.
- * @param {string} path - path to the desired asset
- * @param {string} gameKind - kind (name) of the game
- * @param {string} assetType - either model, texture or image
- * @returns {string} the final, full, asset path
- */
-export function addAbsoluteAsset(path, gameKind, assetType) {
+function addAbsoluteAsset(path, gameKind, assetType) {
   return `/${gameKind}/${assetType}s/${path}`
 }
 
@@ -156,8 +167,8 @@ function fillSlot(
 /**
  * Crawl all meshes to find a given anchor Alter game data to draw some meshes from a given anchor into a player's hand.
  * @param {string} anchorId - desired anchor id.
- * @param {import('../services/games.js').Mesh[]} meshes - list of mesh to search into.
- * @returns {import('../services/games.js').Anchor|null} the desired anchor, or null if it can't be found.
+ * @param {Mesh[]} meshes - list of mesh to search into.
+ * @returns {Anchor|null} the desired anchor, or null if it can't be found.
  */
 export function findAnchor(anchorId, meshes) {
   if (!meshes) {
@@ -204,7 +215,7 @@ function removeDandlingMeshes(meshesByBagId, allMeshes) {
  * Alter game data to draw some meshes from a given anchor into a player's hand.
  * Automatically creates player hands if needed.
  * If provided anchor has fewer meshes as requested, depletes it.
- * @param {import('../services/games.js').Game} game - altered game data.
+ * @param {Game} game - altered game data.
  * @param {object} params - operation parameters:
  * @param {string} params.playerId - player id for which meshes are drawn.
  * @param {number} params.count - number of drawn mesh
@@ -387,4 +398,35 @@ export function buildCameraPosition({
 function addHash(camera) {
   camera.hash = `${camera.target[0]}-${camera.target[1]}-${camera.target[2]}-${camera.alpha}-${camera.beta}-${camera.elevation}`
   return camera
+}
+
+/**
+ * Loads a game descriptor's parameter schema.
+ * If defined, enriches any image found;
+ * @param {object} args - arguments, including:
+ * @param {object} args.descriptor - game descriptor.
+ * @param {object} args.game - current game's data.
+ * @param {object} args.player - player for which descriptor is retrieved.
+ * @returns {Promise<object|null>} the parameter schema, or null.
+ */
+export async function getParameterSchema({ descriptor, game, player }) {
+  const schema = await descriptor.askForParameters?.({ game, player })
+  if (!schema) {
+    return null
+  }
+  // TODO validates schema's compliance
+  for (const property of Object.values(schema.properties)) {
+    if (property.metadata?.images) {
+      for (const [name, image] of Object.entries(property.metadata.images)) {
+        if (isRelativeAsset(image)) {
+          property.metadata.images[name] = addAbsoluteAsset(
+            image,
+            game.kind,
+            'image'
+          )
+        }
+      }
+    }
+  }
+  return schema ? { ...game, schema } : null
 }

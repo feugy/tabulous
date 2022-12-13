@@ -16,12 +16,13 @@ erat pellentesque adipiscing commodo elit at imperdiet.
   </div>
    
   <span
-    aria-expanded="false"
-    aria-haspopup="menu"
     class="wrapper s-rGIwyFRHo8D9"
   >
     <button
+      aria-expanded="false"
+      aria-haspopup="menu"
       class="s-NMyTiX1zi6rz"
+      role="combobox"
     >
       <span
         class="material-icons s-NMyTiX1zi6rz"
@@ -35,6 +36,74 @@ erat pellentesque adipiscing commodo elit at imperdiet.
       <i
         class="material-icons arrow s-rGIwyFRHo8D9 iconOnly"
         role="button"
+        tabindex="-1"
+      >
+        arrow_drop_down
+      </i>
+      
+    </button>
+    <!--&lt;Button&gt;-->
+     
+    
+    <!--&lt;Menu&gt;-->
+  </span>
+  <!--&lt;Dropdown&gt;-->
+   
+  <div>
+    Mus mauris vitae ultricies leo integer malesuada nunc vel risus. Tincidunt
+vitae semper quis lectus nulla at. Ac felis donec et odio pellentesque
+diam volutpat. Lectus sit amet est placerat in egestas erat. Cursus sit
+amet dictum sit amet justo donec. Metus aliquam eleifend mi in nulla
+posuere sollicitudin aliquam ultrices. Augue neque gravida in fermentum et
+sollicitudin ac orci phasellus. Vel quam elementum pulvinar etiam non quam
+lacus. Risus commodo viverra maecenas accumsan lacus vel facilisis
+volutpat est. Adipiscing vitae proin sagittis nisl rhoncus mattis.
+Vulputate eu scelerisque felis imperdiet proin fermentum. Suspendisse
+potenti nullam ac tortor vitae. Sem nulla pharetra diam sit amet. Egestas
+pretium aenean pharetra magna ac placerat vestibulum lectus. Ut porttitor
+leo a diam sollicitudin tempor id. Eget nullam non nisi est. Ullamcorper a
+lacus vestibulum sed arcu non odio euismod lacinia.
+  </div>
+</div>
+`;
+
+exports[`Invalid value 1`] = `
+<div>
+  <div>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+tempor incididunt ut labore et dolore magna aliqua. Commodo nulla facilisi
+nullam vehicula ipsum a arcu cursus. Eget sit amet tellus cras adipiscing
+enim eu turpis egestas. Integer malesuada nunc vel risus commodo viverra
+maecenas accumsan lacus. Risus viverra adipiscing at in tellus integer
+feugiat scelerisque. Ultrices in iaculis nunc sed augue lacus viverra.
+Scelerisque in dictum non consectetur a erat nam at lectus. Egestas erat
+imperdiet sed euismod nisi porta. Ut faucibus pulvinar elementum integer
+enim neque. Proin sed libero enim sed faucibus turpis in eu. A iaculis at
+erat pellentesque adipiscing commodo elit at imperdiet.
+  </div>
+   
+  <span
+    class="wrapper s-rGIwyFRHo8D9"
+  >
+    <button
+      aria-expanded="false"
+      aria-haspopup="menu"
+      class="s-NMyTiX1zi6rz"
+      role="combobox"
+    >
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
+      >
+        headset_mic
+      </span>
+      
+      
+      
+       
+      <i
+        class="material-icons arrow s-rGIwyFRHo8D9"
+        role="button"
+        tabindex="-1"
       >
         arrow_drop_down
       </i>
@@ -81,12 +150,13 @@ erat pellentesque adipiscing commodo elit at imperdiet.
   </div>
    
   <span
-    aria-expanded="false"
-    aria-haspopup="menu"
     class="wrapper s-rGIwyFRHo8D9"
   >
     <button
+      aria-expanded="false"
+      aria-haspopup="menu"
       class="s-NMyTiX1zi6rz"
+      role="combobox"
     >
       <span
         class="material-icons s-NMyTiX1zi6rz"
@@ -105,6 +175,7 @@ erat pellentesque adipiscing commodo elit at imperdiet.
       <i
         class="material-icons arrow s-rGIwyFRHo8D9"
         role="button"
+        tabindex="-1"
       >
         arrow_drop_down
       </i>
@@ -153,12 +224,13 @@ erat pellentesque adipiscing commodo elit at imperdiet.
   </div>
    
   <span
-    aria-expanded="false"
-    aria-haspopup="menu"
     class="wrapper s-rGIwyFRHo8D9"
   >
     <button
+      aria-expanded="false"
+      aria-haspopup="menu"
       class="s-NMyTiX1zi6rz"
+      role="combobox"
     >
       <span
         class="material-icons s-NMyTiX1zi6rz"
@@ -177,6 +249,7 @@ erat pellentesque adipiscing commodo elit at imperdiet.
       <i
         class="material-icons arrow s-rGIwyFRHo8D9"
         role="button"
+        tabindex="-1"
       >
         arrow_drop_down
       </i>
@@ -223,12 +296,13 @@ erat pellentesque adipiscing commodo elit at imperdiet.
   </div>
    
   <span
-    aria-expanded="false"
-    aria-haspopup="menu"
     class="wrapper s-rGIwyFRHo8D9"
   >
     <button
+      aria-expanded="false"
+      aria-haspopup="menu"
       class="s-NMyTiX1zi6rz"
+      role="combobox"
     >
       <span
         class="material-icons s-NMyTiX1zi6rz"
@@ -242,6 +316,7 @@ erat pellentesque adipiscing commodo elit at imperdiet.
       <i
         class="material-icons arrow s-rGIwyFRHo8D9 iconOnly split"
         role="button"
+        tabindex="0"
       >
         arrow_drop_down
       </i>
@@ -288,12 +363,13 @@ erat pellentesque adipiscing commodo elit at imperdiet.
   </div>
    
   <span
-    aria-expanded="false"
-    aria-haspopup="menu"
     class="wrapper s-rGIwyFRHo8D9"
   >
     <button
+      aria-expanded="false"
+      aria-haspopup="menu"
       class="s-NMyTiX1zi6rz"
+      role="combobox"
     >
       <span
         class="material-icons s-NMyTiX1zi6rz"
@@ -304,7 +380,7 @@ erat pellentesque adipiscing commodo elit at imperdiet.
       <span
         class="text s-NMyTiX1zi6rz"
       >
-        player
+        previous
       </span>
       
       
@@ -312,6 +388,7 @@ erat pellentesque adipiscing commodo elit at imperdiet.
       <i
         class="material-icons arrow s-rGIwyFRHo8D9"
         role="button"
+        tabindex="-1"
       >
         arrow_drop_down
       </i>

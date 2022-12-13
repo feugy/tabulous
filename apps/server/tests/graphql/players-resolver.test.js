@@ -19,6 +19,7 @@ import { mockMethods, signToken } from '../test-utils.js'
 describe('given a started server', () => {
   let server
   let restoreServices
+  vi.spyOn(console, 'warn').mockImplementation(() => {})
   const configuration = {
     turn: { secret: faker.lorem.words() },
     auth: { jwt: { key: faker.datatype.uuid() } }

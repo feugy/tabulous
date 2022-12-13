@@ -126,7 +126,7 @@ describe('/game/[gameId] RuleViewer component', () => {
     expect(handleChange).not.toHaveBeenCalled()
   })
 
-  it('zooms the image in', async () => {
+  it('zooms the image out and in', async () => {
     renderComponent({ lastPage: 2 })
     const image = screen.queryByRole('img')
     const width = 300
@@ -134,32 +134,19 @@ describe('/game/[gameId] RuleViewer component', () => {
     image.getBoundingClientRect = () => ({ width, height })
     fireEvent.load(image)
     expect(image).toHaveStyle({
-      width: `${width}px`,
-      height: `${height}px`
+      width: `90px`,
+      height: `150px`
     })
-    fireEvent.wheel(image.parentElement, { deltaY: 1 })
-    expect(image).toHaveStyle({
-      width: `${width * 0.9}px`,
-      height: `${height * 0.9}px`
-    })
-    expect(handleChange).not.toHaveBeenCalled()
-  })
-
-  it('zooms the image out', async () => {
-    renderComponent({ lastPage: 2 })
-    const image = screen.queryByRole('img')
-    const width = 300
-    const height = 500
-    image.getBoundingClientRect = () => ({ width, height })
-    fireEvent.load(image)
-    expect(image).toHaveStyle({
-      width: `${width}px`,
-      height: `${height}px`
-    })
+    fireEvent.wheel(image.parentElement, { deltaY: -10 })
     fireEvent.wheel(image.parentElement, { deltaY: -5 })
     expect(image).toHaveStyle({
-      width: `${width * 1.1}px`,
-      height: `${height * 1.1}px`
+      width: `150px`,
+      height: `250px`
+    })
+    fireEvent.wheel(image.parentElement, { deltaY: 5 })
+    expect(image).toHaveStyle({
+      width: `120px`,
+      height: `200px`
     })
     expect(handleChange).not.toHaveBeenCalled()
   })

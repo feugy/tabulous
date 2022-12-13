@@ -2324,19 +2324,20 @@ exports[`Connected 1`] = `
       </span>
        
       <span
-        aria-expanded="false"
-        aria-haspopup="menu"
         class="wrapper s-rGIwyFRHo8D9"
       >
         <button
+          aria-expanded="false"
+          aria-haspopup="menu"
           class="transparent s-NMyTiX1zi6rz"
+          role="combobox"
         >
           
           
           
           <figure
             class="s-engCJu8q-fNe"
-            style="--dimension: 30px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 0px"
+            style="--dimension: 30px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
           >
             <img
               alt="avatar for Jane Doe"

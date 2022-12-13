@@ -10,7 +10,7 @@ import {
   toastInfo
 } from '@src/stores'
 import { fireEvent, render, screen, within } from '@testing-library/svelte'
-import { sleep, translate } from '@tests/test-utils'
+import { translate } from '@tests/test-utils'
 import html from 'svelte-htm'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -33,8 +33,11 @@ describe('/home route loader', () => {
     const parent = async () => ({ session: null })
     const catalog = [{ id: 'game-1' }, { id: 'game-2' }]
     listCatalog.mockResolvedValueOnce(catalog)
-    expect(await load({ parent })).toEqual({
+    expect(
+      await load({ parent, url: new URL('https://tabulous.fr/home') })
+    ).toEqual({
       catalog,
+      creationError: null,
       currentGames: null
     })
     expect(listCatalog).toHaveBeenCalledTimes(1)
@@ -47,12 +50,81 @@ describe('/home route loader', () => {
     const currentGames = [{ id: 'game-3' }]
     listCatalog.mockResolvedValueOnce(catalog)
     listGames.mockResolvedValueOnce(currentGames)
-    expect(await load({ parent })).toEqual({
+    expect(
+      await load({ parent, url: new URL('https://tabulous.fr/home') })
+    ).toEqual({
       catalog,
+      creationError: null,
       currentGames
     })
     expect(listCatalog).toHaveBeenCalledTimes(1)
     expect(listGames).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not create game when unauthenticated', async () => {
+    const parent = async () => ({ session: null })
+    const catalog = [
+      { id: 'game-1', name: 'klondike' },
+      { id: 'game-2', name: 'chess' }
+    ]
+    listCatalog.mockResolvedValueOnce(catalog)
+    expect(
+      await load({
+        parent,
+        url: new URL(`https://tabulous.fr/home?game-name=${catalog[0].name}`)
+      })
+    ).toEqual({
+      catalog,
+      creationError: null,
+      currentGames: null
+    })
+    expect(listCatalog).toHaveBeenCalledTimes(1)
+    expect(listGames).not.toHaveBeenCalled()
+    expect(createGame).not.toHaveBeenCalled()
+  })
+
+  describe('given an authenticated user', () => {
+    const parent = async () => ({ session: { player: { name: 'dude' } } })
+    const catalog = [
+      { id: 'game-1', name: 'klondike' },
+      { id: 'game-2', name: 'chess' }
+    ]
+    const currentGames = [{ id: 'game-3' }]
+
+    beforeEach(() => {
+      listCatalog.mockResolvedValueOnce(catalog)
+      listGames.mockResolvedValueOnce(currentGames)
+    })
+
+    it('redirects to new game on creation', async () => {
+      const id = faker.datatype.uuid()
+      createGame.mockResolvedValueOnce(id)
+      await expect(
+        load({
+          parent,
+          url: new URL(`https://tabulous.fr/home?game-name=${catalog[1].name}`)
+        })
+      ).rejects.toEqual({ status: 307, location: `/game/${id}` })
+      expect(listCatalog).toHaveBeenCalledTimes(1)
+      expect(listGames).toHaveBeenCalledTimes(1)
+      expect(createGame).toHaveBeenCalledWith(catalog[1].name)
+      expect(createGame).toHaveBeenCalledTimes(1)
+    })
+
+    it('returns game creation error', async () => {
+      const error = new Error(`You own 6 games, you can not create more`)
+      createGame.mockRejectedValueOnce(error)
+      expect(
+        await load({
+          parent,
+          url: new URL(`https://tabulous.fr/home?game-name=${catalog[1].name}`)
+        })
+      ).toEqual({ creationError: error, currentGames, catalog })
+      expect(listCatalog).toHaveBeenCalledTimes(1)
+      expect(listGames).toHaveBeenCalledTimes(1)
+      expect(createGame).toHaveBeenCalledWith(catalog[1].name)
+      expect(createGame).toHaveBeenCalledTimes(1)
+    })
   })
 })
 
@@ -74,8 +146,27 @@ describe('/home route', () => {
   beforeEach(async () => {
     listCatalog.mockResolvedValueOnce(catalog)
     listGames.mockResolvedValueOnce(games)
-    const data = await load({ parent })
-    render(html`<${HomePage} data=${{ ...data, ...(await parent()) }} />`)
+  })
+
+  async function renderWithLoad(gameName) {
+    const data = await load({
+      parent,
+      url: new URL(
+        `https://tabulous.fr/home${gameName ? `?game-name=${gameName}` : ''}`
+      )
+    })
+    return render(
+      html`<${HomePage} data=${{ ...data, ...(await parent()) }} />`
+    )
+  }
+
+  it('browse to game creation', async () => {
+    await renderWithLoad()
+    fireEvent.click(
+      screen.getByRole('heading', { name: catalog[1].locales.fr.title })
+    )
+    expect(goto).toHaveBeenCalledWith(`/home?game-name=${catalog[1].name}`)
+    expect(goto).toHaveBeenCalledTimes(1)
   })
 
   it('displays error when too many games where created', async () => {
@@ -83,10 +174,7 @@ describe('/home route', () => {
     createGame.mockRejectedValueOnce(
       new Error(`You own ${count} games, you can not create more`)
     )
-    fireEvent.click(
-      screen.getByRole('heading', { name: catalog[1].locales.fr.title })
-    )
-    await sleep()
+    await renderWithLoad(catalog[0].name)
 
     expect(toastError).toHaveBeenCalledWith({
       content: translate('errors.too-many-games', { count })
@@ -97,10 +185,7 @@ describe('/home route', () => {
 
   it('displays error game is restricted', async () => {
     createGame.mockRejectedValueOnce(new Error('Access to game is restricted'))
-    fireEvent.click(
-      screen.getByRole('heading', { name: catalog[0].locales.fr.title })
-    )
-    await sleep()
+    await renderWithLoad(catalog[0].name)
 
     expect(toastError).toHaveBeenCalledWith({
       content: translate('errors.restricted-game')
@@ -109,20 +194,8 @@ describe('/home route', () => {
     expect(goto).not.toHaveBeenCalled()
   })
 
-  it('redirects to game on success', async () => {
-    const id = faker.datatype.uuid()
-    createGame.mockResolvedValueOnce(id)
-    fireEvent.click(
-      screen.getByRole('heading', { name: catalog[0].locales.fr.title })
-    )
-    await sleep()
-
-    expect(createGame).toHaveBeenCalledWith(catalog[0].name)
-    expect(goto).toHaveBeenCalledWith(`/game/${id}`)
-    expect(goto).toHaveBeenCalledTimes(1)
-  })
-
   it('can cancels game deletion', async () => {
+    await renderWithLoad()
     const gameLink = screen.getByRole('heading', {
       name: games[0].locales.fr.title
     }).parentElement
@@ -138,6 +211,7 @@ describe('/home route', () => {
   })
 
   it('displays a toaster on game deletion', async () => {
+    await renderWithLoad()
     const gameLink = screen.getByRole('heading', {
       name: games[0].locales.fr.title
     }).parentElement

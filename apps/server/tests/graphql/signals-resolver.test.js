@@ -28,6 +28,7 @@ describe('given a started server', () => {
   let server
   let ws
   let restoreServices
+  vi.spyOn(console, 'warn').mockImplementation(() => {})
   const pubsubUrl = getRedisTestUrl()
   const playerId = faker.datatype.uuid()
   const configuration = {

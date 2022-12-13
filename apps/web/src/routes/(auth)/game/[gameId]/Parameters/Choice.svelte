@@ -1,32 +1,71 @@
 <script>
   import { Dropdown } from '@src/components'
+  import { gameAssetsUrl } from '@src/utils'
   import { _, locale } from 'svelte-intl'
+  
+  import { findViolations } from './utils'
 
   export let name
   export let property
-  export let value
+  export let values
 
-  $: options = property?.enum?.map(value => ({
+  // only build options for valid candidates
+  $: options = findCandidates(property, name, values).map(value => ({
     value,
-    label: translate(value) ?? value
+    label: translate(value),
+    image: findImage(property, value)
   }))
 
-  $: if (!value) {
-    value = options[0]
+  // value must be one of the option because DropDown + Menu are using strict equality
+  $: value = options.find(candidate => candidate.value === values[name])
+
+  // when defauling to first option, mutates values
+  $: if (!value && options.length) {
+    handleSelection({ detail: options[0] })
+  }
+
+  function handleSelection({ detail }) {
+    values[name] = detail.value
   }
 
   function translate(key) {
-    return property?.metadata?.[$locale][key] ?? key
+    return property.metadata?.[$locale]?.[key] ?? key
+  }
+
+  function findImage(property, key) {
+    return property.metadata?.images?.[key]
+  }
+
+  function findCandidates(property, name, values) {
+    const candidates = property.enum
+    const schema = { type: 'object', properties: { [name]: property } }
+    const result = candidates.filter(
+      value => findViolations({ [name]: value }, schema, values).length === 0
+    )
+    return result
   }
 </script>
 
-<fieldset on:click|preventDefault on:keyup|preventDefault>
-  <label for={name}>{translate('name')}{$_('labels.colon')}</label>
-  <Dropdown id={name} {options} bind:value />
-</fieldset>
+<label for={name}>{translate('name') + $_('labels.colon')}</label>
+<span on:click|preventDefault on:keyup|preventDefault>
+  <Dropdown id={name} {options} {value} on:select={handleSelection} />
+  {#if value?.image}
+    <img src="{gameAssetsUrl}{value.image}" alt="" />
+  {/if}
+</span>
 
 <style lang="postcss">
   label {
-    @apply mr-4;
+    @apply leading-[2.5] text-right;
+  }
+
+  span {
+    @apply flex items-start;
+  }
+
+  img {
+    @apply inline-block ml-4;
+    max-width: 33vw;
+    max-height: 50vh;
   }
 </style>

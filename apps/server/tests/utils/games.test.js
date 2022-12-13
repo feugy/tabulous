@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { vi } from 'vitest'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import {
@@ -6,9 +7,11 @@ import {
   createMeshes,
   decrement,
   drawInHand,
+  enrichAssets,
   findAnchor,
   findMeshById,
   findOrCreateHand,
+  getParameterSchema,
   snapTo,
   stackMeshes
 } from '../../src/utils/games.js'
@@ -67,111 +70,6 @@ describe('createMeshes()', () => {
     expect(await createMeshes('cards', descriptor)).toEqual(
       descriptor.build().meshes
     )
-  })
-
-  it('enriches mesh relative texture', async () => {
-    const gameId = faker.lorem.word()
-    const texture = faker.system.commonFileName('png')
-    const descriptor = { build: () => ({ meshes: [{ id: 1, texture }] }) }
-    expect((await createMeshes(gameId, descriptor))[0].texture).toEqual(
-      `/${gameId}/textures/${texture}`
-    )
-  })
-
-  it('does not enrich mesh absolute texture', async () => {
-    const gameId = faker.lorem.word()
-    const texture = faker.system.filePath()
-    const descriptor = { build: () => ({ meshes: [{ id: 1, texture }] }) }
-    expect((await createMeshes(gameId, descriptor))[0].texture).toEqual(texture)
-  })
-
-  it('does not enrich mesh colored texture', async () => {
-    const gameId = faker.lorem.word()
-    const texture = faker.internet.color()
-    const descriptor = { build: () => ({ meshes: [{ id: 1, texture }] }) }
-    expect((await createMeshes(gameId, descriptor))[0].texture).toEqual(texture)
-  })
-
-  it('enriches mesh relative model', async () => {
-    const gameId = faker.lorem.word()
-    const file = faker.system.commonFileName('png')
-    const descriptor = { build: () => ({ meshes: [{ id: 1, file }] }) }
-    expect((await createMeshes(gameId, descriptor))[0].file).toEqual(
-      `/${gameId}/models/${file}`
-    )
-  })
-
-  it('does not enrich mesh absolute model', async () => {
-    const gameId = faker.lorem.word()
-    const file = faker.system.filePath()
-    const descriptor = { build: () => ({ meshes: [{ id: 1, file }] }) }
-    expect((await createMeshes(gameId, descriptor))[0].file).toEqual(file)
-  })
-
-  it('enriches mesh relative front image', async () => {
-    const gameId = faker.lorem.word()
-    const frontImage = faker.system.commonFileName('png')
-    const descriptor = {
-      build: () => ({ meshes: [{ id: 1, detailable: { frontImage } }] })
-    }
-    expect(
-      (await createMeshes(gameId, descriptor))[0].detailable.frontImage
-    ).toEqual(`/${gameId}/images/${frontImage}`)
-  })
-
-  it('does not enrich mesh absolute front image', async () => {
-    const gameId = faker.lorem.word()
-    const frontImage = faker.system.filePath()
-    const descriptor = {
-      build: () => ({ meshes: [{ id: 1, detailable: { frontImage } }] })
-    }
-    expect(
-      (await createMeshes(gameId, descriptor))[0].detailable.frontImage
-    ).toEqual(frontImage)
-  })
-
-  it('enriches mesh relative back image', async () => {
-    const gameId = faker.lorem.word()
-    const backImage = faker.system.commonFileName('png')
-    const descriptor = {
-      build: () => ({ meshes: [{ id: 1, detailable: { backImage } }] })
-    }
-    expect(
-      (await createMeshes(gameId, descriptor))[0].detailable.backImage
-    ).toEqual(`/${gameId}/images/${backImage}`)
-  })
-
-  it('does not enrich mesh absolute front image', async () => {
-    const gameId = faker.lorem.word()
-    const backImage = faker.system.filePath()
-    const descriptor = {
-      build: () => ({ meshes: [{ id: 1, detailable: { backImage } }] })
-    }
-    expect(
-      (await createMeshes(gameId, descriptor))[0].detailable.backImage
-    ).toEqual(backImage)
-  })
-
-  it('enriches all mesh relative assets', async () => {
-    const gameId = faker.lorem.word()
-    const texture = faker.system.commonFileName('png')
-    const file = faker.system.commonFileName('png')
-    const frontImage = faker.system.commonFileName('png')
-    const backImage = faker.system.commonFileName('png')
-    const descriptor = {
-      build: () => ({
-        meshes: [
-          { id: 1, texture, file, detailable: { frontImage, backImage } }
-        ]
-      })
-    }
-    const [mesh] = await createMeshes(gameId, descriptor)
-    expect(mesh.texture).toEqual(`/${gameId}/textures/${texture}`)
-    expect(mesh.file).toEqual(`/${gameId}/models/${file}`)
-    expect(mesh.detailable.frontImage).toEqual(
-      `/${gameId}/images/${frontImage}`
-    )
-    expect(mesh.detailable.backImage).toEqual(`/${gameId}/images/${backImage}`)
   })
 
   describe('given a descriptor with a count slot and a countless slot on the same bag', () => {
@@ -472,6 +370,130 @@ describe('createMeshes()', () => {
       ).toHaveLength(1)
       expect(meshes.filter(({ x }) => x === 1)).toHaveLength(7)
     })
+  })
+})
+
+describe('enrichAssets()', () => {
+  it('enriches mesh relative texture', () => {
+    const kind = faker.lorem.word()
+    const texture = faker.system.commonFileName('png')
+    expect(
+      enrichAssets({ kind, meshes: [{ id: 1, texture }], hands: [] }).meshes[0]
+        .texture
+    ).toEqual(`/${kind}/textures/${texture}`)
+  })
+
+  it('does not enrich mesh absolute texture', () => {
+    const kind = faker.lorem.word()
+    const texture = faker.system.filePath()
+    expect(
+      enrichAssets({ kind, meshes: [{ id: 1, texture }], hands: [] }).meshes[0]
+        .texture
+    ).toEqual(texture)
+  })
+
+  it('does not enrich mesh colored texture', () => {
+    const kind = faker.lorem.word()
+    const texture = faker.internet.color()
+    expect(
+      enrichAssets({ kind, meshes: [{ id: 1, texture }], hands: [] }).meshes[0]
+        .texture
+    ).toEqual(texture)
+  })
+
+  it('enriches mesh relative model', () => {
+    const kind = faker.lorem.word()
+    const file = faker.system.commonFileName('png')
+    expect(
+      enrichAssets({ kind, meshes: [{ id: 1, file }], hands: [] }).meshes[0]
+        .file
+    ).toEqual(`/${kind}/models/${file}`)
+  })
+
+  it('does not enrich mesh absolute model', () => {
+    const kind = faker.lorem.word()
+    const file = faker.system.filePath()
+    expect(
+      enrichAssets({ kind, meshes: [{ id: 1, file }], hands: [] }).meshes[0]
+        .file
+    ).toEqual(file)
+  })
+
+  it('enriches mesh relative front image', () => {
+    const kind = faker.lorem.word()
+    const frontImage = faker.system.commonFileName('png')
+    expect(
+      enrichAssets({
+        kind,
+        meshes: [{ id: 1, detailable: { frontImage } }],
+        hands: []
+      }).meshes[0].detailable.frontImage
+    ).toEqual(`/${kind}/images/${frontImage}`)
+  })
+
+  it('does not enrich mesh absolute front image', () => {
+    const kind = faker.lorem.word()
+    const frontImage = faker.system.filePath()
+    expect(
+      enrichAssets({
+        kind,
+        meshes: [{ id: 1, detailable: { frontImage } }],
+        hands: []
+      }).meshes[0].detailable.frontImage
+    ).toEqual(frontImage)
+  })
+
+  it('enriches mesh relative back image', () => {
+    const kind = faker.lorem.word()
+    const backImage = faker.system.commonFileName('png')
+    expect(
+      enrichAssets({
+        kind,
+        meshes: [{ id: 1, detailable: { backImage } }],
+        hands: []
+      }).meshes[0].detailable.backImage
+    ).toEqual(`/${kind}/images/${backImage}`)
+  })
+
+  it('does not enrich mesh absolute front image', () => {
+    const kind = faker.lorem.word()
+    const backImage = faker.system.filePath()
+    expect(
+      enrichAssets({
+        kind,
+        meshes: [{ id: 1, detailable: { backImage } }],
+        hands: []
+      }).meshes[0].detailable.backImage
+    ).toEqual(backImage)
+  })
+
+  it('enriches all mesh relative assets', () => {
+    const kind = faker.lorem.word()
+    const texture = faker.system.commonFileName('png')
+    const file = faker.system.commonFileName('png')
+    const frontImage = faker.system.commonFileName('png')
+    const backImage = faker.system.commonFileName('png')
+    const {
+      hands: [
+        {
+          meshes: [mesh]
+        }
+      ]
+    } = enrichAssets({
+      kind,
+      meshes: [],
+      hands: [
+        {
+          meshes: [
+            { id: 1, texture, file, detailable: { frontImage, backImage } }
+          ]
+        }
+      ]
+    })
+    expect(mesh.texture).toEqual(`/${kind}/textures/${texture}`)
+    expect(mesh.file).toEqual(`/${kind}/models/${file}`)
+    expect(mesh.detailable.frontImage).toEqual(`/${kind}/images/${frontImage}`)
+    expect(mesh.detailable.backImage).toEqual(`/${kind}/images/${backImage}`)
   })
 })
 
@@ -865,6 +887,114 @@ describe('buildCameraPosition()', () => {
       beta,
       elevation,
       hash: `${target[0]}-${target[1]}-${target[2]}-${alpha}-${beta}-${elevation}`
+    })
+  })
+})
+
+describe('getParameterSchema()', () => {
+  const askForParameters = vi.fn()
+  const kind = faker.lorem.word()
+  const game = { kind, meshes: [{ id: faker.datatype.uuid() }] }
+  const player = { id: faker.datatype.uuid(), name: faker.name.fullName() }
+
+  beforeEach(vi.resetAllMocks)
+
+  it('enriches game data with parameters', async () => {
+    const schema = {
+      type: 'object',
+      properties: {
+        side: {
+          type: 'string',
+          enum: ['white', 'black']
+        }
+      }
+    }
+    askForParameters.mockResolvedValue(schema)
+    expect(
+      await getParameterSchema({
+        descriptor: { askForParameters },
+        game,
+        player
+      })
+    ).toEqual({ ...game, schema })
+    expect(askForParameters).toHaveBeenCalledWith({ game, player })
+  })
+
+  it('handles missing askForParameters()', async () => {
+    expect(
+      await getParameterSchema({ descriptor: {}, game, player })
+    ).toBeNull()
+  })
+
+  it('handles no schema', async () => {
+    askForParameters.mockResolvedValue(null)
+    expect(
+      await getParameterSchema({
+        descriptor: { askForParameters },
+        game,
+        player
+      })
+    ).toBeNull()
+    expect(askForParameters).toHaveBeenCalledWith({ game, player })
+  })
+
+  it('enriches image metadatas', async () => {
+    const { schema } = await getParameterSchema({
+      descriptor: {
+        askForParameters: () => ({
+          type: 'object',
+          properties: {
+            suite: {
+              type: 'string',
+              enum: ['clubs', 'spades'],
+              metadata: {
+                images: {
+                  clubs: 'clubs.png',
+                  spades: 'spades.png'
+                }
+              }
+            },
+            side: {
+              type: 'string',
+              enum: ['white', 'black']
+            }
+          }
+        })
+      },
+      game,
+      player
+    })
+    expect(schema.properties.suite.metadata.images).toEqual({
+      clubs: `/${kind}/images/clubs.png`,
+      spades: `/${kind}/images/spades.png`
+    })
+  })
+
+  it('does not enrich image absolute metadata', async () => {
+    const { schema } = await getParameterSchema({
+      descriptor: {
+        askForParameters: () => ({
+          type: 'object',
+          properties: {
+            suite: {
+              type: 'string',
+              enum: ['clubs', 'spades'],
+              metadata: {
+                images: {
+                  clubs: '/clubs.png',
+                  spades: '#spades.png'
+                }
+              }
+            }
+          }
+        })
+      },
+      game,
+      player
+    })
+    expect(schema.properties.suite.metadata.images).toEqual({
+      clubs: `/clubs.png`,
+      spades: `#spades.png`
     })
   })
 })

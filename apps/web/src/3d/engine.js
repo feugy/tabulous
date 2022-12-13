@@ -1,6 +1,9 @@
 // all BabylonJS imports must be from individual files to allow tree shaking.
 // more [here](https://doc.babylonjs.com/divingDeeper/developWithBjs/treeShaking)
 // mandatory side effects
+// import '@babylonjs/core/Debug/debugLayer.js'
+// import '@babylonjs/inspector.js'
+// import { AxesViewer } from '@babylonjs/core/Debug/axesViewer.js'
 import '@babylonjs/core/Animations/animatable.js'
 import '@babylonjs/core/Materials/Textures/Loaders/ktxTextureLoader.js'
 import '@babylonjs/core/Rendering/edgesRenderer.js'
@@ -31,10 +34,6 @@ import {
   serializeMeshes
 } from './utils'
 
-// import { AxesViewer } from '@babylonjs/core/Debug/axesViewer.js'
-// import '@babylonjs/inspector.js'
-// import '@babylonjs/core/Debug/debugLayer.js'
-// import '@babylonjs/core/PostProcesses.js'
 const debug = false
 const debugHand = false
 

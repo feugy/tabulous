@@ -2,6 +2,7 @@
 import '@babylonjs/core/Loading/loadingScreen.js'
 
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
+import clone from 'rfdc/default'
 
 import { makeLogger } from '../../utils/logger'
 import { AnchorBehaviorName, StackBehaviorName } from '../behaviors/names'
@@ -87,7 +88,9 @@ export function loadMeshes(scene, meshes) {
   // makes sure all meshes are created
   for (const state of meshes) {
     let mesh = scene.getMeshById(state.id)
-    const { stackable, anchorable, shape: name } = state
+    const name = state.shape
+    const stackable = state.stackable ? clone(state.stackable) : undefined
+    const anchorable = state.anchorable ? clone(state.anchorable) : undefined
     if (mesh) {
       logger.debug({ state, mesh }, `updates ${name} ${state.id}`)
       disposables.delete(mesh)
