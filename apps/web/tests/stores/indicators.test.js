@@ -1,5 +1,9 @@
 import { faker } from '@faker-js/faker'
-import { AnchorBehaviorName, StackBehaviorName } from '@src/3d/behaviors'
+import {
+  AnchorBehaviorName,
+  QuantityBehaviorName,
+  StackBehaviorName
+} from '@src/3d/behaviors'
 import { indicatorManager } from '@src/3d/managers/indicator'
 import { selectionManager } from '@src/3d/managers/selection'
 import { createCard } from '@src/3d/meshes'
@@ -88,7 +92,9 @@ describe('Indicators store', () => {
       { id: 'card4', x: 5 },
       { id: 'card5', x: -5 },
       { id: 'card6', z: 5 }
-    ].map(params => createCard({ ...params, stackable: {}, anchorable: {} }))
+    ].map(params =>
+      createCard({ ...params, stackable: {}, anchorable: {}, quantifiable: {} })
+    )
     actionMenuProps.next(null)
     selectionManager.clear()
   })
@@ -105,6 +111,31 @@ describe('Indicators store', () => {
     })
 
     it('has indicators for each stackable mesh', async () => {
+      const [card1, card2, card3, , card5] = cards
+      card1
+        .getBehaviorByName(StackBehaviorName)
+        .fromState({ stackIds: ['card4', 'card5'] })
+      card2.getBehaviorByName(QuantityBehaviorName).fromState({ quantity: 5 })
+      card3.getBehaviorByName(QuantityBehaviorName).fromState({ quantity: 1 })
+
+      await waitNextRender(scene)
+      expectIndicators([
+        {
+          id: `${card5.id}.stack-size`,
+          size: 3,
+          screenPosition: { x: 1024, y: 511.8 },
+          onClick: expect.any(Function)
+        },
+        {
+          id: `${card2.id}.quantity`,
+          size: 5,
+          screenPosition: { x: 1048.22, y: 512 },
+          onClick: expect.any(Function)
+        }
+      ])
+    })
+
+    it('has indicators for quantifiable meshes with quantity higher than 1', async () => {
       const [card1, , card3, card4, card5] = cards
       card1
         .getBehaviorByName(StackBehaviorName)
@@ -118,14 +149,33 @@ describe('Indicators store', () => {
         {
           id: `${card4.id}.stack-size`,
           size: 3,
-          screenPosition: { x: 1024, y: 511.8 }
+          screenPosition: { x: 1024, y: 511.8 },
+          onClick: expect.any(Function)
         },
         {
           id: `${card5.id}.stack-size`,
           size: 2,
-          screenPosition: { x: 999.78, y: 511.9 }
+          screenPosition: { x: 999.78, y: 511.9 },
+          onClick: expect.any(Function)
         }
       ])
+    })
+
+    it('selects mesh when interacting with their indicators, and removes interactivity', async () => {
+      cards[0]
+        .getBehaviorByName(StackBehaviorName)
+        .fromState({ stackIds: ['card2', 'card4'] })
+      await waitNextRender(scene)
+
+      get(visibleIndicators$)[0].onClick()
+      expect(selectionManager.meshes.has(cards[0])).toBe(true)
+      expect(selectionManager.meshes.has(cards[1])).toBe(true)
+      expect(selectionManager.meshes.has(cards[2])).toBe(false)
+      expect(selectionManager.meshes.has(cards[3])).toBe(true)
+      expect(selectionManager.meshes.has(cards[4])).toBe(false)
+
+      await waitNextRender(scene)
+      expect(get(visibleIndicators$)[0]).toHaveProperty('onClick', null)
     })
 
     it('has feedback', async () => {

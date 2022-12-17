@@ -26,10 +26,11 @@
   }
 </script>
 
-{#each items as { screenPosition, id, mesh, player, ...rest } ({ id, screenPosition })}
+{#each items as { screenPosition, id, mesh, player, onClick, ...rest } ({ id, screenPosition })}
   {#if mesh}
     <Label
       {screenPosition}
+      {onClick}
       centered={!!player}
       content={computeLabel(player, rest)}
       color={player?.color}
