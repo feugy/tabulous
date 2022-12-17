@@ -1,5 +1,5 @@
 <script>
-  import { Tool, ToolBox } from '@atelier-wb/svelte'
+  import { recordEvent, Tool, ToolBox } from '@atelier-wb/svelte'
   import Indicators from '@src/routes/(auth)/game/[gameId]/Indicators.svelte'
 </script>
 
@@ -12,7 +12,13 @@
     name="Single"
     props={{
       items: [
-        { screenPosition: { x: 50, y: 100 }, size: 5, id: 'card1', mesh: {} }
+        {
+          screenPosition: { x: 50, y: 100 },
+          size: 5,
+          id: 'card1',
+          mesh: {},
+          onClick: () => recordEvent('select')
+        }
       ]
     }}
   />

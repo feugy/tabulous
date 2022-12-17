@@ -95,7 +95,6 @@ AssertionError: expected 2nd "spy" call to have been called with [ 'anima' ]
 - detailable/stackable behavior: preview a stack of meshes
 - hide/distinguish non-connected participants
 - is this right? given an active selection, when it anchors with other items, then items are part of the selection
-- click on stack size to select all/select stack on push?
 - option to invite players with url
 - distribute multiple meshes to players' hand
 - shortcuts cheatsheet

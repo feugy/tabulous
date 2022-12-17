@@ -1,5 +1,6 @@
 import { BehaviorSubject, map, merge, of, withLatestFrom } from 'rxjs'
 
+import { selectionManager } from '../3d/managers'
 import { getPixelDimension, observeDimension } from '../utils/dom'
 import {
   actionMenuProps,
@@ -79,7 +80,8 @@ export const visibleIndicators = merge(
       handPosition
     )
   ),
-  map(enrichWithPlayerData)
+  map(enrichWithPlayerData),
+  map(enrichWithInteraction)
 )
 
 /**
@@ -132,6 +134,16 @@ function enrichWithPlayerData(indicators) {
     }
     return indicator
   })
+}
+
+function enrichWithInteraction(indicators) {
+  return indicators.map(indicator => ({
+    ...indicator,
+    onClick:
+      indicator.mesh && !selectionManager.meshes.has(indicator.mesh)
+        ? () => selectionManager.select([indicator.mesh])
+        : null
+  }))
 }
 
 function memorizeAndMergeFeedback(indicators) {

@@ -23,7 +23,12 @@
   })
 </script>
 
-<aside class:highlight class:visible style="--color: {color}">
+<aside
+  class:highlight
+  class:visible
+  style="--color: {color}"
+  on:pointerdown|stopPropagation
+>
   <MinimizableSection
     placement="bottom"
     tabs={[{ icon: 'front_hand', key: $_('shortcuts.hand') }]}

@@ -1,13 +1,23 @@
 <script>
   export let content
+  export let onClick
   export let screenPosition = { x: 0, y: 0 }
   export let color = '#7a7a7a'
   export let centered = false
+
+  function interact() {
+    onClick?.()
+  }
 </script>
 
 <div
   class:centered
-  style="top: {screenPosition.y}px; left: {screenPosition.x}px; --color:{color}"
+  style="top: {screenPosition.y}px; left: {screenPosition.x}px; --color:{color}; pointer-events:{onClick
+    ? 'auto'
+    : 'none'};"
+  on:click={interact}
+  on:keydown={interact}
+  on:pointerdown|stopPropagation
 >
   {content}
 </div>
@@ -15,7 +25,7 @@
 <style lang="postcss">
   div {
     @apply absolute transform-gpu -translate-y-1/2 -translate-x-1
-            pointer-events-none 
+            select-none 
             text-lg text-$primary-lightest opacity-85
             py-1 pr-2 pl-5 rounded z-10;
     clip-path: polygon(1rem 0%, 100% 0, 100% 100%, 1rem 100%, 0% 50%);
