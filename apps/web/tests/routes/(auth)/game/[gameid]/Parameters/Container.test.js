@@ -1,6 +1,6 @@
 import Parameters from '@src/routes/(auth)/game/[gameId]/Parameters/Container.svelte'
 import { fireEvent, render, screen } from '@testing-library/svelte'
-import { extractText, translate } from '@tests/test-utils'
+import { extractText, sleep, translate } from '@tests/test-utils'
 import html from 'svelte-htm'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -9,13 +9,16 @@ describe('Parameters component', () => {
 
   beforeEach(vi.resetAllMocks)
 
-  function renderComponent(schema) {
+  async function renderComponent(schema) {
     function onSubmit({ detail }) {
       handleSubmit(detail)
     }
-    return render(
+    const result = render(
       html`<${Parameters} schema=${schema} on:submit=${onSubmit} />`
     )
+
+    await sleep()
+    return result
   }
 
   it('displays dropdown for enums', async () => {
@@ -38,7 +41,8 @@ describe('Parameters component', () => {
         }
       }
     }
-    renderComponent(schema)
+    await renderComponent(schema)
+
     expect(
       screen.getByText(colorLabel + translate('labels.colon'), { trim: false })
     ).toBeInTheDocument()
@@ -84,7 +88,8 @@ describe('Parameters component', () => {
         }
       }
     }
-    renderComponent(schema)
+    await renderComponent(schema)
+
     expect(
       screen.getByText(colorLabel + translate('labels.colon'), { trim: false })
     ).toBeInTheDocument()
@@ -155,7 +160,7 @@ describe('Parameters component', () => {
         }
       }
     }
-    renderComponent(schema)
+    await renderComponent(schema)
 
     const [playerDropdown, opponent1Dropdown, opponent2Dropdown] =
       screen.getAllByRole('combobox')
@@ -233,7 +238,7 @@ describe('Parameters component', () => {
         }
       }
     }
-    renderComponent(schema)
+    await renderComponent(schema)
 
     let dropdowns = screen.getAllByRole('combobox')
     expect(dropdowns).toHaveLength(2)
@@ -242,6 +247,7 @@ describe('Parameters component', () => {
 
     await fireEvent.click(dropdowns[0])
     await fireEvent.click(screen.getAllByRole('menuitem')[1])
+    await sleep()
 
     dropdowns = screen.getAllByRole('combobox')
     expect(dropdowns).toHaveLength(3)
@@ -293,7 +299,7 @@ describe('Parameters component', () => {
         }
       }
     }
-    renderComponent(schema)
+    await renderComponent(schema)
 
     let [countDropdown] = screen.getAllByRole('combobox')
     await fireEvent.click(countDropdown)

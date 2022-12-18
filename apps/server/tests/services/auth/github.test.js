@@ -88,7 +88,7 @@ describe('Github authentication service', () => {
             return { access_token: token }
           })
         githubApiMock.intercept({ path: '/user' }).reply(200, req => {
-          userInvoked(req.headers.authorization)
+          userInvoked(req.headers.Authorization)
           return user
         })
         const state = githubAuth.storeFinalLocation(location)
@@ -151,7 +151,7 @@ describe('Github authentication service', () => {
             return { access_token: token }
           })
         githubApiMock.intercept({ path: '/user' }).reply(500, req => {
-          userInvoked(req.headers.authorization)
+          userInvoked(req.headers.Authorization)
           return 'server error'
         })
         const state = githubAuth.storeFinalLocation(location)

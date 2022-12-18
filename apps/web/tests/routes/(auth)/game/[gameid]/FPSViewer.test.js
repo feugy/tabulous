@@ -7,9 +7,11 @@ import { tick } from 'svelte'
 import html from 'svelte-htm'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-vi.mock('@src/stores/game-engine', () => {
+vi.mock('@src/stores/game-engine', async () => {
   const { BehaviorSubject, Subject } = require('rxjs')
+  const gameEngine = await vi.importActual('@src/stores/game-engine')
   return {
+    ...gameEngine,
     fps: new BehaviorSubject(),
     engine: new BehaviorSubject(),
     action: new Subject()

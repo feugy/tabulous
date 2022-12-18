@@ -5,4 +5,5 @@ dist/
 dist-atelier/
 node_modules/
 scans/
+.vercel/
 !.storybook/

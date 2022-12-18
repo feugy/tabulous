@@ -16,15 +16,19 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { goto } from '$app/navigation'
 
-vi.mock('@src/stores', () => ({
-  createGame: vi.fn(),
-  deleteGame: vi.fn(),
-  listCatalog: vi.fn(),
-  listGames: vi.fn(),
-  receiveGameListUpdates: vi.fn(),
-  toastError: vi.fn(),
-  toastInfo: vi.fn()
-}))
+vi.mock('@src/stores', async () => {
+  const stores = await vi.importActual('@src/stores')
+  return {
+    ...stores,
+    createGame: vi.fn(),
+    deleteGame: vi.fn(),
+    listCatalog: vi.fn(),
+    listGames: vi.fn(),
+    receiveGameListUpdates: vi.fn(),
+    toastError: vi.fn(),
+    toastInfo: vi.fn()
+  }
+})
 
 beforeEach(vi.clearAllMocks)
 
