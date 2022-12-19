@@ -5,6 +5,11 @@ exports[`Local 1`] = `
   class="s-oO6dIPzQcPRb"
   data-testid="player-avatar"
 >
+  <video
+    autoplay=""
+    class="s-oO6dIPzQcPRb"
+  />
+   
   <figure
     class="s-engCJu8q-fNe colored"
     style="--dimension: 150px; --color: red; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
@@ -41,6 +46,11 @@ exports[`No video 1`] = `
   class="s-oO6dIPzQcPRb"
   data-testid="player-avatar"
 >
+  <video
+    autoplay=""
+    class="s-oO6dIPzQcPRb"
+  />
+   
   <figure
     class="s-engCJu8q-fNe colored"
     style="--dimension: 150px; --color: red; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
@@ -74,6 +84,11 @@ exports[`No video nor avatar 1`] = `
   class="s-oO6dIPzQcPRb"
   data-testid="player-avatar"
 >
+  <video
+    autoplay=""
+    class="s-oO6dIPzQcPRb"
+  />
+   
   <figure
     class="s-engCJu8q-fNe"
     style="--dimension: 150px; --color: null; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"

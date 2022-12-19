@@ -84,31 +84,31 @@ export async function acquireMediaStream(desired) {
     return acquireInProgress
   }
 
-  async function acquire() {
-    try {
-      const last = loadLastMediaIds()
-      if (mics.value.length === 0 && cameras.value.length === 0) {
-        await enumerateDevices()
-      }
-      const video = getDesiredOrDefault(desired, last.cameraId, cameras.value)
-      const audio = getDesiredOrDefault(desired, last.micId, mics.value)
-      currentCamera.next(video)
-      currentMic.next(audio)
-      saveLastMediaIds({ audio, video })
-      const result = await navigator.mediaDevices.getUserMedia({ audio, video })
-      stream.next(result)
-      logger.info(`media successfully attached`)
-      return result
-    } catch (error) {
-      logger.warn({ error }, `Failed to access media devices: ${error.message}`)
-      resetAll()
-    }
+  const last = loadLastMediaIds()
+  if (mics.value.length === 0 && cameras.value.length === 0) {
+    await enumerateDevices()
   }
-
-  acquireInProgress = acquire()
+  const video = getDesiredOrDefault(desired, last.cameraId, cameras.value)
+  const audio = getDesiredOrDefault(desired, last.micId, mics.value)
+  acquireInProgress = acquire(video, audio)
   const result = await acquireInProgress
   acquireInProgress = null
   return result
+}
+
+async function acquire(video, audio) {
+  try {
+    currentCamera.next(video)
+    currentMic.next(audio)
+    saveLastMediaIds({ audio, video })
+    const result = await navigator.mediaDevices.getUserMedia({ audio, video })
+    stream.next(result)
+    logger.info(`media successfully attached`)
+    return result
+  } catch (error) {
+    logger.warn({ error }, `Failed to access media devices: ${error.message}`)
+    resetAll()
+  }
 }
 
 /**
