@@ -123,6 +123,11 @@ exports[`Multiple connected 1`] = `
               class="s-oO6dIPzQcPRb"
               data-testid="player-avatar"
             >
+              <video
+                autoplay=""
+                class="s-oO6dIPzQcPRb"
+              />
+               
               <figure
                 class="s-engCJu8q-fNe colored"
                 style="--dimension: 150px; --color: #9c3096; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
@@ -158,6 +163,11 @@ exports[`Multiple connected 1`] = `
               class="s-oO6dIPzQcPRb"
               data-testid="player-avatar"
             >
+              <video
+                autoplay=""
+                class="s-oO6dIPzQcPRb"
+              />
+               
               <figure
                 class="s-engCJu8q-fNe colored"
                 style="--dimension: 150px; --color: #ff4500; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
@@ -189,6 +199,11 @@ exports[`Multiple connected 1`] = `
               class="s-oO6dIPzQcPRb"
               data-testid="player-avatar"
             >
+              <video
+                autoplay=""
+                class="s-oO6dIPzQcPRb"
+              />
+               
               <figure
                 class="s-engCJu8q-fNe colored"
                 style="--dimension: 150px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
@@ -1072,6 +1087,11 @@ exports[`Single connected 1`] = `
               class="s-oO6dIPzQcPRb"
               data-testid="player-avatar"
             >
+              <video
+                autoplay=""
+                class="s-oO6dIPzQcPRb"
+              />
+               
               <figure
                 class="s-engCJu8q-fNe colored"
                 style="--dimension: 150px; --color: #ff4500; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
@@ -1103,6 +1123,11 @@ exports[`Single connected 1`] = `
               class="s-oO6dIPzQcPRb"
               data-testid="player-avatar"
             >
+              <video
+                autoplay=""
+                class="s-oO6dIPzQcPRb"
+              />
+               
               <figure
                 class="s-engCJu8q-fNe colored"
                 style="--dimension: 150px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
@@ -1241,6 +1266,11 @@ exports[`Single connected, no rules book, thread 1`] = `
               class="s-oO6dIPzQcPRb"
               data-testid="player-avatar"
             >
+              <video
+                autoplay=""
+                class="s-oO6dIPzQcPRb"
+              />
+               
               <figure
                 class="s-engCJu8q-fNe colored"
                 style="--dimension: 150px; --color: #ff4500; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
@@ -1272,6 +1302,11 @@ exports[`Single connected, no rules book, thread 1`] = `
               class="s-oO6dIPzQcPRb"
               data-testid="player-avatar"
             >
+              <video
+                autoplay=""
+                class="s-oO6dIPzQcPRb"
+              />
+               
               <figure
                 class="s-engCJu8q-fNe colored"
                 style="--dimension: 150px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"

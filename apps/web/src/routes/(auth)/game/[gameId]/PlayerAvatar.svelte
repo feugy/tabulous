@@ -18,16 +18,12 @@
   export let stopped = false
 
   let video
-  let hasAudio = false
-  let hasVideo = false
 
   $: mediaStream = isLocal ? $stream$ : stream
   $: hasStream = Boolean(mediaStream) && !stopped
 
-  $: if (hasStream && video) {
+  $: if (mediaStream && video) {
     video.srcObject = mediaStream
-    hasAudio = mediaStream.getAudioTracks().length > 0
-    hasVideo = mediaStream.getVideoTracks().length > 0
   }
 
   function toggleMic() {
@@ -51,18 +47,15 @@
   }
 </script>
 
-<section data-testid="player-avatar" class:hasStream>
-  {#if hasStream}<video
-      autoplay
-      muted={isLocal}
-      bind:this={video}
-    />{:else}<PlayerThumbnail {player} dimension={150} />{/if}
+<section data-testid="player-avatar">
+  <video class:hasStream autoplay muted={isLocal} bind:this={video} />
+  {#if !hasStream}<PlayerThumbnail {player} dimension={150} />{/if}
   {#if player?.isHost}
     <span class="host">{$_('host')}</span>
   {/if}
   <legend>
     {#if isLocal}
-      {#if hasAudio}
+      {#if $mics$?.length > 0}
         <Dropdown
           valueAsText={false}
           openOnClick={false}
@@ -73,7 +66,7 @@
           on:select={selectMedia}
         />
       {/if}
-      {#if hasVideo}
+      {#if $cameras$?.length > 0}
         <Dropdown
           valueAsText={false}
           openOnClick={false}
@@ -92,15 +85,15 @@
 
 <style lang="postcss">
   section {
-    @apply inline-flex relative items-center justify-center w-full h-full;
-
-    &.hasStream {
-      @apply overflow-hidden bg-black;
-    }
+    @apply inline-flex relative items-center justify-center w-full h-full overflow-hidden;
   }
 
   video {
-    @apply w-full;
+    @apply w-full hidden;
+
+    &.hasStream {
+      @apply block bg-black;
+    }
   }
 
   legend {
