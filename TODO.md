@@ -74,6 +74,8 @@ AssertionError: expected 2nd "spy" call to have been called with [ 'anima' ]
 
 ## Refactor
 
+- vitest@0.25.8: issue when loading peer deps, resolve in [next release](https://github.com/vitest-dev/vitest/pull/2463)
+- @urql/core@3.1.1: receiveGameListUpdates subscribtion fails because urql's stringification sends the whole games.graphql file instead of the subscription as a payload. This is because [these lines](https://github.com/urql-graphql/urql/pull/2871/files#diff-425e8fcb48a8df1865f99ca1fb981873c6d0ef33ee3856e18f85a8b449bb81b7R41-R42)
 - add tests for web/src/utils/peer-connection
 - use node 18 when msw/interceptor will [handle it](https://github.com/mswjs/interceptors/pull/283)
 - ts-check all the things!

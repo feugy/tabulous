@@ -1,5 +1,59 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Empty 1`] = `undefined`;
+
+exports[`Multiple entries 1`] = `
+<ol
+  class="s-x5nEMCoiqeIy"
+>
+  <li
+    class="s-x5nEMCoiqeIy"
+  >
+    <a
+      class="s-x5nEMCoiqeIy"
+      href="/"
+    >
+      home
+    </a>
+  </li>
+   
+  <li
+    class="s-x5nEMCoiqeIy"
+  >
+    &gt;
+  </li>
+  
+  <li
+    class="s-x5nEMCoiqeIy"
+  >
+    <a
+      class="s-x5nEMCoiqeIy"
+      href="/account"
+    >
+      account
+    </a>
+  </li>
+   
+  <li
+    class="s-x5nEMCoiqeIy"
+  >
+    &gt;
+  </li>
+  
+  <li
+    class="s-x5nEMCoiqeIy"
+  >
+    <a
+      class="s-x5nEMCoiqeIy"
+    >
+      details
+    </a>
+  </li>
+   
+  
+</ol>
+`;
+
 exports[`Primary image icon only 1`] = `
 <button
   class="s-NMyTiX1zi6rz"
@@ -157,6 +211,24 @@ exports[`Secondary with text and icon 1`] = `
   
   
 </button>
+`;
+
+exports[`Single entry 1`] = `
+<ol
+  class="s-x5nEMCoiqeIy"
+>
+  <li
+    class="s-x5nEMCoiqeIy"
+  >
+    <a
+      class="s-x5nEMCoiqeIy"
+    >
+      home
+    </a>
+  </li>
+   
+  
+</ol>
 `;
 
 exports[`Transparent with text 1`] = `

@@ -47,14 +47,14 @@ class CatalogItemRepository extends AbstractRepository {
           this.models.push(item)
           this.modelsByName.set(name, item)
         } catch (err) {
+          /* c8 ignore start */
           // ignore folders with no index.js or invalid symbolic links
-          // vite-node loader (used for tests) has a different error message than node.js
-          if (
-            !err.message.includes(`Cannot find module '${descriptor}'`) &&
-            !err.message.includes(`Failed to load ${descriptor}`)
-          ) {
+          // Since recently (https://github.com/vitest-dev/vitest/commit/58ee8e9b6300fd6899072e34feb766805be1593c),
+          // it can not be tested under vitest because an uncatchable rejection will be thrown
+          if (!err.message.includes(`Cannot find module '${descriptor}'`)) {
             throw new Error(`Failed to load game ${entry.name}: ${err.message}`)
           }
+          /* c8 ignore stop */
         }
       }
     }

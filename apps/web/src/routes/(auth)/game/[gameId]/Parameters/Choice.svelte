@@ -2,7 +2,7 @@
   import { Dropdown } from '@src/components'
   import { gameAssetsUrl } from '@src/utils'
   import { _, locale } from 'svelte-intl'
-  
+
   import { findViolations } from './utils'
 
   export let name
@@ -21,7 +21,7 @@
 
   // when defauling to first option, mutates values
   $: if (!value && options.length) {
-    handleSelection({ detail: options[0] })
+    setTimeout(() => handleSelection({ detail: options[0] }), 0)
   }
 
   function handleSelection({ detail }) {
