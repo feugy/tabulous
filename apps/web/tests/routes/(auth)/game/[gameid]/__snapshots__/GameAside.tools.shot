@@ -119,306 +119,310 @@ exports[`Multiple connected 1`] = `
           <div
             class="peers s-SgNA803GJPfe"
           >
-            <section
-              class="s-oO6dIPzQcPRb"
-              data-testid="player-avatar"
-            >
-              <video
-                autoplay=""
-                class="s-oO6dIPzQcPRb"
-              />
-               
-              <figure
-                class="s-engCJu8q-fNe colored"
-                style="--dimension: 150px; --color: #9c3096; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
-              >
-                <img
-                  alt="avatar for Fernand Naudin"
-                  class="s-engCJu8q-fNe"
-                  height="150"
-                  referrerpolicy="no-referrer"
-                  width="150"
-                />
-                 
-                <figcaption
-                  class="s-engCJu8q-fNe"
-                >
-                  Fernand Naudin
-                </figcaption>
-              </figure>
-              <!--&lt;PlayerThumbnail&gt;-->
-               
-               
-              <legend
-                class="s-oO6dIPzQcPRb"
-              >
-                 
-                
-              </legend>
-            </section>
-            <!--&lt;PlayerAvatar&gt;-->
-             
-            
-            <section
-              class="s-oO6dIPzQcPRb"
-              data-testid="player-avatar"
-            >
-              <video
-                autoplay=""
-                class="s-oO6dIPzQcPRb"
-              />
-               
-              <figure
-                class="s-engCJu8q-fNe colored"
-                style="--dimension: 150px; --color: #ff4500; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
-              >
-                <img
-                  alt="avatar for Maître Folage"
-                  class="s-engCJu8q-fNe"
-                  height="150"
-                  referrerpolicy="no-referrer"
-                  width="150"
-                />
-                 
-                <figcaption
-                  class="s-engCJu8q-fNe"
-                >
-                  Maître Folage
-                </figcaption>
-              </figure>
-              <!--&lt;PlayerThumbnail&gt;-->
-               
-               
-              <legend
-                class="s-oO6dIPzQcPRb"
-              />
-            </section>
-            <!--&lt;PlayerAvatar&gt;-->
-            
-            <section
-              class="s-oO6dIPzQcPRb"
-              data-testid="player-avatar"
-            >
-              <video
-                autoplay=""
-                class="s-oO6dIPzQcPRb"
-              />
-               
-              <figure
-                class="s-engCJu8q-fNe colored"
-                style="--dimension: 150px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
-              >
-                <img
-                  alt="avatar for Pascal"
-                  class="s-engCJu8q-fNe"
-                  height="150"
-                  referrerpolicy="no-referrer"
-                  width="150"
-                />
-                 
-                <figcaption
-                  class="s-engCJu8q-fNe"
-                >
-                  Pascal
-                </figcaption>
-              </figure>
-              <!--&lt;PlayerThumbnail&gt;-->
-               
-               
-              <legend
-                class="s-oO6dIPzQcPRb"
-              />
-            </section>
-            <!--&lt;PlayerAvatar&gt;-->
-          </div>
-           
-          <section
-            aria-expanded="true"
-            aria-label="minimizable"
-            class="s-vqhOCvFa7LzI vertical"
-            id="minimizable-section-9"
-            style="height: 15%;"
-          >
-            <menu
-              class="bottom s-vqhOCvFa7LzI vertical"
-            >
-              <ol
-                class="buttonContainer s-vqhOCvFa7LzI"
-                role="tablist"
-              >
-                <li
-                  class="s-vqhOCvFa7LzI"
-                >
-                  <button
-                    aria-selected="false"
-                    class="s-NMyTiX1zi6rz"
-                    role="tab"
-                  >
-                    <span
-                      class="material-icons s-NMyTiX1zi6rz"
-                    >
-                      question_answer
-                    </span>
-                    
-                    
-                    <span
-                      class="badge s-NMyTiX1zi6rz"
-                    >
-                      F4
-                    </span>
-                    
-                  </button>
-                  <!--&lt;Button&gt;-->
-                   
-                </li>
-              </ol>
-               
-              <div
-                aria-controls="minimizable-section-9"
-                class="gutter s-vqhOCvFa7LzI"
-                role="scrollbar"
-              />
-            </menu>
-             
             <span
-              class="s-vqhOCvFa7LzI"
+              class="avatars s-SgNA803GJPfe"
             >
-              <div
-                class="discussion s-vwbhBuhy0jW4"
+              <section
+                class="s-oO6dIPzQcPRb"
+                data-testid="player-avatar"
+              >
+                <video
+                  autoplay=""
+                  class="s-oO6dIPzQcPRb"
+                />
+                 
+                <figure
+                  class="s-engCJu8q-fNe colored"
+                  style="--dimension: 150px; --color: #9c3096; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+                >
+                  <img
+                    alt="avatar for Fernand Naudin"
+                    class="s-engCJu8q-fNe"
+                    height="150"
+                    referrerpolicy="no-referrer"
+                    width="150"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe"
+                  >
+                    Fernand Naudin
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+                 
+                 
+                <legend
+                  class="s-oO6dIPzQcPRb"
+                >
+                   
+                  
+                </legend>
+              </section>
+              <!--&lt;PlayerAvatar&gt;-->
+               
+              
+              <section
+                class="s-oO6dIPzQcPRb"
+                data-testid="player-avatar"
+              >
+                <video
+                  autoplay=""
+                  class="s-oO6dIPzQcPRb"
+                />
+                 
+                <figure
+                  class="s-engCJu8q-fNe colored"
+                  style="--dimension: 150px; --color: #ff4500; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+                >
+                  <img
+                    alt="avatar for Maître Folage"
+                    class="s-engCJu8q-fNe"
+                    height="150"
+                    referrerpolicy="no-referrer"
+                    width="150"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe"
+                  >
+                    Maître Folage
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+                 
+                 
+                <legend
+                  class="s-oO6dIPzQcPRb"
+                />
+              </section>
+              <!--&lt;PlayerAvatar&gt;-->
+              
+              <section
+                class="s-oO6dIPzQcPRb"
+                data-testid="player-avatar"
+              >
+                <video
+                  autoplay=""
+                  class="s-oO6dIPzQcPRb"
+                />
+                 
+                <figure
+                  class="s-engCJu8q-fNe colored"
+                  style="--dimension: 150px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+                >
+                  <img
+                    alt="avatar for Pascal"
+                    class="s-engCJu8q-fNe"
+                    height="150"
+                    referrerpolicy="no-referrer"
+                    width="150"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe"
+                  >
+                    Pascal
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+                 
+                 
+                <legend
+                  class="s-oO6dIPzQcPRb"
+                />
+              </section>
+              <!--&lt;PlayerAvatar&gt;-->
+            </span>
+             
+            <section
+              aria-expanded="true"
+              aria-label="minimizable"
+              class="s-vqhOCvFa7LzI vertical"
+              id="minimizable-section-9"
+              style="height: 15%;"
+            >
+              <menu
+                class="bottom s-vqhOCvFa7LzI vertical"
+              >
+                <ol
+                  class="buttonContainer s-vqhOCvFa7LzI"
+                  role="tablist"
+                >
+                  <li
+                    class="s-vqhOCvFa7LzI"
+                  >
+                    <button
+                      aria-selected="false"
+                      class="s-NMyTiX1zi6rz"
+                      role="tab"
+                    >
+                      <span
+                        class="material-icons s-NMyTiX1zi6rz"
+                      >
+                        question_answer
+                      </span>
+                      
+                      
+                      <span
+                        class="badge s-NMyTiX1zi6rz"
+                      >
+                        F4
+                      </span>
+                      
+                    </button>
+                    <!--&lt;Button&gt;-->
+                     
+                  </li>
+                </ol>
+                 
+                <div
+                  aria-controls="minimizable-section-9"
+                  class="gutter s-vqhOCvFa7LzI"
+                  role="scrollbar"
+                />
+              </menu>
+               
+              <span
+                class="s-vqhOCvFa7LzI"
               >
                 <div
-                  class="messages s-vwbhBuhy0jW4"
+                  class="discussion s-vwbhBuhy0jW4"
                 >
-                  <span
-                    class="from s-vwbhBuhy0jW4"
-                  >
-                    Fernand Naudin
-                  </span>
-                  <span
-                    class="message s-vwbhBuhy0jW4"
-                  >
-                    Qu'est-ce qui se passe encore ?
-                  </span>
-                  <span
-                    class="from s-vwbhBuhy0jW4"
-                  >
-                    Maître Folage
-                  </span>
-                  <span
-                    class="message s-vwbhBuhy0jW4"
-                  >
-                    Notre ami va se faire un plaisir de vous l'expliquer.
-                  </span>
-                  <span
-                    class="from s-vwbhBuhy0jW4"
-                  >
-                    Pascal
-                  </span>
-                  <span
-                    class="message s-vwbhBuhy0jW4"
-                  >
-                    Les Volfoni ont organisé à la péniche une petite réunion des cadres, façon meeting, si vous voyez ce que je veux dire.
-M'enfin quoi, on parle dans votre dos.
-                  </span>
-                  <span
-                    class="from s-vwbhBuhy0jW4"
-                  >
-                    Fernand Naudin
-                  </span>
-                  <span
-                    class="message s-vwbhBuhy0jW4"
-                  >
-                    Et tu tiens ça d'où ?
-                  </span>
-                  <span
-                    class="from s-vwbhBuhy0jW4"
-                  >
-                    Pascal
-                  </span>
-                  <span
-                    class="message s-vwbhBuhy0jW4"
-                  >
-                    Je ne peux pas le dire, j'ai promis. Ce serait mal.
-                  </span>
-                  <span
-                    class="from s-vwbhBuhy0jW4"
-                  >
-                    Fernand Naudin
-                  </span>
-                  <span
-                    class="message s-vwbhBuhy0jW4"
-                  >
-                    Alors ?
-                  </span>
-                  <span
-                    class="from s-vwbhBuhy0jW4"
-                  >
-                    Maître Folage
-                  </span>
-                  <span
-                    class="message s-vwbhBuhy0jW4"
-                  >
-                    Eh bien. Euh. Y'a deux solutions : ou on se dérange, ou on méprise. 
-Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire, bien sûr.
-                  </span>
-                  <span
-                    class="from s-vwbhBuhy0jW4"
-                  >
-                    Fernand Naudin
-                  </span>
-                  <span
-                    class="message s-vwbhBuhy0jW4"
-                  >
-                    Bon, on va y aller, hmm ?
-                  </span>
-                  <span
-                    class="from s-vwbhBuhy0jW4"
-                  >
-                    Pascal
-                  </span>
-                  <span
-                    class="message s-vwbhBuhy0jW4"
-                  >
-                    Monsieur Fernand, y'a peut-être une place pour moi dans votre auto. Des fois que la réunion devienne houleuse ... J'ai une présence tranquillisante.
-                  </span>
-                </div>
-                 
-                <form
-                  class="s-vwbhBuhy0jW4"
-                >
-                  <fieldset
-                    class="s-Fe6WNbR-55zp"
-                  >
-                     
-                    <input
-                      class="s-Fe6WNbR-55zp"
-                    />
-                  </fieldset>
-                  <!--&lt;Input&gt;-->
-                   
-                  <button
-                    class="s-NMyTiX1zi6rz"
-                    disabled=""
-                    title="Envoyer à tous"
-                    type="submit"
+                  <div
+                    class="messages s-vwbhBuhy0jW4"
                   >
                     <span
-                      class="material-icons s-NMyTiX1zi6rz"
+                      class="from s-vwbhBuhy0jW4"
                     >
-                      send
+                      Fernand Naudin
                     </span>
-                    
-                    
-                    
-                  </button>
-                  <!--&lt;Button&gt;-->
-                </form>
-              </div>
-              <!--&lt;Discussion&gt;-->
-            </span>
-          </section>
-          <!--&lt;MinimizableSection&gt;-->
-          
+                    <span
+                      class="message s-vwbhBuhy0jW4"
+                    >
+                      Qu'est-ce qui se passe encore ?
+                    </span>
+                    <span
+                      class="from s-vwbhBuhy0jW4"
+                    >
+                      Maître Folage
+                    </span>
+                    <span
+                      class="message s-vwbhBuhy0jW4"
+                    >
+                      Notre ami va se faire un plaisir de vous l'expliquer.
+                    </span>
+                    <span
+                      class="from s-vwbhBuhy0jW4"
+                    >
+                      Pascal
+                    </span>
+                    <span
+                      class="message s-vwbhBuhy0jW4"
+                    >
+                      Les Volfoni ont organisé à la péniche une petite réunion des cadres, façon meeting, si vous voyez ce que je veux dire.
+M'enfin quoi, on parle dans votre dos.
+                    </span>
+                    <span
+                      class="from s-vwbhBuhy0jW4"
+                    >
+                      Fernand Naudin
+                    </span>
+                    <span
+                      class="message s-vwbhBuhy0jW4"
+                    >
+                      Et tu tiens ça d'où ?
+                    </span>
+                    <span
+                      class="from s-vwbhBuhy0jW4"
+                    >
+                      Pascal
+                    </span>
+                    <span
+                      class="message s-vwbhBuhy0jW4"
+                    >
+                      Je ne peux pas le dire, j'ai promis. Ce serait mal.
+                    </span>
+                    <span
+                      class="from s-vwbhBuhy0jW4"
+                    >
+                      Fernand Naudin
+                    </span>
+                    <span
+                      class="message s-vwbhBuhy0jW4"
+                    >
+                      Alors ?
+                    </span>
+                    <span
+                      class="from s-vwbhBuhy0jW4"
+                    >
+                      Maître Folage
+                    </span>
+                    <span
+                      class="message s-vwbhBuhy0jW4"
+                    >
+                      Eh bien. Euh. Y'a deux solutions : ou on se dérange, ou on méprise. 
+Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire, bien sûr.
+                    </span>
+                    <span
+                      class="from s-vwbhBuhy0jW4"
+                    >
+                      Fernand Naudin
+                    </span>
+                    <span
+                      class="message s-vwbhBuhy0jW4"
+                    >
+                      Bon, on va y aller, hmm ?
+                    </span>
+                    <span
+                      class="from s-vwbhBuhy0jW4"
+                    >
+                      Pascal
+                    </span>
+                    <span
+                      class="message s-vwbhBuhy0jW4"
+                    >
+                      Monsieur Fernand, y'a peut-être une place pour moi dans votre auto. Des fois que la réunion devienne houleuse ... J'ai une présence tranquillisante.
+                    </span>
+                  </div>
+                   
+                  <form
+                    class="s-vwbhBuhy0jW4"
+                  >
+                    <fieldset
+                      class="s-Fe6WNbR-55zp"
+                    >
+                       
+                      <input
+                        class="s-Fe6WNbR-55zp"
+                      />
+                    </fieldset>
+                    <!--&lt;Input&gt;-->
+                     
+                    <button
+                      class="s-NMyTiX1zi6rz"
+                      disabled=""
+                      title="Envoyer à tous"
+                      type="submit"
+                    >
+                      <span
+                        class="material-icons s-NMyTiX1zi6rz"
+                      >
+                        send
+                      </span>
+                      
+                      
+                      
+                    </button>
+                    <!--&lt;Button&gt;-->
+                  </form>
+                </div>
+                <!--&lt;Discussion&gt;-->
+              </span>
+            </section>
+            <!--&lt;MinimizableSection&gt;-->
+          </div>
+           
         </div>
       </span>
     </section>
@@ -519,6 +523,17 @@ exports[`No peers 1`] = `
           class="content s-SgNA803GJPfe"
           style="max-width: 30vw"
         >
+          <div
+            class="peers s-SgNA803GJPfe hidden"
+          >
+            <span
+              class="avatars s-SgNA803GJPfe"
+            >
+               
+            </span>
+             
+          </div>
+           
           <section
             class="s-pX3FslpvGiLr"
           >
@@ -645,6 +660,17 @@ exports[`No peers, no rules book 1`] = `
           class="content s-SgNA803GJPfe"
           style="max-width: 30vw"
         >
+          <div
+            class="peers s-SgNA803GJPfe hidden"
+          >
+            <span
+              class="avatars s-SgNA803GJPfe"
+            >
+               
+            </span>
+             
+          </div>
+           
           <div
             class="s-z1Q6GECZQiDV"
           >
@@ -1081,82 +1107,86 @@ exports[`Single connected 1`] = `
           <div
             class="peers s-SgNA803GJPfe"
           >
+            <span
+              class="avatars s-SgNA803GJPfe"
+            >
+               
+              
+              <section
+                class="s-oO6dIPzQcPRb"
+                data-testid="player-avatar"
+              >
+                <video
+                  autoplay=""
+                  class="s-oO6dIPzQcPRb"
+                />
+                 
+                <figure
+                  class="s-engCJu8q-fNe colored"
+                  style="--dimension: 150px; --color: #ff4500; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+                >
+                  <img
+                    alt="avatar for Maître Folage"
+                    class="s-engCJu8q-fNe"
+                    height="150"
+                    referrerpolicy="no-referrer"
+                    width="150"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe"
+                  >
+                    Maître Folage
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+                 
+                 
+                <legend
+                  class="s-oO6dIPzQcPRb"
+                />
+              </section>
+              <!--&lt;PlayerAvatar&gt;-->
+              
+              <section
+                class="s-oO6dIPzQcPRb"
+                data-testid="player-avatar"
+              >
+                <video
+                  autoplay=""
+                  class="s-oO6dIPzQcPRb"
+                />
+                 
+                <figure
+                  class="s-engCJu8q-fNe colored"
+                  style="--dimension: 150px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+                >
+                  <img
+                    alt="avatar for Pascal"
+                    class="s-engCJu8q-fNe"
+                    height="150"
+                    referrerpolicy="no-referrer"
+                    width="150"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe"
+                  >
+                    Pascal
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+                 
+                 
+                <legend
+                  class="s-oO6dIPzQcPRb"
+                />
+              </section>
+              <!--&lt;PlayerAvatar&gt;-->
+            </span>
              
-            
-            <section
-              class="s-oO6dIPzQcPRb"
-              data-testid="player-avatar"
-            >
-              <video
-                autoplay=""
-                class="s-oO6dIPzQcPRb"
-              />
-               
-              <figure
-                class="s-engCJu8q-fNe colored"
-                style="--dimension: 150px; --color: #ff4500; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
-              >
-                <img
-                  alt="avatar for Maître Folage"
-                  class="s-engCJu8q-fNe"
-                  height="150"
-                  referrerpolicy="no-referrer"
-                  width="150"
-                />
-                 
-                <figcaption
-                  class="s-engCJu8q-fNe"
-                >
-                  Maître Folage
-                </figcaption>
-              </figure>
-              <!--&lt;PlayerThumbnail&gt;-->
-               
-               
-              <legend
-                class="s-oO6dIPzQcPRb"
-              />
-            </section>
-            <!--&lt;PlayerAvatar&gt;-->
-            
-            <section
-              class="s-oO6dIPzQcPRb"
-              data-testid="player-avatar"
-            >
-              <video
-                autoplay=""
-                class="s-oO6dIPzQcPRb"
-              />
-               
-              <figure
-                class="s-engCJu8q-fNe colored"
-                style="--dimension: 150px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
-              >
-                <img
-                  alt="avatar for Pascal"
-                  class="s-engCJu8q-fNe"
-                  height="150"
-                  referrerpolicy="no-referrer"
-                  width="150"
-                />
-                 
-                <figcaption
-                  class="s-engCJu8q-fNe"
-                >
-                  Pascal
-                </figcaption>
-              </figure>
-              <!--&lt;PlayerThumbnail&gt;-->
-               
-               
-              <legend
-                class="s-oO6dIPzQcPRb"
-              />
-            </section>
-            <!--&lt;PlayerAvatar&gt;-->
           </div>
            
-          
         </div>
       </span>
     </section>
@@ -1260,268 +1290,272 @@ exports[`Single connected, no rules book, thread 1`] = `
           <div
             class="peers s-SgNA803GJPfe"
           >
-             
-            
-            <section
-              class="s-oO6dIPzQcPRb"
-              data-testid="player-avatar"
-            >
-              <video
-                autoplay=""
-                class="s-oO6dIPzQcPRb"
-              />
-               
-              <figure
-                class="s-engCJu8q-fNe colored"
-                style="--dimension: 150px; --color: #ff4500; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
-              >
-                <img
-                  alt="avatar for Maître Folage"
-                  class="s-engCJu8q-fNe"
-                  height="150"
-                  referrerpolicy="no-referrer"
-                  width="150"
-                />
-                 
-                <figcaption
-                  class="s-engCJu8q-fNe"
-                >
-                  Maître Folage
-                </figcaption>
-              </figure>
-              <!--&lt;PlayerThumbnail&gt;-->
-               
-               
-              <legend
-                class="s-oO6dIPzQcPRb"
-              />
-            </section>
-            <!--&lt;PlayerAvatar&gt;-->
-            
-            <section
-              class="s-oO6dIPzQcPRb"
-              data-testid="player-avatar"
-            >
-              <video
-                autoplay=""
-                class="s-oO6dIPzQcPRb"
-              />
-               
-              <figure
-                class="s-engCJu8q-fNe colored"
-                style="--dimension: 150px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
-              >
-                <img
-                  alt="avatar for Pascal"
-                  class="s-engCJu8q-fNe"
-                  height="150"
-                  referrerpolicy="no-referrer"
-                  width="150"
-                />
-                 
-                <figcaption
-                  class="s-engCJu8q-fNe"
-                >
-                  Pascal
-                </figcaption>
-              </figure>
-              <!--&lt;PlayerThumbnail&gt;-->
-               
-               
-              <legend
-                class="s-oO6dIPzQcPRb"
-              />
-            </section>
-            <!--&lt;PlayerAvatar&gt;-->
-          </div>
-           
-          <section
-            aria-expanded="true"
-            aria-label="minimizable"
-            class="s-vqhOCvFa7LzI vertical"
-            id="minimizable-section-12"
-            style="height: 15%;"
-          >
-            <menu
-              class="bottom s-vqhOCvFa7LzI vertical"
-            >
-              <ol
-                class="buttonContainer s-vqhOCvFa7LzI"
-                role="tablist"
-              >
-                <li
-                  class="s-vqhOCvFa7LzI"
-                >
-                  <button
-                    aria-selected="false"
-                    class="s-NMyTiX1zi6rz"
-                    role="tab"
-                  >
-                    <span
-                      class="material-icons s-NMyTiX1zi6rz"
-                    >
-                      question_answer
-                    </span>
-                    
-                    
-                    <span
-                      class="badge s-NMyTiX1zi6rz"
-                    >
-                      F4
-                    </span>
-                    
-                  </button>
-                  <!--&lt;Button&gt;-->
-                   
-                </li>
-              </ol>
-               
-              <div
-                aria-controls="minimizable-section-12"
-                class="gutter s-vqhOCvFa7LzI"
-                role="scrollbar"
-              />
-            </menu>
-             
             <span
-              class="s-vqhOCvFa7LzI"
+              class="avatars s-SgNA803GJPfe"
             >
-              <div
-                class="discussion s-vwbhBuhy0jW4"
+               
+              
+              <section
+                class="s-oO6dIPzQcPRb"
+                data-testid="player-avatar"
+              >
+                <video
+                  autoplay=""
+                  class="s-oO6dIPzQcPRb"
+                />
+                 
+                <figure
+                  class="s-engCJu8q-fNe colored"
+                  style="--dimension: 150px; --color: #ff4500; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+                >
+                  <img
+                    alt="avatar for Maître Folage"
+                    class="s-engCJu8q-fNe"
+                    height="150"
+                    referrerpolicy="no-referrer"
+                    width="150"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe"
+                  >
+                    Maître Folage
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+                 
+                 
+                <legend
+                  class="s-oO6dIPzQcPRb"
+                />
+              </section>
+              <!--&lt;PlayerAvatar&gt;-->
+              
+              <section
+                class="s-oO6dIPzQcPRb"
+                data-testid="player-avatar"
+              >
+                <video
+                  autoplay=""
+                  class="s-oO6dIPzQcPRb"
+                />
+                 
+                <figure
+                  class="s-engCJu8q-fNe colored"
+                  style="--dimension: 150px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+                >
+                  <img
+                    alt="avatar for Pascal"
+                    class="s-engCJu8q-fNe"
+                    height="150"
+                    referrerpolicy="no-referrer"
+                    width="150"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe"
+                  >
+                    Pascal
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+                 
+                 
+                <legend
+                  class="s-oO6dIPzQcPRb"
+                />
+              </section>
+              <!--&lt;PlayerAvatar&gt;-->
+            </span>
+             
+            <section
+              aria-expanded="true"
+              aria-label="minimizable"
+              class="s-vqhOCvFa7LzI vertical"
+              id="minimizable-section-12"
+              style="height: 15%;"
+            >
+              <menu
+                class="bottom s-vqhOCvFa7LzI vertical"
+              >
+                <ol
+                  class="buttonContainer s-vqhOCvFa7LzI"
+                  role="tablist"
+                >
+                  <li
+                    class="s-vqhOCvFa7LzI"
+                  >
+                    <button
+                      aria-selected="false"
+                      class="s-NMyTiX1zi6rz"
+                      role="tab"
+                    >
+                      <span
+                        class="material-icons s-NMyTiX1zi6rz"
+                      >
+                        question_answer
+                      </span>
+                      
+                      
+                      <span
+                        class="badge s-NMyTiX1zi6rz"
+                      >
+                        F4
+                      </span>
+                      
+                    </button>
+                    <!--&lt;Button&gt;-->
+                     
+                  </li>
+                </ol>
+                 
+                <div
+                  aria-controls="minimizable-section-12"
+                  class="gutter s-vqhOCvFa7LzI"
+                  role="scrollbar"
+                />
+              </menu>
+               
+              <span
+                class="s-vqhOCvFa7LzI"
               >
                 <div
-                  class="messages s-vwbhBuhy0jW4"
+                  class="discussion s-vwbhBuhy0jW4"
                 >
-                  <span
-                    class="from s-vwbhBuhy0jW4"
-                  >
-                    Fernand Naudin
-                  </span>
-                  <span
-                    class="message s-vwbhBuhy0jW4"
-                  >
-                    Qu'est-ce qui se passe encore ?
-                  </span>
-                  <span
-                    class="from s-vwbhBuhy0jW4"
-                  >
-                    Maître Folage
-                  </span>
-                  <span
-                    class="message s-vwbhBuhy0jW4"
-                  >
-                    Notre ami va se faire un plaisir de vous l'expliquer.
-                  </span>
-                  <span
-                    class="from s-vwbhBuhy0jW4"
-                  >
-                    Pascal
-                  </span>
-                  <span
-                    class="message s-vwbhBuhy0jW4"
-                  >
-                    Les Volfoni ont organisé à la péniche une petite réunion des cadres, façon meeting, si vous voyez ce que je veux dire.
-M'enfin quoi, on parle dans votre dos.
-                  </span>
-                  <span
-                    class="from s-vwbhBuhy0jW4"
-                  >
-                    Fernand Naudin
-                  </span>
-                  <span
-                    class="message s-vwbhBuhy0jW4"
-                  >
-                    Et tu tiens ça d'où ?
-                  </span>
-                  <span
-                    class="from s-vwbhBuhy0jW4"
-                  >
-                    Pascal
-                  </span>
-                  <span
-                    class="message s-vwbhBuhy0jW4"
-                  >
-                    Je ne peux pas le dire, j'ai promis. Ce serait mal.
-                  </span>
-                  <span
-                    class="from s-vwbhBuhy0jW4"
-                  >
-                    Fernand Naudin
-                  </span>
-                  <span
-                    class="message s-vwbhBuhy0jW4"
-                  >
-                    Alors ?
-                  </span>
-                  <span
-                    class="from s-vwbhBuhy0jW4"
-                  >
-                    Maître Folage
-                  </span>
-                  <span
-                    class="message s-vwbhBuhy0jW4"
-                  >
-                    Eh bien. Euh. Y'a deux solutions : ou on se dérange, ou on méprise. 
-Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire, bien sûr.
-                  </span>
-                  <span
-                    class="from s-vwbhBuhy0jW4"
-                  >
-                    Fernand Naudin
-                  </span>
-                  <span
-                    class="message s-vwbhBuhy0jW4"
-                  >
-                    Bon, on va y aller, hmm ?
-                  </span>
-                  <span
-                    class="from s-vwbhBuhy0jW4"
-                  >
-                    Pascal
-                  </span>
-                  <span
-                    class="message s-vwbhBuhy0jW4"
-                  >
-                    Monsieur Fernand, y'a peut-être une place pour moi dans votre auto. Des fois que la réunion devienne houleuse ... J'ai une présence tranquillisante.
-                  </span>
-                </div>
-                 
-                <form
-                  class="s-vwbhBuhy0jW4"
-                >
-                  <fieldset
-                    class="s-Fe6WNbR-55zp"
-                  >
-                     
-                    <input
-                      class="s-Fe6WNbR-55zp"
-                    />
-                  </fieldset>
-                  <!--&lt;Input&gt;-->
-                   
-                  <button
-                    class="s-NMyTiX1zi6rz"
-                    disabled=""
-                    title="Envoyer à tous"
-                    type="submit"
+                  <div
+                    class="messages s-vwbhBuhy0jW4"
                   >
                     <span
-                      class="material-icons s-NMyTiX1zi6rz"
+                      class="from s-vwbhBuhy0jW4"
                     >
-                      send
+                      Fernand Naudin
                     </span>
-                    
-                    
-                    
-                  </button>
-                  <!--&lt;Button&gt;-->
-                </form>
-              </div>
-              <!--&lt;Discussion&gt;-->
-            </span>
-          </section>
-          <!--&lt;MinimizableSection&gt;-->
-          
+                    <span
+                      class="message s-vwbhBuhy0jW4"
+                    >
+                      Qu'est-ce qui se passe encore ?
+                    </span>
+                    <span
+                      class="from s-vwbhBuhy0jW4"
+                    >
+                      Maître Folage
+                    </span>
+                    <span
+                      class="message s-vwbhBuhy0jW4"
+                    >
+                      Notre ami va se faire un plaisir de vous l'expliquer.
+                    </span>
+                    <span
+                      class="from s-vwbhBuhy0jW4"
+                    >
+                      Pascal
+                    </span>
+                    <span
+                      class="message s-vwbhBuhy0jW4"
+                    >
+                      Les Volfoni ont organisé à la péniche une petite réunion des cadres, façon meeting, si vous voyez ce que je veux dire.
+M'enfin quoi, on parle dans votre dos.
+                    </span>
+                    <span
+                      class="from s-vwbhBuhy0jW4"
+                    >
+                      Fernand Naudin
+                    </span>
+                    <span
+                      class="message s-vwbhBuhy0jW4"
+                    >
+                      Et tu tiens ça d'où ?
+                    </span>
+                    <span
+                      class="from s-vwbhBuhy0jW4"
+                    >
+                      Pascal
+                    </span>
+                    <span
+                      class="message s-vwbhBuhy0jW4"
+                    >
+                      Je ne peux pas le dire, j'ai promis. Ce serait mal.
+                    </span>
+                    <span
+                      class="from s-vwbhBuhy0jW4"
+                    >
+                      Fernand Naudin
+                    </span>
+                    <span
+                      class="message s-vwbhBuhy0jW4"
+                    >
+                      Alors ?
+                    </span>
+                    <span
+                      class="from s-vwbhBuhy0jW4"
+                    >
+                      Maître Folage
+                    </span>
+                    <span
+                      class="message s-vwbhBuhy0jW4"
+                    >
+                      Eh bien. Euh. Y'a deux solutions : ou on se dérange, ou on méprise. 
+Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire, bien sûr.
+                    </span>
+                    <span
+                      class="from s-vwbhBuhy0jW4"
+                    >
+                      Fernand Naudin
+                    </span>
+                    <span
+                      class="message s-vwbhBuhy0jW4"
+                    >
+                      Bon, on va y aller, hmm ?
+                    </span>
+                    <span
+                      class="from s-vwbhBuhy0jW4"
+                    >
+                      Pascal
+                    </span>
+                    <span
+                      class="message s-vwbhBuhy0jW4"
+                    >
+                      Monsieur Fernand, y'a peut-être une place pour moi dans votre auto. Des fois que la réunion devienne houleuse ... J'ai une présence tranquillisante.
+                    </span>
+                  </div>
+                   
+                  <form
+                    class="s-vwbhBuhy0jW4"
+                  >
+                    <fieldset
+                      class="s-Fe6WNbR-55zp"
+                    >
+                       
+                      <input
+                        class="s-Fe6WNbR-55zp"
+                      />
+                    </fieldset>
+                    <!--&lt;Input&gt;-->
+                     
+                    <button
+                      class="s-NMyTiX1zi6rz"
+                      disabled=""
+                      title="Envoyer à tous"
+                      type="submit"
+                    >
+                      <span
+                        class="material-icons s-NMyTiX1zi6rz"
+                      >
+                        send
+                      </span>
+                      
+                      
+                      
+                    </button>
+                    <!--&lt;Button&gt;-->
+                  </form>
+                </div>
+                <!--&lt;Discussion&gt;-->
+              </span>
+            </section>
+            <!--&lt;MinimizableSection&gt;-->
+          </div>
+           
         </div>
       </span>
     </section>
