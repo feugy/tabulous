@@ -115,6 +115,7 @@ describe('Media Stream store', () => {
         enumerateDevices: vi.fn().mockRejectedValue(new Error('unauthorized')),
         getUserMedia: vi.fn().mockRejectedValue(new Error('unauthorized'))
       }
+      navigator.mediaDevices.mock
       await acquireMediaStream()
     })
 
@@ -131,11 +132,11 @@ describe('Media Stream store', () => {
       expect(logger.info).not.toHaveBeenCalledWith(
         expect.stringMatching(noMediaMessage)
       )
-      expect(streamReceived).toHaveBeenCalledTimes(1)
-      expect(camerasReceived).toHaveBeenCalledTimes(1)
-      expect(currentCameraReceived).toHaveBeenCalledTimes(1)
-      expect(micsReceived).toHaveBeenCalledTimes(1)
-      expect(currentMicReceived).toHaveBeenCalledTimes(1)
+      expect(streamReceived).toHaveBeenCalledTimes(2)
+      expect(camerasReceived).toHaveBeenCalledTimes(2)
+      expect(currentCameraReceived).toHaveBeenCalledTimes(3)
+      expect(micsReceived).toHaveBeenCalledTimes(2)
+      expect(currentMicReceived).toHaveBeenCalledTimes(3)
       expect(localStreamChangeReceived).not.toHaveBeenCalled()
     })
 
