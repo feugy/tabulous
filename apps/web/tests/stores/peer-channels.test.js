@@ -81,6 +81,7 @@ describe('Peer channels store', () => {
     credentials: faker.datatype.uuid()
   }
   const stream = faker.datatype.uuid()
+  const gameId = faker.datatype.uuid()
 
   let subscriptions = []
   let lastConnectedId
@@ -135,13 +136,15 @@ describe('Peer channels store', () => {
     const awaitSignal = new Subject()
     runSubscription.mockReturnValueOnce(awaitSignal)
     const openPromise = communication
-      .openChannels({ id: playerId1 }, turnCredentials)
+      .openChannels({ id: playerId1 }, turnCredentials, gameId)
       .then(() => (done = true))
     expect(done).toBe(false)
     awaitSignal.next({ data: JSON.stringify({ type: 'ready' }) })
     await openPromise
     expect(done).toBe(true)
-    expect(runSubscription).toHaveBeenCalledWith(graphQL.awaitSignal)
+    expect(runSubscription).toHaveBeenCalledWith(graphQL.awaitSignal, {
+      gameId
+    })
     expect(runSubscription).toHaveBeenCalledTimes(1)
     expect(acquireMediaStream).not.toHaveBeenCalled()
   })
@@ -152,7 +155,7 @@ describe('Peer channels store', () => {
     beforeEach(() => {
       stream$.next(null)
       runSubscription.mockReturnValueOnce(awaitSignal)
-      communication.openChannels({ id: playerId1 }, turnCredentials)
+      communication.openChannels({ id: playerId1 }, turnCredentials, gameId)
     })
 
     it('opens WebRTC peer when receiving an offer, and sends the answer through mutation', async () => {
@@ -331,7 +334,8 @@ describe('Peer channels store', () => {
       })
       let openPromise = communication.openChannels(
         { id: playerId1 },
-        turnCredentials
+        turnCredentials,
+        gameId
       )
       awaitSignal.next({ data: JSON.stringify({ type: 'ready' }) })
       await openPromise
