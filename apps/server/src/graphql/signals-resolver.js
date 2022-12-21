@@ -42,26 +42,29 @@ export default {
      * Requires valid authentication.
      * @async
      * @param {object} obj - graphQL object.
-     * @param {object} args - query arguments.
+     * @param {object} args - subscription arguments, including:
+     * @param {string} args.gameId - game's id.
      * @param {object} context - graphQL context.
      * @yields {import('./signals.graphql').Signal}
      */
     awaitSignal: {
-      subscribe: isAuthenticated(async (obj, args, { player, pubsub }) => {
-        const queue = await pubsub.subscribe(`sendSignal-${player.id}`)
-        queue.once('close', () => services.setPlaying(player.id, false))
-        pubsub.publish({
-          topic: `sendSignal-${player.id}`,
-          payload: {
-            awaitSignal: {
-              from: 'server',
-              data: JSON.stringify({ type: 'ready' })
+      subscribe: isAuthenticated(
+        async (obj, { gameId }, { player, pubsub }) => {
+          const queue = await pubsub.subscribe(`sendSignal-${player.id}`)
+          queue.once('close', () => services.setCurrentGameId(player.id, null))
+          pubsub.publish({
+            topic: `sendSignal-${player.id}`,
+            payload: {
+              awaitSignal: {
+                from: 'server',
+                data: JSON.stringify({ type: 'ready' })
+              }
             }
-          }
-        })
-        services.setPlaying(player.id, true)
-        return queue
-      })
+          })
+          services.setCurrentGameId(player.id, gameId)
+          return queue
+        }
+      )
     }
   }
 }

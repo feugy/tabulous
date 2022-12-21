@@ -6,7 +6,8 @@ import {
 
 class PlayerRepository extends AbstractRepository {
   static fields = [
-    { name: 'playing', deserialize: deserializeBoolean },
+    // enforce no game id to be null
+    { name: 'currentGameId', deserialize: value => value || null },
     { name: 'isAdmin', deserialize: deserializeBoolean },
     { name: 'termsAccepted', deserialize: deserializeBoolean },
     { name: 'catalog', deserialize: deserializeArray }

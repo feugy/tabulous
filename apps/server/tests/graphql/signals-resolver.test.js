@@ -127,7 +127,7 @@ describe('given a started server', () => {
         expect(services.getPlayerById).toHaveBeenCalledTimes(2)
       })
 
-      it('sets playing status based on subscription', async () => {
+      it('sets current game Id based on subscription', async () => {
         const subId = faker.datatype.number()
         const gameId = faker.datatype.uuid()
         services.getPlayerById.mockImplementation(id => ({ id }))
@@ -140,11 +140,19 @@ describe('given a started server', () => {
           subId
         )
         await setTimeout(500)
-        expect(services.setPlaying).toHaveBeenNthCalledWith(1, playerId, true)
+        expect(services.setCurrentGameId).toHaveBeenNthCalledWith(
+          1,
+          playerId,
+          gameId
+        )
 
         await stopSubscription(ws, subId)
-        expect(services.setPlaying).toHaveBeenNthCalledWith(2, playerId, false)
-        expect(services.setPlaying).toHaveBeenCalledTimes(2)
+        expect(services.setCurrentGameId).toHaveBeenNthCalledWith(
+          2,
+          playerId,
+          null
+        )
+        expect(services.setCurrentGameId).toHaveBeenCalledTimes(2)
       })
 
       it('sends ready signal upon subscription', async () => {
