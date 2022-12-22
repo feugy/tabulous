@@ -42,7 +42,7 @@ describe('TargetManager', () => {
 
   describe('given an initialized manager', () => {
     const playerId = faker.datatype.uuid()
-    const color = '#00FF00'
+    const color = '#00FF00FF'
 
     beforeAll(() => manager.init({ scene, playerId, color, overlayAlpha: 0.2 }))
 
@@ -458,7 +458,7 @@ describe('TargetManager', () => {
     behavior.onDropObservable.add(drop => drops.push(drop))
     targetable.addBehavior(behavior, true)
 
-    const target = CreateBox(id, {}, usedScene ?? scene)
+    const target = CreateBox(id, { height: 0.1 }, usedScene ?? scene)
     target.setAbsolutePosition(position)
     return behavior.addZone(target, { extent: 0.5, ...properties })
   }

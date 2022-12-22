@@ -1048,7 +1048,7 @@ describe('MoveManager', () => {
     behavior.onDropObservable.add(drop => drops.push(drop))
     targetable.addBehavior(behavior, true)
 
-    const target = CreateBox(`target-${rank}`, {})
+    const target = CreateBox(`target-${rank}`, { height: 0.1 })
     target.setAbsolutePosition(position)
     behavior.addZone(target, { extent: 0.5 })
     return target
