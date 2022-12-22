@@ -58,14 +58,19 @@ export function isPositionAboveTable(scene, position) {
 
 /**
  * Returns screen coordinate of a given mesh.
- * @param {import('@babylonjs/core').Mesh} mesh - the tested mesh
- * @returns {ScreenPosition|null} this mesh's screen position
+ * @param {import('@babylonjs/core').Mesh} mesh - the tested mesh.
+ * @param {number[]} [offset = [0, 0, 0]] - optional offset (3D coordinates) applied.
+ * @returns {ScreenPosition|null} this mesh's screen position.
  */
-export function getMeshScreenPosition(mesh) {
+export function getMeshScreenPosition(mesh, offset = [0, 0, 0]) {
   if (!mesh || !mesh.getScene()?.activeCamera) {
     return null
   }
-  return getScreenPosition(mesh.getScene(), mesh.getAbsolutePosition())
+  const position = mesh.getAbsolutePosition().clone()
+  return getScreenPosition(
+    mesh.getScene(),
+    position.addInPlaceFromFloats(...offset)
+  )
 }
 
 /**

@@ -3,7 +3,6 @@
   export let onClick
   export let screenPosition = { x: 0, y: 0 }
   export let color = '#7a7a7a'
-  export let centered = false
 
   function interact() {
     onClick?.()
@@ -11,7 +10,6 @@
 </script>
 
 <div
-  class:centered
   style="top: {screenPosition.y}px; left: {screenPosition.x}px; --color:{color}; pointer-events:{onClick
     ? 'auto'
     : 'none'};"
@@ -24,25 +22,21 @@
 
 <style lang="postcss">
   div {
-    @apply absolute transform-gpu -translate-y-1/2 -translate-x-1
+    @apply absolute transform-gpu 
             select-none 
-            text-lg text-$primary-lightest opacity-85
-            py-1 pr-2 pl-5 rounded z-10;
-    clip-path: polygon(1rem 0%, 100% 0, 100% 100%, 1rem 100%, 0% 50%);
+            text-lg text-$primary-lightest opacity-90
+            rounded-md
+            p-2 pt-1 pb-3 -translate-y-[100%] -translate-x-[50%];
     background-color: var(--color);
-
-    &.centered {
-      @apply p-2 pt-1 pb-3 rounded-none -translate-y-[100%] -translate-x-[50%];
-      --offset: 85%;
-      clip-path: polygon(
-        0% 0%,
-        100% 0%,
-        100% var(--offset),
-        65% var(--offset),
-        50% 100%,
-        35% var(--offset),
-        0% var(--offset)
-      );
-    }
+    --offset: 85%;
+    clip-path: polygon(
+      0% 0%,
+      100% 0%,
+      100% var(--offset),
+      70% var(--offset),
+      50% 100%,
+      30% var(--offset),
+      0% var(--offset)
+    );
   }
 </style>

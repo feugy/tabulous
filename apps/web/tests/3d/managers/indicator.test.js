@@ -12,7 +12,11 @@ import {
   vi
 } from 'vitest'
 
-import { configures3dTestEngine, waitNextRender } from '../../test-utils'
+import {
+  configures3dTestEngine,
+  expectScreenPosition,
+  waitNextRender
+} from '../../test-utils'
 
 describe('IndicatorManager', () => {
   let scene
@@ -55,14 +59,14 @@ describe('IndicatorManager', () => {
         expect(manager.registerMeshIndicator(indicator)).toEqual(indicator)
         expect(manager.isManaging(indicator)).toBe(true)
         expect(manager.getById(indicator.id)).toEqual(indicator)
-        expectChanged([{ id: mesh.id, screenPosition: { x: 1024, y: 512 } }])
+        expectChanged([{ id: mesh.id, screenPosition: { x: 1024, y: 500.85 } }])
       })
 
       it('automatically unregisters a mesh upon disposal', () => {
         const indicator = { id: mesh.id, mesh }
         manager.registerMeshIndicator(indicator)
         expect(manager.isManaging(indicator)).toBe(true)
-        expectChanged([{ id: mesh.id, screenPosition: { x: 1024, y: 512 } }])
+        expectChanged([{ id: mesh.id, screenPosition: { x: 1024, y: 500.85 } }])
 
         mesh.dispose()
         expect(manager.isManaging(indicator)).toBe(false)
@@ -179,9 +183,9 @@ describe('IndicatorManager', () => {
         indicator2.mesh.setAbsolutePosition(new Vector3(10, 0, 10))
         await waitNextRender(scene)
         expect(indicator1.screenPosition?.x).toBeCloseTo(1024)
-        expect(indicator1.screenPosition?.y).toBeCloseTo(512)
-        expect(indicator2.screenPosition?.x).toBeCloseTo(1248.979)
-        expect(indicator2.screenPosition?.y).toBeCloseTo(304.146)
+        expect(indicator1.screenPosition?.y).toBeCloseTo(500.85)
+        expect(indicator2.screenPosition?.x).toBeCloseTo(1248.18)
+        expect(indicator2.screenPosition?.y).toBeCloseTo(294.53)
         expectChanged([...indicators, ...pointers])
       })
 
@@ -189,13 +193,13 @@ describe('IndicatorManager', () => {
         const [indicator1] = indicators
         await waitNextRender(scene)
         expect(indicator1.screenPosition?.x).toBeCloseTo(1024)
-        expect(indicator1.screenPosition?.y).toBeCloseTo(512)
+        expect(indicator1.screenPosition?.y).toBeCloseTo(500.85)
         expect(changeReceived).not.toHaveBeenCalled()
 
         indicator1.mesh.setAbsolutePosition(new Vector3(1, 0, 1))
         await waitNextRender(scene)
-        expect(indicator1.screenPosition?.x).toBeCloseTo(1048.036)
-        expect(indicator1.screenPosition?.y).toBeCloseTo(489.793)
+        expect(indicator1.screenPosition?.x).toBeCloseTo(1047.94)
+        expect(indicator1.screenPosition?.y).toBeCloseTo(478.82)
         expectChanged([...indicators, ...pointers])
       })
 
@@ -203,13 +207,13 @@ describe('IndicatorManager', () => {
         const [indicator1, indicator2] = indicators
         await waitNextRender(scene)
         expect(indicator1.screenPosition?.x).toBeCloseTo(1024)
-        expect(indicator1.screenPosition?.y).toBeCloseTo(512)
+        expect(indicator1.screenPosition?.y).toBeCloseTo(500.85)
         expect(changeReceived).not.toHaveBeenCalled()
 
         indicator1.mesh.setAbsolutePosition(new Vector3(200, 0, 200))
         await waitNextRender(scene)
-        expect(indicator1.screenPosition?.x).toBeCloseTo(2938.06)
-        expect(indicator1.screenPosition?.y).toBeCloseTo(-1256.36)
+        expect(indicator1.screenPosition?.x).toBeCloseTo(2935.17)
+        expect(indicator1.screenPosition?.y).toBeCloseTo(-1258.1)
         expectChanged([indicator2, ...pointers])
       })
 
@@ -306,9 +310,20 @@ describe('IndicatorManager', () => {
       expect(changeReceived).toHaveBeenCalledTimes(1)
       const changed = changeReceived.mock.calls[0][0]
       expect(changed).toHaveLength(indicators.length)
-      // do not compare mesh because vi fail to serialize them
-      // eslint-disable-next-line no-unused-vars
-      expect(changed).toMatchObject(indicators.map(({ mesh, ...rest }) => rest))
+      for (const [
+        rank,
+        // do not compare mesh because vi fail to serialize them
+        // eslint-disable-next-line no-unused-vars
+        { mesh, screenPosition, ...rest }
+      ] of indicators.entries()) {
+        expect(changed[rank]).toMatchObject(rest)
+        expectScreenPosition(
+          changed[rank].screenPosition,
+          screenPosition,
+          `indicator #${rank}`
+        )
+      }
+      expect()
       changeReceived.mockReset()
     }
   })

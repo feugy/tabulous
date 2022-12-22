@@ -123,13 +123,13 @@ describe('Indicators store', () => {
         {
           id: `${card5.id}.stack-size`,
           size: 3,
-          screenPosition: { x: 1024, y: 511.8 },
+          screenPosition: { x: 1024, y: 464.99 },
           onClick: expect.any(Function)
         },
         {
           id: `${card2.id}.quantity`,
           size: 5,
-          screenPosition: { x: 1048.22, y: 512 },
+          screenPosition: { x: 1047.83, y: 465.21 },
           onClick: expect.any(Function)
         }
       ])
@@ -149,13 +149,13 @@ describe('Indicators store', () => {
         {
           id: `${card4.id}.stack-size`,
           size: 3,
-          screenPosition: { x: 1024, y: 511.8 },
+          screenPosition: { x: 1024, y: 464.99 },
           onClick: expect.any(Function)
         },
         {
           id: `${card5.id}.stack-size`,
           size: 2,
-          screenPosition: { x: 999.78, y: 511.9 },
+          screenPosition: { x: 1000.16, y: 465.1 },
           onClick: expect.any(Function)
         }
       ])
@@ -217,7 +217,7 @@ describe('Indicators store', () => {
           {
             id: `${card5.id}.stack-size`,
             size: 2,
-            screenPosition: { x: 902.9, y: 512 }
+            screenPosition: { x: 904.84, y: 465.21 }
           }
         ])
       })
@@ -236,7 +236,7 @@ describe('Indicators store', () => {
           {
             id: `${card5.id}.stack-size`,
             size: 2,
-            screenPosition: { x: 902.9, y: 512 }
+            screenPosition: { x: 904.84, y: 465.21 }
           }
         ])
       })
@@ -265,12 +265,12 @@ describe('Indicators store', () => {
           {
             id: `${card4.id}.stack-size`,
             size: 3,
-            screenPosition: { x: 1145.099, y: 512 }
+            screenPosition: { x: 1143.16, y: 465.21 }
           },
           {
             id: `${card5.id}.stack-size`,
             size: 2,
-            screenPosition: { x: 902.9, y: 512 }
+            screenPosition: { x: 904.84, y: 465.21 }
           }
         ])
         actionMenuProps.next({ interactedMesh: card4 })
@@ -278,12 +278,12 @@ describe('Indicators store', () => {
           {
             id: `${card4.id}.stack-size`,
             size: 3,
-            screenPosition: { x: 1145.099, y: 512 }
+            screenPosition: { x: 1143.16, y: 465.21 }
           },
           {
             id: `${card5.id}.stack-size`,
             size: 2,
-            screenPosition: { x: 902.9, y: 512 }
+            screenPosition: { x: 904.84, y: 465.21 }
           }
         ])
       })
@@ -299,7 +299,7 @@ describe('Indicators store', () => {
           {
             id: `${card5.id}.stack-size`,
             size: 3,
-            screenPosition: { x: 902.9, y: 512 }
+            screenPosition: { x: 904.84, y: 465.21 }
           }
         ])
       })
@@ -350,12 +350,12 @@ describe('Indicators store', () => {
           {
             id: `${card4.id}.stack-size`,
             size: 3,
-            screenPosition: { x: 1024, y: 511.796 }
+            screenPosition: { x: 1024, y: 464.99 }
           },
           {
             id: `${card5.id}.stack-size`,
             size: 2,
-            screenPosition: { x: 999.78, y: 511.898 }
+            screenPosition: { x: 1000.16, y: 465.1 }
           }
         ])
       })
@@ -370,7 +370,7 @@ describe('Indicators store', () => {
           {
             id: `${card5.id}.stack-size`,
             size: 3,
-            screenPosition: { x: 902.9, y: 512 }
+            screenPosition: { x: 904.84, y: 465.21 }
           }
         ])
       })
@@ -384,7 +384,7 @@ describe('Indicators store', () => {
           {
             id: `${card5.id}.stack-size`,
             size: 3,
-            screenPosition: { x: 902.9, y: 512 }
+            screenPosition: { x: 904.84, y: 465.21 }
           }
         ])
         toggleIndicators()
@@ -400,7 +400,7 @@ describe('Indicators store', () => {
           {
             id: `${card5.id}.stack-size`,
             size: 3,
-            screenPosition: { x: 902.9, y: 512 }
+            screenPosition: { x: 904.84, y: 465.21 }
           }
         ])
         await card1.metadata.flipAll()
@@ -408,7 +408,7 @@ describe('Indicators store', () => {
           {
             id: `${card1.id}.stack-size`,
             size: 3,
-            screenPosition: { x: 1024, y: 512 }
+            screenPosition: { x: 1024, y: 465.21 }
           }
         ])
       })
@@ -421,7 +421,7 @@ describe('Indicators store', () => {
         expectIndicators([
           {
             id: `${players[0].id}.drop-zone.anchor-0`,
-            screenPosition: { x: 1024, y: 512 }
+            screenPosition: { x: 1024, y: 500.74 }
           }
         ])
       })
@@ -439,19 +439,19 @@ describe('Indicators store', () => {
           {
             id: `${card4.id}.stack-size`,
             size: 3,
-            screenPosition: { x: 1024, y: 511.796 }
+            screenPosition: { x: 1024, y: 464.99 }
           },
           {
             id: `${card5.id}.stack-size`,
             size: 2,
-            screenPosition: { x: 1024, y: 404.123 }
+            screenPosition: { x: 1024, y: 360.69 }
           }
         ]
 
         await waitNextRender(scene)
         expectIndicators(indicators)
 
-        await notifyHandResize(renderHeight * 0.51)
+        await notifyHandResize(renderHeight * 0.6)
         expectIndicators(indicators.slice(1))
       })
     })
@@ -476,12 +476,12 @@ describe('Indicators store', () => {
           {
             id: `${players[0].id}.drop-zone.anchor-0`,
             player: players[0],
-            screenPosition: { x: 1024, y: 512 }
+            screenPosition: { x: 1024, y: 500.74 }
           },
           {
             id: `${players[1].id}.drop-zone.anchor-0`,
             player: players[1],
-            screenPosition: { x: 1048.22, y: 512 }
+            screenPosition: { x: 1048.13, y: 500.74 }
           }
         ])
       })

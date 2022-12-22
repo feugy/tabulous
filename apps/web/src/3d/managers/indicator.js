@@ -3,6 +3,7 @@ import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import { Observable } from '@babylonjs/core/Misc/observable.js'
 
 import { makeLogger } from '../../utils/logger'
+import { getDimensions } from '../utils/mesh'
 import { getMeshScreenPosition, getScreenPosition } from '../utils/vector'
 
 const logger = makeLogger('indicator')
@@ -173,7 +174,8 @@ function handleFrame(manager) {
 }
 
 function setMeshPosition(indicator) {
-  const { x, y } = getMeshScreenPosition(indicator.mesh)
+  const { depth } = getDimensions(indicator.mesh)
+  const { x, y } = getMeshScreenPosition(indicator.mesh, [0, 0, depth / 2])
   const hasChanged =
     x !== indicator.screenPosition?.x || y !== indicator.screenPosition?.y
   if (hasChanged) {
