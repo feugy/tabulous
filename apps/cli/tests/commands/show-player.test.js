@@ -98,7 +98,7 @@ describe('Show player command', () => {
       expect(rawOutput).toContain(`username:       ${player.username}`)
       expect(rawOutput).toContain(`email:          ${player.email}`)
       expect(rawOutput).toContain(`provider:       manual`)
-      expect(rawOutput).toContain(`is playing:     false`)
+      expect(rawOutput).toContain(`is playing:     none`)
       expect(rawOutput).toContain(`terms accepted: false`)
       expect(rawOutput).toContain(`total games:    0`)
     })
@@ -116,6 +116,7 @@ describe('Show player command', () => {
     })
 
     it('handles booleans, provider, admin, email', async () => {
+      const gameId = faker.datatype.uuid()
       mockQuery
         .mockResolvedValueOnce({
           searchPlayers: [
@@ -123,7 +124,7 @@ describe('Show player command', () => {
               ...player,
               isAdmin: true,
               termsAccepted: false,
-              playing: true,
+              currentGameId: gameId,
               provider: 'github',
               email: undefined
             }
@@ -133,7 +134,7 @@ describe('Show player command', () => {
       const rawOutput = stripAnsi(
         applyFormaters(await showPlayer(['-u', player.username])).join('\n')
       )
-      expect(rawOutput).toContain(`is playing:     true`)
+      expect(rawOutput).toContain(`is playing:     ${gameId}`)
       expect(rawOutput).toContain(`terms accepted: false`)
       expect(rawOutput).toContain(`provider:       github`)
       expect(rawOutput).toContain(`email:          none`)

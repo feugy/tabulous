@@ -17,7 +17,7 @@ import {
  * @typedef {object} PlayerDetails
  * @property {string} id
  * @property {string} username
- * @property {boolean} playing
+ * @property {number} currentGameId
  * @property {string} provider
  * @property {string} email
  * @property {boolean} termsAccepted
@@ -83,7 +83,7 @@ function formatPlayerDetails({
   username,
   email,
   provider,
-  playing,
+  currentGameId,
   termsAccepted
 }) {
   return chalkTemplate`{dim id:}             ${id} ${isAdmin ? '🥷' : ''}
@@ -91,7 +91,7 @@ function formatPlayerDetails({
 {dim email:}          ${email || 'none'}
 {dim provider:}       ${provider || 'manual'}
 {dim terms accepted:} ${!!termsAccepted}
-{dim is playing:}     ${!!playing}`
+{dim is playing:}     ${currentGameId || 'none'}`
 }
 
 function formatGames({ id, games }) {
