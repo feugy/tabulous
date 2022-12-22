@@ -26,7 +26,7 @@ import { shuffle } from './collections.js'
  * Use bags to randomize meshes, and use slots to assign them to given positions (and with specific properties).
  * Slot will stack onto meshes already there, optionnaly snapping them to an anchor.
  * Meshes remaining in bags after processing all slots will be removed.
- * @property {import('../services/games').Mesh[]} meshes? - all meshes.
+ * @property {Mesh[]} meshes? - all meshes.
  * @property {Map<string, string[]>} bags? - map of randomized bags, as a list of mesh ids.
  * @property {Slot[]} slots? - a list of position slots
  */
@@ -58,7 +58,7 @@ import { shuffle } from './collections.js'
  * @async
  * @param {string} kind - created game's kind.
  * @param {GameDescriptor} descriptor - to create game from.
- * @returns {import('../services/games').Mesh[]} a list of serialized 3D meshes.
+ * @returns {Mesh[]} a list of serialized 3D meshes.
  */
 export async function createMeshes(kind, descriptor) {
   const { slots, bags, meshes } = await descriptor.build()
@@ -270,7 +270,7 @@ export function findOrCreateHand(game, playerId) {
  * Finds a mesh by id.
  * @param {string} id - desired mesh id.
  * @param {*} meshes - mesh list to search in.
- * @returns {import('../services/games').Mesh|null} corresponding mesh, if any.
+ * @returns {Mesh|null} corresponding mesh, if any.
  */
 export function findMeshById(id, meshes) {
   return meshes?.find(mesh => mesh.id === id) ?? null
@@ -285,7 +285,7 @@ function drawMesh(stackMesh, meshes) {
 
 /**
  * Stack all provided meshes, in order (the first becomes stack base).
- * @param {import('../services/games').Mesh[]} meshes - stacked meshes.
+ * @param {Mesh[]} meshes - stacked meshes.
  */
 export function stackMeshes(meshes) {
   const stackIds = meshes.slice(1).map(({ id }) => id)
@@ -300,8 +300,8 @@ export function stackMeshes(meshes) {
  * If the anchor is already used, tries to stack the meshes (the current snapped mesh must be in provided meshes).
  * Abort the operation when meshes can't be stacked.
  * @param {string} anchorId - desired anchor id.
- * @param {import('../services/games').Mesh} mesh? - snapped mesh, if any.
- * @param {import('../services/games').Mesh[]} meshes - all meshes to search the anchor in.
+ * @param {Mesh} mesh? - snapped mesh, if any.
+ * @param {Mesh[]} meshes - all meshes to search the anchor in.
  * @return {boolean} true if the mesh could be snapped or stacked. False otherwise.
  */
 export function snapTo(anchorId, mesh, meshes) {
@@ -321,6 +321,23 @@ export function snapTo(anchorId, mesh, meshes) {
   return true
 }
 
+/**
+ * Unsnapps a mesh from a given anchor.
+ * @param {string} anchorId - desired anchor id.
+ * @param {Mesh[]} meshes - all meshes to search the anchor in.
+ * @returns {Mesh|null} unsnapped meshes, or undefined if the anchor does not exist,
+ * has no snapped mesh, or has an unexisting snapped mesh
+ */
+export function unsnap(anchorId, meshes) {
+  const anchor = findAnchor(anchorId, meshes)
+  if (!anchor || !anchor.snappedId) {
+    return null
+  }
+  const id = anchor.snappedId
+  anchor.snappedId = null
+  return findMeshById(id, meshes)
+}
+
 function canStack(base, mesh) {
   return Boolean(base?.stackable) && Boolean(mesh?.stackable)
 }
@@ -337,8 +354,8 @@ export function mergeProps(object, props) {
 
 /**
  * Decrements a quantifiable mesh, by creating another one (when relevant)
- * @param {import('../services/games').Mesh} mesh - quantifiable mesh
- * @returns {import('../services/games').Mesh} the created object, if relevant
+ * @param {Mesh} mesh - quantifiable mesh
+ * @returns {Mesh} the created object, if relevant
  */
 export function decrement(mesh) {
   if (mesh?.quantifiable?.quantity > 1) {

@@ -13,8 +13,8 @@ import {
   findOrCreateHand,
   getParameterSchema,
   snapTo,
-  stackMeshes
-} from '../../src/utils/games.js'
+  stackMeshes,
+  unsnap} from '../../src/utils/games.js'
 import { cloneAsJSON } from '../test-utils.js'
 
 describe('createMeshes()', () => {
@@ -776,6 +776,52 @@ describe('snapTo()', () => {
     const state = cloneAsJSON(meshes)
     expect(snapTo('anchor1', null, meshes)).toBe(false)
     expect(state).toEqual(meshes)
+  })
+})
+
+describe('unsnap()', () => {
+  let meshes
+
+  beforeEach(() => {
+    meshes = [
+      {
+        id: 'mesh1',
+        anchorable: {
+          anchors: [{ id: 'anchor1', snappedId: 'mesh2' }, { id: 'anchor2' }]
+        }
+      },
+      {
+        id: 'mesh2',
+        anchorable: {
+          anchors: [
+            { id: 'anchor3', snappedId: 'mesh3' },
+            { id: 'anchor4', snappedId: 'unknown' }
+          ]
+        }
+      },
+      {
+        id: 'mesh3'
+      }
+    ]
+  })
+
+  it('returns nothing on unknown anchor', () => {
+    expect(unsnap('unknown', meshes)).toBeNull()
+  })
+
+  it('returns nothing on anchor with no snapped mesh', () => {
+    expect(unsnap('anchor2', meshes)).toBeNull()
+  })
+  it('returns nothing on anchor with unknown snapped mesh', () => {
+    expect(unsnap('anchor4', meshes)).toBeNull()
+  })
+
+  it('returns mesh and unsnapps it', () => {
+    expect(unsnap('anchor3', meshes)).toEqual(meshes[2])
+    expect(meshes[1].anchorable.anchors).toEqual([
+      { id: 'anchor3', snappedId: null },
+      { id: 'anchor4', snappedId: 'unknown' }
+    ])
   })
 })
 
