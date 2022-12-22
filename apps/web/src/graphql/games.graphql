@@ -2,7 +2,7 @@ fragment lightPlayer on Player {
   id
   username
   avatar
-  playing
+  currentGameId
   isGuest
   isOwner
 }

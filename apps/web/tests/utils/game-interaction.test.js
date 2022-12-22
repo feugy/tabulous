@@ -695,7 +695,8 @@ describe('Game interaction model', () => {
         type: 'tap',
         mesh,
         pointers: 1,
-        long: true
+        long: true,
+        timestamp: Date.now()
       })
       await sleep(doubleTapDelay * 1.1)
       expect(get(actionMenuProps$)).toBeUndefined()
@@ -708,7 +709,8 @@ describe('Game interaction model', () => {
         type: 'tap',
         mesh,
         event: { pointerType: 'mouse' },
-        button: 0
+        button: 0,
+        timestamp: Date.now()
       })
       await sleep(doubleTapDelay * 1.1)
       expect(get(actionMenuProps$)).toBeUndefined()
@@ -720,7 +722,8 @@ describe('Game interaction model', () => {
       inputManager.onTapObservable.notifyObservers({
         type: 'tap',
         mesh,
-        pointers: 1
+        pointers: 1,
+        timestamp: Date.now()
       })
       await sleep(doubleTapDelay * 1.1)
       expect(get(actionMenuProps$)).toBeUndefined()
@@ -733,7 +736,8 @@ describe('Game interaction model', () => {
         type: 'tap',
         mesh,
         event: { pointerType: 'mouse' },
-        button: 2
+        button: 2,
+        timestamp: Date.now()
       })
       await sleep(doubleTapDelay * 1.1)
       expect(get(actionMenuProps$)).toEqual(
@@ -747,7 +751,8 @@ describe('Game interaction model', () => {
       inputManager.onTapObservable.notifyObservers({
         type: 'tap',
         mesh,
-        pointers: 2
+        pointers: 2,
+        timestamp: Date.now()
       })
       await sleep(doubleTapDelay * 1.1)
       expect(get(actionMenuProps$)).toEqual(
@@ -762,13 +767,15 @@ describe('Game interaction model', () => {
         type: 'tap',
         mesh,
         event: { pointerType: 'mouse' },
-        button: 0
+        button: 0,
+        timestamp: Date.now()
       })
       inputManager.onTapObservable.notifyObservers({
         type: 'doubletap',
         mesh,
         event: { pointerType: 'mouse' },
-        button: 0
+        button: 0,
+        timestamp: Date.now() + doubleTapDelay * 0.5
       })
       await sleep(doubleTapDelay * 1.1)
       expectMeshActions(mesh, 'detail')
@@ -779,12 +786,14 @@ describe('Game interaction model', () => {
       inputManager.onTapObservable.notifyObservers({
         type: 'tap',
         mesh,
-        pointers: 1
+        pointers: 1,
+        timestamp: Date.now()
       })
       inputManager.onTapObservable.notifyObservers({
         type: 'doubletap',
         mesh,
-        pointers: 1
+        pointers: 1,
+        timestamp: Date.now() + doubleTapDelay * 0.5
       })
       await sleep(doubleTapDelay * 1.1)
       expectMeshActions(mesh, 'detail')
@@ -794,7 +803,8 @@ describe('Game interaction model', () => {
       inputManager.onTapObservable.notifyObservers({
         type: 'tap',
         long: true,
-        pointers: 1
+        pointers: 1,
+        timestamp: Date.now()
       })
       await sleep(doubleTapDelay * 1.1)
       expect(get(actionMenuProps$)).toBeUndefined()
@@ -882,7 +892,8 @@ describe('Game interaction model', () => {
           type: 'tap',
           mesh,
           long: true,
-          pointers: 1
+          pointers: 1,
+          timestamp: Date.now()
         })
         await sleep(doubleTapDelay * 1.1)
         expectMeshActions(mesh, 'rotate')
@@ -895,7 +906,8 @@ describe('Game interaction model', () => {
           type: 'tap',
           event: { pointerType: 'mouse' },
           button: 0,
-          long: true
+          long: true,
+          timestamp: Date.now()
         })
         await sleep(doubleTapDelay * 1.1)
         expect(get(actionMenuProps$)).toBeNull()
@@ -905,11 +917,13 @@ describe('Game interaction model', () => {
       it('closes menu on table double tap', async () => {
         inputManager.onTapObservable.notifyObservers({
           type: 'tap',
-          pointers: 1
+          pointers: 1,
+          timestamp: Date.now()
         })
         inputManager.onTapObservable.notifyObservers({
           type: 'doubletap',
-          pointers: 1
+          pointers: 1,
+          timestamp: Date.now() + doubleTapDelay * 0.5
         })
         await sleep(doubleTapDelay * 1.1)
         expect(get(actionMenuProps$)).toBeNull()
@@ -977,11 +991,13 @@ describe('Game interaction model', () => {
       it('clears selection when double-tapping on the table', async () => {
         inputManager.onTapObservable.notifyObservers({
           type: 'tap',
-          pointers: 1
+          pointers: 1,
+          timestamp: Date.now()
         })
         inputManager.onTapObservable.notifyObservers({
           type: 'doubletap',
-          pointers: 1
+          pointers: 1,
+          timestamp: Date.now() + doubleTapDelay * 0.5
         })
         await sleep(doubleTapDelay * 1.1)
         expect(selectionManager.meshes.size).toEqual(0)
@@ -995,7 +1011,8 @@ describe('Game interaction model', () => {
         inputManager.onTapObservable.notifyObservers({
           type: 'tap',
           mesh: mesh1,
-          pointers: 1
+          pointers: 1,
+          timestamp: Date.now()
         })
         await sleep(doubleTapDelay * 1.1)
         expect(selectionManager.meshes.size).toEqual(4)
@@ -1015,7 +1032,8 @@ describe('Game interaction model', () => {
           mesh: mesh1,
           event: { pointerType: 'mouse' },
           button: 0,
-          long: true
+          long: true,
+          timestamp: Date.now()
         })
         await sleep(doubleTapDelay * 1.1)
         expect(selectionManager.meshes.size).toEqual(4)
@@ -1030,7 +1048,8 @@ describe('Game interaction model', () => {
         inputManager.onTapObservable.notifyObservers({
           type: 'tap',
           mesh,
-          pointers: 2
+          pointers: 2,
+          timestamp: Date.now()
         })
         await sleep(doubleTapDelay * 1.1)
         expect(get(actionMenuProps$)).toEqual(
@@ -1045,7 +1064,8 @@ describe('Game interaction model', () => {
         inputManager.onTapObservable.notifyObservers({
           type: 'tap',
           mesh: mesh3,
-          pointers: 2
+          pointers: 2,
+          timestamp: Date.now()
         })
         await sleep(doubleTapDelay * 1.1)
         expect(get(actionMenuProps$)).toEqual(
@@ -1211,18 +1231,21 @@ describe('Game interaction model', () => {
         type: 'dragStart',
         event: { pointerType: 'mouse' },
         mesh: meshes[1],
-        button: 2
+        button: 2,
+        timestamp: Date.now()
       })
       inputManager.onDragObservable.notifyObservers({
         type: 'drag',
         event: { pointerType: 'mouse' },
-        button: 2
+        button: 2,
+        timestamp: Date.now()
       })
       expect(cameraManager.pan).toHaveBeenCalled()
       inputManager.onDragObservable.notifyObservers({
         type: 'dragStop',
         event: { pointerType: 'mouse' },
-        button: 2
+        button: 2,
+        timestamp: Date.now()
       })
       expect(cameraManager.pan).toHaveBeenCalledTimes(1)
       expect(cameraManager.rotate).not.toHaveBeenCalled()
@@ -1273,18 +1296,21 @@ describe('Game interaction model', () => {
         type: 'dragStart',
         event,
         mesh: meshes[1],
-        button
+        button,
+        timestamp: Date.now()
       })
       inputManager.onDragObservable.notifyObservers({
         type: 'drag',
         event,
-        button
+        button,
+        timestamp: Date.now()
       })
       expect(cameraManager.rotate).toHaveBeenCalled()
       inputManager.onDragObservable.notifyObservers({
         type: 'dragStop',
         event,
-        button
+        button,
+        timestamp: Date.now()
       })
       expect(cameraManager.rotate).toHaveBeenCalledTimes(1)
       expect(cameraManager.pan).not.toHaveBeenCalled()
@@ -1402,20 +1428,23 @@ describe('Game interaction model', () => {
       inputManager.onDragObservable.notifyObservers({
         type: 'dragStart',
         event: { pointerType: 'mouse' },
-        button: 0
+        button: 0,
+        timestamp: Date.now()
       })
       expect(drawSelectionBox).not.toHaveBeenCalled()
       inputManager.onDragObservable.notifyObservers({
         type: 'drag',
         event: { pointerType: 'mouse' },
-        button: 0
+        button: 0,
+        timestamp: Date.now()
       })
       expect(drawSelectionBox).toHaveBeenCalled()
       expect(selectWithinBox).not.toHaveBeenCalled()
       inputManager.onDragObservable.notifyObservers({
         type: 'dragStop',
         event: { pointerType: 'mouse' },
-        button: 0
+        button: 0,
+        timestamp: Date.now()
       })
       expect(drawSelectionBox).toHaveBeenCalledTimes(1)
       expect(selectWithinBox).toHaveBeenCalledTimes(1)
@@ -1431,22 +1460,56 @@ describe('Game interaction model', () => {
         type: 'dragStart',
         event: { pointerType: 'mouse', x: 50, y: 50 },
         mesh,
-        button: 0
+        button: 0,
+        timestamp: Date.now()
       })
       inputManager.onDragObservable.notifyObservers({
         type: 'drag',
         event: { pointerType: 'mouse', x: 100, y: 50 },
         mesh,
-        button: 0
+        button: 0,
+        timestamp: Date.now()
       })
       inputManager.onDragObservable.notifyObservers({
         type: 'dragStop',
         event: { pointerType: 'mouse', x: 200, y: 50 },
         mesh,
-        button: 0
+        button: 0,
+        timestamp: Date.now()
       })
 
       expect(position.asArray()).not.toEqual(mesh.absolutePosition.asArray())
+      expect(cameraManager.pan).not.toHaveBeenCalled()
+      expect(cameraManager.rotate).not.toHaveBeenCalled()
+      expect(drawSelectionBox).not.toHaveBeenCalled()
+      expect(selectWithinBox).not.toHaveBeenCalled()
+    })
+
+    it('can not moves mesh after left click within double click delay', () => {
+      const [, mesh] = meshes
+      const position = mesh.absolutePosition.clone()
+      inputManager.onTapObservable.notifyObservers({
+        type: 'tap',
+        mesh,
+        event: { pointerType: 'mouse' },
+        button: 0,
+        timestamp: Date.now()
+      })
+      inputManager.onDragObservable.notifyObservers({
+        type: 'dragStart',
+        event: { pointerType: 'mouse', x: 50, y: 50 },
+        mesh,
+        button: 0,
+        timestamp: Date.now()
+      })
+      inputManager.onDragObservable.notifyObservers({
+        type: 'drag',
+        event: { pointerType: 'mouse', x: 100, y: 50 },
+        mesh,
+        button: 0,
+        timestamp: Date.now()
+      })
+      expect(position.asArray()).toEqual(mesh.absolutePosition.asArray())
       expect(cameraManager.pan).not.toHaveBeenCalled()
       expect(cameraManager.rotate).not.toHaveBeenCalled()
       expect(drawSelectionBox).not.toHaveBeenCalled()

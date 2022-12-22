@@ -83,12 +83,15 @@ export const gamePlayerById = merge(hostId$, playingIds$, currentGame$).pipe(
     playerById = new Map()
     const game = currentGame$.value
     if (game) {
-      for (const player of game.players) {
-        playerById.set(player.id, {
+      // we don't want currentGameId in gamePlayerById map
+      // eslint-disable-next-line no-unused-vars
+      for (const { id, currentGameId, ...player } of game.players) {
+        playerById.set(id, {
+          id,
           ...player,
-          ...findPlayerPreferences(game, player.id),
-          playing: playingIds$.value.includes(player.id),
-          isHost: hostId$.value === player.id
+          ...findPlayerPreferences(game, id),
+          playing: playingIds$.value.includes(id),
+          isHost: hostId$.value === id
         })
       }
     }
@@ -234,7 +237,7 @@ export async function joinGame(
   })
 
   if (needPeerConnection) {
-    await openChannels(currentPlayer, turnCredentials)
+    await openChannels(currentPlayer, turnCredentials, gameId)
     playingIds$.next([currentPlayerId])
   }
 
@@ -246,7 +249,8 @@ export async function joinGame(
 
   if (needPeerConnection) {
     const peers = game.players.filter(
-      ({ id, playing }) => id !== currentPlayerId && playing
+      ({ id, currentGameId }) =>
+        id !== currentPlayerId && currentGameId === game.id
     )
     logger.info({ peers }, `connecting to other players`)
     for (const peer of peers) {
@@ -533,12 +537,14 @@ function shareHand(currentPlayerId) {
 }
 
 function isNextHost(currentPlayerId, connectedIds) {
-  const { players } = currentGame$.value
+  const { id, players } = currentGame$.value
   const connectedPlayers = players
     .filter(({ isGuest }) => !isGuest)
     .map(player => ({
       ...player,
-      playing: connectedIds ? connectedIds.includes(player.id) : player.playing
+      playing: connectedIds
+        ? connectedIds.includes(player.id)
+        : player.currentGameId === id
     }))
   const firstPlaying = connectedPlayers.find(({ playing }) => playing)
   // when no one is playing yet, firstPlaying is undefined.

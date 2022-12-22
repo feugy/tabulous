@@ -8,7 +8,7 @@ import repositories from '../repositories/index.js'
  * @typedef {object} Player a player
  * @property {string} id - unique id.
  * @property {string} username - player user name.
- * @property {boolean} playing - whether this player has currently joined an active game.
+ * @property {number} currentGameId - game this player is currently playing.
  * @property {string} [avatar] - avatar used for display.
  * @property {string} [provider] - player's authentication provider, when relevant.
  * @property {string} [providerId] - authentication provider own id, when relevant.
@@ -59,7 +59,7 @@ export async function upsertPlayer(userDetails) {
     }
     delete userDetails.email
   }
-  userDetails.playing = false
+  userDetails.currentGameId = null
   return repositories.players.save(userDetails)
 }
 
@@ -73,16 +73,16 @@ export async function getPlayerById(playerId) {
 }
 
 /**
- * Changes player's "is playing" flag.
+ * Changes player's current game Id.
  * Does nothing when no player is matching the given id.
  * @param {string} playerId - related player id.
- * @param {boolean} playing - new value for the flag.
+ * @param {string|null} currentGameId - id of the current game, or null.
  * @returns {Promise<Player|null>} the modified player.
  */
-export async function setPlaying(playerId, playing) {
+export async function setCurrentGameId(playerId, currentGameId) {
   const player = await getPlayerById(playerId)
   if (player) {
-    return repositories.players.save({ id: playerId, playing })
+    return repositories.players.save({ id: playerId, currentGameId })
   }
   return player
 }

@@ -98,6 +98,7 @@ export async function acquireMediaStream(desired) {
 
 async function acquire(video, audio) {
   try {
+    logger.debug({ video, audio }, `acquiring media devices`)
     currentCamera.next(video)
     currentMic.next(audio)
     saveLastMediaIds({ audio, video })
@@ -135,23 +136,31 @@ export function recordStreamChange(state) {
 }
 
 async function enumerateDevices() {
-  logger.info(`enumerating media devices`)
-  const devices = await navigator.mediaDevices.enumerateDevices()
-  const micDevices = []
-  const cameraDevices = []
-  for (const device of devices) {
-    if (device?.kind && !device?.label.startsWith('Monitor of')) {
-      if (device.kind === 'audioinput') {
-        micDevices.push(device)
-        logger.debug(device, `found mic ${device.label}`)
-      } else if (device.kind === 'videoinput') {
-        cameraDevices.push(device)
-        logger.debug(device, `found camera ${device.label}`)
+  try {
+    logger.info(`enumerating media devices`)
+    const devices = await navigator.mediaDevices.enumerateDevices()
+    const micDevices = []
+    const cameraDevices = []
+    for (const device of devices) {
+      if (device?.kind && !device?.label.startsWith('Monitor of')) {
+        if (device.kind === 'audioinput') {
+          micDevices.push(device)
+          logger.debug(device, `found mic ${device.label}`)
+        } else if (device.kind === 'videoinput') {
+          cameraDevices.push(device)
+          logger.debug(device, `found camera ${device.label}`)
+        }
       }
     }
+    mics.next(micDevices)
+    cameras.next(cameraDevices)
+  } catch (error) {
+    logger.warn(
+      { error },
+      `Failed to enumerate media devices: ${error.message}`
+    )
+    resetAll()
   }
-  mics.next(micDevices)
-  cameras.next(cameraDevices)
 }
 
 function getDesiredOrDefault(desired, lastId, devices) {

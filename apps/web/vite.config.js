@@ -31,7 +31,7 @@ export default defineConfig(({ mode }) => ({
     })
   ],
   build: {
-    sourcemap: mode === 'integration' ? 'inline' : false
+    sourcemap: mode === 'integration' ? 'inline' : true
   },
   optimizeDeps: {
     exclude: ['@urql/svelte', '@atelier-wb/ui']

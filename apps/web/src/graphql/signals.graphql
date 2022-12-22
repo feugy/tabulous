@@ -4,8 +4,8 @@ mutation sendSignal($signal: SignalInput) {
   }
 }
 
-subscription awaitSignal {
-  awaitSignal {
+subscription awaitSignal($gameId: ID!) {
+  awaitSignal(gameId: $gameId) {
     from
     data
   }

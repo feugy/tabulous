@@ -1,4 +1,14 @@
-import { delayWhen, filter, interval, scan, Subject } from 'rxjs'
+import {
+  delayWhen,
+  filter,
+  interval,
+  map,
+  merge,
+  of,
+  scan,
+  Subject,
+  withLatestFrom
+} from 'rxjs'
 
 import {
   cameraManager,
@@ -162,94 +172,106 @@ export function attachInputs({
      * - dragging table with right click/two fingers pans the camera
      * - dragging table with middle click/three fingers rotates the camera
      * - dragging mesh moves it
+     *
+     * Ignores any drag event that would occur immediately after a tap, and before we could
+     * determine if it was a single or a double tap
      */
-    drags$.subscribe({
-      next: ({ type, mesh, button, long, pointers, event }) => {
-        if (type === 'dragStart') {
-          resetMenu()
-          const kind = pointerKind(event, button, pointers)
-          if (mesh) {
-            if (kind === 'left') {
-              if (!selectionManager.meshes.has(mesh)) {
-                selectionManager.clear()
+    drags$
+      .pipe(
+        withLatestFrom(merge(of(null), taps$)),
+        filter(
+          ([drag, tap]) =>
+            !tap || drag.timestamp > tap.timestamp + doubleTapDelay
+        ),
+        map(([drag]) => drag)
+      )
+      .subscribe({
+        next: ({ type, mesh, button, long, pointers, event }) => {
+          if (type === 'dragStart') {
+            resetMenu()
+            const kind = pointerKind(event, button, pointers)
+            if (mesh) {
+              if (kind === 'left') {
+                if (!selectionManager.meshes.has(mesh)) {
+                  selectionManager.clear()
+                }
+                logger.info(
+                  { mesh, button, long, pointers, event },
+                  `start moving mesh ${mesh.id}`
+                )
+                moveManager.start(mesh, event)
               }
+            }
+            if (!moveManager.inProgress) {
+              const position = { x: event.x, y: event.y }
+              if (kind === 'left') {
+                logger.info(
+                  { button, long, pointers, event },
+                  `start selecting meshes`
+                )
+                selectionPosition = position
+              } else if (kind === 'right') {
+                logger.info(
+                  { button, long, pointers, event },
+                  `start panning camera`
+                )
+                panPosition = position
+              } else if (kind === 'middle') {
+                logger.info(
+                  { button, long, pointers, event },
+                  `start rotating camera`
+                )
+                rotatePosition = position
+              }
+            }
+          } else if (type === 'drag') {
+            if (rotatePosition) {
+              // for alpha, rotate clockwise when panning the top side of the screen, and anti-clockwise when panning the bottom side
+              const deltaX =
+                event.y < window.innerHeight / 2
+                  ? event.x - rotatePosition.x
+                  : rotatePosition.x - event.x
+              const deltaY = event.y - rotatePosition.y
+              cameraManager.rotate(
+                Math.abs(deltaX) < 8
+                  ? 0
+                  : deltaX < 0
+                  ? -Math.PI / 4
+                  : Math.PI / 4,
+                Math.abs(deltaY) < 4 ? 0 : normalize(deltaY, 10, 0, Math.PI / 6)
+              )
+              rotatePosition = event
+            } else if (panPosition) {
+              if (!panInProgress) {
+                cameraManager.pan(panPosition, event, 100).then(() => {
+                  panInProgress = false
+                })
+                panPosition = event
+                panInProgress = true
+              }
+            } else if (selectionPosition) {
+              selectionManager.drawSelectionBox(selectionPosition, event)
+            } else if (mesh) {
+              moveManager.continue(event)
+            }
+          } else if (type === 'dragStop') {
+            if (selectionPosition) {
+              logger.info({ button, long, pointers, event }, `selecting meshes`)
+              selectionManager.selectWithinBox()
+            } else if (mesh) {
               logger.info(
                 { mesh, button, long, pointers, event },
-                `start moving mesh ${mesh.id}`
+                `stop moving mesh ${mesh.id}`
               )
-              moveManager.start(mesh, event)
+              moveManager.stop()
             }
+            selectionPosition = null
+            rotatePosition = null
+            panPosition = null
+            panInProgress = false
           }
-          if (!moveManager.inProgress) {
-            const position = { x: event.x, y: event.y }
-            if (kind === 'left') {
-              logger.info(
-                { button, long, pointers, event },
-                `start selecting meshes`
-              )
-              selectionPosition = position
-            } else if (kind === 'right') {
-              logger.info(
-                { button, long, pointers, event },
-                `start panning camera`
-              )
-              panPosition = position
-            } else if (kind === 'middle') {
-              logger.info(
-                { button, long, pointers, event },
-                `start rotating camera`
-              )
-              rotatePosition = position
-            }
-          }
-        } else if (type === 'drag') {
-          if (rotatePosition) {
-            // for alpha, rotate clockwise when panning the top side of the screen, and anti-clockwise when panning the bottom side
-            const deltaX =
-              event.y < window.innerHeight / 2
-                ? event.x - rotatePosition.x
-                : rotatePosition.x - event.x
-            const deltaY = event.y - rotatePosition.y
-            cameraManager.rotate(
-              Math.abs(deltaX) < 8
-                ? 0
-                : deltaX < 0
-                ? -Math.PI / 4
-                : Math.PI / 4,
-              Math.abs(deltaY) < 4 ? 0 : normalize(deltaY, 10, 0, Math.PI / 6)
-            )
-            rotatePosition = event
-          } else if (panPosition) {
-            if (!panInProgress) {
-              cameraManager.pan(panPosition, event, 100).then(() => {
-                panInProgress = false
-              })
-              panPosition = event
-              panInProgress = true
-            }
-          } else if (selectionPosition) {
-            selectionManager.drawSelectionBox(selectionPosition, event)
-          } else if (mesh) {
-            moveManager.continue(event)
-          }
-        } else if (type === 'dragStop') {
-          if (selectionPosition) {
-            logger.info({ button, long, pointers, event }, `selecting meshes`)
-            selectionManager.selectWithinBox()
-          } else if (mesh) {
-            logger.info(
-              { mesh, button, long, pointers, event },
-              `stop moving mesh ${mesh.id}`
-            )
-            moveManager.stop()
-          }
-          selectionPosition = null
-          rotatePosition = null
-          panPosition = null
-          panInProgress = false
         }
-      }
-    }),
+      }),
 
     /**
      * Implements actions on mouse wheel:

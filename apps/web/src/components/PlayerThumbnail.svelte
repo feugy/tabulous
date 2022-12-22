@@ -49,7 +49,7 @@
     border-width: var(--border-width);
 
     &.positioned {
-      @apply absolute relative transform-gpu -translate-y-full;
+      @apply absolute transform-gpu -translate-y-full;
       border-bottom-left-radius: 0;
       left: var(--left);
       top: var(--top);

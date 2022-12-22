@@ -28,7 +28,7 @@ describe('given a connected repository and several players', () => {
         username: 'Paul',
         catalog: [],
         isAdmin: true,
-        playing: false
+        currentGameId: null
       },
       {
         id: faker.datatype.uuid(),
@@ -79,11 +79,11 @@ describe('given a connected repository and several players', () => {
           'idAdmin'
         )
         expect(await players.getById(models[0].id)).not.toHaveProperty(
-          'playing'
+          'currentGameId'
         )
         expect(await players.getById(models[1].id)).toMatchObject({
           isAdmin: true,
-          playing: false
+          currentGameId: null
         })
         expect(await players.getById(models[2].id)).toMatchObject({
           termsAccepted: true
@@ -154,7 +154,7 @@ describe('given a connected repository and several players', () => {
           providerId: faker.datatype.string(),
           catalog: [],
           isAdmin: false,
-          playing: false
+          currentGameId: null
         })
         expect(await players.getByProviderDetails(added)).toEqual(added)
         await players.deleteById(added.id)

@@ -159,6 +159,10 @@ describe('given a mocked game engine', () => {
       id: 'partner2',
       username: 'partner 2'
     }
+    const partner3 = {
+      id: 'partner3',
+      username: 'partner 3'
+    }
 
     beforeEach(() => {
       runSubscription.mockReturnValue(new Subject())
@@ -208,7 +212,7 @@ describe('given a mocked game engine', () => {
         undefined
       )
       expect(send).toHaveBeenCalledTimes(1)
-      expect(openChannels).toHaveBeenCalledWith(player, turnCredentials)
+      expect(openChannels).toHaveBeenCalledWith(player, turnCredentials, gameId)
       expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(
         new Map([
           [player.id, { ...player, isHost: true, playing: true, color }]
@@ -243,7 +247,7 @@ describe('given a mocked game engine', () => {
       expect(loadThread).not.toHaveBeenCalled()
       expect(connectWith).not.toHaveBeenCalled()
       expect(send).not.toHaveBeenCalled()
-      expect(openChannels).toHaveBeenCalledWith(player, turnCredentials)
+      expect(openChannels).toHaveBeenCalledWith(player, turnCredentials, gameId)
       expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(
         new Map([[player.id, { ...player, isHost: true, playing: true }]])
       )
@@ -375,7 +379,7 @@ describe('given a mocked game engine', () => {
       expect(loadThread).not.toHaveBeenCalled()
       expect(connectWith).not.toHaveBeenCalled()
       expect(send).not.toHaveBeenCalled()
-      expect(openChannels).toHaveBeenCalledWith(player, turnCredentials)
+      expect(openChannels).toHaveBeenCalledWith(player, turnCredentials, gameId)
       expect(toastReceived).not.toHaveBeenCalled()
     })
 
@@ -402,7 +406,7 @@ describe('given a mocked game engine', () => {
       expect(loadThread).not.toHaveBeenCalled()
       expect(connectWith).not.toHaveBeenCalled()
       expect(send).not.toHaveBeenCalled()
-      expect(openChannels).toHaveBeenCalledWith(player, turnCredentials)
+      expect(openChannels).toHaveBeenCalledWith(player, turnCredentials, gameId)
       expect(toastReceived).not.toHaveBeenCalled()
     })
 
@@ -823,12 +827,14 @@ describe('given a mocked game engine', () => {
 
     describe('with online players', () => {
       const meshes = [{ id: 'mesh1' }, { id: 'mesh2' }, { id: 'mesh3' }]
+      const id = faker.datatype.uuid()
       const game = {
-        id: faker.datatype.uuid(),
+        id,
         meshes,
         players: [
-          { playing: true, ...player },
-          { playing: true, ...partner1 },
+          { currentGameId: faker.datatype.uuid(), ...partner3 },
+          { currentGameId: id, ...player },
+          { currentGameId: id, ...partner1 },
           partner2
         ],
         hands: [
@@ -884,9 +890,10 @@ describe('given a mocked game engine', () => {
         const gameParameters = {
           ...game,
           players: [
-            { playing: true, ...player },
-            { playing: true, ...partner1 },
-            { isGuest: true, ...partner2 }
+            { currentGameId: id, ...player },
+            { currentGameId: id, ...partner1 },
+            { isGuest: true, ...partner2 },
+            { currentGameId: faker.datatype.uuid(), ...partner3 }
           ],
           schemaString: '{}'
         }
@@ -907,7 +914,11 @@ describe('given a mocked game engine', () => {
         expect(connectWith).toHaveBeenCalledWith(partner1.id, turnCredentials)
         expect(connectWith).toHaveBeenCalledTimes(2)
         expect(send).not.toHaveBeenCalled()
-        expect(openChannels).toHaveBeenCalledWith(partner2, turnCredentials)
+        expect(openChannels).toHaveBeenCalledWith(
+          partner2,
+          turnCredentials,
+          game.id
+        )
         expect(toastReceived).not.toHaveBeenCalled()
       })
 
@@ -951,6 +962,7 @@ describe('given a mocked game engine', () => {
                 gamer.id,
                 {
                   ...gamer,
+                  currentGameId: undefined,
                   ...findPlayerPreferences(game, gamer.id),
                   isHost: gamer.id === partner1.id,
                   playing: gamer.id === partner2.id
@@ -1029,6 +1041,15 @@ describe('given a mocked game engine', () => {
           expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(
             new Map([
               [
+                partner3.id,
+                {
+                  ...partner3,
+                  ...findPlayerPreferences(game, partner3.id),
+                  isHost: false,
+                  playing: false
+                }
+              ],
+              [
                 player.id,
                 {
                   ...player,
@@ -1092,9 +1113,9 @@ describe('given a mocked game engine', () => {
               type: 'game-sync',
               ...game,
               players: [
-                { playing: true, ...player },
-                { playing: true, ...partner1 },
-                { playing: true, ...partner2 }
+                { currentGameId: id, ...player },
+                { currentGameId: id, ...partner1 },
+                { currentGameId: id, ...partner2 }
               ]
             },
             playerId: player.id

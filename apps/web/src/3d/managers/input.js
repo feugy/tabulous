@@ -23,7 +23,8 @@ const DragMinimumDistance = 5
  * @typedef {object} InputData input event data:
  * @property {string} type - event type (tap, doubletap, wheel, dragStart, drag, dragStop, hoverStart, hoverStop, pinchStart, pinch, pinchStop, longPointer, keyDown).
  * @property {PointerEvent} event - the original browser event.
- * @property {number} pointers? - number of pointers used
+ * @property {Number} timestamp - input timestamp in milliseconds.
+ * @property {number} pointers? - number of pointers used.
  * @property {object} mesh? - mesh upon which event occured, when relevant.
  * @property {object[]} meshes? - meshes upon which key event occured, when relevant.
  * @property {number} button? - the pointer button used, when relevant (depends on pointer and event types).
@@ -97,7 +98,7 @@ class InputManager {
 
     const startHover = (event, mesh) => {
       if (hoveredByPointerId.get(event.pointerId) !== mesh) {
-        const data = { type: 'hoverStart', mesh, event }
+        const data = { type: 'hoverStart', mesh, event, timestamp: Date.now() }
         logger.info(data, `start hovering ${mesh.id}`)
         hoveredByPointerId.set(event.pointerId, mesh)
         this.onHoverObservable.notifyObservers(data)
@@ -109,7 +110,7 @@ class InputManager {
       if ('pointerId' in event) {
         const mesh = hoveredByPointerId.get(event.pointerId)
         if (mesh) {
-          const data = { type: 'hoverStop', mesh, event }
+          const data = { type: 'hoverStop', mesh, event, timestamp: Date.now() }
           logger.info(data, `stop hovering ${mesh.id}`)
           hoveredByPointerId.delete(event.pointerId)
           this.onHoverObservable.notifyObservers(data)
@@ -128,7 +129,8 @@ class InputManager {
           type: 'dragStop',
           ...dragOrigin,
           event,
-          pointers: pointers.size
+          pointers: pointers.size,
+          timestamp: Date.now()
         }
         clearLong()
         pointerTimes.clear()
@@ -147,7 +149,12 @@ class InputManager {
     // dynamically creates stopPinch to keep pinchPointers hidden
     this.stopPinch = event => {
       if (pinch.confirmed) {
-        const data = { type: 'pinchStop', event, pointers: 2 }
+        const data = {
+          type: 'pinchStop',
+          event,
+          pointers: 2,
+          timestamp: Date.now()
+        }
         clearLong()
         pointerTimes.clear()
         pointers.clear()
@@ -182,16 +189,21 @@ class InputManager {
         `type: pointerdown x: ${event.x} y: ${event.y} id: ${event.pointerId}`
       )
       const { button, mesh } = computeMetas(event)
-      pointers.set(event.pointerId, { mesh, button, event })
+      pointers.set(event.pointerId, {
+        mesh,
+        button,
+        event,
+        timestamp: Date.now()
+      })
       pointerTimes.set(event.pointerId, {
-        time: Date.now(),
         long: false,
         deferLong: setTimeout(() => {
           pointerTimes.get(event.pointerId).long = true
           const data = {
             type: 'longPointer',
             event,
-            pointers: pointers.size
+            pointers: pointers.size,
+            timestamp: pointers.get(event.pointerId).timestamp
           }
           logger.info(data, `long pointer detected`)
           this.onLongObservable.notifyObservers(data)
@@ -249,7 +261,8 @@ class InputManager {
               pinchDelta,
               event,
               pointers: 2,
-              long: pointerTimes.get(event.pointerId)?.long
+              long: pointerTimes.get(event.pointerId)?.long,
+              timestamp: pointers.get(event.pointerId).timestamp
             }
             logger.info(data, `start ${data.long ? 'long ' : ' '}pinching`)
             this.onPinchObservable.notifyObservers(data)
@@ -260,7 +273,13 @@ class InputManager {
         }
 
         if (pinch.confirmed) {
-          const data = { type: 'pinch', pinchDelta, event, pointers: 2 }
+          const data = {
+            type: 'pinch',
+            pinchDelta,
+            event,
+            pointers: 2,
+            timestamp: Date.now()
+          }
           logger.debug(data, `pinching by ${pinchDelta}`)
           this.onPinchObservable.notifyObservers(data)
         }
@@ -332,7 +351,8 @@ class InputManager {
           event,
           pointers: tapPointers,
           long: pointerTimes.get(pointerId).long,
-          fromHand: mesh?.getScene() === handScene
+          fromHand: mesh?.getScene() === handScene,
+          timestamp: pointers.get(pointerId).timestamp
         }
         clearLong()
         pointerTimes.clear()
@@ -362,7 +382,8 @@ class InputManager {
         mesh,
         button,
         event,
-        pointers: pointers.size
+        pointers: pointers.size,
+        timestamp: Date.now()
       }
       logger.info(data, `wheel on ${mesh?.id ?? 'table'} with button ${button}`)
       this.onWheelObservable.notifyObservers(data)
@@ -380,7 +401,8 @@ class InputManager {
           meta: event.metaKey,
           shift: event.shiftKey
         },
-        event
+        event,
+        timestamp: Date.now()
       }
       logger.debug(data, `type: keydown ${data.key} on (${event.mesh?.id})`)
       this.onKeyObservable.notifyObservers(data)

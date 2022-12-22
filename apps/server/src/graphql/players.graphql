@@ -1,7 +1,7 @@
 type Player {
   id: ID!
   username: String!
-  playing: Boolean!
+  currentGameId: ID
   isGuest: Boolean
   isOwner: Boolean
   avatar: String

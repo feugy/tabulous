@@ -15,7 +15,7 @@ import {
   getPlayerById,
   isUsernameUsed,
   searchPlayers,
-  setPlaying,
+  setCurrentGameId,
   upsertPlayer
 } from '../../src/services/players.js'
 import { clearDatabase, getRedisTestUrl } from '../test-utils.js'
@@ -40,7 +40,7 @@ describe('given initialized repository', () => {
         password,
         avatar,
         username,
-        playing: false
+        currentGameId: null
       })
     })
 
@@ -52,7 +52,7 @@ describe('given initialized repository', () => {
         id,
         avatar,
         username,
-        playing: false
+        currentGameId: null
       })
     })
 
@@ -73,7 +73,7 @@ describe('given initialized repository', () => {
       const original = await repositories.players.save({
         username: faker.name.fullName(),
         email: 'damien.simoninfeugas@gmail.com',
-        playing: false
+        currentGameId: null
       })
       expect(
         await upsertPlayer({ id: original.id, avatar: 'gravatar' })
@@ -158,7 +158,7 @@ describe('given initialized repository', () => {
       const original = await repositories.players.save({
         username: faker.name.firstName(),
         email: faker.internet.email(),
-        playing: true,
+        currentGameId: faker.datatype.uuid(),
         provider: 'oauth2',
         providerId: faker.datatype.uuid(),
         avatar: faker.internet.avatar(),
@@ -174,7 +174,7 @@ describe('given initialized repository', () => {
       }
       expect(await upsertPlayer(update)).toEqual({
         ...original,
-        playing: false,
+        currentGameId: null,
         email: update.email
       })
     })
@@ -183,7 +183,7 @@ describe('given initialized repository', () => {
       const original = await repositories.players.save({
         username: faker.name.firstName(),
         email: faker.internet.email(),
-        playing: true,
+        currentGameId: faker.datatype.uuid(),
         provider: 'oauth2',
         providerId: faker.datatype.uuid(),
         avatar: faker.internet.avatar(),
@@ -276,24 +276,25 @@ describe('given initialized repository', () => {
       })
     })
 
-    describe('setPlaying()', () => {
-      it('returns updated player with new playing status', async () => {
-        expect(await setPlaying(players[2].id, true)).toEqual({
+    describe('setCurrentGameId()', () => {
+      it('returns updated player with new game Ids', async () => {
+        const currentGameId = faker.datatype.uuid()
+        expect(await setCurrentGameId(players[2].id, currentGameId)).toEqual({
           ...players[2],
-          playing: true
+          currentGameId
         })
-        expect(await setPlaying(players[3].id, false)).toEqual({
+        expect(await setCurrentGameId(players[3].id, null)).toEqual({
           ...players[3],
-          playing: false
+          currentGameId: null
         })
-        expect(await setPlaying(players[2].id, false)).toEqual({
+        expect(await setCurrentGameId(players[2].id, null)).toEqual({
           ...players[2],
-          playing: false
+          currentGameId: null
         })
       })
 
       it('returns null on unknown id', async () => {
-        expect(await setPlaying(faker.datatype.uuid(), true)).toBeNull()
+        expect(await setCurrentGameId(faker.datatype.uuid(), true)).toBeNull()
       })
     })
 

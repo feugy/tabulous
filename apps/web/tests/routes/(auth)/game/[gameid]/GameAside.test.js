@@ -124,9 +124,9 @@ describe('game/[gameId] GameAside component', () => {
     const avatars = screen.getAllByTestId('player-avatar')
 
     expect(extractText(avatars)).toEqual(['', players[1].username, ''])
-    expect(avatars[0]).toHaveClass('hasStream')
-    expect(avatars[1]).not.toHaveClass('hasStream')
-    expect(avatars[2]).toHaveClass('hasStream')
+    expect(avatars[0].children[0]).toHaveClass('hasStream')
+    expect(avatars[1].children[0]).not.toHaveClass('hasStream')
+    expect(avatars[2].children[0]).toHaveClass('hasStream')
   })
 
   it('has help, rules book, peer and thread tabs on multiple connected game', () => {
@@ -150,9 +150,9 @@ describe('game/[gameId] GameAside component', () => {
     const avatars = screen.getAllByTestId('player-avatar')
 
     expect(extractText(avatars)).toEqual(['', players[1].username, ''])
-    expect(avatars[0]).toHaveClass('hasStream')
-    expect(avatars[1]).not.toHaveClass('hasStream')
-    expect(avatars[2]).toHaveClass('hasStream')
+    expect(avatars[0].children[0]).toHaveClass('hasStream')
+    expect(avatars[1].children[0]).not.toHaveClass('hasStream')
+    expect(avatars[2].children[0]).toHaveClass('hasStream')
   })
 
   it('has thread discussion on single connected game with thread', () => {

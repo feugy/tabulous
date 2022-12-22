@@ -11,9 +11,7 @@ const config = {
   },
   kit: {
     adapter: vercel({ edge: true }),
-    files: {
-      assets: 'public'
-    }
+    files: { assets: 'public' }
   }
 }
 

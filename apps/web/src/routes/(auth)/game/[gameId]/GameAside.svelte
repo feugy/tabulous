@@ -62,15 +62,15 @@
         ? 'width'
         : 'max-width'}: {initialWidth}"
     >
-      {#if tabs[tab]?.id === playersId}
-        <div class="peers">
+      <div class="peers" class:hidden={tabs[tab]?.id !== playersId}>
+        <span class="avatars">
           {#if connected?.length}
             <PlayerAvatar player={playerById.get(player.id)} isLocal={true} />
           {/if}
           {#each peers as { playerId, ...props } (props.player.id)}
             <PlayerAvatar {...props} />
           {/each}
-        </div>
+        </span>
         {#if connected?.length || thread?.length}
           <MinimizableSection
             dimension={discussionDimension}
@@ -80,9 +80,10 @@
             <Discussion {thread} {playerById} on:sendMessage />
           </MinimizableSection>
         {/if}
-      {:else if tabs[tab]?.id === rulesId}
+      </div>
+      {#if tabs[tab]?.id === rulesId}
         <RuleViewer game={game?.kind} lastPage={game?.rulesBookPageCount - 1} />
-      {:else}
+      {:else if tabs[tab]?.id === helpId}
         <ControlsHelp />
       {/if}
     </div>
@@ -91,7 +92,7 @@
 
 <style lang="postcss">
   aside {
-    @apply bg-$base-lightest z-0;
+    @apply bg-$base-lightest z-10;
   }
 
   .content {
@@ -99,7 +100,15 @@
   }
 
   .peers {
-    @apply grid flex-1 place-items-center grid-flow-col;
+    @apply flex flex-col flex-1;
+
+    &.hidden {
+      @apply hidden;
+    }
+  }
+
+  .avatars {
+    @apply flex-1 grid place-items-center grid-flow-col;
     grid-template-rows: repeat(auto-fit, minmax(150px, 1fr));
   }
 </style>
