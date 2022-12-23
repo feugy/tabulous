@@ -157,9 +157,9 @@ class SelectionManager {
   selectWithinBox() {}
 
   /**
-   * Adds meshes into selection (if not already in).
+   * Adds meshes into selection (if not already in), including their stack.
    * Ignores mesh already selected by other players.
-   * @param {Mesh[]} - array of meshes added to the active selection
+   * @param {Mesh[]} - array of meshes added to the active selection.
    * @param {Color4} [color] - color used to highlight mesh, default to manager's color.
    */
   select(meshes, color) {
@@ -173,6 +173,28 @@ class SelectionManager {
         mesh,
         color ?? this.color
       )
+    }
+    if (this.meshes.size !== oldSize) {
+      reorderSelection(this)
+    }
+  }
+
+  /**
+   * Removes meshes from the selection, including their stack.
+   * Ignores meshes selected by other players.
+   * @param {Mesh[]} meshes - array of meshes to remove from the active selection.
+   */
+  unselect(meshes) {
+    const unselected = []
+    const oldSize = this.meshes.size
+    const otherSelections = [...this.selectionByPeerId.values()]
+    for (const mesh of meshes) {
+      if (!otherSelections.find(selection => selection.has(mesh))) {
+        unselected.push(...(mesh.metadata?.stack ?? [mesh]))
+      }
+    }
+    for (const mesh of unselected) {
+      removeFromSelection(this.meshes, mesh)
     }
     if (this.meshes.size !== oldSize) {
       reorderSelection(this)

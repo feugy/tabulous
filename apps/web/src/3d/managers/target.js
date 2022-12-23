@@ -1,5 +1,5 @@
 import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial.js'
-import { Color3, Color4 } from '@babylonjs/core/Maths/math.color.js'
+import { Color4 } from '@babylonjs/core/Maths/math.color.js'
 
 import { makeLogger } from '../../utils/logger'
 import { distance } from '../../utils/math'
@@ -38,8 +38,9 @@ class TargetManager {
   init({ scene, playerId, color }) {
     this.scene = scene
     this.playerId = playerId
+    this.color = Color4.FromHexString(color)
     this.material = new StandardMaterial('target-material', scene)
-    this.material.diffuseColor = Color3.FromHexString(color)
+    this.material.diffuseColor = this.color
     this.material.alpha = 0.5
   }
 
@@ -214,7 +215,7 @@ function findAndHighlightZone(manager, candidates, dragged, kind) {
     const { targetable, zone } = match
     const droppables = manager.droppablesByDropZone.get(zone) ?? []
     manager.droppablesByDropZone.set(zone, [...droppables, dragged])
-    highlightZone(zone, manager.material)
+    highlightZone(zone, manager.material, manager.color)
     logger.info(
       { zone, dragged },
       `found drop zone ${targetable.mesh?.id} for ${dragged?.id} (${kind})`
@@ -235,16 +236,13 @@ function sortCandidates(candidates) {
   )
 }
 
-function highlightZone(zone, material) {
+function highlightZone(zone, material, color) {
   if (zone?.mesh?.visibility === 0) {
     zone.mesh.material = material
     zone.mesh.visibility = 1
     zone.mesh.enableEdgesRendering()
     zone.mesh.edgesWidth = 5.0
-    zone.mesh.edgesColor = Color4.FromArray([
-      ...material.diffuseColor.asArray(),
-      1
-    ])
+    zone.mesh.edgesColor = color
   }
 }
 

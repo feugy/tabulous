@@ -14,7 +14,7 @@ const findUserQuery = gql`
       avatar
       provider
       termsAccepted
-      playing
+      currentGameId
     }
   }
 `

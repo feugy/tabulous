@@ -11,6 +11,7 @@
   ```
 
 - expectEvents tests/3d/managers/input.test.js:1591:19
+
   ```
   1589|     expect(hovers).toHaveLength(counts.hovers ?? 0)
   1590|     expect(wheels).toHaveLength(counts.wheels ?? 0)
@@ -18,6 +19,7 @@
       |                   ^
   1592|     expect(keys).toHaveLength(counts.keys ?? 0)
   ```
+
 - tests/3d/managers/input.test.js > InputManager > given an initialized manager > handles multiple pointers double taps
 
   ```
@@ -51,30 +53,64 @@
       }
   ```
 
+- tests/3d/managers/input.test.js > InputManager > given an initialized manager > starts and stops pinch operation''
+
+  ```
+  AssertionError: expected [ { type: 'longPointer', …(3) } ] to have a length of +0 but got 1
+  ❯ expectEvents tests/3d/managers/input.test.js:1614:19
+      1612|     expect(hovers).toHaveLength(counts.hovers ?? 0)
+      1613|     expect(wheels).toHaveLength(counts.wheels ?? 0)
+      1614|     expect(longs).toHaveLength(counts.longs ?? 0)
+        |                   ^
+      1615|     expect(keys).toHaveLength(counts.keys ?? 0)
+      1616|   }
+  ❯ tests/3d/managers/input.test.js:869:9
+
+    - Expected   "0"
+    + Received   "1"
+  ```
+
+- tests/3d/managers/hand.test.js > HandManager > given an initialized manager > given some meshs in hand > moves mesh to hand by dragging
+
+  ```
+  AssertionError: expected -3.5 to be close to -5.25, received difference is 1.75, but expected 0.005
+  ❯ expectCloseVector tests/test-utils.js:144:29
+      142|
+      143| export function expectCloseVector(actual, [x, y, z], message) {
+      144|   expect(actual.x, message).toBeCloseTo(x)
+        |                             ^
+      145|   expect(actual.y, message).toBeCloseTo(y)
+      146|   expect(actual.z, message).toBeCloseTo(z)
+  ❯ Module.expectPosition tests/test-utils.js:132:3
+  ❯ tests/3d/managers/hand.test.js:707:9
+
+    - Expected   "-5.25"
+    + Received   "-3.5"
+  ```
+
 - tests/connected-components/InvitePlayerDialogue.test.js > InvitePlayerDialogue connected component > debounce searches
 
-```
-AssertionError: expected 2nd "spy" call to have been called with [ 'anima' ]
-❯ tests/connected-components/InvitePlayerDialogue.test.js:56:27
-    54|     }
-    55|     expect(searchPlayers).toHaveBeenNthCalledWith(1, 'an')
-    56|     expect(searchPlayers).toHaveBeenNthCalledWith(2, 'anima')
-      |                           ^
-    57|     expect(searchPlayers).toHaveBeenCalledTimes(2)
-    58|   })
+  ```
+  AssertionError: expected 2nd "spy" call to have been called with [ 'anima' ]
+  ❯ tests/connected-components/InvitePlayerDialogue.test.js:56:27
+      54|     }
+      55|     expect(searchPlayers).toHaveBeenNthCalledWith(1, 'an')
+      56|     expect(searchPlayers).toHaveBeenNthCalledWith(2, 'anima')
+        |                           ^
+      57|     expect(searchPlayers).toHaveBeenCalledTimes(2)
+      58|   })
 
-  - Expected  - 1
-  + Received  + 1
+    - Expected  - 1
+    + Received  + 1
 
-    Array [
-  -   "anima",
-  +   "anim",
-    ]
-```
+      Array [
+    -   "anima",
+    +   "anim",
+      ]
+  ```
 
 ## Refactor
 
-- vitest@0.25.8: issue when loading peer deps, resolve in [next release](https://github.com/vitest-dev/vitest/pull/2463)
 - @urql/core@3.1.1: receiveGameListUpdates subscribtion fails because urql's stringification sends the whole games.graphql file instead of the subscription as a payload. This is because [these lines](https://github.com/urql-graphql/urql/pull/2871/files#diff-425e8fcb48a8df1865f99ca1fb981873c6d0ef33ee3856e18f85a8b449bb81b7R41-R42)
 - add tests for web/src/utils/peer-connection
 - use node 18 when msw/interceptor will [handle it](https://github.com/mswjs/interceptors/pull/283)
@@ -105,6 +141,14 @@ AssertionError: expected 2nd "spy" call to have been called with [ 'anima' ]
 - "box" space for unusued/undesired meshes
 - command to "switch place" around the table, for games like Belote
 - fullscreen and default key (F11)
+- hide media dropdown unless hovering?
+
+23:09:47,374 Uncaught InternalError: too much recursion
+Immutable 10
+players-9eebbfcf.js:315:100318 (https://github.com/ReactiveX/rxjs/blob/630d2b009b5ae4e8f2a62d9740738c1ec317c2d5/src/internal/scheduler/intervalProvider.ts#L22)
+Immutable 128
+
+This is bound to rxjs asyncScheduler, which depends on the operator used (probably time operators)
 
 ## Server
 

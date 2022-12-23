@@ -3,7 +3,7 @@
 exports[`All kinds 1`] = `
 HTMLCollection [
   <div
-    class="s-WFVnM7df3-nu centered"
+    class="s-WFVnM7df3-nu"
     style="top: 125px; left: 150px; --color: cyan; pointer-events: none;"
   >
     Gaspard
@@ -87,7 +87,7 @@ exports[`Feedback for player 1`] = `
 
 exports[`For player 1`] = `
 <div
-  class="s-WFVnM7df3-nu centered"
+  class="s-WFVnM7df3-nu"
   style="top: 125px; left: 150px; --color: #967d3e; pointer-events: none;"
 >
   Gaspard

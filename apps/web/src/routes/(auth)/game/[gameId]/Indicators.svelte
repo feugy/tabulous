@@ -31,7 +31,6 @@
     <Label
       {screenPosition}
       {onClick}
-      centered={!!player}
       content={computeLabel(player, rest)}
       color={player?.color}
     />
