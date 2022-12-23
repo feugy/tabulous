@@ -1,114 +1,5 @@
 # TODO
 
-## Brittle tests
-
-- tests/atelier/tools.test.js > Toolshot > components/RadialMenu.tools.svelte
-
-  ```
-  Error: expect(received).toMatchSnapshot()
-
-  Snapshot name: `More items 1`
-  ```
-
-- expectEvents tests/3d/managers/input.test.js:1591:19
-
-  ```
-  1589|     expect(hovers).toHaveLength(counts.hovers ?? 0)
-  1590|     expect(wheels).toHaveLength(counts.wheels ?? 0)
-  1591|     expect(longs).toHaveLength(counts.longs ?? 0)
-      |                   ^
-  1592|     expect(keys).toHaveLength(counts.keys ?? 0)
-  ```
-
-- tests/3d/managers/input.test.js > InputManager > given an initialized manager > handles multiple pointers double taps
-
-  ```
-  AssertionError: expected { type: 'tap', mesh: undefined, …(5) } o match object { long: false, pointers: 2, …(2) }
-  ❯ expectsDataWithMesh tests/3d/managers/input.test.js:1604:20
-      1602|
-      1603|   function expectsDataWithMesh(actual, expected, eshId) {
-      1604|     expect(actual).toMatchObject(expected)
-          |                    ^
-      1605|     if (Array.isArray(meshId)) {
-      1606|       expect(actual.meshes?.map(({ id }) => id)).oEqual(meshId)
-  ❯ tests/3d/managers/input.test.js:530:9
-    - Expected  - 1
-    + Received  + 4
-
-      Object {
-    +   "button": undefined,
-        "event": CustomEvent {
-          "isTrusted": false,
-          "pointerId": 16,
-          "pointerType": "tap",
-          "x": 360,
-          "y": 954,
-        },
-    +   "fromHand": false,
-        "long": false,
-    +   "mesh": undefined,
-        "pointers": 2,
-    -   "type": "doubletap",
-    +   "type": "tap",
-      }
-  ```
-
-- tests/3d/managers/input.test.js > InputManager > given an initialized manager > starts and stops pinch operation''
-
-  ```
-  AssertionError: expected [ { type: 'longPointer', …(3) } ] to have a length of +0 but got 1
-  ❯ expectEvents tests/3d/managers/input.test.js:1614:19
-      1612|     expect(hovers).toHaveLength(counts.hovers ?? 0)
-      1613|     expect(wheels).toHaveLength(counts.wheels ?? 0)
-      1614|     expect(longs).toHaveLength(counts.longs ?? 0)
-        |                   ^
-      1615|     expect(keys).toHaveLength(counts.keys ?? 0)
-      1616|   }
-  ❯ tests/3d/managers/input.test.js:869:9
-
-    - Expected   "0"
-    + Received   "1"
-  ```
-
-- tests/3d/managers/hand.test.js > HandManager > given an initialized manager > given some meshs in hand > moves mesh to hand by dragging
-
-  ```
-  AssertionError: expected -3.5 to be close to -5.25, received difference is 1.75, but expected 0.005
-  ❯ expectCloseVector tests/test-utils.js:144:29
-      142|
-      143| export function expectCloseVector(actual, [x, y, z], message) {
-      144|   expect(actual.x, message).toBeCloseTo(x)
-        |                             ^
-      145|   expect(actual.y, message).toBeCloseTo(y)
-      146|   expect(actual.z, message).toBeCloseTo(z)
-  ❯ Module.expectPosition tests/test-utils.js:132:3
-  ❯ tests/3d/managers/hand.test.js:707:9
-
-    - Expected   "-5.25"
-    + Received   "-3.5"
-  ```
-
-- tests/connected-components/InvitePlayerDialogue.test.js > InvitePlayerDialogue connected component > debounce searches
-
-  ```
-  AssertionError: expected 2nd "spy" call to have been called with [ 'anima' ]
-  ❯ tests/connected-components/InvitePlayerDialogue.test.js:56:27
-      54|     }
-      55|     expect(searchPlayers).toHaveBeenNthCalledWith(1, 'an')
-      56|     expect(searchPlayers).toHaveBeenNthCalledWith(2, 'anima')
-        |                           ^
-      57|     expect(searchPlayers).toHaveBeenCalledTimes(2)
-      58|   })
-
-    - Expected  - 1
-    + Received  + 1
-
-      Array [
-    -   "anima",
-    +   "anim",
-      ]
-  ```
-
 ## Refactor
 
 - @urql/core@3.1.1: receiveGameListUpdates subscribtion fails because urql's stringification sends the whole games.graphql file instead of the subscription as a payload. This is because [these lines](https://github.com/urql-graphql/urql/pull/2871/files#diff-425e8fcb48a8df1865f99ca1fb981873c6d0ef33ee3856e18f85a8b449bb81b7R41-R42)
@@ -127,6 +18,7 @@
 
 ## UI
 
+- bug: can interact with a single mesh being moved by peer
 - bug: animating visibility from 0 to 1 creates trouble with texture alpha channel
 - bug: attached, unselected mesh are not ignored during dragging
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
@@ -160,12 +52,12 @@ This is bound to rxjs asyncScheduler, which depends on the operator used (probab
 
 ## Hosting
 
+- firewall
 - where to store secrets?
 - deploy in a folder named after the commit SHA
 - use symlink to switch between deployments (including conf files)
 - rotates log files
 - notifies on deployment failures/success
-- automate SSH renewal with certbot
 
 ## Known issues
 
