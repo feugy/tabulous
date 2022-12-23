@@ -186,6 +186,31 @@ describe('SelectionManager', () => {
       })
     })
 
+    describe('unselect()', () => {
+      it('ignores unselected meshes', () => {
+        const mesh = CreateBox('box1', {})
+        manager.unselect([mesh])
+        expect(manager.meshes.size).toBe(0)
+        expectSelected(mesh, null, false)
+        expect(selectionChanged).not.toHaveBeenCalled()
+      })
+
+      it('removes entire stacks from selection', () => {
+        const mesh1 = CreateBox('box1', {})
+        const mesh2 = CreateBox('box2', {})
+        mesh1.addBehavior(new StackBehavior({ stackIds: [mesh2.id] }))
+        manager.select([mesh1])
+        expect(manager.meshes.size).toBe(2)
+
+        manager.unselect([mesh1])
+        expect(manager.meshes.size).toBe(0)
+        expectSelected(mesh1, colorByPlayerId.get(playerId), false)
+        expectSelected(mesh2, colorByPlayerId.get(playerId), false)
+        expect(selectionChanged).toHaveBeenCalledTimes(2)
+        expect(selectionChanged.mock.calls[1][0].size).toBe(0)
+      })
+    })
+
     describe('given some selected meshes', () => {
       let meshes
 
@@ -241,12 +266,29 @@ describe('SelectionManager', () => {
         })
       })
 
+      describe('unselect()', () => {
+        it('removes selected meshes', () => {
+          const [mesh1, mesh2, mesh3] = meshes
+          manager.unselect([mesh3, mesh1])
+          expect(manager.meshes.has(mesh1)).toBe(false)
+          expect(manager.meshes.has(mesh2)).toBe(true)
+          expect(manager.meshes.has(mesh3)).toBe(false)
+          expect(manager.meshes.size).toBe(1)
+          expectSelected(mesh1, colorByPlayerId.get(playerId), false)
+          expectSelected(mesh2, colorByPlayerId.get(playerId))
+          expectSelected(mesh3, colorByPlayerId.get(playerId), false)
+          expect(selectionChanged).toHaveBeenCalledTimes(1)
+          expect(selectionChanged.mock.calls[0][0].size).toBe(1)
+        })
+      })
+
       describe('clear()', () => {
         it('removes all meshes from selection', () => {
           manager.clear()
           expect(manager.meshes.size).toBe(0)
           expectSelected(meshes[0], null, false)
           expectSelected(meshes[1], null, false)
+          expectSelected(meshes[2], null, false)
           expect(selectionChanged).toHaveBeenCalledTimes(1)
           expect(selectionChanged.mock.calls[0][0].size).toBe(0)
         })
@@ -313,6 +355,21 @@ describe('SelectionManager', () => {
 
         it('returns false for unselected meshes', () => {
           expect(manager.isSelectedByPeer(meshes[4])).toBe(false)
+        })
+      })
+
+      describe('unselect()', () => {
+        it('ignoes meshes selected by peers', () => {
+          const [mesh1, mesh2, mesh3, mesh4, mesh5] = meshes
+          manager.unselect(meshes)
+          expect(manager.meshes.size).toBe(0)
+          expectSelected(mesh1, colorByPlayerId.get(peer1.id))
+          expectSelected(mesh2, colorByPlayerId.get(peer1.id))
+          expectSelected(mesh3, colorByPlayerId.get(playerId), false)
+          expectSelected(mesh4, colorByPlayerId.get(peer2.id))
+          expectSelected(mesh5, colorByPlayerId.get(playerId), false)
+          expect(selectionChanged).toHaveBeenCalledTimes(1)
+          expect(selectionChanged.mock.calls[0][0].size).toBe(0)
         })
       })
     })

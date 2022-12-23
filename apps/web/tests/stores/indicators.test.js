@@ -161,7 +161,7 @@ describe('Indicators store', () => {
       ])
     })
 
-    it('selects mesh when interacting with their indicators, and removes interactivity', async () => {
+    it('selects and unselects meshes when with their indicators', async () => {
       cards[0]
         .getBehaviorByName(StackBehaviorName)
         .fromState({ stackIds: ['card2', 'card4'] })
@@ -174,8 +174,8 @@ describe('Indicators store', () => {
       expect(selectionManager.meshes.has(cards[3])).toBe(true)
       expect(selectionManager.meshes.has(cards[4])).toBe(false)
 
-      await waitNextRender(scene)
-      expect(get(visibleIndicators$)[0]).toHaveProperty('onClick', null)
+      get(visibleIndicators$)[0].onClick()
+      expect(selectionManager.meshes.size).toBe(0)
     })
 
     it('has feedback', async () => {

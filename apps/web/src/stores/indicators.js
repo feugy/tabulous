@@ -139,10 +139,15 @@ function enrichWithPlayerData(indicators) {
 function enrichWithInteraction(indicators) {
   return indicators.map(indicator => ({
     ...indicator,
-    onClick:
-      indicator.mesh && !selectionManager.meshes.has(indicator.mesh)
-        ? () => selectionManager.select([indicator.mesh])
-        : null
+    onClick: indicator.mesh
+      ? () => {
+          if (selectionManager.meshes.has(indicator.mesh)) {
+            selectionManager.unselect([indicator.mesh])
+          } else {
+            selectionManager.select([indicator.mesh])
+          }
+        }
+      : null
   }))
 }
 
