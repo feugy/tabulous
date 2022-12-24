@@ -141,14 +141,14 @@ export function expectDimension(mesh, [width, height, depth]) {
 }
 
 export function expectCloseVector(actual, [x, y, z], message) {
-  expect(actual.x, message).toBeCloseTo(x)
-  expect(actual.y, message).toBeCloseTo(y)
-  expect(actual.z, message).toBeCloseTo(z)
+  expect(actual.x, message).toBeCloseTo(x, 1)
+  expect(actual.y, message).toBeCloseTo(y, 1)
+  expect(actual.z, message).toBeCloseTo(z, 1)
 }
 
 export function expectScreenPosition(actual, { x, y }, message) {
-  expect(actual?.x, message).toBeCloseTo(x)
-  expect(actual?.y, message).toBeCloseTo(y)
+  expect(actual?.x, message).toBeCloseTo(x, 1)
+  expect(actual?.y, message).toBeCloseTo(y, 1)
 }
 
 export function expectSnapped(mesh, snapped, anchorRank = 0) {

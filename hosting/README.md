@@ -132,6 +132,53 @@ First commands will need to connect with IPv4 (hence the `-4` flag) in the meant
     1. save and quit
   - restart redis to apply changes: `sudo systemctl restart redis`
 
+- install Gitea (original [documentation](https://docs.gitea.io/en-us/install-from-binary/)):
+
+  - open an SSH connection to the VPS: `ssh ubuntu@vps-XYZ.vps.ovh.net`
+  - creates an nginx configuration: `sudo vi /etc/nginx/sites-enabled/gitea`
+  - sets content to /hosting/gitea.nginx file from this repo
+  - restart nginx `sudo systemctl restart nginx`
+  - download gitea: `wget -O gitea https://dl.gitea.io/gitea/1.17.4/gitea-1.17.4-linux-amd64`
+  - make it executable: `sudo chmod +x gitea`
+  - create a system user: `sudo adduser --system --shell /bin/bash --gecos 'Git Version Control' --group --disabled-password --home /home/git git`
+  - create working repositories:
+    - `sudo mkdir -p /var/lib/gitea/{custom,data,log}`
+    - `sudo mkdir /etc/gitea`
+  - grant them ownership:
+    - `sudo chown -R git:git /var/lib/gitea/`
+    - `sudo chmod -R 750 /var/lib/gitea/`
+    - `sudo chown root:git /etc/gitea`
+    - `sudo chmod 770 /etc/gitea`
+  - move the executable to its final place: `sudo cp gitea /usr/local/bin/gitea`
+  - create a service file: `sudo vi /etc/systemd/system/gitea.service`
+  - set its content to [this](https://github.com/go-gitea/gitea/blob/main/contrib/systemd/gitea.service)
+  - append `-p 9000` to the `ExecStart` command
+  - enable service: `sudo systemctl enable gitea`
+  - start service: `sudo systemctl start gitea`
+  - browse to the service configuration page: http://vps-XYZ.vps.ovh.net:9000/
+    - select SQLite3 database
+    - change title to `Gitea for Tabulous`
+    - set base url to `https://gitea.tabulous.fr/`
+    - configure local only
+    - expand server parameters and make sure only these are checked:
+      - `Enable unified avatars`
+      - `Disable registration form`
+      - `Require account registration to display pages`
+      - `Allow default organization creation`
+      - `Enable time tracking`
+    - expand admin account parameters and fill out the details
+    - click on `Install Gitea`
+    - once logged, add ssh key to the SSH/GPG keys list in /user/settings/keys
+  - tweak gitea server configuration: `sudo vi /etc/gitea/app.ini`
+    - set `SSH_DOMAIN` and `DOMAIN` to `gitea.tabulous.fr`
+  - restrict permissions after installation:
+    - `sudo chmod 750 /etc/gitea`
+    - `sudo chmod 640 /etc/gitea/app.ini`
+  - restart `sudo systemctl restart gitea`
+  - give the user access to tabulous folders: `sudo usermod -G tabulous,git git`
+  - open sudoer configuration file: `sudo visudo`
+    - add: `git      ALL=NOPASSWD:/usr/bin/systemctl`
+
 ## Continuous deployment
 
 [Inspiration](https://coderflex.com/blog/2-easy-steps-to-automate-a-deployment-in-a-vps-with-github-actions)
