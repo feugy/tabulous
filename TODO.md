@@ -22,6 +22,7 @@
 - bug: animating visibility from 0 to 1 creates trouble with texture alpha channel
 - bug: attached, unselected mesh are not ignored during dragging
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
+- rework lights & shadows
 - detailable/stackable behavior: preview a stack of meshes
 - hide/distinguish non-connected participants
 - is this right? given an active selection, when it anchors with other items, then items are part of the selection
@@ -44,6 +45,7 @@ This is bound to rxjs asyncScheduler, which depends on the operator used (probab
 
 ## Server
 
+- bug: game assets can not be updated in browser (forever-cache policy)
 - bug: timezone used for Serverside rendering is wrong
 - invite players who have no account yet
 - allows a single connection per player (discards other JWTs)
@@ -304,3 +306,17 @@ Game parameters need the ability to express contraints in between parameters (se
 JSON Type Definition [does not allow conditionals](https://ajv.js.org/guide/schema-language.html#json-type-definition-2), and scafolding UI component out of [Joi schema](https://joi.dev/api/?v=17.7.0#anydescribe) is too complicated, so let's use [JSON Schema](https://ajv.js.org/json-schema.html#if-then-else)
 
 [online JSON schema playground](https://extendsclass.com/json-schema-validator.html)
+
+How to export from blender to Babylon?
+
+1. craft meshes into blender. Pay attention to the following points:
+
+- set normals to faces
+- no global/local transformation
+- set origin to geometry
+
+1. export as stl
+
+- selection only
+- Y forward
+- Z up
