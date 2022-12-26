@@ -1,5 +1,6 @@
 // mandatory side effect
 import '@babylonjs/core/Loading/index.js'
+import '@babylonjs/loaders/STL'
 
 import { SceneLoader } from '@babylonjs/core/Loading/sceneLoader.js'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
@@ -29,10 +30,11 @@ export function createCustom(
   scene
 ) {
   let mesh
+  const encodedData = `data:;base64,${customShapeManager.get(file)}`
   SceneLoader.ImportMesh(
     null,
     '',
-    `data:;base64,${customShapeManager.get(file)}`,
+    encodedData,
     scene,
     meshes => {
       // note: because we're using data url, this function is synchronously called by Babylon.
@@ -40,10 +42,10 @@ export function createCustom(
       mesh = meshes?.[0]
     },
     null,
-    (scene, message, error) => {
-      throw error ?? new Error(message)
+    (scene, message) => {
+      throw new Error(message.replace(encodedData, file))
     },
-    '.babylon'
+    `.${file.split('.').pop()}`
   )
   if (!mesh) {
     throw new Error(`${file} does not contain any mesh`)

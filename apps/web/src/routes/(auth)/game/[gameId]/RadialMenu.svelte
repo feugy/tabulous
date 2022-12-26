@@ -51,9 +51,7 @@
 
   function handleEnterEnd(args) {
     const { x, y } = computeItemPosition(args)
-    setTimeout(() => {
-      args.target.style = `opacity: 1; left: ${x}px; top: ${y}px;`
-    }, 0)
+    args.target.style = `opacity: 1; left: ${x}px; top: ${y}px;`
   }
 </script>
 

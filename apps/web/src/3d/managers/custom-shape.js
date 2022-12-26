@@ -92,7 +92,10 @@ async function download(file, manager) {
   logger.debug({ file }, `starts downloading ${file}`)
   try {
     const response = await fetch(`${manager.gameAssetsUrl}${file}`)
-    store(manager, file, fixMeshNames(await response.json()))
+    if (!response.ok) {
+      throw `Unexpected shape file response: ${response.statusText}`
+    }
+    store(manager, file, await response.arrayBuffer())
   } catch (error) {
     const message = `failed to download custom shape file ${file}: ${error}`
     logger.error({ file, error }, message)
@@ -100,14 +103,10 @@ async function download(file, manager) {
   }
 }
 
-function fixMeshNames(content) {
-  for (const mesh of content.meshes ?? []) {
-    mesh.name = 'custom'
-  }
-  return content
-}
-
-function store({ dataByFile }, file, data) {
+function store({ dataByFile }, file, arrayBuffer) {
   logger.info({ file }, `stores data for ${file}`)
-  dataByFile.set(file, btoa(JSON.stringify(data)))
+  dataByFile.set(
+    file,
+    btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)))
+  )
 }
