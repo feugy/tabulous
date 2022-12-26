@@ -77,13 +77,11 @@ export function attachInputs({
   const wheels$ = new Subject()
   const pinchs$ = new Subject()
   const keys$ = new Subject()
-  const meshHover$ = new Subject()
   const details$ = new Subject()
   const behaviorAction$ = new Subject()
 
   const mapping = [
     { observable: inputManager.onTapObservable, subject: taps$ },
-    { observable: inputManager.onHoverObservable, subject: meshHover$ },
     { observable: inputManager.onDragObservable, subject: drags$ },
     { observable: inputManager.onWheelObservable, subject: wheels$ },
     { observable: inputManager.onPinchObservable, subject: pinchs$ },

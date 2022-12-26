@@ -4,6 +4,7 @@ import {
   QuantityBehaviorName,
   StackBehaviorName
 } from '@src/3d/behaviors'
+import { inputManager } from '@src/3d/managers'
 import { indicatorManager } from '@src/3d/managers/indicator'
 import { selectionManager } from '@src/3d/managers/selection'
 import { createCard } from '@src/3d/meshes'
@@ -183,6 +184,35 @@ describe('Indicators store', () => {
       indicatorManager.registerFeedback(indicator)
       await waitNextRender(scene)
       expectFeedbacks([indicator])
+    })
+
+    it('hovers indicators when hovering their mesh', async () => {
+      const [, , , card4] = cards
+      cards[0]
+        .getBehaviorByName(StackBehaviorName)
+        .fromState({ stackIds: ['card2', 'card4'] })
+      await waitNextRender(scene)
+      expectIndicators([
+        { id: `${card4.id}.stack-size`, size: 3, hovered: false }
+      ])
+
+      inputManager.onHoverObservable.notifyObservers({
+        type: 'hoverStart',
+        mesh: card4
+      })
+      await waitNextRender(scene)
+      expectIndicators([
+        { id: `${card4.id}.stack-size`, size: 3, hovered: true }
+      ])
+
+      inputManager.onHoverObservable.notifyObservers({
+        type: 'hoverStop',
+        mesh: card4
+      })
+      await waitNextRender(scene)
+      expectIndicators([
+        { id: `${card4.id}.stack-size`, size: 3, hovered: false }
+      ])
     })
   })
 
@@ -500,18 +530,23 @@ describe('Indicators store', () => {
     expect(actuals).toHaveLength(expected.length)
     for (const [
       rank,
-      { screenPosition, id, ...otherProps }
+      { screenPosition, id, mesh, ...otherProps }
     ] of expected.entries()) {
-      const actual = actuals[rank]
+      const { mesh: actualMesh, ...actual } = actuals[rank]
       expect(actual, `indicator #${rank}`).toHaveProperty('id', id)
       expect(actual, `indicator #${rank}`).toEqual(
         expect.objectContaining(otherProps)
       )
-      expectScreenPosition(
-        actual.screenPosition,
-        screenPosition,
-        `indicator #${rank}`
-      )
+      if (mesh) {
+        expect(actualMesh?.id, `indicator #${rank} mesh`).toEqual(mesh?.id)
+      }
+      if (screenPosition) {
+        expectScreenPosition(
+          actual.screenPosition,
+          screenPosition,
+          `indicator #${rank}`
+        )
+      }
     }
   }
 

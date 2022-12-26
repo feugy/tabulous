@@ -1,6 +1,6 @@
 import { BehaviorSubject, map, merge, of, withLatestFrom } from 'rxjs'
 
-import { selectionManager } from '../3d/managers'
+import { inputManager, selectionManager } from '../3d/managers'
 import { getPixelDimension, observeDimension } from '../utils/dom'
 import {
   actionMenuProps,
@@ -11,6 +11,7 @@ import { gamePlayerById as gamePlayerById$ } from './game-manager'
 
 const visible$ = new BehaviorSubject(true)
 const handPosition$ = new BehaviorSubject(Number.POSITIVE_INFINITY)
+const hoveredMesh$ = new BehaviorSubject()
 
 let playerById = new Map()
 gamePlayerById$.subscribe(value => (playerById = value))
@@ -28,13 +29,17 @@ export function initIndicators(params) {
   const { canvas, hand } = params
   const { dimension$, disconnect } = observeDimension(hand)
   feedbackById = new Map()
-  const subscription = dimension$.subscribe(({ height }) => {
+  const dimensionSubscription = dimension$.subscribe(({ height }) => {
     const { height: totalHeight } = getPixelDimension(canvas)
     handPosition$.next(totalHeight - height)
   })
+  const hoverObserver = inputManager.onHoverObservable.add(({ type, mesh }) => {
+    hoveredMesh$.next(type === 'hoverStop' ? null : mesh)
+  })
   engine.onDisposeObservable.addOnce(() => {
     disconnect()
-    subscription.unsubscribe()
+    dimensionSubscription.unsubscribe()
+    inputManager.onHoverObservable.remove(hoverObserver)
   })
 }
 
@@ -63,7 +68,8 @@ export const visibleIndicators = merge(
   selectedMeshes,
   actionMenuProps,
   indicators$,
-  handPosition$
+  handPosition$,
+  hoveredMesh$
 ).pipe(
   withLatestFrom(
     merge(of(new Set()), selectedMeshes),
@@ -80,6 +86,7 @@ export const visibleIndicators = merge(
       handPosition
     )
   ),
+  map(enrichWithHovered),
   map(enrichWithPlayerData),
   map(enrichWithInteraction)
 )
@@ -134,6 +141,13 @@ function enrichWithPlayerData(indicators) {
     }
     return indicator
   })
+}
+
+function enrichWithHovered(indicators) {
+  for (const indicator of indicators) {
+    indicator.hovered = indicator.mesh === hoveredMesh$.value
+  }
+  return indicators
 }
 
 function enrichWithInteraction(indicators) {
