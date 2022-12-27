@@ -35,7 +35,12 @@
 <svelte:window on:keydown={handleKey} />
 
 {#if open}
-  <figure class:open on:click={handleClose} on:keyup={handleKey}>
+  <figure
+    class:open
+    on:click={handleClose}
+    on:keydown={handleKey}
+    on:pointerdown|stopPropagation
+  >
     <img src="{gameAssetsUrl}{mesh?.image}" alt="" />
   </figure>
 {/if}

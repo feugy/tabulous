@@ -57,15 +57,17 @@ describe('createCustom()', () => {
   it('throws on an invalid JSON data', () => {
     customShapeManager.set(file, 'invalid base64 data')
     expect(() => createCustom({ id: 'invalid-pawn', file })).toThrow(
-      `Unable to load from data:;base64,invalid`
+      `Unable to load from pawn.babylon: InvalidCharacterError: The string to be decoded contains invalid characters.`
     )
+  })
 
+  it('throws on mesh-less data', () => {
     customShapeManager.set(
       file,
       btoa(JSON.stringify({ meshes: ['this is invalid'] }))
     )
     expect(() => createCustom({ id: 'invalid-pawn', file })).toThrow(
-      `Unable to load from data:`
+      `Unable to load from pawn.babylon: importMesh of unknown`
     )
   })
 

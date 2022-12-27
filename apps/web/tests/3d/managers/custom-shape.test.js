@@ -150,23 +150,6 @@ describe('CustomShapeManager', () => {
       expect(manager.get(file)).toEqual(expectedData.pawn)
       expect(request).toHaveBeenCalledTimes(1)
     })
-
-    it('sets mesh names to custom', async () => {
-      const file = `/${faker.lorem.word()}`
-      server.use(
-        rest.get(`${gameAssetsUrl}${file}`, (req, res, ctx) =>
-          res(
-            ctx.json({
-              meshes: [
-                { name: 'OVERRIDEN', id: 'Pawn', positions: [0.2858, -0.3324] }
-              ]
-            })
-          )
-        )
-      )
-      await manager.init({ gameAssetsUrl, meshes: [{ shape: 'custom', file }] })
-      expect(manager.get(file)).toEqual(expectedData.pawn)
-    })
   })
 
   describe('given initialised', () => {

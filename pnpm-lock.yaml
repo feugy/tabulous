@@ -126,8 +126,12 @@ importers:
       '@atelier-wb/toolshot': ^0.10.1
       '@atelier-wb/vite-plugin-atelier': ^0.10.2
       '@babylonjs/core': ^5.38.0
+      '@babylonjs/gui': ^5.39.0
+      '@babylonjs/gui-editor': ^5.39.0
       '@babylonjs/inspector': ^5.38.0
       '@babylonjs/loaders': ^5.38.0
+      '@babylonjs/materials': ^5.39.0
+      '@babylonjs/serializers': ^5.39.0
       '@fastify/cors': ^8.2.0
       '@fastify/static': ^6.6.0
       '@fastify/websocket': ^7.1.1
@@ -141,6 +145,8 @@ importers:
       '@testing-library/jest-dom': ^5.16.5
       '@testing-library/svelte': ^3.2.2
       '@testing-library/user-event': ^14.4.3
+      '@types/react': ^18.0.26
+      '@types/react-dom': ^18.0.10
       '@urql/core': 3.1.0
       '@vitejs/plugin-basic-ssl': ^1.0.1
       autoprefixer: ^10.4.13
@@ -186,8 +192,12 @@ importers:
       '@atelier-wb/toolshot': 0.10.1_svelte@3.55.0
       '@atelier-wb/vite-plugin-atelier': 0.10.2_vite@4.0.1
       '@babylonjs/core': 5.38.0
-      '@babylonjs/inspector': 5.38.0_2ddd26436qwifqh4g5sdw7izq4
+      '@babylonjs/gui': 5.39.0_@babylonjs+core@5.38.0
+      '@babylonjs/gui-editor': 5.39.0_pv7t6yi64gn5vhfirqsoxufh4q
+      '@babylonjs/inspector': 5.38.0_3wazvvxcdxwgqa3xuli4u3wmvu
       '@babylonjs/loaders': 5.38.0_3sk26tsu3a5ehrg6vbhhrej6yu
+      '@babylonjs/materials': 5.39.0_@babylonjs+core@5.38.0
+      '@babylonjs/serializers': 5.39.0_3sk26tsu3a5ehrg6vbhhrej6yu
       '@fastify/cors': 8.2.0
       '@fastify/static': 6.6.0
       '@fastify/websocket': 7.1.1
@@ -201,6 +211,8 @@ importers:
       '@testing-library/jest-dom': 5.16.5
       '@testing-library/svelte': 3.2.2_svelte@3.55.0
       '@testing-library/user-event': 14.4.3_aaq3sbffpfe3jnxzm2zngsddei
+      '@types/react': 18.0.26
+      '@types/react-dom': 18.0.10
       '@urql/core': 3.1.0_graphql@16.6.0
       '@vitejs/plugin-basic-ssl': 1.0.1_vite@4.0.1
       autoprefixer: 10.4.13_postcss@8.4.20
@@ -643,7 +655,29 @@ packages:
     resolution: {integrity: sha512-uZ1jPkx/agxFD8TbAaTkZnSiGV1tPDSG10XD35NE5ShJ5z11G9w9GavCxhfwrL1OPjCASuAaXQXzpzV+pN9u/A==}
     dev: true
 
-  /@babylonjs/inspector/5.38.0_2ddd26436qwifqh4g5sdw7izq4:
+  /@babylonjs/gui-editor/5.39.0_pv7t6yi64gn5vhfirqsoxufh4q:
+    resolution: {integrity: sha512-vGL5uT18ZoT2p1G+5BbGdoJdedTuVD6KldQz2UvIMpJ8Iuw0iEBoEW1Q8zHPwtubZbItRably0Q2sXiBNkUjSA==}
+    peerDependencies:
+      '@babylonjs/core': ^5.22.0
+      '@babylonjs/gui': ^5.22.0
+      '@types/react': '>=16.7.3'
+      '@types/react-dom': '>=16.0.9'
+    dependencies:
+      '@babylonjs/core': 5.38.0
+      '@babylonjs/gui': 5.39.0_@babylonjs+core@5.38.0
+      '@types/react': 18.0.26
+      '@types/react-dom': 18.0.10
+    dev: true
+
+  /@babylonjs/gui/5.39.0_@babylonjs+core@5.38.0:
+    resolution: {integrity: sha512-mwxYvROKt0m66DBG6DVNMvXDGTlGAJCF/8LL0IXqUnvCuV0WzLHVGq1TI+IrCyIbjVgmMnaf7SI10+b5sIzUHQ==}
+    peerDependencies:
+      '@babylonjs/core': ^5.22.0
+    dependencies:
+      '@babylonjs/core': 5.38.0
+    dev: true
+
+  /@babylonjs/inspector/5.38.0_3wazvvxcdxwgqa3xuli4u3wmvu:
     resolution: {integrity: sha512-pPymCUERCi4YVr9GC3orytDUmAzDcmV1Xj+nHAtii3bSjmBQPsFSOR4Q3l2FWZkR2P5TTSBGm0F7OSvUKhCt0Q==}
     peerDependencies:
       '@babylonjs/core': ^5.22.0
@@ -656,14 +690,38 @@ packages:
       '@types/react-dom': '>=16.0.9'
     dependencies:
       '@babylonjs/core': 5.38.0
+      '@babylonjs/gui': 5.39.0_@babylonjs+core@5.38.0
+      '@babylonjs/gui-editor': 5.39.0_pv7t6yi64gn5vhfirqsoxufh4q
       '@babylonjs/loaders': 5.38.0_3sk26tsu3a5ehrg6vbhhrej6yu
+      '@babylonjs/materials': 5.39.0_@babylonjs+core@5.38.0
+      '@babylonjs/serializers': 5.39.0_3sk26tsu3a5ehrg6vbhhrej6yu
       '@fortawesome/fontawesome-svg-core': 6.2.1
       '@fortawesome/free-regular-svg-icons': 6.2.1
       '@fortawesome/free-solid-svg-icons': 6.2.1
+      '@types/react': 18.0.26
+      '@types/react-dom': 18.0.10
     dev: true
 
   /@babylonjs/loaders/5.38.0_3sk26tsu3a5ehrg6vbhhrej6yu:
     resolution: {integrity: sha512-CRQWfNUaEmiOHuwFH3jdWIPjniDAZUB5/5zuWqYD/It5Y4CXSm8Q0HTvRV2wbZKNApJtpPWG6FIK6j1x1nbU/Q==}
+    peerDependencies:
+      '@babylonjs/core': ^5.22.0
+      babylonjs-gltf2interface: ^5.22.0
+    dependencies:
+      '@babylonjs/core': 5.38.0
+      babylonjs-gltf2interface: 5.38.0
+    dev: true
+
+  /@babylonjs/materials/5.39.0_@babylonjs+core@5.38.0:
+    resolution: {integrity: sha512-R6nX+oYjf+40Hl/sAHn1Y7+VWmEd4mBgG/+Au/4y9Awx51EbPgH94vVsvhjRz5kqL/lcTh+wrAh4gqZyuD5NjQ==}
+    peerDependencies:
+      '@babylonjs/core': ^5.22.0
+    dependencies:
+      '@babylonjs/core': 5.38.0
+    dev: true
+
+  /@babylonjs/serializers/5.39.0_3sk26tsu3a5ehrg6vbhhrej6yu:
+    resolution: {integrity: sha512-V5Y5AXBvecPhM/GSpSfyMO6UpsRjEux432AB6KJhqH5oDX9gBdeAAUaaMN5FwESyxA5VNzTmXoRd+dimtVRLeQ==}
     peerDependencies:
       '@babylonjs/core': ^5.22.0
       babylonjs-gltf2interface: ^5.22.0
@@ -1458,6 +1516,28 @@ packages:
 
   /@types/prettier/2.7.1:
     resolution: {integrity: sha512-ri0UmynRRvZiiUJdiz38MmIblKK+oH30MztdBVR95dv/Ubw6neWSb8u1XpRb72L4qsZOhz+L+z9JD40SJmfWow==}
+    dev: true
+
+  /@types/prop-types/15.7.5:
+    resolution: {integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==}
+    dev: true
+
+  /@types/react-dom/18.0.10:
+    resolution: {integrity: sha512-E42GW/JA4Qv15wQdqJq8DL4JhNpB3prJgjgapN3qJT9K2zO5IIAQh4VXvCEDupoqAwnz0cY4RlXeC/ajX5SFHg==}
+    dependencies:
+      '@types/react': 18.0.26
+    dev: true
+
+  /@types/react/18.0.26:
+    resolution: {integrity: sha512-hCR3PJQsAIXyxhTNSiDFY//LhnMZWpNNr5etoCqx/iUfGc5gXWtQR2Phl908jVR6uPXacojQWTg4qRpkxTuGug==}
+    dependencies:
+      '@types/prop-types': 15.7.5
+      '@types/scheduler': 0.16.2
+      csstype: 3.1.1
+    dev: true
+
+  /@types/scheduler/0.16.2:
+    resolution: {integrity: sha512-hppQEBDmlwhFAXKJX2KnWLYu5yMfi91yazPb2l+lbJiwW+wdo1gNeRA+3RgNSO39WYX2euey41KEwnqesU2Jew==}
     dev: true
 
   /@types/semver/7.3.13:
@@ -2361,6 +2441,10 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       cssom: 0.3.8
+    dev: true
+
+  /csstype/3.1.1:
+    resolution: {integrity: sha512-DJR/VvkAvSZW9bTouZue2sSxDwdTN92uHjqeKVm+0dAqdfNykRzQ95tay8aXMBAAPpUiq4Qcug2L7neoRh2Egw==}
     dev: true
 
   /data-urls/3.0.2:

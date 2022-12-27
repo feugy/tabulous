@@ -26,11 +26,12 @@
   }
 </script>
 
-{#each items as { screenPosition, id, mesh, player, onClick, ...rest } ({ id, screenPosition })}
+{#each items as { screenPosition, id, mesh, player, onClick, hovered, ...rest } ({ id, screenPosition })}
   {#if mesh}
     <Label
       {screenPosition}
       {onClick}
+      {hovered}
       content={computeLabel(player, rest)}
       color={player?.color}
     />
