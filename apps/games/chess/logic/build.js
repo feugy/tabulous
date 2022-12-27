@@ -1,5 +1,5 @@
 import { buildBoard, buildPieces } from './builders/index.js'
-import { black, white } from './constants.js'
+import { blackId, whiteId } from './constants.js'
 
 export function build() {
   return {
@@ -14,6 +14,6 @@ export function build() {
      * and the game board.
      * @type {import('@tabulous/server/src/services/games').Mesh[]}
      */
-    meshes: [buildBoard(), ...buildPieces(white), ...buildPieces(black)]
+    meshes: [buildBoard(), ...buildPieces(whiteId), ...buildPieces(blackId)]
   }
 }

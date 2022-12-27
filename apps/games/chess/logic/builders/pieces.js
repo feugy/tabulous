@@ -1,8 +1,8 @@
-import { black, colors, pieces } from '../constants.js'
+import { blackId, colors, pieces } from '../constants.js'
 
 export function buildPieces(color) {
   const meshes = []
-  const invert = color === black
+  const invert = color === blackId
   for (const kind of pieces) {
     meshes.push({
       shape: 'custom',

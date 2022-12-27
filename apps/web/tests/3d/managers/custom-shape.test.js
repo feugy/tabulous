@@ -1,3 +1,6 @@
+import { readFile } from 'node:fs/promises'
+import { resolve } from 'node:path'
+
 import { faker } from '@faker-js/faker'
 import { customShapeManager as manager } from '@src/3d/managers'
 import { makeLogger } from '@src/utils'
@@ -156,6 +159,7 @@ describe('CustomShapeManager', () => {
     const pawnPath = '/pawn.babylon'
     const avatarPath = '/avatar.babylon'
     const diePath = '/die.babylon'
+    const knightPath = '/knight.stl'
 
     beforeEach(async () => {
       vi.resetAllMocks()
@@ -183,6 +187,23 @@ describe('CustomShapeManager', () => {
         expect(manager.get(pawnPath)).toEqual(expectedData.pawn)
         expect(manager.get(avatarPath)).toEqual(expectedData.avatar)
         expect(manager.get(diePath)).toEqual(expectedData.die)
+      })
+
+      it('handles stl binary files', async () => {
+        const binaryContent = await readFile(
+          resolve(__dirname, '../../../../games/chess/models/knight.stl'),
+          { encoding: 'binary' }
+        )
+        server.use(
+          rest.get(`${gameAssetsUrl}${knightPath}`, (req, res, ctx) =>
+            res(ctx.body(binaryContent))
+          )
+        )
+        await manager.init({
+          gameAssetsUrl,
+          meshes: [{ shape: 'custom', file: knightPath }]
+        })
+        expect(manager.get(pawnPath)).toBeDefined()
       })
     })
 

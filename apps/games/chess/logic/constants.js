@@ -1,9 +1,9 @@
-export const white = 'white'
-export const black = 'black'
+export const whiteId = 'white'
+export const blackId = 'black'
 
 export const colors = {
-  [white]: '#efd3c0ff',
-  [black]: '#603b23ff'
+  [whiteId]: '#efd3c0ff',
+  [blackId]: '#603b23ff'
 }
 
 export const sizes = {
@@ -32,3 +32,15 @@ export const pieces = [
   'knight-2',
   'rook-2'
 ]
+
+export const cameraPositions = {
+  [blackId]: {
+    alpha: Math.PI / 2,
+    target: [0, 0, 2],
+    elevation: 37
+  },
+  [whiteId]: {
+    target: [0, 0, -2],
+    elevation: 37
+  }
+}
