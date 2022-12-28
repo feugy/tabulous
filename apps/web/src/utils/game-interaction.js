@@ -70,7 +70,8 @@ export function attachInputs({
   let selectionPosition
   let panPosition
   let rotatePosition
-  let panInProgress = false
+  let isPanInProgress = false
+  let shouldDeselect = false
 
   const taps$ = new Subject()
   const drags$ = new Subject()
@@ -192,9 +193,11 @@ export function attachInputs({
               if (kind === 'left') {
                 if (!selectionManager.meshes.has(mesh)) {
                   selectionManager.clear()
+                  shouldDeselect = true
+                  selectionManager.select([mesh])
                 }
                 logger.info(
-                  { mesh, button, long, pointers, event },
+                  { mesh, button, long, pointers, event, shouldDeselect },
                   `start moving mesh ${mesh.id}`
                 )
                 moveManager.start(mesh, event)
@@ -240,12 +243,12 @@ export function attachInputs({
               )
               rotatePosition = event
             } else if (panPosition) {
-              if (!panInProgress) {
+              if (!isPanInProgress) {
                 cameraManager.pan(panPosition, event, 100).then(() => {
-                  panInProgress = false
+                  isPanInProgress = false
                 })
                 panPosition = event
-                panInProgress = true
+                isPanInProgress = true
               }
             } else if (selectionPosition) {
               selectionManager.drawSelectionBox(selectionPosition, event)
@@ -258,15 +261,19 @@ export function attachInputs({
               selectionManager.selectWithinBox()
             } else if (mesh) {
               logger.info(
-                { mesh, button, long, pointers, event },
+                { mesh, button, long, pointers, event, shouldDeselect },
                 `stop moving mesh ${mesh.id}`
               )
               moveManager.stop()
+              if (shouldDeselect) {
+                shouldDeselect = false
+                selectionManager.unselect([mesh])
+              }
             }
             selectionPosition = null
             rotatePosition = null
             panPosition = null
-            panInProgress = false
+            isPanInProgress = false
           }
         }
       }),

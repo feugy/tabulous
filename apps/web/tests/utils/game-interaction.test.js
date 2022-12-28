@@ -1454,31 +1454,79 @@ describe('Game interaction model', () => {
     })
 
     it('moves mesh on left click drag', () => {
-      const [, mesh] = meshes
-      const position = mesh.absolutePosition.clone()
+      const [box1, box2] = meshes
+      selectionManager.select([box1])
+      const position = box2.absolutePosition.clone()
       inputManager.onDragObservable.notifyObservers({
         type: 'dragStart',
         event: { pointerType: 'mouse', x: 50, y: 50 },
-        mesh,
+        mesh: box2,
         button: 0,
         timestamp: Date.now()
       })
+      expect(selectionManager.meshes.has(box1)).toBe(false)
+      expect(selectionManager.meshes.has(box2)).toBe(true)
       inputManager.onDragObservable.notifyObservers({
         type: 'drag',
         event: { pointerType: 'mouse', x: 100, y: 50 },
-        mesh,
+        mesh: box2,
+        button: 0,
+        timestamp: Date.now()
+      })
+      expect(selectionManager.meshes.has(box1)).toBe(false)
+      expect(selectionManager.meshes.has(box2)).toBe(true)
+      inputManager.onDragObservable.notifyObservers({
+        type: 'dragStop',
+        event: { pointerType: 'mouse', x: 200, y: 50 },
+        mesh: box2,
+        button: 0,
+        timestamp: Date.now()
+      })
+
+      expect(selectionManager.meshes.has(box1)).toBe(false)
+      expect(selectionManager.meshes.has(box2)).toBe(false)
+      expect(position.asArray()).not.toEqual(box2.absolutePosition.asArray())
+      expect(cameraManager.pan).not.toHaveBeenCalled()
+      expect(cameraManager.rotate).not.toHaveBeenCalled()
+      expect(drawSelectionBox).not.toHaveBeenCalled()
+      expect(selectWithinBox).not.toHaveBeenCalled()
+    })
+
+    it('moves selected meshes on left click drag', () => {
+      const [, , box3, , box5, box6, box7] = meshes
+      selectionManager.select([box3, box7])
+      const position = box5.absolutePosition.clone()
+      inputManager.onDragObservable.notifyObservers({
+        type: 'dragStart',
+        event: { pointerType: 'mouse', x: 50, y: 50 },
+        mesh: box5,
+        button: 0,
+        timestamp: Date.now()
+      })
+      expect(selectionManager.meshes.has(box3)).toBe(true)
+      expect(selectionManager.meshes.has(box5)).toBe(true)
+      expect(selectionManager.meshes.has(box6)).toBe(true)
+      expect(selectionManager.meshes.has(box7)).toBe(true)
+      inputManager.onDragObservable.notifyObservers({
+        type: 'drag',
+        event: { pointerType: 'mouse', x: 100, y: 50 },
+        mesh: box5,
         button: 0,
         timestamp: Date.now()
       })
       inputManager.onDragObservable.notifyObservers({
         type: 'dragStop',
         event: { pointerType: 'mouse', x: 200, y: 50 },
-        mesh,
+        mesh: box5,
         button: 0,
         timestamp: Date.now()
       })
 
-      expect(position.asArray()).not.toEqual(mesh.absolutePosition.asArray())
+      expect(selectionManager.meshes.has(box3)).toBe(true)
+      expect(selectionManager.meshes.has(box5)).toBe(true)
+      expect(selectionManager.meshes.has(box6)).toBe(true)
+      expect(selectionManager.meshes.has(box7)).toBe(true)
+      expect(position.asArray()).not.toEqual(box5.absolutePosition.asArray())
       expect(cameraManager.pan).not.toHaveBeenCalled()
       expect(cameraManager.rotate).not.toHaveBeenCalled()
       expect(drawSelectionBox).not.toHaveBeenCalled()
