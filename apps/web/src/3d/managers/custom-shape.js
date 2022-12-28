@@ -105,8 +105,10 @@ async function download(file, manager) {
 
 function store({ dataByFile }, file, arrayBuffer) {
   logger.info({ file }, `stores data for ${file}`)
-  dataByFile.set(
-    file,
-    btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)))
-  )
+  const bytes = new Uint8Array(arrayBuffer)
+  const binary = new Array(bytes.length)
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary[i] = String.fromCharCode(bytes[i])
+  }
+  dataByFile.set(file, window.btoa(binary.join('')))
 }

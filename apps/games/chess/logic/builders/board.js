@@ -1,4 +1,4 @@
-import { black, faceUVs, pieces, sizes, white } from '../constants.js'
+import { blackId, faceUVs, pieces, sizes, whiteId } from '../constants.js'
 
 export function buildBoard() {
   return {
@@ -37,12 +37,12 @@ function buildAnchors() {
 
 function getPieceId({ column, row }) {
   return row === 0
-    ? `${[white]}-${pieces[column]}`
+    ? `${[whiteId]}-${pieces[column]}`
     : row === pieces.length - 1
-    ? `${[black]}-${pieces[pieces.length - 1 - column]}`
+    ? `${[blackId]}-${pieces[pieces.length - 1 - column]}`
     : row === 1
-    ? `${[white]}-pawn-${column}`
+    ? `${[whiteId]}-pawn-${column}`
     : row === pieces.length - 2
-    ? `${[black]}-pawn-${column}`
+    ? `${[blackId]}-pawn-${column}`
     : null
 }

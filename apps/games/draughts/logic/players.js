@@ -33,9 +33,9 @@ export function addPlayer(game, player, parameters) {
   // use selected preferences, or look for the first player color, and choose the other one.
   const side =
     preferences.length === 2
-      ? preferences[0].side === 'white'
-        ? 'black'
-        : 'white'
+      ? preferences[0].side === whiteId
+        ? blackId
+        : whiteId
       : parameters.side
   // stores preferences for the next player added.
   preferences[preferences.length - 1].side = side
