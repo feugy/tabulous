@@ -145,30 +145,34 @@ describe('HandManager', () => {
       expect(manager.transitionMargin).toEqual(transitionMargin)
     })
 
-    it('performs initial layout', async () => {
-      manager.init({
-        scene,
-        handScene,
-        overlay,
-        gap,
-        horizontalPadding,
-        verticalPadding,
-        duration,
-        transitionMargin
-      })
-      const cards = [
-        { id: 'box1', x: 1, y: 1, z: -1 },
-        { id: 'box2', x: 0, y: 0, z: 0 },
-        { id: 'box3', x: -5, y: 0, z: -2 }
-      ].map(state => createMesh(state, handScene))
-      await waitForLayout()
-      const z = computeZ()
-      expectPosition(cards[2], [-gap - cardWidth, 0.005, z])
-      expectPosition(cards[1], [0, 0.005, z])
-      expectPosition(cards[0], [gap + cardWidth, 0.005, z])
-      expect(actionRecorded).not.toHaveBeenCalled()
-      expect(registerFeedbackSpy).not.toHaveBeenCalled()
-    })
+    it(
+      'performs initial layout',
+      async () => {
+        manager.init({
+          scene,
+          handScene,
+          overlay,
+          gap,
+          horizontalPadding,
+          verticalPadding,
+          duration,
+          transitionMargin
+        })
+        const cards = [
+          { id: 'box1', x: 1, y: 1, z: -1 },
+          { id: 'box2', x: 0, y: 0, z: 0 },
+          { id: 'box3', x: -5, y: 0, z: -2 }
+        ].map(state => createMesh(state, handScene))
+        await waitForLayout()
+        const z = computeZ()
+        expectPosition(cards[2], [-gap - cardWidth, 0.005, z])
+        expectPosition(cards[1], [0, 0.005, z])
+        expectPosition(cards[0], [gap + cardWidth, 0.005, z])
+        expect(actionRecorded).not.toHaveBeenCalled()
+        expect(registerFeedbackSpy).not.toHaveBeenCalled()
+      },
+      { retry: 3 }
+    )
   })
 
   describe('given an initialized manager', () => {
@@ -677,7 +681,7 @@ describe('HandManager', () => {
           mesh.absolutePosition.z + cardDepth
         )
         mesh.setAbsolutePosition(movedPosition)
-        selectionManager.select([mesh])
+        selectionManager.select(mesh)
         inputManager.onDragObservable.notifyObservers({
           type: 'dragStart',
           mesh,

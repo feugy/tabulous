@@ -1,7 +1,7 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
-import { StackBehavior } from '@src/3d/behaviors'
+import { AnchorBehavior } from '@src/3d/behaviors'
 import { handManager, selectionManager as manager } from '@src/3d/managers'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -90,7 +90,7 @@ describe('SelectionManager', () => {
     describe('select()', () => {
       it('adds meshes to selection', () => {
         const mesh = CreateBox('box1', {})
-        manager.select([mesh])
+        manager.select(mesh)
         expect(manager.meshes.has(mesh)).toBe(true)
         expect(manager.meshes.size).toBe(1)
         expectSelected(mesh, colorByPlayerId.get(playerId))
@@ -111,38 +111,57 @@ describe('SelectionManager', () => {
         expect(selectionChanged).toHaveBeenCalledTimes(1)
       })
 
-      it('adds an entire stack to selection', () => {
-        const mesh1 = CreateBox('box1', {})
-        const mesh2 = CreateBox('box2', {})
-        mesh1.addBehavior(new StackBehavior({ stackIds: [mesh2.id] }))
-        manager.select([mesh1])
-        expect(manager.meshes.has(mesh1)).toBe(true)
-        expect(manager.meshes.has(mesh2)).toBe(true)
-        expect(manager.meshes.size).toBe(2)
-        expectSelected(mesh1, colorByPlayerId.get(playerId))
-        expectSelected(mesh2, colorByPlayerId.get(playerId))
+      it('adds anchored meshes to selection', () => {
+        const box1 = CreateBox('box1', {})
+        const box2 = CreateBox('box2', {})
+        const box3 = CreateBox('box3', {})
+        const box4 = CreateBox('box4', {})
+        box1.addBehavior(
+          new AnchorBehavior({
+            anchors: [
+              { snappedId: box2.id },
+              { snappedId: null },
+              { snappedId: box3.id }
+            ]
+          })
+        )
+        box3.addBehavior(
+          new AnchorBehavior({
+            anchors: [{ snappedId: box4.id }, { snappedId: null }]
+          })
+        )
+        manager.select(box1)
+        expect(manager.meshes.has(box1)).toBe(true)
+        expect(manager.meshes.has(box2)).toBe(true)
+        expect(manager.meshes.has(box3)).toBe(true)
+        expect(manager.meshes.has(box4)).toBe(true)
+        expect(manager.meshes.size).toBe(4)
+        expectSelected(box1, colorByPlayerId.get(playerId))
+        expectSelected(box2, colorByPlayerId.get(playerId))
+        expectSelected(box3, colorByPlayerId.get(playerId))
+        expectSelected(box4, colorByPlayerId.get(playerId))
         expect(selectionChanged).toHaveBeenCalledTimes(1)
       })
 
       it('reorders selection based on elevation', () => {
         const mesh1 = CreateBox('box1', {})
         mesh1.setAbsolutePosition(new Vector3(0, 5, 0))
-        manager.select([mesh1])
+        manager.select(mesh1)
         expectSelection([mesh1], colorByPlayerId.get(playerId))
 
         const mesh2 = CreateBox('box2', {})
         mesh2.setAbsolutePosition(new Vector3(0, -2, 0))
-        manager.select([mesh2])
+        manager.select(mesh2)
         expectSelection([mesh2, mesh1], colorByPlayerId.get(playerId))
 
         const mesh3 = CreateBox('box3', {})
         mesh3.setAbsolutePosition(new Vector3(0, 7, 0))
-        manager.select([mesh3])
+        manager.select(mesh3)
         expectSelection([mesh2, mesh1, mesh3], colorByPlayerId.get(playerId))
 
         const mesh4 = CreateBox('box4', {})
         mesh4.setAbsolutePosition(new Vector3(0, 2, 0))
-        manager.select([mesh4])
+        manager.select(mesh4)
         expectSelection(
           [mesh2, mesh4, mesh1, mesh3],
           colorByPlayerId.get(playerId)
@@ -195,19 +214,40 @@ describe('SelectionManager', () => {
         expect(selectionChanged).not.toHaveBeenCalled()
       })
 
-      it('removes entire stacks from selection', () => {
-        const mesh1 = CreateBox('box1', {})
-        const mesh2 = CreateBox('box2', {})
-        mesh1.addBehavior(new StackBehavior({ stackIds: [mesh2.id] }))
-        manager.select([mesh1])
-        expect(manager.meshes.size).toBe(2)
+      it('removes with anchored from selection', () => {
+        const box1 = CreateBox('box1', {})
+        const box2 = CreateBox('box2', {})
+        const box3 = CreateBox('box3', {})
+        const box4 = CreateBox('box4', {})
+        box1.addBehavior(
+          new AnchorBehavior({
+            anchors: [
+              { snappedId: box2.id },
+              { snappedId: null },
+              { snappedId: box3.id }
+            ]
+          })
+        )
+        box3.addBehavior(
+          new AnchorBehavior({
+            anchors: [{ snappedId: box4.id }, { snappedId: null }]
+          })
+        )
+        manager.select(box1)
+        expect(manager.meshes.size).toBe(4)
 
-        manager.unselect([mesh1])
-        expect(manager.meshes.size).toBe(0)
-        expectSelected(mesh1, colorByPlayerId.get(playerId), false)
-        expectSelected(mesh2, colorByPlayerId.get(playerId), false)
+        manager.unselect(box3)
+        expect(manager.meshes.size).toBe(2)
+        expect(manager.meshes.has(box1)).toBe(true)
+        expect(manager.meshes.has(box2)).toBe(true)
+        expect(manager.meshes.has(box3)).toBe(false)
+        expect(manager.meshes.has(box4)).toBe(false)
+        expectSelected(box1, colorByPlayerId.get(playerId))
+        expectSelected(box2, colorByPlayerId.get(playerId))
+        expectSelected(box3, null, false)
+        expectSelected(box4, null, false)
         expect(selectionChanged).toHaveBeenCalledTimes(2)
-        expect(selectionChanged.mock.calls[1][0].size).toBe(0)
+        expect(selectionChanged.mock.calls[1][0].size).toBe(2)
       })
     })
 
@@ -246,7 +286,7 @@ describe('SelectionManager', () => {
 
       describe('select()', () => {
         it('does not add the same mesh twice', () => {
-          manager.select([meshes[0]])
+          manager.select(meshes[0])
           expect(manager.meshes.has(meshes[0])).toBe(true)
           expect(manager.meshes.size).toBe(3)
           expectSelected(meshes[0], colorByPlayerId.get(playerId))
@@ -313,7 +353,7 @@ describe('SelectionManager', () => {
           CreateBox(id, {})
         )
         manager.apply([meshes[0].id, meshes[1].id], peer1.id)
-        manager.select([meshes[2]])
+        manager.select(meshes[2])
         manager.apply([meshes[3].id], peer2.id)
         selectionChanged.mockReset()
       })
@@ -394,38 +434,6 @@ describe('SelectionManager', () => {
         })
       })
 
-      describe('selectById()', () => {
-        it('adds meshes to selection', () => {
-          manager.selectById([meshes[0].id])
-          expect(manager.meshes.has(meshes[0])).toBe(true)
-          expect(manager.meshes.size).toBe(1)
-          expectSelected(meshes[0], colorByPlayerId.get(playerId))
-          expect(selectionChanged).toHaveBeenCalledTimes(1)
-          expect(selectionChanged.mock.calls[0][0].has(meshes[0])).toBe(true)
-          expect(selectionChanged.mock.calls[0][0].size).toBe(1)
-        })
-
-        it('adds multiple meshes to selection', () => {
-          manager.selectById([meshes[0].id, meshes[1].id])
-          expect(manager.meshes.has(meshes[0])).toBe(true)
-          expect(manager.meshes.has(meshes[1])).toBe(true)
-          expect(manager.meshes.size).toBe(2)
-          expectSelected(meshes[0], colorByPlayerId.get(playerId))
-          expectSelected(meshes[1], colorByPlayerId.get(playerId))
-          expect(selectionChanged).toHaveBeenCalledTimes(1)
-        })
-
-        it('ignores meshes selected by peers', () => {
-          const [{ id }] = meshes
-          manager.apply([id], peer1.id)
-          manager.selectById([id])
-
-          expectSelected(meshes[0], colorByPlayerId.get(peer1.id), true)
-          expectSelection([], colorByPlayerId.get(playerId))
-          expect(selectionChanged).not.toHaveBeenCalled()
-        })
-      })
-
       describe('drawSelectionBox()', () => {
         it('allows selecting contained meshes on main scene', () => {
           manager.drawSelectionBox({ x: 1000, y: 550 }, { x: 1100, y: 400 })
@@ -438,7 +446,7 @@ describe('SelectionManager', () => {
         })
 
         it('append to selection', () => {
-          manager.select([meshes[4]])
+          manager.select(meshes[4])
           manager.drawSelectionBox({ x: 1100, y: 550 }, { x: 1000, y: 400 })
           manager.selectWithinBox()
           expectSelection(
@@ -459,14 +467,14 @@ describe('SelectionManager', () => {
         })
 
         it('clears selection from hand when selecting in main scene', () => {
-          manager.select([meshes[6]])
+          manager.select(meshes[6])
           manager.drawSelectionBox({ x: 1000, y: 550 }, { x: 1100, y: 400 })
           manager.selectWithinBox()
           expectSelection([meshes[1], meshes[0]], colorByPlayerId.get(playerId))
         })
 
         it('clears selection from main when selecting in hand', () => {
-          manager.select([meshes[4]])
+          manager.select(meshes[4])
           vi.spyOn(handManager, 'isPointerInHand').mockReturnValueOnce(true)
           manager.drawSelectionBox({ x: 100, y: 400 }, { x: 1100, y: 900 })
           manager.selectWithinBox()
@@ -476,7 +484,7 @@ describe('SelectionManager', () => {
         it('ignores meshes selected by peers', () => {
           const [mesh] = meshes
           manager.apply([mesh.id], peer1.id)
-          manager.select([mesh])
+          manager.select(mesh)
 
           expectSelected(meshes[0], colorByPlayerId.get(peer1.id), true)
           expectSelection([], colorByPlayerId.get(playerId))

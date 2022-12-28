@@ -157,22 +157,35 @@ class SelectionManager {
   selectWithinBox() {}
 
   /**
-   * Adds meshes into selection (if not already in), including their stack.
+   * Adds meshes into selection (if not already in).
    * Ignores mesh already selected by other players.
+   * Recursively inculdes anchored meshes.
+   * @param {Mesh} - mesh added to the active selection.
+   * @param {Color4} [color] - color used to highlight mesh, default to manager's color.
+   */
+  /**
+   * Adds mesh into selection (if not already in).
+   * Ignores mesh already selected by other players.
+   * Recursively inculdes anchored meshes.
    * @param {Mesh[]} - array of meshes added to the active selection.
    * @param {Color4} [color] - color used to highlight mesh, default to manager's color.
    */
   select(meshes, color) {
+    if (!Array.isArray(meshes)) {
+      meshes = [meshes]
+    }
     const allSelections = [this.meshes, ...this.selectionByPeerId.values()]
     const oldSize = this.meshes.size
     for (const mesh of meshes) {
-      addToSelection(
-        allSelections,
-        this.meshes,
-        this.onSelectionObservable,
-        mesh,
-        color ?? this.color
-      )
+      if (mesh) {
+        addToSelection(
+          allSelections,
+          this.meshes,
+          this.onSelectionObservable,
+          mesh,
+          color ?? this.color
+        )
+      }
     }
     if (this.meshes.size !== oldSize) {
       reorderSelection(this)
@@ -180,17 +193,25 @@ class SelectionManager {
   }
 
   /**
-   * Removes meshes from the selection, including their stack.
+   * Removes mesh from the selection, including anchored meshes.
+   * Ignores meshes selected by other players.
+   * @param {Mesh} mesh - mesh to remove from the active selection.
+   */
+  /**
+   * Removes meshes from the selection, including anchored meshes.
    * Ignores meshes selected by other players.
    * @param {Mesh[]} meshes - array of meshes to remove from the active selection.
    */
   unselect(meshes) {
+    if (!Array.isArray(meshes)) {
+      meshes = [meshes]
+    }
     const unselected = []
     const oldSize = this.meshes.size
     const otherSelections = [...this.selectionByPeerId.values()]
     for (const mesh of meshes) {
       if (!otherSelections.find(selection => selection.has(mesh))) {
-        unselected.push(...(mesh.metadata?.stack ?? [mesh]))
+        unselected.push(mesh, ...findAnchored(mesh))
       }
     }
     for (const mesh of unselected) {
@@ -199,25 +220,6 @@ class SelectionManager {
     if (this.meshes.size !== oldSize) {
       reorderSelection(this)
     }
-  }
-
-  /**
-   * Adds meshes into selection (if not already in), by their ids.
-   * Ignores mesh already selected by other players.
-   * @param {string[]} ids - selected mesh ids
-   * @param {Color4} [color] - color used to highlight mesh, default to manager's color.
-   */
-  selectById(ids, color) {
-    const selected = []
-    for (const scene of [this.scene, this.handScene]) {
-      for (const id of ids) {
-        const mesh = scene.getMeshById(id)
-        if (mesh) {
-          selected.push(mesh)
-        }
-      }
-    }
-    this.select(selected, color ?? this.color)
   }
 
   /**
@@ -292,7 +294,7 @@ export const selectionManager = new SelectionManager()
 
 function addToSelection(allSelections, selection, observable, mesh, color) {
   if (mesh && !allSelections.find(selection => selection.has(mesh))) {
-    for (const added of mesh.metadata?.stack ?? [mesh]) {
+    for (const added of [mesh, ...findAnchored(mesh)]) {
       selection.add(added)
       added.overlayColor = color
       added.overlayAlpha = 0.5
@@ -306,6 +308,21 @@ function addToSelection(allSelections, selection, observable, mesh, color) {
       })
     }
   }
+}
+
+function findAnchored(mesh) {
+  if (!mesh.metadata?.anchors?.length > 0) {
+    return []
+  }
+  const scene = mesh.getScene()
+  const anchored = []
+  for (const { snappedId } of mesh.metadata.anchors) {
+    if (snappedId) {
+      const mesh = scene.getMeshById(snappedId)
+      anchored.push(mesh, ...findAnchored(mesh))
+    }
+  }
+  return anchored
 }
 
 function removeFromSelection(selection, mesh) {

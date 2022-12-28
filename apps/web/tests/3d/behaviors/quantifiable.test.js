@@ -410,7 +410,7 @@ describe('QuantityBehavior', () => {
       const meshCount = scene.meshes.length
       behavior.fromState({ quantity })
       expectQuantity(mesh, quantity)
-      selectionManager.select([mesh])
+      selectionManager.select(mesh)
 
       moveManager.start(mesh, {})
 

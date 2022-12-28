@@ -314,7 +314,7 @@ describe('Game interaction model', () => {
 
     it('can trigger all actions for a selected quantifiable', async () => {
       const [, , mesh3, , mesh5, mesh6, mesh7] = meshes
-      selectionManager.select([mesh5, mesh7, mesh6])
+      selectionManager.select([mesh3, mesh5, mesh6, mesh7])
       const menuProps = computeMenuProps(mesh7)
       expect(menuProps).toHaveProperty('items')
       expect(menuProps).toHaveProperty('open', true)
@@ -397,7 +397,7 @@ describe('Game interaction model', () => {
       mesh3.metadata.canPush.mockReturnValue(true)
       mesh5.metadata.canPush.mockReturnValue(true)
       mesh6.metadata.canPush.mockReturnValue(true)
-      selectionManager.select([mesh2, mesh3, mesh4, mesh5, mesh6])
+      selectionManager.select([mesh2, mesh4, mesh3, mesh5, mesh6])
       const menuProps = computeMenuProps(mesh2)
       expect(menuProps).toHaveProperty('items')
       expect(menuProps).toHaveProperty('open', true)
@@ -1081,7 +1081,7 @@ describe('Game interaction model', () => {
       it('does not alter selection when pushing an unselected mesh', () => {
         const [mesh1, mesh2, mesh3] = meshes
         selectionManager.clear()
-        selectionManager.select([mesh1])
+        selectionManager.select(mesh1)
         controlManager.onActionObservable.notifyObservers({
           meshId: mesh3.id,
           fn: 'push',
@@ -1095,7 +1095,7 @@ describe('Game interaction model', () => {
       it('selects the entire stack when pushing a selected mesh', () => {
         const [mesh1, mesh2, mesh3, , mesh5, mesh6] = meshes
         selectionManager.clear()
-        selectionManager.select([mesh1, mesh2])
+        selectionManager.select([mesh1, mesh2, ...mesh3.metadata.stack])
         mesh3.metadata.stack.push(mesh2)
         mesh2.metadata.stack = [...mesh3.metadata.stack]
         controlManager.onActionObservable.notifyObservers({
@@ -1225,7 +1225,7 @@ describe('Game interaction model', () => {
     })
 
     it('pans camera on right click drag', () => {
-      selectionManager.select([meshes[0]])
+      selectionManager.select(meshes[0])
       cameraManager.pan.mockResolvedValue()
       inputManager.onDragObservable.notifyObservers({
         type: 'dragStart',
@@ -1291,7 +1291,7 @@ describe('Game interaction model', () => {
         button: 0
       }
     ])('rotates camera on $title drag', ({ event, button }) => {
-      selectionManager.select([meshes[0]])
+      selectionManager.select(meshes[0])
       inputManager.onDragObservable.notifyObservers({
         type: 'dragStart',
         event,
@@ -1455,7 +1455,7 @@ describe('Game interaction model', () => {
 
     it('moves mesh on left click drag', () => {
       const [box1, box2] = meshes
-      selectionManager.select([box1])
+      selectionManager.select(box1)
       const position = box2.absolutePosition.clone()
       inputManager.onDragObservable.notifyObservers({
         type: 'dragStart',
@@ -1494,7 +1494,7 @@ describe('Game interaction model', () => {
 
     it('moves selected meshes on left click drag', () => {
       const [, , box3, , box5, box6, box7] = meshes
-      selectionManager.select([box3, box7])
+      selectionManager.select([box3, box5, box6, box7])
       const position = box5.absolutePosition.clone()
       inputManager.onDragObservable.notifyObservers({
         type: 'dragStart',

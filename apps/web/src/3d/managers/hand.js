@@ -351,7 +351,7 @@ function handDrag(manager, { type, mesh, event }) {
           mesh.setAbsolutePosition()
         } else {
           if (wasSelected) {
-            selectionManager.select([mesh])
+            selectionManager.select(mesh)
           }
           recordDraw(mesh)
         }

@@ -194,7 +194,7 @@ export function attachInputs({
                 if (!selectionManager.meshes.has(mesh)) {
                   selectionManager.clear()
                   shouldDeselect = true
-                  selectionManager.select([mesh])
+                  selectionManager.select(mesh)
                 }
                 logger.info(
                   { mesh, button, long, pointers, event, shouldDeselect },
@@ -267,7 +267,7 @@ export function attachInputs({
               moveManager.stop()
               if (shouldDeselect) {
                 shouldDeselect = false
-                selectionManager.unselect([mesh])
+                selectionManager.unselect(mesh)
               }
             }
             selectionPosition = null
@@ -445,9 +445,14 @@ export function attachInputs({
         }
         if (
           fn === 'push' &&
+          !shouldDeselect &&
           [...selectionManager.meshes].some(({ id }) => args[0] === id)
         ) {
-          selectionManager.selectById([meshId])
+          const mesh = engine.scenes.reduce(
+            (mesh, scene) => mesh || scene.getMeshById(meshId),
+            null
+          )
+          setTimeout(() => selectionManager.select(mesh.metadata?.stack), 0)
         }
       }
     })
@@ -647,9 +652,9 @@ const menuActions = [
       title: 'tooltips.decrement',
       badge: 'shortcuts.pop',
       onClick: async ({ detail } = {}) =>
-        selectionManager.select([
+        selectionManager.select(
           await triggerAction(mesh, 'decrement', detail?.quantity, true)
-        ]),
+        ),
       max: computesQuantity(mesh, params)
     })
   },
