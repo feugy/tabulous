@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker'
 import { customShapeManager, handManager } from '@src/3d/managers'
 import { createCustom } from '@src/3d/meshes'
 import {
+  altitudeGap,
   createTable,
   getAnimatableBehavior,
   loadMeshes,
@@ -644,17 +645,25 @@ describe('loadMeshes() 3D utility', () => {
 
     const mesh2 = scene.getMeshById('card2')
     expect(mesh2).not.toBeNull()
-    expectPosition(mesh2, [pos1.x + shift, pos1.y + height + 0.001, pos1.z])
+    expectPosition(mesh2, [
+      pos1.x + shift,
+      pos1.y + height + altitudeGap,
+      pos1.z
+    ])
 
     const mesh4 = scene.getMeshById('card4')
     expect(mesh4).not.toBeNull()
-    expectPosition(mesh4, [pos1.x - shift, pos1.y + height + 0.001, pos1.z])
+    expectPosition(mesh4, [
+      pos1.x - shift,
+      pos1.y + height + altitudeGap,
+      pos1.z
+    ])
 
     const mesh3 = scene.getMeshById('card3')
     expect(mesh3).not.toBeNull()
     expectPosition(mesh3, [
       pos1.x - shift,
-      pos1.y + (height + 0.001) * 2,
+      pos1.y + (height + altitudeGap) * 2,
       pos1.z
     ])
   })

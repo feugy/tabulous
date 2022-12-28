@@ -13,12 +13,19 @@ import { getDimensions } from './mesh'
 const logger = makeLogger('gravity')
 
 /**
+ * Gap between meshes when computing altitude above specific positions.
+ */
+export const altitudeGap = 0.01
+
+/**
  * Returns the absolute altitude (Y axis) above a given mesh, including minimum spacing.
  * @param {import('@babel/core').Mesh} mesh - related mesh.
  * @returns {number} resulting Y coordinate.
  */
 export function getAltitudeAbove(mesh) {
-  return mesh.absolutePosition.y + getDimensions(mesh).height * 0.5 + 0.001
+  return (
+    mesh.absolutePosition.y + getDimensions(mesh).height * 0.5 + altitudeGap
+  )
 }
 
 /**

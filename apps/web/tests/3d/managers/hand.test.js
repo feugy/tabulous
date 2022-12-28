@@ -1003,7 +1003,7 @@ describe('HandManager', () => {
         expectMeshFeedback(
           registerFeedbackSpy,
           'push',
-          [-3.890000104904175, 0.010999999999995451, 0]
+          [-3.890000104904175, 0.019999999999995452, 0]
         )
       })
 

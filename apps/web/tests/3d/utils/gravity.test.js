@@ -3,6 +3,7 @@ import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
 import { faker } from '@faker-js/faker'
 import {
+  altitudeGap,
   applyGravity,
   getCenterAltitudeAbove,
   getDimensions,
@@ -84,7 +85,7 @@ describe('applyGravity() 3D utility', () => {
     box2.setAbsolutePosition(new Vector3(x, 3, z))
     let pos = applyGravity(box)
     expect(pos.x).toEqual(x)
-    expect(pos.y).toBeCloseTo(4)
+    expect(pos.y).toBeCloseTo(4 + altitudeGap)
     expect(pos.z).toEqual(z)
   })
 
@@ -95,7 +96,7 @@ describe('applyGravity() 3D utility', () => {
     box2.setAbsolutePosition(new Vector3(x - 0.5, 2, z - 0.5))
     let pos = applyGravity(box)
     expect(pos.x).toEqual(x)
-    expect(pos.y).toBeCloseTo(3)
+    expect(pos.y).toBeCloseTo(3 + altitudeGap)
     expect(pos.z).toEqual(z)
   })
 
@@ -108,7 +109,7 @@ describe('applyGravity() 3D utility', () => {
     box3.setAbsolutePosition(new Vector3(x + 0.5, 3, z))
     let pos = applyGravity(box)
     expect(pos.x).toEqual(x)
-    expect(pos.y).toBeCloseTo(5)
+    expect(pos.y).toBeCloseTo(5 + altitudeGap)
     expect(pos.z).toEqual(z)
   })
 })
@@ -285,7 +286,7 @@ describe('getCenterAltitudeAbove() 3D utility', () => {
     box.absolutePosition.y = 20
     const box2 = CreateBox('box2', { height: 3 })
     expect(getCenterAltitudeAbove(box, box2)).toEqual(
-      20 + 4 / 2 + 3 / 2 + 0.001
+      20 + 4 / 2 + 3 / 2 + altitudeGap
     )
   })
 })
