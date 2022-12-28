@@ -20,6 +20,7 @@ import {
   runAnimation
 } from '../utils/behaviors'
 import {
+  altitudeGap,
   applyGravity,
   getCenterAltitudeAbove,
   sortByElevation
@@ -612,7 +613,7 @@ function invertStack(behavior) {
 function getFinalAltitudeAboveStack(stack) {
   let y = stack[0].absolutePosition.y - getDimensions(stack[0]).height * 0.5
   for (const mesh of stack) {
-    y += getDimensions(mesh).height + 0.001
+    y += getDimensions(mesh).height + altitudeGap
   }
   return y
 }

@@ -18,14 +18,10 @@
 
 ## UI
 
-- bug: can interact with a single mesh being moved by peer
-- bug: animating visibility from 0 to 1 creates trouble with texture alpha channel
-- bug: attached, unselected mesh are not ignored during dragging
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
 - rework lights & shadows
 - detailable/stackable behavior: preview a stack of meshes
 - hide/distinguish non-connected participants
-- is this right? given an active selection, when it anchors with other items, then items are part of the selection
 - option to invite players with url
 - distribute multiple meshes to players' hand
 - shortcuts cheatsheet

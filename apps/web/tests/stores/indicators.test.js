@@ -124,7 +124,7 @@ describe('Indicators store', () => {
         {
           id: `${card5.id}.stack-size`,
           size: 3,
-          screenPosition: { x: 1024, y: 464.99 },
+          screenPosition: { x: 1024, y: 464.81 },
           onClick: expect.any(Function)
         },
         {
@@ -150,19 +150,19 @@ describe('Indicators store', () => {
         {
           id: `${card4.id}.stack-size`,
           size: 3,
-          screenPosition: { x: 1024, y: 464.99 },
+          screenPosition: { x: 1024, y: 464.81 },
           onClick: expect.any(Function)
         },
         {
           id: `${card5.id}.stack-size`,
           size: 2,
-          screenPosition: { x: 1000.16, y: 465.1 },
+          screenPosition: { x: 1000.16, y: 465 },
           onClick: expect.any(Function)
         }
       ])
     })
 
-    it('selects and unselects meshes when with their indicators', async () => {
+    it('selects and unselects stacked meshes when with their indicators', async () => {
       cards[0]
         .getBehaviorByName(StackBehaviorName)
         .fromState({ stackIds: ['card2', 'card4'] })
@@ -174,6 +174,19 @@ describe('Indicators store', () => {
       expect(selectionManager.meshes.has(cards[2])).toBe(false)
       expect(selectionManager.meshes.has(cards[3])).toBe(true)
       expect(selectionManager.meshes.has(cards[4])).toBe(false)
+
+      get(visibleIndicators$)[0].onClick()
+      expect(selectionManager.meshes.size).toBe(0)
+    })
+
+    it('selects and unselects quantifiable meshes when with their indicators', async () => {
+      cards[0]
+        .getBehaviorByName(QuantityBehaviorName)
+        .fromState({ quantity: 4 })
+      await waitNextRender(scene)
+
+      get(visibleIndicators$)[0].onClick()
+      expect(selectionManager.meshes.has(cards[0])).toBe(true)
 
       get(visibleIndicators$)[0].onClick()
       expect(selectionManager.meshes.size).toBe(0)
@@ -380,12 +393,12 @@ describe('Indicators store', () => {
           {
             id: `${card4.id}.stack-size`,
             size: 3,
-            screenPosition: { x: 1024, y: 464.99 }
+            screenPosition: { x: 1024, y: 464.81 }
           },
           {
             id: `${card5.id}.stack-size`,
             size: 2,
-            screenPosition: { x: 1000.16, y: 465.1 }
+            screenPosition: { x: 1000.16, y: 465 }
           }
         ])
       })
@@ -469,12 +482,12 @@ describe('Indicators store', () => {
           {
             id: `${card4.id}.stack-size`,
             size: 3,
-            screenPosition: { x: 1024, y: 464.99 }
+            screenPosition: { x: 1024, y: 464.81 }
           },
           {
             id: `${card5.id}.stack-size`,
             size: 2,
-            screenPosition: { x: 1024, y: 360.69 }
+            screenPosition: { x: 1024, y: 360.58 }
           }
         ]
 

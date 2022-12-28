@@ -8,9 +8,7 @@ export function buildBoard() {
     faceUV: faceUVs.board,
     y: sizes.board.height / 2,
     ...sizes.board,
-    lockable: { isLocked: true },
-    anchorable: { anchors: buildPawnAnchors() },
-    movable: {}
+    anchorable: { anchors: buildPawnAnchors() }
   }
 }
 

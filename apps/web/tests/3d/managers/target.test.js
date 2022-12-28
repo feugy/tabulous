@@ -138,7 +138,7 @@ describe('TargetManager', () => {
       })
 
       it('ignores target part of the current selection', () => {
-        selectionManager.select([zone1.targetable.mesh])
+        selectionManager.select(zone1.targetable.mesh)
         const mesh = CreateBox('box', {})
         mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
 
@@ -315,7 +315,7 @@ describe('TargetManager', () => {
       })
 
       it('ignores target part of the current selection', () => {
-        selectionManager.select([zone1.targetable.mesh])
+        selectionManager.select(zone1.targetable.mesh)
         const mesh = CreateBox('box', {})
         mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
 

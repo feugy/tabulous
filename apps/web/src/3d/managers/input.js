@@ -125,9 +125,14 @@ class InputManager {
     // dynamically creates stopDrag to keep dragOrigin hidden
     this.stopDrag = event => {
       if (dragOrigin) {
+        const meshId = dragOrigin.mesh?.id
         const data = {
           type: 'dragStop',
           ...dragOrigin,
+          // in case mesh was moved between scenes by dragging, return the new one
+          mesh: meshId
+            ? scene.getMeshById(meshId) ?? handScene?.getMeshById(meshId)
+            : undefined,
           event,
           pointers: pointers.size,
           timestamp: Date.now()
@@ -137,9 +142,7 @@ class InputManager {
         pointers.clear()
         logger.info(
           data,
-          `end dragging ${dragOrigin.mesh?.id ?? ''} with button ${
-            dragOrigin.button
-          }`
+          `end dragging ${meshId ?? ''} with button ${dragOrigin.button}`
         )
         this.onDragObservable.notifyObservers(data)
       }

@@ -36,25 +36,29 @@ describe('InvitePlayerDialogue connected component', () => {
     expect(searchPlayers).not.toHaveBeenCalled()
   })
 
-  it('debounce searches', async () => {
-    searchPlayers.mockResolvedValue([])
-    const inputs = [
-      { key: 'a', delay: 10 },
-      { key: 'n', delay: 110 },
-      { key: 'i', delay: 10 },
-      { key: 'm', delay: 10 },
-      { key: 'a', delay: 110 }
-    ]
-    render(html`<${InvitePlayerDialogue} open game=${game} />`)
-    const input = screen.getByRole('textbox')
-    for (const { key, delay } of inputs) {
-      await userEvent.type(input, key)
-      await sleep(delay)
-    }
-    expect(searchPlayers).toHaveBeenNthCalledWith(1, 'an')
-    expect(searchPlayers).toHaveBeenNthCalledWith(2, 'anima')
-    expect(searchPlayers).toHaveBeenCalledTimes(2)
-  })
+  it(
+    'debounce searches',
+    async () => {
+      searchPlayers.mockResolvedValue([])
+      const inputs = [
+        { key: 'a', delay: 10 },
+        { key: 'n', delay: 110 },
+        { key: 'i', delay: 10 },
+        { key: 'm', delay: 10 },
+        { key: 'a', delay: 110 }
+      ]
+      render(html`<${InvitePlayerDialogue} open game=${game} />`)
+      const input = screen.getByRole('textbox')
+      for (const { key, delay } of inputs) {
+        await userEvent.type(input, key)
+        await sleep(delay)
+      }
+      expect(searchPlayers).toHaveBeenNthCalledWith(1, 'an')
+      expect(searchPlayers).toHaveBeenNthCalledWith(2, 'anima')
+      expect(searchPlayers).toHaveBeenCalledTimes(2)
+    },
+    { retry: 3 }
+  )
 
   it('searches for candidate players and displays them', async () => {
     searchPlayers.mockResolvedValueOnce(candidates)

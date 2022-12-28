@@ -191,8 +191,8 @@ export function createEngine({
   function handleLeave(event) {
     inputManager.stopAll(event)
   }
-  debug && scene.debugLayer.show({ embedMode: true })
-  debugHand && handScene.debugLayer.show({ embedMode: true })
+  debug && scene.debugLayer.show({ embedMode: true, enablePopup: true })
+  debugHand && handScene.debugLayer.show({ embedMode: true, enablePopup: true })
   // new AxesViewer(scene)
 
   const dispose = engine.dispose

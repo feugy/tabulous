@@ -155,10 +155,11 @@ function enrichWithInteraction(indicators) {
     ...indicator,
     onClick: indicator.mesh
       ? () => {
+          const selected = indicator.mesh.metadata.stack ?? indicator.mesh
           if (selectionManager.meshes.has(indicator.mesh)) {
-            selectionManager.unselect([indicator.mesh])
+            selectionManager.unselect(selected)
           } else {
-            selectionManager.select([indicator.mesh])
+            selectionManager.select(selected)
           }
         }
       : null

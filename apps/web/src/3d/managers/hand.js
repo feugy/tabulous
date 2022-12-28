@@ -324,6 +324,7 @@ function handDrag(manager, { type, mesh, event }) {
           { mesh: movedMesh, x, z },
           `play mesh ${movedMesh.id} from hand by dragging`
         )
+        const wasSelected = selectionManager.meshes.has(movedMesh)
         const mesh = createMainMesh(manager, movedMesh, { x, z })
         let dropZone
         if (droppedList.length) {
@@ -349,6 +350,9 @@ function handDrag(manager, { type, mesh, event }) {
           targetManager.dropOn(dropZone, { immediate: true })
           mesh.setAbsolutePosition()
         } else {
+          if (wasSelected) {
+            selectionManager.select(mesh)
+          }
           recordDraw(mesh)
         }
       }

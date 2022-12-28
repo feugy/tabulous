@@ -314,7 +314,7 @@ describe('Game interaction model', () => {
 
     it('can trigger all actions for a selected quantifiable', async () => {
       const [, , mesh3, , mesh5, mesh6, mesh7] = meshes
-      selectionManager.select([mesh5, mesh7, mesh6])
+      selectionManager.select([mesh3, mesh5, mesh6, mesh7])
       const menuProps = computeMenuProps(mesh7)
       expect(menuProps).toHaveProperty('items')
       expect(menuProps).toHaveProperty('open', true)
@@ -397,7 +397,7 @@ describe('Game interaction model', () => {
       mesh3.metadata.canPush.mockReturnValue(true)
       mesh5.metadata.canPush.mockReturnValue(true)
       mesh6.metadata.canPush.mockReturnValue(true)
-      selectionManager.select([mesh2, mesh3, mesh4, mesh5, mesh6])
+      selectionManager.select([mesh2, mesh4, mesh3, mesh5, mesh6])
       const menuProps = computeMenuProps(mesh2)
       expect(menuProps).toHaveProperty('items')
       expect(menuProps).toHaveProperty('open', true)
@@ -1059,7 +1059,23 @@ describe('Game interaction model', () => {
         expectMeshActions(mesh)
       })
 
-      it('does not reset selection when tapping with 2 fingers on a selected mesh', async () => {
+      it('does not clear selection on a right click', async () => {
+        const [mesh1, , mesh3, , mesh5, mesh6] = meshes
+        inputManager.onTapObservable.notifyObservers({
+          type: 'tap',
+          event: { pointerType: 'mouse' },
+          button: 2,
+          timestamp: Date.now()
+        })
+        await sleep(doubleTapDelay * 1.1)
+        expect(selectionManager.meshes.size).toEqual(4)
+        expectMeshActions(mesh1)
+        expectMeshActions(mesh3)
+        expectMeshActions(mesh5)
+        expectMeshActions(mesh6)
+      })
+
+      it('does not clear selection when tapping with 2 fingers on a selected mesh', async () => {
         const [mesh1, , mesh3, , mesh5, mesh6] = meshes
         inputManager.onTapObservable.notifyObservers({
           type: 'tap',
@@ -1081,7 +1097,7 @@ describe('Game interaction model', () => {
       it('does not alter selection when pushing an unselected mesh', () => {
         const [mesh1, mesh2, mesh3] = meshes
         selectionManager.clear()
-        selectionManager.select([mesh1])
+        selectionManager.select(mesh1)
         controlManager.onActionObservable.notifyObservers({
           meshId: mesh3.id,
           fn: 'push',
@@ -1095,7 +1111,7 @@ describe('Game interaction model', () => {
       it('selects the entire stack when pushing a selected mesh', () => {
         const [mesh1, mesh2, mesh3, , mesh5, mesh6] = meshes
         selectionManager.clear()
-        selectionManager.select([mesh1, mesh2])
+        selectionManager.select([mesh1, mesh2, ...mesh3.metadata.stack])
         mesh3.metadata.stack.push(mesh2)
         mesh2.metadata.stack = [...mesh3.metadata.stack]
         controlManager.onActionObservable.notifyObservers({
@@ -1225,7 +1241,7 @@ describe('Game interaction model', () => {
     })
 
     it('pans camera on right click drag', () => {
-      selectionManager.select([meshes[0]])
+      selectionManager.select(meshes[0])
       cameraManager.pan.mockResolvedValue()
       inputManager.onDragObservable.notifyObservers({
         type: 'dragStart',
@@ -1291,7 +1307,7 @@ describe('Game interaction model', () => {
         button: 0
       }
     ])('rotates camera on $title drag', ({ event, button }) => {
-      selectionManager.select([meshes[0]])
+      selectionManager.select(meshes[0])
       inputManager.onDragObservable.notifyObservers({
         type: 'dragStart',
         event,
@@ -1454,31 +1470,79 @@ describe('Game interaction model', () => {
     })
 
     it('moves mesh on left click drag', () => {
-      const [, mesh] = meshes
-      const position = mesh.absolutePosition.clone()
+      const [box1, box2] = meshes
+      selectionManager.select(box1)
+      const position = box2.absolutePosition.clone()
       inputManager.onDragObservable.notifyObservers({
         type: 'dragStart',
         event: { pointerType: 'mouse', x: 50, y: 50 },
-        mesh,
+        mesh: box2,
         button: 0,
         timestamp: Date.now()
       })
+      expect(selectionManager.meshes.has(box1)).toBe(false)
+      expect(selectionManager.meshes.has(box2)).toBe(true)
       inputManager.onDragObservable.notifyObservers({
         type: 'drag',
         event: { pointerType: 'mouse', x: 100, y: 50 },
-        mesh,
+        mesh: box2,
+        button: 0,
+        timestamp: Date.now()
+      })
+      expect(selectionManager.meshes.has(box1)).toBe(false)
+      expect(selectionManager.meshes.has(box2)).toBe(true)
+      inputManager.onDragObservable.notifyObservers({
+        type: 'dragStop',
+        event: { pointerType: 'mouse', x: 200, y: 50 },
+        mesh: box2,
+        button: 0,
+        timestamp: Date.now()
+      })
+
+      expect(selectionManager.meshes.has(box1)).toBe(false)
+      expect(selectionManager.meshes.has(box2)).toBe(false)
+      expect(position.asArray()).not.toEqual(box2.absolutePosition.asArray())
+      expect(cameraManager.pan).not.toHaveBeenCalled()
+      expect(cameraManager.rotate).not.toHaveBeenCalled()
+      expect(drawSelectionBox).not.toHaveBeenCalled()
+      expect(selectWithinBox).not.toHaveBeenCalled()
+    })
+
+    it('moves selected meshes on left click drag', () => {
+      const [, , box3, , box5, box6, box7] = meshes
+      selectionManager.select([box3, box5, box6, box7])
+      const position = box5.absolutePosition.clone()
+      inputManager.onDragObservable.notifyObservers({
+        type: 'dragStart',
+        event: { pointerType: 'mouse', x: 50, y: 50 },
+        mesh: box5,
+        button: 0,
+        timestamp: Date.now()
+      })
+      expect(selectionManager.meshes.has(box3)).toBe(true)
+      expect(selectionManager.meshes.has(box5)).toBe(true)
+      expect(selectionManager.meshes.has(box6)).toBe(true)
+      expect(selectionManager.meshes.has(box7)).toBe(true)
+      inputManager.onDragObservable.notifyObservers({
+        type: 'drag',
+        event: { pointerType: 'mouse', x: 100, y: 50 },
+        mesh: box5,
         button: 0,
         timestamp: Date.now()
       })
       inputManager.onDragObservable.notifyObservers({
         type: 'dragStop',
         event: { pointerType: 'mouse', x: 200, y: 50 },
-        mesh,
+        mesh: box5,
         button: 0,
         timestamp: Date.now()
       })
 
-      expect(position.asArray()).not.toEqual(mesh.absolutePosition.asArray())
+      expect(selectionManager.meshes.has(box3)).toBe(true)
+      expect(selectionManager.meshes.has(box5)).toBe(true)
+      expect(selectionManager.meshes.has(box6)).toBe(true)
+      expect(selectionManager.meshes.has(box7)).toBe(true)
+      expect(position.asArray()).not.toEqual(box5.absolutePosition.asArray())
       expect(cameraManager.pan).not.toHaveBeenCalled()
       expect(cameraManager.rotate).not.toHaveBeenCalled()
       expect(drawSelectionBox).not.toHaveBeenCalled()
