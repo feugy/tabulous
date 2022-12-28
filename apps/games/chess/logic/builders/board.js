@@ -37,7 +37,7 @@ function getPieceId({ column, row }) {
   return row === 0
     ? `${[whiteId]}-${pieces[column]}`
     : row === pieces.length - 1
-    ? `${[blackId]}-${pieces[pieces.length - 1 - column]}`
+    ? `${[blackId]}-${pieces[column]}`
     : row === 1
     ? `${[whiteId]}-pawn-${column}`
     : row === pieces.length - 2
