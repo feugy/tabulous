@@ -1059,7 +1059,23 @@ describe('Game interaction model', () => {
         expectMeshActions(mesh)
       })
 
-      it('does not reset selection when tapping with 2 fingers on a selected mesh', async () => {
+      it('does not clear selection on a right click', async () => {
+        const [mesh1, , mesh3, , mesh5, mesh6] = meshes
+        inputManager.onTapObservable.notifyObservers({
+          type: 'tap',
+          event: { pointerType: 'mouse' },
+          button: 2,
+          timestamp: Date.now()
+        })
+        await sleep(doubleTapDelay * 1.1)
+        expect(selectionManager.meshes.size).toEqual(4)
+        expectMeshActions(mesh1)
+        expectMeshActions(mesh3)
+        expectMeshActions(mesh5)
+        expectMeshActions(mesh6)
+      })
+
+      it('does not clear selection when tapping with 2 fingers on a selected mesh', async () => {
         const [mesh1, , mesh3, , mesh5, mesh6] = meshes
         inputManager.onTapObservable.notifyObservers({
           type: 'tap',

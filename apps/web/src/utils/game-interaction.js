@@ -116,16 +116,16 @@ export function attachInputs({
     taps$.subscribe({
       next: ({ mesh, button, event, pointers, fromHand }) => {
         resetMenu()
+        const kind = pointerKind(event, button, pointers)
         if (mesh) {
           if (!selectionManager.meshes.has(mesh)) {
             selectionManager.clear()
           }
-          const kind = pointerKind(event, button, pointers)
           if (kind === 'right') {
             logger.info({ mesh, event }, `display menu for mesh ${mesh.id}`)
             actionMenuProps$.next(computeMenuProps(mesh, fromHand))
           }
-        } else {
+        } else if (kind === 'left') {
           selectionManager.clear()
         }
       }
