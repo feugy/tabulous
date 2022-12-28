@@ -198,7 +198,8 @@ describe('InputManager', () => {
       expectsDataWithMesh(
         taps[0],
         { long: false, pointers: 1, type: 'tap', button, event, fromHand },
-        meshId
+        meshId,
+        fromHand ? handScene : scene
       )
     })
 
@@ -777,6 +778,51 @@ describe('InputManager', () => {
         }
       }
     )
+
+    it('returns final mesh when ending drag operation', async () => {
+      const pointerId = 26
+      const meshId = 'box2'
+      const pointer = { x: 1024, y: 512 }
+      const button = 1
+      const events = []
+      events.push(triggerEvent(pointerDown, { ...pointer, pointerId, button }))
+      await sleep(50)
+      events.push(
+        triggerEvent(pointerMove, { ...move(pointer, 50, -25), pointerId })
+      )
+      await sleep(50)
+      events.push(
+        triggerEvent(pointerMove, { ...move(pointer, 50, -25), pointerId })
+      )
+      meshes[1].dispose()
+      CreateBox(meshId, {}, handScene)
+      await sleep(50)
+      events.push(triggerEvent(pointerUp, { ...pointer, pointerId, button }))
+
+      expectEvents({ drags: 4 })
+      const pointers = 1
+      expectsDataWithMesh(
+        drags[0],
+        { long: false, pointers, type: 'dragStart', button, event: events[0] },
+        meshId
+      )
+      expectsDataWithMesh(
+        drags[1],
+        { pointers, type: 'drag', button, event: events[1] },
+        meshId
+      )
+      expectsDataWithMesh(
+        drags[2],
+        { pointers, type: 'drag', button, event: events[2] },
+        meshId
+      )
+      expectsDataWithMesh(
+        drags[3],
+        { pointers, type: 'dragStop', button, event: events[3] },
+        meshId,
+        handScene
+      )
+    })
 
     it.each([
       {
@@ -1390,7 +1436,8 @@ describe('InputManager', () => {
           button,
           event
         },
-        meshes[5].id
+        meshes[5].id,
+        handScene
       )
     })
 
@@ -1406,7 +1453,8 @@ describe('InputManager', () => {
       expectsDataWithMesh(
         taps[0],
         { long: false, pointers: 1, type: 'tap', button, event },
-        mesh.id
+        mesh.id,
+        handScene
       )
     })
 
@@ -1621,13 +1669,19 @@ describe('InputManager', () => {
     return { ...pointer }
   }
 
-  function expectsDataWithMesh(actual, expected, meshId) {
+  function expectsDataWithMesh(
+    actual,
+    expected,
+    meshId,
+    expectedScene = scene
+  ) {
     expect(actual).toMatchObject(expected)
     if (Array.isArray(meshId)) {
       expect(actual.meshes?.map(({ id }) => id)).toEqual(meshId)
     } else {
       if (meshId) {
         expect(actual.mesh?.id).toEqual(meshId)
+        expect(actual.mesh?.getScene()?.uid).toEqual(expectedScene.uid)
       } else {
         expect(actual.mesh).not.toBeDefined()
       }
