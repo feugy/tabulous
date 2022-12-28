@@ -668,6 +668,45 @@ describe('HandManager', () => {
         expect(extractDrawnState().flippable.isFlipped).toBe(true)
       })
 
+      it('keeps selected mesh while dragging to main', async () => {
+        const mesh = handCards[1]
+
+        let movedPosition = new Vector3(
+          mesh.absolutePosition.x,
+          mesh.absolutePosition.y + 2,
+          mesh.absolutePosition.z + cardDepth
+        )
+        mesh.setAbsolutePosition(movedPosition)
+        selectionManager.select([mesh])
+        inputManager.onDragObservable.notifyObservers({
+          type: 'dragStart',
+          mesh,
+          event: { x: 289.7, y: 175 }
+        })
+        await waitForLayout()
+        expect(handScene.getMeshById(mesh.id)?.id).toBeUndefined()
+        expect(selectionManager.meshes.has(mesh)).toBe(false)
+
+        const newMesh = scene.getMeshById(mesh.id)
+        expect(newMesh?.id).toBeDefined()
+        expect(selectionManager.meshes.has(newMesh)).toBe(true)
+        expectPosition(newMesh, [6, 2.005, 0])
+        expect(actionRecorded).toHaveBeenCalledWith(
+          {
+            meshId: newMesh.id,
+            fn: 'draw',
+            args: [expect.any(Object)],
+            fromHand: false
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenCalledTimes(1)
+        expectCloseVector(
+          extractDrawnState(),
+          newMesh.absolutePosition.asArray()
+        )
+      })
+
       it(
         'moves mesh to hand by dragging',
         async () => {
