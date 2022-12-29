@@ -510,32 +510,36 @@ describe('MoveManager', () => {
       expectMoveRecorded(moveRecorded, moved)
     })
 
-    it('excludes selected meshes from main scene when moving hand mesh', async () => {
-      const positions = [new Vector3(0, 5, 0), new Vector3(-3, 0, -3)]
-      const meshes = [
-        createMovable('box1', positions[0]),
-        createMovable('box2', positions[1])
-      ]
-      selectionManager.select([...meshes, moved])
+    it(
+      'excludes selected meshes from main scene when moving hand mesh',
+      async () => {
+        const positions = [new Vector3(0, 5, 0), new Vector3(-3, 0, -3)]
+        const meshes = [
+          createMovable('box1', positions[0]),
+          createMovable('box2', positions[1])
+        ]
+        selectionManager.select([...meshes, moved])
 
-      manager.start(moved, { x: centerX, y: centerY })
-      expect(manager.inProgress).toBe(true)
-      expectPosition(moved, [1, 1 + manager.elevation, 1])
+        manager.start(moved, { x: centerX, y: centerY })
+        expect(manager.inProgress).toBe(true)
+        expectPosition(moved, [1, 1 + manager.elevation, 1])
 
-      const deltaX = 2.029703140258789
-      const deltaZ = -2.196934700012207
-      manager.continue({ x: centerX + 50, y: centerY + 50 })
+        const deltaX = 2.029703140258789
+        const deltaZ = -2.196934700012207
+        manager.continue({ x: centerX + 50, y: centerY + 50 })
 
-      expectPosition(moved, [1 + deltaX, 1 + manager.elevation, 1 + deltaZ])
+        expectPosition(moved, [1 + deltaX, 1 + manager.elevation, 1 + deltaZ])
 
-      await manager.stop()
-      expectPosition(moved, [3, getDimensions(moved).height / 2, -1.25])
-      expect(manager.inProgress).toBe(false)
-      expect(drops).toHaveLength(0)
-      expectPosition(meshes[0], positions[0].asArray())
-      expectPosition(meshes[1], positions[1].asArray())
-      expectMoveRecorded(moveRecorded, moved)
-    })
+        await manager.stop()
+        expectPosition(moved, [3, getDimensions(moved).height / 2, -1.25])
+        expect(manager.inProgress).toBe(false)
+        expect(drops).toHaveLength(0)
+        expectPosition(meshes[0], positions[0].asArray())
+        expectPosition(meshes[1], positions[1].asArray())
+        expectMoveRecorded(moveRecorded, moved)
+      },
+      { retry: 3 }
+    )
   })
 
   describe('given active selection', () => {

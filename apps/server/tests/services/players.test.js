@@ -31,6 +31,8 @@ describe('given initialized repository', () => {
   })
 
   describe('upsertPlayer()', () => {
+    afterAll(() => clearDatabase(redisUrl))
+
     it('assigns a new id', async () => {
       const username = faker.name.firstName()
       const password = faker.internet.password()

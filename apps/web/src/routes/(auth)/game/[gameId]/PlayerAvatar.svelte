@@ -10,6 +10,8 @@
     stream$
   } from '@src/stores/stream'
   import { _ } from 'svelte-intl'
+  
+  import SoundMeter from './SoundMeter.svelte'
 
   export let player = null
   export let stream = null
@@ -56,6 +58,7 @@
   <legend>
     {#if isLocal}
       {#if $mics$?.length > 0}
+        <SoundMeter {mediaStream} />
         <Dropdown
           valueAsText={false}
           openOnClick={false}
