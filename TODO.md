@@ -18,6 +18,7 @@
 
 ## UI
 
+- bug: 6-takes: snapping to the wrong anchor (when 2 players are snapping to different anchors)
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
 - rework lights & shadows
 - detailable/stackable behavior: preview a stack of meshes
