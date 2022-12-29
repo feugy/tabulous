@@ -145,19 +145,22 @@ describe('TargetManager', () => {
         expect(manager.findDropZone(mesh)).not.toBeDefined()
       })
 
-      it('ignores targets when not in main scene', () => {
-        createsTargetZone('target1', {
+      it('ignores targets from different scene', () => {
+        const handMesh = CreateBox('box', {}, handScene)
+        handMesh.setAbsolutePosition(aboveZone2)
+        expect(manager.findDropZone(handMesh)).not.toBeDefined()
+
+        createsTargetZone('target3', {
           position: new Vector3(10, 0, 10),
           scene: handScene
         })
-        const mesh = CreateBox('box', {}, handScene)
+        const mesh = CreateBox('box', {})
         mesh.setAbsolutePosition(aboveZone3)
-
         expect(manager.findDropZone(mesh)).not.toBeDefined()
       })
 
       it('ignores targets with another player Id', () => {
-        createsTargetZone('target1', {
+        createsTargetZone('target3', {
           position: new Vector3(10, 0, 10),
           playerId: faker.datatype.uuid(),
           scene
@@ -169,7 +172,7 @@ describe('TargetManager', () => {
       })
 
       it('returns targets with same playerId below mesh with kind', () => {
-        const zone3 = createsTargetZone('target1', {
+        const zone3 = createsTargetZone('target3', {
           position: new Vector3(10, 0, 10),
           playerId,
           scene
@@ -322,13 +325,8 @@ describe('TargetManager', () => {
         expect(manager.findPlayerZone(mesh)).not.toBeDefined()
       })
 
-      it('ignores targets when not in main scene', () => {
-        createsTargetZone('target', {
-          position: new Vector3(10, 0, 10),
-          playerId,
-          scene: handScene
-        })
-        manager.unregisterTargetable(zone1.targetable)
+      it('ignores targets from different scene', () => {
+        const mesh = CreateBox('box', {}, handScene)
         expect(manager.findPlayerZone(mesh)).not.toBeDefined()
       })
 

@@ -187,8 +187,9 @@ class TargetManager {
  */
 export const targetManager = new TargetManager()
 
-function findCandidates({ behaviors, scene }, dragged, isMatching) {
+function findCandidates({ behaviors }, dragged, isMatching) {
   const candidates = []
+  const scene = dragged.getScene()
   const excluded = [dragged, ...selectionManager.meshes]
   for (const targetable of behaviors) {
     if (
