@@ -1,13 +1,19 @@
 # import Player from "players.graphql"
 
 type Game {
+  """
+  lobby properties
+  """
   id: ID!
-  kind: String!
-  locales: ItemLocales!
   created: Float!
   players: [Player]!
-  meshes: [Mesh]!
   messages: [Message]
+  """
+  game properties
+  """
+  kind: String
+  locales: ItemLocales
+  meshes: [Mesh]
   cameras: [CameraPosition]
   hands: [Hand]
   preferences: [PlayerPreference]
@@ -329,8 +335,8 @@ type GameParameters {
   schemaString: String!
   error: String
   id: ID!
-  kind: String!
-  locales: ItemLocales!
+  kind: String
+  locales: ItemLocales
   players: [Player]!
   preferences: [PlayerPreference]
   rulesBookPageCount: Int
@@ -344,8 +350,9 @@ extend type Query {
 }
 
 extend type Mutation {
-  createGame(kind: String!): Game
+  createGame(kind: String): Game
   joinGame(gameId: ID!, parameters: String): GameOrParameters
+  promoteGame(gameId: ID!, kind: String!): GameOrParameters
   saveGame(game: GameInput!): Game
   deleteGame(gameId: ID!): Game
   invite(gameId: ID!, playerId: ID!): Game

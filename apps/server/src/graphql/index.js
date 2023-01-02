@@ -4,9 +4,9 @@ import { dirname, join } from 'path'
 import { fileURLToPath } from 'url'
 
 import catalogResolvers from './catalog-resolver.js'
-import gameResolvers from './games-resolver.js'
-import playerResolvers from './players-resolver.js'
-import signalResolvers from './signals-resolver.js'
+import gamesResolvers from './games-resolver.js'
+import playersResolvers from './players-resolver.js'
+import signalsResolvers from './signals-resolver.js'
 
 const folder = dirname(fileURLToPath(import.meta.url))
 
@@ -20,9 +20,9 @@ const schema = [
 
 const { loaders, ...resolvers } = merge.all([
   catalogResolvers,
-  gameResolvers,
-  playerResolvers,
-  signalResolvers
+  gamesResolvers,
+  playersResolvers,
+  signalsResolvers
 ])
 
 export { loaders, resolvers, schema }

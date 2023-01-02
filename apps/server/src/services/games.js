@@ -11,15 +11,17 @@ import {
 import { canAccess } from './catalog.js'
 
 /**
- * @typedef {object} Game an active game:
+ * @typedef {object} Game an active game, or a waiting room:
  * @property {string} id - unique game id.
- * @property {string} kind - game kind (relates with game descriptor).
  * @property {number} created - game creation timestamp.
- * @property {string[]} playerId - player ids, the first always being the creator id.
- * @property {Mesh[]} meshes - game meshes.
- * @property {Message[]} messages - game discussion thread, if any.
- * @property {CameraPosition[]} cameras - player's saved camera positions, if any.
- * @property {Hand[]} hands - player's private hands, id any.
+ * @property {string} ownerId - id of the player who created this game
+ * @property {string[]} playerIds - (active) player ids.
+ * @property {string[]} guestIds - guest (future player) ids.
+ * @property {string} kind? - game kind (relates with game descriptor). Unset means a waiting room.
+ * @property {Mesh[]} meshes? - game meshes.
+ * @property {Message[]} messages? - game discussion thread, if any.
+ * @property {CameraPosition[]} cameras? - player's saved camera positions, if any.
+ * @property {Hand[]} hands? - player's private hands, id any.
  * @property {number} rulesBookPageCount? - number of pages in the rules book, if any.
  * @property {ZoomSpec} zoomSpec? - zoom specifications for main and hand scene.
  */
@@ -178,7 +180,8 @@ export const gameListsUpdate = gameListsUpdate$.pipe(
 
 /**
  * Creates a new game of a given kind, registering the creator as a guest.
- * It instanciate an unique set, based on the descriptor's bags and slots.
+ * If no kind is provided, the game is a simple lobby.
+ * When kind is provided, it instanciates an unique set of meshes, based on the descriptor's bags and slots.
  * Notifies this player's for new game.
  * @param {string} kind - game's kind.
  * @param {object} player - creating player.
@@ -188,17 +191,8 @@ export const gameListsUpdate = gameListsUpdate$.pipe(
  * @throws {Error} when player already owns too many games.
  */
 export async function createGame(kind, player) {
-  const descriptor = await repositories.catalogItems.getById(kind)
-  if (!descriptor) {
-    throw new Error(`Unsupported game ${kind}`)
-  }
-  if (!canAccess(player, descriptor)) {
-    throw new Error(`Access to game ${kind} is restricted`)
-  }
-  const ownedCount = await countOwnGames(player.id)
-  if (ownedCount >= maxOwnedGames) {
-    throw new Error(`You own ${ownedCount} games, you can not create more`)
-  }
+  await checkGameLimit(player)
+  const descriptor = kind ? await findDescriptor(kind, player) : { maxSeats: 8 }
 
   // trim some data out of the descriptor before saving it as game properties
   // eslint-disable-next-line no-unused-vars
@@ -213,7 +207,7 @@ export async function createGame(kind, player) {
       playerIds: [],
       guestIds: [player.id],
       availableSeats: maxSeats ?? 2,
-      meshes: await createMeshes(kind, descriptor),
+      meshes: kind ? await createMeshes(kind, descriptor) : [],
       messages: [],
       cameras: [],
       hands: [],
@@ -222,6 +216,85 @@ export async function createGame(kind, player) {
   )
   notifyAllPeers(game)
   return game
+}
+
+function notifyAllPeers(game) {
+  gameListsUpdate$.next([...game.playerIds, ...game.guestIds])
+}
+
+async function checkGameLimit(player, excludedGameIds = []) {
+  const ownedCount = await countOwnGames(player.id, excludedGameIds)
+  if (ownedCount >= maxOwnedGames) {
+    throw new Error(`You own ${ownedCount} games, you can not create more`)
+  }
+}
+
+async function findDescriptor(kind, player) {
+  const descriptor = await repositories.catalogItems.getById(kind)
+  if (!descriptor) {
+    throw new Error(`Unsupported game ${kind}`)
+  }
+  if (!canAccess(player, descriptor)) {
+    throw new Error(`Access to game ${kind} is restricted`)
+  }
+  return descriptor
+}
+
+/**
+ * Promote a lobby into a full game, setting its kind.
+ * All players will be downgraded to guests, and will have to join again.
+ * The operation will abort and return null when:
+ * - no game could match this game id
+ * - requesting user is not a player.
+ * May returns parameters if needed, or the actual game content.
+ * @param {string} gameId - loaded game id.
+ * @param {string} kind - game's kind.
+ * @param {object} player - joining guest
+ * @returns {Promise<Game|GameParameters|null>} the promoted game, its parameters, or null.
+ * @throws {Error} when no descriptor could be found for this kind.
+ * @throws {Error} when this game is restricted and was not granted to player.
+ * @throws {Error} when player already owns too many games (not counting this one).
+ * @throws {Error} when the promotted game is not a lobby.
+ */
+export async function promoteGame(gameId, kind, player) {
+  const lobbyOrGame = await repositories.games.getById(gameId)
+  if (!isPlayer(lobbyOrGame, player.id)) {
+    return null
+  }
+  if (lobbyOrGame.kind) {
+    throw new Error(`Game ${gameId} is already a full game`)
+  }
+  await checkGameLimit(player, [gameId])
+  const descriptor = await findDescriptor(kind, player)
+
+  // trim some data out of the descriptor before saving it as game properties
+  // eslint-disable-next-line no-unused-vars
+  const { name, build, addPlayer, askForParameters, maxSeats, ...gameProps } =
+    descriptor
+  const availableSeats = maxSeats ?? 2
+  // TODO allow users selecting who should enter game
+  const guestIds = lobbyOrGame.playerIds
+    .concat(lobbyOrGame.guestIds)
+    .slice(0, availableSeats)
+  const game = await repositories.games.save(
+    enrichAssets({
+      ...lobbyOrGame,
+      ...gameProps,
+      kind,
+      ownerId: player.id,
+      playerIds: [],
+      guestIds,
+      availableSeats,
+      meshes: await createMeshes(kind, descriptor),
+      preferences: []
+    })
+  )
+  notifyAllPeers(game)
+  return game
+}
+
+function isPlayer(game, playerId) {
+  return game?.playerIds.includes(playerId)
 }
 
 /**
@@ -244,6 +317,10 @@ export async function deleteGame(gameId, playerId) {
   return game
 }
 
+function isOwner(game, playerId) {
+  return game?.ownerId === playerId
+}
+
 /**
  * Allows a player to load the game content.
  * Allows a guest to join a game with given parameters.
@@ -256,7 +333,7 @@ export async function deleteGame(gameId, playerId) {
  * @param {string} gameId - loaded game id.
  * @param {object} player - joining guest
  * @param {object} parameters - parameters values for this player, when joining for the first time.
- * @returns {Promise<Game|GameParameters|null>} the loaded game, or null.
+ * @returns {Promise<Game|GameParameters|null>} the loaded game, its parameters, or null.
  * @throws {Error} when player is a guest and the game has no more availabe seats.
  * @throws {Error} when player is a guest and an error occured while adding them.
  */
@@ -272,18 +349,21 @@ export async function joinGame(gameId, player, parameters) {
     throw new Error('no more available seats')
   }
   try {
-    const descriptor = await repositories.catalogItems.getById(game.kind)
-    const gameParameters = await getParameterSchema({
-      descriptor,
-      game,
-      player
-    })
-    if (gameParameters && !parameters) {
-      return gameParameters
-    }
-    const error = validateParameters(gameParameters?.schema, parameters)
-    if (error) {
-      return { ...gameParameters, error }
+    let descriptor
+    if (game.kind) {
+      descriptor = await repositories.catalogItems.getById(game.kind)
+      const gameParameters = await getParameterSchema({
+        descriptor,
+        game,
+        player
+      })
+      if (gameParameters && !parameters) {
+        return gameParameters
+      }
+      const error = validateParameters(gameParameters?.schema, parameters)
+      if (error) {
+        return { ...gameParameters, error }
+      }
     }
     game.availableSeats--
     game = await enrichWithPlayer({
@@ -304,20 +384,8 @@ export async function joinGame(gameId, player, parameters) {
   }
 }
 
-function isOwner(game, playerId) {
-  return game?.ownerId === playerId
-}
-
-function isPlayer(game, playerId) {
-  return game?.playerIds.includes(playerId)
-}
-
 function isGuest(game, guestId) {
   return game?.guestIds.indexOf(guestId) >= 0
-}
-
-function notifyAllPeers(game) {
-  gameListsUpdate$.next([...game.playerIds, ...game.guestIds])
 }
 
 function validateParameters(schema, parameters) {
@@ -328,6 +396,24 @@ function validateParameters(schema, parameters) {
       )
       .join('\n')
   }
+}
+
+async function enrichWithPlayer({ descriptor, game, guest, parameters }) {
+  game.playerIds.push(guest.id)
+  game.guestIds.splice(game.guestIds.indexOf(guest.id), 1)
+  if (descriptor) {
+    game.preferences.push({
+      playerId: guest.id,
+      color: pickRandom(
+        colors,
+        game.preferences.map(({ color }) => color)
+      )
+    })
+  }
+  if (!descriptor?.addPlayer) {
+    return game
+  }
+  return enrichAssets(await descriptor.addPlayer(game, guest, parameters))
 }
 
 /**
@@ -381,22 +467,6 @@ export async function invite(gameId, guestId, hostId) {
   return game
 }
 
-async function enrichWithPlayer({ descriptor, game, guest, parameters }) {
-  game.playerIds.push(guest.id)
-  game.guestIds.splice(game.guestIds.indexOf(guest.id), 1)
-  game.preferences.push({
-    playerId: guest.id,
-    color: pickRandom(
-      colors,
-      game.preferences.map(({ color }) => color)
-    )
-  })
-  if (!descriptor?.addPlayer) {
-    return game
-  }
-  return enrichAssets(await descriptor.addPlayer(game, guest, parameters))
-}
-
 /**
  * Lists all games this players is in.
  * @param {string} playerId - player id.
@@ -427,11 +497,13 @@ export async function notifyRelatedPlayers(playerId) {
 /**
  * Count the number of games a given player owns.
  * @param {string} playerId - id of the desired player.
+ * @param {string[]} excludedGameId? - optional list of game ids to exclude from the count.
  * @returns {Promise<number>} the number of owned games.
  */
-export async function countOwnGames(playerId) {
+export async function countOwnGames(playerId, excludedGameIds = []) {
   return (await listGames(playerId)).reduce(
-    (count, { playerIds: [ownerId] }) => count + (ownerId === playerId ? 1 : 0),
+    (count, { id, ownerId }) =>
+      count + (ownerId === playerId && !excludedGameIds.includes(id) ? 1 : 0),
     0
   )
 }

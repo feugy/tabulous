@@ -78,7 +78,7 @@ export default {
      * @param {object} obj - graphQL object.
      * @param {object} args - mutation arguments, including:
      * @param {string} args.gameId - game's id.
-     * @param {string} args.parameters - player's provided parameters
+     * @param {string} args.parameters - player's provided parameters.
      * @param {object} context - graphQL context.
      * @returns {Promise<Game|GameParameters|null>} joined game in case of success, new required parameters, or null.
      */
@@ -96,6 +96,21 @@ export default {
         }
         return services.joinGame(gameId, player, parameters)
       }
+    ),
+
+    /**
+     * Promote a lobby into a full game, setting its kind.
+     * May returns parameters if needed, or the actual game content.
+     * Requires valid authentication.
+     * @param {object} obj - graphQL object.
+     * @param {object} args - mutation arguments, including:
+     * @param {string} args.gameId - game's id.
+     * @param {string} args.kind - promoted game kind.
+     * @param {object} context - graphQL context.
+     * @returns {Promise<Game|GameParameters|null>} joined game in case of success, new required parameters, or null.
+     */
+    promoteGame: isAuthenticated((obj, { gameId, kind }, { player }) =>
+      services.promoteGame(gameId, kind, player)
     ),
 
     /**

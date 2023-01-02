@@ -66,198 +66,6 @@ describe('given a started server', () => {
   })
 
   describe('Games GraphQL resolver', () => {
-    describe('joinGame query', () => {
-      it('fails on unauthenticated requests', async () => {
-        const response = await server.inject({
-          method: 'POST',
-          url: 'graphql',
-          payload: {
-            query: `mutation { joinGame(gameId: "${faker.datatype.uuid()}") { ... on Game { id } ... on GameParameters { id } } }`
-          }
-        })
-        expect(response.statusCode).toEqual(200)
-        expect(services.listGames).not.toHaveBeenCalled()
-        expect(await response.json()).toMatchObject({
-          data: { joinGame: null },
-          errors: [{ message: 'Unauthorized' }]
-        })
-      })
-
-      it('loads game details and resolves player objects', async () => {
-        const [player] = players
-        const game = {
-          id: faker.datatype.uuid(),
-          kind: 'tarot',
-          created: faker.date.past().getTime(),
-          ownerId: player.id,
-          playerIds: players.map(({ id }) => id),
-          guestIds: guests.map(({ id }) => id)
-        }
-        services.getPlayerById
-          .mockResolvedValueOnce(player)
-          .mockResolvedValueOnce(players.concat(guests))
-        services.joinGame.mockResolvedValueOnce(game)
-
-        const response = await server.inject({
-          method: 'POST',
-          url: 'graphql',
-          headers: {
-            authorization: `Bearer ${signToken(
-              player.id,
-              configuration.auth.jwt.key
-            )}`
-          },
-          payload: {
-            query: `mutation {
-  joinGame(gameId: "${game.id}") { 
-    ... on Game { 
-      id
-      kind
-      created
-      players {
-        id
-        username
-        isGuest
-        isOwner
-      }
-    } ... on GameParameters { 
-      id 
-    } 
-  }
-}`
-          }
-        })
-
-        expect(response.json()).toEqual({
-          data: {
-            joinGame: {
-              ...game,
-              ownerId: undefined,
-              playerIds: undefined,
-              guestIds: undefined,
-              players: [...players, ...guests].map(obj => ({
-                ...obj,
-                isGuest: guests.includes(obj),
-                isOwner: obj === player
-              }))
-            }
-          }
-        })
-        expect(response.statusCode).toEqual(200)
-        expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
-        expect(services.getPlayerById).toHaveBeenNthCalledWith(
-          2,
-          game.playerIds.concat(game.guestIds)
-        )
-        expect(services.getPlayerById).toHaveBeenCalledTimes(2)
-        expect(services.joinGame).toHaveBeenCalledWith(game.id, player, null)
-        expect(services.joinGame).toHaveBeenCalledTimes(1)
-      })
-
-      it('loads game parameters', async () => {
-        const [player] = players
-        const gameParameters = {
-          id: faker.datatype.uuid(),
-          schema: {},
-          ownerId: player.id,
-          playerIds: players.map(({ id }) => id),
-          guestIds: guests.map(({ id }) => id)
-        }
-        const value = faker.lorem.words()
-        services.getPlayerById
-          .mockResolvedValueOnce(player)
-          .mockResolvedValueOnce(players.concat(guests))
-        services.joinGame.mockResolvedValueOnce(gameParameters)
-
-        const response = await server.inject({
-          method: 'POST',
-          url: 'graphql',
-          headers: {
-            authorization: `Bearer ${signToken(
-              player.id,
-              configuration.auth.jwt.key
-            )}`
-          },
-          payload: {
-            query: `mutation { joinGame(gameId: "${gameParameters.id}", parameters: "{\\"foo\\":\\"${value}\\"}") { 
-              ... on Game { 
-                id 
-                kind 
-              } 
-              ... on GameParameters { 
-                id 
-                players {
-                  id
-                  username
-                  isGuest
-                  isOwner
-                }
-              } 
-            } 
-          }`
-          }
-        })
-
-        expect(response.json()).toEqual({
-          data: {
-            joinGame: {
-              id: gameParameters.id,
-              playerIds: undefined,
-              guestIds: undefined,
-              players: [...players, ...guests].map(obj => ({
-                ...obj,
-                isGuest: guests.includes(obj),
-                isOwner: obj === player
-              }))
-            }
-          }
-        })
-        expect(response.statusCode).toEqual(200)
-        expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
-        expect(services.getPlayerById).toHaveBeenNthCalledWith(
-          2,
-          gameParameters.playerIds.concat(gameParameters.guestIds)
-        )
-        expect(services.getPlayerById).toHaveBeenCalledTimes(2)
-        expect(services.joinGame).toHaveBeenCalledWith(
-          gameParameters.id,
-          player,
-          { foo: value }
-        )
-        expect(services.joinGame).toHaveBeenCalledTimes(1)
-      })
-
-      it('rejects broken parameters', async () => {
-        const [player] = players
-        services.getPlayerById.mockResolvedValueOnce(player)
-
-        const response = await server.inject({
-          method: 'POST',
-          url: 'graphql',
-          headers: {
-            authorization: `Bearer ${signToken(
-              player.id,
-              configuration.auth.jwt.key
-            )}`
-          },
-          payload: {
-            query: `mutation { joinGame(gameId: "${faker.datatype.uuid()}", parameters: "{\\"broken\\": true" ) { ... on Game { id } ... on GameParameters { id } } }`
-          }
-        })
-        expect(response.statusCode).toEqual(200)
-        expect(services.listGames).not.toHaveBeenCalled()
-        expect(await response.json()).toMatchObject({
-          data: { joinGame: null },
-          errors: [
-            {
-              message:
-                'Failed to parse provided parameters: Unexpected end of JSON input'
-            }
-          ]
-        })
-      })
-    })
-
     describe('listGames query', () => {
       it('fails on unauthenticated requests', async () => {
         const response = await server.inject({
@@ -449,6 +257,276 @@ describe('given a started server', () => {
         expect(services.getPlayerById).toHaveBeenCalledTimes(2)
         expect(services.createGame).toHaveBeenCalledWith(kind, players[0])
         expect(services.createGame).toHaveBeenCalledTimes(1)
+      })
+    })
+
+    describe('promoteGame mutation', () => {
+      it('fails on unauthenticated requests', async () => {
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          payload: {
+            query: `mutation { promoteGame(gameId: "123", kind: "draughts") { ...on Game { id } } }`
+          }
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.listGames).not.toHaveBeenCalled()
+        expect(await response.json()).toMatchObject({
+          data: { promoteGame: null },
+          errors: [{ message: 'Unauthorized' }]
+        })
+      })
+
+      it('promotes an existing lobby and resolves player objects', async () => {
+        const playerId = players[0].id
+        const kind = faker.helpers.arrayElement(['coinche', 'tarot', 'belote'])
+        const game = {
+          id: faker.datatype.uuid(),
+          kind,
+          created: Date.now(),
+          playerIds: [],
+          guestIds: [playerId]
+        }
+        services.getPlayerById
+          .mockResolvedValueOnce(players[0])
+          .mockResolvedValueOnce([players[0]])
+        services.promoteGame.mockResolvedValueOnce(game)
+
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            authorization: `Bearer ${signToken(
+              playerId,
+              configuration.auth.jwt.key
+            )}`
+          },
+          payload: {
+            query: `mutation {
+  promoteGame(gameId: "${game.id}", kind: "${kind}") {
+    ...on Game {
+      id
+      kind
+      created
+      players { id username }
+    }
+  }
+}`
+          }
+        })
+
+        expect(response.json()).toEqual({
+          data: {
+            promoteGame: {
+              ...game,
+              guestIds: undefined,
+              playerIds: undefined,
+              players: [players[0]]
+            }
+          }
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(1, playerId)
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(2, game.guestIds)
+        expect(services.getPlayerById).toHaveBeenCalledTimes(2)
+        expect(services.promoteGame).toHaveBeenCalledWith(
+          game.id,
+          kind,
+          players[0]
+        )
+        expect(services.promoteGame).toHaveBeenCalledTimes(1)
+      })
+    })
+
+    describe('joinGame mutation', () => {
+      it('fails on unauthenticated requests', async () => {
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          payload: {
+            query: `mutation { joinGame(gameId: "${faker.datatype.uuid()}") { ... on Game { id } ... on GameParameters { id } } }`
+          }
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.listGames).not.toHaveBeenCalled()
+        expect(await response.json()).toMatchObject({
+          data: { joinGame: null },
+          errors: [{ message: 'Unauthorized' }]
+        })
+      })
+
+      it('loads game details and resolves player objects', async () => {
+        const [player] = players
+        const game = {
+          id: faker.datatype.uuid(),
+          kind: 'tarot',
+          created: faker.date.past().getTime(),
+          ownerId: player.id,
+          playerIds: players.map(({ id }) => id),
+          guestIds: guests.map(({ id }) => id)
+        }
+        services.getPlayerById
+          .mockResolvedValueOnce(player)
+          .mockResolvedValueOnce(players.concat(guests))
+        services.joinGame.mockResolvedValueOnce(game)
+
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            authorization: `Bearer ${signToken(
+              player.id,
+              configuration.auth.jwt.key
+            )}`
+          },
+          payload: {
+            query: `mutation {
+  joinGame(gameId: "${game.id}") { 
+    ... on Game { 
+      id
+      kind
+      created
+      players {
+        id
+        username
+        isGuest
+        isOwner
+      }
+    } ... on GameParameters { 
+      id 
+    } 
+  }
+}`
+          }
+        })
+
+        expect(response.json()).toEqual({
+          data: {
+            joinGame: {
+              ...game,
+              ownerId: undefined,
+              playerIds: undefined,
+              guestIds: undefined,
+              players: [...players, ...guests].map(obj => ({
+                ...obj,
+                isGuest: guests.includes(obj),
+                isOwner: obj === player
+              }))
+            }
+          }
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(
+          2,
+          game.playerIds.concat(game.guestIds)
+        )
+        expect(services.getPlayerById).toHaveBeenCalledTimes(2)
+        expect(services.joinGame).toHaveBeenCalledWith(game.id, player, null)
+        expect(services.joinGame).toHaveBeenCalledTimes(1)
+      })
+
+      it('loads game parameters', async () => {
+        const [player] = players
+        const gameParameters = {
+          id: faker.datatype.uuid(),
+          schema: {},
+          ownerId: player.id,
+          playerIds: players.map(({ id }) => id),
+          guestIds: guests.map(({ id }) => id)
+        }
+        const value = faker.lorem.words()
+        services.getPlayerById
+          .mockResolvedValueOnce(player)
+          .mockResolvedValueOnce(players.concat(guests))
+        services.joinGame.mockResolvedValueOnce(gameParameters)
+
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            authorization: `Bearer ${signToken(
+              player.id,
+              configuration.auth.jwt.key
+            )}`
+          },
+          payload: {
+            query: `mutation { joinGame(gameId: "${gameParameters.id}", parameters: "{\\"foo\\":\\"${value}\\"}") { 
+              ... on Game { 
+                id 
+                kind 
+              } 
+              ... on GameParameters { 
+                id 
+                players {
+                  id
+                  username
+                  isGuest
+                  isOwner
+                }
+              } 
+            } 
+          }`
+          }
+        })
+
+        expect(response.json()).toEqual({
+          data: {
+            joinGame: {
+              id: gameParameters.id,
+              playerIds: undefined,
+              guestIds: undefined,
+              players: [...players, ...guests].map(obj => ({
+                ...obj,
+                isGuest: guests.includes(obj),
+                isOwner: obj === player
+              }))
+            }
+          }
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(
+          2,
+          gameParameters.playerIds.concat(gameParameters.guestIds)
+        )
+        expect(services.getPlayerById).toHaveBeenCalledTimes(2)
+        expect(services.joinGame).toHaveBeenCalledWith(
+          gameParameters.id,
+          player,
+          { foo: value }
+        )
+        expect(services.joinGame).toHaveBeenCalledTimes(1)
+      })
+
+      it('rejects broken parameters', async () => {
+        const [player] = players
+        services.getPlayerById.mockResolvedValueOnce(player)
+
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            authorization: `Bearer ${signToken(
+              player.id,
+              configuration.auth.jwt.key
+            )}`
+          },
+          payload: {
+            query: `mutation { joinGame(gameId: "${faker.datatype.uuid()}", parameters: "{\\"broken\\": true" ) { ... on Game { id } ... on GameParameters { id } } }`
+          }
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.listGames).not.toHaveBeenCalled()
+        expect(await response.json()).toMatchObject({
+          data: { joinGame: null },
+          errors: [
+            {
+              message:
+                'Failed to parse provided parameters: Unexpected end of JSON input'
+            }
+          ]
+        })
       })
     })
 
