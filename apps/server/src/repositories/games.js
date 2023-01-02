@@ -71,10 +71,13 @@ class GameRepository extends AbstractRepository {
     const transaction = super._enrichSaveTransaction(context)
     for (const game of context.models) {
       for (const playerId of [
+        game?.ownerId,
         ...(game?.playerIds ?? []),
         ...(game?.guestIds ?? [])
       ]) {
-        transaction.sadd(this._buildPlayerKey(playerId), game.id)
+        if (playerId && game) {
+          transaction.sadd(this._buildPlayerKey(playerId), game.id)
+        }
       }
     }
     return transaction
@@ -90,10 +93,13 @@ class GameRepository extends AbstractRepository {
     const transaction = super._enrichDeleteTransaction(context)
     for (const game of context.models) {
       for (const playerId of [
+        game?.ownerId,
         ...(game?.playerIds ?? []),
         ...(game?.guestIds ?? [])
       ]) {
-        transaction.srem(this._buildPlayerKey(playerId), game.id)
+        if (playerId && game) {
+          transaction.srem(this._buildPlayerKey(playerId), game.id)
+        }
       }
     }
     return transaction

@@ -23,6 +23,7 @@ import {
   joinGame,
   listGames,
   notifyRelatedPlayers,
+  promoteGame,
   saveGame
 } from '../../src/services/games.js'
 import { clearDatabase, getRedisTestUrl } from '../test-utils.js'
@@ -30,11 +31,13 @@ import { clearDatabase, getRedisTestUrl } from '../test-utils.js'
 describe('given a subscription to game lists and an initialized repository', () => {
   const redisUrl = getRedisTestUrl()
   const updates = []
-  let subscription
   const player = { id: 'player' }
   const peer = { id: 'peer-1' }
   const peer2 = { id: 'peer-2' }
+  const games = []
   let game
+  let lobby
+  let subscription
 
   beforeAll(async () => {
     subscription = gameListsUpdate.subscribe(update => updates.push(update))
@@ -60,7 +63,14 @@ describe('given a subscription to game lists and an initialized repository', () 
     updates.splice(0, updates.length)
   })
 
-  afterEach(async () => repositories.games.deleteById(game?.id))
+  afterEach(async () => {
+    await repositories.games.deleteById([
+      game?.id,
+      lobby?.id,
+      ...games.map(({ id }) => id)
+    ])
+    games.splice(0, games.length)
+  })
 
   describe('createGame()', () => {
     it('throws an error on unknown game', async () => {
@@ -82,11 +92,16 @@ describe('given a subscription to game lists and an initialized repository', () 
     })
 
     it('throws an error when cap reached', async () => {
-      const player = { id: faker.datatype.uuid() }
       const kind = 'klondike'
       const actualCount = 10
       for (let rank = 0; rank < actualCount; rank++) {
-        await repositories.games.save({ kind, playerIds: [player.id] })
+        games.push(
+          await repositories.games.save({
+            kind,
+            ownerId: player.id,
+            playerIds: [player.id]
+          })
+        )
       }
       await expect(createGame(kind, player)).rejects.toThrow(
         `You own ${actualCount} games, you can not create more`
@@ -118,12 +133,32 @@ describe('given a subscription to game lists and an initialized repository', () 
       expect(updates).toEqual([{ playerId: player.id, games: [game] }])
     })
 
+    it('creates a lobby', async () => {
+      lobby = await createGame(undefined, player)
+      expect(lobby).toEqual({
+        id: expect.any(String),
+        created: expect.any(Number),
+        availableSeats: 8,
+        kind: undefined,
+        ownerId: player.id,
+        playerIds: [],
+        guestIds: [player.id],
+        meshes: [],
+        cameras: [],
+        messages: [],
+        hands: [],
+        preferences: []
+      })
+      await setTimeout(50)
+      expect(updates).toEqual([{ playerId: player.id, games: [lobby] }])
+    })
+
     it(`throws errors from descriptor's build() function`, async () => {
       vi.spyOn(console, 'error').mockImplementationOnce(() => {})
       await repositories.catalogItems.connect({
         path: join('tests', 'fixtures', 'invalid-games')
       })
-      await expect(createGame('throwing', faker)).rejects.toThrow(
+      await expect(createGame('throwing', player)).rejects.toThrow(
         `internal build error`
       )
       await setTimeout(50)
@@ -132,13 +167,6 @@ describe('given a subscription to game lists and an initialized repository', () 
   })
 
   describe('countOwnedGames()', () => {
-    const games = []
-
-    afterEach(async () => {
-      await repositories.games.deleteById(games.map(({ id }) => id))
-      games.splice(0, games.length)
-    })
-
     it('handles no owned games', async () => {
       await expect(await countOwnGames(player.id)).toBe(0)
     })
@@ -150,10 +178,10 @@ describe('given a subscription to game lists and an initialized repository', () 
     it('counts owned games', async () => {
       const count = 4
       for (let rank = 0; rank < count; rank++) {
-        games.push(await repositories.games.save({ playerIds: [player.id] }))
+        games.push(await repositories.games.save({ ownerId: player.id }))
       }
       for (let rank = 0; rank < 3; rank++) {
-        games.push(await repositories.games.save({ playerIds: [peer.id] }))
+        games.push(await repositories.games.save({ ownerId: peer.id }))
       }
       await expect(await countOwnGames(player.id)).toBe(count)
     })
@@ -161,23 +189,51 @@ describe('given a subscription to game lists and an initialized repository', () 
     it('ignores invitations', async () => {
       const count = 3
       games.push(
-        await repositories.games.save({ playerIds: [peer.id, player.id] })
+        await repositories.games.save({
+          ownerId: peer.id,
+          playerIds: [peer.id, player.id]
+        })
       )
       for (let rank = 0; rank < count; rank++) {
-        games.push(await repositories.games.save({ playerIds: [player.id] }))
+        games.push(
+          await repositories.games.save({
+            ownerId: player.id,
+            playerIds: [player.id]
+          })
+        )
       }
       games.push(
-        await repositories.games.save({ playerIds: [peer.id, player.id] })
+        await repositories.games.save({
+          ownerId: peer.id,
+          playerIds: [player.id]
+        })
       )
       await expect(await countOwnGames(player.id)).toBe(count)
     })
+
+    it('ignores excluded game ids', async () => {
+      const count = 4
+      for (let rank = 0; rank < count; rank++) {
+        games.push(await repositories.games.save({ ownerId: player.id }))
+      }
+      await expect(
+        await countOwnGames(player.id, [games[0].id, games[2].id])
+      ).toBe(count - 2)
+    })
   })
 
-  describe('given a created game', () => {
+  describe('given a created game and lobby', () => {
     beforeEach(async () => {
       game = await createGame('belote', player)
       expect(game).toMatchObject({
         availableSeats: 2,
+        playerIds: [],
+        guestIds: [player.id],
+        preferences: []
+      })
+      lobby = await createGame(undefined, player)
+      expect(lobby).toMatchObject({
+        availableSeats: 8,
         playerIds: [],
         guestIds: [player.id],
         preferences: []
@@ -189,14 +245,18 @@ describe('given a subscription to game lists and an initialized repository', () 
     describe('joinGame()', () => {
       it('returns null on unknown game', async () => {
         expect(await joinGame(faker.datatype.uuid(), player)).toBeNull()
+        await setTimeout(50)
+        expect(updates).toHaveLength(0)
       })
 
       it('returns null on un-owned game', async () => {
         expect(await joinGame(game.id, peer2)).toBeNull()
+        await setTimeout(50)
+        expect(updates).toHaveLength(0)
       })
 
       it('automatically joins a game without parameters', async () => {
-        expect(await joinGame(game.id, player)).toEqual({
+        const expectedGame = {
           ...game,
           meshes: [...game.meshes, expect.any(Object)],
           availableSeats: 1,
@@ -204,7 +264,35 @@ describe('given a subscription to game lists and an initialized repository', () 
           playerIds: [player.id],
           hands: [{ playerId: player.id, meshes: [] }],
           preferences: [{ playerId: player.id, color: expect.any(String) }]
-        })
+        }
+        expect(await joinGame(game.id, player)).toEqual(expectedGame)
+        await setTimeout(50)
+        expect(updates).toEqual([
+          {
+            playerId: player.id,
+            games: expect.arrayContaining([expectedGame, lobby])
+          }
+        ])
+      })
+
+      it('automatically joins a lobby', async () => {
+        const expectedLobby = {
+          ...lobby,
+          meshes: [],
+          availableSeats: 7,
+          guestIds: [],
+          playerIds: [player.id],
+          hands: [],
+          preferences: []
+        }
+        expect(await joinGame(lobby.id, player)).toEqual(expectedLobby)
+        await setTimeout(50)
+        expect(updates).toEqual([
+          {
+            playerId: player.id,
+            games: expect.arrayContaining([game, expectedLobby])
+          }
+        ])
       })
 
       it(`invokes descriptor's addPlayer() when loading game`, async () => {
@@ -261,6 +349,7 @@ describe('given a subscription to game lists and an initialized repository', () 
     describe('given joined owner', () => {
       beforeEach(async () => {
         game = await joinGame(game.id, player)
+        lobby = await joinGame(lobby.id, player)
         await setTimeout(50)
         updates.splice(0)
       })
@@ -291,10 +380,15 @@ describe('given a subscription to game lists and an initialized repository', () 
             ]
           })
           await setTimeout(50)
-          expect(updates).toEqual([
-            { playerId: player.id, games: [updated] },
-            { playerId: peer.id, games: [updated] }
-          ])
+          expect(updates).toEqual(
+            expect.arrayContaining([
+              {
+                playerId: player.id,
+                games: expect.arrayContaining([updated, lobby])
+              },
+              { playerId: peer.id, games: [updated] }
+            ])
+          )
         })
 
         it('throws when the maximum number of players was reached', async () => {
@@ -337,6 +431,217 @@ describe('given a subscription to game lists and an initialized repository', () 
           await expect(
             joinGame(game.id, guests[guests.length - 1])
           ).rejects.toThrow(`no more available seats`)
+        })
+      })
+
+      describe('promoteGame()', () => {
+        it('returns null on unknown game', async () => {
+          expect(
+            await promoteGame(faker.datatype.uuid(), 'belote', player)
+          ).toBeNull()
+          await setTimeout(50)
+          expect(updates).toHaveLength(0)
+        })
+
+        it('throws an error on unknown kind', async () => {
+          const kind = faker.lorem.word()
+          await expect(promoteGame(lobby.id, kind, player)).rejects.toThrow(
+            `Unsupported game ${kind}`
+          )
+          await setTimeout(50)
+          expect(updates).toHaveLength(0)
+        })
+
+        it('returns null on un-owned game', async () => {
+          expect(await promoteGame(lobby.id, 'belote', peer2)).toBeNull()
+          await setTimeout(50)
+          expect(updates).toHaveLength(0)
+        })
+
+        it('throws when the promoted lobby is already a game', async () => {
+          await expect(promoteGame(game.id, 'belote', player)).rejects.toThrow(
+            `is already a full game`
+          )
+          await setTimeout(50)
+          expect(updates).toHaveLength(0)
+        })
+
+        it('promotes as full game with no parameters', async () => {
+          const { kind } = game
+          const expectedGame = {
+            ...lobby,
+            kind,
+            meshes: [game.meshes[0]],
+            availableSeats: 2,
+            guestIds: [player.id],
+            playerIds: [],
+            zoomSpec: game.zoomSpec,
+            preferences: []
+          }
+          expect(await promoteGame(lobby.id, kind, player)).toEqual(
+            expectedGame
+          )
+          await setTimeout(50)
+          expect(updates).toEqual([
+            {
+              playerId: player.id,
+              games: expect.arrayContaining([expectedGame, game])
+            }
+          ])
+        })
+
+        it('promotes as full game with parameters', async () => {
+          const kind = 'draughts'
+          const expectedGame = {
+            ...lobby,
+            kind,
+            meshes: [{ id: 'white-1', shape: 'token' }],
+            availableSeats: 2,
+            guestIds: [player.id],
+            playerIds: [],
+            preferences: []
+          }
+          expect(await promoteGame(lobby.id, kind, player)).toEqual(
+            expectedGame
+          )
+          await setTimeout(50)
+          expect(updates).toEqual([
+            {
+              playerId: player.id,
+              games: expect.arrayContaining([expectedGame, game])
+            }
+          ])
+        })
+
+        it('includes players and guest from the lobby', async () => {
+          await invite(lobby.id, peer.id, player.id)
+          await setTimeout(50)
+          updates.splice(0)
+          const { kind } = game
+          const expectedGame = {
+            ...lobby,
+            kind,
+            meshes: [game.meshes[0]],
+            availableSeats: 2,
+            guestIds: [player.id, peer.id],
+            playerIds: [],
+            zoomSpec: game.zoomSpec,
+            preferences: []
+          }
+          expect(await promoteGame(lobby.id, kind, player)).toEqual(
+            expectedGame
+          )
+          await setTimeout(50)
+          expect(updates).toEqual(
+            expect.arrayContaining([
+              { playerId: peer.id, games: [expectedGame] },
+              {
+                playerId: player.id,
+                games: expect.arrayContaining([expectedGame, game])
+              }
+            ])
+          )
+        })
+
+        it('trims out players when they outnumber available seats', async () => {
+          await invite(lobby.id, peer.id, player.id)
+          await invite(lobby.id, peer2.id, player.id)
+          await joinGame(lobby.id, peer2)
+          await setTimeout(50)
+          updates.splice(0)
+          const { kind } = game
+          const expectedGame = {
+            ...lobby,
+            kind,
+            ownerId: peer2.id,
+            meshes: [game.meshes[0]],
+            availableSeats: 2,
+            guestIds: [player.id, peer2.id],
+            playerIds: [],
+            zoomSpec: game.zoomSpec,
+            preferences: []
+          }
+          expect(await promoteGame(lobby.id, kind, peer2)).toEqual(expectedGame)
+          await setTimeout(50)
+          expect(updates).toEqual(
+            expect.arrayContaining([
+              { playerId: peer2.id, games: [expectedGame] },
+              {
+                playerId: player.id,
+                games: expect.arrayContaining([expectedGame, game])
+              }
+            ])
+          )
+        })
+
+        it('does not throw when promoting the last allowed lobby', async () => {
+          const kind = 'belote'
+          for (let rank = 0; rank < 4; rank++) {
+            games.push({
+              ...(await repositories.games.save({
+                kind,
+                ownerId: player.id,
+                playerIds: [player.id]
+              })),
+              created: NaN,
+              guestIds: []
+            })
+          }
+          await expect(createGame(kind, player)).rejects.toThrow(
+            `You own 6 games, you can not create more`
+          )
+          const expectedGame = {
+            ...lobby,
+            kind,
+            ownerId: player.id,
+            meshes: [game.meshes[0]],
+            availableSeats: 2,
+            guestIds: [player.id],
+            playerIds: [],
+            zoomSpec: game.zoomSpec,
+            preferences: []
+          }
+          expect(await promoteGame(lobby.id, kind, player)).toEqual(
+            expectedGame
+          )
+          await setTimeout(50)
+          expect(updates).toEqual([
+            {
+              playerId: player.id,
+              games: expect.arrayContaining([expectedGame, game, ...games])
+            }
+          ])
+        })
+
+        it('throws an error when cap reached', async () => {
+          const kind = 'klondike'
+          const actualCount = 10
+          for (let rank = 0; rank < actualCount - 1; rank++) {
+            games.push(
+              await repositories.games.save({
+                kind,
+                ownerId: player.id,
+                playerIds: [player.id]
+              })
+            )
+          }
+          await expect(promoteGame(lobby.id, 'belote', player)).rejects.toThrow(
+            `You own ${actualCount} games, you can not create more`
+          )
+          await setTimeout(50)
+          expect(updates).toHaveLength(0)
+        })
+
+        it(`throws errors from descriptor's build() function`, async () => {
+          vi.spyOn(console, 'error').mockImplementationOnce(() => {})
+          await repositories.catalogItems.connect({
+            path: join('tests', 'fixtures', 'invalid-games')
+          })
+          await expect(
+            promoteGame(lobby.id, 'throwing', player)
+          ).rejects.toThrow(`internal build error`)
+          await setTimeout(50)
+          expect(updates).toHaveLength(0)
         })
       })
 
@@ -460,15 +765,19 @@ describe('given a subscription to game lists and an initialized repository', () 
           expect(loaded.playerIds).toEqual([player.id])
           expect(loaded.guestIds).toEqual([peer.id])
           await setTimeout(50)
-          expect(updates).toEqual([
-            { playerId: player.id, games: [updated] },
-            { playerId: peer.id, games: [updated] }
-          ])
+          expect(updates).toEqual(
+            expect.arrayContaining([
+              {
+                playerId: player.id,
+                games: expect.arrayContaining([updated, lobby])
+              },
+              { playerId: peer.id, games: [updated] }
+            ])
+          )
         })
       })
 
       describe('listGames()', () => {
-        const games = []
         const getId = ({ id }) => id
 
         beforeEach(async () => {
@@ -491,18 +800,13 @@ describe('given a subscription to game lists and an initialized repository', () 
           await joinGame(games[4].id, player)
         })
 
-        afterEach(async () => {
-          await repositories.games.deleteById(games.map(({ id }) => id))
-          games.splice(0, games.length)
-        })
-
         it('can return an empty list', async () => {
           expect(await listGames(faker.datatype.uuid())).toEqual([])
         })
 
         it('returns all game of a player', async () => {
           expect((await listGames(player.id)).map(getId)).toEqual(
-            [games[0], games[1], games[2], games[3]].map(getId).sort()
+            [games[0], games[1], games[2], games[3], lobby].map(getId).sort()
           )
 
           expect((await listGames(peer.id)).map(getId)).toEqual(
@@ -529,18 +833,11 @@ describe('given a subscription to game lists and an initialized repository', () 
           expect(await deleteGame(game.id, player.id)).toEqual(game)
           expect(await joinGame(game.id, player.id)).toBeNull()
           await setTimeout(50)
-          expect(updates).toEqual([{ playerId: player.id, games: [] }])
+          expect(updates).toEqual([{ playerId: player.id, games: [lobby] }])
         })
       })
 
       describe('notifyRelatedPlayers()', () => {
-        const games = []
-
-        afterEach(async () => {
-          await repositories.games.deleteById(games.map(({ id }) => id))
-          games.splice(0, games.length)
-        })
-
         it('does nothing for players with no games', async () => {
           await notifyRelatedPlayers(faker.datatype.uuid())
           await setTimeout(50)
