@@ -1,21 +1,373 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Multiple connected 1`] = `
+exports[`Lobby 1`] = `
 <main
   class="flex w-full h-screen"
+  style="height: 100vh;"
 >
   <section
     class="flex-1"
   />
    
   <aside
-    class="s-SgNA803GJPfe"
+    class="s-PjlK2P_9oz-f"
   >
     <section
       aria-expanded="true"
       aria-label="minimizable"
       class="s-vqhOCvFa7LzI"
-      id="minimizable-section-8"
+      id="minimizable-section-9"
+      style="width: auto;"
+    >
+      <menu
+        class="right s-vqhOCvFa7LzI"
+      >
+        <ol
+          class="buttonContainer s-vqhOCvFa7LzI"
+          role="tablist"
+        >
+          <li
+            class="s-vqhOCvFa7LzI"
+          >
+            <button
+              aria-selected="false"
+              class="s-NMyTiX1zi6rz"
+              role="tab"
+            >
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                people_alt
+              </span>
+              
+              
+              <span
+                class="badge s-NMyTiX1zi6rz"
+              >
+                F3
+              </span>
+              
+            </button>
+            <!--&lt;Button&gt;-->
+             
+          </li>
+        </ol>
+         
+        <div
+          aria-controls="minimizable-section-9"
+          class="gutter s-vqhOCvFa7LzI"
+          role="scrollbar"
+        />
+      </menu>
+       
+      <span
+        class="s-vqhOCvFa7LzI"
+      >
+        <div
+          class="content s-PjlK2P_9oz-f"
+          style="width: 30vw"
+        >
+          <div
+            class="peers s-PjlK2P_9oz-f"
+          >
+            <span
+              class="avatars s-PjlK2P_9oz-f"
+            >
+               
+              
+              <section
+                class="s-ab4pMJzf-5--"
+                data-testid="player-avatar"
+              >
+                <video
+                  autoplay=""
+                  class="s-ab4pMJzf-5--"
+                />
+                 
+                <figure
+                  class="s-engCJu8q-fNe colored"
+                  style="--dimension: 150px; --color: #ff4500; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+                >
+                  <img
+                    alt="avatar for Maître Folage"
+                    class="s-engCJu8q-fNe"
+                    height="150"
+                    referrerpolicy="no-referrer"
+                    width="150"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe"
+                  >
+                    Maître Folage
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+                 
+                 
+                <legend
+                  class="s-ab4pMJzf-5--"
+                />
+              </section>
+              <!--&lt;PlayerAvatar&gt;-->
+              
+              <section
+                class="s-ab4pMJzf-5--"
+                data-testid="player-avatar"
+              >
+                <video
+                  autoplay=""
+                  class="s-ab4pMJzf-5--"
+                />
+                 
+                <figure
+                  class="s-engCJu8q-fNe colored"
+                  style="--dimension: 150px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+                >
+                  <img
+                    alt="avatar for Pascal"
+                    class="s-engCJu8q-fNe"
+                    height="150"
+                    referrerpolicy="no-referrer"
+                    width="150"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe"
+                  >
+                    Pascal
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+                 
+                 
+                <legend
+                  class="s-ab4pMJzf-5--"
+                />
+              </section>
+              <!--&lt;PlayerAvatar&gt;-->
+            </span>
+             
+            <div
+              class="lobby-instructions s-PjlK2P_9oz-f"
+            >
+              Pour transformer ce salon en jeu, choisissez un de vos jeux disponibles.
+            </div>
+             
+            <section
+              aria-expanded="true"
+              aria-label="minimizable"
+              class="s-vqhOCvFa7LzI vertical"
+              id="minimizable-section-10"
+              style="height: 15%;"
+            >
+              <menu
+                class="bottom s-vqhOCvFa7LzI vertical"
+              >
+                <ol
+                  class="buttonContainer s-vqhOCvFa7LzI"
+                  role="tablist"
+                >
+                  <li
+                    class="s-vqhOCvFa7LzI"
+                  >
+                    <button
+                      aria-selected="false"
+                      class="s-NMyTiX1zi6rz"
+                      role="tab"
+                    >
+                      <span
+                        class="material-icons s-NMyTiX1zi6rz"
+                      >
+                        question_answer
+                      </span>
+                      
+                      
+                      <span
+                        class="badge s-NMyTiX1zi6rz"
+                      >
+                        F4
+                      </span>
+                      
+                    </button>
+                    <!--&lt;Button&gt;-->
+                     
+                  </li>
+                </ol>
+                 
+                <div
+                  aria-controls="minimizable-section-10"
+                  class="gutter s-vqhOCvFa7LzI"
+                  role="scrollbar"
+                />
+              </menu>
+               
+              <span
+                class="s-vqhOCvFa7LzI"
+              >
+                <div
+                  class="discussion s-4DrpFHLJm4IA"
+                >
+                  <div
+                    class="messages s-4DrpFHLJm4IA"
+                  >
+                    <span
+                      class="from s-4DrpFHLJm4IA"
+                    >
+                      Fernand Naudin
+                    </span>
+                    <span
+                      class="message s-4DrpFHLJm4IA"
+                    >
+                      Qu'est-ce qui se passe encore ?
+                    </span>
+                    <span
+                      class="from s-4DrpFHLJm4IA"
+                    >
+                      Maître Folage
+                    </span>
+                    <span
+                      class="message s-4DrpFHLJm4IA"
+                    >
+                      Notre ami va se faire un plaisir de vous l'expliquer.
+                    </span>
+                    <span
+                      class="from s-4DrpFHLJm4IA"
+                    >
+                      Pascal
+                    </span>
+                    <span
+                      class="message s-4DrpFHLJm4IA"
+                    >
+                      Les Volfoni ont organisé à la péniche une petite réunion des cadres, façon meeting, si vous voyez ce que je veux dire.
+M'enfin quoi, on parle dans votre dos.
+                    </span>
+                    <span
+                      class="from s-4DrpFHLJm4IA"
+                    >
+                      Fernand Naudin
+                    </span>
+                    <span
+                      class="message s-4DrpFHLJm4IA"
+                    >
+                      Et tu tiens ça d'où ?
+                    </span>
+                    <span
+                      class="from s-4DrpFHLJm4IA"
+                    >
+                      Pascal
+                    </span>
+                    <span
+                      class="message s-4DrpFHLJm4IA"
+                    >
+                      Je ne peux pas le dire, j'ai promis. Ce serait mal.
+                    </span>
+                    <span
+                      class="from s-4DrpFHLJm4IA"
+                    >
+                      Fernand Naudin
+                    </span>
+                    <span
+                      class="message s-4DrpFHLJm4IA"
+                    >
+                      Alors ?
+                    </span>
+                    <span
+                      class="from s-4DrpFHLJm4IA"
+                    >
+                      Maître Folage
+                    </span>
+                    <span
+                      class="message s-4DrpFHLJm4IA"
+                    >
+                      Eh bien. Euh. Y'a deux solutions : ou on se dérange, ou on méprise. 
+Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire, bien sûr.
+                    </span>
+                    <span
+                      class="from s-4DrpFHLJm4IA"
+                    >
+                      Fernand Naudin
+                    </span>
+                    <span
+                      class="message s-4DrpFHLJm4IA"
+                    >
+                      Bon, on va y aller, hmm ?
+                    </span>
+                    <span
+                      class="from s-4DrpFHLJm4IA"
+                    >
+                      Pascal
+                    </span>
+                    <span
+                      class="message s-4DrpFHLJm4IA"
+                    >
+                      Monsieur Fernand, y'a peut-être une place pour moi dans votre auto. Des fois que la réunion devienne houleuse ... J'ai une présence tranquillisante.
+                    </span>
+                  </div>
+                   
+                  <form
+                    class="s-4DrpFHLJm4IA"
+                  >
+                    <fieldset
+                      class="s-Fe6WNbR-55zp"
+                    >
+                       
+                      <input
+                        class="s-Fe6WNbR-55zp"
+                      />
+                    </fieldset>
+                    <!--&lt;Input&gt;-->
+                     
+                    <button
+                      class="s-NMyTiX1zi6rz"
+                      disabled=""
+                      title="Envoyer à tous"
+                      type="submit"
+                    >
+                      <span
+                        class="material-icons s-NMyTiX1zi6rz"
+                      >
+                        send
+                      </span>
+                      
+                      
+                      
+                    </button>
+                    <!--&lt;Button&gt;-->
+                  </form>
+                </div>
+                <!--&lt;Discussion&gt;-->
+              </span>
+            </section>
+            <!--&lt;MinimizableSection&gt;-->
+          </div>
+           
+        </div>
+      </span>
+    </section>
+    <!--&lt;MinimizableSection&gt;-->
+  </aside>
+  <!--&lt;GameAside&gt;-->
+</main>
+`;
+
+exports[`Multiple connected 1`] = `
+<main
+  class="flex w-full h-screen"
+  style="height: 100vh;"
+>
+  <section
+    class="flex-1"
+  />
+   
+  <aside
+    class="s-PjlK2P_9oz-f"
+  >
+    <section
+      aria-expanded="true"
+      aria-label="minimizable"
+      class="s-vqhOCvFa7LzI"
+      id="minimizable-section-4"
       style="width: auto;"
     >
       <menu
@@ -103,7 +455,7 @@ exports[`Multiple connected 1`] = `
         </ol>
          
         <div
-          aria-controls="minimizable-section-8"
+          aria-controls="minimizable-section-4"
           class="gutter s-vqhOCvFa7LzI"
           role="scrollbar"
         />
@@ -113,22 +465,22 @@ exports[`Multiple connected 1`] = `
         class="s-vqhOCvFa7LzI"
       >
         <div
-          class="content s-SgNA803GJPfe"
+          class="content s-PjlK2P_9oz-f"
           style="width: 30vw"
         >
           <div
-            class="peers s-SgNA803GJPfe"
+            class="peers s-PjlK2P_9oz-f"
           >
             <span
-              class="avatars s-SgNA803GJPfe"
+              class="avatars s-PjlK2P_9oz-f"
             >
               <section
-                class="s-oO6dIPzQcPRb"
+                class="s-ab4pMJzf-5--"
                 data-testid="player-avatar"
               >
                 <video
                   autoplay=""
-                  class="s-oO6dIPzQcPRb"
+                  class="s-ab4pMJzf-5--"
                 />
                  
                 <figure
@@ -153,7 +505,7 @@ exports[`Multiple connected 1`] = `
                  
                  
                 <legend
-                  class="s-oO6dIPzQcPRb"
+                  class="s-ab4pMJzf-5--"
                 >
                    
                   
@@ -163,12 +515,12 @@ exports[`Multiple connected 1`] = `
                
               
               <section
-                class="s-oO6dIPzQcPRb"
+                class="s-ab4pMJzf-5--"
                 data-testid="player-avatar"
               >
                 <video
                   autoplay=""
-                  class="s-oO6dIPzQcPRb"
+                  class="s-ab4pMJzf-5--"
                 />
                  
                 <figure
@@ -193,18 +545,18 @@ exports[`Multiple connected 1`] = `
                  
                  
                 <legend
-                  class="s-oO6dIPzQcPRb"
+                  class="s-ab4pMJzf-5--"
                 />
               </section>
               <!--&lt;PlayerAvatar&gt;-->
               
               <section
-                class="s-oO6dIPzQcPRb"
+                class="s-ab4pMJzf-5--"
                 data-testid="player-avatar"
               >
                 <video
                   autoplay=""
-                  class="s-oO6dIPzQcPRb"
+                  class="s-ab4pMJzf-5--"
                 />
                  
                 <figure
@@ -229,17 +581,18 @@ exports[`Multiple connected 1`] = `
                  
                  
                 <legend
-                  class="s-oO6dIPzQcPRb"
+                  class="s-ab4pMJzf-5--"
                 />
               </section>
               <!--&lt;PlayerAvatar&gt;-->
             </span>
              
+             
             <section
               aria-expanded="true"
               aria-label="minimizable"
               class="s-vqhOCvFa7LzI vertical"
-              id="minimizable-section-9"
+              id="minimizable-section-5"
               style="height: 15%;"
             >
               <menu
@@ -277,7 +630,7 @@ exports[`Multiple connected 1`] = `
                 </ol>
                  
                 <div
-                  aria-controls="minimizable-section-9"
+                  aria-controls="minimizable-section-5"
                   class="gutter s-vqhOCvFa7LzI"
                   role="scrollbar"
                 />
@@ -287,107 +640,107 @@ exports[`Multiple connected 1`] = `
                 class="s-vqhOCvFa7LzI"
               >
                 <div
-                  class="discussion s-vwbhBuhy0jW4"
+                  class="discussion s-4DrpFHLJm4IA"
                 >
                   <div
-                    class="messages s-vwbhBuhy0jW4"
+                    class="messages s-4DrpFHLJm4IA"
                   >
                     <span
-                      class="from s-vwbhBuhy0jW4"
+                      class="from s-4DrpFHLJm4IA"
                     >
                       Fernand Naudin
                     </span>
                     <span
-                      class="message s-vwbhBuhy0jW4"
+                      class="message s-4DrpFHLJm4IA"
                     >
                       Qu'est-ce qui se passe encore ?
                     </span>
                     <span
-                      class="from s-vwbhBuhy0jW4"
+                      class="from s-4DrpFHLJm4IA"
                     >
                       Maître Folage
                     </span>
                     <span
-                      class="message s-vwbhBuhy0jW4"
+                      class="message s-4DrpFHLJm4IA"
                     >
                       Notre ami va se faire un plaisir de vous l'expliquer.
                     </span>
                     <span
-                      class="from s-vwbhBuhy0jW4"
+                      class="from s-4DrpFHLJm4IA"
                     >
                       Pascal
                     </span>
                     <span
-                      class="message s-vwbhBuhy0jW4"
+                      class="message s-4DrpFHLJm4IA"
                     >
                       Les Volfoni ont organisé à la péniche une petite réunion des cadres, façon meeting, si vous voyez ce que je veux dire.
 M'enfin quoi, on parle dans votre dos.
                     </span>
                     <span
-                      class="from s-vwbhBuhy0jW4"
+                      class="from s-4DrpFHLJm4IA"
                     >
                       Fernand Naudin
                     </span>
                     <span
-                      class="message s-vwbhBuhy0jW4"
+                      class="message s-4DrpFHLJm4IA"
                     >
                       Et tu tiens ça d'où ?
                     </span>
                     <span
-                      class="from s-vwbhBuhy0jW4"
+                      class="from s-4DrpFHLJm4IA"
                     >
                       Pascal
                     </span>
                     <span
-                      class="message s-vwbhBuhy0jW4"
+                      class="message s-4DrpFHLJm4IA"
                     >
                       Je ne peux pas le dire, j'ai promis. Ce serait mal.
                     </span>
                     <span
-                      class="from s-vwbhBuhy0jW4"
+                      class="from s-4DrpFHLJm4IA"
                     >
                       Fernand Naudin
                     </span>
                     <span
-                      class="message s-vwbhBuhy0jW4"
+                      class="message s-4DrpFHLJm4IA"
                     >
                       Alors ?
                     </span>
                     <span
-                      class="from s-vwbhBuhy0jW4"
+                      class="from s-4DrpFHLJm4IA"
                     >
                       Maître Folage
                     </span>
                     <span
-                      class="message s-vwbhBuhy0jW4"
+                      class="message s-4DrpFHLJm4IA"
                     >
                       Eh bien. Euh. Y'a deux solutions : ou on se dérange, ou on méprise. 
 Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire, bien sûr.
                     </span>
                     <span
-                      class="from s-vwbhBuhy0jW4"
+                      class="from s-4DrpFHLJm4IA"
                     >
                       Fernand Naudin
                     </span>
                     <span
-                      class="message s-vwbhBuhy0jW4"
+                      class="message s-4DrpFHLJm4IA"
                     >
                       Bon, on va y aller, hmm ?
                     </span>
                     <span
-                      class="from s-vwbhBuhy0jW4"
+                      class="from s-4DrpFHLJm4IA"
                     >
                       Pascal
                     </span>
                     <span
-                      class="message s-vwbhBuhy0jW4"
+                      class="message s-4DrpFHLJm4IA"
                     >
                       Monsieur Fernand, y'a peut-être une place pour moi dans votre auto. Des fois que la réunion devienne houleuse ... J'ai une présence tranquillisante.
                     </span>
                   </div>
                    
                   <form
-                    class="s-vwbhBuhy0jW4"
+                    class="s-4DrpFHLJm4IA"
                   >
                     <fieldset
                       class="s-Fe6WNbR-55zp"
@@ -435,19 +788,20 @@ Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire,
 exports[`No peers 1`] = `
 <main
   class="flex w-full h-screen"
+  style="height: 100vh;"
 >
   <section
     class="flex-1"
   />
    
   <aside
-    class="s-SgNA803GJPfe"
+    class="s-PjlK2P_9oz-f"
   >
     <section
       aria-expanded="false"
       aria-label="minimizable"
       class="s-vqhOCvFa7LzI minimized"
-      id="minimizable-section-6"
+      id="minimizable-section-1"
       style="width: auto;"
     >
       <menu
@@ -510,7 +864,7 @@ exports[`No peers 1`] = `
         </ol>
          
         <div
-          aria-controls="minimizable-section-6"
+          aria-controls="minimizable-section-1"
           class="gutter s-vqhOCvFa7LzI"
           role="scrollbar"
         />
@@ -520,25 +874,26 @@ exports[`No peers 1`] = `
         class="s-vqhOCvFa7LzI"
       >
         <div
-          class="content s-SgNA803GJPfe"
+          class="content s-PjlK2P_9oz-f"
           style="max-width: 30vw"
         >
           <div
-            class="peers s-SgNA803GJPfe hidden"
+            class="peers s-PjlK2P_9oz-f hidden"
           >
             <span
-              class="avatars s-SgNA803GJPfe"
+              class="avatars s-PjlK2P_9oz-f"
             >
                
             </span>
              
+             
           </div>
            
           <section
-            class="s-pX3FslpvGiLr"
+            class="s-HS2qv-2i033g"
           >
             <menu
-              class="s-pX3FslpvGiLr"
+              class="s-HS2qv-2i033g"
             >
               <button
                 class="s-NMyTiX1zi6rz"
@@ -575,11 +930,11 @@ exports[`No peers 1`] = `
             </menu>
              
             <div
-              class="image-container s-pX3FslpvGiLr"
+              class="image-container s-HS2qv-2i033g"
             >
               <img
                 alt="Livre de règles, page 1"
-                class="s-pX3FslpvGiLr"
+                class="s-HS2qv-2i033g"
                 src="http://localhost:3001/games/splendor/rules/1.webp"
               />
             </div>
@@ -597,19 +952,20 @@ exports[`No peers 1`] = `
 exports[`No peers, no rules book 1`] = `
 <main
   class="flex w-full h-screen"
+  style="height: 100vh;"
 >
   <section
     class="flex-1"
   />
    
   <aside
-    class="s-SgNA803GJPfe"
+    class="s-PjlK2P_9oz-f"
   >
     <section
       aria-expanded="false"
       aria-label="minimizable"
       class="s-vqhOCvFa7LzI minimized"
-      id="minimizable-section-10"
+      id="minimizable-section-6"
       style="width: auto;"
     >
       <menu
@@ -647,7 +1003,7 @@ exports[`No peers, no rules book 1`] = `
         </ol>
          
         <div
-          aria-controls="minimizable-section-10"
+          aria-controls="minimizable-section-6"
           class="gutter s-vqhOCvFa7LzI"
           role="scrollbar"
         />
@@ -657,37 +1013,38 @@ exports[`No peers, no rules book 1`] = `
         class="s-vqhOCvFa7LzI"
       >
         <div
-          class="content s-SgNA803GJPfe"
+          class="content s-PjlK2P_9oz-f"
           style="max-width: 30vw"
         >
           <div
-            class="peers s-SgNA803GJPfe hidden"
+            class="peers s-PjlK2P_9oz-f hidden"
           >
             <span
-              class="avatars s-SgNA803GJPfe"
+              class="avatars s-PjlK2P_9oz-f"
             >
                
             </span>
              
+             
           </div>
            
           <div
-            class="s-z1Q6GECZQiDV"
+            class="s-STWbXzfYiRLQ"
           >
             <h3
-              class="s-z1Q6GECZQiDV"
+              class="s-STWbXzfYiRLQ"
             >
               Contrôler un ou plusieurs objets
             </h3>
              
             <section
-              class="s-z1Q6GECZQiDV"
+              class="s-STWbXzfYiRLQ"
             >
               <div
-                class="s-0nPg0M2wSeXX"
+                class="s-4iEuBZCKGaMy"
               >
                 <span
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                 >
                   Déplacer
                   :
@@ -695,21 +1052,21 @@ exports[`No peers, no rules book 1`] = `
                  
                 <img
                   alt="Tiré-déplacé un objet avec le clic gauche"
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                   src="/images/help/left-drag-object.webp"
                 />
                 <img
                   alt="Tiré-déplacé un objet avec un tap"
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                   src="/images/help/pointer-drag-object.webp"
                 />
               </div>
-              <!--&lt;ControlsHelpSection&gt;-->
+              <!--&lt;ControlHelp&gt;-->
               <div
-                class="s-0nPg0M2wSeXX"
+                class="s-4iEuBZCKGaMy"
               >
                 <span
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                 >
                   Retourner
                   :
@@ -717,21 +1074,21 @@ exports[`No peers, no rules book 1`] = `
                  
                 <img
                   alt="Clic gauche sur un objet"
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                   src="/images/help/left-object.webp"
                 />
                 <img
                   alt="Tap sur un objet"
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                   src="/images/help/pointer-object.webp"
                 />
               </div>
-              <!--&lt;ControlsHelpSection&gt;-->
+              <!--&lt;ControlHelp&gt;-->
               <div
-                class="s-0nPg0M2wSeXX"
+                class="s-4iEuBZCKGaMy"
               >
                 <span
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                 >
                   Tourner de 90°
                   :
@@ -739,32 +1096,32 @@ exports[`No peers, no rules book 1`] = `
                  
                 <img
                   alt="Clic gauche long sur un objet"
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                   src="/images/help/long-left-object.webp"
                 />
                 <img
                   alt="Tap long sur un objet"
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                   src="/images/help/long-pointer-object.webp"
                 />
               </div>
-              <!--&lt;ControlsHelpSection&gt;-->
+              <!--&lt;ControlHelp&gt;-->
             </section>
              
             <h3
-              class="s-z1Q6GECZQiDV"
+              class="s-STWbXzfYiRLQ"
             >
               Contrôler un objet
             </h3>
              
             <section
-              class="s-z1Q6GECZQiDV"
+              class="s-STWbXzfYiRLQ"
             >
               <div
-                class="s-0nPg0M2wSeXX"
+                class="s-4iEuBZCKGaMy"
               >
                 <span
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                 >
                   Ouvrir le menu
                   :
@@ -772,21 +1129,21 @@ exports[`No peers, no rules book 1`] = `
                  
                 <img
                   alt="Clic droit sur un objet"
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                   src="/images/help/right-object.webp"
                 />
                 <img
                   alt="Tap avec deux doigts sur un objet"
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                   src="/images/help/two-pointers-object.webp"
                 />
               </div>
-              <!--&lt;ControlsHelpSection&gt;-->
+              <!--&lt;ControlHelp&gt;-->
               <div
-                class="s-0nPg0M2wSeXX"
+                class="s-4iEuBZCKGaMy"
               >
                 <span
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                 >
                   Voir en détail
                   :
@@ -794,21 +1151,21 @@ exports[`No peers, no rules book 1`] = `
                  
                 <img
                   alt="Double clic gauche sur un objet"
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                   src="/images/help/double-left-object.webp"
                 />
                 <img
                   alt="Double tap sur un objet"
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                   src="/images/help/double-pointer-object.webp"
                 />
               </div>
-              <!--&lt;ControlsHelpSection&gt;-->
+              <!--&lt;ControlHelp&gt;-->
               <div
-                class="s-0nPg0M2wSeXX"
+                class="s-4iEuBZCKGaMy"
               >
                 <span
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                 >
                   Ajouter à la sélection
                   :
@@ -816,21 +1173,21 @@ exports[`No peers, no rules book 1`] = `
                  
                 <img
                   alt="tooltips.help-left-drag-select"
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                   src="/images/help/left-drag-select.webp"
                 />
                 <img
                   alt="tooltips.help-pointer-drag-select"
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                   src="/images/help/pointer-drag-select.webp"
                 />
               </div>
-              <!--&lt;ControlsHelpSection&gt;-->
+              <!--&lt;ControlHelp&gt;-->
               <div
-                class="s-0nPg0M2wSeXX"
+                class="s-4iEuBZCKGaMy"
               >
                 <span
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                 >
                   Vider la sélection
                   :
@@ -838,32 +1195,32 @@ exports[`No peers, no rules book 1`] = `
                  
                 <img
                   alt="Clic gauche en dehors de la sélection"
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                   src="/images/help/left-outside-selection.webp"
                 />
                 <img
                   alt="Tap en dehors de la sélection"
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                   src="/images/help/pointer-outside-selection.webp"
                 />
               </div>
-              <!--&lt;ControlsHelpSection&gt;-->
+              <!--&lt;ControlHelp&gt;-->
             </section>
              
             <h3
-              class="s-z1Q6GECZQiDV"
+              class="s-STWbXzfYiRLQ"
             >
               Contrôler la caméra
             </h3>
              
             <section
-              class="s-z1Q6GECZQiDV"
+              class="s-STWbXzfYiRLQ"
             >
               <div
-                class="s-0nPg0M2wSeXX"
+                class="s-4iEuBZCKGaMy"
               >
                 <span
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                 >
                   Déplacer
                   :
@@ -871,21 +1228,21 @@ exports[`No peers, no rules book 1`] = `
                  
                 <img
                   alt="Tiré-déplacé avec le clic droit"
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                   src="/images/help/right-drag.webp"
                 />
                 <img
                   alt="Tap avec deux doigts sur un objet"
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                   src="/images/help/two-pointers-drag.webp"
                 />
               </div>
-              <!--&lt;ControlsHelpSection&gt;-->
+              <!--&lt;ControlHelp&gt;-->
               <div
-                class="s-0nPg0M2wSeXX"
+                class="s-4iEuBZCKGaMy"
               >
                 <span
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                 >
                   Pivoter et incliner
                   :
@@ -893,21 +1250,21 @@ exports[`No peers, no rules book 1`] = `
                  
                 <img
                   alt="tooltips.help-middle-drag"
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                   src="/images/help/middle-drag.webp"
                 />
                 <img
                   alt="tooltips.help-three-pointers-drag"
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                   src="/images/help/three-pointers-drag.webp"
                 />
               </div>
-              <!--&lt;ControlsHelpSection&gt;-->
+              <!--&lt;ControlHelp&gt;-->
               <div
-                class="s-0nPg0M2wSeXX"
+                class="s-4iEuBZCKGaMy"
               >
                 <span
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                 >
                   Zoomer
                   :
@@ -915,21 +1272,21 @@ exports[`No peers, no rules book 1`] = `
                  
                 <img
                   alt="Molette de la souris"
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                   src="/images/help/mouse-wheel.webp"
                 />
                 <img
                   alt="Pincer"
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                   src="/images/help/pinch.webp"
                 />
               </div>
-              <!--&lt;ControlsHelpSection&gt;-->
+              <!--&lt;ControlHelp&gt;-->
               <div
-                class="s-0nPg0M2wSeXX"
+                class="s-4iEuBZCKGaMy"
               >
                 <span
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                 >
                   Enregistrer la position (Ctrl+1~9)
                   :
@@ -937,16 +1294,16 @@ exports[`No peers, no rules book 1`] = `
                  
                 <img
                   alt="Clic sur le bouton \\"nouvelle caméra\\""
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                   src="/images/help/new-camera.webp"
                 />
               </div>
-              <!--&lt;ControlsHelpSection&gt;-->
+              <!--&lt;ControlHelp&gt;-->
               <div
-                class="s-0nPg0M2wSeXX"
+                class="s-4iEuBZCKGaMy"
               >
                 <span
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                 >
                   Restaurer la position
                   :
@@ -954,16 +1311,16 @@ exports[`No peers, no rules book 1`] = `
                  
                 <img
                   alt="Clic sur un emplacement de caméra"
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                   src="/images/help/restore-camera.webp"
                 />
               </div>
-              <!--&lt;ControlsHelpSection&gt;-->
+              <!--&lt;ControlHelp&gt;-->
               <div
-                class="s-0nPg0M2wSeXX"
+                class="s-4iEuBZCKGaMy"
               >
                 <span
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                 >
                   Mettre à jour la position
                   :
@@ -971,14 +1328,14 @@ exports[`No peers, no rules book 1`] = `
                  
                 <img
                   alt="Clic long sur un emplacement de caméra"
-                  class="s-0nPg0M2wSeXX"
+                  class="s-4iEuBZCKGaMy"
                   src="/images/help/update-camera.webp"
                 />
               </div>
-              <!--&lt;ControlsHelpSection&gt;-->
+              <!--&lt;ControlHelp&gt;-->
             </section>
           </div>
-          <!--&lt;ControlsHelp&gt;-->
+          <!--&lt;Container&gt;-->
         </div>
       </span>
     </section>
@@ -991,18 +1348,322 @@ exports[`No peers, no rules book 1`] = `
 exports[`Single connected 1`] = `
 <main
   class="flex w-full h-screen"
+  style="height: 100vh;"
 >
   <section
     class="flex-1"
   />
    
   <aside
-    class="s-SgNA803GJPfe"
+    class="s-PjlK2P_9oz-f"
   >
     <section
-      aria-expanded="false"
+      aria-expanded="true"
       aria-label="minimizable"
-      class="s-vqhOCvFa7LzI minimized"
+      class="s-vqhOCvFa7LzI"
+      id="minimizable-section-2"
+      style="width: auto;"
+    >
+      <menu
+        class="right s-vqhOCvFa7LzI"
+      >
+        <ol
+          class="buttonContainer s-vqhOCvFa7LzI"
+          role="tablist"
+        >
+          <li
+            class="s-vqhOCvFa7LzI active"
+          >
+            <button
+              aria-selected="true"
+              class="s-NMyTiX1zi6rz"
+              role="tab"
+            >
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                people_alt
+              </span>
+              
+              
+              <span
+                class="badge s-NMyTiX1zi6rz"
+              >
+                F3
+              </span>
+              
+            </button>
+            <!--&lt;Button&gt;-->
+             
+          </li>
+          <li
+            class="s-vqhOCvFa7LzI"
+          >
+            <button
+              aria-selected="false"
+              class="s-NMyTiX1zi6rz"
+              role="tab"
+            >
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                auto_stories
+              </span>
+              
+              
+              <span
+                class="badge s-NMyTiX1zi6rz"
+              >
+                F2
+              </span>
+              
+            </button>
+            <!--&lt;Button&gt;-->
+             
+          </li>
+          <li
+            class="s-vqhOCvFa7LzI"
+          >
+            <button
+              aria-selected="false"
+              class="s-NMyTiX1zi6rz"
+              role="tab"
+            >
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                help
+              </span>
+              
+              
+              <span
+                class="badge s-NMyTiX1zi6rz"
+              >
+                F1
+              </span>
+              
+            </button>
+            <!--&lt;Button&gt;-->
+             
+          </li>
+        </ol>
+         
+        <div
+          aria-controls="minimizable-section-2"
+          class="gutter s-vqhOCvFa7LzI"
+          role="scrollbar"
+        />
+      </menu>
+       
+      <span
+        class="s-vqhOCvFa7LzI"
+      >
+        <div
+          class="content s-PjlK2P_9oz-f"
+          style="width: 30vw"
+        >
+          <div
+            class="peers s-PjlK2P_9oz-f"
+          >
+            <span
+              class="avatars s-PjlK2P_9oz-f"
+            >
+               
+              
+              <section
+                class="s-ab4pMJzf-5--"
+                data-testid="player-avatar"
+              >
+                <video
+                  autoplay=""
+                  class="s-ab4pMJzf-5--"
+                />
+                 
+                <figure
+                  class="s-engCJu8q-fNe colored"
+                  style="--dimension: 150px; --color: #ff4500; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+                >
+                  <img
+                    alt="avatar for Maître Folage"
+                    class="s-engCJu8q-fNe"
+                    height="150"
+                    referrerpolicy="no-referrer"
+                    width="150"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe"
+                  >
+                    Maître Folage
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+                 
+                 
+                <legend
+                  class="s-ab4pMJzf-5--"
+                />
+              </section>
+              <!--&lt;PlayerAvatar&gt;-->
+              
+              <section
+                class="s-ab4pMJzf-5--"
+                data-testid="player-avatar"
+              >
+                <video
+                  autoplay=""
+                  class="s-ab4pMJzf-5--"
+                />
+                 
+                <figure
+                  class="s-engCJu8q-fNe colored"
+                  style="--dimension: 150px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+                >
+                  <img
+                    alt="avatar for Pascal"
+                    class="s-engCJu8q-fNe"
+                    height="150"
+                    referrerpolicy="no-referrer"
+                    width="150"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe"
+                  >
+                    Pascal
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+                 
+                 
+                <legend
+                  class="s-ab4pMJzf-5--"
+                />
+              </section>
+              <!--&lt;PlayerAvatar&gt;-->
+            </span>
+             
+             
+            <section
+              aria-expanded="true"
+              aria-label="minimizable"
+              class="s-vqhOCvFa7LzI vertical"
+              id="minimizable-section-3"
+              style="height: 15%;"
+            >
+              <menu
+                class="bottom s-vqhOCvFa7LzI vertical"
+              >
+                <ol
+                  class="buttonContainer s-vqhOCvFa7LzI"
+                  role="tablist"
+                >
+                  <li
+                    class="s-vqhOCvFa7LzI"
+                  >
+                    <button
+                      aria-selected="false"
+                      class="s-NMyTiX1zi6rz"
+                      role="tab"
+                    >
+                      <span
+                        class="material-icons s-NMyTiX1zi6rz"
+                      >
+                        question_answer
+                      </span>
+                      
+                      
+                      <span
+                        class="badge s-NMyTiX1zi6rz"
+                      >
+                        F4
+                      </span>
+                      
+                    </button>
+                    <!--&lt;Button&gt;-->
+                     
+                  </li>
+                </ol>
+                 
+                <div
+                  aria-controls="minimizable-section-3"
+                  class="gutter s-vqhOCvFa7LzI"
+                  role="scrollbar"
+                />
+              </menu>
+               
+              <span
+                class="s-vqhOCvFa7LzI"
+              >
+                <div
+                  class="discussion s-4DrpFHLJm4IA"
+                >
+                  <div
+                    class="messages s-4DrpFHLJm4IA"
+                  />
+                   
+                  <form
+                    class="s-4DrpFHLJm4IA"
+                  >
+                    <fieldset
+                      class="s-Fe6WNbR-55zp"
+                    >
+                       
+                      <input
+                        class="s-Fe6WNbR-55zp"
+                      />
+                    </fieldset>
+                    <!--&lt;Input&gt;-->
+                     
+                    <button
+                      class="s-NMyTiX1zi6rz"
+                      disabled=""
+                      title="Envoyer à tous"
+                      type="submit"
+                    >
+                      <span
+                        class="material-icons s-NMyTiX1zi6rz"
+                      >
+                        send
+                      </span>
+                      
+                      
+                      
+                    </button>
+                    <!--&lt;Button&gt;-->
+                  </form>
+                </div>
+                <!--&lt;Discussion&gt;-->
+              </span>
+            </section>
+            <!--&lt;MinimizableSection&gt;-->
+          </div>
+           
+        </div>
+      </span>
+    </section>
+    <!--&lt;MinimizableSection&gt;-->
+  </aside>
+  <!--&lt;GameAside&gt;-->
+</main>
+`;
+
+exports[`Single connected, no rules book, thread 1`] = `
+<main
+  class="flex w-full h-screen"
+  style="height: 100vh;"
+>
+  <section
+    class="flex-1"
+  />
+   
+  <aside
+    class="s-PjlK2P_9oz-f"
+  >
+    <section
+      aria-expanded="true"
+      aria-label="minimizable"
+      class="s-vqhOCvFa7LzI"
       id="minimizable-section-7"
       style="width: auto;"
     >
@@ -1049,31 +1710,6 @@ exports[`Single connected 1`] = `
               <span
                 class="material-icons s-NMyTiX1zi6rz"
               >
-                auto_stories
-              </span>
-              
-              
-              <span
-                class="badge s-NMyTiX1zi6rz"
-              >
-                F2
-              </span>
-              
-            </button>
-            <!--&lt;Button&gt;-->
-             
-          </li>
-          <li
-            class="s-vqhOCvFa7LzI"
-          >
-            <button
-              aria-selected="false"
-              class="s-NMyTiX1zi6rz"
-              role="tab"
-            >
-              <span
-                class="material-icons s-NMyTiX1zi6rz"
-              >
                 help
               </span>
               
@@ -1101,24 +1737,24 @@ exports[`Single connected 1`] = `
         class="s-vqhOCvFa7LzI"
       >
         <div
-          class="content s-SgNA803GJPfe"
+          class="content s-PjlK2P_9oz-f"
           style="width: 30vw"
         >
           <div
-            class="peers s-SgNA803GJPfe"
+            class="peers s-PjlK2P_9oz-f"
           >
             <span
-              class="avatars s-SgNA803GJPfe"
+              class="avatars s-PjlK2P_9oz-f"
             >
                
               
               <section
-                class="s-oO6dIPzQcPRb"
+                class="s-ab4pMJzf-5--"
                 data-testid="player-avatar"
               >
                 <video
                   autoplay=""
-                  class="s-oO6dIPzQcPRb"
+                  class="s-ab4pMJzf-5--"
                 />
                  
                 <figure
@@ -1143,18 +1779,18 @@ exports[`Single connected 1`] = `
                  
                  
                 <legend
-                  class="s-oO6dIPzQcPRb"
+                  class="s-ab4pMJzf-5--"
                 />
               </section>
               <!--&lt;PlayerAvatar&gt;-->
               
               <section
-                class="s-oO6dIPzQcPRb"
+                class="s-ab4pMJzf-5--"
                 data-testid="player-avatar"
               >
                 <video
                   autoplay=""
-                  class="s-oO6dIPzQcPRb"
+                  class="s-ab4pMJzf-5--"
                 />
                  
                 <figure
@@ -1179,200 +1815,18 @@ exports[`Single connected 1`] = `
                  
                  
                 <legend
-                  class="s-oO6dIPzQcPRb"
+                  class="s-ab4pMJzf-5--"
                 />
               </section>
               <!--&lt;PlayerAvatar&gt;-->
             </span>
              
-          </div>
-           
-        </div>
-      </span>
-    </section>
-    <!--&lt;MinimizableSection&gt;-->
-  </aside>
-  <!--&lt;GameAside&gt;-->
-</main>
-`;
-
-exports[`Single connected, no rules book, thread 1`] = `
-<main
-  class="flex w-full h-screen"
->
-  <section
-    class="flex-1"
-  />
-   
-  <aside
-    class="s-SgNA803GJPfe"
-  >
-    <section
-      aria-expanded="false"
-      aria-label="minimizable"
-      class="s-vqhOCvFa7LzI minimized"
-      id="minimizable-section-11"
-      style="width: auto;"
-    >
-      <menu
-        class="right s-vqhOCvFa7LzI"
-      >
-        <ol
-          class="buttonContainer s-vqhOCvFa7LzI"
-          role="tablist"
-        >
-          <li
-            class="s-vqhOCvFa7LzI active"
-          >
-            <button
-              aria-selected="true"
-              class="s-NMyTiX1zi6rz"
-              role="tab"
-            >
-              <span
-                class="material-icons s-NMyTiX1zi6rz"
-              >
-                people_alt
-              </span>
-              
-              
-              <span
-                class="badge s-NMyTiX1zi6rz"
-              >
-                F3
-              </span>
-              
-            </button>
-            <!--&lt;Button&gt;-->
-             
-          </li>
-          <li
-            class="s-vqhOCvFa7LzI"
-          >
-            <button
-              aria-selected="false"
-              class="s-NMyTiX1zi6rz"
-              role="tab"
-            >
-              <span
-                class="material-icons s-NMyTiX1zi6rz"
-              >
-                help
-              </span>
-              
-              
-              <span
-                class="badge s-NMyTiX1zi6rz"
-              >
-                F1
-              </span>
-              
-            </button>
-            <!--&lt;Button&gt;-->
-             
-          </li>
-        </ol>
-         
-        <div
-          aria-controls="minimizable-section-11"
-          class="gutter s-vqhOCvFa7LzI"
-          role="scrollbar"
-        />
-      </menu>
-       
-      <span
-        class="s-vqhOCvFa7LzI"
-      >
-        <div
-          class="content s-SgNA803GJPfe"
-          style="width: 30vw"
-        >
-          <div
-            class="peers s-SgNA803GJPfe"
-          >
-            <span
-              class="avatars s-SgNA803GJPfe"
-            >
-               
-              
-              <section
-                class="s-oO6dIPzQcPRb"
-                data-testid="player-avatar"
-              >
-                <video
-                  autoplay=""
-                  class="s-oO6dIPzQcPRb"
-                />
-                 
-                <figure
-                  class="s-engCJu8q-fNe colored"
-                  style="--dimension: 150px; --color: #ff4500; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
-                >
-                  <img
-                    alt="avatar for Maître Folage"
-                    class="s-engCJu8q-fNe"
-                    height="150"
-                    referrerpolicy="no-referrer"
-                    width="150"
-                  />
-                   
-                  <figcaption
-                    class="s-engCJu8q-fNe"
-                  >
-                    Maître Folage
-                  </figcaption>
-                </figure>
-                <!--&lt;PlayerThumbnail&gt;-->
-                 
-                 
-                <legend
-                  class="s-oO6dIPzQcPRb"
-                />
-              </section>
-              <!--&lt;PlayerAvatar&gt;-->
-              
-              <section
-                class="s-oO6dIPzQcPRb"
-                data-testid="player-avatar"
-              >
-                <video
-                  autoplay=""
-                  class="s-oO6dIPzQcPRb"
-                />
-                 
-                <figure
-                  class="s-engCJu8q-fNe colored"
-                  style="--dimension: 150px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
-                >
-                  <img
-                    alt="avatar for Pascal"
-                    class="s-engCJu8q-fNe"
-                    height="150"
-                    referrerpolicy="no-referrer"
-                    width="150"
-                  />
-                   
-                  <figcaption
-                    class="s-engCJu8q-fNe"
-                  >
-                    Pascal
-                  </figcaption>
-                </figure>
-                <!--&lt;PlayerThumbnail&gt;-->
-                 
-                 
-                <legend
-                  class="s-oO6dIPzQcPRb"
-                />
-              </section>
-              <!--&lt;PlayerAvatar&gt;-->
-            </span>
              
             <section
               aria-expanded="true"
               aria-label="minimizable"
               class="s-vqhOCvFa7LzI vertical"
-              id="minimizable-section-12"
+              id="minimizable-section-8"
               style="height: 15%;"
             >
               <menu
@@ -1410,7 +1864,7 @@ exports[`Single connected, no rules book, thread 1`] = `
                 </ol>
                  
                 <div
-                  aria-controls="minimizable-section-12"
+                  aria-controls="minimizable-section-8"
                   class="gutter s-vqhOCvFa7LzI"
                   role="scrollbar"
                 />
@@ -1420,107 +1874,107 @@ exports[`Single connected, no rules book, thread 1`] = `
                 class="s-vqhOCvFa7LzI"
               >
                 <div
-                  class="discussion s-vwbhBuhy0jW4"
+                  class="discussion s-4DrpFHLJm4IA"
                 >
                   <div
-                    class="messages s-vwbhBuhy0jW4"
+                    class="messages s-4DrpFHLJm4IA"
                   >
                     <span
-                      class="from s-vwbhBuhy0jW4"
+                      class="from s-4DrpFHLJm4IA"
                     >
                       Fernand Naudin
                     </span>
                     <span
-                      class="message s-vwbhBuhy0jW4"
+                      class="message s-4DrpFHLJm4IA"
                     >
                       Qu'est-ce qui se passe encore ?
                     </span>
                     <span
-                      class="from s-vwbhBuhy0jW4"
+                      class="from s-4DrpFHLJm4IA"
                     >
                       Maître Folage
                     </span>
                     <span
-                      class="message s-vwbhBuhy0jW4"
+                      class="message s-4DrpFHLJm4IA"
                     >
                       Notre ami va se faire un plaisir de vous l'expliquer.
                     </span>
                     <span
-                      class="from s-vwbhBuhy0jW4"
+                      class="from s-4DrpFHLJm4IA"
                     >
                       Pascal
                     </span>
                     <span
-                      class="message s-vwbhBuhy0jW4"
+                      class="message s-4DrpFHLJm4IA"
                     >
                       Les Volfoni ont organisé à la péniche une petite réunion des cadres, façon meeting, si vous voyez ce que je veux dire.
 M'enfin quoi, on parle dans votre dos.
                     </span>
                     <span
-                      class="from s-vwbhBuhy0jW4"
+                      class="from s-4DrpFHLJm4IA"
                     >
                       Fernand Naudin
                     </span>
                     <span
-                      class="message s-vwbhBuhy0jW4"
+                      class="message s-4DrpFHLJm4IA"
                     >
                       Et tu tiens ça d'où ?
                     </span>
                     <span
-                      class="from s-vwbhBuhy0jW4"
+                      class="from s-4DrpFHLJm4IA"
                     >
                       Pascal
                     </span>
                     <span
-                      class="message s-vwbhBuhy0jW4"
+                      class="message s-4DrpFHLJm4IA"
                     >
                       Je ne peux pas le dire, j'ai promis. Ce serait mal.
                     </span>
                     <span
-                      class="from s-vwbhBuhy0jW4"
+                      class="from s-4DrpFHLJm4IA"
                     >
                       Fernand Naudin
                     </span>
                     <span
-                      class="message s-vwbhBuhy0jW4"
+                      class="message s-4DrpFHLJm4IA"
                     >
                       Alors ?
                     </span>
                     <span
-                      class="from s-vwbhBuhy0jW4"
+                      class="from s-4DrpFHLJm4IA"
                     >
                       Maître Folage
                     </span>
                     <span
-                      class="message s-vwbhBuhy0jW4"
+                      class="message s-4DrpFHLJm4IA"
                     >
                       Eh bien. Euh. Y'a deux solutions : ou on se dérange, ou on méprise. 
 Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire, bien sûr.
                     </span>
                     <span
-                      class="from s-vwbhBuhy0jW4"
+                      class="from s-4DrpFHLJm4IA"
                     >
                       Fernand Naudin
                     </span>
                     <span
-                      class="message s-vwbhBuhy0jW4"
+                      class="message s-4DrpFHLJm4IA"
                     >
                       Bon, on va y aller, hmm ?
                     </span>
                     <span
-                      class="from s-vwbhBuhy0jW4"
+                      class="from s-4DrpFHLJm4IA"
                     >
                       Pascal
                     </span>
                     <span
-                      class="message s-vwbhBuhy0jW4"
+                      class="message s-4DrpFHLJm4IA"
                     >
                       Monsieur Fernand, y'a peut-être une place pour moi dans votre auto. Des fois que la réunion devienne houleuse ... J'ai une présence tranquillisante.
                     </span>
                   </div>
                    
                   <form
-                    class="s-vwbhBuhy0jW4"
+                    class="s-4DrpFHLJm4IA"
                   >
                     <fieldset
                       class="s-Fe6WNbR-55zp"

@@ -31,3 +31,22 @@ export function findPlayerColor(game, playerId) {
 export function buildPlayerColors(game) {
   return new Map(game.players.map(({ id }) => [id, findPlayerColor(game, id)]))
 }
+
+/**
+ * Distinguishes regular game from waiting lobbies.
+ * @param {object} gameOrLobby? - tested object.
+ * @returns {Boolean|null} true if this game is a lobby, false if it a game, null otherwise.
+ */
+export function isLobby(game) {
+  return !game ? null : !game.kind
+}
+
+/**
+ * Indicates whether a player is part of a given game's guest list.
+ * @param {object} game - game data, including players array.
+ * @param {string} playerId - tested player id.
+ * @returns {boolean} true when this player is a guest of thie game, false otherwise
+ */
+export function isGuest(game, playerId) {
+  return game?.players.find(({ id }) => id === playerId)?.isGuest === true
+}

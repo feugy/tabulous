@@ -181,6 +181,39 @@ exports[`/login route > displays all options 1`] = `
       <!--&lt;Pane&gt;-->
       <!--&lt;Form&gt;-->
     </main>
+     
+    <footer
+      class="s-_Wq18H0k1xjH"
+    >
+      <section
+        class="s-_Wq18H0k1xjH"
+      >
+        © 
+        2023
+         
+        Tabulous.fr. Tous droits réservés.
+      </section>
+       
+      <a
+        class="s-_Wq18H0k1xjH"
+        href="/terms-of-service"
+      >
+        Mentions Légales & Conditions Générales d'Utilisation
+      </a>
+       
+      <a
+        class="s-_Wq18H0k1xjH"
+        href="#top"
+        title="Défiler jusqu'en haut"
+      >
+        <i
+          class="material-icons s-_Wq18H0k1xjH"
+        >
+          vertical_align_top
+        </i>
+      </a>
+    </footer>
+    <!--&lt;PageFooter&gt;-->
     <!--&lt;+page&gt;-->
   </div>
 </body>
@@ -373,6 +406,39 @@ exports[`/login route > expands login panel and show all options 1`] = `
       <!--&lt;Pane&gt;-->
       <!--&lt;Form&gt;-->
     </main>
+     
+    <footer
+      class="s-_Wq18H0k1xjH"
+    >
+      <section
+        class="s-_Wq18H0k1xjH"
+      >
+        © 
+        2023
+         
+        Tabulous.fr. Tous droits réservés.
+      </section>
+       
+      <a
+        class="s-_Wq18H0k1xjH"
+        href="/terms-of-service"
+      >
+        Mentions Légales & Conditions Générales d'Utilisation
+      </a>
+       
+      <a
+        class="s-_Wq18H0k1xjH"
+        href="#top"
+        title="Défiler jusqu'en haut"
+      >
+        <i
+          class="material-icons s-_Wq18H0k1xjH"
+        >
+          vertical_align_top
+        </i>
+      </a>
+    </footer>
+    <!--&lt;PageFooter&gt;-->
     <!--&lt;+page&gt;-->
   </div>
 </body>

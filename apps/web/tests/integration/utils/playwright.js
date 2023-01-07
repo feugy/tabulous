@@ -39,3 +39,5 @@ export const it = test.extend({
 export const describe = test.describe
 
 export const expect = test.expect
+
+export const beforeEach = test.beforeEach

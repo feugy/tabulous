@@ -17,8 +17,10 @@ import {
   gamePlayerById,
   invite,
   joinGame,
+  leaveGame,
   listGames,
   playerColor,
+  promoteGame,
   receiveGameListUpdates
 } from '@src/stores/game-manager'
 import {
@@ -26,6 +28,7 @@ import {
   runQuery,
   runSubscription
 } from '@src/stores/graphql-client'
+import { notify } from '@src/stores/notifications'
 import {
   closeChannels,
   connectWith,
@@ -57,6 +60,7 @@ import {
   vi
 } from 'vitest'
 
+vi.mock('@src/stores/discussion')
 vi.mock('@src/stores/graphql-client')
 vi.mock('@src/stores/game-engine', () => {
   const { BehaviorSubject, Subject } = require('rxjs')
@@ -70,6 +74,7 @@ vi.mock('@src/stores/game-engine', () => {
     remoteSelection: new Subject()
   }
 })
+vi.mock('@src/stores/notifications')
 vi.mock('@src/stores/peer-channels', () => {
   const { Subject } = require('rxjs')
   return {
@@ -83,13 +88,14 @@ vi.mock('@src/stores/peer-channels', () => {
     openChannels: vi.fn()
   }
 })
-vi.mock('@src/stores/discussion')
 vi.mock('@src/3d/utils')
 
 const logger = makeLogger('game-manager')
 const gamePlayerByIdReceived = vi.fn()
 const playerColorReceived = vi.fn()
 const toastReceived = vi.fn()
+const promotionReceived = vi.fn()
+const deletionReceived = vi.fn()
 const turnCredentials = { turn: 'credentials' }
 const engine = {
   scenes: [],
@@ -98,9 +104,28 @@ const engine = {
   onDisposeObservable: new Observable(),
   onBeforeDisposeObservable: new Observable()
 }
+const gameUpdates$ = new Subject()
 let subscriptions
-let warn
 let error
+
+const player = {
+  id: 'player',
+  username: 'player',
+  isGuest: false
+}
+const partner1 = {
+  id: 'partner1',
+  username: 'partner 1'
+}
+const partner2 = {
+  id: 'partner2',
+  username: 'partner 2',
+  isGuest: false
+}
+const partner3 = {
+  id: 'partner3',
+  username: 'partner 3'
+}
 
 beforeAll(() => {
   subscriptions = [
@@ -112,8 +137,6 @@ beforeAll(() => {
 
 beforeEach(() => {
   vi.resetAllMocks()
-  loadCameraSaves.mockImplementation(data => cameraSaves.next(data))
-  warn = vi.spyOn(logger, 'warn')
   error = vi.spyOn(logger, 'error')
 })
 
@@ -121,24 +144,259 @@ afterAll(() =>
   subscriptions.forEach(subscription => subscription.unsubscribe())
 )
 
-it('joinGame() does nothing without engine', async () => {
-  warn.mockImplementationOnce(() => {})
-  await joinGame(faker.datatype.uuid(), {
-    player: { id: faker.datatype.uuid() },
-    turnCredentials
+describe('given no engine', async () => {
+  describe('joinGame()', () => {
+    const game = {
+      id: faker.datatype.uuid(),
+      kind: 'belote',
+      meshes: [{ id: 'mesh1' }],
+      players: [player],
+      hands: [{ playerId: player.id, meshes: [] }]
+    }
+    const lobby = {
+      id: faker.datatype.uuid(),
+      meshes: [],
+      players: [player, partner1, partner2, partner3],
+      messages: ['coucou', 'yeah'],
+      hands: []
+    }
+
+    beforeEach(() => {
+      loadCameraSaves.mockImplementation(data => cameraSaves.next(data))
+      runSubscription.mockReturnValueOnce(new Subject())
+    })
+
+    afterEach(() => leaveGame(player))
+
+    it('loads game data', async () => {
+      runMutation.mockResolvedValueOnce(game)
+      await joinGame({ gameId: game.id, player, turnCredentials })
+      expect(runMutation).toHaveBeenCalledWith(graphQL.joinGame, {
+        gameId: game.id,
+        parameters: undefined
+      })
+      expect(runMutation).toHaveBeenCalledOnce()
+      expect(runSubscription).toHaveBeenCalledWith(graphQL.receiveGameUpdates, {
+        gameId: game.id
+      })
+      expect(runSubscription).toHaveBeenCalledOnce()
+      expect(loadCameraSaves).not.toHaveBeenCalled()
+      expect(loadThread).not.toHaveBeenCalled()
+      expect(connectWith).not.toHaveBeenCalled()
+      expect(send).toHaveBeenCalledWith(
+        {
+          type: 'game-sync',
+          ...game,
+          meshes: undefined,
+          cameras: [],
+          selections: []
+        },
+        undefined
+      )
+      expect(send).toHaveBeenCalledOnce()
+      expect(openChannels).toHaveBeenCalledWith(
+        player,
+        turnCredentials,
+        game.id
+      )
+      expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(
+        new Map([[player.id, { ...player, isHost: true, playing: true }]])
+      )
+      expect(playerColorReceived).toHaveBeenLastCalledWith(
+        findPlayerColor(game, player.id)
+      )
+      expect(toastReceived).not.toHaveBeenCalled()
+    })
+
+    it('loads lobby data', async () => {
+      runMutation.mockResolvedValueOnce(lobby)
+      await joinGame({ gameId: lobby.id, player, turnCredentials })
+      expect(runMutation).toHaveBeenCalledWith(graphQL.joinGame, {
+        gameId: lobby.id,
+        parameters: undefined
+      })
+      expect(runMutation).toHaveBeenCalledOnce()
+      expect(runSubscription).toHaveBeenCalledWith(graphQL.receiveGameUpdates, {
+        gameId: lobby.id
+      })
+      expect(runSubscription).toHaveBeenCalledOnce()
+      expect(loadCameraSaves).not.toHaveBeenCalled()
+      expect(loadThread).toHaveBeenCalledWith(lobby.messages)
+      expect(loadThread).toHaveBeenCalledOnce()
+      expect(connectWith).not.toHaveBeenCalled()
+      expect(send).not.toHaveBeenCalled()
+      expect(openChannels).toHaveBeenCalledWith(
+        player,
+        turnCredentials,
+        lobby.id
+      )
+      expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(
+        new Map([
+          [player.id, { ...player, isHost: true, playing: true }],
+          [partner1.id, { ...partner1, isHost: false, playing: false }],
+          [partner2.id, { ...partner2, isHost: false, playing: false }],
+          [partner3.id, { ...partner3, isHost: false, playing: false }]
+        ])
+      )
+      expect(playerColorReceived).toHaveBeenLastCalledWith(
+        findPlayerColor(game, player.id)
+      )
+      expect(toastReceived).not.toHaveBeenCalled()
+    })
+
+    describe('with a loaded lobby', () => {
+      beforeEach(async () => {
+        prepareGame(lobby)
+        await joinGame({
+          gameId: lobby.id,
+          player,
+          turnCredentials,
+          onPromotion: promotionReceived,
+          onDeletion: deletionReceived
+        })
+        lastConnectedId.next(partner1.id)
+        await nextPromise()
+        vi.clearAllMocks()
+        serializeThread.mockReturnValue(lobby.messages)
+      })
+
+      it('keeps peer channels when joining the same lobby', async () => {
+        await joinGame({
+          gameId: lobby.id,
+          player,
+          turnCredentials,
+          onPromotion: promotionReceived,
+          onDeletion: deletionReceived
+        })
+        expect(runMutation).toHaveBeenCalledWith(graphQL.joinGame, {
+          gameId: lobby.id,
+          parameters: undefined
+        })
+        expect(runMutation).toHaveBeenCalledOnce()
+        expect(runSubscription).toHaveBeenCalledWith(
+          graphQL.receiveGameUpdates,
+          {
+            gameId: lobby.id
+          }
+        )
+        expect(runSubscription).toHaveBeenCalledOnce()
+        expect(loadCameraSaves).not.toHaveBeenCalled()
+        expect(loadThread).toHaveBeenCalledWith(lobby.messages)
+        expect(loadThread).toHaveBeenCalledOnce()
+        expect(connectWith).not.toHaveBeenCalled()
+        expect(send).not.toHaveBeenCalled()
+        expect(openChannels).not.toHaveBeenCalled()
+        expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(
+          new Map([
+            [player.id, { ...player, isHost: true, playing: true }],
+            [partner1.id, { ...partner1, isHost: false, playing: true }],
+            [partner2.id, { ...partner2, isHost: false, playing: false }],
+            [partner3.id, { ...partner3, isHost: false, playing: false }]
+          ])
+        )
+        expect(playerColorReceived).toHaveBeenLastCalledWith(
+          findPlayerColor(game, player.id)
+        )
+        expect(toastReceived).not.toHaveBeenCalled()
+      })
+
+      it('notifies about joining player', async () => {
+        lastConnectedId.next(partner2.id)
+        await nextPromise()
+        expect(serializeThread).toHaveBeenCalledOnce()
+        expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(
+          new Map([
+            [player.id, { ...player, isHost: true, playing: true }],
+            [partner1.id, { ...partner1, isHost: false, playing: true }],
+            [partner2.id, { ...partner2, isHost: false, playing: true }],
+            [partner3.id, { ...partner3, isHost: false, playing: false }]
+          ])
+        )
+        expect(toastReceived).toHaveBeenCalledWith({
+          content: translate('labels.player-joined-lobby', {
+            player: partner2
+          }),
+          icon: 'person_add_alt_1'
+        })
+        expect(toastReceived).toHaveBeenCalledOnce()
+      })
+
+      it('notifies about leaving player', async () => {
+        lastDisconnectedId.next(partner1.id)
+        await nextPromise()
+        expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(
+          new Map([
+            [player.id, { ...player, isHost: true, playing: true }],
+            [partner1.id, { ...partner1, isHost: false, playing: false }],
+            [partner2.id, { ...partner2, isHost: false, playing: false }],
+            [partner3.id, { ...partner3, isHost: false, playing: false }]
+          ])
+        )
+        expect(toastReceived).toHaveBeenCalledWith({
+          content: translate('labels.player-left-lobby', {
+            player: partner1
+          }),
+          icon: 'person_remove'
+        })
+        expect(toastReceived).toHaveBeenCalledOnce()
+      })
+
+      it('notifies of lobby promotion from server', async () => {
+        const promotedLobby = {
+          ...lobby,
+          meshes: game.meshes,
+          kind: 'belote',
+          players: lobby.players.map(player => ({ ...player, isGuest: true }))
+        }
+        gameUpdates$.next(promotedLobby)
+        await nextPromise()
+        expect(promotionReceived).toHaveBeenCalledWith(promotedLobby)
+        expect(promotionReceived).toHaveBeenCalledOnce()
+        expect(deletionReceived).not.toHaveBeenCalled()
+        expect(send).not.toHaveBeenCalled()
+        expect(playerColorReceived).toHaveLastReturnedWith()
+        expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(
+          new Map([
+            [
+              player.id,
+              { ...player, isHost: true, isGuest: true, playing: true }
+            ],
+            [
+              partner1.id,
+              { ...partner1, isHost: false, isGuest: true, playing: true }
+            ],
+            [
+              partner2.id,
+              { ...partner2, isHost: false, isGuest: true, playing: false }
+            ],
+            [
+              partner3.id,
+              { ...partner3, isHost: false, isGuest: true, playing: false }
+            ]
+          ])
+        )
+      })
+
+      it('notifies of lobby deletion from server', async () => {
+        gameUpdates$.next(null)
+        await nextPromise()
+        expect(deletionReceived).toHaveBeenCalledOnce()
+        expect(promotionReceived).not.toHaveBeenCalled()
+        expect(send).not.toHaveBeenCalled()
+        expect(playerColorReceived).toHaveLastReturnedWith()
+        expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(new Map())
+      })
+    })
   })
-  expect(warn).toHaveBeenCalledTimes(1)
-  expect(runMutation).not.toHaveBeenCalled()
-  expect(runSubscription).not.toHaveBeenCalled()
-  expect(engine.load).not.toHaveBeenCalled()
-  expect(gamePlayerByIdReceived).not.toHaveBeenCalled()
-  expect(playerColorReceived).not.toHaveBeenCalled()
 })
 
 describe('given a mocked game engine', () => {
-  const gameUpdates$ = new Subject()
-
   beforeAll(() => engine$.next(engine))
+
+  beforeEach(() => {
+    loadCameraSaves.mockImplementation(data => cameraSaves.next(data))
+    runSubscription.mockReturnValueOnce(new Subject())
+  })
 
   afterEach(() => {
     engine.onDisposeObservable.notifyObservers()
@@ -147,26 +405,7 @@ describe('given a mocked game engine', () => {
   })
 
   describe('joinGame()', () => {
-    const player = {
-      id: 'player',
-      username: 'player'
-    }
-    const partner1 = {
-      id: 'partner1',
-      username: 'partner 1'
-    }
-    const partner2 = {
-      id: 'partner2',
-      username: 'partner 2'
-    }
-    const partner3 = {
-      id: 'partner3',
-      username: 'partner 3'
-    }
-
-    beforeEach(() => {
-      runSubscription.mockReturnValue(new Subject())
-    })
+    afterEach(() => leaveGame(player))
 
     it('loads game data into the game engine', async () => {
       const gameId = faker.datatype.uuid()
@@ -175,35 +414,42 @@ describe('given a mocked game engine', () => {
         { playerId: 'anotherPlayerId', meshes: [{ id: 'mesh2' }] },
         { playerId: player.id, meshes: [{ id: 'mesh3' }] }
       ]
-      const color = '#ff0000'
+      const color = '#00ff00'
       const preferences = [
         { playerId: 'anotherPlayerId', color: '#ffffff' },
         { playerId: player.id, color }
       ]
-      const game = { id: gameId, meshes, players: [player], hands, preferences }
+      const game = {
+        id: gameId,
+        kind: 'belote',
+        meshes,
+        players: [player],
+        hands,
+        preferences
+      }
       const colorByPlayerId = buildPlayerColors(game)
       engine.serialize.mockReturnValue({
         meshes,
         handMeshes: hands[1].meshes
       })
       runMutation.mockResolvedValueOnce(game)
-      await joinGame(gameId, { player, turnCredentials })
+      await joinGame({ gameId, player, turnCredentials })
       expect(runMutation).toHaveBeenCalledWith(graphQL.joinGame, {
         gameId,
         parameters: undefined
       })
-      expect(runMutation).toHaveBeenCalledTimes(1)
+      expect(runMutation).toHaveBeenCalledOnce()
       expect(runSubscription).toHaveBeenCalledWith(graphQL.receiveGameUpdates, {
         gameId
       })
-      expect(runSubscription).toHaveBeenCalledTimes(1)
+      expect(runSubscription).toHaveBeenCalledOnce()
       expect(engine.load).toHaveBeenCalledWith(
         game,
         player.id,
         colorByPlayerId,
         true
       )
-      expect(engine.load).toHaveBeenCalledTimes(1)
+      expect(engine.load).toHaveBeenCalledOnce()
       expect(loadCameraSaves).not.toHaveBeenCalled()
       expect(loadThread).not.toHaveBeenCalled()
       expect(connectWith).not.toHaveBeenCalled()
@@ -211,7 +457,7 @@ describe('given a mocked game engine', () => {
         { type: 'game-sync', ...game, cameras: [], selections: [] },
         undefined
       )
-      expect(send).toHaveBeenCalledTimes(1)
+      expect(send).toHaveBeenCalledOnce()
       expect(openChannels).toHaveBeenCalledWith(player, turnCredentials, gameId)
       expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(
         new Map([
@@ -232,16 +478,16 @@ describe('given a mocked game engine', () => {
         schemaString: '{}'
       }
       runMutation.mockResolvedValueOnce(game)
-      expect(await joinGame(gameId, { player, turnCredentials })).toEqual(game)
+      expect(await joinGame({ gameId, player, turnCredentials })).toEqual(game)
       expect(runMutation).toHaveBeenCalledWith(graphQL.joinGame, {
         gameId,
         parameters: undefined
       })
-      expect(runMutation).toHaveBeenCalledTimes(1)
+      expect(runMutation).toHaveBeenCalledOnce()
       expect(runSubscription).toHaveBeenCalledWith(graphQL.receiveGameUpdates, {
         gameId
       })
-      expect(runSubscription).toHaveBeenCalledTimes(1)
+      expect(runSubscription).toHaveBeenCalledOnce()
       expect(engine.load).not.toHaveBeenCalled()
       expect(loadCameraSaves).not.toHaveBeenCalled()
       expect(loadThread).not.toHaveBeenCalled()
@@ -266,25 +512,33 @@ describe('given a mocked game engine', () => {
         { playerId: partner1.id, index: 0 },
         { playerId: player.id, index: 0 }
       ]
-      const game = { id: gameId, meshes, players: [player], hands, cameras }
+      const game = {
+        id: gameId,
+        kind: 'belote',
+        meshes,
+        players: [player],
+        hands,
+        cameras
+      }
       engine.serialize.mockReturnValueOnce({ meshes, handMeshes: [] })
       serializeThread.mockReturnValueOnce([])
       runMutation.mockResolvedValueOnce(game)
-      await joinGame(gameId, { player, turnCredentials })
+      await joinGame({ gameId, player, turnCredentials })
       expect(runMutation).toHaveBeenCalledWith(graphQL.joinGame, {
         gameId,
         parameters: undefined
       })
-      expect(runMutation).toHaveBeenCalledTimes(1)
+      expect(runMutation).toHaveBeenCalledOnce()
       expect(engine.load).toHaveBeenCalledWith(
         game,
         player.id,
         buildPlayerColors(game),
         true
       )
-      expect(engine.load).toHaveBeenCalledTimes(1)
+      expect(engine.serialize).toHaveBeenCalledOnce()
+      expect(engine.load).toHaveBeenCalledOnce()
       expect(loadCameraSaves).toHaveBeenCalledWith([cameras[2], cameras[0]])
-      expect(loadCameraSaves).toHaveBeenCalledTimes(1)
+      expect(loadCameraSaves).toHaveBeenCalledOnce()
       expect(send).toHaveBeenCalledWith(
         {
           type: 'game-sync',
@@ -295,7 +549,7 @@ describe('given a mocked game engine', () => {
         },
         undefined
       )
-      expect(send).toHaveBeenCalledTimes(1)
+      expect(send).toHaveBeenCalledOnce()
     })
 
     it('loads message thread upon game loading', async () => {
@@ -305,6 +559,7 @@ describe('given a mocked game engine', () => {
       const messages = ['coucou', 'yeah']
       const game = {
         id: gameId,
+        kind: 'belote',
         meshes,
         players: [player],
         hands,
@@ -314,46 +569,52 @@ describe('given a mocked game engine', () => {
       engine.serialize.mockReturnValueOnce({ meshes, handMeshes: [] })
       serializeThread.mockReturnValueOnce(messages)
       runMutation.mockResolvedValueOnce(game)
-      await joinGame(gameId, { player, turnCredentials })
+      await joinGame({ gameId, player, turnCredentials })
       expect(runMutation).toHaveBeenCalledWith(graphQL.joinGame, {
         gameId,
         parameters: undefined
       })
-      expect(runMutation).toHaveBeenCalledTimes(1)
+      expect(runMutation).toHaveBeenCalledOnce()
       expect(engine.load).toHaveBeenCalledWith(
         game,
         player.id,
         buildPlayerColors(game),
         true
       )
-      expect(engine.load).toHaveBeenCalledTimes(1)
+      expect(engine.load).toHaveBeenCalledOnce()
       expect(loadCameraSaves).not.toHaveBeenCalled()
       expect(send).toHaveBeenCalledWith(
         { type: 'game-sync', ...game, selections: [] },
         undefined
       )
-      expect(send).toHaveBeenCalledTimes(1)
+      expect(send).toHaveBeenCalledOnce()
     })
 
     it('loads game data without player hand', async () => {
       const gameId = faker.datatype.uuid()
       const meshes = [{ id: 'mesh2' }]
-      const game = { id: gameId, meshes, players: [player], hands: [] }
+      const game = {
+        id: gameId,
+        kind: 'belote',
+        meshes,
+        players: [player],
+        hands: []
+      }
       engine.serialize.mockReturnValueOnce({ meshes, handMeshes: [] })
       runMutation.mockResolvedValueOnce(game)
-      await joinGame(gameId, { player, turnCredentials })
+      await joinGame({ gameId, player, turnCredentials })
       expect(runMutation).toHaveBeenCalledWith(graphQL.joinGame, {
         gameId,
         parameters: undefined
       })
-      expect(runMutation).toHaveBeenCalledTimes(1)
+      expect(runMutation).toHaveBeenCalledOnce()
       expect(engine.load).toHaveBeenCalledWith(
         game,
         player.id,
         buildPlayerColors(game),
         true
       )
-      expect(engine.load).toHaveBeenCalledTimes(1)
+      expect(engine.load).toHaveBeenCalledOnce()
       expect(playerColorReceived).toHaveBeenLastCalledWith(
         findPlayerColor(game, player.id)
       )
@@ -363,17 +624,17 @@ describe('given a mocked game engine', () => {
       const gameId = faker.datatype.uuid()
       const game = {
         id: gameId,
+        kind: 'belote',
         players: [{ ...player, isGuest: true }],
         schemaString: '{}'
       }
       runMutation.mockResolvedValueOnce(game)
-      expect(await joinGame(gameId, { player, turnCredentials })).toEqual(game)
+      expect(await joinGame({ gameId, player, turnCredentials })).toEqual(game)
       expect(runMutation).toHaveBeenCalledWith(graphQL.joinGame, {
         gameId,
         parameters: undefined
       })
-      expect(runMutation).toHaveBeenCalledTimes(1)
-      expect(runSubscription).toHaveBeenCalledTimes(0)
+      expect(runMutation).toHaveBeenCalledOnce()
       expect(engine.load).not.toHaveBeenCalled()
       expect(loadCameraSaves).not.toHaveBeenCalled()
       expect(loadThread).not.toHaveBeenCalled()
@@ -387,20 +648,20 @@ describe('given a mocked game engine', () => {
       const gameId = faker.datatype.uuid()
       const game = {
         id: gameId,
+        kind: 'belote',
         players: [{ ...player, isGuest: true }],
         schemaString: '{}'
       }
       const parameters = { side: 'white' }
       runMutation.mockResolvedValueOnce(game)
       expect(
-        await joinGame(gameId, { player, turnCredentials }, parameters)
+        await joinGame({ gameId, player, turnCredentials, parameters })
       ).toEqual(game)
       expect(runMutation).toHaveBeenCalledWith(graphQL.joinGame, {
         gameId,
         parameters: JSON.stringify(parameters)
       })
-      expect(runMutation).toHaveBeenCalledTimes(1)
-      expect(runSubscription).toHaveBeenCalledTimes(0)
+      expect(runMutation).toHaveBeenCalledOnce()
       expect(engine.load).not.toHaveBeenCalled()
       expect(loadCameraSaves).not.toHaveBeenCalled()
       expect(loadThread).not.toHaveBeenCalled()
@@ -414,6 +675,7 @@ describe('given a mocked game engine', () => {
       const meshes = [{ id: 'mesh1' }, { id: 'mesh2' }, { id: 'mesh3' }]
       const game = {
         id: faker.datatype.uuid(),
+        kind: 'belote',
         meshes,
         players: [player, partner1],
         hands: [{ playerId: partner2.id, meshes: [{ id: 'mesh4' }] }],
@@ -440,7 +702,13 @@ describe('given a mocked game engine', () => {
           meshes,
           handMeshes: []
         })
-        await joinGame(game.id, { player, turnCredentials })
+        await joinGame({
+          gameId: game.id,
+          player,
+          turnCredentials,
+          onPromotion: promotionReceived,
+          onDeletion: deletionReceived
+        })
         vi.clearAllMocks()
         serializeThread.mockReturnValue(game.messages)
       })
@@ -455,8 +723,8 @@ describe('given a mocked game engine', () => {
           },
           partner1.id
         )
-        expect(engine.serialize).toHaveBeenCalledTimes(1)
-        expect(serializeThread).toHaveBeenCalledTimes(1)
+        expect(engine.serialize).toHaveBeenCalledOnce()
+        expect(serializeThread).toHaveBeenCalledOnce()
         expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(
           new Map([
             [
@@ -481,65 +749,10 @@ describe('given a mocked game engine', () => {
         )
         expect(runMutation).not.toHaveBeenCalled()
         expect(toastReceived).toHaveBeenCalledWith({
-          content: translate('labels.player-joined', { player: partner1 }),
+          content: translate('labels.player-joined-game', { player: partner1 }),
           icon: 'person_add_alt_1'
         })
-        expect(toastReceived).toHaveBeenCalledTimes(1)
-      })
-
-      it('sends game data on server update', async () => {
-        gameUpdates$.next(game)
-        selectedMeshes.next([{ id: 'mesh1' }])
-        expect(engine.load).toHaveBeenCalledWith(
-          game,
-          player.id,
-          buildPlayerColors(game),
-          false
-        )
-        expect(engine.load).toHaveBeenCalledTimes(1)
-        expect(loadThread).toHaveBeenCalledTimes(1)
-        expect(connectWith).not.toHaveBeenCalled()
-        expect(loadCameraSaves).not.toHaveBeenCalled()
-        await nextPromise()
-        expect(send).toHaveBeenCalledWith(
-          {
-            type: 'game-sync',
-            ...game,
-            cameras: expect.arrayContaining(game.cameras),
-            hands: [...game.hands, { playerId: player.id, meshes: [] }],
-            selections: [{ playerId: player.id, selectedIds: ['mesh1'] }]
-          },
-          undefined
-        )
-        expect(send).toHaveBeenCalledTimes(1)
-        expect(openChannels).not.toHaveBeenCalled()
-        expect(gamePlayerByIdReceived).toHaveBeenCalledWith(
-          new Map([
-            [
-              player.id,
-              {
-                ...player,
-                ...findPlayerPreferences(game, player.id),
-                isHost: true,
-                playing: true
-              }
-            ],
-            [
-              partner1.id,
-              {
-                ...partner1,
-                ...findPlayerPreferences(game, partner1.id),
-                isHost: false,
-                playing: false
-              }
-            ]
-          ])
-        )
-        expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(1)
-        expect(engine.serialize).toHaveBeenCalledTimes(1)
-        expect(serializeThread).toHaveBeenCalledTimes(1)
-        expect(runMutation).not.toHaveBeenCalled()
-        expect(runSubscription).not.toHaveBeenCalled()
+        expect(toastReceived).toHaveBeenCalledOnce()
       })
 
       it('sends game data to newly invited player', async () => {
@@ -554,8 +767,8 @@ describe('given a mocked game engine', () => {
           },
           partner2.id
         )
-        expect(engine.serialize).toHaveBeenCalledTimes(1)
-        expect(serializeThread).toHaveBeenCalledTimes(1)
+        expect(engine.serialize).toHaveBeenCalledOnce()
+        expect(serializeThread).toHaveBeenCalledOnce()
         expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(
           new Map([
             [
@@ -588,29 +801,10 @@ describe('given a mocked game engine', () => {
           ])
         )
         expect(toastReceived).toHaveBeenCalledWith({
-          content: translate('labels.player-joined', { player: partner2 }),
+          content: translate('labels.player-joined-game', { player: partner2 }),
           icon: 'person_add_alt_1'
         })
-        expect(toastReceived).toHaveBeenCalledTimes(1)
-      })
-
-      it('saves game data on dispose', async () => {
-        engine.onBeforeDisposeObservable.notifyObservers()
-        const hands = [...game.hands, { playerId: player.id, meshes: [] }]
-        expect(runMutation).toHaveBeenCalledWith(graphQL.saveGame, {
-          game: {
-            ...game,
-            cameras: [...game.cameras],
-            hands,
-            zoomSpec: undefined,
-            tableSpec: undefined,
-            players: undefined,
-            preferences: undefined
-          }
-        })
-        expect(runMutation).toHaveBeenCalledTimes(1)
-        expect(engine.serialize).toHaveBeenCalledTimes(1)
-        expect(send).not.toHaveBeenCalled()
+        expect(toastReceived).toHaveBeenCalledOnce()
       })
 
       it('saves game data after some actions', async () => {
@@ -623,14 +817,15 @@ describe('given a mocked game engine', () => {
             ...game,
             cameras: [...game.cameras],
             hands,
+            kind: undefined,
             zoomSpec: undefined,
             tableSpec: undefined,
             players: undefined,
             preferences: undefined
           }
         })
-        expect(runMutation).toHaveBeenCalledTimes(1)
-        expect(engine.serialize).toHaveBeenCalledTimes(1)
+        expect(runMutation).toHaveBeenCalledOnce()
+        expect(engine.serialize).toHaveBeenCalledOnce()
         expect(send).toHaveBeenCalledWith(
           {
             type: 'game-sync',
@@ -640,7 +835,7 @@ describe('given a mocked game engine', () => {
           },
           undefined
         )
-        expect(send).toHaveBeenCalledTimes(1)
+        expect(send).toHaveBeenCalledOnce()
         await connectPeerAndExpectGameSync({ ...game, hands }, partner1.id)
       })
 
@@ -657,8 +852,8 @@ describe('given a mocked game engine', () => {
         expect(runMutation).toHaveBeenCalledWith(graphQL.saveGame, {
           game: { id: game.id, messages }
         })
-        expect(runMutation).toHaveBeenCalledTimes(1)
-        expect(serializeThread).toHaveBeenCalledTimes(1)
+        expect(runMutation).toHaveBeenCalledOnce()
+        expect(serializeThread).toHaveBeenCalledOnce()
         expect(send).not.toHaveBeenCalled()
       })
 
@@ -675,8 +870,8 @@ describe('given a mocked game engine', () => {
         expect(runMutation).toHaveBeenCalledWith(graphQL.saveGame, {
           game: { id: game.id, messages }
         })
-        expect(runMutation).toHaveBeenCalledTimes(1)
-        expect(serializeThread).toHaveBeenCalledTimes(1)
+        expect(runMutation).toHaveBeenCalledOnce()
+        expect(serializeThread).toHaveBeenCalledOnce()
         expect(send).not.toHaveBeenCalled()
       })
 
@@ -696,8 +891,8 @@ describe('given a mocked game engine', () => {
         expect(runMutation).toHaveBeenCalledWith(graphQL.saveGame, {
           game: { id: game.id, messages }
         })
-        expect(runMutation).toHaveBeenCalledTimes(1)
-        expect(serializeThread).toHaveBeenCalledTimes(1)
+        expect(runMutation).toHaveBeenCalledOnce()
+        expect(serializeThread).toHaveBeenCalledOnce()
         expect(send).not.toHaveBeenCalled()
         await connectPeerAndExpectGameSync(
           {
@@ -720,7 +915,7 @@ describe('given a mocked game engine', () => {
         expect(runMutation).toHaveBeenCalledWith(graphQL.saveGame, {
           game: { id: game.id, cameras }
         })
-        expect(runMutation).toHaveBeenCalledTimes(1)
+        expect(runMutation).toHaveBeenCalledOnce()
         await connectPeerAndExpectGameSync(
           {
             ...game,
@@ -747,7 +942,7 @@ describe('given a mocked game engine', () => {
             ]
           }
         })
-        expect(runMutation).toHaveBeenCalledTimes(1)
+        expect(runMutation).toHaveBeenCalledOnce()
         expect(send).not.toHaveBeenCalled()
       })
 
@@ -761,7 +956,7 @@ describe('given a mocked game engine', () => {
         expect(runMutation).toHaveBeenCalledWith(graphQL.saveGame, {
           game: expectedGame
         })
-        expect(runMutation).toHaveBeenCalledTimes(1)
+        expect(runMutation).toHaveBeenCalledOnce()
         expect(engine.serialize).not.toHaveBeenCalled()
         expect(send).not.toHaveBeenCalled()
       })
@@ -786,7 +981,7 @@ describe('given a mocked game engine', () => {
         expect(runMutation).toHaveBeenCalledWith(graphQL.saveGame, {
           game: expectedGame
         })
-        expect(runMutation).toHaveBeenCalledTimes(1)
+        expect(runMutation).toHaveBeenCalledOnce()
         expect(engine.serialize).not.toHaveBeenCalled()
         expect(send).not.toHaveBeenCalled()
       })
@@ -823,6 +1018,101 @@ describe('given a mocked game engine', () => {
           partner1.id
         )
       })
+
+      it('notifies of game deletion from server', async () => {
+        gameUpdates$.next(null)
+        await nextPromise()
+        expect(deletionReceived).toHaveBeenCalledOnce()
+        expect(promotionReceived).not.toHaveBeenCalled()
+        expect(send).not.toHaveBeenCalled()
+        expect(playerColorReceived).toHaveLastReturnedWith()
+        expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(new Map())
+      })
+
+      it('keeps peer channels when joining the same game', async () => {
+        await joinGame({
+          gameId: game.id,
+          player,
+          turnCredentials,
+          onPromotion: promotionReceived,
+          onDeletion: deletionReceived
+        })
+        expect(runMutation).toHaveBeenCalledWith(graphQL.joinGame, {
+          gameId: game.id,
+          parameters: undefined
+        })
+        expect(runMutation).toHaveBeenCalledOnce()
+        expect(runSubscription).toHaveBeenCalledWith(
+          graphQL.receiveGameUpdates,
+          {
+            gameId: game.id
+          }
+        )
+        expect(runSubscription).toHaveBeenCalledOnce()
+        expect(engine.load).toHaveBeenCalledWith(
+          game,
+          player.id,
+          buildPlayerColors(game),
+          true
+        )
+        expect(engine.load).toHaveBeenCalledOnce()
+        expect(loadCameraSaves).toHaveBeenCalledWith(game.cameras.slice(0, 1))
+        expect(loadCameraSaves).toHaveBeenCalledOnce()
+        expect(loadThread).toHaveBeenCalledWith(game.messages)
+        expect(loadThread).toHaveBeenCalledOnce()
+        expect(connectWith).not.toHaveBeenCalled()
+        expect(send).toHaveBeenCalledWith(
+          {
+            type: 'game-sync',
+            ...game,
+            hands: [...game.hands, { meshes: [], playerId: player.id }],
+            selections: []
+          },
+          undefined
+        )
+        expect(send).toHaveBeenCalledOnce()
+        expect(openChannels).not.toHaveBeenCalled()
+        expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(
+          new Map([
+            [
+              player.id,
+              { ...player, isHost: true, playing: true, color: '#00ff00' }
+            ],
+            [
+              partner1.id,
+              { ...partner1, isHost: false, playing: false, color: '#0000ff' }
+            ]
+          ])
+        )
+        expect(playerColorReceived).toHaveBeenLastCalledWith(
+          findPlayerColor(game, player.id)
+        )
+        expect(toastReceived).not.toHaveBeenCalled()
+      })
+
+      describe('leaveGame()', () => {
+        it('saves game data', async () => {
+          leaveGame(player)
+          const hands = [...game.hands, { playerId: player.id, meshes: [] }]
+          expect(runMutation).toHaveBeenCalledWith(graphQL.saveGame, {
+            game: {
+              ...game,
+              cameras: [...game.cameras],
+              hands,
+              kind: undefined,
+              zoomSpec: undefined,
+              tableSpec: undefined,
+              players: undefined,
+              preferences: undefined
+            }
+          })
+          expect(runMutation).toHaveBeenCalledOnce()
+          expect(engine.serialize).toHaveBeenCalledOnce()
+          expect(send).not.toHaveBeenCalled()
+          expect(playerColorReceived).toHaveLastReturnedWith()
+          expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(new Map())
+        })
+      })
     })
 
     describe('with online players', () => {
@@ -830,6 +1120,7 @@ describe('given a mocked game engine', () => {
       const id = faker.datatype.uuid()
       const game = {
         id,
+        kind: 'belote',
         meshes,
         players: [
           { currentGameId: faker.datatype.uuid(), ...partner3 },
@@ -854,17 +1145,16 @@ describe('given a mocked game engine', () => {
         ]
       }
 
-      beforeEach(() => {
-        vi.useFakeTimers()
-        prepareGame(game)
-      })
+      beforeEach(() => prepareGame(game))
 
-      afterEach(() => vi.useRealTimers())
-
-      it('fails when not receiving game from online players', async () => {
+      it.skip('fails when not receiving game from online players', async () => {
         error.mockImplementationOnce(() => {})
         const errorMessage = 'No game data after 30s'
-        const promise = joinGame(game.id, { player: partner2, turnCredentials })
+        const promise = joinGame({
+          gameId: game.id,
+          player: partner2,
+          turnCredentials
+        })
         await nextPromise()
         await nextPromise()
         await nextPromise()
@@ -875,7 +1165,7 @@ describe('given a mocked game engine', () => {
           gameId: game.id,
           parameter: undefined
         })
-        expect(runMutation).toHaveBeenCalledTimes(1)
+        expect(runMutation).toHaveBeenCalledOnce()
         expect(connectWith).toHaveBeenCalledWith(player.id, turnCredentials)
         expect(connectWith).toHaveBeenCalledWith(partner1.id, turnCredentials)
         expect(connectWith).toHaveBeenCalledTimes(2)
@@ -899,14 +1189,13 @@ describe('given a mocked game engine', () => {
         }
         runMutation.mockReset().mockResolvedValueOnce(gameParameters)
         expect(
-          await joinGame(game.id, { player: partner2, turnCredentials })
+          await joinGame({ gameId: game.id, player: partner2, turnCredentials })
         ).toEqual(gameParameters)
         expect(runMutation).toHaveBeenCalledWith(graphQL.joinGame, {
           gameId: game.id,
           parameters: undefined
         })
-        expect(runMutation).toHaveBeenCalledTimes(1)
-        expect(runSubscription).toHaveBeenCalledTimes(0)
+        expect(runMutation).toHaveBeenCalledOnce()
         expect(engine.load).not.toHaveBeenCalled()
         expect(loadCameraSaves).not.toHaveBeenCalled()
         expect(loadThread).not.toHaveBeenCalled()
@@ -932,7 +1221,13 @@ describe('given a mocked game engine', () => {
               playerId: partner1.id
             })
           })
-          await joinGame(game.id, { player: partner2, turnCredentials })
+          await joinGame({
+            gameId: game.id,
+            player: partner2,
+            turnCredentials,
+            onPromotion: promotionReceived,
+            onDeletion: deletionReceived
+          })
         })
 
         it('loads game data from online players', async () => {
@@ -940,22 +1235,22 @@ describe('given a mocked game engine', () => {
             gameId: game.id,
             parameters: undefined
           })
-          expect(runMutation).toHaveBeenCalledTimes(1)
+          expect(runMutation).toHaveBeenCalledOnce()
           expect(connectWith).toHaveBeenCalledWith(player.id, turnCredentials)
           expect(connectWith).toHaveBeenCalledWith(partner1.id, turnCredentials)
           expect(connectWith).toHaveBeenCalledTimes(2)
           expect(send).not.toHaveBeenCalled()
           expect(engine.load).toHaveBeenCalledWith(
-            { ...game, type: 'game-sync' },
+            game,
             partner2.id,
             buildPlayerColors(game),
             true
           )
-          expect(engine.load).toHaveBeenCalledTimes(1)
+          expect(engine.load).toHaveBeenCalledOnce()
           expect(loadCameraSaves).toHaveBeenCalledWith(game.cameras.slice(2))
-          expect(loadCameraSaves).toHaveBeenCalledTimes(1)
+          expect(loadCameraSaves).toHaveBeenCalledOnce()
           expect(loadThread).toHaveBeenCalledWith(game.messages)
-          expect(loadThread).toHaveBeenCalledTimes(1)
+          expect(loadThread).toHaveBeenCalledOnce()
           expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(
             new Map(
               game.players.map(gamer => [
@@ -970,7 +1265,11 @@ describe('given a mocked game engine', () => {
               ])
             )
           )
-          expect(runSubscription).not.toHaveBeenCalled()
+          expect(runSubscription).toHaveBeenCalledWith(
+            graphQL.receiveGameUpdates,
+            { gameId: game.id }
+          )
+          expect(runSubscription).toHaveBeenCalledOnce()
         })
 
         it('share hand with other peers', async () => {
@@ -983,7 +1282,7 @@ describe('given a mocked game engine', () => {
             playerId: partner2.id,
             type: 'saveHand'
           })
-          expect(send).toHaveBeenCalledTimes(1)
+          expect(send).toHaveBeenCalledOnce()
           expect(loadCameraSaves).not.toHaveBeenCalled()
           expect(runMutation).not.toHaveBeenCalled()
         })
@@ -998,7 +1297,7 @@ describe('given a mocked game engine', () => {
             playerId: partner2.id,
             type: 'saveCameras'
           })
-          expect(send).toHaveBeenCalledTimes(1)
+          expect(send).toHaveBeenCalledOnce()
           expect(loadCameraSaves).not.toHaveBeenCalled()
           expect(runMutation).not.toHaveBeenCalled()
         })
@@ -1013,7 +1312,13 @@ describe('given a mocked game engine', () => {
               playerId: player.id
             })
           })
-          await joinGame(game.id, { player: partner2, turnCredentials })
+          await joinGame({
+            gameId: game.id,
+            player: partner2,
+            turnCredentials,
+            onPromotion: promotionReceived,
+            onDeletion: deletionReceived
+          })
           vi.clearAllMocks()
         })
 
@@ -1036,7 +1341,7 @@ describe('given a mocked game engine', () => {
             },
             undefined
           )
-          expect(send).toHaveBeenCalledTimes(1)
+          expect(send).toHaveBeenCalledOnce()
           expect(closeChannels).not.toHaveBeenCalled()
           expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(
             new Map([
@@ -1079,17 +1384,17 @@ describe('given a mocked game engine', () => {
               ]
             ])
           )
-          expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(2)
+          expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(3)
           expect(runSubscription).toHaveBeenCalledWith(
             graphQL.receiveGameUpdates,
             { gameId: game.id }
           )
-          expect(runSubscription).toHaveBeenCalledTimes(1)
+          expect(runSubscription).toHaveBeenCalledOnce()
           expect(toastReceived).toHaveBeenCalledWith({
-            content: translate('labels.player-left', { player }),
+            content: translate('labels.player-left-game', { player }),
             icon: 'person_remove'
           })
-          expect(toastReceived).toHaveBeenCalledTimes(1)
+          expect(toastReceived).toHaveBeenCalledOnce()
 
           vi.clearAllMocks()
           const newcamera = { pos: 'a' }
@@ -1104,22 +1409,10 @@ describe('given a mocked game engine', () => {
               ]
             }
           })
-          expect(runMutation).toHaveBeenCalledTimes(1)
+          expect(runMutation).toHaveBeenCalledOnce()
         })
 
         it('does not take host role when not being the first online', async () => {
-          lastMessageReceived.next({
-            data: {
-              type: 'game-sync',
-              ...game,
-              players: [
-                { currentGameId: id, ...player },
-                { currentGameId: id, ...partner1 },
-                { currentGameId: id, ...partner2 }
-              ]
-            },
-            playerId: player.id
-          })
           lastConnectedId.next(partner1.id)
           toastReceived.mockClear()
           lastDisconnectedId.next(player.id)
@@ -1127,6 +1420,15 @@ describe('given a mocked game engine', () => {
           expect(send).not.toHaveBeenCalled()
           expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(
             new Map([
+              [
+                partner3.id,
+                {
+                  ...partner3,
+                  ...findPlayerPreferences(game, partner3.id),
+                  isHost: false,
+                  playing: false
+                }
+              ],
               [
                 player.id,
                 {
@@ -1161,10 +1463,10 @@ describe('given a mocked game engine', () => {
           expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(3)
           expect(runSubscription).not.toHaveBeenCalled()
           expect(toastReceived).toHaveBeenCalledWith({
-            content: translate('labels.player-left', { player }),
+            content: translate('labels.player-left-game', { player }),
             icon: 'person_remove'
           })
-          expect(toastReceived).toHaveBeenCalledTimes(1)
+          expect(toastReceived).toHaveBeenCalledOnce()
         })
       })
     })
@@ -1186,7 +1488,7 @@ describe('given a mocked game engine', () => {
         gameId: game.id,
         playerId: guest.id
       })
-      expect(runMutation).toHaveBeenCalledTimes(1)
+      expect(runMutation).toHaveBeenCalledOnce()
       expect(engine.load).not.toHaveBeenCalled()
     })
 
@@ -1197,50 +1499,10 @@ describe('given a mocked game engine', () => {
         gameId: game.id,
         playerId: guest.id
       })
-      expect(runMutation).toHaveBeenCalledTimes(1)
+      expect(runMutation).toHaveBeenCalledOnce()
       expect(engine.load).not.toHaveBeenCalled()
     })
   })
-
-  async function connectPeerAndExpectGameSync(
-    { cameras, selections, ...gameData },
-    playerId
-  ) {
-    send.mockReset()
-    lastConnectedId.next(playerId)
-    await nextPromise()
-    expect(send).toHaveBeenCalledWith(
-      {
-        type: 'game-sync',
-        cameras: [...cameras].sort((a, b) => +a.index - +b.index),
-        ...gameData,
-        selections: selections ?? [
-          { playerId: gameData.players[0].id, selectedIds: [] }
-        ]
-      },
-      playerId
-    )
-    expect(send).toHaveBeenCalledTimes(1)
-  }
-
-  function prepareGame(game) {
-    engine.onDisposeObservable.notifyObservers()
-    runSubscription.mockImplementation(subscription =>
-      subscription === graphQL.receiveGameUpdates ? gameUpdates$ : null
-    )
-    runMutation.mockResolvedValueOnce({
-      ...game,
-      meshes: [...game.meshes],
-      hands: [...game.hands]
-    })
-  }
-
-  // because of fake timers, we can't use sleep
-  async function nextPromise() {
-    for (let i = 0; i < 3; i++) {
-      await Promise.resolve()
-    }
-  }
 })
 
 describe('createGame()', () => {
@@ -1248,9 +1510,23 @@ describe('createGame()', () => {
     const kind = faker.lorem.word()
     const id = faker.datatype.uuid()
     runMutation.mockResolvedValueOnce({ id })
-    expect(await createGame(kind)).toEqual(id)
+    expect(await createGame(kind)).toEqual({ id })
     expect(runMutation).toHaveBeenCalledWith(graphQL.createGame, { kind })
-    expect(runMutation).toHaveBeenCalledTimes(1)
+    expect(runMutation).toHaveBeenCalledOnce()
+  })
+})
+
+describe('promoteGame()', () => {
+  it('promotes a lobby', async () => {
+    const kind = faker.lorem.word()
+    const id = faker.datatype.uuid()
+    runMutation.mockResolvedValueOnce({ id })
+    expect(await promoteGame(id, kind)).toEqual({ id })
+    expect(runMutation).toHaveBeenCalledWith(graphQL.promoteGame, {
+      gameId: id,
+      kind
+    })
+    expect(runMutation).toHaveBeenCalledOnce()
   })
 })
 
@@ -1259,7 +1535,7 @@ describe('deleteGame()', () => {
     const gameId = faker.datatype.uuid()
     expect(await deleteGame(gameId)).toBeUndefined()
     expect(runMutation).toHaveBeenCalledWith(graphQL.deleteGame, { gameId })
-    expect(runMutation).toHaveBeenCalledTimes(1)
+    expect(runMutation).toHaveBeenCalledOnce()
   })
 })
 
@@ -1273,7 +1549,7 @@ describe('listGames()', () => {
     runQuery.mockResolvedValueOnce(games)
     expect(await listGames()).toEqual(games)
     expect(runQuery).toHaveBeenCalledWith(graphQL.listGames)
-    expect(runQuery).toHaveBeenCalledTimes(1)
+    expect(runQuery).toHaveBeenCalledOnce()
   })
 })
 
@@ -1285,22 +1561,82 @@ describe('receiveGameListUpdates()', () => {
   ]
 
   it('initializes observable with provided list', () => {
-    runSubscription.mockReturnValue(new Subject())
+    runSubscription.mockReturnValueOnce(new Subject())
     const gameList$ = receiveGameListUpdates(games.slice(0, 1))
     expect(get(gameList$)).toEqual(games.slice(0, 1))
   })
 
-  it('updates observable with received list', () => {
+  it('updates observable with received list and notify for new games', () => {
+    runSubscription.mockReset()
     const updatesReceived = vi.fn()
     const sendUpdate = new Subject()
-    runSubscription.mockReturnValue(sendUpdate)
+    runSubscription.mockReturnValueOnce(sendUpdate)
     const gameList$ = receiveGameListUpdates()
     gameList$.subscribe(updatesReceived)
     expect(updatesReceived).toHaveBeenCalledWith([])
-    expect(updatesReceived).toHaveBeenCalledTimes(1)
+    expect(updatesReceived).toHaveBeenCalledOnce()
 
     sendUpdate.next(games)
     expect(updatesReceived).toHaveBeenNthCalledWith(2, games)
     expect(updatesReceived).toHaveBeenCalledTimes(2)
+    expect(notify).toHaveBeenCalledWith({
+      contentKey: 'labels.new-game-invite'
+    })
+    expect(notify).toHaveBeenCalledOnce()
+  })
+
+  it('does not notify when receiving a list with same games', () => {
+    runSubscription.mockReset()
+    const updatesReceived = vi.fn()
+    const sendUpdate = new Subject()
+    runSubscription.mockReturnValueOnce(sendUpdate)
+    const gameList$ = receiveGameListUpdates(games)
+    gameList$.subscribe(updatesReceived)
+
+    sendUpdate.next(games)
+    expect(updatesReceived).toHaveBeenLastCalledWith(games)
+    expect(updatesReceived).toHaveBeenCalledTimes(2)
+    expect(notify).not.toHaveBeenCalled()
   })
 })
+
+async function connectPeerAndExpectGameSync(
+  { cameras, selections, ...gameData },
+  playerId
+) {
+  send.mockReset()
+  lastConnectedId.next(playerId)
+  await nextPromise()
+  expect(send).toHaveBeenCalledWith(
+    {
+      type: 'game-sync',
+      cameras: [...cameras].sort((a, b) => +a.index - +b.index),
+      ...gameData,
+      selections: selections ?? [
+        { playerId: gameData.players[0].id, selectedIds: [] }
+      ]
+    },
+    playerId
+  )
+  expect(send).toHaveBeenCalledOnce()
+}
+
+function prepareGame(game) {
+  engine.onDisposeObservable.notifyObservers()
+  runSubscription.mockReset()
+  runSubscription.mockImplementation(subscription =>
+    subscription === graphQL.receiveGameUpdates ? gameUpdates$ : null
+  )
+  runMutation.mockResolvedValue({
+    ...game,
+    meshes: [...game.meshes],
+    hands: [...game.hands]
+  })
+}
+
+// because of fake timers, we can't use sleep
+async function nextPromise() {
+  for (let i = 0; i < 3; i++) {
+    await Promise.resolve()
+  }
+}

@@ -4,7 +4,14 @@ import { faker } from '@faker-js/faker'
 import { fn } from 'vitest/dist/spy.js'
 
 import { GamePage, HomePage, LoginPage } from './pages/index.js'
-import { describe, expect, it, mockGraphQl, translate } from './utils/index.js'
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  mockGraphQl,
+  translate
+} from './utils/index.js'
 
 describe('Home page', () => {
   const catalog = [
@@ -31,6 +38,11 @@ describe('Home page', () => {
   const publicCatalog = catalog.slice(0, 2)
 
   const player = {
+    id: faker.datatype.uuid(),
+    username: faker.name.fullName(),
+    termsAccepted: true
+  }
+  const player2 = {
     id: faker.datatype.uuid(),
     username: faker.name.fullName(),
     termsAccepted: true
@@ -99,9 +111,10 @@ describe('Home page', () => {
     await loginPage.logInWithPassword({ username: player.username, password })
 
     await homePage.expectAuthenticated(player.username)
-    await expect(homePage.catalogItemHeadings).toHaveText(
-      catalog.map(({ locales }) => new RegExp(locales.fr.title))
-    )
+    await expect(homePage.catalogItemHeadings).toHaveText([
+      new RegExp(translate('actions.create-lobby')),
+      ...catalog.map(({ locales }) => new RegExp(locales.fr.title))
+    ])
     await expect(homePage.games).toHaveText(
       games.map(({ locales }) => new RegExp(locales.fr.title))
     )
@@ -128,9 +141,10 @@ describe('Home page', () => {
     await homePage.goTo()
     await homePage.getStarted()
     await homePage.expectAuthenticated(player.username)
-    await expect(homePage.catalogItemHeadings).toHaveText(
-      catalog.map(({ locales }) => new RegExp(locales.fr.title))
-    )
+    await expect(homePage.catalogItemHeadings).toHaveText([
+      new RegExp(translate('actions.create-lobby')),
+      ...catalog.map(({ locales }) => new RegExp(locales.fr.title))
+    ])
     await expect(homePage.games).toHaveText(
       games.map(({ locales }) => new RegExp(locales.fr.title))
     )
@@ -157,9 +171,10 @@ describe('Home page', () => {
     await homePage.goTo()
     await homePage.getStarted()
     await homePage.expectAuthenticated(player.username)
-    await expect(homePage.catalogItemHeadings).toHaveText(
-      catalog.map(({ locales }) => new RegExp(locales.fr.title))
-    )
+    await expect(homePage.catalogItemHeadings).toHaveText([
+      new RegExp(translate('actions.create-lobby')),
+      ...catalog.map(({ locales }) => new RegExp(locales.fr.title))
+    ])
     await expect(homePage.games).toHaveText(
       initialGames.map(({ locales }) => new RegExp(locales.fr.title))
     )
@@ -324,7 +339,7 @@ describe('Home page', () => {
         }
       },
       createGame: game,
-      loadGame: game
+      joinGame: game
     })
     await setTokenCookie()
 
@@ -335,5 +350,168 @@ describe('Home page', () => {
     await homePage.createGame(catalog[1].locales.fr.title)
     await expect(page).toHaveURL(`/game/${game.id}`)
     await new GamePage(page).getStarted()
+  })
+
+  it('can create a new lobby with an guest', async ({ page }) => {
+    const lobby = {
+      id: faker.datatype.uuid(),
+      availableSeats: 7,
+      meshes: [],
+      cameras: [],
+      hands: [],
+      players: [player]
+    }
+    const updatedLobby = {
+      ...lobby,
+      availableSeats: 7,
+      players: [player, player2]
+    }
+    const { sendToSubscription, setTokenCookie, onSubscription } =
+      await mockGraphQl(page, {
+        listCatalog: [catalog],
+        listGames: [games],
+        getCurrentPlayer: {
+          token: faker.datatype.uuid(),
+          player,
+          turnCredentials: {
+            username: 'bob',
+            credentials: faker.internet.password()
+          }
+        },
+        createGame: () => {
+          sendToSubscription({
+            data: {
+              receiveGameListUpdates: [
+                { id: lobby.id, players: [player, player2] },
+                ...games
+              ]
+            }
+          })
+          return lobby
+        },
+        joinGame: lobby,
+        searchPlayers: [[player2]],
+        invite: () => {
+          sendToSubscription({ data: { receiveGameUpdates: updatedLobby } })
+          return updatedLobby
+        },
+        saveGame: updatedLobby
+      })
+    await setTokenCookie()
+
+    onSubscription(({ payload: { query } }) => {
+      if (query.startsWith('subscription awaitSignal')) {
+        sendToSubscription({
+          data: { awaitSignal: { data: JSON.stringify({ type: 'ready' }) } }
+        })
+      }
+    })
+
+    const homePage = new HomePage(page)
+    await homePage.goTo()
+    await homePage.getStarted()
+
+    await homePage.createLobby()
+    await expect(page).toHaveURL(`/home`)
+    await expect(homePage.games).toHaveText([
+      new RegExp(translate('titles.lobby')),
+      ...games.map(({ locales }) => new RegExp(locales.fr.title))
+    ])
+    await homePage.invite(player2.username)
+    await expect(homePage.playerAvatars).toHaveText([player2.username])
+  })
+
+  describe('given a lobby', () => {
+    const lobby = {
+      id: faker.datatype.uuid(),
+      availableSeats: 7,
+      meshes: [],
+      cameras: [],
+      hands: [],
+      players: [player]
+    }
+    let gameJoined = lobby
+    let sendToSubscription
+
+    beforeEach(async ({ page }) => {
+      gameJoined = lobby
+
+      let updatedLobby = {
+        ...lobby,
+        availableSeats: 7,
+        players: [player, player2]
+      }
+
+      const graphQlMocks = await mockGraphQl(page, {
+        listCatalog: [catalog],
+        listGames: [games],
+        getCurrentPlayer: {
+          token: faker.datatype.uuid(),
+          player,
+          turnCredentials: {
+            username: 'bob',
+            credentials: faker.internet.password()
+          }
+        },
+        createGame: () => {
+          sendToSubscription({
+            data: {
+              receiveGameListUpdates: [
+                { id: lobby.id, players: [player, player2] },
+                ...games
+              ]
+            }
+          })
+          return lobby
+        },
+        joinGame: () => gameJoined,
+        searchPlayers: [[player2]],
+        invite: () => {
+          sendToSubscription({ data: { receiveGameUpdates: updatedLobby } })
+          return updatedLobby
+        },
+        saveGame: updatedLobby
+      })
+      sendToSubscription = graphQlMocks.sendToSubscription
+      await graphQlMocks.setTokenCookie()
+
+      graphQlMocks.onSubscription(({ payload: { query } }) => {
+        if (query.startsWith('subscription awaitSignal')) {
+          sendToSubscription({
+            data: { awaitSignal: { data: JSON.stringify({ type: 'ready' }) } }
+          })
+        }
+      })
+
+      const homePage = new HomePage(page)
+      await homePage.goTo()
+      await homePage.getStarted()
+      await homePage.createLobby()
+      await homePage.invite(player2.username)
+    })
+
+    it('can promote current lobby to game', async ({ page }) => {
+      const game = { ...lobby, kind: catalog[0].name }
+      gameJoined = game
+      sendToSubscription({
+        data: { receiveGameUpdates: game }
+      })
+      await expect(page).toHaveURL(`/game/${lobby.id}`)
+      await new GamePage(page).getStarted()
+    })
+
+    it('can leave current lobby', async ({ page }) => {
+      const homePage = new HomePage(page)
+      await homePage.closeGameButtons.first().click()
+      await expect(homePage.playerAvatars).toBeHidden()
+      await expect(homePage.closeGameButtons).toBeHidden()
+    })
+
+    it('leaves current lobby on server deletion', async ({ page }) => {
+      const homePage = new HomePage(page)
+      sendToSubscription({ data: { receiveGameUpdates: null } })
+      await expect(homePage.playerAvatars).toBeHidden()
+      await expect(homePage.closeGameButtons).toBeHidden()
+    })
   })
 })

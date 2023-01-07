@@ -1,307 +1,373 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Default 1`] = `
-<main
-  class="s-BUJUVtHZo5xi"
->
-  <div
-    class="pane s-j2LTsWktqK_4"
+HTMLCollection [
+  <main
+    class="s-BUJUVtHZo5xi"
   >
-    <h1
-      class="heading s-OEREYjlWzGh2"
-    >
-      Bienvenue !
-    </h1>
-     
     <div
-      class="container s-OEREYjlWzGh2"
+      class="pane s-j2LTsWktqK_4"
     >
-      <button
-        class="s-NMyTiX1zi6rz"
+      <h1
+        class="heading s-OEREYjlWzGh2"
       >
-        <span
-          class="icon s-NMyTiX1zi6rz"
-        >
-          <svg
-            height="20"
-            slot="icon"
-            viewBox="0 0 14 14"
-            width="20"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M7 .175c-3.872 0-7 3.128-7 7 0 3.084 2.013 5.71 4.79 6.65.35.066.482-.153.482-.328v-1.181c-1.947.415-2.363-.941-2.363-.941-.328-.81-.787-1.028-.787-1.028-.634-.438.044-.416.044-.416.7.044 1.071.722 1.071.722.635 1.072 1.641.766 2.035.59.066-.459.24-.765.437-.94-1.553-.175-3.193-.787-3.193-3.456 0-.766.262-1.378.721-1.881-.065-.175-.306-.897.066-1.86 0 0 .59-.197 1.925.722a6.754 6.754 0 0 1 1.75-.24c.59 0 1.203.087 1.75.24 1.335-.897 1.925-.722 1.925-.722.372.963.131 1.685.066 1.86.46.48.722 1.115.722 1.88 0 2.691-1.641 3.282-3.194 3.457.24.219.481.634.481 1.29v1.926c0 .197.131.415.481.328C11.988 12.884 14 10.259 14 7.175c0-3.872-3.128-7-7-7z"
-              fill="currentColor"
-            />
-          </svg>
-          <!--&lt;Github-logo.svg.rollup-plugin&gt;-->
-        </span>
-        
-        <span
-          class="text s-NMyTiX1zi6rz"
-        >
-          Continuer avec Github
-        </span>
-        
-        
-      </button>
-      <!--&lt;Button&gt;-->
+        Bienvenue !
+      </h1>
        
-      <button
-        class="s-NMyTiX1zi6rz"
+      <div
+        class="container s-OEREYjlWzGh2"
       >
-        <span
-          class="icon s-NMyTiX1zi6rz"
-        >
-          <svg
-            height="18"
-            slot="icon"
-            width="17.64"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M8.991 10.71V7.362h8.424c.126.567.225 1.098.225 1.845C17.64 14.346 14.193 18 9 18c-4.968 0-9-4.032-9-9s4.032-9 9-9c2.43 0 4.464.891 6.021 2.349l-2.556 2.484C11.817 4.221 10.683 3.501 9 3.501c-2.979 0-5.409 2.475-5.409 5.508S6.021 14.517 9 14.517c3.447 0 4.716-2.385 4.95-3.798H8.991Z"
-              fill="currentColor"
-              fill-rule="evenodd"
-            />
-          </svg>
-          <!--&lt;Google-logo.svg.rollup-plugin&gt;-->
-        </span>
-        
-        <span
-          class="text s-NMyTiX1zi6rz"
-        >
-          Continuer avec Google
-        </span>
-        
-        
-      </button>
-      <!--&lt;Button&gt;-->
-       
-      <details
-        class="s-OEREYjlWzGh2"
-      >
-        <summary
-          class="s-OEREYjlWzGh2"
-          title="password-toggle"
+        <button
+          class="s-NMyTiX1zi6rz"
         >
           <span
-            class="material-icons s-OEREYjlWzGh2"
+            class="icon s-NMyTiX1zi6rz"
           >
-            arrow_forward
+            <svg
+              height="20"
+              slot="icon"
+              viewBox="0 0 14 14"
+              width="20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M7 .175c-3.872 0-7 3.128-7 7 0 3.084 2.013 5.71 4.79 6.65.35.066.482-.153.482-.328v-1.181c-1.947.415-2.363-.941-2.363-.941-.328-.81-.787-1.028-.787-1.028-.634-.438.044-.416.044-.416.7.044 1.071.722 1.071.722.635 1.072 1.641.766 2.035.59.066-.459.24-.765.437-.94-1.553-.175-3.193-.787-3.193-3.456 0-.766.262-1.378.721-1.881-.065-.175-.306-.897.066-1.86 0 0 .59-.197 1.925.722a6.754 6.754 0 0 1 1.75-.24c.59 0 1.203.087 1.75.24 1.335-.897 1.925-.722 1.925-.722.372.963.131 1.685.066 1.86.46.48.722 1.115.722 1.88 0 2.691-1.641 3.282-3.194 3.457.24.219.481.634.481 1.29v1.926c0 .197.131.415.481.328C11.988 12.884 14 10.259 14 7.175c0-3.872-3.128-7-7-7z"
+                fill="currentColor"
+              />
+            </svg>
+            <!--&lt;Github-logo.svg.rollup-plugin&gt;-->
           </span>
-          Continuer avec un mot de passe
-        </summary>
+          
+          <span
+            class="text s-NMyTiX1zi6rz"
+          >
+            Continuer avec Github
+          </span>
+          
+          
+        </button>
+        <!--&lt;Button&gt;-->
          
-        <form
-          class="s-OEREYjlWzGh2"
-          method="POST"
+        <button
+          class="s-NMyTiX1zi6rz"
         >
-          <div
-            class="row s-OEREYjlWzGh2"
+          <span
+            class="icon s-NMyTiX1zi6rz"
           >
-            <fieldset
-              class="s-Fe6WNbR-55zp"
+            <svg
+              height="18"
+              slot="icon"
+              width="17.64"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <legend
-                class="s-Fe6WNbR-55zp"
-              >
-                Identifiant
-              </legend>
-               
-              <input
-                class="s-Fe6WNbR-55zp"
-                name="id"
+              <path
+                d="M8.991 10.71V7.362h8.424c.126.567.225 1.098.225 1.845C17.64 14.346 14.193 18 9 18c-4.968 0-9-4.032-9-9s4.032-9 9-9c2.43 0 4.464.891 6.021 2.349l-2.556 2.484C11.817 4.221 10.683 3.501 9 3.501c-2.979 0-5.409 2.475-5.409 5.508S6.021 14.517 9 14.517c3.447 0 4.716-2.385 4.95-3.798H8.991Z"
+                fill="currentColor"
+                fill-rule="evenodd"
               />
-            </fieldset>
-            <!--&lt;Input&gt;-->
-          </div>
-           
-          <div
-            class="row s-OEREYjlWzGh2"
+            </svg>
+            <!--&lt;Google-logo.svg.rollup-plugin&gt;-->
+          </span>
+          
+          <span
+            class="text s-NMyTiX1zi6rz"
           >
-            <fieldset
-              class="s-Fe6WNbR-55zp"
-            >
-              <legend
-                class="s-Fe6WNbR-55zp"
-              >
-                Mot de passe
-              </legend>
-               
-              <input
-                class="s-Fe6WNbR-55zp"
-                data-testid="password"
-                name="password"
-                type="password"
-              />
-            </fieldset>
-            <!--&lt;Input&gt;-->
-          </div>
-           
-           
-          <div
-            class="actions s-OEREYjlWzGh2"
-          >
-            <button
-              class="s-NMyTiX1zi6rz"
-              disabled=""
-              type="submit"
-            >
-              <span
-                class="material-icons s-NMyTiX1zi6rz"
-              >
-                emoji_people
-              </span>
-              
-              <span
-                class="text s-NMyTiX1zi6rz"
-              >
-                Entrer
-              </span>
-              
-              
-            </button>
-            <!--&lt;Button&gt;-->
-          </div>
-           
-          <input
+            Continuer avec Google
+          </span>
+          
+          
+        </button>
+        <!--&lt;Button&gt;-->
+         
+        <details
+          class="s-OEREYjlWzGh2"
+        >
+          <summary
             class="s-OEREYjlWzGh2"
-            name="redirect"
-            type="hidden"
-            value=""
-          />
-        </form>
-      </details>
+            title="password-toggle"
+          >
+            <span
+              class="material-icons s-OEREYjlWzGh2"
+            >
+              arrow_forward
+            </span>
+            Continuer avec un mot de passe
+          </summary>
+           
+          <form
+            class="s-OEREYjlWzGh2"
+            method="POST"
+          >
+            <div
+              class="row s-OEREYjlWzGh2"
+            >
+              <fieldset
+                class="s-Fe6WNbR-55zp"
+              >
+                <legend
+                  class="s-Fe6WNbR-55zp"
+                >
+                  Identifiant
+                </legend>
+                 
+                <input
+                  class="s-Fe6WNbR-55zp"
+                  name="id"
+                />
+              </fieldset>
+              <!--&lt;Input&gt;-->
+            </div>
+             
+            <div
+              class="row s-OEREYjlWzGh2"
+            >
+              <fieldset
+                class="s-Fe6WNbR-55zp"
+              >
+                <legend
+                  class="s-Fe6WNbR-55zp"
+                >
+                  Mot de passe
+                </legend>
+                 
+                <input
+                  class="s-Fe6WNbR-55zp"
+                  data-testid="password"
+                  name="password"
+                  type="password"
+                />
+              </fieldset>
+              <!--&lt;Input&gt;-->
+            </div>
+             
+             
+            <div
+              class="actions s-OEREYjlWzGh2"
+            >
+              <button
+                class="s-NMyTiX1zi6rz"
+                disabled=""
+                type="submit"
+              >
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  emoji_people
+                </span>
+                
+                <span
+                  class="text s-NMyTiX1zi6rz"
+                >
+                  Entrer
+                </span>
+                
+                
+              </button>
+              <!--&lt;Button&gt;-->
+            </div>
+             
+            <input
+              class="s-OEREYjlWzGh2"
+              name="redirect"
+              type="hidden"
+              value=""
+            />
+          </form>
+        </details>
+      </div>
     </div>
-  </div>
-  <!--&lt;Pane&gt;-->
-  <!--&lt;Form&gt;-->
-</main>
+    <!--&lt;Pane&gt;-->
+    <!--&lt;Form&gt;-->
+  </main>,
+  <footer
+    class="s-_Wq18H0k1xjH"
+  >
+    <section
+      class="s-_Wq18H0k1xjH"
+    >
+      © 
+      2023
+       
+      Tabulous.fr. Tous droits réservés.
+    </section>
+     
+    <a
+      class="s-_Wq18H0k1xjH"
+      href="/terms-of-service"
+    >
+      Mentions Légales & Conditions Générales d'Utilisation
+    </a>
+     
+    <a
+      class="s-_Wq18H0k1xjH"
+      href="#top"
+      title="Défiler jusqu'en haut"
+    >
+      <i
+        class="material-icons s-_Wq18H0k1xjH"
+      >
+        vertical_align_top
+      </i>
+    </a>
+  </footer>,
+]
 `;
 
 exports[`With errors 1`] = `
-<main
-  class="s-BUJUVtHZo5xi"
->
-  <div
-    class="pane s-j2LTsWktqK_4"
+HTMLCollection [
+  <main
+    class="s-BUJUVtHZo5xi"
   >
-    <h1
-      class="heading s-OEREYjlWzGh2"
-    >
-      Bienvenue !
-    </h1>
-     
     <div
-      class="container s-OEREYjlWzGh2"
+      class="pane s-j2LTsWktqK_4"
     >
-       
-       
-      <details
-        class="s-OEREYjlWzGh2"
-        open=""
+      <h1
+        class="heading s-OEREYjlWzGh2"
       >
-        <summary
-          class="s-OEREYjlWzGh2"
-          title="password-toggle"
-        >
-          <span
-            class="material-icons s-OEREYjlWzGh2"
-          >
-            arrow_back
-          </span>
-          Autres options
-        </summary>
+        Bienvenue !
+      </h1>
+       
+      <div
+        class="container s-OEREYjlWzGh2"
+      >
          
-        <form
+         
+        <details
           class="s-OEREYjlWzGh2"
-          method="POST"
+          open=""
         >
-          <div
-            class="row s-OEREYjlWzGh2"
-          >
-            <fieldset
-              class="s-Fe6WNbR-55zp"
-            >
-              <legend
-                class="s-Fe6WNbR-55zp"
-              >
-                Identifiant
-              </legend>
-               
-              <input
-                class="s-Fe6WNbR-55zp"
-                name="id"
-              />
-            </fieldset>
-            <!--&lt;Input&gt;-->
-          </div>
-           
-          <div
-            class="row s-OEREYjlWzGh2"
-          >
-            <fieldset
-              class="s-Fe6WNbR-55zp"
-            >
-              <legend
-                class="s-Fe6WNbR-55zp"
-              >
-                Mot de passe
-              </legend>
-               
-              <input
-                class="s-Fe6WNbR-55zp"
-                data-testid="password"
-                name="password"
-                type="password"
-              />
-            </fieldset>
-            <!--&lt;Input&gt;-->
-          </div>
-           
-          <div
-            class="error s-OEREYjlWzGh2"
-          >
-            Pseudo ou mot de passe incorrect. Merci de réessayer.
-          </div>
-           
-          <div
-            class="actions s-OEREYjlWzGh2"
-          >
-            <button
-              class="s-NMyTiX1zi6rz"
-              disabled=""
-              type="submit"
-            >
-              <span
-                class="material-icons s-NMyTiX1zi6rz"
-              >
-                emoji_people
-              </span>
-              
-              <span
-                class="text s-NMyTiX1zi6rz"
-              >
-                Entrer
-              </span>
-              
-              
-            </button>
-            <!--&lt;Button&gt;-->
-          </div>
-           
-          <input
+          <summary
             class="s-OEREYjlWzGh2"
-            name="redirect"
-            type="hidden"
-            value=""
-          />
-        </form>
-      </details>
+            title="password-toggle"
+          >
+            <span
+              class="material-icons s-OEREYjlWzGh2"
+            >
+              arrow_back
+            </span>
+            Autres options
+          </summary>
+           
+          <form
+            class="s-OEREYjlWzGh2"
+            method="POST"
+          >
+            <div
+              class="row s-OEREYjlWzGh2"
+            >
+              <fieldset
+                class="s-Fe6WNbR-55zp"
+              >
+                <legend
+                  class="s-Fe6WNbR-55zp"
+                >
+                  Identifiant
+                </legend>
+                 
+                <input
+                  class="s-Fe6WNbR-55zp"
+                  name="id"
+                />
+              </fieldset>
+              <!--&lt;Input&gt;-->
+            </div>
+             
+            <div
+              class="row s-OEREYjlWzGh2"
+            >
+              <fieldset
+                class="s-Fe6WNbR-55zp"
+              >
+                <legend
+                  class="s-Fe6WNbR-55zp"
+                >
+                  Mot de passe
+                </legend>
+                 
+                <input
+                  class="s-Fe6WNbR-55zp"
+                  data-testid="password"
+                  name="password"
+                  type="password"
+                />
+              </fieldset>
+              <!--&lt;Input&gt;-->
+            </div>
+             
+            <div
+              class="error s-OEREYjlWzGh2"
+            >
+              Pseudo ou mot de passe incorrect. Merci de réessayer.
+            </div>
+             
+            <div
+              class="actions s-OEREYjlWzGh2"
+            >
+              <button
+                class="s-NMyTiX1zi6rz"
+                disabled=""
+                type="submit"
+              >
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  emoji_people
+                </span>
+                
+                <span
+                  class="text s-NMyTiX1zi6rz"
+                >
+                  Entrer
+                </span>
+                
+                
+              </button>
+              <!--&lt;Button&gt;-->
+            </div>
+             
+            <input
+              class="s-OEREYjlWzGh2"
+              name="redirect"
+              type="hidden"
+              value=""
+            />
+          </form>
+        </details>
+      </div>
     </div>
-  </div>
-  <!--&lt;Pane&gt;-->
-  <!--&lt;Form&gt;-->
-</main>
+    <!--&lt;Pane&gt;-->
+    <!--&lt;Form&gt;-->
+  </main>,
+  <footer
+    class="s-_Wq18H0k1xjH"
+  >
+    <section
+      class="s-_Wq18H0k1xjH"
+    >
+      © 
+      2023
+       
+      Tabulous.fr. Tous droits réservés.
+    </section>
+     
+    <a
+      class="s-_Wq18H0k1xjH"
+      href="/terms-of-service"
+    >
+      Mentions Légales & Conditions Générales d'Utilisation
+    </a>
+     
+    <a
+      class="s-_Wq18H0k1xjH"
+      href="#top"
+      title="Défiler jusqu'en haut"
+    >
+      <i
+        class="material-icons s-_Wq18H0k1xjH"
+      >
+        vertical_align_top
+      </i>
+    </a>
+  </footer>,
+]
 `;

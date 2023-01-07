@@ -11,7 +11,7 @@ exports[`Multiple choices 1`] = `
     <header
       class="heading s-_xyHwNw5vPU9"
     >
-      A vos marques...
+      Réglages du jeu
     </header>
      
     <section
@@ -154,7 +154,7 @@ exports[`Single choice 1`] = `
     <header
       class="heading s-_xyHwNw5vPU9"
     >
-      A vos marques...
+      Réglages du jeu
     </header>
      
     <section

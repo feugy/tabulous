@@ -1,7 +1,7 @@
 // @ts-check
 import { faker } from '@faker-js/faker'
 
-import { GamePage } from './pages/index.js'
+import { GamePage, HomePage } from './pages/index.js'
 import { translate } from './utils/index.js'
 import { describe, expect, it, mockGraphQl } from './utils/index.js'
 
@@ -153,5 +153,71 @@ describe('Game page', () => {
       .locator('role=button', { hasText: translate('actions.join-game') })
       .click()
     await expect(gamePage.parametersDialogue).not.toBeVisible()
+  })
+
+  it('redirects to home when loading a lobby', async ({ page }) => {
+    const { onSubscription, setTokenCookie, sendToSubscription } =
+      await mockGraphQl(page, {
+        listCatalog: [[]],
+        listGames: [[]],
+        getCurrentPlayer: {
+          token: faker.datatype.uuid(),
+          player,
+          turnCredentials: {
+            username: 'bob',
+            credentials: faker.internet.password()
+          }
+        },
+        joinGame: { ...game, kind: undefined }
+      })
+    await setTokenCookie()
+
+    onSubscription(({ payload: { query } }) => {
+      if (query.startsWith('subscription awaitSignal')) {
+        sendToSubscription({
+          data: { awaitSignal: { data: JSON.stringify({ type: 'ready' }) } }
+        })
+      }
+    })
+
+    const gamePage = new GamePage(page)
+    await gamePage.goTo(game.id)
+    await expect(page).toHaveURL(`/home`)
+    await new HomePage(page).getStarted()
+  })
+
+  it('leaves current game on server deletion', async ({ page }) => {
+    const { sendToSubscription, setTokenCookie, onSubscription } =
+      await mockGraphQl(page, {
+        listCatalog: [[]],
+        listGames: [[]],
+        getCurrentPlayer: {
+          token: faker.datatype.uuid(),
+          player,
+          turnCredentials: {
+            username: 'bob',
+            credentials: faker.internet.password()
+          }
+        },
+        joinGame: game,
+        saveGame: { id: game.id }
+      })
+    await setTokenCookie()
+
+    onSubscription(({ payload: { query } }) => {
+      if (query.startsWith('subscription awaitSignal')) {
+        sendToSubscription({
+          data: { awaitSignal: { data: JSON.stringify({ type: 'ready' }) } }
+        })
+      }
+    })
+
+    const gamePage = new GamePage(page)
+    await gamePage.goTo(game.id)
+    await gamePage.getStarted()
+
+    sendToSubscription({ data: { receiveGameUpdates: null } })
+    await expect(page).toHaveURL(`/home`)
+    await new HomePage(page).getStarted()
   })
 })

@@ -2,7 +2,7 @@
 import { expect } from '@playwright/test'
 
 import { translate } from '../utils/index.js'
-import { mixin, TermsSupportedMixin } from './mixins.js'
+import { GameAsideMixin, mixin, TermsSupportedMixin } from './mixins/index.js'
 
 /**
  * @typedef {import('@playwright/test').Page} Page
@@ -28,14 +28,6 @@ export const GamePage = mixin(
       this.inviteMenuItem = page.locator('role=menuitem', {
         hasText: `connect_without_contact ${translate('actions.invite-player')}`
       })
-      /** @type {Locator} */
-      this.inviteDialogue = this.page.locator('role=dialog', {
-        has: this.page.locator(`text="${translate('titles.invite')}"`)
-      })
-      /** @type {Locator} */
-      this.inviteButton = this.inviteDialogue.locator('role=button')
-      /** @type {Locator} */
-      this.searchInput = this.inviteDialogue.locator('role=textbox')
       /** @type {Locator} */
       this.parametersDialogue = page.locator('role=dialog', {
         has: this.page.locator(`text="${translate('titles.game-parameters')}"`)
@@ -65,21 +57,7 @@ export const GamePage = mixin(
     async openMenu() {
       await this.menuButton.click()
     }
-
-    /**
-     * Invites another players by searching them in the invite dialogue.
-     * It assumes the invite dialogue to be already opened.
-     */
-    async invite(playerName) {
-      await expect(
-        this.inviteDialogue,
-        'the invite dialogue is not opened'
-      ).toBeVisible()
-      await this.searchInput.type(playerName)
-      await this.page.locator('role=menuitem', { hasText: playerName }).click()
-      await this.inviteButton.click()
-      await expect(this.inviteDialogue).not.toBeVisible()
-    }
   },
+  GameAsideMixin,
   TermsSupportedMixin
 )

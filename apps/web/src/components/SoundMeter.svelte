@@ -1,6 +1,6 @@
 <script>
   import { BehaviorSubject } from 'rxjs'
-  import { onMount } from 'svelte'
+  import { onDestroy } from 'svelte'
 
   export let mediaStream = null
 
@@ -19,12 +19,10 @@
     clearSoundMeter()
     input = audioContext.createMediaStreamSource(mediaStream)
     input.connect(analyser)
+    scheduleSoundMeter()
   }
 
-  onMount(() => {
-    scheduleSoundMeter()
-    return clearSoundMeter
-  })
+  onDestroy(clearSoundMeter)
 
   function clearSoundMeter() {
     clearTimeout(timer)
@@ -33,6 +31,7 @@
   }
 
   function scheduleSoundMeter() {
+    timer = setTimeout(scheduleSoundMeter, refreshDelayMs)
     if (!analyser) {
       return
     }
@@ -43,7 +42,6 @@
       squareSum += value ** 2
     }
     levelDb.next(10 * Math.log10(squareSum / samples.length))
-    timer = setTimeout(scheduleSoundMeter, refreshDelayMs)
   }
 </script>
 

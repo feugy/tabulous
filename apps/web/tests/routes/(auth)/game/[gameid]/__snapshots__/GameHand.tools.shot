@@ -9,7 +9,7 @@ exports[`Default (not visible) 1`] = `
     aria-expanded="false"
     aria-label="minimizable"
     class="s-vqhOCvFa7LzI minimized vertical"
-    id="minimizable-section-13"
+    id="minimizable-section-16"
     style="height: 25vh;"
   >
     <menu
@@ -47,7 +47,7 @@ exports[`Default (not visible) 1`] = `
       </ol>
        
       <div
-        aria-controls="minimizable-section-13"
+        aria-controls="minimizable-section-16"
         class="gutter s-vqhOCvFa7LzI"
         role="scrollbar"
       />
@@ -74,7 +74,7 @@ exports[`Highlighted 1`] = `
     aria-expanded="false"
     aria-label="minimizable"
     class="s-vqhOCvFa7LzI minimized vertical"
-    id="minimizable-section-15"
+    id="minimizable-section-18"
     style="height: 25vh;"
   >
     <menu
@@ -112,7 +112,7 @@ exports[`Highlighted 1`] = `
       </ol>
        
       <div
-        aria-controls="minimizable-section-15"
+        aria-controls="minimizable-section-18"
         class="gutter s-vqhOCvFa7LzI"
         role="scrollbar"
       />
@@ -139,7 +139,7 @@ exports[`With some meshes 1`] = `
     aria-expanded="true"
     aria-label="minimizable"
     class="s-vqhOCvFa7LzI vertical"
-    id="minimizable-section-14"
+    id="minimizable-section-17"
     style="height: 25vh;"
   >
     <menu
@@ -177,7 +177,7 @@ exports[`With some meshes 1`] = `
       </ol>
        
       <div
-        aria-controls="minimizable-section-14"
+        aria-controls="minimizable-section-17"
         class="gutter s-vqhOCvFa7LzI"
         role="scrollbar"
       />

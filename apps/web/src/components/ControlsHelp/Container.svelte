@@ -1,7 +1,7 @@
 <script>
   import { _ } from 'svelte-intl'
 
-  import ControlsHelpSection from './ControlsHelpSection.svelte'
+  import ControlHelp from './ControlHelp.svelte'
 
   const cameraControls = [
     { actions: ['right-drag', 'two-pointers-drag'], outcome: 'pan-camera' },
@@ -43,19 +43,19 @@
   <h3>{$_('titles.selection-controls')}</h3>
   <section>
     {#each selectionControls as { actions, outcome }}
-      <ControlsHelpSection {actions} {outcome} />
+      <ControlHelp {actions} {outcome} />
     {/each}
   </section>
   <h3>{$_('titles.object-controls')}</h3>
   <section>
     {#each objectControls as { actions, outcome }}
-      <ControlsHelpSection {actions} {outcome} />
+      <ControlHelp {actions} {outcome} />
     {/each}
   </section>
   <h3>{$_('titles.camera-controls')}</h3>
   <section>
     {#each cameraControls as { actions, outcome }}
-      <ControlsHelpSection {actions} {outcome} />
+      <ControlHelp {actions} {outcome} />
     {/each}
   </section>
 </div>

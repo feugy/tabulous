@@ -1,11 +1,11 @@
-import RuleViewer from '@src/routes/(auth)/game/[gameId]/RuleViewer.svelte'
+import { RuleViewer } from '@src/components'
 import { gameAssetsUrl } from '@src/utils'
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import { tick } from 'svelte'
 import html from 'svelte-htm'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-describe('/game/[gameId] RuleViewer component', () => {
+describe('RuleViewer component', () => {
   const handleChange = vi.fn()
   const game = 'cards'
 

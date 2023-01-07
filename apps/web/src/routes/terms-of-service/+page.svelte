@@ -1,5 +1,5 @@
 <script>
-  import { Header, Markdown, TermsOfService } from '@src/components'
+  import { Header, Markdown, PageFooter, TermsOfService } from '@src/components'
   import { _ } from 'svelte-intl'
 
   /** @type {import('./$types').PageData} */
@@ -23,6 +23,7 @@
 
   <TermsOfService />
 </main>
+<PageFooter />
 
 <style lang="postcss">
   main {

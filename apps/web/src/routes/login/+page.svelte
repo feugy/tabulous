@@ -1,4 +1,5 @@
 <script>
+  import { PageFooter } from '@src/components'
   import { flags } from '@src/stores'
   import { _ } from 'svelte-intl'
 
@@ -30,6 +31,7 @@
     withGoogle={$flags.useGoogleProvider}
   />
 </main>
+<PageFooter />
 
 <style lang="postcss">
   main {

@@ -1,5 +1,5 @@
 <script>
-  import { Header } from '@src/components'
+  import { Header, PageFooter } from '@src/components'
   import { _ } from 'svelte-intl'
 
   import { page } from '$app/stores'
@@ -32,6 +32,7 @@
   <ScrollableTerms on:end={() => (disabled = false)} />
   <Form {disabled} {redirect} />
 </main>
+<PageFooter />
 
 <style lang="postcss">
   main {

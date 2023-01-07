@@ -1,7 +1,9 @@
 import {
   buildPlayerColors,
   findPlayerColor,
-  findPlayerPreferences
+  findPlayerPreferences,
+  isGuest,
+  isLobby
 } from '@src/utils/game'
 import { describe, expect, it } from 'vitest'
 
@@ -69,6 +71,40 @@ describe('Game utils', () => {
           ['c', '#0000ff']
         ])
       )
+    })
+  })
+
+  describe('isGuest()', () => {
+    it('returns false on missing game', () => {
+      expect(isGuest()).toBe(false)
+    })
+
+    it('returns false on missing player', () => {
+      expect(isGuest({ players: [{ id: 'a', isGuest: true }] }, 'b')).toBe(
+        false
+      )
+    })
+
+    it('returns false for playing player', () => {
+      expect(isGuest({ players: [{ id: 'a' }] }, 'a')).toBe(false)
+    })
+
+    it('returns true for guest', () => {
+      expect(isGuest({ players: [{ id: 'a', isGuest: true }] }, 'a')).toBe(true)
+    })
+  })
+
+  describe('isLobby()', () => {
+    it('returns null with no argument', () => {
+      expect(isLobby()).toBeNull()
+    })
+
+    it('detects lobby', () => {
+      expect(isLobby({ id: 'whatever' })).toBe(true)
+    })
+
+    it('detects game', () => {
+      expect(isLobby({ id: 'whatever', kind: 'foo' })).toBe(false)
     })
   })
 })

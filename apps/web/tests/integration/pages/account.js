@@ -6,7 +6,7 @@ import {
   AuthenticatedHeaderMixin,
   mixin,
   TermsSupportedMixin
-} from './mixins.js'
+} from './mixins/index.js'
 
 /**
  * @typedef {import('@playwright/test').Page} Page

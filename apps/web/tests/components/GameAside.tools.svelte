@@ -14,8 +14,14 @@
 
 <ToolBox
   component={GameAside}
-  name="Routes/game/[gameId]/Game Aside"
-  props={{ player: players[0], playerById, connected: [], thread: [] }}
+  name="Components/Game Aside"
+  props={{
+    game: { kind: 'splendor' },
+    player: players[0],
+    playerById,
+    connected: [],
+    thread: []
+  }}
   events={['sendMessage']}
 >
   <Tool
@@ -45,4 +51,5 @@
     props={{ playerById: singlePlayerById }}
   />
   <Tool name="Single connected, no rules book, thread" props={{ thread }} />
+  <Tool name="Lobby" props={{ thread, game: {} }} />
 </ToolBox>

@@ -1,23 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Routes/game/[gameId]/Controls Help 1`] = `
+exports[`Components/Controls Help 1`] = `
 <div
-  class="s-z1Q6GECZQiDV"
+  class="s-STWbXzfYiRLQ"
 >
   <h3
-    class="s-z1Q6GECZQiDV"
+    class="s-STWbXzfYiRLQ"
   >
     Contrôler un ou plusieurs objets
   </h3>
    
   <section
-    class="s-z1Q6GECZQiDV"
+    class="s-STWbXzfYiRLQ"
   >
     <div
-      class="s-0nPg0M2wSeXX"
+      class="s-4iEuBZCKGaMy"
     >
       <span
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
       >
         Déplacer
         :
@@ -25,21 +25,21 @@ exports[`Routes/game/[gameId]/Controls Help 1`] = `
        
       <img
         alt="Tiré-déplacé un objet avec le clic gauche"
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
         src="/images/help/left-drag-object.webp"
       />
       <img
         alt="Tiré-déplacé un objet avec un tap"
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
         src="/images/help/pointer-drag-object.webp"
       />
     </div>
-    <!--&lt;ControlsHelpSection&gt;-->
+    <!--&lt;ControlHelp&gt;-->
     <div
-      class="s-0nPg0M2wSeXX"
+      class="s-4iEuBZCKGaMy"
     >
       <span
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
       >
         Retourner
         :
@@ -47,21 +47,21 @@ exports[`Routes/game/[gameId]/Controls Help 1`] = `
        
       <img
         alt="Clic gauche sur un objet"
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
         src="/images/help/left-object.webp"
       />
       <img
         alt="Tap sur un objet"
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
         src="/images/help/pointer-object.webp"
       />
     </div>
-    <!--&lt;ControlsHelpSection&gt;-->
+    <!--&lt;ControlHelp&gt;-->
     <div
-      class="s-0nPg0M2wSeXX"
+      class="s-4iEuBZCKGaMy"
     >
       <span
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
       >
         Tourner de 90°
         :
@@ -69,32 +69,32 @@ exports[`Routes/game/[gameId]/Controls Help 1`] = `
        
       <img
         alt="Clic gauche long sur un objet"
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
         src="/images/help/long-left-object.webp"
       />
       <img
         alt="Tap long sur un objet"
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
         src="/images/help/long-pointer-object.webp"
       />
     </div>
-    <!--&lt;ControlsHelpSection&gt;-->
+    <!--&lt;ControlHelp&gt;-->
   </section>
    
   <h3
-    class="s-z1Q6GECZQiDV"
+    class="s-STWbXzfYiRLQ"
   >
     Contrôler un objet
   </h3>
    
   <section
-    class="s-z1Q6GECZQiDV"
+    class="s-STWbXzfYiRLQ"
   >
     <div
-      class="s-0nPg0M2wSeXX"
+      class="s-4iEuBZCKGaMy"
     >
       <span
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
       >
         Ouvrir le menu
         :
@@ -102,21 +102,21 @@ exports[`Routes/game/[gameId]/Controls Help 1`] = `
        
       <img
         alt="Clic droit sur un objet"
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
         src="/images/help/right-object.webp"
       />
       <img
         alt="Tap avec deux doigts sur un objet"
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
         src="/images/help/two-pointers-object.webp"
       />
     </div>
-    <!--&lt;ControlsHelpSection&gt;-->
+    <!--&lt;ControlHelp&gt;-->
     <div
-      class="s-0nPg0M2wSeXX"
+      class="s-4iEuBZCKGaMy"
     >
       <span
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
       >
         Voir en détail
         :
@@ -124,21 +124,21 @@ exports[`Routes/game/[gameId]/Controls Help 1`] = `
        
       <img
         alt="Double clic gauche sur un objet"
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
         src="/images/help/double-left-object.webp"
       />
       <img
         alt="Double tap sur un objet"
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
         src="/images/help/double-pointer-object.webp"
       />
     </div>
-    <!--&lt;ControlsHelpSection&gt;-->
+    <!--&lt;ControlHelp&gt;-->
     <div
-      class="s-0nPg0M2wSeXX"
+      class="s-4iEuBZCKGaMy"
     >
       <span
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
       >
         Ajouter à la sélection
         :
@@ -146,21 +146,21 @@ exports[`Routes/game/[gameId]/Controls Help 1`] = `
        
       <img
         alt="tooltips.help-left-drag-select"
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
         src="/images/help/left-drag-select.webp"
       />
       <img
         alt="tooltips.help-pointer-drag-select"
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
         src="/images/help/pointer-drag-select.webp"
       />
     </div>
-    <!--&lt;ControlsHelpSection&gt;-->
+    <!--&lt;ControlHelp&gt;-->
     <div
-      class="s-0nPg0M2wSeXX"
+      class="s-4iEuBZCKGaMy"
     >
       <span
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
       >
         Vider la sélection
         :
@@ -168,32 +168,32 @@ exports[`Routes/game/[gameId]/Controls Help 1`] = `
        
       <img
         alt="Clic gauche en dehors de la sélection"
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
         src="/images/help/left-outside-selection.webp"
       />
       <img
         alt="Tap en dehors de la sélection"
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
         src="/images/help/pointer-outside-selection.webp"
       />
     </div>
-    <!--&lt;ControlsHelpSection&gt;-->
+    <!--&lt;ControlHelp&gt;-->
   </section>
    
   <h3
-    class="s-z1Q6GECZQiDV"
+    class="s-STWbXzfYiRLQ"
   >
     Contrôler la caméra
   </h3>
    
   <section
-    class="s-z1Q6GECZQiDV"
+    class="s-STWbXzfYiRLQ"
   >
     <div
-      class="s-0nPg0M2wSeXX"
+      class="s-4iEuBZCKGaMy"
     >
       <span
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
       >
         Déplacer
         :
@@ -201,21 +201,21 @@ exports[`Routes/game/[gameId]/Controls Help 1`] = `
        
       <img
         alt="Tiré-déplacé avec le clic droit"
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
         src="/images/help/right-drag.webp"
       />
       <img
         alt="Tap avec deux doigts sur un objet"
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
         src="/images/help/two-pointers-drag.webp"
       />
     </div>
-    <!--&lt;ControlsHelpSection&gt;-->
+    <!--&lt;ControlHelp&gt;-->
     <div
-      class="s-0nPg0M2wSeXX"
+      class="s-4iEuBZCKGaMy"
     >
       <span
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
       >
         Pivoter et incliner
         :
@@ -223,21 +223,21 @@ exports[`Routes/game/[gameId]/Controls Help 1`] = `
        
       <img
         alt="tooltips.help-middle-drag"
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
         src="/images/help/middle-drag.webp"
       />
       <img
         alt="tooltips.help-three-pointers-drag"
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
         src="/images/help/three-pointers-drag.webp"
       />
     </div>
-    <!--&lt;ControlsHelpSection&gt;-->
+    <!--&lt;ControlHelp&gt;-->
     <div
-      class="s-0nPg0M2wSeXX"
+      class="s-4iEuBZCKGaMy"
     >
       <span
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
       >
         Zoomer
         :
@@ -245,21 +245,21 @@ exports[`Routes/game/[gameId]/Controls Help 1`] = `
        
       <img
         alt="Molette de la souris"
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
         src="/images/help/mouse-wheel.webp"
       />
       <img
         alt="Pincer"
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
         src="/images/help/pinch.webp"
       />
     </div>
-    <!--&lt;ControlsHelpSection&gt;-->
+    <!--&lt;ControlHelp&gt;-->
     <div
-      class="s-0nPg0M2wSeXX"
+      class="s-4iEuBZCKGaMy"
     >
       <span
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
       >
         Enregistrer la position (Ctrl+1~9)
         :
@@ -267,16 +267,16 @@ exports[`Routes/game/[gameId]/Controls Help 1`] = `
        
       <img
         alt="Clic sur le bouton \\"nouvelle caméra\\""
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
         src="/images/help/new-camera.webp"
       />
     </div>
-    <!--&lt;ControlsHelpSection&gt;-->
+    <!--&lt;ControlHelp&gt;-->
     <div
-      class="s-0nPg0M2wSeXX"
+      class="s-4iEuBZCKGaMy"
     >
       <span
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
       >
         Restaurer la position
         :
@@ -284,16 +284,16 @@ exports[`Routes/game/[gameId]/Controls Help 1`] = `
        
       <img
         alt="Clic sur un emplacement de caméra"
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
         src="/images/help/restore-camera.webp"
       />
     </div>
-    <!--&lt;ControlsHelpSection&gt;-->
+    <!--&lt;ControlHelp&gt;-->
     <div
-      class="s-0nPg0M2wSeXX"
+      class="s-4iEuBZCKGaMy"
     >
       <span
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
       >
         Mettre à jour la position
         :
@@ -301,11 +301,11 @@ exports[`Routes/game/[gameId]/Controls Help 1`] = `
        
       <img
         alt="Clic long sur un emplacement de caméra"
-        class="s-0nPg0M2wSeXX"
+        class="s-4iEuBZCKGaMy"
         src="/images/help/update-camera.webp"
       />
     </div>
-    <!--&lt;ControlsHelpSection&gt;-->
+    <!--&lt;ControlHelp&gt;-->
   </section>
 </div>
 `;
