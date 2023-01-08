@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker'
-import InvitePlayerDialogue from '@src/routes/(auth)/game/[gameId]/InvitePlayerDialogue.svelte'
+import { InvitePlayerDialogue } from '@src/components'
 import { invite, searchPlayers } from '@src/stores'
 import { sleep } from '@src/utils'
 import { fireEvent, render, screen, waitFor } from '@testing-library/svelte'
@@ -13,7 +13,7 @@ vi.mock('@src/stores', () => {
   return { invite: vi.fn(), searchPlayers: vi.fn() }
 })
 
-describe('InvitePlayerDialogue connected component', () => {
+describe('InvitePlayerDialogue component', () => {
   beforeEach(vi.resetAllMocks)
   const name = faker.name.firstName()
   const game = { id: faker.datatype.uuid(), players: [] }

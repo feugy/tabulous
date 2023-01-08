@@ -16,7 +16,7 @@ HTMLCollection [
   </div>,
   <figure
     class="s-engCJu8q-fNe positioned colored"
-    style="--dimension: 60px; --color: purple; --top: 125px; --left: -150px; --border-width: 3px"
+    style="--dimension: 60px; --color: purple; --top: 125px; --left: 150px; --border-width: 3px"
   >
     <img
       alt="avatar for Gaspard"
@@ -114,7 +114,7 @@ HTMLCollection [
 exports[`Peer pointer 1`] = `
 <figure
   class="s-engCJu8q-fNe positioned colored"
-  style="--dimension: 60px; --color: #567cdc; --top: 125px; --left: -150px; --border-width: 3px"
+  style="--dimension: 60px; --color: #567cdc; --top: 125px; --left: 150px; --border-width: 3px"
 >
   <img
     alt="avatar for Gaspard"

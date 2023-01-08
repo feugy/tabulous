@@ -14,7 +14,7 @@ export async function load({ parent, url }) {
   if (name && hasPlayer) {
     let gameId
     try {
-      gameId = await createGame(name)
+      gameId = (await createGame(name)).id
     } catch (err) {
       creationError = err
     }

@@ -14,7 +14,8 @@ vi.mock('$app/environment', () => ({ browser: true }))
 vi.mock('$app/navigation', () => {
   return {
     goto: vi.fn(),
-    invalidateAll: vi.fn()
+    invalidateAll: vi.fn(),
+    beforeNavigate: vi.fn()
   }
 })
 
@@ -109,4 +110,15 @@ if (typeof window !== 'undefined') {
   Object.defineProperty(global.self, 'crypto', {
     value: Object.setPrototypeOf({ subtle: crypto.subtle }, crypto)
   })
+
+  window.Notification = class Notification {
+    static requestPermission() {}
+
+    static permission = 'default'
+
+    constructor(title, options) {
+      this.title = title
+      this.options = options
+    }
+  }
 }

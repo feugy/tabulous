@@ -1,8 +1,10 @@
 <script>
-  import { MinimizableSection } from '@src/components'
+  import { isLobby } from '@src/utils'
+  import { _ } from 'svelte-intl'
 
-  import ControlsHelp from './ControlsHelp.svelte'
+  import ControlsHelp from './ControlsHelp/index.js'
   import Discussion from './Discussion.svelte'
+  import MinimizableSection from './MinimizableSection.svelte'
   import PlayerAvatar from './PlayerAvatar.svelte'
   import RuleViewer from './RuleViewer.svelte'
 
@@ -17,18 +19,16 @@
   const rulesId = 'rules'
 
   let tab
+  let tabs
   let initialWidth = '30vw'
   let hasPeers = false
   let discussionDimension = '15%'
-  let tabs = [{ icon: 'help', id: helpId, key: 'F1' }]
 
   $: otherPlayers = [...(playerById?.values() ?? [])].filter(
     ({ id }) => id !== player.id
   )
 
   $: hasPeers = playerById?.size > 1
-
-  $: hasConnectedPeers = otherPlayers.some(({ playing }) => playing)
 
   $: peers = hasPeers
     ? otherPlayers.map(player => ({
@@ -38,12 +38,18 @@
     : []
 
   $: {
-    tabs = [{ icon: 'help', id: helpId, key: 'F1' }]
-    if (game?.rulesBookPageCount > 1) {
-      tabs.splice(0, 0, { icon: 'auto_stories', id: rulesId, key: 'F2' })
-    }
-    if (hasPeers) {
-      tabs.splice(0, 0, { icon: 'people_alt', id: playersId, key: 'F3' })
+    if (isLobby(game)) {
+      tabs = [{ icon: 'people_alt', id: playersId, key: 'F3' }]
+    } else if (game) {
+      tabs = [{ icon: 'help', id: helpId, key: 'F1' }]
+      if (game?.rulesBookPageCount > 1) {
+        tabs.splice(0, 0, { icon: 'auto_stories', id: rulesId, key: 'F2' })
+      }
+      if (hasPeers) {
+        tabs.splice(0, 0, { icon: 'people_alt', id: playersId, key: 'F3' })
+      }
+    } else {
+      tabs = []
     }
   }
 </script>
@@ -52,7 +58,7 @@
   <MinimizableSection
     placement="right"
     {tabs}
-    minimized={!hasConnectedPeers}
+    minimized={!hasPeers}
     bind:currentTab={tab}
     on:resize={() => (initialWidth = 'auto')}
   >
@@ -71,7 +77,12 @@
             <PlayerAvatar {...props} />
           {/each}
         </span>
-        {#if connected?.length || thread?.length}
+        {#if isLobby(game)}
+          <div class="lobby-instructions">
+            {$_('labels.lobby-instructions')}
+          </div>
+        {/if}
+        {#if tabs[tab]?.id === playersId}
           <MinimizableSection
             dimension={discussionDimension}
             placement="bottom"
@@ -100,13 +111,16 @@
   }
 
   .peers {
-    @apply flex flex-col flex-1;
+    @apply flex flex-col flex-1 overflow-auto;
 
     &.hidden {
       @apply hidden;
     }
   }
 
+  .lobby-instructions {
+    @apply italic p-8 pb-12;
+  }
   .avatars {
     @apply flex-1 grid place-items-center grid-flow-col;
     grid-template-rows: repeat(auto-fit, minmax(150px, 1fr));

@@ -3,6 +3,7 @@
   import HomePage from '@src/routes/home/+page.svelte'
   import { initGraphQlClient } from '@src/stores'
   import { graphQlUrl } from '@src/utils'
+  import { setSvelteUrl } from '@tests/atelier/setup'
 
   const player = {
     id: 'abc123',
@@ -98,7 +99,11 @@
   ]
 </script>
 
-<ToolBox component={HomePage} name="Routes/home">
+<ToolBox
+  component={HomePage}
+  name="Routes/home"
+  setup={() => setSvelteUrl('/home')}
+>
   <Tool name="Anonymous" props={{ data: { catalog: publicCatalog } }} />
   <Tool
     name="Authenticated"

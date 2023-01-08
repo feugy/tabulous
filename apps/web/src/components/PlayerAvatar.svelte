@@ -1,5 +1,4 @@
 <script>
-  import { Dropdown, PlayerThumbnail } from '@src/components'
   import {
     acquireMediaStream,
     cameras$,
@@ -10,7 +9,9 @@
     stream$
   } from '@src/stores/stream'
   import { _ } from 'svelte-intl'
-  
+
+  import Dropdown from './Dropdown.svelte'
+  import PlayerThumbnail from './PlayerThumbnail.svelte'
   import SoundMeter from './SoundMeter.svelte'
 
   export let player = null

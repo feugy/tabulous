@@ -1,11 +1,11 @@
 <script>
   import { Tool } from '@atelier-wb/svelte'
-  import RuleViewer from '@src/routes/(auth)/game/[gameId]/RuleViewer.svelte'
+  import { RuleViewer } from '@src/components'
 </script>
 
 <Tool
   component={RuleViewer}
-  name="Routes/game/[gameId]/Rule Viewer"
+  name="Components/Rule Viewer"
   props={{ game: 'splendor', lastPage: 3 }}
   events={['change']}
   layout="centered"

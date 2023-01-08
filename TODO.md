@@ -1,12 +1,23 @@
 # TODO
 
+## Road to beta
+
+- refactor invite dialogue to send a friend request
+- display friend requests on home page for acceptation
+- replace invite dialogue with friend list, showing online and guest statuses
+- skin(s)
+- interface in English
+- always go fullscreen when entering game
+- rework lights & shadows
+- server logging (warning on invalid descriptors) + log file rotation
+- fix obvious bugs bellow
+
 ## Refactor
 
 - @urql/core@3.1.1: receiveGameListUpdates subscribtion fails because urql's stringification sends the whole games.graphql file instead of the subscription as a payload. This is because [these lines](https://github.com/urql-graphql/urql/pull/2871/files#diff-425e8fcb48a8df1865f99ca1fb981873c6d0ef33ee3856e18f85a8b449bb81b7R41-R42)
 - add tests for web/src/utils/peer-connection
 - use node 18 when msw/interceptor will [handle it](https://github.com/mswjs/interceptors/pull/283)
 - ts-check all the things!
-- removes nginx to directly use the node server?
 - group candidate target per kind for performance
 - keep anchor ids
 - create Animation objects as part of runAnimation() (constant frameRate of 60)
@@ -20,18 +31,15 @@
 
 - bug: 6-takes: snapping to the wrong anchor (when 2 players are snapping to different anchors)
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
-- rework lights & shadows
 - detailable/stackable behavior: preview a stack of meshes
-- hide/distinguish non-connected participants
-- option to invite players with url
+- hide/distinguish non-connected participants?
+- hide media dropdown unless hovering?
 - distribute multiple meshes to players' hand
 - shortcuts cheatsheet
 - hand support for quantifiable behavior
 - put/draw under
 - "box" space for unusued/undesired meshes
 - command to "switch place" around the table, for games like Belote
-- fullscreen and default key (F11)
-- hide media dropdown unless hovering?
 
 23:09:47,374 Uncaught InternalError: too much recursion
 Immutable 10
@@ -42,11 +50,8 @@ This is bound to rxjs asyncScheduler, which depends on the operator used (probab
 
 ## Server
 
-- bug: game assets can not be updated in browser (forever-cache policy)
 - bug: timezone used for Serverside rendering is wrong
-- invite players who have no account yet
 - allows a single connection per player (discards other JWTs)
-- logging (warning on invalid descriptors)
 - better coTURN integration (password management and rotation)
 
 ## Hosting
@@ -55,7 +60,6 @@ This is bound to rxjs asyncScheduler, which depends on the operator used (probab
 - where to store secrets?
 - deploy in a folder named after the commit SHA
 - use symlink to switch between deployments (including conf files)
-- rotates log files
 - notifies on deployment failures/success
 
 ## Known issues
@@ -137,50 +141,6 @@ The host player is in charge of:
 1. regularly sending the game state so all peer could sync their state
 
 When the host player disconnects, a new host is elected: the first connected player in the game player list becomes host
-
-## HTTPs certificate
-
-Follow official Let's Encrypt [instructions](https://certbot.eff.org/lets-encrypt/ubuntufocal-other) for Ubuntu.
-
-1. run the app locally on port 80
-
-   ```shell
-   sudo NODE_ENV=production PORT=80 node apps/server
-   ```
-
-1. install certbot and certbot-dns-ovh plugin using snapd
-
-   ```shell
-   sudo snap install --classic certbot
-   sudo ln -s /snap/bin/certbot /usr/bin/certbot
-   sudo snap set certbot trust-plugin-with-root=ok
-   sudo snap install certbot-dns-ovh
-   ```
-
-1. get 1h credentials from [OVH DNS](https://eu.api.ovh.com/createToken/), using your OVH ID and password, naming the script 'certbot' and allowing GET+PUT+POST+DELETE on `/domain/zone/*`
-
-1. save the credentials in an `certbot/ovh.ini` file:
-
-   ```shell
-   dns_ovh_endpoint = ovh-eu
-   dns_ovh_application_key = AkG1LEDihK0AEP9g
-   dns_ovh_application_secret = k1oYVImXc3YQYxwA3DTUc2Ch6oI7stXN
-   dns_ovh_consumer_key = KVw37RY59KXOrinnLEO1QIMSC7Dec0ST
-   ```
-
-1. run the certbot command
-
-   ```shell
-   certbot certonly --dns-ovh --dns-ovh-credentials hosting/certbot/ovh.ini -d tabulous.fr -d www.tabulous.fr --work-dir hosting/certbot --logs-dir hosting/certbot --config-dir hosting/certbot
-   ```
-
-1. copy relevant files to run it locally
-   ```shell
-   cp hosting/certbot/live/tabulous.fr/cert.pem keys/
-   cp hosting/certbot/live/tabulous.fr/privkey.pem keys/
-   ```
-
-Here there are, copied from `hosting/certbot/live/tabulous.fr/` to `keys/\` folder.
 
 ## Player migration
 

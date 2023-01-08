@@ -1,5 +1,5 @@
 <script>
-  import { Progress } from '@src/components'
+  import { GameAside, InvitePlayerDialogue, Progress } from '@src/components'
   import {
     actionMenuProps,
     cameraSaves,
@@ -13,6 +13,7 @@
     initEngine,
     initIndicators,
     joinGame,
+    leaveGame,
     longInputs,
     meshDetails,
     playerColor,
@@ -21,23 +22,22 @@
     sendToThread,
     thread,
     toastError,
+    toastInfo,
     visibleFeedbacks,
     visibleIndicators
   } from '@src/stores'
-  import { observeDimension } from '@src/utils'
-  import { onDestroy, onMount } from 'svelte'
+  import { isLobby, observeDimension } from '@src/utils'
+  import { onMount } from 'svelte'
   import { _ } from 'svelte-intl'
 
-  import { goto } from '$app/navigation'
+  import { beforeNavigate, goto } from '$app/navigation'
   import { page } from '$app/stores'
 
   import CameraSwitch from './CameraSwitch.svelte'
   import CursorInfo from './CursorInfo.svelte'
-  import GameAside from './GameAside.svelte'
   import GameHand from './GameHand.svelte'
   import GameMenu from './GameMenu.svelte'
   import Indicators from './Indicators.svelte'
-  import InvitePlayerDialogue from './InvitePlayerDialogue.svelte'
   import MeshDetails from './MeshDetails.svelte'
   import Parameters from './Parameters'
   import RadialMenu from './RadialMenu.svelte'
@@ -68,10 +68,10 @@
         engine?.resize()
       }
     )
-    window.addEventListener('beforeunload', () => engine?.dispose())
   })
 
-  onDestroy(() => {
+  beforeNavigate(() => {
+    leaveGame(data.session.player)
     engine?.dispose()
     dimensionObserver?.disconnect()
     dimensionSubscription?.unsubscribe()
@@ -79,12 +79,24 @@
 
   function askForGame(parameters) {
     gameParameters = null
-    joinPromise = joinGame($page.params.gameId, data.session, parameters)
+    joinPromise = joinGame({
+      gameId: $page.params.gameId,
+      ...data.session,
+      parameters,
+      onDeletion: () => {
+        toastInfo({ contentKey: 'labels.game-deleted-by-owner' })
+        goto('/home')
+      }
+    })
       .then(result => {
         if (result?.schemaString) {
           gameParameters = {
             schema: JSON.parse(result.schemaString)
           }
+        }
+        console.log('coucou', result, isLobby(result))
+        if (isLobby(result)) {
+          goto('/home')
         }
       })
       .catch(err => {
@@ -188,7 +200,7 @@
   }
 
   aside.top {
-    @apply absolute z-10 top-0 left-0 p-2;
+    @apply absolute z-10 top-0 left-0 p-2 flex gap-2;
   }
 
   .overlay {

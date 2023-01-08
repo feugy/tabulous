@@ -1,10 +1,9 @@
 <script>
   import '../common'
 
-  import { PageFooter, Toaster } from '@src/components'
+  import { Toaster } from '@src/components'
   import { lastToast } from '@src/stores'
 </script>
 
 <slot />
 <Toaster message={$lastToast} />
-<PageFooter />

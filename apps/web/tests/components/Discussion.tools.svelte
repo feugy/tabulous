@@ -1,11 +1,11 @@
 <script>
   import { Tool, ToolBox } from '@atelier-wb/svelte'
-  import Discussion from '@src/routes/(auth)/game/[gameId]/Discussion.svelte'
+  import { Discussion } from '@src/components'
   import { players, thread } from '@tests/fixtures/Discussion.testdata'
 </script>
 
 <ToolBox
-  name="Routes/game/[gameId]/Discussion"
+  name="Components/Discussion"
   props={{ playerById: new Map(players.map(player => [player.id, player])) }}
   events={['sendMessage']}
   layout="centered"

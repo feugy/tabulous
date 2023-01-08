@@ -15,7 +15,7 @@
 </script>
 
 <ToolBox
-  name="Routes/game/[gameId]/Player Avatar"
+  name="Components/Player Avatar"
   component={PlayerAvatar}
   props={{ player, muted: false, stopped: false }}
   layout="centered"

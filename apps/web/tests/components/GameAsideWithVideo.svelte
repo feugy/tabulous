@@ -1,5 +1,5 @@
 <script>
-  import GameAside from '@src/routes/(auth)/game/[gameId]/GameAside.svelte'
+  import { GameAside } from '@src/components'
   import { acquireMediaStream, releaseMediaStream } from '@src/stores'
   import { onDestroy, onMount } from 'svelte'
 
@@ -8,7 +8,7 @@
   onDestroy(releaseMediaStream)
 </script>
 
-<main class="flex w-full h-screen">
+<main class="flex w-full h-screen" style="height: 100vh">
   <section class="flex-1" />
   <GameAside {...$$restProps} on:sendMessage />
 </main>

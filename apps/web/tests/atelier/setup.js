@@ -3,7 +3,17 @@ import './styles.postcss'
 
 import * as svelteClient from '../../node_modules/@sveltejs/kit/src/runtime/client/singletons'
 
-svelteClient.init({ client: {} })
+svelteClient.init({
+  client: {
+    goto: () => {},
+    invalidate: () => {},
+    invalidateAll: () => {},
+    preload_code: () => {},
+    preload_data: () => {},
+    before_navigate: () => {},
+    after_navigate: () => {}
+  }
+})
 
 /**
  * Allows configuring svelte's page store with a given url

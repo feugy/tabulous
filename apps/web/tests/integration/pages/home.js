@@ -6,9 +6,10 @@ import { expect } from '@playwright/test'
 import { translate } from '../utils/index.js'
 import {
   AuthenticatedHeaderMixin,
+  GameAsideMixin,
   mixin,
   TermsSupportedMixin
-} from './mixins.js'
+} from './mixins/index.js'
 
 /**
  * @typedef {import('@playwright/test').Page} Page
@@ -43,6 +44,10 @@ export const HomePage = mixin(
       /** @type {Locator} */
       this.catalogItemHeadings = this.catalogItems.filter({
         has: page.locator('role=heading[level=3]')
+      })
+      /** @type {Locator} */
+      this.closeGameButtons = this.games.locator('role=button', {
+        hasText: 'close'
       })
       /** @type {Locator} */
       this.loginButton = page.locator('header >> role=button', {
@@ -128,7 +133,7 @@ export const HomePage = mixin(
     }
 
     /**
-     * Creates a game by its localized title.
+     * Creates a game by clicking its localized title.
      * @param {string} title - created game's title.
      */
     async createGame(title) {
@@ -138,7 +143,15 @@ export const HomePage = mixin(
         })
         .click()
     }
+
+    /**
+     * Creates a lobby by clicking the corresponding button
+     */
+    async createLobby() {
+      await this.catalogItems.first().click()
+    }
   },
   AuthenticatedHeaderMixin,
+  GameAsideMixin,
   TermsSupportedMixin
 )

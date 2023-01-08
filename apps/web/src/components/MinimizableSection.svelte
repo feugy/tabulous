@@ -123,28 +123,30 @@
   aria-label="minimizable"
   style="{props.style}: {innerDimension};"
 >
-  <menu class:vertical class={placement}>
-    <ol role="tablist" class="buttonContainer">
-      {#each innerTabs as { icon, key }, i}
-        <li class:active={innerTabs.length > 1 && i === currentTab}>
-          <Button
-            role="tab"
-            aria-selected={innerTabs.length > 1 && i === currentTab}
-            badge={key}
-            {icon}
-            on:click={() => handleClick(i)}
-          />
-        </li>
-      {/each}
-    </ol>
-    <div
-      role="scrollbar"
-      aria-controls={id}
-      aria-valuenow={size}
-      class="gutter"
-      on:pointerdown|stopPropagation={handleDown}
-    />
-  </menu>
+  {#if innerTabs.length}
+    <menu class:vertical class={placement}>
+      <ol role="tablist" class="buttonContainer">
+        {#each innerTabs as { icon, key }, i}
+          <li class:active={innerTabs.length > 1 && i === currentTab}>
+            <Button
+              role="tab"
+              aria-selected={innerTabs.length > 1 && i === currentTab}
+              badge={key}
+              {icon}
+              on:click={() => handleClick(i)}
+            />
+          </li>
+        {/each}
+      </ol>
+      <div
+        role="scrollbar"
+        aria-controls={id}
+        aria-valuenow={size}
+        class="gutter"
+        on:pointerdown|stopPropagation={handleDown}
+      />
+    </menu>
+  {/if}
   <span>
     <slot />
   </span>

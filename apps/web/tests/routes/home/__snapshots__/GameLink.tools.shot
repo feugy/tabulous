@@ -1,5 +1,67 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Current lobby 1`] = `
+<article
+  class="s-QQoQzhRq8NK6 lobby"
+  role="link"
+  tabindex="0"
+>
+  <span
+    class="title s-QQoQzhRq8NK6"
+  >
+    <h3
+      class="s-QQoQzhRq8NK6"
+    >
+      Salon
+    </h3>
+     
+    <div
+      class="buttons s-QQoQzhRq8NK6"
+    >
+      <span
+        class="invite s-QQoQzhRq8NK6"
+      >
+        <button
+          class="secondary s-NMyTiX1zi6rz"
+        >
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            people
+          </span>
+          
+          
+          
+        </button>
+        <!--&lt;Button&gt;-->
+      </span>
+       
+      <button
+        class="secondary s-NMyTiX1zi6rz"
+      >
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          close
+        </span>
+        
+        
+        
+      </button>
+      <!--&lt;Button&gt;-->
+    </div>
+  </span>
+   
+  <span
+    class="created s-QQoQzhRq8NK6"
+  >
+    02 mai, 21:25
+  </span>
+   
+   
+</article>
+`;
+
 exports[`Guests only 1`] = `
 <article
   class="s-QQoQzhRq8NK6"
@@ -15,6 +77,11 @@ exports[`Guests only 1`] = `
       Richii Mahjong
     </h3>
      
+    <div
+      class="buttons s-QQoQzhRq8NK6"
+    >
+       
+    </div>
   </span>
    
   <span
@@ -47,6 +114,11 @@ exports[`Invited 1`] = `
       Richii Mahjong
     </h3>
      
+    <div
+      class="buttons s-QQoQzhRq8NK6"
+    >
+       
+    </div>
   </span>
    
   <span
@@ -69,6 +141,55 @@ exports[`Invited 1`] = `
 </article>
 `;
 
+exports[`Lobby 1`] = `
+<article
+  class="s-QQoQzhRq8NK6 lobby"
+  role="link"
+  tabindex="0"
+>
+  <span
+    class="title s-QQoQzhRq8NK6"
+  >
+    <h3
+      class="s-QQoQzhRq8NK6"
+    >
+      Salon
+    </h3>
+     
+    <div
+      class="buttons s-QQoQzhRq8NK6"
+    >
+      <span
+        class="invite s-QQoQzhRq8NK6"
+      >
+        <button
+          class="secondary s-NMyTiX1zi6rz"
+        >
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            people
+          </span>
+          
+          
+          
+        </button>
+        <!--&lt;Button&gt;-->
+      </span>
+       
+    </div>
+  </span>
+   
+  <span
+    class="created s-QQoQzhRq8NK6"
+  >
+    02 mai, 21:25
+  </span>
+   
+   
+</article>
+`;
+
 exports[`Owned 1`] = `
 <article
   class="s-QQoQzhRq8NK6"
@@ -84,19 +205,24 @@ exports[`Owned 1`] = `
       Richii Mahjong
     </h3>
      
-    <button
-      class="secondary s-NMyTiX1zi6rz"
+    <div
+      class="buttons s-QQoQzhRq8NK6"
     >
-      <span
-        class="material-icons s-NMyTiX1zi6rz"
+       
+      <button
+        class="secondary s-NMyTiX1zi6rz"
       >
-        delete
-      </span>
-      
-      
-      
-    </button>
-    <!--&lt;Button&gt;-->
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          delete
+        </span>
+        
+        
+        
+      </button>
+      <!--&lt;Button&gt;-->
+    </div>
   </span>
    
   <span
@@ -134,19 +260,24 @@ exports[`Single owned 1`] = `
       Richii Mahjong
     </h3>
      
-    <button
-      class="secondary s-NMyTiX1zi6rz"
+    <div
+      class="buttons s-QQoQzhRq8NK6"
     >
-      <span
-        class="material-icons s-NMyTiX1zi6rz"
+       
+      <button
+        class="secondary s-NMyTiX1zi6rz"
       >
-        delete
-      </span>
-      
-      
-      
-    </button>
-    <!--&lt;Button&gt;-->
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          delete
+        </span>
+        
+        
+        
+      </button>
+      <!--&lt;Button&gt;-->
+    </div>
   </span>
    
   <span

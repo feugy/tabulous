@@ -143,9 +143,30 @@ fragment lightGame on Game {
   }
 }
 
-mutation createGame($kind: String!) {
-  createGame(kind: $kind) {
+fragment gameData on GameOrParameters {
+  ... on Game {
+    ...fullGame
+  }
+  ... on GameParameters {
+    schemaString
+    error
     id
+    kind
+    players {
+      ...lightPlayer
+    }
+    preferences {
+      playerId
+      color
+    }
+    rulesBookPageCount
+    availableSeats
+  }
+}
+
+mutation createGame($kind: String) {
+  createGame(kind: $kind) {
+    ...lightGame
   }
 }
 
@@ -179,26 +200,15 @@ subscription receiveGameUpdates($gameId: ID!) {
   }
 }
 
+mutation promoteGame($gameId: ID!, $kind: String!) {
+  promoteGame(gameId: $gameId, kind: $kind) {
+    ...gameData
+  }
+}
+
 mutation joinGame($gameId: ID!, $parameters: String) {
   joinGame(gameId: $gameId, parameters: $parameters) {
-    ... on Game {
-      ...fullGame
-    }
-    ... on GameParameters {
-      schemaString
-      error
-      id
-      kind
-      players {
-        ...lightPlayer
-      }
-      preferences {
-        playerId
-        color
-      }
-      rulesBookPageCount
-      availableSeats
-    }
+    ...gameData
   }
 }
 

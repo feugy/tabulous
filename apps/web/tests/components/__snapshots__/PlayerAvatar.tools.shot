@@ -2,12 +2,12 @@
 
 exports[`Local 1`] = `
 <section
-  class="s-oO6dIPzQcPRb"
+  class="s-ab4pMJzf-5--"
   data-testid="player-avatar"
 >
   <video
     autoplay=""
-    class="s-oO6dIPzQcPRb"
+    class="s-ab4pMJzf-5--"
   />
    
   <figure
@@ -27,13 +27,13 @@ exports[`Local 1`] = `
   <!--&lt;PlayerThumbnail&gt;-->
    
   <span
-    class="host s-oO6dIPzQcPRb"
+    class="host s-ab4pMJzf-5--"
   >
     host
   </span>
    
   <legend
-    class="s-oO6dIPzQcPRb"
+    class="s-ab4pMJzf-5--"
   >
      
     
@@ -43,12 +43,12 @@ exports[`Local 1`] = `
 
 exports[`No video 1`] = `
 <section
-  class="s-oO6dIPzQcPRb"
+  class="s-ab4pMJzf-5--"
   data-testid="player-avatar"
 >
   <video
     autoplay=""
-    class="s-oO6dIPzQcPRb"
+    class="s-ab4pMJzf-5--"
   />
    
   <figure
@@ -68,25 +68,25 @@ exports[`No video 1`] = `
   <!--&lt;PlayerThumbnail&gt;-->
    
   <span
-    class="host s-oO6dIPzQcPRb"
+    class="host s-ab4pMJzf-5--"
   >
     host
   </span>
    
   <legend
-    class="s-oO6dIPzQcPRb"
+    class="s-ab4pMJzf-5--"
   />
 </section>
 `;
 
 exports[`No video nor avatar 1`] = `
 <section
-  class="s-oO6dIPzQcPRb"
+  class="s-ab4pMJzf-5--"
   data-testid="player-avatar"
 >
   <video
     autoplay=""
-    class="s-oO6dIPzQcPRb"
+    class="s-ab4pMJzf-5--"
   />
    
   <figure
@@ -110,13 +110,13 @@ exports[`No video nor avatar 1`] = `
   <!--&lt;PlayerThumbnail&gt;-->
    
   <span
-    class="host s-oO6dIPzQcPRb"
+    class="host s-ab4pMJzf-5--"
   >
     host
   </span>
    
   <legend
-    class="s-oO6dIPzQcPRb"
+    class="s-ab4pMJzf-5--"
   />
 </section>
 `;

@@ -41,6 +41,12 @@
     created: 1619983503676,
     players: []
   }
+
+  const lobby = {
+    id: 'fb236220-62a3-4c97-b938-716512386153',
+    created: 1619983503676,
+    players: []
+  }
 </script>
 
 <ToolBox
@@ -53,7 +59,7 @@
       players
     }
   }}
-  events={['delete']}
+  events={['select', 'close', 'invite', 'delete']}
   layout="centered"
 >
   <Tool name="Owned" />
@@ -70,4 +76,6 @@
       game: { ...game, players: players.filter(({ isGuest }) => isGuest) }
     }}
   />
+  <Tool name="Lobby" props={{ game: lobby }} />
+  <Tool name="Current lobby" props={{ game: lobby, isCurrent: true }} />
 </ToolBox>

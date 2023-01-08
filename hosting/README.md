@@ -92,6 +92,16 @@ First commands will need to connect with IPv4 (hence the `-4` flag) in the meant
   - make it executable: `sudo ln -s /snap/bin/certbot /usr/bin/certbot`
   - give it authorizations: `sudo snap set certbot trust-plugin-with-root=ok`
   - install certbot OVH DNS plugin: `sudo snap install certbot-dns-ovh`
+  - get 1h credentials from [OVH DNS](https://eu.api.ovh.com/createToken/), using your OVH ID and password, naming the script 'certbot' and allowing GET+PUT+POST+DELETE on `/domain/zone/*`
+  - save the credentials in an `certbot/ovh.ini` file:
+
+    ```shell
+    dns_ovh_endpoint = ovh-eu
+    dns_ovh_application_key = AkG1LEDihK0AEP9g
+    dns_ovh_application_secret = k1oYVImXc3YQYxwA3DTUc2Ch6oI7stXN
+    dns_ovh_consumer_key = KVw37RY59KXOrinnLEO1QIMSC7Dec0ST
+    ```
+
   - configure for Nginx: `sudo certbot --nginx` then:
     1.  provide email
     1.  accept terms of service

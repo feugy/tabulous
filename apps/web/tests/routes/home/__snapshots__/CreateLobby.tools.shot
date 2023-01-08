@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Default 1`] = `
+<article
+  class="s-XAn5sMboW1io"
+  role="link"
+  tabindex="0"
+>
+  <div
+    class="content s-XAn5sMboW1io"
+  >
+    <legend
+      class="s-XAn5sMboW1io"
+    >
+      <div
+        class="title s-XAn5sMboW1io"
+      >
+        <h3
+          class="s-XAn5sMboW1io"
+        >
+          Nouveau salon
+        </h3>
+         
+        <div
+          class="s-XAn5sMboW1io"
+        >
+          Invitez vos ami(e)s puis décidez à quel jeu jouer.
+        </div>
+      </div>
+    </legend>
+  </div>
+</article>
+`;

@@ -40,7 +40,7 @@
     props={{
       items: [
         {
-          screenPosition: { x: -150, y: 125 },
+          screenPosition: { x: 150, y: 125 },
           player: { username: 'Gaspard', color: '#567cdc' },
           id: 'pointer-123'
         }
@@ -97,7 +97,7 @@
           mesh: {}
         },
         {
-          screenPosition: { x: -150, y: 125 },
+          screenPosition: { x: 150, y: 125 },
           player: { username: 'Gaspard', color: 'purple' },
           id: 'pointer-123'
         }

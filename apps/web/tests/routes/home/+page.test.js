@@ -102,7 +102,7 @@ describe('/home route loader', () => {
 
     it('redirects to new game on creation', async () => {
       const id = faker.datatype.uuid()
-      createGame.mockResolvedValueOnce(id)
+      createGame.mockResolvedValueOnce({ id })
       await expect(
         load({
           parent,

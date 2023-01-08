@@ -1,5 +1,5 @@
 <script>
-  import PlayerAvatar from '@src/routes/(auth)/game/[gameId]/PlayerAvatar.svelte'
+  import { PlayerAvatar } from '@src/components'
   import { acquireMediaStream, releaseMediaStream } from '@src/stores'
   import { onDestroy, onMount } from 'svelte'
 

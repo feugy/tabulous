@@ -1,4 +1,4 @@
-import GameAside from '@src/routes/(auth)/game/[gameId]/GameAside.svelte'
+import { GameAside } from '@src/components'
 import { stream$ } from '@src/stores/stream'
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import userEvent from '@testing-library/user-event'
@@ -25,7 +25,7 @@ const rulesButtonText = 'auto_storiesF2'
 const playersButonText = 'people_altF3'
 const discussionButtonText = 'question_answerF4'
 
-describe('game/[gameId] GameAside component', () => {
+describe('GameAside component', () => {
   const handleSend = vi.fn()
   const stream = { getAudioTracks: () => [], getVideoTracks: () => [] }
   const connected = [
@@ -56,8 +56,20 @@ describe('game/[gameId] GameAside component', () => {
     />`)
   }
 
+  it('can have no tabs', () => {
+    renderComponent({
+      player,
+      playerById: new Map(
+        players.slice(0, 1).map(player => [player.id, player])
+      )
+    })
+    expect(screen.queryByRole('tab')).not.toBeInTheDocument()
+    expect(screen.getByRole('region')).toHaveAttribute('aria-expanded', 'false')
+  })
+
   it('only has help tab on single player game without rules book', () => {
     renderComponent({
+      game: { kind: 'belote' },
       player,
       playerById: new Map(
         players.slice(0, 1).map(player => [player.id, player])
@@ -80,65 +92,88 @@ describe('game/[gameId] GameAside component', () => {
     expect(screen.getByRole('region')).toHaveAttribute('aria-expanded', 'false')
   })
 
-  it('has help and peer tabs on single connected game without rules book', () => {
-    renderComponent({ player, playerById: toMap(players) })
-    expect(extractText(screen.getAllByRole('tab'))).toEqual([
-      playersButonText,
-      helpButtonText
-    ])
-    expect(screen.getByRole('region')).toHaveAttribute('aria-expanded', 'false')
-    expect(extractText(screen.getAllByTestId('player-avatar'))).toEqual(
-      players.slice(1).map(({ username }) => username)
-    )
-  })
-
-  it('has help, rules book and peer tabs on single connected game', () => {
+  it('has help and peer tabs on game without rules book', () => {
     renderComponent({
       player,
-      game: { kind: 'splendor', rulesBookPageCount: 4 },
-      playerById: toMap(players)
+      game: { kind: 'splendor' },
+      playerById: toMap(players),
+      thread
     })
-    expect(screen.getByRole('region')).toHaveAttribute('aria-expanded', 'false')
-    expect(extractText(screen.getAllByRole('tab'))).toEqual([
-      playersButonText,
-      rulesButtonText,
-      helpButtonText
-    ])
-    expect(extractText(screen.getAllByTestId('player-avatar'))).toEqual(
-      players.slice(1).map(({ username }) => username)
-    )
-  })
-
-  it('has help, peer and thread tabs on multiple connected game without rules book', () => {
-    renderComponent({ player, playerById: toMap(playingPlayers), connected })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
       playersButonText,
       helpButtonText,
       discussionButtonText
     ])
-    expect(screen.getAllByRole('region')[0]).toHaveAttribute(
-      'aria-expanded',
-      'true'
-    )
-
+    const [peerSection, discussionSection] = screen.getAllByRole('region')
+    expect(peerSection).toHaveAttribute('aria-expanded', 'true')
+    expect(discussionSection).toHaveAttribute('aria-expanded', 'true')
     const avatars = screen.getAllByTestId('player-avatar')
-
-    expect(extractText(avatars)).toEqual(['', players[1].username, ''])
-    expect(avatars[0].children[0]).toHaveClass('hasStream')
+    expect(extractText(avatars)).toEqual(
+      players.slice(1).map(({ username }) => username)
+    )
+    expect(avatars[0].children[0]).not.toHaveClass('hasStream')
     expect(avatars[1].children[0]).not.toHaveClass('hasStream')
-    expect(avatars[2].children[0]).toHaveClass('hasStream')
+    expect(screen.getByText(thread[thread.length - 1].text)).toBeInTheDocument()
   })
 
-  it('has help, rules book, peer and thread tabs on multiple connected game', () => {
+  it('has help, rules book and peer tabs on game', () => {
     renderComponent({
       player,
       game: { kind: 'splendor', rulesBookPageCount: 4 },
+      playerById: toMap(players),
+      thread
+    })
+    const [peerSection, discussionSection] = screen.getAllByRole('region')
+    expect(peerSection).toHaveAttribute('aria-expanded', 'true')
+    expect(discussionSection).toHaveAttribute('aria-expanded', 'true')
+    expect(extractText(screen.getAllByRole('tab'))).toEqual([
+      playersButonText,
+      rulesButtonText,
+      helpButtonText,
+      discussionButtonText
+    ])
+    const avatars = screen.getAllByTestId('player-avatar')
+    expect(extractText(avatars)).toEqual(
+      players.slice(1).map(({ username }) => username)
+    )
+    expect(avatars[0].children[0]).not.toHaveClass('hasStream')
+    expect(avatars[1].children[0]).not.toHaveClass('hasStream')
+    expect(screen.getByText(thread[thread.length - 1].text)).toBeInTheDocument()
+  })
+
+  it('has only peer tabs on lobby', () => {
+    renderComponent({
+      player,
+      game: { rulesBookPageCount: 4 },
+      playerById: toMap(players),
+      thread
+    })
+    const [peerSection, discussionSection] = screen.getAllByRole('region')
+    expect(peerSection).toHaveAttribute('aria-expanded', 'true')
+    expect(discussionSection).toHaveAttribute('aria-expanded', 'true')
+    expect(extractText(screen.getAllByRole('tab'))).toEqual([
+      playersButonText,
+      discussionButtonText
+    ])
+    const avatars = screen.getAllByTestId('player-avatar')
+    expect(extractText(avatars)).toEqual(
+      players.slice(1).map(({ username }) => username)
+    )
+    expect(avatars[0].children[0]).not.toHaveClass('hasStream')
+    expect(avatars[1].children[0]).not.toHaveClass('hasStream')
+    expect(screen.getByText(thread[thread.length - 1].text)).toBeInTheDocument()
+  })
+
+  it('has streams for connected peers', () => {
+    renderComponent({
+      player,
+      game: { kind: 'belote' },
       playerById: toMap(playingPlayers),
-      connected
+      connected,
+      thread
     })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
       playersButonText,
-      rulesButtonText,
       helpButtonText,
       discussionButtonText
     ])
@@ -153,50 +188,11 @@ describe('game/[gameId] GameAside component', () => {
     expect(avatars[0].children[0]).toHaveClass('hasStream')
     expect(avatars[1].children[0]).not.toHaveClass('hasStream')
     expect(avatars[2].children[0]).toHaveClass('hasStream')
-  })
-
-  it('has thread discussion on single connected game with thread', () => {
-    renderComponent({ player, playerById: toMap(players), thread })
-    expect(extractText(screen.getAllByRole('tab'))).toEqual([
-      playersButonText,
-      helpButtonText,
-      discussionButtonText
-    ])
-    expect(screen.getAllByRole('region')[0]).toHaveAttribute(
-      'aria-expanded',
-      'false'
-    )
-
-    const avatars = screen.getAllByTestId('player-avatar')
-
-    expect(extractText(avatars)).toEqual(
-      players.slice(1).map(({ username }) => username)
-    )
     expect(screen.getByText(thread[thread.length - 1].text)).toBeInTheDocument()
   })
 
-  it('has thread discussion on single connected game with thread', () => {
-    renderComponent({ player, playerById: toMap(players), thread })
-    expect(extractText(screen.getAllByRole('tab'))).toEqual([
-      playersButonText,
-      helpButtonText,
-      discussionButtonText
-    ])
-    expect(screen.getAllByRole('region')[0]).toHaveAttribute(
-      'aria-expanded',
-      'false'
-    )
-
-    const avatars = screen.getAllByTestId('player-avatar')
-
-    expect(extractText(avatars)).toEqual(
-      players.slice(1).map(({ username }) => username)
-    )
-    expect(screen.getByText(thread[thread.length - 1].text)).toBeInTheDocument()
-  })
-
-  it('sends messages', async () => {
-    renderComponent({ player, playerById: toMap(players), thread })
+  it('can send messages', async () => {
+    renderComponent({ player, game: {}, playerById: toMap(players), thread })
 
     await userEvent.type(screen.getByRole('textbox'), thread[0].text)
     fireEvent.click(screen.getByRole('button', { type: 'submit' }))
@@ -229,7 +225,11 @@ describe('game/[gameId] GameAside component', () => {
   })
 
   it('displays help book when clicking on tab', () => {
-    renderComponent({ player, playerById: toMap(players.slice(0, 1)) })
+    renderComponent({
+      player,
+      game: { kind: 'belote' },
+      playerById: toMap(players.slice(0, 1))
+    })
 
     fireEvent.click(screen.getByRole('tab', { name: 'help F1' }))
 
