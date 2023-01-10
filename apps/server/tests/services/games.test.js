@@ -818,6 +818,7 @@ describe('given a subscription to game lists and an initialized repository', () 
       describe('deleteGame()', () => {
         it('returns null on unknown game', async () => {
           expect(await deleteGame(faker.datatype.uuid(), player)).toBeNull()
+          expect(await deleteGame(faker.datatype.uuid(), peer2)).toBeNull()
           await setTimeout(50)
           expect(updates).toHaveLength(0)
         })

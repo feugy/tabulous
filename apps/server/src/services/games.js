@@ -309,7 +309,7 @@ function isPlayer(game, playerId) {
  */
 export async function deleteGame(gameId, player) {
   const game = await repositories.games.getById(gameId)
-  if (!isOwner(game, player?.id) && !isAdmin(player)) {
+  if (!game || !(isOwner(game, player?.id) || isAdmin(player))) {
     return null
   }
   await repositories.games.deleteById(gameId)
