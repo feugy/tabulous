@@ -31,6 +31,7 @@ type PlayerListResult {
 
 type Query {
   getCurrentPlayer: PlayerWithTurnCredentials
+  getFriendList: [Player]
   searchPlayers(search: String!, includeCurrent: Boolean): [Player]
   listPlayers(from: Int, size: Int): PlayerListResult
 }
@@ -41,4 +42,5 @@ type Mutation {
   acceptTerms: Player
   updateCurrentPlayer(username: String, avatar: String): Player
   deletePlayer(id: ID!): Player
+  sendFriendRequest(id: ID!): Boolean
 }

@@ -47,7 +47,19 @@ export default {
      * @param {object} context - graphQL context.
      * @returns {Promise<PlayerPage>} extract of the player list.
      */
-    listPlayers: isAdmin((obj, args) => repositories.players.list(args))
+    listPlayers: isAdmin((obj, args) => repositories.players.list(args)),
+
+    /**
+     * Returns the list of friends of a given player.
+     * Requires valid authentication.
+     * @param {object} obj - graphQL object.
+     * @param {object} args - query arguments.
+     * @param {object} context - graphQL context.
+     * @returns {Promise<Player[]>} list (potentially empty) of friend players.
+     */
+    getFriendList: isAuthenticated((obj, args, { player }) =>
+      services.getFriendList(player.id)
+    )
   },
 
   Mutation: {
@@ -135,6 +147,20 @@ export default {
      * @param {string} args.id - deleted player's id.
      * @returns {Promise<Player|null>} deleted player account, or null.
      */
-    deletePlayer: isAdmin((obj, { id }) => repositories.players.deleteById(id))
+    deletePlayer: isAdmin((obj, { id }) => repositories.players.deleteById(id)),
+
+    /**
+     * Sends a friend request from one player to another one.
+     * Requires valid authentication.
+     * @param {object} obj - graphQL object.
+     * @param {object} args - query arguments, including:
+     * @param {string} args.id - id of the requested player.
+     * @param {object} context - graphQL context.
+     * @returns {Promise<boolean>} true if the operation succeeds.
+     */
+    sendFriendRequest: isAuthenticated(async (obj, { id }, { player }) => {
+      await services.sendFriendRequest(player, id)
+      return true
+    })
   }
 }

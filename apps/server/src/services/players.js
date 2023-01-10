@@ -142,3 +142,20 @@ async function findGravatar(userDetails) {
   const response = await fetch(avatar)
   return response.status === 200 ? avatar : undefined
 }
+
+/**
+ * Returns the list of friends of a given player.
+ * @param {string} playerId - player id for who the list is returned
+ * @returns {Promise<Player[]>} list (possibly empty) of friends of a given player
+ */
+export async function getFriendList(playerId) {
+  return []
+}
+
+/**
+ * Sends a friend request from one player to another one.
+ * @param {Player} sender - sender player.
+ * @param {string} destinationId - id of the destination player.
+ * @returns {Promise<void>}
+ */
+export async function sendFriendRequest(sender, destinationId) {}
