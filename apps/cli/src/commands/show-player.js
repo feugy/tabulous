@@ -30,6 +30,7 @@ const listGamesQuery = gql`
       kind
       players {
         id
+        isOwner
       }
     }
   }
@@ -94,22 +95,28 @@ function formatPlayerDetails({
 {dim is playing:}     ${currentGameId || 'none'}`
 }
 
-function formatGames({ id, games }) {
+const spacing = '\n                '
+
+function formatGames({ id: playerId, games }) {
   const { owned, invited } = games.reduce(
-    (counts, { players: [owner] }) => {
-      if (owner?.id === id) {
-        counts.owned++
+    (counts, { id: gameId, players }) => {
+      if (players.find(({ id, isOwner }) => isOwner && id === playerId)) {
+        counts.owned.push(gameId)
       } else {
-        counts.invited++
+        counts.invited.push(gameId)
       }
       return counts
     },
-    { owned: 0, invited: 0 }
+    { owned: [], invited: [] }
   )
   return chalkTemplate`
 {dim total games:}    ${games.length}
-{dim owned games:}    ${owned}
-{dim invited games:}  ${invited}`
+{dim owned games:}    ${owned.length}${
+    owned.length > 0 ? spacing + owned.join(spacing) : ''
+  }
+{dim invited games:}  ${invited.length}${
+    invited.length > 0 ? spacing + invited.join(spacing) : ''
+  }`
 }
 
 showPlayerCommand.help = function help() {
