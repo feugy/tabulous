@@ -774,7 +774,7 @@ describe('given a started server', () => {
           game.playerIds
         )
         expect(services.getPlayerById).toHaveBeenCalledTimes(2)
-        expect(services.deleteGame).toHaveBeenCalledWith(game.id, playerId)
+        expect(services.deleteGame).toHaveBeenCalledWith(game.id, players[0])
         expect(services.deleteGame).toHaveBeenCalledTimes(1)
       })
     })

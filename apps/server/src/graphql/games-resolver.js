@@ -136,7 +136,7 @@ export default {
      * @returns {Promise<Game|null>} deleted game details, or null.
      */
     deleteGame: isAuthenticated((obj, { gameId }, { player }) =>
-      services.deleteGame(gameId, player.id)
+      services.deleteGame(gameId, player)
     ),
 
     /**

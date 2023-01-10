@@ -33,7 +33,7 @@ describe('given a subscription to game lists and an initialized repository', () 
   const updates = []
   const player = { id: 'player' }
   const peer = { id: 'peer-1' }
-  const peer2 = { id: 'peer-2' }
+  const peer2 = { id: 'peer-2', isAdmin: true }
   const games = []
   let game
   let lobby
@@ -393,7 +393,7 @@ describe('given a subscription to game lists and an initialized repository', () 
 
         it('throws when the maximum number of players was reached', async () => {
           const grantedPlayer = await grantAccess(player.id, 'splendor')
-          await deleteGame(game.id, grantedPlayer.id)
+          await deleteGame(game.id, grantedPlayer)
           game = await createGame('splendor', grantedPlayer) // it has 4 seats
           game = await joinGame(game.id, grantedPlayer)
           const guests = await repositories.players.save([
@@ -817,21 +817,29 @@ describe('given a subscription to game lists and an initialized repository', () 
 
       describe('deleteGame()', () => {
         it('returns null on unknown game', async () => {
-          expect(await deleteGame(faker.datatype.uuid(), player.id)).toBeNull()
+          expect(await deleteGame(faker.datatype.uuid(), player)).toBeNull()
           await setTimeout(50)
           expect(updates).toHaveLength(0)
         })
 
         it('returns null on un-owned game', async () => {
-          expect(await deleteGame(game.id, faker.datatype.uuid())).toBeNull()
+          expect(
+            await deleteGame(game.id, { id: faker.datatype.uuid() })
+          ).toBeNull()
           expect(await joinGame(game.id, player.id)).toBeDefined()
           await setTimeout(50)
           expect(updates).toHaveLength(0)
         })
 
         it('returns deleted game and trigger list update', async () => {
-          expect(await deleteGame(game.id, player.id)).toEqual(game)
+          expect(await deleteGame(game.id, player)).toEqual(game)
           expect(await joinGame(game.id, player.id)).toBeNull()
+          await setTimeout(50)
+          expect(updates).toEqual([{ playerId: player.id, games: [lobby] }])
+        })
+
+        it('allows adming deleting un-owned games', async () => {
+          expect(await deleteGame(game.id, peer2)).toEqual(game)
           await setTimeout(50)
           expect(updates).toEqual([{ playerId: player.id, games: [lobby] }])
         })
