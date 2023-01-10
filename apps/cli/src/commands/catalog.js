@@ -12,6 +12,7 @@ import {
   RequiredString,
   signToken
 } from '../util/index.js'
+import { commonOptions } from './help.js'
 
 /**
  * @typedef {object} CatalogResult game catalog command result
@@ -113,7 +114,5 @@ catalogCommand.help = function help() {
   Lists accessible games
   {dim Options:}
     --username/-u             Username for which catalog is fetched
-    --production/-p           Loads configuration from .env.prod
-    --help/-h                 Display help for this command
-`
+    ${commonOptions}`
 }

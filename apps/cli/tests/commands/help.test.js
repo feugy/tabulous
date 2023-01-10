@@ -9,14 +9,13 @@ describe('help command', () => {
   tabulous [options] <command>
   Commands:
     add-player                Creates a new player account
+    show-player               Show details for a given player
     catalog                   Lists accessible games
     grant [game-name]         Grants access to a copyrighted game
     revoke [game-name]        Revokes access to a copyrighted game
-    show-player               Show details for a given player
+    delete-game [game-id]     Deletes an existing game or lobby
   Common options:
-    --username/-u             Username for which command is run
     --production/-p           Loads configuration from .env.prod
-    --help/-h                 Displays help for a given command
-`)
+    --help/-h                 Displays help for this command`)
   })
 })

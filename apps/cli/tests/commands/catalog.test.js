@@ -37,8 +37,7 @@ describe('Player catalog command', () => {
   Options:
     --username/-u             Username for which catalog is fetched
     --production/-p           Loads configuration from .env.prod
-    --help/-h                 Display help for this command
-`)
+    --help/-h                 Displays help for this command`)
     expect(mockQuery).not.toHaveBeenCalled()
   })
 

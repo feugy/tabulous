@@ -27,6 +27,7 @@ export default async function main(argv) {
   } else {
     await invokeCommand(command, argv, name)
   }
+  console.log('')
 }
 
 function loadEnv({ production }) {

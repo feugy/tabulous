@@ -7,11 +7,13 @@ import {
   cliName,
   commonArgSpec,
   findUser,
+  formatGame,
   getGraphQLClient,
   parseArgv,
   RequiredString,
   signToken
 } from '../util/index.js'
+import { commonOptions } from './help.js'
 
 /**
  * @typedef {object} PlayerDetails
@@ -28,6 +30,7 @@ const listGamesQuery = gql`
     listGames {
       id
       kind
+      created
       players {
         id
         isOwner
@@ -99,23 +102,25 @@ const spacing = '\n                '
 
 function formatGames({ id: playerId, games }) {
   const { owned, invited } = games.reduce(
-    (counts, { id: gameId, players }) => {
-      if (players.find(({ id, isOwner }) => isOwner && id === playerId)) {
-        counts.owned.push(gameId)
+    (counts, game) => {
+      if (game.players.find(({ id, isOwner }) => isOwner && id === playerId)) {
+        counts.owned.push(game)
       } else {
-        counts.invited.push(gameId)
+        counts.invited.push(game)
       }
       return counts
     },
     { owned: [], invited: [] }
   )
+  owned.sort(byCreatedDate)
+  invited.sort(byCreatedDate)
   return chalkTemplate`
 {dim total games:}    ${games.length}
 {dim owned games:}    ${owned.length}${
-    owned.length > 0 ? spacing + owned.join(spacing) : ''
+    owned.length > 0 ? spacing + owned.map(formatGame).join(spacing) : ''
   }
 {dim invited games:}  ${invited.length}${
-    invited.length > 0 ? spacing + invited.join(spacing) : ''
+    invited.length > 0 ? spacing + invited.map(formatGame).join(spacing) : ''
   }`
 }
 
@@ -125,7 +130,9 @@ showPlayerCommand.help = function help() {
   Show all details of a given player
   {dim Options:}
     --username/-u             Desired username
-    --production/-p           Loads configuration from .env.prod
-    --help/-h                 Display help for this command
-`
+    ${commonOptions}`
+}
+
+function byCreatedDate({ created: a }, { created: b }) {
+  return b - a
 }

@@ -12,10 +12,11 @@ import {
   RequiredString,
   signToken
 } from '../util/index.js'
+import { commonOptions } from './help.js'
 
 /**
  * @typedef {object} AddPlayerResult player addition command result
- * @property {Player[]} player - added player.
+ * @property {Player} player - added player.
  */
 
 /**
@@ -86,7 +87,5 @@ addPlayerCommand.help = function help() {
   {dim Options:}
     --username/-u             Created player's name
     --password                Initial password clear value
-    --production/-p           Loads configuration from .env.prod
-    --help/-h                 Display help for this command
-`
+    ${commonOptions}`
 }

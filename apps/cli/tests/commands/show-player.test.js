@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker'
 import stripAnsi from 'strip-ansi'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { applyFormaters } from '../../src/util/formaters.js'
+import { applyFormaters, formatGame } from '../../src/util/formaters.js'
 import { signToken } from '../../src/util/jwt.js'
 
 const mockQuery = vi.fn()
@@ -52,8 +52,7 @@ describe('Show player command', () => {
   Options:
     --username/-u             Desired username
     --production/-p           Loads configuration from .env.prod
-    --help/-h                 Display help for this command
-`)
+    --help/-h                 Displays help for this command`)
     expect(mockQuery).not.toHaveBeenCalled()
   })
 
@@ -68,32 +67,36 @@ describe('Show player command', () => {
       { username: player.username },
       signToken()
     )
-    expect(mockQuery).toHaveBeenCalledTimes(1)
+    expect(mockQuery).toHaveBeenCalledOnce()
   })
 
   describe('given some games', () => {
     const games = [
       {
-        id: faker.datatype.uuid(),
+        id: 'game-1',
         kind: 'klondike',
+        created: faker.date.past().getTime(),
         players: [{ ...player, isOwner: true }]
       },
       {
-        id: faker.datatype.uuid(),
+        id: 'game-2',
         kind: 'klondike',
+        created: Date.now(),
         players: [{ ...player, isOwner: true }]
-      },
-      {
-        id: faker.datatype.uuid(),
-        kind: 'klondike',
-        players: [{ ...player, isOwner: true }, player2]
-      },
-      {
-        id: faker.datatype.uuid(),
-        kind: 'klondike',
-        players: [{ ...player2, isOwner: true }, player]
       }
     ]
+    games.push({
+      id: 'game-3',
+      kind: 'klondike',
+      created: faker.date.past(1, games[0].created).getTime(),
+      players: [{ ...player, isOwner: true }, player2]
+    })
+    games.push({
+      id: 'game-4',
+      kind: 'klondike',
+      created: faker.date.past(1, games[2].created).getTime(),
+      players: [{ ...player2, isOwner: true }, player]
+    })
 
     it('displays found player', async () => {
       mockQuery
@@ -124,9 +127,15 @@ describe('Show player command', () => {
       )
       expect(rawOutput).toContain(`total games: 4`)
       expect(rawOutput).toContain(
-        `owned games: 3 ${games[0].id} ${games[1].id} ${games[2].id}`
+        stripAnsi(
+          `owned games: 3 ${formatGame(games[1])} ${formatGame(
+            games[0]
+          )} ${formatGame(games[2])}`
+        )
       )
-      expect(rawOutput).toContain(`invited games: 1 ${games[3].id}`)
+      expect(rawOutput).toContain(
+        stripAnsi(`invited games: 1 ${formatGame(games[3])}`)
+      )
     })
 
     it('handles booleans, provider, admin, email', async () => {
