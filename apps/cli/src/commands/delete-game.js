@@ -29,7 +29,7 @@ const deleteGameMutation = gql`
 `
 
 /**
- * Triggers game addition command
+ * Triggers game deletion command
  * @param {string[]} argv - array of parsed arguments (without executable and current file).
  * @returns {Promise<DeleteGameResult|string>} the deleted game (or help message).
  */
@@ -53,7 +53,7 @@ export default async function deleteGameCommand(argv) {
  */
 
 /**
- * Adds a new player account.
+ * Deletes an existing game.
  * @param {DeleteGameArgs} args - deletion arguments.
  * @returns {Promise<DeleteGameResult>} game deletion results.
  */
@@ -66,7 +66,7 @@ export async function deleteGame({ gameId }) {
   return attachFormater({ game }, ({ game }) =>
     game
       ? chalkTemplate`${formatGame(game)} {underline deleted}`
-      : chalkTemplate`{bold no} game deleted`
+      : chalkTemplate`{underline no game} deleted`
   )
 }
 

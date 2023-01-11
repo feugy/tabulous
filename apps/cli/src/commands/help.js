@@ -17,6 +17,7 @@ export function help() {
     grant [game-name]         Grants access to a copyrighted game
     revoke [game-name]        Revokes access to a copyrighted game
     delete-game [game-id]     Deletes an existing game or lobby
+    delete-player [player-id] Deletes an existing player account
   {dim Common options:}
     ${commonOptions}`
 }

@@ -14,6 +14,7 @@ describe('help command', () => {
     grant [game-name]         Grants access to a copyrighted game
     revoke [game-name]        Revokes access to a copyrighted game
     delete-game [game-id]     Deletes an existing game or lobby
+    delete-player [player-id] Deletes an existing player account
   Common options:
     --production/-p           Loads configuration from .env.prod
     --help/-h                 Displays help for this command`)
