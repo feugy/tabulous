@@ -142,3 +142,14 @@ async function findGravatar(userDetails) {
   const response = await fetch(avatar)
   return response.status === 200 ? avatar : undefined
 }
+
+/**
+ * Deletes an existing player account.
+ * The operation will abort and return null when:
+ * - the player could not be found.
+ * @param {string} id - deleted account id.
+ * @returns {Promise<Plyaer|null>} the deleted player, or null.
+ */
+export async function deletePlayer(id) {
+  return repositories.players.deleteById(id)
+}

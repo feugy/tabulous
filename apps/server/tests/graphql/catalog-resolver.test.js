@@ -71,9 +71,9 @@ describe('given a started server', () => {
         expect(response.json()).toEqual({ data: { listCatalog: items } })
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
-        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
         expect(services.listCatalog).toHaveBeenCalledWith(player)
-        expect(services.listCatalog).toHaveBeenCalledTimes(1)
+        expect(services.listCatalog).toHaveBeenCalledOnce()
       })
 
       it('returns public catalog on invalid token', async () => {
@@ -97,9 +97,9 @@ describe('given a started server', () => {
         })
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
-        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
         expect(services.listCatalog).toHaveBeenCalledWith(null)
-        expect(services.listCatalog).toHaveBeenCalledTimes(1)
+        expect(services.listCatalog).toHaveBeenCalledOnce()
       })
 
       it('returns public catalog without token', async () => {
@@ -117,7 +117,7 @@ describe('given a started server', () => {
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).not.toHaveBeenCalled()
         expect(services.listCatalog).toHaveBeenCalledWith(null)
-        expect(services.listCatalog).toHaveBeenCalledTimes(1)
+        expect(services.listCatalog).toHaveBeenCalledOnce()
       })
     })
 
@@ -145,12 +145,12 @@ describe('given a started server', () => {
         expect(response.json()).toEqual({ data: { grantAccess: true } })
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).toHaveBeenNthCalledWith(1, admin.id)
-        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
         expect(services.grantAccess).toHaveBeenCalledWith(
           player.id,
           items[0].name
         )
-        expect(services.grantAccess).toHaveBeenCalledTimes(1)
+        expect(services.grantAccess).toHaveBeenCalledOnce()
       })
 
       it('returns false when no item were granted', async () => {
@@ -176,12 +176,12 @@ describe('given a started server', () => {
         expect(response.json()).toEqual({ data: { grantAccess: false } })
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).toHaveBeenNthCalledWith(1, admin.id)
-        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
         expect(services.grantAccess).toHaveBeenCalledWith(
           player.id,
           items[0].name
         )
-        expect(services.grantAccess).toHaveBeenCalledTimes(1)
+        expect(services.grantAccess).toHaveBeenCalledOnce()
       })
 
       it('denies anonymous access', async () => {
@@ -209,7 +209,7 @@ describe('given a started server', () => {
         })
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
-        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
         expect(services.grantAccess).not.toHaveBeenCalled()
       })
 
@@ -238,7 +238,7 @@ describe('given a started server', () => {
         })
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
-        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
         expect(services.grantAccess).not.toHaveBeenCalled()
       })
     })
@@ -267,12 +267,12 @@ describe('given a started server', () => {
         expect(response.json()).toEqual({ data: { revokeAccess: true } })
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).toHaveBeenNthCalledWith(1, admin.id)
-        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
         expect(services.revokeAccess).toHaveBeenCalledWith(
           player.id,
           items[0].name
         )
-        expect(services.revokeAccess).toHaveBeenCalledTimes(1)
+        expect(services.revokeAccess).toHaveBeenCalledOnce()
       })
 
       it('returns no items when no item were revoke', async () => {
@@ -298,12 +298,12 @@ describe('given a started server', () => {
         expect(response.json()).toEqual({ data: { revokeAccess: false } })
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).toHaveBeenNthCalledWith(1, admin.id)
-        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
         expect(services.revokeAccess).toHaveBeenCalledWith(
           player.id,
           items[0].name
         )
-        expect(services.revokeAccess).toHaveBeenCalledTimes(1)
+        expect(services.revokeAccess).toHaveBeenCalledOnce()
       })
 
       it('denies anonymous access', async () => {
@@ -331,7 +331,7 @@ describe('given a started server', () => {
         })
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
-        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
         expect(services.revokeAccess).not.toHaveBeenCalled()
       })
 
@@ -360,7 +360,7 @@ describe('given a started server', () => {
         })
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
-        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
         expect(services.revokeAccess).not.toHaveBeenCalled()
       })
     })

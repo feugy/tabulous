@@ -12,6 +12,7 @@ import {
 import repositories from '../../src/repositories/index.js'
 import {
   acceptTerms,
+  deletePlayer,
   getPlayerById,
   isUsernameUsed,
   searchPlayers,
@@ -343,6 +344,18 @@ describe('given initialized repository', () => {
         expect(await isUsernameUsed('adversary', faker.datatype.uuid())).toBe(
           true
         )
+      })
+    })
+
+    describe('deletePlayer()', () => {
+      it('returns deleted player', async () => {
+        const [, player] = players
+        expect(await deletePlayer(player.id)).toEqual(player)
+        expect(await getPlayerById(player)).toBeNull()
+      })
+
+      it('returns null on unknown id', async () => {
+        expect(await deletePlayer(faker.datatype.uuid())).toBeNull()
       })
     })
   })

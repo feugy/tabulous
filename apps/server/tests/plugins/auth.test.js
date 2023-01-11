@@ -65,7 +65,7 @@ describe('auth plugin', () => {
           redirect: `${domain}/${name}/callback`,
           ...options
         })
-        expect(services[serviceName].init).toHaveBeenCalledTimes(1)
+        expect(services[serviceName].init).toHaveBeenCalledOnce()
       })
     })
 
@@ -93,7 +93,7 @@ describe('auth plugin', () => {
         expect(services[serviceName].buildAuthUrl).toHaveBeenCalledWith(
           `http://localhost:80`
         )
-        expect(services[serviceName].buildAuthUrl).toHaveBeenCalledTimes(1)
+        expect(services[serviceName].buildAuthUrl).toHaveBeenCalledOnce()
       })
 
       it(`redirects to ${name} for with a redirect`, async () => {
@@ -108,7 +108,7 @@ describe('auth plugin', () => {
         expect(services[serviceName].buildAuthUrl).toHaveBeenCalledWith(
           redirect
         )
-        expect(services[serviceName].buildAuthUrl).toHaveBeenCalledTimes(1)
+        expect(services[serviceName].buildAuthUrl).toHaveBeenCalledOnce()
       })
 
       it(`fails to redirects from another origin`, async () => {
@@ -163,12 +163,12 @@ describe('auth plugin', () => {
           code,
           state
         )
-        expect(services[serviceName].authenticateUser).toHaveBeenCalledTimes(1)
+        expect(services[serviceName].authenticateUser).toHaveBeenCalledOnce()
         expect(services.upsertPlayer).toHaveBeenCalledWith({
           ...user,
           provider: name
         })
-        expect(services.upsertPlayer).toHaveBeenCalledTimes(1)
+        expect(services.upsertPlayer).toHaveBeenCalledOnce()
       })
 
       it(`returns an error when ${name} authentication fails`, async () => {
@@ -190,7 +190,7 @@ describe('auth plugin', () => {
           code,
           state
         )
-        expect(services[serviceName].authenticateUser).toHaveBeenCalledTimes(1)
+        expect(services[serviceName].authenticateUser).toHaveBeenCalledOnce()
         expect(services.upsertPlayer).not.toHaveBeenCalled()
       })
     })

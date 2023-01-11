@@ -108,9 +108,9 @@ describe('Github authentication service', () => {
           client_secret: secret,
           code
         })
-        expect(accessTokenInvoked).toHaveBeenCalledTimes(1)
+        expect(accessTokenInvoked).toHaveBeenCalledOnce()
         expect(userInvoked).toHaveBeenCalledWith(`Bearer ${token}`)
-        expect(userInvoked).toHaveBeenCalledTimes(1)
+        expect(userInvoked).toHaveBeenCalledOnce()
       })
 
       it('throws forbidden on token error', async () => {
@@ -136,7 +136,7 @@ describe('Github authentication service', () => {
           client_id: id,
           client_secret: secret
         })
-        expect(accessTokenInvoked).toHaveBeenCalledTimes(1)
+        expect(accessTokenInvoked).toHaveBeenCalledOnce()
         expect(userInvoked).not.toHaveBeenCalled()
       })
 
@@ -164,9 +164,9 @@ describe('Github authentication service', () => {
           client_secret: secret,
           code
         })
-        expect(accessTokenInvoked).toHaveBeenCalledTimes(1)
+        expect(accessTokenInvoked).toHaveBeenCalledOnce()
         expect(userInvoked).toHaveBeenCalledWith(`Bearer ${token}`)
-        expect(userInvoked).toHaveBeenCalledTimes(1)
+        expect(userInvoked).toHaveBeenCalledOnce()
       })
 
       it('throws forbidden on unkown state', async () => {

@@ -116,6 +116,16 @@ export default {
         services.notifyRelatedPlayers(player.id)
         return updated
       }
-    )
+    ),
+
+    /**
+     * Deletes an existing player account.
+     * Requires authentication and elevated privileges.
+     * @param {object} obj - graphQL object.
+     * @param {object} args - mutation arguments, including:
+     * @param {string} args.id - deleted player's id.
+     * @returns {Promise<Player|null>} deleted player account, or null.
+     */
+    deletePlayer: isAdmin((obj, { id }) => services.deletePlayer(id))
   }
 }
