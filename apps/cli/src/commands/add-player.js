@@ -16,13 +16,7 @@ import { commonOptions } from './help.js'
 
 /**
  * @typedef {object} AddPlayerResult player addition command result
- * @property {Player} player - added player.
- */
-
-/**
- * @typedef {object} Player player account
- * @property {string} id - player unique identifier.
- * @property {string} username - player display name.
+ * @property {import('../util/formaters.js').Player} player - added player.
  */
 
 const addPlayerMutation = gql`

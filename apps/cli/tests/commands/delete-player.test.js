@@ -41,9 +41,9 @@ describe('Player deletion command', () => {
 
   it('returns deleted player', async () => {
     const id = faker.datatype.uuid()
-    const kind = faker.lorem.word()
-    const created = Date.now()
-    const player = { id, kind, created }
+    const username = faker.name.firstName()
+    const email = faker.internet.email()
+    const player = { id, username, email }
     mockQuery.mockResolvedValueOnce({ deletePlayer: player })
     const result = await deletePlayer([id])
     expect(result).toMatchObject({ player })

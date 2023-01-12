@@ -8,6 +8,7 @@ describe('help command', () => {
     expect(stripAnsi(help())).toContain(`
   tabulous [options] <command>
   Commands:
+    list-players              List all existing player accounts
     add-player                Creates a new player account
     show-player               Show details for a given player
     catalog                   Lists accessible games

@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker'
 import stripAnsi from 'strip-ansi'
 import { describe, expect, it } from 'vitest'
 
-import { formatDate, formatGame } from '../../src/util/formaters'
+import { formatDate, formatGame, formatPlayer } from '../../src/util/formaters'
 
 describe('formatGame()', () => {
   it('prints game kind, creation date and id', () => {
@@ -43,6 +43,25 @@ describe('formatDate()', () => {
       )}/${date.getFullYear()}, ${pad(date.getHours())}:${pad(
         date.getMinutes()
       )}:${pad(date.getSeconds())}`
+    )
+  })
+})
+
+describe('formatPlayer()', () => {
+  it('prints username, email and id', () => {
+    const id = faker.datatype.uuid()
+    const email = faker.internet.email()
+    const username = faker.name.fullName()
+    expect(stripAnsi(formatPlayer({ username, email, id }))).toEqual(
+      `${username} ${email} (${id})`
+    )
+  })
+
+  it('handles no email', () => {
+    const id = faker.datatype.uuid()
+    const username = faker.name.fullName()
+    expect(stripAnsi(formatPlayer({ username, id }))).toEqual(
+      `${username} no email (${id})`
     )
   })
 })

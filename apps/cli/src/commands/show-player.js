@@ -23,6 +23,7 @@ import { commonOptions } from './help.js'
  * @property {string} provider
  * @property {string} email
  * @property {boolean} termsAccepted
+ * @property {import('../util/formaters.js').Game[]} games
  */
 
 const listGamesQuery = gql`

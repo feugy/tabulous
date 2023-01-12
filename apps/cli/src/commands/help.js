@@ -11,6 +11,7 @@ export function help() {
   return chalkTemplate`
   {bold ${cliName}} [options] <command>
   {dim Commands:}
+    list-players              List all existing player accounts
     add-player                Creates a new player account
     show-player               Show details for a given player
     catalog                   Lists accessible games

@@ -6,6 +6,7 @@ import {
   attachFormater,
   cliName,
   commonArgSpec,
+  formatPlayer,
   getGraphQLClient,
   parseArgv,
   signToken
@@ -14,7 +15,7 @@ import { commonOptions } from './help.js'
 
 /**
  * @typedef {object} DeletePlayerResult player deletion command result
- * @property {import('./add-player.js').Player} player - deleted player.
+ * @property {import('../util/formaters.js').Player} player - deleted player.
  */
 
 const deletePlayerMutation = gql`
@@ -64,7 +65,7 @@ export async function deletePlayer({ id }) {
   )
   return attachFormater({ player }, ({ player }) =>
     player
-      ? chalkTemplate`{bold ${player.username}} {dim ${player.email}} (${player.id}) {underline deleted}`
+      ? chalkTemplate`${formatPlayer(player)} {underline deleted}`
       : chalkTemplate`{underline no player} deleted`
   )
 }
