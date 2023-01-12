@@ -42,11 +42,11 @@ class PlayerRepository extends AbstractRepository {
    * @returns {AbstractRepository.Transaction} the applied transaction.
    */
   _enrichSaveTransaction(context) {
-    const transaction = super._enrichDeleteTransaction(context)
+    const transaction = super._enrichSaveTransaction(context)
     const { models, existings } = context
     const references = models
       .map(player =>
-        player ? [this._buildProviderIdKey(player), player.id] : null
+        player?.provider ? [this._buildProviderIdKey(player), player.id] : null
       )
       .filter(Boolean)
     if (references.length) {
