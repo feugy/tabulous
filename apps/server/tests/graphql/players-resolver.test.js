@@ -12,6 +12,7 @@ import {
 } from 'vitest'
 
 import graphQL from '../../src/plugins/graphql.js'
+import repositories from '../../src/repositories/index.js'
 import services from '../../src/services/index.js'
 import { hash } from '../../src/utils/index.js'
 import { mockMethods, signToken } from '../test-utils.js'
@@ -31,6 +32,8 @@ describe('given a started server', () => {
     server.register(graphQL)
     await server.listen()
     restoreServices = mockMethods(services)
+    vi.spyOn(repositories.players, 'deleteById').mockImplementation(() => {})
+    vi.spyOn(repositories.players, 'list').mockImplementation(() => {})
   })
 
   beforeEach(vi.resetAllMocks)
@@ -595,7 +598,7 @@ describe('given a started server', () => {
 
       it('removes an existing player account', async () => {
         services.getPlayerById.mockResolvedValueOnce(admin)
-        services.deletePlayer.mockResolvedValueOnce(player)
+        repositories.players.deleteById.mockResolvedValueOnce(player)
         const response = await server.inject({
           method: 'POST',
           url: 'graphql',
@@ -618,8 +621,75 @@ describe('given a started server', () => {
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).toHaveBeenCalledWith(admin.id)
         expect(services.getPlayerById).toHaveBeenCalledOnce()
-        expect(services.deletePlayer).toHaveBeenCalledWith(player.id)
-        expect(services.deletePlayer).toHaveBeenCalledOnce()
+        expect(repositories.players.deleteById).toHaveBeenCalledWith(player.id)
+        expect(repositories.players.deleteById).toHaveBeenCalledOnce()
+      })
+    })
+
+    describe('list query', () => {
+      it('denies un-privileged access', async () => {
+        services.getPlayerById.mockResolvedValueOnce(player)
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            authorization: `Bearer ${signToken(
+              player.id,
+              configuration.auth.jwt.key
+            )}`
+          },
+          payload: {
+            query: `query { listPlayers(from: 0, size: 10) { from size total results { id username } } }`
+          }
+        })
+
+        expect(response.json()).toEqual({
+          data: { listPlayers: null },
+          errors: [expect.objectContaining({ message: 'Forbidden' })]
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
+        expect(repositories.players.list).not.toHaveBeenCalled()
+      })
+
+      it('returns players', async () => {
+        const page = {
+          from: 0,
+          size: 10,
+          total: 2,
+          results: [
+            {
+              id: faker.datatype.uuid(),
+              username: faker.name.firstName()
+            },
+            {
+              id: faker.datatype.uuid(),
+              username: faker.name.firstName()
+            }
+          ]
+        }
+        const from = faker.datatype.number()
+        const size = faker.datatype.number()
+        services.getPlayerById.mockResolvedValueOnce(admin)
+        repositories.players.list.mockResolvedValueOnce(page)
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            authorization: `Bearer ${signToken(
+              page.results[0].id,
+              configuration.auth.jwt.key
+            )}`
+          },
+          payload: {
+            query: `query { listPlayers(from: ${from}, size: ${size}) { from size total results { id username } } }`
+          }
+        })
+        expect(response.json()).toEqual({ data: { listPlayers: page } })
+        expect(response.statusCode).toEqual(200)
+        expect(repositories.players.list).toHaveBeenCalledWith({ from, size })
+        expect(repositories.players.list).toHaveBeenCalledOnce()
       })
     })
   })

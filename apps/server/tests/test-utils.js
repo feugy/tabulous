@@ -85,7 +85,7 @@ export function toGraphQLArg(object) {
  */
 export function mockMethods(object) {
   const original = { ...object }
-  for (const method in object) {
+  for (const method of Object.getOwnPropertyNames(object)) {
     if (typeof object[method] === 'function') {
       object[method] = vi.fn()
     }
