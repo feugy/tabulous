@@ -301,15 +301,15 @@ function isPlayer(game, playerId) {
  * Deletes a game for a given player.
  * The operation will abort and return null when:
  * - no game could match this game id
- * - the player does not own the game
+ * - the player does not own the game or is not an admin
  * Updates game lists of all related players.
  * @param {string} gameId - loaded game id.
- * @param {string} playerId - player id.
+ * @param {object} player - deleting player.
  * @returns {Promise<Game|null>} the deleted game, or null.
  */
-export async function deleteGame(gameId, playerId) {
+export async function deleteGame(gameId, player) {
   const game = await repositories.games.getById(gameId)
-  if (!isOwner(game, playerId)) {
+  if (!game || !(isOwner(game, player?.id) || isAdmin(player))) {
     return null
   }
   await repositories.games.deleteById(gameId)
@@ -319,6 +319,10 @@ export async function deleteGame(gameId, playerId) {
 
 function isOwner(game, playerId) {
   return game?.ownerId === playerId
+}
+
+function isAdmin(player) {
+  return player?.isAdmin === true
 }
 
 /**

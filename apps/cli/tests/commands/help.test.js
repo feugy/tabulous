@@ -8,15 +8,16 @@ describe('help command', () => {
     expect(stripAnsi(help())).toContain(`
   tabulous [options] <command>
   Commands:
+    list-players              List all existing player accounts
     add-player                Creates a new player account
+    show-player               Show details for a given player
     catalog                   Lists accessible games
     grant [game-name]         Grants access to a copyrighted game
     revoke [game-name]        Revokes access to a copyrighted game
-    show-player               Show details for a given player
+    delete-game [game-id]     Deletes an existing game or lobby
+    delete-player [player-id] Deletes an existing player account
   Common options:
-    --username/-u             Username for which command is run
     --production/-p           Loads configuration from .env.prod
-    --help/-h                 Displays help for a given command
-`)
+    --help/-h                 Displays help for this command`)
   })
 })

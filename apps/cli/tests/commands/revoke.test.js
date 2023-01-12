@@ -50,8 +50,7 @@ describe('Player game revokation command', () => {
   Options:
     --username/-u             Username for which catalog is fetched
     --production/-p           Loads configuration from .env.prod
-    --help/-h                 Display help for this command
-`)
+    --help/-h                 Displays help for this command`)
     expect(mockQuery).not.toHaveBeenCalled()
   })
 
@@ -107,7 +106,7 @@ describe('Player game revokation command', () => {
         { id: player.id, gameName },
         signToken()
       )
-      expect(mockMutation).toHaveBeenCalledTimes(1)
+      expect(mockMutation).toHaveBeenCalledOnce()
     })
 
     it('returns false when access was not granted', async () => {
@@ -140,7 +139,7 @@ describe('Player game revokation command', () => {
         { id: player.id, gameName },
         signToken()
       )
-      expect(mockMutation).toHaveBeenCalledTimes(1)
+      expect(mockMutation).toHaveBeenCalledOnce()
     })
   })
 })

@@ -7,11 +7,13 @@ import {
   cliName,
   commonArgSpec,
   findUser,
+  formatGame,
   getGraphQLClient,
   parseArgv,
   RequiredString,
   signToken
 } from '../util/index.js'
+import { commonOptions } from './help.js'
 
 /**
  * @typedef {object} PlayerDetails
@@ -21,6 +23,7 @@ import {
  * @property {string} provider
  * @property {string} email
  * @property {boolean} termsAccepted
+ * @property {import('../util/formaters.js').Game[]} games
  */
 
 const listGamesQuery = gql`
@@ -28,8 +31,10 @@ const listGamesQuery = gql`
     listGames {
       id
       kind
+      created
       players {
         id
+        isOwner
       }
     }
   }
@@ -94,22 +99,30 @@ function formatPlayerDetails({
 {dim is playing:}     ${currentGameId || 'none'}`
 }
 
-function formatGames({ id, games }) {
+const spacing = '\n                '
+
+function formatGames({ id: playerId, games }) {
   const { owned, invited } = games.reduce(
-    (counts, { players: [owner] }) => {
-      if (owner?.id === id) {
-        counts.owned++
+    (counts, game) => {
+      if (game.players.find(({ id, isOwner }) => isOwner && id === playerId)) {
+        counts.owned.push(game)
       } else {
-        counts.invited++
+        counts.invited.push(game)
       }
       return counts
     },
-    { owned: 0, invited: 0 }
+    { owned: [], invited: [] }
   )
+  owned.sort(byCreatedDate)
+  invited.sort(byCreatedDate)
   return chalkTemplate`
 {dim total games:}    ${games.length}
-{dim owned games:}    ${owned}
-{dim invited games:}  ${invited}`
+{dim owned games:}    ${owned.length}${
+    owned.length > 0 ? spacing + owned.map(formatGame).join(spacing) : ''
+  }
+{dim invited games:}  ${invited.length}${
+    invited.length > 0 ? spacing + invited.map(formatGame).join(spacing) : ''
+  }`
 }
 
 showPlayerCommand.help = function help() {
@@ -118,7 +131,9 @@ showPlayerCommand.help = function help() {
   Show all details of a given player
   {dim Options:}
     --username/-u             Desired username
-    --production/-p           Loads configuration from .env.prod
-    --help/-h                 Display help for this command
-`
+    ${commonOptions}`
+}
+
+function byCreatedDate({ created: a }, { created: b }) {
+  return b - a
 }

@@ -56,6 +56,7 @@ This is bound to rxjs asyncScheduler, which depends on the operator used (probab
 
 ## Hosting
 
+- scheduled DB backups: cp /var/lib/redis/dump.{rdb,"$(date +%Y%m%d-%H%M).rdb"}
 - firewall
 - where to store secrets?
 - deploy in a folder named after the commit SHA

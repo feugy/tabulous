@@ -50,7 +50,7 @@ async function main() {
     next++
   ) {
     const rank = next - 1
-    await applyMigration(available[rank])
+    await applyMigration(available[rank], redis)
     incremented.push(available[rank])
   }
   console.log('[migration] all available migrations applied')
@@ -77,6 +77,12 @@ async function updateAppliedVersions(redis, incremented) {
   await redis.sadd(versionKey, incremented)
 }
 
+/**
+ * Read all migration files inside a given folder, returning them ordered by file name.
+ * Migration files must start with a numerical number, a dash, any characters, and have with .js extension.
+ * @param {string} folder - folder in which migration could be found.
+ * @returns {Promise<string[]>} - ordered list of migration files.
+ */
 async function readAvailableVersions(folder) {
   const versions = []
   for (const dirent of await readdir(folder, { withFileTypes: true })) {
@@ -88,9 +94,16 @@ async function readAvailableVersions(folder) {
   return versions.sort(collator.compare.bind(collator))
 }
 
-async function applyMigration(file) {
+/**
+ * Imports a migration file and runs its `apply()` exported function.
+ * The apply function receives the repositories object and the redis client.
+ * @param {string} file - imported migration file.
+ * @param {Redis} redis - redis client.
+ * @return {Promise<void>}
+ */
+async function applyMigration(file, redis) {
   console.log(`[migration] loading migration file: ${file}`)
   const { apply } = await import(`./${file}`)
-  await apply(repositories)
+  await apply(repositories, redis)
   console.log(`[migration] ${file} applied`)
 }

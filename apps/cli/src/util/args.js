@@ -40,7 +40,7 @@ export function parseArgv(argv = [], spec) {
  * @returns {string[]} the parsed arguments without stripped command.
  */
 export function shiftCommand(argv, command) {
-  return argv.filter(arg => arg !== command)
+  return argv.filter(arg => camelCase(arg) !== command)
 }
 
 /**

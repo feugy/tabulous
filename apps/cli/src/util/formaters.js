@@ -1,5 +1,7 @@
 // @ts-check
 
+import chalkTemplate from 'chalk-template'
+
 const symbol = Symbol('formaters')
 
 /**
@@ -45,4 +47,52 @@ export function attachFormater(object, formater, first = false) {
   }
   formaters[first ? 'unshift' : 'push'](formater)
   return object
+}
+
+/**
+ * @typedef {object} Game game details
+ * @property {string} id - game unique identifier.
+ * @property {string} kind? - game kind, if any.
+ * @property {number} created - creation timestamp.
+ */
+
+/**
+ * Formater for game objects.
+ * @param {Game} game - game to format.
+ * @returns {string} formatted game.
+ */
+export function formatGame({ id, created, kind }) {
+  return chalkTemplate`${kind ? `${kind} game` : `🛋️ lobby`} {dim ${formatDate(
+    created
+  )}} (${id})`
+}
+
+/**
+ * @typedef {object} Player player account
+ * @property {string} id - player unique identifier.
+ * @property {string} username - player display name.
+ * @property {string} email? - player email, when relevant.
+ */
+
+/**
+ * Formater for player objects.
+ * @param {Player} player - player to format.
+ * @return {string} formatted player.
+ */
+export function formatPlayer({ id, username, email }) {
+  return chalkTemplate`{bold ${username}} {dim ${email || 'no email'}} (${id})`
+}
+
+const timeAndDate = new Intl.DateTimeFormat('en-gb', {
+  timeStyle: 'medium',
+  dateStyle: 'short'
+})
+
+/**
+ * Formater for timestamps.
+ * @param {number} timestamp - timestamp to format.
+ * @returns {string} localized date and time.
+ */
+export function formatDate(timestamp) {
+  return !timestamp ? 'unknown' : timeAndDate.format(timestamp)
 }

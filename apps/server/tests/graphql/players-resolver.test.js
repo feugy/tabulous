@@ -12,6 +12,7 @@ import {
 } from 'vitest'
 
 import graphQL from '../../src/plugins/graphql.js'
+import repositories from '../../src/repositories/index.js'
 import services from '../../src/services/index.js'
 import { hash } from '../../src/utils/index.js'
 import { mockMethods, signToken } from '../test-utils.js'
@@ -31,6 +32,8 @@ describe('given a started server', () => {
     server.register(graphQL)
     await server.listen()
     restoreServices = mockMethods(services)
+    vi.spyOn(repositories.players, 'deleteById').mockImplementation(() => {})
+    vi.spyOn(repositories.players, 'list').mockImplementation(() => {})
   })
 
   beforeEach(vi.resetAllMocks)
@@ -53,7 +56,7 @@ describe('given a started server', () => {
     }
 
     describe('addPlayer mutation', () => {
-      it('denies un-privilege access', async () => {
+      it('denies un-privileged access', async () => {
         services.getPlayerById.mockResolvedValueOnce(player)
         const response = await server.inject({
           method: 'POST',
@@ -77,7 +80,7 @@ describe('given a started server', () => {
         })
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
-        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
         expect(services.upsertPlayer).not.toHaveBeenCalled()
       })
 
@@ -105,13 +108,13 @@ describe('given a started server', () => {
         })
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).toHaveBeenNthCalledWith(1, admin.id)
-        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
         expect(services.upsertPlayer).toHaveBeenCalledWith({
           id: player.id,
           username: player.username,
           password: hash(player.password)
         })
-        expect(services.upsertPlayer).toHaveBeenCalledTimes(1)
+        expect(services.upsertPlayer).toHaveBeenCalledOnce()
       })
     })
 
@@ -160,11 +163,11 @@ describe('given a started server', () => {
           createVerifier({ key: configuration.auth.jwt.key })(token)
         ).toMatchObject({ id })
         expect(services.getPlayerById).toHaveBeenCalledWith(id)
-        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
         expect(services.generateTurnCredentials).toHaveBeenCalledWith(
           configuration.turn.secret
         )
-        expect(services.generateTurnCredentials).toHaveBeenCalledTimes(1)
+        expect(services.generateTurnCredentials).toHaveBeenCalledOnce()
       })
 
       it.each([
@@ -205,7 +208,7 @@ describe('given a started server', () => {
         })
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).toHaveBeenCalledWith(id)
-        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
         expect(services.generateTurnCredentials).not.toHaveBeenCalled()
       })
     })
@@ -250,8 +253,8 @@ describe('given a started server', () => {
         })
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).toHaveBeenCalledWith(id)
-        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
-        expect(services.generateTurnCredentials).toHaveBeenCalledTimes(1)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
+        expect(services.generateTurnCredentials).toHaveBeenCalledOnce()
       })
 
       it('does not return current player without authentication details', async () => {
@@ -289,7 +292,7 @@ describe('given a started server', () => {
         })
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).toHaveBeenCalledWith(id)
-        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
       })
     })
 
@@ -330,7 +333,7 @@ describe('given a started server', () => {
           players[0].id,
           true
         )
-        expect(services.searchPlayers).toHaveBeenCalledTimes(1)
+        expect(services.searchPlayers).toHaveBeenCalledOnce()
       })
     })
 
@@ -362,9 +365,9 @@ describe('given a started server', () => {
         })
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).toHaveBeenCalledWith(id)
-        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
         expect(services.acceptTerms).toHaveBeenCalledWith(player)
-        expect(services.acceptTerms).toHaveBeenCalledTimes(1)
+        expect(services.acceptTerms).toHaveBeenCalledOnce()
       })
     })
 
@@ -401,165 +404,293 @@ describe('given a started server', () => {
         })
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
-        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
         expect(services.upsertPlayer).toHaveBeenCalledWith({
           id: player.id,
           ...update
         })
-        expect(services.upsertPlayer).toHaveBeenCalledTimes(1)
+        expect(services.upsertPlayer).toHaveBeenCalledOnce()
         expect(services.notifyRelatedPlayers).toHaveBeenCalledWith(player.id)
-        expect(services.notifyRelatedPlayers).toHaveBeenCalledTimes(1)
+        expect(services.notifyRelatedPlayers).toHaveBeenCalledOnce()
       })
-    })
 
-    it.each([
-      {
-        title: 'leading and trailing spaces',
-        input: '   trimmed   ',
-        username: 'trimmed'
-      },
-      {
-        title: 'regular letters and number',
-        input: `2pack`,
-        username: '2pack'
-      },
-      {
-        title: 'punctuations and symbols',
-        input: `&(-_)=^$*,;:!<~#{[|\`@]¨¤>£}%§/.?¿£µ»×÷`,
-        username: '-_*#'
-      },
-      {
-        title: 'funky letters',
-        input: `ÀÝßàþÿĀāĦħŊŋžſƀƁƾƿɏȯșȆǪḀṬẞỘỼ`,
-        username: 'ÀÝßàþÿĀāĦħŊŋžſƀƁƾƿɏȯșȆǪḀṬẞỘỼ'
-      },
-      {
-        title: 'emojis',
-        input: `🥷🙈👏`,
-        username: '🥷🙈👏'
-      }
-    ])('maps $title "$input" as "$username"', async ({ username, input }) => {
-      services.getPlayerById.mockResolvedValueOnce(player)
-      services.isUsernameUsed.mockResolvedValueOnce(false)
-      services.upsertPlayer.mockImplementation(player => player)
-      const response = await server.inject({
-        method: 'POST',
-        url: 'graphql',
-        headers: {
-          authorization: `Bearer ${signToken(
-            player.id,
-            configuration.auth.jwt.key
-          )}`
+      it.each([
+        {
+          title: 'leading and trailing spaces',
+          input: '   trimmed   ',
+          username: 'trimmed'
         },
-        payload: {
-          query: `mutation { 
+        {
+          title: 'regular letters and number',
+          input: `2pack`,
+          username: '2pack'
+        },
+        {
+          title: 'punctuations and symbols',
+          input: `&(-_)=^$*,;:!<~#{[|\`@]¨¤>£}%§/.?¿£µ»×÷`,
+          username: '-_*#'
+        },
+        {
+          title: 'funky letters',
+          input: `ÀÝßàþÿĀāĦħŊŋžſƀƁƾƿɏȯșȆǪḀṬẞỘỼ`,
+          username: 'ÀÝßàþÿĀāĦħŊŋžſƀƁƾƿɏȯșȆǪḀṬẞỘỼ'
+        },
+        {
+          title: 'emojis',
+          input: `🥷🙈👏`,
+          username: '🥷🙈👏'
+        }
+      ])('maps $title "$input" as "$username"', async ({ username, input }) => {
+        services.getPlayerById.mockResolvedValueOnce(player)
+        services.isUsernameUsed.mockResolvedValueOnce(false)
+        services.upsertPlayer.mockImplementation(player => player)
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            authorization: `Bearer ${signToken(
+              player.id,
+              configuration.auth.jwt.key
+            )}`
+          },
+          payload: {
+            query: `mutation { 
             updateCurrentPlayer(username: "${input}") { username }
           }`
-        }
+          }
+        })
+        expect(
+          response.json()?.data?.updateCurrentPlayer?.username,
+          JSON.stringify(response.json())
+        ).toEqual(username)
+        expect(response.statusCode).toEqual(200)
+        expect(services.upsertPlayer).toHaveBeenCalledWith({
+          id: player.id,
+          username
+        })
       })
-      expect(
-        response.json()?.data?.updateCurrentPlayer?.username,
-        JSON.stringify(response.json())
-      ).toEqual(username)
-      expect(response.statusCode).toEqual(200)
-      expect(services.upsertPlayer).toHaveBeenCalledWith({
-        id: player.id,
-        username
-      })
-    })
 
-    it('rejects username smaller than 3 characters', async () => {
-      services.getPlayerById.mockResolvedValueOnce(player)
-      services.isUsernameUsed.mockResolvedValueOnce(false)
-      const response = await server.inject({
-        method: 'POST',
-        url: 'graphql',
-        headers: {
-          authorization: `Bearer ${signToken(
-            player.id,
-            configuration.auth.jwt.key
-          )}`
-        },
-        payload: {
-          query: `mutation { 
+      it('rejects username smaller than 3 characters', async () => {
+        services.getPlayerById.mockResolvedValueOnce(player)
+        services.isUsernameUsed.mockResolvedValueOnce(false)
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            authorization: `Bearer ${signToken(
+              player.id,
+              configuration.auth.jwt.key
+            )}`
+          },
+          payload: {
+            query: `mutation { 
             updateCurrentPlayer(username: "  x s  ") { username }
           }`
-        }
+          }
+        })
+        expect(response.json()).toMatchObject({
+          data: { updateCurrentPlayer: null },
+          errors: [{ message: 'Username too short' }]
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.upsertPlayer).not.toHaveBeenCalled()
+        expect(services.notifyRelatedPlayers).not.toHaveBeenCalled()
       })
-      expect(response.json()).toMatchObject({
-        data: { updateCurrentPlayer: null },
-        errors: [{ message: 'Username too short' }]
-      })
-      expect(response.statusCode).toEqual(200)
-      expect(services.upsertPlayer).not.toHaveBeenCalled()
-      expect(services.notifyRelatedPlayers).not.toHaveBeenCalled()
-    })
 
-    it('rejects username already used', async () => {
-      services.getPlayerById.mockResolvedValueOnce(player)
-      services.isUsernameUsed.mockResolvedValueOnce(true)
-      const response = await server.inject({
-        method: 'POST',
-        url: 'graphql',
-        headers: {
-          authorization: `Bearer ${signToken(
-            player.id,
-            configuration.auth.jwt.key
-          )}`
-        },
-        payload: {
-          query: `mutation { 
+      it('rejects username already used', async () => {
+        services.getPlayerById.mockResolvedValueOnce(player)
+        services.isUsernameUsed.mockResolvedValueOnce(true)
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            authorization: `Bearer ${signToken(
+              player.id,
+              configuration.auth.jwt.key
+            )}`
+          },
+          payload: {
+            query: `mutation { 
             updateCurrentPlayer(username: "${admin.username}") { username }
           }`
-        }
+          }
+        })
+        expect(response.json()).toMatchObject({
+          data: { updateCurrentPlayer: null },
+          errors: [{ message: 'Username already used' }]
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.upsertPlayer).not.toHaveBeenCalled()
+        expect(services.notifyRelatedPlayers).not.toHaveBeenCalled()
       })
-      expect(response.json()).toMatchObject({
-        data: { updateCurrentPlayer: null },
-        errors: [{ message: 'Username already used' }]
-      })
-      expect(response.statusCode).toEqual(200)
-      expect(services.upsertPlayer).not.toHaveBeenCalled()
-      expect(services.notifyRelatedPlayers).not.toHaveBeenCalled()
-    })
 
-    it('set avatar', async () => {
-      const username = faker.name.firstName()
-      services.upsertPlayer.mockResolvedValueOnce({
-        id: player.id,
-        username
-      })
-      services.getPlayerById.mockResolvedValueOnce(player)
-      services.searchPlayers.mockResolvedValueOnce([])
-      const response = await server.inject({
-        method: 'POST',
-        url: 'graphql',
-        headers: {
-          authorization: `Bearer ${signToken(
-            player.id,
-            configuration.auth.jwt.key
-          )}`
-        },
-        payload: {
-          query: `mutation { 
+      it('set avatar', async () => {
+        const username = faker.name.firstName()
+        services.upsertPlayer.mockResolvedValueOnce({
+          id: player.id,
+          username
+        })
+        services.getPlayerById.mockResolvedValueOnce(player)
+        services.searchPlayers.mockResolvedValueOnce([])
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            authorization: `Bearer ${signToken(
+              player.id,
+              configuration.auth.jwt.key
+            )}`
+          },
+          payload: {
+            query: `mutation { 
             updateCurrentPlayer(username: "${username}", avatar: "") { id username avatar }
           }`
-        }
+          }
+        })
+
+        expect(response.json()).toEqual({
+          data: {
+            updateCurrentPlayer: { id: player.id, username, avatar: null }
+          }
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
+        expect(services.upsertPlayer).toHaveBeenCalledWith({
+          id: player.id,
+          username,
+          avatar: ''
+        })
+        expect(services.upsertPlayer).toHaveBeenCalledOnce()
+        expect(services.notifyRelatedPlayers).toHaveBeenCalledWith(player.id)
+        expect(services.notifyRelatedPlayers).toHaveBeenCalledOnce()
+      })
+    })
+
+    describe('deletePlayer mutation', () => {
+      it('denies un-privileged access', async () => {
+        services.getPlayerById.mockResolvedValueOnce(player)
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            authorization: `Bearer ${signToken(
+              player.id,
+              configuration.auth.jwt.key
+            )}`
+          },
+          payload: {
+            query: `mutation { 
+              deletePlayer(id:"${player.id}") { id username }
+            }`
+          }
+        })
+
+        expect(response.json()).toEqual({
+          data: { deletePlayer: null },
+          errors: [expect.objectContaining({ message: 'Forbidden' })]
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).toHaveBeenCalledWith(player.id)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
+        expect(services.upsertPlayer).not.toHaveBeenCalled()
       })
 
-      expect(response.json()).toEqual({
-        data: { updateCurrentPlayer: { id: player.id, username, avatar: null } }
+      it('removes an existing player account', async () => {
+        services.getPlayerById.mockResolvedValueOnce(admin)
+        repositories.players.deleteById.mockResolvedValueOnce(player)
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            authorization: `Bearer ${signToken(
+              admin.id,
+              configuration.auth.jwt.key
+            )}`
+          },
+          payload: {
+            query: `mutation { 
+              deletePlayer(id:"${player.id}") { id username }
+            }`
+          }
+        })
+
+        expect(response.json()).toEqual({
+          data: { deletePlayer: { ...player, password: undefined } }
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).toHaveBeenCalledWith(admin.id)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
+        expect(repositories.players.deleteById).toHaveBeenCalledWith(player.id)
+        expect(repositories.players.deleteById).toHaveBeenCalledOnce()
       })
-      expect(response.statusCode).toEqual(200)
-      expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
-      expect(services.getPlayerById).toHaveBeenCalledTimes(1)
-      expect(services.upsertPlayer).toHaveBeenCalledWith({
-        id: player.id,
-        username,
-        avatar: ''
+    })
+
+    describe('list query', () => {
+      it('denies un-privileged access', async () => {
+        services.getPlayerById.mockResolvedValueOnce(player)
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            authorization: `Bearer ${signToken(
+              player.id,
+              configuration.auth.jwt.key
+            )}`
+          },
+          payload: {
+            query: `query { listPlayers(from: 0, size: 10) { from size total results { id username } } }`
+          }
+        })
+
+        expect(response.json()).toEqual({
+          data: { listPlayers: null },
+          errors: [expect.objectContaining({ message: 'Forbidden' })]
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
+        expect(repositories.players.list).not.toHaveBeenCalled()
       })
-      expect(services.upsertPlayer).toHaveBeenCalledTimes(1)
-      expect(services.notifyRelatedPlayers).toHaveBeenCalledWith(player.id)
-      expect(services.notifyRelatedPlayers).toHaveBeenCalledTimes(1)
+
+      it('returns players', async () => {
+        const page = {
+          from: 0,
+          size: 10,
+          total: 2,
+          results: [
+            {
+              id: faker.datatype.uuid(),
+              username: faker.name.firstName()
+            },
+            {
+              id: faker.datatype.uuid(),
+              username: faker.name.firstName()
+            }
+          ]
+        }
+        const from = faker.datatype.number()
+        const size = faker.datatype.number()
+        services.getPlayerById.mockResolvedValueOnce(admin)
+        repositories.players.list.mockResolvedValueOnce(page)
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            authorization: `Bearer ${signToken(
+              page.results[0].id,
+              configuration.auth.jwt.key
+            )}`
+          },
+          payload: {
+            query: `query { listPlayers(from: ${from}, size: ${size}) { from size total results { id username } } }`
+          }
+        })
+        expect(response.json()).toEqual({ data: { listPlayers: page } })
+        expect(response.statusCode).toEqual(200)
+        expect(repositories.players.list).toHaveBeenCalledWith({ from, size })
+        expect(repositories.players.list).toHaveBeenCalledOnce()
+      })
     })
   })
 })

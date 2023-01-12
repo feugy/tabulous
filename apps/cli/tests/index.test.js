@@ -76,7 +76,7 @@ describe('Tabulous CLI', () => {
     expect(output.stdout).toContain(formatedResult)
     expect(output.stdout).not.toContain(inspect(result))
     expect(formater).toHaveBeenCalledWith(result)
-    expect(formater).toHaveBeenCalledTimes(1)
+    expect(formater).toHaveBeenCalledOnce()
   })
 
   it('supports kebab-case commands', async () => {

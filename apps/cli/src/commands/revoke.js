@@ -13,6 +13,7 @@ import {
   signToken
 } from '../util/index.js'
 import { catalog } from './catalog.js'
+import { commonOptions } from './help.js'
 
 const revokeAccessMutation = gql`
   mutation revokeAccess($id: ID!, $gameName: ID!) {
@@ -83,7 +84,5 @@ revokeCommand.help = function help() {
     [game-name]               Name of the revoked game
   {dim Options:}
     --username/-u             Username for which catalog is fetched
-    --production/-p           Loads configuration from .env.prod
-    --help/-h                 Display help for this command
-`
+    ${commonOptions}`
 }

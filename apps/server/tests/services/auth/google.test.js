@@ -110,7 +110,7 @@ describe('Google authentication service', () => {
           grant_type: 'authorization_code',
           redirect_uri: redirect
         })
-        expect(accessTokenInvoked).toHaveBeenCalledTimes(1)
+        expect(accessTokenInvoked).toHaveBeenCalledOnce()
       })
 
       it('throws forbidden on token error', async () => {
@@ -134,7 +134,7 @@ describe('Google authentication service', () => {
           grant_type: 'authorization_code',
           redirect_uri: redirect
         })
-        expect(accessTokenInvoked).toHaveBeenCalledTimes(1)
+        expect(accessTokenInvoked).toHaveBeenCalledOnce()
       })
 
       it('throws forbidden on unkown state', async () => {

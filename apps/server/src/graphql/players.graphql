@@ -22,9 +22,17 @@ type PlayerWithTurnCredentials {
   turnCredentials: TurnCredentials!
 }
 
+type PlayerListResult {
+  total: Int!
+  from: Int!
+  size: Int!
+  results: [Player]!
+}
+
 type Query {
   getCurrentPlayer: PlayerWithTurnCredentials
   searchPlayers(search: String!, includeCurrent: Boolean): [Player]
+  listPlayers(from: Int, size: Int): PlayerListResult
 }
 
 type Mutation {
@@ -32,4 +40,5 @@ type Mutation {
   logIn(id: ID!, password: String!): PlayerWithTurnCredentials
   acceptTerms: Player
   updateCurrentPlayer(username: String, avatar: String): Player
+  deletePlayer(id: ID!): Player
 }

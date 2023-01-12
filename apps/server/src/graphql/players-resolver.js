@@ -1,15 +1,12 @@
 import { makeToken } from '../plugins/utils.js'
+import repositories from '../repositories/index.js'
 import services from '../services/index.js'
 import { hash } from '../utils/index.js'
 import { isAdmin, isAuthenticated } from './utils.js'
 
-/**
- * @typedef {import('./players.graphql').PlayerWithTurnCredentials} PlayerWithTurnCredentials
- */
-
-/**
- * @typedef {import('../services/players').Player} Player
- */
+/** @typedef {import('./players.graphql').PlayerWithTurnCredentials} PlayerWithTurnCredentials */
+/** @typedef {import('../services/players').Player} Player */
+/** @typedef {import('../repositories/abstract-repository.js').Page} PlayerPage */
 
 export default {
   Query: {
@@ -38,7 +35,19 @@ export default {
     searchPlayers: isAuthenticated(
       (obj, { search, includeCurrent }, { player }) =>
         services.searchPlayers(search, player.id, !includeCurrent)
-    )
+    ),
+
+    /**
+     * Returns a page or players.
+     * Requires authentication and elevated privileges.
+     * @param {object} obj - graphQL object.
+     * @param {object} args - query arguments, including:
+     * @param {number} args.from - index of the first result returned.
+     * @param {number} args.size - number of return results.
+     * @param {object} context - graphQL context.
+     * @returns {Promise<PlayerPage>} extract of the player list.
+     */
+    listPlayers: isAdmin((obj, args) => repositories.players.list(args))
   },
 
   Mutation: {
@@ -116,6 +125,16 @@ export default {
         services.notifyRelatedPlayers(player.id)
         return updated
       }
-    )
+    ),
+
+    /**
+     * Deletes an existing player account.
+     * Requires authentication and elevated privileges.
+     * @param {object} obj - graphQL object.
+     * @param {object} args - mutation arguments, including:
+     * @param {string} args.id - deleted player's id.
+     * @returns {Promise<Player|null>} deleted player account, or null.
+     */
+    deletePlayer: isAdmin((obj, { id }) => repositories.players.deleteById(id))
   }
 }

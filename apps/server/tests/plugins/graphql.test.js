@@ -92,6 +92,6 @@ describe('graphql plugin', () => {
       ]
     })
     expect(warn).toHaveBeenCalledWith(error.stack)
-    expect(warn).toHaveBeenCalledTimes(1)
+    expect(warn).toHaveBeenCalledOnce()
   })
 })

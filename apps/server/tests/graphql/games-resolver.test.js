@@ -164,7 +164,7 @@ describe('given a started server', () => {
         })
         expect(response.statusCode).toEqual(200)
         expect(services.listGames).toHaveBeenCalledWith(playerId)
-        expect(services.listGames).toHaveBeenCalledTimes(1)
+        expect(services.listGames).toHaveBeenCalledOnce()
         expect(services.getPlayerById).toHaveBeenCalledWith(playerId)
         expect(services.getPlayerById).toHaveBeenNthCalledWith(
           2,
@@ -256,7 +256,7 @@ describe('given a started server', () => {
         )
         expect(services.getPlayerById).toHaveBeenCalledTimes(2)
         expect(services.createGame).toHaveBeenCalledWith(kind, players[0])
-        expect(services.createGame).toHaveBeenCalledTimes(1)
+        expect(services.createGame).toHaveBeenCalledOnce()
       })
     })
 
@@ -334,7 +334,7 @@ describe('given a started server', () => {
           kind,
           players[0]
         )
-        expect(services.promoteGame).toHaveBeenCalledTimes(1)
+        expect(services.promoteGame).toHaveBeenCalledOnce()
       })
     })
 
@@ -423,7 +423,7 @@ describe('given a started server', () => {
         )
         expect(services.getPlayerById).toHaveBeenCalledTimes(2)
         expect(services.joinGame).toHaveBeenCalledWith(game.id, player, null)
-        expect(services.joinGame).toHaveBeenCalledTimes(1)
+        expect(services.joinGame).toHaveBeenCalledOnce()
       })
 
       it('loads game parameters', async () => {
@@ -496,7 +496,7 @@ describe('given a started server', () => {
           player,
           { foo: value }
         )
-        expect(services.joinGame).toHaveBeenCalledTimes(1)
+        expect(services.joinGame).toHaveBeenCalledOnce()
       })
 
       it('rejects broken parameters', async () => {
@@ -620,7 +620,7 @@ describe('given a started server', () => {
           { id: game.id, messages, meshes: [] },
           playerId
         )
-        expect(services.saveGame).toHaveBeenCalledTimes(1)
+        expect(services.saveGame).toHaveBeenCalledOnce()
       })
     })
 
@@ -698,7 +698,7 @@ describe('given a started server', () => {
         )
         expect(services.getPlayerById).toHaveBeenCalledTimes(2)
         expect(services.invite).toHaveBeenCalledWith(game.id, peerId, playerId)
-        expect(services.invite).toHaveBeenCalledTimes(1)
+        expect(services.invite).toHaveBeenCalledOnce()
       })
     })
 
@@ -774,8 +774,8 @@ describe('given a started server', () => {
           game.playerIds
         )
         expect(services.getPlayerById).toHaveBeenCalledTimes(2)
-        expect(services.deleteGame).toHaveBeenCalledWith(game.id, playerId)
-        expect(services.deleteGame).toHaveBeenCalledTimes(1)
+        expect(services.deleteGame).toHaveBeenCalledWith(game.id, players[0])
+        expect(services.deleteGame).toHaveBeenCalledOnce()
       })
     })
 
@@ -848,7 +848,7 @@ describe('given a started server', () => {
           ])
         ).rejects.toThrow('timeout')
         expect(services.getPlayerById).toHaveBeenNthCalledWith(1, playerId)
-        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
       })
     })
 
@@ -944,7 +944,7 @@ describe('given a started server', () => {
           ])
         ).rejects.toThrow('timeout')
         expect(services.getPlayerById).toHaveBeenCalledWith(playerId)
-        expect(services.getPlayerById).toHaveBeenCalledTimes(1)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
       })
     })
   })
