@@ -1,11 +1,17 @@
 // @ts-check
 
-import { iteratePage } from './utils.js'
-
-export async function apply(repositories, redis) {
+export async function apply({ players }, redis) {
+  console.log('delete undefined provider index')
   await redis.del('index:players:providers:undefined:undefined')
-  await iteratePage(repositories.players, async player => {
-    // save player to include them in the players index.
-    await repositories.players.save(player)
-  })
+  const playerIds = await redis.keys('players:*')
+  console.log(`re-indexing ${playerIds.length} players`)
+  for (const fullId of playerIds) {
+    const id = fullId.replace(/^players:/, '')
+    console.log(`assign player ${id} score: ${players.nextScore}`)
+    await redis
+      .multi()
+      .set(players.scoreKey, players.nextScore)
+      .zadd(players.indexKey, players.nextScore++, id)
+      .exec()
+  }
 }
