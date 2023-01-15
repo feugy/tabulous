@@ -19,7 +19,7 @@ import {
   vi
 } from 'vitest'
 
-import pawnData from '../../fixtures/pawn.json'
+import pawnData from '../../fixtures/pawn.obj?raw'
 import {
   expectAnimationEnd,
   expectPosition,
@@ -40,7 +40,7 @@ let createRoundToken
 let createRoundedTile
 const renderWidth = 2048
 const renderHeight = 1024
-const pawnFile = '/pawn.babylon'
+const pawnFile = '/pawn.obj'
 
 beforeAll(async () => {
   engine = initialize3dEngine().engine
@@ -52,7 +52,7 @@ beforeAll(async () => {
     createRoundToken,
     createRoundedTile
   } = await import('@src/3d/meshes'))
-  customShapeManager.set(pawnFile, btoa(JSON.stringify(pawnData)))
+  customShapeManager.set(pawnFile, btoa(pawnData))
 })
 
 afterAll(() => engine.dispose())

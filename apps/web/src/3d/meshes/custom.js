@@ -35,7 +35,14 @@ export async function createCustom(
       '',
       encodedData,
       scene,
-      meshes => resolve(meshes?.[0]),
+      meshes => {
+        const mesh = meshes?.[0]
+        resolve(
+          mesh?.getTotalVertices() > 0 || mesh?.getChildMeshes()?.length
+            ? mesh
+            : null
+        )
+      },
       null,
       (scene, message) => reject(new Error(message.replace(encodedData, file))),
       `.${file.split('.').pop()}`
