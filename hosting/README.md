@@ -142,6 +142,20 @@ First commands will need to connect with IPv4 (hence the `-4` flag) in the meant
     1. save and quit
   - restart redis to apply changes: `sudo systemctl restart redis`
 
+- install rsnapshot
+
+  - open an SSH connection to the VPS: `ssh ubuntu@vps-XYZ.vps.ovh.net`
+  - install rsnapshot: `sudo apt install -y rsnapshot`
+  - edit the configuration file:
+    1. `sudo vi /etc/rsnapshot.conf` (beware: use tabs between keys and their values)
+    1. set `snapshot_root /home/ubuntu/backup/`
+    1. uncomment `no_create_root`
+    1. set the following retain intervals: `retain hourly 24` `retain daily 7` and `retain monthly 3`
+    1. at the end keep a single backup point: `backup /var/lib/redis ./`
+  - set cron jobs:
+    1. open cron table in the editor of your choice: `sudo crontab -e`
+    1. add these jobs: `0 * * * * sudo /usr/bin/rsnapshot hourly`, `0 0 * * * sudo /usr/bin/rsnapshot daily` and `0 0 1 * * sudo /usr/bin/rsnapshot monthly`
+
 - install Gitea (original [documentation](https://docs.gitea.io/en-us/install-from-binary/)):
 
   - open an SSH connection to the VPS: `ssh ubuntu@vps-XYZ.vps.ovh.net`
@@ -233,6 +247,12 @@ Because such configuration should not be commited on Github, it is stored in an 
   - add `REDIS_URL=redis://[USER]:[SECRET]@localhost:6379` with the first user and secret from `/etc/redis/users.acl`
   - add `PUBSUB_URL=redis://[USER]:[SECRET]@localhost:6379` with the second user and password from `/etc/redis/users.acl`
 
+## Rotating backup
+
+Create an hourly backup
+@hourly rsync -a /var/lib/redis/dump.rdb ~/backup/dump.`date +%y%m%d-%h%m`.rdb
+@daily rsync -a /var/lib/redis/dump.rdb ~/backup/dump.`date +%y%m%d`.rdb
+
 ## Maintenance
 
 1. update all packages:
@@ -242,4 +262,8 @@ Because such configuration should not be commited on Github, it is stored in an 
 1. renew SSH certificates
    ```sh
    sudo certbot renew
+   ```
+1. disk used by backups:
+   ```sh
+   sudo rsnapshot du
    ```

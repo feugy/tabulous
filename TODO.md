@@ -269,12 +269,18 @@ How to export from blender to Babylon?
 
 1. craft meshes into blender. Pay attention to the following points:
 
+- try exported meshes in https://sandbox.babylonjs.com/
 - set normals to faces
 - no global/local transformation
 - set origin to geometry
+- triangulate some complex face (Edit mode + select + Ctrl+T) to avoid unnecessary edges when selected, and undesited additional faces on render
 
-1. export as stl
+1. export as obj (vertices + uv mapping)
 
 - selection only
-- Y forward
-- Z up
+- Z forward
+- Y up
+- Apply modifier
+- UV coordinates
+- Normals
+- do not export materials
