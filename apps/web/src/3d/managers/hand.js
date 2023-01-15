@@ -214,16 +214,16 @@ class HandManager {
    *
    * @param {import('@babylonjs/core').Mesh} drawnMesh - drawn mesh
    */
-  draw(drawnMesh) {
+  async draw(drawnMesh) {
     const drawable = getDrawable(drawnMesh)
     if (!this.enabled || !drawable) {
       return
     }
     if (drawnMesh.getScene() === this.handScene) {
-      playMeshes(this, selectionManager.getSelection(drawnMesh))
+      await playMeshes(this, selectionManager.getSelection(drawnMesh))
       selectionManager.clear()
     } else {
-      pickMesh(this, drawnMesh)
+      await pickMesh(this, drawnMesh)
     }
   }
 
@@ -234,7 +234,7 @@ class HandManager {
    * @param {object} state - the state of the drawn mesh.
    * @param {string} playerId - id of the peer who drawn mesh.
    */
-  applyDraw(state, playerId) {
+  async applyDraw(state, playerId) {
     if (this.enabled) {
       const mainMesh = this.scene.getMeshById(state.id)
       if (mainMesh) {
@@ -244,7 +244,7 @@ class HandManager {
         )
         animateToHand(mainMesh)
       } else {
-        const mesh = createMeshFromState(state, this.scene)
+        const mesh = await createMeshFromState(state, this.scene)
         logger.info(
           { mesh },
           `another player played ${mesh.id} from their hand`
@@ -294,7 +294,7 @@ function handleAction(manager, action) {
   }
 }
 
-function handDrag(manager, { type, mesh, event }) {
+async function handDrag(manager, { type, mesh, event }) {
   const { handScene, duration } = manager
   manager.onDraggableToHandObservable.notifyObservers(false)
   if (!hasSelectedDrawableMeshes(mesh)) {
@@ -325,7 +325,7 @@ function handDrag(manager, { type, mesh, event }) {
           `play mesh ${movedMesh.id} from hand by dragging`
         )
         const wasSelected = selectionManager.meshes.has(movedMesh)
-        const mesh = createMainMesh(manager, movedMesh, { x, z })
+        const mesh = await createMainMesh(manager, movedMesh, { x, z })
         let dropZone
         if (droppedList.length) {
           // when first drawn mesh was dropped on player zone, tries to drop others on top of it.
@@ -377,7 +377,7 @@ function handDrag(manager, { type, mesh, event }) {
       logger.debug({ drawn }, `dragged meshes into hand`)
       for (const mesh of drawn) {
         mesh.isPhantom = true
-        const newMesh = createHandMesh(manager, mesh)
+        const newMesh = await createHandMesh(manager, mesh)
         logger.info(
           { mesh: newMesh },
           `pick mesh ${newMesh.id} in hand by dragging`
@@ -406,16 +406,16 @@ function isHandMeshNextToMain(
   return event.y < screenHeight - transitionMargin
 }
 
-function createMainMesh({ scene }, handMesh, extraState) {
+async function createMainMesh({ scene }, handMesh, extraState) {
   flipIfNeeded(handMesh)
   const state = handMesh.metadata.serialize()
   handMesh.dispose()
   return createMeshFromState({ ...state, ...extraState }, scene)
 }
 
-function createHandMesh(manager, mainMesh, extraState = {}) {
+async function createHandMesh(manager, mainMesh, extraState = {}) {
   mainMesh.metadata.unsnapAll?.()
-  const newMesh = createMeshFromState(
+  const newMesh = await createMeshFromState(
     { ...mainMesh.metadata.serialize(), ...extraState },
     manager.handScene
   )
@@ -562,7 +562,7 @@ function hasSelectedDrawableMeshes(mesh) {
   )
 }
 
-function playMeshes(manager, meshes) {
+async function playMeshes(manager, meshes) {
   let dropped
   const created = []
   for (const drawnMesh of meshes) {
@@ -575,7 +575,7 @@ function playMeshes(manager, meshes) {
     if (!position || !isAboveTable(manager.scene, screenPosition)) {
       return
     }
-    const mesh = createMainMesh(manager, drawnMesh, {
+    const mesh = await createMainMesh(manager, drawnMesh, {
       x: position.x,
       y: 100,
       z: position.z
@@ -633,11 +633,11 @@ function canDropAbove(baseMesh, mesh) {
   return null
 }
 
-function pickMesh(manager, mesh) {
+async function pickMesh(manager, mesh) {
   logger.info({ mesh }, `pick mesh ${mesh.id} in hand`)
   recordDraw(mesh)
   animateToHand(mesh)
   const { minX, minZ } = manager.extent
   const { depth } = getDimensions(mesh)
-  createHandMesh(manager, mesh, { x: minX, z: minZ + depth * 0.5 })
+  await createHandMesh(manager, mesh, { x: minX, z: minZ + depth * 0.5 })
 }

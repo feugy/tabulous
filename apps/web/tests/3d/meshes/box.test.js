@@ -16,8 +16,8 @@ configures3dTestEngine(created => (scene = created.scene))
 beforeAll(() => materialManager.init({ scene }))
 
 describe('createBox()', () => {
-  it('creates a box with default values, faces and no behavior', () => {
-    const mesh = createBox()
+  it('creates a box with default values, faces and no behavior', async () => {
+    const mesh = await createBox()
     expect(mesh.name).toEqual('box')
     expectDimension(mesh, [1, 1, 1])
     expect(mesh.isPickable).toBe(false)
@@ -28,9 +28,9 @@ describe('createBox()', () => {
     expect(mesh.behaviors).toHaveLength(0)
   })
 
-  it('creates a box with a single color', () => {
+  it('creates a box with a single color', async () => {
     const color = '#1E282F'
-    const mesh = createBox({ texture: color })
+    const mesh = await createBox({ texture: color })
     expect(mesh.name).toEqual('box')
     expectDimension(mesh, [1, 1, 1])
     expect(mesh.isPickable).toBe(false)
@@ -61,8 +61,8 @@ describe('createBox()', () => {
       }
     }
 
-    beforeEach(() => {
-      mesh = createBox({
+    beforeEach(async () => {
+      mesh = await createBox({
         id,
         width,
         height,

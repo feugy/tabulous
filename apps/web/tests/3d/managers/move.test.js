@@ -32,6 +32,7 @@ import {
 import {
   configures3dTestEngine,
   expectAnimationEnd,
+  expectCloseVector,
   expectMoveRecorded,
   expectPosition,
   sleep
@@ -450,7 +451,7 @@ describe('MoveManager', () => {
       expectMoveRecorded(moveRecorded, moved)
     })
 
-    it('keeps moving mesh after drawn', () => {
+    it('keeps moving mesh after drawn', async () => {
       let event = { x: centerX, y: centerY }
       manager.start(moved, event)
       expect(manager.inProgress).toBe(true)
@@ -469,6 +470,7 @@ describe('MoveManager', () => {
         mesh: moved,
         event
       })
+      await sleep()
       manager.continue(event)
 
       const mainMoved = scene.getMeshById(moved.id)
@@ -500,10 +502,14 @@ describe('MoveManager', () => {
         3,
         {
           meshId: moved.id,
-          pos: [deltaX, manager.elevation, deltaZ],
+          pos: expect.any(Array),
           fromHand: false
         },
         expect.anything()
+      )
+      expectCloseVector(
+        Vector3.FromArray(actionRecorded.mock.calls[2][0].pos),
+        [deltaX, manager.elevation, deltaZ]
       )
       expect(actionRecorded).toHaveBeenCalledTimes(3)
       expect(manager.getActiveZones()).toHaveLength(0)
@@ -825,6 +831,137 @@ describe('MoveManager', () => {
           expect.anything()
         )
         expect(actionRecorded).toHaveBeenCalledTimes(2)
+        expect(manager.getActiveZones()).toHaveLength(0)
+      })
+    })
+
+    describe('include()', () => {
+      it('adds new mesh from selection', () => {
+        selectionManager.unselect(moved.slice(1))
+        manager.start(moved[0], { x: centerX, y: centerY })
+        expect(manager.isMoving(moved[0])).toBe(true)
+        expect(manager.isMoving(moved[1])).toBe(false)
+        expect(manager.isMoving(moved[2])).toBe(false)
+        actionRecorded.mockReset()
+
+        manager.include(moved[1], moved[2])
+        expect(manager.isMoving(moved[0])).toBe(true)
+        expect(manager.isMoving(moved[1])).toBe(true)
+        expect(manager.isMoving(moved[2])).toBe(true)
+
+        const deltaX = 2.029703140258789
+        const deltaZ = -2.196934700012207
+
+        manager.continue({ x: centerX + 50, y: centerY + 50 })
+        expectPosition(moved[0], [
+          deltaX + 1,
+          1 + manager.elevation,
+          deltaZ + 1
+        ])
+        expectPosition(moved[1], [deltaX, 5 + manager.elevation, deltaZ])
+        expectPosition(moved[2], [
+          deltaX - 3,
+          0.5 + manager.elevation,
+          deltaZ - 3
+        ])
+        expect(actionRecorded).toHaveBeenNthCalledWith(
+          1,
+          {
+            meshId: moved[1].id,
+            pos: [0, 5 + manager.elevation, 0],
+            fromHand: false
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenNthCalledWith(
+          2,
+          {
+            meshId: moved[2].id,
+            pos: [-3, 0.5 + manager.elevation, -3],
+            fromHand: false
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenNthCalledWith(
+          3,
+          {
+            meshId: moved[0].id,
+            pos: moved[0].absolutePosition.asArray(),
+            fromHand: false
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenNthCalledWith(
+          4,
+          {
+            meshId: moved[1].id,
+            pos: moved[1].absolutePosition.asArray(),
+            fromHand: false
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenNthCalledWith(
+          5,
+          {
+            meshId: moved[2].id,
+            pos: moved[2].absolutePosition.asArray(),
+            fromHand: false
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenCalledTimes(5)
+        expect(manager.getActiveZones()).toHaveLength(0)
+      })
+
+      it('ignores already selected meshes', () => {
+        manager.start(moved[0], { x: centerX, y: centerY })
+        actionRecorded.mockReset()
+
+        manager.include(moved[0], moved[1])
+
+        const deltaX = 2.029703140258789
+        const deltaZ = -2.196934700012207
+
+        manager.continue({ x: centerX + 50, y: centerY + 50 })
+        expectPosition(moved[0], [
+          deltaX + 1,
+          1 + manager.elevation,
+          deltaZ + 1
+        ])
+        expectPosition(moved[1], [deltaX, 5 + manager.elevation, deltaZ])
+        expectPosition(moved[2], [
+          deltaX - 3,
+          0.5 + manager.elevation,
+          deltaZ - 3
+        ])
+        expect(actionRecorded).toHaveBeenNthCalledWith(
+          1,
+          {
+            meshId: moved[2].id,
+            pos: moved[2].absolutePosition.asArray(),
+            fromHand: false
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenNthCalledWith(
+          2,
+          {
+            meshId: moved[0].id,
+            pos: moved[0].absolutePosition.asArray(),
+            fromHand: false
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenNthCalledWith(
+          3,
+          {
+            meshId: moved[1].id,
+            pos: moved[1].absolutePosition.asArray(),
+            fromHand: false
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenCalledTimes(3)
         expect(manager.getActiveZones()).toHaveLength(0)
       })
     })

@@ -16,8 +16,8 @@ configures3dTestEngine(created => (scene = created.scene))
 beforeAll(() => materialManager.init({ scene }))
 
 describe('createRoundToken()', () => {
-  it('creates a token with default values and no behavior', () => {
-    const mesh = createRoundToken()
+  it('creates a token with default values and no behavior', async () => {
+    const mesh = await createRoundToken()
     expect(mesh.name).toEqual('roundToken')
     expectDimension(mesh, [2, 0.1, 2])
     expect(mesh.isPickable).toBe(false)
@@ -29,9 +29,9 @@ describe('createRoundToken()', () => {
     expect(mesh.behaviors).toHaveLength(0)
   })
 
-  it('creates a card with a single color', () => {
+  it('creates a card with a single color', async () => {
     const color = '#1E282F'
-    const mesh = createRoundToken({ texture: color })
+    const mesh = await createRoundToken({ texture: color })
     expect(mesh.name).toEqual('roundToken')
     expectDimension(mesh, [2, 0.1, 2])
     expect(mesh.isPickable).toBe(false)
@@ -61,8 +61,8 @@ describe('createRoundToken()', () => {
       }
     }
 
-    beforeEach(() => {
-      mesh = createRoundToken({
+    beforeEach(async () => {
+      mesh = await createRoundToken({
         id,
         diameter,
         height,

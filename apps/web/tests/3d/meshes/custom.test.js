@@ -32,8 +32,8 @@ beforeEach(() => {
 })
 
 describe('createCustom()', () => {
-  it('creates a custom mesh from babylon JSON data with default values, and no behavior', () => {
-    const mesh = createCustom({ id: 'pawn', file })
+  it('creates a custom mesh from babylon JSON data with default values, and no behavior', async () => {
+    const mesh = await createCustom({ id: 'pawn', file })
     expect(mesh.id).toEqual('pawn')
     expect(mesh.name).toEqual('custom')
     expectDimension(mesh, [5.2982, 6.2283, 2.0563])
@@ -46,34 +46,34 @@ describe('createCustom()', () => {
     expect(mesh.behaviors).toHaveLength(0)
   })
 
-  it('throws on an empty JSON data', () => {
+  it('throws on an empty JSON data', async () => {
     const file = '/empty.babylon'
     customShapeManager.set(file, btoa(JSON.stringify({})))
-    expect(() => createCustom({ id: 'empty-pawn', file })).toThrow(
+    await expect(createCustom({ id: 'empty-pawn', file })).rejects.toThrow(
       `${file} does not contain any mesh`
     )
   })
 
-  it('throws on an invalid JSON data', () => {
+  it('throws on an invalid JSON data', async () => {
     customShapeManager.set(file, 'invalid base64 data')
-    expect(() => createCustom({ id: 'invalid-pawn', file })).toThrow(
+    await expect(createCustom({ id: 'invalid-pawn', file })).rejects.toThrow(
       `Unable to load from pawn.babylon: InvalidCharacterError: The string to be decoded contains invalid characters.`
     )
   })
 
-  it('throws on mesh-less data', () => {
+  it('throws on mesh-less data', async () => {
     customShapeManager.set(
       file,
       btoa(JSON.stringify({ meshes: ['this is invalid'] }))
     )
-    expect(() => createCustom({ id: 'invalid-pawn', file })).toThrow(
+    await expect(createCustom({ id: 'invalid-pawn', file })).rejects.toThrow(
       `Unable to load from pawn.babylon: importMesh of unknown`
     )
   })
 
-  it('creates a custom mesh with a single color', () => {
+  it('creates a custom mesh with a single color', async () => {
     const color = '#1E282F'
-    const mesh = createCustom({ file, texture: color })
+    const mesh = await createCustom({ file, texture: color })
     expect(mesh.name).toEqual('custom')
     expectDimension(mesh, [5.2982, 6.2283, 2.0563])
     expect(mesh.material.diffuseColor).toEqual(Color4.FromHexString(color))
@@ -92,8 +92,8 @@ describe('createCustom()', () => {
       rotable: { angle: Math.PI }
     }
 
-    beforeEach(() => {
-      mesh = createCustom({ file, id, x, y, z, ...behaviors })
+    beforeEach(async () => {
+      mesh = await createCustom({ file, id, x, y, z, ...behaviors })
     })
 
     it('has all the expected data', () => {

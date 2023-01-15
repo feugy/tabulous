@@ -32,7 +32,8 @@ import {
   expectMeshFeedback,
   expectPosition,
   expectSnapped,
-  expectStacked
+  expectStacked,
+  sleep
 } from '../../test-utils'
 
 describe('HandManager', () => {
@@ -100,16 +101,16 @@ describe('HandManager', () => {
     expect(manager.transitionMargin).toEqual(0)
   })
 
-  it('can not draw mesh', () => {
+  it('can not draw mesh', async () => {
     const mesh = createMesh({ id: 'box' }, scene)
-    manager.draw(mesh)
+    await manager.draw(mesh)
     expect(actionRecorded).not.toHaveBeenCalled()
     expect(registerFeedbackSpy).not.toHaveBeenCalled()
   })
 
-  it('can not apply draw', () => {
+  it('can not apply draw', async () => {
     const id = 'box'
-    manager.applyDraw({ drawable: {}, id })
+    await manager.applyDraw({ drawable: {}, id })
     expect(scene.getMeshById(id)?.id).toBeUndefined()
     expect(handScene.getMeshById(id)?.id).toBeUndefined()
     expect(registerFeedbackSpy).not.toHaveBeenCalled()
@@ -223,7 +224,7 @@ describe('HandManager', () => {
         },
         scene
       )
-      manager.draw(card)
+      await manager.draw(card)
       await expect(waitForLayout()).rejects.toThrow()
       expect(scene.getMeshById(card.id)?.id).toBeDefined()
       expect(actionRecorded).not.toHaveBeenCalled()
@@ -312,7 +313,7 @@ describe('HandManager', () => {
     it(`removes mesh drawn into another player's hand`, async () => {
       const [, , card] = cards
       const playerId = faker.datatype.uuid()
-      manager.applyDraw(card.metadata.serialize(), playerId)
+      await manager.applyDraw(card.metadata.serialize(), playerId)
       await expectAnimationEnd(card.getBehaviorByName(DrawBehaviorName))
       expect(scene.getMeshById(card.id)?.id).toBeUndefined()
       expect(handScene.meshes.length).toEqual(0)
@@ -1044,7 +1045,7 @@ describe('HandManager', () => {
         const positions = getPositions(handCards)
         const playerId = faker.datatype.uuid()
         const meshId = 'box5'
-        manager.applyDraw(
+        await manager.applyDraw(
           {
             shape: 'card',
             id: meshId,
@@ -1295,6 +1296,7 @@ describe('HandManager', () => {
             mesh: mesh1,
             event: { x: 289.7, y: 175 }
           })
+          await sleep()
           const newMesh1 = scene.getMeshById(mesh1.id)
           expect(newMesh1?.id).toBeDefined()
           const newMesh2 = scene.getMeshById(mesh2.id)

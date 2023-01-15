@@ -6,14 +6,12 @@ import clone from 'rfdc/default'
 
 import { makeLogger } from '../../utils/logger'
 import { AnchorBehaviorName, StackBehaviorName } from '../behaviors/names'
-import {
-  createBox,
-  createCard,
-  createCustom,
-  createPrism,
-  createRoundedTile,
-  createRoundToken
-} from '../meshes'
+import { createBox } from '../meshes/box'
+import { createCard } from '../meshes/card'
+import { createCustom } from '../meshes/custom'
+import { createPrism } from '../meshes/prism'
+import { createRoundToken } from '../meshes/round-token'
+import { createRoundedTile } from '../meshes/rounded-tile'
 import { restoreBehaviors } from './behaviors'
 
 const logger = makeLogger('scene-loader')
@@ -58,11 +56,14 @@ export function serializeMeshes(scene) {
  * Creates a meshes into the provided scene.
  * @param {object} state - serialized mesh state.
  * @param {import('@babel/core').Scene} scene - 3D scene used.
- * @returns {import('@babel/core').Mesh} mesh created
+ * @returns {Promise<import('@babel/core').Mesh>} mesh created
  */
-export function createMeshFromState(state, scene) {
+export async function createMeshFromState(state, scene) {
   const { shape } = state
   logger.debug({ state }, `create new ${shape} ${state.id}`)
+  if (!supportedNames.has(shape)) {
+    throw new Error(`mesh shape ${shape} is not supported`)
+  }
   return meshCreatorByName.get(shape)(state, scene)
 }
 
@@ -71,9 +72,9 @@ export function createMeshFromState(state, scene) {
  * - either creates new mesh, or updates existing ones, based on their ids
  * - deletes existing mesh that are not found in the provided data
  * @param {import('@babel/core').Scene} scene - 3D scene used.
- * @param {object[]} meshes - a list of serialized meshes data TODO.
+ * @param {Promise<object[]>} meshes - a list of serialized meshes data TODO.
  */
-export function loadMeshes(scene, meshes) {
+export async function loadMeshes(scene, meshes) {
   const disposables = new Set(scene.meshes)
   for (const mesh of disposables) {
     if (!isSerializable(mesh)) {
@@ -99,7 +100,7 @@ export function loadMeshes(scene, meshes) {
       restoreBehaviors(mesh.behaviors, state)
     } else {
       logger.debug({ state }, `create new ${name} ${state.id}`)
-      mesh = createMeshFromState(skipDelayableBehaviors(state), scene)
+      mesh = await createMeshFromState(skipDelayableBehaviors(state), scene)
     }
     const stackBehavior = mesh.getBehaviorByName(StackBehaviorName)
     if (stackBehavior) {

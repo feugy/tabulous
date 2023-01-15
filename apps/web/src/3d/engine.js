@@ -150,9 +150,9 @@ export function createEngine({
     selectionManager.updateColors(playerId, colorByPlayerId)
 
     await customShapeManager.init({ ...game, gameAssetsUrl })
-    loadMeshes(scene, game.meshes)
+    await loadMeshes(scene, game.meshes)
     if (handsEnabled) {
-      loadMeshes(
+      await loadMeshes(
         handScene,
         game.hands.find(hand => playerId === hand.playerId)?.meshes ?? []
       )

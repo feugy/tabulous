@@ -345,7 +345,7 @@ describe('QuantityBehavior', () => {
       })
     })
 
-    it('decrements multiple and moves meshe', async () => {
+    it('decrements multiple and moves mesh', async () => {
       const quantity = 4
       const meshCount = scene.meshes.length
       behavior.fromState({ quantity })
@@ -379,6 +379,7 @@ describe('QuantityBehavior', () => {
       expectQuantity(mesh, quantity)
 
       moveManager.start(mesh, {})
+      await sleep()
 
       expect(scene.meshes.length).toBe(meshCount + 2)
       const created = scene.meshes[meshCount]
@@ -413,6 +414,7 @@ describe('QuantityBehavior', () => {
       selectionManager.select(mesh)
 
       moveManager.start(mesh, {})
+      await sleep()
 
       expect(scene.meshes.length).toBe(meshCount)
       expectQuantity(mesh, quantity)

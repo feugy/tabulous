@@ -12,8 +12,8 @@ configures3dTestEngine(created => (scene = created.scene))
 beforeAll(() => materialManager.init({ scene }))
 
 describe('createPrism()', () => {
-  it('creates a prism with default values and no behavior', () => {
-    const mesh = createPrism()
+  it('creates a prism with default values and no behavior', async () => {
+    const mesh = await createPrism()
     const { boundingBox } = mesh.getBoundingInfo()
     expect(mesh.name).toEqual('prism')
     expect(boundingBox.extendSize.x * 2).toEqual(3)
@@ -27,9 +27,9 @@ describe('createPrism()', () => {
     expect(mesh.behaviors).toHaveLength(0)
   })
 
-  it('creates a prism with a single color', () => {
+  it('creates a prism with a single color', async () => {
     const color = '#1E282F'
-    const mesh = createPrism({ texture: color })
+    const mesh = await createPrism({ texture: color })
     const { boundingBox } = mesh.getBoundingInfo()
     expect(mesh.name).toEqual('prism')
     expect(boundingBox.extendSize.x * 2).toEqual(3)
@@ -63,8 +63,8 @@ describe('createPrism()', () => {
       }
     }
 
-    beforeEach(() => {
-      mesh = createPrism({
+    beforeEach(async () => {
+      mesh = await createPrism({
         id,
         edges,
         prismRotation,

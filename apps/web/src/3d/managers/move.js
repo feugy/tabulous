@@ -101,14 +101,7 @@ class MoveManager {
       }
     )
 
-    logger.info(
-      { moved, position: lastPosition.asArray() },
-      `start move operation`
-    )
-    this.onPreMoveObservable.notifyObservers(moved)
-    moved = [...moved]
-
-    for (const mesh of moved) {
+    const startMoving = mesh => {
       const { x, y, z } = mesh.absolutePosition
       mesh.setAbsolutePosition(new Vector3(x, y + this.elevation, z))
       controlManager.record({ mesh, pos: mesh.absolutePosition.asArray() })
@@ -171,6 +164,16 @@ class MoveManager {
       )
     }
 
+    // dynamically assign include function to keep moved in scope
+    this.include = (...meshes) => {
+      for (const mesh of meshes) {
+        if (!moved.find(({ id }) => id === mesh?.id)) {
+          moved.push(mesh)
+          startMoving(mesh)
+        }
+      }
+    }
+
     // dynamically assign stop function to keep moved, zones and lastPosition in scope
     this.stop = async () => {
       if (actionObserver) {
@@ -179,6 +182,7 @@ class MoveManager {
       this.continue = () => {}
       this.getActiveZones = () => []
       this.isMoving = () => false
+      this.includes = () => {}
       this.exclude = () => {}
       if (moved.length === 0) {
         zones.clear()
@@ -229,6 +233,16 @@ class MoveManager {
       )
       this.inProgress = false
     }
+
+    logger.info(
+      { moved, position: lastPosition.asArray() },
+      `start move operation`
+    )
+    this.onPreMoveObservable.notifyObservers(moved)
+    moved = [...moved]
+    for (const mesh of moved) {
+      startMoving(mesh)
+    }
   }
 
   /**
@@ -246,6 +260,13 @@ class MoveManager {
    * @param {import('@babylonjs/core').Mesh...} meshes - excluded meshes.
    */
   exclude() {}
+
+  /**
+   * Adds some meshes to the moving selection.
+   * Does nothing if no operation is in progress.
+   * @param {import('@babylonjs/core').Mesh...} meshes - included meshes.
+   */
+  include() {}
 
   /**
    * Stops the move operation, releasing mesh(es) on its(their) target if any, or on the table.
