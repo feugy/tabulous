@@ -1,6 +1,5 @@
 // mandatory side effect
-import '@babylonjs/core/Loading/index.js'
-import '@babylonjs/loaders/STL'
+import '@babylonjs/loaders/OBJ'
 
 import { SceneLoader } from '@babylonjs/core/Loading/sceneLoader.js'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'

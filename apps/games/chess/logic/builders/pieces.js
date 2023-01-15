@@ -8,7 +8,7 @@ export function buildPieces(color) {
       shape: 'custom',
       id: `${color}-${kind}`,
       texture: colors[color],
-      file: `${kind.replace(/-\d/, '')}.stl`,
+      file: `${kind.replace(/-\d/, '')}.obj`,
       movable: { kind: 'piece' },
       rotable: { angle: invert ? Math.PI : 0 }
     })
@@ -18,7 +18,7 @@ export function buildPieces(color) {
       shape: 'custom',
       id: `${color}-pawn-${rank}`,
       texture: colors[color],
-      file: 'pawn.stl',
+      file: 'pawn.obj',
       movable: { kind: 'piece' }
     })
   }

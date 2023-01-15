@@ -159,7 +159,7 @@ describe('CustomShapeManager', () => {
     const pawnPath = '/pawn.babylon'
     const avatarPath = '/avatar.babylon'
     const diePath = '/die.babylon'
-    const knightPath = '/knight.stl'
+    const knightPath = '/knight.obj'
 
     beforeEach(async () => {
       vi.resetAllMocks()
@@ -189,9 +189,9 @@ describe('CustomShapeManager', () => {
         expect(manager.get(diePath)).toEqual(expectedData.die)
       })
 
-      it('handles stl binary files', async () => {
+      it('handles binary files', async () => {
         const binaryContent = await readFile(
-          resolve(__dirname, '../../../../games/chess/models/knight.stl'),
+          resolve(__dirname, '../../../../games/chess/models/knight.obj'),
           { encoding: 'binary' }
         )
         server.use(
