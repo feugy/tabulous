@@ -9,7 +9,7 @@ import { createCustom } from '@src/3d/meshes'
 import { getDimensions } from '@src/3d/utils'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import pawnData from '../../fixtures/pawn.json'
+import pawnData from '../../fixtures/pawn.obj?raw'
 import {
   configures3dTestEngine,
   expectDimension,
@@ -25,18 +25,19 @@ vi.mock('@src/3d/managers/custom-shape', () => ({
   customShapeManager: new Map()
 }))
 
-const file = 'pawn.babylon'
+const file = 'pawn.obj'
+const pawnDimensions = [1.11, 2.45, 0.84]
 
 beforeEach(() => {
-  customShapeManager.set(file, btoa(JSON.stringify(pawnData)))
+  customShapeManager.set(file, btoa(pawnData))
 })
 
 describe('createCustom()', () => {
-  it('creates a custom mesh from babylon JSON data with default values, and no behavior', () => {
-    const mesh = createCustom({ id: 'pawn', file })
+  it('creates a custom mesh from OBJ data with default values, and no behavior', async () => {
+    const mesh = await createCustom({ id: 'pawn', file })
     expect(mesh.id).toEqual('pawn')
     expect(mesh.name).toEqual('custom')
-    expectDimension(mesh, [5.2982, 6.2283, 2.0563])
+    expectDimension(mesh, pawnDimensions)
     expect(mesh.isPickable).toBe(false)
     expectPosition(mesh, [0, getDimensions(mesh).height * 0.5, 0])
     expect(mesh.metadata).toEqual({
@@ -46,36 +47,33 @@ describe('createCustom()', () => {
     expect(mesh.behaviors).toHaveLength(0)
   })
 
-  it('throws on an empty JSON data', () => {
-    const file = '/empty.babylon'
+  it('throws on an empty data', async () => {
+    const file = '/empty.obj'
     customShapeManager.set(file, btoa(JSON.stringify({})))
-    expect(() => createCustom({ id: 'empty-pawn', file })).toThrow(
+    await expect(createCustom({ id: 'empty-pawn', file })).rejects.toThrow(
       `${file} does not contain any mesh`
     )
   })
 
-  it('throws on an invalid JSON data', () => {
+  it('throws on an invalid data', async () => {
     customShapeManager.set(file, 'invalid base64 data')
-    expect(() => createCustom({ id: 'invalid-pawn', file })).toThrow(
-      `Unable to load from pawn.babylon: InvalidCharacterError: The string to be decoded contains invalid characters.`
+    await expect(createCustom({ id: 'invalid-pawn', file })).rejects.toThrow(
+      `Unable to load from pawn.obj: InvalidCharacterError: The string to be decoded contains invalid characters.`
     )
   })
 
-  it('throws on mesh-less data', () => {
-    customShapeManager.set(
-      file,
-      btoa(JSON.stringify({ meshes: ['this is invalid'] }))
-    )
-    expect(() => createCustom({ id: 'invalid-pawn', file })).toThrow(
-      `Unable to load from pawn.babylon: importMesh of unknown`
+  it('throws on mesh-less data', async () => {
+    customShapeManager.set(file, btoa('this is invalid'))
+    await expect(createCustom({ id: 'invalid-pawn', file })).rejects.toThrow(
+      `${file} does not contain any mesh`
     )
   })
 
-  it('creates a custom mesh with a single color', () => {
+  it('creates a custom mesh with a single color', async () => {
     const color = '#1E282F'
-    const mesh = createCustom({ file, texture: color })
+    const mesh = await createCustom({ file, texture: color })
     expect(mesh.name).toEqual('custom')
-    expectDimension(mesh, [5.2982, 6.2283, 2.0563])
+    expectDimension(mesh, pawnDimensions)
     expect(mesh.material.diffuseColor).toEqual(Color4.FromHexString(color))
   })
 
@@ -92,14 +90,14 @@ describe('createCustom()', () => {
       rotable: { angle: Math.PI }
     }
 
-    beforeEach(() => {
-      mesh = createCustom({ file, id, x, y, z, ...behaviors })
+    beforeEach(async () => {
+      mesh = await createCustom({ file, id, x, y, z, ...behaviors })
     })
 
     it('has all the expected data', () => {
       expect(mesh.name).toEqual('custom')
       expect(mesh.id).toEqual(id)
-      expectDimension(mesh, [5.2982, 6.2283, 2.0563])
+      expectDimension(mesh, pawnDimensions)
       expect(mesh.isPickable).toBe(true)
       expectPosition(mesh, [x, y, z])
       expect(mesh.getBehaviorByName('movable')?.state).toEqual(

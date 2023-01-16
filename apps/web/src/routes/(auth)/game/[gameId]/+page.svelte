@@ -94,7 +94,6 @@
             schema: JSON.parse(result.schemaString)
           }
         }
-        console.log('coucou', result, isLobby(result))
         if (isLobby(result)) {
           goto('/home')
         }

@@ -82,14 +82,15 @@ export class QuantityBehavior extends TargetBehavior {
       this.increment(ids, immediate)
     })
 
-    this.preMoveObserver = moveManager.onPreMoveObservable.add(async moved => {
+    this.preMoveObserver = moveManager.onPreMoveObservable.add(moved => {
       const index = moved.findIndex(({ id }) => id === this.mesh?.id)
       if (
         !selectionManager.meshes.has(this.mesh) &&
         index !== -1 &&
         this.state.quantity > 1
       ) {
-        moved.splice(index, 1, this.decrement())
+        moveManager.exclude(this.mesh)
+        this.decrement().then(mesh => moveManager.include(mesh))
       }
     })
   }
@@ -174,7 +175,7 @@ export class QuantityBehavior extends TargetBehavior {
    * @param {boolean} [withMove=false] - when set to true, moves the created meshes aside this one.
    * @return {import('@babylonjs/core').Mesh} the created mesh, if any.
    */
-  decrement(count = 1, withMove = false) {
+  async decrement(count = 1, withMove = false) {
     const { mesh, state } = this
     let created = null
     if (state.quantity === 1) return created
@@ -184,7 +185,7 @@ export class QuantityBehavior extends TargetBehavior {
     const serialized = mesh.metadata.serialize()
     serialized.quantifiable.quantity = quantity
     serialized.id = makeId(mesh)
-    created = createMeshFromState(serialized, mesh.getScene())
+    created = await createMeshFromState(serialized, mesh.getScene())
 
     logger.info(
       { mesh, oldQuantity: state.quantity, created, quantity },

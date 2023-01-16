@@ -16,8 +16,8 @@ configures3dTestEngine(created => (scene = created.scene))
 beforeAll(() => materialManager.init({ scene }))
 
 describe('createRoundedTile()', () => {
-  it('creates a tile with default values and no behavior', () => {
-    const mesh = createRoundedTile()
+  it('creates a tile with default values and no behavior', async () => {
+    const mesh = await createRoundedTile()
     expect(mesh.name).toEqual('roundedTile')
     expectDimension(mesh, [3, 0.05, 3])
     expect(mesh.isPickable).toBe(false)
@@ -28,9 +28,9 @@ describe('createRoundedTile()', () => {
     expect(mesh.behaviors).toHaveLength(0)
   })
 
-  it('creates a card with a single color', () => {
+  it('creates a card with a single color', async () => {
     const color = '#1E282F'
-    const mesh = createRoundedTile({ texture: color })
+    const mesh = await createRoundedTile({ texture: color })
     expect(mesh.name).toEqual('roundedTile')
     expectDimension(mesh, [3, 0.05, 3])
     expect(mesh.isPickable).toBe(false)
@@ -68,8 +68,8 @@ describe('createRoundedTile()', () => {
     }
     const borderRadius = Math.random()
 
-    beforeEach(() => {
-      mesh = createRoundedTile({
+    beforeEach(async () => {
+      mesh = await createRoundedTile({
         id,
         width,
         height,

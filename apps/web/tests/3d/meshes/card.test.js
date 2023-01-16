@@ -16,8 +16,8 @@ configures3dTestEngine(created => (scene = created.scene))
 beforeAll(() => materialManager.init({ scene }))
 
 describe('createCard()', () => {
-  it('creates a card with default values, faces and no behavior', () => {
-    const mesh = createCard()
+  it('creates a card with default values, faces and no behavior', async () => {
+    const mesh = await createCard()
     expect(mesh.name).toEqual('card')
     expectDimension(mesh, [3, 0.01, 4.25])
     expect(mesh.isPickable).toBe(false)
@@ -29,16 +29,16 @@ describe('createCard()', () => {
     expect(mesh.behaviors).toHaveLength(0)
   })
 
-  it('creates a card with a single color', () => {
+  it('creates a card with a single color', async () => {
     const color = '#1E282F'
-    const mesh = createCard({ texture: color })
+    const mesh = await createCard({ texture: color })
     expect(mesh.name).toEqual('card')
     expectDimension(mesh, [3, 0.01, 4.25])
     expect(mesh.isPickable).toBe(false)
     expect(mesh.material.diffuseColor).toEqual(Color4.FromHexString(color))
   })
 
-  describe('given a card with initial position, dimension, images and behaviors', () => {
+  describe('given a card with initial position, dimension, images and behaviors', async () => {
     let mesh
 
     const width = faker.datatype.number()
@@ -62,8 +62,8 @@ describe('createCard()', () => {
       }
     }
 
-    beforeEach(() => {
-      mesh = createCard({
+    beforeEach(async () => {
+      mesh = await createCard({
         id,
         width,
         height,

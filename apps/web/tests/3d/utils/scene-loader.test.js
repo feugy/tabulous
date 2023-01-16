@@ -19,7 +19,7 @@ import {
   vi
 } from 'vitest'
 
-import pawnData from '../../fixtures/pawn.json'
+import pawnData from '../../fixtures/pawn.obj?raw'
 import {
   expectAnimationEnd,
   expectPosition,
@@ -40,7 +40,7 @@ let createRoundToken
 let createRoundedTile
 const renderWidth = 2048
 const renderHeight = 1024
-const pawnFile = '/pawn.babylon'
+const pawnFile = '/pawn.obj'
 
 beforeAll(async () => {
   engine = initialize3dEngine().engine
@@ -52,7 +52,7 @@ beforeAll(async () => {
     createRoundToken,
     createRoundedTile
   } = await import('@src/3d/meshes'))
-  customShapeManager.set(pawnFile, btoa(JSON.stringify(pawnData)))
+  customShapeManager.set(pawnFile, btoa(pawnData))
 })
 
 afterAll(() => engine.dispose())
@@ -93,9 +93,9 @@ describe('serializeMeshes() 3D utility', () => {
       expect(serializeMeshes(scene)).toEqual([])
     })
 
-    it('serializes boxes', () => {
-      const box1 = createBox({ id: 'box1' })
-      const box2 = createBox({
+    it('serializes boxes', async () => {
+      const box1 = await createBox({ id: 'box1' })
+      const box2 = await createBox({
         id: 'box2',
         texture: faker.internet.url(),
         images: [faker.random.word()],
@@ -112,9 +112,9 @@ describe('serializeMeshes() 3D utility', () => {
       ])
     })
 
-    it('serializes cards', () => {
-      const card1 = createCard({ id: 'card1' })
-      const card2 = createCard({
+    it('serializes cards', async () => {
+      const card1 = await createCard({ id: 'card1' })
+      const card2 = await createCard({
         id: 'card2',
         texture: faker.internet.url(),
         images: [faker.random.word()],
@@ -131,9 +131,9 @@ describe('serializeMeshes() 3D utility', () => {
       ])
     })
 
-    it('serializes prism', () => {
-      const prism1 = createPrism({ id: 'prism1' })
-      const prism2 = createPrism({
+    it('serializes prism', async () => {
+      const prism1 = await createPrism({ id: 'prism1' })
+      const prism2 = await createPrism({
         id: 'prism2',
         texture: faker.internet.url(),
         images: [faker.random.word()],
@@ -151,9 +151,9 @@ describe('serializeMeshes() 3D utility', () => {
       ])
     })
 
-    it('serializes round tokens', () => {
-      const token1 = createRoundToken({ id: 'token1' })
-      const token2 = createRoundToken({
+    it('serializes round tokens', async () => {
+      const token1 = await createRoundToken({ id: 'token1' })
+      const token2 = await createRoundToken({
         id: 'token2',
         texture: faker.internet.url(),
         images: [faker.random.word()],
@@ -169,9 +169,9 @@ describe('serializeMeshes() 3D utility', () => {
       ])
     })
 
-    it('serializes rounded tiles', () => {
-      const tile1 = createRoundedTile({ id: 'tile1' })
-      const tile2 = createRoundedTile({
+    it('serializes rounded tiles', async () => {
+      const tile1 = await createRoundedTile({ id: 'tile1' })
+      const tile2 = await createRoundedTile({
         id: 'tile2',
         texture: faker.internet.url(),
         images: [faker.random.word()],
@@ -190,14 +190,14 @@ describe('serializeMeshes() 3D utility', () => {
       ])
     })
 
-    it('serializes custom shapes', () => {
-      const pawn1 = createCustom({ id: 'pawn1', file: pawnFile })
+    it('serializes custom shapes', async () => {
+      const pawn1 = await createCustom({ id: 'pawn1', file: pawnFile })
       expect(serializeMeshes(scene)).toEqual([pawn1.metadata.serialize()])
     })
 
-    it('ignores phantom meshes', () => {
-      const tile1 = createRoundedTile({ id: 'tile1' })
-      const tile2 = createRoundedTile({
+    it('ignores phantom meshes', async () => {
+      const tile1 = await createRoundedTile({ id: 'tile1' })
+      const tile2 = await createRoundedTile({
         id: 'tile2',
         texture: faker.internet.url(),
         images: [faker.random.word()],
@@ -215,7 +215,7 @@ describe('serializeMeshes() 3D utility', () => {
     })
 
     it('keep tracks of meshes transitioning between scenes', async () => {
-      const mesh = createCard({ id: 'card1', drawable: {} })
+      const mesh = await createCard({ id: 'card1', drawable: {} })
       const serialized = {
         ...mesh.metadata.serialize(),
         x: expect.any(Number),
@@ -385,11 +385,17 @@ describe('loadMeshes() 3D utility', () => {
     }
   })
 
-  it('handles empty input', () => {
-    expect(loadMeshes(scene, [])).toBeUndefined()
+  it('handles empty input', async () => {
+    expect(await loadMeshes(scene, [])).toBeUndefined()
   })
 
-  it('disposes all existing cards, tokens, tiles and boxes but leaves other meshes', () => {
+  it('throws on unsupported shape', async () => {
+    await expect(loadMeshes(scene, [{ shape: 'unknown' }])).rejects.toThrow(
+      'mesh shape unknown is not supported'
+    )
+  })
+
+  it('disposes all existing cards, tokens, tiles and boxes but leaves other meshes', async () => {
     createTable()
     createRoundToken({ id: 'token' })
     createBox({ id: 'box' })
@@ -404,7 +410,7 @@ describe('loadMeshes() 3D utility', () => {
     expect(scene.getMeshById('card')).toBeDefined()
     expect(scene.getMeshById('prism')).toBeDefined()
 
-    loadMeshes(scene, [])
+    await loadMeshes(scene, [])
 
     expect(scene.getMeshById('table')).toBeDefined()
     expect(scene.getMeshById('token')).toBeNull()
@@ -414,8 +420,8 @@ describe('loadMeshes() 3D utility', () => {
     expect(scene.getMeshById('prism')).toBeNull()
   })
 
-  it('adds new meshes with their behaviors', () => {
-    loadMeshes(scene, [card1, token1, tile1, card2, pawn1, box1, prism1])
+  it('adds new meshes with their behaviors', async () => {
+    await loadMeshes(scene, [card1, token1, tile1, card2, pawn1, box1, prism1])
     expect(scene.getMeshById(card1.id)).toBeDefined()
     expect(scene.getMeshById(card1.id).metadata.serialize()).toEqual(card1)
     expect(scene.getMeshById(card2.id)).toBeDefined()
@@ -432,20 +438,20 @@ describe('loadMeshes() 3D utility', () => {
     expect(scene.getMeshById(prism1.id).metadata.serialize()).toEqual(prism1)
   })
 
-  it('updates existing meshes with their behaviors', () => {
-    const originalCard = createCard({
+  it('updates existing meshes with their behaviors', async () => {
+    const originalCard = await createCard({
       id: card1.id,
       x: 21,
       y: 62,
       z: 52
     })
-    const originalTile = createRoundedTile({
+    const originalTile = await createRoundedTile({
       id: tile1.id,
       x: -23,
       y: 0,
       z: -5.34
     })
-    const originalToken = createRoundToken({
+    const originalToken = await createRoundToken({
       id: token1.id,
       x: 10,
       y: 20,
@@ -453,26 +459,26 @@ describe('loadMeshes() 3D utility', () => {
       flippable: { isFlipped: false },
       rotable: { angle: Math.PI * 2 }
     })
-    const originalPawn = createCustom({
+    const originalPawn = await createCustom({
       id: pawn1.id,
       file: pawnFile,
       x: 30,
       y: 20,
       z: 10
     })
-    const originalBox = createBox({
+    const originalBox = await createBox({
       id: box1.id,
       x: -5,
       y: -6,
       z: -7
     })
-    const originalPrism = createPrism({
+    const originalPrism = await createPrism({
       id: prism1.id,
       x: 10,
       y: 11,
       z: 12
     })
-    loadMeshes(scene, [card1, card2, token1, tile1, pawn1, box1, prism1])
+    await loadMeshes(scene, [card1, card2, token1, tile1, pawn1, box1, prism1])
     expect(scene.getMeshById(card1.id)).toBeDefined()
     expect(scene.getMeshById(card1.id).metadata.serialize()).toEqual({
       ...originalCard.metadata.serialize(),
@@ -521,7 +527,7 @@ describe('loadMeshes() 3D utility', () => {
     })
   })
 
-  it('restores mesh stacks with proper Y-ordering', () => {
+  it('restores mesh stacks with proper Y-ordering', async () => {
     const card1 = {
       shape: 'card',
       id: 'card1',
@@ -547,7 +553,7 @@ describe('loadMeshes() 3D utility', () => {
       z: -5,
       movable: {}
     }
-    loadMeshes(scene, [
+    await loadMeshes(scene, [
       card5,
       card1,
       {
@@ -591,7 +597,7 @@ describe('loadMeshes() 3D utility', () => {
     })
   })
 
-  it('restores mesh anchors with proper Y-ordering', () => {
+  it('restores mesh anchors with proper Y-ordering', async () => {
     const pos1 = { x: 2, y: 2, z: 4 }
     const shift = 2
     const height = 0.01
@@ -621,7 +627,7 @@ describe('loadMeshes() 3D utility', () => {
       movable: {}
     }
 
-    loadMeshes(scene, [
+    await loadMeshes(scene, [
       card4,
       card1,
       { shape: 'card', id: 'card2', movable: {} },
