@@ -33,7 +33,7 @@
 
 <style lang="postcss">
   form {
-    @apply absolute inset-0 p-16 flex justify-center items-center;
+    @apply absolute inset-0 p-16 flex justify-center items-center z-1;
   }
 
   section {
