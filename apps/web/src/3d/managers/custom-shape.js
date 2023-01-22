@@ -1,4 +1,5 @@
 import { makeLogger } from '../../utils/logger'
+import { getDieModelFile } from '../meshes'
 
 const logger = makeLogger('custom-shape')
 
@@ -80,9 +81,11 @@ export const customShapeManager = new CustomShapeManager()
 
 function extractFiles(meshes) {
   const files = []
-  for (const { shape, file } of meshes ?? []) {
+  for (const { shape, file, faces } of meshes ?? []) {
     if (shape === 'custom') {
       files.push(file)
+    } else if (shape === 'die') {
+      files.push(getDieModelFile(faces))
     }
   }
   return files
