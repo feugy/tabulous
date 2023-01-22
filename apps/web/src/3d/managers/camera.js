@@ -58,12 +58,10 @@ class CameraManager {
     beta = Math.PI / 8,
     minY = 5,
     maxY = 70,
-    minAngle = Math.PI / 4,
+    minAngle = Math.PI / 3,
     scene,
     handScene
   } = {}) {
-    this.minAngle = minAngle
-
     logger.info({ y, minY, maxY }, 'initialize camera manager')
     this.camera = new ArcRotateCamera(
       'camera',
@@ -77,7 +75,7 @@ class CameraManager {
     this.camera.allowUpsideDown = false
     this.camera.lowerRadiusLimit = minY
     this.camera.upperRadiusLimit = maxY
-    this.camera.upperBetaLimit = Math.PI / 3
+    this.camera.upperBetaLimit = minAngle
     this.camera.useBouncingBehavior = false
     this.camera.useAutoRotationBehavior = false
     this.camera.useFramingBehavior = false
