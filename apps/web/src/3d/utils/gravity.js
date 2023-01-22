@@ -8,9 +8,10 @@ import {
   intersectRectangles,
   intersectRectangleWithCircle
 } from '../../utils/math'
-import { getDimensions } from './mesh'
 
 const logger = makeLogger('gravity')
+
+/** @typedef {import('@babel/core').Mesh} Mesh */
 
 /**
  * Gap between meshes when computing altitude above specific positions.
@@ -18,32 +19,40 @@ const logger = makeLogger('gravity')
 export const altitudeGap = 0.01
 
 /**
+ * Return the altitude of a mesh center if it was lying on the ground
+ * @param {Mesh} mesh - dested mesh.
+ * @returns {number} resulting y coordinage.
+ */
+export function getGroundAltitude(mesh) {
+  return -mesh.getBoundingInfo().minimum.y
+}
+
+/**
  * Returns the absolute altitude (Y axis) above a given mesh, including minimum spacing.
- * @param {import('@babel/core').Mesh} mesh - related mesh.
+ * @param {Mesh} mesh - related mesh.
  * @returns {number} resulting Y coordinate.
  */
 export function getAltitudeAbove(mesh) {
-  return (
-    mesh.absolutePosition.y + getDimensions(mesh).height * 0.5 + altitudeGap
-  )
+  return mesh.getBoundingInfo().boundingBox.maximumWorld.y + altitudeGap
 }
 
 /**
  * Computes the Y coordinate to assign to 'mesh' so it goes above 'other', considering their heights.
  * Does not modifies any coordinate.
- * @param {import('@babel/core').Mesh} meshBelow - foundation to put the mesh on.
- * @param {import('@babel/core').Mesh} meshAbove - positionned over the other mesh.
+ * @param {Mesh} meshBelow - foundation to put the mesh on.
+ * @param {Mesh} meshAbove - positionned over the other mesh.
  * @returns {number} resulting Y coordinate.
  */
 export function getCenterAltitudeAbove(meshBelow, meshAbove) {
-  return getAltitudeAbove(meshBelow) + getDimensions(meshAbove).height * 0.5
+  meshAbove.computeWorldMatrix(true)
+  return getAltitudeAbove(meshBelow) + getGroundAltitude(meshAbove)
 }
 
 /**
  * Changes a mesh's Y coordinate so it lies on mesh below, or on the ground.
  * It'll check all other meshes in the same scene to identify the ones below (partial overlap is supported).
  * Does not run any animation, and change its absolute position.
- * @param {import('@babel/core').Mesh} mesh - applied mesh.
+ * @param {Mesh} mesh - applied mesh.
  * @returns {Vector3} the mesh's new absolute position
  */
 export function applyGravity(mesh) {
@@ -55,7 +64,8 @@ export function applyGravity(mesh) {
     mesh,
     mesh.getScene().meshes.filter(other => other.isPickable && other !== mesh)
   )
-  let y = getDimensions(mesh).height * 0.5
+
+  let y = getGroundAltitude(mesh)
   if (below.length) {
     const ordered = sortByElevation(below, true)
     y = getCenterAltitudeAbove(ordered[0], mesh)
@@ -73,8 +83,8 @@ export function applyGravity(mesh) {
 /**
  * Indicates when a mesh is hovering another one.
  * Does not modifies any coordinates.
- * @param {import('@babel/core').Mesh} mesh - checked mesh.
- * @param {import('@babel/core').Mesh} target - other mesh.
+ * @param {Mesh} mesh - checked mesh.
+ * @param {Mesh} target - other mesh.
  * @returns {boolean} true when mesh is hovering the target.
  */
 export function isAbove(mesh, target) {
@@ -84,9 +94,9 @@ export function isAbove(mesh, target) {
 /**
  * Sort meshes by elevation.
  * This will guarantee a proper gravity application when running operations (moves, flips...) in parallel.
- * @param {import('@babel/core').Mesh[]} meshes - array of meshes to order.
+ * @param {Mesh[]} meshes - array of meshes to order.
  * @param {boolean} [highestFirst = false] - false to return highest first.
- * @return {import('@babel/core').Mesh[]} sorted array.
+ * @return {Mesh[]} sorted array.
  */
 export function sortByElevation(meshes, highestFirst = false) {
   return [...(meshes ?? [])].sort((a, b) =>
