@@ -13,12 +13,16 @@
   function stepUp() {
     if (quantity < max) {
       quantity++
+    } else {
+      quantity = 1
     }
   }
 
   function stepDown() {
     if (quantity > 1) {
       quantity--
+    } else {
+      quantity = max
     }
   }
 
