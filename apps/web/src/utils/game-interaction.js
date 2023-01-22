@@ -44,12 +44,14 @@ export const actionIds = {
   rotate: 'rotate',
   toggleLock: 'toggleLock',
   draw: 'draw',
+  setFace: 'setFace',
   shuffle: 'shuffle',
   push: 'push',
   increment: 'increment',
   pop: 'pop',
   decrement: 'decrement',
-  detail: 'detail'
+  detail: 'detail',
+  random: 'random'
 }
 
 /**
@@ -522,7 +524,7 @@ export function triggerActionOnSelection(mesh, actionName, quantity = null) {
           for (const mesh of (baseMesh.metadata.stack ?? [baseMesh])
             .slice(-quantity)
             .reverse()) {
-            triggerAction(mesh, actionName)
+            triggerAction(mesh, actionName, quantity)
           }
         }
       }
@@ -690,6 +692,29 @@ const menuActions = [
     })
   },
   {
+    id: actionIds.random,
+    support: (mesh, { selectedMeshes }) => canAllDo('random', selectedMeshes),
+    build: mesh => ({
+      icon: 'airline_stops',
+      title: 'tooltips.random',
+      badge: 'shortcuts.random',
+      onClick: () => triggerActionOnSelection(mesh, 'random')
+    })
+  },
+  {
+    id: actionIds.setFace,
+    support: (mesh, { selectedMeshes }) => canAllDo('setFace', selectedMeshes),
+    build: (mesh, params) => ({
+      icon: 'casino',
+      title: 'tooltips.set-face',
+      badge: 'shortcuts.set-face',
+      onClick: ({ detail } = {}) =>
+        triggerActionOnSelection(mesh, 'setFace', detail.quantity ?? 1),
+      quantity: mesh.metadata.face,
+      max: computeMaxFace(mesh, params)
+    })
+  },
+  {
     id: actionIds.detail,
     support: (mesh, { selectedMeshes }) =>
       selectedMeshes.length === 1 && Boolean(mesh.metadata.detail),
@@ -781,6 +806,13 @@ function computesQuantity(mesh, { selectedMeshes }) {
   return selectedMeshes.length === 1 && mesh.metadata.quantity > 1
     ? mesh.metadata.quantity - 1
     : undefined
+}
+
+function computeMaxFace(mesh, { selectedMeshes }) {
+  return selectedMeshes.reduce(
+    (min, mesh) => Math.min(mesh.metadata.maxFace, min),
+    Number.POSITIVE_INFINITY
+  )
 }
 
 function shuffleStack(mesh) {

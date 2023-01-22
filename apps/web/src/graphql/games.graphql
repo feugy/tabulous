@@ -23,6 +23,7 @@ fragment mesh on Mesh {
   prismRotation
   diameter
   borderRadius
+  faces
   detailable {
     frontImage
     backImage
@@ -79,6 +80,11 @@ fragment mesh on Mesh {
     extent
     kinds
     priority
+  }
+  randomizable {
+    face
+    duration
+    canBeSet
   }
 }
 

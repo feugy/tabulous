@@ -18,11 +18,13 @@ import {
   LockBehaviorName,
   MoveBehaviorName,
   QuantityBehaviorName,
+  RandomBehaviorName,
   RotateBehaviorName,
   StackBehaviorName,
   TargetBehaviorName
 } from '../behaviors/names'
 import { QuantityBehavior } from '../behaviors/quantifiable'
+import { RandomBehavior } from '../behaviors/randomizable'
 import { RotateBehavior } from '../behaviors/rotable'
 import { StackBehavior } from '../behaviors/stackable'
 import { applyGravity, getCenterAltitudeAbove } from './gravity'
@@ -38,6 +40,7 @@ function getConstructors() {
       [DetailBehaviorName, DetailBehavior],
       [DrawBehaviorName, DrawBehavior],
       [AnchorBehaviorName, AnchorBehavior],
+      [RandomBehaviorName, RandomBehavior],
       [StackBehaviorName, StackBehavior],
       [QuantityBehaviorName, QuantityBehavior],
       // always applies lockable at the end so it can alter other behaviors

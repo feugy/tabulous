@@ -18,6 +18,7 @@ const levels = {
   'peer-channels': 'warn',
   'peer-connection': 'warn',
   quantifiable: 'warn',
+  randomizable: 'warn',
   rotable: 'warn',
   selection: 'warn',
   'scene-loader': 'warn',

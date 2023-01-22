@@ -151,6 +151,7 @@ tooltips:
   pan-camera: Déplacer
   play: Jouer sur la table
   pop: Dépiller
+  random: Jeter
   restore-camera: Restaurer la position
   rotate-camera: Pivoter et incliner
   rotate: Tourner de 90°
@@ -159,6 +160,7 @@ tooltips:
   save-new-camera: Enregistrer la position (Ctrl+1~9)
   save-restore-camera: "{index, plural, =0 {Charger la position initiale de la camera (Début)} other {Charger (clic) ou enregistrer (clic long) la position à l'emplacement #}}"
   send-message: Envoyer à tous
+  set-face: Fixer la valeur
   shuffle: Mélanger
   stack-all: Assembler
   unlock: Déverrouiller
@@ -170,7 +172,9 @@ shortcuts:
   hand: h
   pop: d
   push: a
+  random: j
   rotate: t
+  set-face: f
   shuffle: m
   toggleLock: l
 markdown:

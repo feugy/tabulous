@@ -60,7 +60,7 @@ export class QuantityBehavior extends TargetBehavior {
 
   /**
    * Attaches this behavior to a mesh, adding to its metadata:
-   * - a `quantity` number (minimym 1).
+   * - a `quantity` number (minimum 1).
    * - a `increment()` function to programmatically increment the quantity.
    * - a `decrement()` function to programmatically decrement the quantity.
    * - a `canIncrement()` function to determin whether a mesh could increment the quantity.
