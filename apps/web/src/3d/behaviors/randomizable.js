@@ -1,6 +1,6 @@
 import { Animation } from '@babylonjs/core/Animations/animation.js'
 import { VertexBuffer } from '@babylonjs/core/Buffers/buffer.js'
-import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
+import { Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 
 import { makeLogger } from '../../utils/logger'
 import { controlManager } from '../managers/control'
@@ -16,6 +16,7 @@ import { AnimateBehavior } from './animatable'
 import { RandomBehaviorName } from './names'
 
 const logger = makeLogger('randomizable')
+const { cos, floor, PI, random, sin } = Math
 
 /**
  * @typedef {object} RandomState behavior persistent state, including:
@@ -27,7 +28,7 @@ const logger = makeLogger('randomizable')
 /**
  * @typedef {RandomState} RandomStateWithExtra behavior persistent state, with internal parameters provided by the mesh, including:
  * @property {number} max - maximum face value (minimum is always 1).
- * @property {Map<number, number[]} rotationPerFace - map of Euler angles [x, y, z] applied when setting a given fave
+ * @property {Map<number, number[]} quaternionPerFace - map of Euler angles [x, y, z] applied when setting a given fave
  */
 
 export class RandomBehavior extends AnimateBehavior {
@@ -45,12 +46,12 @@ export class RandomBehavior extends AnimateBehavior {
     this.state = state
     // private
     this.max = state.max
-    this.rotationPerFace = state.rotationPerFace
+    this.quaternionPerFace = state.quaternionPerFace
     this.rollAnimation = new Animation(
       'roll',
-      'rotation',
+      'rotationQuaternion',
       this.frameRate,
-      Animation.ANIMATIONTYPE_VECTOR3,
+      Animation.ANIMATIONTYPE_QUATERNION,
       Animation.ANIMATIONLOOPMODE_CONSTANT
     )
   }
@@ -91,7 +92,7 @@ export class RandomBehavior extends AnimateBehavior {
     const {
       state: { face: oldFace, duration, canBeSet },
       max,
-      rotationPerFace,
+      quaternionPerFace,
       isAnimated,
       mesh,
       rollAnimation
@@ -104,40 +105,20 @@ export class RandomBehavior extends AnimateBehavior {
         `Can not set randomizable face for mesh ${mesh.id}: ${face} is not in [1..${max}]`
       )
     }
-    logger.debug(
-      { mesh, face, oldFace },
-      `start setting ${mesh.id} (${oldFace} > ${face})`
-    )
-    this.state.face = face
-    controlManager.record({
-      mesh,
-      fn: 'setFace',
-      args: [face],
-      duration: duration / 3
+    await animate(this, 'setFace', face, duration / 3, {
+      animation: rollAnimation,
+      duration: duration / 3,
+      keys: [
+        {
+          frame: 0,
+          values: quaternionPerFace
+            .get(oldFace)
+            .multiply(quaternionPerFace.get(face).invert())
+            .asArray()
+        },
+        { frame: 100, values: [0, 0, 0, 1] }
+      ]
     })
-
-    const attach = detachFromParent(mesh)
-    applyRotation(this)
-
-    const [oldX, oldY, oldZ] = rotationPerFace.get(oldFace)
-    const [x, y, z] = rotationPerFace.get(face)
-
-    await runAnimation(
-      this,
-      () => {
-        attach()
-        logger.debug({ mesh, face }, `end setting ${mesh.id} to face ${face}`)
-        return applyGravity(mesh)
-      },
-      {
-        animation: rollAnimation,
-        duration: duration / 3,
-        keys: [
-          { frame: 0, values: [oldX - x, oldY - y, oldZ - z] },
-          { frame: 100, values: [0, 0, 0] }
-        ]
-      }
-    )
   }
 
   /**
@@ -156,7 +137,7 @@ export class RandomBehavior extends AnimateBehavior {
       state: { face: oldFace, duration },
       isAnimated,
       max,
-      rotationPerFace,
+      quaternionPerFace,
       mesh,
       rollAnimation,
       moveAnimation
@@ -165,38 +146,46 @@ export class RandomBehavior extends AnimateBehavior {
       return
     }
     if (!face) {
-      face = Math.floor(Math.random() * max + 1)
+      face = floor(random() * max + 1)
     }
-    logger.debug(
-      { mesh, face, oldFace },
-      `start randomizing ${mesh.id} (${oldFace} > ${face})`
-    )
-    this.state.face = face
-    controlManager.record({ mesh, fn: 'random', args: [face], duration })
-
-    const attach = detachFromParent(mesh)
-    applyRotation(this)
-
-    const [oldX, oldY, oldZ] = rotationPerFace.get(oldFace)
-    const [x, y, z] = rotationPerFace.get(face)
-    await runAnimation(
+    await animate(
       this,
-      () => {
-        mesh.rotation.x = mesh.rotation.x % (2 * Math.PI)
-        attach()
-        logger.debug(
-          { mesh, value: face },
-          `end randomizing ${mesh.id} to face ${face}`
-        )
-        return applyGravity(mesh)
-      },
+      'random',
+      face,
+      duration / 3,
       {
         animation: rollAnimation,
         duration,
         keys: [
-          { frame: 0, values: [oldX - x, oldY - y, oldZ - z] },
-          { frame: 50, values: [Math.random() * 2 * Math.PI, 0, 0] },
-          { frame: 100, values: [0, Math.random() * 2 * Math.PI, 0] }
+          {
+            frame: 0,
+            values: quaternionPerFace
+              .get(oldFace)
+              .multiply(quaternionPerFace.get(face).invert())
+              .asArray()
+          },
+          {
+            frame: 25,
+            values: makeRandomRotation('x')
+              .multiply(makeRandomRotation('z'))
+              .asArray()
+          },
+          {
+            frame: 50,
+            values: makeRandomRotation('z')
+              .multiply(makeRandomRotation('y'))
+              .asArray()
+          },
+          {
+            frame: 75,
+            values: makeRandomRotation('y')
+              .multiply(makeRandomRotation('x'))
+              .asArray()
+          },
+          {
+            frame: 100,
+            values: makeRandomRotation('y', 0.5 * PI).asArray()
+          }
         ]
       },
       {
@@ -222,7 +211,7 @@ export class RandomBehavior extends AnimateBehavior {
    * Updates this behavior's state and mesh to match provided data.
    * @param {RandomState} state - state to update to.
    */
-  fromState({ value: face = 1, duration = 600, canBeSet = false } = {}) {
+  fromState({ face = 1, duration = 600, canBeSet = false } = {}) {
     if (!this.mesh) {
       throw new Error('Can not restore state without mesh')
     }
@@ -250,11 +239,11 @@ export class RandomBehavior extends AnimateBehavior {
   }
 }
 
-function applyRotation({ mesh, rotationPerFace, state: { face }, save }) {
+function applyRotation({ mesh, quaternionPerFace, state: { face }, save }) {
   const restore = saveTranslation(mesh)
   mesh.updateVerticesData(VertexBuffer.PositionKind, [...save.positions])
   mesh.updateVerticesData(VertexBuffer.NormalKind, [...save.normals])
-  mesh.rotation = new Vector3(...rotationPerFace.get(face))
+  mesh.rotationQuaternion = quaternionPerFace.get(face).clone()
   mesh.bakeCurrentTransformIntoVertices()
   mesh.refreshBoundingInfo()
   restore()
@@ -267,4 +256,43 @@ function saveTranslation(mesh) {
     mesh.setAbsolutePosition(translation)
     translation
   }
+}
+
+async function animate(behavior, fn, face, duration, ...animations) {
+  const {
+    mesh,
+    state: { face: oldFace }
+  } = behavior
+  logger.debug(
+    { mesh, face, oldFace },
+    `starts ${fn} on ${mesh.id} (${oldFace} > ${face})`
+  )
+  behavior.state.face = face
+  controlManager.record({ mesh, fn, args: [face], duration })
+
+  const attach = detachFromParent(mesh)
+  applyRotation(behavior)
+
+  await runAnimation(
+    behavior,
+    () => {
+      attach()
+      logger.debug(
+        { mesh, value: face },
+        `ends ${fn} on ${mesh.id} with face ${face}`
+      )
+      return applyGravity(mesh)
+    },
+    ...animations
+  )
+}
+
+function makeRandomRotation(axis, limit = 2 * PI) {
+  const angle = random() * limit
+  return new Quaternion(
+    axis === 'x' ? sin(angle) : 0,
+    axis === 'y' ? sin(angle) : 0,
+    axis === 'z' ? sin(angle) : 0,
+    cos(angle)
+  )
 }

@@ -1,4 +1,4 @@
-import { Matrix } from '@babylonjs/core/Maths/math.vector'
+import { Matrix, Quaternion } from '@babylonjs/core/Maths/math.vector'
 
 import { registerBehaviors, serializeBehaviors } from '../utils/behaviors'
 import { createCustom } from './custom'
@@ -9,9 +9,9 @@ import { createCustom } from './custom'
  * @param {string} params.id - die's unique id.
  * @param {string} params.texture - die's texture url or hexadecimal string color.
  * @param {number[][]} params.faceUV? - up to TODO face UV (Vector4 components), to map texture on the die.
- * @param {number} params.x? - initial position along the X axis.
- * @param {number} params.y? - initial position along the Y axis.
- * @param {number} params.z? - initial position along the Z axis.
+ * @param {number} params.x? - initial position along the X
+ * @param {number} params.y? - initial position along the Y
+ * @param {number} params.z? - initial position along the Z
  * @param {number} params.diameter? - token's diameter (all axis).
  * @param {number} params.faces? - number of faces (6 by default)
  * @param {import('@babylonjs/core').Scene} scene? - scene to host this die (default to last scene).
@@ -66,7 +66,7 @@ export async function createDie(
     behaviorStates.randomizable = {}
   }
   behaviorStates.randomizable.max = faces
-  behaviorStates.randomizable.rotationPerFace = getRotations(faces)
+  behaviorStates.randomizable.quaternionPerFace = getQuaternions(faces)
   registerBehaviors(mesh, behaviorStates)
 
   return mesh
@@ -85,40 +85,84 @@ export function getDieModelFile(faces) {
   return `/models/die${faces}.obj`
 }
 
-export function getRotations(faces) {
+const { cos, PI, sin } = Math
+
+// https://www.opengl-tutorial.org/fr/intermediate-tutorials/tutorial-17-quaternions/
+const sinMinus90 = sin(toRad(-45))
+const cosMinus90 = cos(toRad(-45))
+const sin90 = sin(toRad(45))
+const cos90 = cos(toRad(45))
+const sin180 = sin(toRad(90))
+const cos180 = cos(toRad(90))
+
+export function getQuaternions(faces) {
   if (faces === 6) {
     return new Map([
-      [1, [0, 0, 0]],
-      [2, [0, 0, -0.5 * Math.PI]],
-      [3, [0.5 * Math.PI, 0, 0]],
-      [4, [-0.5 * Math.PI, 0, 0]],
-      [5, [0, 0, 0.5 * Math.PI]],
-      [6, [0, 0, Math.PI]]
+      [1, new Quaternion(0, 0, 0, 1)],
+      [2, new Quaternion(0, 0, sinMinus90, cosMinus90)],
+      [
+        3,
+        new Quaternion(sin90, 0, 0, cos90).multiply(
+          new Quaternion(0, 0, sinMinus90, cosMinus90)
+        )
+      ],
+      [
+        4,
+        new Quaternion(sinMinus90, 0, 0, cosMinus90).multiply(
+          new Quaternion(0, 0, sin90, cos90)
+        )
+      ],
+      [5, new Quaternion(0, 0, sin90, cos90)],
+      [6, new Quaternion(0, 0, sin180, cos180)]
     ])
   }
   if (faces === 8) {
+    // axis along which rotation bringe 1 to 3, 5 and 7, or 2 to 4, 6 and 8
+    const x = 0
+    const y = -cos(toRad(-55))
+    const z = sin(toRad(-55))
+    // swing movement from 1 to 2, 3 to 4, and so on
+    const swing = new Quaternion(0, sin180, 0, cos180).multiply(
+      new Quaternion(sin(toRad(35)), 0, 0, cos(toRad(35)))
+    )
     return new Map([
-      [1, [0, 0, 0]],
-      [2, [toRad(70), toRad(180), 0]],
-      [3, [toRad(-25), toRad(-40), toRad(-70)]],
-      [4, [toRad(25), toRad(140), toRad(-110)]],
-      [5, [toRad(-70), 0, toRad(180)]],
-      [6, [toRad(0), toRad(180), toRad(180)]],
-      [7, [toRad(-25), toRad(40), toRad(70)]],
-      [8, [toRad(25), toRad(-140), toRad(110)]]
+      [1, new Quaternion(0, 0, 0, 1)],
+      [2, swing],
+      [3, new Quaternion(x * sin90, y * sin90, z * sin90, cos90)],
+      [
+        4,
+        new Quaternion(
+          x * sinMinus90,
+          y * sinMinus90,
+          z * sinMinus90,
+          cosMinus90
+        ).multiply(swing)
+      ],
+      [5, new Quaternion(x * sin180, y * sin180, z * sin180, cos180)],
+      [
+        6,
+        new Quaternion(x * sin180, y * sin180, z * sin180, cos180).multiply(
+          swing
+        )
+      ],
+      [
+        7,
+        new Quaternion(
+          x * sinMinus90,
+          y * sinMinus90,
+          z * sinMinus90,
+          cosMinus90
+        )
+      ],
+      [
+        8,
+        new Quaternion(x * sin90, y * sin90, z * sin90, cos90).multiply(swing)
+      ]
     ])
   }
-  /* 4 faces 
-  new Map([
-    [1, [0, 0, 0]],
-    [2, [(250 * Math.PI), 0, 0]],
-    [3, [(28 * Math.PI), 0, (247 * Math.PI)]],
-    [4, [(28 * Math.PI), 0, (112 * Math.PI)]]
-  ])
-  */
   throw new Error(`${faces} faces dice are not supported`)
 }
 
 function toRad(degree) {
-  return (degree * Math.PI) / 180
+  return (degree * PI) / 180
 }

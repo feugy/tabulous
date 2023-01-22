@@ -1,5 +1,5 @@
 import { Animation } from '@babylonjs/core/Animations/animation.js'
-import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
+import { Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder.js'
 import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder.js'
 
@@ -235,6 +235,8 @@ export function runAnimation(behavior, onEnd, ...animationSpecs) {
     const parse =
       animation.dataType === Animation.ANIMATIONTYPE_VECTOR3
         ? parseVector3
+        : animation.dataType === Animation.ANIMATIONTYPE_QUATERNION
+        ? parseQuaternion
         : parseFloat
     animation.setKeys(
       keys.map(key => parse(key, lastFrame)).sort((a, b) => a.frame - b.frame)
@@ -322,7 +324,7 @@ function buildLastFrame(frameRate, animationSpecs) {
   return Math.round(frameRate * (maxDuration / 1050))
 }
 
-// inspired from Animation.parse() https://github.com/BabylonJS/Babylon.js/blob/master/src/Animations/animation.ts#L1224
+// inspired from Animation.Parse() https://github.com/BabylonJS/Babylon.js/blob/d105658037e04471898a12232e5605c9b800c3dd/packages/dev/core/src/Animations/animation.ts#L1304
 
 function parseVector3(
   { frame, values: [x, y, z, inTangent, outTangent, interpolation] },
@@ -334,6 +336,21 @@ function parseVector3(
     inTangent: inTangent ? Vector3.FromArray(inTangent) : undefined,
     outTangent: outTangent ? Vector3.FromArray(outTangent) : undefined,
     interpolation: interpolation ? Vector3.FromArray(interpolation) : undefined
+  }
+}
+
+function parseQuaternion(
+  { frame, values: [x, y, z, w, inTangent, outTangent, interpolation] },
+  lastFrame
+) {
+  return {
+    frame: (frame * lastFrame) / 100,
+    value: Quaternion.FromArray([x, y, z, w]),
+    inTangent: inTangent ? Quaternion.FromArray(inTangent) : undefined,
+    outTangent: outTangent ? Quaternion.FromArray(outTangent) : undefined,
+    interpolation: interpolation
+      ? Quaternion.FromArray(interpolation)
+      : undefined
   }
 }
 
