@@ -75,11 +75,13 @@ describe('QuantityButton component', () => {
     expect(handleClick).not.toHaveBeenCalled()
   })
 
-  it(`can not decrement below 1`, async () => {
-    renderComponent()
+  it(`reset to max when decrementing below 1`, async () => {
+    const max = 11
+    renderComponent({ max })
+    expectQuantity(1)
     fireEvent.click(screen.getByRole('button', { name: 'arrow_drop_down' }))
     await tick()
-    expectQuantity(1)
+    expectQuantity(max)
     expect(handleClick).not.toHaveBeenCalled()
   })
 
@@ -93,10 +95,13 @@ describe('QuantityButton component', () => {
     expect(handleClick).not.toHaveBeenCalled()
   })
 
-  it(`can not increment above max`, async () => {
-    renderComponent({ max: 1 })
-    fireEvent.click(screen.getByRole('button', { name: 'arrow_drop_up' }))
-    await tick()
+  it(`resetto 1 when incrementing above max`, async () => {
+    renderComponent({ max: 3 })
+    for (let times = 1; times <= 3; times++) {
+      expectQuantity(times)
+      fireEvent.click(screen.getByRole('button', { name: 'arrow_drop_up' }))
+      await tick()
+    }
     expectQuantity(1)
     expect(handleClick).not.toHaveBeenCalled()
   })
