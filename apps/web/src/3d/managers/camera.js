@@ -34,7 +34,6 @@ class CameraManager {
   constructor() {
     this.camera = null
     this.handSceneCamera = null
-    this.minAngle = 0
     this.saves = []
     this.onSaveObservable = new Observable()
     this.onMoveObservable = new Observable()
