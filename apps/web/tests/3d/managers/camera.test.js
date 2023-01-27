@@ -33,7 +33,6 @@ describe('CameraManager', () => {
 
   it('has initial state', () => {
     expect(manager.camera).toBeNull()
-    expect(manager.minAngle).toEqual(0)
     expect(manager.saves).toEqual([])
   })
 

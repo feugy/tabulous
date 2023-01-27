@@ -515,7 +515,7 @@ export function triggerAction(mesh, actionName, ...parameters) {
  * @param {number} [quantity=null] - number of meshes of a given stack which will apply this action
  */
 export function triggerActionOnSelection(mesh, actionName, quantity = null) {
-  if (quantity) {
+  if (quantity && actionName !== 'setFace') {
     for (const baseMesh of getBaseMeshes(selectionManager.getSelection(mesh))) {
       if (baseMesh?.metadata) {
         if (isRotatingEntireStack(baseMesh, actionName, quantity)) {
@@ -709,7 +709,7 @@ const menuActions = [
       title: 'tooltips.set-face',
       badge: 'shortcuts.set-face',
       onClick: ({ detail } = {}) =>
-        triggerActionOnSelection(mesh, 'setFace', detail.quantity ?? 1),
+        triggerActionOnSelection(mesh, 'setFace', detail?.quantity ?? 1),
       quantity: mesh.metadata.face,
       max: computeMaxFace(mesh, params)
     })

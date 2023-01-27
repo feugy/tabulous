@@ -44,7 +44,7 @@ export function getAltitudeAbove(mesh) {
  * @returns {number} resulting Y coordinate.
  */
 export function getCenterAltitudeAbove(meshBelow, meshAbove) {
-  meshAbove.computeWorldMatrix(true)
+  meshBelow.computeWorldMatrix(true)
   return getAltitudeAbove(meshBelow) + getGroundAltitude(meshAbove)
 }
 

@@ -134,6 +134,7 @@ export function getAnimatableBehavior(mesh) {
     mesh?.getBehaviorByName(FlipBehaviorName) ??
     mesh?.getBehaviorByName(DrawBehaviorName) ??
     mesh?.getBehaviorByName(RotateBehaviorName) ??
+    mesh?.getBehaviorByName(RandomBehaviorName) ??
     mesh?.getBehaviorByName(AnimateBehaviorName)
   )
 }

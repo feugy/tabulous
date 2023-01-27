@@ -1,5 +1,6 @@
 import { Matrix, Quaternion } from '@babylonjs/core/Maths/math.vector'
 
+import { toRad } from '../../utils/math'
 import { registerBehaviors, serializeBehaviors } from '../utils/behaviors'
 import { createCustom } from './custom'
 
@@ -46,6 +47,7 @@ export async function createDie(
     mesh.bakeTransformIntoVertices(Matrix.Scaling(diameter, diameter, diameter))
   }
   // removes and re-add mesh to ensure it is referenced with the desired name.
+  scene = mesh.getScene()
   scene.removeMesh(mesh, true)
   mesh.name = 'die'
   scene.addMesh(mesh, true)
@@ -62,11 +64,11 @@ export async function createDie(
     ...serializeBehaviors(mesh.behaviors)
   })
 
-  if (!behaviorStates.randomizable) {
-    behaviorStates.randomizable = {}
+  behaviorStates.randomizable = {
+    ...(behaviorStates.randomizable || {}),
+    max: faces,
+    quaternionPerFace: getQuaternions(faces)
   }
-  behaviorStates.randomizable.max = faces
-  behaviorStates.randomizable.quaternionPerFace = getQuaternions(faces)
   registerBehaviors(mesh, behaviorStates)
 
   return mesh
@@ -85,7 +87,7 @@ export function getDieModelFile(faces) {
   return `/models/die${faces}.obj`
 }
 
-const { cos, PI, sin } = Math
+const { cos, sin } = Math
 
 // https://www.opengl-tutorial.org/fr/intermediate-tutorials/tutorial-17-quaternions/
 const sinMinus90 = sin(toRad(-45))
@@ -96,6 +98,21 @@ const sin180 = sin(toRad(90))
 const cos180 = cos(toRad(90))
 
 export function getQuaternions(faces) {
+  if (faces === 4) {
+    // swing movement from 1 to 2,
+    const swing = new Quaternion(0, sin(toRad(30)), 0, cos(toRad(30))).multiply(
+      new Quaternion(sin(toRad(-55)), 0, 0, cos(toRad(-55)))
+    )
+    return new Map([
+      [1, new Quaternion(0, 0, 0, 1)],
+      [2, swing],
+      [3, swing.multiply(new Quaternion(0, sin(toRad(60)), 0, cos(toRad(60))))],
+      [
+        4,
+        swing.multiply(new Quaternion(0, sin(toRad(-60)), 0, cos(toRad(-60))))
+      ]
+    ])
+  }
   if (faces === 6) {
     return new Map([
       [1, new Quaternion(0, 0, 0, 1)],
@@ -161,8 +178,4 @@ export function getQuaternions(faces) {
     ])
   }
   throw new Error(`${faces} faces dice are not supported`)
-}
-
-function toRad(degree) {
-  return (degree * PI) / 180
 }

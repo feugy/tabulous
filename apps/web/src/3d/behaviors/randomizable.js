@@ -45,8 +45,16 @@ export class RandomBehavior extends AnimateBehavior {
     super()
     this.state = state
     // private
-    this.max = state.max
+    if (!(state.quaternionPerFace instanceof Map)) {
+      throw new Error(`RandomBehavior needs quaternionPerFace`)
+    }
     this.quaternionPerFace = state.quaternionPerFace
+    if (!(state.max > 1)) {
+      throw new Error(
+        `RandomBehavior's max should be higher than ${state.face ?? 1}`
+      )
+    }
+    this.max = state.max
     this.rollAnimation = new Animation(
       'roll',
       'rotationQuaternion',
@@ -152,7 +160,7 @@ export class RandomBehavior extends AnimateBehavior {
       this,
       'random',
       face,
-      duration / 3,
+      duration,
       {
         animation: rollAnimation,
         duration,
@@ -216,6 +224,11 @@ export class RandomBehavior extends AnimateBehavior {
       throw new Error('Can not restore state without mesh')
     }
     this.state = { face, duration, canBeSet }
+    if (this.max < face) {
+      throw new Error(
+        `Can not restore state face ${face} since maximum is ${this.max}`
+      )
+    }
     const attach = detachFromParent(this.mesh)
     this.mesh.computeWorldMatrix(true)
 
@@ -233,6 +246,8 @@ export class RandomBehavior extends AnimateBehavior {
     attachFunctions(this, 'random')
     if (canBeSet) {
       attachFunctions(this, 'setFace')
+    } else {
+      this.mesh.metadata.setFace = undefined
     }
     attachProperty(this, 'face', () => this.state.face)
     attachProperty(this, 'maxFace', () => this.max)

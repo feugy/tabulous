@@ -283,7 +283,7 @@ describe('isAbove() 3D utility', () => {
 describe('getCenterAltitudeAbove() 3D utility', () => {
   it('considers heights when positioning mesh above another one (without fresh matrix)', () => {
     const box = CreateBox('box', { height: 4 })
-    box.absolutePosition.y = 20
+    box.setAbsolutePosition(new Vector3(0, 20, 0))
     const box2 = CreateBox('box2', { height: 3 })
     expect(getCenterAltitudeAbove(box, box2)).toEqual(
       20 + 4 / 2 + 3 / 2 + altitudeGap
