@@ -812,7 +812,7 @@ describe('Game interaction model', () => {
       expect(menuProps).toHaveProperty('meshes', [mesh1, mesh2, mesh3])
 
       await expectActionItems(menuProps, mesh1, [
-        { functionName: 'flip', icon: 'flip', calls: [[]] },
+        { functionName: 'flip', icon: 'flip', calls: [[null]] },
         { functionName: 'rotate', icon: 'rotate_right' },
         { functionName: 'draw', icon: 'front_hand' },
         {
@@ -833,7 +833,9 @@ describe('Game interaction model', () => {
           title: 'tooltips.set-face',
           badge: 'shortcuts.set-face',
           quantity: mesh1.metadata.face,
-          max: mesh2.metadata.maxFace
+          max: mesh2.metadata.maxFace,
+          clickArg: { quantity: 3 },
+          calls: [[3]]
         }
       ])
       expectMeshActions(
@@ -1939,7 +1941,16 @@ async function expectActionItems(menuProps, mesh, items) {
   expect(menuProps.items).toHaveLength(items.length)
   for (const [
     rank,
-    { functionName, icon, title, badge, triggeredMesh, calls, ...props }
+    {
+      functionName,
+      icon,
+      title,
+      badge,
+      triggeredMesh,
+      calls,
+      clickArg,
+      ...props
+    }
   ] of items.entries()) {
     expect(menuProps.items, `for menu item #${rank} (${functionName})`).toEqual(
       expect.arrayContaining([
@@ -1952,7 +1963,9 @@ async function expectActionItems(menuProps, mesh, items) {
         }
       ])
     )
-    await menuProps.items.find(item => item.icon === icon).onClick()
+    await menuProps.items
+      .find(item => item.icon === icon)
+      .onClick(clickArg ? { detail: clickArg } : undefined)
     const checkedMesh = triggeredMesh ?? mesh
     expect(
       checkedMesh.metadata[functionName],

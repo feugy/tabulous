@@ -84,7 +84,7 @@ export function getDieModelFile(faces) {
   if (![4, 6, 8, 10, 12, 20].includes(faces)) {
     throw new Error(`${faces} faces dice are not supported`)
   }
-  return `/models/die${faces}.obj`
+  return `/assets/models/die${faces}.obj`
 }
 
 const { cos, sin } = Math

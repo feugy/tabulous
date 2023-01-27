@@ -9,9 +9,9 @@ import {
 import { createDie, getQuaternions } from '@src/3d/meshes'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import die4Data from '../../../../games/models/die4.obj?raw'
-import die6Data from '../../../../games/models/die6.obj?raw'
-import die8Data from '../../../../games/models/die8.obj?raw'
+import die4Data from '../../../../games/assets/models/die4.obj?raw'
+import die6Data from '../../../../games/assets/models/die6.obj?raw'
+import die8Data from '../../../../games/assets/models/die8.obj?raw'
 import {
   configures3dTestEngine,
   expectDimension,
@@ -28,9 +28,9 @@ vi.mock('@src/3d/managers/custom-shape', () => ({
 }))
 
 beforeAll(() => {
-  customShapeManager.set(`/models/die4.obj`, btoa(die4Data))
-  customShapeManager.set(`/models/die6.obj`, btoa(die6Data))
-  customShapeManager.set(`/models/die8.obj`, btoa(die8Data))
+  customShapeManager.set(`/assets/models/die4.obj`, btoa(die4Data))
+  customShapeManager.set(`/assets/models/die6.obj`, btoa(die6Data))
+  customShapeManager.set(`/assets/models/die8.obj`, btoa(die8Data))
 })
 
 describe('getQuaternions()', () => {

@@ -19,8 +19,8 @@ import {
   vi
 } from 'vitest'
 
-import die6Data from '../../../../games/models/die6.obj?raw'
-import die8Data from '../../../../games/models/die8.obj?raw'
+import die6Data from '../../../../games/assets/models/die6.obj?raw'
+import die8Data from '../../../../games/assets/models/die8.obj?raw'
 import pawnData from '../../fixtures/pawn.obj?raw'
 import {
   expectAnimationEnd,

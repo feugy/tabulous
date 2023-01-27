@@ -8,9 +8,9 @@ import {
 } from '@src/3d/meshes'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import die4Data from '../../../../games/models/die4.obj?raw'
-import die6Data from '../../../../games/models/die6.obj?raw'
-import die8Data from '../../../../games/models/die8.obj?raw'
+import die4Data from '../../../../games/assets/models/die4.obj?raw'
+import die6Data from '../../../../games/assets/models/die6.obj?raw'
+import die8Data from '../../../../games/assets/models/die8.obj?raw'
 import { configures3dTestEngine } from '../../test-utils'
 
 vi.mock('@src/3d/managers/custom-shape', () => ({

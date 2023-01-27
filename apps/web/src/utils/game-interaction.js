@@ -548,9 +548,9 @@ export function triggerActionOnSelection(mesh, actionName, quantity = null) {
             actionName === 'flip' ? 'flipAll' : actionName
           )
         } else if (mesh.metadata.stack && mesh !== last && meshes.size === 1) {
-          triggerAction(last, actionName)
+          triggerAction(last, actionName, quantity)
         } else {
-          triggerAction(mesh, actionName)
+          triggerAction(mesh, actionName, quantity)
         }
       }
     }
