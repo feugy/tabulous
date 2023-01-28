@@ -108,6 +108,7 @@ export function createRoundedTile(
   materialManager.configure(mesh, texture)
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.isPickable = false
+  mesh.isHittable = true
   tileMesh.dispose(false, true)
 
   mesh.metadata = {

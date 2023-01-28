@@ -1,6 +1,4 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
-import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
 import { faker } from '@faker-js/faker'
 import {
   altitudeGap,
@@ -12,7 +10,11 @@ import {
 } from '@src/3d/utils'
 import { beforeEach, describe, expect, it } from 'vitest'
 
-import { configures3dTestEngine } from '../../test-utils'
+import {
+  configures3dTestEngine,
+  createBox,
+  createCylinder
+} from '../../test-utils'
 
 configures3dTestEngine()
 
@@ -21,13 +23,13 @@ describe('sortByElevation() 3D utility', () => {
 
   beforeEach(() => {
     boxes = []
-    boxes.push(CreateBox('box', {}))
+    boxes.push(createBox('box', {}))
     boxes[boxes.length - 1].absolutePosition.y = 10
-    boxes.push(CreateBox('box2', {}))
+    boxes.push(createBox('box2', {}))
     boxes[boxes.length - 1].absolutePosition.y = 0
-    boxes.push(CreateBox('box3', {}))
+    boxes.push(createBox('box3', {}))
     boxes[boxes.length - 1].absolutePosition.y = -5
-    boxes.push(CreateBox('box4', {}))
+    boxes.push(createBox('box4', {}))
     boxes[boxes.length - 1].absolutePosition.y = 7
   })
 
@@ -59,29 +61,29 @@ describe('applyGravity() 3D utility', () => {
   const z = faker.datatype.number()
 
   it('positions mesh on the ground', () => {
-    const box = CreateBox('box', {})
+    const box = createBox('box', {})
     expect(getDimensions(box).height).toEqual(1)
     box.setAbsolutePosition(new Vector3(x, 10, z))
-    const box2 = CreateBox('box2', {})
+    const box2 = createBox('box2', {})
     box2.setAbsolutePosition(new Vector3(x + 2, 3, z))
     expect(box.absolutePosition.y).toEqual(10)
     expect(applyGravity(box).asArray()).toEqual([x, 0.5, z])
   })
 
   it('positions mesh with negative position', () => {
-    const box = CreateBox('box', {})
+    const box = createBox('box', {})
     expect(getDimensions(box).height).toEqual(1)
     box.setAbsolutePosition(new Vector3(x, -10, z))
-    const box2 = CreateBox('box2', {})
+    const box2 = createBox('box2', {})
     box2.setAbsolutePosition(new Vector3(x, 3, z - 2))
     expect(box.absolutePosition.y).toEqual(-10)
     expect(applyGravity(box).asArray()).toEqual([x, 0.5, z])
   })
 
   it('positions mesh just above another one', () => {
-    const box = CreateBox('box', {})
+    const box = createBox('box', {})
     box.setAbsolutePosition(new Vector3(x, 15, z))
-    const box2 = CreateBox('box2', {})
+    const box2 = createBox('box2', {})
     box2.setAbsolutePosition(new Vector3(x, 3, z))
     let pos = applyGravity(box)
     expect(pos.x).toEqual(x)
@@ -90,9 +92,9 @@ describe('applyGravity() 3D utility', () => {
   })
 
   it('positions mesh above another one with partial overlap', () => {
-    const box = CreateBox('box', {})
+    const box = createBox('box', {})
     box.setAbsolutePosition(new Vector3(x, 10, z))
-    const box2 = CreateBox('box2', {})
+    const box2 = createBox('box2', {})
     box2.setAbsolutePosition(new Vector3(x - 0.5, 2, z - 0.5))
     let pos = applyGravity(box)
     expect(pos.x).toEqual(x)
@@ -101,11 +103,11 @@ describe('applyGravity() 3D utility', () => {
   })
 
   it('positions mesh just above several ones', () => {
-    const box = CreateBox('box', {})
+    const box = createBox('box', {})
     box.setAbsolutePosition(new Vector3(x, 20, z))
-    const box2 = CreateBox('box2', {})
+    const box2 = createBox('box2', {})
     box2.setAbsolutePosition(new Vector3(x - 0.5, 4, z))
-    const box3 = CreateBox('box3', {})
+    const box3 = createBox('box3', {})
     box3.setAbsolutePosition(new Vector3(x + 0.5, 3, z))
     let pos = applyGravity(box)
     expect(pos.x).toEqual(x)
@@ -119,18 +121,18 @@ describe('isAbove() 3D utility', () => {
   const z = faker.datatype.number({ min: -10, max: 10 })
 
   it('finds when a mesh is hovering another one', () => {
-    const box = CreateBox('box', {})
+    const box = createBox('box', {})
     box.setAbsolutePosition(new Vector3(x, 20, z))
-    const box2 = CreateBox('box2', {})
+    const box2 = createBox('box2', {})
     box2.setAbsolutePosition(new Vector3(x - 0.5, 4, z))
 
     expect(isAbove(box, box2)).toBe(true)
   })
 
   it('finds when a mesh is not hovering another one', () => {
-    const box = CreateBox('box', {})
+    const box = createBox('box', {})
     box.setAbsolutePosition(new Vector3(x, 20, z))
-    const box2 = CreateBox('box2', {})
+    const box2 = createBox('box2', {})
     box2.setAbsolutePosition(new Vector3(x - 3, 4, z))
 
     expect(isAbove(box, box2)).toBe(false)
@@ -141,15 +143,15 @@ describe('isAbove() 3D utility', () => {
       title: 'two intersecting squares',
       buildMeshes: () =>
         [2, 3].map((size, i) =>
-          CreateBox(`box${i + 1}`, { width: size, depth: size })
+          createBox(`box${i + 1}`, { width: size, depth: size })
         ),
       results: [true, true]
     },
     {
       title: 'two intersecting rectangles',
       buildMeshes: () => [
-        CreateBox(`box1`, { width: 2, depth: 4 }),
-        CreateBox(`box2`, { width: 3, depth: 1 })
+        createBox(`box1`, { width: 2, depth: 4 }),
+        createBox(`box2`, { width: 3, depth: 1 })
       ],
       results: [true, true]
     },
@@ -157,8 +159,8 @@ describe('isAbove() 3D utility', () => {
       title: 'two cylinders',
       buildMeshes: () =>
         [
-          CreateCylinder(`cylinder1`, { diameter: 2 }),
-          CreateCylinder(`cylinder2`, { diameter: 3 })
+          createCylinder(`cylinder1`, { diameter: 2 }),
+          createCylinder(`cylinder2`, { diameter: 3 })
         ].map(mesh => {
           mesh.isCylindric = true
           return mesh
@@ -169,8 +171,8 @@ describe('isAbove() 3D utility', () => {
       title: 'two hexagons',
       buildMeshes: () =>
         [
-          CreateCylinder(`hexgon1`, { tessellation: 6, diameter: 2 }),
-          CreateCylinder(`hexgon3`, { tessellation: 6, diameter: 3 })
+          createCylinder(`hexgon1`, { tessellation: 6, diameter: 2 }),
+          createCylinder(`hexgon3`, { tessellation: 6, diameter: 3 })
         ].map(mesh => {
           mesh.isCylindric = true
           return mesh
@@ -181,8 +183,8 @@ describe('isAbove() 3D utility', () => {
       title: 'a cylinder and an hexagon',
       buildMeshes: () =>
         [
-          CreateCylinder(`hexgon1`, { tessellation: 6, diameter: 2 }),
-          CreateCylinder(`cylinder2`, { diameter: 3 })
+          createCylinder(`hexgon1`, { tessellation: 6, diameter: 2 }),
+          createCylinder(`cylinder2`, { diameter: 3 })
         ].map(mesh => {
           mesh.isCylindric = true
           return mesh
@@ -193,8 +195,8 @@ describe('isAbove() 3D utility', () => {
       title: 'a cylinder and a square',
       buildMeshes: () =>
         [
-          CreateBox(`box1`, { width: 2, depth: 2 }),
-          CreateCylinder(`cylinder2`, { diameter: 2.5 })
+          createBox(`box1`, { width: 2, depth: 2 }),
+          createCylinder(`cylinder2`, { diameter: 2.5 })
         ].map((mesh, i) => {
           mesh.isCylindric = i === 1
           return mesh
@@ -205,8 +207,8 @@ describe('isAbove() 3D utility', () => {
       title: 'a cylinder and a rectangle',
       buildMeshes: () =>
         [
-          CreateBox(`box1`, { width: 3, depth: 2 }),
-          CreateCylinder(`cylinder2`, { diameter: 2 })
+          createBox(`box1`, { width: 3, depth: 2 }),
+          createCylinder(`cylinder2`, { diameter: 2 })
         ].map((mesh, i) => {
           mesh.isCylindric = i === 1
           return mesh
@@ -217,8 +219,8 @@ describe('isAbove() 3D utility', () => {
       title: 'a hexagon and a rectangle',
       buildMeshes: () =>
         [
-          CreateBox(`box1`, { width: 3, depth: 2 }),
-          CreateCylinder(`hexagon2`, { tessellation: 6, diameter: 2 })
+          createBox(`box1`, { width: 3, depth: 2 }),
+          createCylinder(`hexagon2`, { tessellation: 6, diameter: 2 })
         ].map((mesh, i) => {
           mesh.isCylindric = i === 1
           return mesh
@@ -228,8 +230,8 @@ describe('isAbove() 3D utility', () => {
     {
       title: 'rectangles of the same size',
       buildMeshes: () => [
-        CreateBox(`box1`, { width: 2, depth: 2 }),
-        CreateBox(`box2`, { width: 2, depth: 2 })
+        createBox(`box1`, { width: 2, depth: 2 }),
+        createBox(`box2`, { width: 2, depth: 2 })
       ],
       results: [true, true]
     }
@@ -282,9 +284,9 @@ describe('isAbove() 3D utility', () => {
 
 describe('getCenterAltitudeAbove() 3D utility', () => {
   it('considers heights when positioning mesh above another one (without fresh matrix)', () => {
-    const box = CreateBox('box', { height: 4 })
+    const box = createBox('box', { height: 4 })
     box.setAbsolutePosition(new Vector3(0, 20, 0))
-    const box2 = CreateBox('box2', { height: 3 })
+    const box2 = createBox('box2', { height: 3 })
     expect(getCenterAltitudeAbove(box, box2)).toEqual(
       20 + 4 / 2 + 3 / 2 + altitudeGap
     )

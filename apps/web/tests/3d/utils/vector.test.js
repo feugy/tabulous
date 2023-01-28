@@ -1,5 +1,4 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { CreateGround } from '@babylonjs/core/Meshes/Builders/groundBuilder'
 import {
   getAbsoluteRotation,
@@ -11,7 +10,7 @@ import {
 } from '@src/3d/utils'
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
 
-import { initialize3dEngine } from '../../test-utils'
+import { createBox, initialize3dEngine } from '../../test-utils'
 
 let engine
 let scene
@@ -25,7 +24,7 @@ beforeAll(() => {
     renderWidth,
     renderHeight
   }))
-  box = CreateBox('box', {})
+  box = createBox('box', {})
 })
 
 afterEach(() => {
@@ -238,7 +237,7 @@ describe('getScreenPosition() 3D utility', () => {
 
 describe('getAbsoluteRotation() 3D utility', () => {
   it('returns rotation of a single mesh', () => {
-    const mesh = CreateBox('box')
+    const mesh = createBox('box')
     const angle = Math.PI * 0.5
     mesh.rotation.z = angle
     mesh.computeWorldMatrix(true)
@@ -249,10 +248,10 @@ describe('getAbsoluteRotation() 3D utility', () => {
   })
 
   it('returns rotation of a child mesh', () => {
-    const parent = CreateBox('parent')
+    const parent = createBox('parent')
     const parentAngle = Math.PI * 0.5
     parent.rotation.y = parentAngle
-    const child = CreateBox('child')
+    const child = createBox('child')
     child.setParent(parent)
     const childAngle = Math.PI
     child.rotation.y = childAngle

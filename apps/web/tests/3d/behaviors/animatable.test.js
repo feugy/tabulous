@@ -1,10 +1,9 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
 import { AnimateBehavior, AnimateBehaviorName } from '@src/3d/behaviors'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { configures3dTestEngine } from '../../test-utils'
+import { configures3dTestEngine, createBox } from '../../test-utils'
 
 describe('AnimateBehavior', () => {
   configures3dTestEngine()
@@ -21,7 +20,7 @@ describe('AnimateBehavior', () => {
     expect(behavior.frameRate).toEqual(60)
     expect(behavior.onAnimationEndObservable).toBeDefined()
 
-    const mesh = CreateBox('box', {})
+    const mesh = createBox('box', {})
     mesh.addBehavior(behavior, true)
     expect(behavior.mesh).toEqual(mesh)
   })
@@ -47,7 +46,7 @@ describe('AnimateBehavior', () => {
     let behavior
 
     beforeEach(() => {
-      mesh = CreateBox('box', {})
+      mesh = createBox('box', {})
       behavior = new AnimateBehavior()
       mesh.addBehavior(behavior, true)
       mesh.getScene()._pendingData = []

@@ -62,7 +62,7 @@ export function applyGravity(mesh) {
   )
   const below = findBelow(
     mesh,
-    mesh.getScene().meshes.filter(other => other.isPickable && other !== mesh)
+    mesh.getScene().meshes.filter(other => other.isHittable && other !== mesh)
   )
 
   let y = getGroundAltitude(mesh)

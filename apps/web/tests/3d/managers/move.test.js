@@ -1,5 +1,4 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
 import {
   MoveBehavior,
@@ -31,6 +30,7 @@ import {
 
 import {
   configures3dTestEngine,
+  createBox,
   expectAnimationEnd,
   expectCloseVector,
   expectMoveRecorded,
@@ -113,13 +113,13 @@ describe('MoveManager', () => {
 
   describe('registerMovable()', () => {
     it('registers a mesh', () => {
-      const mesh = CreateBox('box3', {})
+      const mesh = createBox('box3', {})
       mesh.addBehavior(new MoveBehavior(), true)
       expect(manager.isManaging(mesh)).toBe(true)
     })
 
     it('automatically unregisters a mesh upon disposal', () => {
-      const mesh = CreateBox('box3', {})
+      const mesh = createBox('box3', {})
       mesh.addBehavior(new MoveBehavior(), true)
       expect(manager.isManaging(mesh)).toBe(true)
 
@@ -128,7 +128,7 @@ describe('MoveManager', () => {
     })
 
     it('automatically unregisters a mesh upon behavior detachment', () => {
-      const mesh = CreateBox('box3', {})
+      const mesh = createBox('box3', {})
       const behavior = new MoveBehavior()
       mesh.addBehavior(behavior, true)
       expect(manager.isManaging(mesh)).toBe(true)
@@ -152,7 +152,7 @@ describe('MoveManager', () => {
     })
 
     it('does not unregisters a phantom mesh', () => {
-      const mesh = CreateBox('box3', {})
+      const mesh = createBox('box3', {})
       mesh.isPhantom = true
       const behavior = new MoveBehavior()
       mesh.addBehavior(behavior, true)
@@ -179,7 +179,7 @@ describe('MoveManager', () => {
 
     describe('start()', () => {
       it('ignores uncontrolled mesh', () => {
-        const mesh = CreateBox('box4', {})
+        const mesh = createBox('box4', {})
         manager.start(mesh, { x: centerX, y: centerY })
         expect(manager.inProgress).toBe(false)
         expect(manager.isMoving(mesh)).toBe(false)
@@ -188,7 +188,7 @@ describe('MoveManager', () => {
       })
 
       it('ignores disabled mesh', () => {
-        const mesh = CreateBox('box4', {})
+        const mesh = createBox('box4', {})
         const behavior = new MoveBehavior()
         mesh.addBehavior(behavior, true)
         behavior.enabled = false
@@ -286,7 +286,7 @@ describe('MoveManager', () => {
       })
 
       it('elevates moved when detecting a collision', () => {
-        const obstacle = CreateBox('obstacle', { size: 2 })
+        const obstacle = createBox('obstacle', { size: 2 })
         obstacle.setAbsolutePosition(1, 0.5, 1)
 
         manager.continue({ x: centerX + 20, y: centerY })
@@ -298,11 +298,11 @@ describe('MoveManager', () => {
       })
 
       it('elevates moved mesh above stacked obstacles', () => {
-        const obstacle1 = CreateBox('obstacle1', {})
+        const obstacle1 = createBox('obstacle1', {})
         obstacle1.setAbsolutePosition(1, 0.5, 1)
-        const obstacle2 = CreateBox('obstacle2', {})
+        const obstacle2 = createBox('obstacle2', {})
         obstacle2.setAbsolutePosition(1, 2, 1)
-        const obstacle3 = CreateBox('obstacle3', {})
+        const obstacle3 = createBox('obstacle3', {})
         obstacle3.setAbsolutePosition(1, 3.5, 1)
 
         manager.continue({ x: centerX + 20, y: centerY })
@@ -718,9 +718,9 @@ describe('MoveManager', () => {
 
       it('elevates entire selection on collision', () => {
         const deltaX = 0.8257662057876587
-        const obstacle1 = CreateBox('obstacle1', { size: 2 })
+        const obstacle1 = createBox('obstacle1', { size: 2 })
         obstacle1.setAbsolutePosition(1, 0.5, 1)
-        const obstacle2 = CreateBox('obstacle2', { size: 2 })
+        const obstacle2 = createBox('obstacle2', { size: 2 })
         obstacle2.setAbsolutePosition(-10, 0, -10)
 
         manager.continue({ x: centerX + 20, y: centerY })
@@ -1175,7 +1175,7 @@ describe('MoveManager', () => {
     position = new Vector3(1, 1, 1),
     sceneUsed = scene
   ) {
-    const movable = CreateBox(id, {}, sceneUsed)
+    const movable = createBox(id, {}, sceneUsed)
     movable.setAbsolutePosition(position)
     movable.addBehavior(new MoveBehavior(), true)
     controlManager.registerControlable(movable)
@@ -1183,13 +1183,13 @@ describe('MoveManager', () => {
   }
 
   function createsTarget(rank = 1, position = new Vector3(0, 0, 0)) {
-    const targetable = CreateBox(`targetable-${rank}`, {})
-    targetable.isPickable = false
+    const targetable = createBox(`targetable-${rank}`, {})
+    targetable.isHittable = false
     const behavior = new TargetBehavior()
     behavior.onDropObservable.add(drop => drops.push(drop))
     targetable.addBehavior(behavior, true)
 
-    const target = CreateBox(`target-${rank}`, { height: 0.1 })
+    const target = createBox(`target-${rank}`, { height: 0.1 })
     target.setAbsolutePosition(position)
     behavior.addZone(target, { extent: 0.5 })
     return target

@@ -1,5 +1,4 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
 import {
   cameraManager,
@@ -28,7 +27,7 @@ import {
   vi
 } from 'vitest'
 
-import { configures3dTestEngine, sleep } from '../test-utils'
+import { configures3dTestEngine, createBox, sleep } from '../test-utils'
 
 vi.mock('@src/3d/managers/camera')
 
@@ -1893,7 +1892,7 @@ describe('Game interaction model', () => {
 })
 
 function buildMesh(data) {
-  const mesh = CreateBox(data.id, data)
+  const mesh = createBox(data.id, data)
   mesh.addBehavior(new MoveBehavior(), true)
   mesh.metadata = {
     face: 4,

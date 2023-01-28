@@ -63,6 +63,7 @@ export async function createCustom(
 
   mesh.setAbsolutePosition(new Vector3(x, y ?? getGroundAltitude(mesh), z))
   mesh.isPickable = false
+  mesh.isHittable = true
 
   mesh.metadata = {
     serialize: () => ({

@@ -1,5 +1,4 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
 import {
   AnchorBehavior,
@@ -31,6 +30,7 @@ import {
 
 import {
   configures3dTestEngine,
+  createBox,
   expectFlipped,
   expectMeshFeedback,
   expectMoveRecorded,
@@ -84,9 +84,9 @@ describe('AnchorBehavior', () => {
   })
 
   it('can not snap without mesh', async () => {
-    const snapped = CreateBox('box', {})
+    const snapped = createBox('box', {})
     snapped.setAbsolutePosition(new Vector3(1, 1, 1))
-    const anchor = CreateBox('anchor', {})
+    const anchor = createBox('anchor', {})
     const behavior = new AnchorBehavior()
     behavior.addZone(anchor, { extent: 1 })
 
@@ -98,10 +98,10 @@ describe('AnchorBehavior', () => {
   })
 
   it('can not unsnap a mesh not previously snapped', () => {
-    const snapped = CreateBox('box', {})
+    const snapped = createBox('box', {})
 
     const behavior = new AnchorBehavior()
-    behavior.addZone(CreateBox('anchor', {}), { extent: 1 })
+    behavior.addZone(createBox('anchor', {}), { extent: 1 })
 
     behavior.unsnap(snapped.id)
     expect(recordSpy).not.toHaveBeenCalled()
@@ -109,11 +109,11 @@ describe('AnchorBehavior', () => {
   })
 
   it('can not unsnap a stack of mesh not previously snapped', () => {
-    const snapped = CreateBox('box', {})
+    const snapped = createBox('box', {})
     const stacked = makeStack(snapped)
 
     const behavior = new AnchorBehavior()
-    behavior.addZone(CreateBox('anchor', {}), { extent: 1 })
+    behavior.addZone(createBox('anchor', {}), { extent: 1 })
 
     behavior.unsnap(stacked.id)
     expect(recordSpy).not.toHaveBeenCalled()
@@ -132,10 +132,10 @@ describe('AnchorBehavior', () => {
     let behavior
 
     beforeEach(() => {
-      mesh = CreateBox('box', { width: 5, depth: 5 })
+      mesh = createBox('box', { width: 5, depth: 5 })
       mesh.addBehavior(new AnimateBehavior(), true)
       meshes = Array.from({ length: 2 }, (_, rank) => {
-        const box = CreateBox(`box${rank + 1}`, {})
+        const box = createBox(`box${rank + 1}`, {})
         box.addBehavior(new AnimateBehavior(), true)
         box.addBehavior(new DrawBehavior(), true)
         box.setAbsolutePosition(new Vector3(rank + 10, rank + 10, rank + 10))
@@ -827,7 +827,7 @@ describe('AnchorBehavior', () => {
 })
 
 function makeStack(mesh) {
-  const stacked = CreateBox('stacked-box1', {})
+  const stacked = createBox('stacked-box1', {})
   stacked.addBehavior(new AnimateBehavior(), true)
   stacked.addBehavior(new StackBehavior(), true)
   mesh.addBehavior(new StackBehavior({ stackIds: [stacked.id] }), true)

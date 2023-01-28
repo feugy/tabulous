@@ -3,7 +3,6 @@ import { ShadowGenerator } from '@babylonjs/core/Lights/Shadows/shadowGenerator'
 import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial'
 import { Texture } from '@babylonjs/core/Materials/Textures/texture'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
 import { materialManager as manager } from '@src/3d/managers'
 import {
@@ -16,7 +15,7 @@ import {
   vi
 } from 'vitest'
 
-import { configures3dTestEngine } from '../../test-utils'
+import { configures3dTestEngine, createBox } from '../../test-utils'
 
 describe('MaterialManager', () => {
   let scene
@@ -87,8 +86,8 @@ describe('MaterialManager', () => {
 
     beforeEach(() => {
       manager.clear()
-      box = CreateBox('box', {}, scene)
-      handBox = CreateBox('hand-box', {}, handScene)
+      box = createBox('box', {}, scene)
+      handBox = createBox('hand-box', {}, handScene)
     })
 
     describe('isManaging()', () => {
@@ -169,7 +168,7 @@ describe('MaterialManager', () => {
         expect(box.material.diffuseColor?.asArray()).toEqual([0, 0.4, 1, 0.4])
         expect(box.material.diffuseTexture).toBeNull()
 
-        const box2 = CreateBox('box2', {}, box.getScene())
+        const box2 = createBox('box2', {}, box.getScene())
         manager.configure(box2, color)
         expect(box2.material).toBeInstanceOf(StandardMaterial)
         expect(box2.material === box.material).toBe(true)
@@ -185,7 +184,7 @@ describe('MaterialManager', () => {
         expect(box.material).toBeInstanceOf(StandardMaterial)
         expect(box.material.diffuseTexture).toBeInstanceOf(Texture)
 
-        const box2 = CreateBox('box2', {}, box.getScene())
+        const box2 = createBox('box2', {}, box.getScene())
         manager.configure(box2, texture)
         expect(box2.material).toBeInstanceOf(StandardMaterial)
         expect(box2.material === box.material).toBe(true)
@@ -331,7 +330,7 @@ describe('MaterialManager', () => {
 
     beforeEach(() => {
       manager.clear()
-      box = CreateBox('box', {}, scene)
+      box = createBox('box', {}, scene)
     })
 
     describe('isManaging()', () => {
@@ -397,7 +396,7 @@ describe('MaterialManager', () => {
         expect(box.material.diffuseColor?.asArray()).toEqual([0, 0.4, 1, 0.4])
         expect(box.material.diffuseTexture).toBeNull()
 
-        const box2 = CreateBox('box2', {}, box.getScene())
+        const box2 = createBox('box2', {}, box.getScene())
         manager.configure(box2, color)
         expect(box2.material).toBeInstanceOf(StandardMaterial)
         expect(box2.material === box.material).toBe(true)
@@ -409,7 +408,7 @@ describe('MaterialManager', () => {
         expect(box.material).toBeInstanceOf(StandardMaterial)
         expect(box.material.diffuseTexture).toBeInstanceOf(Texture)
 
-        const box2 = CreateBox('box2', {}, box.getScene())
+        const box2 = createBox('box2', {}, box.getScene())
         manager.configure(box2, texture)
         expect(box2.material).toBeInstanceOf(StandardMaterial)
         expect(box2.material === box.material).toBe(true)

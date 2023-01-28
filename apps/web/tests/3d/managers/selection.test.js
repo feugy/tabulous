@@ -1,11 +1,14 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
 import { AnchorBehavior } from '@src/3d/behaviors'
 import { handManager, selectionManager as manager } from '@src/3d/managers'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { configures3dTestEngine, expectMeshes } from '../../test-utils'
+import {
+  configures3dTestEngine,
+  createBox,
+  expectMeshes
+} from '../../test-utils'
 
 describe('SelectionManager', () => {
   let scene
@@ -89,7 +92,7 @@ describe('SelectionManager', () => {
 
     describe('select()', () => {
       it('adds meshes to selection', () => {
-        const mesh = CreateBox('box1', {})
+        const mesh = createBox('box1', {})
         manager.select(mesh)
         expect(manager.meshes.has(mesh)).toBe(true)
         expect(manager.meshes.size).toBe(1)
@@ -100,8 +103,8 @@ describe('SelectionManager', () => {
       })
 
       it('adds multiple meshes to selection', () => {
-        const mesh1 = CreateBox('box1', {})
-        const mesh2 = CreateBox('box2', {})
+        const mesh1 = createBox('box1', {})
+        const mesh2 = createBox('box2', {})
         manager.select([mesh1, mesh2])
         expect(manager.meshes.has(mesh1)).toBe(true)
         expect(manager.meshes.has(mesh2)).toBe(true)
@@ -112,10 +115,10 @@ describe('SelectionManager', () => {
       })
 
       it('adds anchored meshes to selection', () => {
-        const box1 = CreateBox('box1', {})
-        const box2 = CreateBox('box2', {})
-        const box3 = CreateBox('box3', {})
-        const box4 = CreateBox('box4', {})
+        const box1 = createBox('box1', {})
+        const box2 = createBox('box2', {})
+        const box3 = createBox('box3', {})
+        const box4 = createBox('box4', {})
         box1.addBehavior(
           new AnchorBehavior({
             anchors: [
@@ -144,22 +147,22 @@ describe('SelectionManager', () => {
       })
 
       it('reorders selection based on elevation', () => {
-        const mesh1 = CreateBox('box1', {})
+        const mesh1 = createBox('box1', {})
         mesh1.setAbsolutePosition(new Vector3(0, 5, 0))
         manager.select(mesh1)
         expectSelection([mesh1], colorByPlayerId.get(playerId))
 
-        const mesh2 = CreateBox('box2', {})
+        const mesh2 = createBox('box2', {})
         mesh2.setAbsolutePosition(new Vector3(0, -2, 0))
         manager.select(mesh2)
         expectSelection([mesh2, mesh1], colorByPlayerId.get(playerId))
 
-        const mesh3 = CreateBox('box3', {})
+        const mesh3 = createBox('box3', {})
         mesh3.setAbsolutePosition(new Vector3(0, 7, 0))
         manager.select(mesh3)
         expectSelection([mesh2, mesh1, mesh3], colorByPlayerId.get(playerId))
 
-        const mesh4 = CreateBox('box4', {})
+        const mesh4 = createBox('box4', {})
         mesh4.setAbsolutePosition(new Vector3(0, 2, 0))
         manager.select(mesh4)
         expectSelection(
@@ -181,9 +184,9 @@ describe('SelectionManager', () => {
 
       beforeEach(() => {
         meshes = [
-          CreateBox('box1', {}),
-          CreateBox('box2', {}),
-          CreateBox('box3', {})
+          createBox('box1', {}),
+          createBox('box2', {}),
+          createBox('box3', {})
         ]
       })
 
@@ -207,7 +210,7 @@ describe('SelectionManager', () => {
 
     describe('unselect()', () => {
       it('ignores unselected meshes', () => {
-        const mesh = CreateBox('box1', {})
+        const mesh = createBox('box1', {})
         manager.unselect([mesh])
         expect(manager.meshes.size).toBe(0)
         expectSelected(mesh, null, false)
@@ -215,10 +218,10 @@ describe('SelectionManager', () => {
       })
 
       it('removes with anchored from selection', () => {
-        const box1 = CreateBox('box1', {})
-        const box2 = CreateBox('box2', {})
-        const box3 = CreateBox('box3', {})
-        const box4 = CreateBox('box4', {})
+        const box1 = createBox('box1', {})
+        const box2 = createBox('box2', {})
+        const box3 = createBox('box3', {})
+        const box4 = createBox('box4', {})
         box1.addBehavior(
           new AnchorBehavior({
             anchors: [
@@ -255,7 +258,7 @@ describe('SelectionManager', () => {
       let meshes
 
       beforeEach(() => {
-        meshes = ['box1', 'box2', 'box3'].map(id => CreateBox(id, {}))
+        meshes = ['box1', 'box2', 'box3'].map(id => createBox(id, {}))
         manager.select(meshes)
         selectionChanged.mockReset()
       })
@@ -350,7 +353,7 @@ describe('SelectionManager', () => {
 
       beforeEach(() => {
         meshes = ['box1', 'box2', 'box3', 'box4', 'box5'].map(id =>
-          CreateBox(id, {})
+          createBox(id, {})
         )
         manager.apply([meshes[0].id, meshes[1].id], peer1.id)
         manager.select(meshes[2])
@@ -428,7 +431,7 @@ describe('SelectionManager', () => {
           { id: 'box7', position: new Vector3(0, 0, -10), scene: handScene },
           { id: 'box8', position: new Vector3(-10, 0, -10), scene: handScene }
         ].map(({ id, position, scene }) => {
-          const mesh = CreateBox(id, {}, scene)
+          const mesh = createBox(id, {}, scene)
           mesh.setAbsolutePosition(position)
           return mesh
         })

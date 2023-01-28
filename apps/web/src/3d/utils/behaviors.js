@@ -244,13 +244,17 @@ export function runAnimation(behavior, onEnd, ...animationSpecs) {
     )
   }
   // prevents interactions and collisions
+  const wasPickable = mesh.isPickable
   mesh.isPickable = false
+  const wasHittable = mesh.isHittable
+  mesh.isHittable = false
   behavior.isAnimated = true
   return new Promise(resolve =>
     mesh
       .getScene()
       .beginDirectAnimation(mesh, animations, 0, lastFrame, false, 1, () => {
-        mesh.isPickable = true
+        mesh.isPickable = wasPickable
+        mesh.isHittable = wasHittable
         behavior.isAnimated = false
         // framed animation may not exactly end where we want, so force the final position
         for (const { animation } of animationSpecs) {

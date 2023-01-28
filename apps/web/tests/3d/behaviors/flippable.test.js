@@ -1,5 +1,4 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
 import { FlipBehavior, FlipBehaviorName } from '@src/3d/behaviors'
 import { controlManager } from '@src/3d/managers'
@@ -7,6 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
   configures3dTestEngine,
+  createBox,
   expectFlipped,
   expectPickable,
   expectPosition
@@ -30,7 +30,7 @@ describe('FlipBehavior', () => {
       duration: faker.datatype.number()
     }
     const behavior = new FlipBehavior(state)
-    const mesh = CreateBox('box', {})
+    const mesh = createBox('box', {})
 
     expect(behavior.name).toEqual(FlipBehaviorName)
     expect(behavior.state).toEqual(state)
@@ -231,7 +231,7 @@ describe('FlipBehavior', () => {
 
 function createAttachedFlippable(state) {
   const behavior = new FlipBehavior(state)
-  const mesh = CreateBox('box', {})
+  const mesh = createBox('box', {})
   mesh.addBehavior(behavior, true)
   return behavior
 }

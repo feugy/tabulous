@@ -5,6 +5,8 @@ import '@babylonjs/core/Rendering/edgesRenderer'
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera'
 import { NullEngine } from '@babylonjs/core/Engines/nullEngine'
 import { Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
 import { Logger } from '@babylonjs/core/Misc/logger'
 import cors from '@fastify/cors'
 import {
@@ -110,6 +112,18 @@ export function configures3dTestEngine(callback, engineProps) {
   })
 
   afterAll(() => engine.dispose())
+}
+
+export function createBox(...args) {
+  const box = CreateBox(...args)
+  box.isHittable = true
+  return box
+}
+
+export function createCylinder(...args) {
+  const cylinder = CreateCylinder(...args)
+  cylinder.isHittable = true
+  return cylinder
 }
 
 const debugFile = 'debug.txt'

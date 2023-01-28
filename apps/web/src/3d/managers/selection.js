@@ -126,6 +126,7 @@ class SelectionManager {
       box.position.y = -5
       box.visibility = 0
       box.isPickable = false
+      box.isHittable = false
 
       if (getFirstSelected(this)?.getScene() !== scene) {
         this.skipNotify = true

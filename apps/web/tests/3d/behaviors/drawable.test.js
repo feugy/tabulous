@@ -1,4 +1,3 @@
-import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
 import { DrawBehavior, DrawBehaviorName } from '@src/3d/behaviors'
 import { controlManager, handManager } from '@src/3d/managers'
@@ -7,6 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
   configures3dTestEngine,
+  createBox,
   expectAnimationEnd,
   expectPosition,
   sleep
@@ -31,7 +31,7 @@ describe('DrawBehavior', () => {
       flipOnPlay: faker.datatype.boolean()
     }
     const behavior = new DrawBehavior(state)
-    const mesh = CreateBox('box', {})
+    const mesh = createBox('box', {})
 
     expect(behavior.mesh).toBeNull()
     expect(behavior.name).toEqual(DrawBehaviorName)
@@ -56,7 +56,7 @@ describe('DrawBehavior', () => {
 
   it('can hydrate with default state', () => {
     const behavior = new DrawBehavior()
-    const mesh = CreateBox('box', {})
+    const mesh = createBox('box', {})
     mesh.addBehavior(behavior, true)
 
     behavior.fromState()
