@@ -344,6 +344,7 @@ export class StackBehavior extends TargetBehavior {
     for (const mesh of stack) {
       // prevents interactions and collisions
       mesh.isPickable = false
+      mesh.isHittable = false
     }
 
     let last = null
@@ -457,6 +458,7 @@ export class StackBehavior extends TargetBehavior {
     }
     for (const mesh of stack) {
       mesh.isPickable = true
+      mesh.isHittable = true
       mesh.getBehaviorByName(StackBehaviorName).isReordering = false
     }
   }

@@ -8,7 +8,7 @@ import { controlManager } from '../managers/control'
 import { customShapeManager } from '../managers/custom-shape'
 import { materialManager } from '../managers/material'
 import { registerBehaviors, serializeBehaviors } from '../utils/behaviors'
-import { getDimensions } from '../utils/mesh'
+import { getGroundAltitude } from '../utils/gravity'
 
 /**
  * Creates a custom mesh by importing .babylon format.
@@ -61,9 +61,9 @@ export async function createCustom(
 
   materialManager.configure(mesh, texture)
 
-  const { height } = getDimensions(mesh)
-  mesh.setAbsolutePosition(new Vector3(x, y ?? height * 0.5, z))
+  mesh.setAbsolutePosition(new Vector3(x, y ?? getGroundAltitude(mesh), z))
   mesh.isPickable = false
+  mesh.isHittable = true
 
   mesh.metadata = {
     serialize: () => ({

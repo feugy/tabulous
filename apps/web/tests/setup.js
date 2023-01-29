@@ -3,6 +3,9 @@ import '@babylonjs/core/Materials/standardMaterial'
 import 'whatwg-fetch'
 import '../src/common'
 
+import util from 'node:util'
+
+import { AbstractMesh } from '@babylonjs/core/Meshes/abstractMesh'
 import matchers from '@testing-library/jest-dom/matchers'
 import crypto from 'crypto'
 import { expect, vi } from 'vitest'
@@ -32,6 +35,27 @@ vi.mock('$app/stores', async () => {
     ...stores
   }
 })
+
+AbstractMesh.prototype[util.inspect.custom] = function () {
+  const result = {
+    absolutePosition: this.absolutePosition,
+    absoluteRotationQuaternion: this.absoluteRotationQuaternion,
+    absoluteScaling: this.absoluteScaling,
+    behaviors: this.behaviors,
+    parent: this.parent,
+    position: this.position,
+    rotation: this.rotation,
+    rotationQuaternion: this.rotationQuaternion,
+    renderingGroupId: this.renderingGroupId,
+    visibility: this.visibility
+  }
+  for (const prop in this) {
+    if (!/^_|^on[A-Z]/.test(prop)) {
+      result[prop] = this[prop]
+    }
+  }
+  return result
+}
 
 if (typeof window !== 'undefined') {
   document.querySelector(':root').style.setProperty('--short', '150ms')

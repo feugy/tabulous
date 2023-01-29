@@ -95,6 +95,7 @@ export class TargetBehavior {
   addZone(mesh, properties) {
     mesh.visibility = 0
     mesh.isPickable = false
+    mesh.isHittable = false
     mesh.scalingDeterminant = 1.01
     const zone = {
       mesh,

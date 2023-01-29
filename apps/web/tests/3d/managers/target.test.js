@@ -1,11 +1,10 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
 import { TargetBehavior } from '@src/3d/behaviors'
 import { selectionManager, targetManager as manager } from '@src/3d/managers'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { configures3dTestEngine } from '../../test-utils'
+import { configures3dTestEngine, createBox } from '../../test-utils'
 
 describe('TargetManager', () => {
   let drops
@@ -48,13 +47,13 @@ describe('TargetManager', () => {
 
     describe('registerTargetable()', () => {
       it('registers a mesh', () => {
-        const mesh = CreateBox('box3', {})
+        const mesh = createBox('box3', {})
         mesh.addBehavior(new TargetBehavior(), true)
         expect(manager.isManaging(mesh)).toBe(true)
       })
 
       it('automatically unregisters a mesh upon disposal', () => {
-        const mesh = CreateBox('box3', {})
+        const mesh = createBox('box3', {})
         mesh.addBehavior(new TargetBehavior(), true)
         expect(manager.isManaging(mesh)).toBe(true)
 
@@ -63,7 +62,7 @@ describe('TargetManager', () => {
       })
 
       it('automatically unregisters a mesh upon behavior detachment', () => {
-        const mesh = CreateBox('box3', {})
+        const mesh = createBox('box3', {})
         const behavior = new TargetBehavior()
         mesh.addBehavior(behavior, true)
         expect(manager.isManaging(mesh)).toBe(true)
@@ -104,18 +103,18 @@ describe('TargetManager', () => {
       })
 
       it('returns nothing if mesh is not above any target', () => {
-        expect(manager.findDropZone(CreateBox('box', {}))).not.toBeDefined()
+        expect(manager.findDropZone(createBox('box', {}))).not.toBeDefined()
       })
 
       it('returns targets below mesh', () => {
-        const mesh = CreateBox('box', {})
+        const mesh = createBox('box', {})
         mesh.setAbsolutePosition(aboveZone1)
 
         expectActiveZone(manager.findDropZone(mesh), zone1, color)
       })
 
       it('ignores an overlaping target when mesh is too far from center', () => {
-        const mesh = CreateBox('box', {})
+        const mesh = createBox('box', {})
         mesh.setAbsolutePosition(aboveZone1.add(new Vector3(1, 0, 0)))
 
         expect(manager.findDropZone(mesh)).not.toBeDefined()
@@ -123,7 +122,7 @@ describe('TargetManager', () => {
 
       it('ignores targets with kinds below kind-less mesh', () => {
         zone1.kinds = ['card']
-        const mesh = CreateBox('box', {})
+        const mesh = createBox('box', {})
         mesh.setAbsolutePosition(aboveZone1)
 
         expect(manager.findDropZone(mesh)).not.toBeDefined()
@@ -131,7 +130,7 @@ describe('TargetManager', () => {
 
       it('ignores disabled targets', () => {
         zone1.enabled = false
-        const mesh = CreateBox('box', {})
+        const mesh = createBox('box', {})
         mesh.setAbsolutePosition(aboveZone1)
 
         expect(manager.findDropZone(mesh)).not.toBeDefined()
@@ -139,14 +138,14 @@ describe('TargetManager', () => {
 
       it('ignores target part of the current selection', () => {
         selectionManager.select(zone1.targetable.mesh)
-        const mesh = CreateBox('box', {})
+        const mesh = createBox('box', {})
         mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
 
         expect(manager.findDropZone(mesh)).not.toBeDefined()
       })
 
       it('ignores targets from different scene', () => {
-        const handMesh = CreateBox('box', {}, handScene)
+        const handMesh = createBox('box', {}, handScene)
         handMesh.setAbsolutePosition(aboveZone2)
         expect(manager.findDropZone(handMesh)).not.toBeDefined()
 
@@ -154,7 +153,7 @@ describe('TargetManager', () => {
           position: new Vector3(10, 0, 10),
           scene: handScene
         })
-        const mesh = CreateBox('box', {})
+        const mesh = createBox('box', {})
         mesh.setAbsolutePosition(aboveZone3)
         expect(manager.findDropZone(mesh)).not.toBeDefined()
       })
@@ -165,7 +164,7 @@ describe('TargetManager', () => {
           playerId: faker.datatype.uuid(),
           scene
         })
-        const mesh = CreateBox('box', {}, scene)
+        const mesh = createBox('box', {}, scene)
         mesh.setAbsolutePosition(aboveZone3)
 
         expect(manager.findDropZone(mesh)).not.toBeDefined()
@@ -177,14 +176,14 @@ describe('TargetManager', () => {
           playerId,
           scene
         })
-        const mesh = CreateBox('box', {})
+        const mesh = createBox('box', {})
         mesh.setAbsolutePosition(aboveZone3)
 
         expectActiveZone(manager.findDropZone(mesh, 'box'), zone3, color)
       })
 
       it('returns kind-less targets below mesh with kind', () => {
-        const mesh = CreateBox('box', {})
+        const mesh = createBox('box', {})
         mesh.setAbsolutePosition(aboveZone1)
 
         expectActiveZone(manager.findDropZone(mesh, 'box'), zone1, color)
@@ -192,7 +191,7 @@ describe('TargetManager', () => {
 
       it('returns targets below mesh with matching kind', () => {
         zone1.kinds = ['card', 'box']
-        const mesh = CreateBox('box', {})
+        const mesh = createBox('box', {})
         mesh.setAbsolutePosition(aboveZone2)
 
         expectActiveZone(manager.findDropZone(mesh, 'box'), zone2, color)
@@ -208,7 +207,7 @@ describe('TargetManager', () => {
         })
         createsTargetZone('target5', { position: new Vector3(0, 0.5, 0) })
 
-        const mesh = CreateBox('box', {})
+        const mesh = createBox('box', {})
         mesh.setAbsolutePosition(new Vector3(0, 5, 0))
 
         expectActiveZone(manager.findDropZone(mesh, 'box'), zone4, color)
@@ -225,7 +224,7 @@ describe('TargetManager', () => {
           priority: 1
         })
 
-        const mesh = CreateBox('box', {})
+        const mesh = createBox('box', {})
         mesh.setAbsolutePosition(new Vector3(0, 5, 0))
 
         expectActiveZone(manager.findDropZone(mesh, 'box'), zone4, color)
@@ -233,7 +232,7 @@ describe('TargetManager', () => {
 
       describe('clear()', () => {
         beforeEach(() => {
-          const mesh = CreateBox('box', {})
+          const mesh = createBox('box', {})
           mesh.setAbsolutePosition(aboveZone1)
           manager.findDropZone(mesh, 'box')
         })
@@ -265,7 +264,7 @@ describe('TargetManager', () => {
         let meshes = ['box1', 'box2']
         beforeEach(() => {
           meshes = meshes.map(id => {
-            const mesh = CreateBox(id, {})
+            const mesh = createBox(id, {})
             mesh.setAbsolutePosition(aboveZone1)
             manager.findDropZone(mesh, 'box')
             return mesh
@@ -298,12 +297,12 @@ describe('TargetManager', () => {
           position: new Vector3(-5, 0, -5),
           playerId: faker.datatype.uuid()
         })
-        mesh = CreateBox('box', {})
+        mesh = createBox('box', {})
       })
 
       it('ignores targets with kinds when providing no kind', () => {
         zone1.kinds = ['card']
-        const mesh = CreateBox('box', {})
+        const mesh = createBox('box', {})
         mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
 
         expect(manager.findPlayerZone(mesh)).not.toBeDefined()
@@ -311,7 +310,7 @@ describe('TargetManager', () => {
 
       it('ignores disabled targets', () => {
         zone1.enabled = false
-        const mesh = CreateBox('box', {})
+        const mesh = createBox('box', {})
         mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
 
         expect(manager.findPlayerZone(mesh)).not.toBeDefined()
@@ -319,14 +318,14 @@ describe('TargetManager', () => {
 
       it('ignores target part of the current selection', () => {
         selectionManager.select(zone1.targetable.mesh)
-        const mesh = CreateBox('box', {})
+        const mesh = createBox('box', {})
         mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
 
         expect(manager.findPlayerZone(mesh)).not.toBeDefined()
       })
 
       it('ignores targets from different scene', () => {
-        const mesh = CreateBox('box', {}, handScene)
+        const mesh = createBox('box', {}, handScene)
         expect(manager.findPlayerZone(mesh)).not.toBeDefined()
       })
 
@@ -375,7 +374,7 @@ describe('TargetManager', () => {
         let meshes = ['box1', 'box2']
         beforeEach(() => {
           meshes = meshes.map(id => {
-            const mesh = CreateBox(id, {})
+            const mesh = createBox(id, {})
             manager.findPlayerZone(mesh, 'box')
             return mesh
           })
@@ -450,13 +449,13 @@ describe('TargetManager', () => {
     id,
     { position = new Vector3(0, 0, 0), scene: usedScene, ...properties }
   ) {
-    const targetable = CreateBox(`targetable-${id}`, {}, usedScene ?? scene)
+    const targetable = createBox(`targetable-${id}`, {}, usedScene ?? scene)
     targetable.isPickable = false
     const behavior = new TargetBehavior()
     behavior.onDropObservable.add(drop => drops.push(drop))
     targetable.addBehavior(behavior, true)
 
-    const target = CreateBox(id, { height: 0.1 }, usedScene ?? scene)
+    const target = createBox(id, { height: 0.1 }, usedScene ?? scene)
     target.setAbsolutePosition(position)
     return behavior.addZone(target, { extent: 0.5, ...properties })
   }

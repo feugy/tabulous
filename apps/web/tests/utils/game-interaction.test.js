@@ -1,5 +1,4 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
 import {
   cameraManager,
@@ -28,7 +27,7 @@ import {
   vi
 } from 'vitest'
 
-import { configures3dTestEngine, sleep } from '../test-utils'
+import { configures3dTestEngine, createBox, sleep } from '../test-utils'
 
 vi.mock('@src/3d/managers/camera')
 
@@ -97,7 +96,20 @@ describe('Game interaction model', () => {
         { functionName: 'rotate', icon: 'rotate_right' },
         { functionName: 'detail', icon: 'visibility' },
         { functionName: 'draw', icon: 'front_hand' },
-        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
+        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' },
+        {
+          functionName: 'random',
+          icon: 'airline_stops',
+          title: 'tooltips.random'
+        },
+        {
+          functionName: 'setFace',
+          icon: 'casino',
+          title: 'tooltips.set-face',
+          badge: 'shortcuts.set-face',
+          quantity: mesh.metadata.face,
+          max: mesh.metadata.maxFace
+        }
       ])
     })
 
@@ -118,7 +130,20 @@ describe('Game interaction model', () => {
         { functionName: 'draw', icon: 'front_hand', max: 3 },
         { functionName: 'pop', icon: 'redo', triggeredMesh: meshes[2], max: 3 },
         { functionName: 'detail', icon: 'visibility' },
-        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
+        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' },
+        {
+          functionName: 'random',
+          icon: 'airline_stops',
+          title: 'tooltips.random'
+        },
+        {
+          functionName: 'setFace',
+          icon: 'casino',
+          title: 'tooltips.set-face',
+          badge: 'shortcuts.set-face',
+          quantity: mesh.metadata.face,
+          max: mesh.metadata.maxFace
+        }
       ])
     })
 
@@ -144,7 +169,20 @@ describe('Game interaction model', () => {
           max: 4
         },
         { functionName: 'detail', icon: 'visibility' },
-        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
+        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' },
+        {
+          functionName: 'random',
+          icon: 'airline_stops',
+          title: 'tooltips.random'
+        },
+        {
+          functionName: 'setFace',
+          icon: 'casino',
+          title: 'tooltips.set-face',
+          badge: 'shortcuts.set-face',
+          quantity: mesh.metadata.face,
+          max: mesh.metadata.maxFace
+        }
       ])
     })
 
@@ -184,6 +222,21 @@ describe('Game interaction model', () => {
           functionName: 'toggleLock',
           icon: 'lock',
           title: 'tooltips.lock',
+          triggeredMesh: mesh6
+        },
+        {
+          functionName: 'random',
+          icon: 'airline_stops',
+          title: 'tooltips.random',
+          triggeredMesh: mesh6
+        },
+        {
+          functionName: 'setFace',
+          icon: 'casino',
+          title: 'tooltips.set-face',
+          badge: 'shortcuts.set-face',
+          quantity: mesh5.metadata.face,
+          max: mesh5.metadata.maxFace,
           triggeredMesh: mesh6
         }
       ])
@@ -306,10 +359,23 @@ describe('Game interaction model', () => {
           badge: 'shortcuts.shuffle'
         },
         { functionName: 'draw', icon: 'front_hand' },
-        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
+        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' },
+        {
+          functionName: 'random',
+          icon: 'airline_stops',
+          title: 'tooltips.random'
+        },
+        {
+          functionName: 'setFace',
+          icon: 'casino',
+          title: 'tooltips.set-face',
+          badge: 'shortcuts.set-face',
+          quantity: mesh3.metadata.face,
+          max: mesh3.metadata.maxFace
+        }
       ])
-      expectMeshActions(mesh5, 'draw', 'toggleLock')
-      expectMeshActions(mesh6, 'draw', 'toggleLock')
+      expectMeshActions(mesh5, 'draw', 'toggleLock', 'random', 'setFace')
+      expectMeshActions(mesh6, 'draw', 'toggleLock', 'random', 'setFace')
     })
 
     it('can trigger all actions for a selected quantifiable', async () => {
@@ -327,11 +393,32 @@ describe('Game interaction model', () => {
         { functionName: 'flip', icon: 'flip' },
         { functionName: 'rotate', icon: 'rotate_right' },
         { functionName: 'draw', icon: 'front_hand' },
-        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
+        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' },
+        {
+          functionName: 'random',
+          icon: 'airline_stops',
+          title: 'tooltips.random'
+        },
+        {
+          functionName: 'setFace',
+          icon: 'casino',
+          title: 'tooltips.set-face',
+          badge: 'shortcuts.set-face',
+          quantity: mesh7.metadata.face,
+          max: mesh7.metadata.maxFace
+        }
       ])
-      expectMeshActions(mesh3, 'rotate', 'flipAll', 'draw', 'toggleLock')
-      expectMeshActions(mesh5, 'draw', 'toggleLock')
-      expectMeshActions(mesh6, 'draw', 'toggleLock')
+      expectMeshActions(
+        mesh3,
+        'rotate',
+        'flipAll',
+        'draw',
+        'toggleLock',
+        'random',
+        'setFace'
+      )
+      expectMeshActions(mesh5, 'draw', 'toggleLock', 'random', 'setFace')
+      expectMeshActions(mesh6, 'draw', 'toggleLock', 'random', 'setFace')
     })
 
     it('can trigger all actions for a selection of unstacked meshes', async () => {
@@ -359,9 +446,30 @@ describe('Game interaction model', () => {
           title: 'tooltips.stack-all',
           calls: [[mesh1.id]]
         },
-        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
+        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' },
+        {
+          functionName: 'random',
+          icon: 'airline_stops',
+          title: 'tooltips.random'
+        },
+        {
+          functionName: 'setFace',
+          icon: 'casino',
+          title: 'tooltips.set-face',
+          badge: 'shortcuts.set-face',
+          quantity: mesh2.metadata.face,
+          max: mesh2.metadata.maxFace
+        }
       ])
-      expectMeshActions(mesh1, 'flip', 'rotate', 'draw', 'toggleLock')
+      expectMeshActions(
+        mesh1,
+        'flip',
+        'rotate',
+        'draw',
+        'toggleLock',
+        'random',
+        'setFace'
+      )
     })
 
     it('can trigger all actions for a selection of unstacked meshes in hand', async () => {
@@ -383,9 +491,30 @@ describe('Game interaction model', () => {
         { functionName: 'flip', icon: 'flip' },
         { functionName: 'rotate', icon: 'rotate_right' },
         { functionName: 'draw', icon: 'back_hand', title: 'tooltips.play' },
-        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
+        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' },
+        {
+          functionName: 'random',
+          icon: 'airline_stops',
+          title: 'tooltips.random'
+        },
+        {
+          functionName: 'setFace',
+          icon: 'casino',
+          title: 'tooltips.set-face',
+          badge: 'shortcuts.set-face',
+          quantity: mesh2.metadata.face,
+          max: mesh2.metadata.maxFace
+        }
       ])
-      expectMeshActions(mesh1, 'flip', 'rotate', 'draw', 'toggleLock')
+      expectMeshActions(
+        mesh1,
+        'flip',
+        'rotate',
+        'draw',
+        'toggleLock',
+        'random',
+        'setFace'
+      )
     })
 
     it('can trigger all actions for a selection of stacks', async () => {
@@ -427,12 +556,33 @@ describe('Game interaction model', () => {
           title: 'tooltips.stack-all',
           calls: [[mesh3.id]]
         },
-        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
+        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' },
+        {
+          functionName: 'random',
+          icon: 'airline_stops',
+          title: 'tooltips.random'
+        },
+        {
+          functionName: 'setFace',
+          icon: 'casino',
+          title: 'tooltips.set-face',
+          badge: 'shortcuts.set-face',
+          quantity: mesh2.metadata.face,
+          max: mesh2.metadata.maxFace
+        }
       ])
-      expectMeshActions(mesh4, 'draw', 'toggleLock')
-      expectMeshActions(mesh5, 'draw', 'toggleLock')
-      expectMeshActions(mesh6, 'draw', 'toggleLock')
-      expectMeshActions(mesh3, 'flipAll', 'rotate', 'draw', 'toggleLock')
+      expectMeshActions(mesh4, 'draw', 'toggleLock', 'random', 'setFace')
+      expectMeshActions(mesh5, 'draw', 'toggleLock', 'random', 'setFace')
+      expectMeshActions(mesh6, 'draw', 'toggleLock', 'random', 'setFace')
+      expectMeshActions(
+        mesh3,
+        'flipAll',
+        'rotate',
+        'draw',
+        'toggleLock',
+        'random',
+        'setFace'
+      )
     })
 
     it('can trigger all actions for a selection of quantifiable', async () => {
@@ -460,10 +610,39 @@ describe('Game interaction model', () => {
           badge: 'shortcuts.push',
           calls: [[[mesh8.id, mesh9.id]]]
         },
-        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
+        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' },
+        {
+          functionName: 'random',
+          icon: 'airline_stops',
+          title: 'tooltips.random'
+        },
+        {
+          functionName: 'setFace',
+          icon: 'casino',
+          title: 'tooltips.set-face',
+          badge: 'shortcuts.set-face',
+          quantity: mesh7.metadata.face,
+          max: mesh7.metadata.maxFace
+        }
       ])
-      expectMeshActions(mesh8, 'flip', 'rotate', 'draw', 'toggleLock')
-      expectMeshActions(mesh9, 'flip', 'rotate', 'draw', 'toggleLock')
+      expectMeshActions(
+        mesh8,
+        'flip',
+        'rotate',
+        'draw',
+        'toggleLock',
+        'random',
+        'setFace'
+      )
+      expectMeshActions(
+        mesh9,
+        'flip',
+        'rotate',
+        'draw',
+        'toggleLock',
+        'random',
+        'setFace'
+      )
     })
 
     it('does not display stackAll action if at least one selected meshes can not be pushed', async () => {
@@ -483,9 +662,30 @@ describe('Game interaction model', () => {
         { functionName: 'flip', icon: 'flip' },
         { functionName: 'rotate', icon: 'rotate_right' },
         { functionName: 'draw', icon: 'front_hand' },
-        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
+        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' },
+        {
+          functionName: 'random',
+          icon: 'airline_stops',
+          title: 'tooltips.random'
+        },
+        {
+          functionName: 'setFace',
+          icon: 'casino',
+          title: 'tooltips.set-face',
+          badge: 'shortcuts.set-face',
+          quantity: mesh2.metadata.face,
+          max: mesh2.metadata.maxFace
+        }
       ])
-      expectMeshActions(mesh1, 'flip', 'rotate', 'draw', 'toggleLock')
+      expectMeshActions(
+        mesh1,
+        'flip',
+        'rotate',
+        'draw',
+        'toggleLock',
+        'random',
+        'setFace'
+      )
     })
 
     it('does not display increment action if at least one selected meshes can not be incremented', async () => {
@@ -505,9 +705,30 @@ describe('Game interaction model', () => {
         { functionName: 'flip', icon: 'flip' },
         { functionName: 'rotate', icon: 'rotate_right' },
         { functionName: 'draw', icon: 'front_hand' },
-        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
+        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' },
+        {
+          functionName: 'random',
+          icon: 'airline_stops',
+          title: 'tooltips.random'
+        },
+        {
+          functionName: 'setFace',
+          icon: 'casino',
+          title: 'tooltips.set-face',
+          badge: 'shortcuts.set-face',
+          quantity: mesh8.metadata.face,
+          max: mesh8.metadata.maxFace
+        }
       ])
-      expectMeshActions(mesh7, 'flip', 'rotate', 'draw', 'toggleLock')
+      expectMeshActions(
+        mesh7,
+        'flip',
+        'rotate',
+        'draw',
+        'toggleLock',
+        'random',
+        'setFace'
+      )
     })
 
     it('can trigger all actions for a selection of stacked and unstacked meshes', async () => {
@@ -541,11 +762,99 @@ describe('Game interaction model', () => {
           triggeredMesh: mesh5,
           calls: [[mesh1.id]]
         },
-        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' }
+        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' },
+        {
+          functionName: 'random',
+          icon: 'airline_stops',
+          title: 'tooltips.random'
+        },
+        {
+          functionName: 'setFace',
+          icon: 'casino',
+          title: 'tooltips.set-face',
+          badge: 'shortcuts.set-face',
+          quantity: mesh3.metadata.face,
+          max: mesh3.metadata.maxFace
+        }
       ])
-      expectMeshActions(mesh5, 'draw', 'toggleLock')
-      expectMeshActions(mesh6, 'draw', 'toggleLock')
-      expectMeshActions(mesh1, 'flip', 'rotate', 'draw', 'toggleLock')
+      expectMeshActions(mesh5, 'draw', 'toggleLock', 'random', 'setFace')
+      expectMeshActions(mesh6, 'draw', 'toggleLock', 'random', 'setFace')
+      expectMeshActions(
+        mesh1,
+        'flip',
+        'rotate',
+        'draw',
+        'toggleLock',
+        'random',
+        'setFace'
+      )
+    })
+
+    it('uses lowest max when triggering setFace a selection ofmeshes', async () => {
+      const [mesh1, mesh2, mesh3] = meshes
+      mesh1.metadata.stack = [mesh1]
+      mesh1.metadata.maxFace = 4
+      mesh1.metadata.face = 1
+      mesh1.metadata.canPush.mockReturnValue(true)
+      mesh2.metadata.stack = [mesh2]
+      mesh2.metadata.canPush.mockReturnValue(true)
+      mesh2.metadata.maxFace = 3
+      mesh2.metadata.face = 2
+      mesh3.metadata.stack = [mesh3]
+      mesh3.metadata.canPush.mockReturnValue(true)
+      mesh3.metadata.maxFace = 6
+      mesh3.metadata.face = 6
+      selectionManager.select([mesh1, mesh2, mesh3])
+      const menuProps = computeMenuProps(mesh1)
+      expect(menuProps).toHaveProperty('items')
+      expect(menuProps).toHaveProperty('open', true)
+      expect(menuProps).toHaveProperty('meshes', [mesh1, mesh2, mesh3])
+
+      await expectActionItems(menuProps, mesh1, [
+        { functionName: 'flip', icon: 'flip', calls: [[null]] },
+        { functionName: 'rotate', icon: 'rotate_right' },
+        { functionName: 'draw', icon: 'front_hand' },
+        {
+          functionName: 'push',
+          icon: 'layers',
+          title: 'tooltips.stack-all',
+          calls: [[mesh2.id], [mesh3.id]]
+        },
+        { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' },
+        {
+          functionName: 'random',
+          icon: 'airline_stops',
+          title: 'tooltips.random'
+        },
+        {
+          functionName: 'setFace',
+          icon: 'casino',
+          title: 'tooltips.set-face',
+          badge: 'shortcuts.set-face',
+          quantity: mesh1.metadata.face,
+          max: mesh2.metadata.maxFace,
+          clickArg: { quantity: 3 },
+          calls: [[3]]
+        }
+      ])
+      expectMeshActions(
+        mesh2,
+        'flip',
+        'rotate',
+        'draw',
+        'toggleLock',
+        'random',
+        'setFace'
+      )
+      expectMeshActions(
+        mesh3,
+        'flip',
+        'rotate',
+        'draw',
+        'toggleLock',
+        'random',
+        'setFace'
+      )
     })
   })
 
@@ -1583,9 +1892,11 @@ describe('Game interaction model', () => {
 })
 
 function buildMesh(data) {
-  const mesh = CreateBox(data.id, data)
+  const mesh = createBox(data.id, data)
   mesh.addBehavior(new MoveBehavior(), true)
   mesh.metadata = {
+    face: 4,
+    maxFace: 6,
     detail: vi.fn(),
     flip: vi.fn(),
     rotate: vi.fn(),
@@ -1601,7 +1912,9 @@ function buildMesh(data) {
     toggleLock: vi.fn(),
     increment: vi.fn(),
     decrement: vi.fn(),
-    canIncrement: vi.fn()
+    canIncrement: vi.fn(),
+    setFace: vi.fn(),
+    random: vi.fn()
   }
   return mesh
 }
@@ -1627,9 +1940,18 @@ async function expectActionItems(menuProps, mesh, items) {
   expect(menuProps.items).toHaveLength(items.length)
   for (const [
     rank,
-    { functionName, icon, title, badge, triggeredMesh, calls, ...props }
+    {
+      functionName,
+      icon,
+      title,
+      badge,
+      triggeredMesh,
+      calls,
+      clickArg,
+      ...props
+    }
   ] of items.entries()) {
-    expect(menuProps.items, `for menu item #${rank}`).toEqual(
+    expect(menuProps.items, `for menu item #${rank} (${functionName})`).toEqual(
       expect.arrayContaining([
         {
           icon,
@@ -1640,16 +1962,18 @@ async function expectActionItems(menuProps, mesh, items) {
         }
       ])
     )
-    await menuProps.items.find(item => item.icon === icon).onClick()
+    await menuProps.items
+      .find(item => item.icon === icon)
+      .onClick(clickArg ? { detail: clickArg } : undefined)
     const checkedMesh = triggeredMesh ?? mesh
     expect(
       checkedMesh.metadata[functionName],
-      `${functionName} metadata`
+      `${functionName} metadata calls`
     ).toHaveBeenCalledTimes(calls?.length ?? 1)
     for (const [rank, parameters] of (calls ?? []).entries()) {
       expect(
         checkedMesh.metadata[functionName],
-        `${functionName} metadata`
+        `${functionName} metadata call arguments`
       ).toHaveBeenNthCalledWith(rank + 1, ...parameters)
     }
     checkedMesh.metadata[functionName].mockReset()

@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 
 import { faker } from '@faker-js/faker'
 import { customShapeManager as manager } from '@src/3d/managers'
+import { getDieModelFile } from '@src/3d/meshes'
 import { makeLogger } from '@src/utils'
 import { rest } from 'msw'
 import { setupServer } from 'msw/node'
@@ -59,15 +60,27 @@ describe('CustomShapeManager', () => {
   describe('init()', () => {
     beforeEach(() => manager.clear())
 
-    it('downloads all required mesh shapes', async () => {
+    it('downloads all required mesh and die shapes', async () => {
       const file = `/${faker.lorem.word()}`
       server.use(
         rest.get(`${gameAssetsUrl}${file}`, (req, res, ctx) =>
           res(ctx.json(fixtures.pawn))
         )
       )
-      await manager.init({ gameAssetsUrl, meshes: [{ shape: 'custom', file }] })
+      server.use(
+        rest.get(`${gameAssetsUrl}${getDieModelFile(4)}`, (req, res, ctx) =>
+          res(ctx.json(fixtures.die))
+        )
+      )
+      await manager.init({
+        gameAssetsUrl,
+        meshes: [
+          { shape: 'custom', file },
+          { shape: 'die', faces: 4 }
+        ]
+      })
       expect(manager.get(file)).toEqual(expectedData.pawn)
+      expect(manager.get(getDieModelFile(4))).toEqual(expectedData.die)
     })
 
     it('downloads shapes for hand meshes', async () => {

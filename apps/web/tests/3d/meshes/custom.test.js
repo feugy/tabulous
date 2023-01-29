@@ -77,7 +77,7 @@ describe('createCustom()', () => {
     expect(mesh.material.diffuseColor).toEqual(Color4.FromHexString(color))
   })
 
-  describe('given a card with initial position, dimension, images and behaviors', () => {
+  describe('given a mesh with initial position, dimension, images and behaviors', () => {
     let mesh
 
     const id = faker.datatype.uuid()

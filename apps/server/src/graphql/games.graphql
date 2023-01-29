@@ -75,6 +75,12 @@ type QuantifiableState {
   kinds: [String]
 }
 
+type RandomizableState {
+  face: Int
+  duration: Int
+  canBeSet: Boolean
+}
+
 type Anchor {
   id: ID
   x: Float
@@ -108,6 +114,7 @@ type Mesh {
   drawable: DrawableState
   lockable: LockableState
   quantifiable: QuantifiableState
+  randomizable: RandomizableState
   """
   boxes, cards, prisms, rounded tokens and rounded tiles
   """
@@ -121,7 +128,7 @@ type Mesh {
   """
   depth: Float
   """
-  round tokens
+  round tokens and dice
   """
   diameter: Float
   """
@@ -137,12 +144,17 @@ type Mesh {
   """
   edges: Float
   prismRotation: Float
+  """
+  dice
+  """
+  faces: Int
 }
 
 enum Shape {
   box
   card
   custom
+  die
   prism
   roundedTile
   roundToken
@@ -246,6 +258,12 @@ input QuantifiableStateInput {
   kinds: [String]
 }
 
+input RandomizableStateInput {
+  face: Int
+  duration: Int
+  canBeSet: Boolean
+}
+
 input AnchorInput {
   id: ID
   x: Float
@@ -279,6 +297,7 @@ input MeshInput {
   drawable: DrawableStateInput
   lockable: LockableStateInput
   quantifiable: QuantifiableStateInput
+  randomizable: RandomizableStateInput
   """
   boxes, cards, prisms, rounded tokens and rounded tiles
   """
@@ -292,7 +311,7 @@ input MeshInput {
   """
   depth: Float
   """
-  round tokens
+  round tokens and dice
   """
   diameter: Float
   """
@@ -308,6 +327,10 @@ input MeshInput {
   """
   edges: Float
   prismRotation: Float
+  """
+  dice
+  """
+  faces: Int
 }
 
 input MessageInput {

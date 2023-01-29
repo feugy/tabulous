@@ -1,5 +1,4 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { Scene } from '@babylonjs/core/scene'
 import { faker } from '@faker-js/faker'
 import { inputManager as manager, selectionManager } from '@src/3d/managers'
@@ -7,6 +6,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
   configures3dTestEngine,
+  createBox,
   expectCloseVector,
   sleep
 } from '../../test-utils'
@@ -113,7 +113,7 @@ describe('InputManager', () => {
         // x: 1048, y: 525
         { id: 'box7', position: new Vector3(1, 0.5, -1), scene }
       ].map(({ id, position, scene }) => {
-        const mesh = CreateBox(id, {}, scene)
+        const mesh = createBox(id, {}, scene)
         mesh.setAbsolutePosition(position)
         mesh.computeWorldMatrix(true)
         return mesh
@@ -795,7 +795,7 @@ describe('InputManager', () => {
         triggerEvent(pointerMove, { ...move(pointer, 50, -25), pointerId })
       )
       meshes[1].dispose()
-      CreateBox(meshId, {}, handScene)
+      createBox(meshId, {}, handScene)
       await sleep(50)
       events.push(triggerEvent(pointerUp, { ...pointer, pointerId, button }))
 
@@ -1442,7 +1442,7 @@ describe('InputManager', () => {
     })
 
     it('picks highest meshes on Y-order', () => {
-      const mesh = CreateBox('box6', {})
+      const mesh = createBox('box6', {})
       mesh.setAbsolutePosition(new Vector3(10, 1, 0))
       const pointer = { x: 1266, y: 512 }
       const pointerId = 10

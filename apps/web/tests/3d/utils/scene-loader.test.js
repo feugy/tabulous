@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { customShapeManager, handManager } from '@src/3d/managers'
-import { createCustom } from '@src/3d/meshes'
+import { getDieModelFile } from '@src/3d/meshes/die'
 import {
   altitudeGap,
   createTable,
@@ -19,6 +19,8 @@ import {
   vi
 } from 'vitest'
 
+import die6Data from '../../../../games/assets/models/die6.obj?raw'
+import die8Data from '../../../../games/assets/models/die8.obj?raw'
 import pawnData from '../../fixtures/pawn.obj?raw'
 import {
   expectAnimationEnd,
@@ -35,6 +37,8 @@ let scene
 let handScene
 let createBox
 let createCard
+let createCustom
+let createDie
 let createPrism
 let createRoundToken
 let createRoundedTile
@@ -48,11 +52,15 @@ beforeAll(async () => {
   ;({
     createBox,
     createCard,
+    createCustom,
+    createDie,
     createPrism,
     createRoundToken,
     createRoundedTile
   } = await import('@src/3d/meshes'))
   customShapeManager.set(pawnFile, btoa(pawnData))
+  customShapeManager.set(getDieModelFile(6), btoa(die6Data))
+  customShapeManager.set(getDieModelFile(8), btoa(die8Data))
 })
 
 afterAll(() => engine.dispose())
@@ -128,6 +136,24 @@ describe('serializeMeshes() 3D utility', () => {
       expect(serializeMeshes(scene)).toEqual([
         card1.metadata.serialize(),
         card2.metadata.serialize()
+      ])
+    })
+
+    it('serializes dice', async () => {
+      const die6 = await createDie({ id: 'd6' })
+      const die8 = await createBox({
+        id: 'd8',
+        faces: 8,
+        texture: faker.internet.url(),
+        images: [faker.random.word()],
+        x: faker.datatype.number(),
+        y: faker.datatype.number(),
+        z: faker.datatype.number(),
+        diameter: faker.datatype.number()
+      })
+      expect(serializeMeshes(scene)).toEqual([
+        die6.metadata.serialize(),
+        die8.metadata.serialize()
       ])
     })
 
@@ -334,6 +360,18 @@ describe('loadMeshes() 3D utility', () => {
     z: -10
   }
 
+  let die1 = {
+    shape: 'die',
+    id: 'd6',
+    faces: 6,
+    x: 5,
+    y: 1,
+    z: 2.5,
+    diameter: 1.7,
+    texture: 'https://obviously.org',
+    randomizable: { duration: 300, canBeSet: true, face: 3 }
+  }
+
   let box1 = {
     shape: 'box',
     id: 'box1',
@@ -402,6 +440,7 @@ describe('loadMeshes() 3D utility', () => {
     createRoundedTile({ id: 'tile' })
     createCard({ id: 'card' })
     createPrism({ id: 'prism' })
+    createDie({ id: 'die' })
 
     expect(scene.getMeshById('table')).toBeDefined()
     expect(scene.getMeshById('token')).toBeDefined()
@@ -409,6 +448,7 @@ describe('loadMeshes() 3D utility', () => {
     expect(scene.getMeshById('tile')).toBeDefined()
     expect(scene.getMeshById('card')).toBeDefined()
     expect(scene.getMeshById('prism')).toBeDefined()
+    expect(scene.getMeshById('die')).toBeDefined()
 
     await loadMeshes(scene, [])
 
@@ -418,10 +458,20 @@ describe('loadMeshes() 3D utility', () => {
     expect(scene.getMeshById('tile')).toBeNull()
     expect(scene.getMeshById('card')).toBeNull()
     expect(scene.getMeshById('prism')).toBeNull()
+    expect(scene.getMeshById('die')).toBeNull()
   })
 
   it('adds new meshes with their behaviors', async () => {
-    await loadMeshes(scene, [card1, token1, tile1, card2, pawn1, box1, prism1])
+    await loadMeshes(scene, [
+      card1,
+      token1,
+      tile1,
+      card2,
+      pawn1,
+      box1,
+      prism1,
+      die1
+    ])
     expect(scene.getMeshById(card1.id)).toBeDefined()
     expect(scene.getMeshById(card1.id).metadata.serialize()).toEqual(card1)
     expect(scene.getMeshById(card2.id)).toBeDefined()
@@ -436,6 +486,8 @@ describe('loadMeshes() 3D utility', () => {
     expect(scene.getMeshById(box1.id).metadata.serialize()).toEqual(box1)
     expect(scene.getMeshById(prism1.id)).toBeDefined()
     expect(scene.getMeshById(prism1.id).metadata.serialize()).toEqual(prism1)
+    expect(scene.getMeshById(die1.id)).toBeDefined()
+    expect(scene.getMeshById(die1.id).metadata.serialize()).toEqual(die1)
   })
 
   it('updates existing meshes with their behaviors', async () => {
@@ -478,7 +530,23 @@ describe('loadMeshes() 3D utility', () => {
       y: 11,
       z: 12
     })
-    await loadMeshes(scene, [card1, card2, token1, tile1, pawn1, box1, prism1])
+    const originalDie = await createDie({
+      id: die1.id,
+      x: -2,
+      y: 5,
+      z: 3,
+      randomizable: { face: 6 }
+    })
+    await loadMeshes(scene, [
+      card1,
+      card2,
+      token1,
+      tile1,
+      pawn1,
+      box1,
+      prism1,
+      die1
+    ])
     expect(scene.getMeshById(card1.id)).toBeDefined()
     expect(scene.getMeshById(card1.id).metadata.serialize()).toEqual({
       ...originalCard.metadata.serialize(),
@@ -524,6 +592,14 @@ describe('loadMeshes() 3D utility', () => {
       x: prism1.x,
       y: prism1.y,
       z: prism1.z
+    })
+    expect(scene.getMeshById(die1.id)).toBeDefined()
+    expect(scene.getMeshById(die1.id).metadata.serialize()).toEqual({
+      ...originalDie.metadata.serialize(),
+      x: die1.x,
+      y: die1.y,
+      z: die1.z,
+      randomizable: die1.randomizable
     })
   })
 

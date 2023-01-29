@@ -1,5 +1,4 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
 import { indicatorManager as manager } from '@src/3d/managers'
 import {
@@ -14,6 +13,7 @@ import {
 
 import {
   configures3dTestEngine,
+  createBox,
   expectScreenPosition,
   waitNextRender
 } from '../../test-utils'
@@ -48,7 +48,7 @@ describe('IndicatorManager', () => {
     })
 
     beforeEach(() => {
-      mesh = CreateBox(faker.datatype.uuid(), {}, scene)
+      mesh = createBox(faker.datatype.uuid(), {}, scene)
     })
 
     describe('registerMeshIndicator()', () => {
@@ -157,7 +157,7 @@ describe('IndicatorManager', () => {
         manager.init({ scene })
         indicators = [{ id: 'box1' }, { id: 'box2' }].map(
           ({ id, ...props }) => {
-            const mesh = CreateBox(id, {})
+            const mesh = createBox(id, {})
             const indicator = { id, mesh, ...props }
             return manager.registerMeshIndicator(indicator)
           }

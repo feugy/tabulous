@@ -1,10 +1,9 @@
-import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
 import { MoveBehavior, MoveBehaviorName } from '@src/3d/behaviors'
 import { moveManager } from '@src/3d/managers'
 import { beforeEach, describe, expect, it } from 'vitest'
 
-import { configures3dTestEngine } from '../../test-utils'
+import { configures3dTestEngine, createBox } from '../../test-utils'
 
 describe('MoveBehavior', () => {
   configures3dTestEngine()
@@ -16,7 +15,7 @@ describe('MoveBehavior', () => {
       duration: faker.datatype.number()
     }
     const behavior = new MoveBehavior(state)
-    const mesh = CreateBox('box', {})
+    const mesh = createBox('box', {})
     mesh.isPickable = false
 
     expect(behavior.enabled).toBe(true)
@@ -30,7 +29,7 @@ describe('MoveBehavior', () => {
   })
 
   it('registers mesh into MoveManager', () => {
-    const mesh = CreateBox('box', {})
+    const mesh = createBox('box', {})
     expect(moveManager.isManaging(mesh)).toBe(false)
 
     mesh.addBehavior(new MoveBehavior(), true)
@@ -53,7 +52,7 @@ describe('MoveBehavior', () => {
 
     beforeEach(() => {
       behavior = new MoveBehavior()
-      mesh = CreateBox('box', {})
+      mesh = createBox('box', {})
       mesh.addBehavior(behavior, true)
     })
 

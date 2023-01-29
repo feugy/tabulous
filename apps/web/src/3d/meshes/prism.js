@@ -60,6 +60,7 @@ export function createPrism(
   }
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.isPickable = false
+  mesh.isHittable = true
   mesh.isCylindric = true
 
   mesh.metadata = {

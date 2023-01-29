@@ -9,6 +9,7 @@ import { AnchorBehaviorName, StackBehaviorName } from '../behaviors/names'
 import { createBox } from '../meshes/box'
 import { createCard } from '../meshes/card'
 import { createCustom } from '../meshes/custom'
+import { createDie } from '../meshes/die'
 import { createPrism } from '../meshes/prism'
 import { createRoundToken } from '../meshes/round-token'
 import { createRoundedTile } from '../meshes/rounded-tile'
@@ -20,6 +21,7 @@ const meshCreatorByName = new Map([
   ['box', createBox],
   ['card', createCard],
   ['custom', createCustom],
+  ['die', createDie],
   ['prism', createPrism],
   ['roundToken', createRoundToken],
   ['roundedTile', createRoundedTile]

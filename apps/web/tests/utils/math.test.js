@@ -4,7 +4,9 @@ import {
   intersectCircles,
   intersectRectangles,
   intersectRectangleWithCircle,
-  projectToGround
+  projectToGround,
+  toDeg,
+  toRad
 } from '@src/utils'
 import { describe, expect, it } from 'vitest'
 
@@ -276,6 +278,22 @@ describe('mathematical utilities', () => {
       }
     ])('returns $result with $title', ({ circle, result }) => {
       expect(intersectRectangleWithCircle(rectangle, circle)).toBe(result)
+    })
+  })
+
+  describe('toDeg()', () => {
+    it('translates angle to degree', () => {
+      expect(toDeg(Math.PI)).toEqual(180)
+      expect(toDeg(Math.PI * 0.5)).toEqual(90)
+      expect(toDeg(Math.PI * -2)).toEqual(-360)
+    })
+  })
+
+  describe('toRad()', () => {
+    it('translates angle to degree', () => {
+      expect(toRad(-180)).toEqual(-Math.PI)
+      expect(toRad(45)).toEqual(Math.PI * 0.25)
+      expect(toRad(720)).toEqual(Math.PI * 4)
     })
   })
 })

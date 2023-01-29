@@ -1,4 +1,3 @@
-import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
 import { DetailBehavior, DetailBehaviorName } from '@src/3d/behaviors'
 import { controlManager } from '@src/3d/managers'
@@ -12,7 +11,7 @@ import {
   vi
 } from 'vitest'
 
-import { configures3dTestEngine } from '../../test-utils'
+import { configures3dTestEngine, createBox } from '../../test-utils'
 
 describe('DetailBehavior', () => {
   configures3dTestEngine()
@@ -33,7 +32,7 @@ describe('DetailBehavior', () => {
       backImage: faker.image.imageUrl()
     }
     const behavior = new DetailBehavior(state)
-    const mesh = CreateBox('box', {})
+    const mesh = createBox('box', {})
 
     expect(behavior.mesh).toBeNull()
     expect(behavior.name).toEqual(DetailBehaviorName)
@@ -57,7 +56,7 @@ describe('DetailBehavior', () => {
 
   it('can hydrate with default state', () => {
     const behavior = new DetailBehavior()
-    const mesh = CreateBox('box', {})
+    const mesh = createBox('box', {})
     mesh.addBehavior(behavior, true)
 
     behavior.fromState()
@@ -84,7 +83,7 @@ describe('DetailBehavior', () => {
 
     beforeEach(() => {
       behavior = new DetailBehavior({ frontImage, backImage })
-      mesh = CreateBox('box', {})
+      mesh = createBox('box', {})
       mesh.addBehavior(behavior, true)
     })
 

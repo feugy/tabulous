@@ -1,6 +1,4 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
-import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
 import { faker } from '@faker-js/faker'
 import {
   AnchorBehavior,
@@ -32,6 +30,8 @@ import {
 
 import {
   configures3dTestEngine,
+  createBox,
+  createCylinder,
   expectAnimationEnd,
   expectFlipped,
   expectInteractible,
@@ -96,7 +96,7 @@ describe('StackBehavior', () => {
 
   it('can hydrate with default state', () => {
     const behavior = new StackBehavior()
-    const mesh = CreateBox('box0', {})
+    const mesh = createBox('box0', {})
     mesh.addBehavior(behavior, true)
 
     behavior.fromState()
@@ -113,10 +113,10 @@ describe('StackBehavior', () => {
   })
 
   it('can hydrate with stacked mesh', () => {
-    const stacked = CreateBox('box1', {})
+    const stacked = createBox('box1', {})
     stacked.addBehavior(new StackBehavior(), true)
 
-    const mesh = CreateBox('box0', {})
+    const mesh = createBox('box0', {})
     mesh.addBehavior(new StackBehavior({ stackIds: [stacked.id] }), true)
     expectStacked([mesh, stacked])
     expectMoveRecorded(moveRecorded)
@@ -125,7 +125,7 @@ describe('StackBehavior', () => {
   })
 
   it('can not push mesh', () => {
-    expect(new StackBehavior().canPush(CreateBox('box1', {}))).toBe(false)
+    expect(new StackBehavior().canPush(createBox('box1', {}))).toBe(false)
   })
 
   describe('given attached to a mesh', () => {
@@ -135,7 +135,7 @@ describe('StackBehavior', () => {
 
     beforeEach(() => {
       ;[mesh, ...meshes] = Array.from({ length: 4 }, (_, rank) => {
-        const box = CreateBox(`box${rank}`, {})
+        const box = createBox(`box${rank}`, {})
         box.setAbsolutePosition(new Vector3(rank, rank, rank))
         box.addBehavior(new StackBehavior({ duration: 10 }), true)
         box.addBehavior(new FlipBehavior({ duration: 100 }), true)
@@ -207,7 +207,7 @@ describe('StackBehavior', () => {
       expect(meshes[0].absolutePosition).toEqual(Vector3.FromArray([1, 1, 1]))
       expect(meshes[2].absolutePosition).toEqual(Vector3.FromArray([3, 3, 3]))
       mesh.removeBehavior(behavior)
-      mesh = CreateCylinder('roundToken', { diameter })
+      mesh = createCylinder('roundToken', { diameter })
       mesh.addBehavior(behavior, true)
 
       behavior.fromState({ duration, extent, stackIds, kinds, priority })

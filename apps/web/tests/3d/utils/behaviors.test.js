@@ -1,6 +1,5 @@
 import { Animation } from '@babylonjs/core/Animations/animation'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import {
   AnchorBehaviorName,
   DetailBehaviorName,
@@ -36,6 +35,7 @@ import {
 } from 'vitest'
 
 import {
+  createBox,
   disposeAllMeshes,
   expectPosition,
   initialize3dEngine
@@ -74,7 +74,7 @@ beforeAll(async () => {
 })
 
 beforeEach(() => {
-  box = CreateBox('box', {})
+  box = createBox('box', {})
 })
 
 afterAll(() => engine.dispose())
@@ -585,7 +585,7 @@ describe('serializeBehaviors() 3D utility', () => {
 
   it('serializes rotable behavior', () => {
     const state = { angle: Math.PI, duration: 432 }
-    const mesh = CreateBox('box1')
+    const mesh = createBox('box1')
     const rotable = new RotateBehavior(state)
     mesh.addBehavior(rotable, true)
     expect(serializeBehaviors([rotable])).toEqual({
@@ -859,7 +859,7 @@ describe('isMeshInverted()', () => {
   })
 
   it('returns true for inverted child mesh', async () => {
-    const parent = CreateBox('parent')
+    const parent = createBox('parent')
     parent.addBehavior(
       new RotateBehavior({ angle: Math.PI, duration: 50 }),
       true

@@ -312,6 +312,8 @@ function buildShortcutMap() {
     [translate('shortcuts.shuffle'), [actionIds.shuffle]],
     [translate('shortcuts.push'), [actionIds.push, actionIds.increment]],
     [translate('shortcuts.pop'), [actionIds.pop, actionIds.decrement]],
+    [translate('shortcuts.random'), [actionIds.random]],
+    [translate('shortcuts.set-face'), [actionIds.setFace]],
     [translate('shortcuts.detail'), [actionIds.detail]]
   ])
 }

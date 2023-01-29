@@ -1,5 +1,4 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
-import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
 import {
   FlipBehavior,
@@ -11,6 +10,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
   configures3dTestEngine,
+  createBox,
   expectAbsoluteRotation,
   expectFlipped,
   expectPickable,
@@ -36,7 +36,7 @@ describe('RotateBehavior', () => {
       duration: faker.datatype.number()
     }
     const behavior = new RotateBehavior(state)
-    const mesh = CreateBox('box', {})
+    const mesh = createBox('box', {})
 
     expect(behavior.name).toEqual(RotateBehaviorName)
     expect(behavior.state).toEqual(state)
@@ -267,7 +267,7 @@ describe('RotateBehavior', () => {
       const angle = Math.PI * 0.5
       await mesh.metadata.rotate()
       expectRotated(mesh, angle)
-      const child = CreateBox('child', {})
+      const child = createBox('child', {})
       child.setParent(mesh)
       expectRotated(mesh, angle)
       expectAbsoluteRotation(child, 0, 'y')
@@ -280,7 +280,7 @@ describe('RotateBehavior', () => {
 
 function createAttachedRotable(state) {
   const behavior = new RotateBehavior(state)
-  const mesh = CreateBox('box', {})
+  const mesh = createBox('box', {})
   mesh.addBehavior(behavior, true)
   return behavior
 }

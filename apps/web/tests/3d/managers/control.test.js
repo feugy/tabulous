@@ -1,10 +1,9 @@
-import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
 import { AnchorBehavior, FlipBehavior } from '@src/3d/behaviors'
 import { controlManager as manager, indicatorManager } from '@src/3d/managers'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { configures3dTestEngine, sleep } from '../../test-utils'
+import { configures3dTestEngine, createBox, sleep } from '../../test-utils'
 
 describe('ControlManager', () => {
   let scene
@@ -29,8 +28,8 @@ describe('ControlManager', () => {
     vi.resetAllMocks()
     actions = []
 
-    mesh = CreateBox('box1', {}, scene)
-    anchorable = CreateBox('box2', {})
+    mesh = createBox('box1', {}, scene)
+    anchorable = createBox('box2', {})
     anchorable.addBehavior(
       new AnchorBehavior({
         anchors: [{ width: 1, height: 1, depth: 0.5 }]
@@ -38,7 +37,7 @@ describe('ControlManager', () => {
       true
     )
     anchorable.addBehavior(new FlipBehavior(), true)
-    handMesh = CreateBox('box3', {}, handScene)
+    handMesh = createBox('box3', {}, handScene)
     snapSpy = vi.spyOn(anchorable.metadata, 'snap')
     flipSpy = vi.spyOn(anchorable.metadata, 'flip')
 
@@ -50,7 +49,7 @@ describe('ControlManager', () => {
 
   describe('registerControlable()', () => {
     it('registers a mesh', () => {
-      const mesh = CreateBox('box3', {})
+      const mesh = createBox('box3', {})
       expect(manager.isManaging(mesh)).toBe(false)
 
       manager.registerControlable(mesh)
@@ -60,7 +59,7 @@ describe('ControlManager', () => {
     })
 
     it('automatically unregisters a mesh upon disposal', () => {
-      const mesh = CreateBox('box4', {})
+      const mesh = createBox('box4', {})
       manager.registerControlable(mesh)
       expect(manager.isManaging(mesh)).toBe(true)
       expect(controlledChangeReceived).toHaveBeenCalledTimes(1)
@@ -73,7 +72,7 @@ describe('ControlManager', () => {
     })
 
     it('does not unregisters a phantom mesh', () => {
-      const mesh = CreateBox('box5', {})
+      const mesh = createBox('box5', {})
       manager.registerControlable(mesh)
       mesh.isPhantom = true
       expect(manager.isManaging(mesh)).toBe(true)
@@ -87,7 +86,7 @@ describe('ControlManager', () => {
 
   describe('unregisterControlable()', () => {
     it('ignores uncontrolled mesh', () => {
-      const mesh = CreateBox('box6', {})
+      const mesh = createBox('box6', {})
       expect(manager.isManaging(mesh)).toBe(false)
 
       manager.unregisterControlable(mesh)
@@ -98,7 +97,7 @@ describe('ControlManager', () => {
 
   describe('apply()', () => {
     it('ignores uncontrolled mesh', () => {
-      const mesh = CreateBox('box', {})
+      const mesh = createBox('box', {})
       mesh.addBehavior(new FlipBehavior(), true)
       const flipSpy = vi.spyOn(mesh.metadata, 'flip')
 
@@ -209,7 +208,7 @@ describe('ControlManager', () => {
 
   describe('record()', () => {
     it('ignores uncontrolled mesh', async () => {
-      const mesh = CreateBox('box4', {})
+      const mesh = createBox('box4', {})
       manager.record({ mesh, fn: 'flip' })
       expect(actions).toHaveLength(0)
       expect(controlledChangeReceived).toHaveBeenCalledTimes(0)

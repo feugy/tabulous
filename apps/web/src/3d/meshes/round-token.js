@@ -53,6 +53,7 @@ export function createRoundToken(
   materialManager.configure(mesh, texture)
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.isPickable = false
+  mesh.isHittable = true
   mesh.isCylindric = true
 
   mesh.metadata = {

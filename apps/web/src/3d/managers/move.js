@@ -363,7 +363,7 @@ function findCollidingBoundingBoxes({ meshes }, moved, min) {
   const boxes = []
   for (const mesh of meshes) {
     if (
-      mesh.isPickable &&
+      mesh.isHittable &&
       !moved.includes(mesh) &&
       !selectionManager.meshes.has(mesh)
     ) {

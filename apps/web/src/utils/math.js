@@ -11,12 +11,21 @@
  */
 
 /**
- * Turn an angle from radian to degree
- * @param {number} radian - angle in radian
- * @return {number} same angle in degree
+ * Turns an angle from radian to degree.
+ * @param {number} radian - angle in radian.
+ * @return {number} same angle in degree.
  */
 export function toDeg(radian) {
   return radian * (180 / Math.PI)
+}
+
+/**
+ * Turns an angle from degree to radian.
+ * @param {number} degree - angle in degree.
+ * @returns {number} same angle in radian.
+ */
+export function toRad(degree) {
+  return (degree * Math.PI) / 180
 }
 
 /**

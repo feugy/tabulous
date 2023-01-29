@@ -1,10 +1,9 @@
-import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { faker } from '@faker-js/faker'
 import { TargetBehavior, TargetBehaviorName } from '@src/3d/behaviors'
 import { indicatorManager, targetManager } from '@src/3d/managers'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { configures3dTestEngine } from '../../test-utils'
+import { configures3dTestEngine, createBox } from '../../test-utils'
 
 describe('TargetBehavior', () => {
   configures3dTestEngine()
@@ -17,7 +16,7 @@ describe('TargetBehavior', () => {
       duration: faker.datatype.number()
     }
     const behavior = new TargetBehavior(state)
-    const mesh = CreateBox('box', {})
+    const mesh = createBox('box', {})
 
     expect(behavior.name).toEqual(TargetBehaviorName)
     expect(behavior.zones).toEqual([])
@@ -29,12 +28,12 @@ describe('TargetBehavior', () => {
 
   it('adds zones', () => {
     const behavior = new TargetBehavior()
-    const mesh1 = CreateBox('box1', {})
+    const mesh1 = createBox('box1', {})
     const zone1 = behavior.addZone(mesh1, { extent: 1.2 })
     expect(behavior.zones).toEqual([zone1])
     expectZone(zone1, { mesh: mesh1, extent: 1.2, enabled: true, priority: 0 })
 
-    const mesh2 = CreateBox('box1', {})
+    const mesh2 = createBox('box1', {})
     const zone2 = behavior.addZone(mesh2, {
       extent: 2,
       kinds: ['box', 'card'],
@@ -63,7 +62,7 @@ describe('TargetBehavior', () => {
     const id = `${playerId}.drop-zone.${meshId}`
     expect(indicatorManager.isManaging({ id })).toBe(false)
     const behavior = new TargetBehavior()
-    const mesh = CreateBox(meshId, {})
+    const mesh = createBox(meshId, {})
     const zone = behavior.addZone(mesh, { playerId })
     expect(behavior.zones).toEqual([zone])
     expectZone(zone, { mesh, enabled: true, priority: 0, playerId })
@@ -74,7 +73,7 @@ describe('TargetBehavior', () => {
 
   it('removes added zone and disposes their mesh', () => {
     const behavior = new TargetBehavior()
-    const mesh = CreateBox('box', {})
+    const mesh = createBox('box', {})
     const zone = behavior.addZone(mesh, { extent: 1.2 })
     expect(behavior.zones).toEqual([zone])
 
@@ -85,7 +84,7 @@ describe('TargetBehavior', () => {
 
   it('can not remove random zone', () => {
     const behavior = new TargetBehavior()
-    const mesh = CreateBox('box', {})
+    const mesh = createBox('box', {})
 
     behavior.removeZone({
       mesh,
@@ -102,7 +101,7 @@ describe('TargetBehavior', () => {
 
     beforeEach(() => {
       behavior = new TargetBehavior()
-      mesh = CreateBox('box', {})
+      mesh = createBox('box', {})
       mesh.addBehavior(behavior, true)
     })
 
@@ -115,9 +114,9 @@ describe('TargetBehavior', () => {
       const meshId = 'box1'
       const playerId = faker.datatype.uuid()
       const id = `${playerId}.drop-zone.${meshId}`
-      const mesh1 = CreateBox(meshId, {})
+      const mesh1 = createBox(meshId, {})
       behavior.addZone(mesh1, { extent: 1.2, playerId })
-      const mesh2 = CreateBox('box1', {})
+      const mesh2 = createBox('box1', {})
       behavior.addZone(mesh2, {
         extent: 2,
         kinds: ['box', 'card'],

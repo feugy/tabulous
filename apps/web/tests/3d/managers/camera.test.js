@@ -33,7 +33,6 @@ describe('CameraManager', () => {
 
   it('has initial state', () => {
     expect(manager.camera).toBeNull()
-    expect(manager.minAngle).toEqual(0)
     expect(manager.saves).toEqual([])
   })
 
@@ -66,7 +65,7 @@ describe('CameraManager', () => {
   describe('init()', () => {
     it('creates a camera with defaults', () => {
       manager.init()
-      expect(manager.minAngle).toEqual(Math.PI / 4)
+      expect(manager.camera.upperBetaLimit).toEqual(Math.PI / 3)
       expect(manager.camera.lowerRadiusLimit).toEqual(defaults.minY)
       expect(manager.camera.upperRadiusLimit).toEqual(defaults.maxY)
       expect(manager.camera.alpha).toEqual(defaults.alpha)
@@ -85,7 +84,7 @@ describe('CameraManager', () => {
       const maxY = 50
       const minAngle = Math.PI / 8
       manager.init({ beta, y: elevation, minY, maxY, minAngle })
-      expect(manager.minAngle).toEqual(minAngle)
+      expect(manager.camera.upperBetaLimit).toEqual(minAngle)
       expect(manager.camera.lowerRadiusLimit).toEqual(minY)
       expect(manager.camera.upperRadiusLimit).toEqual(maxY)
       expect(manager.camera.alpha).toEqual(alpha)
