@@ -1,9 +1,10 @@
 <script>
   import { logOut } from '@src/stores'
+  import Logo from '@src/svg/tabulous-logo-large.svg'
   import { _ } from 'svelte-intl'
-
+  
   import { goto } from '$app/navigation'
-
+  
   import Breadcrumb from './Breadcrumb.svelte'
   import Button from './Button.svelte'
   import Dropdown from './Dropdown.svelte'
@@ -46,6 +47,7 @@
     {/if}
   </nav>
   <div>
+    <Logo />
     <slot />
   </div>
 </header>
