@@ -1,11 +1,19 @@
 import { createHash } from 'node:crypto'
 
+import { Subject } from 'rxjs'
 import { fetch } from 'undici'
 
 import repositories from '../repositories/index.js'
 
+const {
+  FriendshipAccepted,
+  FriendshipEnded,
+  FriendshipProposed,
+  FriendshipRequested
+} = repositories
+
 /**
- * @typedef {object} Player a player
+ * @typedef {object} Player a player.
  * @property {string} id - unique id.
  * @property {string} username - player user name.
  * @property {number} currentGameId - game this player is currently playing.
@@ -17,6 +25,14 @@ import repositories from '../repositories/index.js'
  * @property {boolean} [isAdmin] - whether this player has elevated priviledges or not.
  * @property {string[]} [catalog] - list of copyrighted games this player has accessed to.
  */
+
+/**
+ * @typedef {object} Friendship a relationship between two players.
+ * @property {string} playerId - id of the target player (origin player is implicit).
+ * @property {boolean} isRequest? - when true, indicate a friendship request from the target player.
+ */
+
+export const friendshipUpdates = new Subject()
 
 /**
  * Creates or updates a player account, saving user details as they are provided.
@@ -144,18 +160,88 @@ async function findGravatar(userDetails) {
 }
 
 /**
- * Returns the list of friends of a given player.
- * @param {string} playerId - player id for who the list is returned
- * @returns {Promise<Player[]>} list (possibly empty) of friends of a given player
+ * Returns the list of friends of a given player, including friendship requests, and blocked players.
+ * @param {string} playerId - player id for who the list is returned.
+ * @returns {Promise<Friendship[]>} list (possibly empty) of friendship relationships for the specified player.
  */
-export async function getFriendList(playerId) {
-  return []
+export async function listFriends(playerId) {
+  const list = []
+  for (const { id, state } of await repositories.players.listFriendships(
+    playerId
+  )) {
+    if (state === FriendshipAccepted) {
+      list.push({ playerId: id })
+    } else if (state === FriendshipRequested) {
+      list.push({ playerId: id, isRequest: true })
+    } else if (state === FriendshipProposed) {
+      list.push({ playerId: id, isProposal: true })
+    }
+  }
+  return list
 }
 
 /**
- * Sends a friend request from one player to another one.
+ * Proposes a friendship request from one player to another one.
+ * Publishes an update.
  * @param {Player} sender - sender player.
- * @param {string} destinationId - id of the destination player.
+ * @param {string} playerId - id of the destination player.
+ * @returns {Promise<boolean>} true if the request was proposed.
+ */
+export async function requestFriendship(sender, playerId) {
+  if (!(await repositories.players.makeFriends(sender.id, playerId))) {
+    return false
+  }
+  friendshipUpdates.next({ from: sender.id, to: playerId, requested: true })
+  friendshipUpdates.next({ from: playerId, to: sender.id, proposed: true })
+  return true
+}
+
+/**
+ * Accepts a friendship request from another player.
+ * Publishes an update.
+ * @param {Player} sender - accepting player.
+ * @param {string} playerId - id of the requesting player.
+ * @returns {Promise<boolean>} true if the request was accepted.
+ */
+export async function acceptFriendship(sender, playerId) {
+  if (
+    !(await repositories.players.listFriendships(sender.id)).some(
+      ({ id, state }) => id === playerId && state === FriendshipRequested
+    )
+  ) {
+    return false
+  }
+  if (
+    !(await repositories.players.makeFriends(
+      sender.id,
+      playerId,
+      FriendshipAccepted
+    ))
+  ) {
+    return false
+  }
+  friendshipUpdates.next({ from: sender.id, to: playerId, accepted: true })
+  friendshipUpdates.next({ from: playerId, to: sender.id, accepted: true })
+  return true
+}
+
+/**
+ * Declines a friendship request or ends existing friendship.
+ * @param {Player} sender - declining player.
+ * @param {string} playerId - id of the declined player.
  * @returns {Promise<void>}
  */
-export async function sendFriendRequest(sender, destinationId) {}
+export async function endFriendship(sender, playerId) {
+  if (
+    !(await repositories.players.makeFriends(
+      sender.id,
+      playerId,
+      FriendshipEnded
+    ))
+  ) {
+    return false
+  }
+  friendshipUpdates.next({ from: sender.id, to: playerId, declined: true })
+  friendshipUpdates.next({ from: playerId, to: sender.id, declined: true })
+  return true
+}

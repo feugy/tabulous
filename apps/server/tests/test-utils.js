@@ -16,6 +16,7 @@ export function openGraphQLWebSocket(app) {
     `ws://localhost:${app.server.address().port}/graphql`,
     'graphql-ws'
   )
+  // ws.on('message', buffer => console.debug(`ws received: ${buffer.toString()}`))
   return new Promise(resolve => ws.once('open', () => resolve(ws)))
 }
 

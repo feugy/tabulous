@@ -1,8 +1,10 @@
 import { faker } from '@faker-js/faker'
 import { createVerifier } from 'fast-jwt'
 import fastify from 'fastify'
+import { Subject } from 'rxjs'
 import {
   afterAll,
+  afterEach,
   beforeAll,
   beforeEach,
   describe,
@@ -15,10 +17,18 @@ import graphQL from '../../src/plugins/graphql.js'
 import repositories from '../../src/repositories/index.js'
 import services from '../../src/services/index.js'
 import { hash } from '../../src/utils/index.js'
-import { mockMethods, signToken } from '../test-utils.js'
+import {
+  mockMethods,
+  openGraphQLWebSocket,
+  signToken,
+  startSubscription,
+  stopSubscription,
+  waitOnMessage
+} from '../test-utils.js'
 
 describe('given a started server', () => {
   let server
+  let ws
   let restoreServices
   vi.spyOn(console, 'warn').mockImplementation(() => {})
   const configuration = {
@@ -31,15 +41,22 @@ describe('given a started server', () => {
     server.decorate('conf', configuration)
     server.register(graphQL)
     await server.listen()
+    ws = await openGraphQLWebSocket(server)
     restoreServices = mockMethods(services)
     vi.spyOn(repositories.players, 'deleteById').mockImplementation(() => {})
     vi.spyOn(repositories.players, 'list').mockImplementation(() => {})
+    services.friendshipUpdates = new Subject()
   })
 
   beforeEach(vi.resetAllMocks)
 
   afterAll(async () => {
     restoreServices()
+    try {
+      ws?.close()
+    } catch {
+      // ignore closure errors
+    }
     await server?.close()
   })
 
@@ -337,44 +354,80 @@ describe('given a started server', () => {
       })
     })
 
-    describe('getFriendList query', () => {
-      it('returns the list of the current player', async () => {
-        const username = faker.name.firstName()
-        const id = faker.datatype.uuid()
-        services.getPlayerById.mockResolvedValueOnce({ id, username })
-        const friends = [
-          { id: faker.datatype.uuid(), username: faker.name.firstName() },
-          { id: faker.datatype.uuid(), username: faker.name.firstName() }
+    describe('listFriends query', () => {
+      it('resolves friend details on the fly', async () => {
+        const players = [
+          {
+            id: `p1-${faker.datatype.number(100)}`,
+            username: faker.name.firstName()
+          },
+          {
+            id: `p2-${faker.datatype.number(100)}`,
+            username: faker.name.firstName()
+          },
+          {
+            id: `p3-${faker.datatype.number(100)}`,
+            username: faker.name.firstName()
+          },
+          {
+            id: `p4-${faker.datatype.number(100)}`,
+            username: faker.name.firstName()
+          }
         ]
-        services.getFriendList.mockResolvedValueOnce(friends)
-        const token = signToken(id, configuration.auth.jwt.key)
+        services.getPlayerById.mockImplementation(async ids =>
+          Array.isArray(ids)
+            ? players.filter(({ id }) => ids.includes(id))
+            : players.find(({ id }) => id === ids)
+        )
+        services.listFriends.mockResolvedValueOnce([
+          { playerId: players[1].id, isRequest: true },
+          { playerId: players[2].id },
+          { playerId: players[3].id, isProposal: true }
+        ])
+        const token = signToken(players[0].id, configuration.auth.jwt.key)
         const response = await server.inject({
           method: 'POST',
           url: 'graphql',
           headers: { authorization: `Bearer ${token}` },
-          payload: { query: `query { getFriendList { id username } }` }
+          payload: {
+            query: `query { listFriends { player { id username } isRequest isProposal }}`
+          }
         })
-        expect(response.json()).toEqual({ data: { getFriendList: friends } })
+        expect(response.json()).toEqual({
+          data: {
+            listFriends: [
+              { player: players[1], isRequest: true, isProposal: null },
+              { player: players[2], isRequest: null, isProposal: null },
+              { player: players[3], isRequest: null, isProposal: true }
+            ]
+          }
+        })
         expect(response.statusCode).toEqual(200)
-        expect(services.getPlayerById).toHaveBeenCalledWith(id)
-        expect(services.getPlayerById).toHaveBeenCalledOnce()
-        expect(services.getFriendList).toHaveBeenCalledWith(id)
-        expect(services.getFriendList).toHaveBeenCalledOnce()
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(1, players[0].id)
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(
+          2,
+          expect.arrayContaining([players[1].id, players[2].id])
+        )
+        expect(services.getPlayerById).toHaveBeenCalledTimes(2)
+        expect(services.listFriends).toHaveBeenCalledWith(players[0].id)
+        expect(services.listFriends).toHaveBeenCalledOnce()
       })
 
       it('does not return current player without authentication details', async () => {
         const response = await server.inject({
           method: 'POST',
           url: 'graphql',
-          payload: { query: `query { getFriendList { id username } }` }
+          payload: {
+            query: `query { listFriends { player { id } isRequest } }`
+          }
         })
         expect(response.json()).toEqual({
-          data: { getFriendList: null },
+          data: { listFriends: null },
           errors: [expect.objectContaining({ message: 'Unauthorized' })]
         })
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).not.toHaveBeenCalled()
-        expect(services.getFriendList).not.toHaveBeenCalled()
+        expect(services.listFriends).not.toHaveBeenCalled()
       })
 
       it('does not return current player with invalid authentication details', async () => {
@@ -386,16 +439,201 @@ describe('given a started server', () => {
           headers: {
             authorization: `Bearer ${signToken(id, configuration.auth.jwt.key)}`
           },
-          payload: { query: `query { getFriendList { id username } }` }
+          payload: {
+            query: `query { listFriends { player { id } isRequest } }`
+          }
         })
         expect(response.json()).toEqual({
-          data: { getFriendList: null },
+          data: { listFriends: null },
           errors: [expect.objectContaining({ message: 'Unauthorized' })]
         })
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).toHaveBeenCalledWith(id)
         expect(services.getPlayerById).toHaveBeenCalledOnce()
-        expect(services.getFriendList).not.toHaveBeenCalled()
+        expect(services.listFriends).not.toHaveBeenCalled()
+      })
+    })
+
+    describe('acceptFriendship mutation', () => {
+      it('returns result', async () => {
+        const id = faker.datatype.uuid()
+        services.getPlayerById.mockResolvedValueOnce(player)
+        services.acceptFriendship.mockResolvedValueOnce(true)
+        const token = signToken(player.id, configuration.auth.jwt.key)
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: { authorization: `Bearer ${token}` },
+          payload: { query: `mutation { acceptFriendship(id: "${id}") }` }
+        })
+        expect(response.json()).toEqual({
+          data: { acceptFriendship: true }
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).toHaveBeenCalledWith(player.id)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
+        expect(services.acceptFriendship).toHaveBeenCalledWith(player, id)
+        expect(services.acceptFriendship).toHaveBeenCalledOnce()
+      })
+
+      it('does not return current player without authentication details', async () => {
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          payload: {
+            query: `mutation { acceptFriendship(id: "${player.id}") }`
+          }
+        })
+        expect(response.json()).toEqual({
+          data: { acceptFriendship: null },
+          errors: [expect.objectContaining({ message: 'Unauthorized' })]
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).not.toHaveBeenCalled()
+        expect(services.acceptFriendship).not.toHaveBeenCalled()
+      })
+
+      it('does not return current player with invalid authentication details', async () => {
+        const id = faker.datatype.uuid()
+        services.getPlayerById.mockResolvedValueOnce(null)
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            authorization: `Bearer ${signToken(id, configuration.auth.jwt.key)}`
+          },
+          payload: { query: `mutation { acceptFriendship(id: "${id}") }` }
+        })
+        expect(response.json()).toEqual({
+          data: { acceptFriendship: null },
+          errors: [expect.objectContaining({ message: 'Unauthorized' })]
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).toHaveBeenCalledWith(id)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
+        expect(services.acceptFriendship).not.toHaveBeenCalled()
+      })
+    })
+
+    describe('requestFriendship mutation', () => {
+      it('returns result', async () => {
+        const id = faker.datatype.uuid()
+        services.getPlayerById.mockResolvedValueOnce(player)
+        services.requestFriendship.mockResolvedValueOnce(true)
+        const token = signToken(player.id, configuration.auth.jwt.key)
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: { authorization: `Bearer ${token}` },
+          payload: { query: `mutation { requestFriendship(id: "${id}") }` }
+        })
+        expect(response.json()).toEqual({
+          data: { requestFriendship: true }
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).toHaveBeenCalledWith(player.id)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
+        expect(services.requestFriendship).toHaveBeenCalledWith(player, id)
+        expect(services.requestFriendship).toHaveBeenCalledOnce()
+      })
+
+      it('does not return current player without authentication details', async () => {
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          payload: {
+            query: `mutation { requestFriendship(id: "${player.id}") }`
+          }
+        })
+        expect(response.json()).toEqual({
+          data: { requestFriendship: null },
+          errors: [expect.objectContaining({ message: 'Unauthorized' })]
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).not.toHaveBeenCalled()
+        expect(services.requestFriendship).not.toHaveBeenCalled()
+      })
+
+      it('does not return current player with invalid authentication details', async () => {
+        const id = faker.datatype.uuid()
+        services.getPlayerById.mockResolvedValueOnce(null)
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            authorization: `Bearer ${signToken(id, configuration.auth.jwt.key)}`
+          },
+          payload: { query: `mutation { requestFriendship(id: "${id}") }` }
+        })
+        expect(response.json()).toEqual({
+          data: { requestFriendship: null },
+          errors: [expect.objectContaining({ message: 'Unauthorized' })]
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).toHaveBeenCalledWith(id)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
+        expect(services.requestFriendship).not.toHaveBeenCalled()
+      })
+    })
+
+    describe('endFriendship mutation', () => {
+      it('returns result', async () => {
+        const id = faker.datatype.uuid()
+        services.getPlayerById.mockResolvedValueOnce(player)
+        services.endFriendship.mockResolvedValueOnce(true)
+        const token = signToken(player.id, configuration.auth.jwt.key)
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: { authorization: `Bearer ${token}` },
+          payload: { query: `mutation { endFriendship(id: "${id}") }` }
+        })
+        expect(response.json()).toEqual({
+          data: { endFriendship: true }
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).toHaveBeenCalledWith(player.id)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
+        expect(services.endFriendship).toHaveBeenCalledWith(player, id)
+        expect(services.endFriendship).toHaveBeenCalledOnce()
+      })
+
+      it('does not return current player without authentication details', async () => {
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          payload: {
+            query: `mutation { endFriendship(id: "${player.id}") }`
+          }
+        })
+        expect(response.json()).toEqual({
+          data: { endFriendship: null },
+          errors: [expect.objectContaining({ message: 'Unauthorized' })]
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).not.toHaveBeenCalled()
+        expect(services.endFriendship).not.toHaveBeenCalled()
+      })
+
+      it('does not return current player with invalid authentication details', async () => {
+        const id = faker.datatype.uuid()
+        services.getPlayerById.mockResolvedValueOnce(null)
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            authorization: `Bearer ${signToken(id, configuration.auth.jwt.key)}`
+          },
+          payload: { query: `mutation { endFriendship(id: "${id}") }` }
+        })
+        expect(response.json()).toEqual({
+          data: { endFriendship: null },
+          errors: [expect.objectContaining({ message: 'Unauthorized' })]
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).toHaveBeenCalledWith(id)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
+        expect(services.endFriendship).not.toHaveBeenCalled()
       })
     })
 
@@ -904,6 +1142,93 @@ describe('given a started server', () => {
         expect(response.statusCode).toEqual(200)
         expect(repositories.players.list).toHaveBeenCalledWith({ from, size })
         expect(repositories.players.list).toHaveBeenCalledOnce()
+      })
+    })
+
+    describe('receiveFriendshipUpdates subscription', () => {
+      const players = [
+        player,
+        {
+          id: `p1-${faker.datatype.number(100)}`,
+          username: faker.name.firstName()
+        },
+        {
+          id: `p2-${faker.datatype.number(100)}`,
+          username: faker.name.firstName()
+        },
+        {
+          id: `p3-${faker.datatype.number(100)}`,
+          username: faker.name.firstName()
+        }
+      ]
+
+      beforeEach(() => {
+        services.getPlayerById.mockImplementation(async ids =>
+          Array.isArray(ids)
+            ? players.filter(({ id }) => ids.includes(id))
+            : players.find(({ id }) => id === ids)
+        )
+      })
+
+      afterEach(() => stopSubscription(ws))
+
+      it('sends update for current player', async () => {
+        await startSubscription(
+          ws,
+          'subscription { receiveFriendshipUpdates { from { id username } requested accepted declined proposed }}',
+          signToken(player.id, configuration.auth.jwt.key)
+        )
+        const data = waitOnMessage(ws, data => data.type === 'data')
+        services.friendshipUpdates.next({
+          from: players[1].id,
+          to: player.id,
+          requested: true,
+          accepted: false,
+          proposed: false
+        })
+
+        expect(await data).toEqual(
+          expect.objectContaining({
+            payload: {
+              data: {
+                receiveFriendshipUpdates: {
+                  from: players[1],
+                  requested: true,
+                  accepted: false,
+                  proposed: false,
+                  declined: null
+                }
+              }
+            }
+          })
+        )
+        expect(services.getPlayerById).toHaveBeenCalledWith(player.id)
+        expect(services.getPlayerById).toHaveBeenCalledWith([players[1].id])
+        expect(services.getPlayerById).toHaveBeenCalledTimes(2)
+      }, 3000)
+
+      it('ignores updates from other players', async () => {
+        await startSubscription(
+          ws,
+          'subscription { receiveFriendshipUpdates { from requested accepted declined }}',
+          signToken(player.id, configuration.auth.jwt.key)
+        )
+        const data = waitOnMessage(ws, data => data.type === 'data')
+        services.friendshipUpdates.next({
+          from: player.id,
+          to: players[1].id,
+          accepted: true
+        })
+        await expect(
+          Promise.race([
+            data,
+            new Promise((resolve, reject) =>
+              setTimeout(reject, 500, new Error('timeout'))
+            )
+          ])
+        ).rejects.toThrow('timeout')
+        expect(services.getPlayerById).toHaveBeenCalledWith(player.id)
+        expect(services.getPlayerById).toHaveBeenCalledOnce()
       })
     })
   })

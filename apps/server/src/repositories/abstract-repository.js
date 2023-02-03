@@ -85,10 +85,10 @@ export class AbstractRepository {
   /**
    * Connects the repository to the underlying storage system.
    * Will store models into a JSON file named after the repository.
-   * @async
    * @param {object} args - connection arguments:
    * @param {string} args.url - url to the Redis Database, including potential authentication.
    * @param {boolean} [args.isProduction = true] - when false, displays friendly stacktraces, which penalize performances.
+   * @returns {Promise<void>}
    */
   async connect({ url, isProduction = true }) {
     if (!this.client) {
@@ -117,6 +117,7 @@ export class AbstractRepository {
 
   /**
    * Tears the repository down to release its connection.
+   * @returns {Promise<void>}
    */
   async release() {
     try {
@@ -129,11 +130,10 @@ export class AbstractRepository {
 
   /**
    * Lists all models with pagination.
-   * @async
    * @param {object} args - list arguments, including:
    * @param {number} [args.from = 0] - 0-based index of the first result
    * @param {number} [args.size = 10] - maximum number of models returned after first results.
-   * @returns {Page} a given page of models.
+   * @returns {Promise<Page>} a given page of models.
    */
   async list({ from = 0, size = 10 } = {}) {
     let results = []
@@ -148,9 +148,8 @@ export class AbstractRepository {
 
   /**
    * Get a single or several model by their id.
-   * @async
    * @param {string|string[]} id - desired id(s).
-   * @returns {object|null|(object|null)[]} matching model(s), or null(s).
+   * @returns {Promise<object|null>|Promise<(object|null)[]>} matching model(s), or null(s).
    */
   async getById(id) {
     const ids = Array.isArray(id) ? id : [id]
@@ -188,9 +187,8 @@ export class AbstractRepository {
    * It creates new model when needed, and updates existing ones (based on provided id).
    * Partial update is supported: incoming data is merged with previous (top level properties only).
    * Time complexity if O(2N + 1) + M * O(log(T)), with N saved records, M newly saved records, T total of records.
-   * @async
    * @param {object|object[]} data - single or array of saved (partial) models.
-   * @returns {object|object[]} single or array of saved models.
+   * @returns {Promise<object|object[]>} single or array of saved models.
    */
   async save(data) {
     const records = Array.isArray(data) ? data : [data]
@@ -216,12 +214,14 @@ export class AbstractRepository {
         models.push(model)
         this._saveModel({ key: this._buildKey(model.id), model, transaction })
       }
-      await this._enrichSaveTransaction({
-        transaction,
-        models,
-        existings,
-        indexed
-      }).exec()
+      await (
+        await this._enrichSaveTransaction({
+          transaction,
+          models,
+          existings,
+          indexed
+        })
+      ).exec()
     }
     return Array.isArray(data) ? models : models[0]
   }
@@ -241,7 +241,7 @@ export class AbstractRepository {
    * Allows subclasses to tweak the Redis transaction used to save records.
    * @private
    * @param {SaveTransactionContext} context - contextual information.
-   * @returns {Transaction} the applied transaction.
+   * @returns {Transaction|Promise<Transaction>} the applied transaction.
    */
   _enrichSaveTransaction({ transaction, indexed }) {
     if (indexed.length) {
@@ -255,9 +255,8 @@ export class AbstractRepository {
   /**
    * Deletes models by their ids.
    * Unmatching ids will be simply ignored and null will be returned instead.
-   * @async
    * @param {string|string[]} ids - ids of removed models.
-   * @returns {object|null|[object|null]} single or array of removed models and nulls.
+   * @returns {Promise<object|null>|Promise<[object|null]>} single or array of removed models and nulls.
    */
   async deleteById(ids) {
     const recordIds = Array.isArray(ids) ? ids : [ids]
@@ -267,11 +266,13 @@ export class AbstractRepository {
       if (keys.length) {
         models = await this.getById(recordIds)
         const transaction = this.client.multi().del(...keys)
-        await this._enrichDeleteTransaction({
-          keys,
-          models,
-          transaction
-        }).exec()
+        await (
+          await this._enrichDeleteTransaction({
+            keys,
+            models,
+            transaction
+          })
+        ).exec()
       }
     }
     return Array.isArray(ids) ? models : models[0]
@@ -282,7 +283,7 @@ export class AbstractRepository {
    * Allows subclasses to tweak the Redis transaction used to delete records.
    * @private
    * @param {DeleteTransactionContext} context - contextual information.
-   * @returns {Transaction} the applied transaction.
+   * @returns {Transaction|Promise<Transaction>} the applied transaction.
    */
   _enrichDeleteTransaction({ transaction, models }) {
     const ids = models.map(model => model?.id).filter(Boolean)

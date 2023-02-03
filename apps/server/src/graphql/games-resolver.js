@@ -155,14 +155,14 @@ export default {
   },
 
   Subscription: {
-    /**
-     * Sends the full list of current games to a given player when they change.
-     * Requires valid authentication.
-     * @param {object} obj - graphQL object.
-     * @param {object} args - subscription arguments.
-     * @param {object} context - graphQL context.
-     */
     receiveGameListUpdates: {
+      /**
+       * Sends the full list of current games to a given player when they change.
+       * Requires valid authentication.
+       * @param {object} obj - graphQL object.
+       * @param {object} args - subscription arguments.
+       * @param {object} context - graphQL context.
+       */
       subscribe: isAuthenticated(async (obj, args, { player, pubsub }) => {
         const topic = `listGames-${player.id}`
         const subscription = services.gameListsUpdate
@@ -179,6 +179,7 @@ export default {
         return queue
       })
     },
+
     receiveGameUpdates: {
       /**
        * Sends a given game updates from server.
