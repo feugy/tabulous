@@ -54,7 +54,7 @@ describe('Typeahead component', () => {
       handleInput.mockImplementation(async () => options$.set(options))
       await userEvent.type(input, 'a')
       expect(handleChange).not.toHaveBeenCalled()
-      expect(handleInput).toHaveBeenCalledTimes(1)
+      expect(handleInput).toHaveBeenCalledOnce()
       expect(screen.queryByRole('menu')).toBeInTheDocument()
       const items = screen.getAllByRole('menuitem')
       expect(extractText(items)).toEqual(
@@ -67,13 +67,13 @@ describe('Typeahead component', () => {
       const input = screen.getByRole('textbox')
       handleInput.mockImplementation(async () => options$.set(options))
       await userEvent.type(input, 'a')
-      expect(handleInput).toHaveBeenCalledTimes(1)
+      expect(handleInput).toHaveBeenCalledOnce()
 
       fireEvent.click(screen.queryAllByRole('menuitem')[2])
       await tick()
       expect(input).toHaveValue(options[2].label ?? options[2])
-      expect(handleChange).toHaveBeenCalledTimes(0)
-      expect(handleInput).toHaveBeenCalledTimes(1)
+      expect(handleChange).not.toHaveBeenCalled()
+      expect(handleInput).toHaveBeenCalledOnce()
     })
 
     it('selects option with keyboard and updates value', async () => {
@@ -81,7 +81,7 @@ describe('Typeahead component', () => {
       const input = screen.getByRole('textbox')
       handleInput.mockImplementation(async () => options$.set(options))
       await userEvent.type(input, 'a')
-      expect(handleInput).toHaveBeenCalledTimes(1)
+      expect(handleInput).toHaveBeenCalledOnce()
 
       await userEvent.type(input, '{ArrowDown}')
       fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' })
@@ -89,8 +89,8 @@ describe('Typeahead component', () => {
       fireEvent.keyDown(document.activeElement, { key: 'ArrowRight' })
       await tick()
       expect(input).toHaveValue(options[1].label ?? options[1])
-      expect(handleChange).toHaveBeenCalledTimes(0)
-      expect(handleInput).toHaveBeenCalledTimes(1)
+      expect(handleChange).not.toHaveBeenCalled()
+      expect(handleInput).toHaveBeenCalledOnce()
     })
 
     it('selects option by typing its value', async () => {
@@ -101,11 +101,20 @@ describe('Typeahead component', () => {
       await userEvent.type(input, 'a{Backspace}')
       expect(handleInput).toHaveBeenCalledTimes(2)
 
-      await userEvent.type(input, value)
-      fireEvent.keyDown(input, { key: 'Enter' })
+      await userEvent.type(input, `${value}{Enter}`)
       expect(input).toHaveValue(value)
-      expect(handleChange).toHaveBeenCalledTimes(0)
+      expect(handleChange).not.toHaveBeenCalled()
       expect(handleInput).toHaveBeenCalledTimes(2 + value.length)
+    })
+
+    it('selects first option on enter', async () => {
+      renderComponent()
+      const input = screen.getByRole('textbox')
+      handleInput.mockImplementation(async () => options$.set(options))
+      await userEvent.type(input, `a{Enter}`)
+      expect(input).toHaveValue(options[0].label ?? options[0])
+      expect(handleChange).not.toHaveBeenCalled()
+      expect(handleInput).toHaveBeenCalledOnce()
     })
 
     it('closes menu with keyboard and opens on focus', async () => {
@@ -113,13 +122,13 @@ describe('Typeahead component', () => {
       const input = screen.getByRole('textbox')
       handleInput.mockImplementation(async () => options$.set(options))
       await userEvent.type(input, 'a')
-      expect(handleInput).toHaveBeenCalledTimes(1)
+      expect(handleInput).toHaveBeenCalledOnce()
 
       await userEvent.type(input, '{Enter}')
       await sleep(100)
       expect(screen.queryByRole('menu')).toBeNull()
-      expect(handleChange).toHaveBeenCalledTimes(0)
-      expect(handleInput).toHaveBeenCalledTimes(1)
+      expect(handleChange).not.toHaveBeenCalled()
+      expect(handleInput).toHaveBeenCalledOnce()
 
       fireEvent.focus(input)
       await tick()

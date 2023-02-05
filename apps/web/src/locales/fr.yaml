@@ -48,6 +48,12 @@ labels:
   confirm-game-deletion: Souhaitez vous vraiment supprimer cette partie de "{title}" ?
   confirm-lobby-deletion: Souhaitez vous vraiment supprimer ce salon ?
   copyright: Tabulous.fr. Tous droits réservés.
+  end-friendship: Voulez vous vraiment retirer {username} de vos ami(e)s ? Vous ne pourrez plus jouer ensemble.
+  empty-friend-list: Ajoutez vos amis pour pouvoir jouer avec eux.
+  friendship-accepted: "{username} a rejoint votre liste d'ami(e)s"
+  friendship-declined: "{username} a quitté votre liste d'ami(e)s"
+  friendship-proposed: 'Demande envoyée à {username}'
+  friendship-requested: '{username} souhaite rejoindre vos ami(e)s'
   game-authors: 'Créé par : '
   game-deleted: Partie supprimée !
   game-deleted-by-owner: Le(a) propriétaire a supprimé cette partie
@@ -98,6 +104,8 @@ titles:
   confirm-game-deletion: Suppression de la partie
   confirm-lobby-deletion: Suppression du salon
   create-game: Nouvelle partie
+  end-friendship: Êtes vous sûr ?
+  friend-list: Vos ami(e)s
   game-parameters: Réglages du jeu
   home: Bonjour {username} !
   invite: Qui vas tu inviter ?

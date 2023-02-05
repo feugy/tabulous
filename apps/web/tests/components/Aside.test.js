@@ -1,4 +1,4 @@
-import { GameAside } from '@src/components'
+import { Aside } from '@src/components'
 import { stream$ } from '@src/stores/stream'
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import userEvent from '@testing-library/user-event'
@@ -21,11 +21,16 @@ vi.mock('@src/stores/stream', () => {
 })
 
 const helpButtonText = 'helpF1'
-const rulesButtonText = 'auto_storiesF2'
-const playersButonText = 'people_altF3'
-const discussionButtonText = 'question_answerF4'
+const helpButtonSelector = { name: 'help F1' }
+const friendsButtonText = 'people_altF2'
+const friendsButtonSelector = { name: 'people_alt F2' }
+const rulesButtonText = 'auto_storiesF3'
+const rulesButtonSelector = { name: 'auto_stories F3' }
+const playersButonText = 'contactsF4'
+const playersButtonSelector = { name: 'contacts F4' }
+const discussionButtonText = 'question_answerF5'
 
-describe('GameAside component', () => {
+describe('Aside component', () => {
   const handleSend = vi.fn()
   const stream = { getAudioTracks: () => [], getVideoTracks: () => [] }
   const connected = [
@@ -48,7 +53,7 @@ describe('GameAside component', () => {
   })
 
   function renderComponent(props = {}) {
-    return render(html`<${GameAside}
+    return render(html`<${Aside}
       connected=${[]}
       thread=${[]}
       ...${props}
@@ -56,18 +61,34 @@ describe('GameAside component', () => {
     />`)
   }
 
-  it('can have no tabs', () => {
+  it('can have friends tab only', () => {
     renderComponent({
       player,
+      friends: [{ player: players[1] }, { player: players[2] }],
       playerById: new Map(
         players.slice(0, 1).map(player => [player.id, player])
       )
     })
-    expect(screen.queryByRole('tab')).not.toBeInTheDocument()
+    expect(extractText(screen.getAllByRole('tab'))).toEqual([friendsButtonText])
     expect(screen.getByRole('region')).toHaveAttribute('aria-expanded', 'false')
   })
 
-  it('only has help tab on single player game without rules book', () => {
+  it('opens friends tab when it contains requests', () => {
+    renderComponent({
+      player,
+      friends: [
+        { player: players[1], isRequest: true },
+        { player: players[2] }
+      ],
+      playerById: new Map(
+        players.slice(0, 1).map(player => [player.id, player])
+      )
+    })
+    expect(extractText(screen.getAllByRole('tab'))).toEqual([friendsButtonText])
+    expect(screen.getByRole('region')).toHaveAttribute('aria-expanded', 'true')
+  })
+
+  it('only has help and friends tabs on single player game without rules book', () => {
     renderComponent({
       game: { kind: 'belote' },
       player,
@@ -75,11 +96,14 @@ describe('GameAside component', () => {
         players.slice(0, 1).map(player => [player.id, player])
       )
     })
-    expect(extractText(screen.getAllByRole('tab'))).toEqual([helpButtonText])
+    expect(extractText(screen.getAllByRole('tab'))).toEqual([
+      friendsButtonText,
+      helpButtonText
+    ])
     expect(screen.getByRole('region')).toHaveAttribute('aria-expanded', 'false')
   })
 
-  it('has help and rules book on single player game', () => {
+  it('has help, friends and rules book on single player game', () => {
     renderComponent({
       player,
       game: { kind: 'splendor', rulesBookPageCount: 4 },
@@ -87,12 +111,13 @@ describe('GameAside component', () => {
     })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
       rulesButtonText,
+      friendsButtonText,
       helpButtonText
     ])
     expect(screen.getByRole('region')).toHaveAttribute('aria-expanded', 'false')
   })
 
-  it('has help and peer tabs on game without rules book', () => {
+  it('has help, friends and peer tabs on game without rules book', () => {
     renderComponent({
       player,
       game: { kind: 'splendor' },
@@ -101,6 +126,7 @@ describe('GameAside component', () => {
     })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
       playersButonText,
+      friendsButtonText,
       helpButtonText,
       discussionButtonText
     ])
@@ -116,7 +142,7 @@ describe('GameAside component', () => {
     expect(screen.getByText(thread[thread.length - 1].text)).toBeInTheDocument()
   })
 
-  it('has help, rules book and peer tabs on game', () => {
+  it('has help, friends, rules book and peer tabs on game', () => {
     renderComponent({
       player,
       game: { kind: 'splendor', rulesBookPageCount: 4 },
@@ -129,6 +155,7 @@ describe('GameAside component', () => {
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
       playersButonText,
       rulesButtonText,
+      friendsButtonText,
       helpButtonText,
       discussionButtonText
     ])
@@ -141,7 +168,7 @@ describe('GameAside component', () => {
     expect(screen.getByText(thread[thread.length - 1].text)).toBeInTheDocument()
   })
 
-  it('has only peer tabs on lobby', () => {
+  it('has only friends and peer tabs on lobby', () => {
     renderComponent({
       player,
       game: { rulesBookPageCount: 4 },
@@ -153,6 +180,7 @@ describe('GameAside component', () => {
     expect(discussionSection).toHaveAttribute('aria-expanded', 'true')
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
       playersButonText,
+      friendsButtonText,
       discussionButtonText
     ])
     const avatars = screen.getAllByTestId('player-avatar')
@@ -164,7 +192,7 @@ describe('GameAside component', () => {
     expect(screen.getByText(thread[thread.length - 1].text)).toBeInTheDocument()
   })
 
-  it('has streams for connected peers', () => {
+  it('has streams for connected peers', async () => {
     renderComponent({
       player,
       game: { kind: 'belote' },
@@ -174,6 +202,7 @@ describe('GameAside component', () => {
     })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
       playersButonText,
+      friendsButtonText,
       helpButtonText,
       discussionButtonText
     ])
@@ -205,37 +234,50 @@ describe('GameAside component', () => {
     expect(handleSend).toHaveBeenCalledTimes(1)
   })
 
-  it('displays rules book when clicking on tab', () => {
-    renderComponent({
-      player,
-      game: { kind: 'splendor', rulesBookPageCount: 4 },
-      playerById: toMap(players.slice(0, 1))
-    })
-
-    fireEvent.click(screen.getByRole('tab', { name: 'auto_stories F2' }))
-
-    expect(
-      screen.getByRole('button', { name: 'navigate_before' })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', {
-        name: 'navigate_next'
+  describe('given all tabs visible', () => {
+    beforeEach(() =>
+      renderComponent({
+        player,
+        game: { kind: 'splendor', rulesBookPageCount: 4 },
+        playerById: toMap(playingPlayers),
+        connected,
+        thread
       })
-    ).toBeInTheDocument()
-  })
+    )
 
-  it('displays help book when clicking on tab', () => {
-    renderComponent({
-      player,
-      game: { kind: 'belote' },
-      playerById: toMap(players.slice(0, 1))
+    it('displays rules book when clicking on tab', async () => {
+      await fireEvent.click(screen.getByRole('tab', rulesButtonSelector))
+      expect(
+        screen.getByRole('button', { name: 'navigate_before' })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', {
+          name: 'navigate_next'
+        })
+      ).toBeInTheDocument()
     })
 
-    fireEvent.click(screen.getByRole('tab', { name: 'help F1' }))
+    it('displays help book when clicking on tab', async () => {
+      await fireEvent.click(screen.getByRole('tab', helpButtonSelector))
+      expect(
+        screen.getByText(translate('titles.camera-controls'))
+      ).toBeInTheDocument()
+    })
 
-    expect(
-      screen.getByText(translate('titles.camera-controls'))
-    ).toBeInTheDocument()
+    it('displays friend list when clicking on tab', async () => {
+      await fireEvent.click(screen.getByRole('tab', friendsButtonSelector))
+      expect(
+        screen.getByText(translate('titles.friend-list'))
+      ).toBeInTheDocument()
+    })
+
+    it('displays friends when clicking on tab', async () => {
+      await fireEvent.click(screen.getByRole('tab', friendsButtonSelector))
+      await fireEvent.click(screen.getByRole('tab', playersButtonSelector))
+      const avatars = screen.getAllByTestId('player-avatar')
+      expect(avatars).toHaveLength(playingPlayers.length)
+      expect(avatars[0].closest('.peers')).not.toHaveClass('hidden')
+    })
   })
 })
 

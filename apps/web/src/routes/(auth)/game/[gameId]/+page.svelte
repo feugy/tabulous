@@ -1,5 +1,5 @@
 <script>
-  import { GameAside, InvitePlayerDialogue, Progress } from '@src/components'
+  import { Aside, InvitePlayerDialogue, Progress } from '@src/components'
   import {
     actionMenuProps,
     cameraSaves,
@@ -14,6 +14,7 @@
     initIndicators,
     joinGame,
     leaveGame,
+    listFriends,
     longInputs,
     meshDetails,
     playerColor,
@@ -55,6 +56,7 @@
   let dimensionObserver
   let dimensionSubscription
   let gameParameters
+  let friends
 
   onMount(async () => {
     engine = initEngine({ canvas, interaction, longTapDelay, hand })
@@ -68,6 +70,7 @@
         engine?.resize()
       }
     )
+    friends = listFriends()
   })
 
   beforeNavigate(() => {
@@ -168,12 +171,13 @@
   </div>
   <RadialMenu {...$actionMenuProps || {}} />
   <CursorInfo halos={longInputs} />
-  <GameAside
+  <Aside
     game={$currentGame}
     player={data.session.player}
     playerById={$gamePlayerById}
     connected={$connected}
     thread={$thread}
+    friends={$friends}
     on:sendMessage={({ detail }) => sendToThread(detail.text)}
   />
 </main>

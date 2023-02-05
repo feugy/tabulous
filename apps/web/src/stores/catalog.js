@@ -1,6 +1,9 @@
+import { get } from 'svelte/store'
+
 import * as graphQL from '../graphql'
 import { makeLogger } from '../utils'
 import { runQuery } from './graphql-client'
+import { buildLocaleComparator } from './locale'
 
 const logger = makeLogger('players')
 
@@ -15,5 +18,6 @@ const logger = makeLogger('players')
  */
 export async function listCatalog() {
   logger.info('list catalog')
-  return runQuery(graphQL.listCatalog)
+  const byTitle = get(buildLocaleComparator('locales.$locale.title'))
+  return (await runQuery(graphQL.listCatalog)).sort(byTitle)
 }

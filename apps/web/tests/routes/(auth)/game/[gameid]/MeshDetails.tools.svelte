@@ -7,5 +7,5 @@
   component={MeshDetails}
   name="Routes/game/[gameId]/Mesh Details"
   events={['open', 'close']}
-  props={{ mesh: { image: '/french-suited-card/images/hearts-12.svg' } }}
+  props={{ mesh: { image: '/assets/images/hearts-12.1.svg' } }}
 />

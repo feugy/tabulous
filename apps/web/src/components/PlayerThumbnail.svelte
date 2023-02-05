@@ -42,7 +42,7 @@
 
 <style lang="postcss">
   figure {
-    @apply flex items-center justify-center;
+    @apply flex flex-shrink-0 items-center justify-center;
     @apply rounded-full border-$primary-light bg-$primary-light;
     height: var(--dimension);
     width: var(--dimension);

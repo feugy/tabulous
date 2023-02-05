@@ -8,7 +8,7 @@
     "migrate": "node migrations",
     "start": "nodemon . | pino-pretty -c -t",
     "test": "vitest run --coverage",
-    "test:dev": "vitest dev"
+    "test:dev": "vitest dev --reporter=verbose"
   },
   "dependencies": {
     "@fastify/cors": "^8.2.0",

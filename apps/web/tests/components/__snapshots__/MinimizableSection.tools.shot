@@ -8,7 +8,7 @@ exports[`Bottom 1`] = `
     aria-expanded="true"
     aria-label="minimizable"
     class="s-vqhOCvFa7LzI vertical"
-    id="minimizable-section-15"
+    id="minimizable-section-16"
     style="height: auto;"
   >
     <menu
@@ -41,7 +41,7 @@ exports[`Bottom 1`] = `
       </ol>
        
       <div
-        aria-controls="minimizable-section-15"
+        aria-controls="minimizable-section-16"
         class="gutter s-vqhOCvFa7LzI"
         role="scrollbar"
       />
@@ -69,7 +69,7 @@ exports[`Bottom 1`] = `
           <span
             class="from s-4DrpFHLJm4IA"
           >
-            Maître Folage
+            Maître Follas
           </span>
           <span
             class="message s-4DrpFHLJm4IA"
@@ -120,7 +120,7 @@ M'enfin quoi, on parle dans votre dos.
           <span
             class="from s-4DrpFHLJm4IA"
           >
-            Maître Folage
+            Maître Follas
           </span>
           <span
             class="message s-4DrpFHLJm4IA"
@@ -198,7 +198,7 @@ exports[`Left 1`] = `
     aria-expanded="true"
     aria-label="minimizable"
     class="s-vqhOCvFa7LzI"
-    id="minimizable-section-12"
+    id="minimizable-section-13"
     style="width: auto;"
   >
     <menu
@@ -231,7 +231,7 @@ exports[`Left 1`] = `
       </ol>
        
       <div
-        aria-controls="minimizable-section-12"
+        aria-controls="minimizable-section-13"
         class="gutter s-vqhOCvFa7LzI"
         role="scrollbar"
       />
@@ -259,7 +259,7 @@ exports[`Left 1`] = `
           <span
             class="from s-4DrpFHLJm4IA"
           >
-            Maître Folage
+            Maître Follas
           </span>
           <span
             class="message s-4DrpFHLJm4IA"
@@ -310,7 +310,7 @@ M'enfin quoi, on parle dans votre dos.
           <span
             class="from s-4DrpFHLJm4IA"
           >
-            Maître Folage
+            Maître Follas
           </span>
           <span
             class="message s-4DrpFHLJm4IA"
@@ -388,7 +388,7 @@ exports[`Multiple, custom tabs 1`] = `
     aria-expanded="false"
     aria-label="minimizable"
     class="s-vqhOCvFa7LzI minimized vertical"
-    id="minimizable-section-11"
+    id="minimizable-section-12"
     style="height: auto;"
   >
     <menu
@@ -441,7 +441,7 @@ exports[`Multiple, custom tabs 1`] = `
       </ol>
        
       <div
-        aria-controls="minimizable-section-11"
+        aria-controls="minimizable-section-12"
         class="gutter s-vqhOCvFa7LzI"
         role="scrollbar"
       />
@@ -469,7 +469,7 @@ exports[`Multiple, custom tabs 1`] = `
           <span
             class="from s-4DrpFHLJm4IA"
           >
-            Maître Folage
+            Maître Follas
           </span>
           <span
             class="message s-4DrpFHLJm4IA"
@@ -520,7 +520,7 @@ M'enfin quoi, on parle dans votre dos.
           <span
             class="from s-4DrpFHLJm4IA"
           >
-            Maître Folage
+            Maître Follas
           </span>
           <span
             class="message s-4DrpFHLJm4IA"
@@ -598,7 +598,7 @@ exports[`Right 1`] = `
     aria-expanded="true"
     aria-label="minimizable"
     class="s-vqhOCvFa7LzI"
-    id="minimizable-section-13"
+    id="minimizable-section-14"
     style="width: auto;"
   >
     <menu
@@ -631,7 +631,7 @@ exports[`Right 1`] = `
       </ol>
        
       <div
-        aria-controls="minimizable-section-13"
+        aria-controls="minimizable-section-14"
         class="gutter s-vqhOCvFa7LzI"
         role="scrollbar"
       />
@@ -659,7 +659,7 @@ exports[`Right 1`] = `
           <span
             class="from s-4DrpFHLJm4IA"
           >
-            Maître Folage
+            Maître Follas
           </span>
           <span
             class="message s-4DrpFHLJm4IA"
@@ -710,7 +710,7 @@ M'enfin quoi, on parle dans votre dos.
           <span
             class="from s-4DrpFHLJm4IA"
           >
-            Maître Folage
+            Maître Follas
           </span>
           <span
             class="message s-4DrpFHLJm4IA"
@@ -788,7 +788,7 @@ exports[`Top 1`] = `
     aria-expanded="true"
     aria-label="minimizable"
     class="s-vqhOCvFa7LzI vertical"
-    id="minimizable-section-14"
+    id="minimizable-section-15"
     style="height: auto;"
   >
     <menu
@@ -821,7 +821,7 @@ exports[`Top 1`] = `
       </ol>
        
       <div
-        aria-controls="minimizable-section-14"
+        aria-controls="minimizable-section-15"
         class="gutter s-vqhOCvFa7LzI"
         role="scrollbar"
       />
@@ -849,7 +849,7 @@ exports[`Top 1`] = `
           <span
             class="from s-4DrpFHLJm4IA"
           >
-            Maître Folage
+            Maître Follas
           </span>
           <span
             class="message s-4DrpFHLJm4IA"
@@ -900,7 +900,7 @@ M'enfin quoi, on parle dans votre dos.
           <span
             class="from s-4DrpFHLJm4IA"
           >
-            Maître Folage
+            Maître Follas
           </span>
           <span
             class="message s-4DrpFHLJm4IA"

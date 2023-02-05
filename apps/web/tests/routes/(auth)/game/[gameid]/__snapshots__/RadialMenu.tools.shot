@@ -76,7 +76,7 @@ HTMLCollection [
     >
       <li
         class="s-ZVitxLYKaOVI"
-        style="animation: __svelte_3019659111_0 150ms linear 0ms 1 both;"
+        style="opacity: 1; left: 90.00000000000001px; top: 0px;"
       >
         <button
           class="s-NMyTiX1zi6rz"
@@ -96,7 +96,7 @@ HTMLCollection [
       
       <li
         class="s-ZVitxLYKaOVI"
-        style="animation: __svelte_1277330016_0 150ms linear 112.5ms 1 both;"
+        style="opacity: 1; left: 160.3648334221227px; top: 33.885917832714px;"
       >
         <button
           class="secondary s-NMyTiX1zi6rz"
@@ -116,7 +116,7 @@ HTMLCollection [
       
       <li
         class="s-ZVitxLYKaOVI"
-        style="animation: __svelte_2128706359_0 150ms linear 225ms 1 both;"
+        style="opacity: 1; left: 177.74351209636413px; top: 110.02688405606831px;"
       >
         <button
           class="secondary s-NMyTiX1zi6rz"
@@ -136,7 +136,7 @@ HTMLCollection [
       
       <li
         class="s-ZVitxLYKaOVI"
-        style="animation: __svelte_4140758231_0 150ms linear 337.5ms 1 both;"
+        style="opacity: 1; left: 129.04953652058023px; top: 171.08719811121773px;"
       >
         <button
           class="s-NMyTiX1zi6rz"
@@ -156,7 +156,7 @@ HTMLCollection [
       
       <li
         class="s-ZVitxLYKaOVI"
-        style="animation: __svelte_63569755_0 150ms linear 450ms 1 both;"
+        style="opacity: 1; left: 50.95046347941975px; top: 171.0871981112177px;"
       >
         <button
           class="s-NMyTiX1zi6rz"
@@ -176,7 +176,7 @@ HTMLCollection [
       
       <li
         class="s-ZVitxLYKaOVI"
-        style="animation: __svelte_4220652078_0 150ms linear 562.5ms 1 both;"
+        style="opacity: 1; left: 2.2564879036358745px; top: 110.0268840560683px;"
       >
         <button
           class="s-NMyTiX1zi6rz"
@@ -196,7 +196,7 @@ HTMLCollection [
       
       <li
         class="s-ZVitxLYKaOVI"
-        style="animation: __svelte_2315107558_0 150ms linear 675ms 1 both;"
+        style="opacity: 1; left: 19.635166577877328px; top: 33.88591783271398px;"
       >
         <button
           class="s-NMyTiX1zi6rz"

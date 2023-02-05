@@ -1,5 +1,5 @@
 <script>
-  import { GameAside } from '@src/components'
+  import { Aside } from '@src/components'
   import { acquireMediaStream, releaseMediaStream } from '@src/stores'
   import { onDestroy, onMount } from 'svelte'
 
@@ -10,5 +10,5 @@
 
 <main class="flex w-full h-screen" style="height: 100vh">
   <section class="flex-1" />
-  <GameAside {...$$restProps} on:sendMessage />
+  <Aside {...$$restProps} on:sendMessage />
 </main>

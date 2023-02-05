@@ -48,3 +48,37 @@ mutation updateCurrentPlayer($username: String, $avatar: String) {
     ...player
   }
 }
+
+query listFriends {
+  listFriends {
+    player {
+      ...player
+    }
+    isRequest
+    isProposal
+  }
+}
+
+mutation requestFriendship($id: ID!) {
+  requestFriendship(id: $id)
+}
+
+mutation acceptFriendship($id: ID!) {
+  acceptFriendship(id: $id)
+}
+
+mutation endFriendship($id: ID!) {
+  endFriendship(id: $id)
+}
+
+subscription receiveFriendshipUpdates {
+  receiveFriendshipUpdates {
+    from {
+      ...player
+    }
+    requested
+    proposed
+    accepted
+    declined
+  }
+}

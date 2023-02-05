@@ -1,8 +1,9 @@
 <script>
   import { Tool, ToolBox } from '@atelier-wb/svelte'
+  import avatar from '@tests/fixtures/avatar.png'
   import { players, thread } from '@tests/fixtures/Discussion.testdata'
 
-  import GameAside from './GameAsideWithVideo.svelte'
+  import Aside from './AsideWithVideo.svelte'
 
   const connected = [{ playerId: players[0].id }, { playerId: players[2].id }]
   const playerById = new Map(players.map(player => [player.id, player]))
@@ -13,17 +14,44 @@
 </script>
 
 <ToolBox
-  component={GameAside}
-  name="Components/Game Aside"
+  component={Aside}
+  name="Components/Aside"
   props={{
     game: { kind: 'splendor' },
     player: players[0],
     playerById,
     connected: [],
-    thread: []
+    thread: [],
+    friends: [
+      { player: players[0] },
+      {
+        player: { id: '425364', username: 'Paul Wolfoni', avatar },
+        isRequest: true
+      },
+      {
+        player: {
+          id: '758697',
+          username: 'Raoul Wolfoni',
+          color: '#040404'
+        },
+        isProposal: true
+      },
+      { player: players[1] },
+      { player: players[2] }
+    ]
   }}
   events={['sendMessage']}
 >
+  <Tool
+    name="Friends only"
+    props={{
+      game: undefined,
+      playerById: undefined,
+      connected: undefined,
+      thread: undefined
+    }}
+  />
+  <Tool name="Lobby" props={{ thread, game: {} }} />
   <Tool
     name="No peers"
     props={{
@@ -51,5 +79,4 @@
     props={{ playerById: singlePlayerById }}
   />
   <Tool name="Single connected, no rules book, thread" props={{ thread }} />
-  <Tool name="Lobby" props={{ thread, game: {} }} />
 </ToolBox>

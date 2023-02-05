@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "start": "vite dev --open https://localhost:3000",
     "test": "vitest run --coverage",
-    "test:dev": "vitest dev",
+    "test:dev": "vitest dev --reporter=verbose",
     "test:integration": "pnpm test:integration:prepare && pnpm test:integration:run",
     "test:integration:prepare": "vite build --mode integration",
     "test:integration:show": "playwright show-report coverage/integration",

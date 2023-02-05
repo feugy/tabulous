@@ -12,8 +12,8 @@
   }
   const publicCatalog = [
     {
-      name: '32-cards',
-      locales: { fr: { title: 'Jeu de 32 cartes' } },
+      name: 'playground',
+      locales: { fr: { title: 'Aire de jeu' } },
       minSeats: 2,
       maxSeats: 8
     },
@@ -92,10 +92,13 @@
     {
       id: 'b9c5b5e7-1ab2-4849-8490-fa13dcd0840e',
       created: 1659424383964,
-      kind: '32-cards',
+      kind: 'playground',
       players: [{ ...player, isOwner: true }],
       locales: { fr: { title: 'Jeu de 32 cartes' } }
     }
+  ]
+  const friends = [
+    { player: { id: 'bcd234', username: 'Karl L.' }, isRequest: true }
   ]
 </script>
 
@@ -115,7 +118,13 @@
       }
     }}
     setup={() => {
-      initGraphQlClient({ graphQlUrl, subscriptionSupport: false })
+      const client = initGraphQlClient({
+        graphQlUrl,
+        subscriptionSupport: false
+      })
+      client.query = () => ({
+        toPromise: async () => ({ data: { doesNotMatter: friends } })
+      })
     }}
   />
 </ToolBox>

@@ -24,3 +24,12 @@ export function setSvelteUrl(url) {
   svelteClient.stores.url.set(fullUrl)
   svelteClient.stores.page.set({ url: fullUrl })
 }
+
+window.addEventListener(
+  'unhandledrejection',
+  e => {
+    e.stopImmediatePropagation()
+    console.log('Unhandled rejection:', e.reason?.message ?? e.reason)
+  },
+  { useCapture: true }
+)
