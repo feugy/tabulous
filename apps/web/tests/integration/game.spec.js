@@ -87,8 +87,8 @@ describe('Game page', () => {
       })
     await setTokenCookie()
 
-    onSubscription(({ payload: { query } }) => {
-      if (query.startsWith('subscription awaitSignal')) {
+    onSubscription(operation => {
+      if (operation === 'awaitSignal') {
         sendToSubscription({
           data: { awaitSignal: { data: JSON.stringify({ type: 'ready' }) } }
         })
@@ -136,8 +136,8 @@ describe('Game page', () => {
       })
     await setTokenCookie()
 
-    onSubscription(({ payload: { query } }) => {
-      if (query.startsWith('subscription awaitSignal')) {
+    onSubscription(operation => {
+      if (operation === 'awaitSignal') {
         sendToSubscription({
           data: { awaitSignal: { data: JSON.stringify({ type: 'ready' }) } }
         })
@@ -172,8 +172,8 @@ describe('Game page', () => {
       })
     await setTokenCookie()
 
-    onSubscription(({ payload: { query } }) => {
-      if (query.startsWith('subscription awaitSignal')) {
+    onSubscription(operation => {
+      if (operation === 'awaitSignal') {
         sendToSubscription({
           data: { awaitSignal: { data: JSON.stringify({ type: 'ready' }) } }
         })
@@ -204,8 +204,8 @@ describe('Game page', () => {
       })
     await setTokenCookie()
 
-    onSubscription(({ payload: { query } }) => {
-      if (query.startsWith('subscription awaitSignal')) {
+    onSubscription(operation => {
+      if (operation === 'awaitSignal') {
         sendToSubscription({
           data: { awaitSignal: { data: JSON.stringify({ type: 'ready' }) } }
         })

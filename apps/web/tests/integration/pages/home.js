@@ -103,6 +103,22 @@ export const HomePage = mixin(
     }
 
     /**
+     * Expects several catalog items, sorted by their locale title.
+     * Lobby link creation is expected first.
+     * @param {object[]} catalog - expected catalog items.
+     * @returns {Promise<void>}
+     */
+    async expectSortedCatalogItems(catalog, withLobby = true) {
+      const names = [...catalog.map(({ locales }) => locales.fr.title).sort()]
+      if (withLobby) {
+        names.splice(0, 0, translate('actions.create-lobby'))
+      }
+      await expect(this.catalogItemHeadings).toHaveText(
+        names.map(value => new RegExp(value))
+      )
+    }
+
+    /**
      * Navigates to login by clicking on the header button
      */
     async goToLogin() {

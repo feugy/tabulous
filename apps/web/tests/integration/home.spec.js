@@ -16,8 +16,8 @@ import {
 describe('Home page', () => {
   const catalog = [
     {
-      name: '32-cards',
-      locales: { fr: { title: 'Jeu de 32 cartes' } },
+      name: 'playground',
+      locales: { fr: { title: 'Aire de jeu' } },
       minAge: null,
       minTime: null
     },
@@ -78,6 +78,8 @@ describe('Home page', () => {
     }
   ]
 
+  const friends = []
+
   it('updates catalog and display games after authentication', async ({
     page
   }) => {
@@ -92,6 +94,7 @@ describe('Home page', () => {
     await mockGraphQl(page, {
       listCatalog: [publicCatalog, publicCatalog, catalog],
       listGames: [games],
+      listFriends: [friends],
       getCurrentPlayer: authentication,
       logIn: authentication
     })
@@ -111,10 +114,8 @@ describe('Home page', () => {
     await loginPage.logInWithPassword({ username: player.username, password })
 
     await homePage.expectAuthenticated(player.username)
-    await expect(homePage.catalogItemHeadings).toHaveText([
-      new RegExp(translate('actions.create-lobby')),
-      ...catalog.map(({ locales }) => new RegExp(locales.fr.title))
-    ])
+    await homePage.expectSortedCatalogItems(catalog)
+
     await expect(homePage.games).toHaveText(
       games.map(({ locales }) => new RegExp(locales.fr.title))
     )
@@ -126,6 +127,7 @@ describe('Home page', () => {
     const { setTokenCookie } = await mockGraphQl(page, {
       listCatalog: [catalog],
       listGames: [games],
+      listFriends: [friends],
       getCurrentPlayer: {
         token: faker.datatype.uuid(),
         player,
@@ -141,10 +143,7 @@ describe('Home page', () => {
     await homePage.goTo()
     await homePage.getStarted()
     await homePage.expectAuthenticated(player.username)
-    await expect(homePage.catalogItemHeadings).toHaveText([
-      new RegExp(translate('actions.create-lobby')),
-      ...catalog.map(({ locales }) => new RegExp(locales.fr.title))
-    ])
+    await homePage.expectSortedCatalogItems(catalog)
     await expect(homePage.games).toHaveText(
       games.map(({ locales }) => new RegExp(locales.fr.title))
     )
@@ -153,8 +152,9 @@ describe('Home page', () => {
   it('updates current games on received update', async ({ page }) => {
     const initialGames = games.slice(0, 1)
     const { setTokenCookie, sendToSubscription } = await mockGraphQl(page, {
-      listCatalog: [publicCatalog, publicCatalog, catalog],
+      listCatalog: [catalog, catalog],
       listGames: [initialGames],
+      listFriends: [friends],
       getCurrentPlayer: {
         token: faker.datatype.uuid(),
         player,
@@ -168,13 +168,9 @@ describe('Home page', () => {
 
     const homePage = new HomePage(page)
     await homePage.goTo()
-    await homePage.goTo()
     await homePage.getStarted()
     await homePage.expectAuthenticated(player.username)
-    await expect(homePage.catalogItemHeadings).toHaveText([
-      new RegExp(translate('actions.create-lobby')),
-      ...catalog.map(({ locales }) => new RegExp(locales.fr.title))
-    ])
+    await homePage.expectSortedCatalogItems(catalog)
     await expect(homePage.games).toHaveText(
       initialGames.map(({ locales }) => new RegExp(locales.fr.title))
     )
@@ -186,20 +182,19 @@ describe('Home page', () => {
   })
 
   it('displays public catalog after log out', async ({ page }) => {
-    const { onSubscription, sendToSubscription, setTokenCookie } =
-      await mockGraphQl(page, {
-        listCatalog: [catalog, publicCatalog],
-        listGames: [games],
-        getCurrentPlayer: {
-          token: faker.datatype.uuid(),
-          player,
-          turnCredentials: {
-            username: 'bob',
-            credentials: faker.internet.password()
-          }
+    const { setTokenCookie } = await mockGraphQl(page, {
+      listCatalog: [catalog, publicCatalog],
+      listGames: [games],
+      listFriends: [friends],
+      getCurrentPlayer: {
+        token: faker.datatype.uuid(),
+        player,
+        turnCredentials: {
+          username: 'bob',
+          credentials: faker.internet.password()
         }
-      })
-    onSubscription(() => sendToSubscription({ data: { listGames: games } }))
+      }
+    })
     await setTokenCookie()
 
     const homePage = new HomePage(page)
@@ -211,28 +206,26 @@ describe('Home page', () => {
     await homePage.logOut()
     await expect(page).toHaveURL('/home')
     await homePage.expectAnonymous()
-    await expect(homePage.catalogItemHeadings).toHaveText(
-      publicCatalog.map(({ locales }) => new RegExp(locales.fr.title))
-    )
+    await homePage.expectSortedCatalogItems(publicCatalog, false)
   })
 
   it('confirms before deleting a game', async ({ page }) => {
     const queryReceived = fn()
-    const { onQuery, onSubscription, sendToSubscription, setTokenCookie } =
-      await mockGraphQl(page, {
-        listCatalog: [catalog],
-        listGames: [games],
-        deleteGame: null,
-        getCurrentPlayer: {
-          token: faker.datatype.uuid(),
-          player,
-          turnCredentials: {
-            username: 'bob',
-            credentials: faker.internet.password()
-          }
+    const { onQuery, setTokenCookie } = await mockGraphQl(page, {
+      listCatalog: [catalog],
+      listGames: [games],
+      listFriends: [friends],
+      deleteGame: null,
+      getCurrentPlayer: {
+        token: faker.datatype.uuid(),
+        player,
+        turnCredentials: {
+          username: 'bob',
+          credentials: faker.internet.password()
         }
-      })
-    onSubscription(() => sendToSubscription({ data: { listGames: games } }))
+      }
+    })
+
     await setTokenCookie()
 
     const homePage = new HomePage(page)
@@ -263,6 +256,7 @@ describe('Home page', () => {
     const { setTokenCookie } = await mockGraphQl(page, {
       listCatalog: [catalog],
       listGames: [games],
+      listFriends: [friends],
       getCurrentPlayer: {
         token: faker.datatype.uuid(),
         player,
@@ -305,7 +299,8 @@ describe('Home page', () => {
         }
       ],
       listCatalog: [publicCatalog, publicCatalog, catalog],
-      listGames: [games]
+      listGames: [games],
+      listFriends: [friends]
     })
     await setTokenCookie()
 
@@ -330,6 +325,7 @@ describe('Home page', () => {
     const { setTokenCookie } = await mockGraphQl(page, {
       listCatalog: [catalog],
       listGames: [games],
+      listFriends: [friends],
       getCurrentPlayer: {
         token: faker.datatype.uuid(),
         player,
@@ -370,6 +366,7 @@ describe('Home page', () => {
       await mockGraphQl(page, {
         listCatalog: [catalog],
         listGames: [games],
+        listFriends: [friends],
         getCurrentPlayer: {
           token: faker.datatype.uuid(),
           player,
@@ -399,8 +396,8 @@ describe('Home page', () => {
       })
     await setTokenCookie()
 
-    onSubscription(({ payload: { query } }) => {
-      if (query.startsWith('subscription awaitSignal')) {
+    onSubscription(operation => {
+      if (operation === 'awaitSignal') {
         sendToSubscription({
           data: { awaitSignal: { data: JSON.stringify({ type: 'ready' }) } }
         })
@@ -413,10 +410,7 @@ describe('Home page', () => {
 
     await homePage.createLobby()
     await expect(page).toHaveURL(`/home`)
-    await expect(homePage.games).toHaveText([
-      new RegExp(translate('titles.lobby')),
-      ...games.map(({ locales }) => new RegExp(locales.fr.title))
-    ])
+    await homePage.expectSortedCatalogItems(catalog)
     await homePage.invite(player2.username)
     await expect(homePage.playerAvatars).toHaveText([player2.username])
   })
@@ -445,6 +439,7 @@ describe('Home page', () => {
       const graphQlMocks = await mockGraphQl(page, {
         listCatalog: [catalog],
         listGames: [games],
+        listFriends: [friends],
         getCurrentPlayer: {
           token: faker.datatype.uuid(),
           player,
@@ -475,8 +470,8 @@ describe('Home page', () => {
       sendToSubscription = graphQlMocks.sendToSubscription
       await graphQlMocks.setTokenCookie()
 
-      graphQlMocks.onSubscription(({ payload: { query } }) => {
-        if (query.startsWith('subscription awaitSignal')) {
+      graphQlMocks.onSubscription(operation => {
+        if (operation === 'awaitSignal') {
           sendToSubscription({
             data: { awaitSignal: { data: JSON.stringify({ type: 'ready' }) } }
           })
@@ -493,9 +488,7 @@ describe('Home page', () => {
     it('can promote current lobby to game', async ({ page }) => {
       const game = { ...lobby, kind: catalog[0].name }
       gameJoined = game
-      sendToSubscription({
-        data: { receiveGameUpdates: game }
-      })
+      sendToSubscription({ data: { receiveGameUpdates: game } })
       await expect(page).toHaveURL(`/game/${lobby.id}`)
       await new GamePage(page).getStarted()
     })
