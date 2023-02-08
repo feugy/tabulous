@@ -2,6 +2,7 @@
 
 exports[`Empty list 1`] = `
 <section
+  aria-roledescription="friend-list"
   class="s-XLQf75fI0H0o"
 >
   <h3
@@ -69,6 +70,7 @@ exports[`Empty list 1`] = `
 
 exports[`With friends 1`] = `
 <section
+  aria-roledescription="friend-list"
   class="s-XLQf75fI0H0o"
 >
   <h3
@@ -150,6 +152,7 @@ exports[`With friends 1`] = `
        
       <span
         class="s-XLQf75fI0H0o"
+        role="term"
       >
         Fernand Naudin
       </span>
@@ -198,6 +201,7 @@ exports[`With friends 1`] = `
        
       <span
         class="s-XLQf75fI0H0o"
+        role="term"
       >
         Maître Follas
       </span>
@@ -246,6 +250,7 @@ exports[`With friends 1`] = `
        
       <span
         class="s-XLQf75fI0H0o"
+        role="term"
       >
         Pascal
       </span>
@@ -276,6 +281,7 @@ exports[`With friends 1`] = `
 
 exports[`With requests and proposals 1`] = `
 <section
+  aria-roledescription="friend-list"
   class="s-XLQf75fI0H0o"
 >
   <h3
@@ -357,6 +363,7 @@ exports[`With requests and proposals 1`] = `
        
       <span
         class="s-XLQf75fI0H0o"
+        role="term"
       >
         Fernand Naudin
       </span>
@@ -401,6 +408,7 @@ exports[`With requests and proposals 1`] = `
        
       <span
         class="s-XLQf75fI0H0o"
+        role="term"
       >
         Paul Wolfoni souhaite rejoindre vos ami(e)s
       </span>
@@ -463,6 +471,7 @@ exports[`With requests and proposals 1`] = `
        
       <span
         class="s-XLQf75fI0H0o"
+        role="term"
       >
         Demande envoyée à Raoul Wolfoni
       </span>
@@ -511,6 +520,7 @@ exports[`With requests and proposals 1`] = `
        
       <span
         class="s-XLQf75fI0H0o"
+        role="term"
       >
         Maître Follas
       </span>
@@ -559,6 +569,7 @@ exports[`With requests and proposals 1`] = `
        
       <span
         class="s-XLQf75fI0H0o"
+        role="term"
       >
         Pascal
       </span>

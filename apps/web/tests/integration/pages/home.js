@@ -5,8 +5,8 @@ import { expect } from '@playwright/test'
 
 import { translate } from '../utils/index.js'
 import {
+  AsideMixin,
   AuthenticatedHeaderMixin,
-  GameAsideMixin,
   mixin,
   TermsSupportedMixin
 } from './mixins/index.js'
@@ -129,7 +129,7 @@ export const HomePage = mixin(
     }
 
     /**
-     * Deletes a game by titles
+     * Find a game by its title, click on its deletion button, displaying the confirmation dialogue.
      * @param {string} title - deleted game's title.
      * @param {number} rank - 0-based rank, in case of multiple matching games.
      */
@@ -168,6 +168,6 @@ export const HomePage = mixin(
     }
   },
   AuthenticatedHeaderMixin,
-  GameAsideMixin,
+  AsideMixin,
   TermsSupportedMixin
 )

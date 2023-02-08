@@ -80,6 +80,7 @@ exports[`Friends only 1`] = `
           </div>
            
           <section
+            aria-roledescription="friend-list"
             class="s-XLQf75fI0H0o"
           >
             <h3
@@ -161,6 +162,7 @@ exports[`Friends only 1`] = `
                  
                 <span
                   class="s-XLQf75fI0H0o"
+                  role="term"
                 >
                   Fernand Naudin
                 </span>
@@ -205,6 +207,7 @@ exports[`Friends only 1`] = `
                  
                 <span
                   class="s-XLQf75fI0H0o"
+                  role="term"
                 >
                   Paul Wolfoni souhaite rejoindre vos ami(e)s
                 </span>
@@ -267,6 +270,7 @@ exports[`Friends only 1`] = `
                  
                 <span
                   class="s-XLQf75fI0H0o"
+                  role="term"
                 >
                   Demande envoyée à Raoul Wolfoni
                 </span>
@@ -315,6 +319,7 @@ exports[`Friends only 1`] = `
                  
                 <span
                   class="s-XLQf75fI0H0o"
+                  role="term"
                 >
                   Maître Follas
                 </span>
@@ -363,6 +368,7 @@ exports[`Friends only 1`] = `
                  
                 <span
                   class="s-XLQf75fI0H0o"
+                  role="term"
                 >
                   Pascal
                 </span>
@@ -1528,6 +1534,7 @@ exports[`No peers, no rules book 1`] = `
           </div>
            
           <section
+            aria-roledescription="friend-list"
             class="s-XLQf75fI0H0o"
           >
             <h3
@@ -1609,6 +1616,7 @@ exports[`No peers, no rules book 1`] = `
                  
                 <span
                   class="s-XLQf75fI0H0o"
+                  role="term"
                 >
                   Fernand Naudin
                 </span>
@@ -1653,6 +1661,7 @@ exports[`No peers, no rules book 1`] = `
                  
                 <span
                   class="s-XLQf75fI0H0o"
+                  role="term"
                 >
                   Paul Wolfoni souhaite rejoindre vos ami(e)s
                 </span>
@@ -1715,6 +1724,7 @@ exports[`No peers, no rules book 1`] = `
                  
                 <span
                   class="s-XLQf75fI0H0o"
+                  role="term"
                 >
                   Demande envoyée à Raoul Wolfoni
                 </span>
@@ -1763,6 +1773,7 @@ exports[`No peers, no rules book 1`] = `
                  
                 <span
                   class="s-XLQf75fI0H0o"
+                  role="term"
                 >
                   Maître Follas
                 </span>
@@ -1811,6 +1822,7 @@ exports[`No peers, no rules book 1`] = `
                  
                 <span
                   class="s-XLQf75fI0H0o"
+                  role="term"
                 >
                   Pascal
                 </span>

@@ -1305,6 +1305,7 @@ exports[`Authenticated 1`] = `
           </div>
            
           <section
+            aria-roledescription="friend-list"
             class="s-XLQf75fI0H0o"
           >
             <h3
@@ -1386,6 +1387,7 @@ exports[`Authenticated 1`] = `
                  
                 <span
                   class="s-XLQf75fI0H0o"
+                  role="term"
                 >
                   Karl L. souhaite rejoindre vos ami(e)s
                 </span>

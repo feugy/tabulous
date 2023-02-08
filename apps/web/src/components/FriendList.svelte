@@ -5,7 +5,7 @@
     requestFriendship,
     searchPlayers
   } from '@src/stores'
-import { debounceTime, map, Subject, switchMap } from 'rxjs'
+  import { debounceTime, map, Subject, switchMap } from 'rxjs'
   import { onMount } from 'svelte'
   import { _ } from 'svelte-intl'
 
@@ -63,7 +63,7 @@ import { debounceTime, map, Subject, switchMap } from 'rxjs'
   }
 </script>
 
-<section>
+<section aria-roledescription="friend-list">
   <h3>{$_('titles.friend-list')}</h3>
   <div>
     <Typeahead
@@ -87,7 +87,7 @@ import { debounceTime, map, Subject, switchMap } from 'rxjs'
     {#each friends as { player, isRequest, isProposal } (player.id)}
       <li class:isRequest class:isProposal>
         <PlayerThumbnail {player} />
-        <span
+        <span role="term"
           >{isProposal
             ? $_('labels.friendship-proposed', player)
             : isRequest

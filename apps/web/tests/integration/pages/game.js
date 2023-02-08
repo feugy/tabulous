@@ -2,7 +2,7 @@
 import { expect } from '@playwright/test'
 
 import { translate } from '../utils/index.js'
-import { GameAsideMixin, mixin, TermsSupportedMixin } from './mixins/index.js'
+import { AsideMixin, mixin, TermsSupportedMixin } from './mixins/index.js'
 
 /**
  * @typedef {import('@playwright/test').Page} Page
@@ -58,6 +58,6 @@ export const GamePage = mixin(
       await this.menuButton.click()
     }
   },
-  GameAsideMixin,
+  AsideMixin,
   TermsSupportedMixin
 )

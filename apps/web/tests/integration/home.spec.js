@@ -507,4 +507,155 @@ describe('Home page', () => {
       await expect(homePage.closeGameButtons).toBeHidden()
     })
   })
+
+  describe('given some friends', () => {
+    const friends = [
+      {
+        player: {
+          id: `p1-${faker.datatype.number(100)}`,
+          username: 'Anthony'
+        }
+      },
+      {
+        player: {
+          id: `p2-${faker.datatype.number(100)}`,
+          username: 'Brat'
+        },
+        isRequest: true
+      },
+      {
+        player: {
+          id: `p3-${faker.datatype.number(100)}`,
+          username: 'James'
+        },
+        isProposal: true
+      },
+      {
+        player: {
+          id: `p4-${faker.datatype.number(100)}`,
+          username: 'John'
+        }
+      }
+    ]
+    const proposedPlayer = {
+      id: `p5-${faker.datatype.number(100)}`,
+      username: 'Cian'
+    }
+
+    let graphQlMocks
+
+    beforeEach(async ({ page }) => {
+      graphQlMocks = await mockGraphQl(page, {
+        listCatalog: [catalog],
+        listGames: [games],
+        listFriends: [friends],
+        getCurrentPlayer: {
+          token: faker.datatype.uuid(),
+          player,
+          turnCredentials: {
+            username: 'bob',
+            credentials: faker.internet.password()
+          }
+        },
+        searchPlayers: [[proposedPlayer]],
+        requestFriendship: true,
+        endFriendship: true
+      })
+      await graphQlMocks.setTokenCookie()
+      const homePage = new HomePage(page)
+      await homePage.goTo()
+      await homePage.getStarted()
+    })
+
+    it('turns proposal into friendship when receiving an update', async ({
+      page
+    }) => {
+      const homePage = new HomePage(page)
+      await homePage.expectFriends(friends)
+
+      const { player } = friends[2]
+      graphQlMocks.sendToSubscription({
+        data: { receiveFriendshipUpdates: { from: player, accepted: true } }
+      })
+      await homePage.expectFriends([
+        friends[0],
+        friends[1],
+        { player },
+        friends[3]
+      ])
+    })
+
+    it('display received requests', async ({ page }) => {
+      const homePage = new HomePage(page)
+      await homePage.expectFriends(friends)
+
+      const player = {
+        id: `p5-${faker.datatype.number(100)}`,
+        username: 'Beth'
+      }
+      graphQlMocks.sendToSubscription({
+        data: { receiveFriendshipUpdates: { from: player, requested: true } }
+      })
+      await homePage.expectFriends([
+        friends[0],
+        { player, isRequest: true },
+        ...friends.slice(1)
+      ])
+    })
+
+    it('can invite new friends', async ({ page }) => {
+      const homePage = new HomePage(page)
+      await homePage.expectFriends(friends)
+
+      const mutation = fn()
+      graphQlMocks.onQuery(mutation)
+
+      await homePage.requestFriendship(proposedPlayer.username)
+      // @ts-ignore toHaveBeenCalledWith is not defined
+      expect(mutation).toHaveBeenCalledWith(
+        expect.objectContaining({
+          operationName: 'requestFriendship',
+          variables: { id: proposedPlayer.id }
+        })
+      )
+
+      graphQlMocks.sendToSubscription({
+        data: {
+          receiveFriendshipUpdates: { from: proposedPlayer, proposed: true }
+        }
+      })
+      await homePage.expectFriends([
+        ...friends.slice(0, 2),
+        { player: proposedPlayer, isProposal: true },
+        ...friends.slice(2)
+      ])
+    })
+
+    it('can removes friend', async ({ page }) => {
+      const homePage = new HomePage(page)
+      await homePage.expectFriends(friends)
+
+      const { player } = friends[2]
+      await homePage.removeFriend(player.username)
+
+      const mutation = fn()
+      graphQlMocks.onQuery(mutation)
+      await homePage.endFriendshipDialogue
+        .locator(`role=button >> text=${translate('actions.confirm')}`)
+        .click()
+      await expect(homePage.endFriendshipDialogue).not.toBeVisible()
+      // @ts-ignore toHaveBeenCalledWith is not defined
+      expect(mutation).toHaveBeenCalledWith(
+        expect.objectContaining({
+          operationName: 'endFriendship',
+          variables: { id: player.id }
+        })
+      )
+
+      graphQlMocks.sendToSubscription({
+        data: { receiveFriendshipUpdates: { from: player, declined: true } }
+      })
+      await homePage.expectFriends([friends[0], friends[1], friends[3]])
+    })
+  })
 })
