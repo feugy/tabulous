@@ -22,7 +22,7 @@
   function removeMessage(id) {
     const index = messages.findIndex(candidate => candidate.id === id)
     if (index >= 0) {
-      messages.splice(index, 1)
+      messages = [...messages.slice(0, index), ...messages.slice(index + 1)]
     }
   }
 </script>
@@ -35,6 +35,6 @@
 
 <style lang="postcss">
   div {
-    @apply flex flex-col items-end fixed z-20 top-12 right-8;
+    @apply relative flex flex-col items-end fixed z-20 top-12 right-8;
   }
 </style>

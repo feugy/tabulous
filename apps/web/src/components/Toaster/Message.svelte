@@ -1,18 +1,46 @@
 <script>
+  import { onMount } from 'svelte'
+  
   import Button from '../Button.svelte'
 
   export let icon = ''
   export let content = ''
-  export let duration = 5
-  export let color = '#fcfcfc'
+  export let duration = defaultDuration
+  export let color = defaultColor
+
+  const defaultColor = '#fcfcfc'
+  const defaultDuration = 5
 
   let hide = false
+  let node
+  // use absolute positioning to avoid multiple notification glitch:
+  // when previous message is removed, next messages "jump" upward because
+  // or parent re-layout. Absolute position keep them in place
+  let top = 0
+
+  onMount(() => {
+    // find nearest visible sibling and position current message bellow
+    for (
+      let previous = node.previousElementSibling;
+      previous;
+      previous = previous.previousElementSibling
+    ) {
+      const styles = getComputedStyle(previous)
+      if (styles.opacity !== '0') {
+        const previousOffset = parseInt(styles.top)
+        top = previousOffset + previous.offsetHeight
+        break
+      }
+    }
+  })
 </script>
 
 <div
   class:hide
-  style="--bg-color:{color}; --duration:{duration}s; --close-duration:{duration /
-    10}s"
+  bind:this={node}
+  style="--top:{top}px; --bg-color:{color ||
+    defaultColor}; --duration:{duration ||
+    defaultDuration}s; --close-duration:{duration / 10}s"
 >
   <span class="material-icons">{icon}</span>
   <strong>{content}</strong>
@@ -21,8 +49,9 @@
 
 <style lang="postcss">
   div {
-    @apply transform-gpu opacity-0 py-2 px-3 shadow-md flex items-center;
+    @apply absolute transform-gpu opacity-0 py-2 px-3 shadow-md flex items-center;
     background-color: var(--bg-color);
+    top: var(--top);
     animation: showAndHide var(--duration) cubic-bezier(0, 0, 0.2, 1.5);
 
     &.hide {
