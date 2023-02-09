@@ -8,6 +8,7 @@ import { Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
 import { Logger } from '@babylonjs/core/Misc/logger'
+import { faker } from '@faker-js/faker'
 import cors from '@fastify/cors'
 import {
   AnchorBehaviorName,
@@ -395,5 +396,24 @@ export async function configureGraphQlServer(mocks) {
 
   afterAll(() => {
     server.close()
+  })
+}
+
+export function makeId(value) {
+  return `${value}-${faker.datatype.number(200)}`
+}
+
+export function waitForObservable(observable, timeout = 100) {
+  return new Promise((resolve, reject) => {
+    setTimeout(
+      () => reject(new Error(`no value received after ${timeout}ms`)),
+      timeout
+    )
+    const subscription = observable.subscribe(value => {
+      if (Array.isArray(value) ? value.length : value) {
+        resolve(value)
+        setTimeout(() => subscription.unsubscribe(), 0)
+      }
+    })
   })
 }

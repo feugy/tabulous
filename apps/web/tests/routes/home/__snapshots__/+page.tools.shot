@@ -88,9 +88,9 @@ exports[`Anonymous 1`] = `
           tabindex="0"
         >
           <img
-            alt="Jeu de 32 cartes"
+            alt="Aire de jeu"
             class="s-Z6y0dSYOFWU8"
-            src="http://localhost:3001/games/32-cards/catalog/cover.webp"
+            src="http://localhost:3001/games/playground/catalog/cover.webp"
           />
            
           <div
@@ -105,7 +105,7 @@ exports[`Anonymous 1`] = `
                 <h3
                   class="s-Z6y0dSYOFWU8"
                 >
-                  Jeu de 32 cartes
+                  Aire de jeu
                 </h3>
                  
                 <details
@@ -887,9 +887,9 @@ exports[`Authenticated 1`] = `
           tabindex="0"
         >
           <img
-            alt="Jeu de 32 cartes"
+            alt="Aire de jeu"
             class="s-Z6y0dSYOFWU8"
-            src="http://localhost:3001/games/32-cards/catalog/cover.webp"
+            src="http://localhost:3001/games/playground/catalog/cover.webp"
           />
            
           <div
@@ -904,7 +904,7 @@ exports[`Authenticated 1`] = `
                 <h3
                   class="s-Z6y0dSYOFWU8"
                 >
-                  Jeu de 32 cartes
+                  Aire de jeu
                 </h3>
                  
                 <details
@@ -1235,28 +1235,68 @@ exports[`Authenticated 1`] = `
   </div>
    
   <aside
-    class="s-PjlK2P_9oz-f"
+    class="s-ufy4N79qlNiA"
   >
     <section
-      aria-expanded="false"
+      aria-expanded="true"
       aria-label="minimizable"
-      class="s-vqhOCvFa7LzI minimized"
-      id="minimizable-section-19"
+      class="s-vqhOCvFa7LzI"
+      id="minimizable-section-20"
       style="width: auto;"
     >
+      <menu
+        class="right s-vqhOCvFa7LzI"
+      >
+        <ol
+          class="buttonContainer s-vqhOCvFa7LzI"
+          role="tablist"
+        >
+          <li
+            class="s-vqhOCvFa7LzI"
+          >
+            <button
+              aria-selected="false"
+              class="s-NMyTiX1zi6rz"
+              role="tab"
+            >
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                people_alt
+              </span>
+              
+              
+              <span
+                class="badge s-NMyTiX1zi6rz"
+              >
+                F2
+              </span>
+              
+            </button>
+            <!--&lt;Button&gt;-->
+             
+          </li>
+        </ol>
+         
+        <div
+          aria-controls="minimizable-section-20"
+          class="gutter s-vqhOCvFa7LzI"
+          role="scrollbar"
+        />
+      </menu>
        
       <span
         class="s-vqhOCvFa7LzI"
       >
         <div
-          class="content s-PjlK2P_9oz-f"
+          class="content s-ufy4N79qlNiA"
           style="max-width: 30vw"
         >
           <div
-            class="peers s-PjlK2P_9oz-f hidden"
+            class="peers s-ufy4N79qlNiA hidden"
           >
             <span
-              class="avatars s-PjlK2P_9oz-f"
+              class="avatars s-ufy4N79qlNiA"
             >
                
             </span>
@@ -1264,11 +1304,136 @@ exports[`Authenticated 1`] = `
              
           </div>
            
+          <section
+            aria-roledescription="friend-list"
+            class="s-XLQf75fI0H0o"
+          >
+            <h3
+              class="s-XLQf75fI0H0o"
+            >
+              Vos ami(e)s
+            </h3>
+             
+            <div
+              class="s-XLQf75fI0H0o"
+            >
+              <span
+                aria-haspopup="menu"
+                class="wrapper s-JM3fRWrV7jJU"
+              >
+                <fieldset
+                  class="s-Fe6WNbR-55zp"
+                >
+                  <legend
+                    class="s-Fe6WNbR-55zp"
+                  >
+                    Pseudo
+                  </legend>
+                   
+                  <input
+                    class="s-Fe6WNbR-55zp"
+                    type="text"
+                  />
+                </fieldset>
+                <!--&lt;Input&gt;-->
+                 
+                
+                <!--&lt;Menu&gt;-->
+              </span>
+              <!--&lt;Typeahead&gt;-->
+               
+              <button
+                class="s-NMyTiX1zi6rz"
+                disabled=""
+              >
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  person_add_alt_1
+                </span>
+                
+                
+                
+              </button>
+              <!--&lt;Button&gt;-->
+            </div>
+             
+             
+            <ol
+              class="s-XLQf75fI0H0o"
+            >
+              <li
+                class="s-XLQf75fI0H0o isRequest"
+              >
+                <figure
+                  class="s-engCJu8q-fNe"
+                  style="--dimension: 60px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+                >
+                  <img
+                    alt="avatar for Karl L."
+                    class="s-engCJu8q-fNe"
+                    height="60"
+                    referrerpolicy="no-referrer"
+                    width="60"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe"
+                  >
+                    Karl L.
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+                 
+                <span
+                  class="s-XLQf75fI0H0o"
+                  role="term"
+                >
+                  Karl L. souhaite rejoindre vos ami(e)s
+                </span>
+                 
+                <span
+                  class="buttons s-XLQf75fI0H0o"
+                >
+                  <button
+                    class="s-NMyTiX1zi6rz"
+                  >
+                    <span
+                      class="material-icons s-NMyTiX1zi6rz"
+                    >
+                      check
+                    </span>
+                    
+                    
+                    
+                  </button>
+                  <!--&lt;Button&gt;-->
+                   
+                  <button
+                    class="s-NMyTiX1zi6rz"
+                  >
+                    <span
+                      class="material-icons s-NMyTiX1zi6rz"
+                    >
+                      clear
+                    </span>
+                    
+                    
+                    
+                  </button>
+                  <!--&lt;Button&gt;-->
+                </span>
+                 
+              </li>
+            </ol>
+             
+          </section>
+          <!--&lt;FriendList&gt;-->
         </div>
       </span>
     </section>
     <!--&lt;MinimizableSection&gt;-->
   </aside>
-  <!--&lt;GameAside&gt;-->
+  <!--&lt;Aside&gt;-->
 </main>
 `;

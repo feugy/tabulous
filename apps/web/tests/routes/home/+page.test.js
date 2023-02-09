@@ -5,12 +5,14 @@ import {
   createGame,
   deleteGame,
   listCatalog,
+  listFriends,
   listGames,
   toastError,
   toastInfo
 } from '@src/stores'
 import { fireEvent, render, screen, within } from '@testing-library/svelte'
 import { translate } from '@tests/test-utils'
+import { readable } from 'svelte/store'
 import html from 'svelte-htm'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -24,6 +26,7 @@ vi.mock('@src/stores', async () => {
     deleteGame: vi.fn(),
     listCatalog: vi.fn(),
     listGames: vi.fn(),
+    listFriends: vi.fn(),
     receiveGameListUpdates: vi.fn(),
     toastError: vi.fn(),
     toastInfo: vi.fn()
@@ -150,6 +153,7 @@ describe('/home route', () => {
   beforeEach(async () => {
     listCatalog.mockResolvedValueOnce(catalog)
     listGames.mockResolvedValueOnce(games)
+    listFriends.mockReturnValueOnce(readable([]))
   })
 
   async function renderWithLoad(gameName) {

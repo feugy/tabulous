@@ -1,0 +1,599 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Empty list 1`] = `
+<section
+  aria-roledescription="friend-list"
+  class="s-XLQf75fI0H0o"
+>
+  <h3
+    class="s-XLQf75fI0H0o"
+  >
+    Vos ami(e)s
+  </h3>
+   
+  <div
+    class="s-XLQf75fI0H0o"
+  >
+    <span
+      aria-haspopup="menu"
+      class="wrapper s-JM3fRWrV7jJU"
+    >
+      <fieldset
+        class="s-Fe6WNbR-55zp"
+      >
+        <legend
+          class="s-Fe6WNbR-55zp"
+        >
+          Pseudo
+        </legend>
+         
+        <input
+          class="s-Fe6WNbR-55zp"
+          type="text"
+        />
+      </fieldset>
+      <!--&lt;Input&gt;-->
+       
+      
+      <!--&lt;Menu&gt;-->
+    </span>
+    <!--&lt;Typeahead&gt;-->
+     
+    <button
+      class="s-NMyTiX1zi6rz"
+      disabled=""
+    >
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
+      >
+        person_add_alt_1
+      </span>
+      
+      
+      
+    </button>
+    <!--&lt;Button&gt;-->
+  </div>
+   
+  <span
+    class="s-XLQf75fI0H0o empty"
+  >
+    Ajoutez vos amis pour pouvoir jouer avec eux.
+  </span>
+   
+  <ol
+    class="s-XLQf75fI0H0o"
+  />
+   
+</section>
+`;
+
+exports[`With friends 1`] = `
+<section
+  aria-roledescription="friend-list"
+  class="s-XLQf75fI0H0o"
+>
+  <h3
+    class="s-XLQf75fI0H0o"
+  >
+    Vos ami(e)s
+  </h3>
+   
+  <div
+    class="s-XLQf75fI0H0o"
+  >
+    <span
+      aria-haspopup="menu"
+      class="wrapper s-JM3fRWrV7jJU"
+    >
+      <fieldset
+        class="s-Fe6WNbR-55zp"
+      >
+        <legend
+          class="s-Fe6WNbR-55zp"
+        >
+          Pseudo
+        </legend>
+         
+        <input
+          class="s-Fe6WNbR-55zp"
+          type="text"
+        />
+      </fieldset>
+      <!--&lt;Input&gt;-->
+       
+      
+      <!--&lt;Menu&gt;-->
+    </span>
+    <!--&lt;Typeahead&gt;-->
+     
+    <button
+      class="s-NMyTiX1zi6rz"
+      disabled=""
+    >
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
+      >
+        person_add_alt_1
+      </span>
+      
+      
+      
+    </button>
+    <!--&lt;Button&gt;-->
+  </div>
+   
+   
+  <ol
+    class="s-XLQf75fI0H0o"
+  >
+    <li
+      class="s-XLQf75fI0H0o"
+    >
+      <figure
+        class="s-engCJu8q-fNe colored"
+        style="--dimension: 60px; --color: #9c3096; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+      >
+        <img
+          alt="avatar for Fernand Naudin"
+          class="s-engCJu8q-fNe"
+          height="60"
+          referrerpolicy="no-referrer"
+          width="60"
+        />
+         
+        <figcaption
+          class="s-engCJu8q-fNe"
+        >
+          Fernand Naudin
+        </figcaption>
+      </figure>
+      <!--&lt;PlayerThumbnail&gt;-->
+       
+      <span
+        class="s-XLQf75fI0H0o"
+        role="term"
+      >
+        Fernand Naudin
+      </span>
+       
+      <span
+        class="buttons s-XLQf75fI0H0o"
+      >
+        <button
+          class="s-NMyTiX1zi6rz"
+        >
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            delete
+          </span>
+          
+          
+          
+        </button>
+        <!--&lt;Button&gt;-->
+      </span>
+       
+    </li>
+    <li
+      class="s-XLQf75fI0H0o"
+    >
+      <figure
+        class="s-engCJu8q-fNe colored"
+        style="--dimension: 60px; --color: #ff4500; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+      >
+        <img
+          alt="avatar for Maître Follas"
+          class="s-engCJu8q-fNe"
+          height="60"
+          referrerpolicy="no-referrer"
+          width="60"
+        />
+         
+        <figcaption
+          class="s-engCJu8q-fNe"
+        >
+          Maître Follas
+        </figcaption>
+      </figure>
+      <!--&lt;PlayerThumbnail&gt;-->
+       
+      <span
+        class="s-XLQf75fI0H0o"
+        role="term"
+      >
+        Maître Follas
+      </span>
+       
+      <span
+        class="buttons s-XLQf75fI0H0o"
+      >
+        <button
+          class="s-NMyTiX1zi6rz"
+        >
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            delete
+          </span>
+          
+          
+          
+        </button>
+        <!--&lt;Button&gt;-->
+      </span>
+       
+    </li>
+    <li
+      class="s-XLQf75fI0H0o"
+    >
+      <figure
+        class="s-engCJu8q-fNe colored"
+        style="--dimension: 60px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+      >
+        <img
+          alt="avatar for Pascal"
+          class="s-engCJu8q-fNe"
+          height="60"
+          referrerpolicy="no-referrer"
+          width="60"
+        />
+         
+        <figcaption
+          class="s-engCJu8q-fNe"
+        >
+          Pascal
+        </figcaption>
+      </figure>
+      <!--&lt;PlayerThumbnail&gt;-->
+       
+      <span
+        class="s-XLQf75fI0H0o"
+        role="term"
+      >
+        Pascal
+      </span>
+       
+      <span
+        class="buttons s-XLQf75fI0H0o"
+      >
+        <button
+          class="s-NMyTiX1zi6rz"
+        >
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            delete
+          </span>
+          
+          
+          
+        </button>
+        <!--&lt;Button&gt;-->
+      </span>
+       
+    </li>
+  </ol>
+   
+</section>
+`;
+
+exports[`With requests and proposals 1`] = `
+<section
+  aria-roledescription="friend-list"
+  class="s-XLQf75fI0H0o"
+>
+  <h3
+    class="s-XLQf75fI0H0o"
+  >
+    Vos ami(e)s
+  </h3>
+   
+  <div
+    class="s-XLQf75fI0H0o"
+  >
+    <span
+      aria-haspopup="menu"
+      class="wrapper s-JM3fRWrV7jJU"
+    >
+      <fieldset
+        class="s-Fe6WNbR-55zp"
+      >
+        <legend
+          class="s-Fe6WNbR-55zp"
+        >
+          Pseudo
+        </legend>
+         
+        <input
+          class="s-Fe6WNbR-55zp"
+          type="text"
+        />
+      </fieldset>
+      <!--&lt;Input&gt;-->
+       
+      
+      <!--&lt;Menu&gt;-->
+    </span>
+    <!--&lt;Typeahead&gt;-->
+     
+    <button
+      class="s-NMyTiX1zi6rz"
+      disabled=""
+    >
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
+      >
+        person_add_alt_1
+      </span>
+      
+      
+      
+    </button>
+    <!--&lt;Button&gt;-->
+  </div>
+   
+   
+  <ol
+    class="s-XLQf75fI0H0o"
+  >
+    <li
+      class="s-XLQf75fI0H0o"
+    >
+      <figure
+        class="s-engCJu8q-fNe colored"
+        style="--dimension: 60px; --color: #9c3096; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+      >
+        <img
+          alt="avatar for Fernand Naudin"
+          class="s-engCJu8q-fNe"
+          height="60"
+          referrerpolicy="no-referrer"
+          width="60"
+        />
+         
+        <figcaption
+          class="s-engCJu8q-fNe"
+        >
+          Fernand Naudin
+        </figcaption>
+      </figure>
+      <!--&lt;PlayerThumbnail&gt;-->
+       
+      <span
+        class="s-XLQf75fI0H0o"
+        role="term"
+      >
+        Fernand Naudin
+      </span>
+       
+      <span
+        class="buttons s-XLQf75fI0H0o"
+      >
+        <button
+          class="s-NMyTiX1zi6rz"
+        >
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            delete
+          </span>
+          
+          
+          
+        </button>
+        <!--&lt;Button&gt;-->
+      </span>
+       
+    </li>
+    <li
+      class="s-XLQf75fI0H0o isRequest"
+    >
+      <figure
+        class="s-engCJu8q-fNe"
+        style="--dimension: 60px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+      >
+        <img
+          alt="avatar for Paul Wolfoni"
+          class="s-engCJu8q-fNe hasImage"
+          height="60"
+          referrerpolicy="no-referrer"
+          src="/tests/fixtures/avatar.png"
+          width="60"
+        />
+         
+      </figure>
+      <!--&lt;PlayerThumbnail&gt;-->
+       
+      <span
+        class="s-XLQf75fI0H0o"
+        role="term"
+      >
+        Paul Wolfoni souhaite rejoindre vos ami(e)s
+      </span>
+       
+      <span
+        class="buttons s-XLQf75fI0H0o"
+      >
+        <button
+          class="s-NMyTiX1zi6rz"
+        >
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            check
+          </span>
+          
+          
+          
+        </button>
+        <!--&lt;Button&gt;-->
+         
+        <button
+          class="s-NMyTiX1zi6rz"
+        >
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            clear
+          </span>
+          
+          
+          
+        </button>
+        <!--&lt;Button&gt;-->
+      </span>
+       
+    </li>
+    <li
+      class="s-XLQf75fI0H0o isProposal"
+    >
+      <figure
+        class="s-engCJu8q-fNe colored"
+        style="--dimension: 60px; --color: #040404; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+      >
+        <img
+          alt="avatar for Raoul Wolfoni"
+          class="s-engCJu8q-fNe"
+          height="60"
+          referrerpolicy="no-referrer"
+          width="60"
+        />
+         
+        <figcaption
+          class="s-engCJu8q-fNe"
+        >
+          Raoul Wolfoni
+        </figcaption>
+      </figure>
+      <!--&lt;PlayerThumbnail&gt;-->
+       
+      <span
+        class="s-XLQf75fI0H0o"
+        role="term"
+      >
+        Demande envoyée à Raoul Wolfoni
+      </span>
+       
+      <span
+        class="buttons s-XLQf75fI0H0o"
+      >
+        <button
+          class="s-NMyTiX1zi6rz"
+        >
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            delete
+          </span>
+          
+          
+          
+        </button>
+        <!--&lt;Button&gt;-->
+      </span>
+       
+    </li>
+    <li
+      class="s-XLQf75fI0H0o"
+    >
+      <figure
+        class="s-engCJu8q-fNe colored"
+        style="--dimension: 60px; --color: #ff4500; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+      >
+        <img
+          alt="avatar for Maître Follas"
+          class="s-engCJu8q-fNe"
+          height="60"
+          referrerpolicy="no-referrer"
+          width="60"
+        />
+         
+        <figcaption
+          class="s-engCJu8q-fNe"
+        >
+          Maître Follas
+        </figcaption>
+      </figure>
+      <!--&lt;PlayerThumbnail&gt;-->
+       
+      <span
+        class="s-XLQf75fI0H0o"
+        role="term"
+      >
+        Maître Follas
+      </span>
+       
+      <span
+        class="buttons s-XLQf75fI0H0o"
+      >
+        <button
+          class="s-NMyTiX1zi6rz"
+        >
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            delete
+          </span>
+          
+          
+          
+        </button>
+        <!--&lt;Button&gt;-->
+      </span>
+       
+    </li>
+    <li
+      class="s-XLQf75fI0H0o"
+    >
+      <figure
+        class="s-engCJu8q-fNe colored"
+        style="--dimension: 60px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+      >
+        <img
+          alt="avatar for Pascal"
+          class="s-engCJu8q-fNe"
+          height="60"
+          referrerpolicy="no-referrer"
+          width="60"
+        />
+         
+        <figcaption
+          class="s-engCJu8q-fNe"
+        >
+          Pascal
+        </figcaption>
+      </figure>
+      <!--&lt;PlayerThumbnail&gt;-->
+       
+      <span
+        class="s-XLQf75fI0H0o"
+        role="term"
+      >
+        Pascal
+      </span>
+       
+      <span
+        class="buttons s-XLQf75fI0H0o"
+      >
+        <button
+          class="s-NMyTiX1zi6rz"
+        >
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            delete
+          </span>
+          
+          
+          
+        </button>
+        <!--&lt;Button&gt;-->
+      </span>
+       
+    </li>
+  </ol>
+   
+</section>
+`;

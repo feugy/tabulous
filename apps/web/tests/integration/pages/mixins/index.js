@@ -1,6 +1,6 @@
 // @ts-check
+export { AsideMixin } from './aside.js'
 export { AuthenticatedHeaderMixin } from './authenticated-header.js'
-export { GameAsideMixin } from './game-aside.js'
 export { TermsSupportedMixin } from './terms-supported.js'
 
 /**

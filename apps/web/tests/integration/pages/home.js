@@ -5,8 +5,8 @@ import { expect } from '@playwright/test'
 
 import { translate } from '../utils/index.js'
 import {
+  AsideMixin,
   AuthenticatedHeaderMixin,
-  GameAsideMixin,
   mixin,
   TermsSupportedMixin
 } from './mixins/index.js'
@@ -103,6 +103,22 @@ export const HomePage = mixin(
     }
 
     /**
+     * Expects several catalog items, sorted by their locale title.
+     * Lobby link creation is expected first.
+     * @param {object[]} catalog - expected catalog items.
+     * @returns {Promise<void>}
+     */
+    async expectSortedCatalogItems(catalog, withLobby = true) {
+      const names = [...catalog.map(({ locales }) => locales.fr.title).sort()]
+      if (withLobby) {
+        names.splice(0, 0, translate('actions.create-lobby'))
+      }
+      await expect(this.catalogItemHeadings).toHaveText(
+        names.map(value => new RegExp(value))
+      )
+    }
+
+    /**
      * Navigates to login by clicking on the header button
      */
     async goToLogin() {
@@ -113,7 +129,7 @@ export const HomePage = mixin(
     }
 
     /**
-     * Deletes a game by titles
+     * Find a game by its title, click on its deletion button, displaying the confirmation dialogue.
      * @param {string} title - deleted game's title.
      * @param {number} rank - 0-based rank, in case of multiple matching games.
      */
@@ -152,6 +168,6 @@ export const HomePage = mixin(
     }
   },
   AuthenticatedHeaderMixin,
-  GameAsideMixin,
+  AsideMixin,
   TermsSupportedMixin
 )

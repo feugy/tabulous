@@ -9,7 +9,7 @@
   "main": "./src/index.js",
   "scripts": {
     "test": "vitest run --coverage",
-    "test:dev": "vitest dev"
+    "test:dev": "vitest dev --reporter=verbose"
   },
   "dependencies": {
     "@tabulous/cli": "workspace:^0.0.1",

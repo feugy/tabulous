@@ -4,6 +4,7 @@ const levels = {
   catalog: 'warn',
   'custom-shape': 'warn',
   flippable: 'warn',
+  friends: 'warn',
   'game-interaction': 'warn',
   'game-manager': 'warn',
   graphql: 'warn',

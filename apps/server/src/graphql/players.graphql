@@ -11,6 +11,20 @@ type Player {
   isAdmin: Boolean
 }
 
+type Friendship {
+  player: Player!
+  isRequest: Boolean
+  isProposal: Boolean
+}
+
+type FriendshipUpdate {
+  from: Player!
+  requested: Boolean
+  proposed: Boolean
+  accepted: Boolean
+  declined: Boolean
+}
+
 type TurnCredentials {
   username: String!
   credentials: String!
@@ -31,6 +45,7 @@ type PlayerListResult {
 
 type Query {
   getCurrentPlayer: PlayerWithTurnCredentials
+  listFriends: [Friendship]
   searchPlayers(search: String!, includeCurrent: Boolean): [Player]
   listPlayers(from: Int, size: Int): PlayerListResult
 }
@@ -41,4 +56,12 @@ type Mutation {
   acceptTerms: Player
   updateCurrentPlayer(username: String, avatar: String): Player
   deletePlayer(id: ID!): Player
+  sendFriendRequest(id: ID!): Boolean
+  requestFriendship(id: ID!): Boolean
+  acceptFriendship(id: ID!): Boolean
+  endFriendship(id: ID!): Boolean
+}
+
+extend type Subscription {
+  receiveFriendshipUpdates: FriendshipUpdate
 }

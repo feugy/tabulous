@@ -28,7 +28,7 @@ let serverContext = null
 
 /**
  * @typedef {object} GraphQlMockResult
- * @property {string[]} subscriptionIds - list of current GraphQL subscription ids.
+ * @property {Record<string, string>} subscriptionIds - GaphQL subscription ids by their operation name.
  * @property {function} onSubscription - registers a unique callback called when receiving GraphQL subscription.
  * @property {function} onQuery - registers a unique callback called when receiving GraphQL queries (and mutations).
  * @property {function} sendToSubscription - sends a GraphQL response payload to the subscription.
@@ -103,12 +103,9 @@ export async function mockGraphQl(page, mocks) {
             log(reqId, `receiving WS message:`, message)
             if (message.type === 'connection_init') {
               serverContext.wsConnection = connection
-              serverContext.sendToSubscription = (payload, id) => {
-                id =
-                  id ||
-                  serverContext.subscriptionIds[
-                    serverContext.subscriptionIds.length - 1
-                  ]
+              serverContext.sendToSubscription = payload => {
+                const operation = Object.keys(payload.data)[0]
+                const id = serverContext.subscriptionIds[operation]
                 log(
                   reqId,
                   chalk`sending WS message {blueBright ${id}}:`,
@@ -120,8 +117,11 @@ export async function mockGraphQl(page, mocks) {
             } else if (message.type === 'ping') {
               sendInWebSocket({ type: 'pong' })
             } else if (message.type === 'subscribe') {
-              serverContext.subscriptionIds.push(message.id)
-              serverContext.onSubscription?.(message)
+              const [, operation] = message.payload.query.match(
+                /^subscription ([^ (]+)/
+              )
+              serverContext.subscriptionIds[operation] = message.id
+              serverContext.onSubscription?.(operation, message)
             }
           })
         }

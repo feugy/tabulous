@@ -1,7 +1,7 @@
 <script>
   import {
+    Aside,
     ConfirmDialogue,
-    GameAside,
     Header,
     InvitePlayerDialogue,
     PageFooter
@@ -15,6 +15,7 @@
     isDifferentGame,
     joinGame,
     leaveGame,
+    listFriends,
     promoteGame,
     receiveGameListUpdates,
     sendToThread,
@@ -39,13 +40,15 @@
 
   let gameToDelete = null
   let user = null
-  let games$ = readable(data.currentGames || [])
+  let games = readable(data.currentGames || [])
   let gameToInvite = false
+  let friends = readable([])
   $: isDeletedLobby = isLobby(gameToDelete)
 
   if (data.session?.player) {
     user = data.session.player
-    games$ = receiveGameListUpdates(data.currentGames)
+    games = receiveGameListUpdates(data.currentGames)
+    friends = listFriends()
   }
 
   $: if (browser && $page.url.searchParams.get('game-name')) {
@@ -140,7 +143,7 @@
       {#if user}
         <h2>{$_('titles.your-games')}</h2>
         <section aria-roledescription="games">
-          {#each $games$.sort((a, b) => b.created - a.created) as game (game.id)}
+          {#each $games.sort((a, b) => b.created - a.created) as game (game.id)}
             <GameLink
               {game}
               playerId={user.id}
@@ -170,12 +173,13 @@
     </div>
   </div>
   {#if user}
-    <GameAside
+    <Aside
       game={$currentGame}
       player={user}
       playerById={$gamePlayerById}
       connected={$connected}
       thread={$thread}
+      friends={$friends}
       on:sendMessage={({ detail }) => sendToThread(detail.text)}
     />
   {/if}

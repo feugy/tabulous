@@ -125,20 +125,23 @@ First commands will need to connect with IPv4 (hence the `-4` flag) in the meant
     - uncomment `#pkey=[PATH]` and change path value for `/home/tabulous/certbot/live/tabulous.fr/privkey.pem`
   - restart service: `sudo systemctl restart coturn`
 
-- install Redis:
+- install Redis 7+:
 
   - open an SSH connection to the VPS: `ssh ubuntu@vps-XYZ.vps.ovh.net`
+  - configure Redis PPA:
+    - `curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg`
+    - `echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list`
+    - `sudo apt-get update`
   - install Redis: `sudo apt install -y redis`
   - configure redis:
     1. `sudo vi /etc/redis/redis.conf`
-    1. change line `supervised no` to `superivsed auto`
     1. uncomment line `aclfile /etc/redis/users.acl`
     1. save and quit
     1. generate 2 random secrets values (save them somewhere): `tr -cd '[:alnum:]' < /dev/urandom | fold -w30 | head -n 2`
     1. add these:
        - `user default off`
        - `user USERNAME on allkeys +@keyspace +@list +@set +@sortedset +@hash +@string +@transaction >PASSWORD_1`
-       - `user USERNAME_2 on +@pubsub >PASSWORD_2`
+       - `user USERNAME_2 on allchannels +@pubsub >PASSWORD_2`
     1. save and quit
   - restart redis to apply changes: `sudo systemctl restart redis`
 

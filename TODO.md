@@ -2,18 +2,20 @@
 
 ## Road to beta
 
-- refactor invite dialogue to send a friend request
-- display friend requests on home page for acceptation
-- replace invite dialogue with friend list, showing online and guest statuses
+- invite guests from friend list (skip existing guests, skip requested)
+- include fiend list in game parameters to select guest
+- remove GameInvite dialog, enforce inviting acknoledge friends only
 - skin(s)
 - interface in English
 - always go fullscreen when entering game
+- allow spliting aside in a different window
 - rework lights & shadows
 - server logging (warning on invalid descriptors) + log file rotation
 - fix obvious bugs bellow
 
 ## Refactor
 
+- vitest@0.27.3: can not run atelier/svelte files because imports (klaw-sync, htm, svelte-html) are not resolved. [here](https://github.com/vitest-dev/vitest/pull/2687/files#diff-0d08494797e08cc20a3fd0f24593279cb51d179486a6188d86b92d4855a23633R220) is the culprit line.
 - @urql/core@3.1.1: receiveGameListUpdates subscribtion fails because urql's stringification sends the whole games.graphql file instead of the subscription as a payload. This is because [these lines](https://github.com/urql-graphql/urql/pull/2871/files#diff-425e8fcb48a8df1865f99ca1fb981873c6d0ef33ee3856e18f85a8b449bb81b7R41-R42)
 - add tests for web/src/utils/peer-connection
 - use node 18 when msw/interceptor will [handle it](https://github.com/mswjs/interceptors/pull/283)

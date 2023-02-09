@@ -62,7 +62,7 @@
 
 <style lang="postcss">
   div {
-    @apply flex-1 p-2 h-full overflow-auto;
+    @apply flex-1 p-4 h-full overflow-auto;
   }
 
   section {
@@ -71,6 +71,6 @@
   }
 
   h3 {
-    @apply text-xl border-b border-$secondary-light mx-2 pb-1 pt-4;
+    @apply text-xl font-bold mx-2 pb-1 pt-4;
   }
 </style>

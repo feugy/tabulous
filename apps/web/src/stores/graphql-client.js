@@ -67,6 +67,7 @@ export function initGraphQlClient({
     maskTypename: true,
     exchanges
   })
+  return client
 }
 
 export async function runMutation(query, variables) {

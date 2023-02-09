@@ -4,6 +4,7 @@
 
   import ControlsHelp from './ControlsHelp/index.js'
   import Discussion from './Discussion.svelte'
+  import FriendList from './FriendList.svelte'
   import MinimizableSection from './MinimizableSection.svelte'
   import PlayerAvatar from './PlayerAvatar.svelte'
   import RuleViewer from './RuleViewer.svelte'
@@ -13,10 +14,12 @@
   export let thread
   export let connected
   export let game = undefined
+  export let friends = undefined
 
   const helpId = 'help'
   const playersId = 'players'
   const rulesId = 'rules'
+  const friendsId = 'friends'
 
   let tab
   let tabs
@@ -30,6 +33,8 @@
 
   $: hasPeers = playerById?.size > 1
 
+  $: hasInvites = friends?.some(({ isRequest }) => isRequest)
+
   $: peers = hasPeers
     ? otherPlayers.map(player => ({
         player,
@@ -38,18 +43,17 @@
     : []
 
   $: {
+    tabs = [{ icon: 'people_alt', id: friendsId, key: 'F2' }]
     if (isLobby(game)) {
-      tabs = [{ icon: 'people_alt', id: playersId, key: 'F3' }]
+      tabs.splice(0, 0, { icon: 'contacts', id: playersId, key: 'F4' })
     } else if (game) {
-      tabs = [{ icon: 'help', id: helpId, key: 'F1' }]
+      tabs.push({ icon: 'help', id: helpId, key: 'F1' })
       if (game?.rulesBookPageCount > 1) {
-        tabs.splice(0, 0, { icon: 'auto_stories', id: rulesId, key: 'F2' })
+        tabs.splice(0, 0, { icon: 'auto_stories', id: rulesId, key: 'F3' })
       }
       if (hasPeers) {
-        tabs.splice(0, 0, { icon: 'people_alt', id: playersId, key: 'F3' })
+        tabs.splice(0, 0, { icon: 'contacts', id: playersId, key: 'F4' })
       }
-    } else {
-      tabs = []
     }
   }
 </script>
@@ -58,7 +62,7 @@
   <MinimizableSection
     placement="right"
     {tabs}
-    minimized={!hasPeers}
+    minimized={!hasPeers && !hasInvites}
     bind:currentTab={tab}
     on:resize={() => (initialWidth = 'auto')}
   >
@@ -86,7 +90,7 @@
           <MinimizableSection
             dimension={discussionDimension}
             placement="bottom"
-            tabs={[{ icon: 'question_answer', key: 'F4' }]}
+            tabs={[{ icon: 'question_answer', key: 'F5' }]}
           >
             <Discussion {thread} {playerById} on:sendMessage />
           </MinimizableSection>
@@ -96,6 +100,8 @@
         <RuleViewer game={game?.kind} lastPage={game?.rulesBookPageCount - 1} />
       {:else if tabs[tab]?.id === helpId}
         <ControlsHelp />
+      {:else if tabs[tab]?.id === friendsId}
+        <FriendList {friends} />
       {/if}
     </div>
   </MinimizableSection>

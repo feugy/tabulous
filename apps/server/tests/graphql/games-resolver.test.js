@@ -798,7 +798,7 @@ describe('given a started server', () => {
 
       afterEach(() => stopSubscription(ws))
 
-      it('senfs update for current player', async () => {
+      it('sends update for current player', async () => {
         await startSubscription(
           ws,
           'subscription { receiveGameListUpdates { id created players { id username } } }',

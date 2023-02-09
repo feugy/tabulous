@@ -36,6 +36,9 @@
     } else if (evt.key === 'ArrowRight' || evt.key === 'Enter') {
       open = false
       evt.preventDefault()
+      if (!value) {
+        value = options[0] ?? null
+      }
     } else {
       // matches possible option with current text
       const text = evt.currentTarget.value

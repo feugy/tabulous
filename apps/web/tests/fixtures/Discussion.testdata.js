@@ -1,6 +1,6 @@
 export const players = [
   { id: '123456', username: 'Fernand Naudin', color: '#9c3096' },
-  { id: '741852', username: 'Maître Folage', color: '#ff4500' },
+  { id: '741852', username: 'Maître Follas', color: '#ff4500' },
   { id: '369258', username: 'Pascal', color: '#239646' }
 ]
 

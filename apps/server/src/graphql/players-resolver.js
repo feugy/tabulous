@@ -1,3 +1,5 @@
+import { filter } from 'rxjs'
+
 import { makeToken } from '../plugins/utils.js'
 import repositories from '../repositories/index.js'
 import services from '../services/index.js'
@@ -7,8 +9,44 @@ import { isAdmin, isAuthenticated } from './utils.js'
 /** @typedef {import('./players.graphql').PlayerWithTurnCredentials} PlayerWithTurnCredentials */
 /** @typedef {import('../services/players').Player} Player */
 /** @typedef {import('../repositories/abstract-repository.js').Page} PlayerPage */
+/** @typedef {import('../services/players').Friendship} Friendship */
+
+function buildPlayerLoader(playerProperty, idProperty) {
+  return {
+    async loader(queries) {
+      const ids = queries.reduce(
+        (ids, { obj }) =>
+          obj[playerProperty] ? ids : [obj[idProperty], ...ids],
+        []
+      )
+      const players = ids.length ? await services.getPlayerById(ids) : []
+      return queries.map(
+        ({ obj }) =>
+          obj[playerProperty] ??
+          players.find(({ id }) => id === obj[idProperty])
+      )
+    },
+    // disable cache since playing statuses are volatile
+    opts: { cache: false }
+  }
+}
 
 export default {
+  loaders: {
+    Friendship: {
+      /**
+       * Loads player details on the fly.
+       */
+      player: buildPlayerLoader('player', 'playerId')
+    },
+    FriendshipUpdate: {
+      /**
+       * Loads player details on the fly.
+       */
+      from: buildPlayerLoader('from', 'id')
+    }
+  },
+
   Query: {
     /**
      * Returns the current player data from their authentication details.
@@ -47,7 +85,19 @@ export default {
      * @param {object} context - graphQL context.
      * @returns {Promise<PlayerPage>} extract of the player list.
      */
-    listPlayers: isAdmin((obj, args) => repositories.players.list(args))
+    listPlayers: isAdmin((obj, args) => repositories.players.list(args)),
+
+    /**
+     * Returns the list of friends of a given player.
+     * Requires valid authentication.
+     * @param {object} obj - graphQL object.
+     * @param {object} args - query arguments.
+     * @param {object} context - graphQL context.
+     * @returns {Promise<Friendship[]>} list (potentially empty) of friend players.
+     */
+    listFriends: isAuthenticated((obj, args, { player }) =>
+      services.listFriends(player.id)
+    )
   },
 
   Mutation: {
@@ -135,6 +185,71 @@ export default {
      * @param {string} args.id - deleted player's id.
      * @returns {Promise<Player|null>} deleted player account, or null.
      */
-    deletePlayer: isAdmin((obj, { id }) => repositories.players.deleteById(id))
+    deletePlayer: isAdmin((obj, { id }) => repositories.players.deleteById(id)),
+
+    /**
+     * Sends a friend request from one player to another one.
+     * Requires valid authentication.
+     * @param {object} obj - graphQL object.
+     * @param {object} args - query arguments, including:
+     * @param {string} args.id - id of the requested player.
+     * @param {object} context - graphQL context.
+     * @returns {Promise<boolean>} true if the operation succeeds.
+     */
+    requestFriendship: isAuthenticated(async (obj, { id }, { player }) =>
+      services.requestFriendship(player, id)
+    ),
+
+    /**
+     * Accepts a friend request from another player.
+     * Requires valid authentication.
+     * @param {object} obj - graphQL object.
+     * @param {object} args - query arguments, including:
+     * @param {string} args.id - id of the requesting player.
+     * @param {object} context - graphQL context.
+     * @returns {Promise<boolean>} true if the operation succeeds.
+     */
+    acceptFriendship: isAuthenticated(async (obj, { id }, { player }) =>
+      services.acceptFriendship(player, id)
+    ),
+
+    /**
+     * Declines a friend request or ends existing friendship with another player.
+     * Requires valid authentication.
+     * @param {object} obj - graphQL object.
+     * @param {object} args - query arguments, including:
+     * @param {string} args.id - id of the ended player.
+     * @param {object} context - graphQL context.
+     * @returns {Promise<boolean>} true if the operation succeeds.
+     */
+    endFriendship: isAuthenticated(async (obj, { id }, { player }) =>
+      services.endFriendship(player, id)
+    )
+  },
+
+  Subscription: {
+    receiveFriendshipUpdates: {
+      /**
+       * Sends updates (new request, acceptation and declines) to the a given player's friend list.
+       * Requires valid authentication.
+       * @param {object} obj - graphQL object.
+       * @param {object} args - subscription arguments.
+       * @param {object} context - graphQL context.
+       */
+      subscribe: isAuthenticated(async (obj, args, { player, pubsub }) => {
+        const topic = `friendship-${player.id}`
+        const subscription = services.friendshipUpdates
+          .pipe(filter(({ to }) => to === player.id))
+          .subscribe(({ from, ...others }) => {
+            pubsub.publish({
+              topic,
+              payload: { receiveFriendshipUpdates: { id: from, ...others } }
+            })
+          })
+        const queue = await pubsub.subscribe(topic)
+        queue.once('close', () => subscription.unsubscribe())
+        return queue
+      })
+    }
   }
 }

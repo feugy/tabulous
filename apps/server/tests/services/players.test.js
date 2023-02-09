@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { vi } from 'vitest'
 import {
   afterAll,
   afterEach,
@@ -11,9 +12,14 @@ import {
 
 import repositories from '../../src/repositories/index.js'
 import {
+  acceptFriendship,
   acceptTerms,
+  endFriendship,
+  friendshipUpdates,
   getPlayerById,
   isUsernameUsed,
+  listFriends,
+  requestFriendship,
   searchPlayers,
   setCurrentGameId,
   upsertPlayer
@@ -235,15 +241,50 @@ describe('given initialized repository', () => {
 
   describe('given some players', () => {
     let players = [
-      { username: 'Adam Destine' },
-      { username: 'Batman' },
-      { username: 'Adaptoid' },
-      { username: 'Adversary' },
-      { username: 'Hulk' }
+      { id: `adam-${faker.datatype.number(100)}`, username: 'Adam Destine' },
+      { id: `batman-${faker.datatype.number(100)}`, username: 'Batman' },
+      { id: `adaptoid-${faker.datatype.number(100)}`, username: 'Adaptoid' },
+      { id: `adversary-${faker.datatype.number(100)}`, username: 'Adversary' },
+      { id: `hulk-${faker.datatype.number(100)}`, username: 'Hulk' },
+      { id: `thor-${faker.datatype.number(100)}`, username: 'Thor' }
     ]
 
+    let subscription
+    const friendshipUpdateReceived = vi.fn()
+
+    beforeAll(async () => {
+      subscription = friendshipUpdates.subscribe(friendshipUpdateReceived)
+    })
+
+    afterAll(async () => {
+      subscription?.unsubscribe()
+    })
+
     beforeEach(async () => {
+      vi.resetAllMocks()
       players = await repositories.players.save(players)
+      await repositories.players.makeFriends(
+        players[0].id,
+        players[1].id,
+        repositories.FriendshipAccepted
+      )
+      await repositories.players.makeFriends(players[2].id, players[0].id)
+      await repositories.players.makeFriends(
+        players[0].id,
+        players[3].id,
+        repositories.FriendshipAccepted
+      )
+      await repositories.players.makeFriends(players[0].id, players[4].id)
+      await repositories.players.makeFriends(
+        players[4].id,
+        players[1].id,
+        repositories.FriendshipAccepted
+      )
+      await repositories.players.makeFriends(
+        players[4].id,
+        players[2].id,
+        repositories.FriendshipBlocked
+      )
     })
 
     afterEach(() =>
@@ -343,6 +384,208 @@ describe('given initialized repository', () => {
         expect(await isUsernameUsed('adversary', faker.datatype.uuid())).toBe(
           true
         )
+      })
+    })
+
+    describe('listFriends()', () => {
+      it('returns friends, requests and proposals', async () => {
+        const [
+          { id: player1 },
+          { id: player2 },
+          { id: player3 },
+          { id: player4 },
+          { id: player5 }
+        ] = players
+        expect(await listFriends(player1)).toEqual([
+          { playerId: player2 },
+          { playerId: player4 },
+          { playerId: player3, isRequest: true },
+          { playerId: player5, isProposal: true }
+        ])
+      })
+
+      it('ignores blocked players', async () => {
+        const [{ id: player1 }, { id: player2 }, , , { id: player5 }] = players
+        expect(await listFriends(player5)).toEqual([
+          { playerId: player2 },
+          { playerId: player1, isRequest: true }
+        ])
+      })
+
+      it('can return empty list', async () => {
+        expect(await listFriends(players[5].id)).toEqual([])
+      })
+
+      it('returns an empty list for unknown player', async () => {
+        expect(await listFriends(faker.datatype.uuid())).toEqual([])
+      })
+    })
+
+    describe('requestFriendship()', () => {
+      it('records a request to an existing player', async () => {
+        const [player1, , , , player5] = players
+        expect(await requestFriendship(player5, player1.id)).toBe(true)
+        expect(friendshipUpdateReceived).toHaveBeenCalledWith({
+          from: player5.id,
+          to: player1.id,
+          requested: true
+        })
+        expect(friendshipUpdateReceived).toHaveBeenCalledWith({
+          from: player1.id,
+          to: player5.id,
+          proposed: true
+        })
+        expect(friendshipUpdateReceived).toHaveBeenCalledTimes(2)
+        expect(await listFriends(player1.id)).toContainEqual({
+          playerId: player5.id,
+          isRequest: true
+        })
+        expect(await listFriends(player5.id)).not.toContainEqual({
+          playerId: player1.id
+        })
+      })
+
+      it('does nothing for an unexisting player', async () => {
+        const [player1] = players
+        const id = faker.datatype.uuid()
+        expect(await requestFriendship(player1, id)).toBe(false)
+        expect(friendshipUpdateReceived).not.toHaveBeenCalledOnce()
+        expect(await listFriends(player1.id)).not.toContainEqual({
+          playerId: id
+        })
+        expect(await listFriends(id)).toEqual([])
+      })
+
+      it('does nothing for existing friendship', async () => {
+        const [player1, player2] = players
+        expect(await requestFriendship(player1, player2.id)).toBe(false)
+        expect(friendshipUpdateReceived).not.toHaveBeenCalledOnce()
+        expect(await listFriends(player1.id)).toContainEqual({
+          playerId: player2.id
+        })
+        expect(await listFriends(player2.id)).toContainEqual({
+          playerId: player1.id
+        })
+      })
+    })
+
+    describe('acceptFriendship()', () => {
+      it('accepts a request from an existing player', async () => {
+        const [player1, , player3] = players
+        expect(await acceptFriendship(player1, player3.id)).toBe(true)
+        expect(friendshipUpdateReceived).toHaveBeenCalledWith({
+          from: player3.id,
+          to: player1.id,
+          accepted: true
+        })
+        expect(friendshipUpdateReceived).toHaveBeenCalledWith({
+          from: player1.id,
+          to: player3.id,
+          accepted: true
+        })
+        expect(friendshipUpdateReceived).toHaveBeenCalledTimes(2)
+        expect(await listFriends(player1.id)).toContainEqual({
+          playerId: player3.id
+        })
+        expect(await listFriends(player3.id)).toContainEqual({
+          playerId: player1.id
+        })
+      })
+
+      it('does nothing for an unexisting player', async () => {
+        const [player1] = players
+        const id = faker.datatype.uuid()
+        expect(await acceptFriendship(player1, id)).toBe(false)
+        expect(friendshipUpdateReceived).not.toHaveBeenCalledOnce()
+        expect(await listFriends(player1.id)).not.toContainEqual({
+          playerId: id
+        })
+        expect(await listFriends(id)).toEqual([])
+      })
+
+      it('does nothing for existing friendship', async () => {
+        const [player1, player2] = players
+        expect(await acceptFriendship(player1, player2.id)).toBe(false)
+        expect(friendshipUpdateReceived).not.toHaveBeenCalledOnce()
+        expect(await listFriends(player1.id)).toContainEqual({
+          playerId: player2.id
+        })
+        expect(await listFriends(player2.id)).toContainEqual({
+          playerId: player1.id
+        })
+      })
+
+      it('does nothing without prior request', async () => {
+        const [player1, , , , , player6] = players
+        expect(await acceptFriendship(player1, player6.id)).toBe(false)
+        expect(friendshipUpdateReceived).not.toHaveBeenCalledOnce()
+        expect(await listFriends(player1.id)).not.toContainEqual({
+          playerId: player6.id
+        })
+        expect(await listFriends(player6.id)).not.toContainEqual({
+          playerId: player1.id
+        })
+      })
+    })
+
+    describe('endFriendship()', () => {
+      it('ends an existing friendship', async () => {
+        const [player1, player2] = players
+        expect(await endFriendship(player1, player2.id)).toBe(true)
+        expect(friendshipUpdateReceived).toHaveBeenCalledWith({
+          from: player2.id,
+          to: player1.id,
+          declined: true
+        })
+        expect(friendshipUpdateReceived).toHaveBeenCalledWith({
+          from: player1.id,
+          to: player2.id,
+          declined: true
+        })
+        expect(friendshipUpdateReceived).toHaveBeenCalledTimes(2)
+        expect(await listFriends(player1.id)).not.toContainEqual({
+          playerId: player2.id
+        })
+        expect(await listFriends(player2.id)).not.toContainEqual({
+          playerId: player1.id
+        })
+      })
+
+      it('declines an existing request', async () => {
+        const [player1, , player3] = players
+        expect(await endFriendship(player1, player3.id)).toBe(true)
+        expect(friendshipUpdateReceived).toHaveBeenCalledWith({
+          from: player3.id,
+          to: player1.id,
+          declined: true
+        })
+        expect(friendshipUpdateReceived).toHaveBeenCalledWith({
+          from: player1.id,
+          to: player3.id,
+          declined: true
+        })
+        expect(friendshipUpdateReceived).toHaveBeenCalledTimes(2)
+        expect(await listFriends(player1.id)).not.toContainEqual({
+          playerId: player3.id,
+          isRequest: true
+        })
+        expect(await listFriends(player3.id)).not.toContainEqual({
+          playerId: player1.id
+        })
+      })
+
+      it('does nothing for an unexistig player', async () => {
+        const [player1] = players
+        const id = faker.datatype.uuid()
+        expect(await endFriendship(player1, id)).toBe(false)
+        expect(friendshipUpdateReceived).not.toHaveBeenCalledOnce()
+        expect(await listFriends(id)).toEqual([])
+      })
+
+      it('does nothing without existing friendship or request', async () => {
+        const [player1, , , , , player6] = players
+        expect(await endFriendship(player1, player6.id)).toBe(false)
+        expect(friendshipUpdateReceived).not.toHaveBeenCalledOnce()
       })
     })
   })

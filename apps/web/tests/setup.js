@@ -1,7 +1,6 @@
 // Babylon.js side effect imports
 import '@babylonjs/core/Materials/standardMaterial'
 import 'whatwg-fetch'
-import '../src/common'
 
 import util from 'node:util'
 
@@ -58,6 +57,8 @@ AbstractMesh.prototype[util.inspect.custom] = function () {
 }
 
 if (typeof window !== 'undefined') {
+  Object.defineProperty(window.navigator, 'languages', { value: ['fr'] })
+
   document.querySelector(':root').style.setProperty('--short', '150ms')
 
   // implements requestAnimationFrame ourselves, because the one in jsdom
@@ -146,3 +147,6 @@ if (typeof window !== 'undefined') {
     }
   }
 }
+
+// common initialization, once locale is set
+import '../src/common'

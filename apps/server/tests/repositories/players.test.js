@@ -1,7 +1,14 @@
 import { faker } from '@faker-js/faker'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
-import { players } from '../../src/repositories/players.js'
+import {
+  FriendshipAccepted,
+  FriendshipBlocked,
+  FriendshipEnded,
+  FriendshipProposed,
+  FriendshipRequested,
+  players
+} from '../../src/repositories/players.js'
 import { clearDatabase, getRedisTestUrl } from '../test-utils.js'
 
 describe('given a connected repository and several players', () => {
@@ -18,20 +25,20 @@ describe('given a connected repository and several players', () => {
     await players.connect({ url: redisUrl })
     models = [
       {
-        id: faker.datatype.uuid(),
+        id: `p1-${faker.datatype.number(100)}`,
         username: 'Jane',
         provider: provider1,
         providerId: providerId1
       },
       {
-        id: faker.datatype.uuid(),
+        id: `p2-${faker.datatype.number(100)}`,
         username: 'Paul',
         catalog: [],
         isAdmin: true,
         currentGameId: null
       },
       {
-        id: faker.datatype.uuid(),
+        id: `p3-${faker.datatype.number(100)}`,
         username: 'Adam Destine',
         provider: provider1,
         providerId: providerId2,
@@ -39,26 +46,26 @@ describe('given a connected repository and several players', () => {
         termsAccepted: true
       },
       {
-        id: faker.datatype.uuid(),
+        id: `p4-${faker.datatype.number(100)}`,
         username: 'Adam Mann',
         catalog: ['draughts', 'klondike']
       },
       {
-        id: faker.datatype.uuid(),
+        id: `p5-${faker.datatype.number(100)}`,
         username: 'Bruce',
         provider: provider2,
         providerId: providerId1
       },
-      { id: faker.datatype.uuid(), username: 'àdversary' },
+      { id: `p6-${faker.datatype.number(100)}`, username: 'àdversary' },
       {
-        id: faker.datatype.uuid(),
+        id: `p7-${faker.datatype.number(100)}`,
         username: 'Peter',
         provider: provider2,
         providerId: providerId3
       },
-      { id: faker.datatype.uuid(), username: 'Agent Moebius' },
-      { id: faker.datatype.uuid(), username: 'Agent' },
-      { id: faker.datatype.uuid(), username: 'AgentX' }
+      { id: `p8-${faker.datatype.number(100)}`, username: 'Agent Moebius' },
+      { id: `p9-${faker.datatype.number(100)}`, username: 'Agent' },
+      { id: `p10-${faker.datatype.number(100)}`, username: 'AgentX' }
     ]
     await players.save(models)
   })
@@ -289,6 +296,194 @@ describe('given a connected repository and several players', () => {
           from: 0,
           size: 10,
           results: []
+        })
+      })
+    })
+
+    describe('makeFriends()', () => {
+      it('does nothing if requested id is not a valid player', async () => {
+        const [{ id: playerA }] = models
+        const id = faker.datatype.uuid()
+        expect(await players.makeFriends(id, playerA)).toBe(false)
+        expect(await players.listFriendships(playerA)).toEqual([])
+        expect(await players.listFriendships(id)).toEqual([])
+      })
+
+      it('does nothing if requested id is not a valid player', async () => {
+        const [{ id: playerA }] = models
+        const id = faker.datatype.uuid()
+        expect(await players.makeFriends(playerA, id)).toBe(false)
+        expect(await players.listFriendships(playerA)).toEqual([])
+        expect(await players.listFriendships(id)).toEqual([])
+      })
+    })
+
+    describe('given a friendship request', () => {
+      beforeEach(() => players.makeFriends(models[0].id, models[1].id))
+
+      describe('listFriendships()', () => {
+        it('returns request and proposal', async () => {
+          const [{ id: playerA }, { id: playerB }] = models
+          expect(await players.listFriendships(playerA)).toEqual([
+            { id: playerB, state: FriendshipProposed }
+          ])
+          expect(await players.listFriendships(playerB)).toEqual([
+            { id: playerA, state: FriendshipRequested }
+          ])
+        })
+      })
+
+      describe('makeFriends()', () => {
+        it('can confirm the request', async () => {
+          const [{ id: playerA }, { id: playerB }] = models
+          expect(
+            await players.makeFriends(playerB, playerA, FriendshipAccepted)
+          ).toBe(true)
+          expect(await players.listFriendships(playerA)).toEqual([
+            { id: playerB, state: FriendshipAccepted }
+          ])
+          expect(await players.listFriendships(playerB)).toEqual([
+            { id: playerA, state: FriendshipAccepted }
+          ])
+        })
+
+        it('can decline the request', async () => {
+          const [{ id: playerA }, { id: playerB }] = models
+          expect(
+            await players.makeFriends(playerB, playerA, FriendshipEnded)
+          ).toBe(true)
+          expect(await players.listFriendships(playerA)).toEqual([])
+          expect(await players.listFriendships(playerB)).toEqual([])
+        })
+
+        it('can block the request', async () => {
+          const [{ id: playerA }, { id: playerB }] = models
+          expect(
+            await players.makeFriends(playerB, playerA, FriendshipBlocked)
+          ).toBe(true)
+          expect(await players.listFriendships(playerA)).toEqual([])
+          expect(await players.listFriendships(playerB)).toEqual([
+            { id: playerA, state: FriendshipBlocked }
+          ])
+        })
+      })
+
+      describe('deleteById', () => {
+        it('removes friendship with first player', async () => {
+          const [{ id: playerA }, { id: playerB }] = models
+          await players.deleteById(playerA)
+          expect(await players.listFriendships(playerA)).toEqual([])
+          expect(await players.listFriendships(playerB)).toEqual([])
+        })
+
+        it('removes friendship with second player', async () => {
+          const [{ id: playerA }, { id: playerB }] = models
+          await players.deleteById(playerB)
+          expect(await players.listFriendships(playerA)).toEqual([])
+          expect(await players.listFriendships(playerB)).toEqual([])
+        })
+      })
+    })
+
+    describe('given a friendship relationship', () => {
+      beforeEach(() =>
+        players.makeFriends(models[0].id, models[1].id, FriendshipAccepted)
+      )
+
+      describe('listFriendships()', () => {
+        it('returns friendship', async () => {
+          const [{ id: playerA }, { id: playerB }] = models
+          expect(await players.listFriendships(playerA)).toEqual([
+            { id: playerB, state: FriendshipAccepted }
+          ])
+          expect(await players.listFriendships(playerB)).toEqual([
+            { id: playerA, state: FriendshipAccepted }
+          ])
+        })
+      })
+
+      describe('makeFriends()', () => {
+        it('can be ended', async () => {
+          const [{ id: playerA }, { id: playerB }] = models
+          expect(
+            await players.makeFriends(playerA, playerB, FriendshipEnded)
+          ).toBe(true)
+          expect(await players.listFriendships(playerA)).toEqual([])
+          expect(await players.listFriendships(playerB)).toEqual([])
+        })
+
+        it('can be blocked', async () => {
+          const [{ id: playerA }, { id: playerB }] = models
+          expect(
+            await players.makeFriends(playerA, playerB, FriendshipBlocked)
+          ).toBe(true)
+          expect(await players.listFriendships(playerA)).toEqual([
+            { id: playerB, state: FriendshipBlocked }
+          ])
+          expect(await players.listFriendships(playerB)).toEqual([])
+        })
+      })
+
+      describe('deleteById', () => {
+        it('removes friendship with first player', async () => {
+          const [{ id: playerA }, { id: playerB }] = models
+          await players.deleteById(playerA)
+          expect(await players.listFriendships(playerA)).toEqual([])
+          expect(await players.listFriendships(playerB)).toEqual([])
+        })
+
+        it('removes friendship with second player', async () => {
+          const [{ id: playerA }, { id: playerB }] = models
+          await players.deleteById(playerB)
+          expect(await players.listFriendships(playerA)).toEqual([])
+          expect(await players.listFriendships(playerB)).toEqual([])
+        })
+      })
+    })
+
+    describe('given blocked friendship', () => {
+      beforeEach(() =>
+        players.makeFriends(models[0].id, models[1].id, FriendshipBlocked)
+      )
+
+      describe('listFriendships()', () => {
+        it('returns blocked', async () => {
+          const [{ id: playerA }, { id: playerB }] = models
+          expect(await players.listFriendships(playerA)).toEqual([
+            { id: playerB, state: FriendshipBlocked }
+          ])
+          expect(await players.listFriendships(playerB)).toEqual([])
+        })
+      })
+
+      describe('makeFriends()', () => {
+        it('does not request any more', async () => {
+          const [{ id: playerA }, { id: playerB }] = models
+          expect(await players.makeFriends(playerB, playerA)).toBe(false)
+          expect(await players.listFriendships(playerA)).toEqual([
+            { id: playerB, state: FriendshipBlocked }
+          ])
+          expect(await players.listFriendships(playerB)).toEqual([
+            { id: playerA, state: FriendshipProposed }
+          ])
+        })
+      })
+
+      describe('deleteById', () => {
+        it('removes friendship with first player', async () => {
+          const [{ id: playerA }, { id: playerB }] = models
+          await players.deleteById(playerA)
+          expect(await players.listFriendships(playerA)).toEqual([])
+          expect(await players.listFriendships(playerB)).toEqual([])
+        })
+
+        it('removes friendship with second player', async () => {
+          const [{ id: playerA }, { id: playerB }] = models
+          await players.deleteById(playerB)
+          expect(await players.listFriendships(playerA)).toEqual([
+            { id: playerB, state: FriendshipBlocked }
+          ])
+          expect(await players.listFriendships(playerB)).toEqual([])
         })
       })
     })
