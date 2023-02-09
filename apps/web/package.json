@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "start": "vite dev --open https://localhost:3000",
-    "test": "vitest run --coverage",
+    "test": "NODE_OPTIONS=--max-old-space-size=7000 vitest run --coverage",
     "test:dev": "vitest dev --reporter=verbose",
     "test:integration": "pnpm test:integration:prepare && pnpm test:integration:run",
     "test:integration:prepare": "vite build --mode integration",
