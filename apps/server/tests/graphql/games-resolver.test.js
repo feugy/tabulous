@@ -630,7 +630,7 @@ describe('given a started server', () => {
           method: 'POST',
           url: 'graphql',
           payload: {
-            query: `mutation { invite(gameId: "1234", playerId: "abcd") { id } }`
+            query: `mutation { invite(gameId: "1234", playerIds: ["abcd"]) { id } }`
           }
         })
         expect(response.statusCode).toEqual(200)
@@ -643,12 +643,12 @@ describe('given a started server', () => {
 
       it('invites another player to an existing game and resolves player objects', async () => {
         const playerId = players[0].id
-        const peerId = players[1].id
+        const peerIds = players.slice(1, 3).map(({ id }) => id)
         const game = {
           id: faker.datatype.uuid(),
           kind: 'belote',
           created: faker.date.past().getTime(),
-          playerIds: [playerId, peerId],
+          playerIds: [playerId, ...peerIds],
           guestIds: []
         }
         services.getPlayerById
@@ -667,7 +667,7 @@ describe('given a started server', () => {
           },
           payload: {
             query: `mutation {
-  invite(gameId: "${game.id}", playerId: "${peerId}") {
+  invite(gameId: "${game.id}", playerIds: ${JSON.stringify(peerIds)}) {
     id
     kind
     created
@@ -697,7 +697,7 @@ describe('given a started server', () => {
           game.playerIds
         )
         expect(services.getPlayerById).toHaveBeenCalledTimes(2)
-        expect(services.invite).toHaveBeenCalledWith(game.id, peerId, playerId)
+        expect(services.invite).toHaveBeenCalledWith(game.id, peerIds, playerId)
         expect(services.invite).toHaveBeenCalledOnce()
       })
     })

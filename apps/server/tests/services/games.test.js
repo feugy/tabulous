@@ -44,6 +44,16 @@ describe('given a subscription to game lists and an initialized repository', () 
     await repositories.games.connect({ url: redisUrl })
     await repositories.players.connect({ url: redisUrl })
     await repositories.players.save([player, peer, peer2])
+    await repositories.players.makeFriends(
+      player.id,
+      peer.id,
+      repositories.FriendshipAccepted
+    )
+    await repositories.players.makeFriends(
+      player.id,
+      peer2.id,
+      repositories.FriendshipAccepted
+    )
   })
 
   afterAll(async () => {
@@ -360,7 +370,7 @@ describe('given a subscription to game lists and an initialized repository', () 
         })
 
         it(`adds guest id to game's player id and preference lists, and trigger list updates`, async () => {
-          await invite(game.id, peer.id, player.id)
+          await await invite(game.id, [peer.id], player.id)
           await setTimeout(50)
           updates.splice(0)
 
@@ -403,8 +413,17 @@ describe('given a subscription to game lists and an initialized repository', () 
             { id: faker.datatype.uuid() }
           ])
           for (const { id } of guests) {
-            await invite(game.id, id, grantedPlayer.id)
+            await repositories.players.makeFriends(
+              grantedPlayer.id,
+              id,
+              repositories.FriendshipAccepted
+            )
           }
+          await invite(
+            game.id,
+            guests.map(({ id }) => id),
+            grantedPlayer.id
+          )
 
           let availableSeats = game.availableSeats
           let playerIds
@@ -514,7 +533,7 @@ describe('given a subscription to game lists and an initialized repository', () 
         })
 
         it('includes players and guest from the lobby', async () => {
-          await invite(lobby.id, peer.id, player.id)
+          await invite(lobby.id, [peer.id], player.id)
           await setTimeout(50)
           updates.splice(0)
           const { kind } = game
@@ -544,8 +563,7 @@ describe('given a subscription to game lists and an initialized repository', () 
         })
 
         it('trims out players when they outnumber available seats', async () => {
-          await invite(lobby.id, peer.id, player.id)
-          await invite(lobby.id, peer2.id, player.id)
+          await invite(lobby.id, [peer.id, peer2.id], player.id)
           await joinGame(lobby.id, peer2)
           await setTimeout(50)
           updates.splice(0)
@@ -709,7 +727,7 @@ describe('given a subscription to game lists and an initialized repository', () 
       describe('invite()', () => {
         it('returns null on unknown game', async () => {
           expect(
-            await invite(faker.datatype.uuid(), peer.id, player.id)
+            await invite(faker.datatype.uuid(), [peer.id], player.id)
           ).toBeNull()
           await setTimeout(50)
           expect(updates).toHaveLength(0)
@@ -717,50 +735,101 @@ describe('given a subscription to game lists and an initialized repository', () 
 
         it('returns null on un-owned game', async () => {
           expect(
-            await invite(game.id, peer.id, faker.datatype.uuid())
+            await invite(game.id, [peer.id], faker.datatype.uuid())
           ).toBeNull()
           await setTimeout(50)
           expect(updates).toHaveLength(0)
         })
 
-        it('returns null on unknown guest id', async () => {
+        it('does not invite an unknown guest id', async () => {
           vi.spyOn(repositories.players, 'getById').mockResolvedValue(null)
           expect(
-            await invite(game.id, faker.datatype.uuid(), player.id)
-          ).toBeNull()
+            await invite(game.id, [faker.datatype.uuid()], player.id)
+          ).toEqual(game)
           await setTimeout(50)
           expect(updates).toHaveLength(0)
         })
 
-        it('returns null on already invited guest', async () => {
-          await invite(game.id, peer.id, player.id)
+        it('does not invite an invited guest twice', async () => {
+          expect(await invite(game.id, [peer.id], player.id)).toEqual({
+            ...game,
+            guestIds: [peer.id]
+          })
           await setTimeout(50)
           updates.splice(0)
 
-          expect(await invite(game.id, peer.id, player.id)).toBeNull()
+          expect(await invite(game.id, [peer.id], player.id)).toEqual({
+            ...game,
+            guestIds: [peer.id]
+          })
           await setTimeout(50)
           expect(updates).toHaveLength(0)
         })
 
-        it('returns null on invited player', async () => {
-          await invite(game.id, peer.id, player.id)
-          await joinGame(game.id, peer)
+        it('does not invite a player twice', async () => {
+          expect(await invite(game.id, [peer.id], player.id)).toEqual({
+            ...game,
+            guestIds: [peer.id]
+          })
+          const updatedGame = await joinGame(game.id, peer)
+          expect(updatedGame).toMatchObject({
+            availableSeats: 0,
+            playerIds: [player.id, peer.id]
+          })
           await setTimeout(50)
           updates.splice(0)
 
-          expect(await invite(game.id, peer.id, player.id)).toBeNull()
+          expect(await invite(game.id, [peer.id], player.id)).toEqual(
+            updatedGame
+          )
+          await setTimeout(50)
+          expect(updates).toHaveLength(0)
+        })
+
+        it('does not invite a player that is not friend', async () => {
+          const stranger = await repositories.players.save({
+            id: faker.datatype.uuid()
+          })
+          expect(await invite(game.id, [stranger.id], player.id)).toEqual(game)
+          await setTimeout(50)
+          expect(updates).toHaveLength(0)
+        })
+
+        it('does not invite a requested friend', async () => {
+          const stranger = await repositories.players.save({
+            id: faker.datatype.uuid()
+          })
+          await repositories.players.makeFriends(
+            stranger.id,
+            player.id,
+            repositories.FriendshipRequested
+          )
+          expect(await invite(game.id, [stranger.id], player.id)).toEqual(game)
+          await setTimeout(50)
+          expect(updates).toHaveLength(0)
+        })
+
+        it('does not invite a blocked friend', async () => {
+          const stranger = await repositories.players.save({
+            id: faker.datatype.uuid()
+          })
+          await repositories.players.makeFriends(
+            player.id,
+            stranger.id,
+            repositories.FriendshipBlocked
+          )
+          expect(await invite(game.id, [stranger.id], player.id)).toEqual(game)
           await setTimeout(50)
           expect(updates).toHaveLength(0)
         })
 
         it(`adds to game's guest list and trigger list updates`, async () => {
-          const updated = await invite(game.id, peer.id, player.id)
+          const updated = await invite(game.id, [peer.id], player.id)
           expect(updated).toEqual({
             ...game,
             guestIds: [peer.id]
           })
-          // only once
-          expect(await invite(game.id, peer.id, player.id)).toEqual(null)
+
           const loaded = await joinGame(game.id, player)
           expect(loaded.playerIds).toEqual([player.id])
           expect(loaded.guestIds).toEqual([peer.id])
@@ -782,7 +851,7 @@ describe('given a subscription to game lists and an initialized repository', () 
 
         beforeEach(async () => {
           games.push(game)
-          await invite(games[0].id, peer.id, player.id)
+          await invite(games[0].id, [peer.id], player.id)
           await joinGame(games[0].id, peer)
 
           games.push(await createGame('belote', player))
@@ -793,7 +862,7 @@ describe('given a subscription to game lists and an initialized repository', () 
 
           games.push(await createGame('belote', peer))
           await joinGame(games[3].id, peer)
-          await invite(games[3].id, player.id, peer.id)
+          await invite(games[3].id, [player.id], peer.id)
           await joinGame(games[3].id, player)
 
           games.push(await createGame('belote', peer))
@@ -862,11 +931,11 @@ describe('given a subscription to game lists and an initialized repository', () 
         it('notifies players invited by the specified player', async () => {
           const game1 = await createGame('belote', player)
           await joinGame(game1.id, player)
-          await invite(game1.id, peer.id, player.id)
+          await invite(game1.id, [peer.id], player.id)
           games.push(await joinGame(game1.id, peer))
           const game2 = await createGame('belote', peer2)
           await joinGame(game2.id, peer2)
-          await invite(game2.id, player.id, peer2.id)
+          await invite(game2.id, [player.id], peer2.id)
           games.push(await joinGame(game2.id, player))
 
           await setTimeout(50)
@@ -892,11 +961,11 @@ describe('given a subscription to game lists and an initialized repository', () 
         it('does not notify the same peer multiple times', async () => {
           const game1 = await createGame('belote', player)
           await joinGame(game1.id, player)
-          await invite(game1.id, peer.id, player.id)
+          await invite(game1.id, [peer.id], player.id)
           games.push(await joinGame(game1.id, peer))
           const game2 = await createGame('belote', player)
           await joinGame(game2.id, player)
-          await invite(game2.id, peer.id, player.id)
+          await invite(game2.id, [peer.id], player.id)
           games.push(await joinGame(game2.id, peer))
 
           await setTimeout(50)

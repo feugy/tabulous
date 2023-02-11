@@ -145,12 +145,13 @@ export default {
      * @param {object} obj - graphQL object.
      * @param {object} args - mutation arguments, including:
      * @param {string} args.gameId - game's id.
-     * @param {string} args.playerId - guest player id
+     * @param {string[]} args.playerIds - guest player ids
      * @param {object} context - graphQL context.
      * @returns {Promise<Game|null>} saved game details, or null.
      */
-    invite: isAuthenticated((obj, { gameId, playerId: guestId }, { player }) =>
-      services.invite(gameId, guestId, player.id)
+    invite: isAuthenticated(
+      (obj, { gameId, playerIds: guestIds }, { player }) =>
+        services.invite(gameId, guestIds, player.id)
     )
   },
 
