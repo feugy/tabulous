@@ -59,7 +59,7 @@
       players
     }
   }}
-  events={['select', 'close', 'invite', 'delete']}
+  events={['select', 'close', 'delete']}
   layout="centered"
 >
   <Tool name="Owned" />

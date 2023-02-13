@@ -101,7 +101,12 @@
       {:else if tabs[tab]?.id === helpId}
         <ControlsHelp />
       {:else if tabs[tab]?.id === friendsId}
-        <FriendList {friends} />
+        <FriendList
+          {friends}
+          {playerById}
+          {game}
+          currentPlayerId={player?.id}
+        />
       {/if}
     </div>
   </MinimizableSection>

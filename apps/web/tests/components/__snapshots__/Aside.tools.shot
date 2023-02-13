@@ -79,14 +79,14 @@ exports[`Friends only 1`] = `
              
           </div>
            
+           
           <section
-            aria-roledescription="friend-list"
             class="s-XLQf75fI0H0o"
           >
             <h3
               class="s-XLQf75fI0H0o"
             >
-              Vos ami(e)s
+              Vos ami·e·s
             </h3>
              
             <div
@@ -136,26 +136,31 @@ exports[`Friends only 1`] = `
              
             <ol
               class="s-XLQf75fI0H0o"
+              role="listbox"
             >
               <li
+                aria-checked="false"
+                aria-selected="false"
                 class="s-XLQf75fI0H0o"
+                role="option"
+                tabindex="-1"
               >
                 <figure
-                  class="s-engCJu8q-fNe colored"
-                  style="--dimension: 60px; --color: #9c3096; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+                  class="s-engCJu8q-fNe"
+                  style="--dimension: 40px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
                 >
                   <img
                     alt="avatar for Fernand Naudin"
                     class="s-engCJu8q-fNe"
-                    height="60"
+                    height="40"
                     referrerpolicy="no-referrer"
-                    width="60"
+                    width="40"
                   />
                    
                   <figcaption
-                    class="s-engCJu8q-fNe"
+                    class="s-engCJu8q-fNe abbreviated"
                   >
-                    Fernand Naudin
+                    FN
                   </figcaption>
                 </figure>
                 <!--&lt;PlayerThumbnail&gt;-->
@@ -187,19 +192,23 @@ exports[`Friends only 1`] = `
                  
               </li>
               <li
+                aria-checked="false"
+                aria-selected="false"
                 class="s-XLQf75fI0H0o isRequest"
+                role="option"
+                tabindex="-1"
               >
                 <figure
                   class="s-engCJu8q-fNe"
-                  style="--dimension: 60px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+                  style="--dimension: 40px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
                 >
                   <img
                     alt="avatar for Paul Wolfoni"
                     class="s-engCJu8q-fNe hasImage"
-                    height="60"
+                    height="40"
                     referrerpolicy="no-referrer"
                     src="/tests/fixtures/avatar.png"
-                    width="60"
+                    width="40"
                   />
                    
                 </figure>
@@ -209,7 +218,7 @@ exports[`Friends only 1`] = `
                   class="s-XLQf75fI0H0o"
                   role="term"
                 >
-                  Paul Wolfoni souhaite rejoindre vos ami(e)s
+                  Paul Wolfoni souhaite rejoindre vos ami·e·s
                 </span>
                  
                 <span
@@ -246,24 +255,28 @@ exports[`Friends only 1`] = `
                  
               </li>
               <li
+                aria-checked="false"
+                aria-selected="false"
                 class="s-XLQf75fI0H0o isProposal"
+                role="option"
+                tabindex="-1"
               >
                 <figure
-                  class="s-engCJu8q-fNe colored"
-                  style="--dimension: 60px; --color: #040404; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+                  class="s-engCJu8q-fNe"
+                  style="--dimension: 40px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
                 >
                   <img
                     alt="avatar for Raoul Wolfoni"
                     class="s-engCJu8q-fNe"
-                    height="60"
+                    height="40"
                     referrerpolicy="no-referrer"
-                    width="60"
+                    width="40"
                   />
                    
                   <figcaption
-                    class="s-engCJu8q-fNe"
+                    class="s-engCJu8q-fNe abbreviated"
                   >
-                    Raoul Wolfoni
+                    RW
                   </figcaption>
                 </figure>
                 <!--&lt;PlayerThumbnail&gt;-->
@@ -295,24 +308,28 @@ exports[`Friends only 1`] = `
                  
               </li>
               <li
+                aria-checked="false"
+                aria-selected="false"
                 class="s-XLQf75fI0H0o"
+                role="option"
+                tabindex="-1"
               >
                 <figure
-                  class="s-engCJu8q-fNe colored"
-                  style="--dimension: 60px; --color: #ff4500; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+                  class="s-engCJu8q-fNe"
+                  style="--dimension: 40px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
                 >
                   <img
                     alt="avatar for Maître Follas"
                     class="s-engCJu8q-fNe"
-                    height="60"
+                    height="40"
                     referrerpolicy="no-referrer"
-                    width="60"
+                    width="40"
                   />
                    
                   <figcaption
-                    class="s-engCJu8q-fNe"
+                    class="s-engCJu8q-fNe abbreviated"
                   >
-                    Maître Follas
+                    MF
                   </figcaption>
                 </figure>
                 <!--&lt;PlayerThumbnail&gt;-->
@@ -344,24 +361,28 @@ exports[`Friends only 1`] = `
                  
               </li>
               <li
+                aria-checked="false"
+                aria-selected="false"
                 class="s-XLQf75fI0H0o"
+                role="option"
+                tabindex="-1"
               >
                 <figure
-                  class="s-engCJu8q-fNe colored"
-                  style="--dimension: 60px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+                  class="s-engCJu8q-fNe"
+                  style="--dimension: 40px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
                 >
                   <img
                     alt="avatar for Pascal"
                     class="s-engCJu8q-fNe"
-                    height="60"
+                    height="40"
                     referrerpolicy="no-referrer"
-                    width="60"
+                    width="40"
                   />
                    
                   <figcaption
-                    class="s-engCJu8q-fNe"
+                    class="s-engCJu8q-fNe abbreviated"
                   >
-                    Pascal
+                    P
                   </figcaption>
                 </figure>
                 <!--&lt;PlayerThumbnail&gt;-->
@@ -393,6 +414,7 @@ exports[`Friends only 1`] = `
                  
               </li>
             </ol>
+             
              
           </section>
           <!--&lt;FriendList&gt;-->
@@ -1533,14 +1555,14 @@ exports[`No peers, no rules book 1`] = `
              
           </div>
            
+           
           <section
-            aria-roledescription="friend-list"
             class="s-XLQf75fI0H0o"
           >
             <h3
               class="s-XLQf75fI0H0o"
             >
-              Vos ami(e)s
+              Vos ami·e·s
             </h3>
              
             <div
@@ -1590,70 +1612,26 @@ exports[`No peers, no rules book 1`] = `
              
             <ol
               class="s-XLQf75fI0H0o"
+              role="listbox"
             >
               <li
-                class="s-XLQf75fI0H0o"
-              >
-                <figure
-                  class="s-engCJu8q-fNe colored"
-                  style="--dimension: 60px; --color: #9c3096; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
-                >
-                  <img
-                    alt="avatar for Fernand Naudin"
-                    class="s-engCJu8q-fNe"
-                    height="60"
-                    referrerpolicy="no-referrer"
-                    width="60"
-                  />
-                   
-                  <figcaption
-                    class="s-engCJu8q-fNe"
-                  >
-                    Fernand Naudin
-                  </figcaption>
-                </figure>
-                <!--&lt;PlayerThumbnail&gt;-->
-                 
-                <span
-                  class="s-XLQf75fI0H0o"
-                  role="term"
-                >
-                  Fernand Naudin
-                </span>
-                 
-                <span
-                  class="buttons s-XLQf75fI0H0o"
-                >
-                  <button
-                    class="s-NMyTiX1zi6rz"
-                  >
-                    <span
-                      class="material-icons s-NMyTiX1zi6rz"
-                    >
-                      delete
-                    </span>
-                    
-                    
-                    
-                  </button>
-                  <!--&lt;Button&gt;-->
-                </span>
-                 
-              </li>
-              <li
+                aria-checked="false"
+                aria-selected="false"
                 class="s-XLQf75fI0H0o isRequest"
+                role="option"
+                tabindex="-1"
               >
                 <figure
                   class="s-engCJu8q-fNe"
-                  style="--dimension: 60px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+                  style="--dimension: 40px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
                 >
                   <img
                     alt="avatar for Paul Wolfoni"
                     class="s-engCJu8q-fNe hasImage"
-                    height="60"
+                    height="40"
                     referrerpolicy="no-referrer"
                     src="/tests/fixtures/avatar.png"
-                    width="60"
+                    width="40"
                   />
                    
                 </figure>
@@ -1663,7 +1641,7 @@ exports[`No peers, no rules book 1`] = `
                   class="s-XLQf75fI0H0o"
                   role="term"
                 >
-                  Paul Wolfoni souhaite rejoindre vos ami(e)s
+                  Paul Wolfoni souhaite rejoindre vos ami·e·s
                 </span>
                  
                 <span
@@ -1700,24 +1678,28 @@ exports[`No peers, no rules book 1`] = `
                  
               </li>
               <li
+                aria-checked="false"
+                aria-selected="true"
                 class="s-XLQf75fI0H0o isProposal"
+                role="option"
+                tabindex="0"
               >
                 <figure
-                  class="s-engCJu8q-fNe colored"
-                  style="--dimension: 60px; --color: #040404; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+                  class="s-engCJu8q-fNe"
+                  style="--dimension: 40px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
                 >
                   <img
                     alt="avatar for Raoul Wolfoni"
                     class="s-engCJu8q-fNe"
-                    height="60"
+                    height="40"
                     referrerpolicy="no-referrer"
-                    width="60"
+                    width="40"
                   />
                    
                   <figcaption
-                    class="s-engCJu8q-fNe"
+                    class="s-engCJu8q-fNe abbreviated"
                   >
-                    Raoul Wolfoni
+                    RW
                   </figcaption>
                 </figure>
                 <!--&lt;PlayerThumbnail&gt;-->
@@ -1749,24 +1731,28 @@ exports[`No peers, no rules book 1`] = `
                  
               </li>
               <li
+                aria-checked="false"
+                aria-selected="true"
                 class="s-XLQf75fI0H0o"
+                role="option"
+                tabindex="0"
               >
                 <figure
-                  class="s-engCJu8q-fNe colored"
-                  style="--dimension: 60px; --color: #ff4500; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+                  class="s-engCJu8q-fNe"
+                  style="--dimension: 40px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
                 >
                   <img
                     alt="avatar for Maître Follas"
                     class="s-engCJu8q-fNe"
-                    height="60"
+                    height="40"
                     referrerpolicy="no-referrer"
-                    width="60"
+                    width="40"
                   />
                    
                   <figcaption
-                    class="s-engCJu8q-fNe"
+                    class="s-engCJu8q-fNe abbreviated"
                   >
-                    Maître Follas
+                    MF
                   </figcaption>
                 </figure>
                 <!--&lt;PlayerThumbnail&gt;-->
@@ -1798,24 +1784,28 @@ exports[`No peers, no rules book 1`] = `
                  
               </li>
               <li
+                aria-checked="false"
+                aria-selected="true"
                 class="s-XLQf75fI0H0o"
+                role="option"
+                tabindex="0"
               >
                 <figure
-                  class="s-engCJu8q-fNe colored"
-                  style="--dimension: 60px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+                  class="s-engCJu8q-fNe"
+                  style="--dimension: 40px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
                 >
                   <img
                     alt="avatar for Pascal"
                     class="s-engCJu8q-fNe"
-                    height="60"
+                    height="40"
                     referrerpolicy="no-referrer"
-                    width="60"
+                    width="40"
                   />
                    
                   <figcaption
-                    class="s-engCJu8q-fNe"
+                    class="s-engCJu8q-fNe abbreviated"
                   >
-                    Pascal
+                    P
                   </figcaption>
                 </figure>
                 <!--&lt;PlayerThumbnail&gt;-->
@@ -1847,6 +1837,7 @@ exports[`No peers, no rules book 1`] = `
                  
               </li>
             </ol>
+             
              
           </section>
           <!--&lt;FriendList&gt;-->

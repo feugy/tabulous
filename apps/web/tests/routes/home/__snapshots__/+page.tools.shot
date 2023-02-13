@@ -563,7 +563,6 @@ exports[`Authenticated 1`] = `
             <div
               class="buttons s-QQoQzhRq8NK6"
             >
-               
               <button
                 class="secondary s-NMyTiX1zi6rz"
               >
@@ -606,9 +605,7 @@ exports[`Authenticated 1`] = `
              
             <div
               class="buttons s-QQoQzhRq8NK6"
-            >
-               
-            </div>
+            />
           </span>
            
           <span
@@ -665,7 +662,7 @@ exports[`Authenticated 1`] = `
                 <div
                   class="s-XAn5sMboW1io"
                 >
-                  Invitez vos ami(e)s puis décidez à quel jeu jouer.
+                  Invitez vos ami·e·s puis décidez à quel jeu jouer.
                 </div>
               </div>
             </legend>
@@ -1304,14 +1301,14 @@ exports[`Authenticated 1`] = `
              
           </div>
            
+           
           <section
-            aria-roledescription="friend-list"
             class="s-XLQf75fI0H0o"
           >
             <h3
               class="s-XLQf75fI0H0o"
             >
-              Vos ami(e)s
+              Vos ami·e·s
             </h3>
              
             <div
@@ -1361,26 +1358,31 @@ exports[`Authenticated 1`] = `
              
             <ol
               class="s-XLQf75fI0H0o"
+              role="listbox"
             >
               <li
+                aria-checked="false"
+                aria-selected="false"
                 class="s-XLQf75fI0H0o isRequest"
+                role="option"
+                tabindex="-1"
               >
                 <figure
                   class="s-engCJu8q-fNe"
-                  style="--dimension: 60px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+                  style="--dimension: 40px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
                 >
                   <img
                     alt="avatar for Karl L."
                     class="s-engCJu8q-fNe"
-                    height="60"
+                    height="40"
                     referrerpolicy="no-referrer"
-                    width="60"
+                    width="40"
                   />
                    
                   <figcaption
-                    class="s-engCJu8q-fNe"
+                    class="s-engCJu8q-fNe abbreviated"
                   >
-                    Karl L.
+                    KL
                   </figcaption>
                 </figure>
                 <!--&lt;PlayerThumbnail&gt;-->
@@ -1389,7 +1391,7 @@ exports[`Authenticated 1`] = `
                   class="s-XLQf75fI0H0o"
                   role="term"
                 >
-                  Karl L. souhaite rejoindre vos ami(e)s
+                  Karl L. souhaite rejoindre vos ami·e·s
                 </span>
                  
                 <span
@@ -1426,6 +1428,7 @@ exports[`Authenticated 1`] = `
                  
               </li>
             </ol>
+             
              
           </section>
           <!--&lt;FriendList&gt;-->

@@ -2,9 +2,6 @@
 
 ## Road to beta
 
-- invite guests from friend list (skip existing guests, skip requested)
-- include fiend list in game parameters to select guest
-- remove GameInvite dialog, enforce inviting acknoledge friends only
 - skin(s)
 - interface in English
 - always go fullscreen when entering game

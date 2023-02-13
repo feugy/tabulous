@@ -1,11 +1,5 @@
 <script>
-  import {
-    Aside,
-    ConfirmDialogue,
-    Header,
-    InvitePlayerDialogue,
-    PageFooter
-  } from '@src/components'
+  import { Aside, ConfirmDialogue, Header, PageFooter } from '@src/components'
   import {
     connected,
     createGame,
@@ -41,7 +35,6 @@
   let gameToDelete = null
   let user = null
   let games = readable(data.currentGames || [])
-  let gameToInvite = false
   let friends = readable([])
   $: isDeletedLobby = isLobby(gameToDelete)
 
@@ -106,8 +99,7 @@
   }
 
   async function handleCreateLobby() {
-    gameToInvite = await createGame()
-    await enterGame(gameToInvite)
+    await enterGame(await createGame())
   }
 
   function enterGame(game) {
@@ -151,7 +143,6 @@
               on:select={handleSelectGame}
               on:delete={handleDeleteGame}
               on:close={handleCloseLobby}
-              on:invite={() => (gameToInvite = game)}
             />
           {:else}
             <span class="no-games">{$_('labels.no-games-yet')}</span>
@@ -185,13 +176,6 @@
   {/if}
 </main>
 
-{#if gameToInvite}
-  <InvitePlayerDialogue
-    game={gameToInvite}
-    open
-    on:close={() => (gameToInvite = null)}
-  />
-{/if}
 {#if gameToDelete}
   <ConfirmDialogue
     open

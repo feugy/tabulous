@@ -1480,24 +1480,25 @@ describe('given a mocked game engine', () => {
       hands: []
     }
     const guest = { id: faker.datatype.uuid() }
+    const guest2 = { id: faker.datatype.uuid() }
 
     it('invites a given user to a game', async () => {
       runMutation.mockResolvedValueOnce(game)
-      expect(await invite(game.id, guest.id)).toBe(true)
+      expect(await invite(game.id, guest.id)).toBeUndefined()
       expect(runMutation).toHaveBeenCalledWith(graphQL.invite, {
         gameId: game.id,
-        playerId: guest.id
+        playerIds: [guest.id]
       })
       expect(runMutation).toHaveBeenCalledOnce()
       expect(engine.load).not.toHaveBeenCalled()
     })
 
-    it('returns false when invite was declined', async () => {
+    it('can invite multiple guests', async () => {
       runMutation.mockResolvedValueOnce()
-      expect(await invite(game.id, guest.id)).toBe(false)
+      expect(await invite(game.id, guest.id, guest2.id)).toBeUndefined()
       expect(runMutation).toHaveBeenCalledWith(graphQL.invite, {
         gameId: game.id,
-        playerId: guest.id
+        playerIds: [guest.id, guest2.id]
       })
       expect(runMutation).toHaveBeenCalledOnce()
       expect(engine.load).not.toHaveBeenCalled()

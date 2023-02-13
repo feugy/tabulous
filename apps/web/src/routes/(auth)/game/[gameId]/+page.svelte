@@ -1,5 +1,5 @@
 <script>
-  import { Aside, InvitePlayerDialogue, Progress } from '@src/components'
+  import { Aside, Progress } from '@src/components'
   import {
     actionMenuProps,
     cameraSaves,
@@ -51,7 +51,6 @@
   let canvas
   let interaction
   let hand
-  let openInviteDialogue = false
   let joinPromise
   let dimensionObserver
   let dimensionSubscription
@@ -127,7 +126,7 @@
   </div>
 {/await}
 <aside class="top">
-  <GameMenu on:invite-player={() => (openInviteDialogue = true)} />
+  <GameMenu />
   <CameraSwitch
     {longTapDelay}
     current={$currentCamera}
@@ -135,11 +134,6 @@
     on:longTap={() => longInputs.next()}
     on:restore={({ detail: { index } }) => restoreCamera(index)}
     on:save={({ detail: { index } }) => saveCamera(index)}
-  />
-  <InvitePlayerDialogue
-    game={$currentGame}
-    open={openInviteDialogue}
-    on:close={() => (openInviteDialogue = false)}
   />
 </aside>
 <main>

@@ -169,19 +169,14 @@ export async function deleteGame(gameId) {
  * Invites another player to a given game.
  * Does not alter the current game: instead game updates should come from server or host.
  * @param {string} gameId - the shared game id.
- * @param {string} playerId - the invited player id.
- * @returns {Promise<boolean>} true when guest was invited.
+ * @param {...string} playerIds - the invited player id(s).
  */
-export async function invite(gameId, playerId) {
+export async function invite(gameId, ...playerIds) {
   logger.info(
-    { gameId, playerId },
-    `invite player ${playerId} to game ${gameId}`
+    { gameId, playerIds },
+    `invite player ${playerIds.join(', ')} to game ${gameId}`
   )
-  const game = await runMutation(graphQL.invite, { gameId, playerId })
-  if (!game) {
-    return false
-  }
-  return true
+  await runMutation(graphQL.invite, { gameId, playerIds })
 }
 
 /**

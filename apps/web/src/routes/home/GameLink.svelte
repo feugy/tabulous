@@ -1,6 +1,6 @@
 <script>
   import { Button } from '@src/components'
-  import { isGuest, isLobby } from '@src/utils'
+  import { isLobby } from '@src/utils'
   import { createEventDispatcher } from 'svelte'
   import { _, locale } from 'svelte-intl'
 
@@ -10,7 +10,6 @@
 
   const dispatch = createEventDispatcher()
   const owned = game.players.find(player => player?.isOwner)?.id === playerId
-  $: isAGuest = isGuest(game, playerId)
   $: isALobby = isLobby(game)
   $: peerNames = game.players
     .filter(player => player && !player.isGuest && player.id !== playerId)
@@ -34,11 +33,6 @@
     event.stopPropagation()
   }
 
-  function handleInvite(event) {
-    dispatch('invite', game)
-    event.stopPropagation()
-  }
-
   function handleKey(event) {
     if (event.key === ' ' || event.key === 'Enter') {
       event.preventDefault()
@@ -57,16 +51,6 @@
   <span class="title">
     <h3>{title}</h3>
     <div class="buttons">
-      {#if isALobby && !isAGuest}
-        <span class="invite">
-          <Button
-            secondary
-            icon="people"
-            on:click={handleInvite}
-            on:keyup={event => event.stopPropagation()}
-          />
-        </span>
-      {/if}
       {#if isCurrent}<Button
           secondary
           icon="close"
@@ -111,10 +95,6 @@
 
   .guests {
     @apply text-$primary;
-  }
-
-  .invite {
-    @apply self-center;
   }
 
   h3 {

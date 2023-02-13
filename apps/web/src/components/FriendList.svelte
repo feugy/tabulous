@@ -2,9 +2,11 @@
   import {
     acceptFriendship,
     endFriendship,
+    invite,
     requestFriendship,
     searchPlayers
   } from '@src/stores'
+  import { isLobby } from '@src/utils'
   import { debounceTime, map, Subject, switchMap } from 'rxjs'
   import { onMount } from 'svelte'
   import { _ } from 'svelte-intl'
@@ -14,13 +16,40 @@
   import PlayerThumbnail from './PlayerThumbnail.svelte'
   import Typeahead from './Typeahead.svelte'
 
+  export let game = null
+  export let currentPlayerId = null
+  export let playerById = null
   export let friends = []
 
   let inputRef
   let candidates
   let futureFriend
   let friendToRemove
+  let players = []
+  let friendships = []
+  let selected = []
   let search = new Subject()
+
+  $: {
+    players = []
+    friendships = friends
+    if (playerById?.size) {
+      const friendIds = new Set()
+      friendships = []
+      for (const friendship of friends) {
+        const { id } = friendship.player
+        friendIds.add(id)
+        if (!playerById.has(id)) {
+          friendships.push(friendship)
+        }
+      }
+      for (const player of playerById.values()) {
+        if (player.id !== currentPlayerId) {
+          players.push({ player, isNotFriend: !friendIds.has(player.id) })
+        }
+      }
+    }
+  }
 
   onMount(() =>
     search
@@ -48,10 +77,15 @@
     }
   }
 
-  function handleMakeRequest() {
+  function isInteractive({ isRequest }) {
+    return Boolean(game) && !isRequest
+  }
+
+  function handleMakeFriendRequest() {
     if (futureFriend) {
       requestFriendship(futureFriend)
-      futureFriend = null
+      candidates = undefined
+      futureFriend = undefined
     }
   }
 
@@ -61,9 +95,53 @@
     }
     friendToRemove = null
   }
+
+  function handleToggle(player) {
+    const index = selected.indexOf(player)
+    if (index >= 0) {
+      selected = [...selected.slice(0, index), ...selected.slice(index + 1)]
+    } else {
+      selected = [...selected, player]
+    }
+  }
+
+  function handleKeyDown(evt, player) {
+    if (evt.key === 'Enter' || evt.key === ' ') {
+      handleToggle(player)
+    }
+  }
+
+  function handleInvite() {
+    invite(game.id, ...selected.map(({ id }) => id))
+    selected = []
+  }
 </script>
 
-<section aria-roledescription="friend-list">
+{#if players.length}
+  <section>
+    <h3>{$_(isLobby(game) ? 'titles.attendee-list' : 'titles.player-list')}</h3>
+    <ol>
+      {#each players as { player, isNotFriend } (player.id)}
+        <li class="isPlayer" class:isNotFriend>
+          <PlayerThumbnail {player} dimension={40} />
+          <span role="term">{player.username}</span>
+          {#if isNotFriend}
+            <span class="buttons">
+              <Button
+                icon="person_add_alt_1"
+                on:click={() => {
+                  futureFriend = player
+                  handleMakeFriendRequest()
+                }}
+              />
+            </span>
+          {/if}
+        </li>
+      {/each}
+    </ol>
+  </section>
+{/if}
+<section>
   <h3>{$_('titles.friend-list')}</h3>
   <div>
     <Typeahead
@@ -77,16 +155,26 @@
     <Button
       icon="person_add_alt_1"
       disabled={!futureFriend}
-      on:click={handleMakeRequest}
+      on:click={handleMakeFriendRequest}
     />
   </div>
   {#if !friends?.length}
     <span class:empty={true}>{$_('labels.empty-friend-list')}</span>
   {/if}
-  <ol>
-    {#each friends as { player, isRequest, isProposal } (player.id)}
-      <li class:isRequest class:isProposal>
-        <PlayerThumbnail {player} />
+  <ol role="listbox">
+    {#each friendships as { player, isRequest, isProposal } (player.id)}
+      {@const interactive = isInteractive({ isRequest })}
+      <li
+        class:isRequest
+        class:isProposal
+        role="option"
+        aria-checked={selected.indexOf(player) >= 0}
+        aria-selected={interactive}
+        tabindex={interactive ? 0 : -1}
+        on:click={interactive ? () => handleToggle(player) : null}
+        on:keydown={interactive ? evt => handleKeyDown(evt, player) : null}
+      >
+        <PlayerThumbnail {player} dimension={40} />
         <span role="term"
           >{isProposal
             ? $_('labels.friendship-proposed', player)
@@ -105,6 +193,17 @@
       </li>
     {/each}
   </ol>
+  {#if selected.length}
+    <span class="invite">
+      <Button
+        text={$_(
+          isLobby(game) ? 'actions.invite-attendee' : 'actions.invite-player'
+        )}
+        icon="gamepad"
+        on:click={handleInvite}
+      />
+    </span>
+  {/if}
   {#if friendToRemove}
     <ConfirmDialogue
       title={$_('titles.end-friendship')}
@@ -117,7 +216,11 @@
 
 <style lang="postcss">
   section {
-    @apply flex flex-col p-8;
+    @apply flex flex-col m-8 overflow-hidden;
+  }
+
+  section + section {
+    @apply mt-0;
   }
 
   h3 {
@@ -133,11 +236,13 @@
   }
 
   ol {
-    @apply mt-8 flex-1 divide-y;
+    @apply mt-8 flex-1 divide-y overflow-auto;
   }
 
   li {
-    @apply flex items-center p-2 pr-4 gap-2 transition-all relative duration-500;
+    @apply flex items-center p-2 pr-4 gap-2 relative duration-500;
+    transition: background-color;
+    margin: 1px; /* without, outline is not visible */
 
     &:hover {
       @apply bg-$primary-lighter;
@@ -146,13 +251,28 @@
       }
     }
 
+    &[role='option'] {
+      @apply cursor-pointer;
+    }
+
+    &.isNotFriend {
+      @apply text-$base-dark;
+    }
+
     &.isRequest,
     &.isProposal {
       @apply text-$primary-light;
+    }
+    &[aria-checked='true'] {
+      @apply bg-$primary-light text-$base-lightest;
     }
   }
 
   .buttons {
     @apply flex flex-nowrap gap-2 justify-self-end opacity-0 absolute right-4 transition-opacity duration-500;
+  }
+
+  .invite {
+    @apply pt-4 text-center;
   }
 </style>

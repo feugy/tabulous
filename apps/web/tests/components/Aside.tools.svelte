@@ -11,6 +11,26 @@
     players.map(player => [player.id, { ...player, playing: true }])
   )
   const singlePlayerById = new Map([[players[0].id, players[0]]])
+  const friends = [
+    { player: players[0] },
+    {
+      player: { id: '425364', username: 'Paul Wolfoni', avatar },
+      isRequest: true
+    },
+    {
+      player: {
+        id: '758697',
+        username: 'Raoul Wolfoni',
+        color: '#040404'
+      },
+      isProposal: true
+    },
+    { player: players[1] },
+    { player: players[2] }
+  ].map(friend => ({
+    ...friend,
+    player: { ...friend.player, color: undefined }
+  }))
 </script>
 
 <ToolBox
@@ -22,23 +42,7 @@
     playerById,
     connected: [],
     thread: [],
-    friends: [
-      { player: players[0] },
-      {
-        player: { id: '425364', username: 'Paul Wolfoni', avatar },
-        isRequest: true
-      },
-      {
-        player: {
-          id: '758697',
-          username: 'Raoul Wolfoni',
-          color: '#040404'
-        },
-        isProposal: true
-      },
-      { player: players[1] },
-      { player: players[2] }
-    ]
+    friends
   }}
   events={['sendMessage']}
 >

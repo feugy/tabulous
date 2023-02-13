@@ -1,7 +1,6 @@
 import GameMenu from '@src/routes/(auth)/game/[gameId]/GameMenu.svelte'
 import {
   areIndicatorsVisible,
-  currentGame,
   isFullscreen,
   toggleFullscreen,
   toggleIndicators
@@ -28,16 +27,8 @@ vi.mock('@src/stores/indicators', () => {
     toggleIndicators: vi.fn()
   }
 })
-vi.mock('@src/stores/game-manager', () => {
-  const { BehaviorSubject } = require('rxjs')
-  return {
-    currentGame: new BehaviorSubject({ availableSeats: 1 })
-  }
-})
 
 describe('GameMenu connected component', () => {
-  const handleInvitePlayer = vi.fn()
-
   beforeEach(() => {
     vi.resetAllMocks()
     isFullscreen.next(false)
@@ -45,9 +36,7 @@ describe('GameMenu connected component', () => {
   })
 
   async function renderAndOpenComponent(props = {}) {
-    const results = render(
-      html`<${GameMenu} ...${props} on:invite-player=${handleInvitePlayer} />`
-    )
+    const results = render(html`<${GameMenu} ...${props} />`)
     fireEvent.click(screen.getByRole('combobox'))
     await tick()
     return results
@@ -57,14 +46,12 @@ describe('GameMenu connected component', () => {
     await renderAndOpenComponent()
     expect(screen.getByRole('combobox')).toHaveTextContent('menu')
     expect(selectHomeOption()).toBeInTheDocument()
-    expect(selectInviteOption()).toBeInTheDocument()
     expect(selectEnterFullscreenOption()).toBeInTheDocument()
     expect(selectExitFullscreenOption()).not.toBeInTheDocument()
     expect(selectHideIndicatorsOption()).toBeInTheDocument()
     expect(selectShowIndicatorsOption()).not.toBeInTheDocument()
     expect(toggleFullscreen).not.toHaveBeenCalled()
     expect(toggleIndicators).not.toHaveBeenCalled()
-    expect(handleInvitePlayer).not.toHaveBeenCalled()
     expect(goto).not.toHaveBeenCalled()
   })
 
@@ -87,23 +74,7 @@ describe('GameMenu connected component', () => {
     fireEvent.click(selectEnterFullscreenOption())
     expect(toggleFullscreen).toHaveBeenCalledTimes(1)
     expect(toggleIndicators).not.toHaveBeenCalled()
-    expect(handleInvitePlayer).not.toHaveBeenCalled()
     expect(goto).not.toHaveBeenCalled()
-  })
-
-  it('can invite player', async () => {
-    await renderAndOpenComponent()
-    fireEvent.click(selectInviteOption())
-    expect(handleInvitePlayer).toHaveBeenCalledTimes(1)
-    expect(toggleFullscreen).not.toHaveBeenCalled()
-    expect(toggleIndicators).not.toHaveBeenCalled()
-    expect(goto).not.toHaveBeenCalled()
-  })
-
-  it('hides player invite when all seats are used', async () => {
-    currentGame.next({ availableSeats: 0 })
-    await renderAndOpenComponent()
-    expect(selectInviteOption()).not.toBeInTheDocument()
   })
 
   it('can go back home', async () => {
@@ -111,7 +82,6 @@ describe('GameMenu connected component', () => {
     fireEvent.click(selectHomeOption())
     expect(toggleFullscreen).not.toHaveBeenCalled()
     expect(toggleIndicators).not.toHaveBeenCalled()
-    expect(handleInvitePlayer).not.toHaveBeenCalled()
     expect(goto).toHaveBeenCalledTimes(1)
   })
 
@@ -121,7 +91,6 @@ describe('GameMenu connected component', () => {
     fireEvent.click(selectHideIndicatorsOption())
     expect(toggleFullscreen).not.toHaveBeenCalled()
     expect(toggleIndicators).toHaveBeenCalledTimes(1)
-    expect(handleInvitePlayer).not.toHaveBeenCalled()
     expect(goto).not.toHaveBeenCalled()
   })
 
@@ -131,7 +100,6 @@ describe('GameMenu connected component', () => {
     fireEvent.click(selectHomeOption())
     expect(toggleFullscreen).toHaveBeenCalledTimes(1)
     expect(toggleIndicators).not.toHaveBeenCalled()
-    expect(handleInvitePlayer).not.toHaveBeenCalled()
     expect(goto).toHaveBeenCalledTimes(1)
   })
 })
@@ -139,12 +107,6 @@ describe('GameMenu connected component', () => {
 function selectHomeOption() {
   return screen.queryByRole('menuitem', {
     name: `home ${translate('actions.quit-game')}`
-  })
-}
-
-function selectInviteOption() {
-  return screen.queryByRole('menuitem', {
-    name: `connect_without_contact ${translate('actions.invite-player')}`
   })
 }
 
