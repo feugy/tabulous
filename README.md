@@ -28,7 +28,7 @@ You need [git], [Node.js 16][node], [PNPM] and [Redis]
 1. Checkout the code:
 
    ```shell
-   git clone git@github.com:feugy/tabulous.gitP
+   git clone git@github.com:feugy/tabulous.git
    cd tabulous
    ```
 
