@@ -1,5 +1,8 @@
 # TODO
 
+- in a game that has a rule book, inviting from the friend list displays the rule book tab instead of the players tab
+- the friend tab is not open when creating a lobby
+
 ## Road to beta
 
 - skin(s)

@@ -191,23 +191,14 @@ describe('Aside component', () => {
       playerById: toMap(players),
       thread
     })
-    const [peerSection, discussionSection] = screen.getAllByRole('region', {
-      name: 'minimizable'
-    })
-    expect(peerSection).toHaveAttribute('aria-expanded', 'true')
-    expect(discussionSection).toHaveAttribute('aria-expanded', 'true')
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
       playersButonText,
-      friendsButtonText,
-      discussionButtonText
+      friendsButtonText
     ])
-    const avatars = screen.getAllByTestId('player-avatar')
-    expect(extractText(avatars)).toEqual(
-      players.slice(1).map(({ username }) => username)
-    )
-    expect(avatars[0].children[0]).not.toHaveClass('hasStream')
-    expect(avatars[1].children[0]).not.toHaveClass('hasStream')
-    expect(screen.getByText(thread[thread.length - 1].text)).toBeInTheDocument()
+    const friendSection = screen.getByRole('region', {
+      name: 'minimizable'
+    })
+    expect(friendSection).toHaveAttribute('aria-expanded', 'true')
   })
 
   it('has streams for connected peers', async () => {
@@ -239,6 +230,8 @@ describe('Aside component', () => {
 
   it('can send messages', async () => {
     renderComponent({ player, game: {}, playerById: toMap(players), thread })
+
+    await fireEvent.click(screen.getAllByRole('tab')[0])
 
     await userEvent.type(screen.getByRole('textbox'), thread[0].text)
     fireEvent.click(screen.getByRole('button', { type: 'submit' }))

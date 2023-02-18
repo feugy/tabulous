@@ -1238,7 +1238,7 @@ exports[`Authenticated 1`] = `
       aria-expanded="true"
       aria-label="minimizable"
       class="s-vqhOCvFa7LzI"
-      id="minimizable-section-20"
+      id="minimizable-section-19"
       style="width: auto;"
     >
       <menu
@@ -1276,7 +1276,7 @@ exports[`Authenticated 1`] = `
         </ol>
          
         <div
-          aria-controls="minimizable-section-20"
+          aria-controls="minimizable-section-19"
           class="gutter s-vqhOCvFa7LzI"
           role="scrollbar"
         />

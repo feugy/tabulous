@@ -61,6 +61,20 @@ export class AsideMixin {
   }
 
   /**
+   * Checks whether a given tab is active or not.
+   * @param {Locator} tab - tested tab.
+   * @returns {Promise<boolean>} true if this tab is already active.
+   */
+  async isTabActive(tab) {
+    return (
+      (await tab.getAttribute('aria-selected')) === 'true' &&
+      (await tab
+        .locator('xpath=ancestor::section')
+        .getAttribute('aria-expanded')) === 'true'
+    )
+  }
+
+  /**
    * Invites a friend to the current game or lobby.
    * It assumes the friends tab to be available
    * @param {string} guestUsername - name of the invited friend.
@@ -70,7 +84,9 @@ export class AsideMixin {
       this.friendsTab,
       'the friends tab is not available'
     ).toBeVisible()
-    await this.friendsTab.click()
+    if (!(await this.isTabActive(this.friendsTab))) {
+      await this.friendsTab.click()
+    }
     await this.friendItems.getByText(guestUsername).click()
     await this.inviteButton.click()
     await expect(this.playerItems.getByText(guestUsername)).toBeVisible()
