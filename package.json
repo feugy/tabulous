@@ -41,7 +41,7 @@
     "svelte": "^3.55.0",
     "typescript": "^4.9.4",
     "vite": "^4.0.1",
-    "vitest": "0.27.2"
+    "vitest": "^0.28.5"
   },
   "lint-staged": {
     "*.{js,svelte}": "eslint --cache --fix",
