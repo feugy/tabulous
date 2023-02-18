@@ -85,7 +85,7 @@ HTMLCollection [
      
     <div
       class="s-vliZNtvr_DWl"
-      data-test-id="scrollable-terms"
+      data-testid="scrollable-terms"
     >
       <section
         class="s-VFBuvOTIAoad"

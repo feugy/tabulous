@@ -118,7 +118,7 @@
 </script>
 
 {#if players.length}
-  <section>
+  <section aria-roledescription="player-list">
     <h3>{$_(isLobby(game) ? 'titles.attendee-list' : 'titles.player-list')}</h3>
     <ol>
       {#each players as { player, isNotFriend } (player.id)}
@@ -141,7 +141,7 @@
     </ol>
   </section>
 {/if}
-<section>
+<section aria-roledescription="friend-list">
   <h3>{$_('titles.friend-list')}</h3>
   <div>
     <Typeahead

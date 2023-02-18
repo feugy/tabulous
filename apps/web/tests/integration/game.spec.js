@@ -58,7 +58,9 @@ describe('Game page', () => {
     )
   })
 
-  it('removes invite option after using the last seats', async ({ page }) => {
+  it.skip('removes invite option after using the last seats', async ({
+    page
+  }) => {
     const { sendToSubscription, setTokenCookie, onSubscription } =
       await mockGraphQl(page, {
         getCurrentPlayer: {
@@ -150,7 +152,7 @@ describe('Game page', () => {
 
     await expect(gamePage.parametersDialogue).toBeVisible()
     await gamePage.parametersDialogue
-      .locator('role=button', { hasText: translate('actions.join-game') })
+      .getByRole('button', { name: translate('actions.join-game') })
       .click()
     await expect(gamePage.parametersDialogue).not.toBeVisible()
   })

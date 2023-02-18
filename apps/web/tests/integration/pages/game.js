@@ -19,18 +19,18 @@ export const GamePage = mixin(
       /** @type {Page} */
       this.page = page
       /** @type {Locator} */
-      this.menuButton = page.locator('role=combobox', { hasText: 'menu' })
+      this.menuButton = page.getByRole('combobox', { name: 'menu' })
       /** @type {Locator} */
-      this.defaultCameraButton = page.locator('role=button', {
-        hasText: 'videocam'
+      this.defaultCameraButton = page.getByRole('button', {
+        name: 'videocam'
       })
       /** @type {Locator} */
-      this.inviteMenuItem = page.locator('role=menuitem', {
-        hasText: `connect_without_contact ${translate('actions.invite-player')}`
+      this.inviteMenuItem = page.getByRole('menuitem', {
+        name: `connect_without_contact ${translate('actions.invite-player')}`
       })
       /** @type {Locator} */
-      this.parametersDialogue = page.locator('role=dialog', {
-        has: this.page.locator(`text="${translate('titles.game-parameters')}"`)
+      this.parametersDialogue = page.getByRole('dialog').filter({
+        hasText: translate('titles.game-parameters')
       })
     }
 

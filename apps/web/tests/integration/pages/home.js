@@ -26,16 +26,16 @@ export const HomePage = mixin(
       /** @type {Page} */
       this.page = page
       /** @type {Locator} */
-      this.heading = page.locator('role=heading[level=1]')
+      this.heading = page.getByRole('heading', { level: 1 })
       /** @type {Locator} */
-      this.gamesHeading = page.locator('role=heading', {
-        hasText: translate('titles.your-games')
+      this.gamesHeading = page.getByRole('heading', {
+        name: translate('titles.your-games')
       })
       /** @type {Locator} */
       this.games = page.locator('[aria-roledescription="games"] >> role=link')
       /** @type {Locator} */
-      this.catalogHeading = page.locator('role=heading', {
-        hasText: translate('titles.catalog')
+      this.catalogHeading = page.getByRole('heading', {
+        name: translate('titles.catalog')
       })
       /** @type {Locator} */
       this.catalogItems = page.locator(
@@ -43,21 +43,17 @@ export const HomePage = mixin(
       )
       /** @type {Locator} */
       this.catalogItemHeadings = this.catalogItems.filter({
-        has: page.locator('role=heading[level=3]')
+        has: page.getByRole('heading', { level: 3 })
       })
       /** @type {Locator} */
-      this.closeGameButtons = this.games.locator('role=button', {
-        hasText: 'close'
-      })
+      this.closeGameButtons = this.games.getByRole('button', { name: 'close' })
       /** @type {Locator} */
-      this.loginButton = page.locator('header >> role=button', {
-        hasText: 'account_circle'
-      })
+      this.loginButton = page
+        .locator('header')
+        .getByRole('button', { name: 'account_circle' })
       /** @type {Locator} */
-      this.deleteGameDialogue = page.locator('role=dialog', {
-        has: this.page.locator(
-          `text="${translate('titles.confirm-game-deletion')}"`
-        )
+      this.deleteGameDialogue = page.getByRole('dialog').filter({
+        hasText: translate('titles.confirm-game-deletion')
       })
     }
 
@@ -136,7 +132,7 @@ export const HomePage = mixin(
     async deleteGame(title, rank = 0) {
       const game = this.games
         .filter({
-          has: this.page.locator(`role=heading[level=3] >> text=${title}`)
+          has: this.page.getByRole('heading', { level: 3, name: title })
         })
         .nth(rank)
       await expect(
@@ -144,7 +140,7 @@ export const HomePage = mixin(
         `no game link with title "${title}" and rank #${rank} found`
       ).toBeDefined()
       await setTimeout(500)
-      await game.locator('role=button >> text=delete').click()
+      await game.getByRole('button', { name: 'delete' }).click()
       await expect(this.deleteGameDialogue).toBeVisible()
     }
 
@@ -155,7 +151,7 @@ export const HomePage = mixin(
     async createGame(title) {
       await this.catalogItems
         .filter({
-          has: this.page.locator(`text="${title}"`)
+          has: this.page.getByText(title)
         })
         .click()
     }

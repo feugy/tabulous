@@ -24,7 +24,7 @@
   }
 </script>
 
-<div data-test-id="scrollable-terms">
+<div data-testid="scrollable-terms">
   <TermsOfService withTitle={false} />
   <hr bind:this={delimiter} />
 </div>

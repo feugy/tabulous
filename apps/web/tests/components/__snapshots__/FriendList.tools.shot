@@ -2,6 +2,7 @@
 
 exports[`Empty list 1`] = `
 <section
+  aria-roledescription="friend-list"
   class="s-XLQf75fI0H0o"
 >
   <h3
@@ -71,6 +72,7 @@ exports[`Empty list 1`] = `
 
 exports[`With friends 1`] = `
 <section
+  aria-roledescription="friend-list"
   class="s-XLQf75fI0H0o"
 >
   <h3
@@ -296,6 +298,7 @@ exports[`With friends 1`] = `
 exports[`With game 1`] = `
 HTMLCollection [
   <section
+    aria-roledescription="player-list"
     class="s-XLQf75fI0H0o"
   >
     <h3
@@ -406,6 +409,7 @@ HTMLCollection [
     </ol>
   </section>,
   <section
+    aria-roledescription="friend-list"
     class="s-XLQf75fI0H0o"
   >
     <h3
@@ -588,6 +592,7 @@ HTMLCollection [
 
 exports[`With requests and proposals 1`] = `
 <section
+  aria-roledescription="friend-list"
   class="s-XLQf75fI0H0o"
 >
   <h3

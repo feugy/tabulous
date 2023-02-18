@@ -10,21 +10,22 @@ export class AuthenticatedHeaderMixin {
   constructor(page) {
     this.page = page
     /** @type {Locator} */
-    this.accountDropdown = page.locator('header >> role=combobox', {
-      has: page.locator('figure')
+    this.accountDropdown = page
+      .locator('header')
+      .getByRole('combobox')
+      .locator('figure')
+    /** @type {Locator} */
+    this.logOutMenuItem = page.getByRole('menuitem', {
+      name: translate('actions.log-out')
     })
     /** @type {Locator} */
-    this.logOutMenuItem = page.locator('role=menuitem', {
-      hasText: translate('actions.log-out')
+    this.goToAccountMenuItem = page.getByRole('menuitem', {
+      name: translate('actions.go-to-account')
     })
     /** @type {Locator} */
-    this.goToAccountMenuItem = page.locator('role=menuitem', {
-      hasText: translate('actions.go-to-account')
-    })
-    /** @type {Locator} */
-    this.breadcrumbItems = page.locator(
-      `role=navigation >> li >> :not(:scope:has-text(">"))`
-    )
+    this.breadcrumbItems = page
+      .getByRole('navigation')
+      .locator('li >> :not(:scope:has-text(">"))')
   }
 
   /**

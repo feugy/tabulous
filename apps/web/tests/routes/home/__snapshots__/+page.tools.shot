@@ -1303,6 +1303,7 @@ exports[`Authenticated 1`] = `
            
            
           <section
+            aria-roledescription="friend-list"
             class="s-XLQf75fI0H0o"
           >
             <h3

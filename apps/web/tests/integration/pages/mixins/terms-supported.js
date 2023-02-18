@@ -1,5 +1,5 @@
 // @ts-check
-import { expect } from '../../utils/index.js'
+import { expect, translate } from '../../utils/index.js'
 
 /**
  * @typedef {import('@playwright/test').Page} Page
@@ -10,13 +10,15 @@ export class TermsSupportedMixin {
   constructor(page) {
     this.page = page
     /** @type {Locator} */
-    this.scrollable = page.locator('data-test-id=scrollable-terms')
+    this.scrollable = page.getByTestId('scrollable-terms')
     /** @type {Locator} */
     this.acceptTermsCheckbox = page.locator('[type=checkbox][id=accept]')
     /** @type {Locator} */
     this.oldEnoughCheckbox = page.locator('[type=checkbox][id=age]')
     /** @type {Locator} */
-    this.submitButton = page.locator('button[type=submit]')
+    this.submitTermsButton = page.getByRole('button', {
+      name: translate('actions.log-in')
+    })
   }
 
   /**
@@ -42,7 +44,7 @@ export class TermsSupportedMixin {
     await this.page.mouse.wheel(0, 5000)
     await this.acceptTermsCheckbox.click()
     await this.oldEnoughCheckbox.click()
-    await this.submitButton.click()
+    await this.submitTermsButton.click()
     await this.page.waitForLoadState()
   }
 }
