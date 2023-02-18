@@ -5,9 +5,19 @@
 [![CI](https://github.com/feugy/tabulous/actions/workflows/CI.yml/badge.svg)](https://github.com/feugy/atelier/tabulous/workflows/CI.yml)
 [![Codacy](https://app.codacy.com/project/badge/Grade/36bc5e1d473746f09656d1ffc8dec813)](https://www.codacy.com/gh/feugy/tabulous/dashboard?utm_source=github.com&utm_medium=referral&utm_content=feugy/tabulous&utm_campaign=Badge_Grade)
 
-Tabulous is virtual table-top game engine: [see it on tabulous.fr][production].
+Tabulous is online table-top game platform: [see it on tabulous.fr][production].
 
 Meet your friends online to play your favorite games!
+
+Once authenticated, you'll have access to the catalog (Chess, Klondike, Draughts...), and you can start new games.
+
+The game 3D engine lets you handle cards, die, pawns, tokens, boards... as you would do in real life.
+
+Each game comes with a rule book, but the rules are not enforced, and you are free to apply yours.
+
+To player with other people, you will first have to request friendship with them (or accept their requests), and invite them from your friend list.
+
+Tabulous is built in Javascript with Sveltekit, Babylon.js, Rx.js, Fastify and Redis. It uses GraphQL and WebRTC.
 
 **[Work in Progress]**
 

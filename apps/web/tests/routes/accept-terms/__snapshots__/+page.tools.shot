@@ -85,7 +85,7 @@ HTMLCollection [
      
     <div
       class="s-vliZNtvr_DWl"
-      data-test-id="scrollable-terms"
+      data-testid="scrollable-terms"
     >
       <section
         class="s-VFBuvOTIAoad"
@@ -2104,7 +2104,7 @@ HTMLCollection [
           class="s-oausCIIttb36"
           for="age"
         >
-          Je déclare avoir plus de 15 ans ou être autorisé(e) par l’un de mes parents
+          Je déclare avoir plus de 15 ans ou être autorisé·e par l’un de mes parents
         </label>
       </fieldset>
        

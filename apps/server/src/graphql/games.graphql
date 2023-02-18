@@ -378,7 +378,7 @@ extend type Mutation {
   promoteGame(gameId: ID!, kind: String!): GameOrParameters
   saveGame(game: GameInput!): Game
   deleteGame(gameId: ID!): Game
-  invite(gameId: ID!, playerId: ID!): Game
+  invite(gameId: ID!, playerIds: [ID!]!): Game
 }
 
 extend type Subscription {

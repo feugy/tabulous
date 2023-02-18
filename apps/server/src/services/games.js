@@ -3,6 +3,10 @@ import { concatMap, mergeMap, Subject } from 'rxjs'
 
 import repositories from '../repositories/index.js'
 import {
+  FriendshipAccepted,
+  FriendshipProposed
+} from '../repositories/players.js'
+import {
   createMeshes,
   enrichAssets,
   getParameterSchema,
@@ -443,32 +447,51 @@ export async function saveGame(game, playerId) {
 }
 
 /**
- * Invites a guest player into one of the inviting player's games.
+ * Invites guest players into one of the inviting player's games.
  * The operation will abort and return null when:
  * - no game could match this game id
  * - the inviting player does not own the game
- * - the guest was already invited
- * - the guest id is invalid
+ * It will ignore guest who are invalid, not friends of host, already invited or already playing
  * Updates game lists of all related players.
  * @param {string} gameId - shared game id.
- * @param {string} guestId - invited player id.
+ * @param {string[]} guestIds - invited player ids.
  * @param {string} hostId - inviting player id.
- * @returns {Promise<Game|null>} updated game, or null if the player can not be invited.
+ * @returns {Promise<Game|null>} updated game, or null
  */
-export async function invite(gameId, guestId, hostId) {
-  const guest = await repositories.players.getById(guestId)
+export async function invite(gameId, guestIds, hostId) {
+  const guests = (await repositories.players.getById(guestIds)) || []
   const game = await repositories.games.getById(gameId)
-  if (
-    (!isPlayer(game, hostId) && !isOwner(game, hostId)) ||
-    !guest ||
-    [...game.playerIds, ...game.guestIds].includes(guest.id)
-  ) {
+  if (!isPlayer(game, hostId) && !isOwner(game, hostId)) {
     return null
   }
-  game.guestIds.push(guest.id)
-  await repositories.games.save(game)
-  notifyAllPeers(game)
+  const friendships = await repositories.players.listFriendships(hostId)
+  const newIds = []
+  for (const { id: guestId } of guests) {
+    if (
+      !isGuestAlreadyPlaying(guestId, game) &&
+      isGuestAFriend(guestId, friendships)
+    ) {
+      newIds.push(guestId)
+    }
+  }
+  if (newIds.length) {
+    game.guestIds.push(...newIds)
+    await repositories.games.save(game)
+    notifyAllPeers(game)
+  }
   return game
+}
+
+function isGuestAlreadyPlaying(guestId, { playerIds, guestIds }) {
+  return playerIds.includes(guestId) || guestIds.includes(guestId)
+}
+
+function isGuestAFriend(guestId, friendships) {
+  return friendships.some(
+    ({ id, state }) =>
+      id === guestId &&
+      (state === FriendshipProposed || state === FriendshipAccepted)
+  )
 }
 
 /**

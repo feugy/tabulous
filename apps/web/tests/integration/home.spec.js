@@ -28,8 +28,8 @@ describe('Home page', () => {
       minTime: 15
     },
     {
-      name: '6-takes',
-      locales: { fr: { title: '6 qui prend' } },
+      name: 'draughts',
+      locales: { fr: { title: 'Dames' } },
       minAge: 10,
       minTime: 15
     }
@@ -38,16 +38,45 @@ describe('Home page', () => {
   const publicCatalog = catalog.slice(0, 2)
 
   const player = {
-    id: faker.datatype.uuid(),
-    username: faker.name.fullName(),
-    termsAccepted: true
-  }
-  const player2 = {
-    id: faker.datatype.uuid(),
-    username: faker.name.fullName(),
+    id: `p1-${faker.datatype.number(100)}`,
+    username: 'Jane',
     termsAccepted: true
   }
   const password = faker.internet.password()
+
+  const friends = [
+    {
+      player: {
+        id: `p2-${faker.datatype.number(100)}`,
+        username: 'Anthony'
+      }
+    },
+    {
+      player: {
+        id: `p3-${faker.datatype.number(100)}`,
+        username: 'Brat'
+      },
+      isRequest: true
+    },
+    {
+      player: {
+        id: `p4-${faker.datatype.number(100)}`,
+        username: 'James'
+      },
+      isProposal: true
+    },
+    {
+      player: {
+        id: `p5-${faker.datatype.number(100)}`,
+        username: 'John'
+      }
+    }
+  ]
+
+  const proposedPlayer = {
+    id: `p6-${faker.datatype.number(100)}`,
+    username: 'Cian'
+  }
 
   const recent = faker.date.recent(1).getTime()
   const recent2 = faker.date.recent(2, recent).getTime()
@@ -55,30 +84,25 @@ describe('Home page', () => {
     {
       id: faker.datatype.uuid(),
       created: recent,
-      kind: 'dune-imperium',
-      players: [
-        { id: '1789', username: 'Dams' },
-        { ...player, isOwner: true }
-      ],
-      locales: { fr: { title: 'Dune Imperium' } }
+      kind: 'draughts',
+      players: [friends[0].player, { ...player, isOwner: true }],
+      locales: { fr: { title: 'Dames' } }
     },
     {
       id: faker.datatype.uuid(),
       created: recent2,
-      kind: 'terraforming-mars',
+      kind: 'klondike',
       players: [{ ...player, isOwner: true }],
-      locales: { fr: { title: 'Terraforming Mars' } }
+      locales: { fr: { title: 'Solitaire' } }
     },
     {
       id: faker.datatype.uuid(),
       created: faker.date.recent(3, recent2).getTime(),
-      kind: 'terraforming-mars',
-      players: [{ id: '1789', username: 'Dams' }],
-      locales: { fr: { title: 'Terraforming Mars' } }
+      kind: 'klondike',
+      players: [{ ...player, isOwner: true }],
+      locales: { fr: { title: 'Solitaire' } }
     }
   ]
-
-  const friends = []
 
   it('updates catalog and display games after authentication', async ({
     page
@@ -233,14 +257,14 @@ describe('Home page', () => {
     await homePage.getStarted()
     await homePage.deleteGame(games[1].locales.fr.title)
     await expect(
-      homePage.deleteGameDialogue.locator(
-        `text=${translate('labels.confirm-game-deletion', games[1].locales.fr)}`
+      homePage.deleteGameDialogue.getByText(
+        translate('labels.confirm-game-deletion', games[1].locales.fr)
       )
     ).toBeVisible()
 
     onQuery(queryReceived)
     await homePage.deleteGameDialogue
-      .locator(`role=button >> text=${translate('actions.confirm')}`)
+      .getByRole('button', { name: translate('actions.confirm') })
       .click()
     await expect(homePage.deleteGameDialogue).not.toBeVisible()
     // @ts-ignore toHaveBeenCalledWith is not defined
@@ -348,7 +372,7 @@ describe('Home page', () => {
     await new GamePage(page).getStarted()
   })
 
-  it('can create a new lobby with an guest', async ({ page }) => {
+  it('can create a new lobby and invite a friend', async ({ page }) => {
     const lobby = {
       id: faker.datatype.uuid(),
       availableSeats: 7,
@@ -357,10 +381,11 @@ describe('Home page', () => {
       hands: [],
       players: [player]
     }
+    const guest = friends[0].player
     const updatedLobby = {
       ...lobby,
       availableSeats: 7,
-      players: [player, player2]
+      players: [player, guest]
     }
     const { sendToSubscription, setTokenCookie, onSubscription } =
       await mockGraphQl(page, {
@@ -379,7 +404,7 @@ describe('Home page', () => {
           sendToSubscription({
             data: {
               receiveGameListUpdates: [
-                { id: lobby.id, players: [player, player2] },
+                { id: lobby.id, players: [player] },
                 ...games
               ]
             }
@@ -387,7 +412,6 @@ describe('Home page', () => {
           return lobby
         },
         joinGame: lobby,
-        searchPlayers: [[player2]],
         invite: () => {
           sendToSubscription({ data: { receiveGameUpdates: updatedLobby } })
           return updatedLobby
@@ -411,11 +435,11 @@ describe('Home page', () => {
     await homePage.createLobby()
     await expect(page).toHaveURL(`/home`)
     await homePage.expectSortedCatalogItems(catalog)
-    await homePage.invite(player2.username)
-    await expect(homePage.playerAvatars).toHaveText([player2.username])
+
+    await homePage.invite(guest.username)
   })
 
-  describe('given a lobby', () => {
+  describe('given a lobby with a guest', () => {
     const lobby = {
       id: faker.datatype.uuid(),
       availableSeats: 7,
@@ -425,18 +449,19 @@ describe('Home page', () => {
       players: [player]
     }
     let gameJoined = lobby
-    let sendToSubscription
+    let graphQlMocks
 
     beforeEach(async ({ page }) => {
       gameJoined = lobby
+      const guest = friends[0].player
 
       let updatedLobby = {
         ...lobby,
         availableSeats: 7,
-        players: [player, player2]
+        players: [player, guest]
       }
 
-      const graphQlMocks = await mockGraphQl(page, {
+      graphQlMocks = await mockGraphQl(page, {
         listCatalog: [catalog],
         listGames: [games],
         listFriends: [friends],
@@ -449,10 +474,10 @@ describe('Home page', () => {
           }
         },
         createGame: () => {
-          sendToSubscription({
+          graphQlMocks.sendToSubscription({
             data: {
               receiveGameListUpdates: [
-                { id: lobby.id, players: [player, player2] },
+                { id: lobby.id, players: updatedLobby.players },
                 ...games
               ]
             }
@@ -460,19 +485,19 @@ describe('Home page', () => {
           return lobby
         },
         joinGame: () => gameJoined,
-        searchPlayers: [[player2]],
         invite: () => {
-          sendToSubscription({ data: { receiveGameUpdates: updatedLobby } })
+          graphQlMocks.sendToSubscription({
+            data: { receiveGameUpdates: updatedLobby }
+          })
           return updatedLobby
         },
         saveGame: updatedLobby
       })
-      sendToSubscription = graphQlMocks.sendToSubscription
       await graphQlMocks.setTokenCookie()
 
       graphQlMocks.onSubscription(operation => {
         if (operation === 'awaitSignal') {
-          sendToSubscription({
+          graphQlMocks.sendToSubscription({
             data: { awaitSignal: { data: JSON.stringify({ type: 'ready' }) } }
           })
         }
@@ -482,13 +507,13 @@ describe('Home page', () => {
       await homePage.goTo()
       await homePage.getStarted()
       await homePage.createLobby()
-      await homePage.invite(player2.username)
+      await homePage.invite(guest.username)
     })
 
     it('can promote current lobby to game', async ({ page }) => {
       const game = { ...lobby, kind: catalog[0].name }
       gameJoined = game
-      sendToSubscription({ data: { receiveGameUpdates: game } })
+      graphQlMocks.sendToSubscription({ data: { receiveGameUpdates: game } })
       await expect(page).toHaveURL(`/game/${lobby.id}`)
       await new GamePage(page).getStarted()
     })
@@ -502,46 +527,13 @@ describe('Home page', () => {
 
     it('leaves current lobby on server deletion', async ({ page }) => {
       const homePage = new HomePage(page)
-      sendToSubscription({ data: { receiveGameUpdates: null } })
+      graphQlMocks.sendToSubscription({ data: { receiveGameUpdates: null } })
       await expect(homePage.playerAvatars).toBeHidden()
       await expect(homePage.closeGameButtons).toBeHidden()
     })
   })
 
   describe('given some friends', () => {
-    const friends = [
-      {
-        player: {
-          id: `p1-${faker.datatype.number(100)}`,
-          username: 'Anthony'
-        }
-      },
-      {
-        player: {
-          id: `p2-${faker.datatype.number(100)}`,
-          username: 'Brat'
-        },
-        isRequest: true
-      },
-      {
-        player: {
-          id: `p3-${faker.datatype.number(100)}`,
-          username: 'James'
-        },
-        isProposal: true
-      },
-      {
-        player: {
-          id: `p4-${faker.datatype.number(100)}`,
-          username: 'John'
-        }
-      }
-    ]
-    const proposedPlayer = {
-      id: `p5-${faker.datatype.number(100)}`,
-      username: 'Cian'
-    }
-
     let graphQlMocks
 
     beforeEach(async ({ page }) => {
@@ -641,7 +633,7 @@ describe('Home page', () => {
       const mutation = fn()
       graphQlMocks.onQuery(mutation)
       await homePage.endFriendshipDialogue
-        .locator(`role=button >> text=${translate('actions.confirm')}`)
+        .getByRole('button', { name: translate('actions.confirm') })
         .click()
       await expect(homePage.endFriendshipDialogue).not.toBeVisible()
       // @ts-ignore toHaveBeenCalledWith is not defined

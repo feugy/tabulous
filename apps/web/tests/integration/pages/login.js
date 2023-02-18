@@ -14,25 +14,25 @@ export class LoginPage {
    * @param {Page} page - the actual page.
    */
   constructor(page) {
-    /**  @type {Page}     */
+    /** @type {Page} */
     this.page = page
     /** @type {Locator} */
-    this.githubButton = page.locator('role=button', {
-      hasText: translate('actions.log-in-github')
+    this.githubButton = page.getByRole('button', {
+      name: translate('actions.log-in-github')
     })
     /** @type {Locator} */
-    this.googleButton = page.locator('role=button', {
-      hasText: translate('actions.log-in-google')
+    this.googleButton = page.getByRole('button', {
+      name: translate('actions.log-in-google')
     })
     /** @type {Locator} */
     this.passwordDetails = page.locator('details')
     /** @type {Locator} */
-    this.usernameInput = page.locator('role=textbox >> nth=0')
+    this.usernameInput = page.getByRole('textbox').first()
     /** @type {Locator} */
-    this.passwordInput = page.locator('role=textbox >> nth=1')
+    this.passwordInput = page.getByRole('textbox').nth(1)
     /** @type {Locator} */
-    this.passwordButton = page.locator('role=button', {
-      hasText: translate('actions.log-in')
+    this.passwordButton = page.getByRole('button', {
+      name: translate('actions.log-in')
     })
   }
 

@@ -1,5 +1,5 @@
 <script>
-  import { isLobby } from '@src/utils'
+  import { isLobby as checkIfLobby } from '@src/utils'
   import { _ } from 'svelte-intl'
 
   import ControlsHelp from './ControlsHelp/index.js'
@@ -27,6 +27,8 @@
   let hasPeers = false
   let discussionDimension = '15%'
 
+  $: isLobby = checkIfLobby(game)
+
   $: otherPlayers = [...(playerById?.values() ?? [])].filter(
     ({ id }) => id !== player.id
   )
@@ -44,7 +46,7 @@
 
   $: {
     tabs = [{ icon: 'people_alt', id: friendsId, key: 'F2' }]
-    if (isLobby(game)) {
+    if (isLobby) {
       tabs.splice(0, 0, { icon: 'contacts', id: playersId, key: 'F4' })
     } else if (game) {
       tabs.push({ icon: 'help', id: helpId, key: 'F1' })
@@ -55,6 +57,16 @@
         tabs.splice(0, 0, { icon: 'contacts', id: playersId, key: 'F4' })
       }
     }
+    if (isLobby) {
+      tab = 1
+    } else {
+      tab = 0
+    }
+  }
+
+  function handleSetTab({ detail: { currentTab } }) {
+    // do nor use `bind:currentTab={tab}` because it computes tabs again, which reset cuttent tab
+    tab = currentTab
   }
 </script>
 
@@ -62,8 +74,9 @@
   <MinimizableSection
     placement="right"
     {tabs}
-    minimized={!hasPeers && !hasInvites}
-    bind:currentTab={tab}
+    minimized={!hasPeers && !hasInvites && !isLobby}
+    currentTab={tab}
+    on:change={handleSetTab}
     on:resize={() => (initialWidth = 'auto')}
   >
     <div
@@ -81,7 +94,7 @@
             <PlayerAvatar {...props} />
           {/each}
         </span>
-        {#if isLobby(game)}
+        {#if isLobby}
           <div class="lobby-instructions">
             {$_('labels.lobby-instructions')}
           </div>
@@ -101,7 +114,12 @@
       {:else if tabs[tab]?.id === helpId}
         <ControlsHelp />
       {:else if tabs[tab]?.id === friendsId}
-        <FriendList {friends} />
+        <FriendList
+          {friends}
+          {playerById}
+          {game}
+          currentPlayerId={player?.id}
+        />
       {/if}
     </div>
   </MinimizableSection>

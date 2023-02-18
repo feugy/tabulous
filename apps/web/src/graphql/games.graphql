@@ -182,9 +182,12 @@ mutation deleteGame($gameId: ID!) {
   }
 }
 
-mutation invite($gameId: ID!, $playerId: ID!) {
-  invite(gameId: $gameId, playerId: $playerId) {
-    ...fullGame
+mutation invite($gameId: ID!, $playerIds: [ID!]!) {
+  invite(gameId: $gameId, playerIds: $playerIds) {
+    id
+    players {
+      ...lightPlayer
+    }
   }
 }
 

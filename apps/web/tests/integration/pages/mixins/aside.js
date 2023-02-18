@@ -11,27 +11,30 @@ export class AsideMixin {
   constructor(page) {
     this.page = page
     /** @type {Locator} */
-    this.inviteDialogue = this.page.locator('role=dialog', {
-      has: this.page.locator(`text="${translate('titles.invite')}"`)
+    this.playerAvatars = this.page.getByTestId('player-avatar')
+    /** @type {Locator} */
+    this.friendsTab = this.page.getByRole('tab', { name: 'people_alt F2' })
+    /** @type {Locator} */
+    this.friendsSection = page.locator('[aria-roledescription="friend-list"]')
+    /** @type {Locator} */
+    this.friendItems = this.friendsSection.getByRole('option')
+    /** @type {Locator} */
+    this.inviteButton = this.friendsSection.getByRole('button', {
+      name: /^gamepad /
     })
     /** @type {Locator} */
-    this.inviteButton = this.inviteDialogue.locator('role=button')
+    this.friendSearchInput = this.friendsSection.getByRole('textbox')
     /** @type {Locator} */
-    this.searchInput = this.inviteDialogue.locator('role=textbox')
+    this.playersSection = page.locator('[aria-roledescription="player-list"]')
     /** @type {Locator} */
-    this.playerAvatars = this.page.locator('data-testid=player-avatar')
+    this.playerItems = this.playersSection.getByRole('listitem')
     /** @type {Locator} */
-    this.friendsPane = page.locator('[aria-roledescription="friend-list"]')
-    /** @type {Locator} */
-    this.friendItems = this.friendsPane.locator('role=listitem')
-    /** @type {Locator} */
-    this.endFriendshipDialogue = page.locator('role=dialog', {
-      has: this.page.locator(`text="${translate('titles.end-friendship')}"`)
+    this.endFriendshipDialogue = page.getByRole('dialog').filter({
+      has: this.page.getByText(translate('titles.end-friendship'))
     })
     /** @type {Locator} */
-    this.friendSearchInput = this.friendsPane.locator('role=textbox')
-    this.requestFriendshipButton = this.friendsPane.locator('role=button', {
-      hasText: 'person_add_alt_1'
+    this.requestFriendshipButton = this.friendsSection.getByRole('button', {
+      name: 'person_add_alt_1'
     })
   }
 
@@ -58,18 +61,35 @@ export class AsideMixin {
   }
 
   /**
-   * Invites another players by searching them in the invite dialogue.
-   * It assumes the invite dialogue to be already opened.
+   * Checks whether a given tab is active or not.
+   * @param {Locator} tab - tested tab.
+   * @returns {Promise<boolean>} true if this tab is already active.
    */
-  async invite(playerName) {
+  async isTabActive(tab) {
+    return (
+      (await tab.getAttribute('aria-selected')) === 'true' &&
+      (await tab
+        .locator('xpath=ancestor::section')
+        .getAttribute('aria-expanded')) === 'true'
+    )
+  }
+
+  /**
+   * Invites a friend to the current game or lobby.
+   * It assumes the friends tab to be available
+   * @param {string} guestUsername - name of the invited friend.
+   */
+  async invite(guestUsername) {
     await expect(
-      this.inviteDialogue,
-      'the invite dialogue is not opened'
+      this.friendsTab,
+      'the friends tab is not available'
     ).toBeVisible()
-    await this.searchInput.type(playerName)
-    await this.page.locator('role=menuitem', { hasText: playerName }).click()
+    if (!(await this.isTabActive(this.friendsTab))) {
+      await this.friendsTab.click()
+    }
+    await this.friendItems.getByText(guestUsername).click()
     await this.inviteButton.click()
-    await expect(this.inviteDialogue).not.toBeVisible()
+    await expect(this.playerItems.getByText(guestUsername)).toBeVisible()
   }
 
   /**
@@ -78,11 +98,11 @@ export class AsideMixin {
    */
   async requestFriendship(playerName) {
     await expect(
-      this.friendsPane,
+      this.friendsSection,
       'the friends pane is not visible'
     ).toBeVisible()
     await this.friendSearchInput.type(playerName)
-    await this.page.locator('role=menuitem', { hasText: playerName }).click()
+    await this.page.getByRole('menuitem', { name: playerName }).click()
     await expect(this.requestFriendshipButton).toBeEnabled()
     await this.requestFriendshipButton.click()
   }
@@ -99,7 +119,7 @@ export class AsideMixin {
       `no friend with username "${username}" found`
     ).toBeDefined()
     await friend.hover()
-    await friend.locator('role=button').click()
+    await friend.getByRole('button').click()
     await expect(this.endFriendshipDialogue).toBeVisible()
   }
 }

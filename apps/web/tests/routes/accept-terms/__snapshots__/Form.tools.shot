@@ -43,7 +43,7 @@ exports[`Default 1`] = `
       class="s-oausCIIttb36"
       for="age"
     >
-      Je déclare avoir plus de 15 ans ou être autorisé(e) par l’un de mes parents
+      Je déclare avoir plus de 15 ans ou être autorisé·e par l’un de mes parents
     </label>
   </fieldset>
    
@@ -118,7 +118,7 @@ exports[`Enabled 1`] = `
       class="s-oausCIIttb36"
       for="age"
     >
-      Je déclare avoir plus de 15 ans ou être autorisé(e) par l’un de mes parents
+      Je déclare avoir plus de 15 ans ou être autorisé·e par l’un de mes parents
     </label>
   </fieldset>
    

@@ -9,7 +9,8 @@ actions:
   enter-fullscreen: Plein-écran
   go-to-account: Paramètres
   hide-indicators: Masquer les indicateurs
-  invite-player: Inviter un(e) joueur(se)
+  invite-attendee: Inviter dans le salon
+  invite-player: Inviter à jouer
   invite: Inviter
   join-game: Jouer
   leave-fullscreen: Quitter le plein-écran
@@ -48,15 +49,15 @@ labels:
   confirm-game-deletion: Souhaitez vous vraiment supprimer cette partie de "{title}" ?
   confirm-lobby-deletion: Souhaitez vous vraiment supprimer ce salon ?
   copyright: Tabulous.fr. Tous droits réservés.
-  end-friendship: Voulez vous vraiment retirer {username} de vos ami(e)s ? Vous ne pourrez plus jouer ensemble.
+  end-friendship: Voulez vous vraiment retirer {username} de vos ami·e·s ? Vous ne pourrez plus jouer ensemble.
   empty-friend-list: Ajoutez vos amis pour pouvoir jouer avec eux.
-  friendship-accepted: "{username} a rejoint votre liste d'ami(e)s"
-  friendship-declined: "{username} a quitté votre liste d'ami(e)s"
+  friendship-accepted: "{username} a rejoint votre liste d'ami·e·s"
+  friendship-declined: "{username} a quitté votre liste d'ami·e·s"
   friendship-proposed: 'Demande envoyée à {username}'
-  friendship-requested: '{username} souhaite rejoindre vos ami(e)s'
+  friendship-requested: '{username} souhaite rejoindre vos ami·e·s'
   game-authors: 'Créé par : '
   game-deleted: Partie supprimée !
-  game-deleted-by-owner: Le(a) propriétaire a supprimé cette partie
+  game-deleted-by-owner: Le·a propriétaire a supprimé cette partie
   game-designers: 'Illustré par : '
   game-min-age: '{minAge}+'
   game-min-time: "{minTime}'"
@@ -64,20 +65,20 @@ labels:
   home: Accueil
   host: hôte
   last-updated: 'Dernière mise à jour : { published, date, date-only }'
-  lobby-description: Invitez vos ami(e)s puis décidez à quel jeu jouer.
+  lobby-description: Invitez vos ami·e·s puis décidez à quel jeu jouer.
   lobby-deleted: 'Salon supprimé !'
   lobby-instructions: Pour transformer ce salon en jeu, choisissez un de vos jeux disponibles.
   manual-provider: Vous avez un compte manuel dont l'identifiant de connextion est "{id}"
-  new-game-invite: Vous avez été invité(e) à jouer !
+  new-game-invite: Vous avez été invité·e à jouer !
   no-games-yet: Rien pour l'instant ! Choisissez un jeu disponible.
   oauth-provider: Vous avez relié ce compte à votre adresse "{email}"
-  old-enough: Je déclare avoir plus de 15 ans ou être autorisé(e) par l’un de mes parents
+  old-enough: Je déclare avoir plus de 15 ans ou être autorisé·e par l’un de mes parents
   peer-guests: 'invités: {names}'
   peer-players: avec {names}
   player-joined-game: '{player.username} a rejoint la partie !'
   player-joined-lobby: '{player.username} a rejoint le salon !'
-  player-left-game: '{player.username} a quitté(e) la partie'
-  player-left-lobby: '{player.username} a quitté(e) le salon'
+  player-left-game: '{player.username} a quitté·e la partie'
+  player-left-lobby: '{player.username} a quitté·e le salon'
   terms-accepted: J'ai lu et accepté les Conditions Générales d'Utilisation
   terms-intro: Ici, nous ne sommes pas des sauvages ! Pour profiter de Tabulous, merci de lire et d'approuver les conditions d'utilisation.
   terms-of-service: Mentions Légales & Conditions Générales d'Utilisation
@@ -97,6 +98,7 @@ placeholders:
   username: Pseudo
 titles:
   account: Vos paramètres
+  attendee-list: Participant·e·s
   auth-provider: Votre compte
   camera-controls: Contrôler la caméra
   catalog: Jeux disponibles
@@ -105,7 +107,7 @@ titles:
   confirm-lobby-deletion: Suppression du salon
   create-game: Nouvelle partie
   end-friendship: Êtes vous sûr ?
-  friend-list: Vos ami(e)s
+  friend-list: Vos ami·e·s
   game-parameters: Réglages du jeu
   home: Bonjour {username} !
   invite: Qui vas tu inviter ?
@@ -113,6 +115,7 @@ titles:
   lobby: Salon
   log-in: Bienvenue !
   object-controls: Contrôler un objet
+  player-list: Joueur·euse·s
   selection-controls: Contrôler un ou plusieurs objets
   terms-of-service: Conditions générales d’utilisation
   username: Votre peusdo

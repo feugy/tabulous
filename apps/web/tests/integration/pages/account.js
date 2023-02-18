@@ -23,26 +23,25 @@ export const AccountPage = mixin(
       /** @type {Page} */
       this.page = page
       /** @type {Locator} */
-      this.heading = page.locator(
-        `role=heading[level=1] >> :scope:has-text("${translate(
-          'titles.account'
-        )}")`
-      )
+      this.heading = page.getByRole('heading', {
+        level: 1,
+        name: translate('titles.account')
+      })
       /** @type {Locator} */
       this.usernameInput = page.locator(`input[name="username"]`)
       /** @type {Locator} */
       this.avatarImage = page.locator(`section img`)
       /** @type {Locator} */
-      this.openAvatarDialogueButton = page.locator(`role=button`, {
-        hasText: translate('actions.change-avatar')
+      this.openAvatarDialogueButton = page.getByRole('button', {
+        name: translate('actions.change-avatar')
       })
       /** @type {Locator} */
-      this.avatarDialogue = page.locator(`role=dialog`)
+      this.avatarDialogue = page.getByRole('dialog')
       /** @type {Locator} */
-      this.avatarInput = this.avatarDialogue.locator('role=textbox')
+      this.avatarInput = this.avatarDialogue.getByRole('textbox')
       /** @type {Locator} */
-      this.avatarSaveButon = this.avatarDialogue.locator('role=button', {
-        hasText: translate('actions.save')
+      this.avatarSaveButon = this.avatarDialogue.getByRole('button', {
+        name: translate('actions.save')
       })
     }
 

@@ -18,24 +18,6 @@ exports[`Current lobby 1`] = `
     <div
       class="buttons s-QQoQzhRq8NK6"
     >
-      <span
-        class="invite s-QQoQzhRq8NK6"
-      >
-        <button
-          class="secondary s-NMyTiX1zi6rz"
-        >
-          <span
-            class="material-icons s-NMyTiX1zi6rz"
-          >
-            people
-          </span>
-          
-          
-          
-        </button>
-        <!--&lt;Button&gt;-->
-      </span>
-       
       <button
         class="secondary s-NMyTiX1zi6rz"
       >
@@ -79,9 +61,7 @@ exports[`Guests only 1`] = `
      
     <div
       class="buttons s-QQoQzhRq8NK6"
-    >
-       
-    </div>
+    />
   </span>
    
   <span
@@ -116,9 +96,7 @@ exports[`Invited 1`] = `
      
     <div
       class="buttons s-QQoQzhRq8NK6"
-    >
-       
-    </div>
+    />
   </span>
    
   <span
@@ -158,26 +136,7 @@ exports[`Lobby 1`] = `
      
     <div
       class="buttons s-QQoQzhRq8NK6"
-    >
-      <span
-        class="invite s-QQoQzhRq8NK6"
-      >
-        <button
-          class="secondary s-NMyTiX1zi6rz"
-        >
-          <span
-            class="material-icons s-NMyTiX1zi6rz"
-          >
-            people
-          </span>
-          
-          
-          
-        </button>
-        <!--&lt;Button&gt;-->
-      </span>
-       
-    </div>
+    />
   </span>
    
   <span
@@ -208,7 +167,6 @@ exports[`Owned 1`] = `
     <div
       class="buttons s-QQoQzhRq8NK6"
     >
-       
       <button
         class="secondary s-NMyTiX1zi6rz"
       >
@@ -263,7 +221,6 @@ exports[`Single owned 1`] = `
     <div
       class="buttons s-QQoQzhRq8NK6"
     >
-       
       <button
         class="secondary s-NMyTiX1zi6rz"
       >
