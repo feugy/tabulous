@@ -36,8 +36,7 @@
   }
 </script>
 
-<Pane>
-  <h1 class="heading">{$_('titles.log-in')}</h1>
+<Pane title={$_('titles.welcome')}>
   <div class="container">
     {#if withGithub && !isPasswordOpen}
       <Button
@@ -55,7 +54,7 @@
     {/if}
     <details
       bind:this={details}
-      open={!hasProviders || !!error || id || password}
+      open={!hasProviders || !!error || isPasswordOpen}
       on:toggle={handleTogglePassword}
     >
       <summary class:hidden={!hasProviders} title="password-toggle">
@@ -90,6 +89,7 @@
         {/if}
         <div class="actions">
           <Button
+            primary
             text={$_('actions.log-in')}
             icon="emoji_people"
             type="submit"
@@ -103,10 +103,6 @@
 </Pane>
 
 <style lang="postcss">
-  h1 {
-    @apply inline-block;
-  }
-
   .row {
     @apply flex my-4 items-center gap-2;
   }
@@ -116,7 +112,7 @@
   }
 
   .container {
-    @apply flex flex-col gap-4 whitespace-nowrap w-min mx-auto my-0;
+    @apply flex flex-col gap-4 whitespace-nowrap w-min mx-auto my-0 py-6;
   }
 
   details {
