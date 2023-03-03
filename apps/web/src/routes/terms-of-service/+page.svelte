@@ -11,26 +11,22 @@
 </svelte:head>
 
 <main>
-  <Header
-    user={data.session?.player}
-    breadcrumb={[
-      { label: $_('labels.home'), href: '/' },
-      { label: $_('labels.terms-of-service') }
-    ]}
-  />
+  <i id="top" />
+  <Header user={data.session?.player}><h1>{$_('titles.legal')}</h1></Header>
+  <section>
+    <Markdown titleKey="titles.legal" contentKey="markdown.legal" />
 
-  <Markdown titleKey="titles.legal" contentKey="markdown.legal" />
-
-  <TermsOfService />
+    <TermsOfService />
+  </section>
+  <PageFooter />
 </main>
-<PageFooter />
 
 <style lang="postcss">
   main {
-    @apply flex flex-col w-full pb-8;
+    @apply flex flex-col max-h-screen overflow-auto;
+  }
 
-    :global(> *) {
-      @apply px-2 mx-auto w-3/4 <lg:w-full;
-    }
+  section {
+    @apply flex flex-col flex-1 px-6 self-center w-full xl:w-screen-xl;
   }
 </style>

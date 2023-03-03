@@ -55,7 +55,7 @@ exports[`Default 1`] = `
   />
    
   <button
-    class="s-NMyTiX1zi6rz"
+    class="primary has-text s-NMyTiX1zi6rz"
     disabled=""
     type="submit"
   >
@@ -130,7 +130,7 @@ exports[`Enabled 1`] = `
   />
    
   <button
-    class="s-NMyTiX1zi6rz"
+    class="primary has-text s-NMyTiX1zi6rz"
     disabled=""
     type="submit"
   >

@@ -155,7 +155,7 @@ erat pellentesque adipiscing commodo elit at imperdiet.
     <button
       aria-expanded="false"
       aria-haspopup="menu"
-      class="s-NMyTiX1zi6rz"
+      class="has-text s-NMyTiX1zi6rz"
       role="combobox"
     >
       <span
@@ -229,7 +229,7 @@ erat pellentesque adipiscing commodo elit at imperdiet.
     <button
       aria-expanded="false"
       aria-haspopup="menu"
-      class="s-NMyTiX1zi6rz"
+      class="has-text s-NMyTiX1zi6rz"
       role="combobox"
     >
       <span
@@ -368,7 +368,7 @@ erat pellentesque adipiscing commodo elit at imperdiet.
     <button
       aria-expanded="false"
       aria-haspopup="menu"
-      class="s-NMyTiX1zi6rz"
+      class="has-text s-NMyTiX1zi6rz"
       role="combobox"
     >
       <span

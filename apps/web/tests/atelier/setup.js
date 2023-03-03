@@ -1,9 +1,9 @@
 import '../../src/common'
 import './styles.postcss'
 
-import * as svelteClient from '../../node_modules/@sveltejs/kit/src/runtime/client/singletons'
+import * as kitClient from '../../node_modules/@sveltejs/kit/src/runtime/client/singletons'
 
-svelteClient.init({
+kitClient.init({
   client: {
     goto: () => {},
     invalidate: () => {},
@@ -15,14 +15,30 @@ svelteClient.init({
   }
 })
 
+let storeMock = null
+
+/**
+ * Only used when running the test suite, for toolshots.
+ * Reconciles sveltekit $app/stores mocks from test suite and atelier tools.
+ * @param {object} mock - mock for $app/stores
+ */
+export function setStoreMockForTestSuite(mock) {
+  storeMock = mock
+}
+
 /**
  * Allows configuring svelte's page store with a given url
  * @param {string} url - relative url for this page.
+ * @param {string} id - route id for this page (defaults to url)
  */
-export function setSvelteUrl(url) {
+export function setSvelteUrl(url, id = url) {
   const fullUrl = new URL(url, 'https://example.com')
-  svelteClient.stores.url.set(fullUrl)
-  svelteClient.stores.page.set({ url: fullUrl })
+  const page = { url: fullUrl, route: { id } }
+  kitClient.stores.url.set(fullUrl)
+  kitClient.stores.page.set(page)
+  if (storeMock) {
+    storeMock.getStores().page.set(page)
+  }
 }
 
 window.addEventListener(

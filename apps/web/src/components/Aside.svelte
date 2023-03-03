@@ -2,7 +2,7 @@
   import { isLobby as checkIfLobby } from '@src/utils'
   import { _ } from 'svelte-intl'
 
-  import ControlsHelp from './ControlsHelp/index.js'
+  import ControlsHelp from './ControlsHelp.svelte'
   import Discussion from './Discussion.svelte'
   import FriendList from './FriendList.svelte'
   import MinimizableSection from './MinimizableSection.svelte'
@@ -127,7 +127,7 @@
 
 <style lang="postcss">
   aside {
-    @apply bg-$base-lightest z-10;
+    @apply z-10 bg-$base-lighter;
   }
 
   .content {
@@ -146,7 +146,7 @@
     @apply italic p-8 pb-12;
   }
   .avatars {
-    @apply flex-1 grid place-items-center grid-flow-col;
-    grid-template-rows: repeat(auto-fit, minmax(150px, 1fr));
+    @apply flex-1 grid place-items-center grid-flow-row;
+    grid-template-columns: repeat(auto-fill, minmax(max(50%, 150px), 1fr));
   }
 </style>

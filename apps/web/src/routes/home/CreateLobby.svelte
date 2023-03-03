@@ -17,42 +17,37 @@
 </script>
 
 <article role="link" tabindex="0" on:click={handleClick} on:keyup={handleKey}>
-  <div class="content">
-    <legend>
-      <div class="title">
-        <h3>{$_('actions.create-lobby')}</h3>
-        <div>{$_('labels.lobby-description')}</div>
-      </div>
-    </legend>
-  </div>
+  <legend>
+    <h3>{$_('actions.create-lobby')}</h3>
+    <div>{$_('labels.lobby-description')}</div>
+  </legend>
 </article>
 
 <style lang="postcss">
   article {
-    @apply inline-grid h-64 shadow-md cursor-pointer flex-1 rounded 
-           overflow-hidden bg-$base-lighter transition-all duration-$short;
+    @apply m-4 cursor-pointer bg-$secondary-darkest transition-all duration-$short;
     grid-template-areas: 'full';
+
+    --corner-cut: 1rem;
+    clip-path: polygon(
+      0 var(--corner-cut),
+      var(--corner-cut) 0,
+      100% 0,
+      100% calc(100% - var(--corner-cut)),
+      calc(100% - var(--corner-cut)) 100%,
+      0 100%
+    );
 
     &:hover {
       @apply transform-gpu scale-105;
     }
   }
 
-  .content {
-    @apply flex items-end;
-    grid-area: full;
-  }
-
   legend {
-    @apply flex flex-nowrap w-full gap-4 p-4 
-           opacity-80 bg-$primary text-$primary-lightest;
-  }
-
-  .title {
-    @apply flex-1 text-left;
+    @apply p-4 text-$ink-dark;
   }
 
   h3 {
-    @apply text-xl;
+    @apply mb-4 text-$secondary-light;
   }
 </style>

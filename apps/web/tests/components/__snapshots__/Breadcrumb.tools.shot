@@ -1,73 +1,97 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Empty 1`] = `undefined`;
+exports[`Empty 1`] = `
+<div
+  class="s-x5nEMCoiqeIy"
+/>
+`;
 
 exports[`Multiple entries 1`] = `
-<ol
+<div
   class="s-x5nEMCoiqeIy"
 >
-  <li
-    class="s-x5nEMCoiqeIy"
+  <span
+    class="material-icons s-x5nEMCoiqeIy"
   >
-    <a
-      class="s-x5nEMCoiqeIy"
-      href="/"
-    >
-      home
-    </a>
-  </li>
+    home_filled
+  </span>
    
-  <li
+  <ol
     class="s-x5nEMCoiqeIy"
   >
-    &gt;
-  </li>
-  
-  <li
-    class="s-x5nEMCoiqeIy"
-  >
-    <a
-      class="s-x5nEMCoiqeIy"
-      href="/account"
-    >
-      account
-    </a>
-  </li>
-   
-  <li
-    class="s-x5nEMCoiqeIy"
-  >
-    &gt;
-  </li>
-  
-  <li
-    class="s-x5nEMCoiqeIy"
-  >
-    <a
+    <li
       class="s-x5nEMCoiqeIy"
     >
-      details
-    </a>
-  </li>
-   
-  
-</ol>
+      <a
+        class="s-x5nEMCoiqeIy"
+        href="/"
+      >
+        home
+      </a>
+    </li>
+     
+    <li
+      class="s-x5nEMCoiqeIy"
+    >
+      •
+    </li>
+    
+    <li
+      class="s-x5nEMCoiqeIy"
+    >
+      <a
+        class="s-x5nEMCoiqeIy"
+        href="/account"
+      >
+        account
+      </a>
+    </li>
+     
+    <li
+      class="s-x5nEMCoiqeIy"
+    >
+      •
+    </li>
+    
+    <li
+      class="s-x5nEMCoiqeIy"
+    >
+      <a
+        class="s-x5nEMCoiqeIy"
+      >
+        details
+      </a>
+    </li>
+     
+    
+  </ol>
+</div>
 `;
 
 exports[`Single entry 1`] = `
-<ol
+<div
   class="s-x5nEMCoiqeIy"
 >
-  <li
+  <span
+    class="material-icons s-x5nEMCoiqeIy"
+  >
+    home_filled
+  </span>
+   
+  <ol
     class="s-x5nEMCoiqeIy"
   >
-    <a
+    <li
       class="s-x5nEMCoiqeIy"
     >
-      home
-    </a>
-  </li>
-   
-  
-</ol>
+      <a
+        class="s-x5nEMCoiqeIy"
+      >
+        home
+      </a>
+    </li>
+     
+    
+  </ol>
+</div>
 `;

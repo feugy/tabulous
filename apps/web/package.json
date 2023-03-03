@@ -29,6 +29,8 @@
     "@fastify/cors": "^8.2.0",
     "@fastify/static": "^6.6.0",
     "@fastify/websocket": "^7.1.1",
+    "@fontsource/carter-one": "^4.5.9",
+    "@fontsource/lexend": "^4.5.15",
     "@playwright/test": "^1.29.0",
     "@rollup/plugin-graphql": "^2.0.2",
     "@rollup/plugin-yaml": "^4.0.1",

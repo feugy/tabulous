@@ -12,7 +12,7 @@ exports[`Default 1`] = `
       class="s-VFBuvOTIAoad"
     >
        
-      <h2
+      <h3
         id="article-1---objet"
       >
         Article 1 - Objet
@@ -26,7 +26,7 @@ exports[`Default 1`] = `
         
         <!--&lt;Parser&gt;-->
         
-      </h2>
+      </h3>
       
       <!--&lt;Heading&gt;-->
       
@@ -93,7 +93,7 @@ exports[`Default 1`] = `
       <!--&lt;Parser&gt;-->
       
       <!--&lt;Parser&gt;-->
-      <h2
+      <h3
         id="article-2---définitions"
       >
         Article 2 - Définitions
@@ -107,7 +107,7 @@ exports[`Default 1`] = `
         
         <!--&lt;Parser&gt;-->
         
-      </h2>
+      </h3>
       
       <!--&lt;Heading&gt;-->
       
@@ -368,7 +368,7 @@ exports[`Default 1`] = `
         
         <!--&lt;Parser&gt;-->
         <strong>
-          Services
+          Services Tiers
           
           <!--&lt;Text&gt;-->
           
@@ -385,7 +385,7 @@ exports[`Default 1`] = `
         
         
         <!--&lt;Parser&gt;-->
-         Tiers » désigne tout  service tiers au moyen desquels l’Utilisateur peut choisir de se connecter à la Plateforme (par exemple Facebook, Google, Discord, Twitch, etc).
+         » désigne tout  service tiers au moyen desquels l’Utilisateur peut choisir de se connecter à la Plateforme (par exemple Facebook, Google, Discord, Twitch, etc).
         
         <!--&lt;Text&gt;-->
         
@@ -494,7 +494,7 @@ exports[`Default 1`] = `
       <!--&lt;Parser&gt;-->
       
       <!--&lt;Parser&gt;-->
-      <h2
+      <h3
         id="article-3---utilisation-de-la-plateforme"
       >
         Article 3 - Utilisation de la Plateforme
@@ -508,14 +508,14 @@ exports[`Default 1`] = `
         
         <!--&lt;Parser&gt;-->
         
-      </h2>
+      </h3>
       
       <!--&lt;Heading&gt;-->
       
       
       
       <!--&lt;Parser&gt;-->
-      <h3
+      <h4
         id="31-accès-gratuit"
       >
         3.1 Accès gratuit
@@ -529,7 +529,7 @@ exports[`Default 1`] = `
         
         <!--&lt;Parser&gt;-->
         
-      </h3>
+      </h4>
       
       <!--&lt;Heading&gt;-->
       
@@ -576,7 +576,7 @@ exports[`Default 1`] = `
       <!--&lt;Parser&gt;-->
       
       <!--&lt;Parser&gt;-->
-      <h3
+      <h4
         id="32-création-dun-compte"
       >
         3.2 Création d’un Compte
@@ -590,7 +590,7 @@ exports[`Default 1`] = `
         
         <!--&lt;Parser&gt;-->
         
-      </h3>
+      </h4>
       
       <!--&lt;Heading&gt;-->
       
@@ -722,7 +722,7 @@ exports[`Default 1`] = `
       <!--&lt;Parser&gt;-->
       
       <!--&lt;Parser&gt;-->
-      <h3
+      <h4
         id="33-jeux-en-mode-multi-joueurs"
       >
         3.3 Jeux en mode multi-joueurs
@@ -736,7 +736,7 @@ exports[`Default 1`] = `
         
         <!--&lt;Parser&gt;-->
         
-      </h3>
+      </h4>
       
       <!--&lt;Heading&gt;-->
       
@@ -763,7 +763,7 @@ exports[`Default 1`] = `
       <!--&lt;Parser&gt;-->
       
       <!--&lt;Parser&gt;-->
-      <h3
+      <h4
         id="34-chat"
       >
         3.4 Chat
@@ -777,7 +777,7 @@ exports[`Default 1`] = `
         
         <!--&lt;Parser&gt;-->
         
-      </h3>
+      </h4>
       
       <!--&lt;Heading&gt;-->
       
@@ -824,7 +824,7 @@ exports[`Default 1`] = `
       <!--&lt;Parser&gt;-->
       
       <!--&lt;Parser&gt;-->
-      <h2
+      <h3
         id="article-4---garantie-et-responsabilité-de-lediteur"
       >
         Article 4 - Garantie et responsabilité de l’Editeur
@@ -838,14 +838,14 @@ exports[`Default 1`] = `
         
         <!--&lt;Parser&gt;-->
         
-      </h2>
+      </h3>
       
       <!--&lt;Heading&gt;-->
       
       
       
       <!--&lt;Parser&gt;-->
-      <h3
+      <h4
         id="41-fonctionnement-de-la-plateforme"
       >
         4.1 Fonctionnement de la Plateforme
@@ -859,7 +859,7 @@ exports[`Default 1`] = `
         
         <!--&lt;Parser&gt;-->
         
-      </h3>
+      </h4>
       
       <!--&lt;Heading&gt;-->
       
@@ -1082,7 +1082,7 @@ exports[`Default 1`] = `
       <!--&lt;Parser&gt;-->
       
       <!--&lt;Parser&gt;-->
-      <h3
+      <h4
         id="42-liens-vers-des-sites-tiers"
       >
         4.2 Liens vers des sites tiers
@@ -1096,7 +1096,7 @@ exports[`Default 1`] = `
         
         <!--&lt;Parser&gt;-->
         
-      </h3>
+      </h4>
       
       <!--&lt;Heading&gt;-->
       
@@ -1143,7 +1143,7 @@ exports[`Default 1`] = `
       <!--&lt;Parser&gt;-->
       
       <!--&lt;Parser&gt;-->
-      <h3
+      <h4
         id="43-comportement-des-utilisateurs"
       >
         4.3 Comportement des Utilisateurs
@@ -1157,7 +1157,7 @@ exports[`Default 1`] = `
         
         <!--&lt;Parser&gt;-->
         
-      </h3>
+      </h4>
       
       <!--&lt;Heading&gt;-->
       
@@ -1231,7 +1231,7 @@ exports[`Default 1`] = `
       <!--&lt;Parser&gt;-->
       
       <!--&lt;Parser&gt;-->
-      <h2
+      <h3
         id="article-5---obligations-de-lutilisateur"
       >
         Article 5 - Obligations de l’Utilisateur
@@ -1245,14 +1245,14 @@ exports[`Default 1`] = `
         
         <!--&lt;Parser&gt;-->
         
-      </h2>
+      </h3>
       
       <!--&lt;Heading&gt;-->
       
       
       
       <!--&lt;Parser&gt;-->
-      <h3
+      <h4
         id="51-obligation-de-lutilisateur"
       >
         5.1 Obligation de l’Utilisateur
@@ -1266,7 +1266,7 @@ exports[`Default 1`] = `
         
         <!--&lt;Parser&gt;-->
         
-      </h3>
+      </h4>
       
       <!--&lt;Heading&gt;-->
       
@@ -1513,7 +1513,7 @@ exports[`Default 1`] = `
       <!--&lt;Parser&gt;-->
       
       <!--&lt;Parser&gt;-->
-      <h3
+      <h4
         id="52-sanctions-à-légard-de-lutilisateur"
       >
         5.2 Sanctions à l’égard de l’Utilisateur
@@ -1527,7 +1527,7 @@ exports[`Default 1`] = `
         
         <!--&lt;Parser&gt;-->
         
-      </h3>
+      </h4>
       
       <!--&lt;Heading&gt;-->
       
@@ -1574,7 +1574,7 @@ exports[`Default 1`] = `
       <!--&lt;Parser&gt;-->
       
       <!--&lt;Parser&gt;-->
-      <h2
+      <h3
         id="article-6---propriété-intellectuelle"
       >
         Article 6 - Propriété intellectuelle
@@ -1588,7 +1588,7 @@ exports[`Default 1`] = `
         
         <!--&lt;Parser&gt;-->
         
-      </h2>
+      </h3>
       
       <!--&lt;Heading&gt;-->
       
@@ -1655,7 +1655,7 @@ exports[`Default 1`] = `
       <!--&lt;Parser&gt;-->
       
       <!--&lt;Parser&gt;-->
-      <h2
+      <h3
         id="article-7--cookies"
       >
         Article 7 – Cookies
@@ -1669,7 +1669,7 @@ exports[`Default 1`] = `
         
         <!--&lt;Parser&gt;-->
         
-      </h2>
+      </h3>
       
       <!--&lt;Heading&gt;-->
       
@@ -1716,7 +1716,7 @@ exports[`Default 1`] = `
       <!--&lt;Parser&gt;-->
       
       <!--&lt;Parser&gt;-->
-      <h2
+      <h3
         id="article-8--données-personnelles"
       >
         Article 8 – Données Personnelles
@@ -1730,7 +1730,7 @@ exports[`Default 1`] = `
         
         <!--&lt;Parser&gt;-->
         
-      </h2>
+      </h3>
       
       <!--&lt;Heading&gt;-->
       
@@ -1924,7 +1924,7 @@ exports[`Default 1`] = `
       <!--&lt;Parser&gt;-->
       
       <!--&lt;Parser&gt;-->
-      <h2
+      <h3
         id="article-9---loi-applicable-et-tribunal-compétent"
       >
         Article 9 - Loi applicable et Tribunal compétent
@@ -1938,7 +1938,7 @@ exports[`Default 1`] = `
         
         <!--&lt;Parser&gt;-->
         
-      </h2>
+      </h3>
       
       <!--&lt;Heading&gt;-->
       

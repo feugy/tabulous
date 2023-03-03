@@ -13,8 +13,8 @@
 
 <style lang="postcss">
   footer {
-    @apply flex gap-8 py-8 px-1/8 <lg:px-0 <sm:flex-col <sm:gap-2;
-    @apply bg-$primary-lighter border-$secondary-light border-t;
+    @apply flex mt-8 gap-8 py-4 px-1/8 <lg:px-0 <sm:flex-col <sm:gap-2;
+    @apply bg-$secondary-light border-$secondary-dark border-t text-sm;
 
     & > * {
       @apply px-4;

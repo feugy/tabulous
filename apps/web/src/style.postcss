@@ -1,74 +1,152 @@
 @import 'material-design-icons-iconfont';
+@import '@fontsource/carter-one';
+@import '@fontsource/lexend/variable.css';
 
 :root {
   /* 
   https://designsystem.digital.gov/design-tokens/
-  https://paletton.com/#uid=7000u0k00pB00Ts00vE01kb0oes
+  https://fffuel.co/cccolor/
   */
-  --ink: #444545;
+  --ink: #000000;
+  --ink-dark: #ffffff;
 
-  --base-lightest: #ffffff;
-  --base-lighter: #fcfcfc;
-  /* --primary-light: #;
-  --primary: #; */
-  --base-dark: #7a7a7abf;
-  /* --primary-darker: #;
-  --primary-darkest: #; 
-  --primary-vivid: #; */
+  /*
+  https://colorhunt.co/palette/e14d2afd841f3e6d9c001253
+  --base-lightest: #fff4ea;
+  --base-lighter: #ffd2ab;
+  --base-light: #ffb16d;
+  --base: #fb8500;
+  --base-dark: #c05500;
+  --base-darker: #882600;
+  --base-darkest: #670000;
 
-  --primary-lightest: #fcfcfc;
-  --primary-lighter: #f0f0f0;
-  --primary-light: #979797;
-  --primary: #7a7a7a;
-  --primary-dark: #606060;
-  /* --primary-darker: #;
-  --primary-darkest: #; 
-  --primary-vivid: #; */
+  --primary-lightest: #eef6f9;
+  --primary-lighter: #bcdbe6;
+  --primary-light: #86c1d4;
+  --primary: #219ebc;
+  --primary-dark: #005874;
+  --primary-darker: #00324c;
+  --primary-darkest: #001d33;
 
-  --secondary-lightest: #dbdbdb;
-  --secondary-light: #cacaca;
-  --secondary: #a3a3a3;
-  --secondary-dark: #5b5c5b;
-  /* --secondary-darker: #;
-  --secondary-darkest: #;
-  --secondary-vivid: #; */
+  --secondary-lightest: #fff8eb;
+  --secondary-lighter: #ffe4b1;
+  --secondary-light: #ffd076;
+  --secondary: #ffb703;
+  --secondary-dark: #bc7e00;
+  --secondary-darker: #915b00;
+  --secondary-darkest: #582900;
+  */
 
-  /* --disabled-lightest: #;
-  --disabled-lighter: #;
-  --disabled-light: #; */
-  --disabled: #cacaca;
-  --disabled-dark: #737272;
-  /* --disabled-darker: #;
-  --disabled-darkest: #; */
+  --base-lightest: #e3ebf1;
+  --base-lighter: #c6d8e3;
+  --base-light: #9cbbcf;
+  --base: #6096b4;
+  --base-dark: #336d89;
+  --base-darker: #0f526d;
+  --base-darkest: #003953;
 
-  --accent-warm: #fa9441;
+  --primary-lightest: #ffe1c7;
+  --primary-lighter: #ffcea3;
+  --primary-light: #fcbb80;
+  --primary: #ef9535;
+  --primary-dark: #b46400;
+  --primary-darker: #7c3700;
+  --primary-darkest: #4d0700;
+
+  --secondary-lightest: #dee5ea;
+  --secondary-lighter: #cdd8e0;
+  --secondary-light: #bdccd5;
+  --secondary: #adbfcb;
+  --secondary-dark: #708390;
+  --secondary-darker: #4f626d;
+  --secondary-darkest: #30424d;
+
+  --disabled: #888a91;
+
+  --accent-warm: #730404;
+  --accent-warm-lighter: #f37356;
+
+  --svg-highlight: #730404;
+
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --shadow-blur: 1px;
+
+  --page-bg: local
+    linear-gradient(
+      180deg,
+      var(--base) 0%,
+      var(--base) 10%,
+      var(--base-light) 100%
+    );
 
   --short: 150ms;
+  --medium: 300ms;
+  --long: 600ms;
+
+  --font-base: LexendVariable, sans-serif;
+  --font-heading: Carter One, cursive;
 }
 
 .material-icons {
   vertical-align: -0.2em;
+
+  &.hidden {
+    display: none;
+  }
 }
 
 html,
 body {
-  @apply font-sans h-full m-0 bg-$base-lighter text-$ink;
+  @apply font-sans h-full m-0 bg-$base-lighter text-$ink font-300;
+  font-family: var(--font-base);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-family: var(--font-heading);
+}
+
+h1 {
+  @apply text-3xl;
+}
+
+h2 {
+  @apply px-8 py-4 bg-$primary-dark text-$ink-dark mt-6 mb-4 text-2xl;
+
+  --corner-cut: 1rem;
+  clip-path: polygon(
+    0 var(--corner-cut),
+    var(--corner-cut) 0,
+    100% 0,
+    100% calc(100% - var(--corner-cut)),
+    calc(100% - var(--corner-cut)) 100%,
+    0 100%
+  );
+}
+
+h3 {
+  @apply text-xl;
+}
+
+h4 {
+  @apply text-lg;
 }
 
 body {
   @apply relative flex flex-col h-max min-h-full overflow-auto;
+  background: var(--page-bg);
 
   & > :first-child {
     @apply flex-1;
   }
 }
 
-.heading {
-  @apply text-3xl border-b mb-4 border-$primary-dark;
-}
-
 a[href] {
-  @apply text-$primary;
+  @apply text-$primary-darkest font-medium;
+  transition: text-decoration;
 
   &:hover,
   &:visited {

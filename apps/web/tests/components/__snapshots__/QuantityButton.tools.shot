@@ -8,6 +8,7 @@ exports[`Default 1`] = `
 >
   <button
     class="s-NMyTiX1zi6rz"
+    secondary="false"
   >
     <span
       class="material-icons s-NMyTiX1zi6rz"
@@ -31,6 +32,7 @@ exports[`Default 1`] = `
     <button
       class="s-NMyTiX1zi6rz"
       data-up="true"
+      secondary="false"
     >
       <span
         class="material-icons s-NMyTiX1zi6rz"
@@ -46,6 +48,7 @@ exports[`Default 1`] = `
     <button
       class="s-NMyTiX1zi6rz"
       data-down="true"
+      secondary="false"
     >
       <span
         class="material-icons s-NMyTiX1zi6rz"
@@ -70,6 +73,7 @@ exports[`Disabled 1`] = `
   <button
     class="s-NMyTiX1zi6rz"
     disabled=""
+    secondary="false"
   >
     <span
       class="material-icons s-NMyTiX1zi6rz"
@@ -94,6 +98,7 @@ exports[`Disabled 1`] = `
       class="s-NMyTiX1zi6rz"
       data-up="true"
       disabled=""
+      secondary="false"
     >
       <span
         class="material-icons s-NMyTiX1zi6rz"
@@ -110,6 +115,7 @@ exports[`Disabled 1`] = `
       class="s-NMyTiX1zi6rz"
       data-down="true"
       disabled=""
+      secondary="false"
     >
       <span
         class="material-icons s-NMyTiX1zi6rz"
@@ -132,7 +138,8 @@ exports[`Secondary 1`] = `
   role="slider"
 >
   <button
-    class="secondary s-NMyTiX1zi6rz"
+    class="s-NMyTiX1zi6rz"
+    secondary="true"
   >
     <span
       class="material-icons s-NMyTiX1zi6rz"
@@ -154,8 +161,9 @@ exports[`Secondary 1`] = `
     class="s-6VEvz9s88k9v"
   >
     <button
-      class="secondary s-NMyTiX1zi6rz"
+      class="s-NMyTiX1zi6rz"
       data-up="true"
+      secondary="true"
     >
       <span
         class="material-icons s-NMyTiX1zi6rz"
@@ -169,8 +177,9 @@ exports[`Secondary 1`] = `
     <!--&lt;Button&gt;-->
      
     <button
-      class="secondary s-NMyTiX1zi6rz"
+      class="s-NMyTiX1zi6rz"
       data-down="true"
+      secondary="true"
     >
       <span
         class="material-icons s-NMyTiX1zi6rz"

@@ -6,7 +6,10 @@ import { describe, expect, it, vi } from 'vitest'
 vi.mock('$app/stores', () => {
   const { BehaviorSubject } = require('rxjs')
   return {
-    page: new BehaviorSubject({ url: new URL('http://localhost/login') })
+    page: new BehaviorSubject({
+      url: new URL('http://localhost/login'),
+      route: { id: '/login' }
+    })
   }
 })
 

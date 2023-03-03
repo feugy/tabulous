@@ -54,6 +54,11 @@ export const actionIds = {
   random: 'random'
 }
 
+// Share of PI added to the camera angle when applying rotation
+const cameraRotationShare = 8
+// Units added to the camera position when applying elevation
+const cameraElevationShare = 24
+
 /**
  * Attach to game engine's input manager observables to implement game interaction model.
  * @param {object} params - parameters, including:
@@ -239,8 +244,8 @@ export function attachInputs({
                 Math.abs(deltaX) < 8
                   ? 0
                   : deltaX < 0
-                  ? -Math.PI / 4
-                  : Math.PI / 4,
+                  ? -Math.PI / cameraRotationShare
+                  : Math.PI / cameraRotationShare,
                 Math.abs(deltaY) < 4 ? 0 : normalize(deltaY, 10, 0, Math.PI / 6)
               )
               rotatePosition = event
@@ -395,14 +400,14 @@ export function attachInputs({
         next: ({ key }) => {
           cameraManager.rotate(
             key === 'ArrowLeft'
-              ? Math.PI / -4
+              ? -Math.PI / cameraRotationShare
               : key === 'ArrowRight'
-              ? Math.PI / 4
+              ? Math.PI / cameraRotationShare
               : 0,
             key === 'ArrowDown'
-              ? Math.PI / 24
+              ? Math.PI / cameraElevationShare
               : key === 'ArrowUp'
-              ? Math.PI / -24
+              ? -Math.PI / cameraElevationShare
               : 0
           )
         }

@@ -93,7 +93,7 @@
   }
 
   video {
-    @apply w-full hidden;
+    @apply w-full h-full object-cover hidden;
 
     &.hasStream {
       @apply block bg-black;
@@ -104,11 +104,11 @@
     @apply absolute bottom-4 left-1/2 transform-gpu -translate-x-1/2 flex gap-2 z-10;
 
     .muted {
-      @apply text-$accent-warm bg-$primary-lightest rounded-full p-2;
+      @apply text-$ink bg-$disabled rounded-full p-2;
     }
   }
 
   .host {
-    @apply absolute top-2 right-2 bg-$primary-lightest px-2 py-1 text-xs;
+    @apply absolute top-2 right-2 bg-$primary-light px-2 py-1 text-xs;
   }
 </style>

@@ -7,16 +7,16 @@
 <ToolBox
   component={Button}
   name="Components/Button"
-  props={{ disabled: false, secondary: false }}
+  props={{ disabled: false, primary: false }}
   events={['click']}
   layout="centered"
 >
   <Tool
-    name="Primary with text and icon"
+    name="Base with text and icon"
     props={{ text: 'Hello!', icon: 'emoji_people' }}
   />
   <Tool
-    name="Primary with text and image icon"
+    name="Base with text and image icon"
     props={{ text: 'Hello!' }}
     let:props
     let:handleEvent
@@ -25,25 +25,22 @@
       <GithubLogo slot="icon" /></Button
     >
   </Tool>
-  <Tool name="Primary with icon only" props={{ icon: 'videogame_asset' }} />
-  <Tool name="Primary image icon only" let:handleEvent>
+  <Tool name="Base with icon only" props={{ icon: 'videogame_asset' }} />
+  <Tool name="Base image icon only" let:handleEvent>
     <Button on:click={handleEvent}>
       <GithubLogo slot="icon" /></Button
     >
   </Tool>
-  <Tool name="Primary with text" props={{ text: 'Hello!' }} />
+  <Tool name="Base with text" props={{ text: 'Hello!' }} />
   <Tool
-    name="Secondary with text and icon"
-    props={{ secondary: true, text: 'Hello!', icon: 'emoji_people' }}
+    name="Primary with text and icon"
+    props={{ primary: true, text: 'Hello!', icon: 'emoji_people' }}
   />
   <Tool
-    name="Secondary with icon only"
-    props={{ secondary: true, icon: 'videogame_asset' }}
+    name="Primary with icon only"
+    props={{ primary: true, icon: 'videogame_asset' }}
   />
-  <Tool
-    name="Secondary with text"
-    props={{ secondary: true, text: 'Hello!' }}
-  />
+  <Tool name="Primary with text" props={{ primary: true, text: 'Hello!' }} />
   <Tool
     name="With badge"
     props={{ text: 'Inbox', icon: 'email', badge: 5 }}

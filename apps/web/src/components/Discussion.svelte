@@ -26,7 +26,10 @@
 <div class="discussion">
   <div class="messages" bind:this={messageContainer}>
     {#each thread || [] as { playerId, text }}
-      <span class="from">{playerById.get(playerId)?.username ?? ''}</span><span
+      {@const { username, color } = playerById.get(playerId) ?? {
+        username: ''
+      }}
+      <span class="from" style="--player-color:{color};">{username}</span><span
         class="message">{text}</span
       >
     {/each}
@@ -44,7 +47,7 @@
 
 <style lang="postcss">
   .discussion {
-    @apply flex flex-col overflow-auto p-2 shadow-md justify-end h-full bg-$base-lighter;
+    @apply flex flex-col overflow-auto p-2 shadow-md justify-end h-full;
   }
 
   .messages {
@@ -65,7 +68,7 @@
   }
 
   .from {
-    @apply text-right font-medium pr-2 text-$secondary;
+    @apply text-right font-medium pr-2 text-$player-color;
   }
 
   form {

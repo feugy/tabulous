@@ -5,140 +5,145 @@ exports[`Multiple choices 1`] = `
   class="s-_xyHwNw5vPU9"
   role="dialog"
 >
-  <div
-    class="pane s-j2LTsWktqK_4"
+  <span
+    class="s-j2LTsWktqK_4"
   >
-    <header
-      class="heading s-_xyHwNw5vPU9"
-    >
-      Réglages du jeu
-    </header>
-     
-    <section
-      class="s-_xyHwNw5vPU9"
-    >
-      <label
-        class="s-AFGyPIu2lLfy"
-        for="side"
-      >
-        Couleur : 
-      </label>
-       
-      <span
-        class="s-AFGyPIu2lLfy"
-      >
-        <span
-          class="wrapper s-rGIwyFRHo8D9"
-        >
-          <button
-            aria-expanded="false"
-            aria-haspopup="menu"
-            class="s-NMyTiX1zi6rz"
-            id="side"
-            role="combobox"
-          >
-            
-            <span
-              class="text s-NMyTiX1zi6rz"
-            >
-              black
-            </span>
-            
-            
-             
-            <i
-              class="material-icons arrow s-rGIwyFRHo8D9"
-              role="button"
-              tabindex="-1"
-            >
-              arrow_drop_down
-            </i>
-            
-          </button>
-          <!--&lt;Button&gt;-->
-           
-          
-          <!--&lt;Menu&gt;-->
-        </span>
-        <!--&lt;Dropdown&gt;-->
-         
-      </span>
-      <!--&lt;Choice&gt;-->
-      
-      <label
-        class="s-AFGyPIu2lLfy"
-        for="position"
-      >
-        Suite : 
-      </label>
-       
-      <span
-        class="s-AFGyPIu2lLfy"
-      >
-        <span
-          class="wrapper s-rGIwyFRHo8D9"
-        >
-          <button
-            aria-expanded="false"
-            aria-haspopup="menu"
-            class="s-NMyTiX1zi6rz"
-            id="position"
-            role="combobox"
-          >
-            
-            <span
-              class="text s-NMyTiX1zi6rz"
-            >
-              Trèfle
-            </span>
-            
-            
-             
-            <i
-              class="material-icons arrow s-rGIwyFRHo8D9"
-              role="button"
-              tabindex="-1"
-            >
-              arrow_drop_down
-            </i>
-            
-          </button>
-          <!--&lt;Button&gt;-->
-           
-          
-          <!--&lt;Menu&gt;-->
-        </span>
-        <!--&lt;Dropdown&gt;-->
-         
-        <img
-          alt=""
-          class="s-AFGyPIu2lLfy"
-          src="http://localhost:3001/games/french-suited-card/images/clubs-1.svg"
-        />
-      </span>
-      <!--&lt;Choice&gt;-->
-      
-    </section>
-     
     <div
-      class="s-_xyHwNw5vPU9"
+      class="pane s-j2LTsWktqK_4"
     >
-      <button
-        class="s-NMyTiX1zi6rz"
-        type="submit"
+      <h2
+        class="s-j2LTsWktqK_4"
       >
-        
-        <span
-          class="text s-NMyTiX1zi6rz"
+        Réglages du jeu
+      </h2>
+      
+       
+      <section
+        class="s-_xyHwNw5vPU9"
+      >
+        <label
+          class="s-AFGyPIu2lLfy"
+          for="side"
         >
-          Jouer
+          Couleur : 
+        </label>
+         
+        <span
+          class="s-AFGyPIu2lLfy"
+        >
+          <span
+            class="wrapper s-rGIwyFRHo8D9"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="menu"
+              class="s-NMyTiX1zi6rz has-text"
+              id="side"
+              role="combobox"
+            >
+              
+              <span
+                class="text s-NMyTiX1zi6rz"
+              >
+                black
+              </span>
+              
+              
+               
+              <i
+                class="material-icons arrow s-rGIwyFRHo8D9"
+                role="button"
+                tabindex="-1"
+              >
+                arrow_drop_down
+              </i>
+              
+            </button>
+            <!--&lt;Button&gt;-->
+             
+            
+            <!--&lt;Menu&gt;-->
+          </span>
+          <!--&lt;Dropdown&gt;-->
+           
         </span>
+        <!--&lt;Choice&gt;-->
         
+        <label
+          class="s-AFGyPIu2lLfy"
+          for="position"
+        >
+          Suite : 
+        </label>
+         
+        <span
+          class="s-AFGyPIu2lLfy"
+        >
+          <span
+            class="wrapper s-rGIwyFRHo8D9"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="menu"
+              class="s-NMyTiX1zi6rz has-text"
+              id="position"
+              role="combobox"
+            >
+              
+              <span
+                class="text s-NMyTiX1zi6rz"
+              >
+                Trèfle
+              </span>
+              
+              
+               
+              <i
+                class="material-icons arrow s-rGIwyFRHo8D9"
+                role="button"
+                tabindex="-1"
+              >
+                arrow_drop_down
+              </i>
+              
+            </button>
+            <!--&lt;Button&gt;-->
+             
+            
+            <!--&lt;Menu&gt;-->
+          </span>
+          <!--&lt;Dropdown&gt;-->
+           
+          <img
+            alt=""
+            class="s-AFGyPIu2lLfy"
+            src="http://localhost:3001/games/french-suited-card/images/clubs-1.svg"
+          />
+        </span>
+        <!--&lt;Choice&gt;-->
         
-      </button>
-      <!--&lt;Button&gt;-->
+      </section>
+       
+      <div
+        class="s-_xyHwNw5vPU9"
+      >
+        <button
+          class="has-text s-NMyTiX1zi6rz"
+          type="submit"
+        >
+          
+          <span
+            class="text s-NMyTiX1zi6rz"
+          >
+            Jouer
+          </span>
+          
+          
+        </button>
+        <!--&lt;Button&gt;-->
+      </div>
     </div>
-  </div>
+  </span>
   <!--&lt;Pane&gt;-->
 </form>
 `;
@@ -148,87 +153,92 @@ exports[`Single choice 1`] = `
   class="s-_xyHwNw5vPU9"
   role="dialog"
 >
-  <div
-    class="pane s-j2LTsWktqK_4"
+  <span
+    class="s-j2LTsWktqK_4"
   >
-    <header
-      class="heading s-_xyHwNw5vPU9"
-    >
-      Réglages du jeu
-    </header>
-     
-    <section
-      class="s-_xyHwNw5vPU9"
-    >
-      <label
-        class="s-AFGyPIu2lLfy"
-        for="side"
-      >
-        Couleur : 
-      </label>
-       
-      <span
-        class="s-AFGyPIu2lLfy"
-      >
-        <span
-          class="wrapper s-rGIwyFRHo8D9"
-        >
-          <button
-            aria-expanded="false"
-            aria-haspopup="menu"
-            class="s-NMyTiX1zi6rz"
-            id="side"
-            role="combobox"
-          >
-            
-            <span
-              class="text s-NMyTiX1zi6rz"
-            >
-              Noirs
-            </span>
-            
-            
-             
-            <i
-              class="material-icons arrow s-rGIwyFRHo8D9"
-              role="button"
-              tabindex="-1"
-            >
-              arrow_drop_down
-            </i>
-            
-          </button>
-          <!--&lt;Button&gt;-->
-           
-          
-          <!--&lt;Menu&gt;-->
-        </span>
-        <!--&lt;Dropdown&gt;-->
-         
-      </span>
-      <!--&lt;Choice&gt;-->
-      
-    </section>
-     
     <div
-      class="s-_xyHwNw5vPU9"
+      class="pane s-j2LTsWktqK_4"
     >
-      <button
-        class="s-NMyTiX1zi6rz"
-        type="submit"
+      <h2
+        class="s-j2LTsWktqK_4"
       >
-        
-        <span
-          class="text s-NMyTiX1zi6rz"
+        Réglages du jeu
+      </h2>
+      
+       
+      <section
+        class="s-_xyHwNw5vPU9"
+      >
+        <label
+          class="s-AFGyPIu2lLfy"
+          for="side"
         >
-          Jouer
+          Couleur : 
+        </label>
+         
+        <span
+          class="s-AFGyPIu2lLfy"
+        >
+          <span
+            class="wrapper s-rGIwyFRHo8D9"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="menu"
+              class="s-NMyTiX1zi6rz has-text"
+              id="side"
+              role="combobox"
+            >
+              
+              <span
+                class="text s-NMyTiX1zi6rz"
+              >
+                Noirs
+              </span>
+              
+              
+               
+              <i
+                class="material-icons arrow s-rGIwyFRHo8D9"
+                role="button"
+                tabindex="-1"
+              >
+                arrow_drop_down
+              </i>
+              
+            </button>
+            <!--&lt;Button&gt;-->
+             
+            
+            <!--&lt;Menu&gt;-->
+          </span>
+          <!--&lt;Dropdown&gt;-->
+           
         </span>
+        <!--&lt;Choice&gt;-->
         
-        
-      </button>
-      <!--&lt;Button&gt;-->
+      </section>
+       
+      <div
+        class="s-_xyHwNw5vPU9"
+      >
+        <button
+          class="has-text s-NMyTiX1zi6rz"
+          type="submit"
+        >
+          
+          <span
+            class="text s-NMyTiX1zi6rz"
+          >
+            Jouer
+          </span>
+          
+          
+        </button>
+        <!--&lt;Button&gt;-->
+      </div>
     </div>
-  </div>
+  </span>
   <!--&lt;Pane&gt;-->
 </form>
 `;

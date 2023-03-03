@@ -12,6 +12,7 @@ exports[`Long thread 1`] = `
     >
       <span
         class="from s-4DrpFHLJm4IA"
+        style="--player-color: #9c3096;"
       >
         Fernand Naudin
       </span>
@@ -22,6 +23,7 @@ exports[`Long thread 1`] = `
       </span>
       <span
         class="from s-4DrpFHLJm4IA"
+        style="--player-color: #ff4500;"
       >
         Maître Follas
       </span>
@@ -32,6 +34,7 @@ exports[`Long thread 1`] = `
       </span>
       <span
         class="from s-4DrpFHLJm4IA"
+        style="--player-color: #239646;"
       >
         Pascal
       </span>
@@ -43,6 +46,7 @@ M'enfin quoi, on parle dans votre dos.
       </span>
       <span
         class="from s-4DrpFHLJm4IA"
+        style="--player-color: #9c3096;"
       >
         Fernand Naudin
       </span>
@@ -53,6 +57,7 @@ M'enfin quoi, on parle dans votre dos.
       </span>
       <span
         class="from s-4DrpFHLJm4IA"
+        style="--player-color: #239646;"
       >
         Pascal
       </span>
@@ -63,6 +68,7 @@ M'enfin quoi, on parle dans votre dos.
       </span>
       <span
         class="from s-4DrpFHLJm4IA"
+        style="--player-color: #9c3096;"
       >
         Fernand Naudin
       </span>
@@ -73,6 +79,7 @@ M'enfin quoi, on parle dans votre dos.
       </span>
       <span
         class="from s-4DrpFHLJm4IA"
+        style="--player-color: #ff4500;"
       >
         Maître Follas
       </span>
@@ -84,6 +91,7 @@ Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire,
       </span>
       <span
         class="from s-4DrpFHLJm4IA"
+        style="--player-color: #9c3096;"
       >
         Fernand Naudin
       </span>
@@ -94,6 +102,7 @@ Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire,
       </span>
       <span
         class="from s-4DrpFHLJm4IA"
+        style="--player-color: #239646;"
       >
         Pascal
       </span>
@@ -148,6 +157,7 @@ exports[`short thread 1`] = `
   >
     <span
       class="from s-4DrpFHLJm4IA"
+      style="--player-color: #239646;"
     >
       Pascal
     </span>

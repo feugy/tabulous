@@ -3,6 +3,8 @@
     Button,
     Header,
     Input,
+    PageFooter,
+    Pane,
     PlayerThumbnail,
     Progress
   } from '@src/components'
@@ -62,76 +64,70 @@
 </svelte:head>
 
 <main>
-  <Header
-    {user}
-    breadcrumb={[
-      { label: $_('labels.home'), href: '/home' },
-      { label: $_('labels.account') }
-    ]}
-  >
+  <i id="top" />
+  <Header {user}>
     <h1>
       {$_('titles.account')}
     </h1>
   </Header>
   <section>
-    <h2>{$_('titles.auth-provider')}</h2>
-    <fieldset>
-      {#if user.provider}
-        <div>{$_('labels.oauth-provider', user)}</div>
-      {:else}
-        <div>{$_('labels.manual-provider', user)}</div>
-      {/if}
-      <label for="username">{$_('labels.username')}</label>
-      <span class="with-progress">
-        <Input
-          name="username"
-          value={user.username}
-          disabled={isSaving}
-          on:input={handleSave}
-        />
-        <span
-          >{#if isSaving}<Progress radius={24} />{/if}</span
-        >
-        {#if usernameError}
-          <span class="error">{translateError($_, usernameError)}</span>
+    <Pane title={$_('titles.auth-provider')}>
+      <fieldset>
+        {#if user.provider}
+          <div>{$_('labels.oauth-provider', user)}</div>
+        {:else}
+          <div>{$_('labels.manual-provider', user)}</div>
         {/if}
-      </span>
-      <span>{$_('labels.avatar')}</span>
-      <span class="aligned">
-        <PlayerThumbnail player={user} dimension={150} />
-        <Button
-          text={$_('actions.change-avatar')}
-          on:click={() => (openAvatarDialogue = true)}
-        />
-        <AvatarDialogue
-          bind:open={openAvatarDialogue}
-          bind:avatar
-          on:close={handleCloseAvatarDialogue}
-        />
-      </span>
-    </fieldset>
+        <label for="username">{$_('labels.username')}</label>
+        <span class="with-progress">
+          <Input
+            name="username"
+            value={user.username}
+            disabled={isSaving}
+            on:input={handleSave}
+          />
+          <span
+            >{#if isSaving}<Progress radius={24} />{/if}</span
+          >
+          {#if usernameError}
+            <span class="error">{translateError($_, usernameError)}</span>
+          {/if}
+        </span>
+        <label for="avatar">{$_('labels.avatar')}</label>
+        <span class="aligned">
+          <PlayerThumbnail player={user} dimension={150} />
+          <Button
+            id="avatar"
+            text={$_('actions.change-avatar')}
+            on:click={() => (openAvatarDialogue = true)}
+          />
+          <AvatarDialogue
+            bind:open={openAvatarDialogue}
+            bind:avatar
+            on:close={handleCloseAvatarDialogue}
+          />
+        </span>
+      </fieldset>
+    </Pane>
   </section>
+  <PageFooter />
 </main>
 
 <style lang="postcss">
   main {
-    @apply flex flex-col h-full w-full;
-  }
-
-  h1 {
-    @apply text-3xl py-4;
-  }
-
-  h2 {
-    @apply text-2xl pb-4;
+    @apply flex flex-col;
   }
 
   section {
-    @apply my-8 p-8 self-center lg:w-3/4 border rounded-md;
+    @apply flex flex-col flex-1 p-6 self-center w-full xl:w-screen-xl;
   }
 
   fieldset {
-    @apply grid gap-x-8 gap-y-4 grid-cols-[auto,1fr] items-center;
+    @apply mt-4 grid gap-x-8 gap-y-4 grid-cols-[auto,1fr] items-center;
+
+    label {
+      @apply font-medium;
+    }
 
     div {
       @apply col-span-2;
@@ -143,7 +139,7 @@
   }
 
   .aligned {
-    @apply flex items-center gap-4;
+    @apply flex items-center gap-4 flex-wrap;
   }
 
   .error {

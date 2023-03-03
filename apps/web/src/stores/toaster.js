@@ -46,7 +46,7 @@ export function toastInfo({ contentKey, content, icon, color, ...args }) {
 export function toastError({ contentKey, content, icon, color, ...args }) {
   lastToast$.next({
     icon: icon ?? 'error_outline',
-    color: color ?? 'var(--accent-warm)',
+    color: color ?? 'var(--accent-warm-lighter)',
     content: content ?? translate(contentKey, args)
   })
 }

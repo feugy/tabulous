@@ -1,6 +1,14 @@
 <script>
-  import { Tool } from '@atelier-wb/svelte'
+  import { Tool, ToolBox } from '@atelier-wb/svelte'
   import { Pane } from '@src/components'
 </script>
 
-<Tool component={Pane} name="Components/Pane" layout="padded" />
+<ToolBox
+  component={Pane}
+  name="Components/Pane"
+  props={{ title: undefined }}
+  layout="padded"
+>
+  <Tool name="No Title" />
+  <Tool name="With Title" props={{ title: 'Hello world!' }} />
+</ToolBox>

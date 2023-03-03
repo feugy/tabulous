@@ -24,6 +24,6 @@
   }
 
   circle {
-    @apply stroke-$primary stroke-offset-0;
+    @apply stroke-$primary-dark stroke-offset-0;
   }
 </style>

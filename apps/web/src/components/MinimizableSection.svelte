@@ -182,11 +182,11 @@
     }
 
     & .gutter {
-      @apply relative border border-l-2 h-full z-20 pointer-events-auto;
+      @apply relative border border-l-2 h-full z-20 pointer-events-auto border-$secondary-dark;
       cursor: ew-resize;
 
       &:after {
-        @apply absolute inline-block w-4 h-10 top-1/2 -mt-4 -ml-2 rounded bg-$primary-light;
+        @apply absolute inline-block w-4 h-10 top-1/2 -mt-4 -ml-2 rounded bg-$secondary-dark;
         content: '';
       }
     }

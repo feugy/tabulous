@@ -20,34 +20,26 @@
 </svelte:head>
 
 <main>
-  <Header
-    user={data.session?.player}
-    breadcrumb={[
-      { label: $_('labels.home'), href: '/' },
-      { label: $_('labels.accept-terms') }
-    ]}
-  />
-  <h1>{$_('titles.welcome')}</h1>
-  <p>{$_('labels.terms-intro')}</p>
-  <ScrollableTerms on:end={() => (disabled = false)} />
-  <Form {disabled} {redirect} />
+  <Header user={data.session?.player}><h1>{$_('titles.legal')}</h1></Header>
+  <section>
+    <h2>{$_('titles.welcome')}</h2>
+    <p>{$_('labels.terms-intro')}</p>
+    <ScrollableTerms on:end={() => (disabled = false)} />
+    <Form {disabled} {redirect} />
+  </section>
+  <PageFooter />
 </main>
-<PageFooter />
 
 <style lang="postcss">
   main {
-    @apply flex flex-col w-full max-h-screen pb-8;
+    @apply flex flex-col max-h-screen overflow-auto;
+  }
+
+  section {
+    @apply flex flex-col flex-1 px-6 self-center w-full xl:w-screen-xl overflow-hidden;
 
     & > p {
-      @apply mb-4;
-    }
-
-    h1 {
-      @apply text-3xl underline underline-$primary-light mt-8 mb-6;
-    }
-
-    :global(> *) {
-      @apply px-2 mx-auto w-3/4 <lg:w-full;
+      @apply mb-6;
     }
   }
 </style>

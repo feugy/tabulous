@@ -42,11 +42,9 @@
 
 <style lang="postcss">
   figure {
-    @apply flex flex-shrink-0 items-center justify-center;
-    @apply rounded-full border-$primary-light bg-$primary-light;
+    @apply flex flex-shrink-0 items-center justify-center rounded-full;
     height: var(--dimension);
     width: var(--dimension);
-    border-width: var(--border-width);
 
     &.positioned {
       @apply absolute transform-gpu -translate-y-full;
@@ -56,7 +54,11 @@
     }
     &.colored {
       background-color: var(--color);
-      border-color: var(--color);
+      padding: var(--border-width);
+
+      figcaption {
+        @apply bg-transparent;
+      }
     }
 
     > * {
@@ -65,7 +67,7 @@
   }
 
   figcaption {
-    @apply flex items-center justify-center p-1 text-$primary-lightest text-center;
+    @apply flex items-center justify-center p-1 text-$ink-dark text-center  bg-$base-darkest;
 
     &.abbreviated {
       @apply whitespace-nowrap;

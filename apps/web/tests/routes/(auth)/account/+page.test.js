@@ -89,9 +89,7 @@ describe('/account route', () => {
     const newAvatar = faker.internet.avatar()
     updateCurrentPlayer.mockResolvedValueOnce({ ...player, avatar: newAvatar })
     render(html`<${AccountPage} data=${{ session: { player } }} />`)
-    await fireEvent.click(
-      screen.getByRole('button', { name: translate('actions.change-avatar') })
-    )
+    await fireEvent.click(screen.getByLabelText(/.*/, { selector: 'button' }))
 
     const dialogue = screen.getByRole('dialog')
     expect(dialogue).toBeInTheDocument()
@@ -113,9 +111,7 @@ describe('/account route', () => {
   it('can close avatar dialogue', async () => {
     const newAvatar = faker.internet.avatar()
     render(html`<${AccountPage} data=${{ session: { player } }} />`)
-    await fireEvent.click(
-      screen.getByRole('button', { name: translate('actions.change-avatar') })
-    )
+    await fireEvent.click(screen.getByLabelText(/.*/, { selector: 'button' }))
 
     const dialogue = screen.getByRole('dialog')
     expect(dialogue).toBeInTheDocument()

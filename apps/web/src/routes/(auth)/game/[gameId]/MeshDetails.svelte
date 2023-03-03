@@ -50,7 +50,7 @@
     @apply invisible flex absolute z-10 inset-0 justify-center pointer-events-none py-[5%] px-0;
 
     &.open {
-      @apply visible pointer-events-auto bg-$base-dark;
+      @apply visible pointer-events-auto;
 
       & img {
         @apply opacity-100 translate-y-0;

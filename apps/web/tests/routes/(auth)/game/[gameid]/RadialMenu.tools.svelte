@@ -12,6 +12,14 @@
   events={['click']}
   layout="centered"
 >
+  <Tool name="No items" props={{ items: [] }} let:props>
+    <RadialMenu bind:open {...props} />
+    <Button
+      on:click={() => {
+        open = !open
+      }}>{open ? 'Close' : 'Open'}</Button
+    >
+  </Tool>
   <Tool
     name="A few items"
     props={{

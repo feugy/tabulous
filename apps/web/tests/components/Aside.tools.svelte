@@ -1,11 +1,12 @@
 <script>
   import { Tool, ToolBox } from '@atelier-wb/svelte'
+  import { acquireMediaStream, releaseMediaStream, stream$ } from '@src/stores'
   import avatar from '@tests/fixtures/avatar.png'
   import { players, thread } from '@tests/fixtures/Discussion.testdata'
+  import { get } from 'svelte/store'
 
   import Aside from './AsideWithVideo.svelte'
 
-  const connected = [{ playerId: players[0].id }, { playerId: players[2].id }]
   const playerById = new Map(players.map(player => [player.id, player]))
   const playingPlayersById = new Map(
     players.map(player => [player.id, { ...player, playing: true }])
@@ -45,6 +46,10 @@
     friends
   }}
   events={['sendMessage']}
+  setup={async () => {
+    await acquireMediaStream()
+  }}
+  teardown={releaseMediaStream}
 >
   <Tool
     name="Friends only"
@@ -74,8 +79,14 @@
     props={{
       game: { kind: 'splendor', rulesBookPageCount: 4 },
       playerById: playingPlayersById,
-      connected,
       thread
+    }}
+    setup={({ props }) => {
+      const stream = get(stream$)
+      return {
+        ...props,
+        connected: players.map(({ id: playerId }) => ({ playerId, stream }))
+      }
     }}
   />
   <Tool
