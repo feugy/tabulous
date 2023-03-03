@@ -31,12 +31,12 @@
   <slot />
   <svelte:fragment slot="buttons">
     <Button
-      secondary
       text={cancelText}
       bind:ref={cancelButtonRef}
       on:click={() => (open = false)}
     />
     <Button
+      primary
       text={confirmText}
       on:click={() => {
         confirmed = true

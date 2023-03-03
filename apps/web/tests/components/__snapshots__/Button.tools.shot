@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Primary image icon only 1`] = `
+exports[`Base image icon only 1`] = `
 <button
   class="s-NMyTiX1zi6rz"
 >
@@ -27,7 +27,7 @@ exports[`Primary image icon only 1`] = `
 </button>
 `;
 
-exports[`Primary with icon only 1`] = `
+exports[`Base with icon only 1`] = `
 <button
   class="s-NMyTiX1zi6rz"
 >
@@ -42,9 +42,9 @@ exports[`Primary with icon only 1`] = `
 </button>
 `;
 
-exports[`Primary with text 1`] = `
+exports[`Base with text 1`] = `
 <button
-  class="s-NMyTiX1zi6rz"
+  class="has-text s-NMyTiX1zi6rz"
 >
   
   <span
@@ -57,9 +57,9 @@ exports[`Primary with text 1`] = `
 </button>
 `;
 
-exports[`Primary with text and icon 1`] = `
+exports[`Base with text and icon 1`] = `
 <button
-  class="s-NMyTiX1zi6rz"
+  class="has-text s-NMyTiX1zi6rz"
 >
   <span
     class="material-icons s-NMyTiX1zi6rz"
@@ -77,9 +77,9 @@ exports[`Primary with text and icon 1`] = `
 </button>
 `;
 
-exports[`Primary with text and image icon 1`] = `
+exports[`Base with text and image icon 1`] = `
 <button
-  class="s-NMyTiX1zi6rz"
+  class="has-text s-NMyTiX1zi6rz"
 >
   <span
     class="icon s-NMyTiX1zi6rz"
@@ -109,9 +109,9 @@ exports[`Primary with text and image icon 1`] = `
 </button>
 `;
 
-exports[`Secondary with icon only 1`] = `
+exports[`Primary with icon only 1`] = `
 <button
-  class="secondary s-NMyTiX1zi6rz"
+  class="primary s-NMyTiX1zi6rz"
 >
   <span
     class="material-icons s-NMyTiX1zi6rz"
@@ -124,9 +124,9 @@ exports[`Secondary with icon only 1`] = `
 </button>
 `;
 
-exports[`Secondary with text 1`] = `
+exports[`Primary with text 1`] = `
 <button
-  class="secondary s-NMyTiX1zi6rz"
+  class="primary has-text s-NMyTiX1zi6rz"
 >
   
   <span
@@ -139,9 +139,9 @@ exports[`Secondary with text 1`] = `
 </button>
 `;
 
-exports[`Secondary with text and icon 1`] = `
+exports[`Primary with text and icon 1`] = `
 <button
-  class="secondary s-NMyTiX1zi6rz"
+  class="primary has-text s-NMyTiX1zi6rz"
 >
   <span
     class="material-icons s-NMyTiX1zi6rz"
@@ -161,7 +161,7 @@ exports[`Secondary with text and icon 1`] = `
 
 exports[`Transparent with text 1`] = `
 <button
-  class="transparent s-NMyTiX1zi6rz"
+  class="transparent has-text s-NMyTiX1zi6rz"
 >
   
   <span
@@ -180,7 +180,7 @@ HTMLCollection [
     Vous avez...
   </div>,
   <button
-    class="s-NMyTiX1zi6rz"
+    class="has-text s-NMyTiX1zi6rz"
   >
     <span
       class="material-icons s-NMyTiX1zi6rz"

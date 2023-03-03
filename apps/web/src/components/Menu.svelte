@@ -233,7 +233,7 @@
     &:not(.disabled) {
       &:hover,
       &:focus {
-        @apply cursor-pointer outline-none text-$primary-lightest bg-$primary-dark;
+        @apply cursor-pointer outline-none text-$primary-lightest bg-$primary-darker;
       }
       &.current {
         @apply text-$primary-lightest bg-$primary;

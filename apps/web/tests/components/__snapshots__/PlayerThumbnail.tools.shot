@@ -17,6 +17,44 @@ exports[`Avatar 1`] = `
 </figure>
 `;
 
+exports[`Colored Avatar 1`] = `
+<figure
+  class="s-engCJu8q-fNe colored"
+  style="--dimension: 150px; --color: blue; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+>
+  <img
+    alt="avatar for Joe le clodo"
+    class="s-engCJu8q-fNe hasImage"
+    height="150"
+    referrerpolicy="no-referrer"
+    src="/tests/fixtures/avatar.png"
+    width="150"
+  />
+   
+</figure>
+`;
+
+exports[`Colored Text 1`] = `
+<figure
+  class="s-engCJu8q-fNe colored"
+  style="--dimension: 150px; --color: purple; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+>
+  <img
+    alt="avatar for Joe le clodo"
+    class="s-engCJu8q-fNe"
+    height="150"
+    referrerpolicy="no-referrer"
+    width="150"
+  />
+   
+  <figcaption
+    class="s-engCJu8q-fNe"
+  >
+    Joe le clodo
+  </figcaption>
+</figure>
+`;
+
 exports[`Positioned text 1`] = `
 <figure
   class="s-engCJu8q-fNe positioned colored"

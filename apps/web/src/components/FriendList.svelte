@@ -184,7 +184,11 @@
         >
         <span class="buttons">
           {#if isRequest}
-            <Button icon="check" on:click={() => acceptFriendship(player)} />
+            <Button
+              icon="check"
+              primary
+              on:click={() => acceptFriendship(player)}
+            />
             <Button icon="clear" on:click={() => endFriendship(player)} />
           {:else}
             <Button icon="delete" on:click={() => (friendToRemove = player)} />
@@ -240,12 +244,14 @@
   }
 
   li {
-    @apply flex items-center p-2 pr-4 gap-2 relative duration-500;
+    @apply flex items-center p-2 pr-4 gap-2 border-$base-dark relative duration-500;
     transition: background-color;
     margin: 1px; /* without, outline is not visible */
 
-    &:hover {
-      @apply bg-$primary-lighter;
+    &:hover,
+    &:hover.isProposal,
+    &:hover.isRequest {
+      @apply text-$ink-dark bg-$primary-darker;
       & .buttons {
         @apply opacity-100;
       }
@@ -261,7 +267,7 @@
 
     &.isRequest,
     &.isProposal {
-      @apply text-$primary-light;
+      @apply text-$primary-darkest;
     }
     &[aria-checked='true'] {
       @apply bg-$primary-light text-$base-lightest;

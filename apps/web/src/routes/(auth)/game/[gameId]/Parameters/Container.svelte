@@ -18,8 +18,7 @@
 </script>
 
 <form role="dialog" on:submit|preventDefault|stopPropagation={handleSubmit}>
-  <Pane>
-    <header class="heading">{$_('titles.game-parameters')}</header>
+  <Pane title={$_('titles.game-parameters')}>
     <section>
       {#each components as { name, component, property }}
         <svelte:component this={component} {property} {name} bind:values />

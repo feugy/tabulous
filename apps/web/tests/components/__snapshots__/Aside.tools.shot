@@ -226,7 +226,7 @@ exports[`Friends only 1`] = `
                   class="buttons s-XLQf75fI0H0o"
                 >
                   <button
-                    class="s-NMyTiX1zi6rz"
+                    class="primary s-NMyTiX1zi6rz"
                   >
                     <span
                       class="material-icons s-NMyTiX1zi6rz"
@@ -782,7 +782,7 @@ exports[`Lobby 1`] = `
                   class="buttons s-XLQf75fI0H0o"
                 >
                   <button
-                    class="s-NMyTiX1zi6rz"
+                    class="primary s-NMyTiX1zi6rz"
                   >
                     <span
                       class="material-icons s-NMyTiX1zi6rz"
@@ -1199,6 +1199,7 @@ exports[`Multiple connected 1`] = `
                   >
                     <span
                       class="from s-4DrpFHLJm4IA"
+                      style="--player-color: #9c3096;"
                     >
                       Fernand Naudin
                     </span>
@@ -1209,6 +1210,7 @@ exports[`Multiple connected 1`] = `
                     </span>
                     <span
                       class="from s-4DrpFHLJm4IA"
+                      style="--player-color: #ff4500;"
                     >
                       Maître Follas
                     </span>
@@ -1219,6 +1221,7 @@ exports[`Multiple connected 1`] = `
                     </span>
                     <span
                       class="from s-4DrpFHLJm4IA"
+                      style="--player-color: #239646;"
                     >
                       Pascal
                     </span>
@@ -1230,6 +1233,7 @@ M'enfin quoi, on parle dans votre dos.
                     </span>
                     <span
                       class="from s-4DrpFHLJm4IA"
+                      style="--player-color: #9c3096;"
                     >
                       Fernand Naudin
                     </span>
@@ -1240,6 +1244,7 @@ M'enfin quoi, on parle dans votre dos.
                     </span>
                     <span
                       class="from s-4DrpFHLJm4IA"
+                      style="--player-color: #239646;"
                     >
                       Pascal
                     </span>
@@ -1250,6 +1255,7 @@ M'enfin quoi, on parle dans votre dos.
                     </span>
                     <span
                       class="from s-4DrpFHLJm4IA"
+                      style="--player-color: #9c3096;"
                     >
                       Fernand Naudin
                     </span>
@@ -1260,6 +1266,7 @@ M'enfin quoi, on parle dans votre dos.
                     </span>
                     <span
                       class="from s-4DrpFHLJm4IA"
+                      style="--player-color: #ff4500;"
                     >
                       Maître Follas
                     </span>
@@ -1271,6 +1278,7 @@ Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire,
                     </span>
                     <span
                       class="from s-4DrpFHLJm4IA"
+                      style="--player-color: #9c3096;"
                     >
                       Fernand Naudin
                     </span>
@@ -1281,6 +1289,7 @@ Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire,
                     </span>
                     <span
                       class="from s-4DrpFHLJm4IA"
+                      style="--player-color: #239646;"
                     >
                       Pascal
                     </span>
@@ -1724,7 +1733,7 @@ exports[`No peers, no rules book 1`] = `
                   class="buttons s-XLQf75fI0H0o"
                 >
                   <button
-                    class="s-NMyTiX1zi6rz"
+                    class="primary s-NMyTiX1zi6rz"
                   >
                     <span
                       class="material-icons s-NMyTiX1zi6rz"
@@ -2512,6 +2521,7 @@ exports[`Single connected, no rules book, thread 1`] = `
                   >
                     <span
                       class="from s-4DrpFHLJm4IA"
+                      style="--player-color: #9c3096;"
                     >
                       Fernand Naudin
                     </span>
@@ -2522,6 +2532,7 @@ exports[`Single connected, no rules book, thread 1`] = `
                     </span>
                     <span
                       class="from s-4DrpFHLJm4IA"
+                      style="--player-color: #ff4500;"
                     >
                       Maître Follas
                     </span>
@@ -2532,6 +2543,7 @@ exports[`Single connected, no rules book, thread 1`] = `
                     </span>
                     <span
                       class="from s-4DrpFHLJm4IA"
+                      style="--player-color: #239646;"
                     >
                       Pascal
                     </span>
@@ -2543,6 +2555,7 @@ M'enfin quoi, on parle dans votre dos.
                     </span>
                     <span
                       class="from s-4DrpFHLJm4IA"
+                      style="--player-color: #9c3096;"
                     >
                       Fernand Naudin
                     </span>
@@ -2553,6 +2566,7 @@ M'enfin quoi, on parle dans votre dos.
                     </span>
                     <span
                       class="from s-4DrpFHLJm4IA"
+                      style="--player-color: #239646;"
                     >
                       Pascal
                     </span>
@@ -2563,6 +2577,7 @@ M'enfin quoi, on parle dans votre dos.
                     </span>
                     <span
                       class="from s-4DrpFHLJm4IA"
+                      style="--player-color: #9c3096;"
                     >
                       Fernand Naudin
                     </span>
@@ -2573,6 +2588,7 @@ M'enfin quoi, on parle dans votre dos.
                     </span>
                     <span
                       class="from s-4DrpFHLJm4IA"
+                      style="--player-color: #ff4500;"
                     >
                       Maître Follas
                     </span>
@@ -2584,6 +2600,7 @@ Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire,
                     </span>
                     <span
                       class="from s-4DrpFHLJm4IA"
+                      style="--player-color: #9c3096;"
                     >
                       Fernand Naudin
                     </span>
@@ -2594,6 +2611,7 @@ Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire,
                     </span>
                     <span
                       class="from s-4DrpFHLJm4IA"
+                      style="--player-color: #239646;"
                     >
                       Pascal
                     </span>

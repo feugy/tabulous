@@ -15,97 +15,89 @@ exports[`No age nor time 1`] = `
       src="http://localhost:3001/games/klondike/catalog/cover.webp"
     />
      
-    <div
-      class="content s-Z6y0dSYOFWU8"
+    <legend
+      class="s-Z6y0dSYOFWU8"
     >
-      <legend
+      <h3
         class="s-Z6y0dSYOFWU8"
       >
-        <div
-          class="title s-Z6y0dSYOFWU8"
+        Solitaire
+      </h3>
+       
+      <div
+        class="characteristics s-Z6y0dSYOFWU8"
+      >
+        <i
+          class="material-icons s-Z6y0dSYOFWU8 hidden"
         >
-          <h3
+          people
+        </i>
+        <span
+          class="s-Z6y0dSYOFWU8 hidden"
+        >
+          undefined
+        </span>
+         
+        <i
+          class="material-icons s-Z6y0dSYOFWU8 hidden"
+        >
+          access_time
+        </i>
+        <span
+          class="s-Z6y0dSYOFWU8 hidden"
+        >
+          undefined'
+        </span>
+         
+        <i
+          class="material-icons s-Z6y0dSYOFWU8 hidden"
+        >
+          person
+        </i>
+        <span
+          class="s-Z6y0dSYOFWU8 hidden"
+        >
+          undefined+
+        </span>
+      </div>
+       
+      <details
+        class="s-Z6y0dSYOFWU8 hidden"
+      >
+        <summary
+          class="s-Z6y0dSYOFWU8"
+        >
+          <strong
             class="s-Z6y0dSYOFWU8"
           >
-            Solitaire
-          </h3>
-           
-          <details
-            class="s-Z6y0dSYOFWU8 hidden"
-          >
-            <summary
-              class="s-Z6y0dSYOFWU8"
-            >
-              <strong
-                class="s-Z6y0dSYOFWU8"
-              >
-                Créé par : 
-              </strong>
-              undefined
-            </summary>
-             
-            <p
-              class="s-Z6y0dSYOFWU8"
-            >
-              <strong
-                class="s-Z6y0dSYOFWU8"
-              >
-                Illustré par : 
-              </strong>
-              undefined
-            </p>
-             
-            <p
-              class="s-Z6y0dSYOFWU8"
-            >
-              <strong
-                class="s-Z6y0dSYOFWU8"
-              >
-                Distribué par : 
-              </strong>
-              undefined
-            </p>
-          </details>
-        </div>
+            Créé par : 
+          </strong>
+          undefined
+        </summary>
          
-        <span
-          class="characteristics s-Z6y0dSYOFWU8"
+        <p
+          class="s-Z6y0dSYOFWU8"
         >
-          <span
-            class="s-Z6y0dSYOFWU8 hidden"
+          <strong
+            class="s-Z6y0dSYOFWU8"
           >
-            <span
-              class="material-icons s-Z6y0dSYOFWU8"
-            >
-              people
-            </span>
-            undefined
-          </span>
-           
-          <span
-            class="s-Z6y0dSYOFWU8 hidden"
+            Illustré par : 
+          </strong>
+          undefined
+        </p>
+         
+        <p
+          class="s-Z6y0dSYOFWU8"
+        >
+          <strong
+            class="s-Z6y0dSYOFWU8"
           >
-            <span
-              class="material-icons s-Z6y0dSYOFWU8"
-            >
-              access_time
-            </span>
-            undefined'
-          </span>
-           
-          <span
-            class="s-Z6y0dSYOFWU8 hidden"
-          >
-            <span
-              class="material-icons s-Z6y0dSYOFWU8"
-            >
-              person
-            </span>
-            undefined+
-          </span>
-        </span>
-      </legend>
-    </div>
+            Distribué par : 
+          </strong>
+          undefined
+        </p>
+      </details>
+    </legend>
   </article>
   <!--&lt;CatalogItem&gt;-->
 </span>
@@ -126,97 +118,89 @@ exports[`With characteristics 1`] = `
       src="http://localhost:3001/games/klondike/catalog/cover.webp"
     />
      
-    <div
-      class="content s-Z6y0dSYOFWU8"
+    <legend
+      class="s-Z6y0dSYOFWU8"
     >
-      <legend
+      <h3
         class="s-Z6y0dSYOFWU8"
       >
-        <div
-          class="title s-Z6y0dSYOFWU8"
+        Solitaire
+      </h3>
+       
+      <div
+        class="characteristics s-Z6y0dSYOFWU8"
+      >
+        <i
+          class="material-icons s-Z6y0dSYOFWU8"
         >
-          <h3
-            class="s-Z6y0dSYOFWU8"
-          >
-            Solitaire
-          </h3>
-           
-          <details
-            class="s-Z6y0dSYOFWU8 hidden"
-          >
-            <summary
-              class="s-Z6y0dSYOFWU8"
-            >
-              <strong
-                class="s-Z6y0dSYOFWU8"
-              >
-                Créé par : 
-              </strong>
-              undefined
-            </summary>
-             
-            <p
-              class="s-Z6y0dSYOFWU8"
-            >
-              <strong
-                class="s-Z6y0dSYOFWU8"
-              >
-                Illustré par : 
-              </strong>
-              undefined
-            </p>
-             
-            <p
-              class="s-Z6y0dSYOFWU8"
-            >
-              <strong
-                class="s-Z6y0dSYOFWU8"
-              >
-                Distribué par : 
-              </strong>
-              undefined
-            </p>
-          </details>
-        </div>
-         
+          people
+        </i>
         <span
-          class="characteristics s-Z6y0dSYOFWU8"
+          class="s-Z6y0dSYOFWU8"
         >
-          <span
-            class="s-Z6y0dSYOFWU8"
-          >
-            <span
-              class="material-icons s-Z6y0dSYOFWU8"
-            >
-              people
-            </span>
-            2
-          </span>
-           
-          <span
-            class="s-Z6y0dSYOFWU8"
-          >
-            <span
-              class="material-icons s-Z6y0dSYOFWU8"
-            >
-              access_time
-            </span>
-            30'
-          </span>
-           
-          <span
-            class="s-Z6y0dSYOFWU8"
-          >
-            <span
-              class="material-icons s-Z6y0dSYOFWU8"
-            >
-              person
-            </span>
-            10+
-          </span>
+          2
         </span>
-      </legend>
-    </div>
+         
+        <i
+          class="material-icons s-Z6y0dSYOFWU8"
+        >
+          access_time
+        </i>
+        <span
+          class="s-Z6y0dSYOFWU8"
+        >
+          30'
+        </span>
+         
+        <i
+          class="material-icons s-Z6y0dSYOFWU8"
+        >
+          person
+        </i>
+        <span
+          class="s-Z6y0dSYOFWU8"
+        >
+          10+
+        </span>
+      </div>
+       
+      <details
+        class="s-Z6y0dSYOFWU8 hidden"
+      >
+        <summary
+          class="s-Z6y0dSYOFWU8"
+        >
+          <strong
+            class="s-Z6y0dSYOFWU8"
+          >
+            Créé par : 
+          </strong>
+          undefined
+        </summary>
+         
+        <p
+          class="s-Z6y0dSYOFWU8"
+        >
+          <strong
+            class="s-Z6y0dSYOFWU8"
+          >
+            Illustré par : 
+          </strong>
+          undefined
+        </p>
+         
+        <p
+          class="s-Z6y0dSYOFWU8"
+        >
+          <strong
+            class="s-Z6y0dSYOFWU8"
+          >
+            Distribué par : 
+          </strong>
+          undefined
+        </p>
+      </details>
+    </legend>
   </article>
   <!--&lt;CatalogItem&gt;-->
 </span>
@@ -237,97 +221,89 @@ exports[`With characteristics and copyright 1`] = `
       src="http://localhost:3001/games/klondike/catalog/cover.webp"
     />
      
-    <div
-      class="content s-Z6y0dSYOFWU8"
+    <legend
+      class="s-Z6y0dSYOFWU8"
     >
-      <legend
+      <h3
         class="s-Z6y0dSYOFWU8"
       >
-        <div
-          class="title s-Z6y0dSYOFWU8"
+        Solitaire
+      </h3>
+       
+      <div
+        class="characteristics s-Z6y0dSYOFWU8"
+      >
+        <i
+          class="material-icons s-Z6y0dSYOFWU8"
         >
-          <h3
-            class="s-Z6y0dSYOFWU8"
-          >
-            Solitaire
-          </h3>
-           
-          <details
-            class="s-Z6y0dSYOFWU8"
-          >
-            <summary
-              class="s-Z6y0dSYOFWU8"
-            >
-              <strong
-                class="s-Z6y0dSYOFWU8"
-              >
-                Créé par : 
-              </strong>
-              John Doe, Jane Lark
-            </summary>
-             
-            <p
-              class="s-Z6y0dSYOFWU8"
-            >
-              <strong
-                class="s-Z6y0dSYOFWU8"
-              >
-                Illustré par : 
-              </strong>
-              Amy Banks, Mark Loom
-            </p>
-             
-            <p
-              class="s-Z6y0dSYOFWU8"
-            >
-              <strong
-                class="s-Z6y0dSYOFWU8"
-              >
-                Distribué par : 
-              </strong>
-              Awesome games, Games from elsewhere
-            </p>
-          </details>
-        </div>
-         
+          people
+        </i>
         <span
-          class="characteristics s-Z6y0dSYOFWU8"
+          class="s-Z6y0dSYOFWU8"
         >
-          <span
-            class="s-Z6y0dSYOFWU8"
-          >
-            <span
-              class="material-icons s-Z6y0dSYOFWU8"
-            >
-              people
-            </span>
-            2-4
-          </span>
-           
-          <span
-            class="s-Z6y0dSYOFWU8"
-          >
-            <span
-              class="material-icons s-Z6y0dSYOFWU8"
-            >
-              access_time
-            </span>
-            30'
-          </span>
-           
-          <span
-            class="s-Z6y0dSYOFWU8"
-          >
-            <span
-              class="material-icons s-Z6y0dSYOFWU8"
-            >
-              person
-            </span>
-            10+
-          </span>
+          2-4
         </span>
-      </legend>
-    </div>
+         
+        <i
+          class="material-icons s-Z6y0dSYOFWU8"
+        >
+          access_time
+        </i>
+        <span
+          class="s-Z6y0dSYOFWU8"
+        >
+          30'
+        </span>
+         
+        <i
+          class="material-icons s-Z6y0dSYOFWU8"
+        >
+          person
+        </i>
+        <span
+          class="s-Z6y0dSYOFWU8"
+        >
+          10+
+        </span>
+      </div>
+       
+      <details
+        class="s-Z6y0dSYOFWU8"
+      >
+        <summary
+          class="s-Z6y0dSYOFWU8"
+        >
+          <strong
+            class="s-Z6y0dSYOFWU8"
+          >
+            Créé par : 
+          </strong>
+          John Doe, Jane Lark
+        </summary>
+         
+        <p
+          class="s-Z6y0dSYOFWU8"
+        >
+          <strong
+            class="s-Z6y0dSYOFWU8"
+          >
+            Illustré par : 
+          </strong>
+          Amy Banks, Mark Loom
+        </p>
+         
+        <p
+          class="s-Z6y0dSYOFWU8"
+        >
+          <strong
+            class="s-Z6y0dSYOFWU8"
+          >
+            Distribué par : 
+          </strong>
+          Awesome games, Games from elsewhere
+        </p>
+      </details>
+    </legend>
   </article>
   <!--&lt;CatalogItem&gt;-->
 </span>

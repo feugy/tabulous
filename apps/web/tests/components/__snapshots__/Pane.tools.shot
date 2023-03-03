@@ -1,7 +1,31 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Components/Pane 1`] = `
-<div
-  class="pane s-j2LTsWktqK_4"
-/>
+exports[`No Title 1`] = `
+<span
+  class="s-j2LTsWktqK_4"
+>
+  <div
+    class="pane s-j2LTsWktqK_4"
+  >
+     
+  </div>
+</span>
+`;
+
+exports[`With Title 1`] = `
+<span
+  class="s-j2LTsWktqK_4"
+>
+  <div
+    class="pane s-j2LTsWktqK_4"
+  >
+    <h2
+      class="s-j2LTsWktqK_4"
+    >
+      Hello world!
+    </h2>
+    
+     
+  </div>
+</span>
 `;

@@ -59,9 +59,9 @@
   }
 
   li {
-    @apply inline-block w-3 h-1.5 rounded-sm bg-$primary-light;
+    @apply inline-block w-3 h-1.5 rounded-sm bg-$base-dark;
     &.on {
-      @apply bg-$accent-warm;
+      @apply bg-$base-lighter;
     }
   }
 </style>

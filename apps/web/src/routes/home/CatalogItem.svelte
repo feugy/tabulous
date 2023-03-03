@@ -7,6 +7,10 @@
 
   const dispatch = createEventDispatcher()
   $: title = game?.locales?.[$locale]?.title
+  $: seatsHidden = !game?.maxSeats && !game?.minSeats
+  $: timeHidden = !game?.minTime
+  $: ageHidden = !game?.minAge
+  $: detailsHidden = !game?.copyright
 
   function formatCopyright(field) {
     return game?.copyright?.[field].map(({ name }) => name).join(', ')
@@ -34,96 +38,113 @@
 
 <article role="link" tabindex={0} on:click={handleClick} on:keyup={handleKey}>
   <img src="{gameAssetsUrl}/{game.name}/catalog/cover.webp" alt={title} />
-  <div class="content">
-    <legend>
-      <div class="title">
-        <h3>{title}</h3>
-        <details
-          class:hidden={!game.copyright}
-          on:click|stopPropagation
-          on:keyup|stopPropagation
-        >
-          <summary
-            ><strong>{$_('labels.game-authors')}</strong>{formatCopyright(
-              'authors'
-            )}</summary
-          >
-          <p>
-            <strong>{$_('labels.game-designers')}</strong>{formatCopyright(
-              'designers'
-            )}
-          </p>
-          <p>
-            <strong>{$_('labels.game-publishers')}</strong>{formatCopyright(
-              'publishers'
-            )}
-          </p>
-        </details>
-      </div>
-      <span class="characteristics">
-        <span class:hidden={!game.maxSeats && !game.minSeats}
-          ><span class="material-icons">people</span>{formatSeats()}</span
-        >
-        <span class:hidden={!game.minTime}
-          ><span class="material-icons">access_time</span>{$_(
-            'labels.game-min-time',
-            game
-          )}</span
-        >
-        <span class:hidden={!game.minAge}
-          ><span class="material-icons">person</span>{$_(
-            'labels.game-min-age',
-            game
-          )}</span
-        >
-      </span>
-    </legend>
-  </div>
+  <legend>
+    <h3>{title}</h3>
+    <div class="characteristics">
+      <i class="material-icons" class:hidden={seatsHidden}>people</i><span
+        class:hidden={seatsHidden}>{formatSeats()}</span
+      >
+      <i class="material-icons" class:hidden={timeHidden}>access_time</i><span
+        class:hidden={timeHidden}>{$_('labels.game-min-time', game)}</span
+      >
+      <i class="material-icons" class:hidden={ageHidden}>person</i><span
+        class:hidden={ageHidden}>{$_('labels.game-min-age', game)}</span
+      >
+    </div>
+    <details class:hidden={detailsHidden}>
+      <summary on:click|stopPropagation on:keyup|stopPropagation
+        ><strong>{$_('labels.game-authors')}</strong>{formatCopyright(
+          'authors'
+        )}</summary
+      >
+      <p>
+        <strong>{$_('labels.game-designers')}</strong>{formatCopyright(
+          'designers'
+        )}
+      </p>
+      <p>
+        <strong>{$_('labels.game-publishers')}</strong>{formatCopyright(
+          'publishers'
+        )}
+      </p>
+    </details>
+  </legend>
 </article>
 
 <style lang="postcss">
   article {
-    @apply inline-grid h-64 shadow-md cursor-pointer flex-1 rounded 
-           overflow-hidden bg-$base-lighter transition-all duration-$short;
+    @apply inline-grid h-64 cursor-pointer flex-1 p-1;
     grid-template-areas: 'full';
 
     &:hover {
-      @apply transform-gpu scale-105;
+      legend {
+        @apply opacity-90 text-$ink-dark;
+
+        h3,
+        strong {
+          @apply text-$secondary-light;
+        }
+        .material-icons {
+          @apply $text-$primary-light;
+        }
+      }
+
+      img {
+        @apply transform-gpu scale-110;
+      }
     }
   }
 
   img {
-    @apply max-h-full place-self-center overflow-hidden;
+    @apply max-h-full place-self-center overflow-hidden 
+           transition-all duration-$short;
     grid-area: full;
-  }
-
-  .content {
-    @apply flex items-end;
-    grid-area: full;
+    --shadow-drop: 0.5rem 0.5rem;
+    filter: drop-shadow(
+      var(--shadow-drop) var(--shadow-blur) var(--shadow-color)
+    );
   }
 
   legend {
-    @apply flex flex-nowrap w-full gap-4 p-4 
-           opacity-80 bg-$primary text-$primary-lightest;
-  }
+    @apply inline-grid grid-rows-[min-content,1fr] grid-cols-[auto,min-content] gap-4 p-4 -m-2
+           opacity-0 bg-$base-darker text-$base-darker overflow-hidden;
+    transition: opacity var(--long), color var(--medium) var(--short);
+    grid-area: full;
 
-  .title {
-    @apply flex-1 text-left;
+    --corner-cut: 1.5rem;
+    clip-path: polygon(
+      0 var(--corner-cut),
+      var(--corner-cut) 0,
+      100% 0,
+      100% calc(100% - var(--corner-cut)),
+      calc(100% - var(--corner-cut)) 100%,
+      0 100%
+    );
   }
 
   h3 {
-    @apply text-xl;
+    @apply mt-1 mx-1 mb-2;
+    transition: color var(--medium) var(--short);
   }
 
-  strong {
-    @apply italic font-normal;
+  details:not(.hidden) {
+    @apply flex flex-col overflow-auto;
+    strong {
+      @apply font-normal;
+      transition: color var(--medium) var(--short);
+    }
+
+    p {
+      @apply mt-2;
+    }
   }
 
   .characteristics {
-    @apply flex flex-col gap-2;
+    @apply row-span-2 flex flex-col items-center;
 
-    & .material-icons {
-      @apply mr-2;
+    .material-icons {
+      @apply mt-2;
+      transition: color var(--medium) var(--short);
     }
   }
 </style>

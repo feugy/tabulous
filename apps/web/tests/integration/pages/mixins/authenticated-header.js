@@ -23,9 +23,7 @@ export class AuthenticatedHeaderMixin {
       name: translate('actions.go-to-account')
     })
     /** @type {Locator} */
-    this.breadcrumbItems = page
-      .getByRole('navigation')
-      .locator('li >> :not(:scope:has-text(">"))')
+    this.homeLink = page.getByRole('navigation').getByRole('button')
   }
 
   /**
@@ -47,10 +45,10 @@ export class AuthenticatedHeaderMixin {
   }
 
   /**
-   * Navigates by clicking on a breadcrumb item
+   * Clicks on the logo to navigate back home
    */
-  async navigateWithBreadcrumb(rank = 0) {
-    await this.breadcrumbItems.nth(rank).click()
+  async navigateToHome() {
+    await this.homeLink.click()
     await this.page.waitForLoadState()
   }
 }

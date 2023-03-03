@@ -2,7 +2,17 @@ import AcceptTermsPage from '@src/routes/accept-terms/+page.svelte'
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import { translate } from '@tests/test-utils'
 import html from 'svelte-htm'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+
+vi.mock('$app/stores', () => {
+  const { BehaviorSubject } = require('rxjs')
+  return {
+    page: new BehaviorSubject({
+      url: new URL('http://localhost/accept-terms'),
+      route: { id: '/accept-terms' }
+    })
+  }
+})
 
 describe('/accept-terms route', () => {
   it('enables checkboxes on scroll', () => {

@@ -111,7 +111,7 @@ describe('Account page', () => {
     const accountPage = new AccountPage(page)
     await accountPage.goTo()
     await accountPage.getStarted()
-    await accountPage.navigateWithBreadcrumb()
+    await accountPage.navigateToHome()
     await expect(page).toHaveURL('/home')
   })
 })

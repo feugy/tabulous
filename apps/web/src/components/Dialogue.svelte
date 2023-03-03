@@ -62,8 +62,7 @@
         on:click|stopPropagation
         on:keyup|stopPropagation={handleKey}
       >
-        <Pane>
-          <header class="heading">{title}</header>
+        <Pane {title}>
           <div class="content">
             <slot />
           </div>
@@ -84,7 +83,7 @@
   }
 
   .filter {
-    @apply bg-$base-dark delay-150 opacity-90 backdrop-filter backdrop-blur-sm;
+    @apply bg-$base-darker delay-150 opacity-90 backdrop-filter backdrop-blur-sm;
   }
 
   .close-container {
@@ -100,11 +99,7 @@
     @apply overflow-y-auto mt-4;
   }
 
-  header {
-    @apply inline-block;
-  }
-
   footer {
-    @apply mt-8 text-center;
+    @apply mt-8 justify-center flex gap-4;
   }
 </style>

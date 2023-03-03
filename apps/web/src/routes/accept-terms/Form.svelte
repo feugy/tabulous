@@ -41,6 +41,7 @@
   </fieldset>
   <input type="hidden" name="redirect" value={redirect} />
   <Button
+    primary
     text={$_('actions.log-in')}
     icon="emoji_people"
     type="submit"
@@ -50,10 +51,10 @@
 
 <style lang="postcss">
   form {
-    @apply inline-flex flex-col py-4 gap-2;
+    @apply inline-flex flex-col py-8 gap-2;
 
     :global(& > button) {
-      @apply self-center;
+      @apply self-center mt-4;
     }
   }
 

@@ -2,7 +2,7 @@
 
 exports[`Current lobby 1`] = `
 <article
-  class="s-QQoQzhRq8NK6 lobby"
+  class="s-QQoQzhRq8NK6 lobby isCurrent"
   role="link"
   tabindex="0"
 >
@@ -19,7 +19,8 @@ exports[`Current lobby 1`] = `
       class="buttons s-QQoQzhRq8NK6"
     >
       <button
-        class="secondary s-NMyTiX1zi6rz"
+        class="s-NMyTiX1zi6rz"
+        secondary="true"
       >
         <span
           class="material-icons s-NMyTiX1zi6rz"
@@ -168,7 +169,8 @@ exports[`Owned 1`] = `
       class="buttons s-QQoQzhRq8NK6"
     >
       <button
-        class="secondary s-NMyTiX1zi6rz"
+        class="s-NMyTiX1zi6rz"
+        secondary="true"
       >
         <span
           class="material-icons s-NMyTiX1zi6rz"
@@ -222,7 +224,8 @@ exports[`Single owned 1`] = `
       class="buttons s-QQoQzhRq8NK6"
     >
       <button
-        class="secondary s-NMyTiX1zi6rz"
+        class="s-NMyTiX1zi6rz"
+        secondary="true"
       >
         <span
           class="material-icons s-NMyTiX1zi6rz"

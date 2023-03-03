@@ -60,7 +60,7 @@
     }
   }}
   events={['select', 'close', 'delete']}
-  layout="centered"
+  layout="padded"
 >
   <Tool name="Owned" />
   <Tool

@@ -122,58 +122,57 @@
 </svelte:head>
 
 <main>
-  <div class="column">
-    <Header {user} breadcrumb={[{ label: $_('labels.home') }]}>
-      <h1>
-        {$_(user ? 'titles.home' : 'titles.welcome', user)}
-      </h1>
-    </Header>
-
-    <div class="content">
+  <Header {user}>
+    <h1>
+      {$_(user ? 'titles.home' : 'titles.welcome', user)}
+    </h1>
+  </Header>
+  <div class="grid">
+    <div class="scrollable">
       <i id="top" />
+      <span class="padded">
+        {#if user}
+          <span class="heading"><h2>{$_('titles.your-games')}</h2></span>
+          <section aria-roledescription="games">
+            {#each $games.sort((a, b) => b.created - a.created) as game (game.id)}
+              <GameLink
+                {game}
+                playerId={user.id}
+                isCurrent={game.id === $currentGame?.id}
+                on:select={handleSelectGame}
+                on:delete={handleDeleteGame}
+                on:close={handleCloseLobby}
+              />
+            {:else}
+              <span class="no-games">{$_('labels.no-games-yet')}</span>
+            {/each}
+          </section>
+        {/if}
 
-      {#if user}
-        <h2>{$_('titles.your-games')}</h2>
-        <section aria-roledescription="games">
-          {#each $games.sort((a, b) => b.created - a.created) as game (game.id)}
-            <GameLink
-              {game}
-              playerId={user.id}
-              isCurrent={game.id === $currentGame?.id}
-              on:select={handleSelectGame}
-              on:delete={handleDeleteGame}
-              on:close={handleCloseLobby}
-            />
-          {:else}
-            <span class="no-games">{$_('labels.no-games-yet')}</span>
+        <span class="heading"><h2>{$_('titles.catalog')}</h2></span>
+        <section aria-roledescription="catalog">
+          {#if user}
+            <CreateLobby on:select={handleCreateLobby} />
+          {/if}
+          {#each data.catalog as game}
+            <CatalogItem {game} on:select={handleCreateGame} />
           {/each}
         </section>
-      {/if}
-
-      <h2>{$_('titles.catalog')}</h2>
-      <section aria-roledescription="catalog">
-        {#if user}
-          <CreateLobby on:select={handleCreateLobby} />
-        {/if}
-        {#each data.catalog as game}
-          <CatalogItem {game} on:select={handleCreateGame} />
-        {/each}
-      </section>
-      <span class="flex-1" />
+      </span>
       <PageFooter />
     </div>
+    {#if user}
+      <Aside
+        game={$currentGame}
+        player={user}
+        playerById={$gamePlayerById}
+        connected={$connected}
+        thread={$thread}
+        friends={$friends}
+        on:sendMessage={({ detail }) => sendToThread(detail.text)}
+      />
+    {/if}
   </div>
-  {#if user}
-    <Aside
-      game={$currentGame}
-      player={user}
-      playerById={$gamePlayerById}
-      connected={$connected}
-      thread={$thread}
-      friends={$friends}
-      on:sendMessage={({ detail }) => sendToThread(detail.text)}
-    />
-  {/if}
 </main>
 
 {#if gameToDelete}
@@ -196,27 +195,35 @@
 
 <style lang="postcss">
   main {
-    @apply absolute inset-0 flex items-stretch overflow-hidden;
+    @apply flex flex-col max-h-screen;
   }
 
-  .column {
-    @apply flex flex-col w-full p-0;
+  .grid {
+    @apply grid grid-cols-[1fr,auto] flex-1 overflow-x-hidden;
   }
 
-  h1 {
-    @apply text-3xl py-4;
+  .scrollable {
+    @apply flex flex-col overflow-y-auto;
+  }
+
+  .padded {
+    @apply px-6 flex-1;
+  }
+
+  .heading {
+    --shadow-drop: 0.5rem 0.5rem;
+    filter: drop-shadow(
+      var(--shadow-drop) var(--shadow-blur) var(--shadow-color)
+    );
   }
 
   h2 {
-    @apply text-2xl py-4 w-3/4 mx-auto;
-  }
-
-  .content {
-    @apply flex flex-col flex-1 overflow-y-auto p-0;
+    @apply mx-auto w-full max-w-screen-2xl;
   }
 
   section {
-    @apply grid grid-cols-3 mx-auto my-8 gap-8 w-9/12;
+    @apply grid my-6 gap-6 justify-center mx-auto max-w-screen-2xl;
+    grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), auto));
   }
 
   .no-games {

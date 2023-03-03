@@ -1,6 +1,7 @@
 <script>
   import { Tool, ToolBox } from '@atelier-wb/svelte'
   import AccountPage from '@src/routes/(auth)/account/+page.svelte'
+  import { setSvelteUrl } from '@tests/atelier/setup'
 
   const manualPlayer = {
     id: 'jane-doe-123',
@@ -16,7 +17,11 @@
   }
 </script>
 
-<ToolBox component={AccountPage} name="Routes/account">
+<ToolBox
+  component={AccountPage}
+  name="Routes/account"
+  setup={() => setSvelteUrl('/account')}
+>
   <Tool
     name="Manual account"
     props={{ data: { session: { player: manualPlayer } } }}

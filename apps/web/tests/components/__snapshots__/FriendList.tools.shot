@@ -501,7 +501,7 @@ HTMLCollection [
           class="buttons s-XLQf75fI0H0o"
         >
           <button
-            class="s-NMyTiX1zi6rz"
+            class="primary s-NMyTiX1zi6rz"
           >
             <span
               class="material-icons s-NMyTiX1zi6rz"
@@ -737,7 +737,7 @@ exports[`With requests and proposals 1`] = `
         class="buttons s-XLQf75fI0H0o"
       >
         <button
-          class="s-NMyTiX1zi6rz"
+          class="primary s-NMyTiX1zi6rz"
         >
           <span
             class="material-icons s-NMyTiX1zi6rz"

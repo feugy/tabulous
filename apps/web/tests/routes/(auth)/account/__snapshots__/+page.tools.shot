@@ -4,193 +4,247 @@ exports[`Manual account 1`] = `
 <main
   class="s-GQCXmK5OKySU"
 >
+  <i
+    class="s-GQCXmK5OKySU"
+    id="top"
+  />
+   
   <header
     class="s-c1MG4BWNDc59"
   >
     <nav
       class="s-c1MG4BWNDc59"
     >
-      <span
+      <button
         class="s-c1MG4BWNDc59"
       >
-        <ol
-          class="s-x5nEMCoiqeIy"
+        <svg
+          height="27.035763"
+          version="1.1"
+          viewBox="0 0 37.126423 27.035763"
+          width="37.126423"
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:svg="http://www.w3.org/2000/svg"
         >
-          <li
-            class="s-x5nEMCoiqeIy"
+          <g
+            transform="translate(-5.7081121,-5.3321023)"
           >
-            <a
-              class="s-x5nEMCoiqeIy"
-              href="/home"
-            >
-              Accueil
-            </a>
-          </li>
-           
-          <li
-            class="s-x5nEMCoiqeIy"
-          >
-            &gt;
-          </li>
-          
-          <li
-            class="s-x5nEMCoiqeIy"
-          >
-            <a
-              class="s-x5nEMCoiqeIy"
-            >
-              Paramètres
-            </a>
-          </li>
-           
-          
-        </ol>
-        
-        <!--&lt;Breadcrumb&gt;-->
-      </span>
+            <path
+              d="m 25.120364,19.713484 a 16.171131,6.3284572 0.15697335 0 0 -10.950753,1.507401 c 0.140483,0.350402 0.240812,0.598413 0.240812,0.598413 l -0.787548,-0.409277 a 16.171131,6.3284572 0.15697335 0 0 -1.884123,0.829407 c 0.463249,0.204263 0.790513,0.438583 0.805119,0.730704 0.03586,0.717292 -1.395039,1.030311 -2.9124841,0.762228 a 16.171131,6.3284572 0.15697335 0 0 -1.0185424,1.698604 16.171131,6.3284572 0.15697335 0 0 14.6461345,6.907589 16.171131,6.3284572 0.15697335 0 0 17.564302,-5.691126 16.171131,6.3284572 0.15697335 0 0 0.0016,-1.133781 c -1.581229,1.267596 -4.142285,2.250232 -4.714441,0.95188 -0.524486,-1.190168 2.444087,-1.664571 3.564123,-2.796728 a 16.171131,6.3284572 0.15697335 0 0 -5.535579,-2.750737 c -0.157951,1.104143 0.2541,3.296302 -1.137915,3.298507 -0.816889,0.0013 -1.122444,-2.159577 -0.807186,-3.771346 a 16.171131,6.3284572 0.15697335 0 0 -6.017204,-0.705383 16.171131,6.3284572 0.15697335 0 0 -1.056266,-0.02635 z m -0.912606,1.601969 h 1.580782 v 1.623674 h -1.580782 z m -5.183146,0.960148 1.791105,0.735873 -1.012858,0.817521 -1.791105,-0.735873 z m 11.035502,0.810287 1.012858,0.817521 -1.791105,0.735872 -1.012858,-0.817521 z m -11.185364,0.681095 1.791106,0.735872 -1.013375,0.817522 -1.791105,-0.735873 z m 15.300875,0.373621 1.012858,0.817521 -1.791105,0.735872 -1.012858,-0.817521 z m -17.849039,0.125057 1.791105,0.735872 -1.012858,0.817521 -1.791106,-0.735872 z"
+              style="font-variation-settings: normal; fill: #000000; fill-opacity: 1; fill-rule: evenodd; stroke: none; stroke-width: 0.634999; stroke-linecap: round; stroke-linejoin: miter; stroke-miterlimit: 4; stroke-dasharray: none; stroke-dashoffset: 0; stroke-opacity: 0.5117; stop-color: rgb(0, 0, 0);"
+            />
+            <path
+              d="m 35.550623,21.31134 0.668087,-2.021097 c 0.159717,-0.483175 -1.429238,0.453831 -1.991196,1.166561 -0.54224,0.687723 0.350734,3.781871 -1.30307,3.78449 -1.073283,0.0017 -1.264756,-3.730088 -0.323839,-5.043292 0.553159,-0.772023 3.068597,-2.275848 4.221601,-2.288246 1.590592,-0.0171 4.536182,1.713781 5.305128,2.835228 0.562386,0.820194 0.221571,3.922708 -0.437095,4.841158 -1.149572,1.602976 -4.944053,3.520061 -5.656223,1.903992 -0.561409,-1.273959 2.879328,-1.727923 3.771314,-3.046188 0.703797,-1.040142 0.517619,-2.429842 0.517619,-2.429842 m -2.654858,-7.866815 a 2.3234062,2.8584074 14.77332 0 0 1.751252,3.171591 2.3234062,2.8584074 14.77332 0 0 2.844305,-2.433408 2.3234062,2.8584074 14.77332 0 0 -1.751253,-3.171591 2.3234062,2.8584074 14.77332 0 0 -2.844304,2.433408 z"
+              style="font-variation-settings: normal; fill: none; fill-opacity: 1; stroke: #000000; stroke-width: 0.846663; stroke-linecap: round; stroke-linejoin: miter; stroke-miterlimit: 4; stroke-dasharray: none; stroke-dashoffset: 0; stroke-opacity: 1; stop-color: rgb(0, 0, 0);"
+            />
+            <path
+              d="m 21.69336,20.588834 c 0,0 0.02678,-2.677038 -0.206019,-3.091041 -0.776379,-1.380737 -2.599184,-4.025216 -2.613438,-5.966523 -0.01639,-2.2322799 1.752164,-6.4643449 2.726857,-5.6885019 1.078456,0.858437 -1.085657,4.5175159 -0.381412,6.1633349 0.418802,0.978742 1.010211,2.291873 1.83974,2.745834 1.018025,0.557116 3.010225,0.631654 4.047692,0.111544 1.21019,-0.606701 1.861782,-1.447969 2.336439,-2.879006 0.427503,-1.288873 -1.154588,-4.9427149 -0.07921,-5.3658779 1.462782,-0.575606 2.312798,3.6986019 2.203533,5.6037499 -0.103141,1.798372 -2.31399,4.015614 -2.819254,5.217566 -0.341408,0.812161 -0.156693,3.467564 -0.156693,3.467564 M 27.33896,11.429663 a 2.033196,2.750803 1.8373958 0 1 -2.29222,2.410331 2.033196,2.750803 1.8373958 0 1 -1.737975,-3.052389 2.033196,2.750803 1.8373958 0 1 2.29222,-2.4103309 2.033196,2.750803 1.8373958 0 1 1.737975,3.0523889 z"
+              style="font-variation-settings: normal; fill: none; fill-opacity: 1; stroke: #000000; stroke-width: 0.846663; stroke-linecap: round; stroke-linejoin: miter; stroke-miterlimit: 4; stroke-dasharray: none; stroke-dashoffset: 0; stroke-opacity: 1; stop-color: rgb(0, 0, 0);"
+            />
+            <path
+              d="m 14.333877,21.844254 c 0,0 -1.220706,-3.003311 -1.32075,-3.465503 -0.05842,-0.269875 1.287063,1.131397 2.623366,0.903835 1.49769,-0.255045 3.519874,-4.235044 1.763283,-4.584697 -0.664466,-0.132263 -1.50618,2.482816 -2.146704,2.604076 -0.595067,0.112655 -2.319707,-2.019375 -3.525543,-2.212273 -2.186247,-0.349735 -3.979353,0.802561 -4.169399,1.046062 -1.192202,1.527537 -1.886942,4.551923 -1.053854,5.856331 1.452582,2.27438 6.026744,2.278506 5.962967,1.002872 -0.0501,-1.002024 -3.762944,-1.331489 -4.117637,-2.056564 -0.192935,-0.394403 0.201973,-2.099557 0.201973,-2.099557 m 2.667282,-7.575614 A 2.8582202,2.3235584 84.877672 0 1 8.9625898,14.098673 2.8582202,2.3235584 84.877672 0 1 6.5644114,11.225541 2.8582202,2.3235584 84.877672 0 1 8.8206822,8.3900889 2.8582202,2.3235584 84.877672 0 1 11.218861,11.263222 Z"
+              style="fill: none; stroke: #000000; stroke-width: 0.846663; stroke-linecap: round; stroke-linejoin: miter; stroke-dasharray: none; stroke-opacity: 1;"
+            />
+          </g>
+        </svg>
+        <!--&lt;Tabulous-logo.svg.rollup-plugin&gt;-->
+      </button>
+       
+      <div
+        class="s-c1MG4BWNDc59"
+      >
+        <h1
+          class="s-GQCXmK5OKySU"
+        >
+          Vos paramètres
+        </h1>
+      </div>
        
       <span
-        class="wrapper s-rGIwyFRHo8D9"
+        class="nav s-c1MG4BWNDc59"
       >
-        <button
-          aria-expanded="false"
-          aria-haspopup="menu"
-          class="transparent s-NMyTiX1zi6rz"
-          role="combobox"
+        <span
+          class="wrapper s-rGIwyFRHo8D9"
         >
-          
-          
-          
-          <figure
-            class="s-engCJu8q-fNe"
-            style="--dimension: 30px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+          <button
+            aria-expanded="false"
+            aria-haspopup="menu"
+            class="transparent s-NMyTiX1zi6rz"
+            role="combobox"
           >
-            <img
-              alt="avatar for Jane Doe"
-              class="s-engCJu8q-fNe hasImage"
-              height="30"
-              referrerpolicy="no-referrer"
-              src="https://avatars.dicebear.com/api/micah/tabulous-avatar-4.svg"
-              width="30"
-            />
+            
+            
+            
+            <figure
+              class="s-engCJu8q-fNe"
+              style="--dimension: 30px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+            >
+              <img
+                alt="avatar for Jane Doe"
+                class="s-engCJu8q-fNe hasImage"
+                height="30"
+                referrerpolicy="no-referrer"
+                src="https://avatars.dicebear.com/api/micah/tabulous-avatar-4.svg"
+                width="30"
+              />
+               
+            </figure>
+            <!--&lt;PlayerThumbnail&gt;-->
              
-          </figure>
-          <!--&lt;PlayerThumbnail&gt;-->
+            
+          </button>
+          <!--&lt;Button&gt;-->
            
           
-        </button>
-        <!--&lt;Button&gt;-->
-         
-        
-        <!--&lt;Menu&gt;-->
+          <!--&lt;Menu&gt;-->
+        </span>
+        <!--&lt;Dropdown&gt;-->
       </span>
-      <!--&lt;Dropdown&gt;-->
     </nav>
      
     <div
       class="s-c1MG4BWNDc59"
-    >
-      <h1
-        class="s-GQCXmK5OKySU"
-      >
-        Vos paramètres
-      </h1>
-    </div>
+    />
   </header>
   <!--&lt;Header&gt;-->
    
   <section
     class="s-GQCXmK5OKySU"
   >
-    <h2
-      class="s-GQCXmK5OKySU"
-    >
-      Votre compte
-    </h2>
-     
-    <fieldset
-      class="s-GQCXmK5OKySU"
+    <span
+      class="s-j2LTsWktqK_4"
     >
       <div
-        class="s-GQCXmK5OKySU"
+        class="pane s-j2LTsWktqK_4"
       >
-        Vous avez un compte manuel dont l'identifiant de connextion est "jane-doe-123"
-      </div>
-       
-      <label
-        class="s-GQCXmK5OKySU"
-        for="username"
-      >
-        Pseudo : 
-      </label>
-       
-      <span
-        class="with-progress s-GQCXmK5OKySU"
-      >
+        <h2
+          class="s-j2LTsWktqK_4"
+        >
+          Votre compte
+        </h2>
+        
+         
         <fieldset
-          class="s-Fe6WNbR-55zp"
-        >
-           
-          <input
-            class="s-Fe6WNbR-55zp"
-            name="username"
-          />
-        </fieldset>
-        <!--&lt;Input&gt;-->
-         
-        <span
           class="s-GQCXmK5OKySU"
-        />
-         
-      </span>
-       
-      <span
-        class="s-GQCXmK5OKySU"
-      >
-        Avatar : 
-      </span>
-       
-      <span
-        class="aligned s-GQCXmK5OKySU"
-      >
-        <figure
-          class="s-engCJu8q-fNe"
-          style="--dimension: 150px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
         >
-          <img
-            alt="avatar for Jane Doe"
-            class="s-engCJu8q-fNe hasImage"
-            height="150"
-            referrerpolicy="no-referrer"
-            src="https://avatars.dicebear.com/api/micah/tabulous-avatar-4.svg"
-            width="150"
-          />
-           
-        </figure>
-        <!--&lt;PlayerThumbnail&gt;-->
-         
-        <button
-          class="s-NMyTiX1zi6rz"
-        >
-          
-          <span
-            class="text s-NMyTiX1zi6rz"
+          <div
+            class="s-GQCXmK5OKySU"
           >
-            Changer
+            Vous avez un compte manuel dont l'identifiant de connextion est "jane-doe-123"
+          </div>
+           
+          <label
+            class="s-GQCXmK5OKySU"
+            for="username"
+          >
+            Pseudo : 
+          </label>
+           
+          <span
+            class="with-progress s-GQCXmK5OKySU"
+          >
+            <fieldset
+              class="s-Fe6WNbR-55zp"
+            >
+               
+              <input
+                class="s-Fe6WNbR-55zp"
+                name="username"
+              />
+            </fieldset>
+            <!--&lt;Input&gt;-->
+             
+            <span
+              class="s-GQCXmK5OKySU"
+            />
+             
           </span>
-          
-          
-        </button>
-        <!--&lt;Button&gt;-->
-         
-         
-        <!--&lt;Portal&gt;-->
-        <!--&lt;Dialogue&gt;-->
-        <!--&lt;ConfirmDialogue&gt;-->
-        <!--&lt;AvatarDialogue&gt;-->
-      </span>
-    </fieldset>
+           
+          <label
+            class="s-GQCXmK5OKySU"
+            for="avatar"
+          >
+            Avatar : 
+          </label>
+           
+          <span
+            class="aligned s-GQCXmK5OKySU"
+          >
+            <figure
+              class="s-engCJu8q-fNe"
+              style="--dimension: 150px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+            >
+              <img
+                alt="avatar for Jane Doe"
+                class="s-engCJu8q-fNe hasImage"
+                height="150"
+                referrerpolicy="no-referrer"
+                src="https://avatars.dicebear.com/api/micah/tabulous-avatar-4.svg"
+                width="150"
+              />
+               
+            </figure>
+            <!--&lt;PlayerThumbnail&gt;-->
+             
+            <button
+              class="has-text s-NMyTiX1zi6rz"
+              id="avatar"
+            >
+              
+              <span
+                class="text s-NMyTiX1zi6rz"
+              >
+                Changer
+              </span>
+              
+              
+            </button>
+            <!--&lt;Button&gt;-->
+             
+             
+            <!--&lt;Portal&gt;-->
+            <!--&lt;Dialogue&gt;-->
+            <!--&lt;ConfirmDialogue&gt;-->
+            <!--&lt;AvatarDialogue&gt;-->
+          </span>
+        </fieldset>
+      </div>
+    </span>
+    <!--&lt;Pane&gt;-->
   </section>
+   
+  <footer
+    class="s-_Wq18H0k1xjH"
+  >
+    <section
+      class="s-_Wq18H0k1xjH"
+    >
+      © 
+      2023
+       
+      Tabulous.fr. Tous droits réservés.
+    </section>
+     
+    <a
+      class="s-_Wq18H0k1xjH"
+      href="/terms-of-service"
+    >
+      Mentions Légales & Conditions Générales d'Utilisation
+    </a>
+     
+    <a
+      class="s-_Wq18H0k1xjH"
+      href="#top"
+      title="Défiler jusqu'en haut"
+    >
+      <i
+        class="material-icons s-_Wq18H0k1xjH"
+      >
+        vertical_align_top
+      </i>
+    </a>
+  </footer>
+  <!--&lt;PageFooter&gt;-->
 </main>
 `;
 
@@ -198,192 +252,246 @@ exports[`OAuth account 1`] = `
 <main
   class="s-GQCXmK5OKySU"
 >
+  <i
+    class="s-GQCXmK5OKySU"
+    id="top"
+  />
+   
   <header
     class="s-c1MG4BWNDc59"
   >
     <nav
       class="s-c1MG4BWNDc59"
     >
-      <span
+      <button
         class="s-c1MG4BWNDc59"
       >
-        <ol
-          class="s-x5nEMCoiqeIy"
+        <svg
+          height="27.035763"
+          version="1.1"
+          viewBox="0 0 37.126423 27.035763"
+          width="37.126423"
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:svg="http://www.w3.org/2000/svg"
         >
-          <li
-            class="s-x5nEMCoiqeIy"
+          <g
+            transform="translate(-5.7081121,-5.3321023)"
           >
-            <a
-              class="s-x5nEMCoiqeIy"
-              href="/home"
-            >
-              Accueil
-            </a>
-          </li>
-           
-          <li
-            class="s-x5nEMCoiqeIy"
-          >
-            &gt;
-          </li>
-          
-          <li
-            class="s-x5nEMCoiqeIy"
-          >
-            <a
-              class="s-x5nEMCoiqeIy"
-            >
-              Paramètres
-            </a>
-          </li>
-           
-          
-        </ol>
-        
-        <!--&lt;Breadcrumb&gt;-->
-      </span>
+            <path
+              d="m 25.120364,19.713484 a 16.171131,6.3284572 0.15697335 0 0 -10.950753,1.507401 c 0.140483,0.350402 0.240812,0.598413 0.240812,0.598413 l -0.787548,-0.409277 a 16.171131,6.3284572 0.15697335 0 0 -1.884123,0.829407 c 0.463249,0.204263 0.790513,0.438583 0.805119,0.730704 0.03586,0.717292 -1.395039,1.030311 -2.9124841,0.762228 a 16.171131,6.3284572 0.15697335 0 0 -1.0185424,1.698604 16.171131,6.3284572 0.15697335 0 0 14.6461345,6.907589 16.171131,6.3284572 0.15697335 0 0 17.564302,-5.691126 16.171131,6.3284572 0.15697335 0 0 0.0016,-1.133781 c -1.581229,1.267596 -4.142285,2.250232 -4.714441,0.95188 -0.524486,-1.190168 2.444087,-1.664571 3.564123,-2.796728 a 16.171131,6.3284572 0.15697335 0 0 -5.535579,-2.750737 c -0.157951,1.104143 0.2541,3.296302 -1.137915,3.298507 -0.816889,0.0013 -1.122444,-2.159577 -0.807186,-3.771346 a 16.171131,6.3284572 0.15697335 0 0 -6.017204,-0.705383 16.171131,6.3284572 0.15697335 0 0 -1.056266,-0.02635 z m -0.912606,1.601969 h 1.580782 v 1.623674 h -1.580782 z m -5.183146,0.960148 1.791105,0.735873 -1.012858,0.817521 -1.791105,-0.735873 z m 11.035502,0.810287 1.012858,0.817521 -1.791105,0.735872 -1.012858,-0.817521 z m -11.185364,0.681095 1.791106,0.735872 -1.013375,0.817522 -1.791105,-0.735873 z m 15.300875,0.373621 1.012858,0.817521 -1.791105,0.735872 -1.012858,-0.817521 z m -17.849039,0.125057 1.791105,0.735872 -1.012858,0.817521 -1.791106,-0.735872 z"
+              style="font-variation-settings: normal; fill: #000000; fill-opacity: 1; fill-rule: evenodd; stroke: none; stroke-width: 0.634999; stroke-linecap: round; stroke-linejoin: miter; stroke-miterlimit: 4; stroke-dasharray: none; stroke-dashoffset: 0; stroke-opacity: 0.5117; stop-color: rgb(0, 0, 0);"
+            />
+            <path
+              d="m 35.550623,21.31134 0.668087,-2.021097 c 0.159717,-0.483175 -1.429238,0.453831 -1.991196,1.166561 -0.54224,0.687723 0.350734,3.781871 -1.30307,3.78449 -1.073283,0.0017 -1.264756,-3.730088 -0.323839,-5.043292 0.553159,-0.772023 3.068597,-2.275848 4.221601,-2.288246 1.590592,-0.0171 4.536182,1.713781 5.305128,2.835228 0.562386,0.820194 0.221571,3.922708 -0.437095,4.841158 -1.149572,1.602976 -4.944053,3.520061 -5.656223,1.903992 -0.561409,-1.273959 2.879328,-1.727923 3.771314,-3.046188 0.703797,-1.040142 0.517619,-2.429842 0.517619,-2.429842 m -2.654858,-7.866815 a 2.3234062,2.8584074 14.77332 0 0 1.751252,3.171591 2.3234062,2.8584074 14.77332 0 0 2.844305,-2.433408 2.3234062,2.8584074 14.77332 0 0 -1.751253,-3.171591 2.3234062,2.8584074 14.77332 0 0 -2.844304,2.433408 z"
+              style="font-variation-settings: normal; fill: none; fill-opacity: 1; stroke: #000000; stroke-width: 0.846663; stroke-linecap: round; stroke-linejoin: miter; stroke-miterlimit: 4; stroke-dasharray: none; stroke-dashoffset: 0; stroke-opacity: 1; stop-color: rgb(0, 0, 0);"
+            />
+            <path
+              d="m 21.69336,20.588834 c 0,0 0.02678,-2.677038 -0.206019,-3.091041 -0.776379,-1.380737 -2.599184,-4.025216 -2.613438,-5.966523 -0.01639,-2.2322799 1.752164,-6.4643449 2.726857,-5.6885019 1.078456,0.858437 -1.085657,4.5175159 -0.381412,6.1633349 0.418802,0.978742 1.010211,2.291873 1.83974,2.745834 1.018025,0.557116 3.010225,0.631654 4.047692,0.111544 1.21019,-0.606701 1.861782,-1.447969 2.336439,-2.879006 0.427503,-1.288873 -1.154588,-4.9427149 -0.07921,-5.3658779 1.462782,-0.575606 2.312798,3.6986019 2.203533,5.6037499 -0.103141,1.798372 -2.31399,4.015614 -2.819254,5.217566 -0.341408,0.812161 -0.156693,3.467564 -0.156693,3.467564 M 27.33896,11.429663 a 2.033196,2.750803 1.8373958 0 1 -2.29222,2.410331 2.033196,2.750803 1.8373958 0 1 -1.737975,-3.052389 2.033196,2.750803 1.8373958 0 1 2.29222,-2.4103309 2.033196,2.750803 1.8373958 0 1 1.737975,3.0523889 z"
+              style="font-variation-settings: normal; fill: none; fill-opacity: 1; stroke: #000000; stroke-width: 0.846663; stroke-linecap: round; stroke-linejoin: miter; stroke-miterlimit: 4; stroke-dasharray: none; stroke-dashoffset: 0; stroke-opacity: 1; stop-color: rgb(0, 0, 0);"
+            />
+            <path
+              d="m 14.333877,21.844254 c 0,0 -1.220706,-3.003311 -1.32075,-3.465503 -0.05842,-0.269875 1.287063,1.131397 2.623366,0.903835 1.49769,-0.255045 3.519874,-4.235044 1.763283,-4.584697 -0.664466,-0.132263 -1.50618,2.482816 -2.146704,2.604076 -0.595067,0.112655 -2.319707,-2.019375 -3.525543,-2.212273 -2.186247,-0.349735 -3.979353,0.802561 -4.169399,1.046062 -1.192202,1.527537 -1.886942,4.551923 -1.053854,5.856331 1.452582,2.27438 6.026744,2.278506 5.962967,1.002872 -0.0501,-1.002024 -3.762944,-1.331489 -4.117637,-2.056564 -0.192935,-0.394403 0.201973,-2.099557 0.201973,-2.099557 m 2.667282,-7.575614 A 2.8582202,2.3235584 84.877672 0 1 8.9625898,14.098673 2.8582202,2.3235584 84.877672 0 1 6.5644114,11.225541 2.8582202,2.3235584 84.877672 0 1 8.8206822,8.3900889 2.8582202,2.3235584 84.877672 0 1 11.218861,11.263222 Z"
+              style="fill: none; stroke: #000000; stroke-width: 0.846663; stroke-linecap: round; stroke-linejoin: miter; stroke-dasharray: none; stroke-opacity: 1;"
+            />
+          </g>
+        </svg>
+        <!--&lt;Tabulous-logo.svg.rollup-plugin&gt;-->
+      </button>
+       
+      <div
+        class="s-c1MG4BWNDc59"
+      >
+        <h1
+          class="s-GQCXmK5OKySU"
+        >
+          Vos paramètres
+        </h1>
+      </div>
        
       <span
-        class="wrapper s-rGIwyFRHo8D9"
+        class="nav s-c1MG4BWNDc59"
       >
-        <button
-          aria-expanded="false"
-          aria-haspopup="menu"
-          class="transparent s-NMyTiX1zi6rz"
-          role="combobox"
+        <span
+          class="wrapper s-rGIwyFRHo8D9"
         >
-          
-          
-          
-          <figure
-            class="s-engCJu8q-fNe"
-            style="--dimension: 30px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+          <button
+            aria-expanded="false"
+            aria-haspopup="menu"
+            class="transparent s-NMyTiX1zi6rz"
+            role="combobox"
           >
-            <img
-              alt="avatar for John Clark"
-              class="s-engCJu8q-fNe hasImage"
-              height="30"
-              referrerpolicy="no-referrer"
-              src="https://avatars.dicebear.com/api/micah/tabulous-avatar-10.svg"
-              width="30"
-            />
+            
+            
+            
+            <figure
+              class="s-engCJu8q-fNe"
+              style="--dimension: 30px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+            >
+              <img
+                alt="avatar for John Clark"
+                class="s-engCJu8q-fNe hasImage"
+                height="30"
+                referrerpolicy="no-referrer"
+                src="https://avatars.dicebear.com/api/micah/tabulous-avatar-10.svg"
+                width="30"
+              />
+               
+            </figure>
+            <!--&lt;PlayerThumbnail&gt;-->
              
-          </figure>
-          <!--&lt;PlayerThumbnail&gt;-->
+            
+          </button>
+          <!--&lt;Button&gt;-->
            
           
-        </button>
-        <!--&lt;Button&gt;-->
-         
-        
-        <!--&lt;Menu&gt;-->
+          <!--&lt;Menu&gt;-->
+        </span>
+        <!--&lt;Dropdown&gt;-->
       </span>
-      <!--&lt;Dropdown&gt;-->
     </nav>
      
     <div
       class="s-c1MG4BWNDc59"
-    >
-      <h1
-        class="s-GQCXmK5OKySU"
-      >
-        Vos paramètres
-      </h1>
-    </div>
+    />
   </header>
   <!--&lt;Header&gt;-->
    
   <section
     class="s-GQCXmK5OKySU"
   >
-    <h2
-      class="s-GQCXmK5OKySU"
-    >
-      Votre compte
-    </h2>
-     
-    <fieldset
-      class="s-GQCXmK5OKySU"
+    <span
+      class="s-j2LTsWktqK_4"
     >
       <div
-        class="s-GQCXmK5OKySU"
+        class="pane s-j2LTsWktqK_4"
       >
-        Vous avez relié ce compte à votre adresse "john.clark@gmail.com"
-      </div>
-       
-      <label
-        class="s-GQCXmK5OKySU"
-        for="username"
-      >
-        Pseudo : 
-      </label>
-       
-      <span
-        class="with-progress s-GQCXmK5OKySU"
-      >
+        <h2
+          class="s-j2LTsWktqK_4"
+        >
+          Votre compte
+        </h2>
+        
+         
         <fieldset
-          class="s-Fe6WNbR-55zp"
-        >
-           
-          <input
-            class="s-Fe6WNbR-55zp"
-            name="username"
-          />
-        </fieldset>
-        <!--&lt;Input&gt;-->
-         
-        <span
           class="s-GQCXmK5OKySU"
-        />
-         
-      </span>
-       
-      <span
-        class="s-GQCXmK5OKySU"
-      >
-        Avatar : 
-      </span>
-       
-      <span
-        class="aligned s-GQCXmK5OKySU"
-      >
-        <figure
-          class="s-engCJu8q-fNe"
-          style="--dimension: 150px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
         >
-          <img
-            alt="avatar for John Clark"
-            class="s-engCJu8q-fNe hasImage"
-            height="150"
-            referrerpolicy="no-referrer"
-            src="https://avatars.dicebear.com/api/micah/tabulous-avatar-10.svg"
-            width="150"
-          />
-           
-        </figure>
-        <!--&lt;PlayerThumbnail&gt;-->
-         
-        <button
-          class="s-NMyTiX1zi6rz"
-        >
-          
-          <span
-            class="text s-NMyTiX1zi6rz"
+          <div
+            class="s-GQCXmK5OKySU"
           >
-            Changer
+            Vous avez relié ce compte à votre adresse "john.clark@gmail.com"
+          </div>
+           
+          <label
+            class="s-GQCXmK5OKySU"
+            for="username"
+          >
+            Pseudo : 
+          </label>
+           
+          <span
+            class="with-progress s-GQCXmK5OKySU"
+          >
+            <fieldset
+              class="s-Fe6WNbR-55zp"
+            >
+               
+              <input
+                class="s-Fe6WNbR-55zp"
+                name="username"
+              />
+            </fieldset>
+            <!--&lt;Input&gt;-->
+             
+            <span
+              class="s-GQCXmK5OKySU"
+            />
+             
           </span>
-          
-          
-        </button>
-        <!--&lt;Button&gt;-->
-         
-         
-        <!--&lt;Portal&gt;-->
-        <!--&lt;Dialogue&gt;-->
-        <!--&lt;ConfirmDialogue&gt;-->
-        <!--&lt;AvatarDialogue&gt;-->
-      </span>
-    </fieldset>
+           
+          <label
+            class="s-GQCXmK5OKySU"
+            for="avatar"
+          >
+            Avatar : 
+          </label>
+           
+          <span
+            class="aligned s-GQCXmK5OKySU"
+          >
+            <figure
+              class="s-engCJu8q-fNe"
+              style="--dimension: 150px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+            >
+              <img
+                alt="avatar for John Clark"
+                class="s-engCJu8q-fNe hasImage"
+                height="150"
+                referrerpolicy="no-referrer"
+                src="https://avatars.dicebear.com/api/micah/tabulous-avatar-10.svg"
+                width="150"
+              />
+               
+            </figure>
+            <!--&lt;PlayerThumbnail&gt;-->
+             
+            <button
+              class="has-text s-NMyTiX1zi6rz"
+              id="avatar"
+            >
+              
+              <span
+                class="text s-NMyTiX1zi6rz"
+              >
+                Changer
+              </span>
+              
+              
+            </button>
+            <!--&lt;Button&gt;-->
+             
+             
+            <!--&lt;Portal&gt;-->
+            <!--&lt;Dialogue&gt;-->
+            <!--&lt;ConfirmDialogue&gt;-->
+            <!--&lt;AvatarDialogue&gt;-->
+          </span>
+        </fieldset>
+      </div>
+    </span>
+    <!--&lt;Pane&gt;-->
   </section>
+   
+  <footer
+    class="s-_Wq18H0k1xjH"
+  >
+    <section
+      class="s-_Wq18H0k1xjH"
+    >
+      © 
+      2023
+       
+      Tabulous.fr. Tous droits réservés.
+    </section>
+     
+    <a
+      class="s-_Wq18H0k1xjH"
+      href="/terms-of-service"
+    >
+      Mentions Légales & Conditions Générales d'Utilisation
+    </a>
+     
+    <a
+      class="s-_Wq18H0k1xjH"
+      href="#top"
+      title="Défiler jusqu'en haut"
+    >
+      <i
+        class="material-icons s-_Wq18H0k1xjH"
+      >
+        vertical_align_top
+      </i>
+    </a>
+  </footer>
+  <!--&lt;PageFooter&gt;-->
 </main>
 `;

@@ -62,14 +62,26 @@ labels:
   game-min-age: '{minAge}+'
   game-min-time: "{minTime}'"
   game-publishers: 'Distribué par : '
+  help-add-to-selection: Sélectionne plusieurs objets.
+  help-clear-selection: Désélectionne les objets.
+  help-detail: Voir l'objet en plein écran, s'il le supporte.
+  help-flip: Retourne l'objet (ou la sélection), si le jeu le supporte.
+  help-open-menu: Ouvre le menu des actions de l'objet (ou de la sélection), s'il y des actions possibles.
+  help-move: Déplace l'objet (ou la sélection), s'il n'est pas figé.
+  help-pan-camera: Déplace la caméra.
+  help-rotate: Tourne l'object (ou la sélection), si je jeu le supporte.
+  help-rotate-camera: Pivote et contrôle l'inclinaison de la caméra.
+  help-zoom: Zoome ou dézoome.
   home: Accueil
   host: hôte
   last-updated: 'Dernière mise à jour : { published, date, date-only }'
   lobby-description: Invitez vos ami·e·s puis décidez à quel jeu jouer.
   lobby-deleted: 'Salon supprimé !'
   lobby-instructions: Pour transformer ce salon en jeu, choisissez un de vos jeux disponibles.
+  log-in: Connexion
   manual-provider: Vous avez un compte manuel dont l'identifiant de connextion est "{id}"
   new-game-invite: Vous avez été invité·e à jouer !
+  no-actions: Rien pour cette sélection
   no-games-yet: Rien pour l'instant ! Choisissez un jeu disponible.
   oauth-provider: Vous avez relié ce compte à votre adresse "{email}"
   old-enough: Je déclare avoir plus de 15 ans ou être autorisé·e par l’un de mes parents
@@ -89,7 +101,7 @@ page-titles:
   create-game: Tabulous • Nouvelle partie
   game: Tabulous • Jeu
   home: Tabulous • Accueil
-  log-in: Tabulous • Connection
+  log-in: Tabulous • Connexion
   terms-of-service: Tabulous • Mentions Légales & Conditions Générales d'Utilisation
 placeholders:
   avatar: Url
@@ -113,13 +125,12 @@ titles:
   invite: Qui vas tu inviter ?
   legal: Mentions légales
   lobby: Salon
-  log-in: Bienvenue !
-  object-controls: Contrôler un objet
+  log-in: Connexion
+  object-controls: Contrôler les objets
   player-list: Joueur·euse·s
-  selection-controls: Contrôler un ou plusieurs objets
   terms-of-service: Conditions générales d’utilisation
   username: Votre peusdo
-  welcome: Bienvenue sur Tabulous !
+  welcome: Bienvenue !
   your-games: Parties en cours
 tooltips:
   add-to-selection: Ajouter à la sélection
@@ -131,30 +142,6 @@ tooltips:
   flip-stack: Retourner la pile
   flip: Retourner
   game-menu: Menu des commandes
-  help-controls: Contrôles de l'interface
-  help-double-left-object: Double clic gauche sur un objet
-  help-double-pointer-object: Double tap sur un objet
-  help-left-drag-object: Tiré-déplacé un objet avec le clic gauche
-  help-left-drag: Tiré-déplacé avec le clic gauche
-  help-left-object: Clic gauche sur un objet
-  help-left-outside-selection: Clic gauche en dehors de la sélection
-  help-long-left-drag-select: Tiré-déplacé avec un clic gauche long
-  help-long-left-object: Clic gauche long sur un objet
-  help-long-pointer-drag-select: Tiré-déplacé avec un tap long
-  help-long-pointer-object: Tap long sur un objet
-  help-mouse-wheel: Molette de la souris
-  help-new-camera: Clic sur le bouton "nouvelle caméra"
-  help-pinch: Pincer
-  help-pointer-drag-object: Tiré-déplacé un objet avec un tap
-  help-pointer-drag: Tiré-déplacé avec un tap
-  help-pointer-object: Tap sur un objet
-  help-pointer-outside-selection: Tap en dehors de la sélection
-  help-restore-camera: Clic sur un emplacement de caméra
-  help-right-drag: Tiré-déplacé avec le clic droit
-  help-right-object: Clic droit sur un objet
-  help-two-pointers-drag: Tap avec deux doigts sur un objet
-  help-two-pointers-object: Tap avec deux doigts sur un objet
-  help-update-camera: Clic long sur un emplacement de caméra
   increment: Assembler
   lock: Verrouiller
   move: Déplacer
@@ -197,7 +184,7 @@ markdown:
     - la société VERCEL, située 340 S Lemon Ave \#4133, Walnut CA 91789 Etats-Unis, joignable par téléphone au +1 951-383-6898 et par email à [support@vercel.com](mailto:support@vercel.com)
 
   terms-of-service: |
-    ## Article 1 - Objet 
+    ### Article 1 - Objet 
 
     Les présentes conditions générales d’utilisation (ci-après « CGU ») ont pour objet de définir les conditions dans lesquelles toute personne (ci-après l’« Utilisateur ») peut accéder, consulter ou utiliser la Plateforme.
 
@@ -205,7 +192,7 @@ markdown:
 
     Les présentes CGU sont susceptibles d’être modifiées à tout moment sans préavis. L’Utilisateur devra en conséquence vérifier régulièrement la Plateforme pour rester informé de tout changement ou mise à jour des CGU. 
 
-    ## Article 2 - Définitions 
+    ### Article 2 - Définitions 
 
     En sus des termes définis ci-dessus, les termes suivants auront la signification suivante : 
 
@@ -219,21 +206,21 @@ markdown:
 
     « **Joueur(s)** » désigne toute personne ayant créé un Compte.
 
-    « **Services** Tiers » désigne tout  service tiers au moyen desquels l’Utilisateur peut choisir de se connecter à la Plateforme (par exemple Facebook, Google, Discord, Twitch, etc).
+    « **Services Tiers** » désigne tout  service tiers au moyen desquels l’Utilisateur peut choisir de se connecter à la Plateforme (par exemple Facebook, Google, Discord, Twitch, etc).
 
     « **Utilisateur(s)** » désigne tout internaute navigant sur la Plateforme en qualité de Joueur ou de Visiteur. 
 
     « **Visiteur(s)** » désigne tout internaute navigant sur la Plateforme sans y avoir créé un Compte. 
 
-    ## Article 3 - Utilisation de la Plateforme
+    ### Article 3 - Utilisation de la Plateforme
 
-    ### 3.1 Accès gratuit
+    #### 3.1 Accès gratuit
 
     La Plateforme est accessible gratuitement par tout Utilisateur disposant d’un accès à internet. 
 
     Tous les frais supportés par l’Utilisateur pour accéder à la Plateforme demeurent à sa charge. 
 
-    ### 3.2 Création d’un Compte
+    #### 3.2 Création d’un Compte
 
     Afin de pouvoir accéder aux Jeux disponibles sur la Plateforme en vue d’y jouer, l’Utilisateur doit s’inscrire et se connecter à la Plateforme via le recours à un Service Tiers. 
 
@@ -245,19 +232,19 @@ markdown:
 
     Lors de la première connexion à la Plateforme, l’Utilisateur déclare au moyen d’une case à cocher qu’il est âgé de plus de 15 ans ou qu’il a été autorisé par l’un de ses parents ou le titulaire de l’autorité parentale à l’utilisation de ses noms, prénoms, adresse mail, avatar et pseudonyme (ci-après les « **Données Personnelles du Mineur** ») pour créer le Compte, accéder à la Plateforme et jouer aux Jeux.
 
-    ### 3.3 Jeux en mode multi-joueurs
+    #### 3.3 Jeux en mode multi-joueurs
 
     Les Jeux mis à la disposition des Joueurs peuvent être joués en mode multi-joueurs, chaque Joueur pouvant créer une partie de jeu en invitant le(s) Joueur(s) de son choix, sous réserve de l’acceptation du Joueur invité à participer la partie de jeu. 
 
-    ### 3.4 Chat 
+    #### 3.4 Chat 
 
     Lors de la tenue d’une partie de Jeu en mode multi-joueurs, un Chat est mis à la disposition des Joueurs afin de leur permettre d’échanger tout Contenu par écrit ou par visio. 
 
     Ce Contenu n’est accessible que par les Joueurs d’une même partie. Tout Contenu est accessible tant que le Joueur conserve la partie de Jeux à l’occasion de laquelle le Contenu a été échangé et ce jusqu’à ce que le Joueur décide de supprimer la partie de jeu. Par exception, le Contenu en visio ne fait l’objet d’aucun enregistrement. 
 
-    ## Article 4 - Garantie et responsabilité de l’Editeur
+    ### Article 4 - Garantie et responsabilité de l’Editeur
 
-    ### 4.1 Fonctionnement de la Plateforme
+    #### 4.1 Fonctionnement de la Plateforme
 
     L’Editeur met en œuvre tous les moyens raisonnables à sa disposition pour assurer la disponibilité de la Plateforme 7 jours sur 7 et 24 heures sur 24, à l’exception de cas de force majeure et d’opérations de maintenance ou de problèmes affectant les réseaux de télécommunications. 
 
@@ -272,21 +259,21 @@ markdown:
 
     Il appartient à l’Utilisateur de prendre toutes les mesures appropriées pour protéger son matériel de la contamination par d’éventuels virus ou programmes malfaisants. 
 
-    ### 4.2 Liens vers des sites tiers 
+    #### 4.2 Liens vers des sites tiers 
 
     La Plateforme peut contenir des liens vers d’autres sites qui ne sont pas exploités par l’Editeur. 
 
     L’Editeur ne peut en aucune manière être tenu responsable de la mise à disposition de ces liens permettant l’accès à des sites et sources externes, et ne peut supporter aucune responsabilité quant aux contenus, publicités, produits, services ou tout autre matériel disponible sur ou à partir de ces sites ou sources externes qui ne sont ni vérifiées ni approuvées par celui-ci.
 
-    ### 4.3 Comportement des Utilisateurs
+    #### 4.3 Comportement des Utilisateurs
 
     L’Editeur ne saurait être tenu responsable des conséquences de la violation par un Utilisateur de ses obligations au titre des CGU, du non-respect des obligations de l’Utilisateur et des éventuels dommages causés par un Utilisateur à un autre, notamment du fait du Contenu partagé sur le Chat lors de parties de jeu en mode multi-joueurs. 
 
     Il appartient à chaque Utilisateur de signaler tout Contenu qu’il estime inapproprié à l’Editeur en adressant un signalement écrit à l’adresse suivante : [support@tabulous.fr](mailto:support@tabulous.fr). 
 
-    ## Article 5 - Obligations de l’Utilisateur
+    ### Article 5 - Obligations de l’Utilisateur
 
-    ### 5.1 Obligation de l’Utilisateur
+    #### 5.1 Obligation de l’Utilisateur
 
     L’Utilisateur s’engage à :  
 
@@ -302,13 +289,13 @@ markdown:
 
     A ce titre, l’Utilisateur garantit l’Editeur contre tout recours, de quelque nature qu’il soit, fondé directement ou indirectement sur le caractère illicite ou contraire aux CGU d’un Contenu.
 
-    ### 5.2 Sanctions à l’égard de l’Utilisateur  
+    #### 5.2 Sanctions à l’égard de l’Utilisateur  
 
     En cas de manquement de l’Utilisateur à ses obligations, l’Editeur se réserve le droit de suspendre ou d’exclure l’Utilisateur et/ou de supprimer son Compte, et ce sans préjudice des éventuelles demandes de dédommagement de la part de l’Editeur ou d’un tiers.
 
     Il est rappelé que les violations des obligations prévues à l’article 5.1 peuvent conduire à des poursuites civiles et pénales. 
 
-    ## Article 6 - Propriété intellectuelle
+    ### Article 6 - Propriété intellectuelle
 
     La Plateforme est la propriété exclusive de l’Editeur. 
 
@@ -316,13 +303,13 @@ markdown:
 
     Les présentes CGU n’emportent aucune cession de droits de propriété intellectuelle attachés à la Plateforme ou à ses éléments. 
 
-    ## Article 7 – Cookies  
+    ### Article 7 – Cookies  
 
     La Plateforme utilise des cookies pour permettre aux Joueurs de rester connectés pendant l’utilisation de la Plateforme. 
 
     Il s’agit de cookies nécessaires au bon fonctionnement de la Plateforme. 
 
-    ## Article 8 – Données Personnelles
+    ### Article 8 – Données Personnelles
 
     L’Editeur étant une personne physique qui met à la disposition des Utilisateurs la Plateforme gratuitement et à des fins non professionnelles, les dispositions du RGPD ne sont pas applicables.
 
@@ -340,6 +327,6 @@ markdown:
 
     Un parent ou un titulaire de l’autorité parentale peut contrôler, supprimer, modifier ou s’opposer à la collecte des Données Personnelles du Mineur concernant son enfant en adressant une demande à l’adresse suivante : [support@tabulous.fr](mailto:support@tabulous.fr).
 
-    ## Article 9 - Loi applicable et Tribunal compétent
+    ### Article 9 - Loi applicable et Tribunal compétent
 
     Les présentes CGU sont soumises au droit français. Tout litige pouvant résulter de l’interprétation et/ ou de l’exécution des présentes CGU sera de la compétence des juridictions françaises.

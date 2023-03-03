@@ -1,17 +1,16 @@
 <script>
   import { logOut } from '@src/stores'
-  import Logo from '@src/svg/tabulous-logo-large.svg'
+  import Logo from '@src/svg/tabulous-logo.svg'
   import { _ } from 'svelte-intl'
-  
+
   import { goto } from '$app/navigation'
-  
-  import Breadcrumb from './Breadcrumb.svelte'
+  import { page } from '$app/stores'
+
   import Button from './Button.svelte'
   import Dropdown from './Dropdown.svelte'
   import PlayerThumbnail from './PlayerThumbnail.svelte'
 
-  export let user
-  export let breadcrumb
+  export let user = null
 
   const menu = [
     {
@@ -25,46 +24,53 @@
   function handleSelectMenuItem({ detail: item }) {
     item.act()
   }
+
+  function handleClickLogo() {
+    goto('/')
+  }
 </script>
 
 <header>
   <nav>
-    <span>
-      <Breadcrumb steps={breadcrumb} />
+    <button on:click={handleClickLogo}><Logo /></button>
+    <div>
+      <slot />
+    </div>
+    <span class="nav">
+      {#if user}
+        <Dropdown
+          transparent
+          valueAsText={false}
+          withArrow={false}
+          on:select={handleSelectMenuItem}
+          options={menu}
+        >
+          <PlayerThumbnail slot="icon" player={user} dimension={30} />
+        </Dropdown>
+      {:else if $page.route.id !== '/login'}
+        <Button icon="account_circle" primary on:click={() => goto('/login')} />
+      {/if}
     </span>
-    {#if user}
-      <Dropdown
-        transparent
-        valueAsText={false}
-        withArrow={false}
-        on:select={handleSelectMenuItem}
-        options={menu}
-      >
-        <PlayerThumbnail slot="icon" player={user} dimension={30} />
-      </Dropdown>
-    {:else}
-      <Button icon="account_circle" secondary on:click={() => goto('/login')} />
-    {/if}
   </nav>
-  <div>
-    <Logo />
-    <slot />
-  </div>
+  <div />
 </header>
 
 <style lang="postcss">
   header {
-    @apply w-full py-4 px-4 bg-$secondary-light sticky top-0 z-10 opacity-80;
+    @apply w-full py-4 px-4 bg-$secondary sticky top-0 z-20 opacity-90 border-b border-$secondary-dark;
   }
 
-  div {
-    @apply relative lg:w-3/4 lg:mx-auto;
-  }
   nav {
-    @apply flex lg:w-3/4 lg:mx-auto items-center;
+    @apply grid grid-cols-[4rem,1fr,auto] gap-4 items-center;
 
-    > span {
-      @apply flex-1;
+    button {
+      :global(svg) {
+        @apply h-full w-full;
+      }
+    }
+
+    .nav {
+      @apply flex gap-8 items-center;
     }
   }
 </style>

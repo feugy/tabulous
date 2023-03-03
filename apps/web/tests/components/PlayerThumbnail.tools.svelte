@@ -15,7 +15,15 @@
   layout="centered"
 >
   <Tool name="Avatar" props={{ dimension, player: { ...player, avatar } }} />
+  <Tool
+    name="Colored Avatar"
+    props={{ dimension, player: { ...player, avatar, color: 'blue' } }}
+  />
   <Tool name="Text" props={{ dimension }} />
+  <Tool
+    name="Colored Text"
+    props={{ dimension, player: { ...player, color: 'purple' } }}
+  />
   <Tool name="Small text" props={{ dimension: 50 }} />
   <Tool
     name="Positionned avatar"

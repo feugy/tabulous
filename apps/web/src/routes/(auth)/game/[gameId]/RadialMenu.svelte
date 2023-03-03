@@ -1,7 +1,9 @@
 <script context="module">
   import ms from 'ms'
-
+  import { fade } from 'svelte/transition'
+  
   import { browser } from '$app/environment'
+
   let enterDuration = 0
   if (browser) {
     enterDuration = ms(
@@ -55,11 +57,17 @@
   }
 </script>
 
-{#if open && items?.length}
+{#if open && Array.isArray(items)}
   <aside
     role="menu"
+    transition:fade={{ duration: enterDuration }}
     style={`left: ${left}; top: ${top}; --size:${radius * 2}px;`}
   >
+    {#if !items.length}
+      <span class="no-actions" transition:fade={{ delay: enterDuration }}
+        >{$_('labels.no-actions')}</span
+      >
+    {/if}
     <ul on:pointerdown|stopPropagation on:mouseenter on:mouseleave>
       {#each items as { onClick, title, badge, max, ...buttonProps }, i}
         {#key buttonProps}
@@ -93,10 +101,16 @@
 
 <style lang="postcss">
   aside {
-    @apply absolute rounded-full border-2 flex items-center z-10
-           justify-center border-$primary-light transform-gpu -translate-x-1/2 -translate-y-1/2;
+    @apply absolute rounded-full border-3 flex items-center z-10
+           justify-center border-$base-darker transform-gpu -translate-x-1/2 -translate-y-1/2;
     width: var(--size);
     height: var(--size);
+  }
+
+  .no-actions {
+    @apply flex rounded-full bg-$base-light items-center text-center;
+    height: 80%;
+    width: 80%;
   }
 
   ul {

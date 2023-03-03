@@ -50,7 +50,7 @@ describe('Toaster store', () => {
       const contentKey = 'labels.home'
       toastError({ contentKey })
       expect(messageReceived).toHaveBeenCalledWith({
-        color: 'var(--accent-warm)',
+        color: 'var(--accent-warm-lighter)',
         icon: 'error_outline',
         content: translate(contentKey)
       })
@@ -62,7 +62,7 @@ describe('Toaster store', () => {
       const player = { username: 'John' }
       toastError({ contentKey, player })
       expect(messageReceived).toHaveBeenCalledWith({
-        color: 'var(--accent-warm)',
+        color: 'var(--accent-warm-lighter)',
         icon: 'error_outline',
         content: translate(contentKey, { player })
       })

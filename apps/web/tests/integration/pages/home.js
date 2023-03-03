@@ -139,7 +139,7 @@ export const HomePage = mixin(
         game,
         `no game link with title "${title}" and rank #${rank} found`
       ).toBeDefined()
-      await setTimeout(500)
+      await game.hover()
       await game.getByRole('button', { name: 'delete' }).click()
       await expect(this.deleteGameDialogue).toBeVisible()
     }

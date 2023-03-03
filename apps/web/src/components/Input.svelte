@@ -44,25 +44,25 @@
   }
 
   legend {
-    @apply absolute top-1 pointer-events-none transition-transform duration-$short origin-top-left;
+    @apply absolute top-1 pointer-events-none transition-transform duration-$short origin-top-left text-$base-darkest;
 
     &.has-value {
       @apply transform-gpu -translate-y-4 scale-75;
     }
 
     &.disabled {
-      @apply text-$disabled;
+      @apply text-$ink-dark;
     }
   }
 
   input {
-    @apply py-1 w-full border-b border-$secondary-light bg-transparent transition duration-$short;
+    @apply py-1 w-full border-b border-$base-darker bg-transparent transition duration-$short text-$primary-darkest;
 
     &:focus {
-      @apply outline-none border-$primary-light;
+      @apply outline-none border-$primary-darker;
     }
     &:disabled {
-      @apply text-$disabled;
+      @apply text-$ink-dark;
     }
   }
 </style>

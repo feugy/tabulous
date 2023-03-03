@@ -8,17 +8,13 @@
 </script>
 
 <section>
-  {#if titleKey}<h1>{$_(titleKey)}</h1>{/if}
+  {#if titleKey}<h2>{$_(titleKey)}</h2>{/if}
   <SvelteMarkdown source={$_(contentKey)} {options} />
 </section>
 
 <style lang="postcss">
   section {
     @apply inline-block;
-
-    h1 {
-      @apply text-3xl underline underline-$primary-light mt-8 mb-6;
-    }
 
     :global(p) {
       @apply my-2 leading-relaxed text-justify;
@@ -32,13 +28,22 @@
       @apply ml-6 mb-2;
     }
 
-    :global(h2),
     :global(h3) {
-      @apply text-xl underline underline-$primary-light mt-6 mb-4;
+      @apply px-8 py-2 mt-4 mb-2 bg-$primary-light;
+
+      --corner-cut: 1rem;
+      clip-path: polygon(
+        0 var(--corner-cut),
+        var(--corner-cut) 0,
+        100% 0,
+        100% calc(100% - var(--corner-cut)),
+        calc(100% - var(--corner-cut)) 100%,
+        0 100%
+      );
     }
 
-    :global(h3) {
-      @apply mx-4 text-base;
+    :global(h4) {
+      @apply py-2 mx-8 mt-4 mb-2 underline underline-current;
     }
   }
 </style>

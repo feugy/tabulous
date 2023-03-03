@@ -43,6 +43,7 @@
 
 <article
   class:lobby={isALobby}
+  class:isCurrent
   role="link"
   tabindex="0"
   on:click={handleClick}
@@ -77,24 +78,56 @@
 
 <style lang="postcss">
   article {
-    @apply inline-flex flex-col p-6 rounded shadow-md cursor-pointer 
-           bg-$base-lighter transition duration-$short;
+    @apply inline-flex flex-col p-4 m-2 cursor-pointer bg-$base-light;
+    transition: background-color var(--long), color var(--medium) var(--short),
+      transform var(--short);
+
+    --corner-cut: 1rem;
+    clip-path: polygon(
+      0 var(--corner-cut),
+      var(--corner-cut) 0,
+      100% 0,
+      100% calc(100% - var(--corner-cut)),
+      calc(100% - var(--corner-cut)) 100%,
+      0 100%
+    );
+
+    &:not(.isCurrent) .buttons {
+      @apply invisible;
+    }
 
     &:hover {
-      @apply transform-gpu scale-105;
+      @apply transform-gpu scale-105 bg-$base-darker text-$ink-dark;
+
+      .buttons {
+        @apply visible;
+      }
+
+      .guests {
+        @apply text-$primary-lighter;
+      }
     }
 
     &.lobby {
-      @apply bg-$secondary-lightest;
+      @apply bg-$secondary-darkest text-$ink-dark;
+
+      .title {
+        @apply text-$secondary-light;
+      }
+
+      .guests {
+        @apply text-$primary-lighter;
+      }
     }
   }
 
   .title {
-    @apply inline-flex flex-nowrap items-center gap-4 mb-2;
+    @apply inline-flex flex-nowrap gap-4;
   }
 
   .guests {
-    @apply text-$primary;
+    @apply text-$primary-darkest;
+    transition: color var(--medium) var(--short);
   }
 
   h3 {

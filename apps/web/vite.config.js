@@ -26,7 +26,13 @@ export default defineConfig(({ mode }) => ({
       path: 'tests',
       setupPath: './atelier/setup',
       uiSettings: {
-        backgrounds: ['white', '', '#e0e0e0', '#a0a0a0', 'black']
+        backgrounds: [
+          'linear-gradient(180deg, #6096b4 0%, #9cbbcf 100%)',
+          '#6096b4',
+          '#4d0700',
+          'white',
+          'black'
+        ]
       }
     })
   ],

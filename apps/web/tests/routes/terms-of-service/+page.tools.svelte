@@ -1,11 +1,16 @@
 <script>
   import { Tool, ToolBox } from '@atelier-wb/svelte'
   import TermsOfServicePage from '@src/routes/terms-of-service/+page.svelte'
+  import { setSvelteUrl } from '@tests/atelier/setup'
 
   const player = { id: 'abc123', username: 'Jane Doe' }
 </script>
 
-<ToolBox component={TermsOfServicePage} name="Routes/terms-of-service">
+<ToolBox
+  component={TermsOfServicePage}
+  name="Routes/terms-of-service"
+  setup={() => setSvelteUrl('/terms-of-service')}
+>
   <Tool name="Anonymous" />
   <Tool
     name="Connected"
