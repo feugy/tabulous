@@ -51,7 +51,7 @@
     @apply w-4 h-4 rounded-full -mt-2 -ml-2;
     animation-duration: 400ms;
     transform-origin: center;
-    box-shadow: 0 0 0.15rem 0 lime;
+    box-shadow: 0 0 0.15rem 0 var(--svg-highlight);
   }
 
   @keyframes -global-halo {

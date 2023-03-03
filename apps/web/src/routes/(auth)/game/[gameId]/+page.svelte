@@ -31,6 +31,7 @@
   import { onMount } from 'svelte'
   import { _ } from 'svelte-intl'
 
+  import { browser } from '$app/environment'
   import { beforeNavigate, goto } from '$app/navigation'
   import { page } from '$app/stores'
 
@@ -56,6 +57,10 @@
   let dimensionSubscription
   let gameParameters
   let friends
+
+  $: if (browser && $playerColor) {
+    document.documentElement.style.setProperty('--svg-highlight', $playerColor)
+  }
 
   onMount(async () => {
     engine = initEngine({ canvas, interaction, longTapDelay, hand })
