@@ -15,9 +15,12 @@ describe('/game/[gameId] Radial Menu component', () => {
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 
-  it('does not show without items', () => {
+  it('displays message without items', () => {
     renderComponent({ items: [] })
-    expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+    const menu = screen.getByRole('menu')
+    expect(menu).toBeInTheDocument()
+    expect(menu.children[0]).toHaveClass('no-actions')
+    expect(screen.queryAllByRole('button')).toHaveLength(0)
   })
 
   it('displays relevant buttons', async () => {

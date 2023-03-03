@@ -5,8 +5,9 @@ HTMLCollection [
   <aside
     class="s-ZVitxLYKaOVI"
     role="menu"
-    style="left: 25%; top: 25%; --size:130px;"
+    style="left: 25%; top: 25%; --size: 130px; animation: __svelte_4004126939_0 150ms linear 0ms 1 both;"
   >
+     
     <ul
       class="s-ZVitxLYKaOVI"
     >
@@ -35,7 +36,8 @@ HTMLCollection [
         style="animation: __svelte_3890762829_0 150ms linear 112.5ms 1 both;"
       >
         <button
-          class="secondary s-NMyTiX1zi6rz"
+          class="s-NMyTiX1zi6rz"
+          secondary="true"
         >
           <span
             class="material-icons s-NMyTiX1zi6rz"
@@ -69,8 +71,9 @@ HTMLCollection [
   <aside
     class="s-ZVitxLYKaOVI"
     role="menu"
-    style="left: 25%; top: 25%; --size:180px;"
+    style="left: 25%; top: 25%; --size: 180px; animation: __svelte_4004126939_0 150ms linear 0ms 1 both;"
   >
+     
     <ul
       class="s-ZVitxLYKaOVI"
     >
@@ -99,7 +102,8 @@ HTMLCollection [
         style="animation: __svelte_1277330016_0 150ms linear 112.5ms 1 both;"
       >
         <button
-          class="secondary s-NMyTiX1zi6rz"
+          class="s-NMyTiX1zi6rz"
+          secondary="true"
         >
           <span
             class="material-icons s-NMyTiX1zi6rz"
@@ -119,7 +123,8 @@ HTMLCollection [
         style="animation: __svelte_2128706359_0 150ms linear 225ms 1 both;"
       >
         <button
-          class="secondary s-NMyTiX1zi6rz"
+          class="s-NMyTiX1zi6rz"
+          secondary="true"
         >
           <span
             class="material-icons s-NMyTiX1zi6rz"
@@ -215,6 +220,36 @@ HTMLCollection [
       </li>
       
     </ul>
+     
+  </aside>,
+  <button
+    class="s-NMyTiX1zi6rz"
+  >
+    
+    
+    
+    Close
+  </button>,
+]
+`;
+
+exports[`No items 1`] = `
+HTMLCollection [
+  <aside
+    class="s-ZVitxLYKaOVI"
+    role="menu"
+    style="left: 25%; top: 25%; --size: 110px; animation: __svelte_4004126939_0 150ms linear 0ms 1 both;"
+  >
+    <span
+      class="no-actions s-ZVitxLYKaOVI"
+      style="animation: __svelte_3516408220_0 400ms linear 150ms 1 both;"
+    >
+      Rien pour cette sélection
+    </span>
+     
+    <ul
+      class="s-ZVitxLYKaOVI"
+    />
      
   </aside>,
   <button
