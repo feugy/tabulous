@@ -1647,9 +1647,9 @@ describe('Game interaction model', () => {
 
     it.each([
       { key: 'ArrowUp', alpha: 0, beta: Math.PI / -24 },
-      { key: 'ArrowLeft', alpha: Math.PI / -4, beta: 0 },
+      { key: 'ArrowLeft', alpha: Math.PI / -8, beta: 0 },
       { key: 'ArrowDown', alpha: 0, beta: Math.PI / 24 },
-      { key: 'ArrowRight', alpha: Math.PI / 4, beta: 0 }
+      { key: 'ArrowRight', alpha: Math.PI / 8, beta: 0 }
     ])(`rotate camera on 'ctrl+$key' key`, ({ key, alpha, beta }) => {
       inputManager.onKeyObservable.notifyObservers({
         type: 'keyDown',
