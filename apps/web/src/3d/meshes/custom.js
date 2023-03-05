@@ -1,14 +1,14 @@
-// mandatory side effect
-import '@babylonjs/loaders/OBJ'
-
 import { SceneLoader } from '@babylonjs/core/Loading/sceneLoader.js'
-import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
+import { Vector2, Vector3 } from '@babylonjs/core/Maths/math.vector.js'
+import { OBJFileLoader } from '@babylonjs/loaders/OBJ'
 
 import { controlManager } from '../managers/control'
 import { customShapeManager } from '../managers/custom-shape'
 import { materialManager } from '../managers/material'
 import { registerBehaviors, serializeBehaviors } from '../utils/behaviors'
 import { getGroundAltitude } from '../utils/gravity'
+
+OBJFileLoader.UV_SCALING = new Vector2(1, -1)
 
 /**
  * Creates a custom mesh by importing .babylon format.

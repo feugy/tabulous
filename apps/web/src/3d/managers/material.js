@@ -146,6 +146,7 @@ function buildMaterial(materialByUrl, baseUrl, url, scene) {
   } else {
     material.diffuseTexture = new Texture(adaptTextureUrl(baseUrl, url), scene)
     material.diffuseTexture.hasAlpha = true
+    // new ColorizeMaterialPlugin(material)
     attachMaterialError(material)
   }
   // material.freeze()
@@ -184,3 +185,36 @@ function attachMaterialError(material) {
     }
   }
 }
+
+/*
+Example of Grayscale shader applied to a material.
+Could be extended to take a color and colorize the material.
+https://doc.babylonjs.com/features/featuresDeepDive/materials/using/materialPlugins
+https://gamedev.stackexchange.com/questions/75923/colorize-with-a-given-color-a-texture
+class ColorizeMaterialPlugin extends MaterialPluginBase {
+  constructor(material) {
+    super(material, 'Colorize', 200, { COLORIZE: false })
+    this._enable(true)
+  }
+
+  prepareDefines(defines) {
+    defines.COLORIZE = true
+  }
+
+  getClassName() {
+    return 'BlackAndWhitePluginMaterial'
+  }
+
+  getCustomCode(shaderType) {
+    if (shaderType === 'fragment') {
+      return {
+        CUSTOM_FRAGMENT_MAIN_END: `
+                    float luma = gl_FragColor.r*0.299 + gl_FragColor.g*0.587 + gl_FragColor.b*0.114;
+                    gl_FragColor = vec4(luma, luma, luma, 1.0);
+                `
+      }
+    }
+    return null
+  }
+}
+*/
