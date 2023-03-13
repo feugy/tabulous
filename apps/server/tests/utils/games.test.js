@@ -6,15 +6,17 @@ import {
   buildCameraPosition,
   createMeshes,
   decrement,
+  draw,
   drawInHand,
   enrichAssets,
   findAnchor,
-  findMeshById,
+  findMesh,
   findOrCreateHand,
   getParameterSchema,
   snapTo,
   stackMeshes,
-  unsnap} from '../../src/utils/games.js'
+  unsnap
+} from '../../src/utils/games.js'
 import { cloneAsJSON } from '../test-utils.js'
 
 describe('createMeshes()', () => {
@@ -497,6 +499,52 @@ describe('enrichAssets()', () => {
   })
 })
 
+describe('draw()', () => {
+  let game
+
+  beforeEach(() => {
+    game = {
+      hands: [],
+      meshes: [
+        { id: 'A' },
+        {
+          id: 'B',
+          anchorable: { anchors: [{ id: 'discard', snappedId: 'C' }] }
+        },
+        { id: 'C', stackable: { stackIds: ['A', 'E', 'D'] } },
+        { id: 'D' },
+        { id: 'E' }
+      ]
+    }
+  })
+
+  it('draws one mesh from a stack', () => {
+    const { meshes } = game
+    expect(draw('C', 1, game.meshes)).toEqual([meshes[3]])
+    expect(meshes[2].stackable.stackIds).toEqual(['A', 'E'])
+  })
+
+  it('draws several meshes from a stack', () => {
+    const { meshes } = game
+    expect(draw('C', 2, meshes)).toEqual([meshes[3], meshes[4]])
+    expect(meshes[2].stackable.stackIds).toEqual(['A'])
+  })
+
+  it('can deplete a stack', () => {
+    const { meshes } = game
+    expect(draw('C', 10, meshes)).toEqual([meshes[3], meshes[4], meshes[0]])
+    expect(meshes[2].stackable.stackIds).toEqual([])
+  })
+
+  it('does nothing on unstackable meshes', () => {
+    expect(draw('A', 1, game.meshes)).toEqual([])
+  })
+
+  it('does nothing on unknown meshes', () => {
+    expect(draw('K', 1, game.meshes)).toEqual([])
+  })
+})
+
 describe('drawInHand()', () => {
   const playerId = faker.datatype.uuid()
   let game
@@ -607,20 +655,20 @@ describe('drawInHand()', () => {
   })
 })
 
-describe('findMeshById()', () => {
+describe('findMesh()', () => {
   const meshes = Array.from({ length: 10 }, () => ({
     id: faker.datatype.uuid()
   }))
 
   it('returns existing meshes', () => {
-    expect(findMeshById(meshes[5].id, meshes)).toEqual(meshes[5])
-    expect(findMeshById(meshes[8].id, meshes)).toEqual(meshes[8])
+    expect(findMesh(meshes[5].id, meshes)).toEqual(meshes[5])
+    expect(findMesh(meshes[8].id, meshes)).toEqual(meshes[8])
   })
 
   it('returns null for unknown ids', () => {
-    expect(findMeshById(faker.datatype.uuid(), meshes)).toBeNull()
-    expect(findMeshById(meshes[0].id, [])).toBeNull()
-    expect(findMeshById(meshes[0].id)).toBeNull()
+    expect(findMesh(faker.datatype.uuid(), meshes)).toBeNull()
+    expect(findMesh(meshes[0].id, [])).toBeNull()
+    expect(findMesh(meshes[0].id)).toBeNull()
   })
 })
 
