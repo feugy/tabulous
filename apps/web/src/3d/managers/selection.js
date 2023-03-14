@@ -7,6 +7,7 @@ import { Mesh } from '@babylonjs/core/Meshes/mesh.js'
 import { Observable } from '@babylonjs/core/Misc/observable.js'
 
 import { makeLogger } from '../../utils/logger'
+import { isMeshLocked } from '../utils/behaviors'
 import { sortByElevation } from '../utils/gravity'
 import { isContaining } from '../utils/mesh'
 import { screenToGround } from '../utils/vector'
@@ -294,7 +295,11 @@ class SelectionManager {
 export const selectionManager = new SelectionManager()
 
 function addToSelection(allSelections, selection, observable, mesh, color) {
-  if (mesh && !allSelections.find(selection => selection.has(mesh))) {
+  if (
+    mesh &&
+    !isMeshLocked(mesh) &&
+    !allSelections.find(selection => selection.has(mesh))
+  ) {
     for (const added of [mesh, ...findAnchored(mesh)]) {
       selection.add(added)
       added.overlayColor = color

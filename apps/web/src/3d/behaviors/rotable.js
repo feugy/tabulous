@@ -6,6 +6,7 @@ import { controlManager } from '../managers/control'
 import {
   attachFunctions,
   attachProperty,
+  isMeshLocked,
   runAnimation
 } from '../utils/behaviors'
 import { applyGravity } from '../utils/gravity'
@@ -103,7 +104,7 @@ export class RotateBehavior extends AnimateBehavior {
       rotateAnimation,
       moveAnimation
     } = this
-    if (isAnimated || !mesh) {
+    if (isAnimated || !mesh || isMeshLocked(mesh)) {
       return
     }
     logger.debug({ mesh }, `start rotating ${mesh.id}`)

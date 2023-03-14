@@ -6,6 +6,7 @@ import {
   attachFunctions,
   attachProperty,
   detachFromParent,
+  isMeshLocked,
   runAnimation
 } from '../utils/behaviors'
 import { applyGravity } from '../utils/gravity'
@@ -83,7 +84,7 @@ export class FlipBehavior extends AnimateBehavior {
       flipAnimation,
       moveAnimation
     } = this
-    if (isAnimated || !mesh) {
+    if (isAnimated || !mesh || isMeshLocked(mesh)) {
       return
     }
     logger.debug({ mesh }, `start flipping ${mesh.id}`)

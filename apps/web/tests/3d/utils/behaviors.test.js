@@ -18,6 +18,7 @@ import {
   getTargetableBehavior,
   isMeshFlipped,
   isMeshInverted,
+  isMeshLocked,
   registerBehaviors,
   restoreBehaviors,
   runAnimation,
@@ -868,6 +869,21 @@ describe('isMeshInverted()', () => {
     box.parent = parent
     expect(isMeshInverted(parent)).toBe(true)
     expect(isMeshInverted(box)).toBe(true)
+  })
+})
+
+describe('isMeshLocked()', () => {
+  it('returns false for regular mesh', () => {
+    expect(isMeshLocked(box)).toBe(false)
+  })
+
+  it('returns true for inverted mesh', async () => {
+    box.addBehavior(new LockBehavior({ isLocked: true }), true)
+    expect(isMeshLocked(box)).toBe(true)
+    await box.metadata.toggleLock()
+    expect(isMeshLocked(box)).toBe(false)
+    await box.metadata.toggleLock()
+    expect(isMeshLocked(box)).toBe(true)
   })
 })
 

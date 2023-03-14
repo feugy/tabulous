@@ -97,7 +97,7 @@ describe('SelectionManager', () => {
         expect(manager.meshes.has(mesh)).toBe(true)
         expect(manager.meshes.size).toBe(1)
         expectSelected(mesh, colorByPlayerId.get(playerId))
-        expect(selectionChanged).toHaveBeenCalledTimes(1)
+        expect(selectionChanged).toHaveBeenCalledOnce()
         expect(selectionChanged.mock.calls[0][0].has(mesh)).toBe(true)
         expect(selectionChanged.mock.calls[0][0].size).toBe(1)
       })
@@ -111,7 +111,7 @@ describe('SelectionManager', () => {
         expect(manager.meshes.size).toBe(2)
         expectSelected(mesh1, colorByPlayerId.get(playerId))
         expectSelected(mesh2, colorByPlayerId.get(playerId))
-        expect(selectionChanged).toHaveBeenCalledTimes(1)
+        expect(selectionChanged).toHaveBeenCalledOnce()
       })
 
       it('adds anchored meshes to selection', () => {
@@ -143,7 +143,7 @@ describe('SelectionManager', () => {
         expectSelected(box2, colorByPlayerId.get(playerId))
         expectSelected(box3, colorByPlayerId.get(playerId))
         expectSelected(box4, colorByPlayerId.get(playerId))
-        expect(selectionChanged).toHaveBeenCalledTimes(1)
+        expect(selectionChanged).toHaveBeenCalledOnce()
       })
 
       it('reorders selection based on elevation', () => {
@@ -176,6 +176,17 @@ describe('SelectionManager', () => {
         expect(selectionChanged.mock.calls[3][0].has(mesh3)).toBe(true)
         expect(selectionChanged.mock.calls[3][0].has(mesh4)).toBe(true)
         expect(selectionChanged.mock.calls[3][0].size).toBe(4)
+      })
+
+      it('ignores locked meshes', () => {
+        const mesh = createBox('box1', {})
+        mesh.metadata = { isLocked: true }
+        manager.select(mesh)
+        expect(manager.meshes.has(mesh)).toBe(false)
+        expect(manager.meshes.size).toBe(0)
+        expect(manager.meshes.size).toBe(0)
+        expectSelected(mesh, null, false)
+        expect(selectionChanged).not.toHaveBeenCalled()
       })
     })
 
@@ -320,7 +331,7 @@ describe('SelectionManager', () => {
           expectSelected(mesh1, colorByPlayerId.get(playerId), false)
           expectSelected(mesh2, colorByPlayerId.get(playerId))
           expectSelected(mesh3, colorByPlayerId.get(playerId), false)
-          expect(selectionChanged).toHaveBeenCalledTimes(1)
+          expect(selectionChanged).toHaveBeenCalledOnce()
           expect(selectionChanged.mock.calls[0][0].size).toBe(1)
         })
       })
@@ -332,7 +343,7 @@ describe('SelectionManager', () => {
           expectSelected(meshes[0], null, false)
           expectSelected(meshes[1], null, false)
           expectSelected(meshes[2], null, false)
-          expect(selectionChanged).toHaveBeenCalledTimes(1)
+          expect(selectionChanged).toHaveBeenCalledOnce()
           expect(selectionChanged.mock.calls[0][0].size).toBe(0)
         })
 
@@ -411,7 +422,7 @@ describe('SelectionManager', () => {
           expectSelected(mesh3, colorByPlayerId.get(playerId), false)
           expectSelected(mesh4, colorByPlayerId.get(peer2.id))
           expectSelected(mesh5, colorByPlayerId.get(playerId), false)
-          expect(selectionChanged).toHaveBeenCalledTimes(1)
+          expect(selectionChanged).toHaveBeenCalledOnce()
           expect(selectionChanged.mock.calls[0][0].size).toBe(0)
         })
       })
@@ -442,7 +453,7 @@ describe('SelectionManager', () => {
           manager.drawSelectionBox({ x: 1000, y: 550 }, { x: 1100, y: 400 })
           manager.selectWithinBox()
           expectSelection([meshes[1], meshes[0]], colorByPlayerId.get(playerId))
-          expect(selectionChanged).toHaveBeenCalledTimes(1)
+          expect(selectionChanged).toHaveBeenCalledOnce()
           expect(selectionChanged.mock.calls[0][0].size).toBe(2)
           expect(selectionChanged.mock.calls[0][0].has(meshes[0])).toBe(true)
           expect(selectionChanged.mock.calls[0][0].has(meshes[1])).toBe(true)
@@ -463,7 +474,7 @@ describe('SelectionManager', () => {
           manager.drawSelectionBox({ x: 100, y: 400 }, { x: 1100, y: 900 })
           manager.selectWithinBox()
           expectSelection([meshes[6], meshes[7]], colorByPlayerId.get(playerId))
-          expect(selectionChanged).toHaveBeenCalledTimes(1)
+          expect(selectionChanged).toHaveBeenCalledOnce()
           expect(selectionChanged.mock.calls[0][0].size).toBe(2)
           expect(selectionChanged.mock.calls[0][0].has(meshes[6])).toBe(true)
           expect(selectionChanged.mock.calls[0][0].has(meshes[7])).toBe(true)
@@ -487,11 +498,23 @@ describe('SelectionManager', () => {
         it('ignores meshes selected by peers', () => {
           const [mesh] = meshes
           manager.apply([mesh.id], peer1.id)
-          manager.select(mesh)
+          manager.drawSelectionBox({ x: 100, y: 400 }, { x: 1100, y: 900 })
+          manager.selectWithinBox()
 
-          expectSelected(meshes[0], colorByPlayerId.get(peer1.id), true)
-          expectSelection([], colorByPlayerId.get(playerId))
-          expect(selectionChanged).not.toHaveBeenCalled()
+          expectSelected(meshes[0], colorByPlayerId.get(peer1.id))
+          expectSelected(meshes[1], colorByPlayerId.get(playerId))
+        })
+
+        it('ignores locked meshes', () => {
+          meshes[1].metadata = { isLocked: true }
+          manager.drawSelectionBox({ x: 1000, y: 550 }, { x: 1100, y: 400 })
+          manager.selectWithinBox()
+
+          expectSelection([meshes[0]], colorByPlayerId.get(playerId))
+          expect(selectionChanged).toHaveBeenCalledOnce()
+          expect(selectionChanged.mock.calls[0][0].size).toBe(1)
+          expect(selectionChanged.mock.calls[0][0].has(meshes[0])).toBe(true)
+          expect(selectionChanged.mock.calls[0][0].has(meshes[1])).toBe(false)
         })
       })
     })

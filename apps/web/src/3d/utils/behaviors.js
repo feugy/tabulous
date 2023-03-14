@@ -1,7 +1,7 @@
-import { Animation } from '@babylonjs/core/Animations/animation.js'
-import { Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector.js'
-import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder.js'
-import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder.js'
+import { Animation } from '@babylonjs/core/Animations/animation'
+import { Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector'
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
+import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
 
 import { AnchorBehavior } from '../behaviors/anchorable'
 import { DetailBehavior } from '../behaviors/detailable'
@@ -29,6 +29,9 @@ import { RotateBehavior } from '../behaviors/rotable'
 import { StackBehavior } from '../behaviors/stackable'
 import { applyGravity, getCenterAltitudeAbove } from './gravity'
 
+/** @typedef {import('@babylonjs/core').Behavior} Behavior */
+/** @typedef {import('@babylonjs/core').Mesh} Mesh */
+
 let constructors = null
 
 function getConstructors() {
@@ -55,7 +58,7 @@ function getConstructors() {
  * It uses behavior names to identify the desired behaviore.
  * For example, when given parameters contain 'anchorable' object, it creates an AnchorBehavior
  * and attach it to the mesh.
- * @param {import('@babel/core').Mesh} mesh - the modified mesh.
+ * @param {Mesh} mesh - the modified mesh.
  * @param {object} params - parameters, which may contain behavior specific states.
  * @returns {object} an hash of registered behaviors, by their names.
  */
@@ -73,7 +76,7 @@ export function registerBehaviors(mesh, params) {
 /**
  * Restores a mesh behaviors states from the provided paramerter object.
  * Warning! stackable behavior is ignored, since it needs all mesh to exist before being restored.
- * @param {import('@babel/core').Behavior[]} behaviors - list of serialized behaviors.
+ * @param {Behavior[]} behaviors - list of serialized behaviors.
  * @param {object} state hash of behavior states.
  */
 export function restoreBehaviors(behaviors, state) {
@@ -86,7 +89,7 @@ export function restoreBehaviors(behaviors, state) {
 
 /**
  * Creates an hash which keys are behavior names, and values their respective states, when relevant.
- * @param {import('@babel/core').Behavior[]} behaviors - list of serialized behaviors.
+ * @param {Behavior[]} behaviors - list of serialized behaviors.
  * @returns {object} an hash of behavior states.
  */
 export function serializeBehaviors(behaviors) {
@@ -101,8 +104,8 @@ export function serializeBehaviors(behaviors) {
  * Moves, with an animation if possible, a mesh to a given position.
  * When requested, will apply gravity at the end.
  * @async
- * @param {import('@babel/core').Mesh} mesh - the moved mesh.
- * @param {import('@babel/core').Vector3} absolutePosition - its final, absolute position.
+ * @param {Mesh} mesh - the moved mesh.
+ * @param {Vector3} absolutePosition - its final, absolute position.
  * @param {number} duration - how long, in ms, the move will last.
  * @param {boolean} [withGravity=false] - whether to apply gravity at the end.
  */
@@ -125,8 +128,8 @@ export async function animateMove(
 
 /**
  * Finds and returns an animatable behavior of a given mesh.
- * @param {import('@babel/core').Mesh} mesh - related mesh.
- * @returns an Animatable behavior (or one of its subimplementation) if any.
+ * @param {Mesh} mesh? - related mesh.
+ * @returns {AnimatableBehavior} an Animatable behavior (or one of its subimplementation) if any.
  */
 export function getAnimatableBehavior(mesh) {
   return (
@@ -141,8 +144,8 @@ export function getAnimatableBehavior(mesh) {
 
 /**
  * Finds and returns a targetable behavior of a given mesh.
- * @param {import('@babel/core').Mesh} mesh - related mesh.
- * @returns a Target behavior (or one of its subimplementation) if any.
+ * @param {Mesh} mesh? - related mesh.
+ * @returns {TargetBehavior} a Target behavior (or one of its subimplementation) if any.
  */
 export function getTargetableBehavior(mesh) {
   return (
@@ -155,8 +158,8 @@ export function getTargetableBehavior(mesh) {
 
 /**
  * Indicates whether a mesh is flipped or not.
- * @param {import('@babel/core').Mesh} mesh - related mesh.
- * @returns a boolean indicating whether the mesh is flipped.
+ * @param {Mesh} mesh? - related mesh.
+ * @returns {boolean} whether the mesh is flipped.
  */
 export function isMeshFlipped(mesh) {
   return mesh?.metadata?.isFlipped ?? false
@@ -164,17 +167,26 @@ export function isMeshFlipped(mesh) {
 
 /**
  * Indicates whether a mesh has been rotated twice (its angle is PI).
- * @param {import('@babel/core').Mesh} mesh - related mesh.
- * @returns a boolean indicating whether the mesh is inverted.
+ * @param {Mesh} mesh? - related mesh.
+ * @returns {boolean} whether the mesh is inverted.
  */
 export function isMeshInverted(mesh) {
   return mesh?.metadata?.angle === Math.PI ?? false
 }
 
 /**
+ * Indicates whether a mesh is locked (prevents moves and interactions)
+ * @param {Mesh} mesh? - related mesh.
+ * @returns {boolean} whether the mesh is locked.
+ */
+export function isMeshLocked(mesh) {
+  return mesh?.metadata?.isLocked ?? false
+}
+
+/**
  * Attaches a read-only property to a given behavior's mesh metadata.
  * Behavior must be attached to a mesh.
- * @param {import('@babel/core').Behavior} behavior - related behavior.
+ * @param {Behavior} behavior - related behavior.
  * @param {string} property - name of the created property.
  * @param {function} getter - getter function.
  */
@@ -192,7 +204,7 @@ export function attachProperty(behavior, property, getter) {
 /**
  * Attaches a behavior function to its mesh's metadata.
  * Behavior must be attached to a mesh.
- * @param {import('@babel/core').Behavior} behavior - related behavior.
+ * @param {Behavior} behavior - related behavior.
  * @param {string[]} functionNames - one or several behavior function names.
  */
 export function attachFunctions(behavior, ...functionNames) {
@@ -206,7 +218,7 @@ export function attachFunctions(behavior, ...functionNames) {
 
 /**
  * @typedef {object} AnimationSpec - an animation's specifications:
- * @property {import('@babel/core').Animation} animation - the animation object ran (controls one property of the animated mesh).
+ * @property {Animation} animation - the animation object ran (controls one property of the animated mesh).
  * @property {object[]} keys - a list of keys for the animation object, as allowed by Babylon's Animation.Parse() methode
  * @property {number} duration - duration in milliseconds.
  */
@@ -276,7 +288,7 @@ export function runAnimation(behavior, onEnd, ...animationSpecs) {
  * one needs to temporary detach an animated mesh from its parent, or rotation may alter the movements.
  * This function detaches a given mesh, keeping its absolute position and rotation unchanged, then
  * returns a function to re-attach to the original parent (or new, if it has changed meanwhile).
- * @param {import('@babel/core').Mesh} mesh - detached mesh.
+ * @param {Mesh} mesh - detached mesh.
  * @returns {function} a function to re-attach to the original (or new) parent.
  */
 export function detachFromParent(mesh) {
@@ -307,7 +319,7 @@ export function detachFromParent(mesh) {
 
 /**
  * Computes the final position of a given above a drop zone
- * @param {import('@babel/core').Mesh} droppedMesh - mesh dropped above zone.
+ * @param {Mesh} droppedMesh - mesh dropped above zone.
  * @param {import('../behaviors').DropZone} zone - drop zone.
  * @returns {Vector3} absolute position for this mesh.
  */
@@ -378,13 +390,13 @@ function parseFloat(
  * Creates a cylinder for cylindric meshes or when providing dimension's diameter.
  * Otherwise, creates a box.
  * @param {string} name - new mesh's name
- * @param {import('@babel/core').Mesh} parent - mesh to copy dimensions and shape from.
+ * @param {Mesh} parent - mesh to copy dimensions and shape from.
  * @param {object} dimensions? - target dimensions. When specified, prevail on parent's shape:
  * @param {number} dimensions.width - target's width.
  * @param {number} dimensions.height - target's height.
  * @param {number} dimensions.depth - target's depth.
  * @param {number} dimensions.diameter - target's diameter.
- * @returns {import('@babel/core').Mesh} created target mesh.
+ * @returns {Mesh} created target mesh.
  */
 export function buildTargetMesh(name, parent, dimensions) {
   parent.computeWorldMatrix(true)
