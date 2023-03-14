@@ -3,14 +3,14 @@
 // mandatory side effects
 // import '@babylonjs/core/Debug/debugLayer'
 // import '@babylonjs/inspector'
-// import { AxesViewer } from '@babylonjs/core/Debug/axesViewer.js'
-import '@babylonjs/core/Animations/animatable.js'
-import '@babylonjs/core/Materials/Textures/Loaders/ktxTextureLoader.js'
-import '@babylonjs/core/Rendering/edgesRenderer.js'
-import '@babylonjs/core/Rendering/outlineRenderer.js'
+// import { AxesViewer } from '@babylonjs/core/Debug/axesViewer'
+import '@babylonjs/core/Animations/animatable'
+import '@babylonjs/core/Materials/Textures/Loaders/ktxTextureLoader'
+import '@babylonjs/core/Rendering/edgesRenderer'
+import '@babylonjs/core/Rendering/outlineRenderer'
 
-import { Engine as RealEngine } from '@babylonjs/core/Engines/engine.js'
-import { Observable } from '@babylonjs/core/Misc/observable.js'
+import { Engine as RealEngine } from '@babylonjs/core/Engines/engine'
+import { Observable } from '@babylonjs/core/Misc/observable'
 
 import { gameAssetsUrl, sleep } from '../utils'
 import {
@@ -38,7 +38,7 @@ const debug = false
 const debugHand = false
 
 /**
- * Enhanced Babylon.js' Engine
+ * Enhanced Babylon' Engine
  * @typedef {Engine} EnhancedEngine
  * @property {boolean} isLoading - indicates whether the engine is still loading data and materials.
  * @property {Observable<boolean>} onLoadingObservable - emits while data and materials are being loaded.
@@ -50,7 +50,7 @@ const debugHand = false
  * Handles pointer out event, to cancel multiple selection or drag'n drop operations.
  * Note: must be called before any other 3D elements.
  * @param {object} params - parameters, including:
- * @param {import('@babylonjs/core').ThinEngine} params.Engine - Babylon.js's 3D Engine class used.
+ * @param {import('@babylonjs/core').ThinEngine} params.Engine - Babylon's 3D Engine class used.
  * @param {HTMLCanvasElement} params.canvas - HTML canvas used to display the scene.
  * @param {HTMLElement} params.interaction - HTML element receiving user interaction (mouse events, taps).
  * @param {HTMLElement} params.hand - HTML element holding hand.

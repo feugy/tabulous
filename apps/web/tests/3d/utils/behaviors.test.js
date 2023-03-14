@@ -42,6 +42,8 @@ import {
   initialize3dEngine
 } from '../../test-utils'
 
+vi.mock('@src/3d/managers/indicator')
+
 let engine
 let box
 let AnchorBehavior

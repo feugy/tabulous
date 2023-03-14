@@ -188,7 +188,7 @@
   }
 
   main {
-    container-type: inline-size;
+    container-type: inline-size z-10;
   }
 
   .interaction {

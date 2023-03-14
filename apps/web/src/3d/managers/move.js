@@ -68,15 +68,15 @@ class MoveManager {
     }
 
     let sceneUsed = mesh.getScene()
-    let moved = selectionManager.meshes.has(mesh)
+    const meshes = selectionManager.meshes.has(mesh)
       ? [...selectionManager.meshes].filter(
           mesh => this.meshIds.has(mesh?.id) && mesh.getScene() === sceneUsed
         )
       : [mesh]
-    const allMoved = [...moved]
-    for (const mesh of allMoved) {
-      if (allMoved.includes(mesh.parent) || isDisabled(this, mesh)) {
-        moved.splice(moved.indexOf(mesh), 1)
+    let moved = []
+    for (const mesh of meshes) {
+      if (!meshes.includes(mesh.parent) && !isDisabled(this, mesh)) {
+        moved.push(mesh)
       }
     }
     let lastPosition = screenToGround(sceneUsed, event)
