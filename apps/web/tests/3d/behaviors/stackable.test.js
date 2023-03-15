@@ -153,7 +153,7 @@ describe('StackBehavior', () => {
     })
 
     it('attaches metadata to its mesh', () => {
-      expectZone(behavior, { extent: 2, enabled: true })
+      expectZone(behavior, { extent: 2, enabled: true, ignoreParts: true })
       expectStacked([mesh])
       expect(behavior.state.duration).toEqual(10)
       expect(behavior.state.extent).toEqual(2)
@@ -180,7 +180,13 @@ describe('StackBehavior', () => {
       expect(meshes[2].absolutePosition).toEqual(Vector3.FromArray([3, 3, 3]))
 
       behavior.fromState({ duration, extent, stackIds, kinds, priority })
-      expectZone(behavior, { extent, enabled: false, kinds, priority })
+      expectZone(behavior, {
+        extent,
+        enabled: false,
+        kinds,
+        priority,
+        ignoreParts: true
+      })
       expectStacked([mesh, meshes[0], meshes[2]])
       expect(behavior.state.duration).toEqual(duration)
       expect(behavior.state.extent).toEqual(extent)
@@ -211,7 +217,13 @@ describe('StackBehavior', () => {
       mesh.addBehavior(behavior, true)
 
       behavior.fromState({ duration, extent, stackIds, kinds, priority })
-      expectZone(behavior, { extent, enabled: false, kinds, priority })
+      expectZone(behavior, {
+        extent,
+        enabled: false,
+        kinds,
+        priority,
+        ignoreParts: true
+      })
       const { boundingBox } = behavior.zones[0].mesh.getBoundingInfo()
       expect(boundingBox.extendSize.x * 2).toBeCloseTo(diameter)
       expect(boundingBox.extendSize.z * 2).toBeCloseTo(diameter)
@@ -244,7 +256,13 @@ describe('StackBehavior', () => {
       meshes[2].addBehavior(new LockBehavior({ isLocked: true }), true)
 
       behavior.fromState({ duration, extent, stackIds, kinds, priority })
-      expectZone(behavior, { extent, enabled: false, kinds, priority })
+      expectZone(behavior, {
+        extent,
+        enabled: false,
+        kinds,
+        priority,
+        ignoreParts: true
+      })
       expectStacked([mesh, meshes[0], meshes[2]], false)
       expect(behavior.state.duration).toEqual(duration)
       expect(behavior.state.extent).toEqual(extent)

@@ -529,7 +529,14 @@ export class StackBehavior extends TargetBehavior {
     if (!this.mesh) {
       throw new Error('Can not restore state without mesh')
     }
-    this._state = { kinds, priority, extent, enabled, duration }
+    this._state = {
+      kinds,
+      priority,
+      extent,
+      enabled,
+      duration,
+      ignoreParts: true
+    }
 
     this.stack = [this.mesh]
     // dispose previous drop zone

@@ -184,6 +184,25 @@ export function isMeshLocked(mesh) {
 }
 
 /**
+ * Returns absolute position of all part centers of a given mesh (after applying any transformations).
+ * @param {Mesh} mesh - related mesh
+ * @returns {Vector3[]|null} a list of absolute positions.
+ */
+export function getMeshAbsolutePartCenters(mesh) {
+  if (!mesh.metadata?.partCenters?.length) {
+    return [mesh.absolutePosition]
+  }
+  const matrix = mesh.computeWorldMatrix()
+  const centers = []
+  for (const { x, y, z } of mesh.metadata.partCenters) {
+    centers.push(
+      Vector3.TransformCoordinates(new Vector3(x ?? 0, y ?? 0, z ?? 0), matrix)
+    )
+  }
+  return centers
+}
+
+/**
  * Attaches a read-only property to a given behavior's mesh metadata.
  * Behavior must be attached to a mesh.
  * @param {Behavior} behavior - related behavior.

@@ -339,13 +339,17 @@ export function expectMoveRecorded(moveRecorded, ...meshes) {
   }
 }
 
-export function expectZone(behavior, { extent, enabled, kinds, priority = 0 }) {
+export function expectZone(
+  behavior,
+  { extent = 1.2, enabled = true, kinds, priority = 0, ignoreParts = false }
+) {
   expect(behavior.zones).toHaveLength(1)
   expect(behavior.zones[0].extent).toEqual(extent)
   expect(behavior.zones[0].enabled).toEqual(enabled)
   expect(behavior.zones[0].kinds).toEqual(kinds)
   expect(behavior.zones[0].priority).toEqual(priority)
   expect(behavior.zones[0].mesh?.parent?.id).toEqual(behavior.mesh.id)
+  expect(behavior.zones[0].ignoreParts).toEqual(ignoreParts)
 }
 
 export function expectDisposed(scene, ...meshes) {

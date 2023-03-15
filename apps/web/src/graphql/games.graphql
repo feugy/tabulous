@@ -32,6 +32,11 @@ fragment mesh on Mesh {
     duration
     snapDistance
     kind
+    partCenters {
+      x
+      y
+      z
+    }
   }
   flippable {
     isFlipped
@@ -63,6 +68,7 @@ fragment mesh on Mesh {
       priority
       snappedId
       playerId
+      ignoreParts
     }
     duration
   }

@@ -1,6 +1,6 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
-import { TargetBehavior } from '@src/3d/behaviors'
+import { MoveBehavior, TargetBehavior } from '@src/3d/behaviors'
 import { selectionManager, targetManager as manager } from '@src/3d/managers'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -103,7 +103,7 @@ describe('TargetManager', () => {
       })
 
       it('returns nothing if mesh is not above any target', () => {
-        expect(manager.findDropZone(createBox('box', {}))).not.toBeDefined()
+        expect(manager.findDropZone(createBox('box', {}))).toBeNull()
       })
 
       it('returns targets below mesh', () => {
@@ -117,7 +117,7 @@ describe('TargetManager', () => {
         const mesh = createBox('box', {})
         mesh.setAbsolutePosition(aboveZone1.add(new Vector3(1, 0, 0)))
 
-        expect(manager.findDropZone(mesh)).not.toBeDefined()
+        expect(manager.findDropZone(mesh)).toBeNull()
       })
 
       it('ignores targets with kinds below kind-less mesh', () => {
@@ -125,7 +125,7 @@ describe('TargetManager', () => {
         const mesh = createBox('box', {})
         mesh.setAbsolutePosition(aboveZone1)
 
-        expect(manager.findDropZone(mesh)).not.toBeDefined()
+        expect(manager.findDropZone(mesh)).toBeNull()
       })
 
       it('ignores disabled targets', () => {
@@ -133,7 +133,7 @@ describe('TargetManager', () => {
         const mesh = createBox('box', {})
         mesh.setAbsolutePosition(aboveZone1)
 
-        expect(manager.findDropZone(mesh)).not.toBeDefined()
+        expect(manager.findDropZone(mesh)).toBeNull()
       })
 
       it('ignores target part of the current selection', () => {
@@ -141,13 +141,13 @@ describe('TargetManager', () => {
         const mesh = createBox('box', {})
         mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
 
-        expect(manager.findDropZone(mesh)).not.toBeDefined()
+        expect(manager.findDropZone(mesh)).toBeNull()
       })
 
       it('ignores targets from different scene', () => {
         const handMesh = createBox('box', {}, handScene)
         handMesh.setAbsolutePosition(aboveZone2)
-        expect(manager.findDropZone(handMesh)).not.toBeDefined()
+        expect(manager.findDropZone(handMesh)).toBeNull()
 
         createsTargetZone('target3', {
           position: new Vector3(10, 0, 10),
@@ -155,7 +155,7 @@ describe('TargetManager', () => {
         })
         const mesh = createBox('box', {})
         mesh.setAbsolutePosition(aboveZone3)
-        expect(manager.findDropZone(mesh)).not.toBeDefined()
+        expect(manager.findDropZone(mesh)).toBeNull()
       })
 
       it('ignores targets with another player Id', () => {
@@ -167,7 +167,7 @@ describe('TargetManager', () => {
         const mesh = createBox('box', {}, scene)
         mesh.setAbsolutePosition(aboveZone3)
 
-        expect(manager.findDropZone(mesh)).not.toBeDefined()
+        expect(manager.findDropZone(mesh)).toBeNull()
       })
 
       it('returns targets with same playerId below mesh with kind', () => {
@@ -228,6 +228,51 @@ describe('TargetManager', () => {
         mesh.setAbsolutePosition(new Vector3(0, 5, 0))
 
         expectActiveZone(manager.findDropZone(mesh, 'box'), zone4, color)
+      })
+
+      describe('given a mesh with parts', () => {
+        let mesh
+
+        beforeEach(() => {
+          mesh = createBox('multi-box', { width: 2 })
+          mesh.addBehavior(
+            new MoveBehavior({ partCenters: [{ x: 0.5 }, { x: 1.5 }] }),
+            true
+          )
+          mesh.setAbsolutePosition(new Vector3(0, 1, 0))
+        })
+
+        it('returns a multi drop zone', () => {
+          const zone4 = createsTargetZone('target4', {
+            position: new Vector3(0, 0, 0)
+          })
+          const zone5 = createsTargetZone('target5', {
+            position: new Vector3(1, 0, 0)
+          })
+
+          expect(manager.findDropZone(mesh, 'box')).toEqual({
+            parts: [zone4, zone5],
+            mesh: zone4.mesh,
+            targetable: zone4.targetable
+          })
+        })
+
+        it('returns null when at least one part is not covered', () => {
+          createsTargetZone('target4', { position: new Vector3(0, 0, 0) })
+          createsTargetZone('target5', { position: new Vector3(-1, 0, 0) })
+
+          expect(manager.findDropZone(mesh, 'box')).toBeNull()
+        })
+
+        it('clears an active multi zone', () => {
+          createsTargetZone('target4', { position: new Vector3(0, 0, 0) })
+          createsTargetZone('target5', { position: new Vector3(1, 0, 0) })
+
+          const multiZone = manager.findDropZone(mesh, 'box')
+          expectVisibility(multiZone, true)
+          manager.clear(multiZone)
+          expectVisibility(multiZone, false)
+        })
       })
 
       describe('clear()', () => {
@@ -305,7 +350,7 @@ describe('TargetManager', () => {
         const mesh = createBox('box', {})
         mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
 
-        expect(manager.findPlayerZone(mesh)).not.toBeDefined()
+        expect(manager.findPlayerZone(mesh)).toBeNull()
       })
 
       it('ignores disabled targets', () => {
@@ -313,7 +358,7 @@ describe('TargetManager', () => {
         const mesh = createBox('box', {})
         mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
 
-        expect(manager.findPlayerZone(mesh)).not.toBeDefined()
+        expect(manager.findPlayerZone(mesh)).toBeNull()
       })
 
       it('ignores target part of the current selection', () => {
@@ -321,12 +366,12 @@ describe('TargetManager', () => {
         const mesh = createBox('box', {})
         mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
 
-        expect(manager.findPlayerZone(mesh)).not.toBeDefined()
+        expect(manager.findPlayerZone(mesh)).toBeNull()
       })
 
       it('ignores targets from different scene', () => {
         const mesh = createBox('box', {}, handScene)
-        expect(manager.findPlayerZone(mesh)).not.toBeDefined()
+        expect(manager.findPlayerZone(mesh)).toBeNull()
       })
 
       it('returns kind-less targets for provided kind', () => {

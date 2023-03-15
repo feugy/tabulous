@@ -15,6 +15,7 @@ import {
   attachFunctions,
   attachProperty,
   getAnimatableBehavior,
+  getMeshAbsolutePartCenters,
   getTargetableBehavior,
   isMeshFlipped,
   isMeshInverted,
@@ -38,6 +39,7 @@ import {
 import {
   createBox,
   disposeAllMeshes,
+  expectCloseVector,
   expectPosition,
   initialize3dEngine
 } from '../../test-utils'
@@ -886,6 +888,42 @@ describe('isMeshLocked()', () => {
     expect(isMeshLocked(box)).toBe(false)
     await box.metadata.toggleLock()
     expect(isMeshLocked(box)).toBe(true)
+  })
+})
+
+describe('getMeshAbsolutePartCenters()', () => {
+  it('returns absolute position of a part-less mesh', () => {
+    box.setAbsolutePosition(new Vector3(1, -3, 4))
+    expect(getMeshAbsolutePartCenters(box)).toEqual([box.absolutePosition])
+
+    box.metadata = { partCenters: [] }
+    expect(getMeshAbsolutePartCenters(box)).toEqual([box.absolutePosition])
+  })
+
+  it('computes absolute position of each part', () => {
+    const position = new Vector3(1, -3, 4)
+    box.setAbsolutePosition(position)
+    box.computeWorldMatrix(true)
+    box.metadata = {
+      partCenters: [{ x: -0.5, z: -0.25 }, { z: 0.25 }, { x: 0.5, z: -0.25 }]
+    }
+    expect(getMeshAbsolutePartCenters(box)).toEqual([
+      new Vector3(position.x - 0.5, position.y, position.z - 0.25),
+      new Vector3(position.x, position.y, position.z + 0.25),
+      new Vector3(position.x + 0.5, position.y, position.z - 0.25)
+    ])
+  })
+
+  it('considers rotation when computing part positions', () => {
+    box.rotation.y = Math.PI * 0.5
+    box.computeWorldMatrix(true)
+    box.metadata = {
+      partCenters: [{ x: -0.5 }, { x: 0.5 }]
+    }
+    const parts = getMeshAbsolutePartCenters(box)
+    expect(parts).toHaveLength(2)
+    expectCloseVector(parts[0], [0, 0, 0.5])
+    expectCloseVector(parts[1], [0, 0, -0.5])
   })
 })
 

@@ -10,6 +10,7 @@ import {
   attachFunctions,
   attachProperty,
   buildTargetMesh,
+  getMeshAbsolutePartCenters,
   getPositionAboveZone,
   getTargetableBehavior
 } from '../utils/behaviors'
@@ -317,6 +318,11 @@ async function snapToAnchor(behavior, snappedId, zone, loading = false) {
 
     // moves it to the final position
     const position = getPositionAboveZone(snapped, zone)
+    const partCenters = getMeshAbsolutePartCenters(snapped)
+    if (!zone.ignoreParts && partCenters) {
+      // always use first part as a reference
+      position.addInPlace(snapped.absolutePosition.subtract(partCenters[0]))
+    }
     const move = animateMove(snapped, position, loading ? 0 : duration)
     if (!loading) {
       await move

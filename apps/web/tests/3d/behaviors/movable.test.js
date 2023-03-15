@@ -12,7 +12,8 @@ describe('MoveBehavior', () => {
     const state = {
       kind: faker.lorem.word(),
       snapDistance: Math.random(),
-      duration: faker.datatype.number()
+      duration: faker.datatype.number(),
+      partCenters: [{ x: faker.datatype.number(), z: faker.datatype.number() }]
     }
     const behavior = new MoveBehavior(state)
     const mesh = createBox('box', {})
@@ -56,6 +57,12 @@ describe('MoveBehavior', () => {
       mesh.addBehavior(behavior, true)
     })
 
+    it('attaches metadata to its mesh', () => {
+      expect(mesh.metadata).toEqual({
+        partCenters: undefined
+      })
+    })
+
     it('unregisters mesh from MoveManager upon disposal', () => {
       expect(moveManager.isManaging(mesh)).toBe(true)
       mesh.dispose()
@@ -66,12 +73,18 @@ describe('MoveBehavior', () => {
       const state = {
         kind: faker.lorem.word(),
         snapDistance: Math.random(),
-        duration: faker.datatype.number()
+        duration: faker.datatype.number(),
+        partCenters: [
+          { x: faker.datatype.number(), z: faker.datatype.number() }
+        ]
       }
       behavior.fromState(state)
       expect(behavior.state).toEqual(state)
       expect(behavior.enabled).toBe(true)
       expect(behavior.mesh).toEqual(mesh)
+      expect(mesh.metadata).toEqual({
+        partCenters: state.partCenters
+      })
     })
 
     it('can hydrate from state with defaults', () => {
@@ -86,6 +99,9 @@ describe('MoveBehavior', () => {
       })
       expect(behavior.enabled).toBe(true)
       expect(behavior.mesh).toEqual(mesh)
+      expect(mesh.metadata).toEqual({
+        partCenters: undefined
+      })
     })
   })
 })
