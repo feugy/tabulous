@@ -106,23 +106,28 @@ export function serializeBehaviors(behaviors) {
  * @async
  * @param {Mesh} mesh - the moved mesh.
  * @param {Vector3} absolutePosition - its final, absolute position.
+ * @param {Vector3} rotation - its final rotation (set to null to leave unmodified).
  * @param {number} duration - how long, in ms, the move will last.
  * @param {boolean} [withGravity=false] - whether to apply gravity at the end.
  */
 export async function animateMove(
   mesh,
   absolutePosition,
+  rotation,
   duration,
   withGravity = false
 ) {
   const movable = getAnimatableBehavior(mesh)
   if (mesh.getEngine().isLoading || !movable || !duration) {
     mesh.setAbsolutePosition(absolutePosition)
+    if (rotation) {
+      mesh.rotation = rotation
+    }
     if (withGravity) {
       applyGravity(mesh)
     }
   } else {
-    await movable.moveTo(absolutePosition, duration, withGravity)
+    await movable.moveTo(absolutePosition, rotation, duration, withGravity)
   }
 }
 
@@ -435,6 +440,7 @@ export function buildTargetMesh(name, parent, dimensions) {
         scene
       )
   created.isCylindric = isCylindric
-  created.parent = parent
+  created.setParent(parent)
+  created.position = Vector3.Zero()
   return created
 }

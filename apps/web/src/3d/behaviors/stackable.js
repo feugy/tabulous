@@ -1,5 +1,4 @@
-import { Animation } from '@babylonjs/core/Animations/animation.js'
-import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
+import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 
 import { makeLogger } from '../../utils/logger'
 import { sleep } from '../../utils/time'
@@ -42,6 +41,7 @@ const logger = makeLogger('stackable')
  * @property {number} priority? - priority applied when multiple targets with same altitude apply.
  * @property {number} [duration=100] - duration (in milliseconds) when pushing or shuffling individual meshes.
  * @property {number} [extent=2] - allowed distance between mesh and stack center when dropping.
+ * @property {number} angle? - angle, in Radian, applied to the stacked mesh.
  */
 
 export class StackBehavior extends TargetBehavior {
@@ -137,6 +137,7 @@ export class StackBehavior extends TargetBehavior {
               animateMove(
                 stack[rank],
                 stack[rank].absolutePosition.subtract(shift),
+                null,
                 duration
               )
             }
@@ -192,6 +193,7 @@ export class StackBehavior extends TargetBehavior {
     const base = this.base ?? this
     const { stack } = base
     const duration = this.inhibitControl || immediate ? 0 : this._state.duration
+    const { angle } = this._state
 
     if (!this.inhibitControl) {
       controlManager.record({
@@ -218,7 +220,14 @@ export class StackBehavior extends TargetBehavior {
       setStatus(stack, index, index === stack.length - 1, this)
     }
     const position = new Vector3(x, y, z)
-    const move = animateMove(meshPushed[0], position, duration)
+    const move = animateMove(
+      meshPushed[0],
+      position,
+      angle != undefined
+        ? new Vector3(0, stack[0].rotation.y + angle, 0)
+        : null,
+      duration
+    )
     if (duration) {
       await move
     }
@@ -271,6 +280,7 @@ export class StackBehavior extends TargetBehavior {
           animateMove(
             mesh,
             mesh.absolutePosition.add(new Vector3(shift, 0, 0)),
+            null,
             duration,
             true
           )
@@ -390,7 +400,7 @@ export class StackBehavior extends TargetBehavior {
             behavior,
             null,
             {
-              animation: buildInclineAnimation(behavior.frameRate),
+              animation: behavior.rotateAnimation,
               duration: expodeDuration,
               keys: [
                 { frame: 0, values: [pitch, yaw, roll] },
@@ -436,7 +446,7 @@ export class StackBehavior extends TargetBehavior {
               behavior,
               null,
               {
-                animation: buildInclineAnimation(behavior.frameRate),
+                animation: behavior.rotateAnimation,
                 duration: restoreDuration,
                 keys: [
                   { frame: 0, values: mesh.rotation.asArray() },
@@ -507,6 +517,7 @@ export class StackBehavior extends TargetBehavior {
       extent: this._state.extent,
       kinds: this._state.kinds,
       priority: this._state.priority,
+      angle: this._state.angle,
       stackIds:
         this.base !== null || this.stack.length <= 1
           ? []
@@ -524,7 +535,8 @@ export class StackBehavior extends TargetBehavior {
     duration = 100,
     kinds,
     enabled,
-    priority
+    priority,
+    angle
   } = {}) {
     if (!this.mesh) {
       throw new Error('Can not restore state without mesh')
@@ -535,6 +547,7 @@ export class StackBehavior extends TargetBehavior {
       extent,
       enabled,
       duration,
+      angle,
       ignoreParts: true
     }
 
@@ -603,16 +616,6 @@ function updateIndicator(mesh, size) {
   } else {
     indicatorManager.unregisterIndicator({ id })
   }
-}
-
-function buildInclineAnimation(frameRate) {
-  return new Animation(
-    'incline',
-    'rotation',
-    frameRate,
-    Animation.ANIMATIONTYPE_VECTOR3,
-    Animation.ANIMATIONLOOPMODE_CONSTANT
-  )
 }
 
 function invertStack(behavior) {

@@ -32,6 +32,8 @@ const logger = makeLogger(AnchorBehaviorName)
  * @property {number} priority? - priority applied when multiple targets with same altitude apply.
  * @property {string} playerId? - when set, only player with this id can use this anchor.
  * @property {string} snappedId? - the currently snapped mesh id.
+ * @property {boolean} ignoreParts? - whether this anchor consider a mesh's parts or not.
+ * @property {number} angle? - angle, in Radian, applied to the snapped mesh.
  */
 
 /**
@@ -323,7 +325,14 @@ async function snapToAnchor(behavior, snappedId, zone, loading = false) {
       // always use first part as a reference
       position.addInPlace(snapped.absolutePosition.subtract(partCenters[0]))
     }
-    const move = animateMove(snapped, position, loading ? 0 : duration)
+    const move = animateMove(
+      snapped,
+      position,
+      zone.angle != undefined
+        ? new Vector3(0, mesh.rotation.y + zone.angle, 0)
+        : null,
+      loading ? 0 : duration
+    )
     if (!loading) {
       await move
     }

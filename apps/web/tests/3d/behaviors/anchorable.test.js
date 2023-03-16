@@ -384,6 +384,52 @@ describe('AnchorBehavior', () => {
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
+    it('can rotate snapped mesh when hydrating', () => {
+      const snapped = meshes[0]
+      snapped.addBehavior(new RotateBehavior({ angle: Math.PI * 0.5 }), true)
+      expectRotated(snapped, Math.PI * 0.5)
+
+      const angle = Math.PI * -0.5
+      behavior.fromState({
+        anchors: [
+          { width: 1, height: 2, depth: 0.5, snappedId: snapped.id, angle }
+        ]
+      })
+      expect(behavior.state.duration).toEqual(100)
+      expect(behavior.state.anchors).toEqual([
+        { width: 1, height: 2, depth: 0.5, snappedId: 'box1', angle }
+      ])
+      expectAnchor(0, behavior.state.anchors[0], false)
+      expectSnapped(mesh, snapped, 0)
+      expectRotated(snapped, angle)
+      expect(behavior.getSnappedIds()).toEqual([snapped.id])
+      expect(recordSpy).not.toHaveBeenCalled()
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
+    })
+
+    it('can reset snapped mesh rotationwhen hydrating', () => {
+      const snapped = meshes[0]
+      snapped.addBehavior(new RotateBehavior({ angle: Math.PI * 0.5 }), true)
+      expectRotated(snapped, Math.PI * 0.5)
+
+      const angle = 0
+      behavior.fromState({
+        anchors: [
+          { width: 1, height: 2, depth: 0.5, snappedId: snapped.id, angle }
+        ]
+      })
+      expect(behavior.state.duration).toEqual(100)
+      expect(behavior.state.anchors).toEqual([
+        { width: 1, height: 2, depth: 0.5, snappedId: 'box1', angle }
+      ])
+      expectAnchor(0, behavior.state.anchors[0], false)
+      expectSnapped(mesh, snapped, 0)
+      expectRotated(snapped, angle)
+      expect(behavior.getSnappedIds()).toEqual([snapped.id])
+      expect(recordSpy).not.toHaveBeenCalled()
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
+    })
+
     it('snaps mesh', async () => {
       const snapped = meshes[0]
       expect(snapped.absolutePosition.asArray()).toEqual([10, 10, 10])
@@ -499,6 +545,33 @@ describe('AnchorBehavior', () => {
         duration: behavior.state.duration
       })
       expectMeshFeedback(registerFeedbackSpy, 'snap', [0.25, 0.75, 0.5])
+    })
+
+    it('can set rotation when snaping rotated mesh', async () => {
+      const angle = Math.PI * 0.5
+      mesh.addBehavior(new RotateBehavior({ angle }), true)
+      expectRotated(mesh, angle)
+      const snapped = meshes[0]
+      behavior.fromState({
+        anchors: [{ width: 1, height: 2, depth: 0.5, angle }]
+      })
+      snapped.addBehavior(new RotateBehavior({ angle: Math.PI * -0.5 }), true)
+      expectRotated(snapped, Math.PI * -0.5)
+      expect(snapped.absolutePosition.asArray()).toEqual([10, 10, 10])
+
+      const args = [snapped.id, behavior.zones[0].mesh.id, false]
+      await mesh.metadata.snap(...args)
+      expectSnapped(mesh, snapped, 0)
+      expect(behavior.getSnappedIds()).toEqual([meshes[0].id])
+      expectRotated(snapped, -angle)
+      expect(recordSpy).toHaveBeenCalledTimes(1)
+      expect(recordSpy).toHaveBeenCalledWith({
+        fn: 'snap',
+        mesh,
+        args,
+        duration: behavior.state.duration
+      })
+      expectMeshFeedback(registerFeedbackSpy, 'snap', [0, 0, 0])
     })
 
     it('updates snapped when reordering a stack', async () => {

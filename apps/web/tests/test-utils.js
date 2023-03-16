@@ -156,9 +156,9 @@ export function expectDimension(mesh, [width, height, depth]) {
 }
 
 export function expectCloseVector(actual, [x, y, z], message) {
-  expect(actual.x, message).toBeCloseTo(x, 1)
-  expect(actual.y, message).toBeCloseTo(y, 1)
-  expect(actual.z, message).toBeCloseTo(z, 1)
+  expect(actual.x, message ?? 'x/pitch').toBeCloseTo(x, 1)
+  expect(actual.y, message ?? 'y/yaw').toBeCloseTo(y, 1)
+  expect(actual.z, message ?? 'z/roll').toBeCloseTo(z, 1)
 }
 
 export function expectScreenPosition(actual, { x, y }, message) {
@@ -209,19 +209,22 @@ export function expectFlipped(mesh, isFlipped = true, initialRotation = 0) {
   expectAbsoluteRotation(mesh, initialRotation + (isFlipped ? Math.PI : 0), 'z')
 }
 
-export function expectRotated(mesh, angle, absoluteAngle = angle) {
-  expect(mesh.metadata.angle).toBeCloseTo(angle)
+export function expectRotated(mesh, angle, unroundedAngle = angle) {
+  expect(mesh.metadata.angle, 'metadata rotation angle').toBeCloseTo(angle)
   expect(mesh.getBehaviorByName(RotateBehaviorName).state.angle).toBeCloseTo(
     angle
   )
-  expectAbsoluteRotation(mesh, absoluteAngle, 'y')
+  expectAbsoluteRotation(mesh, unroundedAngle, 'y')
 }
 
 export function expectAbsoluteRotation(mesh, angle, axis) {
   mesh.computeWorldMatrix(true)
   const rotation = Quaternion.Identity()
   mesh.getWorldMatrix().decompose(Vector3.Zero(), rotation, Vector3.Zero())
-  expect(rotation.toEulerAngles()[axis]).toBeCloseTo(angle)
+  expect(
+    rotation.toEulerAngles()[axis],
+    `absolute rotation on ${axis}`
+  ).toBeCloseTo(angle)
 }
 
 export function expectStacked(meshes, isLastMovable = true) {

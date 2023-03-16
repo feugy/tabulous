@@ -36,7 +36,6 @@
 - check headings ordering
 - document keyboard shortcuts in the help panel
 - explicit layout in JS for aside videos
-- auto-rotate mesh when snapping
 - per game configurable single/double/lon tap/left click action
 - detailable/stackable behavior: preview a stack of meshes
 - hide/distinguish non-connected participants?

@@ -1,5 +1,3 @@
-import { Animation } from '@babylonjs/core/Animations/animation.js'
-
 import { makeLogger } from '../../utils/logger'
 import { controlManager } from '../managers/control'
 import {
@@ -37,14 +35,6 @@ export class FlipBehavior extends AnimateBehavior {
   constructor(state = {}) {
     super(state)
     this.state = state
-    // private
-    this.flipAnimation = new Animation(
-      'flip',
-      'rotation.z',
-      this.frameRate,
-      Animation.ANIMATIONTYPE_FLOAT,
-      Animation.ANIMATIONLOOPMODE_CONSTANT
-    )
   }
 
   /**
@@ -81,7 +71,7 @@ export class FlipBehavior extends AnimateBehavior {
       state: { duration, isFlipped },
       isAnimated,
       mesh,
-      flipAnimation,
+      rotateAnimation,
       moveAnimation
     } = this
     if (isAnimated || !mesh || isMeshLocked(mesh)) {
@@ -96,11 +86,10 @@ export class FlipBehavior extends AnimateBehavior {
     const { width } = getDimensions(mesh)
 
     this.state.isFlipped = !isFlipped
-    // because of JS, rotation.y may be very close to Math.PI or 0, but not equal to it.
+    let [pitch, yaw, roll] = mesh.rotation.asArray()
+    // because of JS, yaw may be very close to Math.PI or 0, but not equal to it.
     const rotation =
-      mesh.rotation.y < Math.PI - Tolerance && mesh.rotation.y >= -Tolerance
-        ? Math.PI
-        : -Math.PI
+      yaw < Math.PI - Tolerance && yaw >= -Tolerance ? Math.PI : -Math.PI
     await runAnimation(
       this,
       () => {
@@ -115,11 +104,11 @@ export class FlipBehavior extends AnimateBehavior {
         logger.debug({ mesh }, `end flipping ${mesh.id}`)
       },
       {
-        animation: flipAnimation,
+        animation: rotateAnimation,
         duration,
         keys: [
-          { frame: 0, values: [mesh.rotation.z] },
-          { frame: 100, values: [mesh.rotation.z + rotation] }
+          { frame: 0, values: [pitch, yaw, roll] },
+          { frame: 100, values: [pitch, yaw, roll + rotation] }
         ]
       },
       {

@@ -1,4 +1,4 @@
-import { Animation } from '@babylonjs/core/Animations/animation.js'
+import { Animation } from '@babylonjs/core/Animations/animation'
 
 import { handManager } from '../managers/hand'
 import {

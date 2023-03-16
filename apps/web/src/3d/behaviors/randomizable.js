@@ -1,6 +1,6 @@
-import { Animation } from '@babylonjs/core/Animations/animation.js'
-import { VertexBuffer } from '@babylonjs/core/Buffers/buffer.js'
-import { Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector.js'
+import { Animation } from '@babylonjs/core/Animations/animation'
+import { VertexBuffer } from '@babylonjs/core/Buffers/buffer'
+import { Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector'
 
 import { makeLogger } from '../../utils/logger'
 import { controlManager } from '../managers/control'

@@ -220,34 +220,58 @@ describe('animateMove() 3D utility', () => {
   it('moves an animatable mesh without gravity', async () => {
     const position = [10, 5, 4]
     box.addBehavior(new AnimateBehavior(), true)
-    await animateMove(box, Vector3.FromArray(position), 100)
+    await animateMove(box, Vector3.FromArray(position), null, 100)
     expectPosition(box, position)
+    expectCloseVector(box.rotation, [0, 0, 0])
   })
 
-  it('moves without animation when omitting duration', async () => {
+  it('moves and rotates without animation when omitting duration', async () => {
     const position = [-2, -4, -0.5]
+    const rotation = [Math.PI, Math.PI * 0.5, 0]
     box.addBehavior(new FlipBehavior(), true)
-    animateMove(box, Vector3.FromArray(position), 0)
+    animateMove(
+      box,
+      Vector3.FromArray(position),
+      Vector3.FromArray(rotation),
+      0
+    )
     expectPosition(box, position)
+    expectCloseVector(box.rotation, rotation)
   })
 
   it('moves without animation regular mesh', async () => {
     const position = [15, 0, -4]
-    animateMove(box, Vector3.FromArray(position), 100)
+    const rotation = [Math.PI * 0.5, Math.PI * -0.5, Math.PI]
+    animateMove(
+      box,
+      Vector3.FromArray(position),
+      Vector3.FromArray(rotation),
+      100
+    )
     expectPosition(box, position)
+    expectCloseVector(box.rotation, rotation)
   })
 
   it('moves an animatable mesh without gravity', async () => {
     const position = [10, 0.5, 4]
     box.addBehavior(new RotateBehavior(), true)
-    await animateMove(box, Vector3.FromArray(position), 100, true)
+    await animateMove(box, Vector3.FromArray(position), null, 100, true)
     expectPosition(box, position)
+    expectCloseVector(box.rotation, [0, 0, 0])
   })
 
   it('moves without animation regular mesh with gravity', async () => {
     const position = [10, 0.5, -4]
-    animateMove(box, Vector3.FromArray(position), 100, true)
+    const rotation = [Math.PI, Math.PI * 0.5, 0]
+    animateMove(
+      box,
+      Vector3.FromArray(position),
+      Vector3.FromArray(rotation),
+      100,
+      true
+    )
     expectPosition(box, position)
+    expectCloseVector(box.rotation, rotation)
   })
 })
 

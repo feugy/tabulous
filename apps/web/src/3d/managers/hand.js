@@ -362,7 +362,7 @@ async function handDrag(manager, { type, mesh, event }) {
         // play move animation for local player only
         const current = saved.mesh.absolutePosition.clone()
         saved.mesh.setAbsolutePosition(saved.position)
-        animateMove(saved.mesh, current, saved.duration)
+        animateMove(saved.mesh, current, null, saved.duration)
       }
       // final layout after all animation are over
       setTimeout(() => layoutMeshs(manager), duration * 1.1)
@@ -505,6 +505,7 @@ async function layoutMeshs({
         animateMove(
           mesh,
           new Vector3(x + width * 0.5, y + height * 0.5, z),
+          null,
           duration
         )
       )

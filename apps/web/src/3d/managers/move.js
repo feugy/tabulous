@@ -222,7 +222,9 @@ class MoveManager {
           )
           logger.info({ mesh }, `end move operation on table ${mesh.id}`)
           return sleep(i * 1.5)
-            .then(() => animateMove(mesh, absolutePosition, duration, true))
+            .then(() =>
+              animateMove(mesh, absolutePosition, null, duration, true)
+            )
             .then(() =>
               controlManager.record({
                 mesh,
