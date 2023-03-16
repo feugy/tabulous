@@ -1214,7 +1214,7 @@ exports[`Authenticated 1`] = `
     </div>
      
     <aside
-      class="s-ufy4N79qlNiA"
+      class="s-2iawX3uhhnz1"
     >
       <section
         aria-expanded="true"
@@ -1268,17 +1268,27 @@ exports[`Authenticated 1`] = `
           class="s-vqhOCvFa7LzI"
         >
           <div
-            class="content s-ufy4N79qlNiA"
+            class="content s-2iawX3uhhnz1"
             style="max-width: 30vw"
           >
             <div
-              class="peers s-ufy4N79qlNiA hidden"
+              class="peers s-2iawX3uhhnz1 hidden"
             >
-              <span
-                class="avatars s-ufy4N79qlNiA"
+              <div
+                class="s-9CzX_ZtBT-9N"
+                style="--rows: 1; --columns: 1;"
               >
                  
-              </span>
+                 
+                <legend
+                  class="s-9CzX_ZtBT-9N"
+                >
+                   
+                  
+                  <!--&lt;VideoCommands&gt;-->
+                </legend>
+              </div>
+              <!--&lt;AvatarGrid&gt;-->
                
                
             </div>
@@ -1420,7 +1430,7 @@ exports[`Authenticated 1`] = `
       </section>
       <!--&lt;MinimizableSection&gt;-->
     </aside>
-    <!--&lt;Aside&gt;-->
+    <!--&lt;Container&gt;-->
   </div>
 </main>
 `;

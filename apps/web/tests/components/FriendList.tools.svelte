@@ -9,7 +9,7 @@
     color: undefined
   }))
   const playerById = new Map(
-    playerWithColors.map(player => [player.id, player])
+    playerWithColors.slice(0, 2).map(player => [player.id, player])
   )
   const friendsWithRequests = [
     { player: players[0] },
@@ -48,6 +48,7 @@
   <Tool
     name="With game"
     props={{
+      game: {},
       playerById,
       friends: friendsWithRequests
     }}

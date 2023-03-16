@@ -31,28 +31,17 @@
 
 - bug: 6-takes: snapping to the wrong anchor (when 2 players are snapping to different anchors)
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
-- style: friend list highlited element are not readable
-- style: player videos on a two player game should be vertically lay out
 - check headings ordering
 - document keyboard shortcuts in the help panel
-- explicit layout in JS for aside videos
 - per game configurable single/double/lon tap/left click action
 - detailable/stackable behavior: preview a stack of meshes
 - hide/distinguish non-connected participants?
-- hide media dropdown unless hovering?
 - distribute multiple meshes to players' hand
 - shortcuts cheatsheet
 - hand support for quantifiable behavior
 - put/draw under
 - "box" space for unusued/undesired meshes
 - command to "switch place" around the table, for games like Belote
-
-23:09:47,374 Uncaught InternalError: too much recursion
-Immutable 10
-players-9eebbfcf.js:315:100318 (https://github.com/ReactiveX/rxjs/blob/630d2b009b5ae4e8f2a62d9740738c1ec317c2d5/src/internal/scheduler/intervalProvider.ts#L22)
-Immutable 128
-
-This is bound to rxjs asyncScheduler, which depends on the operator used (probably time operators)
 
 ## Server
 

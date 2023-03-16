@@ -2,12 +2,12 @@
   import { isLobby as checkIfLobby } from '@src/utils'
   import { _ } from 'svelte-intl'
 
-  import ControlsHelp from './ControlsHelp.svelte'
-  import Discussion from './Discussion.svelte'
-  import FriendList from './FriendList.svelte'
-  import MinimizableSection from './MinimizableSection.svelte'
-  import PlayerAvatar from './PlayerAvatar.svelte'
-  import RuleViewer from './RuleViewer.svelte'
+  import ControlsHelp from '../ControlsHelp.svelte'
+  import Discussion from '../Discussion.svelte'
+  import FriendList from '../FriendList.svelte'
+  import MinimizableSection from '../MinimizableSection.svelte'
+  import RuleViewer from '../RuleViewer.svelte'
+  import AvatarGrid from './AvatarGrid.svelte'
 
   export let player
   export let playerById
@@ -29,20 +29,9 @@
 
   $: isLobby = checkIfLobby(game)
 
-  $: otherPlayers = [...(playerById?.values() ?? [])].filter(
-    ({ id }) => id !== player.id
-  )
-
   $: hasPeers = playerById?.size > 1
 
   $: hasInvites = friends?.some(({ isRequest }) => isRequest)
-
-  $: peers = hasPeers
-    ? otherPlayers.map(player => ({
-        player,
-        ...(connected?.find(({ playerId }) => playerId === player.id) ?? {})
-      }))
-    : []
 
   $: {
     tabs = [{ icon: 'people_alt', id: friendsId, key: 'F2' }]
@@ -86,14 +75,7 @@
         : 'max-width'}: {initialWidth}"
     >
       <div class="peers" class:hidden={tabs[tab]?.id !== playersId}>
-        <span class="avatars">
-          {#if connected?.length}
-            <PlayerAvatar player={playerById.get(player.id)} isLocal={true} />
-          {/if}
-          {#each peers as { playerId, ...props } (props.player.id)}
-            <PlayerAvatar {...props} />
-          {/each}
-        </span>
+        <AvatarGrid {connected} {playerById} {player} />
         {#if isLobby}
           <div class="lobby-instructions">
             {$_('labels.lobby-instructions')}
@@ -144,9 +126,5 @@
 
   .lobby-instructions {
     @apply italic p-8 pb-12;
-  }
-  .avatars {
-    @apply flex-1 grid place-items-center grid-flow-row;
-    grid-template-columns: repeat(auto-fill, minmax(max(50%, 150px), 1fr));
   }
 </style>

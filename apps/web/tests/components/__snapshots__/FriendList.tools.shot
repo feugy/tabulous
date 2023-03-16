@@ -304,7 +304,7 @@ HTMLCollection [
     <h3
       class="s-XLQf75fI0H0o"
     >
-      Joueur·euse·s
+      Participant·e·s
     </h3>
      
     <ol
@@ -370,38 +370,6 @@ HTMLCollection [
           role="term"
         >
           Maître Follas
-        </span>
-         
-         
-      </li>
-      <li
-        class="isPlayer s-XLQf75fI0H0o"
-      >
-        <figure
-          class="s-engCJu8q-fNe colored"
-          style="--dimension: 40px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
-        >
-          <img
-            alt="avatar for Pascal"
-            class="s-engCJu8q-fNe"
-            height="40"
-            referrerpolicy="no-referrer"
-            width="40"
-          />
-           
-          <figcaption
-            class="s-engCJu8q-fNe abbreviated"
-          >
-            P
-          </figcaption>
-        </figure>
-        <!--&lt;PlayerThumbnail&gt;-->
-         
-        <span
-          class="s-XLQf75fI0H0o"
-          role="term"
-        >
-          Pascal
         </span>
          
          
@@ -532,10 +500,10 @@ HTMLCollection [
       </li>
       <li
         aria-checked="false"
-        aria-selected="false"
+        aria-selected="true"
         class="s-XLQf75fI0H0o isProposal"
         role="option"
-        tabindex="-1"
+        tabindex="0"
       >
         <figure
           class="s-engCJu8q-fNe colored"
@@ -562,6 +530,59 @@ HTMLCollection [
           role="term"
         >
           Demande envoyée à Raoul Wolfoni
+        </span>
+         
+        <span
+          class="buttons s-XLQf75fI0H0o"
+        >
+          <button
+            class="s-NMyTiX1zi6rz"
+          >
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              delete
+            </span>
+            
+            
+            
+          </button>
+          <!--&lt;Button&gt;-->
+        </span>
+         
+      </li>
+      <li
+        aria-checked="false"
+        aria-selected="true"
+        class="s-XLQf75fI0H0o"
+        role="option"
+        tabindex="0"
+      >
+        <figure
+          class="s-engCJu8q-fNe"
+          style="--dimension: 40px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+        >
+          <img
+            alt="avatar for Pascal"
+            class="s-engCJu8q-fNe"
+            height="40"
+            referrerpolicy="no-referrer"
+            width="40"
+          />
+           
+          <figcaption
+            class="s-engCJu8q-fNe abbreviated"
+          >
+            P
+          </figcaption>
+        </figure>
+        <!--&lt;PlayerThumbnail&gt;-->
+         
+        <span
+          class="s-XLQf75fI0H0o"
+          role="term"
+        >
+          Pascal
         </span>
          
         <span
