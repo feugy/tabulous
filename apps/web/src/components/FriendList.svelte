@@ -270,7 +270,7 @@
       @apply text-$primary-darkest;
     }
     &[aria-checked='true'] {
-      @apply bg-$primary-light text-$base-lightest;
+      @apply bg-$base-lighter;
     }
   }
 
