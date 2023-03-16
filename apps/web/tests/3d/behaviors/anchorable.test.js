@@ -556,6 +556,7 @@ describe('AnchorBehavior', () => {
         anchors: [{ width: 1, height: 2, depth: 0.5, angle }]
       })
       snapped.addBehavior(new RotateBehavior({ angle: Math.PI * -0.5 }), true)
+      snapped.addBehavior(new FlipBehavior({ isFlipped: true }), true)
       expectRotated(snapped, Math.PI * -0.5)
       expect(snapped.absolutePosition.asArray()).toEqual([10, 10, 10])
 
@@ -564,6 +565,7 @@ describe('AnchorBehavior', () => {
       expectSnapped(mesh, snapped, 0)
       expect(behavior.getSnappedIds()).toEqual([meshes[0].id])
       expectRotated(snapped, -angle)
+      expectFlipped(snapped)
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
         fn: 'snap',

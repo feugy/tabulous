@@ -4,6 +4,7 @@ import {
   AnchorBehavior,
   DrawBehavior,
   FlipBehavior,
+  FlipBehaviorName,
   LockBehavior,
   MoveBehavior,
   MoveBehaviorName,
@@ -76,7 +77,8 @@ describe('StackBehavior', () => {
       extent: faker.datatype.number(),
       duration: faker.datatype.number(),
       kinds: [],
-      stackIds: []
+      stackIds: [],
+      angle: faker.datatype.number()
     }
     const behavior = new StackBehavior(state)
 
@@ -105,7 +107,8 @@ describe('StackBehavior', () => {
     expect(behavior.state).toEqual({
       extent: 2,
       duration: 100,
-      stackIds: []
+      stackIds: [],
+      angle: undefined
     })
     expect(behavior.mesh).toEqual(mesh)
     expect(mesh.metadata.stack).toEqual([mesh])
@@ -342,12 +345,16 @@ describe('StackBehavior', () => {
       box1
         .getBehaviorByName(RotateBehaviorName)
         .fromState({ duration: 100, angle: Math.PI * -0.5 })
+      box1
+        .getBehaviorByName(FlipBehaviorName)
+        .fromState({ duration: 100, isFlipped: true })
       behavior.fromState({ angle })
       expectStacked([mesh])
       expect(box1.absolutePosition).toEqual(Vector3.FromArray([1, 1, 1]))
 
       await mesh.metadata.push(box1.id)
       expectRotated(box1, baseAngle - angle)
+      expectFlipped(box1)
       expectStacked([mesh, box1])
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({

@@ -224,7 +224,11 @@ export class StackBehavior extends TargetBehavior {
       meshPushed[0],
       position,
       angle != undefined
-        ? new Vector3(0, stack[0].rotation.y + angle, 0)
+        ? new Vector3(
+            meshPushed[0].rotation.x,
+            stack[0].rotation.y + angle,
+            meshPushed[0].rotation.z
+          )
         : null,
       duration
     )

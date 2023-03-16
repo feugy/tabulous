@@ -325,16 +325,38 @@ async function snapToAnchor(behavior, snappedId, zone, loading = false) {
       // always use first part as a reference
       position.addInPlace(snapped.absolutePosition.subtract(partCenters[0]))
     }
+    if (zone.angle != undefined) {
+      console.log(
+        'rotate snapped',
+        zone.id,
+        mesh.rotation.y + zone.angle,
+        snapped.id,
+        snapped.rotation.asArray()
+      )
+    }
     const move = animateMove(
       snapped,
       position,
       zone.angle != undefined
-        ? new Vector3(0, mesh.rotation.y + zone.angle, 0)
+        ? new Vector3(
+            snapped.rotation.x,
+            mesh.rotation.y + zone.angle,
+            snapped.rotation.z
+          )
         : null,
       loading ? 0 : duration
     )
     if (!loading) {
       await move
+      if (zone.angle) {
+        console.log(
+          'snapped rotated',
+          zone,
+          snapped.id,
+          snapped.rotation.asArray(),
+          snapped.absolutePosition.asArray()
+        )
+      }
     }
   }
 }
