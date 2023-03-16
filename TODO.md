@@ -1,7 +1,6 @@
 # TODO
 
-- in a game that has a rule book, inviting from the friend list displays the rule book tab instead of the players tab
-- the friend tab is not open when creating a lobby
+- select player color in games
 
 ## Road to beta
 
@@ -22,7 +21,7 @@
 - group candidate target per kind for performance
 - keep anchor ids
 - create Animation objects as part of runAnimation() (constant frameRate of 60)
-- all manager managing a collection of behaviors should check their capabilities
+- all manager managing a collection of behaviors should check their capabilities + stackable/anchorable
 - game-manager is just a gigantic mess!!! no single responsibility, global state all over the place
 - UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
 - stackable duration override's movable duration on
@@ -32,6 +31,12 @@
 
 - bug: 6-takes: snapping to the wrong anchor (when 2 players are snapping to different anchors)
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
+- style: friend list highlited element are not readable
+- style: player videos on a two player game should be vertically lay out
+- check headings ordering
+- document keyboard shortcuts in the help panel
+- explicit layout in JS for aside videos
+- per game configurable single/double/lon tap/left click action
 - detailable/stackable behavior: preview a stack of meshes
 - hide/distinguish non-connected participants?
 - hide media dropdown unless hovering?

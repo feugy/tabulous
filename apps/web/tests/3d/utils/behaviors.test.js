@@ -15,9 +15,11 @@ import {
   attachFunctions,
   attachProperty,
   getAnimatableBehavior,
+  getMeshAbsolutePartCenters,
   getTargetableBehavior,
   isMeshFlipped,
   isMeshInverted,
+  isMeshLocked,
   registerBehaviors,
   restoreBehaviors,
   runAnimation,
@@ -37,9 +39,12 @@ import {
 import {
   createBox,
   disposeAllMeshes,
+  expectCloseVector,
   expectPosition,
   initialize3dEngine
 } from '../../test-utils'
+
+vi.mock('@src/3d/managers/indicator')
 
 let engine
 let box
@@ -215,34 +220,58 @@ describe('animateMove() 3D utility', () => {
   it('moves an animatable mesh without gravity', async () => {
     const position = [10, 5, 4]
     box.addBehavior(new AnimateBehavior(), true)
-    await animateMove(box, Vector3.FromArray(position), 100)
+    await animateMove(box, Vector3.FromArray(position), null, 100)
     expectPosition(box, position)
+    expectCloseVector(box.rotation, [0, 0, 0])
   })
 
-  it('moves without animation when omitting duration', async () => {
+  it('moves and rotates without animation when omitting duration', async () => {
     const position = [-2, -4, -0.5]
+    const rotation = [Math.PI, Math.PI * 0.5, 0]
     box.addBehavior(new FlipBehavior(), true)
-    animateMove(box, Vector3.FromArray(position), 0)
+    animateMove(
+      box,
+      Vector3.FromArray(position),
+      Vector3.FromArray(rotation),
+      0
+    )
     expectPosition(box, position)
+    expectCloseVector(box.rotation, rotation)
   })
 
   it('moves without animation regular mesh', async () => {
     const position = [15, 0, -4]
-    animateMove(box, Vector3.FromArray(position), 100)
+    const rotation = [Math.PI * 0.5, Math.PI * -0.5, Math.PI]
+    animateMove(
+      box,
+      Vector3.FromArray(position),
+      Vector3.FromArray(rotation),
+      100
+    )
     expectPosition(box, position)
+    expectCloseVector(box.rotation, rotation)
   })
 
   it('moves an animatable mesh without gravity', async () => {
     const position = [10, 0.5, 4]
     box.addBehavior(new RotateBehavior(), true)
-    await animateMove(box, Vector3.FromArray(position), 100, true)
+    await animateMove(box, Vector3.FromArray(position), null, 100, true)
     expectPosition(box, position)
+    expectCloseVector(box.rotation, [0, 0, 0])
   })
 
   it('moves without animation regular mesh with gravity', async () => {
     const position = [10, 0.5, -4]
-    animateMove(box, Vector3.FromArray(position), 100, true)
+    const rotation = [Math.PI, Math.PI * 0.5, 0]
+    animateMove(
+      box,
+      Vector3.FromArray(position),
+      Vector3.FromArray(rotation),
+      100,
+      true
+    )
     expectPosition(box, position)
+    expectCloseVector(box.rotation, rotation)
   })
 })
 
@@ -868,6 +897,57 @@ describe('isMeshInverted()', () => {
     box.parent = parent
     expect(isMeshInverted(parent)).toBe(true)
     expect(isMeshInverted(box)).toBe(true)
+  })
+})
+
+describe('isMeshLocked()', () => {
+  it('returns false for regular mesh', () => {
+    expect(isMeshLocked(box)).toBe(false)
+  })
+
+  it('returns true for inverted mesh', async () => {
+    box.addBehavior(new LockBehavior({ isLocked: true }), true)
+    expect(isMeshLocked(box)).toBe(true)
+    await box.metadata.toggleLock()
+    expect(isMeshLocked(box)).toBe(false)
+    await box.metadata.toggleLock()
+    expect(isMeshLocked(box)).toBe(true)
+  })
+})
+
+describe('getMeshAbsolutePartCenters()', () => {
+  it('returns absolute position of a part-less mesh', () => {
+    box.setAbsolutePosition(new Vector3(1, -3, 4))
+    expect(getMeshAbsolutePartCenters(box)).toEqual([box.absolutePosition])
+
+    box.metadata = { partCenters: [] }
+    expect(getMeshAbsolutePartCenters(box)).toEqual([box.absolutePosition])
+  })
+
+  it('computes absolute position of each part', () => {
+    const position = new Vector3(1, -3, 4)
+    box.setAbsolutePosition(position)
+    box.computeWorldMatrix(true)
+    box.metadata = {
+      partCenters: [{ x: -0.5, z: -0.25 }, { z: 0.25 }, { x: 0.5, z: -0.25 }]
+    }
+    expect(getMeshAbsolutePartCenters(box)).toEqual([
+      new Vector3(position.x - 0.5, position.y, position.z - 0.25),
+      new Vector3(position.x, position.y, position.z + 0.25),
+      new Vector3(position.x + 0.5, position.y, position.z - 0.25)
+    ])
+  })
+
+  it('considers rotation when computing part positions', () => {
+    box.rotation.y = Math.PI * 0.5
+    box.computeWorldMatrix(true)
+    box.metadata = {
+      partCenters: [{ x: -0.5 }, { x: 0.5 }]
+    }
+    const parts = getMeshAbsolutePartCenters(box)
+    expect(parts).toHaveLength(2)
+    expectCloseVector(parts[0], [0, 0, 0.5])
+    expectCloseVector(parts[1], [0, 0, -0.5])
   })
 })
 

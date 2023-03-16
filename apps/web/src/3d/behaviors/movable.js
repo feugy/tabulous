@@ -1,12 +1,21 @@
 import { moveManager } from '../managers/move'
+import { attachProperty } from '../utils/behaviors'
 import { AnimateBehavior } from './animatable'
 import { MoveBehaviorName } from './names'
 
 /**
  * @typedef {object} MovableState behavior persistent state, including:
  * @property {string} kind - drag kind, used to select targets.
+ * @property {Point[]} partCenters? - when the mesh is made of several parts, a list of their centers.
  * @property {boolean} [snapDistance=0.25] - snap grid unit, in 3D world coordinate.
  * @property {number} [duration=100] - duration (in milliseconds) of the snap animation.
+ */
+
+/**
+ * @typedef {object} Point a coordinate in space
+ * @property {number} x? - horizontal coordinate.
+ * @property {number} y? - vertical coordinate.
+ * @property {number} z? - depth coordinate.
  */
 
 export class MoveBehavior extends AnimateBehavior {
@@ -35,8 +44,9 @@ export class MoveBehavior extends AnimateBehavior {
   }
 
   /**
-   * Attaches this behavior to a mesh, registering it to the drag manager
-   * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
+   * Attaches this behavior to a mesh, registering it to the drag manager. Adds to the mesh metadata:
+   * - `partCenters` property.
+   * @param {import('@babylonjs/core').Mesh} mesh - which becomes movable.
    */
   attach(mesh) {
     super.attach(mesh)
@@ -60,10 +70,11 @@ export class MoveBehavior extends AnimateBehavior {
    * Updates this behavior's state and mesh to match provided data.
    * @param {MovableState} state - state to update to.
    */
-  fromState({ kind, snapDistance = 0.25, duration = 100 } = {}) {
+  fromState({ kind, partCenters, snapDistance = 0.25, duration = 100 } = {}) {
     if (!this.mesh) {
       throw new Error('Can not restore state without mesh')
     }
-    this.state = { kind, snapDistance, duration }
+    attachProperty(this, 'partCenters', () => this.state.partCenters)
+    this.state = { kind, snapDistance, duration, partCenters }
   }
 }

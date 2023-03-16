@@ -1009,7 +1009,7 @@ describe('HandManager', () => {
       })
 
       it('can flip mesh prior to moving it to main scene', async () => {
-        const [, , card] = handCards
+        const [, card] = handCards
         card.getBehaviorByName(DrawBehaviorName).state.flipOnPlay = true
         expectFlipped(card, false)
         card.metadata.draw()

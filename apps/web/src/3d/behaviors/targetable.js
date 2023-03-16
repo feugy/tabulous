@@ -10,6 +10,7 @@ import { TargetBehaviorName } from './names'
  * @property {import('@babylonjs/core').Mesh} mesh - invisible, unpickable mesh acting as drop zone.
  * @property {number} extend - units (in 3D coordinate) added to the zone's bounding box to determine.
  * @property {boolean} enabled - whether this zone is active or not.
+ * @property {boolean} ignoreParts - whether this zone consider mesh's slots or not.
  * @property {string[]} kinds? - an optional array of allowed drag kinds for this zone (allows all if not present).
  * @property {number} priority? - priority applied when multiple targets with same altitude apply.
  * @property {string} playerId? - when set, only player with this id can use this anchor.
@@ -101,6 +102,7 @@ export class TargetBehavior {
       mesh,
       targetable: this,
       ...properties,
+      ignoreParts: properties.ignoreParts ?? false,
       enabled: properties.enabled ?? true,
       priority: properties.priority ?? 0
     }

@@ -1,10 +1,12 @@
-import { Animation } from '@babylonjs/core/Animations/animation.js'
-import { Observable } from '@babylonjs/core/Misc/observable.js'
+import { Animation } from '@babylonjs/core/Animations/animation'
+import { Observable } from '@babylonjs/core/Misc/observable'
 
 import { runAnimation } from '../utils/behaviors'
 import { applyGravity } from '../utils/gravity'
 import { convertToLocal } from '../utils/vector'
 import { AnimateBehaviorName } from './names'
+
+/** @typedef {import('@babylonjs/core').Vector3} Vector3 */
 
 export class AnimateBehavior {
   /**
@@ -28,6 +30,13 @@ export class AnimateBehavior {
     this.moveAnimation = new Animation(
       'move',
       'position',
+      this.frameRate,
+      Animation.ANIMATIONTYPE_VECTOR3,
+      Animation.ANIMATIONLOOPMODE_CONSTANT
+    )
+    this.rotateAnimation = new Animation(
+      'rotate',
+      'rotation',
       this.frameRate,
       Animation.ANIMATIONTYPE_VECTOR3,
       Animation.ANIMATIONLOOPMODE_CONSTANT
@@ -70,22 +79,17 @@ export class AnimateBehavior {
    * Does nothing if the mesh is already being animated.
    *
    * @async
-   * @param {import('@babylonjs/core').Vector3} to - the desired new absolute position.
+   * @param {Vector3} to - the desired new absolute position.
+   * @param {Vector3} rotation - its final rotation (set to null to leave unmodified).
    * @param {number} duration - move duration (in milliseconds).
    * @param {boolean} [gravity=true] - applies gravity at the end.
    */
-  async moveTo(to, duration, gravity = true) {
-    const { isAnimated, mesh, moveAnimation } = this
+  async moveTo(to, rotation, duration, gravity = true) {
+    const { isAnimated, mesh, moveAnimation, rotateAnimation } = this
     if (isAnimated || !mesh) {
       return
     }
-    await runAnimation(
-      this,
-      () => {
-        if (gravity) {
-          applyGravity(mesh)
-        }
-      },
+    const frameSpecs = [
       {
         animation: moveAnimation,
         duration: mesh.getEngine().isLoading ? 0 : duration,
@@ -97,6 +101,25 @@ export class AnimateBehavior {
           { frame: 100, values: convertToLocal(to, mesh).asArray() }
         ]
       }
+    ]
+    if (rotation) {
+      frameSpecs.push({
+        animation: rotateAnimation,
+        duration: mesh.getEngine().isLoading ? 0 : duration,
+        keys: [
+          { frame: 0, values: mesh.rotation.asArray() },
+          { frame: 100, values: rotation.asArray() }
+        ]
+      })
+    }
+    await runAnimation(
+      this,
+      () => {
+        if (gravity) {
+          applyGravity(mesh)
+        }
+      },
+      ...frameSpecs
     )
   }
 }

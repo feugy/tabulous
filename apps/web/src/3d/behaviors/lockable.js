@@ -13,7 +13,7 @@ const logger = makeLogger(LockBehaviorName)
 
 export class LockBehavior {
   /**
-   * Creates behavior to lock some actions on a mesh, by actigin on other behaviors.
+   * Creates behavior to lock some actions on a mesh, by acting on other behaviors.
    *
    * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
    * @property {LockableState} state - the behavior's current state.

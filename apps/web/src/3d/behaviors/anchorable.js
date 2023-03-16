@@ -10,6 +10,7 @@ import {
   attachFunctions,
   attachProperty,
   buildTargetMesh,
+  getMeshAbsolutePartCenters,
   getPositionAboveZone,
   getTargetableBehavior
 } from '../utils/behaviors'
@@ -31,6 +32,8 @@ const logger = makeLogger(AnchorBehaviorName)
  * @property {number} priority? - priority applied when multiple targets with same altitude apply.
  * @property {string} playerId? - when set, only player with this id can use this anchor.
  * @property {string} snappedId? - the currently snapped mesh id.
+ * @property {boolean} ignoreParts? - whether this anchor consider a mesh's parts or not.
+ * @property {number} angle? - angle, in Radian, applied to the snapped mesh.
  */
 
 /**
@@ -317,9 +320,43 @@ async function snapToAnchor(behavior, snappedId, zone, loading = false) {
 
     // moves it to the final position
     const position = getPositionAboveZone(snapped, zone)
-    const move = animateMove(snapped, position, loading ? 0 : duration)
+    const partCenters = getMeshAbsolutePartCenters(snapped)
+    if (!zone.ignoreParts && partCenters) {
+      // always use first part as a reference
+      position.addInPlace(snapped.absolutePosition.subtract(partCenters[0]))
+    }
+    if (zone.angle != undefined) {
+      console.log(
+        'rotate snapped',
+        zone.id,
+        mesh.rotation.y + zone.angle,
+        snapped.id,
+        snapped.rotation.asArray()
+      )
+    }
+    const move = animateMove(
+      snapped,
+      position,
+      zone.angle != undefined
+        ? new Vector3(
+            snapped.rotation.x,
+            mesh.rotation.y + zone.angle,
+            snapped.rotation.z
+          )
+        : null,
+      loading ? 0 : duration
+    )
     if (!loading) {
       await move
+      if (zone.angle) {
+        console.log(
+          'snapped rotated',
+          zone,
+          snapped.id,
+          snapped.rotation.asArray(),
+          snapped.absolutePosition.asArray()
+        )
+      }
     }
   }
 }

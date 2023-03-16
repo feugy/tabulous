@@ -38,10 +38,17 @@ type RotableState {
   duration: Int
 }
 
+type Point {
+  x: Float
+  y: Float
+  z: Float
+}
+
 type MovableState {
   duration: Int
   snapDistance: Float
   kind: String
+  partCenters: [Point]
 }
 
 type StackableState {
@@ -50,6 +57,7 @@ type StackableState {
   extent: Float
   priority: Float
   kinds: [String]
+  angle: Float
 }
 
 type AnchorableState {
@@ -95,6 +103,8 @@ type Anchor {
   kinds: [String]
   snappedId: ID
   playerId: ID
+  ignoreParts: Boolean
+  angle: Float
 }
 
 type Mesh {
@@ -221,10 +231,17 @@ input RotableStateInput {
   duration: Int
 }
 
+input PointInput {
+  x: Float
+  y: Float
+  z: Float
+}
+
 input MovableStateInput {
   duration: Int
   snapDistance: Float
   kind: String
+  partCenters: [PointInput]
 }
 
 input StackableStateInput {
@@ -233,6 +250,7 @@ input StackableStateInput {
   extent: Float
   priority: Float
   kinds: [String]
+  angle: Float
 }
 
 input AnchorableStateInput {
@@ -278,6 +296,8 @@ input AnchorInput {
   kinds: [String]
   snappedId: ID
   playerId: ID
+  ignoreParts: Boolean
+  angle: Float
 }
 
 input MeshInput {

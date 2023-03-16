@@ -13,7 +13,8 @@ describe('TargetBehavior', () => {
   it('has initial state', () => {
     const state = {
       isFlipped: faker.datatype.boolean(),
-      duration: faker.datatype.number()
+      duration: faker.datatype.number(),
+      ignoreParts: faker.datatype.boolean()
     }
     const behavior = new TargetBehavior(state)
     const mesh = createBox('box', {})
@@ -31,23 +32,35 @@ describe('TargetBehavior', () => {
     const mesh1 = createBox('box1', {})
     const zone1 = behavior.addZone(mesh1, { extent: 1.2 })
     expect(behavior.zones).toEqual([zone1])
-    expectZone(zone1, { mesh: mesh1, extent: 1.2, enabled: true, priority: 0 })
+    expect(zone1).toEqual(
+      expect.objectContaining({
+        mesh: mesh1,
+        extent: 1.2,
+        enabled: true,
+        priority: 0,
+        ignoreParts: false
+      })
+    )
 
     const mesh2 = createBox('box1', {})
     const zone2 = behavior.addZone(mesh2, {
       extent: 2,
       kinds: ['box', 'card'],
       enabled: false,
-      priority: 10
+      priority: 10,
+      ignoreParts: true
     })
     expect(behavior.zones).toEqual([zone1, zone2])
-    expectZone(zone2, {
-      mesh: mesh2,
-      extent: 2,
-      kinds: ['box', 'card'],
-      enabled: false,
-      priority: 10
-    })
+    expect(zone2).toEqual(
+      expect.objectContaining({
+        mesh: mesh2,
+        extent: 2,
+        kinds: ['box', 'card'],
+        enabled: false,
+        priority: 10,
+        ignoreParts: true
+      })
+    )
     expect(mesh1.isDisposed()).toBe(false)
     expect(mesh1.isPickable).toBe(false)
     expect(mesh1.visibility).toBe(0)
@@ -65,7 +78,9 @@ describe('TargetBehavior', () => {
     const mesh = createBox(meshId, {})
     const zone = behavior.addZone(mesh, { playerId })
     expect(behavior.zones).toEqual([zone])
-    expectZone(zone, { mesh, enabled: true, priority: 0, playerId })
+    expect(zone).toEqual(
+      expect.objectContaining({ mesh, enabled: true, priority: 0, playerId })
+    )
     expect(indicatorManager.isManaging({ id })).toBe(true)
     behavior.removeZone(zone)
     expect(indicatorManager.isManaging({ id })).toBe(false)
@@ -134,11 +149,3 @@ describe('TargetBehavior', () => {
     })
   })
 })
-
-function expectZone(zone, { mesh, extent, enabled, kinds, priority }) {
-  expect(zone.extent).toEqual(extent)
-  expect(zone.enabled).toEqual(enabled)
-  expect(zone.kinds).toEqual(kinds)
-  expect(zone.priority).toEqual(priority)
-  expect(zone.mesh?.id).toEqual(mesh?.id)
-}

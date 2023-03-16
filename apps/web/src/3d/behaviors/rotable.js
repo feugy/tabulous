@@ -1,11 +1,11 @@
-import { Animation } from '@babylonjs/core/Animations/animation.js'
-import { Vector3 } from '@babylonjs/core/Maths/math.js'
+import { Vector3 } from '@babylonjs/core/Maths/math'
 
 import { makeLogger } from '../../utils/logger'
 import { controlManager } from '../managers/control'
 import {
   attachFunctions,
   attachProperty,
+  isMeshLocked,
   runAnimation
 } from '../utils/behaviors'
 import { applyGravity } from '../utils/gravity'
@@ -39,14 +39,6 @@ export class RotateBehavior extends AnimateBehavior {
   constructor(state = {}) {
     super(state)
     this._state = state
-    // private
-    this.rotateAnimation = new Animation(
-      'rotate',
-      'rotation.y',
-      this.frameRate,
-      Animation.ANIMATIONTYPE_FLOAT,
-      Animation.ANIMATIONLOOPMODE_CONSTANT
-    )
   }
 
   /**
@@ -103,7 +95,7 @@ export class RotateBehavior extends AnimateBehavior {
       rotateAnimation,
       moveAnimation
     } = this
-    if (isAnimated || !mesh) {
+    if (isAnimated || !mesh || isMeshLocked(mesh)) {
       return
     }
     logger.debug({ mesh }, `start rotating ${mesh.id}`)
@@ -112,7 +104,7 @@ export class RotateBehavior extends AnimateBehavior {
     controlManager.record({ mesh, fn: 'rotate', duration })
 
     const [x, y, z] = mesh.position.asArray()
-    const [, yaw] = mesh.rotation.asArray()
+    const [pitch, yaw, roll] = mesh.rotation.asArray()
 
     let rotation = rotationStep
     if (mesh.parent && getAbsoluteRotation(mesh.parent).z >= Math.PI) {
@@ -130,8 +122,8 @@ export class RotateBehavior extends AnimateBehavior {
         animation: rotateAnimation,
         duration,
         keys: [
-          { frame: 0, values: [yaw] },
-          { frame: 100, values: [yaw + rotation] }
+          { frame: 0, values: [pitch, yaw, roll] },
+          { frame: 100, values: [pitch, yaw + rotation, roll] }
         ]
       },
       {

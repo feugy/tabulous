@@ -136,7 +136,7 @@ describe('RotateBehavior', () => {
       await mesh.metadata.rotate()
       expectRotated(mesh, Math.PI * 0.5)
       expectPosition(mesh, [x, 0.5, z])
-      expect(animationEndReceived).toHaveBeenCalledTimes(1)
+      expect(animationEndReceived).toHaveBeenCalledOnce()
     })
 
     it('rotates mesh clockwise with flipped parent', async () => {
@@ -174,7 +174,7 @@ describe('RotateBehavior', () => {
       expectRotated(mesh, Math.PI * 0.5)
       expectPosition(mesh, [x, 0.5, z])
       expectRotated(child, Math.PI * 0.5)
-      expect(animationEndReceived).toHaveBeenCalledTimes(1)
+      expect(animationEndReceived).toHaveBeenCalledOnce()
     })
 
     it('makes mesh unpickable while rotating', async () => {
@@ -192,7 +192,7 @@ describe('RotateBehavior', () => {
       expectRotated(mesh, 0)
       expect(recordSpy).toHaveBeenCalledTimes(0)
       await mesh.metadata.rotate()
-      expect(recordSpy).toHaveBeenCalledTimes(1)
+      expect(recordSpy).toHaveBeenCalledOnce()
       expect(recordSpy).toHaveBeenNthCalledWith(1, {
         mesh,
         fn: 'rotate',
@@ -232,8 +232,8 @@ describe('RotateBehavior', () => {
 
       expectPickable(mesh)
       expectRotated(mesh, Math.PI * 0.5)
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(animationEndReceived).toHaveBeenCalledTimes(1)
+      expect(recordSpy).toHaveBeenCalledOnce()
+      expect(animationEndReceived).toHaveBeenCalledOnce()
     })
 
     it('applies current rotation to added child', async () => {
@@ -274,6 +274,14 @@ describe('RotateBehavior', () => {
 
       child.setParent(null)
       expectAbsoluteRotation(child, 0, 'y')
+    })
+
+    it('can not rotate if locked', async () => {
+      mesh.metadata.isLocked = true
+      expectRotated(mesh, 0)
+      await mesh.metadata.rotate()
+      expectRotated(mesh, 0)
+      expect(animationEndReceived).not.toHaveBeenCalled()
     })
   })
 })

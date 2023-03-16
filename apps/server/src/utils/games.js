@@ -154,7 +154,7 @@ function fillSlot(
       const anchor = findAnchor(anchorId, allMeshes)
       if (anchor) {
         if (anchor.snappedId) {
-          meshes.splice(0, 0, findMeshById(anchor.snappedId, allMeshes))
+          meshes.splice(0, 0, findMesh(anchor.snappedId, allMeshes))
         } else {
           anchor.snappedId = meshes[0].id
         }
@@ -233,7 +233,7 @@ export function drawInHand(
   if (!anchor) {
     throw new Error(`no anchor with id '${fromAnchor}'`)
   }
-  const stack = findMeshById(anchor.snappedId, meshes)
+  const stack = findMesh(anchor.snappedId, meshes)
   if (!stack) {
     return
   }
@@ -269,17 +269,35 @@ export function findOrCreateHand(game, playerId) {
 /**
  * Finds a mesh by id.
  * @param {string} id - desired mesh id.
- * @param {*} meshes - mesh list to search in.
+ * @param {Mesh[]} meshes - mesh list to search in.
  * @returns {Mesh|null} corresponding mesh, if any.
  */
-export function findMeshById(id, meshes) {
+export function findMesh(id, meshes) {
   return meshes?.find(mesh => mesh.id === id) ?? null
+}
+
+/**
+ * Draw one or several meshes from a given stack.
+ * @param {string} stackId - id of a stacked mesh to draw from.
+ * @param {number} count - number of drawned meshes.
+ * @param {Mesh[]} meshes - mesh list to search in.
+ * @returns {Mesh[]} drawn meshes, if any.
+ */
+export function draw(stackId, count, meshes) {
+  const drawn = []
+  const stack = findMesh(stackId, meshes)
+  if (stack) {
+    for (let i = 0; i < count; i++) {
+      drawn.push(drawMesh(stack, meshes))
+    }
+  }
+  return drawn.filter(Boolean)
 }
 
 function drawMesh(stackMesh, meshes) {
   if (stackMesh.stackable?.stackIds.length) {
     const id = stackMesh.stackable.stackIds.pop()
-    return findMeshById(id, meshes)
+    return findMesh(id, meshes)
   }
 }
 
@@ -310,7 +328,7 @@ export function snapTo(anchorId, mesh, meshes) {
     return false
   }
   if (anchor.snappedId) {
-    const snapped = findMeshById(anchor.snappedId, meshes)
+    const snapped = findMesh(anchor.snappedId, meshes)
     if (!canStack(snapped, mesh)) {
       return false
     }
@@ -335,7 +353,7 @@ export function unsnap(anchorId, meshes) {
   }
   const id = anchor.snappedId
   anchor.snappedId = null
-  return findMeshById(id, meshes)
+  return findMesh(id, meshes)
 }
 
 function canStack(base, mesh) {

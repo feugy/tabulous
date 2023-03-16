@@ -113,7 +113,9 @@ function getVisibleIndicators(
   return allVisible
     ? indicators.filter(
         ({ screenPosition, isFeedback }) =>
-          !isFeedback && screenPosition.y <= handPosition
+          !isFeedback &&
+          screenPosition.y <= handPosition &&
+          screenPosition.y > 10
       )
     : hasMenu(menuProps, selected)
     ? getMenuIndicators(menuProps, indicators)

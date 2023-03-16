@@ -1,4 +1,4 @@
-import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
+import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 
 import { makeLogger } from '../../utils/logger'
 import { controlManager } from '../managers/control'
@@ -156,7 +156,7 @@ export class QuantityBehavior extends TargetBehavior {
       this.state.quantity += increment
       updateIndicator(mesh, this.state.quantity)
       if (duration) {
-        await animateMove(other, mesh.absolutePosition, duration)
+        await animateMove(other, mesh.absolutePosition, null, duration)
       }
       other.dispose()
     }
@@ -201,6 +201,7 @@ export class QuantityBehavior extends TargetBehavior {
           getCenterAltitudeAbove(mesh, created),
           created.absolutePosition.z
         ),
+        null,
         duration,
         true
       )

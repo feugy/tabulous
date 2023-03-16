@@ -106,7 +106,7 @@ describe('FlipBehavior', () => {
       await mesh.metadata.flip()
       expectFlipped(mesh)
       expectPosition(mesh, [x, 0.5, z])
-      expect(animationEndReceived).toHaveBeenCalledTimes(1)
+      expect(animationEndReceived).toHaveBeenCalledOnce()
     })
 
     it('flips mesh anti-clockwise and apply gravity', async () => {
@@ -119,7 +119,15 @@ describe('FlipBehavior', () => {
       await mesh.metadata.flip()
       expectFlipped(mesh)
       expectPosition(mesh, [x, 0.5, z])
-      expect(animationEndReceived).toHaveBeenCalledTimes(1)
+      expect(animationEndReceived).toHaveBeenCalledOnce()
+    })
+
+    it('can not flip if locked', async () => {
+      mesh.metadata.isLocked = true
+      expectFlipped(mesh, false)
+      await mesh.metadata.flip()
+      expectFlipped(mesh, false)
+      expect(animationEndReceived).not.toHaveBeenCalled()
     })
 
     describe('given parent and children', () => {
@@ -138,7 +146,7 @@ describe('FlipBehavior', () => {
         expectFlipped(mesh)
         expectFlipped(child, false)
         expectFlipped(granChild, false)
-        expect(animationEndReceived).toHaveBeenCalledTimes(1)
+        expect(animationEndReceived).toHaveBeenCalledOnce()
       })
 
       it('flips mesh independently from its parent', async () => {
@@ -154,7 +162,7 @@ describe('FlipBehavior', () => {
         expectFlipped(mesh)
         expectFlipped(child)
         expectFlipped(granChild, false)
-        expect(animationEndReceived).toHaveBeenCalledTimes(1)
+        expect(animationEndReceived).toHaveBeenCalledOnce()
       })
     })
 
@@ -167,14 +175,14 @@ describe('FlipBehavior', () => {
 
       expectPickable(mesh)
       expectFlipped(mesh)
-      expect(animationEndReceived).toHaveBeenCalledTimes(1)
+      expect(animationEndReceived).toHaveBeenCalledOnce()
     })
 
     it('records flips to controlManager', async () => {
       expectFlipped(mesh, false)
       expect(recordSpy).toHaveBeenCalledTimes(0)
       await mesh.metadata.flip()
-      expect(recordSpy).toHaveBeenCalledTimes(1)
+      expect(recordSpy).toHaveBeenCalledOnce()
       expect(recordSpy).toHaveBeenNthCalledWith(1, {
         mesh,
         fn: 'flip',
@@ -223,8 +231,8 @@ describe('FlipBehavior', () => {
 
       expectPickable(mesh)
       expectFlipped(mesh)
-      expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(animationEndReceived).toHaveBeenCalledTimes(1)
+      expect(recordSpy).toHaveBeenCalledOnce()
+      expect(animationEndReceived).toHaveBeenCalledOnce()
     })
   })
 })
