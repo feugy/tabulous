@@ -1,7 +1,7 @@
 <script context="module">
   import ms from 'ms'
   import { fade } from 'svelte/transition'
-  
+
   import { browser } from '$app/environment'
 
   let enterDuration = 0
@@ -51,6 +51,10 @@
     }
   }
 
+  function hide() {
+    return { duration: 0, css: () => 'opacity:0' }
+  }
+
   function handleEnterEnd(args) {
     const { x, y } = computeItemPosition(args)
     args.target.style = `opacity: 1; left: ${x}px; top: ${y}px;`
@@ -61,7 +65,7 @@
   <aside
     role="menu"
     transition:fade={{ duration: enterDuration }}
-    style={`left: ${left}; top: ${top}; --size:${radius * 2}px;`}
+    style="left: {left}; top: {top}; --size:{radius * 2}px;"
   >
     {#if !items.length}
       <span class="no-actions" transition:fade={{ delay: enterDuration }}
@@ -69,30 +73,29 @@
       >
     {/if}
     <ul on:pointerdown|stopPropagation on:mouseenter on:mouseleave>
-      {#each items as { onClick, title, badge, max, ...buttonProps }, i}
-        {#key buttonProps}
-          <li
-            in:enter={{ i }}
-            on:introend={({ target }) => handleEnterEnd({ i, target })}
-          >
-            {#if max}
-              <QuantityButton
-                title={title ? $_(title) : undefined}
-                badge={badge ? $_(badge) : undefined}
-                {max}
-                {...buttonProps}
-                on:click={onClick}
-              />
-            {:else}
-              <Button
-                title={title ? $_(title) : undefined}
-                badge={badge ? $_(badge) : undefined}
-                {...buttonProps}
-                on:click={onClick}
-              />
-            {/if}
-          </li>
-        {/key}
+      {#each items as { key, onClick, title, badge, max, ...buttonProps }, i}
+        <li
+          in:enter={{ i }}
+          on:introend={({ target }) => handleEnterEnd({ i, target })}
+          out:hide
+        >
+          {#if max}
+            <QuantityButton
+              title={title ? $_(title) : undefined}
+              badge={badge ? $_(badge) : undefined}
+              {max}
+              {...buttonProps}
+              on:click={onClick}
+            />
+          {:else}
+            <Button
+              title={title ? $_(title) : undefined}
+              badge={badge ? $_(badge) : undefined}
+              {...buttonProps}
+              on:click={onClick}
+            />
+          {/if}
+        </li>
       {/each}
     </ul>
     <slot />
