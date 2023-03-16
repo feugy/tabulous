@@ -57,6 +57,7 @@ type StackableState {
   extent: Float
   priority: Float
   kinds: [String]
+  angle: Float
 }
 
 type AnchorableState {
@@ -103,6 +104,7 @@ type Anchor {
   snappedId: ID
   playerId: ID
   ignoreParts: Boolean
+  angle: Float
 }
 
 type Mesh {
@@ -248,6 +250,7 @@ input StackableStateInput {
   extent: Float
   priority: Float
   kinds: [String]
+  angle: Float
 }
 
 input AnchorableStateInput {
@@ -294,6 +297,7 @@ input AnchorInput {
   snappedId: ID
   playerId: ID
   ignoreParts: Boolean
+  angle: Float
 }
 
 input MeshInput {
