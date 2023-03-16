@@ -102,7 +102,12 @@ async function acquire(video, audio) {
     currentCamera.next(video)
     currentMic.next(audio)
     saveLastMediaIds({ audio, video })
-    const result = await navigator.mediaDevices.getUserMedia({ audio, video })
+    const result = await navigator.mediaDevices.getUserMedia({
+      audio,
+      video: video
+        ? { deviceId: video.deviceId, aspectRatio: { ideal: 16 / 9 } }
+        : video
+    })
     stream.next(result)
     logger.info(`media successfully attached`)
     return result

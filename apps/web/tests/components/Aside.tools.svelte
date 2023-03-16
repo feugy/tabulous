@@ -7,7 +7,7 @@
 
   import Aside from './AsideWithVideo.svelte'
 
-  const playerById = new Map(players.map(player => [player.id, player]))
+  let playerById = new Map(players.map(player => [player.id, player]))
   const playingPlayersById = new Map(
     players.map(player => [player.id, { ...player, playing: true }])
   )
@@ -32,6 +32,17 @@
     ...friend,
     player: { ...friend.player, color: undefined }
   }))
+
+  let stream
+
+  function addPeer() {
+    const id = `${Math.random()}`
+    playerById = new Map([...playerById.entries(), [id, { ...players[0], id }]])
+  }
+
+  function removePeer() {
+    playerById = new Map([...playerById.entries()].slice(0, -1))
+  }
 </script>
 
 <ToolBox
@@ -82,13 +93,22 @@
       thread
     }}
     setup={({ props }) => {
-      const stream = get(stream$)
-      return {
-        ...props,
-        connected: players.map(({ id: playerId }) => ({ playerId, stream }))
-      }
+      stream = get(stream$)
+      return props
     }}
-  />
+    let:props
+    let:handleEvent
+  >
+    <Aside
+      {...props}
+      {playerById}
+      withControls={true}
+      connected={[...playerById.keys()].map(playerId => ({ playerId, stream }))}
+      on:sendMessage={handleEvent}
+      on:add={addPeer}
+      on:remove={removePeer}
+    />
+  </Tool>
   <Tool
     name="No peers, no rules book"
     props={{ playerById: singlePlayerById }}
