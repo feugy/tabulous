@@ -12,7 +12,6 @@ import {
   attachProperty,
   buildTargetMesh
 } from '../utils/behaviors'
-import { getCenterAltitudeAbove } from '../utils/gravity'
 import { createMeshFromState } from '../utils/scene-loader'
 import { MoveBehaviorName, QuantityBehaviorName } from './names'
 import { TargetBehavior } from './targetable'
@@ -197,8 +196,8 @@ export class QuantityBehavior extends TargetBehavior {
       move = animateMove(
         created,
         new Vector3(
-          created.absolutePosition.x,
-          getCenterAltitudeAbove(mesh, created),
+          mesh.getBoundingInfo().boundingBox.maximumWorld.x + 0.5,
+          created.absolutePosition.y,
           created.absolutePosition.z
         ),
         null,

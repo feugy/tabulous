@@ -75,27 +75,7 @@ exports[`No age nor time 1`] = `
           undefined
         </summary>
          
-        <p
-          class="s-Z6y0dSYOFWU8"
-        >
-          <strong
-            class="s-Z6y0dSYOFWU8"
-          >
-            Illustré par : 
-          </strong>
-          undefined
-        </p>
          
-        <p
-          class="s-Z6y0dSYOFWU8"
-        >
-          <strong
-            class="s-Z6y0dSYOFWU8"
-          >
-            Distribué par : 
-          </strong>
-          undefined
-        </p>
       </details>
     </legend>
   </article>
@@ -178,27 +158,7 @@ exports[`With characteristics 1`] = `
           undefined
         </summary>
          
-        <p
-          class="s-Z6y0dSYOFWU8"
-        >
-          <strong
-            class="s-Z6y0dSYOFWU8"
-          >
-            Illustré par : 
-          </strong>
-          undefined
-        </p>
          
-        <p
-          class="s-Z6y0dSYOFWU8"
-        >
-          <strong
-            class="s-Z6y0dSYOFWU8"
-          >
-            Distribué par : 
-          </strong>
-          undefined
-        </p>
       </details>
     </legend>
   </article>

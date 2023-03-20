@@ -57,16 +57,20 @@
           'authors'
         )}</summary
       >
-      <p>
-        <strong>{$_('labels.game-designers')}</strong>{formatCopyright(
-          'designers'
-        )}
-      </p>
-      <p>
-        <strong>{$_('labels.game-publishers')}</strong>{formatCopyright(
-          'publishers'
-        )}
-      </p>
+      {#if game?.copyright?.designers}
+        <p>
+          <strong>{$_('labels.game-designers')}</strong>{formatCopyright(
+            'designers'
+          )}
+        </p>
+      {/if}
+      {#if game?.copyright?.publishers}
+        <p>
+          <strong>{$_('labels.game-publishers')}</strong>{formatCopyright(
+            'publishers'
+          )}
+        </p>
+      {/if}
     </details>
   </legend>
 </article>

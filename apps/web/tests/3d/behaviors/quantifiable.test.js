@@ -327,7 +327,7 @@ describe('QuantityBehavior', () => {
       const created = await mesh.metadata.decrement(1, true)
       expect(created.id).not.toBe(mesh.id)
       const [x, y, z] = mesh.absolutePosition.asArray()
-      expectPosition(created, [x, y + 1.001, z])
+      expectPosition(created, [x + 1, y + 0.5, z])
       expect(created.metadata.serialize()).toMatchObject({
         id: expect.stringMatching(/^box0-/),
         shape: 'box',
@@ -354,7 +354,7 @@ describe('QuantityBehavior', () => {
       const created = await mesh.metadata.decrement(2, true)
       expect(created.id).not.toBe(mesh.id)
       const [x, y, z] = mesh.absolutePosition.asArray()
-      expectPosition(created, [x, y + 1.001, z])
+      expectPosition(created, [x + 1, y + 0.5, z])
       expect(created.metadata.serialize()).toMatchObject({
         id: expect.stringMatching(/^box0-/),
         shape: 'box',

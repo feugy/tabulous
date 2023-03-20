@@ -255,6 +255,9 @@
       & .buttons {
         @apply opacity-100;
       }
+      &[aria-checked='true'] {
+        @apply text-$ink;
+      }
     }
 
     &[role='option'] {
@@ -270,7 +273,7 @@
       @apply text-$primary-darkest;
     }
     &[aria-checked='true'] {
-      @apply bg-$base-lighter;
+      @apply bg-$base-lightest;
     }
   }
 
