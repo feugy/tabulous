@@ -8,7 +8,7 @@ import { materialManager } from '../managers/material'
 import { registerBehaviors, serializeBehaviors } from '../utils/behaviors'
 import { getGroundAltitude } from '../utils/gravity'
 
-OBJFileLoader.UV_SCALING = new Vector2(1, -1)
+OBJFileLoader.UV_SCALING = new Vector2(-1, 1)
 
 /**
  * Creates a custom mesh by importing .babylon format.

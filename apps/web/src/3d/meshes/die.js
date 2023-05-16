@@ -115,22 +115,22 @@ export function getQuaternions(faces) {
   }
   if (faces === 6) {
     return new Map([
-      [1, new Quaternion(0, 0, 0, 1)],
-      [2, new Quaternion(0, 0, sinMinus90, cosMinus90)],
+      [1, new Quaternion(0, 0, sin90, cos90)],
+      [2, new Quaternion(0, 0, sin180, cos180)],
       [
         3,
-        new Quaternion(sin90, 0, 0, cos90).multiply(
-          new Quaternion(0, 0, sinMinus90, cosMinus90)
-        )
-      ],
-      [
-        4,
         new Quaternion(sinMinus90, 0, 0, cosMinus90).multiply(
           new Quaternion(0, 0, sin90, cos90)
         )
       ],
-      [5, new Quaternion(0, 0, sin90, cos90)],
-      [6, new Quaternion(0, 0, sin180, cos180)]
+      [
+        4,
+        new Quaternion(sin90, 0, 0, cos90).multiply(
+          new Quaternion(0, 0, sinMinus90, cosMinus90)
+        )
+      ],
+      [5, new Quaternion(0, 0, 0, 1)],
+      [6, new Quaternion(0, 0, sinMinus90, cosMinus90)]
     ])
   }
   if (faces === 8) {
@@ -143,11 +143,11 @@ export function getQuaternions(faces) {
       new Quaternion(sin(toRad(35)), 0, 0, cos(toRad(35)))
     )
     return new Map([
-      [1, new Quaternion(0, 0, 0, 1)],
-      [2, swing],
-      [3, new Quaternion(x * sin90, y * sin90, z * sin90, cos90)],
+      [8, new Quaternion(0, 0, 0, 1)],
+      [7, swing],
+      [6, new Quaternion(x * sin90, y * sin90, z * sin90, cos90)],
       [
-        4,
+        5,
         new Quaternion(
           x * sinMinus90,
           y * sinMinus90,
@@ -155,15 +155,15 @@ export function getQuaternions(faces) {
           cosMinus90
         ).multiply(swing)
       ],
-      [5, new Quaternion(x * sin180, y * sin180, z * sin180, cos180)],
+      [4, new Quaternion(x * sin180, y * sin180, z * sin180, cos180)],
       [
-        6,
+        3,
         new Quaternion(x * sin180, y * sin180, z * sin180, cos180).multiply(
           swing
         )
       ],
       [
-        7,
+        2,
         new Quaternion(
           x * sinMinus90,
           y * sinMinus90,
@@ -172,7 +172,7 @@ export function getQuaternions(faces) {
         )
       ],
       [
-        8,
+        1,
         new Quaternion(x * sin90, y * sin90, z * sin90, cos90).multiply(swing)
       ]
     ])
