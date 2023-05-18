@@ -1,5 +1,4 @@
 import { Color4 } from '@babylonjs/core/Maths/math.color'
-import { Quaternion } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
 import {
   controlManager,
@@ -39,9 +38,8 @@ describe('getQuaternions()', () => {
     ({ faces }) => {
       const quaternions = getQuaternions(faces)
       expect(quaternions.size).toBe(faces)
-      expect(quaternions.get(1)).toEqual(Quaternion.Identity())
-      for (let face = 2; face <= faces; face++) {
-        expect(quaternions.get(face), `face ${face}`).toBeDefined
+      for (let face = 1; face <= faces; face++) {
+        expect(quaternions.get(face), `face ${face}`).toBeDefined()
       }
     }
   )
