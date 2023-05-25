@@ -42,6 +42,7 @@ class MoveManager {
     this.scene = null
     this.meshIds = new Set()
     this.behaviorByMeshId = new Map()
+    this.autoSelect = new Set()
   }
 
   /**
@@ -67,6 +68,7 @@ class MoveManager {
       return
     }
 
+    this.autoSelect.clear()
     let sceneUsed = mesh.getScene()
     const meshes = selectionManager.meshes.has(mesh)
       ? [...selectionManager.meshes].filter(
@@ -101,7 +103,20 @@ class MoveManager {
       }
     )
 
+    const deselectAuto = meshes => {
+      for (const mesh of meshes) {
+        if (this.autoSelect.has(mesh)) {
+          selectionManager.unselect(mesh)
+          this.autoSelect.delete(mesh)
+        }
+      }
+    }
+
     const startMoving = mesh => {
+      if (!selectionManager.meshes.has(mesh)) {
+        this.autoSelect.add(mesh)
+        selectionManager.select(mesh)
+      }
       const { x, y, z } = mesh.absolutePosition
       mesh.setAbsolutePosition(new Vector3(x, y + this.elevation, z))
       controlManager.record({ mesh, pos: mesh.absolutePosition.asArray() })
@@ -162,6 +177,7 @@ class MoveManager {
       moved = moved.filter(({ id }) =>
         meshes.every(excluded => excluded?.id !== id)
       )
+      deselectAuto(meshes)
     }
 
     // dynamically assign include function to keep moved in scope
@@ -190,6 +206,7 @@ class MoveManager {
         return
       }
 
+      deselectAuto(moved)
       // trigger drop operation on all identified drop zones
       const dropped = []
       for (const zone of zones) {

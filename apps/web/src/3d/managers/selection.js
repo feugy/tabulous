@@ -278,6 +278,10 @@ class SelectionManager {
     }
   }
 
+  /**
+   * @param {Mesh} mesh - tested mesh.
+   * @returns {boolean} whether this mesh is selected by another player or not.
+   */
   isSelectedByPeer(mesh) {
     for (const selection of this.selectionByPeerId.values()) {
       if (selection.has(mesh)) {
