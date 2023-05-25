@@ -7,8 +7,6 @@
 - skin(s)
 - interface in English
 - always go fullscreen when entering game
-- allow spliting aside in a different window
-- rework lights & shadows
 - server logging (warning on invalid descriptors) + log file rotation
 - fix obvious bugs bellow
 

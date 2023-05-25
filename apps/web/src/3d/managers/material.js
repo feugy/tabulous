@@ -2,9 +2,10 @@
 import '@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent.js'
 
 import { Engine } from '@babylonjs/core/Engines/engine.js'
-import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial.js'
+import { PBRBaseMaterial } from '@babylonjs/core/Materials/PBR/pbrBaseMaterial.js'
+import { PBRSpecularGlossinessMaterial } from '@babylonjs/core/Materials/PBR/pbrSpecularGlossinessMaterial.js'
 import { Texture } from '@babylonjs/core/Materials/Textures/texture.js'
-import { Color4 } from '@babylonjs/core/Maths/math.color.js'
+import { Color3, Color4 } from '@babylonjs/core/Maths/math.color.js'
 
 import { makeLogger } from '../../utils/logger'
 
@@ -139,11 +140,13 @@ function buildMaterials(manager, url, usedScene) {
 }
 
 function buildMaterial(materialByUrl, baseUrl, url, scene) {
-  const material = new StandardMaterial(url, scene)
+  const material = new PBRSpecularGlossinessMaterial(url, scene)
   if (url?.startsWith('#')) {
-    material.diffuseColor = Color4.FromHexString(url)
+    material.transparencyMode = PBRBaseMaterial.PBRMATERIAL_ALPHABLEND
+    material.diffuseColor = Color4.FromHexString(url).toLinearSpace()
     material.alpha = material.diffuseColor.a
   } else {
+    material.transparencyMode = PBRBaseMaterial.PBRMATERIAL_ALPHATEST
     material.diffuseTexture = new Texture(adaptTextureUrl(baseUrl, url), scene)
     material.diffuseTexture.hasAlpha = true
     // new ColorizeMaterialPlugin(material)
@@ -152,6 +155,7 @@ function buildMaterial(materialByUrl, baseUrl, url, scene) {
   // material.freeze()
   materialByUrl.set(url, material)
   material.onDisposeObservable.addOnce(() => materialByUrl.delete(url))
+  material.specularColor = Color3.Black()
   return material
 }
 

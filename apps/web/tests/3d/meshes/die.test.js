@@ -106,7 +106,9 @@ describe('createDie()', () => {
     expectDimension(mesh, [2.94, 2.5, 2.6])
     expect(mesh.isPickable).toBe(false)
     expectPosition(mesh, [0, 0.7, 0])
-    expect(mesh.material.diffuseColor).toEqual(Color4.FromHexString(color))
+    expect(mesh.material.diffuseColor).toEqual(
+      Color4.FromHexString(color).toLinearSpace()
+    )
     expect(mesh.metadata).toEqual({
       face,
       maxFace: 4,

@@ -1,6 +1,6 @@
 import { DirectionalLight } from '@babylonjs/core/Lights/directionalLight'
 import { ShadowGenerator } from '@babylonjs/core/Lights/Shadows/shadowGenerator'
-import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial'
+import { PBRSpecularGlossinessMaterial } from '@babylonjs/core/Materials/PBR/pbrSpecularGlossinessMaterial'
 import { Texture } from '@babylonjs/core/Materials/Textures/texture'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
@@ -148,8 +148,10 @@ describe('MaterialManager', () => {
     describe('configure()', () => {
       it('creates a material with a color', () => {
         manager.configure(box, '#0066ff66')
-        expect(box.material).toBeInstanceOf(StandardMaterial)
-        expect(box.material.diffuseColor?.asArray()).toEqual([0, 0.4, 1, 0.4])
+        expect(box.material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
+        expect(box.material.diffuseColor?.asArray()).toEqual([
+          0, 0.1332085131842997, 1, 0.4
+        ])
         expect(box.material.alpha).toEqual(0.4)
         expect(box.material.diffuseTexture).toBeNull()
       })
@@ -157,40 +159,42 @@ describe('MaterialManager', () => {
       it('creates a material with a texture', () => {
         const texture = faker.internet.url()
         manager.configure(box, texture)
-        expect(box.material).toBeInstanceOf(StandardMaterial)
+        expect(box.material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(box.material.diffuseTexture).toBeInstanceOf(Texture)
       })
 
       it('reuses existing color material on the same scene', () => {
         const color = '#0066ff66'
         manager.configure(box, color)
-        expect(box.material).toBeInstanceOf(StandardMaterial)
-        expect(box.material.diffuseColor?.asArray()).toEqual([0, 0.4, 1, 0.4])
+        expect(box.material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
+        expect(box.material.diffuseColor?.asArray()).toEqual([
+          0, 0.1332085131842997, 1, 0.4
+        ])
         expect(box.material.diffuseTexture).toBeNull()
 
         const box2 = createBox('box2', {}, box.getScene())
         manager.configure(box2, color)
-        expect(box2.material).toBeInstanceOf(StandardMaterial)
+        expect(box2.material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(box2.material === box.material).toBe(true)
 
         manager.configure(handBox, color)
-        expect(handBox.material).toBeInstanceOf(StandardMaterial)
+        expect(handBox.material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(handBox.material === box.material).toBe(false)
       })
 
       it('reuses existing texture material on the same scene', () => {
         const texture = faker.internet.url()
         manager.configure(box, texture)
-        expect(box.material).toBeInstanceOf(StandardMaterial)
+        expect(box.material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(box.material.diffuseTexture).toBeInstanceOf(Texture)
 
         const box2 = createBox('box2', {}, box.getScene())
         manager.configure(box2, texture)
-        expect(box2.material).toBeInstanceOf(StandardMaterial)
+        expect(box2.material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(box2.material === box.material).toBe(true)
 
         manager.configure(handBox, texture)
-        expect(handBox.material).toBeInstanceOf(StandardMaterial)
+        expect(handBox.material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(handBox.material === box.material).toBe(false)
         expect(handBox.material.diffuseTexture.url).toEqual(
           box.material.diffuseTexture.url
@@ -286,8 +290,10 @@ describe('MaterialManager', () => {
         const texture = `${faker.internet.color()}ff`.toUpperCase()
         expect(manager.isManaging(texture)).toBe(false)
         const material = manager.buildOnDemand(texture, scene)
-        expect(material).toBeInstanceOf(StandardMaterial)
-        expect(material.diffuseColor?.toHexString()).toEqual(texture)
+        expect(material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
+        expect(material.diffuseColor?.toGammaSpace().toHexString()).toEqual(
+          texture
+        )
         expect(material.diffuseTexture).toBeNull()
         expect(manager.isManaging(texture)).toBe(true)
       })
@@ -296,7 +302,7 @@ describe('MaterialManager', () => {
         const texture = faker.internet.url()
         expect(manager.isManaging(texture)).toBe(false)
         const material = manager.buildOnDemand(texture, scene)
-        expect(material).toBeInstanceOf(StandardMaterial)
+        expect(material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(material.diffuseTexture).toBeInstanceOf(Texture)
         expect(manager.isManaging(texture)).toBe(true)
       })
@@ -305,7 +311,7 @@ describe('MaterialManager', () => {
         const texture = `${faker.internet.color()}ff`.toUpperCase()
         expect(manager.isManaging(texture)).toBe(false)
         const material = manager.buildOnDemand(texture, scene)
-        expect(material).toBeInstanceOf(StandardMaterial)
+        expect(material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
 
         expect(manager.isManaging(texture)).toBe(true)
         expect(manager.buildOnDemand(texture, scene)).toBe(material)
@@ -315,7 +321,7 @@ describe('MaterialManager', () => {
         const texture = faker.internet.url()
         expect(manager.isManaging(texture)).toBe(false)
         const material = manager.buildOnDemand(texture, scene)
-        expect(material).toBeInstanceOf(StandardMaterial)
+        expect(material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
 
         expect(manager.isManaging(texture)).toBe(true)
         expect(manager.buildOnDemand(texture, scene)).toBe(material)
@@ -376,8 +382,10 @@ describe('MaterialManager', () => {
     describe('configure()', () => {
       it('creates a material with a color', () => {
         manager.configure(box, '#0066ff66')
-        expect(box.material).toBeInstanceOf(StandardMaterial)
-        expect(box.material.diffuseColor?.asArray()).toEqual([0, 0.4, 1, 0.4])
+        expect(box.material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
+        expect(box.material.diffuseColor?.asArray()).toEqual([
+          0, 0.1332085131842997, 1, 0.4
+        ])
         expect(box.material.alpha).toEqual(0.4)
         expect(box.material.diffuseTexture).toBeNull()
       })
@@ -385,32 +393,34 @@ describe('MaterialManager', () => {
       it('creates a material with a texture', () => {
         const texture = faker.internet.url()
         manager.configure(box, texture)
-        expect(box.material).toBeInstanceOf(StandardMaterial)
+        expect(box.material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(box.material.diffuseTexture).toBeInstanceOf(Texture)
       })
 
       it('reuses existing color material', () => {
         const color = '#0066ff66'
         manager.configure(box, color)
-        expect(box.material).toBeInstanceOf(StandardMaterial)
-        expect(box.material.diffuseColor?.asArray()).toEqual([0, 0.4, 1, 0.4])
+        expect(box.material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
+        expect(box.material.diffuseColor?.asArray()).toEqual([
+          0, 0.1332085131842997, 1, 0.4
+        ])
         expect(box.material.diffuseTexture).toBeNull()
 
         const box2 = createBox('box2', {}, box.getScene())
         manager.configure(box2, color)
-        expect(box2.material).toBeInstanceOf(StandardMaterial)
+        expect(box2.material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(box2.material === box.material).toBe(true)
       })
 
       it('reuses existing texture material', () => {
         const texture = faker.internet.url()
         manager.configure(box, texture)
-        expect(box.material).toBeInstanceOf(StandardMaterial)
+        expect(box.material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(box.material.diffuseTexture).toBeInstanceOf(Texture)
 
         const box2 = createBox('box2', {}, box.getScene())
         manager.configure(box2, texture)
-        expect(box2.material).toBeInstanceOf(StandardMaterial)
+        expect(box2.material).toBeInstanceOf(PBRSpecularGlossinessMaterial)
         expect(box2.material === box.material).toBe(true)
       })
     })

@@ -34,7 +34,9 @@ describe('createRoundedTile()', () => {
     expect(mesh.name).toEqual('roundedTile')
     expectDimension(mesh, [3, 0.05, 3])
     expect(mesh.isPickable).toBe(false)
-    expect(mesh.material.diffuseColor).toEqual(Color4.FromHexString(color))
+    expect(mesh.material.diffuseColor).toEqual(
+      Color4.FromHexString(color).toLinearSpace()
+    )
   })
 
   describe('given a tile with initial position, dimension, images and behaviors', () => {

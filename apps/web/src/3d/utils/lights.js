@@ -4,7 +4,6 @@ import '@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent.js'
 import { DirectionalLight } from '@babylonjs/core/Lights/directionalLight.js'
 import { HemisphericLight } from '@babylonjs/core/Lights/hemisphericLight.js'
 import { ShadowGenerator } from '@babylonjs/core/Lights/Shadows/shadowGenerator.js'
-import { Color3 } from '@babylonjs/core/Maths/math.color.js'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 
 /**
@@ -30,6 +29,8 @@ export function createLights({ scene, handScene } = {}) {
 
   const shadowGenerator = new ShadowGenerator(1024, light)
   shadowGenerator.usePercentageCloserFiltering = true
+  // https://forum.babylonjs.com/t/shadow-darkness-darker-than-0/22837
+  shadowGenerator._darkness = -1.5
 
   const handLight = makeAmbientLight(handScene)
   handLight.intensity = 1
@@ -42,15 +43,13 @@ export function createLights({ scene, handScene } = {}) {
 
 function makeDirectionalLight(scene) {
   const light = new DirectionalLight('sun', new Vector3(0, -1, 0), scene)
-  light.position = new Vector3(0, 100, 0)
-  light.intensity = 0.5
-  light.specular = Color3.Black()
+  light.position = new Vector3(0, 20, 0)
+  light.intensity = 1
   return light
 }
 
 function makeAmbientLight(scene) {
-  const light = new HemisphericLight('ambient', new Vector3(0, -1, 0), scene)
-  light.intensity = 0.7
-  light.groundColor = Color3.White()
+  const light = new HemisphericLight('ambient', new Vector3(0, 1, 0), scene)
+  light.intensity = 0.8
   return light
 }

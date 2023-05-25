@@ -35,7 +35,9 @@ describe('createTable() 3D utility', () => {
   it('creates a table mesh with a color', () => {
     const texture = `${faker.internet.color().toUpperCase()}FF`
     const table = createTable({ texture })
-    expect(table.material.diffuseColor?.toHexString()).toEqual(texture)
+    expect(table.material.diffuseColor?.toGammaSpace().toHexString()).toEqual(
+      texture
+    )
     expect(table.material.diffuseTexture).toBeNull()
   })
 

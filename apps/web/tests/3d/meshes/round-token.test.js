@@ -35,7 +35,9 @@ describe('createRoundToken()', () => {
     expect(mesh.name).toEqual('roundToken')
     expectDimension(mesh, [2, 0.1, 2])
     expect(mesh.isPickable).toBe(false)
-    expect(mesh.material.diffuseColor).toEqual(Color4.FromHexString(color))
+    expect(mesh.material.diffuseColor).toEqual(
+      Color4.FromHexString(color).toLinearSpace()
+    )
   })
 
   describe('given a token with initial position, dimension, images and behaviors', () => {

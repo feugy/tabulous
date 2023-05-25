@@ -35,7 +35,9 @@ describe('createCard()', () => {
     expect(mesh.name).toEqual('card')
     expectDimension(mesh, [3, 0.01, 4.25])
     expect(mesh.isPickable).toBe(false)
-    expect(mesh.material.diffuseColor).toEqual(Color4.FromHexString(color))
+    expect(mesh.material.diffuseColor).toEqual(
+      Color4.FromHexString(color).toLinearSpace()
+    )
   })
 
   describe('given a card with initial position, dimension, images and behaviors', async () => {

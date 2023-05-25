@@ -74,7 +74,9 @@ describe('createCustom()', () => {
     const mesh = await createCustom({ file, texture: color })
     expect(mesh.name).toEqual('custom')
     expectDimension(mesh, pawnDimensions)
-    expect(mesh.material.diffuseColor).toEqual(Color4.FromHexString(color))
+    expect(mesh.material.diffuseColor).toEqual(
+      Color4.FromHexString(color).toLinearSpace()
+    )
   })
 
   describe('given a mesh with initial position, dimension, images and behaviors', () => {

@@ -34,7 +34,9 @@ describe('createBox()', () => {
     expect(mesh.name).toEqual('box')
     expectDimension(mesh, [1, 1, 1])
     expect(mesh.isPickable).toBe(false)
-    expect(mesh.material.diffuseColor).toEqual(Color4.FromHexString(color))
+    expect(mesh.material.diffuseColor).toEqual(
+      Color4.FromHexString(color).toLinearSpace()
+    )
   })
 
   describe('given a box with initial position, dimension, images and behaviors', () => {
