@@ -3,7 +3,6 @@
 // mandatory side effects
 // import '@babylonjs/core/Debug/debugLayer'
 // import '@babylonjs/inspector'
-// import { AxesViewer } from '@babylonjs/core/Debug/axesViewer'
 import '@babylonjs/core/Animations/animatable'
 import '@babylonjs/core/Materials/Textures/Loaders/ktxTextureLoader'
 import '@babylonjs/core/Rendering/edgesRenderer'
@@ -33,9 +32,6 @@ import {
   removeNulls,
   serializeMeshes
 } from './utils'
-
-const debug = false
-const debugHand = false
 
 /**
  * Enhanced Babylon' Engine
@@ -191,9 +187,27 @@ export function createEngine({
   function handleLeave(event) {
     inputManager.stopAll(event)
   }
-  debug && scene.debugLayer.show({ embedMode: true, enablePopup: true })
-  debugHand && handScene.debugLayer.show({ embedMode: true, enablePopup: true })
-  // new AxesViewer(scene)
+
+  /* c8 ignore start */
+  if (typeof window !== 'undefined') {
+    window.toggleDebugger = (main = true, hand = false) => {
+      if (main) {
+        if (!scene.debugLayer.isVisible()) {
+          scene.debugLayer.show({ embedMode: true, enablePopup: true })
+        } else {
+          scene.debugLayer.hide()
+        }
+      }
+      if (hand) {
+        if (!handScene.debugLayer.isVisible()) {
+          handScene.debugLayer.show({ embedMode: true, enablePopup: true })
+        } else {
+          handScene.debugLayer.hide()
+        }
+      }
+    }
+  }
+  /* c8 ignore stop */
 
   const dispose = engine.dispose
   engine.dispose = function (...args) {

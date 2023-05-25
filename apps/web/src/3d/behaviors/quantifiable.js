@@ -82,10 +82,9 @@ export class QuantityBehavior extends TargetBehavior {
     })
 
     this.preMoveObserver = moveManager.onPreMoveObservable.add(moved => {
-      const index = moved.findIndex(({ id }) => id === this.mesh?.id)
       if (
         !selectionManager.meshes.has(this.mesh) &&
-        index !== -1 &&
+        moved.some(({ id }) => id === this.mesh?.id) &&
         this.state.quantity > 1
       ) {
         moveManager.exclude(this.mesh)

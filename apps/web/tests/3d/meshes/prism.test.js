@@ -35,7 +35,9 @@ describe('createPrism()', () => {
     expect(boundingBox.extendSize.x * 2).toEqual(3)
     expect(boundingBox.extendSize.y * 2).toEqual(1)
     expect(mesh.isPickable).toBe(false)
-    expect(mesh.material.diffuseColor).toEqual(Color4.FromHexString(color))
+    expect(mesh.material.diffuseColor).toEqual(
+      Color4.FromHexString(color).toLinearSpace()
+    )
   })
 
   describe('given a prism with initial position, edges number, dimension, images and behaviors', () => {

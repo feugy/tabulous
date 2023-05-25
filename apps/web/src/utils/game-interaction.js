@@ -78,7 +78,6 @@ export function attachInputs({
   let panPosition
   let rotatePosition
   let isPanInProgress = false
-  let shouldDeselect = false
 
   const taps$ = new Subject()
   const drags$ = new Subject()
@@ -200,11 +199,9 @@ export function attachInputs({
               if (kind === 'left') {
                 if (!selectionManager.meshes.has(mesh)) {
                   selectionManager.clear()
-                  shouldDeselect = true
-                  selectionManager.select(mesh)
                 }
                 logger.info(
-                  { mesh, button, long, pointers, event, shouldDeselect },
+                  { mesh, button, long, pointers, event },
                   `start moving mesh ${mesh.id}`
                 )
                 moveManager.start(mesh, event)
@@ -268,14 +265,10 @@ export function attachInputs({
               selectionManager.selectWithinBox()
             } else if (mesh) {
               logger.info(
-                { mesh, button, long, pointers, event, shouldDeselect },
+                { mesh, button, long, pointers, event },
                 `stop moving mesh ${mesh.id}`
               )
               moveManager.stop()
-              if (shouldDeselect) {
-                shouldDeselect = false
-                selectionManager.unselect(mesh)
-              }
             }
             selectionPosition = null
             rotatePosition = null
@@ -452,7 +445,6 @@ export function attachInputs({
         }
         if (
           fn === 'push' &&
-          !shouldDeselect &&
           [...selectionManager.meshes].some(({ id }) => args[0] === id)
         ) {
           const mesh = engine.scenes.reduce(

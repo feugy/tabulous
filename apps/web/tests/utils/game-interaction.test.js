@@ -1778,7 +1778,7 @@ describe('Game interaction model', () => {
       expect(cameraManager.zoom).not.toHaveBeenCalled()
     })
 
-    it('moves mesh on left click drag', () => {
+    it('moves mesh on left click drag, and automatically selects it', () => {
       const [box1, box2] = meshes
       selectionManager.select(box1)
       const position = box2.absolutePosition.clone()
