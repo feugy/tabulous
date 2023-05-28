@@ -97,7 +97,7 @@ describe('Catalog Items repository', () => {
         })
 
         it('returns null on unknown id', async () => {
-          expect(await catalogItems.getById(faker.datatype.uuid())).toBeNull()
+          expect(await catalogItems.getById(faker.string.uuid())).toBeNull()
         })
 
         it('returns several models by ids', async () => {
@@ -109,9 +109,9 @@ describe('Catalog Items repository', () => {
         it('returns null on unknown ids', async () => {
           expect(
             await catalogItems.getById([
-              faker.datatype.uuid(),
+              faker.string.uuid(),
               items[2].name,
-              faker.datatype.uuid(),
+              faker.string.uuid(),
               items[1].name
             ])
           ).toEqual([null, items[2], null, items[1]])

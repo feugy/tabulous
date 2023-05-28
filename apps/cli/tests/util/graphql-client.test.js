@@ -10,7 +10,7 @@ describe('getGraphQLClient()', () => {
   let loadConfiguration
   let getGraphQLClient
   const url = faker.internet.url()
-  const jwtKey = faker.datatype.uuid()
+  const jwtKey = faker.string.uuid()
 
   beforeAll(async () => {
     ;({ loadConfiguration } = await import('../../src/util/configuration.js'))
@@ -51,8 +51,8 @@ describe('getGraphQLClient()', () => {
 
     it('throws returned errors', async () => {
       const error = new Error('boom')
-      const username = faker.name.fullName()
-      const jwt = faker.datatype.uuid()
+      const username = faker.person.fullName()
+      const jwt = faker.string.uuid()
 
       networkMock
         .intercept({ method: 'POST', path: '/' })
@@ -73,11 +73,11 @@ describe('getGraphQLClient()', () => {
     })
 
     it('runs query', async () => {
-      const username = faker.name.fullName()
-      const jwt = faker.datatype.uuid()
+      const username = faker.person.fullName()
+      const jwt = faker.string.uuid()
       const data = {
         searchPlayers: [
-          { id: faker.datatype.uuid(), name: faker.name.fullName() }
+          { id: faker.string.uuid(), name: faker.person.fullName() }
         ]
       }
 
@@ -116,10 +116,10 @@ describe('getGraphQLClient()', () => {
     })
 
     it('runs mutation', async () => {
-      const username = faker.name.fullName()
-      const jwt = faker.datatype.uuid()
+      const username = faker.person.fullName()
+      const jwt = faker.string.uuid()
       const data = {
-        addNewUser: [{ id: faker.datatype.uuid(), name: faker.name.fullName() }]
+        addNewUser: [{ id: faker.string.uuid(), name: faker.person.fullName() }]
       }
 
       networkMock

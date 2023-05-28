@@ -74,11 +74,11 @@ describe('StackBehavior', () => {
 
   it('has initial state', () => {
     const state = {
-      extent: faker.datatype.number(),
-      duration: faker.datatype.number(),
+      extent: faker.number.int(999),
+      duration: faker.number.int(999),
       kinds: [],
       stackIds: [],
-      angle: faker.datatype.number()
+      angle: faker.number.int(999)
     }
     const behavior = new StackBehavior(state)
 
@@ -175,11 +175,11 @@ describe('StackBehavior', () => {
     })
 
     it('can hydrate from state', async () => {
-      const extent = faker.datatype.number()
+      const extent = faker.number.int(999)
       const stackIds = [box1.id, box3.id]
-      const duration = faker.datatype.number()
+      const duration = faker.number.int(999)
       const kinds = ['card']
-      const priority = faker.datatype.number()
+      const priority = faker.number.int(999)
       expect(box1.absolutePosition).toEqual(Vector3.FromArray([1, 1, 1]))
       expect(box3.absolutePosition).toEqual(Vector3.FromArray([3, 3, 3]))
 
@@ -208,11 +208,11 @@ describe('StackBehavior', () => {
     })
 
     it('can hydrate with cylindric zone', async () => {
-      const extent = faker.datatype.number()
+      const extent = faker.number.int(999)
       const stackIds = [box1.id, box3.id]
-      const duration = faker.datatype.number()
+      const duration = faker.number.int(999)
       const kinds = ['tokens']
-      const priority = faker.datatype.number()
+      const priority = faker.number.int(999)
       const diameter = 5
       expect(box1.absolutePosition).toEqual(Vector3.FromArray([1, 1, 1]))
       expect(box3.absolutePosition).toEqual(Vector3.FromArray([3, 3, 3]))
@@ -263,11 +263,11 @@ describe('StackBehavior', () => {
     })
 
     it('does not enable locked meshes when hydrating', async () => {
-      const extent = faker.datatype.number()
+      const extent = faker.number.int(999)
       const stackIds = [box1.id, box3.id]
-      const duration = faker.datatype.number()
+      const duration = faker.number.int(999)
       const kinds = ['card']
-      const priority = faker.datatype.number()
+      const priority = faker.number.int(999)
       expect(box1.absolutePosition).toEqual(Vector3.FromArray([1, 1, 1]))
       expect(box3.absolutePosition).toEqual(Vector3.FromArray([3, 3, 3]))
       mesh.addBehavior(new LockBehavior({ isLocked: true }), true)

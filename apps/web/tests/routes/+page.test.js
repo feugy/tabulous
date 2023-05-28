@@ -1,14 +1,14 @@
 import { load } from '@src/routes/+page'
-import { describe, expect, it, vi } from 'vitest'
-
-vi.mock('@sveltejs/kit', () => ({
-  redirect(status, location) {
-    return new Error(`${status} redirection to ${location}`)
-  }
-}))
+import { redirect } from '@sveltejs/kit'
+import { describe, expect, it } from 'vitest'
 
 describe('/ route server loader', () => {
   it('always redirects to home page', async () => {
-    expect(load).toThrow('307 redirection to /home')
+    try {
+      load()
+      throw new Error('should have thrown')
+    } catch (err) {
+      expect(err).toEqual(redirect(307, '/home'))
+    }
   })
 })

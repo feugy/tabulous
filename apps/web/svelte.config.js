@@ -10,8 +10,9 @@ const config = {
     defaultHandler(warning)
   },
   kit: {
-    adapter: vercel({ edge: true }),
-    files: { assets: 'public' }
+    adapter: vercel({ runtime: 'edge' }),
+    files: { assets: 'public' },
+    output: { preloadStrategy: 'preload-mjs' }
   }
 }
 

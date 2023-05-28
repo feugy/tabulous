@@ -20,7 +20,7 @@
   }
 
   $: if (options) {
-    // open menu when setting omptions
+    // open menu when setting options
     open = true
   }
 

@@ -68,7 +68,7 @@ describe('InputManager', () => {
 
   describe('init()', () => {
     it('assigns default properties', () => {
-      const longTapDelay = faker.datatype.number()
+      const longTapDelay = faker.number.int(999)
       manager.init({ scene, handScene, longTapDelay, interaction })
       expect(manager.enabled).toBe(false)
       expect(manager.longTapDelay).toBe(longTapDelay)
@@ -166,7 +166,7 @@ describe('InputManager', () => {
       const pointerId = 71
       selectionManager.apply(
         meshes.map(({ id }) => id),
-        faker.datatype.uuid()
+        faker.string.uuid()
       )
       triggerEvent(pointerDown, { ...pointer, pointerId, button })
       const event = triggerEvent(pointerUp, { ...pointer, pointerId, button })

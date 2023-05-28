@@ -7,7 +7,7 @@ import { formatDate, formatGame, formatPlayer } from '../../src/util/formaters'
 describe('formatGame()', () => {
   it('prints game kind, creation date and id', () => {
     const game = {
-      id: faker.datatype.uuid(),
+      id: faker.string.uuid(),
       created: faker.date.recent().getTime(),
       kind: 'klondike'
     }
@@ -18,7 +18,7 @@ describe('formatGame()', () => {
 
   it('prints lobby and id', () => {
     const game = {
-      id: faker.datatype.uuid(),
+      id: faker.string.uuid(),
       created: faker.date.recent().getTime()
     }
     expect(stripAnsi(formatGame(game))).toEqual(
@@ -49,17 +49,17 @@ describe('formatDate()', () => {
 
 describe('formatPlayer()', () => {
   it('prints username, email and id', () => {
-    const id = faker.datatype.uuid()
+    const id = faker.string.uuid()
     const email = faker.internet.email()
-    const username = faker.name.fullName()
+    const username = faker.person.fullName()
     expect(stripAnsi(formatPlayer({ username, email, id }))).toEqual(
       `${username} ${email} (${id})`
     )
   })
 
   it('handles no email', () => {
-    const id = faker.datatype.uuid()
-    const username = faker.name.fullName()
+    const id = faker.string.uuid()
+    const username = faker.person.fullName()
     expect(stripAnsi(formatPlayer({ username, id }))).toEqual(
       `${username} no email (${id})`
     )

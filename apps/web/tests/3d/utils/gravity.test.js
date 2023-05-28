@@ -13,7 +13,8 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import {
   configures3dTestEngine,
   createBox,
-  createCylinder
+  createCylinder,
+  expectCloseVector
 } from '../../test-utils'
 
 configures3dTestEngine()
@@ -57,8 +58,8 @@ describe('sortByElevation() 3D utility', () => {
 })
 
 describe('applyGravity() 3D utility', () => {
-  const x = faker.datatype.number()
-  const z = faker.datatype.number()
+  const x = faker.number.int(999)
+  const z = faker.number.int(999)
 
   it('positions mesh on the ground', () => {
     const box = createBox('box', {})
@@ -67,7 +68,7 @@ describe('applyGravity() 3D utility', () => {
     const box2 = createBox('box2', {})
     box2.setAbsolutePosition(new Vector3(x + 2, 3, z))
     expect(box.absolutePosition.y).toEqual(10)
-    expect(applyGravity(box).asArray()).toEqual([x, 0.5, z])
+    expectCloseVector(applyGravity(box), [x, 0.5, z])
   })
 
   it('positions mesh with negative position', () => {
@@ -77,7 +78,7 @@ describe('applyGravity() 3D utility', () => {
     const box2 = createBox('box2', {})
     box2.setAbsolutePosition(new Vector3(x, 3, z - 2))
     expect(box.absolutePosition.y).toEqual(-10)
-    expect(applyGravity(box).asArray()).toEqual([x, 0.5, z])
+    expectCloseVector(applyGravity(box), [x, 0.5, z])
   })
 
   it('positions mesh just above another one', () => {
@@ -85,10 +86,7 @@ describe('applyGravity() 3D utility', () => {
     box.setAbsolutePosition(new Vector3(x, 15, z))
     const box2 = createBox('box2', {})
     box2.setAbsolutePosition(new Vector3(x, 3, z))
-    let pos = applyGravity(box)
-    expect(pos.x).toEqual(x)
-    expect(pos.y).toBeCloseTo(4 + altitudeGap)
-    expect(pos.z).toEqual(z)
+    expectCloseVector(applyGravity(box), [x, 4 + altitudeGap, z])
   })
 
   it('positions mesh above another one with partial overlap', () => {
@@ -96,10 +94,7 @@ describe('applyGravity() 3D utility', () => {
     box.setAbsolutePosition(new Vector3(x, 10, z))
     const box2 = createBox('box2', {})
     box2.setAbsolutePosition(new Vector3(x - 0.5, 2, z - 0.5))
-    let pos = applyGravity(box)
-    expect(pos.x).toEqual(x)
-    expect(pos.y).toBeCloseTo(3 + altitudeGap)
-    expect(pos.z).toEqual(z)
+    expectCloseVector(applyGravity(box), [x, 3 + altitudeGap, z])
   })
 
   it('positions mesh just above several ones', () => {
@@ -109,16 +104,13 @@ describe('applyGravity() 3D utility', () => {
     box2.setAbsolutePosition(new Vector3(x - 0.5, 4, z))
     const box3 = createBox('box3', {})
     box3.setAbsolutePosition(new Vector3(x + 0.5, 3, z))
-    let pos = applyGravity(box)
-    expect(pos.x).toEqual(x)
-    expect(pos.y).toBeCloseTo(5 + altitudeGap)
-    expect(pos.z).toEqual(z)
+    expectCloseVector(applyGravity(box), [x, 5 + altitudeGap, z])
   })
 })
 
 describe('isAbove() 3D utility', () => {
-  const x = faker.datatype.number({ min: -10, max: 10 })
-  const z = faker.datatype.number({ min: -10, max: 10 })
+  const x = faker.number.int({ min: -10, max: 10 })
+  const z = faker.number.int({ min: -10, max: 10 })
 
   it('finds when a mesh is hovering another one', () => {
     const box = createBox('box', {})

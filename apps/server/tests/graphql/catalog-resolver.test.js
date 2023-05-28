@@ -25,17 +25,17 @@ describe('given a started server', () => {
   let server
   let services
   vi.spyOn(console, 'warn').mockImplementation(() => {})
-  const player = { id: faker.datatype.uuid(), username: faker.name.firstName() }
+  const player = { id: faker.string.uuid(), username: faker.person.firstName() }
   const admin = {
-    id: faker.datatype.uuid(),
-    username: faker.name.firstName(),
+    id: faker.string.uuid(),
+    username: faker.person.firstName(),
     isAdmin: true
   }
   const items = [{ name: 'belote' }, { name: 'splendor' }, { name: 'klondike' }]
   const gamesPath = faker.system.directoryPath()
   const configuration = {
     games: { path: gamesPath },
-    auth: { jwt: { key: faker.datatype.uuid() } }
+    auth: { jwt: { key: faker.string.uuid() } }
   }
 
   beforeAll(async () => {

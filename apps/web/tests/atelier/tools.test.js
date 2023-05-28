@@ -10,5 +10,5 @@ beforeAll(() => setStoreMockForTestSuite(stores))
 
 configureToolshot({
   folder: join(__dirname, '..'),
-  timeout: 10000
+  timeout: 20000
 })

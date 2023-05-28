@@ -13,8 +13,8 @@ vi.mock('../../src/util/graphql-client.js', () => ({
 
 describe('Player catalog command', () => {
   let catalog
-  const adminUserId = faker.datatype.uuid()
-  const jwtKey = faker.datatype.uuid()
+  const adminUserId = faker.string.uuid()
+  const jwtKey = faker.string.uuid()
 
   beforeAll(async () => {
     process.env.URL = faker.internet.url()
@@ -30,7 +30,7 @@ describe('Player catalog command', () => {
   })
 
   it('displays help and support common options', async () => {
-    const username = faker.name.fullName()
+    const username = faker.person.fullName()
     expect(stripAnsi(await catalog(['-h', '-u', username, '-p']))).toEqual(`
   tabulous [options] catalog
   Lists accessible games
@@ -43,8 +43,8 @@ describe('Player catalog command', () => {
 
   it('returns a serializable list of games', async () => {
     const player = {
-      id: faker.datatype.uuid(),
-      username: faker.name.fullName()
+      id: faker.string.uuid(),
+      username: faker.person.fullName()
     }
     const games = [
       { name: 'chess', title: 'Echecs', copyright: '' },
@@ -62,7 +62,7 @@ describe('Player catalog command', () => {
         locales: name === 'splendor' ? {} : { fr: { title } },
         copyright:
           copyright !== ''
-            ? { authors: [{ name: faker.name.fullName() }] }
+            ? { authors: [{ name: faker.person.fullName() }] }
             : undefined
       }))
     })

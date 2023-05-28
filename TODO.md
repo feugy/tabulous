@@ -277,3 +277,5 @@ How to export from blender to Babylon?
 - UV coordinates
 - Normals
 - do not export materials
+
+Pnpm has a super nice feature: interactive dependency update: `pnpm update -i --latest -r`

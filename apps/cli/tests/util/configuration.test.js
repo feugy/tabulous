@@ -14,7 +14,7 @@ describe('loadConfiguration()', () => {
 
   it('loads values from environment variables', () => {
     const url = faker.internet.ip()
-    const adminUserId = faker.datatype.uuid()
+    const adminUserId = faker.string.uuid()
 
     process.env = {
       ...process.env,

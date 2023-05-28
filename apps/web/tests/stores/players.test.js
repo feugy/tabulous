@@ -20,21 +20,21 @@ import { goto } from '$app/navigation'
 
 vi.mock('@src/stores/graphql-client')
 
-const id = faker.datatype.uuid()
-const username = faker.name.firstName()
+const id = faker.string.uuid()
+const username = faker.person.firstName()
 const password = faker.internet.password()
 const player = { id, username }
 const turnCredentials = {
   username: faker.lorem.words(),
-  credentials: faker.datatype.uuid()
+  credentials: faker.string.uuid()
 }
-const token = faker.datatype.uuid()
+const token = faker.string.uuid()
 
 beforeEach(vi.resetAllMocks)
 
 describe('searchPlayers()', () => {
   it('search players by user name', async () => {
-    const username = faker.name.firstName()
+    const username = faker.person.firstName()
     expect(await searchPlayers(username)).toBeUndefined()
     expect(runQuery).toHaveBeenCalledWith(graphQL.searchPlayers, {
       search: username
@@ -79,7 +79,7 @@ describe('logOut()', () => {
 
 describe('recoverSession()', () => {
   it('returns null on invalid session', async () => {
-    const bearer = faker.datatype.uuid()
+    const bearer = faker.string.uuid()
     runQuery.mockRejectedValueOnce(new Error('forbidden'))
     expect(await recoverSession(fetch, bearer)).toBeNull()
     expect(runQuery).toHaveBeenCalledWith(graphQL.getCurrentPlayer)
@@ -95,7 +95,7 @@ describe('recoverSession()', () => {
   })
 
   it('returns session on success', async () => {
-    const bearer = faker.datatype.uuid()
+    const bearer = faker.string.uuid()
     const session = { token, player, turnCredentials }
     runQuery.mockResolvedValueOnce(session)
     expect(await recoverSession(fetch, bearer)).toEqual(session)
@@ -123,7 +123,7 @@ describe('acceptTerms()', () => {
 
 describe('updateCurrentPlayer()', () => {
   it('returns player on success', async () => {
-    const username = faker.name.fullName()
+    const username = faker.person.fullName()
     const avatar = faker.internet.avatar()
     runMutation.mockResolvedValueOnce(player)
     expect(await updateCurrentPlayer(username, avatar)).toEqual(player)

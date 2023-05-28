@@ -7,18 +7,18 @@ import { describe, expect, it, mockGraphQl } from './utils/index.js'
 
 describe('Game page', () => {
   const player = {
-    id: faker.datatype.uuid(),
-    username: faker.name.fullName(),
+    id: faker.string.uuid(),
+    username: faker.person.fullName(),
     termsAccepted: true
   }
 
   const player2 = {
-    id: faker.datatype.uuid(),
-    username: faker.name.fullName()
+    id: faker.string.uuid(),
+    username: faker.person.fullName()
   }
 
   const game = {
-    id: faker.datatype.uuid(),
+    id: faker.string.uuid(),
     kind: 'klondike',
     availableSeats: 1,
     meshes: [],
@@ -30,7 +30,7 @@ describe('Game page', () => {
   it('redirect to terms on the first connection', async ({ page }) => {
     const { setTokenCookie } = await mockGraphQl(page, {
       getCurrentPlayer: {
-        token: faker.datatype.uuid(),
+        token: faker.string.uuid(),
         player: { ...player, termsAccepted: undefined },
         turnCredentials: {
           username: 'bob',
@@ -64,7 +64,7 @@ describe('Game page', () => {
     const { sendToSubscription, setTokenCookie, onSubscription } =
       await mockGraphQl(page, {
         getCurrentPlayer: {
-          token: faker.datatype.uuid(),
+          token: faker.string.uuid(),
           player,
           turnCredentials: {
             username: 'bob',
@@ -119,7 +119,7 @@ describe('Game page', () => {
     const { sendToSubscription, setTokenCookie, onSubscription } =
       await mockGraphQl(page, {
         getCurrentPlayer: {
-          token: faker.datatype.uuid(),
+          token: faker.string.uuid(),
           player,
           turnCredentials: {
             username: 'bob',
@@ -163,7 +163,7 @@ describe('Game page', () => {
         listCatalog: [[]],
         listGames: [[]],
         getCurrentPlayer: {
-          token: faker.datatype.uuid(),
+          token: faker.string.uuid(),
           player,
           turnCredentials: {
             username: 'bob',
@@ -194,7 +194,7 @@ describe('Game page', () => {
         listCatalog: [[]],
         listGames: [[]],
         getCurrentPlayer: {
-          token: faker.datatype.uuid(),
+          token: faker.string.uuid(),
           player,
           turnCredentials: {
             username: 'bob',

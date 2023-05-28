@@ -58,6 +58,8 @@ export default defineConfig(({ mode }) => ({
     }
   },
   test: {
+    // https://github.com/vitest-dev/vitest/issues/2834
+    alias: [{ find: /^svelte$/, replacement: 'svelte/internal' }],
     include: ['**/*.test.js'],
     deps: {
       inline: ['msw', 'svelte-hyperscript', 'whatwg-fetch']

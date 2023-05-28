@@ -131,10 +131,10 @@ describe('createDie()', () => {
   describe('given a die with initial position, dimension and behaviors', () => {
     let mesh
 
-    const id = faker.datatype.uuid()
-    const x = faker.datatype.number()
-    const y = faker.datatype.number()
-    const z = faker.datatype.number()
+    const id = faker.string.uuid()
+    const x = faker.number.int(999)
+    const y = faker.number.int(999)
+    const z = faker.number.int(999)
     const faces = 6
     const diameter = 2
     const texture = '#1E282F'

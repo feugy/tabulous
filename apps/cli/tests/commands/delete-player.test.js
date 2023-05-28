@@ -13,8 +13,8 @@ vi.mock('../../src/util/graphql-client.js', () => ({
 
 describe('Player deletion command', () => {
   let deletePlayer
-  const adminPlayerId = faker.datatype.uuid()
-  const jwtKey = faker.datatype.uuid()
+  const adminPlayerId = faker.string.uuid()
+  const jwtKey = faker.string.uuid()
 
   beforeAll(async () => {
     process.env.URL = faker.internet.url()
@@ -40,8 +40,8 @@ describe('Player deletion command', () => {
   })
 
   it('returns deleted player', async () => {
-    const id = faker.datatype.uuid()
-    const username = faker.name.firstName()
+    const id = faker.string.uuid()
+    const username = faker.person.firstName()
     const email = faker.internet.email()
     const player = { id, username, email }
     mockQuery.mockResolvedValueOnce({ deletePlayer: player })
@@ -59,7 +59,7 @@ describe('Player deletion command', () => {
   })
 
   it('handles no deleted player', async () => {
-    const id = faker.datatype.uuid()
+    const id = faker.string.uuid()
     mockQuery.mockResolvedValueOnce({ deletePlayer: null })
     const result = await deletePlayer([id])
     expect(result).toMatchObject({ player: null })

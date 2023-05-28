@@ -103,7 +103,7 @@ describe('MoveManager', () => {
 
   describe('init()', () => {
     it('assigns properties', () => {
-      const elevation = faker.datatype.number()
+      const elevation = faker.number.int(999)
       manager.init({ scene, elevation })
       expect(manager.inProgress).toBe(false)
       expect(manager.elevation).toBe(elevation)

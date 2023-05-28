@@ -161,7 +161,7 @@ describe('Media Stream store', () => {
 
   describe('given acquireMediaStream() got authorized media', () => {
     const stream = {
-      id: faker.datatype.uuid(),
+      id: faker.string.uuid(),
       getTracks: vi.fn()
     }
 
@@ -258,8 +258,8 @@ describe('Media Stream store', () => {
 
     it(`defaults to first device when last can't be found`, async () => {
       vi.clearAllMocks()
-      localStorage.lastCameraId = faker.datatype.uuid()
-      localStorage.lastMicId = faker.datatype.uuid()
+      localStorage.lastCameraId = faker.string.uuid()
+      localStorage.lastMicId = faker.string.uuid()
       await acquireMediaStream()
       expect(get(stream$)).toEqual(stream)
       expectCurrentMic(devices[3])

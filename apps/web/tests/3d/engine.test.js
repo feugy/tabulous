@@ -17,9 +17,9 @@ import { expectAnimationEnd } from '../test-utils'
 
 describe('createEngine()', () => {
   let engine
-  const playerId = faker.datatype.uuid()
-  const peerId1 = faker.datatype.uuid()
-  const peerId2 = faker.datatype.uuid()
+  const playerId = faker.string.uuid()
+  const peerId1 = faker.string.uuid()
+  const peerId2 = faker.string.uuid()
   const canvas = document.createElement('canvas')
   const interaction = document.createElement('div')
   const hand = document.createElement('div')
@@ -37,8 +37,8 @@ describe('createEngine()', () => {
   })
 
   it('initializes engine with parameters', () => {
-    const doubleTapDelay = faker.datatype.number()
-    const longTapDelay = faker.datatype.number()
+    const doubleTapDelay = faker.number.int(999)
+    const longTapDelay = faker.number.int(999)
     engine = createEngine({
       Engine: NullEngine,
       canvas,
@@ -280,7 +280,7 @@ describe('createEngine()', () => {
       it('updates color on subsequent loads', async () => {
         const updatedColorByPlayerId = new Map([
           ...colorByPlayerId.entries(),
-          [faker.datatype.uuid(), '#123456']
+          [faker.string.uuid(), '#123456']
         ])
         await engine.load(
           { ...engine.serialize(), hands: [] },

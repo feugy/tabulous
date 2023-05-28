@@ -15,8 +15,8 @@ vi.mock('../../src/util/graphql-client.js', () => ({
 
 describe('List players command', () => {
   let listPlayers
-  const adminUserId = faker.datatype.uuid()
-  const jwtKey = faker.datatype.uuid()
+  const adminUserId = faker.string.uuid()
+  const jwtKey = faker.string.uuid()
 
   beforeAll(async () => {
     process.env.URL = faker.internet.url()
@@ -40,7 +40,7 @@ describe('List players command', () => {
   describe('given some players', () => {
     const players = Array.from({ length: 34 }, (_, i) => ({
       id: `id-${i + 1}`,
-      username: faker.name.firstName(),
+      username: faker.person.firstName(),
       email: faker.internet.email()
     }))
 

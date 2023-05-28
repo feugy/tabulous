@@ -33,7 +33,7 @@ describe('RotateBehavior', () => {
   it('has initial state', () => {
     const state = {
       angle: Math.PI * 1.5,
-      duration: faker.datatype.number()
+      duration: faker.number.int(999)
     }
     const behavior = new RotateBehavior(state)
     const mesh = createBox('box', {})
@@ -91,7 +91,7 @@ describe('RotateBehavior', () => {
 
     it('can hydrate from state', () => {
       const angle = Math.PI * 0.5
-      const state = { angle, duration: faker.datatype.number() }
+      const state = { angle, duration: faker.number.int(999) }
       behavior.fromState(state)
       expect(behavior.state).toEqual({ ...state, angle })
       expect(behavior.mesh).toEqual(mesh)
@@ -101,7 +101,7 @@ describe('RotateBehavior', () => {
     })
 
     it('rounds real angle', () => {
-      const state = { angle: Math.PI * 0.5, duration: faker.datatype.number() }
+      const state = { angle: Math.PI * 0.5, duration: faker.number.int(999) }
       behavior.fromState(state)
       expectRotated(mesh, Math.PI * 0.5)
 
@@ -114,7 +114,7 @@ describe('RotateBehavior', () => {
 
     it('can restore state on existing mesh', () => {
       const angle = Math.PI * 0.5
-      const state = { angle, duration: faker.datatype.number() }
+      const state = { angle, duration: faker.number.int(999) }
       behavior.fromState(state)
       const parent = createAttachedRotable({
         duration: 50,
@@ -128,8 +128,8 @@ describe('RotateBehavior', () => {
     })
 
     it('rotates mesh clockwise and apply gravity', async () => {
-      const x = faker.datatype.number()
-      const z = faker.datatype.number()
+      const x = faker.number.int(999)
+      const z = faker.number.int(999)
       mesh.setAbsolutePosition(new Vector3(x, 10, z))
 
       expectRotated(mesh, 0)
@@ -140,8 +140,8 @@ describe('RotateBehavior', () => {
     })
 
     it('rotates mesh clockwise with flipped parent', async () => {
-      const x = faker.datatype.number()
-      const z = faker.datatype.number()
+      const x = faker.number.int(999)
+      const z = faker.number.int(999)
       mesh.setAbsolutePosition(new Vector3(x, 10, z))
       mesh.addBehavior(new FlipBehavior({ isFlipped: true }), true)
 
@@ -161,8 +161,8 @@ describe('RotateBehavior', () => {
     })
 
     it('rotates children along with their parent mesh', async () => {
-      const x = faker.datatype.number()
-      const z = faker.datatype.number()
+      const x = faker.number.int(999)
+      const z = faker.number.int(999)
       mesh.setAbsolutePosition(new Vector3(x, 10, z))
 
       const child = createAttachedRotable().mesh

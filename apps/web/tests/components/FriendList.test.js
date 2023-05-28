@@ -221,7 +221,7 @@ describe('FriendList component', () => {
     )
 
     it('searches for candidate players and displays them', async () => {
-      const name = faker.name.firstName()
+      const name = faker.person.firstName()
       searchPlayers.mockResolvedValueOnce([playerA, playerB])
       await userEvent.type(textbox, name)
       await waitFor(() =>
@@ -257,7 +257,7 @@ describe('FriendList component', () => {
     })
 
     it('can request friendship', async () => {
-      searchPlayers.mockResolvedValueOnce([playerA, playerB])
+      searchPlayers.mockResolvedValue([playerA, playerB])
 
       await userEvent.type(textbox, playerA.username)
       await waitFor(() =>
@@ -290,13 +290,13 @@ describe('FriendList component', () => {
       title: 'a game',
       subTitle: 'player',
       inviteButtonLabel: `gamepad ${translate('actions.invite-attendee')}`,
-      game: { id: faker.datatype.uuid() }
+      game: { id: faker.string.uuid() }
     },
     {
       title: 'a lobby',
       subTitle: 'attendee',
       inviteButtonLabel: `gamepad ${translate('actions.invite-player')}`,
-      game: { id: faker.datatype.uuid(), kind: 'klondike' }
+      game: { id: faker.string.uuid(), kind: 'klondike' }
     }
   ])('given $title', ({ game, subTitle, inviteButtonLabel }) => {
     it(`displays ${subTitle}s in player list rather than friend list`, () => {

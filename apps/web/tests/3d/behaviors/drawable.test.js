@@ -26,7 +26,7 @@ beforeEach(vi.resetAllMocks)
 describe('DrawBehavior', () => {
   it('has initial state', () => {
     const state = {
-      duration: faker.datatype.number(),
+      duration: faker.number.int(999),
       unflipOnPick: faker.datatype.boolean(),
       flipOnPlay: faker.datatype.boolean()
     }
@@ -81,7 +81,7 @@ describe('DrawBehavior', () => {
 
     it('can hydrate from state', () => {
       const state = {
-        duration: faker.datatype.number(),
+        duration: faker.number.int(999),
         unflipOnPick: faker.datatype.boolean(),
         flipOnPlay: faker.datatype.boolean()
       }

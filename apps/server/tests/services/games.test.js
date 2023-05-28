@@ -182,7 +182,7 @@ describe('given a subscription to game lists and an initialized repository', () 
     })
 
     it('handles unknown player', async () => {
-      await expect(await countOwnGames(faker.datatype.uuid())).toBe(0)
+      await expect(await countOwnGames(faker.string.uuid())).toBe(0)
     })
 
     it('counts owned games', async () => {
@@ -254,7 +254,7 @@ describe('given a subscription to game lists and an initialized repository', () 
 
     describe('joinGame()', () => {
       it('returns null on unknown game', async () => {
-        expect(await joinGame(faker.datatype.uuid(), player)).toBeNull()
+        expect(await joinGame(faker.string.uuid(), player)).toBeNull()
         await setTimeout(50)
         expect(updates).toHaveLength(0)
       })
@@ -407,10 +407,10 @@ describe('given a subscription to game lists and an initialized repository', () 
           game = await createGame('splendor', grantedPlayer) // it has 4 seats
           game = await joinGame(game.id, grantedPlayer)
           const guests = await repositories.players.save([
-            { id: faker.datatype.uuid() },
-            { id: faker.datatype.uuid() },
-            { id: faker.datatype.uuid() },
-            { id: faker.datatype.uuid() }
+            { id: faker.string.uuid() },
+            { id: faker.string.uuid() },
+            { id: faker.string.uuid() },
+            { id: faker.string.uuid() }
           ])
           for (const { id } of guests) {
             await repositories.players.makeFriends(
@@ -456,7 +456,7 @@ describe('given a subscription to game lists and an initialized repository', () 
       describe('promoteGame()', () => {
         it('returns null on unknown game', async () => {
           expect(
-            await promoteGame(faker.datatype.uuid(), 'belote', player)
+            await promoteGame(faker.string.uuid(), 'belote', player)
           ).toBeNull()
           await setTimeout(50)
           expect(updates).toHaveLength(0)
@@ -666,12 +666,12 @@ describe('given a subscription to game lists and an initialized repository', () 
       describe('saveGame()', () => {
         it('returns null on unknown game', async () => {
           expect(
-            await saveGame({ id: faker.datatype.uuid() }, player.id)
+            await saveGame({ id: faker.string.uuid() }, player.id)
           ).toBeNull()
         })
 
         it('returns null on un-owned game', async () => {
-          expect(await saveGame(game, faker.datatype.uuid())).toBeNull()
+          expect(await saveGame(game, faker.string.uuid())).toBeNull()
         })
 
         it('can save scene', async () => {
@@ -727,7 +727,7 @@ describe('given a subscription to game lists and an initialized repository', () 
       describe('invite()', () => {
         it('returns null on unknown game', async () => {
           expect(
-            await invite(faker.datatype.uuid(), [peer.id], player.id)
+            await invite(faker.string.uuid(), [peer.id], player.id)
           ).toBeNull()
           await setTimeout(50)
           expect(updates).toHaveLength(0)
@@ -735,7 +735,7 @@ describe('given a subscription to game lists and an initialized repository', () 
 
         it('returns null on un-owned game', async () => {
           expect(
-            await invite(game.id, [peer.id], faker.datatype.uuid())
+            await invite(game.id, [peer.id], faker.string.uuid())
           ).toBeNull()
           await setTimeout(50)
           expect(updates).toHaveLength(0)
@@ -744,7 +744,7 @@ describe('given a subscription to game lists and an initialized repository', () 
         it('does not invite an unknown guest id', async () => {
           vi.spyOn(repositories.players, 'getById').mockResolvedValue(null)
           expect(
-            await invite(game.id, [faker.datatype.uuid()], player.id)
+            await invite(game.id, [faker.string.uuid()], player.id)
           ).toEqual(game)
           await setTimeout(50)
           expect(updates).toHaveLength(0)
@@ -788,7 +788,7 @@ describe('given a subscription to game lists and an initialized repository', () 
 
         it('does not invite a player that is not friend', async () => {
           const stranger = await repositories.players.save({
-            id: faker.datatype.uuid()
+            id: faker.string.uuid()
           })
           expect(await invite(game.id, [stranger.id], player.id)).toEqual(game)
           await setTimeout(50)
@@ -797,7 +797,7 @@ describe('given a subscription to game lists and an initialized repository', () 
 
         it('does not invite a requested friend', async () => {
           const stranger = await repositories.players.save({
-            id: faker.datatype.uuid()
+            id: faker.string.uuid()
           })
           await repositories.players.makeFriends(
             stranger.id,
@@ -811,7 +811,7 @@ describe('given a subscription to game lists and an initialized repository', () 
 
         it('does not invite a blocked friend', async () => {
           const stranger = await repositories.players.save({
-            id: faker.datatype.uuid()
+            id: faker.string.uuid()
           })
           await repositories.players.makeFriends(
             player.id,
@@ -870,7 +870,7 @@ describe('given a subscription to game lists and an initialized repository', () 
         })
 
         it('can return an empty list', async () => {
-          expect(await listGames(faker.datatype.uuid())).toEqual([])
+          expect(await listGames(faker.string.uuid())).toEqual([])
         })
 
         it('returns all game of a player', async () => {
@@ -886,15 +886,15 @@ describe('given a subscription to game lists and an initialized repository', () 
 
       describe('deleteGame()', () => {
         it('returns null on unknown game', async () => {
-          expect(await deleteGame(faker.datatype.uuid(), player)).toBeNull()
-          expect(await deleteGame(faker.datatype.uuid(), peer2)).toBeNull()
+          expect(await deleteGame(faker.string.uuid(), player)).toBeNull()
+          expect(await deleteGame(faker.string.uuid(), peer2)).toBeNull()
           await setTimeout(50)
           expect(updates).toHaveLength(0)
         })
 
         it('returns null on un-owned game', async () => {
           expect(
-            await deleteGame(game.id, { id: faker.datatype.uuid() })
+            await deleteGame(game.id, { id: faker.string.uuid() })
           ).toBeNull()
           expect(await joinGame(game.id, player.id)).toBeDefined()
           await setTimeout(50)
@@ -917,7 +917,7 @@ describe('given a subscription to game lists and an initialized repository', () 
 
       describe('notifyRelatedPlayers()', () => {
         it('does nothing for players with no games', async () => {
-          await notifyRelatedPlayers(faker.datatype.uuid())
+          await notifyRelatedPlayers(faker.string.uuid())
           await setTimeout(50)
           expect(updates).toHaveLength(0)
         })

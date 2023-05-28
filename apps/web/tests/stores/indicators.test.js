@@ -70,16 +70,16 @@ describe('Indicators store', () => {
     indicatorManager.init({ scene })
     players = [
       {
-        id: faker.datatype.uuid(),
-        username: faker.name.fullName()
+        id: faker.string.uuid(),
+        username: faker.person.fullName()
       },
       {
-        id: faker.datatype.uuid(),
-        username: faker.name.fullName()
+        id: faker.string.uuid(),
+        username: faker.person.fullName()
       },
       {
-        id: faker.datatype.uuid(),
-        username: faker.name.fullName()
+        id: faker.string.uuid(),
+        username: faker.person.fullName()
       }
     ]
   })

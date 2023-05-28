@@ -14,8 +14,8 @@ vi.mock('../../src/util/graphql-client.js', () => ({
 
 describe('Player addition command', () => {
   let addPlayer
-  const adminPlayerId = faker.datatype.uuid()
-  const jwtKey = faker.datatype.uuid()
+  const adminPlayerId = faker.string.uuid()
+  const jwtKey = faker.string.uuid()
 
   beforeAll(async () => {
     process.env.URL = faker.internet.url()
@@ -31,7 +31,7 @@ describe('Player addition command', () => {
   })
 
   it('throws on missing password', async () => {
-    await expect(addPlayer(['-u', faker.name.fullName()])).rejects.toThrow(
+    await expect(addPlayer(['-u', faker.person.fullName()])).rejects.toThrow(
       'no password provided'
     )
   })
@@ -49,9 +49,9 @@ describe('Player addition command', () => {
   })
 
   it('returns created player', async () => {
-    const username = faker.name.fullName()
+    const username = faker.person.fullName()
     const password = faker.internet.password()
-    const id = faker.datatype.uuid()
+    const id = faker.string.uuid()
     const player = { username, id }
     mockQuery.mockResolvedValueOnce({ addPlayer: player })
     const result = await addPlayer([

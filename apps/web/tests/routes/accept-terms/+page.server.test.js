@@ -3,10 +3,6 @@ import { actions } from '@src/routes/accept-terms/+page.server'
 import { initGraphQlClient, runMutation } from '@src/stores/graphql-client'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-vi.mock('@sveltejs/kit', () => ({
-  redirect: (status, location) => ({ status, location }),
-  invalid: (status, errors) => ({ status, errors })
-}))
 vi.mock('@src/stores/graphql-client', () => ({
   initGraphQlClient: vi.fn(),
   runMutation: vi.fn()
@@ -14,14 +10,14 @@ vi.mock('@src/stores/graphql-client', () => ({
 
 describe('POST /accept-terms route action', () => {
   let locals
-  const bearer = `Bearer ${faker.datatype.uuid()}`
+  const bearer = `Bearer ${faker.string.uuid()}`
 
   beforeEach(() => {
     vi.resetAllMocks()
     locals = {
       bearer,
       session: {
-        player: { id: faker.datatype.uuid(), username: faker.name.fullName() }
+        player: { id: faker.string.uuid(), username: faker.person.fullName() }
       }
     }
   })
@@ -77,7 +73,7 @@ describe('POST /accept-terms route action', () => {
 
     await expect(actions.default({ request, locals, fetch })).rejects.toEqual({
       status: 400,
-      errors: { redirect: `'${redirect}' should be an absolute path` }
+      body: { redirect: `'${redirect}' should be an absolute path` }
     })
     expect(locals.session.player).not.toHaveProperty('termsAccepted', true)
     expect(runMutation).not.toHaveBeenCalled()
@@ -90,7 +86,7 @@ describe('POST /accept-terms route action', () => {
 
     await expect(actions.default({ request, locals, fetch })).rejects.toEqual({
       status: 400,
-      errors: { redirect: `'${redirect}' should be an absolute path` }
+      body: { redirect: `'${redirect}' should be an absolute path` }
     })
     expect(locals.session.player).not.toHaveProperty('termsAccepted', true)
     expect(runMutation).not.toHaveBeenCalled()
@@ -102,7 +98,7 @@ describe('POST /accept-terms route action', () => {
 
     await expect(actions.default({ request, locals, fetch })).rejects.toEqual({
       status: 400,
-      errors: {
+      body: {
         age: `you must be at least 15 or be approved by your parents to proceed`
       }
     })
@@ -116,7 +112,7 @@ describe('POST /accept-terms route action', () => {
 
     await expect(actions.default({ request, locals, fetch })).rejects.toEqual({
       status: 400,
-      errors: {
+      body: {
         accept: `you must accept terms of service to proceed`
       }
     })

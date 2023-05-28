@@ -48,7 +48,7 @@ let serverContext = null
  * @return {Promise<GraphQlMockResult>} functions to restore or clear mocks, and to send subscription message.
  */
 export async function mockGraphQl(page, mocks) {
-  const id = faker.datatype.uuid()
+  const id = faker.string.uuid()
   const browserContext = page.context()
 
   if (!server) {

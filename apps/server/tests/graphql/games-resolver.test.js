@@ -30,17 +30,17 @@ describe('given a started server', () => {
   let restoreServices
   vi.spyOn(console, 'warn').mockImplementation(() => {})
   const players = [
-    { id: 'player-0', username: faker.name.firstName() },
-    { id: 'player-1', username: faker.name.firstName() },
-    { id: 'player-2', username: faker.name.firstName() }
+    { id: 'player-0', username: faker.person.firstName() },
+    { id: 'player-1', username: faker.person.firstName() },
+    { id: 'player-2', username: faker.person.firstName() }
   ]
   const guests = [
-    { id: 'guest-0', username: faker.name.firstName() },
-    { id: 'guest-1', username: faker.name.firstName() },
-    { id: 'guest-2', username: faker.name.firstName() }
+    { id: 'guest-0', username: faker.person.firstName() },
+    { id: 'guest-1', username: faker.person.firstName() },
+    { id: 'guest-2', username: faker.person.firstName() }
   ]
   const configuration = {
-    auth: { jwt: { key: faker.datatype.uuid() } }
+    auth: { jwt: { key: faker.string.uuid() } }
   }
 
   beforeAll(async () => {
@@ -87,21 +87,21 @@ describe('given a started server', () => {
         const playerId = players[0].id
         const games = [
           {
-            id: faker.datatype.uuid(),
+            id: faker.string.uuid(),
             created: faker.date.past().getTime(),
             ownerId: playerId,
             playerIds: [playerId],
             guestIds: []
           },
           {
-            id: faker.datatype.uuid(),
+            id: faker.string.uuid(),
             created: faker.date.past().getTime(),
             ownerId: playerId,
             playerIds: [players[1].id],
             guestIds: [playerId]
           },
           {
-            id: faker.datatype.uuid(),
+            id: faker.string.uuid(),
             created: faker.date.past().getTime(),
             ownerId: playerId,
             playerIds: [playerId, players[2].id],
@@ -203,7 +203,7 @@ describe('given a started server', () => {
         const playerId = players[0].id
         const kind = faker.helpers.arrayElement(['coinche', 'tarot', 'belote'])
         const game = {
-          id: faker.datatype.uuid(),
+          id: faker.string.uuid(),
           kind,
           created: Date.now(),
           playerIds: [playerId],
@@ -281,7 +281,7 @@ describe('given a started server', () => {
         const playerId = players[0].id
         const kind = faker.helpers.arrayElement(['coinche', 'tarot', 'belote'])
         const game = {
-          id: faker.datatype.uuid(),
+          id: faker.string.uuid(),
           kind,
           created: Date.now(),
           playerIds: [],
@@ -344,7 +344,7 @@ describe('given a started server', () => {
           method: 'POST',
           url: 'graphql',
           payload: {
-            query: `mutation { joinGame(gameId: "${faker.datatype.uuid()}") { ... on Game { id } ... on GameParameters { id } } }`
+            query: `mutation { joinGame(gameId: "${faker.string.uuid()}") { ... on Game { id } ... on GameParameters { id } } }`
           }
         })
         expect(response.statusCode).toEqual(200)
@@ -358,7 +358,7 @@ describe('given a started server', () => {
       it('loads game details and resolves player objects', async () => {
         const [player] = players
         const game = {
-          id: faker.datatype.uuid(),
+          id: faker.string.uuid(),
           kind: 'tarot',
           created: faker.date.past().getTime(),
           ownerId: player.id,
@@ -429,7 +429,7 @@ describe('given a started server', () => {
       it('loads game parameters', async () => {
         const [player] = players
         const gameParameters = {
-          id: faker.datatype.uuid(),
+          id: faker.string.uuid(),
           schema: {},
           ownerId: player.id,
           playerIds: players.map(({ id }) => id),
@@ -513,7 +513,7 @@ describe('given a started server', () => {
             )}`
           },
           payload: {
-            query: `mutation { joinGame(gameId: "${faker.datatype.uuid()}", parameters: "{\\"broken\\": true" ) { ... on Game { id } ... on GameParameters { id } } }`
+            query: `mutation { joinGame(gameId: "${faker.string.uuid()}", parameters: "{\\"broken\\": true" ) { ... on Game { id } ... on GameParameters { id } } }`
           }
         })
         expect(response.statusCode).toEqual(200)
@@ -558,7 +558,7 @@ describe('given a started server', () => {
           }
         ]
         const game = {
-          id: faker.datatype.uuid(),
+          id: faker.string.uuid(),
           kind,
           created: faker.date.past().getTime(),
           playerIds: players.map(({ id }) => id),
@@ -645,7 +645,7 @@ describe('given a started server', () => {
         const playerId = players[0].id
         const peerIds = players.slice(1, 3).map(({ id }) => id)
         const game = {
-          id: faker.datatype.uuid(),
+          id: faker.string.uuid(),
           kind: 'belote',
           created: faker.date.past().getTime(),
           playerIds: [playerId, ...peerIds],
@@ -708,7 +708,7 @@ describe('given a started server', () => {
           method: 'POST',
           url: 'graphql',
           payload: {
-            query: `mutation { deleteGame(gameId: "${faker.datatype.uuid()}") { id } }`
+            query: `mutation { deleteGame(gameId: "${faker.string.uuid()}") { id } }`
           }
         })
         expect(response.statusCode).toEqual(200)
@@ -722,7 +722,7 @@ describe('given a started server', () => {
       it('deletes an existing game and resolves player objects', async () => {
         const playerId = players[0].id
         const game = {
-          id: faker.datatype.uuid(),
+          id: faker.string.uuid(),
           kind: 'coinche',
           created: faker.date.past().getTime(),
           playerIds: players.map(({ id }) => id),
@@ -782,7 +782,7 @@ describe('given a started server', () => {
     describe('receiveGameListUpdates subscription', () => {
       const playerId = players[0].id
       const game = {
-        id: faker.datatype.uuid(),
+        id: faker.string.uuid(),
         created: Date.now(),
         playerIds: [playerId],
         guestIds: []
@@ -856,19 +856,19 @@ describe('given a started server', () => {
       const playerId = players[0].id
       const games = [
         {
-          id: faker.datatype.uuid(),
+          id: faker.string.uuid(),
           created: faker.date.past().getTime(),
           playerIds: [playerId],
           guestIds: []
         },
         {
-          id: faker.datatype.uuid(),
+          id: faker.string.uuid(),
           created: faker.date.past().getTime(),
           playerIds: [playerId, players[1].id],
           guestIds: []
         },
         {
-          id: faker.datatype.uuid(),
+          id: faker.string.uuid(),
           created: faker.date.past().getTime(),
           playerIds: [players[1].id, players[2].id],
           guestIds: []

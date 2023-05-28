@@ -299,27 +299,27 @@ describe('CameraManager', () => {
     beforeEach(() => manager.init())
 
     it('adjusts minimum main scene zoom', () => {
-      const min = faker.datatype.number()
+      const min = faker.number.int(999)
       manager.adjustZoomLevels({ min })
       expect(manager.camera.lowerRadiusLimit).toEqual(min)
     })
 
     it('adjusts maximum main scene zoom', () => {
-      const max = faker.datatype.number()
+      const max = faker.number.int(999)
       manager.adjustZoomLevels({ max })
       expect(manager.camera.upperRadiusLimit).toEqual(max)
     })
 
     it('adjusts current hand scene zoom', () => {
-      const hand = faker.datatype.number()
+      const hand = faker.number.int(999)
       manager.adjustZoomLevels({ hand })
       expect(manager.handSceneCamera.position.y).toEqual(hand)
     })
 
     it('adjusts all level at once', () => {
-      const hand = faker.datatype.number()
-      const min = faker.datatype.number()
-      const max = faker.datatype.number()
+      const hand = faker.number.int(999)
+      const min = faker.number.int(999)
+      const max = faker.number.int(999)
       manager.adjustZoomLevels({ min, max, hand })
       expect(manager.camera.lowerRadiusLimit).toEqual(min)
       expect(manager.camera.upperRadiusLimit).toEqual(max)

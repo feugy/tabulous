@@ -21,17 +21,17 @@ import { clearDatabase, getRedisTestUrl } from '../test-utils.js'
 describe('Catalog service', () => {
   const players = [
     {
-      id: faker.datatype.uuid(),
-      username: faker.name.fullName(),
+      id: faker.string.uuid(),
+      username: faker.person.fullName(),
       catalog: ['splendor', '6-takes']
     },
     {
-      id: faker.datatype.uuid(),
-      username: faker.name.fullName()
+      id: faker.string.uuid(),
+      username: faker.person.fullName()
     },
     {
-      id: faker.datatype.uuid(),
-      username: faker.name.fullName(),
+      id: faker.string.uuid(),
+      username: faker.person.fullName(),
       catalog: ['6-takes']
     }
   ]
@@ -103,8 +103,8 @@ describe('Catalog service', () => {
     it(`grants access to a given item`, async () => {
       const gameName = items[4].name
       const player = await repositories.players.save({
-        id: faker.datatype.uuid(),
-        name: faker.name.fullName(),
+        id: faker.string.uuid(),
+        name: faker.person.fullName(),
         catalog: [items[2].name]
       })
       const grantedPlayer = {
@@ -120,8 +120,8 @@ describe('Catalog service', () => {
     it(`creates user catalog on demand`, async () => {
       const gameName = items[0].name
       const player = await repositories.players.save({
-        id: faker.datatype.uuid(),
-        name: faker.name.fullName()
+        id: faker.string.uuid(),
+        name: faker.person.fullName()
       })
       const grantedPlayer = {
         ...player,
@@ -136,8 +136,8 @@ describe('Catalog service', () => {
     it(`does not grant the same game twice`, async () => {
       const gameName = items[3].name
       const player = await repositories.players.save({
-        id: faker.datatype.uuid(),
-        name: faker.name.fullName(),
+        id: faker.string.uuid(),
+        name: faker.person.fullName(),
         catalog: [gameName]
       })
       expect(await grantAccess(player.id, gameName)).toBeNull()
@@ -147,8 +147,8 @@ describe('Catalog service', () => {
     it(`ignores non-copyrighted games`, async () => {
       const gameName = items[1].name
       const player = await repositories.players.save({
-        id: faker.datatype.uuid(),
-        name: faker.name.fullName(),
+        id: faker.string.uuid(),
+        name: faker.person.fullName(),
         catalog: [gameName]
       })
       expect(await grantAccess(player.id, gameName)).toBeNull()
@@ -156,10 +156,10 @@ describe('Catalog service', () => {
     })
 
     it(`ignores unknnown games`, async () => {
-      const gameName = faker.datatype.uuid()
+      const gameName = faker.string.uuid()
       const player = await repositories.players.save({
-        id: faker.datatype.uuid(),
-        name: faker.name.fullName(),
+        id: faker.string.uuid(),
+        name: faker.person.fullName(),
         catalog: [gameName]
       })
       expect(await grantAccess(player.id, gameName)).toBeNull()
@@ -167,7 +167,7 @@ describe('Catalog service', () => {
     })
 
     it(`ignores unknnown player`, async () => {
-      expect(await grantAccess(faker.datatype.uuid(), items[0].name)).toBeNull()
+      expect(await grantAccess(faker.string.uuid(), items[0].name)).toBeNull()
     })
   })
 
@@ -175,8 +175,8 @@ describe('Catalog service', () => {
     it(`revokes access to a given item`, async () => {
       const gameName = items[4].name
       const player = await repositories.players.save({
-        id: faker.datatype.uuid(),
-        name: faker.name.fullName(),
+        id: faker.string.uuid(),
+        name: faker.person.fullName(),
         catalog: [items[2].name, gameName]
       })
       const revokedPlayer = {
@@ -192,8 +192,8 @@ describe('Catalog service', () => {
     it(`does not revokes a games not granted`, async () => {
       const gameName = items[3].name
       const player = await repositories.players.save({
-        id: faker.datatype.uuid(),
-        name: faker.name.fullName(),
+        id: faker.string.uuid(),
+        name: faker.person.fullName(),
         catalog: [items[0].name]
       })
       expect(await revokeAccess(player.id, gameName)).toBeNull()
@@ -203,8 +203,8 @@ describe('Catalog service', () => {
     it(`ignores non-copyrighted games`, async () => {
       const gameName = items[1].name
       const player = await repositories.players.save({
-        id: faker.datatype.uuid(),
-        name: faker.name.fullName(),
+        id: faker.string.uuid(),
+        name: faker.person.fullName(),
         catalog: [gameName]
       })
       expect(await revokeAccess(player.id, gameName)).toBeNull()
@@ -212,10 +212,10 @@ describe('Catalog service', () => {
     })
 
     it(`ignores unknnown games`, async () => {
-      const gameName = faker.datatype.uuid()
+      const gameName = faker.string.uuid()
       const player = await repositories.players.save({
-        id: faker.datatype.uuid(),
-        name: faker.name.fullName(),
+        id: faker.string.uuid(),
+        name: faker.person.fullName(),
         catalog: [gameName]
       })
       expect(await revokeAccess(player.id, gameName)).toBeNull()
@@ -223,9 +223,7 @@ describe('Catalog service', () => {
     })
 
     it(`ignores unknnown player`, async () => {
-      expect(
-        await revokeAccess(faker.datatype.uuid(), items[0].name)
-      ).toBeNull()
+      expect(await revokeAccess(faker.string.uuid(), items[0].name)).toBeNull()
     })
   })
 })

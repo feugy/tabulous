@@ -71,7 +71,7 @@ describe('AnchorBehavior', () => {
 
   it('has initial state', () => {
     const state = {
-      duration: faker.datatype.number()
+      duration: faker.number.int(999)
     }
     const behavior = new AnchorBehavior(state)
 
@@ -176,7 +176,7 @@ describe('AnchorBehavior', () => {
     })
 
     it('can hydrate from state', () => {
-      const duration = faker.datatype.number()
+      const duration = faker.number.int(999)
 
       behavior.fromState({
         duration,

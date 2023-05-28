@@ -16,8 +16,8 @@ vi.mock('../../src/util/graphql-client.js', () => ({
 
 describe('Player game revokation command', () => {
   let revoke
-  const adminUserId = faker.datatype.uuid()
-  const jwtKey = faker.datatype.uuid()
+  const adminUserId = faker.string.uuid()
+  const jwtKey = faker.string.uuid()
 
   beforeAll(async () => {
     process.env.URL = faker.internet.url()
@@ -39,7 +39,7 @@ describe('Player game revokation command', () => {
   })
 
   it('displays help and support common options', async () => {
-    const username = faker.name.fullName()
+    const username = faker.person.fullName()
     const gameName = faker.commerce.productName()
     expect(stripAnsi(await revoke(['-h', '-u', username, '-p', gameName])))
       .toEqual(`
@@ -56,8 +56,8 @@ describe('Player game revokation command', () => {
 
   describe('given existing players', () => {
     const player = {
-      id: faker.datatype.uuid(),
-      username: faker.name.fullName()
+      id: faker.string.uuid(),
+      username: faker.person.fullName()
     }
     const gameName = faker.commerce.productName()
 

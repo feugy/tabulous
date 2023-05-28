@@ -30,7 +30,7 @@ describe('TargetManager', () => {
 
   describe('init()', () => {
     it('sets scene', () => {
-      const playerId = faker.datatype.uuid()
+      const playerId = faker.string.uuid()
       const color = faker.color.rgb()
       const overlayAlpha = Math.random()
       manager.init({ scene, playerId, color, overlayAlpha })
@@ -40,7 +40,7 @@ describe('TargetManager', () => {
   })
 
   describe('given an initialized manager', () => {
-    const playerId = faker.datatype.uuid()
+    const playerId = faker.string.uuid()
     const color = '#00FF00FF'
 
     beforeAll(() => manager.init({ scene, playerId, color, overlayAlpha: 0.2 }))
@@ -161,7 +161,7 @@ describe('TargetManager', () => {
       it('ignores targets with another player Id', () => {
         createsTargetZone('target3', {
           position: new Vector3(10, 0, 10),
-          playerId: faker.datatype.uuid(),
+          playerId: faker.string.uuid(),
           scene
         })
         const mesh = createBox('box', {}, scene)
@@ -340,7 +340,7 @@ describe('TargetManager', () => {
         })
         zone2 = createsTargetZone('target2', {
           position: new Vector3(-5, 0, -5),
-          playerId: faker.datatype.uuid()
+          playerId: faker.string.uuid()
         })
         mesh = createBox('box', {})
       })

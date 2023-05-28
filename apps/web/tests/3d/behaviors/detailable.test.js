@@ -28,8 +28,8 @@ describe('DetailBehavior', () => {
 
   it('has initial state', () => {
     const state = {
-      frontImage: faker.image.imageUrl(),
-      backImage: faker.image.imageUrl()
+      frontImage: faker.image.url(),
+      backImage: faker.image.url()
     }
     const behavior = new DetailBehavior(state)
     const mesh = createBox('box', {})
@@ -69,8 +69,8 @@ describe('DetailBehavior', () => {
   describe.each([
     {
       title: ' with images',
-      frontImage: faker.image.imageUrl(),
-      backImage: faker.image.imageUrl()
+      frontImage: faker.image.url(),
+      backImage: faker.image.url()
     },
     {
       title: ' with no images',

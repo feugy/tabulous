@@ -134,8 +134,8 @@ describe('initEngine()', () => {
       })
 
       it('updates FPS on event', () => {
-        let fps1 = faker.datatype.number()
-        let fps2 = faker.datatype.number()
+        let fps1 = faker.number.int(999)
+        let fps2 = faker.number.int(999)
         engine.getFps.mockReturnValueOnce(fps1).mockReturnValueOnce(fps2)
 
         engine.onEndFrameObservable.notifyObservers()
@@ -146,7 +146,7 @@ describe('initEngine()', () => {
       })
 
       it('sends scene actions to peers', () => {
-        const data = { foo: faker.datatype.uuid() }
+        const data = { foo: faker.string.uuid() }
         controlManager.onActionObservable.notifyObservers(data)
         expect(receiveAction).toHaveBeenCalledWith(data)
         expect(receiveAction).toHaveBeenCalledTimes(1)
@@ -155,7 +155,7 @@ describe('initEngine()', () => {
       })
 
       it('does not send hand actions to peers', () => {
-        const data = { foo: faker.datatype.uuid(), fromHand: true }
+        const data = { foo: faker.string.uuid(), fromHand: true }
         controlManager.onActionObservable.notifyObservers(data)
         expect(receiveAction).toHaveBeenCalledWith(data)
         expect(receiveAction).toHaveBeenCalledTimes(1)
@@ -180,7 +180,7 @@ describe('initEngine()', () => {
 
       it('handles remote selection', () => {
         vi.spyOn(selectionManager, 'apply').mockImplementationOnce(() => {})
-        const playerId = faker.datatype.uuid()
+        const playerId = faker.string.uuid()
         const selectedIds = ['mesh1', 'mesh2']
         lastMessageReceived.next({ data: { selectedIds }, playerId })
 
@@ -194,7 +194,7 @@ describe('initEngine()', () => {
 
       it('clears remote selection on peer disconnection', () => {
         vi.spyOn(selectionManager, 'apply').mockImplementationOnce(() => {})
-        const playerId = faker.datatype.uuid()
+        const playerId = faker.string.uuid()
         lastDisconnectedId.next(playerId)
 
         expect(receiveSelection).not.toHaveBeenCalled()
@@ -207,11 +207,11 @@ describe('initEngine()', () => {
 
       it('moves peer pointers on message', () => {
         expect(registerPointerIndicator).not.toHaveBeenCalled()
-        const playerId = faker.datatype.uuid()
+        const playerId = faker.string.uuid()
         const pointer = [
-          faker.datatype.number({ min: 0, max: 800 }),
+          faker.number.int({ min: 0, max: 800 }),
           0,
-          faker.datatype.number({ min: 0, max: 800 })
+          faker.number.int({ min: 0, max: 800 })
         ]
         lastMessageReceived.next({ data: { pointer }, playerId })
         expect(registerPointerIndicator).toHaveBeenCalledWith(playerId, pointer)
@@ -219,10 +219,10 @@ describe('initEngine()', () => {
       })
 
       it('handles peer draw actions', () => {
-        const playerId = faker.datatype.uuid()
+        const playerId = faker.string.uuid()
         const state = { foo: 'bar' }
         const action = {
-          meshId: faker.datatype.uuid(),
+          meshId: faker.string.uuid(),
           fn: 'draw',
           args: [state]
         }
@@ -246,7 +246,7 @@ describe('initEngine()', () => {
       })
 
       it('receives peer actions', () => {
-        const meshId = faker.datatype.uuid()
+        const meshId = faker.string.uuid()
         lastMessageReceived.next({ data: { meshId } })
         expect(receiveAction).toHaveBeenCalledWith({ meshId })
         expect(receiveAction).toHaveBeenCalledTimes(1)
@@ -269,7 +269,7 @@ describe('initEngine()', () => {
       })
 
       it('proxies mesh detail events', () => {
-        const data = { foo: faker.datatype.uuid() }
+        const data = { foo: faker.string.uuid() }
         controlManager.onDetailedObservable.notifyObservers({ data })
         expect(receiveMeshDetail).toHaveBeenCalledWith(data)
         expect(receiveMeshDetail).toHaveBeenCalledTimes(1)
@@ -278,7 +278,7 @@ describe('initEngine()', () => {
       it('proxies camera save events', () => {
         expect(receiveCameraSave).toHaveBeenCalledWith([])
         expect(receiveCameraSave).toHaveBeenCalledTimes(1)
-        const data = { foo: faker.datatype.uuid() }
+        const data = { foo: faker.string.uuid() }
         cameraManager.onSaveObservable.notifyObservers(data)
         expect(receiveCameraSave).toHaveBeenNthCalledWith(2, data)
         expect(receiveCameraSave).toHaveBeenCalledTimes(2)
@@ -287,21 +287,21 @@ describe('initEngine()', () => {
       it('proxies current camera events', () => {
         expect(receiveCurrentCamera).toHaveBeenCalledWith(undefined)
         expect(receiveCurrentCamera).toHaveBeenCalledTimes(1)
-        const data = { foo: faker.datatype.uuid() }
+        const data = { foo: faker.string.uuid() }
         cameraManager.onMoveObservable.notifyObservers(data)
         expect(receiveCurrentCamera).toHaveBeenNthCalledWith(2, data)
         expect(receiveCurrentCamera).toHaveBeenCalledTimes(2)
       })
 
       it('proxies long input events', () => {
-        const data = { foo: faker.datatype.uuid() }
+        const data = { foo: faker.string.uuid() }
         inputManager.onLongObservable.notifyObservers(data)
         expect(receiveLongInput).toHaveBeenCalledWith(data)
         expect(receiveLongInput).toHaveBeenCalledTimes(1)
       })
 
       it('proxies hand change events', () => {
-        const handMeshes = [{ foo: faker.datatype.uuid() }]
+        const handMeshes = [{ foo: faker.string.uuid() }]
         engine.serialize.mockReturnValueOnce({ handMeshes })
         handManager.onHandChangeObservable.notifyObservers()
         expect(receiveHandChange).toHaveBeenCalledWith(handMeshes)

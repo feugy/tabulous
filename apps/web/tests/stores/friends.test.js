@@ -21,8 +21,8 @@ vi.mock('@src/stores/graphql-client')
 vi.mock('@src/stores/notifications')
 
 const player = {
-  id: faker.datatype.uuid(),
-  username: faker.name.firstName()
+  id: faker.string.uuid(),
+  username: faker.person.firstName()
 }
 
 beforeEach(() => vi.clearAllMocks())

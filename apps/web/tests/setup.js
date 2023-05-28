@@ -57,7 +57,10 @@ AbstractMesh.prototype[util.inspect.custom] = function () {
 }
 
 if (typeof window !== 'undefined') {
-  Object.defineProperty(window.navigator, 'languages', { value: ['fr'] })
+  Object.defineProperty(window.navigator, 'languages', {
+    value: ['fr'],
+    configurable: true
+  })
 
   document.querySelector(':root').style.setProperty('--short', '150ms')
 
@@ -68,6 +71,7 @@ if (typeof window !== 'undefined') {
 
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
+    configurable: true,
     value: query => ({
       matches: false,
       media: query,
@@ -133,6 +137,7 @@ if (typeof window !== 'undefined') {
   window.intersectionObservers = intersectionObservers
 
   Object.defineProperty(global.self, 'crypto', {
+    configurable: true,
     value: Object.setPrototypeOf({ subtle: crypto.subtle }, crypto)
   })
 
@@ -149,4 +154,4 @@ if (typeof window !== 'undefined') {
 }
 
 // common initialization, once locale is set
-import '../src/common'
+await import('../src/common')

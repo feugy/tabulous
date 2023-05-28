@@ -9,9 +9,9 @@ describe('loadConfiguration()', () => {
   const { ...envSave } = process.env
   const jwtKey = faker.internet.password()
   const turnSecret = faker.lorem.words()
-  const githubId = faker.datatype.uuid()
+  const githubId = faker.string.uuid()
   const githubSecret = faker.internet.password()
-  const googleId = faker.datatype.uuid()
+  const googleId = faker.string.uuid()
   const googleSecret = faker.internet.password()
   const redisUrl = faker.internet.url()
   const pubsubUrl = faker.internet.url()
@@ -22,7 +22,7 @@ describe('loadConfiguration()', () => {
   })
 
   it('loads values from environment variables', () => {
-    const port = faker.datatype.number({ min: 0, max: 8000 })
+    const port = faker.number.int({ min: 0, max: 8000 })
     const host = faker.internet.ip()
     const level = faker.helpers.arrayElement([
       'fatal',

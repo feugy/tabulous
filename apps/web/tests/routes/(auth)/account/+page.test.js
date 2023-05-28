@@ -13,7 +13,7 @@ vi.mock('@src/stores')
 
 describe('/account route', () => {
   const player = {
-    id: faker.datatype.uuid(),
+    id: faker.string.uuid(),
     avatar: faker.internet.avatar(),
     username: 'Batman'
   }

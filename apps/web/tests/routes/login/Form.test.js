@@ -166,7 +166,7 @@ describe('Login Form component', () => {
         }
       }
     ])('hides error on $title', async ({ change }) => {
-      const error = faker.name.fullName()
+      const error = faker.person.fullName()
       renderComponent({ error })
       expect(screen.getByText(error)).toBeInTheDocument()
 

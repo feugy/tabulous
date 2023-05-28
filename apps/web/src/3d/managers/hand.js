@@ -82,8 +82,11 @@ class HandManager {
     this.changes$ = new Subject()
     this.changes$.pipe(debounceTime(10)).subscribe({
       next: () => {
-        storeMeshDimensions(this)
-        layoutMeshs(this)
+        // because we delay thr processing, the hand scene could have been disposed
+        if (this.handScene) {
+          storeMeshDimensions(this)
+          layoutMeshs(this)
+        }
       }
     })
     this.disposeResizeObserver = null

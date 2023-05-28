@@ -58,9 +58,9 @@ describe('given a connected repository and several games', () => {
         created: Date.now(),
         // other fields,
         kind: 'draughts',
-        foo: faker.datatype.number(),
+        foo: faker.number.int(),
         bar: faker.datatype.boolean(),
-        baz: faker.datatype.array()
+        baz: faker.helpers.shuffle(Array.from({ length: 5 }, i => `${i}`))
       }
     ]
     await games.save(models)
@@ -74,7 +74,7 @@ describe('given a connected repository and several games', () => {
   describe('Game repository', () => {
     describe('getById()', () => {
       it('returns null for unknown game', async () => {
-        expect(await games.getById(faker.datatype.uuid())).toBeNull()
+        expect(await games.getById(faker.string.uuid())).toBeNull()
       })
 
       it('hydrates numbers', async () => {
@@ -123,7 +123,7 @@ describe('given a connected repository and several games', () => {
       })
 
       it('returns nothing for a gameless player', async () => {
-        expect(await games.listByPlayerId(faker.datatype.uuid())).toEqual([])
+        expect(await games.listByPlayerId(faker.string.uuid())).toEqual([])
       })
 
       it('reflects added players', async () => {

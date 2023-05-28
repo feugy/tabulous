@@ -6,8 +6,8 @@ import { describe, expect, it, mockGraphQl } from './utils/index.js'
 
 describe('Account page', () => {
   const player = {
-    id: faker.datatype.uuid(),
-    username: faker.name.fullName(),
+    id: faker.string.uuid(),
+    username: faker.person.fullName(),
     avatar: faker.internet.avatar(),
     termsAccepted: true
   }
@@ -15,7 +15,7 @@ describe('Account page', () => {
   it('redirects to terms on the first connection', async ({ page }) => {
     const { setTokenCookie } = await mockGraphQl(page, {
       getCurrentPlayer: {
-        token: faker.datatype.uuid(),
+        token: faker.string.uuid(),
         player: { ...player, termsAccepted: undefined },
         turnCredentials: {
           username: 'bob',
@@ -33,7 +33,7 @@ describe('Account page', () => {
   it('displays player username and avatar', async ({ page }) => {
     const { setTokenCookie } = await mockGraphQl(page, {
       getCurrentPlayer: {
-        token: faker.datatype.uuid(),
+        token: faker.string.uuid(),
         player,
         turnCredentials: {
           username: 'bob',
@@ -54,7 +54,7 @@ describe('Account page', () => {
     const gravatar = `https://www.gravatar.com/avatar/0440c0a8bc7e7dbbb8cec0585ca3c25c?s=96`
     const { setTokenCookie } = await mockGraphQl(page, {
       getCurrentPlayer: {
-        token: faker.datatype.uuid(),
+        token: faker.string.uuid(),
         player,
         turnCredentials: {
           username: 'bob',
@@ -76,7 +76,7 @@ describe('Account page', () => {
   it('can clear avatar', async ({ page }) => {
     const { setTokenCookie } = await mockGraphQl(page, {
       getCurrentPlayer: {
-        token: faker.datatype.uuid(),
+        token: faker.string.uuid(),
         player,
         turnCredentials: {
           username: 'bob',
@@ -98,7 +98,7 @@ describe('Account page', () => {
   it('navigates back to home page', async ({ page }) => {
     const { setTokenCookie } = await mockGraphQl(page, {
       getCurrentPlayer: {
-        token: faker.datatype.uuid(),
+        token: faker.string.uuid(),
         player,
         turnCredentials: {
           username: 'bob',

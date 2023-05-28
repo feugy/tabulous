@@ -106,13 +106,13 @@ describe('serializeMeshes() 3D utility', () => {
       const box2 = await createBox({
         id: 'box2',
         texture: faker.internet.url(),
-        images: [faker.random.word()],
-        x: faker.datatype.number(),
-        y: faker.datatype.number(),
-        z: faker.datatype.number(),
-        width: faker.datatype.number(),
-        height: faker.datatype.number(),
-        depth: faker.datatype.number()
+        images: [faker.word.sample()],
+        x: faker.number.int(999),
+        y: faker.number.int(999),
+        z: faker.number.int(999),
+        width: faker.number.int(999),
+        height: faker.number.int(999),
+        depth: faker.number.int(999)
       })
       expect(serializeMeshes(scene)).toEqual([
         box1.metadata.serialize(),
@@ -125,13 +125,13 @@ describe('serializeMeshes() 3D utility', () => {
       const card2 = await createCard({
         id: 'card2',
         texture: faker.internet.url(),
-        images: [faker.random.word()],
-        x: faker.datatype.number(),
-        y: faker.datatype.number(),
-        z: faker.datatype.number(),
-        width: faker.datatype.number(),
-        height: faker.datatype.number(),
-        depth: faker.datatype.number()
+        images: [faker.word.sample()],
+        x: faker.number.int(999),
+        y: faker.number.int(999),
+        z: faker.number.int(999),
+        width: faker.number.int(999),
+        height: faker.number.int(999),
+        depth: faker.number.int(999)
       })
       expect(serializeMeshes(scene)).toEqual([
         card1.metadata.serialize(),
@@ -145,11 +145,11 @@ describe('serializeMeshes() 3D utility', () => {
         id: 'd8',
         faces: 8,
         texture: faker.internet.url(),
-        images: [faker.random.word()],
-        x: faker.datatype.number(),
-        y: faker.datatype.number(),
-        z: faker.datatype.number(),
-        diameter: faker.datatype.number()
+        images: [faker.word.sample()],
+        x: faker.number.int(999),
+        y: faker.number.int(999),
+        z: faker.number.int(999),
+        diameter: faker.number.int(999)
       })
       expect(serializeMeshes(scene)).toEqual([
         die6.metadata.serialize(),
@@ -162,14 +162,14 @@ describe('serializeMeshes() 3D utility', () => {
       const prism2 = await createPrism({
         id: 'prism2',
         texture: faker.internet.url(),
-        images: [faker.random.word()],
-        prismRotation: faker.datatype.number(),
-        x: faker.datatype.number(),
-        y: faker.datatype.number(),
-        z: faker.datatype.number(),
-        width: faker.datatype.number(),
-        edges: faker.datatype.number(),
-        depth: faker.datatype.number()
+        images: [faker.word.sample()],
+        prismRotation: faker.number.int(999),
+        x: faker.number.int(999),
+        y: faker.number.int(999),
+        z: faker.number.int(999),
+        width: faker.number.int(999),
+        edges: faker.number.int(999),
+        depth: faker.number.int(999)
       })
       expect(serializeMeshes(scene)).toEqual([
         prism1.metadata.serialize(),
@@ -182,12 +182,12 @@ describe('serializeMeshes() 3D utility', () => {
       const token2 = await createRoundToken({
         id: 'token2',
         texture: faker.internet.url(),
-        images: [faker.random.word()],
-        x: faker.datatype.number(),
-        y: faker.datatype.number(),
-        z: faker.datatype.number(),
-        diameter: faker.datatype.number(),
-        height: faker.datatype.number()
+        images: [faker.word.sample()],
+        x: faker.number.int(999),
+        y: faker.number.int(999),
+        z: faker.number.int(999),
+        diameter: faker.number.int(999),
+        height: faker.number.int(999)
       })
       expect(serializeMeshes(scene)).toEqual([
         token1.metadata.serialize(),
@@ -200,15 +200,15 @@ describe('serializeMeshes() 3D utility', () => {
       const tile2 = await createRoundedTile({
         id: 'tile2',
         texture: faker.internet.url(),
-        images: [faker.random.word()],
-        x: faker.datatype.number(),
-        y: faker.datatype.number(),
-        z: faker.datatype.number(),
-        borderRadius: faker.datatype.number(),
-        faceUV: [Array.from({ length: 4 }, () => faker.datatype.number())],
-        width: faker.datatype.number(),
-        height: faker.datatype.number(),
-        depth: faker.datatype.number()
+        images: [faker.word.sample()],
+        x: faker.number.int(999),
+        y: faker.number.int(999),
+        z: faker.number.int(999),
+        borderRadius: faker.number.int(999),
+        faceUV: [Array.from({ length: 4 }, () => faker.number.int(999))],
+        width: faker.number.int(999),
+        height: faker.number.int(999),
+        depth: faker.number.int(999)
       })
       expect(serializeMeshes(scene)).toEqual([
         tile1.metadata.serialize(),
@@ -226,15 +226,15 @@ describe('serializeMeshes() 3D utility', () => {
       const tile2 = await createRoundedTile({
         id: 'tile2',
         texture: faker.internet.url(),
-        images: [faker.random.word()],
-        x: faker.datatype.number(),
-        y: faker.datatype.number(),
-        z: faker.datatype.number(),
-        borderRadius: faker.datatype.number(),
-        faceUV: [Array.from({ length: 4 }, () => faker.datatype.number())],
-        width: faker.datatype.number(),
-        height: faker.datatype.number(),
-        depth: faker.datatype.number()
+        images: [faker.word.sample()],
+        x: faker.number.int(999),
+        y: faker.number.int(999),
+        z: faker.number.int(999),
+        borderRadius: faker.number.int(999),
+        faceUV: [Array.from({ length: 4 }, () => faker.number.int(999))],
+        width: faker.number.int(999),
+        height: faker.number.int(999),
+        depth: faker.number.int(999)
       })
       tile1.isPhantom = true
       expect(serializeMeshes(scene)).toEqual([tile2.metadata.serialize()])
