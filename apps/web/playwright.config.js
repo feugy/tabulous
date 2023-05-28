@@ -20,9 +20,10 @@ const config = {
   },
   webServer: {
     command: 'pnpm preview',
-    url: 'https://localhost:3000',
+    url: 'https://localhost:3000/robots.txt',
     ignoreHTTPSErrors: true,
-    timeout: 30000
+    reuseExistingServer: true,
+    timeout: 5000
   },
   workers: 1
 }

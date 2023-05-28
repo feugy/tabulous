@@ -1,6 +1,7 @@
 import {
+  cacheExchange,
   createClient,
-  defaultExchanges,
+  fetchExchange,
   subscriptionExchange
 } from '@urql/core'
 import { createClient as createWSClient } from 'graphql-ws'
@@ -28,7 +29,7 @@ export function initGraphQlClient({
   fetch,
   subscriptionSupport = true
 }) {
-  const exchanges = [...defaultExchanges]
+  const exchanges = [cacheExchange, fetchExchange]
   const headers = {}
   let hasSubscriptionExchange = false
   if (bearer) {

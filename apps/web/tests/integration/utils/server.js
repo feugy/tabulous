@@ -21,6 +21,25 @@ let server = null
 // different processes, and sharing the same mock server would be impossible.
 let serverContext = null
 
+function log(reqId, ...args) {
+  const now = new Date()
+  debug &&
+    console.log(
+      chalk`{dim ${now.toLocaleTimeString()}.${now.getMilliseconds()}}`,
+      chalk`{blueBright mock-server ${reqId ? `[${reqId}] ` : ''}}-`,
+      ...args
+    )
+}
+
+function logError(reqId, ...args) {
+  const now = new Date()
+  console.log(
+    chalk`{dim ${now.toLocaleTimeString()}.${now.getMilliseconds()}}`,
+    chalk`{red.bold mock-server [${reqId}]} -`,
+    ...args
+  )
+}
+
 /**
  * @typedef {Object.<string, object[]|object>} GraphQLMocks mocks for multiple graphQL operations.
  * Each property name is the operation Name, while values are the returned data, or an array of returned data.
@@ -52,15 +71,6 @@ export async function mockGraphQl(page, mocks) {
   const browserContext = page.context()
 
   if (!server) {
-    const log = (reqId, ...args) =>
-      debug &&
-      console.log(
-        chalk`{blueBright mock-server ${reqId ? `[${reqId}] ` : ''}}-`,
-        ...args
-      )
-    const logError = (reqId, ...args) =>
-      console.log(chalk`{red.bold mock-server [${reqId}]} -`, ...args)
-
     server = fastify()
     server.register(cors, {
       origin: /.*/,
@@ -99,29 +109,35 @@ export async function mockGraphQl(page, mocks) {
           }
 
           connection.socket.on('message', async buffer => {
-            const message = JSON.parse(buffer.toString())
-            log(reqId, `receiving WS message:`, message)
-            if (message.type === 'connection_init') {
-              serverContext.wsConnection = connection
-              serverContext.sendToSubscription = payload => {
-                const operation = Object.keys(payload.data)[0]
-                const id = serverContext.subscriptionIds[operation]
-                log(
-                  reqId,
-                  chalk`sending WS message {blueBright ${id}}:`,
-                  payload
-                )
-                sendInWebSocket({ type: 'next', id, payload })
+            try {
+              const message = JSON.parse(buffer.toString())
+              log(reqId, `receiving WS message:`, message)
+              if (message.type === 'connection_init') {
+                serverContext.wsConnection = connection
+                serverContext.sendToSubscription = payload => {
+                  const operation = Object.keys(payload.data)[0]
+                  const id = serverContext.subscriptionIds[operation]
+                  log(
+                    reqId,
+                    chalk`sending WS message {blueBright ${id}}:`,
+                    payload
+                  )
+                  sendInWebSocket({ type: 'next', id, payload })
+                }
+                sendInWebSocket({ type: 'connection_ack' })
+              } else if (message.type === 'ping') {
+                sendInWebSocket({ type: 'pong' })
+              } else if (message.type === 'subscribe') {
+                const operation = message.payload.operationName
+                serverContext.subscriptionIds[operation] = message.id
+                serverContext.onSubscription?.(operation, message)
               }
-              sendInWebSocket({ type: 'connection_ack' })
-            } else if (message.type === 'ping') {
-              sendInWebSocket({ type: 'pong' })
-            } else if (message.type === 'subscribe') {
-              const [, operation] = message.payload.query.match(
-                /^subscription ([^ (]+)/
+            } catch (err) {
+              logError(
+                chalk`{red can not parse received WS message}: ${
+                  err.message
+                } \n ${buffer.toString()}`
               )
-              serverContext.subscriptionIds[operation] = message.id
-              serverContext.onSubscription?.(operation, message)
             }
           })
         }

@@ -78,8 +78,8 @@ describe('Home page', () => {
     username: 'Cian'
   }
 
-  const recent = faker.date.recent(1).getTime()
-  const recent2 = faker.date.recent(2, recent).getTime()
+  const recent = faker.date.recent({ days: 1 }).getTime()
+  const recent2 = faker.date.recent({ days: 2, refDate: recent }).getTime()
   const games = [
     {
       id: faker.string.uuid(),
@@ -97,7 +97,7 @@ describe('Home page', () => {
     },
     {
       id: faker.string.uuid(),
-      created: faker.date.recent(3, recent2).getTime(),
+      created: faker.date.recent({ days: 3, refDate: recent2 }).getTime(),
       kind: 'klondike',
       players: [{ ...player, isOwner: true }],
       locales: { fr: { title: 'Solitaire' } }

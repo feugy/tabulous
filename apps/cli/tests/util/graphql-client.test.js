@@ -9,7 +9,7 @@ vi.mock('../../src/util/configuration.js', () => ({
 describe('getGraphQLClient()', () => {
   let loadConfiguration
   let getGraphQLClient
-  const url = faker.internet.url()
+  const url = faker.internet.url({ appendSlash: false })
   const jwtKey = faker.string.uuid()
 
   beforeAll(async () => {

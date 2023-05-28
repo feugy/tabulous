@@ -1,7 +1,7 @@
 import { initGraphQlClient } from '@src/stores/graphql-client'
 import { acceptTerms } from '@src/stores/players'
 import { graphQlUrl } from '@src/utils/env'
-import { error, redirect } from '@sveltejs/kit'
+import { fail, redirect } from '@sveltejs/kit'
 
 export const actions = {
   /** @type {import('./$types').Action} */
@@ -16,17 +16,17 @@ export const actions = {
       location &&
       (location.startsWith('http') || !location.startsWith('/'))
     ) {
-      throw error(400, {
+      return fail(400, {
         redirect: `'${location}' should be an absolute path`
       })
     }
     if (age !== 'true') {
-      throw error(400, {
+      return fail(400, {
         age: `you must be at least 15 or be approved by your parents to proceed`
       })
     }
     if (accept !== 'true') {
-      throw error(400, {
+      return fail(400, {
         accept: `you must accept terms of service to proceed`
       })
     }

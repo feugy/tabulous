@@ -1,9 +1,8 @@
 # TODO
 
-- select player color in games
-
 ## Road to beta
 
+- select player color in games
 - skin(s)
 - interface in English
 - always go fullscreen when entering game
@@ -12,9 +11,7 @@
 
 ## Refactor
 
-- @urql/core@3.1.1: receiveGameListUpdates subscribtion fails because urql's stringification sends the whole games.graphql file instead of the subscription as a payload. This is because [these lines](https://github.com/urql-graphql/urql/pull/2871/files#diff-425e8fcb48a8df1865f99ca1fb981873c6d0ef33ee3856e18f85a8b449bb81b7R41-R42)
 - add tests for web/src/utils/peer-connection
-- use node 18 when msw/interceptor will [handle it](https://github.com/mswjs/interceptors/pull/283)
 - ts-check all the things!
 - group candidate target per kind for performance
 - keep anchor ids
@@ -27,6 +24,9 @@
 
 ## UI
 
+- bug: svelte reports many accessibility violations
+- bug: when already in a lobby, clicking on the lobby card joins the same lobby again
+- bug: when a peer is joining a lobby, we don't automatically switch to video tab (both host and peer)
 - bug: 6-takes: snapping to the wrong anchor (when 2 players are snapping to different anchors)
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
 - check headings ordering
@@ -43,6 +43,7 @@
 
 ## Server
 
+- bug: looby to parametrized game: handle concurrent parameters (playground)
 - bug: timezone used for Serverside rendering is wrong
 - allows a single connection per player (discards other JWTs)
 - better coTURN integration (password management and rotation)

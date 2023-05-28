@@ -71,9 +71,9 @@ describe('POST /accept-terms route action', () => {
     const redirect = faker.internet.url()
     const request = buildsRequest({ age: true, accept: true, redirect })
 
-    await expect(actions.default({ request, locals, fetch })).rejects.toEqual({
+    expect(await actions.default({ request, locals, fetch })).toEqual({
       status: 400,
-      body: { redirect: `'${redirect}' should be an absolute path` }
+      data: { redirect: `'${redirect}' should be an absolute path` }
     })
     expect(locals.session.player).not.toHaveProperty('termsAccepted', true)
     expect(runMutation).not.toHaveBeenCalled()
@@ -84,9 +84,9 @@ describe('POST /accept-terms route action', () => {
     const redirect = '../home'
     const request = buildsRequest({ age: true, accept: true, redirect })
 
-    await expect(actions.default({ request, locals, fetch })).rejects.toEqual({
+    expect(await actions.default({ request, locals, fetch })).toEqual({
       status: 400,
-      body: { redirect: `'${redirect}' should be an absolute path` }
+      data: { redirect: `'${redirect}' should be an absolute path` }
     })
     expect(locals.session.player).not.toHaveProperty('termsAccepted', true)
     expect(runMutation).not.toHaveBeenCalled()
@@ -96,9 +96,9 @@ describe('POST /accept-terms route action', () => {
   it('returns request error if age is not true', async () => {
     const request = buildsRequest({ age: false, accept: true })
 
-    await expect(actions.default({ request, locals, fetch })).rejects.toEqual({
+    expect(await actions.default({ request, locals, fetch })).toEqual({
       status: 400,
-      body: {
+      data: {
         age: `you must be at least 15 or be approved by your parents to proceed`
       }
     })
@@ -110,9 +110,9 @@ describe('POST /accept-terms route action', () => {
   it('returns request error if accept is not true', async () => {
     const request = buildsRequest({ accept: false, age: true })
 
-    await expect(actions.default({ request, locals, fetch })).rejects.toEqual({
+    expect(await actions.default({ request, locals, fetch })).toEqual({
       status: 400,
-      body: {
+      data: {
         accept: `you must accept terms of service to proceed`
       }
     })

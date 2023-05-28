@@ -1,5 +1,5 @@
 // @ts-check
-import { createClient } from '@urql/core'
+import { cacheExchange, createClient, fetchExchange } from '@urql/core'
 import { Agent, fetch, setGlobalDispatcher } from 'undici'
 
 import { loadConfiguration } from './configuration.js'
@@ -17,7 +17,8 @@ export function getGraphQLClient() {
       ...loadConfiguration(),
       maskTypename: true,
       fetch,
-      fetchOptions: () => fetchOptions
+      fetchOptions: () => fetchOptions,
+      exchanges: [cacheExchange, fetchExchange]
     })
   }
   return client

@@ -1,7 +1,7 @@
 import { initGraphQlClient } from '@src/stores/graphql-client'
 import { logIn } from '@src/stores/players'
 import { graphQlUrl } from '@src/utils/env'
-import { error, redirect } from '@sveltejs/kit'
+import { fail, redirect } from '@sveltejs/kit'
 
 export const actions = {
   /** @type {import('./$types').Action} */
@@ -16,7 +16,7 @@ export const actions = {
       location &&
       (location.startsWith('http') || !location.startsWith('/'))
     ) {
-      throw error(400, {
+      return fail(400, {
         redirect: `'${location}' should be an absolute path`
       })
     }
@@ -24,7 +24,7 @@ export const actions = {
       initGraphQlClient({ graphQlUrl, fetch, subscriptionSupport: false })
       locals.session = await logIn(id, password)
     } catch (err) {
-      throw error(401, err.message)
+      return fail(401, err)
     }
     throw redirect(303, location || '/home')
   }

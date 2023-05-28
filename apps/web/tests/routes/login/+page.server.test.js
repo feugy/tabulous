@@ -51,9 +51,9 @@ describe('POST /login route action', () => {
     const redirect = faker.internet.url()
     const request = buildsRequest({ id, password, redirect })
 
-    await expect(actions.default({ request, locals, fetch })).rejects.toEqual({
+    expect(await actions.default({ request, locals, fetch })).toEqual({
       status: 400,
-      body: { redirect: `'${redirect}' should be an absolute path` }
+      data: { redirect: `'${redirect}' should be an absolute path` }
     })
     expect(locals.session).toBeUndefined()
   })
@@ -65,14 +65,14 @@ describe('POST /login route action', () => {
     const redirect = '../home'
     const request = buildsRequest({ id, password, redirect })
 
-    await expect(actions.default({ request, locals, fetch })).rejects.toEqual({
+    expect(await actions.default({ request, locals, fetch })).toEqual({
       status: 400,
-      body: { redirect: `'${redirect}' should be an absolute path` }
+      data: { redirect: `'${redirect}' should be an absolute path` }
     })
     expect(locals.session).toBeUndefined()
   })
 
-  it('returns forbidden error on invalid credentials', async () => {
+  it('returns an error on invalid credentials', async () => {
     const id = faker.number.int(999)
     const password = faker.internet.password()
     const locals = {}
@@ -80,9 +80,9 @@ describe('POST /login route action', () => {
     const error = new Error('wrong credentials')
     runMutation.mockRejectedValueOnce(error)
 
-    await expect(actions.default({ request, locals, fetch })).rejects.toEqual({
+    expect(await actions.default({ request, locals, fetch })).toEqual({
       status: 401,
-      body: { message: error.message }
+      data: error
     })
     expect(locals.session).toBeUndefined()
   })
