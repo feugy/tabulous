@@ -522,8 +522,7 @@ describe('given a started server', () => {
           data: { joinGame: null },
           errors: [
             {
-              message:
-                'Failed to parse provided parameters: Unexpected end of JSON input'
+              message: `Failed to parse provided parameters: Expected ',' or '}' after property value in JSON at position 15`
             }
           ]
         })
