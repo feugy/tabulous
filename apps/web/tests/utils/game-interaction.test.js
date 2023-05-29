@@ -1714,7 +1714,7 @@ describe('Game interaction model', () => {
     })
 
     it(`saves camera position on 'ctrl+N' key`, () => {
-      const number = faker.datatype.number({ min: 1, max: 9 })
+      const number = faker.number.int({ min: 1, max: 9 })
       inputManager.onKeyObservable.notifyObservers({
         type: 'keyDown',
         meshes: [],
@@ -1738,7 +1738,7 @@ describe('Game interaction model', () => {
     })
 
     it(`restores camera position on 'N' key`, () => {
-      const number = faker.datatype.number({ min: 1, max: 9 })
+      const number = faker.number.int({ min: 1, max: 9 })
       inputManager.onKeyObservable.notifyObservers({
         type: 'keyDown',
         meshes: [],

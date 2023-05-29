@@ -10,6 +10,7 @@
   "repository": {
     "url": "https://github.com/feugy/tabulous"
   },
+  "packageManager": "pnpm@8.5.1",
   "scripts": {
     "dev:cli": "pnpm --filter cli test:dev",
     "dev:server": "pnpm --filter server test:dev",
@@ -26,22 +27,22 @@
     "test:integration": "pnpm --filter web test:integration"
   },
   "devDependencies": {
-    "@faker-js/faker": "^7.6.0",
-    "@vitest/coverage-c8": "^0.28.3",
-    "eslint": "^8.30.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-simple-import-sort": "^8.0.0",
+    "@faker-js/faker": "^8.0.2",
+    "@vitest/coverage-c8": "^0.31.1",
+    "eslint": "^8.41.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
     "eslint-plugin-svelte3": "^4.0.0",
-    "eslint-plugin-vitest": "^0.0.20",
-    "husky": "^8.0.2",
-    "lint-staged": "^13.1.0",
-    "playwright": "^1.29.0",
-    "prettier": "^2.8.1",
-    "prettier-plugin-svelte": "^2.9.0",
-    "svelte": "^3.55.0",
-    "typescript": "^4.9.4",
-    "vite": "^4.0.1",
-    "vitest": "^0.28.5"
+    "eslint-plugin-vitest": "^0.2.5",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.2",
+    "playwright": "^1.34.3",
+    "prettier": "^2.8.8",
+    "prettier-plugin-svelte": "^2.10.1",
+    "svelte": "^3.59.1",
+    "typescript": "^5.0.4",
+    "vite": "^4.3.9",
+    "vitest": "^0.31.1"
   },
   "lint-staged": {
     "*.{js,svelte}": "eslint --cache --fix",

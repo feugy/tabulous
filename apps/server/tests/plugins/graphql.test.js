@@ -54,7 +54,7 @@ describe('graphql plugin', () => {
   it('logs errors', async () => {
     const configuration = {
       turn: { secret: faker.lorem.words() },
-      auth: { jwt: { key: faker.datatype.uuid() } }
+      auth: { jwt: { key: faker.string.uuid() } }
     }
 
     server = fastify({ logger: false })

@@ -546,7 +546,7 @@ describe('draw()', () => {
 })
 
 describe('drawInHand()', () => {
-  const playerId = faker.datatype.uuid()
+  const playerId = faker.string.uuid()
   let game
 
   beforeEach(() => {
@@ -657,7 +657,7 @@ describe('drawInHand()', () => {
 
 describe('findMesh()', () => {
   const meshes = Array.from({ length: 10 }, () => ({
-    id: faker.datatype.uuid()
+    id: faker.string.uuid()
   }))
 
   it('returns existing meshes', () => {
@@ -666,7 +666,7 @@ describe('findMesh()', () => {
   })
 
   it('returns null for unknown ids', () => {
-    expect(findMesh(faker.datatype.uuid(), meshes)).toBeNull()
+    expect(findMesh(faker.string.uuid(), meshes)).toBeNull()
     expect(findMesh(meshes[0].id, [])).toBeNull()
     expect(findMesh(meshes[0].id)).toBeNull()
   })
@@ -674,8 +674,8 @@ describe('findMesh()', () => {
 
 describe('findOrCreateHand()', () => {
   it('finds existing hand', () => {
-    const playerId1 = faker.datatype.uuid()
-    const playerId2 = faker.datatype.uuid()
+    const playerId1 = faker.string.uuid()
+    const playerId2 = faker.string.uuid()
 
     const game = {
       hands: [
@@ -688,8 +688,8 @@ describe('findOrCreateHand()', () => {
   })
 
   it('creates new hand', () => {
-    const playerId1 = faker.datatype.uuid()
-    const playerId2 = faker.datatype.uuid()
+    const playerId1 = faker.string.uuid()
+    const playerId2 = faker.string.uuid()
 
     const game = {
       hands: [{ playerId: playerId1, meshes: [{ id: 'A' }] }]
@@ -703,7 +703,7 @@ describe('findOrCreateHand()', () => {
 
 describe('findAnchor()', () => {
   const anchors = Array.from({ length: 10 }, () => ({
-    id: faker.datatype.uuid()
+    id: faker.string.uuid()
   }))
 
   const meshes = [
@@ -715,7 +715,7 @@ describe('findAnchor()', () => {
   ]
 
   it('returns null on unknown anchor', () => {
-    expect(findAnchor(faker.datatype.uuid(), meshes)).toBeNull()
+    expect(findAnchor(faker.string.uuid(), meshes)).toBeNull()
     expect(findAnchor(anchors[0].id, [])).toBeNull()
     expect(findAnchor(anchors[0].id)).toBeNull()
   })
@@ -942,7 +942,7 @@ describe('decrement()', () => {
 
 describe('buildCameraPosition()', () => {
   it('applies all defaults', () => {
-    const playerId = faker.datatype.uuid()
+    const playerId = faker.string.uuid()
     expect(buildCameraPosition({ playerId })).toEqual({
       playerId,
       index: 0,
@@ -961,16 +961,12 @@ describe('buildCameraPosition()', () => {
   })
 
   it('uses provided data and computes hash', () => {
-    const playerId = faker.datatype.uuid()
-    const index = faker.datatype.number()
-    const alpha = faker.datatype.number()
-    const beta = faker.datatype.number()
-    const elevation = faker.datatype.number()
-    const target = [
-      faker.datatype.number(),
-      faker.datatype.number(),
-      faker.datatype.number()
-    ]
+    const playerId = faker.string.uuid()
+    const index = faker.number.int()
+    const alpha = faker.number.int()
+    const beta = faker.number.int()
+    const elevation = faker.number.int()
+    const target = [faker.number.int(), faker.number.int(), faker.number.int()]
     expect(
       buildCameraPosition({ playerId, index, alpha, beta, elevation, target })
     ).toEqual({
@@ -988,8 +984,8 @@ describe('buildCameraPosition()', () => {
 describe('getParameterSchema()', () => {
   const askForParameters = vi.fn()
   const kind = faker.lorem.word()
-  const game = { kind, meshes: [{ id: faker.datatype.uuid() }] }
-  const player = { id: faker.datatype.uuid(), name: faker.name.fullName() }
+  const game = { kind, meshes: [{ id: faker.string.uuid() }] }
+  const player = { id: faker.string.uuid(), name: faker.person.fullName() }
 
   beforeEach(vi.resetAllMocks)
 

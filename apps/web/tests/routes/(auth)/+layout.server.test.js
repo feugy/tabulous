@@ -1,44 +1,37 @@
 import { faker } from '@faker-js/faker'
 import { load } from '@src/routes/(auth)/+layout.server'
-import { describe, expect, it, vi } from 'vitest'
-
-vi.mock('@sveltejs/kit', () => ({
-  redirect(status, location) {
-    return new Error(`${status} redirection to ${location}`)
-  }
-}))
+import { redirect } from '@sveltejs/kit'
+import { describe, expect, it } from 'vitest'
 
 describe('@auth layout server loader', () => {
   it('redirects to login without session', async () => {
-    const location = `/game/${faker.datatype.uuid()}`
+    const location = `/game/${faker.string.uuid()}`
     const url = new URL(location, 'https://example.org')
-    await expect(load({ url, locals: {} })).rejects.toThrow(
-      '307 redirection to /login?redirect='
+    await expect(load({ url, locals: {} })).rejects.toEqual(
+      redirect(307, `/login?redirect=${encodeURIComponent(location)}`)
     )
   })
 
   it('redirects to terms on first connection', async () => {
     const session = {
-      player: { id: faker.datatype.number(), username: faker.name.fullName() }
+      player: { id: faker.number.int(999), username: faker.person.fullName() }
     }
-    const location = `/game/${faker.datatype.uuid()}`
+    const location = `/game/${faker.string.uuid()}`
     const url = new URL(location, 'https://example.org')
-    await expect(load({ url, locals: { session } })).rejects.toThrow(
-      `307 redirection to /accept-terms?redirect=${encodeURIComponent(
-        location
-      )}`
+    await expect(load({ url, locals: { session } })).rejects.toEqual(
+      redirect(307, `/accept-terms?redirect=${encodeURIComponent(location)}`)
     )
   })
 
   it('accepts session', async () => {
     const session = {
       player: {
-        id: faker.datatype.number(),
-        username: faker.name.fullName(),
+        id: faker.number.int(999),
+        username: faker.person.fullName(),
         termsAccepted: true
       }
     }
-    const location = `/game/${faker.datatype.uuid()}`
+    const location = `/game/${faker.string.uuid()}`
     const url = new URL(location, 'https://example.org')
     expect(await load({ url, locals: { session } })).toEqual({
       session,

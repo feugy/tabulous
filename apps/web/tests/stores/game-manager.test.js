@@ -147,14 +147,14 @@ afterAll(() =>
 describe('given no engine', async () => {
   describe('joinGame()', () => {
     const game = {
-      id: faker.datatype.uuid(),
+      id: faker.string.uuid(),
       kind: 'belote',
       meshes: [{ id: 'mesh1' }],
       players: [player],
       hands: [{ playerId: player.id, meshes: [] }]
     }
     const lobby = {
-      id: faker.datatype.uuid(),
+      id: faker.string.uuid(),
       meshes: [],
       players: [player, partner1, partner2, partner3],
       messages: ['coucou', 'yeah'],
@@ -408,7 +408,7 @@ describe('given a mocked game engine', () => {
     afterEach(() => leaveGame(player))
 
     it('loads game data into the game engine', async () => {
-      const gameId = faker.datatype.uuid()
+      const gameId = faker.string.uuid()
       const meshes = [{ id: 'mesh1' }]
       const hands = [
         { playerId: 'anotherPlayerId', meshes: [{ id: 'mesh2' }] },
@@ -471,7 +471,7 @@ describe('given a mocked game engine', () => {
     })
 
     it('does not load data when receiving game parameters', async () => {
-      const gameId = faker.datatype.uuid()
+      const gameId = faker.string.uuid()
       const game = {
         id: gameId,
         players: [player],
@@ -504,7 +504,7 @@ describe('given a mocked game engine', () => {
     })
 
     it('loads camera positions upon game loading', async () => {
-      const gameId = faker.datatype.uuid()
+      const gameId = faker.string.uuid()
       const meshes = [{ id: 'mesh1' }]
       const hands = [{ playerId: player.id, meshes: [] }]
       const cameras = [
@@ -553,7 +553,7 @@ describe('given a mocked game engine', () => {
     })
 
     it('loads message thread upon game loading', async () => {
-      const gameId = faker.datatype.uuid()
+      const gameId = faker.string.uuid()
       const meshes = [{ id: 'mesh1' }]
       const hands = [{ playerId: player.id, meshes: [] }]
       const messages = ['coucou', 'yeah']
@@ -591,7 +591,7 @@ describe('given a mocked game engine', () => {
     })
 
     it('loads game data without player hand', async () => {
-      const gameId = faker.datatype.uuid()
+      const gameId = faker.string.uuid()
       const meshes = [{ id: 'mesh2' }]
       const game = {
         id: gameId,
@@ -621,7 +621,7 @@ describe('given a mocked game engine', () => {
     })
 
     it('does not become host when being the only guest with game parameters', async () => {
-      const gameId = faker.datatype.uuid()
+      const gameId = faker.string.uuid()
       const game = {
         id: gameId,
         kind: 'belote',
@@ -645,7 +645,7 @@ describe('given a mocked game engine', () => {
     })
 
     it('sends selected parameters', async () => {
-      const gameId = faker.datatype.uuid()
+      const gameId = faker.string.uuid()
       const game = {
         id: gameId,
         kind: 'belote',
@@ -674,7 +674,7 @@ describe('given a mocked game engine', () => {
     describe('with a loaded game', () => {
       const meshes = [{ id: 'mesh1' }, { id: 'mesh2' }, { id: 'mesh3' }]
       const game = {
-        id: faker.datatype.uuid(),
+        id: faker.string.uuid(),
         kind: 'belote',
         meshes,
         players: [player, partner1],
@@ -1117,13 +1117,13 @@ describe('given a mocked game engine', () => {
 
     describe('with online players', () => {
       const meshes = [{ id: 'mesh1' }, { id: 'mesh2' }, { id: 'mesh3' }]
-      const id = faker.datatype.uuid()
+      const id = faker.string.uuid()
       const game = {
         id,
         kind: 'belote',
         meshes,
         players: [
-          { currentGameId: faker.datatype.uuid(), ...partner3 },
+          { currentGameId: faker.string.uuid(), ...partner3 },
           { currentGameId: id, ...player },
           { currentGameId: id, ...partner1 },
           partner2
@@ -1183,7 +1183,7 @@ describe('given a mocked game engine', () => {
             { currentGameId: id, ...player },
             { currentGameId: id, ...partner1 },
             { isGuest: true, ...partner2 },
-            { currentGameId: faker.datatype.uuid(), ...partner3 }
+            { currentGameId: faker.string.uuid(), ...partner3 }
           ],
           schemaString: '{}'
         }
@@ -1474,13 +1474,13 @@ describe('given a mocked game engine', () => {
 
   describe('invite()', () => {
     const game = {
-      id: faker.datatype.uuid(),
+      id: faker.string.uuid(),
       meshes: [],
       players: [],
       hands: []
     }
-    const guest = { id: faker.datatype.uuid() }
-    const guest2 = { id: faker.datatype.uuid() }
+    const guest = { id: faker.string.uuid() }
+    const guest2 = { id: faker.string.uuid() }
 
     it('invites a given user to a game', async () => {
       runMutation.mockResolvedValueOnce(game)
@@ -1509,7 +1509,7 @@ describe('given a mocked game engine', () => {
 describe('createGame()', () => {
   it('creates a game', async () => {
     const kind = faker.lorem.word()
-    const id = faker.datatype.uuid()
+    const id = faker.string.uuid()
     runMutation.mockResolvedValueOnce({ id })
     expect(await createGame(kind)).toEqual({ id })
     expect(runMutation).toHaveBeenCalledWith(graphQL.createGame, { kind })
@@ -1520,7 +1520,7 @@ describe('createGame()', () => {
 describe('promoteGame()', () => {
   it('promotes a lobby', async () => {
     const kind = faker.lorem.word()
-    const id = faker.datatype.uuid()
+    const id = faker.string.uuid()
     runMutation.mockResolvedValueOnce({ id })
     expect(await promoteGame(id, kind)).toEqual({ id })
     expect(runMutation).toHaveBeenCalledWith(graphQL.promoteGame, {
@@ -1533,7 +1533,7 @@ describe('promoteGame()', () => {
 
 describe('deleteGame()', () => {
   it('deletes a game', async () => {
-    const gameId = faker.datatype.uuid()
+    const gameId = faker.string.uuid()
     expect(await deleteGame(gameId)).toBeUndefined()
     expect(runMutation).toHaveBeenCalledWith(graphQL.deleteGame, { gameId })
     expect(runMutation).toHaveBeenCalledOnce()
@@ -1543,9 +1543,9 @@ describe('deleteGame()', () => {
 describe('listGames()', () => {
   it('list all games', async () => {
     const games = [
-      { id: faker.datatype.uuid(), created: faker.date.past().getTime() },
-      { id: faker.datatype.uuid(), created: faker.date.past().getTime() },
-      { id: faker.datatype.uuid(), created: faker.date.past().getTime() }
+      { id: faker.string.uuid(), created: faker.date.past().getTime() },
+      { id: faker.string.uuid(), created: faker.date.past().getTime() },
+      { id: faker.string.uuid(), created: faker.date.past().getTime() }
     ]
     runQuery.mockResolvedValueOnce(games)
     expect(await listGames()).toEqual(games)
@@ -1556,9 +1556,9 @@ describe('listGames()', () => {
 
 describe('receiveGameListUpdates()', () => {
   const games = [
-    { id: faker.datatype.uuid(), created: faker.date.past().getTime() },
-    { id: faker.datatype.uuid(), created: faker.date.past().getTime() },
-    { id: faker.datatype.uuid(), created: faker.date.past().getTime() }
+    { id: faker.string.uuid(), created: faker.date.past().getTime() },
+    { id: faker.string.uuid(), created: faker.date.past().getTime() },
+    { id: faker.string.uuid(), created: faker.date.past().getTime() }
   ]
 
   it('initializes observable with provided list', () => {

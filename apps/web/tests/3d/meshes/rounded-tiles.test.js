@@ -42,15 +42,15 @@ describe('createRoundedTile()', () => {
   describe('given a tile with initial position, dimension, images and behaviors', () => {
     let mesh
 
-    const width = faker.datatype.number()
-    const height = faker.datatype.number()
-    const depth = faker.datatype.number()
-    const id = faker.datatype.uuid()
-    const x = faker.datatype.number()
-    const y = faker.datatype.number()
-    const z = faker.datatype.number()
+    const width = faker.number.int(999)
+    const height = faker.number.int(999)
+    const depth = faker.number.int(999)
+    const id = faker.string.uuid()
+    const x = faker.number.int(999)
+    const y = faker.number.int(999)
+    const z = faker.number.int(999)
     const faceUV = Array.from({ length: 6 }, () =>
-      Array.from({ length: 4 }, () => faker.datatype.number())
+      Array.from({ length: 4 }, () => faker.number.int(999))
     )
     const behaviors = {
       anchorable: {

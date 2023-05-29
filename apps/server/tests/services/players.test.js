@@ -40,7 +40,7 @@ describe('given initialized repository', () => {
     afterAll(() => clearDatabase(redisUrl))
 
     it('assigns a new id', async () => {
-      const username = faker.name.firstName()
+      const username = faker.person.firstName()
       const password = faker.internet.password()
       const avatar = faker.internet.avatar()
       expect(await upsertPlayer({ username, password, avatar })).toEqual({
@@ -53,8 +53,8 @@ describe('given initialized repository', () => {
     })
 
     it('reuses provided id', async () => {
-      const username = faker.name.firstName()
-      const id = faker.datatype.uuid()
+      const username = faker.person.firstName()
+      const id = faker.string.uuid()
       const avatar = faker.internet.avatar()
       expect(await upsertPlayer({ username, id, avatar })).toEqual({
         id,
@@ -66,10 +66,10 @@ describe('given initialized repository', () => {
 
     it('fetches user gravatar when requested', async () => {
       const details = {
-        id: faker.datatype.uuid(),
+        id: faker.string.uuid(),
         avatar: 'gravatar',
         email: ' Damien.SimoninFeugas@gmail.com ',
-        username: faker.name.fullName()
+        username: faker.person.fullName()
       }
       expect(await upsertPlayer(details)).toEqual({
         ...details,
@@ -79,7 +79,7 @@ describe('given initialized repository', () => {
 
     it('fetches user gravatar when requested on an existing account', async () => {
       const original = await repositories.players.save({
-        username: faker.name.fullName(),
+        username: faker.person.fullName(),
         email: 'damien.simoninfeugas@gmail.com',
         currentGameId: null
       })
@@ -93,9 +93,9 @@ describe('given initialized repository', () => {
 
     it('does no fetch user gravatar without email', async () => {
       const details = {
-        id: faker.datatype.uuid(),
+        id: faker.string.uuid(),
         avatar: 'gravatar',
-        username: faker.name.fullName()
+        username: faker.person.fullName()
       }
       expect(await upsertPlayer(details)).toEqual({
         ...details,
@@ -105,11 +105,11 @@ describe('given initialized repository', () => {
 
     it('creates new account from provider', async () => {
       const creation = {
-        providerId: faker.datatype.uuid(),
+        providerId: faker.string.uuid(),
         provider: 'oauth',
         avatar: faker.internet.avatar(),
         email: faker.internet.email(),
-        username: faker.name.fullName()
+        username: faker.person.fullName()
       }
       expect(await upsertPlayer(creation)).toEqual({
         ...creation,
@@ -119,10 +119,10 @@ describe('given initialized repository', () => {
 
     it('default to an existing gravatar when creating from provider', async () => {
       const creation = {
-        providerId: faker.datatype.uuid(),
+        providerId: faker.string.uuid(),
         provider: 'oauth',
         email: ' Damien.SimoninFeugas@gmail.com ',
-        username: faker.name.fullName()
+        username: faker.person.fullName()
       }
       expect(await upsertPlayer(creation)).toEqual({
         ...creation,
@@ -133,10 +133,10 @@ describe('given initialized repository', () => {
 
     it('does not use an unexisting gravatar', async () => {
       const creation = {
-        providerId: faker.datatype.uuid(),
+        providerId: faker.string.uuid(),
         provider: 'oauth',
         email: ' MyEmailAddress@example.com ',
-        username: faker.name.fullName()
+        username: faker.person.fullName()
       }
       expect(await upsertPlayer(creation)).toEqual({
         ...creation,
@@ -146,10 +146,10 @@ describe('given initialized repository', () => {
     })
 
     it('checks username unicity when creating new account from provider', async () => {
-      const username = faker.name.fullName()
+      const username = faker.person.fullName()
       await repositories.players.save({ username })
       const creation = {
-        providerId: faker.datatype.uuid(),
+        providerId: faker.string.uuid(),
         provider: 'oauth',
         avatar: faker.internet.avatar(),
         email: faker.internet.email(),
@@ -164,11 +164,11 @@ describe('given initialized repository', () => {
 
     it('ignores id, avatar and username when updating with provider & providerId', async () => {
       const original = await repositories.players.save({
-        username: faker.name.firstName(),
+        username: faker.person.firstName(),
         email: faker.internet.email(),
-        currentGameId: faker.datatype.uuid(),
+        currentGameId: faker.string.uuid(),
         provider: 'oauth2',
-        providerId: faker.datatype.uuid(),
+        providerId: faker.string.uuid(),
         avatar: faker.internet.avatar(),
         isAdmin: true
       })
@@ -177,8 +177,8 @@ describe('given initialized repository', () => {
         provider: original.provider,
         avatar: faker.internet.avatar(),
         email: faker.internet.email(),
-        username: faker.name.fullName(),
-        id: faker.datatype.uuid()
+        username: faker.person.fullName(),
+        id: faker.string.uuid()
       }
       expect(await upsertPlayer(update)).toEqual({
         ...original,
@@ -189,11 +189,11 @@ describe('given initialized repository', () => {
 
     it('ignores email, provider and providerId when updating fields', async () => {
       const original = await repositories.players.save({
-        username: faker.name.firstName(),
+        username: faker.person.firstName(),
         email: faker.internet.email(),
-        currentGameId: faker.datatype.uuid(),
+        currentGameId: faker.string.uuid(),
         provider: 'oauth2',
-        providerId: faker.datatype.uuid(),
+        providerId: faker.string.uuid(),
         avatar: faker.internet.avatar(),
         isAdmin: true
       })
@@ -201,7 +201,7 @@ describe('given initialized repository', () => {
         id: original.id,
         avatar: faker.internet.avatar(),
         email: faker.internet.email(),
-        username: faker.name.fullName(),
+        username: faker.person.fullName(),
         provider: 'open-id',
         isAdmin: false
       }
@@ -212,7 +212,7 @@ describe('given initialized repository', () => {
       })
 
       update.provider = undefined
-      update.providerId = faker.datatype.uuid()
+      update.providerId = faker.string.uuid()
       expect(await upsertPlayer(update)).toEqual({
         ...original,
         ...update,
@@ -224,8 +224,8 @@ describe('given initialized repository', () => {
   describe('acceptTerms()', () => {
     it('sets termsAccepted flag', async () => {
       const player = {
-        id: faker.datatype.uuid(),
-        username: faker.name.firstName(),
+        id: faker.string.uuid(),
+        username: faker.person.firstName(),
         password: faker.internet.password()
       }
       expect(await acceptTerms(player)).toEqual({
@@ -241,12 +241,12 @@ describe('given initialized repository', () => {
 
   describe('given some players', () => {
     let players = [
-      { id: `adam-${faker.datatype.number(100)}`, username: 'Adam Destine' },
-      { id: `batman-${faker.datatype.number(100)}`, username: 'Batman' },
-      { id: `adaptoid-${faker.datatype.number(100)}`, username: 'Adaptoid' },
-      { id: `adversary-${faker.datatype.number(100)}`, username: 'Adversary' },
-      { id: `hulk-${faker.datatype.number(100)}`, username: 'Hulk' },
-      { id: `thor-${faker.datatype.number(100)}`, username: 'Thor' }
+      { id: `adam-${faker.number.int(100)}`, username: 'Adam Destine' },
+      { id: `batman-${faker.number.int(100)}`, username: 'Batman' },
+      { id: `adaptoid-${faker.number.int(100)}`, username: 'Adaptoid' },
+      { id: `adversary-${faker.number.int(100)}`, username: 'Adversary' },
+      { id: `hulk-${faker.number.int(100)}`, username: 'Hulk' },
+      { id: `thor-${faker.number.int(100)}`, username: 'Thor' }
     ]
 
     let subscription
@@ -297,7 +297,7 @@ describe('given initialized repository', () => {
       })
 
       it('returns null on unknown id', async () => {
-        expect(await getPlayerById(faker.datatype.uuid())).toBeNull()
+        expect(await getPlayerById(faker.string.uuid())).toBeNull()
       })
 
       it('returns several players by id', async () => {
@@ -311,9 +311,9 @@ describe('given initialized repository', () => {
         expect(
           await getPlayerById([
             players[3].id,
-            faker.datatype.uuid(),
+            faker.string.uuid(),
             players[0].id,
-            faker.datatype.uuid()
+            faker.string.uuid()
           ])
         ).toEqual([players[3], null, players[0], null])
       })
@@ -321,7 +321,7 @@ describe('given initialized repository', () => {
 
     describe('setCurrentGameId()', () => {
       it('returns updated player with new game Ids', async () => {
-        const currentGameId = faker.datatype.uuid()
+        const currentGameId = faker.string.uuid()
         expect(await setCurrentGameId(players[2].id, currentGameId)).toEqual({
           ...players[2],
           currentGameId
@@ -337,7 +337,7 @@ describe('given initialized repository', () => {
       })
 
       it('returns null on unknown id', async () => {
-        expect(await setCurrentGameId(faker.datatype.uuid(), true)).toBeNull()
+        expect(await setCurrentGameId(faker.string.uuid(), true)).toBeNull()
       })
     })
 
@@ -381,7 +381,7 @@ describe('given initialized repository', () => {
 
       it('can exclude a given id', async () => {
         expect(await isUsernameUsed('adaptoid', players[2].id)).toBe(false)
-        expect(await isUsernameUsed('adversary', faker.datatype.uuid())).toBe(
+        expect(await isUsernameUsed('adversary', faker.string.uuid())).toBe(
           true
         )
       })
@@ -417,7 +417,7 @@ describe('given initialized repository', () => {
       })
 
       it('returns an empty list for unknown player', async () => {
-        expect(await listFriends(faker.datatype.uuid())).toEqual([])
+        expect(await listFriends(faker.string.uuid())).toEqual([])
       })
     })
 
@@ -447,7 +447,7 @@ describe('given initialized repository', () => {
 
       it('does nothing for an unexisting player', async () => {
         const [player1] = players
-        const id = faker.datatype.uuid()
+        const id = faker.string.uuid()
         expect(await requestFriendship(player1, id)).toBe(false)
         expect(friendshipUpdateReceived).not.toHaveBeenCalledOnce()
         expect(await listFriends(player1.id)).not.toContainEqual({
@@ -494,7 +494,7 @@ describe('given initialized repository', () => {
 
       it('does nothing for an unexisting player', async () => {
         const [player1] = players
-        const id = faker.datatype.uuid()
+        const id = faker.string.uuid()
         expect(await acceptFriendship(player1, id)).toBe(false)
         expect(friendshipUpdateReceived).not.toHaveBeenCalledOnce()
         expect(await listFriends(player1.id)).not.toContainEqual({
@@ -576,7 +576,7 @@ describe('given initialized repository', () => {
 
       it('does nothing for an unexistig player', async () => {
         const [player1] = players
-        const id = faker.datatype.uuid()
+        const id = faker.string.uuid()
         expect(await endFriendship(player1, id)).toBe(false)
         expect(friendshipUpdateReceived).not.toHaveBeenCalledOnce()
         expect(await listFriends(id)).toEqual([])

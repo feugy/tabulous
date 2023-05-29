@@ -78,10 +78,10 @@ describe('Peer channels store', () => {
   const playerId3 = 'Gene'
   const turnCredentials = {
     username: faker.lorem.words(),
-    credentials: faker.datatype.uuid()
+    credentials: faker.string.uuid()
   }
-  const stream = faker.datatype.uuid()
-  const gameId = faker.datatype.uuid()
+  const stream = faker.string.uuid()
+  const gameId = faker.string.uuid()
 
   let subscriptions = []
   let lastConnectedId
@@ -381,7 +381,7 @@ describe('Peer channels store', () => {
 
     it('can change local stream', async () => {
       const [peer1, peer2] = peers
-      const newStream = faker.datatype.uuid()
+      const newStream = faker.string.uuid()
       await stream$.next(newStream)
       expect(peer1.attachLocalStream).toHaveBeenCalledWith(newStream)
       expect(peer2.attachLocalStream).toHaveBeenCalledWith(newStream)

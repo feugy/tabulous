@@ -16,16 +16,16 @@ vi.mock('../../src/util/graphql-client.js', () => ({
 
 describe('Show player command', () => {
   let showPlayer
-  const adminUserId = faker.datatype.uuid()
-  const jwtKey = faker.datatype.uuid()
+  const adminUserId = faker.string.uuid()
+  const jwtKey = faker.string.uuid()
   const player = {
-    id: faker.datatype.uuid(),
-    username: faker.name.fullName(),
+    id: faker.string.uuid(),
+    username: faker.person.fullName(),
     email: faker.internet.email()
   }
   const player2 = {
-    id: faker.datatype.uuid(),
-    username: faker.name.fullName(),
+    id: faker.string.uuid(),
+    username: faker.person.fullName(),
     email: faker.internet.email()
   }
 
@@ -43,7 +43,7 @@ describe('Show player command', () => {
   })
 
   it('displays help and support common options', async () => {
-    const username = faker.name.fullName()
+    const username = faker.person.fullName()
     const gameName = faker.commerce.productName()
     expect(stripAnsi(await showPlayer(['-h', '-u', username, '-p', gameName])))
       .toEqual(`
@@ -88,13 +88,17 @@ describe('Show player command', () => {
     games.push({
       id: 'game-3',
       kind: 'klondike',
-      created: faker.date.past(1, games[0].created).getTime(),
+      created: faker.date
+        .past({ year: 1, refDate: games[0].created })
+        .getTime(),
       players: [{ ...player, isOwner: true }, player2]
     })
     games.push({
       id: 'game-4',
       kind: 'klondike',
-      created: faker.date.past(1, games[2].created).getTime(),
+      created: faker.date
+        .past({ year: 1, refDate: games[2].created })
+        .getTime(),
       players: [{ ...player2, isOwner: true }, player]
     })
 
@@ -139,7 +143,7 @@ describe('Show player command', () => {
     })
 
     it('handles booleans, provider, admin, email', async () => {
-      const gameId = faker.datatype.uuid()
+      const gameId = faker.string.uuid()
       mockQuery
         .mockResolvedValueOnce({
           searchPlayers: [

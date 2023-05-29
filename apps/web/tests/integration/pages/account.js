@@ -33,7 +33,7 @@ export const AccountPage = mixin(
       this.avatarImage = page.locator(`section img`)
       /** @type {Locator} */
       this.openAvatarDialogueButton = page.getByRole('button', {
-        name: translate('actions.change-avatar')
+        name: translate('labels.avatar')
       })
       /** @type {Locator} */
       this.avatarDialogue = page.getByRole('dialog')

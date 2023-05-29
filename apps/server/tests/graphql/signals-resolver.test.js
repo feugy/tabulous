@@ -30,9 +30,9 @@ describe('given a started server', () => {
   let restoreServices
   vi.spyOn(console, 'warn').mockImplementation(() => {})
   const pubsubUrl = getRedisTestUrl()
-  const playerId = faker.datatype.uuid()
+  const playerId = faker.string.uuid()
   const configuration = {
-    auth: { jwt: { key: faker.datatype.uuid() } }
+    auth: { jwt: { key: faker.string.uuid() } }
   }
 
   beforeAll(async () => {
@@ -61,7 +61,7 @@ describe('given a started server', () => {
     describe('sendSignal mutation', () => {
       it('can not send signal without authentication', async () => {
         const signal = {
-          to: faker.datatype.uuid(),
+          to: faker.string.uuid(),
           data: JSON.stringify({ type: 'offer' })
         }
         const response = await server.inject({
@@ -82,8 +82,8 @@ describe('given a started server', () => {
 
     describe('awaitSignal subscription', () => {
       it('sends signal and triggers subscription', async () => {
-        const peerId = faker.datatype.uuid()
-        const gameId = faker.datatype.uuid()
+        const peerId = faker.string.uuid()
+        const gameId = faker.string.uuid()
         const signal = { to: peerId, data: '{"type": "answer"}' }
         services.getPlayerById.mockImplementation(id => ({ id }))
         await startSubscription(
@@ -128,8 +128,8 @@ describe('given a started server', () => {
       })
 
       it('sets current game Id based on subscription', async () => {
-        const subId = faker.datatype.number()
-        const gameId = faker.datatype.uuid()
+        const subId = faker.number.int()
+        const gameId = faker.string.uuid()
         services.getPlayerById.mockImplementation(id => ({ id }))
         await startSubscription(
           ws,
@@ -156,8 +156,8 @@ describe('given a started server', () => {
       })
 
       it('sends ready signal upon subscription', async () => {
-        const subId = faker.datatype.number()
-        const gameId = faker.datatype.uuid()
+        const subId = faker.number.int()
+        const gameId = faker.string.uuid()
         services.getPlayerById.mockImplementation(id => ({ id }))
         const startPromise = startSubscription(
           ws,

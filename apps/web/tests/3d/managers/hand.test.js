@@ -46,7 +46,7 @@ describe('HandManager', () => {
   let registerFeedbackSpy
   const overlay = document.createElement('div')
 
-  const playerId = faker.datatype.uuid()
+  const playerId = faker.string.uuid()
   const gap = 0.5
   const horizontalPadding = 2
   const verticalPadding = 0.5
@@ -121,11 +121,11 @@ describe('HandManager', () => {
     afterEach(() => engine.onDisposeObservable.notifyObservers())
 
     it('sets scenes', () => {
-      const gap = faker.datatype.number()
-      const horizontalPadding = faker.datatype.number()
-      const verticalPadding = faker.datatype.number()
-      const duration = faker.datatype.number()
-      const transitionMargin = faker.datatype.number()
+      const gap = faker.number.int(999)
+      const horizontalPadding = faker.number.int(999)
+      const verticalPadding = faker.number.int(999)
+      const duration = faker.number.int(999)
+      const transitionMargin = faker.number.int(999)
       manager.init({
         scene,
         handScene,
@@ -312,7 +312,7 @@ describe('HandManager', () => {
 
     it(`removes mesh drawn into another player's hand`, async () => {
       const [, , card] = cards
-      const playerId = faker.datatype.uuid()
+      const playerId = faker.string.uuid()
       await manager.applyDraw(card.metadata.serialize(), playerId)
       await expectAnimationEnd(card.getBehaviorByName(DrawBehaviorName))
       expect(scene.getMeshById(card.id)?.id).toBeUndefined()
@@ -1043,7 +1043,7 @@ describe('HandManager', () => {
 
       it(`adds mesh from other player's hand to main scene`, async () => {
         const positions = getPositions(handCards)
-        const playerId = faker.datatype.uuid()
+        const playerId = faker.string.uuid()
         const meshId = 'box5'
         await manager.applyDraw(
           {

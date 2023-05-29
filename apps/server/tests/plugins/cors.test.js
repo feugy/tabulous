@@ -13,7 +13,7 @@ describe('cors plugin', () => {
   it('handles preflight request', async () => {
     const allowedOrigins = /https?:\/\/toto\.(?:com|fr)/
     server = fastify({ logger: false })
-    server.decorate('conf', { auth: { jwt: { key: faker.datatype.uuid() } } })
+    server.decorate('conf', { auth: { jwt: { key: faker.string.uuid() } } })
     server.register(corsPlugin, { allowedOrigins })
     server.register(graphqlPlugin, { allowedOrigins })
 

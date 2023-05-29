@@ -3,10 +3,6 @@ import { actions } from '@src/routes/login/+page.server'
 import { runMutation } from '@src/stores/graphql-client'
 import { describe, expect, it, vi } from 'vitest'
 
-vi.mock('@sveltejs/kit', () => ({
-  redirect: (status, location) => ({ status, location }),
-  invalid: (status, errors) => ({ status, errors })
-}))
 vi.mock('@src/stores/graphql-client', () => ({
   initGraphQlClient: vi.fn(),
   runMutation: vi.fn()
@@ -14,10 +10,10 @@ vi.mock('@src/stores/graphql-client', () => ({
 
 describe('POST /login route action', () => {
   it('redirects to home and set session on success', async () => {
-    const id = faker.datatype.number()
+    const id = faker.number.int(999)
     const password = faker.internet.password()
     const session = {
-      player: { id, username: faker.name.fullName() }
+      player: { id, username: faker.person.fullName() }
     }
     const locals = {}
     const request = buildsRequest({ id, password })
@@ -32,10 +28,10 @@ describe('POST /login route action', () => {
   })
 
   it('redirects to desired page on success', async () => {
-    const id = faker.datatype.number()
+    const id = faker.number.int(999)
     const password = faker.internet.password()
     const session = {
-      player: { id, username: faker.name.fullName() }
+      player: { id, username: faker.person.fullName() }
     }
     const locals = {}
     const redirect = `/${faker.internet.domainName()}`
@@ -49,46 +45,44 @@ describe('POST /login route action', () => {
   })
 
   it('denies redirection to other sites', async () => {
-    const id = faker.datatype.number()
+    const id = faker.number.int(999)
     const password = faker.internet.password()
     const locals = {}
     const redirect = faker.internet.url()
     const request = buildsRequest({ id, password, redirect })
 
-    await expect(actions.default({ request, locals, fetch })).rejects.toEqual({
+    expect(await actions.default({ request, locals, fetch })).toEqual({
       status: 400,
-      errors: { redirect: `'${redirect}' should be an absolute path` }
+      data: { redirect: `'${redirect}' should be an absolute path` }
     })
     expect(locals.session).toBeUndefined()
   })
 
   it('denies redirection to relative url', async () => {
-    const id = faker.datatype.number()
+    const id = faker.number.int(999)
     const password = faker.internet.password()
     const locals = {}
     const redirect = '../home'
     const request = buildsRequest({ id, password, redirect })
 
-    await expect(actions.default({ request, locals, fetch })).rejects.toEqual({
+    expect(await actions.default({ request, locals, fetch })).toEqual({
       status: 400,
-      errors: { redirect: `'${redirect}' should be an absolute path` }
+      data: { redirect: `'${redirect}' should be an absolute path` }
     })
     expect(locals.session).toBeUndefined()
   })
 
-  it('returns forbidden error on invalid credentials', async () => {
-    const id = faker.datatype.number()
+  it('returns an error on invalid credentials', async () => {
+    const id = faker.number.int(999)
     const password = faker.internet.password()
     const locals = {}
     const request = buildsRequest({ id, password })
     const error = new Error('wrong credentials')
     runMutation.mockRejectedValueOnce(error)
 
-    // TODO should be rejects
-    await expect(actions.default({ request, locals, fetch })).resolves.toEqual({
+    expect(await actions.default({ request, locals, fetch })).toEqual({
       status: 401,
-      data: error.message, // TODO should be errors: error.message
-      type: 'invalid' // TODO should not be here
+      data: error
     })
     expect(locals.session).toBeUndefined()
   })

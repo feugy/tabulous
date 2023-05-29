@@ -32,7 +32,7 @@ vi.mock('../../src/services/players.js', () => ({
 
 describe('auth plugin', () => {
   const domain = 'https://localhost:3000'
-  const jwtOptions = { key: faker.datatype.uuid() }
+  const jwtOptions = { key: faker.string.uuid() }
   const allowedOrigins = `http:\\/\\/localhost:80`
   let server
   let authPlugin
@@ -85,7 +85,7 @@ describe('auth plugin', () => {
       afterAll(() => server?.close())
 
       it(`redirects to ${name} for connection`, async () => {
-        const url = faker.internet.url()
+        const url = faker.internet.url({ appendSlash: false })
         services[serviceName].buildAuthUrl.mockReturnValueOnce(new URL(url))
         const response = await server.inject(`/auth/${name}/connect`)
         expect(response.statusCode).toBe(302)
@@ -139,8 +139,8 @@ describe('auth plugin', () => {
 
       it(`connects user authenticated on ${name}`, async () => {
         const code = faker.internet.password()
-        const state = faker.datatype.uuid()
-        const player = { id: faker.datatype.uuid() }
+        const state = faker.string.uuid()
+        const player = { id: faker.string.uuid() }
         const user = { foo: faker.lorem.words() }
         const location = 'http://example.com/home'
         services[serviceName].authenticateUser.mockResolvedValueOnce({
@@ -173,7 +173,7 @@ describe('auth plugin', () => {
 
       it(`returns an error when ${name} authentication fails`, async () => {
         const code = faker.internet.password()
-        const state = faker.datatype.uuid()
+        const state = faker.string.uuid()
         services[serviceName].authenticateUser.mockRejectedValueOnce(
           new Error('boom')
         )

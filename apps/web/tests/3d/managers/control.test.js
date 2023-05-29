@@ -150,9 +150,9 @@ describe('ControlManager', () => {
 
     it('applies a move', async () => {
       const pos = [
-        faker.datatype.number(),
-        faker.datatype.number(),
-        faker.datatype.number()
+        faker.number.int(999),
+        faker.number.int(999),
+        faker.number.int(999)
       ]
       manager.apply({ meshId: mesh.id, pos })
       expect(mesh.absolutePosition.asArray()).toEqual(pos)

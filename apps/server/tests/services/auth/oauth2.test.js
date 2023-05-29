@@ -8,7 +8,7 @@ describe('OAuth2 authentication provider', () => {
     it('sets internal state', async () => {
       const provider = new OAuth2Provider()
 
-      const id = faker.datatype.uuid()
+      const id = faker.string.uuid()
       const secret = faker.internet.password()
       const redirect = faker.internet.url()
       provider.init({ id, secret, redirect })

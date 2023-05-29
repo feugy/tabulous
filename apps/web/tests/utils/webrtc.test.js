@@ -3,7 +3,7 @@ import { buildSDPTransform } from '@src/utils'
 import { describe, expect, it } from 'vitest'
 
 describe('webRTC utilities', () => {
-  const bitrate = faker.datatype.number()
+  const bitrate = faker.number.int(999)
   const claim = `b=AS:${bitrate}`
 
   describe('buildSDPTransform()', () => {

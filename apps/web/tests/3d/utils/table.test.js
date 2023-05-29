@@ -17,8 +17,8 @@ describe('createTable() 3D utility', () => {
   beforeAll(() => materialManager.init({ scene, handScene }))
 
   it('creates a table mesh with parameters', () => {
-    const width = faker.datatype.number()
-    const height = faker.datatype.number()
+    const width = faker.number.int(999)
+    const height = faker.number.int(999)
     const texture = faker.internet.url()
     const table = createTable({ width, height, texture })
     const { boundingBox } = table.getBoundingInfo()

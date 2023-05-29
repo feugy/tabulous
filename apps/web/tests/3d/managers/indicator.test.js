@@ -48,7 +48,7 @@ describe('IndicatorManager', () => {
     })
 
     beforeEach(() => {
-      mesh = createBox(faker.datatype.uuid(), {}, scene)
+      mesh = createBox(faker.string.uuid(), {}, scene)
     })
 
     describe('registerMeshIndicator()', () => {
@@ -78,7 +78,7 @@ describe('IndicatorManager', () => {
       afterEach(() => manager.pruneUnusedPointers([]))
 
       it('registers a new pointer', () => {
-        const playerId = faker.datatype.uuid()
+        const playerId = faker.string.uuid()
         const position = [-10, 0, -5]
         const id = `pointer-${playerId}`
         expect(manager.isManaging({ id })).toBe(false)
@@ -149,7 +149,7 @@ describe('IndicatorManager', () => {
 
     describe('given registered indicators', () => {
       let indicators
-      const playerIds = [faker.datatype.uuid(), faker.datatype.uuid()]
+      const playerIds = [faker.string.uuid(), faker.string.uuid()]
       let pointers
       let feedback
 
@@ -298,7 +298,7 @@ describe('IndicatorManager', () => {
           const [pointer1, pointer2] = pointers
           expect(manager.isManaging(pointer1)).toBe(true)
           expect(manager.isManaging(pointer2)).toBe(true)
-          manager.pruneUnusedPointers([faker.datatype.uuid(), ...playerIds])
+          manager.pruneUnusedPointers([faker.string.uuid(), ...playerIds])
           expect(manager.isManaging(pointer1)).toBe(true)
           expect(manager.isManaging(pointer2)).toBe(true)
           expect(changeReceived).not.toHaveBeenCalled()

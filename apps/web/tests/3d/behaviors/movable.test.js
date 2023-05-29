@@ -12,8 +12,8 @@ describe('MoveBehavior', () => {
     const state = {
       kind: faker.lorem.word(),
       snapDistance: Math.random(),
-      duration: faker.datatype.number(),
-      partCenters: [{ x: faker.datatype.number(), z: faker.datatype.number() }]
+      duration: faker.number.int(999),
+      partCenters: [{ x: faker.number.int(999), z: faker.number.int(999) }]
     }
     const behavior = new MoveBehavior(state)
     const mesh = createBox('box', {})
@@ -73,10 +73,8 @@ describe('MoveBehavior', () => {
       const state = {
         kind: faker.lorem.word(),
         snapDistance: Math.random(),
-        duration: faker.datatype.number(),
-        partCenters: [
-          { x: faker.datatype.number(), z: faker.datatype.number() }
-        ]
+        duration: faker.number.int(999),
+        partCenters: [{ x: faker.number.int(999), z: faker.number.int(999) }]
       }
       behavior.fromState(state)
       expect(behavior.state).toEqual(state)

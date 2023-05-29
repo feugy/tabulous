@@ -33,7 +33,7 @@ describe('given a started server', () => {
   vi.spyOn(console, 'warn').mockImplementation(() => {})
   const configuration = {
     turn: { secret: faker.lorem.words() },
-    auth: { jwt: { key: faker.datatype.uuid() } }
+    auth: { jwt: { key: faker.string.uuid() } }
   }
 
   beforeAll(async () => {
@@ -62,13 +62,13 @@ describe('given a started server', () => {
 
   describe('Player GraphQL resolver', () => {
     const player = {
-      id: faker.datatype.uuid(),
-      username: faker.name.firstName(),
+      id: faker.string.uuid(),
+      username: faker.person.firstName(),
       password: faker.internet.password()
     }
     const admin = {
-      id: faker.datatype.uuid(),
-      username: faker.name.firstName(),
+      id: faker.string.uuid(),
+      username: faker.person.firstName(),
       isAdmin: true
     }
 
@@ -139,12 +139,12 @@ describe('given a started server', () => {
       const password = faker.internet.password()
 
       it('logs user without authentication', async () => {
-        const username = faker.name.firstName()
+        const username = faker.person.firstName()
         const turnCredentials = {
           username: faker.lorem.words(),
           credentials: faker.internet.password()
         }
-        const id = faker.datatype.uuid()
+        const id = faker.string.uuid()
         services.getPlayerById.mockResolvedValueOnce({
           username,
           password: hash(password),
@@ -192,20 +192,20 @@ describe('given a started server', () => {
         {
           title: 'account with no password',
           password,
-          user: { id: faker.datatype.uuid() }
+          user: { id: faker.string.uuid() }
         },
         {
           title: 'account with different password',
           password,
-          user: { id: faker.datatype.uuid(), password: 'whatever' }
+          user: { id: faker.string.uuid(), password: 'whatever' }
         },
         {
           title: 'empty password provided',
           password: '',
-          user: { id: faker.datatype.uuid(), password }
+          user: { id: faker.string.uuid(), password }
         }
       ])('does not generates turn credentials on $title', async ({ user }) => {
-        const id = faker.name.firstName()
+        const id = faker.person.firstName()
         services.getPlayerById.mockResolvedValueOnce(user)
         const response = await server.inject({
           method: 'POST',
@@ -232,8 +232,8 @@ describe('given a started server', () => {
 
     describe('getCurrentPlayer query', () => {
       it('returns current player from authentication details', async () => {
-        const username = faker.name.firstName()
-        const id = faker.datatype.uuid()
+        const username = faker.person.firstName()
+        const id = faker.string.uuid()
         services.getPlayerById.mockResolvedValueOnce({
           id,
           username,
@@ -291,7 +291,7 @@ describe('given a started server', () => {
       })
 
       it('does not return current player with invalid authentication details', async () => {
-        const id = faker.datatype.uuid()
+        const id = faker.string.uuid()
         services.getPlayerById.mockResolvedValueOnce(null)
         const response = await server.inject({
           method: 'POST',
@@ -315,15 +315,15 @@ describe('given a started server', () => {
 
     describe('searchPlayer query', () => {
       it('returns matchings players', async () => {
-        const search = faker.name.firstName()
+        const search = faker.person.firstName()
         const players = [
           {
-            id: faker.datatype.uuid(),
-            username: faker.name.firstName()
+            id: faker.string.uuid(),
+            username: faker.person.firstName()
           },
           {
-            id: faker.datatype.uuid(),
-            username: faker.name.firstName()
+            id: faker.string.uuid(),
+            username: faker.person.firstName()
           }
         ]
         services.getPlayerById.mockResolvedValueOnce(players[0])
@@ -358,20 +358,20 @@ describe('given a started server', () => {
       it('resolves friend details on the fly', async () => {
         const players = [
           {
-            id: `p1-${faker.datatype.number(100)}`,
-            username: faker.name.firstName()
+            id: `p1-${faker.number.int(100)}`,
+            username: faker.person.firstName()
           },
           {
-            id: `p2-${faker.datatype.number(100)}`,
-            username: faker.name.firstName()
+            id: `p2-${faker.number.int(100)}`,
+            username: faker.person.firstName()
           },
           {
-            id: `p3-${faker.datatype.number(100)}`,
-            username: faker.name.firstName()
+            id: `p3-${faker.number.int(100)}`,
+            username: faker.person.firstName()
           },
           {
-            id: `p4-${faker.datatype.number(100)}`,
-            username: faker.name.firstName()
+            id: `p4-${faker.number.int(100)}`,
+            username: faker.person.firstName()
           }
         ]
         services.getPlayerById.mockImplementation(async ids =>
@@ -431,7 +431,7 @@ describe('given a started server', () => {
       })
 
       it('does not return current player with invalid authentication details', async () => {
-        const id = faker.datatype.uuid()
+        const id = faker.string.uuid()
         services.getPlayerById.mockResolvedValueOnce(null)
         const response = await server.inject({
           method: 'POST',
@@ -456,7 +456,7 @@ describe('given a started server', () => {
 
     describe('acceptFriendship mutation', () => {
       it('returns result', async () => {
-        const id = faker.datatype.uuid()
+        const id = faker.string.uuid()
         services.getPlayerById.mockResolvedValueOnce(player)
         services.acceptFriendship.mockResolvedValueOnce(true)
         const token = signToken(player.id, configuration.auth.jwt.key)
@@ -494,7 +494,7 @@ describe('given a started server', () => {
       })
 
       it('does not return current player with invalid authentication details', async () => {
-        const id = faker.datatype.uuid()
+        const id = faker.string.uuid()
         services.getPlayerById.mockResolvedValueOnce(null)
         const response = await server.inject({
           method: 'POST',
@@ -517,7 +517,7 @@ describe('given a started server', () => {
 
     describe('requestFriendship mutation', () => {
       it('returns result', async () => {
-        const id = faker.datatype.uuid()
+        const id = faker.string.uuid()
         services.getPlayerById.mockResolvedValueOnce(player)
         services.requestFriendship.mockResolvedValueOnce(true)
         const token = signToken(player.id, configuration.auth.jwt.key)
@@ -555,7 +555,7 @@ describe('given a started server', () => {
       })
 
       it('does not return current player with invalid authentication details', async () => {
-        const id = faker.datatype.uuid()
+        const id = faker.string.uuid()
         services.getPlayerById.mockResolvedValueOnce(null)
         const response = await server.inject({
           method: 'POST',
@@ -578,7 +578,7 @@ describe('given a started server', () => {
 
     describe('endFriendship mutation', () => {
       it('returns result', async () => {
-        const id = faker.datatype.uuid()
+        const id = faker.string.uuid()
         services.getPlayerById.mockResolvedValueOnce(player)
         services.endFriendship.mockResolvedValueOnce(true)
         const token = signToken(player.id, configuration.auth.jwt.key)
@@ -616,7 +616,7 @@ describe('given a started server', () => {
       })
 
       it('does not return current player with invalid authentication details', async () => {
-        const id = faker.datatype.uuid()
+        const id = faker.string.uuid()
         services.getPlayerById.mockResolvedValueOnce(null)
         const response = await server.inject({
           method: 'POST',
@@ -639,8 +639,8 @@ describe('given a started server', () => {
 
     describe('acceptTerms mutation', () => {
       it('sets terms accepted flag', async () => {
-        const username = faker.name.firstName()
-        const id = faker.datatype.uuid()
+        const username = faker.person.firstName()
+        const id = faker.string.uuid()
         const player = { id, username }
         services.getPlayerById.mockResolvedValueOnce(player)
         services.acceptTerms.mockResolvedValueOnce({
@@ -783,7 +783,7 @@ describe('given a started server', () => {
       })
 
       it('set avatar', async () => {
-        const username = faker.name.firstName()
+        const username = faker.person.firstName()
         services.upsertPlayer.mockResolvedValueOnce({
           id: player.id,
           username
@@ -826,7 +826,7 @@ describe('given a started server', () => {
 
       it('updates current player details', async () => {
         const update = {
-          username: faker.name.firstName(),
+          username: faker.person.firstName(),
           avatar: faker.internet.avatar()
         }
         services.upsertPlayer.mockResolvedValueOnce({
@@ -977,7 +977,7 @@ describe('given a started server', () => {
       })
 
       it('set avatar', async () => {
-        const username = faker.name.firstName()
+        const username = faker.person.firstName()
         services.upsertPlayer.mockResolvedValueOnce({
           id: player.id,
           username
@@ -1112,17 +1112,17 @@ describe('given a started server', () => {
           total: 2,
           results: [
             {
-              id: faker.datatype.uuid(),
-              username: faker.name.firstName()
+              id: faker.string.uuid(),
+              username: faker.person.firstName()
             },
             {
-              id: faker.datatype.uuid(),
-              username: faker.name.firstName()
+              id: faker.string.uuid(),
+              username: faker.person.firstName()
             }
           ]
         }
-        const from = faker.datatype.number()
-        const size = faker.datatype.number()
+        const from = faker.number.int(9999)
+        const size = faker.number.int(9999)
         services.getPlayerById.mockResolvedValueOnce(admin)
         repositories.players.list.mockResolvedValueOnce(page)
         const response = await server.inject({
@@ -1149,16 +1149,16 @@ describe('given a started server', () => {
       const players = [
         player,
         {
-          id: `p1-${faker.datatype.number(100)}`,
-          username: faker.name.firstName()
+          id: `p1-${faker.number.int(100)}`,
+          username: faker.person.firstName()
         },
         {
-          id: `p2-${faker.datatype.number(100)}`,
-          username: faker.name.firstName()
+          id: `p2-${faker.number.int(100)}`,
+          username: faker.person.firstName()
         },
         {
-          id: `p3-${faker.datatype.number(100)}`,
-          username: faker.name.firstName()
+          id: `p3-${faker.number.int(100)}`,
+          username: faker.person.firstName()
         }
       ]
 

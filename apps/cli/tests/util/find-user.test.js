@@ -12,8 +12,8 @@ vi.mock('../../src/util/graphql-client.js', () => ({
 
 describe('getGraphQLClient()', () => {
   let findUser
-  const adminUserId = faker.datatype.uuid()
-  const jwtKey = faker.datatype.uuid()
+  const adminUserId = faker.string.uuid()
+  const jwtKey = faker.string.uuid()
 
   beforeAll(async () => {
     process.env.URL = faker.internet.url()
@@ -26,8 +26,8 @@ describe('getGraphQLClient()', () => {
 
   it('returns existing user', async () => {
     const player = {
-      id: faker.datatype.uuid(),
-      username: faker.name.fullName()
+      id: faker.string.uuid(),
+      username: faker.person.fullName()
     }
     mockQuery.mockResolvedValue({ searchPlayers: [player] })
 
@@ -40,14 +40,14 @@ describe('getGraphQLClient()', () => {
   })
 
   it('throws on user not found', async () => {
-    const username = faker.name.fullName()
+    const username = faker.person.fullName()
     mockQuery.mockResolvedValue({ searchPlayers: [] })
 
     await expect(findUser(username)).rejects.toThrow('no user found')
   })
 
   it('can return null on demand', async () => {
-    const username = faker.name.fullName()
+    const username = faker.person.fullName()
     mockQuery.mockResolvedValue({ searchPlayers: [] })
 
     expect(await findUser(username, false)).toBeNull()

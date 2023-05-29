@@ -43,18 +43,18 @@ describe('createPrism()', () => {
   describe('given a prism with initial position, edges number, dimension, images and behaviors', () => {
     let mesh
 
-    const width = faker.datatype.number({ min: 3, max: 5 })
-    const edges = faker.datatype.number({ min: 8, max: 20 })
-    const height = faker.datatype.number({ min: 5, max: 8 })
-    const id = faker.datatype.uuid()
-    const x = faker.datatype.number()
-    const y = faker.datatype.number()
-    const z = faker.datatype.number()
-    const prismRotation = faker.datatype.number()
+    const width = faker.number.int({ min: 3, max: 5 })
+    const edges = faker.number.int({ min: 8, max: 20 })
+    const height = faker.number.int({ min: 5, max: 8 })
+    const id = faker.string.uuid()
+    const x = faker.number.int(999)
+    const y = faker.number.int(999)
+    const z = faker.number.int(999)
+    const prismRotation = faker.number.int(999)
     const faceUV = [
-      Array.from({ length: 4 }, () => faker.datatype.number()),
-      Array.from({ length: 4 }, () => faker.datatype.number()),
-      Array.from({ length: 4 }, () => faker.datatype.number())
+      Array.from({ length: 4 }, () => faker.number.int(999)),
+      Array.from({ length: 4 }, () => faker.number.int(999)),
+      Array.from({ length: 4 }, () => faker.number.int(999))
     ]
     const behaviors = {
       movable: { kind: faker.lorem.word() },

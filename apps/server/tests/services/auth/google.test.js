@@ -8,7 +8,7 @@ import { googleAuth } from '../../../src/services/auth/google.js'
 describe('Google authentication service', () => {
   describe('init()', () => {
     it('sets internal state', async () => {
-      const id = faker.datatype.uuid()
+      const id = faker.string.uuid()
       const secret = faker.internet.password()
       const redirect = faker.internet.url()
       googleAuth.init({ id, secret, redirect })
@@ -19,7 +19,7 @@ describe('Google authentication service', () => {
   })
 
   describe('given an initialized service', () => {
-    const id = faker.datatype.uuid()
+    const id = faker.string.uuid()
     const secret = faker.internet.password()
     const redirect = faker.internet.url()
     let mockAgent
@@ -76,13 +76,13 @@ describe('Google authentication service', () => {
 
       it('returns user details', async () => {
         const location = faker.internet.url()
-        const code = faker.datatype.number({ min: 9999 }).toString()
+        const code = faker.number.int({ min: 9999 }).toString()
         const user = {
-          given_name: faker.name.fullName(),
+          given_name: faker.person.fullName(),
           picture: faker.internet.avatar(),
           email: faker.internet.email(),
-          sub: faker.datatype.uuid(),
-          name: faker.name.fullName()
+          sub: faker.string.uuid(),
+          name: faker.person.fullName()
         }
         const token = signJWT(user)
         googleApiMock
@@ -115,7 +115,7 @@ describe('Google authentication service', () => {
 
       it('throws forbidden on token error', async () => {
         const location = faker.internet.url()
-        const code = faker.datatype.number({ min: 9999 }).toString()
+        const code = faker.number.int({ min: 9999 }).toString()
         googleApiMock
           .intercept({ method: 'POST', path: '/token' })
           .reply(403, req => {
@@ -138,8 +138,8 @@ describe('Google authentication service', () => {
       })
 
       it('throws forbidden on unkown state', async () => {
-        const state = faker.datatype.uuid()
-        const code = faker.datatype.number({ min: 9999 })
+        const state = faker.string.uuid()
+        const code = faker.number.int({ min: 9999 })
 
         await expect(googleAuth.authenticateUser(code, state)).rejects.toThrow(
           'forbidden'

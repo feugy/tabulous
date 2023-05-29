@@ -30,7 +30,7 @@ describe('AnimateBehavior', () => {
   })
 
   it('can have custom state', () => {
-    const frameRate = faker.datatype.number()
+    const frameRate = faker.number.int(999)
     const behavior = new AnimateBehavior({ frameRate })
     expect(behavior.name).toEqual(AnimateBehaviorName)
     expect(behavior.mesh).toBeNull()

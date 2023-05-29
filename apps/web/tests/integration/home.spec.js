@@ -38,7 +38,7 @@ describe('Home page', () => {
   const publicCatalog = catalog.slice(0, 2)
 
   const player = {
-    id: `p1-${faker.datatype.number(100)}`,
+    id: `p1-${faker.number.int(100)}`,
     username: 'Jane',
     termsAccepted: true
   }
@@ -47,57 +47,57 @@ describe('Home page', () => {
   const friends = [
     {
       player: {
-        id: `p2-${faker.datatype.number(100)}`,
+        id: `p2-${faker.number.int(100)}`,
         username: 'Anthony'
       }
     },
     {
       player: {
-        id: `p3-${faker.datatype.number(100)}`,
+        id: `p3-${faker.number.int(100)}`,
         username: 'Brat'
       },
       isRequest: true
     },
     {
       player: {
-        id: `p4-${faker.datatype.number(100)}`,
+        id: `p4-${faker.number.int(100)}`,
         username: 'James'
       },
       isProposal: true
     },
     {
       player: {
-        id: `p5-${faker.datatype.number(100)}`,
+        id: `p5-${faker.number.int(100)}`,
         username: 'John'
       }
     }
   ]
 
   const proposedPlayer = {
-    id: `p6-${faker.datatype.number(100)}`,
+    id: `p6-${faker.number.int(100)}`,
     username: 'Cian'
   }
 
-  const recent = faker.date.recent(1).getTime()
-  const recent2 = faker.date.recent(2, recent).getTime()
+  const recent = faker.date.recent({ days: 1 }).getTime()
+  const recent2 = faker.date.recent({ days: 2, refDate: recent }).getTime()
   const games = [
     {
-      id: faker.datatype.uuid(),
+      id: faker.string.uuid(),
       created: recent,
       kind: 'draughts',
       players: [friends[0].player, { ...player, isOwner: true }],
       locales: { fr: { title: 'Dames' } }
     },
     {
-      id: faker.datatype.uuid(),
+      id: faker.string.uuid(),
       created: recent2,
       kind: 'klondike',
       players: [{ ...player, isOwner: true }],
       locales: { fr: { title: 'Solitaire' } }
     },
     {
-      id: faker.datatype.uuid(),
-      created: faker.date.recent(3, recent2).getTime(),
+      id: faker.string.uuid(),
+      created: faker.date.recent({ days: 3, refDate: recent2 }).getTime(),
       kind: 'klondike',
       players: [{ ...player, isOwner: true }],
       locales: { fr: { title: 'Solitaire' } }
@@ -108,7 +108,7 @@ describe('Home page', () => {
     page
   }) => {
     const authentication = {
-      token: faker.datatype.uuid(),
+      token: faker.string.uuid(),
       player,
       turnCredentials: {
         username: 'bob',
@@ -153,7 +153,7 @@ describe('Home page', () => {
       listGames: [games],
       listFriends: [friends],
       getCurrentPlayer: {
-        token: faker.datatype.uuid(),
+        token: faker.string.uuid(),
         player,
         turnCredentials: {
           username: 'bob',
@@ -180,7 +180,7 @@ describe('Home page', () => {
       listGames: [initialGames],
       listFriends: [friends],
       getCurrentPlayer: {
-        token: faker.datatype.uuid(),
+        token: faker.string.uuid(),
         player,
         turnCredentials: {
           username: 'bob',
@@ -211,7 +211,7 @@ describe('Home page', () => {
       listGames: [games],
       listFriends: [friends],
       getCurrentPlayer: {
-        token: faker.datatype.uuid(),
+        token: faker.string.uuid(),
         player,
         turnCredentials: {
           username: 'bob',
@@ -241,7 +241,7 @@ describe('Home page', () => {
       listFriends: [friends],
       deleteGame: null,
       getCurrentPlayer: {
-        token: faker.datatype.uuid(),
+        token: faker.string.uuid(),
         player,
         turnCredentials: {
           username: 'bob',
@@ -282,7 +282,7 @@ describe('Home page', () => {
       listGames: [games],
       listFriends: [friends],
       getCurrentPlayer: {
-        token: faker.datatype.uuid(),
+        token: faker.string.uuid(),
         player,
         turnCredentials: {
           username: 'bob',
@@ -306,7 +306,7 @@ describe('Home page', () => {
     const { setTokenCookie } = await mockGraphQl(page, {
       getCurrentPlayer: [
         {
-          token: faker.datatype.uuid(),
+          token: faker.string.uuid(),
           player: { ...player, termsAccepted: undefined },
           turnCredentials: {
             username: 'bob',
@@ -314,7 +314,7 @@ describe('Home page', () => {
           }
         },
         {
-          token: faker.datatype.uuid(),
+          token: faker.string.uuid(),
           player,
           turnCredentials: {
             username: 'bob',
@@ -338,7 +338,7 @@ describe('Home page', () => {
 
   it('can create a new game', async ({ page }) => {
     const game = {
-      id: faker.datatype.uuid(),
+      id: faker.string.uuid(),
       kind: catalog[1].name,
       availableSeats: 1,
       meshes: [],
@@ -351,7 +351,7 @@ describe('Home page', () => {
       listGames: [games],
       listFriends: [friends],
       getCurrentPlayer: {
-        token: faker.datatype.uuid(),
+        token: faker.string.uuid(),
         player,
         turnCredentials: {
           username: 'bob',
@@ -374,7 +374,7 @@ describe('Home page', () => {
 
   it('can create a new lobby and invite a friend', async ({ page }) => {
     const lobby = {
-      id: faker.datatype.uuid(),
+      id: faker.string.uuid(),
       availableSeats: 7,
       meshes: [],
       cameras: [],
@@ -393,7 +393,7 @@ describe('Home page', () => {
         listGames: [games],
         listFriends: [friends],
         getCurrentPlayer: {
-          token: faker.datatype.uuid(),
+          token: faker.string.uuid(),
           player,
           turnCredentials: {
             username: 'bob',
@@ -441,7 +441,7 @@ describe('Home page', () => {
 
   describe('given a lobby with a guest', () => {
     const lobby = {
-      id: faker.datatype.uuid(),
+      id: faker.string.uuid(),
       availableSeats: 7,
       meshes: [],
       cameras: [],
@@ -466,7 +466,7 @@ describe('Home page', () => {
         listGames: [games],
         listFriends: [friends],
         getCurrentPlayer: {
-          token: faker.datatype.uuid(),
+          token: faker.string.uuid(),
           player,
           turnCredentials: {
             username: 'bob',
@@ -542,7 +542,7 @@ describe('Home page', () => {
         listGames: [games],
         listFriends: [friends],
         getCurrentPlayer: {
-          token: faker.datatype.uuid(),
+          token: faker.string.uuid(),
           player,
           turnCredentials: {
             username: 'bob',
@@ -582,7 +582,7 @@ describe('Home page', () => {
       await homePage.expectFriends(friends)
 
       const player = {
-        id: `p5-${faker.datatype.number(100)}`,
+        id: `p5-${faker.number.int(100)}`,
         username: 'Beth'
       }
       graphQlMocks.sendToSubscription({

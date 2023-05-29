@@ -30,8 +30,8 @@ describe('Abstract repository', () => {
 
     it('reads existing models', async () => {
       const models = [
-        { id: faker.datatype.uuid(), foo: faker.lorem.word() },
-        { id: faker.datatype.uuid(), bar: faker.lorem.word() }
+        { id: faker.string.uuid(), foo: faker.lorem.word() },
+        { id: faker.string.uuid(), bar: faker.lorem.word() }
       ]
       for (const model of models) {
         await testClient.hset(`${repository.name}:${model.id}`, model)
@@ -50,8 +50,8 @@ describe('Abstract repository', () => {
     })
 
     it('starts saving data into storage file', async () => {
-      const id1 = faker.datatype.uuid()
-      const id2 = faker.datatype.uuid()
+      const id1 = faker.string.uuid()
+      const id2 = faker.string.uuid()
       await repository.connect({ url: redisUrl, isProduction: false })
 
       const model1 = { id: id1, foo: faker.lorem.word() }
@@ -88,7 +88,7 @@ describe('Abstract repository', () => {
       it('creates several models and assigns them ids', async () => {
         const models = [
           { foo: faker.lorem.word() },
-          { id: faker.datatype.uuid(), bar: faker.lorem.word() },
+          { id: faker.string.uuid(), bar: faker.lorem.word() },
           { baz: faker.lorem.word() }
         ]
         expect(await repository.save(models)).toEqual(
@@ -102,9 +102,9 @@ describe('Abstract repository', () => {
 
     describe('given some models', () => {
       const models = [
-        { id: faker.datatype.uuid(), foo: faker.lorem.word() },
-        { id: faker.datatype.uuid(), bar: faker.lorem.word() },
-        { id: faker.datatype.uuid(), baz: faker.lorem.word() }
+        { id: faker.string.uuid(), foo: faker.lorem.word() },
+        { id: faker.string.uuid(), bar: faker.lorem.word() },
+        { id: faker.string.uuid(), baz: faker.lorem.word() }
       ]
 
       beforeEach(async () => {
@@ -114,14 +114,14 @@ describe('Abstract repository', () => {
       describe('save()', () => {
         it('updates an existing model', async () => {
           const model = faker.helpers.arrayElement(models)
-          model.count = faker.datatype.number()
+          model.count = faker.number.int()
           expect(await repository.save(model)).toEqual({ ...model })
           expect(await repository.getById(model.id)).toEqual({ ...model })
         })
 
         it('updates several existing models', async () => {
           for (const model of models) {
-            model.count = faker.datatype.number()
+            model.count = faker.number.int()
           }
           const saved = await repository.save(models)
           expect(saved).toEqual(models.map(model => ({ ...model })))
@@ -171,8 +171,8 @@ describe('Abstract repository', () => {
             results: models
           })
           const [model1, model2] = await repository.save([
-            { id: faker.datatype.uuid(), foo: faker.lorem.word() },
-            { id: faker.datatype.uuid(), bar: faker.lorem.word() }
+            { id: faker.string.uuid(), foo: faker.lorem.word() },
+            { id: faker.string.uuid(), bar: faker.lorem.word() }
           ])
           expect(await repository.list({ from: 0, size: 10 })).toEqual({
             total: 5,
@@ -197,7 +197,7 @@ describe('Abstract repository', () => {
         })
 
         it('returns null on unknown id', async () => {
-          expect(await repository.getById(faker.datatype.uuid())).toBeNull()
+          expect(await repository.getById(faker.string.uuid())).toBeNull()
         })
 
         it('returns several models by ids', async () => {
@@ -209,9 +209,9 @@ describe('Abstract repository', () => {
         it('returns null on unknown ids', async () => {
           expect(
             await repository.getById([
-              faker.datatype.uuid(),
+              faker.string.uuid(),
               models[2].id,
-              faker.datatype.uuid(),
+              faker.string.uuid(),
               models[1].id
             ])
           ).toEqual([null, models[2], null, models[1]])
@@ -226,7 +226,7 @@ describe('Abstract repository', () => {
         })
 
         it('ignores an unknown id', async () => {
-          expect(await repository.deleteById(faker.datatype.uuid())).toBeNull()
+          expect(await repository.deleteById(faker.string.uuid())).toBeNull()
         })
 
         it('deletes several models by id', async () => {
@@ -246,9 +246,9 @@ describe('Abstract repository', () => {
         it('returns null on unknown ids', async () => {
           expect(
             await repository.deleteById([
-              faker.datatype.uuid(),
+              faker.string.uuid(),
               models[2].id,
-              faker.datatype.uuid(),
+              faker.string.uuid(),
               models[0].id
             ])
           ).toEqual([null, models[2], null, models[0]])

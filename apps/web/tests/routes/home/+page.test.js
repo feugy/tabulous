@@ -104,7 +104,7 @@ describe('/home route loader', () => {
     })
 
     it('redirects to new game on creation', async () => {
-      const id = faker.datatype.uuid()
+      const id = faker.string.uuid()
       createGame.mockResolvedValueOnce({ id })
       await expect(
         load({
@@ -178,7 +178,7 @@ describe('/home route', () => {
   })
 
   it('displays error when too many games where created', async () => {
-    const count = faker.datatype.number({ min: 4, max: 10 })
+    const count = faker.number.int({ min: 4, max: 10 })
     createGame.mockRejectedValueOnce(
       new Error(`You own ${count} games, you can not create more`)
     )

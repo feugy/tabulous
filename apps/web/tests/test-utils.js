@@ -407,7 +407,7 @@ export async function configureGraphQlServer(mocks) {
 }
 
 export function makeId(value) {
-  return `${value}-${faker.datatype.number(200)}`
+  return `${value}-${faker.number.int(200)}`
 }
 
 export function waitForObservable(observable, timeout = 100) {

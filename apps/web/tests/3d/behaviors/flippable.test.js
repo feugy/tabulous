@@ -27,7 +27,7 @@ describe('FlipBehavior', () => {
   it('has initial state', () => {
     const state = {
       isFlipped: faker.datatype.boolean(),
-      duration: faker.datatype.number()
+      duration: faker.number.int(999)
     }
     const behavior = new FlipBehavior(state)
     const mesh = createBox('box', {})
@@ -87,7 +87,7 @@ describe('FlipBehavior', () => {
       expect(mesh.rotation.z).toEqual(0)
       const state = {
         isFlipped: true,
-        duration: faker.datatype.number()
+        duration: faker.number.int(999)
       }
       behavior.fromState(state)
       expect(behavior.state).toEqual(state)
@@ -98,8 +98,8 @@ describe('FlipBehavior', () => {
     })
 
     it('flips mesh clockwise and apply gravity', async () => {
-      const x = faker.datatype.number()
-      const z = faker.datatype.number()
+      const x = faker.number.int(999)
+      const z = faker.number.int(999)
       mesh.setAbsolutePosition(new Vector3(x, 10, z))
 
       expectFlipped(mesh, false)
@@ -110,8 +110,8 @@ describe('FlipBehavior', () => {
     })
 
     it('flips mesh anti-clockwise and apply gravity', async () => {
-      const x = faker.datatype.number()
-      const z = faker.datatype.number()
+      const x = faker.number.int(999)
+      const z = faker.number.int(999)
       mesh.rotation.y = 1.5 * Math.PI
       mesh.setAbsolutePosition(new Vector3(x, 10, z))
 

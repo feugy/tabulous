@@ -15,9 +15,9 @@ describe('given a connected repository and several players', () => {
   const redisUrl = getRedisTestUrl()
   const provider1 = 'oauth'
   const provider2 = 'oauth2'
-  const providerId1 = faker.datatype.string()
-  const providerId2 = faker.datatype.string()
-  const providerId3 = faker.datatype.string()
+  const providerId1 = faker.string.sample()
+  const providerId2 = faker.string.sample()
+  const providerId3 = faker.string.sample()
 
   let models = []
 
@@ -25,20 +25,20 @@ describe('given a connected repository and several players', () => {
     await players.connect({ url: redisUrl })
     models = [
       {
-        id: `p1-${faker.datatype.number(100)}`,
+        id: `p1-${faker.number.int(100)}`,
         username: 'Jane',
         provider: provider1,
         providerId: providerId1
       },
       {
-        id: `p2-${faker.datatype.number(100)}`,
+        id: `p2-${faker.number.int(100)}`,
         username: 'Paul',
         catalog: [],
         isAdmin: true,
         currentGameId: null
       },
       {
-        id: `p3-${faker.datatype.number(100)}`,
+        id: `p3-${faker.number.int(100)}`,
         username: 'Adam Destine',
         provider: provider1,
         providerId: providerId2,
@@ -46,26 +46,26 @@ describe('given a connected repository and several players', () => {
         termsAccepted: true
       },
       {
-        id: `p4-${faker.datatype.number(100)}`,
+        id: `p4-${faker.number.int(100)}`,
         username: 'Adam Mann',
         catalog: ['draughts', 'klondike']
       },
       {
-        id: `p5-${faker.datatype.number(100)}`,
+        id: `p5-${faker.number.int(100)}`,
         username: 'Bruce',
         provider: provider2,
         providerId: providerId1
       },
-      { id: `p6-${faker.datatype.number(100)}`, username: 'àdversary' },
+      { id: `p6-${faker.number.int(100)}`, username: 'àdversary' },
       {
-        id: `p7-${faker.datatype.number(100)}`,
+        id: `p7-${faker.number.int(100)}`,
         username: 'Peter',
         provider: provider2,
         providerId: providerId3
       },
-      { id: `p8-${faker.datatype.number(100)}`, username: 'Agent Moebius' },
-      { id: `p9-${faker.datatype.number(100)}`, username: 'Agent' },
-      { id: `p10-${faker.datatype.number(100)}`, username: 'AgentX' }
+      { id: `p8-${faker.number.int(100)}`, username: 'Agent Moebius' },
+      { id: `p9-${faker.number.int(100)}`, username: 'Agent' },
+      { id: `p10-${faker.number.int(100)}`, username: 'AgentX' }
     ]
     await players.save(models)
   })
@@ -78,7 +78,7 @@ describe('given a connected repository and several players', () => {
   describe('Player repository', () => {
     describe('getById()', () => {
       it('returns null for unknown player', async () => {
-        expect(await players.getById(faker.datatype.uuid())).toBeNull()
+        expect(await players.getById(faker.string.uuid())).toBeNull()
       })
 
       it('hydrates booleans', async () => {
@@ -155,10 +155,10 @@ describe('given a connected repository and several players', () => {
       it('reflects player additions and deletions', async () => {
         expect(await players.getByProviderDetails(models[0])).toEqual(models[0])
         const added = await players.save({
-          id: faker.datatype.uuid(),
+          id: faker.string.uuid(),
           username: 'Jack',
           provider: provider1,
-          providerId: faker.datatype.string(),
+          providerId: faker.string.sample(),
           catalog: [],
           isAdmin: false,
           currentGameId: null
@@ -303,7 +303,7 @@ describe('given a connected repository and several players', () => {
     describe('makeFriends()', () => {
       it('does nothing if requested id is not a valid player', async () => {
         const [{ id: playerA }] = models
-        const id = faker.datatype.uuid()
+        const id = faker.string.uuid()
         expect(await players.makeFriends(id, playerA)).toBe(false)
         expect(await players.listFriendships(playerA)).toEqual([])
         expect(await players.listFriendships(id)).toEqual([])
@@ -311,7 +311,7 @@ describe('given a connected repository and several players', () => {
 
       it('does nothing if requested id is not a valid player', async () => {
         const [{ id: playerA }] = models
-        const id = faker.datatype.uuid()
+        const id = faker.string.uuid()
         expect(await players.makeFriends(playerA, id)).toBe(false)
         expect(await players.listFriendships(playerA)).toEqual([])
         expect(await players.listFriendships(id)).toEqual([])

@@ -13,7 +13,7 @@ describe('TargetBehavior', () => {
   it('has initial state', () => {
     const state = {
       isFlipped: faker.datatype.boolean(),
-      duration: faker.datatype.number(),
+      duration: faker.number.int(999),
       ignoreParts: faker.datatype.boolean()
     }
     const behavior = new TargetBehavior(state)
@@ -71,7 +71,7 @@ describe('TargetBehavior', () => {
 
   it('registers indicator for player drop zone', () => {
     const meshId = 'box1'
-    const playerId = faker.datatype.uuid()
+    const playerId = faker.string.uuid()
     const id = `${playerId}.drop-zone.${meshId}`
     expect(indicatorManager.isManaging({ id })).toBe(false)
     const behavior = new TargetBehavior()
@@ -127,7 +127,7 @@ describe('TargetBehavior', () => {
 
     it('unregisteres from manager and removes zones upon detaching', () => {
       const meshId = 'box1'
-      const playerId = faker.datatype.uuid()
+      const playerId = faker.string.uuid()
       const id = `${playerId}.drop-zone.${meshId}`
       const mesh1 = createBox(meshId, {})
       behavior.addZone(mesh1, { extent: 1.2, playerId })

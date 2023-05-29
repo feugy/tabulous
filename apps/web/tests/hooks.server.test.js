@@ -22,7 +22,7 @@ describe('Sveltekit handle() hook', () => {
   })
 
   it('redirects and sets cookie when token is in the search query', async () => {
-    const token = faker.datatype.uuid()
+    const token = faker.string.uuid()
     const pathname = `/current-${faker.internet.domainWord()}?data=${faker.lorem.word()}`
     const response = await handle(
       buildHandleInput({
@@ -37,7 +37,7 @@ describe('Sveltekit handle() hook', () => {
   })
 
   it('redirects to desired url when token is in the search query', async () => {
-    const token = faker.datatype.uuid()
+    const token = faker.string.uuid()
     const pathname = `/current-${faker.internet.domainWord()}`
     const desired = `/redirected-${faker.internet.domainWord()}?data=${faker.lorem.word()}`
     const response = await handle(
@@ -55,10 +55,10 @@ describe('Sveltekit handle() hook', () => {
   })
 
   it('recovers session from incoming cookie', async () => {
-    const token = faker.datatype.uuid()
+    const token = faker.string.uuid()
     const session = {
       token,
-      player: { id: faker.datatype.number(), username: faker.name.fullName() }
+      player: { id: faker.number.int(999), username: faker.person.fullName() }
     }
     mocks.handleGraphQl.mockReturnValue(session)
 

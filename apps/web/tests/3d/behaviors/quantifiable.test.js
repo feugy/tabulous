@@ -33,10 +33,10 @@ describe('QuantityBehavior', () => {
 
   it('has initial state', () => {
     const state = {
-      extent: faker.datatype.number(),
-      duration: faker.datatype.number(),
+      extent: faker.number.int(999),
+      duration: faker.number.int(999),
       kinds: [],
-      quantity: faker.datatype.number()
+      quantity: faker.number.int(999)
     }
     const behavior = new QuantityBehavior(state)
 
@@ -113,11 +113,11 @@ describe('QuantityBehavior', () => {
     })
 
     it('can hydrate from state', async () => {
-      const extent = faker.datatype.number()
-      const quantity = faker.datatype.number({ min: 2, max: 100 })
-      const duration = faker.datatype.number()
+      const extent = faker.number.int(999)
+      const quantity = faker.number.int({ min: 2, max: 100 })
+      const duration = faker.number.int(999)
       const kinds = ['card']
-      const priority = faker.datatype.number()
+      const priority = faker.number.int(999)
 
       behavior.fromState({ duration, extent, quantity, kinds, priority })
       expectQuantity(mesh, quantity)
@@ -137,11 +137,11 @@ describe('QuantityBehavior', () => {
     })
 
     it('can hydrate with cylindric zone', async () => {
-      const extent = faker.datatype.number()
-      const duration = faker.datatype.number()
-      const quantity = faker.datatype.number({ min: 2, max: 100 })
+      const extent = faker.number.int(999)
+      const duration = faker.number.int(999)
+      const quantity = faker.number.int({ min: 2, max: 100 })
       const kinds = ['tokens']
-      const priority = faker.datatype.number()
+      const priority = faker.number.int(999)
       const diameter = 5
       mesh.removeBehavior(behavior)
       mesh = createRoundToken({ id: 'roundToken', diameter })

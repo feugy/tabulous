@@ -7,7 +7,7 @@ import { githubAuth } from '../../../src/services/auth/github.js'
 describe('Github authentication service', () => {
   describe('init()', () => {
     it('sets internal state', async () => {
-      const id = faker.datatype.uuid()
+      const id = faker.string.uuid()
       const secret = faker.internet.password()
       githubAuth.init({ id, secret })
       expect(githubAuth.id).toEqual(id)
@@ -16,7 +16,7 @@ describe('Github authentication service', () => {
   })
 
   describe('given an initialized service', () => {
-    const id = faker.datatype.uuid()
+    const id = faker.string.uuid()
     const secret = faker.internet.password()
     let mockAgent
     let githubMock
@@ -72,15 +72,15 @@ describe('Github authentication service', () => {
 
       it('returns user details', async () => {
         const location = faker.internet.url()
-        const code = faker.datatype.number({ min: 9999 })
+        const code = faker.number.int({ min: 9999 })
         const user = {
-          login: faker.name.fullName(),
+          login: faker.person.fullName(),
           avatar_url: faker.internet.avatar(),
           email: faker.internet.email(),
-          id: faker.datatype.number(),
-          name: faker.name.fullName()
+          id: faker.number.int(),
+          name: faker.person.fullName()
         }
-        const token = faker.datatype.uuid()
+        const token = faker.string.uuid()
         githubMock
           .intercept({ method: 'POST', path: '/login/oauth/access_token' })
           .reply(200, req => {
@@ -115,7 +115,7 @@ describe('Github authentication service', () => {
 
       it('throws forbidden on token error', async () => {
         const location = faker.internet.url()
-        const code = faker.datatype.number({ min: 9999 })
+        const code = faker.number.int({ min: 9999 })
         githubMock
           .intercept({ method: 'POST', path: '/login/oauth/access_token' })
           .reply(403, req => {
@@ -142,8 +142,8 @@ describe('Github authentication service', () => {
 
       it('throws forbidden on user details error', async () => {
         const location = faker.internet.url()
-        const code = faker.datatype.number({ min: 9999 })
-        const token = faker.datatype.uuid()
+        const code = faker.number.int({ min: 9999 })
+        const token = faker.string.uuid()
         githubMock
           .intercept({ method: 'POST', path: '/login/oauth/access_token' })
           .reply(200, req => {
@@ -170,8 +170,8 @@ describe('Github authentication service', () => {
       })
 
       it('throws forbidden on unkown state', async () => {
-        const state = faker.datatype.uuid()
-        const code = faker.datatype.number({ min: 9999 })
+        const state = faker.string.uuid()
+        const code = faker.number.int({ min: 9999 })
 
         await expect(githubAuth.authenticateUser(code, state)).rejects.toThrow(
           'forbidden'

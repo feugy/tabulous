@@ -3,10 +3,6 @@ import { actions } from '@src/routes/accept-terms/+page.server'
 import { initGraphQlClient, runMutation } from '@src/stores/graphql-client'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-vi.mock('@sveltejs/kit', () => ({
-  redirect: (status, location) => ({ status, location }),
-  invalid: (status, errors) => ({ status, errors })
-}))
 vi.mock('@src/stores/graphql-client', () => ({
   initGraphQlClient: vi.fn(),
   runMutation: vi.fn()
@@ -14,14 +10,14 @@ vi.mock('@src/stores/graphql-client', () => ({
 
 describe('POST /accept-terms route action', () => {
   let locals
-  const bearer = `Bearer ${faker.datatype.uuid()}`
+  const bearer = `Bearer ${faker.string.uuid()}`
 
   beforeEach(() => {
     vi.resetAllMocks()
     locals = {
       bearer,
       session: {
-        player: { id: faker.datatype.uuid(), username: faker.name.fullName() }
+        player: { id: faker.string.uuid(), username: faker.person.fullName() }
       }
     }
   })
@@ -75,9 +71,9 @@ describe('POST /accept-terms route action', () => {
     const redirect = faker.internet.url()
     const request = buildsRequest({ age: true, accept: true, redirect })
 
-    await expect(actions.default({ request, locals, fetch })).rejects.toEqual({
+    expect(await actions.default({ request, locals, fetch })).toEqual({
       status: 400,
-      errors: { redirect: `'${redirect}' should be an absolute path` }
+      data: { redirect: `'${redirect}' should be an absolute path` }
     })
     expect(locals.session.player).not.toHaveProperty('termsAccepted', true)
     expect(runMutation).not.toHaveBeenCalled()
@@ -88,9 +84,9 @@ describe('POST /accept-terms route action', () => {
     const redirect = '../home'
     const request = buildsRequest({ age: true, accept: true, redirect })
 
-    await expect(actions.default({ request, locals, fetch })).rejects.toEqual({
+    expect(await actions.default({ request, locals, fetch })).toEqual({
       status: 400,
-      errors: { redirect: `'${redirect}' should be an absolute path` }
+      data: { redirect: `'${redirect}' should be an absolute path` }
     })
     expect(locals.session.player).not.toHaveProperty('termsAccepted', true)
     expect(runMutation).not.toHaveBeenCalled()
@@ -100,9 +96,9 @@ describe('POST /accept-terms route action', () => {
   it('returns request error if age is not true', async () => {
     const request = buildsRequest({ age: false, accept: true })
 
-    await expect(actions.default({ request, locals, fetch })).rejects.toEqual({
+    expect(await actions.default({ request, locals, fetch })).toEqual({
       status: 400,
-      errors: {
+      data: {
         age: `you must be at least 15 or be approved by your parents to proceed`
       }
     })
@@ -114,9 +110,9 @@ describe('POST /accept-terms route action', () => {
   it('returns request error if accept is not true', async () => {
     const request = buildsRequest({ accept: false, age: true })
 
-    await expect(actions.default({ request, locals, fetch })).rejects.toEqual({
+    expect(await actions.default({ request, locals, fetch })).toEqual({
       status: 400,
-      errors: {
+      data: {
         accept: `you must accept terms of service to proceed`
       }
     })

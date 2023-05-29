@@ -22,14 +22,14 @@ describe('FPSViewer connected component', () => {
   beforeEach(vi.resetAllMocks)
 
   it('displays current frame per seconds', async () => {
-    const fps1 = faker.datatype.number()
+    const fps1 = faker.number.int(999)
     fps.next(fps1)
     render(html`<${FPSViewer} />`)
     expect(
       screen.getByText(translate('fps _', { value: fps1 }))
     ).toBeInTheDocument()
 
-    const fps2 = faker.datatype.number()
+    const fps2 = faker.number.int(999)
     fps.next(fps2)
     await tick()
     expect(
