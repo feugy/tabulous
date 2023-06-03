@@ -247,12 +247,23 @@ describe('StackBehavior', () => {
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
+    it('can hydrate with its own state', () => {
+      behavior.fromState({ stackIds: ['box2', 'box1'] })
+      expectStacked([mesh, box2, box1])
+
+      behavior.fromState({ stackIds: ['box2', 'box1'] })
+      expectStacked([mesh, box2, box1])
+      expect(recordSpy).not.toHaveBeenCalled()
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
+    })
+
     it('can rotate mesh when hydrating from state', async () => {
+      const baseAngle = Math.PI * 0.5
       const stackIds = [box1.id, box3.id]
       box3
         .getBehaviorByName(RotateBehaviorName)
-        .fromState({ duration: 100, angle: Math.PI * 0.5 })
-      expectRotated(box3, Math.PI * 0.5)
+        .fromState({ duration: 100, angle: baseAngle })
+      expectRotated(box3, baseAngle)
 
       behavior.fromState({ stackIds, angle: 0 })
       expectRotated(box3, 0)
@@ -260,6 +271,27 @@ describe('StackBehavior', () => {
       expectStacked([mesh, box1, box3])
       expect(recordSpy).not.toHaveBeenCalled()
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
+    })
+
+    it('rotates pushed mesh regardless of their parent when hydrating', async () => {
+      const angle = Math.PI * 0.5
+      await mesh.getBehaviorByName(RotateBehaviorName).rotate()
+      behavior.fromState({ stackIds: [], angle: 0 })
+      expectStacked([mesh])
+      expectRotated(mesh, angle)
+      expectRotated(box1, 0)
+      await mesh.metadata.push(box1.id)
+      await mesh.metadata.push(box3.id)
+      expectStacked([mesh, box1, box3])
+      expectRotated(mesh, angle)
+      expectRotated(box1, angle)
+      expectRotated(box3, angle)
+
+      behavior.fromState({ stackIds: [box1.id, box3.id], angle: 0 })
+      expectStacked([mesh, box1, box3])
+      expectRotated(mesh, angle)
+      expectRotated(box1, angle)
+      expectRotated(box3, angle)
     })
 
     it('does not enable locked meshes when hydrating', async () => {
@@ -600,17 +632,16 @@ describe('StackBehavior', () => {
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
-    it('pops any mesh when drawn', async () => {
+    it('can not pops any mesh when drawn', async () => {
       behavior.fromState({ stackIds: ['box3', 'box1', 'box2'] })
 
       box3.isPickable = false
       box3.metadata.draw()
-      await expectAnimationEnd(getAnimatableBehavior(box1))
-      expectInteractible(box3)
-      expectStacked([mesh, box1, box2])
+      expectInteractible(box3, false, false)
+      expectStacked([mesh, box3, box1, box2])
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({ fn: 'draw', mesh: box3 })
-      expectMoveRecorded(moveRecorded)
+      expect(moveRecorded).not.toHaveBeenCalled()
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
@@ -837,6 +868,7 @@ describe('StackBehavior', () => {
       expect(recordSpy).toHaveBeenNthCalledWith(1, {
         fn: 'rotate',
         mesh,
+        args: [Math.PI / 2],
         duration: 100
       })
       expectMoveRecorded(moveRecorded)
@@ -850,6 +882,7 @@ describe('StackBehavior', () => {
       expect(recordSpy).toHaveBeenCalledWith({
         fn: 'rotate',
         mesh,
+        args: [Math.PI / 2],
         duration: 100
       })
       expectMoveRecorded(moveRecorded)

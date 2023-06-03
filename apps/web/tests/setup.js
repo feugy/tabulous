@@ -9,7 +9,10 @@ import matchers from '@testing-library/jest-dom/matchers'
 import crypto from 'crypto'
 import { expect, vi } from 'vitest'
 
+import * as customMatchers from './matchers'
+
 expect.extend(matchers)
+expect.extend(customMatchers)
 
 vi.mock('$app/environment', () => ({ browser: true }))
 

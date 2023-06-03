@@ -352,7 +352,7 @@ export function leaveGame({ id: currentPlayerId }) {
   clearThread()
 }
 
-async function load(game, currentPlayerId, firstLoad) {
+async function load(game, playerId, firstLoad) {
   currentGame$.next(game)
   hands = game.hands ?? []
   cameras = game.cameras ?? []
@@ -362,7 +362,7 @@ async function load(game, currentPlayerId, firstLoad) {
   }
   if (cameras.length && firstLoad) {
     const playerCameras = cameras
-      .filter(save => save.playerId === currentPlayerId)
+      .filter(save => save.playerId === playerId)
       .sort((a, b) => a.index - b.index)
     if (playerCameras.length) {
       loadCameraSaves(playerCameras)
@@ -370,9 +370,17 @@ async function load(game, currentPlayerId, firstLoad) {
   }
   if (
     engine &&
-    game.players.find(({ id }) => id === currentPlayerId)?.isGuest === false
+    game.players.find(({ id }) => id === playerId)?.isGuest === false
   ) {
-    await engine.load(game, currentPlayerId, buildPlayerColors(game), firstLoad)
+    await engine.load(
+      game,
+      {
+        playerId,
+        preferences: findPlayerPreferences(game, playerId),
+        colorByPlayerId: buildPlayerColors(game)
+      },
+      firstLoad
+    )
   }
 }
 

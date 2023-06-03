@@ -445,8 +445,11 @@ describe('given a mocked game engine', () => {
       expect(runSubscription).toHaveBeenCalledOnce()
       expect(engine.load).toHaveBeenCalledWith(
         game,
-        player.id,
-        colorByPlayerId,
+        {
+          playerId: player.id,
+          colorByPlayerId,
+          preferences: { color: '#00ff00' }
+        },
         true
       )
       expect(engine.load).toHaveBeenCalledOnce()
@@ -531,8 +534,11 @@ describe('given a mocked game engine', () => {
       expect(runMutation).toHaveBeenCalledOnce()
       expect(engine.load).toHaveBeenCalledWith(
         game,
-        player.id,
-        buildPlayerColors(game),
+        {
+          playerId: player.id,
+          colorByPlayerId: buildPlayerColors(game),
+          preferences: {}
+        },
         true
       )
       expect(engine.serialize).toHaveBeenCalledOnce()
@@ -577,8 +583,11 @@ describe('given a mocked game engine', () => {
       expect(runMutation).toHaveBeenCalledOnce()
       expect(engine.load).toHaveBeenCalledWith(
         game,
-        player.id,
-        buildPlayerColors(game),
+        {
+          playerId: player.id,
+          colorByPlayerId: buildPlayerColors(game),
+          preferences: {}
+        },
         true
       )
       expect(engine.load).toHaveBeenCalledOnce()
@@ -610,8 +619,11 @@ describe('given a mocked game engine', () => {
       expect(runMutation).toHaveBeenCalledOnce()
       expect(engine.load).toHaveBeenCalledWith(
         game,
-        player.id,
-        buildPlayerColors(game),
+        {
+          playerId: player.id,
+          colorByPlayerId: buildPlayerColors(game),
+          preferences: {}
+        },
         true
       )
       expect(engine.load).toHaveBeenCalledOnce()
@@ -1051,8 +1063,11 @@ describe('given a mocked game engine', () => {
         expect(runSubscription).toHaveBeenCalledOnce()
         expect(engine.load).toHaveBeenCalledWith(
           game,
-          player.id,
-          buildPlayerColors(game),
+          {
+            playerId: player.id,
+            colorByPlayerId: buildPlayerColors(game),
+            preferences: { color: '#00ff00' }
+          },
           true
         )
         expect(engine.load).toHaveBeenCalledOnce()
@@ -1242,8 +1257,11 @@ describe('given a mocked game engine', () => {
           expect(send).not.toHaveBeenCalled()
           expect(engine.load).toHaveBeenCalledWith(
             game,
-            partner2.id,
-            buildPlayerColors(game),
+            {
+              playerId: partner2.id,
+              colorByPlayerId: buildPlayerColors(game),
+              preferences: { color: '#ffffff' }
+            },
             true
           )
           expect(engine.load).toHaveBeenCalledOnce()

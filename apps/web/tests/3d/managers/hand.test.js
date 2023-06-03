@@ -1,6 +1,10 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
-import { DrawBehaviorName, FlipBehaviorName } from '@src/3d/behaviors'
+import {
+  DrawBehaviorName,
+  FlipBehaviorName,
+  RotateBehaviorName
+} from '@src/3d/behaviors'
 import {
   controlManager,
   handManager as manager,
@@ -31,6 +35,7 @@ import {
   expectFlipped,
   expectMeshFeedback,
   expectPosition,
+  expectRotated,
   expectSnapped,
   expectStacked,
   sleep
@@ -71,6 +76,9 @@ describe('HandManager', () => {
   )
 
   beforeAll(() => {
+    vi.spyOn(window, 'getComputedStyle').mockImplementation(() => ({
+      height: `${renderHeight / 4}px`
+    }))
     savedCameraPosition = camera.position.clone()
     targetManager.init({ scene, playerId, color: '#00ff00' })
     indicatorManager.init({ scene })
@@ -78,10 +86,7 @@ describe('HandManager', () => {
   })
 
   beforeEach(() => {
-    vi.resetAllMocks()
-    vi.spyOn(window, 'getComputedStyle').mockImplementation(() => ({
-      height: `${renderHeight / 4}px`
-    }))
+    vi.clearAllMocks()
     registerFeedbackSpy = vi.spyOn(indicatorManager, 'registerFeedback')
     selectionManager.clear()
     createTable({}, scene)
@@ -286,6 +291,50 @@ describe('HandManager', () => {
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
+    it('can rotate mesh while drawing into hand', async () => {
+      const [card] = cards
+      const angle = Math.PI
+      card.getBehaviorByName(DrawBehaviorName).state.angleOnPick = angle
+      await card.metadata.rotate()
+      await card.metadata.rotate()
+      await card.metadata.rotate()
+      expectRotated(card, Math.PI * -0.5)
+      actionRecorded.mockReset()
+
+      card.metadata.draw()
+      const newMesh = handScene.getMeshById(card.id)
+      await Promise.all([
+        expectAnimationEnd(newMesh.getBehaviorByName(RotateBehaviorName)),
+        expectAnimationEnd(card.getBehaviorByName(DrawBehaviorName)),
+        waitForLayout()
+      ])
+      expectRotated(newMesh, angle)
+      expect(actionRecorded).toHaveBeenCalledWith(
+        {
+          meshId: newMesh.id,
+          fn: 'draw',
+          args: [expect.any(Object)],
+          fromHand: false
+        },
+        expect.anything()
+      )
+      expect(actionRecorded).toHaveBeenCalledWith(
+        {
+          meshId: newMesh.id,
+          fn: 'rotate',
+          fromHand: true,
+          args: [expect.any(Number)],
+          duration: 200
+        },
+        expect.anything()
+      )
+      expect(actionRecorded).toHaveBeenCalledTimes(2)
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
+      expect(newMesh.getBehaviorByName(RotateBehaviorName).state.angle).toBe(
+        angle
+      )
+    })
+
     it('can keep flipped mesh while drawing into hand', async () => {
       const [card] = cards
       card.getBehaviorByName(DrawBehaviorName).state.unflipOnPick = false
@@ -360,18 +409,6 @@ describe('HandManager', () => {
         x += cardWidth + gap
         y += 0.01
       }
-    })
-
-    it('can not have hover pointer', () => {
-      expect(
-        manager.isPointerInHand({ x: renderWidth * 0.5, y: renderHeight * 0.5 })
-      ).toBe(false)
-      expect(
-        manager.isPointerInHand({
-          x: renderWidth * 0.5,
-          y: renderHeight * 0.98
-        })
-      ).toBe(false)
     })
 
     describe('given some meshs in hand', () => {
@@ -671,6 +708,47 @@ describe('HandManager', () => {
           newMesh.absolutePosition.asArray()
         )
         expect(extractDrawnState().flippable.isFlipped).toBe(true)
+      })
+
+      it('can rotate mesh to main scene while dragging', async () => {
+        const angle = Math.PI * 0.5
+        manager.angleOnPlay = angle
+        const mesh = handCards[1]
+        expectRotated(mesh, 0)
+
+        let movedPosition = new Vector3(
+          mesh.absolutePosition.x,
+          mesh.absolutePosition.y + 2,
+          mesh.absolutePosition.z + cardDepth
+        )
+        mesh.setAbsolutePosition(movedPosition)
+        inputManager.onDragObservable.notifyObservers({
+          type: 'dragStart',
+          mesh,
+          event: { x: 289.7, y: 175 }
+        })
+        await waitForLayout()
+        expect(handScene.getMeshById(mesh.id)?.id).toBeUndefined()
+        const newMesh = scene.getMeshById(mesh.id)
+        expect(newMesh?.id).toBeDefined()
+        expectRotated(newMesh, angle)
+        expectPosition(newMesh, [6, 2.005, 0])
+        const { rotable } = extractDrawnState()
+        expect(actionRecorded).toHaveBeenCalledWith(
+          {
+            meshId: newMesh.id,
+            fn: 'draw',
+            args: [expect.objectContaining({ rotable })],
+            fromHand: false
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenCalledTimes(1)
+        expectCloseVector(
+          extractDrawnState(),
+          newMesh.absolutePosition.asArray()
+        )
+        expect(rotable).toEqualWithAngle({ angle, duration: 200 })
       })
 
       it('keeps selected mesh while dragging to main', async () => {

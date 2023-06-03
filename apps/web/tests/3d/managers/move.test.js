@@ -421,6 +421,9 @@ describe('MoveManager', () => {
     let moved
     let cameraPosition
     const handOverlay = document.createElement('div')
+    vi.spyOn(window, 'getComputedStyle').mockImplementation(() => ({
+      height: `${centerY / 2}px`
+    }))
 
     beforeAll(() => {
       manager.init({ scene })
@@ -434,9 +437,6 @@ describe('MoveManager', () => {
         handScene
       )
       camera.setPosition(cameraPosition)
-      vi.spyOn(window, 'getComputedStyle').mockImplementation(() => ({
-        height: `${centerY / 2}px`
-      }))
     })
 
     it('moves according to hand camera', async () => {

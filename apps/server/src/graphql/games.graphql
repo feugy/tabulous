@@ -68,6 +68,7 @@ type AnchorableState {
 type DrawableState {
   unflipOnPick: Boolean
   flipOnPlay: Boolean
+  angleOnPick: Float
   duration: Int
 }
 
@@ -194,6 +195,7 @@ type Hand {
 type PlayerPreference {
   playerId: ID!
   color: String
+  angle: Float
 }
 
 type ZoomSpec {
@@ -261,6 +263,7 @@ input AnchorableStateInput {
 input DrawableStateInput {
   unflipOnPick: Boolean
   flipOnPlay: Boolean
+  angleOnPick: Float
   duration: Int
 }
 

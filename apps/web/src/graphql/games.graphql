@@ -77,6 +77,7 @@ fragment mesh on Mesh {
   drawable {
     unflipOnPick
     flipOnPlay
+    angleOnPick
     duration
   }
   lockable {
@@ -129,6 +130,7 @@ fragment fullGame on Game {
   preferences {
     playerId
     color
+    angle
   }
   rulesBookPageCount
   zoomSpec {
@@ -172,6 +174,7 @@ fragment gameData on GameOrParameters {
     preferences {
       playerId
       color
+      angle
     }
     rulesBookPageCount
     availableSeats

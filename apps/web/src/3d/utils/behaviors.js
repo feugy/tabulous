@@ -313,9 +313,10 @@ export function runAnimation(behavior, onEnd, ...animationSpecs) {
  * This function detaches a given mesh, keeping its absolute position and rotation unchanged, then
  * returns a function to re-attach to the original parent (or new, if it has changed meanwhile).
  * @param {Mesh} mesh - detached mesh.
+ * @param {boolean} [detachChildren=true] - set to detach the mesh from its children.
  * @returns {function} a function to re-attach to the original (or new) parent.
  */
-export function detachFromParent(mesh) {
+export function detachFromParent(mesh, detachChildren = true) {
   let parent = mesh.parent
   mesh.setParent(null)
 
@@ -324,10 +325,12 @@ export function detachFromParent(mesh) {
     parent = newParent
   }
 
-  const children = mesh.getChildMeshes(
-    true,
-    ({ name }) => !name.startsWith('drop-') && !name.startsWith('anchor-')
-  )
+  const children = detachChildren
+    ? mesh.getChildMeshes(
+        true,
+        ({ name }) => !name.startsWith('drop-') && !name.startsWith('anchor-')
+      )
+    : []
   for (const child of children) {
     child.setParent(null)
   }

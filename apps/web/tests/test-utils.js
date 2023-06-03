@@ -83,7 +83,8 @@ export function initialize3dScene(engine) {
     (3 * Math.PI) / 2,
     Math.PI / 8,
     50,
-    Vector3.Zero()
+    Vector3.Zero(),
+    scene
   )
   camera.lockedTarget = Vector3.Zero()
   scene.updateTransformMatrix()

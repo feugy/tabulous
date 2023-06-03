@@ -306,9 +306,10 @@ function drawMesh(stackMesh, meshes) {
  * @param {Mesh[]} meshes - stacked meshes.
  */
 export function stackMeshes(meshes) {
-  const stackIds = meshes.slice(1).map(({ id }) => id)
+  const [base, ...others] = meshes
+  const stackIds = others.map(({ id }) => id)
   if (stackIds.length) {
-    mergeProps(meshes[0], { stackable: { stackIds } })
+    mergeProps(base, { stackable: { stackIds } })
   }
 }
 

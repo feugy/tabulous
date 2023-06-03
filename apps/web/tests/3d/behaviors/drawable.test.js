@@ -28,7 +28,8 @@ describe('DrawBehavior', () => {
     const state = {
       duration: faker.number.int(999),
       unflipOnPick: faker.datatype.boolean(),
-      flipOnPlay: faker.datatype.boolean()
+      flipOnPlay: faker.datatype.boolean(),
+      angleOnPick: faker.number.int(1) * Math.PI
     }
     const behavior = new DrawBehavior(state)
     const mesh = createBox('box', {})
@@ -63,7 +64,8 @@ describe('DrawBehavior', () => {
     expect(behavior.state).toEqual({
       duration: 750,
       unflipOnPick: true,
-      flipOnPlay: false
+      flipOnPlay: false,
+      angleOnPick: 0
     })
     expect(behavior.mesh).toEqual(mesh)
     expect(mesh.metadata.draw).toBeInstanceOf(Function)
@@ -83,7 +85,8 @@ describe('DrawBehavior', () => {
       const state = {
         duration: faker.number.int(999),
         unflipOnPick: faker.datatype.boolean(),
-        flipOnPlay: faker.datatype.boolean()
+        flipOnPlay: faker.datatype.boolean(),
+        angleOnPick: faker.number.int(1) * Math.PI
       }
       behavior.fromState(state)
       expect(behavior.state).toEqual(state)
