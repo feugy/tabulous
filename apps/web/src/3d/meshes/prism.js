@@ -4,6 +4,7 @@ import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder.
 import { controlManager } from '../managers/control'
 import { materialManager } from '../managers/material'
 import { registerBehaviors, serializeBehaviors } from '../utils/behaviors'
+import { applyInitialTransform } from '../utils/mesh'
 
 /**
  * Creates a prism, with a given number of base edge (starting at 3).
@@ -19,6 +20,7 @@ import { registerBehaviors, serializeBehaviors } from '../utils/behaviors'
  * @param {number} params.z? - initial position along the Z axis.
  * @param {number} params.width? - prism's base size (X axis, size on Z depends on the number of edges).
  * @param {number} params.height? - prism's height (Y axis).
+ * @param {import('../utils').InitialTransform} params.transform? - initial transformation baked into the mesh's vertice.
  * @param {import('@babylonjs/core').Scene} scene? - scene to host this round prism (default to last scene).
  * @returns the created prism mesh.
  */
@@ -38,6 +40,7 @@ export function createPrism(
       [1 / 3, 0, 2 / 3, 1],
       [2 / 3, 0, 3 / 3, 1]
     ],
+    transform = undefined,
     ...behaviorStates
   } = {},
   scene
@@ -58,6 +61,7 @@ export function createPrism(
     const rotation = Matrix.RotationYawPitchRoll(prismRotation, 0, 0)
     mesh.bakeTransformIntoVertices(rotation)
   }
+  applyInitialTransform(mesh, transform)
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.isPickable = false
   mesh.isHittable = true
@@ -72,6 +76,7 @@ export function createPrism(
       z: mesh.absolutePosition.z,
       texture,
       faceUV,
+      transform,
       edges,
       prismRotation,
       width,

@@ -4,6 +4,7 @@ import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder.js'
 import { controlManager } from '../managers/control'
 import { materialManager } from '../managers/material'
 import { registerBehaviors, serializeBehaviors } from '../utils/behaviors'
+import { applyInitialTransform } from '../utils/mesh'
 
 /**
  * Creates a card mesh.
@@ -20,6 +21,7 @@ import { registerBehaviors, serializeBehaviors } from '../utils/behaviors'
  * @param {number} params.width? - card's width (X axis).
  * @param {number} params.height? - card's height (Y axis).
  * @param {number} params.depth? - card's depth (Z axis).
+ * @param {import('../utils').InitialTransform} params.transform? - initial transformation baked into the mesh's vertice.
  * @param {import('@babylonjs/core').Scene} scene? - scene to host this card (default to last scene).
  * @returns {import('@babylonjs/core').Mesh} the created card mesh.
  */
@@ -37,6 +39,7 @@ export function createCard(
       [0.5, 1, 0, 0],
       [0.5, 0, 1, 1]
     ],
+    transform = undefined,
     ...behaviorStates
   } = {},
   scene
@@ -61,6 +64,7 @@ export function createCard(
   )
   mesh.name = 'card'
   materialManager.configure(mesh, texture)
+  applyInitialTransform(mesh, transform)
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.isPickable = false
   mesh.isHittable = true
@@ -77,6 +81,7 @@ export function createCard(
       depth,
       texture,
       faceUV,
+      transform,
       ...serializeBehaviors(mesh.behaviors)
     })
   }

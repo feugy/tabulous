@@ -2,10 +2,14 @@ import { NullEngine } from '@babylonjs/core/Engines/nullEngine'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { Logger } from '@babylonjs/core/Misc/logger'
 import { Scene } from '@babylonjs/core/scene'
-import { getDimensions, isContaining } from '@src/3d/utils'
+import {
+  applyInitialTransform,
+  getDimensions,
+  isContaining
+} from '@src/3d/utils'
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
-import { createBox } from '../../test-utils'
+import { createBox, expectDimension } from '../../test-utils'
 
 let engine
 
@@ -78,5 +82,53 @@ describe('isContaining() 3D utility', () => {
   it('returns false when testing boxes that interesects', () => {
     smallBox.setAbsolutePosition(new Vector3(0, 4, 0))
     expect(isContaining(bigBox, smallBox)).toBe(false)
+  })
+})
+
+describe('applyInitialTransform() 3D utility', () => {
+  let box
+
+  beforeEach(() => {
+    box = createBox('box', { width: 4, height: 8, depth: 2 })
+  })
+
+  it('does nothing without tranform', () => {
+    applyInitialTransform(box)
+    expectDimension(box, [4, 8, 2])
+  })
+
+  it('can skew on X', () => {
+    applyInitialTransform(box, { scaleX: 2 })
+    expectDimension(box, [8, 8, 2])
+  })
+
+  it('can skew on Y', () => {
+    applyInitialTransform(box, { scaleY: 2 })
+    expectDimension(box, [4, 16, 2])
+  })
+
+  it('can skew on Z', () => {
+    applyInitialTransform(box, { scaleZ: 0.5 })
+    expectDimension(box, [4, 8, 1])
+  })
+
+  it('can rotate on X', () => {
+    applyInitialTransform(box, { yaw: Math.PI * 0.5 })
+    expectDimension(box, [4, 2, 8])
+  })
+
+  it('can rotate on Y', () => {
+    applyInitialTransform(box, { pitch: Math.PI * 0.5 })
+    expectDimension(box, [2, 8, 4])
+  })
+
+  it('can rotate on Z', () => {
+    applyInitialTransform(box, { roll: Math.PI * 0.5 })
+    expectDimension(box, [8, 4, 2])
+  })
+
+  it('can rotate and skew', () => {
+    applyInitialTransform(box, { roll: Math.PI * 0.5, scaleX: 2, scaleZ: 3 })
+    expectDimension(box, [8, 8, 6])
   })
 })

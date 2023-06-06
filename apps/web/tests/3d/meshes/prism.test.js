@@ -40,6 +40,17 @@ describe('createPrism()', () => {
     )
   })
 
+  it('creates a prism with initial transformation', async () => {
+    const mesh = await createPrism({
+      dimension: 4,
+      transform: { roll: Math.PI * -0.5 }
+    })
+    const { boundingBox } = mesh.getBoundingInfo()
+    expect(mesh.name).toEqual('prism')
+    expect(boundingBox.extendSize.x * 2).toBeCloseTo(1)
+    expect(boundingBox.extendSize.y * 2).toBeCloseTo(3)
+  })
+
   describe('given a prism with initial position, edges number, dimension, images and behaviors', () => {
     let mesh
 

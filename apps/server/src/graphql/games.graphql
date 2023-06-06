@@ -116,6 +116,7 @@ type Mesh {
   x: Float
   y: Float
   z: Float
+  transform: InitialTransform
   detailable: DetailableState
   movable: MovableState
   flippable: FlippableState
@@ -169,6 +170,15 @@ enum Shape {
   prism
   roundedTile
   roundToken
+}
+
+type InitialTransform {
+  yaw: Float
+  pitch: Float
+  roll: Float
+  scaleX: Float
+  scaleY: Float
+  scaleZ: Float
 }
 
 type Message {
@@ -321,6 +331,7 @@ input MeshInput {
   lockable: LockableStateInput
   quantifiable: QuantifiableStateInput
   randomizable: RandomizableStateInput
+  transform: InitialTransformInput
   """
   boxes, cards, prisms, rounded tokens and rounded tiles
   """
@@ -354,6 +365,15 @@ input MeshInput {
   dice
   """
   faces: Int
+}
+
+input InitialTransformInput {
+  yaw: Float
+  pitch: Float
+  roll: Float
+  scaleX: Float
+  scaleY: Float
+  scaleZ: Float
 }
 
 input MessageInput {

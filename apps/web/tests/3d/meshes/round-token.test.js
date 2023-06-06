@@ -29,7 +29,7 @@ describe('createRoundToken()', () => {
     expect(mesh.behaviors).toHaveLength(0)
   })
 
-  it('creates a card with a single color', async () => {
+  it('creates a token with a single color', async () => {
     const color = '#1E282F'
     const mesh = await createRoundToken({ texture: color })
     expect(mesh.name).toEqual('roundToken')
@@ -38,6 +38,15 @@ describe('createRoundToken()', () => {
     expect(mesh.material.diffuseColor).toEqual(
       Color4.FromHexString(color).toLinearSpace()
     )
+  })
+
+  it('creates a token with initial transformation', async () => {
+    const mesh = await createRoundToken({
+      dimension: 4,
+      transform: { roll: Math.PI * -0.5 }
+    })
+    expect(mesh.name).toEqual('roundToken')
+    expectDimension(mesh, [0.05, 2, 2])
   })
 
   describe('given a token with initial position, dimension, images and behaviors', () => {

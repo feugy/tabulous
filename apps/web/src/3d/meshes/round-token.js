@@ -4,6 +4,7 @@ import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder.
 import { controlManager } from '../managers/control'
 import { materialManager } from '../managers/material'
 import { registerBehaviors, serializeBehaviors } from '../utils/behaviors'
+import { applyInitialTransform } from '../utils/mesh'
 
 /**
  * Creates a round token, like a pocker one.
@@ -18,6 +19,7 @@ import { registerBehaviors, serializeBehaviors } from '../utils/behaviors'
  * @param {number} params.z? - initial position along the Z axis.
  * @param {number} params.diameter? - token's diameter (X+Z axis).
  * @param {number} params.height? - token's height (Y axis).
+ * @param {import('../utils').InitialTransform} params.transform? - initial transformation baked into the mesh's vertice.
  * @param {import('@babylonjs/core').Scene} scene? - scene to host this round token (default to last scene).
  * @returns the created token mesh.
  */
@@ -35,6 +37,7 @@ export function createRoundToken(
       [0, 0, 0, 0],
       [0.5, 1, 1, 0]
     ],
+    transform = undefined,
     ...behaviorStates
   } = {},
   scene
@@ -51,6 +54,7 @@ export function createRoundToken(
   )
   mesh.name = 'roundToken'
   materialManager.configure(mesh, texture)
+  applyInitialTransform(mesh, transform)
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.isPickable = false
   mesh.isHittable = true
@@ -65,6 +69,7 @@ export function createRoundToken(
       z: mesh.absolutePosition.z,
       texture,
       faceUV,
+      transform,
       diameter,
       height,
       ...serializeBehaviors(mesh.behaviors)

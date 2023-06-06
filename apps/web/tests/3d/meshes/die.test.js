@@ -128,6 +128,12 @@ describe('createDie()', () => {
     )
   })
 
+  it('creates a die with initial transformation', async () => {
+    const mesh = await createDie({ transform: { scaleX: 2 } })
+    expect(mesh.name).toEqual('die')
+    expectDimension(mesh, [2, 4, 2])
+  })
+
   describe('given a die with initial position, dimension and behaviors', () => {
     let mesh
 

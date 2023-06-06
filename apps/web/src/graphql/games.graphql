@@ -15,6 +15,14 @@ fragment mesh on Mesh {
   y
   z
   shape
+  transform {
+    yaw
+    pitch
+    roll
+    scaleX
+    scaleY
+    scaleZ
+  }
   file
   width
   height

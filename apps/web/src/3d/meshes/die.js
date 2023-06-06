@@ -2,6 +2,7 @@ import { Matrix, Quaternion } from '@babylonjs/core/Maths/math.vector'
 
 import { toRad } from '../../utils/math'
 import { registerBehaviors, serializeBehaviors } from '../utils/behaviors'
+import { applyInitialTransform } from '../utils/mesh'
 import { createCustom } from './custom'
 
 /**
@@ -15,6 +16,7 @@ import { createCustom } from './custom'
  * @param {number} params.z? - initial position along the Z
  * @param {number} params.diameter? - token's diameter (all axis).
  * @param {number} params.faces? - number of faces (6 by default)
+ * @param {import('../utils').InitialTransform} params.transform? - initial transformation baked into the mesh's vertice.
  * @param {import('@babylonjs/core').Scene} scene? - scene to host this die (default to last scene).
  * @returns {Promise<import('@babylonjs/core').Mesh>} the created custom mesh.
  */
@@ -27,6 +29,7 @@ export async function createDie(
     diameter = 1,
     faces = 6,
     texture,
+    transform = undefined,
     ...behaviorStates
   } = {},
   scene
@@ -46,6 +49,7 @@ export async function createDie(
   if (diameter && diameter !== 1) {
     mesh.bakeTransformIntoVertices(Matrix.Scaling(diameter, diameter, diameter))
   }
+  applyInitialTransform(mesh, transform)
   // removes and re-add mesh to ensure it is referenced with the desired name.
   scene = mesh.getScene()
   scene.removeMesh(mesh, true)
@@ -61,6 +65,7 @@ export async function createDie(
     texture,
     diameter,
     faces,
+    transform,
     ...serializeBehaviors(mesh.behaviors)
   })
 
