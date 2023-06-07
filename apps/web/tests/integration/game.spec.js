@@ -1,5 +1,6 @@
 // @ts-check
 import { faker } from '@faker-js/faker'
+import { sleep } from '@src/utils/time.js'
 
 import { GamePage, HomePage } from './pages/index.js'
 import { translate } from './utils/index.js'
@@ -74,6 +75,7 @@ describe('Game page', () => {
         joinGame: game,
         saveGame: { id: game.id },
         searchPlayers: [[player2]],
+        listFriends: [[]],
         invite: () => {
           sendToSubscription({
             data: {
@@ -134,7 +136,8 @@ describe('Game page', () => {
           },
           game
         ],
-        saveGame: { id: game.id }
+        saveGame: { id: game.id },
+        listFriends: [[]]
       })
     await setTokenCookie()
 
@@ -170,7 +173,8 @@ describe('Game page', () => {
             credentials: faker.internet.password()
           }
         },
-        joinGame: { ...game, kind: undefined }
+        joinGame: { ...game, kind: undefined },
+        listFriends: [[]]
       })
     await setTokenCookie()
 
@@ -202,7 +206,8 @@ describe('Game page', () => {
           }
         },
         joinGame: game,
-        saveGame: { id: game.id }
+        saveGame: { id: game.id },
+        listFriends: [[]]
       })
     await setTokenCookie()
 
@@ -218,6 +223,7 @@ describe('Game page', () => {
     await gamePage.goTo(game.id)
     await gamePage.getStarted()
 
+    await sleep(100)
     sendToSubscription({ data: { receiveGameUpdates: null } })
     await expect(page).toHaveURL(`/home`)
     await new HomePage(page).getStarted()
