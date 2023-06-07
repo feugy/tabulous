@@ -24,7 +24,6 @@
 
 ## UI
 
-- bug: on the game page, can not type lowercase h into invite dialogue (considered as hand shortcut)
 - bug: svelte reports many accessibility violations
 - bug: when already in a lobby, clicking on the lobby card joins the same lobby again
 - bug: when a peer is joining a lobby, we don't automatically switch to video tab (both host and peer)

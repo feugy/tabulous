@@ -105,7 +105,11 @@
 
   function handleKey(event) {
     const index = tabIndexPerkey.get(event.key)
-    if (index !== undefined) {
+    if (
+      index !== undefined &&
+      !event.target.isContentEditable &&
+      event.target.nodeName !== 'INPUT'
+    ) {
       handleClick(index)
       event.preventDefault()
     }

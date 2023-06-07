@@ -196,6 +196,26 @@ describe('MinimizableSection component', () => {
         )
         expect(handleChange).toHaveBeenCalledTimes(1)
       })
+
+      it('ignores tab keys when fired from an Input element', async () => {
+        fireEvent.click(tabs[0])
+        await tick()
+        expect(tabs[0]).toHaveAttribute('aria-selected', 'true')
+        expect(handleMinimize).toHaveBeenNthCalledWith(
+          1,
+          expect.objectContaining({ detail: { minimized: true } })
+        )
+        expect(handleChange).not.toHaveBeenCalled()
+        handleMinimize.mockClear()
+
+        const input = document.createElement('input')
+        document.body.append(input)
+        fireEvent.keyDown(input, { key: 'F11' })
+        await tick()
+        expect(tabs[0]).toHaveAttribute('aria-selected', 'true')
+        expect(handleMinimize).not.toHaveBeenCalled()
+        expect(handleChange).not.toHaveBeenCalled()
+      })
     })
   })
 })

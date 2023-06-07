@@ -34,7 +34,7 @@
       >
     {/each}
   </div>
-  <form on:submit|preventDefault={handleSend} on:keydown|stopPropagation>
+  <form on:submit|preventDefault={handleSend}>
     <Input bind:value={text} />
     <Button
       type="submit"
