@@ -56,10 +56,7 @@ export class RotateBehavior extends AnimateBehavior {
     const angle = this.mesh
       ? getAbsoluteRotation(this.mesh).y
       : this._state.angle
-    return {
-      duration: this._state.duration,
-      angle: Math.round(angle / rotationStep) * rotationStep
-    }
+    return { duration: this._state.duration, angle }
   }
 
   /**
@@ -85,9 +82,10 @@ export class RotateBehavior extends AnimateBehavior {
    * - returns
    * Does nothing if the mesh is already being animated.
    *
-   * @async
+   * @param {number} angle? - new rotation angle. When not set, adds PI/2 to the current rotation.
+   * @returns {Promise<void>}
    */
-  async rotate() {
+  async rotate(angle) {
     const {
       _state: { duration },
       isAnimated,
@@ -101,15 +99,15 @@ export class RotateBehavior extends AnimateBehavior {
     logger.debug({ mesh }, `start rotating ${mesh.id}`)
     this.isAnimated = true
 
-    controlManager.record({ mesh, fn: 'rotate', duration })
-
     const [x, y, z] = mesh.position.asArray()
     const [pitch, yaw, roll] = mesh.rotation.asArray()
 
-    let rotation = rotationStep
+    let rotation = angle ?? yaw + rotationStep
     if (mesh.parent && getAbsoluteRotation(mesh.parent).z >= Math.PI) {
       rotation *= -1
     }
+
+    controlManager.record({ mesh, fn: 'rotate', args: [rotation], duration })
 
     await runAnimation(
       this,
@@ -123,7 +121,7 @@ export class RotateBehavior extends AnimateBehavior {
         duration,
         keys: [
           { frame: 0, values: [pitch, yaw, roll] },
-          { frame: 100, values: [pitch, yaw + rotation, roll] }
+          { frame: 100, values: [pitch, rotation, roll] }
         ]
       },
       {

@@ -39,6 +39,17 @@ describe('createBox()', () => {
     )
   })
 
+  it('creates a box with initial transformation', async () => {
+    const mesh = await createBox({
+      width: 4,
+      height: 8,
+      depth: 2,
+      transform: { pitch: Math.PI * -0.5 }
+    })
+    expect(mesh.name).toEqual('box')
+    expectDimension(mesh, [2, 8, 4])
+  })
+
   describe('given a box with initial position, dimension, images and behaviors', () => {
     let mesh
 

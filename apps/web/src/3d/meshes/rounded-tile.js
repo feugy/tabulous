@@ -7,6 +7,7 @@ import { CSG } from '@babylonjs/core/Meshes/csg.js'
 import { controlManager } from '../managers/control'
 import { materialManager } from '../managers/material'
 import { registerBehaviors, serializeBehaviors } from '../utils/behaviors'
+import { applyInitialTransform } from '../utils/mesh'
 
 function makeCornerMesh(
   { borderRadius, width, height, depth, faceUV },
@@ -53,6 +54,7 @@ function makeCornerMesh(
  * @param {number} params.width? - tile's width (X axis).
  * @param {number} params.height? - tile's height (Y axis).
  * @param {number} params.depth? - tile's depth (Z axis).
+ * @param {import('../utils').InitialTransform} params.transform? - initial transformation baked into the mesh's vertice.
  * @param {import('@babylonjs/core').Scene} scene? - scene to host this rounded tile (default to last scene).
  * @returns {import('@babylonjs/core').Mesh} the created tile mesh.
  */
@@ -75,6 +77,7 @@ export function createRoundedTile(
       [0.5, 1, 0, 0],
       [0.5, 0, 1, 1]
     ],
+    transform = undefined,
     ...behaviorStates
   } = {},
   scene
@@ -106,6 +109,7 @@ export function createRoundedTile(
   const mesh = tileCSG.toMesh(id, undefined, scene)
   mesh.name = 'roundedTile'
   materialManager.configure(mesh, texture)
+  applyInitialTransform(mesh, transform)
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.isPickable = false
   mesh.isHittable = true
@@ -124,6 +128,7 @@ export function createRoundedTile(
       borderRadius,
       texture,
       faceUV,
+      transform,
       ...serializeBehaviors(mesh.behaviors)
     })
   }

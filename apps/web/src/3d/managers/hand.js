@@ -53,7 +53,8 @@ class HandManager {
    * @property {number} verticalPadding - vertical padding between meshes and the viewport edges, in 3D coordinates.
    * @property {number} horizontalPadding - horizontal padding between meshes and the viewport edges, in 3D coordinates.
    * @property {number} transitionMargin - margin (in pixel) applied to the hand scene border. Meshes dragged within this margin will be drawn or played.
-   * @property {number} [duration=100] - duration (in milliseconds) when moving meshes.
+   * @property {number} duration - duration (in milliseconds) when moving meshes.
+   * @property {number} params.angleOnPlay - angle applied when playing rotable meshes, due to the player position.
    */
   constructor() {
     this.scene = null
@@ -63,6 +64,7 @@ class HandManager {
     this.horizontalPadding = 0
     this.duration = 100
     this.transitionMargin = 0
+    this.angleOnPlay = 0
     this.onHandChangeObservable = new Observable()
     this.onDraggableToHandObservable = new Observable()
     this.overlay = null
@@ -73,7 +75,7 @@ class HandManager {
       height: 0,
       width: 0,
       minZ: -Infinity,
-      screenHeight: 0,
+      screenHeight: Infinity,
       size: {}
     }
     this.contentDimensions = { width: null, depth: null }
@@ -107,6 +109,7 @@ class HandManager {
    * @param {number} [params.horizontalPadding=2] - horizontal padding between meshes and the viewport edges, in 3D coordinates.
    * @param {number} [params.transitionMargin=20] - margin (in pixel) applied to the hand scene border. Meshes dragged within this margin will be drawn or played.
    * @param {number} [params.duration=100] - duration (in milliseconds) when moving meshes.
+   * @param {number} [params.angleOnPlay=0] - angle applied when playing rotable meshes, due to the player position.
    */
   init({
     scene,
@@ -116,7 +119,8 @@ class HandManager {
     verticalPadding = 0.5,
     horizontalPadding = 2,
     transitionMargin = 20,
-    duration = 100
+    duration = 100,
+    angleOnPlay = 0
   }) {
     this.scene = scene
     this.handScene = handScene
@@ -126,6 +130,7 @@ class HandManager {
     this.duration = duration
     this.transitionMargin = transitionMargin
     this.overlay = overlay
+    this.angleOnPlay = angleOnPlay
 
     this.disposeResizeObserver?.()
     const engine = this.handScene.getEngine()
@@ -180,7 +185,7 @@ class HandManager {
       subscriptions.push(() => observable.remove(observer))
     }
 
-    const { dimension$, disconnect } = observeDimension(this.overlay, 5)
+    const { dimension$, disconnect } = observeDimension(this.overlay, 50)
     const subscription = dimension$.subscribe(() => layoutMeshs(this))
     subscriptions.push(() => {
       disconnect()
@@ -208,12 +213,14 @@ class HandManager {
    * 2. run animation on the main scene (elevates and fades out) and dispose at the end
    * 3. creates mesh in hand and lay the hand out
    * 4. if required (unflipOnPick is true), unflips flippable mesh
+   * 5. if relevant (angleOnPick differs from mesh rotation), rotates rotable mesh
    *
    * When drawing to main
    * 1. records the action into the control manager
    * 2. if required (flipOnPlay is true), flips flippable mesh without animation
    * 3. disposes mesh in hand and lay the hand out
    * 4. run animation on the main scene (fades in and descends)
+   * 5. if relevant (angleOnPlay differs from mesh rotation), rotates rotable mesh
    *
    * @param {import('@babylonjs/core').Mesh} drawnMesh - drawn mesh
    */
@@ -263,15 +270,12 @@ class HandManager {
   }
 
   /**
-   * Indicates when the user pointer (in screen coordinate) is over a non-empty hand.
+   * Indicates when the user pointer (in screen coordinate) is over the hand.
    * @param {import('../utils').ScreenPosition} position - pointer or mouse event.
    * @returns {boolean} whether the pointer is over the hand or not.
    */
   isPointerInHand(position) {
-    return (
-      this.handScene?.meshes.length > 0 &&
-      position?.y >= this.extent.screenHeight
-    )
+    return position?.y >= this.extent.screenHeight
   }
 }
 
@@ -409,11 +413,11 @@ function isHandMeshNextToMain(
   return event.y < screenHeight - transitionMargin
 }
 
-async function createMainMesh({ scene }, handMesh, extraState) {
-  flipIfNeeded(handMesh)
+async function createMainMesh(manager, handMesh, extraState) {
+  transformOnPlay(manager, handMesh)
   const state = handMesh.metadata.serialize()
   handMesh.dispose()
-  return createMeshFromState({ ...state, ...extraState }, scene)
+  return createMeshFromState({ ...state, ...extraState }, manager.scene)
 }
 
 async function createHandMesh(manager, mainMesh, extraState = {}) {
@@ -422,7 +426,7 @@ async function createHandMesh(manager, mainMesh, extraState = {}) {
     { ...mainMesh.metadata.serialize(), ...extraState },
     manager.handScene
   )
-  unflipIfNeeded(manager, newMesh)
+  transformOnPick(manager, newMesh)
   return newMesh
 }
 
@@ -451,6 +455,11 @@ function computeExtent(manager, engine) {
     width: bottomRight.x - topLeft.x,
     height: topLeft.z - bottomRight.z
   }
+  updateScreenHeight(manager)
+}
+
+function updateScreenHeight({ extent, overlay }) {
+  extent.screenHeight = extent.size.height - getPixelDimension(overlay).height
 }
 
 function storeMeshDimensions(manager) {
@@ -485,6 +494,7 @@ async function layoutMeshs({
     .map(id => handScene.getMeshById(id))
     .filter(Boolean)
     .sort((a, b) => a.absolutePosition.x - b.absolutePosition.x)
+  updateScreenHeight({ extent, overlay })
   const availableWidth = extent.width - horizontalPadding * 2
   let x =
     (contentDimensions.width <= availableWidth
@@ -496,7 +506,6 @@ async function layoutMeshs({
       ? 0
       : (contentDimensions.width - availableWidth) / (meshes.length - 1))
   let y = 0
-  extent.screenHeight = extent.size.height - getPixelDimension(overlay).height
   const z =
     screenToGround(handScene, { x: 0, y: extent.screenHeight }).z -
     contentDimensions.depth * 0.5
@@ -540,20 +549,30 @@ function getDrawable(mesh) {
   return mesh?.getBehaviorByName(DrawBehaviorName)
 }
 
-function unflipIfNeeded({ onHandChangeObservable }, mesh) {
-  if (isMeshFlipped(mesh) && getDrawable(mesh).state.unflipOnPick) {
-    logger.debug({ mesh }, `un-flips ${mesh.id}`)
-    onHandChangeObservable.addOnce(() => {
-      mesh.metadata.flip()
-    })
-  }
+function transformOnPick({ onHandChangeObservable }, mesh) {
+  onHandChangeObservable.addOnce(async () => {
+    const { angleOnPick, unflipOnPick } = getDrawable(mesh).state
+    if (isMeshFlipped(mesh) && unflipOnPick) {
+      logger.debug({ mesh }, `un-flips ${mesh.id}`)
+      await mesh.metadata.flip()
+    }
+    if (mesh.metadata.rotate && mesh.metadata.angle !== angleOnPick) {
+      logger.debug({ mesh, angleOnPick }, `rotates ${mesh.id}`)
+      await mesh.metadata.rotate(angleOnPick)
+    }
+  })
 }
 
-function flipIfNeeded(mesh) {
+function transformOnPlay({ angleOnPlay }, mesh) {
   const flippable = mesh.getBehaviorByName(FlipBehaviorName)
   if (flippable && !isMeshFlipped(mesh) && getDrawable(mesh).state.flipOnPlay) {
     logger.debug({ mesh }, `flips ${mesh.id}`)
     flippable.state.isFlipped = true
+  }
+  const rotable = mesh.getBehaviorByName(RotateBehaviorName)
+  if (rotable && mesh.metadata.angle !== angleOnPlay) {
+    logger.debug({ mesh, angleOnPlay }, `rotates ${mesh.id}`)
+    rotable.fromState({ ...rotable.state, angle: angleOnPlay })
   }
 }
 

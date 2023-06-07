@@ -27,6 +27,7 @@ describe('createEngine()', () => {
   const updateColors = vi.spyOn(selectionManager, 'updateColors')
   const applySelection = vi.spyOn(selectionManager, 'apply')
   const targetInit = vi.spyOn(targetManager, 'init')
+  const handInit = vi.spyOn(handManager, 'init')
 
   beforeEach(() => {
     Logger.LogLevels = 0
@@ -59,6 +60,7 @@ describe('createEngine()', () => {
     )
     expect(inputInit).toHaveBeenCalledTimes(1)
     expect(targetInit).not.toHaveBeenCalled()
+    expect(handInit).not.toHaveBeenCalled()
     expect(updateColors).not.toHaveBeenCalled()
     expect(applySelection).not.toHaveBeenCalled()
   })
@@ -71,7 +73,7 @@ describe('createEngine()', () => {
     const receiveLoading = vi.fn()
 
     beforeEach(() => {
-      vi.resetAllMocks()
+      vi.clearAllMocks()
       engine = createEngine({
         Engine: NullEngine,
         canvas,
@@ -87,6 +89,7 @@ describe('createEngine()', () => {
     afterEach(() => engine.onLoadingObservable.remove(loadingObserver))
 
     it('can load() game data, including colors and peers selections', async () => {
+      applySelection.mockResolvedValue()
       const selections = [
         { playerId: peerId2, selectedIds: ['4'] },
         { playerId, selectedIds: ['1', '2'] },
@@ -105,8 +108,7 @@ describe('createEngine()', () => {
       }
       await engine.load(
         { meshes: [mesh], hands: [], selections },
-        playerId,
-        colorByPlayerId,
+        { playerId, colorByPlayerId, preferences: {} },
         false
       )
       engine.scenes[1].onDataLoadedObservable.notifyObservers()
@@ -117,6 +119,7 @@ describe('createEngine()', () => {
       expect(updateColors).toHaveBeenCalledTimes(1)
       expect(receiveLoading).not.toHaveBeenCalled()
       expect(targetInit).not.toHaveBeenCalled()
+      expect(handInit).not.toHaveBeenCalled()
       expect(applySelection).toHaveBeenNthCalledWith(
         1,
         selections[0].selectedIds,
@@ -177,8 +180,7 @@ describe('createEngine()', () => {
       expect(engine.isLoading).toBe(false)
       await engine.load(
         { meshes: [mesh], hands: [], selections },
-        playerId,
-        colorByPlayerId,
+        { playerId, colorByPlayerId },
         true
       )
       expect(engine.isLoading).toBe(true)
@@ -199,6 +201,7 @@ describe('createEngine()', () => {
         })
       )
       expect(targetInit).toHaveBeenCalledTimes(1)
+      expect(handInit).not.toHaveBeenCalled()
       expect(applySelection).toHaveBeenNthCalledWith(
         1,
         selections[0].selectedIds,
@@ -213,14 +216,14 @@ describe('createEngine()', () => {
     })
 
     it('enables hand manager on initial load', async () => {
+      const angleOnPlay = faker.number.int(1) * Math.PI
       expect(engine.isLoading).toBe(false)
       await engine.load(
         {
           meshes: [],
           hands: [{ playerId, meshes: [{ id: 'box', shape: 'card' }] }]
         },
-        playerId,
-        colorByPlayerId,
+        { playerId, colorByPlayerId, preferences: { angle: angleOnPlay } },
         true
       )
       expect(engine.isLoading).toBe(true)
@@ -228,6 +231,13 @@ describe('createEngine()', () => {
       expect(engine.isLoading).toBe(false)
       expect(displayLoadingUI).toHaveBeenCalledTimes(1)
       expect(handManager.enabled).toBe(true)
+      expect(handInit).toHaveBeenCalledWith({
+        scene: engine.scenes[1],
+        handScene: engine.scenes[0],
+        overlay: expect.anything(),
+        angleOnPlay
+      })
+      expect(handInit).toHaveBeenCalledTimes(1)
     })
 
     it('invokes observer before disposing', () => {
@@ -258,8 +268,7 @@ describe('createEngine()', () => {
             ],
             hands: []
           },
-          playerId,
-          colorByPlayerId,
+          { playerId, colorByPlayerId, preferences: {} },
           true
         )
         engine.start()
@@ -284,8 +293,7 @@ describe('createEngine()', () => {
         ])
         await engine.load(
           { ...engine.serialize(), hands: [] },
-          playerId,
-          updatedColorByPlayerId
+          { playerId, colorByPlayerId: updatedColorByPlayerId, preferences: {} }
         )
         expect(updateColors).toHaveBeenCalledWith(
           playerId,

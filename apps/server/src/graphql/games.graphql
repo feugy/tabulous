@@ -68,6 +68,7 @@ type AnchorableState {
 type DrawableState {
   unflipOnPick: Boolean
   flipOnPlay: Boolean
+  angleOnPick: Float
   duration: Int
 }
 
@@ -115,6 +116,7 @@ type Mesh {
   x: Float
   y: Float
   z: Float
+  transform: InitialTransform
   detailable: DetailableState
   movable: MovableState
   flippable: FlippableState
@@ -170,6 +172,15 @@ enum Shape {
   roundToken
 }
 
+type InitialTransform {
+  yaw: Float
+  pitch: Float
+  roll: Float
+  scaleX: Float
+  scaleY: Float
+  scaleZ: Float
+}
+
 type Message {
   playerId: ID!
   text: String!
@@ -194,6 +205,7 @@ type Hand {
 type PlayerPreference {
   playerId: ID!
   color: String
+  angle: Float
 }
 
 type ZoomSpec {
@@ -261,6 +273,7 @@ input AnchorableStateInput {
 input DrawableStateInput {
   unflipOnPick: Boolean
   flipOnPlay: Boolean
+  angleOnPick: Float
   duration: Int
 }
 
@@ -318,6 +331,7 @@ input MeshInput {
   lockable: LockableStateInput
   quantifiable: QuantifiableStateInput
   randomizable: RandomizableStateInput
+  transform: InitialTransformInput
   """
   boxes, cards, prisms, rounded tokens and rounded tiles
   """
@@ -351,6 +365,15 @@ input MeshInput {
   dice
   """
   faces: Int
+}
+
+input InitialTransformInput {
+  yaw: Float
+  pitch: Float
+  roll: Float
+  scaleX: Float
+  scaleY: Float
+  scaleZ: Float
 }
 
 input MessageInput {

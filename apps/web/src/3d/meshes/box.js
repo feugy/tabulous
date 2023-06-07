@@ -4,6 +4,7 @@ import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder.js'
 import { controlManager } from '../managers/control'
 import { materialManager } from '../managers/material'
 import { registerBehaviors, serializeBehaviors } from '../utils/behaviors'
+import { applyInitialTransform } from '../utils/mesh'
 
 /**
  * Creates a box.
@@ -24,6 +25,7 @@ import { registerBehaviors, serializeBehaviors } from '../utils/behaviors'
  * @param {number} params.width? - box's width (X axis).
  * @param {number} params.height? - box's height (Y axis).
  * @param {number} params.depth? - box's depth (Z axis).
+ * @param {import('../utils').InitialTransform} params.transform? - initial transformation baked into the mesh's vertice.
  * @param {import('@babylonjs/core').Scene} scene? - scene to host this box (default to last scene).
  * @returns the created box mesh.
  */
@@ -45,6 +47,7 @@ export function createBox(
       [4 / 6, 0, 5 / 6, 1],
       [5 / 6, 0, 6 / 6, 1]
     ],
+    transform = undefined,
     ...behaviorStates
   } = {},
   scene
@@ -61,6 +64,7 @@ export function createBox(
   )
   mesh.name = 'box'
   materialManager.configure(mesh, texture)
+  applyInitialTransform(mesh, transform)
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.isPickable = false
   mesh.isHittable = true
@@ -74,6 +78,7 @@ export function createBox(
       z: mesh.absolutePosition.z,
       texture,
       faceUV,
+      transform,
       width,
       height,
       depth,

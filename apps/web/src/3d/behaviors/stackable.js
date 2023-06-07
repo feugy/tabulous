@@ -12,6 +12,7 @@ import {
   attachFunctions,
   attachProperty,
   buildTargetMesh,
+  detachFromParent,
   getAnimatableBehavior,
   getTargetableBehavior,
   isMeshFlipped,
@@ -118,30 +119,15 @@ export class StackBehavior extends TargetBehavior {
 
     this.actionObserver = controlManager.onActionObservable.add(
       ({ meshId, fn }) => {
-        const {
-          stack,
-          _state: { duration }
-        } = this
-        if (fn === 'draw' && stack.length > 1) {
-          const index = stack.findIndex(({ id }) => id === meshId)
-          if (index >= 0) {
-            const [poped] = stack.splice(index, 1)
-            const shift = new Vector3(0, getDimensions(poped).height, 0)
-            setStatus([poped], 0, true, setBase(poped, null, [poped]))
-            for (
-              let rank = index === 0 ? index : index - 1;
-              rank < stack.length;
-              rank++
-            ) {
-              setStatus(stack, rank, rank === stack.length - 1, this)
-              animateMove(
-                stack[rank],
-                stack[rank].absolutePosition.subtract(shift),
-                null,
-                duration
-              )
-            }
-          }
+        const { stack } = this
+        if (
+          fn === 'draw' &&
+          stack.length > 1 &&
+          stack[stack.length - 1].id === meshId
+        ) {
+          const poped = stack.pop()
+          setStatus([poped], 0, true, setBase(poped, null, [poped]))
+          setStatus(stack, stack.length - 1, true, this)
         }
       }
     )
@@ -205,29 +191,36 @@ export class StackBehavior extends TargetBehavior {
       moveManager.notifyMove(mesh)
     }
     const { x, z } = base.mesh.absolutePosition
+    // when hydrating, we must break existing stacks, because they are meant to be broken by serialization
+    // otherwise we may push a stack onto itself, which would lead to a Maximum call stack size exceeded error in Mesh.computWorldMatrix()
+    const meshPushed = (!this.inhibitControl
+      ? getTargetableBehavior(mesh)?.stack
+      : undefined) ?? [mesh]
+    const pushed = meshPushed[0]
+    const y =
+      getFinalAltitudeAboveStack(stack) + getDimensions(pushed).height * 0.5
     logger.info(
-      { stack, mesh, x, z },
+      { stack, mesh, x, y, z },
       `push ${mesh.id} on stack ${stack.map(({ id }) => id)}`
     )
-    const meshPushed = getTargetableBehavior(mesh)?.stack ?? [mesh]
+
     const rank = stack.length - 1
     setStatus(stack, rank, false, this)
-    const y =
-      getFinalAltitudeAboveStack(stack) +
-      getDimensions(meshPushed[0]).height * 0.5
     stack.push(...meshPushed)
     for (let index = rank; index < stack.length; index++) {
       setStatus(stack, index, index === stack.length - 1, this)
     }
     const position = new Vector3(x, y, z)
+    const attach = detachFromParent(pushed, false)
+    const { x: pitch, z: roll } = pushed.rotation
     const move = animateMove(
-      meshPushed[0],
+      pushed,
       position,
       angle != undefined
         ? new Vector3(
-            meshPushed[0].rotation.x,
-            stack[0].rotation.y + angle,
-            meshPushed[0].rotation.z
+            pitch,
+            stack[0].rotation.y + (angle % (2 * Math.PI)),
+            roll
           )
         : null,
       duration
@@ -235,10 +228,11 @@ export class StackBehavior extends TargetBehavior {
     if (duration) {
       await move
     }
+    attach()
     if (!this.inhibitControl) {
       indicatorManager.registerFeedback({
         action: 'push',
-        position: meshPushed[0].absolutePosition.asArray()
+        position: pushed.absolutePosition.asArray()
       })
     }
     for (const mesh of meshPushed) {

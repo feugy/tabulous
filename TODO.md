@@ -29,6 +29,7 @@
 - bug: when a peer is joining a lobby, we don't automatically switch to video tab (both host and peer)
 - bug: 6-takes: snapping to the wrong anchor (when 2 players are snapping to different anchors)
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
+- video controls are relative to the entire aside section, which is not intuitive
 - check headings ordering
 - document keyboard shortcuts in the help panel
 - per game configurable single/double/lon tap/left click action

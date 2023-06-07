@@ -1,7 +1,11 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { Scene } from '@babylonjs/core/scene'
 import { faker } from '@faker-js/faker'
-import { inputManager as manager, selectionManager } from '@src/3d/managers'
+import {
+  handManager,
+  inputManager as manager,
+  selectionManager
+} from '@src/3d/managers'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
@@ -29,11 +33,19 @@ describe('InputManager', () => {
   let keys
   let currentPointer = null
   const interaction = document.createElement('div')
+  const overlay = document.createElement('div')
+  const renderWidth = 2048
+  const renderHeight = 1024
+  vi.spyOn(window, 'getComputedStyle').mockImplementation(() => ({
+    height: `${renderHeight / 2.5}px`
+  }))
 
-  configures3dTestEngine(created => {
-    scene = created.scene
-    handScene = created.handScene
-  })
+  configures3dTestEngine(
+    created => {
+      ;({ scene, handScene } = created)
+    },
+    { renderWidth, renderHeight }
+  )
 
   beforeEach(() => {
     vi.resetAllMocks()
@@ -56,6 +68,7 @@ describe('InputManager', () => {
     manager.onKeyObservable.add(key => keys.push(key))
     manager.onPointerObservable.add(pointer => (currentPointer = pointer))
     selectionManager.init({ scene, handScene })
+    handManager.init({ scene, handScene, overlay })
   })
 
   it('has initial state', () => {
@@ -108,10 +121,10 @@ describe('InputManager', () => {
         { id: 'box4', position: new Vector3(5, 5, 5), scene },
         // x: 1266, y: 512
         { id: 'box5', position: new Vector3(10, 0, 0), scene },
+        // x: 1266, y: 615
+        { id: 'box6', position: new Vector3(10, 0, -5), scene: handScene },
         // x: 1266, y: 512
-        { id: 'box6', position: new Vector3(10, 0, 0), scene: handScene },
-        // x: 1048, y: 525
-        { id: 'box7', position: new Vector3(1, 0.5, -1), scene }
+        { id: 'box7', position: new Vector3(10, 0, 0), scene }
       ].map(({ id, position, scene }) => {
         const mesh = createBox(id, {}, scene)
         mesh.setAbsolutePosition(position)
@@ -185,7 +198,7 @@ describe('InputManager', () => {
       { title: ' on mesh', pointer: { x: 905, y: 573 }, meshId: 'box3' },
       {
         title: ' on hand mesh',
-        pointer: { x: 1266, y: 512 },
+        pointer: { x: 1266, y: 615 },
         meshId: 'box6',
         fromHand: true
       }
@@ -1420,7 +1433,7 @@ describe('InputManager', () => {
     })
 
     it('does not find un-pickable meshes', () => {
-      meshes[4].isPickable = false
+      meshes[6].isPickable = false
       const pointer = { x: 1266, y: 512 }
       const pointerId = 10
       const button = 1
@@ -1436,14 +1449,15 @@ describe('InputManager', () => {
           button,
           event
         },
-        meshes[5].id,
-        handScene
+        meshes[4].id,
+        scene
       )
     })
 
-    it('picks highest meshes on Y-order', () => {
-      const mesh = createBox('box6', {})
+    it('picks closest meshes to camera', () => {
+      const mesh = createBox('box-high', {})
       mesh.setAbsolutePosition(new Vector3(10, 1, 0))
+      mesh.computeWorldMatrix(true)
       const pointer = { x: 1266, y: 512 }
       const pointerId = 10
       const button = 1
@@ -1454,7 +1468,7 @@ describe('InputManager', () => {
         taps[0],
         { long: false, pointers: 1, type: 'tap', button, event },
         mesh.id,
-        handScene
+        scene
       )
     })
 
@@ -1675,7 +1689,6 @@ describe('InputManager', () => {
     meshId,
     expectedScene = scene
   ) {
-    expect(actual).toMatchObject(expected)
     if (Array.isArray(meshId)) {
       expect(actual.meshes?.map(({ id }) => id)).toEqual(meshId)
     } else {
@@ -1683,8 +1696,11 @@ describe('InputManager', () => {
         expect(actual.mesh?.id).toEqual(meshId)
         expect(actual.mesh?.getScene()?.uid).toEqual(expectedScene.uid)
       } else {
-        expect(actual.mesh).not.toBeDefined()
+        expect(actual.mesh?.id).not.toBeDefined()
       }
     }
+    expect({ ...actual, mesh: undefined, meshes: undefined }).toMatchObject(
+      expected
+    )
   }
 })

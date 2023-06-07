@@ -2,7 +2,6 @@
 // more [here](https://doc.babylonjs.com/divingDeeper/developWithBjs/treeShaking)
 // mandatory side effects
 // import '@babylonjs/core/Debug/debugLayer'
-// import '@babylonjs/inspector'
 import '@babylonjs/core/Animations/animatable'
 import '@babylonjs/core/Materials/Textures/Loaders/ktxTextureLoader'
 import '@babylonjs/core/Rendering/edgesRenderer'
@@ -106,11 +105,17 @@ export function createEngine({
    * - if needed, loads data into player's hand scene
    * @async
    * @param {object} game - serialized game data TODO.
-   * @param {string} playerId - current player id (to determine their hand).
-   * @param {Map<string, string>} colorByPlayerId - map of hexadecimal color string for each player Id.
+   * @param {object} playersData - players data
+   * @param {string} playersData.playerId - current player id (to determine their hand).
+   * @param {object} playersData.preferences - current player's preferences.
+   * @param {Map<string, string>} playerData.colorByPlayerId - map of hexadecimal color string for each player Id.
    * @param {boolean} initial? - set to true to show Babylon's loading UI while loading assets.
    */
-  engine.load = async (gameData, playerId, colorByPlayerId, initial) => {
+  engine.load = async (
+    gameData,
+    { playerId, preferences, colorByPlayerId },
+    initial
+  ) => {
     const game = removeNulls(gameData)
     cameraManager.adjustZoomLevels(game.zoomSpec)
     const handsEnabled = hasHandsEnabled(game)
@@ -140,7 +145,12 @@ export function createEngine({
         engine.onLoadingObservable.notifyObservers(isLoading)
       })
       if (handsEnabled) {
-        handManager.init({ scene, handScene, overlay: hand })
+        handManager.init({
+          scene,
+          handScene,
+          overlay: hand,
+          angleOnPlay: preferences?.angle
+        })
       }
     }
     selectionManager.updateColors(playerId, colorByPlayerId)
@@ -190,7 +200,8 @@ export function createEngine({
 
   /* c8 ignore start */
   if (typeof window !== 'undefined') {
-    window.toggleDebugger = (main = true, hand = false) => {
+    window.toggleDebugger = async (main = true, hand = false) => {
+      await import('@babylonjs/inspector')
       if (main) {
         if (!scene.debugLayer.isVisible()) {
           scene.debugLayer.show({ embedMode: true, enablePopup: true })

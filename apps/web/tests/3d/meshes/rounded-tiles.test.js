@@ -28,7 +28,7 @@ describe('createRoundedTile()', () => {
     expect(mesh.behaviors).toHaveLength(0)
   })
 
-  it('creates a card with a single color', async () => {
+  it('creates a tile with a single color', async () => {
     const color = '#1E282F'
     const mesh = await createRoundedTile({ texture: color })
     expect(mesh.name).toEqual('roundedTile')
@@ -37,6 +37,17 @@ describe('createRoundedTile()', () => {
     expect(mesh.material.diffuseColor).toEqual(
       Color4.FromHexString(color).toLinearSpace()
     )
+  })
+
+  it('creates a tile with initial transformation', async () => {
+    const mesh = await createRoundedTile({
+      width: 4,
+      height: 8,
+      depth: 2,
+      transform: { pitch: Math.PI * -0.5 }
+    })
+    expect(mesh.name).toEqual('roundedTile')
+    expectDimension(mesh, [2, 8, 4])
   })
 
   describe('given a tile with initial position, dimension, images and behaviors', () => {

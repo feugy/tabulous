@@ -300,10 +300,8 @@ describe('registerBehaviors() 3D utility', () => {
   it('adds rotable behavior to a mesh', () => {
     const state = { angle: Math.PI * 0.5, duration: 321 }
     registerBehaviors(box, { rotable: state })
-    expect(box.getBehaviorByName(RotateBehaviorName)).toHaveProperty(
-      'state',
-      state
-    )
+    const behavior = box.getBehaviorByName(RotateBehaviorName)
+    expect(behavior.state).toEqualWithAngle(state)
   })
 
   it('adds detailable behavior to a mesh', () => {
@@ -353,7 +351,12 @@ describe('registerBehaviors() 3D utility', () => {
   })
 
   it('adds drawable behavior to a mesh', () => {
-    const state = { duration: 300, unflipOnPick: false, flipOnPlay: true }
+    const state = {
+      duration: 300,
+      unflipOnPick: false,
+      flipOnPlay: true,
+      angleOnPick: 0
+    }
     registerBehaviors(box, { drawable: state })
     expect(box.getBehaviorByName(DrawBehaviorName)).toHaveProperty(
       'state',
@@ -380,26 +383,26 @@ describe('registerBehaviors() 3D utility', () => {
       rotable: { angle: Math.PI },
       lockable: { isLocked: false }
     })
-    expect(box.getBehaviorByName(AnchorBehaviorName)).toHaveProperty('state', {
+    expect(box.getBehaviorByName(AnchorBehaviorName).state).toEqual({
       anchors: [],
       duration: 100
     })
     expect(box.getBehaviorByName(DetailBehaviorName)).toBeDefined()
-    expect(box.getBehaviorByName(FlipBehaviorName)).toHaveProperty('state', {
+    expect(box.getBehaviorByName(FlipBehaviorName).state).toEqual({
       duration: 500,
       isFlipped: false
     })
     expect(box.getBehaviorByName(MoveBehaviorName)).toBeDefined()
-    expect(box.getBehaviorByName(RotateBehaviorName)).toHaveProperty('state', {
+    expect(box.getBehaviorByName(RotateBehaviorName).state).toEqualWithAngle({
       duration: 200,
       angle: Math.PI
     })
-    expect(box.getBehaviorByName(StackBehaviorName)).toHaveProperty('state', {
+    expect(box.getBehaviorByName(StackBehaviorName).state).toEqual({
       stackIds: [],
       duration: 100,
       extent: 1.5
     })
-    expect(box.getBehaviorByName(LockBehaviorName)).toHaveProperty('state', {
+    expect(box.getBehaviorByName(LockBehaviorName).state).toEqual({
       isLocked: false
     })
     expect(box.behaviors).toHaveLength(7)
@@ -412,13 +415,11 @@ describe('registerBehaviors() 3D utility', () => {
 
   it('adds lockable after all other behavior', () => {
     registerBehaviors(box, { lockable: { isLocked: true }, movable: {} })
-    expect(box.getBehaviorByName(LockBehaviorName)).toHaveProperty('state', {
+
+    expect(box.getBehaviorByName(LockBehaviorName).state).toEqual({
       isLocked: true
     })
-    expect(box.getBehaviorByName(MoveBehaviorName)).toHaveProperty(
-      'enabled',
-      false
-    )
+    expect(box.getBehaviorByName(MoveBehaviorName).enabled).toBe(false)
   })
 })
 
@@ -444,7 +445,7 @@ describe('restoreBehaviors() 3D utility', () => {
     const rotable = new RotateBehavior()
     box.addBehavior(rotable, true)
     restoreBehaviors(box.behaviors, { rotable: state })
-    expect(rotable.state).toEqual(state)
+    expect(rotable.state).toEqualWithAngle(state)
   })
 
   it('restores detailable behavior', () => {
@@ -550,7 +551,9 @@ describe('restoreBehaviors() 3D utility', () => {
     })
     expect(box.getBehaviorByName(MoveBehaviorName).state).toEqual(movable)
     expect(box.getBehaviorByName(FlipBehaviorName).state).toEqual(flippable)
-    expect(box.getBehaviorByName(RotateBehaviorName).state).toEqual(rotable)
+    expect(box.getBehaviorByName(RotateBehaviorName).state).toEqualWithAngle(
+      rotable
+    )
     expect(box.getBehaviorByName(AnchorBehaviorName).state).toEqual(anchorable)
     expect(box.getBehaviorByName(StackBehaviorName).state).toEqual({
       duration: 100,
@@ -578,7 +581,7 @@ describe('restoreBehaviors() 3D utility', () => {
       isFlipped: false,
       duration: 500
     })
-    expect(box.getBehaviorByName(RotateBehaviorName).state).toEqual({
+    expect(box.getBehaviorByName(RotateBehaviorName).state).toEqualWithAngle({
       angle: 0,
       duration: 200
     })
@@ -617,9 +620,7 @@ describe('serializeBehaviors() 3D utility', () => {
     const mesh = createBox('box1')
     const rotable = new RotateBehavior(state)
     mesh.addBehavior(rotable, true)
-    expect(serializeBehaviors([rotable])).toEqual({
-      rotable: state
-    })
+    expect(serializeBehaviors([rotable]).rotable).toEqualWithAngle(state)
   })
 
   it('serializes stackable behavior', () => {

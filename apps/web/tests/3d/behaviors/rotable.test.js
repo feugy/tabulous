@@ -93,23 +93,15 @@ describe('RotateBehavior', () => {
       const angle = Math.PI * 0.5
       const state = { angle, duration: faker.number.int(999) }
       behavior.fromState(state)
-      expect(behavior.state).toEqual({ ...state, angle })
+      expect({ ...behavior.state, angle: undefined }).toEqual({
+        ...state,
+        angle: undefined
+      })
+      expect(behavior.state.angle).toBeCloseTo(angle)
       expect(behavior.mesh).toEqual(mesh)
       expectRotated(mesh, angle)
       expect(animationEndReceived).not.toHaveBeenCalled()
       expect(recordSpy).not.toHaveBeenCalled()
-    })
-
-    it('rounds real angle', () => {
-      const state = { angle: Math.PI * 0.5, duration: faker.number.int(999) }
-      behavior.fromState(state)
-      expectRotated(mesh, Math.PI * 0.5)
-
-      mesh.rotation.y = Math.PI - 0.2
-      expectRotated(mesh, Math.PI, Math.PI - 0.2)
-
-      mesh.rotation.y = Math.PI * -0.5 + 0.2
-      expectRotated(mesh, Math.PI * -0.5, Math.PI * -0.5 + 0.2)
     })
 
     it('can restore state on existing mesh', () => {
@@ -188,6 +180,21 @@ describe('RotateBehavior', () => {
       expectRotated(mesh, Math.PI * 0.5)
     })
 
+    it('can rotate mesh with any angle', async () => {
+      const angle = faker.number.float(1) * Math.PI
+      expectRotated(mesh, 0)
+      await mesh.metadata.rotate(angle)
+      expectRotated(mesh, angle)
+      expect(animationEndReceived).toHaveBeenCalledOnce()
+      expect(recordSpy).toHaveBeenCalledOnce()
+      expect(recordSpy).toHaveBeenCalledWith({
+        mesh,
+        fn: 'rotate',
+        args: [angle],
+        duration: behavior.state.duration
+      })
+    })
+
     it('records rotations to controlManager', async () => {
       expectRotated(mesh, 0)
       expect(recordSpy).toHaveBeenCalledTimes(0)
@@ -196,6 +203,7 @@ describe('RotateBehavior', () => {
       expect(recordSpy).toHaveBeenNthCalledWith(1, {
         mesh,
         fn: 'rotate',
+        args: [Math.PI / 2],
         duration: behavior.state.duration
       })
       expectRotated(mesh, Math.PI * 0.5)
@@ -205,6 +213,7 @@ describe('RotateBehavior', () => {
       expect(recordSpy).toHaveBeenNthCalledWith(2, {
         mesh,
         fn: 'rotate',
+        args: [Math.PI],
         duration: behavior.state.duration
       })
       expectRotated(mesh, Math.PI)

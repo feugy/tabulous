@@ -69,6 +69,9 @@ describe('serializeMeshes() 3D utility', () => {
   const overlay = document.createElement('div')
   const renderWidth = 480
   const renderHeight = 350
+  vi.spyOn(window, 'getComputedStyle').mockImplementation(() => ({
+    height: `${renderHeight / 4}px`
+  }))
 
   it('handles empty scene', () => {
     expect(serializeMeshes()).toEqual([])
@@ -87,10 +90,7 @@ describe('serializeMeshes() 3D utility', () => {
     })
 
     beforeEach(() => {
-      vi.restoreAllMocks()
-      vi.spyOn(window, 'getComputedStyle').mockImplementation(() => ({
-        height: `${renderHeight / 4}px`
-      }))
+      vi.clearAllMocks()
       for (const mesh of [...scene.meshes]) {
         mesh.dispose()
       }
@@ -240,7 +240,7 @@ describe('serializeMeshes() 3D utility', () => {
       expect(serializeMeshes(scene)).toEqual([tile2.metadata.serialize()])
     })
 
-    it('keep tracks of meshes transitioning between scenes', async () => {
+    it('keep track of meshes transitioning between scenes', async () => {
       const mesh = await createCard({ id: 'card1', drawable: {} })
       const serialized = {
         ...mesh.metadata.serialize(),
@@ -390,7 +390,12 @@ describe('loadMeshes() 3D utility', () => {
       [0.5, 1, 0, 0],
       [0.5, 0, 1, 1]
     ],
-    drawable: { duration: 750, flipOnPlay: false, unflipOnPick: true }
+    drawable: {
+      duration: 750,
+      flipOnPlay: false,
+      unflipOnPick: true,
+      angleOnPick: 0
+    }
   }
 
   let prism1 = {

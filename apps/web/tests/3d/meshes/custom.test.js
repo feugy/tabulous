@@ -47,6 +47,19 @@ describe('createCustom()', () => {
     expect(mesh.behaviors).toHaveLength(0)
   })
 
+  it('creates a custom mesh with initial transformation', async () => {
+    const mesh = await createCustom({
+      id: 'pawn',
+      file,
+      transform: { scaleX: 2, scaleY: 2, scaleZ: 2 }
+    })
+    expect(mesh.name).toEqual('custom')
+    expectDimension(
+      mesh,
+      pawnDimensions.map(n => n * 2)
+    )
+  })
+
   it('throws on an empty data', async () => {
     const file = '/empty.obj'
     customShapeManager.set(file, btoa(JSON.stringify({})))

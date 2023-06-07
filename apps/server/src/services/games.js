@@ -84,6 +84,7 @@ import { canAccess } from './catalog.js'
  * @property {string[]} kinds? - acceptable meshe kinds, that could be stacked on top of this one. Leave undefined to accept all.
  * @property {number} extent? - dimension multiplier applied to the drop target.
  * @property {number} priority? - priority applied when multiple targets with same altitude apply.
+ * @property {number} angle? - angle applied to any rotable mesh pushed to the stack.
  */
 
 /**
@@ -101,14 +102,20 @@ import { canAccess } from './catalog.js'
  * @property {number} width? - anchor's width (X axis).
  * @property {number} height? - anchor's height (Y axis).
  * @property {number} depth? - anchor's depth (Z axis).
+ * @property {number} diameter? - anchor's diameter (X+Z axis), for round anchors.
  * @property {string[]} kinds? - acceptable meshe kinds, that could be snapped to the anchor. Leave undefined to accept all.
  * @property {number} priority? - priority applied when multiple targets with same altitude apply.
+ * @property {string} playerId? - when set, only this player can snap meshes to this anchor.
+ * @property {number} extent? - dimension multiplier applied to the drop target.
+ * @property {boolean} ignoreParts? - when set, and when snapping a multi-part mesh, takes it barycenter into account.
+ * @property {number} angle? - angle applied to any rotable mesh snapped to the anchor.
  */
 
 /**
  * @typedef {object} DrawableState state for drawable meshes:
  * @property {boolean} [unflipOnPick=true] - unflip flipped mesh when picking them in hand.
  * @property {boolean} [flipOnPlay=false] - flip flipable meshes when playing them from hand.
+ * @property {number} [angleOnPick=0] - set angle of rotable meshes when picking them in hand.
  * @property {number} [duration=750] - duration (in milliseconds) of the draw animation.
  */
 

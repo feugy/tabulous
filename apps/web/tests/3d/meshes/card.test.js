@@ -40,6 +40,16 @@ describe('createCard()', () => {
     )
   })
 
+  it('creates a card with initial transformation', async () => {
+    const mesh = await createCard({
+      width: 4,
+      depth: 2,
+      transform: { pitch: Math.PI * -0.5 }
+    })
+    expect(mesh.name).toEqual('card')
+    expectDimension(mesh, [2, 0.1, 4])
+  })
+
   describe('given a card with initial position, dimension, images and behaviors', async () => {
     let mesh
 

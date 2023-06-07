@@ -15,6 +15,14 @@ fragment mesh on Mesh {
   y
   z
   shape
+  transform {
+    yaw
+    pitch
+    roll
+    scaleX
+    scaleY
+    scaleZ
+  }
   file
   width
   height
@@ -77,6 +85,7 @@ fragment mesh on Mesh {
   drawable {
     unflipOnPick
     flipOnPlay
+    angleOnPick
     duration
   }
   lockable {
@@ -129,6 +138,7 @@ fragment fullGame on Game {
   preferences {
     playerId
     color
+    angle
   }
   rulesBookPageCount
   zoomSpec {
@@ -172,6 +182,7 @@ fragment gameData on GameOrParameters {
     preferences {
       playerId
       color
+      angle
     }
     rulesBookPageCount
     availableSeats
