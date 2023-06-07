@@ -4,14 +4,14 @@
   "description": "Tabulous web application",
   "type": "module",
   "scripts": {
-    "atelier": "vite build --mode export-atelier",
-    "build": "vite build",
+    "atelier": "NODE_OPTIONS=--max-old-space-size=4096 vite build --mode export-atelier",
+    "build": "NODE_OPTIONS=--max-old-space-size=4096 vite build",
     "preview": "vite preview",
     "start": "vite dev --open https://localhost:3000",
     "test": "NODE_OPTIONS=--max-old-space-size=7000 vitest run --coverage",
     "test:dev": "vitest dev --reporter=verbose",
     "test:integration": "pnpm test:integration:prepare && pnpm test:integration:run",
-    "test:integration:prepare": "vite build --mode integration",
+    "test:integration:prepare": "NODE_OPTIONS=--max-old-space-size=4096 vite build --mode integration",
     "test:integration:show": "playwright show-report coverage/integration",
     "test:integration:run": "playwright test"
   },
