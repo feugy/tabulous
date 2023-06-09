@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker'
-import { actions } from '@src/routes/login/+page.server'
+import { actions, load } from '@src/routes/login/+page.server'
 import { runMutation } from '@src/stores/graphql-client'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -7,6 +7,21 @@ vi.mock('@src/stores/graphql-client', () => ({
   initGraphQlClient: vi.fn(),
   runMutation: vi.fn()
 }))
+
+describe('/login route loader', () => {
+  it('redirects to home connected users', async () => {
+    await expect(async () =>
+      load({ locals: { session: { player: { name: 'dude' } } } })
+    ).rejects.toEqual({
+      status: 303,
+      location: '/home'
+    })
+  })
+
+  it('does nothing on anonymous access', () => {
+    expect(load({ locals: {} })).toBeUndefined()
+  })
+})
 
 describe('POST /login route action', () => {
   it('redirects to home and set session on success', async () => {
@@ -82,7 +97,7 @@ describe('POST /login route action', () => {
 
     expect(await actions.default({ request, locals, fetch })).toEqual({
       status: 401,
-      data: error
+      data: { message: error.message }
     })
     expect(locals.session).toBeUndefined()
   })

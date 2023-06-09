@@ -18,7 +18,7 @@
     !id || id.trim().length === 0 || !password || password.trim().length <= 3
 
   let details
-  let isPasswordOpen = false
+  let isPasswordOpen = !!error
 
   function resetError() {
     error = null
@@ -33,6 +33,9 @@
 
   function handleTogglePassword() {
     isPasswordOpen = details.open
+    if (!isPasswordOpen) {
+      resetError()
+    }
   }
 </script>
 
@@ -54,7 +57,7 @@
     {/if}
     <details
       bind:this={details}
-      open={!hasProviders || !!error || isPasswordOpen}
+      open={!hasProviders || isPasswordOpen}
       on:toggle={handleTogglePassword}
     >
       <summary class:hidden={!hasProviders} title="password-toggle">

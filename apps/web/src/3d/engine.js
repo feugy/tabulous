@@ -1,7 +1,6 @@
 // all BabylonJS imports must be from individual files to allow tree shaking.
 // more [here](https://doc.babylonjs.com/divingDeeper/developWithBjs/treeShaking)
 // mandatory side effects
-// import '@babylonjs/core/Debug/debugLayer'
 import '@babylonjs/core/Animations/animatable'
 import '@babylonjs/core/Materials/Textures/Loaders/ktxTextureLoader'
 import '@babylonjs/core/Rendering/edgesRenderer'
@@ -201,6 +200,7 @@ export function createEngine({
   /* c8 ignore start */
   if (typeof window !== 'undefined') {
     window.toggleDebugger = async (main = true, hand = false) => {
+      await import('@babylonjs/core/Debug/debugLayer')
       await import('@babylonjs/inspector')
       if (main) {
         if (!scene.debugLayer.isVisible()) {

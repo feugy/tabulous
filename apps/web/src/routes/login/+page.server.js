@@ -3,6 +3,14 @@ import { logIn } from '@src/stores/players'
 import { graphQlUrl } from '@src/utils/env'
 import { fail, redirect } from '@sveltejs/kit'
 
+/** @type {import('./$types').ServerLoad} */
+export function load({ locals }) {
+  const { session = null } = locals
+  if (session && session.player) {
+    throw redirect(303, '/home')
+  }
+}
+
 export const actions = {
   /** @type {import('./$types').Action} */
   default: async ({ request, locals, fetch }) => {
@@ -23,8 +31,8 @@ export const actions = {
     try {
       initGraphQlClient({ graphQlUrl, fetch, subscriptionSupport: false })
       locals.session = await logIn(id, password)
-    } catch (err) {
-      return fail(401, err)
+    } catch (error) {
+      return fail(401, { message: error.message })
     }
     throw redirect(303, location || '/home')
   }

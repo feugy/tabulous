@@ -6,8 +6,8 @@ import { BehaviorSubject } from 'rxjs'
  * @property {boolean} useGoogleProvider enables "Connect with Google" button.
  */
 const flags$ = new BehaviorSubject({
-  useGithubProvider: import.meta.env.WEB_USE_GITHUB_PROVIDER,
-  useGoogleProvider: import.meta.env.WEB_USE_GOOGLE_PROVIDER
+  useGithubProvider: Boolean(import.meta.env.WEB_USE_GITHUB_PROVIDER),
+  useGoogleProvider: Boolean(import.meta.env.WEB_USE_GOOGLE_PROVIDER)
 })
 
 /**

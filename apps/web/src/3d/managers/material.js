@@ -147,7 +147,11 @@ function buildMaterial(materialByUrl, baseUrl, url, scene) {
     material.alpha = material.diffuseColor.a
   } else {
     material.transparencyMode = PBRBaseMaterial.PBRMATERIAL_ALPHATEST
-    material.diffuseTexture = new Texture(adaptTextureUrl(baseUrl, url), scene)
+    material.diffuseTexture = new Texture(
+      adaptTextureUrl(baseUrl, url),
+      scene,
+      { invertY: false }
+    )
     material.diffuseTexture.hasAlpha = true
     // new ColorizeMaterialPlugin(material)
     attachMaterialError(material)
