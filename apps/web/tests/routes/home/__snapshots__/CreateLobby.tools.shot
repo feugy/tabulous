@@ -1,9 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Default 1`] = `
-<article
+<button
   class="s-XAn5sMboW1io"
-  role="link"
   tabindex="0"
 >
   <legend
@@ -21,5 +20,5 @@ exports[`Default 1`] = `
       Invitez vos ami·e·s puis décidez à quel jeu jouer.
     </div>
   </legend>
-</article>
+</button>
 `;

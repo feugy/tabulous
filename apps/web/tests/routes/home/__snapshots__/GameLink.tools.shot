@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Current lobby 1`] = `
-<article
+<button
   class="s-QQoQzhRq8NK6 lobby isCurrent"
-  role="link"
+  style="--bg-url: url('http://localhost:3001/games/undefined/catalog/cover.webp');"
   tabindex="0"
 >
   <span
@@ -42,13 +42,13 @@ exports[`Current lobby 1`] = `
   </span>
    
    
-</article>
+</button>
 `;
 
 exports[`Guests only 1`] = `
-<article
+<button
   class="s-QQoQzhRq8NK6"
-  role="link"
+  style="--bg-url: url('http://localhost:3001/games/riichi/catalog/cover.webp');"
   tabindex="0"
 >
   <span
@@ -77,13 +77,13 @@ exports[`Guests only 1`] = `
   >
     invités: John, Georges
   </span>
-</article>
+</button>
 `;
 
 exports[`Invited 1`] = `
-<article
+<button
   class="s-QQoQzhRq8NK6"
-  role="link"
+  style="--bg-url: url('http://localhost:3001/games/riichi/catalog/cover.webp');"
   tabindex="0"
 >
   <span
@@ -117,13 +117,13 @@ exports[`Invited 1`] = `
   >
     invités: John, Georges
   </span>
-</article>
+</button>
 `;
 
 exports[`Lobby 1`] = `
-<article
+<button
   class="s-QQoQzhRq8NK6 lobby"
-  role="link"
+  style="--bg-url: url('http://localhost:3001/games/undefined/catalog/cover.webp');"
   tabindex="0"
 >
   <span
@@ -147,13 +147,13 @@ exports[`Lobby 1`] = `
   </span>
    
    
-</article>
+</button>
 `;
 
 exports[`Owned 1`] = `
-<article
+<button
   class="s-QQoQzhRq8NK6"
-  role="link"
+  style="--bg-url: url('http://localhost:3001/games/riichi/catalog/cover.webp');"
   tabindex="0"
 >
   <span
@@ -202,13 +202,13 @@ exports[`Owned 1`] = `
   >
     invités: John, Georges
   </span>
-</article>
+</button>
 `;
 
 exports[`Single owned 1`] = `
-<article
+<button
   class="s-QQoQzhRq8NK6"
-  role="link"
+  style="--bg-url: url('http://localhost:3001/games/riichi/catalog/cover.webp');"
   tabindex="0"
 >
   <span
@@ -247,5 +247,5 @@ exports[`Single owned 1`] = `
   </span>
    
    
-</article>
+</button>
 `;

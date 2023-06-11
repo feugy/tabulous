@@ -4,9 +4,8 @@ exports[`No age nor time 1`] = `
 <span
   class="catalog-item-viewer s-rLDQDs7gMRnu"
 >
-  <article
+  <button
     class="s-Z6y0dSYOFWU8"
-    role="link"
     tabindex="0"
   >
     <img
@@ -61,24 +60,14 @@ exports[`No age nor time 1`] = `
         </span>
       </div>
        
-      <details
-        class="s-Z6y0dSYOFWU8 hidden"
+      <div
+        class="details s-Z6y0dSYOFWU8"
       >
-        <summary
-          class="s-Z6y0dSYOFWU8"
-        >
-          <strong
-            class="s-Z6y0dSYOFWU8"
-          >
-            Créé par : 
-          </strong>
-          undefined
-        </summary>
          
          
-      </details>
+      </div>
     </legend>
-  </article>
+  </button>
   <!--&lt;CatalogItem&gt;-->
 </span>
 `;
@@ -87,9 +76,8 @@ exports[`With characteristics 1`] = `
 <span
   class="catalog-item-viewer s-rLDQDs7gMRnu"
 >
-  <article
+  <button
     class="s-Z6y0dSYOFWU8"
-    role="link"
     tabindex="0"
   >
     <img
@@ -144,24 +132,14 @@ exports[`With characteristics 1`] = `
         </span>
       </div>
        
-      <details
-        class="s-Z6y0dSYOFWU8 hidden"
+      <div
+        class="details s-Z6y0dSYOFWU8"
       >
-        <summary
-          class="s-Z6y0dSYOFWU8"
-        >
-          <strong
-            class="s-Z6y0dSYOFWU8"
-          >
-            Créé par : 
-          </strong>
-          undefined
-        </summary>
          
          
-      </details>
+      </div>
     </legend>
-  </article>
+  </button>
   <!--&lt;CatalogItem&gt;-->
 </span>
 `;
@@ -170,9 +148,8 @@ exports[`With characteristics and copyright 1`] = `
 <span
   class="catalog-item-viewer s-rLDQDs7gMRnu"
 >
-  <article
+  <button
     class="s-Z6y0dSYOFWU8"
-    role="link"
     tabindex="0"
   >
     <img
@@ -227,10 +204,10 @@ exports[`With characteristics and copyright 1`] = `
         </span>
       </div>
        
-      <details
-        class="s-Z6y0dSYOFWU8"
+      <div
+        class="details s-Z6y0dSYOFWU8"
       >
-        <summary
+        <p
           class="s-Z6y0dSYOFWU8"
         >
           <strong
@@ -239,7 +216,7 @@ exports[`With characteristics and copyright 1`] = `
             Créé par : 
           </strong>
           John Doe, Jane Lark
-        </summary>
+        </p>
          
         <p
           class="s-Z6y0dSYOFWU8"
@@ -262,9 +239,9 @@ exports[`With characteristics and copyright 1`] = `
           </strong>
           Awesome games, Games from elsewhere
         </p>
-      </details>
+      </div>
     </legend>
-  </article>
+  </button>
   <!--&lt;CatalogItem&gt;-->
 </span>
 `;

@@ -95,24 +95,19 @@ exports[`Anonymous 1`] = `
         class="padded s-A-bC3Hke5zSn"
       >
          
-        <span
-          class="heading s-A-bC3Hke5zSn"
+        <h2
+          class="s-A-bC3Hke5zSn"
         >
-          <h2
-            class="s-A-bC3Hke5zSn"
-          >
-            Jeux disponibles
-          </h2>
-        </span>
+          Jeux disponibles
+        </h2>
          
         <section
           aria-roledescription="catalog"
           class="s-A-bC3Hke5zSn"
         >
            
-          <article
+          <button
             class="s-Z6y0dSYOFWU8"
-            role="link"
             tabindex="0"
           >
             <img
@@ -167,28 +162,17 @@ exports[`Anonymous 1`] = `
                 </span>
               </div>
                
-              <details
-                class="s-Z6y0dSYOFWU8 hidden"
+              <div
+                class="details s-Z6y0dSYOFWU8"
               >
-                <summary
-                  class="s-Z6y0dSYOFWU8"
-                >
-                  <strong
-                    class="s-Z6y0dSYOFWU8"
-                  >
-                    Créé par : 
-                  </strong>
-                  undefined
-                </summary>
                  
                  
-              </details>
+              </div>
             </legend>
-          </article>
+          </button>
           <!--&lt;CatalogItem&gt;-->
-          <article
+          <button
             class="s-Z6y0dSYOFWU8"
-            role="link"
             tabindex="0"
           >
             <img
@@ -243,28 +227,17 @@ exports[`Anonymous 1`] = `
                 </span>
               </div>
                
-              <details
-                class="s-Z6y0dSYOFWU8 hidden"
+              <div
+                class="details s-Z6y0dSYOFWU8"
               >
-                <summary
-                  class="s-Z6y0dSYOFWU8"
-                >
-                  <strong
-                    class="s-Z6y0dSYOFWU8"
-                  >
-                    Créé par : 
-                  </strong>
-                  undefined
-                </summary>
                  
                  
-              </details>
+              </div>
             </legend>
-          </article>
+          </button>
           <!--&lt;CatalogItem&gt;-->
-          <article
+          <button
             class="s-Z6y0dSYOFWU8"
-            role="link"
             tabindex="0"
           >
             <img
@@ -319,24 +292,14 @@ exports[`Anonymous 1`] = `
                 </span>
               </div>
                
-              <details
-                class="s-Z6y0dSYOFWU8 hidden"
+              <div
+                class="details s-Z6y0dSYOFWU8"
               >
-                <summary
-                  class="s-Z6y0dSYOFWU8"
-                >
-                  <strong
-                    class="s-Z6y0dSYOFWU8"
-                  >
-                    Créé par : 
-                  </strong>
-                  undefined
-                </summary>
                  
                  
-              </details>
+              </div>
             </legend>
-          </article>
+          </button>
           <!--&lt;CatalogItem&gt;-->
         </section>
       </span>
@@ -500,24 +463,20 @@ exports[`Authenticated 1`] = `
       <span
         class="padded s-A-bC3Hke5zSn"
       >
-        <span
-          class="heading s-A-bC3Hke5zSn"
+        <h2
+          class="s-A-bC3Hke5zSn"
         >
-          <h2
-            class="s-A-bC3Hke5zSn"
-          >
-            Parties en cours
-          </h2>
-        </span>
+          Parties en cours
+        </h2>
          
         <section
           aria-roledescription="games"
           class="s-A-bC3Hke5zSn"
         >
           
-          <article
+          <button
             class="s-QQoQzhRq8NK6"
-            role="link"
+            style="--bg-url: url('http://localhost:3001/games/playground/catalog/cover.webp');"
             tabindex="0"
           >
             <span
@@ -556,12 +515,12 @@ exports[`Authenticated 1`] = `
             </span>
              
              
-          </article>
+          </button>
           <!--&lt;GameLink&gt;-->
           
-          <article
+          <button
             class="s-QQoQzhRq8NK6"
-            role="link"
+            style="--bg-url: url('http://localhost:3001/games/6-takes/catalog/cover.webp');"
             tabindex="0"
           >
             <span
@@ -595,27 +554,22 @@ exports[`Authenticated 1`] = `
             >
               invités: Hugo
             </span>
-          </article>
+          </button>
           <!--&lt;GameLink&gt;-->
         </section>
          
-        <span
-          class="heading s-A-bC3Hke5zSn"
+        <h2
+          class="s-A-bC3Hke5zSn"
         >
-          <h2
-            class="s-A-bC3Hke5zSn"
-          >
-            Jeux disponibles
-          </h2>
-        </span>
+          Jeux disponibles
+        </h2>
          
         <section
           aria-roledescription="catalog"
           class="s-A-bC3Hke5zSn"
         >
-          <article
+          <button
             class="s-XAn5sMboW1io"
-            role="link"
             tabindex="0"
           >
             <legend
@@ -633,12 +587,11 @@ exports[`Authenticated 1`] = `
                 Invitez vos ami·e·s puis décidez à quel jeu jouer.
               </div>
             </legend>
-          </article>
+          </button>
           <!--&lt;CreateLobby&gt;-->
            
-          <article
+          <button
             class="s-Z6y0dSYOFWU8"
-            role="link"
             tabindex="0"
           >
             <img
@@ -693,10 +646,10 @@ exports[`Authenticated 1`] = `
                 </span>
               </div>
                
-              <details
-                class="s-Z6y0dSYOFWU8"
+              <div
+                class="details s-Z6y0dSYOFWU8"
               >
-                <summary
+                <p
                   class="s-Z6y0dSYOFWU8"
                 >
                   <strong
@@ -705,7 +658,7 @@ exports[`Authenticated 1`] = `
                     Créé par : 
                   </strong>
                   Paul Dennen
-                </summary>
+                </p>
                  
                 <p
                   class="s-Z6y0dSYOFWU8"
@@ -728,13 +681,12 @@ exports[`Authenticated 1`] = `
                   </strong>
                   Dire Wolf Digital, Gale Force Nine, Lucky Duck, Legendary
                 </p>
-              </details>
+              </div>
             </legend>
-          </article>
+          </button>
           <!--&lt;CatalogItem&gt;-->
-          <article
+          <button
             class="s-Z6y0dSYOFWU8"
-            role="link"
             tabindex="0"
           >
             <img
@@ -789,10 +741,10 @@ exports[`Authenticated 1`] = `
                 </span>
               </div>
                
-              <details
-                class="s-Z6y0dSYOFWU8"
+              <div
+                class="details s-Z6y0dSYOFWU8"
               >
-                <summary
+                <p
                   class="s-Z6y0dSYOFWU8"
                 >
                   <strong
@@ -801,7 +753,7 @@ exports[`Authenticated 1`] = `
                     Créé par : 
                   </strong>
                   Wolfgang Kramer
-                </summary>
+                </p>
                  
                 <p
                   class="s-Z6y0dSYOFWU8"
@@ -824,13 +776,12 @@ exports[`Authenticated 1`] = `
                   </strong>
                   Amigo, Gigamic
                 </p>
-              </details>
+              </div>
             </legend>
-          </article>
+          </button>
           <!--&lt;CatalogItem&gt;-->
-          <article
+          <button
             class="s-Z6y0dSYOFWU8"
-            role="link"
             tabindex="0"
           >
             <img
@@ -885,28 +836,17 @@ exports[`Authenticated 1`] = `
                 </span>
               </div>
                
-              <details
-                class="s-Z6y0dSYOFWU8 hidden"
+              <div
+                class="details s-Z6y0dSYOFWU8"
               >
-                <summary
-                  class="s-Z6y0dSYOFWU8"
-                >
-                  <strong
-                    class="s-Z6y0dSYOFWU8"
-                  >
-                    Créé par : 
-                  </strong>
-                  undefined
-                </summary>
                  
                  
-              </details>
+              </div>
             </legend>
-          </article>
+          </button>
           <!--&lt;CatalogItem&gt;-->
-          <article
+          <button
             class="s-Z6y0dSYOFWU8"
-            role="link"
             tabindex="0"
           >
             <img
@@ -961,28 +901,17 @@ exports[`Authenticated 1`] = `
                 </span>
               </div>
                
-              <details
-                class="s-Z6y0dSYOFWU8 hidden"
+              <div
+                class="details s-Z6y0dSYOFWU8"
               >
-                <summary
-                  class="s-Z6y0dSYOFWU8"
-                >
-                  <strong
-                    class="s-Z6y0dSYOFWU8"
-                  >
-                    Créé par : 
-                  </strong>
-                  undefined
-                </summary>
                  
                  
-              </details>
+              </div>
             </legend>
-          </article>
+          </button>
           <!--&lt;CatalogItem&gt;-->
-          <article
+          <button
             class="s-Z6y0dSYOFWU8"
-            role="link"
             tabindex="0"
           >
             <img
@@ -1037,24 +966,14 @@ exports[`Authenticated 1`] = `
                 </span>
               </div>
                
-              <details
-                class="s-Z6y0dSYOFWU8 hidden"
+              <div
+                class="details s-Z6y0dSYOFWU8"
               >
-                <summary
-                  class="s-Z6y0dSYOFWU8"
-                >
-                  <strong
-                    class="s-Z6y0dSYOFWU8"
-                  >
-                    Créé par : 
-                  </strong>
-                  undefined
-                </summary>
                  
                  
-              </details>
+              </div>
             </legend>
-          </article>
+          </button>
           <!--&lt;CatalogItem&gt;-->
         </section>
       </span>

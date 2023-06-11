@@ -26,7 +26,7 @@ describe('/home CatalogItem component', () => {
     )
     expect(screen.getByRole('heading')).toHaveTextContent(title)
 
-    await fireEvent.click(screen.getByRole('link'))
+    await fireEvent.click(screen.getByRole('button'))
     expect(handleSelect).toHaveBeenCalledWith(
       expect.objectContaining({ detail: game.name })
     )

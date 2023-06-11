@@ -28,7 +28,7 @@
 
 <style lang="postcss">
   button {
-    @apply py-2 px-4 inline-flex justify-center items-center relative transition-all duration-$short;
+    @apply bg-$secondary text-$ink py-2 px-4 inline-flex justify-center items-center relative transition-all duration-$short rounded;
     --shadow-drop: 3px 3px;
     filter: drop-shadow(var(--shadow-drop) 0px var(--shadow-color));
 
@@ -41,57 +41,10 @@
       @apply bg-$disabled text-$ink-dark;
     }
 
-    &.has-text:not(.transparent) {
-      @apply bg-transparent;
-
-      &:before {
-        @apply absolute inset-0 transition-all duration-$short;
-        z-index: -1;
-        content: '';
-
-        --corner-cut: 8px;
-        clip-path: polygon(
-          0 var(--corner-cut),
-          var(--corner-cut) 0,
-          100% 0,
-          100% calc(100% - var(--corner-cut)),
-          calc(100% - var(--corner-cut)) 100%,
-          0 100%
-        );
-      }
-
-      &.primary:disabled,
-      &:disabled {
-        &:before {
-          @apply bg-$disabled;
-        }
-      }
-    }
-
-    & .badge {
-      @apply absolute rounded-full leading-4 text-xs p-0.5
-         flex justify-center items-center bg-$primary-darker 
-         text-$ink-dark -top-2 -left-2 min-w-5;
-    }
-  }
-
-  button {
-    @apply bg-$secondary text-$ink;
-
     &.has-text {
-      @apply bg-transparent;
-
-      &:before {
-        @apply bg-$secondary;
-      }
-
       &:focus,
       &:hover:not(:disabled) {
-        @apply bg-transparent  text-$ink;
-
-        &:before {
-          @apply bg-$secondary-light;
-        }
+        @apply bg-$secondary-light text-$ink;
       }
     }
 
@@ -103,33 +56,27 @@
     }
 
     & .badge {
-      @apply bg-$secondary-darker;
+      @apply absolute rounded-full leading-4 text-xs p-0.5
+         flex justify-center items-center bg-$secondary-darker
+         text-$ink-dark -top-2 -left-2 min-w-5;
     }
   }
 
-  button.primary {
+  button.primary:not(:disabled) {
     @apply bg-$primary text-$ink;
 
     &.has-text {
-      @apply bg-transparent;
-
-      &:before {
-        @apply bg-$primary;
-      }
+      @apply bg-$primary;
 
       &:focus,
-      &:hover:not(:disabled) {
-        @apply bg-transparent  text-$ink;
-
-        &:before {
-          @apply bg-$primary-light;
-        }
+      &:hover {
+        @apply bg-$primary-light text-$ink;
       }
     }
 
     &:not(.has-text) {
       &:focus,
-      &:hover:not(:disabled) {
+      &:hover {
         @apply bg-$primary-light text-$ink;
       }
     }

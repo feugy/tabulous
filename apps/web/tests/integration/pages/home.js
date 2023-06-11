@@ -32,18 +32,18 @@ export const HomePage = mixin(
         name: translate('titles.your-games')
       })
       /** @type {Locator} */
-      this.games = page.locator('[aria-roledescription="games"] >> role=link')
+      this.games = page.locator('[aria-roledescription="games"] >> role=button')
       /** @type {Locator} */
       this.catalogHeading = page.getByRole('heading', {
         name: translate('titles.catalog')
       })
       /** @type {Locator} */
       this.catalogItems = page.locator(
-        '[aria-roledescription="catalog"] >> role=link'
+        '[aria-roledescription="catalog"] >> role=button'
       )
       /** @type {Locator} */
-      this.catalogItemHeadings = this.catalogItems.filter({
-        has: page.getByRole('heading', { level: 3 })
+      this.catalogItemHeadings = this.catalogItems.getByRole('heading', {
+        level: 3
       })
       /** @type {Locator} */
       this.closeGameButtons = this.games.getByRole('button', { name: 'close' })

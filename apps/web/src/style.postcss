@@ -71,13 +71,7 @@
   --shadow-color: rgba(0, 0, 0, 0.3);
   --shadow-blur: 1px;
 
-  --page-bg: local
-    linear-gradient(
-      180deg,
-      var(--base) 0%,
-      var(--base) 10%,
-      var(--base-light) 100%
-    );
+  --page-bg: local url('/background-hexagon.svg') rgb(249, 250, 251) repeat;
 
   --short: 150ms;
   --medium: 300ms;
@@ -97,8 +91,9 @@
 
 html,
 body {
-  @apply font-sans h-full m-0 bg-$base-lighter text-$ink font-300;
+  @apply font-sans h-full m-0 text-$ink font-300;
   font-family: var(--font-base);
+  background: var(--page-bg);
 }
 
 h1,
@@ -114,17 +109,8 @@ h1 {
 }
 
 h2 {
-  @apply px-8 py-4 bg-$primary-dark text-$ink-dark mt-6 mb-4 text-2xl;
-
-  --corner-cut: 1rem;
-  clip-path: polygon(
-    0 var(--corner-cut),
-    var(--corner-cut) 0,
-    100% 0,
-    100% calc(100% - var(--corner-cut)),
-    calc(100% - var(--corner-cut)) 100%,
-    0 100%
-  );
+  @apply px-8 py-4 mt-6 mb-4 text-2xl;
+  border-radius: ;
 }
 
 h3 {
@@ -137,7 +123,6 @@ h4 {
 
 body {
   @apply relative flex flex-col h-max min-h-full overflow-auto;
-  background: var(--page-bg);
 
   & > :first-child {
     @apply flex-1;
