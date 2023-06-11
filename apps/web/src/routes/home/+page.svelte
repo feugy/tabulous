@@ -132,7 +132,7 @@
       <i id="top" />
       <span class="padded">
         {#if user}
-          <span class="heading"><h2>{$_('titles.your-games')}</h2></span>
+          <h2>{$_('titles.your-games')}</h2>
           <section aria-roledescription="games">
             {#each $games.sort((a, b) => b.created - a.created) as game (game.id)}
               <GameLink
@@ -149,7 +149,7 @@
           </section>
         {/if}
 
-        <span class="heading"><h2>{$_('titles.catalog')}</h2></span>
+        <h2>{$_('titles.catalog')}</h2>
         <section aria-roledescription="catalog">
           {#if user}
             <CreateLobby on:select={handleCreateLobby} />
@@ -199,31 +199,25 @@
   }
 
   .grid {
-    @apply grid grid-cols-[1fr,auto] flex-1 overflow-x-hidden;
+    @apply grid grid-cols-[1fr,auto] grid-rows-[100%] flex-1 overflow-hidden;
   }
 
   .scrollable {
     @apply flex flex-col overflow-y-auto;
+    background: var(--page-bg);
   }
 
   .padded {
     @apply px-6 flex-1;
   }
 
-  .heading {
-    --shadow-drop: 0.5rem 0.5rem;
-    filter: drop-shadow(
-      var(--shadow-drop) var(--shadow-blur) var(--shadow-color)
-    );
-  }
-
   h2 {
-    @apply mx-auto w-full max-w-screen-2xl;
+    @apply mx-auto w-full max-w-screen-2xl border-b-2 border-$base;
   }
 
   section {
     @apply grid my-6 gap-6 justify-center mx-auto max-w-screen-2xl;
-    grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), auto));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   }
 
   .no-games {

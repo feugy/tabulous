@@ -7,36 +7,19 @@
   function handleClick() {
     dispatch('select')
   }
-
-  function handleKey(event) {
-    if (event.key === ' ' || event.key === 'Enter') {
-      event.preventDefault()
-      handleClick()
-    }
-  }
 </script>
 
-<article role="link" tabindex="0" on:click={handleClick} on:keyup={handleKey}>
+<button tabindex="0" on:click={handleClick}>
   <legend>
     <h3>{$_('actions.create-lobby')}</h3>
     <div>{$_('labels.lobby-description')}</div>
   </legend>
-</article>
+</button>
 
 <style lang="postcss">
-  article {
-    @apply m-4 cursor-pointer bg-$secondary-darkest transition-all duration-$short;
+  button {
+    @apply m-4 cursor-pointer bg-$secondary-darkest text-left rounded transition-all duration-$short;
     grid-template-areas: 'full';
-
-    --corner-cut: 1rem;
-    clip-path: polygon(
-      0 var(--corner-cut),
-      var(--corner-cut) 0,
-      100% 0,
-      100% calc(100% - var(--corner-cut)),
-      calc(100% - var(--corner-cut)) 100%,
-      0 100%
-    );
 
     &:hover {
       @apply transform-gpu scale-105;

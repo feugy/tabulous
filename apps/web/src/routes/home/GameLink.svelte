@@ -1,6 +1,6 @@
 <script>
   import { Button } from '@src/components'
-  import { isLobby } from '@src/utils'
+  import { gameAssetsUrl, isLobby } from '@src/utils'
   import { createEventDispatcher } from 'svelte'
   import { _, locale } from 'svelte-intl'
 
@@ -18,6 +18,7 @@
     .filter(player => player && player.isGuest && player.id !== playerId)
     .map(({ username }) => username)
   $: title = isALobby ? $_('titles.lobby') : game.locales?.[$locale]?.title
+  $: coverImage = game ? `${gameAssetsUrl}/${game.kind}/catalog/cover.webp` : ''
 
   function handleDelete(event) {
     dispatch('delete', game)
@@ -32,22 +33,14 @@
     dispatch('close', game)
     event.stopPropagation()
   }
-
-  function handleKey(event) {
-    if (event.key === ' ' || event.key === 'Enter') {
-      event.preventDefault()
-      handleClick()
-    }
-  }
 </script>
 
-<article
+<button
   class:lobby={isALobby}
   class:isCurrent
-  role="link"
-  tabindex="0"
+  tabindex={0}
+  style="--bg-url: url('{coverImage}')"
   on:click={handleClick}
-  on:keyup={handleKey}
 >
   <span class="title">
     <h3>{title}</h3>
@@ -74,30 +67,33 @@
       >{$_('labels.peer-guests', { names: guestNames.join(', ') })}</span
     >
   {/if}
-</article>
+</button>
 
 <style lang="postcss">
-  article {
-    @apply inline-flex flex-col p-4 m-2 cursor-pointer bg-$base-light;
-    transition: background-color var(--long), color var(--medium) var(--short),
+  button {
+    @apply relative inline-flex flex-col p-4 m-2 cursor-pointer bg-$base-lighter text-left rounded;
+    transition: background-color var(--long), color var(--medium),
       transform var(--short);
 
-    --corner-cut: 1rem;
-    clip-path: polygon(
-      0 var(--corner-cut),
-      var(--corner-cut) 0,
-      100% 0,
-      100% calc(100% - var(--corner-cut)),
-      calc(100% - var(--corner-cut)) 100%,
-      0 100%
-    );
+    &::before {
+      @apply absolute inset-0 w-full h-full;
+      content: '';
+      background-image: var(--bg-url);
+      background-size: cover;
+      filter: grayscale(100%) opacity(15%);
+    }
 
     &:not(.isCurrent) .buttons {
       @apply invisible;
     }
 
     &:hover {
-      @apply transform-gpu scale-105 bg-$base-darker text-$ink-dark;
+      @apply transform-gpu scale-110 bg-$base-darker text-$ink-dark;
+
+      h3 {
+        @apply text-$primary-lighter;
+        transition: color var(--long) var(--medium);
+      }
 
       .buttons {
         @apply visible;

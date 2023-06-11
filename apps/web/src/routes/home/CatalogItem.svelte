@@ -10,7 +10,6 @@
   $: seatsHidden = !game?.maxSeats && !game?.minSeats
   $: timeHidden = !game?.minTime
   $: ageHidden = !game?.minAge
-  $: detailsHidden = !game?.copyright
 
   function formatCopyright(field) {
     return game?.copyright?.[field].map(({ name }) => name).join(', ')
@@ -27,16 +26,9 @@
   function handleClick() {
     dispatch('select', game.name)
   }
-
-  function handleKey(event) {
-    if (event.key === ' ' || event.key === 'Enter') {
-      event.preventDefault()
-      handleClick()
-    }
-  }
 </script>
 
-<article role="link" tabindex={0} on:click={handleClick} on:keyup={handleKey}>
+<button tabindex={0} on:click={handleClick}>
   <img src="{gameAssetsUrl}/{game.name}/catalog/cover.webp" alt={title} />
   <legend>
     <h3>{title}</h3>
@@ -51,12 +43,14 @@
         class:hidden={ageHidden}>{$_('labels.game-min-age', game)}</span
       >
     </div>
-    <details class:hidden={detailsHidden}>
-      <summary on:click|stopPropagation on:keyup|stopPropagation
-        ><strong>{$_('labels.game-authors')}</strong>{formatCopyright(
-          'authors'
-        )}</summary
-      >
+    <div class="details">
+      {#if game?.copyright?.authors}
+        <p>
+          <strong>{$_('labels.game-authors')}</strong>{formatCopyright(
+            'authors'
+          )}
+        </p>
+      {/if}
       {#if game?.copyright?.designers}
         <p>
           <strong>{$_('labels.game-designers')}</strong>{formatCopyright(
@@ -71,38 +65,31 @@
           )}
         </p>
       {/if}
-    </details>
+    </div>
   </legend>
-</article>
+</button>
 
 <style lang="postcss">
-  article {
-    @apply inline-grid h-64 cursor-pointer flex-1 p-1;
-    grid-template-areas: 'full';
+  button {
+    @apply inline-flex flex-col justify-center h-64 flex-1 bg-$base-lighter text-left rounded;
 
     &:hover {
-      legend {
-        @apply opacity-90 text-$ink-dark;
-
-        h3,
-        strong {
-          @apply text-$secondary-light;
-        }
-        .material-icons {
-          @apply $text-$primary-light;
-        }
+      img {
+        @apply max-h-1/3 -m-b-3;
       }
 
-      img {
-        @apply transform-gpu scale-110;
+      legend {
+        @apply h-1/1 opacity-100 text-$ink-dark;
+      }
+
+      .details {
+        @apply opacity-100;
       }
     }
   }
 
   img {
-    @apply max-h-full place-self-center overflow-hidden 
-           transition-all duration-$short;
-    grid-area: full;
+    @apply max-h-full place-self-center overflow-hidden z-10 transition-all;
     --shadow-drop: 0.5rem 0.5rem;
     filter: drop-shadow(
       var(--shadow-drop) var(--shadow-blur) var(--shadow-color)
@@ -110,32 +97,21 @@
   }
 
   legend {
-    @apply inline-grid grid-rows-[min-content,1fr] grid-cols-[auto,min-content] gap-4 p-4 -m-2
-           opacity-0 bg-$base-darker text-$base-darker overflow-hidden;
-    transition: opacity var(--long), color var(--medium) var(--short);
-    grid-area: full;
-
-    --corner-cut: 1.5rem;
-    clip-path: polygon(
-      0 var(--corner-cut),
-      var(--corner-cut) 0,
-      100% 0,
-      100% calc(100% - var(--corner-cut)),
-      calc(100% - var(--corner-cut)) 100%,
-      0 100%
-    );
+    @apply inline-grid grid-rows-[min-content,1fr] grid-cols-[auto,min-content] gap-1 p-4 -m-3
+           h-0 opacity-0 bg-$base-darker text-$base-darker overflow-hidden z-1 rounded;
+    transition: opacity var(--long) var(--medium), height var(--long);
   }
 
   h3 {
-    @apply mt-1 mx-1 mb-2;
-    transition: color var(--medium) var(--short);
+    @apply m-1 text-$primary-lighter;
   }
 
-  details:not(.hidden) {
-    @apply flex flex-col overflow-auto;
+  .details {
+    @apply flex flex-col overflow-auto m-l-1 text-$ink-dark opacity-0;
+    transition: opacity var(--short) var(--long);
+
     strong {
-      @apply font-normal;
-      transition: color var(--medium) var(--short);
+      @apply font-normal text-$secondary-light;
     }
 
     p {
@@ -147,8 +123,7 @@
     @apply row-span-2 flex flex-col items-center;
 
     .material-icons {
-      @apply mt-2;
-      transition: color var(--medium) var(--short);
+      @apply mt-2 $text-$secondary-dark;
     }
   }
 </style>
