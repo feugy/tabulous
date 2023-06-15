@@ -32,7 +32,7 @@ export const HomePage = mixin(
         name: translate('titles.your-games')
       })
       /** @type {Locator} */
-      this.games = page.locator('[aria-roledescription="games"] >> role=button')
+      this.games = page.locator('[aria-roledescription="games"] >> article')
       /** @type {Locator} */
       this.catalogHeading = page.getByRole('heading', {
         name: translate('titles.catalog')
