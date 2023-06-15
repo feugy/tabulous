@@ -204,10 +204,14 @@ describe('/home route', () => {
 
   it('can cancels game deletion', async () => {
     await renderWithLoad()
-    const gameLink = screen.getByRole('heading', {
-      name: games[0].locales.fr.title
-    }).parentElement
-    await fireEvent.click(within(gameLink).getByRole('button'))
+    const gameLink = screen
+      .getByRole('heading', {
+        name: games[0].locales.fr.title
+      })
+      .closest('article')
+    await fireEvent.click(
+      within(gameLink).getByRole('button', { name: 'delete' })
+    )
 
     const confirmDialogue = screen.getByRole('dialog')
     expect(confirmDialogue).toBeInTheDocument()
@@ -220,10 +224,14 @@ describe('/home route', () => {
 
   it('displays a toaster on game deletion', async () => {
     await renderWithLoad()
-    const gameLink = screen.getByRole('heading', {
-      name: games[0].locales.fr.title
-    }).parentElement
-    await fireEvent.click(within(gameLink).getByRole('button'))
+    const gameLink = screen
+      .getByRole('heading', {
+        name: games[0].locales.fr.title
+      })
+      .closest('article')
+    await fireEvent.click(
+      within(gameLink).getByRole('button', { name: 'delete' })
+    )
 
     const confirmDialogue = screen.getByRole('dialog')
     expect(confirmDialogue).toBeInTheDocument()
