@@ -18,41 +18,51 @@
   on:keydown
   on:pointerup
   on:pointerdown
-  >{#if icon}<span class="material-icons">{icon}</span
-    >{:else if $$slots.icon}<span class="icon"><slot name="icon" /></span
-    >{/if}{#if text}<span class="text">{text}</span
-    >{/if}{#if badge != undefined}<span class="badge"
-      >{badge > 999 ? `+999` : badge}</span
-    >{/if}<slot /></button
+  ><div>
+    {#if icon}<span class="material-icons">{icon}</span
+      >{:else if $$slots.icon}<span class="icon"><slot name="icon" /></span
+      >{/if}{#if text}<span class="text">{text}</span>{/if}<slot />
+  </div>
+  {#if badge != undefined}
+    <span class="badge">{badge > 999 ? `+999` : badge}</span>
+  {/if}</button
 >
 
 <style lang="postcss">
   button {
-    @apply bg-$secondary text-$ink py-2 px-4 inline-flex justify-center items-center relative transition-all duration-$short rounded;
-    --shadow-drop: 3px 3px;
-    filter: drop-shadow(var(--shadow-drop) 0px var(--shadow-color));
+    @apply relative bg-$secondary-light rounded text-$ink transition-all duration-$short;
+    --shadow-drop: 0 3px;
+    --corner: 18px;
+    filter: drop-shadow(
+      var(--shadow-drop) var(--shadow-blur) var(--secondary-darker)
+    );
+
+    &::before {
+      @apply absolute inset-0 h-full w-full bg-$secondary pointer-events-none rounded transition-all duration-$long;
+      content: '';
+      clip-path: polygon(
+        0 calc(100% - var(--corner)),
+        0 100%,
+        var(--corner) 100%,
+        var(--corner) 100%
+      );
+    }
+
+    div {
+      @apply relative inline-flex justify-center items-center py-2 px-4;
+    }
 
     &:hover:not(:disabled) {
       @apply transform-gpu scale-105;
+
+      &::before {
+        clip-path: polygon(0 0, 0 100%, 100% 100%, 100% 0);
+      }
     }
 
     &.primary:disabled,
     &:disabled {
       @apply bg-$disabled text-$ink-dark;
-    }
-
-    &.has-text {
-      &:focus,
-      &:hover:not(:disabled) {
-        @apply bg-$secondary-light text-$ink;
-      }
-    }
-
-    &:not(.has-text) {
-      &:focus,
-      &:hover:not(:disabled) {
-        @apply bg-$secondary-light text-$ink;
-      }
     }
 
     & .badge {
@@ -62,23 +72,21 @@
     }
   }
 
-  button.primary:not(:disabled) {
-    @apply bg-$primary text-$ink;
-
-    &.has-text {
-      @apply bg-$primary;
-
-      &:focus,
-      &:hover {
-        @apply bg-$primary-light text-$ink;
-      }
+  button:not(.has-text) {
+    @apply rounded-full;
+    &::before {
+      @apply rounded-full;
     }
+  }
 
-    &:not(.has-text) {
-      &:focus,
-      &:hover {
-        @apply bg-$primary-light text-$ink;
-      }
+  button.primary:not(:disabled) {
+    @apply bg-$primary-light text-$ink;
+    filter: drop-shadow(
+      var(--shadow-drop) var(--shadow-blur) var(--primary-darker)
+    );
+
+    &::before {
+      @apply bg-$primary;
     }
 
     & .badge {
@@ -115,6 +123,7 @@
       @apply ml-4;
     }
   }
+
   .icon:not(:last-child) {
     @apply -ml-1;
   }

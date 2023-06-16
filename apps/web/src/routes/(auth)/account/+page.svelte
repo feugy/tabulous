@@ -126,7 +126,7 @@
     @apply mt-4 grid gap-x-8 gap-y-4 grid-cols-[auto,1fr] items-center;
 
     label {
-      @apply font-medium;
+      font-family: var(--font-heading);
     }
 
     div {
@@ -139,7 +139,7 @@
   }
 
   .aligned {
-    @apply flex items-center gap-4 flex-wrap;
+    @apply flex items-center gap-8 flex-wrap;
   }
 
   .error {

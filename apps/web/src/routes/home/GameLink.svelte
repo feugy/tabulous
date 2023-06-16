@@ -89,8 +89,7 @@
       @apply transform-gpu scale-110 bg-$base-darker text-$ink-dark;
 
       h3 {
-        @apply text-$primary-lighter;
-        transition: color var(--long) var(--short);
+        @apply text-$primary-lighter  transition-colors duration-$long delay-$short;
       }
 
       .actions {

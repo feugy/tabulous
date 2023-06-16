@@ -24,9 +24,10 @@
 <style lang="postcss">
   main {
     @apply flex flex-col max-h-screen overflow-auto;
+    background: var(--page-bg);
   }
 
   section {
-    @apply flex flex-col flex-1 px-6 self-center w-full xl:w-screen-xl;
+    @apply flex flex-col flex-1 px-6 self-center w-full xl:w-screen-xl p-x-8;
   }
 </style>

@@ -27,9 +27,10 @@ export default defineConfig(({ mode }) => ({
       setupPath: './atelier/setup',
       uiSettings: {
         backgrounds: [
-          'linear-gradient(180deg, #6096b4 0%, #9cbbcf 100%)',
+          `local url('/background-hexagon.svg') rgb(249, 250, 251) repeat`,
+          '#e3ebf1',
+          '#c6d8e3',
           '#6096b4',
-          '#4d0700',
           'white',
           'black'
         ]

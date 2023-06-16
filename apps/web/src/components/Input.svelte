@@ -38,13 +38,28 @@
   fieldset {
     @apply relative flex-grow my-2;
 
+    &::before {
+      @apply absolute inset-0 border-b border-$primary-darker w-0 pointer-events-none;
+      transition: width var(--medium) var(--medium);
+      content: '';
+    }
+
     &:focus-within legend {
       @apply transform-gpu -translate-y-4 scale-75;
+    }
+
+    &:hover,
+    &:focus-within {
+      &::before {
+        @apply w-full;
+      }
     }
   }
 
   legend {
-    @apply absolute top-1 pointer-events-none transition-transform duration-$short origin-top-left text-$base-darkest;
+    @apply absolute top-1 pointer-events-none transition-transform duration-$short
+           origin-top-left text-$base-dark;
+    font-family: var(--font-heading);
 
     &.has-value {
       @apply transform-gpu -translate-y-4 scale-75;
@@ -56,10 +71,10 @@
   }
 
   input {
-    @apply py-1 w-full border-b border-$base-darker bg-transparent transition duration-$short text-$primary-darkest;
+    @apply py-1 w-full bg-transparent transition-colors duration-$medium;
 
     &:focus {
-      @apply outline-none border-$primary-darker;
+      @apply outline-none text-$primary-dark;
     }
     &:disabled {
       @apply text-$ink-dark;

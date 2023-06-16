@@ -57,11 +57,15 @@
 
 <style lang="postcss">
   header {
-    @apply w-full py-4 px-4 bg-$secondary sticky top-0 z-20 opacity-90 border-b border-$secondary-dark;
+    @apply w-full py-2 px-4  bg-$base-light sticky top-0 z-20 opacity-90 border-b border-$secondary-dark;
+
+    :global(h1) {
+      font-size: 1.5rem;
+    }
   }
 
   nav {
-    @apply grid grid-cols-[4rem,1fr,auto] gap-4 items-center;
+    @apply grid grid-cols-[3.5rem,1fr,auto] gap-6 items-center;
 
     button {
       :global(svg) {

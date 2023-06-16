@@ -1,5 +1,11 @@
 # TODO
 
+- automerge.js
+- quantity button
+- aside background color (same as menu)
+- invite friend button cut on the right hand side
+- minimizable section
+
 ## Road to beta
 
 - select player color in games

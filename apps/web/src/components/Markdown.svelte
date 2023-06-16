@@ -28,22 +28,16 @@
       @apply ml-6 mb-2;
     }
 
-    :global(h3) {
-      @apply px-8 py-2 mt-4 mb-2 bg-$primary-light;
+    :global(h2) {
+      @apply px-4 py-2 mt-4 mb-2 border-b-2 bg-$base-lighter;
+    }
 
-      --corner-cut: 1rem;
-      clip-path: polygon(
-        0 var(--corner-cut),
-        var(--corner-cut) 0,
-        100% 0,
-        100% calc(100% - var(--corner-cut)),
-        calc(100% - var(--corner-cut)) 100%,
-        0 100%
-      );
+    :global(h3) {
+      @apply px-4 py-2 mt-4 mb-2 border-b-2 border-$base;
     }
 
     :global(h4) {
-      @apply py-2 mx-8 mt-4 mb-2 underline underline-current;
+      @apply py-2 mx-8 mt-4 mb-2;
     }
   }
 </style>

@@ -22,7 +22,11 @@
     grid-template-areas: 'full';
 
     &:hover {
-      @apply transform-gpu scale-105;
+      @apply transform-gpu scale-110;
+
+      h3 {
+        @apply text-$primary-lighter;
+      }
     }
   }
 
@@ -31,6 +35,6 @@
   }
 
   h3 {
-    @apply mb-4 text-$secondary-light;
+    @apply mb-4 text-$secondary-light transition-colors duration-$long delay-$short;
   }
 </style>

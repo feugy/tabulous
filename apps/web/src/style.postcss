@@ -130,11 +130,18 @@ body {
 }
 
 a[href] {
-  @apply text-$primary-darkest font-medium;
-  transition: text-decoration;
+  @apply relative text-$base-darkest;
 
   &:hover,
   &:visited {
-    @apply underline;
+    &::before {
+      @apply w-full;
+    }
+  }
+
+  &::before {
+    @apply absolute inset-0 border-b border-$base-darker w-0 pointer-events-none;
+    transition: width var(--medium);
+    content: '';
   }
 }

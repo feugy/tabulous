@@ -231,12 +231,12 @@
     }
 
     &:not(.disabled) {
+      &.current {
+        @apply text-$ink-dark bg-$primary-dark;
+      }
       &:hover,
       &:focus {
-        @apply cursor-pointer outline-none text-$primary-lightest bg-$primary-darker;
-      }
-      &.current {
-        @apply text-$primary-lightest bg-$primary;
+        @apply cursor-pointer outline-none text-$ink-dark bg-$base-darker;
       }
     }
 
