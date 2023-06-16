@@ -22,7 +22,7 @@ exports[`Current lobby 1`] = `
     <span
       class="created s-QQoQzhRq8NK6"
     >
-      02 mai, 20:25
+      02 mai, 21:25
     </span>
      
      
@@ -71,7 +71,7 @@ exports[`Guests only 1`] = `
     <span
       class="created s-QQoQzhRq8NK6"
     >
-      02 mai, 20:25
+      02 mai, 21:25
     </span>
      
      
@@ -110,7 +110,7 @@ exports[`Invited 1`] = `
     <span
       class="created s-QQoQzhRq8NK6"
     >
-      02 mai, 20:25
+      02 mai, 21:25
     </span>
      
     <span
@@ -154,7 +154,7 @@ exports[`Lobby 1`] = `
     <span
       class="created s-QQoQzhRq8NK6"
     >
-      02 mai, 20:25
+      02 mai, 21:25
     </span>
      
      
@@ -188,7 +188,7 @@ exports[`Owned 1`] = `
     <span
       class="created s-QQoQzhRq8NK6"
     >
-      02 mai, 20:25
+      02 mai, 21:25
     </span>
      
     <span
@@ -247,7 +247,7 @@ exports[`Single owned 1`] = `
     <span
       class="created s-QQoQzhRq8NK6"
     >
-      02 mai, 20:25
+      02 mai, 21:25
     </span>
      
      

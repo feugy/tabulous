@@ -59,19 +59,17 @@
         secondary
         icon="close"
         on:click={handleClose}
-        on:keyup={event => event.stopPropagation()}
       />{:else if owned}<Button
         secondary
         icon="delete"
         on:click={handleDelete}
-        on:keyup={event => event.stopPropagation()}
       />{/if}
   </div>
 </article>
 
 <style lang="postcss">
   article {
-    @apply relative inline-flex flex p-4 m-2 bg-$base-lighter rounded;
+    @apply relative inline-flex m-2 flex bg-$base-lighter rounded;
     transition: background-color var(--long), color var(--medium),
       transform var(--short);
 
@@ -84,7 +82,7 @@
     }
 
     &:not(.isCurrent) .actions {
-      @apply invisible;
+      @apply hidden;
     }
 
     &:hover {
@@ -96,7 +94,7 @@
       }
 
       .actions {
-        @apply visible;
+        @apply block;
       }
 
       .guests {
@@ -118,7 +116,11 @@
   }
 
   button {
-    @apply flex flex-col flex-1 text-left;
+    @apply relative flex flex-col flex-1 p-4 text-left rounded;
+  }
+
+  .actions {
+    @apply m-2;
   }
 
   .title {
