@@ -35,43 +35,41 @@
   }
 </script>
 
-<button
+<article
   class:lobby={isALobby}
   class:isCurrent
-  tabindex={0}
-  style="--bg-url: url('{coverImage}')"
-  on:click={handleClick}
+  style:--bg-url="url('{coverImage}')"
 >
-  <span class="title">
-    <h3>{title}</h3>
-    <div class="buttons">
-      {#if isCurrent}<Button
-          secondary
-          icon="close"
-          on:click={handleClose}
-          on:keyup={event => event.stopPropagation()}
-        />{:else if owned}<Button
-          secondary
-          icon="delete"
-          on:click={handleDelete}
-          on:keyup={event => event.stopPropagation()}
-        />{/if}
-    </div>
-  </span>
-  <span class="created">{$_('{ created, date, short-date }', game)}</span>
-  {#if peerNames.length}
-    <span>{$_('labels.peer-players', { names: peerNames.join(', ') })}</span>
-  {/if}
-  {#if guestNames.length}
-    <span class="guests"
-      >{$_('labels.peer-guests', { names: guestNames.join(', ') })}</span
-    >
-  {/if}
-</button>
+  <button tabindex={0} on:click={handleClick}>
+    <span class="title">
+      <h3>{title}</h3>
+    </span>
+    <span class="created">{$_('{ created, date, short-date }', game)}</span>
+    {#if peerNames.length}
+      <span>{$_('labels.peer-players', { names: peerNames.join(', ') })}</span>
+    {/if}
+    {#if guestNames.length}
+      <span class="guests"
+        >{$_('labels.peer-guests', { names: guestNames.join(', ') })}</span
+      >
+    {/if}
+  </button>
+  <div class="actions">
+    {#if isCurrent}<Button
+        secondary
+        icon="close"
+        on:click={handleClose}
+      />{:else if owned}<Button
+        secondary
+        icon="delete"
+        on:click={handleDelete}
+      />{/if}
+  </div>
+</article>
 
 <style lang="postcss">
-  button {
-    @apply relative inline-flex flex-col p-4 m-2 cursor-pointer bg-$base-lighter text-left rounded;
+  article {
+    @apply relative inline-flex m-2 flex bg-$base-lighter rounded;
     transition: background-color var(--long), color var(--medium),
       transform var(--short);
 
@@ -83,8 +81,8 @@
       filter: grayscale(100%) opacity(15%);
     }
 
-    &:not(.isCurrent) .buttons {
-      @apply invisible;
+    &:not(.isCurrent) .actions {
+      @apply hidden;
     }
 
     &:hover {
@@ -92,11 +90,11 @@
 
       h3 {
         @apply text-$primary-lighter;
-        transition: color var(--long) var(--medium);
+        transition: color var(--long) var(--short);
       }
 
-      .buttons {
-        @apply visible;
+      .actions {
+        @apply block;
       }
 
       .guests {
@@ -115,6 +113,14 @@
         @apply text-$primary-lighter;
       }
     }
+  }
+
+  button {
+    @apply relative flex flex-col flex-1 p-4 text-left rounded;
+  }
+
+  .actions {
+    @apply m-2;
   }
 
   .title {

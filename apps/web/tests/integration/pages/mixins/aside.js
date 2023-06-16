@@ -84,7 +84,7 @@ export class AsideMixin {
       this.friendsTab,
       'the friends tab is not available'
     ).toBeVisible()
-    if (!(await this.isTabActive(this.friendsTab))) {
+    while (!(await this.isTabActive(this.friendsTab))) {
       await this.friendsTab.click()
     }
     await this.friendItems.getByText(guestUsername).click()

@@ -474,87 +474,95 @@ exports[`Authenticated 1`] = `
           class="s-A-bC3Hke5zSn"
         >
           
-          <button
+          <article
             class="s-QQoQzhRq8NK6"
             style="--bg-url: url('http://localhost:3001/games/playground/catalog/cover.webp');"
-            tabindex="0"
           >
-            <span
-              class="title s-QQoQzhRq8NK6"
+            <button
+              class="s-QQoQzhRq8NK6"
+              tabindex="0"
             >
-              <h3
-                class="s-QQoQzhRq8NK6"
+              <span
+                class="title s-QQoQzhRq8NK6"
               >
-                Jeu de 32 cartes
-              </h3>
-               
-              <div
-                class="buttons s-QQoQzhRq8NK6"
-              >
-                <button
-                  class="s-NMyTiX1zi6rz"
-                  secondary="true"
+                <h3
+                  class="s-QQoQzhRq8NK6"
                 >
-                  <span
-                    class="material-icons s-NMyTiX1zi6rz"
-                  >
-                    delete
-                  </span>
-                  
-                  
-                  
-                </button>
-                <!--&lt;Button&gt;-->
-              </div>
-            </span>
+                  Jeu de 32 cartes
+                </h3>
+              </span>
+               
+              <span
+                class="created s-QQoQzhRq8NK6"
+              >
+                02 août, 09:13
+              </span>
+               
+               
+            </button>
              
-            <span
-              class="created s-QQoQzhRq8NK6"
+            <div
+              class="actions s-QQoQzhRq8NK6"
             >
-              02 août, 09:13
-            </span>
-             
-             
-          </button>
+              <button
+                class="s-NMyTiX1zi6rz"
+                secondary="true"
+              >
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  delete
+                </span>
+                
+                
+                
+              </button>
+              <!--&lt;Button&gt;-->
+            </div>
+          </article>
           <!--&lt;GameLink&gt;-->
           
-          <button
+          <article
             class="s-QQoQzhRq8NK6"
             style="--bg-url: url('http://localhost:3001/games/6-takes/catalog/cover.webp');"
-            tabindex="0"
           >
-            <span
-              class="title s-QQoQzhRq8NK6"
+            <button
+              class="s-QQoQzhRq8NK6"
+              tabindex="0"
             >
-              <h3
+              <span
+                class="title s-QQoQzhRq8NK6"
+              >
+                <h3
+                  class="s-QQoQzhRq8NK6"
+                >
+                  6 qui prend !
+                </h3>
+              </span>
+               
+              <span
+                class="created s-QQoQzhRq8NK6"
+              >
+                29 juil., 08:17
+              </span>
+               
+              <span
                 class="s-QQoQzhRq8NK6"
               >
-                6 qui prend !
-              </h3>
+                avec Dams, Célia
+              </span>
                
-              <div
-                class="buttons s-QQoQzhRq8NK6"
-              />
-            </span>
+              <span
+                class="guests s-QQoQzhRq8NK6"
+              >
+                invités: Hugo
+              </span>
+            </button>
              
-            <span
-              class="created s-QQoQzhRq8NK6"
-            >
-              29 juil., 08:17
-            </span>
-             
-            <span
-              class="s-QQoQzhRq8NK6"
-            >
-              avec Dams, Célia
-            </span>
-             
-            <span
-              class="guests s-QQoQzhRq8NK6"
-            >
-              invités: Hugo
-            </span>
-          </button>
+            <div
+              class="actions s-QQoQzhRq8NK6"
+            />
+          </article>
           <!--&lt;GameLink&gt;-->
         </section>
          

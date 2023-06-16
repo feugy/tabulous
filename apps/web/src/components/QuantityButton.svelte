@@ -64,6 +64,7 @@
 <span
   role="slider"
   aria-valuenow={quantity}
+  tabindex={0}
   on:keyup|stopPropagation={handleKeys}
 >
   <Button
