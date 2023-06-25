@@ -10,10 +10,17 @@
   events={['minimize', 'resize', 'change']}
 >
   <Tool
-    name="Multiple, custom tabs"
+    name="Multiple horizontal, custom tabs"
     props={{
       placement: 'bottom',
       minimized: true,
+      tabs: [{ icon: 'question_answer' }, { icon: 'help' }]
+    }}
+  />
+  <Tool
+    name="Multiple vertical, custom tabs"
+    props={{
+      placement: 'right',
       tabs: [{ icon: 'question_answer' }, { icon: 'help' }]
     }}
   />

@@ -185,7 +185,7 @@ class HandManager {
       subscriptions.push(() => observable.remove(observer))
     }
 
-    const { dimension$, disconnect } = observeDimension(this.overlay, 50)
+    const { dimension$, disconnect } = observeDimension(this.overlay, 100)
     const subscription = dimension$.subscribe(() => layoutMeshs(this))
     subscriptions.push(() => {
       disconnect()

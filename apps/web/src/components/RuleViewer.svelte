@@ -108,7 +108,7 @@
 
 <style lang="postcss">
   section {
-    @apply flex flex-col flex-1 max-h-full max-w-full items-center gap-2 p-4 select-none bg-white;
+    @apply flex flex-col flex-1 max-h-full max-w-full items-center gap-2 p-4 select-none;
   }
   .image-container {
     @apply flex-1 w-full overflow-auto text-center;

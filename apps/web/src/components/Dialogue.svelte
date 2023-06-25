@@ -1,6 +1,6 @@
 <script>
   import { afterUpdate, createEventDispatcher, onMount } from 'svelte'
-  import { fade } from 'svelte/transition'
+  import { fly } from 'svelte/transition'
   import Portal from 'svelte-portal'
 
   import Button from './Button.svelte'
@@ -11,6 +11,7 @@
   export let closable = true
 
   const dispatch = createEventDispatcher()
+  const duration = 150
   let previous = null
 
   onMount(() => {
@@ -44,10 +45,9 @@
 <svelte:body on:keyup={handleKey} />
 <Portal>
   {#if open}
-    <div class="filter" transition:fade />
+    <div class="filter" />
     <div
       class="backdrop"
-      transition:fade
       on:click={close}
       on:keydown|stopPropagation
       on:keyup={handleKey}
@@ -59,10 +59,11 @@
       {/if}
       <article
         role="dialog"
+        in:fly={{ y: -100, duration }}
         on:click|stopPropagation
         on:keyup|stopPropagation={handleKey}
       >
-        <Pane {title}>
+        <Pane {title} backgroundColor="primary">
           <div class="content">
             <slot />
           </div>
@@ -83,7 +84,7 @@
   }
 
   .filter {
-    @apply bg-$base-darker delay-150 opacity-90 backdrop-filter backdrop-blur-sm;
+    @apply bg-$base-darker opacity-90 backdrop-filter backdrop-blur-sm;
   }
 
   .close-container {
@@ -93,6 +94,7 @@
   article {
     @apply flex flex-col w-full max-h-full
            md:w-10/12 lg:w-9/12 xl:w-7/12;
+    box-shadow: 0 10px 8px var(--shadow-color);
   }
 
   .content {

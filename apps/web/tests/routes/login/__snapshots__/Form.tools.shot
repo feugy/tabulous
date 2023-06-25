@@ -1,94 +1,95 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Default state 1`] = `
-<span
-  class="s-j2LTsWktqK_4"
+<section
+  class="pane s-j2LTsWktqK_4"
+  style="--bg: var(--base-lightest);"
 >
-  <div
-    class="pane s-j2LTsWktqK_4"
+  <h2
+    class="s-j2LTsWktqK_4"
   >
-    <h2
-      class="s-j2LTsWktqK_4"
-    >
-      Bienvenue !
-    </h2>
-    
+    Bienvenue !
+  </h2>
+  
+   
+  <div
+    class="container s-OEREYjlWzGh2"
+  >
      
-    <div
-      class="container s-OEREYjlWzGh2"
+     
+    <details
+      class="s-OEREYjlWzGh2"
+      open=""
     >
-       
-       
-      <details
-        class="s-OEREYjlWzGh2"
-        open=""
+      <summary
+        class="s-OEREYjlWzGh2 hidden"
+        title="password-toggle"
       >
-        <summary
-          class="s-OEREYjlWzGh2 hidden"
-          title="password-toggle"
+        <span
+          class="material-icons s-OEREYjlWzGh2"
         >
-          <span
-            class="material-icons s-OEREYjlWzGh2"
+          arrow_back
+        </span>
+        Autres options
+      </summary>
+       
+      <form
+        class="s-OEREYjlWzGh2"
+        method="POST"
+      >
+        <div
+          class="row s-OEREYjlWzGh2"
+        >
+          <fieldset
+            class="s-Fe6WNbR-55zp"
           >
-            arrow_back
-          </span>
-          Autres options
-        </summary>
+            <legend
+              class="s-Fe6WNbR-55zp"
+            >
+              Identifiant
+            </legend>
+             
+            <input
+              class="s-Fe6WNbR-55zp"
+              name="id"
+            />
+          </fieldset>
+          <!--&lt;Input&gt;-->
+        </div>
          
-        <form
-          class="s-OEREYjlWzGh2"
-          method="POST"
+        <div
+          class="row s-OEREYjlWzGh2"
         >
-          <div
-            class="row s-OEREYjlWzGh2"
+          <fieldset
+            class="s-Fe6WNbR-55zp"
           >
-            <fieldset
+            <legend
               class="s-Fe6WNbR-55zp"
             >
-              <legend
-                class="s-Fe6WNbR-55zp"
-              >
-                Identifiant
-              </legend>
-               
-              <input
-                class="s-Fe6WNbR-55zp"
-                name="id"
-              />
-            </fieldset>
-            <!--&lt;Input&gt;-->
-          </div>
-           
-          <div
-            class="row s-OEREYjlWzGh2"
-          >
-            <fieldset
+              Mot de passe
+            </legend>
+             
+            <input
               class="s-Fe6WNbR-55zp"
-            >
-              <legend
-                class="s-Fe6WNbR-55zp"
-              >
-                Mot de passe
-              </legend>
-               
-              <input
-                class="s-Fe6WNbR-55zp"
-                data-testid="password"
-                name="password"
-                type="password"
-              />
-            </fieldset>
-            <!--&lt;Input&gt;-->
-          </div>
-           
-           
-          <div
-            class="actions s-OEREYjlWzGh2"
+              data-testid="password"
+              name="password"
+              type="password"
+            />
+          </fieldset>
+          <!--&lt;Input&gt;-->
+        </div>
+         
+         
+        <div
+          class="actions s-OEREYjlWzGh2"
+        >
+          <button
+            class="primary has-text s-NMyTiX1zi6rz"
+            disabled=""
+            type="submit"
           >
-            <button
-              class="primary has-text s-NMyTiX1zi6rz"
-              disabled=""
-              type="submit"
+            <div
+              class="s-NMyTiX1zi6rz"
             >
               <span
                 class="material-icons s-NMyTiX1zi6rz"
@@ -102,43 +103,44 @@ exports[`Default state 1`] = `
                 Entrer
               </span>
               
-              
-            </button>
-            <!--&lt;Button&gt;-->
-          </div>
-           
-          <input
-            class="s-OEREYjlWzGh2"
-            name="redirect"
-            type="hidden"
-            value=""
-          />
-        </form>
-      </details>
-    </div>
+            </div>
+             
+          </button>
+          <!--&lt;Button&gt;-->
+        </div>
+         
+        <input
+          class="s-OEREYjlWzGh2"
+          name="redirect"
+          type="hidden"
+          value=""
+        />
+      </form>
+    </details>
   </div>
-</span>
+</section>
 `;
 
 exports[`With Github provider 1`] = `
-<span
-  class="s-j2LTsWktqK_4"
+<section
+  class="pane s-j2LTsWktqK_4"
+  style="--bg: var(--base-lightest);"
 >
-  <div
-    class="pane s-j2LTsWktqK_4"
+  <h2
+    class="s-j2LTsWktqK_4"
   >
-    <h2
-      class="s-j2LTsWktqK_4"
+    Bienvenue !
+  </h2>
+  
+   
+  <div
+    class="container s-OEREYjlWzGh2"
+  >
+    <button
+      class="has-text s-NMyTiX1zi6rz"
     >
-      Bienvenue !
-    </h2>
-    
-     
-    <div
-      class="container s-OEREYjlWzGh2"
-    >
-      <button
-        class="has-text s-NMyTiX1zi6rz"
+      <div
+        class="s-NMyTiX1zi6rz"
       >
         <span
           class="icon s-NMyTiX1zi6rz"
@@ -155,7 +157,6 @@ exports[`With Github provider 1`] = `
               fill="currentColor"
             />
           </svg>
-          <!--&lt;Github-logo.svg.rollup-plugin&gt;-->
         </span>
         
         <span
@@ -164,80 +165,84 @@ exports[`With Github provider 1`] = `
           Continuer avec Github
         </span>
         
-        
-      </button>
-      <!--&lt;Button&gt;-->
+      </div>
        
-       
-      <details
+    </button>
+    <!--&lt;Button&gt;-->
+     
+     
+    <details
+      class="s-OEREYjlWzGh2"
+    >
+      <summary
         class="s-OEREYjlWzGh2"
+        title="password-toggle"
       >
-        <summary
-          class="s-OEREYjlWzGh2"
-          title="password-toggle"
+        <span
+          class="material-icons s-OEREYjlWzGh2"
         >
-          <span
-            class="material-icons s-OEREYjlWzGh2"
+          arrow_forward
+        </span>
+        Continuer avec un mot de passe
+      </summary>
+       
+      <form
+        class="s-OEREYjlWzGh2"
+        method="POST"
+      >
+        <div
+          class="row s-OEREYjlWzGh2"
+        >
+          <fieldset
+            class="s-Fe6WNbR-55zp"
           >
-            arrow_forward
-          </span>
-          Continuer avec un mot de passe
-        </summary>
+            <legend
+              class="s-Fe6WNbR-55zp"
+            >
+              Identifiant
+            </legend>
+             
+            <input
+              class="s-Fe6WNbR-55zp"
+              name="id"
+            />
+          </fieldset>
+          <!--&lt;Input&gt;-->
+        </div>
          
-        <form
-          class="s-OEREYjlWzGh2"
-          method="POST"
+        <div
+          class="row s-OEREYjlWzGh2"
         >
-          <div
-            class="row s-OEREYjlWzGh2"
+          <fieldset
+            class="s-Fe6WNbR-55zp"
           >
-            <fieldset
+            <legend
               class="s-Fe6WNbR-55zp"
             >
-              <legend
-                class="s-Fe6WNbR-55zp"
-              >
-                Identifiant
-              </legend>
-               
-              <input
-                class="s-Fe6WNbR-55zp"
-                name="id"
-              />
-            </fieldset>
-            <!--&lt;Input&gt;-->
-          </div>
-           
-          <div
-            class="row s-OEREYjlWzGh2"
-          >
-            <fieldset
+              Mot de passe
+            </legend>
+             
+            <input
               class="s-Fe6WNbR-55zp"
-            >
-              <legend
-                class="s-Fe6WNbR-55zp"
-              >
-                Mot de passe
-              </legend>
-               
-              <input
-                class="s-Fe6WNbR-55zp"
-                data-testid="password"
-                name="password"
-                type="password"
-              />
-            </fieldset>
-            <!--&lt;Input&gt;-->
-          </div>
-           
-           
-          <div
-            class="actions s-OEREYjlWzGh2"
+              data-testid="password"
+              name="password"
+              type="password"
+            />
+          </fieldset>
+          <!--&lt;Input&gt;-->
+        </div>
+         
+         
+        <div
+          class="actions s-OEREYjlWzGh2"
+        >
+          <button
+            class="primary has-text s-NMyTiX1zi6rz"
+            disabled=""
+            type="submit"
           >
-            <button
-              class="primary has-text s-NMyTiX1zi6rz"
-              disabled=""
-              type="submit"
+            <div
+              class="s-NMyTiX1zi6rz"
             >
               <span
                 class="material-icons s-NMyTiX1zi6rz"
@@ -251,44 +256,45 @@ exports[`With Github provider 1`] = `
                 Entrer
               </span>
               
-              
-            </button>
-            <!--&lt;Button&gt;-->
-          </div>
-           
-          <input
-            class="s-OEREYjlWzGh2"
-            name="redirect"
-            type="hidden"
-            value=""
-          />
-        </form>
-      </details>
-    </div>
+            </div>
+             
+          </button>
+          <!--&lt;Button&gt;-->
+        </div>
+         
+        <input
+          class="s-OEREYjlWzGh2"
+          name="redirect"
+          type="hidden"
+          value=""
+        />
+      </form>
+    </details>
   </div>
-</span>
+</section>
 `;
 
 exports[`With Google provider 1`] = `
-<span
-  class="s-j2LTsWktqK_4"
+<section
+  class="pane s-j2LTsWktqK_4"
+  style="--bg: var(--base-lightest);"
 >
-  <div
-    class="pane s-j2LTsWktqK_4"
+  <h2
+    class="s-j2LTsWktqK_4"
   >
-    <h2
-      class="s-j2LTsWktqK_4"
-    >
-      Bienvenue !
-    </h2>
-    
+    Bienvenue !
+  </h2>
+  
+   
+  <div
+    class="container s-OEREYjlWzGh2"
+  >
      
-    <div
-      class="container s-OEREYjlWzGh2"
+    <button
+      class="has-text s-NMyTiX1zi6rz"
     >
-       
-      <button
-        class="has-text s-NMyTiX1zi6rz"
+      <div
+        class="s-NMyTiX1zi6rz"
       >
         <span
           class="icon s-NMyTiX1zi6rz"
@@ -305,7 +311,6 @@ exports[`With Google provider 1`] = `
               fill-rule="evenodd"
             />
           </svg>
-          <!--&lt;Google-logo.svg.rollup-plugin&gt;-->
         </span>
         
         <span
@@ -314,79 +319,83 @@ exports[`With Google provider 1`] = `
           Continuer avec Google
         </span>
         
-        
-      </button>
-      <!--&lt;Button&gt;-->
+      </div>
        
-      <details
+    </button>
+    <!--&lt;Button&gt;-->
+     
+    <details
+      class="s-OEREYjlWzGh2"
+    >
+      <summary
         class="s-OEREYjlWzGh2"
+        title="password-toggle"
       >
-        <summary
-          class="s-OEREYjlWzGh2"
-          title="password-toggle"
+        <span
+          class="material-icons s-OEREYjlWzGh2"
         >
-          <span
-            class="material-icons s-OEREYjlWzGh2"
+          arrow_forward
+        </span>
+        Continuer avec un mot de passe
+      </summary>
+       
+      <form
+        class="s-OEREYjlWzGh2"
+        method="POST"
+      >
+        <div
+          class="row s-OEREYjlWzGh2"
+        >
+          <fieldset
+            class="s-Fe6WNbR-55zp"
           >
-            arrow_forward
-          </span>
-          Continuer avec un mot de passe
-        </summary>
+            <legend
+              class="s-Fe6WNbR-55zp"
+            >
+              Identifiant
+            </legend>
+             
+            <input
+              class="s-Fe6WNbR-55zp"
+              name="id"
+            />
+          </fieldset>
+          <!--&lt;Input&gt;-->
+        </div>
          
-        <form
-          class="s-OEREYjlWzGh2"
-          method="POST"
+        <div
+          class="row s-OEREYjlWzGh2"
         >
-          <div
-            class="row s-OEREYjlWzGh2"
+          <fieldset
+            class="s-Fe6WNbR-55zp"
           >
-            <fieldset
+            <legend
               class="s-Fe6WNbR-55zp"
             >
-              <legend
-                class="s-Fe6WNbR-55zp"
-              >
-                Identifiant
-              </legend>
-               
-              <input
-                class="s-Fe6WNbR-55zp"
-                name="id"
-              />
-            </fieldset>
-            <!--&lt;Input&gt;-->
-          </div>
-           
-          <div
-            class="row s-OEREYjlWzGh2"
-          >
-            <fieldset
+              Mot de passe
+            </legend>
+             
+            <input
               class="s-Fe6WNbR-55zp"
-            >
-              <legend
-                class="s-Fe6WNbR-55zp"
-              >
-                Mot de passe
-              </legend>
-               
-              <input
-                class="s-Fe6WNbR-55zp"
-                data-testid="password"
-                name="password"
-                type="password"
-              />
-            </fieldset>
-            <!--&lt;Input&gt;-->
-          </div>
-           
-           
-          <div
-            class="actions s-OEREYjlWzGh2"
+              data-testid="password"
+              name="password"
+              type="password"
+            />
+          </fieldset>
+          <!--&lt;Input&gt;-->
+        </div>
+         
+         
+        <div
+          class="actions s-OEREYjlWzGh2"
+        >
+          <button
+            class="primary has-text s-NMyTiX1zi6rz"
+            disabled=""
+            type="submit"
           >
-            <button
-              class="primary has-text s-NMyTiX1zi6rz"
-              disabled=""
-              type="submit"
+            <div
+              class="s-NMyTiX1zi6rz"
             >
               <span
                 class="material-icons s-NMyTiX1zi6rz"
@@ -400,43 +409,44 @@ exports[`With Google provider 1`] = `
                 Entrer
               </span>
               
-              
-            </button>
-            <!--&lt;Button&gt;-->
-          </div>
-           
-          <input
-            class="s-OEREYjlWzGh2"
-            name="redirect"
-            type="hidden"
-            value=""
-          />
-        </form>
-      </details>
-    </div>
+            </div>
+             
+          </button>
+          <!--&lt;Button&gt;-->
+        </div>
+         
+        <input
+          class="s-OEREYjlWzGh2"
+          name="redirect"
+          type="hidden"
+          value=""
+        />
+      </form>
+    </details>
   </div>
-</span>
+</section>
 `;
 
 exports[`With all providers 1`] = `
-<span
-  class="s-j2LTsWktqK_4"
+<section
+  class="pane s-j2LTsWktqK_4"
+  style="--bg: var(--base-lightest);"
 >
-  <div
-    class="pane s-j2LTsWktqK_4"
+  <h2
+    class="s-j2LTsWktqK_4"
   >
-    <h2
-      class="s-j2LTsWktqK_4"
+    Bienvenue !
+  </h2>
+  
+   
+  <div
+    class="container s-OEREYjlWzGh2"
+  >
+    <button
+      class="has-text s-NMyTiX1zi6rz"
     >
-      Bienvenue !
-    </h2>
-    
-     
-    <div
-      class="container s-OEREYjlWzGh2"
-    >
-      <button
-        class="has-text s-NMyTiX1zi6rz"
+      <div
+        class="s-NMyTiX1zi6rz"
       >
         <span
           class="icon s-NMyTiX1zi6rz"
@@ -453,7 +463,6 @@ exports[`With all providers 1`] = `
               fill="currentColor"
             />
           </svg>
-          <!--&lt;Github-logo.svg.rollup-plugin&gt;-->
         </span>
         
         <span
@@ -462,12 +471,16 @@ exports[`With all providers 1`] = `
           Continuer avec Github
         </span>
         
-        
-      </button>
-      <!--&lt;Button&gt;-->
+      </div>
        
-      <button
-        class="has-text s-NMyTiX1zi6rz"
+    </button>
+    <!--&lt;Button&gt;-->
+     
+    <button
+      class="has-text s-NMyTiX1zi6rz"
+    >
+      <div
+        class="s-NMyTiX1zi6rz"
       >
         <span
           class="icon s-NMyTiX1zi6rz"
@@ -484,7 +497,6 @@ exports[`With all providers 1`] = `
               fill-rule="evenodd"
             />
           </svg>
-          <!--&lt;Google-logo.svg.rollup-plugin&gt;-->
         </span>
         
         <span
@@ -493,79 +505,83 @@ exports[`With all providers 1`] = `
           Continuer avec Google
         </span>
         
-        
-      </button>
-      <!--&lt;Button&gt;-->
+      </div>
        
-      <details
+    </button>
+    <!--&lt;Button&gt;-->
+     
+    <details
+      class="s-OEREYjlWzGh2"
+    >
+      <summary
         class="s-OEREYjlWzGh2"
+        title="password-toggle"
       >
-        <summary
-          class="s-OEREYjlWzGh2"
-          title="password-toggle"
+        <span
+          class="material-icons s-OEREYjlWzGh2"
         >
-          <span
-            class="material-icons s-OEREYjlWzGh2"
+          arrow_forward
+        </span>
+        Continuer avec un mot de passe
+      </summary>
+       
+      <form
+        class="s-OEREYjlWzGh2"
+        method="POST"
+      >
+        <div
+          class="row s-OEREYjlWzGh2"
+        >
+          <fieldset
+            class="s-Fe6WNbR-55zp"
           >
-            arrow_forward
-          </span>
-          Continuer avec un mot de passe
-        </summary>
+            <legend
+              class="s-Fe6WNbR-55zp"
+            >
+              Identifiant
+            </legend>
+             
+            <input
+              class="s-Fe6WNbR-55zp"
+              name="id"
+            />
+          </fieldset>
+          <!--&lt;Input&gt;-->
+        </div>
          
-        <form
-          class="s-OEREYjlWzGh2"
-          method="POST"
+        <div
+          class="row s-OEREYjlWzGh2"
         >
-          <div
-            class="row s-OEREYjlWzGh2"
+          <fieldset
+            class="s-Fe6WNbR-55zp"
           >
-            <fieldset
+            <legend
               class="s-Fe6WNbR-55zp"
             >
-              <legend
-                class="s-Fe6WNbR-55zp"
-              >
-                Identifiant
-              </legend>
-               
-              <input
-                class="s-Fe6WNbR-55zp"
-                name="id"
-              />
-            </fieldset>
-            <!--&lt;Input&gt;-->
-          </div>
-           
-          <div
-            class="row s-OEREYjlWzGh2"
-          >
-            <fieldset
+              Mot de passe
+            </legend>
+             
+            <input
               class="s-Fe6WNbR-55zp"
-            >
-              <legend
-                class="s-Fe6WNbR-55zp"
-              >
-                Mot de passe
-              </legend>
-               
-              <input
-                class="s-Fe6WNbR-55zp"
-                data-testid="password"
-                name="password"
-                type="password"
-              />
-            </fieldset>
-            <!--&lt;Input&gt;-->
-          </div>
-           
-           
-          <div
-            class="actions s-OEREYjlWzGh2"
+              data-testid="password"
+              name="password"
+              type="password"
+            />
+          </fieldset>
+          <!--&lt;Input&gt;-->
+        </div>
+         
+         
+        <div
+          class="actions s-OEREYjlWzGh2"
+        >
+          <button
+            class="primary has-text s-NMyTiX1zi6rz"
+            disabled=""
+            type="submit"
           >
-            <button
-              class="primary has-text s-NMyTiX1zi6rz"
-              disabled=""
-              type="submit"
+            <div
+              class="s-NMyTiX1zi6rz"
             >
               <span
                 class="material-icons s-NMyTiX1zi6rz"
@@ -579,117 +595,118 @@ exports[`With all providers 1`] = `
                 Entrer
               </span>
               
-              
-            </button>
-            <!--&lt;Button&gt;-->
-          </div>
-           
-          <input
-            class="s-OEREYjlWzGh2"
-            name="redirect"
-            type="hidden"
-            value=""
-          />
-        </form>
-      </details>
-    </div>
+            </div>
+             
+          </button>
+          <!--&lt;Button&gt;-->
+        </div>
+         
+        <input
+          class="s-OEREYjlWzGh2"
+          name="redirect"
+          type="hidden"
+          value=""
+        />
+      </form>
+    </details>
   </div>
-</span>
+</section>
 `;
 
 exports[`With password error 1`] = `
-<span
-  class="s-j2LTsWktqK_4"
+<section
+  class="pane s-j2LTsWktqK_4"
+  style="--bg: var(--base-lightest);"
 >
-  <div
-    class="pane s-j2LTsWktqK_4"
+  <h2
+    class="s-j2LTsWktqK_4"
   >
-    <h2
-      class="s-j2LTsWktqK_4"
-    >
-      Bienvenue !
-    </h2>
-    
+    Bienvenue !
+  </h2>
+  
+   
+  <div
+    class="container s-OEREYjlWzGh2"
+  >
      
-    <div
-      class="container s-OEREYjlWzGh2"
+     
+    <details
+      class="s-OEREYjlWzGh2"
+      open=""
     >
-       
-       
-      <details
+      <summary
         class="s-OEREYjlWzGh2"
-        open=""
+        title="password-toggle"
       >
-        <summary
-          class="s-OEREYjlWzGh2"
-          title="password-toggle"
+        <span
+          class="material-icons s-OEREYjlWzGh2"
         >
-          <span
-            class="material-icons s-OEREYjlWzGh2"
+          arrow_back
+        </span>
+        Autres options
+      </summary>
+       
+      <form
+        class="s-OEREYjlWzGh2"
+        method="POST"
+      >
+        <div
+          class="row s-OEREYjlWzGh2"
+        >
+          <fieldset
+            class="s-Fe6WNbR-55zp"
           >
-            arrow_back
-          </span>
-          Autres options
-        </summary>
+            <legend
+              class="s-Fe6WNbR-55zp has-value"
+            >
+              Identifiant
+            </legend>
+             
+            <input
+              class="s-Fe6WNbR-55zp"
+              name="id"
+            />
+          </fieldset>
+          <!--&lt;Input&gt;-->
+        </div>
          
-        <form
-          class="s-OEREYjlWzGh2"
-          method="POST"
+        <div
+          class="row s-OEREYjlWzGh2"
         >
-          <div
-            class="row s-OEREYjlWzGh2"
+          <fieldset
+            class="s-Fe6WNbR-55zp"
           >
-            <fieldset
-              class="s-Fe6WNbR-55zp"
+            <legend
+              class="s-Fe6WNbR-55zp has-value"
             >
-              <legend
-                class="s-Fe6WNbR-55zp has-value"
-              >
-                Identifiant
-              </legend>
-               
-              <input
-                class="s-Fe6WNbR-55zp"
-                name="id"
-              />
-            </fieldset>
-            <!--&lt;Input&gt;-->
-          </div>
-           
-          <div
-            class="row s-OEREYjlWzGh2"
-          >
-            <fieldset
+              Mot de passe
+            </legend>
+             
+            <input
               class="s-Fe6WNbR-55zp"
-            >
-              <legend
-                class="s-Fe6WNbR-55zp has-value"
-              >
-                Mot de passe
-              </legend>
-               
-              <input
-                class="s-Fe6WNbR-55zp"
-                data-testid="password"
-                name="password"
-                type="password"
-              />
-            </fieldset>
-            <!--&lt;Input&gt;-->
-          </div>
-           
-          <div
-            class="error s-OEREYjlWzGh2"
+              data-testid="password"
+              name="password"
+              type="password"
+            />
+          </fieldset>
+          <!--&lt;Input&gt;-->
+        </div>
+         
+        <div
+          class="error s-OEREYjlWzGh2"
+        >
+          Authentication failed!
+        </div>
+         
+        <div
+          class="actions s-OEREYjlWzGh2"
+        >
+          <button
+            class="primary has-text s-NMyTiX1zi6rz"
+            type="submit"
           >
-            Authentication failed!
-          </div>
-           
-          <div
-            class="actions s-OEREYjlWzGh2"
-          >
-            <button
-              class="primary has-text s-NMyTiX1zi6rz"
-              type="submit"
+            <div
+              class="s-NMyTiX1zi6rz"
             >
               <span
                 class="material-icons s-NMyTiX1zi6rz"
@@ -703,112 +720,113 @@ exports[`With password error 1`] = `
                 Entrer
               </span>
               
-              
-            </button>
-            <!--&lt;Button&gt;-->
-          </div>
-           
-          <input
-            class="s-OEREYjlWzGh2"
-            name="redirect"
-            type="hidden"
-            value=""
-          />
-        </form>
-      </details>
-    </div>
+            </div>
+             
+          </button>
+          <!--&lt;Button&gt;-->
+        </div>
+         
+        <input
+          class="s-OEREYjlWzGh2"
+          name="redirect"
+          type="hidden"
+          value=""
+        />
+      </form>
+    </details>
   </div>
-</span>
+</section>
 `;
 
 exports[`with password values 1`] = `
-<span
-  class="s-j2LTsWktqK_4"
+<section
+  class="pane s-j2LTsWktqK_4"
+  style="--bg: var(--base-lightest);"
 >
-  <div
-    class="pane s-j2LTsWktqK_4"
+  <h2
+    class="s-j2LTsWktqK_4"
   >
-    <h2
-      class="s-j2LTsWktqK_4"
-    >
-      Bienvenue !
-    </h2>
-    
+    Bienvenue !
+  </h2>
+  
+   
+  <div
+    class="container s-OEREYjlWzGh2"
+  >
      
-    <div
-      class="container s-OEREYjlWzGh2"
+     
+    <details
+      class="s-OEREYjlWzGh2"
+      open=""
     >
-       
-       
-      <details
-        class="s-OEREYjlWzGh2"
-        open=""
+      <summary
+        class="s-OEREYjlWzGh2 hidden"
+        title="password-toggle"
       >
-        <summary
-          class="s-OEREYjlWzGh2 hidden"
-          title="password-toggle"
+        <span
+          class="material-icons s-OEREYjlWzGh2"
         >
-          <span
-            class="material-icons s-OEREYjlWzGh2"
+          arrow_back
+        </span>
+        Autres options
+      </summary>
+       
+      <form
+        class="s-OEREYjlWzGh2"
+        method="POST"
+      >
+        <div
+          class="row s-OEREYjlWzGh2"
+        >
+          <fieldset
+            class="s-Fe6WNbR-55zp"
           >
-            arrow_back
-          </span>
-          Autres options
-        </summary>
+            <legend
+              class="s-Fe6WNbR-55zp has-value"
+            >
+              Identifiant
+            </legend>
+             
+            <input
+              class="s-Fe6WNbR-55zp"
+              name="id"
+            />
+          </fieldset>
+          <!--&lt;Input&gt;-->
+        </div>
          
-        <form
-          class="s-OEREYjlWzGh2"
-          method="POST"
+        <div
+          class="row s-OEREYjlWzGh2"
         >
-          <div
-            class="row s-OEREYjlWzGh2"
+          <fieldset
+            class="s-Fe6WNbR-55zp"
           >
-            <fieldset
-              class="s-Fe6WNbR-55zp"
+            <legend
+              class="s-Fe6WNbR-55zp has-value"
             >
-              <legend
-                class="s-Fe6WNbR-55zp has-value"
-              >
-                Identifiant
-              </legend>
-               
-              <input
-                class="s-Fe6WNbR-55zp"
-                name="id"
-              />
-            </fieldset>
-            <!--&lt;Input&gt;-->
-          </div>
-           
-          <div
-            class="row s-OEREYjlWzGh2"
-          >
-            <fieldset
+              Mot de passe
+            </legend>
+             
+            <input
               class="s-Fe6WNbR-55zp"
-            >
-              <legend
-                class="s-Fe6WNbR-55zp has-value"
-              >
-                Mot de passe
-              </legend>
-               
-              <input
-                class="s-Fe6WNbR-55zp"
-                data-testid="password"
-                name="password"
-                type="password"
-              />
-            </fieldset>
-            <!--&lt;Input&gt;-->
-          </div>
-           
-           
-          <div
-            class="actions s-OEREYjlWzGh2"
+              data-testid="password"
+              name="password"
+              type="password"
+            />
+          </fieldset>
+          <!--&lt;Input&gt;-->
+        </div>
+         
+         
+        <div
+          class="actions s-OEREYjlWzGh2"
+        >
+          <button
+            class="primary has-text s-NMyTiX1zi6rz"
+            type="submit"
           >
-            <button
-              class="primary has-text s-NMyTiX1zi6rz"
-              type="submit"
+            <div
+              class="s-NMyTiX1zi6rz"
             >
               <span
                 class="material-icons s-NMyTiX1zi6rz"
@@ -822,20 +840,20 @@ exports[`with password values 1`] = `
                 Entrer
               </span>
               
-              
-            </button>
-            <!--&lt;Button&gt;-->
-          </div>
-           
-          <input
-            class="s-OEREYjlWzGh2"
-            name="redirect"
-            type="hidden"
-            value=""
-          />
-        </form>
-      </details>
-    </div>
+            </div>
+             
+          </button>
+          <!--&lt;Button&gt;-->
+        </div>
+         
+        <input
+          class="s-OEREYjlWzGh2"
+          name="redirect"
+          type="hidden"
+          value=""
+        />
+      </form>
+    </details>
   </div>
-</span>
+</section>
 `;

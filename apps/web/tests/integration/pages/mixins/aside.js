@@ -67,7 +67,6 @@ export class AsideMixin {
    */
   async isTabActive(tab) {
     return (
-      (await tab.getAttribute('aria-selected')) === 'true' &&
       (await tab
         .locator('xpath=ancestor::section')
         .getAttribute('aria-expanded')) === 'true'

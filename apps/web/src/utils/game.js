@@ -1,3 +1,7 @@
+import chroma from 'chroma-js'
+
+import { setCssVariables } from './dom'
+
 /**
  * Find game preferences of a given player.
  * @param {object} game - game date, including preferences and players arrays.
@@ -49,4 +53,56 @@ export function isLobby(game) {
  */
 export function isGuest(game, playerId) {
   return game?.players.find(({ id }) => id === playerId)?.isGuest === true
+}
+
+/**
+ * @typedef {object} ColorSpec
+ * @property {string} base - hex value for the base color.
+ * @property {string} primary - hex value for the primary color.
+ * @property {string} secondary - hex value for the secondary color.
+ */
+
+/**
+ * Apply colors specified in a game descriptor to customize UI elements
+ * @param {ColorSpec} colors - color specifications
+ * @returns {() => void} a function to restore colors to their previous values
+ */
+export function applyGameColors(colors) {
+  setCssVariables(document.body, {
+    ...makeColorRange(colors?.base, 'base'),
+    ...makeColorRange(colors?.primary, 'primary'),
+    ...makeColorRange(colors?.secondary, 'secondary')
+  })
+  return () =>
+    setCssVariables(document.body, {
+      ...makeColorRange('', 'base'),
+      ...makeColorRange('', 'primary'),
+      ...makeColorRange('', 'secondary')
+    })
+}
+
+function makeColorRange(color, colorName) {
+  if (!color) {
+    return {
+      [`${colorName}-lightest`]: '',
+      [`${colorName}-lighter`]: '',
+      [`${colorName}-light`]: '',
+      [colorName]: '',
+      [`${colorName}-dark`]: '',
+      [`${colorName}-darker`]: '',
+      [`${colorName}-darkest`]: ''
+    }
+  }
+  const base = chroma(color)
+  // using brighten: https://coolors.co/c4f9ff-aae0ff-91c7e6-6096b4-2e6884-003e57-00182e
+  // using luminance: https://coolors.co/eff4f7-d5e3eb-a0c0d2-6096b4-2e6884-003e57-00182e
+  return {
+    [`${colorName}-lightest`]: base.luminance(0.9).hex(), // brighten(2)
+    [`${colorName}-lighter`]: base.luminance(0.75).hex(), // brighten(1.5)
+    [`${colorName}-light`]: base.luminance(0.5).hex(), // brighten()
+    [colorName]: base.hex(),
+    [`${colorName}-dark`]: base.darken().hex(),
+    [`${colorName}-darker`]: base.darken(2).hex(),
+    [`${colorName}-darkest`]: base.darken(3).hex()
+  }
 }

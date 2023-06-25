@@ -30,15 +30,15 @@
 
 <style lang="postcss">
   button {
-    @apply relative bg-$secondary-light rounded text-$ink transition-all duration-$short;
+    @apply relative bg-$base rounded text-$ink transition-all duration-$short leading-none;
     --shadow-drop: 0 3px;
-    --corner: 18px;
+    --corner: 20px;
     filter: drop-shadow(
-      var(--shadow-drop) var(--shadow-blur) var(--secondary-darker)
+      var(--shadow-drop) var(--shadow-blur) var(--shadow-color)
     );
 
     &::before {
-      @apply absolute inset-0 h-full w-full bg-$secondary pointer-events-none rounded transition-all duration-$long;
+      @apply absolute inset-0 h-full w-full bg-$base-light pointer-events-none rounded transition-all duration-$long;
       content: '';
       clip-path: polygon(
         0 calc(100% - var(--corner)),
@@ -52,11 +52,14 @@
       @apply relative inline-flex justify-center items-center py-2 px-4;
     }
 
-    &:hover:not(:disabled) {
-      @apply transform-gpu scale-105;
+    &:not(:disabled) {
+      &:hover,
+      &:focus {
+        @apply transform-gpu scale-105;
 
-      &::before {
-        clip-path: polygon(0 0, 0 100%, 100% 100%, 100% 0);
+        &::before {
+          clip-path: polygon(0 0, 0 100%, 100% 100%, 100% 0);
+        }
       }
     }
 
@@ -67,7 +70,7 @@
 
     & .badge {
       @apply absolute rounded-full leading-4 text-xs p-0.5
-         flex justify-center items-center bg-$secondary-darker
+         flex justify-center items-center bg-$base-darkest
          text-$ink-dark -top-2 -left-2 min-w-5;
     }
   }
@@ -80,31 +83,36 @@
   }
 
   button.primary:not(:disabled) {
-    @apply bg-$primary-light text-$ink;
+    @apply bg-$primary text-$ink;
     filter: drop-shadow(
       var(--shadow-drop) var(--shadow-blur) var(--primary-darker)
     );
 
     &::before {
-      @apply bg-$primary;
+      @apply bg-$primary-light;
     }
 
     & .badge {
-      @apply bg-$primary-darker;
+      @apply bg-$primary-darkest;
     }
   }
 
   button.transparent {
-    @apply bg-transparent text-$secondary-darker;
+    @apply bg-transparent text-$base-darkest;
     filter: none;
 
+    &::before {
+      @apply invisible;
+    }
+
     &.primary {
-      @apply text-$primary-dark;
+      @apply bg-transparent text-$primary-darkest;
+      filter: none;
     }
 
     &:focus,
     &:hover:not(:disabled) {
-      @apply bg-transparent text-$secondary-darkest;
+      @apply bg-transparent text-$base-darker;
 
       &.primary {
         @apply text-$primary-darker;

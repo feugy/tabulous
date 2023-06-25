@@ -2,9 +2,7 @@
   import { Aside, Progress } from '@src/components'
   import {
     actionMenuProps,
-    cameraSaves,
     connected,
-    currentCamera,
     currentGame,
     gamePlayerById,
     handMeshes,
@@ -18,8 +16,6 @@
     longInputs,
     meshDetails,
     playerColor,
-    restoreCamera,
-    saveCamera,
     sendToThread,
     thread,
     toastError,
@@ -27,7 +23,7 @@
     visibleFeedbacks,
     visibleIndicators
   } from '@src/stores'
-  import { isLobby, observeDimension } from '@src/utils'
+  import { applyGameColors,isLobby, observeDimension } from '@src/utils'
   import { onMount } from 'svelte'
   import { _ } from 'svelte-intl'
 
@@ -35,7 +31,6 @@
   import { beforeNavigate, goto } from '$app/navigation'
   import { page } from '$app/stores'
 
-  import CameraSwitch from './CameraSwitch.svelte'
   import CursorInfo from './CursorInfo.svelte'
   import GameHand from './GameHand.svelte'
   import GameMenu from './GameMenu.svelte'
@@ -57,6 +52,7 @@
   let dimensionSubscription
   let gameParameters
   let friends
+  let restoreColors
 
   $: if (browser && $playerColor) {
     document.documentElement.style.setProperty('--svg-highlight', $playerColor)
@@ -75,9 +71,11 @@
       }
     )
     friends = listFriends()
+    return () => restoreColors?.()
   })
 
   beforeNavigate(() => {
+    restoreColors?.()
     leaveGame(data.session.player)
     engine?.dispose()
     dimensionObserver?.disconnect()
@@ -96,6 +94,7 @@
       }
     })
       .then(result => {
+        restoreColors = applyGameColors(result.colors)
         if (result?.schemaString) {
           gameParameters = {
             schema: JSON.parse(result.schemaString)
@@ -130,17 +129,7 @@
     <Progress />
   </div>
 {/await}
-<aside class="top">
-  <GameMenu />
-  <CameraSwitch
-    {longTapDelay}
-    current={$currentCamera}
-    saves={$cameraSaves}
-    on:longTap={() => longInputs.next()}
-    on:restore={({ detail: { index } }) => restoreCamera(index)}
-    on:save={({ detail: { index } }) => saveCamera(index)}
-  />
-</aside>
+<GameMenu {longTapDelay} />
 <main>
   <!-- svelte-ignore a11y-autofocus -->
   <div
@@ -189,20 +178,21 @@
 
   main {
     container-type: inline-size z-10;
+
+    :global(> aside) {
+      @apply absolute inset-y-0 right-0;
+    }
   }
 
   .interaction {
     @apply select-none flex-1 relative;
     touch-action: none;
+    cursor: grab;
   }
 
   canvas {
     @apply absolute top-0 left-0 select-none h-full w-full;
     touch-action: none;
-  }
-
-  aside.top {
-    @apply absolute z-10 top-0 left-0 p-2 flex gap-2;
   }
 
   .overlay {

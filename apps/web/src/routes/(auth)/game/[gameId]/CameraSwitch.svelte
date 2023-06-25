@@ -42,6 +42,7 @@
     badge={index === 0 ? null : index}
     title={$_('tooltips.save-restore-camera', { index })}
     disabled={save.hash === current?.hash}
+    transparent
     on:pointerdown={({ pointerId }) => handleDown(pointerId)}
     on:pointerup={({ pointerId }) => handleUp(pointerId, index)}
   />{' '}
@@ -51,6 +52,7 @@
     icon="video_call"
     title={$_('tooltips.save-new-camera')}
     disabled={isSaved}
+    transparent
     on:click={() => dispatch('save', { index: saveCount })}
   />
 {/if}

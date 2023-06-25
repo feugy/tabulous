@@ -3,71 +3,87 @@
 exports[`Max count reached 1`] = `
 HTMLCollection [
   <button
-    class="s-NMyTiX1zi6rz"
+    class="transparent s-NMyTiX1zi6rz"
     title="Charger la position initiale de la camera (Début)"
   >
-    <span
-      class="material-icons s-NMyTiX1zi6rz"
+    <div
+      class="s-NMyTiX1zi6rz"
     >
-      videocam
-    </span>
-    
-    
-    
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
+      >
+        videocam
+      </span>
+      
+      
+    </div>
+     
   </button>,
   <button
-    class="s-NMyTiX1zi6rz"
+    class="transparent s-NMyTiX1zi6rz"
     title="Charger (clic) ou enregistrer (clic long) la position à l'emplacement 1"
   >
-    <span
-      class="material-icons s-NMyTiX1zi6rz"
+    <div
+      class="s-NMyTiX1zi6rz"
     >
-      videocam
-    </span>
-    
-    
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
+      >
+        videocam
+      </span>
+      
+      
+    </div>
+     
     <span
       class="badge s-NMyTiX1zi6rz"
     >
       1
     </span>
-    
   </button>,
   <button
-    class="s-NMyTiX1zi6rz"
+    class="transparent s-NMyTiX1zi6rz"
     title="Charger (clic) ou enregistrer (clic long) la position à l'emplacement 2"
   >
-    <span
-      class="material-icons s-NMyTiX1zi6rz"
+    <div
+      class="s-NMyTiX1zi6rz"
     >
-      videocam
-    </span>
-    
-    
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
+      >
+        videocam
+      </span>
+      
+      
+    </div>
+     
     <span
       class="badge s-NMyTiX1zi6rz"
     >
       2
     </span>
-    
   </button>,
   <button
-    class="s-NMyTiX1zi6rz"
+    class="transparent s-NMyTiX1zi6rz"
     title="Charger (clic) ou enregistrer (clic long) la position à l'emplacement 3"
   >
-    <span
-      class="material-icons s-NMyTiX1zi6rz"
+    <div
+      class="s-NMyTiX1zi6rz"
     >
-      videocam
-    </span>
-    
-    
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
+      >
+        videocam
+      </span>
+      
+      
+    </div>
+     
     <span
       class="badge s-NMyTiX1zi6rz"
     >
       3
     </span>
-    
   </button>,
 ]
 `;
@@ -75,66 +91,82 @@ HTMLCollection [
 exports[`Multiple saves 1`] = `
 HTMLCollection [
   <button
-    class="s-NMyTiX1zi6rz"
+    class="transparent s-NMyTiX1zi6rz"
     title="Charger la position initiale de la camera (Début)"
   >
-    <span
-      class="material-icons s-NMyTiX1zi6rz"
+    <div
+      class="s-NMyTiX1zi6rz"
     >
-      videocam
-    </span>
-    
-    
-    
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
+      >
+        videocam
+      </span>
+      
+      
+    </div>
+     
   </button>,
   <button
-    class="s-NMyTiX1zi6rz"
+    class="transparent s-NMyTiX1zi6rz"
     title="Charger (clic) ou enregistrer (clic long) la position à l'emplacement 1"
   >
-    <span
-      class="material-icons s-NMyTiX1zi6rz"
+    <div
+      class="s-NMyTiX1zi6rz"
     >
-      videocam
-    </span>
-    
-    
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
+      >
+        videocam
+      </span>
+      
+      
+    </div>
+     
     <span
       class="badge s-NMyTiX1zi6rz"
     >
       1
     </span>
-    
   </button>,
   <button
-    class="s-NMyTiX1zi6rz"
+    class="transparent s-NMyTiX1zi6rz"
     title="Charger (clic) ou enregistrer (clic long) la position à l'emplacement 2"
   >
-    <span
-      class="material-icons s-NMyTiX1zi6rz"
+    <div
+      class="s-NMyTiX1zi6rz"
     >
-      videocam
-    </span>
-    
-    
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
+      >
+        videocam
+      </span>
+      
+      
+    </div>
+     
     <span
       class="badge s-NMyTiX1zi6rz"
     >
       2
     </span>
-    
   </button>,
   <button
-    class="s-NMyTiX1zi6rz"
+    class="transparent s-NMyTiX1zi6rz"
     title="Enregistrer la position (Ctrl+1~9)"
   >
-    <span
-      class="material-icons s-NMyTiX1zi6rz"
+    <div
+      class="s-NMyTiX1zi6rz"
     >
-      video_call
-    </span>
-    
-    
-    
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
+      >
+        video_call
+      </span>
+      
+      
+    </div>
+     
   </button>,
 ]
 `;
@@ -142,68 +174,84 @@ HTMLCollection [
 exports[`Multiple saves with current 1`] = `
 HTMLCollection [
   <button
-    class="s-NMyTiX1zi6rz"
+    class="transparent s-NMyTiX1zi6rz"
     title="Charger la position initiale de la camera (Début)"
   >
-    <span
-      class="material-icons s-NMyTiX1zi6rz"
+    <div
+      class="s-NMyTiX1zi6rz"
     >
-      videocam
-    </span>
-    
-    
-    
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
+      >
+        videocam
+      </span>
+      
+      
+    </div>
+     
   </button>,
   <button
-    class="s-NMyTiX1zi6rz"
+    class="transparent s-NMyTiX1zi6rz"
     disabled=""
     title="Charger (clic) ou enregistrer (clic long) la position à l'emplacement 1"
   >
-    <span
-      class="material-icons s-NMyTiX1zi6rz"
+    <div
+      class="s-NMyTiX1zi6rz"
     >
-      videocam
-    </span>
-    
-    
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
+      >
+        videocam
+      </span>
+      
+      
+    </div>
+     
     <span
       class="badge s-NMyTiX1zi6rz"
     >
       1
     </span>
-    
   </button>,
   <button
-    class="s-NMyTiX1zi6rz"
+    class="transparent s-NMyTiX1zi6rz"
     title="Charger (clic) ou enregistrer (clic long) la position à l'emplacement 2"
   >
-    <span
-      class="material-icons s-NMyTiX1zi6rz"
+    <div
+      class="s-NMyTiX1zi6rz"
     >
-      videocam
-    </span>
-    
-    
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
+      >
+        videocam
+      </span>
+      
+      
+    </div>
+     
     <span
       class="badge s-NMyTiX1zi6rz"
     >
       2
     </span>
-    
   </button>,
   <button
-    class="s-NMyTiX1zi6rz"
+    class="transparent s-NMyTiX1zi6rz"
     disabled=""
     title="Enregistrer la position (Ctrl+1~9)"
   >
-    <span
-      class="material-icons s-NMyTiX1zi6rz"
+    <div
+      class="s-NMyTiX1zi6rz"
     >
-      video_call
-    </span>
-    
-    
-    
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
+      >
+        video_call
+      </span>
+      
+      
+    </div>
+     
   </button>,
 ]
 `;
@@ -211,30 +259,38 @@ HTMLCollection [
 exports[`Single save 1`] = `
 HTMLCollection [
   <button
-    class="s-NMyTiX1zi6rz"
+    class="transparent s-NMyTiX1zi6rz"
     title="Charger la position initiale de la camera (Début)"
   >
-    <span
-      class="material-icons s-NMyTiX1zi6rz"
+    <div
+      class="s-NMyTiX1zi6rz"
     >
-      videocam
-    </span>
-    
-    
-    
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
+      >
+        videocam
+      </span>
+      
+      
+    </div>
+     
   </button>,
   <button
-    class="s-NMyTiX1zi6rz"
+    class="transparent s-NMyTiX1zi6rz"
     title="Enregistrer la position (Ctrl+1~9)"
   >
-    <span
-      class="material-icons s-NMyTiX1zi6rz"
+    <div
+      class="s-NMyTiX1zi6rz"
     >
-      video_call
-    </span>
-    
-    
-    
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
+      >
+        video_call
+      </span>
+      
+      
+    </div>
+     
   </button>,
 ]
 `;

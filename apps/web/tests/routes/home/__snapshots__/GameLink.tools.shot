@@ -3,7 +3,7 @@
 exports[`Current lobby 1`] = `
 <article
   class="s-QQoQzhRq8NK6 lobby isCurrent"
-  style="--bg-url: url('http://localhost:3001/games/undefined/catalog/cover.webp');"
+  style="--bg-url: url('');"
 >
   <button
     class="s-QQoQzhRq8NK6"
@@ -35,14 +35,18 @@ exports[`Current lobby 1`] = `
       class="s-NMyTiX1zi6rz"
       secondary="true"
     >
-      <span
-        class="material-icons s-NMyTiX1zi6rz"
+      <div
+        class="s-NMyTiX1zi6rz"
       >
-        close
-      </span>
-      
-      
-      
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          close
+        </span>
+        
+        
+      </div>
+       
     </button>
     <!--&lt;Button&gt;-->
   </div>
@@ -135,7 +139,7 @@ exports[`Invited 1`] = `
 exports[`Lobby 1`] = `
 <article
   class="s-QQoQzhRq8NK6 lobby"
-  style="--bg-url: url('http://localhost:3001/games/undefined/catalog/cover.webp');"
+  style="--bg-url: url('');"
 >
   <button
     class="s-QQoQzhRq8NK6"
@@ -211,14 +215,18 @@ exports[`Owned 1`] = `
       class="s-NMyTiX1zi6rz"
       secondary="true"
     >
-      <span
-        class="material-icons s-NMyTiX1zi6rz"
+      <div
+        class="s-NMyTiX1zi6rz"
       >
-        delete
-      </span>
-      
-      
-      
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          delete
+        </span>
+        
+        
+      </div>
+       
     </button>
     <!--&lt;Button&gt;-->
   </div>
@@ -260,14 +268,18 @@ exports[`Single owned 1`] = `
       class="s-NMyTiX1zi6rz"
       secondary="true"
     >
-      <span
-        class="material-icons s-NMyTiX1zi6rz"
+      <div
+        class="s-NMyTiX1zi6rz"
       >
-        delete
-      </span>
-      
-      
-      
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          delete
+        </span>
+        
+        
+      </div>
+       
     </button>
     <!--&lt;Button&gt;-->
   </div>

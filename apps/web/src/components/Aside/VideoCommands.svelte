@@ -36,26 +36,34 @@
   }
 </script>
 
-{#if $mics$?.length > 0}
-  <SoundMeter mediaStream={$stream$} />
-  <Dropdown
-    valueAsText={false}
-    openOnClick={false}
-    icon={!muted ? 'mic' : 'mic_off'}
-    value={$currentMic$}
-    options={$mics$}
-    on:click={toggleMic}
-    on:select={selectMedia}
-  />
-{/if}
-{#if $cameras$?.length > 0}
-  <Dropdown
-    valueAsText={false}
-    openOnClick={false}
-    icon={!stopped ? 'videocam' : 'videocam_off'}
-    value={$currentCamera$}
-    options={$cameras$}
-    on:click={toggleVideo}
-    on:select={selectMedia}
-  />
-{/if}
+<legend>
+  {#if $mics$?.length > 0}
+    <SoundMeter mediaStream={$stream$} />
+    <Dropdown
+      valueAsText={false}
+      openOnClick={false}
+      icon={!muted ? 'mic' : 'mic_off'}
+      value={$currentMic$}
+      options={$mics$}
+      on:click={toggleMic}
+      on:select={selectMedia}
+    />
+  {/if}
+  {#if $cameras$?.length > 0}
+    <Dropdown
+      valueAsText={false}
+      openOnClick={false}
+      icon={!stopped ? 'videocam' : 'videocam_off'}
+      value={$currentCamera$}
+      options={$cameras$}
+      on:click={toggleVideo}
+      on:select={selectMedia}
+    />
+  {/if}
+</legend>
+
+<style lang="postcss">
+  legend {
+    @apply flex gap-2 justify-center p-2;
+  }
+</style>

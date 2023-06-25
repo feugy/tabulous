@@ -1,9 +1,10 @@
 <script>
   export let title = null
   export let heading = 2
+  export let backgroundColor = 'base'
 </script>
 
-<section class="pane">
+<section class="pane" style:--bg="var(--{backgroundColor}-lightest)">
   {#if title}
     <svelte:element this={`h${heading}`}>{title}</svelte:element>
   {/if}
@@ -12,7 +13,8 @@
 
 <style lang="postcss">
   .pane {
-    @apply px-8 py-6 bg-$base-lightest rounded shadow-md;
+    @apply px-8 py-6 rounded shadow-md;
+    background: var(--card-light) var(--bg);
   }
 
   h1,

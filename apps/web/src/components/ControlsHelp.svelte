@@ -8,82 +8,66 @@
 </script>
 
 <script>
-  import {
-    DoubleLeftObject,
-    DoublePointerObject,
-    LeftDrag,
-    LeftDragObject,
-    LeftObject,
-    LeftOutside,
-    LongLeftObject,
-    LongPointerObject,
-    MiddleDrag,
-    MouseWheel,
-    Pinch,
-    PointerDrag,
-    PointerDragObject,
-    PointerObject,
-    PointerOutside,
-    RightDrag,
-    RightObject,
-    ThreePointersDrag,
-    TwoPointersDrag,
-    TwoPointersObject
-  } from '@src/svg/help'
   import { _ } from 'svelte-intl'
+  
+  import Progress from './Progress.svelte'
 </script>
 
 <div>
-  <h3>{$_('titles.object-controls')}</h3>
-  <dl>
-    <dt>
-      {#if isTouch}<TwoPointersObject />{:else} <RightObject />{/if}
-    </dt>
-    <dd>{$_('labels.help-open-menu')}</dd>
-    <dt>
-      {#if isTouch}<PointerObject />{:else} <LeftObject />{/if}
-    </dt>
-    <dd>{$_('labels.help-flip')}</dd>
-    <dt>
-      {#if isTouch}<LongPointerObject />{:else} <LongLeftObject />{/if}
-    </dt>
-    <dd>{$_('labels.help-rotate')}</dd>
-    <dt>
-      {#if isTouch}<DoublePointerObject />{:else} <DoubleLeftObject />{/if}
-    </dt>
-    <dd>{$_('labels.help-detail')}</dd>
-    <dt>
-      {#if isTouch}<PointerDragObject />{:else} <LeftDragObject />{/if}
-    </dt>
-    <dd>{$_('labels.help-move')}</dd>
-    <dt>
-      {#if isTouch}<PointerDrag />{:else} <LeftDrag />{/if}
-    </dt>
-    <dd>{$_('labels.help-add-to-selection')}</dd>
-    <dt>
-      {#if isTouch}<PointerOutside />{:else} <LeftOutside />{/if}
-    </dt>
-    <dd>{$_('labels.help-clear-selection')}</dd>
-  </dl>
+  {#await import('@src/svg/help')}
+    <Progress />
+  {:then { DoubleLeftObject, DoublePointerObject, LeftDrag, LeftDragObject, LeftObject, LeftOutside, LongLeftObject, LongPointerObject, MiddleDrag, MouseWheel, Pinch, PointerDrag, PointerDragObject, PointerObject, PointerOutside, RightDrag, RightObject, ThreePointersDrag, TwoPointersDrag, TwoPointersObject }}
+    <h3>{$_('titles.object-controls')}</h3>
+    <dl>
+      <dt>
+        {#if isTouch}<TwoPointersObject />{:else} <RightObject />{/if}
+      </dt>
+      <dd>{$_('labels.help-open-menu')}</dd>
+      <dt>
+        {#if isTouch}<PointerObject />{:else} <LeftObject />{/if}
+      </dt>
+      <dd>{$_('labels.help-flip')}</dd>
+      <dt>
+        {#if isTouch}<LongPointerObject />{:else} <LongLeftObject />{/if}
+      </dt>
+      <dd>{$_('labels.help-rotate')}</dd>
+      <dt>
+        {#if isTouch}<DoublePointerObject />{:else} <DoubleLeftObject />{/if}
+      </dt>
+      <dd>{$_('labels.help-detail')}</dd>
+      <dt>
+        {#if isTouch}<PointerDragObject />{:else} <LeftDragObject />{/if}
+      </dt>
+      <dd>{$_('labels.help-move')}</dd>
+      <dt>
+        {#if isTouch}<PointerDrag />{:else} <LeftDrag />{/if}
+      </dt>
+      <dd>{$_('labels.help-add-to-selection')}</dd>
+      <dt>
+        {#if isTouch}<PointerOutside />{:else} <LeftOutside />{/if}
+      </dt>
+      <dd>{$_('labels.help-clear-selection')}</dd>
+    </dl>
 
-  <h3>{$_('titles.camera-controls')}</h3>
-  <dl>
-    <dt>
-      {#if isTouch}<TwoPointersDrag />{:else} <RightDrag />{/if}
-    </dt>
-    <dd>{$_('labels.help-pan-camera')}</dd>
-    <dt>
-      {#if isTouch}<ThreePointersDrag />{:else} <MiddleDrag />{/if}
-    </dt>
-    <dd>{$_('labels.help-rotate-camera')}</dd>
-    <dt>
-      {#if isTouch}<Pinch />{:else} <MouseWheel />{/if}
-    </dt>
-    <dd>{$_('labels.help-zoom')}</dd>
-  </dl>
-  <!--ControlHelp actions={[NewCamera]} label={$_('labels.new-camera')} /-->
-  <!--ControlHelp actions={[RestoreCamera]} label={$_('labels.restore-camera')} /-->
-  <!--ControlHelp actions={[UpdateCamera]} label={$_('labels.save-camera')} /-->
+    <h3>{$_('titles.camera-controls')}</h3>
+    <dl>
+      <dt>
+        {#if isTouch}<TwoPointersDrag />{:else} <RightDrag />{/if}
+      </dt>
+      <dd>{$_('labels.help-pan-camera')}</dd>
+      <dt>
+        {#if isTouch}<ThreePointersDrag />{:else} <MiddleDrag />{/if}
+      </dt>
+      <dd>{$_('labels.help-rotate-camera')}</dd>
+      <dt>
+        {#if isTouch}<Pinch />{:else} <MouseWheel />{/if}
+      </dt>
+      <dd>{$_('labels.help-zoom')}</dd>
+    </dl>
+    <!--ControlHelp actions={[NewCamera]} label={$_('labels.new-camera')} /-->
+    <!--ControlHelp actions={[RestoreCamera]} label={$_('labels.restore-camera')} /-->
+    <!--ControlHelp actions={[UpdateCamera]} label={$_('labels.save-camera')} /-->
+  {/await}
 </div>
 
 <style lang="postcss">

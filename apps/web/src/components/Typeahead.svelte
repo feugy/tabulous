@@ -91,5 +91,9 @@
 <style lang="postcss">
   .wrapper {
     @apply relative inline-block flex-grow;
+
+    :global(fieldset) {
+      @apply mb-0;
+    }
   }
 </style>

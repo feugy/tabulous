@@ -1,9 +1,8 @@
 <script>
   import { getPixelDimension, observeDimension } from '@src/utils'
   import { onMount } from 'svelte'
-  
+
   import PlayerAvatar from './PlayerAvatar.svelte'
-  import VideoCommands from './VideoCommands.svelte'
 
   export let player
   export let playerById
@@ -79,7 +78,6 @@
   {#each peers as { playerId, ...props } (props.player.id)}
     <PlayerAvatar {...props} />
   {/each}
-  <legend><VideoCommands /></legend>
 </div>
 
 <style lang="postcss">
@@ -91,13 +89,5 @@
       width: calc(100% / var(--columns));
       height: calc(100% / var(--rows));
     }
-
-    &:hover > legend {
-      @apply opacity-100;
-    }
-  }
-
-  legend {
-    @apply absolute bottom-4 left-1/2 transform-gpu -translate-x-1/2 flex gap-2 z-10 w-auto h-auto opacity-0 transition-opacity;
   }
 </style>

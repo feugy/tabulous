@@ -53,7 +53,7 @@ lacus vestibulum sed arcu non odio euismod lacinia.`
   layout="centered"
 >
   <Tool name="Left aligned" let:props let:handleEvent>
-    <div>
+    <div class="p-8">
       <div>{headerText}</div>
       <Dropdown
         {...props}
@@ -65,7 +65,7 @@ lacus vestibulum sed arcu non odio euismod lacinia.`
     </div>
   </Tool>
   <Tool name="Right aligned" let:props let:handleEvent>
-    <div class="text-right">
+    <div class="text-right p-8">
       <div>{headerText}</div>
       <Dropdown
         {...props}

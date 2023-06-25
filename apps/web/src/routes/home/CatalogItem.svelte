@@ -71,9 +71,18 @@
 
 <style lang="postcss">
   button {
-    @apply inline-flex flex-col justify-center h-64 flex-1 bg-$base-lighter text-left rounded;
+    @apply relative inline-flex flex-col justify-center items-stretch h-64 flex-1 text-left rounded;
+    background: var(--card-light) var(--base-lighter);
+    transition: transform var(--short), box-shadow var(--short),
+      background-position var(--long);
+    box-shadow: 0px 3px 10px var(--shadow-color);
 
     &:hover {
+      transform: perspective(450px) rotate3d(1, 0, 0, 5deg)
+        scale3d(1.05, 1.05, 1.05) translate3d(0, -4px, 0);
+      background-position: 0 0;
+      box-shadow: 0px 1rem 10px var(--shadow-color);
+
       img {
         @apply max-h-1/3 -m-b-3;
       }
@@ -97,21 +106,21 @@
   }
 
   legend {
-    @apply inline-grid grid-rows-[min-content,1fr] grid-cols-[auto,min-content] gap-1 p-4 -m-3
-           h-0 opacity-0 bg-$base-darker text-$base-darker overflow-hidden z-1 rounded;
+    @apply inline-grid grid-rows-[min-content,1fr] grid-cols-[auto,min-content] gap-1 p-4 -m-2
+           h-0 opacity-0 bg-$base-darker text-$ink-dark overflow-hidden z-1 rounded;
     transition: opacity var(--long) var(--medium), height var(--long);
   }
 
   h3 {
-    @apply m-1 text-$primary-lighter;
+    @apply m-1 text-$primary-light;
   }
 
   .details {
-    @apply flex flex-col overflow-auto m-l-1 text-$ink-dark opacity-0;
+    @apply flex flex-col overflow-auto m-l-1 opacity-0;
     transition: opacity var(--short) var(--long);
 
     strong {
-      @apply font-normal text-$secondary-light;
+      @apply font-normal text-$secondary;
     }
 
     p {
@@ -123,7 +132,7 @@
     @apply row-span-2 flex flex-col items-center;
 
     .material-icons {
-      @apply mt-2 $text-$secondary-dark;
+      @apply mt-2 text-$base-light;
     }
   }
 </style>

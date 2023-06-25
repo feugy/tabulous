@@ -9,37 +9,46 @@ exports[`Default (not visible) 1`] = `
     aria-expanded="false"
     aria-label="minimizable"
     class="s-vqhOCvFa7LzI minimized vertical"
-    id="minimizable-section-16"
-    style="height: 25vh;"
+    id="minimizable-section-14"
+    style="height: 25vh; transition: height var(--short);"
   >
     <menu
       class="bottom s-vqhOCvFa7LzI vertical"
     >
       <ol
-        class="buttonContainer s-vqhOCvFa7LzI"
+        class="s-vqhOCvFa7LzI"
         role="tablist"
+        style="--corner1: url(#clip-path-10000); --corner2: url(#clip-path-10010);"
       >
+        <li
+          class="bg s-vqhOCvFa7LzI"
+        />
+         
         <li
           class="s-vqhOCvFa7LzI"
         >
           <button
             aria-selected="false"
-            class="s-NMyTiX1zi6rz"
+            class="transparent s-NMyTiX1zi6rz"
             role="tab"
           >
-            <span
-              class="material-icons s-NMyTiX1zi6rz"
+            <div
+              class="s-NMyTiX1zi6rz"
             >
-              front_hand
-            </span>
-            
-            
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                front_hand
+              </span>
+              
+              
+            </div>
+             
             <span
               class="badge s-NMyTiX1zi6rz"
             >
               h
             </span>
-            
           </button>
           <!--&lt;Button&gt;-->
            
@@ -47,10 +56,40 @@ exports[`Default (not visible) 1`] = `
       </ol>
        
       <div
-        aria-controls="minimizable-section-16"
+        aria-controls="minimizable-section-14"
         class="gutter s-vqhOCvFa7LzI"
         role="scrollbar"
       />
+       
+      <svg
+        class="s-vqhOCvFa7LzI"
+        style="width: 0px; height: 0px;"
+      >
+        <clippath
+          class="s-vqhOCvFa7LzI"
+          clipPathUnits="objectBoundingBox"
+          id="clip-path-10000"
+        >
+          <path
+            class="s-vqhOCvFa7LzI"
+            d="M 0 1 C 0.5 1 0.5 0 1 0 V 1 Z"
+            transform="rotate(0) scale(1, 1)"
+            transform-origin="0.5 0.5"
+          />
+        </clippath>
+        <clippath
+          class="s-vqhOCvFa7LzI"
+          clipPathUnits="objectBoundingBox"
+          id="clip-path-10010"
+        >
+          <path
+            class="s-vqhOCvFa7LzI"
+            d="M 0 0 C 0.5 0 0.5 1 1 1 H 0 Z"
+            transform="rotate(0) scale(1, 1)"
+            transform-origin="0.5 0.5"
+          />
+        </clippath>
+      </svg>
     </menu>
      
     <span
@@ -74,37 +113,46 @@ exports[`Highlighted 1`] = `
     aria-expanded="false"
     aria-label="minimizable"
     class="s-vqhOCvFa7LzI minimized vertical"
-    id="minimizable-section-18"
-    style="height: 25vh;"
+    id="minimizable-section-16"
+    style="height: 25vh; transition: height var(--short);"
   >
     <menu
       class="bottom s-vqhOCvFa7LzI vertical"
     >
       <ol
-        class="buttonContainer s-vqhOCvFa7LzI"
+        class="s-vqhOCvFa7LzI"
         role="tablist"
+        style="--corner1: url(#clip-path-10040); --corner2: url(#clip-path-10050);"
       >
+        <li
+          class="bg s-vqhOCvFa7LzI"
+        />
+         
         <li
           class="s-vqhOCvFa7LzI"
         >
           <button
             aria-selected="false"
-            class="s-NMyTiX1zi6rz"
+            class="transparent s-NMyTiX1zi6rz"
             role="tab"
           >
-            <span
-              class="material-icons s-NMyTiX1zi6rz"
+            <div
+              class="s-NMyTiX1zi6rz"
             >
-              front_hand
-            </span>
-            
-            
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                front_hand
+              </span>
+              
+              
+            </div>
+             
             <span
               class="badge s-NMyTiX1zi6rz"
             >
               h
             </span>
-            
           </button>
           <!--&lt;Button&gt;-->
            
@@ -112,10 +160,40 @@ exports[`Highlighted 1`] = `
       </ol>
        
       <div
-        aria-controls="minimizable-section-18"
+        aria-controls="minimizable-section-16"
         class="gutter s-vqhOCvFa7LzI"
         role="scrollbar"
       />
+       
+      <svg
+        class="s-vqhOCvFa7LzI"
+        style="width: 0px; height: 0px;"
+      >
+        <clippath
+          class="s-vqhOCvFa7LzI"
+          clipPathUnits="objectBoundingBox"
+          id="clip-path-10040"
+        >
+          <path
+            class="s-vqhOCvFa7LzI"
+            d="M 0 1 C 0.5 1 0.5 0 1 0 V 1 Z"
+            transform="rotate(0) scale(1, 1)"
+            transform-origin="0.5 0.5"
+          />
+        </clippath>
+        <clippath
+          class="s-vqhOCvFa7LzI"
+          clipPathUnits="objectBoundingBox"
+          id="clip-path-10050"
+        >
+          <path
+            class="s-vqhOCvFa7LzI"
+            d="M 0 0 C 0.5 0 0.5 1 1 1 H 0 Z"
+            transform="rotate(0) scale(1, 1)"
+            transform-origin="0.5 0.5"
+          />
+        </clippath>
+      </svg>
     </menu>
      
     <span
@@ -139,37 +217,46 @@ exports[`With some meshes 1`] = `
     aria-expanded="true"
     aria-label="minimizable"
     class="s-vqhOCvFa7LzI vertical"
-    id="minimizable-section-17"
-    style="height: 25vh;"
+    id="minimizable-section-15"
+    style="height: 25vh; transition: height var(--short);"
   >
     <menu
       class="bottom s-vqhOCvFa7LzI vertical"
     >
       <ol
-        class="buttonContainer s-vqhOCvFa7LzI"
+        class="s-vqhOCvFa7LzI"
         role="tablist"
+        style="--corner1: url(#clip-path-10020); --corner2: url(#clip-path-10030);"
       >
+        <li
+          class="bg s-vqhOCvFa7LzI"
+        />
+         
         <li
           class="s-vqhOCvFa7LzI"
         >
           <button
             aria-selected="false"
-            class="s-NMyTiX1zi6rz"
+            class="transparent s-NMyTiX1zi6rz"
             role="tab"
           >
-            <span
-              class="material-icons s-NMyTiX1zi6rz"
+            <div
+              class="s-NMyTiX1zi6rz"
             >
-              front_hand
-            </span>
-            
-            
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                front_hand
+              </span>
+              
+              
+            </div>
+             
             <span
               class="badge s-NMyTiX1zi6rz"
             >
               h
             </span>
-            
           </button>
           <!--&lt;Button&gt;-->
            
@@ -177,10 +264,40 @@ exports[`With some meshes 1`] = `
       </ol>
        
       <div
-        aria-controls="minimizable-section-17"
+        aria-controls="minimizable-section-15"
         class="gutter s-vqhOCvFa7LzI"
         role="scrollbar"
       />
+       
+      <svg
+        class="s-vqhOCvFa7LzI"
+        style="width: 0px; height: 0px;"
+      >
+        <clippath
+          class="s-vqhOCvFa7LzI"
+          clipPathUnits="objectBoundingBox"
+          id="clip-path-10020"
+        >
+          <path
+            class="s-vqhOCvFa7LzI"
+            d="M 0 1 C 0.5 1 0.5 0 1 0 V 1 Z"
+            transform="rotate(0) scale(1, 1)"
+            transform-origin="0.5 0.5"
+          />
+        </clippath>
+        <clippath
+          class="s-vqhOCvFa7LzI"
+          clipPathUnits="objectBoundingBox"
+          id="clip-path-10030"
+        >
+          <path
+            class="s-vqhOCvFa7LzI"
+            d="M 0 0 C 0.5 0 0.5 1 1 1 H 0 Z"
+            transform="rotate(0) scale(1, 1)"
+            transform-origin="0.5 0.5"
+          />
+        </clippath>
+      </svg>
     </menu>
      
     <span

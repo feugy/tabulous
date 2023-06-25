@@ -43,14 +43,18 @@ exports[`Empty list 1`] = `
       class="s-NMyTiX1zi6rz"
       disabled=""
     >
-      <span
-        class="material-icons s-NMyTiX1zi6rz"
+      <div
+        class="s-NMyTiX1zi6rz"
       >
-        person_add_alt_1
-      </span>
-      
-      
-      
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          person_add_alt_1
+        </span>
+        
+        
+      </div>
+       
     </button>
     <!--&lt;Button&gt;-->
   </div>
@@ -113,14 +117,18 @@ exports[`With friends 1`] = `
       class="s-NMyTiX1zi6rz"
       disabled=""
     >
-      <span
-        class="material-icons s-NMyTiX1zi6rz"
+      <div
+        class="s-NMyTiX1zi6rz"
       >
-        person_add_alt_1
-      </span>
-      
-      
-      
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          person_add_alt_1
+        </span>
+        
+        
+      </div>
+       
     </button>
     <!--&lt;Button&gt;-->
   </div>
@@ -170,14 +178,18 @@ exports[`With friends 1`] = `
         <button
           class="s-NMyTiX1zi6rz"
         >
-          <span
-            class="material-icons s-NMyTiX1zi6rz"
+          <div
+            class="s-NMyTiX1zi6rz"
           >
-            delete
-          </span>
-          
-          
-          
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              delete
+            </span>
+            
+            
+          </div>
+           
         </button>
         <!--&lt;Button&gt;-->
       </span>
@@ -223,14 +235,18 @@ exports[`With friends 1`] = `
         <button
           class="s-NMyTiX1zi6rz"
         >
-          <span
-            class="material-icons s-NMyTiX1zi6rz"
+          <div
+            class="s-NMyTiX1zi6rz"
           >
-            delete
-          </span>
-          
-          
-          
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              delete
+            </span>
+            
+            
+          </div>
+           
         </button>
         <!--&lt;Button&gt;-->
       </span>
@@ -276,14 +292,18 @@ exports[`With friends 1`] = `
         <button
           class="s-NMyTiX1zi6rz"
         >
-          <span
-            class="material-icons s-NMyTiX1zi6rz"
+          <div
+            class="s-NMyTiX1zi6rz"
           >
-            delete
-          </span>
-          
-          
-          
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              delete
+            </span>
+            
+            
+          </div>
+           
         </button>
         <!--&lt;Button&gt;-->
       </span>
@@ -418,14 +438,18 @@ HTMLCollection [
         class="s-NMyTiX1zi6rz"
         disabled=""
       >
-        <span
-          class="material-icons s-NMyTiX1zi6rz"
+        <div
+          class="s-NMyTiX1zi6rz"
         >
-          person_add_alt_1
-        </span>
-        
-        
-        
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            person_add_alt_1
+          </span>
+          
+          
+        </div>
+         
       </button>
       <!--&lt;Button&gt;-->
     </div>
@@ -471,28 +495,36 @@ HTMLCollection [
           <button
             class="primary s-NMyTiX1zi6rz"
           >
-            <span
-              class="material-icons s-NMyTiX1zi6rz"
+            <div
+              class="s-NMyTiX1zi6rz"
             >
-              check
-            </span>
-            
-            
-            
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                check
+              </span>
+              
+              
+            </div>
+             
           </button>
           <!--&lt;Button&gt;-->
            
           <button
             class="s-NMyTiX1zi6rz"
           >
-            <span
-              class="material-icons s-NMyTiX1zi6rz"
+            <div
+              class="s-NMyTiX1zi6rz"
             >
-              clear
-            </span>
-            
-            
-            
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                clear
+              </span>
+              
+              
+            </div>
+             
           </button>
           <!--&lt;Button&gt;-->
         </span>
@@ -538,14 +570,18 @@ HTMLCollection [
           <button
             class="s-NMyTiX1zi6rz"
           >
-            <span
-              class="material-icons s-NMyTiX1zi6rz"
+            <div
+              class="s-NMyTiX1zi6rz"
             >
-              delete
-            </span>
-            
-            
-            
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                delete
+              </span>
+              
+              
+            </div>
+             
           </button>
           <!--&lt;Button&gt;-->
         </span>
@@ -591,14 +627,18 @@ HTMLCollection [
           <button
             class="s-NMyTiX1zi6rz"
           >
-            <span
-              class="material-icons s-NMyTiX1zi6rz"
+            <div
+              class="s-NMyTiX1zi6rz"
             >
-              delete
-            </span>
-            
-            
-            
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                delete
+              </span>
+              
+              
+            </div>
+             
           </button>
           <!--&lt;Button&gt;-->
         </span>
@@ -606,6 +646,33 @@ HTMLCollection [
       </li>
     </ol>
      
+    <span
+      class="invite s-XLQf75fI0H0o"
+    >
+      <button
+        class="has-text s-NMyTiX1zi6rz"
+        disabled=""
+      >
+        <div
+          class="s-NMyTiX1zi6rz"
+        >
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            gamepad
+          </span>
+          
+          <span
+            class="text s-NMyTiX1zi6rz"
+          >
+            Inviter dans le salon
+          </span>
+          
+        </div>
+         
+      </button>
+      <!--&lt;Button&gt;-->
+    </span>
      
   </section>,
 ]
@@ -654,14 +721,18 @@ exports[`With requests and proposals 1`] = `
       class="s-NMyTiX1zi6rz"
       disabled=""
     >
-      <span
-        class="material-icons s-NMyTiX1zi6rz"
+      <div
+        class="s-NMyTiX1zi6rz"
       >
-        person_add_alt_1
-      </span>
-      
-      
-      
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          person_add_alt_1
+        </span>
+        
+        
+      </div>
+       
     </button>
     <!--&lt;Button&gt;-->
   </div>
@@ -711,14 +782,18 @@ exports[`With requests and proposals 1`] = `
         <button
           class="s-NMyTiX1zi6rz"
         >
-          <span
-            class="material-icons s-NMyTiX1zi6rz"
+          <div
+            class="s-NMyTiX1zi6rz"
           >
-            delete
-          </span>
-          
-          
-          
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              delete
+            </span>
+            
+            
+          </div>
+           
         </button>
         <!--&lt;Button&gt;-->
       </span>
@@ -760,28 +835,36 @@ exports[`With requests and proposals 1`] = `
         <button
           class="primary s-NMyTiX1zi6rz"
         >
-          <span
-            class="material-icons s-NMyTiX1zi6rz"
+          <div
+            class="s-NMyTiX1zi6rz"
           >
-            check
-          </span>
-          
-          
-          
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              check
+            </span>
+            
+            
+          </div>
+           
         </button>
         <!--&lt;Button&gt;-->
          
         <button
           class="s-NMyTiX1zi6rz"
         >
-          <span
-            class="material-icons s-NMyTiX1zi6rz"
+          <div
+            class="s-NMyTiX1zi6rz"
           >
-            clear
-          </span>
-          
-          
-          
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              clear
+            </span>
+            
+            
+          </div>
+           
         </button>
         <!--&lt;Button&gt;-->
       </span>
@@ -827,14 +910,18 @@ exports[`With requests and proposals 1`] = `
         <button
           class="s-NMyTiX1zi6rz"
         >
-          <span
-            class="material-icons s-NMyTiX1zi6rz"
+          <div
+            class="s-NMyTiX1zi6rz"
           >
-            delete
-          </span>
-          
-          
-          
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              delete
+            </span>
+            
+            
+          </div>
+           
         </button>
         <!--&lt;Button&gt;-->
       </span>
@@ -880,14 +967,18 @@ exports[`With requests and proposals 1`] = `
         <button
           class="s-NMyTiX1zi6rz"
         >
-          <span
-            class="material-icons s-NMyTiX1zi6rz"
+          <div
+            class="s-NMyTiX1zi6rz"
           >
-            delete
-          </span>
-          
-          
-          
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              delete
+            </span>
+            
+            
+          </div>
+           
         </button>
         <!--&lt;Button&gt;-->
       </span>
@@ -933,14 +1024,18 @@ exports[`With requests and proposals 1`] = `
         <button
           class="s-NMyTiX1zi6rz"
         >
-          <span
-            class="material-icons s-NMyTiX1zi6rz"
+          <div
+            class="s-NMyTiX1zi6rz"
           >
-            delete
-          </span>
-          
-          
-          
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              delete
+            </span>
+            
+            
+          </div>
+           
         </button>
         <!--&lt;Button&gt;-->
       </span>

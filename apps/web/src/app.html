@@ -6,6 +6,20 @@
   <link rel="icon" href="%sveltekit.assets%/favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   %sveltekit.head%
+
+  <script type="application/javascript">
+    const style = document.createElement('style')
+    document.head.appendChild(style)
+    style.sheet.insertRule('.material-icons { color: transparent important; display: inline-block; width: 24px; height: 24px; }')
+    document.fonts.addEventListener('loadingdone', ({ fontfaces }) => {
+      for (const { family, loaded } of fontfaces) {
+        if (family === 'Material Icons') {
+          loaded.then(() => style.remove())
+          break
+        }
+      }
+    })
+  </script>
 </head>
 
 <body>

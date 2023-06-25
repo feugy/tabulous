@@ -197,13 +197,14 @@
       </li>
     {/each}
   </ol>
-  {#if selected.length}
+  {#if game}
     <span class="invite">
       <Button
         text={$_(
           isLobby(game) ? 'actions.invite-attendee' : 'actions.invite-player'
         )}
         icon="gamepad"
+        disabled={selected.length === 0}
         on:click={handleInvite}
       />
     </span>
@@ -220,7 +221,7 @@
 
 <style lang="postcss">
   section {
-    @apply flex flex-col m-8 overflow-hidden;
+    @apply flex flex-col p-6 overflow-hidden;
   }
 
   section + section {
@@ -240,23 +241,19 @@
   }
 
   ol {
-    @apply mt-8 flex-1 divide-y overflow-auto;
+    @apply mt-8 flex-1 overflow-auto;
   }
 
   li {
-    @apply flex items-center p-2 pr-4 gap-2 border-$base-dark relative duration-500;
-    transition: background-color;
+    @apply flex items-center p-2 pr-4 gap-2 relative transition-colors duration-$medium rounded;
     margin: 1px; /* without, outline is not visible */
 
     &:hover,
     &:hover.isProposal,
     &:hover.isRequest {
-      @apply text-$ink-dark bg-$primary-darker;
+      @apply text-$ink-dark bg-$base-darker;
       & .buttons {
         @apply opacity-100;
-      }
-      &[aria-checked='true'] {
-        @apply text-$ink;
       }
     }
 
@@ -265,20 +262,20 @@
     }
 
     &.isNotFriend {
-      @apply text-$base-dark;
+      @apply text-$secondary-darker;
     }
 
     &.isRequest,
     &.isProposal {
-      @apply text-$primary-darkest;
+      @apply text-$primary-darker;
     }
     &[aria-checked='true'] {
-      @apply bg-$base-lightest;
+      @apply bg-$primary-dark text-$ink-dark;
     }
   }
 
   .buttons {
-    @apply flex flex-nowrap gap-2 justify-self-end opacity-0 absolute right-4 transition-opacity duration-500;
+    @apply flex flex-nowrap gap-2 justify-self-end opacity-0 absolute right-4 transition-opacity duration-$long;
   }
 
   .invite {

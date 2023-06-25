@@ -137,7 +137,7 @@ describe('MinimizableSection component', () => {
       it('minimize when clicking active tab', async () => {
         fireEvent.click(tabs[0])
         await tick()
-        expect(tabs[0]).toHaveAttribute('aria-selected', 'true')
+        expect(tabs[0]).toHaveAttribute('aria-selected', 'false')
         expect(handleMinimize).toHaveBeenCalledWith(
           expect.objectContaining({ detail: { minimized: true } })
         )
@@ -148,7 +148,7 @@ describe('MinimizableSection component', () => {
       it('expands and changes tab when clicking inactive, minimized tab', async () => {
         fireEvent.click(tabs[0])
         await tick()
-        expect(tabs[0]).toHaveAttribute('aria-selected', 'true')
+        expect(tabs[0]).toHaveAttribute('aria-selected', 'false')
         expect(handleMinimize).toHaveBeenNthCalledWith(
           1,
           expect.objectContaining({ detail: { minimized: true } })
@@ -174,7 +174,7 @@ describe('MinimizableSection component', () => {
       it('expands and changes tab on tab key', async () => {
         fireEvent.click(tabs[0])
         await tick()
-        expect(tabs[0]).toHaveAttribute('aria-selected', 'true')
+        expect(tabs[0]).toHaveAttribute('aria-selected', 'false')
         expect(handleMinimize).toHaveBeenNthCalledWith(
           1,
           expect.objectContaining({ detail: { minimized: true } })
@@ -200,7 +200,7 @@ describe('MinimizableSection component', () => {
       it('ignores tab keys when fired from an Input element', async () => {
         fireEvent.click(tabs[0])
         await tick()
-        expect(tabs[0]).toHaveAttribute('aria-selected', 'true')
+        expect(tabs[0]).toHaveAttribute('aria-selected', 'false')
         expect(handleMinimize).toHaveBeenNthCalledWith(
           1,
           expect.objectContaining({ detail: { minimized: true } })
@@ -212,7 +212,7 @@ describe('MinimizableSection component', () => {
         document.body.append(input)
         fireEvent.keyDown(input, { key: 'F11' })
         await tick()
-        expect(tabs[0]).toHaveAttribute('aria-selected', 'true')
+        expect(tabs[0]).toHaveAttribute('aria-selected', 'false')
         expect(handleMinimize).not.toHaveBeenCalled()
         expect(handleChange).not.toHaveBeenCalled()
       })

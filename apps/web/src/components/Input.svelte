@@ -41,6 +41,7 @@
     &::before {
       @apply absolute inset-0 border-b border-$primary-darker w-0 pointer-events-none;
       transition: width var(--medium) var(--medium);
+      animation: 2s ease-in-out infinite highlight;
       content: '';
     }
 
@@ -52,7 +53,20 @@
     &:focus-within {
       &::before {
         @apply w-full;
+        animation: none;
       }
+    }
+  }
+
+  @keyframes highlight {
+    0% {
+      @apply w-0;
+    }
+    20% {
+      @apply w-full ml-[0%];
+    }
+    40% {
+      @apply w-0 ml-[100%];
     }
   }
 

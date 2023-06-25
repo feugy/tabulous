@@ -53,6 +53,6 @@
   </Tool>
   <Tool
     name="Transparent with text"
-    props={{ transparent: true, text: 'Hello!' }}
+    props={{ transparent: true, primary: true, text: 'Hello!' }}
   />
 </ToolBox>

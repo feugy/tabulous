@@ -1,8 +1,9 @@
 <script>
   import { Button, Pane } from '@src/components'
   import { createEventDispatcher } from 'svelte'
+  import { fly } from 'svelte/transition'
   import { _ } from 'svelte-intl'
-
+  
   import { buildComponents } from './utils'
 
   export let schema = {}
@@ -11,14 +12,19 @@
   $: components = buildComponents(values, schema)
 
   const dispatch = createEventDispatcher()
+  const duration = 300
 
   function handleSubmit() {
     dispatch('submit', values)
   }
 </script>
 
-<form role="dialog" on:submit|preventDefault|stopPropagation={handleSubmit}>
-  <Pane title={$_('titles.game-parameters')}>
+<form
+  role="dialog"
+  on:submit|preventDefault|stopPropagation={handleSubmit}
+  in:fly={{ y: -100, duration }}
+>
+  <Pane title={$_('titles.game-parameters')} backgroundColor="primary">
     <section>
       {#each components as { name, component, property }}
         <svelte:component this={component} {property} {name} bind:values />
@@ -33,6 +39,7 @@
 <style lang="postcss">
   form {
     @apply absolute inset-0 p-16 flex justify-center items-center z-1;
+    box-shadow: 0 10px 8px var(--shadow-color);
   }
 
   section {

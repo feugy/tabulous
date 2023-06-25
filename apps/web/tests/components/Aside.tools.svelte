@@ -71,7 +71,10 @@
       thread: undefined
     }}
   />
-  <Tool name="Lobby" props={{ thread, game: {} }} />
+  <Tool
+    name="Lobby"
+    props={{ thread, game: {}, playerById: playingPlayersById }}
+  />
   <Tool
     name="No peers"
     props={{

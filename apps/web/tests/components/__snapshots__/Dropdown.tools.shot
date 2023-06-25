@@ -24,23 +24,27 @@ erat pellentesque adipiscing commodo elit at imperdiet.
       class="s-NMyTiX1zi6rz"
       role="combobox"
     >
-      <span
-        class="material-icons s-NMyTiX1zi6rz"
+      <div
+        class="s-NMyTiX1zi6rz"
       >
-        headset_mic
-      </span>
-      
-      
-      
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          headset_mic
+        </span>
+        
+        
+         
+        <i
+          class="material-icons arrow s-rGIwyFRHo8D9 iconOnly"
+          role="button"
+          tabindex="-1"
+        >
+          arrow_drop_down
+        </i>
+        
+      </div>
        
-      <i
-        class="material-icons arrow s-rGIwyFRHo8D9 iconOnly"
-        role="button"
-        tabindex="-1"
-      >
-        arrow_drop_down
-      </i>
-      
     </button>
     <!--&lt;Button&gt;-->
      
@@ -91,23 +95,27 @@ erat pellentesque adipiscing commodo elit at imperdiet.
       class="s-NMyTiX1zi6rz"
       role="combobox"
     >
-      <span
-        class="material-icons s-NMyTiX1zi6rz"
+      <div
+        class="s-NMyTiX1zi6rz"
       >
-        headset_mic
-      </span>
-      
-      
-      
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          headset_mic
+        </span>
+        
+        
+         
+        <i
+          class="material-icons arrow s-rGIwyFRHo8D9"
+          role="button"
+          tabindex="-1"
+        >
+          arrow_drop_down
+        </i>
+        
+      </div>
        
-      <i
-        class="material-icons arrow s-rGIwyFRHo8D9"
-        role="button"
-        tabindex="-1"
-      >
-        arrow_drop_down
-      </i>
-      
     </button>
     <!--&lt;Button&gt;-->
      
@@ -135,7 +143,9 @@ lacus vestibulum sed arcu non odio euismod lacinia.
 `;
 
 exports[`Left aligned 1`] = `
-<div>
+<div
+  class="p-8"
+>
   <div>
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
 tempor incididunt ut labore et dolore magna aliqua. Commodo nulla facilisi
@@ -158,28 +168,32 @@ erat pellentesque adipiscing commodo elit at imperdiet.
       class="has-text s-NMyTiX1zi6rz"
       role="combobox"
     >
-      <span
-        class="material-icons s-NMyTiX1zi6rz"
+      <div
+        class="s-NMyTiX1zi6rz"
       >
-        emoji_people
-      </span>
-      
-      <span
-        class="text s-NMyTiX1zi6rz"
-      >
-        Greet
-      </span>
-      
-      
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          emoji_people
+        </span>
+        
+        <span
+          class="text s-NMyTiX1zi6rz"
+        >
+          Greet
+        </span>
+        
+         
+        <i
+          class="material-icons arrow s-rGIwyFRHo8D9"
+          role="button"
+          tabindex="-1"
+        >
+          arrow_drop_down
+        </i>
+        
+      </div>
        
-      <i
-        class="material-icons arrow s-rGIwyFRHo8D9"
-        role="button"
-        tabindex="-1"
-      >
-        arrow_drop_down
-      </i>
-      
     </button>
     <!--&lt;Button&gt;-->
      
@@ -208,7 +222,7 @@ lacus vestibulum sed arcu non odio euismod lacinia.
 
 exports[`Right aligned 1`] = `
 <div
-  class="text-right"
+  class="text-right p-8"
 >
   <div>
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
@@ -232,28 +246,32 @@ erat pellentesque adipiscing commodo elit at imperdiet.
       class="has-text s-NMyTiX1zi6rz"
       role="combobox"
     >
-      <span
-        class="material-icons s-NMyTiX1zi6rz"
+      <div
+        class="s-NMyTiX1zi6rz"
       >
-        emoji_people
-      </span>
-      
-      <span
-        class="text s-NMyTiX1zi6rz"
-      >
-        Greet
-      </span>
-      
-      
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          emoji_people
+        </span>
+        
+        <span
+          class="text s-NMyTiX1zi6rz"
+        >
+          Greet
+        </span>
+        
+         
+        <i
+          class="material-icons arrow s-rGIwyFRHo8D9"
+          role="button"
+          tabindex="-1"
+        >
+          arrow_drop_down
+        </i>
+        
+      </div>
        
-      <i
-        class="material-icons arrow s-rGIwyFRHo8D9"
-        role="button"
-        tabindex="-1"
-      >
-        arrow_drop_down
-      </i>
-      
     </button>
     <!--&lt;Button&gt;-->
      
@@ -304,23 +322,27 @@ erat pellentesque adipiscing commodo elit at imperdiet.
       class="s-NMyTiX1zi6rz"
       role="combobox"
     >
-      <span
-        class="material-icons s-NMyTiX1zi6rz"
+      <div
+        class="s-NMyTiX1zi6rz"
       >
-        headset_mic
-      </span>
-      
-      
-      
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          headset_mic
+        </span>
+        
+        
+         
+        <i
+          class="material-icons arrow s-rGIwyFRHo8D9 iconOnly split"
+          role="button"
+          tabindex="0"
+        >
+          arrow_drop_down
+        </i>
+        
+      </div>
        
-      <i
-        class="material-icons arrow s-rGIwyFRHo8D9 iconOnly split"
-        role="button"
-        tabindex="0"
-      >
-        arrow_drop_down
-      </i>
-      
     </button>
     <!--&lt;Button&gt;-->
      
@@ -371,28 +393,32 @@ erat pellentesque adipiscing commodo elit at imperdiet.
       class="has-text s-NMyTiX1zi6rz"
       role="combobox"
     >
-      <span
-        class="material-icons s-NMyTiX1zi6rz"
+      <div
+        class="s-NMyTiX1zi6rz"
       >
-        headset_mic
-      </span>
-      
-      <span
-        class="text s-NMyTiX1zi6rz"
-      >
-        previous
-      </span>
-      
-      
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          headset_mic
+        </span>
+        
+        <span
+          class="text s-NMyTiX1zi6rz"
+        >
+          previous
+        </span>
+        
+         
+        <i
+          class="material-icons arrow s-rGIwyFRHo8D9"
+          role="button"
+          tabindex="-1"
+        >
+          arrow_drop_down
+        </i>
+        
+      </div>
        
-      <i
-        class="material-icons arrow s-rGIwyFRHo8D9"
-        role="button"
-        tabindex="-1"
-      >
-        arrow_drop_down
-      </i>
-      
     </button>
     <!--&lt;Button&gt;-->
      

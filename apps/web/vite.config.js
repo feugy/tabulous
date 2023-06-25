@@ -2,11 +2,11 @@
 import { resolve } from 'node:path'
 
 import atelier from '@atelier-wb/vite-plugin-atelier'
+import svg from '@poppanator/sveltekit-svg'
 import graphql from '@rollup/plugin-graphql'
 import yaml from '@rollup/plugin-yaml'
 import { sveltekit } from '@sveltejs/kit/vite'
 import basicSsl from '@vitejs/plugin-basic-ssl'
-import { svelteSVG } from 'rollup-plugin-svelte-svg'
 import { defineConfig } from 'vite'
 import windi from 'vite-plugin-windicss'
 
@@ -18,7 +18,22 @@ export default defineConfig(({ mode }) => ({
     basicSsl(),
     sveltekit(),
     windi(),
-    svelteSVG({ enforce: 'pre' }),
+    svg({
+      svgoOptions: {
+        multipass: true,
+        plugins: [
+          {
+            name: 'preset-default',
+            params: {
+              overrides: {
+                cleanupIds: false,
+                removeViewBox: false
+              }
+            }
+          }
+        ]
+      }
+    }),
     yaml(),
     graphql(),
     atelier({

@@ -8,6 +8,7 @@
   import MinimizableSection from '../MinimizableSection.svelte'
   import RuleViewer from '../RuleViewer.svelte'
   import AvatarGrid from './AvatarGrid.svelte'
+  import VideoCommands from './VideoCommands.svelte'
 
   export let player
   export let playerById
@@ -18,14 +19,13 @@
 
   const helpId = 'help'
   const playersId = 'players'
+  const discussionId = 'discussion'
   const rulesId = 'rules'
   const friendsId = 'friends'
 
   let tab
   let tabs
-  let initialWidth = '30vw'
   let hasPeers = false
-  let discussionDimension = '15%'
 
   $: isLobby = checkIfLobby(game)
 
@@ -35,22 +35,23 @@
 
   $: {
     tabs = [{ icon: 'people_alt', id: friendsId, key: 'F2' }]
-    if (isLobby) {
-      tabs.splice(0, 0, { icon: 'contacts', id: playersId, key: 'F4' })
-    } else if (game) {
-      tabs.push({ icon: 'help', id: helpId, key: 'F1' })
-      if (game?.rulesBookPageCount > 1) {
-        tabs.splice(0, 0, { icon: 'auto_stories', id: rulesId, key: 'F3' })
+    if (game) {
+      if (!isLobby) {
+        tabs.push({ icon: 'help', id: helpId, key: 'F1' })
+        if (game.rulesBookPageCount > 1) {
+          tabs.splice(0, 0, { icon: 'auto_stories', id: rulesId, key: 'F3' })
+        }
       }
       if (hasPeers) {
-        tabs.splice(0, 0, { icon: 'contacts', id: playersId, key: 'F4' })
+        tabs.splice(
+          0,
+          0,
+          { icon: 'contacts', id: playersId, key: 'F4' },
+          { icon: 'question_answer', id: discussionId, key: 'F5' }
+        )
       }
     }
-    if (isLobby) {
-      tab = 1
-    } else {
-      tab = 0
-    }
+    tab = isLobby ? tabs.length - 1 : 0
   }
 
   function handleSetTab({ detail: { currentTab } }) {
@@ -66,32 +67,20 @@
     minimized={!hasPeers && !hasInvites && !isLobby}
     currentTab={tab}
     on:change={handleSetTab}
-    on:resize={() => (initialWidth = 'auto')}
   >
-    <div
-      class="content"
-      style="{tabs[tab]?.id === playersId
-        ? 'width'
-        : 'max-width'}: {initialWidth}"
-    >
+    <div class="content">
       <div class="peers" class:hidden={tabs[tab]?.id !== playersId}>
         <AvatarGrid {connected} {playerById} {player} />
+        <VideoCommands />
         {#if isLobby}
           <div class="lobby-instructions">
             {$_('labels.lobby-instructions')}
           </div>
         {/if}
-        {#if tabs[tab]?.id === playersId}
-          <MinimizableSection
-            dimension={discussionDimension}
-            placement="bottom"
-            tabs={[{ icon: 'question_answer', key: 'F5' }]}
-          >
-            <Discussion {thread} {playerById} on:sendMessage />
-          </MinimizableSection>
-        {/if}
       </div>
-      {#if tabs[tab]?.id === rulesId}
+      {#if tabs[tab]?.id === discussionId}
+        <Discussion {thread} {playerById} on:sendMessage />
+      {:else if tabs[tab]?.id === rulesId}
         <RuleViewer game={game?.kind} lastPage={game?.rulesBookPageCount - 1} />
       {:else if tabs[tab]?.id === helpId}
         <ControlsHelp />

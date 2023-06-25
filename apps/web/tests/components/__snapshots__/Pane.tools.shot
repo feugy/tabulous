@@ -1,31 +1,25 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`No Title 1`] = `
-<span
-  class="s-j2LTsWktqK_4"
+<section
+  class="pane s-j2LTsWktqK_4"
+  style="--bg: var(--base-lightest);"
 >
-  <div
-    class="pane s-j2LTsWktqK_4"
-  >
-     
-  </div>
-</span>
+   
+</section>
 `;
 
 exports[`With Title 1`] = `
-<span
-  class="s-j2LTsWktqK_4"
+<section
+  class="pane s-j2LTsWktqK_4"
+  style="--bg: var(--base-lightest);"
 >
-  <div
-    class="pane s-j2LTsWktqK_4"
+  <h2
+    class="s-j2LTsWktqK_4"
   >
-    <h2
-      class="s-j2LTsWktqK_4"
-    >
-      Hello world!
-    </h2>
-    
-     
-  </div>
-</span>
+    Hello world!
+  </h2>
+  
+   
+</section>
 `;
