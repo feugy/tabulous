@@ -7,7 +7,7 @@ export const colors = {
 }
 
 export const sizes = {
-  board: { depth: 3 * 8, width: 3 * 8, height: 0.5, borderRadius: 0.8 },
+  board: { depth: 3 * 9, width: 3 * 9, height: 0.5, borderRadius: 0.8 },
   tile: 3
 }
 
