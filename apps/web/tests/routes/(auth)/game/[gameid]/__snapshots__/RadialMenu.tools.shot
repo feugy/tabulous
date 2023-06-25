@@ -4,12 +4,12 @@ exports[`A few items 1`] = `
 HTMLCollection [
   <aside
     class="s-ZVitxLYKaOVI"
-    role="menu"
     style="left: 25%; top: 25%; --size: 130px; animation: __svelte_4004126939_0 150ms linear 0ms 1 both;"
   >
      
     <ul
       class="s-ZVitxLYKaOVI"
+      role="menu"
     >
       <li
         class="s-ZVitxLYKaOVI"
@@ -84,12 +84,12 @@ exports[`More items 1`] = `
 HTMLCollection [
   <aside
     class="s-ZVitxLYKaOVI"
-    role="menu"
     style="left: 25%; top: 25%; --size: 180px; animation: __svelte_4004126939_0 150ms linear 0ms 1 both;"
   >
      
     <ul
       class="s-ZVitxLYKaOVI"
+      role="menu"
     >
       <li
         class="s-ZVitxLYKaOVI"
@@ -280,7 +280,6 @@ exports[`No items 1`] = `
 HTMLCollection [
   <aside
     class="s-ZVitxLYKaOVI"
-    role="menu"
     style="left: 25%; top: 25%; --size: 110px; animation: __svelte_4004126939_0 150ms linear 0ms 1 both;"
   >
     <span
@@ -292,6 +291,7 @@ HTMLCollection [
      
     <ul
       class="s-ZVitxLYKaOVI"
+      role="menu"
     />
      
   </aside>,

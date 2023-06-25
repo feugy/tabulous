@@ -32,12 +32,12 @@ describe('MinimizableSection component', () => {
     it('collapses and expands on click', async () => {
       renderComponent()
 
-      const section = screen.getByRole('region')
-      expect(section).toHaveAttribute('aria-expanded', 'true')
+      const tab = screen.getByRole('tab')
+      expect(tab).toHaveAttribute('aria-expanded', 'true')
 
-      fireEvent.click(screen.getByRole('tab'))
+      fireEvent.click(tab)
       await tick()
-      expect(section).toHaveAttribute('aria-expanded', 'false')
+      expect(tab).toHaveAttribute('aria-expanded', 'false')
       expect(handleMinimize).toHaveBeenNthCalledWith(
         1,
         expect.objectContaining({ detail: { minimized: true } })
@@ -45,7 +45,7 @@ describe('MinimizableSection component', () => {
 
       fireEvent.click(screen.getByRole('tab'))
       await tick()
-      expect(section).toHaveAttribute('aria-expanded', 'true')
+      expect(tab).toHaveAttribute('aria-expanded', 'true')
       expect(handleMinimize).toHaveBeenNthCalledWith(
         2,
         expect.objectContaining({ detail: { minimized: false } })
@@ -78,10 +78,7 @@ describe('MinimizableSection component', () => {
 
     it('can start minimized', () => {
       renderComponent({ minimized: true })
-      expect(screen.getByRole('region')).toHaveAttribute(
-        'aria-expanded',
-        'false'
-      )
+      expect(screen.getByRole('tab')).toHaveAttribute('aria-expanded', 'false')
     })
 
     it('can not resize when minimized', async () => {

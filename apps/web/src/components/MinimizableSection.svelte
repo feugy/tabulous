@@ -130,7 +130,6 @@
   class:minimized
   class:vertical
   bind:this={node}
-  aria-expanded={!minimized}
   aria-label="minimizable"
   style="{props.style}: {innerDimension};"
   style:transition={isResizing ? undefined : props.transition}
@@ -149,6 +148,7 @@
             <Button
               role="tab"
               aria-selected={active}
+              aria-expanded={!minimized}
               transparent
               badge={key}
               {icon}

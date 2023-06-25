@@ -19,7 +19,7 @@ describe('/game/[gameId] Radial Menu component', () => {
     renderComponent({ items: [] })
     const menu = screen.getByRole('menu')
     expect(menu).toBeInTheDocument()
-    expect(menu.children[0]).toHaveClass('no-actions')
+    expect(menu.previousElementSibling).toHaveClass('no-actions')
     expect(screen.queryAllByRole('button')).toHaveLength(0)
   })
 

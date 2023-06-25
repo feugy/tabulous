@@ -60,6 +60,13 @@ export function extractText(nodes) {
   return Array.isArray(nodes) ? texts : texts[0]
 }
 
+export function extractAttribute(nodes, attributeName) {
+  const texts = (Array.isArray(nodes) ? nodes : [nodes]).map(item =>
+    item.getAttribute(attributeName).trim()
+  )
+  return Array.isArray(nodes) ? texts : texts[0]
+}
+
 export function initialize3dEngine(
   engineProps = { renderWidth: 2048, renderHeight: 1024 }
 ) {

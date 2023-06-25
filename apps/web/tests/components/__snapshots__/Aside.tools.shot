@@ -13,7 +13,6 @@ exports[`Friends only 1`] = `
     class="s-2iawX3uhhnz1"
   >
     <section
-      aria-expanded="true"
       aria-label="minimizable"
       class="s-vqhOCvFa7LzI"
       id="minimizable-section-1"
@@ -35,6 +34,7 @@ exports[`Friends only 1`] = `
             class="s-vqhOCvFa7LzI"
           >
             <button
+              aria-expanded="true"
               aria-selected="false"
               class="transparent s-NMyTiX1zi6rz"
               role="tab"
@@ -515,7 +515,6 @@ exports[`Lobby 1`] = `
     class="s-2iawX3uhhnz1"
   >
     <section
-      aria-expanded="true"
       aria-label="minimizable"
       class="s-vqhOCvFa7LzI"
       id="minimizable-section-2"
@@ -537,6 +536,7 @@ exports[`Lobby 1`] = `
             class="s-vqhOCvFa7LzI"
           >
             <button
+              aria-expanded="true"
               aria-selected="false"
               class="transparent s-NMyTiX1zi6rz"
               role="tab"
@@ -566,6 +566,7 @@ exports[`Lobby 1`] = `
             class="s-vqhOCvFa7LzI"
           >
             <button
+              aria-expanded="true"
               aria-selected="false"
               class="transparent s-NMyTiX1zi6rz"
               role="tab"
@@ -595,6 +596,7 @@ exports[`Lobby 1`] = `
             class="s-vqhOCvFa7LzI active"
           >
             <button
+              aria-expanded="true"
               aria-selected="true"
               class="transparent s-NMyTiX1zi6rz"
               role="tab"
@@ -1117,7 +1119,6 @@ exports[`Multiple connected 1`] = `
     class="s-2iawX3uhhnz1"
   >
     <section
-      aria-expanded="true"
       aria-label="minimizable"
       class="s-vqhOCvFa7LzI"
       id="minimizable-section-5"
@@ -1139,6 +1140,7 @@ exports[`Multiple connected 1`] = `
             class="s-vqhOCvFa7LzI active"
           >
             <button
+              aria-expanded="true"
               aria-selected="true"
               class="transparent s-NMyTiX1zi6rz"
               role="tab"
@@ -1168,6 +1170,7 @@ exports[`Multiple connected 1`] = `
             class="s-vqhOCvFa7LzI"
           >
             <button
+              aria-expanded="true"
               aria-selected="false"
               class="transparent s-NMyTiX1zi6rz"
               role="tab"
@@ -1197,6 +1200,7 @@ exports[`Multiple connected 1`] = `
             class="s-vqhOCvFa7LzI"
           >
             <button
+              aria-expanded="true"
               aria-selected="false"
               class="transparent s-NMyTiX1zi6rz"
               role="tab"
@@ -1226,6 +1230,7 @@ exports[`Multiple connected 1`] = `
             class="s-vqhOCvFa7LzI"
           >
             <button
+              aria-expanded="true"
               aria-selected="false"
               class="transparent s-NMyTiX1zi6rz"
               role="tab"
@@ -1255,6 +1260,7 @@ exports[`Multiple connected 1`] = `
             class="s-vqhOCvFa7LzI"
           >
             <button
+              aria-expanded="true"
               aria-selected="false"
               class="transparent s-NMyTiX1zi6rz"
               role="tab"
@@ -1465,7 +1471,6 @@ exports[`No peers 1`] = `
     class="s-2iawX3uhhnz1"
   >
     <section
-      aria-expanded="true"
       aria-label="minimizable"
       class="s-vqhOCvFa7LzI"
       id="minimizable-section-3"
@@ -1487,6 +1492,7 @@ exports[`No peers 1`] = `
             class="s-vqhOCvFa7LzI active"
           >
             <button
+              aria-expanded="true"
               aria-selected="true"
               class="transparent s-NMyTiX1zi6rz"
               role="tab"
@@ -1516,6 +1522,7 @@ exports[`No peers 1`] = `
             class="s-vqhOCvFa7LzI"
           >
             <button
+              aria-expanded="true"
               aria-selected="false"
               class="transparent s-NMyTiX1zi6rz"
               role="tab"
@@ -1545,6 +1552,7 @@ exports[`No peers 1`] = `
             class="s-vqhOCvFa7LzI"
           >
             <button
+              aria-expanded="true"
               aria-selected="false"
               class="transparent s-NMyTiX1zi6rz"
               role="tab"
@@ -1718,7 +1726,6 @@ exports[`Single connected 1`] = `
     class="s-2iawX3uhhnz1"
   >
     <section
-      aria-expanded="true"
       aria-label="minimizable"
       class="s-vqhOCvFa7LzI"
       id="minimizable-section-4"
@@ -1740,6 +1747,7 @@ exports[`Single connected 1`] = `
             class="s-vqhOCvFa7LzI active"
           >
             <button
+              aria-expanded="true"
               aria-selected="true"
               class="transparent s-NMyTiX1zi6rz"
               role="tab"
@@ -1769,6 +1777,7 @@ exports[`Single connected 1`] = `
             class="s-vqhOCvFa7LzI"
           >
             <button
+              aria-expanded="true"
               aria-selected="false"
               class="transparent s-NMyTiX1zi6rz"
               role="tab"
@@ -1798,6 +1807,7 @@ exports[`Single connected 1`] = `
             class="s-vqhOCvFa7LzI"
           >
             <button
+              aria-expanded="true"
               aria-selected="false"
               class="transparent s-NMyTiX1zi6rz"
               role="tab"
@@ -1827,6 +1837,7 @@ exports[`Single connected 1`] = `
             class="s-vqhOCvFa7LzI"
           >
             <button
+              aria-expanded="true"
               aria-selected="false"
               class="transparent s-NMyTiX1zi6rz"
               role="tab"
@@ -1856,6 +1867,7 @@ exports[`Single connected 1`] = `
             class="s-vqhOCvFa7LzI"
           >
             <button
+              aria-expanded="true"
               aria-selected="false"
               class="transparent s-NMyTiX1zi6rz"
               role="tab"
@@ -2034,7 +2046,6 @@ exports[`Single connected, no rules book, thread 1`] = `
     class="s-2iawX3uhhnz1"
   >
     <section
-      aria-expanded="true"
       aria-label="minimizable"
       class="s-vqhOCvFa7LzI"
       id="minimizable-section-7"
@@ -2056,6 +2067,7 @@ exports[`Single connected, no rules book, thread 1`] = `
             class="s-vqhOCvFa7LzI active"
           >
             <button
+              aria-expanded="true"
               aria-selected="true"
               class="transparent s-NMyTiX1zi6rz"
               role="tab"
@@ -2085,6 +2097,7 @@ exports[`Single connected, no rules book, thread 1`] = `
             class="s-vqhOCvFa7LzI"
           >
             <button
+              aria-expanded="true"
               aria-selected="false"
               class="transparent s-NMyTiX1zi6rz"
               role="tab"
@@ -2114,6 +2127,7 @@ exports[`Single connected, no rules book, thread 1`] = `
             class="s-vqhOCvFa7LzI"
           >
             <button
+              aria-expanded="true"
               aria-selected="false"
               class="transparent s-NMyTiX1zi6rz"
               role="tab"
@@ -2143,6 +2157,7 @@ exports[`Single connected, no rules book, thread 1`] = `
             class="s-vqhOCvFa7LzI"
           >
             <button
+              aria-expanded="true"
               aria-selected="false"
               class="transparent s-NMyTiX1zi6rz"
               role="tab"

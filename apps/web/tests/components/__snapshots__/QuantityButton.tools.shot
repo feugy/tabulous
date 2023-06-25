@@ -5,7 +5,7 @@ exports[`Default 1`] = `
   aria-valuenow="1"
   class="s-6VEvz9s88k9v"
   role="slider"
-  tabindex="0"
+  tabindex="-1"
 >
   <button
     class="s-NMyTiX1zi6rz"
@@ -79,7 +79,7 @@ exports[`Disabled 1`] = `
   aria-valuenow="1"
   class="s-6VEvz9s88k9v"
   role="slider"
-  tabindex="0"
+  tabindex="-1"
 >
   <button
     class="s-NMyTiX1zi6rz"
@@ -156,7 +156,7 @@ exports[`Primary 1`] = `
   aria-valuenow="1"
   class="s-6VEvz9s88k9v"
   role="slider"
-  tabindex="0"
+  tabindex="-1"
 >
   <button
     class="primary s-NMyTiX1zi6rz"

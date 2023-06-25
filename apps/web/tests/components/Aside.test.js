@@ -3,7 +3,7 @@ import { stream$ } from '@src/stores/stream'
 import { fireEvent, render, screen, waitFor } from '@testing-library/svelte'
 import userEvent from '@testing-library/user-event'
 import { players, thread } from '@tests/fixtures/Discussion.testdata'
-import { extractText, translate } from '@tests/test-utils'
+import { extractAttribute, extractText, translate } from '@tests/test-utils'
 import html from 'svelte-htm'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -66,10 +66,9 @@ describe('Aside component', () => {
       )
     })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([friendsButtonText])
-    expect(screen.getByRole('region', { name: 'minimizable' })).toHaveAttribute(
-      'aria-expanded',
-      'false'
-    )
+    expect(
+      screen.getByRole('tab', { name: friendsButtonText })
+    ).toHaveAttribute('aria-expanded', 'false')
   })
 
   it('opens friends tab when it contains requests', () => {
@@ -84,10 +83,9 @@ describe('Aside component', () => {
       )
     })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([friendsButtonText])
-    expect(screen.getByRole('region', { name: 'minimizable' })).toHaveAttribute(
-      'aria-expanded',
-      'true'
-    )
+    expect(
+      screen.getByRole('tab', { name: friendsButtonText })
+    ).toHaveAttribute('aria-expanded', 'true')
   })
 
   it('only has help and friends tabs on single player game without rules book', () => {
@@ -102,10 +100,9 @@ describe('Aside component', () => {
       friendsButtonText,
       helpButtonText
     ])
-    expect(screen.getByRole('region', { name: 'minimizable' })).toHaveAttribute(
-      'aria-expanded',
-      'false'
-    )
+    expect(
+      extractAttribute(screen.getAllByRole('tab'), 'aria-expanded')
+    ).toEqual(['false', 'false'])
   })
 
   it('has help, friends and rules book on single player game', () => {
@@ -119,10 +116,9 @@ describe('Aside component', () => {
       friendsButtonText,
       helpButtonText
     ])
-    expect(screen.getByRole('region', { name: 'minimizable' })).toHaveAttribute(
-      'aria-expanded',
-      'false'
-    )
+    expect(
+      extractAttribute(screen.getAllByRole('tab'), 'aria-expanded')
+    ).toEqual(['false', 'false', 'false'])
   })
 
   it('has help, friends, discussion and peer tabs on game without rules book', () => {
@@ -139,10 +135,8 @@ describe('Aside component', () => {
       helpButtonText
     ])
     expect(
-      screen.getByRole('region', {
-        name: 'minimizable'
-      })
-    ).toHaveAttribute('aria-expanded', 'true')
+      extractAttribute(screen.getAllByRole('tab'), 'aria-expanded')
+    ).toEqual(['true', 'true', 'true', 'true'])
     const avatars = screen.getAllByTestId('player-avatar')
     expect(extractText(avatars)).toEqual(
       players.slice(1).map(({ username }) => username)
@@ -158,11 +152,6 @@ describe('Aside component', () => {
       playerById: toMap(players),
       thread
     })
-    expect(
-      screen.getByRole('region', {
-        name: 'minimizable'
-      })
-    ).toHaveAttribute('aria-expanded', 'true')
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
       playersButonText,
       discussionButtonText,
@@ -170,6 +159,9 @@ describe('Aside component', () => {
       friendsButtonText,
       helpButtonText
     ])
+    expect(
+      extractAttribute(screen.getAllByRole('tab'), 'aria-expanded')
+    ).toEqual(['true', 'true', 'true', 'true', 'true'])
     const avatars = screen.getAllByTestId('player-avatar')
     expect(extractText(avatars)).toEqual(
       players.slice(1).map(({ username }) => username)
@@ -191,10 +183,8 @@ describe('Aside component', () => {
       friendsButtonText
     ])
     expect(
-      screen.getByRole('region', {
-        name: 'minimizable'
-      })
-    ).toHaveAttribute('aria-expanded', 'true')
+      extractAttribute(screen.getAllByRole('tab'), 'aria-expanded')
+    ).toEqual(['true', 'true', 'true'])
   })
 
   it('has streams for connected peers', async () => {
@@ -211,10 +201,9 @@ describe('Aside component', () => {
       friendsButtonText,
       helpButtonText
     ])
-    expect(screen.getByRole('region', { name: 'minimizable' })).toHaveAttribute(
-      'aria-expanded',
-      'true'
-    )
+    expect(
+      extractAttribute(screen.getAllByRole('tab'), 'aria-expanded')
+    ).toEqual(['true', 'true', 'true', 'true'])
 
     const avatars = screen.getAllByTestId('player-avatar')
 

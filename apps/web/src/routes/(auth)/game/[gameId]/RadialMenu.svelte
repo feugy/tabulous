@@ -63,7 +63,6 @@
 
 {#if open && Array.isArray(items)}
   <aside
-    role="menu"
     transition:fade={{ duration: enterDuration }}
     style="left: {left}; top: {top}; --size:{radius * 2}px;"
   >
@@ -72,7 +71,7 @@
         >{$_('labels.no-actions')}</span
       >
     {/if}
-    <ul on:pointerdown|stopPropagation on:mouseenter on:mouseleave>
+    <ul on:pointerdown|stopPropagation on:mouseenter on:mouseleave role="menu">
       {#each items as { key, onClick, title, badge, max, ...buttonProps }, i}
         <li
           in:enter={{ i }}

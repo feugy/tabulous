@@ -6,7 +6,6 @@ exports[`Default (not visible) 1`] = `
   style="--color: #00ff00;"
 >
   <section
-    aria-expanded="false"
     aria-label="minimizable"
     class="s-vqhOCvFa7LzI minimized vertical"
     id="minimizable-section-14"
@@ -28,6 +27,7 @@ exports[`Default (not visible) 1`] = `
           class="s-vqhOCvFa7LzI"
         >
           <button
+            aria-expanded="false"
             aria-selected="false"
             class="transparent s-NMyTiX1zi6rz"
             role="tab"
@@ -110,7 +110,6 @@ exports[`Highlighted 1`] = `
   style="--color: #00ff00;"
 >
   <section
-    aria-expanded="false"
     aria-label="minimizable"
     class="s-vqhOCvFa7LzI minimized vertical"
     id="minimizable-section-16"
@@ -132,6 +131,7 @@ exports[`Highlighted 1`] = `
           class="s-vqhOCvFa7LzI"
         >
           <button
+            aria-expanded="false"
             aria-selected="false"
             class="transparent s-NMyTiX1zi6rz"
             role="tab"
@@ -214,7 +214,6 @@ exports[`With some meshes 1`] = `
   style="--color: #00ff00;"
 >
   <section
-    aria-expanded="true"
     aria-label="minimizable"
     class="s-vqhOCvFa7LzI vertical"
     id="minimizable-section-15"
@@ -236,6 +235,7 @@ exports[`With some meshes 1`] = `
           class="s-vqhOCvFa7LzI"
         >
           <button
+            aria-expanded="true"
             aria-selected="false"
             class="transparent s-NMyTiX1zi6rz"
             role="tab"

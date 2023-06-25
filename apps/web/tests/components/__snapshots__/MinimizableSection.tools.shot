@@ -5,7 +5,6 @@ exports[`Bottom 1`] = `
   class="bottom s-Hw7hm9C7K1_q"
 >
   <section
-    aria-expanded="true"
     aria-label="minimizable"
     class="s-vqhOCvFa7LzI vertical"
     id="minimizable-section-13"
@@ -27,6 +26,7 @@ exports[`Bottom 1`] = `
           class="s-vqhOCvFa7LzI"
         >
           <button
+            aria-expanded="true"
             aria-selected="false"
             class="transparent s-NMyTiX1zi6rz"
             role="tab"
@@ -247,7 +247,6 @@ exports[`Left 1`] = `
   class="left s-Hw7hm9C7K1_q"
 >
   <section
-    aria-expanded="true"
     aria-label="minimizable"
     class="s-vqhOCvFa7LzI"
     id="minimizable-section-10"
@@ -269,6 +268,7 @@ exports[`Left 1`] = `
           class="s-vqhOCvFa7LzI"
         >
           <button
+            aria-expanded="true"
             aria-selected="false"
             class="transparent s-NMyTiX1zi6rz"
             role="tab"
@@ -489,7 +489,6 @@ exports[`Multiple horizontal, custom tabs 1`] = `
   class="bottom s-Hw7hm9C7K1_q"
 >
   <section
-    aria-expanded="false"
     aria-label="minimizable"
     class="s-vqhOCvFa7LzI minimized vertical"
     id="minimizable-section-8"
@@ -511,6 +510,7 @@ exports[`Multiple horizontal, custom tabs 1`] = `
           class="s-vqhOCvFa7LzI"
         >
           <button
+            aria-expanded="false"
             aria-selected="false"
             class="transparent s-NMyTiX1zi6rz"
             role="tab"
@@ -535,6 +535,7 @@ exports[`Multiple horizontal, custom tabs 1`] = `
           class="s-vqhOCvFa7LzI"
         >
           <button
+            aria-expanded="false"
             aria-selected="false"
             class="transparent s-NMyTiX1zi6rz"
             role="tab"
@@ -755,7 +756,6 @@ exports[`Multiple vertical, custom tabs 1`] = `
   class="right s-Hw7hm9C7K1_q"
 >
   <section
-    aria-expanded="true"
     aria-label="minimizable"
     class="s-vqhOCvFa7LzI"
     id="minimizable-section-9"
@@ -777,6 +777,7 @@ exports[`Multiple vertical, custom tabs 1`] = `
           class="s-vqhOCvFa7LzI active"
         >
           <button
+            aria-expanded="true"
             aria-selected="true"
             class="transparent s-NMyTiX1zi6rz"
             role="tab"
@@ -801,6 +802,7 @@ exports[`Multiple vertical, custom tabs 1`] = `
           class="s-vqhOCvFa7LzI"
         >
           <button
+            aria-expanded="true"
             aria-selected="false"
             class="transparent s-NMyTiX1zi6rz"
             role="tab"
@@ -1021,7 +1023,6 @@ exports[`Right 1`] = `
   class="right s-Hw7hm9C7K1_q"
 >
   <section
-    aria-expanded="true"
     aria-label="minimizable"
     class="s-vqhOCvFa7LzI"
     id="minimizable-section-11"
@@ -1043,6 +1044,7 @@ exports[`Right 1`] = `
           class="s-vqhOCvFa7LzI"
         >
           <button
+            aria-expanded="true"
             aria-selected="false"
             class="transparent s-NMyTiX1zi6rz"
             role="tab"
@@ -1263,7 +1265,6 @@ exports[`Top 1`] = `
   class="top s-Hw7hm9C7K1_q"
 >
   <section
-    aria-expanded="true"
     aria-label="minimizable"
     class="s-vqhOCvFa7LzI vertical"
     id="minimizable-section-12"
@@ -1285,6 +1286,7 @@ exports[`Top 1`] = `
           class="s-vqhOCvFa7LzI"
         >
           <button
+            aria-expanded="true"
             aria-selected="false"
             class="transparent s-NMyTiX1zi6rz"
             role="tab"
