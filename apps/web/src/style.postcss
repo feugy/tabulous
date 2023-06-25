@@ -37,6 +37,7 @@
   --secondary-darkest: #582900;
   */
 
+  /* https://coolors.co/e3ebf1-c6d8e3-9cbbcf-6096b4-336d89-0f526d-003953 */
   --base-lightest: #e3ebf1;
   --base-lighter: #c6d8e3;
   --base-light: #9cbbcf;
@@ -45,6 +46,7 @@
   --base-darker: #0f526d;
   --base-darkest: #003953;
 
+  /* https://coolors.co/ffe1c7-ffcea3-fcbb80-ef9535-b46400-7c3700-4d0700 */
   --primary-lightest: #ffe1c7;
   --primary-lighter: #ffcea3;
   --primary-light: #fcbb80;
@@ -53,6 +55,7 @@
   --primary-darker: #7c3700;
   --primary-darkest: #4d0700;
 
+  /* https://coolors.co/dee5ea-cdd8e0-bdccd5-adbfcb-708390-4f626d-30424d */
   --secondary-lightest: #dee5ea;
   --secondary-lighter: #cdd8e0;
   --secondary-light: #bdccd5;
@@ -79,6 +82,13 @@
 
   --font-base: LexendVariable, sans-serif;
   --font-heading: Carter One, cursive;
+
+  --card-light: no-repeat -80px -20px
+    radial-gradient(
+      ellipse at top left,
+      rgba(255, 255, 255, 0.9) 5%,
+      rgba(0, 0, 0, 0) 60%
+    );
 }
 
 .material-icons {
@@ -110,7 +120,6 @@ h1 {
 
 h2 {
   @apply px-8 py-4 mt-6 mb-4 text-2xl;
-  border-radius: ;
 }
 
 h3 {
@@ -130,11 +139,18 @@ body {
 }
 
 a[href] {
-  @apply text-$primary-darkest font-medium;
-  transition: text-decoration;
+  @apply relative text-$base-darkest;
 
   &:hover,
   &:visited {
-    @apply underline;
+    &::before {
+      @apply w-full;
+    }
+  }
+
+  &::before {
+    @apply absolute inset-0 border-b border-$base-darker w-0 pointer-events-none;
+    transition: width var(--medium);
+    content: '';
   }
 }

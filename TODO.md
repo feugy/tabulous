@@ -2,11 +2,12 @@
 
 ## Road to beta
 
+- update svelte
+- replace material icon font with https://github.com/marella/material-design-icons/tree/main/svg#readme
 - select player color in games
-- skin(s)
 - interface in English
-- always go fullscreen when entering game
 - server logging (warning on invalid descriptors) + log file rotation
+- automerge.js
 - fix obvious bugs bellow
 
 ## Refactor
@@ -24,14 +25,11 @@
 
 ## UI
 
-- bug: svelte reports many accessibility violations
 - bug: when already in a lobby, clicking on the lobby card joins the same lobby again
 - bug: when a peer is joining a lobby, we don't automatically switch to video tab (both host and peer)
 - bug: 6-takes: snapping to the wrong anchor (when 2 players are snapping to different anchors)
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
-- video controls are relative to the entire aside section, which is not intuitive
 - check headings ordering
-- document keyboard shortcuts in the help panel
 - per game configurable single/double/lon tap/left click action
 - detailable/stackable behavior: preview a stack of meshes
 - hide/distinguish non-connected participants?
@@ -40,7 +38,9 @@
 - hand support for quantifiable behavior
 - put/draw under
 - "box" space for unusued/undesired meshes
+- command to reset some mesh state and restart a game (Mah-jong, Belote)
 - command to "switch place" around the table, for games like Belote
+- always go fullscreen when entering game?
 
 ## Server
 

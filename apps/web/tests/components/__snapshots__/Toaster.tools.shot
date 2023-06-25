@@ -8,10 +8,14 @@ HTMLCollection [
   <button
     class="s-NMyTiX1zi6rz"
   >
-    
-    
-    
-    Add toast
+    <div
+      class="s-NMyTiX1zi6rz"
+    >
+      
+      
+      Add toast
+    </div>
+     
   </button>,
 ]
 `;
@@ -40,14 +44,18 @@ exports[`Text only 1`] = `
     <button
       class="transparent s-NMyTiX1zi6rz"
     >
-      <span
-        class="material-icons s-NMyTiX1zi6rz"
+      <div
+        class="s-NMyTiX1zi6rz"
       >
-        close
-      </span>
-      
-      
-      
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          close
+        </span>
+        
+        
+      </div>
+       
     </button>
     <!--&lt;Button&gt;-->
   </div>
@@ -79,14 +87,18 @@ exports[`Text, color and icon 1`] = `
     <button
       class="transparent s-NMyTiX1zi6rz"
     >
-      <span
-        class="material-icons s-NMyTiX1zi6rz"
+      <div
+        class="s-NMyTiX1zi6rz"
       >
-        close
-      </span>
-      
-      
-      
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          close
+        </span>
+        
+        
+      </div>
+       
     </button>
     <!--&lt;Button&gt;-->
   </div>

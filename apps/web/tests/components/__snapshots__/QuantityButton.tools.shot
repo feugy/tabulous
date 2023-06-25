@@ -5,25 +5,28 @@ exports[`Default 1`] = `
   aria-valuenow="1"
   class="s-6VEvz9s88k9v"
   role="slider"
-  tabindex="0"
+  tabindex="-1"
 >
   <button
     class="s-NMyTiX1zi6rz"
-    secondary="false"
   >
-    <span
-      class="material-icons s-NMyTiX1zi6rz"
+    <div
+      class="s-NMyTiX1zi6rz"
     >
-      front_hand
-    </span>
-    
-    
-    
-    <strong
-      class="s-6VEvz9s88k9v"
-    >
-      1
-    </strong>
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
+      >
+        front_hand
+      </span>
+      
+      
+      <strong
+        class="s-6VEvz9s88k9v"
+      >
+        1
+      </strong>
+    </div>
+     
   </button>
   <!--&lt;Button&gt;-->
    
@@ -33,32 +36,38 @@ exports[`Default 1`] = `
     <button
       class="s-NMyTiX1zi6rz"
       data-up="true"
-      secondary="false"
     >
-      <span
-        class="material-icons s-NMyTiX1zi6rz"
+      <div
+        class="s-NMyTiX1zi6rz"
       >
-        arrow_drop_up
-      </span>
-      
-      
-      
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          arrow_drop_up
+        </span>
+        
+        
+      </div>
+       
     </button>
     <!--&lt;Button&gt;-->
      
     <button
       class="s-NMyTiX1zi6rz"
       data-down="true"
-      secondary="false"
     >
-      <span
-        class="material-icons s-NMyTiX1zi6rz"
+      <div
+        class="s-NMyTiX1zi6rz"
       >
-        arrow_drop_down
-      </span>
-      
-      
-      
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          arrow_drop_down
+        </span>
+        
+        
+      </div>
+       
     </button>
     <!--&lt;Button&gt;-->
   </div>
@@ -70,26 +79,29 @@ exports[`Disabled 1`] = `
   aria-valuenow="1"
   class="s-6VEvz9s88k9v"
   role="slider"
-  tabindex="0"
+  tabindex="-1"
 >
   <button
     class="s-NMyTiX1zi6rz"
     disabled=""
-    secondary="false"
   >
-    <span
-      class="material-icons s-NMyTiX1zi6rz"
+    <div
+      class="s-NMyTiX1zi6rz"
     >
-      stop
-    </span>
-    
-    
-    
-    <strong
-      class="s-6VEvz9s88k9v"
-    >
-      1
-    </strong>
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
+      >
+        stop
+      </span>
+      
+      
+      <strong
+        class="s-6VEvz9s88k9v"
+      >
+        1
+      </strong>
+    </div>
+     
   </button>
   <!--&lt;Button&gt;-->
    
@@ -100,16 +112,19 @@ exports[`Disabled 1`] = `
       class="s-NMyTiX1zi6rz"
       data-up="true"
       disabled=""
-      secondary="false"
     >
-      <span
-        class="material-icons s-NMyTiX1zi6rz"
+      <div
+        class="s-NMyTiX1zi6rz"
       >
-        arrow_drop_up
-      </span>
-      
-      
-      
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          arrow_drop_up
+        </span>
+        
+        
+      </div>
+       
     </button>
     <!--&lt;Button&gt;-->
      
@@ -117,46 +132,52 @@ exports[`Disabled 1`] = `
       class="s-NMyTiX1zi6rz"
       data-down="true"
       disabled=""
-      secondary="false"
     >
-      <span
-        class="material-icons s-NMyTiX1zi6rz"
+      <div
+        class="s-NMyTiX1zi6rz"
       >
-        arrow_drop_down
-      </span>
-      
-      
-      
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          arrow_drop_down
+        </span>
+        
+        
+      </div>
+       
     </button>
     <!--&lt;Button&gt;-->
   </div>
 </span>
 `;
 
-exports[`Secondary 1`] = `
+exports[`Primary 1`] = `
 <span
   aria-valuenow="1"
   class="s-6VEvz9s88k9v"
   role="slider"
-  tabindex="0"
+  tabindex="-1"
 >
   <button
-    class="s-NMyTiX1zi6rz"
-    secondary="true"
+    class="primary s-NMyTiX1zi6rz"
   >
-    <span
-      class="material-icons s-NMyTiX1zi6rz"
+    <div
+      class="s-NMyTiX1zi6rz"
     >
-      send
-    </span>
-    
-    
-    
-    <strong
-      class="s-6VEvz9s88k9v"
-    >
-      1
-    </strong>
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
+      >
+        send
+      </span>
+      
+      
+      <strong
+        class="s-6VEvz9s88k9v"
+      >
+        1
+      </strong>
+    </div>
+     
   </button>
   <!--&lt;Button&gt;-->
    
@@ -164,34 +185,40 @@ exports[`Secondary 1`] = `
     class="s-6VEvz9s88k9v"
   >
     <button
-      class="s-NMyTiX1zi6rz"
+      class="primary s-NMyTiX1zi6rz"
       data-up="true"
-      secondary="true"
     >
-      <span
-        class="material-icons s-NMyTiX1zi6rz"
+      <div
+        class="s-NMyTiX1zi6rz"
       >
-        arrow_drop_up
-      </span>
-      
-      
-      
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          arrow_drop_up
+        </span>
+        
+        
+      </div>
+       
     </button>
     <!--&lt;Button&gt;-->
      
     <button
-      class="s-NMyTiX1zi6rz"
+      class="primary s-NMyTiX1zi6rz"
       data-down="true"
-      secondary="true"
     >
-      <span
-        class="material-icons s-NMyTiX1zi6rz"
+      <div
+        class="s-NMyTiX1zi6rz"
       >
-        arrow_drop_down
-      </span>
-      
-      
-      
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          arrow_drop_down
+        </span>
+        
+        
+      </div>
+       
     </button>
     <!--&lt;Button&gt;-->
   </div>

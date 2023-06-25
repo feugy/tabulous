@@ -21,6 +21,7 @@ type Game {
   availableSeats: Int
   zoomSpec: ZoomSpec
   tableSpec: TableSpec
+  colors: ColorSpec
 }
 
 type DetailableState {
@@ -220,6 +221,12 @@ type TableSpec {
   texture: String
 }
 
+type ColorSpec {
+  base: String
+  primary: String
+  secondary: String
+}
+
 input GameInput {
   id: ID!
   meshes: [MeshInput]
@@ -407,6 +414,7 @@ type GameParameters {
   preferences: [PlayerPreference]
   rulesBookPageCount: Int
   availableSeats: Int
+  colors: ColorSpec
 }
 
 union GameOrParameters = Game | GameParameters

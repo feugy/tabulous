@@ -24,3 +24,9 @@ export const tableSpec = {
 }
 
 export const zoomSpec = { min: 20 }
+
+export const colors = {
+  base: '#dda15e',
+  primary: '#606c38',
+  secondary: '#fefae0'
+}

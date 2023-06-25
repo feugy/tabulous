@@ -4,12 +4,12 @@ exports[`A few items 1`] = `
 HTMLCollection [
   <aside
     class="s-ZVitxLYKaOVI"
-    role="menu"
     style="left: 25%; top: 25%; --size: 130px; animation: __svelte_4004126939_0 150ms linear 0ms 1 both;"
   >
      
     <ul
       class="s-ZVitxLYKaOVI"
+      role="menu"
     >
       <li
         class="s-ZVitxLYKaOVI"
@@ -18,14 +18,18 @@ HTMLCollection [
         <button
           class="s-NMyTiX1zi6rz"
         >
-          <span
-            class="material-icons s-NMyTiX1zi6rz"
+          <div
+            class="s-NMyTiX1zi6rz"
           >
-            home
-          </span>
-          
-          
-          
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              home
+            </span>
+            
+            
+          </div>
+           
         </button>
         <!--&lt;Button&gt;-->
          
@@ -38,14 +42,18 @@ HTMLCollection [
           class="s-NMyTiX1zi6rz"
           secondary="true"
         >
-          <span
-            class="material-icons s-NMyTiX1zi6rz"
+          <div
+            class="s-NMyTiX1zi6rz"
           >
-            settings
-          </span>
-          
-          
-          
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              settings
+            </span>
+            
+            
+          </div>
+           
         </button>
         <!--&lt;Button&gt;-->
          
@@ -54,12 +62,20 @@ HTMLCollection [
      
   </aside>,
   <button
-    class="s-NMyTiX1zi6rz"
+    class="has-text s-NMyTiX1zi6rz"
   >
-    
-    
-    
-    Close
+    <div
+      class="s-NMyTiX1zi6rz"
+    >
+      
+      <span
+        class="text s-NMyTiX1zi6rz"
+      >
+        Close
+      </span>
+      
+    </div>
+     
   </button>,
 ]
 `;
@@ -68,12 +84,12 @@ exports[`More items 1`] = `
 HTMLCollection [
   <aside
     class="s-ZVitxLYKaOVI"
-    role="menu"
     style="left: 25%; top: 25%; --size: 180px; animation: __svelte_4004126939_0 150ms linear 0ms 1 both;"
   >
      
     <ul
       class="s-ZVitxLYKaOVI"
+      role="menu"
     >
       <li
         class="s-ZVitxLYKaOVI"
@@ -82,14 +98,18 @@ HTMLCollection [
         <button
           class="s-NMyTiX1zi6rz"
         >
-          <span
-            class="material-icons s-NMyTiX1zi6rz"
+          <div
+            class="s-NMyTiX1zi6rz"
           >
-            home
-          </span>
-          
-          
-          
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              home
+            </span>
+            
+            
+          </div>
+           
         </button>
         <!--&lt;Button&gt;-->
          
@@ -102,14 +122,18 @@ HTMLCollection [
           class="s-NMyTiX1zi6rz"
           secondary="true"
         >
-          <span
-            class="material-icons s-NMyTiX1zi6rz"
+          <div
+            class="s-NMyTiX1zi6rz"
           >
-            settings
-          </span>
-          
-          
-          
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              settings
+            </span>
+            
+            
+          </div>
+           
         </button>
         <!--&lt;Button&gt;-->
          
@@ -122,14 +146,18 @@ HTMLCollection [
           class="s-NMyTiX1zi6rz"
           secondary="true"
         >
-          <span
-            class="material-icons s-NMyTiX1zi6rz"
+          <div
+            class="s-NMyTiX1zi6rz"
           >
-            face
-          </span>
-          
-          
-          
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              face
+            </span>
+            
+            
+          </div>
+           
         </button>
         <!--&lt;Button&gt;-->
          
@@ -141,14 +169,18 @@ HTMLCollection [
         <button
           class="s-NMyTiX1zi6rz"
         >
-          <span
-            class="material-icons s-NMyTiX1zi6rz"
+          <div
+            class="s-NMyTiX1zi6rz"
           >
-            lock
-          </span>
-          
-          
-          
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              lock
+            </span>
+            
+            
+          </div>
+           
         </button>
         <!--&lt;Button&gt;-->
          
@@ -160,14 +192,18 @@ HTMLCollection [
         <button
           class="s-NMyTiX1zi6rz"
         >
-          <span
-            class="material-icons s-NMyTiX1zi6rz"
+          <div
+            class="s-NMyTiX1zi6rz"
           >
-            flip
-          </span>
-          
-          
-          
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              flip
+            </span>
+            
+            
+          </div>
+           
         </button>
         <!--&lt;Button&gt;-->
          
@@ -179,14 +215,18 @@ HTMLCollection [
         <button
           class="s-NMyTiX1zi6rz"
         >
-          <span
-            class="material-icons s-NMyTiX1zi6rz"
+          <div
+            class="s-NMyTiX1zi6rz"
           >
-            shuffle
-          </span>
-          
-          
-          
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              shuffle
+            </span>
+            
+            
+          </div>
+           
         </button>
         <!--&lt;Button&gt;-->
          
@@ -198,14 +238,18 @@ HTMLCollection [
         <button
           class="s-NMyTiX1zi6rz"
         >
-          <span
-            class="material-icons s-NMyTiX1zi6rz"
+          <div
+            class="s-NMyTiX1zi6rz"
           >
-            rotate_left
-          </span>
-          
-          
-          
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              rotate_left
+            </span>
+            
+            
+          </div>
+           
         </button>
         <!--&lt;Button&gt;-->
          
@@ -214,12 +258,20 @@ HTMLCollection [
      
   </aside>,
   <button
-    class="s-NMyTiX1zi6rz"
+    class="has-text s-NMyTiX1zi6rz"
   >
-    
-    
-    
-    Close
+    <div
+      class="s-NMyTiX1zi6rz"
+    >
+      
+      <span
+        class="text s-NMyTiX1zi6rz"
+      >
+        Close
+      </span>
+      
+    </div>
+     
   </button>,
 ]
 `;
@@ -228,7 +280,6 @@ exports[`No items 1`] = `
 HTMLCollection [
   <aside
     class="s-ZVitxLYKaOVI"
-    role="menu"
     style="left: 25%; top: 25%; --size: 110px; animation: __svelte_4004126939_0 150ms linear 0ms 1 both;"
   >
     <span
@@ -240,16 +291,25 @@ HTMLCollection [
      
     <ul
       class="s-ZVitxLYKaOVI"
+      role="menu"
     />
      
   </aside>,
   <button
-    class="s-NMyTiX1zi6rz"
+    class="has-text s-NMyTiX1zi6rz"
   >
-    
-    
-    
-    Close
+    <div
+      class="s-NMyTiX1zi6rz"
+    >
+      
+      <span
+        class="text s-NMyTiX1zi6rz"
+      >
+        Close
+      </span>
+      
+    </div>
+     
   </button>,
 ]
 `;

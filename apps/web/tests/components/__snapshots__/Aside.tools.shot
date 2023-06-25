@@ -13,40 +13,49 @@ exports[`Friends only 1`] = `
     class="s-2iawX3uhhnz1"
   >
     <section
-      aria-expanded="true"
       aria-label="minimizable"
       class="s-vqhOCvFa7LzI"
       id="minimizable-section-1"
-      style="width: auto;"
+      style="width: 25vw; transition: width var(--short);"
     >
       <menu
         class="right s-vqhOCvFa7LzI"
       >
         <ol
-          class="buttonContainer s-vqhOCvFa7LzI"
+          class="s-vqhOCvFa7LzI"
           role="tablist"
+          style="--corner1: url(#clip-path-10010); --corner2: url(#clip-path-10020);"
         >
+          <li
+            class="bg s-vqhOCvFa7LzI"
+          />
+           
           <li
             class="s-vqhOCvFa7LzI"
           >
             <button
+              aria-expanded="true"
               aria-selected="false"
-              class="s-NMyTiX1zi6rz"
+              class="transparent s-NMyTiX1zi6rz"
               role="tab"
             >
-              <span
-                class="material-icons s-NMyTiX1zi6rz"
+              <div
+                class="s-NMyTiX1zi6rz"
               >
-                people_alt
-              </span>
-              
-              
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  people_alt
+                </span>
+                
+                
+              </div>
+               
               <span
                 class="badge s-NMyTiX1zi6rz"
               >
                 F2
               </span>
-              
             </button>
             <!--&lt;Button&gt;-->
              
@@ -58,6 +67,36 @@ exports[`Friends only 1`] = `
           class="gutter s-vqhOCvFa7LzI"
           role="scrollbar"
         />
+         
+        <svg
+          class="s-vqhOCvFa7LzI"
+          style="width: 0px; height: 0px;"
+        >
+          <clippath
+            class="s-vqhOCvFa7LzI"
+            clipPathUnits="objectBoundingBox"
+            id="clip-path-10010"
+          >
+            <path
+              class="s-vqhOCvFa7LzI"
+              d="M 0 1 C 0.5 1 0.5 0 1 0 V 1 Z"
+              transform="rotate(90) scale(1, -1)"
+              transform-origin="0.5 0.5"
+            />
+          </clippath>
+          <clippath
+            class="s-vqhOCvFa7LzI"
+            clipPathUnits="objectBoundingBox"
+            id="clip-path-10020"
+          >
+            <path
+              class="s-vqhOCvFa7LzI"
+              d="M 0 0 C 0.5 0 0.5 1 1 1 H 0 Z"
+              transform="rotate(90) scale(1, -1)"
+              transform-origin="0.5 0.5"
+            />
+          </clippath>
+        </svg>
       </menu>
        
       <span
@@ -65,7 +104,6 @@ exports[`Friends only 1`] = `
       >
         <div
           class="content s-2iawX3uhhnz1"
-          style="max-width: 30vw"
         >
           <div
             class="peers s-2iawX3uhhnz1 hidden"
@@ -75,17 +113,15 @@ exports[`Friends only 1`] = `
               style="--rows: 1; --columns: 1;"
             >
                
-               
-              <legend
-                class="s-9CzX_ZtBT-9N"
-              >
-                 
-                
-                <!--&lt;VideoCommands&gt;-->
-              </legend>
             </div>
             <!--&lt;AvatarGrid&gt;-->
              
+            <legend
+              class="s-uuldoZl5F298"
+            >
+               
+            </legend>
+            <!--&lt;VideoCommands&gt;-->
              
           </div>
            
@@ -132,14 +168,18 @@ exports[`Friends only 1`] = `
                 class="s-NMyTiX1zi6rz"
                 disabled=""
               >
-                <span
-                  class="material-icons s-NMyTiX1zi6rz"
+                <div
+                  class="s-NMyTiX1zi6rz"
                 >
-                  person_add_alt_1
-                </span>
-                
-                
-                
+                  <span
+                    class="material-icons s-NMyTiX1zi6rz"
+                  >
+                    person_add_alt_1
+                  </span>
+                  
+                  
+                </div>
+                 
               </button>
               <!--&lt;Button&gt;-->
             </div>
@@ -189,14 +229,18 @@ exports[`Friends only 1`] = `
                   <button
                     class="s-NMyTiX1zi6rz"
                   >
-                    <span
-                      class="material-icons s-NMyTiX1zi6rz"
+                    <div
+                      class="s-NMyTiX1zi6rz"
                     >
-                      delete
-                    </span>
-                    
-                    
-                    
+                      <span
+                        class="material-icons s-NMyTiX1zi6rz"
+                      >
+                        delete
+                      </span>
+                      
+                      
+                    </div>
+                     
                   </button>
                   <!--&lt;Button&gt;-->
                 </span>
@@ -238,28 +282,36 @@ exports[`Friends only 1`] = `
                   <button
                     class="primary s-NMyTiX1zi6rz"
                   >
-                    <span
-                      class="material-icons s-NMyTiX1zi6rz"
+                    <div
+                      class="s-NMyTiX1zi6rz"
                     >
-                      check
-                    </span>
-                    
-                    
-                    
+                      <span
+                        class="material-icons s-NMyTiX1zi6rz"
+                      >
+                        check
+                      </span>
+                      
+                      
+                    </div>
+                     
                   </button>
                   <!--&lt;Button&gt;-->
                    
                   <button
                     class="s-NMyTiX1zi6rz"
                   >
-                    <span
-                      class="material-icons s-NMyTiX1zi6rz"
+                    <div
+                      class="s-NMyTiX1zi6rz"
                     >
-                      clear
-                    </span>
-                    
-                    
-                    
+                      <span
+                        class="material-icons s-NMyTiX1zi6rz"
+                      >
+                        clear
+                      </span>
+                      
+                      
+                    </div>
+                     
                   </button>
                   <!--&lt;Button&gt;-->
                 </span>
@@ -305,14 +357,18 @@ exports[`Friends only 1`] = `
                   <button
                     class="s-NMyTiX1zi6rz"
                   >
-                    <span
-                      class="material-icons s-NMyTiX1zi6rz"
+                    <div
+                      class="s-NMyTiX1zi6rz"
                     >
-                      delete
-                    </span>
-                    
-                    
-                    
+                      <span
+                        class="material-icons s-NMyTiX1zi6rz"
+                      >
+                        delete
+                      </span>
+                      
+                      
+                    </div>
+                     
                   </button>
                   <!--&lt;Button&gt;-->
                 </span>
@@ -358,14 +414,18 @@ exports[`Friends only 1`] = `
                   <button
                     class="s-NMyTiX1zi6rz"
                   >
-                    <span
-                      class="material-icons s-NMyTiX1zi6rz"
+                    <div
+                      class="s-NMyTiX1zi6rz"
                     >
-                      delete
-                    </span>
-                    
-                    
-                    
+                      <span
+                        class="material-icons s-NMyTiX1zi6rz"
+                      >
+                        delete
+                      </span>
+                      
+                      
+                    </div>
+                     
                   </button>
                   <!--&lt;Button&gt;-->
                 </span>
@@ -411,14 +471,18 @@ exports[`Friends only 1`] = `
                   <button
                     class="s-NMyTiX1zi6rz"
                   >
-                    <span
-                      class="material-icons s-NMyTiX1zi6rz"
+                    <div
+                      class="s-NMyTiX1zi6rz"
                     >
-                      delete
-                    </span>
-                    
-                    
-                    
+                      <span
+                        class="material-icons s-NMyTiX1zi6rz"
+                      >
+                        delete
+                      </span>
+                      
+                      
+                    </div>
+                     
                   </button>
                   <!--&lt;Button&gt;-->
                 </span>
@@ -451,40 +515,79 @@ exports[`Lobby 1`] = `
     class="s-2iawX3uhhnz1"
   >
     <section
-      aria-expanded="true"
       aria-label="minimizable"
       class="s-vqhOCvFa7LzI"
       id="minimizable-section-2"
-      style="width: auto;"
+      style="width: 25vw; transition: width var(--short);"
     >
       <menu
         class="right s-vqhOCvFa7LzI"
       >
         <ol
-          class="buttonContainer s-vqhOCvFa7LzI"
+          class="s-vqhOCvFa7LzI"
           role="tablist"
+          style="--corner1: url(#clip-path-10030); --corner2: url(#clip-path-10040);"
         >
+          <li
+            class="bg s-vqhOCvFa7LzI"
+          />
+           
           <li
             class="s-vqhOCvFa7LzI"
           >
             <button
+              aria-expanded="true"
               aria-selected="false"
-              class="s-NMyTiX1zi6rz"
+              class="transparent s-NMyTiX1zi6rz"
               role="tab"
             >
-              <span
-                class="material-icons s-NMyTiX1zi6rz"
+              <div
+                class="s-NMyTiX1zi6rz"
               >
-                contacts
-              </span>
-              
-              
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  contacts
+                </span>
+                
+                
+              </div>
+               
               <span
                 class="badge s-NMyTiX1zi6rz"
               >
                 F4
               </span>
-              
+            </button>
+            <!--&lt;Button&gt;-->
+             
+          </li>
+          <li
+            class="s-vqhOCvFa7LzI"
+          >
+            <button
+              aria-expanded="true"
+              aria-selected="false"
+              class="transparent s-NMyTiX1zi6rz"
+              role="tab"
+            >
+              <div
+                class="s-NMyTiX1zi6rz"
+              >
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  question_answer
+                </span>
+                
+                
+              </div>
+               
+              <span
+                class="badge s-NMyTiX1zi6rz"
+              >
+                F5
+              </span>
             </button>
             <!--&lt;Button&gt;-->
              
@@ -493,23 +596,28 @@ exports[`Lobby 1`] = `
             class="s-vqhOCvFa7LzI active"
           >
             <button
+              aria-expanded="true"
               aria-selected="true"
-              class="s-NMyTiX1zi6rz"
+              class="transparent s-NMyTiX1zi6rz"
               role="tab"
             >
-              <span
-                class="material-icons s-NMyTiX1zi6rz"
+              <div
+                class="s-NMyTiX1zi6rz"
               >
-                people_alt
-              </span>
-              
-              
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  people_alt
+                </span>
+                
+                
+              </div>
+               
               <span
                 class="badge s-NMyTiX1zi6rz"
               >
                 F2
               </span>
-              
             </button>
             <!--&lt;Button&gt;-->
              
@@ -521,6 +629,36 @@ exports[`Lobby 1`] = `
           class="gutter s-vqhOCvFa7LzI"
           role="scrollbar"
         />
+         
+        <svg
+          class="s-vqhOCvFa7LzI"
+          style="width: 0px; height: 0px;"
+        >
+          <clippath
+            class="s-vqhOCvFa7LzI"
+            clipPathUnits="objectBoundingBox"
+            id="clip-path-10030"
+          >
+            <path
+              class="s-vqhOCvFa7LzI"
+              d="M 0 1 C 0.5 1 0.5 0 1 0 V 1 Z"
+              transform="rotate(90) scale(1, -1)"
+              transform-origin="0.5 0.5"
+            />
+          </clippath>
+          <clippath
+            class="s-vqhOCvFa7LzI"
+            clipPathUnits="objectBoundingBox"
+            id="clip-path-10040"
+          >
+            <path
+              class="s-vqhOCvFa7LzI"
+              d="M 0 0 C 0.5 0 0.5 1 1 1 H 0 Z"
+              transform="rotate(90) scale(1, -1)"
+              transform-origin="0.5 0.5"
+            />
+          </clippath>
+        </svg>
       </menu>
        
       <span
@@ -528,7 +666,6 @@ exports[`Lobby 1`] = `
       >
         <div
           class="content s-2iawX3uhhnz1"
-          style="max-width: 30vw"
         >
           <div
             class="peers s-2iawX3uhhnz1 hidden"
@@ -604,23 +741,21 @@ exports[`Lobby 1`] = `
                  
               </section>
               <!--&lt;PlayerAvatar&gt;-->
-               
-              <legend
-                class="s-9CzX_ZtBT-9N"
-              >
-                 
-                
-                <!--&lt;VideoCommands&gt;-->
-              </legend>
             </div>
             <!--&lt;AvatarGrid&gt;-->
+             
+            <legend
+              class="s-uuldoZl5F298"
+            >
+               
+            </legend>
+            <!--&lt;VideoCommands&gt;-->
              
             <div
               class="lobby-instructions s-2iawX3uhhnz1"
             >
               Pour transformer ce salon en jeu, choisissez un de vos jeux disponibles.
             </div>
-             
           </div>
            
           <section
@@ -745,14 +880,18 @@ exports[`Lobby 1`] = `
                 class="s-NMyTiX1zi6rz"
                 disabled=""
               >
-                <span
-                  class="material-icons s-NMyTiX1zi6rz"
+                <div
+                  class="s-NMyTiX1zi6rz"
                 >
-                  person_add_alt_1
-                </span>
-                
-                
-                
+                  <span
+                    class="material-icons s-NMyTiX1zi6rz"
+                  >
+                    person_add_alt_1
+                  </span>
+                  
+                  
+                </div>
+                 
               </button>
               <!--&lt;Button&gt;-->
             </div>
@@ -798,28 +937,36 @@ exports[`Lobby 1`] = `
                   <button
                     class="primary s-NMyTiX1zi6rz"
                   >
-                    <span
-                      class="material-icons s-NMyTiX1zi6rz"
+                    <div
+                      class="s-NMyTiX1zi6rz"
                     >
-                      check
-                    </span>
-                    
-                    
-                    
+                      <span
+                        class="material-icons s-NMyTiX1zi6rz"
+                      >
+                        check
+                      </span>
+                      
+                      
+                    </div>
+                     
                   </button>
                   <!--&lt;Button&gt;-->
                    
                   <button
                     class="s-NMyTiX1zi6rz"
                   >
-                    <span
-                      class="material-icons s-NMyTiX1zi6rz"
+                    <div
+                      class="s-NMyTiX1zi6rz"
                     >
-                      clear
-                    </span>
-                    
-                    
-                    
+                      <span
+                        class="material-icons s-NMyTiX1zi6rz"
+                      >
+                        clear
+                      </span>
+                      
+                      
+                    </div>
+                     
                   </button>
                   <!--&lt;Button&gt;-->
                 </span>
@@ -865,14 +1012,18 @@ exports[`Lobby 1`] = `
                   <button
                     class="s-NMyTiX1zi6rz"
                   >
-                    <span
-                      class="material-icons s-NMyTiX1zi6rz"
+                    <div
+                      class="s-NMyTiX1zi6rz"
                     >
-                      delete
-                    </span>
-                    
-                    
-                    
+                      <span
+                        class="material-icons s-NMyTiX1zi6rz"
+                      >
+                        delete
+                      </span>
+                      
+                      
+                    </div>
+                     
                   </button>
                   <!--&lt;Button&gt;-->
                 </span>
@@ -880,6 +1031,33 @@ exports[`Lobby 1`] = `
               </li>
             </ol>
              
+            <span
+              class="invite s-XLQf75fI0H0o"
+            >
+              <button
+                class="has-text s-NMyTiX1zi6rz"
+                disabled=""
+              >
+                <div
+                  class="s-NMyTiX1zi6rz"
+                >
+                  <span
+                    class="material-icons s-NMyTiX1zi6rz"
+                  >
+                    gamepad
+                  </span>
+                  
+                  <span
+                    class="text s-NMyTiX1zi6rz"
+                  >
+                    Inviter dans le salon
+                  </span>
+                  
+                </div>
+                 
+              </button>
+              <!--&lt;Button&gt;-->
+            </span>
              
           </section>
           <!--&lt;FriendList&gt;-->
@@ -903,28 +1081,36 @@ exports[`Multiple connected 1`] = `
     <button
       class="s-NMyTiX1zi6rz"
     >
-      <span
-        class="material-icons s-NMyTiX1zi6rz"
+      <div
+        class="s-NMyTiX1zi6rz"
       >
-        add
-      </span>
-      
-      
-      
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          add
+        </span>
+        
+        
+      </div>
+       
     </button>
     <!--&lt;Button&gt;-->
      
     <button
       class="s-NMyTiX1zi6rz"
     >
-      <span
-        class="material-icons s-NMyTiX1zi6rz"
+      <div
+        class="s-NMyTiX1zi6rz"
       >
-        remove
-      </span>
-      
-      
-      
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          remove
+        </span>
+        
+        
+      </div>
+       
     </button>
     <!--&lt;Button&gt;-->
   </section>
@@ -933,40 +1119,49 @@ exports[`Multiple connected 1`] = `
     class="s-2iawX3uhhnz1"
   >
     <section
-      aria-expanded="true"
       aria-label="minimizable"
       class="s-vqhOCvFa7LzI"
-      id="minimizable-section-6"
-      style="width: auto;"
+      id="minimizable-section-5"
+      style="width: 25vw; transition: width var(--short);"
     >
       <menu
         class="right s-vqhOCvFa7LzI"
       >
         <ol
-          class="buttonContainer s-vqhOCvFa7LzI"
+          class="s-vqhOCvFa7LzI"
           role="tablist"
+          style="--corner1: url(#clip-path-10090); --corner2: url(#clip-path-10100);"
         >
+          <li
+            class="bg s-vqhOCvFa7LzI"
+          />
+           
           <li
             class="s-vqhOCvFa7LzI active"
           >
             <button
+              aria-expanded="true"
               aria-selected="true"
-              class="s-NMyTiX1zi6rz"
+              class="transparent s-NMyTiX1zi6rz"
               role="tab"
             >
-              <span
-                class="material-icons s-NMyTiX1zi6rz"
+              <div
+                class="s-NMyTiX1zi6rz"
               >
-                contacts
-              </span>
-              
-              
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  contacts
+                </span>
+                
+                
+              </div>
+               
               <span
                 class="badge s-NMyTiX1zi6rz"
               >
                 F4
               </span>
-              
             </button>
             <!--&lt;Button&gt;-->
              
@@ -975,23 +1170,58 @@ exports[`Multiple connected 1`] = `
             class="s-vqhOCvFa7LzI"
           >
             <button
+              aria-expanded="true"
               aria-selected="false"
-              class="s-NMyTiX1zi6rz"
+              class="transparent s-NMyTiX1zi6rz"
               role="tab"
             >
-              <span
-                class="material-icons s-NMyTiX1zi6rz"
+              <div
+                class="s-NMyTiX1zi6rz"
               >
-                auto_stories
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  question_answer
+                </span>
+                
+                
+              </div>
+               
+              <span
+                class="badge s-NMyTiX1zi6rz"
+              >
+                F5
               </span>
-              
-              
+            </button>
+            <!--&lt;Button&gt;-->
+             
+          </li>
+          <li
+            class="s-vqhOCvFa7LzI"
+          >
+            <button
+              aria-expanded="true"
+              aria-selected="false"
+              class="transparent s-NMyTiX1zi6rz"
+              role="tab"
+            >
+              <div
+                class="s-NMyTiX1zi6rz"
+              >
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  auto_stories
+                </span>
+                
+                
+              </div>
+               
               <span
                 class="badge s-NMyTiX1zi6rz"
               >
                 F3
               </span>
-              
             </button>
             <!--&lt;Button&gt;-->
              
@@ -1000,23 +1230,28 @@ exports[`Multiple connected 1`] = `
             class="s-vqhOCvFa7LzI"
           >
             <button
+              aria-expanded="true"
               aria-selected="false"
-              class="s-NMyTiX1zi6rz"
+              class="transparent s-NMyTiX1zi6rz"
               role="tab"
             >
-              <span
-                class="material-icons s-NMyTiX1zi6rz"
+              <div
+                class="s-NMyTiX1zi6rz"
               >
-                people_alt
-              </span>
-              
-              
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  people_alt
+                </span>
+                
+                
+              </div>
+               
               <span
                 class="badge s-NMyTiX1zi6rz"
               >
                 F2
               </span>
-              
             </button>
             <!--&lt;Button&gt;-->
              
@@ -1025,23 +1260,28 @@ exports[`Multiple connected 1`] = `
             class="s-vqhOCvFa7LzI"
           >
             <button
+              aria-expanded="true"
               aria-selected="false"
-              class="s-NMyTiX1zi6rz"
+              class="transparent s-NMyTiX1zi6rz"
               role="tab"
             >
-              <span
-                class="material-icons s-NMyTiX1zi6rz"
+              <div
+                class="s-NMyTiX1zi6rz"
               >
-                help
-              </span>
-              
-              
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  help
+                </span>
+                
+                
+              </div>
+               
               <span
                 class="badge s-NMyTiX1zi6rz"
               >
                 F1
               </span>
-              
             </button>
             <!--&lt;Button&gt;-->
              
@@ -1049,10 +1289,40 @@ exports[`Multiple connected 1`] = `
         </ol>
          
         <div
-          aria-controls="minimizable-section-6"
+          aria-controls="minimizable-section-5"
           class="gutter s-vqhOCvFa7LzI"
           role="scrollbar"
         />
+         
+        <svg
+          class="s-vqhOCvFa7LzI"
+          style="width: 0px; height: 0px;"
+        >
+          <clippath
+            class="s-vqhOCvFa7LzI"
+            clipPathUnits="objectBoundingBox"
+            id="clip-path-10090"
+          >
+            <path
+              class="s-vqhOCvFa7LzI"
+              d="M 0 1 C 0.5 1 0.5 0 1 0 V 1 Z"
+              transform="rotate(90) scale(1, -1)"
+              transform-origin="0.5 0.5"
+            />
+          </clippath>
+          <clippath
+            class="s-vqhOCvFa7LzI"
+            clipPathUnits="objectBoundingBox"
+            id="clip-path-10100"
+          >
+            <path
+              class="s-vqhOCvFa7LzI"
+              d="M 0 0 C 0.5 0 0.5 1 1 1 H 0 Z"
+              transform="rotate(90) scale(1, -1)"
+              transform-origin="0.5 0.5"
+            />
+          </clippath>
+        </svg>
       </menu>
        
       <span
@@ -1060,7 +1330,6 @@ exports[`Multiple connected 1`] = `
       >
         <div
           class="content s-2iawX3uhhnz1"
-          style="width: 30vw"
         >
           <div
             class="peers s-2iawX3uhhnz1"
@@ -1168,213 +1437,16 @@ exports[`Multiple connected 1`] = `
                  
               </section>
               <!--&lt;PlayerAvatar&gt;-->
-               
-              <legend
-                class="s-9CzX_ZtBT-9N"
-              >
-                 
-                
-                <!--&lt;VideoCommands&gt;-->
-              </legend>
             </div>
             <!--&lt;AvatarGrid&gt;-->
              
-             
-            <section
-              aria-expanded="true"
-              aria-label="minimizable"
-              class="s-vqhOCvFa7LzI vertical"
-              id="minimizable-section-7"
-              style="height: 15%;"
+            <legend
+              class="s-uuldoZl5F298"
             >
-              <menu
-                class="bottom s-vqhOCvFa7LzI vertical"
-              >
-                <ol
-                  class="buttonContainer s-vqhOCvFa7LzI"
-                  role="tablist"
-                >
-                  <li
-                    class="s-vqhOCvFa7LzI"
-                  >
-                    <button
-                      aria-selected="false"
-                      class="s-NMyTiX1zi6rz"
-                      role="tab"
-                    >
-                      <span
-                        class="material-icons s-NMyTiX1zi6rz"
-                      >
-                        question_answer
-                      </span>
-                      
-                      
-                      <span
-                        class="badge s-NMyTiX1zi6rz"
-                      >
-                        F5
-                      </span>
-                      
-                    </button>
-                    <!--&lt;Button&gt;-->
-                     
-                  </li>
-                </ol>
-                 
-                <div
-                  aria-controls="minimizable-section-7"
-                  class="gutter s-vqhOCvFa7LzI"
-                  role="scrollbar"
-                />
-              </menu>
                
-              <span
-                class="s-vqhOCvFa7LzI"
-              >
-                <div
-                  class="discussion s-4DrpFHLJm4IA"
-                >
-                  <div
-                    class="messages s-4DrpFHLJm4IA"
-                  >
-                    <span
-                      class="from s-4DrpFHLJm4IA"
-                      style="--player-color: #9c3096;"
-                    >
-                      Fernand Naudin
-                    </span>
-                    <span
-                      class="message s-4DrpFHLJm4IA"
-                    >
-                      Qu'est-ce qui se passe encore ?
-                    </span>
-                    <span
-                      class="from s-4DrpFHLJm4IA"
-                      style="--player-color: #ff4500;"
-                    >
-                      Maître Follas
-                    </span>
-                    <span
-                      class="message s-4DrpFHLJm4IA"
-                    >
-                      Notre ami va se faire un plaisir de vous l'expliquer.
-                    </span>
-                    <span
-                      class="from s-4DrpFHLJm4IA"
-                      style="--player-color: #239646;"
-                    >
-                      Pascal
-                    </span>
-                    <span
-                      class="message s-4DrpFHLJm4IA"
-                    >
-                      Les Volfoni ont organisé à la péniche une petite réunion des cadres, façon meeting, si vous voyez ce que je veux dire.
-M'enfin quoi, on parle dans votre dos.
-                    </span>
-                    <span
-                      class="from s-4DrpFHLJm4IA"
-                      style="--player-color: #9c3096;"
-                    >
-                      Fernand Naudin
-                    </span>
-                    <span
-                      class="message s-4DrpFHLJm4IA"
-                    >
-                      Et tu tiens ça d'où ?
-                    </span>
-                    <span
-                      class="from s-4DrpFHLJm4IA"
-                      style="--player-color: #239646;"
-                    >
-                      Pascal
-                    </span>
-                    <span
-                      class="message s-4DrpFHLJm4IA"
-                    >
-                      Je ne peux pas le dire, j'ai promis. Ce serait mal.
-                    </span>
-                    <span
-                      class="from s-4DrpFHLJm4IA"
-                      style="--player-color: #9c3096;"
-                    >
-                      Fernand Naudin
-                    </span>
-                    <span
-                      class="message s-4DrpFHLJm4IA"
-                    >
-                      Alors ?
-                    </span>
-                    <span
-                      class="from s-4DrpFHLJm4IA"
-                      style="--player-color: #ff4500;"
-                    >
-                      Maître Follas
-                    </span>
-                    <span
-                      class="message s-4DrpFHLJm4IA"
-                    >
-                      Eh bien. Euh. Y'a deux solutions : ou on se dérange, ou on méprise. 
-Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire, bien sûr.
-                    </span>
-                    <span
-                      class="from s-4DrpFHLJm4IA"
-                      style="--player-color: #9c3096;"
-                    >
-                      Fernand Naudin
-                    </span>
-                    <span
-                      class="message s-4DrpFHLJm4IA"
-                    >
-                      Bon, on va y aller, hmm ?
-                    </span>
-                    <span
-                      class="from s-4DrpFHLJm4IA"
-                      style="--player-color: #239646;"
-                    >
-                      Pascal
-                    </span>
-                    <span
-                      class="message s-4DrpFHLJm4IA"
-                    >
-                      Monsieur Fernand, y'a peut-être une place pour moi dans votre auto. Des fois que la réunion devienne houleuse ... J'ai une présence tranquillisante.
-                    </span>
-                  </div>
-                   
-                  <form
-                    class="s-4DrpFHLJm4IA"
-                  >
-                    <fieldset
-                      class="s-Fe6WNbR-55zp"
-                    >
-                       
-                      <input
-                        class="s-Fe6WNbR-55zp"
-                      />
-                    </fieldset>
-                    <!--&lt;Input&gt;-->
-                     
-                    <button
-                      class="s-NMyTiX1zi6rz"
-                      disabled=""
-                      title="Envoyer à tous"
-                      type="submit"
-                    >
-                      <span
-                        class="material-icons s-NMyTiX1zi6rz"
-                      >
-                        send
-                      </span>
-                      
-                      
-                      
-                    </button>
-                    <!--&lt;Button&gt;-->
-                  </form>
-                </div>
-                <!--&lt;Discussion&gt;-->
-              </span>
-            </section>
-            <!--&lt;MinimizableSection&gt;-->
+            </legend>
+            <!--&lt;VideoCommands&gt;-->
+             
           </div>
            
         </div>
@@ -1399,40 +1471,49 @@ exports[`No peers 1`] = `
     class="s-2iawX3uhhnz1"
   >
     <section
-      aria-expanded="true"
       aria-label="minimizable"
       class="s-vqhOCvFa7LzI"
       id="minimizable-section-3"
-      style="width: auto;"
+      style="width: 25vw; transition: width var(--short);"
     >
       <menu
         class="right s-vqhOCvFa7LzI"
       >
         <ol
-          class="buttonContainer s-vqhOCvFa7LzI"
+          class="s-vqhOCvFa7LzI"
           role="tablist"
+          style="--corner1: url(#clip-path-10050); --corner2: url(#clip-path-10060);"
         >
+          <li
+            class="bg s-vqhOCvFa7LzI"
+          />
+           
           <li
             class="s-vqhOCvFa7LzI active"
           >
             <button
+              aria-expanded="true"
               aria-selected="true"
-              class="s-NMyTiX1zi6rz"
+              class="transparent s-NMyTiX1zi6rz"
               role="tab"
             >
-              <span
-                class="material-icons s-NMyTiX1zi6rz"
+              <div
+                class="s-NMyTiX1zi6rz"
               >
-                auto_stories
-              </span>
-              
-              
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  auto_stories
+                </span>
+                
+                
+              </div>
+               
               <span
                 class="badge s-NMyTiX1zi6rz"
               >
                 F3
               </span>
-              
             </button>
             <!--&lt;Button&gt;-->
              
@@ -1441,23 +1522,28 @@ exports[`No peers 1`] = `
             class="s-vqhOCvFa7LzI"
           >
             <button
+              aria-expanded="true"
               aria-selected="false"
-              class="s-NMyTiX1zi6rz"
+              class="transparent s-NMyTiX1zi6rz"
               role="tab"
             >
-              <span
-                class="material-icons s-NMyTiX1zi6rz"
+              <div
+                class="s-NMyTiX1zi6rz"
               >
-                people_alt
-              </span>
-              
-              
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  people_alt
+                </span>
+                
+                
+              </div>
+               
               <span
                 class="badge s-NMyTiX1zi6rz"
               >
                 F2
               </span>
-              
             </button>
             <!--&lt;Button&gt;-->
              
@@ -1466,23 +1552,28 @@ exports[`No peers 1`] = `
             class="s-vqhOCvFa7LzI"
           >
             <button
+              aria-expanded="true"
               aria-selected="false"
-              class="s-NMyTiX1zi6rz"
+              class="transparent s-NMyTiX1zi6rz"
               role="tab"
             >
-              <span
-                class="material-icons s-NMyTiX1zi6rz"
+              <div
+                class="s-NMyTiX1zi6rz"
               >
-                help
-              </span>
-              
-              
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  help
+                </span>
+                
+                
+              </div>
+               
               <span
                 class="badge s-NMyTiX1zi6rz"
               >
                 F1
               </span>
-              
             </button>
             <!--&lt;Button&gt;-->
              
@@ -1494,6 +1585,36 @@ exports[`No peers 1`] = `
           class="gutter s-vqhOCvFa7LzI"
           role="scrollbar"
         />
+         
+        <svg
+          class="s-vqhOCvFa7LzI"
+          style="width: 0px; height: 0px;"
+        >
+          <clippath
+            class="s-vqhOCvFa7LzI"
+            clipPathUnits="objectBoundingBox"
+            id="clip-path-10050"
+          >
+            <path
+              class="s-vqhOCvFa7LzI"
+              d="M 0 1 C 0.5 1 0.5 0 1 0 V 1 Z"
+              transform="rotate(90) scale(1, -1)"
+              transform-origin="0.5 0.5"
+            />
+          </clippath>
+          <clippath
+            class="s-vqhOCvFa7LzI"
+            clipPathUnits="objectBoundingBox"
+            id="clip-path-10060"
+          >
+            <path
+              class="s-vqhOCvFa7LzI"
+              d="M 0 0 C 0.5 0 0.5 1 1 1 H 0 Z"
+              transform="rotate(90) scale(1, -1)"
+              transform-origin="0.5 0.5"
+            />
+          </clippath>
+        </svg>
       </menu>
        
       <span
@@ -1501,7 +1622,6 @@ exports[`No peers 1`] = `
       >
         <div
           class="content s-2iawX3uhhnz1"
-          style="max-width: 30vw"
         >
           <div
             class="peers s-2iawX3uhhnz1 hidden"
@@ -1511,17 +1631,15 @@ exports[`No peers 1`] = `
               style="--rows: 1; --columns: 1;"
             >
                
-               
-              <legend
-                class="s-9CzX_ZtBT-9N"
-              >
-                 
-                
-                <!--&lt;VideoCommands&gt;-->
-              </legend>
             </div>
             <!--&lt;AvatarGrid&gt;-->
              
+            <legend
+              class="s-uuldoZl5F298"
+            >
+               
+            </legend>
+            <!--&lt;VideoCommands&gt;-->
              
           </div>
            
@@ -1535,14 +1653,18 @@ exports[`No peers 1`] = `
                 class="s-NMyTiX1zi6rz"
                 disabled=""
               >
-                <span
-                  class="material-icons s-NMyTiX1zi6rz"
+                <div
+                  class="s-NMyTiX1zi6rz"
                 >
-                  navigate_before
-                </span>
-                
-                
-                
+                  <span
+                    class="material-icons s-NMyTiX1zi6rz"
+                  >
+                    navigate_before
+                  </span>
+                  
+                  
+                </div>
+                 
               </button>
               <!--&lt;Button&gt;-->
                
@@ -1553,14 +1675,18 @@ exports[`No peers 1`] = `
               <button
                 class="s-NMyTiX1zi6rz"
               >
-                <span
-                  class="material-icons s-NMyTiX1zi6rz"
+                <div
+                  class="s-NMyTiX1zi6rz"
                 >
-                  navigate_next
-                </span>
-                
-                
-                
+                  <span
+                    class="material-icons s-NMyTiX1zi6rz"
+                  >
+                    navigate_next
+                  </span>
+                  
+                  
+                </div>
+                 
               </button>
               <!--&lt;Button&gt;-->
             </menu>
@@ -1600,40 +1726,49 @@ exports[`Single connected 1`] = `
     class="s-2iawX3uhhnz1"
   >
     <section
-      aria-expanded="true"
       aria-label="minimizable"
       class="s-vqhOCvFa7LzI"
       id="minimizable-section-4"
-      style="width: auto;"
+      style="width: 25vw; transition: width var(--short);"
     >
       <menu
         class="right s-vqhOCvFa7LzI"
       >
         <ol
-          class="buttonContainer s-vqhOCvFa7LzI"
+          class="s-vqhOCvFa7LzI"
           role="tablist"
+          style="--corner1: url(#clip-path-10070); --corner2: url(#clip-path-10080);"
         >
+          <li
+            class="bg s-vqhOCvFa7LzI"
+          />
+           
           <li
             class="s-vqhOCvFa7LzI active"
           >
             <button
+              aria-expanded="true"
               aria-selected="true"
-              class="s-NMyTiX1zi6rz"
+              class="transparent s-NMyTiX1zi6rz"
               role="tab"
             >
-              <span
-                class="material-icons s-NMyTiX1zi6rz"
+              <div
+                class="s-NMyTiX1zi6rz"
               >
-                contacts
-              </span>
-              
-              
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  contacts
+                </span>
+                
+                
+              </div>
+               
               <span
                 class="badge s-NMyTiX1zi6rz"
               >
                 F4
               </span>
-              
             </button>
             <!--&lt;Button&gt;-->
              
@@ -1642,23 +1777,58 @@ exports[`Single connected 1`] = `
             class="s-vqhOCvFa7LzI"
           >
             <button
+              aria-expanded="true"
               aria-selected="false"
-              class="s-NMyTiX1zi6rz"
+              class="transparent s-NMyTiX1zi6rz"
               role="tab"
             >
-              <span
-                class="material-icons s-NMyTiX1zi6rz"
+              <div
+                class="s-NMyTiX1zi6rz"
               >
-                auto_stories
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  question_answer
+                </span>
+                
+                
+              </div>
+               
+              <span
+                class="badge s-NMyTiX1zi6rz"
+              >
+                F5
               </span>
-              
-              
+            </button>
+            <!--&lt;Button&gt;-->
+             
+          </li>
+          <li
+            class="s-vqhOCvFa7LzI"
+          >
+            <button
+              aria-expanded="true"
+              aria-selected="false"
+              class="transparent s-NMyTiX1zi6rz"
+              role="tab"
+            >
+              <div
+                class="s-NMyTiX1zi6rz"
+              >
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  auto_stories
+                </span>
+                
+                
+              </div>
+               
               <span
                 class="badge s-NMyTiX1zi6rz"
               >
                 F3
               </span>
-              
             </button>
             <!--&lt;Button&gt;-->
              
@@ -1667,23 +1837,28 @@ exports[`Single connected 1`] = `
             class="s-vqhOCvFa7LzI"
           >
             <button
+              aria-expanded="true"
               aria-selected="false"
-              class="s-NMyTiX1zi6rz"
+              class="transparent s-NMyTiX1zi6rz"
               role="tab"
             >
-              <span
-                class="material-icons s-NMyTiX1zi6rz"
+              <div
+                class="s-NMyTiX1zi6rz"
               >
-                people_alt
-              </span>
-              
-              
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  people_alt
+                </span>
+                
+                
+              </div>
+               
               <span
                 class="badge s-NMyTiX1zi6rz"
               >
                 F2
               </span>
-              
             </button>
             <!--&lt;Button&gt;-->
              
@@ -1692,23 +1867,28 @@ exports[`Single connected 1`] = `
             class="s-vqhOCvFa7LzI"
           >
             <button
+              aria-expanded="true"
               aria-selected="false"
-              class="s-NMyTiX1zi6rz"
+              class="transparent s-NMyTiX1zi6rz"
               role="tab"
             >
-              <span
-                class="material-icons s-NMyTiX1zi6rz"
+              <div
+                class="s-NMyTiX1zi6rz"
               >
-                help
-              </span>
-              
-              
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  help
+                </span>
+                
+                
+              </div>
+               
               <span
                 class="badge s-NMyTiX1zi6rz"
               >
                 F1
               </span>
-              
             </button>
             <!--&lt;Button&gt;-->
              
@@ -1720,6 +1900,36 @@ exports[`Single connected 1`] = `
           class="gutter s-vqhOCvFa7LzI"
           role="scrollbar"
         />
+         
+        <svg
+          class="s-vqhOCvFa7LzI"
+          style="width: 0px; height: 0px;"
+        >
+          <clippath
+            class="s-vqhOCvFa7LzI"
+            clipPathUnits="objectBoundingBox"
+            id="clip-path-10070"
+          >
+            <path
+              class="s-vqhOCvFa7LzI"
+              d="M 0 1 C 0.5 1 0.5 0 1 0 V 1 Z"
+              transform="rotate(90) scale(1, -1)"
+              transform-origin="0.5 0.5"
+            />
+          </clippath>
+          <clippath
+            class="s-vqhOCvFa7LzI"
+            clipPathUnits="objectBoundingBox"
+            id="clip-path-10080"
+          >
+            <path
+              class="s-vqhOCvFa7LzI"
+              d="M 0 0 C 0.5 0 0.5 1 1 1 H 0 Z"
+              transform="rotate(90) scale(1, -1)"
+              transform-origin="0.5 0.5"
+            />
+          </clippath>
+        </svg>
       </menu>
        
       <span
@@ -1727,7 +1937,6 @@ exports[`Single connected 1`] = `
       >
         <div
           class="content s-2iawX3uhhnz1"
-          style="width: 30vw"
         >
           <div
             class="peers s-2iawX3uhhnz1"
@@ -1803,111 +2012,16 @@ exports[`Single connected 1`] = `
                  
               </section>
               <!--&lt;PlayerAvatar&gt;-->
-               
-              <legend
-                class="s-9CzX_ZtBT-9N"
-              >
-                 
-                
-                <!--&lt;VideoCommands&gt;-->
-              </legend>
             </div>
             <!--&lt;AvatarGrid&gt;-->
              
-             
-            <section
-              aria-expanded="true"
-              aria-label="minimizable"
-              class="s-vqhOCvFa7LzI vertical"
-              id="minimizable-section-5"
-              style="height: 15%;"
+            <legend
+              class="s-uuldoZl5F298"
             >
-              <menu
-                class="bottom s-vqhOCvFa7LzI vertical"
-              >
-                <ol
-                  class="buttonContainer s-vqhOCvFa7LzI"
-                  role="tablist"
-                >
-                  <li
-                    class="s-vqhOCvFa7LzI"
-                  >
-                    <button
-                      aria-selected="false"
-                      class="s-NMyTiX1zi6rz"
-                      role="tab"
-                    >
-                      <span
-                        class="material-icons s-NMyTiX1zi6rz"
-                      >
-                        question_answer
-                      </span>
-                      
-                      
-                      <span
-                        class="badge s-NMyTiX1zi6rz"
-                      >
-                        F5
-                      </span>
-                      
-                    </button>
-                    <!--&lt;Button&gt;-->
-                     
-                  </li>
-                </ol>
-                 
-                <div
-                  aria-controls="minimizable-section-5"
-                  class="gutter s-vqhOCvFa7LzI"
-                  role="scrollbar"
-                />
-              </menu>
                
-              <span
-                class="s-vqhOCvFa7LzI"
-              >
-                <div
-                  class="discussion s-4DrpFHLJm4IA"
-                >
-                  <div
-                    class="messages s-4DrpFHLJm4IA"
-                  />
-                   
-                  <form
-                    class="s-4DrpFHLJm4IA"
-                  >
-                    <fieldset
-                      class="s-Fe6WNbR-55zp"
-                    >
-                       
-                      <input
-                        class="s-Fe6WNbR-55zp"
-                      />
-                    </fieldset>
-                    <!--&lt;Input&gt;-->
-                     
-                    <button
-                      class="s-NMyTiX1zi6rz"
-                      disabled=""
-                      title="Envoyer à tous"
-                      type="submit"
-                    >
-                      <span
-                        class="material-icons s-NMyTiX1zi6rz"
-                      >
-                        send
-                      </span>
-                      
-                      
-                      
-                    </button>
-                    <!--&lt;Button&gt;-->
-                  </form>
-                </div>
-                <!--&lt;Discussion&gt;-->
-              </span>
-            </section>
-            <!--&lt;MinimizableSection&gt;-->
+            </legend>
+            <!--&lt;VideoCommands&gt;-->
+             
           </div>
            
         </div>
@@ -1932,40 +2046,49 @@ exports[`Single connected, no rules book, thread 1`] = `
     class="s-2iawX3uhhnz1"
   >
     <section
-      aria-expanded="true"
       aria-label="minimizable"
       class="s-vqhOCvFa7LzI"
-      id="minimizable-section-9"
-      style="width: auto;"
+      id="minimizable-section-7"
+      style="width: 25vw; transition: width var(--short);"
     >
       <menu
         class="right s-vqhOCvFa7LzI"
       >
         <ol
-          class="buttonContainer s-vqhOCvFa7LzI"
+          class="s-vqhOCvFa7LzI"
           role="tablist"
+          style="--corner1: url(#clip-path-10130); --corner2: url(#clip-path-10140);"
         >
+          <li
+            class="bg s-vqhOCvFa7LzI"
+          />
+           
           <li
             class="s-vqhOCvFa7LzI active"
           >
             <button
+              aria-expanded="true"
               aria-selected="true"
-              class="s-NMyTiX1zi6rz"
+              class="transparent s-NMyTiX1zi6rz"
               role="tab"
             >
-              <span
-                class="material-icons s-NMyTiX1zi6rz"
+              <div
+                class="s-NMyTiX1zi6rz"
               >
-                contacts
-              </span>
-              
-              
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  contacts
+                </span>
+                
+                
+              </div>
+               
               <span
                 class="badge s-NMyTiX1zi6rz"
               >
                 F4
               </span>
-              
             </button>
             <!--&lt;Button&gt;-->
              
@@ -1974,23 +2097,58 @@ exports[`Single connected, no rules book, thread 1`] = `
             class="s-vqhOCvFa7LzI"
           >
             <button
+              aria-expanded="true"
               aria-selected="false"
-              class="s-NMyTiX1zi6rz"
+              class="transparent s-NMyTiX1zi6rz"
               role="tab"
             >
-              <span
-                class="material-icons s-NMyTiX1zi6rz"
+              <div
+                class="s-NMyTiX1zi6rz"
               >
-                people_alt
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  question_answer
+                </span>
+                
+                
+              </div>
+               
+              <span
+                class="badge s-NMyTiX1zi6rz"
+              >
+                F5
               </span>
-              
-              
+            </button>
+            <!--&lt;Button&gt;-->
+             
+          </li>
+          <li
+            class="s-vqhOCvFa7LzI"
+          >
+            <button
+              aria-expanded="true"
+              aria-selected="false"
+              class="transparent s-NMyTiX1zi6rz"
+              role="tab"
+            >
+              <div
+                class="s-NMyTiX1zi6rz"
+              >
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  people_alt
+                </span>
+                
+                
+              </div>
+               
               <span
                 class="badge s-NMyTiX1zi6rz"
               >
                 F2
               </span>
-              
             </button>
             <!--&lt;Button&gt;-->
              
@@ -1999,23 +2157,28 @@ exports[`Single connected, no rules book, thread 1`] = `
             class="s-vqhOCvFa7LzI"
           >
             <button
+              aria-expanded="true"
               aria-selected="false"
-              class="s-NMyTiX1zi6rz"
+              class="transparent s-NMyTiX1zi6rz"
               role="tab"
             >
-              <span
-                class="material-icons s-NMyTiX1zi6rz"
+              <div
+                class="s-NMyTiX1zi6rz"
               >
-                help
-              </span>
-              
-              
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  help
+                </span>
+                
+                
+              </div>
+               
               <span
                 class="badge s-NMyTiX1zi6rz"
               >
                 F1
               </span>
-              
             </button>
             <!--&lt;Button&gt;-->
              
@@ -2023,10 +2186,40 @@ exports[`Single connected, no rules book, thread 1`] = `
         </ol>
          
         <div
-          aria-controls="minimizable-section-9"
+          aria-controls="minimizable-section-7"
           class="gutter s-vqhOCvFa7LzI"
           role="scrollbar"
         />
+         
+        <svg
+          class="s-vqhOCvFa7LzI"
+          style="width: 0px; height: 0px;"
+        >
+          <clippath
+            class="s-vqhOCvFa7LzI"
+            clipPathUnits="objectBoundingBox"
+            id="clip-path-10130"
+          >
+            <path
+              class="s-vqhOCvFa7LzI"
+              d="M 0 1 C 0.5 1 0.5 0 1 0 V 1 Z"
+              transform="rotate(90) scale(1, -1)"
+              transform-origin="0.5 0.5"
+            />
+          </clippath>
+          <clippath
+            class="s-vqhOCvFa7LzI"
+            clipPathUnits="objectBoundingBox"
+            id="clip-path-10140"
+          >
+            <path
+              class="s-vqhOCvFa7LzI"
+              d="M 0 0 C 0.5 0 0.5 1 1 1 H 0 Z"
+              transform="rotate(90) scale(1, -1)"
+              transform-origin="0.5 0.5"
+            />
+          </clippath>
+        </svg>
       </menu>
        
       <span
@@ -2034,7 +2227,6 @@ exports[`Single connected, no rules book, thread 1`] = `
       >
         <div
           class="content s-2iawX3uhhnz1"
-          style="width: 30vw"
         >
           <div
             class="peers s-2iawX3uhhnz1"
@@ -2110,213 +2302,16 @@ exports[`Single connected, no rules book, thread 1`] = `
                  
               </section>
               <!--&lt;PlayerAvatar&gt;-->
-               
-              <legend
-                class="s-9CzX_ZtBT-9N"
-              >
-                 
-                
-                <!--&lt;VideoCommands&gt;-->
-              </legend>
             </div>
             <!--&lt;AvatarGrid&gt;-->
              
-             
-            <section
-              aria-expanded="true"
-              aria-label="minimizable"
-              class="s-vqhOCvFa7LzI vertical"
-              id="minimizable-section-10"
-              style="height: 15%;"
+            <legend
+              class="s-uuldoZl5F298"
             >
-              <menu
-                class="bottom s-vqhOCvFa7LzI vertical"
-              >
-                <ol
-                  class="buttonContainer s-vqhOCvFa7LzI"
-                  role="tablist"
-                >
-                  <li
-                    class="s-vqhOCvFa7LzI"
-                  >
-                    <button
-                      aria-selected="false"
-                      class="s-NMyTiX1zi6rz"
-                      role="tab"
-                    >
-                      <span
-                        class="material-icons s-NMyTiX1zi6rz"
-                      >
-                        question_answer
-                      </span>
-                      
-                      
-                      <span
-                        class="badge s-NMyTiX1zi6rz"
-                      >
-                        F5
-                      </span>
-                      
-                    </button>
-                    <!--&lt;Button&gt;-->
-                     
-                  </li>
-                </ol>
-                 
-                <div
-                  aria-controls="minimizable-section-10"
-                  class="gutter s-vqhOCvFa7LzI"
-                  role="scrollbar"
-                />
-              </menu>
                
-              <span
-                class="s-vqhOCvFa7LzI"
-              >
-                <div
-                  class="discussion s-4DrpFHLJm4IA"
-                >
-                  <div
-                    class="messages s-4DrpFHLJm4IA"
-                  >
-                    <span
-                      class="from s-4DrpFHLJm4IA"
-                      style="--player-color: #9c3096;"
-                    >
-                      Fernand Naudin
-                    </span>
-                    <span
-                      class="message s-4DrpFHLJm4IA"
-                    >
-                      Qu'est-ce qui se passe encore ?
-                    </span>
-                    <span
-                      class="from s-4DrpFHLJm4IA"
-                      style="--player-color: #ff4500;"
-                    >
-                      Maître Follas
-                    </span>
-                    <span
-                      class="message s-4DrpFHLJm4IA"
-                    >
-                      Notre ami va se faire un plaisir de vous l'expliquer.
-                    </span>
-                    <span
-                      class="from s-4DrpFHLJm4IA"
-                      style="--player-color: #239646;"
-                    >
-                      Pascal
-                    </span>
-                    <span
-                      class="message s-4DrpFHLJm4IA"
-                    >
-                      Les Volfoni ont organisé à la péniche une petite réunion des cadres, façon meeting, si vous voyez ce que je veux dire.
-M'enfin quoi, on parle dans votre dos.
-                    </span>
-                    <span
-                      class="from s-4DrpFHLJm4IA"
-                      style="--player-color: #9c3096;"
-                    >
-                      Fernand Naudin
-                    </span>
-                    <span
-                      class="message s-4DrpFHLJm4IA"
-                    >
-                      Et tu tiens ça d'où ?
-                    </span>
-                    <span
-                      class="from s-4DrpFHLJm4IA"
-                      style="--player-color: #239646;"
-                    >
-                      Pascal
-                    </span>
-                    <span
-                      class="message s-4DrpFHLJm4IA"
-                    >
-                      Je ne peux pas le dire, j'ai promis. Ce serait mal.
-                    </span>
-                    <span
-                      class="from s-4DrpFHLJm4IA"
-                      style="--player-color: #9c3096;"
-                    >
-                      Fernand Naudin
-                    </span>
-                    <span
-                      class="message s-4DrpFHLJm4IA"
-                    >
-                      Alors ?
-                    </span>
-                    <span
-                      class="from s-4DrpFHLJm4IA"
-                      style="--player-color: #ff4500;"
-                    >
-                      Maître Follas
-                    </span>
-                    <span
-                      class="message s-4DrpFHLJm4IA"
-                    >
-                      Eh bien. Euh. Y'a deux solutions : ou on se dérange, ou on méprise. 
-Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire, bien sûr.
-                    </span>
-                    <span
-                      class="from s-4DrpFHLJm4IA"
-                      style="--player-color: #9c3096;"
-                    >
-                      Fernand Naudin
-                    </span>
-                    <span
-                      class="message s-4DrpFHLJm4IA"
-                    >
-                      Bon, on va y aller, hmm ?
-                    </span>
-                    <span
-                      class="from s-4DrpFHLJm4IA"
-                      style="--player-color: #239646;"
-                    >
-                      Pascal
-                    </span>
-                    <span
-                      class="message s-4DrpFHLJm4IA"
-                    >
-                      Monsieur Fernand, y'a peut-être une place pour moi dans votre auto. Des fois que la réunion devienne houleuse ... J'ai une présence tranquillisante.
-                    </span>
-                  </div>
-                   
-                  <form
-                    class="s-4DrpFHLJm4IA"
-                  >
-                    <fieldset
-                      class="s-Fe6WNbR-55zp"
-                    >
-                       
-                      <input
-                        class="s-Fe6WNbR-55zp"
-                      />
-                    </fieldset>
-                    <!--&lt;Input&gt;-->
-                     
-                    <button
-                      class="s-NMyTiX1zi6rz"
-                      disabled=""
-                      title="Envoyer à tous"
-                      type="submit"
-                    >
-                      <span
-                        class="material-icons s-NMyTiX1zi6rz"
-                      >
-                        send
-                      </span>
-                      
-                      
-                      
-                    </button>
-                    <!--&lt;Button&gt;-->
-                  </form>
-                </div>
-                <!--&lt;Discussion&gt;-->
-              </span>
-            </section>
-            <!--&lt;MinimizableSection&gt;-->
+            </legend>
+            <!--&lt;VideoCommands&gt;-->
+             
           </div>
            
         </div>

@@ -1,7 +1,7 @@
 <script>
   import { Button, Input, Pane } from '@src/components'
-  import GithubLogo from '@src/svg/github-logo.svg'
-  import GoogleLogo from '@src/svg/google-logo.svg'
+  import GithubLogo from '@src/svg/github-logo.svg?component'
+  import GoogleLogo from '@src/svg/google-logo.svg?component'
   import { authUrl } from '@src/utils'
   import { _ } from 'svelte-intl'
 

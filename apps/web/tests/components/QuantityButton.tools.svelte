@@ -6,11 +6,11 @@
 <ToolBox
   component={QuantityButton}
   name="Components/Quantity Button"
-  props={{ disabled: false, secondary: false }}
+  props={{ disabled: false, primary: false }}
   events={['click']}
   layout="centered"
 >
   <Tool name="Default" props={{ icon: 'front_hand' }} />
-  <Tool name="Secondary" props={{ icon: 'send', secondary: true }} />
+  <Tool name="Primary" props={{ icon: 'send', primary: true }} />
   <Tool name="Disabled" props={{ icon: 'stop', disabled: true }} />
 </ToolBox>

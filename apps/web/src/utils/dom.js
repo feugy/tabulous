@@ -39,3 +39,35 @@ export function observeDimension(element, buffer = 10) {
     disconnect: () => observer.disconnect()
   }
 }
+
+/**
+ * Defines new css variables on a given element, returning any existing values.
+ * @param {HTMLElement} element - element to set variables on.
+ * @param {object} variables - hash of Css variables (without the -- prefix).
+ */
+export function setCssVariables(element, variables) {
+  for (const [name, value] of Object.entries(variables)) {
+    if (value != undefined) {
+      element.style.setProperty(`--${name}`, value)
+    }
+  }
+}
+
+/**
+ * TODOC
+ */
+export function buildCornerClipPath({
+  curve = 0.5,
+  inverted = false,
+  placement = 'top'
+} = {}) {
+  return {
+    id: `clip-path-${Math.floor(Math.random() * 100000)}`,
+    transform: `rotate(${
+      placement === 'right' || placement === 'left' ? 90 : 0
+    }) scale(1, ${placement === 'right' || placement === 'top' ? -1 : 1})`,
+    d: inverted
+      ? `M 0 0 C ${curve} 0 ${1 - curve} 1 1 1 H 0 Z`
+      : `M 0 1 C ${curve} 1 ${1 - curve} 0 1 0 V 1 Z`
+  }
+}

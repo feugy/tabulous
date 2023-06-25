@@ -18,7 +18,9 @@
     .filter(player => player && player.isGuest && player.id !== playerId)
     .map(({ username }) => username)
   $: title = isALobby ? $_('titles.lobby') : game.locales?.[$locale]?.title
-  $: coverImage = game ? `${gameAssetsUrl}/${game.kind}/catalog/cover.webp` : ''
+  $: coverImage = game.kind
+    ? `${gameAssetsUrl}/${game.kind}/catalog/cover.webp`
+    : ''
 
   function handleDelete(event) {
     dispatch('delete', game)
@@ -69,9 +71,10 @@
 
 <style lang="postcss">
   article {
-    @apply relative inline-flex m-2 flex bg-$base-lighter rounded;
+    @apply relative inline-block m-2 flex bg-$base-lighter rounded overflow-hidden;
     transition: background-color var(--long), color var(--medium),
-      transform var(--short);
+      transform var(--short), box-shadow var(--short);
+    box-shadow: 0px 3px 10px var(--shadow-color);
 
     &::before {
       @apply absolute inset-0 w-full h-full;
@@ -81,16 +84,24 @@
       filter: grayscale(100%) opacity(15%);
     }
 
+    &::after {
+      @apply absolute -inset-1/2 transition-all duration-$long;
+      background: var(--card-light);
+      content: '';
+    }
+
     &:not(.isCurrent) .actions {
       @apply hidden;
     }
 
     &:hover {
-      @apply transform-gpu scale-110 bg-$base-darker text-$ink-dark;
+      @apply bg-$base-darker text-$ink-dark;
+      transform: perspective(450px) rotate3d(1, 0, 0, 5deg)
+        scale3d(1.05, 1.05, 1.05) translate3d(0, -4px, 0);
+      box-shadow: 0px 1rem 10px var(--shadow-color);
 
       h3 {
-        @apply text-$primary-lighter;
-        transition: color var(--long) var(--short);
+        @apply text-$primary-light transition-colors duration-$long delay-$short;
       }
 
       .actions {
@@ -98,29 +109,33 @@
       }
 
       .guests {
-        @apply text-$primary-lighter;
+        @apply text-$secondary-lighter;
+      }
+
+      &::after {
+        background-position: 0 0;
       }
     }
 
     &.lobby {
       @apply bg-$secondary-darkest text-$ink-dark;
 
-      .title {
-        @apply text-$secondary-light;
+      .guests {
+        @apply text-$secondary-lighter;
       }
 
-      .guests {
-        @apply text-$primary-lighter;
+      &:hover {
+        @apply bg-$base-darkest;
       }
     }
   }
 
   button {
-    @apply relative flex flex-col flex-1 p-4 text-left rounded;
+    @apply relative flex flex-col flex-1 p-4 text-left rounded z-1;
   }
 
   .actions {
-    @apply m-2;
+    @apply absolute top-2 right-2 z-1;
   }
 
   .title {
@@ -128,7 +143,7 @@
   }
 
   .guests {
-    @apply text-$primary-darkest;
+    @apply text-$secondary-darker;
     transition: color var(--medium) var(--short);
   }
 

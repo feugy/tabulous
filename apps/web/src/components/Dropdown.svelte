@@ -90,7 +90,7 @@
     @apply ml-2 -mr-2;
 
     &.split {
-      @apply border border-$primary-lightest border-t-transparent border-r-transparent border-b-transparent ml-4;
+      @apply border border-$ink border-t-transparent border-r-transparent border-b-transparent ml-4;
     }
   }
 </style>

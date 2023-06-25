@@ -377,20 +377,18 @@ describe('FriendList component', () => {
       const { player: player2 } = friends[friends.length - 1]
       renderComponent({ friends, game })
 
-      expect(
-        screen.queryByRole('button', { name: inviteButtonLabel })
-      ).not.toBeInTheDocument()
+      const inviteButton = screen.getByRole('button', {
+        name: inviteButtonLabel
+      })
+      expect(inviteButton).toBeDisabled()
 
       const player1Item = screen.getByText(player1.username)
       const player2Item = screen.getByText(player2.username)
       await fireEvent.click(player1Item)
       expectSelected(player1Item)
-      const inviteButton = screen.getByRole('button', {
-        name: inviteButtonLabel
-      })
       await fireEvent.click(player2Item)
       expectSelected(player2Item)
-      expect(inviteButton).toBeInTheDocument()
+      expect(inviteButton).toBeEnabled()
 
       await fireEvent.click(inviteButton)
       expect(invite).toHaveBeenCalledWith(game.id, player1.id, player2.id)
@@ -400,35 +398,33 @@ describe('FriendList component', () => {
     it('can not invite friendship request', async () => {
       const { player } = friends[1]
       renderComponent({ friends, game })
+      const inviteButton = screen.getByRole('button', {
+        name: inviteButtonLabel
+      })
+      expect(inviteButton).toBeDisabled()
 
       const playerItem = screen.getByText(
         translate('labels.friendship-requested', player)
       )
       await fireEvent.click(playerItem)
       expectSelected(playerItem, false)
-      expect(
-        screen.queryByRole('button', { name: inviteButtonLabel })
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByRole('button', { name: inviteButtonLabel })
-      ).not.toBeInTheDocument()
+      expect(inviteButton).toBeDisabled()
     })
 
     it('can unselect selected friend', async () => {
       const { player } = friends[0]
       renderComponent({ friends, game })
+      const inviteButton = screen.getByRole('button', {
+        name: inviteButtonLabel
+      })
+      expect(inviteButton).toBeDisabled()
 
       const playerItem = screen.getByText(player.username)
       await fireEvent.click(playerItem)
       expectSelected(playerItem)
-      expect(
-        screen.queryByRole('button', { name: inviteButtonLabel })
-      ).toBeInTheDocument()
       await fireEvent.click(playerItem)
       expectSelected(playerItem, false)
-      expect(
-        screen.queryByRole('button', { name: inviteButtonLabel })
-      ).not.toBeInTheDocument()
+      expect(inviteButton).toBeDisabled()
     })
 
     it('can select and unselect with keyboard', async () => {

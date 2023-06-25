@@ -3,7 +3,7 @@
 
   import Button from './Button.svelte'
 
-  export let secondary = false
+  export let primary = false
   export let disabled = false
   export let quantity = 1
   export let max = 1000
@@ -64,13 +64,13 @@
 <span
   role="slider"
   aria-valuenow={quantity}
-  tabindex={0}
+  tabindex={-1}
   on:keyup|stopPropagation={handleKeys}
 >
   <Button
     {...$$restProps}
     {disabled}
-    {secondary}
+    {primary}
     on:click={handleClick}
     on:pointerdown
     on:pointerup
@@ -82,14 +82,14 @@
       data-up
       icon="arrow_drop_up"
       {disabled}
-      {secondary}
+      {primary}
       on:click={handleUp}
     />
     <Button
       data-down
       icon="arrow_drop_down"
       {disabled}
-      {secondary}
+      {primary}
       on:click={handleDown}
     />
   </div>
@@ -97,10 +97,18 @@
 
 <style lang="postcss">
   span {
-    @apply inline-flex items-center justify-center;
+    @apply relative inline-flex items-center justify-center;
+    --shadow-drop: 0 3px;
+    filter: drop-shadow(
+      var(--shadow-drop) var(--shadow-blur) var(--secondary-darker)
+    );
 
     & > :global(button:first-child) {
-      @apply pr-1 pl-3 rounded-r-none;
+      @apply z-1;
+    }
+
+    & :global(button) {
+      filter: none !important;
     }
   }
 
@@ -110,16 +118,44 @@
   }
 
   div {
-    @apply flex flex-col;
+    @apply flex flex-col -ml-4;
 
     & :global(.material-icons) {
       font-size: 20px;
     }
     & > :global(button[data-up]) {
-      @apply pt-1 pb-0 pl-1 pr-2 rounded-l-none rounded-br-none;
+      @apply rounded-none !important;
+      border-top-right-radius: 9999px !important;
     }
     & > :global(button[data-down]) {
-      @apply pt-0 pb-1 pl-1 pr-2 rounded-l-none rounded-tr-none;
+      @apply border-t border-$ink-dark rounded-none !important;
+      border-bottom-right-radius: 9999px !important;
+    }
+    & > :global(button > div) {
+      @apply text-$ink-dark;
+      padding: 0 0.75rem 0 1.25rem !important;
+    }
+    & > :global(button::before) {
+      @apply hidden;
+    }
+
+    & > :global(button:not([disabled])) {
+      @apply bg-$secondary-dark;
+    }
+    & > :global(button:not([disabled]):hover) {
+      @apply bg-$secondary-darker;
+    }
+    & > :global(button:not([disabled]):focus) {
+      @apply bg-$secondary-darker;
+    }
+    & > :global(button.primary:not([disabled])) {
+      @apply bg-$primary-dark !important;
+    }
+    & > :global(button.primary:not([disabled]):hover) {
+      @apply bg-$primary-darker !important;
+    }
+    & > :global(button.primary:not([disabled]):focus) {
+      @apply bg-$primary-darker !important;
     }
   }
 </style>

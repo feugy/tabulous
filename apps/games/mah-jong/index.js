@@ -18,3 +18,9 @@ export const minTime = 60
 export const tableSpec = { texture: '#36823e' }
 
 export const zoomSpec = { hand: 35, min: 20, max: 90 }
+
+export const colors = {
+  base: '#B36B00',
+  primary: '#CB0A2A',
+  secondary: '#adc2ad'
+}

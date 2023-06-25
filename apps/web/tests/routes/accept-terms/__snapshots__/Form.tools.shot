@@ -59,19 +59,23 @@ exports[`Default 1`] = `
     disabled=""
     type="submit"
   >
-    <span
-      class="material-icons s-NMyTiX1zi6rz"
+    <div
+      class="s-NMyTiX1zi6rz"
     >
-      emoji_people
-    </span>
-    
-    <span
-      class="text s-NMyTiX1zi6rz"
-    >
-      Entrer
-    </span>
-    
-    
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
+      >
+        emoji_people
+      </span>
+      
+      <span
+        class="text s-NMyTiX1zi6rz"
+      >
+        Entrer
+      </span>
+      
+    </div>
+     
   </button>
   <!--&lt;Button&gt;-->
 </form>
@@ -134,19 +138,23 @@ exports[`Enabled 1`] = `
     disabled=""
     type="submit"
   >
-    <span
-      class="material-icons s-NMyTiX1zi6rz"
+    <div
+      class="s-NMyTiX1zi6rz"
     >
-      emoji_people
-    </span>
-    
-    <span
-      class="text s-NMyTiX1zi6rz"
-    >
-      Entrer
-    </span>
-    
-    
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
+      >
+        emoji_people
+      </span>
+      
+      <span
+        class="text s-NMyTiX1zi6rz"
+      >
+        Entrer
+      </span>
+      
+    </div>
+     
   </button>
   <!--&lt;Button&gt;-->
 </form>

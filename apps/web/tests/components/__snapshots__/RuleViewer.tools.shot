@@ -14,14 +14,18 @@ exports[`Components/Rule Viewer 1`] = `
         class="s-NMyTiX1zi6rz"
         disabled=""
       >
-        <span
-          class="material-icons s-NMyTiX1zi6rz"
+        <div
+          class="s-NMyTiX1zi6rz"
         >
-          navigate_before
-        </span>
-        
-        
-        
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            navigate_before
+          </span>
+          
+          
+        </div>
+         
       </button>
       <!--&lt;Button&gt;-->
        
@@ -32,14 +36,18 @@ exports[`Components/Rule Viewer 1`] = `
       <button
         class="s-NMyTiX1zi6rz"
       >
-        <span
-          class="material-icons s-NMyTiX1zi6rz"
+        <div
+          class="s-NMyTiX1zi6rz"
         >
-          navigate_next
-        </span>
-        
-        
-        
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            navigate_next
+          </span>
+          
+          
+        </div>
+         
       </button>
       <!--&lt;Button&gt;-->
     </menu>

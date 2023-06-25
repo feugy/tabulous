@@ -35,7 +35,7 @@ describe('GameMenu connected component', () => {
     areIndicatorsVisible.next(true)
   })
 
-  async function renderAndOpenComponent(props = {}) {
+  async function renderAndOpenComponent(props = { longTapDelay: 250 }) {
     const results = render(html`<${GameMenu} ...${props} />`)
     fireEvent.click(screen.getByRole('combobox'))
     await tick()
@@ -44,7 +44,7 @@ describe('GameMenu connected component', () => {
 
   it('has relevant options', async () => {
     await renderAndOpenComponent()
-    expect(screen.getByRole('combobox')).toHaveTextContent('menu')
+    expect(screen.getByRole('combobox')).toBeInTheDocument()
     expect(selectHomeOption()).toBeInTheDocument()
     expect(selectEnterFullscreenOption()).toBeInTheDocument()
     expect(selectExitFullscreenOption()).not.toBeInTheDocument()

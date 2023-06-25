@@ -51,8 +51,7 @@
   }
 
   .messages {
-    @apply grid overflow-y-auto;
-    grid-template-columns: fit-content(6rem) 1fr;
+    @apply flex flex-col overflow-y-auto;
 
     & > * {
       @apply pb-2;
@@ -68,7 +67,7 @@
   }
 
   .from {
-    @apply text-right font-medium pr-2 text-$player-color;
+    @apply font-medium pr-2 text-$player-color;
   }
 
   form {

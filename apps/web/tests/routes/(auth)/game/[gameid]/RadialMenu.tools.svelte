@@ -17,8 +17,9 @@
     <Button
       on:click={() => {
         open = !open
-      }}>{open ? 'Close' : 'Open'}</Button
-    >
+      }}
+      text={open ? 'Close' : 'Open'}
+    />
   </Tool>
   <Tool
     name="A few items"
@@ -38,8 +39,9 @@
     <Button
       on:click={() => {
         open = !open
-      }}>{open ? 'Close' : 'Open'}</Button
-    >
+      }}
+      text={open ? 'Close' : 'Open'}
+    />
   </Tool>
   <Tool
     name="More items"
@@ -68,7 +70,8 @@
     <Button
       on:click={() => {
         open = !open
-      }}>{open ? 'Close' : 'Open'}</Button
-    >
+      }}
+      text={open ? 'Close' : 'Open'}
+    />
   </Tool>
 </ToolBox>

@@ -151,6 +151,11 @@ fragment fullGame on Game {
     height
     texture
   }
+  colors {
+    base
+    primary
+    secondary
+  }
 }
 
 fragment lightGame on Game {
@@ -186,6 +191,11 @@ fragment gameData on GameOrParameters {
     }
     rulesBookPageCount
     availableSeats
+    colors {
+      base
+      primary
+      secondary
+    }
   }
 }
 

@@ -5,41 +5,42 @@ exports[`Multiple choices 1`] = `
   class="s-_xyHwNw5vPU9"
   role="dialog"
 >
-  <span
-    class="s-j2LTsWktqK_4"
+  <section
+    class="pane s-j2LTsWktqK_4"
+    style="--bg: var(--primary-lightest);"
   >
-    <div
-      class="pane s-j2LTsWktqK_4"
+    <h2
+      class="s-j2LTsWktqK_4"
     >
-      <h2
-        class="s-j2LTsWktqK_4"
+      Réglages du jeu
+    </h2>
+    
+     
+    <section
+      class="s-_xyHwNw5vPU9"
+    >
+      <label
+        class="s-AFGyPIu2lLfy"
+        for="side"
       >
-        Réglages du jeu
-      </h2>
-      
+        Couleur : 
+      </label>
        
-      <section
-        class="s-_xyHwNw5vPU9"
+      <span
+        class="s-AFGyPIu2lLfy"
       >
-        <label
-          class="s-AFGyPIu2lLfy"
-          for="side"
-        >
-          Couleur : 
-        </label>
-         
         <span
-          class="s-AFGyPIu2lLfy"
+          class="wrapper s-rGIwyFRHo8D9"
         >
-          <span
-            class="wrapper s-rGIwyFRHo8D9"
+          <button
+            aria-expanded="false"
+            aria-haspopup="menu"
+            class="s-NMyTiX1zi6rz has-text"
+            id="side"
+            role="combobox"
           >
-            <button
-              aria-expanded="false"
-              aria-haspopup="menu"
-              class="s-NMyTiX1zi6rz has-text"
-              id="side"
-              role="combobox"
+            <div
+              class="s-NMyTiX1zi6rz"
             >
               
               <span
@@ -48,7 +49,6 @@ exports[`Multiple choices 1`] = `
                 black
               </span>
               
-              
                
               <i
                 class="material-icons arrow s-rGIwyFRHo8D9"
@@ -58,36 +58,41 @@ exports[`Multiple choices 1`] = `
                 arrow_drop_down
               </i>
               
-            </button>
-            <!--&lt;Button&gt;-->
+            </div>
              
-            
-            <!--&lt;Menu&gt;-->
-          </span>
-          <!--&lt;Dropdown&gt;-->
+          </button>
+          <!--&lt;Button&gt;-->
            
+          
+          <!--&lt;Menu&gt;-->
         </span>
-        <!--&lt;Choice&gt;-->
-        
-        <label
-          class="s-AFGyPIu2lLfy"
-          for="position"
-        >
-          Suite : 
-        </label>
+        <!--&lt;Dropdown&gt;-->
          
+      </span>
+      <!--&lt;Choice&gt;-->
+      
+      <label
+        class="s-AFGyPIu2lLfy"
+        for="position"
+      >
+        Suite : 
+      </label>
+       
+      <span
+        class="s-AFGyPIu2lLfy"
+      >
         <span
-          class="s-AFGyPIu2lLfy"
+          class="wrapper s-rGIwyFRHo8D9"
         >
-          <span
-            class="wrapper s-rGIwyFRHo8D9"
+          <button
+            aria-expanded="false"
+            aria-haspopup="menu"
+            class="s-NMyTiX1zi6rz has-text"
+            id="position"
+            role="combobox"
           >
-            <button
-              aria-expanded="false"
-              aria-haspopup="menu"
-              class="s-NMyTiX1zi6rz has-text"
-              id="position"
-              role="combobox"
+            <div
+              class="s-NMyTiX1zi6rz"
             >
               
               <span
@@ -96,7 +101,6 @@ exports[`Multiple choices 1`] = `
                 Trèfle
               </span>
               
-              
                
               <i
                 class="material-icons arrow s-rGIwyFRHo8D9"
@@ -106,30 +110,35 @@ exports[`Multiple choices 1`] = `
                 arrow_drop_down
               </i>
               
-            </button>
-            <!--&lt;Button&gt;-->
+            </div>
              
-            
-            <!--&lt;Menu&gt;-->
-          </span>
-          <!--&lt;Dropdown&gt;-->
+          </button>
+          <!--&lt;Button&gt;-->
            
-          <img
-            alt=""
-            class="s-AFGyPIu2lLfy"
-            src="http://localhost:3001/games/french-suited-card/images/clubs-1.svg"
-          />
+          
+          <!--&lt;Menu&gt;-->
         </span>
-        <!--&lt;Choice&gt;-->
-        
-      </section>
-       
-      <div
-        class="s-_xyHwNw5vPU9"
+        <!--&lt;Dropdown&gt;-->
+         
+        <img
+          alt=""
+          class="s-AFGyPIu2lLfy"
+          src="http://localhost:3001/games/french-suited-card/images/clubs-1.svg"
+        />
+      </span>
+      <!--&lt;Choice&gt;-->
+      
+    </section>
+     
+    <div
+      class="s-_xyHwNw5vPU9"
+    >
+      <button
+        class="has-text s-NMyTiX1zi6rz"
+        type="submit"
       >
-        <button
-          class="has-text s-NMyTiX1zi6rz"
-          type="submit"
+        <div
+          class="s-NMyTiX1zi6rz"
         >
           
           <span
@@ -138,12 +147,12 @@ exports[`Multiple choices 1`] = `
             Jouer
           </span>
           
-          
-        </button>
-        <!--&lt;Button&gt;-->
-      </div>
+        </div>
+         
+      </button>
+      <!--&lt;Button&gt;-->
     </div>
-  </span>
+  </section>
   <!--&lt;Pane&gt;-->
 </form>
 `;
@@ -153,41 +162,42 @@ exports[`Single choice 1`] = `
   class="s-_xyHwNw5vPU9"
   role="dialog"
 >
-  <span
-    class="s-j2LTsWktqK_4"
+  <section
+    class="pane s-j2LTsWktqK_4"
+    style="--bg: var(--primary-lightest);"
   >
-    <div
-      class="pane s-j2LTsWktqK_4"
+    <h2
+      class="s-j2LTsWktqK_4"
     >
-      <h2
-        class="s-j2LTsWktqK_4"
+      Réglages du jeu
+    </h2>
+    
+     
+    <section
+      class="s-_xyHwNw5vPU9"
+    >
+      <label
+        class="s-AFGyPIu2lLfy"
+        for="side"
       >
-        Réglages du jeu
-      </h2>
-      
+        Couleur : 
+      </label>
        
-      <section
-        class="s-_xyHwNw5vPU9"
+      <span
+        class="s-AFGyPIu2lLfy"
       >
-        <label
-          class="s-AFGyPIu2lLfy"
-          for="side"
-        >
-          Couleur : 
-        </label>
-         
         <span
-          class="s-AFGyPIu2lLfy"
+          class="wrapper s-rGIwyFRHo8D9"
         >
-          <span
-            class="wrapper s-rGIwyFRHo8D9"
+          <button
+            aria-expanded="false"
+            aria-haspopup="menu"
+            class="s-NMyTiX1zi6rz has-text"
+            id="side"
+            role="combobox"
           >
-            <button
-              aria-expanded="false"
-              aria-haspopup="menu"
-              class="s-NMyTiX1zi6rz has-text"
-              id="side"
-              role="combobox"
+            <div
+              class="s-NMyTiX1zi6rz"
             >
               
               <span
@@ -195,7 +205,6 @@ exports[`Single choice 1`] = `
               >
                 Noirs
               </span>
-              
               
                
               <i
@@ -206,25 +215,30 @@ exports[`Single choice 1`] = `
                 arrow_drop_down
               </i>
               
-            </button>
-            <!--&lt;Button&gt;-->
+            </div>
              
-            
-            <!--&lt;Menu&gt;-->
-          </span>
-          <!--&lt;Dropdown&gt;-->
+          </button>
+          <!--&lt;Button&gt;-->
            
+          
+          <!--&lt;Menu&gt;-->
         </span>
-        <!--&lt;Choice&gt;-->
-        
-      </section>
-       
-      <div
-        class="s-_xyHwNw5vPU9"
+        <!--&lt;Dropdown&gt;-->
+         
+      </span>
+      <!--&lt;Choice&gt;-->
+      
+    </section>
+     
+    <div
+      class="s-_xyHwNw5vPU9"
+    >
+      <button
+        class="has-text s-NMyTiX1zi6rz"
+        type="submit"
       >
-        <button
-          class="has-text s-NMyTiX1zi6rz"
-          type="submit"
+        <div
+          class="s-NMyTiX1zi6rz"
         >
           
           <span
@@ -233,12 +247,12 @@ exports[`Single choice 1`] = `
             Jouer
           </span>
           
-          
-        </button>
-        <!--&lt;Button&gt;-->
-      </div>
+        </div>
+         
+      </button>
+      <!--&lt;Button&gt;-->
     </div>
-  </span>
+  </section>
   <!--&lt;Pane&gt;-->
 </form>
 `;

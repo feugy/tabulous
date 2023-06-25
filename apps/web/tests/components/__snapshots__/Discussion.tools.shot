@@ -132,14 +132,18 @@ Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire,
         title="Envoyer à tous"
         type="submit"
       >
-        <span
-          class="material-icons s-NMyTiX1zi6rz"
+        <div
+          class="s-NMyTiX1zi6rz"
         >
-          send
-        </span>
-        
-        
-        
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            send
+          </span>
+          
+          
+        </div>
+         
       </button>
       <!--&lt;Button&gt;-->
     </form>
@@ -187,14 +191,18 @@ exports[`short thread 1`] = `
       title="Envoyer à tous"
       type="submit"
     >
-      <span
-        class="material-icons s-NMyTiX1zi6rz"
+      <div
+        class="s-NMyTiX1zi6rz"
       >
-        send
-      </span>
-      
-      
-      
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          send
+        </span>
+        
+        
+      </div>
+       
     </button>
     <!--&lt;Button&gt;-->
   </form>

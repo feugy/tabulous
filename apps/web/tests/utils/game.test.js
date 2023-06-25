@@ -1,11 +1,13 @@
+import { faker } from '@faker-js/faker'
 import {
+  applyGameColors,
   buildPlayerColors,
   findPlayerColor,
   findPlayerPreferences,
   isGuest,
   isLobby
 } from '@src/utils/game'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 
 describe('Game utils', () => {
   const game = {
@@ -105,6 +107,104 @@ describe('Game utils', () => {
 
     it('detects game', () => {
       expect(isLobby({ id: 'whatever', kind: 'foo' })).toBe(false)
+    })
+  })
+
+  describe('applyGameColors()', () => {
+    const shades = [
+      '-lightest',
+      '-lighter',
+      '-light',
+      '',
+      '-dark',
+      '-darker',
+      '-darkest'
+    ]
+
+    beforeEach(() => {
+      const root = document.body
+      for (const name of ['base', 'primary', 'secondary']) {
+        for (const shade of shades) {
+          root.style.removeProperty(`--${name}${shade}`)
+        }
+      }
+    })
+
+    function getPaletteVariables(name) {
+      const root = document.body
+      const result = {}
+      for (const shade of shades) {
+        const value = root.style.getPropertyValue(`--${name}${shade}`)
+        if (value) {
+          result[`${name}${shade}`] = value
+        }
+      }
+      return result
+    }
+
+    const expectedBasePalette = {
+      base: '#6096b4',
+      'base-dark': '#2e6884',
+      'base-darker': '#003e57',
+      'base-darkest': '#00182e',
+      'base-light': '#a0c0d2',
+      'base-lighter': '#d5e3eb',
+      'base-lightest': '#eff4f7'
+    }
+
+    const expectedPrimaryPalette = {
+      primary: '#ef9535',
+      'primary-dark': '#b76700',
+      'primary-darker': '#823b00',
+      'primary-darkest': '#531000',
+      'primary-light': '#f3ae64',
+      'primary-lighter': '#fadcbc',
+      'primary-lightest': '#fdf2e6'
+    }
+
+    const expectedSecondaryPalette = {
+      secondary: '#adbfcb',
+      'secondary-dark': '#7d8f9a',
+      'secondary-darker': '#51616c',
+      'secondary-darkest': '#273841',
+      'secondary-light': '#acbeca',
+      'secondary-lighter': '#dae2e7',
+      'secondary-lightest': '#f1f4f6'
+    }
+
+    it('creates a palette for base colors', () => {
+      applyGameColors({ base: '#6096b4' })
+      expect(getPaletteVariables('base')).toEqual(expectedBasePalette)
+    })
+
+    it('creates a palette for primary colors', () => {
+      applyGameColors({ primary: '#ef9535' })
+      expect(getPaletteVariables('primary')).toEqual(expectedPrimaryPalette)
+    })
+
+    it('creates a palette for secondary colors', () => {
+      applyGameColors({ secondary: '#adbfcb' })
+      expect(getPaletteVariables('secondary')).toEqual(expectedSecondaryPalette)
+    })
+
+    it('creates a palette for multiple colors and ignore unspecified ones', () => {
+      applyGameColors({
+        base: '#6096b4',
+        primary: '#ef9535',
+        secondary: undefined
+      })
+      expect(getPaletteVariables('base')).toEqual(expectedBasePalette)
+      expect(getPaletteVariables('primary')).toEqual(expectedPrimaryPalette)
+      expect(getPaletteVariables('secondary')).toEqual({})
+    })
+
+    it('returns a function to unset values', () => {
+      const base = faker.color.rgb()
+      document.querySelector(':root').style.setProperty('--base', base)
+      const restore = applyGameColors({ base: '#6096b4' })
+      expect(getPaletteVariables('base')).toEqual(expectedBasePalette)
+      restore()
+      expect(getPaletteVariables('base')).toEqual({})
     })
   })
 })
