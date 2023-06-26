@@ -16,6 +16,7 @@
 
 <script>
   import { Button, QuantityButton } from '@src/components'
+  import { writable } from 'svelte/store'
   import { _ } from 'svelte-intl'
 
   export let items = []
@@ -24,12 +25,21 @@
   export let y = 0
   export let angleShift = Math.PI * -0.5
 
+  const actions = writable(null)
+  $: {
+    // make sure we reset actions to trigger animations again.
+    actions.set(null)
+    if (items) {
+      setTimeout(() => actions.set(items), enterDuration)
+    }
+  }
+
   $: left = typeof x === 'number' ? `${x}px` : x
   $: top = typeof y === 'number' ? `${y}px` : y
-  $: radius = 55 + 5 * items?.length
+  $: radius = 55 + 5 * $actions?.length
 
   function computeItemPosition({ i }) {
-    const angle = (-2 * Math.PI * (items.length - i)) / items.length
+    const angle = (-2 * Math.PI * ($actions.length - i)) / $actions.length
     // add 1 radius because css origin is menu's top-left corner, not its center
     return {
       x: radius * (Math.cos(angle + angleShift) + 1),
@@ -61,18 +71,20 @@
   }
 </script>
 
-{#if open && Array.isArray(items)}
+{#if open && Array.isArray($actions)}
   <aside
     transition:fade={{ duration: enterDuration }}
     style="left: {left}; top: {top}; --size:{radius * 2}px;"
   >
-    {#if !items.length}
-      <span class="no-actions" transition:fade={{ delay: enterDuration }}
+    {#if $actions?.length === 0}
+      <span
+        class="no-actions"
+        transition:fade={{ duration: enterDuration, delay: enterDuration }}
         >{$_('labels.no-actions')}</span
       >
     {/if}
     <ul on:pointerdown|stopPropagation on:mouseenter on:mouseleave role="menu">
-      {#each items as { key, onClick, title, badge, max, ...buttonProps }, i}
+      {#each $actions as { icon, onClick, title, badge, max, ...buttonProps }, i (icon)}
         <li
           in:enter={{ i }}
           on:introend={({ target }) => handleEnterEnd({ i, target })}
@@ -83,6 +95,7 @@
               title={title ? $_(title) : undefined}
               badge={badge ? $_(badge) : undefined}
               {max}
+              {icon}
               {...buttonProps}
               on:click={onClick}
             />
@@ -90,6 +103,7 @@
             <Button
               title={title ? $_(title) : undefined}
               badge={badge ? $_(badge) : undefined}
+              {icon}
               {...buttonProps}
               on:click={onClick}
             />
@@ -110,9 +124,7 @@
   }
 
   .no-actions {
-    @apply flex rounded-full bg-$base-light items-center text-center;
-    height: 80%;
-    width: 80%;
+    @apply flex rounded-full bg-$base-light items-center text-center w-[80%] h-[80%];
   }
 
   ul {

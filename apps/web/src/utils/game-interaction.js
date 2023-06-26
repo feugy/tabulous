@@ -128,8 +128,12 @@ export function attachInputs({
             selectionManager.clear()
           }
           if (kind === 'right') {
-            logger.info({ mesh, event }, `display menu for mesh ${mesh.id}`)
-            actionMenuProps$.next(computeMenuProps(mesh, fromHand))
+            const actions = computeMenuProps(mesh, fromHand)
+            logger.info(
+              { mesh, event, actions },
+              `display menu for mesh ${mesh.id}`
+            )
+            actionMenuProps$.next(actions)
           }
         } else if (kind === 'left') {
           selectionManager.clear()

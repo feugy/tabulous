@@ -81,7 +81,7 @@ labels:
   log-in: Connexion
   manual-provider: Vous avez un compte manuel dont l'identifiant de connextion est "{id}"
   new-game-invite: Vous avez été invité·e à jouer !
-  no-actions: Rien pour cette sélection
+  no-actions: Aucune action
   no-games-yet: Rien pour l'instant ! Choisissez un jeu disponible.
   oauth-provider: Vous avez relié ce compte à votre adresse "{email}"
   old-enough: Je déclare avoir plus de 15 ans ou être autorisé·e par l’un de mes parents
