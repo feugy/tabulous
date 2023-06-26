@@ -17,12 +17,9 @@ describe('/game/[gameId] Radial Menu component', () => {
 
   it('displays message without items', async () => {
     renderComponent({ items: [] })
-    let menu
     await waitFor(() => {
-      menu = screen.getByRole('menu')
-      expect(menu).toBeInTheDocument()
+      expect(screen.queryByRole('menu')).toHaveClass('no-actions')
     })
-    expect(menu.previousElementSibling).toHaveClass('no-actions')
     expect(screen.queryAllByRole('button')).toHaveLength(0)
   })
 

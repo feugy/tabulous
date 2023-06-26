@@ -3,7 +3,7 @@
   import { createEventDispatcher } from 'svelte'
   import { fly } from 'svelte/transition'
   import { _ } from 'svelte-intl'
-  
+
   import { buildComponents } from './utils'
 
   export let schema = {}
@@ -22,7 +22,7 @@
 <form
   role="dialog"
   on:submit|preventDefault|stopPropagation={handleSubmit}
-  in:fly={{ y: -100, duration }}
+  in:fly|global={{ y: -100, duration }}
 >
   <Pane title={$_('titles.game-parameters')} backgroundColor="primary">
     <section>

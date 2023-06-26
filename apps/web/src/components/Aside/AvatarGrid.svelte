@@ -34,7 +34,7 @@
     resize(getPixelDimension(container))
   }
 
-  onMount(async () => {
+  onMount(() => {
     const { dimension$, disconnect } = observeDimension(container, 0)
     dimension$.subscribe(resize)
     return () => disconnect()

@@ -59,7 +59,7 @@
       {/if}
       <article
         role="dialog"
-        in:fly={{ y: -100, duration }}
+        in:fly|global={{ y: -100, duration }}
         on:click|stopPropagation
         on:keyup|stopPropagation={handleKey}
       >

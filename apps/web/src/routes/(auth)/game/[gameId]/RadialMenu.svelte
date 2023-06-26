@@ -73,51 +73,60 @@
 
 {#if open && Array.isArray($actions)}
   <aside
-    transition:fade={{ duration: enterDuration }}
+    transition:fade|global={{ duration: enterDuration }}
     style="left: {left}; top: {top}; --size:{radius * 2}px;"
   >
-    {#if $actions?.length === 0}
+    {#if $actions.length === 0}
       <span
+        role="menu"
         class="no-actions"
-        transition:fade={{ duration: enterDuration, delay: enterDuration }}
-        >{$_('labels.no-actions')}</span
+        transition:fade|global={{
+          duration: enterDuration,
+          delay: enterDuration
+        }}>{$_('labels.no-actions')}</span
       >
+    {:else}
+      <ul
+        on:pointerdown|stopPropagation
+        on:mouseenter
+        on:mouseleave
+        role="menu"
+      >
+        {#each $actions as { icon, onClick, title, badge, max, ...buttonProps }, i (icon)}
+          <li
+            in:enter|global={{ i }}
+            on:introend={({ target }) => handleEnterEnd({ i, target })}
+            out:hide|global
+          >
+            {#if max}
+              <QuantityButton
+                title={title ? $_(title) : undefined}
+                badge={badge ? $_(badge) : undefined}
+                {max}
+                {icon}
+                {...buttonProps}
+                on:click={onClick}
+              />
+            {:else}
+              <Button
+                title={title ? $_(title) : undefined}
+                badge={badge ? $_(badge) : undefined}
+                {icon}
+                {...buttonProps}
+                on:click={onClick}
+              />
+            {/if}
+          </li>
+        {/each}
+      </ul>
     {/if}
-    <ul on:pointerdown|stopPropagation on:mouseenter on:mouseleave role="menu">
-      {#each $actions as { icon, onClick, title, badge, max, ...buttonProps }, i (icon)}
-        <li
-          in:enter={{ i }}
-          on:introend={({ target }) => handleEnterEnd({ i, target })}
-          out:hide
-        >
-          {#if max}
-            <QuantityButton
-              title={title ? $_(title) : undefined}
-              badge={badge ? $_(badge) : undefined}
-              {max}
-              {icon}
-              {...buttonProps}
-              on:click={onClick}
-            />
-          {:else}
-            <Button
-              title={title ? $_(title) : undefined}
-              badge={badge ? $_(badge) : undefined}
-              {icon}
-              {...buttonProps}
-              on:click={onClick}
-            />
-          {/if}
-        </li>
-      {/each}
-    </ul>
     <slot />
   </aside>
 {/if}
 
 <style lang="postcss">
   aside {
-    @apply absolute rounded-full border-3 flex items-center z-10
+    @apply absolute rounded-full border-3 flex items-center z-10 pointer-events-none
            justify-center border-$base-darker transform-gpu -translate-x-1/2 -translate-y-1/2;
     width: var(--size);
     height: var(--size);
@@ -128,7 +137,7 @@
   }
 
   ul {
-    @position relative;
+    @apply pointer-events-auto;
   }
 
   li {
