@@ -204,7 +204,10 @@
           />
         {:else}
           {#if option.icon}<i class="material-icons">{option.icon}</i>{/if}
-          {option.label || option}
+          {#if option.color}<span
+              class="color"
+              style:--color={option.color}
+            />{:else}{option.label || option}{/if}
         {/if}
       </li>
     {/each}
@@ -238,8 +241,13 @@
       }
     }
 
-    & > i {
+    > i {
       @apply mr-2 text-base;
+    }
+
+    > .color {
+      @apply inline-block w-full h-6 p-1;
+      background-color: var(--color);
     }
   }
 </style>

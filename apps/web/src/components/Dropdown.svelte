@@ -18,7 +18,10 @@
 
   $: iconOnly = !valueAsText && !text
   $: if (valueAsText) {
-    text = value && options?.includes(value) ? value.label || value : null
+    text =
+      value && !value.color && options?.includes(value)
+        ? value.label || value
+        : null
   }
 
   function handleClick() {
@@ -47,13 +50,17 @@
 <span class="wrapper" bind:this={anchor}>
   <Button
     {...$$restProps}
-    {text}
     role="combobox"
     aria-haspopup="menu"
     aria-expanded={open}
     on:click={handleClick}
   >
     <slot name="icon" />
+    <span
+      slot="text"
+      style:--color={value?.color}
+      class:color={Boolean(value?.color)}>{text || ''}</span
+    >
     {#if withArrow && options.length > 1}
       <i
         role="button"
@@ -84,6 +91,11 @@
 <style lang="postcss">
   .wrapper {
     @apply relative inline-block h-min;
+  }
+
+  .color {
+    @apply inline-block w-6 h-6 p-1;
+    background-color: var(--color);
   }
 
   .arrow {

@@ -33,6 +33,13 @@ lacus vestibulum sed arcu non odio euismod lacinia.`
     { icon: 'fast_rewind', label: 'previous' },
     { icon: 'fast_forward', label: 'next' }
   ]
+  const colorOptions = [
+    { color: '#CB0A2A', label: 'Fire engine red' },
+    { color: '#B36B00', label: "Tiger's eye" },
+    { color: '#ADC2AD', label: 'Ash gray' },
+    { color: '#6DBEC6', label: 'Verdigris' },
+    { color: '#BA69B0', label: 'Sky magenta' }
+  ]
 </script>
 
 <ToolBox
@@ -77,11 +84,12 @@ lacus vestibulum sed arcu non odio euismod lacinia.`
     </div>
   </Tool>
   <Tool
-    name="Icon only"
+    name="With colors"
     props={{
-      text: null,
-      icon: 'headset_mic',
-      options: objectOptions
+      icon: 'colorize',
+      options: colorOptions,
+      value: colorOptions[2],
+      valueAsText: true
     }}
     let:props
     let:handleEvent
@@ -145,7 +153,6 @@ lacus vestibulum sed arcu non odio euismod lacinia.`
   <Tool
     name="Split clicks"
     props={{
-      text: null,
       icon: 'headset_mic',
       openOnClick: false,
       options: [

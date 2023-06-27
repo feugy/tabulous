@@ -12,6 +12,7 @@
   // only build options for valid candidates
   $: options = findCandidates(property, name, values).map(value => ({
     value,
+    color: property.description === 'color' ? value : undefined,
     label: translate(value),
     image: findImage(property, value)
   }))
@@ -49,7 +50,13 @@
 <label for={name}>{translate('name') + $_('labels.colon')}</label>
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <span on:click|preventDefault on:keyup|preventDefault>
-  <Dropdown id={name} {options} {value} on:select={handleSelection} />
+  <Dropdown
+    id={name}
+    icon={property.description === 'color' ? 'color_lens' : undefined}
+    {options}
+    {value}
+    on:select={handleSelection}
+  />
   {#if value?.image}
     <img src="{gameAssetsUrl}{value.image}" alt="" />
   {/if}

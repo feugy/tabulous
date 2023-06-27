@@ -35,7 +35,7 @@ exports[`Multiple choices 1`] = `
           <button
             aria-expanded="false"
             aria-haspopup="menu"
-            class="s-NMyTiX1zi6rz has-text"
+            class="has-text s-NMyTiX1zi6rz"
             id="side"
             role="combobox"
           >
@@ -46,7 +46,12 @@ exports[`Multiple choices 1`] = `
               <span
                 class="text s-NMyTiX1zi6rz"
               >
-                black
+                <span
+                  class="s-rGIwyFRHo8D9"
+                  slot="text"
+                >
+                  black
+                </span>
               </span>
               
                
@@ -87,7 +92,7 @@ exports[`Multiple choices 1`] = `
           <button
             aria-expanded="false"
             aria-haspopup="menu"
-            class="s-NMyTiX1zi6rz has-text"
+            class="has-text s-NMyTiX1zi6rz"
             id="position"
             role="combobox"
           >
@@ -98,7 +103,12 @@ exports[`Multiple choices 1`] = `
               <span
                 class="text s-NMyTiX1zi6rz"
               >
-                Trèfle
+                <span
+                  class="s-rGIwyFRHo8D9"
+                  slot="text"
+                >
+                  Trèfle
+                </span>
               </span>
               
                
@@ -123,7 +133,7 @@ exports[`Multiple choices 1`] = `
         <img
           alt=""
           class="s-AFGyPIu2lLfy"
-          src="http://localhost:3001/games/french-suited-card/images/clubs-1.svg"
+          src="http://localhost:3001/games/assets/images/clubs-1.1.svg"
         />
       </span>
       <!--&lt;Choice&gt;-->
@@ -192,18 +202,29 @@ exports[`Single choice 1`] = `
           <button
             aria-expanded="false"
             aria-haspopup="menu"
-            class="s-NMyTiX1zi6rz has-text"
+            class="has-text s-NMyTiX1zi6rz"
             id="side"
             role="combobox"
           >
             <div
               class="s-NMyTiX1zi6rz"
             >
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                color_lens
+              </span>
               
               <span
                 class="text s-NMyTiX1zi6rz"
               >
-                Noirs
+                <span
+                  class="s-rGIwyFRHo8D9 color"
+                  slot="text"
+                  style="--color: black;"
+                >
+                  
+                </span>
               </span>
               
                
