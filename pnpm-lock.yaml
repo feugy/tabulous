@@ -175,8 +175,8 @@ importers:
         specifier: ^0.11.0
         version: 0.11.0(svelte@4.0.0)
       '@atelier-wb/vite-plugin-atelier':
-        specifier: ^0.11.0
-        version: 0.11.0(vite@4.3.9)
+        specifier: ^0.11.1
+        version: 0.11.1(vite@4.3.9)
       '@babylonjs/core':
         specifier: ^6.9.0
         version: 6.9.0
@@ -427,8 +427,8 @@ packages:
     resolution: {integrity: sha512-pALYM5KQzORYeT2tWQuTBEHb4aGQXL4n4FMYPEoI9eXEGvu+B1MYSwSujQC5TMpTz6LbORqeKChgwdyjSR04EQ==}
     dev: true
 
-  /@atelier-wb/vite-plugin-atelier@0.11.0(vite@4.3.9):
-    resolution: {integrity: sha512-25dr3OOssiKWBSM5IDaZ++Ln/pVM7AoRyx2KqRiLfYTTgNx8ajTwJy9RPzHNHfcetrGBGMANHL8jTDF3bM+WiA==}
+  /@atelier-wb/vite-plugin-atelier@0.11.1(vite@4.3.9):
+    resolution: {integrity: sha512-VW3Aoj5I02zdpUrQmdW2/F94fzXN1smJoReqhzn3oow4voq6sioySLdLNXmJPqkDFkD8z6O/DsV+G3XFzxdf9w==}
     peerDependencies:
       vite: '>=3.1.0'
     dependencies:

@@ -18,7 +18,7 @@
   "devDependencies": {
     "@atelier-wb/svelte": "^0.11.0",
     "@atelier-wb/toolshot": "^0.11.0",
-    "@atelier-wb/vite-plugin-atelier": "^0.11.0",
+    "@atelier-wb/vite-plugin-atelier": "^0.11.1",
     "@babylonjs/core": "^6.9.0",
     "@babylonjs/gui": "^6.9.0",
     "@babylonjs/gui-editor": "^6.9.0",

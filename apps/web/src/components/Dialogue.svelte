@@ -46,6 +46,7 @@
 <Portal>
   {#if open}
     <div class="filter" />
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div
       class="backdrop"
       on:click={close}
@@ -57,6 +58,7 @@
           <Button icon="close" on:click={close} />
         </span>
       {/if}
+      <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
       <article
         role="dialog"
         in:fly|global={{ y: -100, duration }}
