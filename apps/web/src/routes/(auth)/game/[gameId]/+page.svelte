@@ -23,7 +23,7 @@
     visibleFeedbacks,
     visibleIndicators
   } from '@src/stores'
-  import { applyGameColors,isLobby, observeDimension } from '@src/utils'
+  import { applyGameColors, isLobby, observeDimension } from '@src/utils'
   import { onMount } from 'svelte'
   import { _ } from 'svelte-intl'
 
@@ -58,7 +58,7 @@
     document.documentElement.style.setProperty('--svg-highlight', $playerColor)
   }
 
-  onMount(async () => {
+  onMount(() => {
     engine = initEngine({ canvas, interaction, longTapDelay, hand })
     initIndicators({ engine, canvas, hand })
     askForGame()

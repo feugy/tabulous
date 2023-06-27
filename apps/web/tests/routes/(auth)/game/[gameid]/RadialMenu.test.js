@@ -1,5 +1,5 @@
 import RadialMenu from '@src/routes/(auth)/game/[gameId]/RadialMenu.svelte'
-import { fireEvent, render, screen } from '@testing-library/svelte'
+import { fireEvent, render, screen, waitFor } from '@testing-library/svelte'
 import html from 'svelte-htm'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -15,11 +15,11 @@ describe('/game/[gameId] Radial Menu component', () => {
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 
-  it('displays message without items', () => {
+  it('displays message without items', async () => {
     renderComponent({ items: [] })
-    const menu = screen.getByRole('menu')
-    expect(menu).toBeInTheDocument()
-    expect(menu.previousElementSibling).toHaveClass('no-actions')
+    await waitFor(() => {
+      expect(screen.queryByRole('menu')).toHaveClass('no-actions')
+    })
     expect(screen.queryAllByRole('button')).toHaveLength(0)
   })
 

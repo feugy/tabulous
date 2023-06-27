@@ -47,6 +47,7 @@
 </script>
 
 <label for={name}>{translate('name') + $_('labels.colon')}</label>
+<!-- svelte-ignore a11y-no-static-element-interactions -->
 <span on:click|preventDefault on:keyup|preventDefault>
   <Dropdown id={name} {options} {value} on:select={handleSelection} />
   {#if value?.image}

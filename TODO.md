@@ -2,7 +2,6 @@
 
 ## Road to beta
 
-- update svelte
 - replace material icon font with https://github.com/marella/material-design-icons/tree/main/svg#readme
 - select player color in games
 - interface in English

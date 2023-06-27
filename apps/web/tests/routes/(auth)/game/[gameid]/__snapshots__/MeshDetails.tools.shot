@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Routes/game/[gameId]/Mesh Details 1`] = `
-<figure
+<button
   class="s-Yswckynttum3 open"
 >
   <img
@@ -9,5 +9,5 @@ exports[`Routes/game/[gameId]/Mesh Details 1`] = `
     class="s-Yswckynttum3"
     src="http://localhost:3001/games/assets/images/hearts-12.1.svg"
   />
-</figure>
+</button>
 `;

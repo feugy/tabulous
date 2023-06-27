@@ -7,6 +7,7 @@ import {
   listCatalog,
   listFriends,
   listGames,
+  receiveGameListUpdates,
   toastError,
   toastInfo
 } from '@src/stores'
@@ -154,6 +155,7 @@ describe('/home route', () => {
     listCatalog.mockResolvedValueOnce(catalog)
     listGames.mockResolvedValueOnce(games)
     listFriends.mockReturnValueOnce(readable([]))
+    receiveGameListUpdates.mockImplementation(games => readable(games))
   })
 
   async function renderWithLoad(gameName) {

@@ -174,7 +174,7 @@
   <ul
     role="menu"
     tabindex="-1"
-    transition:slide
+    transition:slide|global
     on:introstart={handleVisible}
     on:keydown={handleMenuKeyDown}
     on:focus={evt => handleFocus(evt, ref.dataset.focusNext !== 'false')}

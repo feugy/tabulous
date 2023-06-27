@@ -10,6 +10,7 @@
   }
 </script>
 
+<!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
   style="top: {screenPosition.y}px; left: {screenPosition.x}px; --color:{color}; pointer-events:{onClick
     ? 'auto'

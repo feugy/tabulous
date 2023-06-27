@@ -35,19 +35,19 @@
 <svelte:window on:keydown={handleKey} />
 
 {#if open}
-  <figure
+  <button
     class:open
     on:click={handleClose}
     on:keydown={handleKey}
     on:pointerdown|stopPropagation
   >
     <img src="{gameAssetsUrl}{mesh?.image}" alt="" />
-  </figure>
+  </button>
 {/if}
 
 <style lang="postcss">
-  figure {
-    @apply invisible flex absolute z-10 inset-0 justify-center pointer-events-none py-[5%] px-0;
+  button {
+    @apply invisible flex absolute z-10 inset-0 w-full justify-center pointer-events-none py-[5%] px-0;
 
     &.open {
       @apply visible pointer-events-auto;
