@@ -18,10 +18,11 @@
 
   $: iconOnly = !valueAsText && !text
   $: if (valueAsText) {
-    text =
-      value && !value.color && options?.includes(value)
-        ? value.label || value
-        : null
+    text = value?.color
+      ? ' '
+      : value && options?.includes(value)
+      ? value.label || value
+      : null
   }
 
   function handleClick() {
@@ -50,6 +51,7 @@
 <span class="wrapper" bind:this={anchor}>
   <Button
     {...$$restProps}
+    {text}
     role="combobox"
     aria-haspopup="menu"
     aria-expanded={open}
@@ -94,7 +96,7 @@
   }
 
   .color {
-    @apply inline-block w-6 h-6 p-1;
+    @apply inline-block w-6 h-[1.35rem];
     background-color: var(--color);
   }
 

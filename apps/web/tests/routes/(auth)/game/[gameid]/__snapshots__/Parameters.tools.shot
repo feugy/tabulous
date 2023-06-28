@@ -35,7 +35,7 @@ exports[`Multiple choices 1`] = `
           <button
             aria-expanded="false"
             aria-haspopup="menu"
-            class="has-text s-NMyTiX1zi6rz"
+            class="s-NMyTiX1zi6rz has-text"
             id="side"
             role="combobox"
           >
@@ -92,7 +92,7 @@ exports[`Multiple choices 1`] = `
           <button
             aria-expanded="false"
             aria-haspopup="menu"
-            class="has-text s-NMyTiX1zi6rz"
+            class="s-NMyTiX1zi6rz has-text"
             id="position"
             role="combobox"
           >
@@ -202,7 +202,7 @@ exports[`Single choice 1`] = `
           <button
             aria-expanded="false"
             aria-haspopup="menu"
-            class="has-text s-NMyTiX1zi6rz"
+            class="s-NMyTiX1zi6rz has-text"
             id="side"
             role="combobox"
           >
@@ -223,7 +223,7 @@ exports[`Single choice 1`] = `
                   slot="text"
                   style="--color: black;"
                 >
-                  
+                   
                 </span>
               </span>
               

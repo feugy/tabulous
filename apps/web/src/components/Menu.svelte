@@ -246,7 +246,7 @@
     }
 
     > .color {
-      @apply inline-block w-full h-6 p-1;
+      @apply inline-block w-full h-6;
       background-color: var(--color);
     }
   }

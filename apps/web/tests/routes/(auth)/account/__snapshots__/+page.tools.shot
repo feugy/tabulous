@@ -58,7 +58,7 @@ exports[`Manual account 1`] = `
           <button
             aria-expanded="false"
             aria-haspopup="menu"
-            class="transparent has-text s-NMyTiX1zi6rz"
+            class="transparent s-NMyTiX1zi6rz"
             role="combobox"
           >
             <div
@@ -324,7 +324,7 @@ exports[`OAuth account 1`] = `
           <button
             aria-expanded="false"
             aria-haspopup="menu"
-            class="transparent has-text s-NMyTiX1zi6rz"
+            class="transparent s-NMyTiX1zi6rz"
             role="combobox"
           >
             <div

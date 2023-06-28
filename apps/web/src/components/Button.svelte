@@ -11,7 +11,7 @@
   {...$$restProps}
   class:primary
   class:transparent
-  class:has-text={Boolean(text) || $$slots.text}
+  class:has-text={Boolean(text)}
   bind:this={ref}
   on:click
   on:keyup
@@ -21,9 +21,8 @@
   ><div>
     {#if icon}<span class="material-icons">{icon}</span
       >{:else if $$slots.icon}<span class="icon"><slot name="icon" /></span
-      >{/if}{#if text}<span class="text">{text}</span
-      >{:else if $$slots.text}<span class="text"><slot name="text" /></span
-      >{/if}<slot />
+      >{/if}{#if $$slots.text}<span class="text"><slot name="text" /></span
+      >{:else if text}<span class="text">{text}</span>{/if}<slot />
   </div>
   {#if badge != undefined}
     <span class="badge">{badge > 999 ? `+999` : badge}</span>
@@ -81,6 +80,10 @@
     @apply rounded-full;
     &::before {
       @apply rounded-full;
+    }
+
+    .text {
+      @apply m-0;
     }
   }
 
