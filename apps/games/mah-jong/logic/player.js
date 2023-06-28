@@ -1,6 +1,24 @@
-import { buildCameraPosition } from '@tabulous/server/src/utils/index.js'
+import {
+  buildCameraPosition,
+  findAvailableValues
+} from '@tabulous/server/src/utils/index.js'
 
 import { buildSticks } from './builders/index.js'
+import { colors } from './constants.js'
+
+export function askForParameters({ game: { preferences } }) {
+  return {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      color: {
+        description: 'color',
+        enum: findAvailableValues(preferences, 'color', colors.players),
+        metadata: { fr: { name: 'Couleur' } }
+      }
+    }
+  }
+}
 
 /**
  * Set player angle and camera position based on their rank:
