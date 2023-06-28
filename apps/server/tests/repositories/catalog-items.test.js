@@ -17,7 +17,8 @@ describe('Catalog Items repository', () => {
       name: 'belote',
       build: expect.any(Function),
       addPlayer: expect.any(Function),
-      zoomSpec: { min: 5, max: 50 }
+      zoomSpec: { min: 5, max: 50 },
+      colors: { players: ['red', 'green', 'blue'] }
     },
     {
       name: 'draughts',
