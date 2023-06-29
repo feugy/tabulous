@@ -65,6 +65,16 @@ exports[`Manual account 1`] = `
               class="s-NMyTiX1zi6rz"
             >
               
+              <span
+                class="text s-NMyTiX1zi6rz"
+              >
+                <span
+                  class="s-rGIwyFRHo8D9"
+                  slot="text"
+                >
+                  
+                </span>
+              </span>
               
               <figure
                 class="s-engCJu8q-fNe"
@@ -321,6 +331,16 @@ exports[`OAuth account 1`] = `
               class="s-NMyTiX1zi6rz"
             >
               
+              <span
+                class="text s-NMyTiX1zi6rz"
+              >
+                <span
+                  class="s-rGIwyFRHo8D9"
+                  slot="text"
+                >
+                  
+                </span>
+              </span>
               
               <figure
                 class="s-engCJu8q-fNe"

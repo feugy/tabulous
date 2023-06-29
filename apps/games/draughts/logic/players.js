@@ -1,27 +1,22 @@
-import { buildCameraPosition } from '@tabulous/server/src/utils/index.js'
+import {
+  buildCameraPosition,
+  findAvailableValues
+} from '@tabulous/server/src/utils/index.js'
 
 import { blackId, cameraPositions, whiteId } from './constants.js'
 
 export function askForParameters({ game: { preferences } }) {
-  const usedValues = preferences.map(({ side }) => side)
-  return usedValues.length
+  const sides = findAvailableValues(preferences, 'side', [whiteId, blackId])
+  return sides.length <= 1
     ? null
     : {
         type: 'object',
         additionalProperties: false,
         properties: {
           side: {
-            type: 'string',
-            enum: [whiteId, blackId].filter(
-              value => !usedValues.includes(value)
-            ),
-            metadata: {
-              fr: {
-                name: 'Couleur',
-                [whiteId]: 'Blancs',
-                [blackId]: 'Noirs'
-              }
-            }
+            description: 'color',
+            enum: sides,
+            metadata: { fr: { name: 'Couleur' } }
           }
         },
         required: ['side']
@@ -39,6 +34,8 @@ export function addPlayer(game, player, parameters) {
       : parameters.side
   // stores preferences for the next player added.
   preferences[preferences.length - 1].side = side
+  preferences[preferences.length - 1].color =
+    game.colors.players[side === whiteId ? 0 : 1]
   // set camera based on selected side.
   cameras.push(
     buildCameraPosition({

@@ -419,10 +419,12 @@ async function enrichWithPlayer({ descriptor, game, guest, parameters }) {
   if (descriptor) {
     game.preferences.push({
       playerId: guest.id,
-      color: pickRandom(
-        colors,
-        game.preferences.map(({ color }) => color)
-      )
+      color:
+        parameters?.color ??
+        pickRandom(
+          game.colors?.players ?? colors,
+          game.preferences.map(({ color }) => color)
+        )
     })
   }
   if (!descriptor?.addPlayer) {

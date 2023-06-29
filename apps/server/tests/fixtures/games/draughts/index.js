@@ -12,15 +12,21 @@ export function askForParameters({ game: { preferences } }) {
     type: 'object',
     additionalProperties: false,
     properties: {
+      color: {
+        enum: ['red', 'green', 'blue'],
+        description: 'color',
+        metadata: {
+          fr: { name: 'Couleur', red: 'rouge', blue: 'bleu', green: 'vert' }
+        }
+      },
       side: {
-        type: 'string',
         enum: ['white', 'black'].filter(value => !usedValues.includes(value)),
         metadata: {
-          fr: { name: 'Couleur', white: 'Blancs', black: 'Noirs' }
+          fr: { name: 'Coté', white: 'Blancs', black: 'Noirs' }
         }
       }
     },
-    required: ['side']
+    required: ['side', 'color']
   }
 }
 

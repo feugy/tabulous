@@ -275,7 +275,11 @@ describe('given a subscription to game lists and an initialized repository', () 
           hands: [{ playerId: player.id, meshes: [] }],
           preferences: [{ playerId: player.id, color: expect.any(String) }]
         }
-        expect(await joinGame(game.id, player)).toEqual(expectedGame)
+        const joinedGame = await joinGame(game.id, player)
+        expect(joinedGame).toEqual(expectedGame)
+        expect(joinedGame.preferences[0].color).toMatch(
+          new RegExp(game.colors.players.join('|'))
+        )
         await setTimeout(50)
         expect(updates).toEqual([
           {
@@ -327,7 +331,8 @@ describe('given a subscription to game lists and an initialized repository', () 
           messages: [],
           hands: [{ playerId: player.id, meshes: [] }],
           preferences: [{ playerId: player.id, color: expect.any(String) }],
-          zoomSpec: { min: 5, max: 50 }
+          zoomSpec: { min: 5, max: 50 },
+          colors: { players: ['red', 'green', 'blue'] }
         })
         await setTimeout(50)
         expect(updates).toEqual([
@@ -495,7 +500,8 @@ describe('given a subscription to game lists and an initialized repository', () 
             guestIds: [player.id],
             playerIds: [],
             zoomSpec: game.zoomSpec,
-            preferences: []
+            preferences: [],
+            colors: { players: ['red', 'green', 'blue'] }
           }
           expect(await promoteGame(lobby.id, kind, player)).toEqual(
             expectedGame
@@ -545,7 +551,8 @@ describe('given a subscription to game lists and an initialized repository', () 
             guestIds: [player.id, peer.id],
             playerIds: [],
             zoomSpec: game.zoomSpec,
-            preferences: []
+            preferences: [],
+            colors: { players: ['red', 'green', 'blue'] }
           }
           expect(await promoteGame(lobby.id, kind, player)).toEqual(
             expectedGame
@@ -577,7 +584,8 @@ describe('given a subscription to game lists and an initialized repository', () 
             guestIds: [player.id, peer2.id],
             playerIds: [],
             zoomSpec: game.zoomSpec,
-            preferences: []
+            preferences: [],
+            colors: { players: ['red', 'green', 'blue'] }
           }
           expect(await promoteGame(lobby.id, kind, peer2)).toEqual(expectedGame)
           await setTimeout(50)
@@ -617,7 +625,8 @@ describe('given a subscription to game lists and an initialized repository', () 
             guestIds: [player.id],
             playerIds: [],
             zoomSpec: game.zoomSpec,
-            preferences: []
+            preferences: [],
+            colors: { players: ['red', 'green', 'blue'] }
           }
           expect(await promoteGame(lobby.id, kind, player)).toEqual(
             expectedGame
@@ -993,13 +1002,19 @@ describe('given a subscription to game lists and an initialized repository', () 
     const schema = {
       type: 'object',
       additionalProperties: false,
-      required: ['side'],
+      required: ['side', 'color'],
       properties: {
+        color: {
+          enum: ['red', 'green', 'blue'],
+          description: 'color',
+          metadata: {
+            fr: { name: 'Couleur', red: 'rouge', blue: 'bleu', green: 'vert' }
+          }
+        },
         side: {
-          type: 'string',
           enum: ['white', 'black'],
           metadata: {
-            fr: { name: 'Couleur', white: 'Blancs', black: 'Noirs' }
+            fr: { name: 'Coté', white: 'Blancs', black: 'Noirs' }
           }
         }
       }
@@ -1025,7 +1040,11 @@ describe('given a subscription to game lists and an initialized repository', () 
 
       it('returns error and game parameters on invalid parameters', async () => {
         expect(
-          await joinGame(game.id, player, { side: 'red', foo: 'bar' })
+          await joinGame(game.id, player, {
+            side: 'red',
+            foo: 'bar',
+            color: 'blue'
+          })
         ).toEqual({
           schema,
           error:
@@ -1036,14 +1055,13 @@ describe('given a subscription to game lists and an initialized repository', () 
 
       it('applies provided parameters', async () => {
         const side = 'black'
-        expect(await joinGame(game.id, player, { side })).toEqual({
+        const color = 'blue'
+        expect(await joinGame(game.id, player, { side, color })).toEqual({
           ...game,
           availableSeats: 1,
           guestIds: [],
           playerIds: [player.id],
-          preferences: [
-            { playerId: player.id, color: expect.any(String), side }
-          ]
+          preferences: [{ playerId: player.id, color, side }]
         })
       })
     })

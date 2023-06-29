@@ -16,6 +16,7 @@
         properties: {
           side: {
             enum: ['black', 'white'],
+            description: 'color',
             metadata: {
               fr: {
                 name: 'Couleur',
@@ -53,9 +54,9 @@
                 hearts: 'Coeur'
               },
               images: {
-                clubs: '/french-suited-card/images/clubs-1.svg',
-                spades: '/french-suited-card/images/spades-1.svg',
-                hearts: '/french-suited-card/images/hearts-1.svg'
+                clubs: '/assets/images/clubs-1.1.svg',
+                spades: '/assets/images/spades-1.1.svg',
+                hearts: '/assets/images/hearts-1.1.svg'
               }
             }
           }

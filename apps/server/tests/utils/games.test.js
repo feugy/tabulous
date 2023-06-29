@@ -10,6 +10,7 @@ import {
   drawInHand,
   enrichAssets,
   findAnchor,
+  findAvailableValues,
   findMesh,
   findOrCreateHand,
   getParameterSchema,
@@ -1086,6 +1087,54 @@ describe('getParameterSchema()', () => {
       clubs: `/clubs.png`,
       spades: `#spades.png`
     })
+  })
+})
+
+describe('findAvailableValues()', () => {
+  const colors = ['red', 'green', 'blue']
+
+  it('returns all possible values when there are no preferences', () => {
+    expect(findAvailableValues([], 'color', colors)).toEqual(colors)
+  })
+
+  it('returns nothing when all possible values were used', () => {
+    expect(
+      findAvailableValues(
+        colors.map(color => ({ color })),
+        'color',
+        colors
+      )
+    ).toEqual([])
+  })
+
+  it('returns available values', () => {
+    expect(
+      findAvailableValues(
+        [
+          { color: 'red' },
+          { color: 'lime' },
+          { color: 'azure' },
+          { color: 'blue' }
+        ],
+        'color',
+        colors
+      )
+    ).toEqual(['green'])
+  })
+
+  it('ignores unknown preference name', () => {
+    expect(
+      findAvailableValues(
+        [
+          { color: 'red' },
+          { color: 'lime' },
+          { color: 'azure' },
+          { color: 'blue' }
+        ],
+        'unknown',
+        colors
+      )
+    ).toEqual(colors)
   })
 })
 

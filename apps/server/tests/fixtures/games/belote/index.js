@@ -18,3 +18,7 @@ export function addPlayer(game, player) {
 }
 
 export const zoomSpec = { min: 5, max: 50 }
+
+export const colors = {
+  players: ['red', 'green', 'blue']
+}

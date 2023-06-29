@@ -25,8 +25,10 @@ export const tableSpec = {
 
 export const zoomSpec = { min: 20 }
 
+// https://coolors.co/ebd8c3-fbe0e0-ffeeee-bd5d2c-6d938e
 export const colors = {
   base: '#ebd8c3',
   primary: '#fbe0e0',
-  secondary: '#ffeeee'
+  secondary: '#ffeeee',
+  players: ['#bd5d2c', '#6d938e']
 }

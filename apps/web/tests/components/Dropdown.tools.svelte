@@ -33,6 +33,13 @@ lacus vestibulum sed arcu non odio euismod lacinia.`
     { icon: 'fast_rewind', label: 'previous' },
     { icon: 'fast_forward', label: 'next' }
   ]
+  const colorOptions = [
+    { color: '#CB0A2A', label: 'Fire engine red' },
+    { color: '#B36B00', label: "Tiger's eye" },
+    { color: '#ADC2AD', label: 'Ash gray' },
+    { color: '#6DBEC6', label: 'Verdigris' },
+    { color: '#BA69B0', label: 'Sky magenta' }
+  ]
 </script>
 
 <ToolBox
@@ -46,7 +53,7 @@ lacus vestibulum sed arcu non odio euismod lacinia.`
     icon: 'emoji_people',
     options: [
       'Hello! (this is in English)',
-      `Salut ! (c'est en français)`,
+      "Salut ! (c'est en français)",
       'Hallo ! (das ist im Deutsch)'
     ]
   }}
@@ -65,7 +72,29 @@ lacus vestibulum sed arcu non odio euismod lacinia.`
     </div>
   </Tool>
   <Tool name="Right aligned" let:props let:handleEvent>
-    <div class="text-right p-8">
+    <div class="p-8" style="text-align: right;">
+      <div>{headerText}</div>
+      <Dropdown
+        {...props}
+        on:click={handleEvent}
+        on:select={handleEvent}
+        on:close={handleEvent}
+      />
+      <div>{footerText}</div>
+    </div>
+  </Tool>
+  <Tool
+    name="With colors"
+    props={{
+      icon: 'colorize',
+      options: colorOptions,
+      value: colorOptions[2],
+      valueAsText: true
+    }}
+    let:props
+    let:handleEvent
+  >
+    <div>
       <div>{headerText}</div>
       <Dropdown
         {...props}
@@ -145,7 +174,6 @@ lacus vestibulum sed arcu non odio euismod lacinia.`
   <Tool
     name="Split clicks"
     props={{
-      text: null,
       icon: 'headset_mic',
       openOnClick: false,
       options: [
