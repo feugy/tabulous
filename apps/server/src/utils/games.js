@@ -466,3 +466,18 @@ export async function getParameterSchema({ descriptor, game, player }) {
   }
   return schema ? { ...game, schema } : null
 }
+
+/**
+ * Returns all possible values of a preference that were not picked by other players.
+ * For example: `findAvailableValues(preferences, 'color', colors.players)` returns available colors.
+ *
+ * @param {object[]} preferences - list of player preferences objects.
+ * @param {string} name - name of the preference considered.
+ * @param {any[]} possibleValues - list of possible values.
+ * @returns {any[]} filtered possible values (could be empty).
+ */
+export function findAvailableValues(preferences, name, possibleValues) {
+  return possibleValues.filter(value =>
+    preferences.every(pref => value !== pref[name])
+  )
+}

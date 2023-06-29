@@ -3,7 +3,6 @@
 ## Road to beta
 
 - replace material icon font with https://github.com/marella/material-design-icons/tree/main/svg#readme
-- select player color in games
 - interface in English
 - server logging (warning on invalid descriptors) + log file rotation
 - automerge.js
@@ -280,3 +279,11 @@ How to export from blender to Babylon?
 - do not export materials
 
 Pnpm has a super nice feature: interactive dependency update: `pnpm update -i --latest -r`
+
+For choosing game colors:
+
+1. use https://coolors.co/ and stick color hex codes (no '#' prefix) separated with '-'.
+2. make sure player colors have good contrast with white text.
+3. make sure player colors have sufficient contrast with table texture/color.
+4. try as much as possible to have player colors with enough distance, to avoid confusion.
+5. black is a great player color! Transparent colors work as well.
