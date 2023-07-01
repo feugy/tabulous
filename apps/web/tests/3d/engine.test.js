@@ -261,6 +261,30 @@ describe('createEngine()', () => {
       expect(ordering).toEqual(['beforeDispose', 'dispose'])
     })
 
+    it('can load game specific actions', async () => {
+      await engine.load(
+        {
+          meshes: [],
+          hands: [],
+          actions: { button1: ['rotate', 'pop'], button3: ['random'] }
+        },
+        { playerId, colorByPlayerId, preferences: {} },
+        true
+      )
+
+      expect(engine.actionNamesByButton).toMatchInlineSnapshot(`
+        Map {
+          "button1" => [
+            "rotate",
+            "pop",
+          ],
+          "button3" => [
+            "random",
+          ],
+        }
+      `)
+    })
+
     describe('given some loaded meshes', () => {
       beforeEach(async () => {
         const duration = 200
@@ -307,11 +331,12 @@ describe('createEngine()', () => {
         expect(updateColors).toHaveBeenCalledTimes(1)
       })
 
-      it('has actionIds map by button and key', () => {
+      it('has default actionIds map by button and key', () => {
         expect(engine.actionNamesByButton).toMatchInlineSnapshot(`
           Map {
             "button1" => [
               "flip",
+              "random",
             ],
             "button2" => [
               "rotate",
