@@ -1,4 +1,5 @@
 import { controlManager } from '../managers/control'
+import { actionNames } from '../utils/actions'
 import {
   attachFunctions,
   attachProperty,
@@ -82,7 +83,7 @@ export class DetailBehavior {
       throw new Error('Can not restore state without mesh')
     }
     this.state = { frontImage, backImage }
-    attachFunctions(this, 'detail')
+    attachFunctions(this, actionNames.detail)
     attachProperty(this, 'frontImage', () => this.state.frontImage)
     attachProperty(this, 'backImage', () => this.state.backImage)
   }

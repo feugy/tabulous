@@ -4,6 +4,7 @@ import { Observable } from '@babylonjs/core/Misc/observable.js'
 
 import { makeLogger } from '../../utils/logger'
 import { sleep } from '../../utils/time'
+import { actionNames } from '../utils/actions'
 import { animateMove } from '../utils/behaviors'
 import { sortByElevation } from '../utils/gravity'
 import { isAboveTable, screenToGround } from '../utils/vector'
@@ -86,7 +87,7 @@ class MoveManager {
     this.inProgress = true
     const actionObserver = controlManager.onActionObservable.add(
       ({ meshId, fn }) => {
-        if (fn === 'draw') {
+        if (fn === actionNames.draw) {
           const mesh = moved.find(({ id }) => id === meshId)
           if (mesh && mesh.getScene() !== this.scene) {
             const idx = moved.indexOf(mesh)

@@ -1,6 +1,8 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import { Observable } from '@babylonjs/core/Misc/observable.js'
 
+import { actionNames } from '../utils/actions'
+
 /**
  * @typedef {object} Action applied action to a given mesh:
  * @property {string} meshId - modified mesh id.
@@ -114,7 +116,8 @@ class ControlManager {
         ...actionProps,
         meshId: mesh.id,
         fromHand:
-          this.handScene === mesh.getScene() && actionProps.fn !== 'draw'
+          this.handScene === mesh.getScene() &&
+          actionProps.fn !== actionNames.draw
       })
       this.onControlledObservable.notifyObservers(this.controlables)
     }

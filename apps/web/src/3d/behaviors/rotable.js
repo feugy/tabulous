@@ -2,6 +2,7 @@ import { Vector3 } from '@babylonjs/core/Maths/math'
 
 import { makeLogger } from '../../utils/logger'
 import { controlManager } from '../managers/control'
+import { actionNames } from '../utils/actions'
 import {
   attachFunctions,
   attachProperty,
@@ -107,7 +108,12 @@ export class RotateBehavior extends AnimateBehavior {
       rotation *= -1
     }
 
-    controlManager.record({ mesh, fn: 'rotate', args: [rotation], duration })
+    controlManager.record({
+      mesh,
+      fn: actionNames.rotate,
+      args: [rotation],
+      duration
+    })
 
     await runAnimation(
       this,
@@ -155,7 +161,7 @@ export class RotateBehavior extends AnimateBehavior {
     this.mesh.setParent(null)
     this.mesh.rotation.y = angle
     this.mesh.setParent(parent)
-    attachFunctions(this, 'rotate')
+    attachFunctions(this, actionNames.rotate)
     attachProperty(this, 'angle', () => this.state.angle)
   }
 }

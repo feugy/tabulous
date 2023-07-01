@@ -1,6 +1,7 @@
 import { makeLogger } from '../../utils/logger'
 import { controlManager } from '../managers/control'
 import { indicatorManager } from '../managers/indicator'
+import { actionNames } from '../utils/actions'
 import { attachFunctions, attachProperty } from '../utils/behaviors'
 import { LockBehaviorName, MoveBehaviorName } from './names'
 
@@ -65,7 +66,7 @@ export class LockBehavior {
     if (!mesh) {
       return
     }
-    controlManager.record({ mesh, fn: 'toggleLock' })
+    controlManager.record({ mesh, fn: actionNames.toggleLock })
     indicatorManager.registerFeedback({
       action: state.isLocked ? 'unlock' : 'lock',
       position: mesh.absolutePosition.asArray()
@@ -86,7 +87,7 @@ export class LockBehavior {
     }
     this.state = { isLocked }
     setEnabled(this.mesh, MoveBehaviorName, !isLocked)
-    attachFunctions(this, 'toggleLock')
+    attachFunctions(this, actionNames.toggleLock)
     attachProperty(this, 'isLocked', () => this.state.isLocked)
   }
 }

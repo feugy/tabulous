@@ -28,6 +28,7 @@ describe('createEngine()', () => {
   const applySelection = vi.spyOn(selectionManager, 'apply')
   const targetInit = vi.spyOn(targetManager, 'init')
   const handInit = vi.spyOn(handManager, 'init')
+  const translate = key => key
 
   beforeEach(() => {
     Logger.LogLevels = 0
@@ -46,7 +47,8 @@ describe('createEngine()', () => {
       interaction,
       hand,
       doubleTapDelay,
-      longTapDelay
+      longTapDelay,
+      translate
     })
     expect(engine.enableOfflineSupport).toBe(false)
     expect(engine.inputElement).toBeUndefined()
@@ -63,6 +65,8 @@ describe('createEngine()', () => {
     expect(handInit).not.toHaveBeenCalled()
     expect(updateColors).not.toHaveBeenCalled()
     expect(applySelection).not.toHaveBeenCalled()
+    expect(engine.actionNamesByButton).toEqual(new Map([]))
+    expect(engine.actionNamesByKey).toEqual(new Map([]))
   })
   // TODO input manager stopAll()
 
@@ -80,7 +84,8 @@ describe('createEngine()', () => {
         interaction,
         hand,
         doubleTapDelay: 100,
-        longTapDelay: 200
+        longTapDelay: 200,
+        translate
       })
       loadingObserver = engine.onLoadingObservable.add(receiveLoading)
       displayLoadingUI = vi.spyOn(engine, 'displayLoadingUI')
@@ -300,6 +305,58 @@ describe('createEngine()', () => {
           updatedColorByPlayerId
         )
         expect(updateColors).toHaveBeenCalledTimes(1)
+      })
+
+      it('has actionIds map by button and key', () => {
+        expect(engine.actionNamesByButton).toMatchInlineSnapshot(`
+          Map {
+            "button1" => [
+              "flip",
+            ],
+            "button2" => [
+              "rotate",
+            ],
+            "button3" => [
+              "detail",
+            ],
+          }
+        `)
+        expect(engine.actionNamesByKey).toMatchInlineSnapshot(`
+          Map {
+            "shortcuts.flip" => [
+              "flip",
+            ],
+            "shortcuts.rotate" => [
+              "rotate",
+            ],
+            "shortcuts.toggleLock" => [
+              "toggleLock",
+            ],
+            "shortcuts.draw" => [
+              "draw",
+            ],
+            "shortcuts.shuffle" => [
+              "reorder",
+            ],
+            "shortcuts.push" => [
+              "push",
+              "increment",
+            ],
+            "shortcuts.pop" => [
+              "pop",
+              "decrement",
+            ],
+            "shortcuts.random" => [
+              "random",
+            ],
+            "shortcuts.set-face" => [
+              "setFace",
+            ],
+            "shortcuts.detail" => [
+              "detail",
+            ],
+          }
+        `)
       })
     })
   })

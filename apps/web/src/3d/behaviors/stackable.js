@@ -7,6 +7,7 @@ import { indicatorManager } from '../managers/indicator'
 import { moveManager } from '../managers/move'
 import { selectionManager } from '../managers/selection'
 import { targetManager } from '../managers/target'
+import { actionNames } from '../utils/actions'
 import {
   animateMove,
   attachFunctions,
@@ -121,7 +122,7 @@ export class StackBehavior extends TargetBehavior {
       ({ meshId, fn }) => {
         const { stack } = this
         if (
-          fn === 'draw' &&
+          fn === actionNames.draw &&
           stack.length > 1 &&
           stack[stack.length - 1].id === meshId
         ) {
@@ -184,7 +185,7 @@ export class StackBehavior extends TargetBehavior {
     if (!this.inhibitControl) {
       controlManager.record({
         mesh: stack[0],
-        fn: 'push',
+        fn: actionNames.push,
         args: [meshId, immediate],
         duration
       })
@@ -231,7 +232,7 @@ export class StackBehavior extends TargetBehavior {
     attach()
     if (!this.inhibitControl) {
       indicatorManager.registerFeedback({
-        action: 'push',
+        action: actionNames.push,
         position: pushed.absolutePosition.asArray()
       })
     }
@@ -291,7 +292,7 @@ export class StackBehavior extends TargetBehavior {
     // note: all mesh in stack are uncontrollable, so we pass the poped mesh id
     controlManager.record({
       mesh: stack[0],
-      fn: 'pop',
+      fn: actionNames.pop,
       args: [count, withMove],
       duration
     })
@@ -299,7 +300,7 @@ export class StackBehavior extends TargetBehavior {
       await Promise.all(moves)
     }
     indicatorManager.registerFeedback({
-      action: 'pop',
+      action: actionNames.pop,
       position: poped[0].absolutePosition.asArray()
     })
     return poped
@@ -331,7 +332,7 @@ export class StackBehavior extends TargetBehavior {
 
     controlManager.record({
       mesh: old[0],
-      fn: 'reorder',
+      fn: actionNames.reorder,
       args: [ids, animate]
     })
 
@@ -483,7 +484,7 @@ export class StackBehavior extends TargetBehavior {
    */
   async flipAll() {
     const base = this.base ?? this
-    controlManager.record({ mesh: base.stack[0], fn: 'flipAll' })
+    controlManager.record({ mesh: base.stack[0], fn: actionNames.flipAll })
 
     const ignored = []
     for (const mesh of base.stack) {
@@ -565,7 +566,14 @@ export class StackBehavior extends TargetBehavior {
     }
     this.inhibitControl = false
     this.isReordering = false
-    attachFunctions(this, 'push', 'pop', 'reorder', 'flipAll', 'canPush')
+    attachFunctions(
+      this,
+      actionNames.push,
+      actionNames.pop,
+      actionNames.reorder,
+      actionNames.flipAll,
+      'canPush'
+    )
     attachProperty(this, 'stack', () => this.stack)
   }
 }

@@ -20,7 +20,8 @@ import {
   inputManager,
   selectionManager
 } from '../3d/managers'
-import { actionIds, attachInputs } from '../utils'
+import { actionNames } from '../3d/utils/actions'
+import { attachInputs } from '../utils'
 import {
   connected,
   lastDisconnectedId,
@@ -169,6 +170,7 @@ export function initEngine({
   const engine = createEngine({
     doubleTapDelay,
     longTapDelay,
+    translate: get(translate$),
     ...engineProps
   })
   engine.onEndFrameObservable.add(() => fps$.next(engine.getFps().toFixed()))
@@ -207,7 +209,6 @@ export function initEngine({
   // implements game interaction model
   const subscriptions = attachInputs({
     doubleTapDelay,
-    actionIdsByKey: buildShortcutMap(),
     actionMenuProps$,
     engine
   })
@@ -220,7 +221,7 @@ export function initEngine({
       } else if (Array.isArray(data?.selectedIds)) {
         applyRemoteSelection(data.selectedIds, playerId)
       } else if (data?.meshId) {
-        if (data.fn === 'draw') {
+        if (data.fn === actionNames.draw) {
           handManager.applyDraw(...data.args, playerId)
         } else {
           controlManager.apply(data, true)
@@ -300,20 +301,4 @@ export function restoreCamera(...args) {
  */
 export function loadCameraSaves(...args) {
   cameraManager.loadSaves(...args)
-}
-
-function buildShortcutMap() {
-  const translate = get(translate$)
-  return new Map([
-    [translate('shortcuts.flip'), [actionIds.flip]],
-    [translate('shortcuts.rotate'), [actionIds.rotate]],
-    [translate('shortcuts.toggleLock'), [actionIds.toggleLock]],
-    [translate('shortcuts.draw'), [actionIds.draw]],
-    [translate('shortcuts.shuffle'), [actionIds.shuffle]],
-    [translate('shortcuts.push'), [actionIds.push, actionIds.increment]],
-    [translate('shortcuts.pop'), [actionIds.pop, actionIds.decrement]],
-    [translate('shortcuts.random'), [actionIds.random]],
-    [translate('shortcuts.set-face'), [actionIds.setFace]],
-    [translate('shortcuts.detail'), [actionIds.detail]]
-  ])
 }

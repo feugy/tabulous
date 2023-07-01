@@ -17,6 +17,7 @@ import {
   moveManager,
   selectionManager
 } from '../3d/managers'
+import { actionNames, buttonIds } from '../3d/utils/actions'
 import { getMeshScreenPosition } from '../3d/utils/vector'
 import { shuffle } from './collections'
 import { makeLogger } from './logger'
@@ -36,44 +37,37 @@ const cameraPositionKeys = new Set([
   '9'
 ])
 
-/**
- * Action ids that can be used in actionsByKey map.
- */
-export const actionIds = {
-  flip: 'flip',
-  rotate: 'rotate',
-  toggleLock: 'toggleLock',
-  draw: 'draw',
-  setFace: 'setFace',
-  shuffle: 'shuffle',
-  push: 'push',
-  increment: 'increment',
-  pop: 'pop',
-  decrement: 'decrement',
-  detail: 'detail',
-  random: 'random'
-}
-
 // Share of PI added to the camera angle when applying rotation
 const cameraRotationShare = 8
 // Units added to the camera position when applying elevation
 const cameraElevationShare = 24
 
+const { button1, button2, button3 } = buttonIds
+const {
+  decrement,
+  detail,
+  draw,
+  flip,
+  flipAll,
+  increment,
+  pop,
+  push,
+  random,
+  reorder,
+  rotate,
+  setFace,
+  toggleLock
+} = actionNames
+
 /**
  * Attach to game engine's input manager observables to implement game interaction model.
  * @param {object} params - parameters, including:
- * @param {import('@babylonjs/core').Engine} - current 3D engine.
+ * @param {import('@src/3d').EnhancedEngine} params.engine - current 3D engine.
  * @param {number} params.doubleTapDelay - number of milliseconds between 2 taps to be considered as a double tap.
  * @param {Subject<import('../stores/game-engine').ActionMenuProps>} params.actionMenuProps$ - subject emitting when action menu should be displayed and hidden.
- * @param {Map<string, string[]>} params.actionIdsByKey - map containing action name by key shortcut.
  * @returns {import('rxjs').Subscription[]} an array of observable subscriptions
  */
-export function attachInputs({
-  engine,
-  doubleTapDelay,
-  actionMenuProps$,
-  actionIdsByKey
-}) {
+export function attachInputs({ engine, doubleTapDelay, actionMenuProps$ }) {
   let selectionPosition
   let panPosition
   let rotatePosition
@@ -162,14 +156,24 @@ export function attachInputs({
         filter(data => data)
       )
       .subscribe({
-        next: async ({ type, mesh, button, event, long, pointers }) => {
+        next: async ({
+          type,
+          mesh,
+          button,
+          event,
+          long,
+          pointers,
+          fromHand
+        }) => {
           const kind = pointerKind(event, button, pointers)
           if (kind === 'left') {
-            if (type === 'doubletap') {
-              triggerActionOnSelection(mesh, 'detail')
-            } else {
-              triggerActionOnSelection(mesh, long ? 'rotate' : 'flip')
-            }
+            applyMatchingAction(
+              engine.actionNamesByButton.get(
+                type === 'doubletap' ? button3 : long ? button2 : button1
+              ),
+              mesh,
+              fromHand
+            )
           }
         }
       }),
@@ -324,13 +328,13 @@ export function attachInputs({
     }),
 
     /**
-     * Implements actions on mesh keys, or on selection, based on actionIdsByKey map
+     * Implements actions on mesh keys, or on selection, based on actionNamesByKey map
      */
     keys$
       .pipe(
         filter(
           ({ key, meshes }) =>
-            actionIdsByKey.has(key) &&
+            engine.actionNamesByKey.has(key) &&
             (meshes.length || selectionManager.meshes.size)
         )
       )
@@ -340,14 +344,11 @@ export function attachInputs({
             ? meshes
             : [selectionManager.meshes.values().next().value]
           for (const mesh of actualMeshes) {
-            const params = buildSupportParams(mesh, fromHand)
-            for (const id of actionIdsByKey.get(key)) {
-              const action = menuActions.find(action => action.id === id)
-              if (action?.support(mesh, params)) {
-                action.build(mesh, params).onClick()
-                break
-              }
-            }
+            applyMatchingAction(
+              engine.actionNamesByKey.get(key),
+              mesh,
+              fromHand
+            )
           }
         }
       }),
@@ -444,11 +445,11 @@ export function attachInputs({
      */
     behaviorAction$.subscribe({
       next: ({ fn, meshId, args }) => {
-        if (fn !== 'flip' && fn !== 'rotate') {
+        if (fn !== flip && fn !== rotate) {
           resetMenu()
         }
         if (
-          fn === 'push' &&
+          fn === push &&
           [...selectionManager.meshes].some(({ id }) => args[0] === id)
         ) {
           const mesh = engine.scenes.reduce(
@@ -516,7 +517,7 @@ export function triggerAction(mesh, actionName, ...parameters) {
  * @param {number} [quantity=null] - number of meshes of a given stack which will apply this action
  */
 export function triggerActionOnSelection(mesh, actionName, quantity = null) {
-  if (quantity && actionName !== 'setFace') {
+  if (quantity && actionName !== setFace) {
     for (const baseMesh of getBaseMeshes(selectionManager.getSelection(mesh))) {
       if (baseMesh?.metadata) {
         if (isRotatingEntireStack(baseMesh, actionName, quantity)) {
@@ -537,7 +538,7 @@ export function triggerActionOnSelection(mesh, actionName, quantity = null) {
       if (mesh?.metadata && !exclude.has(mesh)) {
         const last = mesh.metadata.stack?.[mesh.metadata.stack?.length - 1]
         if (
-          (actionName === 'flip' || actionName === 'rotate') &&
+          (actionName === flip || actionName === rotate) &&
           mesh.metadata.stack?.length > 1 &&
           mesh.metadata.stack.every(mesh => meshes.has(mesh))
         ) {
@@ -546,7 +547,7 @@ export function triggerActionOnSelection(mesh, actionName, quantity = null) {
           }
           triggerAction(
             mesh.metadata.stack[0],
-            actionName === 'flip' ? 'flipAll' : actionName
+            actionName === flip ? flipAll : actionName
           )
         } else if (mesh.metadata.stack && mesh !== last && meshes.size === 1) {
           triggerAction(last, actionName, quantity)
@@ -572,7 +573,7 @@ export function computeMenuProps(mesh, fromHand = false) {
   }
   const items = []
   const params = buildSupportParams(mesh, fromHand)
-  for (const spec of menuActions) {
+  for (const spec of menuActionByName.values()) {
     if (params.selectedMeshes.every(mesh => spec.support(mesh, params))) {
       items.push(spec.build(mesh, params))
     }
@@ -586,158 +587,194 @@ export function computeMenuProps(mesh, fromHand = false) {
   }
 }
 
-const menuActions = [
-  {
-    id: actionIds.flip,
-    support: (mesh, { selectedMeshes }) => canAllDo('flip', selectedMeshes),
-    build: (mesh, params) => ({
-      icon: 'flip',
-      title:
-        params.isSingleStackSelected && params.selectedMeshes.length > 1
-          ? 'tooltips.flip-stack'
-          : 'tooltips.flip',
-      badge: 'shortcuts.flip',
-      onClick: ({ detail } = {}) =>
-        triggerActionOnSelection(mesh, 'flip', detail?.quantity),
-      max: computesStackSize(mesh, params)
-    })
-  },
-  {
-    id: actionIds.rotate,
-    support: (mesh, { selectedMeshes }) => canAllDo('rotate', selectedMeshes),
-    build: (mesh, params) => ({
-      icon: 'rotate_right',
-      title: 'tooltips.rotate',
-      badge: 'shortcuts.rotate',
-      onClick: ({ detail } = {}) =>
-        triggerActionOnSelection(mesh, 'rotate', detail?.quantity),
-      max: computesStackSize(mesh, params)
-    })
-  },
-  {
-    id: actionIds.draw,
-    support: (mesh, { selectedMeshes }) => canAllDo('draw', selectedMeshes),
-    build: (mesh, params) => ({
-      icon: params.fromHand ? 'back_hand' : 'front_hand',
-      title: params.fromHand ? 'tooltips.play' : 'tooltips.draw',
-      badge: 'shortcuts.draw',
-      onClick: ({ detail } = {}) =>
-        triggerActionOnSelection(mesh, 'draw', detail?.quantity),
-      max: computesStackSize(mesh, params)
-    })
-  },
-  {
-    id: actionIds.pop,
-    support: (mesh, { selectedMeshes }) =>
-      mesh.metadata?.stack?.length > 1 && selectedMeshes.length === 1,
-    build: (mesh, params) => ({
-      icon: 'redo',
-      title: 'tooltips.pop',
-      badge: 'shortcuts.pop',
-      onClick: async ({ detail } = {}) =>
-        selectionManager.select(
-          await triggerAction(
-            mesh.metadata.stack[0],
-            'pop',
-            detail?.quantity,
-            true
-          )
-        ),
-      max: computesStackSize(mesh, params)
-    })
-  },
-  {
-    id: actionIds.decrement,
-    support: (mesh, { selectedMeshes }) =>
-      mesh.metadata?.quantity > 1 && selectedMeshes.length === 1,
-    build: (mesh, params) => ({
-      icon: 'redo',
-      title: 'tooltips.decrement',
-      badge: 'shortcuts.pop',
-      onClick: async ({ detail } = {}) =>
-        selectionManager.select(
-          await triggerAction(mesh, 'decrement', detail?.quantity, true)
-        ),
-      max: computesQuantity(mesh, params)
-    })
-  },
-  {
-    id: actionIds.push,
-    support: canStackAll,
-    build: (mesh, { selectedMeshes }) => ({
-      icon: 'layers',
-      title: 'tooltips.stack-all',
-      badge: 'shortcuts.push',
-      onClick: () => stackAll(mesh, selectedMeshes)
-    })
-  },
-  {
-    id: actionIds.increment,
-    support: canIncrement,
-    build: (mesh, { selectedMeshes }) => ({
-      icon: 'layers',
-      title: 'tooltips.increment',
-      badge: 'shortcuts.push',
-      onClick: () => increment(mesh, selectedMeshes)
-    })
-  },
-  {
-    id: actionIds.shuffle,
-    support: (mesh, { isSingleStackSelected, selectedMeshes }) =>
-      isSingleStackSelected && selectedMeshes.length > 1,
-    build: mesh => ({
-      icon: 'shuffle',
-      title: 'tooltips.shuffle',
-      badge: 'shortcuts.shuffle',
-      onClick: () => triggerAction(mesh, 'shuffle')
-    })
-  },
-  {
-    id: actionIds.random,
-    support: (mesh, { selectedMeshes }) => canAllDo('random', selectedMeshes),
-    build: mesh => ({
-      icon: 'airline_stops',
-      title: 'tooltips.random',
-      badge: 'shortcuts.random',
-      onClick: () => triggerActionOnSelection(mesh, 'random')
-    })
-  },
-  {
-    id: actionIds.setFace,
-    support: (mesh, { selectedMeshes }) => canAllDo('setFace', selectedMeshes),
-    build: (mesh, params) => ({
-      icon: 'casino',
-      title: 'tooltips.set-face',
-      badge: 'shortcuts.set-face',
-      onClick: ({ detail } = {}) =>
-        triggerActionOnSelection(mesh, 'setFace', detail?.quantity ?? 1),
-      quantity: mesh.metadata.face,
-      max: computeMaxFace(mesh, params)
-    })
-  },
-  {
-    id: actionIds.detail,
-    support: (mesh, { selectedMeshes }) =>
-      selectedMeshes.length === 1 && Boolean(mesh.metadata.detail),
-    build: mesh => ({
-      icon: 'visibility',
-      title: 'tooltips.detail',
-      badge: 'shortcuts.detail',
-      onClick: () => triggerAction(mesh, 'detail')
-    })
-  },
-  {
-    id: actionIds.toggleLock,
-    support: (mesh, { selectedMeshes }) =>
-      canAllDo('toggleLock', selectedMeshes),
-    build: mesh => ({
-      icon: mesh.metadata.isLocked ? 'lock_open' : 'lock',
-      title: mesh.metadata.isLocked ? 'tooltips.unlock' : 'tooltips.lock',
-      badge: 'shortcuts.toggleLock',
-      onClick: () => triggerActionOnSelection(mesh, 'toggleLock')
-    })
+const menuActionByName = new Map([
+  [
+    flip,
+    {
+      support: (mesh, { selectedMeshes }) => canAllDo(flip, selectedMeshes),
+      build: (mesh, params) => ({
+        icon: 'flip',
+        title:
+          params.isSingleStackSelected && params.selectedMeshes.length > 1
+            ? 'tooltips.flip-stack'
+            : 'tooltips.flip',
+        badge: 'shortcuts.flip',
+        onClick: ({ detail } = {}) =>
+          triggerActionOnSelection(mesh, flip, detail?.quantity),
+        max: computesStackSize(mesh, params)
+      })
+    }
+  ],
+  [
+    rotate,
+    {
+      support: (mesh, { selectedMeshes }) => canAllDo(rotate, selectedMeshes),
+      build: (mesh, params) => ({
+        icon: 'rotate_right',
+        title: 'tooltips.rotate',
+        badge: 'shortcuts.rotate',
+        onClick: ({ detail } = {}) =>
+          triggerActionOnSelection(mesh, rotate, detail?.quantity),
+        max: computesStackSize(mesh, params)
+      })
+    }
+  ],
+  [
+    draw,
+    {
+      support: (mesh, { selectedMeshes }) => canAllDo(draw, selectedMeshes),
+      build: (mesh, params) => ({
+        icon: params.fromHand ? 'back_hand' : 'front_hand',
+        title: params.fromHand ? 'tooltips.play' : 'tooltips.draw',
+        badge: 'shortcuts.draw',
+        onClick: ({ detail } = {}) =>
+          triggerActionOnSelection(mesh, draw, detail?.quantity),
+        max: computesStackSize(mesh, params)
+      })
+    }
+  ],
+  [
+    pop,
+    {
+      support: (mesh, { selectedMeshes }) =>
+        mesh.metadata?.stack?.length > 1 && selectedMeshes.length === 1,
+      build: (mesh, params) => ({
+        icon: 'redo',
+        title: 'tooltips.pop',
+        badge: 'shortcuts.pop',
+        onClick: async ({ detail } = {}) =>
+          selectionManager.select(
+            await triggerAction(
+              mesh.metadata.stack[0],
+              pop,
+              detail?.quantity,
+              true
+            )
+          ),
+        max: computesStackSize(mesh, params)
+      })
+    }
+  ],
+  [
+    decrement,
+    {
+      support: (mesh, { selectedMeshes }) =>
+        mesh.metadata?.quantity > 1 && selectedMeshes.length === 1,
+      build: (mesh, params) => ({
+        icon: 'redo',
+        title: 'tooltips.decrement',
+        badge: 'shortcuts.pop',
+        onClick: async ({ detail } = {}) =>
+          selectionManager.select(
+            await triggerAction(mesh, decrement, detail?.quantity, true)
+          ),
+        max: computesQuantity(mesh, params)
+      })
+    }
+  ],
+  [
+    push,
+    {
+      support: canStackAll,
+      build: (mesh, { selectedMeshes }) => ({
+        icon: 'layers',
+        title: 'tooltips.stack-all',
+        badge: 'shortcuts.push',
+        onClick: () => stackAll(mesh, selectedMeshes)
+      })
+    }
+  ],
+  [
+    increment,
+    {
+      support: canIncrement,
+      build: (mesh, { selectedMeshes }) => ({
+        icon: 'layers',
+        title: 'tooltips.increment',
+        badge: 'shortcuts.push',
+        onClick: () => incrementMesh(mesh, selectedMeshes)
+      })
+    }
+  ],
+  [
+    reorder,
+    {
+      support: (mesh, { isSingleStackSelected, selectedMeshes }) =>
+        isSingleStackSelected && selectedMeshes.length > 1,
+      build: mesh => ({
+        icon: 'shuffle',
+        title: 'tooltips.shuffle',
+        badge: 'shortcuts.shuffle',
+        onClick: () => triggerAction(mesh, reorder)
+      })
+    }
+  ],
+  [
+    random,
+    {
+      support: (mesh, { selectedMeshes }) => canAllDo(random, selectedMeshes),
+      build: mesh => ({
+        icon: 'airline_stops',
+        title: 'tooltips.random',
+        badge: 'shortcuts.random',
+        onClick: () => triggerActionOnSelection(mesh, random)
+      })
+    }
+  ],
+  [
+    setFace,
+    {
+      support: (mesh, { selectedMeshes }) =>
+        canAllDo(actionNames.setFace, selectedMeshes),
+      build: (mesh, params) => ({
+        icon: 'casino',
+        title: 'tooltips.set-face',
+        badge: 'shortcuts.set-face',
+        onClick: ({ detail } = {}) =>
+          triggerActionOnSelection(mesh, setFace, detail?.quantity ?? 1),
+        quantity: mesh.metadata.face,
+        max: computeMaxFace(mesh, params)
+      })
+    }
+  ],
+  [
+    detail,
+    {
+      support: (mesh, { selectedMeshes }) =>
+        selectedMeshes.length === 1 && Boolean(mesh.metadata.detail),
+      build: mesh => ({
+        icon: 'visibility',
+        title: 'tooltips.detail',
+        badge: 'shortcuts.detail',
+        onClick: () => triggerAction(mesh, detail)
+      })
+    }
+  ],
+  [
+    toggleLock,
+    {
+      support: (mesh, { selectedMeshes }) =>
+        canAllDo(actionNames.toggleLock, selectedMeshes),
+      build: mesh => ({
+        icon: mesh.metadata.isLocked ? 'lock_open' : 'lock',
+        title: mesh.metadata.isLocked ? 'tooltips.unlock' : 'tooltips.lock',
+        badge: 'shortcuts.toggleLock',
+        onClick: () => triggerActionOnSelection(mesh, toggleLock)
+      })
+    }
+  ]
+])
+
+function applyMatchingAction(actionNames, mesh, fromHand) {
+  const params = buildSupportParams(mesh, fromHand)
+  for (const name of actionNames) {
+    const action = menuActionByName.get(name)
+    if (action?.support(mesh, params)) {
+      action.build(mesh, params).onClick()
+      break
+    }
   }
-]
+}
 
 function buildSupportParams(mesh, fromHand) {
   const selectedMeshes = selectionManager.getSelection(mesh)
@@ -753,7 +790,7 @@ function getBaseMeshes(meshes) {
 }
 
 function isValidShuffleAction(actionName, mesh) {
-  return actionName === 'shuffle' && mesh.metadata.stack?.length > 1
+  return actionName === reorder && mesh.metadata.stack?.length > 1
 }
 
 function isSingleStackSelected(mesh, selected) {
@@ -766,8 +803,7 @@ function isSingleStackSelected(mesh, selected) {
 
 function isRotatingEntireStack(baseMesh, actionName, quantity) {
   return (
-    actionName === 'rotate' &&
-    quantity >= (baseMesh.metadata.stack?.length ?? 1)
+    actionName === rotate && quantity >= (baseMesh.metadata.stack?.length ?? 1)
   )
 }
 
@@ -824,12 +860,12 @@ function shuffleStack(mesh) {
 async function stackAll(mesh, selectedMeshes) {
   for (const base of getBaseMeshes(selectedMeshes)) {
     if (mesh.metadata.stack[0] !== base) {
-      await triggerAction(mesh, 'push', base.id)
+      await triggerAction(mesh, push, base.id)
     }
   }
 }
 
-async function increment(mesh, selectedMeshes) {
+async function incrementMesh(mesh, selectedMeshes) {
   const ids = []
   for (const { id } of selectedMeshes) {
     if (mesh.id !== id) {
