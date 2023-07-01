@@ -447,3 +447,18 @@ export function buildTargetMesh(name, parent, dimensions) {
   created.position = Vector3.Zero()
   return created
 }
+
+/**
+ * Returns the current face image of a Detailable mesh.
+ * @param {Mesh} mesh - concerned mesh.
+ * @returns {string | null} the mesh back image if it is flipped, or its front image. Defaults to null.
+ */
+export function selectDetailedFace(mesh) {
+  return (
+    (Boolean(mesh.metadata?.detail) &&
+      (isMeshFlipped(mesh)
+        ? mesh.metadata.backImage
+        : mesh.metadata.frontImage)) ||
+    null
+  )
+}

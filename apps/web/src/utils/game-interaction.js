@@ -18,6 +18,7 @@ import {
   selectionManager
 } from '../3d/managers'
 import { actionNames, buttonIds } from '../3d/utils/actions'
+import { selectDetailedFace } from '../3d/utils/behaviors'
 import { getMeshScreenPosition } from '../3d/utils/vector'
 import { shuffle } from './collections'
 import { makeLogger } from './logger'
@@ -741,7 +742,7 @@ const menuActionByName = new Map([
     detail,
     {
       support: (mesh, { selectedMeshes }) =>
-        selectedMeshes.length === 1 && Boolean(mesh.metadata.detail),
+        selectedMeshes.length === 1 && selectDetailedFace(mesh),
       build: mesh => ({
         icon: 'visibility',
         title: 'tooltips.detail',

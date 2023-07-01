@@ -1905,6 +1905,7 @@ function buildMesh(data) {
   mesh.metadata = {
     face: 4,
     maxFace: 6,
+    frontImage: 'front.png',
     detail: vi.fn(),
     flip: vi.fn(),
     rotate: vi.fn(),

@@ -23,6 +23,7 @@ import {
   registerBehaviors,
   restoreBehaviors,
   runAnimation,
+  selectDetailedFace,
   serializeBehaviors
 } from '@src/3d/utils/behaviors'
 import {
@@ -1011,6 +1012,38 @@ describe('given a test behavior', () => {
       expect(box.metadata.foo()).toEqual('foo')
       expect(box.metadata.bar()).toEqual('bar')
     })
+  })
+})
+
+describe('selectDetailedFace()', () => {
+  it('returns null for a mesh without Detailable behavior', () => {
+    expect(selectDetailedFace(box)).toBeNull()
+  })
+
+  it('returns null for a Detailable without front image', () => {
+    box.addBehavior(new DetailBehavior(), true)
+    expect(selectDetailedFace(box)).toBeNull()
+  })
+
+  it('returns front image of Detailable', () => {
+    const frontImage = 'front.png'
+    box.addBehavior(new DetailBehavior({ frontImage }), true)
+    expect(selectDetailedFace(box)).toEqual(frontImage)
+  })
+
+  it('returns null for a flipped Detailable without back image', () => {
+    const frontImage = 'front.png'
+    box.addBehavior(new DetailBehavior({ frontImage }), true)
+    box.addBehavior(new FlipBehavior({ isFlipped: true }), true)
+    expect(selectDetailedFace(box)).toBeNull()
+  })
+
+  it('returns back image of a flipped Detailable', () => {
+    const frontImage = 'front.png'
+    const backImage = 'back.png'
+    box.addBehavior(new DetailBehavior({ frontImage, backImage }), true)
+    box.addBehavior(new FlipBehavior({ isFlipped: true }), true)
+    expect(selectDetailedFace(box)).toEqual(backImage)
   })
 })
 

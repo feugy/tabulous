@@ -3,7 +3,7 @@ import { actionNames } from '../utils/actions'
 import {
   attachFunctions,
   attachProperty,
-  isMeshFlipped
+  selectDetailedFace
 } from '../utils/behaviors'
 import { DetailBehaviorName } from './names'
 
@@ -67,9 +67,7 @@ export class DetailBehavior {
     controlManager.onDetailedObservable.notifyObservers({
       mesh: this.mesh,
       data: {
-        image:
-          this.state[isMeshFlipped(this.mesh) ? 'backImage' : 'frontImage'] ??
-          null
+        image: selectDetailedFace(this.mesh)
       }
     })
   }
