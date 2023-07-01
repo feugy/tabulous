@@ -16,19 +16,23 @@
   export let stopped = false
 
   function toggleMic() {
-    muted = !muted
-    for (const track of $stream$.getAudioTracks()) {
-      track.enabled = !muted
+    if ($stream$) {
+      muted = !muted
+      for (const track of $stream$.getAudioTracks()) {
+        track.enabled = !muted
+      }
+      recordStreamChange({ muted, stopped })
     }
-    recordStreamChange({ muted, stopped })
   }
 
   function toggleVideo() {
-    stopped = !stopped
-    for (const track of $stream$.getVideoTracks()) {
-      track.enabled = !stopped
+    if ($stream$) {
+      stopped = !stopped
+      for (const track of $stream$.getVideoTracks()) {
+        track.enabled = !stopped
+      }
+      recordStreamChange({ muted, stopped })
     }
-    recordStreamChange({ muted, stopped })
   }
 
   function selectMedia({ detail: media }) {
