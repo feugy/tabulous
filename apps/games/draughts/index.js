@@ -32,3 +32,6 @@ export const colors = {
   secondary: '#ffeeee',
   players: ['#bd5d2c', '#6d938e']
 }
+
+// disable all button actions
+export const actions = {}
