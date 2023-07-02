@@ -26,6 +26,7 @@
 - bug: 6-takes: snapping to the wrong anchor (when 2 players are snapping to different anchors)
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
 - check headings ordering
+- anchorable: flip/unflip on snap
 - detailable/stackable behavior: preview a stack of meshes
 - hide/distinguish non-connected participants?
 - distribute multiple meshes to players' hand

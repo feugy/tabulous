@@ -791,20 +791,20 @@ function getBaseMeshes(meshes) {
 }
 
 function isValidShuffleAction(actionName, mesh) {
-  return actionName === reorder && mesh.metadata.stack?.length > 1
+  return actionName === reorder && mesh.metadata?.stack?.length > 1
 }
 
 function isSingleStackSelected(mesh, selected) {
-  const base = mesh.metadata.stack?.[0]
+  const base = mesh.metadata?.stack?.[0]
   return (
-    mesh.metadata.stack?.length > 1 &&
+    mesh.metadata?.stack?.length > 1 &&
     selected.every(other => other.metadata.stack?.[0] === base)
   )
 }
 
 function isRotatingEntireStack(baseMesh, actionName, quantity) {
   return (
-    actionName === rotate && quantity >= (baseMesh.metadata.stack?.length ?? 1)
+    actionName === rotate && quantity >= (baseMesh.metadata?.stack?.length ?? 1)
   )
 }
 
@@ -823,7 +823,7 @@ function canStackAll(mesh, { selectedMeshes, fromHand }) {
 
 function canIncrement(mesh, { selectedMeshes }) {
   for (const other of selectedMeshes) {
-    if (other !== mesh && !mesh.metadata.canIncrement?.(other)) {
+    if (other !== mesh && !mesh.metadata?.canIncrement?.(other)) {
       return false
     }
   }
@@ -831,18 +831,18 @@ function canIncrement(mesh, { selectedMeshes }) {
 }
 
 function canAllDo(action, meshes) {
-  return meshes.every(mesh => Boolean(mesh.metadata[action]))
+  return meshes.every(mesh => Boolean(mesh.metadata?.[action]))
 }
 
 function computesStackSize(mesh, { selectedMeshes }) {
-  return selectedMeshes.length === 1 && mesh.metadata.stack?.length > 1
-    ? mesh.metadata.stack.length
+  return selectedMeshes.length === 1 && mesh.metadata?.stack?.length > 1
+    ? mesh.metadata?.stack.length
     : undefined
 }
 
 function computesQuantity(mesh, { selectedMeshes }) {
-  return selectedMeshes.length === 1 && mesh.metadata.quantity > 1
-    ? mesh.metadata.quantity - 1
+  return selectedMeshes.length === 1 && mesh.metadata?.quantity > 1
+    ? mesh.metadata?.quantity - 1
     : undefined
 }
 

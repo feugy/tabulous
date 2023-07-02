@@ -65,11 +65,16 @@ labels:
   help-add-to-selection: Sélectionne plusieurs objets.
   help-clear-selection: Désélectionne les objets.
   help-detail: Voir l'objet en plein écran.
+  help-draw: Piocher l'objet (ou la sélection) dans votre main, ou jouer depuis votre main.
+  help-decrement: Séparer un objet du groupe.
   help-flip: Retourne l'objet (ou la sélection).
+  help-increment: Regrouper la sélection d'objets.
   help-open-menu: Ouvre le menu des actions de l'objet (ou de la sélection), s'il y des actions possibles.
   help-move: Déplace l'objet (ou la sélection), s'il n'est pas figé.
   help-new-camera: Enregistrer la position de la caméra
   help-pan-camera: Déplace la caméra.
+  help-push: Empiler la sélection d'objets.
+  help-pop: Dépiler un objet de la pile.
   help-random: Jeter le(s) dé(s).
   help-restore-camera: Restaurer la position de la caméra.
   help-rotate: Pivote l'objet (ou la sélection).
@@ -141,13 +146,13 @@ tooltips:
   add-to-selection: Ajouter à la sélection
   change-avatar: Si vous avez associé un gravatar à votre email, tappez "gravatar". Videz le champ pour supprimer votre avatar.
   clear-selection: Vider la sélection
-  decrement: Décrémenter
+  decrement: Séparer du groupe
   detail: Voir en détail
   draw: Piocher dans votre main
   flip-stack: Retourner la pile
   flip: Retourner
   game-menu: Menu des commandes
-  increment: Assembler
+  increment: Regrouper la sélection
   lock: Verrouiller
   move: Déplacer
   open-menu: Ouvrir le menu
@@ -166,7 +171,7 @@ tooltips:
   save-restore-camera: "{index, plural, =0 {Restaurer la position initiale de la camera (Début)} other {Restaurer (clic / #) ou mettre à jour (clic long / Ctrl+#) la position à l'emplacement}}"
   send-message: Envoyer à tous
   setFace: Fixer la valeur
-  stack-all: Assembler
+  stack-all: Empiller
   toggleLock: (Dé)verrouiller
   unlock: Déverrouiller
   zoom: Zoomer

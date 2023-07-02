@@ -2883,7 +2883,7 @@ exports[`Components/Controls Help 1`] = `
     <dd
       class="s-IlJH5O1f0y3M"
     >
-      Empiller, Assembler
+      Empiller, Regrouper la sélection
     </dd>
     <dt
       class="s-IlJH5O1f0y3M"
@@ -2954,7 +2954,7 @@ exports[`Components/Controls Help 1`] = `
     <dd
       class="s-IlJH5O1f0y3M"
     >
-      Dépiller, Décrémenter
+      Dépiller, Séparer du groupe
     </dd>
     <dt
       class="s-IlJH5O1f0y3M"
