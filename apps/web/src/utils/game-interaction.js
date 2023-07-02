@@ -170,7 +170,7 @@ export function attachInputs({ engine, doubleTapDelay, actionMenuProps$ }) {
           if (kind === 'left') {
             applyMatchingAction(
               engine.actionNamesByButton.get(
-                type === 'doubletap' ? button3 : long ? button2 : button1
+                type === 'doubletap' ? button2 : long ? button3 : button1
               ),
               mesh,
               fromHand

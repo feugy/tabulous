@@ -51,8 +51,8 @@ describe('Game interaction model', () => {
     engine = created.engine
     engine.actionNamesByButton = new Map([
       [buttonIds.button1, [actionNames.flip]],
-      [buttonIds.button2, [actionNames.rotate]],
-      [buttonIds.button3, [actionNames.detail]]
+      [buttonIds.button2, [actionNames.detail]],
+      [buttonIds.button3, [actionNames.rotate]]
     ])
     engine.actionNamesByKey = new Map([
       ['f', [actionNames.flip]],

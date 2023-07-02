@@ -22,6 +22,6 @@ export const zoomSpec = { hand: 35, min: 20, max: 90 }
 
 export const actions = {
   button1: ['rotate', 'random'],
-  button2: ['detail'],
-  button3: ['flip']
+  button2: ['flip'],
+  button3: ['detail']
 }

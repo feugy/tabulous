@@ -90,8 +90,8 @@ exports[`Custom actions 1`] = `
         height="129.754"
         id="svg921"
         version="1.1"
-        viewBox="0 0 30.021 34.331"
-        width="113.466"
+        viewBox="0 0 30.266 34.331"
+        width="114.392"
         xmlns="http://www.w3.org/2000/svg"
         xmlns:xlink="http://www.w3.org/1999/xlink"
       >
@@ -103,9 +103,9 @@ exports[`Custom actions 1`] = `
             cy="19.068"
             fx="154.474"
             fy="19.068"
-            gradientTransform="translate(-85.59 148.475)"
+            gradientTransform="translate(-128.802 149.092)"
             gradientUnits="userSpaceOnUse"
-            id="radialGradient129962"
+            id="radialGradient145395"
             r="11.135"
             xlink:href="#linearGradient6783"
           />
@@ -125,17 +125,17 @@ exports[`Custom actions 1`] = `
           </lineargradient>
         </defs>
         <g
-          id="layer11"
-          transform="translate(-51.851 -154.556)"
+          id="layer9"
+          transform="translate(-11.896 -154.779)"
         >
           <g
-            id="use6837"
+            id="use6752"
             style="font-variation-settings: normal; fill: #f2f2f2; fill-opacity: 1; stroke: #000; stroke-width: 1.63779; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 4; stroke-dasharray: none; stroke-dashoffset: 0; stroke-opacity: 1; stop-color: rgb(0, 0, 0);"
-            transform="matrix(.48582 0 0 .48348 43.923 64.128)"
+            transform="matrix(.48582 0 0 .48348 -6.172 64.35)"
           >
             <rect
               height="54.882"
-              id="rect129812"
+              id="rect145241"
               ry="4.619"
               style="font-variation-settings: normal; opacity: 1; fill: #f2f2f2; fill-opacity: 1; fill-rule: evenodd; stroke: #000; stroke-width: 1.63779; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 4; stroke-dasharray: none; stroke-dashoffset: 0; stroke-opacity: 1; stop-color: rgb(0, 0, 0); stop-opacity: 1;"
               width="39.286"
@@ -144,7 +144,7 @@ exports[`Custom actions 1`] = `
             />
             <rect
               height="47.921"
-              id="rect129814"
+              id="rect145243"
               ry="0"
               style="font-variation-settings: normal; opacity: 1; fill: #f2f2f2; fill-opacity: 1; fill-rule: evenodd; stroke: #000; stroke-width: 1.63779; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 4; stroke-dasharray: none; stroke-dashoffset: 0; stroke-opacity: 1; stop-color: rgb(0, 0, 0); stop-opacity: 1;"
               width="32.749"
@@ -153,44 +153,44 @@ exports[`Custom actions 1`] = `
             />
           </g>
           <circle
-            cx="68.885"
-            cy="167.543"
-            id="use6839"
+            cx="25.673"
+            cy="168.16"
+            id="use6754"
             r="10.341"
-            style="fill: none; fill-rule: evenodd; stroke: url(#radialGradient129962); stroke-width: 5.29167; stroke-dasharray: none; stroke-opacity: 1;"
+            style="fill: none; fill-rule: evenodd; stroke: url(#radialGradient145395); stroke-width: 5.29167; stroke-dasharray: none; stroke-opacity: 1;"
           />
           <g
-            id="use6841"
+            id="use6750"
             style="display: inline; stroke-width: 2.04714;"
-            transform="matrix(.48799 0 0 .48898 49.021 105.97)"
+            transform="matrix(.48799 0 0 .48898 13.79 102.5)"
           >
             <path
-              d="M45.479 164.523s2.862-6.028 2.862-13.433c0-11.55-3.754-27.386-3.754-27.386-6.273-5.615-14.817-6.569-14.817-6.569l-5.712-.01s-8.124 1.149-14.276 6.177c0 0-3.486 15.855-3.427 28.149.038 7.868 3.14 12.909 3.14 12.909 18.424 11.63 35.984.163 35.984.163z"
-              id="path129932"
+              d="M54.208 172.075s2.862-6.029 2.862-13.434c0-11.55-3.753-27.385-3.753-27.385-6.273-5.616-14.818-6.57-14.818-6.57l-5.712-.01s-8.124 1.149-14.275 6.177c0 0-3.487 15.855-3.428 28.149.038 7.869 3.14 12.909 3.14 12.909 18.424 11.63 35.984.164 35.984.164z"
+              id="path145313"
               style="font-variation-settings: normal; opacity: 1; vector-effect: none; fill: #f2f2f2; fill-opacity: 1; stroke: none; stroke-width: 1.62492; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 4; stroke-dasharray: none; stroke-dashoffset: 0; stroke-opacity: 1; stop-color: rgb(0, 0, 0); stop-opacity: 1;"
             />
             <path
-              d="M45.736 164.594s2.862-6.028 2.862-13.433c0-11.55-3.753-27.386-3.753-27.386-6.273-5.615-14.818-6.57-14.818-6.57l-5.712-.01s-8.124 1.15-14.275 6.178c0 0-3.487 15.855-3.428 28.149.038 7.868 3.14 12.909 3.14 12.909"
-              id="path129934"
+              d="M54.466 172.145s2.862-6.028 2.862-13.433c0-11.55-3.754-27.385-3.754-27.385-6.273-5.616-14.817-6.57-14.817-6.57l-5.712-.01s-8.124 1.149-14.276 6.177c0 0-3.486 15.855-3.427 28.149.038 7.869 3.14 12.909 3.14 12.909"
+              id="path145315"
               style="fill: none; stroke: #000; stroke-width: 1.62492; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 4; stroke-dasharray: none; stroke-opacity: 1;"
             />
             <path
               d="m33.257 46.362-1.579.092s-4.14.77-6.997 3.007l.482 9.718c4.816 1.422 8.119 1.062 8.119 1.062l-.005-2.488c-1.092-.052-1.381-1.286-1.381-1.286l-.069-6.771s.304-1.079 1.4-1.045l.033.001z"
-              id="path129936"
-              style="font-variation-settings: normal; display: inline; vector-effect: none; fill: none; fill-opacity: 1; stroke: #000; stroke-width: .793751; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 4; stroke-dasharray: none; stroke-dashoffset: 0; stroke-opacity: 1; stop-color: rgb(0, 0, 0);"
-              transform="matrix(2.04923 0 0 2.04505 -40.685 22.47)"
+              id="path145317"
+              style="font-variation-settings: normal; display: inline; vector-effect: none; fill: gray; fill-opacity: 1; stroke: #000; stroke-width: .793751; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 4; stroke-dasharray: none; stroke-dashoffset: 0; stroke-opacity: 1; stop-color: rgb(0, 0, 0);"
+              transform="matrix(2.04923 0 0 2.04505 -31.956 30.022)"
             />
             <path
               d="m33.22 46.374 1.578.091s4.14.771 6.997 3.008l-.482 9.717c-4.815 1.423-8.119 1.063-8.119 1.063l.005-2.488c1.092-.052 1.381-1.286 1.381-1.286l.069-6.772s-.304-1.078-1.4-1.044h-.033z"
-              id="path129938"
-              style="font-variation-settings: normal; display: inline; vector-effect: none; fill: gray; fill-opacity: 1; stroke: #000; stroke-width: .793751; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 4; stroke-dasharray: none; stroke-dashoffset: 0; stroke-opacity: 1; stop-color: rgb(0, 0, 0);"
-              transform="matrix(2.04923 0 0 2.04505 -40.685 22.47)"
+              id="path145319"
+              style="font-variation-settings: normal; display: inline; vector-effect: none; fill: none; fill-opacity: 1; stroke: #000; stroke-width: .793751; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 4; stroke-dasharray: none; stroke-dashoffset: 0; stroke-opacity: 1; stop-color: rgb(0, 0, 0);"
+              transform="matrix(2.04923 0 0 2.04505 -31.956 30.022)"
             />
             <path
               d="M31.816 49.64s.304-1.08 1.4-1.045c1.095.034 1.39 1.045 1.39 1.045l.068 6.771s-.276 1.323-1.386 1.287c-1.11-.036-1.404-1.287-1.404-1.287z"
-              id="path129940"
+              id="path145321"
               style="display: inline; fill: none; fill-rule: evenodd; stroke: #000; stroke-width: .793751; stroke-miterlimit: 4; stroke-dasharray: none; stop-color: rgb(0, 0, 0);"
-              transform="matrix(2.04923 0 0 2.04505 -40.685 22.47)"
+              transform="matrix(2.04923 0 0 2.04505 -31.956 30.022)"
             />
           </g>
         </g>
@@ -485,8 +485,8 @@ exports[`Default actions 1`] = `
         height="129.754"
         id="svg921"
         version="1.1"
-        viewBox="0 0 30.021 34.331"
-        width="113.466"
+        viewBox="0 0 30.266 34.331"
+        width="114.392"
         xmlns="http://www.w3.org/2000/svg"
         xmlns:xlink="http://www.w3.org/1999/xlink"
       >
@@ -498,9 +498,9 @@ exports[`Default actions 1`] = `
             cy="19.068"
             fx="154.474"
             fy="19.068"
-            gradientTransform="translate(-85.59 148.475)"
+            gradientTransform="translate(-128.802 149.092)"
             gradientUnits="userSpaceOnUse"
-            id="radialGradient129962"
+            id="radialGradient145395"
             r="11.135"
             xlink:href="#linearGradient6783"
           />
@@ -520,17 +520,17 @@ exports[`Default actions 1`] = `
           </lineargradient>
         </defs>
         <g
-          id="layer11"
-          transform="translate(-51.851 -154.556)"
+          id="layer9"
+          transform="translate(-11.896 -154.779)"
         >
           <g
-            id="use6837"
+            id="use6752"
             style="font-variation-settings: normal; fill: #f2f2f2; fill-opacity: 1; stroke: #000; stroke-width: 1.63779; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 4; stroke-dasharray: none; stroke-dashoffset: 0; stroke-opacity: 1; stop-color: rgb(0, 0, 0);"
-            transform="matrix(.48582 0 0 .48348 43.923 64.128)"
+            transform="matrix(.48582 0 0 .48348 -6.172 64.35)"
           >
             <rect
               height="54.882"
-              id="rect129812"
+              id="rect145241"
               ry="4.619"
               style="font-variation-settings: normal; opacity: 1; fill: #f2f2f2; fill-opacity: 1; fill-rule: evenodd; stroke: #000; stroke-width: 1.63779; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 4; stroke-dasharray: none; stroke-dashoffset: 0; stroke-opacity: 1; stop-color: rgb(0, 0, 0); stop-opacity: 1;"
               width="39.286"
@@ -539,7 +539,7 @@ exports[`Default actions 1`] = `
             />
             <rect
               height="47.921"
-              id="rect129814"
+              id="rect145243"
               ry="0"
               style="font-variation-settings: normal; opacity: 1; fill: #f2f2f2; fill-opacity: 1; fill-rule: evenodd; stroke: #000; stroke-width: 1.63779; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 4; stroke-dasharray: none; stroke-dashoffset: 0; stroke-opacity: 1; stop-color: rgb(0, 0, 0); stop-opacity: 1;"
               width="32.749"
@@ -548,44 +548,44 @@ exports[`Default actions 1`] = `
             />
           </g>
           <circle
-            cx="68.885"
-            cy="167.543"
-            id="use6839"
+            cx="25.673"
+            cy="168.16"
+            id="use6754"
             r="10.341"
-            style="fill: none; fill-rule: evenodd; stroke: url(#radialGradient129962); stroke-width: 5.29167; stroke-dasharray: none; stroke-opacity: 1;"
+            style="fill: none; fill-rule: evenodd; stroke: url(#radialGradient145395); stroke-width: 5.29167; stroke-dasharray: none; stroke-opacity: 1;"
           />
           <g
-            id="use6841"
+            id="use6750"
             style="display: inline; stroke-width: 2.04714;"
-            transform="matrix(.48799 0 0 .48898 49.021 105.97)"
+            transform="matrix(.48799 0 0 .48898 13.79 102.5)"
           >
             <path
-              d="M45.479 164.523s2.862-6.028 2.862-13.433c0-11.55-3.754-27.386-3.754-27.386-6.273-5.615-14.817-6.569-14.817-6.569l-5.712-.01s-8.124 1.149-14.276 6.177c0 0-3.486 15.855-3.427 28.149.038 7.868 3.14 12.909 3.14 12.909 18.424 11.63 35.984.163 35.984.163z"
-              id="path129932"
+              d="M54.208 172.075s2.862-6.029 2.862-13.434c0-11.55-3.753-27.385-3.753-27.385-6.273-5.616-14.818-6.57-14.818-6.57l-5.712-.01s-8.124 1.149-14.275 6.177c0 0-3.487 15.855-3.428 28.149.038 7.869 3.14 12.909 3.14 12.909 18.424 11.63 35.984.164 35.984.164z"
+              id="path145313"
               style="font-variation-settings: normal; opacity: 1; vector-effect: none; fill: #f2f2f2; fill-opacity: 1; stroke: none; stroke-width: 1.62492; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 4; stroke-dasharray: none; stroke-dashoffset: 0; stroke-opacity: 1; stop-color: rgb(0, 0, 0); stop-opacity: 1;"
             />
             <path
-              d="M45.736 164.594s2.862-6.028 2.862-13.433c0-11.55-3.753-27.386-3.753-27.386-6.273-5.615-14.818-6.57-14.818-6.57l-5.712-.01s-8.124 1.15-14.275 6.178c0 0-3.487 15.855-3.428 28.149.038 7.868 3.14 12.909 3.14 12.909"
-              id="path129934"
+              d="M54.466 172.145s2.862-6.028 2.862-13.433c0-11.55-3.754-27.385-3.754-27.385-6.273-5.616-14.817-6.57-14.817-6.57l-5.712-.01s-8.124 1.149-14.276 6.177c0 0-3.486 15.855-3.427 28.149.038 7.869 3.14 12.909 3.14 12.909"
+              id="path145315"
               style="fill: none; stroke: #000; stroke-width: 1.62492; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 4; stroke-dasharray: none; stroke-opacity: 1;"
             />
             <path
               d="m33.257 46.362-1.579.092s-4.14.77-6.997 3.007l.482 9.718c4.816 1.422 8.119 1.062 8.119 1.062l-.005-2.488c-1.092-.052-1.381-1.286-1.381-1.286l-.069-6.771s.304-1.079 1.4-1.045l.033.001z"
-              id="path129936"
-              style="font-variation-settings: normal; display: inline; vector-effect: none; fill: none; fill-opacity: 1; stroke: #000; stroke-width: .793751; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 4; stroke-dasharray: none; stroke-dashoffset: 0; stroke-opacity: 1; stop-color: rgb(0, 0, 0);"
-              transform="matrix(2.04923 0 0 2.04505 -40.685 22.47)"
+              id="path145317"
+              style="font-variation-settings: normal; display: inline; vector-effect: none; fill: gray; fill-opacity: 1; stroke: #000; stroke-width: .793751; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 4; stroke-dasharray: none; stroke-dashoffset: 0; stroke-opacity: 1; stop-color: rgb(0, 0, 0);"
+              transform="matrix(2.04923 0 0 2.04505 -31.956 30.022)"
             />
             <path
               d="m33.22 46.374 1.578.091s4.14.771 6.997 3.008l-.482 9.717c-4.815 1.423-8.119 1.063-8.119 1.063l.005-2.488c1.092-.052 1.381-1.286 1.381-1.286l.069-6.772s-.304-1.078-1.4-1.044h-.033z"
-              id="path129938"
-              style="font-variation-settings: normal; display: inline; vector-effect: none; fill: gray; fill-opacity: 1; stroke: #000; stroke-width: .793751; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 4; stroke-dasharray: none; stroke-dashoffset: 0; stroke-opacity: 1; stop-color: rgb(0, 0, 0);"
-              transform="matrix(2.04923 0 0 2.04505 -40.685 22.47)"
+              id="path145319"
+              style="font-variation-settings: normal; display: inline; vector-effect: none; fill: none; fill-opacity: 1; stroke: #000; stroke-width: .793751; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 4; stroke-dasharray: none; stroke-dashoffset: 0; stroke-opacity: 1; stop-color: rgb(0, 0, 0);"
+              transform="matrix(2.04923 0 0 2.04505 -31.956 30.022)"
             />
             <path
               d="M31.816 49.64s.304-1.08 1.4-1.045c1.095.034 1.39 1.045 1.39 1.045l.068 6.771s-.276 1.323-1.386 1.287c-1.11-.036-1.404-1.287-1.404-1.287z"
-              id="path129940"
+              id="path145321"
               style="display: inline; fill: none; fill-rule: evenodd; stroke: #000; stroke-width: .793751; stroke-miterlimit: 4; stroke-dasharray: none; stop-color: rgb(0, 0, 0);"
-              transform="matrix(2.04923 0 0 2.04505 -40.685 22.47)"
+              transform="matrix(2.04923 0 0 2.04505 -31.956 30.022)"
             />
           </g>
         </g>

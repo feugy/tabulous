@@ -22,3 +22,9 @@ export const colors = {
   primary: '#8367c7',
   secondary: '#73778c'
 }
+
+export const actions = {
+  button1: ['flip'],
+  button2: ['rotate'],
+  button3: ['detail']
+}

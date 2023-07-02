@@ -1,6 +1,6 @@
 <script>
-  import { RightObject, TwoPointersObject } from '@src/svg/help'
+  import { LeftObject, PointerObject } from '@src/svg/help'
   import { isTouchScreen } from '@src/utils'
 </script>
 
-{#if isTouchScreen()}<TwoPointersObject />{:else} <RightObject />{/if}
+{#if isTouchScreen()}<PointerObject />{:else} <LeftObject />{/if}

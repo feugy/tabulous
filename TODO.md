@@ -2,7 +2,7 @@
 
 ## Road to beta
 
-- replace material icon font with https://github.com/marella/material-design-icons/tree/main/svg#readme
+- improve dev loading perf (lazy-load 3d?, material icon font? https://github.com/marella/material-design-icons/tree/main/svg#readme)
 - interface in English
 - server logging (warning on invalid descriptors) + log file rotation
 - automerge.js
