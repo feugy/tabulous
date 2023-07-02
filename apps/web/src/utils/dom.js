@@ -1,5 +1,7 @@
 import { auditTime, map, Subject } from 'rxjs'
 
+import { browser } from '$app/environment'
+
 /**
  * @typedef {object} Dimension the dimension of a HTML element.
  * @param {number} height - height, in pixel.
@@ -70,4 +72,12 @@ export function buildCornerClipPath({
       ? `M 0 0 C ${curve} 0 ${1 - curve} 1 1 1 H 0 Z`
       : `M 0 1 C ${curve} 1 ${1 - curve} 0 1 0 V 1 Z`
   }
+}
+
+/**
+ * Detect touch screens
+ * @returns {boolean} true if this screens has touch capabilities.
+ */
+export function isTouchScreen() {
+  return browser ? navigator?.maxTouchPoints > 0 : false
 }

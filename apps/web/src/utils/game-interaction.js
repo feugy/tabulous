@@ -704,8 +704,8 @@ const menuActionByName = new Map([
         isSingleStackSelected && selectedMeshes.length > 1,
       build: mesh => ({
         icon: 'shuffle',
-        title: 'tooltips.shuffle',
-        badge: 'shortcuts.shuffle',
+        title: 'tooltips.reorder',
+        badge: 'shortcuts.reorder',
         onClick: () => triggerAction(mesh, reorder)
       })
     }
@@ -729,8 +729,8 @@ const menuActionByName = new Map([
         canAllDo(actionNames.setFace, selectedMeshes),
       build: (mesh, params) => ({
         icon: 'casino',
-        title: 'tooltips.set-face',
-        badge: 'shortcuts.set-face',
+        title: 'tooltips.setFace',
+        badge: 'shortcuts.setFace',
         onClick: ({ detail } = {}) =>
           triggerActionOnSelection(mesh, setFace, detail?.quantity ?? 1),
         quantity: mesh.metadata.face,

@@ -1,9 +1,11 @@
 <script>
   import { Tool, ToolBox } from '@atelier-wb/svelte'
+  import { actionNames, buttonIds } from '@src/3d/utils'
   import { acquireMediaStream, releaseMediaStream, stream$ } from '@src/stores'
   import avatar from '@tests/fixtures/avatar.png'
   import { players, thread } from '@tests/fixtures/Discussion.testdata'
   import { get } from 'svelte/store'
+  import { _ } from 'svelte-intl'
 
   import Aside from './AsideWithVideo.svelte'
 
@@ -54,7 +56,24 @@
     playerById,
     connected: [],
     thread: [],
-    friends
+    friends,
+    actionNamesByButton: new Map([
+      [buttonIds.button1, [actionNames.flip]],
+      [buttonIds.button2, [actionNames.detail]],
+      [buttonIds.button3, [actionNames.rotate]]
+    ]),
+    actionNamesByKey: new Map([
+      [$_('shortcuts.flip'), [actionNames.flip]],
+      [$_('shortcuts.rotate'), [actionNames.rotate]],
+      [$_('shortcuts.toggleLock'), [actionNames.toggleLock]],
+      [$_('shortcuts.draw'), [actionNames.draw]],
+      [$_('shortcuts.reorder'), [actionNames.reorder]],
+      [$_('shortcuts.push'), [actionNames.push, actionNames.increment]],
+      [$_('shortcuts.pop'), [actionNames.pop, actionNames.decrement]],
+      [$_('shortcuts.random'), [actionNames.random]],
+      [$_('shortcuts.setFace'), [actionNames.setFace]],
+      [$_('shortcuts.detail'), [actionNames.detail]]
+    ])
   }}
   events={['sendMessage']}
   setup={async () => {
