@@ -24,6 +24,7 @@ import {
 } from './managers'
 import {
   actionNames,
+  buildActionNamesByKey,
   buttonIds,
   createLights,
   createTable,
@@ -33,20 +34,7 @@ import {
   serializeMeshes
 } from './utils'
 
-const {
-  decrement,
-  detail,
-  draw,
-  flip,
-  increment,
-  pop,
-  push,
-  random,
-  reorder,
-  rotate,
-  setFace,
-  toggleLock
-} = actionNames
+const { detail, flip, random, rotate } = actionNames
 
 /**
  * Enhanced Babylon' Engine
@@ -112,7 +100,7 @@ export function createEngine({
   let isLoading = false
 
   const actionNamesByButton = new Map()
-  const actionNamesByKey = new Map()
+  let actionNamesByKey = new Map()
 
   Object.defineProperty(engine, 'isLoading', { get: () => isLoading })
   Object.defineProperty(engine, 'actionNamesByKey', {
@@ -144,9 +132,23 @@ export function createEngine({
     cameraManager.adjustZoomLevels(game.zoomSpec)
     const handsEnabled = hasHandsEnabled(game)
     if (initial) {
+      actionNamesByButton.clear()
+      for (const [button, actions] of Object.entries(
+        game.actions ?? {
+          [buttonIds.button1]: [flip, random],
+          [buttonIds.button2]: [rotate],
+          [buttonIds.button3]: [detail]
+        }
+      )) {
+        actionNamesByButton.set(button, actions)
+      }
       isLoading = true
       engine.onLoadingObservable.notifyObservers(isLoading)
-      engine.displayLoadingUI()
+
+      actionNamesByKey = buildActionNamesByKey(
+        [...game.meshes, ...game.hands.flatMap(({ meshes }) => meshes)],
+        translate
+      )
 
       selectionManager.init({ scene, handScene })
       targetManager.init({
@@ -158,34 +160,11 @@ export function createEngine({
         { gameAssetsUrl, scene, handScene: handsEnabled ? handScene : null },
         game
       )
-      actionNamesByButton.clear()
-      for (const [button, actions] of Object.entries(
-        game.actions ?? {
-          [buttonIds.button1]: [flip, random],
-          [buttonIds.button2]: [rotate],
-          [buttonIds.button3]: [detail]
-        }
-      )) {
-        actionNamesByButton.set(button, actions)
-      }
-
-      actionNamesByKey.clear()
-      actionNamesByKey.set(translate('shortcuts.flip'), [flip])
-      actionNamesByKey.set(translate('shortcuts.rotate'), [rotate])
-      actionNamesByKey.set(translate('shortcuts.toggleLock'), [toggleLock])
-      actionNamesByKey.set(translate('shortcuts.draw'), [draw])
-      actionNamesByKey.set(translate('shortcuts.shuffle'), [reorder])
-      actionNamesByKey.set(translate('shortcuts.push'), [push, increment])
-      actionNamesByKey.set(translate('shortcuts.pop'), [pop, decrement])
-      actionNamesByKey.set(translate('shortcuts.random'), [random])
-      actionNamesByKey.set(translate('shortcuts.set-face'), [setFace])
-      actionNamesByKey.set(translate('shortcuts.detail'), [detail])
 
       createTable(game.tableSpec, scene)
       // creates light after table, so table doesn't project shadow
       createLights({ scene, handScene })
       scene.onDataLoadedObservable.addOnce(async () => {
-        engine.hideLoadingUI()
         isLoading = false
         // slight delay to let the UI disappear
         await sleep(100)

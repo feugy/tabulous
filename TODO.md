@@ -17,9 +17,7 @@
 - create Animation objects as part of runAnimation() (constant frameRate of 60)
 - all manager managing a collection of behaviors should check their capabilities + stackable/anchorable
 - game-manager is just a gigantic mess!!! no single responsibility, global state all over the place
-- UI lib: https://svelte-materialify.vercel.app/getting-started/installation/
 - stackable duration override's movable duration on
-- move camera when drop zone is not in sight and dropping on it
 
 ## UI
 
@@ -28,11 +26,9 @@
 - bug: 6-takes: snapping to the wrong anchor (when 2 players are snapping to different anchors)
 - bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
 - check headings ordering
-- per game configurable single/double/lon tap/left click action
 - detailable/stackable behavior: preview a stack of meshes
 - hide/distinguish non-connected participants?
 - distribute multiple meshes to players' hand
-- shortcuts cheatsheet
 - hand support for quantifiable behavior
 - put/draw under
 - "box" space for unusued/undesired meshes
@@ -42,7 +38,7 @@
 
 ## Server
 
-- bug: looby to parametrized game: handle concurrent parameters (playground)
+- bug: lobby to parametrized game: handle concurrent parameters (playground)
 - bug: timezone used for Serverside rendering is wrong
 - allows a single connection per player (discards other JWTs)
 - better coTURN integration (password management and rotation)
@@ -56,7 +52,7 @@
 - use symlink to switch between deployments (including conf files)
 - notifies on deployment failures/success
 
-## Known issues
+## Known "wont-fix" issues
 
 - moving items bellow other does not apply gravity to them
 

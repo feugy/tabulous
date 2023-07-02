@@ -45,11 +45,19 @@ const selectedMeshes$ = new BehaviorSubject(new Set())
 const highlightHand$ = new BehaviorSubject(false)
 const engineLoading$ = new Subject()
 
+/** @typedef {import('rxjs').Observable} Observable */
+
 /**
  * Emits 3D engine when available.
  * @type {Observable<import('@babylonjs/core').Engine>}
  */
 export const engine = engine$.asObservable()
+
+/**
+ * Emits a boolean indicating when the 3D engine is loading.
+ * @type {Observable<boolean>}
+ */
+export const engineLoading = engineLoading$.asObservable()
 
 /**
  * Emits the current number of frames per second.

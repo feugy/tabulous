@@ -100,7 +100,7 @@
 
 <style lang="postcss">
   aside {
-    @apply z-10 bg-$base-lightest;
+    @apply bg-$base-lightest pointer-events-auto;
   }
 
   .content {

@@ -71,7 +71,6 @@ describe('createEngine()', () => {
   // TODO input manager stopAll()
 
   describe('given an engine', () => {
-    let displayLoadingUI
     let loadingObserver
     const colorByPlayerId = new Map([[playerId, '#f0f']])
     const receiveLoading = vi.fn()
@@ -88,7 +87,6 @@ describe('createEngine()', () => {
         translate
       })
       loadingObserver = engine.onLoadingObservable.add(receiveLoading)
-      displayLoadingUI = vi.spyOn(engine, 'displayLoadingUI')
     })
 
     afterEach(() => engine.onLoadingObservable.remove(loadingObserver))
@@ -118,7 +116,6 @@ describe('createEngine()', () => {
       )
       engine.scenes[1].onDataLoadedObservable.notifyObservers()
       expect(engine.scenes[1].getMeshById(mesh.id)).toBeDefined()
-      expect(displayLoadingUI).not.toHaveBeenCalled()
       expect(engine.isLoading).toBe(false)
       expect(updateColors).toHaveBeenCalledWith(playerId, colorByPlayerId)
       expect(updateColors).toHaveBeenCalledTimes(1)
@@ -165,7 +162,7 @@ describe('createEngine()', () => {
       })
     })
 
-    it('displays loading UI on initial load only', async () => {
+    it('updates isLoading on initial load only', async () => {
       const selections = [
         { playerId: peerId2, selectedIds: ['4'] },
         { playerId, selectedIds: ['1', '2'] },
@@ -196,7 +193,6 @@ describe('createEngine()', () => {
       await sleep(150)
       expect(engine.isLoading).toBe(false)
       expect(engine.scenes[1].getMeshById(mesh.id)).toBeDefined()
-      expect(displayLoadingUI).toHaveBeenCalledTimes(1)
       expect(handManager.enabled).toBe(false)
       expect(receiveLoading).toHaveBeenCalledWith(false, expect.anything())
       expect(receiveLoading).toHaveBeenCalledTimes(1)
@@ -234,7 +230,6 @@ describe('createEngine()', () => {
       expect(engine.isLoading).toBe(true)
       engine.scenes[1].onDataLoadedObservable.notifyObservers()
       expect(engine.isLoading).toBe(false)
-      expect(displayLoadingUI).toHaveBeenCalledTimes(1)
       expect(handManager.enabled).toBe(true)
       expect(handInit).toHaveBeenCalledWith({
         scene: engine.scenes[1],
@@ -292,8 +287,19 @@ describe('createEngine()', () => {
           {
             meshes: [
               { id: 'card1', shape: 'card', drawable: { duration } },
-              { id: 'card2', shape: 'card', drawable: { duration } },
-              { id: 'card3', shape: 'card', drawable: { duration } }
+              {
+                id: 'card2',
+                shape: 'card',
+                drawable: { duration },
+                stackable: {},
+                quantifiable: {}
+              },
+              {
+                id: 'card3',
+                shape: 'card',
+                drawable: { duration },
+                flippable: {}
+              }
             ],
             hands: []
           },
@@ -331,7 +337,7 @@ describe('createEngine()', () => {
         expect(updateColors).toHaveBeenCalledTimes(1)
       })
 
-      it('has default actionIds map by button and key', () => {
+      it('has action names mapped by button and shortcut', () => {
         expect(engine.actionNamesByButton).toMatchInlineSnapshot(`
           Map {
             "button1" => [
@@ -348,20 +354,14 @@ describe('createEngine()', () => {
         `)
         expect(engine.actionNamesByKey).toMatchInlineSnapshot(`
           Map {
-            "shortcuts.flip" => [
-              "flip",
-            ],
-            "shortcuts.rotate" => [
-              "rotate",
-            ],
-            "shortcuts.toggleLock" => [
-              "toggleLock",
-            ],
             "shortcuts.draw" => [
               "draw",
             ],
-            "shortcuts.shuffle" => [
+            "shortcuts.reorder" => [
               "reorder",
+            ],
+            "shortcuts.flip" => [
+              "flip",
             ],
             "shortcuts.push" => [
               "push",
@@ -370,15 +370,6 @@ describe('createEngine()', () => {
             "shortcuts.pop" => [
               "pop",
               "decrement",
-            ],
-            "shortcuts.random" => [
-              "random",
-            ],
-            "shortcuts.set-face" => [
-              "setFace",
-            ],
-            "shortcuts.detail" => [
-              "detail",
             ],
           }
         `)
