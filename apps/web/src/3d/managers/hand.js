@@ -10,6 +10,7 @@ import {
   MoveBehaviorName,
   RotateBehaviorName
 } from '../behaviors/names'
+import { actionNames } from '../utils/actions'
 import {
   animateMove,
   getPositionAboveZone,
@@ -262,7 +263,7 @@ class HandManager {
         getDrawable(mesh).animateToMain()
       }
       indicatorManager.registerFeedback({
-        action: 'draw',
+        action: actionNames.draw,
         playerId,
         position: [state.x, state.y, state.z]
       })
@@ -287,11 +288,11 @@ export const handManager = new HandManager()
 
 function handleAction(manager, action) {
   const { fn, meshId } = action
-  if (fn === 'rotate' || fn === 'flip') {
+  if (fn === actionNames.rotate || fn === actionNames.flip) {
     const handMesh = manager.handScene.getMeshById(meshId)
     if (handMesh) {
       const behavior = handMesh.getBehaviorByName(
-        fn === 'rotate' ? RotateBehaviorName : FlipBehaviorName
+        fn === actionNames.rotate ? RotateBehaviorName : FlipBehaviorName
       )
       behavior.onAnimationEndObservable.addOnce(() => {
         logger.info(action, 'detects hand change')
@@ -437,7 +438,7 @@ function recordDraw(mesh, finalPosition) {
     state.y = finalPosition.y
     state.z = finalPosition.z
   }
-  controlManager.record({ mesh, fn: 'draw', args: [state] })
+  controlManager.record({ mesh, fn: actionNames.draw, args: [state] })
 }
 
 function computeExtent(manager, engine) {

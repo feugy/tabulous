@@ -1,4 +1,5 @@
 <script>
+  import { actionNames } from '@src/3d/utils/actions'
   import { Label, PlayerThumbnail } from '@src/components'
 
   import Feedback from './Feedback.svelte'
@@ -10,13 +11,13 @@
   }
 
   function computeFeedback({ action }) {
-    return action === 'push'
+    return action === actionNames.push
       ? 'layers'
-      : action === 'pop'
+      : action === actionNames.pop
       ? 'layers_clear'
-      : action === 'snap'
+      : action === actionNames.snap
       ? 'link'
-      : action === 'unsnap'
+      : action === actionNames.unsnap
       ? 'link_off'
       : action === 'lock'
       ? 'lock'

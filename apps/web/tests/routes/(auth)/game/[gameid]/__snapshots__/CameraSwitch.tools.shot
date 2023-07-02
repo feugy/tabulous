@@ -4,7 +4,7 @@ exports[`Max count reached 1`] = `
 HTMLCollection [
   <button
     class="transparent s-NMyTiX1zi6rz"
-    title="Charger la position initiale de la camera (Début)"
+    title="Restaurer la position initiale de la camera (Début)"
   >
     <div
       class="s-NMyTiX1zi6rz"
@@ -21,7 +21,7 @@ HTMLCollection [
   </button>,
   <button
     class="transparent s-NMyTiX1zi6rz"
-    title="Charger (clic) ou enregistrer (clic long) la position à l'emplacement 1"
+    title="Restaurer (clic / 1) ou mettre à jour (clic long / Ctrl+1) la position à l'emplacement"
   >
     <div
       class="s-NMyTiX1zi6rz"
@@ -43,7 +43,7 @@ HTMLCollection [
   </button>,
   <button
     class="transparent s-NMyTiX1zi6rz"
-    title="Charger (clic) ou enregistrer (clic long) la position à l'emplacement 2"
+    title="Restaurer (clic / 2) ou mettre à jour (clic long / Ctrl+2) la position à l'emplacement"
   >
     <div
       class="s-NMyTiX1zi6rz"
@@ -65,7 +65,7 @@ HTMLCollection [
   </button>,
   <button
     class="transparent s-NMyTiX1zi6rz"
-    title="Charger (clic) ou enregistrer (clic long) la position à l'emplacement 3"
+    title="Restaurer (clic / 3) ou mettre à jour (clic long / Ctrl+3) la position à l'emplacement"
   >
     <div
       class="s-NMyTiX1zi6rz"
@@ -92,7 +92,7 @@ exports[`Multiple saves 1`] = `
 HTMLCollection [
   <button
     class="transparent s-NMyTiX1zi6rz"
-    title="Charger la position initiale de la camera (Début)"
+    title="Restaurer la position initiale de la camera (Début)"
   >
     <div
       class="s-NMyTiX1zi6rz"
@@ -109,7 +109,7 @@ HTMLCollection [
   </button>,
   <button
     class="transparent s-NMyTiX1zi6rz"
-    title="Charger (clic) ou enregistrer (clic long) la position à l'emplacement 1"
+    title="Restaurer (clic / 1) ou mettre à jour (clic long / Ctrl+1) la position à l'emplacement"
   >
     <div
       class="s-NMyTiX1zi6rz"
@@ -131,7 +131,7 @@ HTMLCollection [
   </button>,
   <button
     class="transparent s-NMyTiX1zi6rz"
-    title="Charger (clic) ou enregistrer (clic long) la position à l'emplacement 2"
+    title="Restaurer (clic / 2) ou mettre à jour (clic long / Ctrl+2) la position à l'emplacement"
   >
     <div
       class="s-NMyTiX1zi6rz"
@@ -175,7 +175,7 @@ exports[`Multiple saves with current 1`] = `
 HTMLCollection [
   <button
     class="transparent s-NMyTiX1zi6rz"
-    title="Charger la position initiale de la camera (Début)"
+    title="Restaurer la position initiale de la camera (Début)"
   >
     <div
       class="s-NMyTiX1zi6rz"
@@ -193,7 +193,7 @@ HTMLCollection [
   <button
     class="transparent s-NMyTiX1zi6rz"
     disabled=""
-    title="Charger (clic) ou enregistrer (clic long) la position à l'emplacement 1"
+    title="Restaurer (clic / 1) ou mettre à jour (clic long / Ctrl+1) la position à l'emplacement"
   >
     <div
       class="s-NMyTiX1zi6rz"
@@ -215,7 +215,7 @@ HTMLCollection [
   </button>,
   <button
     class="transparent s-NMyTiX1zi6rz"
-    title="Charger (clic) ou enregistrer (clic long) la position à l'emplacement 2"
+    title="Restaurer (clic / 2) ou mettre à jour (clic long / Ctrl+2) la position à l'emplacement"
   >
     <div
       class="s-NMyTiX1zi6rz"
@@ -260,7 +260,7 @@ exports[`Single save 1`] = `
 HTMLCollection [
   <button
     class="transparent s-NMyTiX1zi6rz"
-    title="Charger la position initiale de la camera (Début)"
+    title="Restaurer la position initiale de la camera (Début)"
   >
     <div
       class="s-NMyTiX1zi6rz"

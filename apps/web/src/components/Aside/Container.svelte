@@ -14,6 +14,8 @@
   export let playerById
   export let thread
   export let connected
+  export let actionNamesByButton = new Map()
+  export let actionNamesByKey = new Map()
   export let game = undefined
   export let friends = undefined
 
@@ -83,7 +85,7 @@
       {:else if tabs[tab]?.id === rulesId}
         <RuleViewer game={game?.kind} lastPage={game?.rulesBookPageCount - 1} />
       {:else if tabs[tab]?.id === helpId}
-        <ControlsHelp />
+        <ControlsHelp {actionNamesByButton} {actionNamesByKey} />
       {:else if tabs[tab]?.id === friendsId}
         <FriendList
           {friends}
@@ -98,7 +100,7 @@
 
 <style lang="postcss">
   aside {
-    @apply z-10 bg-$base-lightest;
+    @apply bg-$base-lightest pointer-events-auto;
   }
 
   .content {

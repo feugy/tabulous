@@ -7,9 +7,13 @@ import {
   moveManager,
   selectionManager
 } from '@src/3d/managers'
-import { createTable, getMeshScreenPosition } from '@src/3d/utils'
 import {
-  actionIds,
+  actionNames,
+  buttonIds,
+  createTable,
+  getMeshScreenPosition
+} from '@src/3d/utils'
+import {
   attachInputs,
   computeMenuProps,
   triggerAction,
@@ -45,6 +49,22 @@ describe('Game interaction model', () => {
     moveManager.init(created)
     selectionManager.init({ ...created, color: '#ff0000' })
     engine = created.engine
+    engine.actionNamesByButton = new Map([
+      [buttonIds.button1, [actionNames.flip]],
+      [buttonIds.button2, [actionNames.detail]],
+      [buttonIds.button3, [actionNames.rotate]]
+    ])
+    engine.actionNamesByKey = new Map([
+      ['f', [actionNames.flip]],
+      ['r', [actionNames.rotate]],
+      ['l', [actionNames.toggleLock]],
+      ['d', [actionNames.draw]],
+      ['s', [actionNames.reorder]],
+      ['g', [actionNames.push, actionNames.increment]],
+      ['u', [actionNames.pop, actionNames.decrement]],
+      ['v', [actionNames.detail]],
+      ['k', ['unknown']]
+    ])
   })
 
   beforeAll(async () => {
@@ -105,8 +125,8 @@ describe('Game interaction model', () => {
         {
           functionName: 'setFace',
           icon: 'casino',
-          title: 'tooltips.set-face',
-          badge: 'shortcuts.set-face',
+          title: 'tooltips.setFace',
+          badge: 'shortcuts.setFace',
           quantity: mesh.metadata.face,
           max: mesh.metadata.maxFace
         }
@@ -139,8 +159,8 @@ describe('Game interaction model', () => {
         {
           functionName: 'setFace',
           icon: 'casino',
-          title: 'tooltips.set-face',
-          badge: 'shortcuts.set-face',
+          title: 'tooltips.setFace',
+          badge: 'shortcuts.setFace',
           quantity: mesh.metadata.face,
           max: mesh.metadata.maxFace
         }
@@ -178,8 +198,8 @@ describe('Game interaction model', () => {
         {
           functionName: 'setFace',
           icon: 'casino',
-          title: 'tooltips.set-face',
-          badge: 'shortcuts.set-face',
+          title: 'tooltips.setFace',
+          badge: 'shortcuts.setFace',
           quantity: mesh.metadata.face,
           max: mesh.metadata.maxFace
         }
@@ -233,8 +253,8 @@ describe('Game interaction model', () => {
         {
           functionName: 'setFace',
           icon: 'casino',
-          title: 'tooltips.set-face',
-          badge: 'shortcuts.set-face',
+          title: 'tooltips.setFace',
+          badge: 'shortcuts.setFace',
           quantity: mesh5.metadata.face,
           max: mesh5.metadata.maxFace,
           triggeredMesh: mesh6
@@ -355,8 +375,8 @@ describe('Game interaction model', () => {
         {
           functionName: 'reorder',
           icon: 'shuffle',
-          title: 'tooltips.shuffle',
-          badge: 'shortcuts.shuffle'
+          title: 'tooltips.reorder',
+          badge: 'shortcuts.reorder'
         },
         { functionName: 'draw', icon: 'front_hand' },
         { functionName: 'toggleLock', icon: 'lock', title: 'tooltips.lock' },
@@ -368,8 +388,8 @@ describe('Game interaction model', () => {
         {
           functionName: 'setFace',
           icon: 'casino',
-          title: 'tooltips.set-face',
-          badge: 'shortcuts.set-face',
+          title: 'tooltips.setFace',
+          badge: 'shortcuts.setFace',
           quantity: mesh3.metadata.face,
           max: mesh3.metadata.maxFace
         }
@@ -402,8 +422,8 @@ describe('Game interaction model', () => {
         {
           functionName: 'setFace',
           icon: 'casino',
-          title: 'tooltips.set-face',
-          badge: 'shortcuts.set-face',
+          title: 'tooltips.setFace',
+          badge: 'shortcuts.setFace',
           quantity: mesh7.metadata.face,
           max: mesh7.metadata.maxFace
         }
@@ -455,8 +475,8 @@ describe('Game interaction model', () => {
         {
           functionName: 'setFace',
           icon: 'casino',
-          title: 'tooltips.set-face',
-          badge: 'shortcuts.set-face',
+          title: 'tooltips.setFace',
+          badge: 'shortcuts.setFace',
           quantity: mesh2.metadata.face,
           max: mesh2.metadata.maxFace
         }
@@ -500,8 +520,8 @@ describe('Game interaction model', () => {
         {
           functionName: 'setFace',
           icon: 'casino',
-          title: 'tooltips.set-face',
-          badge: 'shortcuts.set-face',
+          title: 'tooltips.setFace',
+          badge: 'shortcuts.setFace',
           quantity: mesh2.metadata.face,
           max: mesh2.metadata.maxFace
         }
@@ -565,8 +585,8 @@ describe('Game interaction model', () => {
         {
           functionName: 'setFace',
           icon: 'casino',
-          title: 'tooltips.set-face',
-          badge: 'shortcuts.set-face',
+          title: 'tooltips.setFace',
+          badge: 'shortcuts.setFace',
           quantity: mesh2.metadata.face,
           max: mesh2.metadata.maxFace
         }
@@ -619,8 +639,8 @@ describe('Game interaction model', () => {
         {
           functionName: 'setFace',
           icon: 'casino',
-          title: 'tooltips.set-face',
-          badge: 'shortcuts.set-face',
+          title: 'tooltips.setFace',
+          badge: 'shortcuts.setFace',
           quantity: mesh7.metadata.face,
           max: mesh7.metadata.maxFace
         }
@@ -671,8 +691,8 @@ describe('Game interaction model', () => {
         {
           functionName: 'setFace',
           icon: 'casino',
-          title: 'tooltips.set-face',
-          badge: 'shortcuts.set-face',
+          title: 'tooltips.setFace',
+          badge: 'shortcuts.setFace',
           quantity: mesh2.metadata.face,
           max: mesh2.metadata.maxFace
         }
@@ -714,8 +734,8 @@ describe('Game interaction model', () => {
         {
           functionName: 'setFace',
           icon: 'casino',
-          title: 'tooltips.set-face',
-          badge: 'shortcuts.set-face',
+          title: 'tooltips.setFace',
+          badge: 'shortcuts.setFace',
           quantity: mesh8.metadata.face,
           max: mesh8.metadata.maxFace
         }
@@ -771,8 +791,8 @@ describe('Game interaction model', () => {
         {
           functionName: 'setFace',
           icon: 'casino',
-          title: 'tooltips.set-face',
-          badge: 'shortcuts.set-face',
+          title: 'tooltips.setFace',
+          badge: 'shortcuts.setFace',
           quantity: mesh3.metadata.face,
           max: mesh3.metadata.maxFace
         }
@@ -829,8 +849,8 @@ describe('Game interaction model', () => {
         {
           functionName: 'setFace',
           icon: 'casino',
-          title: 'tooltips.set-face',
-          badge: 'shortcuts.set-face',
+          title: 'tooltips.setFace',
+          badge: 'shortcuts.setFace',
           quantity: mesh1.metadata.face,
           max: mesh2.metadata.maxFace,
           clickArg: { quantity: 3 },
@@ -965,22 +985,10 @@ describe('Game interaction model', () => {
   describe('attachInputs()', () => {
     let drawSelectionBox
     let selectWithinBox
-    const actionIdsByKey = new Map([
-      ['f', [actionIds.flip]],
-      ['r', [actionIds.rotate]],
-      ['l', [actionIds.toggleLock]],
-      ['d', [actionIds.draw]],
-      ['s', [actionIds.shuffle]],
-      ['g', [actionIds.push, actionIds.increment]],
-      ['u', [actionIds.pop, actionIds.decrement]],
-      ['v', [actionIds.detail]],
-      ['k', ['unknown']]
-    ])
 
     beforeAll(() => {
       subscriptions = attachInputs({
         engine,
-        actionIdsByKey,
         doubleTapDelay,
         actionMenuProps$
       })
@@ -1897,6 +1905,7 @@ function buildMesh(data) {
   mesh.metadata = {
     face: 4,
     maxFace: 6,
+    frontImage: 'front.png',
     detail: vi.fn(),
     flip: vi.fn(),
     rotate: vi.fn(),

@@ -1,8 +1,9 @@
 import { controlManager } from '../managers/control'
+import { actionNames } from '../utils/actions'
 import {
   attachFunctions,
   attachProperty,
-  isMeshFlipped
+  selectDetailedFace
 } from '../utils/behaviors'
 import { DetailBehaviorName } from './names'
 
@@ -66,9 +67,7 @@ export class DetailBehavior {
     controlManager.onDetailedObservable.notifyObservers({
       mesh: this.mesh,
       data: {
-        image:
-          this.state[isMeshFlipped(this.mesh) ? 'backImage' : 'frontImage'] ??
-          null
+        image: selectDetailedFace(this.mesh)
       }
     })
   }
@@ -82,7 +81,7 @@ export class DetailBehavior {
       throw new Error('Can not restore state without mesh')
     }
     this.state = { frontImage, backImage }
-    attachFunctions(this, 'detail')
+    attachFunctions(this, actionNames.detail)
     attachProperty(this, 'frontImage', () => this.state.frontImage)
     attachProperty(this, 'backImage', () => this.state.backImage)
   }

@@ -1,9 +1,10 @@
 <script>
-  import { Aside, Progress } from '@src/components'
+  import { Aside } from '@src/components'
   import {
     actionMenuProps,
     connected,
     currentGame,
+    engineLoading,
     gamePlayerById,
     handMeshes,
     handVisible,
@@ -35,6 +36,7 @@
   import GameHand from './GameHand.svelte'
   import GameMenu from './GameMenu.svelte'
   import Indicators from './Indicators.svelte'
+  import LoadingScreen from './LoadingScreen'
   import MeshDetails from './MeshDetails.svelte'
   import Parameters from './Parameters'
   import RadialMenu from './RadialMenu.svelte'
@@ -47,16 +49,20 @@
   let canvas
   let interaction
   let hand
-  let joinPromise
   let dimensionObserver
   let dimensionSubscription
   let gameParameters
   let friends
   let restoreColors
+  let isJoining = false
 
   $: if (browser && $playerColor) {
     document.documentElement.style.setProperty('--svg-highlight', $playerColor)
   }
+  $: actionNamesByButton =
+    $engineLoading || engine ? engine.actionNamesByButton : undefined
+  $: actionNamesByKey =
+    $engineLoading || engine ? engine.actionNamesByKey : undefined
 
   onMount(() => {
     engine = initEngine({ canvas, interaction, longTapDelay, hand })
@@ -82,33 +88,35 @@
     dimensionSubscription?.unsubscribe()
   })
 
-  function askForGame(parameters) {
+  async function askForGame(parameters) {
     gameParameters = null
-    joinPromise = joinGame({
-      gameId: $page.params.gameId,
-      ...data.session,
-      parameters,
-      onDeletion: () => {
-        toastInfo({ contentKey: 'labels.game-deleted-by-owner' })
-        goto('/home')
-      }
-    })
-      .then(result => {
-        restoreColors = applyGameColors(result.colors)
-        if (result?.schemaString) {
-          gameParameters = {
-            schema: JSON.parse(result.schemaString)
-          }
-        }
-        if (isLobby(result)) {
+    try {
+      isJoining = true
+      const result = await joinGame({
+        gameId: $page.params.gameId,
+        ...data.session,
+        parameters,
+        onDeletion: () => {
+          toastInfo({ contentKey: 'labels.game-deleted-by-owner' })
           goto('/home')
         }
       })
-      .catch(err => {
-        console.error(err)
-        toastError({ content: err.message })
+      restoreColors = applyGameColors(result.colors)
+      if (result?.schemaString) {
+        gameParameters = {
+          schema: JSON.parse(result.schemaString)
+        }
+      }
+      if (isLobby(result)) {
         goto('/home')
-      })
+      }
+    } catch (err) {
+      console.error(err)
+      toastError({ content: err.message })
+      goto('/home')
+    } finally {
+      isJoining = false
+    }
   }
 
   function handleCloseDetails() {
@@ -124,11 +132,20 @@
   <title>{$_('page-titles.game')}</title>
 </svelte:head>
 
-{#await joinPromise}
-  <div class="overlay">
-    <Progress />
-  </div>
-{/await}
+<div class="overlay">
+  <LoadingScreen visible={$engineLoading || isJoining} {actionNamesByButton} />
+  <Aside
+    game={$currentGame}
+    player={data.session.player}
+    playerById={$gamePlayerById}
+    connected={$connected}
+    thread={$thread}
+    friends={$friends}
+    {actionNamesByButton}
+    {actionNamesByKey}
+    on:sendMessage={({ detail }) => sendToThread(detail.text)}
+  />
+</div>
 <GameMenu {longTapDelay} />
 <main>
   <!-- svelte-ignore a11y-autofocus -->
@@ -159,25 +176,20 @@
   </div>
   <RadialMenu {...$actionMenuProps || {}} />
   <CursorInfo halos={longInputs} />
-  <Aside
-    game={$currentGame}
-    player={data.session.player}
-    playerById={$gamePlayerById}
-    connected={$connected}
-    thread={$thread}
-    friends={$friends}
-    on:sendMessage={({ detail }) => sendToThread(detail.text)}
-  />
 </main>
 
 <style lang="postcss">
   main,
   .overlay {
-    @apply absolute inset-0 flex items-stretch overflow-hidden;
+    @apply absolute inset-0 flex items-stretch overflow-hidden z-1;
+  }
+
+  .overlay {
+    @apply z-10 justify-end pointer-events-none;
   }
 
   main {
-    container-type: inline-size z-10;
+    container-type: inline-size;
 
     :global(> aside) {
       @apply absolute inset-y-0 right-0;
@@ -193,9 +205,5 @@
   canvas {
     @apply absolute top-0 left-0 select-none h-full w-full;
     touch-action: none;
-  }
-
-  .overlay {
-    @apply flex items-center justify-center z-10;
   }
 </style>

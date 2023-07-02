@@ -32,3 +32,7 @@ export const colors = {
   secondary: '#fefae0',
   players: ['#dda15e', '#606c38']
 }
+
+export const actions = {
+  button1: ['rotate']
+}

@@ -22,6 +22,7 @@ type Game {
   zoomSpec: ZoomSpec
   tableSpec: TableSpec
   colors: ColorSpec
+  actions: ActionSpec
 }
 
 type DetailableState {
@@ -225,6 +226,31 @@ type ColorSpec {
   base: String
   primary: String
   secondary: String
+}
+
+enum ActionName {
+  decrement
+  detail
+  draw
+  flip
+  flipAll
+  increment
+  pop
+  push
+  random
+  reorder
+  rotate
+  setFace
+  snap
+  toggleLock
+  unsnap
+  unsnapAll
+}
+
+type ActionSpec {
+  button1: [ActionName]
+  button2: [ActionName]
+  button3: [ActionName]
 }
 
 input GameInput {

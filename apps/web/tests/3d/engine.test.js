@@ -28,6 +28,7 @@ describe('createEngine()', () => {
   const applySelection = vi.spyOn(selectionManager, 'apply')
   const targetInit = vi.spyOn(targetManager, 'init')
   const handInit = vi.spyOn(handManager, 'init')
+  const translate = key => key
 
   beforeEach(() => {
     Logger.LogLevels = 0
@@ -46,7 +47,8 @@ describe('createEngine()', () => {
       interaction,
       hand,
       doubleTapDelay,
-      longTapDelay
+      longTapDelay,
+      translate
     })
     expect(engine.enableOfflineSupport).toBe(false)
     expect(engine.inputElement).toBeUndefined()
@@ -63,11 +65,12 @@ describe('createEngine()', () => {
     expect(handInit).not.toHaveBeenCalled()
     expect(updateColors).not.toHaveBeenCalled()
     expect(applySelection).not.toHaveBeenCalled()
+    expect(engine.actionNamesByButton).toEqual(new Map([]))
+    expect(engine.actionNamesByKey).toEqual(new Map([]))
   })
   // TODO input manager stopAll()
 
   describe('given an engine', () => {
-    let displayLoadingUI
     let loadingObserver
     const colorByPlayerId = new Map([[playerId, '#f0f']])
     const receiveLoading = vi.fn()
@@ -80,10 +83,10 @@ describe('createEngine()', () => {
         interaction,
         hand,
         doubleTapDelay: 100,
-        longTapDelay: 200
+        longTapDelay: 200,
+        translate
       })
       loadingObserver = engine.onLoadingObservable.add(receiveLoading)
-      displayLoadingUI = vi.spyOn(engine, 'displayLoadingUI')
     })
 
     afterEach(() => engine.onLoadingObservable.remove(loadingObserver))
@@ -113,7 +116,6 @@ describe('createEngine()', () => {
       )
       engine.scenes[1].onDataLoadedObservable.notifyObservers()
       expect(engine.scenes[1].getMeshById(mesh.id)).toBeDefined()
-      expect(displayLoadingUI).not.toHaveBeenCalled()
       expect(engine.isLoading).toBe(false)
       expect(updateColors).toHaveBeenCalledWith(playerId, colorByPlayerId)
       expect(updateColors).toHaveBeenCalledTimes(1)
@@ -160,7 +162,7 @@ describe('createEngine()', () => {
       })
     })
 
-    it('displays loading UI on initial load only', async () => {
+    it('updates isLoading on initial load only', async () => {
       const selections = [
         { playerId: peerId2, selectedIds: ['4'] },
         { playerId, selectedIds: ['1', '2'] },
@@ -191,7 +193,6 @@ describe('createEngine()', () => {
       await sleep(150)
       expect(engine.isLoading).toBe(false)
       expect(engine.scenes[1].getMeshById(mesh.id)).toBeDefined()
-      expect(displayLoadingUI).toHaveBeenCalledTimes(1)
       expect(handManager.enabled).toBe(false)
       expect(receiveLoading).toHaveBeenCalledWith(false, expect.anything())
       expect(receiveLoading).toHaveBeenCalledTimes(1)
@@ -229,7 +230,6 @@ describe('createEngine()', () => {
       expect(engine.isLoading).toBe(true)
       engine.scenes[1].onDataLoadedObservable.notifyObservers()
       expect(engine.isLoading).toBe(false)
-      expect(displayLoadingUI).toHaveBeenCalledTimes(1)
       expect(handManager.enabled).toBe(true)
       expect(handInit).toHaveBeenCalledWith({
         scene: engine.scenes[1],
@@ -256,6 +256,30 @@ describe('createEngine()', () => {
       expect(ordering).toEqual(['beforeDispose', 'dispose'])
     })
 
+    it('can load game specific actions', async () => {
+      await engine.load(
+        {
+          meshes: [],
+          hands: [],
+          actions: { button1: ['rotate', 'pop'], button3: ['random'] }
+        },
+        { playerId, colorByPlayerId, preferences: {} },
+        true
+      )
+
+      expect(engine.actionNamesByButton).toMatchInlineSnapshot(`
+        Map {
+          "button1" => [
+            "rotate",
+            "pop",
+          ],
+          "button3" => [
+            "random",
+          ],
+        }
+      `)
+    })
+
     describe('given some loaded meshes', () => {
       beforeEach(async () => {
         const duration = 200
@@ -263,8 +287,19 @@ describe('createEngine()', () => {
           {
             meshes: [
               { id: 'card1', shape: 'card', drawable: { duration } },
-              { id: 'card2', shape: 'card', drawable: { duration } },
-              { id: 'card3', shape: 'card', drawable: { duration } }
+              {
+                id: 'card2',
+                shape: 'card',
+                drawable: { duration },
+                stackable: {},
+                quantifiable: {}
+              },
+              {
+                id: 'card3',
+                shape: 'card',
+                drawable: { duration },
+                flippable: {}
+              }
             ],
             hands: []
           },
@@ -300,6 +335,44 @@ describe('createEngine()', () => {
           updatedColorByPlayerId
         )
         expect(updateColors).toHaveBeenCalledTimes(1)
+      })
+
+      it('has action names mapped by button and shortcut', () => {
+        expect(engine.actionNamesByButton).toMatchInlineSnapshot(`
+          Map {
+            "button1" => [
+              "flip",
+              "random",
+            ],
+            "button2" => [
+              "rotate",
+            ],
+            "button3" => [
+              "detail",
+            ],
+          }
+        `)
+        expect(engine.actionNamesByKey).toMatchInlineSnapshot(`
+          Map {
+            "shortcuts.draw" => [
+              "draw",
+            ],
+            "shortcuts.reorder" => [
+              "reorder",
+            ],
+            "shortcuts.flip" => [
+              "flip",
+            ],
+            "shortcuts.push" => [
+              "push",
+              "increment",
+            ],
+            "shortcuts.pop" => [
+              "pop",
+              "decrement",
+            ],
+          }
+        `)
       })
     })
   })

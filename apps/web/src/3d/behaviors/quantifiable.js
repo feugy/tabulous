@@ -6,6 +6,7 @@ import { indicatorManager } from '../managers/indicator'
 import { moveManager } from '../managers/move'
 import { selectionManager } from '../managers/selection'
 import { targetManager } from '../managers/target'
+import { actionNames } from '../utils/actions'
 import {
   animateMove,
   attachFunctions,
@@ -140,7 +141,7 @@ export class QuantityBehavior extends TargetBehavior {
 
     controlManager.record({
       mesh,
-      fn: 'increment',
+      fn: actionNames.increment,
       args: [meshIds, immediate],
       duration
     })
@@ -207,7 +208,7 @@ export class QuantityBehavior extends TargetBehavior {
     updateIndicator(mesh, state.quantity)
     controlManager.record({
       mesh,
-      fn: 'decrement',
+      fn: actionNames.decrement,
       args: [count, withMove],
       duration
     })
@@ -239,7 +240,12 @@ export class QuantityBehavior extends TargetBehavior {
       this.state
     )
 
-    attachFunctions(this, 'increment', 'decrement', 'canIncrement')
+    attachFunctions(
+      this,
+      actionNames.increment,
+      actionNames.decrement,
+      'canIncrement'
+    )
     attachProperty(this, 'quantity', () => this.state.quantity)
   }
 }

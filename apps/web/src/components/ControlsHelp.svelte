@@ -1,73 +1,136 @@
-<script context="module">
-  import { browser } from '$app/environment'
+<script>
+  import { buttonIds } from '@src/3d/utils/actions'
+  import { isTouchScreen } from '@src/utils'
+  import { _ } from 'svelte-intl'
+  
+  import HelpButton1 from './HelpButton1.svelte'
+  import HelpButton2 from './HelpButton2.svelte'
+  import HelpButton3 from './HelpButton3.svelte'
+  import HelpKey from './HelpKey.svelte'
+  import Skeleton from './Skeleton.svelte'
 
-  let isTouch = false
-  if (browser) {
-    isTouch = navigator?.maxTouchPoints > 0
+  export let actionNamesByButton = new Map()
+  export let actionNamesByKey = new Map()
+
+  const isTouch = isTouchScreen()
+  const tone = 'base-lighter'
+
+  const iconPromise = import('@src/svg/help')
+
+  $: button1Actions = actionNamesByButton?.get(buttonIds.button1)
+  $: button2Actions = actionNamesByButton?.get(buttonIds.button2)
+  $: button3Actions = actionNamesByButton?.get(buttonIds.button3)
+
+  function mapToLabels(actions) {
+    return actions.map(action => $_(`labels.help-${action}`)).join('<br/>')
   }
 </script>
 
-<script>
-  import { _ } from 'svelte-intl'
-  
-  import Progress from './Progress.svelte'
-</script>
-
 <div>
-  {#await import('@src/svg/help')}
-    <Progress />
-  {:then { DoubleLeftObject, DoublePointerObject, LeftDrag, LeftDragObject, LeftObject, LeftOutside, LongLeftObject, LongPointerObject, MiddleDrag, MouseWheel, Pinch, PointerDrag, PointerDragObject, PointerObject, PointerOutside, RightDrag, RightObject, ThreePointersDrag, TwoPointersDrag, TwoPointersObject }}
-    <h3>{$_('titles.object-controls')}</h3>
-    <dl>
-      <dt>
+  <h3>{$_('titles.object-controls')}</h3>
+  <dl>
+    <dt>
+      {#await iconPromise}
+        <Skeleton height="74px" {tone} />
+      {:then { RightObject, TwoPointersObject }}
         {#if isTouch}<TwoPointersObject />{:else} <RightObject />{/if}
-      </dt>
-      <dd>{$_('labels.help-open-menu')}</dd>
-      <dt>
-        {#if isTouch}<PointerObject />{:else} <LeftObject />{/if}
-      </dt>
-      <dd>{$_('labels.help-flip')}</dd>
-      <dt>
-        {#if isTouch}<LongPointerObject />{:else} <LongLeftObject />{/if}
-      </dt>
-      <dd>{$_('labels.help-rotate')}</dd>
-      <dt>
-        {#if isTouch}<DoublePointerObject />{:else} <DoubleLeftObject />{/if}
-      </dt>
-      <dd>{$_('labels.help-detail')}</dd>
-      <dt>
+      {/await}
+    </dt>
+    <dd>{$_('labels.help-open-menu')}</dd>
+    {#if button1Actions?.length}
+      <dt><HelpButton1 /></dt>
+      <dd>{@html mapToLabels(button1Actions)}</dd>
+    {/if}
+    {#if button2Actions?.length}
+      <dt><HelpButton2 /></dt>
+      <dd>{@html mapToLabels(button2Actions)}</dd>
+    {/if}
+    {#if button3Actions?.length}
+      <dt><HelpButton3 /></dt>
+      <dd>{@html mapToLabels(button3Actions)}</dd>
+    {/if}
+    <dt>
+      {#await iconPromise}
+        <Skeleton height="55px" {tone} />
+      {:then { LeftDragObject, PointerDragObject }}
         {#if isTouch}<PointerDragObject />{:else} <LeftDragObject />{/if}
-      </dt>
-      <dd>{$_('labels.help-move')}</dd>
-      <dt>
+      {/await}
+    </dt>
+    <dd>{$_('labels.help-move')}</dd>
+    <dt>
+      {#await iconPromise}
+        <Skeleton height="55px" {tone} />
+      {:then { LeftDrag, PointerDrag }}
         {#if isTouch}<PointerDrag />{:else} <LeftDrag />{/if}
-      </dt>
-      <dd>{$_('labels.help-add-to-selection')}</dd>
-      <dt>
+      {/await}
+    </dt>
+    <dd>{$_('labels.help-add-to-selection')}</dd>
+    <dt>
+      {#await iconPromise}
+        <Skeleton height="80px" {tone} />
+      {:then { LeftOutside, PointerOutside }}
         {#if isTouch}<PointerOutside />{:else} <LeftOutside />{/if}
-      </dt>
-      <dd>{$_('labels.help-clear-selection')}</dd>
-    </dl>
+      {/await}
+    </dt>
+    <dd>{$_('labels.help-clear-selection')}</dd>
+  </dl>
 
-    <h3>{$_('titles.camera-controls')}</h3>
-    <dl>
-      <dt>
+  <h3>{$_('titles.camera-controls')}</h3>
+  <dl>
+    <dt>
+      {#await iconPromise}
+        <Skeleton height="55px" {tone} />
+      {:then { Arrows, RightDrag, TwoPointersDrag }}
         {#if isTouch}<TwoPointersDrag />{:else} <RightDrag />{/if}
-      </dt>
-      <dd>{$_('labels.help-pan-camera')}</dd>
-      <dt>
+        <Arrows />
+      {/await}
+    </dt>
+    <dd>{$_('labels.help-pan-camera')}</dd>
+    <dt>
+      {#await iconPromise}
+        <Skeleton height="74px" {tone} />
+      {:then { CtrlArrows, MiddleDrag, ThreePointersDrag }}
         {#if isTouch}<ThreePointersDrag />{:else} <MiddleDrag />{/if}
-      </dt>
-      <dd>{$_('labels.help-rotate-camera')}</dd>
-      <dt>
+        <CtrlArrows />
+      {/await}
+    </dt>
+    <dd>{$_('labels.help-rotate-camera')}</dd>
+    <dt>
+      {#await iconPromise}
+        <Skeleton height="70px" {tone} />
+      {:then { MouseWheel, Pinch }}
         {#if isTouch}<Pinch />{:else} <MouseWheel />{/if}
+      {/await}
+    </dt>
+    <dd>{$_('labels.help-zoom')}</dd>
+    <dt>
+      <i class="material-icons">video_call</i>
+      {#await iconPromise then { CtrlNumbers }}<CtrlNumbers />{/await}
+    </dt>
+    <dd>{$_('labels.help-new-camera')}</dd>
+    <dt>
+      <span class="badge"><i class="material-icons">videocam</i></span>
+      {#await iconPromise then { Numbers }}<Numbers />{/await}
+    </dt>
+    <dd>{$_('labels.help-restore-camera')}</dd>
+    <dt>
+      <span class="badge"
+        ><i class="material-icons">videocam</i><i class="halo" /></span
+      >
+      {#await iconPromise then { CtrlNumbers }}<CtrlNumbers />{/await}
+    </dt>
+    <dd>{$_('labels.help-save-camera')}</dd>
+  </dl>
+
+  <h3>{$_('titles.object-shortcuts')}</h3>
+  <dl class="shortcuts">
+    {#each actionNamesByKey?.entries() as [key, actions]}
+      <dt>
+        <HelpKey {key} height="50px" {tone} />
       </dt>
-      <dd>{$_('labels.help-zoom')}</dd>
-    </dl>
-    <!--ControlHelp actions={[NewCamera]} label={$_('labels.new-camera')} /-->
-    <!--ControlHelp actions={[RestoreCamera]} label={$_('labels.restore-camera')} /-->
-    <!--ControlHelp actions={[UpdateCamera]} label={$_('labels.save-camera')} /-->
-  {/await}
+      <dd>{actions.map(name => $_(`tooltips.${name}`)).join(', ')}</dd>
+    {/each}
+  </dl>
 </div>
 
 <style lang="postcss">
@@ -77,26 +140,56 @@
 
   dl {
     @apply grid;
-    grid-template-columns: repeat(auto-fill, 80px minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, 150px minmax(200px, 1fr));
 
     :global(svg) {
-      @apply h-16 w-auto;
+      @apply w-16 h-auto;
+    }
+
+    &.shortcuts {
+      grid-template-columns: repeat(auto-fill, 75px minmax(125px, 1fr));
     }
   }
 
   dt,
   dd {
-    @apply flex items-center p-2;
+    @apply inline-grid items-center p-2;
   }
 
-  dt:nth-of-type(even) {
-    @apply bg-$base-lighter;
+  dt {
+    @apply gap-2 grid-flow-col auto-cols-fr justify-items-center;
   }
+
+  dt:nth-of-type(even),
   dd:nth-of-type(even) {
     @apply bg-$base-lighter;
   }
 
   h3 {
     @apply text-xl font-bold pb-1 pt-4;
+  }
+
+  .halo {
+    @apply absolute w-8 h-8 rounded-full left-1/2 top-1/2 transform-gpu -translate-x-1/2 -translate-y-1/2;
+    box-shadow: 0 0 0.7rem 0 var(--svg-highlight);
+
+    &::after {
+      @apply absolute -top-2 left-[105%] not-italic;
+      color: var(--svg-highlight);
+      font-family: var(--font-heading);
+      content: '1s';
+    }
+  }
+
+  .badge {
+    @apply relative;
+
+    &::before {
+      @apply absolute rounded-full leading-4 text-xs p-0.5
+         flex justify-center items-center bg-$base-darkest
+         text-$ink-dark -top-4 -left-4 min-w-5;
+      font-family: var(--font-base);
+      content: '1';
+    }
   }
 </style>

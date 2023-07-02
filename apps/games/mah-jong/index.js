@@ -19,3 +19,9 @@ export const minTime = 60
 export const tableSpec = { texture: '#36823e' }
 
 export const zoomSpec = { hand: 35, min: 20, max: 90 }
+
+export const actions = {
+  button1: ['rotate', 'random'],
+  button2: ['flip'],
+  button3: ['detail']
+}

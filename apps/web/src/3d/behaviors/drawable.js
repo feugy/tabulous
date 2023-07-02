@@ -1,6 +1,7 @@
 import { Animation } from '@babylonjs/core/Animations/animation'
 
 import { handManager } from '../managers/hand'
+import { actionNames } from '../utils/actions'
 import {
   attachFunctions,
   detachFromParent,
@@ -145,7 +146,7 @@ export class DrawBehavior extends AnimateBehavior {
       throw new Error('Can not restore state without mesh')
     }
     this.state = { duration, unflipOnPick, flipOnPlay, angleOnPick }
-    attachFunctions(this, 'draw')
+    attachFunctions(this, actionNames.draw)
   }
 }
 

@@ -4,6 +4,7 @@ import { Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector'
 
 import { makeLogger } from '../../utils/logger'
 import { controlManager } from '../managers/control'
+import { actionNames } from '../utils/actions'
 import {
   attachFunctions,
   attachProperty,
@@ -243,9 +244,9 @@ export class RandomBehavior extends AnimateBehavior {
 
     applyRotation(this)
     attach()
-    attachFunctions(this, 'random')
+    attachFunctions(this, actionNames.random)
     if (canBeSet) {
-      attachFunctions(this, 'setFace')
+      attachFunctions(this, actionNames.setFace)
     } else {
       this.mesh.metadata.setFace = undefined
     }

@@ -23,6 +23,9 @@ import {
   targetManager
 } from './managers'
 import {
+  actionNames,
+  buildActionNamesByKey,
+  buttonIds,
   createLights,
   createTable,
   ExtendedScene,
@@ -31,10 +34,14 @@ import {
   serializeMeshes
 } from './utils'
 
+const { detail, flip, random, rotate } = actionNames
+
 /**
  * Enhanced Babylon' Engine
  * @typedef {Engine} EnhancedEngine
  * @property {boolean} isLoading - indicates whether the engine is still loading data and materials.
+ * @property {Map<string, [string]>} actionNamesByKey - a map of action ids by (localized) keystroke.
+ * @property {Map<string, [string]>} actionIdByButton - a map of action ids by (mouse/finger) button.
  * @property {Observable<boolean>} onLoadingObservable - emits while data and materials are being loaded.
  * @property {Observable<void>} onBeforeDisposeObservable - emits just before disposing the engien, to allow synchronous access to its content.
  */
@@ -50,6 +57,7 @@ import {
  * @param {HTMLElement} params.hand - HTML element holding hand.
  * @param {number} params.doubleTapDelay - number of milliseconds between 2 pointer down events to be considered as a double one.
  * @param {number} params.longTapDelay - number of milliseconds to hold pointer down before it is considered as long.
+ * @param {(key: string) => string} params.translate - function that translate a i18n key into a localized text.
  * @returns {EnhancedEngine} the created 3D engine.
  */
 export function createEngine({
@@ -58,7 +66,8 @@ export function createEngine({
   interaction,
   hand,
   doubleTapDelay,
-  longTapDelay
+  longTapDelay,
+  translate
 }) {
   const engine = new Engine(canvas, true)
   engine.enableOfflineSupport = false
@@ -90,12 +99,16 @@ export function createEngine({
 
   let isLoading = false
 
-  /**
-   * @property {boolean} isLoading - true while the loading UI is visible.
-   * @memberof EnhancedEngine
-   * @readonly
-   */
+  const actionNamesByButton = new Map()
+  let actionNamesByKey = new Map()
+
   Object.defineProperty(engine, 'isLoading', { get: () => isLoading })
+  Object.defineProperty(engine, 'actionNamesByKey', {
+    get: () => actionNamesByKey
+  })
+  Object.defineProperty(engine, 'actionNamesByButton', {
+    get: () => actionNamesByButton
+  })
 
   /**
    * Load all meshes into the game engine
@@ -119,9 +132,23 @@ export function createEngine({
     cameraManager.adjustZoomLevels(game.zoomSpec)
     const handsEnabled = hasHandsEnabled(game)
     if (initial) {
+      actionNamesByButton.clear()
+      for (const [button, actions] of Object.entries(
+        game.actions ?? {
+          [buttonIds.button1]: [flip, random],
+          [buttonIds.button2]: [rotate],
+          [buttonIds.button3]: [detail]
+        }
+      )) {
+        actionNamesByButton.set(button, actions)
+      }
       isLoading = true
       engine.onLoadingObservable.notifyObservers(isLoading)
-      engine.displayLoadingUI()
+
+      actionNamesByKey = buildActionNamesByKey(
+        [...game.meshes, ...game.hands.flatMap(({ meshes }) => meshes)],
+        translate
+      )
 
       selectionManager.init({ scene, handScene })
       targetManager.init({
@@ -133,11 +160,11 @@ export function createEngine({
         { gameAssetsUrl, scene, handScene: handsEnabled ? handScene : null },
         game
       )
+
       createTable(game.tableSpec, scene)
       // creates light after table, so table doesn't project shadow
       createLights({ scene, handScene })
       scene.onDataLoadedObservable.addOnce(async () => {
-        engine.hideLoadingUI()
         isLoading = false
         // slight delay to let the UI disappear
         await sleep(100)

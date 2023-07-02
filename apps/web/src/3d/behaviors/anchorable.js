@@ -5,6 +5,7 @@ import { controlManager } from '../managers/control'
 import { indicatorManager } from '../managers/indicator'
 import { moveManager } from '../managers/move'
 import { selectionManager } from '../managers/selection'
+import { actionNames } from '../utils/actions'
 import {
   animateMove,
   attachFunctions,
@@ -108,16 +109,16 @@ export class AnchorBehavior extends TargetBehavior {
       ({ meshId, fn, args, fromHand }) => {
         const zone = this.zoneBySnappedId.get(meshId)
         if (zone) {
-          if (fn === 'reorder' || fn === 'flipAll') {
+          if (fn === actionNames.reorder || fn === actionNames.flipAll) {
             const scene = this.mesh.getScene()
             const stack = getMeshList(scene, meshId)
             const snapped =
-              fn === 'flipAll'
+              fn === actionNames.flipAll
                 ? stack.reverse()[0]
                 : stack.find(({ id }) => id === args[0][0])
             unsetAnchor(this, zone, stack[0])
             setAnchor(this, zone, snapped, true)
-          } else if (fn === 'draw' && !fromHand) {
+          } else if (fn === actionNames.draw && !fromHand) {
             this.unsnap(meshId)
           }
         }
@@ -183,12 +184,12 @@ export class AnchorBehavior extends TargetBehavior {
     }
     controlManager.record({
       mesh: this.mesh,
-      fn: 'snap',
+      fn: actionNames.snap,
       args: [snappedId, anchorId, immediate],
       duration: immediate ? 0 : this.state.duration
     })
     indicatorManager.registerFeedback({
-      action: 'snap',
+      action: actionNames.snap,
       position: zone.mesh.absolutePosition.asArray()
     })
     moveManager.notifyMove(snapped)
@@ -219,11 +220,11 @@ export class AnchorBehavior extends TargetBehavior {
         unsetAnchor(this, zone, released)
         controlManager.record({
           mesh: this.mesh,
-          fn: 'unsnap',
+          fn: actionNames.unsnap,
           args: [releasedId]
         })
         indicatorManager.registerFeedback({
-          action: 'unsnap',
+          action: actionNames.unsnap,
           position: zone.mesh.absolutePosition.asArray()
         })
       }
@@ -297,7 +298,7 @@ export class AnchorBehavior extends TargetBehavior {
         snapToAnchor(this, snappedId, zone, true)
       }
     }
-    attachFunctions(this, 'snap', 'unsnap', 'unsnapAll')
+    attachFunctions(this, actionNames.snap, actionNames.unsnap, 'unsnapAll')
     attachProperty(this, 'anchors', () => this.state.anchors)
   }
 }

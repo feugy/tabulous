@@ -64,13 +64,22 @@ labels:
   game-publishers: 'Distribué par : '
   help-add-to-selection: Sélectionne plusieurs objets.
   help-clear-selection: Désélectionne les objets.
-  help-detail: Voir l'objet en plein écran, s'il le supporte.
-  help-flip: Retourne l'objet (ou la sélection), si le jeu le supporte.
+  help-detail: Voir l'objet en plein écran.
+  help-draw: Piocher l'objet (ou la sélection) dans votre main, ou jouer depuis votre main.
+  help-decrement: Séparer un objet du groupe.
+  help-flip: Retourne l'objet (ou la sélection).
+  help-increment: Regrouper la sélection d'objets.
   help-open-menu: Ouvre le menu des actions de l'objet (ou de la sélection), s'il y des actions possibles.
   help-move: Déplace l'objet (ou la sélection), s'il n'est pas figé.
+  help-new-camera: Enregistrer la position de la caméra
   help-pan-camera: Déplace la caméra.
-  help-rotate: Tourne l'object (ou la sélection), si je jeu le supporte.
+  help-push: Empiler la sélection d'objets.
+  help-pop: Dépiler un objet de la pile.
+  help-random: Jeter le(s) dé(s).
+  help-restore-camera: Restaurer la position de la caméra.
+  help-rotate: Pivote l'objet (ou la sélection).
   help-rotate-camera: Pivote et contrôle l'inclinaison de la caméra.
+  help-save-camera: Mettre à jour la position de la caméra
   help-zoom: Zoome ou dézoome.
   home: Accueil
   host: hôte
@@ -127,6 +136,7 @@ titles:
   lobby: Salon
   log-in: Connexion
   object-controls: Contrôler les objets
+  object-shortcuts: Raccourcis clavier (objets)
   player-list: Joueur·euse·s
   terms-of-service: Conditions générales d’utilisation
   username: Votre peusdo
@@ -136,31 +146,33 @@ tooltips:
   add-to-selection: Ajouter à la sélection
   change-avatar: Si vous avez associé un gravatar à votre email, tappez "gravatar". Videz le champ pour supprimer votre avatar.
   clear-selection: Vider la sélection
-  decrement: Dépiller
+  decrement: Séparer du groupe
   detail: Voir en détail
   draw: Piocher dans votre main
   flip-stack: Retourner la pile
   flip: Retourner
   game-menu: Menu des commandes
-  increment: Assembler
+  increment: Regrouper la sélection
   lock: Verrouiller
   move: Déplacer
   open-menu: Ouvrir le menu
   pan-camera: Déplacer
   play: Jouer sur la table
   pop: Dépiller
-  random: Jeter
+  push: Empiller
+  random: Jeter le(s) dé(s)
+  reorder: Mélanger
   restore-camera: Restaurer la position
   rotate-camera: Pivoter et incliner
-  rotate: Tourner de 90°
+  rotate: Pivoter
   rule-page: Livre de règles, page {page}
   save-camera: Mettre à jour la position
   save-new-camera: Enregistrer la position (Ctrl+1~9)
-  save-restore-camera: "{index, plural, =0 {Charger la position initiale de la camera (Début)} other {Charger (clic) ou enregistrer (clic long) la position à l'emplacement #}}"
+  save-restore-camera: "{index, plural, =0 {Restaurer la position initiale de la camera (Début)} other {Restaurer (clic / #) ou mettre à jour (clic long / Ctrl+#) la position à l'emplacement}}"
   send-message: Envoyer à tous
-  set-face: Fixer la valeur
-  shuffle: Mélanger
-  stack-all: Assembler
+  setFace: Fixer la valeur
+  stack-all: Empiller
+  toggleLock: (Dé)verrouiller
   unlock: Déverrouiller
   zoom: Zoomer
 shortcuts:
@@ -171,9 +183,9 @@ shortcuts:
   pop: d
   push: a
   random: j
+  reorder: m
   rotate: t
-  set-face: f
-  shuffle: m
+  setFace: f
   toggleLock: l
 markdown:
   legal: |

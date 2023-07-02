@@ -1,5 +1,6 @@
 import { makeLogger } from '../../utils/logger'
 import { controlManager } from '../managers/control'
+import { actionNames } from '../utils/actions'
 import {
   attachFunctions,
   attachProperty,
@@ -79,7 +80,7 @@ export class FlipBehavior extends AnimateBehavior {
     }
     logger.debug({ mesh }, `start flipping ${mesh.id}`)
 
-    controlManager.record({ mesh, fn: 'flip', duration })
+    controlManager.record({ mesh, fn: actionNames.flip, duration })
 
     const attach = detachFromParent(mesh)
     const [x, y, z] = mesh.position.asArray()
@@ -135,7 +136,7 @@ export class FlipBehavior extends AnimateBehavior {
     const attach = detachFromParent(this.mesh)
     this.mesh.rotation.z = this.state.isFlipped ? Math.PI : 0
     attach()
-    attachFunctions(this, 'flip')
+    attachFunctions(this, actionNames.flip)
     attachProperty(this, 'isFlipped', () => this.state.isFlipped)
   }
 }

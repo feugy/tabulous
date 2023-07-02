@@ -156,6 +156,11 @@ fragment fullGame on Game {
     primary
     secondary
   }
+  actions {
+    button1
+    button2
+    button3
+  }
 }
 
 fragment lightGame on Game {

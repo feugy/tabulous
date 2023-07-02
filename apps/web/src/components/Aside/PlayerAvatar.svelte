@@ -50,7 +50,7 @@
     @apply absolute bottom-4 left-1/2 transform-gpu -translate-x-1/2 flex gap-2 z-10;
 
     .muted {
-      @apply text-$ink bg-$disabled rounded-full p-2;
+      @apply text-$ink bg-$disabled rounded-full p-2 w-full h-full;
     }
   }
 
