@@ -61,8 +61,10 @@
 
   function handleSelectGame({ detail: game }) {
     if (isLobby(game)) {
-      leaveGame(user)
-      enterGame(game)
+      if (game.id !== $currentGame?.id) {
+        leaveGame(user)
+        enterGame(game)
+      }
     } else {
       goto(`/game/${game.id}`)
     }

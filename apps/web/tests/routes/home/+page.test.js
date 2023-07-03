@@ -3,7 +3,9 @@ import { load } from '@src/routes/home/+page'
 import HomePage from '@src/routes/home/+page.svelte'
 import {
   createGame,
+  currentGame,
   deleteGame,
+  joinGame,
   listCatalog,
   listFriends,
   listGames,
@@ -21,10 +23,13 @@ import { goto } from '$app/navigation'
 
 vi.mock('@src/stores', async () => {
   const stores = await vi.importActual('@src/stores')
+  const { BehaviorSubject } = await import('rxjs')
   return {
     ...stores,
     createGame: vi.fn(),
+    currentGame: new BehaviorSubject(null),
     deleteGame: vi.fn(),
+    joinGame: vi.fn(),
     listCatalog: vi.fn(),
     listGames: vi.fn(),
     listFriends: vi.fn(),
@@ -137,7 +142,8 @@ describe('/home route loader', () => {
 })
 
 describe('/home route', () => {
-  const parent = async () => ({ session: { player: { name: 'dude' } } })
+  const player = { username: 'dude' }
+  const parent = async () => ({ session: { player } })
   const catalog = [
     { id: 'game-1', name: 'klondike', locales: { fr: { title: 'Solitaire' } } },
     { id: 'game-2', name: 'draughts', locales: { fr: { title: 'Dames' } } }
@@ -152,6 +158,7 @@ describe('/home route', () => {
   ]
 
   beforeEach(async () => {
+    currentGame.next(null)
     listCatalog.mockResolvedValueOnce(catalog)
     listGames.mockResolvedValueOnce(games)
     listFriends.mockReturnValueOnce(readable([]))
@@ -246,5 +253,72 @@ describe('/home route', () => {
     expect(toastInfo).toHaveBeenCalledTimes(1)
     expect(deleteGame).toHaveBeenCalledWith(games[0].id)
     expect(deleteGame).toHaveBeenCalledTimes(1)
+  })
+
+  describe('given some lobbies', () => {
+    const gamesWithLobbies = [
+      { id: 'game-4', players: [] },
+      { id: 'game-5', players: [] },
+      ...games
+    ]
+
+    let lobbyLinks
+
+    beforeEach(async () => {
+      listGames.mockResolvedValue(gamesWithLobbies)
+      receiveGameListUpdates.mockImplementation(() =>
+        readable(gamesWithLobbies)
+      )
+      joinGame.mockImplementation(async ({ gameId }) =>
+        currentGame.next(gamesWithLobbies.find(({ id }) => id === gameId))
+      )
+
+      await renderWithLoad()
+
+      lobbyLinks = screen.getAllByRole('button', {
+        name: new RegExp(`^${translate('titles.lobby')}`)
+      })
+    })
+
+    it('enters lobby when clicking on lobby link', async () => {
+      await fireEvent.click(lobbyLinks[0])
+      expect(joinGame).toHaveBeenCalledWith({
+        gameId: gamesWithLobbies[0].id,
+        player,
+        onPromotion: expect.any(Function)
+      })
+      expect(joinGame).toHaveBeenCalledOnce()
+    })
+
+    it('can change lobbies', async () => {
+      await fireEvent.click(lobbyLinks[0])
+      expect(joinGame).toHaveBeenCalledWith({
+        gameId: gamesWithLobbies[0].id,
+        player,
+        onPromotion: expect.any(Function)
+      })
+      expect(joinGame).toHaveBeenCalledOnce()
+
+      await fireEvent.click(lobbyLinks[1])
+      expect(joinGame).toHaveBeenNthCalledWith(2, {
+        gameId: gamesWithLobbies[1].id,
+        player,
+        onPromotion: expect.any(Function)
+      })
+      expect(joinGame).toHaveBeenCalledTimes(2)
+    })
+
+    it('does not re-enters the same lobby', async () => {
+      await fireEvent.click(lobbyLinks[0])
+      expect(joinGame).toHaveBeenCalledWith({
+        gameId: gamesWithLobbies[0].id,
+        player,
+        onPromotion: expect.any(Function)
+      })
+      expect(joinGame).toHaveBeenCalledOnce()
+
+      await fireEvent.click(lobbyLinks[0])
+      expect(joinGame).toHaveBeenCalledOnce()
+    })
   })
 })
