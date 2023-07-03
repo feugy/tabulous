@@ -6,7 +6,6 @@
 - interface in English
 - server logging (warning on invalid descriptors) + log file rotation
 - automerge.js
-- fix obvious bugs bellow
 
 ## Refactor
 
@@ -21,10 +20,7 @@
 
 ## UI
 
-- bug: when already in a lobby, clicking on the lobby card joins the same lobby again
-- bug: when a peer is joining a lobby, we don't automatically switch to video tab (both host and peer)
 - bug: 6-takes: snapping to the wrong anchor (when 2 players are snapping to different anchors)
-- bug: on a game with no textures, loading UI never disappears (and game manager never enables) as onDataLoadedObservable is not triggered
 - check headings ordering
 - anchorable: flip/unflip on snap
 - detailable/stackable behavior: preview a stack of meshes
