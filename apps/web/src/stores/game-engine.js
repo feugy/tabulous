@@ -94,13 +94,13 @@ export const indicators = merge(indicators$, engineLoading$).pipe(
 
 /**
  * Emits the list of controlled mesh, when it changes.
- * @type {Observable<Set<import('@babylonjs/core').Mesh>>}
+ * @type {Observable<Set<Mesh>>}
  */
 export const selectedMeshes = selectedMeshes$.asObservable()
 
 /**
  * @typedef {object} ActionMenuProps RadialMenu properties for the action menu
- * @property {import('@babel/core').Mesh[]} meshes - list of mesh for which menu is displayed.
+ * @property {Mesh[]} meshes - list of mesh for which menu is displayed.
  * @property {boolean} open - whether the menu is opened or not.
  * @property {number} x - horizontal screen coordinate.
  * @property {number} y - vertical screen coordinate.

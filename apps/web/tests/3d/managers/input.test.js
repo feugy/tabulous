@@ -1,4 +1,5 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
+import { Observable } from '@babylonjs/core/Misc/observable'
 import { Scene } from '@babylonjs/core/scene'
 import { faker } from '@faker-js/faker'
 import {
@@ -24,6 +25,7 @@ const keyDown = 'keydown'
 describe('InputManager', () => {
   let scene
   let handScene
+  let camera
   let taps
   let drags
   let pinches
@@ -36,13 +38,14 @@ describe('InputManager', () => {
   const overlay = document.createElement('div')
   const renderWidth = 2048
   const renderHeight = 1024
+  const onCameraMove = new Observable()
   vi.spyOn(window, 'getComputedStyle').mockImplementation(() => ({
     height: `${renderHeight / 2.5}px`
   }))
 
   configures3dTestEngine(
     created => {
-      ;({ scene, handScene } = created)
+      ;({ scene, handScene, camera } = created)
     },
     { renderWidth, renderHeight }
   )
@@ -56,6 +59,7 @@ describe('InputManager', () => {
     wheels = []
     longs = []
     keys = []
+    onCameraMove.clear()
   })
 
   beforeAll(() => {
@@ -82,7 +86,13 @@ describe('InputManager', () => {
   describe('init()', () => {
     it('assigns default properties', () => {
       const longTapDelay = faker.number.int(999)
-      manager.init({ scene, handScene, longTapDelay, interaction })
+      manager.init({
+        scene,
+        handScene,
+        longTapDelay,
+        interaction,
+        onCameraMove
+      })
       expect(manager.enabled).toBe(false)
       expect(manager.longTapDelay).toBe(longTapDelay)
     })
@@ -94,7 +104,8 @@ describe('InputManager', () => {
         handScene,
         enabled: true,
         longTapDelay,
-        interaction
+        interaction,
+        onCameraMove
       })
       expect(manager.enabled).toBe(true)
       expect(manager.longTapDelay).toBe(longTapDelay)
@@ -108,7 +119,8 @@ describe('InputManager', () => {
         handScene,
         enabled: true,
         longTapDelay: 100,
-        interaction
+        interaction,
+        onCameraMove
       })
       meshes = [
         // x: 1048, y: 525
@@ -134,9 +146,10 @@ describe('InputManager', () => {
     })
 
     it('updates current pointer position', () => {
-      triggerEvent(pointerMove, { x: 1048, y: 525 })
+      const pointerId = 120
+      triggerEvent(pointerMove, { x: 1048, y: 525, pointerId })
       expectCloseVector({ x: 0.986, y: 0, z: -0.58 }, currentPointer)
-      triggerEvent(pointerMove, { x: 500, y: 250 })
+      triggerEvent(pointerMove, { x: 500, y: 250, pointerId })
       expectCloseVector({ x: -23.764, y: 0, z: 12.86 }, currentPointer)
     })
 
@@ -1608,10 +1621,34 @@ describe('InputManager', () => {
         meshId
       )
     })
+
+    it('updates hovered on camera move', () => {
+      const event = triggerEvent(pointerMove, {
+        x: 1000,
+        y: 500,
+        pointerId: 85
+      })
+
+      expectEvents()
+      const meshId = meshes[1].id
+
+      camera.lockedTarget.x = 1
+      camera.lockedTarget.z = -1
+      onCameraMove.notifyObservers()
+      expectEvents({ hovers: 1 })
+      expectsDataWithMesh(hovers[0], { type: 'hoverStart', event }, meshId)
+
+      camera.lockedTarget.x = 10
+      onCameraMove.notifyObservers()
+      expectEvents({ hovers: 2 })
+      expectsDataWithMesh(hovers[1], { type: 'hoverStop', event }, meshId)
+    })
   })
 
   describe('given a disabled manager', () => {
-    beforeEach(() => manager.init({ scene, longTapDelay: 100, interaction }))
+    beforeEach(() =>
+      manager.init({ scene, longTapDelay: 100, interaction, onCameraMove })
+    )
 
     it('ignores pointer down', () => {
       triggerEvent(pointerDown, { x: 1000, y: 500, pointerId: 1, button: 1 })

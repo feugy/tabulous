@@ -199,7 +199,7 @@
   .interaction {
     @apply select-none flex-1 relative;
     touch-action: none;
-    cursor: grab;
+    cursor: var(--cursor);
   }
 
   canvas {

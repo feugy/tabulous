@@ -85,7 +85,8 @@ export function createEngine({
     handScene,
     longTapDelay,
     doubleTapDelay,
-    interaction
+    interaction,
+    onCameraMove: cameraManager.onMoveObservable
   })
   moveManager.init({ scene })
   controlManager.init({ scene, handScene })
