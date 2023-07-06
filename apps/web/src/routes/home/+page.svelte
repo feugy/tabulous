@@ -53,16 +53,18 @@
     toastError({ content: translateError($_, data.creationError) })
   }
 
-  beforeNavigate(({ to }) => {
+  beforeNavigate(async ({ to }) => {
     if (user && isDifferentGame(to?.params?.gameId)) {
-      leaveGame(user)
+      await leaveGame(user)
     }
   })
 
-  function handleSelectGame({ detail: game }) {
+  async function handleSelectGame({ detail: game }) {
     if (isLobby(game)) {
-      leaveGame(user)
-      enterGame(game)
+      if (game.id !== $currentGame?.id) {
+        await leaveGame(user)
+        enterGame(game)
+      }
     } else {
       goto(`/game/${game.id}`)
     }
@@ -112,8 +114,8 @@
     })
   }
 
-  function handleCloseLobby() {
-    leaveGame(user)
+  async function handleCloseLobby() {
+    await leaveGame(user)
   }
 </script>
 

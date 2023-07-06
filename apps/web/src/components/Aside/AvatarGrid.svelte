@@ -72,12 +72,12 @@
 </script>
 
 <div bind:this={container} style="--rows:{rows};--columns:{columns}">
-  {#if connected?.length}
-    <PlayerAvatar player={playerById.get(player.id)} isLocal={true} />
-  {/if}
   {#each peers as { playerId, ...props } (props.player.id)}
     <PlayerAvatar {...props} />
   {/each}
+  {#if connected?.length}
+    <PlayerAvatar player={playerById.get(player.id)} isLocal={true} />
+  {/if}
 </div>
 
 <style lang="postcss">

@@ -74,10 +74,19 @@ class InputManager {
    * @param {object} params - parameters, including:
    * @param {Scene} params.scene - scene attached to.
    * @param {Scene} params.handScene - hand scene overlay.
+   * @param {Element} params.interaction - the DOM element to attach event handlers to
+   * @param {Observable} onCameraMove - observable triggered when the main camera is moving.
    * @param {number} params.longTapDelay - number of milliseconds to hold pointer down before it is considered as long.
    * @param {boolean} [params.enabled=true] - whether the input manager actively handles inputs or not.
    */
-  init({ scene, handScene, enabled = false, longTapDelay, interaction }) {
+  init({
+    scene,
+    handScene,
+    enabled = false,
+    longTapDelay,
+    interaction,
+    onCameraMove
+  }) {
     // same finger/stylus/mouse will have same pointerId for down, move(s) and up events
     // different fingers will have different ids
     const pointers = new Map()
@@ -93,9 +102,20 @@ class InputManager {
     let hoveredByPointerId = new Map()
     let lastTap = 0
     let tapPointers = 1
+    let lastMoveEvent = {}
     this.enabled = enabled
     this.longTapDelay = longTapDelay
     this.dispose?.()
+    interaction.style.setProperty('--cursor', 'move')
+
+    const handleCameraMove = () => {
+      const { mesh } = computeMetas(lastMoveEvent)
+      if (mesh) {
+        startHover(lastMoveEvent, mesh)
+      } else {
+        this.stopHover({ ...lastMoveEvent, pointerId: undefined })
+      }
+    }
 
     const startHover = (event, mesh) => {
       if (hoveredByPointerId.get(event.pointerId) !== mesh) {
@@ -103,18 +123,20 @@ class InputManager {
         logger.info(data, `start hovering ${mesh.id}`)
         hoveredByPointerId.set(event.pointerId, mesh)
         this.onHoverObservable.notifyObservers(data)
+        interaction.style.setProperty('--cursor', 'grab')
       }
     }
 
     // dynamically creates stopHover to keep hovered hidden
     this.stopHover = event => {
-      if ('pointerId' in event) {
+      if ('pointerId' in event && event.pointerId !== undefined) {
         const mesh = hoveredByPointerId.get(event.pointerId)
         if (mesh) {
           const data = { type: 'hoverStop', mesh, event, timestamp: Date.now() }
           logger.info(data, `stop hovering ${mesh.id}`)
           hoveredByPointerId.delete(event.pointerId)
           this.onHoverObservable.notifyObservers(data)
+          interaction.style.setProperty('--cursor', 'move')
         }
       } else {
         for (const pointerId of hoveredByPointerId.keys()) {
@@ -233,6 +255,7 @@ class InputManager {
         { event },
         `type: pointermove x: ${event.x} y: ${event.y} id: ${event.pointerId}`
       )
+      lastMoveEvent = event
       const pointer = screenToGround(scene, event)?.asArray()
       if (pointer) {
         this.onPointerObservable.notifyObservers(pointer)
@@ -434,6 +457,7 @@ class InputManager {
     interaction.addEventListener('pointerup', handlePointerUp)
     interaction.addEventListener('wheel', handleWheel)
     interaction.addEventListener('keydown', handleKeyDown)
+    onCameraMove.add(handleCameraMove)
     this.dispose = () => {
       interaction.removeEventListener('focus', handleFocus)
       interaction.removeEventListener('blur', handleBlur)
@@ -442,6 +466,7 @@ class InputManager {
       interaction.removeEventListener('pointerup', handlePointerUp)
       interaction.removeEventListener('wheel', handleWheel)
       interaction.removeEventListener('keydown', handleKeyDown)
+      onCameraMove.remove(handleCameraMove)
     }
     scene.onDisposeObservable.addOnce(() => {
       this.onTapObservable.clear()

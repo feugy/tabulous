@@ -82,7 +82,9 @@ export class AsideMixin {
     while (!(await this.isTabActive(this.friendsTab))) {
       await this.friendsTab.click()
     }
-    await this.friendItems.getByText(guestUsername).click()
+    while (await this.inviteButton.isDisabled()) {
+      await this.friendItems.getByText(guestUsername).click()
+    }
     await this.inviteButton.click()
     await expect(this.playerItems.getByText(guestUsername)).toBeVisible()
   }

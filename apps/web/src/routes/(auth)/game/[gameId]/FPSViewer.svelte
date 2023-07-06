@@ -1,5 +1,5 @@
 <script>
-  import { fps } from '@src/stores'
+  import { fps } from '@src/stores/game-engine'
   import { _ } from 'svelte-intl'
 </script>
 

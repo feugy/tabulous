@@ -207,9 +207,9 @@ describe('Aside component', () => {
 
     const avatars = screen.getAllByTestId('player-avatar')
 
-    expect(extractText(avatars)).toEqual(['', players[1].username, ''])
-    expect(avatars[0].children[0]).toHaveClass('hasStream')
-    expect(avatars[1].children[0]).not.toHaveClass('hasStream')
+    expect(extractText(avatars)).toEqual([players[1].username, '', ''])
+    expect(avatars[0].children[0]).not.toHaveClass('hasStream')
+    expect(avatars[1].children[0]).toHaveClass('hasStream')
     expect(avatars[2].children[0]).toHaveClass('hasStream')
   })
 

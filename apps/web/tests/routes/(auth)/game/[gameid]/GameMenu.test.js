@@ -1,10 +1,6 @@
 import GameMenu from '@src/routes/(auth)/game/[gameId]/GameMenu.svelte'
-import {
-  areIndicatorsVisible,
-  isFullscreen,
-  toggleFullscreen,
-  toggleIndicators
-} from '@src/stores'
+import { isFullscreen, toggleFullscreen } from '@src/stores'
+import { areIndicatorsVisible, toggleIndicators } from '@src/stores/indicators'
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import { translate } from '@tests/test-utils'
 import { tick } from 'svelte'

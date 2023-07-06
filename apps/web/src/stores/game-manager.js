@@ -6,6 +6,7 @@ import {
   map,
   merge
 } from 'rxjs'
+import { get } from 'svelte/store'
 
 import * as graphQL from '../graphql'
 import {
@@ -17,15 +18,6 @@ import {
   sleep
 } from '../utils'
 import { clearThread, loadThread, serializeThread } from './discussion'
-import {
-  action,
-  cameraSaves as cameraSaves$,
-  engine as engine$,
-  handMeshes as handMeshes$,
-  loadCameraSaves,
-  remoteSelection,
-  selectedMeshes
-} from './game-engine'
 import { runMutation, runQuery, runSubscription } from './graphql-client'
 import { notify } from './notifications'
 import {
@@ -39,6 +31,8 @@ import {
   send
 } from './peer-channels'
 import { toastInfo } from './toaster'
+// dynamically import ./game-engine which depends on
+// This allows splitting production chunks and keep Babylonjs (1.6Mb uncompressed) on its own.
 
 /** @typedef {import('../graphql').lightPlayer} Player */
 /** @typedef {import('../graphql').gameData} Game */
@@ -51,15 +45,12 @@ const currentGameSubscriptions = []
 let listGamesSubscription = null
 let delayOnLoad = () => {}
 let playerById = new Map()
-let engine
 // cameras for all players
 let cameras = []
 // hands for all players
 let hands = []
 // active selections for all players
 let selections = []
-
-engine$.subscribe(value => (engine = value))
 
 /**
  * Emits the player current game, or undefined.
@@ -253,7 +244,7 @@ export async function joinGame({
   const needPeerConnection = isDifferentGame(gameId)
 
   if (needPeerConnection) {
-    leaveGame(currentPlayer)
+    await leaveGame(currentPlayer)
   } else {
     unsubscribeCurrentGame()
   }
@@ -272,9 +263,13 @@ export async function joinGame({
     playingIds$.next([currentPlayerId])
   }
 
+  const gameEngine = await import('./game-engine')
+  const engine = get(gameEngine.engine)
+
   currentGame$.next(game)
   currentGameSubscriptions.push(
     ...subscribePeerStatusesAndGameUpdates({
+      gameEngine,
       gameId,
       currentPlayerId,
       onDeletion,
@@ -296,27 +291,26 @@ export async function joinGame({
   if (isGameParameter(game)) {
     if (isHost) {
       currentGameSubscriptions.push(
-        ...takeHostRole(gameId, currentPlayerId, false)
+        ...takeHostRole(gameEngine, gameId, currentPlayerId, false)
       )
     }
     return game
   }
-  const loadComplete = load(game, currentPlayerId, true)
+  const loadComplete = await load(engine, game, currentPlayerId, true)
   if (isHost) {
-    currentGameSubscriptions.push(...takeHostRole(gameId, currentPlayerId))
+    currentGameSubscriptions.push(
+      ...takeHostRole(gameEngine, gameId, currentPlayerId)
+    )
   } else {
     currentGameSubscriptions.push(
-      cameraSaves$.subscribe(shareCameras(currentPlayerId)),
-      handMeshes$.subscribe(shareHand(currentPlayerId)),
+      gameEngine.cameraSaves.subscribe(shareCameras(currentPlayerId)),
+      gameEngine.handMeshes.subscribe(shareHand(currentPlayerId)),
       lastMessageReceived
         .pipe(filter(({ data }) => data?.type === 'game-sync'))
-        .subscribe(({ data, playerId }) => {
-          logger.info(
-            { game: data, playerId },
-            `loading game data (${data.id})`
-          )
+        .subscribe(({ playerId }) => {
           if (!isCurrentHost(playerId)) {
             hostId$.next(playerId)
+            logger.info({ playerId }, `updating host to ${playerId}`)
           }
         })
     )
@@ -331,15 +325,18 @@ export async function joinGame({
  * Does nothing without any current game.
  * @param {object} player - the current player details.
  */
-export function leaveGame({ id: currentPlayerId }) {
+export async function leaveGame({ id: currentPlayerId }) {
   const game = currentGame$.value
   if (!game) {
     return
   }
+  const engine = get((await import('./game-engine')).engine)
   const { id: gameId } = game
   if (isCurrentHost(currentPlayerId)) {
     logger.info({ gameId, currentPlayerId }, `persisting game before leaving`)
-    runMutation(graphQL.saveGame, { game: serializeGame(currentPlayerId) })
+    runMutation(graphQL.saveGame, {
+      game: serializeGame(engine, currentPlayerId)
+    })
   }
   unsubscribeCurrentGame()
   closeChannels()
@@ -352,7 +349,8 @@ export function leaveGame({ id: currentPlayerId }) {
   clearThread()
 }
 
-async function load(game, playerId, firstLoad) {
+async function load(engine, game, playerId, firstLoad) {
+  const { loadCameraSaves } = await import('./game-engine')
   currentGame$.next(game)
   hands = game.hands ?? []
   cameras = game.cameras ?? []
@@ -423,12 +421,25 @@ function mergeSelections({ playerId, selectedIds }) {
   return selections
 }
 
-function takeHostRole(gameId, currentPlayerId, shouldShareGame = true) {
+function takeHostRole(
+  {
+    engine: engine$,
+    action,
+    cameraSaves,
+    handMeshes,
+    remoteSelection,
+    selectedMeshes
+  },
+  gameId,
+  currentPlayerId,
+  shouldShareGame = true
+) {
   const game = currentGame$.value
+  const engine = get(engine$)
   logger.info({ gameId, game }, `taking game host role`)
   hostId$.next(currentPlayerId)
   if (shouldShareGame && !isLobby(game)) {
-    shareGame(currentPlayerId)
+    shareGame(engine, currentPlayerId)
   }
 
   return [
@@ -440,7 +451,9 @@ function takeHostRole(gameId, currentPlayerId, shouldShareGame = true) {
       )
       .subscribe(action => {
         logger.info({ gameId, action }, `persisting game scene on action`)
-        runMutation(graphQL.saveGame, { game: shareGame(currentPlayerId) })
+        runMutation(graphQL.saveGame, {
+          game: shareGame(engine, currentPlayerId)
+        })
       }),
     // save discussion thread
     merge(lastMessageSent, lastMessageReceived)
@@ -457,7 +470,7 @@ function takeHostRole(gameId, currentPlayerId, shouldShareGame = true) {
     // save player hands
     merge(
       lastMessageReceived.pipe(filter(({ data }) => data?.type === 'saveHand')),
-      handMeshes$.pipe(
+      handMeshes.pipe(
         map(meshes => ({ data: { playerId: currentPlayerId, meshes } }))
       )
     ).subscribe(({ data }) => {
@@ -469,7 +482,7 @@ function takeHostRole(gameId, currentPlayerId, shouldShareGame = true) {
       lastMessageReceived.pipe(
         filter(({ data }) => data?.type === 'saveCameras')
       ),
-      cameraSaves$.pipe(
+      cameraSaves.pipe(
         map(cameras => ({ data: { playerId: currentPlayerId, cameras } }))
       )
     ).subscribe(({ data }) => {
@@ -490,28 +503,33 @@ function takeHostRole(gameId, currentPlayerId, shouldShareGame = true) {
 }
 
 function subscribePeerStatusesAndGameUpdates(params) {
-  const { gameId, currentPlayerId, onDeletion, onPromotion } = params
+  const { gameId } = params
   return [
     runSubscription(graphQL.receiveGameUpdates, { gameId }).subscribe(
-      handleServerUpdate(currentPlayerId, onDeletion, onPromotion)
+      handleServerUpdate(params)
     ),
     lastConnectedId.subscribe(handlePeerConnection(params)),
     lastDisconnectedId.subscribe(handlePeerDisconnection(params))
   ]
 }
 
-function handleServerUpdate(currentPlayerId, onDeletion, onPromotion) {
+function handleServerUpdate({
+  gameEngine,
+  currentPlayerId,
+  onDeletion,
+  onPromotion
+}) {
   return async function (game) {
     const wasLobby = isLobby(currentGame$.value)
     if (!game) {
-      leaveGame({ id: currentPlayerId })
+      await leaveGame({ id: currentPlayerId })
       onDeletion?.()
     } else {
       logger.debug(
         { gameId: game.id, currentPlayerId, wasLobby, game },
         'loading game update from server'
       )
-      await load(game, currentPlayerId, false)
+      await load(gameEngine.engine, game, currentPlayerId, false)
       if (wasLobby && !isLobby(game)) {
         onPromotion?.(game)
       }
@@ -519,7 +537,7 @@ function handleServerUpdate(currentPlayerId, onDeletion, onPromotion) {
   }
 }
 
-function serializeGame(currentPlayerId) {
+function serializeGame(engine, currentPlayerId) {
   const { meshes, handMeshes } =
     (!isLobby(currentGame$.value) && engine?.serialize()) ?? {}
   return {
@@ -531,13 +549,13 @@ function serializeGame(currentPlayerId) {
   }
 }
 
-function shareGame(currentPlayerId, peerId) {
+function shareGame(engine, currentPlayerId, peerId) {
   const { id: gameId, ...otherGameData } = currentGame$.value
   logger.info(
     { gameId },
     `sending game data ${gameId} to peer${peerId ? ` ${peerId}` : 's'}`
   )
-  const game = serializeGame(currentPlayerId)
+  const game = serializeGame(engine, currentPlayerId)
   send({ type: 'game-sync', ...otherGameData, ...game, selections }, peerId)
   return game
 }
@@ -550,7 +568,7 @@ function unsubscribeCurrentGame() {
   currentGameSubscriptions.splice(0, currentGameSubscriptions.length)
 }
 
-function handlePeerConnection({ currentPlayerId }) {
+function handlePeerConnection({ gameEngine, currentPlayerId }) {
   return async function (playerId) {
     playingIds$.next([...playingIds$.value, playerId])
     const game = currentGame$.value
@@ -559,7 +577,7 @@ function handlePeerConnection({ currentPlayerId }) {
       currentGame$.next({ ...game, players })
     }
     if (isCurrentHost(currentPlayerId)) {
-      shareGame(currentPlayerId, playerId)
+      shareGame(get(gameEngine.engine), currentPlayerId, playerId)
     }
     toastInfo({
       icon: 'person_add_alt_1',
@@ -572,7 +590,7 @@ function handlePeerConnection({ currentPlayerId }) {
 }
 
 function handlePeerDisconnection(params) {
-  const { currentPlayerId } = params
+  const { currentPlayerId, gameEngine } = params
   return function (playerId) {
     const game = currentGame$.value
     toastInfo({
@@ -588,7 +606,7 @@ function handlePeerDisconnection(params) {
       unsubscribeCurrentGame()
       currentGameSubscriptions.push(
         ...subscribePeerStatusesAndGameUpdates(params),
-        ...takeHostRole(currentGame$.value.id, currentPlayerId)
+        ...takeHostRole(gameEngine, currentGame$.value.id, currentPlayerId)
       )
     }
   }

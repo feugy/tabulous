@@ -55,6 +55,9 @@
     }
     tab = isLobby ? tabs.length - 1 : 0
   }
+  $: if (hasPeers && connected?.length) {
+    tab = 0
+  }
 
   function handleSetTab({ detail: { currentTab } }) {
     // do nor use `bind:currentTab={tab}` because it computes tabs again, which reset cuttent tab

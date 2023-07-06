@@ -674,7 +674,6 @@ exports[`Lobby 1`] = `
               class="s-9CzX_ZtBT-9N"
               style="--rows: 1; --columns: 1;"
             >
-               
               
               <section
                 class="s-IEYcsUOCmov_"
@@ -741,6 +740,7 @@ exports[`Lobby 1`] = `
                  
               </section>
               <!--&lt;PlayerAvatar&gt;-->
+               
             </div>
             <!--&lt;AvatarGrid&gt;-->
              
@@ -1338,39 +1338,6 @@ exports[`Multiple connected 1`] = `
               class="s-9CzX_ZtBT-9N"
               style="--rows: 1; --columns: 1;"
             >
-              <section
-                class="s-IEYcsUOCmov_"
-                data-testid="player-avatar"
-              >
-                <video
-                  autoplay=""
-                  class="s-IEYcsUOCmov_"
-                />
-                 
-                <figure
-                  class="s-engCJu8q-fNe colored"
-                  style="--dimension: 150px; --color: #9c3096; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
-                >
-                  <img
-                    alt="avatar for Fernand Naudin"
-                    class="s-engCJu8q-fNe"
-                    height="150"
-                    referrerpolicy="no-referrer"
-                    width="150"
-                  />
-                   
-                  <figcaption
-                    class="s-engCJu8q-fNe"
-                  >
-                    Fernand Naudin
-                  </figcaption>
-                </figure>
-                <!--&lt;PlayerThumbnail&gt;-->
-                 
-                 
-              </section>
-              <!--&lt;PlayerAvatar&gt;-->
-               
               
               <section
                 class="s-IEYcsUOCmov_"
@@ -1430,6 +1397,39 @@ exports[`Multiple connected 1`] = `
                     class="s-engCJu8q-fNe"
                   >
                     Pascal
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+                 
+                 
+              </section>
+              <!--&lt;PlayerAvatar&gt;-->
+               
+              <section
+                class="s-IEYcsUOCmov_"
+                data-testid="player-avatar"
+              >
+                <video
+                  autoplay=""
+                  class="s-IEYcsUOCmov_"
+                />
+                 
+                <figure
+                  class="s-engCJu8q-fNe colored"
+                  style="--dimension: 150px; --color: #9c3096; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+                >
+                  <img
+                    alt="avatar for Fernand Naudin"
+                    class="s-engCJu8q-fNe"
+                    height="150"
+                    referrerpolicy="no-referrer"
+                    width="150"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe"
+                  >
+                    Fernand Naudin
                   </figcaption>
                 </figure>
                 <!--&lt;PlayerThumbnail&gt;-->
@@ -1945,7 +1945,6 @@ exports[`Single connected 1`] = `
               class="s-9CzX_ZtBT-9N"
               style="--rows: 1; --columns: 1;"
             >
-               
               
               <section
                 class="s-IEYcsUOCmov_"
@@ -2012,6 +2011,7 @@ exports[`Single connected 1`] = `
                  
               </section>
               <!--&lt;PlayerAvatar&gt;-->
+               
             </div>
             <!--&lt;AvatarGrid&gt;-->
              
@@ -2235,7 +2235,6 @@ exports[`Single connected, no rules book, thread 1`] = `
               class="s-9CzX_ZtBT-9N"
               style="--rows: 1; --columns: 1;"
             >
-               
               
               <section
                 class="s-IEYcsUOCmov_"
@@ -2302,6 +2301,7 @@ exports[`Single connected, no rules book, thread 1`] = `
                  
               </section>
               <!--&lt;PlayerAvatar&gt;-->
+               
             </div>
             <!--&lt;AvatarGrid&gt;-->
              

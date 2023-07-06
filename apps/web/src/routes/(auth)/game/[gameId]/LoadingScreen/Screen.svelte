@@ -3,7 +3,7 @@
   import { HelpButton1, HelpButton2, HelpButton3 } from '@src/components'
   import { fade } from 'svelte/transition'
   import { _ } from 'svelte-intl'
-  
+
   import { default as Logo } from './babylon-logo.svg?component'
   import { default as Spinning } from './spinning.svg?component'
 

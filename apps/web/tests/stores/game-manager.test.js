@@ -43,8 +43,7 @@ import { lastToast } from '@src/stores/toaster'
 import {
   buildPlayerColors,
   findPlayerColor,
-  findPlayerPreferences,
-  makeLogger
+  findPlayerPreferences
 } from '@src/utils'
 import { translate } from '@tests/test-utils'
 import { Subject } from 'rxjs'
@@ -90,7 +89,6 @@ vi.mock('@src/stores/peer-channels', () => {
 })
 vi.mock('@src/3d/utils')
 
-const logger = makeLogger('game-manager')
 const gamePlayerByIdReceived = vi.fn()
 const playerColorReceived = vi.fn()
 const toastReceived = vi.fn()
@@ -106,7 +104,6 @@ const engine = {
 }
 const gameUpdates$ = new Subject()
 let subscriptions
-let error
 
 const player = {
   id: 'player',
@@ -135,10 +132,7 @@ beforeAll(() => {
   ]
 })
 
-beforeEach(() => {
-  vi.resetAllMocks()
-  error = vi.spyOn(logger, 'error')
-})
+beforeEach(() => vi.resetAllMocks())
 
 afterAll(() =>
   subscriptions.forEach(subscription => subscription.unsubscribe())
@@ -1107,7 +1101,7 @@ describe('given a mocked game engine', () => {
 
       describe('leaveGame()', () => {
         it('saves game data', async () => {
-          leaveGame(player)
+          await leaveGame(player)
           const hands = [...game.hands, { playerId: player.id, meshes: [] }]
           expect(runMutation).toHaveBeenCalledWith(graphQL.saveGame, {
             game: {
@@ -1161,35 +1155,6 @@ describe('given a mocked game engine', () => {
       }
 
       beforeEach(() => prepareGame(game))
-
-      it.skip('fails when not receiving game from online players', async () => {
-        error.mockImplementationOnce(() => {})
-        const errorMessage = 'No game data after 30s'
-        const promise = joinGame({
-          gameId: game.id,
-          player: partner2,
-          turnCredentials
-        })
-        await nextPromise()
-        await nextPromise()
-        await nextPromise()
-        vi.runAllTimers()
-        await expect(promise).rejects.toThrow(errorMessage)
-        expect(error).toHaveBeenCalledWith(errorMessage)
-        expect(runMutation).toHaveBeenCalledWith(graphQL.joinGame, {
-          gameId: game.id,
-          parameter: undefined
-        })
-        expect(runMutation).toHaveBeenCalledOnce()
-        expect(connectWith).toHaveBeenCalledWith(player.id, turnCredentials)
-        expect(connectWith).toHaveBeenCalledWith(partner1.id, turnCredentials)
-        expect(connectWith).toHaveBeenCalledTimes(2)
-        expect(engine.load).not.toHaveBeenCalled()
-        expect(loadCameraSaves).not.toHaveBeenCalled()
-        expect(loadThread).not.toHaveBeenCalled()
-        expect(send).not.toHaveBeenCalled()
-        expect(closeChannels).toHaveBeenCalledTimes(2)
-      })
 
       it('connects to peers when being guest with game parameters', async () => {
         const gameParameters = {
@@ -1402,7 +1367,7 @@ describe('given a mocked game engine', () => {
               ]
             ])
           )
-          expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(3)
+          expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(2)
           expect(runSubscription).toHaveBeenCalledWith(
             graphQL.receiveGameUpdates,
             { gameId: game.id }
@@ -1478,7 +1443,7 @@ describe('given a mocked game engine', () => {
               ]
             ])
           )
-          expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(3)
+          expect(gamePlayerByIdReceived).toHaveBeenCalledTimes(2)
           expect(runSubscription).not.toHaveBeenCalled()
           expect(toastReceived).toHaveBeenCalledWith({
             content: translate('labels.player-left-game', { player }),
@@ -1655,7 +1620,7 @@ function prepareGame(game) {
 
 // because of fake timers, we can't use sleep
 async function nextPromise() {
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 10; i++) {
     await Promise.resolve()
   }
 }

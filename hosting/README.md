@@ -198,6 +198,7 @@ First commands will need to connect with IPv4 (hence the `-4` flag) in the meant
     - once logged, add ssh key to the SSH/GPG keys list in /user/settings/keys
   - tweak gitea server configuration: `sudo vi /etc/gitea/app.ini`
     - set `SSH_DOMAIN` and `DOMAIN` to `gitea.tabulous.fr`
+    - look for `[actions]` and set `ENABLED` to `true`
   - restrict permissions after installation:
     - `sudo chmod 750 /etc/gitea`
     - `sudo chmod 640 /etc/gitea/app.ini`
@@ -269,4 +270,17 @@ Create an hourly backup
 1. disk used by backups:
    ```sh
    sudo rsnapshot du
+   ```
+1. updating [gitea](https://docs.gitea.com/next/installation/install-from-binary#updating-to-a-new-version):
+   ```sh
+   sudo systemctl stop gitea
+   sudo su git
+   cd ~
+   mkdir tmp
+   gitea dump -c /etc/gitea/app.ini -t ~/tmp -w ~
+   exit
+   wget -O gitea https://dl.gitea.io/gitea/1.20/gitea-1.20-linux-amd64
+   sudo chmod +x gitea
+   sudo cp gitea /usr/local/bin/gitea
+   sudo systemctl start gitea
    ```
