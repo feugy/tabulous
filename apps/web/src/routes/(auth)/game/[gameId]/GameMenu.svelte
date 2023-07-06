@@ -1,15 +1,17 @@
 <script>
   import { Dropdown } from '@src/components'
+  import { isFullscreen, toggleFullscreen } from '@src/stores'
   import {
-    areIndicatorsVisible,
     cameraSaves,
     currentCamera,
-    isFullscreen,
     longInputs,
     restoreCamera,
-    saveCamera,
-    toggleFullscreen,
-    toggleIndicators} from '@src/stores'
+    saveCamera
+  } from '@src/stores/game-engine'
+  import {
+    areIndicatorsVisible,
+    toggleIndicators
+  } from '@src/stores/indicators'
   import Logo from '@src/svg/tabulous-logo.svg?component'
   import { buildCornerClipPath } from '@src/utils'
   import { _ } from 'svelte-intl'

@@ -2,7 +2,7 @@
   import { buttonIds } from '@src/3d/utils/actions'
   import { isTouchScreen } from '@src/utils'
   import { _ } from 'svelte-intl'
-  
+
   import HelpButton1 from './HelpButton1.svelte'
   import HelpButton2 from './HelpButton2.svelte'
   import HelpButton3 from './HelpButton3.svelte'

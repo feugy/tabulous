@@ -1,5 +1,5 @@
 <script>
-  import { DoubleLeftObject,DoublePointerObject } from '@src/svg/help'
+  import { DoubleLeftObject, DoublePointerObject } from '@src/svg/help'
   import { isTouchScreen } from '@src/utils'
 </script>
 

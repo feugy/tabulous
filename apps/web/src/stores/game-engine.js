@@ -21,7 +21,7 @@ import {
   selectionManager
 } from '../3d/managers'
 import { actionNames } from '../3d/utils/actions'
-import { attachInputs } from '../utils'
+import { attachInputs } from '../utils/game-interaction'
 import {
   connected,
   lastDisconnectedId,

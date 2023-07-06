@@ -1,3 +1,5 @@
+// Keep this file free from @babylon (in)direct imports, to allow Svelte component referencing them
+// Otherwise this would bloat production chunks with Babylonjs (1.6Mb uncompressed)
 import {
   DetailBehaviorName,
   DrawBehaviorName,
