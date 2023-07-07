@@ -18,6 +18,8 @@ export async function handle({ event, resolve }) {
     locals.session = await recoverSession(fetch, locals.bearer)
   }
 
+  locals.timeZone = request.headers.get('x-vercel-ip-timezone') || undefined
+
   // session may be (un)set by endpoints
   return setCookie(await resolve(event), locals.session?.token)
 }
