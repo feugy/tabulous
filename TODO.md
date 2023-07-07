@@ -35,7 +35,8 @@
 ## Server
 
 - bug: lobby to parametrized game: handle concurrent parameters (playground)
-- bug: timezone used for Serverside rendering is wrong
+- bug: lobby to limited-seat game: rejected lobby owner creates an owner-less game
+- handle rejected players when promoting lobby to a limited-seats game
 - allows a single connection per player (discards other JWTs)
 - better coTURN integration (password management and rotation)
 

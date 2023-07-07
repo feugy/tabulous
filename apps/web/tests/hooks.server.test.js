@@ -72,6 +72,30 @@ describe('Sveltekit handle() hook', () => {
     )
     expect(input.event.locals.bearer).toBe(`Bearer ${token}`)
     expect(input.event.locals.session).toEqual(session)
+    expect(input.event.locals.timeZone).toBeUndefined()
+  })
+
+  it('sets timeZone from request Vercel header', async () => {
+    const token = faker.string.uuid()
+    const session = {
+      token,
+      player: { id: faker.number.int(999), username: faker.person.fullName() }
+    }
+    mocks.handleGraphQl.mockReturnValue(session)
+    const timeZone = faker.location.timeZone()
+
+    const request = new Request('https://localhost:3000')
+    request.headers.set('cookie', `token=${token}; Path=/; HttpOnly; Secure`)
+    request.headers.set('x-vercel-ip-timezone', timeZone)
+    const input = buildHandleInput({ request })
+    const response = await handle(input)
+    expect(response.status).toBe(200)
+    expect(response.headers.get('set-cookie')).toBe(
+      `token=${token}; Path=/; HttpOnly; Secure; SameSite=None`
+    )
+    expect(input.event.locals.bearer).toBe(`Bearer ${token}`)
+    expect(input.event.locals.session).toEqual(session)
+    expect(input.event.locals.timeZone).toEqual(timeZone)
   })
 
   it('unsets cookie and redirects on logout', async () => {

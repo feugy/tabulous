@@ -157,4 +157,5 @@ if (typeof window !== 'undefined') {
 }
 
 // common initialization, once locale is set
-await import('../src/common')
+const { initLocale } = await import('../src/common')
+initLocale()

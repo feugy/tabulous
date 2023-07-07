@@ -1,7 +1,9 @@
-import '../../src/common'
 import './styles.postcss'
 
 import * as kitClient from '../../node_modules/@sveltejs/kit/src/runtime/client/singletons'
+import { initLocale } from '../../src/common'
+
+initLocale()
 
 kitClient.init({
   client: {
