@@ -46,6 +46,7 @@
     "@types/react-dom": "^18.2.6",
     "@urql/core": "^4.0.10",
     "@vitejs/plugin-basic-ssl": "^1.0.1",
+    "accept-language-parser": "^1.5.0",
     "autoprefixer": "^10.4.14",
     "babylonjs-gltf2interface": "^6.9.0",
     "chalk": "^5.2.0",
@@ -84,8 +85,5 @@
     "webrtc-adapter": "^8.2.3",
     "whatwg-fetch": "^3.6.2",
     "wonka": "^6.3.2"
-  },
-  "dependencies": {
-    "accept-language-parser": "^1.5.0"
   }
 }

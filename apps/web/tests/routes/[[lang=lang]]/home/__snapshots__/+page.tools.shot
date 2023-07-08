@@ -45,6 +45,47 @@ exports[`Anonymous 1`] = `
       </div>
        
       <span
+        class="wrapper s-rGIwyFRHo8D9"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="menu"
+          class="s-NMyTiX1zi6rz"
+          role="combobox"
+        >
+          <div
+            class="s-NMyTiX1zi6rz"
+          >
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              translate
+            </span>
+            
+            <span
+              class="text s-NMyTiX1zi6rz"
+            >
+              <span
+                class="s-rGIwyFRHo8D9"
+                slot="text"
+              >
+                
+              </span>
+            </span>
+            
+             
+            
+          </div>
+           
+        </button>
+        <!--&lt;Button&gt;-->
+         
+        
+        <!--&lt;Menu&gt;-->
+      </span>
+      <!--&lt;Dropdown&gt;-->
+       
+      <span
         class="account s-c1MG4BWNDc59"
       >
         <button
@@ -394,6 +435,47 @@ exports[`Authenticated 1`] = `
       </div>
        
       <span
+        class="wrapper s-rGIwyFRHo8D9"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="menu"
+          class="s-NMyTiX1zi6rz"
+          role="combobox"
+        >
+          <div
+            class="s-NMyTiX1zi6rz"
+          >
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              translate
+            </span>
+            
+            <span
+              class="text s-NMyTiX1zi6rz"
+            >
+              <span
+                class="s-rGIwyFRHo8D9"
+                slot="text"
+              >
+                
+              </span>
+            </span>
+            
+             
+            
+          </div>
+           
+        </button>
+        <!--&lt;Button&gt;-->
+         
+        
+        <!--&lt;Menu&gt;-->
+      </span>
+      <!--&lt;Dropdown&gt;-->
+       
+      <span
         class="account s-c1MG4BWNDc59"
       >
         <span
@@ -617,101 +699,6 @@ exports[`Authenticated 1`] = `
             tabindex="0"
           >
             <img
-              alt="Dune Imperium"
-              class="s-umE5dFFiiYHw"
-              src="http://localhost:3001/games/dune-imperium/catalog/cover.webp"
-            />
-             
-            <legend
-              class="s-umE5dFFiiYHw"
-            >
-              <h3
-                class="s-umE5dFFiiYHw"
-              >
-                Dune Imperium
-              </h3>
-               
-              <div
-                class="characteristics s-umE5dFFiiYHw"
-              >
-                <i
-                  class="material-icons s-umE5dFFiiYHw"
-                >
-                  people
-                </i>
-                <span
-                  class="s-umE5dFFiiYHw"
-                >
-                  1-4
-                </span>
-                 
-                <i
-                  class="material-icons s-umE5dFFiiYHw"
-                >
-                  access_time
-                </i>
-                <span
-                  class="s-umE5dFFiiYHw"
-                >
-                  90'
-                </span>
-                 
-                <i
-                  class="material-icons s-umE5dFFiiYHw"
-                >
-                  person
-                </i>
-                <span
-                  class="s-umE5dFFiiYHw"
-                >
-                  13+
-                </span>
-              </div>
-               
-              <div
-                class="details s-umE5dFFiiYHw"
-              >
-                <p
-                  class="s-umE5dFFiiYHw"
-                >
-                  <strong
-                    class="s-umE5dFFiiYHw"
-                  >
-                    Créé par : 
-                  </strong>
-                  Paul Dennen
-                </p>
-                 
-                <p
-                  class="s-umE5dFFiiYHw"
-                >
-                  <strong
-                    class="s-umE5dFFiiYHw"
-                  >
-                    Illustré par : 
-                  </strong>
-                  Clay Brooks, Nate Storm, Raul Ramos, Brett Nienburg, Atila Guzey, Derek Herring, Kenan Jackson
-                </p>
-                 
-                <p
-                  class="s-umE5dFFiiYHw"
-                >
-                  <strong
-                    class="s-umE5dFFiiYHw"
-                  >
-                    Distribué par : 
-                  </strong>
-                  Dire Wolf Digital, Gale Force Nine, Lucky Duck, Legendary
-                </p>
-              </div>
-            </legend>
-          </button>
-          <!--&lt;CatalogItem&gt;-->
-          <button
-            class="s-umE5dFFiiYHw"
-            tabindex="0"
-          >
-            <img
               alt="6 qui prend !"
               class="s-umE5dFFiiYHw"
               src="http://localhost:3001/games/6-takes/catalog/cover.webp"
@@ -928,6 +915,101 @@ exports[`Authenticated 1`] = `
               >
                  
                  
+              </div>
+            </legend>
+          </button>
+          <!--&lt;CatalogItem&gt;-->
+          <button
+            class="s-umE5dFFiiYHw"
+            tabindex="0"
+          >
+            <img
+              alt="Dune Imperium"
+              class="s-umE5dFFiiYHw"
+              src="http://localhost:3001/games/dune-imperium/catalog/cover.webp"
+            />
+             
+            <legend
+              class="s-umE5dFFiiYHw"
+            >
+              <h3
+                class="s-umE5dFFiiYHw"
+              >
+                Dune Imperium
+              </h3>
+               
+              <div
+                class="characteristics s-umE5dFFiiYHw"
+              >
+                <i
+                  class="material-icons s-umE5dFFiiYHw"
+                >
+                  people
+                </i>
+                <span
+                  class="s-umE5dFFiiYHw"
+                >
+                  1-4
+                </span>
+                 
+                <i
+                  class="material-icons s-umE5dFFiiYHw"
+                >
+                  access_time
+                </i>
+                <span
+                  class="s-umE5dFFiiYHw"
+                >
+                  90'
+                </span>
+                 
+                <i
+                  class="material-icons s-umE5dFFiiYHw"
+                >
+                  person
+                </i>
+                <span
+                  class="s-umE5dFFiiYHw"
+                >
+                  13+
+                </span>
+              </div>
+               
+              <div
+                class="details s-umE5dFFiiYHw"
+              >
+                <p
+                  class="s-umE5dFFiiYHw"
+                >
+                  <strong
+                    class="s-umE5dFFiiYHw"
+                  >
+                    Créé par : 
+                  </strong>
+                  Paul Dennen
+                </p>
+                 
+                <p
+                  class="s-umE5dFFiiYHw"
+                >
+                  <strong
+                    class="s-umE5dFFiiYHw"
+                  >
+                    Illustré par : 
+                  </strong>
+                  Clay Brooks, Nate Storm, Raul Ramos, Brett Nienburg, Atila Guzey, Derek Herring, Kenan Jackson
+                </p>
+                 
+                <p
+                  class="s-umE5dFFiiYHw"
+                >
+                  <strong
+                    class="s-umE5dFFiiYHw"
+                  >
+                    Distribué par : 
+                  </strong>
+                  Dire Wolf Digital, Gale Force Nine, Lucky Duck, Legendary
+                </p>
               </div>
             </legend>
           </button>

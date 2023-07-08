@@ -53,6 +53,47 @@ exports[`'/' > /login route > displays all options 1`] = `
           </div>
            
           <span
+            class="wrapper s-rGIwyFRHo8D9"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="menu"
+              class="s-NMyTiX1zi6rz"
+              role="combobox"
+            >
+              <div
+                class="s-NMyTiX1zi6rz"
+              >
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  translate
+                </span>
+                
+                <span
+                  class="text s-NMyTiX1zi6rz"
+                >
+                  <span
+                    class="s-rGIwyFRHo8D9"
+                    slot="text"
+                  >
+                    
+                  </span>
+                </span>
+                
+                 
+                
+              </div>
+               
+            </button>
+            <!--&lt;Button&gt;-->
+             
+            
+            <!--&lt;Menu&gt;-->
+          </span>
+          <!--&lt;Dropdown&gt;-->
+           
+          <span
             class="account s-c1MG4BWNDc59"
           >
             <button
@@ -376,6 +417,47 @@ exports[`'/' > /login route > expands login panel on error 1`] = `
           </div>
            
           <span
+            class="wrapper s-rGIwyFRHo8D9"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="menu"
+              class="s-NMyTiX1zi6rz"
+              role="combobox"
+            >
+              <div
+                class="s-NMyTiX1zi6rz"
+              >
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  translate
+                </span>
+                
+                <span
+                  class="text s-NMyTiX1zi6rz"
+                >
+                  <span
+                    class="s-rGIwyFRHo8D9"
+                    slot="text"
+                  >
+                    
+                  </span>
+                </span>
+                
+                 
+                
+              </div>
+               
+            </button>
+            <!--&lt;Button&gt;-->
+             
+            
+            <!--&lt;Menu&gt;-->
+          </span>
+          <!--&lt;Dropdown&gt;-->
+           
+          <span
             class="account s-c1MG4BWNDc59"
           >
             <button
@@ -637,6 +719,47 @@ exports[`'/en' > /login route > displays all options 1`] = `
               Connection
             </h1>
           </div>
+           
+          <span
+            class="wrapper s-rGIwyFRHo8D9"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="menu"
+              class="s-NMyTiX1zi6rz"
+              role="combobox"
+            >
+              <div
+                class="s-NMyTiX1zi6rz"
+              >
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  translate
+                </span>
+                
+                <span
+                  class="text s-NMyTiX1zi6rz"
+                >
+                  <span
+                    class="s-rGIwyFRHo8D9"
+                    slot="text"
+                  >
+                    
+                  </span>
+                </span>
+                
+                 
+                
+              </div>
+               
+            </button>
+            <!--&lt;Button&gt;-->
+             
+            
+            <!--&lt;Menu&gt;-->
+          </span>
+          <!--&lt;Dropdown&gt;-->
            
           <span
             class="account s-c1MG4BWNDc59"
@@ -960,6 +1083,47 @@ exports[`'/en' > /login route > expands login panel on error 1`] = `
               Connection
             </h1>
           </div>
+           
+          <span
+            class="wrapper s-rGIwyFRHo8D9"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="menu"
+              class="s-NMyTiX1zi6rz"
+              role="combobox"
+            >
+              <div
+                class="s-NMyTiX1zi6rz"
+              >
+                <span
+                  class="material-icons s-NMyTiX1zi6rz"
+                >
+                  translate
+                </span>
+                
+                <span
+                  class="text s-NMyTiX1zi6rz"
+                >
+                  <span
+                    class="s-rGIwyFRHo8D9"
+                    slot="text"
+                  >
+                    
+                  </span>
+                </span>
+                
+                 
+                
+              </div>
+               
+            </button>
+            <!--&lt;Button&gt;-->
+             
+            
+            <!--&lt;Menu&gt;-->
+          </span>
+          <!--&lt;Dropdown&gt;-->
            
           <span
             class="account s-c1MG4BWNDc59"
