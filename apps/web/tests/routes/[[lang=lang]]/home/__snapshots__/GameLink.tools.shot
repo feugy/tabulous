@@ -1,0 +1,287 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Current lobby 1`] = `
+<article
+  class="s-tazni-gDXtlL lobby isCurrent"
+  style="--bg-url: url('');"
+>
+  <button
+    class="s-tazni-gDXtlL"
+    tabindex="0"
+  >
+    <span
+      class="title s-tazni-gDXtlL"
+    >
+      <h3
+        class="s-tazni-gDXtlL"
+      >
+        Salon
+      </h3>
+    </span>
+     
+    <span
+      class="created s-tazni-gDXtlL"
+    >
+      02 mai, 21:25
+    </span>
+     
+     
+  </button>
+   
+  <div
+    class="actions s-tazni-gDXtlL"
+  >
+    <button
+      class="s-NMyTiX1zi6rz"
+      secondary="true"
+    >
+      <div
+        class="s-NMyTiX1zi6rz"
+      >
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          close
+        </span>
+        
+        
+      </div>
+       
+    </button>
+    <!--&lt;Button&gt;-->
+  </div>
+</article>
+`;
+
+exports[`Guests only 1`] = `
+<article
+  class="s-tazni-gDXtlL"
+  style="--bg-url: url('http://localhost:3001/games/riichi/catalog/fr/cover.webp');"
+>
+  <button
+    class="s-tazni-gDXtlL"
+    tabindex="0"
+  >
+    <span
+      class="title s-tazni-gDXtlL"
+    >
+      <h3
+        class="s-tazni-gDXtlL"
+      >
+        Richii Mahjong
+      </h3>
+    </span>
+     
+    <span
+      class="created s-tazni-gDXtlL"
+    >
+      02 mai, 21:25
+    </span>
+     
+     
+    <span
+      class="guests s-tazni-gDXtlL"
+    >
+      invités: John, Georges
+    </span>
+  </button>
+   
+  <div
+    class="actions s-tazni-gDXtlL"
+  />
+</article>
+`;
+
+exports[`Invited 1`] = `
+<article
+  class="s-tazni-gDXtlL"
+  style="--bg-url: url('http://localhost:3001/games/riichi/catalog/fr/cover.webp');"
+>
+  <button
+    class="s-tazni-gDXtlL"
+    tabindex="0"
+  >
+    <span
+      class="title s-tazni-gDXtlL"
+    >
+      <h3
+        class="s-tazni-gDXtlL"
+      >
+        Richii Mahjong
+      </h3>
+    </span>
+     
+    <span
+      class="created s-tazni-gDXtlL"
+    >
+      02 mai, 21:25
+    </span>
+     
+    <span
+      class="s-tazni-gDXtlL"
+    >
+      avec Chandra, Timothé
+    </span>
+     
+    <span
+      class="guests s-tazni-gDXtlL"
+    >
+      invités: John, Georges
+    </span>
+  </button>
+   
+  <div
+    class="actions s-tazni-gDXtlL"
+  />
+</article>
+`;
+
+exports[`Lobby 1`] = `
+<article
+  class="s-tazni-gDXtlL lobby"
+  style="--bg-url: url('');"
+>
+  <button
+    class="s-tazni-gDXtlL"
+    tabindex="0"
+  >
+    <span
+      class="title s-tazni-gDXtlL"
+    >
+      <h3
+        class="s-tazni-gDXtlL"
+      >
+        Salon
+      </h3>
+    </span>
+     
+    <span
+      class="created s-tazni-gDXtlL"
+    >
+      02 mai, 21:25
+    </span>
+     
+     
+  </button>
+   
+  <div
+    class="actions s-tazni-gDXtlL"
+  />
+</article>
+`;
+
+exports[`Owned 1`] = `
+<article
+  class="s-tazni-gDXtlL"
+  style="--bg-url: url('http://localhost:3001/games/riichi/catalog/fr/cover.webp');"
+>
+  <button
+    class="s-tazni-gDXtlL"
+    tabindex="0"
+  >
+    <span
+      class="title s-tazni-gDXtlL"
+    >
+      <h3
+        class="s-tazni-gDXtlL"
+      >
+        Richii Mahjong
+      </h3>
+    </span>
+     
+    <span
+      class="created s-tazni-gDXtlL"
+    >
+      02 mai, 21:25
+    </span>
+     
+    <span
+      class="s-tazni-gDXtlL"
+    >
+      avec Sarah, Timothé
+    </span>
+     
+    <span
+      class="guests s-tazni-gDXtlL"
+    >
+      invités: John, Georges
+    </span>
+  </button>
+   
+  <div
+    class="actions s-tazni-gDXtlL"
+  >
+    <button
+      class="s-NMyTiX1zi6rz"
+      secondary="true"
+    >
+      <div
+        class="s-NMyTiX1zi6rz"
+      >
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          delete
+        </span>
+        
+        
+      </div>
+       
+    </button>
+    <!--&lt;Button&gt;-->
+  </div>
+</article>
+`;
+
+exports[`Single owned 1`] = `
+<article
+  class="s-tazni-gDXtlL"
+  style="--bg-url: url('http://localhost:3001/games/riichi/catalog/fr/cover.webp');"
+>
+  <button
+    class="s-tazni-gDXtlL"
+    tabindex="0"
+  >
+    <span
+      class="title s-tazni-gDXtlL"
+    >
+      <h3
+        class="s-tazni-gDXtlL"
+      >
+        Richii Mahjong
+      </h3>
+    </span>
+     
+    <span
+      class="created s-tazni-gDXtlL"
+    >
+      02 mai, 21:25
+    </span>
+     
+     
+  </button>
+   
+  <div
+    class="actions s-tazni-gDXtlL"
+  >
+    <button
+      class="s-NMyTiX1zi6rz"
+      secondary="true"
+    >
+      <div
+        class="s-NMyTiX1zi6rz"
+      >
+        <span
+          class="material-icons s-NMyTiX1zi6rz"
+        >
+          delete
+        </span>
+        
+        
+      </div>
+       
+    </button>
+    <!--&lt;Button&gt;-->
+  </div>
+</article>
+`;

@@ -12,6 +12,7 @@ type CatalogItem {
 
 type ItemLocales {
   fr: ItemLocale
+  en: ItemLocale
 }
 
 type ItemLocale {

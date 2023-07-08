@@ -1,7 +1,7 @@
 <script>
   import { gameAssetsUrl } from '@src/utils'
   import { createEventDispatcher } from 'svelte'
-  import { _ } from 'svelte-intl'
+  import { _, locale } from 'svelte-intl'
 
   import Button from './Button.svelte'
 
@@ -99,7 +99,7 @@
       <img
         bind:this={image}
         alt={$_('tooltips.rule-page', { page: page + 1 })}
-        src={`${gameAssetsUrl}/${game}/rules/${page + 1}.webp`}
+        src="{gameAssetsUrl}/{game}/rules/{$locale}/{page + 1}.webp"
         on:load={handleImageLoaded}
       />
     {/if}

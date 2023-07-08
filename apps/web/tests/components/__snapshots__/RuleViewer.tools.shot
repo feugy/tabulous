@@ -58,7 +58,7 @@ exports[`Components/Rule Viewer 1`] = `
       <img
         alt="Livre de règles, page 1"
         class="s-HS2qv-2i033g"
-        src="http://localhost:3001/games/splendor/rules/1.webp"
+        src="http://localhost:3001/games/splendor/rules/fr/1.webp"
       />
     </div>
   </section>

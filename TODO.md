@@ -2,7 +2,6 @@
 
 ## Road to beta
 
-- interface in English
 - server logging (warning on invalid descriptors) + log file rotation
 - automerge.js
 
@@ -19,6 +18,7 @@
 
 ## UI
 
+- bug: game shortcuts ignore active selection to only apply to hover mesh
 - bug: 6-takes: snapping to the wrong anchor (when 2 players are snapping to different anchors)
 - check headings ordering
 - anchorable: flip/unflip on snap

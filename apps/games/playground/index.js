@@ -5,9 +5,8 @@ export function build() {
 }
 
 export const locales = {
-  fr: {
-    title: 'Aire de jeux'
-  }
+  fr: { title: 'Aire de jeux' },
+  en: { title: 'Playground' }
 }
 
 export const minSeats = 2

@@ -7,7 +7,10 @@ import { expect, translate } from '../../utils/index.js'
  */
 
 export class TermsSupportedMixin {
-  constructor(page) {
+  constructor(page, lang) {
+    /** @type {string} */
+    this.lang = lang
+    /** @type {Page} */
     this.page = page
     /** @type {Locator} */
     this.scrollable = page.getByTestId('scrollable-terms')
@@ -17,7 +20,7 @@ export class TermsSupportedMixin {
     this.oldEnoughCheckbox = page.locator('[type=checkbox][id=age]')
     /** @type {Locator} */
     this.submitTermsButton = page.getByRole('button', {
-      name: translate('actions.log-in')
+      name: translate('actions.log-in', undefined, this.lang)
     })
   }
 
@@ -28,7 +31,7 @@ export class TermsSupportedMixin {
    */
   async expectRedirectedToTerms(missingElement, originalUrl) {
     await expect(this.page).toHaveURL(
-      `/accept-terms?redirect=${encodeURIComponent(originalUrl)}`
+      `${this.lang}/accept-terms?redirect=${encodeURIComponent(originalUrl)}`
     )
     await expect(missingElement).toBeHidden()
     await expect(this.acceptTermsCheckbox).toBeVisible()

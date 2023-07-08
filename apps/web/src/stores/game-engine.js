@@ -9,7 +9,7 @@ import {
   withLatestFrom
 } from 'rxjs'
 import { get } from 'svelte/store'
-import { translate as translate$ } from 'svelte-intl'
+import { locale, translate } from 'svelte-intl'
 
 import { createEngine } from '../3d'
 import {
@@ -178,7 +178,8 @@ export function initEngine({
   const engine = createEngine({
     doubleTapDelay,
     longTapDelay,
-    translate: get(translate$),
+    locale: get(locale),
+    translate: get(translate),
     ...engineProps
   })
   engine.onEndFrameObservable.add(() => fps$.next(engine.getFps().toFixed()))

@@ -12,17 +12,20 @@ export class LoginPage {
   /**
    * Represent the login page for testing.
    * @param {Page} page - the actual page.
+   * @param {string} lang - current language.
    */
-  constructor(page) {
+  constructor(page, lang) {
+    /** @type {string} */
+    this.lang = lang
     /** @type {Page} */
     this.page = page
     /** @type {Locator} */
     this.githubButton = page.getByRole('button', {
-      name: translate('actions.log-in-github')
+      name: translate('actions.log-in-github', undefined, this.lang)
     })
     /** @type {Locator} */
     this.googleButton = page.getByRole('button', {
-      name: translate('actions.log-in-google')
+      name: translate('actions.log-in-google', undefined, this.lang)
     })
     /** @type {Locator} */
     this.passwordDetails = page.locator('details')
@@ -32,7 +35,7 @@ export class LoginPage {
     this.passwordInput = page.getByRole('textbox').nth(1)
     /** @type {Locator} */
     this.passwordButton = page.getByRole('button', {
-      name: translate('actions.log-in')
+      name: translate('actions.log-in', undefined, this.lang)
     })
   }
 

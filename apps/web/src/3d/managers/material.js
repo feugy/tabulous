@@ -6,6 +6,7 @@ import { PBRBaseMaterial } from '@babylonjs/core/Materials/PBR/pbrBaseMaterial.j
 import { PBRSpecularGlossinessMaterial } from '@babylonjs/core/Materials/PBR/pbrSpecularGlossinessMaterial.js'
 import { Texture } from '@babylonjs/core/Materials/Textures/texture.js'
 import { Color3, Color4 } from '@babylonjs/core/Maths/math.color.js'
+import { injectLocale } from '@src/utils'
 
 import { makeLogger } from '../../utils/logger'
 
@@ -22,11 +23,13 @@ class MaterialManager {
    * @property {import('@babylon/core').Scene} scene? - main scene.
    * @property {import('@babylon/core').Scene} handScene? - hand scene.
    * @property {string} gameAssetsUrl? - base url hosting the game textures.
+   * @property {string} locale? - locale used to download the game textures.
    */
   constructor() {
     this.scene = null
     this.handScene = null
     this.gameAssetsUrl = ''
+    this.locale = ''
     // private
     this.mainMaterialByUrl = new Map()
     this.handMaterialByUrl = new Map()
@@ -37,13 +40,15 @@ class MaterialManager {
    * @param {object} params - parameters, including:
    * @param {Scene} params.scene - main scene.
    * @param {Scene} params.handScene? - scene for meshes in hand.
-   * @param {string} params.gameAssetsUrl? - base url hosting the game assets (textures).
+   * @param {string} params.gameAssetsUrl? - base url hosting the game textures.
+   * @param {string} params.locale? - locale used to download the game textures.
    * @param {import('../../graphql').Game} game - loaded game data.
    */
-  init({ scene, handScene, gameAssetsUrl }, game) {
+  init({ scene, handScene, gameAssetsUrl, locale }, game) {
     this.scene = scene
     this.handScene = handScene
     this.gameAssetsUrl = gameAssetsUrl ?? ''
+    this.locale = locale ?? 'fr'
     logger.debug('material manager initialized')
     this.clear()
     scene.onDisposeObservable.addOnce(() => this.clear())
@@ -125,21 +130,15 @@ function preloadMaterials(manager, game) {
 }
 
 function buildMaterials(manager, url, usedScene) {
-  const {
-    gameAssetsUrl,
-    scene,
-    handScene,
-    mainMaterialByUrl,
-    handMaterialByUrl
-  } = manager
-  buildMaterial(mainMaterialByUrl, gameAssetsUrl, url, scene)
+  const { scene, handScene, mainMaterialByUrl, handMaterialByUrl } = manager
+  buildMaterial(mainMaterialByUrl, manager, url, scene)
   if (handScene) {
-    buildMaterial(handMaterialByUrl, gameAssetsUrl, url, handScene)
+    buildMaterial(handMaterialByUrl, manager, url, handScene)
   }
   return getMaterialCache(manager, usedScene).get(url)
 }
 
-function buildMaterial(materialByUrl, baseUrl, url, scene) {
+function buildMaterial(materialByUrl, { gameAssetsUrl, locale }, url, scene) {
   const material = new PBRSpecularGlossinessMaterial(url, scene)
   if (url?.startsWith('#')) {
     material.transparencyMode = PBRBaseMaterial.PBRMATERIAL_ALPHABLEND
@@ -148,7 +147,7 @@ function buildMaterial(materialByUrl, baseUrl, url, scene) {
   } else {
     material.transparencyMode = PBRBaseMaterial.PBRMATERIAL_ALPHATEST
     material.diffuseTexture = new Texture(
-      adaptTextureUrl(baseUrl, url),
+      adaptTextureUrl(gameAssetsUrl, url, locale),
       scene,
       { invertY: false }
     )
@@ -168,14 +167,19 @@ function buildMaterial(materialByUrl, baseUrl, url, scene) {
  * Since WebGL 1 does not support Khronos Texture properly, uses webp files instead.
  * @param {string} base - base Url, without any trailing slash.
  * @param {string} texture - the texture file name.
+ * @param {string} locale - locale injected into the texture file.
  * @returns {string} if the engine is WebGL 1, the input texture with ktx2 extension replaced with webp.
  */
-function adaptTextureUrl(base, texture) {
+function adaptTextureUrl(base, texture, locale) {
   return !texture
     ? texture
-    : Engine.LastCreatedEngine.version === 1
-    ? `${base}${texture.replace('.ktx2', '.gl1.webp')}`
-    : `${base}${texture}`
+    : injectLocale(
+        Engine.LastCreatedEngine.version === 1
+          ? `${base}${texture.replace('.ktx2', '.gl1.webp')}`
+          : `${base}${texture}`,
+        'textures',
+        locale
+      )
 }
 
 /**

@@ -1,0 +1,1401 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Anonymous 1`] = `
+<main
+  class="s-roc2_ro6Inhd"
+>
+  <header
+    class="s-c1MG4BWNDc59"
+  >
+    <nav
+      class="s-c1MG4BWNDc59"
+    >
+      <button
+        class="s-c1MG4BWNDc59"
+      >
+        <svg
+          height="27.04"
+          viewBox="0 0 37.126 27.036"
+          width="37.13"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M25.12 19.71a16.17 6.33.16 0 0-10.95 1.51l.24.6-.79-.41a16.17 6.33.16 0 0-1.88.83c.46.2.79.44.8.73.04.72-1.4 1.03-2.9.76a16.17 6.33.16 0 0-1.03 1.7 16.17 6.33.16 0 0 14.65 6.9 16.17 6.33.16 0 0 17.56-5.68 16.17 6.33.16 0 0 0-1.14c-1.58 1.27-4.14 2.25-4.71.96-.52-1.2 2.44-1.67 3.56-2.8a16.17 6.33.16 0 0-5.53-2.75c-.16 1.1.25 3.3-1.14 3.3-.82 0-1.12-2.16-.8-3.77a16.17 6.33.16 0 0-6.02-.71 16.17 6.33.16 0 0-1.06-.03zm-.91 1.6h1.58v1.63H24.2zm-5.19.97 1.8.73-1.02.82-1.79-.74zm11.04.8 1.01.82-1.79.74-1.01-.82zm-11.19.69 1.8.73-1.02.82-1.79-.74zm15.3.37 1.02.82-1.8.73-1-.81zm-17.84.13 1.79.73-1.02.82-1.79-.74z"
+            fill="currentColor"
+            style="stroke-width: .634999; stroke-linecap: round;"
+            transform="translate(-5.7 -5.33)"
+          />
+          <path
+            d="m35.55 21.31.67-2.02c.16-.48-1.43.45-2 1.17-.53.68.36 3.78-1.3 3.78-1.07 0-1.26-3.73-.32-5.04.55-.77 3.07-2.28 4.22-2.29 1.6-.02 4.54 1.71 5.3 2.83.57.83.23 3.93-.43 4.85-1.15 1.6-4.94 3.52-5.66 1.9-.56-1.27 2.88-1.73 3.78-3.05.7-1.04.51-2.43.51-2.43m-2.65-7.86a2.32 2.86 14.77 0 0 1.75 3.17 2.32 2.86 14.77 0 0 2.84-2.43 2.32 2.86 14.77 0 0-1.75-3.18 2.32 2.86 14.77 0 0-2.84 2.44zM21.7 20.59s.02-2.68-.21-3.1c-.78-1.37-2.6-4.02-2.62-5.96-.01-2.23 1.76-6.46 2.73-5.69 1.08.86-1.08 4.52-.38 6.17.42.97 1.01 2.29 1.84 2.74 1.02.56 3 .63 4.05.11 1.2-.6 1.86-1.44 2.33-2.88.43-1.28-1.15-4.94-.08-5.36 1.47-.58 2.32 3.7 2.2 5.6-.1 1.8-2.3 4.02-2.81 5.22-.34.81-.16 3.47-.16 3.47m-1.25-9.48a2.03 2.75 1.84 0 1-2.3 2.41 2.03 2.75 1.84 0 1-1.73-3.05 2.03 2.75 1.84 0 1 2.3-2.41 2.03 2.75 1.84 0 1 1.73 3.05zM14.33 21.84s-1.22-3-1.32-3.46c-.06-.27 1.29 1.13 2.63.9 1.5-.25 3.52-4.23 1.76-4.58-.66-.13-1.5 2.48-2.15 2.6-.6.11-2.32-2.02-3.52-2.21a5.48 5.48 0 0 0-4.17 1.05c-1.2 1.52-1.89 4.55-1.06 5.85 1.46 2.28 6.03 2.28 5.97 1-.05-1-3.77-1.33-4.12-2.05-.2-.4.2-2.1.2-2.1m2.67-7.58a2.86 2.32 84.88 0 1-2.26 2.84 2.86 2.32 84.88 0 1-2.4-2.87 2.86 2.32 84.88 0 1 2.26-2.84 2.86 2.32 84.88 0 1 2.4 2.87Z"
+            stroke="currentColor"
+            style="fill: none; stroke-width: .846663; stroke-linecap: round;"
+            transform="translate(-5.7 -5.33)"
+          />
+        </svg>
+      </button>
+       
+      <div
+        class="s-c1MG4BWNDc59"
+      >
+        <h1
+          class="s-roc2_ro6Inhd"
+        >
+          Bienvenue !
+        </h1>
+      </div>
+       
+      <span
+        class="wrapper s-rGIwyFRHo8D9"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="menu"
+          class="s-NMyTiX1zi6rz"
+          role="combobox"
+        >
+          <div
+            class="s-NMyTiX1zi6rz"
+          >
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              translate
+            </span>
+            
+            <span
+              class="text s-NMyTiX1zi6rz"
+            >
+              <span
+                class="s-rGIwyFRHo8D9"
+                slot="text"
+              >
+                
+              </span>
+            </span>
+            
+             
+            
+          </div>
+           
+        </button>
+        <!--&lt;Button&gt;-->
+         
+        
+        <!--&lt;Menu&gt;-->
+      </span>
+      <!--&lt;Dropdown&gt;-->
+       
+      <span
+        class="account s-c1MG4BWNDc59"
+      >
+        <button
+          class="primary s-NMyTiX1zi6rz"
+        >
+          <div
+            class="s-NMyTiX1zi6rz"
+          >
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              account_circle
+            </span>
+            
+            
+          </div>
+           
+        </button>
+        <!--&lt;Button&gt;-->
+      </span>
+    </nav>
+     
+    <div
+      class="s-c1MG4BWNDc59"
+    />
+  </header>
+  <!--&lt;Header&gt;-->
+   
+  <div
+    class="grid s-roc2_ro6Inhd"
+  >
+    <div
+      class="scrollable s-roc2_ro6Inhd"
+    >
+      <i
+        class="s-roc2_ro6Inhd"
+        id="top"
+      />
+       
+      <span
+        class="padded s-roc2_ro6Inhd"
+      >
+         
+        <h2
+          class="s-roc2_ro6Inhd"
+        >
+          Jeux disponibles
+        </h2>
+         
+        <section
+          aria-roledescription="catalog"
+          class="s-roc2_ro6Inhd"
+        >
+           
+          <button
+            class="s-umE5dFFiiYHw"
+            tabindex="0"
+          >
+            <img
+              alt="Aire de jeu"
+              class="s-umE5dFFiiYHw"
+              src="http://localhost:3001/games/playground/catalog/fr/cover.webp"
+            />
+             
+            <legend
+              class="s-umE5dFFiiYHw"
+            >
+              <h3
+                class="s-umE5dFFiiYHw"
+              >
+                Aire de jeu
+              </h3>
+               
+              <div
+                class="characteristics s-umE5dFFiiYHw"
+              >
+                <i
+                  class="material-icons s-umE5dFFiiYHw"
+                >
+                  people
+                </i>
+                <span
+                  class="s-umE5dFFiiYHw"
+                >
+                  2-8
+                </span>
+                 
+                <i
+                  class="material-icons s-umE5dFFiiYHw hidden"
+                >
+                  access_time
+                </i>
+                <span
+                  class="s-umE5dFFiiYHw hidden"
+                >
+                  undefined'
+                </span>
+                 
+                <i
+                  class="material-icons s-umE5dFFiiYHw hidden"
+                >
+                  person
+                </i>
+                <span
+                  class="s-umE5dFFiiYHw hidden"
+                >
+                  undefined+
+                </span>
+              </div>
+               
+              <div
+                class="details s-umE5dFFiiYHw"
+              >
+                 
+                 
+              </div>
+            </legend>
+          </button>
+          <!--&lt;CatalogItem&gt;-->
+          <button
+            class="s-umE5dFFiiYHw"
+            tabindex="0"
+          >
+            <img
+              alt="Dames"
+              class="s-umE5dFFiiYHw"
+              src="http://localhost:3001/games/draughts/catalog/fr/cover.webp"
+            />
+             
+            <legend
+              class="s-umE5dFFiiYHw"
+            >
+              <h3
+                class="s-umE5dFFiiYHw"
+              >
+                Dames
+              </h3>
+               
+              <div
+                class="characteristics s-umE5dFFiiYHw"
+              >
+                <i
+                  class="material-icons s-umE5dFFiiYHw"
+                >
+                  people
+                </i>
+                <span
+                  class="s-umE5dFFiiYHw"
+                >
+                  2
+                </span>
+                 
+                <i
+                  class="material-icons s-umE5dFFiiYHw"
+                >
+                  access_time
+                </i>
+                <span
+                  class="s-umE5dFFiiYHw"
+                >
+                  30'
+                </span>
+                 
+                <i
+                  class="material-icons s-umE5dFFiiYHw"
+                >
+                  person
+                </i>
+                <span
+                  class="s-umE5dFFiiYHw"
+                >
+                  6+
+                </span>
+              </div>
+               
+              <div
+                class="details s-umE5dFFiiYHw"
+              >
+                 
+                 
+              </div>
+            </legend>
+          </button>
+          <!--&lt;CatalogItem&gt;-->
+          <button
+            class="s-umE5dFFiiYHw"
+            tabindex="0"
+          >
+            <img
+              alt="Solitaire"
+              class="s-umE5dFFiiYHw"
+              src="http://localhost:3001/games/klondike/catalog/fr/cover.webp"
+            />
+             
+            <legend
+              class="s-umE5dFFiiYHw"
+            >
+              <h3
+                class="s-umE5dFFiiYHw"
+              >
+                Solitaire
+              </h3>
+               
+              <div
+                class="characteristics s-umE5dFFiiYHw"
+              >
+                <i
+                  class="material-icons s-umE5dFFiiYHw"
+                >
+                  people
+                </i>
+                <span
+                  class="s-umE5dFFiiYHw"
+                >
+                  1
+                </span>
+                 
+                <i
+                  class="material-icons s-umE5dFFiiYHw"
+                >
+                  access_time
+                </i>
+                <span
+                  class="s-umE5dFFiiYHw"
+                >
+                  15'
+                </span>
+                 
+                <i
+                  class="material-icons s-umE5dFFiiYHw"
+                >
+                  person
+                </i>
+                <span
+                  class="s-umE5dFFiiYHw"
+                >
+                  7+
+                </span>
+              </div>
+               
+              <div
+                class="details s-umE5dFFiiYHw"
+              >
+                 
+                 
+              </div>
+            </legend>
+          </button>
+          <!--&lt;CatalogItem&gt;-->
+        </section>
+      </span>
+       
+      <footer
+        class="s-_Wq18H0k1xjH"
+      >
+        <section
+          class="s-_Wq18H0k1xjH"
+        >
+          © 
+          2023
+           
+          Tabulous.fr. Tous droits réservés.
+        </section>
+         
+        <span
+          class="s-_Wq18H0k1xjH"
+        >
+          <a
+            class="s-_Wq18H0k1xjH"
+            href="/fr/terms-of-service"
+          >
+            Mentions Légales & Conditions Générales d'Utilisation
+          </a>
+        </span>
+         
+        <span
+          class="back-to-top s-_Wq18H0k1xjH"
+        >
+          <button
+            class="s-NMyTiX1zi6rz"
+          >
+            <div
+              class="s-NMyTiX1zi6rz"
+            >
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                vertical_align_top
+              </span>
+              
+              
+            </div>
+             
+          </button>
+          <!--&lt;Button&gt;-->
+        </span>
+      </footer>
+      <!--&lt;PageFooter&gt;-->
+    </div>
+     
+  </div>
+</main>
+`;
+
+exports[`Authenticated 1`] = `
+<main
+  class="s-roc2_ro6Inhd"
+>
+  <header
+    class="s-c1MG4BWNDc59"
+  >
+    <nav
+      class="s-c1MG4BWNDc59"
+    >
+      <button
+        class="s-c1MG4BWNDc59"
+      >
+        <svg
+          height="27.04"
+          viewBox="0 0 37.126 27.036"
+          width="37.13"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M25.12 19.71a16.17 6.33.16 0 0-10.95 1.51l.24.6-.79-.41a16.17 6.33.16 0 0-1.88.83c.46.2.79.44.8.73.04.72-1.4 1.03-2.9.76a16.17 6.33.16 0 0-1.03 1.7 16.17 6.33.16 0 0 14.65 6.9 16.17 6.33.16 0 0 17.56-5.68 16.17 6.33.16 0 0 0-1.14c-1.58 1.27-4.14 2.25-4.71.96-.52-1.2 2.44-1.67 3.56-2.8a16.17 6.33.16 0 0-5.53-2.75c-.16 1.1.25 3.3-1.14 3.3-.82 0-1.12-2.16-.8-3.77a16.17 6.33.16 0 0-6.02-.71 16.17 6.33.16 0 0-1.06-.03zm-.91 1.6h1.58v1.63H24.2zm-5.19.97 1.8.73-1.02.82-1.79-.74zm11.04.8 1.01.82-1.79.74-1.01-.82zm-11.19.69 1.8.73-1.02.82-1.79-.74zm15.3.37 1.02.82-1.8.73-1-.81zm-17.84.13 1.79.73-1.02.82-1.79-.74z"
+            fill="currentColor"
+            style="stroke-width: .634999; stroke-linecap: round;"
+            transform="translate(-5.7 -5.33)"
+          />
+          <path
+            d="m35.55 21.31.67-2.02c.16-.48-1.43.45-2 1.17-.53.68.36 3.78-1.3 3.78-1.07 0-1.26-3.73-.32-5.04.55-.77 3.07-2.28 4.22-2.29 1.6-.02 4.54 1.71 5.3 2.83.57.83.23 3.93-.43 4.85-1.15 1.6-4.94 3.52-5.66 1.9-.56-1.27 2.88-1.73 3.78-3.05.7-1.04.51-2.43.51-2.43m-2.65-7.86a2.32 2.86 14.77 0 0 1.75 3.17 2.32 2.86 14.77 0 0 2.84-2.43 2.32 2.86 14.77 0 0-1.75-3.18 2.32 2.86 14.77 0 0-2.84 2.44zM21.7 20.59s.02-2.68-.21-3.1c-.78-1.37-2.6-4.02-2.62-5.96-.01-2.23 1.76-6.46 2.73-5.69 1.08.86-1.08 4.52-.38 6.17.42.97 1.01 2.29 1.84 2.74 1.02.56 3 .63 4.05.11 1.2-.6 1.86-1.44 2.33-2.88.43-1.28-1.15-4.94-.08-5.36 1.47-.58 2.32 3.7 2.2 5.6-.1 1.8-2.3 4.02-2.81 5.22-.34.81-.16 3.47-.16 3.47m-1.25-9.48a2.03 2.75 1.84 0 1-2.3 2.41 2.03 2.75 1.84 0 1-1.73-3.05 2.03 2.75 1.84 0 1 2.3-2.41 2.03 2.75 1.84 0 1 1.73 3.05zM14.33 21.84s-1.22-3-1.32-3.46c-.06-.27 1.29 1.13 2.63.9 1.5-.25 3.52-4.23 1.76-4.58-.66-.13-1.5 2.48-2.15 2.6-.6.11-2.32-2.02-3.52-2.21a5.48 5.48 0 0 0-4.17 1.05c-1.2 1.52-1.89 4.55-1.06 5.85 1.46 2.28 6.03 2.28 5.97 1-.05-1-3.77-1.33-4.12-2.05-.2-.4.2-2.1.2-2.1m2.67-7.58a2.86 2.32 84.88 0 1-2.26 2.84 2.86 2.32 84.88 0 1-2.4-2.87 2.86 2.32 84.88 0 1 2.26-2.84 2.86 2.32 84.88 0 1 2.4 2.87Z"
+            stroke="currentColor"
+            style="fill: none; stroke-width: .846663; stroke-linecap: round;"
+            transform="translate(-5.7 -5.33)"
+          />
+        </svg>
+      </button>
+       
+      <div
+        class="s-c1MG4BWNDc59"
+      >
+        <h1
+          class="s-roc2_ro6Inhd"
+        >
+          Bonjour Jane Doe !
+        </h1>
+      </div>
+       
+      <span
+        class="wrapper s-rGIwyFRHo8D9"
+      >
+        <button
+          aria-expanded="false"
+          aria-haspopup="menu"
+          class="s-NMyTiX1zi6rz"
+          role="combobox"
+        >
+          <div
+            class="s-NMyTiX1zi6rz"
+          >
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              translate
+            </span>
+            
+            <span
+              class="text s-NMyTiX1zi6rz"
+            >
+              <span
+                class="s-rGIwyFRHo8D9"
+                slot="text"
+              >
+                
+              </span>
+            </span>
+            
+             
+            
+          </div>
+           
+        </button>
+        <!--&lt;Button&gt;-->
+         
+        
+        <!--&lt;Menu&gt;-->
+      </span>
+      <!--&lt;Dropdown&gt;-->
+       
+      <span
+        class="account s-c1MG4BWNDc59"
+      >
+        <span
+          class="wrapper s-rGIwyFRHo8D9"
+        >
+          <button
+            aria-expanded="false"
+            aria-haspopup="menu"
+            class="transparent s-NMyTiX1zi6rz"
+            role="combobox"
+          >
+            <div
+              class="s-NMyTiX1zi6rz"
+            >
+              
+              <span
+                class="text s-NMyTiX1zi6rz"
+              >
+                <span
+                  class="s-rGIwyFRHo8D9"
+                  slot="text"
+                >
+                  
+                </span>
+              </span>
+              
+              <figure
+                class="s-engCJu8q-fNe"
+                style="--dimension: 30px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+              >
+                <img
+                  alt="avatar for Jane Doe"
+                  class="s-engCJu8q-fNe"
+                  height="30"
+                  referrerpolicy="no-referrer"
+                  width="30"
+                />
+                 
+                <figcaption
+                  class="s-engCJu8q-fNe abbreviated"
+                >
+                  JD
+                </figcaption>
+              </figure>
+              <!--&lt;PlayerThumbnail&gt;-->
+               
+              
+            </div>
+             
+          </button>
+          <!--&lt;Button&gt;-->
+           
+          
+          <!--&lt;Menu&gt;-->
+        </span>
+        <!--&lt;Dropdown&gt;-->
+      </span>
+    </nav>
+     
+    <div
+      class="s-c1MG4BWNDc59"
+    />
+  </header>
+  <!--&lt;Header&gt;-->
+   
+  <div
+    class="grid s-roc2_ro6Inhd"
+  >
+    <div
+      class="scrollable s-roc2_ro6Inhd"
+    >
+      <i
+        class="s-roc2_ro6Inhd"
+        id="top"
+      />
+       
+      <span
+        class="padded s-roc2_ro6Inhd"
+      >
+        <h2
+          class="s-roc2_ro6Inhd"
+        >
+          Parties en cours
+        </h2>
+         
+        <section
+          aria-roledescription="games"
+          class="s-roc2_ro6Inhd"
+        >
+          
+          <article
+            class="s-tazni-gDXtlL"
+            style="--bg-url: url('http://localhost:3001/games/playground/catalog/fr/cover.webp');"
+          >
+            <button
+              class="s-tazni-gDXtlL"
+              tabindex="0"
+            >
+              <span
+                class="title s-tazni-gDXtlL"
+              >
+                <h3
+                  class="s-tazni-gDXtlL"
+                >
+                  Jeu de 32 cartes
+                </h3>
+              </span>
+               
+              <span
+                class="created s-tazni-gDXtlL"
+              >
+                02 août, 09:13
+              </span>
+               
+               
+            </button>
+             
+            <div
+              class="actions s-tazni-gDXtlL"
+            >
+              <button
+                class="s-NMyTiX1zi6rz"
+                secondary="true"
+              >
+                <div
+                  class="s-NMyTiX1zi6rz"
+                >
+                  <span
+                    class="material-icons s-NMyTiX1zi6rz"
+                  >
+                    delete
+                  </span>
+                  
+                  
+                </div>
+                 
+              </button>
+              <!--&lt;Button&gt;-->
+            </div>
+          </article>
+          <!--&lt;GameLink&gt;-->
+          
+          <article
+            class="s-tazni-gDXtlL"
+            style="--bg-url: url('http://localhost:3001/games/6-takes/catalog/fr/cover.webp');"
+          >
+            <button
+              class="s-tazni-gDXtlL"
+              tabindex="0"
+            >
+              <span
+                class="title s-tazni-gDXtlL"
+              >
+                <h3
+                  class="s-tazni-gDXtlL"
+                >
+                  6 qui prend !
+                </h3>
+              </span>
+               
+              <span
+                class="created s-tazni-gDXtlL"
+              >
+                29 juil., 08:17
+              </span>
+               
+              <span
+                class="s-tazni-gDXtlL"
+              >
+                avec Dams, Célia
+              </span>
+               
+              <span
+                class="guests s-tazni-gDXtlL"
+              >
+                invités: Hugo
+              </span>
+            </button>
+             
+            <div
+              class="actions s-tazni-gDXtlL"
+            />
+          </article>
+          <!--&lt;GameLink&gt;-->
+        </section>
+         
+        <h2
+          class="s-roc2_ro6Inhd"
+        >
+          Jeux disponibles
+        </h2>
+         
+        <section
+          aria-roledescription="catalog"
+          class="s-roc2_ro6Inhd"
+        >
+          <button
+            class="s-63jve6FsTFKC"
+            tabindex="0"
+          >
+            <legend
+              class="s-63jve6FsTFKC"
+            >
+              <h3
+                class="s-63jve6FsTFKC"
+              >
+                Nouveau salon
+              </h3>
+               
+              <div
+                class="s-63jve6FsTFKC"
+              >
+                Invitez vos ami·e·s puis décidez à quel jeu jouer.
+              </div>
+            </legend>
+          </button>
+          <!--&lt;CreateLobby&gt;-->
+           
+          <button
+            class="s-umE5dFFiiYHw"
+            tabindex="0"
+          >
+            <img
+              alt="6 qui prend !"
+              class="s-umE5dFFiiYHw"
+              src="http://localhost:3001/games/6-takes/catalog/fr/cover.webp"
+            />
+             
+            <legend
+              class="s-umE5dFFiiYHw"
+            >
+              <h3
+                class="s-umE5dFFiiYHw"
+              >
+                6 qui prend !
+              </h3>
+               
+              <div
+                class="characteristics s-umE5dFFiiYHw"
+              >
+                <i
+                  class="material-icons s-umE5dFFiiYHw"
+                >
+                  people
+                </i>
+                <span
+                  class="s-umE5dFFiiYHw"
+                >
+                  2-8
+                </span>
+                 
+                <i
+                  class="material-icons s-umE5dFFiiYHw"
+                >
+                  access_time
+                </i>
+                <span
+                  class="s-umE5dFFiiYHw"
+                >
+                  15'
+                </span>
+                 
+                <i
+                  class="material-icons s-umE5dFFiiYHw"
+                >
+                  person
+                </i>
+                <span
+                  class="s-umE5dFFiiYHw"
+                >
+                  10+
+                </span>
+              </div>
+               
+              <div
+                class="details s-umE5dFFiiYHw"
+              >
+                <p
+                  class="s-umE5dFFiiYHw"
+                >
+                  <strong
+                    class="s-umE5dFFiiYHw"
+                  >
+                    Créé par : 
+                  </strong>
+                  Wolfgang Kramer
+                </p>
+                 
+                <p
+                  class="s-umE5dFFiiYHw"
+                >
+                  <strong
+                    class="s-umE5dFFiiYHw"
+                  >
+                    Illustré par : 
+                  </strong>
+                  Franz vohwinkel
+                </p>
+                 
+                <p
+                  class="s-umE5dFFiiYHw"
+                >
+                  <strong
+                    class="s-umE5dFFiiYHw"
+                  >
+                    Distribué par : 
+                  </strong>
+                  Amigo, Gigamic
+                </p>
+              </div>
+            </legend>
+          </button>
+          <!--&lt;CatalogItem&gt;-->
+          <button
+            class="s-umE5dFFiiYHw"
+            tabindex="0"
+          >
+            <img
+              alt="Aire de jeu"
+              class="s-umE5dFFiiYHw"
+              src="http://localhost:3001/games/playground/catalog/fr/cover.webp"
+            />
+             
+            <legend
+              class="s-umE5dFFiiYHw"
+            >
+              <h3
+                class="s-umE5dFFiiYHw"
+              >
+                Aire de jeu
+              </h3>
+               
+              <div
+                class="characteristics s-umE5dFFiiYHw"
+              >
+                <i
+                  class="material-icons s-umE5dFFiiYHw"
+                >
+                  people
+                </i>
+                <span
+                  class="s-umE5dFFiiYHw"
+                >
+                  2-8
+                </span>
+                 
+                <i
+                  class="material-icons s-umE5dFFiiYHw hidden"
+                >
+                  access_time
+                </i>
+                <span
+                  class="s-umE5dFFiiYHw hidden"
+                >
+                  undefined'
+                </span>
+                 
+                <i
+                  class="material-icons s-umE5dFFiiYHw hidden"
+                >
+                  person
+                </i>
+                <span
+                  class="s-umE5dFFiiYHw hidden"
+                >
+                  undefined+
+                </span>
+              </div>
+               
+              <div
+                class="details s-umE5dFFiiYHw"
+              >
+                 
+                 
+              </div>
+            </legend>
+          </button>
+          <!--&lt;CatalogItem&gt;-->
+          <button
+            class="s-umE5dFFiiYHw"
+            tabindex="0"
+          >
+            <img
+              alt="Dames"
+              class="s-umE5dFFiiYHw"
+              src="http://localhost:3001/games/draughts/catalog/fr/cover.webp"
+            />
+             
+            <legend
+              class="s-umE5dFFiiYHw"
+            >
+              <h3
+                class="s-umE5dFFiiYHw"
+              >
+                Dames
+              </h3>
+               
+              <div
+                class="characteristics s-umE5dFFiiYHw"
+              >
+                <i
+                  class="material-icons s-umE5dFFiiYHw"
+                >
+                  people
+                </i>
+                <span
+                  class="s-umE5dFFiiYHw"
+                >
+                  2
+                </span>
+                 
+                <i
+                  class="material-icons s-umE5dFFiiYHw"
+                >
+                  access_time
+                </i>
+                <span
+                  class="s-umE5dFFiiYHw"
+                >
+                  30'
+                </span>
+                 
+                <i
+                  class="material-icons s-umE5dFFiiYHw"
+                >
+                  person
+                </i>
+                <span
+                  class="s-umE5dFFiiYHw"
+                >
+                  6+
+                </span>
+              </div>
+               
+              <div
+                class="details s-umE5dFFiiYHw"
+              >
+                 
+                 
+              </div>
+            </legend>
+          </button>
+          <!--&lt;CatalogItem&gt;-->
+          <button
+            class="s-umE5dFFiiYHw"
+            tabindex="0"
+          >
+            <img
+              alt="Dune Imperium"
+              class="s-umE5dFFiiYHw"
+              src="http://localhost:3001/games/dune-imperium/catalog/fr/cover.webp"
+            />
+             
+            <legend
+              class="s-umE5dFFiiYHw"
+            >
+              <h3
+                class="s-umE5dFFiiYHw"
+              >
+                Dune Imperium
+              </h3>
+               
+              <div
+                class="characteristics s-umE5dFFiiYHw"
+              >
+                <i
+                  class="material-icons s-umE5dFFiiYHw"
+                >
+                  people
+                </i>
+                <span
+                  class="s-umE5dFFiiYHw"
+                >
+                  1-4
+                </span>
+                 
+                <i
+                  class="material-icons s-umE5dFFiiYHw"
+                >
+                  access_time
+                </i>
+                <span
+                  class="s-umE5dFFiiYHw"
+                >
+                  90'
+                </span>
+                 
+                <i
+                  class="material-icons s-umE5dFFiiYHw"
+                >
+                  person
+                </i>
+                <span
+                  class="s-umE5dFFiiYHw"
+                >
+                  13+
+                </span>
+              </div>
+               
+              <div
+                class="details s-umE5dFFiiYHw"
+              >
+                <p
+                  class="s-umE5dFFiiYHw"
+                >
+                  <strong
+                    class="s-umE5dFFiiYHw"
+                  >
+                    Créé par : 
+                  </strong>
+                  Paul Dennen
+                </p>
+                 
+                <p
+                  class="s-umE5dFFiiYHw"
+                >
+                  <strong
+                    class="s-umE5dFFiiYHw"
+                  >
+                    Illustré par : 
+                  </strong>
+                  Clay Brooks, Nate Storm, Raul Ramos, Brett Nienburg, Atila Guzey, Derek Herring, Kenan Jackson
+                </p>
+                 
+                <p
+                  class="s-umE5dFFiiYHw"
+                >
+                  <strong
+                    class="s-umE5dFFiiYHw"
+                  >
+                    Distribué par : 
+                  </strong>
+                  Dire Wolf Digital, Gale Force Nine, Lucky Duck, Legendary
+                </p>
+              </div>
+            </legend>
+          </button>
+          <!--&lt;CatalogItem&gt;-->
+          <button
+            class="s-umE5dFFiiYHw"
+            tabindex="0"
+          >
+            <img
+              alt="Solitaire"
+              class="s-umE5dFFiiYHw"
+              src="http://localhost:3001/games/klondike/catalog/fr/cover.webp"
+            />
+             
+            <legend
+              class="s-umE5dFFiiYHw"
+            >
+              <h3
+                class="s-umE5dFFiiYHw"
+              >
+                Solitaire
+              </h3>
+               
+              <div
+                class="characteristics s-umE5dFFiiYHw"
+              >
+                <i
+                  class="material-icons s-umE5dFFiiYHw"
+                >
+                  people
+                </i>
+                <span
+                  class="s-umE5dFFiiYHw"
+                >
+                  1
+                </span>
+                 
+                <i
+                  class="material-icons s-umE5dFFiiYHw"
+                >
+                  access_time
+                </i>
+                <span
+                  class="s-umE5dFFiiYHw"
+                >
+                  15'
+                </span>
+                 
+                <i
+                  class="material-icons s-umE5dFFiiYHw"
+                >
+                  person
+                </i>
+                <span
+                  class="s-umE5dFFiiYHw"
+                >
+                  7+
+                </span>
+              </div>
+               
+              <div
+                class="details s-umE5dFFiiYHw"
+              >
+                 
+                 
+              </div>
+            </legend>
+          </button>
+          <!--&lt;CatalogItem&gt;-->
+        </section>
+      </span>
+       
+      <footer
+        class="s-_Wq18H0k1xjH"
+      >
+        <section
+          class="s-_Wq18H0k1xjH"
+        >
+          © 
+          2023
+           
+          Tabulous.fr. Tous droits réservés.
+        </section>
+         
+        <span
+          class="s-_Wq18H0k1xjH"
+        >
+          <a
+            class="s-_Wq18H0k1xjH"
+            href="/fr/terms-of-service"
+          >
+            Mentions Légales & Conditions Générales d'Utilisation
+          </a>
+        </span>
+         
+        <span
+          class="back-to-top s-_Wq18H0k1xjH"
+        >
+          <button
+            class="s-NMyTiX1zi6rz"
+          >
+            <div
+              class="s-NMyTiX1zi6rz"
+            >
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                vertical_align_top
+              </span>
+              
+              
+            </div>
+             
+          </button>
+          <!--&lt;Button&gt;-->
+        </span>
+      </footer>
+      <!--&lt;PageFooter&gt;-->
+    </div>
+     
+    <aside
+      class="s-2iawX3uhhnz1"
+    >
+      <section
+        aria-label="minimizable"
+        class="s-vqhOCvFa7LzI"
+        id="minimizable-section-17"
+        style="width: 25vw; transition: width var(--short);"
+      >
+        <menu
+          class="right s-vqhOCvFa7LzI"
+        >
+          <ol
+            class="s-vqhOCvFa7LzI"
+            role="tablist"
+            style="--corner1: url(#clip-path-10000); --corner2: url(#clip-path-10010);"
+          >
+            <li
+              class="bg s-vqhOCvFa7LzI"
+            />
+             
+            <li
+              class="s-vqhOCvFa7LzI"
+            >
+              <button
+                aria-expanded="true"
+                aria-selected="false"
+                class="transparent s-NMyTiX1zi6rz"
+                role="tab"
+              >
+                <div
+                  class="s-NMyTiX1zi6rz"
+                >
+                  <span
+                    class="material-icons s-NMyTiX1zi6rz"
+                  >
+                    people_alt
+                  </span>
+                  
+                  
+                </div>
+                 
+                <span
+                  class="badge s-NMyTiX1zi6rz"
+                >
+                  F2
+                </span>
+              </button>
+              <!--&lt;Button&gt;-->
+               
+            </li>
+          </ol>
+           
+          <div
+            aria-controls="minimizable-section-17"
+            class="gutter s-vqhOCvFa7LzI"
+            role="scrollbar"
+          />
+           
+          <svg
+            class="s-vqhOCvFa7LzI"
+            style="width: 0px; height: 0px;"
+          >
+            <clippath
+              class="s-vqhOCvFa7LzI"
+              clipPathUnits="objectBoundingBox"
+              id="clip-path-10000"
+            >
+              <path
+                class="s-vqhOCvFa7LzI"
+                d="M 0 1 C 0.5 1 0.5 0 1 0 V 1 Z"
+                transform="rotate(90) scale(1, -1)"
+                transform-origin="0.5 0.5"
+              />
+            </clippath>
+            <clippath
+              class="s-vqhOCvFa7LzI"
+              clipPathUnits="objectBoundingBox"
+              id="clip-path-10010"
+            >
+              <path
+                class="s-vqhOCvFa7LzI"
+                d="M 0 0 C 0.5 0 0.5 1 1 1 H 0 Z"
+                transform="rotate(90) scale(1, -1)"
+                transform-origin="0.5 0.5"
+              />
+            </clippath>
+          </svg>
+        </menu>
+         
+        <span
+          class="s-vqhOCvFa7LzI"
+        >
+          <div
+            class="content s-2iawX3uhhnz1"
+          >
+            <div
+              class="peers s-2iawX3uhhnz1 hidden"
+            >
+              <div
+                class="s-9CzX_ZtBT-9N"
+                style="--rows: 1; --columns: 1;"
+              >
+                 
+              </div>
+              <!--&lt;AvatarGrid&gt;-->
+               
+              <legend
+                class="s-uuldoZl5F298"
+              >
+                 
+              </legend>
+              <!--&lt;VideoCommands&gt;-->
+               
+            </div>
+             
+             
+            <section
+              aria-roledescription="friend-list"
+              class="s-XLQf75fI0H0o"
+            >
+              <h3
+                class="s-XLQf75fI0H0o"
+              >
+                Vos ami·e·s
+              </h3>
+               
+              <div
+                class="s-XLQf75fI0H0o"
+              >
+                <span
+                  aria-haspopup="menu"
+                  class="wrapper s-JM3fRWrV7jJU"
+                >
+                  <fieldset
+                    class="s-Fe6WNbR-55zp"
+                  >
+                    <legend
+                      class="s-Fe6WNbR-55zp"
+                    >
+                      Pseudo
+                    </legend>
+                     
+                    <input
+                      class="s-Fe6WNbR-55zp"
+                      type="text"
+                    />
+                  </fieldset>
+                  <!--&lt;Input&gt;-->
+                   
+                  
+                  <!--&lt;Menu&gt;-->
+                </span>
+                <!--&lt;Typeahead&gt;-->
+                 
+                <button
+                  class="s-NMyTiX1zi6rz"
+                  disabled=""
+                >
+                  <div
+                    class="s-NMyTiX1zi6rz"
+                  >
+                    <span
+                      class="material-icons s-NMyTiX1zi6rz"
+                    >
+                      person_add_alt_1
+                    </span>
+                    
+                    
+                  </div>
+                   
+                </button>
+                <!--&lt;Button&gt;-->
+              </div>
+               
+               
+              <ol
+                class="s-XLQf75fI0H0o"
+                role="listbox"
+              >
+                <li
+                  aria-checked="false"
+                  aria-selected="false"
+                  class="s-XLQf75fI0H0o isRequest"
+                  role="option"
+                  tabindex="-1"
+                >
+                  <figure
+                    class="s-engCJu8q-fNe"
+                    style="--dimension: 40px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+                  >
+                    <img
+                      alt="avatar for Karl L."
+                      class="s-engCJu8q-fNe"
+                      height="40"
+                      referrerpolicy="no-referrer"
+                      width="40"
+                    />
+                     
+                    <figcaption
+                      class="s-engCJu8q-fNe abbreviated"
+                    >
+                      KL
+                    </figcaption>
+                  </figure>
+                  <!--&lt;PlayerThumbnail&gt;-->
+                   
+                  <span
+                    class="s-XLQf75fI0H0o"
+                    role="term"
+                  >
+                    Karl L. souhaite rejoindre vos ami·e·s
+                  </span>
+                   
+                  <span
+                    class="buttons s-XLQf75fI0H0o"
+                  >
+                    <button
+                      class="primary s-NMyTiX1zi6rz"
+                    >
+                      <div
+                        class="s-NMyTiX1zi6rz"
+                      >
+                        <span
+                          class="material-icons s-NMyTiX1zi6rz"
+                        >
+                          check
+                        </span>
+                        
+                        
+                      </div>
+                       
+                    </button>
+                    <!--&lt;Button&gt;-->
+                     
+                    <button
+                      class="s-NMyTiX1zi6rz"
+                    >
+                      <div
+                        class="s-NMyTiX1zi6rz"
+                      >
+                        <span
+                          class="material-icons s-NMyTiX1zi6rz"
+                        >
+                          clear
+                        </span>
+                        
+                        
+                      </div>
+                       
+                    </button>
+                    <!--&lt;Button&gt;-->
+                  </span>
+                   
+                </li>
+              </ol>
+               
+               
+            </section>
+            <!--&lt;FriendList&gt;-->
+          </div>
+        </span>
+      </section>
+      <!--&lt;MinimizableSection&gt;-->
+    </aside>
+    <!--&lt;Container&gt;-->
+  </div>
+</main>
+`;

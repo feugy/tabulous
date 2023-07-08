@@ -1,0 +1,334 @@
+actions:
+  back: Back
+  cancel: No
+  change-avatar: Configure
+  confirm: Yes
+  create-lobby: New lobby
+  enter-fullscreen: Full-screen
+  go-to-account: Settings
+  hide-indicators: Hide indicators
+  invite-attendee: Invite in the lobby
+  invite-player: Invite to play
+  invite: Invite
+  join-game: Play
+  leave-fullscreen: Leave full-screen
+  log-in-github: Continue with Github
+  log-in-google: Continue with Google
+  log-in-others: Other options
+  log-in-password: Continue with password
+  log-in: Log in
+  log-out: Log out
+  new-game: New
+  quit-game: Leave game
+  save: Save
+  scroll-to-top: Scroll to top
+  show-indicators: Display indicators
+errors:
+  login-failure: Incorrect nickname or password. Please retry.
+  restricted-game: This game is not accessible.
+  too-many-games: You already have {count} current games, you can not start new ones.
+  username-too-short: Your nickname must have at least 3 characters.
+  username-used: This nickname is altready used, please choose a different one.
+labels:
+  accept-terms: Terms of Use
+  account: Settings
+  avatar: 'Avatar: '
+  colon: ': '
+  confirm-game-deletion: Do you really want to delete this "{title}" game?
+  confirm-lobby-deletion: Do you really want to delete this lobby?
+  copyright: Copyright Tabulous.fr.
+  end-friendship: Do you really want to remove {username} from your friends? You could not play together any more.
+  empty-friend-list: Add friends and play with them.
+  en: English
+  fr: Français
+  friendship-accepted: '{username} just joined your friend list'
+  friendship-declined: '{username} left your friend list'
+  friendship-proposed: 'Request sent to {username}'
+  friendship-requested: '{username} wish to join your friend list'
+  game-authors: 'Designer(s): '
+  game-deleted: Deleted game!
+  game-deleted-by-owner: This owner deleted this game
+  game-designers: 'Artist(s): '
+  game-min-age: '{minAge}+'
+  game-min-time: "{minTime}'"
+  game-publishers: 'Publisher(s): '
+  help-add-to-selection: Select multiple objects.
+  help-clear-selection: Unselect objects.
+  help-detail: See object details.
+  help-draw: Draw the object (or the current selection) in your hand, or play from your hand.
+  help-decrement: Split an object from the group.
+  help-flip: Flip the object (or the active selection).
+  help-increment: Group the active selection together.
+  help-open-menu: Open action menu for this object (or the active selection).
+  help-move: Move the object (or the active selection), if not locked.
+  help-new-camera: Save the camera position.
+  help-pan-camera: Pans the camera.
+  help-push: Stacks objects of the active selection.
+  help-pop: Pops an object from the stack.
+  help-random: Throw dice.
+  help-restore-camera: Restore the camera position.
+  help-rotate: Rotates the object (or the active selection).
+  help-rotate-camera: Rotates and inclines the camera.
+  help-save-camera: Updates the camera position.
+  help-zoom: Zoom in or out.
+  home: Home
+  host: host
+  last-updated: 'Last update: { published, date, date-only }'
+  lobby-description: Invites your friends and decide which game to play.
+  lobby-deleted: 'Deleted lobby!'
+  lobby-instructions: To promote this lobby to a game, pick any game from the catalog.
+  log-in: Connection
+  manual-provider: You have a manual account which identifier is "{id}"
+  new-game-invite: You have been invited to a game!
+  no-actions: No actions
+  no-games-yet: Nothing right now! Pick a game from the catalog.
+  oauth-provider: You connected this account to your "{email}" email address
+  old-enough: I warrant that I am over 15 years of age, or have obtained parental or guardian consent
+  peer-guests: 'invited: {names}'
+  peer-players: with {names}
+  player-joined-game: '{player.username} joined the game!'
+  player-joined-lobby: '{player.username} joined the lobby!'
+  player-left-game: '{player.username} left the game'
+  player-left-lobby: '{player.username} left the lobby'
+  terms-accepted: I accept and agree to the Terms of Use
+  terms-intro: Here is not the jungle! To enjoy Tabulous, please read and accept these Terms of Use.
+  terms-of-service: Legal mentions & Terms of Use
+  username: 'Nickname: '
+page-titles:
+  accept-terms: Tabulous • Terms of Use
+  account: Tabulous • Settings
+  create-game: Tabulous • New game
+  game: Tabulous • Game
+  home: Tabulous • Home
+  log-in: Tabulous • Connection
+  terms-of-service: Tabulous • Legal & Terms of Use
+placeholders:
+  avatar: Url
+  password: Password
+  playerId: Id
+  username: Nickname
+titles:
+  account: Your settings
+  attendee-list: Attendees
+  auth-provider: Account
+  camera-controls: Camera controls
+  catalog: Available games
+  change-avatar: Choose a new avatar
+  confirm-game-deletion: Game deletion
+  confirm-lobby-deletion: Lobby deletion
+  create-game: New game
+  end-friendship: Are you sure?
+  friend-list: Your friends
+  game-parameters: Game settings
+  home: Hello {username} !
+  invite: Who will you invite?
+  legal: Legal mentions
+  lobby: Lobby
+  log-in: Connection
+  object-controls: Object controls
+  object-shortcuts: Keyboard shortcuts (objects)
+  player-list: Players
+  terms-of-service: Terms of Use
+  username: Your nickname
+  welcome: Welcome!
+  your-games: Current games
+tooltips:
+  add-to-selection: Add to the active selection
+  change-avatar: If your email is bound to Gravatar, enter "gravatar". Clear the field to remove your avatar.
+  clear-selection: Clear active selection
+  decrement: Split from from the group
+  detail: View in details
+  draw: Draw in your hand
+  flip-stack: Flip entire stack
+  flip: Flip
+  game-menu: Controls menu
+  increment: Group the active selection together
+  lock: Lock
+  move: Move
+  open-menu: Open menu
+  pan-camera: Move
+  play: Play on the table
+  pop: Pop from the stack
+  push: Push to the stack
+  random: Throw dice
+  reorder: Shuffle
+  restore-camera: Restore position
+  rotate-camera: Rotate and incline
+  rotate: Rotate
+  rule-page: Rule book, page {page}
+  save-camera: Update position
+  save-new-camera: Save new position (Ctrl+1~9)
+  save-restore-camera: '{index, plural, =0 {Restore initial camera position (home)} other {Restore (click / #) or update (long click / Ctrl+#) camera position}}'
+  send-message: Send to all
+  setFace: Configure value
+  stack-all: Stack all together
+  toggleLock: (Un)lock
+  unlock: Unlock
+  zoom: Zoom
+shortcuts:
+  detail: v
+  draw: d
+  flip: f
+  hand: h
+  pop: p
+  push: g
+  random: t
+  reorder: s
+  rotate: r
+  setFace: c
+  toggleLock: l
+markdown:
+  legal: |
+    The online gaming platform accessible at [tabulous.fr](https://tabulous.fr) (hereinafter the "**Platform**") is published by an individual on a non-professional and non-commercial basis (hereinafter the "**Publisher**"). 
+    The Platform is hosted by :
+
+    - OVH NET, located at 140, quai du Sartel, 59000 Roubaix, France, reachable by phone at +33 8 99 70 17 61 and by email at [tech@ovh.net](mailto:tech@ovh.net);
+    - VERCEL, located at 340 S Lemon Ave \#4133, Walnut CA 91789 United States, reachable by phone at +1 951-383-6898 and by email at [support@vercel.com](mailto:support@vercel.com)
+
+  terms-of-service: |
+    ### Article 1 - Purpose 
+
+    The purpose of these terms of use (hereinafter referred to as the "TU") is to define the conditions under which any person (hereinafter referred to as the "User") may access, consult or use the Platform.
+
+    By accessing, consulting or using the Platform, the User agrees to accept without reservation the TU and to abide by its terms. In the event that the User does not accept all or part of the TU, he/she is requested to cease all use of the Platform. 
+
+    These TU may be modified at any time without notice. The User should therefore check the Platform regularly to keep informed of any changes or updates to the TU.
+
+    ### Article 2 - Definitions 
+
+    In addition to the terms defined above, the following terms shall have the following meaning: 
+
+    "**Account**" refers to the user account created in order to access the Games available on the Platform. 
+
+    "**Content**" refers to any content, data, information, video, image, recording, statement, comment, message, document, published by a User on the Chat.
+
+    "**Chat**" refers to the written messaging and video system accessible by Users while playing a Game.
+
+    "**Games**" refers to the games made available to Users on the Platform.
+
+    "**Player(s)**" refers to any person who has created an Account.
+
+    "**Third Party Services**" refers to any third party service through which the User may choose to connect to the Platform (e.g. Facebook, Google, Discord, Twitch, etc).
+
+    "**User(s)**" refers to any Internet user browsing the Platform as a Player or Visitor. 
+
+    "**Visitor(s)**" refers to any Internet user browsing the Platform without having created an Account.
+
+    ### Article 3 - Use of the Platform
+
+    #### 3.1 Free access
+
+    The Platform is accessible free of charge by any User with Internet access. 
+
+    All costs incurred by the User in accessing the Platform remain at the User's expense.
+
+    #### 3.2 Creating an Account
+
+    In order to access and play the Games available on the Platform, the User must register and connect to the Platform via a Third Party Service. 
+
+    The collection, use and disclosure of User information resulting from these actions will be subject to the privacy policy of the Third Party Service chosen by the User. Where permitted by the privacy policy, the Publisher will be provided with the User's first name, last name, avatar and nickname. 
+
+    By virtue of the OAuth2 protocol used to connect to the Third Party Service, the User will be notified of the information transmitted to the Publisher. If the User rejects the use of this data, the Platform will not be accessible to him/her. 
+
+    Once registration and connection to the Platform has been completed using a Third-Party Service, an Account is created. 
+
+    When connecting to the Platform for the first time, the User declares by ticking a box that he/she is over 15 years of age or that he/she has been authorized by one of his/her parents or the holder of parental authority to use his/her surname, first names, e-mail address, avatar and nickname (hereinafter referred to as the "Minor's Personal Data") to create the Account, access the Platform and play the Games.
+
+    #### 3.3 Multiplayer Games
+
+    The Games made available to Players may be played in multi-player mode, whereby each Player may create a game by inviting the Player(s) of his or her choice, subject to the acceptance of the invited Player to participate in the game. 
+
+    #### 3.4 Chat 
+
+    When a game is played in multi-player mode, a chat room is made available to Players to enable them to exchange any Content in writing or by video. 
+
+    This Content is accessible only by Players in the same game. All Content is accessible for as long as the Player retains the game in which the Content was exchanged, and until such time as the Player decides to delete the game. As an exception, Content exchanged via video is not recorded.
+
+    ### Article 4 - Warranty and liability of the Publisher
+
+    #### 4.1 Platform operation
+
+    The Publisher uses all reasonable means at its disposal to ensure the availability of the Platform 7 days a week and 24 hours a day, with the exception of cases of force majeure and maintenance operations or problems affecting telecommunications networks. 
+
+    Accordingly, the Publisher shall not be held liable for : 
+
+    - any Internet connection problem attributable to any equipment and/or operator used by the User;  
+    - in the event of unavailability of the Platform for updating and maintenance purposes, or of any network or server malfunction; 
+    - any failure, breakdown, difficulty or interruption in operation, preventing access to the Platform or any of its functions; 
+    - modification, interruption or deletion of the Platform; 
+    - computer security breaches for which it is not responsible, which may cause damage to Users' computer equipment; 
+    - the presence of viruses on the Platform for reasons beyond its control.
+
+    Users are responsible for taking all appropriate measures to protect their equipment from contamination by viruses or malicious programs.
+
+    #### 4.2 Links to third-party sites 
+
+    The Platform may contain links to other sites which are not operated by the Publisher. 
+
+    The Publisher cannot in any way be held responsible for the provision of these links enabling access to external sites and sources, and cannot accept any responsibility for the content, advertising, products, services or any other material available on or from these external sites or sources, which are neither verified nor approved by the Publisher.
+
+    #### 4.3 User behaviour
+
+    The Publisher shall not be held liable for the consequences of a User's breach of his or her obligations under the TU, for a User's failure to comply with his or her obligations, or for any damage caused by one User to another, in particular as a result of Content shared in chat during multi-player games. 
+
+    It is the responsibility of each User to report any Content he or she considers inappropriate to the Publisher by sending a written notice to the following address: [support@tabulous.fr](mailto:support@tabulous.fr).
+
+    ### Article 5 - User obligations
+
+    #### 5.1 User obligations
+
+    The User undertakes to :  
+
+    - use the Platform in accordance with these TU; 
+    - not to publish, upload, transmit or make available on the Chat any Content that is defamatory, abusive, obscene, pornographic, vulgar, offensive, aggressive, inappropriate, violent, threatening, harassing, racist, xenophobic, inciting to violence, discrimination or hatred, encouraging illegal activities or use of illegal substances or, more generally, contrary to the purposes of the Platform, likely to infringe the rights of the Publisher or a third party, and shall refrain from using the Platform to carry out illicit and/or fraudulent operations; 
+    - comply with all applicable laws and regulations; 
+    - refrain from creating a new Account in the event that the Publisher deletes the User's Account due to the User's failure to comply with any of its obligations; 
+    - not to use any manual or automated software or devices, coding robots or other means to access, explore, retrieve or index any page of the Platform or to play any of the Games available on the Platform; 
+    - interfere with or interrupt the operation of the Platform; 
+    - not to divert the purpose of the Platform to propaganda or proselytizing, canvassing or soliciting, and not to use the Platform for commercial, political or advertising purposes.  
+
+    The User acknowledges that he/she is solely responsible for the Content that he/she publishes, uploads, transmits, communicates or makes available to Users, as well as for any document or information that he/she transmits to Users.
+
+    In this respect, the User guarantees the Publisher against any recourse of any nature whatsoever, based directly or indirectly on the illicit nature or contrary to the TU of any Content.
+
+    #### 5.2 Sanctions against the User  
+
+    Should the User fail to comply with his obligations, the Publisher reserves the right to suspend or exclude the User and/or delete his Account, without prejudice to any claims for compensation by the Publisher or a third party.
+
+    Users are reminded that breaches of the obligations set out in article 5.1 may lead to civil and criminal proceedings. 
+
+    ### Article 6 - Intellectual property
+
+    The Platform is the exclusive property of the Publisher. 
+
+    More generally, all intellectual property rights relating to the Platform, in particular the general architecture of the Platform, the Games, the texts, graphics, photos, music, videos, logos, images, drawings and computer files or any other element making up the Platform, belong to the Publisher. 
+
+    These TU do not imply any transfer of intellectual property rights attached to the Platform or its elements.
+
+    ### Article 7 - Cookies  
+
+    The Platform uses cookies to enable Players to remain connected while using the Platform. 
+
+    These cookies are necessary for the Platform to function properly. 
+
+    ### Article 8 - Personal data
+
+    As the Publisher is a natural person who makes the Platform available to Users free of charge and for non-professional purposes, the provisions of the GDPR are not applicable.
+
+    In accordance with Article 45 of the French Data Protection Act, the Minor's Personal Data may not be collected, used or stored by the Publisher without the consent of their parents or the holder of parental authority.
+
+    This consent is given when the Account is created.
+
+    In the absence of such consent, Users under the age of 15 may not create an Account or access the Platform.
+
+    The Minor's Personal Data is collected solely for the purpose of creating an Account and enabling them to access the Platform and play a Game.
+
+    The Minor's Personal Data is never shared with third parties or resold.
+
+    The Minor's Personal Data is kept by the Publisher for the time strictly necessary to achieve the purpose for which it was collected. After this period, all the Minor's Personal Data will be deleted or made anonymous.
+
+    A parent or legal guardian may control, delete, modify or oppose the collection of Personal Data of the Minor concerning his/her child by sending a request to the following address: [support@tabulous.fr](mailto:support@tabulous.fr).
+
+    ### Article 9 - Applicable law and competent court
+
+    These TU are governed by French law. Any dispute arising from the interpretation and/or execution of these TU shall be subject to the jurisdiction of the French courts.

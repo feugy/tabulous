@@ -8,7 +8,10 @@ import { expect } from '../../utils/index.js'
  */
 
 export class AsideMixin {
-  constructor(page) {
+  constructor(page, lang) {
+    /** @type {string} */
+    this.lang = lang
+    /** @type {Page} */
     this.page = page
     /** @type {Locator} */
     this.playerAvatars = this.page.getByTestId('player-avatar')
@@ -30,7 +33,9 @@ export class AsideMixin {
     this.playerItems = this.playersSection.getByRole('listitem')
     /** @type {Locator} */
     this.endFriendshipDialogue = page.getByRole('dialog').filter({
-      has: this.page.getByText(translate('titles.end-friendship'))
+      has: this.page.getByText(
+        translate('titles.end-friendship', undefined, this.lang)
+      )
     })
     /** @type {Locator} */
     this.requestFriendshipButton = this.friendsSection.getByRole('button', {
@@ -49,9 +54,9 @@ export class AsideMixin {
     )) {
       const { player, isRequest, isProposal } = friends[i]
       const label = isRequest
-        ? translate('labels.friendship-requested', player)
+        ? translate('labels.friendship-requested', player, this.lang)
         : isProposal
-        ? translate('labels.friendship-proposed', player)
+        ? translate('labels.friendship-proposed', player, this.lang)
         : player.username
       expect(
         await friendItem.locator('span').first().textContent(),

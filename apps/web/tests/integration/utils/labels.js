@@ -13,7 +13,8 @@ function loadLocales() {
   formatMessage.setup({
     locale: 'fr',
     translations: {
-      fr: readLocale('../../../src/locales/fr.yaml')
+      fr: readLocale('../../../src/locales/fr.yaml'),
+      en: readLocale('../../../src/locales/en.yaml')
     }
   })
 }

@@ -106,3 +106,14 @@ function makeColorRange(color, colorName) {
     [`${colorName}-darkest`]: base.darken(3).hex()
   }
 }
+
+/**
+ * Injects locale into a game asset's url
+ * @param {string} url - the original game asset's url.
+ * @param {'textures'|'images'} kind - asset's kind.
+ * @param {string} locale - the injected locale.
+ * @returns {string} the modified url.
+ */
+export function injectLocale(url, kind, locale) {
+  return url.replace(`/${kind}/`, `/${kind}/${locale}/`)
+}

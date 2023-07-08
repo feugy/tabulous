@@ -2,9 +2,8 @@ export * from './logic/build.js'
 export * from './logic/players.js'
 
 export const locales = {
-  fr: {
-    title: 'Echecs'
-  }
+  fr: { title: 'Echecs' },
+  en: { title: 'Chess' }
 }
 
 export const minSeats = 2

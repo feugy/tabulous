@@ -14,7 +14,7 @@ export function askForParameters({ game: { preferences } }) {
       color: {
         description: 'color',
         enum: findAvailableValues(preferences, 'color', colors.players),
-        metadata: { fr: { name: 'Couleur' } }
+        metadata: { fr: { name: 'Couleur' }, en: { name: 'Color' } }
       }
     }
   }
