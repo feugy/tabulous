@@ -1,5 +1,5 @@
 <script>
-  import { _ } from 'svelte-intl'
+  import { _, locale } from 'svelte-intl'
 
   import Button from './Button.svelte'
   const year = new Date().getFullYear()
@@ -11,7 +11,10 @@
 
 <footer>
   <section>© {year} {$_('labels.copyright')}</section>
-  <span><a href="/terms-of-service">{$_('labels.terms-of-service')}</a></span>
+  <span
+    ><a href="/{$locale}/terms-of-service">{$_('labels.terms-of-service')}</a
+    ></span
+  >
   <span class="back-to-top">
     <Button icon="vertical_align_top" on:click={scrollToTop} />
   </span>

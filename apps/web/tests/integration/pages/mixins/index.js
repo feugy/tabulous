@@ -9,7 +9,7 @@ export { TermsSupportedMixin } from './terms-supported.js'
 
 /**
  * @template T
- * @typedef {{ new(page: Page): T}} Constructor
+ * @typedef {{ new(page: Page, lang: string): T}} Constructor
  */
 
 /**
@@ -31,10 +31,10 @@ export { TermsSupportedMixin } from './terms-supported.js'
 export function mixin(BaseConstructor, ...Mixins) {
   // @ts-ignore because TypeScript does not like constructor to have a generic parameter
   class Augmented extends BaseConstructor {
-    constructor(page) {
-      super(page)
+    constructor(page, lang) {
+      super(page, lang)
       for (const Mixin of Mixins) {
-        Object.assign(this, new Mixin(page))
+        Object.assign(this, new Mixin(page, lang))
       }
     }
   }

@@ -14,8 +14,11 @@ export const GamePage = mixin(
     /**
      * Represent the game page for testing
      * @param {Page} page - the actual page.
+     * @param {string} lang - current language.
      */
-    constructor(page) {
+    constructor(page, lang) {
+      /** @type {string} */
+      this.lang = lang
       /** @type {Page} */
       this.page = page
       /** @type {Locator} */
@@ -26,20 +29,23 @@ export const GamePage = mixin(
       })
       /** @type {Locator} */
       this.inviteMenuItem = page.getByRole('menuitem', {
-        name: `connect_without_contact ${translate('actions.invite-player')}`
+        name: `connect_without_contact ${
+          (translate('actions.invite-player'), undefined, this.lang)
+        }`
       })
       /** @type {Locator} */
       this.parametersDialogue = page.getByRole('dialog').filter({
-        hasText: translate('titles.game-parameters')
+        hasText: translate('titles.game-parameters', undefined, this.lang)
       })
     }
 
     /**
      * Navigates to the page.
      * @param {string} gameId - browsed game iddentifier.
+     * @returns {Promise<void>}
      */
     async goTo(gameId) {
-      await this.page.goto(`/game/${gameId}`)
+      await this.page.goto(`/${this.lang}/game/${gameId}`)
       await this.page.waitForLoadState('networkidle')
     }
 

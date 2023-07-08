@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Default 1`] = `
+<button
+  class="s-63jve6FsTFKC"
+  tabindex="0"
+>
+  <legend
+    class="s-63jve6FsTFKC"
+  >
+    <h3
+      class="s-63jve6FsTFKC"
+    >
+      Nouveau salon
+    </h3>
+     
+    <div
+      class="s-63jve6FsTFKC"
+    >
+      Invitez vos ami·e·s puis décidez à quel jeu jouer.
+    </div>
+  </legend>
+</button>
+`;

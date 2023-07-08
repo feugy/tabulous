@@ -21,21 +21,24 @@ export const HomePage = mixin(
     /**
      * Represent the home page for testing
      * @param {Page} page - the actual page.
+     * @param {string} lang - current language.
      */
-    constructor(page) {
+    constructor(page, lang) {
+      /** @type {string} */
+      this.lang = lang
       /** @type {Page} */
       this.page = page
       /** @type {Locator} */
       this.heading = page.getByRole('heading', { level: 1 })
       /** @type {Locator} */
       this.gamesHeading = page.getByRole('heading', {
-        name: translate('titles.your-games')
+        name: translate('titles.your-games', undefined, this.lang)
       })
       /** @type {Locator} */
       this.games = page.locator('[aria-roledescription="games"] >> article')
       /** @type {Locator} */
       this.catalogHeading = page.getByRole('heading', {
-        name: translate('titles.catalog')
+        name: translate('titles.catalog', undefined, this.lang)
       })
       /** @type {Locator} */
       this.catalogItems = page.locator(
@@ -53,15 +56,16 @@ export const HomePage = mixin(
         .getByRole('button', { name: 'account_circle' })
       /** @type {Locator} */
       this.deleteGameDialogue = page.getByRole('dialog').filter({
-        hasText: translate('titles.confirm-game-deletion')
+        hasText: translate('titles.confirm-game-deletion', undefined, this.lang)
       })
     }
 
     /**
      * Navigates to the page.
+     * @returns {Promise<void>}
      */
     async goTo() {
-      await this.page.goto('/home')
+      await this.page.goto(`/${this.lang}/home`)
       await this.page.waitForLoadState('networkidle')
     }
 
@@ -77,7 +81,9 @@ export const HomePage = mixin(
      * Expects the page to display elements for an anonymous visitor.
      */
     async expectAnonymous() {
-      await expect(this.heading).toContainText(translate('titles.welcome'))
+      await expect(this.heading).toContainText(
+        translate('titles.welcome', undefined, this.lang)
+      )
       await expect(this.gamesHeading).toBeHidden()
       await expect(this.loginButton).toBeVisible()
       // @ts-ignore defined in AuthenticatedHeaderMixin
@@ -90,7 +96,7 @@ export const HomePage = mixin(
      */
     async expectAuthenticated(username) {
       await expect(this.heading).toContainText(
-        translate('titles.home', { username })
+        translate('titles.home', { username }, this.lang)
       )
       await expect(this.gamesHeading).toBeVisible()
       await expect(this.loginButton).toBeHidden()
@@ -102,12 +108,20 @@ export const HomePage = mixin(
      * Expects several catalog items, sorted by their locale title.
      * Lobby link creation is expected first.
      * @param {object[]} catalog - expected catalog items.
+     * @param {boolean} [withLobby=true] - whether to include link to create lobby or not.
      * @returns {Promise<void>}
      */
     async expectSortedCatalogItems(catalog, withLobby = true) {
-      const names = [...catalog.map(({ locales }) => locales.fr.title).sort()]
+      const names = [
+        ...catalog.map(({ locales }) => locales[this.lang].title).sort()
+      ]
+      console.log('coucou', names)
       if (withLobby) {
-        names.splice(0, 0, translate('actions.create-lobby'))
+        names.splice(
+          0,
+          0,
+          translate('actions.create-lobby', undefined, this.lang)
+        )
       }
       await expect(this.catalogItemHeadings).toHaveText(
         names.map(value => new RegExp(value))
@@ -121,7 +135,7 @@ export const HomePage = mixin(
       await setTimeout(500)
       await this.loginButton.click()
       await this.page.waitForLoadState()
-      await expect(this.page).toHaveURL('/login')
+      await expect(this.page).toHaveURL(`/${this.lang}/login`)
     }
 
     /**

@@ -1,0 +1,247 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`No age nor time 1`] = `
+<span
+  class="catalog-item-viewer s-BKfuEPeV5BLW"
+>
+  <button
+    class="s-umE5dFFiiYHw"
+    tabindex="0"
+  >
+    <img
+      alt="Solitaire"
+      class="s-umE5dFFiiYHw"
+      src="http://localhost:3001/games/klondike/catalog/cover.webp"
+    />
+     
+    <legend
+      class="s-umE5dFFiiYHw"
+    >
+      <h3
+        class="s-umE5dFFiiYHw"
+      >
+        Solitaire
+      </h3>
+       
+      <div
+        class="characteristics s-umE5dFFiiYHw"
+      >
+        <i
+          class="material-icons s-umE5dFFiiYHw hidden"
+        >
+          people
+        </i>
+        <span
+          class="s-umE5dFFiiYHw hidden"
+        >
+          undefined
+        </span>
+         
+        <i
+          class="material-icons s-umE5dFFiiYHw hidden"
+        >
+          access_time
+        </i>
+        <span
+          class="s-umE5dFFiiYHw hidden"
+        >
+          undefined'
+        </span>
+         
+        <i
+          class="material-icons s-umE5dFFiiYHw hidden"
+        >
+          person
+        </i>
+        <span
+          class="s-umE5dFFiiYHw hidden"
+        >
+          undefined+
+        </span>
+      </div>
+       
+      <div
+        class="details s-umE5dFFiiYHw"
+      >
+         
+         
+      </div>
+    </legend>
+  </button>
+  <!--&lt;CatalogItem&gt;-->
+</span>
+`;
+
+exports[`With characteristics 1`] = `
+<span
+  class="catalog-item-viewer s-BKfuEPeV5BLW"
+>
+  <button
+    class="s-umE5dFFiiYHw"
+    tabindex="0"
+  >
+    <img
+      alt="Solitaire"
+      class="s-umE5dFFiiYHw"
+      src="http://localhost:3001/games/klondike/catalog/cover.webp"
+    />
+     
+    <legend
+      class="s-umE5dFFiiYHw"
+    >
+      <h3
+        class="s-umE5dFFiiYHw"
+      >
+        Solitaire
+      </h3>
+       
+      <div
+        class="characteristics s-umE5dFFiiYHw"
+      >
+        <i
+          class="material-icons s-umE5dFFiiYHw"
+        >
+          people
+        </i>
+        <span
+          class="s-umE5dFFiiYHw"
+        >
+          2
+        </span>
+         
+        <i
+          class="material-icons s-umE5dFFiiYHw"
+        >
+          access_time
+        </i>
+        <span
+          class="s-umE5dFFiiYHw"
+        >
+          30'
+        </span>
+         
+        <i
+          class="material-icons s-umE5dFFiiYHw"
+        >
+          person
+        </i>
+        <span
+          class="s-umE5dFFiiYHw"
+        >
+          10+
+        </span>
+      </div>
+       
+      <div
+        class="details s-umE5dFFiiYHw"
+      >
+         
+         
+      </div>
+    </legend>
+  </button>
+  <!--&lt;CatalogItem&gt;-->
+</span>
+`;
+
+exports[`With characteristics and copyright 1`] = `
+<span
+  class="catalog-item-viewer s-BKfuEPeV5BLW"
+>
+  <button
+    class="s-umE5dFFiiYHw"
+    tabindex="0"
+  >
+    <img
+      alt="Solitaire"
+      class="s-umE5dFFiiYHw"
+      src="http://localhost:3001/games/klondike/catalog/cover.webp"
+    />
+     
+    <legend
+      class="s-umE5dFFiiYHw"
+    >
+      <h3
+        class="s-umE5dFFiiYHw"
+      >
+        Solitaire
+      </h3>
+       
+      <div
+        class="characteristics s-umE5dFFiiYHw"
+      >
+        <i
+          class="material-icons s-umE5dFFiiYHw"
+        >
+          people
+        </i>
+        <span
+          class="s-umE5dFFiiYHw"
+        >
+          2-4
+        </span>
+         
+        <i
+          class="material-icons s-umE5dFFiiYHw"
+        >
+          access_time
+        </i>
+        <span
+          class="s-umE5dFFiiYHw"
+        >
+          30'
+        </span>
+         
+        <i
+          class="material-icons s-umE5dFFiiYHw"
+        >
+          person
+        </i>
+        <span
+          class="s-umE5dFFiiYHw"
+        >
+          10+
+        </span>
+      </div>
+       
+      <div
+        class="details s-umE5dFFiiYHw"
+      >
+        <p
+          class="s-umE5dFFiiYHw"
+        >
+          <strong
+            class="s-umE5dFFiiYHw"
+          >
+            Créé par : 
+          </strong>
+          John Doe, Jane Lark
+        </p>
+         
+        <p
+          class="s-umE5dFFiiYHw"
+        >
+          <strong
+            class="s-umE5dFFiiYHw"
+          >
+            Illustré par : 
+          </strong>
+          Amy Banks, Mark Loom
+        </p>
+         
+        <p
+          class="s-umE5dFFiiYHw"
+        >
+          <strong
+            class="s-umE5dFFiiYHw"
+          >
+            Distribué par : 
+          </strong>
+          Awesome games, Games from elsewhere
+        </p>
+      </div>
+    </legend>
+  </button>
+  <!--&lt;CatalogItem&gt;-->
+</span>
+`;

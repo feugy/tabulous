@@ -1,7 +1,8 @@
 <script>
+  import { supportedLanguages } from '@src/params/lang'
   import { logOut } from '@src/stores'
   import Logo from '@src/svg/tabulous-logo.svg?component'
-  import { _ } from 'svelte-intl'
+  import { _, locale } from 'svelte-intl'
 
   import { goto } from '$app/navigation'
   import { page } from '$app/stores'
@@ -16,17 +17,22 @@
     {
       icon: 'settings',
       label: $_('actions.go-to-account'),
-      act: () => goto('/account')
+      act: () => goto(`/${$locale}/account`)
     },
     { icon: 'directions_run', label: $_('actions.log-out'), act: logOut }
   ]
+
+  const languages = supportedLanguages.map(lang => ({
+    label: $_(`labels.${lang}`),
+    act: () => goto($page.url.href.replace(`/${$locale}/`, `/${lang}/`))
+  }))
 
   function handleSelectMenuItem({ detail: item }) {
     item.act()
   }
 
   function handleClickLogo() {
-    goto('/')
+    goto(`/${$locale}/home`)
   }
 </script>
 
@@ -36,19 +42,30 @@
     <div>
       <slot />
     </div>
+    <Dropdown
+      icon="translate"
+      valueAsText={false}
+      withArrow={false}
+      options={languages}
+      on:select={handleSelectMenuItem}
+    />
     <span class="account">
       {#if user}
         <Dropdown
           transparent
           valueAsText={false}
           withArrow={false}
-          on:select={handleSelectMenuItem}
           options={menu}
+          on:select={handleSelectMenuItem}
         >
           <PlayerThumbnail slot="icon" player={user} dimension={30} />
         </Dropdown>
       {:else if $page.route.id !== '/login'}
-        <Button icon="account_circle" primary on:click={() => goto('/login')} />
+        <Button
+          icon="account_circle"
+          primary
+          on:click={() => goto(`/${$locale}/login`)}
+        />
       {/if}
     </span>
   </nav>
@@ -67,7 +84,7 @@
   }
 
   nav {
-    @apply grid grid-cols-[3.5rem,1fr,auto] gap-6 items-center;
+    @apply grid grid-cols-[3.5rem,1fr,auto,auto] gap-6 items-center;
 
     button {
       @apply relative text-$primary transform-gpu transition-all p-2 rounded-full;

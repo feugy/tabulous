@@ -1,0 +1,539 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Default 1`] = `
+<main
+  class="s-2F24ppvHAXAr"
+>
+  <i
+    class="s-2F24ppvHAXAr"
+    id="top"
+  />
+   
+  <header
+    class="s-c1MG4BWNDc59"
+  >
+    <nav
+      class="s-c1MG4BWNDc59"
+    >
+      <button
+        class="s-c1MG4BWNDc59"
+      >
+        <svg
+          height="27.04"
+          viewBox="0 0 37.126 27.036"
+          width="37.13"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M25.12 19.71a16.17 6.33.16 0 0-10.95 1.51l.24.6-.79-.41a16.17 6.33.16 0 0-1.88.83c.46.2.79.44.8.73.04.72-1.4 1.03-2.9.76a16.17 6.33.16 0 0-1.03 1.7 16.17 6.33.16 0 0 14.65 6.9 16.17 6.33.16 0 0 17.56-5.68 16.17 6.33.16 0 0 0-1.14c-1.58 1.27-4.14 2.25-4.71.96-.52-1.2 2.44-1.67 3.56-2.8a16.17 6.33.16 0 0-5.53-2.75c-.16 1.1.25 3.3-1.14 3.3-.82 0-1.12-2.16-.8-3.77a16.17 6.33.16 0 0-6.02-.71 16.17 6.33.16 0 0-1.06-.03zm-.91 1.6h1.58v1.63H24.2zm-5.19.97 1.8.73-1.02.82-1.79-.74zm11.04.8 1.01.82-1.79.74-1.01-.82zm-11.19.69 1.8.73-1.02.82-1.79-.74zm15.3.37 1.02.82-1.8.73-1-.81zm-17.84.13 1.79.73-1.02.82-1.79-.74z"
+            fill="currentColor"
+            style="stroke-width: .634999; stroke-linecap: round;"
+            transform="translate(-5.7 -5.33)"
+          />
+          <path
+            d="m35.55 21.31.67-2.02c.16-.48-1.43.45-2 1.17-.53.68.36 3.78-1.3 3.78-1.07 0-1.26-3.73-.32-5.04.55-.77 3.07-2.28 4.22-2.29 1.6-.02 4.54 1.71 5.3 2.83.57.83.23 3.93-.43 4.85-1.15 1.6-4.94 3.52-5.66 1.9-.56-1.27 2.88-1.73 3.78-3.05.7-1.04.51-2.43.51-2.43m-2.65-7.86a2.32 2.86 14.77 0 0 1.75 3.17 2.32 2.86 14.77 0 0 2.84-2.43 2.32 2.86 14.77 0 0-1.75-3.18 2.32 2.86 14.77 0 0-2.84 2.44zM21.7 20.59s.02-2.68-.21-3.1c-.78-1.37-2.6-4.02-2.62-5.96-.01-2.23 1.76-6.46 2.73-5.69 1.08.86-1.08 4.52-.38 6.17.42.97 1.01 2.29 1.84 2.74 1.02.56 3 .63 4.05.11 1.2-.6 1.86-1.44 2.33-2.88.43-1.28-1.15-4.94-.08-5.36 1.47-.58 2.32 3.7 2.2 5.6-.1 1.8-2.3 4.02-2.81 5.22-.34.81-.16 3.47-.16 3.47m-1.25-9.48a2.03 2.75 1.84 0 1-2.3 2.41 2.03 2.75 1.84 0 1-1.73-3.05 2.03 2.75 1.84 0 1 2.3-2.41 2.03 2.75 1.84 0 1 1.73 3.05zM14.33 21.84s-1.22-3-1.32-3.46c-.06-.27 1.29 1.13 2.63.9 1.5-.25 3.52-4.23 1.76-4.58-.66-.13-1.5 2.48-2.15 2.6-.6.11-2.32-2.02-3.52-2.21a5.48 5.48 0 0 0-4.17 1.05c-1.2 1.52-1.89 4.55-1.06 5.85 1.46 2.28 6.03 2.28 5.97 1-.05-1-3.77-1.33-4.12-2.05-.2-.4.2-2.1.2-2.1m2.67-7.58a2.86 2.32 84.88 0 1-2.26 2.84 2.86 2.32 84.88 0 1-2.4-2.87 2.86 2.32 84.88 0 1 2.26-2.84 2.86 2.32 84.88 0 1 2.4 2.87Z"
+            stroke="currentColor"
+            style="fill: none; stroke-width: .846663; stroke-linecap: round;"
+            transform="translate(-5.7 -5.33)"
+          />
+        </svg>
+      </button>
+       
+      <div
+        class="s-c1MG4BWNDc59"
+      >
+        <h1
+          class="s-2F24ppvHAXAr"
+        >
+          Connexion
+        </h1>
+      </div>
+       
+      <span
+        class="account s-c1MG4BWNDc59"
+      />
+    </nav>
+     
+    <div
+      class="s-c1MG4BWNDc59"
+    />
+  </header>
+  <!--&lt;Header&gt;-->
+   
+  <section
+    class="s-2F24ppvHAXAr"
+  >
+    <section
+      class="pane s-j2LTsWktqK_4"
+      style="--bg: var(--base-lightest);"
+    >
+      <h2
+        class="s-j2LTsWktqK_4"
+      >
+        Bienvenue !
+      </h2>
+      
+       
+      <div
+        class="container s-Toj9KngGYm7T"
+      >
+        <button
+          class="has-text s-NMyTiX1zi6rz"
+        >
+          <div
+            class="s-NMyTiX1zi6rz"
+          >
+            <span
+              class="icon s-NMyTiX1zi6rz"
+            >
+              <svg
+                height="20"
+                slot="icon"
+                viewBox="0 0 14 14"
+                width="20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M7 .175c-3.872 0-7 3.128-7 7 0 3.084 2.013 5.71 4.79 6.65.35.066.482-.153.482-.328v-1.181c-1.947.415-2.363-.941-2.363-.941-.328-.81-.787-1.028-.787-1.028-.634-.438.044-.416.044-.416.7.044 1.071.722 1.071.722.635 1.072 1.641.766 2.035.59.066-.459.24-.765.437-.94-1.553-.175-3.193-.787-3.193-3.456 0-.766.262-1.378.721-1.881-.065-.175-.306-.897.066-1.86 0 0 .59-.197 1.925.722a6.754 6.754 0 0 1 1.75-.24c.59 0 1.203.087 1.75.24 1.335-.897 1.925-.722 1.925-.722.372.963.131 1.685.066 1.86.46.48.722 1.115.722 1.88 0 2.691-1.641 3.282-3.194 3.457.24.219.481.634.481 1.29v1.926c0 .197.131.415.481.328C11.988 12.884 14 10.259 14 7.175c0-3.872-3.128-7-7-7z"
+                  fill="currentColor"
+                />
+              </svg>
+            </span>
+            
+            <span
+              class="text s-NMyTiX1zi6rz"
+            >
+              Continuer avec Github
+            </span>
+            
+          </div>
+           
+        </button>
+        <!--&lt;Button&gt;-->
+         
+        <button
+          class="has-text s-NMyTiX1zi6rz"
+        >
+          <div
+            class="s-NMyTiX1zi6rz"
+          >
+            <span
+              class="icon s-NMyTiX1zi6rz"
+            >
+              <svg
+                height="18"
+                slot="icon"
+                width="17.64"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M8.991 10.71V7.362h8.424c.126.567.225 1.098.225 1.845C17.64 14.346 14.193 18 9 18c-4.968 0-9-4.032-9-9s4.032-9 9-9c2.43 0 4.464.891 6.021 2.349l-2.556 2.484C11.817 4.221 10.683 3.501 9 3.501c-2.979 0-5.409 2.475-5.409 5.508S6.021 14.517 9 14.517c3.447 0 4.716-2.385 4.95-3.798H8.991Z"
+                  fill="currentColor"
+                  fill-rule="evenodd"
+                />
+              </svg>
+            </span>
+            
+            <span
+              class="text s-NMyTiX1zi6rz"
+            >
+              Continuer avec Google
+            </span>
+            
+          </div>
+           
+        </button>
+        <!--&lt;Button&gt;-->
+         
+        <details
+          class="s-Toj9KngGYm7T"
+        >
+          <summary
+            class="s-Toj9KngGYm7T"
+            title="password-toggle"
+          >
+            <span
+              class="material-icons s-Toj9KngGYm7T"
+            >
+              arrow_forward
+            </span>
+            Continuer avec un mot de passe
+          </summary>
+           
+          <form
+            class="s-Toj9KngGYm7T"
+            method="POST"
+          >
+            <div
+              class="row s-Toj9KngGYm7T"
+            >
+              <fieldset
+                class="s-Fe6WNbR-55zp"
+              >
+                <legend
+                  class="s-Fe6WNbR-55zp"
+                >
+                  Identifiant
+                </legend>
+                 
+                <input
+                  class="s-Fe6WNbR-55zp"
+                  name="id"
+                />
+              </fieldset>
+              <!--&lt;Input&gt;-->
+            </div>
+             
+            <div
+              class="row s-Toj9KngGYm7T"
+            >
+              <fieldset
+                class="s-Fe6WNbR-55zp"
+              >
+                <legend
+                  class="s-Fe6WNbR-55zp"
+                >
+                  Mot de passe
+                </legend>
+                 
+                <input
+                  class="s-Fe6WNbR-55zp"
+                  data-testid="password"
+                  name="password"
+                  type="password"
+                />
+              </fieldset>
+              <!--&lt;Input&gt;-->
+            </div>
+             
+             
+            <div
+              class="actions s-Toj9KngGYm7T"
+            >
+              <button
+                class="primary has-text s-NMyTiX1zi6rz"
+                disabled=""
+                type="submit"
+              >
+                <div
+                  class="s-NMyTiX1zi6rz"
+                >
+                  <span
+                    class="material-icons s-NMyTiX1zi6rz"
+                  >
+                    emoji_people
+                  </span>
+                  
+                  <span
+                    class="text s-NMyTiX1zi6rz"
+                  >
+                    Entrer
+                  </span>
+                  
+                </div>
+                 
+              </button>
+              <!--&lt;Button&gt;-->
+            </div>
+             
+            <input
+              class="s-Toj9KngGYm7T"
+              name="redirect"
+              type="hidden"
+              value=""
+            />
+          </form>
+        </details>
+      </div>
+    </section>
+    <!--&lt;Pane&gt;-->
+    <!--&lt;Form&gt;-->
+  </section>
+   
+  <footer
+    class="s-_Wq18H0k1xjH"
+  >
+    <section
+      class="s-_Wq18H0k1xjH"
+    >
+      © 
+      2023
+       
+      Tabulous.fr. Tous droits réservés.
+    </section>
+     
+    <span
+      class="s-_Wq18H0k1xjH"
+    >
+      <a
+        class="s-_Wq18H0k1xjH"
+        href="/fr/terms-of-service"
+      >
+        Mentions Légales & Conditions Générales d'Utilisation
+      </a>
+    </span>
+     
+    <span
+      class="back-to-top s-_Wq18H0k1xjH"
+    >
+      <button
+        class="s-NMyTiX1zi6rz"
+      >
+        <div
+          class="s-NMyTiX1zi6rz"
+        >
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            vertical_align_top
+          </span>
+          
+          
+        </div>
+         
+      </button>
+      <!--&lt;Button&gt;-->
+    </span>
+  </footer>
+  <!--&lt;PageFooter&gt;-->
+</main>
+`;
+
+exports[`With errors 1`] = `
+<main
+  class="s-2F24ppvHAXAr"
+>
+  <i
+    class="s-2F24ppvHAXAr"
+    id="top"
+  />
+   
+  <header
+    class="s-c1MG4BWNDc59"
+  >
+    <nav
+      class="s-c1MG4BWNDc59"
+    >
+      <button
+        class="s-c1MG4BWNDc59"
+      >
+        <svg
+          height="27.04"
+          viewBox="0 0 37.126 27.036"
+          width="37.13"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M25.12 19.71a16.17 6.33.16 0 0-10.95 1.51l.24.6-.79-.41a16.17 6.33.16 0 0-1.88.83c.46.2.79.44.8.73.04.72-1.4 1.03-2.9.76a16.17 6.33.16 0 0-1.03 1.7 16.17 6.33.16 0 0 14.65 6.9 16.17 6.33.16 0 0 17.56-5.68 16.17 6.33.16 0 0 0-1.14c-1.58 1.27-4.14 2.25-4.71.96-.52-1.2 2.44-1.67 3.56-2.8a16.17 6.33.16 0 0-5.53-2.75c-.16 1.1.25 3.3-1.14 3.3-.82 0-1.12-2.16-.8-3.77a16.17 6.33.16 0 0-6.02-.71 16.17 6.33.16 0 0-1.06-.03zm-.91 1.6h1.58v1.63H24.2zm-5.19.97 1.8.73-1.02.82-1.79-.74zm11.04.8 1.01.82-1.79.74-1.01-.82zm-11.19.69 1.8.73-1.02.82-1.79-.74zm15.3.37 1.02.82-1.8.73-1-.81zm-17.84.13 1.79.73-1.02.82-1.79-.74z"
+            fill="currentColor"
+            style="stroke-width: .634999; stroke-linecap: round;"
+            transform="translate(-5.7 -5.33)"
+          />
+          <path
+            d="m35.55 21.31.67-2.02c.16-.48-1.43.45-2 1.17-.53.68.36 3.78-1.3 3.78-1.07 0-1.26-3.73-.32-5.04.55-.77 3.07-2.28 4.22-2.29 1.6-.02 4.54 1.71 5.3 2.83.57.83.23 3.93-.43 4.85-1.15 1.6-4.94 3.52-5.66 1.9-.56-1.27 2.88-1.73 3.78-3.05.7-1.04.51-2.43.51-2.43m-2.65-7.86a2.32 2.86 14.77 0 0 1.75 3.17 2.32 2.86 14.77 0 0 2.84-2.43 2.32 2.86 14.77 0 0-1.75-3.18 2.32 2.86 14.77 0 0-2.84 2.44zM21.7 20.59s.02-2.68-.21-3.1c-.78-1.37-2.6-4.02-2.62-5.96-.01-2.23 1.76-6.46 2.73-5.69 1.08.86-1.08 4.52-.38 6.17.42.97 1.01 2.29 1.84 2.74 1.02.56 3 .63 4.05.11 1.2-.6 1.86-1.44 2.33-2.88.43-1.28-1.15-4.94-.08-5.36 1.47-.58 2.32 3.7 2.2 5.6-.1 1.8-2.3 4.02-2.81 5.22-.34.81-.16 3.47-.16 3.47m-1.25-9.48a2.03 2.75 1.84 0 1-2.3 2.41 2.03 2.75 1.84 0 1-1.73-3.05 2.03 2.75 1.84 0 1 2.3-2.41 2.03 2.75 1.84 0 1 1.73 3.05zM14.33 21.84s-1.22-3-1.32-3.46c-.06-.27 1.29 1.13 2.63.9 1.5-.25 3.52-4.23 1.76-4.58-.66-.13-1.5 2.48-2.15 2.6-.6.11-2.32-2.02-3.52-2.21a5.48 5.48 0 0 0-4.17 1.05c-1.2 1.52-1.89 4.55-1.06 5.85 1.46 2.28 6.03 2.28 5.97 1-.05-1-3.77-1.33-4.12-2.05-.2-.4.2-2.1.2-2.1m2.67-7.58a2.86 2.32 84.88 0 1-2.26 2.84 2.86 2.32 84.88 0 1-2.4-2.87 2.86 2.32 84.88 0 1 2.26-2.84 2.86 2.32 84.88 0 1 2.4 2.87Z"
+            stroke="currentColor"
+            style="fill: none; stroke-width: .846663; stroke-linecap: round;"
+            transform="translate(-5.7 -5.33)"
+          />
+        </svg>
+      </button>
+       
+      <div
+        class="s-c1MG4BWNDc59"
+      >
+        <h1
+          class="s-2F24ppvHAXAr"
+        >
+          Connexion
+        </h1>
+      </div>
+       
+      <span
+        class="account s-c1MG4BWNDc59"
+      />
+    </nav>
+     
+    <div
+      class="s-c1MG4BWNDc59"
+    />
+  </header>
+  <!--&lt;Header&gt;-->
+   
+  <section
+    class="s-2F24ppvHAXAr"
+  >
+    <section
+      class="pane s-j2LTsWktqK_4"
+      style="--bg: var(--base-lightest);"
+    >
+      <h2
+        class="s-j2LTsWktqK_4"
+      >
+        Bienvenue !
+      </h2>
+      
+       
+      <div
+        class="container s-Toj9KngGYm7T"
+      >
+         
+         
+        <details
+          class="s-Toj9KngGYm7T"
+          open=""
+        >
+          <summary
+            class="s-Toj9KngGYm7T"
+            title="password-toggle"
+          >
+            <span
+              class="material-icons s-Toj9KngGYm7T"
+            >
+              arrow_back
+            </span>
+            Autres options
+          </summary>
+           
+          <form
+            class="s-Toj9KngGYm7T"
+            method="POST"
+          >
+            <div
+              class="row s-Toj9KngGYm7T"
+            >
+              <fieldset
+                class="s-Fe6WNbR-55zp"
+              >
+                <legend
+                  class="s-Fe6WNbR-55zp"
+                >
+                  Identifiant
+                </legend>
+                 
+                <input
+                  class="s-Fe6WNbR-55zp"
+                  name="id"
+                />
+              </fieldset>
+              <!--&lt;Input&gt;-->
+            </div>
+             
+            <div
+              class="row s-Toj9KngGYm7T"
+            >
+              <fieldset
+                class="s-Fe6WNbR-55zp"
+              >
+                <legend
+                  class="s-Fe6WNbR-55zp"
+                >
+                  Mot de passe
+                </legend>
+                 
+                <input
+                  class="s-Fe6WNbR-55zp"
+                  data-testid="password"
+                  name="password"
+                  type="password"
+                />
+              </fieldset>
+              <!--&lt;Input&gt;-->
+            </div>
+             
+            <div
+              class="error s-Toj9KngGYm7T"
+            >
+              Pseudo ou mot de passe incorrect. Merci de réessayer.
+            </div>
+             
+            <div
+              class="actions s-Toj9KngGYm7T"
+            >
+              <button
+                class="primary has-text s-NMyTiX1zi6rz"
+                disabled=""
+                type="submit"
+              >
+                <div
+                  class="s-NMyTiX1zi6rz"
+                >
+                  <span
+                    class="material-icons s-NMyTiX1zi6rz"
+                  >
+                    emoji_people
+                  </span>
+                  
+                  <span
+                    class="text s-NMyTiX1zi6rz"
+                  >
+                    Entrer
+                  </span>
+                  
+                </div>
+                 
+              </button>
+              <!--&lt;Button&gt;-->
+            </div>
+             
+            <input
+              class="s-Toj9KngGYm7T"
+              name="redirect"
+              type="hidden"
+              value=""
+            />
+          </form>
+        </details>
+      </div>
+    </section>
+    <!--&lt;Pane&gt;-->
+    <!--&lt;Form&gt;-->
+  </section>
+   
+  <footer
+    class="s-_Wq18H0k1xjH"
+  >
+    <section
+      class="s-_Wq18H0k1xjH"
+    >
+      © 
+      2023
+       
+      Tabulous.fr. Tous droits réservés.
+    </section>
+     
+    <span
+      class="s-_Wq18H0k1xjH"
+    >
+      <a
+        class="s-_Wq18H0k1xjH"
+        href="/fr/terms-of-service"
+      >
+        Mentions Légales & Conditions Générales d'Utilisation
+      </a>
+    </span>
+     
+    <span
+      class="back-to-top s-_Wq18H0k1xjH"
+    >
+      <button
+        class="s-NMyTiX1zi6rz"
+      >
+        <div
+          class="s-NMyTiX1zi6rz"
+        >
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            vertical_align_top
+          </span>
+          
+          
+        </div>
+         
+      </button>
+      <!--&lt;Button&gt;-->
+    </span>
+  </footer>
+  <!--&lt;PageFooter&gt;-->
+</main>
+`;

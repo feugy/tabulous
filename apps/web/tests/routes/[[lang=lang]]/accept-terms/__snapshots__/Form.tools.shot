@@ -1,0 +1,161 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Default 1`] = `
+<form
+  class="s-vWKNxgTOhpwO"
+  method="POST"
+>
+  <fieldset
+    class="s-vWKNxgTOhpwO"
+  >
+    <input
+      class="s-vWKNxgTOhpwO"
+      disabled=""
+      id="accept"
+      name="accept"
+      required=""
+      type="checkbox"
+      value="true"
+    />
+     
+    <label
+      class="s-vWKNxgTOhpwO"
+      for="accept"
+    >
+      J'ai lu et accepté les Conditions Générales d'Utilisation
+    </label>
+  </fieldset>
+   
+  <fieldset
+    class="s-vWKNxgTOhpwO"
+  >
+    <input
+      class="s-vWKNxgTOhpwO"
+      disabled=""
+      id="age"
+      name="age"
+      required=""
+      type="checkbox"
+      value="true"
+    />
+     
+    <label
+      class="s-vWKNxgTOhpwO"
+      for="age"
+    >
+      Je déclare avoir plus de 15 ans ou être autorisé·e par l’un de mes parents
+    </label>
+  </fieldset>
+   
+  <input
+    class="s-vWKNxgTOhpwO"
+    name="redirect"
+    type="hidden"
+    value=""
+  />
+   
+  <button
+    class="primary has-text s-NMyTiX1zi6rz"
+    disabled=""
+    type="submit"
+  >
+    <div
+      class="s-NMyTiX1zi6rz"
+    >
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
+      >
+        emoji_people
+      </span>
+      
+      <span
+        class="text s-NMyTiX1zi6rz"
+      >
+        Entrer
+      </span>
+      
+    </div>
+     
+  </button>
+  <!--&lt;Button&gt;-->
+</form>
+`;
+
+exports[`Enabled 1`] = `
+<form
+  class="s-vWKNxgTOhpwO"
+  method="POST"
+>
+  <fieldset
+    class="s-vWKNxgTOhpwO"
+  >
+    <input
+      class="s-vWKNxgTOhpwO"
+      id="accept"
+      name="accept"
+      required=""
+      type="checkbox"
+      value="true"
+    />
+     
+    <label
+      class="s-vWKNxgTOhpwO"
+      for="accept"
+    >
+      J'ai lu et accepté les Conditions Générales d'Utilisation
+    </label>
+  </fieldset>
+   
+  <fieldset
+    class="s-vWKNxgTOhpwO"
+  >
+    <input
+      class="s-vWKNxgTOhpwO"
+      id="age"
+      name="age"
+      required=""
+      type="checkbox"
+      value="true"
+    />
+     
+    <label
+      class="s-vWKNxgTOhpwO"
+      for="age"
+    >
+      Je déclare avoir plus de 15 ans ou être autorisé·e par l’un de mes parents
+    </label>
+  </fieldset>
+   
+  <input
+    class="s-vWKNxgTOhpwO"
+    name="redirect"
+    type="hidden"
+    value=""
+  />
+   
+  <button
+    class="primary has-text s-NMyTiX1zi6rz"
+    disabled=""
+    type="submit"
+  >
+    <div
+      class="s-NMyTiX1zi6rz"
+    >
+      <span
+        class="material-icons s-NMyTiX1zi6rz"
+      >
+        emoji_people
+      </span>
+      
+      <span
+        class="text s-NMyTiX1zi6rz"
+      >
+        Entrer
+      </span>
+      
+    </div>
+     
+  </button>
+  <!--&lt;Button&gt;-->
+</form>
+`;

@@ -51,6 +51,8 @@ labels:
   copyright: Tabulous.fr. Tous droits réservés.
   end-friendship: Voulez vous vraiment retirer {username} de vos ami·e·s ? Vous ne pourrez plus jouer ensemble.
   empty-friend-list: Ajoutez vos amis pour pouvoir jouer avec eux.
+  en: English
+  fr: Français
   friendship-accepted: "{username} a rejoint votre liste d'ami·e·s"
   friendship-declined: "{username} a quitté votre liste d'ami·e·s"
   friendship-proposed: 'Demande envoyée à {username}'
@@ -69,9 +71,9 @@ labels:
   help-decrement: Séparer un objet du groupe.
   help-flip: Retourne l'objet (ou la sélection).
   help-increment: Regrouper la sélection d'objets.
-  help-open-menu: Ouvre le menu des actions de l'objet (ou de la sélection), s'il y des actions possibles.
+  help-open-menu: Ouvre le menu des actions de l'objet (ou de la sélection).
   help-move: Déplace l'objet (ou la sélection), s'il n'est pas figé.
-  help-new-camera: Enregistrer la position de la caméra
+  help-new-camera: Enregistrer la position de la caméra.
   help-pan-camera: Déplace la caméra.
   help-push: Empiler la sélection d'objets.
   help-pop: Dépiler un objet de la pile.
@@ -79,7 +81,7 @@ labels:
   help-restore-camera: Restaurer la position de la caméra.
   help-rotate: Pivote l'objet (ou la sélection).
   help-rotate-camera: Pivote et contrôle l'inclinaison de la caméra.
-  help-save-camera: Mettre à jour la position de la caméra
+  help-save-camera: Mettre à jour la position de la caméra.
   help-zoom: Zoome ou dézoome.
   home: Accueil
   host: hôte

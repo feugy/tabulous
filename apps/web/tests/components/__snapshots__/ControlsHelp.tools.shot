@@ -131,7 +131,7 @@ exports[`Components/Controls Help 1`] = `
     <dd
       class="s-IlJH5O1f0y3M"
     >
-      Ouvre le menu des actions de l'objet (ou de la sélection), s'il y des actions possibles.
+      Ouvre le menu des actions de l'objet (ou de la sélection).
     </dd>
     <dt
       class="s-IlJH5O1f0y3M"
@@ -2123,7 +2123,7 @@ exports[`Components/Controls Help 1`] = `
     <dd
       class="s-IlJH5O1f0y3M"
     >
-      Enregistrer la position de la caméra
+      Enregistrer la position de la caméra.
     </dd>
     <dt
       class="s-IlJH5O1f0y3M"
@@ -2446,7 +2446,7 @@ exports[`Components/Controls Help 1`] = `
     <dd
       class="s-IlJH5O1f0y3M"
     >
-      Mettre à jour la position de la caméra
+      Mettre à jour la position de la caméra.
     </dd>
   </dl>
    

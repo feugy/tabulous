@@ -1,12 +1,22 @@
+import { pick } from 'accept-language-parser'
 import cookie from 'cookie'
 
+import { supportedLanguages } from './params/lang'
 import { recoverSession } from './stores/players'
 
 /** @type {import('@sveltejs/kit').Handle} */
 export async function handle({ event, resolve }) {
-  const { url, request, locals } = event
+  const {
+    url,
+    request,
+    locals,
+    params: { lang }
+  } = event
   if (url.pathname === '/logout') {
-    return logOutAndRedirect()
+    return logOutAndRedirect(lang)
+  }
+  if (!lang) {
+    return redirectBasedOnLanguage(url, request.headers.get('accept-language'))
   }
   if (url.searchParams.has('token')) {
     return extractTokenAndRedirect(url)
@@ -28,13 +38,26 @@ function extractToken(request) {
   return cookie.parse(request.headers.get('cookie') || '').token
 }
 
-function logOutAndRedirect() {
+function logOutAndRedirect(lang) {
   return setCookie(
     new Response(null, {
       status: 307,
-      headers: { location: '/home' }
+      headers: { location: lang ? `/${lang}/home` : '/home' }
     })
   )
+}
+
+function redirectBasedOnLanguage(url, languageHeader) {
+  const lang =
+    pick(supportedLanguages, languageHeader, {
+      loose: true
+    }) || supportedLanguages[0]
+  return new Response(null, {
+    status: 303,
+    headers: {
+      location: `/${lang}${url.href.replace(url.origin, '')}`
+    }
+  })
 }
 
 function extractTokenAndRedirect(url) {

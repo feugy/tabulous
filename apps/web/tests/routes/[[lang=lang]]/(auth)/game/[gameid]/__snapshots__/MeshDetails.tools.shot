@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Routes/game/[gameId]/Mesh Details 1`] = `
+<button
+  class="s-gZ7FSfCNWLAv open"
+>
+  <img
+    alt=""
+    class="s-gZ7FSfCNWLAv"
+    src="http://localhost:3001/games/assets/images/hearts-12.1.svg"
+  />
+</button>
+`;

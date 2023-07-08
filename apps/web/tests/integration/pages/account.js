@@ -18,14 +18,17 @@ export const AccountPage = mixin(
     /**
      * Represent the account page for testing
      * @param {Page} page - the actual page.
+     * @param {string} lang - current language.
      */
-    constructor(page) {
+    constructor(page, lang) {
+      /** @type {string} */
+      this.lang = lang
       /** @type {Page} */
       this.page = page
       /** @type {Locator} */
       this.heading = page.getByRole('heading', {
         level: 1,
-        name: translate('titles.account')
+        name: translate('titles.account', undefined, this.lang)
       })
       /** @type {Locator} */
       this.usernameInput = page.locator(`input[name="username"]`)
@@ -33,7 +36,7 @@ export const AccountPage = mixin(
       this.avatarImage = page.locator(`section img`)
       /** @type {Locator} */
       this.openAvatarDialogueButton = page.getByRole('button', {
-        name: translate('labels.avatar')
+        name: translate('labels.avatar', undefined, this.lang)
       })
       /** @type {Locator} */
       this.avatarDialogue = page.getByRole('dialog')
@@ -41,7 +44,7 @@ export const AccountPage = mixin(
       this.avatarInput = this.avatarDialogue.getByRole('textbox')
       /** @type {Locator} */
       this.avatarSaveButon = this.avatarDialogue.getByRole('button', {
-        name: translate('actions.save')
+        name: translate('actions.save', undefined, this.lang)
       })
     }
 
@@ -50,7 +53,7 @@ export const AccountPage = mixin(
      * @returns {Promise<void>}
      */
     async goTo() {
-      await this.page.goto('/account')
+      await this.page.goto(`/${this.lang}/account`)
       await this.page.waitForLoadState('networkidle')
     }
 
