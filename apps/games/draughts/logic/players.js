@@ -16,7 +16,7 @@ export function askForParameters({ game: { preferences } }) {
           side: {
             description: 'color',
             enum: sides,
-            metadata: { fr: { name: 'Couleur' } }
+            metadata: { fr: { name: 'Couleur' }, en: { name: 'Color' } }
           }
         },
         required: ['side']

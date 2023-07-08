@@ -3,9 +3,8 @@ export { colors } from './logic/constants.js'
 export * from './logic/player.js'
 
 export const locales = {
-  fr: {
-    title: 'Mah-jong'
-  }
+  fr: { title: 'Mah-jong' },
+  en: { title: 'Mah-jong' }
 }
 
 export const rulesBookPageCount = 44

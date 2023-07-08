@@ -11,40 +11,32 @@ export function askForParameters({ game: { preferences } }) {
             type: 'number',
             enum: [54, 32, 0],
             metadata: {
-              fr: {
-                name: 'Nombre de cartes dans le paquet',
-                0: 'Aucunes'
-              }
+              fr: { name: 'Nombre de cartes dans le paquet', 0: 'Aucunes' },
+              en: { name: 'How many cards in the deck', 0: 'None' }
             }
           },
           die4Count: {
             type: 'number',
             enum: [0, 1, 2, 3, 4, 5],
             metadata: {
-              fr: {
-                name: 'Nombre de dés à 4 faces',
-                0: 'Aucun'
-              }
+              fr: { name: 'Nombre de dés à 4 faces', 0: 'Aucun' },
+              en: { name: 'How many 4-faces die', 0: 'None' }
             }
           },
           die6Count: {
             type: 'number',
             enum: [0, 1, 2, 3, 4, 5],
             metadata: {
-              fr: {
-                name: 'Nombre de dés à 6 faces',
-                0: 'Aucun'
-              }
+              fr: { name: 'Nombre de dés à 6 faces', 0: 'Aucun' },
+              en: { name: 'How many 6-faces die', 0: 'None' }
             }
           },
           die8Count: {
             type: 'number',
             enum: [0, 1, 2, 3, 4, 5],
             metadata: {
-              fr: {
-                name: 'Nombre de dés à 8 faces',
-                0: 'Aucun'
-              }
+              fr: { name: 'Nombre de dés à 8 faces', 0: 'Aucun' },
+              en: { name: 'How many 8-faces die', 0: 'None' }
             }
           }
         },
