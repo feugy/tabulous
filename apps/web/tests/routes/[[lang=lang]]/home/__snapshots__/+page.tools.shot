@@ -147,7 +147,7 @@ exports[`Anonymous 1`] = `
             <img
               alt="Aire de jeu"
               class="s-umE5dFFiiYHw"
-              src="http://localhost:3001/games/playground/catalog/cover.webp"
+              src="http://localhost:3001/games/playground/catalog/fr/cover.webp"
             />
              
             <legend
@@ -212,7 +212,7 @@ exports[`Anonymous 1`] = `
             <img
               alt="Dames"
               class="s-umE5dFFiiYHw"
-              src="http://localhost:3001/games/draughts/catalog/cover.webp"
+              src="http://localhost:3001/games/draughts/catalog/fr/cover.webp"
             />
              
             <legend
@@ -277,7 +277,7 @@ exports[`Anonymous 1`] = `
             <img
               alt="Solitaire"
               class="s-umE5dFFiiYHw"
-              src="http://localhost:3001/games/klondike/catalog/cover.webp"
+              src="http://localhost:3001/games/klondike/catalog/fr/cover.webp"
             />
              
             <legend
@@ -568,7 +568,7 @@ exports[`Authenticated 1`] = `
           
           <article
             class="s-tazni-gDXtlL"
-            style="--bg-url: url('http://localhost:3001/games/playground/catalog/cover.webp');"
+            style="--bg-url: url('http://localhost:3001/games/playground/catalog/fr/cover.webp');"
           >
             <button
               class="s-tazni-gDXtlL"
@@ -620,7 +620,7 @@ exports[`Authenticated 1`] = `
           
           <article
             class="s-tazni-gDXtlL"
-            style="--bg-url: url('http://localhost:3001/games/6-takes/catalog/cover.webp');"
+            style="--bg-url: url('http://localhost:3001/games/6-takes/catalog/fr/cover.webp');"
           >
             <button
               class="s-tazni-gDXtlL"
@@ -701,7 +701,7 @@ exports[`Authenticated 1`] = `
             <img
               alt="6 qui prend !"
               class="s-umE5dFFiiYHw"
-              src="http://localhost:3001/games/6-takes/catalog/cover.webp"
+              src="http://localhost:3001/games/6-takes/catalog/fr/cover.webp"
             />
              
             <legend
@@ -796,7 +796,7 @@ exports[`Authenticated 1`] = `
             <img
               alt="Aire de jeu"
               class="s-umE5dFFiiYHw"
-              src="http://localhost:3001/games/playground/catalog/cover.webp"
+              src="http://localhost:3001/games/playground/catalog/fr/cover.webp"
             />
              
             <legend
@@ -861,7 +861,7 @@ exports[`Authenticated 1`] = `
             <img
               alt="Dames"
               class="s-umE5dFFiiYHw"
-              src="http://localhost:3001/games/draughts/catalog/cover.webp"
+              src="http://localhost:3001/games/draughts/catalog/fr/cover.webp"
             />
              
             <legend
@@ -926,7 +926,7 @@ exports[`Authenticated 1`] = `
             <img
               alt="Dune Imperium"
               class="s-umE5dFFiiYHw"
-              src="http://localhost:3001/games/dune-imperium/catalog/cover.webp"
+              src="http://localhost:3001/games/dune-imperium/catalog/fr/cover.webp"
             />
              
             <legend
@@ -1021,7 +1021,7 @@ exports[`Authenticated 1`] = `
             <img
               alt="Solitaire"
               class="s-umE5dFFiiYHw"
-              src="http://localhost:3001/games/klondike/catalog/cover.webp"
+              src="http://localhost:3001/games/klondike/catalog/fr/cover.webp"
             />
              
             <legend

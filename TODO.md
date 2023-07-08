@@ -2,7 +2,6 @@
 
 ## Road to beta
 
-- Games in English: rules, textures, images, Parameters' image
 - server logging (warning on invalid descriptors) + log file rotation
 - automerge.js
 

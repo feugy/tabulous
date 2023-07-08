@@ -56,7 +56,7 @@ exports[`Current lobby 1`] = `
 exports[`Guests only 1`] = `
 <article
   class="s-tazni-gDXtlL"
-  style="--bg-url: url('http://localhost:3001/games/riichi/catalog/cover.webp');"
+  style="--bg-url: url('http://localhost:3001/games/riichi/catalog/fr/cover.webp');"
 >
   <button
     class="s-tazni-gDXtlL"
@@ -95,7 +95,7 @@ exports[`Guests only 1`] = `
 exports[`Invited 1`] = `
 <article
   class="s-tazni-gDXtlL"
-  style="--bg-url: url('http://localhost:3001/games/riichi/catalog/cover.webp');"
+  style="--bg-url: url('http://localhost:3001/games/riichi/catalog/fr/cover.webp');"
 >
   <button
     class="s-tazni-gDXtlL"
@@ -173,7 +173,7 @@ exports[`Lobby 1`] = `
 exports[`Owned 1`] = `
 <article
   class="s-tazni-gDXtlL"
-  style="--bg-url: url('http://localhost:3001/games/riichi/catalog/cover.webp');"
+  style="--bg-url: url('http://localhost:3001/games/riichi/catalog/fr/cover.webp');"
 >
   <button
     class="s-tazni-gDXtlL"
@@ -236,7 +236,7 @@ exports[`Owned 1`] = `
 exports[`Single owned 1`] = `
 <article
   class="s-tazni-gDXtlL"
-  style="--bg-url: url('http://localhost:3001/games/riichi/catalog/cover.webp');"
+  style="--bg-url: url('http://localhost:3001/games/riichi/catalog/fr/cover.webp');"
 >
   <button
     class="s-tazni-gDXtlL"

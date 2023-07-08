@@ -11,7 +11,7 @@ exports[`No age nor time 1`] = `
     <img
       alt="Solitaire"
       class="s-umE5dFFiiYHw"
-      src="http://localhost:3001/games/klondike/catalog/cover.webp"
+      src="http://localhost:3001/games/klondike/catalog/fr/cover.webp"
     />
      
     <legend
@@ -83,7 +83,7 @@ exports[`With characteristics 1`] = `
     <img
       alt="Solitaire"
       class="s-umE5dFFiiYHw"
-      src="http://localhost:3001/games/klondike/catalog/cover.webp"
+      src="http://localhost:3001/games/klondike/catalog/fr/cover.webp"
     />
      
     <legend
@@ -155,7 +155,7 @@ exports[`With characteristics and copyright 1`] = `
     <img
       alt="Solitaire"
       class="s-umE5dFFiiYHw"
-      src="http://localhost:3001/games/klondike/catalog/cover.webp"
+      src="http://localhost:3001/games/klondike/catalog/fr/cover.webp"
     />
      
     <legend

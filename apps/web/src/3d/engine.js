@@ -58,6 +58,7 @@ const { detail, flip, random, rotate } = actionNames
  * @param {number} params.doubleTapDelay - number of milliseconds between 2 pointer down events to be considered as a double one.
  * @param {number} params.longTapDelay - number of milliseconds to hold pointer down before it is considered as long.
  * @param {(key: string) => string} params.translate - function that translate a i18n key into a localized text.
+ * @param {string} params.locale - locale used to download the game textures.
  * @returns {EnhancedEngine} the created 3D engine.
  */
 export function createEngine({
@@ -67,6 +68,7 @@ export function createEngine({
   hand,
   doubleTapDelay,
   longTapDelay,
+  locale,
   translate
 }) {
   const engine = new Engine(canvas, true)
@@ -158,7 +160,12 @@ export function createEngine({
         color: colorByPlayerId.get(playerId)
       })
       materialManager.init(
-        { gameAssetsUrl, scene, handScene: handsEnabled ? handScene : null },
+        {
+          gameAssetsUrl,
+          locale,
+          scene,
+          handScene: handsEnabled ? handScene : null
+        },
         game
       )
 

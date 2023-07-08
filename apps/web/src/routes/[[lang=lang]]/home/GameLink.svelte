@@ -21,7 +21,7 @@
     ? $_('titles.lobby')
     : game.locales?.[$locale]?.title || game.locales?.fr?.title
   $: coverImage = game.kind
-    ? `${gameAssetsUrl}/${game.kind}/catalog/cover.webp`
+    ? `${gameAssetsUrl}/${game.kind}/catalog/${$locale}/cover.webp`
     : ''
 
   function handleDelete(event) {

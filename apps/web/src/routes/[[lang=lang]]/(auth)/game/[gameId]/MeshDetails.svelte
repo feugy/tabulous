@@ -1,6 +1,7 @@
 <script>
-  import { gameAssetsUrl } from '@src/utils'
+  import { gameAssetsUrl, injectLocale } from '@src/utils'
   import { afterUpdate, createEventDispatcher } from 'svelte'
+  import { locale } from 'svelte-intl'
 
   export let mesh = null
 
@@ -41,13 +42,16 @@
     on:keydown={handleKey}
     on:pointerdown|stopPropagation
   >
-    <img src="{gameAssetsUrl}{mesh?.image}" alt="" />
+    <img
+      src="{gameAssetsUrl}{injectLocale(mesh?.image, 'images', $locale)}"
+      alt=""
+    />
   </button>
 {/if}
 
 <style lang="postcss">
   button {
-    @apply invisible flex absolute z-10 inset-0 w-full justify-center pointer-events-none py-[5%] px-0;
+    @apply invisible flex absolute z-10 inset-0 w-full justify-center items-center pointer-events-none py-[5%] px-0 max-w-9/10 m-x-auto;
 
     &.open {
       @apply visible pointer-events-auto;
@@ -59,6 +63,6 @@
   }
 
   img {
-    @apply h-full w-auto opacity-0 transition-all duration-500 transform-gpu translate-y-10;
+    @apply h-full w-full object-contain opacity-0 transition-all duration-500 transform-gpu translate-y-10;
   }
 </style>

@@ -29,7 +29,10 @@
 </script>
 
 <button tabindex={0} on:click={handleClick}>
-  <img src="{gameAssetsUrl}/{game.name}/catalog/cover.webp" alt={title} />
+  <img
+    src="{gameAssetsUrl}/{game.name}/catalog/{$locale}/cover.webp"
+    alt={title}
+  />
   <legend>
     <h3>{title}</h3>
     <div class="characteristics">

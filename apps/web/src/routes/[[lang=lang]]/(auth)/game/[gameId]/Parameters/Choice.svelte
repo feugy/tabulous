@@ -1,6 +1,6 @@
 <script>
   import { Dropdown } from '@src/components'
-  import { gameAssetsUrl } from '@src/utils'
+  import { gameAssetsUrl, injectLocale } from '@src/utils'
   import { _, locale } from 'svelte-intl'
 
   import { findViolations } from './utils'
@@ -58,7 +58,10 @@
     on:select={handleSelection}
   />
   {#if value?.image}
-    <img src="{gameAssetsUrl}{value.image}" alt="" />
+    <img
+      src="{gameAssetsUrl}{injectLocale(value.image, 'images', $locale)}"
+      alt=""
+    />
   {/if}
 </span>
 
