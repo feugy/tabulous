@@ -456,6 +456,7 @@ extend type Mutation {
   saveGame(game: GameInput!): Game
   deleteGame(gameId: ID!): Game
   invite(gameId: ID!, playerIds: [ID!]!): Game
+  kick(gameId: ID!, playerId: ID!): Game
 }
 
 extend type Subscription {

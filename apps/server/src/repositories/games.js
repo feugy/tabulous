@@ -62,13 +62,14 @@ class GameRepository extends AbstractRepository {
   }
 
   /**
-   * When saving games, adds the new ones into their respecive player sets of games.
+   * When saving games, updates guests' and players' respecive player sets of games.
    * @private
    * @param {AbstractRepository.SaveTransactionContext} context - contextual information.
    * @returns {Transaction} the applied transaction.
    */
   _enrichSaveTransaction(context) {
     const transaction = super._enrichSaveTransaction(context)
+    removeGamesFromPlayerSets.call(this, transaction, context.existings)
     for (const game of context.models) {
       for (const playerId of [
         game?.ownerId,
@@ -91,17 +92,7 @@ class GameRepository extends AbstractRepository {
    */
   _enrichDeleteTransaction(context) {
     const transaction = super._enrichDeleteTransaction(context)
-    for (const game of context.models) {
-      for (const playerId of [
-        game?.ownerId,
-        ...(game?.playerIds ?? []),
-        ...(game?.guestIds ?? [])
-      ]) {
-        if (playerId && game) {
-          transaction.srem(this._buildPlayerKey(playerId), game.id)
-        }
-      }
-    }
+    removeGamesFromPlayerSets.call(this, transaction, context.models)
     return transaction
   }
 
@@ -117,6 +108,20 @@ class GameRepository extends AbstractRepository {
     }
     const ids = await this.client.smembers(this._buildPlayerKey(playerId))
     return this.getById(ids.sort())
+  }
+}
+
+function removeGamesFromPlayerSets(transaction, models) {
+  for (const game of models) {
+    for (const playerId of [
+      game?.ownerId,
+      ...(game?.playerIds ?? []),
+      ...(game?.guestIds ?? [])
+    ]) {
+      if (playerId && game) {
+        transaction.srem(this._buildPlayerKey(playerId), game.id)
+      }
+    }
   }
 }
 

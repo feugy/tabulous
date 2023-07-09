@@ -229,8 +229,8 @@ export async function createGame(kind, player) {
   return game
 }
 
-function notifyAllPeers(game) {
-  gameListsUpdate$.next([...game.playerIds, ...game.guestIds])
+function notifyAllPeers(game, ...extras) {
+  gameListsUpdate$.next([...game.playerIds, ...game.guestIds, ...extras])
 }
 
 async function checkGameLimit(player, excludedGameIds = []) {
@@ -501,6 +501,34 @@ function isGuestAFriend(guestId, friendships) {
       id === guestId &&
       (state === FriendshipProposed || state === FriendshipAccepted)
   )
+}
+
+export async function kick(gameId, kickedId, hostId) {
+  const lobbyOrGame = await repositories.games.getById(gameId)
+  if (
+    !isPlayer(lobbyOrGame, hostId) || // kicker is not a player
+    !(
+      isGuest(lobbyOrGame, kickedId) || // kicked is not a guest
+      // kicked is neither a lobby player
+      (isPlayer(lobbyOrGame, kickedId) && !lobbyOrGame.kind)
+    ) ||
+    kickedId === lobbyOrGame?.ownerId // kicked is the owner
+  ) {
+    return null
+  }
+  const guestIndex = lobbyOrGame.guestIds.indexOf(kickedId)
+  const playerIndex = lobbyOrGame.playerIds.indexOf(kickedId)
+  if (guestIndex !== -1) {
+    lobbyOrGame.guestIds.splice(guestIndex, 1)
+  } else if (playerIndex !== -1) {
+    lobbyOrGame.playerIds.splice(playerIndex, 1)
+    lobbyOrGame.availableSeats++
+  }
+  if (guestIndex !== -1 || playerIndex !== -1) {
+    await repositories.games.save(lobbyOrGame)
+    notifyAllPeers(lobbyOrGame, kickedId)
+  }
+  return lobbyOrGame
 }
 
 /**

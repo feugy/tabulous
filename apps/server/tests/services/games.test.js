@@ -21,6 +21,7 @@ import {
   gameListsUpdate,
   invite,
   joinGame,
+  kick,
   listGames,
   notifyRelatedPlayers,
   promoteGame,
@@ -852,6 +853,200 @@ describe('given a subscription to game lists and an initialized repository', () 
               { playerId: peer.id, games: [updated] }
             ])
           )
+        })
+      })
+
+      describe('kick()', () => {
+        it('returns null on unknown game', async () => {
+          expect(await kick(faker.string.uuid(), peer.id, player.id)).toBeNull()
+          await setTimeout(50)
+          expect(updates).toHaveLength(0)
+        })
+
+        it('does not kick an unknown player', async () => {
+          expect(await kick(game.id, faker.string.uuid(), player.id)).toBeNull()
+          await setTimeout(50)
+          expect(updates).toHaveLength(0)
+        })
+
+        it(`removes player from game's guest list and trigger list updates`, async () => {
+          expect(await invite(game.id, [peer.id], player.id)).toEqual({
+            ...game,
+            guestIds: [peer.id]
+          })
+          await setTimeout(50)
+          updates.splice(0)
+
+          const updated = await kick(game.id, peer.id, player.id)
+          expect(updated).toEqual({
+            ...game,
+            playerIds: [player.id],
+            guestIds: []
+          })
+
+          await setTimeout(50)
+          expect(updates).toEqual(
+            expect.arrayContaining([
+              {
+                playerId: player.id,
+                games: expect.arrayContaining([updated, lobby])
+              },
+              { playerId: peer.id, games: [] }
+            ])
+          )
+        })
+      })
+
+      describe('given another player', () => {
+        beforeEach(async () => {
+          await invite(game.id, [peer.id], player.id)
+          game = await joinGame(game.id, peer)
+          await invite(lobby.id, [peer.id], player.id)
+          lobby = await joinGame(lobby.id, peer)
+          await setTimeout(50)
+          updates.splice(0)
+        })
+
+        describe('invite()', () => {
+          it(`allows peer to invite their friends`, async () => {
+            await repositories.players.makeFriends(
+              peer2.id,
+              peer.id,
+              repositories.FriendshipAccepted
+            )
+            const updated = await invite(game.id, [peer2.id], peer.id)
+            expect(updated).toEqual({
+              ...game,
+              guestIds: [peer2.id]
+            })
+            await setTimeout(50)
+            expect(updates).toEqual(
+              expect.arrayContaining([
+                {
+                  playerId: player.id,
+                  games: expect.arrayContaining([updated, lobby])
+                },
+                {
+                  playerId: peer.id,
+                  games: expect.arrayContaining([updated, lobby])
+                },
+                { playerId: peer2.id, games: [updated] }
+              ])
+            )
+          })
+        })
+
+        describe('kick()', () => {
+          it('can not kick the game owner', async () => {
+            expect(await kick(game.id, player.id, peer.id)).toBeNull()
+            await setTimeout(50)
+            expect(updates).toHaveLength(0)
+          })
+
+          it('can not kick the lobby owner', async () => {
+            expect(await kick(lobby.id, player.id, peer.id)).toBeNull()
+            await setTimeout(50)
+            expect(updates).toHaveLength(0)
+          })
+
+          it(`allows peer to kick other guests`, async () => {
+            expect(await invite(game.id, [peer2.id], player.id)).toEqual({
+              ...game,
+              guestIds: [peer2.id]
+            })
+            await setTimeout(50)
+            updates.splice(0)
+
+            const updated = await kick(game.id, peer2.id, peer.id)
+            expect(updated).toEqual({
+              ...game,
+              playerIds: [player.id, peer.id],
+              guestIds: []
+            })
+
+            await setTimeout(50)
+            expect(updates).toEqual(
+              expect.arrayContaining([
+                {
+                  playerId: player.id,
+                  games: expect.arrayContaining([updated, lobby])
+                },
+                {
+                  playerId: peer.id,
+                  games: expect.arrayContaining([updated, lobby])
+                },
+                { playerId: peer2.id, games: [] }
+              ])
+            )
+          })
+
+          it('can kick lobby players', async () => {
+            const updated = await kick(lobby.id, peer.id, player.id)
+            expect(updated).toEqual({
+              ...lobby,
+              availableSeats: 7,
+              playerIds: [player.id]
+            })
+            await setTimeout(50)
+            expect(updates).toEqual(
+              expect.arrayContaining([
+                {
+                  playerId: player.id,
+                  games: expect.arrayContaining([updated, game])
+                },
+                { playerId: peer.id, games: [game] }
+              ])
+            )
+          })
+
+          it('allows non-owner to kick lobby players', async () => {
+            await invite(lobby.id, [peer2.id], player.id)
+            lobby = await joinGame(lobby.id, peer2)
+            await setTimeout(50)
+            updates.splice(0)
+
+            const updated = await kick(lobby.id, peer2.id, peer.id)
+            expect(updated).toEqual({
+              ...lobby,
+              availableSeats: 6,
+              playerIds: [player.id, peer.id],
+              guestIds: []
+            })
+            await setTimeout(50)
+            expect(updates).toEqual(
+              expect.arrayContaining([
+                {
+                  playerId: player.id,
+                  games: expect.arrayContaining([updated, game])
+                },
+                {
+                  playerId: peer.id,
+                  games: expect.arrayContaining([updated, game])
+                },
+                { playerId: peer2.id, games: [] }
+              ])
+            )
+          })
+
+          it('allows non-owner to kick themselves', async () => {
+            const updated = await kick(lobby.id, peer.id, peer.id)
+            expect(updated).toEqual({
+              ...lobby,
+              availableSeats: 7,
+              playerIds: [player.id],
+              guestIds: []
+            })
+            await setTimeout(50)
+            expect(updates).toEqual(
+              expect.arrayContaining([
+                {
+                  playerId: player.id,
+                  games: expect.arrayContaining([updated, game])
+                },
+                { playerId: peer.id, games: [game] }
+              ])
+            )
+          })
         })
       })
 
