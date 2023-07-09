@@ -10,6 +10,7 @@ import {
   listCatalog,
   listFriends,
   listGames,
+  promoteGame,
   receiveGameListUpdates,
   toastError,
   toastInfo
@@ -34,6 +35,7 @@ vi.mock('@src/stores', async () => {
     listCatalog: vi.fn(),
     listGames: vi.fn(),
     listFriends: vi.fn(),
+    promoteGame: vi.fn(),
     receiveGameListUpdates: vi.fn(),
     toastError: vi.fn(),
     toastInfo: vi.fn()
@@ -167,12 +169,15 @@ describe.each([
 
   describe('/home route', () => {
     const player = { username: 'dude' }
+    const peer = { username: 'duke' }
+    const peer2 = { username: 'reno' }
     const parent = async () => ({ session: { player } })
     const catalog = [
       {
         id: 'game-1',
         name: 'klondike',
-        locales: { fr: { title: 'Solitaire' }, en: { title: 'Klondike' } }
+        locales: { fr: { title: 'Solitaire' }, en: { title: 'Klondike' } },
+        maxSeats: 1
       },
       {
         id: 'game-2',
@@ -191,7 +196,7 @@ describe.each([
 
     beforeEach(async () => {
       currentGame.next(null)
-      listCatalog.mockResolvedValueOnce(catalog)
+      listCatalog.mockResolvedValueOnce([...catalog])
       listGames.mockResolvedValueOnce(games)
       listFriends.mockReturnValueOnce(readable([]))
       receiveGameListUpdates.mockImplementation(games => readable(games))
@@ -298,8 +303,8 @@ describe.each([
 
     describe('given some lobbies', () => {
       const gamesWithLobbies = [
-        { id: 'game-4', players: [] },
-        { id: 'game-5', players: [] },
+        { id: 'game-4', players: [player, peer, peer2] },
+        { id: 'game-5', players: [player] },
         ...games
       ]
 
@@ -360,6 +365,38 @@ describe.each([
 
         await fireEvent.click(lobbyLinks[0])
         expect(joinGame).toHaveBeenCalledOnce()
+      })
+
+      it('can not promote lobby with multiple player to solo game', async () => {
+        await fireEvent.click(lobbyLinks[0])
+        const { title } = catalog[0].locales[locale]
+        await fireEvent.click(
+          screen.getByRole('heading', {
+            name: title
+          })
+        )
+        expect(
+          within(screen.getByRole('dialog')).getByText(
+            translate('labels.too-many-players', { title, ...catalog[0] })
+          )
+        ).toBeInTheDocument()
+        expect(promoteGame).not.toHaveBeenCalled()
+      })
+
+      it('can not promote lobby with too many players to limited seats game', async () => {
+        await fireEvent.click(lobbyLinks[0])
+        const { title } = catalog[1].locales[locale]
+        await fireEvent.click(
+          screen.getByRole('heading', {
+            name: title
+          })
+        )
+        expect(
+          within(screen.getByRole('dialog')).getByText(
+            translate('labels.too-many-players', { title, maxSeats: 2 })
+          )
+        ).toBeInTheDocument()
+        expect(promoteGame).not.toHaveBeenCalled()
       })
     })
   })

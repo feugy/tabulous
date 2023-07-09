@@ -149,7 +149,7 @@ exports[`Friends only 1`] = `
                   <legend
                     class="s-Fe6WNbR-55zp"
                   >
-                    Pseudo
+                    Pseudo à inviter
                   </legend>
                    
                   <input
@@ -191,7 +191,6 @@ exports[`Friends only 1`] = `
             >
               <li
                 aria-checked="false"
-                aria-selected="false"
                 class="s-XLQf75fI0H0o"
                 role="option"
                 tabindex="-1"
@@ -248,7 +247,6 @@ exports[`Friends only 1`] = `
               </li>
               <li
                 aria-checked="false"
-                aria-selected="false"
                 class="s-XLQf75fI0H0o isRequest"
                 role="option"
                 tabindex="-1"
@@ -319,7 +317,6 @@ exports[`Friends only 1`] = `
               </li>
               <li
                 aria-checked="false"
-                aria-selected="false"
                 class="s-XLQf75fI0H0o isProposal"
                 role="option"
                 tabindex="-1"
@@ -376,7 +373,6 @@ exports[`Friends only 1`] = `
               </li>
               <li
                 aria-checked="false"
-                aria-selected="false"
                 class="s-XLQf75fI0H0o"
                 role="option"
                 tabindex="-1"
@@ -433,7 +429,6 @@ exports[`Friends only 1`] = `
               </li>
               <li
                 aria-checked="false"
-                aria-selected="false"
                 class="s-XLQf75fI0H0o"
                 role="option"
                 tabindex="-1"
@@ -740,6 +735,39 @@ exports[`Lobby 1`] = `
                  
               </section>
               <!--&lt;PlayerAvatar&gt;-->
+              
+              <section
+                class="s-IEYcsUOCmov_"
+                data-testid="player-avatar"
+              >
+                <video
+                  autoplay=""
+                  class="s-IEYcsUOCmov_"
+                />
+                 
+                <figure
+                  class="s-engCJu8q-fNe colored"
+                  style="--dimension: 150px; --color: #73778c; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+                >
+                  <img
+                    alt="avatar for Bastien"
+                    class="s-engCJu8q-fNe"
+                    height="150"
+                    referrerpolicy="no-referrer"
+                    width="150"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe"
+                  >
+                    Bastien
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+                 
+                 
+              </section>
+              <!--&lt;PlayerAvatar&gt;-->
                
             </div>
             <!--&lt;AvatarGrid&gt;-->
@@ -801,6 +829,28 @@ exports[`Lobby 1`] = `
                   Maître Follas
                 </span>
                  
+                <span
+                  class="buttons s-XLQf75fI0H0o"
+                >
+                  <button
+                    class="s-NMyTiX1zi6rz"
+                  >
+                    <div
+                      class="s-NMyTiX1zi6rz"
+                    >
+                      <span
+                        class="material-icons s-NMyTiX1zi6rz"
+                      >
+                        highlight_remove
+                      </span>
+                      
+                      
+                    </div>
+                     
+                  </button>
+                  <!--&lt;Button&gt;-->
+                   
+                </span>
                  
               </li>
               <li
@@ -833,6 +883,99 @@ exports[`Lobby 1`] = `
                   Pascal
                 </span>
                  
+                <span
+                  class="buttons s-XLQf75fI0H0o"
+                >
+                  <button
+                    class="s-NMyTiX1zi6rz"
+                  >
+                    <div
+                      class="s-NMyTiX1zi6rz"
+                    >
+                      <span
+                        class="material-icons s-NMyTiX1zi6rz"
+                      >
+                        highlight_remove
+                      </span>
+                      
+                      
+                    </div>
+                     
+                  </button>
+                  <!--&lt;Button&gt;-->
+                   
+                </span>
+                 
+              </li>
+              <li
+                class="isPlayer s-XLQf75fI0H0o isNotFriend"
+              >
+                <figure
+                  class="s-engCJu8q-fNe colored"
+                  style="--dimension: 40px; --color: #73778c; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+                >
+                  <img
+                    alt="avatar for Bastien"
+                    class="s-engCJu8q-fNe"
+                    height="40"
+                    referrerpolicy="no-referrer"
+                    width="40"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe abbreviated"
+                  >
+                    B
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+                 
+                <span
+                  class="s-XLQf75fI0H0o"
+                  role="term"
+                >
+                  Bastien
+                </span>
+                 
+                <span
+                  class="buttons s-XLQf75fI0H0o"
+                >
+                  <button
+                    class="s-NMyTiX1zi6rz"
+                  >
+                    <div
+                      class="s-NMyTiX1zi6rz"
+                    >
+                      <span
+                        class="material-icons s-NMyTiX1zi6rz"
+                      >
+                        highlight_remove
+                      </span>
+                      
+                      
+                    </div>
+                     
+                  </button>
+                  <!--&lt;Button&gt;-->
+                   
+                  <button
+                    class="s-NMyTiX1zi6rz"
+                  >
+                    <div
+                      class="s-NMyTiX1zi6rz"
+                    >
+                      <span
+                        class="material-icons s-NMyTiX1zi6rz"
+                      >
+                        person_add_alt_1
+                      </span>
+                      
+                      
+                    </div>
+                     
+                  </button>
+                  <!--&lt;Button&gt;-->
+                </span>
                  
               </li>
             </ol>
@@ -861,7 +1004,7 @@ exports[`Lobby 1`] = `
                   <legend
                     class="s-Fe6WNbR-55zp"
                   >
-                    Pseudo
+                    Pseudo à inviter
                   </legend>
                    
                   <input
@@ -974,10 +1117,10 @@ exports[`Lobby 1`] = `
               </li>
               <li
                 aria-checked="false"
-                aria-selected="true"
+                aria-selected="false"
                 class="s-XLQf75fI0H0o isProposal"
                 role="option"
-                tabindex="0"
+                tabindex="-1"
               >
                 <figure
                   class="s-engCJu8q-fNe"
@@ -1031,33 +1174,6 @@ exports[`Lobby 1`] = `
               </li>
             </ol>
              
-            <span
-              class="invite s-XLQf75fI0H0o"
-            >
-              <button
-                class="has-text s-NMyTiX1zi6rz"
-                disabled=""
-              >
-                <div
-                  class="s-NMyTiX1zi6rz"
-                >
-                  <span
-                    class="material-icons s-NMyTiX1zi6rz"
-                  >
-                    gamepad
-                  </span>
-                  
-                  <span
-                    class="text s-NMyTiX1zi6rz"
-                  >
-                    Inviter dans le salon
-                  </span>
-                  
-                </div>
-                 
-              </button>
-              <!--&lt;Button&gt;-->
-            </span>
              
           </section>
           <!--&lt;FriendList&gt;-->
@@ -1397,6 +1513,39 @@ exports[`Multiple connected 1`] = `
                     class="s-engCJu8q-fNe"
                   >
                     Pascal
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+                 
+                 
+              </section>
+              <!--&lt;PlayerAvatar&gt;-->
+              
+              <section
+                class="s-IEYcsUOCmov_"
+                data-testid="player-avatar"
+              >
+                <video
+                  autoplay=""
+                  class="s-IEYcsUOCmov_"
+                />
+                 
+                <figure
+                  class="s-engCJu8q-fNe colored"
+                  style="--dimension: 150px; --color: #73778c; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+                >
+                  <img
+                    alt="avatar for Bastien"
+                    class="s-engCJu8q-fNe"
+                    height="150"
+                    referrerpolicy="no-referrer"
+                    width="150"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe"
+                  >
+                    Bastien
                   </figcaption>
                 </figure>
                 <!--&lt;PlayerThumbnail&gt;-->
@@ -2011,6 +2160,39 @@ exports[`Single connected 1`] = `
                  
               </section>
               <!--&lt;PlayerAvatar&gt;-->
+              
+              <section
+                class="s-IEYcsUOCmov_"
+                data-testid="player-avatar"
+              >
+                <video
+                  autoplay=""
+                  class="s-IEYcsUOCmov_"
+                />
+                 
+                <figure
+                  class="s-engCJu8q-fNe colored"
+                  style="--dimension: 150px; --color: #73778c; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+                >
+                  <img
+                    alt="avatar for Bastien"
+                    class="s-engCJu8q-fNe"
+                    height="150"
+                    referrerpolicy="no-referrer"
+                    width="150"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe"
+                  >
+                    Bastien
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+                 
+                 
+              </section>
+              <!--&lt;PlayerAvatar&gt;-->
                
             </div>
             <!--&lt;AvatarGrid&gt;-->
@@ -2294,6 +2476,39 @@ exports[`Single connected, no rules book, thread 1`] = `
                     class="s-engCJu8q-fNe"
                   >
                     Pascal
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+                 
+                 
+              </section>
+              <!--&lt;PlayerAvatar&gt;-->
+              
+              <section
+                class="s-IEYcsUOCmov_"
+                data-testid="player-avatar"
+              >
+                <video
+                  autoplay=""
+                  class="s-IEYcsUOCmov_"
+                />
+                 
+                <figure
+                  class="s-engCJu8q-fNe colored"
+                  style="--dimension: 150px; --color: #73778c; --top: undefinedpx; --left: undefinedpx; --border-width: 5px"
+                >
+                  <img
+                    alt="avatar for Bastien"
+                    class="s-engCJu8q-fNe"
+                    height="150"
+                    referrerpolicy="no-referrer"
+                    width="150"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe"
+                  >
+                    Bastien
                   </figcaption>
                 </figure>
                 <!--&lt;PlayerThumbnail&gt;-->

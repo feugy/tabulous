@@ -27,7 +27,8 @@ for (const { lang } of [{ lang: 'fr' }, { lang: 'en' }]) {
         name: 'klondike',
         locales: { fr: { title: 'Solitaire' }, en: { title: 'Klondike' } },
         minAge: 7,
-        minTime: 15
+        minTime: 15,
+        maxSeats: 1
       },
       {
         name: 'draughts',
@@ -311,6 +312,7 @@ for (const { lang } of [{ lang: 'fr' }, { lang: 'en' }]) {
       await expect(homePage.deleteGameDialogue).not.toBeVisible()
       // @ts-ignore toHaveBeenCalledWith is not defined
       expect(queryReceived).toHaveBeenCalledWith(
+        'deleteGame',
         expect.objectContaining({
           operationName: 'deleteGame',
           variables: { gameId: games[1].id }
@@ -494,6 +496,7 @@ for (const { lang } of [{ lang: 'fr' }, { lang: 'en' }]) {
         players: [player]
       }
       let gameJoined = lobby
+      /** @type {import('./utils/server.js').GraphQlMockResult} */
       let graphQlMocks
 
       beforeEach(async ({ page }) => {
@@ -563,6 +566,14 @@ for (const { lang } of [{ lang: 'fr' }, { lang: 'en' }]) {
         await new GamePage(page, lang).getStarted()
       })
 
+      it('can not promote lobby if it has too many players', async ({
+        page
+      }) => {
+        const homePage = new HomePage(page, lang)
+        await homePage.createGame(catalog[1].locales[lang].title)
+        await expect(homePage.tooManyPlayerDialogue).toBeVisible()
+      })
+
       it('can leave current lobby', async ({ page }) => {
         const homePage = new HomePage(page, lang)
         await homePage.closeGameButtons.first().click()
@@ -575,6 +586,22 @@ for (const { lang } of [{ lang: 'fr' }, { lang: 'en' }]) {
         graphQlMocks.sendToSubscription({ data: { receiveGameUpdates: null } })
         await expect(homePage.playerAvatars).toBeHidden()
         await expect(homePage.closeGameButtons).toBeHidden()
+      })
+
+      it('can kick a lobby guest', async ({ page }) => {
+        const homePage = new HomePage(page, lang)
+        graphQlMocks.onQuery((operation, request) => {
+          if (operation === 'kick') {
+            console.log(request)
+            graphQlMocks.sendToSubscription({
+              data: {
+                receiveGameUpdates: { ...lobby, players: [player] }
+              }
+            })
+            return lobby.id
+          }
+        })
+        await homePage.kick(friends[0].player.username)
       })
     })
 
@@ -650,6 +677,7 @@ for (const { lang } of [{ lang: 'fr' }, { lang: 'en' }]) {
         await homePage.requestFriendship(proposedPlayer.username)
         // @ts-ignore toHaveBeenCalledWith is not defined
         expect(mutation).toHaveBeenCalledWith(
+          'requestFriendship',
           expect.objectContaining({
             operationName: 'requestFriendship',
             variables: { id: proposedPlayer.id }
@@ -685,6 +713,7 @@ for (const { lang } of [{ lang: 'fr' }, { lang: 'en' }]) {
         await expect(homePage.endFriendshipDialogue).not.toBeVisible()
         // @ts-ignore toHaveBeenCalledWith is not defined
         expect(mutation).toHaveBeenCalledWith(
+          'endFriendship',
           expect.objectContaining({
             operationName: 'endFriendship',
             variables: { id: player.id }

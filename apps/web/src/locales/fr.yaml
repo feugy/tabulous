@@ -21,6 +21,7 @@ actions:
   log-in: Entrer
   log-out: Quitter
   new-game: Nouveau
+  ok: Compris
   quit-game: Quitter le jeu
   save: Sauver
   scroll-to-top: Défiler jusqu'en haut
@@ -49,45 +50,46 @@ labels:
   confirm-game-deletion: Souhaitez vous vraiment supprimer cette partie de "{title}" ?
   confirm-lobby-deletion: Souhaitez vous vraiment supprimer ce salon ?
   copyright: Tabulous.fr. Tous droits réservés.
-  end-friendship: Voulez vous vraiment retirer {username} de vos ami·e·s ? Vous ne pourrez plus jouer ensemble.
   empty-friend-list: Ajoutez vos amis pour pouvoir jouer avec eux.
   en: English
+  end-friendship: Voulez vous vraiment retirer {username} de vos ami·e·s ? Vous ne pourrez plus jouer ensemble.
   fr: Français
   friendship-accepted: "{username} a rejoint votre liste d'ami·e·s"
   friendship-declined: "{username} a quitté votre liste d'ami·e·s"
   friendship-proposed: 'Demande envoyée à {username}'
   friendship-requested: '{username} souhaite rejoindre vos ami·e·s'
   game-authors: 'Créé par : '
-  game-deleted: Partie supprimée !
   game-deleted-by-owner: Le·a propriétaire a supprimé cette partie
+  game-deleted: Partie supprimée !
   game-designers: 'Illustré par : '
   game-min-age: '{minAge}+'
   game-min-time: "{minTime}'"
   game-publishers: 'Distribué par : '
+  guest: invité·e
   help-add-to-selection: Sélectionne plusieurs objets.
   help-clear-selection: Désélectionne les objets.
+  help-decrement: Séparer un objet du groupe.
   help-detail: Voir l'objet en plein écran.
   help-draw: Piocher l'objet (ou la sélection) dans votre main, ou jouer depuis votre main.
-  help-decrement: Séparer un objet du groupe.
   help-flip: Retourne l'objet (ou la sélection).
   help-increment: Regrouper la sélection d'objets.
-  help-open-menu: Ouvre le menu des actions de l'objet (ou de la sélection).
   help-move: Déplace l'objet (ou la sélection), s'il n'est pas figé.
   help-new-camera: Enregistrer la position de la caméra.
+  help-open-menu: Ouvre le menu des actions de l'objet (ou de la sélection).
   help-pan-camera: Déplace la caméra.
-  help-push: Empiler la sélection d'objets.
   help-pop: Dépiler un objet de la pile.
+  help-push: Empiler la sélection d'objets.
   help-random: Jeter le(s) dé(s).
   help-restore-camera: Restaurer la position de la caméra.
-  help-rotate: Pivote l'objet (ou la sélection).
   help-rotate-camera: Pivote et contrôle l'inclinaison de la caméra.
+  help-rotate: Pivote l'objet (ou la sélection).
   help-save-camera: Mettre à jour la position de la caméra.
   help-zoom: Zoome ou dézoome.
   home: Accueil
   host: hôte
   last-updated: 'Dernière mise à jour : { published, date, date-only }'
-  lobby-description: Invitez vos ami·e·s puis décidez à quel jeu jouer.
   lobby-deleted: 'Salon supprimé !'
+  lobby-description: Invitez vos ami·e·s puis décidez à quel jeu jouer.
   lobby-instructions: Pour transformer ce salon en jeu, choisissez un de vos jeux disponibles.
   log-in: Connexion
   manual-provider: Vous avez un compte manuel dont l'identifiant de connextion est "{id}"
@@ -105,6 +107,7 @@ labels:
   terms-accepted: J'ai lu et accepté les Conditions Générales d'Utilisation
   terms-intro: Ici, nous ne sommes pas des sauvages ! Pour profiter de Tabulous, merci de lire et d'approuver les conditions d'utilisation.
   terms-of-service: Mentions Légales & Conditions Générales d'Utilisation
+  too-many-players: 'Le jeu "{title}" {maxSeats, plural, one {est un jeu solo : choisissez un autre jeu.} other {n''a que # places. Vous devriez (poliement) supprimer des joueurs du salon, ou choisir un autre jeu.}}'
   username: 'Pseudo : '
 page-titles:
   accept-terms: Tabulous • Conditions Générales d'Utilisation
@@ -116,6 +119,7 @@ page-titles:
   terms-of-service: Tabulous • Mentions Légales & Conditions Générales d'Utilisation
 placeholders:
   avatar: Url
+  invitee-username: Pseudo à inviter
   password: Mot de passe
   playerId: Identifiant
   username: Pseudo
@@ -141,6 +145,7 @@ titles:
   object-shortcuts: Raccourcis clavier (objets)
   player-list: Joueur·euse·s
   terms-of-service: Conditions générales d’utilisation
+  too-many-players: Créer une partie
   username: Votre peusdo
   welcome: Bienvenue !
   your-games: Parties en cours

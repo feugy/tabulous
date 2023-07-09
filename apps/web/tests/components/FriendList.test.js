@@ -4,6 +4,7 @@ import {
   acceptFriendship,
   endFriendship,
   invite,
+  kick,
   requestFriendship,
   searchPlayers
 } from '@src/stores'
@@ -287,18 +288,20 @@ describe('FriendList component', () => {
 
   describe.each([
     {
-      title: 'a game',
+      title: 'a lobby',
       subTitle: 'player',
       inviteButtonLabel: `gamepad ${translate('actions.invite-attendee')}`,
-      game: { id: faker.string.uuid() }
+      canKickPlayer: true,
+      game: { id: faker.string.uuid(), availableSeats: 3 }
     },
     {
-      title: 'a lobby',
+      title: 'a game',
       subTitle: 'attendee',
       inviteButtonLabel: `gamepad ${translate('actions.invite-player')}`,
-      game: { id: faker.string.uuid(), kind: 'klondike' }
+      canKickPlayer: false,
+      game: { id: faker.string.uuid(), kind: 'klondike', availableSeats: 3 }
     }
-  ])('given $title', ({ game, subTitle, inviteButtonLabel }) => {
+  ])('given $title', ({ game, subTitle, inviteButtonLabel, canKickPlayer }) => {
     it(`displays ${subTitle}s in player list rather than friend list`, () => {
       const { player: player1 } = friends[0]
       const { player: player2 } = friends[friends.length - 1]
@@ -396,6 +399,17 @@ describe('FriendList component', () => {
     })
 
     it('can not invite friendship request', async () => {
+      const { player } = friends[0]
+      renderComponent({ friends, game: { ...game, availableSeats: 0 } })
+      await fireEvent.click(screen.getByText(player.username))
+      expect(
+        screen.queryByRole('button', {
+          name: inviteButtonLabel
+        })
+      ).not.toBeInTheDocument()
+    })
+
+    it('can not invite without available seats', async () => {
       const { player } = friends[1]
       renderComponent({ friends, game })
       const inviteButton = screen.getByRole('button', {
@@ -452,6 +466,70 @@ describe('FriendList component', () => {
       const playerItem = screen.getByText(player.username)
       await fireEvent.click(playerItem)
       expect(playerItem).not.toHaveAttribute('aria-selected')
+    })
+
+    it(`can not kick the owner`, async () => {
+      const { player } = friends[0]
+      renderComponent({
+        friends,
+        game,
+        playerById: new Map([[player.id, { ...player, isOwner: true }]])
+      })
+
+      const playerItem = screen.getByText(player.username).parentElement
+      await userEvent.hover(playerItem)
+      await userEvent.hover(playerItem)
+      expect(
+        within(playerItem).queryByRole('button', {
+          name: 'highlight_remove'
+        })
+      ).not.toBeInTheDocument()
+    })
+
+    it(`kick a guest`, async () => {
+      const { player } = friends[0]
+      renderComponent({
+        friends,
+        game,
+        playerById: new Map([[player.id, { ...player, isGuest: true }]])
+      })
+
+      const playerItem = screen.getByText(player.username).parentElement
+      await userEvent.hover(playerItem)
+      const kickButton = within(playerItem).getByRole('button', {
+        name: 'highlight_remove'
+      })
+
+      await kickButton.click()
+      expect(kick).toHaveBeenCalledWith(game.id, player.id)
+      expect(kick).toHaveBeenCalledOnce()
+    })
+
+    it(`can ${canKickPlayer ? '' : 'not '}kick a player`, async () => {
+      const { player } = friends[1]
+      renderComponent({
+        friends,
+        game,
+        playerById: new Map([[player.id, player]])
+      })
+
+      const playerItem = screen.getByText(player.username).parentElement
+      await userEvent.hover(playerItem)
+      if (canKickPlayer) {
+        const kickButton = within(playerItem).getByRole('button', {
+          name: 'highlight_remove'
+        })
+
+        await kickButton.click()
+        expect(kick).toHaveBeenCalledWith(game.id, player.id)
+        expect(kick).toHaveBeenCalledOnce()
+      } else {
+        expect(
+          within(playerItem).queryByRole('button', {
+            name: 'highlight_remove'
+          })
+        ).not.toBeInTheDocument()
+      }
     })
   })
 })

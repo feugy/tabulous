@@ -1,5 +1,11 @@
 <script>
-  import { Aside, ConfirmDialogue, Header, PageFooter } from '@src/components'
+  import {
+    Aside,
+    ConfirmDialogue,
+    Header,
+    InfoDialogue,
+    PageFooter
+  } from '@src/components'
   import {
     comparator$,
     connected,
@@ -37,6 +43,7 @@
   let user = null
   let games = readable(data.currentGames || [])
   let friends = readable([])
+  let tooManyPlayersCatalogItem = null
   $: isDeletedLobby = isLobby(gameToDelete)
 
   if (data.session?.player) {
@@ -87,10 +94,15 @@
     gameToDelete = null
   }
 
-  async function handleCreateGame({ detail: name }) {
+  async function handleCreateGame({ detail: { name, title, maxSeats = 2 } }) {
     if ($currentGame) {
-      const gameId = $currentGame.id
-      await promoteGame(gameId, name)
+      if (
+        maxSeats < $currentGame.players.filter(({ isGuest }) => !isGuest).length
+      ) {
+        tooManyPlayersCatalogItem = { title, maxSeats }
+      } else {
+        await promoteGame($currentGame.id, name)
+      }
     } else {
       let creationUrl = `/${$locale}/home?game-name=${encodeURIComponent(name)}`
       if (user) {
@@ -200,6 +212,14 @@
       gameToDelete.locales?.[$locale]
     )}
     on:close={handleDeletionClose}
+  />
+{/if}
+{#if tooManyPlayersCatalogItem}
+  <InfoDialogue
+    open
+    title={$_('titles.too-many-players')}
+    message={$_('labels.too-many-players', tooManyPlayersCatalogItem)}
+    on:close={() => (tooManyPlayersCatalogItem = null)}
   />
 {/if}
 

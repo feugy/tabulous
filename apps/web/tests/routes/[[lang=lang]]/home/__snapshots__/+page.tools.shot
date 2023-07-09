@@ -1270,7 +1270,7 @@ exports[`Authenticated 1`] = `
                     <legend
                       class="s-Fe6WNbR-55zp"
                     >
-                      Pseudo
+                      Pseudo à inviter
                     </legend>
                      
                     <input
@@ -1312,7 +1312,6 @@ exports[`Authenticated 1`] = `
               >
                 <li
                   aria-checked="false"
-                  aria-selected="false"
                   class="s-XLQf75fI0H0o isRequest"
                   role="option"
                   tabindex="-1"
