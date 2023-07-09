@@ -266,6 +266,7 @@ async function findDescriptor(kind, player) {
  * @throws {Error} when this game is restricted and was not granted to player.
  * @throws {Error} when player already owns too many games (not counting this one).
  * @throws {Error} when the promotted game is not a lobby.
+ * @throws {Error} when the lobby has more players than available seats.
  */
 export async function promoteGame(gameId, kind, player) {
   const lobbyOrGame = await repositories.games.getById(gameId)
@@ -283,7 +284,7 @@ export async function promoteGame(gameId, kind, player) {
   const { name, build, addPlayer, askForParameters, maxSeats, ...gameProps } =
     descriptor
   const availableSeats = maxSeats ?? 2
-  // TODO allow users selecting who should enter game
+  checkAvailableSeats(lobbyOrGame, availableSeats)
   const guestIds = lobbyOrGame.playerIds
     .concat(lobbyOrGame.guestIds)
     .slice(0, availableSeats)
@@ -306,6 +307,16 @@ export async function promoteGame(gameId, kind, player) {
 
 function isPlayer(game, playerId) {
   return game?.playerIds.includes(playerId)
+}
+
+function checkAvailableSeats(lobby, availableSeats) {
+  const playerCount = lobby.playerIds.length
+  console.log({ playerCount, availableSeats })
+  if (playerCount > availableSeats) {
+    throw new Error(
+      `This game only has ${availableSeats} seats and you are ${playerCount}`
+    )
+  }
 }
 
 /**
@@ -380,7 +391,6 @@ export async function joinGame(gameId, player, parameters) {
         return { ...gameParameters, error }
       }
     }
-    game.availableSeats--
     game = await enrichWithPlayer({
       descriptor,
       game,
@@ -416,6 +426,7 @@ function validateParameters(schema, parameters) {
 async function enrichWithPlayer({ descriptor, game, guest, parameters }) {
   game.playerIds.push(guest.id)
   game.guestIds.splice(game.guestIds.indexOf(guest.id), 1)
+  game.availableSeats--
   if (descriptor) {
     game.preferences.push({
       playerId: guest.id,

@@ -570,7 +570,7 @@ describe('given a subscription to game lists and an initialized repository', () 
           )
         })
 
-        it('trims out players when they outnumber available seats', async () => {
+        it('trims out guests when they outnumber available seats', async () => {
           await invite(lobby.id, [peer.id, peer2.id], player.id)
           await joinGame(lobby.id, peer2)
           await setTimeout(50)
@@ -599,6 +599,19 @@ describe('given a subscription to game lists and an initialized repository', () 
               }
             ])
           )
+        })
+
+        it('fails to promote when players outnumber available seats', async () => {
+          await invite(lobby.id, [peer.id, peer2.id], player.id)
+          await joinGame(lobby.id, peer2)
+          await joinGame(lobby.id, peer)
+          await setTimeout(50)
+          updates.splice(0)
+          await expect(promoteGame(lobby.id, game.kind, peer2)).rejects.toThrow(
+            'This game only has 2 seats and you are 3'
+          )
+          await setTimeout(50)
+          expect(updates).toHaveLength(0)
         })
 
         it('does not throw when promoting the last allowed lobby', async () => {
