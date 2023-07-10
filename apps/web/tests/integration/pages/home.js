@@ -58,6 +58,10 @@ export const HomePage = mixin(
       this.deleteGameDialogue = page.getByRole('dialog').filter({
         hasText: translate('titles.confirm-game-deletion', undefined, this.lang)
       })
+      /** @type {Locator} */
+      this.tooManyPlayerDialogue = page.getByRole('dialog').filter({
+        hasText: translate('titles.too-many-players', undefined, this.lang)
+      })
     }
 
     /**

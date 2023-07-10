@@ -3,6 +3,7 @@
     acceptFriendship,
     endFriendship,
     invite,
+    kick,
     requestFriendship,
     searchPlayers
   } from '@src/stores'
@@ -51,6 +52,8 @@
     }
   }
 
+  $: canInvite = game && game.availableSeats > 0
+
   onMount(() =>
     search
       .pipe(
@@ -78,7 +81,11 @@
   }
 
   function isInteractive({ isRequest }) {
-    return Boolean(game) && !isRequest
+    return canInvite && !isRequest
+  }
+
+  function canBeKicked(player) {
+    return game && !player.isOwner && (player.isGuest || isLobby(game))
   }
 
   function handleMakeFriendRequest() {
@@ -124,9 +131,19 @@
       {#each players as { player, isNotFriend } (player.id)}
         <li class="isPlayer" class:isNotFriend>
           <PlayerThumbnail {player} dimension={40} />
-          <span role="term">{player.username}</span>
-          {#if isNotFriend}
-            <span class="buttons">
+          <span role="term"
+            >{player.username}{#if player.isGuest}<span class="guest"
+                >{$_('labels.guest')}</span
+              >{/if}</span
+          >
+          <span class="buttons">
+            {#if canBeKicked(player)}
+              <Button
+                icon="highlight_remove"
+                on:click={() => kick(game.id, player.id)}
+              />
+            {/if}
+            {#if isNotFriend}
               <Button
                 icon="person_add_alt_1"
                 on:click={() => {
@@ -134,8 +151,8 @@
                   handleMakeFriendRequest()
                 }}
               />
-            </span>
-          {/if}
+            {/if}
+          </span>
         </li>
       {/each}
     </ol>
@@ -145,7 +162,7 @@
   <h3>{$_('titles.friend-list')}</h3>
   <div>
     <Typeahead
-      placeholder={$_('placeholders.username')}
+      placeholder={$_('placeholders.invitee-username')}
       options={candidates}
       bind:value={futureFriend}
       bind:ref={inputRef}
@@ -197,7 +214,7 @@
       </li>
     {/each}
   </ol>
-  {#if game}
+  {#if canInvite}
     <span class="invite">
       <Button
         text={$_(
@@ -257,6 +274,10 @@
       }
     }
 
+    &:hover .guest {
+      @apply text-$primary-lighter;
+    }
+
     &[role='option'] {
       @apply cursor-pointer;
     }
@@ -280,5 +301,9 @@
 
   .invite {
     @apply pt-4 text-center;
+  }
+
+  .guest {
+    @apply transition-colors duration-$medium ml-2 before:content-['('] after:content-[')'] text-$primary-darker;
   }
 </style>

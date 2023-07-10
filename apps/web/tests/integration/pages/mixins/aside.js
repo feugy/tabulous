@@ -78,6 +78,7 @@ export class AsideMixin {
    * Invites a friend to the current game or lobby.
    * It assumes the friends tab to be available
    * @param {string} guestUsername - name of the invited friend.
+   * @returns {Promise<void>}
    */
   async invite(guestUsername) {
     await expect(
@@ -97,6 +98,8 @@ export class AsideMixin {
   /**
    * Request friendship with another players by searching them in the friends pane.
    * It assumes the pane to be visible.
+   * @param {string} playerName - playerName of the requested friend.
+   * @returns {Promise<void>}
    */
   async requestFriendship(playerName) {
     await expect(
@@ -111,7 +114,9 @@ export class AsideMixin {
 
   /**
    * Find a game by its username, click on its deletion button, displaying the confirmation dialogue.
+   * It assumes the pane to be visible.
    * @param {string} username - username of the removed friend.
+   * @returns {Promise<void>}
    */
   async removeFriend(username) {
     const friend = this.friendItems.filter({ hasText: username })
@@ -123,5 +128,23 @@ export class AsideMixin {
     await friend.hover()
     await friend.getByRole('button').click()
     await expect(this.endFriendshipDialogue).toBeVisible()
+  }
+
+  /**
+   * Tries to kick a player from the current lobby/game.
+   * It assumes the pane to be visible.
+   * @param {string} username - username of the kicked player.
+   * @returns {Promise<void>}
+   */
+  async kick(username) {
+    const player = this.playerItems.filter({ hasText: username })
+
+    await expect(
+      player,
+      `no player with username "${username}" found`
+    ).toBeDefined()
+    await player.hover()
+    await player.getByRole('button', { name: 'highlight_remove' }).click()
+    await expect(player).not.toBeVisible()
   }
 }

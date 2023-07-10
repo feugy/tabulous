@@ -171,6 +171,20 @@ export async function invite(gameId, ...playerIds) {
 }
 
 /**
+ * Licks a game's guest (or a lobby's player).
+ * Does not alter the current game: instead game updates should come from server or host.
+ * @param {string} gameId - the game id.
+ * @param {string} kickedId - the kicked guest/player id.
+ */
+export async function kick(gameId, kickedId) {
+  logger.info(
+    { gameId, kickedId },
+    `kick guest/player ${kickedId} from lobby/game ${gameId}`
+  )
+  await runMutation(graphQL.kick, { gameId, kickedId })
+}
+
+/**
  * Promotes a lobby into a full game,
  * @param {string} gameId - the promoted game id.
  * @param {string} kind - promoted game kind.
@@ -529,7 +543,7 @@ function handleServerUpdate({
         { gameId: game.id, currentPlayerId, wasLobby, game },
         'loading game update from server'
       )
-      await load(gameEngine.engine, game, currentPlayerId, false)
+      await load(get(gameEngine.engine), game, currentPlayerId, false)
       if (wasLobby && !isLobby(game)) {
         onPromotion?.(game)
       }

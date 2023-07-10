@@ -701,6 +701,84 @@ describe('given a started server', () => {
       })
     })
 
+    describe('kick mutation', () => {
+      it('fails on unauthenticated requests', async () => {
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          payload: {
+            query: `mutation { kick(gameId: "1234", playerId: "abcd") { id } }`
+          }
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.listGames).not.toHaveBeenCalled()
+        expect(await response.json()).toMatchObject({
+          data: { kick: null },
+          errors: [{ message: 'Unauthorized' }]
+        })
+      })
+
+      it('kicks a player from an existing game and resolves player objects', async () => {
+        const playerId = players[0].id
+        const kickedId = players[1].id
+        const game = {
+          id: faker.string.uuid(),
+          kind: 'belote',
+          created: faker.date.past().getTime(),
+          playerIds: [playerId],
+          guestIds: []
+        }
+        services.getPlayerById
+          .mockResolvedValueOnce(players[0])
+          .mockResolvedValueOnce(players.slice(0, 1))
+        services.kick.mockResolvedValueOnce(game)
+
+        const response = await server.inject({
+          method: 'POST',
+          url: 'graphql',
+          headers: {
+            authorization: `Bearer ${signToken(
+              playerId,
+              configuration.auth.jwt.key
+            )}`
+          },
+          payload: {
+            query: `mutation {
+  kick(gameId: "${game.id}", playerId: "${kickedId}") {
+    id
+    kind
+    created
+    players {
+      id
+      username
+    }
+  }
+}`
+          }
+        })
+
+        expect(response.json()).toEqual({
+          data: {
+            kick: {
+              ...game,
+              playerIds: undefined,
+              guestIds: undefined,
+              players: players.slice(0, 1)
+            }
+          }
+        })
+        expect(response.statusCode).toEqual(200)
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(1, playerId)
+        expect(services.getPlayerById).toHaveBeenNthCalledWith(
+          2,
+          game.playerIds
+        )
+        expect(services.getPlayerById).toHaveBeenCalledTimes(2)
+        expect(services.kick).toHaveBeenCalledWith(game.id, kickedId, playerId)
+        expect(services.kick).toHaveBeenCalledOnce()
+      })
+    })
+
     describe('deleteGame mutation', () => {
       it('fails on unauthenticated requests', async () => {
         const response = await server.inject({

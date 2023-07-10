@@ -9,8 +9,10 @@
     color: undefined
   }))
   const playerById = new Map(
-    playerWithColors.slice(0, 2).map(player => [player.id, player])
+    playerWithColors.slice(0, 3).map(player => [player.id, player])
   )
+  playerById.get(playerWithColors[0].id).isOwner = true
+  playerById.get(playerWithColors[1].id).isGuest = true
   const friendsWithRequests = [
     { player: players[0] },
     {
@@ -26,7 +28,8 @@
       isProposal: true
     },
     { player: players[1] },
-    { player: players[2] }
+    { player: players[2] },
+    { player: players[3] }
   ]
 </script>
 
@@ -46,9 +49,17 @@
     props={{ friends: friendsWithRequests }}
   />
   <Tool
-    name="With game"
+    name="With lobby"
     props={{
-      game: {},
+      game: { availableSeats: 5 },
+      playerById,
+      friends: friendsWithRequests
+    }}
+  />
+  <Tool
+    name="With game with no seats"
+    props={{
+      game: { kind: 'klondike' },
       playerById,
       friends: friendsWithRequests
     }}

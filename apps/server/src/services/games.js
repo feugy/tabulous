@@ -229,8 +229,8 @@ export async function createGame(kind, player) {
   return game
 }
 
-function notifyAllPeers(game) {
-  gameListsUpdate$.next([...game.playerIds, ...game.guestIds])
+function notifyAllPeers(game, ...extras) {
+  gameListsUpdate$.next([...game.playerIds, ...game.guestIds, ...extras])
 }
 
 async function checkGameLimit(player, excludedGameIds = []) {
@@ -266,6 +266,7 @@ async function findDescriptor(kind, player) {
  * @throws {Error} when this game is restricted and was not granted to player.
  * @throws {Error} when player already owns too many games (not counting this one).
  * @throws {Error} when the promotted game is not a lobby.
+ * @throws {Error} when the lobby has more players than available seats.
  */
 export async function promoteGame(gameId, kind, player) {
   const lobbyOrGame = await repositories.games.getById(gameId)
@@ -283,7 +284,7 @@ export async function promoteGame(gameId, kind, player) {
   const { name, build, addPlayer, askForParameters, maxSeats, ...gameProps } =
     descriptor
   const availableSeats = maxSeats ?? 2
-  // TODO allow users selecting who should enter game
+  checkAvailableSeats(lobbyOrGame, availableSeats)
   const guestIds = lobbyOrGame.playerIds
     .concat(lobbyOrGame.guestIds)
     .slice(0, availableSeats)
@@ -306,6 +307,16 @@ export async function promoteGame(gameId, kind, player) {
 
 function isPlayer(game, playerId) {
   return game?.playerIds.includes(playerId)
+}
+
+function checkAvailableSeats(lobby, availableSeats) {
+  const playerCount = lobby.playerIds.length
+  console.log({ playerCount, availableSeats })
+  if (playerCount > availableSeats) {
+    throw new Error(
+      `This game only has ${availableSeats} seats and you are ${playerCount}`
+    )
+  }
 }
 
 /**
@@ -380,7 +391,6 @@ export async function joinGame(gameId, player, parameters) {
         return { ...gameParameters, error }
       }
     }
-    game.availableSeats--
     game = await enrichWithPlayer({
       descriptor,
       game,
@@ -416,6 +426,7 @@ function validateParameters(schema, parameters) {
 async function enrichWithPlayer({ descriptor, game, guest, parameters }) {
   game.playerIds.push(guest.id)
   game.guestIds.splice(game.guestIds.indexOf(guest.id), 1)
+  game.availableSeats--
   if (descriptor) {
     game.preferences.push({
       playerId: guest.id,
@@ -501,6 +512,34 @@ function isGuestAFriend(guestId, friendships) {
       id === guestId &&
       (state === FriendshipProposed || state === FriendshipAccepted)
   )
+}
+
+export async function kick(gameId, kickedId, hostId) {
+  const lobbyOrGame = await repositories.games.getById(gameId)
+  if (
+    !isPlayer(lobbyOrGame, hostId) || // kicker is not a player
+    !(
+      isGuest(lobbyOrGame, kickedId) || // kicked is not a guest
+      // kicked is neither a lobby player
+      (isPlayer(lobbyOrGame, kickedId) && !lobbyOrGame.kind)
+    ) ||
+    kickedId === lobbyOrGame?.ownerId // kicked is the owner
+  ) {
+    return null
+  }
+  const guestIndex = lobbyOrGame.guestIds.indexOf(kickedId)
+  const playerIndex = lobbyOrGame.playerIds.indexOf(kickedId)
+  if (guestIndex !== -1) {
+    lobbyOrGame.guestIds.splice(guestIndex, 1)
+  } else if (playerIndex !== -1) {
+    lobbyOrGame.playerIds.splice(playerIndex, 1)
+    lobbyOrGame.availableSeats++
+  }
+  if (guestIndex !== -1 || playerIndex !== -1) {
+    await repositories.games.save(lobbyOrGame)
+    notifyAllPeers(lobbyOrGame, kickedId)
+  }
+  return lobbyOrGame
 }
 
 /**

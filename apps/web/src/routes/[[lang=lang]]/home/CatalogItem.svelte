@@ -24,7 +24,7 @@
   }
 
   function handleClick() {
-    dispatch('select', game.name)
+    dispatch('select', { ...game, title })
   }
 </script>
 

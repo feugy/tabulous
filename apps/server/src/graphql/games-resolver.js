@@ -152,6 +152,20 @@ export default {
     invite: isAuthenticated(
       (obj, { gameId, playerIds: guestIds }, { player }) =>
         services.invite(gameId, guestIds, player.id)
+    ),
+
+    /**
+     * Kick a player from a current player's game.
+     * Requires valid authentication.
+     * @param {object} obj - graphQL object.
+     * @param {object} args - mutation arguments, including:
+     * @param {string} args.gameId - game's id.
+     * @param {string[]} args.playerId - kicked player id
+     * @param {object} context - graphQL context.
+     * @returns {Promise<Game|null>} saved game details, or null.
+     */
+    kick: isAuthenticated((obj, { gameId, playerId: kickedId }, { player }) =>
+      services.kick(gameId, kickedId, player.id)
     )
   },
 

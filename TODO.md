@@ -4,6 +4,8 @@
 
 - server logging (warning on invalid descriptors) + log file rotation
 - automerge.js
+- improve searchability with orama search
+- configure personal searchability
 
 ## Refactor
 
@@ -20,6 +22,8 @@
 
 - bug: game shortcuts ignore active selection to only apply to hover mesh
 - bug: 6-takes: snapping to the wrong anchor (when 2 players are snapping to different anchors)
+- score card (Mah-jong, Belote)
+- command to reset some mesh state and restart a game (Mah-jong, Belote)
 - check headings ordering
 - anchorable: flip/unflip on snap
 - detailable/stackable behavior: preview a stack of meshes
@@ -28,15 +32,12 @@
 - hand support for quantifiable behavior
 - put/draw under
 - "box" space for unusued/undesired meshes
-- command to reset some mesh state and restart a game (Mah-jong, Belote)
 - command to "switch place" around the table, for games like Belote
 - always go fullscreen when entering game?
 
 ## Server
 
 - bug: lobby to parametrized game: handle concurrent parameters (playground)
-- bug: lobby to limited-seat game: rejected lobby owner creates an owner-less game
-- handle rejected players when promoting lobby to a limited-seats game
 - allows a single connection per player (discards other JWTs)
 - better coTURN integration (password management and rotation)
 
@@ -52,18 +53,6 @@
 ## Known "wont-fix" issues
 
 - moving items bellow other does not apply gravity to them
-
-## Ideas
-
-### Game setup
-
-- min/max number of players allowed
-- players' positions
-
-### Game UI:
-
-- visual hint when receiving messages on collapsed section
-- show contextual help (for example, on hover) to indicates which commands are available
 
 ## Interaction model
 
@@ -129,34 +118,13 @@ The host player is in charge of:
 
 When the host player disconnects, a new host is elected: the first connected player in the game player list becomes host
 
-## Player migration
-
-When introducing user own password, several data changes where needed:
-
-- add password hash to existing accounts: `"password": "ba5ad8fd3d20cefebf58272fe833c925061097d79237e7363fef45802fddd6c9c57434e8a125378257a569a90dd45456620262a2ea21be49ed7e716d5503beee"`
-- change their ids sed -i 's/"1789"/"dams-1789"/g' ./apps/server/data/\*.json
-
 ## Various learnings
 
 Physics engine aren't great: they are all pretty deprecated. [Cannon-es can not be used yet](https://github.com/BabylonJS/Babylon.js/issues/9810).
 When stacked, card are always bouncing.
+Might worth trying out Babylon@6's built-in physics
 
 Polygon extrusion does not support path (for curves like rounded corners), and the resulting mesh is not vertically (Y axis) centered.
-
-`@storybook/addon-svelte-csf` doesn't work yet with storybook's webpack5 builder. What a pity...
-
-Setting package's type to "module" is not possible, because `snowpack.config.js` would become an ESM module. Since it's using `require()` to load `svelte.config.js` it can not be a module.
-Besides, Jest built-in support for modules [is still in progress](https://github.com/facebook/jest/issues/9430).
-
-@web/test-runner, which is snowpack's recommendation, is not at the level of Jest. Running actual browsers to run test is an interesting idea (although it complexifies CI setup).
-Chai is a good replacement for Jest's expect, and using mocha instead of Jasmine is a no-brainer.
-However, two blockers appeared: Sinon can not mock entire dependencies (maybe an equivvalent rewire would), making mocking extremely hard, and @web/test-runner runs mocha in the browser, preventing to have an global setup script (mocha's --require option)
-
-Finally, using vite solves all the above, and enables Jest again.
-Testing server code on Node requires `NODE_OPTIONS=--experimental-vm-modules` while running jest. What a bummer.
-
-Another pitfall with ESM and jest: `jest.mock()` does not work at all.
-[Here is a ticket to follow](https://github.com/facebook/jest/issues/10025). Using Testdouble [may be an alternative](https://github.com/facebook/jest/issues/11786).
 
 To make WebRTC work in real world scenario, it is paramount to share **every signal received**.
 One must not stop listening to signal event after connection is established, and one muse not handle only `offer` and `answer` types.
@@ -181,35 +149,11 @@ However, it's not broadly supported on WebGL 1 platform, so I kept the png files
 
 Some GPU also require [dimensions to be multiple of 4](https://forum.babylonjs.com/t/non-displayable-image-after-converting-png-with-alpha-to-ktx2-webgl-warning-compressedteximage-unexpected-error-from-driver/16471)
 
-Sizes:
-
-- Splendor
-  - cards: 372x260
-  - tiles: 352x176
-  - tokens: 380x184
-- French suited cards: 360x260
-- Klondike:
-  - board: 1964x980
-- Prima Ballerina cards: 1020x328
-
-```shell
-folder=apps/web/public/images/prima-ballerina; \
-size=1020x328; \
-for file in $folder/!(*.gl1.png|!(*.png)); do \
-  outFile=${file/.png/.out.png}; \
-  convert -flop -strip -resize $size\! $file $outFile; \
-  gl1File=${file/.png/.gl1.png}; \
-  toktx --uastc 2 ${file/.png/.ktx2} $outFile; \
-  convert -flop -rotate 180 $outFile $gl1File; \
-  rm $outFile; \
-done
-```
-
 1. flip image horizontally (front face on the left, back face on the right, mirrored), strip png ICC profile (ktx2 does not support them) and resize
 2. convert to ktx2
 3. make a png equivalent for WebGL1 engines, rotated so it match meshes's UV
 
-Some useful commands:
+Some useful imagemagick commands:
 
 - [remove background color](https://stackoverflow.com/a/69875689/1182976):
   ```

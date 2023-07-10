@@ -34,7 +34,7 @@ describe('/home CatalogItem component', () => {
 
       await fireEvent.click(screen.getByRole('button'))
       expect(handleSelect).toHaveBeenCalledWith(
-        expect.objectContaining({ detail: game.name })
+        expect.objectContaining({ detail: { ...game, title } })
       )
       expect(handleSelect).toHaveBeenCalledTimes(1)
     }
@@ -47,12 +47,12 @@ describe('/home CatalogItem component', () => {
 
     await userEvent.keyboard('[Tab][Enter]')
     expect(handleSelect).toHaveBeenCalledWith(
-      expect.objectContaining({ detail: game.name })
+      expect.objectContaining({ detail: { ...game, title } })
     )
 
     await userEvent.keyboard(' ')
     expect(handleSelect).toHaveBeenCalledWith(
-      expect.objectContaining({ detail: game.name })
+      expect.objectContaining({ detail: { ...game, title } })
     )
     expect(handleSelect).toHaveBeenCalledTimes(2)
   })

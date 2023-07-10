@@ -48,10 +48,11 @@ function logError(reqId, ...args) {
 /**
  * @typedef {object} GraphQlMockResult
  * @property {Record<string, string>} subscriptionIds - GaphQL subscription ids by their operation name.
- * @property {function} onSubscription - registers a unique callback called when receiving GraphQL subscription.
- * @property {function} onQuery - registers a unique callback called when receiving GraphQL queries (and mutations).
- * @property {function} sendToSubscription - sends a GraphQL response payload to the subscription.
- * @property {function} setTokenCookie - sets token cookie so SvelteKit server can issue requests to the mocked server.
+ * @property {(operation: string, message: object) => void} onSubscription - registers a unique callback called when receiving GraphQL subscription.
+ * @property {(operation: string, request: object) => undefined|object[]|object} onQuery - registers a unique callback called when receiving GraphQL queries (and mutations).
+ *                                                                                         Can be used to override predefined responses
+ * @property {(payload: object) => void} sendToSubscription - sends a GraphQL response payload to the subscription.
+ * @property {() => void} setTokenCookie - sets token cookie so SvelteKit server can issue requests to the mocked server.
  */
 
 /**
@@ -144,10 +145,11 @@ export async function mockGraphQl(page, mocks) {
       )
 
       server.post(graphQlRoute, async request => {
-        serverContext.onQuery?.(request.body)
         // @ts-ignore request.body is not typed
         const { operationName: operation } = request.body
-        let responses = serverContext.responsesPerOperation.get(operation)
+        let responses =
+          serverContext.onQuery?.(operation, request.body) ||
+          serverContext.responsesPerOperation.get(operation)
         if (!responses) {
           responses = [null]
           logError(

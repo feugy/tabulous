@@ -222,9 +222,12 @@ mutation deleteGame($gameId: ID!) {
 mutation invite($gameId: ID!, $playerIds: [ID!]!) {
   invite(gameId: $gameId, playerIds: $playerIds) {
     id
-    players {
-      ...lightPlayer
-    }
+  }
+}
+
+mutation kick($gameId: ID!, $kickedId: ID!) {
+  kick(gameId: $gameId, playerId: $kickedId) {
+    id
   }
 }
 

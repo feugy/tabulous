@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte'
-  
+
   import Button from '../Button.svelte'
 
   export let icon = ''
@@ -49,7 +49,7 @@
 
 <style lang="postcss">
   div {
-    @apply absolute transform-gpu opacity-0 py-2 px-3 shadow-md flex items-center;
+    @apply absolute transform-gpu opacity-0 py-2 px-3 shadow-md flex items-center rounded;
     background-color: var(--bg-color);
     top: var(--top);
     animation: showAndHide var(--duration) cubic-bezier(0, 0, 0.2, 1.5);

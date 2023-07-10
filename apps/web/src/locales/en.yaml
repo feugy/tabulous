@@ -37,45 +37,46 @@ labels:
   confirm-game-deletion: Do you really want to delete this "{title}" game?
   confirm-lobby-deletion: Do you really want to delete this lobby?
   copyright: Copyright Tabulous.fr.
-  end-friendship: Do you really want to remove {username} from your friends? You could not play together any more.
   empty-friend-list: Add friends and play with them.
   en: English
+  end-friendship: Do you really want to remove {username} from your friends? You could not play together any more.
   fr: Français
   friendship-accepted: '{username} just joined your friend list'
   friendship-declined: '{username} left your friend list'
   friendship-proposed: 'Request sent to {username}'
   friendship-requested: '{username} wish to join your friend list'
   game-authors: 'Designer(s): '
-  game-deleted: Deleted game!
   game-deleted-by-owner: This owner deleted this game
+  game-deleted: Deleted game!
   game-designers: 'Artist(s): '
   game-min-age: '{minAge}+'
   game-min-time: "{minTime}'"
   game-publishers: 'Publisher(s): '
+  guest: guest
   help-add-to-selection: Select multiple objects.
   help-clear-selection: Unselect objects.
+  help-decrement: Split an object from the group.
   help-detail: See object details.
   help-draw: Draw the object (or the current selection) in your hand, or play from your hand.
-  help-decrement: Split an object from the group.
   help-flip: Flip the object (or the active selection).
   help-increment: Group the active selection together.
-  help-open-menu: Open action menu for this object (or the active selection).
   help-move: Move the object (or the active selection), if not locked.
   help-new-camera: Save the camera position.
+  help-open-menu: Open action menu for this object (or the active selection).
   help-pan-camera: Pans the camera.
-  help-push: Stacks objects of the active selection.
   help-pop: Pops an object from the stack.
+  help-push: Stacks objects of the active selection.
   help-random: Throw dice.
   help-restore-camera: Restore the camera position.
-  help-rotate: Rotates the object (or the active selection).
   help-rotate-camera: Rotates and inclines the camera.
+  help-rotate: Rotates the object (or the active selection).
   help-save-camera: Updates the camera position.
   help-zoom: Zoom in or out.
   home: Home
   host: host
   last-updated: 'Last update: { published, date, date-only }'
-  lobby-description: Invites your friends and decide which game to play.
   lobby-deleted: 'Deleted lobby!'
+  lobby-description: Invites your friends and decide which game to play.
   lobby-instructions: To promote this lobby to a game, pick any game from the catalog.
   log-in: Connection
   manual-provider: You have a manual account which identifier is "{id}"
@@ -93,6 +94,7 @@ labels:
   terms-accepted: I accept and agree to the Terms of Use
   terms-intro: Here is not the jungle! To enjoy Tabulous, please read and accept these Terms of Use.
   terms-of-service: Legal mentions & Terms of Use
+  too-many-players: 'Game "{title}" {maxSeats, plural, one {is a solo game: please pick another one.} other {only has # seats. You (kindly) should remove players from the lobby or pick another game.}}'
   username: 'Nickname: '
 page-titles:
   accept-terms: Tabulous • Terms of Use
@@ -104,6 +106,7 @@ page-titles:
   terms-of-service: Tabulous • Legal & Terms of Use
 placeholders:
   avatar: Url
+  invitee-username: Nickname to invite
   password: Password
   playerId: Id
   username: Nickname
@@ -129,6 +132,7 @@ titles:
   object-shortcuts: Keyboard shortcuts (objects)
   player-list: Players
   terms-of-service: Terms of Use
+  too-many-players: Create a game
   username: Your nickname
   welcome: Welcome!
   your-games: Current games
