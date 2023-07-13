@@ -1,3 +1,4 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import { MockAgent, setGlobalDispatcher } from 'undici'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -9,7 +10,7 @@ describe('Github authentication service', () => {
     it('sets internal state', async () => {
       const id = faker.string.uuid()
       const secret = faker.internet.password()
-      githubAuth.init({ id, secret })
+      githubAuth.init({ id, secret, redirect: 'unused' })
       expect(githubAuth.id).toEqual(id)
       expect(githubAuth.secret).toEqual(secret)
     })
@@ -18,12 +19,15 @@ describe('Github authentication service', () => {
   describe('given an initialized service', () => {
     const id = faker.string.uuid()
     const secret = faker.internet.password()
+    /** @type {MockAgent} */
     let mockAgent
+    /** @type {import('undici').Interceptable} */
     let githubMock
+    /** @type {import('undici').Interceptable} */
     let githubApiMock
 
     beforeEach(() => {
-      githubAuth.init({ id, secret })
+      githubAuth.init({ id, secret, redirect: 'unused' })
       mockAgent = new MockAgent()
       mockAgent.disableNetConnect()
       setGlobalDispatcher(mockAgent)
@@ -68,11 +72,13 @@ describe('Github authentication service', () => {
       const accessTokenInvoked = vi.fn()
       const userInvoked = vi.fn()
 
-      beforeEach(vi.resetAllMocks)
+      beforeEach(() => {
+        vi.resetAllMocks()
+      })
 
       it('returns user details', async () => {
         const location = faker.internet.url()
-        const code = faker.number.int({ min: 9999 })
+        const code = faker.number.int({ min: 9999 }).toString()
         const user = {
           login: faker.person.fullName(),
           avatar_url: faker.internet.avatar(),
@@ -84,10 +90,12 @@ describe('Github authentication service', () => {
         githubMock
           .intercept({ method: 'POST', path: '/login/oauth/access_token' })
           .reply(200, req => {
+            // @ts-expect-error: Argument of type 'Buffer | BodyInit | Readable | undefined' is not assignable to parameter of type 'string'
             accessTokenInvoked(JSON.parse(req.body))
             return { access_token: token }
           })
         githubApiMock.intercept({ path: '/user' }).reply(200, req => {
+          // @ts-expect-error: Property 'Authorization' does not exist on type 'Headers'
           userInvoked(req.headers.Authorization)
           return user
         })
@@ -115,12 +123,13 @@ describe('Github authentication service', () => {
 
       it('throws forbidden on token error', async () => {
         const location = faker.internet.url()
-        const code = faker.number.int({ min: 9999 })
+        const code = faker.number.int({ min: 9999 }).toString()
         githubMock
           .intercept({ method: 'POST', path: '/login/oauth/access_token' })
           .reply(403, req => {
+            // @ts-expect-error: Argument of type 'Buffer | BodyInit | Readable | undefined' is not assignable to parameter of type 'string'
             accessTokenInvoked(JSON.parse(req.body))
-            return 'access forbidden'
+            return { error: 'access forbidden' }
           })
         githubApiMock.intercept({ path: '/user' }).reply(200, req => {
           userInvoked(req)
@@ -142,17 +151,19 @@ describe('Github authentication service', () => {
 
       it('throws forbidden on user details error', async () => {
         const location = faker.internet.url()
-        const code = faker.number.int({ min: 9999 })
+        const code = faker.number.int({ min: 9999 }).toString()
         const token = faker.string.uuid()
         githubMock
           .intercept({ method: 'POST', path: '/login/oauth/access_token' })
           .reply(200, req => {
+            // @ts-expect-error: Argument of type 'Buffer | BodyInit | Readable | undefined' is not assignable to parameter of type 'string'
             accessTokenInvoked(JSON.parse(req.body))
             return { access_token: token }
           })
         githubApiMock.intercept({ path: '/user' }).reply(500, req => {
+          // @ts-expect-error: Property 'Authorization' does not exist on type 'Headers'
           userInvoked(req.headers.Authorization)
-          return 'server error'
+          return { error: 'server error' }
         })
         const state = githubAuth.storeFinalLocation(location)
 
@@ -171,7 +182,7 @@ describe('Github authentication service', () => {
 
       it('throws forbidden on unkown state', async () => {
         const state = faker.string.uuid()
-        const code = faker.number.int({ min: 9999 })
+        const code = faker.number.int({ min: 9999 }).toString()
 
         await expect(githubAuth.authenticateUser(code, state)).rejects.toThrow(
           'forbidden'

@@ -1,31 +1,48 @@
+// @ts-check
+import { randomUUID } from 'node:crypto'
+
 import TTLCache from '@isaacs/ttlcache'
-import { randomUUID } from 'crypto'
+
+import { makeLogger } from '../../utils/index.js'
 
 /**
  * @typedef {object} UserDetailsAndLocation
- * @property {import('../players').UserDetails} user - user details from the provider
+ * @property {Partial<import('../players').Player>} user - user details from the provider
  * @property {string} location - final desired redirection url
+ */
+
+/**
+ * @typedef {object} ProviderInit
+ * @property {string} id - OAuth client ID.
+ * @property {string} secret - OAuth client secret.
+ * @property {string} redirect - Allowed redirection url.
  */
 
 /**
  * Base class for OAuth2-based identity providers
  */
 export class OAuth2Provider {
-  constructor() {
+  /**
+   * @param {string} name - name of this OAuth2 provider.
+   */
+  constructor(name) {
+    this.name = name
     this.locationByKey = new TTLCache({ ttl: 60 * 60 * 1000 })
+    this.id = ''
+    this.redirect = ''
+    this.secret = ''
+    this.logger = makeLogger(`${name}-auth-provider`, { ctx: { oauth2: name } })
   }
 
   /**
    * Initializes the authentication provider
-   * @param {object} options authentication options, including:
-   * @param {string} options.id - OAuth client ID.
-   * @param {string} options.secret - OAuth client secret.
-   * @param {string} options.redirect - Allowed redirection url.
+   * @param {ProviderInit} options authentication options, including:
    */
   init({ id, secret, redirect }) {
     this.id = id
     this.secret = secret
     this.redirect = redirect
+    this.logger.debug({ ctx: { redirect } }, 'initialized provider')
   }
 
   /**
@@ -42,10 +59,11 @@ export class OAuth2Provider {
 
   /**
    * Computes the URL to redirect the player browser for authentication.
-   * @param {string} location? - the final location to redirect browser to.
+   * @param {string} [location] - the final location to redirect browser to.
    * @returns {URL} the redirection URL.
    */
-  buildAuthUrl() {
+  // eslint-disable-next-line no-unused-vars
+  buildAuthUrl(location) {
     throw new Error('not implemented')
   }
 
@@ -53,9 +71,10 @@ export class OAuth2Provider {
    * Fetches user details from the authentication results.
    * @param {string} code - authorization code provided during redirection.
    * @param {string} state - state embedded during redirection.
-   * @returns {UserDetailsAndLocation} user details and the final location.
+   * @returns {Promise<UserDetailsAndLocation>} user details and the final location.
    */
-  async authenticateUser() {
+  // eslint-disable-next-line no-unused-vars
+  async authenticateUser(code, state) {
     throw new Error('not implemented')
   }
 }

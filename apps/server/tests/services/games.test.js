@@ -1,3 +1,4 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import { join } from 'path'
 import { setTimeout } from 'timers/promises'
@@ -29,15 +30,31 @@ import {
 } from '../../src/services/games.js'
 import { clearDatabase, getRedisTestUrl } from '../test-utils.js'
 
+/** @typedef {import('../../src/services/players.js').Player} Player */
+/** @typedef {import('../../src/services/games.js').GameData} GameData */
+
 describe('given a subscription to game lists and an initialized repository', () => {
   const redisUrl = getRedisTestUrl()
+  /** @type {import('../../src/services/games.js').GameListUpdate[]} */
   const updates = []
-  const player = { id: 'player' }
-  const peer = { id: 'peer-1' }
-  const peer2 = { id: 'peer-2', isAdmin: true }
+  /** @type {Player} */
+  const player = { id: 'player', username: '', currentGameId: null }
+  /** @type {Player} */
+  const peer = { id: 'peer-1', username: '', currentGameId: null }
+  /** @type {Player} */
+  const peer2 = {
+    id: 'peer-2',
+    username: '',
+    currentGameId: null,
+    isAdmin: true
+  }
+  /** @type {GameData[]} */
   const games = []
+  /** @type {GameData} */
   let game
+  /** @type {GameData} */
   let lobby
+  /** @type {import('rxjs').Subscription} */
   let subscription
 
   beforeAll(async () => {
@@ -276,10 +293,10 @@ describe('given a subscription to game lists and an initialized repository', () 
           hands: [{ playerId: player.id, meshes: [] }],
           preferences: [{ playerId: player.id, color: expect.any(String) }]
         }
-        const joinedGame = await joinGame(game.id, player)
+        const joinedGame = await joinGame(game.id, player, null)
         expect(joinedGame).toEqual(expectedGame)
-        expect(joinedGame.preferences[0].color).toMatch(
-          new RegExp(game.colors.players.join('|'))
+        expect(joinedGame?.preferences[0].color).toMatch(
+          new RegExp(game?.colors?.players?.join('|') ?? '')
         )
         await setTimeout(50)
         expect(updates).toEqual([
@@ -364,8 +381,8 @@ describe('given a subscription to game lists and an initialized repository', () 
 
     describe('given joined owner', () => {
       beforeEach(async () => {
-        game = await joinGame(game.id, player)
-        lobby = await joinGame(lobby.id, player)
+        game = /** @type {GameData} */ (await joinGame(game.id, player))
+        lobby = /** @type {GameData} */ (await joinGame(lobby.id, player))
         await setTimeout(50)
         updates.splice(0)
       })
@@ -408,10 +425,16 @@ describe('given a subscription to game lists and an initialized repository', () 
         })
 
         it('throws when the maximum number of players was reached', async () => {
-          const grantedPlayer = await grantAccess(player.id, 'splendor')
+          const grantedPlayer = /** @type {Player} */ (
+            await grantAccess(player.id, 'splendor')
+          )
           await deleteGame(game.id, grantedPlayer)
-          game = await createGame('splendor', grantedPlayer) // it has 4 seats
-          game = await joinGame(game.id, grantedPlayer)
+          game = /** @type {GameData} */ (
+            await createGame('splendor', grantedPlayer)
+          ) // it has 4 seats
+          game = /** @type {GameData} */ (
+            await joinGame(game.id, grantedPlayer)
+          )
           const guests = await repositories.players.save([
             { id: faker.string.uuid() },
             { id: faker.string.uuid() },
@@ -504,9 +527,9 @@ describe('given a subscription to game lists and an initialized repository', () 
             preferences: [],
             colors: { players: ['red', 'green', 'blue'] }
           }
-          expect(await promoteGame(lobby.id, kind, player)).toEqual(
-            expectedGame
-          )
+          expect(
+            await promoteGame(lobby.id, /** @type {string} */ (kind), player)
+          ).toEqual(expectedGame)
           await setTimeout(50)
           expect(updates).toEqual([
             {
@@ -555,9 +578,9 @@ describe('given a subscription to game lists and an initialized repository', () 
             preferences: [],
             colors: { players: ['red', 'green', 'blue'] }
           }
-          expect(await promoteGame(lobby.id, kind, player)).toEqual(
-            expectedGame
-          )
+          expect(
+            await promoteGame(lobby.id, /** @type {string} */ (kind), player)
+          ).toEqual(expectedGame)
           await setTimeout(50)
           expect(updates).toEqual(
             expect.arrayContaining([
@@ -588,7 +611,9 @@ describe('given a subscription to game lists and an initialized repository', () 
             preferences: [],
             colors: { players: ['red', 'green', 'blue'] }
           }
-          expect(await promoteGame(lobby.id, kind, peer2)).toEqual(expectedGame)
+          expect(
+            await promoteGame(lobby.id, /** @type {string} */ (kind), peer2)
+          ).toEqual(expectedGame)
           await setTimeout(50)
           expect(updates).toEqual(
             expect.arrayContaining([
@@ -607,9 +632,9 @@ describe('given a subscription to game lists and an initialized repository', () 
           await joinGame(lobby.id, peer)
           await setTimeout(50)
           updates.splice(0)
-          await expect(promoteGame(lobby.id, game.kind, peer2)).rejects.toThrow(
-            'This game only has 2 seats and you are 3'
-          )
+          await expect(
+            promoteGame(lobby.id, /** @type {string} */ (game.kind), peer2)
+          ).rejects.toThrow('This game only has 2 seats and you are 3')
           await setTimeout(50)
           expect(updates).toHaveLength(0)
         })
@@ -853,7 +878,9 @@ describe('given a subscription to game lists and an initialized repository', () 
             guestIds: [peer.id]
           })
 
-          const loaded = await joinGame(game.id, player)
+          const loaded = /** @type {GameData} */ (
+            await joinGame(game.id, player)
+          )
           expect(loaded.playerIds).toEqual([player.id])
           expect(loaded.guestIds).toEqual([peer.id])
           await setTimeout(50)
@@ -913,9 +940,9 @@ describe('given a subscription to game lists and an initialized repository', () 
       describe('given another player', () => {
         beforeEach(async () => {
           await invite(game.id, [peer.id], player.id)
-          game = await joinGame(game.id, peer)
+          game = /** @type {GameData} */ (await joinGame(game.id, peer))
           await invite(lobby.id, [peer.id], player.id)
-          lobby = await joinGame(lobby.id, peer)
+          lobby = /** @type {GameData} */ (await joinGame(lobby.id, peer))
           await setTimeout(50)
           updates.splice(0)
         })
@@ -1014,7 +1041,7 @@ describe('given a subscription to game lists and an initialized repository', () 
 
           it('allows non-owner to kick lobby players', async () => {
             await invite(lobby.id, [peer2.id], player.id)
-            lobby = await joinGame(lobby.id, peer2)
+            lobby = /** @type {GameData} */ (await joinGame(lobby.id, peer2))
             await setTimeout(50)
             updates.splice(0)
 
@@ -1064,7 +1091,7 @@ describe('given a subscription to game lists and an initialized repository', () 
       })
 
       describe('listGames()', () => {
-        const getId = ({ id }) => id
+        const getId = (/** @type {GameData} */ { id }) => id
 
         beforeEach(async () => {
           games.push(game)
@@ -1111,16 +1138,20 @@ describe('given a subscription to game lists and an initialized repository', () 
 
         it('returns null on un-owned game', async () => {
           expect(
-            await deleteGame(game.id, { id: faker.string.uuid() })
+            await deleteGame(game.id, {
+              id: faker.string.uuid(),
+              username: '',
+              currentGameId: null
+            })
           ).toBeNull()
-          expect(await joinGame(game.id, player.id)).toBeDefined()
+          expect(await joinGame(game.id, player)).toBeDefined()
           await setTimeout(50)
           expect(updates).toHaveLength(0)
         })
 
         it('returns deleted game and trigger list update', async () => {
           expect(await deleteGame(game.id, player)).toEqual(game)
-          expect(await joinGame(game.id, player.id)).toBeNull()
+          expect(await joinGame(game.id, player)).toBeNull()
           await setTimeout(50)
           expect(updates).toEqual([{ playerId: player.id, games: [lobby] }])
         })
@@ -1149,11 +1180,11 @@ describe('given a subscription to game lists and an initialized repository', () 
           const game1 = await createGame('belote', player)
           await joinGame(game1.id, player)
           await invite(game1.id, [peer.id], player.id)
-          games.push(await joinGame(game1.id, peer))
+          games.push(/** @type {GameData} */ (await joinGame(game1.id, peer)))
           const game2 = await createGame('belote', peer2)
           await joinGame(game2.id, peer2)
           await invite(game2.id, [player.id], peer2.id)
-          games.push(await joinGame(game2.id, player))
+          games.push(/** @type {GameData} */ (await joinGame(game2.id, player)))
 
           await setTimeout(50)
           updates.splice(0, updates.length)
@@ -1179,11 +1210,11 @@ describe('given a subscription to game lists and an initialized repository', () 
           const game1 = await createGame('belote', player)
           await joinGame(game1.id, player)
           await invite(game1.id, [peer.id], player.id)
-          games.push(await joinGame(game1.id, peer))
+          games.push(/** @type {GameData} */ (await joinGame(game1.id, peer)))
           const game2 = await createGame('belote', player)
           await joinGame(game2.id, player)
           await invite(game2.id, [peer.id], player.id)
-          games.push(await joinGame(game2.id, peer))
+          games.push(/** @type {GameData} */ (await joinGame(game2.id, peer)))
 
           await setTimeout(50)
           updates.splice(0, updates.length)

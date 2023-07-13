@@ -1,3 +1,4 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import { createVerifier } from 'fast-jwt'
 import fastify from 'fastify'
@@ -14,9 +15,9 @@ import {
 } from 'vitest'
 
 import graphQL from '../../src/plugins/graphql.js'
-import repositories from '../../src/repositories/index.js'
-import services from '../../src/services/index.js'
-import { hash } from '../../src/utils/index.js'
+import realRepositories from '../../src/repositories/index.js'
+import realServices from '../../src/services/index.js'
+import { hash, makeLogger } from '../../src/utils/index.js'
 import {
   mockMethods,
   openGraphQLWebSocket,
@@ -26,11 +27,25 @@ import {
   waitOnMessage
 } from '../test-utils.js'
 
+/** @typedef {import('../../src/services/players.js').Player} Player */
+/** @typedef {import('../../src/services/players.js').FriendshipUpdate} FriendshipUpdate */
+
 describe('given a started server', () => {
+  /** @type {import('fastify').FastifyInstance} */
   let server
+  /** @type {import('ws')} */
   let ws
+  /** @type {ReturnType<typeof mockMethods>} */
   let restoreServices
-  vi.spyOn(console, 'warn').mockImplementation(() => {})
+  const services =
+    /** @type {import('vitest').Mocked<typeof realServices> & {friendshipUpdates: Subject<FriendshipUpdate>}} */ (
+      realServices
+    )
+  const repository =
+    /** @type {import('vitest').Mocked<typeof realRepositories.players>} */ (
+      realRepositories.players
+    )
+  vi.spyOn(makeLogger('players-resolver'), 'warn').mockImplementation(() => {})
   const configuration = {
     turn: { secret: faker.lorem.words() },
     auth: { jwt: { key: faker.string.uuid() } }
@@ -43,12 +58,20 @@ describe('given a started server', () => {
     await server.listen()
     ws = await openGraphQLWebSocket(server)
     restoreServices = mockMethods(services)
-    vi.spyOn(repositories.players, 'deleteById').mockImplementation(() => {})
-    vi.spyOn(repositories.players, 'list').mockImplementation(() => {})
+    vi.spyOn(repository, 'deleteById').mockImplementation(async () => null)
+    vi.spyOn(repository, 'list').mockImplementation(async () => ({
+      total: 0,
+      size: 0,
+      from: 0,
+      results: []
+    }))
+    /** @type {Subject<FriendshipUpdate>} */
     services.friendshipUpdates = new Subject()
   })
 
-  beforeEach(vi.resetAllMocks)
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
 
   afterAll(async () => {
     restoreServices()
@@ -64,12 +87,14 @@ describe('given a started server', () => {
     const player = {
       id: faker.string.uuid(),
       username: faker.person.firstName(),
-      password: faker.internet.password()
+      password: faker.internet.password(),
+      currentGameId: null
     }
     const admin = {
       id: faker.string.uuid(),
       username: faker.person.firstName(),
-      isAdmin: true
+      isAdmin: true,
+      currentGameId: null
     }
 
     describe('addPlayer mutation', () => {
@@ -115,7 +140,7 @@ describe('given a started server', () => {
           },
           payload: {
             query: `mutation { 
-              addPlayer(id:"${player.id}", username: "${player.username}", password: "${player.password}") { id username }
+              addPlayer(id:"${player.id}", username: "${player.username}", password: "${player.password}") { id username currentGameId }
             }`
           }
         })
@@ -129,7 +154,7 @@ describe('given a started server', () => {
         expect(services.upsertPlayer).toHaveBeenCalledWith({
           id: player.id,
           username: player.username,
-          password: hash(player.password)
+          password: hash(player.password ?? '')
         })
         expect(services.upsertPlayer).toHaveBeenCalledOnce()
       })
@@ -149,7 +174,7 @@ describe('given a started server', () => {
           username,
           password: hash(password),
           id,
-          whatever: 'foo'
+          currentGameId: null
         })
         services.generateTurnCredentials.mockResolvedValueOnce(turnCredentials)
         const response = await server.inject({
@@ -187,24 +212,26 @@ describe('given a started server', () => {
         expect(services.generateTurnCredentials).toHaveBeenCalledOnce()
       })
 
-      it.each([
-        { title: 'unfound account', user: null, password },
-        {
-          title: 'account with no password',
-          password,
-          user: { id: faker.string.uuid() }
-        },
-        {
-          title: 'account with different password',
-          password,
-          user: { id: faker.string.uuid(), password: 'whatever' }
-        },
-        {
-          title: 'empty password provided',
-          password: '',
-          user: { id: faker.string.uuid(), password }
-        }
-      ])('does not generates turn credentials on $title', async ({ user }) => {
+      it.each(
+        /** @type {{ title: string; user: ?Player, password: string }[]} */ ([
+          { title: 'unfound account', user: null, password },
+          {
+            title: 'account with no password',
+            password,
+            user: { id: faker.string.uuid() }
+          },
+          {
+            title: 'account with different password',
+            password,
+            user: { id: faker.string.uuid(), password: 'whatever' }
+          },
+          {
+            title: 'empty password provided',
+            password: '',
+            user: { id: faker.string.uuid(), password }
+          }
+        ])
+      )('does not generates turn credentials on $title', async ({ user }) => {
         const id = faker.person.firstName()
         services.getPlayerById.mockResolvedValueOnce(user)
         const response = await server.inject({
@@ -237,7 +264,7 @@ describe('given a started server', () => {
         services.getPlayerById.mockResolvedValueOnce({
           id,
           username,
-          foo: 'bar'
+          currentGameId: null
         })
         const turnCredentials = {
           username: faker.lorem.words(),
@@ -319,11 +346,13 @@ describe('given a started server', () => {
         const players = [
           {
             id: faker.string.uuid(),
-            username: faker.person.firstName()
+            username: faker.person.firstName(),
+            currentGameId: null
           },
           {
             id: faker.string.uuid(),
-            username: faker.person.firstName()
+            username: faker.person.firstName(),
+            currentGameId: null
           }
         ]
         services.getPlayerById.mockResolvedValueOnce(players[0])
@@ -338,7 +367,7 @@ describe('given a started server', () => {
             )}`
           },
           payload: {
-            query: `query { searchPlayers(search: "${search}") { id username } }`
+            query: `query { searchPlayers(search: "${search}") { id username currentGameId } }`
           }
         })
         expect(response.json()).toEqual({
@@ -359,25 +388,30 @@ describe('given a started server', () => {
         const players = [
           {
             id: `p1-${faker.number.int(100)}`,
-            username: faker.person.firstName()
+            username: faker.person.firstName(),
+            currentGameId: null
           },
           {
             id: `p2-${faker.number.int(100)}`,
-            username: faker.person.firstName()
+            username: faker.person.firstName(),
+            currentGameId: null
           },
           {
             id: `p3-${faker.number.int(100)}`,
-            username: faker.person.firstName()
+            username: faker.person.firstName(),
+            currentGameId: null
           },
           {
             id: `p4-${faker.number.int(100)}`,
-            username: faker.person.firstName()
+            username: faker.person.firstName(),
+            currentGameId: null
           }
         ]
         services.getPlayerById.mockImplementation(async ids =>
+          // @ts-expect-error: Mocked inference does not support overloads
           Array.isArray(ids)
             ? players.filter(({ id }) => ids.includes(id))
-            : players.find(({ id }) => id === ids)
+            : players.find(({ id }) => id === ids) ?? null
         )
         services.listFriends.mockResolvedValueOnce([
           { playerId: players[1].id, isRequest: true },
@@ -390,7 +424,7 @@ describe('given a started server', () => {
           url: 'graphql',
           headers: { authorization: `Bearer ${token}` },
           payload: {
-            query: `query { listFriends { player { id username } isRequest isProposal }}`
+            query: `query { listFriends { player { id username, currentGameId } isRequest isProposal }}`
           }
         })
         expect(response.json()).toEqual({
@@ -641,7 +675,7 @@ describe('given a started server', () => {
       it('sets terms accepted flag', async () => {
         const username = faker.person.firstName()
         const id = faker.string.uuid()
-        const player = { id, username }
+        const player = { id, username, currentGameId: null }
         services.getPlayerById.mockResolvedValueOnce(player)
         services.acceptTerms.mockResolvedValueOnce({
           ...player,
@@ -701,7 +735,9 @@ describe('given a started server', () => {
       ])('maps $title "$input" as "$username"', async ({ username, input }) => {
         services.getPlayerById.mockResolvedValueOnce(player)
         services.isUsernameUsed.mockResolvedValueOnce(false)
-        services.upsertPlayer.mockImplementation(player => player)
+        services.upsertPlayer.mockImplementation(
+          async player => /** @type {Player} */ (player)
+        )
         const response = await server.inject({
           method: 'POST',
           url: 'graphql',
@@ -786,7 +822,8 @@ describe('given a started server', () => {
         const username = faker.person.firstName()
         services.upsertPlayer.mockResolvedValueOnce({
           id: player.id,
-          username
+          username,
+          currentGameId: null
         })
         services.getPlayerById.mockResolvedValueOnce(player)
         services.searchPlayers.mockResolvedValueOnce([])
@@ -831,6 +868,7 @@ describe('given a started server', () => {
         }
         services.upsertPlayer.mockResolvedValueOnce({
           id: player.id,
+          currentGameId: null,
           ...update
         })
         services.getPlayerById.mockResolvedValueOnce(player)
@@ -895,7 +933,9 @@ describe('given a started server', () => {
       ])('maps $title "$input" as "$username"', async ({ username, input }) => {
         services.getPlayerById.mockResolvedValueOnce(player)
         services.isUsernameUsed.mockResolvedValueOnce(false)
-        services.upsertPlayer.mockImplementation(player => player)
+        services.upsertPlayer.mockImplementation(
+          async player => /** @type {Player} */ (player)
+        )
         const response = await server.inject({
           method: 'POST',
           url: 'graphql',
@@ -980,7 +1020,8 @@ describe('given a started server', () => {
         const username = faker.person.firstName()
         services.upsertPlayer.mockResolvedValueOnce({
           id: player.id,
-          username
+          username,
+          currentGameId: null
         })
         services.getPlayerById.mockResolvedValueOnce(player)
         services.searchPlayers.mockResolvedValueOnce([])
@@ -1050,7 +1091,7 @@ describe('given a started server', () => {
 
       it('removes an existing player account', async () => {
         services.getPlayerById.mockResolvedValueOnce(admin)
-        repositories.players.deleteById.mockResolvedValueOnce(player)
+        repository.deleteById.mockResolvedValueOnce(player)
         const response = await server.inject({
           method: 'POST',
           url: 'graphql',
@@ -1062,7 +1103,7 @@ describe('given a started server', () => {
           },
           payload: {
             query: `mutation { 
-              deletePlayer(id:"${player.id}") { id username }
+              deletePlayer(id:"${player.id}") { id username currentGameId }
             }`
           }
         })
@@ -1073,8 +1114,8 @@ describe('given a started server', () => {
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).toHaveBeenCalledWith(admin.id)
         expect(services.getPlayerById).toHaveBeenCalledOnce()
-        expect(repositories.players.deleteById).toHaveBeenCalledWith(player.id)
-        expect(repositories.players.deleteById).toHaveBeenCalledOnce()
+        expect(repository.deleteById).toHaveBeenCalledWith(player.id)
+        expect(repository.deleteById).toHaveBeenCalledOnce()
       })
     })
 
@@ -1102,7 +1143,7 @@ describe('given a started server', () => {
         expect(response.statusCode).toEqual(200)
         expect(services.getPlayerById).toHaveBeenNthCalledWith(1, player.id)
         expect(services.getPlayerById).toHaveBeenCalledOnce()
-        expect(repositories.players.list).not.toHaveBeenCalled()
+        expect(repository.list).not.toHaveBeenCalled()
       })
 
       it('returns players', async () => {
@@ -1113,18 +1154,20 @@ describe('given a started server', () => {
           results: [
             {
               id: faker.string.uuid(),
-              username: faker.person.firstName()
+              username: faker.person.firstName(),
+              currentGameId: null
             },
             {
               id: faker.string.uuid(),
-              username: faker.person.firstName()
+              username: faker.person.firstName(),
+              currentGameId: null
             }
           ]
         }
         const from = faker.number.int(9999)
         const size = faker.number.int(9999)
         services.getPlayerById.mockResolvedValueOnce(admin)
-        repositories.players.list.mockResolvedValueOnce(page)
+        repository.list.mockResolvedValueOnce(page)
         const response = await server.inject({
           method: 'POST',
           url: 'graphql',
@@ -1135,13 +1178,13 @@ describe('given a started server', () => {
             )}`
           },
           payload: {
-            query: `query { listPlayers(from: ${from}, size: ${size}) { from size total results { id username } } }`
+            query: `query { listPlayers(from: ${from}, size: ${size}) { from size total results { id username currentGameId } } }`
           }
         })
         expect(response.json()).toEqual({ data: { listPlayers: page } })
         expect(response.statusCode).toEqual(200)
-        expect(repositories.players.list).toHaveBeenCalledWith({ from, size })
-        expect(repositories.players.list).toHaveBeenCalledOnce()
+        expect(repository.list).toHaveBeenCalledWith({ from, size })
+        expect(repository.list).toHaveBeenCalledOnce()
       })
     })
 
@@ -1164,13 +1207,16 @@ describe('given a started server', () => {
 
       beforeEach(() => {
         services.getPlayerById.mockImplementation(async ids =>
+          // @ts-expect-error: Mocked inference does not support overloads
           Array.isArray(ids)
             ? players.filter(({ id }) => ids.includes(id))
             : players.find(({ id }) => id === ids)
         )
       })
 
-      afterEach(() => stopSubscription(ws))
+      afterEach(async () => {
+        await stopSubscription(ws)
+      })
 
       it('sends update for current player', async () => {
         await startSubscription(

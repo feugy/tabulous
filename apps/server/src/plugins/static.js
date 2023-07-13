@@ -1,3 +1,4 @@
+// @ts-check
 import staticPlugin from '@fastify/static'
 
 /**

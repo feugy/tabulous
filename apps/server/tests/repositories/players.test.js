@@ -1,3 +1,4 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
@@ -11,6 +12,8 @@ import {
 } from '../../src/repositories/players.js'
 import { clearDatabase, getRedisTestUrl } from '../test-utils.js'
 
+/** @typedef {import('../../src/services/players.js').Player} Player */
+
 describe('given a connected repository and several players', () => {
   const redisUrl = getRedisTestUrl()
   const provider1 = 'oauth'
@@ -19,11 +22,12 @@ describe('given a connected repository and several players', () => {
   const providerId2 = faker.string.sample()
   const providerId3 = faker.string.sample()
 
+  /** @type {Player[]} */
   let models = []
 
   beforeEach(async () => {
     await players.connect({ url: redisUrl })
-    models = [
+    models = /** @type {Player[]} */ ([
       {
         id: `p1-${faker.number.int(100)}`,
         username: 'Jane',
@@ -66,7 +70,7 @@ describe('given a connected repository and several players', () => {
       { id: `p8-${faker.number.int(100)}`, username: 'Agent Moebius' },
       { id: `p9-${faker.number.int(100)}`, username: 'Agent' },
       { id: `p10-${faker.number.int(100)}`, username: 'AgentX' }
-    ]
+    ])
     await players.save(models)
   })
 
@@ -319,7 +323,9 @@ describe('given a connected repository and several players', () => {
     })
 
     describe('given a friendship request', () => {
-      beforeEach(() => players.makeFriends(models[0].id, models[1].id))
+      beforeEach(async () => {
+        await players.makeFriends(models[0].id, models[1].id)
+      })
 
       describe('listFriendships()', () => {
         it('returns request and proposal', async () => {
@@ -386,9 +392,13 @@ describe('given a connected repository and several players', () => {
     })
 
     describe('given a friendship relationship', () => {
-      beforeEach(() =>
-        players.makeFriends(models[0].id, models[1].id, FriendshipAccepted)
-      )
+      beforeEach(async () => {
+        await players.makeFriends(
+          models[0].id,
+          models[1].id,
+          FriendshipAccepted
+        )
+      })
 
       describe('listFriendships()', () => {
         it('returns friendship', async () => {
@@ -442,9 +452,9 @@ describe('given a connected repository and several players', () => {
     })
 
     describe('given blocked friendship', () => {
-      beforeEach(() =>
-        players.makeFriends(models[0].id, models[1].id, FriendshipBlocked)
-      )
+      beforeEach(async () => {
+        await players.makeFriends(models[0].id, models[1].id, FriendshipBlocked)
+      })
 
       describe('listFriendships()', () => {
         it('returns blocked', async () => {

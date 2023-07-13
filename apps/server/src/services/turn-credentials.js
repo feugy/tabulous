@@ -1,4 +1,5 @@
-import { createHmac } from 'crypto'
+// @ts-check
+import { createHmac } from 'node:crypto'
 
 /**
  * @typedef {object} TurnCredentials used to connect to the turn server
@@ -20,6 +21,11 @@ export function generateTurnCredentials(secret) {
   }
 }
 
+/**
+ * @param {string} secret
+ * @param {string} value
+ * @returns {string}
+ */
 function hash(secret, value) {
   return createHmac('sha1', secret).update(value).digest('base64')
 }

@@ -1,3 +1,4 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import fastify from 'fastify'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -6,16 +7,17 @@ import corsPlugin from '../../src/plugins/cors.js'
 import graphqlPlugin from '../../src/plugins/graphql.js'
 
 describe('cors plugin', () => {
+  /** @type {import('fastify').FastifyInstance} */
   let server
 
   afterEach(() => server?.close())
 
   it('handles preflight request', async () => {
-    const allowedOrigins = /https?:\/\/toto\.(?:com|fr)/
+    const allowedOrigins = 'https?://toto\\.(?:com|fr)'
     server = fastify({ logger: false })
     server.decorate('conf', { auth: { jwt: { key: faker.string.uuid() } } })
     server.register(corsPlugin, { allowedOrigins })
-    server.register(graphqlPlugin, { allowedOrigins })
+    server.register(graphqlPlugin, { allowedOrigins, pubsubUrl: '' })
 
     const origin = 'https://toto.com'
     const url = '/graphql'
@@ -60,7 +62,7 @@ describe('cors plugin', () => {
   it('applies allowed origin', async () => {
     server = fastify({ logger: false })
     server.register(corsPlugin, {
-      allowedOrigins: /https?:\/\/toto\.(?:com|fr)/
+      allowedOrigins: 'https?://toto\\.(?:com|fr)'
     })
     const origin = 'https://whatever.us'
     await server.listen()

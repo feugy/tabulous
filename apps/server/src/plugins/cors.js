@@ -1,3 +1,4 @@
+// @ts-check
 import corsPlugin from '@fastify/cors'
 
 /**
@@ -22,4 +23,5 @@ export default async function registerCors(app, opts) {
   })
 }
 // needed so that CORS applies on all routes in all plugins
+// @ts-ignore
 registerCors[Symbol.for('skip-override')] = true

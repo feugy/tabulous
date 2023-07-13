@@ -1,3 +1,4 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import { describe, expect, it } from 'vitest'
 
@@ -6,7 +7,7 @@ import { OAuth2Provider } from '../../../src/services/auth/oauth2.js'
 describe('OAuth2 authentication provider', () => {
   describe('init()', () => {
     it('sets internal state', async () => {
-      const provider = new OAuth2Provider()
+      const provider = new OAuth2Provider('test')
 
       const id = faker.string.uuid()
       const secret = faker.internet.password()
@@ -20,7 +21,7 @@ describe('OAuth2 authentication provider', () => {
 
   describe('buildAuthUrl()', () => {
     it('is not implemented', () => {
-      expect(() => new OAuth2Provider().buildAuthUrl()).toThrow(
+      expect(() => new OAuth2Provider('test').buildAuthUrl('unused')).toThrow(
         'not implemented'
       )
     })
@@ -28,9 +29,9 @@ describe('OAuth2 authentication provider', () => {
 
   describe('authenticateUser()', () => {
     it('is not implemented', async () => {
-      await expect(new OAuth2Provider().authenticateUser()).rejects.toThrow(
-        'not implemented'
-      )
+      await expect(
+        new OAuth2Provider('test').authenticateUser('unused', 'unused')
+      ).rejects.toThrow('not implemented')
     })
   })
 })

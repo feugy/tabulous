@@ -1,4 +1,5 @@
-import { createHash } from 'crypto'
+// @ts-check
+import { createHash } from 'node:crypto'
 
 /**
  * Hashes the provided value.

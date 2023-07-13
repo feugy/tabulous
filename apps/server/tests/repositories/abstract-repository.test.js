@@ -1,3 +1,4 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import Redis from 'ioredis'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
@@ -10,22 +11,34 @@ describe('Abstract repository', () => {
 
   afterEach(() => clearDatabase(redisUrl))
 
+  /**
+   * @typedef {object} TestModel
+   * @property {string} id
+   * @property {string} [foo]
+   * @property {string} [bar]
+   * @property {string} [baz]
+   * @property {number} [count]
+   */
+
+  /** @extends AbstractRepository<TestModel> */
   class TestRepository extends AbstractRepository {
     static fields = [{ name: 'count', deserialize: parseInt }]
   }
 
   it('can not build a nameless repository', () => {
+    // @ts-expect-error: Property 'name' is missing in type '{}' but required in type '{ name: string; }'
     expect(() => new AbstractRepository({})).toThrow(
       'every repository needs a name'
     )
   })
 
   describe('connect()', () => {
+    /** @type {TestRepository} */
     let repository
     const testClient = new Redis(redisUrl)
 
     beforeEach(() => {
-      repository = new TestRepository({ name: faker.lorem.word() })
+      repository = new TestRepository({ name: 'test' })
     })
 
     it('reads existing models', async () => {
@@ -101,11 +114,13 @@ describe('Abstract repository', () => {
     })
 
     describe('given some models', () => {
-      const models = [
-        { id: faker.string.uuid(), foo: faker.lorem.word() },
-        { id: faker.string.uuid(), bar: faker.lorem.word() },
-        { id: faker.string.uuid(), baz: faker.lorem.word() }
-      ]
+      const models =
+        /** @type {TestModel[]} */
+        ([
+          { id: faker.string.uuid(), foo: faker.lorem.word() },
+          { id: faker.string.uuid(), bar: faker.lorem.word() },
+          { id: faker.string.uuid(), baz: faker.lorem.word() }
+        ])
 
       beforeEach(async () => {
         await repository.save(models)

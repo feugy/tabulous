@@ -24,7 +24,8 @@
     "test:cli": "pnpm --filter cli t",
     "test:server": "pnpm --filter server t",
     "test:web": "pnpm --filter web t",
-    "test:integration": "pnpm --filter web test:integration"
+    "test:integration": "pnpm --filter web test:integration",
+    "typecheck": "pnpm run -r --stream --if-present typecheck"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.0.2",

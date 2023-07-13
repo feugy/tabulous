@@ -1,3 +1,4 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import fastify from 'fastify'
 import {
@@ -13,19 +14,28 @@ import {
 import WebSocket from 'ws'
 
 import graphql from '../../src/plugins/graphql.js'
-import services from '../../src/services/index.js'
+import realServices from '../../src/services/index.js'
+import { makeLogger } from '../../src/utils/index.js'
 import { mockMethods } from '../test-utils.js'
 
 describe('graphql plugin', () => {
+  /** @type {import('fastify').FastifyInstance} */
   let server
+  /** @type {ReturnType<typeof mockMethods>} */
   let restoreServices
-  let warn = vi.spyOn(console, 'warn')
+  let warn = vi.spyOn(makeLogger('graphql-plugin'), 'warn')
+  const services =
+    /** @type {import('../test-utils.js').MockedMethods<typeof realServices>} */ (
+      realServices
+    )
 
   beforeAll(() => {
-    restoreServices = mockMethods(services)
+    restoreServices = mockMethods(realServices)
   })
 
-  beforeEach(vi.resetAllMocks)
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
 
   afterAll(async () => {
     restoreServices()
@@ -36,10 +46,15 @@ describe('graphql plugin', () => {
 
   it('denies Websocket connection from a different origin', async () => {
     server = fastify({ logger: false })
-    server.register(graphql, { allowedOrigins: `https:\\/\\/test\\.fr` })
+    server.register(graphql, {
+      allowedOrigins: `https:\\/\\/test\\.fr`,
+      pubsubUrl: ''
+    })
     await server.listen()
     const ws = new WebSocket(
-      `ws://localhost:${server.server.address().port}/graphql`,
+      `ws://localhost:${
+        /** @type {{ port: number }} */ (server.server.address()).port
+      }/graphql`,
       'graphql-ws'
     )
     await expect(
@@ -80,9 +95,7 @@ describe('graphql plugin', () => {
     })
     expect(response.statusCode).toEqual(200)
     expect(response.json()).toEqual({
-      data: {
-        logIn: null
-      },
+      data: { logIn: null },
       errors: [
         {
           locations: [{ column: 11, line: 2 }],
@@ -91,7 +104,10 @@ describe('graphql plugin', () => {
         }
       ]
     })
-    expect(warn).toHaveBeenCalledWith(error.stack)
+    expect(warn).toHaveBeenCalledWith(
+      { errors: [expect.objectContaining({ message })] },
+      'graphQL errors'
+    )
     expect(warn).toHaveBeenCalledOnce()
   })
 })

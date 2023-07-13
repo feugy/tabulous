@@ -114,7 +114,7 @@ type Mesh {
   id: ID!
   texture: String!
   faceUV: [[Float]]
-  shape: Shape
+  shape: Shape!
   x: Float
   y: Float
   z: Float

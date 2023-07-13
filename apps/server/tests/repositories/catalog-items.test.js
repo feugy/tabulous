@@ -1,5 +1,7 @@
+// @ts-check
+import { join } from 'node:path'
+
 import { faker } from '@faker-js/faker'
-import { join } from 'path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 import { catalogItems } from '../../src/repositories/catalog-items.js'

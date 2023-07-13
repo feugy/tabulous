@@ -1,7 +1,9 @@
+// @ts-check
+import { readFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
 import merge from 'deepmerge'
-import { readFileSync } from 'fs'
-import { dirname, join } from 'path'
-import { fileURLToPath } from 'url'
 
 import catalogResolvers from './catalog-resolver.js'
 import gamesResolvers from './games-resolver.js'
@@ -18,6 +20,7 @@ const schema = [
   'games.graphql'
 ].map(loadTypeDefs)
 
+// @ts-ignore
 const { loaders, ...resolvers } = merge.all([
   catalogResolvers,
   gamesResolvers,
@@ -27,6 +30,10 @@ const { loaders, ...resolvers } = merge.all([
 
 export { loaders, resolvers, schema }
 
+/**
+ * @param {string} fileName - loaded file
+ * @returns {string} file content
+ */
 function loadTypeDefs(fileName) {
   return readFileSync(join(folder, fileName)).toString()
 }

@@ -1,8 +1,11 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 import { games } from '../../src/repositories/games.js'
 import { clearDatabase, getRedisTestUrl } from '../test-utils.js'
+
+/** @typedef {import('../../src/services/games.js').Game} Game */
 
 describe('given a connected repository and several games', () => {
   const redisUrl = getRedisTestUrl()
@@ -10,11 +13,12 @@ describe('given a connected repository and several games', () => {
   const playerId2 = '2'
   const playerId3 = '3'
 
+  /** @type {Game[]} */
   let models = []
 
   beforeEach(async () => {
     await games.connect({ url: redisUrl })
-    models = [
+    models = /** @type {Game[]} */ ([
       {
         id: 'model-0',
         ownerId: playerId1,
@@ -62,7 +66,7 @@ describe('given a connected repository and several games', () => {
         bar: faker.datatype.boolean(),
         baz: faker.helpers.shuffle(Array.from({ length: 5 }, i => `${i}`))
       }
-    ]
+    ])
     await games.save(models)
   })
 
@@ -187,6 +191,11 @@ describe('given a connected repository and several games', () => {
   })
 })
 
+/**
+ *
+ * @param {Game[]} results
+ * @returns {Game[]}
+ */
 function sortResults(results) {
   return results.sort((a, b) => (a.id < b.id ? -1 : 1))
 }

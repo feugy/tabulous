@@ -1,8 +1,14 @@
+// @ts-check
 import {
   AbstractRepository,
   deserializeArray,
   deserializeBoolean
 } from './abstract-repository.js'
+
+/** @typedef {import('../services/players.js').Player} Player */
+/** @typedef {import('./abstract-repository.js').SaveTransactionContext<Player>} SaveTransactionContext */
+/** @typedef {import('./abstract-repository.js').DeleteTransactionContext<Player>} DeleteTransactionContext */
+/** @typedef {import('ioredis').Redis} Redis */
 
 /**
  * State (Redis score) when friendship when proposed to someone else.
@@ -31,10 +37,14 @@ export const FriendshipEnded = 4
  * @property {number} state - state of the relationship.
  */
 
+/** @extends AbstractRepository<Player> */
 class PlayerRepository extends AbstractRepository {
   static fields = [
     // enforce no game id to be null
-    { name: 'currentGameId', deserialize: value => value || null },
+    {
+      name: 'currentGameId',
+      deserialize: (/** @type {string} */ value) => value || null
+    },
     { name: 'isAdmin', deserialize: deserializeBoolean },
     { name: 'termsAccepted', deserialize: deserializeBoolean },
     { name: 'catalog', deserialize: deserializeArray }
@@ -45,7 +55,6 @@ class PlayerRepository extends AbstractRepository {
    * The underlying structure is the same as AbstractRepository, plus:
    * - index:${name}:providers:${provider}:${providerId} are Redis strings holding player id for a given provider id.
    * - friends:${id} are Redis sorted set holding a player's list of friend ids (members) and friendship state (score).
-   * @returns {PlayerRepository} a repository for player models.
    */
   constructor() {
     super({ name: 'players' })
@@ -54,9 +63,7 @@ class PlayerRepository extends AbstractRepository {
 
   /**
    * Builds the key of the string holding player id for a given provider id.
-   * @param {object} player - the player details, including:
-   * @param {string} player.provider - name of the provider.
-   * @param {string} player.providerId - provider id for this player
+   * @param {Pick<Player, 'provider'|'providerId'>} details - the desired provider details.
    * @returns {string} the corresponding key.
    */
   _buildProviderIdKey({ provider, providerId }) {
@@ -65,7 +72,7 @@ class PlayerRepository extends AbstractRepository {
 
   /**
    * Builds the key a player's friends list.
-   * @private
+   * @protected
    * @param {string} id - the concerned model id.
    * @returns {string} the corresponding key.
    */
@@ -75,30 +82,36 @@ class PlayerRepository extends AbstractRepository {
 
   /**
    * When saving players, add their provider id references, and updates their username for autocompletion.
-   * @private
-   * @param {AbstractRepository.SaveTransactionContext} context - contextual information.
-   * @returns {AbstractRepository.Transaction} the applied transaction.
+   * @override
+   * @param {SaveTransactionContext} context - contextual information.
    */
   _enrichSaveTransaction(context) {
-    const transaction = super._enrichSaveTransaction(context)
-    const { models, existings } = context
-    const references = models
-      .map(player =>
-        player?.provider ? [this._buildProviderIdKey(player), player.id] : null
+    const transaction =
+      /** @type {import('./abstract-repository.js').Transaction} */ (
+        super._enrichSaveTransaction(context)
       )
-      .filter(Boolean)
+    const { models, existings } = context
+    const references = /** @type {[string[]]} */ (
+      models
+        .map(player =>
+          player?.provider
+            ? [this._buildProviderIdKey(player), player.id]
+            : null
+        )
+        .filter(Boolean)
+    )
     if (references.length) {
       transaction.mset(...references)
     }
-    const oldUsernames = existings
-      .map(player => buildUsernameAutocomplete(player))
-      .filter(Boolean)
+    const oldUsernames = /** @type {string[]} */ (
+      existings.map(player => buildUsernameAutocomplete(player)).filter(Boolean)
+    )
     if (oldUsernames.length) {
       transaction.zrem(this.usernameAutocompleteKey, ...oldUsernames)
     }
-    const newUsernames = models
-      .map(player => buildUsernameAutocomplete(player))
-      .filter(Boolean)
+    const newUsernames = /** @type {string[]} */ (
+      models.map(player => buildUsernameAutocomplete(player)).filter(Boolean)
+    )
     if (newUsernames.length) {
       transaction.zadd(
         this.usernameAutocompleteKey,
@@ -110,31 +123,40 @@ class PlayerRepository extends AbstractRepository {
 
   /**
    * When deleting players, removes their provider id references and username for autocompletion.
-   * @private
-   * @param {AbstractRepository.DeleteTransactionContext} context - contextual information.
-   * @returns {AbstractRepository.Transaction} the applied transaction.
+   * @override
+   * @param {DeleteTransactionContext} context - contextual information.
    */
   async _enrichDeleteTransaction(context) {
-    const transaction = super._enrichDeleteTransaction(context)
-    const references = context.models
-      .flatMap(player =>
-        player
-          ? [this._buildProviderIdKey(player), this._buildFriendsKey(player.id)]
-          : null
+    const transaction =
+      /** @type {import('./abstract-repository.js').Transaction} */ (
+        super._enrichDeleteTransaction(context)
       )
-      .filter(Boolean)
+    const references = /** @type {string[]} */ (
+      context.models
+        .flatMap(player =>
+          player
+            ? [
+                this._buildProviderIdKey(player),
+                this._buildFriendsKey(player.id)
+              ]
+            : null
+        )
+        .filter(Boolean)
+    )
     if (references.length) {
       transaction.del(...references)
     }
-    const usernames = context.models
-      .map(player => buildUsernameAutocomplete(player))
-      .filter(Boolean)
+    const usernames = /** @type {string[]} */ (
+      context.models
+        .map(player => buildUsernameAutocomplete(player))
+        .filter(Boolean)
+    )
     if (usernames.length) {
       transaction.zrem(this.usernameAutocompleteKey, ...usernames)
     }
     for (const player of context.models) {
       if (player) {
-        for (const id of await this.client.zrange(
+        for (const id of await /** @type {Redis} */ (this.client).zrange(
           this._buildFriendsKey(player.id),
           0,
           -1
@@ -148,10 +170,8 @@ class PlayerRepository extends AbstractRepository {
 
   /**
    * Finds a player by their provider and providerId details.
-   * @param {object} player - the desired provider details, including:
-   * @param {string} player.provider - name of the provider.
-   * @param {string} player.providerId - provider id for this player
-   * @returns {Promise<object|null>} the corresponding player or null.
+   * @param {Pick<Player, 'provider'|'providerId'>} details - the desired provider details.
+   * @returns {Promise<?Player>} the corresponding player or null.
    */
   async getByProviderDetails(details) {
     if (!this.client) {
@@ -167,10 +187,13 @@ class PlayerRepository extends AbstractRepository {
    * @param {string} args.search - searched text
    * @param {number} [args.from = 0] - 0-based index of the first result
    * @param {number} [args.size = 10] - maximum number of models returned after first results.
-   * @param {number} [args.exact = false] - for exact search.
-   * @returns {Promise<import('./abstract-repository').Page>} a given page of matching players.
+   * @param {boolean} [args.exact = false] - for exact search.
+   * @returns {Promise<import('./abstract-repository').Page<Player>>} a given page of matching players.
    */
-  async searchByUsername({ search, from = 0, size = 10, exact = false } = {}) {
+  async searchByUsername({ search, from = 0, size = 10, exact = false }) {
+    const ctx = { search, from, size, exact }
+    this.logger.trace({ ctx }, 'finding players')
+    /** @type {Player[]} */
     let results = []
     let total = 0
     if (this.client) {
@@ -181,10 +204,22 @@ class PlayerRepository extends AbstractRepository {
         `[${seed}${exact ? ':{' : '{'}`
       )
       total = matching.length
-      results = await this.getById(
-        matching.slice(from, from + size).map(result => result.split(':')[1])
+      results = /** @type {Player[]} */ (
+        await this.getById(
+          matching.slice(from, from + size).map(result => result.split(':')[1])
+        )
       )
     }
+    this.logger.debug(
+      {
+        ctx,
+        res: {
+          total,
+          results: results.map(({ id, username }) => ({ id, username }))
+        }
+      },
+      'found players'
+    )
     return { total, from, size, results }
   }
 
@@ -197,13 +232,15 @@ class PlayerRepository extends AbstractRepository {
    * @returns {Promise<boolean>} true if the relationship was recorded.
    */
   async makeFriends(requestingId, targetedId, state = FriendshipRequested) {
+    const ctx = { requestingId, targetedId, state }
+    this.logger.trace({ ctx }, 'updating friendships')
     if (
       (await this.getById([requestingId, targetedId])).filter(Boolean)
         .length !== 2
     ) {
       return false
     }
-    const transaction = this.client.multi()
+    const transaction = /** @type {Redis} */ (this.client).multi()
     const targetedKey = this._buildFriendsKey(targetedId)
     const requestingKey = this._buildFriendsKey(requestingId)
     if (state === FriendshipEnded) {
@@ -228,7 +265,9 @@ class PlayerRepository extends AbstractRepository {
     const result = await transaction.exec()
     // first result is for requesting player, second for targeted player
     // the operation was successful if the targeted player was updated
-    return result[1][1] === 1
+    const successful = result?.[1][1] === 1
+    this.logger.debug({ ctx, res: successful }, 'updated friendships')
+    return successful
   }
 
   /**
@@ -237,31 +276,46 @@ class PlayerRepository extends AbstractRepository {
    * @returns {Promise<Friendship[]>} list of relationships.
    */
   async listFriendships(playerId) {
-    let id = null
-    return (
+    this.logger.trace({ ctx: { playerId } }, 'listing friendships')
+    let id = ''
+    if (!this.client) {
+      return []
+    }
+    const friendships = (
       await this.client.zrevrange(
         this._buildFriendsKey(playerId),
         0,
         -1,
         'WITHSCORES'
       )
-    ).reduce((list, value, rank) => {
-      if (rank % 2) {
-        list.push({ id, state: +value })
-      } else {
-        id = value
-      }
-      return list
-    }, [])
+    ).reduce(
+      (/** @type {{ id: String, state: number }[]} */ list, value, rank) => {
+        if (rank % 2) {
+          list.push({ id, state: +value })
+        } else {
+          id = value
+        }
+        return list
+      },
+      []
+    )
+    this.logger.debug(
+      { ctx: { playerId }, res: friendships },
+      'listed friendships'
+    )
+    return friendships
   }
 }
 
 /**
  * Player repository singleton.
- * @type {PlayerRepository}
  */
 export const players = new PlayerRepository()
 
+/**
+ * @param {string} str
+ * @returns {string}
+ */
 function normalizeString(str) {
   return (
     str
@@ -273,6 +327,10 @@ function normalizeString(str) {
   )
 }
 
+/**
+ * @param {?Player} player
+ * @returns {?string}
+ */
 function buildUsernameAutocomplete(player) {
   return player?.username
     ? `${normalizeString(player.username)}:${player.id}`

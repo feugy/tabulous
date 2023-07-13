@@ -1,6 +1,8 @@
+// @ts-check
+import { setTimeout } from 'node:timers/promises'
+
 import { faker } from '@faker-js/faker'
 import fastify from 'fastify'
-import { setTimeout } from 'timers/promises'
 import {
   afterAll,
   beforeAll,
@@ -12,7 +14,8 @@ import {
 } from 'vitest'
 
 import graphQL from '../../src/plugins/graphql.js'
-import services from '../../src/services/index.js'
+import realServices from '../../src/services/index.js'
+import { makeLogger } from '../../src/utils/index.js'
 import {
   mockMethods,
   openGraphQLWebSocket,
@@ -24,11 +27,20 @@ import {
 } from '../test-utils.js'
 import { clearDatabase, getRedisTestUrl } from '../test-utils.js'
 
+/** @typedef {import('../../src/services/players.js').Player} Player */
+
 describe('given a started server', () => {
+  /** @type {import('fastify').FastifyInstance} */
   let server
+  /** @type {import('ws')} */
   let ws
+  /** @type {ReturnType<typeof mockMethods>} */
   let restoreServices
-  vi.spyOn(console, 'warn').mockImplementation(() => {})
+  const services =
+    /** @type {import('../test-utils.js').MockedMethods<typeof realServices>} */ (
+      realServices
+    )
+  vi.spyOn(makeLogger('signals-resolver'), 'warn').mockImplementation(() => {})
   const pubsubUrl = getRedisTestUrl()
   const playerId = faker.string.uuid()
   const configuration = {
@@ -38,13 +50,15 @@ describe('given a started server', () => {
   beforeAll(async () => {
     server = fastify({ logger: false })
     server.decorate('conf', configuration)
-    server.register(graphQL, { pubsubUrl })
+    server.register(graphQL, { allowedOrigins: '.*', pubsubUrl })
     await server.listen()
     ws = await openGraphQLWebSocket(server)
     restoreServices = mockMethods(services)
   })
 
-  beforeEach(vi.resetAllMocks)
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
 
   afterAll(async () => {
     restoreServices()
@@ -85,7 +99,10 @@ describe('given a started server', () => {
         const peerId = faker.string.uuid()
         const gameId = faker.string.uuid()
         const signal = { to: peerId, data: '{"type": "answer"}' }
-        services.getPlayerById.mockImplementation(id => ({ id }))
+        services.getPlayerById.mockImplementation(
+          // @ts-expect-error: missing fields
+          id => /** @type {Player} */ ({ id })
+        )
         await startSubscription(
           ws,
           `subscription { awaitSignal(gameId: ${toGraphQLArg(
@@ -130,7 +147,10 @@ describe('given a started server', () => {
       it('sets current game Id based on subscription', async () => {
         const subId = faker.number.int()
         const gameId = faker.string.uuid()
-        services.getPlayerById.mockImplementation(id => ({ id }))
+        services.getPlayerById.mockImplementation(
+          // @ts-expect-error: missing fields
+          id => /** @type {Player} */ ({ id })
+        )
         await startSubscription(
           ws,
           `subscription { awaitSignal(gameId: ${toGraphQLArg(
@@ -158,7 +178,10 @@ describe('given a started server', () => {
       it('sends ready signal upon subscription', async () => {
         const subId = faker.number.int()
         const gameId = faker.string.uuid()
-        services.getPlayerById.mockImplementation(id => ({ id }))
+        services.getPlayerById.mockImplementation(
+          // @ts-expect-error: missing fields
+          id => /** @type {Player} */ ({ id })
+        )
         const startPromise = startSubscription(
           ws,
           `subscription { awaitSignal(gameId: ${toGraphQLArg(

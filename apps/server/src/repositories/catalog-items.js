@@ -1,40 +1,51 @@
-import { readdir } from 'fs/promises'
-import { pathToFileURL } from 'url'
+// @ts-check
+import { readdir } from 'node:fs/promises'
+import { pathToFileURL } from 'node:url'
 
-import { AbstractRepository } from './abstract-repository.js'
+import { makeLogger } from '../utils/index.js'
 
-class CatalogItemRepository extends AbstractRepository {
+/** @typedef {import('../services/catalog.js').GameDescriptor} CatalogItem */
+
+class CatalogItemRepository {
   /**
    * Builds a repository to manage the games catalog item.
    * It reads game descriptors from the file system, and can not be created, saved nor deleted.
-   * @param {object} args - arguments, including:
-   * @returns {CatalogItemRepository} a model repository.
    */
   constructor() {
-    super({ name: 'catalog' })
+    this.name = 'catalog'
+    /** @type {CatalogItem[]} */
     this.models = []
+    /** @type {Map<string, CatalogItem>} */
+    this.modelsByName = new Map()
+    this.logger = makeLogger(`${this.name}-repository`, {
+      ctx: { name: this.name }
+    })
   }
 
   /**
    * Connects the repository to the underlying storage system.
    * It reads all available descriptors.
-   * @async
    * @param {object} args - connection arguments:
    * @param {string} args.path - folder path containing game descriptors.
+   * @returns {Promise<void>}
    * @throws {Error} when provided path is not a readable folder.
    */
   async connect({ path }) {
+    const root = pathToFileURL(path).pathname
+    const ctx = { root }
+    this.logger.trace({ ctx }, 'initializing repository')
     let entries
     this.models = []
-    this.modelsByName = new Map()
+    this.modelsByName.clear()
     try {
       entries = await readdir(path, { withFileTypes: true })
     } catch (err) {
       throw new Error(
-        `Failed to connect Catalog Items repository: ${err.message}`
+        `Failed to connect Catalog Items repository: ${
+          /** @type {Error} */ (err).message
+        }`
       )
     }
-    const root = pathToFileURL(path).pathname
     for (const entry of entries) {
       if (entry.isDirectory() || entry.isSymbolicLink()) {
         const descriptor = `${root}/${entry.name}/index.js`
@@ -51,31 +62,38 @@ class CatalogItemRepository extends AbstractRepository {
           // ignore folders with no index.js or invalid symbolic links
           // Since recently (https://github.com/vitest-dev/vitest/commit/58ee8e9b6300fd6899072e34feb766805be1593c),
           // it can not be tested under vitest because an uncatchable rejection will be thrown
-          if (!err.message.includes(`Cannot find module '${descriptor}'`)) {
+          if (
+            err instanceof Error &&
+            !err.message.includes(`Cannot find module '${descriptor}'`)
+          ) {
             throw new Error(`Failed to load game ${entry.name}: ${err.message}`)
           }
           /* c8 ignore stop */
         }
       }
     }
+    this.logger.info(
+      { ctx, res: [...this.modelsByName.keys()] },
+      'initialized repository'
+    )
   }
 
   /**
    * Tears the repository down to release its connection.
    */
   async release() {
-    super.release()
     this.models = []
+    this.modelsByName.clear()
+    this.logger.debug('reseted repository')
   }
 
   /**
    * Lists all catalog items.
    * It complies with Page convention, but always returns all the available items.
-   * @async
-   * @param {object} args - list arguments:
-   * @returns {import('./abstract-repository').Page} a given page of catalog items.
+   * @returns {Promise<import('./abstract-repository').Page<CatalogItem>>} a given page of catalog items.
    */
   async list() {
+    this.logger.trace('listing models')
     return {
       total: this.models.length,
       from: 0,
@@ -85,10 +103,19 @@ class CatalogItemRepository extends AbstractRepository {
   }
 
   /**
+   * @overload
+   * @param {string} id
+   * @returns {Promise<?CatalogItem>}
+   */
+  /**
+   * @overload
+   * @param {string[]} id
+   * @returns {Promise<(?CatalogItem)[]>}
+   */
+  /**
    * Get a single or several model by their id.
-   * @async
    * @param {string|string[]} id - desired id(s).
-   * @returns {object|null|(object|null)[]} matching model(s), or null(s).
+   * @returns {Promise<?CatalogItem|(?CatalogItem)[]>} matching model(s), or null(s).
    */
   async getById(id) {
     const ids = Array.isArray(id) ? id : [id]
@@ -120,6 +147,5 @@ class CatalogItemRepository extends AbstractRepository {
 
 /**
  * Catalog item repository singleton.
- * @type {CatalogItemRepository}
  */
 export const catalogItems = new CatalogItemRepository()

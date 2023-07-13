@@ -1,9 +1,11 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import { join, resolve } from 'path'
 import { cwd } from 'process'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { loadConfiguration } from '../../src/services/configuration.js'
+import { makeLogger } from '../../src/utils/index.js'
 
 describe('loadConfiguration()', () => {
   const { ...envSave } = process.env
@@ -18,7 +20,9 @@ describe('loadConfiguration()', () => {
 
   beforeEach(() => {
     process.env = { ...envSave }
-    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    vi.spyOn(makeLogger('configuration-service'), 'fatal').mockImplementation(
+      () => {}
+    )
   })
 
   it('loads values from environment variables', () => {
@@ -31,8 +35,6 @@ describe('loadConfiguration()', () => {
       'debug'
     ])
     const gamesPath = faker.system.directoryPath()
-    const key = faker.system.filePath()
-    const cert = faker.system.filePath()
     const domain = faker.internet.url()
     const allowedOrigins = faker.internet.url()
 
@@ -46,11 +48,9 @@ describe('loadConfiguration()', () => {
       GOOGLE_ID: googleId,
       GOOGLE_SECRET: googleSecret,
       HOST: host,
-      HTTPS_CERT: cert,
-      HTTPS_KEY: key,
       JWT_KEY: jwtKey,
       LOG_LEVEL: level,
-      PORT: port,
+      PORT: port.toString(),
       TURN_SECRET: turnSecret,
       REDIS_URL: redisUrl,
       PUBSUB_URL: pubsubUrl
@@ -60,7 +60,6 @@ describe('loadConfiguration()', () => {
       isProduction: false,
       serverUrl: { host, port },
       logger: { level },
-      https: { key, cert },
       plugins: {
         graphql: {
           graphiql: true,
@@ -106,9 +105,8 @@ describe('loadConfiguration()', () => {
         port: 3001
       },
       logger: { level: 'debug' },
-      https: null,
       plugins: {
-        graphql: { graphiql: null, allowedOrigins, pubsubUrl },
+        graphql: { graphiql: false, allowedOrigins, pubsubUrl },
         static: {
           path: resolve(cwd(), '..', 'games'),
           pathPrefix: '/games'
@@ -154,7 +152,6 @@ describe('loadConfiguration()', () => {
           port: 3001
         },
         logger: { level: 'debug' },
-        https: null,
         plugins: {
           graphql: {
             graphiql: true,
@@ -211,7 +208,7 @@ describe('loadConfiguration()', () => {
     it('validates PORT variable', () => {
       process.env.PORT = 'invalid'
       expect(loadConfiguration).toThrow('/serverUrl/port must be uint16')
-      process.env.PORT = -100
+      process.env.PORT = '-100'
       expect(loadConfiguration).toThrow('/serverUrl/port must be uint16')
     })
 
@@ -220,7 +217,7 @@ describe('loadConfiguration()', () => {
       expect(loadConfiguration).toThrow(
         '/logger/level must be equal to one of the allowed values'
       )
-      process.env.PORT = true
+      process.env.PORT = 'true'
       expect(loadConfiguration).toThrow(
         '/logger/level must be equal to one of the allowed values'
       )

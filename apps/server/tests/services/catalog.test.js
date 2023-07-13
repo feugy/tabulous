@@ -1,3 +1,4 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import { join } from 'path'
 import {
@@ -19,22 +20,23 @@ import {
 import { clearDatabase, getRedisTestUrl } from '../test-utils.js'
 
 describe('Catalog service', () => {
-  const players = [
-    {
-      id: faker.string.uuid(),
-      username: faker.person.fullName(),
-      catalog: ['splendor', '6-takes']
-    },
-    {
-      id: faker.string.uuid(),
-      username: faker.person.fullName()
-    },
-    {
-      id: faker.string.uuid(),
-      username: faker.person.fullName(),
-      catalog: ['6-takes']
-    }
-  ]
+  const players =
+    /** @type {import('../../src/services/players.js').Player[]} */ ([
+      {
+        id: faker.string.uuid(),
+        username: faker.person.fullName(),
+        catalog: ['splendor', '6-takes']
+      },
+      {
+        id: faker.string.uuid(),
+        username: faker.person.fullName()
+      },
+      {
+        id: faker.string.uuid(),
+        username: faker.person.fullName(),
+        catalog: ['6-takes']
+      }
+    ])
 
   const items = [
     {
@@ -105,7 +107,7 @@ describe('Catalog service', () => {
       const gameName = items[4].name
       const player = await repositories.players.save({
         id: faker.string.uuid(),
-        name: faker.person.fullName(),
+        username: faker.person.fullName(),
         catalog: [items[2].name]
       })
       const grantedPlayer = {
@@ -122,7 +124,7 @@ describe('Catalog service', () => {
       const gameName = items[0].name
       const player = await repositories.players.save({
         id: faker.string.uuid(),
-        name: faker.person.fullName()
+        username: faker.person.fullName()
       })
       const grantedPlayer = {
         ...player,
@@ -138,7 +140,7 @@ describe('Catalog service', () => {
       const gameName = items[3].name
       const player = await repositories.players.save({
         id: faker.string.uuid(),
-        name: faker.person.fullName(),
+        username: faker.person.fullName(),
         catalog: [gameName]
       })
       expect(await grantAccess(player.id, gameName)).toBeNull()
@@ -149,7 +151,7 @@ describe('Catalog service', () => {
       const gameName = items[1].name
       const player = await repositories.players.save({
         id: faker.string.uuid(),
-        name: faker.person.fullName(),
+        username: faker.person.fullName(),
         catalog: [gameName]
       })
       expect(await grantAccess(player.id, gameName)).toBeNull()
@@ -160,7 +162,7 @@ describe('Catalog service', () => {
       const gameName = faker.string.uuid()
       const player = await repositories.players.save({
         id: faker.string.uuid(),
-        name: faker.person.fullName(),
+        username: faker.person.fullName(),
         catalog: [gameName]
       })
       expect(await grantAccess(player.id, gameName)).toBeNull()
@@ -177,7 +179,7 @@ describe('Catalog service', () => {
       const gameName = items[4].name
       const player = await repositories.players.save({
         id: faker.string.uuid(),
-        name: faker.person.fullName(),
+        username: faker.person.fullName(),
         catalog: [items[2].name, gameName]
       })
       const revokedPlayer = {
@@ -194,7 +196,7 @@ describe('Catalog service', () => {
       const gameName = items[3].name
       const player = await repositories.players.save({
         id: faker.string.uuid(),
-        name: faker.person.fullName(),
+        username: faker.person.fullName(),
         catalog: [items[0].name]
       })
       expect(await revokeAccess(player.id, gameName)).toBeNull()
@@ -205,7 +207,7 @@ describe('Catalog service', () => {
       const gameName = items[1].name
       const player = await repositories.players.save({
         id: faker.string.uuid(),
-        name: faker.person.fullName(),
+        username: faker.person.fullName(),
         catalog: [gameName]
       })
       expect(await revokeAccess(player.id, gameName)).toBeNull()
@@ -216,7 +218,7 @@ describe('Catalog service', () => {
       const gameName = faker.string.uuid()
       const player = await repositories.players.save({
         id: faker.string.uuid(),
-        name: faker.person.fullName(),
+        username: faker.person.fullName(),
         catalog: [gameName]
       })
       expect(await revokeAccess(player.id, gameName)).toBeNull()

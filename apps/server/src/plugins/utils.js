@@ -1,16 +1,26 @@
+// @ts-check
 import { createSigner, createVerifier } from 'fast-jwt'
 
 import services from '../services/index.js'
+import { makeLogger } from '../utils/logger.js'
 
+/** @typedef {import('../services/players.js').Player} Player */
+/** @typedef {Partial<import('fast-jwt').SignerOptions> & { key: string }} SignerOptions */
+/** @typedef {import('fast-jwt').SignerSync} Signer */
+/** @typedef {(jwt: string) => { id: string }} Verifier */
+
+/** @type {Map<string, Signer>} */
 const signerByKey = new Map()
+/** @type {Map<string, Verifier>} */
 const verifierByKey = new Map()
+const logger = makeLogger()
 
 /**
  * Finds the authenticated player based on Bearer data.
  * @async
  * @param {string} jwt - JWT set during authenticated and received from the incoming request.
  * @param {string} key - key used to verify the received sent.
- * @returns {import('../services/authentication').Player|null} the corresponding player, if any.
+ * @returns {Promise<?Player>} the corresponding player, if any.
  */
 export async function getAuthenticatedPlayer(jwt, key) {
   let player = null
@@ -18,8 +28,11 @@ export async function getAuthenticatedPlayer(jwt, key) {
     try {
       const { id } = getVerifier(key)(jwt)
       player = await services.getPlayerById(id)
-    } catch (e) {
-      console.log(e)
+    } catch (error) {
+      logger.warn(
+        { ctx: { jwt }, error },
+        `failed to retrieve authenticated player from JWT`
+      )
       player = null
     }
   }
@@ -28,14 +41,15 @@ export async function getAuthenticatedPlayer(jwt, key) {
 
 /**
  * Creates a signed JWT to identify the current player.
- * @param {import('../services/players.js').Player} player - authenticated player.
- * @param {import('fast-jwt').SignerOptions} signerOptions - options used to sign the sent JWT.
- * @return {string} the token created.
+ * @param {Player} player - authenticated player.
+ * @param {SignerOptions} signerOptions - options used to sign the sent JWT.
+ * @returns {string} the token created.
  */
 export function makeToken(player, signerOptions) {
   return getSigner(signerOptions)({ id: player.id })
 }
 
+/** @type {(opts: SignerOptions) => Signer} */
 function getSigner(opts) {
   let sign = signerByKey.get(opts.key)
   if (!sign) {
@@ -45,6 +59,7 @@ function getSigner(opts) {
   return sign
 }
 
+/** @type {(key: string) => Verifier} */
 function getVerifier(key) {
   let verify = verifierByKey.get(key)
   if (!verify) {

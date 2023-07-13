@@ -1,3 +1,4 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import fastify from 'fastify'
 import {
@@ -10,7 +11,8 @@ import {
   vi
 } from 'vitest'
 
-import { signToken } from '../test-utils'
+import { makeLogger } from '../../src/utils/index.js'
+import { signToken } from '../test-utils.js'
 
 vi.mock('../../src/services/index.js', () => ({
   default: {
@@ -22,9 +24,11 @@ vi.mock('../../src/services/index.js', () => ({
 }))
 
 describe('given a started server', () => {
+  /** @type {import('fastify').FastifyInstance} */
   let server
+  /** @type {import('../../src/services/index.js').default} */
   let services
-  vi.spyOn(console, 'warn').mockImplementation(() => {})
+  vi.spyOn(makeLogger('catalog-resolver'), 'warn').mockImplementation(() => {})
   const player = { id: faker.string.uuid(), username: faker.person.firstName() }
   const admin = {
     id: faker.string.uuid(),
@@ -42,12 +46,15 @@ describe('given a started server', () => {
     const graphQL = await import('../../src/plugins/graphql.js')
     server = fastify({ logger: false })
     server.decorate('conf', configuration)
+    // @ts-expect-error
     server.register(graphQL)
     await server.listen()
     services = (await import('../../src/services/index.js')).default
   })
 
-  beforeEach(vi.resetAllMocks)
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
 
   afterAll(() => server?.close())
 
