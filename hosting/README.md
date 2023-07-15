@@ -227,8 +227,9 @@ It can also be manually triggered from the [Github action interface](https://git
 
 _Hints_
 
-Tail server logs: `journalctl -f -u tabulous`
+Tail server logs: `journalctl -f -u tabulous -o cat | jq`
 Tail nginx logs: `tail -f /var/log/nginx/access.log`
+Clean logs: `sudo journalctl --vacuum-time=2months`
 
 ## Tabulous Configuration
 
