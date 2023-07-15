@@ -1,5 +1,6 @@
 // @ts-check
 import { readFileSync, writeFileSync } from 'node:fs'
+import { setTimeout } from 'node:timers/promises'
 
 import { createSigner } from 'fast-jwt'
 import Redis from 'ioredis'
@@ -147,4 +148,25 @@ export async function clearDatabase(databaseUrl) {
     throw new Error('you forgot to specificy a database url')
   }
   await new Redis(databaseUrl).flushdb()
+}
+
+/**
+ * Repeately calls a function until it succeeds. Waits 100ms between each calls.
+ * Fails when the overall timeout expires
+ * @param {() => ?} fn - invoked function.
+ * @param {number} [timeout=500] - overall timeout.
+ * @returns {Promise<void>}
+ * @throws {Error} if the invoked function did not succeeded within configured time out.
+ */
+export async function waitUntil(fn, timeout = 1500) {
+  const start = Date.now()
+  do {
+    try {
+      await fn()
+      return
+    } catch {
+      await setTimeout(100)
+    }
+  } while (Date.now() - start < timeout)
+  throw new Error(`function failed to complete within ${timeout}ms`)
 }

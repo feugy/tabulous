@@ -6,24 +6,18 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
   addToLogContext,
+  configureLoggers,
   createLogContext,
+  currentLevels,
   makeLogger
 } from '../../src/utils/index.js'
 
 describe('makeLogger()', () => {
-  const stdout = vi
-    .spyOn(process.stdout, 'write')
-    .mockImplementation(() => Promise.resolve(true))
+  const stdout = vi.spyOn(process.stdout, 'write').mockResolvedValue(true)
+  const warn = vi.spyOn(console, 'warn').mockResolvedValue()
 
   beforeEach(() => {
     vi.clearAllMocks()
-  })
-
-  it('caches created instance and returns it', () => {
-    const name = faker.airline.aircraftType()
-    const logger = makeLogger(name)
-    expect(logger).toBeDefined()
-    expect(makeLogger(name)).toStrictEqual(logger)
   })
 
   it('creates logger with initial object', async () => {
@@ -38,9 +32,70 @@ describe('makeLogger()', () => {
     expect(stdout).toHaveBeenCalledWith(
       serialize({ ...initial, logger: name, msg })
     )
+    expect(currentLevels[name]).toEqual('trace')
   })
 
-  describe('given 2 loggers', () => {
+  it('can configure uncreated logger', async () => {
+    const name = faker.airline.aircraftType()
+    configureLoggers({ [name]: 'info' })
+    expect(currentLevels[name]).toEqual('info')
+    const logger = makeLogger(name)
+    logger.trace('trace')
+    logger.debug('debug')
+    logger.info('info')
+
+    expect(stdout).toHaveBeenCalledOnce()
+    expect(stdout).toHaveBeenNthCalledWith(1, serialize({ msg: 'info' }))
+  })
+
+  describe('given a logger', () => {
+    let name = ''
+    /** @type {import('../../src/utils/logger.js').Logger} */
+    let logger
+
+    beforeEach(() => {
+      name = faker.string.uuid()
+      logger = makeLogger(name)
+    })
+
+    it('caches created instance and returns it', () => {
+      expect(logger).toBeDefined()
+      expect(makeLogger(name)).toStrictEqual(logger)
+    })
+
+    it('can reconfigure level', async () => {
+      expect(logger.level).toEqual('trace')
+      expect(currentLevels[name]).toEqual('trace')
+      logger.trace('trace')
+      expect(stdout).toHaveBeenCalledOnce()
+      expect(stdout).toHaveBeenNthCalledWith(1, serialize({ msg: 'trace' }))
+      configureLoggers({ [name]: 'debug' })
+      logger.trace('trace2')
+      logger.debug('debug3')
+      expect(logger.level).toEqual('debug')
+      expect(stdout).toHaveBeenCalledTimes(2)
+      expect(stdout).toHaveBeenNthCalledWith(2, serialize({ msg: 'debug3' }))
+      expect(currentLevels[name]).toEqual('debug')
+    })
+
+    it('ignores unsupported level', async () => {
+      expect(logger.level).toEqual('trace')
+      logger.trace('trace')
+      expect(stdout).toHaveBeenCalledOnce()
+      expect(stdout).toHaveBeenNthCalledWith(1, serialize({ msg: 'trace' }))
+
+      // @ts-expect-error: 'whatever' is not a valid LevelWithSilent
+      configureLoggers({ [name]: 'whatever' })
+      logger.trace('trace2')
+      expect(logger.level).toEqual('trace')
+      expect(currentLevels[name]).toEqual('trace')
+      expect(stdout).toHaveBeenCalledTimes(2)
+      expect(stdout).toHaveBeenNthCalledWith(2, serialize({ msg: 'trace2' }))
+      expect(warn).toHaveBeenCalledOnce()
+    })
+  })
+
+  describe('given two loggers', () => {
     const loggers = [makeLogger('test-1'), makeLogger('test-2')]
 
     it('shares context between loggers', async () => {

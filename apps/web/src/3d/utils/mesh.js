@@ -32,7 +32,7 @@ export function isContaining(container, mesh) {
  */
 
 /**
- * Returns a given mesh's dimension, that is its extend on Y and X axes.
+ * Returns a given mesh's dimension, that is its extent on Y and X axes.
  * **Requires a fresh world matrix**.
  * @param {Mesh} mesh - sized mesh.
  * @returns {Dimensions} mesh's dimensions.

@@ -18,7 +18,7 @@ const logContext = new AsyncLocalStorage()
  * Initial level values for loggers
  * @type {Record<string, Level>}
  */
-const levels = {
+export const currentLevels = {
   'auth-plugin': 'warn',
   'catalog-repository': 'warn',
   'catalog-service': 'warn',
@@ -63,10 +63,11 @@ export function addToLogContext(object) {
  */
 export function makeLogger(name = 'server', initialObject) {
   if (!loggers.has(name)) {
+    currentLevels[name] = currentLevels[name] ?? 'trace'
     loggers.set(
       name,
       pino({
-        level: levels[name] ?? 'trace',
+        level: currentLevels[name],
         mixin(mergeObject) {
           return {
             ...(initialObject ?? {}),
@@ -98,6 +99,6 @@ export function configureLoggers(levels) {
     if (logger) {
       logger.level = newLevel
     }
-    levels[name] = newLevel
+    currentLevels[name] = newLevel
   }
 }

@@ -8,7 +8,7 @@ import { TargetBehaviorName } from './names'
  * @typedef {object} DropZone definition of a target drop zone
  * @property {TargetBehavior} targetable - the enclosing targetable behavior.
  * @property {import('@babylonjs/core').Mesh} mesh - invisible, unpickable mesh acting as drop zone.
- * @property {number} extend - units (in 3D coordinate) added to the zone's bounding box to determine.
+ * @property {number} extent - units (in 3D coordinate) added to the zone's bounding box to determine.
  * @property {boolean} enabled - whether this zone is active or not.
  * @property {boolean} ignoreParts - whether this zone consider mesh's slots or not.
  * @property {string[]} kinds? - an optional array of allowed drag kinds for this zone (allows all if not present).
@@ -18,7 +18,7 @@ import { TargetBehaviorName } from './names'
 
 /**
  * @typedef {object} ZoneProps properties of a drop zone
- * @property {number} extend - units (in 3D coordinate) added to the zone's bounding box to determine.
+ * @property {number} extent - units (in 3D coordinate) added to the zone's bounding box to determine.
  * @property {boolean} enabled - whether this zone is active or not.
  * @property {string[]} kinds? - an optional array of allowed drag kinds for this zone (allows all if not present).
  * @property {number} priority? - priority applied when multiple targets with same altitude apply.
