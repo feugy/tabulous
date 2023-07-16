@@ -2,7 +2,7 @@
 
 ## Road to beta
 
-- server log tailing + reconfiguration
+- server log tailing
 - automerge.js
 - improve searchability with orama search
 - configure personal searchability

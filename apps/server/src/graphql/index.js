@@ -7,6 +7,7 @@ import merge from 'deepmerge'
 
 import catalogResolvers from './catalog-resolver.js'
 import gamesResolvers from './games-resolver.js'
+import loggerResolvers from './logger-resolver.js'
 import playersResolvers from './players-resolver.js'
 import signalsResolvers from './signals-resolver.js'
 
@@ -17,7 +18,8 @@ const schema = [
   'players.graphql',
   'signals.graphql',
   'catalog.graphql',
-  'games.graphql'
+  'games.graphql',
+  'logger.graphql'
 ].map(loadTypeDefs)
 
 // @ts-ignore
@@ -25,7 +27,8 @@ const { loaders, ...resolvers } = merge.all([
   catalogResolvers,
   gamesResolvers,
   playersResolvers,
-  signalsResolvers
+  signalsResolvers,
+  loggerResolvers
 ])
 
 export { loaders, resolvers, schema }

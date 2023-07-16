@@ -1,0 +1,27 @@
+enum Level {
+  fatal
+  error
+  warn
+  info
+  debug
+  trace
+  silent
+}
+
+type LoggerLevel {
+  name: String!
+  level: Level!
+}
+
+input InputLoggerLevel {
+  name: String!
+  level: String!
+}
+
+extend type Query {
+  getLoggerLevels: [LoggerLevel]
+}
+
+extend type Mutation {
+  configureLoggerLevels(levels: [InputLoggerLevel!]!): [LoggerLevel]
+}
