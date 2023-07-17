@@ -70,6 +70,11 @@ export async function addPlayer({ username, password }) {
   return attachFormater({ player }, formatPlayer)
 }
 
+/**
+ *
+ * @param {AddPlayerResult} result
+ * @returns {string}
+ */
 function formatPlayer({ player }) {
   return chalkTemplate`player {bold ${player.username}} added with id {bold ${player.id}}`
 }

@@ -4,14 +4,15 @@ import camelCase from 'lodash.camelcase'
 
 const requiredSymbol = Symbol('required')
 
-export const RequiredString = value => String(value)
+export const RequiredString = (/** @type {any} */ value) => String(value)
 RequiredString.required = requiredSymbol
 
 /**
  * Parse provided command line arguments against spec.
+ * @template {arg.Spec} T
  * @param {string[]} argv - array of parsed arguments (without executable and current file).
- * @param {arg.Spec} spec - parser specification.
- * @returns {object} parsed command line arguments.
+ * @param {T} spec - parser specification.
+ * @returns {any} parsed command line arguments.
  */
 export function parseArgv(argv = [], spec) {
   const parsed = arg(spec, { permissive: true, argv })
@@ -24,7 +25,7 @@ export function parseArgv(argv = [], spec) {
   if (!args.help) {
     for (const name in spec) {
       const friendlyName = camelCase(name)
-      // @ts-ignore
+      // @ts-expect-error:  Property 'required' does not exist on type 'string'
       if (spec[name].required && !(friendlyName in args)) {
         throw new Error(`no ${friendlyName} provided`)
       }

@@ -1,3 +1,4 @@
+// @ts-check
 import stripAnsi from 'strip-ansi'
 import { describe, expect, it } from 'vitest'
 

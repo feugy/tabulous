@@ -22,7 +22,9 @@ describe('getGraphQLClient()', () => {
     ;({ findUser } = await import('../../src/util/find-user.js'))
   })
 
-  beforeEach(vi.clearAllMocks)
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
 
   it('returns existing user', async () => {
     const player = {

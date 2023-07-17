@@ -1,3 +1,4 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import stripAnsi from 'strip-ansi'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -8,6 +9,8 @@ import { signToken } from '../../src/util/jwt.js'
 const mockQuery = vi.fn()
 const mockMutation = vi.fn()
 
+/** @typedef {import('../../src/index.js').Command} Command */
+
 vi.mock('../../src/util/graphql-client.js', () => ({
   getGraphQLClient: vi
     .fn()
@@ -15,6 +18,7 @@ vi.mock('../../src/util/graphql-client.js', () => ({
 }))
 
 describe('Player game granting command', () => {
+  /** @type {Command} */
   let grant
   const adminUserId = faker.string.uuid()
   const jwtKey = faker.string.uuid()
@@ -26,7 +30,9 @@ describe('Player game granting command', () => {
     grant = (await import('../../src/commands/grant.js')).default
   })
 
-  beforeEach(vi.clearAllMocks)
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
 
   it('throws on missing username', async () => {
     await expect(grant([])).rejects.toThrow('no username provided')

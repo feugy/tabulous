@@ -1,5 +1,4 @@
 // @ts-check
-
 import chalkTemplate from 'chalk-template'
 
 const symbol = Symbol('formaters')
@@ -7,7 +6,7 @@ const symbol = Symbol('formaters')
 /**
  * Prints on console the provided object with its attached formaters.
  * If there are none, prints it raw.
- * @param {any} object - printed object
+ * @param {object} object - printed object
  */
 export function printWithFormaters(object) {
   for (const output of applyFormaters(object)) {
@@ -17,10 +16,12 @@ export function printWithFormaters(object) {
 
 /**
  * Invokes formaters of an object.
- * @param {*} object - printed object.
- * @returns {Array<object|string>} list of outputs, either strings or raw objects.
+ * @template {Record<string|symbol, any>} T
+ * @param {T} object - printed object.
+ * @returns {(T|string)[]} list of outputs, either strings or raw objects.
  */
 export function applyFormaters(object) {
+  /** @type {(T|string)[]} */
   const output = ['']
   const formaters = object?.[symbol] ?? []
   for (const formater of formaters) {
@@ -34,15 +35,17 @@ export function applyFormaters(object) {
 
 /**
  * Adds a formater to an object. The new formater can be added at the beginning of the formater list, or at the end (default)
- * @param {any} object - object to add this formater to.
- * @param {function} formater - added formater function.
+ * @template {Record<string|symbol, any>} T
+ * @param {T} object - object to add this formater to.
+ * @param {(obj: T) => string} formater - added formater function.
  * @param {boolean} [first=false] - whether to add this formater first or last.
- * @returns {any} the mutated object.
+ * @returns {T} the mutated object.
  */
 export function attachFormater(object, formater, first = false) {
   let formaters = object[symbol]
   if (!formaters) {
     formaters = []
+    // @ts-ignore
     object[symbol] = formaters
   }
   formaters[first ? 'unshift' : 'push'](formater)
@@ -50,15 +53,8 @@ export function attachFormater(object, formater, first = false) {
 }
 
 /**
- * @typedef {object} Game game details
- * @property {string} id - game unique identifier.
- * @property {string} kind? - game kind, if any.
- * @property {number} created - creation timestamp.
- */
-
-/**
  * Formater for game objects.
- * @param {Game} game - game to format.
+ * @param {import('@tabulous/server/src/services/games.js').Game} game - game to format.
  * @returns {string} formatted game.
  */
 export function formatGame({ id, created, kind }) {
@@ -67,12 +63,8 @@ export function formatGame({ id, created, kind }) {
   )}} (${id})`
 }
 
-/**
- * @typedef {object} Player player account
- * @property {string} id - player unique identifier.
- * @property {string} username - player display name.
- * @property {string} email? - player email, when relevant.
- */
+/** @typedef {import('@tabulous/server/src/services/players.js').Player} _Player */
+/** @typedef {_Player & { isOwner?: boolean }} Player */
 
 /**
  * Formater for player objects.

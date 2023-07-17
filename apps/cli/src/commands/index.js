@@ -1,3 +1,4 @@
+// @ts-check
 export { default as addPlayer } from './add-player.js'
 export { default as catalog } from './catalog.js'
 export { default as deleteGame } from './delete-game.js'

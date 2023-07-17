@@ -15,7 +15,7 @@ import { commonOptions } from './help.js'
 
 /**
  * @typedef {object} DeleteGameResult game deletion command result
- * @property {import('../util/formaters.js').Game} game - deleted game.
+ * @property {import('@tabulous/server/src/repositories/games.js').Game} game - deleted game.
  */
 
 const deleteGameMutation = gql`

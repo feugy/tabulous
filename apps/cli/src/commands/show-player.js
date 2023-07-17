@@ -15,16 +15,10 @@ import {
 } from '../util/index.js'
 import { commonOptions } from './help.js'
 
-/**
- * @typedef {object} PlayerDetails
- * @property {string} id
- * @property {string} username
- * @property {number} currentGameId
- * @property {string} provider
- * @property {string} email
- * @property {boolean} termsAccepted
- * @property {import('../util/formaters.js').Game[]} games
- */
+/** @typedef {import('../util/formaters.js').Player} Player */
+/** @typedef {import('@tabulous/server/src/services/games.js').Game} _Game */
+/** @typedef {(_Game & { players: Player[] })} Game */
+/** @typedef {Player & { games: Game[] }} PlayerDetails */
 
 const listGamesQuery = gql`
   query listGamesQuery {
@@ -82,6 +76,10 @@ export async function showPlayer({ username }) {
   )
 }
 
+/**
+ * @param {Player} result
+ * @returns {string} formatted results
+ */
 function formatPlayerDetails({
   id,
   isAdmin,
@@ -101,6 +99,10 @@ function formatPlayerDetails({
 
 const spacing = '\n                '
 
+/**
+ * @param {PlayerDetails} result
+ * @returns {string} formatted results
+ */
 function formatGames({ id: playerId, games }) {
   const { owned, invited } = games.reduce(
     (counts, game) => {
@@ -111,7 +113,7 @@ function formatGames({ id: playerId, games }) {
       }
       return counts
     },
-    { owned: [], invited: [] }
+    { owned: /** @type {Game[]} */ ([]), invited: /** @type {Game[]} */ ([]) }
   )
   owned.sort(byCreatedDate)
   invited.sort(byCreatedDate)
@@ -134,6 +136,11 @@ showPlayerCommand.help = function help() {
     ${commonOptions}`
 }
 
+/**
+ * @param {Game} gameA
+ * @param {Game} gameB
+ * @returns {number}
+ */
 function byCreatedDate({ created: a }, { created: b }) {
   return b - a
 }

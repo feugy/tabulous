@@ -1,3 +1,4 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import stripAnsi from 'strip-ansi'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -7,11 +8,14 @@ import { signToken } from '../../src/util/jwt.js'
 
 const mockQuery = vi.fn()
 
+/** @typedef {import('../../src/index.js').Command} Command */
+
 vi.mock('../../src/util/graphql-client.js', () => ({
   getGraphQLClient: vi.fn().mockReturnValue({ mutation: mockQuery })
 }))
 
 describe('Player deletion command', () => {
+  /** @type {Command} */
   let deletePlayer
   const adminPlayerId = faker.string.uuid()
   const jwtKey = faker.string.uuid()
@@ -23,7 +27,9 @@ describe('Player deletion command', () => {
     deletePlayer = (await import('../../src/commands/delete-player.js')).default
   })
 
-  beforeEach(vi.clearAllMocks)
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
 
   it('throws on missing player id', async () => {
     await expect(deletePlayer([])).rejects.toThrow('no player-id provided')

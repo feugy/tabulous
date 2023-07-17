@@ -1,3 +1,4 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import stripAnsi from 'strip-ansi'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -7,11 +8,15 @@ import { signToken } from '../../src/util/jwt.js'
 
 const mockQuery = vi.fn()
 
+/** @typedef {import('../../src/commands/show-player.js').Game} Game */
+/** @typedef {import('../../src/index.js').Command} Command */
+
 vi.mock('../../src/util/graphql-client.js', () => ({
   getGraphQLClient: vi.fn().mockReturnValue({ mutation: mockQuery })
 }))
 
 describe('Game deletion command', () => {
+  /** @type {Command} */
   let deleteGame
   const adminPlayerId = faker.string.uuid()
   const jwtKey = faker.string.uuid()
@@ -23,7 +28,9 @@ describe('Game deletion command', () => {
     deleteGame = (await import('../../src/commands/delete-game.js')).default
   })
 
-  beforeEach(vi.clearAllMocks)
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
 
   it('throws on missing game-id', async () => {
     await expect(deleteGame([])).rejects.toThrow('no game-id provided')
@@ -43,7 +50,7 @@ describe('Game deletion command', () => {
     const id = faker.string.uuid()
     const kind = faker.lorem.word()
     const created = Date.now()
-    const game = { id, kind, created }
+    const game = /** @type {Game} */ ({ id, kind, created })
     mockQuery.mockResolvedValueOnce({ deleteGame: game })
     const result = await deleteGame([id])
     expect(result).toMatchObject({ game })
@@ -61,7 +68,7 @@ describe('Game deletion command', () => {
   it('handles deleted lobby', async () => {
     const id = faker.string.uuid()
     const created = Date.now()
-    const lobby = { id, created }
+    const lobby = /** @type {Game} */ ({ id, created })
     mockQuery.mockResolvedValueOnce({ deleteGame: lobby })
     const result = await deleteGame([id])
     expect(result).toMatchObject({ game: lobby })

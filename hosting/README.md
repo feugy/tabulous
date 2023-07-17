@@ -285,3 +285,7 @@ Create an hourly backup
    sudo cp gitea /usr/local/bin/gitea
    sudo systemctl start gitea
    ```
+1. tailing and parsing logs:
+   ```sh
+   ssh ubuntu@vps-XYZ.vps.ovh.net "journalctl -f -o cat -u tabulous" | jq '.time |= (./1000 | todate)'
+   ```

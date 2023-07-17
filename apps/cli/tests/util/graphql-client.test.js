@@ -17,7 +17,9 @@ describe('getGraphQLClient()', () => {
     ;({ getGraphQLClient } = await import('../../src/util/graphql-client.js'))
   })
 
-  beforeEach(vi.clearAllMocks)
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
 
   it('builds client from configuration', () => {
     loadConfiguration.mockReturnValue({ url, jwt: { key: jwtKey } })
@@ -47,7 +49,9 @@ describe('getGraphQLClient()', () => {
       networkMock = mockAgent.get(url)
     })
 
-    beforeEach(vi.clearAllMocks)
+    beforeEach(() => {
+      vi.clearAllMocks()
+    })
 
     it('throws returned errors', async () => {
       const error = new Error('boom')
