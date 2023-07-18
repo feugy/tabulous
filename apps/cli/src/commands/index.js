@@ -1,6 +1,7 @@
 // @ts-check
 export { default as addPlayer } from './add-player.js'
 export { default as catalog } from './catalog.js'
+export { default as configureLoggers } from './configure-loggers.js'
 export { default as deleteGame } from './delete-game.js'
 export { default as deletePlayer } from './delete-player.js'
 export { default as grant } from './grant.js'
