@@ -1,3 +1,4 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import kebabCase from 'lodash.kebabcase'
 import stripAnsi from 'strip-ansi'
@@ -12,7 +13,10 @@ vi.mock('../../src/util/graphql-client.js', () => ({
   getGraphQLClient: vi.fn().mockReturnValue({ mutation: mockQuery })
 }))
 
+/** @typedef {import('../../src/index.js').Command} Command */
+
 describe('Player addition command', () => {
+  /** @type {Command} */
   let addPlayer
   const adminPlayerId = faker.string.uuid()
   const jwtKey = faker.string.uuid()
@@ -24,7 +28,9 @@ describe('Player addition command', () => {
     addPlayer = (await import('../../src/commands/add-player.js')).default
   })
 
-  beforeEach(vi.clearAllMocks)
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
 
   it('throws on missing username', async () => {
     await expect(addPlayer([])).rejects.toThrow('no username provided')

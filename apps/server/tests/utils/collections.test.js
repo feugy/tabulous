@@ -1,3 +1,4 @@
+// @ts-check
 import { describe, expect, it } from 'vitest'
 
 import { pickRandom, shuffle } from '../../src/utils/index.js'
@@ -21,6 +22,7 @@ describe('shuffle()', () => {
 
   it('handles missing input', () => {
     expect(shuffle()).toEqual([])
+    // @ts-expect-error: Argument of type 'null' is not assignable to parameter of type 'any[] | undefined'
     expect(shuffle(null)).toEqual([])
     expect(shuffle([])).toEqual([])
   })

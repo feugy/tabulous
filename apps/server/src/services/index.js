@@ -1,3 +1,4 @@
+// @ts-check
 import * as githubAuth from './auth/github.js'
 import * as googleAuth from './auth/google.js'
 import * as catalog from './catalog.js'

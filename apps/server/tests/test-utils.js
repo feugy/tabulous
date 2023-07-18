@@ -1,4 +1,6 @@
+// @ts-check
 import { readFileSync, writeFileSync } from 'node:fs'
+import { setTimeout } from 'node:timers/promises'
 
 import { createSigner } from 'fast-jwt'
 import Redis from 'ioredis'
@@ -7,30 +9,30 @@ import WebSocket from 'ws'
 
 /**
  * Opens a web socket to run GraphQL subscriptions.
- * @async
  * @param {import('fastify').FastifyInstance} app - fastify instance to connect to.
- * @returns {WebSocket} connected web socket.
+ * @returns {Promise<WebSocket>} connected web socket.
  */
 export function openGraphQLWebSocket(app) {
   const ws = new WebSocket(
-    `ws://localhost:${app.server.address().port}/graphql`,
+    `ws://localhost:${
+      /** @type {import('node:net').AddressInfo} */ (app.server.address()).port
+    }/graphql`,
     'graphql-ws'
   )
-  // ws.on('message', buffer => console.debug(`ws received: ${buffer.toString()}`))
   return new Promise(resolve => ws.once('open', () => resolve(ws)))
 }
 
 /**
  * Waits for the web socket to receive a message.
  * You can specify condition on the expected message
- * @async
+ * @template {{ type: string }} T
  * @param {WebSocket} ws - websocket client.
- * @param {function} matcher - a function that takes receive data and returns a boolean.
- * @returns {object} message returned, as an object.
+ * @param {(data: T) => boolean} matcher - a function that takes receive data and returns a boolean.
+ * @returns {Promise<T>} message returned, as an object.
  */
 export function waitOnMessage(ws, matcher = () => true) {
   return new Promise(resolve => {
-    function handleMessage(buffer) {
+    function handleMessage(/** @type {Buffer} */ buffer) {
       const data = JSON.parse(buffer.toString())
       if (matcher(data)) {
         ws.removeListener('message', handleMessage)
@@ -43,25 +45,26 @@ export function waitOnMessage(ws, matcher = () => true) {
 
 /**
  * Starts listening on a GraphQL subscription.
- * @async
  * @param {WebSocket} ws - websocket client.
  * @param {string} query - GraphQL subscription query.
  * @param {string} bearer - data sent as bearer on connection.
  * @param {number} [id=1] - subscription (unique) id.
- * @returns {object} connection acknowledge message.
+ * @returns {Promise<object>} connection acknowledge message.
  */
 export function startSubscription(ws, query, bearer, id = 1) {
   ws.send(JSON.stringify({ type: 'connection_init', payload: { bearer } }))
   ws.send(JSON.stringify({ id, type: 'start', payload: { query } }))
-  return waitOnMessage(ws, data => data.type === 'connection_ack')
+  return waitOnMessage(
+    ws,
+    (/** @type {{ type: string; }} */ data) => data.type === 'connection_ack'
+  )
 }
 
 /**
  * Stops listening to a GraphQL subscription.
- * @async
  * @param {WebSocket} ws - websocket client.
  * @param {number} [id=1] - subscription (unique) id.
- * @returns {object} connection completion message.
+ * @returns {Promise<object>} connection completion message.
  */
 export function stopSubscription(ws, id = 1) {
   ws.send(JSON.stringify({ id, type: 'stop' }))
@@ -71,17 +74,19 @@ export function stopSubscription(ws, id = 1) {
 /**
  * Turns a plain JS Object into a GraphQL compliant argument,
  * that can be used in a GraphQL query string.
- * @param {object} object - the input object.
+ * @param {object|string|number} object - the input object.
  * @returns {string} its representation as a GraphQL argument.
  */
 export function toGraphQLArg(object) {
   return JSON.stringify(object).replace(/"(\w+)":/g, '$1:')
 }
 
+/** @template {object} T @typedef {import('vitest').Mocked<T>} MockedMethods */
+
 /**
  * Monkey patch all methods, replacing them with vi mocks.
  * Does not modify getters, setters and plain attributes
- * @param {object} object - hash containing all service methods.
+ * @param {Record<string, any>} object - hash containing all service methods.
  * @returns {function} revert patching when called.
  */
 export function mockMethods(object) {
@@ -97,8 +102,9 @@ export function mockMethods(object) {
 /**
  * Performs a deep clone, using JSON parse and stringify
  * This is a slow, destructive (functions, Date and Regex are lost) method, only suitable in tests
- * @param {object} object - cloned object
- * @returns {object} a clone
+ * @template {object} T
+ * @param {T} object - cloned object
+ * @returns {T} a clone
  */
 export function cloneAsJSON(object) {
   return JSON.parse(JSON.stringify(object))
@@ -134,7 +140,7 @@ export function getRedisTestUrl() {
 
 /**
  * Synchronously removes all keys from a given Redis database.
- * @param {string} url to the redis database.
+ * @param {string} databaseUrl to the redis database.
  * @returns {Promise<void>} resolves when done.
  */
 export async function clearDatabase(databaseUrl) {
@@ -142,4 +148,25 @@ export async function clearDatabase(databaseUrl) {
     throw new Error('you forgot to specificy a database url')
   }
   await new Redis(databaseUrl).flushdb()
+}
+
+/**
+ * Repeately calls a function until it succeeds. Waits 100ms between each calls.
+ * Fails when the overall timeout expires
+ * @param {() => ?} fn - invoked function.
+ * @param {number} [timeout=500] - overall timeout.
+ * @returns {Promise<void>}
+ * @throws {Error} if the invoked function did not succeeded within configured time out.
+ */
+export async function waitUntil(fn, timeout = 1500) {
+  const start = Date.now()
+  do {
+    try {
+      await fn()
+      return
+    } catch {
+      await setTimeout(100)
+    }
+  } while (Date.now() - start < timeout)
+  throw new Error(`function failed to complete within ${timeout}ms`)
 }

@@ -1,3 +1,4 @@
+// @ts-check
 import * as abstractRepository from './abstract-repository.js'
 import * as catalogItems from './catalog-items.js'
 import * as games from './games.js'

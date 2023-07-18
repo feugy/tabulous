@@ -21,9 +21,14 @@ const revokeAccessMutation = gql`
   }
 `
 /**
+ * @typedef {object} RevokeAccessResult catalog item revoke command result.
+ * @property {boolean} revokeAccess - whether the catalog item was revoked.
+ */
+
+/**
  * Triggers the revoke command.
  * @param {string[]} argv - array of parsed arguments (without executable and current file).
- * @returns {Promise<Boolean|string>} whether the operation succeeded.
+ * @returns {Promise<RevokeAccessResult|string>} whether the operation succeeded.
  */
 export default async function revokeCommand(argv) {
   const args = parseArgv(argv, {
@@ -50,7 +55,7 @@ export default async function revokeCommand(argv) {
 /**
  * Revoke game access to a player.
  * @param {RevokeArgs} args - username and game Name.
- * @returns {Promise<Boolean>} whether the operation succeeded.
+ * @returns {Promise<RevokeAccessResult>} whether the operation succeeded.
  */
 export async function revoke({ username, gameName }) {
   const client = getGraphQLClient()
@@ -70,6 +75,10 @@ export async function revoke({ username, gameName }) {
   )
 }
 
+/**
+ * @param {RevokeAccessResult} result
+ * @returns {string} formatted result
+ */
 function formatRevokation({ revokeAccess }) {
   return revokeAccess
     ? chalkTemplate`🚷 access {green revoked}\n`

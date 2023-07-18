@@ -1,9 +1,16 @@
+// @ts-check
 import {
   AbstractRepository,
   deserializeArray,
   deserializeNumber
 } from './abstract-repository.js'
 
+/** @typedef {import('../services/games.js').GameData} Game */
+/** @typedef {import('./abstract-repository.js').SaveTransactionContext<Game>} SaveTransactionContext */
+/** @typedef {import('./abstract-repository.js').DeleteTransactionContext<Game>} DeleteTransactionContext */
+/** @typedef {SaveTransactionContext['transaction']} Transaction */
+
+/** @extends AbstractRepository<Game> */
 class GameRepository extends AbstractRepository {
   static fields = [
     { name: 'created', deserialize: deserializeNumber },
@@ -15,7 +22,6 @@ class GameRepository extends AbstractRepository {
    * Builds a repository to manage games.
    * The underlying structure is the same as AbstractRepository, plus:
    * - index:${name}:playerId:${playerId} are Redis Set holding game ids for a given player.
-   * @returns {GameRepository} a repository for game models.
    */
   constructor() {
     super({ name: 'games' })
@@ -23,12 +29,13 @@ class GameRepository extends AbstractRepository {
 
   /**
    * Fetches game from a Redis Hash.
+   * @override
    * @param {string} key - the Redis key.
-   * @returns {Promise<object>} the corresponding model.
+   * @returns {Promise<?Game>} the corresponding model.
    */
   async _fetchModel(key) {
     const data = await super._fetchModel(key)
-    if (data && 'otherFields' in data) {
+    if (data && 'otherFields' in data && typeof data.otherFields === 'string') {
       Object.assign(data, JSON.parse(data.otherFields))
       data.otherFields = undefined
     }
@@ -37,8 +44,8 @@ class GameRepository extends AbstractRepository {
 
   /**
    * Saves player as Redis Hash.
-   * @private
-   * @param {AbstractRepository.SaveModelContext} context - contextual information.
+   * @override
+   * @param {import('./abstract-repository.js').SaveModelContext<Game>} context - the save operation context.
    */
   _saveModel({ transaction, model, key }) {
     const { id, created, playerIds, guestIds, ownerId, ...otherFields } = model
@@ -63,12 +70,13 @@ class GameRepository extends AbstractRepository {
 
   /**
    * When saving games, updates guests' and players' respecive player sets of games.
-   * @private
-   * @param {AbstractRepository.SaveTransactionContext} context - contextual information.
-   * @returns {Transaction} the applied transaction.
+   * @override
+   * @param {SaveTransactionContext} context - contextual information.
    */
   _enrichSaveTransaction(context) {
-    const transaction = super._enrichSaveTransaction(context)
+    const transaction = /** @type {Transaction} */ (
+      super._enrichSaveTransaction(context)
+    )
     removeGamesFromPlayerSets.call(this, transaction, context.existings)
     for (const game of context.models) {
       for (const playerId of [
@@ -86,31 +94,45 @@ class GameRepository extends AbstractRepository {
 
   /**
    * When deleting games, removes them from player sets of games.
-   * @private
-   * @param {AbstractRepository.DeleteTransactionContext} context - contextual information.
-   * @returns {Transaction} the applied transaction.
+   * @override
+   * @param {DeleteTransactionContext} context - contextual information.
    */
   _enrichDeleteTransaction(context) {
-    const transaction = super._enrichDeleteTransaction(context)
+    const transaction = /** @type {Transaction} */ (
+      super._enrichDeleteTransaction(context)
+    )
     removeGamesFromPlayerSets.call(this, transaction, context.models)
     return transaction
   }
 
   /**
    * Lists all games of a given player.
-   * @async
-   * @param {object} playerId - id of the player for which games are returned.
-   * @returns {object[]} this player's games.
+   * @param {string} playerId - id of the player for which games are returned.
+   * @returns {Promise<Game[]>} this player's games.
    */
   async listByPlayerId(playerId) {
+    const ctx = { playerId }
+    this.logger.trace({ ctx }, 'listing games by player')
     if (!this.client) {
       return []
     }
     const ids = await this.client.smembers(this._buildPlayerKey(playerId))
-    return this.getById(ids.sort())
+    const games = /** @type {Game[]} */ (await this.getById(ids.sort())).filter(
+      Boolean
+    )
+    this.logger.debug(
+      { ctx, res: games.map(({ kind, id }) => ({ id, kind })) },
+      'listed games by player'
+    )
+    return games
   }
 }
 
+/**
+ * @this {GameRepository}
+ * @param {DeleteTransactionContext['transaction']} transaction
+ * @param {DeleteTransactionContext['models']} models
+ */
 function removeGamesFromPlayerSets(transaction, models) {
   for (const game of models) {
     for (const playerId of [
@@ -127,6 +149,5 @@ function removeGamesFromPlayerSets(transaction, models) {
 
 /**
  * Game repository singleton.
- * @type {GameRepository}
  */
 export const games = new GameRepository()

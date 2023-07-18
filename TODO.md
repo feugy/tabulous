@@ -2,7 +2,6 @@
 
 ## Road to beta
 
-- server logging (warning on invalid descriptors) + log file rotation
 - automerge.js
 - improve searchability with orama search
 - configure personal searchability
@@ -11,6 +10,7 @@
 
 - add tests for web/src/utils/peer-connection
 - ts-check all the things!
+- graphQL + mesh: replace prismRotation with initialRotation
 - group candidate target per kind for performance
 - keep anchor ids
 - create Animation objects as part of runAnimation() (constant frameRate of 60)
@@ -38,6 +38,7 @@
 ## Server
 
 - bug: lobby to parametrized game: handle concurrent parameters (playground)
+- chore: a couple TODOs in the code
 - allows a single connection per player (discards other JWTs)
 - better coTURN integration (password management and rotation)
 

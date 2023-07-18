@@ -1,3 +1,4 @@
+// @ts-check
 import Ajv from 'ajv/dist/jtd.js'
 
 const validate = new Ajv({ allErrors: true }).compile({
@@ -40,12 +41,12 @@ export function loadConfiguration() {
 
   if (!validate(configuration)) {
     throw new Error(
-      validate.errors.reduce(
+      /** @type {import('ajv').ErrorObject[]} */ (validate.errors).reduce(
         (message, error) =>
           `${message}\n${error.instancePath} ${error.message}`,
         ''
       )
     )
   }
-  return configuration
+  return /** @type {Configuration} */ (configuration)
 }

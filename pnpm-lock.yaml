@@ -149,19 +149,22 @@ importers:
       mqemitter-redis:
         specifier: ^5.0.0
         version: 5.0.0
+      pino:
+        specifier: ^8.14.1
+        version: 8.14.1
       pino-pretty:
         specifier: ^10.0.1
         version: 10.0.1
       rxjs:
         specifier: ^7.8.1
         version: 7.8.1
-      undici:
-        specifier: ^5.22.1
-        version: 5.22.1
     devDependencies:
       nodemon:
         specifier: ^3.0.0
         version: 3.0.0
+      undici:
+        specifier: ^5.22.1
+        version: 5.22.1
       ws:
         specifier: ^8.13.0
         version: 8.13.0
@@ -1571,11 +1574,11 @@ packages:
       detect-libc: 2.0.1
       https-proxy-agent: 5.0.1
       make-dir: 3.1.0
-      node-fetch: 2.6.11
+      node-fetch: 2.6.12
       nopt: 5.0.0
       npmlog: 5.0.1
       rimraf: 3.0.2
-      semver: 7.5.3
+      semver: 7.5.4
       tar: 6.1.15
     transitivePeerDependencies:
       - encoding
@@ -5080,6 +5083,18 @@ packages:
 
   /node-fetch@2.6.11:
     resolution: {integrity: sha512-4I6pdBY1EthSqDmJkiNk3JIT8cswwR9nfeW/cPdUagJYEQG7R95WRH74wpz7ma8Gh/9dI9FP+OU+0E4FvtA55w==}
+    engines: {node: 4.x || >=6.0.0}
+    peerDependencies:
+      encoding: ^0.1.0
+    peerDependenciesMeta:
+      encoding:
+        optional: true
+    dependencies:
+      whatwg-url: 5.0.0
+    dev: true
+
+  /node-fetch@2.6.12:
+    resolution: {integrity: sha512-C/fGU2E8ToujUivIO0H+tpQ6HWo4eEmchoPIoXtxCrVghxdKq+QOHqEZW7tuP3KlV3bC8FRMO5nMCC7Zm1VP6g==}
     engines: {node: 4.x || >=6.0.0}
     peerDependencies:
       encoding: ^0.1.0

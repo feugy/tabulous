@@ -227,8 +227,9 @@ It can also be manually triggered from the [Github action interface](https://git
 
 _Hints_
 
-Tail server logs: `journalctl -f -u tabulous`
+Tail server logs: `journalctl -f -u tabulous -o cat | jq`
 Tail nginx logs: `tail -f /var/log/nginx/access.log`
+Clean logs: `sudo journalctl --vacuum-time=2months`
 
 ## Tabulous Configuration
 
@@ -283,4 +284,8 @@ Create an hourly backup
    sudo chmod +x gitea
    sudo cp gitea /usr/local/bin/gitea
    sudo systemctl start gitea
+   ```
+1. tailing and parsing logs:
+   ```sh
+   ssh ubuntu@vps-XYZ.vps.ovh.net "journalctl -f -o cat -u tabulous" | jq '.time |= (./1000 | todate)'
    ```

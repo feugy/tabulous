@@ -22,9 +22,14 @@ const grantAccessMutation = gql`
 `
 
 /**
+ * @typedef {object} GrantAccessResult catalog item grant command result.
+ * @property {boolean} grantAccess - whether the catalog item was granted.
+ */
+
+/**
  * Triggers grant command.
  * @param {string[]} argv - array of parsed arguments (without executable and current file).
- * @returns {Promise<Boolean|string>} whether the operation succeeded.
+ * @returns {Promise<GrantAccessResult|string>} whether the operation succeeded.
  */
 export default async function grantCommand(argv) {
   const args = parseArgv(argv, {
@@ -51,7 +56,7 @@ export default async function grantCommand(argv) {
 /**
  * Grant a player access to a copyrighted game.
  * @param {GrantArgs} args - username and game name.
- * @returns {Promise<Boolean>} whether the operation succeeded.
+ * @returns {Promise<GrantAccessResult>} whether the operation succeeded.
  */
 export async function grant({ username, gameName }) {
   const client = getGraphQLClient()
@@ -71,6 +76,10 @@ export async function grant({ username, gameName }) {
   )
 }
 
+/**
+ * @param {GrantAccessResult} result
+ * @returns {string} formatted result
+ */
 function formatGrant({ grantAccess }) {
   return grantAccess
     ? chalkTemplate`🛣  access {green granted}\n`

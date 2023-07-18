@@ -1,3 +1,4 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import { createVerifier } from 'fast-jwt'
 import fastify from 'fastify'
@@ -14,6 +15,7 @@ import {
 
 vi.mock('../../src/services/auth/github.js', () => ({
   githubAuth: {
+    name: 'github',
     init: vi.fn(),
     buildAuthUrl: vi.fn(),
     authenticateUser: vi.fn()
@@ -21,6 +23,7 @@ vi.mock('../../src/services/auth/github.js', () => ({
 }))
 vi.mock('../../src/services/auth/google.js', () => ({
   googleAuth: {
+    name: 'google',
     init: vi.fn(),
     buildAuthUrl: vi.fn(),
     authenticateUser: vi.fn()
@@ -34,8 +37,11 @@ describe('auth plugin', () => {
   const domain = 'https://localhost:3000'
   const jwtOptions = { key: faker.string.uuid() }
   const allowedOrigins = `http:\\/\\/localhost:80`
+  /** @type {import('fastify').FastifyInstance} */
   let server
+  /** @type {import('../../src/plugins/auth.js')} */
   let authPlugin
+  /** @type {import('vitest').Mocked<import('../../src/services/index.js').default>} */
   let services
 
   beforeAll(async () => {
@@ -43,17 +49,28 @@ describe('auth plugin', () => {
     services = (await import('../../src/services/index.js')).default
   })
 
-  beforeEach(vi.resetAllMocks)
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
 
   describe.each([
-    { name: 'github', serviceName: 'githubAuth', options: { foo: 'bar' } },
-    { name: 'google', serviceName: 'googleAuth', options: { foo: 'baz' } }
+    {
+      name: 'github',
+      serviceName: 'githubAuth',
+      options: { id: 'bar', secret: 'boh' }
+    },
+    {
+      name: 'google',
+      serviceName: 'googleAuth',
+      options: { id: 'baz', secret: 'hob' }
+    }
   ])('given options for $name provider', ({ name, serviceName, options }) => {
     describe('given no server', () => {
       afterEach(() => server?.close())
 
       it(`initializes ${name} service`, async () => {
         server = fastify({ logger: false })
+        // @ts-expect-error
         server.register(authPlugin, {
           domain,
           allowedOrigins,
@@ -72,6 +89,7 @@ describe('auth plugin', () => {
     describe('given a started server', () => {
       beforeAll(async () => {
         server = fastify({ logger: false })
+        // @ts-expect-error
         server.register(authPlugin, {
           prefix: '/auth',
           domain,
@@ -153,9 +171,9 @@ describe('auth plugin', () => {
         )
         expect(response.statusCode).toBe(302)
         expect(response.headers.location).toMatch(`${location}?token=`)
-        const token = new URL(response.headers.location).searchParams.get(
-          'token'
-        )
+        const token =
+          // @ts-expect-error
+          new URL(response.headers.location).searchParams.get('token') ?? ''
         expect(createVerifier(jwtOptions)(token)).toMatchObject({
           id: player.id
         })

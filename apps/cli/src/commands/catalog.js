@@ -14,9 +14,11 @@ import {
 } from '../util/index.js'
 import { commonOptions } from './help.js'
 
+/** @typedef {import('@tabulous/server/src/services/catalog.js').GameDescriptor} GameDescriptor */
+
 /**
  * @typedef {object} CatalogResult game catalog command result
- * @property {Game[]} games - array of accessible games.
+ * @property {Game[]} games - games in the catalog.
  */
 
 /**
@@ -73,10 +75,12 @@ export default async function catalogCommand(argv) {
  */
 export async function catalog({ username }) {
   const { id } = await findUser(username)
+  /** @type {{ listCatalog: GameDescriptor[] }} */
   const { listCatalog: catalog } = await getGraphQLClient().query(
     listCatalogQuery,
     signToken(id)
   )
+  /** @type {Game[]} */
   const games = []
   for (const game of catalog.sort((a, b) =>
     getLocaleName(a).localeCompare(getLocaleName(b))
@@ -84,16 +88,24 @@ export async function catalog({ username }) {
     games.push({
       name: game.name,
       title: getLocaleName(game),
-      copyright: game.copyright?.authors?.length > 0 ? '©' : ''
+      copyright: (game.copyright?.authors?.length ?? 0) > 0 ? '©' : ''
     })
   }
   return attachFormater({ games }, formatCatalog)
 }
 
+/**
+ * @param {GameDescriptor} descriptor
+ * @returns {string} the descriptor localized name.
+ */
 function getLocaleName({ name, locales }) {
   return locales?.fr?.title ?? name
 }
 
+/**
+ * @param {CatalogResult} result
+ * @returns {string} formatted result
+ */
 function formatCatalog({ games }) {
   const output = []
   for (const { name, title, copyright } of games) {

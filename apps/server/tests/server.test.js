@@ -1,8 +1,9 @@
+// @ts-check
 // mandatory side effect for vi to load auth plugin
 import '../src/plugins/utils.js'
 
 import { createServer } from 'http'
-import { join, resolve } from 'path'
+import { resolve } from 'path'
 import { cwd } from 'process'
 import { fileURLToPath } from 'url'
 import {
@@ -19,19 +20,24 @@ import repositories from '../src/repositories/index.js'
 import { startServer } from '../src/server.js'
 
 describe('startServer()', () => {
+  /** @type {import('../src/server.js').Server}} */
   let app
+  /** @type {number} */
   let port
 
   beforeAll(() => {
-    vi.spyOn(repositories.games, 'connect').mockImplementation(() => {})
-    vi.spyOn(repositories.players, 'connect').mockImplementation(() => {})
-    vi.spyOn(repositories.catalogItems, 'connect').mockImplementation(() => {})
+    vi.spyOn(repositories.games, 'connect').mockImplementation(async () => {})
+    vi.spyOn(repositories.players, 'connect').mockImplementation(async () => {})
+    vi.spyOn(repositories.catalogItems, 'connect').mockImplementation(
+      async () => {}
+    )
   })
 
   beforeEach(async () => {
     vi.resetAllMocks()
     const dummy = createServer()
     await dummy.listen()
+    // @ts-expect-error: Server.address(): string | AddressInfo | null: Object is possibly 'null'.ts(2531)
     port = dummy.address().port
     dummy.close()
   })
@@ -40,25 +46,31 @@ describe('startServer()', () => {
 
   it('starts app on given port', async () => {
     app = await startServer({
-      serverUrl: { port },
+      isProduction: true,
+      serverUrl: { host: undefined, port },
       logger: { level: 'fatal' },
       plugins: {
         static: {
+          pathPrefix: '/',
           path: resolve(
             fileURLToPath(import.meta.url),
             '..',
             'fixtures',
             'games'
           )
-        }
+        },
+        graphql: { allowedOrigins: '', pubsubUrl: '' },
+        cors: { allowedOrigins: '' }
       },
-      data: { path: 'data' },
+      data: { url: 'data' },
       games: { path: 'games' },
-      turn: { secret: 'blabla' },
       auth: {
+        domain: 'funkytown.com',
+        allowedOrigins: '.*',
         jwt: { key: 'dummy-test-key' },
         github: { id: 'github_client_id', secret: 'github_secret' }
-      }
+      },
+      turn: { secret: 'blah' }
     })
 
     let response = await app.inject({
@@ -73,9 +85,9 @@ describe('startServer()', () => {
 
     response = await app.inject({ url: 'splendor/index.js' })
     expect(response.statusCode).toEqual(200)
-    expect(repositories.games.connect).toHaveBeenCalledWith({ path: 'data' })
+    expect(repositories.games.connect).toHaveBeenCalledWith({ url: 'data' })
     expect(repositories.games.connect).toHaveBeenCalledOnce()
-    expect(repositories.players.connect).toHaveBeenCalledWith({ path: 'data' })
+    expect(repositories.players.connect).toHaveBeenCalledWith({ url: 'data' })
     expect(repositories.players.connect).toHaveBeenCalledOnce()
     expect(repositories.catalogItems.connect).toHaveBeenCalledWith({
       path: 'games'
@@ -83,34 +95,26 @@ describe('startServer()', () => {
     expect(repositories.catalogItems.connect).toHaveBeenCalledOnce()
   })
 
-  it('reads https files and propagate errors', async () => {
-    await expect(
-      startServer({
-        serverUrl: { port },
-        https: {
-          key: join('tests', 'fixtures', 'key.pem'),
-          cert: join('tests', 'fixtures', 'cert.pem')
-        },
-        logger: { level: 'fatal' },
-        plugins: { static: { path: resolve(cwd(), 'games') } },
-        data: { path: 'data' },
-        games: { path: 'games' },
-        auth: { github: { id: 'github_client_id', secret: 'github_secret' } }
-      })
-    ).rejects.toThrow(/base64 decode/)
-  })
-
   it('decorates app with configuration property', async () => {
+    /** @type {import('../src/services/configuration.js').Configuration} */
     const conf = {
-      serverUrl: { port },
-      logger: { level: 'fatal' },
-      plugins: { static: { path: resolve(cwd(), 'games') } },
-      data: { path: 'data' },
+      isProduction: true,
+      serverUrl: { host: undefined, port },
+      logger: { level: 'error' },
+      plugins: {
+        static: { path: resolve(cwd(), 'games'), pathPrefix: '' },
+        graphql: { allowedOrigins: '', pubsubUrl: '' },
+        cors: { allowedOrigins: '' }
+      },
+      data: { url: 'data' },
       games: { path: 'games' },
       auth: {
+        domain: 'funkytown.com',
+        allowedOrigins: '.*',
         jwt: { key: 'dummy-test-key' },
         github: { id: 'github_client_id', secret: 'github_secret' }
-      }
+      },
+      turn: { secret: 'blah' }
     }
     app = await startServer(conf)
     expect(app.conf).toEqual(conf)

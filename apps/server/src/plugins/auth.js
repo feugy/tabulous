@@ -1,45 +1,50 @@
+// @ts-check
 import services from '../services/index.js'
+import { addToLogContext, makeLogger } from '../utils/index.js'
 import { makeToken } from './utils.js'
+
+/** @typedef {import('./utils.js').SignerOptions} SignerOptions */
+/** @typedef {Omit<import('../services/auth/oauth2.js').ProviderInit, 'redirect'>} ProviderInit */
 
 /**
  * @typedef {object} AuthOptions authentication plugin options, including:
- * @param {string} domain - public facing domain (full url) for authentication redirections.
- * @param {string} allowedOrigins - regular expression for allowed domains during authentication.
- * @param {import('fast-jwt').SignerOptions} jwt - options used to encrypt JWT token: needs 'key' at least.
- * @param {OAuth2ProviderOptions} github - Github authentication provider options.
- * @param {OAuth2ProviderOptions} google - Google authentication provider options.
+ * @property {string} domain - public facing domain (full url) for authentication redirections.
+ * @property {string} allowedOrigins - regular expression for allowed domains during authentication.
+ * @property {SignerOptions} jwt - options used to encrypt JWT token: needs 'key' at least.
+ * @property {ProviderInit} [github] - Github authentication provider options.
+ * @property {ProviderInit} [google] - Google authentication provider options.
  */
 
-/**
- * @typedef {object} OAuth2ProviderOptions OAuth2 authentication options, including:
- * @param {string} id - client ID.
- * @param {string} secret - client secret.
- */
+const logger = makeLogger('auth-plugin')
 
 /**
  * Registers endpoint to handle player authentication with various authentication providers.
- * @async
  * @param {import('fastify').FastifyInstance} app - a fastify application.
- * @param {OAuth2ProviderOptions} options - plugin's options.
+ * @param {AuthOptions} options - plugin's options.
+ * @returns {Promise<void>}
  */
 export default async function registerAuth(app, options) {
   const { githubAuth, googleAuth, upsertPlayer } = services
   const allowedOriginsRegExp = new RegExp(options.allowedOrigins)
 
-  for (const { service, provider } of [
-    { service: githubAuth, provider: 'github' },
-    { service: googleAuth, provider: 'google' }
-  ]) {
-    if (options[provider]) {
-      service.init({
-        ...options[provider],
-        redirect: `${options.domain}/${provider}/callback`
+  for (const provider of [githubAuth, googleAuth]) {
+    const name = /** @type {'github'|'google'} */ (provider.name)
+    if (name in options) {
+      provider.init({
+        .../** @type {ProviderInit} */ (options[name]),
+        redirect: `${options.domain}/${name}/callback`
       })
 
       app.get(
-        `/${provider}/connect`,
+        `/${name}/connect`,
+        // @ts-expect-error: Property 'redirect' does not exist on type 'unknown'
         ({ query: { redirect }, hostname, protocol }, reply) => {
+          addToLogContext({ authProvider: name })
           const origin = `${protocol}://${hostname}`
+          logger.trace(
+            { ctx: { redirect, origin } },
+            'connects with auth provider'
+          )
           if (!allowedOriginsRegExp.test(origin)) {
             return reply.code(401).send({ error: `Forbidden origin ${origin}` })
           }
@@ -48,22 +53,37 @@ export default async function registerAuth(app, options) {
               .code(401)
               .send({ error: `Forbidden redirect domain ${redirect}` })
           }
-          return reply.redirect(
-            service.buildAuthUrl(redirect ?? origin).toString()
+          const url = provider.buildAuthUrl(redirect ?? origin).toString()
+          logger.debug(
+            { ctx: { redirect, origin }, res: url },
+            'connected with auth provider'
           )
+          return reply.redirect(url)
         }
       )
 
       app.get(
-        `/${provider}/callback`,
+        `/${name}/callback`,
+        // @ts-expect-error: Property 'code', 'state' does not exist on type 'unknown'
         async ({ query: { code, state } }, reply) => {
-          const { location, user } = await service.authenticateUser(code, state)
-          const player = await upsertPlayer({ ...user, provider })
+          addToLogContext({ authProvider: name })
+          logger.trace('handles auth provider callback')
+          const { location, user } = await provider.authenticateUser(
+            code,
+            state
+          )
+          const player = await upsertPlayer({ ...user, provider: name })
           const url = new URL(location)
           url.searchParams.append('token', makeToken(player, options.jwt))
+          logger.debug(
+            { res: url.toString() },
+            'handled auth provider callback'
+          )
           return reply.redirect(url.toString())
         }
       )
+
+      logger.debug({ res: name }, 'registered authentication provider')
     }
   }
 }

@@ -1,3 +1,4 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import { vi } from 'vitest'
 import {
@@ -197,6 +198,7 @@ describe('given initialized repository', () => {
         avatar: faker.internet.avatar(),
         isAdmin: true
       })
+      /** @type {Partial<import('../../src/services/players.js').Player>} */
       let update = {
         id: original.id,
         avatar: faker.internet.avatar(),
@@ -211,7 +213,7 @@ describe('given initialized repository', () => {
         email: original.email
       })
 
-      update.provider = undefined
+      update.provider = faker.person.fullName()
       update.providerId = faker.string.uuid()
       expect(await upsertPlayer(update)).toEqual({
         ...original,
@@ -226,7 +228,8 @@ describe('given initialized repository', () => {
       const player = {
         id: faker.string.uuid(),
         username: faker.person.firstName(),
-        password: faker.internet.password()
+        password: faker.internet.password(),
+        currentGameId: null
       }
       expect(await acceptTerms(player)).toEqual({
         ...player,
@@ -240,15 +243,17 @@ describe('given initialized repository', () => {
   })
 
   describe('given some players', () => {
-    let players = [
-      { id: `adam-${faker.number.int(100)}`, username: 'Adam Destine' },
-      { id: `batman-${faker.number.int(100)}`, username: 'Batman' },
-      { id: `adaptoid-${faker.number.int(100)}`, username: 'Adaptoid' },
-      { id: `adversary-${faker.number.int(100)}`, username: 'Adversary' },
-      { id: `hulk-${faker.number.int(100)}`, username: 'Hulk' },
-      { id: `thor-${faker.number.int(100)}`, username: 'Thor' }
-    ]
+    let players =
+      /** @type {import('../../src/services/players.js').Player[]} */ ([
+        { id: `adam-${faker.number.int(100)}`, username: 'Adam Destine' },
+        { id: `batman-${faker.number.int(100)}`, username: 'Batman' },
+        { id: `adaptoid-${faker.number.int(100)}`, username: 'Adaptoid' },
+        { id: `adversary-${faker.number.int(100)}`, username: 'Adversary' },
+        { id: `hulk-${faker.number.int(100)}`, username: 'Hulk' },
+        { id: `thor-${faker.number.int(100)}`, username: 'Thor' }
+      ])
 
+    /** @type {import('rxjs').Subscription} */
     let subscription
     const friendshipUpdateReceived = vi.fn()
 
@@ -287,9 +292,9 @@ describe('given initialized repository', () => {
       )
     })
 
-    afterEach(() =>
-      repositories.players.deleteById(players.map(({ id }) => id))
-    )
+    afterEach(async () => {
+      await repositories.players.deleteById(players.map(({ id }) => id))
+    })
 
     describe('getPlayerById()', () => {
       it('returns player by id', async () => {
@@ -337,7 +342,7 @@ describe('given initialized repository', () => {
       })
 
       it('returns null on unknown id', async () => {
-        expect(await setCurrentGameId(faker.string.uuid(), true)).toBeNull()
+        expect(await setCurrentGameId(faker.string.uuid(), 'unused')).toBeNull()
       })
     })
 
@@ -362,6 +367,7 @@ describe('given initialized repository', () => {
       })
 
       it('excludes nothing bellow 2 characters', async () => {
+        // @ts-expect-error: Argument of type 'null' is not assignable to parameter of type 'string'
         expect(await searchPlayers(null, players[0].id)).toEqual([])
         expect(await searchPlayers(' a ', players[0].id)).toEqual([])
         expect(await searchPlayers('a', players[0].id)).toEqual([])

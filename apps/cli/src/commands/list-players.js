@@ -13,10 +13,12 @@ import {
 } from '../util/index.js'
 import { commonOptions } from './help.js'
 
+/** @typedef {import('../util/formaters.js').Player} Player */
+
 /**
  * Triggers player list command.
  * @param {string[]} argv - array of parsed arguments (without executable and current file).
- * @returns {Promise<import('../util/formaters.js').Player[]|string>} list of players or help message.
+ * @returns {Promise<Player[]|string>} list of players or help message.
  */
 export default async function listPlayersCommand(argv) {
   const args = parseArgv(argv, commonArgSpec)
@@ -28,7 +30,7 @@ export default async function listPlayersCommand(argv) {
 
 /**
  * Fetches all pages of the player list
- * @returns {Promise<import('../util/formaters.js').Player[]>} list of players.
+ * @returns {Promise<Player[]>} list of players.
  */
 export async function listPlayers() {
   let from = 0
@@ -48,10 +50,14 @@ export async function listPlayers() {
   return attachFormater(players, formatPlayers)
 }
 
+/**
+ * @param {number} from
+ * @param {number} size
+ */
 function makeListPlayersQuery(from, size) {
   return gql`
     query listGamesQuery {
-      listPlayers(from: ${from}, size: ${size}) {
+      listPlayers(from: ${from.toString()}, size: ${size.toString()}) {
         total
         from
         size
@@ -65,6 +71,10 @@ function makeListPlayersQuery(from, size) {
   `
 }
 
+/**
+ * @param {Player[]} players
+ * @returns {string} - formatted result
+ */
 function formatPlayers(players) {
   return players.map(player => `- ${formatPlayer(player)}`).join('\n')
 }

@@ -1,3 +1,4 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import stripAnsi from 'strip-ansi'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -8,6 +9,10 @@ import { signToken } from '../../src/util/jwt.js'
 const mockQuery = vi.fn()
 const mockMutation = vi.fn()
 
+/** @typedef {import('../../src/commands/show-player.js').Game} Game */
+/** @typedef {import('../../src/util/formaters.js').Player} Player */
+/** @typedef {import('../../src/index.js').Command} Command */
+
 vi.mock('../../src/util/graphql-client.js', () => ({
   getGraphQLClient: vi
     .fn()
@@ -15,18 +20,25 @@ vi.mock('../../src/util/graphql-client.js', () => ({
 }))
 
 describe('Show player command', () => {
+  /** @type {Command} */
   let showPlayer
   const adminUserId = faker.string.uuid()
   const jwtKey = faker.string.uuid()
+  /** @type {Player} */
   const player = {
     id: faker.string.uuid(),
     username: faker.person.fullName(),
-    email: faker.internet.email()
+    email: faker.internet.email(),
+    isOwner: false,
+    currentGameId: null
   }
+  /** @type {Player} */
   const player2 = {
     id: faker.string.uuid(),
     username: faker.person.fullName(),
-    email: faker.internet.email()
+    email: faker.internet.email(),
+    isOwner: false,
+    currentGameId: null
   }
 
   beforeAll(async () => {
@@ -36,7 +48,9 @@ describe('Show player command', () => {
     showPlayer = (await import('../../src/commands/show-player.js')).default
   })
 
-  beforeEach(vi.clearAllMocks)
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
 
   it('throws on missing username', async () => {
     await expect(showPlayer([])).rejects.toThrow('no username provided')
@@ -71,7 +85,7 @@ describe('Show player command', () => {
   })
 
   describe('given some games', () => {
-    const games = [
+    const games = /** @type {Game[]} */ ([
       {
         id: 'game-1',
         kind: 'klondike',
@@ -84,23 +98,27 @@ describe('Show player command', () => {
         created: Date.now(),
         players: [{ ...player, isOwner: true }]
       }
-    ]
-    games.push({
-      id: 'game-3',
-      kind: 'klondike',
-      created: faker.date
-        .past({ year: 1, refDate: games[0].created })
-        .getTime(),
-      players: [{ ...player, isOwner: true }, player2]
-    })
-    games.push({
-      id: 'game-4',
-      kind: 'klondike',
-      created: faker.date
-        .past({ year: 1, refDate: games[2].created })
-        .getTime(),
-      players: [{ ...player2, isOwner: true }, player]
-    })
+    ])
+    games.push(
+      /** @type {Game} */ ({
+        id: 'game-3',
+        kind: 'klondike',
+        created: faker.date
+          .past({ years: 1, refDate: games[0].created })
+          .getTime(),
+        players: [{ ...player, isOwner: true }, player2]
+      })
+    )
+    games.push(
+      /** @type {Game} */ ({
+        id: 'game-4',
+        kind: 'klondike',
+        created: faker.date
+          .past({ years: 1, refDate: games[2].created })
+          .getTime(),
+        players: [{ ...player2, isOwner: true }, player]
+      })
+    )
 
     it('displays found player', async () => {
       mockQuery

@@ -1,3 +1,4 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import { createHmac } from 'crypto'
 import { describe, expect, it } from 'vitest'
@@ -5,7 +6,7 @@ import { describe, expect, it } from 'vitest'
 import { generateTurnCredentials } from '../../src/services/turn-credentials'
 
 describe('generateTurnCredentials()', () => {
-  it('generates compliant credentials for the next 12 hours', async () => {
+  it('generates compliant credentials for the next 12 hours', () => {
     const secret = faker.lorem.word()
     const now = Math.floor(new Date().getTime() / 1000)
 
@@ -15,7 +16,7 @@ describe('generateTurnCredentials()', () => {
       createHmac('sha1', secret).update(username).digest()
     ).toString('base64')
 
-    expect(await generateTurnCredentials(secret)).toEqual({
+    expect(generateTurnCredentials(secret)).toEqual({
       username,
       credentials
     })

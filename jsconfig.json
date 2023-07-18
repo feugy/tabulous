@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "module": "ESNext",
+    "strict": true,
+    "target": "ESNext",
+    "paths": {
+      "@tabulous/*": ["./apps/*"]
+    }
+  },
+  "exclude": ["node_modules"]
+}

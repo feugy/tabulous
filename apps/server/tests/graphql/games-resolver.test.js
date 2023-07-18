@@ -1,3 +1,4 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import fastify from 'fastify'
 import { Subject } from 'rxjs'
@@ -13,7 +14,8 @@ import {
 } from 'vitest'
 
 import graphQL from '../../src/plugins/graphql.js'
-import services from '../../src/services/index.js'
+import realServices from '../../src/services/index.js'
+import { makeLogger } from '../../src/utils/index.js'
 import {
   mockMethods,
   openGraphQLWebSocket,
@@ -24,21 +26,32 @@ import {
   waitOnMessage
 } from '../test-utils.js'
 
+/** @typedef {import('../../src/services/players.js').Player} Player */
+/** @typedef {import('../../src/services/games.js').GameData} GameData */
+/** @typedef {import('../../src/services/games.js').GameListUpdate} GameListUpdate */
+
 describe('given a started server', () => {
+  /** @type {import('fastify').FastifyInstance} */
   let server
+  /** @type {import('ws')} */
   let ws
+  /** @type {ReturnType<typeof mockMethods>} */
   let restoreServices
-  vi.spyOn(console, 'warn').mockImplementation(() => {})
-  const players = [
+  const services =
+    /** @type {import('../test-utils.js').MockedMethods<typeof realServices> & {gameListsUpdate: Subject<GameListUpdate>}} */ (
+      realServices
+    )
+  vi.spyOn(makeLogger('games-resolver'), 'warn').mockImplementation(() => {})
+  const players = /** @type {Player[]} */ ([
     { id: 'player-0', username: faker.person.firstName() },
     { id: 'player-1', username: faker.person.firstName() },
     { id: 'player-2', username: faker.person.firstName() }
-  ]
-  const guests = [
+  ])
+  const guests = /** @type {Player[]} */ ([
     { id: 'guest-0', username: faker.person.firstName() },
     { id: 'guest-1', username: faker.person.firstName() },
     { id: 'guest-2', username: faker.person.firstName() }
-  ]
+  ])
   const configuration = {
     auth: { jwt: { key: faker.string.uuid() } }
   }
@@ -50,10 +63,13 @@ describe('given a started server', () => {
     await server.listen()
     ws = await openGraphQLWebSocket(server)
     restoreServices = mockMethods(services)
+    /** @type {Subject<GameListUpdate>} */
     services.gameListsUpdate = new Subject()
   })
 
-  beforeEach(vi.resetAllMocks)
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
 
   afterAll(async () => {
     restoreServices()
@@ -85,7 +101,7 @@ describe('given a started server', () => {
 
       it('returns current games', async () => {
         const playerId = players[0].id
-        const games = [
+        const games = /** @type {GameData[]} */ ([
           {
             id: faker.string.uuid(),
             created: faker.date.past().getTime(),
@@ -107,11 +123,12 @@ describe('given a started server', () => {
             playerIds: [playerId, players[2].id],
             guestIds: []
           }
-        ]
+        ])
         services.getPlayerById.mockImplementation(async ids =>
+          // @ts-expect-error: Mocked inference does not support overloads
           Array.isArray(ids)
             ? players.filter(({ id }) => ids.includes(id))
-            : players.find(({ id }) => id === ids)
+            : players.find(({ id }) => id === ids) ?? null
         )
         services.listGames.mockResolvedValueOnce(games)
 
@@ -202,15 +219,17 @@ describe('given a started server', () => {
       it('creates a new game and resolves player objects', async () => {
         const playerId = players[0].id
         const kind = faker.helpers.arrayElement(['coinche', 'tarot', 'belote'])
-        const game = {
+        // @ts-expect-error: missing properties
+        const game = /** @type {GameData} */ ({
           id: faker.string.uuid(),
           kind,
           created: Date.now(),
           playerIds: [playerId],
           guestIds: []
-        }
+        })
         services.getPlayerById
           .mockResolvedValueOnce(players[0])
+          // @ts-expect-error: Mocked inference does not support overloads
           .mockResolvedValueOnce([players[0]])
         services.createGame.mockResolvedValueOnce(game)
 
@@ -280,15 +299,17 @@ describe('given a started server', () => {
       it('promotes an existing lobby and resolves player objects', async () => {
         const playerId = players[0].id
         const kind = faker.helpers.arrayElement(['coinche', 'tarot', 'belote'])
-        const game = {
+        // @ts-expect-error: missing properties
+        const game = /** @type {GameData} */ ({
           id: faker.string.uuid(),
           kind,
           created: Date.now(),
           playerIds: [],
           guestIds: [playerId]
-        }
+        })
         services.getPlayerById
           .mockResolvedValueOnce(players[0])
+          // @ts-expect-error: Mocked inference does not support overloads
           .mockResolvedValueOnce([players[0]])
         services.promoteGame.mockResolvedValueOnce(game)
 
@@ -357,16 +378,17 @@ describe('given a started server', () => {
 
       it('loads game details and resolves player objects', async () => {
         const [player] = players
-        const game = {
+        const game = /** @type {GameData} */ ({
           id: faker.string.uuid(),
           kind: 'tarot',
           created: faker.date.past().getTime(),
           ownerId: player.id,
           playerIds: players.map(({ id }) => id),
           guestIds: guests.map(({ id }) => id)
-        }
+        })
         services.getPlayerById
-          .mockResolvedValueOnce(player)
+          .mockResolvedValueOnce(players[0])
+          // @ts-expect-error: Mocked inference does not support overloads
           .mockResolvedValueOnce(players.concat(guests))
         services.joinGame.mockResolvedValueOnce(game)
 
@@ -428,16 +450,18 @@ describe('given a started server', () => {
 
       it('loads game parameters', async () => {
         const [player] = players
-        const gameParameters = {
-          id: faker.string.uuid(),
-          schema: {},
-          ownerId: player.id,
-          playerIds: players.map(({ id }) => id),
-          guestIds: guests.map(({ id }) => id)
-        }
+        const gameParameters =
+          /** @type {import('../../src/services/games.js').GameParameters} */ ({
+            id: faker.string.uuid(),
+            schema: {},
+            ownerId: player.id,
+            playerIds: players.map(({ id }) => id),
+            guestIds: guests.map(({ id }) => id)
+          })
         const value = faker.lorem.words()
         services.getPlayerById
           .mockResolvedValueOnce(player)
+          // @ts-expect-error: Mocked inference does not support overloads
           .mockResolvedValueOnce(players.concat(guests))
         services.joinGame.mockResolvedValueOnce(gameParameters)
 
@@ -556,16 +580,18 @@ describe('given a started server', () => {
             time: faker.date.past().getTime()
           }
         ]
-        const game = {
+        // @ts-expect-error: missing properties
+        const game = /** @type {GameData} */ ({
           id: faker.string.uuid(),
           kind,
           created: faker.date.past().getTime(),
           playerIds: players.map(({ id }) => id),
           guestIds: [],
           messages
-        }
+        })
         services.getPlayerById
           .mockResolvedValueOnce(players[0])
+          // @ts-expect-error: Mocked inference does not support overloads
           .mockResolvedValueOnce(players)
         services.saveGame.mockResolvedValueOnce(game)
 
@@ -643,15 +669,17 @@ describe('given a started server', () => {
       it('invites another player to an existing game and resolves player objects', async () => {
         const playerId = players[0].id
         const peerIds = players.slice(1, 3).map(({ id }) => id)
-        const game = {
+        // @ts-expect-error: missing properties
+        const game = /** @type {GameData} */ ({
           id: faker.string.uuid(),
           kind: 'belote',
           created: faker.date.past().getTime(),
           playerIds: [playerId, ...peerIds],
           guestIds: []
-        }
+        })
         services.getPlayerById
           .mockResolvedValueOnce(players[0])
+          // @ts-expect-error: Mocked inference does not support overloads
           .mockResolvedValueOnce(players.slice(0, 2))
         services.invite.mockResolvedValueOnce(game)
 
@@ -721,15 +749,17 @@ describe('given a started server', () => {
       it('kicks a player from an existing game and resolves player objects', async () => {
         const playerId = players[0].id
         const kickedId = players[1].id
-        const game = {
+        // @ts-expect-error: missing properties
+        const game = /** @type {GameData} */ ({
           id: faker.string.uuid(),
           kind: 'belote',
           created: faker.date.past().getTime(),
           playerIds: [playerId],
           guestIds: []
-        }
+        })
         services.getPlayerById
           .mockResolvedValueOnce(players[0])
+          // @ts-expect-error: Mocked inference does not support overloads
           .mockResolvedValueOnce(players.slice(0, 1))
         services.kick.mockResolvedValueOnce(game)
 
@@ -798,15 +828,17 @@ describe('given a started server', () => {
 
       it('deletes an existing game and resolves player objects', async () => {
         const playerId = players[0].id
-        const game = {
+        // @ts-expect-error: missing properties
+        const game = /** @type {GameData} */ ({
           id: faker.string.uuid(),
           kind: 'coinche',
           created: faker.date.past().getTime(),
           playerIds: players.map(({ id }) => id),
           guestIds: []
-        }
+        })
         services.getPlayerById
           .mockResolvedValueOnce(players[0])
+          // @ts-expect-error: Mocked inference does not support overloads
           .mockResolvedValueOnce(players)
         services.deleteGame.mockResolvedValueOnce(game)
 
@@ -858,22 +890,26 @@ describe('given a started server', () => {
 
     describe('receiveGameListUpdates subscription', () => {
       const playerId = players[0].id
-      const game = {
+      // @ts-expect-error: missing properties
+      const game = /** @type {Game} */ ({
         id: faker.string.uuid(),
         created: Date.now(),
         playerIds: [playerId],
         guestIds: []
-      }
+      })
 
       beforeEach(() => {
         services.getPlayerById.mockImplementation(async ids =>
+          // @ts-expect-error: Mocked inference does not support overloads
           Array.isArray(ids)
             ? players.filter(({ id }) => ids.includes(id))
-            : players.find(({ id }) => id === ids)
+            : players.find(({ id }) => id === ids) ?? null
         )
       })
 
-      afterEach(() => stopSubscription(ws))
+      afterEach(async () => {
+        await stopSubscription(ws)
+      })
 
       it('sends update for current player', async () => {
         await startSubscription(
@@ -931,7 +967,8 @@ describe('given a started server', () => {
 
     describe('receiveGameUpdates subscription', () => {
       const playerId = players[0].id
-      const games = [
+      // @ts-expect-error: missing properties.
+      const games = /** @type {Game[]} */ ([
         {
           id: faker.string.uuid(),
           created: faker.date.past().getTime(),
@@ -950,17 +987,20 @@ describe('given a started server', () => {
           playerIds: [players[1].id, players[2].id],
           guestIds: []
         }
-      ]
+      ])
 
       beforeEach(() => {
         services.getPlayerById.mockImplementation(async ids =>
+          // @ts-expect-error: Mocked inference does not support overloads
           Array.isArray(ids)
             ? players.filter(({ id }) => ids.includes(id))
-            : players.find(({ id }) => id === ids)
+            : players.find(({ id }) => id === ids) ?? null
         )
       })
 
-      afterEach(() => stopSubscription(ws))
+      afterEach(async () => {
+        await stopSubscription(ws)
+      })
 
       it('sends updates on game change', async () => {
         await startSubscription(

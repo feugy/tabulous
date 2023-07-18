@@ -1,26 +1,29 @@
+// @ts-check
 import fastify from 'fastify'
-import { readFile } from 'fs/promises'
 
 import repositories from './repositories/index.js'
+import { createLogContext } from './utils/index.js'
+
+/** @typedef {import('./services/configuration.js').Configuration} Configuration */
+/** @typedef {import('fastify').FastifyInstance & { conf: Configuration }} Server */
 
 /**
  * Starts Tabulous server, using provided configuration.
  * Server has graphQL endpoints registered, and can serve static files.
  * Its configuration object is available as a decorator: the `conf` property.
  * It connects all repositories.
- * @async
- * @param {import('./services/configuration').Configuration} config - server options
- * @returns {import('fastify').FastifyInstance} configured and started server.
+ * @param {Configuration} config - server options
+ * @returns {Promise<Server>} configured and started server.
  */
 export async function startServer(config) {
   const app = fastify({
     logger: config.logger,
-    https: config.https
-      ? {
-          key: await readFile(config.https.key),
-          cert: await readFile(config.https.cert)
-        }
-      : undefined
+    disableRequestLogging: true
+  })
+  app.log.info('starting server')
+
+  app.addHook('onRequest', async ({ id, method, url, query }) => {
+    createLogContext({ req: { id, method, url, query } })
   })
 
   app.decorate('conf', config)
@@ -34,5 +37,7 @@ export async function startServer(config) {
   app.register(import('./plugins/auth.js'), { prefix: '/auth', ...config.auth })
 
   await app.listen(config.serverUrl)
+  app.log.info({ res: app.server.address() }, 'started server')
+  // @ts-expect-error: Property 'conf' is missing
   return app
 }

@@ -1,3 +1,4 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import { createSigner } from 'fast-jwt'
 import { MockAgent, setGlobalDispatcher } from 'undici'
@@ -22,7 +23,9 @@ describe('Google authentication service', () => {
     const id = faker.string.uuid()
     const secret = faker.internet.password()
     const redirect = faker.internet.url()
+    /** @type {MockAgent} */
     let mockAgent
+    /** @type {import('undici').Interceptable} */
     let googleApiMock
 
     beforeEach(() => {
@@ -72,11 +75,13 @@ describe('Google authentication service', () => {
       const accessTokenInvoked = vi.fn()
       const signJWT = createSigner({ key: 'whatever' })
 
-      beforeEach(vi.resetAllMocks)
+      beforeEach(() => {
+        vi.resetAllMocks()
+      })
 
       it('returns user details', async () => {
         const location = faker.internet.url()
-        const code = faker.number.int({ min: 9999 }).toString()
+        const code = faker.number.int({ min: 9999 }).toString().toString()
         const user = {
           given_name: faker.person.fullName(),
           picture: faker.internet.avatar(),
@@ -88,6 +93,7 @@ describe('Google authentication service', () => {
         googleApiMock
           .intercept({ method: 'POST', path: '/token' })
           .reply(200, req => {
+            // @ts-expect-error: Property 'entries' does not exist on type
             accessTokenInvoked(Object.fromEntries(req.body.entries()))
             return { id_token: token }
           })
@@ -115,12 +121,13 @@ describe('Google authentication service', () => {
 
       it('throws forbidden on token error', async () => {
         const location = faker.internet.url()
-        const code = faker.number.int({ min: 9999 }).toString()
+        const code = faker.number.int({ min: 9999 }).toString().toString()
         googleApiMock
           .intercept({ method: 'POST', path: '/token' })
           .reply(403, req => {
+            // @ts-expect-error: Property 'entries' does not exist on type
             accessTokenInvoked(Object.fromEntries(req.body.entries()))
-            return 'access forbidden'
+            return { error: 'access forbidden' }
           })
         const state = googleAuth.storeFinalLocation(location)
 
@@ -139,7 +146,7 @@ describe('Google authentication service', () => {
 
       it('throws forbidden on unkown state', async () => {
         const state = faker.string.uuid()
-        const code = faker.number.int({ min: 9999 })
+        const code = faker.number.int({ min: 9999 }).toString()
 
         await expect(googleAuth.authenticateUser(code, state)).rejects.toThrow(
           'forbidden'

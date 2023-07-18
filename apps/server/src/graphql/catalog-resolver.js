@@ -1,44 +1,61 @@
+// @ts-check
 import services from '../services/index.js'
 import { isAdmin } from './utils.js'
 
+/** @typedef {import('./utils.js').GraphQLContext} GraphQLAnonymousContext */
+/** @typedef {import('./utils.js').GraphQLContext} GraphQLContext */
+
 export default {
   Query: {
+    /** @typedef {ReturnType<typeof services.listCatalog>} ListCatalogResponse */
     /**
      * Returns catalog for current player.
      * Requires valid authentication.
-     * @async
-     * @param {object} obj - graphQL object.
-     * @param {object} args - query arguments.
-     * @param {object} context - graphQL context.
-     * @returns {import('./catalog.graphql').CatalogItem} list of catalog items.
+     * @param {unknown} obj - graphQL object.
+     * @param {unknown} args - query arguments.
+     * @param {GraphQLAnonymousContext} context - graphQL context.
+     * @returns {ListCatalogResponse} list of catalog items.
      */
     listCatalog: (obj, args, { player }) => services.listCatalog(player)
   },
   Mutation: {
     /**
-     * Grants another player access to a given catalog item.
-     * Requires authentication and elevated privileges.
-     * @async
-     * @param {object} obj - graphQL object.
-     * @param {object} args - query arguments.
-     * @param {object} context - graphQL context.
-     * @returns {Boolean} true if access was granted
+     * @typedef {object} GrantAccessArgs
+     * @property {string} playerId - player id being granted access.
+     * @property {string} itemName - granted catalog item name.
      */
-    grantAccess: isAdmin(async (obj, { playerId, itemName }) => {
-      return (await services.grantAccess(playerId, itemName)) !== null
-    }),
+    /** @typedef {Promise<boolean>} GrantAccessResponse */
+    grantAccess: isAdmin(
+      /**
+       * Grants another player access to a given catalog item.
+       * Requires authentication and elevated privileges.
+       * @param {unknown} obj - graphQL object.
+       * @param {GrantAccessArgs} args - query arguments.
+       * @returns {GrantAccessResponse} true if access was granted
+       */
+      async (obj, { playerId, itemName }) => {
+        return (await services.grantAccess(playerId, itemName)) !== null
+      }
+    ),
 
     /**
-     * Revokes access to a given catalog item for another player.
-     * Requires authentication and elevated privileges.
-     * @async
-     * @param {object} obj - graphQL object.
-     * @param {object} args - query arguments.
-     * @param {object} context - graphQL context.
-     * @returns {Boolean} true if access was granted
+     * @typedef {object} RevokeAccessArgs
+     * @property {string} playerId - player id being granted access.
+     * @property {string} itemName - granted catalog item name.
      */
-    revokeAccess: isAdmin(async (obj, { playerId, itemName }) => {
-      return (await services.revokeAccess(playerId, itemName)) !== null
-    })
+    /** @typedef {Promise<boolean>} RevokeAccessResponse */
+    revokeAccess: isAdmin(
+      /**
+       * Revokes access to a given catalog item for another player.
+       * Requires authentication and elevated privileges.
+       * @async
+       * @param {unknown} obj - graphQL object.
+       * @param {RevokeAccessArgs} args - query arguments.
+       * @returns {RevokeAccessResponse} true if access was granted
+       */
+      async (obj, { playerId, itemName }) => {
+        return (await services.revokeAccess(playerId, itemName)) !== null
+      }
+    )
   }
 }

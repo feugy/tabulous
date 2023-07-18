@@ -1,3 +1,4 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import stripAnsi from 'strip-ansi'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -7,6 +8,9 @@ import { applyFormaters, formatPlayer } from '../../src/util/formaters.js'
 const mockQuery = vi.fn()
 const mockMutation = vi.fn()
 
+/** @typedef {import('../../src/util/formaters.js').Player} Player */
+/** @typedef {import('../../src/index.js').Command} Command */
+
 vi.mock('../../src/util/graphql-client.js', () => ({
   getGraphQLClient: vi
     .fn()
@@ -14,6 +18,7 @@ vi.mock('../../src/util/graphql-client.js', () => ({
 }))
 
 describe('List players command', () => {
+  /** @type {Command} */
   let listPlayers
   const adminUserId = faker.string.uuid()
   const jwtKey = faker.string.uuid()
@@ -25,7 +30,9 @@ describe('List players command', () => {
     listPlayers = (await import('../../src/commands/list-players.js')).default
   })
 
-  beforeEach(vi.clearAllMocks)
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
 
   it('displays help and support common options', async () => {
     expect(stripAnsi(await listPlayers(['-h']))).toEqual(`
@@ -38,10 +45,12 @@ describe('List players command', () => {
   })
 
   describe('given some players', () => {
+    /** @type {Player[]} */
     const players = Array.from({ length: 34 }, (_, i) => ({
       id: `id-${i + 1}`,
       username: faker.person.firstName(),
-      email: faker.internet.email()
+      email: faker.internet.email(),
+      currentGameId: null
     }))
 
     it('displays all pages of players', async () => {
@@ -62,7 +71,7 @@ describe('List players command', () => {
             results: players.slice(20)
           }
         })
-      const result = await listPlayers()
+      const result = await listPlayers([])
       const rawOutput = stripAnsi(applyFormaters(result).join('\n'))
       expect(rawOutput).toContain(stripAnsi(formatPlayer(players[0])))
     })
