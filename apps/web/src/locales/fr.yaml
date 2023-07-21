@@ -9,8 +9,8 @@ actions:
   enter-fullscreen: Plein-écran
   go-to-account: Paramètres
   hide-indicators: Masquer les indicateurs
-  invite-attendee: Inviter dans le salon
-  invite-player: Inviter à jouer
+  invite-attendee: Ajouter des particiant·e·s
+  invite-player: Ajouter des joueur·e·s
   invite: Inviter
   join-game: Jouer
   leave-fullscreen: Quitter le plein-écran
@@ -50,7 +50,7 @@ labels:
   confirm-game-deletion: Souhaitez vous vraiment supprimer cette partie de "{title}" ?
   confirm-lobby-deletion: Souhaitez vous vraiment supprimer ce salon ?
   copyright: Tabulous.fr. Tous droits réservés.
-  empty-friend-list: Ajoutez vos amis pour pouvoir jouer avec eux.
+  empty-friend-list: Entrez le pseudo de vos amis et invitez les pour pouvoir jouer avec eux.
   en: English
   end-friendship: Voulez vous vraiment retirer {username} de vos ami·e·s ? Vous ne pourrez plus jouer ensemble.
   fr: Français
@@ -104,9 +104,11 @@ labels:
   player-joined-lobby: '{player.username} a rejoint le salon !'
   player-left-game: '{player.username} a quitté·e la partie'
   player-left-lobby: '{player.username} a quitté·e le salon'
+  searchability: 'Découvrabilité : '
   terms-accepted: J'ai lu et accepté les Conditions Générales d'Utilisation
   terms-intro: Ici, nous ne sommes pas des sauvages ! Pour profiter de Tabulous, merci de lire et d'approuver les conditions d'utilisation.
   terms-of-service: Mentions Légales & Conditions Générales d'Utilisation
+  toggle-username-searchability: Les autres joueurs peuvent vous demander en ami·e.
   too-many-players: 'Le jeu "{title}" {maxSeats, plural, one {est un jeu solo : choisissez un autre jeu.} other {n''a que # places. Vous devriez (poliement) supprimer des joueurs du salon, ou choisir un autre jeu.}}'
   username: 'Pseudo : '
 page-titles:
@@ -137,6 +139,8 @@ titles:
   friend-list: Vos ami·e·s
   game-parameters: Réglages du jeu
   home: Bonjour {username} !
+  invite-attendee: Inviter dans le salon
+  invite-player: Inviter à la partie
   invite: Qui vas tu inviter ?
   legal: Mentions légales
   lobby: Salon

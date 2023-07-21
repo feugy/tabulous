@@ -18,6 +18,8 @@ export const GamePage = mixin(
      */
     constructor(page, lang) {
       /** @type {string} */
+      this.pageKind = 'game'
+      /** @type {string} */
       this.lang = lang
       /** @type {Page} */
       this.page = page

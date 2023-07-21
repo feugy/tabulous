@@ -20,17 +20,33 @@ export class AsideMixin {
     /** @type {Locator} */
     this.friendsSection = page.locator('[aria-roledescription="friend-list"]')
     /** @type {Locator} */
-    this.friendItems = this.friendsSection.getByRole('option')
-    /** @type {Locator} */
-    this.inviteButton = this.friendsSection.getByRole('button', {
-      name: /^gamepad /
-    })
+    this.friendItems = this.friendsSection.getByRole('listitem')
     /** @type {Locator} */
     this.friendSearchInput = this.friendsSection.getByRole('textbox')
     /** @type {Locator} */
+    this.isSearchableCheckbox = page.getByRole('checkbox')
+    /** @type {Locator} */
     this.playersSection = page.locator('[aria-roledescription="player-list"]')
     /** @type {Locator} */
+    this.openInviteDialogueButton = this.playersSection.getByRole('button', {
+      name: /^gamepad /
+    })
+    /** @type {Locator} */
     this.playerItems = this.playersSection.getByRole('listitem')
+    /** @type {Locator} */
+    this.inviteDialogue = page.getByRole('dialog').filter({
+      has: this.page.getByText(
+        translate('actions.invite', undefined, this.lang)
+      )
+    })
+    /** @type {Locator} */
+    this.possiblePlayerItems = this.inviteDialogue.getByRole('option')
+    /** @type {Locator} */
+    this.inviteButton = this.inviteDialogue.getByRole('button').filter({
+      has: this.page.getByText(
+        translate('actions.invite', undefined, this.lang)
+      )
+    })
     /** @type {Locator} */
     this.endFriendshipDialogue = page.getByRole('dialog').filter({
       has: this.page.getByText(
@@ -66,6 +82,23 @@ export class AsideMixin {
   }
 
   /**
+   * Expects several players/attendees.
+   * @param {object[]} players - expected players objects.
+   * @returns {Promise<void>}
+   */
+  async expectPlayers(players) {
+    for (const [i, playerItem] of Object.entries(
+      await this.playerItems.all()
+    )) {
+      const player = players[i]
+      expect(
+        await playerItem.locator('span').first().textContent(),
+        `player rank #${1 + +i}`
+      ).toEqual(player.username)
+    }
+  }
+
+  /**
    * Checks whether a given tab is active or not.
    * @param {Locator} tab - tested tab.
    * @returns {Promise<boolean>} true if this tab is already active.
@@ -75,8 +108,20 @@ export class AsideMixin {
   }
 
   /**
+   * Clicks on a tab until it expands and become active.
+   * @param {Locator} tab - the tab to open.
+   * @returns {Promise<void>}
+   */
+  async openTab(tab) {
+    while (!(await this.isTabActive(tab))) {
+      await tab.click()
+    }
+  }
+
+  /**
    * Invites a friend to the current game or lobby.
-   * It assumes the friends tab to be available
+   * It assumes the friends tab to be available.
+   * Final check is disabled on the game page, which changes tab on player invite.
    * @param {string} guestUsername - name of the invited friend.
    * @returns {Promise<void>}
    */
@@ -85,14 +130,16 @@ export class AsideMixin {
       this.friendsTab,
       'the friends tab is not available'
     ).toBeVisible()
-    while (!(await this.isTabActive(this.friendsTab))) {
-      await this.friendsTab.click()
-    }
-    while (await this.inviteButton.isDisabled()) {
-      await this.friendItems.getByText(guestUsername).click()
-    }
+    this.openTab(this.friendsTab)
+    await this.openInviteDialogueButton.click()
+    await expect(this.inviteDialogue).toBeVisible()
+    await this.possiblePlayerItems.getByText(guestUsername).click()
+    await expect(this.inviteButton).toBeEnabled()
     await this.inviteButton.click()
-    await expect(this.playerItems.getByText(guestUsername)).toBeVisible()
+    // @ts-expect-error pageKind is not defined
+    if (this.pageKind !== 'game') {
+      await expect(this.playerItems.getByText(guestUsername)).toBeVisible()
+    }
   }
 
   /**

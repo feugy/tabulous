@@ -16,6 +16,8 @@ export class LoginPage {
    */
   constructor(page, lang) {
     /** @type {string} */
+    this.pageKind = 'login'
+    /** @type {string} */
     this.lang = lang
     /** @type {Page} */
     this.page = page

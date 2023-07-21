@@ -20,6 +20,7 @@ vi.mock('$app/navigation', () => {
   return {
     goto: vi.fn(),
     invalidateAll: vi.fn(),
+    invalidate: vi.fn(),
     beforeNavigate: vi.fn()
   }
 })

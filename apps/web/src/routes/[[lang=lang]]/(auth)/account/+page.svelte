@@ -6,7 +6,8 @@
     PageFooter,
     Pane,
     PlayerThumbnail,
-    Progress
+    Progress,
+    UsernameSearchability
   } from '@src/components'
   import { updateCurrentPlayer } from '@src/stores'
   import { translateError } from '@src/utils'
@@ -14,7 +15,7 @@
   import { onDestroy } from 'svelte'
   import { _ } from 'svelte-intl'
 
-  import { invalidateAll } from '$app/navigation'
+  import { invalidate } from '$app/navigation'
 
   import AvatarDialogue from './AvatarDialogue.svelte'
 
@@ -37,7 +38,7 @@
         return from(
           updateCurrentPlayer(username)
             // updates page data with new user details
-            .then(invalidateAll)
+            .then(() => invalidate('data:session'))
             .then(() => (user.username = username))
             .catch(error => (usernameError = error))
         ).pipe(finalize(() => (isSaving = false)))
@@ -107,6 +108,8 @@
             on:close={handleCloseAvatarDialogue}
           />
         </span>
+        <span>{$_('labels.searchability')}</span>
+        <UsernameSearchability searchable={user.usernameSearchable} />
       </fieldset>
     </Pane>
   </section>
@@ -125,7 +128,7 @@
   fieldset {
     @apply mt-4 grid gap-x-8 gap-y-4 grid-cols-[auto,1fr] items-center;
 
-    label {
+    :nth-child(even) {
       font-family: var(--font-heading);
     }
 

@@ -25,6 +25,8 @@ export const HomePage = mixin(
      */
     constructor(page, lang) {
       /** @type {string} */
+      this.pageKind = 'home'
+      /** @type {string} */
       this.lang = lang
       /** @type {Page} */
       this.page = page
@@ -119,7 +121,6 @@ export const HomePage = mixin(
       const names = [
         ...catalog.map(({ locales }) => locales[this.lang].title).sort()
       ]
-      console.log('coucou', names)
       if (withLobby) {
         names.splice(
           0,

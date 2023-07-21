@@ -269,7 +269,7 @@ describe('Aside component', () => {
         screen.getByRole('tab', { name: friendsButtonText })
       )
       expect(
-        screen.getByText(translate('titles.friend-list'))
+        screen.getByText(translate('titles.player-list'))
       ).toBeInTheDocument()
     })
 

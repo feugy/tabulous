@@ -3,7 +3,7 @@ import { redirect } from '@sveltejs/kit'
 const termsUrl = '/accept-terms'
 
 /** @type {import('./$types').LayoutServerLoad} */
-export function load({ url, locals, params: { lang } }) {
+export function load({ url, locals, params: { lang }, depends }) {
   const { bearer = null, session = null, timeZone } = locals
   const localizedTerms = `${lang ? `/${lang}` : ''}${termsUrl}`
   if (
@@ -17,5 +17,6 @@ export function load({ url, locals, params: { lang } }) {
       `${localizedTerms}${location ? `?redirect=${location}` : ''}`
     )
   }
+  depends('data:session')
   return { bearer, session, timeZone, lang }
 }

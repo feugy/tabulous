@@ -19,9 +19,10 @@ let client
  * Configures GraphQL client.
  * Must be called prior to any graphql query, mutation or subscription.
  * @param {object} options - client options, including:
- * @param {string} options.graphQLUrl - url of the GraphQL endpoint.
+ * @param {string} options.graphQlUrl - url of the GraphQL endpoint.
  * @param {function} options.fetch - fetch implementation used to initialize the client.
  * @param {string} options.bearer - data used for authenticating graphQL subscriptions and queries.
+ * @param {boolean} [options.subscriptionSupport=true] - whether this client has subscriptions enabled.
  */
 export function initGraphQlClient({
   graphQlUrl,

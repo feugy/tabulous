@@ -8,7 +8,7 @@ import { sleep, translate } from '@tests/test-utils'
 import html from 'svelte-htm'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { invalidateAll } from '$app/navigation'
+import { invalidate } from '$app/navigation'
 
 vi.mock('@src/stores')
 
@@ -38,13 +38,14 @@ describe.each([
       await userEvent.type(usernameInput, `{Control>}A{/Control}${username}`)
       expectEditable()
       expect(updateCurrentPlayer).not.toHaveBeenCalled()
-      expect(invalidateAll).not.toHaveBeenCalled()
+      expect(invalidate).not.toHaveBeenCalled()
       await sleep(550)
       expectEditable()
       expect(usernameInput).toHaveValue(username)
       expect(updateCurrentPlayer).toHaveBeenCalledWith(username)
       expect(updateCurrentPlayer).toHaveBeenCalledTimes(1)
-      expect(invalidateAll).toHaveBeenCalledTimes(1)
+      expect(invalidate).toHaveBeenCalledWith('data:session')
+      expect(invalidate).toHaveBeenCalledOnce
     })
 
     it('disable username input while saving', async () => {
@@ -60,10 +61,11 @@ describe.each([
       expectEditable()
       await sleep(550)
       expectProgress()
-      expect(invalidateAll).not.toHaveBeenCalled()
+      expect(invalidate).not.toHaveBeenCalled()
       await sleep(100)
       expectEditable()
-      expect(invalidateAll).toHaveBeenCalledTimes(1)
+      expect(invalidate).toHaveBeenCalledWith('data:session')
+      expect(invalidate).toHaveBeenCalledOnce
     })
 
     it('displays saving errors', async () => {
@@ -78,7 +80,7 @@ describe.each([
       await sleep(550)
       expectEditable()
       expect(screen.queryByText(error)).toBeInTheDocument()
-      expect(invalidateAll).not.toHaveBeenCalled()
+      expect(invalidate).not.toHaveBeenCalled()
 
       await userEvent.type(
         usernameInput,
