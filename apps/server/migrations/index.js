@@ -43,6 +43,7 @@ async function main() {
   console.log(
     `[migration] last applied version: ${applied.length}, desired: ${desired}`
   )
+  /** @type {string[]} */
   const incremented = []
   for (
     let next = applied.length + 1;
@@ -63,16 +64,28 @@ async function main() {
 config()
 await main()
 
+/**
+ * @param {string} url
+ * @returns {Promise<Redis>}
+ */
 async function initRepositories(url) {
   await repositories.players.connect({ url })
   await repositories.games.connect({ url })
   return new Redis(url, { enableReadyCheck: false })
 }
 
+/**
+ * @param {Redis} redis
+ * @returns {Promise<string[]>}
+ */
 async function readAppliedVersions(redis) {
   return redis.smembers(versionKey)
 }
 
+/**
+ * @param {Redis} redis
+ * @param {string[]} incremented
+ */
 async function updateAppliedVersions(redis, incremented) {
   await redis.sadd(versionKey, incremented)
 }
@@ -84,6 +97,7 @@ async function updateAppliedVersions(redis, incremented) {
  * @returns {Promise<string[]>} - ordered list of migration files.
  */
 async function readAvailableVersions(folder) {
+  /** @type {string[]} */
   const versions = []
   for (const dirent of await readdir(folder, { withFileTypes: true })) {
     if (dirent.isFile() && migrationfileRexExp.test(dirent.name)) {

@@ -1,5 +1,11 @@
 // @ts-check
 
+/**
+ * Applies the migration.
+ * @param {typeof import('../src/repositories/index.js').default} repositories - connected repositories.
+ * @param {import('ioredis').Redis} redis - initialized Redis client.
+ * @returns {Promise<void>}
+ */
 export async function apply({ players }, redis) {
   console.log('delete undefined provider index')
   await redis.del('index:players:providers:undefined:undefined')

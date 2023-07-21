@@ -40,7 +40,7 @@ describe('given a started server', () => {
     /** @type {import('../test-utils.js').MockedMethods<typeof realServices>} */ (
       realServices
     )
-  vi.spyOn(makeLogger('signals-resolver'), 'warn').mockImplementation(() => {})
+  vi.spyOn(makeLogger('graphql-plugin'), 'warn').mockImplementation(() => {})
   const pubsubUrl = getRedisTestUrl()
   const playerId = faker.string.uuid()
   const configuration = {

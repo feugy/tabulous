@@ -1,5 +1,13 @@
 // @ts-check
 import {
+  count,
+  create,
+  insertMultiple,
+  removeMultiple,
+  search
+} from '@orama/orama'
+
+import {
   AbstractRepository,
   deserializeArray,
   deserializeBoolean
@@ -9,6 +17,7 @@ import {
 /** @typedef {import('./abstract-repository.js').SaveTransactionContext<Player>} SaveTransactionContext */
 /** @typedef {import('./abstract-repository.js').DeleteTransactionContext<Player>} DeleteTransactionContext */
 /** @typedef {import('ioredis').Redis} Redis */
+/** @typedef {?import('@orama/orama').Orama<{ Schema: { username: 'string', fullName: 'string', email: 'string' } }>} SearchIndex */
 
 /**
  * State (Redis score) when friendship when proposed to someone else.
@@ -47,7 +56,8 @@ class PlayerRepository extends AbstractRepository {
     },
     { name: 'isAdmin', deserialize: deserializeBoolean },
     { name: 'termsAccepted', deserialize: deserializeBoolean },
-    { name: 'catalog', deserialize: deserializeArray }
+    { name: 'catalog', deserialize: deserializeArray },
+    { name: 'usernameSearchable', deserialize: deserializeBoolean }
   ]
 
   /**
@@ -58,7 +68,29 @@ class PlayerRepository extends AbstractRepository {
    */
   constructor() {
     super({ name: 'players' })
-    this.usernameAutocompleteKey = 'autocomplete:players:username'
+    /** @type {SearchIndex} */
+    this.searchIndex = null
+  }
+
+  /**
+   * In addition to connecting to the Database, also connects to the search index.
+   * @override
+   * @param {{ url: string, isProduction?: boolean }} args - connection arguments.
+   * @returns {Promise<void>}
+   */
+  async connect(args) {
+    await super.connect(args)
+    await this.reindexModels()
+  }
+
+  /**
+   * In addition to disconnecting from the Database, also disconnect the search index.
+   * @override
+   * @returns {Promise<void>}
+   */
+  async release() {
+    await super.release()
+    this.searchIndex = null
   }
 
   /**
@@ -84,8 +116,9 @@ class PlayerRepository extends AbstractRepository {
    * When saving players, add their provider id references, and updates their username for autocompletion.
    * @override
    * @param {SaveTransactionContext} context - contextual information.
+   * @returns {Promise<import('./abstract-repository.js').Transaction>}
    */
-  _enrichSaveTransaction(context) {
+  async _enrichSaveTransaction(context) {
     const transaction =
       /** @type {import('./abstract-repository.js').Transaction} */ (
         super._enrichSaveTransaction(context)
@@ -103,21 +136,8 @@ class PlayerRepository extends AbstractRepository {
     if (references.length) {
       transaction.mset(...references)
     }
-    const oldUsernames = /** @type {string[]} */ (
-      existings.map(player => buildUsernameAutocomplete(player)).filter(Boolean)
-    )
-    if (oldUsernames.length) {
-      transaction.zrem(this.usernameAutocompleteKey, ...oldUsernames)
-    }
-    const newUsernames = /** @type {string[]} */ (
-      models.map(player => buildUsernameAutocomplete(player)).filter(Boolean)
-    )
-    if (newUsernames.length) {
-      transaction.zadd(
-        this.usernameAutocompleteKey,
-        ...newUsernames.flatMap(username => [0, username])
-      )
-    }
+    await removeFromIndex(this.searchIndex, existings, this.logger)
+    await insertIntoIndex(this.searchIndex, models, this.logger)
     return transaction
   }
 
@@ -146,14 +166,7 @@ class PlayerRepository extends AbstractRepository {
     if (references.length) {
       transaction.del(...references)
     }
-    const usernames = /** @type {string[]} */ (
-      context.models
-        .map(player => buildUsernameAutocomplete(player))
-        .filter(Boolean)
-    )
-    if (usernames.length) {
-      transaction.zrem(this.usernameAutocompleteKey, ...usernames)
-    }
+    await removeFromIndex(this.searchIndex, context.models, this.logger)
     for (const player of context.models) {
       if (player) {
         for (const id of await /** @type {Redis} */ (this.client).zrange(
@@ -183,31 +196,40 @@ class PlayerRepository extends AbstractRepository {
 
   /**
    * Finds players starting with a (or being the same exact) text in their username.
+   * Only players who enabled username searchability could be retrieved, unless running an exact search.
    * @param {object} args - search arguments, including:
    * @param {string} args.search - searched text
    * @param {number} [args.from = 0] - 0-based index of the first result
    * @param {number} [args.size = 10] - maximum number of models returned after first results.
-   * @param {boolean} [args.exact = false] - for exact search.
+   * @param {boolean} [args.exact = false] - for exact search (un-searchable players can be retrieved).
    * @returns {Promise<import('./abstract-repository').Page<Player>>} a given page of matching players.
    */
-  async searchByUsername({ search, from = 0, size = 10, exact = false }) {
+  async searchByUsername({ search: term, from = 0, size = 10, exact = false }) {
     const ctx = { search, from, size, exact }
     this.logger.trace({ ctx }, 'finding players')
     /** @type {Player[]} */
     let results = []
     let total = 0
-    if (this.client) {
-      const seed = normalizeString(search)
-      const matching = await this.client.zrangebylex(
-        this.usernameAutocompleteKey,
-        `[${seed}${exact ? ':' : ''}`,
-        `[${seed}${exact ? ':{' : '{'}`
-      )
-      total = matching.length
-      results = /** @type {Player[]} */ (
-        await this.getById(
-          matching.slice(from, from + size).map(result => result.split(':')[1])
+    if (this.searchIndex) {
+      let { hits, count } = await search(this.searchIndex, {
+        term,
+        properties: ['username'],
+        limit: size,
+        offset: from,
+        ...(exact ? { exact: true } : { where: { usernameSearchable: true } })
+      })
+      if (exact) {
+        const lowerCaseTerm = term.toLowerCase().trim()
+        hits = hits.filter(
+          ({ document: { username } }) =>
+            /** @type {string} */ (username).toLowerCase().trim() ===
+            lowerCaseTerm
         )
+        count = hits.length
+      }
+      total = count
+      results = /** @type {Player[]} */ (
+        await this.getById(hits.map(({ id }) => id))
       )
     }
     this.logger.debug(
@@ -223,6 +245,44 @@ class PlayerRepository extends AbstractRepository {
     return { total, from, size, results }
   }
 
+  /**
+   * Resets search index to match models in database
+   * @returns {Promise<void>}
+   */
+  async reindexModels() {
+    this.logger.trace('re-indexing all models')
+
+    this.searchIndex = await create({
+      id: 'id',
+      schema: {
+        username: 'string',
+        fullName: 'string',
+        email: 'string',
+        usernameSearchable: 'boolean'
+      },
+      components: { tokenizer: { stemming: false } }
+    })
+
+    async function* listAll(
+      /** @type {typeof PlayerRepository.prototype.list} */ list
+    ) {
+      const size = 100
+      let total = 1
+      for (let from = 0; from < total; from += size) {
+        const page = await list({ from, size })
+        total = page.total
+        yield page.results
+      }
+    }
+
+    const allPlayers = []
+    for await (const players of listAll(this.list.bind(this))) {
+      allPlayers.push(...players)
+    }
+    await insertIntoIndex(this.searchIndex, allPlayers, this.logger)
+    const total = await count(this.searchIndex)
+    this.logger.debug({ res: total }, 're-indexed all models')
+  }
   /**
    * Connects two players as friends.
    * Order matters when requesting/declining relationship: first player is requesting/delining the second one.
@@ -313,26 +373,36 @@ class PlayerRepository extends AbstractRepository {
 export const players = new PlayerRepository()
 
 /**
- * @param {string} str
- * @returns {string}
+ * @param {SearchIndex} searchIndex
+ * @param {Player[]} models
+ * @param {import('../utils/logger.js').Logger} logger
+ * @returns {Promise<void>}
  */
-function normalizeString(str) {
-  return (
-    str
-      .trim()
-      // https://stackoverflow.com/a/37511463/1182976
-      .normalize('NFD')
-      .replace(/\p{Diacritic}/gu, '')
-      .toLowerCase()
-  )
+async function insertIntoIndex(searchIndex, models, logger) {
+  if (searchIndex) {
+    const ctx = { insertedIds: models.map(({ id }) => id) }
+    logger.trace({ ctx }, 'inserting documents into search index')
+    const inserted = await insertMultiple(searchIndex, models)
+    logger.debug({ ctx, res: inserted }, 'inserted documents into search index')
+  }
 }
 
 /**
- * @param {?Player} player
- * @returns {?string}
+ * @param {SearchIndex} searchIndex
+ * @param {(?Player)[]} models
+ * @param {import('../utils/logger.js').Logger} logger
+ * @returns {Promise<void>}
  */
-function buildUsernameAutocomplete(player) {
-  return player?.username
-    ? `${normalizeString(player.username)}:${player.id}`
-    : null
+async function removeFromIndex(searchIndex, models, logger) {
+  if (searchIndex) {
+    const removedIds = /** @type {Player[]} */ (models.filter(Boolean)).map(
+      ({ id }) => id
+    )
+    if (removedIds.length) {
+      const ctx = { removedIds }
+      logger.trace({ ctx }, 'removing documents from search index')
+      const removed = await removeMultiple(searchIndex, removedIds)
+      logger.debug({ ctx, res: removed }, 'removed documents from search index')
+    }
+  }
 }

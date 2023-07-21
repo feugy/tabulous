@@ -2,6 +2,11 @@
 
 import { iteratePage } from './utils.js'
 
+/**
+ * Applies the migration.
+ * @param {typeof import('../src/repositories/index.js').default} repositories - connected repositories.
+ * @returns {Promise<void>}
+ */
 export async function apply(repositories) {
   await iteratePage(repositories.games, async game => {
     let modified = false

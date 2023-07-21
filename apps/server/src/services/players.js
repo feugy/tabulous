@@ -25,10 +25,11 @@ const logger = makeLogger('players-service')
  * @property {string} [providerId] - authentication provider own id, when relevant.
  * @property {string} [email] - email from authentication provider, when relevant.
  * @property {string} [fullName] - full name from the authentication provider, when relevant.
- * @property {boolean} [termsAccepted] - whether this player has accepted terms of service, or not.
+ * @property {boolean} [termsAccepted] - whether this player has accepted terms of service.
  * @property {string} [password] - the account password hash, when relevant.
  * @property {boolean} [isAdmin] - whether this player has elevated priviledges or not.
  * @property {string[]} [catalog] - list of copyrighted games this player has accessed to.
+ * @property {boolean} [usernameSearchable] - whether this player could by found when searching usernames.
  */
 
 /**

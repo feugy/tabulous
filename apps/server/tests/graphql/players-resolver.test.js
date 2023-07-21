@@ -45,7 +45,7 @@ describe('given a started server', () => {
     /** @type {import('vitest').Mocked<typeof realRepositories.players>} */ (
       realRepositories.players
     )
-  vi.spyOn(makeLogger('players-resolver'), 'warn').mockImplementation(() => {})
+  vi.spyOn(makeLogger('graphql-plugin'), 'warn').mockImplementation(() => {})
   const configuration = {
     turn: { secret: faker.lorem.words() },
     auth: { jwt: { key: faker.string.uuid() } }
@@ -864,7 +864,8 @@ describe('given a started server', () => {
       it('updates current player details', async () => {
         const update = {
           username: faker.person.firstName(),
-          avatar: faker.internet.avatar()
+          avatar: faker.internet.avatar(),
+          usernameSearchable: faker.datatype.boolean()
         }
         services.upsertPlayer.mockResolvedValueOnce({
           id: player.id,
@@ -884,7 +885,11 @@ describe('given a started server', () => {
           },
           payload: {
             query: `mutation { 
-            updateCurrentPlayer(username: "${update.username}", avatar: "${update.avatar}") { id username avatar }
+            updateCurrentPlayer(
+              username: "${update.username}",
+              avatar: "${update.avatar}",
+              usernameSearchable: ${update.usernameSearchable}
+            ) { id username avatar usernameSearchable }
           }`
           }
         })

@@ -122,6 +122,9 @@ importers:
       '@isaacs/ttlcache':
         specifier: ^1.4.1
         version: 1.4.1
+      '@orama/orama':
+        specifier: ^1.0.10
+        version: 1.0.10
       ajv:
         specifier: ^8.12.0
         version: 8.12.0
@@ -1633,6 +1636,11 @@ packages:
   /@open-draft/until@1.0.3:
     resolution: {integrity: sha512-Aq58f5HiWdyDlFffbbSjAlv596h/cOnt2DO1w3DOC7OJ5EHs0hd/nycJfiu9RJbT6Yk6F1knnRRXNSpxoIVZ9Q==}
     dev: true
+
+  /@orama/orama@1.0.10:
+    resolution: {integrity: sha512-BSFRkFJr1EepUloWISpBRDuYcTz0P9CO/+sp46nEP7NJrEi7nc5A0bdFf8zpA3KW5qBCwj2J/zuHJZdUME5Agg==}
+    engines: {node: '>= 16.0.0'}
+    dev: false
 
   /@playwright/test@1.35.1:
     resolution: {integrity: sha512-b5YoFe6J9exsMYg0pQAobNDR85T1nLumUYgUTtKm4d21iX2L7WqKq9dW8NGJ+2vX0etZd+Y7UeuqsxDXm9+5ZA==}

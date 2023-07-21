@@ -200,6 +200,7 @@ export default {
      * @typedef {object} UpdateCurrentPlayerArgs
      * @property {string} [username] - new username value, if any.
      * @property {string} [avatar] - new avatar value, if any.
+     * @property {boolean} [usernameSearchable] - new value for username searchability, if any.
      */
     /** @typedef {Promise<Player>} UpdateCurrentPlayerResponse */
     updateCurrentPlayer: isAuthenticated(
@@ -211,7 +212,7 @@ export default {
        * @param {GraphQLContext} context - graphQL context.
        * @returns {UpdateCurrentPlayerResponse} the updated player.
        */
-      async (obj, { username, avatar }, { player }) => {
+      async (obj, { username, avatar, usernameSearchable }, { player }) => {
         logger.trace('updates current player')
         /** @type {Partial<Player>} */
         const update = { id: player.id }
@@ -231,6 +232,9 @@ export default {
         }
         if (avatar !== undefined) {
           update.avatar = avatar
+        }
+        if (usernameSearchable !== undefined) {
+          update.usernameSearchable = usernameSearchable
         }
         const updated = await services.upsertPlayer(update)
         services.notifyRelatedPlayers(player.id)

@@ -1,6 +1,11 @@
 // @ts-check
 import { iteratePage } from './utils.js'
 
+/**
+ * Applies the migration.
+ * @param {typeof import('../src/repositories/index.js').default} repositories - connected repositories.
+ * @returns {Promise<void>}
+ */
 export async function apply({ games }) {
   let deletedCount = 0
   await iteratePage(games, async game => {
