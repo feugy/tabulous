@@ -128,7 +128,6 @@ exports[`With friends 1`] = `
   >
     <li
       class="s-PJ48chyAailx"
-      role="option"
     >
       <figure
         class="s-engCJu8q-fNe"
@@ -182,7 +181,6 @@ exports[`With friends 1`] = `
     </li>
     <li
       class="s-PJ48chyAailx"
-      role="option"
     >
       <figure
         class="s-engCJu8q-fNe"
@@ -236,7 +234,6 @@ exports[`With friends 1`] = `
     </li>
     <li
       class="s-PJ48chyAailx"
-      role="option"
     >
       <figure
         class="s-engCJu8q-fNe"
@@ -290,7 +287,6 @@ exports[`With friends 1`] = `
     </li>
     <li
       class="s-PJ48chyAailx"
-      role="option"
     >
       <figure
         class="s-engCJu8q-fNe"
@@ -971,7 +967,6 @@ exports[`With requests and proposals 1`] = `
   >
     <li
       class="s-PJ48chyAailx"
-      role="option"
     >
       <figure
         class="s-engCJu8q-fNe"
@@ -1025,7 +1020,6 @@ exports[`With requests and proposals 1`] = `
     </li>
     <li
       class="s-PJ48chyAailx isRequest"
-      role="option"
     >
       <figure
         class="s-engCJu8q-fNe"
@@ -1093,7 +1087,6 @@ exports[`With requests and proposals 1`] = `
     </li>
     <li
       class="s-PJ48chyAailx isProposal"
-      role="option"
     >
       <figure
         class="s-engCJu8q-fNe colored"
@@ -1147,7 +1140,6 @@ exports[`With requests and proposals 1`] = `
     </li>
     <li
       class="s-PJ48chyAailx"
-      role="option"
     >
       <figure
         class="s-engCJu8q-fNe"
@@ -1201,7 +1193,6 @@ exports[`With requests and proposals 1`] = `
     </li>
     <li
       class="s-PJ48chyAailx"
-      role="option"
     >
       <figure
         class="s-engCJu8q-fNe"
@@ -1255,7 +1246,6 @@ exports[`With requests and proposals 1`] = `
     </li>
     <li
       class="s-PJ48chyAailx"
-      role="option"
     >
       <figure
         class="s-engCJu8q-fNe"
