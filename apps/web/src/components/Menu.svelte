@@ -9,6 +9,7 @@
 <script>
   import { createEventDispatcher } from 'svelte'
   import { slide } from 'svelte/transition'
+  import Portal from 'svelte-portal'
 
   export let anchor
   export let options
@@ -59,37 +60,31 @@
     if (!ref || !anchor) {
       return
     }
+    const anchorDim = anchor.getBoundingClientRect()
+    const { innerWidth, innerHeight, scrollY } = window
     const sav = ref.getAttribute('style')
     // reset styling to get final menu dimension
     ref.setAttribute('style', '')
-    const anchorDim = anchor.getBoundingClientRect()
     const { width: menuWidth, height: menuHeight } = ref.getBoundingClientRect()
-    const { innerWidth, innerHeight } = window
-    // restore styling to resume anumations
+    // restore styling to resume animations
     ref.setAttribute('style', sav)
 
+    const margin = 8
     const minWidth = anchorDim.width
-    let top = anchorDim.height
-    let left = 0
-
-    let right = null
+    let top = anchorDim.bottom + scrollY + margin
+    let left = anchorDim.left
     let bottom = null
-    if (anchorDim.left + Math.max(menuWidth, minWidth) > innerWidth) {
-      left = null
-      right = 0
+    if (left + Math.max(menuWidth, minWidth) > innerWidth) {
+      left = anchorDim.right - Math.max(menuWidth, minWidth)
     }
-    if (
-      anchorDim.top - menuHeight >= 0 &&
-      innerHeight < anchorDim.bottom + menuHeight
-    ) {
+    if (anchorDim.bottom + menuHeight > innerHeight) {
       top = null
-      bottom = anchorDim.height
+      bottom = document.body.clientHeight - (anchorDim.top + scrollY - margin)
     }
     Object.assign(ref.style, {
       top: top !== null ? `${top}px` : '',
-      left: left !== null ? `${left}px` : '',
-      right: right !== null ? `${right}px` : '',
       bottom: bottom !== null ? `${bottom}px` : '',
+      left: left !== null ? `${left}px` : '',
       minWidth: `${minWidth}px`
     })
     if (ref.children.length && takesFocus) {
@@ -171,52 +166,54 @@
 />
 
 {#if open && anchor && options?.length}
-  <ul
-    role="menu"
-    tabindex="-1"
-    transition:slide|global
-    on:introstart={handleVisible}
-    on:keydown={handleMenuKeyDown}
-    on:focus={evt => handleFocus(evt, ref.dataset.focusNext !== 'false')}
-    bind:this={ref}
-  >
-    {#each options as option}
-      <li
-        role="menuitem"
-        aria-disabled={option.disabled}
-        class:disabled={option.disabled}
-        class:current={option === value}
-        tabindex={option.disabled ? undefined : -1}
-        on:click={evt => handleItemClick(evt, option)}
-        on:keydown={evt => handleItemKeyDown(evt, option)}
-        on:focus={() => (option.props ? (option.props.focus = true) : null)}
-        on:blur={() => (option.props ? (option.props.focus = false) : null)}
-      >
-        {#if option.Component}
-          <svelte:component
-            this={option.Component}
-            {...option.props}
-            on:close={() => {
-              option.props.open = false
-              dispatch('select', option)
-            }}
-            on:close={handleInteraction}
-          />
-        {:else}
-          {#if option.icon}<i class="material-icons">{option.icon}</i>{/if}
-          {#if option.color}<span
-              class="color"
-              style:--color={option.color}
-            />{:else}{option.label || option}{/if}
-        {/if}
-      </li>
-    {/each}
-  </ul>
+  <Portal>
+    <ul
+      role="menu"
+      tabindex="-1"
+      transition:slide|global
+      on:introstart={handleVisible}
+      on:keydown={handleMenuKeyDown}
+      on:focus={evt => handleFocus(evt, ref.dataset.focusNext !== 'false')}
+      bind:this={ref}
+    >
+      {#each options as option}
+        <li
+          role="menuitem"
+          aria-disabled={option.disabled}
+          class:disabled={option.disabled}
+          class:current={option === value}
+          tabindex={option.disabled ? undefined : -1}
+          on:click={evt => handleItemClick(evt, option)}
+          on:keydown={evt => handleItemKeyDown(evt, option)}
+          on:focus={() => (option.props ? (option.props.focus = true) : null)}
+          on:blur={() => (option.props ? (option.props.focus = false) : null)}
+        >
+          {#if option.Component}
+            <svelte:component
+              this={option.Component}
+              {...option.props}
+              on:close={() => {
+                option.props.open = false
+                dispatch('select', option)
+              }}
+              on:close={handleInteraction}
+            />
+          {:else}
+            {#if option.icon}<i class="material-icons">{option.icon}</i>{/if}
+            {#if option.color}<span
+                class="color"
+                style:--color={option.color}
+              />{:else}{option.label || option}{/if}
+          {/if}
+        </li>
+      {/each}
+    </ul>
+  </Portal>
 {/if}
 
 <style lang="postcss">
   ul {
-    @apply absolute rounded my-2 z-20 text-sm shadow-md bg-$base-dark text-$ink-dark;
+    @apply absolute rounded z-20 text-sm shadow-md bg-$base-dark text-$ink-dark;
     box-shadow: 0px 7px 10px var(--shadow-color);
   }
 
