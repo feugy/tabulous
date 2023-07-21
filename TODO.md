@@ -3,8 +3,6 @@
 ## Road to beta
 
 - automerge.js
-- improve searchability with orama search
-- configure personal searchability
 
 ## Refactor
 

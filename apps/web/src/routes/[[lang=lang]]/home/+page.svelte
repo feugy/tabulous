@@ -46,7 +46,7 @@
   let tooManyPlayersCatalogItem = null
   $: isDeletedLobby = isLobby(gameToDelete)
 
-  if (data.session?.player) {
+  $: if (data.session?.player) {
     user = data.session.player
     games = receiveGameListUpdates(data.currentGames)
     friends = listFriends()

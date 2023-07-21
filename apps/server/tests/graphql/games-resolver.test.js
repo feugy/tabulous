@@ -41,7 +41,7 @@ describe('given a started server', () => {
     /** @type {import('../test-utils.js').MockedMethods<typeof realServices> & {gameListsUpdate: Subject<GameListUpdate>}} */ (
       realServices
     )
-  vi.spyOn(makeLogger('games-resolver'), 'warn').mockImplementation(() => {})
+  vi.spyOn(makeLogger('graphql-plugin'), 'warn').mockImplementation(() => {})
   const players = /** @type {Player[]} */ ([
     { id: 'player-0', username: faker.person.firstName() },
     { id: 'player-1', username: faker.person.firstName() },

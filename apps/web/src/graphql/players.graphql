@@ -11,6 +11,7 @@ fragment authentication on PlayerWithTurnCredentials {
     provider
     email
     termsAccepted
+    usernameSearchable
   }
   turnCredentials {
     username
@@ -46,6 +47,14 @@ mutation acceptTerms {
 mutation updateCurrentPlayer($username: String, $avatar: String) {
   updateCurrentPlayer(username: $username, avatar: $avatar) {
     ...player
+    usernameSearchable
+  }
+}
+
+mutation setUsernameSearchability($searchable: Boolean!) {
+  updateCurrentPlayer(usernameSearchable: $searchable) {
+    ...player
+    usernameSearchable
   }
 }
 

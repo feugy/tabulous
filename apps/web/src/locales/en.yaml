@@ -7,8 +7,8 @@ actions:
   enter-fullscreen: Full-screen
   go-to-account: Settings
   hide-indicators: Hide indicators
-  invite-attendee: Invite in the lobby
-  invite-player: Invite to play
+  invite-attendee: Add to the lobby
+  invite-player: Add to the game
   invite: Invite
   join-game: Play
   leave-fullscreen: Leave full-screen
@@ -37,7 +37,7 @@ labels:
   confirm-game-deletion: Do you really want to delete this "{title}" game?
   confirm-lobby-deletion: Do you really want to delete this lobby?
   copyright: Copyright Tabulous.fr.
-  empty-friend-list: Add friends and play with them.
+  empty-friend-list: Type your friends' nickname and invite them to play with them.
   en: English
   end-friendship: Do you really want to remove {username} from your friends? You could not play together any more.
   fr: Français
@@ -91,9 +91,11 @@ labels:
   player-joined-lobby: '{player.username} joined the lobby!'
   player-left-game: '{player.username} left the game'
   player-left-lobby: '{player.username} left the lobby'
+  searchability: 'Discoverability: '
   terms-accepted: I accept and agree to the Terms of Use
   terms-intro: Here is not the jungle! To enjoy Tabulous, please read and accept these Terms of Use.
   terms-of-service: Legal mentions & Terms of Use
+  toggle-username-searchability: Other players can request your friendship.
   too-many-players: 'Game "{title}" {maxSeats, plural, one {is a solo game: please pick another one.} other {only has # seats. You (kindly) should remove players from the lobby or pick another game.}}'
   username: 'Nickname: '
 page-titles:
@@ -124,6 +126,8 @@ titles:
   friend-list: Your friends
   game-parameters: Game settings
   home: Hello {username} !
+  invite-attendee: Invite to the lobby
+  invite-player: Invite to the game
   invite: Who will you invite?
   legal: Legal mentions
   lobby: Lobby

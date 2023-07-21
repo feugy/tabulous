@@ -22,6 +22,8 @@ export const AccountPage = mixin(
      */
     constructor(page, lang) {
       /** @type {string} */
+      this.pageKind = 'account'
+      /** @type {string} */
       this.lang = lang
       /** @type {Page} */
       this.page = page
@@ -46,6 +48,8 @@ export const AccountPage = mixin(
       this.avatarSaveButon = this.avatarDialogue.getByRole('button', {
         name: translate('actions.save', undefined, this.lang)
       })
+      /** @type {Locator} */
+      this.isSearchableCheckbox = page.getByRole('checkbox')
     }
 
     /**

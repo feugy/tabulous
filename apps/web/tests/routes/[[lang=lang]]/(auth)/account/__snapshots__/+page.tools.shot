@@ -253,6 +253,30 @@ exports[`Manual account 1`] = `
           <!--&lt;ConfirmDialogue&gt;-->
           <!--&lt;AvatarDialogue&gt;-->
         </span>
+         
+        <span
+          class="s-2SuU4kVj__5L"
+        >
+          Découvrabilité : 
+        </span>
+         
+        <span
+          class="s-PYEUE3EzsI5c"
+        >
+          <input
+            class="s-PYEUE3EzsI5c"
+            id="toggle-searchability"
+            type="checkbox"
+          />
+           
+          <label
+            class="s-PYEUE3EzsI5c"
+            for="toggle-searchability"
+          >
+            Les autres joueurs peuvent vous demander en ami·e.
+          </label>
+        </span>
+        <!--&lt;UsernameSearchability&gt;-->
       </fieldset>
     </section>
     <!--&lt;Pane&gt;-->
@@ -560,6 +584,30 @@ exports[`OAuth account 1`] = `
           <!--&lt;ConfirmDialogue&gt;-->
           <!--&lt;AvatarDialogue&gt;-->
         </span>
+         
+        <span
+          class="s-2SuU4kVj__5L"
+        >
+          Découvrabilité : 
+        </span>
+         
+        <span
+          class="s-PYEUE3EzsI5c"
+        >
+          <input
+            class="s-PYEUE3EzsI5c"
+            id="toggle-searchability"
+            type="checkbox"
+          />
+           
+          <label
+            class="s-PYEUE3EzsI5c"
+            for="toggle-searchability"
+          >
+            Les autres joueurs peuvent vous demander en ami·e.
+          </label>
+        </span>
+        <!--&lt;UsernameSearchability&gt;-->
       </fieldset>
     </section>
     <!--&lt;Pane&gt;-->

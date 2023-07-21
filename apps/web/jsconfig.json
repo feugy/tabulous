@@ -4,8 +4,10 @@
     "baseUrl": ".",
     "paths": {
       "@src/*": ["src/*"],
-      "@tests/*": ["tests/*"]
-    }
+      "@tests/*": ["tests/*"],
+      "@tabulous/*": ["../*"]
+    },
+    "strict": true
   },
   "exclude": ["./node_modules/**", "./coverage/**", "./test_results/**"]
 }

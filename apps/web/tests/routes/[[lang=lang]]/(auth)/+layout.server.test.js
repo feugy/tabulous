@@ -1,12 +1,18 @@
 import { faker } from '@faker-js/faker'
 import { load } from '@src/routes/[[lang=lang]]/(auth)/+layout.server'
 import { redirect } from '@sveltejs/kit'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 describe.each([
   { title: '/', lang: undefined, urlRoot: '' },
   { title: '/en', lang: 'en', urlRoot: '/en' }
 ])('$title', ({ lang, urlRoot }) => {
+  const depends = vi.fn()
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   describe('(auth) layout server loader', () => {
     describe.each([
       { location: `/` },
@@ -17,7 +23,8 @@ describe.each([
           load({
             url: new URL(location, 'https://example.org'),
             locals: {},
-            params: { lang }
+            params: { lang },
+            depends
           })
         ).rejects.toEqual(
           redirect(
@@ -25,6 +32,7 @@ describe.each([
             `${urlRoot}/login?redirect=${encodeURIComponent(location)}`
           )
         )
+        expect(depends).toHaveBeenCalledWith('data:session')
       })
 
       it('redirects to terms on first connection when accessing an url', async () => {
@@ -38,7 +46,8 @@ describe.each([
           load({
             url: new URL(location, 'https://example.org'),
             locals: { session },
-            params: { lang }
+            params: { lang },
+            depends
           })
         ).rejects.toEqual(
           redirect(
@@ -46,6 +55,7 @@ describe.each([
             `${urlRoot}/accept-terms?redirect=${encodeURIComponent(location)}`
           )
         )
+        expect(depends).not.toHaveBeenCalled()
       })
 
       it('accepts session', async () => {
@@ -60,13 +70,15 @@ describe.each([
           await load({
             url: new URL(location, 'https://example.org'),
             locals: { session },
-            params: { lang }
+            params: { lang },
+            depends
           })
         ).toEqual({
           lang,
           session,
           bearer: null
         })
+        expect(depends).toHaveBeenCalledWith('data:session')
       })
     })
   })

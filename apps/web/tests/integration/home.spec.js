@@ -310,7 +310,7 @@ for (const { lang } of [{ lang: 'fr' }, { lang: 'en' }]) {
         })
         .click()
       await expect(homePage.deleteGameDialogue).not.toBeVisible()
-      // @ts-ignore toHaveBeenCalledWith is not defined
+      // @ts-expect-error toHaveBeenCalledWith is not defined
       expect(queryReceived).toHaveBeenCalledWith(
         'deleteGame',
         expect.objectContaining({
@@ -484,6 +484,42 @@ for (const { lang } of [{ lang: 'fr' }, { lang: 'en' }]) {
       await homePage.expectSortedCatalogItems(catalog)
 
       await homePage.invite(guest.username)
+    })
+
+    it('can change username searchability', async ({ page }) => {
+      const { setTokenCookie, onQuery } = await mockGraphQl(page, {
+        listCatalog: [catalog],
+        listGames: [games],
+        listFriends: [friends],
+        getCurrentPlayer: {
+          token: faker.string.uuid(),
+          player,
+          turnCredentials: {
+            username: 'bob',
+            credentials: faker.internet.password()
+          }
+        },
+        setUsernameSearchability: { ...player, usernameSearchability: true }
+      })
+      await setTokenCookie()
+
+      const homePage = new HomePage(page, lang)
+      await homePage.goTo()
+      await homePage.getStarted()
+      await homePage.openTab(homePage.friendsTab)
+      const queryReceived = fn()
+      onQuery(queryReceived)
+      await expect(homePage.isSearchableCheckbox).not.toBeChecked()
+      await homePage.isSearchableCheckbox.click()
+      await expect(homePage.isSearchableCheckbox).toBeChecked()
+      // @ts-expect-error toHaveBeenCalledWith is not defined
+      expect(queryReceived).toHaveBeenCalledWith(
+        'setUsernameSearchability',
+        expect.objectContaining({
+          operationName: 'setUsernameSearchability',
+          variables: { searchable: true }
+        })
+      )
     })
 
     describe('given a lobby with a guest', () => {

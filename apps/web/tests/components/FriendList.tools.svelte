@@ -4,6 +4,11 @@
   import avatar from '@tests/fixtures/avatar.png'
   import { players as playerWithColors } from '@tests/fixtures/Discussion.testdata'
 
+  const currentPlayer = {
+    id: '135790',
+    username: 'Fernande',
+    usernameSearchable: true
+  }
   const players = playerWithColors.map(player => ({
     ...player,
     color: undefined
@@ -33,25 +38,40 @@
   ]
 </script>
 
-<ToolBox component={FriendList} name="Components/Friend List">
+<ToolBox
+  component={FriendList}
+  name="Components/Friend List"
+  events={['toggleSearchability']}
+>
   <Tool
     name="Empty list"
     props={{
+      currentPlayer,
       friends: []
     }}
   />
   <Tool
     name="With friends"
-    props={{ friends: players.map(player => ({ player })) }}
+    props={{ currentPlayer, friends: players.map(player => ({ player })) }}
   />
   <Tool
     name="With requests and proposals"
-    props={{ friends: friendsWithRequests }}
+    props={{ currentPlayer, friends: friendsWithRequests }}
   />
   <Tool
     name="With lobby"
     props={{
+      currentPlayer: { ...currentPlayer, usernameSearchable: false },
       game: { availableSeats: 5 },
+      playerById,
+      friends: friendsWithRequests
+    }}
+  />
+  <Tool
+    name="With game"
+    props={{
+      currentPlayer: { ...currentPlayer, usernameSearchable: false },
+      game: { kind: 'klondike', availableSeats: 3 },
       playerById,
       friends: friendsWithRequests
     }}
@@ -59,6 +79,7 @@
   <Tool
     name="With game with no seats"
     props={{
+      currentPlayer: { ...currentPlayer, usernameSearchable: false },
       game: { kind: 'klondike' },
       playerById,
       friends: friendsWithRequests

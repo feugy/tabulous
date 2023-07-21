@@ -32,14 +32,16 @@ describe('given a connected repository and several players', () => {
         id: `p1-${faker.number.int(100)}`,
         username: 'Jane',
         provider: provider1,
-        providerId: providerId1
+        providerId: providerId1,
+        usernameSearchable: true
       },
       {
         id: `p2-${faker.number.int(100)}`,
         username: 'Paul',
         catalog: [],
         isAdmin: true,
-        currentGameId: null
+        currentGameId: null,
+        usernameSearchable: true
       },
       {
         id: `p3-${faker.number.int(100)}`,
@@ -47,29 +49,53 @@ describe('given a connected repository and several players', () => {
         provider: provider1,
         providerId: providerId2,
         catalog: ['klondike', 'draughts'],
-        termsAccepted: true
+        termsAccepted: true,
+        usernameSearchable: true
       },
       {
         id: `p4-${faker.number.int(100)}`,
         username: 'Adam Mann',
-        catalog: ['draughts', 'klondike']
+        catalog: ['draughts', 'klondike'],
+        usernameSearchable: true
       },
       {
         id: `p5-${faker.number.int(100)}`,
         username: 'Bruce',
         provider: provider2,
-        providerId: providerId1
+        providerId: providerId1,
+        usernameSearchable: true
       },
-      { id: `p6-${faker.number.int(100)}`, username: 'àdversary' },
+      {
+        id: `p6-${faker.number.int(100)}`,
+        username: 'àdversary',
+        usernameSearchable: true
+      },
       {
         id: `p7-${faker.number.int(100)}`,
         username: 'Peter',
         provider: provider2,
-        providerId: providerId3
+        providerId: providerId3,
+        usernameSearchable: true
       },
-      { id: `p8-${faker.number.int(100)}`, username: 'Agent Moebius' },
-      { id: `p9-${faker.number.int(100)}`, username: 'Agent' },
-      { id: `p10-${faker.number.int(100)}`, username: 'AgentX' }
+      {
+        id: `p8-${faker.number.int(100)}`,
+        username: 'Agent Moebius',
+        usernameSearchable: true
+      },
+      {
+        id: `p9-${faker.number.int(100)}`,
+        username: 'Agent',
+        usernameSearchable: true
+      },
+      {
+        id: `p10-${faker.number.int(100)}`,
+        username: 'AgentX',
+        usernameSearchable: true
+      },
+      {
+        id: `p11-${faker.number.int(100)}`,
+        username: 'Adam Warlock'
+      }
     ])
     await players.save(models)
   })
@@ -179,7 +205,7 @@ describe('given a connected repository and several players', () => {
           total: 3,
           from: 0,
           size: 10,
-          results: [models[2], models[3], models[5]]
+          results: [models[5], models[2], models[3]]
         })
         expect(await players.searchByUsername({ search: 'ada' })).toEqual({
           total: 2,
@@ -191,7 +217,7 @@ describe('given a connected repository and several players', () => {
           total: 3,
           from: 0,
           size: 10,
-          results: [models[7], models[8], models[9]]
+          results: [models[9], models[8], models[7]]
         })
       })
 
@@ -246,7 +272,7 @@ describe('given a connected repository and several players', () => {
           total: 6,
           from: 2,
           size: 3,
-          results: [models[5], models[7], models[8]]
+          results: [models[8], models[2], models[3]]
         })
 
         expect(
@@ -255,7 +281,7 @@ describe('given a connected repository and several players', () => {
           total: 6,
           from: 4,
           size: 2,
-          results: [models[8], models[9]]
+          results: [models[3], models[7]]
         })
       })
 
@@ -300,6 +326,25 @@ describe('given a connected repository and several players', () => {
           from: 0,
           size: 10,
           results: []
+        })
+      })
+    })
+
+    describe('reindexModels()', () => {
+      it('loads all existing models', async () => {
+        await players.reindexModels()
+        expect(await players.searchByUsername({ search: 'a' })).toEqual({
+          from: 0,
+          size: 10,
+          total: 6,
+          results: [
+            models[9],
+            models[5],
+            models[8],
+            models[2],
+            models[3],
+            models[7]
+          ]
         })
       })
     })

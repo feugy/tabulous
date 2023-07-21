@@ -9,6 +9,7 @@ type Player {
   email: String
   termsAccepted: Boolean
   isAdmin: Boolean
+  usernameSearchable: Boolean
 }
 
 type Friendship {
@@ -54,7 +55,11 @@ type Mutation {
   addPlayer(id: ID!, username: String!, password: String!): Player
   logIn(id: ID!, password: String!): PlayerWithTurnCredentials
   acceptTerms: Player
-  updateCurrentPlayer(username: String, avatar: String): Player
+  updateCurrentPlayer(
+    username: String
+    avatar: String
+    usernameSearchable: Boolean
+  ): Player
   deletePlayer(id: ID!): Player
   sendFriendRequest(id: ID!): Boolean
   requestFriendship(id: ID!): Boolean

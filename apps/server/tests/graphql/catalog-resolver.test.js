@@ -28,7 +28,7 @@ describe('given a started server', () => {
   let server
   /** @type {import('../../src/services/index.js').default} */
   let services
-  vi.spyOn(makeLogger('catalog-resolver'), 'warn').mockImplementation(() => {})
+  vi.spyOn(makeLogger('graphql-plugin'), 'warn').mockImplementation(() => {})
   const player = { id: faker.string.uuid(), username: faker.person.firstName() }
   const admin = {
     id: faker.string.uuid(),

@@ -245,12 +245,36 @@ describe('given initialized repository', () => {
   describe('given some players', () => {
     let players =
       /** @type {import('../../src/services/players.js').Player[]} */ ([
-        { id: `adam-${faker.number.int(100)}`, username: 'Adam Destine' },
-        { id: `batman-${faker.number.int(100)}`, username: 'Batman' },
-        { id: `adaptoid-${faker.number.int(100)}`, username: 'Adaptoid' },
-        { id: `adversary-${faker.number.int(100)}`, username: 'Adversary' },
-        { id: `hulk-${faker.number.int(100)}`, username: 'Hulk' },
-        { id: `thor-${faker.number.int(100)}`, username: 'Thor' }
+        {
+          id: `adam-${faker.number.int(100)}`,
+          username: 'Adam Destine',
+          usernameSearchable: true
+        },
+        {
+          id: `batman-${faker.number.int(100)}`,
+          username: 'Batman',
+          usernameSearchable: true
+        },
+        {
+          id: `adaptoid-${faker.number.int(100)}`,
+          username: 'Adaptoid',
+          usernameSearchable: true
+        },
+        {
+          id: `adversary-${faker.number.int(100)}`,
+          username: 'Adversary',
+          usernameSearchable: true
+        },
+        {
+          id: `hulk-${faker.number.int(100)}`,
+          username: 'Hulk',
+          usernameSearchable: true
+        },
+        {
+          id: `thor-${faker.number.int(100)}`,
+          username: 'Thor',
+          usernameSearchable: true
+        }
       ])
 
     /** @type {import('rxjs').Subscription} */
@@ -349,20 +373,20 @@ describe('given initialized repository', () => {
     describe('searchPlayers()', () => {
       it('returns matching players', async () => {
         expect(await searchPlayers('ada', players[3].id)).toEqual([
-          players[0],
-          players[2]
+          players[2],
+          players[0]
         ])
       })
 
       it('excludes current player from results, on demand', async () => {
         expect(await searchPlayers('ad', players[3].id)).toEqual([
-          players[0],
-          players[2]
+          players[2],
+          players[0]
         ])
         expect(await searchPlayers('ad', players[3].id, false)).toEqual([
-          players[0],
           players[2],
-          players[3]
+          players[3],
+          players[0]
         ])
       })
 

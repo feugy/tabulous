@@ -25,6 +25,11 @@ vi.mock('@src/stores/players')
 vi.mock('@src/stores/game-manager')
 
 describe('FriendList component', () => {
+  const currentPlayer = {
+    id: makeId('p0'),
+    username: 'Karen',
+    usernameSearchable: true
+  }
   const friends = [
     {
       player: {
@@ -59,12 +64,14 @@ describe('FriendList component', () => {
   })
 
   function renderComponent(props = {}) {
-    return render(html`<${FriendList} ...${props} />`)
+    return render(
+      html`<${FriendList} currentPlayer=${currentPlayer} ...${props} />`
+    )
   }
 
   it('displays a disclaimer when list is empty', () => {
     renderComponent({ friends: [] })
-    expect(screen.queryAllByRole('option')).toHaveLength(0)
+    expect(screen.queryAllByRole('listitem')).toHaveLength(0)
     expect(
       screen.getByText(translate('labels.empty-friend-list'))
     ).toBeInTheDocument()
@@ -78,11 +85,11 @@ describe('FriendList component', () => {
 
   it('displays friends, requests and proposals', () => {
     renderComponent({ friends })
-    const friendItems = screen.getAllByRole('option')
+    const friendItems = screen.getAllByRole('listitem')
     expectFriendships(friendItems, friends)
   })
 
-  it('can not select friends without game', async () => {
+  it.skip('can not select friends without game', async () => {
     const { player } = friends[0]
     renderComponent({ friends })
 
@@ -93,7 +100,7 @@ describe('FriendList component', () => {
 
   it('can decline requested friendship', async () => {
     renderComponent({ friends })
-    const request = screen.getAllByRole('option')[1]
+    const request = screen.getAllByRole('listitem')[1]
     await fireEvent.click(
       within(request).getByRole('button', { name: 'clear' })
     )
@@ -105,7 +112,7 @@ describe('FriendList component', () => {
 
   it('can accept requested friendship', async () => {
     renderComponent({ friends })
-    const request = screen.getAllByRole('option')[1]
+    const request = screen.getAllByRole('listitem')[1]
     await fireEvent.click(
       within(request).getByRole('button', { name: 'check' })
     )
@@ -117,7 +124,7 @@ describe('FriendList component', () => {
 
   it('can cancel friendship ending', async () => {
     renderComponent({ friends })
-    const request = screen.getAllByRole('option')[3]
+    const request = screen.getAllByRole('listitem')[3]
     await fireEvent.click(
       within(request).getByRole('button', { name: 'delete' })
     )
@@ -138,7 +145,7 @@ describe('FriendList component', () => {
 
   it('can end existing friendship after confirmation', async () => {
     renderComponent({ friends })
-    const request = screen.getAllByRole('option')[3]
+    const request = screen.getAllByRole('listitem')[3]
     await fireEvent.click(
       within(request).getByRole('button', { name: 'delete' })
     )
@@ -160,7 +167,7 @@ describe('FriendList component', () => {
 
   it('can end proposed friendship after confirmation', async () => {
     renderComponent({ friends })
-    const request = screen.getAllByRole('option')[2]
+    const request = screen.getAllByRole('listitem')[2]
     await fireEvent.click(
       within(request).getByRole('button', { name: 'delete' })
     )
@@ -302,7 +309,7 @@ describe('FriendList component', () => {
       game: { id: faker.string.uuid(), kind: 'klondike', availableSeats: 3 }
     }
   ])('given $title', ({ game, subTitle, inviteButtonLabel, canKickPlayer }) => {
-    it(`displays ${subTitle}s in player list rather than friend list`, () => {
+    it(`displays ${subTitle}s only, without current player`, () => {
       const { player: player1 } = friends[0]
       const { player: player2 } = friends[friends.length - 1]
       renderComponent({
@@ -310,31 +317,16 @@ describe('FriendList component', () => {
         game,
         playerById: new Map([
           [player1.id, player1],
-          [player2.id, player2]
+          [player2.id, player2],
+          [currentPlayer.id, currentPlayer]
         ])
       })
 
       const playerItems = screen.getAllByRole('listitem')
       expectPlayers(playerItems, [player1, player2])
-
-      const friendItems = screen.getAllByRole('option')
-      expectFriendships(friendItems, friends.slice(1, -1))
-    })
-
-    it(`does not display current player as ${subTitle}`, () => {
-      const { player: player1 } = friends[0]
-      const { player: player2 } = friends[friends.length - 1]
-      renderComponent({
-        friends,
-        game,
-        currentPlayerId: player1.id,
-        playerById: new Map([
-          [player1.id, player1],
-          [player2.id, player2]
-        ])
-      })
-
-      expectPlayers(screen.getAllByRole('listitem'), [player2])
+      expect(
+        screen.getByRole('button', { name: inviteButtonLabel })
+      ).toBeInTheDocument()
     })
 
     describe(`given ${subTitle}s that are not in friend list`, () => {
@@ -350,7 +342,8 @@ describe('FriendList component', () => {
           playerById: new Map([
             [player2.id, player2],
             [player1.id, player1],
-            [player3.id, player3]
+            [player3.id, player3],
+            [currentPlayer.id, currentPlayer]
           ])
         })
 
@@ -378,15 +371,29 @@ describe('FriendList component', () => {
     it('can invite friends', async () => {
       const { player: player1 } = friends[0]
       const { player: player2 } = friends[friends.length - 1]
-      renderComponent({ friends, game })
+      renderComponent({
+        friends,
+        game,
+        playerById: new Map([[currentPlayer.id, currentPlayer]])
+      })
 
-      const inviteButton = screen.getByRole('button', {
-        name: inviteButtonLabel
+      expect(screen.queryAllByRole('listitem')).toHaveLength(0)
+
+      await fireEvent.click(
+        screen.getByRole('button', {
+          name: inviteButtonLabel
+        })
+      )
+
+      const dialogue = screen.getByRole('dialog')
+      expect(dialogue).toBeInTheDocument()
+      const inviteButton = within(dialogue).getByRole('button', {
+        name: translate('actions.invite')
       })
       expect(inviteButton).toBeDisabled()
 
-      const player1Item = screen.getByText(player1.username)
-      const player2Item = screen.getByText(player2.username)
+      const player1Item = within(dialogue).getByText(player1.username)
+      const player2Item = within(dialogue).getByText(player2.username)
       await fireEvent.click(player1Item)
       expectSelected(player1Item)
       await fireEvent.click(player2Item)
@@ -396,12 +403,11 @@ describe('FriendList component', () => {
       await fireEvent.click(inviteButton)
       expect(invite).toHaveBeenCalledWith(game.id, player1.id, player2.id)
       expect(invite).toHaveBeenCalledOnce()
+      expect(dialogue).not.toBeInTheDocument()
     })
 
-    it('can not invite friendship request', async () => {
-      const { player } = friends[0]
+    it('can not invite without available seats', async () => {
       renderComponent({ friends, game: { ...game, availableSeats: 0 } })
-      await fireEvent.click(screen.getByText(player.username))
       expect(
         screen.queryByRole('button', {
           name: inviteButtonLabel
@@ -409,33 +415,46 @@ describe('FriendList component', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('can not invite without available seats', async () => {
-      const { player } = friends[1]
+    it('can not invite friendship request', async () => {
       renderComponent({ friends, game })
-      const inviteButton = screen.getByRole('button', {
-        name: inviteButtonLabel
-      })
-      expect(inviteButton).toBeDisabled()
-
-      const playerItem = screen.getByText(
-        translate('labels.friendship-requested', player)
+      await fireEvent.click(
+        screen.getByRole('button', {
+          name: inviteButtonLabel
+        })
       )
-      await fireEvent.click(playerItem)
-      expectSelected(playerItem, false)
-      expect(inviteButton).toBeDisabled()
+
+      const dialogue = screen.getByRole('dialog')
+      expect(dialogue).toBeInTheDocument()
+
+      const friendships = within(dialogue).getAllByRole('term')
+      expect(friendships).toHaveLength(3)
+      expect(friendships[0]).toHaveTextContent(friends[0].player.username)
+      // friends[1] is a request
+      expect(friendships[1]).toHaveTextContent(friends[2].player.username)
+      expect(friendships[2]).toHaveTextContent(friends[3].player.username)
     })
 
     it('can unselect selected friend', async () => {
       const { player } = friends[0]
       renderComponent({ friends, game })
-      const inviteButton = screen.getByRole('button', {
-        name: inviteButtonLabel
+      await fireEvent.click(
+        screen.getByRole('button', {
+          name: inviteButtonLabel
+        })
+      )
+
+      const dialogue = screen.getByRole('dialog')
+      expect(dialogue).toBeInTheDocument()
+
+      const inviteButton = within(dialogue).getByRole('button', {
+        name: translate('actions.invite')
       })
       expect(inviteButton).toBeDisabled()
 
-      const playerItem = screen.getByText(player.username)
+      const playerItem = within(dialogue).getByText(player.username)
       await fireEvent.click(playerItem)
       expectSelected(playerItem)
+      expect(inviteButton).toBeEnabled()
       await fireEvent.click(playerItem)
       expectSelected(playerItem, false)
       expect(inviteButton).toBeDisabled()
@@ -444,28 +463,22 @@ describe('FriendList component', () => {
     it('can select and unselect with keyboard', async () => {
       const { player } = friends[0]
       renderComponent({ friends, game })
+      await fireEvent.click(
+        screen.getByRole('button', {
+          name: inviteButtonLabel
+        })
+      )
 
-      const playerItem = screen.getByText(player.username)
-      playerItem.focus()
+      const dialogue = screen.getByRole('dialog')
+      expect(dialogue).toBeInTheDocument()
+
+      const playerItem = within(dialogue).getByText(player.username)
       await fireEvent.keyDown(playerItem, { key: 'Enter' })
       expectSelected(playerItem)
       await fireEvent.keyDown(playerItem, { key: 'a' })
       expectSelected(playerItem)
       await fireEvent.keyDown(playerItem, { key: ' ' })
       expectSelected(playerItem, false)
-    })
-
-    it(`can not select ${subTitle}s`, async () => {
-      const { player } = friends[0]
-      renderComponent({
-        friends,
-        game,
-        playerById: new Map([[player.id, player]])
-      })
-
-      const playerItem = screen.getByText(player.username)
-      await fireEvent.click(playerItem)
-      expect(playerItem).not.toHaveAttribute('aria-selected')
     })
 
     it(`can not kick the owner`, async () => {

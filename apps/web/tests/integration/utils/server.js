@@ -48,8 +48,8 @@ function logError(reqId, ...args) {
 /**
  * @typedef {object} GraphQlMockResult
  * @property {Record<string, string>} subscriptionIds - GaphQL subscription ids by their operation name.
- * @property {(operation: string, message: object) => void} onSubscription - registers a unique callback called when receiving GraphQL subscription.
- * @property {(operation: string, request: object) => undefined|object[]|object} onQuery - registers a unique callback called when receiving GraphQL queries (and mutations).
+ * @property {(receiver: (operation: string, message: object) => void) => void} onSubscription - registers a unique callback called when receiving GraphQL subscription.
+ * @property {(receiver: (operation: string, request: object) => undefined|object[]|object) => void} onQuery - registers a unique callback called when receiving GraphQL queries (and mutations).
  *                                                                                         Can be used to override predefined responses
  * @property {(payload: object) => void} sendToSubscription - sends a GraphQL response payload to the subscription.
  * @property {() => void} setTokenCookie - sets token cookie so SvelteKit server can issue requests to the mocked server.

@@ -4,7 +4,7 @@
 
   import ControlsHelp from '../ControlsHelp.svelte'
   import Discussion from '../Discussion.svelte'
-  import FriendList from '../FriendList.svelte'
+  import FriendList from '../FriendList/index.js'
   import MinimizableSection from '../MinimizableSection.svelte'
   import RuleViewer from '../RuleViewer.svelte'
   import AvatarGrid from './AvatarGrid.svelte'
@@ -90,12 +90,7 @@
       {:else if tabs[tab]?.id === helpId}
         <ControlsHelp {actionNamesByButton} {actionNamesByKey} />
       {:else if tabs[tab]?.id === friendsId}
-        <FriendList
-          {friends}
-          {playerById}
-          {game}
-          currentPlayerId={player?.id}
-        />
+        <FriendList {friends} {playerById} {game} currentPlayer={player} />
       {/if}
     </div>
   </MinimizableSection>

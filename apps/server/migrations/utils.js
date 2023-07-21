@@ -2,9 +2,10 @@
 
 /**
  * Recursively fetches all model pages of a given repository, applying a function to each of them.
- * @param {object} repository - repository of models.
- * @param {(obj: any) => Promise<void>} apply - function individually applied to each model.
- * @param {{ from: number }} params = { from: 0 } - fetch parameters, for internal use.
+ * @template {{ id: string }} M
+ * @param {import('../src/repositories/abstract-repository.js').AbstractRepository<M>} repository - repository of models.
+ * @param {(obj: M) => Promise<void>} apply - function individually applied to each model.
+ * @param {{ from: number }} [params = { from: 0 }] - fetch parameters, for internal use.
  */
 export async function iteratePage(repository, apply, { from } = { from: 0 }) {
   const { total, results } = await repository.list({ from })

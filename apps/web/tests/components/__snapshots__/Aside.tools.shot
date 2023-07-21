@@ -125,19 +125,324 @@ exports[`Friends only 1`] = `
              
           </div>
            
-           
           <section
             aria-roledescription="friend-list"
-            class="s-XLQf75fI0H0o"
+            class="s-2FHiERVIQQ6s"
           >
             <h3
-              class="s-XLQf75fI0H0o"
+              class="s-2FHiERVIQQ6s"
             >
               Vos ami·e·s
             </h3>
              
+            <span
+              class="s-PYEUE3EzsI5c"
+            >
+              <input
+                class="s-PYEUE3EzsI5c"
+                id="toggle-searchability"
+                type="checkbox"
+              />
+               
+              <label
+                class="s-PYEUE3EzsI5c"
+                for="toggle-searchability"
+              >
+                Les autres joueurs peuvent vous demander en ami·e.
+              </label>
+            </span>
+            <!--&lt;UsernameSearchability&gt;-->
+             
+            <ol
+              class="s-PJ48chyAailx"
+              role="listbox"
+            >
+              <li
+                class="s-PJ48chyAailx"
+              >
+                <figure
+                  class="s-engCJu8q-fNe"
+                  style="--dimension: 40px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+                >
+                  <img
+                    alt="avatar for Fernand Naudin"
+                    class="s-engCJu8q-fNe"
+                    height="40"
+                    referrerpolicy="no-referrer"
+                    width="40"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe abbreviated"
+                  >
+                    FN
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+                 
+                <span
+                  class="s-PJ48chyAailx"
+                  role="term"
+                >
+                  Fernand Naudin
+                </span>
+                 
+                <span
+                  class="buttons s-PJ48chyAailx"
+                >
+                  <button
+                    class="s-NMyTiX1zi6rz"
+                  >
+                    <div
+                      class="s-NMyTiX1zi6rz"
+                    >
+                      <span
+                        class="material-icons s-NMyTiX1zi6rz"
+                      >
+                        delete
+                      </span>
+                      
+                      
+                    </div>
+                     
+                  </button>
+                  <!--&lt;Button&gt;-->
+                </span>
+                 
+              </li>
+              <li
+                class="s-PJ48chyAailx isRequest"
+              >
+                <figure
+                  class="s-engCJu8q-fNe"
+                  style="--dimension: 40px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+                >
+                  <img
+                    alt="avatar for Paul Wolfoni"
+                    class="s-engCJu8q-fNe hasImage"
+                    height="40"
+                    referrerpolicy="no-referrer"
+                    src="/tests/fixtures/avatar.png"
+                    width="40"
+                  />
+                   
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+                 
+                <span
+                  class="s-PJ48chyAailx"
+                  role="term"
+                >
+                  Paul Wolfoni souhaite rejoindre vos ami·e·s
+                </span>
+                 
+                <span
+                  class="buttons s-PJ48chyAailx"
+                >
+                  <button
+                    class="primary s-NMyTiX1zi6rz"
+                  >
+                    <div
+                      class="s-NMyTiX1zi6rz"
+                    >
+                      <span
+                        class="material-icons s-NMyTiX1zi6rz"
+                      >
+                        check
+                      </span>
+                      
+                      
+                    </div>
+                     
+                  </button>
+                  <!--&lt;Button&gt;-->
+                   
+                  <button
+                    class="s-NMyTiX1zi6rz"
+                  >
+                    <div
+                      class="s-NMyTiX1zi6rz"
+                    >
+                      <span
+                        class="material-icons s-NMyTiX1zi6rz"
+                      >
+                        clear
+                      </span>
+                      
+                      
+                    </div>
+                     
+                  </button>
+                  <!--&lt;Button&gt;-->
+                </span>
+                 
+              </li>
+              <li
+                class="s-PJ48chyAailx isProposal"
+              >
+                <figure
+                  class="s-engCJu8q-fNe"
+                  style="--dimension: 40px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+                >
+                  <img
+                    alt="avatar for Raoul Wolfoni"
+                    class="s-engCJu8q-fNe"
+                    height="40"
+                    referrerpolicy="no-referrer"
+                    width="40"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe abbreviated"
+                  >
+                    RW
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+                 
+                <span
+                  class="s-PJ48chyAailx"
+                  role="term"
+                >
+                  Demande envoyée à Raoul Wolfoni
+                </span>
+                 
+                <span
+                  class="buttons s-PJ48chyAailx"
+                >
+                  <button
+                    class="s-NMyTiX1zi6rz"
+                  >
+                    <div
+                      class="s-NMyTiX1zi6rz"
+                    >
+                      <span
+                        class="material-icons s-NMyTiX1zi6rz"
+                      >
+                        delete
+                      </span>
+                      
+                      
+                    </div>
+                     
+                  </button>
+                  <!--&lt;Button&gt;-->
+                </span>
+                 
+              </li>
+              <li
+                class="s-PJ48chyAailx"
+              >
+                <figure
+                  class="s-engCJu8q-fNe"
+                  style="--dimension: 40px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+                >
+                  <img
+                    alt="avatar for Maître Follas"
+                    class="s-engCJu8q-fNe"
+                    height="40"
+                    referrerpolicy="no-referrer"
+                    width="40"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe abbreviated"
+                  >
+                    MF
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+                 
+                <span
+                  class="s-PJ48chyAailx"
+                  role="term"
+                >
+                  Maître Follas
+                </span>
+                 
+                <span
+                  class="buttons s-PJ48chyAailx"
+                >
+                  <button
+                    class="s-NMyTiX1zi6rz"
+                  >
+                    <div
+                      class="s-NMyTiX1zi6rz"
+                    >
+                      <span
+                        class="material-icons s-NMyTiX1zi6rz"
+                      >
+                        delete
+                      </span>
+                      
+                      
+                    </div>
+                     
+                  </button>
+                  <!--&lt;Button&gt;-->
+                </span>
+                 
+              </li>
+              <li
+                class="s-PJ48chyAailx"
+              >
+                <figure
+                  class="s-engCJu8q-fNe"
+                  style="--dimension: 40px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+                >
+                  <img
+                    alt="avatar for Pascal"
+                    class="s-engCJu8q-fNe"
+                    height="40"
+                    referrerpolicy="no-referrer"
+                    width="40"
+                  />
+                   
+                  <figcaption
+                    class="s-engCJu8q-fNe abbreviated"
+                  >
+                    P
+                  </figcaption>
+                </figure>
+                <!--&lt;PlayerThumbnail&gt;-->
+                 
+                <span
+                  class="s-PJ48chyAailx"
+                  role="term"
+                >
+                  Pascal
+                </span>
+                 
+                <span
+                  class="buttons s-PJ48chyAailx"
+                >
+                  <button
+                    class="s-NMyTiX1zi6rz"
+                  >
+                    <div
+                      class="s-NMyTiX1zi6rz"
+                    >
+                      <span
+                        class="material-icons s-NMyTiX1zi6rz"
+                      >
+                        delete
+                      </span>
+                      
+                      
+                    </div>
+                     
+                  </button>
+                  <!--&lt;Button&gt;-->
+                </span>
+                 
+              </li>
+            </ol>
+             
+            
+            <!--&lt;FriendList&gt;-->
+             
             <div
-              class="s-XLQf75fI0H0o"
+              class="s-2FHiERVIQQ6s"
             >
               <span
                 aria-haspopup="menu"
@@ -184,310 +489,9 @@ exports[`Friends only 1`] = `
               <!--&lt;Button&gt;-->
             </div>
              
-             
-            <ol
-              class="s-XLQf75fI0H0o"
-              role="listbox"
-            >
-              <li
-                aria-checked="false"
-                class="s-XLQf75fI0H0o"
-                role="option"
-                tabindex="-1"
-              >
-                <figure
-                  class="s-engCJu8q-fNe"
-                  style="--dimension: 40px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
-                >
-                  <img
-                    alt="avatar for Fernand Naudin"
-                    class="s-engCJu8q-fNe"
-                    height="40"
-                    referrerpolicy="no-referrer"
-                    width="40"
-                  />
-                   
-                  <figcaption
-                    class="s-engCJu8q-fNe abbreviated"
-                  >
-                    FN
-                  </figcaption>
-                </figure>
-                <!--&lt;PlayerThumbnail&gt;-->
-                 
-                <span
-                  class="s-XLQf75fI0H0o"
-                  role="term"
-                >
-                  Fernand Naudin
-                </span>
-                 
-                <span
-                  class="buttons s-XLQf75fI0H0o"
-                >
-                  <button
-                    class="s-NMyTiX1zi6rz"
-                  >
-                    <div
-                      class="s-NMyTiX1zi6rz"
-                    >
-                      <span
-                        class="material-icons s-NMyTiX1zi6rz"
-                      >
-                        delete
-                      </span>
-                      
-                      
-                    </div>
-                     
-                  </button>
-                  <!--&lt;Button&gt;-->
-                </span>
-                 
-              </li>
-              <li
-                aria-checked="false"
-                class="s-XLQf75fI0H0o isRequest"
-                role="option"
-                tabindex="-1"
-              >
-                <figure
-                  class="s-engCJu8q-fNe"
-                  style="--dimension: 40px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
-                >
-                  <img
-                    alt="avatar for Paul Wolfoni"
-                    class="s-engCJu8q-fNe hasImage"
-                    height="40"
-                    referrerpolicy="no-referrer"
-                    src="/tests/fixtures/avatar.png"
-                    width="40"
-                  />
-                   
-                </figure>
-                <!--&lt;PlayerThumbnail&gt;-->
-                 
-                <span
-                  class="s-XLQf75fI0H0o"
-                  role="term"
-                >
-                  Paul Wolfoni souhaite rejoindre vos ami·e·s
-                </span>
-                 
-                <span
-                  class="buttons s-XLQf75fI0H0o"
-                >
-                  <button
-                    class="primary s-NMyTiX1zi6rz"
-                  >
-                    <div
-                      class="s-NMyTiX1zi6rz"
-                    >
-                      <span
-                        class="material-icons s-NMyTiX1zi6rz"
-                      >
-                        check
-                      </span>
-                      
-                      
-                    </div>
-                     
-                  </button>
-                  <!--&lt;Button&gt;-->
-                   
-                  <button
-                    class="s-NMyTiX1zi6rz"
-                  >
-                    <div
-                      class="s-NMyTiX1zi6rz"
-                    >
-                      <span
-                        class="material-icons s-NMyTiX1zi6rz"
-                      >
-                        clear
-                      </span>
-                      
-                      
-                    </div>
-                     
-                  </button>
-                  <!--&lt;Button&gt;-->
-                </span>
-                 
-              </li>
-              <li
-                aria-checked="false"
-                class="s-XLQf75fI0H0o isProposal"
-                role="option"
-                tabindex="-1"
-              >
-                <figure
-                  class="s-engCJu8q-fNe"
-                  style="--dimension: 40px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
-                >
-                  <img
-                    alt="avatar for Raoul Wolfoni"
-                    class="s-engCJu8q-fNe"
-                    height="40"
-                    referrerpolicy="no-referrer"
-                    width="40"
-                  />
-                   
-                  <figcaption
-                    class="s-engCJu8q-fNe abbreviated"
-                  >
-                    RW
-                  </figcaption>
-                </figure>
-                <!--&lt;PlayerThumbnail&gt;-->
-                 
-                <span
-                  class="s-XLQf75fI0H0o"
-                  role="term"
-                >
-                  Demande envoyée à Raoul Wolfoni
-                </span>
-                 
-                <span
-                  class="buttons s-XLQf75fI0H0o"
-                >
-                  <button
-                    class="s-NMyTiX1zi6rz"
-                  >
-                    <div
-                      class="s-NMyTiX1zi6rz"
-                    >
-                      <span
-                        class="material-icons s-NMyTiX1zi6rz"
-                      >
-                        delete
-                      </span>
-                      
-                      
-                    </div>
-                     
-                  </button>
-                  <!--&lt;Button&gt;-->
-                </span>
-                 
-              </li>
-              <li
-                aria-checked="false"
-                class="s-XLQf75fI0H0o"
-                role="option"
-                tabindex="-1"
-              >
-                <figure
-                  class="s-engCJu8q-fNe"
-                  style="--dimension: 40px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
-                >
-                  <img
-                    alt="avatar for Maître Follas"
-                    class="s-engCJu8q-fNe"
-                    height="40"
-                    referrerpolicy="no-referrer"
-                    width="40"
-                  />
-                   
-                  <figcaption
-                    class="s-engCJu8q-fNe abbreviated"
-                  >
-                    MF
-                  </figcaption>
-                </figure>
-                <!--&lt;PlayerThumbnail&gt;-->
-                 
-                <span
-                  class="s-XLQf75fI0H0o"
-                  role="term"
-                >
-                  Maître Follas
-                </span>
-                 
-                <span
-                  class="buttons s-XLQf75fI0H0o"
-                >
-                  <button
-                    class="s-NMyTiX1zi6rz"
-                  >
-                    <div
-                      class="s-NMyTiX1zi6rz"
-                    >
-                      <span
-                        class="material-icons s-NMyTiX1zi6rz"
-                      >
-                        delete
-                      </span>
-                      
-                      
-                    </div>
-                     
-                  </button>
-                  <!--&lt;Button&gt;-->
-                </span>
-                 
-              </li>
-              <li
-                aria-checked="false"
-                class="s-XLQf75fI0H0o"
-                role="option"
-                tabindex="-1"
-              >
-                <figure
-                  class="s-engCJu8q-fNe"
-                  style="--dimension: 40px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
-                >
-                  <img
-                    alt="avatar for Pascal"
-                    class="s-engCJu8q-fNe"
-                    height="40"
-                    referrerpolicy="no-referrer"
-                    width="40"
-                  />
-                   
-                  <figcaption
-                    class="s-engCJu8q-fNe abbreviated"
-                  >
-                    P
-                  </figcaption>
-                </figure>
-                <!--&lt;PlayerThumbnail&gt;-->
-                 
-                <span
-                  class="s-XLQf75fI0H0o"
-                  role="term"
-                >
-                  Pascal
-                </span>
-                 
-                <span
-                  class="buttons s-XLQf75fI0H0o"
-                >
-                  <button
-                    class="s-NMyTiX1zi6rz"
-                  >
-                    <div
-                      class="s-NMyTiX1zi6rz"
-                    >
-                      <span
-                        class="material-icons s-NMyTiX1zi6rz"
-                      >
-                        delete
-                      </span>
-                      
-                      
-                    </div>
-                     
-                  </button>
-                  <!--&lt;Button&gt;-->
-                </span>
-                 
-              </li>
-            </ol>
-             
-             
           </section>
-          <!--&lt;FriendList&gt;-->
+          
+          <!--&lt;Container&gt;-->
         </div>
       </span>
     </section>
@@ -788,19 +792,19 @@ exports[`Lobby 1`] = `
            
           <section
             aria-roledescription="player-list"
-            class="s-XLQf75fI0H0o"
+            class="s-2FHiERVIQQ6s"
           >
             <h3
-              class="s-XLQf75fI0H0o"
+              class="s-2FHiERVIQQ6s"
             >
               Participant·e·s
             </h3>
              
             <ol
-              class="s-XLQf75fI0H0o"
+              class="s-i-J0I6k9Mfa4"
             >
               <li
-                class="isPlayer s-XLQf75fI0H0o"
+                class="s-i-J0I6k9Mfa4"
               >
                 <figure
                   class="s-engCJu8q-fNe colored"
@@ -823,14 +827,14 @@ exports[`Lobby 1`] = `
                 <!--&lt;PlayerThumbnail&gt;-->
                  
                 <span
-                  class="s-XLQf75fI0H0o"
+                  class="s-i-J0I6k9Mfa4"
                   role="term"
                 >
                   Maître Follas
                 </span>
                  
                 <span
-                  class="buttons s-XLQf75fI0H0o"
+                  class="buttons s-i-J0I6k9Mfa4"
                 >
                   <button
                     class="s-NMyTiX1zi6rz"
@@ -854,7 +858,7 @@ exports[`Lobby 1`] = `
                  
               </li>
               <li
-                class="isPlayer s-XLQf75fI0H0o"
+                class="s-i-J0I6k9Mfa4"
               >
                 <figure
                   class="s-engCJu8q-fNe colored"
@@ -877,14 +881,14 @@ exports[`Lobby 1`] = `
                 <!--&lt;PlayerThumbnail&gt;-->
                  
                 <span
-                  class="s-XLQf75fI0H0o"
+                  class="s-i-J0I6k9Mfa4"
                   role="term"
                 >
                   Pascal
                 </span>
                  
                 <span
-                  class="buttons s-XLQf75fI0H0o"
+                  class="buttons s-i-J0I6k9Mfa4"
                 >
                   <button
                     class="s-NMyTiX1zi6rz"
@@ -908,7 +912,7 @@ exports[`Lobby 1`] = `
                  
               </li>
               <li
-                class="isPlayer s-XLQf75fI0H0o isNotFriend"
+                class="s-i-J0I6k9Mfa4 isNotFriend"
               >
                 <figure
                   class="s-engCJu8q-fNe colored"
@@ -931,14 +935,14 @@ exports[`Lobby 1`] = `
                 <!--&lt;PlayerThumbnail&gt;-->
                  
                 <span
-                  class="s-XLQf75fI0H0o"
+                  class="s-i-J0I6k9Mfa4"
                   role="term"
                 >
                   Bastien
                 </span>
                  
                 <span
-                  class="buttons s-XLQf75fI0H0o"
+                  class="buttons s-i-J0I6k9Mfa4"
                 >
                   <button
                     class="s-NMyTiX1zi6rz"
@@ -979,204 +983,11 @@ exports[`Lobby 1`] = `
                  
               </li>
             </ol>
-          </section>
-           
-          <section
-            aria-roledescription="friend-list"
-            class="s-XLQf75fI0H0o"
-          >
-            <h3
-              class="s-XLQf75fI0H0o"
-            >
-              Vos ami·e·s
-            </h3>
-             
-            <div
-              class="s-XLQf75fI0H0o"
-            >
-              <span
-                aria-haspopup="menu"
-                class="wrapper s-JM3fRWrV7jJU"
-              >
-                <fieldset
-                  class="s-Fe6WNbR-55zp"
-                >
-                  <legend
-                    class="s-Fe6WNbR-55zp"
-                  >
-                    Pseudo à inviter
-                  </legend>
-                   
-                  <input
-                    class="s-Fe6WNbR-55zp"
-                    type="text"
-                  />
-                </fieldset>
-                <!--&lt;Input&gt;-->
-                 
-                
-                <!--&lt;Menu&gt;-->
-              </span>
-              <!--&lt;Typeahead&gt;-->
-               
-              <button
-                class="s-NMyTiX1zi6rz"
-                disabled=""
-              >
-                <div
-                  class="s-NMyTiX1zi6rz"
-                >
-                  <span
-                    class="material-icons s-NMyTiX1zi6rz"
-                  >
-                    person_add_alt_1
-                  </span>
-                  
-                  
-                </div>
-                 
-              </button>
-              <!--&lt;Button&gt;-->
-            </div>
-             
-             
-            <ol
-              class="s-XLQf75fI0H0o"
-              role="listbox"
-            >
-              <li
-                aria-checked="false"
-                aria-selected="false"
-                class="s-XLQf75fI0H0o isRequest"
-                role="option"
-                tabindex="-1"
-              >
-                <figure
-                  class="s-engCJu8q-fNe"
-                  style="--dimension: 40px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
-                >
-                  <img
-                    alt="avatar for Paul Wolfoni"
-                    class="s-engCJu8q-fNe hasImage"
-                    height="40"
-                    referrerpolicy="no-referrer"
-                    src="/tests/fixtures/avatar.png"
-                    width="40"
-                  />
-                   
-                </figure>
-                <!--&lt;PlayerThumbnail&gt;-->
-                 
-                <span
-                  class="s-XLQf75fI0H0o"
-                  role="term"
-                >
-                  Paul Wolfoni souhaite rejoindre vos ami·e·s
-                </span>
-                 
-                <span
-                  class="buttons s-XLQf75fI0H0o"
-                >
-                  <button
-                    class="primary s-NMyTiX1zi6rz"
-                  >
-                    <div
-                      class="s-NMyTiX1zi6rz"
-                    >
-                      <span
-                        class="material-icons s-NMyTiX1zi6rz"
-                      >
-                        check
-                      </span>
-                      
-                      
-                    </div>
-                     
-                  </button>
-                  <!--&lt;Button&gt;-->
-                   
-                  <button
-                    class="s-NMyTiX1zi6rz"
-                  >
-                    <div
-                      class="s-NMyTiX1zi6rz"
-                    >
-                      <span
-                        class="material-icons s-NMyTiX1zi6rz"
-                      >
-                        clear
-                      </span>
-                      
-                      
-                    </div>
-                     
-                  </button>
-                  <!--&lt;Button&gt;-->
-                </span>
-                 
-              </li>
-              <li
-                aria-checked="false"
-                aria-selected="false"
-                class="s-XLQf75fI0H0o isProposal"
-                role="option"
-                tabindex="-1"
-              >
-                <figure
-                  class="s-engCJu8q-fNe"
-                  style="--dimension: 40px; --color: undefined; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
-                >
-                  <img
-                    alt="avatar for Raoul Wolfoni"
-                    class="s-engCJu8q-fNe"
-                    height="40"
-                    referrerpolicy="no-referrer"
-                    width="40"
-                  />
-                   
-                  <figcaption
-                    class="s-engCJu8q-fNe abbreviated"
-                  >
-                    RW
-                  </figcaption>
-                </figure>
-                <!--&lt;PlayerThumbnail&gt;-->
-                 
-                <span
-                  class="s-XLQf75fI0H0o"
-                  role="term"
-                >
-                  Demande envoyée à Raoul Wolfoni
-                </span>
-                 
-                <span
-                  class="buttons s-XLQf75fI0H0o"
-                >
-                  <button
-                    class="s-NMyTiX1zi6rz"
-                  >
-                    <div
-                      class="s-NMyTiX1zi6rz"
-                    >
-                      <span
-                        class="material-icons s-NMyTiX1zi6rz"
-                      >
-                        delete
-                      </span>
-                      
-                      
-                    </div>
-                     
-                  </button>
-                  <!--&lt;Button&gt;-->
-                </span>
-                 
-              </li>
-            </ol>
-             
+            <!--&lt;PlayerList&gt;-->
              
           </section>
-          <!--&lt;FriendList&gt;-->
+          
+          <!--&lt;Container&gt;-->
         </div>
       </span>
     </section>

@@ -1,6 +1,8 @@
 // @ts-check
 import { faker } from '@faker-js/faker'
 import { supportedLanguages } from '@src/params/lang.js'
+// note: we can't import the full vitest because it mockeypatches Jest symbols, which Playwright doesn't like
+import { fn } from 'vitest/dist/spy.js'
 
 import { AccountPage } from './pages/index.js'
 import { describe, expect, it, mockGraphQl } from './utils/index.js'
@@ -11,7 +13,8 @@ for (const { lang } of [{ lang: 'fr' }, { lang: 'en' }]) {
       id: faker.string.uuid(),
       username: faker.person.fullName(),
       avatar: faker.internet.avatar(),
-      termsAccepted: true
+      termsAccepted: true,
+      usernameSearchable: true
     }
 
     it('redirects to terms on the first connection', async ({ page }) => {
@@ -101,6 +104,38 @@ for (const { lang } of [{ lang: 'fr' }, { lang: 'en' }]) {
       await accountPage.saveAvatar(null)
       await expect(accountPage.usernameInput).toHaveValue(player.username)
       await expect(accountPage.avatarImage).toBeHidden()
+    })
+
+    it('can change username searchability', async ({ page }) => {
+      const { setTokenCookie, onQuery } = await mockGraphQl(page, {
+        getCurrentPlayer: {
+          token: faker.string.uuid(),
+          player,
+          turnCredentials: {
+            username: 'bob',
+            credentials: faker.internet.password()
+          }
+        },
+        setUsernameSearchability: { ...player, usernameSearchability: false }
+      })
+      await setTokenCookie()
+
+      const accountPage = new AccountPage(page, lang)
+      await accountPage.goTo()
+      await accountPage.getStarted()
+      const queryReceived = fn()
+      onQuery(queryReceived)
+      await expect(accountPage.isSearchableCheckbox).toBeChecked()
+      await accountPage.isSearchableCheckbox.click()
+      await expect(accountPage.isSearchableCheckbox).not.toBeChecked()
+      // @ts-expect-error toHaveBeenCalledWith is not defined
+      expect(queryReceived).toHaveBeenCalledWith(
+        'setUsernameSearchability',
+        expect.objectContaining({
+          operationName: 'setUsernameSearchability',
+          variables: { searchable: false }
+        })
+      )
     })
 
     it('navigates back to home page', async ({ page }) => {

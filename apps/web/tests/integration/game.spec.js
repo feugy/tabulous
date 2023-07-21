@@ -62,9 +62,12 @@ for (const { lang } of [{ lang: 'fr' }, { lang: 'en' }]) {
       )
     })
 
-    it.skip('removes invite option after using the last seats', async ({
-      page
-    }) => {
+    it('removes invite option after using the last seats', async ({ page }) => {
+      const updatedGame = {
+        ...game,
+        availableSeats: 0,
+        players: [player, player2]
+      }
       const { sendToSubscription, setTokenCookie, onSubscription } =
         await mockGraphQl(page, {
           getCurrentPlayer: {
@@ -77,19 +80,10 @@ for (const { lang } of [{ lang: 'fr' }, { lang: 'en' }]) {
           },
           joinGame: game,
           saveGame: { id: game.id },
-          searchPlayers: [[player2]],
-          listFriends: [[]],
+          listFriends: [[{ player: player2 }]],
           invite: () => {
-            sendToSubscription({
-              data: {
-                receiveGameUpdates: {
-                  ...game,
-                  availableSeats: 0,
-                  players: [player, player2]
-                }
-              }
-            })
-            return game
+            sendToSubscription({ data: { receiveGameUpdates: updatedGame } })
+            return updatedGame
           }
         })
       await setTokenCookie()
@@ -105,13 +99,12 @@ for (const { lang } of [{ lang: 'fr' }, { lang: 'en' }]) {
       const gamePage = new GamePage(page, lang)
       await gamePage.goTo(game.id)
       await gamePage.getStarted()
-      await gamePage.openMenu()
-      expect(gamePage.inviteMenuItem).toBeVisible()
-
-      await gamePage.inviteMenuItem.click()
+      await gamePage.openTab(gamePage.friendsTab)
+      expect(gamePage.openInviteDialogueButton).toBeVisible()
       await gamePage.invite(player2.username)
-      await gamePage.openMenu()
-      expect(gamePage.inviteMenuItem).not.toBeVisible()
+      await gamePage.openTab(gamePage.friendsTab)
+      await gamePage.expectPlayers([player2])
+      expect(gamePage.openInviteDialogueButton).not.toBeVisible()
     })
 
     it('collects game parameters on first game', async ({ page }) => {
