@@ -1,4 +1,9 @@
 // @ts-check
+/**
+ * @typedef {import('@tabulous/server/src/graphql/types').Game} Game
+ * @typedef {import('@tabulous/server/src/graphql/types').Player} Player
+ */
+
 import { gql } from '@urql/core'
 import chalkTemplate from 'chalk-template'
 
@@ -14,11 +19,6 @@ import {
   signToken
 } from '../util/index.js'
 import { commonOptions } from './help.js'
-
-/** @typedef {import('../util/formaters.js').Player} Player */
-/** @typedef {import('@tabulous/server/src/services/games.js').Game} _Game */
-/** @typedef {(_Game & { players: Player[] })} Game */
-/** @typedef {Player & { games: Game[] }} PlayerDetails */
 
 const listGamesQuery = gql`
   query listGamesQuery {
@@ -37,7 +37,7 @@ const listGamesQuery = gql`
 /**
  * Triggers show player command.
  * @param {string[]} argv - array of parsed arguments (without executable and current file).
- * @returns {Promise<PlayerDetails | string>} whether the operation succeeded.
+ * @returns {Promise<Player | string>} whether the operation succeeded.
  */
 export default async function showPlayerCommand(argv) {
   const args = parseArgv(argv, {
@@ -59,10 +59,10 @@ export default async function showPlayerCommand(argv) {
 /**
  * Show a player's details.
  * @param {ShowPlayerArgs} args - username.
- * @returns {Promise<PlayerDetails>} found player details.
+ * @returns {Promise<Player>} found player details.
  */
 export async function showPlayer({ username }) {
-  const player = attachFormater(await findUser(username), formatPlayerDetails)
+  const player = attachFormater(await findUser(username), formatPlayer)
   const { listGames: games } = await getGraphQLClient().query(
     listGamesQuery,
     signToken(player.id)
@@ -80,7 +80,7 @@ export async function showPlayer({ username }) {
  * @param {Player} result
  * @returns {string} formatted results
  */
-function formatPlayerDetails({
+function formatPlayer({
   id,
   isAdmin,
   username,
@@ -100,13 +100,13 @@ function formatPlayerDetails({
 const spacing = '\n                '
 
 /**
- * @param {PlayerDetails} result
+ * @param {Player & {games: Game[]}} result
  * @returns {string} formatted results
  */
 function formatGames({ id: playerId, games }) {
   const { owned, invited } = games.reduce(
     (counts, game) => {
-      if (game.players.find(({ id, isOwner }) => isOwner && id === playerId)) {
+      if (game.players?.find(({ id, isOwner }) => isOwner && id === playerId)) {
         counts.owned.push(game)
       } else {
         counts.invited.push(game)

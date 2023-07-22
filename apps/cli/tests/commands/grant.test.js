@@ -1,4 +1,8 @@
-// @ts-check
+// @ts-checkcheck
+/**
+ * @typedef {import('../../src').Command} Command
+ */
+
 import { faker } from '@faker-js/faker'
 import stripAnsi from 'strip-ansi'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -8,8 +12,6 @@ import { signToken } from '../../src/util/jwt.js'
 
 const mockQuery = vi.fn()
 const mockMutation = vi.fn()
-
-/** @typedef {import('../../src/index.js').Command} Command */
 
 vi.mock('../../src/util/graphql-client.js', () => ({
   getGraphQLClient: vi

@@ -1,4 +1,6 @@
 // @ts-check
+/** @typedef {import('@tabulous/server/src/graphql/types').Game} Game */
+
 import { gql } from '@urql/core'
 import chalkTemplate from 'chalk-template'
 
@@ -15,7 +17,7 @@ import { commonOptions } from './help.js'
 
 /**
  * @typedef {object} DeleteGameResult game deletion command result
- * @property {import('@tabulous/server/src/repositories/games.js').Game} game - deleted game.
+ * @property {Game} game - deleted game.
  */
 
 const deleteGameMutation = gql`

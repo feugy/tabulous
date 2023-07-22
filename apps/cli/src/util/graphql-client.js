@@ -1,11 +1,18 @@
 // @ts-check
+/**
+ * @typedef {import('@urql/core').Client} UrqlClient
+ * @typedef {import('@urql/core').ClientOptions} UrqlClientOptions
+ */
+
 import { cacheExchange, createClient, fetchExchange } from '@urql/core'
 import { Agent, fetch, setGlobalDispatcher } from 'undici'
 
 import { loadConfiguration } from './configuration.js'
 
-/** @typedef {Parameters<import('@urql/core').Client['query']>[0]} Query */
-/** @typedef {Parameters<import('@urql/core').Client['query']>[1]} Variables */
+/** @typedef {Parameters<UrqlClient['query']>[0]} Query */
+
+/** @typedef {Parameters<UrqlClient['query']>[1]} Variables */
+
 /** @typedef {<T>(query: Query, variablesOrJwt: Variables|string, jwt?: string) => Promise<T>} RequestSignature */
 
 /**
@@ -14,7 +21,7 @@ import { loadConfiguration } from './configuration.js'
  * @property {RequestSignature} mutation - runs a GraphQL query with pre-defined JWT, throwing received errors.
  */
 
-/** @typedef {Omit<import('@urql/core').Client, 'query'|'mutation'> & CustomClient} Client */
+/** @typedef {Omit<UrqlClient, 'query'|'mutation'> & CustomClient} Client */
 
 /** @type {?Client} */
 let client
@@ -40,7 +47,7 @@ export function getGraphQLClient() {
 }
 
 /**
- * @param {import('@urql/core').ClientOptions} options - GraphQL client options.
+ * @param {UrqlClientOptions} options - GraphQL client options.
  * @returns {Client} initialized client.
  */
 function initClient(options) {

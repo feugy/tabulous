@@ -1,4 +1,6 @@
 // @ts-check
+/** @typedef {import('@tabulous/server/src/graphql/types').Player} Player */
+
 import { gql } from '@urql/core'
 
 import { getGraphQLClient } from './graphql-client.js'
@@ -23,7 +25,7 @@ const findUserQuery = gql`
  * Finds user details from their username
  * @param {string} username - desired username.
  * @param {boolean} [failOnNull = true] - whether to throw an error when no player could be found.
- * @returns {Promise<import('@tabulous/server/src/services/players').Player>} corresponding player, or null.
+ * @returns {Promise<Player>} corresponding player, or null.
  * @throws {Error} when failOnNull is true, and no player could be found
  */
 export async function findUser(username, failOnNull = true) {

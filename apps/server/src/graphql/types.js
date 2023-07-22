@@ -6,6 +6,15 @@
  * Generated from catalog.graphql
  * @typedef {Pick<import('../services/catalog.js').GameDescriptor, 'name'|'locales'> & Partial<Pick<import('../services/catalog.js').GameDescriptor, 'copyright'|'minSeats'|'maxSeats'|'maxAge'|'minTime'>>} CatalogItem
  *
+ * @typedef {import('../services/catalog.js').Copyright} Copyright
+ * @typedef {import('../services/catalog.js').TableSpec} TableSpec
+ * @typedef {import('../services/catalog.js').ZoomSpec} ZoomSpec
+ * @typedef {import('../services/catalog.js').ColorSpec} ColorSpec
+ * @typedef {import('../services/catalog.js').ActionSpec} ActionSpec
+ * @typedef {import('../services/catalog.js').ActionName} ActionName
+ * @typedef {import('../services/catalog.js').ItemLocale} ItemLocale
+ * @typedef {import('../services/catalog.js').ItemLocales} ItemLocales
+ *
  * @typedef {object} GrantAccessArgs
  * @property {string} playerId - player id being granted access.
  * @property {string} itemName - granted catalog item name.
@@ -20,6 +29,28 @@
  * @typedef {Pick<import('../services/players.js').Player, 'id'|'username'> & { isGuest?: boolean, isOwner?: boolean }} GamePlayer
  *
  * @typedef {Pick<_Game, 'id'|'created'|'kind'|'rulesBookPageCount'|'zoomSpec'|'tableSpec'|'colors'|'actions'> & Partial<Pick<_Game, 'messages'|'locales'|'meshes'|'cameras'|'hands'|'preferences'|'availableSeats'>> & { players?: GamePlayer[]}} Game
+ *
+ * @typedef {import('../services/games.js').Shape} Shape
+ * @typedef {import('../services/games.js').Mesh} Mesh
+ * @typedef {import('../services/games.js').InitialTransform} InitialTransform
+ * @typedef {import('../services/games.js').DetailableState} DetailableState
+ * @typedef {import('../services/games.js').FlippableState} FlippableState
+ * @typedef {import('../services/games.js').RotableState} RotableState
+ * @typedef {import('../services/games.js').MovableState} MovableState
+ * @typedef {import('../services/games.js').StackableState} StackableState
+ * @typedef {import('../services/games.js').AnchorableState} AnchorableState
+ * @typedef {import('../services/games.js').DrawableState} DrawableState
+ * @typedef {import('../services/games.js').LockableState} LockableState
+ * @typedef {import('../services/games.js').QuantifiableState} QuantifiableState
+ * @typedef {import('../services/games.js').RandomizableState} RandomizableState
+ * @typedef {import('../services/games.js').Anchor} Anchor
+ * @typedef {import('../services/games.js').Point} Point
+ * @typedef {import('../services/games.js').Dimension} Dimension
+ * @typedef {import('../services/games.js').Targetable} Targetable
+ * @typedef {import('../services/games.js').PlayerPreference} PlayerPreference
+ * @typedef {import('../services/games.js').Message} Message
+ * @typedef {import('../services/games.js').CameraPosition} CameraPosition
+ * @typedef {import('../services/games.js').Hand} Hand
  *
  * @typedef {Pick<_GameParameters, 'error'|'id'|'kind'> & Partial<Pick<_GameParameters, 'locales'|'preferences'|'rulesBookPageCount'|'availableSeats'|'colors'>> & { schemaString?: string, players?: GamePlayer[]}} GameParameters
  *

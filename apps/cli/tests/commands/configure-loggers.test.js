@@ -1,4 +1,8 @@
 // @ts-check
+/**
+ * @typedef {import('../../src').Command} Command
+ */
+
 import { faker } from '@faker-js/faker'
 import stripAnsi from 'strip-ansi'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -11,8 +15,6 @@ const mockQuery = vi.fn()
 vi.mock('../../src/util/graphql-client.js', () => ({
   getGraphQLClient: vi.fn().mockReturnValue({ mutation: mockQuery })
 }))
-
-/** @typedef {import('../../src/index.js').Command} Command */
 
 describe('Logger configuration command', () => {
   /** @type {Command} */

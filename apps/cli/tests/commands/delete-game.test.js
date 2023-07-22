@@ -1,4 +1,9 @@
 // @ts-check
+/**
+ * @typedef {import('../../src').Command} Command
+ * @typedef {import('../../src/commands/show-player').Game} Game
+ */
+
 import { faker } from '@faker-js/faker'
 import stripAnsi from 'strip-ansi'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -7,9 +12,6 @@ import { applyFormaters, formatGame } from '../../src/util/formaters.js'
 import { signToken } from '../../src/util/jwt.js'
 
 const mockQuery = vi.fn()
-
-/** @typedef {import('../../src/commands/show-player.js').Game} Game */
-/** @typedef {import('../../src/index.js').Command} Command */
 
 vi.mock('../../src/util/graphql-client.js', () => ({
   getGraphQLClient: vi.fn().mockReturnValue({ mutation: mockQuery })

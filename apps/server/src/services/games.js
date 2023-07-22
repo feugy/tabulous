@@ -206,11 +206,13 @@ import { canAccess } from './catalog.js'
  */
 
 /**
- * @typedef {Record<string, any>} PlayerPreference
+ * @typedef {object} _PlayerPreference
  * @property {string} playerId - if of this player.
  * @property {string} [color] - hex color for this player, if any.
  * @property {number} [angle] - yaw (Y angle) on the table, if any.
  */
+
+/** @typedef {Record<string, any> & _PlayerPreference} PlayerPreference */
 
 /** @typedef {import('ajv').JSONSchemaType<?>} Schema */
 

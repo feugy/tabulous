@@ -1,4 +1,6 @@
 // @ts-check
+/** @typedef {import('@tabulous/server/src/graphql/types').Player} Player */
+
 import { gql } from '@urql/core'
 import chalkTemplate from 'chalk-template'
 
@@ -12,8 +14,6 @@ import {
   signToken
 } from '../util/index.js'
 import { commonOptions } from './help.js'
-
-/** @typedef {import('../util/formaters.js').Player} Player */
 
 /**
  * Triggers player list command.

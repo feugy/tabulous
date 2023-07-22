@@ -1,4 +1,9 @@
 // @ts-check
+/**
+ * @typedef {import('@tabulous/server/src/graphql/types').Game} Game
+ * @typedef {import('@tabulous/server/src/graphql/types').Player} Player
+ */
+
 import chalkTemplate from 'chalk-template'
 
 const symbol = Symbol('formaters')
@@ -54,7 +59,7 @@ export function attachFormater(object, formater, first = false) {
 
 /**
  * Formater for game objects.
- * @param {import('@tabulous/server/src/services/games.js').Game} game - game to format.
+ * @param {Game} game - game to format.
  * @returns {string} formatted game.
  */
 export function formatGame({ id, created, kind }) {
@@ -62,9 +67,6 @@ export function formatGame({ id, created, kind }) {
     created
   )}} (${id})`
 }
-
-/** @typedef {import('@tabulous/server/src/services/players.js').Player} _Player */
-/** @typedef {_Player & { isOwner?: boolean }} Player */
 
 /**
  * Formater for player objects.
