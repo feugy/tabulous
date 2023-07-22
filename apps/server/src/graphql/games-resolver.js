@@ -8,10 +8,9 @@ import { isAuthenticated } from './utils.js'
 const logger = makeLogger('games-resolver')
 
 /** @typedef {import('./utils.js').GraphQLContext} GraphQLContext */
-/** @typedef {import('../services/players.js').Player} Player */
-/** @typedef {import('../services/games').Game} Game */
-/** @typedef {import('../services/games').GameData} GameData */
-/** @typedef {import('../services/games').GameParameters} GameParameters */
+/** @typedef {import('./types.js').GamePlayer} Player */
+/** @typedef {import('./types.js').Game} Game */
+/** @typedef {import('./types.js').GameParameters} GameParameters */
 
 /**
  * Scafolds Mercurius loaders for specific properties of queried objects.
@@ -58,7 +57,6 @@ export default {
   },
 
   Query: {
-    /** @typedef {ReturnType<typeof services.listGames>} ListGameResponse */
     listGames: isAuthenticated(
       /**
        * Returns the list of current games.
@@ -66,45 +64,34 @@ export default {
        * @param {unknown} obj - graphQL object.
        * @param {unknown} args - subscription arguments.
        * @param {GraphQLContext} context - graphQL context.
-       * @returns {ListGameResponse} list of current games.
+       * @returns {Promise<Game[]>} list of current games.
        */
       (obj, args, { player }) => services.listGames(player.id)
     )
   },
 
   Mutation: {
-    /**
-     * @typedef {object} CreateGameArgs
-     * @property {string} kind - created game kind.
-     */
-    /** @typedef {ReturnType<typeof services.createGame>} CreateGameResponse */
     createGame: isAuthenticated(
       /**
        * Instanciates a new game for the a current player (who becomes its owner).
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {CreateGameArgs} args - mutation arguments.
+       * @param {import('./types.js').CreateGameArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
-       * @returns {CreateGameResponse} created game details, or null.
+       * @returns {Promise<Game>} created game details, or null.
        */
       (obj, { kind }, { player }) => services.createGame(kind, player)
     ),
 
-    /**
-     * @typedef {object} JoinGameArgs
-     * @property {string} gameId - joined game's id.
-     * @property {string} parameters - player's provided parameters in a stringified object.
-     */
-    /** @typedef {ReturnType<typeof services.joinGame>} JoinGameResponse */
     joinGame: isAuthenticated(
       /**
        * Joins a game, potentially with parameters (for guests).
        * May returns other parameters if provided values disn't suffice, or the actual game content.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {JoinGameArgs} args - mutation arguments.
+       * @param {import('./types.js').JoinGameArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
-       * @returns {JoinGameResponse} joined game in case of success, new required parameters, or null.
+       * @returns {Promise<?Game|GameParameters>} joined game in case of success, new required parameters, or null.
        */
       (obj, { gameId, parameters: paramString }, { player }) => {
         let parameters = null
@@ -123,93 +110,65 @@ export default {
       }
     ),
 
-    /**
-     * @typedef {object} PromoteGameArgs
-     * @property {string} gameId - promoted game's id.
-     * @property {string} kind - promoted game kind.
-     */
-    /** @typedef {ReturnType<typeof services.promoteGame>} PromoteGameResponse */
     promoteGame: isAuthenticated(
       /**
        * Promote a lobby into a full game, setting its kind.
        * May returns parameters if needed, or the actual game content.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {PromoteGameArgs} args - mutation arguments.
+       * @param {import('./types.js').PromoteGameArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
-       * @returns {PromoteGameResponse} joined game in case of success, new required parameters, or null.
+       * @returns {Promise<?Game|GameParameters>} joined game in case of success, new required parameters, or null.
        */
       (obj, { gameId, kind }, { player }) =>
         services.promoteGame(gameId, kind, player)
     ),
 
-    /**
-     * @typedef {object} SaveGameArgs
-     * @property {Partial<GameData>} game - saved game data
-     */
-    /** @typedef {ReturnType<typeof services.saveGame>} SaveGameResponse */
     saveGame: isAuthenticated(
       /**
        * Saves a current player's existing game details.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {SaveGameArgs} args - mutation arguments.
+       * @param {import('./types.js').SaveGameArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
-       * @returns {SaveGameResponse} created game details, or null.
+       * @returns {Promise<?Game>} created game details, or null.
        */
       (obj, { game }, { player }) => services.saveGame(game, player.id)
     ),
 
-    /**
-     * @typedef {object} DeleteGameArgs
-     * @property {string} gameId - deleted game's id.
-     */
-    /** @typedef {ReturnType<typeof services.saveGame>} DeleteGameResponse */
     deleteGame: isAuthenticated(
       /**
        * Deletes a current player's existing game.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {DeleteGameArgs} args - mutation arguments.
+       * @param {import('./types.js').DeleteGameArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
-       * @returns {DeleteGameResponse} deleted game details, or null.
+       * @returns {Promise<?Game>} deleted game details, or null.
        */
       (obj, { gameId }, { player }) => services.deleteGame(gameId, player)
     ),
 
-    /**
-     * @typedef {object} InviteArgs
-     * @property {string} gameId - game's id.
-     * @property {string[]} playerIds - invited player ids.
-     */
-    /** @typedef {ReturnType<typeof services.invite>} InviteResponse */
     invite: isAuthenticated(
       /**
        * Invites another player to a current player's game.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {InviteArgs} args - mutation arguments.
+       * @param {import('./types.js').InviteArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
-       * @returns {InviteResponse} saved game details, or null.
+       * @returns {Promise<?Game>} saved game details, or null.
        */
       (obj, { gameId, playerIds: guestIds }, { player }) =>
         services.invite(gameId, guestIds, player.id)
     ),
 
-    /**
-     * @typedef {object} KickArgs
-     * @property {string} gameId - game's id.
-     * @property {string} playerId - kicked player id.
-     */
-    /** @typedef {ReturnType<typeof services.kick>} KickResponse */
     kick: isAuthenticated(
       /**
        * Kick a player from a current player's game.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {KickArgs} args - mutation arguments.
+       * @param {import('./types.js').KickArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
-       * @returns {KickResponse} saved game details, or null.
+       * @returns {Promise<?Game>} saved game details, or null.
        */
       (obj, { gameId, playerId: kickedId }, { player }) =>
         services.kick(gameId, kickedId, player.id)
@@ -251,17 +210,13 @@ export default {
       )
     },
 
-    /**
-     * @typedef {object} ReceiveGameUpdatesArgs
-     * @property {string} gameId - game's id.
-     */
     receiveGameUpdates: {
       subscribe: isAuthenticated(
         /**
          * Sends a given game updates from server.
          * Requires valid authentication, and users must have this game in their list.
          * @param {unknown} obj - graphQL object.
-         * @param {ReceiveGameUpdatesArgs} args - subscription argument.
+         * @param {import('./types.js').ReceiveGameUpdatesArgs} args - subscription argument.
          * @param {GraphQLContext} context - graphQL context.
          * @yields {Game}
          * @returns {import('./utils.js').PubSubQueue}
@@ -292,7 +247,7 @@ export default {
   GameOrParameters: {
     /**
      * Distinguishes returned Game from GameParameters
-     * @param {?GameData|GameParameters} obj - either a Game or a GameParameters object
+     * @param {?Game|GameParameters} obj - either a Game or a GameParameters object
      * @returns {string} the type of this object.
      */
     resolveType(obj) {
@@ -303,7 +258,7 @@ export default {
   GameParameters: {
     /**
      * Serializer for schema.
-     * @param {GameParameters} obj - serialized game parameter schema
+     * @param {import('../services/games.js').GameParameters} obj - serialized game parameter schema
      * @returns {string}
      */
     schemaString: obj => JSON.stringify(obj.schema)

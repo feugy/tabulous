@@ -7,12 +7,6 @@ import { isAdmin } from './utils.js'
 
 const comparator = new Intl.Collator('en', { numeric: true, usage: 'sort' })
 
-/**
- * @typedef {object} LoggerLevel
- * @property {string} name - logger name.
- * @property {import('../utils/logger.js').Level} level - current log level.
- */
-
 export default {
   Query: {
     getLoggerLevels: isAdmin(
@@ -28,7 +22,7 @@ export default {
   Mutation: {
     /**
      * @typedef {object} ConfigureLoggerLevelsArgs
-     * @property {LoggerLevel[]} levels - new logger levels.
+     * @property {import('./types.js').LoggerLevel[]} levels - new logger levels.
      */
 
     configureLoggerLevels: isAdmin(
@@ -37,7 +31,7 @@ export default {
        * Requires authentication and elevated privileges.
        * @param {unknown} obj - graphQL object.
        * @param {ConfigureLoggerLevelsArgs} args - mutation arguments.
-       * @returns {LoggerLevel[]} the ordered list of logger names and their respective levels.
+       * @returns {import('./types.js').LoggerLevel[]} the ordered list of logger names and their respective levels.
        */
       (obj, { levels }) => {
         configureLoggers(

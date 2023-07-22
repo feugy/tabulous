@@ -467,6 +467,7 @@ export function buildCameraPosition({
     throw new Error('camera position requires playerId')
   }
   return addHash({
+    hash: '',
     playerId,
     index,
     target,

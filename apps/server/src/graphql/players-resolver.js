@@ -10,14 +10,7 @@ import { isAdmin, isAuthenticated } from './utils.js'
 const logger = makeLogger('players-resolver')
 
 /** @typedef {import('./utils.js').GraphQLContext} GraphQLContext */
-/** @typedef {import('../services/players.js').Player} Player */
-
-/**
- * @typedef {object} PlayerWithTurnCredentials
- * @property {string} token - authentication token.
- * @property {Player} player - authenticated player.
- * @property {import('../services/turn-credentials.js').TurnCredentials} turnCredentials - credentials for the TURN server.
- */
+/** @typedef {import('./types.js').Player} Player */
 
 /**
  * Scafolds Mercurius loaders for specific properties of queried objects.
@@ -70,7 +63,7 @@ export default {
        * @param {unknown} obj - graphQL object.
        * @param {unknown} args - query arguments:
        * @param {GraphQLContext} context - graphQL context.
-       * @returns {PlayerWithTurnCredentials} current player with turn credentials.
+       * @returns {import('./types.js').PlayerWithTurnCredentials} current player with turn credentials.
        */
       (obj, args, { player, conf, token }) => {
         logger.trace(
@@ -84,43 +77,30 @@ export default {
       }
     ),
 
-    /**
-     * @typedef {object} SearchPlayersArgs
-     * @property {string} search - searched text.
-     * @property {boolean} includeCurrent - whether to include current player in results or not.
-     */
-    /** @typedef {ReturnType<typeof services.searchPlayers>} SearchPlayersResponse */
     searchPlayers: isAuthenticated(
       /**
        * Returns players (except the current one) which username contains searched text.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {SearchPlayersArgs} args - query arguments.
+       * @param {import('./types.js').SearchPlayersArgs} args - query arguments.
        * @param {GraphQLContext} context - graphQL context.
-       * @returns {SearchPlayersResponse} list (potentially empty) of matching players.
+       * @returns {Promise<Player[]>} list (potentially empty) of matching players.
        */
       (obj, { search, includeCurrent }, { player }) =>
         services.searchPlayers(search, player.id, !includeCurrent)
     ),
 
-    /**
-     * @typedef {object} ListPlayersArgs
-     * @property {number} from - index of the first result returned.
-     * @property {number} size - number of return results.
-     */
-    /** @typedef {ReturnType<typeof repositories.players.list>} ListPlayersResponse */
     listPlayers: isAdmin(
       /**
        * Returns a page or players.
        * Requires authentication and elevated privileges.
        * @param {unknown} obj - graphQL object.
-       * @param {ListPlayersArgs} args - query arguments, including:
-       * @returns {ListPlayersResponse} extract of the player list.
+       * @param {import('./types.js').ListPlayersArgs} args - query arguments, including:
+       * @returns {Promise<import('../repositories/abstract-repository.js').Page<Player>>} extract of the player list.
        */
       (obj, args) => repositories.players.list(args)
     ),
 
-    /** @typedef {ReturnType<typeof services.listFriends>} ListFriendsResponse */
     listFriends: isAuthenticated(
       /**
        * Returns the list of friends of a given player.
@@ -128,46 +108,35 @@ export default {
        * @param {unknown} obj - graphQL object.
        * @param {unknown} args - query arguments.
        * @param {GraphQLContext} context - graphQL context.
-       * @returns {ListFriendsResponse} list (potentially empty) of friend players.
+       * @returns {Promise<import('./types.js').Friendship[]>} list (potentially empty) of friend players.
        */
-      (obj, args, { player }) => services.listFriends(player.id)
+      (obj, args, { player }) =>
+        // @ts-expect-error: player is enriched by loaders
+        services.listFriends(player.id)
     )
   },
 
   Mutation: {
-    /**
-     * @typedef {object} AddPlayerArgs
-     * @property {string} id - created player id.
-     * @property {string} username - created player username.
-     * @property {string} password - created player password (clear value).
-     */
-    /** @typedef {ReturnType<typeof services.upsertPlayer>} AddPlayerResponse */
     addPlayer: isAdmin(
       /**
        * Create a new player account that can connect with a password value.
        * The clear password provided is hashed before being stored.
        * Requires authentication and elevated privileges.
        * @param {unknown} obj - graphQL object.
-       * @param {AddPlayerArgs} args - mutation arguments.
-       * @returns {AddPlayerResponse} the created player.
+       * @param {import('./types.js').AddPlayerArgs} args - mutation arguments.
+       * @returns {Promise<Player>} the created player.
        */
       async (obj, { id, username, password }) =>
         services.upsertPlayer({ id, username, password: hash(password) })
     ),
 
     /**
-     * @typedef {object} LogInArgs
-     * @property {string} id - user account id.
-     * @property {string} password - clear password.
-     */
-
-    /**
      * Authenticates an user from their user id.
      * Returns a token to allow browser issueing authenticated requests.
      * @param {unknown} obj - graphQL object.
-     * @param {LogInArgs} args - mutation arguments.
+     * @param {import('./types.js').LogInArgs} args - mutation arguments.
      * @param {GraphQLContext} context - graphQL context.
-     * @returns {Promise<PlayerWithTurnCredentials>} authentified player with turn credentials.
+     * @returns {Promise<import('./types.js').PlayerWithTurnCredentials>} authentified player with turn credentials.
      */
     logIn: async (obj, { id, password }, { conf }) => {
       logger.trace('authenticates manual player')
@@ -184,33 +153,25 @@ export default {
       return { token, player, turnCredentials }
     },
 
-    /** @typedef {ReturnType<typeof services.acceptTerms>} AcceptTermsResponse */
     acceptTerms: isAuthenticated(
       /**
        * Record an user accepting the terms of service.
        * @param {unknown} obj - graphQL object.
        * @param {unknown} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
-       * @returns {AcceptTermsResponse} saved player.
+       * @returns {Promise<?Player>} saved player.
        */
       (obj, args, { player }) => services.acceptTerms(player)
     ),
 
-    /**
-     * @typedef {object} UpdateCurrentPlayerArgs
-     * @property {string} [username] - new username value, if any.
-     * @property {string} [avatar] - new avatar value, if any.
-     * @property {boolean} [usernameSearchable] - new value for username searchability, if any.
-     */
-    /** @typedef {Promise<Player>} UpdateCurrentPlayerResponse */
     updateCurrentPlayer: isAuthenticated(
       /**
        * Updates current player's details.
        * Requires authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {UpdateCurrentPlayerArgs} args - mutation arguments.
+       * @param {import('./types.js').UpdateCurrentPlayerArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
-       * @returns {UpdateCurrentPlayerResponse} the updated player.
+       * @returns {Promise<Player>} the updated player.
        */
       async (obj, { username, avatar, usernameSearchable }, { player }) => {
         logger.trace('updates current player')
@@ -243,57 +204,49 @@ export default {
       }
     ),
 
-    /**
-     * @typedef {object} TargetedPlayerArgs
-     * @property {string} id - id of the targeted player.
-     */
-    /** @typedef {Promise<?Player>} DeletePlayerResponse */
     deletePlayer: isAdmin(
       /**
        * Deletes an existing player account.
        * Requires authentication and elevated privileges.
        * @param {unknown} obj - graphQL object.
-       * @param {TargetedPlayerArgs} args - mutation arguments.
-       * @returns {DeletePlayerResponse} deleted player account, or null.
+       * @param {import('./types.js').TargetedPlayerArgs} args - mutation arguments.
+       * @returns {Promise<?Player>} deleted player account, or null.
        */
       (obj, { id }) => repositories.players.deleteById(id)
     ),
 
-    /** @typedef {ReturnType<typeof services.requestFriendship>} RequestFriendshipResponse */
     requestFriendship: isAuthenticated(
       /**
        * Sends a friend request from one player to another one.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {TargetedPlayerArgs} args - mutation arguments.
+       * @param {import('./types.js').TargetedPlayerArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
-       * @returns {RequestFriendshipResponse} true if the operation succeeds.
+       * @returns {Promise<boolean>} true if the operation succeeds.
        */
       (obj, { id }, { player }) => services.requestFriendship(player, id)
     ),
 
-    /** @typedef {ReturnType<typeof services.acceptFriendship>} AcceptFriendshipResponse */
     acceptFriendship: isAuthenticated(
       /**
        * Accepts a friend request from another player.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {TargetedPlayerArgs} args - mutation arguments.
+       * @param {import('./types.js').TargetedPlayerArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
-       * @returns {AcceptFriendshipResponse} true if the operation succeeds.
+       * @returns {Promise<boolean>} true if the operation succeeds.
        */
       (obj, { id }, { player }) => services.acceptFriendship(player, id)
     ),
 
-    /** @typedef {ReturnType<typeof services.endFriendship>} EndFriendshipResponse */
     endFriendship: isAuthenticated(
       /**
        * Declines a friend request or ends existing friendship with another player.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {TargetedPlayerArgs} args - mutation arguments.
+       * @param {import('./types.js').TargetedPlayerArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
-       * @returns {EndFriendshipResponse} true if the operation succeeds.
+       * @returns {Promise<boolean>} true if the operation succeeds.
        */
       (obj, { id }, { player }) => services.endFriendship(player, id)
     )
@@ -308,7 +261,7 @@ export default {
          * @param {unknown} obj - graphQL object.
          * @param {object} args - subscription arguments.
          * @param {GraphQLContext} context - graphQL context.
-         * @yields {Omit<import('../services/player.js').FriendshipUpdate, 'from'> & { id: string }}
+         * @yields {import('./types.js').FriendshipUpdate}
          * @returns {import('./utils.js').PubSubQueue}
          */
         async (obj, args, { player, pubsub }) => {

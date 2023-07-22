@@ -15,6 +15,7 @@ import { makeLogger } from '../utils/index.js'
  * @property {number} [maxSeats] - maximum seats allowed, when relevant.
  * @property {number} [minAge] - minimum age suggested.
  * @property {number} [maxAge] - maximum age suggested.
+ * @property {number} [minTime] - minimum time observed.
  * @property {Copyright} [copyright] - copyright data, meaning this item has restricted access.
  * @property {number} [rulesBookPageCount] - number of pages in the rules book, if any.
  * @property {ZoomSpec} [zoomSpec] - zoom specifications for main and hand scene.

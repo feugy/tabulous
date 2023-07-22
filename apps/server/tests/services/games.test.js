@@ -754,16 +754,17 @@ describe('given a subscription to game lists and an initialized repository', () 
         })
 
         it('can save cameras', async () => {
-          const cameras = [
-            {
-              playerId: player.id,
-              index: 0,
-              target: [0, 0, 0],
-              alpha: Math.PI,
-              beta: 0,
-              elevation: 10
-            }
-          ]
+          const cameras =
+            /** @type {import('../../src/services/games.js').CameraPosition[]} */ ([
+              {
+                playerId: player.id,
+                index: 0,
+                target: [0, 0, 0],
+                alpha: Math.PI,
+                beta: 0,
+                elevation: 10
+              }
+            ])
           expect(await saveGame({ id: game.id, cameras }, player.id)).toEqual({
             ...game,
             cameras,

@@ -2,8 +2,6 @@ type Player {
   id: ID!
   username: String!
   currentGameId: ID
-  isGuest: Boolean
-  isOwner: Boolean
   avatar: String
   provider: String
   email: String

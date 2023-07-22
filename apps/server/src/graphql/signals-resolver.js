@@ -8,12 +8,6 @@ const logger = makeLogger('signals-resolver')
 /** @typedef {import('./utils.js').GraphQLContext} GraphQLContext */
 
 /**
- * @typedef {object} Signal
- * @property {string} from - player id sending this signal
- * @property {string} data - the signal payload.
- */
-
-/**
  * The implemented protocol is:
  *   1. player A is already in game, with an open awaitSignal() subscription
  *   2. player B join game
@@ -30,19 +24,12 @@ const logger = makeLogger('signals-resolver')
 export default {
   Mutation: {
     /**
-     * @typedef {object} SendSignalArgs
-     * @property {object} signal - signal addressed to another player.
-     * @property {string} signal.to - player id to which the signal is sent.
-     * @property {string} signal.data - the signal payload.
-     */
-
-    /**
      * Emits signal addressed from current player onto the subscription of another player.
      * Requires valid authentication.
      * @param {unknown} obj - graphQL object.
-     * @param {SendSignalArgs} args - mutation arguments, including:
+     * @param {import('./types.js').SendSignalArgs} args - mutation arguments, including:
      * @param {GraphQLContext} context - graphQL context.
-     * @returns {Signal} signal addressed.
+     * @returns {import('./types.js').Signal} signal addressed.
      */
     sendSignal: isAuthenticated((obj, { signal }, { player, pubsub }) => {
       signal.from = player.id
@@ -57,19 +44,15 @@ export default {
   },
 
   Subscription: {
-    /**
-     * @typedef {object} AwaitSignalArgs
-     * @property {string} gameId - game's id.
-     */
     awaitSignal: {
       subscribe: isAuthenticated(
         /**
          * Emits signal addressed to the current player
          * Requires valid authentication.
          * @param {unknown} obj - graphQL object.
-         * @param {AwaitSignalArgs} args - subscription arguments.
+         * @param {import('./types.js').AwaitSignalArgs} args - subscription arguments.
          * @param {GraphQLContext} context - graphQL context.
-         * @yields {Signal}
+         * @yields {import('./types.js').Signal}
          * @returns {import('./utils.js').PubSubQueue}
          */
         async (obj, { gameId }, { player, pubsub }) => {

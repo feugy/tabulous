@@ -189,7 +189,7 @@ import { canAccess } from './catalog.js'
 
 /**
  * @typedef {object} CameraPosition a saved Arc rotate camera position
- * @property {string} [hash] - hash for this position, to ease comparisons and change detections.
+ * @property {string} hash - hash for this position, to ease comparisons and change detections.
  * @property {string} playerId - id of the player for who this camera position is relevant.
  * @property {number} index - 0-based index for this saved position.
  * @property {number[]} target - 3D cooordinates of the camera target, as per Babylon's specs.
