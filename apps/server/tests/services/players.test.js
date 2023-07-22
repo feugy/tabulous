@@ -371,8 +371,14 @@ describe('given initialized repository', () => {
     })
 
     describe('searchPlayers()', () => {
+      beforeEach(() => repositories.players.reindexModels())
+
       it('returns matching players', async () => {
         expect(await searchPlayers('ada', players[3].id)).toEqual([
+          players[2],
+          players[0]
+        ])
+        expect(await searchPlayers('👏 ada', players[3].id)).toEqual([
           players[2],
           players[0]
         ])
@@ -401,12 +407,17 @@ describe('given initialized repository', () => {
     describe('isUsernameUsed()', () => {
       it('returns true for used value', async () => {
         expect(await isUsernameUsed('adaptoid')).toBe(true)
+        expect(await isUsernameUsed('Adaptoid')).toBe(true)
+        expect(await isUsernameUsed(' adaptoid ')).toBe(true)
         expect(await isUsernameUsed('adversary')).toBe(true)
       })
 
       it('returns true for un-used value', async () => {
         expect(await isUsernameUsed('adaptoi')).toBe(false)
+        expect(await isUsernameUsed('adaptoided')).toBe(false)
+        expect(await isUsernameUsed('bdaptoid')).toBe(false)
         expect(await isUsernameUsed('adversari')).toBe(false)
+        expect(await isUsernameUsed('👏 adaptoid')).toBe(false)
       })
 
       it('can exclude a given id', async () => {
