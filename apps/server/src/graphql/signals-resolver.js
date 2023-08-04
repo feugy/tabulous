@@ -1,11 +1,13 @@
 // @ts-check
+/**
+ * @typedef {import('./utils').GraphQLContext} GraphQLContext
+ */
+
 import services from '../services/index.js'
 import { makeLogger } from '../utils/index.js'
 import { isAuthenticated } from './utils.js'
 
 const logger = makeLogger('signals-resolver')
-
-/** @typedef {import('./utils.js').GraphQLContext} GraphQLContext */
 
 /**
  * The implemented protocol is:
@@ -27,9 +29,9 @@ export default {
      * Emits signal addressed from current player onto the subscription of another player.
      * Requires valid authentication.
      * @param {unknown} obj - graphQL object.
-     * @param {import('./types.js').SendSignalArgs} args - mutation arguments, including:
+     * @param {import('./types').SendSignalArgs} args - mutation arguments, including:
      * @param {GraphQLContext} context - graphQL context.
-     * @returns {import('./types.js').Signal} signal addressed.
+     * @returns {import('./types').Signal} signal addressed.
      */
     sendSignal: isAuthenticated((obj, { signal }, { player, pubsub }) => {
       signal.from = player.id
@@ -50,10 +52,10 @@ export default {
          * Emits signal addressed to the current player
          * Requires valid authentication.
          * @param {unknown} obj - graphQL object.
-         * @param {import('./types.js').AwaitSignalArgs} args - subscription arguments.
+         * @param {import('./types').AwaitSignalArgs} args - subscription arguments.
          * @param {GraphQLContext} context - graphQL context.
-         * @yields {import('./types.js').Signal}
-         * @returns {import('./utils.js').PubSubQueue}
+         * @yields {import('./types').Signal}
+         * @returns {import('./utils').PubSubQueue}
          */
         async (obj, { gameId }, { player, pubsub }) => {
           const queue = await pubsub.subscribe(`sendSignal-${player.id}`)

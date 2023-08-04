@@ -1,11 +1,13 @@
 // @ts-check
+/**
+ * @typedef {import('./players').Player} Player
+ * @typedef {import('./games').StartedGameData} GameData
+ * @typedef {import('./games').Schema} Schema
+ * @typedef {import('../utils/games').GameSetup} GameSetup
+ */
+
 import repositories from '../repositories/index.js'
 import { makeLogger } from '../utils/index.js'
-
-/** @typedef {import('./players.js').Player} Player */
-/** @typedef {import('./games.js').StartedGameData} GameData */
-/** @typedef {import('./games.js').Schema} Schema */
-/** @typedef {import('../utils/games.js').GameSetup} GameSetup */
 
 /**
  * @typedef {object} GameDescriptor a catalog item
@@ -28,9 +30,11 @@ import { makeLogger } from '../utils/index.js'
  */
 
 /**
- * @typedef {object} ItemLocales All the localized data for this catalog item.
+ * @typedef {object} _ItemLocales
  * @property {ItemLocale} [fr] - French locale
  * @property {ItemLocale} [en] - English locale
+ *
+ * @typedef {Record<string, ?> & _ItemLocales} ItemLocales All the localized data for a catalog item.
  */
 
 /**
@@ -46,7 +50,7 @@ import { makeLogger } from '../utils/index.js'
 /**
  * @typedef {object} Copyright game copyright data
  * @property {PersonOrCompany[]} authors - game authors.
- * @property {PersonOrCompany[]} [designer] - game designers.
+ * @property {PersonOrCompany[]} [designers] - game designers.
  * @property {PersonOrCompany[]} [publishers] - game publishers.
  */
 

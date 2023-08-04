@@ -1,4 +1,10 @@
 // @ts-check
+/**
+ * @typedef {import('fastify').FastifyInstance} FastifyInstance
+ * @typedef {import('../../src/services/players').Player} Player
+ * @typedef {import('../../src/services/players').FriendshipUpdate} FriendshipUpdate
+ */
+
 import { faker } from '@faker-js/faker'
 import { createVerifier } from 'fast-jwt'
 import fastify from 'fastify'
@@ -27,11 +33,8 @@ import {
   waitOnMessage
 } from '../test-utils.js'
 
-/** @typedef {import('../../src/services/players.js').Player} Player */
-/** @typedef {import('../../src/services/players.js').FriendshipUpdate} FriendshipUpdate */
-
 describe('given a started server', () => {
-  /** @type {import('fastify').FastifyInstance} */
+  /** @type {FastifyInstance} */
   let server
   /** @type {import('ws')} */
   let ws

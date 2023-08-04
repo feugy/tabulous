@@ -1,11 +1,15 @@
 // @ts-check
+/**
+ * @typedef {import('mercurius').PubSub} PubSub
+ * @typedef {import('../plugins/graphql').GraphQLContext} GraphQLAnonymousContext
+ */
+
 import mercurius from 'mercurius'
 
 const { ErrorWithProps } = mercurius
 
-/** @typedef {import('../plugins/graphql').GraphQLContext} GraphQLAnonymousContext*/
 /** @typedef {Omit<GraphQLAnonymousContext, 'player'> & { player: NonNullable<GraphQLAnonymousContext['player']> }} GraphQLContext*/
-/** @typedef {ReturnType<import('mercurius').PubSub['subscribe']>} PubSubQueue*/
+/** @typedef {ReturnType<PubSub['subscribe']>} PubSubQueue*/
 
 /**
  * @template Source, Context, Args

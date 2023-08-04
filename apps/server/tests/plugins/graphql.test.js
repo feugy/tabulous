@@ -1,4 +1,8 @@
 // @ts-check
+/**
+ * @typedef {import('fastify').FastifyInstance} FastifyInstance
+ */
+
 import { faker } from '@faker-js/faker'
 import fastify from 'fastify'
 import {
@@ -19,13 +23,13 @@ import { makeLogger } from '../../src/utils/index.js'
 import { mockMethods } from '../test-utils.js'
 
 describe('graphql plugin', () => {
-  /** @type {import('fastify').FastifyInstance} */
+  /** @type {FastifyInstance} */
   let server
   /** @type {ReturnType<typeof mockMethods>} */
   let restoreServices
   let warn = vi.spyOn(makeLogger('graphql-plugin'), 'warn')
   const services =
-    /** @type {import('../test-utils.js').MockedMethods<typeof realServices>} */ (
+    /** @type {import('../test-utils').MockedMethods<typeof realServices>} */ (
       realServices
     )
 

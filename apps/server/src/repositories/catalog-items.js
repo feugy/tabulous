@@ -1,10 +1,12 @@
 // @ts-check
+/**
+ * @typedef {import('../services/catalog').GameDescriptor} CatalogItem
+ */
+
 import { readdir } from 'node:fs/promises'
 import { pathToFileURL } from 'node:url'
 
 import { makeLogger } from '../utils/index.js'
-
-/** @typedef {import('../services/catalog.js').GameDescriptor} CatalogItem */
 
 class CatalogItemRepository {
   /**

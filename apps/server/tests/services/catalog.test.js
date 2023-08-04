@@ -1,4 +1,8 @@
 // @ts-check
+/**
+ * @typedef {import('../../src/services/players').Player} Player
+ */
+
 import { faker } from '@faker-js/faker'
 import { join } from 'path'
 import {
@@ -20,23 +24,22 @@ import {
 import { clearDatabase, getRedisTestUrl } from '../test-utils.js'
 
 describe('Catalog service', () => {
-  const players =
-    /** @type {import('../../src/services/players.js').Player[]} */ ([
-      {
-        id: faker.string.uuid(),
-        username: faker.person.fullName(),
-        catalog: ['splendor', '6-takes']
-      },
-      {
-        id: faker.string.uuid(),
-        username: faker.person.fullName()
-      },
-      {
-        id: faker.string.uuid(),
-        username: faker.person.fullName(),
-        catalog: ['6-takes']
-      }
-    ])
+  const players = /** @type {Player[]} */ ([
+    {
+      id: faker.string.uuid(),
+      username: faker.person.fullName(),
+      catalog: ['splendor', '6-takes']
+    },
+    {
+      id: faker.string.uuid(),
+      username: faker.person.fullName()
+    },
+    {
+      id: faker.string.uuid(),
+      username: faker.person.fullName(),
+      catalog: ['6-takes']
+    }
+  ])
 
   const items = [
     {

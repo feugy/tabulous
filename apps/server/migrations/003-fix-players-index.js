@@ -1,9 +1,13 @@
 // @ts-check
+/**
+ * @typedef {import('ioredis').Redis} Redis
+ * @typedef {typeof import('@tabulous/server/src/repositories').default} Repositories
+ */
 
 /**
  * Applies the migration.
- * @param {typeof import('../src/repositories/index.js').default} repositories - connected repositories.
- * @param {import('ioredis').Redis} redis - initialized Redis client.
+ * @param {Repositories} repositories - connected repositories.
+ * @param {Redis} redis - initialized Redis client.
  * @returns {Promise<void>}
  */
 export async function apply({ players }, redis) {

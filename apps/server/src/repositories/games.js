@@ -1,14 +1,16 @@
 // @ts-check
+/**
+ * @typedef {import('../services/games').GameData} Game
+ * @typedef {import('./abstract-repository').SaveTransactionContext<Game>} SaveTransactionContext
+ * @typedef {import('./abstract-repository').DeleteTransactionContext<Game>} DeleteTransactionContext
+ * @typedef {SaveTransactionContext['transaction']} Transaction
+ */
+
 import {
   AbstractRepository,
   deserializeArray,
   deserializeNumber
 } from './abstract-repository.js'
-
-/** @typedef {import('../services/games.js').GameData} Game */
-/** @typedef {import('./abstract-repository.js').SaveTransactionContext<Game>} SaveTransactionContext */
-/** @typedef {import('./abstract-repository.js').DeleteTransactionContext<Game>} DeleteTransactionContext */
-/** @typedef {SaveTransactionContext['transaction']} Transaction */
 
 /** @extends AbstractRepository<Game> */
 class GameRepository extends AbstractRepository {
@@ -45,7 +47,7 @@ class GameRepository extends AbstractRepository {
   /**
    * Saves player as Redis Hash.
    * @override
-   * @param {import('./abstract-repository.js').SaveModelContext<Game>} context - the save operation context.
+   * @param {import('./abstract-repository').SaveModelContext<Game>} context - the save operation context.
    */
   _saveModel({ transaction, model, key }) {
     const { id, created, playerIds, guestIds, ownerId, ...otherFields } = model

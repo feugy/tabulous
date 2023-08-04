@@ -1,4 +1,12 @@
 // @ts-check
+/**
+ * @typedef {import('fastify').FastifyInstance} FastifyInstance
+ * @typedef {import('../../src/services/players').Player} Player
+ * @typedef {import('../../src/services/games').GameData} GameData
+ * @typedef {import('../../src/services/games').GameListUpdate} GameListUpdate
+ * @typedef {import('../../src/services/games').GameParameters} GameParameters
+ */
+
 import { faker } from '@faker-js/faker'
 import fastify from 'fastify'
 import { Subject } from 'rxjs'
@@ -26,19 +34,15 @@ import {
   waitOnMessage
 } from '../test-utils.js'
 
-/** @typedef {import('../../src/services/players.js').Player} Player */
-/** @typedef {import('../../src/services/games.js').GameData} GameData */
-/** @typedef {import('../../src/services/games.js').GameListUpdate} GameListUpdate */
-
 describe('given a started server', () => {
-  /** @type {import('fastify').FastifyInstance} */
+  /** @type {FastifyInstance} */
   let server
   /** @type {import('ws')} */
   let ws
   /** @type {ReturnType<typeof mockMethods>} */
   let restoreServices
   const services =
-    /** @type {import('../test-utils.js').MockedMethods<typeof realServices> & {gameListsUpdate: Subject<GameListUpdate>}} */ (
+    /** @type {import('../test-utils').MockedMethods<typeof realServices> & {gameListsUpdate: Subject<GameListUpdate>}} */ (
       realServices
     )
   vi.spyOn(makeLogger('graphql-plugin'), 'warn').mockImplementation(() => {})
@@ -450,14 +454,13 @@ describe('given a started server', () => {
 
       it('loads game parameters', async () => {
         const [player] = players
-        const gameParameters =
-          /** @type {import('../../src/services/games.js').GameParameters} */ ({
-            id: faker.string.uuid(),
-            schema: {},
-            ownerId: player.id,
-            playerIds: players.map(({ id }) => id),
-            guestIds: guests.map(({ id }) => id)
-          })
+        const gameParameters = /** @type {GameParameters} */ ({
+          id: faker.string.uuid(),
+          schema: {},
+          ownerId: player.id,
+          playerIds: players.map(({ id }) => id),
+          guestIds: guests.map(({ id }) => id)
+        })
         const value = faker.lorem.words()
         services.getPlayerById
           .mockResolvedValueOnce(player)

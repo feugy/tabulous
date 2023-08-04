@@ -16,9 +16,9 @@ const logger = makeLogger('graphql-plugin')
 
 /**
  * @typedef {object} Context Context passed to every GraphQL resolver.
- * @property {?import('../services/players.js').Player} player - authenticated player, if any.
+ * @property {?import('../services/players').Player} player - authenticated player, if any.
  * @property {string} token - authentication token (could be empty).
- * @property {import('../services/configuration.js').Configuration} conf - application configuration.
+ * @property {import('../services/configuration').Configuration} conf - application configuration.
  */
 
 /** @typedef {import('mercurius').MercuriusContext & Context} GraphQLContext */
@@ -46,7 +46,7 @@ export default async function registerGraphQL(
   { allowedOrigins, pubsubUrl, ...opts }
 ) {
   const allowedOriginsRegExp = new RegExp(allowedOrigins)
-  const app = /** @type {import('../server.js').Server} */ (fastify)
+  const app = /** @type {import('../server').Server} */ (fastify)
   await app.register(mercurius, {
     ...opts,
     schema,

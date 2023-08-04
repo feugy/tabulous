@@ -1,4 +1,13 @@
 // @ts-check
+/**
+ * @typedef {import('ioredis').Redis} Redis
+ * @typedef {import('./abstract-repository').DeleteTransactionContext<Player>} DeleteTransactionContext
+ * @typedef {import('./abstract-repository').SaveTransactionContext<Player>} SaveTransactionContext
+ * @typedef {import('./abstract-repository').Transaction} Transaction
+ * @typedef {import('../services/players').Player} Player
+ * @typedef {import('../utils/logger').Logger} Logger
+ */
+
 import {
   count,
   create,
@@ -13,10 +22,6 @@ import {
   deserializeBoolean
 } from './abstract-repository.js'
 
-/** @typedef {import('../services/players.js').Player} Player */
-/** @typedef {import('./abstract-repository.js').SaveTransactionContext<Player>} SaveTransactionContext */
-/** @typedef {import('./abstract-repository.js').DeleteTransactionContext<Player>} DeleteTransactionContext */
-/** @typedef {import('ioredis').Redis} Redis */
 /** @typedef {?import('@orama/orama').Orama<{ Schema: { username: 'string', fullName: 'string', email: 'string' } }>} SearchIndex */
 
 /**
@@ -116,13 +121,12 @@ class PlayerRepository extends AbstractRepository {
    * When saving players, add their provider id references, and updates their username for autocompletion.
    * @override
    * @param {SaveTransactionContext} context - contextual information.
-   * @returns {Promise<import('./abstract-repository.js').Transaction>}
+   * @returns {Promise<Transaction>}
    */
   async _enrichSaveTransaction(context) {
-    const transaction =
-      /** @type {import('./abstract-repository.js').Transaction} */ (
-        super._enrichSaveTransaction(context)
-      )
+    const transaction = /** @type {Transaction} */ (
+      super._enrichSaveTransaction(context)
+    )
     const { models, existings } = context
     const references = /** @type {[string[]]} */ (
       models
@@ -148,7 +152,7 @@ class PlayerRepository extends AbstractRepository {
    */
   async _enrichDeleteTransaction(context) {
     const transaction =
-      /** @type {import('./abstract-repository.js').Transaction} */ (
+      /** @type {import('./abstract-repository').Transaction} */ (
         super._enrichDeleteTransaction(context)
       )
     const references = /** @type {string[]} */ (
@@ -375,7 +379,7 @@ export const players = new PlayerRepository()
 /**
  * @param {SearchIndex} searchIndex
  * @param {Player[]} models
- * @param {import('../utils/logger.js').Logger} logger
+ * @param {Logger} logger
  * @returns {Promise<void>}
  */
 async function insertIntoIndex(searchIndex, models, logger) {
@@ -390,7 +394,7 @@ async function insertIntoIndex(searchIndex, models, logger) {
 /**
  * @param {SearchIndex} searchIndex
  * @param {(?Player)[]} models
- * @param {import('../utils/logger.js').Logger} logger
+ * @param {Logger} logger
  * @returns {Promise<void>}
  */
 async function removeFromIndex(searchIndex, models, logger) {

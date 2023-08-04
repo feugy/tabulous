@@ -1,9 +1,11 @@
 // @ts-check
+/**
+ * @typedef {import('./utils').GraphQLAnonymousContext} GraphQLAnonymousContext
+ * @typedef {import('./utils').GraphQLContext} GraphQLContext
+ */
+
 import services from '../services/index.js'
 import { isAdmin } from './utils.js'
-
-/** @typedef {import('./utils.js').GraphQLContext} GraphQLAnonymousContext */
-/** @typedef {import('./utils.js').GraphQLContext} GraphQLContext */
 
 export default {
   Query: {
@@ -13,7 +15,7 @@ export default {
      * @param {unknown} obj - graphQL object.
      * @param {unknown} args - query arguments.
      * @param {GraphQLAnonymousContext} context - graphQL context.
-     * @returns {Promise<import('./types.js').CatalogItem[]>} list of catalog items.
+     * @returns {Promise<import('./types').CatalogItem[]>} list of catalog items.
      */
     listCatalog: (obj, args, { player }) => services.listCatalog(player)
   },
@@ -24,7 +26,7 @@ export default {
        * Grants another player access to a given catalog item.
        * Requires authentication and elevated privileges.
        * @param {unknown} obj - graphQL object.
-       * @param {import('./types.js').GrantAccessArgs} args - query arguments.
+       * @param {import('./types').GrantAccessArgs} args - query arguments.
        * @returns {Promise<boolean>} true if access was granted.
        */
       async (obj, { playerId, itemName }) => {
@@ -38,7 +40,7 @@ export default {
        * Requires authentication and elevated privileges.
        * @async
        * @param {unknown} obj - graphQL object.
-       * @param {import('./types.js').RevokeAccessArgs} args - query arguments.
+       * @param {import('./types').RevokeAccessArgs} args - query arguments.
        * @returns {Promise<boolean>} true if access was revoked.
        */
       async (obj, { playerId, itemName }) => {

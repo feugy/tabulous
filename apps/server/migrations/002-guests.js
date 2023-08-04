@@ -1,10 +1,13 @@
 // @ts-check
+/**
+ * @typedef {typeof import('@tabulous/server/src/repositories').default} Repositories
+ */
 
 import { iteratePage } from './utils.js'
 
 /**
  * Applies the migration.
- * @param {typeof import('../src/repositories/index.js').default} repositories - connected repositories.
+ * @param {Repositories} repositories - connected repositories.
  * @returns {Promise<void>}
  */
 export async function apply(repositories) {

@@ -1,19 +1,20 @@
 // @ts-check
-/** @typedef {import('../services/games.js').GameData} _Game */
-/** @typedef {import('../services/games.js').GameParameters} _GameParameters */
+/** @typedef {import('../services/games').GameData} _Game */
+/** @typedef {import('../services/games').GameParameters} _GameParameters */
 
 /**
  * Generated from catalog.graphql
- * @typedef {Pick<import('../services/catalog.js').GameDescriptor, 'name'|'locales'> & Partial<Pick<import('../services/catalog.js').GameDescriptor, 'copyright'|'minSeats'|'maxSeats'|'maxAge'|'minTime'>>} CatalogItem
+ * @typedef {Pick<import('../services/catalog.js').GameDescriptor, 'name'|'locales'> & Partial<Pick<import('../services/catalog').GameDescriptor, 'copyright'|'minSeats'|'maxSeats'|'minAge'|'maxAge'|'minTime'>>} CatalogItem
  *
- * @typedef {import('../services/catalog.js').Copyright} Copyright
- * @typedef {import('../services/catalog.js').TableSpec} TableSpec
- * @typedef {import('../services/catalog.js').ZoomSpec} ZoomSpec
- * @typedef {import('../services/catalog.js').ColorSpec} ColorSpec
- * @typedef {import('../services/catalog.js').ActionSpec} ActionSpec
- * @typedef {import('../services/catalog.js').ActionName} ActionName
- * @typedef {import('../services/catalog.js').ItemLocale} ItemLocale
- * @typedef {import('../services/catalog.js').ItemLocales} ItemLocales
+ * @typedef {import('../services/catalog').Copyright} Copyright
+ * @typedef {import('../services/catalog').TableSpec} TableSpec
+ * @typedef {import('../services/catalog').ZoomSpec} ZoomSpec
+ * @typedef {import('../services/catalog').ColorSpec} ColorSpec
+ * @typedef {import('../services/catalog').ActionSpec} ActionSpec
+ * @typedef {keyof ActionSpec} ButtonName
+ * @typedef {import('../services/catalog').ActionName} ActionName
+ * @typedef {import('../services/catalog').ItemLocale} ItemLocale
+ * @typedef {import('../services/catalog').ItemLocales} ItemLocales
  *
  * @typedef {object} GrantAccessArgs
  * @property {string} playerId - player id being granted access.
@@ -26,41 +27,41 @@
 
 /**
  * Generated from games.graphql
- * @typedef {Pick<import('../services/players.js').Player, 'id'|'username'> & { isGuest?: boolean, isOwner?: boolean }} GamePlayer
+ * @typedef {import('../services/players').Player & { isGuest?: boolean, isOwner?: boolean }} GamePlayer
  *
  * @typedef {Pick<_Game, 'id'|'created'|'kind'|'rulesBookPageCount'|'zoomSpec'|'tableSpec'|'colors'|'actions'> & Partial<Pick<_Game, 'messages'|'locales'|'meshes'|'cameras'|'hands'|'preferences'|'availableSeats'>> & { players?: GamePlayer[]}} Game
  *
- * @typedef {import('../services/games.js').Shape} Shape
- * @typedef {import('../services/games.js').Mesh} Mesh
- * @typedef {import('../services/games.js').InitialTransform} InitialTransform
- * @typedef {import('../services/games.js').DetailableState} DetailableState
- * @typedef {import('../services/games.js').FlippableState} FlippableState
- * @typedef {import('../services/games.js').RotableState} RotableState
- * @typedef {import('../services/games.js').MovableState} MovableState
- * @typedef {import('../services/games.js').StackableState} StackableState
- * @typedef {import('../services/games.js').AnchorableState} AnchorableState
- * @typedef {import('../services/games.js').DrawableState} DrawableState
- * @typedef {import('../services/games.js').LockableState} LockableState
- * @typedef {import('../services/games.js').QuantifiableState} QuantifiableState
- * @typedef {import('../services/games.js').RandomizableState} RandomizableState
- * @typedef {import('../services/games.js').Anchor} Anchor
- * @typedef {import('../services/games.js').Point} Point
- * @typedef {import('../services/games.js').Dimension} Dimension
- * @typedef {import('../services/games.js').Targetable} Targetable
- * @typedef {import('../services/games.js').PlayerPreference} PlayerPreference
- * @typedef {import('../services/games.js').Message} Message
- * @typedef {import('../services/games.js').CameraPosition} CameraPosition
- * @typedef {import('../services/games.js').Hand} Hand
+ * @typedef {import('../services/games').Shape} Shape
+ * @typedef {import('../services/games').Mesh} Mesh
+ * @typedef {import('../services/games').InitialTransform} InitialTransform
+ * @typedef {import('../services/games').DetailableState} DetailableState
+ * @typedef {import('../services/games').FlippableState} FlippableState
+ * @typedef {import('../services/games').RotableState} RotableState
+ * @typedef {import('../services/games').MovableState} MovableState
+ * @typedef {import('../services/games').StackableState} StackableState
+ * @typedef {import('../services/games').AnchorableState} AnchorableState
+ * @typedef {import('../services/games').DrawableState} DrawableState
+ * @typedef {import('../services/games').LockableState} LockableState
+ * @typedef {import('../services/games').QuantifiableState} QuantifiableState
+ * @typedef {import('../services/games').RandomizableState} RandomizableState
+ * @typedef {import('../services/games').Anchor} Anchor
+ * @typedef {import('../services/games').Point} Point
+ * @typedef {import('../services/games').Dimension} Dimension
+ * @typedef {import('../services/games').Targetable} Targetable
+ * @typedef {import('../services/games').PlayerPreference} PlayerPreference
+ * @typedef {import('../services/games').Message} Message
+ * @typedef {import('../services/games').CameraPosition} CameraPosition
+ * @typedef {import('../services/games').Hand} Hand
  *
  * @typedef {Pick<_GameParameters, 'error'|'id'|'kind'> & Partial<Pick<_GameParameters, 'locales'|'preferences'|'rulesBookPageCount'|'availableSeats'|'colors'>> & { schemaString?: string, players?: GamePlayer[]}} GameParameters
  *
  * @typedef {object} CreateGameArgs
- * @property {string} kind - created game kind.
+ * @property {string} [kind] - created game kind (omit to create a lobby).
  *
  * @typedef {object} JoinGameArgs
  * @property {string} gameId - joined game's id.
- * @property {string} parameters -player's provided parameters in a stringified object.
- **
+ * @property {string} [parameters] -player's provided parameters in a stringified object.
+ *
  * @typedef {object} PromoteGameArgs
  * @property {string} gameId - promoted game's id.
  * @property {string} kind - promoted game kind.
@@ -87,18 +88,18 @@
  * From logger.graphql LoggerLevel and InputLoggerLevel
  * @typedef {object} LoggerLevel
  * @property {string} name - logger name.
- * @property {import('../utils/logger.js').Level} level - current log level.
+ * @property {import('../utils/logger').Level} level - current log level.
  */
 
 /**
  * Generated from players.graphql
- * @typedef {Pick<import('../services/players.js').Player, 'id'|'username'> & Partial<Pick<import('../services/players.js').Player, 'currentGameId'|'avatar'|'provider'|'email'|'termsAccepted'|'isAdmin'|'usernameSearchable'>>} Player
+ * @typedef {Pick<import('../services/players.js').Player, 'id'|'username'> & Partial<Pick<import('../services/players').Player, 'currentGameId'|'avatar'|'provider'|'email'|'termsAccepted'|'isAdmin'|'usernameSearchable'>>} Player
  *
- * @typedef {{ player: Player } & Pick<import('../services/players.js').Friendship, 'isRequest'|'isProposal'> } Friendship
+ * @typedef {{ player: Player } & Pick<import('../services/players').Friendship, 'isRequest'|'isProposal'> } Friendship
  *
- * @typedef {{ from: Player } & Pick<import('../services/players.js').FriendshipUpdate, 'requested'|'proposed'|'accepted'|'declined'> } FriendshipUpdate
+ * @typedef {{ from: Player } & Pick<import('../services/players').FriendshipUpdate, 'requested'|'proposed'|'accepted'|'declined'> } FriendshipUpdate
  *
- * @typedef {import('../services/turn-credentials.js').TurnCredentials} TurnCredentials
+ * @typedef {import('../services/turn-credentials').TurnCredentials} TurnCredentials
  *
  * @typedef {object} PlayerWithTurnCredentials
  * @property {string} token - authentication token.
@@ -139,8 +140,7 @@
  * @property {string} data - the signal payload.
  *
  * @typedef {object} SendSignalArgs
- * @property {string} to - player id to which the signal is sent.
- * @property {string} data - the signal payload.
+ * @property {{ to: string, data: string }} signal - player id to which the signal is sent and the signal payload.
  *
  * @typedef {object} AwaitSignalArgs
  * @property {string} gameId - game's id.

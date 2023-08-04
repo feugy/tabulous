@@ -1,9 +1,15 @@
 // @ts-check
+/**
+ * @typedef {typeof import('@tabulous/server/src/repositories').default} Repositories
+ */
+/**
+ * @template {{id: string}} M
+ * @typedef {import('@tabulous/server/src/repositories/abstract-repository').AbstractRepository<M> } AbstractRepository
+ */
+
 import { access, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-
-/** @typedef {typeof import('../src/repositories/index.js').default} Repositories */
 
 /**
  * Applies the migration.
@@ -17,7 +23,7 @@ export async function apply(repositories) {
 
 /**
  * @template {{id: string}} M
- * @template {import('../src/repositories/abstract-repository.js').AbstractRepository<M>} R
+ * @template {AbstractRepository<M>} R
  * @param {R} repository
  * @returns {Promise<void>}
  */

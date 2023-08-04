@@ -1,4 +1,8 @@
 // @ts-check
+/**
+ * @typedef {import('../../src/utils/logger').Logger} Logger
+ */
+
 import { setTimeout } from 'node:timers/promises'
 
 import { faker } from '@faker-js/faker'
@@ -50,7 +54,7 @@ describe('makeLogger()', () => {
 
   describe('given a logger', () => {
     let name = ''
-    /** @type {import('../../src/utils/logger.js').Logger} */
+    /** @type {Logger} */
     let logger
 
     beforeEach(() => {

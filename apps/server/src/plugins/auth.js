@@ -3,14 +3,13 @@ import services from '../services/index.js'
 import { addToLogContext, makeLogger } from '../utils/index.js'
 import { makeToken } from './utils.js'
 
-/** @typedef {import('./utils.js').SignerOptions} SignerOptions */
-/** @typedef {Omit<import('../services/auth/oauth2.js').ProviderInit, 'redirect'>} ProviderInit */
+/** @typedef {Omit<import('../services/auth/oauth2').ProviderInit, 'redirect'>} ProviderInit */
 
 /**
  * @typedef {object} AuthOptions authentication plugin options, including:
  * @property {string} domain - public facing domain (full url) for authentication redirections.
  * @property {string} allowedOrigins - regular expression for allowed domains during authentication.
- * @property {SignerOptions} jwt - options used to encrypt JWT token: needs 'key' at least.
+ * @property {import('./utils').SignerOptions} jwt - options used to encrypt JWT token: needs 'key' at least.
  * @property {ProviderInit} [github] - Github authentication provider options.
  * @property {ProviderInit} [google] - Google authentication provider options.
  */

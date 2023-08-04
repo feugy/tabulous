@@ -1,4 +1,11 @@
 // @ts-check
+/**
+ * @typedef {import('./utils').GraphQLContext} GraphQLContext
+ * @typedef {import('./types').GamePlayer} Player
+ * @typedef {import('./types').Game} Game
+ * @typedef {import('./types').GameParameters} GameParameters
+ */
+
 import { filter } from 'rxjs/operators'
 
 import services from '../services/index.js'
@@ -6,11 +13,6 @@ import { makeLogger } from '../utils/index.js'
 import { isAuthenticated } from './utils.js'
 
 const logger = makeLogger('games-resolver')
-
-/** @typedef {import('./utils.js').GraphQLContext} GraphQLContext */
-/** @typedef {import('./types.js').GamePlayer} Player */
-/** @typedef {import('./types.js').Game} Game */
-/** @typedef {import('./types.js').GameParameters} GameParameters */
 
 /**
  * Scafolds Mercurius loaders for specific properties of queried objects.
@@ -76,7 +78,7 @@ export default {
        * Instanciates a new game for the a current player (who becomes its owner).
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {import('./types.js').CreateGameArgs} args - mutation arguments.
+       * @param {import('./types').CreateGameArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
        * @returns {Promise<Game>} created game details, or null.
        */
@@ -89,7 +91,7 @@ export default {
        * May returns other parameters if provided values disn't suffice, or the actual game content.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {import('./types.js').JoinGameArgs} args - mutation arguments.
+       * @param {import('./types').JoinGameArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
        * @returns {Promise<?Game|GameParameters>} joined game in case of success, new required parameters, or null.
        */
@@ -116,7 +118,7 @@ export default {
        * May returns parameters if needed, or the actual game content.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {import('./types.js').PromoteGameArgs} args - mutation arguments.
+       * @param {import('./types').PromoteGameArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
        * @returns {Promise<?Game|GameParameters>} joined game in case of success, new required parameters, or null.
        */
@@ -129,7 +131,7 @@ export default {
        * Saves a current player's existing game details.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {import('./types.js').SaveGameArgs} args - mutation arguments.
+       * @param {import('./types').SaveGameArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
        * @returns {Promise<?Game>} created game details, or null.
        */
@@ -141,7 +143,7 @@ export default {
        * Deletes a current player's existing game.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {import('./types.js').DeleteGameArgs} args - mutation arguments.
+       * @param {import('./types').DeleteGameArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
        * @returns {Promise<?Game>} deleted game details, or null.
        */
@@ -153,7 +155,7 @@ export default {
        * Invites another player to a current player's game.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {import('./types.js').InviteArgs} args - mutation arguments.
+       * @param {import('./types').InviteArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
        * @returns {Promise<?Game>} saved game details, or null.
        */
@@ -166,7 +168,7 @@ export default {
        * Kick a player from a current player's game.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {import('./types.js').KickArgs} args - mutation arguments.
+       * @param {import('./types').KickArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
        * @returns {Promise<?Game>} saved game details, or null.
        */
@@ -185,7 +187,7 @@ export default {
          * @param {unknown} args - subscription arguments.
          * @param {GraphQLContext} context - graphQL context.
          * @yields {Game[]}
-         * @returns {import('./utils.js').PubSubQueue}
+         * @returns {import('./utils').PubSubQueue}
          */
         async (obj, args, { player, pubsub }) => {
           const topic = `listGames-${player.id}`
@@ -216,10 +218,10 @@ export default {
          * Sends a given game updates from server.
          * Requires valid authentication, and users must have this game in their list.
          * @param {unknown} obj - graphQL object.
-         * @param {import('./types.js').ReceiveGameUpdatesArgs} args - subscription argument.
+         * @param {import('./types').ReceiveGameUpdatesArgs} args - subscription argument.
          * @param {GraphQLContext} context - graphQL context.
          * @yields {Game}
-         * @returns {import('./utils.js').PubSubQueue}
+         * @returns {import('./utils').PubSubQueue}
          */
         async (obj, { gameId }, { player, pubsub }) => {
           const topic = `receiveGameUpdates-${player.id}-${gameId}`
@@ -258,7 +260,7 @@ export default {
   GameParameters: {
     /**
      * Serializer for schema.
-     * @param {import('../services/games.js').GameParameters} obj - serialized game parameter schema
+     * @param {import('../services/games').GameParameters} obj - serialized game parameter schema
      * @returns {string}
      */
     schemaString: obj => JSON.stringify(obj.schema)
