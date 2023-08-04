@@ -364,8 +364,13 @@ export function expectAbsoluteRotation(mesh, angle, axis) {
 /**
  * @param {Mesh[]} meshes - list of stacked meshes, who should relate to each other as a stack.
  * @param {boolean} isLastMovable - whether the top-most mesh should be movable or not
+ * @param {string} [baseParentId] - parent mesh id for the stack base mesh (undefined by default)
  */
-export function expectStacked(meshes, isLastMovable = true) {
+export function expectStacked(
+  meshes,
+  isLastMovable = true,
+  baseParentId = undefined
+) {
   const ids = getIds(meshes.slice(1))
   for (const [rank, mesh] of meshes.entries()) {
     expect(
@@ -378,6 +383,9 @@ export function expectStacked(meshes, isLastMovable = true) {
           .stackIds,
         `state stackIds of mesh #${rank}`
       ).toEqual(ids)
+      expect(mesh.parent?.id).toEqual(baseParentId)
+    } else {
+      expect(mesh.parent?.id).toEqual(meshes[0].id)
     }
     if (rank === meshes.length - 1) {
       expectInteractible(mesh, true, isLastMovable)

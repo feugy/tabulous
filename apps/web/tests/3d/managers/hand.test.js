@@ -1418,7 +1418,7 @@ describe('HandManager', () => {
           expect(moveManager.isManaging(newMesh2)).toBe(true)
           await expectAnimationEnd(newMesh1.getBehaviorByName(DrawBehaviorName))
           expectSnapped(dropZone, newMesh1)
-          expectStacked([newMesh1, newMesh2])
+          expectStacked([newMesh1, newMesh2], true, dropZone.id)
         })
 
         it(`automatically moves mesh to player's drop zone when dragging mesh`, async () => {
@@ -1564,7 +1564,7 @@ describe('HandManager', () => {
           expect(controlManager.isManaging(newMesh2)).toBe(true)
           expect(moveManager.isManaging(newMesh2)).toBe(true)
           expectSnapped(dropZone, newMesh1)
-          expectStacked([newMesh1, newMesh2])
+          expectStacked([newMesh1, newMesh2], true, dropZone.id)
           expectCloseVector(
             extractDrawnState(),
             newMesh1.absolutePosition.asArray()

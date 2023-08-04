@@ -1,19 +1,9 @@
 # TODO
 
-- manual testing: anchors on flip all/reorder
-- manual testing: lock/unlock
-- manual testing: decrement/increment by dragging
-- manual testing: updates shared in multiplayer
-- manual testing: texture caching: make a difference between hand & main
-- manual testing: texture color with alpha
-- manual testing: intersect geometries
-- manual testing: game parameters
-- manual/integration testing: kick
-- move server graphql types in a d.ts file
-- create type for migration files
-
 ## Road to beta
 
+- move server graphql types in a d.ts file
+- create type for migration files
 - ts-check game files
 - replace windicss with a successor (tailwind or UnoCSS)
 - automerge.js
@@ -31,6 +21,7 @@
 
 ## UI
 
+- bug: a game with no available seats and no other player should not display the friend list tab
 - bug: game shortcuts ignore active selection to only apply to hover mesh
 - bug: 6-takes: snapping to the wrong anchor (when 2 players are snapping to different anchors)
 - chore: a couple TODOs in the code

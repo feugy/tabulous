@@ -346,6 +346,7 @@ export class StackBehavior extends TargetBehavior {
       return
 
     const posById = new Map(old.map(({ id }, i) => [id, i]))
+    /** @type {Mesh[]} */
     const stack = ids.map(id => old[posById.get(id) ?? -1]).filter(Boolean)
 
     controlManager.record({
@@ -651,7 +652,15 @@ function setBase(mesh, base, stack) {
   if (targetable) {
     targetable.base = base
     targetable.stack = stack
-    mesh.setParent(base?.mesh ?? null)
+    if (base) {
+      mesh.setParent(base.mesh)
+    } else if (
+      mesh.parent &&
+      stack.includes(/** @type {Mesh} */ (mesh.parent))
+    ) {
+      // only reset's mesh parent if it is in the stack
+      mesh.setParent(null)
+    }
   }
   return targetable
 }

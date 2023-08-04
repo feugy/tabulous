@@ -13,6 +13,7 @@ import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
 import {
   AnchorBehavior,
+  AnchorBehaviorName,
   DrawBehavior,
   FlipBehavior,
   FlipBehaviorName,
@@ -52,6 +53,7 @@ import {
   expectMoveRecorded,
   expectPosition,
   expectRotated,
+  expectSnapped,
   expectStacked,
   expectStackIndicator,
   expectZone,
@@ -743,6 +745,28 @@ describe('StackBehavior', () => {
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
+    it('keeps reordered stack snapped to an anchor', async () => {
+      behavior.fromState({ stackIds: ['box1', 'box2'] })
+      box3.getBehaviorByName(AnchorBehaviorName)?.fromState({
+        anchors: [{ id: '1', x: -0.5, snappedId: 'box0' }]
+      })
+      expectSnapped(box3, mesh)
+
+      await mesh.metadata.reorder?.(['box1', 'box0', 'box2'])
+
+      expectStacked([box1, mesh, box2], true, 'box3')
+      expectSnapped(box3, box1)
+
+      expect(recordSpy).toHaveBeenCalledWith({
+        fn: 'reorder',
+        mesh,
+        args: [['box1', 'box0', 'box2'], true]
+      })
+      expect(recordSpy).toHaveBeenCalledTimes(1)
+      expectMoveRecorded(moveRecorded)
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
+    })
+
     it('can not reorder while reordering', async () => {
       behavior.fromState({ stackIds: ['box1', 'box2', 'box3'] })
 
@@ -843,8 +867,7 @@ describe('StackBehavior', () => {
       behavior.fromState({ stackIds: ['box1', 'box2', 'box3'] })
       await mesh.metadata.flip?.()
       expectFlipped(mesh, true)
-      recordSpy.mockReset()
-
+      recordSpy.mockClear()
       await mesh.metadata.flipAll?.()
       expectStacked([box3, box2, box1, mesh])
       expect(recordSpy).toHaveBeenCalledTimes(6)
@@ -924,6 +947,49 @@ describe('StackBehavior', () => {
 
       await sleep(200)
       expectStacked([box3, box2, box1, mesh])
+      expectMoveRecorded(moveRecorded)
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
+    })
+
+    it('keeps flipped stack snapped to an anchor', async () => {
+      behavior.fromState({ stackIds: ['box1', 'box2'] })
+      box3.getBehaviorByName(AnchorBehaviorName)?.fromState({
+        anchors: [{ id: '1', x: -0.5, snappedId: 'box0' }]
+      })
+      expectSnapped(box3, mesh)
+
+      await mesh.metadata.flipAll?.()
+      expectStacked([box2, box1, mesh], true, 'box3')
+      expectSnapped(box3, box2)
+      expect(recordSpy).toHaveBeenNthCalledWith(1, {
+        fn: 'flipAll',
+        mesh,
+        args: []
+      })
+      expect(recordSpy).toHaveBeenNthCalledWith(2, {
+        fn: 'flip',
+        mesh,
+        args: [],
+        duration: 100
+      })
+      expect(recordSpy).toHaveBeenNthCalledWith(3, {
+        fn: 'flip',
+        mesh: box1,
+        args: [],
+        duration: 100
+      })
+      expect(recordSpy).toHaveBeenNthCalledWith(4, {
+        fn: 'flip',
+        mesh: box2,
+        args: [],
+        duration: 100
+      })
+      expect(recordSpy).toHaveBeenNthCalledWith(5, {
+        fn: 'reorder',
+        mesh,
+        args: [['box2', 'box1', 'box0'], false]
+      })
+      expect(recordSpy).toHaveBeenCalledTimes(5)
       expectMoveRecorded(moveRecorded)
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })

@@ -493,7 +493,7 @@ describe('AnchorBehavior', () => {
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
-    it('can reset snapped mesh rotationwhen hydrating', () => {
+    it('can reset snapped mesh rotation when hydrating', () => {
       const snapped = meshes[0]
       snapped.addBehavior(new RotateBehavior({ angle: Math.PI * 0.5 }), true)
       expectRotated(snapped, Math.PI * 0.5)
@@ -683,10 +683,10 @@ describe('AnchorBehavior', () => {
         ]
       })
       expectSnapped(mesh, snapped, 0)
-      expectStacked([snapped, stacked])
+      expectStacked([snapped, stacked], true, mesh.id)
 
       await stacked.metadata.reorder?.([stacked.id, snapped.id])
-      expectStacked([stacked, snapped])
+      expectStacked([stacked, snapped], true, mesh.id)
       expectSnapped(mesh, stacked, 0)
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
@@ -700,10 +700,10 @@ describe('AnchorBehavior', () => {
         ]
       })
       expectSnapped(mesh, snapped, 0)
-      expectStacked([snapped, stacked])
+      expectStacked([snapped, stacked], true, mesh.id)
 
       await stacked.metadata.flipAll?.()
-      expectStacked([stacked, snapped])
+      expectStacked([stacked, snapped], true, mesh.id)
       expectSnapped(mesh, stacked, 0)
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
