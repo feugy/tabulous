@@ -1,3 +1,14 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ * @typedef {import('@src/3d/behaviors').MoveBehavior} MoveBehavior
+ */
+/**
+ * @template {any[]} P, R
+ * @typedef {import('vitest').SpyInstance<P, R>} SpyInstance
+ */
+
 import { faker } from '@faker-js/faker'
 import {
   MoveBehaviorName,
@@ -7,7 +18,15 @@ import {
 import { controlManager, moveManager, selectionManager } from '@src/3d/managers'
 import { createBox, createRoundToken } from '@src/3d/meshes'
 import { getTargetableBehavior } from '@src/3d/utils'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest'
 
 import {
   configures3dTestEngine,
@@ -21,10 +40,16 @@ import {
 } from '../../test-utils'
 
 describe('QuantityBehavior', () => {
+  /** @type {Scene} */
   let scene
+  /** @type {SpyInstance<Parameters<typeof controlManager['record']>, void>} */
   let recordSpy
 
   configures3dTestEngine(created => (scene = created.scene))
+
+  beforeAll(() => {
+    moveManager.init({ scene })
+  })
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -54,7 +79,7 @@ describe('QuantityBehavior', () => {
 
   it('can hydrate with default state', () => {
     const behavior = new QuantityBehavior()
-    const mesh = createBox({ id: 'box0' })
+    const mesh = createBox({ id: 'box0', texture: '' }, scene)
     mesh.addBehavior(behavior, true)
 
     behavior.fromState()
@@ -69,28 +94,37 @@ describe('QuantityBehavior', () => {
   })
 
   it('can not increment', () => {
-    expect(new QuantityBehavior().canIncrement(createBox({ id: 'box1' }))).toBe(
-      false
-    )
+    expect(
+      new QuantityBehavior().canIncrement?.(
+        createBox({ id: 'box1', texture: '' }, scene)
+      )
+    ).toBe(false)
   })
 
   describe('given attached to a mesh', () => {
+    /** @type {Mesh} */
     let mesh
+    /** @type {Mesh[]} */
     let meshes = []
+    /** @type {QuantityBehavior} */
     let behavior
 
     beforeEach(() => {
       ;[mesh, ...meshes] = Array.from({ length: 4 }, (_, rank) =>
-        createBox({
-          id: `box${rank}`,
-          x: rank,
-          y: rank,
-          z: rank,
-          quantifiable: { duration: 10 },
-          movable: {}
-        })
+        createBox(
+          {
+            id: `box${rank}`,
+            texture: '',
+            x: rank,
+            y: rank,
+            z: rank,
+            quantifiable: { duration: 10 },
+            movable: {}
+          },
+          scene
+        )
       )
-      behavior = getTargetableBehavior(mesh)
+      behavior = /** @type {QuantityBehavior} */ (getTargetableBehavior(mesh))
     })
 
     afterEach(() => moveManager.stop())
@@ -144,7 +178,10 @@ describe('QuantityBehavior', () => {
       const priority = faker.number.int(999)
       const diameter = 5
       mesh.removeBehavior(behavior)
-      mesh = createRoundToken({ id: 'roundToken', diameter })
+      mesh = createRoundToken(
+        { id: 'roundToken', texture: '', diameter },
+        scene
+      )
       mesh.addBehavior(behavior, true)
 
       behavior.fromState({ duration, extent, quantity, kinds, priority })
@@ -169,7 +206,7 @@ describe('QuantityBehavior', () => {
     it('increments with meshes', async () => {
       const [other1, other2] = meshes
       expectQuantity(mesh, 1)
-      await mesh.metadata.increment([other1.id, other2.id])
+      await mesh.metadata.increment?.([other1.id, other2.id])
       expectQuantity(mesh, 3)
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
@@ -184,13 +221,17 @@ describe('QuantityBehavior', () => {
 
     it('increments with quantifiable meshes', async () => {
       const [other1, other2, other3] = meshes
-      other3.getBehaviorByName(QuantityBehaviorName).fromState({ quantity: 5 })
-      other2.removeBehavior(other2.getBehaviorByName(QuantityBehaviorName))
-      other1.getBehaviorByName(QuantityBehaviorName).fromState({ quantity: 2 })
+      other3.getBehaviorByName(QuantityBehaviorName)?.fromState({ quantity: 5 })
+      other2.removeBehavior(
+        /** @type {QuantityBehavior} */ (
+          other2.getBehaviorByName(QuantityBehaviorName)
+        )
+      )
+      other1.getBehaviorByName(QuantityBehaviorName)?.fromState({ quantity: 2 })
       expectQuantity(mesh, 1)
       expectQuantity(other1, 2)
       expectQuantity(other3, 5)
-      await mesh.metadata.increment([other3.id, other2.id, other1.id])
+      await mesh.metadata.increment?.([other3.id, other2.id, other1.id])
       expectQuantity(mesh, 9)
       expectQuantityIndicator(other1, 0)
       expectQuantityIndicator(other3, 0)
@@ -230,7 +271,11 @@ describe('QuantityBehavior', () => {
 
     it('ignores non-incrementable dropped meshes', async () => {
       const [other1, other2, other3] = meshes
-      other1.removeBehavior(other1.getBehaviorByName(QuantityBehaviorName))
+      other1.removeBehavior(
+        /** @type {QuantityBehavior} */ (
+          other1.getBehaviorByName(QuantityBehaviorName)
+        )
+      )
       expectQuantity(mesh, 1)
       behavior.onDropObservable.notifyObservers({
         dropped: [other1, other2],
@@ -264,7 +309,7 @@ describe('QuantityBehavior', () => {
     it('can not decrement a quantity of 1', async () => {
       const meshCount = scene.meshes.length
       expectQuantity(mesh, 1)
-      expect(await mesh.metadata.decrement()).toBeNull()
+      expect(await mesh.metadata.decrement?.()).toBeNull()
       expectQuantity(mesh, 1)
       expect(recordSpy).not.toHaveBeenCalled()
       expect(scene.meshes.length).toBe(meshCount)
@@ -276,7 +321,7 @@ describe('QuantityBehavior', () => {
       behavior.fromState({ quantity })
       expectQuantity(mesh, quantity)
 
-      const created1 = await mesh.metadata.decrement()
+      const created1 = /** @type {Mesh} */ (await mesh.metadata.decrement?.())
       expect(created1.id).not.toBe(mesh.id)
       expectPosition(created1, mesh.absolutePosition.asArray())
       expect(created1.metadata.serialize()).toMatchObject({
@@ -294,7 +339,7 @@ describe('QuantityBehavior', () => {
         args: [1, false]
       })
 
-      const created2 = await mesh.metadata.decrement()
+      const created2 = /** @type {Mesh} */ (await mesh.metadata.decrement?.())
       expect(created2.id).not.toBe(mesh.id)
       expect(created2.id).not.toBe(created1.id)
       expectPosition(created2, mesh.absolutePosition.asArray())
@@ -313,7 +358,7 @@ describe('QuantityBehavior', () => {
         args: [1, false]
       })
 
-      expect(await mesh.metadata.decrement()).toBeNull()
+      expect(await mesh.metadata.decrement?.()).toBeNull()
       expect(recordSpy).toHaveBeenCalledTimes(2)
       expect(scene.meshes.length).toBe(meshCount + 4)
     })
@@ -324,7 +369,9 @@ describe('QuantityBehavior', () => {
       behavior.fromState({ quantity })
       expectQuantity(mesh, quantity)
 
-      const created = await mesh.metadata.decrement(1, true)
+      const created = /** @type {Mesh} */ (
+        await mesh.metadata.decrement?.(1, true)
+      )
       expect(created.id).not.toBe(mesh.id)
       const [x, y, z] = mesh.absolutePosition.asArray()
       expectPosition(created, [x + 1, y + 0.5, z])
@@ -351,7 +398,9 @@ describe('QuantityBehavior', () => {
       behavior.fromState({ quantity })
       expectQuantity(mesh, quantity)
 
-      const created = await mesh.metadata.decrement(2, true)
+      const created = /** @type {Mesh} */ (
+        await mesh.metadata.decrement?.(2, true)
+      )
       expect(created.id).not.toBe(mesh.id)
       const [x, y, z] = mesh.absolutePosition.asArray()
       expectPosition(created, [x + 1, y + 0.5, z])
@@ -378,7 +427,7 @@ describe('QuantityBehavior', () => {
       behavior.fromState({ quantity })
       expectQuantity(mesh, quantity)
 
-      moveManager.start(mesh, {})
+      moveManager.start(mesh, { x: 0, y: 0 })
       await sleep()
 
       expect(scene.meshes.length).toBe(meshCount + 2)
@@ -390,7 +439,12 @@ describe('QuantityBehavior', () => {
         movable: { snapDistance: 0.25, duration: 100 },
         quantifiable: { ...behavior.state, quantity: 1 }
       })
-      expectPosition(created, mesh.absolutePosition.asArray())
+      const expectedPosition = [
+        mesh.absolutePosition.x,
+        0.5,
+        mesh.absolutePosition.z
+      ]
+      expectPosition(created, expectedPosition)
       expectQuantity(mesh, quantity - 1)
       expect(recordSpy).toHaveBeenCalledTimes(2)
       expect(recordSpy).toHaveBeenNthCalledWith(1, {
@@ -399,7 +453,7 @@ describe('QuantityBehavior', () => {
         args: [1, false]
       })
       expect(recordSpy).toHaveBeenNthCalledWith(2, {
-        pos: mesh.absolutePosition.asArray(),
+        pos: expectedPosition,
         mesh: created
       })
       expect(moveManager.isMoving(mesh)).toBe(false)
@@ -413,7 +467,7 @@ describe('QuantityBehavior', () => {
       expectQuantity(mesh, quantity)
       selectionManager.select(mesh)
 
-      moveManager.start(mesh, {})
+      moveManager.start(mesh, { x: 0, y: 0 })
       await sleep()
 
       expect(scene.meshes.length).toBe(meshCount)
@@ -427,38 +481,54 @@ describe('QuantityBehavior', () => {
     })
 
     it('can not increment without mesh', () => {
-      expect(mesh.metadata.canIncrement()).toBe(false)
-      expect(mesh.metadata.canIncrement(null)).toBe(false)
+      // @ts-expect-error no arguments
+      expect(mesh.metadata.canIncrement?.()).toBe(false)
+      // @ts-expect-error null is not acceptable
+      expect(mesh.metadata.canIncrement?.(null)).toBe(false)
     })
 
     it('can not increment mesh with different kind', () => {
       behavior.fromState({ kinds: ['card'] })
-      meshes[0].getBehaviorByName(MoveBehaviorName).state.kind = 'token'
-      expect(mesh.metadata.canIncrement(meshes[0])).toBe(false)
-      expect(mesh.metadata.canIncrement(meshes[1])).toBe(false)
+      const moveBehavior = /** @type {MoveBehavior} */ (
+        meshes[0].getBehaviorByName(MoveBehaviorName)
+      )
+      moveBehavior.state.kind = 'token'
+      expect(mesh.metadata.canIncrement?.(meshes[0])).toBe(false)
+      expect(mesh.metadata.canIncrement?.(meshes[1])).toBe(false)
     })
 
     it('can increment mesh with the same kind', () => {
       behavior.fromState({ kinds: ['card'] })
-      meshes[0].getBehaviorByName(MoveBehaviorName).state.kind = 'card'
-      expect(mesh.metadata.canIncrement(meshes[0])).toBe(true)
+      const moveBehavior = /** @type {MoveBehavior} */ (
+        meshes[0].getBehaviorByName(MoveBehaviorName)
+      )
+      moveBehavior.state.kind = 'card'
+      expect(mesh.metadata.canIncrement?.(meshes[0])).toBe(true)
     })
 
     it('can increment mesh with kind on kindless zone', () => {
-      meshes[0].getBehaviorByName(MoveBehaviorName).state.kind = 'card'
-      expect(mesh.metadata.canIncrement(meshes[0])).toBe(true)
+      const moveBehavior = /** @type {MoveBehavior} */ (
+        meshes[0].getBehaviorByName(MoveBehaviorName)
+      )
+      moveBehavior.state.kind = 'card'
+      expect(mesh.metadata.canIncrement?.(meshes[0])).toBe(true)
     })
 
     it('can not increment with non quantifiable mesh', async () => {
       meshes[2].removeBehavior(
-        meshes[2].getBehaviorByName(QuantityBehaviorName)
+        /** @type {QuantityBehavior} */ (
+          meshes[2].getBehaviorByName(QuantityBehaviorName)
+        )
       )
-      expect(mesh.metadata.canIncrement(meshes[2])).toBe(false)
+      expect(mesh.metadata.canIncrement?.(meshes[2])).toBe(false)
     })
   })
 })
 
-function expectQuantity(mesh, quantity) {
+function expectQuantity(
+  /** @type {Mesh} */ mesh,
+  /** @type {number} */ quantity
+) {
   expect(mesh.metadata?.quantity).toBe(quantity)
   expectQuantityIndicator(mesh, quantity)
 }

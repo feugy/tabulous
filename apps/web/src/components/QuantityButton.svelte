@@ -1,13 +1,19 @@
 <script>
+  // @ts-check
   import { createEventDispatcher } from 'svelte'
 
   import Button from './Button.svelte'
 
+  /** @type {boolean} whether this button is primary or base. */
   export let primary = false
+  /** @type {boolean} whether this button is disabled. */
   export let disabled = false
+  /** @type {number} the current quantity displayed. */
   export let quantity = 1
+  /** @type {number} maximum quantity allowed. */
   export let max = 1000
 
+  /** @type {import('svelte').EventDispatcher<{ click: { quantity: number } }>} */
   const dispatch = createEventDispatcher()
 
   function stepUp() {
@@ -26,17 +32,17 @@
     }
   }
 
-  function handleUp(event) {
+  function handleUp(/** @type {MouseEvent} */ event) {
     event.stopPropagation()
     stepUp()
   }
 
-  function handleDown(event) {
+  function handleDown(/** @type {MouseEvent} */ event) {
     event.stopPropagation()
     stepDown()
   }
 
-  function handleKeys(event) {
+  function handleKeys(/** @type {KeyboardEvent} */ event) {
     switch (event.code) {
       case 'ArrowUp':
       case 'ArrowRight':
@@ -55,7 +61,7 @@
     }
   }
 
-  function handleClick(event) {
+  function handleClick(/** @type {MouseEvent} */ event) {
     event.stopPropagation()
     dispatch('click', { quantity })
   }

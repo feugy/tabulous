@@ -1,3 +1,8 @@
+// @ts-check
+/**
+ * @typedef {import('rxjs').Subscription} Subscription
+ */
+
 import { lastToast, toastError, toastInfo } from '@src/stores/toaster'
 import { translate } from '@tests/test-utils.js'
 import {
@@ -12,13 +17,16 @@ import {
 
 describe('Toaster store', () => {
   const messageReceived = vi.fn()
+  /** @type {Subscription} */
   let subscription
 
   beforeAll(() => {
     subscription = lastToast.subscribe(messageReceived)
   })
 
-  beforeEach(vi.resetAllMocks)
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
 
   afterAll(() => subscription.unsubscribe())
 

@@ -1,4 +1,8 @@
 // @ts-check
+/**
+ * @typedef {import('fastify').FastifyInstance} FastifyInstance
+ */
+
 import fastify from 'fastify'
 import { resolve } from 'path'
 import { fileURLToPath } from 'url'
@@ -7,7 +11,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import staticPlugin from '../../src/plugins/static.js'
 
 describe('static plugin', () => {
-  /** @type {import('fastify').FastifyInstance} */
+  /** @type {FastifyInstance} */
   let server
 
   afterEach(() => server?.close())

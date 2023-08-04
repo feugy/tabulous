@@ -7,7 +7,10 @@ import { fn } from 'vitest/dist/spy.js'
 import { AccountPage } from './pages/index.js'
 import { describe, expect, it, mockGraphQl } from './utils/index.js'
 
-for (const { lang } of [{ lang: 'fr' }, { lang: 'en' }]) {
+for (const { lang } of /** @type {{ lang: import('./utils').Locale }[]} */ ([
+  { lang: 'fr' },
+  { lang: 'en' }
+])) {
   describe(`${lang} Account page`, () => {
     const player = {
       id: faker.string.uuid(),
@@ -180,7 +183,10 @@ for (const { lang } of [{ lang: 'fr' }, { lang: 'en' }]) {
 
         await accountPage.switchLangTo(otherLang)
 
-        accountPage = new AccountPage(page, otherLang)
+        accountPage = new AccountPage(
+          page,
+          /** @type {import('./utils').Locale} */ (otherLang)
+        )
         await accountPage.goTo()
         await accountPage.getStarted()
       })

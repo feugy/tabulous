@@ -1,25 +1,27 @@
 <script>
+  // @ts-check
+  /** @typedef {import('@src/stores').Toast} Toast */
+
   import Message from './Message.svelte'
+
+  /** @type {?Toast} displayed toast message. */
   export let message = null
 
+  /** @type {(Toast & { id: string })[]} queue of displayed messages. */
   let messages = []
 
   $: if (message) {
     const added = {
-      ...message,
       id: `${Date.now()}_${Math.floor(Math.random() * 1000)}`,
       duration: message.duration || 4,
       ...message
     }
-    added.timeout = setTimeout(
-      () => removeMessage(added.id),
-      added.duration * 1000
-    )
+    setTimeout(() => removeMessage(added.id), added.duration * 1000)
     messages = [...messages, added]
     message = null
   }
 
-  function removeMessage(id) {
+  function removeMessage(/** @type {string} */ id) {
     const index = messages.findIndex(candidate => candidate.id === id)
     if (index >= 0) {
       messages = [...messages.slice(0, index), ...messages.slice(index + 1)]
@@ -28,8 +30,8 @@
 </script>
 
 <div>
-  {#each messages as { timeout, id, ...message } (id)}
-    <Message {...message} on:close={() => removeMessage(id)} />
+  {#each messages as { id, ...toast } (id)}
+    <Message {toast} on:close={() => removeMessage(id)} />
   {/each}
 </div>
 

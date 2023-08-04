@@ -1,3 +1,10 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ * @typedef {import('@src/3d/utils/behaviors').SerializedMesh} SerializedMesh
+ */
+
 import { SceneLoader } from '@babylonjs/core/Loading/sceneLoader.js'
 import { Vector2, Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import { OBJFileLoader } from '@babylonjs/loaders/OBJ'
@@ -12,19 +19,11 @@ import { applyInitialTransform } from '../utils/mesh'
 OBJFileLoader.UV_SCALING = new Vector2(-1, 1)
 
 /**
- * Creates a custom mesh by importing .babylon format.
- * @param {object} params - mesh parameters, including:
- * @param {string} params.id - mesh's unique id.
- * @param {string} params.file - file containing the mesh's shape.
- * @param {string} params.texture - mesh's texture url or hexadecimal string color.
- * @param {number[][]} params.faceUV? - as manuy face UV (Vector4 components), as needed to map texture on the shape.
- * @param {number} params.x? - initial position along the X axis.
- * @param {number} params.y? - initial position along the Y axis.
- * @param {number} params.z? - initial position along the Z axis.
- * @param {import('../utils').InitialTransform} params.transform? - initial transformation baked into the mesh's vertice.
- * @param {import('@babylonjs/core').Scene} scene? - scene to host this mesh (default to last scene).
- * @returns {Promise<import('@babylonjs/core').Mesh>} the created custom mesh.
- * @throws {Error} when the required file does not exist or contain invalid mesh data.
+ * Creates a custom mesh by importing .obj file.
+ * It must contain the file parameter.
+ * @param {Omit<SerializedMesh, 'shape'> & Required<Pick<SerializedMesh, 'file'>>} params - custom mesh parameters.
+ * @param {Scene} scene - scene for the created mesh.
+ * @returns {Promise<Mesh>} the created custom mesh.
  */
 export async function createCustom(
   {
@@ -40,6 +39,7 @@ export async function createCustom(
   scene
 ) {
   const encodedData = `data:;base64,${customShapeManager.get(file)}`
+  /** @type {?Mesh} */
   const mesh = await new Promise((resolve, reject) =>
     SceneLoader.ImportMesh(
       null,
@@ -50,7 +50,7 @@ export async function createCustom(
         const mesh = meshes?.[0]
         resolve(
           mesh?.getTotalVertices() > 0 || mesh?.getChildMeshes()?.length
-            ? mesh
+            ? /** @type {Mesh} */ (mesh)
             : null
         )
       },

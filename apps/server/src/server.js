@@ -1,10 +1,13 @@
 // @ts-check
+/**
+ * @typedef {import('./services/configuration').Configuration} Configuration
+ */
+
 import fastify from 'fastify'
 
 import repositories from './repositories/index.js'
 import { createLogContext } from './utils/index.js'
 
-/** @typedef {import('./services/configuration.js').Configuration} Configuration */
 /** @typedef {import('fastify').FastifyInstance & { conf: Configuration }} Server */
 
 /**

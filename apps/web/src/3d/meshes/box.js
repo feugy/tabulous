@@ -1,3 +1,10 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ * @typedef {import('@src/3d/utils/behaviors').SerializedMesh} SerializedMesh
+ */
+
 import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector.js'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder.js'
 
@@ -15,19 +22,10 @@ import { applyInitialTransform } from '../utils/mesh'
  *   4. positive X (-90°)
  *   5. negative Z (0°)
  *   6. positive Z (180°)
- * @param {object} params - box parameters, including (all other properties will be passed to the created mesh):
- * @param {string} params.id - box's unique id.
- * @param {string} params.texture - box's texture url or hexadecimal string color.
- * @param {number[][]} params.faceUV? - up to 6 face UV (Vector4 components), to map texture on the box.
- * @param {number} params.x? - initial position along the X axis.
- * @param {number} params.y? - initial position along the Y axis.
- * @param {number} params.z? - initial position along the Z axis.
- * @param {number} params.width? - box's width (X axis).
- * @param {number} params.height? - box's height (Y axis).
- * @param {number} params.depth? - box's depth (Z axis).
- * @param {import('../utils').InitialTransform} params.transform? - initial transformation baked into the mesh's vertice.
- * @param {import('@babylonjs/core').Scene} scene? - scene to host this box (default to last scene).
- * @returns the created box mesh.
+ * By default, boxes have a dimension of 1.
+ * @param {Omit<SerializedMesh, 'shape'>} params - box parameters.
+ * @param {Scene} scene - scene for the created mesh.
+ * @returns {Mesh} the created box mesh.
  */
 export function createBox(
   {
@@ -49,7 +47,7 @@ export function createBox(
     ],
     transform = undefined,
     ...behaviorStates
-  } = {},
+  },
   scene
 ) {
   const mesh = CreateBox(
@@ -71,7 +69,7 @@ export function createBox(
 
   mesh.metadata = {
     serialize: () => ({
-      shape: mesh.name,
+      shape: /** @type {'box'} */ (mesh.name),
       id,
       x: mesh.absolutePosition.x,
       y: mesh.absolutePosition.y,

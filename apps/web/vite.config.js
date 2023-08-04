@@ -1,4 +1,3 @@
-// @ts-check
 import { resolve } from 'node:path'
 
 import atelier from '@atelier-wb/vite-plugin-atelier'

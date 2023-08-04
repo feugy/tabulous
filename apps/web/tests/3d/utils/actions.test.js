@@ -1,3 +1,8 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ */
+
 import {
   DetailBehaviorName,
   DrawBehaviorName,
@@ -26,7 +31,7 @@ const {
 } = actionNames
 
 describe('buildActionNamesByKey()', () => {
-  const translate = key => key
+  const translate = (/** @type {string} */ key) => key
 
   it('returns no actions when no mesh is given', () => {
     expect(buildActionNamesByKey([], translate)).toEqual(new Map())
@@ -40,14 +45,20 @@ describe('buildActionNamesByKey()', () => {
     { action: detail, behavior: DetailBehaviorName },
     { action: toggleLock, behavior: LockBehaviorName }
   ])('can return $behavior action', ({ behavior, action }) => {
-    expect(buildActionNamesByKey([{ [behavior]: {} }], translate)).toEqual(
-      new Map([[`shortcuts.${action}`, [action]]])
-    )
+    expect(
+      buildActionNamesByKey(
+        [{ shape: 'box', id: '', texture: '', [behavior]: {} }],
+        translate
+      )
+    ).toEqual(new Map([[`shortcuts.${action}`, [action]]]))
   })
 
   it(`can return '${StackBehaviorName}' actions only`, () => {
     expect(
-      buildActionNamesByKey([{ [StackBehaviorName]: {} }], translate)
+      buildActionNamesByKey(
+        [{ shape: 'box', id: '', texture: '', [StackBehaviorName]: {} }],
+        translate
+      )
     ).toEqual(
       new Map([
         [`shortcuts.pop`, [pop]],
@@ -59,7 +70,10 @@ describe('buildActionNamesByKey()', () => {
 
   it(`can return '${QuantityBehaviorName}' actions only`, () => {
     expect(
-      buildActionNamesByKey([{ [QuantityBehaviorName]: {} }], translate)
+      buildActionNamesByKey(
+        [{ shape: 'box', id: '', texture: '', [QuantityBehaviorName]: {} }],
+        translate
+      )
     ).toEqual(
       new Map([
         [`shortcuts.pop`, [decrement]],
@@ -71,7 +85,15 @@ describe('buildActionNamesByKey()', () => {
   it(`can return both '${QuantityBehaviorName}' and '${StackBehaviorName}' actions`, () => {
     expect(
       buildActionNamesByKey(
-        [{ [QuantityBehaviorName]: {}, [StackBehaviorName]: {} }],
+        [
+          {
+            shape: 'box',
+            id: '',
+            texture: '',
+            [QuantityBehaviorName]: {},
+            [StackBehaviorName]: {}
+          }
+        ],
         translate
       )
     ).toEqual(
@@ -88,9 +110,12 @@ describe('buildActionNamesByKey()', () => {
       buildActionNamesByKey(
         [
           {
+            shape: 'box',
+            id: '',
+            texture: '',
             [FlipBehaviorName]: {},
             [RotateBehaviorName]: {},
-            [DetailBehaviorName]: {},
+            [DetailBehaviorName]: { frontImage: '' },
             [DrawBehaviorName]: {},
             [LockBehaviorName]: {},
             [RandomBehaviorName]: {},

@@ -4,7 +4,44 @@ exports[`Interactive 1`] = `
 HTMLCollection [
   <div
     class="s-u8CdeWxIm4f1"
-  />,
+  >
+    
+    <div
+      class="s-qGWxPda9kJl2"
+      style="--top: 0px; --bg-color: #d6a63d; --duration: 4s; --close-duration: 0.4s;"
+    >
+      <span
+        class="material-icons s-qGWxPda9kJl2"
+      >
+        build
+      </span>
+       
+      <strong
+        class="s-qGWxPda9kJl2"
+      >
+        Hello world
+      </strong>
+       
+      <button
+        class="transparent s-NMyTiX1zi6rz"
+      >
+        <div
+          class="s-NMyTiX1zi6rz"
+        >
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            close
+          </span>
+          
+          
+        </div>
+         
+      </button>
+      <!--&lt;Button&gt;-->
+    </div>
+    <!--&lt;Message&gt;-->
+  </div>,
   <button
     class="s-NMyTiX1zi6rz"
   >
@@ -29,11 +66,6 @@ exports[`Text only 1`] = `
     class="s-qGWxPda9kJl2"
     style="--top: 0px; --bg-color: #fcfcfc; --duration: 4s; --close-duration: 0.4s;"
   >
-    <span
-      class="material-icons s-qGWxPda9kJl2"
-    >
-      
-    </span>
      
     <strong
       class="s-qGWxPda9kJl2"

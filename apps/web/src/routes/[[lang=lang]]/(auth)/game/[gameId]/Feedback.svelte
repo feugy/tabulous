@@ -1,12 +1,20 @@
 <script>
+  // @ts-check
+  /** @typedef {import('@src/utils').ScreenPosition} ScreenPosition */
+
+  /** @type {string} feedback icon. */
   export let icon = ''
+  /** @type {string} feedback content. */
   export let content = ''
-  export let color = '#ffffff'
+  /** @type {string|undefined} color hex string or name. */
+  export let color = undefined
+  /** @type {ScreenPosition} absolute screen position. */
   export let screenPosition = { x: 0, y: 0 }
 </script>
 
 <div
-  style="top: {screenPosition.y}px; left: {screenPosition.x}px; --color:{color}"
+  style="top: {screenPosition.y}px; left: {screenPosition.x}px; --color:{color ??
+    '#ffffff'}"
 >
   <span class="material-icons">{icon}</span>{content}
 </div>

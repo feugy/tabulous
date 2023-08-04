@@ -1,7 +1,10 @@
+// @ts-check
+/** @typedef {import('@src/components').MenuOption} MenuOption */
+
 import Dropdown from '@src/components/Dropdown.svelte'
 import { sleep } from '@src/utils'
 import { fireEvent, render, screen } from '@testing-library/svelte'
-import { extractText } from '@tests/test-utils'
+import { extractText, getMenuOptionValue } from '@tests/test-utils'
 import html from 'svelte-htm'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -10,7 +13,9 @@ describe('Dropdown component', () => {
   const handleSelect = vi.fn()
   const handleClick = vi.fn()
 
-  beforeEach(vi.resetAllMocks)
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
 
   function renderComponent(props = {}) {
     return render(
@@ -23,22 +28,24 @@ describe('Dropdown component', () => {
     )
   }
 
-  describe.each([
-    {
-      title: 'textual',
-      options: ['Salut !', 'Hello!', 'Hallo !'],
-      invalid: 'Hej'
-    },
-    {
-      title: 'object',
-      options: [
-        { label: 'Salut !' },
-        { label: 'Hello!' },
-        { label: 'Hallo !' }
-      ],
-      invalid: { label: 'Hello!' }
-    }
-  ])('given $title options', ({ options, invalid }) => {
+  describe.each(
+    /** @type {{title: string, options: MenuOption[], invalid: MenuOption }[]} */ ([
+      {
+        title: 'textual',
+        options: ['Salut !', 'Hello!', 'Hallo !'],
+        invalid: 'Hej'
+      },
+      {
+        title: 'object',
+        options: [
+          { label: 'Salut !' },
+          { label: 'Hello!' },
+          { label: 'Hallo !' }
+        ],
+        invalid: { label: 'Hello!' }
+      }
+    ])
+  )('given $title options', ({ options, invalid }) => {
     it('displays menu on click', async () => {
       renderComponent({ options })
       const button = screen.getAllByRole('combobox')[0]
@@ -48,9 +55,7 @@ describe('Dropdown component', () => {
 
       expect(screen.queryByRole('menu')).toBeInTheDocument()
       const items = screen.getAllByRole('menuitem')
-      expect(extractText(items)).toEqual(
-        options.map(option => option.label ?? option)
-      )
+      expect(extractText(items)).toEqual(options.map(getMenuOptionValue))
       expect(handleSelect).not.toHaveBeenCalled()
       expect(handleClose).not.toHaveBeenCalled()
       expect(handleClick).toHaveBeenCalledTimes(0)
@@ -60,12 +65,12 @@ describe('Dropdown component', () => {
       let value = options[2]
       renderComponent({ value, options, valueAsText: true })
       const button = screen.getAllByRole('combobox')[0]
-      expect(button).toHaveTextContent(options[2]?.label || value)
+      expect(button).toHaveTextContent(getMenuOptionValue(options[2]))
 
       await fireEvent.click(button)
       await fireEvent.click(screen.queryAllByRole('menuitem')[0])
 
-      expect(button).toHaveTextContent(options[0].label ?? options[0])
+      expect(button).toHaveTextContent(getMenuOptionValue(options[0]))
       expect(handleSelect).toHaveBeenCalledWith(
         expect.objectContaining({ detail: options[0] })
       )
@@ -83,9 +88,7 @@ describe('Dropdown component', () => {
 
       expect(screen.queryByRole('menu')).toBeInTheDocument()
       const items = screen.getAllByRole('menuitem')
-      expect(extractText(items)).toEqual(
-        options.map(option => option.label ?? option)
-      )
+      expect(extractText(items)).toEqual(options.map(getMenuOptionValue))
       expect(handleSelect).not.toHaveBeenCalled()
       expect(handleClose).not.toHaveBeenCalled()
       expect(handleClick).toHaveBeenCalledTimes(0)
@@ -109,8 +112,14 @@ describe('Dropdown component', () => {
       renderComponent({ options })
       const button = screen.getAllByRole('combobox')[0]
       await fireEvent.click(button)
-      await fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' })
-      await fireEvent.keyDown(document.activeElement, { key: 'ArrowRight' })
+      await fireEvent.keyDown(
+        /** @type {HTMLElement} */ (document.activeElement),
+        { key: 'ArrowDown' }
+      )
+      await fireEvent.keyDown(
+        /** @type {HTMLElement} */ (document.activeElement),
+        { key: 'ArrowRight' }
+      )
 
       expect(handleSelect).toHaveBeenCalledWith(
         expect.objectContaining({ detail: options[1] })

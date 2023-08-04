@@ -1,3 +1,4 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import { handle } from '@src/hooks.server'
 import { describe, expect, it, vi } from 'vitest'
@@ -22,15 +23,17 @@ describe('Sveltekit handle() hook', () => {
         const url = `/current-${faker.internet.domainWord()}?data=${faker.lorem.word()}`
         const request = new Request(`http://localhost:3000${url}`)
         request.headers.append('accept-language', header)
-        const response = await handle({
-          event: {
-            url: new URL(url, 'http://localhost:3000'),
-            locals: {},
-            request,
-            params: {}
-          },
-          resolve: vi.fn().mockResolvedValue(new Response())
-        })
+        const response = await handle(
+          /** @type {?} */ ({
+            event: {
+              url: new URL(url, 'http://localhost:3000'),
+              locals: {},
+              request,
+              params: {}
+            },
+            resolve: vi.fn().mockResolvedValue(new Response())
+          })
+        )
         expect(response.status).toBe(303)
         expect(response.headers.get('location')).toBe(`/${lang}${url}`)
       }
@@ -144,7 +147,7 @@ describe('Sveltekit handle() hook', () => {
       request = new Request(`https://localhost:3000${urlRoot}`),
       response = new Response()
     } = {}) {
-      return {
+      return /** @type {?} */ ({
         event: {
           url: new URL(url, 'https://localhost:3000'),
           locals: {},
@@ -152,7 +155,7 @@ describe('Sveltekit handle() hook', () => {
           params: { lang }
         },
         resolve: vi.fn().mockResolvedValue(response)
-      }
+      })
     }
   })
 })

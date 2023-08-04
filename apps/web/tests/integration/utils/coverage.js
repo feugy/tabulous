@@ -7,9 +7,12 @@ import { dirname, join, resolve } from 'path'
 import { fileURLToPath } from 'url'
 import v8toIstanbul from 'v8-to-istanbul'
 
+/** @typedef {import('istanbul-lib-coverage/lib/coverage-map').CoverageMap} CoverageMap */
+/** @typedef {import('istanbul-lib-coverage').classes.FileCoverage} FileCoverage */
+
 const __filename = fileURLToPath(import.meta.url)
 const coverageJSON = join('coverage', 'coverage-final.json')
-/** @type {object[]} */
+/** @type {{name: string, opts?: ?}[]} */
 const reporters = [
   { name: 'clover', opts: { file: 'clover-integration.xml' } },
   { name: 'lcov' }
@@ -29,6 +32,10 @@ export async function initializeCoverage() {
   return utils.createCoverageMap(existing)
 }
 
+/**
+ * @param {CoverageMap} coverageMap
+ * @param {{url: string, source: string, functions: ? }[]} coverageData
+ */
 export async function extendCoverage(coverageMap, coverageData) {
   for (const entry of coverageData) {
     if (!entry.url.includes('node_modules')) {
@@ -40,20 +47,24 @@ export async function extendCoverage(coverageMap, coverageData) {
         )
         await converter.load()
         converter.applyCoverage(entry.functions)
-        const coverageData = converter.toIstanbul()
-        for (const path in coverageData) {
+        const data = converter.toIstanbul()
+        for (const path in data) {
           if (isPathIncludedInCoverage(path)) {
-            coverageMap.addFileCoverage(coverageData[path])
+            // @ts-expect-error
+            coverageMap.addFileCoverage(data[path])
           }
         }
       } catch (err) {
-        console.warn(`coverage failed for ${entry.url}:`, err.message)
+        console.warn(
+          `coverage failed for ${entry.url}:`,
+          /** @type {Error} */ (err).message
+        )
       }
     }
   }
 }
 
-export async function writeCoverage(coverageMap) {
+export async function writeCoverage(/** @type {CoverageMap} */ coverageMap) {
   await writeFile(coverageJSON, JSON.stringify(coverageMap.toJSON()))
   const context = createContext({ coverageMap, dir: dirname(coverageJSON) })
 
@@ -62,6 +73,6 @@ export async function writeCoverage(coverageMap) {
   }
 }
 
-function isPathIncludedInCoverage(path) {
+function isPathIncludedInCoverage(/** @type {string} */ path) {
   return path.startsWith(srcFolder)
 }

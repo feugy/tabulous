@@ -1,11 +1,16 @@
 <script>
+  // @ts-check
   import { Button } from '@src/components'
   import { _ } from 'svelte-intl'
 
+  /** @type {boolean} whether this form is disabled. */
   export let disabled = true
-  export let redirect = ''
+  /** @type {?string} optional url to redirect to. */
+  export let redirect = null
 
+  /** @type {?HTMLInputElement} */
   let acceptInput
+  /** @type {?HTMLInputElement} */
   let ageInput
   let submitDisabled = true
 

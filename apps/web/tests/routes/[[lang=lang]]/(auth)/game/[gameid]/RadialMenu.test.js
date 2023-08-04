@@ -1,10 +1,13 @@
+// @ts-check
 import RadialMenu from '@src/routes/[[lang=lang]]/(auth)/game/[gameId]/RadialMenu.svelte'
 import { fireEvent, render, screen, waitFor } from '@testing-library/svelte'
 import html from 'svelte-htm'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 describe('/game/[gameId] Radial Menu component', () => {
-  beforeEach(vi.resetAllMocks)
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
 
   function renderComponent(props = {}) {
     return render(html`<${RadialMenu} open=${true} ...${props} />`)

@@ -1,4 +1,11 @@
-import { Color4 } from '@babylonjs/core/Maths/math.color'
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').PBRSpecularGlossinessMaterial} Material
+ */
+
+import { Color3 } from '@babylonjs/core/Maths/math.color'
 import { faker } from '@faker-js/faker'
 import {
   controlManager,
@@ -17,6 +24,7 @@ import {
   expectPosition
 } from '../../test-utils'
 
+/** @type {Scene} */
 let scene
 configures3dTestEngine(created => (scene = created.scene))
 
@@ -27,8 +35,11 @@ vi.mock('@src/3d/managers/custom-shape', () => ({
 }))
 
 beforeAll(() => {
+  // @ts-expect-error customShapeManager is not a map
   customShapeManager.set(`/assets/models/die4.obj`, btoa(die4Data))
+  // @ts-expect-error
   customShapeManager.set(`/assets/models/die6.obj`, btoa(die6Data))
+  // @ts-expect-error
   customShapeManager.set(`/assets/models/die8.obj`, btoa(die8Data))
 })
 
@@ -52,7 +63,7 @@ describe('getQuaternions()', () => {
 describe('createDie()', () => {
   it('creates a 6-faces randomizable die by default', async () => {
     const id = 'd6'
-    const mesh = await createDie({ id })
+    const mesh = await createDie({ id, texture: '' }, scene)
     expect(mesh.id).toEqual(id)
     expect(mesh.name).toEqual('die')
     expectDimension(mesh, [2, 2, 2])
@@ -72,7 +83,10 @@ describe('createDie()', () => {
   it('creates a 8-faces die with desired dimensions and position', async () => {
     const [x, y, z] = [10, -4, 3.5]
     const id = 'd8'
-    const mesh = await createDie({ id, faces: 8, diameter: 3, x, y, z })
+    const mesh = await createDie(
+      { id, texture: '', faces: 8, diameter: 3, x, y, z },
+      scene
+    )
     expect(mesh.id).toEqual(id)
     expect(mesh.name).toEqual('die')
     expectDimension(mesh, [7.6, 6.4, 8.6])
@@ -95,19 +109,22 @@ describe('createDie()', () => {
     const face = 2
     const id = 'd4'
     const color = '#1E282F'
-    const mesh = await createDie({
-      id,
-      faces: 4,
-      texture: color,
-      randomizable: { face, canBeSet, duration }
-    })
+    const mesh = await createDie(
+      {
+        id,
+        faces: 4,
+        texture: color,
+        randomizable: { face, canBeSet, duration }
+      },
+      scene
+    )
     expect(mesh.id).toEqual(id)
     expect(mesh.name).toEqual('die')
     expectDimension(mesh, [2.94, 2.5, 2.6])
     expect(mesh.isPickable).toBe(false)
     expectPosition(mesh, [0, 0.7, 0])
-    expect(mesh.material.diffuseColor).toEqual(
-      Color4.FromHexString(color).toLinearSpace()
+    expect(/** @type {Material} */ (mesh.material).diffuseColor).toEqual(
+      Color3.FromHexString(color).toLinearSpace()
     )
     expect(mesh.metadata).toEqual({
       face,
@@ -123,18 +140,22 @@ describe('createDie()', () => {
 
   it('throws on an unsupported number of faces', async () => {
     const faces = 3
-    await expect(createDie({ id: 'unsupported', faces })).rejects.toThrow(
-      `${faces} faces dice are not supported`
-    )
+    await expect(
+      createDie({ id: '', texture: '', faces }, scene)
+    ).rejects.toThrow(`${faces} faces dice are not supported`)
   })
 
   it('creates a die with initial transformation', async () => {
-    const mesh = await createDie({ transform: { scaleX: 2 } })
+    const mesh = await createDie(
+      { id: '', texture: '', transform: { scaleX: 2 } },
+      scene
+    )
     expect(mesh.name).toEqual('die')
     expectDimension(mesh, [2, 4, 2])
   })
 
   describe('given a die with initial position, dimension and behaviors', () => {
+    /** @type {Mesh} */
     let mesh
 
     const id = faker.string.uuid()
@@ -151,7 +172,10 @@ describe('createDie()', () => {
     }
 
     beforeEach(async () => {
-      mesh = await createDie({ id, x, y, z, texture, diameter, ...behaviors })
+      mesh = await createDie(
+        { id, x, y, z, texture, diameter, ...behaviors },
+        scene
+      )
     })
 
     it('has all the expected data', () => {

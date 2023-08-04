@@ -1,3 +1,21 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@tabulous/server/src/graphql/types').Anchor} Anchor
+ * @typedef {import('@tabulous/server/src/graphql/types').StackableState} StackableState
+ * @typedef {import('@src/3d/behaviors/animatable').AnimateBehavior} AnimateBehavior
+ * @typedef {import('@src/3d/behaviors/targetable').DropDetails} DropDetails
+ * @typedef {import('@src/3d/managers/control').Action} Action
+ * @typedef {import('@src/3d/managers/control').Move} Move
+ * @typedef {import('@src/3d/managers/move').MoveDetails} MoveDetails
+ * @typedef {import('@src/3d/managers/target').SingleDropZone} SingleDropZone
+ * @typedef {import('@src/3d/utils').Vector3KeyFrame} Vector3KeyFrame
+ */
+/**
+ * @template T
+ * @typedef {import('@babylonjs/core').Observer<T>} Observer
+ */
+
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 
 import { makeLogger } from '../../utils/logger'
@@ -34,17 +52,10 @@ import {
 } from './names'
 import { TargetBehavior } from './targetable'
 
-const logger = makeLogger('stackable')
+/** @typedef {StackableState & Required<Pick<StackableState, 'duration'|'extent'>> & Required<Pick<Anchor, 'ignoreParts'>>} RequiredStackableState */
+/** @typedef {StackBehavior & { mesh: Mesh }} AttachedStackBehavior */
 
-/**
- * @typedef {object} StackableState behavior persistent state, including:
- * @property {string[]} stackIds - array of stacked mesh ids, not including the current mesh if alone.
- * @property {string[]} kinds? - an optional array of allowed drag kinds for this zone (allows all if not specified).
- * @property {number} priority? - priority applied when multiple targets with same altitude apply.
- * @property {number} [duration=100] - duration (in milliseconds) when pushing or shuffling individual meshes.
- * @property {number} [extent=2] - allowed distance between mesh and stack center when dropping.
- * @property {number} angle? - angle, in Radian, applied to the stacked mesh.
- */
+const logger = makeLogger('stackable')
 
 export class StackBehavior extends TargetBehavior {
   /**
@@ -53,25 +64,30 @@ export class StackBehavior extends TargetBehavior {
    * Once a mesh is stacked bellow others, it can not be moved independently, and its targets and anchors are disabled.
    * Only the highest mesh on stack can be moved (it is automatically poped out) and be targeted.
    *
-   * @extends {TargetBehavior}
-   * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
-   * @property {import('@babylonjs/core').Mesh[]} stack - array of meshes (initially contains this mesh).
    * @property {StackableState} state - the behavior's current state.
    *
    * @param {StackableState} state - behavior state.
    */
   constructor(state = {}) {
     super()
-    this._state = state
+    /** @type {RequiredStackableState} */
+    this._state = /** @type {RequiredStackableState} */ (state)
+    /** @type {Mesh[]} array of meshes (initially contains this mesh). */
     this.stack = []
-    // private
-    this.moveObserver = null
-    this.dropObserver = null
-    this.actionObserver = null
-    this.base = null
+    /** @type {boolean} */
     this.inhibitControl = false
-    this.dropZone = null
+    /** @internal @type {?AttachedStackBehavior} */
+    this.base = null
+    /** @protected @type {?Observer<MoveDetails>} */
+    this.moveObserver = null
+    /** @protected @type {?Observer<DropDetails>} */
+    this.dropObserver = null
+    /** @protected @type {?Observer<Action|Move>} */
+    this.actionObserver = null
+    /** @protected @type {boolean} */
     this.isReordering = false
+    /** @protected @type {SingleDropZone}} */
+    this.dropZone
   }
 
   /**
@@ -91,7 +107,7 @@ export class StackBehavior extends TargetBehavior {
    * - a `canPush()` function to determin whether a mesh could be pushed on this stack.
    * It binds to its drop observable to push dropped meshes to the stack.
    * It binds to the drag manager drag observable to pop the first stacked mesh when dragging it.
-   * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
+   * @param {Mesh} mesh - which becomes detailable.
    */
   attach(mesh) {
     super.attach(mesh)
@@ -126,8 +142,13 @@ export class StackBehavior extends TargetBehavior {
           stack.length > 1 &&
           stack[stack.length - 1].id === meshId
         ) {
-          const poped = stack.pop()
-          setStatus([poped], 0, true, setBase(poped, null, [poped]))
+          const poped = /** @type {Mesh} */ (stack.pop())
+          setStatus(
+            [poped],
+            0,
+            true,
+            /** @type {StackBehavior} */ (setBase(poped, null, [poped]))
+          )
           setStatus(stack, stack.length - 1, true, this)
         }
       }
@@ -146,7 +167,7 @@ export class StackBehavior extends TargetBehavior {
 
   /**
    * Determines whether a movable mesh can be stack onto this mesh (or its stack).
-   * @param {import('@babel/core').Mesh} mesh - tested (movable) mesh.
+   * @param {Mesh} mesh - tested (movable) mesh.
    * @returns {boolean} true if this mesh can be stacked.
    */
   canPush(mesh) {
@@ -157,7 +178,7 @@ export class StackBehavior extends TargetBehavior {
             this.dropZone,
             mesh.getBehaviorByName(MoveBehaviorName)?.state.kind
           )
-      : last?.getBehaviorByName(StackBehaviorName).canPush(mesh) ?? false
+      : last?.getBehaviorByName(StackBehaviorName)?.canPush(mesh) ?? false
   }
 
   /**
@@ -168,16 +189,15 @@ export class StackBehavior extends TargetBehavior {
    * - runs a move animation with gravity until completion
    * - updates the base stack array
    * Does nothing if the mesh is already on stack (or unknown).
-   *
-   * @async
    * @param {string} meshId - id of the pushed mesh.
    * @param {boolean} [immediate=false] - set to true to disable animation.
+   * @returns {Promise<void>}
    */
   async push(meshId, immediate = false) {
     const mesh = this.stack[0].getScene().getMeshById(meshId)
     if (!mesh || this.stack.includes(mesh)) return
 
-    const base = this.base ?? this
+    const base = /** @type {AttachedStackBehavior} */ (this.base ?? this)
     const { stack } = base
     const duration = this.inhibitControl || immediate ? 0 : this._state.duration
     const { angle } = this._state
@@ -195,7 +215,7 @@ export class StackBehavior extends TargetBehavior {
     // when hydrating, we must break existing stacks, because they are meant to be broken by serialization
     // otherwise we may push a stack onto itself, which would lead to a Maximum call stack size exceeded error in Mesh.computWorldMatrix()
     const meshPushed = (!this.inhibitControl
-      ? getTargetableBehavior(mesh)?.stack
+      ? /** @type {?StackBehavior} */ (getTargetableBehavior(mesh))?.stack
       : undefined) ?? [mesh]
     const pushed = meshPushed[0]
     const y =
@@ -247,13 +267,12 @@ export class StackBehavior extends TargetBehavior {
    * - enables new highest mesh's targets and moves
    * - updates stack indicators
    * - records the action into the control manager
-   *
-   * @async
    * @param {number} [count=1] - number of mesh poped
    * @param {boolean} [withMove=false] - when set to true, moves the poped meshes aside the stack.
-   * @return {import('@babylonjs/core').Mesh[]} the poped meshes, if any.
+   * @returns {Promise<Mesh[]>} the poped meshes, if any.
    */
   async pop(count = 1, withMove = false) {
+    /** @type {Mesh[]} */
     const poped = []
     const stack = this.base?.stack ?? this.stack
     if (stack.length <= 1) return poped
@@ -263,7 +282,7 @@ export class StackBehavior extends TargetBehavior {
     const duration = withMove ? this._state.duration : undefined
     const limit = Math.min(count, stack.length - 1)
     for (let times = 0; times < limit; times++) {
-      const mesh = stack.pop()
+      const mesh = /** @type {Mesh} */ (stack.pop())
       poped.push(mesh)
       setBase(mesh, null, [mesh])
       updateIndicator(mesh, 0)
@@ -280,7 +299,7 @@ export class StackBehavior extends TargetBehavior {
             mesh,
             mesh.absolutePosition.add(new Vector3(shift, 0, 0)),
             null,
-            duration,
+            /** @type {number} */ (duration),
             true
           )
         )
@@ -314,21 +333,21 @@ export class StackBehavior extends TargetBehavior {
    * - moves each mesh to their final position, applying gravity, with no animation
    * - (when requested) moves in parallel all meshes to "explode" the stack and wait until they complete
    * - (when requestd) moves in serie all meshes to their final position and wait until completion
-   *
-   * @async
    * @param {string[]} ids - array or mesh ids givin the new order.
    * @param {boolean} [animate = true] - enables visual animation
+   * @returns {Promise<void>}
    */
   async reorder(ids, animate = true) {
     const old = this.base?.stack ?? this.stack
     if (
       old.length <= 1 ||
-      old[0].getBehaviorByName(StackBehaviorName).isReordering
+      old[0]?.getBehaviorByName(StackBehaviorName)?.isReordering
     )
       return
 
     const posById = new Map(old.map(({ id }, i) => [id, i]))
-    const stack = ids.map(id => old[posById.get(id)])
+    /** @type {Mesh[]} */
+    const stack = ids.map(id => old[posById.get(id) ?? -1]).filter(Boolean)
 
     controlManager.record({
       mesh: old[0],
@@ -369,7 +388,10 @@ export class StackBehavior extends TargetBehavior {
         mesh.setAbsolutePosition(position)
         newPositions.push(position)
       }
-      mesh.getBehaviorByName(StackBehaviorName).isReordering = true
+      const behavior = /** @type {StackBehavior} */ (
+        mesh.getBehaviorByName(StackBehaviorName)
+      )
+      behavior.isReordering = true
       last = mesh
     }
 
@@ -381,11 +403,14 @@ export class StackBehavior extends TargetBehavior {
       const interval = this._state.duration * 0.2
 
       // first, explode
+      /** @type {{x:number, y:number, z:number, pitch:number, yaw:number, roll:number }[]} */
       const positionsAndRotations = []
       const shift = getDimensions(stack[0]).width * 0.75
       await Promise.all(
         stack.slice(1).map((mesh, rank) => {
-          const behavior = getAnimatableBehavior(mesh)
+          const behavior = /** @type {AnimateBehavior} */ (
+            getAnimatableBehavior(mesh)
+          )
           const [x, y, z] = mesh.position.asArray()
           const [pitch, yaw, roll] = mesh.rotation.asArray()
           positionsAndRotations.push({ x, y, z, pitch, yaw, roll })
@@ -438,7 +463,9 @@ export class StackBehavior extends TargetBehavior {
       // then restore
       await Promise.all(
         stack.slice(1).map((mesh, rank) => {
-          const behavior = getAnimatableBehavior(mesh)
+          const behavior = /** @type {AnimateBehavior} */ (
+            getAnimatableBehavior(mesh)
+          )
           const { x, y, z, pitch, yaw, roll } = positionsAndRotations[rank++]
           return sleep(rank * interval).then(() =>
             runAnimation(
@@ -447,18 +474,18 @@ export class StackBehavior extends TargetBehavior {
               {
                 animation: behavior.rotateAnimation,
                 duration: restoreDuration,
-                keys: [
+                keys: /** @type {Vector3KeyFrame[]} */ ([
                   { frame: 0, values: mesh.rotation.asArray() },
                   { frame: 100, values: [pitch, yaw, roll] }
-                ]
+                ])
               },
               {
                 animation: behavior.moveAnimation,
                 duration: restoreDuration,
-                keys: [
+                keys: /** @type {Vector3KeyFrame[]} */ ([
                   { frame: 0, values: mesh.position.asArray() },
                   { frame: 100, values: [x, y, z] }
-                ]
+                ])
               }
             )
           )
@@ -468,7 +495,10 @@ export class StackBehavior extends TargetBehavior {
     for (const mesh of stack) {
       mesh.isPickable = true
       mesh.isHittable = true
-      mesh.getBehaviorByName(StackBehaviorName).isReordering = false
+      const behavior = /** @type {StackBehavior} */ (
+        mesh.getBehaviorByName(StackBehaviorName)
+      )
+      behavior.isReordering = false
     }
   }
 
@@ -480,12 +510,17 @@ export class StackBehavior extends TargetBehavior {
    * When the base mesh is flipped, re-ordering happens first so the highest mesh doesn't change after flipping.
    *
    * Controllable meshes are unregistered during the operation to avoid triggering individual actions
-   * @async
+   * @returns {Promise<void>}
    */
   async flipAll() {
     const base = this.base ?? this
-    controlManager.record({ mesh: base.stack[0], fn: actionNames.flipAll })
+    controlManager.record({
+      mesh: base.stack[0],
+      fn: actionNames.flipAll,
+      args: []
+    })
 
+    /** @type {Mesh[]} */
     const ignored = []
     for (const mesh of base.stack) {
       if (controlManager.isManaging(mesh)) {
@@ -566,18 +601,17 @@ export class StackBehavior extends TargetBehavior {
     }
     this.inhibitControl = false
     this.isReordering = false
-    attachFunctions(
-      this,
-      actionNames.push,
-      actionNames.pop,
-      actionNames.reorder,
-      actionNames.flipAll,
-      'canPush'
-    )
+    attachFunctions(this, 'push', 'pop', 'reorder', 'flipAll', 'canPush')
     attachProperty(this, 'stack', () => this.stack)
   }
 }
 
+/**
+ * @param {Mesh[]} stack - stack of meshes.
+ * @param {number} rank - rank of the updated mesh in the stack.
+ * @param {boolean} enabled - new status applied.
+ * @param {StackBehavior} behavior - current stack behavior
+ */
 function setStatus(stack, rank, enabled, behavior) {
   const operation = enabled ? 'enable' : 'disable'
   const mesh = stack[rank]
@@ -605,16 +639,36 @@ function setStatus(stack, rank, enabled, behavior) {
   updateIndicator(mesh, enabled ? stack.length : 0)
 }
 
+/**
+ * @param {Mesh} mesh - updated mesh.
+ * @param {?AttachedStackBehavior} base - base behavior applied.
+ * @param {Mesh[]} stack - stack applied.
+ * @returns {?AttachedStackBehavior}
+ */
 function setBase(mesh, base, stack) {
-  const targetable = getTargetableBehavior(mesh)
+  const targetable = /** @type {?AttachedStackBehavior} */ (
+    getTargetableBehavior(mesh)
+  )
   if (targetable) {
     targetable.base = base
     targetable.stack = stack
-    mesh.setParent(base?.mesh ?? null)
+    if (base) {
+      mesh.setParent(base.mesh)
+    } else if (
+      mesh.parent &&
+      stack.includes(/** @type {Mesh} */ (mesh.parent))
+    ) {
+      // only reset's mesh parent if it is in the stack
+      mesh.setParent(null)
+    }
   }
   return targetable
 }
 
+/**
+ * @param {Mesh} mesh - concerned mesh.
+ * @param {number} size - stack size.
+ */
 function updateIndicator(mesh, size) {
   const id = `${mesh.id}.stack-size`
   if (size > 1) {
@@ -624,10 +678,17 @@ function updateIndicator(mesh, size) {
   }
 }
 
+/**
+ * @param {StackBehavior} behavior - concerned stack behavior.
+ */
 function invertStack(behavior) {
   behavior.reorder(behavior.stack.map(({ id }) => id).reverse(), false)
 }
 
+/**
+ * @param {Mesh[]} stack - stack of meshes
+ * @returns {number} altritude above the stack.
+ */
 function getFinalAltitudeAboveStack(stack) {
   let y = stack[0].absolutePosition.y - getDimensions(stack[0]).height * 0.5
   for (const mesh of stack) {

@@ -1,20 +1,32 @@
+// @ts-check
+/** @typedef {import('@src/common').Locale} Locale */
+/**
+ * @template T
+ * @typedef {import('rxjs').BehaviorSubject<T>} BehaviorSubject
+ */
+
 import { initLocale } from '@src/common'
 import LoginPage from '@src/routes/[[lang=lang]]/login/+page.svelte'
 import { render } from '@testing-library/svelte'
 import html from 'svelte-htm'
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 
-import { page } from '$app/stores'
+import * as stores from '$app/stores'
 
 vi.mock('$app/stores', () => {
   const { BehaviorSubject } = require('rxjs')
-  return { page: new BehaviorSubject() }
+  return { page: new BehaviorSubject(undefined) }
 })
 
-describe.each([
-  { title: '/', lang: undefined, urlRoot: '' },
-  { title: '/en', lang: 'en', urlRoot: '/en' }
-])('$title', ({ lang, urlRoot }) => {
+/** @type {BehaviorSubject<{ url: URL, route: Object, params: { lang: Locale|undefined }}>} */
+const page = /** @type {?} */ (stores.page)
+
+describe.each(
+  /** @type {{ title: String, lang: Locale|undefined, urlRoot: string }[]} */ ([
+    { title: '/', lang: undefined, urlRoot: '' },
+    { title: '/en', lang: 'en', urlRoot: '/en' }
+  ])
+)('$title', ({ lang, urlRoot }) => {
   beforeAll(() => {
     page.next({
       url: new URL(`http://localhost/${urlRoot}/login`),

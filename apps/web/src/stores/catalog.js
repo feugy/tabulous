@@ -1,16 +1,16 @@
+// @ts-check
+/**
+ * @typedef {import('@tabulous/server/src/graphql/types').CatalogItem} CatalogItem
+ */
+
+import * as graphQL from '@src/graphql'
 import { get } from 'svelte/store'
 
-import * as graphQL from '../graphql'
 import { makeLogger } from '../utils'
 import { runQuery } from './graphql-client'
 import { buildLocaleComparator } from './locale'
 
 const logger = makeLogger('players')
-
-/**
- * @typedef {object} CatalogItem a catalog item
- * @property {string} name - item unique name.
- */
 
 /**
  * List all catalog items.

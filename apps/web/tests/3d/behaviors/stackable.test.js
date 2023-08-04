@@ -1,7 +1,19 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').Observer<?>} Observer
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ */
+/**
+ * @template {any[]} P, R
+ * @typedef {import('vitest').SpyInstance<P, R>} SpyInstance
+ */
+
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
 import {
   AnchorBehavior,
+  AnchorBehaviorName,
   DrawBehavior,
   FlipBehavior,
   FlipBehaviorName,
@@ -10,9 +22,9 @@ import {
   MoveBehaviorName,
   RotateBehavior,
   RotateBehaviorName,
-  StackBehavior,
   StackBehaviorName
 } from '@src/3d/behaviors'
+import { StackBehavior } from '@src/3d/behaviors/stackable'
 import {
   controlManager,
   handManager,
@@ -41,6 +53,7 @@ import {
   expectMoveRecorded,
   expectPosition,
   expectRotated,
+  expectSnapped,
   expectStacked,
   expectStackIndicator,
   expectZone,
@@ -51,10 +64,14 @@ describe('StackBehavior', () => {
   configures3dTestEngine(created => (scene = created.scene))
 
   const moveRecorded = vi.fn()
-  let recordSpy
-  let registerFeedbackSpy
-  let moveObserver
+  /** @type {Scene} */
   let scene
+  /** @type {SpyInstance<Parameters<typeof controlManager['record']>, void>} */
+  let recordSpy
+  /** @type {SpyInstance<Parameters<typeof indicatorManager['registerFeedback']>, void>} */
+  let registerFeedbackSpy
+  /** @type {?Observer} */
+  let moveObserver
 
   beforeAll(() => {
     moveObserver = moveManager.onMoveObservable.add(moveRecorded)
@@ -65,12 +82,14 @@ describe('StackBehavior', () => {
     vi.clearAllMocks()
     recordSpy = vi.spyOn(controlManager, 'record')
     registerFeedbackSpy = vi.spyOn(indicatorManager, 'registerFeedback')
-    vi.spyOn(handManager, 'draw').mockImplementation(mesh =>
-      controlManager.record({ mesh, fn: 'draw' })
-    )
+    vi.spyOn(handManager, 'draw').mockImplementation(async mesh => {
+      controlManager.record({ mesh, fn: 'draw', args: [] })
+    })
   })
 
-  afterAll(() => moveManager.onMoveObservable.remove(moveObserver))
+  afterAll(() => {
+    moveManager.onMoveObservable.remove(moveObserver)
+  })
 
   it('has initial state', () => {
     const state = {
@@ -134,7 +153,15 @@ describe('StackBehavior', () => {
   })
 
   describe('given attached to a mesh', () => {
-    let mesh, box1, box2, box3
+    /** @type {Mesh} */
+    let mesh
+    /** @type {Mesh} */
+    let box1
+    /** @type {Mesh} */
+    let box2
+    /** @type {Mesh} */
+    let box3
+    /** @type {StackBehavior} */
     let behavior
 
     beforeEach(() => {
@@ -146,18 +173,27 @@ describe('StackBehavior', () => {
         box.addBehavior(new RotateBehavior({ duration: 100 }), true)
         box.addBehavior(new MoveBehavior(), true)
         box.addBehavior(
-          new AnchorBehavior({ anchors: [{ x: -0.5 }, { x: 0.5 }] })
+          new AnchorBehavior({
+            anchors: [
+              { id: '1', x: -0.5 },
+              { id: '2', x: 0.5 }
+            ]
+          })
         )
         box.addBehavior(new DrawBehavior(), true)
         controlManager.registerControlable(box)
         return box
       })
 
-      behavior = getTargetableBehavior(mesh)
+      behavior = /** @type {StackBehavior} */ (getTargetableBehavior(mesh))
     })
 
     it('attaches metadata to its mesh', () => {
-      expectZone(behavior, { extent: 2, enabled: true, ignoreParts: true })
+      expectZone(behavior, {
+        extent: 2,
+        enabled: true,
+        ignoreParts: true
+      })
       expectStacked([mesh])
       expect(behavior.state.duration).toEqual(10)
       expect(behavior.state.extent).toEqual(2)
@@ -262,7 +298,7 @@ describe('StackBehavior', () => {
       const stackIds = [box1.id, box3.id]
       box3
         .getBehaviorByName(RotateBehaviorName)
-        .fromState({ duration: 100, angle: baseAngle })
+        ?.fromState({ duration: 100, angle: baseAngle })
       expectRotated(box3, baseAngle)
 
       behavior.fromState({ stackIds, angle: 0 })
@@ -275,13 +311,13 @@ describe('StackBehavior', () => {
 
     it('rotates pushed mesh regardless of their parent when hydrating', async () => {
       const angle = Math.PI * 0.5
-      await mesh.getBehaviorByName(RotateBehaviorName).rotate()
+      await mesh.getBehaviorByName(RotateBehaviorName)?.rotate()
       behavior.fromState({ stackIds: [], angle: 0 })
       expectStacked([mesh])
       expectRotated(mesh, angle)
       expectRotated(box1, 0)
-      await mesh.metadata.push(box1.id)
-      await mesh.metadata.push(box3.id)
+      await mesh.metadata.push?.(box1.id)
+      await mesh.metadata.push?.(box3.id)
       expectStacked([mesh, box1, box3])
       expectRotated(mesh, angle)
       expectRotated(box1, angle)
@@ -334,7 +370,7 @@ describe('StackBehavior', () => {
       expectStacked([mesh])
       expect(box1.absolutePosition).toEqual(Vector3.FromArray([1, 1, 1]))
 
-      await mesh.metadata.push(box1.id)
+      await mesh.metadata.push?.(box1.id)
       expectStacked([mesh, box1])
       expectRotated(box1, 0)
       expect(recordSpy).toHaveBeenCalledTimes(1)
@@ -351,7 +387,7 @@ describe('StackBehavior', () => {
     it('can push on any stacked mesh', async () => {
       behavior.fromState({ stackIds: ['box2', 'box1'] })
 
-      await box2.metadata.push(box3.id)
+      await box2.metadata.push?.(box3.id)
       expectStacked([mesh, box2, box1, box3])
       expectRotated(box1, 0)
       expectRotated(box2, 0)
@@ -361,7 +397,7 @@ describe('StackBehavior', () => {
         fn: 'push',
         mesh,
         args: [box3.id, false],
-        duration: box2.getBehaviorByName(StackBehaviorName).state.duration
+        duration: box2.getBehaviorByName(StackBehaviorName)?.state.duration
       })
       expectMoveRecorded(moveRecorded, box3)
       expectMeshFeedback(registerFeedbackSpy, 'push', box3)
@@ -371,20 +407,20 @@ describe('StackBehavior', () => {
       const baseAngle = Math.PI * 0.5
       mesh
         .getBehaviorByName(RotateBehaviorName)
-        .fromState({ duration: 100, angle: baseAngle })
+        ?.fromState({ duration: 100, angle: baseAngle })
       expectRotated(mesh, baseAngle)
       const angle = Math.PI
       box1
         .getBehaviorByName(RotateBehaviorName)
-        .fromState({ duration: 100, angle: Math.PI * -0.5 })
+        ?.fromState({ duration: 100, angle: Math.PI * -0.5 })
       box1
         .getBehaviorByName(FlipBehaviorName)
-        .fromState({ duration: 100, isFlipped: true })
+        ?.fromState({ duration: 100, isFlipped: true })
       behavior.fromState({ angle })
       expectStacked([mesh])
       expect(box1.absolutePosition).toEqual(Vector3.FromArray([1, 1, 1]))
 
-      await mesh.metadata.push(box1.id)
+      await mesh.metadata.push?.(box1.id)
       expectRotated(box1, baseAngle - angle)
       expectFlipped(box1)
       expectStacked([mesh, box1])
@@ -405,7 +441,7 @@ describe('StackBehavior', () => {
       expectInteractible(mesh, true)
       expectInteractible(box1, true, false)
 
-      await mesh.metadata.push(box1.id)
+      await mesh.metadata.push?.(box1.id)
       expectStacked([mesh, box1], false)
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
@@ -420,7 +456,9 @@ describe('StackBehavior', () => {
 
     it('pushes dropped meshes', async () => {
       behavior.fromState({ stackIds: ['box2'] })
-      const targetable = getTargetableBehavior(box2)
+      const targetable = /** @type {StackBehavior} */ (
+        getTargetableBehavior(box2)
+      )
 
       targetable.onDropObservable.notifyObservers({
         dropped: [box1, box3],
@@ -433,13 +471,13 @@ describe('StackBehavior', () => {
         fn: 'push',
         mesh,
         args: [box1.id, false],
-        duration: box2.getBehaviorByName(StackBehaviorName).state.duration
+        duration: box2.getBehaviorByName(StackBehaviorName)?.state.duration
       })
       expect(recordSpy).toHaveBeenNthCalledWith(2, {
         fn: 'push',
         mesh,
         args: [box3.id, false],
-        duration: box2.getBehaviorByName(StackBehaviorName).state.duration
+        duration: box2.getBehaviorByName(StackBehaviorName)?.state.duration
       })
       expectMoveRecorded(moveRecorded, box1, box3)
       expectMeshFeedback(registerFeedbackSpy, 'push', box1, box3)
@@ -451,10 +489,10 @@ describe('StackBehavior', () => {
 
       box2
         .getBehaviorByName(StackBehaviorName)
-        .fromState({ stackIds: ['box3'] })
+        ?.fromState({ stackIds: ['box3'] })
       expectStacked([box2, box3])
 
-      await mesh.metadata.push(box2.id)
+      await mesh.metadata.push?.(box2.id)
       expectStacked([mesh, box1, box2, box3])
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
@@ -468,7 +506,7 @@ describe('StackBehavior', () => {
     })
 
     it('can not pop an empty stack', async () => {
-      expect(await mesh.metadata.pop()).toEqual([])
+      expect(await mesh.metadata.pop?.()).toEqual([])
       expectStacked([mesh])
       expect(recordSpy).not.toHaveBeenCalled()
       expectMoveRecorded(moveRecorded)
@@ -478,7 +516,7 @@ describe('StackBehavior', () => {
     it('pops last mesh from stack', async () => {
       behavior.fromState({ stackIds: ['box2', 'box1', 'box3'] })
 
-      let [poped] = await mesh.metadata.pop()
+      let [poped] = await (mesh.metadata.pop ? mesh.metadata.pop() : [])
       expect(poped?.id).toBe('box3')
       expectInteractible(poped)
       expectStacked([mesh, box2, box1])
@@ -490,7 +528,7 @@ describe('StackBehavior', () => {
       })
       expectStackIndicator(poped)
       expectMeshFeedback(registerFeedbackSpy, 'pop', poped)
-      ;[poped] = await mesh.metadata.pop()
+      ;[poped] = await (mesh.metadata.pop ? mesh.metadata.pop() : [])
       expect(poped?.id).toBe('box1')
       expectInteractible(poped)
       expectStacked([mesh, box2])
@@ -502,7 +540,7 @@ describe('StackBehavior', () => {
       })
       expectStackIndicator(poped)
       expectMeshFeedback(registerFeedbackSpy, 'pop', poped)
-      ;[poped] = await mesh.metadata.pop()
+      ;[poped] = await (mesh.metadata.pop ? mesh.metadata.pop() : [])
       expect(poped?.id).toBe('box2')
       expectInteractible(poped)
       expectStacked([mesh])
@@ -521,7 +559,7 @@ describe('StackBehavior', () => {
       behavior.fromState({ stackIds: ['box2', 'box1', 'box3'] })
 
       const [[poped]] = await Promise.all([
-        mesh.metadata.pop(1, true),
+        mesh.metadata.pop ? mesh.metadata.pop(1, true) : [],
         expectAnimationEnd(getAnimatableBehavior(box3))
       ])
       expect(poped?.id).toBe('box3')
@@ -543,7 +581,7 @@ describe('StackBehavior', () => {
       behavior.fromState({ stackIds: ['box2', 'box1', 'box3'] })
 
       const [[poped1, poped2]] = await Promise.all([
-        mesh.metadata.pop(2, true),
+        mesh.metadata.pop ? mesh.metadata.pop(2, true) : [],
         expectAnimationEnd(getAnimatableBehavior(box1)),
         expectAnimationEnd(getAnimatableBehavior(box3))
       ])
@@ -568,7 +606,9 @@ describe('StackBehavior', () => {
     it('pops all meshes from a stack', async () => {
       behavior.fromState({ stackIds: ['box2', 'box1', 'box3'] })
 
-      let [poped1, poped2, poped3, poped4] = await mesh.metadata.pop(4)
+      let [poped1, poped2, poped3, poped4] = await await (mesh.metadata.pop
+        ? mesh.metadata.pop(4)
+        : [])
       expect(poped1?.id).toBe('box3')
       expect(poped2?.id).toBe('box1')
       expect(poped3?.id).toBe('box2')
@@ -591,7 +631,7 @@ describe('StackBehavior', () => {
     it('can pop from any stacked mesh', async () => {
       behavior.fromState({ stackIds: ['box3', 'box1', 'box2'] })
 
-      const [poped] = await box3.metadata.pop()
+      const [poped] = await (box3.metadata.pop ? box3.metadata.pop() : [])
       expect(poped?.id).toBe('box2')
       expectInteractible(poped)
       expectStacked([mesh, box3, box1])
@@ -623,11 +663,15 @@ describe('StackBehavior', () => {
     it('pops last mesh when drawn', async () => {
       behavior.fromState({ stackIds: ['box3', 'box1', 'box2'] })
 
-      box2.metadata.draw()
+      box2.metadata.draw?.()
       expectInteractible(box2)
       expectStacked([mesh, box3, box1])
       expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({ fn: 'draw', mesh: box2 })
+      expect(recordSpy).toHaveBeenCalledWith({
+        fn: 'draw',
+        mesh: box2,
+        args: []
+      })
       expectMoveRecorded(moveRecorded)
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
@@ -636,11 +680,15 @@ describe('StackBehavior', () => {
       behavior.fromState({ stackIds: ['box3', 'box1', 'box2'] })
 
       box3.isPickable = false
-      box3.metadata.draw()
+      box3.metadata.draw?.()
       expectInteractible(box3, false, false)
       expectStacked([mesh, box3, box1, box2])
       expect(recordSpy).toHaveBeenCalledTimes(1)
-      expect(recordSpy).toHaveBeenCalledWith({ fn: 'draw', mesh: box3 })
+      expect(recordSpy).toHaveBeenCalledWith({
+        fn: 'draw',
+        mesh: box3,
+        args: []
+      })
       expect(moveRecorded).not.toHaveBeenCalled()
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
@@ -650,7 +698,7 @@ describe('StackBehavior', () => {
       expectInteractible(box3, true, false)
       behavior.fromState({ stackIds: ['box2', 'box1', 'box3'] })
 
-      let [poped] = await mesh.metadata.pop()
+      let [poped] = await (mesh.metadata.pop ? mesh.metadata.pop() : [])
       expect(poped?.id).toBe('box3')
       expectInteractible(poped, true, false)
       expectStacked([mesh, box2, box1])
@@ -668,7 +716,7 @@ describe('StackBehavior', () => {
     it('reorders stack to given order', async () => {
       behavior.fromState({ stackIds: ['box3', 'box2', 'box1'] })
 
-      await mesh.metadata.reorder(['box0', 'box1', 'box2', 'box3'], false)
+      await mesh.metadata.reorder?.(['box0', 'box1', 'box2', 'box3'], false)
 
       expectStacked([mesh, box1, box2, box3])
       expect(recordSpy).toHaveBeenCalledTimes(1)
@@ -684,7 +732,7 @@ describe('StackBehavior', () => {
     it('reorders with animation', async () => {
       behavior.fromState({ stackIds: ['box1', 'box2', 'box3'] })
 
-      await mesh.metadata.reorder(['box2', 'box0', 'box3', 'box1'])
+      await mesh.metadata.reorder?.(['box2', 'box0', 'box3', 'box1'])
 
       expectStacked([box2, mesh, box3, box1])
       expect(recordSpy).toHaveBeenCalledTimes(1)
@@ -697,16 +745,38 @@ describe('StackBehavior', () => {
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
+    it('keeps reordered stack snapped to an anchor', async () => {
+      behavior.fromState({ stackIds: ['box1', 'box2'] })
+      box3.getBehaviorByName(AnchorBehaviorName)?.fromState({
+        anchors: [{ id: '1', x: -0.5, snappedId: 'box0' }]
+      })
+      expectSnapped(box3, mesh)
+
+      await mesh.metadata.reorder?.(['box1', 'box0', 'box2'])
+
+      expectStacked([box1, mesh, box2], true, 'box3')
+      expectSnapped(box3, box1)
+
+      expect(recordSpy).toHaveBeenCalledWith({
+        fn: 'reorder',
+        mesh,
+        args: [['box1', 'box0', 'box2'], true]
+      })
+      expect(recordSpy).toHaveBeenCalledTimes(1)
+      expectMoveRecorded(moveRecorded)
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
+    })
+
     it('can not reorder while reordering', async () => {
       behavior.fromState({ stackIds: ['box1', 'box2', 'box3'] })
 
-      const firstReordering = mesh.metadata.reorder([
+      const firstReordering = mesh.metadata.reorder?.([
         'box2',
         'box0',
         'box3',
         'box1'
       ])
-      mesh.metadata.reorder(['box4', 'box3', 'box2', 'box1'])
+      mesh.metadata.reorder?.(['box4', 'box3', 'box2', 'box1'])
       await firstReordering
 
       expectStacked([box2, mesh, box3, box1])
@@ -722,7 +792,7 @@ describe('StackBehavior', () => {
     it('can reorder any stacked mesh', async () => {
       behavior.fromState({ stackIds: ['box2', 'box1', 'box3'] })
 
-      box3.metadata.reorder(['box0', 'box1', 'box2', 'box3'], false)
+      box3.metadata.reorder?.(['box0', 'box1', 'box2', 'box3'], false)
 
       expectStacked([mesh, box1, box2, box3])
       expect(recordSpy).toHaveBeenCalledTimes(1)
@@ -737,7 +807,7 @@ describe('StackBehavior', () => {
     it('can move current mesh while reordering', async () => {
       behavior.fromState({ stackIds: ['box3', 'box2', 'box1'] })
 
-      mesh.metadata.reorder(['box3', 'box0', 'box2', 'box1'], false)
+      mesh.metadata.reorder?.(['box3', 'box0', 'box2', 'box1'], false)
 
       expectStacked([box3, mesh, box2, box1])
       expect(recordSpy).toHaveBeenCalledTimes(1)
@@ -752,28 +822,36 @@ describe('StackBehavior', () => {
     it('flips the entire stack', async () => {
       behavior.fromState({ stackIds: ['box1', 'box2', 'box3'] })
 
-      await mesh.metadata.flipAll()
+      await mesh.metadata.flipAll?.()
       expectStacked([box3, box2, box1, mesh])
       expect(recordSpy).toHaveBeenCalledTimes(6)
-      expect(recordSpy).toHaveBeenNthCalledWith(1, { fn: 'flipAll', mesh })
+      expect(recordSpy).toHaveBeenNthCalledWith(1, {
+        fn: 'flipAll',
+        mesh,
+        args: []
+      })
       expect(recordSpy).toHaveBeenNthCalledWith(2, {
         fn: 'flip',
         mesh,
+        args: [],
         duration: 100
       })
       expect(recordSpy).toHaveBeenNthCalledWith(3, {
         fn: 'flip',
         mesh: box1,
+        args: [],
         duration: 100
       })
       expect(recordSpy).toHaveBeenNthCalledWith(4, {
         fn: 'flip',
         mesh: box2,
+        args: [],
         duration: 100
       })
       expect(recordSpy).toHaveBeenNthCalledWith(5, {
         fn: 'flip',
         mesh: box3,
+        args: [],
         duration: 100
       })
       expect(recordSpy).toHaveBeenNthCalledWith(6, {
@@ -787,14 +865,17 @@ describe('StackBehavior', () => {
 
     it('flips an entire flipped stack', async () => {
       behavior.fromState({ stackIds: ['box1', 'box2', 'box3'] })
-      await mesh.metadata.flip()
+      await mesh.metadata.flip?.()
       expectFlipped(mesh, true)
-      recordSpy.mockReset()
-
-      await mesh.metadata.flipAll()
+      recordSpy.mockClear()
+      await mesh.metadata.flipAll?.()
       expectStacked([box3, box2, box1, mesh])
       expect(recordSpy).toHaveBeenCalledTimes(6)
-      expect(recordSpy).toHaveBeenNthCalledWith(1, { fn: 'flipAll', mesh })
+      expect(recordSpy).toHaveBeenNthCalledWith(1, {
+        fn: 'flipAll',
+        mesh,
+        args: []
+      })
       expect(recordSpy).toHaveBeenNthCalledWith(2, {
         fn: 'reorder',
         mesh,
@@ -803,21 +884,25 @@ describe('StackBehavior', () => {
       expect(recordSpy).toHaveBeenNthCalledWith(3, {
         fn: 'flip',
         mesh: box3,
+        args: [],
         duration: 100
       })
       expect(recordSpy).toHaveBeenNthCalledWith(4, {
         fn: 'flip',
         mesh: box2,
+        args: [],
         duration: 100
       })
       expect(recordSpy).toHaveBeenNthCalledWith(5, {
         fn: 'flip',
         mesh: box1,
+        args: [],
         duration: 100
       })
       expect(recordSpy).toHaveBeenNthCalledWith(6, {
         fn: 'flip',
         mesh,
+        args: [],
         duration: 100
       })
       expectMoveRecorded(moveRecorded)
@@ -825,14 +910,19 @@ describe('StackBehavior', () => {
     })
 
     it('flips an entire stack of one', async () => {
-      await mesh.metadata.flipAll()
+      await mesh.metadata.flipAll?.()
       expectStacked([mesh])
       expectFlipped(mesh, true)
       expect(recordSpy).toHaveBeenCalledTimes(2)
-      expect(recordSpy).toHaveBeenNthCalledWith(1, { fn: 'flipAll', mesh })
+      expect(recordSpy).toHaveBeenNthCalledWith(1, {
+        fn: 'flipAll',
+        mesh,
+        args: []
+      })
       expect(recordSpy).toHaveBeenNthCalledWith(2, {
         fn: 'flip',
         mesh,
+        args: [],
         duration: 100
       })
       expectMoveRecorded(moveRecorded)
@@ -841,15 +931,17 @@ describe('StackBehavior', () => {
 
     it('flips the entire stack from peer', async () => {
       behavior.fromState({ stackIds: ['box1', 'box2', 'box3'] })
-      controlManager.apply({ fn: 'flipAll', meshId: mesh.id }, true)
-      controlManager.apply({ fn: 'flipAll', meshId: mesh.id }, true)
-      controlManager.apply({ fn: 'flip', meshId: mesh.id }, true)
-      controlManager.apply({ fn: 'flip', meshId: box1.id }, true)
-      controlManager.apply({ fn: 'flip', meshId: box2.id }, true)
-      controlManager.apply({ fn: 'flip', meshId: box3.id }, true)
+      const extras = { args: [], fromHand: false, pos: undefined }
+      controlManager.apply({ fn: 'flipAll', meshId: mesh.id, ...extras }, true)
+      controlManager.apply({ fn: 'flipAll', meshId: mesh.id, ...extras }, true)
+      controlManager.apply({ fn: 'flip', meshId: mesh.id, ...extras }, true)
+      controlManager.apply({ fn: 'flip', meshId: box1.id, ...extras }, true)
+      controlManager.apply({ fn: 'flip', meshId: box2.id, ...extras }, true)
+      controlManager.apply({ fn: 'flip', meshId: box3.id, ...extras }, true)
       controlManager.apply({
         fn: 'reorder',
         meshId: mesh.id,
+        ...extras,
         args: [['box3', 'box2', 'box1', 'box0'], false]
       })
 
@@ -859,10 +951,53 @@ describe('StackBehavior', () => {
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
+    it('keeps flipped stack snapped to an anchor', async () => {
+      behavior.fromState({ stackIds: ['box1', 'box2'] })
+      box3.getBehaviorByName(AnchorBehaviorName)?.fromState({
+        anchors: [{ id: '1', x: -0.5, snappedId: 'box0' }]
+      })
+      expectSnapped(box3, mesh)
+
+      await mesh.metadata.flipAll?.()
+      expectStacked([box2, box1, mesh], true, 'box3')
+      expectSnapped(box3, box2)
+      expect(recordSpy).toHaveBeenNthCalledWith(1, {
+        fn: 'flipAll',
+        mesh,
+        args: []
+      })
+      expect(recordSpy).toHaveBeenNthCalledWith(2, {
+        fn: 'flip',
+        mesh,
+        args: [],
+        duration: 100
+      })
+      expect(recordSpy).toHaveBeenNthCalledWith(3, {
+        fn: 'flip',
+        mesh: box1,
+        args: [],
+        duration: 100
+      })
+      expect(recordSpy).toHaveBeenNthCalledWith(4, {
+        fn: 'flip',
+        mesh: box2,
+        args: [],
+        duration: 100
+      })
+      expect(recordSpy).toHaveBeenNthCalledWith(5, {
+        fn: 'reorder',
+        mesh,
+        args: [['box2', 'box1', 'box0'], false]
+      })
+      expect(recordSpy).toHaveBeenCalledTimes(5)
+      expectMoveRecorded(moveRecorded)
+      expect(registerFeedbackSpy).not.toHaveBeenCalled()
+    })
+
     it('rotates the entire stack', async () => {
       behavior.fromState({ stackIds: ['box1', 'box2', 'box3'] })
 
-      await mesh.metadata.rotate()
+      await mesh.metadata.rotate?.()
       expectStacked([mesh, box1, box2, box3])
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenNthCalledWith(1, {
@@ -876,7 +1011,7 @@ describe('StackBehavior', () => {
     })
 
     it('rotates an entire stack of one', async () => {
-      await mesh.metadata.rotate()
+      await mesh.metadata.rotate?.()
       expectStacked([mesh])
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
@@ -890,32 +1025,43 @@ describe('StackBehavior', () => {
     })
 
     it('can not push no mesh', () => {
-      expect(mesh.metadata.canPush()).toBe(false)
-      expect(mesh.metadata.canPush(null)).toBe(false)
+      // @ts-expect-error no arguments
+      expect(mesh.metadata.canPush?.()).toBe(false)
+      // @ts-expect-error null is not acceptable
+      expect(mesh.metadata.canPush?.(null)).toBe(false)
     })
 
     it('can not push mesh with different kind', () => {
       behavior.fromState({ kinds: ['card'] })
-      box1.getBehaviorByName(MoveBehaviorName).state.kind = 'token'
-      expect(mesh.metadata.canPush(box1)).toBe(false)
-      expect(mesh.metadata.canPush(box2)).toBe(false)
+      const moveBehavior = /** @type {MoveBehavior} */ (
+        box1.getBehaviorByName(MoveBehaviorName)
+      )
+      moveBehavior.state.kind = 'token'
+      expect(mesh.metadata.canPush?.(box1)).toBe(false)
+      expect(mesh.metadata.canPush?.(box2)).toBe(false)
     })
 
     it('can push mesh with the same kind', () => {
       behavior.fromState({ kinds: ['card'] })
-      box1.getBehaviorByName(MoveBehaviorName).state.kind = 'card'
-      expect(mesh.metadata.canPush(box1)).toBe(true)
+      const moveBehavior = /** @type {MoveBehavior} */ (
+        box1.getBehaviorByName(MoveBehaviorName)
+      )
+      moveBehavior.state.kind = 'card'
+      expect(mesh.metadata.canPush?.(box1)).toBe(true)
     })
 
     it('can push mesh with kind on kindless zone', () => {
-      box1.getBehaviorByName(MoveBehaviorName).state.kind = 'card'
-      expect(mesh.metadata.canPush(box1)).toBe(true)
+      const moveBehavior = /** @type {MoveBehavior} */ (
+        box1.getBehaviorByName(MoveBehaviorName)
+      )
+      moveBehavior.state.kind = 'card'
+      expect(mesh.metadata.canPush?.(box1)).toBe(true)
     })
 
     it('can push on top of a stacked the entire stack', async () => {
       behavior.fromState({ stackIds: ['box1', 'box2'] })
       expectStacked([mesh, box1, box2])
-      expect(mesh.metadata.canPush(box3)).toBe(true)
+      expect(mesh.metadata.canPush?.(box3)).toBe(true)
     })
   })
 })

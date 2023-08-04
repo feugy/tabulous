@@ -1,4 +1,5 @@
 <script>
+  // ts-check
   import { LongLeftObject, LongPointerObject } from '@src/svg/help'
   import { isTouchScreen } from '@src/utils'
 </script>

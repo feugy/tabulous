@@ -1,3 +1,15 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ * @typedef {import('@tabulous/server/src/graphql/types').AnchorableState} AnchorableState
+ * @typedef {import('@tabulous/server/src/graphql/types').Mesh} SerializedMesh
+ * @typedef {import('@tabulous/server/src/graphql/types').Shape} Shape
+ * @typedef {import('@tabulous/server/src/graphql/types').StackableState} StackableState
+ * @typedef {import('@src/3d/behaviors/anchorable').AnchorBehavior} AnchorBehavior
+ * @typedef {import('@src/3d/behaviors/stackable').StackBehavior} StackBehavior
+ */
+
 // mandatory side effect
 import '@babylonjs/core/Loading/loadingScreen.js'
 
@@ -15,35 +27,39 @@ import { createRoundToken } from '../meshes/round-token'
 import { createRoundedTile } from '../meshes/rounded-tile'
 import { restoreBehaviors } from './behaviors'
 
+/** @typedef {(state: Omit<SerializedMesh, 'shape'>, scene: Scene) => Mesh|Promise<Mesh>} MeshCreator */
+
 const logger = makeLogger('scene-loader')
 
+/** @type {Map<Shape, MeshCreator>} */
 const meshCreatorByName = new Map([
-  ['box', createBox],
-  ['card', createCard],
-  ['custom', createCustom],
-  ['die', createDie],
-  ['prism', createPrism],
-  ['roundToken', createRoundToken],
-  ['roundedTile', createRoundedTile]
+  ['box', /** @type {?} */ (createBox)],
+  ['card', /** @type {?} */ (createCard)],
+  ['custom', /** @type {?} */ (createCustom)],
+  ['die', /** @type {?} */ (createDie)],
+  ['prism', /** @type {?} */ (createPrism)],
+  ['roundToken', /** @type {?} */ (createRoundToken)],
+  ['roundedTile', /** @type {?} */ (createRoundedTile)]
 ])
 
 const supportedNames = new Set([...meshCreatorByName.keys()])
 
 /**
  * Indicates whether a mesh can be serialized and loaded
- * @param {import('@babel/core').Mesh} mesh - tested mesh.
+ * @param {Mesh} mesh - tested mesh.
  * @returns {boolean} whether this mesh could be serialized and loaded.
  */
 export function isSerializable(mesh) {
-  return supportedNames.has(mesh.name)
+  return supportedNames.has(/** @type {Shape} */ (mesh.name))
 }
 
 /**
  * Serializes a scene's meshes.
- * @param {import('@babel/core').Scene} scene - 3D scene serialized.
- * @returns {object[]} list of serialized meshes TODO.
+ * @param {Scene} [scene] - 3D scene serialized.
+ * @returns {SerializedMesh[]} list of serialized meshes.
  */
 export function serializeMeshes(scene) {
+  /** @type {SerializedMesh[]} */
   const meshes = []
   for (const mesh of scene?.meshes ?? []) {
     if (isSerializable(mesh) && !mesh.isPhantom) {
@@ -56,9 +72,9 @@ export function serializeMeshes(scene) {
 
 /**
  * Creates a meshes into the provided scene.
- * @param {object} state - serialized mesh state.
- * @param {import('@babel/core').Scene} scene - 3D scene used.
- * @returns {Promise<import('@babel/core').Mesh>} mesh created
+ * @param {SerializedMesh} state - serialized mesh state.
+ * @param {Scene} scene - 3D scene used.
+ * @returns {Promise<Mesh>} mesh created.
  */
 export async function createMeshFromState(state, scene) {
   const { shape } = state
@@ -66,15 +82,15 @@ export async function createMeshFromState(state, scene) {
   if (!supportedNames.has(shape)) {
     throw new Error(`mesh shape ${shape} is not supported`)
   }
-  return meshCreatorByName.get(shape)(state, scene)
+  return /** @type {MeshCreator} */ (meshCreatorByName.get(shape))(state, scene)
 }
 
 /**
  * Loads meshes into the provided scene:
  * - either creates new mesh, or updates existing ones, based on their ids
  * - deletes existing mesh that are not found in the provided data
- * @param {import('@babel/core').Scene} scene - 3D scene used.
- * @param {Promise<object[]>} meshes - a list of serialized meshes data TODO.
+ * @param {Scene} scene - 3D scene used.
+ * @param {SerializedMesh[]} meshes - a list of serialized meshes data.
  */
 export async function loadMeshes(scene, meshes) {
   const disposables = new Set(scene.meshes)
@@ -84,7 +100,9 @@ export async function loadMeshes(scene, meshes) {
     }
   }
 
+  /** @type {{stackBehavior: StackBehavior, stackable: StackableState, y: number}[]} */
   const stackables = []
+  /** @type {{anchorBehavior: AnchorBehavior, anchorable: AnchorableState, y: number}[]} */
   const anchorables = []
   logger.debug({ meshes }, `loads meshes`)
 
@@ -105,8 +123,8 @@ export async function loadMeshes(scene, meshes) {
       mesh = await createMeshFromState(skipDelayableBehaviors(state), scene)
     }
     const stackBehavior = mesh.getBehaviorByName(StackBehaviorName)
-    if (stackBehavior) {
-      if (stackable?.stackIds?.length > 0) {
+    if (stackable && stackBehavior) {
+      if ((stackable.stackIds?.length ?? 0) > 0) {
         // stores for later
         stackables.push({
           stackBehavior,
@@ -119,8 +137,8 @@ export async function loadMeshes(scene, meshes) {
       }
     }
     const anchorBehavior = mesh.getBehaviorByName(AnchorBehaviorName)
-    if (anchorBehavior) {
-      if (anchorable?.anchors.find(({ snappedId }) => snappedId)) {
+    if (anchorable && anchorBehavior) {
+      if ((anchorable.anchors ?? []).find(({ snappedId }) => snappedId)) {
         // stores for later
         anchorables.push({
           anchorBehavior,
@@ -151,6 +169,10 @@ export async function loadMeshes(scene, meshes) {
   }
 }
 
+/**
+ * @param {SerializedMesh} mesh - serialized mesh to trim.
+ * @return {SerializedMesh} the same mesh without its anchorable and stackable behaviors.
+ */
 function skipDelayableBehaviors({ stackable, anchorable, ...state }) {
   return {
     ...state,
@@ -161,24 +183,31 @@ function skipDelayableBehaviors({ stackable, anchorable, ...state }) {
 
 /**
  * Recursively removes null values (graphQL doesn't return undefined, which prevents from applying default values)
- * @param {object} object - sanitized object
- * @returns {object} a cloned object with no null values.
+ * @template T
+ * @param {T} object - sanitized object
+ * @returns {Exclude<T, null>} a cloned object with no null values.
  */
 export function removeNulls(object) {
   if (object === null) {
+    // @ts-expect-error
     return
   }
   let result = object
   if (Array.isArray(object)) {
+    // @ts-expect-error
     result = new Array(object.length)
     for (const [rank, item] of object.entries()) {
+      // @ts-expect-error
       result[rank] = removeNulls(item)
     }
   } else if (typeof object === 'object') {
+    // @ts-expect-error
     result = {}
     for (const key in object) {
+      // @ts-expect-error
       result[key] = removeNulls(object[key])
     }
   }
+  // @ts-expect-error
   return result
 }

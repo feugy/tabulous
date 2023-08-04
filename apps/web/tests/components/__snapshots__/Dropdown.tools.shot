@@ -1,8 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Icon only 1`] = `
-<div>
-  <div>
+<div
+  class="s-eXK2szYm-Ncy"
+>
+  <div
+    class="s-eXK2szYm-Ncy"
+  >
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
 tempor incididunt ut labore et dolore magna aliqua. Commodo nulla facilisi
 nullam vehicula ipsum a arcu cursus. Eget sit amet tellus cras adipiscing
@@ -63,7 +67,9 @@ erat pellentesque adipiscing commodo elit at imperdiet.
   </span>
   <!--&lt;Dropdown&gt;-->
    
-  <div>
+  <div
+    class="s-eXK2szYm-Ncy"
+  >
     Mus mauris vitae ultricies leo integer malesuada nunc vel risus. Tincidunt
 vitae semper quis lectus nulla at. Ac felis donec et odio pellentesque
 diam volutpat. Lectus sit amet est placerat in egestas erat. Cursus sit
@@ -82,8 +88,12 @@ lacus vestibulum sed arcu non odio euismod lacinia.
 `;
 
 exports[`Invalid value 1`] = `
-<div>
-  <div>
+<div
+  class="s-eXK2szYm-Ncy"
+>
+  <div
+    class="s-eXK2szYm-Ncy"
+  >
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
 tempor incididunt ut labore et dolore magna aliqua. Commodo nulla facilisi
 nullam vehicula ipsum a arcu cursus. Eget sit amet tellus cras adipiscing
@@ -144,7 +154,9 @@ erat pellentesque adipiscing commodo elit at imperdiet.
   </span>
   <!--&lt;Dropdown&gt;-->
    
-  <div>
+  <div
+    class="s-eXK2szYm-Ncy"
+  >
     Mus mauris vitae ultricies leo integer malesuada nunc vel risus. Tincidunt
 vitae semper quis lectus nulla at. Ac felis donec et odio pellentesque
 diam volutpat. Lectus sit amet est placerat in egestas erat. Cursus sit
@@ -164,9 +176,11 @@ lacus vestibulum sed arcu non odio euismod lacinia.
 
 exports[`Left aligned 1`] = `
 <div
-  class="p-8"
+  class="p-8 s-eXK2szYm-Ncy"
 >
-  <div>
+  <div
+    class="s-eXK2szYm-Ncy"
+  >
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
 tempor incididunt ut labore et dolore magna aliqua. Commodo nulla facilisi
 nullam vehicula ipsum a arcu cursus. Eget sit amet tellus cras adipiscing
@@ -227,7 +241,9 @@ erat pellentesque adipiscing commodo elit at imperdiet.
   </span>
   <!--&lt;Dropdown&gt;-->
    
-  <div>
+  <div
+    class="s-eXK2szYm-Ncy"
+  >
     Mus mauris vitae ultricies leo integer malesuada nunc vel risus. Tincidunt
 vitae semper quis lectus nulla at. Ac felis donec et odio pellentesque
 diam volutpat. Lectus sit amet est placerat in egestas erat. Cursus sit
@@ -247,10 +263,12 @@ lacus vestibulum sed arcu non odio euismod lacinia.
 
 exports[`Right aligned 1`] = `
 <div
-  class="p-8"
+  class="p-8 s-eXK2szYm-Ncy"
   style="text-align: right;"
 >
-  <div>
+  <div
+    class="s-eXK2szYm-Ncy"
+  >
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
 tempor incididunt ut labore et dolore magna aliqua. Commodo nulla facilisi
 nullam vehicula ipsum a arcu cursus. Eget sit amet tellus cras adipiscing
@@ -311,7 +329,9 @@ erat pellentesque adipiscing commodo elit at imperdiet.
   </span>
   <!--&lt;Dropdown&gt;-->
    
-  <div>
+  <div
+    class="s-eXK2szYm-Ncy"
+  >
     Mus mauris vitae ultricies leo integer malesuada nunc vel risus. Tincidunt
 vitae semper quis lectus nulla at. Ac felis donec et odio pellentesque
 diam volutpat. Lectus sit amet est placerat in egestas erat. Cursus sit
@@ -330,8 +350,12 @@ lacus vestibulum sed arcu non odio euismod lacinia.
 `;
 
 exports[`Split clicks 1`] = `
-<div>
-  <div>
+<div
+  class="s-eXK2szYm-Ncy"
+>
+  <div
+    class="s-eXK2szYm-Ncy"
+  >
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
 tempor incididunt ut labore et dolore magna aliqua. Commodo nulla facilisi
 nullam vehicula ipsum a arcu cursus. Eget sit amet tellus cras adipiscing
@@ -392,7 +416,9 @@ erat pellentesque adipiscing commodo elit at imperdiet.
   </span>
   <!--&lt;Dropdown&gt;-->
    
-  <div>
+  <div
+    class="s-eXK2szYm-Ncy"
+  >
     Mus mauris vitae ultricies leo integer malesuada nunc vel risus. Tincidunt
 vitae semper quis lectus nulla at. Ac felis donec et odio pellentesque
 diam volutpat. Lectus sit amet est placerat in egestas erat. Cursus sit
@@ -411,8 +437,12 @@ lacus vestibulum sed arcu non odio euismod lacinia.
 `;
 
 exports[`Value as text 1`] = `
-<div>
-  <div>
+<div
+  class="s-eXK2szYm-Ncy"
+>
+  <div
+    class="s-eXK2szYm-Ncy"
+  >
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
 tempor incididunt ut labore et dolore magna aliqua. Commodo nulla facilisi
 nullam vehicula ipsum a arcu cursus. Eget sit amet tellus cras adipiscing
@@ -473,7 +503,9 @@ erat pellentesque adipiscing commodo elit at imperdiet.
   </span>
   <!--&lt;Dropdown&gt;-->
    
-  <div>
+  <div
+    class="s-eXK2szYm-Ncy"
+  >
     Mus mauris vitae ultricies leo integer malesuada nunc vel risus. Tincidunt
 vitae semper quis lectus nulla at. Ac felis donec et odio pellentesque
 diam volutpat. Lectus sit amet est placerat in egestas erat. Cursus sit
@@ -492,8 +524,12 @@ lacus vestibulum sed arcu non odio euismod lacinia.
 `;
 
 exports[`With colors 1`] = `
-<div>
-  <div>
+<div
+  class="s-eXK2szYm-Ncy"
+>
+  <div
+    class="s-eXK2szYm-Ncy"
+  >
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
 tempor incididunt ut labore et dolore magna aliqua. Commodo nulla facilisi
 nullam vehicula ipsum a arcu cursus. Eget sit amet tellus cras adipiscing
@@ -555,7 +591,9 @@ erat pellentesque adipiscing commodo elit at imperdiet.
   </span>
   <!--&lt;Dropdown&gt;-->
    
-  <div>
+  <div
+    class="s-eXK2szYm-Ncy"
+  >
     Mus mauris vitae ultricies leo integer malesuada nunc vel risus. Tincidunt
 vitae semper quis lectus nulla at. Ac felis donec et odio pellentesque
 diam volutpat. Lectus sit amet est placerat in egestas erat. Cursus sit

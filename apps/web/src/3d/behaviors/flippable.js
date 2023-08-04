@@ -1,3 +1,9 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@tabulous/server/src/graphql/types').FlippableState} FlippableState
+ */
+
 import { makeLogger } from '../../utils/logger'
 import { controlManager } from '../managers/control'
 import { actionNames } from '../utils/actions'
@@ -13,29 +19,21 @@ import { getDimensions } from '../utils/mesh'
 import { AnimateBehavior } from './animatable'
 import { FlipBehaviorName } from './names'
 
+/** @typedef {FlippableState & Required<Pick<FlippableState, 'duration'>>} RequiredFlippableState */
+
 const Tolerance = 0.000001
 
 const logger = makeLogger(FlipBehaviorName)
 
-/**
- * @typedef {object} FlippableState behavior persistent state, including:
- * @property {boolean} isFlipped - current flip status.
- * @property {number} [duration=500] - duration (in milliseconds) of the flip animation.
- */
-
 export class FlipBehavior extends AnimateBehavior {
   /**
    * Creates behavior to make a mesh flippable with animation.
-   *
-   * @extends {AnimateBehavior}
-   * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
-   * @property {FlippableState} state - the behavior's current state.
-   *
    * @param {FlippableState} state - behavior state.
    */
   constructor(state = {}) {
-    super(state)
-    this.state = state
+    super()
+    /** @type {RequiredFlippableState} state - the behavior's current state. */
+    this.state = /** @type {RequiredFlippableState} */ (state)
   }
 
   /**
@@ -50,7 +48,7 @@ export class FlipBehavior extends AnimateBehavior {
    * - the `isFlipped` property.
    * - the `flip()` method.
    * It initializes its rotation according to the flip status.
-   * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
+   * @param {Mesh} mesh - which becomes detailable.
    */
   attach(mesh) {
     super.attach(mesh)
@@ -64,8 +62,7 @@ export class FlipBehavior extends AnimateBehavior {
    * - applies gravity
    * - returns
    * Does nothing if the mesh is already being animated.
-   *
-   * @async
+   * @returns {Promise<void>}
    */
   async flip() {
     const {
@@ -80,7 +77,7 @@ export class FlipBehavior extends AnimateBehavior {
     }
     logger.debug({ mesh }, `start flipping ${mesh.id}`)
 
-    controlManager.record({ mesh, fn: actionNames.flip, duration })
+    controlManager.record({ mesh, fn: actionNames.flip, duration, args: [] })
 
     const attach = detachFromParent(mesh)
     const [x, y, z] = mesh.position.asArray()
@@ -136,7 +133,7 @@ export class FlipBehavior extends AnimateBehavior {
     const attach = detachFromParent(this.mesh)
     this.mesh.rotation.z = this.state.isFlipped ? Math.PI : 0
     attach()
-    attachFunctions(this, actionNames.flip)
+    attachFunctions(this, 'flip')
     attachProperty(this, 'isFlipped', () => this.state.isFlipped)
   }
 }

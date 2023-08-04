@@ -1,4 +1,7 @@
 <script>
+  // @ts-check
+
+  /** @type {number} size of this circular progress. */
   export let radius = 35
 </script>
 

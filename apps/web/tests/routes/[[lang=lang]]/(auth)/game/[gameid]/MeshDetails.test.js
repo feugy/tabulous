@@ -1,3 +1,4 @@
+// @ts-check
 import MeshDetails from '@src/routes/[[lang=lang]]/(auth)/game/[gameId]/MeshDetails.svelte'
 import { gameAssetsUrl, sleep } from '@src/utils'
 import { fireEvent, render, screen } from '@testing-library/svelte'
@@ -21,7 +22,9 @@ describe('/game/[gameId] MeshDetails component', () => {
     )
   }
 
-  beforeEach(vi.resetAllMocks)
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
 
   it('displays a mesh image', async () => {
     renderComponent({ mesh: mesh1 })
@@ -33,6 +36,7 @@ describe('/game/[gameId] MeshDetails component', () => {
   })
 
   describe('given being open', () => {
+    /** @type {HTMLImageElement} */
     let image
 
     beforeEach(() => {

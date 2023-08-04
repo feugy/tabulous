@@ -4,11 +4,16 @@ import { translate } from '../../utils/index.js'
 /**
  * @typedef {import('@playwright/test').Page} Page
  * @typedef {import('@playwright/test').Locator} Locator
+ * @typedef {import('../../utils').Locale} Locale
  */
 
 export class AuthenticatedHeaderMixin {
+  /**
+   * @param {Page} page - the actual page.
+   * @param {Locale} lang - current language.
+   */
   constructor(page, lang) {
-    /** @type {string} */
+    /** @type {Locale} */
     this.lang = lang
     /** @type {Page} */
     this.page = page

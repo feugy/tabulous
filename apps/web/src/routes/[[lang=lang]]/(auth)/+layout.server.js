@@ -1,14 +1,9 @@
+// @ts-check
 import { redirect } from '@sveltejs/kit'
 
-import { load as defaultLoad } from '../+layout.server'
-
 /** @type {import('./$types').LayoutServerLoad} */
-export async function load(args) {
-  const data = await defaultLoad(args)
-  const {
-    url,
-    params: { lang }
-  } = args
+export async function load({ url, params: { lang }, parent }) {
+  const data = await parent()
   if (!data.session) {
     throw redirect(
       307,

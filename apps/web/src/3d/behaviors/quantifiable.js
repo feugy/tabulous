@@ -1,3 +1,18 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@tabulous/server/src/graphql/types').QuantifiableState} QuantifiableState
+ * @typedef {import('@tabulous/server/src/graphql/types').Mesh} SerializedMesh
+ * @typedef {import('@src/3d/behaviors/targetable').DropZone} DropZone
+ * @typedef {import('@src/3d/behaviors/targetable').SingleDropZone} SingleDropZone
+ * @typedef {import('@src/3d/behaviors/targetable').DropDetails} DropDetails
+ * @typedef {import('@src/3d/managers/move').PreMoveDetails} PreMoveDetails
+ */
+/**
+ * @template T
+ * @typedef {import('@babylonjs/core').Observer<T>} Observer
+ */
+
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 
 import { makeLogger } from '../../utils/logger'
@@ -17,17 +32,9 @@ import { createMeshFromState } from '../utils/scene-loader'
 import { MoveBehaviorName, QuantityBehaviorName } from './names'
 import { TargetBehavior } from './targetable'
 
-const logger = makeLogger('quantifiable')
+/** @typedef {QuantifiableState & Required<Pick<QuantifiableState, 'duration'|'quantity'|'extent'>>} RequiredQuantifiableState */
 
-/**
- * @typedef {object} QuantifiableState behavior persistent state, including:
- * @property {number} quantity - number of items, including this one.
- * @property {string[]} kinds? - an optional array of allowed drag kinds for this zone (allows all if not specified).
- * @property {number} priority? - priority applied when multiple targets with same altitude apply.
- * @property {number} enabled? - priority applied when multiple targets with same altitude apply.
- * @property {number} [duration=100] - duration (in milliseconds) when pushing individual meshes.
- * @property {number} [extent=2] - allowed distance between mesh and stack center when dropping.
- */
+const logger = makeLogger('quantifiable')
 
 export class QuantityBehavior extends TargetBehavior {
   /**
@@ -35,20 +42,18 @@ export class QuantityBehavior extends TargetBehavior {
    * and targetable (one can drop other quantifiable meshs).
    * Dropped meshes are destroyed while quantity is incremented.
    * Poped meshes are created on the fly, except when the quantity is 1.
-   *
-   * @extends {TargetBehavior}
-   * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
-   * @property {QuantifiableState} state - the behavior's current state.
-   *
    * @param {QuantifiableState} state - behavior state.
    */
   constructor(state = {}) {
     super()
-    this.state = state
-    // private
+    /** @type {RequiredQuantifiableState} state - the behavior's current state. */
+    this.state = /** @type {RequiredQuantifiableState} */ (state)
+    /** @protected @type {?Observer<PreMoveDetails>} */
     this.preMoveObserver = null
+    /** @protected @type {?Observer<DropDetails>} */
     this.dropObserver = null
-    this.dropZone = null
+    /** @protected @type {DropZone}} */
+    this.dropZone
   }
 
   /**
@@ -66,7 +71,7 @@ export class QuantityBehavior extends TargetBehavior {
    * - a `canIncrement()` function to determin whether a mesh could increment the quantity.
    * It binds to its drop observable to increment when dropping meshes.
    * It binds to the drag manager drag observable to decrement (unless quantity is 1).
-   * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
+   * @param {Mesh} mesh - which becomes detailable.
    */
   attach(mesh) {
     super.attach(mesh)
@@ -82,10 +87,11 @@ export class QuantityBehavior extends TargetBehavior {
       this.increment(ids, immediate)
     })
 
-    this.preMoveObserver = moveManager.onPreMoveObservable.add(moved => {
+    this.preMoveObserver = moveManager.onPreMoveObservable.add(({ meshes }) => {
       if (
+        this.mesh &&
         !selectionManager.meshes.has(this.mesh) &&
-        moved.some(({ id }) => id === this.mesh?.id) &&
+        meshes.some(({ id }) => id === this.mesh?.id) &&
         this.state.quantity > 1
       ) {
         moveManager.exclude(this.mesh)
@@ -105,7 +111,7 @@ export class QuantityBehavior extends TargetBehavior {
 
   /**
    * Determines whether a movable mesh can increment the current one.
-   * @param {import('@babel/core').Mesh} mesh - tested (movable) mesh.
+   * @param {Mesh} mesh - tested (movable) mesh.
    * @returns {boolean} true if this mesh can increment.
    */
   canIncrement(mesh) {
@@ -125,17 +131,16 @@ export class QuantityBehavior extends TargetBehavior {
    * - runs a move animation
    * - runs a scale animation
    * - destroy corresponding meshes
-   *
-   * @async
    * @param {string[]} meshIds - ids of the pushed mesh.
    * @param {boolean} [immediate=false] - set to true to disable animation.
+   * @returns {Promise<void>}
    */
   async increment(meshIds, immediate = false) {
     const { mesh } = this
-    const meshes = meshIds
-      ?.map(id => mesh.getScene().getMeshById(id))
-      .filter(Boolean)
-    if (!meshes.length) return
+    const meshes = /** @type {Mesh[]} */ (
+      meshIds?.map(id => mesh?.getScene().getMeshById(id)).filter(Boolean)
+    )
+    if (!meshes.length || !mesh) return
 
     const duration = immediate ? 0 : this.state.duration
 
@@ -169,22 +174,27 @@ export class QuantityBehavior extends TargetBehavior {
    * - records the action into the control manager
    * It can not decrement a quantity of 1, nor decrement more than the available quantity
    *
-   * @async
-   * @param {number} [amount=1] - amount to decrement.
+   * @param {number} [count=1] - amount to decrement.
    * @param {boolean} [withMove=false] - when set to true, moves the created meshes aside this one.
-   * @return {import('@babylonjs/core').Mesh} the created mesh, if any.
+   * @returns {Promise<?Mesh>} the created mesh, if any.
    */
   async decrement(count = 1, withMove = false) {
     const { mesh, state } = this
+    /** @type {?Mesh} */
     let created = null
-    if (state.quantity === 1) return created
+    if (!mesh || state.quantity === 1) return created
     const quantity = Math.min(count, state.quantity - 1)
     state.quantity -= quantity
 
-    const serialized = mesh.metadata.serialize()
+    const serialized =
+      /** @type {SerializedMesh & { quantifiable: RequiredQuantifiableState }} */ (
+        mesh.metadata.serialize()
+      )
     serialized.quantifiable.quantity = quantity
     serialized.id = makeId(mesh)
-    created = await createMeshFromState(serialized, mesh.getScene())
+    created = /** @type {Mesh} */ (
+      await createMeshFromState(serialized, mesh.getScene())
+    )
 
     logger.info(
       { mesh, oldQuantity: state.quantity, created, quantity },
@@ -233,27 +243,30 @@ export class QuantityBehavior extends TargetBehavior {
     updateIndicator(this.mesh, quantity)
     // dispose previous drop zone
     if (this.dropZone) {
-      this.removeZone(this.dropZone)
+      this.removeZone(/** @type {SingleDropZone} */ (this.dropZone))
     }
     this.dropZone = this.addZone(
       buildTargetMesh('drop-zone', this.mesh),
       this.state
     )
 
-    attachFunctions(
-      this,
-      actionNames.increment,
-      actionNames.decrement,
-      'canIncrement'
-    )
+    attachFunctions(this, 'increment', 'decrement', 'canIncrement')
     attachProperty(this, 'quantity', () => this.state.quantity)
   }
 }
 
+/**
+ * @param {Mesh} mesh - updated mesh.
+ * @returns {number} mesh's quantity.
+ */
 function getQuantity(mesh) {
   return mesh.metadata?.quantity ?? 1
 }
 
+/**
+ * @param {Mesh} mesh - updated mesh.
+ * @param {number} size - new indicator's size.
+ */
 function updateIndicator(mesh, size) {
   const id = `${mesh.id}.quantity`
   if (size > 1) {
@@ -263,6 +276,10 @@ function updateIndicator(mesh, size) {
   }
 }
 
+/**
+ * @param {Mesh} mesh - mesh to generate Id from.
+ * @returns {string} generated Id.
+ */
 function makeId(mesh) {
   return `${mesh.id}-${crypto.randomUUID()}`
 }

@@ -1,4 +1,5 @@
 <script context="module">
+  // @ts-check
   import ms from 'ms'
   import { fade } from 'svelte/transition'
 
@@ -6,26 +7,45 @@
 
   let enterDuration = 0
   if (browser) {
-    enterDuration = ms(
-      getComputedStyle(document.querySelector(':root'))
-        .getPropertyValue('--short')
-        .trim() || '0ms'
+    enterDuration = /** @type {number} */ (
+      ms(
+        getComputedStyle(
+          /** @type {Element} */ (document.querySelector(':root'))
+        )
+          .getPropertyValue('--short')
+          .trim() || '0ms'
+      )
     )
   }
 </script>
 
 <script>
+  // @ts-check
+  /**
+   * @typedef {import('@src/utils/game-interaction').MenuItem} MenuItem
+   */
+
   import { Button, QuantityButton } from '@src/components'
   import { writable } from 'svelte/store'
   import { _ } from 'svelte-intl'
 
+  /**
+   * @typedef {object} EnterArgs
+   * @property {number} i - animated item index.
+   */
+
+  /** @type {MenuItem[]} list of action menu items. */
   export let items = []
+  /** @type {boolean} whether this menu is opened. */
   export let open = false
+  /** @type {number} absolute horizontal screen position. */
   export let x = 0
+  /** @type {number} absolute vertical screen position. */
   export let y = 0
+  /** @type {number} angle applied to menu items. */
   export let angleShift = Math.PI * -0.5
 
-  const actions = writable(null)
+  const actions = writable(/** @type {?MenuItem[]} */ (null))
   $: {
     // make sure we reset actions to trigger animations again.
     actions.set(null)
@@ -36,10 +56,11 @@
 
   $: left = typeof x === 'number' ? `${x}px` : x
   $: top = typeof y === 'number' ? `${y}px` : y
-  $: radius = 55 + 5 * $actions?.length
+  $: radius = 55 + 5 * ($actions?.length ?? 0)
 
-  function computeItemPosition({ i }) {
-    const angle = (-2 * Math.PI * ($actions.length - i)) / $actions.length
+  function computeItemPosition(/** @type {EnterArgs} */ { i }) {
+    const angle =
+      (-2 * Math.PI * (($actions?.length ?? 0) - i)) / ($actions?.length ?? 1)
     // add 1 radius because css origin is menu's top-left corner, not its center
     return {
       x: radius * (Math.cos(angle + angleShift) + 1),
@@ -47,27 +68,30 @@
     }
   }
 
-  function enter(node, args) {
+  function enter(/** @type {Element} */ node, /** @type {EnterArgs} */ args) {
     const { x, y } = computeItemPosition(args)
     const oX = radius
     const oY = radius
     return {
       delay: enterDuration * 0.75 * args.i,
       duration: enterDuration,
-      css: t =>
+      css: (/** @type {number} */ t) =>
         `opacity: ${t};left: ${oX - t * (oX - x)}px; top: ${
           oY - t * (oY - y)
         }px;`
     }
   }
 
-  function hide() {
+  // node is not used, but required to be considered as an animation.
+  // eslint-disable-next-line no-unused-vars
+  function hide(/** @type {Element}*/ node) {
     return { duration: 0, css: () => 'opacity:0' }
   }
 
-  function handleEnterEnd(args) {
+  function handleEnterEnd(/** @type {EnterArgs & { target: ? }} */ args) {
     const { x, y } = computeItemPosition(args)
-    args.target.style = `opacity: 1; left: ${x}px; top: ${y}px;`
+    const element = /** @type {{ style: string }} */ (args.target)
+    element.style = `opacity: 1; left: ${x}px; top: ${y}px;`
   }
 </script>
 

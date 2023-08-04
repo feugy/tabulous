@@ -1,5 +1,6 @@
 apps/games/assets/
 apps/games/descriptors/
+apps/web/.svelte-kit/
 coverage/
 dist/
 dist-atelier/

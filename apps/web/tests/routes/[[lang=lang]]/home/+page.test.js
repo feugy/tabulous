@@ -1,30 +1,34 @@
+// @ts-check
+/**
+ * @typedef {import('@src/common').Locale} Locale
+ * @typedef {import('@src/graphql').CatalogItem} CatalogItem
+ * @typedef {import('@src/graphql').Game} Game
+ * @typedef {import('@src/graphql').Friendship} Friendship
+ * @typedef {import('@src/graphql').LightGame} LightGame
+ * @typedef {import('@src/graphql').LightPlayer} LightPlayer
+ */
+/**
+ * @template {any[]} P, R
+ * @typedef {import('vitest').Mock<P, R>} Mock
+ */
+
 import { faker } from '@faker-js/faker'
 import { initLocale } from '@src/common'
 import { load } from '@src/routes/[[lang=lang]]/home/+page'
 import HomePage from '@src/routes/[[lang=lang]]/home/+page.svelte'
-import {
-  createGame,
-  currentGame,
-  deleteGame,
-  joinGame,
-  listCatalog,
-  listFriends,
-  listGames,
-  promoteGame,
-  receiveGameListUpdates,
-  toastError,
-  toastInfo
-} from '@src/stores'
+import * as stores from '@src/stores'
 import { fireEvent, render, screen, within } from '@testing-library/svelte'
 import { translate } from '@tests/test-utils'
-import { readable } from 'svelte/store'
+import { BehaviorSubject } from 'rxjs'
 import html from 'svelte-htm'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { goto } from '$app/navigation'
 
 vi.mock('@src/stores', async () => {
-  const stores = await vi.importActual('@src/stores')
+  const stores = /** @type {Record<string, ?>} */ (
+    await vi.importActual('@src/stores')
+  )
   const { BehaviorSubject } = await import('rxjs')
   return {
     ...stores,
@@ -42,25 +46,70 @@ vi.mock('@src/stores', async () => {
   }
 })
 
-beforeEach(vi.clearAllMocks)
+const listCatalog =
+  /** @type {Mock<Parameters<typeof stores.listCatalog>, ReturnType<typeof stores.listCatalog>>} */ (
+    stores.listCatalog
+  )
+const listGames =
+  /** @type {Mock<Parameters<typeof stores.listGames>, ReturnType<typeof stores.listGames>>} */ (
+    stores.listGames
+  )
+const createGame =
+  /** @type {Mock<Parameters<typeof stores.createGame>, ReturnType<typeof stores.createGame>>} */ (
+    stores.createGame
+  )
+const deleteGame =
+  /** @type {Mock<Parameters<typeof stores.deleteGame>, ReturnType<typeof stores.deleteGame>>} */ (
+    stores.deleteGame
+  )
+const joinGame =
+  /** @type {Mock<Parameters<typeof stores.joinGame>, Promise<Game>>} */ (
+    stores.joinGame
+  )
+const promoteGame =
+  /** @type {Mock<Parameters<typeof stores.promoteGame>, ReturnType<typeof stores.promoteGame>>} */ (
+    stores.promoteGame
+  )
+const listFriends = /** @type {Mock<[], BehaviorSubject<Friendship[]>>} */ (
+  stores.listFriends
+)
+const receiveGameListUpdates =
+  /** @type {Mock<[LightGame[]|undefined], BehaviorSubject<LightGame[]>>} */ (
+    stores.receiveGameListUpdates
+  )
+const currentGame = /** @type {BehaviorSubject<?Game>} */ (stores.currentGame)
+const toastError = /** @type {Mock<?, ?>} */ (stores.toastError)
+const toastInfo = /** @type {Mock<?, ?>} */ (stores.toastInfo)
 
-describe.each([
-  { title: '/', lang: undefined, locale: 'fr', urlRoot: '' },
-  { title: '/en', lang: 'en', locale: 'en', urlRoot: '/en' }
-])('$title', ({ lang, locale, urlRoot }) => {
+beforeEach(() => {
+  vi.clearAllMocks()
+})
+
+describe.each(
+  /** @type {{ title: String, lang: Locale|undefined, locale: Locale, urlRoot: string }[]} */ ([
+    { title: '/', lang: undefined, locale: 'fr', urlRoot: '' },
+    { title: '/en', lang: 'en', locale: 'en', urlRoot: '/en' }
+  ])
+)('$title', ({ lang, locale, urlRoot }) => {
   beforeAll(() => initLocale(lang))
 
   describe('/home route loader', () => {
     it('loads catalog only for anonymous user', async () => {
       const parent = async () => ({ session: null })
-      const catalog = [{ id: 'game-1' }, { id: 'game-2' }]
+      /** @type {CatalogItem[]} */
+      const catalog = [
+        { name: 'game-1', locales: {} },
+        { name: 'game-2', locales: {} }
+      ]
       listCatalog.mockResolvedValueOnce(catalog)
       expect(
-        await load({
-          parent,
-          url: new URL(`https://tabulous.fr${urlRoot}/home`),
-          params: { lang }
-        })
+        await load(
+          /** @type {?} */ ({
+            parent,
+            url: new URL(`https://tabulous.fr${urlRoot}/home`),
+            params: { lang }
+          })
+        )
       ).toEqual({
         catalog,
         creationError: null,
@@ -72,16 +121,23 @@ describe.each([
 
     it('loads catalog and current games for authenticated user', async () => {
       const parent = async () => ({ session: { player: { name: 'dude' } } })
-      const catalog = [{ id: 'game-1' }, { id: 'game-2' }]
-      const currentGames = [{ id: 'game-3' }]
+      /** @type {CatalogItem[]} */
+      const catalog = [
+        { name: 'game-1', locales: {} },
+        { name: 'game-2', locales: {} }
+      ]
+      /** @type {LightGame[]} */
+      const currentGames = [{ id: 'game-3', created: Date.now() }]
       listCatalog.mockResolvedValueOnce(catalog)
       listGames.mockResolvedValueOnce(currentGames)
       expect(
-        await load({
-          parent,
-          url: new URL(`https://tabulous.fr${urlRoot}/home`),
-          params: { lang }
-        })
+        await load(
+          /** @type {?} */ ({
+            parent,
+            url: new URL(`https://tabulous.fr${urlRoot}/home`),
+            params: { lang }
+          })
+        )
       ).toEqual({
         catalog,
         creationError: null,
@@ -93,19 +149,22 @@ describe.each([
 
     it('does not create game when unauthenticated', async () => {
       const parent = async () => ({ session: null })
+      /** @type {CatalogItem[]} */
       const catalog = [
-        { id: 'game-1', name: 'klondike' },
-        { id: 'game-2', name: 'chess' }
+        { locales: {}, name: 'klondike' },
+        { locales: {}, name: 'chess' }
       ]
       listCatalog.mockResolvedValueOnce(catalog)
       expect(
-        await load({
-          parent,
-          url: new URL(
-            `https://tabulous.fr${urlRoot}/home?game-name=${catalog[0].name}`
-          ),
-          params: { lang }
-        })
+        await load(
+          /** @type {?} */ ({
+            parent,
+            url: new URL(
+              `https://tabulous.fr${urlRoot}/home?game-name=${catalog[0].name}`
+            ),
+            params: { lang }
+          })
+        )
       ).toEqual({
         catalog,
         creationError: null,
@@ -118,11 +177,15 @@ describe.each([
 
     describe('given an authenticated user', () => {
       const parent = async () => ({ session: { player: { name: 'dude' } } })
+      /** @type {CatalogItem[]} */
       const catalog = [
-        { id: 'game-1', name: 'klondike' },
-        { id: 'game-2', name: 'chess' }
+        { locales: {}, name: 'klondike' },
+        { locales: {}, name: 'chess' }
       ]
-      const currentGames = [{ id: 'game-3' }]
+      /** @type {LightGame[]} */
+      const currentGames = [
+        { id: 'game-3', created: Date.now(), kind: 'chess' }
+      ]
 
       beforeEach(() => {
         listCatalog.mockResolvedValueOnce(catalog)
@@ -131,15 +194,17 @@ describe.each([
 
       it('redirects to new game on creation', async () => {
         const id = faker.string.uuid()
-        createGame.mockResolvedValueOnce({ id })
+        createGame.mockResolvedValueOnce({ id, created: Date.now() })
         await expect(
-          load({
-            parent,
-            url: new URL(
-              `https://tabulous.fr${urlRoot}/home?game-name=${catalog[1].name}`
-            ),
-            params: { lang }
-          })
+          load(
+            /** @type {?} */ ({
+              parent,
+              url: new URL(
+                `https://tabulous.fr${urlRoot}/home?game-name=${catalog[1].name}`
+              ),
+              params: { lang }
+            })
+          )
         ).rejects.toEqual({ status: 307, location: `${urlRoot}/game/${id}` })
         expect(listCatalog).toHaveBeenCalledTimes(1)
         expect(listGames).toHaveBeenCalledTimes(1)
@@ -151,13 +216,15 @@ describe.each([
         const error = new Error(`You own 6 games, you can not create more`)
         createGame.mockRejectedValueOnce(error)
         expect(
-          await load({
-            parent,
-            url: new URL(
-              `https://tabulous.fr${urlRoot}/home?game-name=${catalog[1].name}`
-            ),
-            params: { lang }
-          })
+          await load(
+            /** @type {?} */ ({
+              parent,
+              url: new URL(
+                `https://tabulous.fr${urlRoot}/home?game-name=${catalog[1].name}`
+              ),
+              params: { lang }
+            })
+          )
         ).toEqual({ creationError: error, currentGames, catalog })
         expect(listCatalog).toHaveBeenCalledTimes(1)
         expect(listGames).toHaveBeenCalledTimes(1)
@@ -168,29 +235,33 @@ describe.each([
   })
 
   describe('/home route', () => {
-    const player = { username: 'dude' }
-    const peer = { username: 'duke' }
-    const peer2 = { username: 'reno' }
+    /** @type {LightPlayer} */
+    const player = { username: 'dude', id: 'p1', currentGameId: null }
+    /** @type {LightPlayer} */
+    const peer = { username: 'duke', id: 'p2', currentGameId: null }
+    /** @type {LightPlayer} */
+    const peer2 = { username: 'reno', id: 'p3', currentGameId: null }
     const parent = async () => ({ session: { player } })
+    /** @type {CatalogItem[]} */
     const catalog = [
       {
-        id: 'game-1',
         name: 'klondike',
         locales: { fr: { title: 'Solitaire' }, en: { title: 'Klondike' } },
         maxSeats: 1
       },
       {
-        id: 'game-2',
         name: 'draughts',
         locales: { fr: { title: 'Dames' }, en: { title: 'Draughts' } }
       }
     ]
+    /** @type {LightGame[]} */
     const games = [
       {
         id: 'game-3',
         kind: 'chess',
-        locales: { fr: { title: 'Echecs', en: { title: 'Chess' } } },
-        players: []
+        created: Date.now(),
+        locales: { fr: { title: 'Echecs' }, en: { title: 'Chess' } },
+        players: [{ ...player, isOwner: true }]
       }
     ]
 
@@ -198,20 +269,26 @@ describe.each([
       currentGame.next(null)
       listCatalog.mockResolvedValueOnce([...catalog])
       listGames.mockResolvedValueOnce(games)
-      listFriends.mockReturnValueOnce(readable([]))
-      receiveGameListUpdates.mockImplementation(games => readable(games))
+      listFriends.mockReturnValueOnce(
+        new BehaviorSubject(/** @type {Friendship[]} */ ([]))
+      )
+      receiveGameListUpdates.mockImplementation(
+        games => new BehaviorSubject(games ?? [])
+      )
     })
 
-    async function renderWithLoad(gameName) {
-      const data = await load({
-        parent,
-        url: new URL(
-          `https://tabulous.fr${urlRoot}/home${
-            gameName ? `?game-name=${gameName}` : ''
-          }`
-        ),
-        params: { lang }
-      })
+    async function renderWithLoad(/** @type {string} */ gameName) {
+      const data = await load(
+        /** @type {?} */ ({
+          parent,
+          url: new URL(
+            `https://tabulous.fr${urlRoot}/home${
+              gameName ? `?game-name=${gameName}` : ''
+            }`
+          ),
+          params: { lang }
+        })
+      )
       return render(
         html`<${HomePage} data=${{ ...data, ...(await parent()) }} />`
       )
@@ -221,7 +298,7 @@ describe.each([
       await renderWithLoad()
       fireEvent.click(
         screen.getByRole('heading', {
-          name: catalog[1].locales[locale].title
+          name: catalog[1].locales[locale]?.title
         })
       )
       expect(goto).toHaveBeenCalledWith(
@@ -259,11 +336,13 @@ describe.each([
 
     it('can cancels game deletion', async () => {
       await renderWithLoad()
-      const gameLink = screen
-        .getByRole('heading', {
-          name: games[0].locales.fr.title
-        })
-        .closest('article')
+      const gameLink = /** @type {HTMLElement} */ (
+        screen
+          .getByRole('heading', {
+            name: games[0].locales?.[locale]?.title
+          })
+          .closest('article')
+      )
       await fireEvent.click(
         within(gameLink).getByRole('button', { name: 'delete' })
       )
@@ -279,11 +358,13 @@ describe.each([
 
     it('displays a toaster on game deletion', async () => {
       await renderWithLoad()
-      const gameLink = screen
-        .getByRole('heading', {
-          name: games[0].locales.fr.title
-        })
-        .closest('article')
+      const gameLink = /** @type {HTMLElement} */ (
+        screen
+          .getByRole('heading', {
+            name: games[0].locales?.[locale]?.title
+          })
+          .closest('article')
+      )
       await fireEvent.click(
         within(gameLink).getByRole('button', { name: 'delete' })
       )
@@ -302,22 +383,28 @@ describe.each([
     })
 
     describe('given some lobbies', () => {
+      /** @type {Game[]} */
       const gamesWithLobbies = [
-        { id: 'game-4', players: [player, peer, peer2] },
-        { id: 'game-5', players: [player] },
+        { id: 'game-4', created: Date.now(), players: [player, peer, peer2] },
+        { id: 'game-5', created: Date.now(), players: [player] },
         ...games
       ]
 
+      /** @type {HTMLElement[]} */
       let lobbyLinks
 
       beforeEach(async () => {
         listGames.mockResolvedValue(gamesWithLobbies)
-        receiveGameListUpdates.mockImplementation(() =>
-          readable(gamesWithLobbies)
+        receiveGameListUpdates.mockImplementation(
+          () => new BehaviorSubject(gamesWithLobbies)
         )
-        joinGame.mockImplementation(async ({ gameId }) =>
-          currentGame.next(gamesWithLobbies.find(({ id }) => id === gameId))
-        )
+        joinGame.mockImplementation(async ({ gameId }) => {
+          const game = /** @type {Game} */ (
+            gamesWithLobbies.find(({ id }) => id === gameId)
+          )
+          currentGame.next(game)
+          return game
+        })
 
         await renderWithLoad()
 
@@ -369,7 +456,7 @@ describe.each([
 
       it('can not promote lobby with multiple player to solo game', async () => {
         await fireEvent.click(lobbyLinks[0])
-        const { title } = catalog[0].locales[locale]
+        const { title } = catalog[0].locales[locale] ?? {}
         await fireEvent.click(
           screen.getByRole('heading', {
             name: title
@@ -385,7 +472,7 @@ describe.each([
 
       it('can not promote lobby with too many players to limited seats game', async () => {
         await fireEvent.click(lobbyLinks[0])
-        const { title } = catalog[1].locales[locale]
+        const { title } = catalog[1].locales[locale] ?? {}
         await fireEvent.click(
           screen.getByRole('heading', {
             name: title

@@ -1,4 +1,11 @@
-import { Color4 } from '@babylonjs/core/Maths/math.color'
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').PBRSpecularGlossinessMaterial} Material
+ */
+
+import { Color3 } from '@babylonjs/core/Maths/math.color'
 import { faker } from '@faker-js/faker'
 import { controlManager, materialManager } from '@src/3d/managers'
 import { createPrism } from '@src/3d/meshes'
@@ -6,6 +13,7 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
 import { configures3dTestEngine, expectPosition } from '../../test-utils'
 
+/** @type {Scene} */
 let scene
 configures3dTestEngine(created => (scene = created.scene))
 
@@ -13,7 +21,7 @@ beforeAll(() => materialManager.init({ scene }))
 
 describe('createPrism()', () => {
   it('creates a prism with default values and no behavior', async () => {
-    const mesh = await createPrism()
+    const mesh = await createPrism({ id: '', texture: '' }, scene)
     const { boundingBox } = mesh.getBoundingInfo()
     expect(mesh.name).toEqual('prism')
     expect(boundingBox.extendSize.x * 2).toEqual(3)
@@ -29,22 +37,27 @@ describe('createPrism()', () => {
 
   it('creates a prism with a single color', async () => {
     const color = '#1E282F'
-    const mesh = await createPrism({ texture: color })
+    const mesh = await createPrism({ id: '', texture: color }, scene)
     const { boundingBox } = mesh.getBoundingInfo()
     expect(mesh.name).toEqual('prism')
     expect(boundingBox.extendSize.x * 2).toEqual(3)
     expect(boundingBox.extendSize.y * 2).toEqual(1)
     expect(mesh.isPickable).toBe(false)
-    expect(mesh.material.diffuseColor).toEqual(
-      Color4.FromHexString(color).toLinearSpace()
+    expect(/** @type {Material} */ (mesh.material).diffuseColor).toEqual(
+      Color3.FromHexString(color).toLinearSpace()
     )
   })
 
   it('creates a prism with initial transformation', async () => {
-    const mesh = await createPrism({
-      dimension: 4,
-      transform: { roll: Math.PI * -0.5 }
-    })
+    const mesh = await createPrism(
+      {
+        id: '',
+        texture: '',
+        diameter: 2,
+        transform: { roll: Math.PI * -0.5 }
+      },
+      scene
+    )
     const { boundingBox } = mesh.getBoundingInfo()
     expect(mesh.name).toEqual('prism')
     expect(boundingBox.extendSize.x * 2).toBeCloseTo(1)
@@ -52,6 +65,7 @@ describe('createPrism()', () => {
   })
 
   describe('given a prism with initial position, edges number, dimension, images and behaviors', () => {
+    /** @type {Mesh} */
     let mesh
 
     const width = faker.number.int({ min: 3, max: 5 })
@@ -61,6 +75,7 @@ describe('createPrism()', () => {
     const x = faker.number.int(999)
     const y = faker.number.int(999)
     const z = faker.number.int(999)
+    const texture = faker.color.rgb()
     const prismRotation = faker.number.int(999)
     const faceUV = [
       Array.from({ length: 4 }, () => faker.number.int(999)),
@@ -77,18 +92,22 @@ describe('createPrism()', () => {
     }
 
     beforeEach(async () => {
-      mesh = await createPrism({
-        id,
-        edges,
-        prismRotation,
-        width,
-        height,
-        x,
-        y,
-        z,
-        faceUV,
-        ...behaviors
-      })
+      mesh = await createPrism(
+        {
+          id,
+          texture,
+          edges,
+          prismRotation,
+          width,
+          height,
+          x,
+          y,
+          z,
+          faceUV,
+          ...behaviors
+        },
+        scene
+      )
     })
 
     it('has all the expected data', () => {
@@ -128,6 +147,7 @@ describe('createPrism()', () => {
         x,
         y,
         z,
+        texture,
         faceUV,
         width,
         edges,

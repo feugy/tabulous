@@ -1,4 +1,10 @@
 <script>
+  // @ts-check
+  /**
+   * @typedef {import('@src/components').LabelMenuOption} LabelMenuOption
+   * @typedef {import('@src/3d/managers/camera').CameraPosition} CameraPosition
+   */
+
   import { Dropdown } from '@src/components'
   import { isFullscreen, toggleFullscreen } from '@src/stores'
   import {
@@ -20,13 +26,19 @@
 
   import CameraSwitch from './CameraSwitch.svelte'
 
+  /** @type {number} number of milliseconds to hold pointer down before it is considered as long. */
   export let longTapDelay
   const homeAction = 'home'
   const fullscreenAction = 'fullscreen'
   const indicatorsAction = 'indicators'
-  const corner = buildCornerClipPath({ placement: 'top', inverted: true })
+  const [cornerId, corner] = buildCornerClipPath({
+    placement: 'top',
+    inverted: true
+  })
+  /** @type {?LabelMenuOption|undefined} */
   let value = null
 
+  /** @type {LabelMenuOption[]} */
   $: options = [
     { icon: 'home', label: $_('actions.quit-game'), id: homeAction },
     {
@@ -62,7 +74,7 @@
   }
 </script>
 
-<aside style="--corner: url(#{corner.id});">
+<aside style="--corner: url(#{cornerId});">
   <Dropdown
     title={$_('tooltips.game-menu')}
     withArrow={false}
@@ -75,18 +87,14 @@
     {longTapDelay}
     current={$currentCamera}
     saves={$cameraSaves}
-    on:longTap={() => longInputs.next()}
+    on:longTap={({ detail: event }) => longInputs.next(event)}
     on:restore={({ detail: { index } }) => restoreCamera(index)}
     on:save={({ detail: { index } }) => saveCamera(index)}
   />
 </aside>
 <svg style="width:0px; height:0px">
-  <clipPath id={corner.id} clipPathUnits="objectBoundingBox">
-    <path
-      d={corner.d}
-      transform-origin="0.5 0.5"
-      transform={corner.transform}
-    />
+  <clipPath id={cornerId} clipPathUnits="objectBoundingBox">
+    <path {...corner} />
   </clipPath>
 </svg>
 

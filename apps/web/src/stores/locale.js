@@ -1,10 +1,19 @@
+// @ts-check
+/**
+ * @typedef {import('@src/common').Locale} Locale
+ */
+
 import { getValue } from '@src/utils'
 import { derived } from 'svelte/store'
 import { locale } from 'svelte-intl'
 
+/** @type {Locale} */
 const defaultLocale = 'fr'
 /* c8 ignore start */
-const locale$ = derived(locale, value => value || defaultLocale)
+const locale$ = derived(
+  locale,
+  value => /** @type {Locale} */ (value) || defaultLocale
+)
 /* c8 ignore stop */
 
 /**
@@ -18,7 +27,7 @@ export const comparator$ = derived(
 /**
  * Builds a readable store containing a function for sorting arrays, based on locale collator.
  * It can dive into compared object properties to find a comparable value.
- * @param {string} propertyPath - the path to property used for comparison.
+ * @param {string} [propertyPath] - the path to property used for comparison.
  * Use . to dive into sub-object (or array index). You can use $locale as a placeholder for a propety named after the current locale:
  * `locales.$locale.titles`
  * @returns {import('svelte/store').Readable<<T>(a: T, b: T) => number>}
@@ -26,7 +35,7 @@ export const comparator$ = derived(
 export function buildLocaleComparator(propertyPath) {
   return derived([comparator$, locale$], ([comparator, locale]) => {
     const path = propertyPath?.replace('$locale', locale).split('.') ?? []
-    return (itemA, itemB) =>
+    return (/** @type {?} */ itemA, /** @type {?} */ itemB) =>
       comparator.compare(getValue(itemA, path), getValue(itemB, path))
   })
 }

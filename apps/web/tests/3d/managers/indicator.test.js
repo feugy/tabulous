@@ -1,3 +1,13 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ * @typedef {import('@src/3d/managers/indicator').FeedbackIndicator} FeedbackIndicator
+ * @typedef {import('@src/3d/managers/indicator').ManagedFeedback} ManagedFeedback
+ * @typedef {import('@src/3d/managers/indicator').ManagedPointer} ManagedPointer
+ * @typedef {import('@src/3d/managers/indicator').ManagedIndicator} ManagedIndicator
+ */
+
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
 import { indicatorManager as manager } from '@src/3d/managers'
@@ -19,12 +29,14 @@ import {
 } from '../../test-utils'
 
 describe('IndicatorManager', () => {
+  /** @type {Scene} */
   let scene
-  configures3dTestEngine(created => {
-    scene = created.scene
-  })
 
-  beforeEach(vi.resetAllMocks)
+  configures3dTestEngine(created => (scene = created.scene))
+
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
 
   it('has initial state', async () => {
     expect(manager.onChangeObservable).toBeDefined()
@@ -39,6 +51,7 @@ describe('IndicatorManager', () => {
   })
 
   describe('given initialised', () => {
+    /** @type {Mesh} */
     let mesh
     const changeReceived = vi.fn()
 
@@ -53,20 +66,24 @@ describe('IndicatorManager', () => {
 
     describe('registerMeshIndicator()', () => {
       it('registers a mesh', () => {
-        const indicator = { id: mesh.id, mesh }
+        const indicator = { id: mesh.id, mesh, size: 1 }
         expect(manager.isManaging(indicator)).toBe(false)
 
         expect(manager.registerMeshIndicator(indicator)).toEqual(indicator)
         expect(manager.isManaging(indicator)).toBe(true)
         expect(manager.getById(indicator.id)).toEqual(indicator)
-        expectChanged([{ id: mesh.id, screenPosition: { x: 1024, y: 500.85 } }])
+        expectChanged([
+          { id: mesh.id, screenPosition: { x: 1024, y: 500.85 }, size: 1 }
+        ])
       })
 
       it('automatically unregisters a mesh upon disposal', () => {
-        const indicator = { id: mesh.id, mesh }
+        const indicator = { id: mesh.id, mesh, size: 1 }
         manager.registerMeshIndicator(indicator)
         expect(manager.isManaging(indicator)).toBe(true)
-        expectChanged([{ id: mesh.id, screenPosition: { x: 1024, y: 500.85 } }])
+        expectChanged([
+          { id: mesh.id, screenPosition: { x: 1024, y: 500.85 }, size: 1 }
+        ])
 
         mesh.dispose()
         expect(manager.isManaging(indicator)).toBe(false)
@@ -95,42 +112,49 @@ describe('IndicatorManager', () => {
 
     describe('registerFeedback()', () => {
       it('registers a new feedback', () => {
+        /** @type {FeedbackIndicator} */
         const indicator = {
           position: mesh.absolutePosition.asArray(),
-          fn: 'push'
+          action: 'push'
         }
-        expect(manager.isManaging(indicator)).toBe(false)
+        expect(manager.isManaging(/** @type {?} */ (indicator))).toBe(false)
 
         manager.registerFeedback(indicator)
-        expect(indicator.isFeedback).toBe(true)
-        expect(indicator.id).toBeDefined()
-        expect(indicator.screenPosition?.x).toBeCloseTo(1024)
-        expect(indicator.screenPosition?.y).toBeCloseTo(512)
-        expect(manager.isManaging(indicator)).toBe(false)
-        expect(manager.getById(indicator.id)).toBeUndefined()
-        expectChanged([indicator])
+        const managed = /** @type {ManagedFeedback} */ (indicator)
+        expect(managed.isFeedback).toBe(true)
+        expect(managed.id).toBeDefined()
+        expect(managed.screenPosition?.x).toBeCloseTo(1024)
+        expect(managed.screenPosition?.y).toBeCloseTo(512)
+        expect(manager.isManaging(/** @type {?} */ (indicator))).toBe(false)
+        expect(manager.getById(managed.id)).toBeUndefined()
+        expectChanged([managed])
       })
 
       it('does not notify for out-of-screen feedback', () => {
+        /** @type {FeedbackIndicator} */
         const indicator = {
           position: [10000, 0, 10000],
-          fn: 'push'
+          action: 'push'
         }
-        expect(manager.isManaging(indicator)).toBe(false)
+        expect(manager.isManaging(/** @type {?} */ (indicator))).toBe(false)
 
         manager.registerFeedback(indicator)
-        expect(indicator.isFeedback).toBe(true)
-        expect(indicator.id).toBeDefined()
-        expect(indicator.screenPosition?.x).toBeCloseTo(4147.67)
-        expect(indicator.screenPosition?.y).toBeCloseTo(-2373.89)
-        expect(manager.isManaging(indicator)).toBe(false)
-        expect(manager.getById(indicator.id)).toBeUndefined()
+        const managed = /** @type {ManagedFeedback} */ (indicator)
+        expect(managed.isFeedback).toBe(true)
+        expect(managed.id).toBeDefined()
+        expect(managed.screenPosition?.x).toBeCloseTo(4147.67)
+        expect(managed.screenPosition?.y).toBeCloseTo(-2373.89)
+        expect(manager.isManaging(managed)).toBe(false)
+        expect(manager.getById(managed.id)).toBeUndefined()
         expect(changeReceived).not.toHaveBeenCalled()
       })
 
       it('ignores postion-less indicators', () => {
+        // @ts-expect-error
         manager.registerFeedback()
+        // @ts-expect-error
         manager.registerFeedback({})
+        // @ts-expect-error
         manager.registerFeedback({ position: mesh.absolutePosition })
         expect(changeReceived).not.toHaveBeenCalled()
       })
@@ -148,20 +172,24 @@ describe('IndicatorManager', () => {
     })
 
     describe('given registered indicators', () => {
+      /** @type {ManagedIndicator[]} */
       let indicators
       const playerIds = [faker.string.uuid(), faker.string.uuid()]
+      /** @type {ManagedPointer[]} */
       let pointers
+      /** @type {FeedbackIndicator} */
       let feedback
 
       beforeEach(() => {
         manager.init({ scene })
-        indicators = [{ id: 'box1' }, { id: 'box2' }].map(
-          ({ id, ...props }) => {
-            const mesh = createBox(id, {})
-            const indicator = { id, mesh, ...props }
-            return manager.registerMeshIndicator(indicator)
-          }
-        )
+        indicators = [
+          { id: 'box1', size: 10 },
+          { id: 'box2', size: 5 }
+        ].map(({ id, ...props }) => {
+          const mesh = createBox(id, {})
+          const indicator = { id, mesh, ...props }
+          return manager.registerMeshIndicator(indicator)
+        })
         pointers = JSON.parse(
           JSON.stringify(
             playerIds.map((playerId, rank) =>
@@ -173,7 +201,10 @@ describe('IndicatorManager', () => {
             )
           )
         )
-        feedback = { position: indicators[0].mesh.absolutePosition, fn: 'snap' }
+        feedback = {
+          position: indicators[0].mesh.absolutePosition.asArray(),
+          action: 'snap'
+        }
         manager.registerFeedback(feedback)
         changeReceived.mockReset()
       })
@@ -219,14 +250,15 @@ describe('IndicatorManager', () => {
 
       describe('registerMeshIndicator()', () => {
         it('updates existing indicators', async () => {
-          const [indicator] = indicators
+          const [indicator1, indicator2] = indicators
           await waitNextRender(scene)
           expect(changeReceived).not.toHaveBeenCalled()
-          expect(manager.getById(indicator.id)).not.toHaveProperty('custom')
+          expect(manager.getById(indicator1.id)).not.toHaveProperty('custom')
 
-          manager.registerMeshIndicator({ ...indicator, custom: 5 })
-          expect(manager.getById(indicator.id)).toHaveProperty('custom', 5)
-          expectChanged([...indicators, ...pointers])
+          const size = 18
+          manager.registerMeshIndicator({ ...indicator1, size })
+          expect(manager.getById(indicator1.id)).toHaveProperty('size', size)
+          expectChanged([{ ...indicator1, size }, indicator2, ...pointers])
         })
       })
 
@@ -306,24 +338,29 @@ describe('IndicatorManager', () => {
       })
     })
 
-    function expectChanged(indicators = []) {
+    function expectChanged(
+      /** @type {(Partial<ManagedIndicator>|Partial<ManagedPointer>|Partial<ManagedFeedback>)[]} */ indicators = []
+    ) {
       expect(changeReceived).toHaveBeenCalledTimes(1)
       const changed = changeReceived.mock.calls[0][0]
       expect(changed).toHaveLength(indicators.length)
       for (const [
         rank,
         // do not compare mesh because vi fail to serialize them
+        // @ts-expect-error
         // eslint-disable-next-line no-unused-vars
-        { mesh, screenPosition, ...rest }
+        { mesh, screenPosition, ...expected }
       ] of indicators.entries()) {
-        expect(changed[rank]).toMatchObject(rest)
+        // do not compare mesh because vi fail to serialize them
+        // eslint-disable-next-line no-unused-vars
+        const { mesh, ...actual } = changed[rank]
+        expect(actual).toMatchObject(expected)
         expectScreenPosition(
           changed[rank].screenPosition,
-          screenPosition,
+          screenPosition ?? { x: 0, y: 0 },
           `indicator #${rank}`
         )
       }
-      expect()
       changeReceived.mockReset()
     }
   })

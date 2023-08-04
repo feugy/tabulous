@@ -1,19 +1,25 @@
 <script>
+  // @ts-check
   import { TermsOfService } from '@src/components'
   import { createEventDispatcher, onDestroy, onMount } from 'svelte'
 
+  /** @type {import('svelte').EventDispatcher<{ end: void }>} */
   const dispatch = createEventDispatcher()
+  /** @type {?HTMLElement } */
   let delimiter
+  /** @type {?IntersectionObserver} */
   let intersectionObserver = null
 
   onMount(() => {
-    intersectionObserver = new IntersectionObserver(function (entries) {
-      if (entries[0].intersectionRatio > 0) {
-        dispatch('end')
-        unwireObserver()
-      }
-    })
-    intersectionObserver.observe(delimiter)
+    if (delimiter) {
+      intersectionObserver = new IntersectionObserver(function (entries) {
+        if (entries[0].intersectionRatio > 0) {
+          dispatch('end')
+          unwireObserver()
+        }
+      })
+      intersectionObserver.observe(delimiter)
+    }
   })
 
   onDestroy(unwireObserver)

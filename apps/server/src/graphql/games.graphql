@@ -1,4 +1,11 @@
-# import Player from "players.graphql"
+type GamePlayer {
+  id: ID!
+  username: String!
+  currentGameId: ID
+  avatar: String
+  isGuest: Boolean
+  isOwner: Boolean
+}
 
 type Game {
   """
@@ -6,7 +13,7 @@ type Game {
   """
   id: ID!
   created: Float!
-  players: [Player]!
+  players: [GamePlayer]!
   messages: [Message]
   """
   game properties
@@ -436,7 +443,7 @@ type GameParameters {
   id: ID!
   kind: String
   locales: ItemLocales
-  players: [Player]!
+  players: [GamePlayer]!
   preferences: [PlayerPreference]
   rulesBookPageCount: Int
   availableSeats: Int

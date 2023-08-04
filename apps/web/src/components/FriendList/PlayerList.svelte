@@ -1,17 +1,25 @@
 <script>
+  // @ts-check
+  /**
+   * @typedef {import('@src/graphql').GameOrGameParameters} GameOrGameParameters
+   * @typedef {import('@src/graphql').LightPlayer} Player
+   */
+
   import { kick } from '@src/stores'
   import { isLobby } from '@src/utils'
-import { createEventDispatcher } from 'svelte'
+  import { createEventDispatcher } from 'svelte'
   import { _ } from 'svelte-intl'
 
   import { Button, PlayerThumbnail } from '..'
 
+  /** @type {({ player: Player, isNotFriend: boolean })[]} list of game/lobby active players. */
   export let players
+  /** @type {GameOrGameParameters} game data. */
   export let game
 
   const dispatch = createEventDispatcher()
 
-  function canBeKicked(player) {
+  function canBeKicked(/** @type {Player} */ player) {
     return game && !player.isOwner && (player.isGuest || isLobby(game))
   }
 </script>

@@ -1,5 +1,10 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@tabulous/server/src/graphql/types').DetailableState} DetailableState
+ */
+
 import { controlManager } from '../managers/control'
-import { actionNames } from '../utils/actions'
 import {
   attachFunctions,
   attachProperty,
@@ -7,23 +12,15 @@ import {
 } from '../utils/behaviors'
 import { DetailBehaviorName } from './names'
 
-/**
- * @typedef {object} DetailableState behavior persistent state, including:
- * @property {string} frontImage - front image url.
- * @property {string} backImage - back image url.
- */
-
 export class DetailBehavior {
   /**
    * Creates behavior to get details of a mesh.
-   *
-   * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
-   * @property {DetailableState} state - the behavior's current state.
-   *
    * @param {DetailableState} state - behavior state.
    */
-  constructor(state = {}) {
+  constructor(state = { frontImage: '' }) {
+    /** @type {?Mesh} mesh - the related mesh. */
     this.mesh = null
+    /**  @type {DetailableState} state - the behavior's current state. */
     this.state = state
   }
 
@@ -36,7 +33,7 @@ export class DetailBehavior {
 
   /**
    * Does nothing.
-   * @see {@link import('@babylonjs/core').Behavior.init}
+   * @see https://doc.babylonjs.com/typedoc/interfaces/babylon.behavior#init
    */
   init() {}
 
@@ -45,7 +42,7 @@ export class DetailBehavior {
    * - `frontImage` property.
    * - `backImage` property.
    * - the `detail()` method.
-   * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
+   * @param {Mesh} mesh - which becomes detailable.
    */
   attach(mesh) {
     this.mesh = mesh
@@ -67,7 +64,7 @@ export class DetailBehavior {
     controlManager.onDetailedObservable.notifyObservers({
       mesh: this.mesh,
       data: {
-        image: selectDetailedFace(this.mesh)
+        image: /** @type {string} */ (selectDetailedFace(this.mesh))
       }
     })
   }
@@ -76,12 +73,12 @@ export class DetailBehavior {
    * Updates this behavior's state and mesh to match provided data.
    * @param {DetailableState} state - state to update to.
    */
-  fromState({ frontImage = null, backImage = null } = {}) {
+  fromState({ frontImage = '', backImage }) {
     if (!this.mesh) {
       throw new Error('Can not restore state without mesh')
     }
     this.state = { frontImage, backImage }
-    attachFunctions(this, actionNames.detail)
+    attachFunctions(this, 'detail')
     attachProperty(this, 'frontImage', () => this.state.frontImage)
     attachProperty(this, 'backImage', () => this.state.backImage)
   }

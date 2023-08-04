@@ -1,3 +1,11 @@
+// @ts-check
+/**
+ * @template T
+ * @typedef {import('rxjs').Subject<T>} Subject
+ */
+/**
+ * @typedef {import('@src/stores/peer-channels').Message} Message
+ */
 import * as peerChannels from '@src/stores/peer-channels'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -7,11 +15,17 @@ vi.mock('@src/stores/peer-channels', () => {
   return {
     lastMessageReceived: new Subject(),
     lastMessageSent,
-    send: data => lastMessageSent.next({ data })
+    send: (/** @type {?} */ data) => lastMessageSent.next({ data })
   }
 })
 
+const peerChannelsMock =
+  /** @type {typeof peerChannels & { lastMessageReceived: Subject<Message>, lastMessageSent: Subject<Message> }} */ (
+    peerChannels
+  )
+
 describe('Discussion store', () => {
+  /** @type {typeof import('@src/stores/discussion')} */
   let discussion
   const playerId = '123456'
   const text1 = 'message 1'
@@ -31,7 +45,7 @@ describe('Discussion store', () => {
   it('enqueues received messages', () => {
     expect(discussion.serializeThread()).toEqual([])
     for (const text of [text1, text2, text3]) {
-      peerChannels.lastMessageReceived.next({
+      peerChannelsMock.lastMessageReceived.next({
         data: { type: 'message', text },
         playerId
       })
@@ -57,16 +71,16 @@ describe('Discussion store', () => {
 
   it('enqueues sent and received messages', () => {
     expect(discussion.serializeThread()).toEqual([])
-    peerChannels.lastMessageReceived.next({
+    peerChannelsMock.lastMessageReceived.next({
       data: { type: 'message', text: text1 },
       playerId
     })
     discussion.sendToThread(text2)
-    peerChannels.lastMessageReceived.next({
+    peerChannelsMock.lastMessageReceived.next({
       data: { type: 'message', text: text3 },
       playerId
     })
-    peerChannels.lastMessageReceived.next({
+    peerChannelsMock.lastMessageReceived.next({
       data: { type: 'message', text: text4 },
       playerId
     })
@@ -81,7 +95,7 @@ describe('Discussion store', () => {
   })
 
   it('loads messages into thread', () => {
-    peerChannels.lastMessageReceived.next({
+    peerChannelsMock.lastMessageReceived.next({
       data: { type: 'message', text: text1 },
       playerId
     })

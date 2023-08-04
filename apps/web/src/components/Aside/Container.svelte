@@ -1,4 +1,16 @@
 <script>
+  // @ts-check
+  /**
+   * @typedef {import('@babylonjs/core').Engine} Engine
+   * @typedef {import('@src/components').SectionTab} SectionTab
+   * @typedef {import('@src/graphql').Friendship} Friendship
+   * @typedef {import('@src/graphql').Game} Game
+   * @typedef {import('@src/graphql').GameOrGameParameters} GameOrGameParameters
+   * @typedef {import('@src/graphql').PlayerWithSearchable} PlayerWithSearchable
+   * @typedef {import('@src/stores').Connected} Connected
+   * @typedef {import('@src/stores/game-manager').Player} Player
+   */
+
   import { isLobby as checkIfLobby } from '@src/utils'
   import { _ } from 'svelte-intl'
 
@@ -10,14 +22,22 @@
   import AvatarGrid from './AvatarGrid.svelte'
   import VideoCommands from './VideoCommands.svelte'
 
-  export let player
+  /** @type {PlayerWithSearchable} authenticated player. */
+  export let user
+  /** @type {Map<string, Player>} map of game/lobby players by their ids. */
   export let playerById
+  /** @type {Game['messages']} list of message threads*/
   export let thread
+  /** @type {Connected[]} currently connected active players. */
   export let connected
+  /** @type {Engine['actionNamesByButton']} engine action names by mouse button. */
   export let actionNamesByButton = new Map()
+  /** @type {Engine['actionNamesByKey']} engine action names by hotkeys. */
   export let actionNamesByKey = new Map()
-  export let game = undefined
-  export let friends = undefined
+  /** @type {?GameOrGameParameters} game data */
+  export let game = null
+  /** @type {Friendship[]} list of all friendships. */
+  export let friends = []
 
   const helpId = 'help'
   const playersId = 'players'
@@ -25,8 +45,10 @@
   const rulesId = 'rules'
   const friendsId = 'friends'
 
+  /** @type {number} currently expanded tab. */
   let tab
-  let tabs
+  /** @type {SectionTab[]} */
+  let tabs = []
   let hasPeers = false
 
   $: isLobby = checkIfLobby(game)
@@ -40,7 +62,7 @@
     if (game) {
       if (!isLobby) {
         tabs.push({ icon: 'help', id: helpId, key: 'F1' })
-        if (game.rulesBookPageCount > 1) {
+        if ((game.rulesBookPageCount ?? 0) > 1) {
           tabs.splice(0, 0, { icon: 'auto_stories', id: rulesId, key: 'F3' })
         }
       }
@@ -59,7 +81,11 @@
     tab = 0
   }
 
-  function handleSetTab({ detail: { currentTab } }) {
+  function handleSetTab(
+    /** @type {CustomEvent<{ currentTab: number }>} */ {
+      detail: { currentTab }
+    }
+  ) {
     // do nor use `bind:currentTab={tab}` because it computes tabs again, which reset cuttent tab
     tab = currentTab
   }
@@ -75,7 +101,7 @@
   >
     <div class="content">
       <div class="peers" class:hidden={tabs[tab]?.id !== playersId}>
-        <AvatarGrid {connected} {playerById} {player} />
+        <AvatarGrid {connected} {playerById} {user} />
         <VideoCommands />
         {#if isLobby}
           <div class="lobby-instructions">
@@ -86,11 +112,14 @@
       {#if tabs[tab]?.id === discussionId}
         <Discussion {thread} {playerById} on:sendMessage />
       {:else if tabs[tab]?.id === rulesId}
-        <RuleViewer game={game?.kind} lastPage={game?.rulesBookPageCount - 1} />
+        <RuleViewer
+          game={game?.kind}
+          lastPage={(game?.rulesBookPageCount ?? 1) - 1}
+        />
       {:else if tabs[tab]?.id === helpId}
         <ControlsHelp {actionNamesByButton} {actionNamesByKey} />
       {:else if tabs[tab]?.id === friendsId}
-        <FriendList {friends} {playerById} {game} currentPlayer={player} />
+        <FriendList {friends} {playerById} {game} {user} />
       {/if}
     </div>
   </MinimizableSection>

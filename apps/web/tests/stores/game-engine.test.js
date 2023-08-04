@@ -1,3 +1,37 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Engine} Engine
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@src/3d/managers/control').Action} Action
+ * @typedef {import('@src/3d/managers/control').MeshDetails} MeshDetails
+ * @typedef {import('@src/3d/managers/input').LongData} LongData
+ * @typedef {import('@src/stores/peer-channels').Connected} Connected
+ * @typedef {import('@src/stores/peer-channels').Message} Message
+ * @typedef {import('@tabulous/server/src/graphql/types').Mesh} SerializedMesh
+ * @typedef {import('rxjs').Subscription} Subscription
+ */
+/**
+ * @template T
+ * @typedef {import('rxjs').BehaviorSubject<T>} BehaviorSubject
+ */
+/**
+ * @template T
+ * @typedef {import('rxjs').Subject<T>} Subject
+ */
+/**
+ * @template {any[]} P, R
+ * @typedef {import('vitest').Mock<P, R>} Mock
+ */
+/**
+ * @template T
+ * @typedef {import('vitest').MockedObject<T>} MockedObject
+ */
+/**
+ * @template {any[]} P, R
+ * @typedef {import('vitest').SpyInstance<P, R>} SpyInstance
+ */
+
 import { Observable } from '@babylonjs/core/Misc/observable'
 import { faker } from '@faker-js/faker'
 import { createEngine } from '@src/3d'
@@ -11,10 +45,10 @@ import {
 } from '@src/3d/managers'
 import * as gameEngine from '@src/stores/game-engine'
 import {
-  connected as connectedPeers,
-  lastDisconnectedId,
-  lastMessageReceived,
-  send as sendToPeer
+  connected,
+  lastDisconnectedId as originalLastDisconnectedId,
+  lastMessageReceived as originalLastMessage,
+  send
 } from '@src/stores/peer-channels'
 import { configures3dTestEngine, sleep } from '@tests/test-utils'
 import { get } from 'svelte/store'
@@ -34,17 +68,23 @@ vi.mock('@src/stores/peer-channels', () => {
   const { BehaviorSubject, Subject } = require('rxjs')
   return {
     send: vi.fn(),
-    connected: new BehaviorSubject(),
-    lastMessageReceived: new Subject({}),
+    connected: new BehaviorSubject(undefined),
+    lastMessageReceived: new Subject(),
     lastDisconnectedId: new Subject()
   }
 })
 
+/** @type {SpyInstance<Parameters<cameraManager['save']>, void>} */
 let saveCamera
+/** @type {SpyInstance<Parameters<cameraManager['restore']>, Promise<void>>} */
 let restoreCamera
+/** @type {SpyInstance<Parameters<cameraManager['loadSaves']>, Promise<void>>} */
 let loadCameraSaves
+/** @type {SpyInstance<Parameters<indicatorManager['registerPointerIndicator']>, ReturnType<indicatorManager['registerPointerIndicator']>>} */
 let registerPointerIndicator
+/** @type {SpyInstance<Parameters<indicatorManager['pruneUnusedPointers']>, void>} */
 let pruneUnusedPointers
+/** @type {SpyInstance<Parameters<handManager['applyDraw']>, Promise<void>>} */
 let handManagerApplyDraw
 
 beforeAll(() => {
@@ -59,15 +99,21 @@ beforeAll(() => {
   handManagerApplyDraw = vi.spyOn(handManager, 'applyDraw')
 })
 
-beforeEach(vi.resetAllMocks)
+beforeEach(() => {
+  vi.resetAllMocks()
+})
 
 describe('initEngine()', () => {
+  /** @type {Subscription[]} */
   let subscriptions
+  /** @type {Scene} */
   let scene
+  /** @type {Scene} */
   let handScene
   const canvas = document.createElement('canvas')
   const interaction = document.createElement('div')
   const overlay = document.createElement('div')
+  const hand = document.createElement('div')
   const receiveAction = vi.fn()
   const receiveSelection = vi.fn()
   const receiveMeshDetail = vi.fn()
@@ -78,6 +124,16 @@ describe('initEngine()', () => {
   const receiveHighlightHand = vi.fn()
   const receiveHandVisible = vi.fn()
   const receiveRemoteSelection = vi.fn()
+  const sendToPeer = /** @type {Mock<Parameters<send>, ReturnType<send>>} */ (
+    send
+  )
+  const lastMessageReceived = /** @type {Subject<Message>} */ (
+    originalLastMessage
+  )
+  const lastDisconnectedId = /** @type {Subject<string>} */ (
+    originalLastDisconnectedId
+  )
+  const connectedPeers = /** @type {BehaviorSubject<Connected[]>} */ (connected)
 
   configures3dTestEngine(created => {
     scene = created.scene
@@ -102,20 +158,23 @@ describe('initEngine()', () => {
   afterAll(() => subscriptions.forEach(sub => sub.unsubscribe()))
 
   describe('given an engine', () => {
+    /** @type {MockedObject<Engine>} */
     let engine
 
     beforeEach(() => {
       engine = create3DEngineMock()
-      createEngine.mockReturnValueOnce(engine)
+      const createEngineMock =
+        /** @type {Mock<Parameters<createEngine>, Engine>} */ (createEngine)
+      createEngineMock.mockReturnValueOnce(engine)
       engine.serialize = vi.fn()
     })
 
     afterEach(() => {
-      engine.onDisposeObservable.notifyObservers()
+      engine.onDisposeObservable.notifyObservers(engine)
     })
 
     it('configures and starts an engine', () => {
-      const created = gameEngine.initEngine({ canvas, interaction })
+      const created = gameEngine.initEngine({ canvas, interaction, hand })
       expect(engine.start).toHaveBeenCalledTimes(1)
       expect(get(gameEngine.engine)).toEqual(engine)
       expect(created).toEqual(engine)
@@ -124,12 +183,17 @@ describe('initEngine()', () => {
 
     describe('given an initialized engine', () => {
       beforeEach(() => {
-        gameEngine.initEngine({ canvas, interaction, pointerThrottle: 10 })
+        gameEngine.initEngine({
+          canvas,
+          interaction,
+          hand,
+          pointerThrottle: 10
+        })
         sendToPeer.mockReset()
       })
 
       it('reset engine observable on disposal', () => {
-        engine.onDisposeObservable.notifyObservers()
+        engine.onDisposeObservable.notifyObservers(engine)
         expect(get(gameEngine.engine)).toBeNull()
       })
 
@@ -138,15 +202,21 @@ describe('initEngine()', () => {
         let fps2 = faker.number.int(999)
         engine.getFps.mockReturnValueOnce(fps1).mockReturnValueOnce(fps2)
 
-        engine.onEndFrameObservable.notifyObservers()
+        engine.onEndFrameObservable.notifyObservers(engine)
         expect(get(gameEngine.fps)).toEqual(fps1.toFixed())
 
-        engine.onEndFrameObservable.notifyObservers()
+        engine.onEndFrameObservable.notifyObservers(engine)
         expect(get(gameEngine.fps)).toEqual(fps2.toFixed())
       })
 
       it('sends scene actions to peers', () => {
-        const data = { foo: faker.string.uuid() }
+        const data = {
+          fn: 'pop',
+          args: [],
+          meshId: faker.string.uuid(),
+          fromHand: false,
+          pos: undefined
+        }
         controlManager.onActionObservable.notifyObservers(data)
         expect(receiveAction).toHaveBeenCalledWith(data)
         expect(receiveAction).toHaveBeenCalledTimes(1)
@@ -155,7 +225,13 @@ describe('initEngine()', () => {
       })
 
       it('does not send hand actions to peers', () => {
-        const data = { foo: faker.string.uuid(), fromHand: true }
+        const data = {
+          fn: 'pop',
+          args: [],
+          meshId: faker.string.uuid(),
+          fromHand: true,
+          pos: undefined
+        }
         controlManager.onActionObservable.notifyObservers(data)
         expect(receiveAction).toHaveBeenCalledWith(data)
         expect(receiveAction).toHaveBeenCalledTimes(1)
@@ -163,7 +239,9 @@ describe('initEngine()', () => {
       })
 
       it('sends selection to peers', () => {
-        const data = new Set([{ id: 'mesh1' }, { id: 'mesh2' }])
+        const data = /** @type {Set<Mesh>} */ (
+          new Set([{ id: 'mesh1' }, { id: 'mesh2' }])
+        )
         selectionManager.onSelectionObservable.notifyObservers(data)
         expect(receiveSelection).toHaveBeenNthCalledWith(1, data)
         expect(sendToPeer).toHaveBeenNthCalledWith(1, {
@@ -238,7 +316,7 @@ describe('initEngine()', () => {
       })
 
       it('ignores other peer messages', () => {
-        lastMessageReceived.next({ data: { foo: 'bar' } })
+        lastMessageReceived.next({ data: { foo: 'bar' }, playerId: 'foo' })
         expect(handManagerApplyDraw).not.toHaveBeenCalled()
         expect(receiveAction).not.toHaveBeenCalled()
         expect(sendToPeer).not.toHaveBeenCalled()
@@ -247,8 +325,9 @@ describe('initEngine()', () => {
 
       it('receives peer actions', () => {
         const meshId = faker.string.uuid()
-        lastMessageReceived.next({ data: { meshId } })
-        expect(receiveAction).toHaveBeenCalledWith({ meshId })
+        const playerId = faker.person.firstName()
+        lastMessageReceived.next({ data: { meshId }, playerId })
+        expect(receiveAction).toHaveBeenCalledWith({ meshId, peerId: playerId })
         expect(receiveAction).toHaveBeenCalledTimes(1)
         expect(handManagerApplyDraw).not.toHaveBeenCalled()
         expect(sendToPeer).not.toHaveBeenCalled()
@@ -256,8 +335,8 @@ describe('initEngine()', () => {
 
       it('regularly send pointer events to peers', async () => {
         expect(sendToPeer).not.toHaveBeenCalled()
-        const data1 = { foo: 1 }
-        const data2 = { foo: 2 }
+        const data1 = [1, 1, 1]
+        const data2 = [1, 1, 1]
         inputManager.onPointerObservable.notifyObservers(data1)
         expect(sendToPeer).not.toHaveBeenCalled()
         inputManager.onPointerObservable.notifyObservers(data2)
@@ -269,8 +348,10 @@ describe('initEngine()', () => {
       })
 
       it('proxies mesh detail events', () => {
-        const data = { foo: faker.string.uuid() }
-        controlManager.onDetailedObservable.notifyObservers({ data })
+        const data = { image: faker.image.avatar() }
+        controlManager.onDetailedObservable.notifyObservers(
+          /** @type {MeshDetails} */ ({ data })
+        )
         expect(receiveMeshDetail).toHaveBeenCalledWith(data)
         expect(receiveMeshDetail).toHaveBeenCalledTimes(1)
       })
@@ -278,7 +359,9 @@ describe('initEngine()', () => {
       it('proxies camera save events', () => {
         expect(receiveCameraSave).toHaveBeenCalledWith([])
         expect(receiveCameraSave).toHaveBeenCalledTimes(1)
-        const data = { foo: faker.string.uuid() }
+        const data = [
+          { hash: '', target: [0, 0, 0], alpha: 1, beta: 2, elevation: 3 }
+        ]
         cameraManager.onSaveObservable.notifyObservers(data)
         expect(receiveCameraSave).toHaveBeenNthCalledWith(2, data)
         expect(receiveCameraSave).toHaveBeenCalledTimes(2)
@@ -287,23 +370,32 @@ describe('initEngine()', () => {
       it('proxies current camera events', () => {
         expect(receiveCurrentCamera).toHaveBeenCalledWith(undefined)
         expect(receiveCurrentCamera).toHaveBeenCalledTimes(1)
-        const data = { foo: faker.string.uuid() }
+        const data = {
+          hash: '',
+          target: [0, 0, 0],
+          alpha: 3,
+          beta: 2,
+          elevation: 1
+        }
         cameraManager.onMoveObservable.notifyObservers(data)
         expect(receiveCurrentCamera).toHaveBeenNthCalledWith(2, data)
         expect(receiveCurrentCamera).toHaveBeenCalledTimes(2)
       })
 
       it('proxies long input events', () => {
-        const data = { foo: faker.string.uuid() }
-        inputManager.onLongObservable.notifyObservers(data)
+        const data = { timestamp: Date.now(), type: 'longTap' }
+        inputManager.onLongObservable.notifyObservers(
+          /** @type {LongData} */ (data)
+        )
         expect(receiveLongInput).toHaveBeenCalledWith(data)
         expect(receiveLongInput).toHaveBeenCalledTimes(1)
       })
 
       it('proxies hand change events', () => {
-        const handMeshes = [{ foo: faker.string.uuid() }]
-        engine.serialize.mockReturnValueOnce({ handMeshes })
-        handManager.onHandChangeObservable.notifyObservers()
+        /** @type {SerializedMesh[]} */
+        const handMeshes = [{ shape: 'box', id: '1', texture: '' }]
+        engine.serialize.mockReturnValueOnce({ handMeshes, meshes: [] })
+        handManager.onHandChangeObservable.notifyObservers({ meshes: [] })
         expect(receiveHandChange).toHaveBeenCalledWith(handMeshes)
         expect(receiveHandChange).toHaveBeenCalledTimes(1)
       })
@@ -317,9 +409,9 @@ describe('initEngine()', () => {
 
       it('prunes peer pointers on connection', () => {
         expect(pruneUnusedPointers).not.toHaveBeenCalled()
-        const id1 = 1
-        const id2 = 2
-        const id3 = 3
+        const id1 = '1'
+        const id2 = '2'
+        const id3 = '3'
         connectedPeers.next([{ playerId: id1 }, { playerId: id3 }])
         expect(pruneUnusedPointers).toHaveBeenCalledWith([id1, id3])
         connectedPeers.next([{ playerId: id1 }, { playerId: id2 }])
@@ -343,7 +435,7 @@ describe('initEngine()', () => {
 
 describe('saveCamera()', () => {
   it('invokes camera manager', () => {
-    const args = ['foo', 'bar']
+    const args = [2]
     gameEngine.saveCamera(...args)
     expect(saveCamera).toHaveBeenCalledWith(...args)
     expect(saveCamera).toHaveBeenCalledTimes(1)
@@ -354,7 +446,7 @@ describe('saveCamera()', () => {
 
 describe('restoreCamera()', () => {
   it('invokes camera manager', () => {
-    const args = ['foo', 'bar']
+    const args = [4]
     gameEngine.restoreCamera(...args)
     expect(restoreCamera).toHaveBeenCalledWith(...args)
     expect(restoreCamera).toHaveBeenCalledTimes(1)
@@ -365,9 +457,11 @@ describe('restoreCamera()', () => {
 
 describe('loadCameraSaves()', () => {
   it('invokes camera manager', () => {
-    const args = ['foo', 'bar']
-    gameEngine.loadCameraSaves(...args)
-    expect(loadCameraSaves).toHaveBeenCalledWith(...args)
+    const args = [
+      { hash: '', target: [0, 0, 0], alpha: 1, beta: 2, elevation: 3 }
+    ]
+    gameEngine.loadCameraSaves(args)
+    expect(loadCameraSaves).toHaveBeenCalledWith(args)
     expect(loadCameraSaves).toHaveBeenCalledTimes(1)
     expect(saveCamera).not.toHaveBeenCalled()
     expect(restoreCamera).not.toHaveBeenCalled()
@@ -375,11 +469,11 @@ describe('loadCameraSaves()', () => {
 })
 
 function create3DEngineMock() {
-  return {
+  return /** @type {MockedObject<Engine>} */ ({
     onEndFrameObservable: new Observable(),
     onDisposeObservable: new Observable(),
     onLoadingObservable: new Observable(),
     getFps: vi.fn(),
     start: vi.fn()
-  }
+  })
 }

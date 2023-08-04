@@ -1,21 +1,24 @@
 // @ts-check
+/**
+ * @typedef {import('../services/players').Player} Player
+ * @typedef {import('../services/catalog').GameDescriptor} GameDescriptor
+ * @typedef {import('../services/games').GameData} GameData
+ * @typedef {import('../services/games').StartedGameData} StartedGameData
+ * @typedef {import('../services/games').GameParameters} GameParameters
+ * @typedef {import('../services/games').Schema} Schema
+ * @typedef {import('../services/games').Mesh} Mesh
+ * @typedef {import('../services/games').Anchor} Anchor
+ * @typedef {import('../services/games').Hand} Hand
+ * @typedef {import('../services/games').CameraPosition} CameraPosition
+ * @typedef {import('../services/games').PlayerPreference} PlayerPreference
+ */
+
 import { randomUUID } from 'node:crypto'
 
 import merge from 'deepmerge'
 
 import { shuffle } from './collections.js'
 
-/** @typedef {import('../services/players.js').Player} Player */
-/** @typedef {import('../services/catalog.js').GameDescriptor} GameDescriptor */
-/** @typedef {import('../services/games.js').GameData} GameData */
-/** @typedef {import('../services/games.js').StartedGameData} StartedGameData */
-/** @typedef {import('../services/games.js').GameParameters} GameParameters */
-/** @typedef {import('../services/games.js').Schema} Schema */
-/** @typedef {import('../services/games.js').Mesh} Mesh */
-/** @typedef {import('../services/games.js').Anchor} Anchor */
-/** @typedef {import('../services/games.js').Hand} Hand */
-/** @typedef {import('../services/games.js').CameraPosition} CameraPosition */
-/** @typedef {import('../services/games.js').PlayerPreference} PlayerPreference */
 /** @typedef {Map<string, string[]>} Bags */
 
 /**
@@ -467,6 +470,7 @@ export function buildCameraPosition({
     throw new Error('camera position requires playerId')
   }
   return addHash({
+    hash: '',
     playerId,
     index,
     target,

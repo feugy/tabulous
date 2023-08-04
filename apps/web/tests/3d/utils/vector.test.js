@@ -1,3 +1,11 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').ArcRotateCamera} ArcRotateCamera
+ * @typedef {import('@babylonjs/core').Engine} Engine
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ */
+
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateGround } from '@babylonjs/core/Meshes/Builders/groundBuilder'
 import {
@@ -10,11 +18,19 @@ import {
 } from '@src/3d/utils'
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
 
-import { createBox, initialize3dEngine } from '../../test-utils'
+import {
+  createBox,
+  expectCloseVector,
+  initialize3dEngine
+} from '../../test-utils'
 
+/** @type {Engine} */
 let engine
+/** @type {Scene} */
 let scene
+/** @type {ArcRotateCamera} */
 let camera
+/** @type {Mesh} */
 let box
 const renderWidth = 2048
 const renderHeight = 1024
@@ -38,45 +54,57 @@ afterAll(() => engine.dispose())
 
 describe('screenToGround() 3D utility', () => {
   it('converts screen center position to ground origin', () => {
-    const { x, y, z } = screenToGround(scene, {
-      x: renderWidth * 0.5,
-      y: renderHeight * 0.5
-    })
-    expect(x).toBeCloseTo(0, 5)
-    expect(y).toBeCloseTo(0, 5)
-    expect(z).toBeCloseTo(-0.000012, 5)
+    expectCloseVector(
+      screenToGround(scene, {
+        x: renderWidth * 0.5,
+        y: renderHeight * 0.5
+      }),
+      [0, 0, -0.000012],
+      undefined,
+      5
+    )
   })
 
   it('converts screen top left corner', () => {
-    const { x, y, z } = screenToGround(scene, { x: 0, y: 0 })
-    expect(x).toBeCloseTo(-51.255399, 5)
-    expect(y).toBeCloseTo(0, 5)
-    expect(z).toBeCloseTo(27.739206, 5)
+    expectCloseVector(
+      screenToGround(scene, {
+        x: 0,
+        y: 0
+      }),
+      [-51.255399, 0, 27.739206],
+      undefined,
+      5
+    )
   })
 
   it('converts screen bottom right corner', () => {
-    const { x, y, z } = screenToGround(scene, {
-      x: renderWidth,
-      y: renderHeight
-    })
-    expect(x).toBeCloseTo(35.978456, 5)
-    expect(y).toBeCloseTo(0, 5)
-    expect(z).toBeCloseTo(-19.47141, 5)
+    expectCloseVector(
+      screenToGround(scene, {
+        x: renderWidth,
+        y: renderHeight
+      }),
+      [35.978456, 0, -19.47141],
+      undefined,
+      5
+    )
   })
 
   it('handles camera moves', () => {
     camera.lockedTarget = new Vector3(10, 0, -10)
-    const { x, y, z } = screenToGround(scene, {
-      x: renderWidth * 0.5,
-      y: renderHeight * 0.5
-    })
-    expect(x).toBeCloseTo(10, 5)
-    expect(y).toBeCloseTo(0, 5)
-    expect(z).toBeCloseTo(-9.999969, 5)
+    expectCloseVector(
+      screenToGround(scene, {
+        x: renderWidth * 0.5,
+        y: renderHeight * 0.5
+      }),
+      [10, 0, -9.999969],
+      undefined,
+      5
+    )
   })
 })
 
 describe('isAboveTable() 3D utility', () => {
+  /** @type {Mesh} */
   let table
   const width = 50
   const height = 25
@@ -137,6 +165,7 @@ describe('isAboveTable() 3D utility', () => {
 })
 
 describe('isPositionAboveTable() 3D utility', () => {
+  /** @type {Mesh} */
   let table
   const width = 50
   const height = 25
@@ -190,7 +219,7 @@ describe('getMeshScreenPosition() 3D utility', () => {
 
   it('returns screen position of a positioned mesh', () => {
     box.setAbsolutePosition(new Vector3(10, 15, -5))
-    const { x, y } = getMeshScreenPosition(box)
+    const { x, y } = getMeshScreenPosition(box) ?? {}
     expect(x).toBeCloseTo(1377.798085, 5)
     expect(y).toBeCloseTo(472.344409, 5)
   })
@@ -200,13 +229,13 @@ describe('getMeshScreenPosition() 3D utility', () => {
     camera.lockedTarget = new Vector3(10, 10, 10)
     camera.beta = Math.PI
     scene.updateTransformMatrix()
-    const { x, y } = getMeshScreenPosition(box)
+    const { x, y } = getMeshScreenPosition(box) ?? {}
     expect(x).toBeCloseTo(1023.999991, 5)
     expect(y).toBeCloseTo(181.728928, 5)
   })
 
   it('handles missing mesh', () => {
-    expect(getMeshScreenPosition()).toBeNull()
+    expect(getMeshScreenPosition(undefined)).toBeNull()
     expect(getMeshScreenPosition(null)).toBeNull()
   })
 })

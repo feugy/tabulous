@@ -1,3 +1,10 @@
+// @ts-check
+/**
+ * @template T
+ * @typedef {import('rxjs').Observable<T>} Observable
+ */
+/** @typedef {import('@src/utils').StreamState} StreamState */
+
 import { makeLogger } from '@src/utils'
 import { BehaviorSubject, Subject } from 'rxjs'
 
@@ -7,60 +14,51 @@ const logger = makeLogger('stream')
 const lastCameraStorageKey = 'lastCameraId'
 const lastMicStorageKey = 'lastMicId'
 
-const stream = new BehaviorSubject(null)
-const cameras = new BehaviorSubject([])
-const mics = new BehaviorSubject([])
-const currentCamera = new BehaviorSubject(null)
-const currentMic = new BehaviorSubject(null)
-const streamChange$ = new Subject()
+const stream = new BehaviorSubject(/** @type {?MediaStream} */ (null))
+const cameras = new BehaviorSubject(/** @type {MediaDeviceInfo[]} */ ([]))
+const mics = new BehaviorSubject(/** @type {MediaDeviceInfo[]} */ ([]))
+const currentCamera = new BehaviorSubject(
+  /** @type {?MediaDeviceInfo} */ (null)
+)
+const currentMic = new BehaviorSubject(/** @type {?MediaDeviceInfo} */ (null))
+const streamChange$ = /** @type {Subject<StreamState>} */ (new Subject())
 if (browser) {
   navigator.mediaDevices?.addEventListener('devicechange', enumerateDevices)
 }
-let acquireInProgress = null
+
+let acquireInProgress = /** @type {?Promise<?MediaStream>} */ (null)
 
 /**
  * Emits the local media stream, that is audio and video allowed and selected by user
- * @type {Observable<MediaStream>}
  */
 export const stream$ = stream.asObservable()
 
 /**
  * Emits when user select a different camera.
  * Empty until acquiring the first media stream.
- * @type {Observable<MediaDeviceInfo>}
  */
 export const currentCamera$ = currentCamera.asObservable()
 
 /**
  * Emits a list of available cameras.
  * Empty until acquiring the first media stream.
- * @type {Observable<MediaDeviceInfo[]>}
  */
 export const cameras$ = cameras.asObservable()
 
 /**
  * Emits when user select a different microphone.
  * Empty until acquiring the first media stream.
- * @type {Observable<MediaDeviceInfo>}
  */
 export const currentMic$ = currentMic.asObservable()
 
 /**
  * Emits a list of available microphones.
  * Empty until acquiring the first media stream.
- * @type {Observable<MediaDeviceInfo[]>}
  */
 export const mics$ = mics.asObservable()
 
 /**
- * @typedef {object} MediaState - new state of the local media stream.
- * @property {boolean} muted - true when microphone has been muted.
- * @property {boolean} stopped - true when video has been stopped.
- */
-
-/**
  * Emits when the local media has been muted, unmutted, stopped or resumed
- * @type {Observable<MediaState>}
  */
 export const localStreamChange$ = streamChange$.asObservable()
 
@@ -69,16 +67,16 @@ export const localStreamChange$ = streamChange$.asObservable()
  * Asks end user for permission, and populates `stream$` observable.
  * Supports concurrent calls: first call will asynchronously acquire stream,
  * while concurrent calls will wait and reuse the same result.
- * @param {MediaDeviceInfo} desired? - desired device.
- * @return {MediaStream} the acquired stream , if any
+ * @param {?MediaDeviceInfo} [desired] - desired device.
+ * @return {Promise<?MediaStream>} the acquired stream , if any
  */
-export async function acquireMediaStream(desired) {
+export async function acquireMediaStream(desired = null) {
   logger.debug({ desired }, `acquiring local media steam`)
   stopStream(stream.value)
   if (!navigator.mediaDevices) {
     logger.info(`This browser does not support media devices`)
     resetAll()
-    return
+    return null
   }
   if (acquireInProgress) {
     return acquireInProgress
@@ -96,6 +94,12 @@ export async function acquireMediaStream(desired) {
   return result
 }
 
+/**
+ * Acquire streams from media devices.
+ * @param {?MediaDeviceInfo} video - selected camera.
+ * @param {?MediaDeviceInfo} audio - selected mic.
+ * @returns {Promise<?MediaStream>} resulting media stream, if any.
+ */
 async function acquire(video, audio) {
   try {
     logger.debug({ video, audio }, `acquiring media devices`)
@@ -103,17 +107,21 @@ async function acquire(video, audio) {
     currentMic.next(audio)
     saveLastMediaIds({ audio, video })
     const result = await navigator.mediaDevices.getUserMedia({
-      audio,
+      audio: audio || undefined,
       video: video
         ? { deviceId: video.deviceId, aspectRatio: { ideal: 16 / 9 } }
-        : video
+        : undefined
     })
     stream.next(result)
     logger.info(`media successfully attached`)
     return result
   } catch (error) {
-    logger.warn({ error }, `Failed to access media devices: ${error.message}`)
+    logger.warn(
+      { error },
+      `Failed to access media devices: ${/** @type {Error} */ (error).message}`
+    )
     resetAll()
+    return null
   }
 }
 
@@ -132,7 +140,7 @@ export function releaseMediaStream() {
 /**
  * Records a change in the local media stream state.
  * Emits on localStreamChange$.
- * @param {MediaState} state - new state for the current video stream.
+ * @param {StreamState} state - new state for the current video stream.
  */
 export function recordStreamChange(state) {
   if (stream.value) {
@@ -140,11 +148,16 @@ export function recordStreamChange(state) {
   }
 }
 
+/**
+ * List all available devices, ignoring unusable ones
+ */
 async function enumerateDevices() {
   try {
     logger.info(`enumerating media devices`)
     const devices = await navigator.mediaDevices.enumerateDevices()
+    /** @type {MediaDeviceInfo[]} */
     const micDevices = []
+    /** @type {MediaDeviceInfo[]} */
     const cameraDevices = []
     for (const device of devices) {
       if (device?.kind && !device?.label.startsWith('Monitor of')) {
@@ -162,24 +175,41 @@ async function enumerateDevices() {
   } catch (error) {
     logger.warn(
       { error },
-      `Failed to enumerate media devices: ${error.message}`
+      `Failed to enumerate media devices: ${
+        /** @type {Error} */ (error).message
+      }`
     )
     resetAll()
   }
 }
 
+/**
+ * Tries to find desired device, or the last one used.
+ * @param {?MediaDeviceInfo} desired - desired device.
+ * @param {?MediaDeviceInfo['deviceId']} lastId - id of the last device used.
+ * @param {MediaDeviceInfo[]} devices - list of available devices.
+ * @returns {?MediaDeviceInfo} desired device if available, or last used, or the first available, or null
+ */
 function getDesiredOrDefault(desired, lastId, devices) {
   const defaultDevice =
-    devices.find(({ deviceId }) => deviceId === lastId) || devices[0]
+    devices.find(({ deviceId }) => deviceId === lastId) ?? devices[0] ?? null
   return desired?.kind === defaultDevice?.kind ? desired : defaultDevice
 }
 
+/**
+ * Stops all tracks of a stream
+ * @param {?MediaStream} stream - stopped stream.
+ */
 function stopStream(stream) {
   for (const track of stream?.getTracks() ?? []) {
     track.stop()
   }
 }
 
+/**
+ * Loads from local storage ids of the last used camera and mic.
+ * @returns {{cameraId: ?string, micId: ?string }} loaded ids.
+ */
 function loadLastMediaIds() {
   return {
     cameraId: localStorage.getItem(lastCameraStorageKey),
@@ -187,6 +217,10 @@ function loadLastMediaIds() {
   }
 }
 
+/**
+ * Stores in local storage ids of the currently used camera and mic.
+ * @param {{ audio: ?MediaDeviceInfo, video: ?MediaDeviceInfo }} devices - devices in use
+ */
 function saveLastMediaIds({ audio, video }) {
   if (video) {
     localStorage.setItem(lastCameraStorageKey, video.deviceId)

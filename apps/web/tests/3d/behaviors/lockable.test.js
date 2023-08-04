@@ -1,3 +1,15 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ * @typedef {import('@src/3d/behaviors').MoveBehavior} MoveBehavior
+ * @typedef {import('@src/3d/utils').BehaviorNames} BehaviorNames
+ */
+/**
+ * @template {any[]} P, R
+ * @typedef {import('vitest').SpyInstance<P, R>} SpyInstance
+ */
+
 import { faker } from '@faker-js/faker'
 import {
   LockBehavior,
@@ -13,7 +25,10 @@ import { configures3dTestEngine, expectMeshFeedback } from '../../test-utils'
 
 describe('LockBehavior', () => {
   const actionRecorded = vi.fn()
+
+  /** @type {SpyInstance<Parameters<typeof indicatorManager['registerFeedback']>, void>} */
   let registerFeedbackSpy
+  /** @type {Scene} */
   let scene
 
   configures3dTestEngine(created => (scene = created.scene))
@@ -33,7 +48,7 @@ describe('LockBehavior', () => {
       isLocked: faker.datatype.boolean()
     }
     const behavior = new LockBehavior(state)
-    const mesh = createBox({ id: 'box' })
+    const mesh = createBox({ id: 'box', texture: '' }, scene)
 
     expect(behavior.mesh).toBeNull()
     expect(behavior.name).toEqual(LockBehaviorName)
@@ -45,21 +60,24 @@ describe('LockBehavior', () => {
   })
 
   it('can not restore state without mesh', () => {
-    expect(() => new LockBehavior().fromState({ front: null })).toThrow(
+    expect(() => new LockBehavior().fromState({})).toThrow(
       'Can not restore state without mesh'
     )
   })
 
   it('can not toggle without mesh', () => {
     const behavior = new LockBehavior()
-    behavior.toggleLock()
+    behavior.toggleLock?.()
     expect(behavior.state).toEqual({ isLocked: false })
     expect(actionRecorded).not.toHaveBeenCalled()
   })
 
   it('can hydrate from state', () => {
     const isLocked = false
-    const mesh = createBox({ id: 'box', lockable: {}, movable: {} })
+    const mesh = createBox(
+      { id: 'box', texture: '', lockable: {}, movable: {} },
+      scene
+    )
     const behavior = getLockable(mesh)
 
     behavior.fromState({ isLocked })
@@ -71,7 +89,10 @@ describe('LockBehavior', () => {
   })
 
   it('can hydrate with default state', () => {
-    const mesh = createBox({ id: 'box', lockable: {}, movable: {} })
+    const mesh = createBox(
+      { id: 'box', texture: '', lockable: {}, movable: {} },
+      scene
+    )
     const behavior = getLockable(mesh)
 
     behavior.fromState()
@@ -83,12 +104,14 @@ describe('LockBehavior', () => {
   })
 
   describe('given attached to mesh with no behavior', () => {
+    /** @type {Mesh} */
     let mesh
+    /** @type {LockBehavior} */
     let behavior
     const state = { isLocked: true }
 
     beforeEach(() => {
-      mesh = createBox({ id: 'box', lockable: state })
+      mesh = createBox({ id: 'box', texture: '', lockable: state }, scene)
       behavior = getLockable(mesh)
     })
 
@@ -101,13 +124,14 @@ describe('LockBehavior', () => {
     })
 
     it(`can toggle without companion behaviors`, () => {
-      mesh.metadata.toggleLock()
+      mesh.metadata.toggleLock?.()
       expect(behavior.state).toEqual({ isLocked: false })
       expect(actionRecorded).toHaveBeenCalledTimes(1)
       expect(actionRecorded).toHaveBeenCalledWith(
         {
           meshId: mesh.id,
           fn: 'toggleLock',
+          args: [],
           fromHand: false
         },
         expect.anything()
@@ -121,22 +145,34 @@ describe('LockBehavior', () => {
       title: 'a movable mesh',
       companionName: MoveBehaviorName,
       buildMesh: () =>
-        createBox({ id: 'box', movable: {}, lockable: { isLocked: false } })
+        createBox(
+          {
+            id: 'box',
+            texture: '',
+            movable: {},
+            lockable: { isLocked: false }
+          },
+          scene
+        )
     }
   ])('given attached to $title', ({ buildMesh, companionName }) => {
+    /** @type {Mesh} */
     let mesh
+    /** @type {LockBehavior} */
     let behavior
+    /** @type {MoveBehavior} */
     let companion
 
     beforeEach(() => {
       mesh = buildMesh()
       behavior = getLockable(mesh)
+      // @ts-expect-error companionName is not a behavior name
       companion = mesh.getBehaviorByName(companionName)
       companion.enabled = true
     })
 
     it(`updates the ${companionName} behavior on lock`, () => {
-      mesh.metadata.toggleLock()
+      mesh.metadata.toggleLock?.()
       expect(companion.enabled).toBe(false)
       expect(behavior.state.isLocked).toBe(true)
       expect(actionRecorded).toHaveBeenCalledTimes(1)
@@ -145,12 +181,13 @@ describe('LockBehavior', () => {
         {
           meshId: mesh.id,
           fn: 'toggleLock',
+          args: [],
           fromHand: false
         },
         expect.anything()
       )
       expectMeshFeedback(registerFeedbackSpy, 'lock', mesh)
-      mesh.metadata.toggleLock()
+      mesh.metadata.toggleLock?.()
       expect(companion.enabled).toBe(true)
       expect(behavior.state.isLocked).toBe(false)
       expect(actionRecorded).toHaveBeenCalledTimes(2)
@@ -159,6 +196,7 @@ describe('LockBehavior', () => {
         {
           meshId: mesh.id,
           fn: 'toggleLock',
+          args: [],
           fromHand: false
         },
         expect.anything()
@@ -168,16 +206,21 @@ describe('LockBehavior', () => {
   })
 
   describe('given attached to a movable and stackable mesh', () => {
+    /** @type {Mesh[]} */
     let meshes
 
     beforeEach(() => {
       meshes = Array.from({ length: 3 }, (_, rank) =>
-        createBox({
-          id: `box${rank + 1}`,
-          stackable: {},
-          movable: {},
-          lockable: {}
-        })
+        createBox(
+          {
+            id: `box${rank + 1}`,
+            texture: '',
+            stackable: {},
+            movable: {},
+            lockable: {}
+          },
+          scene
+        )
       )
     })
 
@@ -185,11 +228,11 @@ describe('LockBehavior', () => {
       const [, , mesh] = meshes
       const lockable = getLockable(mesh)
       const movable = getMovable(mesh)
-      mesh.metadata.toggleLock()
+      mesh.metadata.toggleLock?.()
       expect(movable.enabled).toBe(false)
       expect(lockable.state.isLocked).toBe(true)
       expectMeshFeedback(registerFeedbackSpy, 'lock', mesh)
-      mesh.metadata.toggleLock()
+      mesh.metadata.toggleLock?.()
       expect(movable.enabled).toBe(true)
       expect(lockable.state.isLocked).toBe(false)
       expectMeshFeedback(registerFeedbackSpy, 'unlock', mesh)
@@ -200,7 +243,7 @@ describe('LockBehavior', () => {
       beforeEach(() =>
         meshes[0]
           .getBehaviorByName(StackBehaviorName)
-          .fromState({ stackIds: ['box2', 'box3'] })
+          ?.fromState({ stackIds: ['box2', 'box3'] })
       )
 
       it('does not alter movable on base mesh', () => {
@@ -208,11 +251,11 @@ describe('LockBehavior', () => {
         const lockable = getLockable(mesh)
         const movable = getMovable(mesh)
         expect(movable.enabled).toBe(false)
-        mesh.metadata.toggleLock()
+        mesh.metadata.toggleLock?.()
         expect(movable.enabled).toBe(false)
         expect(lockable.state.isLocked).toBe(true)
         expectMeshFeedback(registerFeedbackSpy, 'lock', mesh)
-        mesh.metadata.toggleLock()
+        mesh.metadata.toggleLock?.()
         expect(movable.enabled).toBe(false)
         expect(lockable.state.isLocked).toBe(false)
         expectMeshFeedback(registerFeedbackSpy, 'unlock', mesh)
@@ -224,11 +267,11 @@ describe('LockBehavior', () => {
         const lockable = getLockable(mesh)
         const movable = getMovable(mesh)
         expect(movable.enabled).toBe(false)
-        mesh.metadata.toggleLock()
+        mesh.metadata.toggleLock?.()
         expect(movable.enabled).toBe(false)
         expect(lockable.state.isLocked).toBe(true)
         expectMeshFeedback(registerFeedbackSpy, 'lock', mesh)
-        mesh.metadata.toggleLock()
+        mesh.metadata.toggleLock?.()
         expect(movable.enabled).toBe(false)
         expect(lockable.state.isLocked).toBe(false)
         expectMeshFeedback(registerFeedbackSpy, 'unlock', mesh)
@@ -240,11 +283,11 @@ describe('LockBehavior', () => {
         const lockable = getLockable(mesh)
         const movable = getMovable(mesh)
         expect(movable.enabled).toBe(true)
-        mesh.metadata.toggleLock()
+        mesh.metadata.toggleLock?.()
         expect(movable.enabled).toBe(false)
         expect(lockable.state.isLocked).toBe(true)
         expectMeshFeedback(registerFeedbackSpy, 'lock', mesh)
-        mesh.metadata.toggleLock()
+        mesh.metadata.toggleLock?.()
         expect(movable.enabled).toBe(true)
         expect(lockable.state.isLocked).toBe(false)
         expectMeshFeedback(registerFeedbackSpy, 'unlock', mesh)
@@ -254,10 +297,10 @@ describe('LockBehavior', () => {
   })
 })
 
-function getMovable(mesh) {
-  return mesh.getBehaviorByName(MoveBehaviorName)
+function getMovable(/** @type {Mesh} */ mesh) {
+  return /** @type {MoveBehavior} */ (mesh.getBehaviorByName(MoveBehaviorName))
 }
 
-function getLockable(mesh) {
-  return mesh.getBehaviorByName(LockBehaviorName)
+function getLockable(/** @type {Mesh} */ mesh) {
+  return /** @type {LockBehavior} */ (mesh.getBehaviorByName(LockBehaviorName))
 }

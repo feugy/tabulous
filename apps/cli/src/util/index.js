@@ -1,4 +1,3 @@
-// @ts-check
 export * from './args.js'
 export * from './configuration.js'
 export * from './find-user.js'

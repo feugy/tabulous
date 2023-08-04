@@ -1,4 +1,9 @@
 // @ts-check
+/**
+ * @typedef {import('rxjs').Subscription} Subscription
+ * @typedef {import('../../src/services/players').Player} Player
+ */
+
 import { faker } from '@faker-js/faker'
 import { vi } from 'vitest'
 import {
@@ -198,7 +203,7 @@ describe('given initialized repository', () => {
         avatar: faker.internet.avatar(),
         isAdmin: true
       })
-      /** @type {Partial<import('../../src/services/players.js').Player>} */
+      /** @type {Partial<Player>} */
       let update = {
         id: original.id,
         avatar: faker.internet.avatar(),
@@ -243,41 +248,40 @@ describe('given initialized repository', () => {
   })
 
   describe('given some players', () => {
-    let players =
-      /** @type {import('../../src/services/players.js').Player[]} */ ([
-        {
-          id: `adam-${faker.number.int(100)}`,
-          username: 'Adam Destine',
-          usernameSearchable: true
-        },
-        {
-          id: `batman-${faker.number.int(100)}`,
-          username: 'Batman',
-          usernameSearchable: true
-        },
-        {
-          id: `adaptoid-${faker.number.int(100)}`,
-          username: 'Adaptoid',
-          usernameSearchable: true
-        },
-        {
-          id: `adversary-${faker.number.int(100)}`,
-          username: 'Adversary',
-          usernameSearchable: true
-        },
-        {
-          id: `hulk-${faker.number.int(100)}`,
-          username: 'Hulk',
-          usernameSearchable: true
-        },
-        {
-          id: `thor-${faker.number.int(100)}`,
-          username: 'Thor',
-          usernameSearchable: true
-        }
-      ])
+    let players = /** @type {Player[]} */ ([
+      {
+        id: `adam-${faker.number.int(100)}`,
+        username: 'Adam Destine',
+        usernameSearchable: true
+      },
+      {
+        id: `batman-${faker.number.int(100)}`,
+        username: 'Batman',
+        usernameSearchable: true
+      },
+      {
+        id: `adaptoid-${faker.number.int(100)}`,
+        username: 'Adaptoid',
+        usernameSearchable: true
+      },
+      {
+        id: `adversary-${faker.number.int(100)}`,
+        username: 'Adversary',
+        usernameSearchable: true
+      },
+      {
+        id: `hulk-${faker.number.int(100)}`,
+        username: 'Hulk',
+        usernameSearchable: true
+      },
+      {
+        id: `thor-${faker.number.int(100)}`,
+        username: 'Thor',
+        usernameSearchable: true
+      }
+    ])
 
-    /** @type {import('rxjs').Subscription} */
+    /** @type {Subscription} */
     let subscription
     const friendshipUpdateReceived = vi.fn()
 

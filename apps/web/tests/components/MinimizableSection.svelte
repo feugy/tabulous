@@ -1,10 +1,22 @@
 <script>
+  // @ts-check
+  /**
+   * @typedef {import('@src/stores/game-manager').Player} Player
+   */
+
   import { Discussion, MinimizableSection } from '@src/components'
   import { players, thread } from '@tests/fixtures/Discussion.testdata'
 
   export let placement = 'top'
+  /** @type {number} */
   let currentTab
-  const playerById = new Map(players.map(player => [player.id, player]))
+  /** @type {Map<string, Player>}*/
+  const playerById = new Map(
+    players.map(player => [
+      player.id,
+      { ...player, isHost: false, playing: false, currentGameId: null }
+    ])
+  )
 </script>
 
 <aside class={placement}>

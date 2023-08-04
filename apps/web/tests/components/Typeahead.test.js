@@ -1,9 +1,14 @@
+// @ts-check
+/**
+ * @typedef {import('@src/components').MenuOption} MenuOption
+ */
+
 import { faker } from '@faker-js/faker'
 import Typeahead from '@src/components/Typeahead.svelte'
 import { sleep } from '@src/utils/index.js'
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import userEvent from '@testing-library/user-event'
-import { extractText } from '@tests/test-utils'
+import { extractText, getMenuOptionValue } from '@tests/test-utils'
 import { tick } from 'svelte'
 import { writable } from 'svelte/store'
 import html from 'svelte-htm'
@@ -15,7 +20,9 @@ describe('Typeahead component', () => {
   const value$ = writable()
   const options$ = writable()
 
-  beforeEach(vi.resetAllMocks)
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
 
   function renderComponent(props = {}) {
     return render(
@@ -29,16 +36,18 @@ describe('Typeahead component', () => {
     )
   }
 
-  describe.each([
-    ['textual', ['Salut !', 'Hello!', 'Hallo !']],
-    [
-      'object',
-      [{ label: 'Salut !' }, { label: 'Hello!' }, { label: 'Hallo !' }]
-    ]
-  ])('given %s options', (title, options) => {
+  describe.each(
+    /** @type {[string, MenuOption[]][]} */ ([
+      ['textual', ['Salut !', 'Hello!', 'Hallo !']],
+      [
+        'object',
+        [{ label: 'Salut !' }, { label: 'Hello!' }, { label: 'Hallo !' }]
+      ]
+    ])
+  )('given %s options', (title, options) => {
     beforeEach(() => {
       value$.set('')
-      options$.set()
+      options$.set(undefined)
     })
 
     it('triggers input event displays menu', async () => {
@@ -57,9 +66,7 @@ describe('Typeahead component', () => {
       expect(handleInput).toHaveBeenCalledOnce()
       expect(screen.queryByRole('menu')).toBeInTheDocument()
       const items = screen.getAllByRole('menuitem')
-      expect(extractText(items)).toEqual(
-        options.map(option => option.label ?? option)
-      )
+      expect(extractText(items)).toEqual(options.map(getMenuOptionValue))
     })
 
     it('selects option with mouse and updates value', async () => {
@@ -71,7 +78,7 @@ describe('Typeahead component', () => {
 
       fireEvent.click(screen.queryAllByRole('menuitem')[2])
       await tick()
-      expect(input).toHaveValue(options[2].label ?? options[2])
+      expect(input).toHaveValue(getMenuOptionValue(options[2]))
       expect(handleChange).not.toHaveBeenCalled()
       expect(handleInput).toHaveBeenCalledOnce()
     })
@@ -84,17 +91,21 @@ describe('Typeahead component', () => {
       expect(handleInput).toHaveBeenCalledOnce()
 
       await userEvent.type(input, '{ArrowDown}')
-      fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' })
+      fireEvent.keyDown(/** @type {HTMLElement} */ (document.activeElement), {
+        key: 'ArrowDown'
+      })
       await tick()
-      fireEvent.keyDown(document.activeElement, { key: 'ArrowRight' })
+      fireEvent.keyDown(/** @type {HTMLElement} */ (document.activeElement), {
+        key: 'ArrowRight'
+      })
       await tick()
-      expect(input).toHaveValue(options[1].label ?? options[1])
+      expect(input).toHaveValue(getMenuOptionValue(options[1]))
       expect(handleChange).not.toHaveBeenCalled()
       expect(handleInput).toHaveBeenCalledOnce()
     })
 
     it('selects option by typing its value', async () => {
-      const value = options[2].label ?? options[2]
+      const value = getMenuOptionValue(options[2])
       renderComponent()
       const input = screen.getByRole('textbox')
       handleInput.mockImplementation(async () => options$.set(options))
@@ -112,7 +123,7 @@ describe('Typeahead component', () => {
       const input = screen.getByRole('textbox')
       handleInput.mockImplementation(async () => options$.set(options))
       await userEvent.type(input, `a{Enter}`)
-      expect(input).toHaveValue(options[0].label ?? options[0])
+      expect(input).toHaveValue(getMenuOptionValue(options[0]))
       expect(handleChange).not.toHaveBeenCalled()
       expect(handleInput).toHaveBeenCalledOnce()
     })

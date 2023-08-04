@@ -1,4 +1,8 @@
 // @ts-check
+/**
+ * @typedef {import('fastify').FastifyInstance} FastifyInstance
+ */
+
 import { faker } from '@faker-js/faker'
 import fastify from 'fastify'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -7,7 +11,7 @@ import corsPlugin from '../../src/plugins/cors.js'
 import graphqlPlugin from '../../src/plugins/graphql.js'
 
 describe('cors plugin', () => {
-  /** @type {import('fastify').FastifyInstance} */
+  /** @type {FastifyInstance} */
   let server
 
   afterEach(() => server?.close())

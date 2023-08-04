@@ -1,3 +1,10 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ * @typedef {import('@src/3d/utils/behaviors').SerializedMesh} SerializedMesh
+ */
+
 import { Axis } from '@babylonjs/core/Maths/math.axis.js'
 import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector.js'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder.js'
@@ -9,54 +16,14 @@ import { materialManager } from '../managers/material'
 import { registerBehaviors, serializeBehaviors } from '../utils/behaviors'
 import { applyInitialTransform } from '../utils/mesh'
 
-function makeCornerMesh(
-  { borderRadius, width, height, depth, faceUV },
-  top,
-  left
-) {
-  const cyclinderMesh = CreateCylinder('cylinder', {
-    diameter: borderRadius,
-    height,
-    faceUV: [faceUV, faceUV, faceUV]
-  })
-  cyclinderMesh.position.x += (left ? -1 : 1) * (width - borderRadius) * 0.5
-  cyclinderMesh.position.z += (top ? 1 : -1) * (depth - borderRadius) * 0.5
-
-  const cornerWidth = borderRadius * 0.7
-  const cornerMesh = CreateBox('corner', {
-    width: cornerWidth,
-    depth: cornerWidth,
-    height
-  })
-  cornerMesh.position.x += (left ? -1 : 1) * width * 0.5
-  cornerMesh.position.z += (top ? 1 : -1) * depth * 0.5
-  cornerMesh.rotate(Axis.Y, Math.PI * 0.25)
-  const cornerCSG = CSG.FromMesh(cornerMesh).subtract(
-    CSG.FromMesh(cyclinderMesh)
-  )
-  cornerMesh.dispose(false, true)
-  cyclinderMesh.dispose(false, true)
-  return cornerCSG
-}
-
 /**
  * Creates a tile with rounded corners.
  * Tiles are boxes, so their position is their center.
  * A tile's texture must have 2 faces, back then front, aligned horizontally.
- * @param {object} params - tile parameters, including (all other properties will be passed to the created mesh):
- * @param {string} params.id - tile's unique id.
- * @param {string} params.texture - tile's texture url or hexadecimal string color.
- * @param {number[][]} params.faceUV? - up to 6 face UV (Vector4 components), to map texture on the tile.
- * @param {number} params.x? - initial position along the X axis.
- * @param {number} params.y? - initial position along the Y axis.
- * @param {number} params.z? - initial position along the Z axis.
- * @param {number} params.borderRadius? - radius applied to each corner.
- * @param {number} params.width? - tile's width (X axis).
- * @param {number} params.height? - tile's height (Y axis).
- * @param {number} params.depth? - tile's depth (Z axis).
- * @param {import('../utils').InitialTransform} params.transform? - initial transformation baked into the mesh's vertice.
- * @param {import('@babylonjs/core').Scene} scene? - scene to host this rounded tile (default to last scene).
- * @returns {import('@babylonjs/core').Mesh} the created tile mesh.
+ * By default tiles have a width and depth of 3 with a border radius of 0.4.
+ * @param {Omit<SerializedMesh, 'shape'>} params - token parameters.
+ * @param {Scene} scene - scene for the created mesh.
+ * @returns {Mesh} the created tile mesh.
  */
 export function createRoundedTile(
   {
@@ -79,7 +46,7 @@ export function createRoundedTile(
     ],
     transform = undefined,
     ...behaviorStates
-  } = {},
+  },
   scene
 ) {
   const tileMesh = CreateBox(
@@ -117,7 +84,7 @@ export function createRoundedTile(
 
   mesh.metadata = {
     serialize: () => ({
-      shape: mesh.name,
+      shape: /** @type {'roundedTile'} */ (mesh.name),
       id,
       x: mesh.absolutePosition.x,
       y: mesh.absolutePosition.y,
@@ -137,4 +104,40 @@ export function createRoundedTile(
 
   controlManager.registerControlable(mesh)
   return mesh
+}
+
+/**
+ * @param {Required<Pick<SerializedMesh, 'borderRadius'|'width'|'height'|'depth'> & { faceUV: Vector4 }>} cornerParams - corner parameters
+ * @param {boolean} isTop  - whether if this corner is on the top or the bottom.
+ * @param {boolean} isLeft - whether if this corner is on the left or the right.
+ * @returns {CSG} Constructive Solid Geometry built for this corner.
+ */
+function makeCornerMesh(
+  { borderRadius, width, height, depth, faceUV },
+  isTop,
+  isLeft
+) {
+  const cyclinderMesh = CreateCylinder('cylinder', {
+    diameter: borderRadius,
+    height,
+    faceUV: [faceUV, faceUV, faceUV]
+  })
+  cyclinderMesh.position.x += (isLeft ? -1 : 1) * (width - borderRadius) * 0.5
+  cyclinderMesh.position.z += (isTop ? 1 : -1) * (depth - borderRadius) * 0.5
+
+  const cornerWidth = borderRadius * 0.7
+  const cornerMesh = CreateBox('corner', {
+    width: cornerWidth,
+    depth: cornerWidth,
+    height
+  })
+  cornerMesh.position.x += (isLeft ? -1 : 1) * width * 0.5
+  cornerMesh.position.z += (isTop ? 1 : -1) * depth * 0.5
+  cornerMesh.rotate(Axis.Y, Math.PI * 0.25)
+  const cornerCSG = CSG.FromMesh(cornerMesh).subtract(
+    CSG.FromMesh(cyclinderMesh)
+  )
+  cornerMesh.dispose(false, true)
+  cyclinderMesh.dispose(false, true)
+  return cornerCSG
 }

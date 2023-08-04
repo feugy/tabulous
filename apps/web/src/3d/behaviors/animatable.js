@@ -1,3 +1,10 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').Vector3} Vector3
+ * @typedef {import('@src/3d/utils').Vector3KeyFrame} Vector3KeyFrame
+ */
+
 import { Animation } from '@babylonjs/core/Animations/animation'
 import { Observable } from '@babylonjs/core/Misc/observable'
 
@@ -6,27 +13,23 @@ import { applyGravity } from '../utils/gravity'
 import { convertToLocal } from '../utils/vector'
 import { AnimateBehaviorName } from './names'
 
-/** @typedef {import('@babylonjs/core').Vector3} Vector3 */
-
 export class AnimateBehavior {
   /**
    * Creates behavior to make a mesh's position animatable.
    * It ignores any animations triggered while a previous animation is running.
-   *
-   * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
-   * @property {boolean} isAnimated - true when this mesh is being animated.
-   * @property {number} frameRate - number of frames per second.
-   * @property {Observable} onAnimationEndObservable - emits when animation has ended.
-   *
    * @param {object} params - parameters, including:
    * @param {number} [params.frameRate=60] - number of frames per second.
    */
   constructor({ frameRate } = {}) {
+    /** @type {?Mesh} mesh - the related mesh. */
     this.mesh = null
+    /** @type {boolean} isAnimated - true when this mesh is being animated. */
     this.isAnimated = false
+    /** @type {number} frameRate - number of frames per second. */
     this.frameRate = frameRate ?? 60
+    /** @type {Observable<void>} onAnimationEndObservable - emits when animation has ended. */
     this.onAnimationEndObservable = new Observable()
-    // private
+    /** @type {Animation} */
     this.moveAnimation = new Animation(
       'move',
       'position',
@@ -34,6 +37,7 @@ export class AnimateBehavior {
       Animation.ANIMATIONTYPE_VECTOR3,
       Animation.ANIMATIONLOOPMODE_CONSTANT
     )
+    /** @type {Animation} */
     this.rotateAnimation = new Animation(
       'rotate',
       'rotation',
@@ -52,13 +56,13 @@ export class AnimateBehavior {
 
   /**
    * Does nothing.
-   * @see {@link import('@babylonjs/core').Behavior.init}
+   * @see https://doc.babylonjs.com/typedoc/interfaces/babylon.behavior#init
    */
   init() {}
 
   /**
    * Attaches this behavior to a mesh.
-   * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
+   * @param {Mesh} mesh - which becomes detailable.
    */
   attach(mesh) {
     this.mesh = mesh
@@ -77,12 +81,11 @@ export class AnimateBehavior {
    * - applies gravity (if requested)
    * - returns
    * Does nothing if the mesh is already being animated.
-   *
-   * @async
    * @param {Vector3} to - the desired new absolute position.
-   * @param {Vector3} rotation - its final rotation (set to null to leave unmodified).
+   * @param {?Vector3} rotation - its final rotation (set to null to leave unmodified).
    * @param {number} duration - move duration (in milliseconds).
    * @param {boolean} [gravity=true] - applies gravity at the end.
+   * @returns {Promise<void>}
    */
   async moveTo(to, rotation, duration, gravity = true) {
     const { isAnimated, mesh, moveAnimation, rotateAnimation } = this
@@ -93,23 +96,23 @@ export class AnimateBehavior {
       {
         animation: moveAnimation,
         duration: mesh.getEngine().isLoading ? 0 : duration,
-        keys: [
+        keys: /** @type {Vector3KeyFrame[]} */ ([
           {
             frame: 0,
             values: convertToLocal(mesh.absolutePosition, mesh).asArray()
           },
           { frame: 100, values: convertToLocal(to, mesh).asArray() }
-        ]
+        ])
       }
     ]
     if (rotation) {
       frameSpecs.push({
         animation: rotateAnimation,
         duration: mesh.getEngine().isLoading ? 0 : duration,
-        keys: [
+        keys: /** @type {Vector3KeyFrame[]} */ ([
           { frame: 0, values: mesh.rotation.asArray() },
           { frame: 100, values: rotation.asArray() }
-        ]
+        ])
       })
     }
     await runAnimation(

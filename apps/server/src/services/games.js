@@ -1,4 +1,10 @@
 // @ts-check
+/**
+ * @typedef {import('./players').Player} Player
+ * @typedef {import('./catalog').GameDescriptor} GameDescriptor
+ * @typedef {import('../repositories/players').Friendship} Friendship
+ */
+
 import Ajv from 'ajv/dist/2020.js'
 import { concatMap, mergeMap, Subject } from 'rxjs'
 
@@ -15,9 +21,6 @@ import {
   pickRandom
 } from '../utils/index.js'
 import { canAccess } from './catalog.js'
-
-/** @typedef {import('./players.js').Player} Player */
-/** @typedef {import('./catalog.js').GameDescriptor} GameDescriptor */
 
 /**
  * @typedef {object} Game an active game, or a lobby
@@ -69,7 +72,7 @@ import { canAccess } from './catalog.js'
  * @property {InitialTransform} [transform] - initial transformation baked into the mesh's vertices.
  * @property {number} [borderRadius] - corner radius, for rounded tiles.
  * @property {string} [file] - path to the custom mesh OBJ file.
- * @property {number} [edge] - number of edge, for prisms.
+ * @property {number} [edges] - number of edges, for prisms.
  * @property {number} [prismRotation] - initial rotation angle, baked in vertices, for prisms.
  * @property {number} [faces] - number of faces, for dice.
  * @property {DetailableState} [detailable] - if this mesh could be detailed, contains details.
@@ -86,7 +89,7 @@ import { canAccess } from './catalog.js'
 /** @typedef {_Mesh & Point & Dimension} Mesh */
 
 /**
- * @typedef {object} Targetable commonn properties for targets (stacks, anchors, quantifiable...)
+ * @typedef {object} Targetable common properties for targets (stacks, anchors, quantifiable...)
  * @property {string[]} [kinds] - acceptable meshe kinds, that could be snapped to the anchor. Leave undefined to accept all.
  * @property {number} [extent=2] - dimension multiplier applied to the drop target.
  * @property {number} [priority=0] - priority applied when multiple targets with same altitude apply.
@@ -189,7 +192,7 @@ import { canAccess } from './catalog.js'
 
 /**
  * @typedef {object} CameraPosition a saved Arc rotate camera position
- * @property {string} [hash] - hash for this position, to ease comparisons and change detections.
+ * @property {string} hash - hash for this position, to ease comparisons and change detections.
  * @property {string} playerId - id of the player for who this camera position is relevant.
  * @property {number} index - 0-based index for this saved position.
  * @property {number[]} target - 3D cooordinates of the camera target, as per Babylon's specs.
@@ -206,11 +209,13 @@ import { canAccess } from './catalog.js'
  */
 
 /**
- * @typedef {Record<string, any>} PlayerPreference
+ * @typedef {object} _PlayerPreference
  * @property {string} playerId - if of this player.
  * @property {string} [color] - hex color for this player, if any.
  * @property {number} [angle] - yaw (Y angle) on the table, if any.
  */
+
+/** @typedef { Record<string, ?> & _PlayerPreference } PlayerPreference */
 
 /** @typedef {import('ajv').JSONSchemaType<?>} Schema */
 
@@ -684,7 +689,7 @@ function isGuestAlreadyPlaying(userId, { playerIds, guestIds }) {
 
 /**
  * @param {string} guestId - checked guest id.
- * @param {import('../repositories/players.js').Friendship[]} friendships - current player existing relationships.
+ * @param {Friendship[]} friendships - current player existing relationships.
  * @returns {boolean} whether this guest is a friend of the current player.
  */
 function isGuestAFriend(guestId, friendships) {

@@ -41,6 +41,7 @@ exports[`Empty list 1`] = `
     class="s-2FHiERVIQQ6s"
   >
     <span
+      aria-expanded="true"
       aria-haspopup="menu"
       class="wrapper s-JM3fRWrV7jJU"
     >
@@ -347,6 +348,7 @@ exports[`With friends 1`] = `
     class="s-2FHiERVIQQ6s"
   >
     <span
+      aria-expanded="true"
       aria-haspopup="menu"
       class="wrapper s-JM3fRWrV7jJU"
     >
@@ -1306,6 +1308,7 @@ exports[`With requests and proposals 1`] = `
     class="s-2FHiERVIQQ6s"
   >
     <span
+      aria-expanded="true"
       aria-haspopup="menu"
       class="wrapper s-JM3fRWrV7jJU"
     >

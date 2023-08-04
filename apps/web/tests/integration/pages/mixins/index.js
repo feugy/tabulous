@@ -5,11 +5,12 @@ export { TermsSupportedMixin } from './terms-supported.js'
 
 /**
  * @typedef {import('@playwright/test').Page} Page
+ * @typedef {import('../../utils').Locale} Locale
  */
 
 /**
  * @template T
- * @typedef {{ new(page: Page, lang: string): T}} Constructor
+ * @typedef {{ new(page: Page, lang: Locale): T}} Constructor
  */
 
 /**
@@ -31,6 +32,10 @@ export { TermsSupportedMixin } from './terms-supported.js'
 export function mixin(BaseConstructor, ...Mixins) {
   // @ts-ignore because TypeScript does not like constructor to have a generic parameter
   class Augmented extends BaseConstructor {
+    /**
+     * @param {Page} page - the actual page.
+     * @param {Locale} lang - current language.
+     */
     constructor(page, lang) {
       super(page, lang)
       for (const Mixin of Mixins) {

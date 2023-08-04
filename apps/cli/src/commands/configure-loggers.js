@@ -1,4 +1,6 @@
 // @ts-check
+/** @typedef {import('@tabulous/server/src/graphql/types').LoggerLevel} LoggerLevel */
+
 import { gql } from '@urql/core'
 import chalkTemplate from 'chalk-template'
 
@@ -11,8 +13,6 @@ import {
   signToken
 } from '../util/index.js'
 import { commonOptions } from './help.js'
-
-/** @typedef {import('@tabulous/server/src/graphql/logger-resolver.js').LoggerLevel} LoggerLevel */
 
 const configureLoggersMutation = gql`
   mutation configureLoggerLevels($levels: [InputLoggerLevel!]!) {

@@ -1,4 +1,19 @@
 // @ts-check
+/**
+ * @typedef {import('./types').AddPlayerArgs} AddPlayerArgs
+ * @typedef {import('./types').Friendship} Friendship
+ * @typedef {import('./types').FriendshipUpdate} FriendshipUpdate
+ * @typedef {import('./types').ListPlayersArgs} ListPlayersArgs
+ * @typedef {import('./types').LogInArgs} LogInArgs
+ * @typedef {import('./types').Player} Player
+ * @typedef {import('./types').PlayerWithTurnCredentials} PlayerWithTurnCredentials
+ * @typedef {import('./types').SearchPlayersArgs} SearchPlayersArgs
+ * @typedef {import('./types').TargetedPlayerArgs} TargetedPlayerArgs
+ * @typedef {import('./types').UpdateCurrentPlayerArgs} UpdateCurrentPlayerArgs
+ * @typedef {import('./utils').GraphQLContext} GraphQLContext
+ * @typedef {import('./utils').PubSubQueue} PubSubQueue
+ */
+
 import { filter } from 'rxjs'
 
 import { makeToken } from '../plugins/utils.js'
@@ -8,16 +23,6 @@ import { hash, makeLogger } from '../utils/index.js'
 import { isAdmin, isAuthenticated } from './utils.js'
 
 const logger = makeLogger('players-resolver')
-
-/** @typedef {import('./utils.js').GraphQLContext} GraphQLContext */
-/** @typedef {import('../services/players.js').Player} Player */
-
-/**
- * @typedef {object} PlayerWithTurnCredentials
- * @property {string} token - authentication token.
- * @property {Player} player - authenticated player.
- * @property {import('../services/turn-credentials.js').TurnCredentials} turnCredentials - credentials for the TURN server.
- */
 
 /**
  * Scafolds Mercurius loaders for specific properties of queried objects.
@@ -84,12 +89,6 @@ export default {
       }
     ),
 
-    /**
-     * @typedef {object} SearchPlayersArgs
-     * @property {string} search - searched text.
-     * @property {boolean} includeCurrent - whether to include current player in results or not.
-     */
-    /** @typedef {ReturnType<typeof services.searchPlayers>} SearchPlayersResponse */
     searchPlayers: isAuthenticated(
       /**
        * Returns players (except the current one) which username contains searched text.
@@ -97,30 +96,23 @@ export default {
        * @param {unknown} obj - graphQL object.
        * @param {SearchPlayersArgs} args - query arguments.
        * @param {GraphQLContext} context - graphQL context.
-       * @returns {SearchPlayersResponse} list (potentially empty) of matching players.
+       * @returns {Promise<Player[]>} list (potentially empty) of matching players.
        */
       (obj, { search, includeCurrent }, { player }) =>
         services.searchPlayers(search, player.id, !includeCurrent)
     ),
 
-    /**
-     * @typedef {object} ListPlayersArgs
-     * @property {number} from - index of the first result returned.
-     * @property {number} size - number of return results.
-     */
-    /** @typedef {ReturnType<typeof repositories.players.list>} ListPlayersResponse */
     listPlayers: isAdmin(
       /**
        * Returns a page or players.
        * Requires authentication and elevated privileges.
        * @param {unknown} obj - graphQL object.
        * @param {ListPlayersArgs} args - query arguments, including:
-       * @returns {ListPlayersResponse} extract of the player list.
+       * @returns {Promise<import('../repositories/abstract-repository').Page<Player>>} extract of the player list.
        */
       (obj, args) => repositories.players.list(args)
     ),
 
-    /** @typedef {ReturnType<typeof services.listFriends>} ListFriendsResponse */
     listFriends: isAuthenticated(
       /**
        * Returns the list of friends of a given player.
@@ -128,20 +120,15 @@ export default {
        * @param {unknown} obj - graphQL object.
        * @param {unknown} args - query arguments.
        * @param {GraphQLContext} context - graphQL context.
-       * @returns {ListFriendsResponse} list (potentially empty) of friend players.
+       * @returns {Promise<Friendship[]>} list (potentially empty) of friend players.
        */
-      (obj, args, { player }) => services.listFriends(player.id)
+      (obj, args, { player }) =>
+        // @ts-expect-error: player is enriched by loaders
+        services.listFriends(player.id)
     )
   },
 
   Mutation: {
-    /**
-     * @typedef {object} AddPlayerArgs
-     * @property {string} id - created player id.
-     * @property {string} username - created player username.
-     * @property {string} password - created player password (clear value).
-     */
-    /** @typedef {ReturnType<typeof services.upsertPlayer>} AddPlayerResponse */
     addPlayer: isAdmin(
       /**
        * Create a new player account that can connect with a password value.
@@ -149,17 +136,11 @@ export default {
        * Requires authentication and elevated privileges.
        * @param {unknown} obj - graphQL object.
        * @param {AddPlayerArgs} args - mutation arguments.
-       * @returns {AddPlayerResponse} the created player.
+       * @returns {Promise<Player>} the created player.
        */
       async (obj, { id, username, password }) =>
         services.upsertPlayer({ id, username, password: hash(password) })
     ),
-
-    /**
-     * @typedef {object} LogInArgs
-     * @property {string} id - user account id.
-     * @property {string} password - clear password.
-     */
 
     /**
      * Authenticates an user from their user id.
@@ -184,25 +165,17 @@ export default {
       return { token, player, turnCredentials }
     },
 
-    /** @typedef {ReturnType<typeof services.acceptTerms>} AcceptTermsResponse */
     acceptTerms: isAuthenticated(
       /**
        * Record an user accepting the terms of service.
        * @param {unknown} obj - graphQL object.
        * @param {unknown} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
-       * @returns {AcceptTermsResponse} saved player.
+       * @returns {Promise<?Player>} saved player.
        */
       (obj, args, { player }) => services.acceptTerms(player)
     ),
 
-    /**
-     * @typedef {object} UpdateCurrentPlayerArgs
-     * @property {string} [username] - new username value, if any.
-     * @property {string} [avatar] - new avatar value, if any.
-     * @property {boolean} [usernameSearchable] - new value for username searchability, if any.
-     */
-    /** @typedef {Promise<Player>} UpdateCurrentPlayerResponse */
     updateCurrentPlayer: isAuthenticated(
       /**
        * Updates current player's details.
@@ -210,7 +183,7 @@ export default {
        * @param {unknown} obj - graphQL object.
        * @param {UpdateCurrentPlayerArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
-       * @returns {UpdateCurrentPlayerResponse} the updated player.
+       * @returns {Promise<Player>} the updated player.
        */
       async (obj, { username, avatar, usernameSearchable }, { player }) => {
         logger.trace('updates current player')
@@ -243,23 +216,17 @@ export default {
       }
     ),
 
-    /**
-     * @typedef {object} TargetedPlayerArgs
-     * @property {string} id - id of the targeted player.
-     */
-    /** @typedef {Promise<?Player>} DeletePlayerResponse */
     deletePlayer: isAdmin(
       /**
        * Deletes an existing player account.
        * Requires authentication and elevated privileges.
        * @param {unknown} obj - graphQL object.
        * @param {TargetedPlayerArgs} args - mutation arguments.
-       * @returns {DeletePlayerResponse} deleted player account, or null.
+       * @returns {Promise<?Player>} deleted player account, or null.
        */
       (obj, { id }) => repositories.players.deleteById(id)
     ),
 
-    /** @typedef {ReturnType<typeof services.requestFriendship>} RequestFriendshipResponse */
     requestFriendship: isAuthenticated(
       /**
        * Sends a friend request from one player to another one.
@@ -267,12 +234,11 @@ export default {
        * @param {unknown} obj - graphQL object.
        * @param {TargetedPlayerArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
-       * @returns {RequestFriendshipResponse} true if the operation succeeds.
+       * @returns {Promise<boolean>} true if the operation succeeds.
        */
       (obj, { id }, { player }) => services.requestFriendship(player, id)
     ),
 
-    /** @typedef {ReturnType<typeof services.acceptFriendship>} AcceptFriendshipResponse */
     acceptFriendship: isAuthenticated(
       /**
        * Accepts a friend request from another player.
@@ -280,12 +246,11 @@ export default {
        * @param {unknown} obj - graphQL object.
        * @param {TargetedPlayerArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
-       * @returns {AcceptFriendshipResponse} true if the operation succeeds.
+       * @returns {Promise<boolean>} true if the operation succeeds.
        */
       (obj, { id }, { player }) => services.acceptFriendship(player, id)
     ),
 
-    /** @typedef {ReturnType<typeof services.endFriendship>} EndFriendshipResponse */
     endFriendship: isAuthenticated(
       /**
        * Declines a friend request or ends existing friendship with another player.
@@ -293,7 +258,7 @@ export default {
        * @param {unknown} obj - graphQL object.
        * @param {TargetedPlayerArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
-       * @returns {EndFriendshipResponse} true if the operation succeeds.
+       * @returns {Promise<boolean>} true if the operation succeeds.
        */
       (obj, { id }, { player }) => services.endFriendship(player, id)
     )
@@ -308,8 +273,8 @@ export default {
          * @param {unknown} obj - graphQL object.
          * @param {object} args - subscription arguments.
          * @param {GraphQLContext} context - graphQL context.
-         * @yields {Omit<import('../services/player.js').FriendshipUpdate, 'from'> & { id: string }}
-         * @returns {import('./utils.js').PubSubQueue}
+         * @yields {FriendshipUpdate}
+         * @returns {PubSubQueue}
          */
         async (obj, args, { player, pubsub }) => {
           const topic = `friendship-${player.id}`

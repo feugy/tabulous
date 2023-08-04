@@ -1,3 +1,9 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ */
+
 import { RandomBehavior, RandomBehaviorName } from '@src/3d/behaviors'
 import { controlManager, customShapeManager } from '@src/3d/managers'
 import {
@@ -19,13 +25,18 @@ vi.mock('@src/3d/managers/custom-shape', () => ({
 
 describe('RandomBehavior', () => {
   const actionRecorded = vi.fn()
+  /** @type {Scene} */
+  let scene
 
-  configures3dTestEngine()
+  configures3dTestEngine(created => (scene = created.scene))
 
   beforeAll(() => {
     controlManager.onActionObservable.add(actionRecorded)
+    // @ts-expect-error customShapeManager is not a map
     customShapeManager.set(getDieModelFile(4), btoa(die4Data))
+    // @ts-expect-error
     customShapeManager.set(getDieModelFile(6), btoa(die6Data))
+    // @ts-expect-error
     customShapeManager.set(getDieModelFile(8), btoa(die8Data))
   })
 
@@ -36,7 +47,7 @@ describe('RandomBehavior', () => {
   it('has initial state', async () => {
     const state = { face: 3, quaternionPerFace: getQuaternions(6), max: 6 }
     const behavior = new RandomBehavior(state)
-    const mesh = await createBox({ id: 'box' })
+    const mesh = await createBox({ id: 'box', texture: '' }, scene)
 
     expect(behavior.mesh).toBeNull()
     expect(behavior.name).toEqual(RandomBehaviorName)
@@ -47,6 +58,7 @@ describe('RandomBehavior', () => {
   })
 
   it('can not build without quaternions', () => {
+    // @ts-expect-error
     expect(() => new RandomBehavior({})).toThrow(
       'RandomBehavior needs quaternionPerFace'
     )
@@ -54,6 +66,7 @@ describe('RandomBehavior', () => {
 
   it('can not build without maximum', () => {
     expect(
+      // @ts-expect-error
       () => new RandomBehavior({ quaternionPerFace: getQuaternions(8) })
     ).toThrow(`RandomBehavior's max should be higher than 1`)
   })
@@ -74,10 +87,14 @@ describe('RandomBehavior', () => {
   })
 
   it('can not restore state with face higher than maximum', async () => {
-    const mesh = await createBox({
-      id: 'box',
-      randomizable: { max: 4, quaternionPerFace: getQuaternions(8), face: 1 }
-    })
+    const mesh = await createBox(
+      {
+        id: 'box',
+        texture: '',
+        randomizable: { max: 4, quaternionPerFace: getQuaternions(8), face: 1 }
+      },
+      scene
+    )
     const behavior = getRandomizable(mesh)
     expect(() => behavior.fromState({ face: 6 })).toThrow(
       `Can not restore state face 6 since maximum is 4`
@@ -103,7 +120,7 @@ describe('RandomBehavior', () => {
       max: 4,
       quaternionPerFace: getQuaternions(4)
     })
-    behavior.setFace(1)
+    behavior.setFace?.(1)
     expect(behavior.state).toMatchObject({ face })
     expect(actionRecorded).not.toHaveBeenCalled()
   })
@@ -111,15 +128,21 @@ describe('RandomBehavior', () => {
   describe.each([{ title: 'a 6 face die', max: 6 }])(
     'given attached to $title',
     ({ max }) => {
+      /** @type {Mesh} */
       let mesh
+      /** @type {RandomBehavior} */
       let behavior
 
       beforeEach(async () => {
-        mesh = await createDie({
-          id: 'd6',
-          faces: max,
-          randomizable: { canBeSet: true, duration: 150 }
-        })
+        mesh = await createDie(
+          {
+            id: 'd6',
+            texture: '',
+            faces: max,
+            randomizable: { canBeSet: true, duration: 150 }
+          },
+          scene
+        )
         behavior = getRandomizable(mesh)
       })
 
@@ -163,7 +186,7 @@ describe('RandomBehavior', () => {
       })
 
       it(`can set face`, async () => {
-        await mesh.metadata.setFace(max)
+        await mesh.metadata.setFace?.(max)
         expect(behavior.state.face).toBe(max)
         expect(actionRecorded).toHaveBeenCalledOnce()
         expect(actionRecorded).toHaveBeenNthCalledWith(
@@ -180,25 +203,25 @@ describe('RandomBehavior', () => {
       })
 
       it(`can not set negative face`, async () => {
-        await expect(mesh.metadata.setFace(0)).rejects.toThrow(
+        await expect(mesh.metadata.setFace?.(0)).rejects.toThrow(
           `Can not set randomizable face for mesh ${mesh.id}: 0 is not in [1..${max}]`
         )
         expect(behavior.state.face).toBe(1)
-        expect(actionRecorded).not.toHaveBeenCalledTimes()
+        expect(actionRecorded).not.toHaveBeenCalled()
       })
 
       it(`can not set face higher than max`, async () => {
-        await expect(mesh.metadata.setFace(max + 2)).rejects.toThrow(
+        await expect(mesh.metadata.setFace?.(max + 2)).rejects.toThrow(
           `Can not set randomizable face for mesh ${mesh.id}: ${
             max + 2
           } is not in [1..${max}]`
         )
         expect(behavior.state.face).toBe(1)
-        expect(actionRecorded).not.toHaveBeenCalledTimes()
+        expect(actionRecorded).not.toHaveBeenCalled()
       })
 
       it(`can randomize face`, async () => {
-        await mesh.metadata.random()
+        await mesh.metadata.random?.()
         expect(behavior.state.face).toBeTypeOf('number')
         expect(actionRecorded).toHaveBeenCalledOnce()
         expect(actionRecorded).toHaveBeenNthCalledWith(
@@ -216,7 +239,7 @@ describe('RandomBehavior', () => {
 
       it(`can randomize face with fixed value`, async () => {
         const newFace = 2
-        await mesh.metadata.random(newFace)
+        await mesh.metadata.random?.(newFace)
         expect(behavior.state.face).toEqual(newFace)
         expect(actionRecorded).toHaveBeenCalledOnce()
         expect(actionRecorded).toHaveBeenNthCalledWith(
@@ -235,6 +258,8 @@ describe('RandomBehavior', () => {
   )
 })
 
-function getRandomizable(mesh) {
-  return mesh.getBehaviorByName(RandomBehaviorName)
+function getRandomizable(/** @type {Mesh} */ mesh) {
+  return /** @type {RandomBehavior} */ (
+    mesh.getBehaviorByName(RandomBehaviorName)
+  )
 }

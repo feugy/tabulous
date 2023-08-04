@@ -1,17 +1,14 @@
 // @ts-check
+/**
+ * @typedef {import('./types').LoggerLevel} LoggerLevel
+ * @typedef {import('./utils').GraphQLAnonymousContext} GraphQLAnonymousContext
+ * @typedef {import('./utils').GraphQLContext} GraphQLContext
+ */
+
 import { configureLoggers, currentLevels } from '../utils/logger.js'
 import { isAdmin } from './utils.js'
 
-/** @typedef {import('./utils.js').GraphQLContext} GraphQLAnonymousContext */
-/** @typedef {import('./utils.js').GraphQLContext} GraphQLContext */
-
 const comparator = new Intl.Collator('en', { numeric: true, usage: 'sort' })
-
-/**
- * @typedef {object} LoggerLevel
- * @property {string} name - logger name.
- * @property {import('../utils/logger.js').Level} level - current log level.
- */
 
 export default {
   Query: {

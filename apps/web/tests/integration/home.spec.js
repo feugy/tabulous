@@ -1,4 +1,4 @@
-// @ts-checkcan promo
+// @ts-check
 import { faker } from '@faker-js/faker'
 import { supportedLanguages } from '@src/params/lang.js'
 // note: we can't import the full vitest because it mockeypatches Jest symbols, which Playwright doesn't like
@@ -14,14 +14,15 @@ import {
   translate
 } from './utils/index.js'
 
-for (const { lang } of [{ lang: 'fr' }, { lang: 'en' }]) {
+for (const { lang } of /** @type {{ lang: import('./utils').Locale }[]} */ ([
+  { lang: 'fr' },
+  { lang: 'en' }
+])) {
   describe(`${lang} Home page`, () => {
     const catalog = [
       {
         name: 'playground',
-        locales: { fr: { title: 'Aire de jeu' }, en: { title: 'Playground' } },
-        minAge: null,
-        minTime: null
+        locales: { fr: { title: 'Aire de jeu' }, en: { title: 'Playground' } }
       },
       {
         name: 'klondike',
@@ -532,7 +533,7 @@ for (const { lang } of [{ lang: 'fr' }, { lang: 'en' }]) {
         players: [player]
       }
       let gameJoined = lobby
-      /** @type {import('./utils/server.js').GraphQlMockResult} */
+      /** @type {import('./utils/server').GraphQlMockResult} */
       let graphQlMocks
 
       beforeEach(async ({ page }) => {
@@ -626,9 +627,10 @@ for (const { lang } of [{ lang: 'fr' }, { lang: 'en' }]) {
 
       it('can kick a lobby guest', async ({ page }) => {
         const homePage = new HomePage(page, lang)
-        graphQlMocks.onQuery((operation, request) => {
+        const kickSpy = fn()
+        graphQlMocks.onQuery((operation, req) => {
           if (operation === 'kick') {
-            console.log(request)
+            kickSpy(req)
             graphQlMocks.sendToSubscription({
               data: {
                 receiveGameUpdates: { ...lobby, players: [player] }
@@ -638,10 +640,18 @@ for (const { lang } of [{ lang: 'fr' }, { lang: 'en' }]) {
           }
         })
         await homePage.kick(friends[0].player.username)
+        // TODO find how to extend playwrigh's expect.
+        // @ts-expect-error: playwright does not know about vitest matchers
+        expect(kickSpy).toHaveBeenCalledWith(
+          expect.objectContaining({
+            variables: { gameId: lobby.id, playerId: friends[0].player.id }
+          })
+        )
       })
     })
 
     describe('given some friends', () => {
+      /** @type {import('./utils/server').GraphQlMockResult} */
       let graphQlMocks
 
       beforeEach(async ({ page }) => {

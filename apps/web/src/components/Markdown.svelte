@@ -1,10 +1,14 @@
 <script>
+  // @ts-check
   import { _ } from 'svelte-intl'
   import SvelteMarkdown from 'svelte-markdown'
 
-  export let options = {}
-  export let titleKey
+  /** @type {string} i18n key for the markdown content. */
   export let contentKey
+  /** @type {?string} optional i18n key for the title.*/
+  export let titleKey = null
+  /** @type {Omit<import('svelte-markdown').Props, 'source'>} extra options for SvelteMarkdown. */
+  export let options = {}
 </script>
 
 <section>

@@ -1,3 +1,8 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ */
+
 import { faker } from '@faker-js/faker'
 import { TargetBehavior, TargetBehaviorName } from '@src/3d/behaviors'
 import { indicatorManager, targetManager } from '@src/3d/managers'
@@ -8,15 +13,12 @@ import { configures3dTestEngine, createBox } from '../../test-utils'
 describe('TargetBehavior', () => {
   configures3dTestEngine()
 
-  beforeEach(vi.resetAllMocks)
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
 
   it('has initial state', () => {
-    const state = {
-      isFlipped: faker.datatype.boolean(),
-      duration: faker.number.int(999),
-      ignoreParts: faker.datatype.boolean()
-    }
-    const behavior = new TargetBehavior(state)
+    const behavior = new TargetBehavior()
     const mesh = createBox('box', {})
 
     expect(behavior.name).toEqual(TargetBehaviorName)
@@ -76,7 +78,7 @@ describe('TargetBehavior', () => {
     expect(indicatorManager.isManaging({ id })).toBe(false)
     const behavior = new TargetBehavior()
     const mesh = createBox(meshId, {})
-    const zone = behavior.addZone(mesh, { playerId })
+    const zone = behavior.addZone(mesh, { playerId, extent: 1 })
     expect(behavior.zones).toEqual([zone])
     expect(zone).toEqual(
       expect.objectContaining({ mesh, enabled: true, priority: 0, playerId })
@@ -105,13 +107,17 @@ describe('TargetBehavior', () => {
       mesh,
       enabled: true,
       extent: 1,
+      priority: 0,
+      ignoreParts: true,
       targetable: behavior
     })
     expect(behavior.zones).toEqual([])
   })
 
   describe('given attached to a mesh', () => {
+    /** @type {Mesh} */
     let mesh
+    /** @type {TargetBehavior} */
     let behavior
 
     beforeEach(() => {

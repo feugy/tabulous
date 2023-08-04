@@ -1,4 +1,22 @@
 <script>
+  // @ts-check
+  /**
+   * @typedef {import('@src/graphql').CatalogItem} CatalogItemData
+   * @typedef {import('@src/graphql').Friendship} Friendship
+   * @typedef {import('@src/graphql').LightGame} LightGame
+   * @typedef {import('@src/graphql').Game} Game
+   * @typedef {import('@src/graphql').LightPlayer} LightPlayer
+   * @typedef {import('@src/graphql').PlayerWithTurnCredentials} PlayerWithTurnCredentials
+   */
+  /**
+   * @template T
+   * @typedef {import('@src/types').DeepRequired<T>} DeepRequired
+   */
+  /**
+   * @template T
+   * @typedef {import('rxjs').Observable<T>} Observable
+   */
+
   import {
     Aside,
     ConfirmDialogue,
@@ -37,18 +55,23 @@
   import GameLink from './GameLink.svelte'
 
   /** @type {import('./$types').PageData} */
-  export let data = {}
+  export let data
 
+  /** @type {?LightGame} */
   let gameToDelete = null
-  let user = null
-  let games = readable(data.currentGames || [])
-  let friends = readable([])
+  /** @type {LightPlayer} */
+  let user
+  /** @type {Observable<LightGame[]> }*/
+  let games = /** @type {?} */ (readable(data.currentGames || []))
+  /** @type {Observable<Friendship[]> }*/
+  let friends = /** @type {?} */ (readable([]))
+  /** @type {?{ title: string, maxSeats: number }} */
   let tooManyPlayersCatalogItem = null
   $: isDeletedLobby = isLobby(gameToDelete)
 
   $: if (data.session?.player) {
     user = data.session.player
-    games = receiveGameListUpdates(data.currentGames)
+    games = receiveGameListUpdates(data.currentGames ?? undefined)
     friends = listFriends()
   }
 
@@ -67,9 +90,11 @@
     }
   })
 
-  async function handleSelectGame({ detail: game }) {
+  async function handleSelectGame(
+    /** @type {CustomEvent<LightGame>} */ { detail: game }
+  ) {
     if (isLobby(game)) {
-      if (game.id !== $currentGame?.id) {
+      if (game.id !== $currentGame?.id && user) {
         await leaveGame(user)
         enterGame(game)
       }
@@ -78,12 +103,16 @@
     }
   }
 
-  async function handleDeleteGame({ detail: game }) {
+  async function handleDeleteGame(
+    /** @type {CustomEvent<LightGame>} */ { detail: game }
+  ) {
     gameToDelete = game
   }
 
-  async function handleDeletionClose({ detail: confirmed } = {}) {
-    if (confirmed) {
+  async function handleDeletionClose(
+    /** @type {CustomEvent<boolean>} */ { detail: confirmed }
+  ) {
+    if (confirmed && gameToDelete) {
       await deleteGame(gameToDelete.id)
       toastInfo({
         contentKey: isDeletedLobby
@@ -94,10 +123,15 @@
     gameToDelete = null
   }
 
-  async function handleCreateGame({ detail: { name, title, maxSeats = 2 } }) {
+  async function handleCreateGame(
+    /** @type {CustomEvent<CatalogItemData & { title: string }>} */ {
+      detail: { name, title, maxSeats = 2 }
+    }
+  ) {
     if ($currentGame) {
       if (
-        maxSeats < $currentGame.players.filter(({ isGuest }) => !isGuest).length
+        maxSeats <
+        ($currentGame?.players ?? []).filter(({ isGuest }) => !isGuest).length
       ) {
         tooManyPlayersCatalogItem = { title, maxSeats }
       } else {
@@ -117,21 +151,28 @@
     await enterGame(await createGame())
   }
 
-  function enterGame(game) {
+  function enterGame(/** @type {Game} */ game) {
     return joinGame({
       gameId: game.id,
-      ...data.session,
+      .../** @type {DeepRequired<PlayerWithTurnCredentials>} */ (data.session),
       onPromotion: promoted => {
-        handleSelectGame({ detail: promoted })
+        handleSelectGame(
+          /** @type {CustomEvent<LightGame>} */ ({ detail: promoted })
+        )
       }
     })
   }
 
   async function handleCloseLobby() {
-    await leaveGame(user)
+    if (user) {
+      await leaveGame(user)
+    }
   }
 
-  function sortCatalogByTitle({ locales: gameA }, { locales: gameB }) {
+  function sortCatalogByTitle(
+    /** @type {CatalogItemData} */ { locales: gameA },
+    /** @type {CatalogItemData} */ { locales: gameB }
+  ) {
     return $comparator$.compare(
       gameA?.[$locale]?.title,
       gameB?.[$locale]?.title
@@ -185,8 +226,8 @@
     </div>
     {#if user}
       <Aside
-        game={$currentGame}
-        player={user}
+        game={$currentGame ?? null}
+        {user}
         playerById={$gamePlayerById}
         connected={$connected}
         thread={$thread}

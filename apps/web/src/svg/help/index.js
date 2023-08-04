@@ -1,3 +1,4 @@
+// @ts-check
 export { default as Arrows } from './arrows.svg?component'
 export { default as CtrlArrows } from './ctrl+arrows.svg?component'
 export { default as CtrlNumbers } from './ctrl+numbers.svg?component'

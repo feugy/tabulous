@@ -1,4 +1,13 @@
 // @ts-check
+/**
+ * @typedef {import('fastify').FastifyInstance} FastifyInstance
+ * @typedef {import('mercurius').MercuriusContext} MercuriusContext
+ * @typedef {import('mercurius').MercuriusOptions} MercuriusOptions
+ * @typedef {import('../server').Server} Server
+ * @typedef {import('../services/configuration').Configuration} Configuration
+ * @typedef {import('../services/players').Player} Player
+ */
+
 import mercurius from 'mercurius'
 import redis from 'mqemitter-redis'
 
@@ -16,15 +25,15 @@ const logger = makeLogger('graphql-plugin')
 
 /**
  * @typedef {object} Context Context passed to every GraphQL resolver.
- * @property {?import('../services/players.js').Player} player - authenticated player, if any.
+ * @property {?Player} player - authenticated player, if any.
  * @property {string} token - authentication token (could be empty).
- * @property {import('../services/configuration.js').Configuration} conf - application configuration.
+ * @property {Configuration} conf - application configuration.
  */
 
-/** @typedef {import('mercurius').MercuriusContext & Context} GraphQLContext */
+/** @typedef {MercuriusContext & Context} GraphQLContext */
 
 /**
- * @typedef {import('mercurius').MercuriusOptions & GraphQLCustomOptions} GraphQLOptions graphQL plugin options.
+ * @typedef {MercuriusOptions & GraphQLCustomOptions} GraphQLOptions graphQL plugin options.
  * You can use any of Mercurius options but `schema`, `resolvers`, `loaders` and `context` which are computed.
  */
 
@@ -37,7 +46,7 @@ const logger = makeLogger('graphql-plugin')
  * Request authentication expects a Bearer token ("Bearer " + a valid JWT).
  * In the case of GraphQL subscription, bearer is expected on the connection payload message.
  * In the case of GraphQL queries and mutations, bearer is expected in the Authorization header
- * @param {import('fastify').FastifyInstance} fastify - a fastify application.
+ * @param {FastifyInstance} fastify - a fastify application.
  * @param {GraphQLOptions} opts - plugin options.
  * @returns {Promise<void>}
  */
@@ -46,7 +55,7 @@ export default async function registerGraphQL(
   { allowedOrigins, pubsubUrl, ...opts }
 ) {
   const allowedOriginsRegExp = new RegExp(allowedOrigins)
-  const app = /** @type {import('../server.js').Server} */ (fastify)
+  const app = /** @type {Server} */ (fastify)
   await app.register(mercurius, {
     ...opts,
     schema,

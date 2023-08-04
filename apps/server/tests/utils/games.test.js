@@ -1,4 +1,15 @@
 // @ts-check
+/**
+ * @typedef {import('../../src/services/games').Anchor} Anchor
+ * @typedef {import('../../src/services/games').GameDescriptor} GameDescriptor
+ * @typedef {import('../../src/services/games').GameParameters} GameParameters
+ * @typedef {import('../../src/services/games').Mesh} Mesh
+ * @typedef {import('../../src/services/games').Point} Point
+ * @typedef {import('../../src/services/games').StartedGameData} StartedGameData
+ * @typedef {import('../../src/services/players').Player} Player
+ * @typedef {import('../../src/utils/games').Slot} Slot
+ */
+
 import { faker } from '@faker-js/faker'
 import { vi } from 'vitest'
 import { beforeEach, describe, expect, it } from 'vitest'
@@ -20,14 +31,6 @@ import {
   unsnap
 } from '../../src/utils/games.js'
 import { cloneAsJSON } from '../test-utils.js'
-
-/** @typedef {import('../../src/services/games.js').Mesh} Mesh */
-/** @typedef {import('../../src/services/games.js').Anchor} Anchor */
-/** @typedef {import('../../src/services/games.js').StartedGameData} StartedGameData */
-/** @typedef {import('../../src/services/games.js').GameDescriptor} GameDescriptor */
-/** @typedef {import('../../src/services/games.js').GameParameters} GameParameters */
-/** @typedef {import('../../src/services/players.js').Player} Player */
-/** @typedef {import('../../src/utils/games.js').Slot} Slot */
 
 describe('createMeshes()', () => {
   it('throws on invalid descriptor', async () => {
@@ -1209,7 +1212,7 @@ describe('findAvailableValues()', () => {
   it('returns nothing when all possible values were used', () => {
     expect(
       findAvailableValues(
-        colors.map(color => ({ color })),
+        colors.map(color => ({ color, playerId: '' })),
         'color',
         colors
       )
@@ -1220,10 +1223,10 @@ describe('findAvailableValues()', () => {
     expect(
       findAvailableValues(
         [
-          { color: 'red' },
-          { color: 'lime' },
-          { color: 'azure' },
-          { color: 'blue' }
+          { color: 'red', playerId: '' },
+          { color: 'lime', playerId: '' },
+          { color: 'azure', playerId: '' },
+          { color: 'blue', playerId: '' }
         ],
         'color',
         colors
@@ -1235,10 +1238,10 @@ describe('findAvailableValues()', () => {
     expect(
       findAvailableValues(
         [
-          { color: 'red' },
-          { color: 'lime' },
-          { color: 'azure' },
-          { color: 'blue' }
+          { color: 'red', playerId: '' },
+          { color: 'lime', playerId: '' },
+          { color: 'azure', playerId: '' },
+          { color: 'blue', playerId: '' }
         ],
         'unknown',
         colors
@@ -1249,7 +1252,7 @@ describe('findAvailableValues()', () => {
 
 /**
  * @param {Mesh[]} meshes
- * @param {Slot & import('../../src/services/games.js').Point} [slot]
+ * @param {Slot & Point} [slot]
  * @param {number} [count]
  * @returns {Mesh}
  */

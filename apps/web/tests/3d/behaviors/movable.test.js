@@ -1,3 +1,8 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ */
+
 import { faker } from '@faker-js/faker'
 import { MoveBehavior, MoveBehaviorName } from '@src/3d/behaviors'
 import { moveManager } from '@src/3d/managers'
@@ -48,7 +53,9 @@ describe('MoveBehavior', () => {
   })
 
   describe('given attached to a mesh', () => {
+    /** @type {Mesh} */
     let mesh
+    /** @type {MoveBehavior} */
     let behavior
 
     beforeEach(() => {

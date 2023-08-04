@@ -1,4 +1,10 @@
 <script>
+  // @ts-check
+  /**
+   * @typedef {import('@tabulous/server/src/utils').Schema} Schema
+   * @typedef {import('@src/types').JSONValue} JSONValue
+   */
+
   import { Button, Pane } from '@src/components'
   import { createEventDispatcher } from 'svelte'
   import { fly } from 'svelte/transition'
@@ -6,11 +12,14 @@
 
   import { buildComponents } from './utils'
 
-  export let schema = {}
+  /** @type {Schema} enforced JSON Schema object */
+  export let schema
 
+  /** @type {JSONValue} */
   let values = {}
   $: components = buildComponents(values, schema)
 
+  /** @type {import('svelte').EventDispatcher<{ submit: JSONValue }>} */
   const dispatch = createEventDispatcher()
   const duration = 300
 

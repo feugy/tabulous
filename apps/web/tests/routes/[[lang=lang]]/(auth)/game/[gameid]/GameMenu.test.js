@@ -1,6 +1,16 @@
+// @ts-check
+/**
+ * @template T
+ * @typedef {import('rxjs').BehaviorSubject<T>} BehaviorSubject
+ */
+/**
+ * @template {any[]}  P, R
+ * @typedef {import('vitest').Mock<P, R>} Mock
+ */
+
 import GameMenu from '@src/routes/[[lang=lang]]/(auth)/game/[gameId]/GameMenu.svelte'
-import { isFullscreen, toggleFullscreen } from '@src/stores'
-import { areIndicatorsVisible, toggleIndicators } from '@src/stores/indicators'
+import * as stores from '@src/stores'
+import * as indicators from '@src/stores/indicators'
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import { translate } from '@tests/test-utils'
 import { tick } from 'svelte'
@@ -23,6 +33,15 @@ vi.mock('@src/stores/indicators', () => {
     toggleIndicators: vi.fn()
   }
 })
+
+const isFullscreen = /** @type {BehaviorSubject<boolean>} */ (
+  stores.isFullscreen
+)
+const areIndicatorsVisible = /** @type {BehaviorSubject<boolean>} */ (
+  indicators.areIndicatorsVisible
+)
+const toggleFullscreen = /** @type {Mock<?, ?>} */ (stores.toggleFullscreen)
+const toggleIndicators = /** @type {Mock<?, ?>} */ (indicators.toggleIndicators)
 
 describe('GameMenu connected component', () => {
   beforeEach(() => {
@@ -101,31 +120,41 @@ describe('GameMenu connected component', () => {
 })
 
 function selectHomeOption() {
-  return screen.queryByRole('menuitem', {
-    name: `home ${translate('actions.quit-game')}`
-  })
+  return /** @type {HTMLLIElement} */ (
+    screen.queryByRole('menuitem', {
+      name: `home ${translate('actions.quit-game')}`
+    })
+  )
 }
 
 function selectEnterFullscreenOption() {
-  return screen.queryByRole('menuitem', {
-    name: `fullscreen ${translate('actions.enter-fullscreen')}`
-  })
+  return /** @type {HTMLLIElement} */ (
+    screen.queryByRole('menuitem', {
+      name: `fullscreen ${translate('actions.enter-fullscreen')}`
+    })
+  )
 }
 
 function selectExitFullscreenOption() {
-  return screen.queryByRole('menuitem', {
-    name: `fullscreen_exit ${translate('actions.leave-fullscreen')}`
-  })
+  return /** @type {HTMLLIElement} */ (
+    screen.queryByRole('menuitem', {
+      name: `fullscreen_exit ${translate('actions.leave-fullscreen')}`
+    })
+  )
 }
 
 function selectHideIndicatorsOption() {
-  return screen.queryByRole('menuitem', {
-    name: `label_off ${translate('actions.hide-indicators')}`
-  })
+  return /** @type {HTMLLIElement} */ (
+    screen.queryByRole('menuitem', {
+      name: `label_off ${translate('actions.hide-indicators')}`
+    })
+  )
 }
 
 function selectShowIndicatorsOption() {
-  return screen.queryByRole('menuitem', {
-    name: `label ${translate('actions.show-indicators')}`
-  })
+  return /** @type {HTMLLIElement} */ (
+    screen.queryByRole('menuitem', {
+      name: `label ${translate('actions.show-indicators')}`
+    })
+  )
 }

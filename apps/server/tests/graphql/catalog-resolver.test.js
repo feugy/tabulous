@@ -26,7 +26,7 @@ vi.mock('../../src/services/index.js', () => ({
 describe('given a started server', () => {
   /** @type {import('fastify').FastifyInstance} */
   let server
-  /** @type {import('../../src/services/index.js').default} */
+  /** @type {import('../../src/services/index').default} */
   let services
   vi.spyOn(makeLogger('graphql-plugin'), 'warn').mockImplementation(() => {})
   const player = { id: faker.string.uuid(), username: faker.person.firstName() }

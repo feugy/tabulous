@@ -1,10 +1,23 @@
 <script>
+  // @ts-check
+  /**
+   * @typedef {import('@src/3d/managers/input').LongData} LongData
+   * @typedef {import('@src/utils').ScreenPosition} ScreenPosition
+   * @typedef {import('rxjs').Subject<?>} Subject
+   * @typedef {import('rxjs').Subscription} Subscription
+   */
+
   import { onDestroy } from 'svelte'
 
+  /** @type {Subject } subject emitting when halo must be shown. */
   export let halos
+
+  /** @type {?HTMLDivElement} reference to the current halo. */
   let halo
-  let position
-  let haloSubscription
+  /** @type {?ScreenPosition} current halo's absolute position. */
+  let position = null
+  /** @type {?Subscription} */
+  let haloSubscription = null
 
   $: {
     haloSubscription?.unsubscribe()

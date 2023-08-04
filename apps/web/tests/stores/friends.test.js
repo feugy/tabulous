@@ -1,3 +1,15 @@
+// @ts-check
+/**
+ * @typedef {import('@src/graphql').Friendship} Friendship
+ * @typedef {import('../test-utils').RunQueryMock} RunQueryMock
+ * @typedef {import('../test-utils').RunMutationMock} RunMutationMock
+ * @typedef {import('../test-utils').RunSubscriptionMock} RunSubscriptionMock
+ */
+/**
+ * @template T
+ * @typedef {import('rxjs').Observable<T>} Observable
+ */
+
 import { faker } from '@faker-js/faker'
 import * as graphQL from '@src/graphql'
 import {
@@ -20,40 +32,46 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 vi.mock('@src/stores/graphql-client')
 vi.mock('@src/stores/notifications')
 
+const runQueryMock = /** @type {RunQueryMock} */ (runQuery)
+const runMutationMock = /** @type {RunMutationMock} */ (runMutation)
+const runSubscriptionMock = /** @type {RunSubscriptionMock} */ (runSubscription)
+
 const player = {
   id: faker.string.uuid(),
   username: faker.person.firstName()
 }
 
-beforeEach(() => vi.clearAllMocks())
+beforeEach(() => {
+  vi.clearAllMocks()
+})
 
 describe('requestFriendship()', () => {
   it('sends mutation for a given player', async () => {
     expect(await requestFriendship(player)).toBeUndefined()
-    expect(runMutation).toHaveBeenCalledWith(graphQL.requestFriendship, {
+    expect(runMutationMock).toHaveBeenCalledWith(graphQL.requestFriendship, {
       id: player.id
     })
-    expect(runMutation).toHaveBeenCalledOnce()
+    expect(runMutationMock).toHaveBeenCalledOnce()
   })
 })
 
 describe('acceptFriendship()', () => {
   it('sends mutation for a given player', async () => {
     expect(await acceptFriendship(player)).toBeUndefined()
-    expect(runMutation).toHaveBeenCalledWith(graphQL.acceptFriendship, {
+    expect(runMutationMock).toHaveBeenCalledWith(graphQL.acceptFriendship, {
       id: player.id
     })
-    expect(runMutation).toHaveBeenCalledOnce()
+    expect(runMutationMock).toHaveBeenCalledOnce()
   })
 })
 
 describe('endFriendship()', () => {
   it('sends mutation for a given player', async () => {
     expect(await endFriendship(player)).toBeUndefined()
-    expect(runMutation).toHaveBeenCalledWith(graphQL.endFriendship, {
+    expect(runMutationMock).toHaveBeenCalledWith(graphQL.endFriendship, {
       id: player.id
     })
-    expect(runMutation).toHaveBeenCalledOnce()
+    expect(runMutationMock).toHaveBeenCalledOnce()
   })
 })
 
@@ -67,8 +85,8 @@ describe('listFriends()', () => {
   ]
 
   it('list sorted friends, requests and proposals', async () => {
-    runQuery.mockResolvedValueOnce([...friendships])
-    runSubscription.mockReturnValueOnce(new Subject())
+    runQueryMock.mockResolvedValueOnce([...friendships])
+    runSubscriptionMock.mockReturnValueOnce(new Subject())
     const list$ = listFriends()
     expect(get(list$)).toEqual([])
 
@@ -80,18 +98,19 @@ describe('listFriends()', () => {
       friendships[3]
     ])
 
-    expect(runQuery).toHaveBeenCalledWith(graphQL.listFriends, {}, false)
-    expect(runQuery).toHaveBeenCalledOnce()
+    expect(runQueryMock).toHaveBeenCalledWith(graphQL.listFriends, {}, false)
+    expect(runQueryMock).toHaveBeenCalledOnce()
     expect(notify).not.toHaveBeenCalled()
   })
 
   describe('given a list of friends', () => {
+    /** @type {Observable<Friendship[]>} */
     let list$
     const updates = new Subject()
 
     beforeEach(async () => {
-      runQuery.mockResolvedValueOnce([...friendships])
-      runSubscription.mockReturnValueOnce(updates)
+      runQueryMock.mockResolvedValueOnce([...friendships])
+      runSubscriptionMock.mockReturnValueOnce(updates)
       list$ = listFriends()
       await waitForObservable(list$)
     })

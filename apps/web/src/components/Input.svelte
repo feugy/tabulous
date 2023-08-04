@@ -1,14 +1,20 @@
 <script>
+  // @ts-check
   import { createEventDispatcher } from 'svelte'
 
-  export let placeholder = null
+  /** @type {string} input current value. */
   export let value = ''
-  export let ref = null
+  /** @type {boolean} whether this input is disabled. */
   export let disabled = false
+  /** @type {?string} optional displayed placeholder. */
+  export let placeholder = null
+  /** @type {?HTMLInputElement} optional reference to the input element. */
+  export let ref = null
 
+  /** @type {import('svelte').EventDispatcher<{ enter: { value: string } }>} */
   const dispatch = createEventDispatcher()
 
-  function handleKey(event) {
+  function handleKey(/** @type {KeyboardEvent} */ event) {
     if (event.key === 'Enter') {
       dispatch('enter', { value })
     }

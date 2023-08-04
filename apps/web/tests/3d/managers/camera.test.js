@@ -1,3 +1,10 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').ArcRotateCamera} ArcRotateCamera
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ * @typedef {import('@src/3d/managers/camera').CameraPosition} CameraPosition
+ */
+
 import { faker } from '@faker-js/faker'
 import { cameraManager as manager } from '@src/3d/managers'
 import { createTable } from '@src/3d/utils'
@@ -6,7 +13,11 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { configures3dTestEngine } from '../../test-utils'
 
 describe('CameraManager', () => {
+  /** @type {Scene} */
+  let scene
+  /** @type {CameraPosition[]} */
   let states
+  /** @type {CameraPosition[][]} */
   let saveUpdates
   const defaults = {
     alpha: (3 * Math.PI) / 2,
@@ -17,11 +28,11 @@ describe('CameraManager', () => {
     target: [0, 0, 0]
   }
 
-  configures3dTestEngine()
+  configures3dTestEngine(created => (scene = created.scene))
 
   beforeEach(() => {
     vi.resetAllMocks()
-    createTable()
+    createTable(undefined, scene)
     states = []
     saveUpdates = []
   })
@@ -65,13 +76,13 @@ describe('CameraManager', () => {
   describe('init()', () => {
     it('creates a camera with defaults', () => {
       manager.init()
-      expect(manager.camera.upperBetaLimit).toEqual(Math.PI / 3)
-      expect(manager.camera.lowerRadiusLimit).toEqual(defaults.minY)
-      expect(manager.camera.upperRadiusLimit).toEqual(defaults.maxY)
-      expect(manager.camera.alpha).toEqual(defaults.alpha)
-      expect(manager.camera.beta).toEqual(defaults.beta)
-      expect(manager.camera.radius).toEqual(defaults.elevation)
-      expect(manager.camera.target.asArray()).toEqual(defaults.target)
+      expect(manager.camera?.upperBetaLimit).toEqual(Math.PI / 3)
+      expect(manager.camera?.lowerRadiusLimit).toEqual(defaults.minY)
+      expect(manager.camera?.upperRadiusLimit).toEqual(defaults.maxY)
+      expect(manager.camera?.alpha).toEqual(defaults.alpha)
+      expect(manager.camera?.beta).toEqual(defaults.beta)
+      expect(manager.camera?.radius).toEqual(defaults.elevation)
+      expect(manager.camera?.target.asArray()).toEqual(defaults.target)
       expectState(manager.saves[0])
     })
 
@@ -84,13 +95,13 @@ describe('CameraManager', () => {
       const maxY = 50
       const minAngle = Math.PI / 8
       manager.init({ beta, y: elevation, minY, maxY, minAngle })
-      expect(manager.camera.upperBetaLimit).toEqual(minAngle)
-      expect(manager.camera.lowerRadiusLimit).toEqual(minY)
-      expect(manager.camera.upperRadiusLimit).toEqual(maxY)
-      expect(manager.camera.alpha).toEqual(alpha)
-      expect(manager.camera.beta).toEqual(beta)
-      expect(manager.camera.radius).toEqual(elevation)
-      expect(manager.camera.target.asArray()).toEqual(target)
+      expect(manager.camera?.upperBetaLimit).toEqual(minAngle)
+      expect(manager.camera?.lowerRadiusLimit).toEqual(minY)
+      expect(manager.camera?.upperRadiusLimit).toEqual(maxY)
+      expect(manager.camera?.alpha).toEqual(alpha)
+      expect(manager.camera?.beta).toEqual(beta)
+      expect(manager.camera?.radius).toEqual(elevation)
+      expect(manager.camera?.target.asArray()).toEqual(target)
       expectState(manager.saves[0], { alpha, beta, elevation })
     })
   })
@@ -301,19 +312,19 @@ describe('CameraManager', () => {
     it('adjusts minimum main scene zoom', () => {
       const min = faker.number.int(999)
       manager.adjustZoomLevels({ min })
-      expect(manager.camera.lowerRadiusLimit).toEqual(min)
+      expect(manager.camera?.lowerRadiusLimit).toEqual(min)
     })
 
     it('adjusts maximum main scene zoom', () => {
       const max = faker.number.int(999)
       manager.adjustZoomLevels({ max })
-      expect(manager.camera.upperRadiusLimit).toEqual(max)
+      expect(manager.camera?.upperRadiusLimit).toEqual(max)
     })
 
     it('adjusts current hand scene zoom', () => {
       const hand = faker.number.int(999)
       manager.adjustZoomLevels({ hand })
-      expect(manager.handSceneCamera.position.y).toEqual(hand)
+      expect(manager.handSceneCamera?.position.y).toEqual(hand)
     })
 
     it('adjusts all level at once', () => {
@@ -321,13 +332,21 @@ describe('CameraManager', () => {
       const min = faker.number.int(999)
       const max = faker.number.int(999)
       manager.adjustZoomLevels({ min, max, hand })
-      expect(manager.camera.lowerRadiusLimit).toEqual(min)
-      expect(manager.camera.upperRadiusLimit).toEqual(max)
-      expect(manager.handSceneCamera.position.y).toEqual(hand)
+      expect(manager.camera?.lowerRadiusLimit).toEqual(min)
+      expect(manager.camera?.upperRadiusLimit).toEqual(max)
+      expect(manager.handSceneCamera?.position.y).toEqual(hand)
     })
   })
 
-  function expectState(state, { alpha, beta, elevation, target = [] } = {}) {
+  function expectState(
+    /** @type {CameraPosition} */ state,
+    /** @type {Partial<CameraPosition>} */ {
+      alpha,
+      beta,
+      elevation,
+      target = []
+    } = {}
+  ) {
     expect(state.alpha).toBeCloseTo(alpha ?? defaults.alpha)
     expect(state.beta).toBeCloseTo(beta ?? defaults.beta)
     expect(state.elevation).toEqual(elevation ?? defaults.elevation)

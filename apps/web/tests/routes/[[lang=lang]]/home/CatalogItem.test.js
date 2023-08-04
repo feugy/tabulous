@@ -1,3 +1,4 @@
+// @ts-check
 import CatalogItem from '@src/routes/[[lang=lang]]/home/CatalogItem.svelte'
 import { gameAssetsUrl } from '@src/utils'
 import { fireEvent, render, screen } from '@testing-library/svelte'
@@ -9,9 +10,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 describe('/home CatalogItem component', () => {
   const handleSelect = vi.fn()
 
-  beforeEach(vi.clearAllMocks)
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
 
-  afterEach(() => locale.set('fr'))
+  afterEach(() => {
+    locale.set('fr')
+  })
 
   function renderComponent(props = {}) {
     return render(

@@ -1,3 +1,4 @@
+// @ts-check
 import { initLocale } from '@src/common'
 import { initGraphQlClient } from '@src/stores'
 import { graphQlUrl } from '@src/utils'

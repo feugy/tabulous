@@ -1,30 +1,37 @@
 <script>
+  // @ts-check
+  /** @typedef {import('@src/graphql').LightGame} LightGame */
+
   import { Button } from '@src/components'
   import { gameAssetsUrl, isLobby } from '@src/utils'
   import { createEventDispatcher } from 'svelte'
   import { _, locale } from 'svelte-intl'
 
+  /** @type {LightGame} displayed game or lobby. */
   export let game
+  /** @type {string} authenticated user id to determine ownership. */
   export let playerId
+  /** @type {boolean} whether this link points to the curent game/lobby. */
   export let isCurrent = false
 
+  /** @type {import('svelte').EventDispatcher<{ close: LightGame, delete: LightGame, select: LightGame }>}*/
   const dispatch = createEventDispatcher()
-  const owned = game.players.find(player => player?.isOwner)?.id === playerId
+  const owned = game.players?.find(player => player?.isOwner)?.id === playerId
   $: isALobby = isLobby(game)
   $: peerNames = game.players
-    .filter(player => player && !player.isGuest && player.id !== playerId)
+    ?.filter(player => player && !player.isGuest && player.id !== playerId)
     .map(({ username }) => username)
   $: guestNames = game.players
-    .filter(player => player && player.isGuest && player.id !== playerId)
+    ?.filter(player => player && player.isGuest && player.id !== playerId)
     .map(({ username }) => username)
   $: title = isALobby
     ? $_('titles.lobby')
-    : game.locales?.[$locale]?.title || game.locales?.fr?.title
+    : game?.locales?.[$locale]?.title || game?.locales?.fr?.title
   $: coverImage = game.kind
     ? `${gameAssetsUrl}/${game.kind}/catalog/${$locale}/cover.webp`
     : ''
 
-  function handleDelete(event) {
+  function handleDelete(/** @type {MouseEvent} */ event) {
     dispatch('delete', game)
     event.stopPropagation()
   }
@@ -33,7 +40,7 @@
     dispatch('select', game)
   }
 
-  function handleClose(event) {
+  function handleClose(/** @type {MouseEvent} */ event) {
     dispatch('close', game)
     event.stopPropagation()
   }
@@ -49,10 +56,10 @@
       <h3>{title}</h3>
     </span>
     <span class="created">{$_('{ created, date, short-date }', game)}</span>
-    {#if peerNames.length}
+    {#if peerNames?.length}
       <span>{$_('labels.peer-players', { names: peerNames.join(', ') })}</span>
     {/if}
-    {#if guestNames.length}
+    {#if guestNames?.length}
       <span class="guests"
         >{$_('labels.peer-guests', { names: guestNames.join(', ') })}</span
       >
@@ -74,8 +81,11 @@
 <style lang="postcss">
   article {
     @apply relative inline-block m-2 flex bg-$base-lighter rounded overflow-hidden;
-    transition: background-color var(--long), color var(--medium),
-      transform var(--short), box-shadow var(--short);
+    transition:
+      background-color var(--long),
+      color var(--medium),
+      transform var(--short),
+      box-shadow var(--short);
     box-shadow: 0px 3px 10px var(--shadow-color);
 
     &::before {

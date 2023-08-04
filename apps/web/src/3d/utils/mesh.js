@@ -1,11 +1,15 @@
+// @ts-check
 /**
+ * @typedef {import('@babylonjs/core').AbstractMesh} AbstractMesh
  * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@tabulous/server/src/graphql/types').InitialTransform} InitialTransform
  */
 
 /**
  * Indicates whether a given container completely contain the tested mesh, using their bounding boxes.
- * @param {Mesh} container - container that may contain the mesh.
- * @param {Mesh} mesh - tested mesh.
+ * @template {AbstractMesh} T
+ * @param {T} container - container that may contain the mesh.
+ * @param {T} mesh - tested mesh.
  * @returns {boolean} true if container contains mesh, false otherwise.
  */
 export function isContaining(container, mesh) {
@@ -26,16 +30,11 @@ export function isContaining(container, mesh) {
 }
 
 /**
- * @typedef {object} Dimensions mesh's bounding box
- * @property {number} height - the mesh's height.
- * @property {number} width - the mesh's width.
- */
-
-/**
  * Returns a given mesh's dimension, that is its extent on Y and X axes.
  * **Requires a fresh world matrix**.
- * @param {Mesh} mesh - sized mesh.
- * @returns {Dimensions} mesh's dimensions.
+ * @template {AbstractMesh} T
+ * @param {T} mesh - sized mesh.
+ * @returns {{ width: number, height: number, depth: number }} mesh's dimensions.
  */
 export function getDimensions(mesh) {
   mesh.computeWorldMatrix(true)
@@ -44,19 +43,9 @@ export function getDimensions(mesh) {
 }
 
 /**
- * @typedef {object} InitialTransform mesh's bounding box
- * @property {number} yaw? - yaw (rotation on x) applied.
- * @property {number} pitch? - pitch (rotation on y) applied.
- * @property {number} roll? - yaw (rotation on z) applied.
- * @property {number} scaleX? - scale on x applied.
- * @property {number} scaleY? - scale on y applied.
- * @property {number} scaleZ? - scale on z applied.
- */
-
-/**
  * Applies an initial transformation to the built mesh, baking it into the vertices.
  * @param {Mesh} mesh - transformed mesh.
- * @param {InitialTransform} transform? - initial transform applied (may be undefined).
+ * @param {InitialTransform} [transform] - initial transform applied (may be undefined).
  */
 export function applyInitialTransform(mesh, transform) {
   if (transform) {

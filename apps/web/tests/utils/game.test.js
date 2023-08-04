@@ -1,3 +1,8 @@
+// @ts-check
+/**
+ * @typedef {import('@tabulous/server/src/graphql/types').Game} Game
+ */
+
 import { faker } from '@faker-js/faker'
 import {
   applyGameColors,
@@ -10,7 +15,10 @@ import {
 import { beforeEach, describe, expect, it } from 'vitest'
 
 describe('Game utils', () => {
+  /** @type {Game & Required<Pick<Game, 'preferences'>>} */
   const game = {
+    id: '',
+    created: Date.now(),
     preferences: [
       { playerId: 'a', color: 'red' },
       { playerId: 'b', color: 'blue' }
@@ -19,7 +27,9 @@ describe('Game utils', () => {
 
   describe('findPlayerPreferences()', () => {
     it('returns an empty object on games with no preferences', async () => {
-      expect(findPlayerPreferences({}, 'whatever')).toEqual({})
+      expect(
+        findPlayerPreferences({ id: '', created: Date.now() }, 'whatever')
+      ).toEqual({})
     })
 
     it('returns an empty object for an unknown player', async () => {
@@ -42,7 +52,9 @@ describe('Game utils', () => {
     const defaultColor = '#ff4500'
 
     it('returns default color on games with no preferences', async () => {
-      expect(findPlayerColor({}, 'whatever')).toEqual(defaultColor)
+      expect(
+        findPlayerColor({ id: '', created: Date.now() }, 'whatever')
+      ).toEqual(defaultColor)
     })
 
     it('returns default color for unknown player', async () => {
@@ -59,7 +71,13 @@ describe('Game utils', () => {
     it('builds a map of player colors', () => {
       expect(
         buildPlayerColors({
-          players: [{ id: 'a' }, { id: 'b' }, { id: 'c' }],
+          id: '',
+          created: Date.now(),
+          players: [
+            { id: 'a', username: 'a', currentGameId: '1' },
+            { id: 'b', username: 'b', currentGameId: '2' },
+            { id: 'c', username: 'c', currentGameId: '1' }
+          ],
           preferences: [
             { playerId: 'a', color: '#ff0000' },
             { playerId: 'c', color: '#0000ff' },
@@ -82,17 +100,46 @@ describe('Game utils', () => {
     })
 
     it('returns false on missing player', () => {
-      expect(isGuest({ players: [{ id: 'a', isGuest: true }] }, 'b')).toBe(
-        false
-      )
+      expect(
+        isGuest(
+          {
+            id: '',
+            created: Date.now(),
+            players: [
+              { id: 'a', username: 'a', isGuest: true, currentGameId: '1' }
+            ]
+          },
+          'b'
+        )
+      ).toBe(false)
     })
 
     it('returns false for playing player', () => {
-      expect(isGuest({ players: [{ id: 'a' }] }, 'a')).toBe(false)
+      expect(
+        isGuest(
+          {
+            id: '',
+            created: Date.now(),
+            players: [{ id: 'a', username: 'a', currentGameId: '1' }]
+          },
+          'a'
+        )
+      ).toBe(false)
     })
 
     it('returns true for guest', () => {
-      expect(isGuest({ players: [{ id: 'a', isGuest: true }] }, 'a')).toBe(true)
+      expect(
+        isGuest(
+          {
+            id: '',
+            created: Date.now(),
+            players: [
+              { id: 'a', username: 'a', isGuest: true, currentGameId: '1' }
+            ]
+          },
+          'a'
+        )
+      ).toBe(true)
     })
   })
 
@@ -102,11 +149,13 @@ describe('Game utils', () => {
     })
 
     it('detects lobby', () => {
-      expect(isLobby({ id: 'whatever' })).toBe(true)
+      expect(isLobby({ id: 'whatever', created: Date.now() })).toBe(true)
     })
 
     it('detects game', () => {
-      expect(isLobby({ id: 'whatever', kind: 'foo' })).toBe(false)
+      expect(
+        isLobby({ id: 'whatever', created: Date.now(), kind: 'foo' })
+      ).toBe(false)
     })
   })
 
@@ -130,8 +179,9 @@ describe('Game utils', () => {
       }
     })
 
-    function getPaletteVariables(name) {
+    function getPaletteVariables(/** @type {string} */ name) {
       const root = document.body
+      /** @type {Record<string, string>} */
       const result = {}
       for (const shade of shades) {
         const value = root.style.getPropertyValue(`--${name}${shade}`)
@@ -200,7 +250,8 @@ describe('Game utils', () => {
 
     it('returns a function to unset values', () => {
       const base = faker.color.rgb()
-      document.querySelector(':root').style.setProperty('--base', base)
+      const root = /** @type {HTMLElement} */ (document.querySelector(':root'))
+      root.style.setProperty('--base', base)
       const restore = applyGameColors({ base: '#6096b4' })
       expect(getPaletteVariables('base')).toEqual(expectedBasePalette)
       restore()

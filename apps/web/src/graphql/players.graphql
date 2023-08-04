@@ -4,14 +4,18 @@ fragment player on Player {
   avatar
 }
 
+fragment authenticatedPlayer on Player {
+  ...player
+  provider
+  email
+  termsAccepted
+  usernameSearchable
+}
+
 fragment authentication on PlayerWithTurnCredentials {
   token
   player {
-    ...player
-    provider
-    email
-    termsAccepted
-    usernameSearchable
+    ...authenticatedPlayer
   }
   turnCredentials {
     username
@@ -39,8 +43,7 @@ query searchPlayers($search: String!) {
 
 mutation acceptTerms {
   acceptTerms {
-    ...player
-    termsAccepted
+    ...authenticatedPlayer
   }
 }
 

@@ -1,12 +1,17 @@
 // @ts-check
+/**
+ * @typedef {import('fast-jwt').SignerOptions} FullSignerOptions
+ * @typedef {import('fast-jwt').SignerSync} Signer
+ * @typedef {import('../services/players').Player} Player
+ */
+
 import { createSigner, createVerifier } from 'fast-jwt'
 
 import services from '../services/index.js'
 import { makeLogger } from '../utils/logger.js'
 
-/** @typedef {import('../services/players.js').Player} Player */
-/** @typedef {Partial<import('fast-jwt').SignerOptions> & { key: string }} SignerOptions */
-/** @typedef {import('fast-jwt').SignerSync} Signer */
+/** @typedef {Partial<FullSignerOptions> & { key: string }} SignerOptions */
+
 /** @typedef {(jwt: string) => { id: string }} Verifier */
 
 /** @type {Map<string, Signer>} */

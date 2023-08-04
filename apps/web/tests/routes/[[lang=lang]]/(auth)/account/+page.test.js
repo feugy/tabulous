@@ -1,7 +1,17 @@
+// @ts-check
+/**
+ * @typedef {import('@src/common').Locale} Locale
+ * @typedef {import('@src/graphql').PlayerWithSearchable}  PlayerWithSearchable
+ */
+/**
+ * @template {any[]} P, R
+ * @typedef {import('vitest').Mock<P, R>} Mock
+ */
+
 import { faker } from '@faker-js/faker'
 import { initLocale } from '@src/common'
 import AccountPage from '@src/routes/[[lang=lang]]/(auth)/account/+page.svelte'
-import { updateCurrentPlayer } from '@src/stores'
+import { updateCurrentPlayer as originalUpdateCurrentPlayer } from '@src/stores'
 import { fireEvent, render, screen, within } from '@testing-library/svelte'
 import userEvent from '@testing-library/user-event'
 import { sleep, translate } from '@tests/test-utils'
@@ -12,10 +22,17 @@ import { invalidate } from '$app/navigation'
 
 vi.mock('@src/stores')
 
-describe.each([
-  { title: '/', lang: undefined },
-  { title: '/en', lang: 'en' }
-])('$title', ({ lang }) => {
+const updateCurrentPlayer =
+  /** @type {Mock<[String, string], Promise<PlayerWithSearchable>>} */ (
+    originalUpdateCurrentPlayer
+  )
+
+describe.each(
+  /** @type {{title: string, lang: Locale|undefined}[]} */ ([
+    { title: '/', lang: undefined },
+    { title: '/en', lang: 'en' }
+  ])
+)('$title', ({ lang }) => {
   describe('/account route', () => {
     const player = {
       id: faker.string.uuid(),
@@ -23,9 +40,13 @@ describe.each([
       username: 'Batman'
     }
 
-    beforeAll(() => initLocale(lang))
+    beforeAll(() => {
+      initLocale(lang)
+    })
 
-    beforeEach(vi.resetAllMocks)
+    beforeEach(() => {
+      vi.resetAllMocks()
+    })
 
     it('debounce input and saves username', async () => {
       const username = 'Robin'

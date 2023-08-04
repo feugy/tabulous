@@ -1,3 +1,11 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').ShadowGenerator} ShadowGenerator
+ * @typedef {import('@src/graphql').Game} Game
+ */
+
 // mandatory side effect
 import '@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent.js'
 
@@ -19,19 +27,19 @@ class MaterialManager {
    * - reuse built materials based on their texture file (or color)
    * - allows using the same texture in between hand and main scene
    * - automatically clears cache scene disposal.
-   *
-   * @property {import('@babylon/core').Scene} scene? - main scene.
-   * @property {import('@babylon/core').Scene} handScene? - hand scene.
-   * @property {string} gameAssetsUrl? - base url hosting the game textures.
-   * @property {string} locale? - locale used to download the game textures.
    */
   constructor() {
-    this.scene = null
-    this.handScene = null
+    /** @type {Scene} main scene. */
+    this.scene
+    /** @type {Scene|undefined} hand scene. */
+    this.handScene
+    /** @type {string} base url hosting the game textures. */
     this.gameAssetsUrl = ''
+    /** @property {string} locale used to download the game textures. */
     this.locale = ''
-    // private
+    /** @internal @type {Map<string, PBRSpecularGlossinessMaterial>} map of material for the main scene. */
     this.mainMaterialByUrl = new Map()
+    /** @internal @type {Map<string, PBRSpecularGlossinessMaterial>} map of material for the hand scene.*/
     this.handMaterialByUrl = new Map()
   }
 
@@ -39,10 +47,10 @@ class MaterialManager {
    * Initialize manager with scene and configuration values.
    * @param {object} params - parameters, including:
    * @param {Scene} params.scene - main scene.
-   * @param {Scene} params.handScene? - scene for meshes in hand.
-   * @param {string} params.gameAssetsUrl? - base url hosting the game textures.
-   * @param {string} params.locale? - locale used to download the game textures.
-   * @param {import('../../graphql').Game} game - loaded game data.
+   * @param {Scene} [params.handScene] - scene for meshes in hand.
+   * @param {string} [params.gameAssetsUrl] - base url hosting the game textures.
+   * @param {string} [params.locale] - locale used to download the game textures.
+   * @param {Game} [game] - loaded game data.
    */
   init({ scene, handScene, gameAssetsUrl, locale }, game) {
     this.scene = scene
@@ -60,14 +68,12 @@ class MaterialManager {
   /**
    * Creates a material from provided texture and attaches it to a mesh.
    * Configures mesh to receive shadows and to have an overlay color.
-   * @param {import('@babylonjs/core').Mesh} mesh - related mesh.
+   * @param {Mesh} mesh - related mesh.
    * @param {string} texture - texture url or hexadecimal string color.
    */
   configure(mesh, texture) {
     const scene = mesh.getScene()
-    const materialByUrl = getMaterialCache(this, scene)
-    mesh.material =
-      materialByUrl.get(texture) ?? buildMaterials(this, texture, scene)
+    mesh.material = buildMaterials(this, texture, scene)
     mesh.receiveShadows = true
   }
 
@@ -75,14 +81,11 @@ class MaterialManager {
    * Creates or reuse an existing material, on a given scene.
    * It is not attached to any mesh
    * @param {string} texture - texture url or hexadecimal string color.
-   * @param {import('@babylonjs/core').Scene} scene - scene used.
-   * @returns {StandardMaterial} the build (or reused) material.
+   * @param {Scene} scene - scene used.
+   * @returns {PBRSpecularGlossinessMaterial} the build (or cached) material.
    */
   buildOnDemand(texture, scene) {
-    return (
-      getMaterialCache(this, scene).get(texture) ??
-      buildMaterials(this, texture, scene)
-    )
+    return buildMaterials(this, texture, scene)
   }
 
   /**
@@ -104,7 +107,9 @@ class MaterialManager {
    * @returns {boolean} whether this material is managed or not
    */
   isManaging(texture) {
-    return this.mainMaterialByUrl.has(texture)
+    return (
+      this.mainMaterialByUrl.has(texture) || this.handMaterialByUrl.has(texture)
+    )
   }
 }
 
@@ -114,36 +119,66 @@ class MaterialManager {
  */
 export const materialManager = new MaterialManager()
 
+/**
+ * @param {MaterialManager} manager - manager instance.
+ * @param {Scene} scene - concerned scene.
+ * @returns {Map<string, PBRSpecularGlossinessMaterial>} map of cached materials for this scene.
+ */
 function getMaterialCache(manager, scene) {
   return manager.scene === scene
     ? manager.mainMaterialByUrl
     : manager.handMaterialByUrl
 }
 
+/**
+ * @param {MaterialManager} manager - manager instance.
+ * @param {Game} game - parsed game data.
+ */
 function preloadMaterials(manager, game) {
   for (const { texture } of [
-    ...game.meshes,
-    ...game.hands.flatMap(({ meshes }) => meshes)
+    ...(game.meshes ?? []),
+    ...(game.hands ?? []).flatMap(({ meshes }) => meshes)
   ]) {
     buildMaterials(manager, texture, manager.scene)
   }
 }
 
+/**
+ * @param {MaterialManager} manager - manager instance.
+ * @param {string} url - material texture url or color code.
+ * @param {Scene} usedScene - concerned scene.
+ * @returns {PBRSpecularGlossinessMaterial} built material.
+ */
 function buildMaterials(manager, url, usedScene) {
+  const cachedMaterial = getMaterialCache(manager, usedScene).get(url)
+  if (cachedMaterial) {
+    return cachedMaterial
+  }
+
   const { scene, handScene, mainMaterialByUrl, handMaterialByUrl } = manager
   buildMaterial(mainMaterialByUrl, manager, url, scene)
   if (handScene) {
     buildMaterial(handMaterialByUrl, manager, url, handScene)
   }
-  return getMaterialCache(manager, usedScene).get(url)
+  return /** @type {PBRSpecularGlossinessMaterial} */ (
+    getMaterialCache(manager, usedScene).get(url)
+  )
 }
 
+/**
+ * @param {Map<string, PBRSpecularGlossinessMaterial>} materialByUrl cached material for this scene
+ * @param {MaterialManager} manager - manager instance.
+ * @param {string} url - material texture url or color code.
+ * @param {Scene} scene - concerned scene.
+ * @returns {PBRSpecularGlossinessMaterial} built material.
+ */
 function buildMaterial(materialByUrl, { gameAssetsUrl, locale }, url, scene) {
   const material = new PBRSpecularGlossinessMaterial(url, scene)
   if (url?.startsWith('#')) {
     material.transparencyMode = PBRBaseMaterial.PBRMATERIAL_ALPHABLEND
-    material.diffuseColor = Color4.FromHexString(url).toLinearSpace()
-    material.alpha = material.diffuseColor.a
+    const color = Color4.FromHexString(url).toLinearSpace()
+    material.diffuseColor = Color3.FromArray(color.asArray())
+    material.alpha = color.a
   } else {
     material.transparencyMode = PBRBaseMaterial.PBRMATERIAL_ALPHATEST
     material.diffuseTexture = new Texture(
@@ -174,7 +209,7 @@ function adaptTextureUrl(base, texture, locale) {
   return !texture
     ? texture
     : injectLocale(
-        Engine.LastCreatedEngine.version === 1
+        Engine.LastCreatedEngine?.version === 1
           ? `${base}${texture.replace('.ktx2', '.gl1.webp')}`
           : `${base}${texture}`,
         'textures',
@@ -185,13 +220,15 @@ function adaptTextureUrl(base, texture, locale) {
 /**
  * Gracefully handles material error due to shadow casting on some Android mobiles.
  * It'll downgrade the shadowGenerator to some supported configuration.
- * @param {import('@babel/core').Material} material - a mesh's material.
- * @see {@link https://forum.babylonjs.com/t/mobile-shadows-pcf-filter/22104/3}
+ * @param {PBRSpecularGlossinessMaterial} material - a mesh's material.
+ * @see https://forum.babylonjs.com/t/mobile-shadows-pcf-filter/22104/3
  */
 function attachMaterialError(material) {
   material.onError = (effect, errors) => {
     if (errors?.includes('FRAGMENT SHADER')) {
-      const shadowGenerator = material.getScene().lights[0].getShadowGenerator()
+      const shadowGenerator = /** @type {ShadowGenerator} */ (
+        material.getScene().lights[0].getShadowGenerator()
+      )
       shadowGenerator.usePercentageCloserFiltering = false
       shadowGenerator.useContactHardeningShadow = false
     }

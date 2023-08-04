@@ -1,4 +1,6 @@
 // @ts-check
+/** @typedef {import('@tabulous/server/src/graphql/types').CatalogItem} CatalogItem */
+
 import { gql } from '@urql/core'
 import chalkTemplate from 'chalk-template'
 
@@ -13,8 +15,6 @@ import {
   signToken
 } from '../util/index.js'
 import { commonOptions } from './help.js'
-
-/** @typedef {import('@tabulous/server/src/services/catalog.js').GameDescriptor} GameDescriptor */
 
 /**
  * @typedef {object} CatalogResult game catalog command result
@@ -75,7 +75,7 @@ export default async function catalogCommand(argv) {
  */
 export async function catalog({ username }) {
   const { id } = await findUser(username)
-  /** @type {{ listCatalog: GameDescriptor[] }} */
+  /** @type {{ listCatalog: CatalogItem[] }} */
   const { listCatalog: catalog } = await getGraphQLClient().query(
     listCatalogQuery,
     signToken(id)
@@ -95,7 +95,7 @@ export async function catalog({ username }) {
 }
 
 /**
- * @param {GameDescriptor} descriptor
+ * @param {CatalogItem} descriptor
  * @returns {string} the descriptor localized name.
  */
 function getLocaleName({ name, locales }) {

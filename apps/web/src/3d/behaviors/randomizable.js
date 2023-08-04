@@ -1,10 +1,19 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Axis} Axis
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@tabulous/server/src/graphql/types').RandomizableState} RandomizableState
+ * @typedef {import('@src/3d/utils').AnimationSpec} AnimationSpec
+ * @typedef {import('@src/3d/utils').QuaternionKeyFrame} QuaternionKeyFrame
+ * @typedef {import('@src/3d/utils').Vector3KeyFrame} Vector3KeyFrame
+ */
+
 import { Animation } from '@babylonjs/core/Animations/animation'
 import { VertexBuffer } from '@babylonjs/core/Buffers/buffer'
 import { Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector'
 
 import { makeLogger } from '../../utils/logger'
 import { controlManager } from '../managers/control'
-import { actionNames } from '../utils/actions'
 import {
   attachFunctions,
   attachProperty,
@@ -20,42 +29,37 @@ const logger = makeLogger('randomizable')
 const { cos, floor, PI, random, sin } = Math
 
 /**
- * @typedef {object} RandomState behavior persistent state, including:
- * @property {number} [face = 1] - current face value.
- * @property {number} [duration = 600] - duration (in milliseconds) of the random animation. The set animartion is a third of it.
- * @property {boolean} [canBeSet = false] - whether this mesh can be manually set to a given fave.
- */
-
-/**
- * @typedef {RandomState} RandomStateWithExtra behavior persistent state, with internal parameters provided by the mesh, including:
+ * @typedef {object} Extras behavior persistent state, with internal parameters provided by the mesh.
  * @property {number} max - maximum face value (minimum is always 1).
- * @property {Map<number, number[]} quaternionPerFace - map of Euler angles [x, y, z] applied when setting a given fave
+ * @property {Map<number, Quaternion>} quaternionPerFace - map of Euler angles [x, y, z] applied when setting a given fave
+ *
+ * @typedef {RandomizableState & Required<Pick<RandomizableState, 'face'|'duration'|'canBeSet'>>} RequiredRandomizableState
  */
 
 export class RandomBehavior extends AnimateBehavior {
   /**
    * Creates behavior to make a mesh randomizable: it has a face vaule and this face can be set, or randomly set.
-   *
-   * @extends {TargetBehavior}
-   * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
-   * @property {RandomState} state - the behavior's current state (+ extras)
-   *
-   * @param {RandomStateWithExtra} state - behavior state.
+   * @param {RandomizableState & Extras} stateWithExtra - behavior persistent state, with internal parameters provided by the mesh.
    */
-  constructor(state = {}) {
+  constructor(stateWithExtra) {
     super()
-    this.state = state
-    // private
-    if (!(state.quaternionPerFace instanceof Map)) {
+    /** @type {RequiredRandomizableState} state - the behavior's current state (+ extras) */
+    this.state = /** @type {RequiredRandomizableState} */ (stateWithExtra)
+    if (!(stateWithExtra.quaternionPerFace instanceof Map)) {
       throw new Error(`RandomBehavior needs quaternionPerFace`)
     }
-    this.quaternionPerFace = state.quaternionPerFace
-    if (!(state.max > 1)) {
+    /** @type {number} */
+    this.max = stateWithExtra.max
+    /** @internal @type {Map<number, Quaternion>} */
+    this.quaternionPerFace = stateWithExtra.quaternionPerFace
+    if (!(this.max > 1)) {
       throw new Error(
-        `RandomBehavior's max should be higher than ${state.face ?? 1}`
+        `RandomBehavior's max should be higher than ${this.state.face ?? 1}`
       )
     }
-    this.max = state.max
+    /** @internal @type {{ positions: number[], normals: number[] }} */
+    this.save = { positions: [], normals: [] }
+    /** @internal @type {Animation} */
     this.rollAnimation = new Animation(
       'roll',
       'rotationQuaternion',
@@ -78,7 +82,7 @@ export class RandomBehavior extends AnimateBehavior {
    * - a `maxFace` number.
    * - a `random()` function to randomly set a new face value.
    * - a `setFace()` function to set the face to a given value.
-   * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
+   * @param {Mesh} mesh - which becomes detailable.
    */
   attach(mesh) {
     super.attach(mesh)
@@ -117,16 +121,17 @@ export class RandomBehavior extends AnimateBehavior {
     await animate(this, 'setFace', face, duration / 3, {
       animation: rollAnimation,
       duration: duration / 3,
-      keys: [
+      keys: /** @type {QuaternionKeyFrame[]} */ ([
         {
           frame: 0,
-          values: quaternionPerFace
-            .get(oldFace)
-            .multiply(quaternionPerFace.get(face).invert())
+          values: /** @type {Quaternion} */ (quaternionPerFace.get(oldFace))
+            .multiply(
+              /** @type {Quaternion} */ (quaternionPerFace.get(face)).invert()
+            )
             .asArray()
         },
         { frame: 100, values: [0, 0, 0, 1] }
-      ]
+      ])
     })
   }
 
@@ -138,7 +143,7 @@ export class RandomBehavior extends AnimateBehavior {
    * - applies gravity
    * - returns
    * Does nothing if the mesh is already being animated.
-   * @param {number} face? - final face value, used when applying random operation from peers
+   * @param {number} [face] - final face value, used when applying random operation from peers
    * @returns {Promise<void>}
    */
   async random(face) {
@@ -165,12 +170,15 @@ export class RandomBehavior extends AnimateBehavior {
       {
         animation: rollAnimation,
         duration,
-        keys: [
+        keys: /** @type {QuaternionKeyFrame[]} */ ([
           {
             frame: 0,
-            values: quaternionPerFace
-              .get(oldFace)
-              .multiply(quaternionPerFace.get(face).invert())
+            values: /** @type {Quaternion} */ (
+              quaternionPerFace.get(oldFace ?? 0)
+            )
+              .multiply(
+                /** @type {Quaternion} */ (quaternionPerFace.get(face)).invert()
+              )
               .asArray()
           },
           {
@@ -195,12 +203,12 @@ export class RandomBehavior extends AnimateBehavior {
             frame: 100,
             values: makeRandomRotation('y', 0.5 * PI).asArray()
           }
-        ]
+        ])
       },
       {
         animation: moveAnimation,
         duration,
-        keys: [
+        keys: /** @type {Vector3KeyFrame[]} */ ([
           { frame: 0, values: mesh.position.asArray() },
           {
             frame: 50,
@@ -211,14 +219,14 @@ export class RandomBehavior extends AnimateBehavior {
             ]
           },
           { frame: 100, values: mesh.position.asArray() }
-        ]
+        ])
       }
     )
   }
 
   /**
    * Updates this behavior's state and mesh to match provided data.
-   * @param {RandomState} state - state to update to.
+   * @param {RandomizableState} state - state to update to.
    */
   fromState({ face = 1, duration = 600, canBeSet = false } = {}) {
     if (!this.mesh) {
@@ -235,8 +243,12 @@ export class RandomBehavior extends AnimateBehavior {
 
     const restore = saveTranslation(this.mesh)
     this.save = {
-      positions: this.mesh.getVerticesData(VertexBuffer.PositionKind),
-      normals: this.mesh.getVerticesData(VertexBuffer.NormalKind)
+      positions: /** @type {number[]} */ (
+        this.mesh.getVerticesData(VertexBuffer.PositionKind)
+      ),
+      normals: /** @type {number[]} */ (
+        this.mesh.getVerticesData(VertexBuffer.NormalKind)
+      )
     }
     this.mesh.markVerticesDataAsUpdatable(VertexBuffer.PositionKind, true)
     this.mesh.markVerticesDataAsUpdatable(VertexBuffer.NormalKind, true)
@@ -244,9 +256,9 @@ export class RandomBehavior extends AnimateBehavior {
 
     applyRotation(this)
     attach()
-    attachFunctions(this, actionNames.random)
+    attachFunctions(this, 'random')
     if (canBeSet) {
-      attachFunctions(this, actionNames.setFace)
+      attachFunctions(this, 'setFace')
     } else {
       this.mesh.metadata.setFace = undefined
     }
@@ -255,16 +267,27 @@ export class RandomBehavior extends AnimateBehavior {
   }
 }
 
+/**
+ * @param {RandomBehavior} behavior - animated behavior.
+ */
 function applyRotation({ mesh, quaternionPerFace, state: { face }, save }) {
+  if (!mesh) return
   const restore = saveTranslation(mesh)
   mesh.updateVerticesData(VertexBuffer.PositionKind, [...save.positions])
   mesh.updateVerticesData(VertexBuffer.NormalKind, [...save.normals])
-  mesh.rotationQuaternion = quaternionPerFace.get(face).clone()
+  mesh.rotationQuaternion = /** @type {Quaternion} */ (
+    quaternionPerFace.get(face ?? 0)
+  ).clone()
   mesh.bakeCurrentTransformIntoVertices()
   mesh.refreshBoundingInfo()
   restore()
 }
 
+/**
+ * Temporary set a mesh's absolute position to the origin.
+ * @param {Mesh} mesh - concerned mesh.
+ * @returns {() => void} - function used to restore absolute position.
+ */
 function saveTranslation(mesh) {
   const translation = mesh.absolutePosition.clone()
   mesh.setAbsolutePosition(Vector3.Zero())
@@ -274,11 +297,21 @@ function saveTranslation(mesh) {
   }
 }
 
+/**
+ * @param {RandomBehavior} behavior - animated behavior.
+ * @param {string} fn - function name, for logging.
+ * @param {number} face - face to animate to.
+ * @param {number|undefined} duration - animation duration.
+ * @param  {...AnimationSpec} animations - animation spec used.
+ * @returns {Promise<void>} resolves when animation is completed.
+ */
 async function animate(behavior, fn, face, duration, ...animations) {
   const {
     mesh,
     state: { face: oldFace }
   } = behavior
+  if (!mesh) return
+
   logger.debug(
     { mesh, face, oldFace },
     `starts ${fn} on ${mesh.id} (${oldFace} > ${face})`
@@ -303,6 +336,12 @@ async function animate(behavior, fn, face, duration, ...animations) {
   )
 }
 
+/**
+ * Builds a random quaterion on a given axis.
+ * @param {Axis} axis - concerned mesh.
+ * @param {number} [limit] - maximum rotation allowed.
+ * @returns {Quaternion}
+ */
 function makeRandomRotation(axis, limit = 2 * PI) {
   const angle = random() * limit
   return new Quaternion(

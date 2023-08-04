@@ -1,25 +1,27 @@
 module.exports = {
-  extends: ['eslint:recommended'],
+  root: true,
+  extends: ['eslint:recommended', 'plugin:svelte/recommended', 'prettier'],
   env: {
     browser: true,
     es2022: true,
     node: true
   },
-  plugins: ['svelte3', 'simple-import-sort', 'vitest'],
+  parser: '@typescript-eslint/parser',
+  plugins: ['simple-import-sort', 'vitest', '@typescript-eslint'],
+  parserOptions: {
+    sourceType: 'module',
+    ecmaVersion: 2022,
+    extraFileExtensions: ['.svelte']
+  },
   overrides: [
     {
       files: ['*.svelte'],
-      processor: 'svelte3/svelte3'
-    },
-    {
-      files: ['*.js'],
-      extends: ['prettier']
+      parser: 'svelte-eslint-parser',
+      parserOptions: {
+        parser: '@typescript-eslint/parser'
+      }
     }
   ],
-  parserOptions: {
-    sourceType: 'module',
-    ecmaVersion: 2022
-  },
   rules: {
     'simple-import-sort/imports': 'error',
     'simple-import-sort/exports': 'error',

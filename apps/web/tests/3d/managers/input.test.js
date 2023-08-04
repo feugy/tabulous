@@ -1,3 +1,19 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').ArcRotateCamera} ArcRotateCamera
+ * @typedef {import('@babylonjs/core').Engine} Engine
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').Observer<?>} Observer
+ * @typedef {import('@src/3d/managers/input').DragData} DragData
+ * @typedef {import('@src/3d/managers/input').HoverData} HoverData
+ * @typedef {import('@src/3d/managers/input').KeyData} KeyData
+ * @typedef {import('@src/3d/managers/input').LongData} LongData
+ * @typedef {import('@src/3d/managers/input').PinchData} PinchData
+ * @typedef {import('@src/3d/managers/input').TapData} TapData
+ * @typedef {import('@src/3d/managers/input').WheelData} WheelData
+ * @typedef {import('@src/utils').ScreenPosition} ScreenPosition
+ */
+
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { Observable } from '@babylonjs/core/Misc/observable'
 import { Scene } from '@babylonjs/core/scene'
@@ -23,25 +39,39 @@ const wheel = 'wheel'
 const keyDown = 'keydown'
 
 describe('InputManager', () => {
+  /** @type {Scene} */
   let scene
+  /** @type {Scene} */
   let handScene
+  /** @type {ArcRotateCamera} */
   let camera
+  /** @type {TapData[]} */
   let taps
+  /** @type {DragData[]} */
   let drags
+  /** @type {PinchData[]} */
   let pinches
+  /** @type {HoverData[]} */
   let hovers
+  /** @type {WheelData[]} */
   let wheels
+  /** @type {LongData[]} */
   let longs
+  /** @type {KeyData[]} */
   let keys
-  let currentPointer = null
+  /** @type {number[]} */
+  let currentPointer
   const interaction = document.createElement('div')
   const overlay = document.createElement('div')
   const renderWidth = 2048
   const renderHeight = 1024
   const onCameraMove = new Observable()
-  vi.spyOn(window, 'getComputedStyle').mockImplementation(() => ({
-    height: `${renderHeight / 2.5}px`
-  }))
+  vi.spyOn(window, 'getComputedStyle').mockImplementation(
+    () =>
+      /** @type {CSSStyleDeclaration} */ ({
+        height: `${renderHeight / 2.5}px`
+      })
+  )
 
   configures3dTestEngine(
     created => {
@@ -80,7 +110,7 @@ describe('InputManager', () => {
   })
 
   it('can stop all', () => {
-    expect(() => manager.stopAll()).not.toThrowError()
+    expect(() => manager.stopAll(new Event('blur'))).not.toThrowError()
   })
 
   describe('init()', () => {
@@ -113,7 +143,10 @@ describe('InputManager', () => {
   })
 
   describe('given an initialized manager', () => {
-    let meshes = beforeEach(() => {
+    /** @type {Mesh[]} */
+    let meshes
+
+    beforeEach(() => {
       manager.init({
         scene,
         handScene,
@@ -190,9 +223,14 @@ describe('InputManager', () => {
       const button = 1
       const pointer = { x: 1048, y: 525 }
       const pointerId = 71
+      const otherPlayerId = faker.string.uuid()
+      selectionManager.updateColors(
+        'currentPlayer',
+        new Map([[otherPlayerId, 'red']])
+      )
       selectionManager.apply(
         meshes.map(({ id }) => id),
-        faker.string.uuid()
+        otherPlayerId
       )
       triggerEvent(pointerDown, { ...pointer, pointerId, button })
       const event = triggerEvent(pointerUp, { ...pointer, pointerId, button })
@@ -291,7 +329,7 @@ describe('InputManager', () => {
         pointerId,
         button
       })
-      await sleep(manager.longTapDelay * 1.1)
+      await sleep((manager.longTapDelay ?? 0) * 1.1)
       const upEvent = triggerEvent(pointerUp, { ...pointer, pointerId, button })
       expectEvents({ taps: 1, longs: 1 })
       expectsDataWithMesh(
@@ -320,7 +358,7 @@ describe('InputManager', () => {
           button
         })
         triggerEvent(pointerMove, { ...move(pointer, 0, 0), pointerId })
-        await sleep(manager.longTapDelay * 1.1)
+        await sleep((manager.longTapDelay ?? 0) * 1.1)
         triggerEvent(pointerMove, { ...move(pointer, 0, 0), pointerId })
         const upEvent = triggerEvent(pointerUp, {
           ...pointer,
@@ -375,7 +413,7 @@ describe('InputManager', () => {
           },
           'tap'
         )
-        await sleep(manager.longTapDelay * 1.1)
+        await sleep((manager.longTapDelay ?? 0) * 1.1)
         triggerEvent(pointerUp, { ...pointerA, pointerId: idA }, 'tap')
         await sleep(10)
         const upEvent = triggerEvent(
@@ -458,7 +496,7 @@ describe('InputManager', () => {
           pointerId,
           button
         })
-        await sleep(manager.longTapDelay * 1.1)
+        await sleep((manager.longTapDelay ?? 0) * 1.1)
         const tapEvent = triggerEvent(pointerUp, {
           ...pointer,
           pointerId,
@@ -643,7 +681,7 @@ describe('InputManager', () => {
       const button = 1
       const events = []
       events.push(triggerEvent(pointerDown, { ...pointer, pointerId, button }))
-      await sleep(manager.longTapDelay * 1.1)
+      await sleep((manager.longTapDelay ?? 0) * 1.1)
       events.push(
         triggerEvent(pointerMove, { ...move(pointer, 100, 0), pointerId })
       )
@@ -716,29 +754,14 @@ describe('InputManager', () => {
         events.push(
           triggerEvent(
             pointerMove,
-            { ...move(pointerA, 1, 0), pointerId: idA },
+            { ...move(pointerA, 10, 0), pointerId: idA },
             'tap'
           )
         )
         events.push(
           triggerEvent(
             pointerMove,
-            { ...move(pointerB, 0, 1), pointerId: idB },
-            'tap'
-          )
-        )
-        await sleep(10)
-        events.push(
-          triggerEvent(
-            pointerMove,
-            { ...move(pointerA, 2, 0), pointerId: idA },
-            'tap'
-          )
-        )
-        events.push(
-          triggerEvent(
-            pointerMove,
-            { ...move(pointerB, 0, 2), pointerId: idB },
+            { ...move(pointerB, 0, 10), pointerId: idB },
             'tap'
           )
         )
@@ -746,14 +769,14 @@ describe('InputManager', () => {
         events.push(
           triggerEvent(
             pointerMove,
-            { ...move(pointerA, 3, 0), pointerId: idA },
+            { ...move(pointerA, 20, 0), pointerId: idA },
             'tap'
           )
         )
         events.push(
           triggerEvent(
             pointerMove,
-            { ...move(pointerB, 0, 3), pointerId: idB },
+            { ...move(pointerB, 0, 20), pointerId: idB },
             'tap'
           )
         )
@@ -761,7 +784,22 @@ describe('InputManager', () => {
         events.push(
           triggerEvent(
             pointerMove,
-            { ...move(pointerA, 4, 0), pointerId: idA },
+            { ...move(pointerA, 30, 0), pointerId: idA },
+            'tap'
+          )
+        )
+        events.push(
+          triggerEvent(
+            pointerMove,
+            { ...move(pointerB, 0, 30), pointerId: idB },
+            'tap'
+          )
+        )
+        await sleep(10)
+        events.push(
+          triggerEvent(
+            pointerMove,
+            { ...move(pointerA, 40, 0), pointerId: idA },
             'tap'
           )
         )
@@ -773,7 +811,7 @@ describe('InputManager', () => {
           triggerEvent(pointerUp, { ...pointerA, pointerId: idA }, 'tap')
         )
 
-        expectEvents({ drags: 4, hovers: meshId ? 1 : 0 })
+        expectEvents({ drags: 4, hovers: meshId ? 2 : 0 })
         const pointers = 2
         expectsDataWithMesh(
           drags[0],
@@ -799,6 +837,11 @@ describe('InputManager', () => {
           expectsDataWithMesh(
             hovers[0],
             { type: 'hoverStart', event: events[2] },
+            meshId
+          )
+          expectsDataWithMesh(
+            hovers[1],
+            { type: 'hoverStop', event: events[4] },
             meshId
           )
         }
@@ -1022,7 +1065,7 @@ describe('InputManager', () => {
         events.push(
           triggerEvent(pointerDown, { ...pointerB, pointerId: idB }, 'tap')
         )
-        await sleep(manager.longTapDelay * 1.1)
+        await sleep((manager.longTapDelay ?? 0) * 1.1)
         events.push(
           triggerEvent(
             pointerMove,
@@ -1209,31 +1252,28 @@ describe('InputManager', () => {
       { title: ' on mesh', pointer: { x: 1024, y: 512 }, meshId: 'box2' }
     ])('identifies wheel$title', async ({ pointer, meshId }) => {
       const pointerId = 45
-      const button = 3
       const zoomInEvent = triggerEvent(wheel, {
         ...pointer,
         deltaY: 10,
-        pointerId,
-        button
+        pointerId
       })
 
       await sleep(50)
       const zoomOutEvent = triggerEvent(wheel, {
         ...pointer,
         deltaY: -5,
-        pointerId,
-        button
+        pointerId
       })
 
       expectEvents({ wheels: 2 })
       expectsDataWithMesh(
         wheels[0],
-        { pointers: 0, type: 'wheel', button, event: zoomInEvent },
+        { type: 'wheel', event: zoomInEvent },
         meshId
       )
       expectsDataWithMesh(
         wheels[1],
-        { pointers: 0, type: 'wheel', button, event: zoomOutEvent },
+        { type: 'wheel', event: zoomOutEvent },
         meshId
       )
     })
@@ -1288,7 +1328,7 @@ describe('InputManager', () => {
           'tap'
         )
       )
-      const finalEvent = { foo: 'bar' }
+      const finalEvent = new Event('focus')
 
       manager.stopPinch(finalEvent)
 
@@ -1331,7 +1371,7 @@ describe('InputManager', () => {
         triggerEvent(pointerMove, { ...move(pointer, 50, -25), pointerId })
       )
       await sleep(50)
-      const finalEvent = { foo: 'bar' }
+      const finalEvent = new Event('focus')
 
       manager.stopDrag(finalEvent)
 
@@ -1566,14 +1606,6 @@ describe('InputManager', () => {
       )
     })
 
-    it('updates hovered on focus', () => {
-      const pointerId = 83
-      const event = triggerEvent('focus', { x: 1050, y: 525, pointerId })
-      expectEvents({ hovers: 1 })
-      const meshId = meshes[0].id
-      expectsDataWithMesh(hovers[0], { type: 'hoverStart', event }, meshId)
-    })
-
     it('can stop hover operation', () => {
       const pointer = { x: 975, y: 535 }
       const pointerId = 50
@@ -1581,7 +1613,7 @@ describe('InputManager', () => {
         ...move(pointer, 50, -25),
         pointerId
       })
-      const finalEvent = { foo: 'bar' }
+      const finalEvent = new Event('focus')
       manager.stopHover(finalEvent)
 
       expectEvents({ hovers: 2 })
@@ -1605,7 +1637,7 @@ describe('InputManager', () => {
         ...move(pointer, 50, -25),
         pointerId
       })
-      const finalEvent = { foo: 'bar' }
+      const finalEvent = new Event('focus')
       manager.stopAll(finalEvent)
 
       expectEvents({ hovers: 2 })
@@ -1634,12 +1666,12 @@ describe('InputManager', () => {
 
       camera.lockedTarget.x = 1
       camera.lockedTarget.z = -1
-      onCameraMove.notifyObservers()
+      onCameraMove.notifyObservers(undefined)
       expectEvents({ hovers: 1 })
       expectsDataWithMesh(hovers[0], { type: 'hoverStart', event }, meshId)
 
       camera.lockedTarget.x = 10
-      onCameraMove.notifyObservers()
+      onCameraMove.notifyObservers(undefined)
       expectEvents({ hovers: 2 })
       expectsDataWithMesh(hovers[1], { type: 'hoverStop', event }, meshId)
     })
@@ -1647,7 +1679,13 @@ describe('InputManager', () => {
 
   describe('given a disabled manager', () => {
     beforeEach(() =>
-      manager.init({ scene, longTapDelay: 100, interaction, onCameraMove })
+      manager.init({
+        scene,
+        handScene,
+        longTapDelay: 100,
+        interaction,
+        onCameraMove
+      })
     )
 
     it('ignores pointer down', () => {
@@ -1690,21 +1728,28 @@ describe('InputManager', () => {
     })
 
     it('does not update pointer', () => {
+      // @ts-expect-error: it's ok to make it null
       currentPointer = null
       triggerEvent(pointerMove, { x: 100, y: 200 })
       expect(currentPointer).toBeNull()
     })
   })
 
-  function triggerEvent(type, data, pointerType = 'mouse') {
-    const event = new CustomEvent(type)
+  function triggerEvent(
+    /** @type {string} */ type,
+    /** @type {object} */ data,
+    /** @type {string} */ pointerType = 'mouse'
+  ) {
+    const event = /** @type {?} */ (new CustomEvent(type))
     event.pointerType = pointerType
     Object.assign(event, data)
     interaction.dispatchEvent(event)
-    return event
+    return /** @type {PointerEvent} */ (event)
   }
 
-  function expectEvents(counts = {}) {
+  function expectEvents(
+    /** @type {Partial<{ taps: number, drags: number, pinches: number, hovers: number, wheels: number, longs: number, keys: number }>} */ counts = {}
+  ) {
     expect(taps).toHaveLength(counts.taps ?? 0)
     expect(drags).toHaveLength(counts.drags ?? 0)
     expect(pinches).toHaveLength(counts.pinches ?? 0)
@@ -1714,30 +1759,40 @@ describe('InputManager', () => {
     expect(keys).toHaveLength(counts.keys ?? 0)
   }
 
-  function move(pointer, x, y) {
+  function move(
+    /** @type {ScreenPosition} */ pointer,
+    /** @type {number} */ x,
+    /** @type {number} */ y
+  ) {
     pointer.x += x
     pointer.y += y
     return { ...pointer }
   }
 
   function expectsDataWithMesh(
-    actual,
-    expected,
-    meshId,
-    expectedScene = scene
+    /** @type {TapData|DragData|PinchData|HoverData|WheelData|KeyData|LongData} */ actual,
+    /** @type {?} */ expected,
+    /** @type {string|string[]|undefined} */ meshId,
+    /** @type {Scene} */ expectedScene = scene
   ) {
     if (Array.isArray(meshId)) {
-      expect(actual.meshes?.map(({ id }) => id)).toEqual(meshId)
+      expect(
+        /** @type {{ meshes?: Mesh[] }} */ (actual).meshes?.map(({ id }) => id)
+      ).toEqual(meshId)
     } else {
+      const actualWithMesh = /** @type {{ mesh?: Mesh }} */ (actual)
       if (meshId) {
-        expect(actual.mesh?.id).toEqual(meshId)
-        expect(actual.mesh?.getScene()?.uid).toEqual(expectedScene.uid)
+        expect(actualWithMesh.mesh?.id).toEqual(meshId)
+        expect(actualWithMesh.mesh?.getScene()?.uid).toEqual(expectedScene.uid)
       } else {
-        expect(actual.mesh?.id).not.toBeDefined()
+        expect(actualWithMesh.mesh?.id).not.toBeDefined()
       }
     }
-    expect({ ...actual, mesh: undefined, meshes: undefined }).toMatchObject(
-      expected
-    )
+    // do not compare meshes because vitest fails showing their gigantic diffs
+    expect({ ...actual, mesh: undefined, meshes: undefined }).toMatchObject({
+      ...expected,
+      mesh: undefined,
+      meshes: undefined
+    })
   }
 })

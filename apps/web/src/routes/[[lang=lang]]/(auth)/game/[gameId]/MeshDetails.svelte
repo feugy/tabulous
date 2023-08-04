@@ -1,12 +1,18 @@
 <script>
+  // @ts-check
+  /** @typedef {import('@src/3d/managers/control').MeshDetails['data']} MeshDetails */
+
   import { gameAssetsUrl, injectLocale } from '@src/utils'
   import { afterUpdate, createEventDispatcher } from 'svelte'
   import { locale } from 'svelte-intl'
 
+  /** @type {?MeshDetails} */
   export let mesh = null
 
+  /** @type {import('svelte').EventDispatcher<{ close: void, open: void }>} */
   const dispatch = createEventDispatcher()
-  let previous
+  /** @type {?MeshDetails} */
+  let previous = null
   let isListeningKey = false
   $: open = Boolean(mesh)
   $: if (open) {
@@ -43,7 +49,11 @@
     on:pointerdown|stopPropagation
   >
     <img
-      src="{gameAssetsUrl}{injectLocale(mesh?.image, 'images', $locale)}"
+      src="{gameAssetsUrl}{injectLocale(
+        /** @type {MeshDetails} */ (mesh).image,
+        'images',
+        $locale
+      )}"
       alt=""
     />
   </button>

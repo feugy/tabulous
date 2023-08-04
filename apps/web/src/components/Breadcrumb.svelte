@@ -1,5 +1,9 @@
 <script>
+  // @ts-check
+
+  /** @type {{ href?: ?string, label: string }[]} list of breadcrumb elements, with a friendly label and possibly a link (all but last one ) */
   export let steps = []
+
   const lastRank = steps?.length - 1
 </script>
 

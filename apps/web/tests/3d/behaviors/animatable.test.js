@@ -1,3 +1,8 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ */
+
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
 import { AnimateBehavior, AnimateBehaviorName } from '@src/3d/behaviors'
@@ -14,7 +19,9 @@ describe('AnimateBehavior', () => {
 
   const animationEndReceived = vi.fn()
 
-  beforeEach(vi.resetAllMocks)
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
 
   it('has initial state', () => {
     const behavior = new AnimateBehavior()
@@ -46,7 +53,9 @@ describe('AnimateBehavior', () => {
   })
 
   describe('given attached to a mesh', () => {
+    /** @type {Mesh} */
     let mesh
+    /** @type {AnimateBehavior} */
     let behavior
 
     beforeEach(() => {
@@ -55,6 +64,7 @@ describe('AnimateBehavior', () => {
       mesh.addBehavior(behavior, true)
       mesh.getScene()._pendingData = []
       behavior.onAnimationEndObservable.add(animationEndReceived)
+      // @ts-expect-error isLoading is not optional
       delete mesh.getEngine().isLoading
     })
 

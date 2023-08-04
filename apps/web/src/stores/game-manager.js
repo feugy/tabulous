@@ -1,3 +1,25 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Engine} Engine
+ * @typedef {import('@src/3d/engine').PlayerSelection} PlayerSelection
+ * @typedef {import('@src/3d/managers/camera').CameraPosition} CameraPosition
+ * @typedef {import('@src/graphql').LightGame} LightGame
+ * @typedef {import('@src/graphql').LightPlayer} LightPlayer
+ * @typedef {import('@src/graphql').Game} Game
+ * @typedef {import('@src/graphql').GameOrGameParameters} GameOrGameParameters
+ * @typedef {import('@src/types').JSONValue} JSONValue
+ * @typedef {import('@tabulous/server/src/graphql/types').CameraPosition} SharedCameraPosition
+ * @typedef {import('@tabulous/server/src/graphql/types').Hand} Hand
+ * @typedef {import('@tabulous/server/src/graphql/types').Mesh} Mesh
+ * @typedef {import('@tabulous/server/src/graphql/types').TurnCredentials} TurnCredentials
+ * @typedef {import('rxjs').Subscription} Subscription
+ */
+/**
+ * @template T
+ * @typedef {import('rxjs').Observable<T>} Observable
+ */
+
+import * as graphQL from '@src/graphql'
 import {
   BehaviorSubject,
   combineLatest,
@@ -8,7 +30,6 @@ import {
 } from 'rxjs'
 import { get } from 'svelte/store'
 
-import * as graphQL from '../graphql'
 import {
   buildPlayerColors,
   findPlayerColor,
@@ -34,34 +55,66 @@ import { toastInfo } from './toaster'
 // dynamically import ./game-engine which depends on
 // This allows splitting production chunks and keep Babylonjs (1.6Mb uncompressed) on its own.
 
-/** @typedef {import('../graphql').lightPlayer} Player */
-/** @typedef {import('../graphql').gameData} Game */
+/**
+ * @typedef {object} _Player
+ * @property {boolean} playing - whether this player is currently playing.
+ * @property {boolean} isHost - whether this player is hosting the current game.
+ *
+ * @typedef {LightPlayer & ReturnType<typeof findPlayerPreferences> & _Player} Player
+ */
+
+/** @typedef {Game & { selections?: PlayerSelection[] }} GameWithSelections */
+
+/**
+ * @typedef {object} JoinGameArgs
+ * @property {string} gameId - the loaded game id.
+ * @property {LightPlayer} player - the current authenticated user.
+ * @property {TurnCredentials} turnCredentials - credentials used to log onto the TURN server.
+ * @property {JSONValue} [parameters] - user chosen parameters, if any.
+ * @property {(game: ?Game) => void} [onDeletion] - optional callback invoked when current game is deleted on server side.
+ * @property {(game: Game) => void} [onPromotion] - optional callback invoked when current lobby is promoted to full game.
+ */
+
+/**
+ * @typedef {object} JoinGameContext
+ * @property {import('@src/stores/game-engine')} gameEngine - lazy-loaded game engine store.
+ * @property {string} gameId - joined game id.
+ * @property {string} currentPlayerId - joining player id.
+ * @property {JoinGameArgs['onDeletion']} onDeletion - optional callback invoked when current game is deleted on server side.
+ * @property {JoinGameArgs['onPromotion']} onPromotion - optional callback invoked when current lobby is promoted to full game.
+ */
 
 const logger = makeLogger('game-manager')
-const currentGame$ = new BehaviorSubject()
-const hostId$ = new BehaviorSubject(null)
-const playingIds$ = new BehaviorSubject([])
+const currentGame$ = new BehaviorSubject(
+  /** @type {?GameOrGameParameters} */ (null)
+)
+const hostId$ = new BehaviorSubject(/** @type {?string} */ (null))
+const playingIds$ = new BehaviorSubject(/** @type {string[]} */ ([]))
+/** @type {Subscription[]} */
 const currentGameSubscriptions = []
+/** @type {?Subscription} */
 let listGamesSubscription = null
 let delayOnLoad = () => {}
+/** @type {Map<string, Player>} */
 let playerById = new Map()
 // cameras for all players
+/** @type {SharedCameraPosition[]} */
 let cameras = []
 // hands for all players
+/** @type {Hand[]} */
 let hands = []
 // active selections for all players
+/** @type {PlayerSelection[]} */
 let selections = []
 
 /**
  * Emits the player current game, or undefined.
- * @type {Observable<object>} TODO
  */
 export const currentGame = currentGame$.asObservable()
 
 /**
  * Indicates whether a given game is different from the current game.
- * @param {string} gameId? - id of the tested game.
- * @returns {boolean} true when the two games have the same id.
+ * @param {?string} [gameId] - id of the tested game.
  */
 export function isDifferentGame(gameId) {
   return currentGame$.value?.id !== gameId
@@ -69,7 +122,6 @@ export function isDifferentGame(gameId) {
 
 /**
  * Emits the player current color.
- * @type {Observable<string>}
  */
 export const playerColor = combineLatest([currentGame$, playingIds$]).pipe(
   map(([game, playingIds]) => findPlayerColor(game, playingIds[0]))
@@ -77,22 +129,18 @@ export const playerColor = combineLatest([currentGame$, playingIds$]).pipe(
 
 /**
  * Emits a map of player in current game.
- * @type {Observable<Map<string, Player>>}
  */
 export const gamePlayerById = merge(hostId$, playingIds$, currentGame$).pipe(
   map(() => {
     playerById = new Map()
     const game = currentGame$.value
     if (game) {
-      // we don't want currentGameId in gamePlayerById map
-      // eslint-disable-next-line no-unused-vars
-      for (const { id, currentGameId, ...player } of game.players) {
-        playerById.set(id, {
-          id,
+      for (const player of game.players ?? []) {
+        playerById.set(player.id, {
           ...player,
-          ...findPlayerPreferences(game, id),
-          playing: playingIds$.value.includes(id),
-          isHost: isCurrentHost(id)
+          ...findPlayerPreferences(game, player.id),
+          playing: playingIds$.value.includes(player.id),
+          isHost: isCurrentHost(player.id)
         })
       }
     }
@@ -102,7 +150,6 @@ export const gamePlayerById = merge(hostId$, playingIds$, currentGame$).pipe(
 
 /**
  * Lists all current games.
- * @returns {Promise<Game[]>} a list of current games for the authenticated user.
  */
 export async function listGames() {
   logger.info('list current games')
@@ -111,7 +158,7 @@ export async function listGames() {
 
 /**
  * Subscribes to current game list updates, to keep the list fresh.
- * @param {Game[]} currentGames - current game list.
+ * @param {LightGame[]} [currentGames] - current game list.
  * @returns {Observable<Game[]>} an observable containing up-to-date current games.
  */
 export function receiveGameListUpdates(currentGames) {
@@ -134,7 +181,7 @@ export function receiveGameListUpdates(currentGames) {
 /**
  * Creates a new game of a given kind on server, registering current player in it,
  * and receiving its id.
- * @param {string} kind - created game kind.
+ * @param {string} [kind] - created game kind (omit to create a lobby).
  * @returns {Promise<Game>} the created game data.
  */
 export async function createGame(kind) {
@@ -181,14 +228,13 @@ export async function kick(gameId, kickedId) {
     { gameId, kickedId },
     `kick guest/player ${kickedId} from lobby/game ${gameId}`
   )
-  await runMutation(graphQL.kick, { gameId, kickedId })
+  await runMutation(graphQL.kick, { gameId, playerId: kickedId })
 }
 
 /**
  * Promotes a lobby into a full game,
  * @param {string} gameId - the promoted game id.
  * @param {string} kind - promoted game kind.
- * @returns {Promise<Game>} the created game id.
  */
 export async function promoteGame(gameId, kind) {
   logger.info(
@@ -199,16 +245,6 @@ export async function promoteGame(gameId, kind) {
 }
 
 /**
- * @typedef {object} joinGameArgs
- * @property {string} gameId - the loaded game id.
- * @property {object} player - the session details.
- * @property {object} turnCredentials - credentials used to log onto the TURN server.
- * @property {object} parameters? - user chosen parameters, if any.
- * @property {(game: Game) => void} onDeletion? - optional callback invoked when current game is deleted on server side.
- * @property {(game: Game) => void} onPromotion? - optional callback invoked when current lobby is promoted to full game.
- */
-
-/**
  * Joins an existing game, loading it from the server.
  * If server returns required paremters, navigates to the relevant page.
  * Otherwise, loads the data into the provided 3D engine.
@@ -216,8 +252,7 @@ export async function promoteGame(gameId, kind) {
  * the game and sharing it with new players.
  * If other players are connected, waits at most 30s to receive the game data from game host.
  * Resolves when the game data has been received (either as host or regular peer).
- * @param {joinGameArgs} args - operation arguments.
- * @returns {Promise<Game>} - game parameters or game data
+ * @param {JoinGameArgs} args - operation arguments.
  */
 export async function joinGame({
   gameId,
@@ -247,7 +282,7 @@ export async function joinGame({
           console.warn(
             'Since there are multiple connected players, HMR is slightly delayed to let host reconnect'
           )
-          sessionStorage.setItem(delayKey, 3000)
+          sessionStorage.setItem(delayKey, '3000')
         }
       }
     })
@@ -278,7 +313,7 @@ export async function joinGame({
   }
 
   const gameEngine = await import('./game-engine')
-  const engine = get(gameEngine.engine)
+  const engine = /** @type {Engine} */ (get(gameEngine.engine))
 
   currentGame$.next(game)
   currentGameSubscriptions.push(
@@ -292,7 +327,7 @@ export async function joinGame({
   )
 
   if (needPeerConnection) {
-    const peers = game.players.filter(
+    const peers = (game.players ?? []).filter(
       ({ id, currentGameId }) =>
         id !== currentPlayerId && currentGameId === game.id
     )
@@ -337,14 +372,16 @@ export async function joinGame({
  * Leaves current game, trigering a last save when current player is the host.
  * Shuts down peer channels.
  * Does nothing without any current game.
- * @param {object} player - the current player details.
+ * @param {Pick<Player, 'id'>} player - the current player details.
  */
 export async function leaveGame({ id: currentPlayerId }) {
   const game = currentGame$.value
   if (!game) {
     return
   }
-  const engine = get((await import('./game-engine')).engine)
+  const engine = /** @type {Engine} */ (
+    get((await import('./game-engine')).engine)
+  )
   const { id: gameId } = game
   if (isCurrentHost(currentPlayerId)) {
     logger.info({ gameId, currentPlayerId }, `persisting game before leaving`)
@@ -363,13 +400,21 @@ export async function leaveGame({ id: currentPlayerId }) {
   clearThread()
 }
 
-async function load(engine, game, playerId, firstLoad) {
+async function load(
+  /** @type {Engine} */ engine,
+  /** @type {GameOrGameParameters} */ game,
+  /** @type {string} */ playerId,
+  /** @type {boolean} */ firstLoad
+) {
   const { loadCameraSaves } = await import('./game-engine')
   currentGame$.next(game)
-  hands = game.hands ?? []
-  cameras = game.cameras ?? []
-  selections = game.selections ?? []
-  if (game.messages) {
+  hands = ('hands' in game ? game.hands : null) ?? []
+  cameras = ('cameras' in game ? game.cameras : null) ?? []
+  selections =
+    ('selections' in game
+      ? /** @type {GameWithSelections} */ (game).selections
+      : null) ?? []
+  if ('messages' in game && game.messages) {
     loadThread(game.messages)
   }
   if (cameras.length && firstLoad) {
@@ -382,10 +427,10 @@ async function load(engine, game, playerId, firstLoad) {
   }
   if (
     engine &&
-    game.players.find(({ id }) => id === playerId)?.isGuest === false
+    (game.players ?? []).find(({ id }) => id === playerId)?.isGuest === false
   ) {
     await engine.load(
-      game,
+      /** @type {Game} */ (game),
       {
         playerId,
         preferences: findPlayerPreferences(game, playerId),
@@ -396,7 +441,12 @@ async function load(engine, game, playerId, firstLoad) {
   }
 }
 
-function mergeCameras({ playerId, cameras: playerCameras }) {
+function mergeCameras(
+  /** @type {{ playerId: string, cameras: CameraPosition[] }} */ {
+    playerId,
+    cameras: playerCameras
+  }
+) {
   logger.info(
     { playerId, cameras, playerCameras },
     `merging cameras for ${playerId}`
@@ -409,12 +459,14 @@ function mergeCameras({ playerId, cameras: playerCameras }) {
   ]
 }
 
-function saveCameras(gameId) {
+function saveCameras(/** @type {string} */ gameId) {
   logger.info({ gameId, cameras }, `persisting game cameras`)
   runMutation(graphQL.saveGame, { game: { id: gameId, cameras } })
 }
 
-function mergeHands({ playerId, meshes = [] }) {
+function mergeHands(
+  /** @type {{ playerId: String, meshes?: Mesh[] }} */ { playerId, meshes = [] }
+) {
   hands = [
     ...hands.filter(hand => hand.playerId !== playerId),
     { playerId, meshes }
@@ -422,12 +474,14 @@ function mergeHands({ playerId, meshes = [] }) {
   return hands
 }
 
-function saveHands(gameId) {
+function saveHands(/** @type {string} */ gameId) {
   logger.info({ gameId, hands }, `persisting player hands`)
   runMutation(graphQL.saveGame, { game: { id: gameId, hands } })
 }
 
-function mergeSelections({ playerId, selectedIds }) {
+function mergeSelections(
+  /** @type {PlayerSelection} */ { playerId, selectedIds }
+) {
   selections = [
     ...selections.filter(selection => selection.playerId !== playerId),
     { playerId, selectedIds }
@@ -436,6 +490,7 @@ function mergeSelections({ playerId, selectedIds }) {
 }
 
 function takeHostRole(
+  /** @type {import('@src/stores/game-engine')} */
   {
     engine: engine$,
     action,
@@ -444,12 +499,12 @@ function takeHostRole(
     remoteSelection,
     selectedMeshes
   },
-  gameId,
-  currentPlayerId,
+  /** @type {string} */ gameId,
+  /** @type {string} */ currentPlayerId,
   shouldShareGame = true
 ) {
   const game = currentGame$.value
-  const engine = get(engine$)
+  const engine = /** @type {Engine} */ (get(engine$))
   logger.info({ gameId, game }, `taking game host role`)
   hostId$.next(currentPlayerId)
   if (shouldShareGame && !isLobby(game)) {
@@ -487,10 +542,14 @@ function takeHostRole(
       handMeshes.pipe(
         map(meshes => ({ data: { playerId: currentPlayerId, meshes } }))
       )
-    ).subscribe(({ data }) => {
-      mergeHands(data)
-      saveHands(gameId)
-    }),
+    ).subscribe(
+      (
+        /** @type {{ data: { playerId: string, meshes?: Mesh[]} }} */ { data }
+      ) => {
+        mergeHands(data)
+        saveHands(gameId)
+      }
+    ),
     // save camera positions
     merge(
       lastMessageReceived.pipe(
@@ -516,7 +575,9 @@ function takeHostRole(
   ]
 }
 
-function subscribePeerStatusesAndGameUpdates(params) {
+function subscribePeerStatusesAndGameUpdates(
+  /** @type {JoinGameContext} */ params
+) {
   const { gameId } = params
   return [
     runSubscription(graphQL.receiveGameUpdates, { gameId }).subscribe(
@@ -527,35 +588,46 @@ function subscribePeerStatusesAndGameUpdates(params) {
   ]
 }
 
-function handleServerUpdate({
-  gameEngine,
-  currentPlayerId,
-  onDeletion,
-  onPromotion
-}) {
-  return async function (game) {
-    const wasLobby = isLobby(currentGame$.value)
+function handleServerUpdate(
+  /** @type {JoinGameContext} */ {
+    gameEngine,
+    currentPlayerId,
+    onDeletion,
+    onPromotion
+  }
+) {
+  return async function (/** @type {GameOrGameParameters} */ game) {
+    const currentGame = /** @type {?Game} */ (currentGame$.value)
+    const wasLobby = isLobby(currentGame)
     if (!game) {
       await leaveGame({ id: currentPlayerId })
-      onDeletion?.()
+      onDeletion?.(currentGame)
     } else {
       logger.debug(
         { gameId: game.id, currentPlayerId, wasLobby, game },
         'loading game update from server'
       )
-      await load(get(gameEngine.engine), game, currentPlayerId, false)
+      await load(
+        /** @type {Engine} */ (get(gameEngine.engine)),
+        game,
+        currentPlayerId,
+        false
+      )
       if (wasLobby && !isLobby(game)) {
-        onPromotion?.(game)
+        onPromotion?.(/** @type {Game} */ (game))
       }
     }
   }
 }
 
-function serializeGame(engine, currentPlayerId) {
+function serializeGame(
+  /** @type {Engine} */ engine,
+  /** @type {string} */ currentPlayerId
+) {
   const { meshes, handMeshes } =
-    (!isLobby(currentGame$.value) && engine?.serialize()) ?? {}
+    (isLobby(currentGame$.value) ? null : engine?.serialize()) ?? {}
   return {
-    id: currentGame$.value.id,
+    id: /** @type {GameOrGameParameters} */ (currentGame$.value).id,
     meshes,
     hands: mergeHands({ playerId: currentPlayerId, meshes: handMeshes }),
     messages: serializeThread(),
@@ -563,8 +635,14 @@ function serializeGame(engine, currentPlayerId) {
   }
 }
 
-function shareGame(engine, currentPlayerId, peerId) {
-  const { id: gameId, ...otherGameData } = currentGame$.value
+function shareGame(
+  /** @type {Engine} */ engine,
+  /** @type {string} */ currentPlayerId,
+  /** @type {string} */ peerId
+) {
+  const { id: gameId, ...otherGameData } = /** @type {Game} */ (
+    currentGame$.value
+  )
   logger.info(
     { gameId },
     `sending game data ${gameId} to peer${peerId ? ` ${peerId}` : 's'}`
@@ -582,16 +660,22 @@ function unsubscribeCurrentGame() {
   currentGameSubscriptions.splice(0, currentGameSubscriptions.length)
 }
 
-function handlePeerConnection({ gameEngine, currentPlayerId }) {
-  return async function (playerId) {
+function handlePeerConnection(
+  /** @type {JoinGameContext} */ { gameEngine, currentPlayerId }
+) {
+  return async function (/** @type {string} */ playerId) {
     playingIds$.next([...playingIds$.value, playerId])
-    const game = currentGame$.value
-    if (!game.players.some(({ id }) => id === playerId)) {
+    const game = /** @type {GameOrGameParameters} */ (currentGame$.value)
+    if (!(game.players ?? []).some(({ id }) => id === playerId)) {
       const { players } = await runMutation(graphQL.getGamePlayers, game)
       currentGame$.next({ ...game, players })
     }
     if (isCurrentHost(currentPlayerId)) {
-      shareGame(get(gameEngine.engine), currentPlayerId, playerId)
+      shareGame(
+        /** @type {Engine} */ (get(gameEngine.engine)),
+        currentPlayerId,
+        playerId
+      )
     }
     toastInfo({
       icon: 'person_add_alt_1',
@@ -603,10 +687,10 @@ function handlePeerConnection({ gameEngine, currentPlayerId }) {
   }
 }
 
-function handlePeerDisconnection(params) {
+function handlePeerDisconnection(/** @type {JoinGameContext} */ params) {
   const { currentPlayerId, gameEngine } = params
-  return function (playerId) {
-    const game = currentGame$.value
+  return function (/** @type {string} */ playerId) {
+    const game = /** @type {GameOrGameParameters} */ (currentGame$.value)
     toastInfo({
       icon: 'person_remove',
       contentKey: isLobby(game)
@@ -620,28 +704,33 @@ function handlePeerDisconnection(params) {
       unsubscribeCurrentGame()
       currentGameSubscriptions.push(
         ...subscribePeerStatusesAndGameUpdates(params),
-        ...takeHostRole(gameEngine, currentGame$.value.id, currentPlayerId)
+        ...takeHostRole(gameEngine, game.id, currentPlayerId)
       )
     }
   }
 }
 
-function shareCameras(currentPlayerId) {
-  return function (cameras) {
+function shareCameras(/** @type {string} */ currentPlayerId) {
+  return function (/** @type {CameraPosition[]} */ cameras) {
     logger.info({ cameras }, `sharing camera saves with peers`)
     send({ type: 'saveCameras', cameras, playerId: currentPlayerId })
   }
 }
 
-function shareHand(currentPlayerId) {
-  return function (meshes) {
+function shareHand(/** @type {string} */ currentPlayerId) {
+  return function (/** @type {Mesh[]|undefined} */ meshes) {
     logger.info({ meshes }, `sharing hand with peers`)
     send({ type: 'saveHand', meshes, playerId: currentPlayerId })
   }
 }
 
-function isNextHost(playerId, connectedIds) {
-  const { id, players } = currentGame$.value
+function isNextHost(
+  /** @type {string} */ playerId,
+  /** @type {string[]} */ connectedIds
+) {
+  const { id, players } = /** @type {Required<Pick<Game, 'id'|'players'>>} */ (
+    currentGame$.value
+  )
   const connectedPlayers = players
     .filter(({ isGuest }) => !isGuest)
     .map(player => ({
@@ -658,10 +747,10 @@ function isNextHost(playerId, connectedIds) {
   )
 }
 
-function isCurrentHost(playerId) {
+function isCurrentHost(/** @type {string} */ playerId) {
   return playerId === hostId$.value
 }
 
-function isGameParameter(game) {
-  return Boolean(game.schemaString)
+function isGameParameter(/** @type {GameOrGameParameters} */ game) {
+  return 'schemaString' in game && Boolean(game.schemaString)
 }

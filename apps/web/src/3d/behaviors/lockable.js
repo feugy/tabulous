@@ -1,3 +1,9 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@tabulous/server/src/graphql/types').LockableState} LockableState
+ */
+
 import { makeLogger } from '../../utils/logger'
 import { controlManager } from '../managers/control'
 import { indicatorManager } from '../managers/indicator'
@@ -5,24 +11,19 @@ import { actionNames } from '../utils/actions'
 import { attachFunctions, attachProperty } from '../utils/behaviors'
 import { LockBehaviorName, MoveBehaviorName } from './names'
 
-const logger = makeLogger(LockBehaviorName)
+/** @typedef {LockableState & Required<Pick<LockableState, 'isLocked'>>} RequiredLockableState */
 
-/**
- * @typedef {object} LockableState behavior persistent state, including:
- * @property {boolean} [isLocked=false] - whether this mesh is locked or not.
- */
+const logger = makeLogger(LockBehaviorName)
 
 export class LockBehavior {
   /**
    * Creates behavior to lock some actions on a mesh, by acting on other behaviors.
-   *
-   * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
-   * @property {LockableState} state - the behavior's current state.
-   *
    * @param {LockableState} state - behavior state.
    */
   constructor(state = {}) {
+    /** @type {?Mesh} mesh - the related mesh. */
     this.mesh = null
+    /**  @type {RequiredLockableState} state - the behavior's current state. */
     this.state = { isLocked: state?.isLocked ?? false }
   }
 
@@ -35,7 +36,7 @@ export class LockBehavior {
 
   /**
    * Does nothing.
-   * @see {@link import('@babylonjs/core').Behavior.init}
+   * @see https://doc.babylonjs.com/typedoc/interfaces/babylon.behavior#init
    */
   init() {}
 
@@ -44,7 +45,7 @@ export class LockBehavior {
    * - `isLocked` property.
    * - the `toggleLock()` method.
    * It also enables or disables companion behaviors based on desired state.
-   * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
+   * @param {Mesh} mesh - which becomes detailable.
    */
   attach(mesh) {
     this.mesh = mesh
@@ -66,15 +67,13 @@ export class LockBehavior {
     if (!mesh) {
       return
     }
-    controlManager.record({ mesh, fn: actionNames.toggleLock })
+    controlManager.record({ mesh, fn: actionNames.toggleLock, args: [] })
     indicatorManager.registerFeedback({
       action: state.isLocked ? 'unlock' : 'lock',
       position: mesh.absolutePosition.asArray()
     })
     state.isLocked = !state.isLocked
-    for (const name of [MoveBehaviorName]) {
-      setEnabled(mesh, name, !state.isLocked)
-    }
+    setEnabled(mesh, !state.isLocked)
   }
 
   /**
@@ -86,14 +85,18 @@ export class LockBehavior {
       throw new Error('Can not restore state without mesh')
     }
     this.state = { isLocked }
-    setEnabled(this.mesh, MoveBehaviorName, !isLocked)
-    attachFunctions(this, actionNames.toggleLock)
+    setEnabled(this.mesh, !isLocked)
+    attachFunctions(this, 'toggleLock')
     attachProperty(this, 'isLocked', () => this.state.isLocked)
   }
 }
 
-function setEnabled(mesh, behaviorName, enabled) {
-  const behavior = mesh.getBehaviorByName(behaviorName)
+/**
+ * @param {Mesh} mesh - updated mesh
+ * @param {boolean} enabled - whether this mesh can be moved.
+ */
+function setEnabled(mesh, enabled) {
+  const behavior = mesh.getBehaviorByName(MoveBehaviorName)
   if (
     behavior &&
     (!mesh.metadata?.stack ||
@@ -101,7 +104,7 @@ function setEnabled(mesh, behaviorName, enabled) {
   ) {
     logger.debug(
       { mesh, behavior },
-      `${enabled ? 'unlocks' : 'locks'} behavior ${behaviorName}`
+      `${enabled ? 'unlocks' : 'locks'} behavior ${MoveBehaviorName}`
     )
     behavior.enabled = enabled
   }

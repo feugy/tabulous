@@ -1,18 +1,27 @@
 <script>
+  // @ts-check
+  /** @typedef {import('@src/graphql').CatalogItem} CatalogItem */
+
   import { gameAssetsUrl } from '@src/utils'
   import { createEventDispatcher } from 'svelte'
   import { _, locale } from 'svelte-intl'
 
+  /** @type {CatalogItem} displayed catalog item. */
   export let game
 
+  /** @type {import('svelte').EventDispatcher<{ select: CatalogItem & { title: string } }>}*/
   const dispatch = createEventDispatcher()
   $: title = game?.locales?.[$locale]?.title
   $: seatsHidden = !game?.maxSeats && !game?.minSeats
   $: timeHidden = !game?.minTime
   $: ageHidden = !game?.minAge
 
-  function formatCopyright(field) {
-    return game?.copyright?.[field].map(({ name }) => name).join(', ')
+  function formatCopyright(/** @type {string} */ field) {
+    return /** @type {Record<string, { name: string }[]>} */ (
+      game?.copyright
+    )?.[field]
+      .map(({ name }) => name)
+      .join(', ')
   }
 
   function formatSeats() {
@@ -76,7 +85,9 @@
   button {
     @apply relative inline-flex flex-col justify-center items-stretch h-64 flex-1 text-left rounded;
     background: var(--card-light) var(--base-lighter);
-    transition: transform var(--short), box-shadow var(--short),
+    transition:
+      transform var(--short),
+      box-shadow var(--short),
       background-position var(--long);
     box-shadow: 0px 3px 10px var(--shadow-color);
 
@@ -111,7 +122,9 @@
   legend {
     @apply inline-grid grid-rows-[min-content,1fr] grid-cols-[auto,min-content] gap-1 p-4 -m-2
            h-0 opacity-0 bg-$base-darker text-$ink-dark overflow-hidden z-1 rounded;
-    transition: opacity var(--long) var(--medium), height var(--long);
+    transition:
+      opacity var(--long) var(--medium),
+      height var(--long);
   }
 
   h3 {

@@ -1,3 +1,12 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Engine} Engine
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@src/3d/behaviors/animatable').AnimateBehavior} AnimateBehavior
+ * @typedef {typeof import('@src/3d/behaviors/targetable').TargetBehavior} TargetBehavior
+ */
+
+//
 import { Animation } from '@babylonjs/core/Animations/animation'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import {
@@ -47,18 +56,31 @@ import {
 
 vi.mock('@src/3d/managers/indicator')
 
+/** @type {Engine} */
 let engine
+/** @type {Mesh} */
 let box
+/** @type {typeof import('@src/3d/behaviors/anchorable').AnchorBehavior} */
 let AnchorBehavior
+/** @type {typeof import('@src/3d/behaviors/animatable').AnimateBehavior} */
 let AnimateBehavior
+/** @type {typeof import('@src/3d/behaviors/detailable').DetailBehavior}} */
 let DetailBehavior
+/** @type {typeof import('@src/3d/behaviors/drawable').DrawBehavior} */
 let DrawBehavior
+/** @type {typeof import('@src/3d/behaviors/flippable').FlipBehavior} */
 let FlipBehavior
+/** @type {typeof import('@src/3d/behaviors/lockable').LockBehavior} */
 let LockBehavior
+/** @type {typeof import('@src/3d/behaviors/movable').MoveBehavior} */
 let MoveBehavior
+/** @type {typeof import('@src/3d/behaviors/quantifiable').QuantityBehavior} */
 let QuantityBehavior
+/** @type {typeof import('@src/3d/behaviors/rotable').RotateBehavior} */
 let RotateBehavior
+/** @type {typeof import('@src/3d/behaviors/stackable').StackBehavior} */
 let StackBehavior
+/** @type {typeof import('@src/3d/behaviors/targetable').TargetBehavior} */
 let TargetBehavior
 
 beforeAll(async () => {
@@ -74,9 +96,9 @@ beforeAll(async () => {
     MoveBehavior,
     QuantityBehavior,
     RotateBehavior,
-    StackBehavior,
     TargetBehavior
   } = await import('@src/3d/behaviors'))
+  ;({ StackBehavior } = await import('@src/3d/behaviors/stackable'))
 })
 
 beforeEach(() => {
@@ -302,7 +324,7 @@ describe('registerBehaviors() 3D utility', () => {
     const state = { angle: Math.PI * 0.5, duration: 321 }
     registerBehaviors(box, { rotable: state })
     const behavior = box.getBehaviorByName(RotateBehaviorName)
-    expect(behavior.state).toEqualWithAngle(state)
+    expect(behavior?.state).toEqualWithAngle(state)
   })
 
   it('adds detailable behavior to a mesh', () => {
@@ -318,6 +340,7 @@ describe('registerBehaviors() 3D utility', () => {
     const state = {
       anchors: [
         {
+          id: 'whatever',
           x: 10,
           y: 15,
           z: -5,
@@ -376,7 +399,7 @@ describe('registerBehaviors() 3D utility', () => {
 
   it('adds multiple behaviors to a mesh', () => {
     registerBehaviors(box, {
-      detailable: {},
+      detailable: { frontImage: '' },
       movable: {},
       stackable: { extent: 1.5 },
       anchorable: { anchors: [] },
@@ -384,26 +407,26 @@ describe('registerBehaviors() 3D utility', () => {
       rotable: { angle: Math.PI },
       lockable: { isLocked: false }
     })
-    expect(box.getBehaviorByName(AnchorBehaviorName).state).toEqual({
+    expect(box.getBehaviorByName(AnchorBehaviorName)?.state).toEqual({
       anchors: [],
       duration: 100
     })
     expect(box.getBehaviorByName(DetailBehaviorName)).toBeDefined()
-    expect(box.getBehaviorByName(FlipBehaviorName).state).toEqual({
+    expect(box.getBehaviorByName(FlipBehaviorName)?.state).toEqual({
       duration: 500,
       isFlipped: false
     })
     expect(box.getBehaviorByName(MoveBehaviorName)).toBeDefined()
-    expect(box.getBehaviorByName(RotateBehaviorName).state).toEqualWithAngle({
+    expect(box.getBehaviorByName(RotateBehaviorName)?.state).toEqualWithAngle({
       duration: 200,
       angle: Math.PI
     })
-    expect(box.getBehaviorByName(StackBehaviorName).state).toEqual({
+    expect(box.getBehaviorByName(StackBehaviorName)?.state).toEqual({
       stackIds: [],
       duration: 100,
       extent: 1.5
     })
-    expect(box.getBehaviorByName(LockBehaviorName).state).toEqual({
+    expect(box.getBehaviorByName(LockBehaviorName)?.state).toEqual({
       isLocked: false
     })
     expect(box.behaviors).toHaveLength(7)
@@ -417,10 +440,10 @@ describe('registerBehaviors() 3D utility', () => {
   it('adds lockable after all other behavior', () => {
     registerBehaviors(box, { lockable: { isLocked: true }, movable: {} })
 
-    expect(box.getBehaviorByName(LockBehaviorName).state).toEqual({
+    expect(box.getBehaviorByName(LockBehaviorName)?.state).toEqual({
       isLocked: true
     })
-    expect(box.getBehaviorByName(MoveBehaviorName).enabled).toBe(false)
+    expect(box.getBehaviorByName(MoveBehaviorName)?.enabled).toBe(false)
   })
 })
 
@@ -461,6 +484,7 @@ describe('restoreBehaviors() 3D utility', () => {
     const state = {
       anchors: [
         {
+          id: 'whatever',
           x: 10,
           y: 15,
           z: -5,
@@ -509,6 +533,7 @@ describe('restoreBehaviors() 3D utility', () => {
     const anchorable = {
       anchors: [
         {
+          id: 'whatever',
           x: 10,
           y: 15,
           z: -5,
@@ -532,6 +557,7 @@ describe('restoreBehaviors() 3D utility', () => {
       snapDistance: 0.5,
       duration: 345
     }
+    const detailable = { frontImage: 'something.png' }
     const lockable = { isLocked: false }
     box.addBehavior(new MoveBehavior(), true)
     box.addBehavior(new FlipBehavior(), true)
@@ -542,7 +568,7 @@ describe('restoreBehaviors() 3D utility', () => {
     box.addBehavior(new AnimateBehavior(), true)
     box.addBehavior(new LockBehavior(), true)
     restoreBehaviors(box.behaviors, {
-      detailable: true,
+      detailable,
       movable,
       flippable,
       anchorable,
@@ -550,18 +576,19 @@ describe('restoreBehaviors() 3D utility', () => {
       stackable,
       lockable
     })
-    expect(box.getBehaviorByName(MoveBehaviorName).state).toEqual(movable)
-    expect(box.getBehaviorByName(FlipBehaviorName).state).toEqual(flippable)
-    expect(box.getBehaviorByName(RotateBehaviorName).state).toEqualWithAngle(
+    expect(box.getBehaviorByName(DetailBehaviorName)?.state).toEqual(detailable)
+    expect(box.getBehaviorByName(MoveBehaviorName)?.state).toEqual(movable)
+    expect(box.getBehaviorByName(FlipBehaviorName)?.state).toEqual(flippable)
+    expect(box.getBehaviorByName(RotateBehaviorName)?.state).toEqualWithAngle(
       rotable
     )
-    expect(box.getBehaviorByName(AnchorBehaviorName).state).toEqual(anchorable)
-    expect(box.getBehaviorByName(StackBehaviorName).state).toEqual({
+    expect(box.getBehaviorByName(AnchorBehaviorName)?.state).toEqual(anchorable)
+    expect(box.getBehaviorByName(StackBehaviorName)?.state).toEqual({
       duration: 100,
       extent: 2,
       stackIds: []
     })
-    expect(box.getBehaviorByName(LockBehaviorName).state).toEqual(lockable)
+    expect(box.getBehaviorByName(LockBehaviorName)?.state).toEqual(lockable)
   })
 
   it('does nothing without parameters', () => {
@@ -574,28 +601,28 @@ describe('restoreBehaviors() 3D utility', () => {
     box.addBehavior(new AnimateBehavior(), true)
     box.addBehavior(new LockBehavior(), true)
     restoreBehaviors(box.behaviors, {})
-    expect(box.getBehaviorByName(MoveBehaviorName).state).toEqual({
+    expect(box.getBehaviorByName(MoveBehaviorName)?.state).toEqual({
       snapDistance: 0.25,
       duration: 100
     })
-    expect(box.getBehaviorByName(FlipBehaviorName).state).toEqual({
+    expect(box.getBehaviorByName(FlipBehaviorName)?.state).toEqual({
       isFlipped: false,
       duration: 500
     })
-    expect(box.getBehaviorByName(RotateBehaviorName).state).toEqualWithAngle({
+    expect(box.getBehaviorByName(RotateBehaviorName)?.state).toEqualWithAngle({
       angle: 0,
       duration: 200
     })
-    expect(box.getBehaviorByName(AnchorBehaviorName).state).toEqual({
+    expect(box.getBehaviorByName(AnchorBehaviorName)?.state).toEqual({
       anchors: [],
       duration: 100
     })
-    expect(box.getBehaviorByName(StackBehaviorName).state).toEqual({
+    expect(box.getBehaviorByName(StackBehaviorName)?.state).toEqual({
       duration: 100,
       extent: 2,
       stackIds: []
     })
-    expect(box.getBehaviorByName(LockBehaviorName).state).toEqual({
+    expect(box.getBehaviorByName(LockBehaviorName)?.state).toEqual({
       isLocked: false
     })
   })
@@ -640,6 +667,7 @@ describe('serializeBehaviors() 3D utility', () => {
     const state = {
       anchors: [
         {
+          id: 'whatever',
           x: 10,
           y: 15,
           z: -5,
@@ -683,6 +711,7 @@ describe('serializeBehaviors() 3D utility', () => {
     const anchorable = {
       anchors: [
         {
+          id: 'whatever',
           x: 10,
           y: 15,
           z: -5,
@@ -733,6 +762,7 @@ describe('serializeBehaviors() 3D utility', () => {
 })
 
 describe('runAnimation() 3D utility', () => {
+  /** @type {AnimateBehavior} */
   let behavior
 
   beforeEach(() => {
@@ -754,8 +784,8 @@ describe('runAnimation() 3D utility', () => {
       duration,
       keys: [
         { frame: 0, values: [1, undefined, 1] },
-        { frame: 50, values: [1, null, null, 3] },
-        { frame: 100, values: [0, 2] }
+        { frame: 50, values: [1, null, null] },
+        { frame: 100, values: [0, 2, undefined] }
       ]
     })
     expect(animation.getKeys()).toEqual([
@@ -764,8 +794,7 @@ describe('runAnimation() 3D utility', () => {
         frame: 3,
         value: 1,
         inTangent: null,
-        outTangent: null,
-        interpolation: 3
+        outTangent: null
       },
       { frame: 6, value: 0, inTangent: 2 }
     ])
@@ -785,8 +814,8 @@ describe('runAnimation() 3D utility', () => {
       duration,
       keys: [
         { frame: 0, values: [1, 2, 3, undefined, [1, 1, 1]] },
-        { frame: 50, values: [2, 3, 4, null, null, [3, 3, 3]] },
-        { frame: 100, values: [3, 4, 5, [2, 2, 2]] }
+        { frame: 50, values: [2, 3, 4, null, null] },
+        { frame: 100, values: [3, 4, 5, [2, 2, 2], undefined] }
       ]
     })
     const finalRotation = new Vector3(3, 4, 5)
@@ -799,8 +828,7 @@ describe('runAnimation() 3D utility', () => {
       },
       {
         frame: 3,
-        value: new Vector3(2, 3, 4),
-        interpolation: new Vector3(3, 3, 3)
+        value: new Vector3(2, 3, 4)
       },
       { frame: 6, value: finalRotation, inTangent: new Vector3(2, 2, 2) }
     ])
@@ -824,8 +852,8 @@ describe('runAnimation() 3D utility', () => {
         animation,
         duration,
         keys: [
-          { frame: 0, values: [1] },
-          { frame: 100, values: [0] }
+          { frame: 0, values: [1, undefined, undefined] },
+          { frame: 100, values: [0, undefined, undefined] }
         ]
       },
       {
@@ -861,9 +889,9 @@ describe('isMeshFlipped()', () => {
   it('returns true for flipped mesh', async () => {
     box.addBehavior(new FlipBehavior({ isFlipped: true, duration: 50 }), true)
     expect(isMeshFlipped(box)).toBe(true)
-    await box.metadata.flip()
+    await box.metadata.flip?.()
     expect(isMeshFlipped(box)).toBe(false)
-    await box.metadata.flip()
+    await box.metadata.flip?.()
     expect(isMeshFlipped(box)).toBe(true)
   })
 })
@@ -879,13 +907,13 @@ describe('isMeshInverted()', () => {
   it('returns true for inverted mesh', async () => {
     box.addBehavior(new RotateBehavior({ angle: Math.PI, duration: 50 }), true)
     expect(isMeshInverted(box)).toBe(true)
-    await box.metadata.rotate()
+    await box.metadata.rotate?.()
     expect(isMeshInverted(box)).toBe(false)
-    await box.metadata.rotate()
+    await box.metadata.rotate?.()
     expect(isMeshInverted(box)).toBe(false)
-    await box.metadata.rotate()
+    await box.metadata.rotate?.()
     expect(isMeshInverted(box)).toBe(false)
-    await box.metadata.rotate()
+    await box.metadata.rotate?.()
     expect(isMeshInverted(box)).toBe(true)
   })
 
@@ -910,9 +938,9 @@ describe('isMeshLocked()', () => {
   it('returns true for inverted mesh', async () => {
     box.addBehavior(new LockBehavior({ isLocked: true }), true)
     expect(isMeshLocked(box)).toBe(true)
-    await box.metadata.toggleLock()
+    await box.metadata.toggleLock?.()
     expect(isMeshLocked(box)).toBe(false)
-    await box.metadata.toggleLock()
+    await box.metadata.toggleLock?.()
     expect(isMeshLocked(box)).toBe(true)
   })
 })
@@ -922,7 +950,10 @@ describe('getMeshAbsolutePartCenters()', () => {
     box.setAbsolutePosition(new Vector3(1, -3, 4))
     expect(getMeshAbsolutePartCenters(box)).toEqual([box.absolutePosition])
 
-    box.metadata = { partCenters: [] }
+    box.metadata = {
+      serialize: () => ({ shape: 'box', id: '', texture: '' }),
+      partCenters: []
+    }
     expect(getMeshAbsolutePartCenters(box)).toEqual([box.absolutePosition])
   })
 
@@ -931,6 +962,7 @@ describe('getMeshAbsolutePartCenters()', () => {
     box.setAbsolutePosition(position)
     box.computeWorldMatrix(true)
     box.metadata = {
+      serialize: () => ({ shape: 'box', id: '', texture: '' }),
       partCenters: [{ x: -0.5, z: -0.25 }, { z: 0.25 }, { x: 0.5, z: -0.25 }]
     }
     expect(getMeshAbsolutePartCenters(box)).toEqual([
@@ -944,6 +976,7 @@ describe('getMeshAbsolutePartCenters()', () => {
     box.rotation.y = Math.PI * 0.5
     box.computeWorldMatrix(true)
     box.metadata = {
+      serialize: () => ({ shape: 'box', id: '', texture: '' }),
       partCenters: [{ x: -0.5 }, { x: 0.5 }]
     }
     const parts = getMeshAbsolutePartCenters(box)
@@ -954,18 +987,23 @@ describe('getMeshAbsolutePartCenters()', () => {
 })
 
 describe('given a test behavior', () => {
+  /** @type {TestBehavior} */
   let behavior
 
   beforeEach(() => {
     behavior = new TestBehavior()
     box.addBehavior(behavior, true)
-    box.metadata = {}
+    box.metadata = {
+      serialize: () => ({ shape: 'box', id: '', texture: '' })
+    }
   })
 
   describe('attachProperty()', () => {
     it('creates metadata', () => {
+      // @ts-expect-error metadata is not optional
       delete box.metadata
       const getter = vi.fn().mockReturnValue('test')
+      // @ts-expect-error Testbehavior is not listed as a behavior
       attachProperty(behavior, 'testProp', getter)
       expect(box.metadata.testProp).toEqual('test')
       expect(getter).toHaveBeenCalledTimes(1)
@@ -974,6 +1012,7 @@ describe('given a test behavior', () => {
     it('creates a getter', () => {
       const value = Math.random()
       const getter = vi.fn().mockReturnValue(value)
+      // @ts-expect-error Testbehavior is not listed as a behavior
       attachProperty(behavior, 'testProp', getter)
       expect(box.metadata.testProp).toEqual(value)
       expect(getter).toHaveBeenCalledTimes(1)
@@ -982,10 +1021,12 @@ describe('given a test behavior', () => {
     it('creates rewritable and enumeratable getters', () => {
       const value = Math.random()
       const getter = vi.fn().mockReturnValue(value)
+      // @ts-expect-error Testbehavior is not listed as a behavior
       attachProperty(behavior, 'testProp2', getter)
       expect(JSON.stringify(box.metadata)).toEqual(
         JSON.stringify({ testProp2: value })
       )
+      // @ts-expect-error Testbehavior is not listed as a behavior
       attachProperty(behavior, 'testProp2', () => null)
       expect(box.metadata.testProp2).toBeNull()
       expect(getter).toHaveBeenCalledTimes(1)
@@ -994,18 +1035,22 @@ describe('given a test behavior', () => {
 
   describe('attachFunctions()', () => {
     it('creates metadata', () => {
+      // @ts-expect-error metadata is not optional
       delete box.metadata
+      // @ts-expect-error Testbehavior is not listed as a behavior
       attachFunctions(behavior, 'foo')
       expect(box.metadata.foo).toBeInstanceOf(Function)
     })
 
     it('attaches a single function', () => {
+      // @ts-expect-error Testbehavior is not listed as a behavior
       attachFunctions(behavior, 'foo')
       expect(box.metadata.foo).toBeInstanceOf(Function)
       expect(box.metadata.foo()).toEqual('foo')
     })
 
     it('attaches a multiple functions', () => {
+      // @ts-expect-error Testbehavior is not listed as a behavior
       attachFunctions(behavior, 'bar', 'foo')
       expect(box.metadata.foo).toBeInstanceOf(Function)
       expect(box.metadata.bar).toBeInstanceOf(Function)
@@ -1051,11 +1096,12 @@ class TestBehavior {
   constructor() {
     this.mesh = null
     this._foo = 'foo'
+    this.name = 'test'
   }
 
   init() {}
 
-  attach(mesh) {
+  attach(/** @type {Mesh} */ mesh) {
     this.mesh = mesh
   }
 

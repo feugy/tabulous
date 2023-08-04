@@ -1,3 +1,24 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Engine} Engine
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').Observable<?>} BabylonObservable
+ * @typedef {import('@babylonjs/core').Observer<?>} BabylonObserver
+ * @typedef {import('@tabulous/server/src/graphql/types').Player} Player
+ * @typedef {import('@src/3d/managers/camera').CameraPosition} CameraPosition
+ * @typedef {import('@src/3d/managers/control').Action} Action
+ * @typedef {import('@src/3d/managers/control').Move} Move
+ * @typedef {import('@src/3d/managers/control').MeshDetails} MeshDetails
+ * @typedef {import('@src/3d/managers/hand').HandChange} HandChange
+ * @typedef {import('@src/3d/managers/indicator').Indicator} Indicator
+ * @typedef {import('@src/3d/managers/input').LongData} LongData
+ * @typedef {import('@src/3d').PlayerSelection} PlayerSelection
+ * @typedef {import('@src/common').Locale} Locale
+ * @typedef {import('@src/graphql').FriendshipUpdate} FriendshipUpdate
+ * @typedef {import('@src/types').BabylonToRxMapping} BabylonToRxMapping
+ * @typedef {import('@src/utils/game-interaction').ActionMenuProps} ActionMenuProps
+ */
+
 import {
   auditTime,
   BehaviorSubject,
@@ -29,63 +50,66 @@ import {
   send
 } from './peer-channels'
 
-const engine$ = new BehaviorSubject(null)
-const fps$ = new BehaviorSubject(0)
+const engine$ = new BehaviorSubject(/** @type {?Engine} */ (null))
+const fps$ = new BehaviorSubject('0')
+/** @type {Subject<Action|Move>} */
 const localAction$ = new Subject()
+/** @type {Subject<(Action|Move) & { peerId: string }>} */
 const remoteAction$ = new Subject()
+/** @type {Subject<PlayerSelection>} */
 const remoteSelection$ = new Subject()
+/** @type {Subject<number[]>} */
 const pointer$ = new Subject()
+/** @type {Subject<MeshDetails>} */
 const meshDetails$ = new Subject()
+/** @type {Subject<?ActionMenuProps>} */
 const actionMenuProps$ = new Subject()
+/** @type {Subject<CameraPosition[]>} */
 const cameraSaves$ = new Subject()
+/** @type {Subject<CameraPosition>} */
 const currentCamera$ = new Subject()
+/** @type {Subject<HandChange>} */
 const handSaves$ = new Subject()
-const indicators$ = new BehaviorSubject([])
-const selectedMeshes$ = new BehaviorSubject(new Set())
+const indicators$ = new BehaviorSubject(/** @type {Indicator[]} */ ([]))
+const selectedMeshes$ = new BehaviorSubject(
+  /** @type {Set<Mesh>} */ (new Set())
+)
 const highlightHand$ = new BehaviorSubject(false)
+/** @type {Subject<boolean>} */
 const engineLoading$ = new Subject()
-
-/** @typedef {import('rxjs').Observable} Observable */
 
 /**
  * Emits 3D engine when available.
- * @type {Observable<import('@babylonjs/core').Engine>}
  */
 export const engine = engine$.asObservable()
 
 /**
  * Emits a boolean indicating when the 3D engine is loading.
- * @type {Observable<boolean>}
  */
 export const engineLoading = engineLoading$.asObservable()
 
 /**
  * Emits the current number of frames per second.
- * @type {Observable<number>}
  */
 export const fps = fps$.asObservable()
 
 /**
  * Emits actions applied to the 3D engine, both comming from current player and peers.
- * @type {Observable<import('../3d/managers').Action>}
  */
 export const action = merge(localAction$, remoteAction$)
 
 /**
  * Emits selections received by peer players
- * @type {Observable<object>} TODOC playerId: string selectedIds: string[]
  */
 export const remoteSelection = remoteSelection$.asObservable()
 
 /**
  * Emits mesh details when the player requested them.
- * @type {Observable<import('../3d/managers').MeshDetails>}
  */
 export const meshDetails = meshDetails$.pipe(map(({ data }) => data))
 
 /**
  * Emits the list of indicators (stack size, anchor labels, peer pointers...), when it changes.
- * @type {Observable<import('../3d/managers').Indicator[]>}
  */
 export const indicators = merge(indicators$, engineLoading$).pipe(
   withLatestFrom(indicators$, engineLoading$),
@@ -94,47 +118,33 @@ export const indicators = merge(indicators$, engineLoading$).pipe(
 
 /**
  * Emits the list of controlled mesh, when it changes.
- * @type {Observable<Set<Mesh>>}
  */
 export const selectedMeshes = selectedMeshes$.asObservable()
 
 /**
- * @typedef {object} ActionMenuProps RadialMenu properties for the action menu
- * @property {Mesh[]} meshes - list of mesh for which menu is displayed.
- * @property {boolean} open - whether the menu is opened or not.
- * @property {number} x - horizontal screen coordinate.
- * @property {number} y - vertical screen coordinate.
- * @property {object[]} items - array of menu items (button properties)
- */
-
-/**
  * Emits meshes player would like to open menu on.
- * @type {Observable<ActionMenuProps>}
  */
 export const actionMenuProps = actionMenuProps$.pipe(delay(300))
 // note: we delay by 300ms so that browser does not fire a click on menu when double-tapping a mesh
 
 /**
  * Emits camera saved positions.
- * @type {Observable<import('../3d/managers').CameraSave>}
  */
 export const cameraSaves = cameraSaves$.asObservable()
 
 /**
  * Emits when a long tap/drag/pinch... input was detected.
- * @type {Subject<import('../3d/managers').CameraSave>}
+ * @type {Subject<LongData>}
  */
 export const longInputs = new Subject()
 
 /**
  * Emits the new camera state every time it changes.
- * @type {Observable<import('../3d/managers').CameraSave>}
  */
 export const currentCamera = currentCamera$.asObservable()
 
 /**
  * Emits a boolean when hand should be enabled or not.
- * @type {Observable<boolean>}
  */
 export const handVisible = engineLoading$.pipe(
   filter(loading => !loading),
@@ -143,7 +153,6 @@ export const handVisible = engineLoading$.pipe(
 
 /**
  * Emits player's hand content (an array of serialized meshes).
- * @type {Observable<object[]>}
  */
 export const handMeshes = handSaves$.pipe(
   map(() => engine$.value?.serialize()?.handMeshes)
@@ -151,10 +160,17 @@ export const handMeshes = handSaves$.pipe(
 
 /**
  * Emits a boolean when hand's should be highlighted (for example, during drag operations).
- * @type {Observable<boolean>}
  */
 export const highlightHand = highlightHand$.asObservable()
 
+/**
+ * @typedef {object} EngineParams
+ * @property {number} [pointerThrottle=150] - number of milliseconds during which pointer will be ignored before being shared with peers.
+ * @property {number} [longTapDelay=250] - number of milliseconds to hold pointer down before it is considered as long.
+ * @property {number} [doubleTapDelay=350] - number of milliseconds between 2 taps to be considered as a double tap.
+ * @return {import('@babylonjs/core').Engine} the created engine.
+
+ */
 /**
  * Initialize the 3D engine, which includes:
  * - displaying loader
@@ -165,9 +181,8 @@ export const highlightHand = highlightHand$.asObservable()
  * - receiving peer messages to apply their actions, show their selection and move their pointerspeers
  * Clears all subscriptions on engine disposal.
  *
- * @param {object} params - parameters, as defined by createEngin(), in addition to:
- * @param {number} [params.pointerThrottle=150] - number of milliseconds during which pointer will be ignored before being shared with peers.
- * @return {import('@babylonjs/core').Engine} the created engine.
+ * @param {Omit<Parameters<createEngine>[0], 'locale'|'longTapDelay'|'translate'|'Engine'> & EngineParams} params - engine creation parameters.
+ * @return {Engine} the created engine.
  */
 export function initEngine({
   pointerThrottle = 150,
@@ -176,9 +191,8 @@ export function initEngine({
   ...engineProps
 }) {
   const engine = createEngine({
-    doubleTapDelay,
     longTapDelay,
-    locale: get(locale),
+    locale: /** @type {Locale} */ (get(locale)),
     translate: get(translate),
     ...engineProps
   })
@@ -190,24 +204,63 @@ export function initEngine({
   cameraSaves$.next(cameraManager.saves)
   currentCamera$.next(cameraManager.saves[0])
 
+  /** @type {BabylonToRxMapping[]} */
   const mappings = [
-    { observable: controlManager.onActionObservable, subject: localAction$ },
-    { observable: controlManager.onDetailedObservable, subject: meshDetails$ },
-    { observable: indicatorManager.onChangeObservable, subject: indicators$ },
+    {
+      observable: controlManager.onActionObservable,
+      subject: localAction$,
+      observer: null
+    },
+    {
+      observable: controlManager.onDetailedObservable,
+      subject: meshDetails$,
+      observer: null
+    },
+    {
+      observable: indicatorManager.onChangeObservable,
+      subject: indicators$,
+      observer: null
+    },
     {
       observable: selectionManager.onSelectionObservable,
-      subject: selectedMeshes$
+      subject: selectedMeshes$,
+      observer: null
     },
-    { observable: cameraManager.onSaveObservable, subject: cameraSaves$ },
-    { observable: cameraManager.onMoveObservable, subject: currentCamera$ },
-    { observable: inputManager.onLongObservable, subject: longInputs },
-    { observable: inputManager.onPointerObservable, subject: pointer$ },
-    { observable: handManager.onHandChangeObservable, subject: handSaves$ },
+    {
+      observable: cameraManager.onSaveObservable,
+      subject: cameraSaves$,
+      observer: null
+    },
+    {
+      observable: cameraManager.onMoveObservable,
+      subject: currentCamera$,
+      observer: null
+    },
+    {
+      observable: inputManager.onLongObservable,
+      subject: longInputs,
+      observer: null
+    },
+    {
+      observable: inputManager.onPointerObservable,
+      subject: pointer$,
+      observer: null
+    },
+    {
+      observable: handManager.onHandChangeObservable,
+      subject: handSaves$,
+      observer: null
+    },
     {
       observable: handManager.onDraggableToHandObservable,
-      subject: highlightHand$
+      subject: highlightHand$,
+      observer: null
     },
-    { observable: engine.onLoadingObservable, subject: engineLoading$ }
+    {
+      observable: engine.onLoadingObservable,
+      subject: engineLoading$,
+      observer: null
+    }
   ]
   // exposes Babylon observables as RX subjects
   for (const mapping of mappings) {
@@ -231,7 +284,7 @@ export function initEngine({
         applyRemoteSelection(data.selectedIds, playerId)
       } else if (data?.meshId) {
         if (data.fn === actionNames.draw) {
-          handManager.applyDraw(...data.args, playerId)
+          handManager.applyDraw(data.args[0], playerId)
         } else {
           controlManager.apply(data, true)
         }
@@ -286,28 +339,31 @@ export function initEngine({
   return engine
 }
 
-function applyRemoteSelection(selectedIds, playerId) {
+function applyRemoteSelection(
+  /** @type {string[]} */ selectedIds,
+  /** @type {string} */ playerId
+) {
   selectionManager.apply(selectedIds, playerId)
   remoteSelection$.next({ selectedIds, playerId })
 }
 
 /**
- * @see {@link import('../3d/managers').CameraManager.save}
+ * @type {typeof cameraManager['save']}
  */
 export function saveCamera(...args) {
   cameraManager.save(...args)
 }
 
 /**
- * @see {@link import('../3d/managers').CameraManager.restore}
+ * @type {typeof cameraManager['restore']}
  */
-export function restoreCamera(...args) {
-  cameraManager.restore(...args)
+export async function restoreCamera(...args) {
+  await cameraManager.restore(...args)
 }
 
 /**
- * @see {@link import('../3d/managers').CameraManager.loadSaves}
+ * @type {typeof cameraManager['loadSaves']}
  */
-export function loadCameraSaves(...args) {
-  cameraManager.loadSaves(...args)
+export async function loadCameraSaves(...args) {
+  await cameraManager.loadSaves(...args)
 }

@@ -1,13 +1,13 @@
 // @ts-check
+/**
+ * @typedef {import('ioredis').ChainableCommander} Transaction
+ */
+
 import { randomUUID } from 'node:crypto'
 
 import Redis from 'ioredis'
 
 import { makeLogger } from '../utils/index.js'
-
-/**
- * @typedef {import('ioredis').ChainableCommander} Transaction
- */
 
 /**
  * @template {object} T

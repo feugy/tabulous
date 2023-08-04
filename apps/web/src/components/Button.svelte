@@ -1,9 +1,17 @@
 <script>
+  // @ts-check
+
+  /** @type {?string} button's text. */
   export let text = null
+  /** @type {?string} optional icon. */
   export let icon = null
+  /** @type {?number|string} optional badge displayed. */
   export let badge = null
+  /** @type {boolean} whether to use primary or base color scheme. */
   export let primary = false
+  /** @type {boolean} whether this button has no border nor background. */
   export let transparent = false
+  /** @type {?HTMLButtonElement} optional reference to the HTML button element. */
   export let ref = null
 </script>
 
@@ -25,7 +33,7 @@
       >{:else if text}<span class="text">{text}</span>{/if}<slot />
   </div>
   {#if badge != undefined}
-    <span class="badge">{badge > 999 ? `+999` : badge}</span>
+    <span class="badge">{!isNaN(+badge) && +badge > 999 ? `+999` : badge}</span>
   {/if}</button
 >
 

@@ -1,3 +1,5 @@
+// @ts-check
+import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import {
   buildEnclosedCircle,
   buildGroundRectangle,
@@ -36,8 +38,8 @@ describe('mathematical utilities', () => {
     it('builds a rectangle out of a bounding box', () => {
       expect(
         buildGroundRectangle({
-          minimumWorld: { x: 1, y: 2, z: 3 },
-          maximumWorld: { x: 4, y: 5, z: 6 }
+          minimumWorld: new Vector3(1, 2, 3),
+          maximumWorld: new Vector3(4, 5, 6)
         })
       ).toEqual({
         min: { x: 1, y: 3 },

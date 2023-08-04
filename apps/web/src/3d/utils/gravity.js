@@ -1,3 +1,12 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').AbstractMesh} AbstractMesh
+ * @typedef {import('@babylonjs/core').BoundingBox} BoundingBox
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@src/utils/math').Circle} Circle
+ * @typedef {import('@src/utils/math').Rectangle} Rectangle
+ */
+
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 
 import { makeLogger } from '../../utils/logger'
@@ -9,9 +18,9 @@ import {
   intersectRectangleWithCircle
 } from '../../utils/math'
 
-const logger = makeLogger('gravity')
+/** @typedef {Rectangle | Circle} Geometry */
 
-/** @typedef {import('@babel/core').Mesh} Mesh */
+const logger = makeLogger('gravity')
 
 /**
  * Gap between meshes when computing altitude above specific positions.
@@ -20,7 +29,8 @@ export const altitudeGap = 0.01
 
 /**
  * Return the altitude of a mesh center if it was lying on the ground
- * @param {Mesh} mesh - dested mesh.
+ * @template {AbstractMesh} T
+ * @param {T} mesh - dested mesh.
  * @returns {number} resulting y coordinage.
  */
 export function getGroundAltitude(mesh) {
@@ -29,7 +39,8 @@ export function getGroundAltitude(mesh) {
 
 /**
  * Returns the absolute altitude (Y axis) above a given mesh, including minimum spacing.
- * @param {Mesh} mesh - related mesh.
+ * @template {AbstractMesh} T
+ * @param {T} mesh - related mesh.
  * @returns {number} resulting Y coordinate.
  */
 export function getAltitudeAbove(mesh) {
@@ -39,8 +50,9 @@ export function getAltitudeAbove(mesh) {
 /**
  * Computes the Y coordinate to assign to 'mesh' so it goes above 'other', considering their heights.
  * Does not modifies any coordinate.
- * @param {Mesh} meshBelow - foundation to put the mesh on.
- * @param {Mesh} meshAbove - positionned over the other mesh.
+ * @template {AbstractMesh} T
+ * @param {T} meshBelow - foundation to put the mesh on.
+ * @param {T} meshAbove - positionned over the other mesh.
  * @returns {number} resulting Y coordinate.
  */
 export function getCenterAltitudeAbove(meshBelow, meshAbove) {
@@ -83,8 +95,9 @@ export function applyGravity(mesh) {
 /**
  * Indicates when a mesh is hovering another one.
  * Does not modifies any coordinates.
- * @param {Mesh} mesh - checked mesh.
- * @param {Mesh} target - other mesh.
+ * @template {AbstractMesh} T
+ * @param {T} mesh - checked mesh.
+ * @param {T} target - other mesh.
  * @returns {boolean} true when mesh is hovering the target.
  */
 export function isAbove(mesh, target) {
@@ -94,9 +107,10 @@ export function isAbove(mesh, target) {
 /**
  * Sort meshes by elevation.
  * This will guarantee a proper gravity application when running operations (moves, flips...) in parallel.
- * @param {Mesh[]} meshes - array of meshes to order.
+ * @template {AbstractMesh} T
+ * @param {Iterable<T>} [meshes] - array of meshes to order.
  * @param {boolean} [highestFirst = false] - false to return highest first.
- * @return {Mesh[]} sorted array.
+ * @returns {T[]} sorted array.
  */
 export function sortByElevation(meshes, highestFirst = false) {
   return [...(meshes ?? [])].sort((a, b) =>
@@ -106,6 +120,12 @@ export function sortByElevation(meshes, highestFirst = false) {
   )
 }
 
+/**
+ * @template {AbstractMesh} T
+ * @param {T} mesh - reference mesh.
+ * @param {T[]} candidates - list of candidate meshes to consider.
+ * @returns {T[]} candidate meshes bellow the reference mesh.
+ */
 function findBelow(mesh, candidates) {
   const results = []
   mesh.computeWorldMatrix(true)
@@ -123,24 +143,44 @@ function findBelow(mesh, candidates) {
   return results
 }
 
+/**
+ * @param {Geometry} geometryA - first considered geometry.
+ * @param {Geometry} geometryB - second considered geometry.
+ * @returns {boolean} whether these geometry instersect.
+ */
 function intersectGeometries(geometryA, geometryB) {
-  if (geometryA.center && geometryB.center) {
-    return intersectCircles(geometryA, geometryB)
+  const circleA = 'center' in geometryA ? geometryA : null
+  const circleB = 'center' in geometryB ? geometryB : null
+  const rectangleA = 'min' in geometryA ? geometryA : null
+  const rectangleB = 'min' in geometryB ? geometryB : null
+  if (circleA && circleB) {
+    return intersectCircles(circleA, circleB)
   }
-  if (geometryA.min && geometryB.min) {
-    return intersectRectangles(geometryA, geometryB)
+  if (rectangleA && rectangleB) {
+    return intersectRectangles(rectangleA, rectangleB)
   }
   return intersectRectangleWithCircle(
-    geometryA.center ? geometryB : geometryA,
-    geometryA.center ? geometryA : geometryB
+    rectangleA ? rectangleA : /** @type {Rectangle} */ (rectangleB),
+    circleA ? circleA : /** @type {Circle} */ (circleB)
   )
 }
 
+/**
+ * @template {AbstractMesh} T
+ * @param {T} mesh - reference mesh.
+ * @param {BoundingBox} boundingBox - bounding box to build geometry for.
+ * @returns {Geometry} bounding box's geomertry object.
+ */
 function buildGeometry(mesh, boundingBox) {
   const rectangle = buildGroundRectangle(boundingBox)
   return mesh.isCylindric ? buildEnclosedCircle(rectangle) : rectangle
 }
 
+/**
+ * @param {BoundingBox} reference - reference bounding box.
+ * @param {BoundingBox} tested - tested bounding box.
+ * @returns {boolean} whether tested bounding box is below the reference.
+ */
 function isGloballyBelow(reference, tested) {
   return tested.maximumWorld.y <= reference.minimumWorld.y
 }

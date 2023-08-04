@@ -1,4 +1,14 @@
 <script>
+  // @ts-check
+  /**
+   * @typedef {import('@src/graphql').PlayerFragment} PlayerFragment
+   * @typedef {import('@src/components').MenuOption} MenuOption
+   */
+  /**
+   * @template {import('svelte').SvelteComponent} T
+   * @typedef {import('svelte').ComponentEvents<T>} ComponentEvents
+   */
+
   import { supportedLanguages } from '@src/params/lang'
   import { logOut } from '@src/stores'
   import Logo from '@src/svg/tabulous-logo.svg?component'
@@ -11,8 +21,12 @@
   import Dropdown from './Dropdown.svelte'
   import PlayerThumbnail from './PlayerThumbnail.svelte'
 
+  /** @typedef {MenuOption & { act: () => void }} Option   */
+
+  /** @type {?PlayerFragment} current authenticated user, if any. */
   export let user = null
 
+  /** @type {Option[]}*/
   const menu = [
     {
       icon: 'settings',
@@ -27,7 +41,9 @@
     act: () => goto($page.url.href.replace(`/${$locale}/`, `/${lang}/`))
   }))
 
-  function handleSelectMenuItem({ detail: item }) {
+  function handleSelectMenuItem(
+    /** @type {CustomEvent<Option>} */ { detail: item }
+  ) {
     item.act()
   }
 
@@ -88,7 +104,8 @@
 
     button {
       @apply relative text-$primary transform-gpu transition-all p-2 rounded-full;
-      box-shadow: 0 3px var(--shadow-blur) var(--shadow-color),
+      box-shadow:
+        0 3px var(--shadow-blur) var(--shadow-color),
         inset 0 2px var(--primary);
 
       &:hover,

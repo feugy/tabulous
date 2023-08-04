@@ -1,4 +1,10 @@
 // @ts-check
+/**
+ * @typedef {import('../../src').Command} Command
+ * @typedef {import('../../src/commands/show-player').Game} Game
+ * @typedef {import('@tabulous/server/src/graphql/types').Player} Player
+ */
+
 import { faker } from '@faker-js/faker'
 import stripAnsi from 'strip-ansi'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -8,10 +14,6 @@ import { signToken } from '../../src/util/jwt.js'
 
 const mockQuery = vi.fn()
 const mockMutation = vi.fn()
-
-/** @typedef {import('../../src/commands/show-player.js').Game} Game */
-/** @typedef {import('../../src/util/formaters.js').Player} Player */
-/** @typedef {import('../../src/index.js').Command} Command */
 
 vi.mock('../../src/util/graphql-client.js', () => ({
   getGraphQLClient: vi
@@ -29,7 +31,6 @@ describe('Show player command', () => {
     id: faker.string.uuid(),
     username: faker.person.fullName(),
     email: faker.internet.email(),
-    isOwner: false,
     currentGameId: null
   }
   /** @type {Player} */
@@ -37,7 +38,6 @@ describe('Show player command', () => {
     id: faker.string.uuid(),
     username: faker.person.fullName(),
     email: faker.internet.email(),
-    isOwner: false,
     currentGameId: null
   }
 

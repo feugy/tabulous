@@ -1,3 +1,8 @@
+// @ts-check
+/**
+ * @typedef {import('rxjs').Subscription} Subscription
+ */
+
 import { faker } from '@faker-js/faker'
 import {
   acquireMediaStream,
@@ -32,7 +37,10 @@ describe('Media Stream store', () => {
   const localStreamChangeReceived = vi.fn()
   const noMediaMessage = 'does not support media devices'
   const unauthorizedMediaMessage = 'Failed to access media devices'
+  /** @type {Subscription[]} */
   let subscriptions
+  /** @type {import('vitest').MockedObject<typeof navigator.mediaDevices>} */
+  let mediaDevicesMock
 
   beforeAll(() => {
     subscriptions = [
@@ -45,7 +53,9 @@ describe('Media Stream store', () => {
     ]
   })
 
-  beforeEach(vi.resetAllMocks)
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
 
   afterAll(() => {
     for (const subscription of subscriptions) {
@@ -69,7 +79,9 @@ describe('Media Stream store', () => {
   })
 
   describe('given acquireMediaStream() got no media devices', () => {
-    beforeEach(() => acquireMediaStream())
+    beforeEach(async () => {
+      await acquireMediaStream()
+    })
 
     it('resets all', async () => {
       expect(get(stream$)).toBeNull()
@@ -110,12 +122,12 @@ describe('Media Stream store', () => {
 
   describe('given acquireMediaStream() got unauthorized media', () => {
     beforeEach(async () => {
-      navigator.mediaDevices = {
+      // @ts-expect-error navigator.mediaDevices is readonly
+      mediaDevicesMock = navigator.mediaDevices = {
         addEventListener: vi.fn(),
         enumerateDevices: vi.fn().mockRejectedValue(new Error('unauthorized')),
         getUserMedia: vi.fn().mockRejectedValue(new Error('unauthorized'))
       }
-      navigator.mediaDevices.mock
       await acquireMediaStream()
     })
 
@@ -165,7 +177,7 @@ describe('Media Stream store', () => {
       getTracks: vi.fn()
     }
 
-    const devices = [
+    const devices = /** @type {MediaDeviceInfo[]} */ ([
       { kind: 'videoinput', deviceId: 'idA', label: 'front camera' },
       { kind: 'videoinput', deviceId: 'idB', label: 'read camera' },
       { kind: 'audioinput', deviceId: 'idC', label: 'Monitor of main mic' },
@@ -175,14 +187,15 @@ describe('Media Stream store', () => {
       null,
       undefined,
       { kind: 'unknown', deviceId: 'idF', label: 'unknown' }
-    ]
+    ])
 
     const mics = devices.slice(3, 5)
     const cameras = devices.slice(0, 2)
 
     beforeEach(async () => {
       releaseMediaStream()
-      navigator.mediaDevices = {
+      // @ts-expect-error navigator.mediaDevices is readonly
+      mediaDevicesMock = navigator.mediaDevices = {
         addEventListener: vi.fn(),
         enumerateDevices: vi.fn().mockResolvedValue(devices),
         getUserMedia: vi.fn().mockResolvedValue(stream)
@@ -205,14 +218,14 @@ describe('Media Stream store', () => {
     })
 
     it('returns the same stream to all "parallel" acquisition requests', async () => {
-      navigator.mediaDevices.getUserMedia.mockClear()
+      mediaDevicesMock.getUserMedia.mockClear()
       const streams = await Promise.all(
         Array.from({ length: 3 }, acquireMediaStream)
       )
       expect(streams[0]).toBe(streams[1])
       expect(streams[0]).toBe(streams[2])
       expect(get(stream$)).toEqual(streams[0])
-      expect(navigator.mediaDevices.getUserMedia).toHaveBeenCalledTimes(1)
+      expect(mediaDevicesMock.getUserMedia).toHaveBeenCalledTimes(1)
     })
 
     it('uses desired camera', async () => {
@@ -273,13 +286,11 @@ describe('Media Stream store', () => {
 
     it('does not enumerate devices twice', async () => {
       await acquireMediaStream()
-      expect(navigator.mediaDevices.enumerateDevices).toHaveBeenCalledTimes(1)
+      expect(mediaDevicesMock.enumerateDevices).toHaveBeenCalledTimes(1)
     })
 
     it('handles no camera at all', async () => {
-      navigator.mediaDevices.enumerateDevices.mockResolvedValue(
-        devices.slice(2, 5)
-      )
+      mediaDevicesMock.enumerateDevices.mockResolvedValue(devices.slice(2, 5))
       releaseMediaStream()
       vi.clearAllMocks()
       localStorage.clear()
@@ -287,7 +298,7 @@ describe('Media Stream store', () => {
       expect(get(stream$)).toEqual(stream)
       expectCurrentMic(mics[0])
       expect(get(mics$)).toEqual(mics)
-      expect(get(currentCamera$)).toBeUndefined()
+      expect(get(currentCamera$)).toBeNull()
       expect(get(cameras$)).toEqual([])
       expect(logger.warn).not.toHaveBeenCalled()
       expect(streamReceived).toHaveBeenCalledTimes(1)
@@ -297,15 +308,13 @@ describe('Media Stream store', () => {
     })
 
     it('handles no audio at all', async () => {
-      navigator.mediaDevices.enumerateDevices.mockResolvedValue(
-        devices.slice(0, 2)
-      )
+      mediaDevicesMock.enumerateDevices.mockResolvedValue(devices.slice(0, 2))
       releaseMediaStream()
       vi.clearAllMocks()
       localStorage.clear()
       await acquireMediaStream()
       expect(get(stream$)).toEqual(stream)
-      expect(get(currentMic$)).toBeUndefined()
+      expect(get(currentMic$)).toBeNull()
       expect(get(mics$)).toEqual([])
       expectCurrentCamera(cameras[0])
       expect(get(cameras$)).toEqual(cameras)
@@ -344,7 +353,7 @@ describe('Media Stream store', () => {
     })
   })
 
-  function expectCurrentMic(device) {
+  function expectCurrentMic(/** @type {MediaDeviceInfo} */ device) {
     expect(get(currentMic$)).toEqual(device)
     expect(localStorage.lastMicId).toEqual(device.deviceId)
     expect(currentMicReceived).toHaveBeenCalledTimes(1)
@@ -352,7 +361,7 @@ describe('Media Stream store', () => {
     currentMicReceived.mockClear()
   }
 
-  function expectCurrentCamera(device) {
+  function expectCurrentCamera(/** @type {MediaDeviceInfo} */ device) {
     expect(get(currentCamera$)).toEqual(device)
     expect(localStorage.lastCameraId).toEqual(device.deviceId)
     expect(currentCameraReceived).toHaveBeenCalledTimes(1)

@@ -1,4 +1,11 @@
-import { Color4 } from '@babylonjs/core/Maths/math.color'
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').PBRSpecularGlossinessMaterial} Material
+ */
+
+import { Color3 } from '@babylonjs/core/Maths/math.color'
 import { faker } from '@faker-js/faker'
 import { controlManager, materialManager } from '@src/3d/managers'
 import { createRoundedTile } from '@src/3d/meshes'
@@ -10,6 +17,7 @@ import {
   expectPosition
 } from '../../test-utils'
 
+/** @type {Scene} */
 let scene
 configures3dTestEngine(created => (scene = created.scene))
 
@@ -17,7 +25,7 @@ beforeAll(() => materialManager.init({ scene }))
 
 describe('createRoundedTile()', () => {
   it('creates a tile with default values and no behavior', async () => {
-    const mesh = await createRoundedTile()
+    const mesh = await createRoundedTile({ id: '', texture: '' }, scene)
     expect(mesh.name).toEqual('roundedTile')
     expectDimension(mesh, [3, 0.05, 3])
     expect(mesh.isPickable).toBe(false)
@@ -30,27 +38,34 @@ describe('createRoundedTile()', () => {
 
   it('creates a tile with a single color', async () => {
     const color = '#1E282F'
-    const mesh = await createRoundedTile({ texture: color })
+    const mesh = await createRoundedTile({ id: '', texture: color }, scene)
     expect(mesh.name).toEqual('roundedTile')
     expectDimension(mesh, [3, 0.05, 3])
     expect(mesh.isPickable).toBe(false)
-    expect(mesh.material.diffuseColor).toEqual(
-      Color4.FromHexString(color).toLinearSpace()
+    expect(/** @type {Material} */ (mesh.material).diffuseColor).toEqual(
+      Color3.FromHexString(color).toLinearSpace()
     )
   })
 
   it('creates a tile with initial transformation', async () => {
-    const mesh = await createRoundedTile({
-      width: 4,
-      height: 8,
-      depth: 2,
-      transform: { pitch: Math.PI * -0.5 }
-    })
+    const mesh = await createRoundedTile(
+      {
+        id: '',
+        texture: '',
+
+        width: 4,
+        height: 8,
+        depth: 2,
+        transform: { pitch: Math.PI * -0.5 }
+      },
+      scene
+    )
     expect(mesh.name).toEqual('roundedTile')
     expectDimension(mesh, [2, 8, 4])
   })
 
   describe('given a tile with initial position, dimension, images and behaviors', () => {
+    /** @type {Mesh} */
     let mesh
 
     const width = faker.number.int(999)
@@ -63,10 +78,12 @@ describe('createRoundedTile()', () => {
     const faceUV = Array.from({ length: 6 }, () =>
       Array.from({ length: 4 }, () => faker.number.int(999))
     )
+    const texture = faker.color.rgb()
     const behaviors = {
       anchorable: {
         anchors: [
           {
+            id: '',
             width: width * 0.5,
             height: height * 0.5,
             kinds: [faker.lorem.word()]
@@ -82,18 +99,22 @@ describe('createRoundedTile()', () => {
     const borderRadius = Math.random()
 
     beforeEach(async () => {
-      mesh = await createRoundedTile({
-        id,
-        width,
-        height,
-        depth,
-        faceUV,
-        x,
-        y,
-        z,
-        borderRadius,
-        ...behaviors
-      })
+      mesh = await createRoundedTile(
+        {
+          id,
+          width,
+          height,
+          depth,
+          faceUV,
+          texture,
+          x,
+          y,
+          z,
+          borderRadius,
+          ...behaviors
+        },
+        scene
+      )
     })
 
     it('has all the expected data', () => {
@@ -140,6 +161,7 @@ describe('createRoundedTile()', () => {
         height,
         depth,
         borderRadius,
+        texture,
         detailable: behaviors.detailable,
         flippable: {
           ...behaviors.flippable,

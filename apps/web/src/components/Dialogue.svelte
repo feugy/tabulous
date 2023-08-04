@@ -1,4 +1,5 @@
 <script>
+  // @ts-check
   import { afterUpdate, createEventDispatcher, onMount } from 'svelte'
   import { fly } from 'svelte/transition'
   import Portal from 'svelte-portal'
@@ -6,12 +7,18 @@
   import Button from './Button.svelte'
   import Pane from './Pane.svelte'
 
+  /** @type {boolean} whether this dialogur is open. */
   export let open
+  /** @type {string} dialogue main title. */
   export let title
+  /** @type {boolean} whether this dialogue could be closed by clicking on the backdrop or hitting ESC key. */
   export let closable = true
 
+  /** @type {import('svelte').EventDispatcher<{ close: void, open: void }>}*/
   const dispatch = createEventDispatcher()
+  /** @type {number} */
   const duration = 150
+  /** @type {?boolean} */
   let previous = null
 
   onMount(() => {
@@ -35,7 +42,7 @@
     }
   }
 
-  function handleKey({ key }) {
+  function handleKey(/** @type {KeyboardEvent} */ { key }) {
     if (key === 'Escape') {
       close()
     }

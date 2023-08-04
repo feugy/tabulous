@@ -1,3 +1,9 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ */
+
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
 import { AnchorBehavior } from '@src/3d/behaviors'
@@ -7,11 +13,13 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   configures3dTestEngine,
   createBox,
-  expectMeshes
+  expectMeshIds
 } from '../../test-utils'
 
 describe('SelectionManager', () => {
+  /** @type {Scene} */
   let scene
+  /** @type {Scene} */
   let handScene
   const selectionChanged = vi.fn()
   const playerId = 'player'
@@ -45,6 +53,7 @@ describe('SelectionManager', () => {
 
   describe('drawSelectionBox()', () => {
     it('does nothing without init', () => {
+      // @ts-expect-error: it's ok to invoke with no arguments
       manager.drawSelectionBox()
       expect(selectionChanged).not.toHaveBeenCalled()
     })
@@ -65,8 +74,7 @@ describe('SelectionManager', () => {
         [playerId, color],
         [peer1.id, peer1.color]
       ])
-      const overlayAlpha = 0.7
-      manager.updateColors(playerId, colorByPlayerId, overlayAlpha)
+      manager.updateColors(playerId, colorByPlayerId)
       expect(manager.color?.toHexString()).toEqual(`${color}FF`)
     })
   })
@@ -80,7 +88,7 @@ describe('SelectionManager', () => {
 
     beforeAll(() => {
       manager.init({ scene, handScene })
-      manager.updateColors(playerId, colorByPlayerId, 0.2)
+      manager.updateColors(playerId, colorByPlayerId)
     })
 
     describe('selectWithinBox()', () => {
@@ -122,15 +130,18 @@ describe('SelectionManager', () => {
         box1.addBehavior(
           new AnchorBehavior({
             anchors: [
-              { snappedId: box2.id },
-              { snappedId: null },
-              { snappedId: box3.id }
+              { id: '1', snappedId: box2.id },
+              { id: '2', snappedId: null },
+              { id: '3', snappedId: box3.id }
             ]
           })
         )
         box3.addBehavior(
           new AnchorBehavior({
-            anchors: [{ snappedId: box4.id }, { snappedId: null }]
+            anchors: [
+              { id: '6', snappedId: box4.id },
+              { id: '5', snappedId: null }
+            ]
           })
         )
         manager.select(box1)
@@ -180,7 +191,10 @@ describe('SelectionManager', () => {
 
       it('ignores locked meshes', () => {
         const mesh = createBox('box1', {})
-        mesh.metadata = { isLocked: true }
+        mesh.metadata = {
+          serialize: () => ({ id: mesh.id, shape: 'box', texture: '' }),
+          isLocked: true
+        }
         manager.select(mesh)
         expect(manager.meshes.has(mesh)).toBe(false)
         expect(manager.meshes.size).toBe(0)
@@ -191,6 +205,7 @@ describe('SelectionManager', () => {
     })
 
     describe('apply()', () => {
+      /** @type {Mesh[]} */
       let meshes
 
       beforeEach(() => {
@@ -202,6 +217,7 @@ describe('SelectionManager', () => {
       })
 
       it('does nothing without player', () => {
+        // @ts-expect-error: we have not provided playerId
         manager.apply([meshes[0].id, meshes[1].id])
         expectSelected(meshes[0], null, false)
         expectSelected(meshes[1], null, false)
@@ -236,15 +252,18 @@ describe('SelectionManager', () => {
         box1.addBehavior(
           new AnchorBehavior({
             anchors: [
-              { snappedId: box2.id },
-              { snappedId: null },
-              { snappedId: box3.id }
+              { id: '1', snappedId: box2.id },
+              { id: '2', snappedId: null },
+              { id: '3', snappedId: box3.id }
             ]
           })
         )
         box3.addBehavior(
           new AnchorBehavior({
-            anchors: [{ snappedId: box4.id }, { snappedId: null }]
+            anchors: [
+              { id: 'a', snappedId: box4.id },
+              { id: 'b', snappedId: null }
+            ]
           })
         )
         manager.select(box1)
@@ -266,6 +285,7 @@ describe('SelectionManager', () => {
     })
 
     describe('given some selected meshes', () => {
+      /** @type {Mesh[]} */
       let meshes
 
       beforeEach(() => {
@@ -310,13 +330,13 @@ describe('SelectionManager', () => {
 
       describe('getSelection()', () => {
         it('returns entire selection when it contains provided mesh', () => {
-          expectMeshes(manager.getSelection(meshes[0]), meshes)
+          expectMeshIds(manager.getSelection(meshes[0]), meshes)
         })
 
         it('returns provided mesh if it not selected', () => {
           manager.clear()
           manager.select([meshes[1], meshes[2]])
-          expectMeshes(manager.getSelection(meshes[0]), [meshes[0]])
+          expectMeshIds(manager.getSelection(meshes[0]), [meshes[0]])
         })
       })
 
@@ -360,6 +380,7 @@ describe('SelectionManager', () => {
     })
 
     describe('given some meshes selected by peer', () => {
+      /** @type {Mesh[]} */
       let meshes
 
       beforeEach(() => {
@@ -429,6 +450,7 @@ describe('SelectionManager', () => {
     })
 
     describe('given some meshes', () => {
+      /** @type {Mesh[]} */
       let meshes
 
       beforeEach(() => {
@@ -506,7 +528,10 @@ describe('SelectionManager', () => {
         })
 
         it('ignores locked meshes', () => {
-          meshes[1].metadata = { isLocked: true }
+          meshes[1].metadata = {
+            serialize: () => ({ id: meshes[1].id, shape: 'box', texture: '' }),
+            isLocked: true
+          }
           manager.drawSelectionBox({ x: 1000, y: 550 }, { x: 1100, y: 400 })
           manager.selectWithinBox()
 
@@ -521,7 +546,10 @@ describe('SelectionManager', () => {
   })
 })
 
-function expectSelection(expectedMeshes, color) {
+function expectSelection(
+  /** @type {Mesh[]} */ expectedMeshes,
+  /** @type {?string|undefined} */ color
+) {
   expect([...manager.meshes].map(({ id }) => id)).toEqual(
     expectedMeshes.map(({ id }) => id)
   )
@@ -530,11 +558,16 @@ function expectSelection(expectedMeshes, color) {
   }
 }
 
-function expectSelected(mesh, color, isSelected = true, message) {
+function expectSelected(
+  /** @type {Mesh} */ mesh,
+  /** @type {?string|undefined} */ color,
+  isSelected = true,
+  /** @type {string|undefined} */ message = undefined
+) {
   if (isSelected) {
     expect(mesh.renderOverlay, message).toBe(true)
     expect(mesh.edgesColor?.toHexString()).toBe(`${color}FF`)
-    expect(mesh.overlayColor?.toHexString()).toBe(`${color}FF`)
+    expect(mesh.overlayColor?.toHexString()).toBe(color)
   } else {
     expect(mesh.renderOverlay, message).toBeFalsy()
   }

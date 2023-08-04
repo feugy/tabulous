@@ -1,4 +1,8 @@
 // @ts-check
+/**
+ * @typedef {import('../../src').Command} Command
+ */
+
 import { faker } from '@faker-js/faker'
 import kebabCase from 'lodash.kebabcase'
 import stripAnsi from 'strip-ansi'
@@ -12,8 +16,6 @@ const mockQuery = vi.fn()
 vi.mock('../../src/util/graphql-client.js', () => ({
   getGraphQLClient: vi.fn().mockReturnValue({ mutation: mockQuery })
 }))
-
-/** @typedef {import('../../src/index.js').Command} Command */
 
 describe('Player addition command', () => {
   /** @type {Command} */

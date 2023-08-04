@@ -1,6 +1,11 @@
 <script>
+  // @ts-check
+
+  /** @type {?string} this pane's title. */
   export let title = null
+  /** @type {number} HTML heading level used (defaults to 2). */
   export let heading = 2
+  /** @type {'base'|'primary'|'secondary'} color scheme used (defaults to 'base'). */
   export let backgroundColor = 'base'
 </script>
 

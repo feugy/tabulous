@@ -1,3 +1,4 @@
+// @ts-check
 import formatMessage from 'format-message'
 import { readFileSync } from 'fs'
 import * as yaml from 'js-yaml'
@@ -19,11 +20,12 @@ function loadLocales() {
   })
 }
 
-function readLocale(relativePath) {
+function readLocale(/** @type {string} */ relativePath) {
   return flatten(yaml.load(readFileSync(join(__dirname, relativePath))))
 }
 
-function flatten(obj) {
+function flatten(/** @type {Record<string, ?>} */ obj) {
+  /** @type {Record<string, ?>} */
   const result = {}
   for (const [key, value] of Object.entries(obj)) {
     if (typeof value === 'object') {

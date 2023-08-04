@@ -1,22 +1,31 @@
 <script>
+  // @ts-check
   import { Button, Input, Pane } from '@src/components'
   import GithubLogo from '@src/svg/github-logo.svg?component'
   import GoogleLogo from '@src/svg/google-logo.svg?component'
   import { authUrl } from '@src/utils'
   import { _, locale } from 'svelte-intl'
 
+  /** @type {string} username identifier. */
   export let id = ''
+  /** @type {string} username password. */
   export let password = ''
+  /** @type {?string} optional url to redirect to. */
   export let redirect = null
+  /** @type {?HTMLInputElement} reference to the username input field for focusing. */
   export let inputRef = null
+  /** @type {?string} optional authentication error string. */
   export let error = null
+  /** @type {boolean} whether to display the "connect with Google" button. */
   export let withGoogle = false
+  /** @type {boolean} whether to display the "connect with Github" button. */
   export let withGithub = false
 
   $: hasProviders = withGoogle || withGithub
   $: disabled =
     !id || id.trim().length === 0 || !password || password.trim().length <= 3
 
+  /** @type {?HTMLDetailsElement} */
   let details
   let isPasswordOpen = !!error
 
@@ -24,7 +33,7 @@
     error = null
   }
 
-  function handleConnectWith(provider) {
+  function handleConnectWith(/** @type {string} */ provider) {
     let url = `${authUrl}/${provider}/connect?${new URLSearchParams({
       redirect: window.location.origin + (redirect || `/${$locale}/home`)
     }).toString()}`
@@ -32,7 +41,7 @@
   }
 
   function handleTogglePassword() {
-    isPasswordOpen = details.open
+    isPasswordOpen = Boolean(details?.open)
     if (!isPasswordOpen) {
       resetError()
     }

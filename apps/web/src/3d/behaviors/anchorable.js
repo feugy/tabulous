@@ -1,3 +1,20 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ * @typedef {import('@tabulous/server/src/graphql/types').AnchorableState} AnchorableState
+ * @typedef {import('@src/3d/behaviors/stackable').StackBehavior} StackBehavior
+ * @typedef {import('@src/3d/behaviors/targetable').DropDetails} DropDetails
+ * @typedef {import('@src/3d/managers/control').Action} Action
+ * @typedef {import('@src/3d/managers/control').Move} Move
+ * @typedef {import('@src/3d/managers/move').MoveDetails} MoveDetails
+ * @typedef {import('@src/3d/managers/target').SingleDropZone} SingleDropZone
+ */
+/**
+ * @template T
+ * @typedef {import('@babylonjs/core').Observer<T>} Observer
+ */
+
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 
 import { makeLogger } from '../../utils/logger'
@@ -18,47 +35,27 @@ import {
 import { AnchorBehaviorName } from './names'
 import { TargetBehavior } from './targetable'
 
+/** @typedef {AnchorableState & Required<Pick<AnchorableState, 'duration'|'anchors'>>} RequiredAnchorableState */
+
 const logger = makeLogger(AnchorBehaviorName)
-
-/**
- * @typedef {object} Anchor anchor definition on meshes: they acts as drop targets.
- * @property {number} x? - position along the X axis, relative to the mesh's center.
- * @property {number} y? - position along the Y axis, relative to the mesh's center.
- * @property {number} z? - position along the Z axis, relative to the mesh's center.
- * @property {number} width - anchor's width (X axis).
- * @property {number} height - anchor's height (Y axis).
- * @property {number} depth - anchor's depth (Z axis).
- * @property {number} [extent=2] - allowed distance between mesh and anchor center when dropping.
- * @property {string[]} kinds? - an optional array of allowed drag kinds for this zone (allows all if not specified).
- * @property {number} priority? - priority applied when multiple targets with same altitude apply.
- * @property {string} playerId? - when set, only player with this id can use this anchor.
- * @property {string} snappedId? - the currently snapped mesh id.
- * @property {boolean} ignoreParts? - whether this anchor consider a mesh's parts or not.
- * @property {number} angle? - angle, in Radian, applied to the snapped mesh.
- */
-
-/**
- * @typedef {object} AnchorableState behavior persistent state, including:
- * @property {Anchor[]} anchors - array of anchor definitions.
- * @property {number} [duration=100] - duration (in milliseconds) of the snap animation.
- */
 
 export class AnchorBehavior extends TargetBehavior {
   /**
    * Creates behavior to make a mesh anchorable: it has one or several anchors to snap other meshes.
    * Each anchor can take up to one mesh only.
-   * @extends {TargetBehavior}
-   * @property {AnchorableState} state - the behavior's current state.
-   *
    * @param {AnchorableState} state - behavior state.
    */
   constructor(state = {}) {
     super()
-    this.state = state
-    // private
+    /** @type {RequiredAnchorableState} state - the behavior's current state. */
+    this.state = /** @type {RequiredAnchorableState} */ (state)
+    /** @protected @type {?Observer<DropDetails>} */
     this.dropObserver = null
+    /** @protected @type {?Observer<MoveDetails>} */
     this.moveObserver = null
+    /** @protected @type {?Observer<Action|Move>}} */
     this.actionObserver = null
+    /** @internal @type {Map<?, ?>} */
     this.zoneBySnappedId = new Map()
   }
 
@@ -77,7 +74,7 @@ export class AnchorBehavior extends TargetBehavior {
    * - the `unsnapAll()` method.
    * It binds to its drop observable to snap dropped meshes on the anchor (unless the anchor is already full).
    * It binds to the drag manager to unsnap dragged meshes, when dragged independently from the current mesh
-   * @param {import('@babylonjs/core').Mesh} mesh - which becomes anchorable.
+   * @param {Mesh} mesh - which becomes anchorable.
    */
   attach(mesh) {
     super.attach(mesh)
@@ -98,7 +95,7 @@ export class AnchorBehavior extends TargetBehavior {
         this.zoneBySnappedId.has(mesh?.id) &&
         !(
           selectionManager.meshes.has(mesh) &&
-          selectionManager.meshes.has(this.mesh)
+          selectionManager.meshes.has(/** @type {Mesh} */ (this.mesh))
         )
       ) {
         this.unsnap(mesh.id)
@@ -108,16 +105,20 @@ export class AnchorBehavior extends TargetBehavior {
     this.actionObserver = controlManager.onActionObservable.add(
       ({ meshId, fn, args, fromHand }) => {
         const zone = this.zoneBySnappedId.get(meshId)
-        if (zone) {
+        if (zone && this.mesh) {
           if (fn === actionNames.reorder || fn === actionNames.flipAll) {
             const scene = this.mesh.getScene()
             const stack = getMeshList(scene, meshId)
-            const snapped =
-              fn === actionNames.flipAll
-                ? stack.reverse()[0]
-                : stack.find(({ id }) => id === args[0][0])
-            unsetAnchor(this, zone, stack[0])
-            setAnchor(this, zone, snapped, true)
+            if (stack) {
+              const snapped =
+                fn === actionNames.flipAll
+                  ? stack.reverse()[0]
+                  : stack.find(({ id }) => id === args[0][0])
+              unsetAnchor(this, zone, stack[0])
+              if (snapped) {
+                setAnchor(this, zone, snapped)
+              }
+            }
           } else if (fn === actionNames.draw && !fromHand) {
             this.unsnap(meshId)
           }
@@ -171,15 +172,15 @@ export class AnchorBehavior extends TargetBehavior {
    * Does nothing if the mesh or the anchor does not exist.
    * Does nothing if the anchor is diabled.
    *
-   * @async
    * @param {string} snappedId - id of the snapped mesh.
    * @param {string} anchorId - id of the anchor mesh to snap onto.
    * @param {boolean} [immediate=false] - set to true to disable animation.
+   * @returns {Promise<void>}
    */
   async snap(snappedId, anchorId, immediate = false) {
     let snapped = this.mesh?.getScene().getMeshById(snappedId)
     const zone = this.zones.find(({ mesh }) => mesh.id === anchorId)
-    if (!snapped || !zone || !zone.enabled) {
+    if (!snapped || !zone || !zone.enabled || !this.mesh) {
       return
     }
     controlManager.record({
@@ -208,7 +209,7 @@ export class AnchorBehavior extends TargetBehavior {
     const meshId = this.mesh?.id
     const released = getMeshList(this.mesh?.getScene(), releasedId)?.[0]
 
-    if (released) {
+    if (this.mesh && released) {
       const snappedId = released.id
       const zone = this.zoneBySnappedId.get(snappedId)
 
@@ -240,7 +241,9 @@ export class AnchorBehavior extends TargetBehavior {
       state: { anchors }
     } = this
     if (mesh) {
-      const ids = anchors.map(({ snappedId }) => snappedId).filter(Boolean)
+      const ids = /** @type {string[]} */ (
+        anchors.map(({ snappedId }) => snappedId).filter(Boolean)
+      )
       for (const id of ids) {
         this.unsnap(id)
       }
@@ -250,7 +253,7 @@ export class AnchorBehavior extends TargetBehavior {
   /**
    * Returns the zone to which a given mesh is snapped
    * @param {string} meshId - id of the tested mesh
-   * @returns {import('./targetable').DropZone | null} zone to which this mesh is snapped, if any
+   * @returns {?SingleDropZone} zone to which this mesh is snapped, if any
    */
   snappedZone(meshId) {
     return this.zoneBySnappedId.get(meshId) ?? null
@@ -298,16 +301,24 @@ export class AnchorBehavior extends TargetBehavior {
         snapToAnchor(this, snappedId, zone, true)
       }
     }
-    attachFunctions(this, actionNames.snap, actionNames.unsnap, 'unsnapAll')
+    attachFunctions(this, 'snap', 'unsnap', 'unsnapAll')
     attachProperty(this, 'anchors', () => this.state.anchors)
   }
 }
 
+/**
+ * @param {AnchorBehavior} behavior - concerned behavior.
+ * @param {string} snappedId - snapped mesh id.
+ * @param {SingleDropZone} zone - drop zone.
+ * @param {boolean} [loading=false] - whether the scene is loading.
+ * @returns {Promise<void>}
+ */
 async function snapToAnchor(behavior, snappedId, zone, loading = false) {
   const {
     mesh,
     state: { anchors, duration }
   } = behavior
+  if (!mesh) return
   const meshId = mesh.id
   anchors[zone.anchorIndex].snappedId = undefined
   const snapped = getMeshList(mesh.getScene(), snappedId)?.[0]
@@ -344,6 +355,11 @@ async function snapToAnchor(behavior, snappedId, zone, loading = false) {
   }
 }
 
+/**
+ * @param {AnchorBehavior} behavior - concerned behavior.
+ * @param {SingleDropZone} zone - drop zone.
+ * @param {Mesh} snapped - snapped mesh.
+ */
 function setAnchor(behavior, zone, snapped) {
   const {
     mesh,
@@ -357,23 +373,33 @@ function setAnchor(behavior, zone, snapped) {
   zone.enabled = false
 }
 
+/**
+ * @param {AnchorBehavior} behavior - concerned behavior.
+ * @param {SingleDropZone} zone - drop zone.
+ * @param {Mesh} snapped - unsnapped mesh.
+ */
 function unsetAnchor(behavior, zone, snapped) {
   const {
     zoneBySnappedId,
     state: { anchors }
   } = behavior
   snapped.setParent(null)
-  zoneBySnappedId.delete(snapped.id, zone)
+  zoneBySnappedId.delete(snapped.id)
   const anchor = anchors[zone.anchorIndex]
   anchor.snappedId = undefined
   zone.enabled = true
 }
 
+/**
+ * @param {Scene|undefined} scene - scene containing meshes.
+ * @param {string} meshId - searched mesh id.
+ * @returns {?Mesh[]} list of stacked meshes, if any.
+ */
 function getMeshList(scene, meshId) {
   let mesh = scene?.getMeshById(meshId)
   if (!mesh) {
     return null
   }
-  const stackable = getTargetableBehavior(mesh)
+  const stackable = /** @type {?StackBehavior} */ (getTargetableBehavior(mesh))
   return stackable?.stack ? [...stackable.stack] : [mesh]
 }

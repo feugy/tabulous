@@ -1,4 +1,5 @@
 <script>
+  // @ts-check
   import { Header, PageFooter } from '@src/components'
   import { flags } from '@src/stores'
   import { _ } from 'svelte-intl'
@@ -10,6 +11,7 @@
   /** @type {import('./$types').ActionData} */
   export let form = null
 
+  /** @type {?HTMLInputElement} */
   let inputRef = null
   const redirect = $page.url?.searchParams.get('redirect')
 

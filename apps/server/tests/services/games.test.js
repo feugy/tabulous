@@ -1,4 +1,12 @@
 // @ts-check
+/**
+ * @typedef {import('rxjs').Subscription} Subscription
+ * @typedef {import('../../src/services/players').Player} Player
+ * @typedef {import('../../src/services/games').GameData} GameData
+ * @typedef {import('../../src/services/games').GameListUpdate} GameListUpdate
+ * @typedef {import('../../src/services/games').CameraPosition} CameraPosition
+ */
+
 import { faker } from '@faker-js/faker'
 import { join } from 'path'
 import { setTimeout } from 'timers/promises'
@@ -30,12 +38,9 @@ import {
 } from '../../src/services/games.js'
 import { clearDatabase, getRedisTestUrl } from '../test-utils.js'
 
-/** @typedef {import('../../src/services/players.js').Player} Player */
-/** @typedef {import('../../src/services/games.js').GameData} GameData */
-
 describe('given a subscription to game lists and an initialized repository', () => {
   const redisUrl = getRedisTestUrl()
-  /** @type {import('../../src/services/games.js').GameListUpdate[]} */
+  /** @type {GameListUpdate[]} */
   const updates = []
   /** @type {Player} */
   const player = { id: 'player', username: '', currentGameId: null }
@@ -54,7 +59,7 @@ describe('given a subscription to game lists and an initialized repository', () 
   let game
   /** @type {GameData} */
   let lobby
-  /** @type {import('rxjs').Subscription} */
+  /** @type {Subscription} */
   let subscription
 
   beforeAll(async () => {
@@ -754,7 +759,7 @@ describe('given a subscription to game lists and an initialized repository', () 
         })
 
         it('can save cameras', async () => {
-          const cameras = [
+          const cameras = /** @type {CameraPosition[]} */ ([
             {
               playerId: player.id,
               index: 0,
@@ -763,7 +768,7 @@ describe('given a subscription to game lists and an initialized repository', () 
               beta: 0,
               elevation: 10
             }
-          ]
+          ])
           expect(await saveGame({ id: game.id, cameras }, player.id)).toEqual({
             ...game,
             cameras,

@@ -1,3 +1,14 @@
+// @ts-check
+/**
+ * @typedef {import('@src/graphql').Friendship} Friendship
+ * @typedef {import('../test-utils').RunQueryMock} RunQueryMock
+ * @typedef {import('../test-utils').RunMutationMock} RunMutationMock
+ */
+/**
+ * @template T
+ * @typedef {import('rxjs').Observable<T>} Observable
+ */
+
 import { faker } from '@faker-js/faker'
 import * as graphQL from '@src/graphql'
 import {
@@ -20,6 +31,9 @@ import { goto } from '$app/navigation'
 
 vi.mock('@src/stores/graphql-client')
 
+const runQueryMock = /** @type {RunQueryMock} */ (runQuery)
+const runMutationMock = /** @type {RunMutationMock} */ (runMutation)
+
 const id = faker.string.uuid()
 const username = faker.person.firstName()
 const password = faker.internet.password()
@@ -30,41 +44,43 @@ const turnCredentials = {
 }
 const token = faker.string.uuid()
 
-beforeEach(vi.resetAllMocks)
+beforeEach(() => {
+  vi.resetAllMocks()
+})
 
 describe('searchPlayers()', () => {
   it('search players by user name', async () => {
     const username = faker.person.firstName()
     expect(await searchPlayers(username)).toBeUndefined()
-    expect(runQuery).toHaveBeenCalledWith(graphQL.searchPlayers, {
+    expect(runQueryMock).toHaveBeenCalledWith(graphQL.searchPlayers, {
       search: username
     })
-    expect(runQuery).toHaveBeenCalledTimes(1)
+    expect(runQueryMock).toHaveBeenCalledTimes(1)
   })
 })
 
 describe('logIn()', () => {
   it('returns session on success', async () => {
     const session = { token, player, turnCredentials }
-    runMutation.mockResolvedValueOnce(session)
+    runMutationMock.mockResolvedValueOnce(session)
     expect(await logIn(id, password)).toEqual(session)
-    expect(runMutation).toHaveBeenCalledWith(graphQL.logIn, {
+    expect(runMutationMock).toHaveBeenCalledWith(graphQL.logIn, {
       id,
       password
     })
-    expect(runMutation).toHaveBeenCalledTimes(1)
+    expect(runMutationMock).toHaveBeenCalledTimes(1)
     expect(goto).not.toHaveBeenCalled()
   })
 
   it('throws on failure', async () => {
     const error = new Error('forbidden')
-    runMutation.mockRejectedValueOnce(error)
+    runMutationMock.mockRejectedValueOnce(error)
     await expect(logIn(id, password)).rejects.toThrow(error)
-    expect(runMutation).toHaveBeenCalledWith(graphQL.logIn, {
+    expect(runMutationMock).toHaveBeenCalledWith(graphQL.logIn, {
       id,
       password
     })
-    expect(runMutation).toHaveBeenCalledTimes(1)
+    expect(runMutationMock).toHaveBeenCalledTimes(1)
     expect(goto).not.toHaveBeenCalled()
   })
 })
@@ -80,10 +96,10 @@ describe('logOut()', () => {
 describe('recoverSession()', () => {
   it('returns null on invalid session', async () => {
     const bearer = faker.string.uuid()
-    runQuery.mockRejectedValueOnce(new Error('forbidden'))
+    runQueryMock.mockRejectedValueOnce(new Error('forbidden'))
     expect(await recoverSession(fetch, bearer)).toBeNull()
-    expect(runQuery).toHaveBeenCalledWith(graphQL.getCurrentPlayer)
-    expect(runQuery).toHaveBeenCalledTimes(1)
+    expect(runQueryMock).toHaveBeenCalledWith(graphQL.getCurrentPlayer)
+    expect(runQueryMock).toHaveBeenCalledTimes(1)
     expect(initGraphQlClient).toHaveBeenCalledWith({
       graphQlUrl,
       fetch,
@@ -97,10 +113,10 @@ describe('recoverSession()', () => {
   it('returns session on success', async () => {
     const bearer = faker.string.uuid()
     const session = { token, player, turnCredentials }
-    runQuery.mockResolvedValueOnce(session)
+    runQueryMock.mockResolvedValueOnce(session)
     expect(await recoverSession(fetch, bearer)).toEqual(session)
-    expect(runQuery).toHaveBeenCalledWith(graphQL.getCurrentPlayer)
-    expect(runQuery).toHaveBeenCalledTimes(1)
+    expect(runQueryMock).toHaveBeenCalledWith(graphQL.getCurrentPlayer)
+    expect(runQueryMock).toHaveBeenCalledTimes(1)
     expect(initGraphQlClient).toHaveBeenCalledWith({
       graphQlUrl,
       fetch,
@@ -114,10 +130,10 @@ describe('recoverSession()', () => {
 
 describe('acceptTerms()', () => {
   it('returns player on success', async () => {
-    runMutation.mockResolvedValueOnce(player)
+    runMutationMock.mockResolvedValueOnce(player)
     expect(await acceptTerms()).toEqual(player)
-    expect(runMutation).toHaveBeenCalledWith(graphQL.acceptTerms)
-    expect(runMutation).toHaveBeenCalledTimes(1)
+    expect(runMutationMock).toHaveBeenCalledWith(graphQL.acceptTerms)
+    expect(runMutationMock).toHaveBeenCalledTimes(1)
   })
 })
 
@@ -125,12 +141,12 @@ describe('updateCurrentPlayer()', () => {
   it('returns player on success', async () => {
     const username = faker.person.fullName()
     const avatar = faker.internet.avatar()
-    runMutation.mockResolvedValueOnce(player)
+    runMutationMock.mockResolvedValueOnce(player)
     expect(await updateCurrentPlayer(username, avatar)).toEqual(player)
-    expect(runMutation).toHaveBeenCalledWith(graphQL.updateCurrentPlayer, {
+    expect(runMutationMock).toHaveBeenCalledWith(graphQL.updateCurrentPlayer, {
       username,
       avatar
     })
-    expect(runMutation).toHaveBeenCalledTimes(1)
+    expect(runMutationMock).toHaveBeenCalledTimes(1)
   })
 })

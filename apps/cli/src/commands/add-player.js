@@ -1,4 +1,6 @@
 // @ts-check
+/** @typedef {import('@tabulous/server/src/graphql/types').Player} Player */
+
 import { gql } from '@urql/core'
 import chalkTemplate from 'chalk-template'
 import kebabCase from 'lodash.kebabcase'
@@ -16,7 +18,7 @@ import { commonOptions } from './help.js'
 
 /**
  * @typedef {object} AddPlayerResult player addition command result
- * @property {import('../util/formaters.js').Player} player - added player.
+ * @property {Player} player - added player.
  */
 
 const addPlayerMutation = gql`

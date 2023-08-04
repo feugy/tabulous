@@ -11,6 +11,7 @@ import {
 /**
  * @typedef {import('@playwright/test').Page} Page
  * @typedef {import('@playwright/test').Locator} Locator
+ * @typedef {import('../utils').Locale} Locale
  */
 
 export const AccountPage = mixin(
@@ -18,12 +19,12 @@ export const AccountPage = mixin(
     /**
      * Represent the account page for testing
      * @param {Page} page - the actual page.
-     * @param {string} lang - current language.
+     * @param {Locale} lang - current language.
      */
     constructor(page, lang) {
       /** @type {string} */
       this.pageKind = 'account'
-      /** @type {string} */
+      /** @type {Locale} */
       this.lang = lang
       /** @type {Page} */
       this.page = page

@@ -1,10 +1,12 @@
 // @ts-check
+/**
+ * @typedef {import('pino').Logger} Logger
+ * @typedef {import('pino').LevelWithSilent} Level
+ */
+
 import { AsyncLocalStorage } from 'node:async_hooks'
 
 import pino from 'pino'
-
-/** @typedef {import('pino').Logger} Logger */
-/** @typedef {import('pino').LevelWithSilent} Level */
 
 /** @typedef {Record<string, unknown>} LogContext */
 

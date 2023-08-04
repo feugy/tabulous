@@ -1,38 +1,51 @@
 <script>
+  // @ts-check
   import { gameAssetsUrl } from '@src/utils'
   import { createEventDispatcher } from 'svelte'
   import { _, locale } from 'svelte-intl'
 
   import Button from './Button.svelte'
 
+  /** @type {number} current page index (0-based). */
   export let page = 0
+  /** @type {number} number of pages displayed. */
   export let lastPage = 0
   export let game = ''
+  /** @type {number} maximum viewport zoom allowed. */
   export let maxZoom = 1.5
+  /** @type {number} minimum viewport zoom allowed. */
   export let minZoom = 0.3
 
+  /** @type {import('svelte').EventDispatcher<{ change: { page: number } }>} */
   const dispatch = createEventDispatcher()
+  /** @type {{ width: number, height: number }} viewport dimension */
   let dimension = { width: 0, height: 0 }
+  /** @type {number} current zoom. */
   let zoom = minZoom
+  /** @type {?{ x: number, y: number, top: number, left: number }} current position in the viewport. */
   let pos = null
-  let container = null
-  let image = null
+  /** @type {HTMLDivElement} */
+  let container
+  /** @type {HTMLImageElement} */
+  let image
 
   function handleNavigate(previous = false) {
     page += previous ? -1 : 1
     dispatch('change', { page })
   }
 
-  function handleImageLoaded({ target }) {
+  function handleImageLoaded(
+    /** @type {Event & { currentTarget: Element }} */ { currentTarget }
+  ) {
     container.scrollTop = 0
     container.scrollLeft = 0
     setImageZoom(null)
-    const { width, height } = target.getBoundingClientRect()
+    const { width, height } = currentTarget.getBoundingClientRect()
     dimension = { width, height }
     setImageZoom(zoom)
   }
 
-  function handleDragStart({ clientX, clientY }) {
+  function handleDragStart(/** @type {MouseEvent} */ { clientX, clientY }) {
     pos = {
       left: container.scrollLeft,
       top: container.scrollTop,
@@ -43,7 +56,7 @@
     window.addEventListener('pointerup', handleDragStop)
   }
 
-  function handleDrag({ clientX, clientY }) {
+  function handleDrag(/** @type {MouseEvent} */ { clientX, clientY }) {
     if (!pos) {
       return
     }
@@ -60,16 +73,16 @@
     window.removeEventListener('pointerup', handleDragStop)
   }
 
-  function handleZoom({ deltaY }) {
+  function handleZoom(/** @type {WheelEvent} */ { deltaY }) {
     zoom = capZoom(zoom + (deltaY < 0 ? 0.1 : -0.1))
     setImageZoom(zoom)
   }
 
-  function capZoom(zoom) {
+  function capZoom(/** @type {number} */ zoom) {
     return zoom < minZoom ? minZoom : zoom > maxZoom ? maxZoom : zoom
   }
 
-  function setImageZoom(zoom) {
+  function setImageZoom(/** @type {?number} */ zoom) {
     image.style.width = zoom ? `${dimension.width * zoom}px` : ''
     image.style.height = zoom ? `${dimension.height * zoom}px` : ''
   }

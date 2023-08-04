@@ -1,4 +1,8 @@
 // @ts-check
+/**
+ * @typedef {import('../../src/services/players').Player} Player
+ */
+
 import { faker } from '@faker-js/faker'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
@@ -11,8 +15,6 @@ import {
   players
 } from '../../src/repositories/players.js'
 import { clearDatabase, getRedisTestUrl } from '../test-utils.js'
-
-/** @typedef {import('../../src/services/players.js').Player} Player */
 
 describe('given a connected repository and several players', () => {
   const redisUrl = getRedisTestUrl()

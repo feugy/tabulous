@@ -1,4 +1,9 @@
 // @ts-check
+/**
+ * @typedef {import('fastify').FastifyInstance} FastifyInstance
+ * @typedef {import('../../src/services/players').Player} Player
+ */
+
 import { setTimeout } from 'node:timers/promises'
 
 import { faker } from '@faker-js/faker'
@@ -27,17 +32,15 @@ import {
 } from '../test-utils.js'
 import { clearDatabase, getRedisTestUrl } from '../test-utils.js'
 
-/** @typedef {import('../../src/services/players.js').Player} Player */
-
 describe('given a started server', () => {
-  /** @type {import('fastify').FastifyInstance} */
+  /** @type {FastifyInstance} */
   let server
   /** @type {import('ws')} */
   let ws
   /** @type {ReturnType<typeof mockMethods>} */
   let restoreServices
   const services =
-    /** @type {import('../test-utils.js').MockedMethods<typeof realServices>} */ (
+    /** @type {import('../test-utils').MockedMethods<typeof realServices>} */ (
       realServices
     )
   vi.spyOn(makeLogger('graphql-plugin'), 'warn').mockImplementation(() => {})

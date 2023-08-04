@@ -1,3 +1,13 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ * @typedef {import('@babylonjs/core').Texture} Texture
+ * @typedef {import('@src/3d/managers/target').DropZone} DropZone
+ * @typedef {import('@src/3d/managers/target').MultiDropZone} MultiDropZone
+ * @typedef {import('@src/3d/managers/target').SingleDropZone} SingleDropZone
+ */
+
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
 import { MoveBehavior, TargetBehavior } from '@src/3d/behaviors'
@@ -8,7 +18,9 @@ import { configures3dTestEngine, createBox } from '../../test-utils'
 
 describe('TargetManager', () => {
   let drops
+  /** @type {Scene} */
   let scene
+  /** @type {Scene} */
   let handScene
 
   configures3dTestEngine(created => {
@@ -16,7 +28,7 @@ describe('TargetManager', () => {
     handScene = created.handScene
   })
 
-  beforeAll(() => selectionManager.init({ scene, color: '#FF00FF' }))
+  beforeAll(() => selectionManager.init({ scene, handScene }))
 
   beforeEach(() => {
     vi.resetAllMocks()
@@ -24,16 +36,15 @@ describe('TargetManager', () => {
   })
 
   it('has initial state', () => {
-    expect(manager.scene).toBeNull()
-    expect(manager.playerId).toBeNull()
+    expect(manager.scene).toBeUndefined()
+    expect(manager.playerId).toBeUndefined()
   })
 
   describe('init()', () => {
     it('sets scene', () => {
       const playerId = faker.string.uuid()
       const color = faker.color.rgb()
-      const overlayAlpha = Math.random()
-      manager.init({ scene, playerId, color, overlayAlpha })
+      manager.init({ scene, playerId, color })
       expect(manager.scene).toEqual(scene)
       expect(manager.playerId).toEqual(playerId)
     })
@@ -43,7 +54,7 @@ describe('TargetManager', () => {
     const playerId = faker.string.uuid()
     const color = '#00FF00FF'
 
-    beforeAll(() => manager.init({ scene, playerId, color, overlayAlpha: 0.2 }))
+    beforeAll(() => manager.init({ scene, playerId, color }))
 
     describe('registerTargetable()', () => {
       it('registers a mesh', () => {
@@ -74,6 +85,7 @@ describe('TargetManager', () => {
       it('handles invalid behavior', () => {
         const behavior = new TargetBehavior()
         manager.registerTargetable(behavior)
+        // @ts-expect-error: we don't provide a behavior
         manager.registerTargetable()
       })
     })
@@ -82,12 +94,15 @@ describe('TargetManager', () => {
       it('handles invalid behavior', () => {
         const behavior = new TargetBehavior()
         manager.unregisterTargetable(behavior)
+        // @ts-expect-error: we don't provide a behavior
         manager.unregisterTargetable()
       })
     })
 
     describe('findDropZone()', () => {
+      /** @type {SingleDropZone} */
       let zone1
+      /** @type {SingleDropZone} */
       let zone2
       const aboveZone1 = new Vector3(5, 1, 5)
       const aboveZone2 = new Vector3(-5, 1, -5)
@@ -137,7 +152,7 @@ describe('TargetManager', () => {
       })
 
       it('ignores target part of the current selection', () => {
-        selectionManager.select(zone1.targetable.mesh)
+        selectionManager.select(/** @type {Mesh} */ (zone1.targetable.mesh))
         const mesh = createBox('box', {})
         mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
 
@@ -231,6 +246,7 @@ describe('TargetManager', () => {
       })
 
       describe('given a mesh with parts', () => {
+        /** @type {Mesh} */
         let mesh
 
         beforeEach(() => {
@@ -299,6 +315,7 @@ describe('TargetManager', () => {
         it('handles invalid zones', () => {
           manager.clear()
           manager.clear(null)
+          // @ts-expect-error: it's ok to pass random object
           manager.clear({})
           expectVisibility(zone1, true)
           expectVisibility(zone2, false)
@@ -306,9 +323,10 @@ describe('TargetManager', () => {
       })
 
       describe('dropOn()', () => {
-        let meshes = ['box1', 'box2']
+        /** @type {Mesh[]} */
+        let meshes
         beforeEach(() => {
-          meshes = meshes.map(id => {
+          meshes = ['box1', 'box2'].map(id => {
             const mesh = createBox(id, {})
             mesh.setAbsolutePosition(aboveZone1)
             manager.findDropZone(mesh, 'box')
@@ -329,8 +347,11 @@ describe('TargetManager', () => {
     })
 
     describe('findPlayerZone()', () => {
+      /** @type {SingleDropZone} */
       let zone1
+      /** @type {SingleDropZone} */
       let zone2
+      /** @type {Mesh} */
       let mesh
 
       beforeEach(() => {
@@ -362,7 +383,7 @@ describe('TargetManager', () => {
       })
 
       it('ignores target part of the current selection', () => {
-        selectionManager.select(zone1.targetable.mesh)
+        selectionManager.select(/** @type {Mesh} */ (zone1.targetable.mesh))
         const mesh = createBox('box', {})
         mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
 
@@ -416,9 +437,10 @@ describe('TargetManager', () => {
       })
 
       describe('dropOn()', () => {
-        let meshes = ['box1', 'box2']
+        /** @type {Mesh[]} */
+        let meshes
         beforeEach(() => {
-          meshes = meshes.map(id => {
+          meshes = ['box1', 'box2'].map(id => {
             const mesh = createBox(id, {})
             manager.findPlayerZone(mesh, 'box')
             return mesh
@@ -443,6 +465,7 @@ describe('TargetManager', () => {
       })
 
       describe('given a kindless zone', () => {
+        /** @type {Partial<SingleDropZone>} */
         let zone
 
         beforeEach(() => {
@@ -464,6 +487,7 @@ describe('TargetManager', () => {
       })
 
       describe('given a zone with kind', () => {
+        /** @type {Partial<SingleDropZone>} */
         let zone
 
         beforeEach(() => {
@@ -491,7 +515,8 @@ describe('TargetManager', () => {
   })
 
   function createsTargetZone(
-    id,
+    /** @type {string} */ id,
+    /** @type {Record<string, ?> & Partial<{ position: Vector3, scene: Scene }>} */
     { position = new Vector3(0, 0, 0), scene: usedScene, ...properties }
   ) {
     const targetable = createBox(`targetable-${id}`, {}, usedScene ?? scene)
@@ -505,13 +530,22 @@ describe('TargetManager', () => {
     return behavior.addZone(target, { extent: 0.5, ...properties })
   }
 
-  function expectActiveZone(actual, expected, color) {
-    expect(actual.mesh.id).toEqual(expected.mesh.id)
+  function expectActiveZone(
+    /** @type {?DropZone} */ actual,
+    /** @type {Partial<DropZone>} */ expected,
+    /** @type {string} */ color
+  ) {
+    expect(actual?.mesh.id).toEqual(expected.mesh?.id)
     expectVisibility(actual, true)
-    expect(actual.mesh.material?.diffuseColor?.toHexString()).toEqual(color)
+    expect(
+      /** @type {?} */ (actual?.mesh.material)?.diffuseColor?.toHexString()
+    ).toEqual(color.slice(0, -2))
   }
 
-  function expectVisibility(zone, isVisible) {
-    expect(zone.mesh.visibility).toEqual(isVisible ? 1 : 0)
+  function expectVisibility(
+    /** @type {?DropZone} */ zone,
+    /** @type {boolean} */ isVisible
+  ) {
+    expect(zone?.mesh.visibility).toEqual(isVisible ? 1 : 0)
   }
 })

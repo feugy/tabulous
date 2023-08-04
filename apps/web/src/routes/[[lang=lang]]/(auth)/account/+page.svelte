@@ -1,4 +1,7 @@
 <script>
+  // @ts-check
+  /** @typedef {import('@src/graphql').FullPlayer} Player */
+
   import {
     Button,
     Header,
@@ -20,11 +23,18 @@
   import AvatarDialogue from './AvatarDialogue.svelte'
 
   /** @type {import('./$types').PageData} */
-  export let data = {}
+  export let data
 
+  /** @type {Subject<string>} */
   const username$ = new Subject()
-  let user = data.session.player
+  /** @type {Player} */
+  let user = data.session?.player ?? {
+    username: '',
+    id: '',
+    currentGameId: null
+  }
   let isSaving = false
+  /** @type {?Error} */
   let usernameError = null
   let openAvatarDialogue = false
   let avatar = user.avatar
@@ -48,11 +58,13 @@
 
   onDestroy(() => saveSubscription.unsubscribe())
 
-  function handleSave({ target }) {
-    username$.next(target.value)
+  function handleSave(/** @type {Event} */ { target }) {
+    username$.next(/** @type {HTMLInputElement} */ (target).value)
   }
 
-  async function handleCloseAvatarDialogue({ detail: confirmed }) {
+  async function handleCloseAvatarDialogue(
+    /** @type {CustomEvent<boolean>} */ { detail: confirmed }
+  ) {
     if (confirmed) {
       user.avatar = (await updateCurrentPlayer(user.username, avatar)).avatar
     }

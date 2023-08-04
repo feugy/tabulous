@@ -1,17 +1,19 @@
 <script>
+  // @ts-check
+  /** @typedef {import('@src/stores').Toast} Toast */
+
   import { onMount } from 'svelte'
 
   import Button from '../Button.svelte'
 
-  export let icon = ''
-  export let content = ''
-  export let duration = defaultDuration
-  export let color = defaultColor
+  /** @type {Toast} message content. */
+  export let toast
 
   const defaultColor = '#fcfcfc'
   const defaultDuration = 5
 
   let hide = false
+  /** @type {?HTMLDivElement} */
   let node
   // use absolute positioning to avoid multiple notification glitch:
   // when previous message is removed, next messages "jump" upward because
@@ -21,9 +23,9 @@
   onMount(() => {
     // find nearest visible sibling and position current message bellow
     for (
-      let previous = node.previousElementSibling;
+      let previous = /** @type {?HTMLElement} */ (node?.previousElementSibling);
       previous;
-      previous = previous.previousElementSibling
+      previous = /** @type {?HTMLElement} */ (previous.previousElementSibling)
     ) {
       const styles = getComputedStyle(previous)
       if (styles.opacity !== '0') {
@@ -38,12 +40,13 @@
 <div
   class:hide
   bind:this={node}
-  style="--top:{top}px; --bg-color:{color ||
-    defaultColor}; --duration:{duration ||
-    defaultDuration}s; --close-duration:{duration / 10}s"
+  style="--top:{top}px; --bg-color:{toast.color ??
+    defaultColor}; --duration:{toast.duration ??
+    defaultDuration}s; --close-duration:{(toast.duration ?? defaultDuration) /
+    10}s"
 >
-  <span class="material-icons">{icon}</span>
-  <strong>{content}</strong>
+  {#if toast.icon}<span class="material-icons">{toast.icon}</span>{/if}
+  <strong>{toast.content}</strong>
   <Button transparent={true} icon="close" on:click={() => (hide = true)} />
 </div>
 

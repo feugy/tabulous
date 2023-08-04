@@ -1,14 +1,18 @@
 // @ts-check
+/**
+ * @typedef {import('../plugins/auth').AuthOptions} AuthOptions
+ * @typedef {import('../plugins/graphql').GraphQLOptions} GraphQLOptions
+ * @typedef {import('../plugins/static').StaticOptions} StaticOptions
+ * @typedef {import('../plugins/cors').CorsOptions} CorsOptions
+ * @typedef {import('../utils/logger').Level} Level
+ */
+
 import { isAbsolute, join } from 'node:path'
 import { cwd } from 'node:process'
 
 import Ajv from 'ajv/dist/jtd.js'
 
 import { makeLogger } from '../utils/index.js'
-
-/** @typedef {import('../plugins/graphql').GraphQLOptions} GraphQLOptions */
-/** @typedef {import('../plugins/static').StaticOptions} StaticOptions */
-/** @typedef {import('../plugins/cors').CorsOptions} CorsOptions */
 
 /**
  * @typedef {object} DataOptions
@@ -17,7 +21,7 @@ import { makeLogger } from '../utils/index.js'
 
 /**
  * @typedef {object} LoggerOptions
- * @property {import('../utils/logger.js').Level} level - level used for logging.
+ * @property {Level} level - level used for logging.
  */
 
 /**
@@ -34,7 +38,7 @@ import { makeLogger } from '../utils/index.js'
  * @property {LoggerOptions} logger - Pino logger options, including:
  * @property {DataOptions} data - configuration to connect to the database:
  * @property {GamesOpptions} games - game engine properties, including;
- * @property {import('../plugins/auth').AuthOptions} auth - options for the authentication plugin.
+ * @property {AuthOptions} auth - options for the authentication plugin.
  * @property {object} plugins - options for all plugin used:
  * @property {GraphQLOptions} plugins.graphql - options for the GraphQL plugin.
  * @property {StaticOptions} plugins.static - options for the static files plugin.

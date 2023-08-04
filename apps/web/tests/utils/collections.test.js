@@ -1,3 +1,4 @@
+// @ts-check
 import * as collections from '@src/utils/collections'
 import { describe, expect, it } from 'vitest'
 
