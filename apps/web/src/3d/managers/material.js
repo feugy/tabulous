@@ -73,9 +73,7 @@ class MaterialManager {
    */
   configure(mesh, texture) {
     const scene = mesh.getScene()
-    const materialByUrl = getMaterialCache(this, scene)
-    mesh.material =
-      materialByUrl.get(texture) ?? buildMaterials(this, texture, scene)
+    mesh.material = buildMaterials(this, texture, scene)
     mesh.receiveShadows = true
   }
 
@@ -87,10 +85,7 @@ class MaterialManager {
    * @returns {PBRSpecularGlossinessMaterial} the build (or cached) material.
    */
   buildOnDemand(texture, scene) {
-    return (
-      getMaterialCache(this, scene).get(texture) ??
-      buildMaterials(this, texture, scene)
-    )
+    return buildMaterials(this, texture, scene)
   }
 
   /**
@@ -155,6 +150,11 @@ function preloadMaterials(manager, game) {
  * @returns {PBRSpecularGlossinessMaterial} built material.
  */
 function buildMaterials(manager, url, usedScene) {
+  const cachedMaterial = getMaterialCache(manager, usedScene).get(url)
+  if (cachedMaterial) {
+    return cachedMaterial
+  }
+
   const { scene, handScene, mainMaterialByUrl, handMaterialByUrl } = manager
   buildMaterial(mainMaterialByUrl, manager, url, scene)
   if (handScene) {

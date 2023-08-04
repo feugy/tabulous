@@ -27,6 +27,26 @@ import { configures3dTestEngine, createBox } from '../../test-utils'
 
 /** @typedef {Material & { diffuseTexture: Texture }} MaterialWithTexture */
 
+const MaterialConstructor = vi.fn()
+
+vi.mock(
+  '@babylonjs/core/Materials/PBR/pbrSpecularGlossinessMaterial',
+  async () => {
+    const { PBRSpecularGlossinessMaterial: BaseClass } = /** @type {?} */ (
+      await vi.importActual(
+        '@babylonjs/core/Materials/PBR/pbrSpecularGlossinessMaterial'
+      )
+    )
+    class PBRSpecularGlossinessMaterial extends BaseClass {
+      constructor(/** @type {...any} */ ...args) {
+        MaterialConstructor(...args)
+        super(...args)
+      }
+    }
+    return { PBRSpecularGlossinessMaterial }
+  }
+)
+
 describe('MaterialManager', () => {
   /** @type {Scene} */
   let scene
@@ -37,6 +57,8 @@ describe('MaterialManager', () => {
   const gameAssetsUrl = 'https://localhost:3000'
 
   configures3dTestEngine(created => ({ scene, handScene, engine } = created))
+
+  beforeEach(() => MaterialConstructor.mockClear())
 
   it('has initial state', () => {
     expect(manager.scene).toBeUndefined()
@@ -99,6 +121,41 @@ describe('MaterialManager', () => {
       expect(manager.isManaging(texture1)).toBe(true)
       expect(manager.isManaging(texture2)).toBe(true)
       expect(manager.isManaging(texture3)).toBe(true)
+      expect(MaterialConstructor).toHaveBeenCalledTimes(5)
+    })
+
+    it('does not load the same material twice', () => {
+      const texture1 = faker.internet.url()
+      const texture2 = faker.internet.url()
+      const color2 = '#ff6600ff'
+      manager.init(
+        { scene, gameAssetsUrl },
+        {
+          id: 'whatever',
+          created: Date.now(),
+          meshes: [
+            { id: 'm1', shape: 'box', texture: color2 },
+            { id: 'm2', shape: 'box', texture: texture1 }
+          ],
+          hands: [
+            {
+              playerId: '1',
+              meshes: [{ id: 'm3', shape: 'box', texture: texture1 }]
+            },
+            {
+              playerId: '2',
+              meshes: [
+                { id: 'm4', shape: 'box', texture: color2 },
+                { id: 'm5', shape: 'box', texture: texture2 }
+              ]
+            }
+          ]
+        }
+      )
+      expect(manager.isManaging(color2)).toBe(true)
+      expect(manager.isManaging(texture1)).toBe(true)
+      expect(manager.isManaging(texture2)).toBe(true)
+      expect(MaterialConstructor).toHaveBeenCalledTimes(3)
     })
   })
 
