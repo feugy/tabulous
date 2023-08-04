@@ -30,7 +30,6 @@
 </script>
 
 <div>
-  <!-- eslint-disable-next-line no-unused-vars : we remove timeout since Message doesn't need it -->
   {#each messages as { id, ...toast } (id)}
     <Message {toast} on:close={() => removeMessage(id)} />
   {/each}

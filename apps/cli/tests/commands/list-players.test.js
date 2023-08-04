@@ -1,4 +1,4 @@
-// @ts-checkcheck
+// @ts-check
 /**
  * @typedef {import('../../src').Command} Command
  * @typedef {import('@tabulous/server/src/graphql/types').Player} Player

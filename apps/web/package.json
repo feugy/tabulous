@@ -6,6 +6,7 @@
   "scripts": {
     "atelier": "NODE_OPTIONS=--max-old-space-size=4096 vite build --mode export-atelier",
     "build": "NODE_OPTIONS=--max-old-space-size=4096 vite build",
+    "prepare": "svelte-kit sync",
     "preview": "vite preview",
     "start": "vite dev --open https://localhost:3000",
     "test": "NODE_OPTIONS=--max-old-space-size=7000 vitest run --coverage",
@@ -14,7 +15,7 @@
     "test:integration:prepare": "NODE_OPTIONS=--max-old-space-size=4096 vite build --mode integration",
     "test:integration:show": "playwright show-report coverage/integration",
     "test:integration:run": "playwright test",
-    "typecheck": "svelte-check --tsconfig jsconfig.json --compiler-warnings \"a11y-autofocus:ignore,a11y-no-noninteractive-element-interactions:ignore,a11y-no-static-element-interactions:ignore\""
+    "typecheck": "svelte-kit sync && svelte-check --tsconfig jsconfig.json --compiler-warnings \"a11y-autofocus:ignore,a11y-no-noninteractive-element-interactions:ignore,a11y-no-static-element-interactions:ignore\""
   },
   "devDependencies": {
     "@atelier-wb/svelte": "^0.11.0",

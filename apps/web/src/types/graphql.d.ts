@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+import type { DeepRequired } from '@src/types'
 import type {
   AwaitSignalArgs,
   CatalogItem as FullCatalogItem,
@@ -122,11 +123,11 @@ declare module '@src/graphql' {
     TargetedPlayerArgs
   >
   const getCurrentPlayer: TypedDocumentNode<{
-    getCurrentPlayer: PlayerWithTurnCredentials
+    getCurrentPlayer: DeepRequired<PlayerWithTurnCredentials>
   }>
   const listFriends: TypedDocumentNode<{ listFriends: Friendship[] }>
   const logIn: TypedDocumentNode<
-    { logIn: PlayerWithTurnCredentials },
+    { logIn: DeepRequired<PlayerWithTurnCredentials> },
     LogInArgs
   >
   const receiveFriendshipUpdates: TypedDocumentNode<{

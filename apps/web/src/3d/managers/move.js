@@ -103,6 +103,7 @@ class MoveManager {
       }
     }
 
+    // TODO what if no last position?
     let lastPosition = /** @type {Vector3} */ (screenToGround(sceneUsed, event))
 
     /** @type {Set<DropZone>} */
@@ -156,6 +157,7 @@ class MoveManager {
       zones.clear()
 
       if (sceneUsed !== this.scene || isAboveTable(this.scene, event)) {
+        // TODO what if no current position?
         const currentPosition = /** @type {Vector3} */ (
           screenToGround(sceneUsed, event)
         )

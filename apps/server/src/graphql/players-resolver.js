@@ -1,7 +1,17 @@
 // @ts-check
 /**
- * @typedef {import('./utils').GraphQLContext} GraphQLContext
+ * @typedef {import('./types').AddPlayerArgs} AddPlayerArgs
+ * @typedef {import('./types').Friendship} Friendship
+ * @typedef {import('./types').FriendshipUpdate} FriendshipUpdate
+ * @typedef {import('./types').ListPlayersArgs} ListPlayersArgs
+ * @typedef {import('./types').LogInArgs} LogInArgs
  * @typedef {import('./types').Player} Player
+ * @typedef {import('./types').PlayerWithTurnCredentials} PlayerWithTurnCredentials
+ * @typedef {import('./types').SearchPlayersArgs} SearchPlayersArgs
+ * @typedef {import('./types').TargetedPlayerArgs} TargetedPlayerArgs
+ * @typedef {import('./types').UpdateCurrentPlayerArgs} UpdateCurrentPlayerArgs
+ * @typedef {import('./utils').GraphQLContext} GraphQLContext
+ * @typedef {import('./utils').PubSubQueue} PubSubQueue
  */
 
 import { filter } from 'rxjs'
@@ -65,7 +75,7 @@ export default {
        * @param {unknown} obj - graphQL object.
        * @param {unknown} args - query arguments:
        * @param {GraphQLContext} context - graphQL context.
-       * @returns {import('./types').PlayerWithTurnCredentials} current player with turn credentials.
+       * @returns {PlayerWithTurnCredentials} current player with turn credentials.
        */
       (obj, args, { player, conf, token }) => {
         logger.trace(
@@ -84,7 +94,7 @@ export default {
        * Returns players (except the current one) which username contains searched text.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {import('./types').SearchPlayersArgs} args - query arguments.
+       * @param {SearchPlayersArgs} args - query arguments.
        * @param {GraphQLContext} context - graphQL context.
        * @returns {Promise<Player[]>} list (potentially empty) of matching players.
        */
@@ -97,7 +107,7 @@ export default {
        * Returns a page or players.
        * Requires authentication and elevated privileges.
        * @param {unknown} obj - graphQL object.
-       * @param {import('./types').ListPlayersArgs} args - query arguments, including:
+       * @param {ListPlayersArgs} args - query arguments, including:
        * @returns {Promise<import('../repositories/abstract-repository').Page<Player>>} extract of the player list.
        */
       (obj, args) => repositories.players.list(args)
@@ -110,7 +120,7 @@ export default {
        * @param {unknown} obj - graphQL object.
        * @param {unknown} args - query arguments.
        * @param {GraphQLContext} context - graphQL context.
-       * @returns {Promise<import('./types').Friendship[]>} list (potentially empty) of friend players.
+       * @returns {Promise<Friendship[]>} list (potentially empty) of friend players.
        */
       (obj, args, { player }) =>
         // @ts-expect-error: player is enriched by loaders
@@ -125,7 +135,7 @@ export default {
        * The clear password provided is hashed before being stored.
        * Requires authentication and elevated privileges.
        * @param {unknown} obj - graphQL object.
-       * @param {import('./types').AddPlayerArgs} args - mutation arguments.
+       * @param {AddPlayerArgs} args - mutation arguments.
        * @returns {Promise<Player>} the created player.
        */
       async (obj, { id, username, password }) =>
@@ -136,9 +146,9 @@ export default {
      * Authenticates an user from their user id.
      * Returns a token to allow browser issueing authenticated requests.
      * @param {unknown} obj - graphQL object.
-     * @param {import('./types').LogInArgs} args - mutation arguments.
+     * @param {LogInArgs} args - mutation arguments.
      * @param {GraphQLContext} context - graphQL context.
-     * @returns {Promise<import('./types').PlayerWithTurnCredentials>} authentified player with turn credentials.
+     * @returns {Promise<PlayerWithTurnCredentials>} authentified player with turn credentials.
      */
     logIn: async (obj, { id, password }, { conf }) => {
       logger.trace('authenticates manual player')
@@ -171,7 +181,7 @@ export default {
        * Updates current player's details.
        * Requires authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {import('./types').UpdateCurrentPlayerArgs} args - mutation arguments.
+       * @param {UpdateCurrentPlayerArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
        * @returns {Promise<Player>} the updated player.
        */
@@ -211,7 +221,7 @@ export default {
        * Deletes an existing player account.
        * Requires authentication and elevated privileges.
        * @param {unknown} obj - graphQL object.
-       * @param {import('./types').TargetedPlayerArgs} args - mutation arguments.
+       * @param {TargetedPlayerArgs} args - mutation arguments.
        * @returns {Promise<?Player>} deleted player account, or null.
        */
       (obj, { id }) => repositories.players.deleteById(id)
@@ -222,7 +232,7 @@ export default {
        * Sends a friend request from one player to another one.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {import('./types').TargetedPlayerArgs} args - mutation arguments.
+       * @param {TargetedPlayerArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
        * @returns {Promise<boolean>} true if the operation succeeds.
        */
@@ -234,7 +244,7 @@ export default {
        * Accepts a friend request from another player.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {import('./types').TargetedPlayerArgs} args - mutation arguments.
+       * @param {TargetedPlayerArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
        * @returns {Promise<boolean>} true if the operation succeeds.
        */
@@ -246,7 +256,7 @@ export default {
        * Declines a friend request or ends existing friendship with another player.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {import('./types').TargetedPlayerArgs} args - mutation arguments.
+       * @param {TargetedPlayerArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
        * @returns {Promise<boolean>} true if the operation succeeds.
        */
@@ -263,8 +273,8 @@ export default {
          * @param {unknown} obj - graphQL object.
          * @param {object} args - subscription arguments.
          * @param {GraphQLContext} context - graphQL context.
-         * @yields {import('./types').FriendshipUpdate}
-         * @returns {import('./utils').PubSubQueue}
+         * @yields {FriendshipUpdate}
+         * @returns {PubSubQueue}
          */
         async (obj, args, { player, pubsub }) => {
           const topic = `friendship-${player.id}`

@@ -39,7 +39,7 @@ const levels = {
   selection: 'warn',
   'scene-loader': 'warn',
   stackable: 'warn',
-  stream: 'debug',
+  stream: 'warn',
   target: 'warn'
 }
 

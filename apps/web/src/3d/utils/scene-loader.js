@@ -33,13 +33,13 @@ const logger = makeLogger('scene-loader')
 
 /** @type {Map<Shape, MeshCreator>} */
 const meshCreatorByName = new Map([
-  ['box', /** @type {MeshCreator} */ (createBox)],
-  ['card', /** @type {MeshCreator} */ (createCard)],
-  ['custom', /** @type {MeshCreator} */ (createCustom)],
-  ['die', /** @type {MeshCreator} */ (createDie)],
-  ['prism', /** @type {MeshCreator} */ (createPrism)],
-  ['roundToken', /** @type {MeshCreator} */ (createRoundToken)],
-  ['roundedTile', /** @type {MeshCreator} */ (createRoundedTile)]
+  ['box', /** @type {?} */ (createBox)],
+  ['card', /** @type {?} */ (createCard)],
+  ['custom', /** @type {?} */ (createCustom)],
+  ['die', /** @type {?} */ (createDie)],
+  ['prism', /** @type {?} */ (createPrism)],
+  ['roundToken', /** @type {?} */ (createRoundToken)],
+  ['roundedTile', /** @type {?} */ (createRoundedTile)]
 ])
 
 const supportedNames = new Set([...meshCreatorByName.keys()])

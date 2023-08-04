@@ -53,6 +53,7 @@ let current = null
 let messageId = 1
 /** @type {Stream} */
 let local
+resetLocalState()
 
 unorderedMessages$
   .pipe(

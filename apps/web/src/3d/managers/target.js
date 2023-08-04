@@ -61,7 +61,7 @@ class TargetManager {
     this.color
     /** @internal @type {Set<TargetBehavior>} set of managed behaviors. */
     this.behaviors = new Set()
-    /** @internal @type {Map<SingleDropZone|MultiDropZone, Mesh[]>} map of droppable meshes by drop zone.*/
+    /** @internal @type {Map<DropZone, Mesh[]>} map of droppable meshes by drop zone.*/
     this.droppablesByDropZone = new Map()
     /** @internal @type {StandardMaterial} material applied to active drop zones. */
     this.material
@@ -122,7 +122,7 @@ class TargetManager {
    *
    * @param {Mesh} dragged - a dragged mesh.
    * @param {string} [kind] - drag kind.
-   * @returns {?SingleDropZone|MultiDropZone} matching zone, if any.
+   * @returns {?DropZone} matching zone, if any.
    */
   findPlayerZone(dragged, kind) {
     logger.debug(
@@ -145,7 +145,7 @@ class TargetManager {
    *
    * @param {Mesh} dragged - a dragged mesh.
    * @param {string} [kind] - drag kind.
-   * @returns {?SingleDropZone|MultiDropZone} matching zone, if any.
+   * @returns {?DropZone} matching zone, if any.
    */
   findDropZone(dragged, kind) {
     logger.debug(
@@ -165,7 +165,7 @@ class TargetManager {
 
   /**
    * Clears all droppable meshes of a given drop zone, and stops highlighting it.
-   * @param {?SingleDropZone|MultiDropZone} [zone] - the cleared drop zone.
+   * @param {?DropZone} [zone] - the cleared drop zone.
    */
   clear(zone) {
     if (!zone) return
@@ -183,7 +183,7 @@ class TargetManager {
    * If the provided target as droppable meshes, performs a drop operation, that is,
    * notifying drop observers of the corresponding Targetable behavior.
    * It clears the target.
-   * @param {SingleDropZone|MultiDropZone} zone - the zone dropped onto.
+   * @param {DropZone} zone - the zone dropped onto.
    * @param {Partial<DropDetails>} props - other properties passed to the drop zone observables
    * @returns {Mesh[]} list of droppable meshes, if any.
    */
@@ -236,7 +236,7 @@ export const targetManager = new TargetManager()
  * @param {Mesh} dragged - dragged mesh to check.
  * @param {(zone: SingleDropZone, partCenters: Vector3[]) => boolean} isMatching - matching function to test candidate zones.
  * @param {string} [kind] - dragged kind.
- * @returns {?SingleDropZone|MultiDropZone} matching zone, if any.
+ * @returns {?DropZone} matching zone, if any.
  */
 function findZone(manager, dragged, isMatching, kind) {
   const { behaviors, scene: mainScene } = manager
@@ -273,10 +273,10 @@ function findZone(manager, dragged, isMatching, kind) {
 
 /**
  * @param {TargetManager} manager - manager instance.
- * @param {?SingleDropZone|MultiDropZone} zone - matching zone to highlight.
+ * @param {?DropZone} zone - matching zone to highlight.
  * @param {Mesh} dragged - dragged mesh to check.
  * @param {string} [kind] - dragged kind.
- * @returns {?SingleDropZone|MultiDropZone} matching zone, if any.
+ * @returns {?DropZone} matching zone, if any.
  */
 function highlightZone(manager, zone, dragged, kind) {
   if (!zone) {

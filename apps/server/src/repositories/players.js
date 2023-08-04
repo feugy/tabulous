@@ -151,10 +151,9 @@ class PlayerRepository extends AbstractRepository {
    * @param {DeleteTransactionContext} context - contextual information.
    */
   async _enrichDeleteTransaction(context) {
-    const transaction =
-      /** @type {import('./abstract-repository').Transaction} */ (
-        super._enrichDeleteTransaction(context)
-      )
+    const transaction = /** @type {Transaction} */ (
+      super._enrichDeleteTransaction(context)
+    )
     const references = /** @type {string[]} */ (
       context.models
         .flatMap(player =>

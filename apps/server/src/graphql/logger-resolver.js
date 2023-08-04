@@ -1,5 +1,6 @@
 // @ts-check
 /**
+ * @typedef {import('./types').LoggerLevel} LoggerLevel
  * @typedef {import('./utils').GraphQLAnonymousContext} GraphQLAnonymousContext
  * @typedef {import('./utils').GraphQLContext} GraphQLContext
  */
@@ -24,7 +25,7 @@ export default {
   Mutation: {
     /**
      * @typedef {object} ConfigureLoggerLevelsArgs
-     * @property {import('./types').LoggerLevel[]} levels - new logger levels.
+     * @property {LoggerLevel[]} levels - new logger levels.
      */
 
     configureLoggerLevels: isAdmin(
@@ -33,7 +34,7 @@ export default {
        * Requires authentication and elevated privileges.
        * @param {unknown} obj - graphQL object.
        * @param {ConfigureLoggerLevelsArgs} args - mutation arguments.
-       * @returns {import('./types').LoggerLevel[]} the ordered list of logger names and their respective levels.
+       * @returns {LoggerLevel[]} the ordered list of logger names and their respective levels.
        */
       (obj, { levels }) => {
         configureLoggers(

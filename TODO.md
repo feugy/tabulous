@@ -1,5 +1,14 @@
 # TODO
 
+- manual testing: anchors on flip all/reorder
+- manual testing: lock/unlock
+- manual testing: decrement/increment by dragging
+- manual testing: updates shared in multiplayer
+- manual testing: texture caching: make a difference between hand & main
+- manual testing: texture color with alpha
+- manual testing: intersect geometries
+- manual testing: game parameters
+- manual/integration testing: kick
 - move server graphql types in a d.ts file
 - create type for migration files
 

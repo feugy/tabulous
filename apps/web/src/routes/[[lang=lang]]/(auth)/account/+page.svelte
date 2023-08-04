@@ -37,7 +37,7 @@
   /** @type {?Error} */
   let usernameError = null
   let openAvatarDialogue = false
-  let avatar = user?.avatar
+  let avatar = user.avatar
 
   const saveSubscription = username$
     .pipe(
@@ -95,7 +95,7 @@
         <span class="with-progress">
           <Input
             name="username"
-            value={user?.username}
+            value={user.username}
             disabled={isSaving}
             on:input={handleSave}
           />

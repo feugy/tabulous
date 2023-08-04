@@ -135,13 +135,12 @@ export const gamePlayerById = merge(hostId$, playingIds$, currentGame$).pipe(
     playerById = new Map()
     const game = currentGame$.value
     if (game) {
-      for (const { id, ...player } of game.players ?? []) {
-        playerById.set(id, {
-          id,
+      for (const player of game.players ?? []) {
+        playerById.set(player.id, {
           ...player,
-          ...findPlayerPreferences(game, id),
-          playing: playingIds$.value.includes(id),
-          isHost: isCurrentHost(id)
+          ...findPlayerPreferences(game, player.id),
+          playing: playingIds$.value.includes(player.id),
+          isHost: isCurrentHost(player.id)
         })
       }
     }

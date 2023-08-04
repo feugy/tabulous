@@ -194,9 +194,7 @@ export class StackBehavior extends TargetBehavior {
    * @returns {Promise<void>}
    */
   async push(meshId, immediate = false) {
-    const mesh = /** @type {?Mesh} */ (
-      this.stack[0].getScene().getMeshById(meshId)
-    )
+    const mesh = this.stack[0].getScene().getMeshById(meshId)
     if (!mesh || this.stack.includes(mesh)) return
 
     const base = /** @type {AttachedStackBehavior} */ (this.base ?? this)

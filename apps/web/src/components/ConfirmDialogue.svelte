@@ -39,7 +39,7 @@
   }
 </script>
 
-<Dialogue closable {open} {title} {...$$restProps} on:close={handleClose}>
+<Dialogue closable {open} {title} on:close={handleClose}>
   {message}
   <slot />
   <svelte:fragment slot="buttons">

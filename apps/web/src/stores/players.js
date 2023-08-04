@@ -36,9 +36,7 @@ export async function recoverSession(fetch, bearer) {
       bearer,
       subscriptionSupport: false
     })
-    session = /** @type {DeepRequired<PlayerWithTurnCredentials>} */ (
-      await runQuery(graphQL.getCurrentPlayer)
-    )
+    session = await runQuery(graphQL.getCurrentPlayer)
   } catch (error) {
     logger.debug(
       { error },
@@ -58,12 +56,10 @@ export async function recoverSession(fetch, bearer) {
  */
 export async function logIn(id, password) {
   try {
-    const session = /** @type {DeepRequired<PlayerWithTurnCredentials>} */ (
-      await runMutation(graphQL.logIn, {
-        id,
-        password
-      })
-    )
+    const session = await runMutation(graphQL.logIn, {
+      id,
+      password
+    })
     logger.info({ session }, `authenticating ${id}`)
     return session
   } catch (error) {

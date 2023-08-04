@@ -1,9 +1,18 @@
 // @ts-check
 /**
- * @typedef {import('./utils').GraphQLContext} GraphQLContext
- * @typedef {import('./types').GamePlayer} Player
+ * @typedef {import('./types').CreateGameArgs} CreateGameArgs
+ * @typedef {import('./types').DeleteGameArgs} DeleteGameArgs
  * @typedef {import('./types').Game} Game
  * @typedef {import('./types').GameParameters} GameParameters
+ * @typedef {import('./types').GamePlayer} Player
+ * @typedef {import('./types').InviteArgs} InviteArgs
+ * @typedef {import('./types').JoinGameArgs} JoinGameArgs
+ * @typedef {import('./types').KickArgs} KickArgs
+ * @typedef {import('./types').PromoteGameArgs} PromoteGameArgs
+ * @typedef {import('./types').ReceiveGameUpdatesArgs} ReceiveGameUpdatesArgs
+ * @typedef {import('./types').SaveGameArgs} SaveGameArgs
+ * @typedef {import('./utils').GraphQLContext} GraphQLContext
+ * @typedef {import('./utils').PubSubQueue} PubSubQueue
  */
 
 import { filter } from 'rxjs/operators'
@@ -78,7 +87,7 @@ export default {
        * Instanciates a new game for the a current player (who becomes its owner).
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {import('./types').CreateGameArgs} args - mutation arguments.
+       * @param {CreateGameArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
        * @returns {Promise<Game>} created game details, or null.
        */
@@ -91,7 +100,7 @@ export default {
        * May returns other parameters if provided values disn't suffice, or the actual game content.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {import('./types').JoinGameArgs} args - mutation arguments.
+       * @param {JoinGameArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
        * @returns {Promise<?Game|GameParameters>} joined game in case of success, new required parameters, or null.
        */
@@ -118,7 +127,7 @@ export default {
        * May returns parameters if needed, or the actual game content.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {import('./types').PromoteGameArgs} args - mutation arguments.
+       * @param {PromoteGameArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
        * @returns {Promise<?Game|GameParameters>} joined game in case of success, new required parameters, or null.
        */
@@ -131,7 +140,7 @@ export default {
        * Saves a current player's existing game details.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {import('./types').SaveGameArgs} args - mutation arguments.
+       * @param {SaveGameArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
        * @returns {Promise<?Game>} created game details, or null.
        */
@@ -143,7 +152,7 @@ export default {
        * Deletes a current player's existing game.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {import('./types').DeleteGameArgs} args - mutation arguments.
+       * @param {DeleteGameArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
        * @returns {Promise<?Game>} deleted game details, or null.
        */
@@ -155,7 +164,7 @@ export default {
        * Invites another player to a current player's game.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {import('./types').InviteArgs} args - mutation arguments.
+       * @param {InviteArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
        * @returns {Promise<?Game>} saved game details, or null.
        */
@@ -168,7 +177,7 @@ export default {
        * Kick a player from a current player's game.
        * Requires valid authentication.
        * @param {unknown} obj - graphQL object.
-       * @param {import('./types').KickArgs} args - mutation arguments.
+       * @param {KickArgs} args - mutation arguments.
        * @param {GraphQLContext} context - graphQL context.
        * @returns {Promise<?Game>} saved game details, or null.
        */
@@ -218,10 +227,10 @@ export default {
          * Sends a given game updates from server.
          * Requires valid authentication, and users must have this game in their list.
          * @param {unknown} obj - graphQL object.
-         * @param {import('./types').ReceiveGameUpdatesArgs} args - subscription argument.
+         * @param {ReceiveGameUpdatesArgs} args - subscription argument.
          * @param {GraphQLContext} context - graphQL context.
          * @yields {Game}
-         * @returns {import('./utils').PubSubQueue}
+         * @returns {PubSubQueue}
          */
         async (obj, { gameId }, { player, pubsub }) => {
           const topic = `receiveGameUpdates-${player.id}-${gameId}`

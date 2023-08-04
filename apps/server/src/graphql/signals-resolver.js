@@ -1,6 +1,10 @@
 // @ts-check
 /**
+ * @typedef {import('./types').AwaitSignalArgs} AwaitSignalArgs
+ * @typedef {import('./types').SendSignalArgs} SendSignalArgs
+ * @typedef {import('./types').Signal} Signal
  * @typedef {import('./utils').GraphQLContext} GraphQLContext
+ * @typedef {import('./utils').PubSubQueue} PubSubQueue
  */
 
 import services from '../services/index.js'
@@ -29,9 +33,9 @@ export default {
      * Emits signal addressed from current player onto the subscription of another player.
      * Requires valid authentication.
      * @param {unknown} obj - graphQL object.
-     * @param {import('./types').SendSignalArgs} args - mutation arguments, including:
+     * @param {SendSignalArgs} args - mutation arguments, including:
      * @param {GraphQLContext} context - graphQL context.
-     * @returns {import('./types').Signal} signal addressed.
+     * @returns {Signal} signal addressed.
      */
     sendSignal: isAuthenticated((obj, { signal }, { player, pubsub }) => {
       signal.from = player.id
@@ -52,10 +56,10 @@ export default {
          * Emits signal addressed to the current player
          * Requires valid authentication.
          * @param {unknown} obj - graphQL object.
-         * @param {import('./types').AwaitSignalArgs} args - subscription arguments.
+         * @param {AwaitSignalArgs} args - subscription arguments.
          * @param {GraphQLContext} context - graphQL context.
-         * @yields {import('./types').Signal}
-         * @returns {import('./utils').PubSubQueue}
+         * @yields {Signal}
+         * @returns {PubSubQueue}
          */
         async (obj, { gameId }, { player, pubsub }) => {
           const queue = await pubsub.subscribe(`sendSignal-${player.id}`)

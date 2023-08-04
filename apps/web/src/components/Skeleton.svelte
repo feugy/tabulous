@@ -38,7 +38,7 @@
   style:--light={light}
 />
 
-<style type="postcss">
+<style lang="postcss">
   span {
     @apply inline-block rounded-xl;
     background-color: var(--background);

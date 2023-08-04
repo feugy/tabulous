@@ -30,11 +30,11 @@
   let anchor
 
   $: iconOnly = !valueAsText && !text
-  $: optionAColor =
+  $: optionColor =
     value && typeof value === 'object' && 'color' in value ? value.color : null
   $: if (valueAsText) {
     text =
-      !value || (typeof value === 'object' && 'color' in value)
+      !value || optionColor
         ? ' '
         : options?.includes(value)
         ? typeof value === 'object' && 'Component' in value
@@ -80,8 +80,8 @@
     <slot name="icon" />
     <span
       slot="text"
-      style:--color={optionAColor}
-      class:color={Boolean(optionAColor)}>{text || ''}</span
+      style:--color={optionColor}
+      class:color={Boolean(optionColor)}>{text || ''}</span
     >
     {#if withArrow && options.length > 1}
       <i
