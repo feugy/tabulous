@@ -1,3 +1,4 @@
+// @ts-check
 import { match } from '@src/params/lang'
 import { describe, expect, it } from 'vitest'
 
@@ -15,6 +16,6 @@ describe('lang route parameter validator', () => {
     },
     { value: 'pt', title: 'rejects unsupported language', result: false }
   ])('$title', ({ value, result }) => {
-    expect(match(value)).toBe(result)
+    expect(match(/** @type {string} */ (value))).toBe(result)
   })
 })

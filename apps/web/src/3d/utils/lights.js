@@ -1,3 +1,9 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ * @typedef {import('@tabulous/server/src/graphql/types').TableSpec} TableSpec
+ */
+
 // mandatory side effect
 import '@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent.js'
 
@@ -10,7 +16,7 @@ import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
  * @typedef {object} LightResult
  * @property {DirectionalLight} light - directional light for main scene
  * @property {HemisphericLight} ambientLight - ambient light for main scene
- * @property {DirectionalLight} handLight - directional light for hand scene
+ * @property {HemisphericLight} handLight - directional light for hand scene
  * @property {ShadowGenerator} shadowGenerator - created shadow generator
  */
 
@@ -19,17 +25,18 @@ import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
  * Creates directional light for the hand scene
  * Note: all meshes created before this light will not project any shadow.
  * @param {object} params - parameters, including:
- * @param {import('@babylonjs/core').Scene} params.scene? - main scene.
- * @param {import('@babylonjs/core').Scene} params.handScene? - hand scene.
+ * @param {Scene} params.scene - main scene.
+ * @param {Scene} params.handScene - hand scene.
  * @returns {LightResult} an object containing created light and shadowGenerator.
  */
-export function createLights({ scene, handScene } = {}) {
+export function createLights({ scene, handScene }) {
   const light = makeDirectionalLight(scene)
   const ambientLight = makeAmbientLight(scene)
 
   const shadowGenerator = new ShadowGenerator(1024, light)
   shadowGenerator.usePercentageCloserFiltering = true
   // https://forum.babylonjs.com/t/shadow-darkness-darker-than-0/22837
+  // @ts-expect-error _darkness is private
   shadowGenerator._darkness = -1.5
 
   const handLight = makeAmbientLight(handScene)
@@ -41,6 +48,10 @@ export function createLights({ scene, handScene } = {}) {
   return { light, ambientLight, handLight, shadowGenerator }
 }
 
+/**
+ * @param {Scene} scene
+ * @returns {DirectionalLight}
+ */
 function makeDirectionalLight(scene) {
   const light = new DirectionalLight('sun', new Vector3(0, -1, 0), scene)
   light.position = new Vector3(0, 20, 0)
@@ -48,6 +59,10 @@ function makeDirectionalLight(scene) {
   return light
 }
 
+/**
+ * @param {Scene} scene
+ * @returns {HemisphericLight}
+ */
 function makeAmbientLight(scene) {
   const light = new HemisphericLight('ambient', new Vector3(0, 1, 0), scene)
   light.intensity = 0.8

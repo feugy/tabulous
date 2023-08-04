@@ -1,3 +1,9 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@src/3d/managers/camera').CameraPosition} CameraPosition
+ */
+
 import { Observable } from '@babylonjs/core/Misc/observable.js'
 import { Scene } from '@babylonjs/core/scene.js'
 
@@ -12,7 +18,77 @@ const logger = makeLogger('input')
 const PinchMovementThreshold = 10
 const PinchMinimumDistance = 200
 const PinchAttemptThreshold = 3
-const DragMinimumDistance = 5
+const DragMinimumDistance = 1
+
+/**
+ * @internal
+ * @template {Event} T
+ * @typedef {object} EventData
+ * @property {string} type - event type.
+ * @property {number} timestamp - input timestamp in milliseconds.
+ * @property {T} event - the original event object.
+ */
+
+/**
+ * @typedef {object} _TapData
+ * @property {?Mesh} mesh - mesh (if any) bellow the pointer.
+ * @property {number} button - the pointer button used
+ * @property {number} pointers - number of pointers pressed.
+ * @property {boolean} fromHand - whether the event occured on the hand or the main scene.
+ * @property {boolean} long - whether pinch started with a long press.
+ *
+ * @typedef {EventData<PointerEvent> & _TapData} TapData tap events ('tap', 'doubletap' type).
+ */
+
+/**
+ * @typedef {object} _DragData
+ * @property {?Mesh} mesh - mesh (if any) bellow the pointer.
+ * @property {number} button - the pointer button used
+ * @property {number} pointers - number of pointers pressed.
+ * @property {boolean} [long] - whether pinch started with a long press ('dragStart' only).
+ *
+ * @typedef {EventData<PointerEvent> & _DragData} DragData drag events ('dragStart', 'drag', 'dragStop' type).
+ */
+
+/**
+ * @typedef {object} _KeyData
+ * @property {Mesh[]} meshes - meshes upon which event occured.
+ * @property {KeyModifiers} modifiers - for key event, active modifiers.
+ * @property {string} key - which key was pressed
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_key_values
+ *
+ * @typedef {EventData<KeyboardEvent> & _KeyData} KeyData keyboard events ('keyDown' type).
+ */
+
+/**
+ * @typedef {object} _WheelData
+ * @property {?Mesh} mesh - mesh upon which event occured.
+ *
+ * @typedef {EventData<WheelEvent> & _WheelData} WheelData Mouse wheel events ('wheel' type).
+ */
+
+/**
+ * @typedef {object} _LongData
+ * @property {number} pointers - number of pointers pressed.
+ *
+ * @typedef {EventData<PointerEvent> & _LongData} LongData Long pointer events ('longPointer' type)
+ */
+
+/**
+ * @typedef {object} _PinchData
+ * @property {number} pointers - number of pointers pressed.
+ * @property {number} pinchDelta - how many pixels more (or less) between the two pointers since the previous event.
+ * @property {boolean} [long] - whether pinch started with a long press ('pinchStart' only).
+ *
+ * @typedef {EventData<PointerEvent> & _PinchData} PinchData Pinch events ('pinchStart', 'pinch', 'pinchStop' type)
+ */
+
+/**
+ * @typedef {object} _HoverData
+ * @property {Mesh} mesh - mesh upon which event occured.
+ *
+ * @typedef {EventData<PointerEvent> & _HoverData} HoverData Hover events ('hoverStart', 'hoverStop' type)
+ */
 
 /**
  * @typedef {object} KeyModifiers modifier keys applied during the keystroke:
@@ -20,20 +96,14 @@ const DragMinimumDistance = 5
  * @property {boolean} ctrl - true when Ctrl key is active.
  * @property {boolean} meta - true when Windows/Command key is active.
  * @property {boolean} shift - true when Shift key is active.
- *
- * @typedef {object} InputData input event data:
- * @property {string} type - event type (tap, doubletap, wheel, dragStart, drag, dragStop, hoverStart, hoverStop, pinchStart, pinch, pinchStop, longPointer, keyDown).
- * @property {PointerEvent} event - the original browser event.
- * @property {Number} timestamp - input timestamp in milliseconds.
- * @property {number} pointers? - number of pointers used.
- * @property {object} mesh? - mesh upon which event occured, when relevant.
- * @property {object[]} meshes? - meshes upon which key event occured, when relevant.
- * @property {number} button? - the pointer button used, when relevant (depends on pointer and event types).
- * @property {boolean} long? - true indicates long press on relevant types (tap, doubletap, dragStart, pinchStart)
- * @property {number} pinchDelta? - for pinch event, how many pixels more (or less) between the two pointers since the previous event.
- * @property {string} key? - for key event, which key was pressed @see https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_key_values
- * @property {KeyModifier} modifiers? - for key event, active modifiers.
- * @property {boolean} fromHand? - true when interacted mesh lies in player's hand.
+ */
+
+/**
+ * @typedef {object} StoredPointer
+ * @property {?Mesh} mesh - mesh (if any) bellow the pointer.
+ * @property {number} button - the pointer button used
+ * @property {PointerEvent} event - the original event object.
+ * @property {number} timestamp - input timestamp in milliseconds.
  */
 
 class InputManager {
@@ -44,28 +114,27 @@ class InputManager {
    * - mouse hovering a given mesh
    * - mouse wheel
    * Clears all observers on scene disposal.
-   *
-   * @property {boolean} enabled - whether inputs are handled or ignored.
-   * @property {Observable<InputData>} onTapObservable - emits single and double tap events.
-   * @property {Observable<InputData>} onDragObservable - emits drag start, drag(ging) and drag stop operation events.
-   * @property {Observable<InputData>} onPinchObservable - emits pinch start, pinch(ing) and pinch stop operation events.
-   * @property {Observable<InputData>} onHoverObservable - emits pointer hover start and stop events.
-   * @property {Observable<InputData>} onWheelObservable - emits pointer wheel events.
-   * @property {Observable<InputData>} onLongObservable - emits an event when detecting long operations (long tap/drag/pinch).
-   * @property {Observable<InputData>} onKeyObservable - emits an event when a key is pressed.
-   * @property {Observable<number[]>} onPointerObservable - emits Vector3 components describing the current pointer position in 3D engine.
    */
   constructor() {
+    /** @type {boolean} whether inputs are handled or ignored. */
     this.enabled = false
+    /** @type {Observable<TapData>} emits single and double tap events. */
     this.onTapObservable = new Observable()
+    /** @type {Observable<DragData>} emits drag start, drag(ging) and drag stop operation events. */
     this.onDragObservable = new Observable()
+    /** @type {Observable<PinchData>} emits pinch start, pinch(ing) and pinch stop operation events. */
     this.onPinchObservable = new Observable()
+    /** @type {Observable<HoverData>} emits pointer hover start and stop events. */
     this.onHoverObservable = new Observable()
+    /** @type {Observable<WheelData>} emits pointer wheel events. */
     this.onWheelObservable = new Observable()
+    /** @type {Observable<LongData>} emits an event when detecting long operations (long tap/drag/pinch). */
     this.onLongObservable = new Observable()
+    /** @type {Observable<KeyData>} emits an event when a key is pressed. */
     this.onKeyObservable = new Observable()
+    /** @type {Observable<number[]>} emits Vector3 components describing the current pointer position in 3D engine. */
     this.onPointerObservable = new Observable()
-    // private
+    /** @protected @type {?() => void} */
     this.dispose = null
   }
 
@@ -74,10 +143,10 @@ class InputManager {
    * @param {object} params - parameters, including:
    * @param {Scene} params.scene - scene attached to.
    * @param {Scene} params.handScene - hand scene overlay.
-   * @param {Element} params.interaction - the DOM element to attach event handlers to
-   * @param {Observable} onCameraMove - observable triggered when the main camera is moving.
+   * @param {HTMLElement} params.interaction - the DOM element to attach event handlers to
+   * @param {Observable<CameraPosition>} params.onCameraMove - observable triggered when the main camera is moving.
    * @param {number} params.longTapDelay - number of milliseconds to hold pointer down before it is considered as long.
-   * @param {boolean} [params.enabled=true] - whether the input manager actively handles inputs or not.
+   * @param {boolean} [params.enabled=false] - whether the input manager actively handles inputs or not.
    */
   init({
     scene,
@@ -89,20 +158,26 @@ class InputManager {
   }) {
     // same finger/stylus/mouse will have same pointerId for down, move(s) and up events
     // different fingers will have different ids
+    /** @type {Map<number, StoredPointer>} */
     const pointers = new Map()
+    /** @type {Map<number, { long: boolean, deferLong: number }>} */
     const pointerTimes = new Map()
     const pinch = {
+      /** @type {?StoredPointer} */
       first: null,
+      /** @type {?StoredPointer} */
       second: null,
-      distance: null,
+      distance: 0,
       attempts: 0,
       confirmed: false
     }
+    /** @type {?StoredPointer} */
     let dragOrigin = null
+    /** @type {Map<number, Mesh>} */
     let hoveredByPointerId = new Map()
     let lastTap = 0
     let tapPointers = 1
-    let lastMoveEvent = {}
+    let lastMoveEvent = /** @type {PointerEvent} */ ({})
     this.enabled = enabled
     this.longTapDelay = longTapDelay
     this.dispose?.()
@@ -113,11 +188,16 @@ class InputManager {
       if (mesh) {
         startHover(lastMoveEvent, mesh)
       } else {
-        this.stopHover({ ...lastMoveEvent, pointerId: undefined })
+        this.stopHover(
+          /** @type {MouseEvent} */ ({ ...lastMoveEvent, pointerId: undefined })
+        )
       }
     }
 
-    const startHover = (event, mesh) => {
+    const startHover = (
+      /** @type {PointerEvent} */ event,
+      /** @type {Mesh} */ mesh
+    ) => {
       if (hoveredByPointerId.get(event.pointerId) !== mesh) {
         const data = { type: 'hoverStart', mesh, event, timestamp: Date.now() }
         logger.info(data, `start hovering ${mesh.id}`)
@@ -128,7 +208,7 @@ class InputManager {
     }
 
     // dynamically creates stopHover to keep hovered hidden
-    this.stopHover = event => {
+    this.stopHover = (/** @type {PointerEvent} */ event) => {
       if ('pointerId' in event && event.pointerId !== undefined) {
         const mesh = hoveredByPointerId.get(event.pointerId)
         if (mesh) {
@@ -140,13 +220,13 @@ class InputManager {
         }
       } else {
         for (const pointerId of hoveredByPointerId.keys()) {
-          this.stopHover({ ...event, pointerId })
+          this.stopHover(/** @type {PointerEvent} */ ({ ...event, pointerId }))
         }
       }
     }
 
     // dynamically creates stopDrag to keep dragOrigin hidden
-    this.stopDrag = event => {
+    this.stopDrag = (/** @type {PointerEvent} */ event) => {
       if (dragOrigin) {
         const meshId = dragOrigin.mesh?.id
         const data = {
@@ -155,7 +235,7 @@ class InputManager {
           // in case mesh was moved between scenes by dragging, return the new one
           mesh: meshId
             ? scene.getMeshById(meshId) ?? handScene?.getMeshById(meshId)
-            : undefined,
+            : null,
           event,
           pointers: pointers.size,
           timestamp: Date.now()
@@ -173,11 +253,12 @@ class InputManager {
     }
 
     // dynamically creates stopPinch to keep pinchPointers hidden
-    this.stopPinch = event => {
+    this.stopPinch = (/** @type {PointerEvent} */ event) => {
       if (pinch.confirmed) {
         const data = {
           type: 'pinchStop',
           event,
+          pinchDelta: 0,
           pointers: 2,
           timestamp: Date.now()
         }
@@ -189,7 +270,7 @@ class InputManager {
       }
       pinch.first = null
       pinch.second = null
-      pinch.distance = null
+      pinch.distance = 0
       pinch.attempts = 0
       pinch.confirmed = false
     }
@@ -200,9 +281,16 @@ class InputManager {
       }
     }
 
+    /**
+     * @param {PointerEvent|WheelEvent} event
+     * @returns {{ button?: PointerEvent['button'], mesh: ?Mesh}}
+     */
     function computeMetas(event) {
       return {
-        button: event.pointerType === 'mouse' ? event.button : undefined,
+        button:
+          'pointerType' in event && event.pointerType === 'mouse'
+            ? event.button
+            : undefined,
         // takes mesh with highest elevation, and only when they are pickable
         mesh: handManager.isPointerInHand(event)
           ? findPickedMesh(handScene, event)
@@ -210,7 +298,7 @@ class InputManager {
       }
     }
 
-    const handlePointerDown = event => {
+    const handlePointerDown = (/** @type {PointerEvent} */ event) => {
       if (!this.enabled) return
       logger.debug(
         { event },
@@ -219,19 +307,20 @@ class InputManager {
       const { button, mesh } = computeMetas(event)
       pointers.set(event.pointerId, {
         mesh,
-        button,
+        button: /** @type {number} */ (button),
         event,
         timestamp: Date.now()
       })
       pointerTimes.set(event.pointerId, {
         long: false,
-        deferLong: setTimeout(() => {
+        deferLong: /** @type {typeof window.setTimeout} */ (setTimeout)(() => {
+          // @ts-expect-error: pointerTimes does contain event.pointerId
           pointerTimes.get(event.pointerId).long = true
           const data = {
             type: 'longPointer',
             event,
             pointers: pointers.size,
-            timestamp: pointers.get(event.pointerId).timestamp
+            timestamp: pointers.get(event.pointerId)?.timestamp ?? 0
           }
           logger.info(data, `long pointer detected`)
           this.onLongObservable.notifyObservers(data)
@@ -249,7 +338,7 @@ class InputManager {
       }
     }
 
-    const handlePointerMove = event => {
+    const handlePointerMove = (/** @type {PointerEvent} */ event) => {
       if (!this.enabled || !hasMoved(pointers, event)) return
       logger.trace(
         { event },
@@ -269,12 +358,14 @@ class InputManager {
         startHover(event, mesh)
       }
 
-      if (pinch.first) {
+      if (pinch.first && pinch.second) {
         const oldDistance = pinch.distance
         // updates pinch pointers and computes new distance
-        pinch[
-          pinch.first.event.pointerId === event.pointerId ? 'first' : 'second'
-        ].event = event
+        if (pinch.first.event.pointerId === event.pointerId) {
+          pinch.first.event = event
+        } else {
+          pinch.second.event = event
+        }
         pinch.distance = distance(pinch.first.event, pinch.second.event)
         const pinchDelta = oldDistance - pinch.distance
 
@@ -291,7 +382,7 @@ class InputManager {
               event,
               pointers: 2,
               long: pointerTimes.get(event.pointerId)?.long,
-              timestamp: pointers.get(event.pointerId).timestamp
+              timestamp: pointers.get(event.pointerId)?.timestamp ?? 0
             }
             logger.info(data, `start ${data.long ? 'long ' : ' '}pinching`)
             this.onPinchObservable.notifyObservers(data)
@@ -315,9 +406,7 @@ class InputManager {
       } else if (pointers.size) {
         if (!dragOrigin) {
           dragOrigin = [...pointers.values()][0]
-          if (
-            isDifferenceEnough(dragOrigin.event, event, DragMinimumDistance)
-          ) {
+          if (distance(dragOrigin.event, event) >= DragMinimumDistance) {
             const data = {
               type: 'dragStart',
               ...dragOrigin,
@@ -353,7 +442,7 @@ class InputManager {
       }
     }
 
-    const handlePointerUp = event => {
+    const handlePointerUp = (/** @type {PointerEvent} */ event) => {
       if (!this.enabled) return
       logger.debug(
         { event },
@@ -376,12 +465,12 @@ class InputManager {
           type:
             Date.now() - lastTap < Scene.DoubleClickDelay ? 'doubletap' : 'tap',
           mesh,
-          button,
+          button: /** @type {number} */ (button),
           event,
           pointers: tapPointers,
-          long: pointerTimes.get(pointerId).long,
+          long: pointerTimes.get(pointerId)?.long ?? false,
           fromHand: mesh?.getScene() === handScene,
-          timestamp: pointers.get(pointerId).timestamp
+          timestamp: pointers.get(pointerId)?.timestamp ?? 0
         }
         clearLong()
         pointerTimes.clear()
@@ -399,26 +488,21 @@ class InputManager {
       }
     }
 
-    const handleWheel = event => {
+    const handleWheel = (/** @type {WheelEvent} */ event) => {
       if (!this.enabled || event.deltaX) return
-      logger.debug(
-        { event },
-        `type: wheel x: ${event.x} y: ${event.y} id: ${event.pointerId}`
-      )
-      const { button, mesh } = computeMetas(event)
+      logger.debug({ event }, `type: wheel x: ${event.x} y: ${event.y}`)
+      const { mesh } = computeMetas(event)
       const data = {
         type: 'wheel',
         mesh,
-        button,
         event,
-        pointers: pointers.size,
         timestamp: Date.now()
       }
-      logger.info(data, `wheel on ${mesh?.id ?? 'table'} with button ${button}`)
+      logger.info(data, `wheel on ${mesh?.id ?? 'table'}`)
       this.onWheelObservable.notifyObservers(data)
     }
 
-    const handleKeyDown = event => {
+    const handleKeyDown = (/** @type {KeyboardEvent} */ event) => {
       if (!this.enabled) return
       const data = {
         type: 'keyDown',
@@ -433,40 +517,30 @@ class InputManager {
         event,
         timestamp: Date.now()
       }
-      logger.debug(data, `type: keydown ${data.key} on (${event.mesh?.id})`)
+      logger.debug(data, `type: keydown ${data.key} on (${data.meshes[0]?.id})`)
       this.onKeyObservable.notifyObservers(data)
     }
 
-    const handleFocus = event => {
-      if (!this.enabled) return
-      const { mesh } = computeMetas(event)
-      if (mesh) {
-        startHover(event, mesh)
-      }
-    }
-
-    const handleBlur = event => {
+    const handleBlur = (/** @type {FocusEvent}) */ event) => {
       if (!this.enabled) return
       this.stopAll(event)
     }
 
-    interaction.addEventListener('focus', handleFocus)
     interaction.addEventListener('blur', handleBlur)
     interaction.addEventListener('pointerdown', handlePointerDown)
     interaction.addEventListener('pointermove', handlePointerMove)
     interaction.addEventListener('pointerup', handlePointerUp)
     interaction.addEventListener('wheel', handleWheel)
     interaction.addEventListener('keydown', handleKeyDown)
-    onCameraMove.add(handleCameraMove)
+    const cameraObserver = onCameraMove.add(handleCameraMove)
     this.dispose = () => {
-      interaction.removeEventListener('focus', handleFocus)
       interaction.removeEventListener('blur', handleBlur)
       interaction.removeEventListener('pointerdown', handlePointerDown)
       interaction.removeEventListener('pointermove', handlePointerMove)
       interaction.removeEventListener('pointerup', handlePointerUp)
       interaction.removeEventListener('wheel', handleWheel)
       interaction.removeEventListener('keydown', handleKeyDown)
-      onCameraMove.remove(handleCameraMove)
+      onCameraMove.remove(cameraObserver)
     }
     scene.onDisposeObservable.addOnce(() => {
       this.onTapObservable.clear()
@@ -475,7 +549,7 @@ class InputManager {
       this.onWheelObservable.clear()
       this.onKeyObservable.clear()
       this.onPointerObservable.clear()
-      this.dispose()
+      this.dispose?.()
     })
   }
 
@@ -483,19 +557,22 @@ class InputManager {
    * Notifies observers of the end of a drag operation (if any).
    * @param {Event} event - triggering event
    */
-  stopDrag() {}
+  // eslint-disable-next-line no-unused-vars
+  stopDrag(event) {}
 
   /**
    * Notifies observers of the end of a pinch operation (if any).
    * @param {Event} event - triggering event
    */
-  stopPinch() {}
+  // eslint-disable-next-line no-unused-vars
+  stopPinch(event) {}
 
   /**
    * Notifies observers of the end of an hover operation (if any).
    * @param {Event} event - triggering event
    */
-  stopHover() {}
+  // eslint-disable-next-line no-unused-vars
+  stopHover(event) {}
 
   /**
    * Stops all active operations (drags, pinchs, hover...). Useful when canvas lost focus.
@@ -514,23 +591,32 @@ class InputManager {
  */
 export const inputManager = new InputManager()
 
+/**
+ * @param {Scene} scene - scene in which mesh are picked.
+ * @param {MouseEvent} event - picking event.
+ * @returns {?Mesh} picked mesh, if any.
+ */
 function findPickedMesh(scene, { x, y }) {
-  return scene
-    .multiPickWithRay(
-      scene.createPickingRay(x, y),
-      mesh => mesh.isPickable && !selectionManager.isSelectedByPeer(mesh)
-    )
-    .sort((a, b) => a.distance - b.distance)[0]?.pickedMesh
-}
-
-function isDifferenceEnough(eventA, eventB, threshold) {
-  return (
-    Math.abs(eventA.x, eventB.x) >= threshold ||
-    Math.abs(eventA.y, eventB.y) >= threshold
+  return /** @type {?Mesh} */ (
+    scene
+      .multiPickWithRay(
+        scene.createPickingRay(x, y, null, null),
+        mesh =>
+          mesh.isPickable &&
+          !selectionManager.isSelectedByPeer(/** @type {Mesh} */ (mesh))
+      )
+      ?.sort((a, b) => a.distance - b.distance)[0]?.pickedMesh ?? null
   )
 }
 
+/**
+ * @param {Map<number, StoredPointer>} pointers - map of pointers.
+ * @param {PointerEvent} event - tested event.
+ * @returns {boolean} whether this pointer has moved or not
+ */
 function hasMoved(pointers, event) {
-  const { x, y } = pointers.get(event?.pointerId)?.event ?? { x: 0, y: 0 }
+  const { x, y } = (event && 'pointerId' in event
+    ? pointers.get(event.pointerId)?.event
+    : null) ?? { x: 0, y: 0 }
   return event?.x - x !== 0 || event?.y - y !== 0
 }

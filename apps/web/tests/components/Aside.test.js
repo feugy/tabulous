@@ -1,5 +1,11 @@
+// @ts-check
+/**
+ * @typedef {import('@src/graphql').LightPlayer} Player
+ * @typedef {import('rxjs').BehaviorSubject<?>} BehaviorSubject
+ */
+
 import { Aside } from '@src/components'
-import { stream$ } from '@src/stores/stream'
+import { stream$ as actualStream$ } from '@src/stores/stream'
 import { fireEvent, render, screen, waitFor } from '@testing-library/svelte'
 import userEvent from '@testing-library/user-event'
 import { players, thread } from '@tests/fixtures/Discussion.testdata'
@@ -20,6 +26,8 @@ vi.mock('@src/stores/stream', () => {
   }
 })
 
+const stream$ = /** @type {BehaviorSubject} */ (actualStream$)
+
 const helpButtonText = 'help F1'
 const friendsButtonText = 'people_alt F2'
 const rulesButtonText = 'auto_stories F3'
@@ -38,7 +46,7 @@ describe('Aside component', () => {
     players[1],
     { ...players[2], playing: true }
   ]
-  const [player] = players
+  const [user] = players
 
   beforeEach(() => {
     vi.resetAllMocks()
@@ -49,17 +57,19 @@ describe('Aside component', () => {
   })
 
   function renderComponent(props = {}) {
-    return render(html`<${Aside}
-      connected=${[]}
-      thread=${[]}
-      ...${props}
-      on:sendMessage=${handleSend}
-    />`)
+    return render(
+      html`<${Aside}
+        connected=${[]}
+        thread=${[]}
+        ...${props}
+        on:sendMessage=${handleSend}
+      />`
+    )
   }
 
   it('can have friends tab only', () => {
     renderComponent({
-      player,
+      user,
       friends: [{ player: players[1] }, { player: players[2] }],
       playerById: new Map(
         players.slice(0, 1).map(player => [player.id, player])
@@ -73,7 +83,7 @@ describe('Aside component', () => {
 
   it('opens friends tab when it contains requests', () => {
     renderComponent({
-      player,
+      user,
       friends: [
         { player: players[1], isRequest: true },
         { player: players[2] }
@@ -91,7 +101,7 @@ describe('Aside component', () => {
   it('only has help and friends tabs on single player game without rules book', () => {
     renderComponent({
       game: { kind: 'belote' },
-      player,
+      user,
       playerById: new Map(
         players.slice(0, 1).map(player => [player.id, player])
       )
@@ -107,7 +117,7 @@ describe('Aside component', () => {
 
   it('has help, friends and rules book on single player game', () => {
     renderComponent({
-      player,
+      user,
       game: { kind: 'splendor', rulesBookPageCount: 4 },
       playerById: toMap(players.slice(0, 1))
     })
@@ -123,7 +133,7 @@ describe('Aside component', () => {
 
   it('has help, friends, discussion and peer tabs on game without rules book', () => {
     renderComponent({
-      player,
+      user,
       game: { kind: 'splendor' },
       playerById: toMap(players),
       thread
@@ -147,7 +157,7 @@ describe('Aside component', () => {
 
   it('has help, friends, rules book, discussion and peer tabs on game', () => {
     renderComponent({
-      player,
+      user,
       game: { kind: 'splendor', rulesBookPageCount: 4 },
       playerById: toMap(players),
       thread
@@ -172,7 +182,7 @@ describe('Aside component', () => {
 
   it('has only friends, discussion and peer tabs on lobby', () => {
     renderComponent({
-      player,
+      user,
       game: { rulesBookPageCount: 4 },
       playerById: toMap(players),
       thread
@@ -189,7 +199,7 @@ describe('Aside component', () => {
 
   it('has streams for connected peers', async () => {
     renderComponent({
-      player,
+      user,
       game: { kind: 'belote' },
       playerById: toMap(playingPlayers),
       connected,
@@ -214,32 +224,34 @@ describe('Aside component', () => {
   })
 
   it('can send messages', async () => {
-    renderComponent({ player, game: {}, playerById: toMap(players), thread })
+    renderComponent({ user, game: {}, playerById: toMap(players), thread })
 
     await fireEvent.click(screen.getAllByRole('tab')[1])
-    expect(screen.getByText(thread[thread.length - 1].text)).toBeInTheDocument()
+    expect(
+      screen.getByText(thread?.[thread?.length - 1]?.text ?? '')
+    ).toBeInTheDocument()
 
-    await userEvent.type(screen.getByRole('textbox'), thread[0].text)
-    fireEvent.click(screen.getByRole('button', { type: 'submit' }))
+    await userEvent.type(screen.getByRole('textbox'), thread?.[0].text ?? '')
+    fireEvent.click(screen.getByRole('button'))
 
     expect(handleSend).toHaveBeenCalledWith(
       expect.objectContaining({
-        detail: { text: thread[0].text }
+        detail: { text: thread?.[0].text }
       })
     )
     expect(handleSend).toHaveBeenCalledTimes(1)
   })
 
   describe('given all tabs visible', () => {
-    beforeEach(() =>
+    beforeEach(() => {
       renderComponent({
-        player,
+        user,
         game: { kind: 'splendor', rulesBookPageCount: 4 },
         playerById: toMap(playingPlayers),
         connected,
         thread
       })
-    )
+    })
 
     it('displays rules book when clicking on tab', async () => {
       await fireEvent.click(screen.getByRole('tab', { name: rulesButtonText }))
@@ -285,6 +297,6 @@ describe('Aside component', () => {
   })
 })
 
-function toMap(players) {
+function toMap(/** @type {Player[]} */ players) {
   return new Map(players.map(player => [player.id, player]))
 }

@@ -52,7 +52,7 @@
   name="Components/Aside"
   props={{
     game: { kind: 'splendor' },
-    player: players[0],
+    user: players[0],
     playerById,
     connected: [],
     thread: [],

@@ -1,3 +1,9 @@
+// @ts-check
+/**
+ * @template {any[]} P, R
+ * @typedef {import('vitest').SpyInstance<P, R>} SpyInstance
+ */
+
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
@@ -21,6 +27,7 @@ describe('CustomShapeManager', () => {
   const logger = makeLogger('custom-shape')
   const gameAssetsUrl = 'https://localhost:3000'
 
+  /** @type {Record<string, {meshes: any[] }>} */
   const fixtures = {
     pawn: {
       meshes: [{ name: 'custom', id: 'Pawn', positions: [0.2858, -0.3324] }]
@@ -37,10 +44,12 @@ describe('CustomShapeManager', () => {
     Object.keys(fixtures).map(key => [key, btoa(JSON.stringify(fixtures[key]))])
   )
 
+  /** @type {SpyInstance<any[], void>} */
   let error
   const server = setupServer(
     rest.get(`${gameAssetsUrl}/:name`, ({ params }, res, ctx) => {
-      const data = fixtures[params.name.replace('.babylon', '')]
+      const data =
+        fixtures[/** @type {string} */ (params.name).replace('.babylon', '')]
       return res(data ? ctx.json(data) : ctx.status(404))
     })
   )
@@ -75,9 +84,10 @@ describe('CustomShapeManager', () => {
       await manager.init({
         gameAssetsUrl,
         meshes: [
-          { shape: 'custom', file },
-          { shape: 'die', faces: 4 }
-        ]
+          { id: '', texture: '', shape: 'custom', file },
+          { id: '', texture: '', shape: 'die', faces: 4 }
+        ],
+        hands: undefined
       })
       expect(manager.get(file)).toEqual(expectedData.pawn)
       expect(manager.get(getDieModelFile(4))).toEqual(expectedData.die)
@@ -100,14 +110,19 @@ describe('CustomShapeManager', () => {
       )
       await manager.init({
         gameAssetsUrl,
+        meshes: undefined,
         hands: [
           {
+            playerId: '1',
             meshes: [
-              { shape: 'custom', file: file1 },
-              { shape: 'custom', file: file2 }
+              { id: '', texture: '', shape: 'custom', file: file1 },
+              { id: '', texture: '', shape: 'custom', file: file2 }
             ]
           },
-          { meshes: [{ shape: 'custom', file: file3 }] }
+          {
+            playerId: '2',
+            meshes: [{ id: '', texture: '', shape: 'custom', file: file3 }]
+          }
         ]
       })
       expect(manager.get(file1)).toEqual(expectedData.pawn)
@@ -126,9 +141,10 @@ describe('CustomShapeManager', () => {
       await manager.init({
         gameAssetsUrl,
         meshes: [
-          { shape: 'card', file: file1 },
-          { shape: 'custom', file: file2 }
-        ]
+          { id: '', texture: '', shape: 'card', file: file1 },
+          { id: '', texture: '', shape: 'custom', file: file2 }
+        ],
+        hands: undefined
       })
       expect(manager.get(file2)).toEqual(expectedData.pawn)
       expect(() => manager.get(file1)).toThrow()
@@ -139,7 +155,8 @@ describe('CustomShapeManager', () => {
       await expect(
         manager.init({
           gameAssetsUrl,
-          meshes: [{ shape: 'custom', file: file }]
+          meshes: [{ id: '', texture: '', shape: 'custom', file: file }],
+          hands: undefined
         })
       ).rejects.toThrow(`failed to download custom shape file ${file}`)
       expect(() => manager.get(file)).toThrow()
@@ -159,9 +176,10 @@ describe('CustomShapeManager', () => {
       await manager.init({
         gameAssetsUrl,
         meshes: [
-          { shape: 'custom', file: file },
-          { shape: 'custom', file: file }
-        ]
+          { id: '', texture: '', shape: 'custom', file: file },
+          { id: '', texture: '', shape: 'custom', file: file }
+        ],
+        hands: undefined
       })
       expect(manager.get(file)).toEqual(expectedData.pawn)
       expect(request).toHaveBeenCalledTimes(1)
@@ -180,9 +198,10 @@ describe('CustomShapeManager', () => {
       await manager.init({
         gameAssetsUrl,
         meshes: [
-          { shape: 'custom', file: pawnPath },
-          { shape: 'custom', file: avatarPath }
-        ]
+          { id: '', texture: '', shape: 'custom', file: pawnPath },
+          { id: '', texture: '', shape: 'custom', file: avatarPath }
+        ],
+        hands: undefined
       })
     })
 
@@ -195,7 +214,8 @@ describe('CustomShapeManager', () => {
         )
         await manager.init({
           gameAssetsUrl,
-          meshes: [{ shape: 'custom', file: diePath }]
+          meshes: [{ id: '', texture: '', shape: 'custom', file: diePath }],
+          hands: undefined
         })
         expect(manager.get(pawnPath)).toEqual(expectedData.pawn)
         expect(manager.get(avatarPath)).toEqual(expectedData.avatar)
@@ -214,7 +234,8 @@ describe('CustomShapeManager', () => {
         )
         await manager.init({
           gameAssetsUrl,
-          meshes: [{ shape: 'custom', file: knightPath }]
+          meshes: [{ id: '', texture: '', shape: 'custom', file: knightPath }],
+          hands: undefined
         })
         expect(manager.get(pawnPath)).toBeDefined()
       })

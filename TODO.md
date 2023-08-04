@@ -1,14 +1,18 @@
 # TODO
 
+- move server graphql types in a d.ts file
+- create type for migration files
+
 ## Road to beta
 
+- ts-check game files
+- replace windicss with a successor (tailwind or UnoCSS)
 - automerge.js
 
 ## Refactor
 
-- add tests for web/src/utils/peer-connection
-- ts-check all the things!
 - graphQL + mesh: replace prismRotation with initialRotation
+- add tests for web/src/utils/peer-connection
 - group candidate target per kind for performance
 - keep anchor ids
 - create Animation objects as part of runAnimation() (constant frameRate of 60)
@@ -20,6 +24,8 @@
 
 - bug: game shortcuts ignore active selection to only apply to hover mesh
 - bug: 6-takes: snapping to the wrong anchor (when 2 players are snapping to different anchors)
+- chore: a couple TODOs in the code
+- chore: Placing %sveltekit.body% directly inside <body> is not recommended
 - score card (Mah-jong, Belote)
 - command to reset some mesh state and restart a game (Mah-jong, Belote)
 - check headings ordering

@@ -8,6 +8,7 @@
   component={AcceptTermsPage}
   name="Routes/accept-terms"
   setup={() => setSvelteUrl('/accept-terms')}
+  props={{ data: {} }}
 >
   <Tool name="Default" />
 </ToolBox>

@@ -1,3 +1,4 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import { buildSDPTransform } from '@src/utils'
 import { describe, expect, it } from 'vitest'

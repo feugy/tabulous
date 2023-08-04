@@ -6,7 +6,10 @@ import { GamePage, HomePage } from './pages/index.js'
 import { translate } from './utils/index.js'
 import { describe, expect, it, mockGraphQl } from './utils/index.js'
 
-for (const { lang } of [{ lang: 'fr' }, { lang: 'en' }]) {
+for (const { lang } of /** @type {{ lang: import('./utils').Locale }[]} */ ([
+  { lang: 'fr' },
+  { lang: 'en' }
+])) {
   describe(`${lang} Game page`, () => {
     const player = {
       id: faker.string.uuid(),

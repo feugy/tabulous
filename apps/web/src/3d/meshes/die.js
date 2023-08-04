@@ -1,3 +1,11 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ * @typedef {import('@tabulous/server/src/graphql/types').RandomizableState} RandomizableState
+ * @typedef {import('@src/3d/utils/behaviors').SerializedMesh} SerializedMesh
+ */
+
 import { Matrix, Quaternion } from '@babylonjs/core/Maths/math.vector'
 
 import { toRad } from '../../utils/math'
@@ -6,19 +14,11 @@ import { applyInitialTransform } from '../utils/mesh'
 import { createCustom } from './custom'
 
 /**
- * Creates a die, which could have from 4, 6, 8, 10, 12 or 20 faces.
- * @param {object} params - die parameters, including (all other properties will be passed to the created mesh):
- * @param {string} params.id - die's unique id.
- * @param {string} params.texture - die's texture url or hexadecimal string color.
- * @param {number[][]} params.faceUV? - up to TODO face UV (Vector4 components), to map texture on the die.
- * @param {number} params.x? - initial position along the X
- * @param {number} params.y? - initial position along the Y
- * @param {number} params.z? - initial position along the Z
- * @param {number} params.diameter? - token's diameter (all axis).
- * @param {number} params.faces? - number of faces (6 by default)
- * @param {import('../utils').InitialTransform} params.transform? - initial transformation baked into the mesh's vertice.
- * @param {import('@babylonjs/core').Scene} scene? - scene to host this die (default to last scene).
- * @returns {Promise<import('@babylonjs/core').Mesh>} the created custom mesh.
+ * Creates a die, which could have from 4, 6, or 8 faces.
+ * By default, dices have a diameter of 1, and 6 faces.
+ * @param {Omit<SerializedMesh, 'shape'>} params - die parameters.
+ * @param {Scene} scene - scene for the created mesh.
+ * @returns {Promise<Mesh>} the created die mesh.
  */
 export async function createDie(
   {
@@ -31,7 +31,7 @@ export async function createDie(
     texture,
     transform = undefined,
     ...behaviorStates
-  } = {},
+  },
   scene
 ) {
   const mesh = await createCustom(
@@ -57,7 +57,7 @@ export async function createDie(
   scene.addMesh(mesh, true)
 
   mesh.metadata.serialize = () => ({
-    shape: mesh.name,
+    shape: /** @type {'die'} */ (mesh.name),
     id,
     x: mesh.absolutePosition.x,
     y: mesh.absolutePosition.y,
@@ -81,12 +81,12 @@ export async function createDie(
 
 /**
  * Computes the model file url for a given die.
- * @param {number} faces - number of faces for this die (4, 6, 8, 10, 12 or 20).
+ * @param {number} faces - number of faces for this die (4, 6, 8).
  * @returns {string} url of the model file.
  * @throws {Error} if the desired number of faces is not supported.
  */
 export function getDieModelFile(faces) {
-  if (![4, 6, 8, 10, 12, 20].includes(faces)) {
+  if (![4, 6, 8].includes(faces)) {
     throw new Error(`${faces} faces dice are not supported`)
   }
   return `/assets/models/die${faces}.obj`
@@ -102,6 +102,10 @@ const cos90 = cos(toRad(45))
 const sin180 = sin(toRad(90))
 const cos180 = cos(toRad(90))
 
+/**
+ * @param {number} faces - number of faces for this die.
+ * @return {Map<number, Quaternion>} rotation quaternion for each face of this die.
+ */
 export function getQuaternions(faces) {
   if (faces === 4) {
     // swing movement from 1 to 2,

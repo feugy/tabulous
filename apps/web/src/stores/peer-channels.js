@@ -1,8 +1,18 @@
+// @ts-check
+/**
+ * @typedef {import('rxjs').Subscription} Subscription
+ * @typedef {import('@tabulous/server/src/graphql/types').Player} Player
+ * @typedef {import('@tabulous/server/src/graphql/types').TurnCredentials} TurnCredentials
+ * @typedef {import('@src/utils').StreamState} StreamState
+ * @typedef {import('@src/utils').Stream} Stream
+ */
+
+// mandatory side effect
 import 'webrtc-adapter'
 
+import * as graphQL from '@src/graphql'
 import { auditTime, BehaviorSubject, filter, scan, Subject } from 'rxjs'
 
-import * as graphQL from '../graphql'
 import { makeLogger, PeerConnection } from '../utils'
 import { runMutation, runSubscription } from './graphql-client'
 import {
@@ -12,31 +22,48 @@ import {
   stream$
 } from './stream'
 
+/** @typedef {{ playerId: string } & Partial<StreamState>} Connected */
+
 const logger = makeLogger('peer-channels')
 
+/**
+ * @typedef {object} Message message received or sent viw WebRTC.
+ * @property {string} playerId - if of the sending/receiving player.
+ * @property {?} data - data sent or received.
+ */
+
 const bitrate = 128
+/** @type {Map<string, PeerConnection>} */
 const connections = new Map()
-const streamSubscriptionByPlayerId = new Map()
+/** @type {Subject<Message>} */
 const lastMessageSent$ = new Subject()
+/** @type {Subject<Message>} */
 const lastMessageReceived$ = new Subject()
+/** @type {Subject<?Message>} */
 const unorderedMessages$ = new Subject()
-const connected$ = new BehaviorSubject([])
+const connected$ = new BehaviorSubject(/** @type {Connected[]} */ ([]))
+/** @type {Subject<string>} */
 const lastConnectedId$ = new Subject()
+/** @type {Subject<string>} */
 const lastDisconnectedId$ = new Subject()
+/** @type {Subscription[]} */
 let subscriptions = []
-let current
+/** @type {?{ player: Player }} */
+let current = null
 let messageId = 1
-let local = {}
-resetLocalState()
+/** @type {Stream} */
+let local
 
 unorderedMessages$
   .pipe(
     // orders message, lower id first
     scan(
-      (list, last) =>
+      (/** @type {?Message[]} */ list, last) =>
         last === null
           ? null
-          : [...list, last].sort((a, b) => a.data.messageId - b.data.messageId),
+          : [...(list ?? []), last].sort(
+              (a, b) => a.data.messageId - b.data.messageId
+            ),
       []
     ),
     filter(list => {
@@ -53,7 +80,7 @@ unorderedMessages$
   )
   .subscribe(list => {
     // processes each ordered message, and clears list
-    for (const data of list) {
+    for (const data of /** @type {Message[]} */ (list)) {
       lastMessageReceived$.next(data)
     }
     unorderedMessages$.next(null)
@@ -61,41 +88,36 @@ unorderedMessages$
 
 /**
  * Emits last data sent to another player
- * @type {Observable<object>}
  */
 export const lastMessageSent = lastMessageSent$.asObservable()
 
 /**
  * Emits last data received from other connected players
- * @type {Observable<object>}
  */
 export const lastMessageReceived = lastMessageReceived$.asObservable()
 
 /**
  * Emits an array of currently connected player descriptors.
  * If current player is single, the array will be empty, otherwise it always comes first.
- * @type {Observable<[PeerPlayer]>}
  */
 export const connected = connected$.asObservable()
 
 /**
  * Emits player id of the last connected player
- * @type {Observable<string>}
  */
 export const lastConnectedId = lastConnectedId$.asObservable()
 
 /**
  * Emits player id of the last disconnected player
- * @type {Observable<string>}
  */
 export const lastDisconnectedId = lastDisconnectedId$.asObservable()
 
 /**
  * Configures communication channels in order to honor other players' connection requests
- * @async
- * @param {object} player - current player // TODO
- * @param {object} turnCredentials - turn credentials from session.
+ * @param {Player} player - current player
+ * @param {TurnCredentials} turnCredentials - turn credentials from session.
  * @param {string} gameId - joined game Id.
+ * @returns {Promise<void>}
  */
 export async function openChannels(player, turnCredentials, gameId) {
   current = { player }
@@ -110,9 +132,11 @@ export async function openChannels(player, turnCredentials, gameId) {
       }
     }),
     stream$.subscribe(stream => {
-      local.stream = stream
-      for (const peer of connections.values()) {
-        peer.attachLocalStream(local.stream)
+      if (stream) {
+        local.stream = stream
+        for (const peer of connections.values()) {
+          peer.attachLocalStream(local.stream)
+        }
       }
     })
   ]
@@ -122,7 +146,10 @@ export async function openChannels(player, turnCredentials, gameId) {
       runSubscription(graphQL.awaitSignal, { gameId }).subscribe(
         async ({ from, data }) => {
           const signal = JSON.parse(data)
-          logger.debug({ from, signal }, `receiving ${signal.type} from server`)
+          logger.debug(
+            { from, signal },
+            `receiving ${signal.type ?? 'candidate'} from server`
+          )
           if (signal.type === 'ready') {
             resolve()
           } else if (signal.type === 'offer' && !connections.has(from)) {
@@ -155,7 +182,9 @@ export async function openChannels(player, turnCredentials, gameId) {
             } catch (error) {
               logger.warn(
                 { peer, error },
-                `failed to connect with peer ${from}: ${error.message}`
+                `failed to connect with peer ${from}: ${
+                  /** @type {Error} */ (error).message
+                }`
               )
             }
           } else {
@@ -171,7 +200,7 @@ export async function openChannels(player, turnCredentials, gameId) {
  * Connects with another player, asking to attach media if necessary.
  * @async
  * @param {string} playerId - id of the player to connect with.
- * @param {object} turnCredentials - turn credentials from session.
+ * @param {TurnCredentials} turnCredentials - turn credentials from session.
  * @throws {Error} when no connected peer is matching provided id.
  */
 export async function connectWith(playerId, turnCredentials) {
@@ -209,7 +238,9 @@ export async function connectWith(playerId, turnCredentials) {
   } catch (error) {
     logger.warn(
       { peer, error },
-      `failed to connect with peer ${playerId}: ${error.message}`
+      `failed to connect with peer ${playerId}: ${
+        /** @type {Error} */ (error).message
+      }`
     )
     throw error
   }
@@ -225,7 +256,6 @@ export function closeChannels() {
   for (const id of [...connections.keys()]) {
     unwire(id)
   }
-  releaseMediaStream()
   current = null
   for (const subscription of subscriptions) {
     subscription?.unsubscribe()
@@ -237,7 +267,7 @@ export function closeChannels() {
  * Sends data to a single peer, or to all peers.
  * Cleans connecte
  * @param {object} data - sent data, no specific structure required
- * @param {string} [playerId] - targeted player id. Do not provide to broacast data
+ * @param {?string} [playerId] - targeted player id. Do not provide to broacast data
  */
 export function send(data, playerId = null) {
   if (!current?.player || (playerId && !connections.has(playerId))) {
@@ -245,7 +275,9 @@ export function send(data, playerId = null) {
   }
   lastMessageSent$.next({ data, playerId: current.player.id })
   const destination = playerId
-    ? new Map([[playerId, connections.get(playerId)]])
+    ? new Map([
+        [playerId, /** @type {PeerConnection} */ (connections.get(playerId))]
+      ])
     : connections
   for (const [playerId, peer] of destination) {
     if (peer.established) {
@@ -254,7 +286,9 @@ export function send(data, playerId = null) {
       } catch (error) {
         logger.warn(
           { error, peer, data },
-          `failed to send data to peer ${playerId}: ${error.message}`
+          `failed to send data to peer ${playerId}: ${
+            /** @type {Error} */ (error).message
+          }`
         )
         unwire(playerId)
       }
@@ -269,29 +303,34 @@ function refreshConnected() {
   )
   connected$.next(
     peers.length > 0
-      ? [{ playerId: current.player.id }, ...peers].map(
-          ({ playerId, remote }) => ({ playerId, ...remote })
-        )
+      ? [
+          { playerId: /** @type {{ player: Player }} */ (current).player.id },
+          ...peers.map(({ playerId, remote }) => ({
+            playerId: /** @type {string} */ (playerId),
+            ...remote
+          }))
+        ]
       : []
   )
 }
 
-function unwire(id) {
+function unwire(/** @type {string} */ id) {
   logger.debug({ id }, `cleaning connection to ${id}`)
   connections.get(id)?.destroy()
   connections.delete(id)
-  streamSubscriptionByPlayerId.get(id)?.unsubscribe()
-  streamSubscriptionByPlayerId.delete(id)
   refreshConnected()
   if (connections.size === 0) {
     releaseMediaStream()
+    resetLocalState()
   }
   lastDisconnectedId$.next(id)
 }
 
-function buildDataHandler(playerId) {
-  return function handleData(data) {
-    const { lastMessageId } = connections.get(playerId)
+function buildDataHandler(/** @type {string} */ playerId) {
+  return function handleData(/** @type {?} */ data) {
+    const { lastMessageId } = /** @type {PeerConnection} */ (
+      connections.get(playerId)
+    )
     if (data.messageId !== lastMessageId + 1 && lastMessageId > 0) {
       logger.error(
         `Invalid message ids: received ${data.messageId}, expecting: ${lastMessageId}`
@@ -302,15 +341,18 @@ function buildDataHandler(playerId) {
     }
     // stores higher last only, so unorderedMessage could get lower ones
     if (data.messageId > lastMessageId) {
-      connections.get(playerId).lastMessageId = data.messageId
+      const connection = /** @type {PeerConnection} */ (
+        connections.get(playerId)
+      )
+      connection.lastMessageId = data.messageId
     }
   }
 }
 
-function buildStreamHandler(playerId) {
-  return function handleRemoteStream(stream) {
+function buildStreamHandler(/** @type {string} */ playerId) {
+  return function handleRemoteStream(/** @type {MediaStream} */ stream) {
     logger.debug({ from: playerId }, `receiving stream from ${playerId}`)
-    connections.get(playerId).setRemote({ stream })
+    connections.get(playerId)?.setRemote({ stream })
     refreshConnected()
   }
 }

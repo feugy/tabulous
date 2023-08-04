@@ -1,3 +1,18 @@
+// @ts-check
+/** @typedef {'trace'|'debug'|'log'|'info'|'warn'|'error'} Level */
+/** @typedef {Level|'all'|'silent'} LevelWithOnOff */
+/** @typedef {typeof console.log} Log */
+/**
+ * @typedef {object} Logger
+ * @property {Log} trace
+ * @property {Log} debug
+ * @property {Log} log
+ * @property {Log} info
+ * @property {Log} warn
+ * @property {Log} error
+ */
+
+/** @type {Record<string, LevelWithOnOff>} */
 const levels = {
   anchorable: 'warn',
   camera: 'warn',
@@ -24,10 +39,11 @@ const levels = {
   selection: 'warn',
   'scene-loader': 'warn',
   stackable: 'warn',
-  stream: 'warn',
+  stream: 'debug',
   target: 'warn'
 }
 
+/** @type {Record<LevelWithOnOff, number>} */
 const levelMap = {
   all: 6,
   trace: 5,
@@ -39,10 +55,16 @@ const levelMap = {
   silent: 0
 }
 
+/** @type {Map<string, Logger>} */
 const loggers = new Map()
 
 function noop() {}
 
+/**
+ * @param {string} name - logger name.
+ * @param {Level} level - desired level.
+ * @returns {Log} implementation for this logger and level.
+ */
 function getImplementation(name, level) {
   return (...args) =>
     levelMap[level] <= levelMap[levels[name] || 'info']
@@ -50,10 +72,15 @@ function getImplementation(name, level) {
       : noop
 }
 
+/**
+ * Creates (or reused cached) logger, with a default level of 'info' (if not specified already).
+ * @param {string} name - desired logger name.
+ * @returns {Logger} the built (or cached) logger.
+ */
 export function makeLogger(name) {
   if (!loggers.has(name)) {
     loggers.set(name, {
-      trace: getImplementation(name, 'trace'),
+      trace: getImplementation(name, 'log'),
       debug: getImplementation(name, 'log'),
       log: getImplementation(name, 'log'),
       info: getImplementation(name, 'info'),
@@ -61,22 +88,24 @@ export function makeLogger(name) {
       error: getImplementation(name, 'error')
     })
   }
-  return loggers.get(name)
+  return /** @type {Logger} */ (loggers.get(name))
 }
 
 /**
  * Allows changing logger levels at runtime.
  * Performs basic validation to avoid setting unknown loggers, or configuring unsupported level.
- * @param {object} newLevels - partial logger level map, merged into the current map.
- * @returns {object} the new, merged logger level map.
+ * @param {Record<string, LevelWithOnOff>} newLevels - partial logger level map, merged into the current map.
+ * @returns {Record<string, LevelWithOnOff>} the new, merged logger level map.
  */
 globalThis.configureLoggers = function (newLevels) {
   for (const logger in newLevels) {
     if (!(logger in levels)) {
       console.warn(`ignoring unknown logger ${logger}`)
+      // @ts-expect-error undefined is not assignable to LevelWithOnOff
       newLevels[logger] = undefined
     } else if (!(newLevels[logger] in levelMap)) {
       console.warn(`ignoring unknown level for ${logger}: ${newLevels[logger]}`)
+      // @ts-expect-error undefined is not assignable to LevelWithOnOff
       newLevels[logger] = undefined
     }
   }

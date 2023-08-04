@@ -1,34 +1,25 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@tabulous/server/src/graphql/types').Anchor} Anchor
+ * @typedef {import('@tabulous/server/src/graphql/types').Targetable} Targetable
+ * @typedef {import('@src/3d/managers/target').SingleDropZone} SingleDropZone
+ * @typedef {import('@src/3d/managers/target').DropZone} DropZone
+ */
+
 import { Observable } from '@babylonjs/core/Misc/observable.js'
 
 import { indicatorManager } from '../managers/indicator'
 import { targetManager } from '../managers/target'
 import { TargetBehaviorName } from './names'
 
-/**
- * @typedef {object} DropZone definition of a target drop zone
- * @property {TargetBehavior} targetable - the enclosing targetable behavior.
- * @property {import('@babylonjs/core').Mesh} mesh - invisible, unpickable mesh acting as drop zone.
- * @property {number} extent - units (in 3D coordinate) added to the zone's bounding box to determine.
- * @property {boolean} enabled - whether this zone is active or not.
- * @property {boolean} ignoreParts - whether this zone consider mesh's slots or not.
- * @property {string[]} kinds? - an optional array of allowed drag kinds for this zone (allows all if not present).
- * @property {number} priority? - priority applied when multiple targets with same altitude apply.
- * @property {string} playerId? - when set, only player with this id can use this anchor.
- */
-
-/**
- * @typedef {object} ZoneProps properties of a drop zone
- * @property {number} extent - units (in 3D coordinate) added to the zone's bounding box to determine.
- * @property {boolean} enabled - whether this zone is active or not.
- * @property {string[]} kinds? - an optional array of allowed drag kinds for this zone (allows all if not present).
- * @property {number} priority? - priority applied when multiple targets with same altitude apply.
- * @property {string} playerId? - when set, only player with this id can use this anchor.
- */
+/** @typedef {Targetable & Required<Pick<Targetable, 'extent'>> & Pick<Anchor, 'playerId'|'ignoreParts'|'angle'>} ZoneProps properties of a drop zone */
 
 /**
  * @typedef {object} DropDetails detailed images definitions for a given mesh:
- * @property {import('@babylonjs/core').Mesh[]} dropped - a list of dropped meshes.
+ * @property {Mesh[]} dropped - a list of dropped meshes.
  * @property {DropZone} zone - the zone onto meshes are dropped.
+ * @property {boolean} [immediate=false] - when true, no animation should be ran.
  */
 
 export class TargetBehavior {
@@ -37,17 +28,15 @@ export class TargetBehavior {
    * A targetable mesh can have multiple drop zones, materialized with 3D geometries and each allowing one or several kinds.
    * All zones can be enable and disabled at once.
    * An observable emits every time one of the zone receives a drop.
-   *
-   * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
-   * @property {DropZone[]} zones - defined drop zones for this target.
-   * @property {Observable<DropDetails>} onDropObservable - emits every time draggable meshes are dropped to one of the zones.
-   *
    * @param {object} params - parameters, including:
    * @param {number} [params.moveDuration=100] - duration (in milliseconds) of an individual mesh re-order animation.
    */
   constructor() {
+    /** @type {?Mesh} mesh - the related mesh. */
     this.mesh = null
+    /** @type {SingleDropZone[]} defined drop zones for this target. */
     this.zones = []
+    /** @type {Observable<DropDetails>} emits every time draggable meshes are dropped to one of the zones.*/
     this.onDropObservable = new Observable()
   }
 
@@ -60,13 +49,13 @@ export class TargetBehavior {
 
   /**
    * Does nothing.
-   * @see {@link import('@babylonjs/core').Behavior.init}
+   * @see https://doc.babylonjs.com/typedoc/interfaces/babylon.behavior#init
    */
   init() {}
 
   /**
    * Attaches this behavior to a mesh, registering it to the target manager.
-   * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
+   * @param {Mesh} mesh - which becomes detailable.
    */
   attach(mesh) {
     this.mesh = mesh
@@ -89,15 +78,16 @@ export class TargetBehavior {
   /**
    * Adds a new zone to this mesh, making it invisible and unpickable.
    * By default, zone is enabled, accepts all kind, with a priority of 0, and no playerId.
-   * @param {import('@babylonjs/core').Mesh} mesh - invisible, unpickable mesh acting as drop zone.
+   * @param {Mesh} mesh - invisible, unpickable mesh acting as drop zone.
    * @param {ZoneProps} properties - drop zone properties.
-   * @returns {DropZone} the created zone.
+   * @returns {SingleDropZone} the created zone.
    */
   addZone(mesh, properties) {
     mesh.visibility = 0
     mesh.isPickable = false
     mesh.isHittable = false
     mesh.scalingDeterminant = 1.01
+    /** @type {SingleDropZone} */
     const zone = {
       mesh,
       targetable: this,
@@ -121,7 +111,7 @@ export class TargetBehavior {
   /**
    * Removes an existing zone, disposing its mesh.
    * Does nothing if no zone is bound to the given mesh id
-   * @param {DropZone} zone - removed zone mesh.
+   * @param {SingleDropZone} zone - removed zone mesh.
    */
   removeZone(zone) {
     const idx = this.zones.indexOf(zone)

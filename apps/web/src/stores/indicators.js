@@ -1,3 +1,23 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Engine} Engine
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@src/3d/managers/indicator').Indicator} Indicator
+ * @typedef {import('@src/3d/managers/indicator').ManagedIndicator} ManagedIndicator
+ * @typedef {import('@src/3d/managers/indicator').ManagedPointer} ManagedPointer
+ * @typedef {import('@src/3d/managers/indicator').ManagedFeedback} ManagedFeedback
+ * @typedef {import('@src/stores/game-manager').Player} Player
+ * @typedef {import('@src/utils/game-interaction').ActionMenuProps} ActionMenuProps
+ */
+/**
+ * @template T
+ * @typedef {import('@src/types').ArrayItem<T>} ArrayItem
+ */
+/**
+ * @template T
+ * @typedef {import('@src/types').Observed<T>} Observed
+ */
+
 import { BehaviorSubject, map, merge, of, withLatestFrom } from 'rxjs'
 
 import { inputManager, selectionManager } from '../3d/managers'
@@ -9,10 +29,14 @@ import {
 } from './game-engine'
 import { gamePlayerById as gamePlayerById$ } from './game-manager'
 
+/** @typedef {ArrayItem<Observed<typeof visibleIndicators>>} VisibleIndicator */
+/** @typedef {ArrayItem<Observed<typeof visibleFeedbacks>>} VisibleFeedback */
+
 const visible$ = new BehaviorSubject(true)
 const handPosition$ = new BehaviorSubject(Number.POSITIVE_INFINITY)
-const hoveredMesh$ = new BehaviorSubject()
+const hoveredMesh$ = new BehaviorSubject(/** @type {?Mesh} */ (null))
 
+/** @type {Map<string, Player>} */
 let playerById = new Map()
 gamePlayerById$.subscribe(value => (playerById = value))
 let engine
@@ -20,7 +44,8 @@ let feedbackById = new Map()
 
 /**
  * Initializes the indicators store with the hand DOM node.
- * @param {object} params - parameters, including:
+ * @param {object} params - parameters
+ * @param {Engine} params.engine - 3D engine.
  * @param {HTMLCanvasElement} params.canvas - HTML canvas used to display the scene.
  * @param {HTMLElement} params.hand - HTML element holding hand.
  */
@@ -45,7 +70,6 @@ export function initIndicators(params) {
 
 /**
  * Emits whenever the indicators are shown or hidden.
- * @type {Observable<boolean>}
  */
 export const areIndicatorsVisible = visible$.asObservable()
 
@@ -61,7 +85,6 @@ export async function toggleIndicators() {
  * - all of them when `visible` is set,
  * - the ones above selected meshes,
  * - the ones above mesh with action menu.
- * @type {Observable<import('../3d/managers').Indicator[]>}
  */
 export const visibleIndicators = merge(
   visible$,
@@ -74,7 +97,7 @@ export const visibleIndicators = merge(
   withLatestFrom(
     merge(of(new Set()), selectedMeshes),
     merge(of(null), actionMenuProps),
-    merge(of([]), indicators$),
+    merge(of(/** @type {Indicator[]} */ ([])), indicators$),
     handPosition$
   ),
   map(([, selected, menuProps, indicators, handPosition]) =>
@@ -93,7 +116,6 @@ export const visibleIndicators = merge(
 
 /**
  * Emits visible feedbacks, dependeing on `visible` state.
- * @type {Observable<import('../3d/managers').Indicator[]>}
  */
 export const visibleFeedbacks = merge(visible$, indicators$).pipe(
   withLatestFrom(merge(of([]), indicators$)),
@@ -103,6 +125,13 @@ export const visibleFeedbacks = merge(visible$, indicators$).pipe(
   map(enrichWithPlayerData)
 )
 
+/**
+ * @param {boolean} allVisible - whether all indicators are visible.
+ * @param {Set<Mesh>} selected - list of currently selected meshes.
+ * @param {?ActionMenuProps} menuProps - current menu items, if any.
+ * @param {Indicator[]} indicators - list of all indicators.
+ * @param {number} handPosition - position of the limit between main and hand scene.
+ */
 function getVisibleIndicators(
   allVisible,
   selected,
@@ -110,65 +139,113 @@ function getVisibleIndicators(
   indicators,
   handPosition
 ) {
-  return allVisible
-    ? indicators.filter(
-        ({ screenPosition, isFeedback }) =>
-          !isFeedback &&
-          screenPosition.y <= handPosition &&
-          screenPosition.y > 10
-      )
-    : hasMenu(menuProps, selected)
-    ? getMenuIndicators(menuProps, indicators)
-    : getSelectedIndicators(selected, indicators)
+  return /** @type {(ManagedPointer|ManagedIndicator)[]} */ (
+    allVisible
+      ? indicators.filter(
+          ({ screenPosition, isFeedback }) =>
+            !isFeedback &&
+            screenPosition.y <= handPosition &&
+            screenPosition.y > 10
+        )
+      : hasMenu(menuProps, selected)
+      ? getMenuIndicators(menuProps, indicators)
+      : getSelectedIndicators(selected, indicators)
+  )
 }
 
-function hasMenu(menuProps, selected) {
-  return menuProps && !selected.has(menuProps.interactedMesh)
+function hasMenu(
+  /** @type {?ActionMenuProps} */ menuProps,
+  /** @type {Set<Mesh>} */ selected
+) {
+  return menuProps !== null && !selected.has(menuProps.interactedMesh)
 }
 
-function getMenuIndicators(menuProps, indicators) {
-  return indicators.filter(({ mesh }) => mesh === menuProps.interactedMesh)
+function getMenuIndicators(
+  /** @type {?ActionMenuProps} */ menuProps,
+  /** @type {Indicator[]} */ indicators
+) {
+  return indicators.filter(indicator =>
+    'mesh' in indicator ? indicator.mesh === menuProps?.interactedMesh : false
+  )
 }
 
-function getSelectedIndicators(selected, indicators) {
-  return indicators.filter(({ mesh }) => selected.has(mesh))
+function getSelectedIndicators(
+  /** @type {Set<Mesh>} */ selected,
+  /** @type {Indicator[]} */ indicators
+) {
+  return indicators.filter(indicator =>
+    'mesh' in indicator ? selected.has(indicator.mesh) : false
+  )
 }
 
+/**
+ * @template {Indicator} T
+ * @param {T[]} indicators
+ * @returns {(T & { player?: Player })[]}
+ */
 function enrichWithPlayerData(indicators) {
-  return indicators.map(indicator => {
-    if (indicator.playerId) {
-      const player = playerById.get(indicator.playerId) ?? {}
+  for (const raw of indicators) {
+    const indicator = /** @type {T & { player?: Player }} */ (raw)
+    if ('playerId' in indicator && indicator.playerId) {
+      const player = playerById.get(indicator.playerId) ?? {
+        id: indicator.playerId,
+        username: '',
+        currentGameId: null,
+        isGuest: false,
+        isOwner: false,
+        isHost: false,
+        playing: false
+      }
       indicator.player = player
       indicator.playerId = undefined
     }
-    return indicator
-  })
-}
-
-function enrichWithHovered(indicators) {
-  for (const indicator of indicators) {
-    indicator.hovered = indicator.mesh === hoveredMesh$.value
   }
   return indicators
 }
 
-function enrichWithInteraction(indicators) {
-  return indicators.map(indicator => ({
-    ...indicator,
-    onClick: indicator.mesh
-      ? () => {
-          const selected = indicator.mesh.metadata.stack ?? indicator.mesh
-          if (selectionManager.meshes.has(indicator.mesh)) {
-            selectionManager.unselect(selected)
-          } else {
-            selectionManager.select(selected)
-          }
-        }
-      : null
-  }))
+/**
+ * @template {Indicator} T
+ * @param {T[]} indicators
+ * @returns {(T & { hovered?: boolean })[]}
+ */
+function enrichWithHovered(indicators) {
+  for (const raw of indicators) {
+    const indicator = /** @type {T & { hovered?: boolean }} */ (raw)
+    if ('mesh' in indicator) {
+      indicator.hovered = indicator.mesh === hoveredMesh$.value
+    }
+  }
+  return indicators
 }
 
+/**
+ * @template {Indicator} T
+ * @param {T[]} indicators
+ * @returns {(T & { onClick?: () => void })[]}
+ */
+function enrichWithInteraction(indicators) {
+  for (const raw of indicators) {
+    const indicator = /** @type {T & { onClick?: () => void }} */ (raw)
+    if ('mesh' in indicator && indicator.mesh) {
+      indicator.onClick = () => {
+        const selected = indicator.mesh.metadata.stack ?? indicator.mesh
+        if (selectionManager.meshes.has(indicator.mesh)) {
+          selectionManager.unselect(selected)
+        } else {
+          selectionManager.select(selected)
+        }
+      }
+    }
+  }
+  return indicators
+}
+
+/**
+ * @param {Indicator[]} indicators
+ * @returns {(ManagedFeedback & { start?: number })[]}
+ */
 function memorizeAndMergeFeedback(indicators) {
+  /** @type {(ManagedFeedback & { start?: number })[]} */
   const results = []
   const now = Date.now()
   for (const [id, feedback] of feedbackById) {
@@ -178,7 +255,8 @@ function memorizeAndMergeFeedback(indicators) {
       feedbackById.delete(id)
     }
   }
-  for (const indicator of indicators) {
+  for (const raw of indicators) {
+    const indicator = /** @type {ManagedFeedback & { start?: number }} */ (raw)
     if (indicator.isFeedback) {
       if (!feedbackById.has(indicator.id)) {
         indicator.start = now

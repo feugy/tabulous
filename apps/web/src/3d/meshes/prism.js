@@ -1,3 +1,10 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ * @typedef {import('@src/3d/utils/behaviors').SerializedMesh} SerializedMesh
+ */
+
 import { Matrix, Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector.js'
 import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder.js'
 
@@ -9,20 +16,10 @@ import { applyInitialTransform } from '../utils/mesh'
 /**
  * Creates a prism, with a given number of base edge (starting at 3).
  * A prism's texture must have edges + 2 faces, starting with back and ending with front, aligned horizontally.
- * @param {object} params - prism parameters, including (all other properties will be passed to the created mesh):
- * @param {string} params.id - prism's unique id.
- * @param {string} params.texture - prism's texture url or hexadecimal string color.
- * @param {number[][]} params.faceUV? - up to 3 face UV (Vector4 components), to map texture to the prism.
- * @param {number} params.edges? - number of edges for this prism.
- * @param {number} params.prismRotation? - fixed rotation applied to the prism.
- * @param {number} params.x? - initial position along the X axis.
- * @param {number} params.y? - initial position along the Y axis.
- * @param {number} params.z? - initial position along the Z axis.
- * @param {number} params.width? - prism's base size (X axis, size on Z depends on the number of edges).
- * @param {number} params.height? - prism's height (Y axis).
- * @param {import('../utils').InitialTransform} params.transform? - initial transformation baked into the mesh's vertice.
- * @param {import('@babylonjs/core').Scene} scene? - scene to host this round prism (default to last scene).
- * @returns the created prism mesh.
+ * By default, prisms have 6 edges and a width of 3.
+ * @param {Omit<SerializedMesh, 'shape'>} params - prism parameters.
+ * @param {Scene} scene - scene for the created mesh.
+ * @returns {Mesh} the created prism mesh.
  */
 export function createPrism(
   {
@@ -42,7 +39,7 @@ export function createPrism(
     ],
     transform = undefined,
     ...behaviorStates
-  } = {},
+  },
   scene
 ) {
   const mesh = CreateCylinder(
@@ -69,7 +66,7 @@ export function createPrism(
 
   mesh.metadata = {
     serialize: () => ({
-      shape: mesh.name,
+      shape: /** @type {'prism'} */ (mesh.name),
       id,
       x: mesh.absolutePosition.x,
       y: mesh.absolutePosition.y,

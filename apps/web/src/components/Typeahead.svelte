@@ -1,20 +1,31 @@
 <script>
+  // @ts-check
+  /** @typedef {import('@src/components').LabelMenuOption} LabelMenuOption */
+
   import { tick } from 'svelte'
 
   import Input from './Input.svelte'
   import Menu from './Menu.svelte'
 
-  export let value = null
+  /** @typedef {(Record<string, ?> & string)|LabelMenuOption} MenuOption */
+
+  /** @type {MenuOption[]} options displayed in the drop down menu. */
   export let options
+  /** @type {?MenuOption} currently active option. */
+  export let value = null
+  /** @type {?HTMLInputElement} reference to the input text field. */
   export let ref = null
+  /** @type {?HTMLSpanElement } reference to the button's wrapper. */
   let anchor
-  let open
+  let open = false
+  /** @type {?HTMLUListElement } reference to the menu. */
   let menu
+  /** @type {string} text displayed in the field, based on input or selected option. */
   let text
 
   $: if (value) {
     // updates text based on current option
-    text = value?.label ?? value
+    text = typeof value === 'string' ? value : value.label
   } else {
     text = ''
   }
@@ -24,13 +35,13 @@
     open = true
   }
 
-  async function handleKeyUp(evt) {
+  async function handleKeyUp(/** @type {KeyboardEvent} */ evt) {
     if (!open || !menu) {
       return
     }
     if (evt.key === 'ArrowDown' || evt.key === 'ArrowUp') {
       // set menu's direction when looking for focusable
-      menu.dataset.focusNext = evt.key === 'ArrowDown'
+      menu.dataset.focusNext = `${evt.key === 'ArrowDown'}`
       menu.focus()
       evt.preventDefault()
     } else if (evt.key === 'ArrowRight' || evt.key === 'Enter') {
@@ -41,12 +52,14 @@
       }
     } else {
       // matches possible option with current text
-      const text = evt.currentTarget.value
+      const text = /** @type {HTMLInputElement} */ (evt.target).value
       await tick()
-      value = options?.find(
-        option =>
-          option?.label === text || (option === text && !option?.disabled)
-      )
+      value =
+        options?.find(option =>
+          typeof option === 'string'
+            ? option === text
+            : !option.disabled && option.label === text
+        ) ?? null
     }
   }
 </script>

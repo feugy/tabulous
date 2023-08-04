@@ -1,4 +1,5 @@
 <script>
+  // @ts-check
   import { Header, PageFooter } from '@src/components'
   import { _ } from 'svelte-intl'
 
@@ -8,7 +9,7 @@
   import ScrollableTerms from './ScrollableTerms.svelte'
 
   /** @type {import('./$types').PageData} */
-  export let data = {}
+  export let data
 
   const redirect = $page.url?.searchParams.get('redirect')
 

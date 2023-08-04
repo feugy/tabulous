@@ -1,4 +1,4 @@
-fragment lightPlayer on Player {
+fragment lightPlayer on GamePlayer {
   id
   username
   avatar

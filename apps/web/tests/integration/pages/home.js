@@ -14,6 +14,7 @@ import {
 /**
  * @typedef {import('@playwright/test').Page} Page
  * @typedef {import('@playwright/test').Locator} Locator
+ * @typedef {import('../utils').Locale} Locale
  */
 
 export const HomePage = mixin(
@@ -21,12 +22,12 @@ export const HomePage = mixin(
     /**
      * Represent the home page for testing
      * @param {Page} page - the actual page.
-     * @param {string} lang - current language.
+     * @param {Locale} lang - current language.
      */
     constructor(page, lang) {
       /** @type {string} */
       this.pageKind = 'home'
-      /** @type {string} */
+      /** @type {Locale} */
       this.lang = lang
       /** @type {Page} */
       this.page = page
@@ -113,13 +114,13 @@ export const HomePage = mixin(
     /**
      * Expects several catalog items, sorted by their locale title.
      * Lobby link creation is expected first.
-     * @param {object[]} catalog - expected catalog items.
+     * @param {import('@tabulous/server/src/graphql/types').CatalogItem[]} catalog - expected catalog items.
      * @param {boolean} [withLobby=true] - whether to include link to create lobby or not.
      * @returns {Promise<void>}
      */
     async expectSortedCatalogItems(catalog, withLobby = true) {
       const names = [
-        ...catalog.map(({ locales }) => locales[this.lang].title).sort()
+        ...catalog.map(({ locales }) => locales[this.lang]?.title ?? '').sort()
       ]
       if (withLobby) {
         names.splice(

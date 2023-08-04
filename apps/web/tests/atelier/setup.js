@@ -1,3 +1,8 @@
+/**
+ * @template T
+ * @typedef {import('vitest').MockedObject<T>} MockedObject
+ */
+
 import './styles.postcss'
 
 import * as kitClient from '../../node_modules/@sveltejs/kit/src/runtime/client/singletons'
@@ -7,22 +12,27 @@ initLocale()
 
 kitClient.init({
   client: {
-    goto: () => {},
-    invalidate: () => {},
-    invalidateAll: () => {},
-    preload_code: () => {},
-    preload_data: () => {},
+    _hydrate: async () => {},
+    _start_router: () => {},
+    after_navigate: () => {},
+    apply_action: () => {},
     before_navigate: () => {},
-    after_navigate: () => {}
+    disable_scroll_handling: () => {},
+    goto: () => {},
+    invalidate_all: () => {},
+    invalidate: () => {},
+    preload_code: () => {},
+    preload_data: () => {}
   }
 })
 
+/** @type {?import('$app/stores')} */
 let storeMock = null
 
 /**
  * Only used when running the test suite, for toolshots.
  * Reconciles sveltekit $app/stores mocks from test suite and atelier tools.
- * @param {object} mock - mock for $app/stores
+ * @param {import('$app/stores')} mock - mock for $app/stores
  */
 export function setStoreMockForTestSuite(mock) {
   storeMock = mock

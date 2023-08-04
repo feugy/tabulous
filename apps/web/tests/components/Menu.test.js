@@ -1,3 +1,4 @@
+// @ts-check
 import Menu from '@src/components/Menu.svelte'
 import { fireEvent, render, screen, waitFor } from '@testing-library/svelte'
 import { get, writable } from 'svelte/store'
@@ -12,7 +13,7 @@ describe('Menu component', () => {
 
   beforeEach(() => {
     vi.resetAllMocks()
-    value$.set()
+    value$.set(undefined)
   })
 
   function renderComponent(props = {}) {
@@ -53,7 +54,9 @@ describe('Menu component', () => {
       renderComponent({ options })
       expect(screen.queryByRole('menu')).toBeInTheDocument()
 
-      fireEvent.click(document.querySelector('#other'))
+      fireEvent.click(
+        /** @type {HTMLElement} */ (document.querySelector('#other'))
+      )
       await waitFor(() =>
         expect(screen.queryByRole('menu')).not.toBeInTheDocument()
       )
@@ -66,7 +69,9 @@ describe('Menu component', () => {
       expect(screen.queryByRole('menu')).toBeInTheDocument()
 
       fireEvent.focus(get(ref$))
-      fireEvent.keyDown(document.activeElement, { key: 'Escape' })
+      fireEvent.keyDown(/** @type {HTMLElement} */ (document.activeElement), {
+        key: 'Escape'
+      })
       await waitFor(() =>
         expect(screen.queryByRole('menu')).not.toBeInTheDocument()
       )
@@ -79,7 +84,9 @@ describe('Menu component', () => {
       expect(screen.queryByRole('menu')).toBeInTheDocument()
 
       fireEvent.focus(get(ref$))
-      fireEvent.keyDown(document.activeElement, { key: 'Tab' })
+      fireEvent.keyDown(/** @type {HTMLElement} */ (document.activeElement), {
+        key: 'Tab'
+      })
       await waitFor(() =>
         expect(screen.queryByRole('menu')).not.toBeInTheDocument()
       )
@@ -133,13 +140,19 @@ describe('Menu component', () => {
       fireEvent.focus(get(ref$))
       expect(document.activeElement).toEqual(items[0])
 
-      fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' })
+      fireEvent.keyDown(/** @type {HTMLElement} */ (document.activeElement), {
+        key: 'ArrowDown'
+      })
       expect(document.activeElement).toEqual(items[1])
 
-      fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' })
+      fireEvent.keyDown(/** @type {HTMLElement} */ (document.activeElement), {
+        key: 'ArrowDown'
+      })
       expect(document.activeElement).toEqual(items[2])
 
-      fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' })
+      fireEvent.keyDown(/** @type {HTMLElement} */ (document.activeElement), {
+        key: 'ArrowDown'
+      })
       expect(document.activeElement).toEqual(items[2])
     })
 
@@ -149,7 +162,9 @@ describe('Menu component', () => {
       fireEvent.focus(get(ref$))
       expect(document.activeElement).toEqual(items[0])
 
-      fireEvent.keyDown(document.activeElement, { key: 'End' })
+      fireEvent.keyDown(/** @type {HTMLElement} */ (document.activeElement), {
+        key: 'End'
+      })
       expect(document.activeElement).toEqual(items[2])
     })
 
@@ -161,13 +176,19 @@ describe('Menu component', () => {
       fireEvent.focus(menu)
       expect(document.activeElement).toEqual(items[2])
 
-      fireEvent.keyDown(document.activeElement, { key: 'ArrowUp' })
+      fireEvent.keyDown(/** @type {HTMLElement} */ (document.activeElement), {
+        key: 'ArrowUp'
+      })
       expect(document.activeElement).toEqual(items[1])
 
-      fireEvent.keyDown(document.activeElement, { key: 'ArrowUp' })
+      fireEvent.keyDown(/** @type {HTMLElement} */ (document.activeElement), {
+        key: 'ArrowUp'
+      })
       expect(document.activeElement).toEqual(items[0])
 
-      fireEvent.keyDown(document.activeElement, { key: 'ArrowUp' })
+      fireEvent.keyDown(/** @type {HTMLElement} */ (document.activeElement), {
+        key: 'ArrowUp'
+      })
       expect(document.activeElement).toEqual(items[0])
     })
 
@@ -179,7 +200,9 @@ describe('Menu component', () => {
       fireEvent.focus(menu)
       expect(document.activeElement).toEqual(items[2])
 
-      fireEvent.keyDown(document.activeElement, { key: 'Home' })
+      fireEvent.keyDown(/** @type {HTMLElement} */ (document.activeElement), {
+        key: 'Home'
+      })
       expect(document.activeElement).toEqual(items[0])
     })
 
@@ -191,10 +214,14 @@ describe('Menu component', () => {
       renderComponent({ options })
       const items = screen.queryAllByRole('menuitem')
       fireEvent.focus(get(ref$))
-      fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' })
+      fireEvent.keyDown(/** @type {HTMLElement} */ (document.activeElement), {
+        key: 'ArrowDown'
+      })
       expect(document.activeElement).toEqual(items[1])
 
-      fireEvent.keyDown(document.activeElement, { key })
+      fireEvent.keyDown(/** @type {HTMLElement} */ (document.activeElement), {
+        key
+      })
       await waitFor(() =>
         expect(screen.queryByRole('menu')).not.toBeInTheDocument()
       )
@@ -221,16 +248,24 @@ describe('Menu component', () => {
     fireEvent.focus(get(ref$))
     expect(document.activeElement).toEqual(items[1])
 
-    fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' })
+    fireEvent.keyDown(/** @type {HTMLElement} */ (document.activeElement), {
+      key: 'ArrowDown'
+    })
     expect(document.activeElement).toEqual(items[3])
 
-    fireEvent.keyDown(document.activeElement, { key: 'ArrowUp' })
+    fireEvent.keyDown(/** @type {HTMLElement} */ (document.activeElement), {
+      key: 'ArrowUp'
+    })
     expect(document.activeElement).toEqual(items[1])
 
-    fireEvent.keyDown(document.activeElement, { key: 'End' })
+    fireEvent.keyDown(/** @type {HTMLElement} */ (document.activeElement), {
+      key: 'End'
+    })
     expect(document.activeElement).toEqual(items[3])
 
-    fireEvent.keyDown(document.activeElement, { key: 'Home' })
+    fireEvent.keyDown(/** @type {HTMLElement} */ (document.activeElement), {
+      key: 'Home'
+    })
     expect(document.activeElement).toEqual(items[1])
   })
 

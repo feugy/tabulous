@@ -1,4 +1,10 @@
 <script>
+  // @ts-check
+  /**
+   * @typedef {import('@tabulous/server/src/graphql/types').ActionSpec} ActionSpec
+   * @typedef {import('@tabulous/server/src/graphql/types').ActionName} ActionName
+   */
+
   import { buttonIds } from '@src/3d/utils/actions'
   import { HelpButton1, HelpButton2, HelpButton3 } from '@src/components'
   import { fade } from 'svelte/transition'
@@ -7,18 +13,22 @@
   import { default as Logo } from './babylon-logo.svg?component'
   import { default as Spinning } from './spinning.svg?component'
 
+  /** @type {boolean} whether the loading screen is visible; */
   export let visible = false
+
+  /** @type {Map<keyof ActionSpec, ActionName[]>} map of action names by a given button. */
   export let actionNamesByButton = new Map()
 
   $: button1Actions = actionNamesByButton?.get(buttonIds.button1)
   $: button2Actions = actionNamesByButton?.get(buttonIds.button2)
   $: button3Actions = actionNamesByButton?.get(buttonIds.button3)
 
-  function mapToLabels(actions) {
+  function mapToLabels(/** @type {ActionName[]} */ actions) {
     return actions.map(action => $_(`tooltips.${action}`)).join('<br/>')
   }
 </script>
 
+<!-- eslint-disable svelte/no-at-html-tags -->
 {#if visible}
   <div transition:fade class="overlay">
     <span>
@@ -48,7 +58,7 @@
   </div>
 {/if}
 
-<style type="postcss">
+<style lang="postcss">
   div {
     @apply flex-1 flex flex-col items-center overflow-hidden justify-center 
           z-10 bg-$base-darkest text-$ink-dark transition-colors;

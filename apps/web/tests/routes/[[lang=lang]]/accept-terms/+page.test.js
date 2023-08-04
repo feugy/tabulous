@@ -1,3 +1,10 @@
+// @ts-check
+/** @typedef {import('@src/common').Locale} Locale */
+/**
+ * @template T
+ * @typedef {import('rxjs').BehaviorSubject<T>} BehaviorSubject
+ */
+
 import { initLocale } from '@src/common'
 import AcceptTermsPage from '@src/routes/[[lang=lang]]/accept-terms/+page.svelte'
 import { fireEvent, render, screen } from '@testing-library/svelte'
@@ -5,17 +12,22 @@ import { translate } from '@tests/test-utils'
 import html from 'svelte-htm'
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 
-import { page } from '$app/stores'
+import * as stores from '$app/stores'
 
 vi.mock('$app/stores', () => {
   const { BehaviorSubject } = require('rxjs')
-  return { page: new BehaviorSubject() }
+  return { page: new BehaviorSubject(undefined) }
 })
 
-describe.each([
-  { title: '/', lang: undefined, urlRoot: '' },
-  { title: '/en', lang: 'en', urlRoot: '/en' }
-])('$title', ({ lang, urlRoot }) => {
+/** @type {BehaviorSubject<{ url: URL, route: Object, params: { lang: Locale|undefined }}>} */
+const page = /** @type {?} */ (stores.page)
+
+describe.each(
+  /** @type {{ title: String, lang: Locale|undefined, urlRoot: string }[]} */ ([
+    { title: '/', lang: undefined, urlRoot: '' },
+    { title: '/en', lang: 'en', urlRoot: '/en' }
+  ])
+)('$title', ({ lang, urlRoot }) => {
   beforeAll(() => {
     page.next({
       url: new URL(`http://localhost/${urlRoot}/accept-terms`),
@@ -27,11 +39,12 @@ describe.each([
 
   describe('/accept-terms route', () => {
     it('enables checkboxes on scroll', () => {
-      render(html`<${AcceptTermsPage} />`)
+      render(html`<${AcceptTermsPage} data=${{}} />`)
       for (const checkbox of screen.getAllByRole('checkbox')) {
         expect(checkbox).toBeDisabled()
       }
-      // simulate scrolling Terms of Service unti lthe end
+      // simulate scrolling Terms of Service until the end
+      // @ts-expect-error: intersactionObservers are mocked
       window.intersectionObservers[0].notify([{ intersectionRatio: 1 }])
       for (const checkbox of screen.getAllByRole('checkbox')) {
         expect(checkbox).toBeDisabled()
@@ -39,10 +52,11 @@ describe.each([
     })
 
     it('enables button when checking boxes', async () => {
-      render(html`<${AcceptTermsPage} />`)
+      render(html`<${AcceptTermsPage} data=${{}} />`)
       const submitButton = screen.getByRole('button', {
         name: `emoji_people ${translate('actions.log-in')}`
       })
+      // @ts-expect-error: intersactionObservers are mocked
       window.intersectionObservers[0].notify([{ intersectionRatio: 1 }])
 
       expect(submitButton).toBeDisabled()

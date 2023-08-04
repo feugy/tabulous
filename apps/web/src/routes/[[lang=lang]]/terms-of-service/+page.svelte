@@ -1,9 +1,10 @@
 <script>
+  // @ts-check
   import { Header, Markdown, PageFooter, TermsOfService } from '@src/components'
   import { _ } from 'svelte-intl'
 
   /** @type {import('./$types').PageData} */
-  export let data = {}
+  export let data
 </script>
 
 <svelte:head>

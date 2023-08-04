@@ -2,6 +2,7 @@
 
 exports[`With labels 1`] = `
 <span
+  aria-expanded="false"
   aria-haspopup="menu"
   class="wrapper s-JM3fRWrV7jJU"
 >
@@ -23,6 +24,7 @@ exports[`With labels 1`] = `
 
 exports[`With objects 1`] = `
 <span
+  aria-expanded="false"
   aria-haspopup="menu"
   class="wrapper s-JM3fRWrV7jJU"
 >

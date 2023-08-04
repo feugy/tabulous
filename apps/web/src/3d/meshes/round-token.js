@@ -1,3 +1,10 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ * @typedef {import('@src/3d/utils/behaviors').SerializedMesh} SerializedMesh
+ */
+
 import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector.js'
 import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder.js'
 
@@ -10,18 +17,10 @@ import { applyInitialTransform } from '../utils/mesh'
  * Creates a round token, like a pocker one.
  * Tokens are cylinders, so their position is their center.
  * A token's texture must have 3 faces, back then edge then front, aligned horizontally.
- * @param {object} params - token parameters, including (all other properties will be passed to the created mesh):
- * @param {string} params.id - token's unique id.
- * @param {string} params.texture - token's texture url or hexadecimal string color.
- * @param {number[][]} params.faceUV? - up to 3 face UV (Vector4 components), to map texture on the token.
- * @param {number} params.x? - initial position along the X axis.
- * @param {number} params.y? - initial position along the Y axis.
- * @param {number} params.z? - initial position along the Z axis.
- * @param {number} params.diameter? - token's diameter (X+Z axis).
- * @param {number} params.height? - token's height (Y axis).
- * @param {import('../utils').InitialTransform} params.transform? - initial transformation baked into the mesh's vertice.
- * @param {import('@babylonjs/core').Scene} scene? - scene to host this round token (default to last scene).
- * @returns the created token mesh.
+ * By default tokens have a diameter of 2.
+ * @param {Omit<SerializedMesh, 'shape'>} params - token parameters.
+ * @param {Scene} scene - scene for the created mesh.
+ * @returns {Mesh} the created token mesh.
  */
 export function createRoundToken(
   {
@@ -39,7 +38,7 @@ export function createRoundToken(
     ],
     transform = undefined,
     ...behaviorStates
-  } = {},
+  },
   scene
 ) {
   const mesh = CreateCylinder(
@@ -62,7 +61,7 @@ export function createRoundToken(
 
   mesh.metadata = {
     serialize: () => ({
-      shape: mesh.name,
+      shape: /** @type {'roundToken'} */ (mesh.name),
       id,
       x: mesh.absolutePosition.x,
       y: mesh.absolutePosition.y,

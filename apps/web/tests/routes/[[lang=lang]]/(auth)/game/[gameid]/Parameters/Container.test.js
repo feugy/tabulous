@@ -1,3 +1,8 @@
+// @ts-check
+/**
+ * @typedef {Partial<import('@tabulous/server/src/utils').Schema>} Schema
+ */
+
 import Parameters from '@src/routes/[[lang=lang]]/(auth)/game/[gameId]/Parameters/Container.svelte'
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import { extractText, sleep, translate } from '@tests/test-utils'
@@ -7,10 +12,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 describe('Parameters component', () => {
   const handleSubmit = vi.fn()
 
-  beforeEach(vi.resetAllMocks)
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
 
-  async function renderComponent(schema) {
-    function onSubmit({ detail }) {
+  async function renderComponent(/** @type {Schema} */ schema) {
+    function onSubmit(/** @type {CustomEvent<?>} */ { detail }) {
       handleSubmit(detail)
     }
     const result = render(
@@ -242,7 +249,7 @@ describe('Parameters component', () => {
 
     let dropdowns = screen.getAllByRole('combobox')
     expect(dropdowns).toHaveLength(2)
-    expect(dropdowns[0]).toHaveTextContent(counts[0])
+    expect(dropdowns[0]).toHaveTextContent(counts[0].toString())
     expect(dropdowns[1]).toHaveTextContent(characters[0])
 
     await fireEvent.click(dropdowns[0])
@@ -251,7 +258,7 @@ describe('Parameters component', () => {
 
     dropdowns = screen.getAllByRole('combobox')
     expect(dropdowns).toHaveLength(3)
-    expect(dropdowns[0]).toHaveTextContent(counts[1])
+    expect(dropdowns[0]).toHaveTextContent(counts[1].toString())
     expect(dropdowns[1]).toHaveTextContent(characters[0])
     expect(dropdowns[2]).toHaveTextContent(characters[1])
 

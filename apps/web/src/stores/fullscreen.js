@@ -1,3 +1,4 @@
+// @ts-check
 import { BehaviorSubject } from 'rxjs'
 
 import { browser } from '$app/environment'
@@ -12,13 +13,11 @@ const fullscreen$ = new BehaviorSubject(
 
 /**
  * Emits whenever the application enters or leaves the fullscreen mode
- * @type {Observable<boolean>}
  */
 export const isFullscreen = fullscreen$.asObservable()
 
 /**
  * Enters fullscreen mode.
- * @returns {Promise<void>}
  */
 export async function enterFullscreen() {
   if (!fullscreen$.value) {
@@ -26,14 +25,16 @@ export async function enterFullscreen() {
       await document.documentElement?.requestFullscreen()
       fullscreen$.next(true)
     } catch (error) {
-      logger.warn({ error }, `failed to enter fullscreen: ${error.message}`)
+      logger.warn(
+        { error },
+        `failed to enter fullscreen: ${/** @type {Error} */ (error).message}`
+      )
     }
   }
 }
 
 /**
  * Leaves fullscreen mode.
- * @returns {Promise<void>}
  */
 export async function leaveFullscreen() {
   if (fullscreen$.value) {
@@ -41,14 +42,16 @@ export async function leaveFullscreen() {
       document.exitFullscreen?.()
       fullscreen$.next(false)
     } catch (error) {
-      logger.warn({ error }, `failed to leave fullscreen: ${error.message}`)
+      logger.warn(
+        { error },
+        `failed to leave fullscreen: ${/** @type {Error} */ (error).message}`
+      )
     }
   }
 }
 
 /**
  * Enters or leaves fullscreen mode, updating the relevant store.
- * @returns {Promise<void>}
  */
 export async function toggleFullscreen() {
   if (fullscreen$.value) {

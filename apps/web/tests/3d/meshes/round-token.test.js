@@ -1,4 +1,11 @@
-import { Color4 } from '@babylonjs/core/Maths/math.color'
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').PBRSpecularGlossinessMaterial} Material
+ */
+
+import { Color3 } from '@babylonjs/core/Maths/math.color'
 import { faker } from '@faker-js/faker'
 import { controlManager, materialManager } from '@src/3d/managers'
 import { createRoundToken } from '@src/3d/meshes'
@@ -10,6 +17,7 @@ import {
   expectPosition
 } from '../../test-utils'
 
+/** @type {Scene} */
 let scene
 configures3dTestEngine(created => (scene = created.scene))
 
@@ -17,7 +25,7 @@ beforeAll(() => materialManager.init({ scene }))
 
 describe('createRoundToken()', () => {
   it('creates a token with default values and no behavior', async () => {
-    const mesh = await createRoundToken()
+    const mesh = await createRoundToken({ id: '', texture: '' }, scene)
     expect(mesh.name).toEqual('roundToken')
     expectDimension(mesh, [2, 0.1, 2])
     expect(mesh.isPickable).toBe(false)
@@ -31,25 +39,31 @@ describe('createRoundToken()', () => {
 
   it('creates a token with a single color', async () => {
     const color = '#1E282F'
-    const mesh = await createRoundToken({ texture: color })
+    const mesh = await createRoundToken({ id: '', texture: color }, scene)
     expect(mesh.name).toEqual('roundToken')
     expectDimension(mesh, [2, 0.1, 2])
     expect(mesh.isPickable).toBe(false)
-    expect(mesh.material.diffuseColor).toEqual(
-      Color4.FromHexString(color).toLinearSpace()
+    expect(/** @type {Material} */ (mesh.material).diffuseColor).toEqual(
+      Color3.FromHexString(color).toLinearSpace()
     )
   })
 
   it('creates a token with initial transformation', async () => {
-    const mesh = await createRoundToken({
-      dimension: 4,
-      transform: { roll: Math.PI * -0.5 }
-    })
+    const mesh = await createRoundToken(
+      {
+        id: '',
+        texture: '',
+        diameter: 2,
+        transform: { roll: Math.PI * -0.5 }
+      },
+      scene
+    )
     expect(mesh.name).toEqual('roundToken')
     expectDimension(mesh, [0.05, 2, 2])
   })
 
   describe('given a token with initial position, dimension, images and behaviors', () => {
+    /** @type {Mesh} */
     let mesh
 
     const diameter = faker.number.int(999)
@@ -63,6 +77,7 @@ describe('createRoundToken()', () => {
       Array.from({ length: 4 }, () => faker.number.int(999)),
       Array.from({ length: 4 }, () => faker.number.int(999))
     ]
+    const texture = faker.color.rgb()
     const behaviors = {
       movable: { kind: faker.lorem.word() },
       rotable: { angle: Math.PI },
@@ -73,16 +88,20 @@ describe('createRoundToken()', () => {
     }
 
     beforeEach(async () => {
-      mesh = await createRoundToken({
-        id,
-        diameter,
-        height,
-        x,
-        y,
-        z,
-        faceUV,
-        ...behaviors
-      })
+      mesh = await createRoundToken(
+        {
+          id,
+          texture,
+          diameter,
+          height,
+          x,
+          y,
+          z,
+          faceUV,
+          ...behaviors
+        },
+        scene
+      )
     })
 
     it('has all the expected data', () => {
@@ -123,6 +142,7 @@ describe('createRoundToken()', () => {
         faceUV,
         diameter,
         height,
+        texture,
         detailable: behaviors.detailable,
         rotable: {
           ...behaviors.rotable,

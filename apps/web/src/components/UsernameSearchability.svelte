@@ -1,9 +1,11 @@
 <script>
+  // @ts-check
   import { setUsernameSearchability } from '@src/stores'
   import { _ } from 'svelte-intl'
-  
+
   import { invalidate } from '$app/navigation'
 
+  /** @type {boolean} whether player's username is searchable. */
   export let searchable = false
 
   async function handleToggle() {

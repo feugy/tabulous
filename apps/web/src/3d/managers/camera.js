@@ -1,3 +1,12 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Animatable} Animatable
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ * @typedef {import('@tabulous/server/src/graphql/types').CameraPosition} RawCameraPosition
+ * @typedef {import('@tabulous/server/src/graphql/types').ZoomSpec} ZoomSpec
+ * @typedef {import('@src/3d/utils').ScreenPosition} ScreenPosition
+ */
+
 import { Animation } from '@babylonjs/core/Animations/animation.js'
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera.js'
 import { TargetCamera } from '@babylonjs/core/Cameras/targetCamera.js'
@@ -7,14 +16,7 @@ import { Observable } from '@babylonjs/core/Misc/observable.js'
 import { makeLogger } from '../../utils/logger'
 import { isPositionAboveTable, screenToGround } from '../utils/vector'
 
-/**
- * @typedef {object} CameraSave camera state save, including:
- * @property {number[]} target - camera locked target, as an array of 3D coordinates.
- * @property {number} alpha - alpha angle, in radian.
- * @property {number} beta - beta angle, in radia.
- * @property {number} elevation - altitude, in 3D coordinate.
- * @property {string} hash - hash to compare saves together.
- */
+/** @typedef {Omit<RawCameraPosition, 'playerId'|'id'|'index'>} CameraPosition */
 
 class CameraManager {
   /**
@@ -23,19 +25,17 @@ class CameraManager {
    * - save and restore its position
    * An ArcRotateCamera with no controls nor behaviors is created when initializing the manager.
    * Clears all observers on scene disposal.
-   *
-   * @property {number} minAngle - minimum camera angle (with x/z plane), in radian
-   * @property {TargetCamera} camera? - managed camera.
-   * @property {TargetCamera} handSceneCamera? - camera for the hand scene, fixed.
-   * @property {CameraSave[]} saves? - list of camera state saves.
-   * @property {Observable<CameraSave[]>} onSaveObservable - emits when saving new camera positions.
-   * @property {Observable<CameraSave>} onMoveObservable - emits when moving current camera (target, angle or elevation).
    */
   constructor() {
+    /** @type {?ArcRotateCamera} managed camera.*/
     this.camera = null
-    this.handSceneCamera = null
+    /** @type {?TargetCamera} camera for the hand scene, fixed.*/
+    this.type = null
+    /** @type {CameraPosition[]} list of camera state saves.*/
     this.saves = []
+    /** @type {Observable<CameraPosition[]>} emits when saving new camera positions.*/
     this.onSaveObservable = new Observable()
+    /** @type {Observable<CameraPosition>} emits when moving current camera (target, angle or elevation).*/
     this.onMoveObservable = new Observable()
   }
 
@@ -45,12 +45,13 @@ class CameraManager {
    * Altitude is always in 3D world coordinate, angle in radians, and position in screen coordinates
    * It maintains a list of saves, the first being its initial state.
    * @param {object} params - parameters, including:
-   * @param {number} params.y? - initial altitude
-   * @param {number} params.beta? - initial beta angle
-   * @param {number} params.minY? - minimum camera altitude, in 3D coordinate
-   * @param {number} params.maxY? - maximum camera altitude, in 3D coordinate
-   * @param {number} params.minAngle? - minimum camera angle (with x/z plane), in radian
-   * @param {import('@babylonjs/core').Scene} params.scene? - scene to host this card (default to last scene).
+   * @param {number} [params.y] - initial altitude
+   * @param {number} [params.beta] - initial beta angle
+   * @param {number} [params.minY] - minimum camera altitude, in 3D coordinate
+   * @param {number} [params.maxY] - maximum camera altitude, in 3D coordinate
+   * @param {number} [params.minAngle] - minimum camera angle (with x/z plane), in radian
+   * @param {Scene} [params.scene] - main scene.
+   * @param {Scene} [params.handScene] - hand scene.
    */
   init({
     y = 35,
@@ -100,10 +101,7 @@ class CameraManager {
 
   /**
    * Adjust the main camera zoom range (when relevant), and the fixed hand zoom (when relevant).
-   * @param {object} params - game data, including:
-   * @param {number} params.min? - minimum zoom level allowed on the main scene.
-   * @param {number} params.max? - maximum zoom level allowed on the main scene.
-   * @param {number} params.handZoom? - fixed zoom level for the hand scene.
+   * @param {ZoomSpec} [zoomSpec] - zoom specification
    * @throws {Error} when called prior to initialization.
    */
   adjustZoomLevels({ min, max, hand } = {}) {
@@ -119,7 +117,7 @@ class CameraManager {
     if (max) {
       camera.upperRadiusLimit = max
     }
-    if (hand) {
+    if (hand && handSceneCamera) {
       handSceneCamera.position.y = hand
     }
   }
@@ -128,10 +126,10 @@ class CameraManager {
    * Applies a given movement to the camera on x/z plane, with animation.
    * Coordinates outside the table will be ignored.
    * Ends with the animation.
-   * @async
-   * @param {import('../utils').ScreenPosition} movementStart - movement starting point, in screen coordinate.
-   * @param {import('../utils').ScreenPosition} movementEnd -movement ending point, in screen coordinate.
+   * @param {ScreenPosition} movementStart - movement starting point, in screen coordinate.
+   * @param {ScreenPosition} movementEnd -movement ending point, in screen coordinate.
    * @param {number} [duration=300] - animation duration, in ms.
+   * @returns {Promise<void>}
    */
   async pan(movementStart, movementEnd, duration = 300) {
     if (!this.camera) return
@@ -139,10 +137,11 @@ class CameraManager {
 
     const start = screenToGround(scene, movementStart)
     const end = screenToGround(scene, movementEnd)
+    if (!start || !end) return
 
-    const target = this.camera[pan.targetProperty].add(
-      new Vector3(start.x - end.x, 0, start.z - end.z)
-    )
+    const target = /** @type {Vector3} */ (
+      /** @type {?} */ (this.camera)[pan.targetProperty]
+    ).add(new Vector3(start.x - end.x, 0, start.z - end.z))
 
     if (isPositionAboveTable(scene, target)) {
       await animate(this, { target }, duration)
@@ -153,10 +152,10 @@ class CameraManager {
    * Rotates the camera by a given angles, with animation.
    * Coordinates outside the table will be ignored.
    * Ends with the animation.
-   * @async.=
    * @param {number} [alpha=0] - longitudinal rotation (around the Z axis), in radian.
    * @param {number} [beta=0] - latitudinal rotation, in radian, between minAngle and PI/2.
    * @param {number} [duration=300] - animation duration, in ms.
+   * @returns {Promise<void>}
    */
   async rotate(alpha = 0, beta = 0, duration = 300) {
     if (!this.camera) return
@@ -173,9 +172,9 @@ class CameraManager {
   /**
    * Zooms the camera in or out by a given step, with animation.
    * Ends with the animation.
-   * @async
-   * @param {number} step - positive or negative elevation (in 3D world coordinates).
+   * @param {number} elevation - positive or negative elevation (in 3D world coordinates).
    * @param {number} [duration=300] - animation duration, in ms.
+   * @returns {Promise<void>}
    */
   async zoom(elevation, duration = 300) {
     if (!this.camera) return
@@ -215,7 +214,7 @@ class CameraManager {
   /**
    * Loads saved position and notifies observers.
    * Restores the first position.
-   * @param {CameraSave[]} saves - an array of save position.
+   * @param {CameraPosition[]} saves - an array of save position.
    */
   async loadSaves(saves) {
     this.saves = saves
@@ -234,47 +233,64 @@ const logger = makeLogger('camera')
 
 const frameRate = 10
 
-const rotateAlpha = new Animation(
-  'rotateAlpha',
-  'alpha',
-  frameRate,
-  Animation.ANIMATIONTYPE_FLOAT,
-  Animation.ANIMATIONLOOPMODE_CONSTANT
+const rotateAlpha = /** @type {Animation & {targetProperty: 'alpha'}} */ (
+  new Animation(
+    'rotateAlpha',
+    'alpha',
+    frameRate,
+    Animation.ANIMATIONTYPE_FLOAT,
+    Animation.ANIMATIONLOOPMODE_CONSTANT
+  )
 )
 
-const rotateBeta = new Animation(
-  'rotateBeta',
-  'beta',
-  frameRate,
-  Animation.ANIMATIONTYPE_FLOAT,
-  Animation.ANIMATIONLOOPMODE_CONSTANT
+const rotateBeta = /** @type {Animation & {targetProperty: 'beta'}} */ (
+  new Animation(
+    'rotateBeta',
+    'beta',
+    frameRate,
+    Animation.ANIMATIONTYPE_FLOAT,
+    Animation.ANIMATIONLOOPMODE_CONSTANT
+  )
 )
 
-const elevate = new Animation(
-  'elevate',
-  'radius',
-  frameRate,
-  Animation.ANIMATIONTYPE_FLOAT,
-  Animation.ANIMATIONLOOPMODE_CONSTANT
+const elevate = /** @type {Animation & {targetProperty: 'radius'}} */ (
+  new Animation(
+    'elevate',
+    'radius',
+    frameRate,
+    Animation.ANIMATIONTYPE_FLOAT,
+    Animation.ANIMATIONLOOPMODE_CONSTANT
+  )
 )
 
-const pan = new Animation(
-  'pan',
-  'lockedTarget',
-  frameRate,
-  Animation.ANIMATIONTYPE_VECTOR3,
-  Animation.ANIMATIONLOOPMODE_CONSTANT
+const pan = /** @type {Animation & {targetProperty: 'lockedTarget'}} */ (
+  new Animation(
+    'pan',
+    'lockedTarget',
+    frameRate,
+    Animation.ANIMATIONTYPE_VECTOR3,
+    Animation.ANIMATIONLOOPMODE_CONSTANT
+  )
 )
 
-let currentAnimation
-let cancelInterval
+/** @type {?Animatable} */
+let currentAnimation = null
 
+/**
+ *
+ * @param {CameraManager} manager
+ * @param {Partial<Omit<CameraPosition, 'target'>> & { target?: Vector3 }} newPosition
+ * @param {number} duration
+ * @returns
+ */
 async function animate(
   { camera, onMoveObservable },
   { alpha, beta, elevation, target },
   duration
 ) {
+  if (!camera) return
   const lastFrame = Math.round(frameRate * (duration / 1000))
+  /** @type {Animation[]} */
   const anims = []
   if (alpha !== undefined) {
     rotateAlpha.setKeys([
@@ -321,18 +337,22 @@ async function animate(
     currentAnimation = camera
       .getScene()
       .beginDirectAnimation(camera, anims, 0, lastFrame, false, 1, () => {
-        cancelInterval?.()
         currentAnimation = null
         // fix alpha to keep it within PI/2 and 5*PI/2: this ensure minimal rotation when animating positions
         fixAlpha(camera)
         onMoveObservable.notifyObservers(serialize(camera))
-        resolve()
+        resolve(void 0)
       })
   })
 }
 
+/**
+ * @param {ArcRotateCamera} camera
+ * @returns {CameraPosition}
+ */
 function serialize(camera) {
   return addHash({
+    hash: '',
     alpha: camera[rotateAlpha.targetProperty],
     beta: camera[rotateBeta.targetProperty],
     elevation: camera[elevate.targetProperty],
@@ -340,11 +360,18 @@ function serialize(camera) {
   })
 }
 
+/**
+ * @param {CameraPosition} save
+ * @returns {CameraPosition}
+ */
 function addHash(save) {
   save.hash = `${save.target[0]}-${save.target[1]}-${save.target[2]}-${save.alpha}-${save.beta}-${save.elevation}`
   return save
 }
 
+/**
+ * @param {ArcRotateCamera} camera
+ */
 function fixAlpha(camera) {
   if (camera.alpha < Math.PI / 2) {
     camera.alpha += 2 * Math.PI

@@ -1,3 +1,4 @@
+// @ts-check
 import { abbreviate, translateError } from '@src/utils'
 import { get } from 'svelte/store'
 import { _ } from 'svelte-intl'
@@ -38,7 +39,7 @@ describe('string utilities', () => {
         output: 'NP'
       }
     ])('$title', ({ input, output }) => {
-      expect(abbreviate(input)).toBe(output)
+      expect(abbreviate(/** @type {?} */ (input))).toBe(output)
     })
   })
 
@@ -76,6 +77,7 @@ describe('string utilities', () => {
     })
 
     it('returns null on missing input', () => {
+      // @ts-expect-error missing parameter
       expect(translateError(formatMessage)).toBeNull()
     })
   })

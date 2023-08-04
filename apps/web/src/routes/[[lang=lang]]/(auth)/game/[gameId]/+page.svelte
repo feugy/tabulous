@@ -1,10 +1,11 @@
 <script>
+  // @ts-check
   import { _ } from 'svelte-intl'
 
   import Loading from './LoadingScreen'
 
   /** @type {import('./$types').PageData} */
-  export let data = {}
+  export let data
 </script>
 
 <svelte:head>

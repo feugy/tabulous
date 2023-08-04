@@ -1,8 +1,10 @@
 <script>
+  // @ts-check
   import { _ } from 'svelte-intl'
 
   import Markdown from './Markdown.svelte'
 
+  /** @type {boolean} whether to show the page title. */
   export let withTitle = true
 </script>
 

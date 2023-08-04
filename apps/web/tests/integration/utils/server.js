@@ -15,13 +15,15 @@ const gameAssetsFolder = join(
 )
 const debug = !!process.env.PWDEBUG || !!process.env.CI
 
-let server = null
+/** @type {import('fastify').FastifyInstance} */
+let server
 // Store the current server context, that is, the mocks for current test.
 // It prevents running tests in paralle, but it's acceptable, because parrallel test would be in
 // different processes, and sharing the same mock server would be impossible.
-let serverContext = null
+/** @type {ServerContext} */
+let serverContext
 
-function log(reqId, ...args) {
+function log(/** @type {?string} */ reqId, /** @type {...any} */ ...args) {
   const now = new Date()
   debug &&
     console.log(
@@ -31,7 +33,7 @@ function log(reqId, ...args) {
     )
 }
 
-function logError(reqId, ...args) {
+function logError(/** @type {?string} */ reqId, /** @type {...any} */ ...args) {
   const now = new Date()
   console.log(
     chalk`{dim ${now.toLocaleTimeString()}.${now.getMilliseconds()}}`,
@@ -41,18 +43,30 @@ function logError(reqId, ...args) {
 }
 
 /**
- * @typedef {Object.<string, object[]|object>} GraphQLMocks mocks for multiple graphQL operations.
+ * @typedef {(?object|string|boolean|number)[]} GraphQLMock
+ * @typedef {Record<string, ?GraphQLMock|object|string|boolean|number>} GraphQLMocks mocks for multiple graphQL operations.
  * Each property name is the operation Name, while values are the returned data, or an array of returned data.
  */
 
 /**
  * @typedef {object} GraphQlMockResult
  * @property {Record<string, string>} subscriptionIds - GaphQL subscription ids by their operation name.
- * @property {(receiver: (operation: string, message: object) => void) => void} onSubscription - registers a unique callback called when receiving GraphQL subscription.
- * @property {(receiver: (operation: string, request: object) => undefined|object[]|object) => void} onQuery - registers a unique callback called when receiving GraphQL queries (and mutations).
- *                                                                                         Can be used to override predefined responses
- * @property {(payload: object) => void} sendToSubscription - sends a GraphQL response payload to the subscription.
+ * @property {(receiver: (operation: string, message: ?) => void) => void} onSubscription - registers a unique callback called when receiving GraphQL subscription.
+ * @property {(receiver: (operation: string, request: ?) => ?) => void} onQuery - registers a unique callback called when receiving GraphQL queries (and mutations). Can be used to override predefined responses
+ * @property {(payload: ?) => void} sendToSubscription - sends a GraphQL response payload to the subscription.
  * @property {() => void} setTokenCookie - sets token cookie so SvelteKit server can issue requests to the mocked server.
+ */
+
+/**
+ * @typedef {object} ServerContext
+ * @property {Map<string, GraphQLMock>} responsesPerOperation
+ * @property {Map<?, ?>} rankPerOperation
+ * @property {import('@fastify/websocket').SocketStream} [wsConnection]
+ * @property {GraphQlMockResult['subscriptionIds']} subscriptionIds
+ * @property {GraphQlMockResult['sendToSubscription']} sendToSubscription
+ * @property {GraphQlMockResult['setTokenCookie']} setTokenCookie
+ * @property {(operation: string, message: ?) => void} [onSubscription]
+ * @property {(operation: string, request: ?) => GraphQLMock} [onQuery]
  */
 
 /**
@@ -105,50 +119,53 @@ export async function mockGraphQl(page, mocks) {
         { websocket: true },
         (connection, { id: reqId }) => {
           log(reqId, `upgrading to WS connection`)
-          function sendInWebSocket(payload) {
+          function sendInWebSocket(/** @type {object} */ payload) {
             serverContext.wsConnection?.socket.send(JSON.stringify(payload))
           }
 
-          connection.socket.on('message', async buffer => {
-            try {
-              const message = JSON.parse(buffer.toString())
-              log(reqId, `receiving WS message:`, message)
-              if (message.type === 'connection_init') {
-                serverContext.wsConnection = connection
-                serverContext.sendToSubscription = payload => {
-                  const operation = Object.keys(payload.data)[0]
-                  const id = serverContext.subscriptionIds[operation]
-                  log(
-                    reqId,
-                    chalk`sending WS message {blueBright ${id}}:`,
-                    payload
-                  )
-                  sendInWebSocket({ type: 'next', id, payload })
+          connection.socket.on(
+            'message',
+            async (/** @type {Buffer} */ buffer) => {
+              try {
+                const message = JSON.parse(buffer.toString())
+                log(reqId, `receiving WS message:`, message)
+                if (message.type === 'connection_init') {
+                  serverContext.wsConnection = connection
+                  serverContext.sendToSubscription = payload => {
+                    const operation = Object.keys(payload.data)[0]
+                    const id = serverContext.subscriptionIds[operation]
+                    log(
+                      reqId,
+                      chalk`sending WS message {blueBright ${id}}:`,
+                      payload
+                    )
+                    sendInWebSocket({ type: 'next', id, payload })
+                  }
+                  sendInWebSocket({ type: 'connection_ack' })
+                } else if (message.type === 'ping') {
+                  sendInWebSocket({ type: 'pong' })
+                } else if (message.type === 'subscribe') {
+                  const operation = message.payload.operationName
+                  serverContext.subscriptionIds[operation] = message.id
+                  serverContext.onSubscription?.(operation, message)
                 }
-                sendInWebSocket({ type: 'connection_ack' })
-              } else if (message.type === 'ping') {
-                sendInWebSocket({ type: 'pong' })
-              } else if (message.type === 'subscribe') {
-                const operation = message.payload.operationName
-                serverContext.subscriptionIds[operation] = message.id
-                serverContext.onSubscription?.(operation, message)
+              } catch (err) {
+                logError(
+                  chalk`{red can not parse received WS message}: ${
+                    /** @type {Error} */ (err).message
+                  } \n ${buffer.toString()}`
+                )
               }
-            } catch (err) {
-              logError(
-                chalk`{red can not parse received WS message}: ${
-                  err.message
-                } \n ${buffer.toString()}`
-              )
             }
-          })
+          )
         }
       )
 
       server.post(graphQlRoute, async request => {
-        // @ts-ignore request.body is not typed
-        const { operationName: operation } = request.body
+        const body = /** @type {Record<string, any>} */ (request.body)
+        const { operationName: operation } = body
         let responses =
-          serverContext.onQuery?.(operation, request.body) ||
+          serverContext.onQuery?.(operation, body) ||
           serverContext.responsesPerOperation.get(operation)
         if (!responses) {
           responses = [null]
@@ -186,10 +203,8 @@ export async function mockGraphQl(page, mocks) {
   serverContext = {
     responsesPerOperation: initResponses(mocks),
     rankPerOperation: new Map(),
-    subscriptionIds: [],
-    wsConnection: null,
-    onSubscription: null,
-    onQuery: null,
+    subscriptionIds: {},
+    sendToSubscription: () => {},
     async setTokenCookie() {
       await page.context().addCookies([
         {
@@ -219,11 +234,17 @@ export async function mockGraphQl(page, mocks) {
   }
 }
 
+/**
+ * @template {function} T
+ * @param {T|?} data
+ * @returns {ReturnType<T>|?}
+ */
 function invokeOrReturn(data) {
   return typeof data === 'function' ? data() : data
 }
 
-function initResponses(mocks = {}) {
+function initResponses(/** @type {GraphQLMocks} */ mocks = {}) {
+  /** @type {Map<string, GraphQLMock>} */
   const responsesPerOperation = new Map()
   for (const [operation, responses] of Object.entries(mocks)) {
     responsesPerOperation.set(

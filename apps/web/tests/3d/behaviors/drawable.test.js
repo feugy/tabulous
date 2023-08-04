@@ -1,3 +1,9 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ */
+
 import { faker } from '@faker-js/faker'
 import { DrawBehavior, DrawBehaviorName } from '@src/3d/behaviors'
 import { controlManager, handManager } from '@src/3d/managers'
@@ -12,16 +18,21 @@ import {
   sleep
 } from '../../test-utils'
 
+/** @type {Scene} */
+let scene
 const actionRecorded = vi.fn()
 const animationEndReceived = vi.fn()
 const handOverlay = document.createElement('div')
 
-configures3dTestEngine(({ handScene, scene }) => {
-  handManager.init({ handScene, scene, overlay: handOverlay })
+configures3dTestEngine(created => {
+  scene = created.scene
+  handManager.init({ ...created, overlay: handOverlay })
   controlManager.onActionObservable.add(actionRecorded)
 })
 
-beforeEach(vi.resetAllMocks)
+beforeEach(() => {
+  vi.resetAllMocks()
+})
 
 describe('DrawBehavior', () => {
   it('has initial state', () => {
@@ -44,14 +55,14 @@ describe('DrawBehavior', () => {
   })
 
   it('can not restore state without mesh', () => {
-    expect(() => new DrawBehavior().fromState({ front: null })).toThrow(
+    expect(() => new DrawBehavior().fromState({})).toThrow(
       'Can not restore state without mesh'
     )
   })
 
   it('can not draw in hand without mesh', () => {
     const behavior = new DrawBehavior()
-    behavior.draw()
+    behavior.draw?.()
     expect(actionRecorded).not.toHaveBeenCalled()
   })
 
@@ -72,12 +83,16 @@ describe('DrawBehavior', () => {
   })
 
   describe('given attached to a mesh', () => {
+    /** @type {Mesh} */
     let mesh
+    /** @type {DrawBehavior} */
     let behavior
 
     beforeEach(() => {
-      mesh = createCard({ id: 'box', drawable: {} })
-      behavior = mesh.getBehaviorByName(DrawBehaviorName)
+      mesh = createCard({ id: 'box', texture: '', drawable: {} }, scene)
+      behavior = /** @type {DrawBehavior} */ (
+        mesh.getBehaviorByName(DrawBehaviorName)
+      )
       behavior.onAnimationEndObservable.add(animationEndReceived)
     })
 
@@ -104,7 +119,7 @@ describe('DrawBehavior', () => {
 
     it(`draws into player's hand`, async () => {
       const { x, ...state } = mesh.metadata.serialize() // eslint-disable-line no-unused-vars
-      mesh.metadata.draw()
+      mesh.metadata.draw?.()
       expect(actionRecorded).toHaveBeenCalledWith(
         {
           meshId: mesh.id,

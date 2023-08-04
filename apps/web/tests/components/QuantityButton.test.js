@@ -1,3 +1,4 @@
+// @ts-check
 import QuantityButton from '@src/components/QuantityButton.svelte'
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import { tick } from 'svelte'
@@ -28,7 +29,7 @@ describe('QuantityButton component', () => {
     render(html`<${QuantityButton} on:click=${handleClick} />`)
     const buttons = screen.getAllByRole('button')
     expect(buttons).toHaveLength(3)
-    expect(buttons[0]).toHaveTextContent(1)
+    expect(buttons[0]).toHaveTextContent('1')
     expect(handleClick).not.toHaveBeenCalled()
   })
 
@@ -44,10 +45,11 @@ describe('QuantityButton component', () => {
   it(`increments quantity with keyboard`, async () => {
     renderComponent()
     screen.getAllByRole('button')[0].focus()
-    fireEvent.keyUp(document.activeElement, { code: 'ArrowUp' })
+    const activeElement = /** @type {HTMLElement} */ (document.activeElement)
+    fireEvent.keyUp(activeElement, { code: 'ArrowUp' })
     await tick()
     expectQuantity(2)
-    fireEvent.keyUp(document.activeElement, { code: 'ArrowRight' })
+    fireEvent.keyUp(activeElement, { code: 'ArrowRight' })
     await tick()
     expectQuantity(3)
     expect(handleClick).not.toHaveBeenCalled()
@@ -66,10 +68,11 @@ describe('QuantityButton component', () => {
     quantity$.set(10)
     renderComponent()
     screen.getAllByRole('button')[0].focus()
-    fireEvent.keyUp(document.activeElement, { code: 'ArrowLeft' })
+    const activeElement = /** @type {HTMLElement} */ (document.activeElement)
+    fireEvent.keyUp(activeElement, { code: 'ArrowLeft' })
     await tick()
     expectQuantity(9)
-    fireEvent.keyUp(document.activeElement, { code: 'ArrowDown' })
+    fireEvent.keyUp(activeElement, { code: 'ArrowDown' })
     await tick()
     expectQuantity(8)
     expect(handleClick).not.toHaveBeenCalled()
@@ -89,13 +92,15 @@ describe('QuantityButton component', () => {
     quantity$.set(5)
     renderComponent()
     screen.getAllByRole('button')[0].focus()
-    fireEvent.keyUp(document.activeElement, { code: 'Home' })
+    fireEvent.keyUp(/** @type {HTMLElement} */ (document.activeElement), {
+      code: 'Home'
+    })
     await tick()
     expectQuantity(1)
     expect(handleClick).not.toHaveBeenCalled()
   })
 
-  it(`resetto 1 when incrementing above max`, async () => {
+  it(`reset to 1 when incrementing above max`, async () => {
     renderComponent({ max: 3 })
     for (let times = 1; times <= 3; times++) {
       expectQuantity(times)
@@ -110,7 +115,9 @@ describe('QuantityButton component', () => {
     const max = 5
     renderComponent({ max })
     screen.getAllByRole('button')[0].focus()
-    fireEvent.keyUp(document.activeElement, { code: 'End' })
+    fireEvent.keyUp(/** @type {HTMLElement} */ (document.activeElement), {
+      code: 'End'
+    })
     await tick()
     expectQuantity(max)
     expect(handleClick).not.toHaveBeenCalled()
@@ -126,8 +133,8 @@ describe('QuantityButton component', () => {
     )
   })
 
-  function expectQuantity(quantity) {
+  function expectQuantity(quantity = 0) {
     expect(get(quantity$)).toEqual(quantity)
-    expect(screen.getAllByRole('button')[0]).toHaveTextContent(quantity)
+    expect(screen.getAllByRole('button')[0]).toHaveTextContent(`${quantity}`)
   }
 })

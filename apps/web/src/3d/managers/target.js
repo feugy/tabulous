@@ -1,5 +1,17 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ * @typedef {import('@babylonjs/core').Vector3} Vector3
+ * @typedef {import('@tabulous/server/src/graphql/types').Anchor} Anchor
+ * @typedef {import('@tabulous/server/src/graphql/types').Targetable} Targetable
+ * @typedef {import('@src/3d/behaviors/targetable').TargetBehavior} TargetBehavior
+ * @typedef {import('@src/3d/behaviors/targetable').DropDetails} DropDetails
+ * @typedef {import('@src/3d/utils').ScreenPosition} ScreenPosition
+ */
+
 import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial'
-import { Color4 } from '@babylonjs/core/Maths/math.color'
+import { Color3, Color4 } from '@babylonjs/core/Maths/math.color'
 
 import { makeLogger } from '../../utils/logger'
 import { distance } from '../../utils/math'
@@ -12,16 +24,22 @@ import { selectionManager } from './selection'
 
 const logger = makeLogger('target')
 
-/** @typedef {import('@babylonjs/core').Mesh} Mesh  */
-/** @typedef {import('../behaviors').TargetBehavior} TargetBehavior  */
-/** @typedef {import('../behaviors').DropZone} DropZone  */
+/**
+ * @typedef {object} _SingleDropZone definition of a target drop zone
+ * @property {TargetBehavior} targetable - the enclosing targetable behavior.
+ * @property {Mesh} mesh - invisible, unpickable mesh acting as drop zone.
+ *
+ * @typedef {Record<string, ?> & Targetable & Required<Omit<Targetable, 'kinds'>> & Pick<Anchor, 'playerId'> & Required<Pick<Anchor, 'ignoreParts'>> & _SingleDropZone} SingleDropZone definition of a target drop zone
+ */
 
 /**
  * @typedef {object} MultiDropZone a virtual drop zone made of several other zones
- * @property {DropZone[]} parts - a list of part for this zone.
+ * @property {SingleDropZone[]} parts - a list of part for this zone.
  * @property {TargetBehavior} targetable - targetable of the first part.
  * @property {Mesh} mesh - mesh of the first part.
  */
+
+/** @typedef {SingleDropZone|MultiDropZone} DropZone */
 
 class TargetManager {
   /**
@@ -31,15 +49,22 @@ class TargetManager {
    * - drop mesh onto their relevant zones
    * Each registered behavior can have multiple zones
    *
-   * @property {import('@babylonjs/core').Scene} scene - the main scene.
+   *
    * @property {string} playerId - current player Id.
    */
   constructor() {
-    this.scene = null
-    this.playerId = null
-    // private
+    /** @type {Scene} the main scene. */
+    this.scene
+    /** @type {string} current player Id. */
+    this.playerId
+    /** @type {Color4} current player color. */
+    this.color
+    /** @internal @type {Set<TargetBehavior>} set of managed behaviors. */
     this.behaviors = new Set()
+    /** @internal @type {Map<SingleDropZone|MultiDropZone, Mesh[]>} map of droppable meshes by drop zone.*/
     this.droppablesByDropZone = new Map()
+    /** @internal @type {StandardMaterial} material applied to active drop zones. */
+    this.material
   }
 
   /**
@@ -54,7 +79,7 @@ class TargetManager {
     this.playerId = playerId
     this.color = Color4.FromHexString(color)
     this.material = new StandardMaterial('target-material', scene)
-    this.material.diffuseColor = this.color
+    this.material.diffuseColor = Color3.FromArray(this.color.asArray())
     this.material.alpha = 0.5
   }
 
@@ -86,7 +111,8 @@ class TargetManager {
    * @returns {boolean} whether this mesh's target behavior is controlled or not
    */
   isManaging(mesh) {
-    return this.behaviors.has(getTargetableBehavior(mesh))
+    const behavior = getTargetableBehavior(mesh)
+    return behavior ? this.behaviors.has(behavior) : false
   }
 
   /**
@@ -95,8 +121,8 @@ class TargetManager {
    * The found zone is highlithed, and the dragged mesh will be saved as potential droppable for this zone.
    *
    * @param {Mesh} dragged - a dragged mesh.
-   * @param {string} kind - drag kind.
-   * @return {DropZone|MultiDropZone} matching zone, if any.
+   * @param {string} [kind] - drag kind.
+   * @returns {?SingleDropZone|MultiDropZone} matching zone, if any.
    */
   findPlayerZone(dragged, kind) {
     logger.debug(
@@ -106,7 +132,7 @@ class TargetManager {
     return findZone(
       this,
       dragged,
-      zone => zone.playerId && this.canAccept(zone, kind),
+      zone => (zone.playerId ? this.canAccept(zone, kind) : false),
       kind
     )
   }
@@ -118,8 +144,8 @@ class TargetManager {
    * The found zone is highlithed, and the dragged mesh will be saved as potential droppable for this zone.
    *
    * @param {Mesh} dragged - a dragged mesh.
-   * @param {string} kind - drag kind.
-   * @return {DropZone|MultiDropZone|null} matching zone, if any.
+   * @param {string} [kind] - drag kind.
+   * @returns {?SingleDropZone|MultiDropZone} matching zone, if any.
    */
   findDropZone(dragged, kind) {
     logger.debug(
@@ -139,11 +165,12 @@ class TargetManager {
 
   /**
    * Clears all droppable meshes of a given drop zone, and stops highlighting it.
-   * @param {DropZone[MultiDropZone]} zone - the cleared drop zone.
+   * @param {?SingleDropZone|MultiDropZone} [zone] - the cleared drop zone.
    */
   clear(zone) {
+    if (!zone) return
     this.droppablesByDropZone.delete(zone)
-    if (zone?.parts) {
+    if ('parts' in zone) {
       for (const part of zone.parts) {
         clearZone(part)
       }
@@ -156,8 +183,8 @@ class TargetManager {
    * If the provided target as droppable meshes, performs a drop operation, that is,
    * notifying drop observers of the corresponding Targetable behavior.
    * It clears the target.
-   * @param {DropZone|MultiDropZone} zone - the zone dropped onto.
-   * @param {object} props - other properties passed to the drop zone observables
+   * @param {SingleDropZone|MultiDropZone} zone - the zone dropped onto.
+   * @param {Partial<DropDetails>} props - other properties passed to the drop zone observables
    * @returns {Mesh[]} list of droppable meshes, if any.
    */
   dropOn(zone, props = {}) {
@@ -170,9 +197,9 @@ class TargetManager {
         )}`
       )
       zone.targetable.onDropObservable.notifyObservers({
+        ...props,
         dropped,
-        zone,
-        ...props
+        zone
       })
     }
     this.clear(zone)
@@ -185,16 +212,15 @@ class TargetManager {
    * - current player Id
    * - enable status
    * Does not consider mesh position.
-   * @param {DropZone} zone - the tested zone.
-   * @param {string} kind - the tested kind.
+   * @param {Partial<SingleDropZone>} [zone] - the tested zone.
+   * @param {string} [kind] - the tested kind.
    * @returns {boolean} true if provided kind is acceptable.
    */
   canAccept(zone, kind) {
+    if (!zone || !zone.enabled) return false
     return (
-      Boolean(zone) &&
-      zone.enabled &&
-      (!zone.playerId || zone.playerId === this.playerId) &&
-      (!zone.kinds || zone.kinds.includes(kind))
+      (!zone.playerId ? true : zone.playerId === this.playerId) &&
+      (!zone.kinds ? true : !kind ? false : zone.kinds.includes(kind))
     )
   }
 }
@@ -205,6 +231,13 @@ class TargetManager {
  */
 export const targetManager = new TargetManager()
 
+/**
+ * @param {TargetManager} manager - manager instance.
+ * @param {Mesh} dragged - dragged mesh to check.
+ * @param {(zone: SingleDropZone, partCenters: Vector3[]) => boolean} isMatching - matching function to test candidate zones.
+ * @param {string} [kind] - dragged kind.
+ * @returns {?SingleDropZone|MultiDropZone} matching zone, if any.
+ */
 function findZone(manager, dragged, isMatching, kind) {
   const { behaviors, scene: mainScene } = manager
   const partCenters = getMeshAbsolutePartCenters(dragged)
@@ -216,10 +249,8 @@ function findZone(manager, dragged, isMatching, kind) {
   }
   const excluded = [dragged, ...selectionManager.meshes]
   for (const targetable of behaviors) {
-    if (
-      !excluded.includes(targetable.mesh) &&
-      targetable.mesh.getScene() === scene
-    ) {
+    const { mesh } = /** @type {TargetBehavior & { mesh: Mesh }} */ (targetable)
+    if (!excluded.includes(mesh) && mesh.getScene() === scene) {
       for (const zone of targetable.zones) {
         if (isMatching(zone, partCenters)) {
           zones.push(zone)
@@ -240,6 +271,13 @@ function findZone(manager, dragged, isMatching, kind) {
   return highlightZone(manager, zone, dragged, kind)
 }
 
+/**
+ * @param {TargetManager} manager - manager instance.
+ * @param {?SingleDropZone|MultiDropZone} zone - matching zone to highlight.
+ * @param {Mesh} dragged - dragged mesh to check.
+ * @param {string} [kind] - dragged kind.
+ * @returns {?SingleDropZone|MultiDropZone} matching zone, if any.
+ */
 function highlightZone(manager, zone, dragged, kind) {
   if (!zone) {
     return null
@@ -262,6 +300,9 @@ function highlightZone(manager, zone, dragged, kind) {
   return zone
 }
 
+/**
+ * @param {?SingleDropZone} zone
+ */
 function clearZone(zone) {
   if (zone?.mesh) {
     zone.mesh.visibility = 0
@@ -269,6 +310,10 @@ function clearZone(zone) {
   }
 }
 
+/**
+ * @param {SingleDropZone[]} candidates - candidate zone.
+ * @returns {SingleDropZone[]} the sorted zones, highest and most priority first.
+ */
 function sortCandidates(candidates) {
   return candidates.sort(
     (
@@ -281,6 +326,12 @@ function sortCandidates(candidates) {
   )
 }
 
+/**
+ * @param {Mesh} mesh - considered mesh.
+ * @param {Vector3[]} partCenters - part position for this mesh.
+ * @param {SingleDropZone} zone - candidate zone.
+ * @returns {boolean} whether this zone is close to the mesh or one of its part.
+ */
 function isAPartCenterClose(mesh, partCenters, zone) {
   if (zone.ignoreParts) {
     return isCloseTo(mesh.absolutePosition, zone)
@@ -293,6 +344,11 @@ function isAPartCenterClose(mesh, partCenters, zone) {
   return false
 }
 
+/**
+ * @param {Vector3} position - checked position.
+ * @param {SingleDropZone} zone - candidate zone.
+ * @returns {boolean} whether this candidate is close enough to the point.
+ */
 function isCloseTo(
   { x, z },
   {
@@ -305,8 +361,15 @@ function isCloseTo(
   return distance({ x, y: z }, { x: targetX, y: targetZ }) <= extent
 }
 
+/**
+ * @param {Vector3[]} partCenters - absolute position of the mesh parts.
+ * @param {SingleDropZone[]} candidates - list of drop zones to group together.
+ * @returns {?MultiDropZone} the built multi drop zone, if all parts have a matching zone.
+ */
 function buildMultiZone(partCenters, candidates) {
-  const multiZone = { parts: [] }
+  const multiZone = /** @type {MultiDropZone} */ ({
+    parts: /** @type {SingleDropZone[]} */ ([])
+  })
   const remainingCandidates = [...candidates]
   for (const point of partCenters) {
     let covered = false

@@ -10,6 +10,7 @@
   component={TermsOfServicePage}
   name="Routes/terms-of-service"
   setup={() => setSvelteUrl('/terms-of-service')}
+  props={{ data: { session: null } }}
 >
   <Tool name="Anonymous" />
   <Tool

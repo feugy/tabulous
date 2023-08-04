@@ -1,3 +1,4 @@
+// @ts-check
 import { findViolations } from '@src/routes/[[lang=lang]]/(auth)/game/[gameId]/Parameters/utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -1105,7 +1106,9 @@ describe('Parameters findViolations() utility', () => {
       properties: { color: { enum: ['green', 'blue'] } }
     }
 
-    beforeEach(vi.resetAllMocks)
+    beforeEach(() => {
+      vi.resetAllMocks()
+    })
 
     it('invokes enrichProps on valid then', () => {
       expect(

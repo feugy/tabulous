@@ -6,18 +6,19 @@ import { translate } from '../utils/index.js'
 /**
  * @typedef {import('@playwright/test').Page} Page
  * @typedef {import('@playwright/test').Locator} Locator
+ * @typedef {import('../utils').Locale} Locale
  */
 
 export class LoginPage {
   /**
    * Represent the login page for testing.
    * @param {Page} page - the actual page.
-   * @param {string} lang - current language.
+   * @param {Locale} lang - current language.
    */
   constructor(page, lang) {
     /** @type {string} */
     this.pageKind = 'login'
-    /** @type {string} */
+    /** @type {Locale} */
     this.lang = lang
     /** @type {Page} */
     this.page = page

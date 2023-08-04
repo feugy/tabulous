@@ -1,3 +1,8 @@
+// @ts-check
+/**
+ * @typedef {import('../test-utils').RunQueryMock} RunQueryMock
+ */
+
 import * as graphQL from '@src/graphql'
 import { listCatalog } from '@src/stores/catalog'
 import { runQuery } from '@src/stores/graphql-client'
@@ -5,6 +10,8 @@ import { locale } from 'svelte-intl'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/stores/graphql-client')
+
+const runQueryMock = /** @type {RunQueryMock} */ (runQuery)
 
 describe('listCatalog()', () => {
   const catalog = [
@@ -22,21 +29,25 @@ describe('listCatalog()', () => {
     }
   ]
 
-  beforeEach(() => vi.clearAllMocks())
-  afterEach(() => locale.set('fr'))
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+  afterEach(() => {
+    locale.set('fr')
+  })
 
   it('list all items of the catalog', async () => {
-    runQuery.mockResolvedValueOnce([...catalog])
+    runQueryMock.mockResolvedValueOnce([...catalog])
     expect(await listCatalog()).toEqual([catalog[1], catalog[2], catalog[0]])
-    expect(runQuery).toHaveBeenCalledWith(graphQL.listCatalog)
-    expect(runQuery).toHaveBeenCalledOnce()
+    expect(runQueryMock).toHaveBeenCalledWith(graphQL.listCatalog)
+    expect(runQueryMock).toHaveBeenCalledOnce()
   })
 
   it('sort returned items by locale title', async () => {
     locale.set('en')
-    runQuery.mockResolvedValueOnce([...catalog])
+    runQueryMock.mockResolvedValueOnce([...catalog])
     expect(await listCatalog()).toEqual([catalog[2], catalog[0], catalog[1]])
-    expect(runQuery).toHaveBeenCalledWith(graphQL.listCatalog)
-    expect(runQuery).toHaveBeenCalledOnce()
+    expect(runQueryMock).toHaveBeenCalledWith(graphQL.listCatalog)
+    expect(runQueryMock).toHaveBeenCalledOnce()
   })
 })

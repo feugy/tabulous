@@ -1,22 +1,35 @@
 <script>
+  // @ts-check
+  /**
+   * @typedef {import('@src/graphql').PlayerWithSearchable} PlayerWithSearchable
+   * @typedef {import('@src/stores').Connected} Connected
+   * @typedef {import('@src/stores/game-manager').Player} Player
+   * @typedef {import('@src/utils').Dimension} Dimension
+   */
+
   import { getPixelDimension, observeDimension } from '@src/utils'
   import { onMount } from 'svelte'
 
   import PlayerAvatar from './PlayerAvatar.svelte'
 
-  export let player
+  /** @type {PlayerWithSearchable} authenticated player. */
+  export let user
+  /** @type {Map<string, Player>} map of game/lobby players by their ids. */
   export let playerById
+  /** @type {Connected[]} currently connected active players. */
   export let connected
+
   let absoluteMin = 0.4
   let min = 1
   let max = 4 / 3
 
+  /** @type {?HTMLDivElement} */
   let container
   let rows = 1
   let columns = 1
 
   $: otherPlayers = [...(playerById?.values() ?? [])].filter(
-    ({ id }) => id !== player.id
+    ({ id }) => id !== user.id
   )
 
   $: hasPeers = playerById?.size > 1
@@ -35,12 +48,14 @@
   }
 
   onMount(() => {
-    const { dimension$, disconnect } = observeDimension(container, 0)
-    dimension$.subscribe(resize)
-    return () => disconnect()
+    if (container) {
+      const { dimension$, disconnect } = observeDimension(container, 0)
+      dimension$.subscribe(resize)
+      return () => disconnect()
+    }
   })
 
-  function resize({ width, height }) {
+  function resize(/** @type {Dimension} */ { width, height }) {
     if (width && height) {
       rows = 0
       columns = 0
@@ -72,11 +87,12 @@
 </script>
 
 <div bind:this={container} style="--rows:{rows};--columns:{columns}">
+  <!-- eslint-disable-next-line no-unused-vars : we remove playerId since PlayerAvatar doesn't need it -->
   {#each peers as { playerId, ...props } (props.player.id)}
     <PlayerAvatar {...props} />
   {/each}
   {#if connected?.length}
-    <PlayerAvatar player={playerById.get(player.id)} isLocal={true} />
+    <PlayerAvatar player={playerById.get(user.id)} isLocal={true} />
   {/if}
 </div>
 

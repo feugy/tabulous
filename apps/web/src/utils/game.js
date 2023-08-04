@@ -1,44 +1,51 @@
+// @ts-check
+/**
+ * @typedef {import('@tabulous/server/src/services/games')._PlayerPreference} NonIndexablePreferences
+ * @typedef {import('@tabulous/server/src/graphql/types').ColorSpec} ColorSpec
+ * @typedef {import('@src/graphql').GameOrGameParameters} GameOrGameParameters
+ */
+
 import chroma from 'chroma-js'
 
 import { setCssVariables } from './dom'
 
 /**
  * Find game preferences of a given player.
- * @param {object} game - game date, including preferences and players arrays.
+ * @param {?GameOrGameParameters|undefined} game - game date, including preferences and players arrays.
  * @param {string} playerId - desired player
- * @returns {object} found preferences, or an empty object.
+ * @returns {Record<string, ?> & Omit<NonIndexablePreferences, 'playerId'>} found preferences, or an empty object.
  */
 export function findPlayerPreferences(game, playerId) {
   // playerId is unused, and simply ommitted from returned preferences.
   // eslint-disable-next-line no-unused-vars
-  const { playerId: _unused, ...preferences } =
-    game?.preferences?.find(preferences => preferences.playerId === playerId) ??
-    {}
+  const { playerId: _unused, ...preferences } = game?.preferences?.find(
+    preferences => preferences.playerId === playerId
+  ) ?? { color: undefined, angle: undefined }
   return preferences
 }
 
 /**
  * Returns player's color, or orange red.
- * @param {object} game - game date, including preferences and players arrays.
+ * @param {?GameOrGameParameters} game - game date, including preferences and players arrays.
  * @param {string} playerId - desired player
  * @returns {string} player's color.
  */
 export function findPlayerColor(game, playerId) {
-  return findPlayerPreferences(game, playerId).color ?? '#ff4500'
+  return findPlayerPreferences(game, playerId)?.color ?? '#ff4500'
 }
 
 /**
  * Builds a map of colors by player id, which can be used for highlighting meshes and actions.
- * @param {object} game - game date, including preferences and players arrays.
+ * @param {GameOrGameParameters} game - game date, including preferences and players arrays.
  * @returns {Map<string, string>} the highlighted hexadecimal color strings by their player ids.
  */
 export function buildPlayerColors(game) {
-  return new Map(game.players.map(({ id }) => [id, findPlayerColor(game, id)]))
+  return new Map(game.players?.map(({ id }) => [id, findPlayerColor(game, id)]))
 }
 
 /**
  * Distinguishes regular game from waiting lobbies.
- * @param {object} gameOrLobby? - tested object.
+ * @param {?GameOrGameParameters} [game] - tested object.
  * @returns {Boolean|null} true if this game is a lobby, false if it a game, null otherwise.
  */
 export function isLobby(game) {
@@ -47,20 +54,13 @@ export function isLobby(game) {
 
 /**
  * Indicates whether a player is part of a given game's guest list.
- * @param {object} game - game data, including players array.
- * @param {string} playerId - tested player id.
+ * @param {GameOrGameParameters} [game] - game data, including players array.
+ * @param {string} [playerId] - tested player id.
  * @returns {boolean} true when this player is a guest of thie game, false otherwise
  */
 export function isGuest(game, playerId) {
-  return game?.players.find(({ id }) => id === playerId)?.isGuest === true
+  return game?.players?.find(({ id }) => id === playerId)?.isGuest === true
 }
-
-/**
- * @typedef {object} ColorSpec
- * @property {string} base - hex value for the base color.
- * @property {string} primary - hex value for the primary color.
- * @property {string} secondary - hex value for the secondary color.
- */
 
 /**
  * Apply colors specified in a game descriptor to customize UI elements
@@ -81,6 +81,11 @@ export function applyGameColors(colors) {
     })
 }
 
+/**
+ * @param {string|undefined} color - hex color value to decline.
+ * @param {Exclude<keyof ColorSpec, 'players'>} colorName - name of that color.
+ * @returns {Record<string, string>} full palette for this color, from lightest to darkest.
+ */
 function makeColorRange(color, colorName) {
   if (!color) {
     return {

@@ -1,8 +1,13 @@
+// @ts-check
+/**
+ * @typedef {object} Constraints
+ * @property {number} constraints.bitrate - maximum bitrate applied, in Kbps.
+ */
+
 /**
  * Builds a transform function to applies various customization to the WebRTC SDP payload, such as bitrate limitation.
- * @param {object} constraints - applied constraints, including:
- * @param {number} constraints.bitrate - maximum bitrate applied, in Kbps.
- * @returns {function} the transform function, that takes SDP payload as parameter and returns an altered version.
+ * @param {Constraints} constraints - applied constraints.
+ * @returns {(sdp: string) => string} the transform function, that takes SDP payload as parameter and returns an altered version.
  * @see https://webrtchacks.com/limit-webrtc-bandwidth-sdp/
  */
 export function buildSDPTransform(constraints) {
@@ -17,6 +22,10 @@ export function buildSDPTransform(constraints) {
   }
 }
 
+/**
+ * @param {?} context - contextual object
+ * @param {Constraints} constraints - applied constraints.
+ */
 function initContextForBitrate(context, { bitrate }) {
   const isFirefox = navigator.userAgent.toLowerCase().includes('firefox')
   // we can not modifiy JSDom useragent on the fly, so we only test the default case
@@ -27,6 +36,13 @@ function initContextForBitrate(context, { bitrate }) {
   context.inMedia = false
 }
 
+/**
+ * @param {object} args
+ * @param {string[]} args.claims - an array of SDP claims.
+ * @param {number} args.rank - current claim rank.
+ * @param {?} args.context - contextual data.
+ * @returns {number} rank of the analyzed claim.
+ */
 function applyBitrateLimit({ claims, rank, context }) {
   if (context.bitrateClaim) {
     const claim = claims[rank]

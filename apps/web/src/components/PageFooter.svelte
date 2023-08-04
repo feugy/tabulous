@@ -1,7 +1,9 @@
 <script>
+  // @ts-check
   import { _, locale } from 'svelte-intl'
 
   import Button from './Button.svelte'
+
   const year = new Date().getFullYear()
 
   function scrollToTop() {

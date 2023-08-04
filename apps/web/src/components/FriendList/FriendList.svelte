@@ -1,15 +1,25 @@
 <script>
+  // @ts-check
+  /**
+   * @typedef {import('@src/graphql').Friendship} Friendship
+   * @typedef {import('@src/graphql').PlayerFragment} PlayerFragment
+   */
+
   import { acceptFriendship, endFriendship } from '@src/stores'
   import { _ } from 'svelte-intl'
 
   import { Button, ConfirmDialogue, PlayerThumbnail } from '..'
 
+  /** @type {Friendship[]} list of displayed friendships. */
   export let friends = []
 
-  let friendToRemove
+  /** @type {?PlayerFragment}*/
+  let friendToRemove = null
 
-  function handleEndingFriendship({ detail: isConfirmed }) {
-    if (isConfirmed) {
+  function handleEndingFriendship(
+    /** @type {CustomEvent<boolean>} */ { detail: isConfirmed }
+  ) {
+    if (isConfirmed && friendToRemove) {
       endFriendship(friendToRemove)
     }
     friendToRemove = null

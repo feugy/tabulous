@@ -1,10 +1,39 @@
+// @ts-check
 import { makeLogger } from './logger'
 import { buildSDPTransform } from './webrtc'
 
 const logger = makeLogger('peer-connection')
 const controlType = 'stream-control'
 
+/**
+ * @typedef {object} StreamState State of a media stream.
+ * @property {boolean} muted - whether audio is muted.
+ * @property {boolean} stopped - whether video is stopped.
+ */
+
+/** @typedef {{ stream: ?MediaStream} & StreamState} Stream Stream and state of local or remote media. */
+
+/**
+ * @typedef {object} PeerConnectionOptions
+ * @property {object} turnCredentials - credentials for connecting to the TURN server.
+ * @property {string} turnCredentials.username - connection username.
+ * @property {string} turnCredentials.credentials - connection password.
+ * @property {number} bitrate - maximum bitrate applied, in Kbps.
+ * @property {Stream} local - local stream.
+ * @property {(playerId: string, signal: ?RTCSessionDescription|RTCIceCandidate) => ?} sendSignal - invoked to exchange RTC messages with peer.
+ * @property {(data: ?) => ?} onData - invoked when receiving data from the connected peer.
+ * @property {(stream: MediaStream) => ?} onRemoteStream - invoked when receiving connected peer's stream.
+ * @property {(state: StreamState) => ?} onRemoteState - invoked when receiving connected peer's state change.
+ * @property {() => ?} onClose -invoked when connected peer closed the connectino.
+ */
+
+/**
+ * Utility wrapper to connect to a remote peer with RTC protocol.
+ */
 export class PeerConnection {
+  /**
+   * @param {PeerConnectionOptions} options - connection options.
+   */
   constructor({
     turnCredentials,
     bitrate,
@@ -15,34 +44,62 @@ export class PeerConnection {
     onRemoteState,
     onClose
   }) {
+    /** @type {?string} */
+    this.playerId = null
+    /** @type {number} */
     this.lastMessageId = 0
+    /** @type {boolean} */
     this.established = false
+    /** @type {RTCDataChannel | undefined} */
     this.dataChannel = undefined
+    /** @type {PeerConnectionOptions['sendSignal']} */
     this.sendSignal = sendSignal
+    /** @type {PeerConnectionOptions['onRemoteStream']} */
     this.onRemoteStream = onRemoteStream
+    /** @type {PeerConnectionOptions['onRemoteState']} */
     this.onRemoteState = onRemoteState
+    /** @type {PeerConnectionOptions['onData']} */
     this.onData = onData
+    /** @type {PeerConnectionOptions['onClose']} */
     this.onClose = onClose
+    /** @type {Stream} */
     this.remote = {
-      stream: undefined,
+      stream: null,
       muted: false,
       stopped: false
     }
-    this.local = local || { stream: undefined, muted: false, stopped: false }
+    /** @type {Stream} */
+    this.local = local || { stream: null, muted: false, stopped: false }
+    /** @type {boolean} */
     this.polite = false
+    /** @type {boolean} */
     this.makingOffer = false
+    /** @type {boolean} */
     this.ignoreOffer = false
+    /** @type {ReturnType<buildSDPTransform>} */
     this.transformSdp = buildSDPTransform({ bitrate })
+    /** @type {RTCPeerConnection} */
     this.connection = new RTCPeerConnection({
       iceServers: getIceServers(turnCredentials)
     })
   }
 
+  /**
+   * @returns {boolean} whether this connection has local stream
+   */
   hasLocalStream() {
     return !!this.local.stream
   }
 
-  connect(playerId, description) {
+  /**
+   * Connects to a remote peer, using perfect negotiaion.
+   * You must only provide signal when receiving a connection request from the signaling server.
+   * @param {string} playerId - player to connect with
+   * @param {RTCSessionDescription} [signal] - when provided, marks this peer as polite.
+   * @returns {Promise<void>} resolves when connection is established.
+   * @see https://w3c.github.io/webrtc-pc/#perfect-negotiation-example
+   */
+  connect(playerId, signal) {
     this.playerId = playerId
     logger.info(serialize(this), `connecting with ${playerId}`)
 
@@ -55,7 +112,8 @@ export class PeerConnection {
             serialize(this),
             `connection established with ${playerId}`
           )
-          this.dataChannel.onopen = undefined
+          const dataChannel = /** @type {RTCDataChannel} */ (this.dataChannel)
+          dataChannel.onopen = null
           this.established = true
           this.setLocalState(this.local)
           resolve()
@@ -66,7 +124,9 @@ export class PeerConnection {
         try {
           this.makingOffer = true
           await this.connection.setLocalDescription()
-          const description = this.connection.localDescription
+          const description = /** @type {RTCSessionDescription} */ (
+            this.connection.localDescription
+          )
           // TODO  description.sdp = this.transformSdp(description.sdp)
           logger.info(
             serialize(this, { description }),
@@ -76,7 +136,9 @@ export class PeerConnection {
         } catch (error) {
           logger.warn(
             serialize(this, { error }),
-            `failed to send description: ${error.message}`
+            `failed to send description: ${
+              /** @type {Error} */ (error).message
+            }`
           )
         } finally {
           this.makingOffer = false
@@ -153,13 +215,17 @@ export class PeerConnection {
       if (this.local.stream) {
         this.attachLocalStream(this.local.stream)
       }
-      if (description) {
+      if (signal) {
         this.polite = true
-        this.handleSignal(description)
+        this.handleSignal(signal)
       }
     })
   }
 
+  /**
+   * @param {RTCIceCandidate|RTCSessionDescription} signal - received from the signaling server.
+   * @returns {Promise<void>}
+   */
   async handleSignal(signal) {
     logger.debug(serialize(this, { signal }), `receiving signal from server`)
     try {
@@ -172,16 +238,18 @@ export class PeerConnection {
           }
         }
       } else {
-        this.ignoreOffer = !this.polite && hasOfferCollistion(signal.type, this)
+        this.ignoreOffer = !this.polite && hasOfferCollision(signal.type, this)
         if (this.ignoreOffer) {
           return
         }
-        await this.connection.setRemoteDescription(signal)
+        await this.connection.setRemoteDescription(
+          /** @type {RTCSessionDescription} */ (signal)
+        )
         if (signal.type === 'offer') {
           await this.connection.setLocalDescription()
           const description = this.connection.localDescription
           // TODO description.sdp = this.transformSdp(description.sdp)
-          this.sendSignal(this.playerId, description)
+          this.sendSignal(/** @type {string} */ (this.playerId), description)
         }
       }
     } catch (error) {
@@ -193,24 +261,40 @@ export class PeerConnection {
     }
   }
 
-  attachLocalStream(stream) {
-    if (stream) {
-      this.local.stream = stream
-      for (const track of stream.getTracks()) {
-        this.connection.addTrack(track, stream)
+  /**
+   * Attach local media stream to this connection.
+   * @param {MediaStream} [mediaStream] - attached stream.
+   */
+  attachLocalStream(mediaStream) {
+    if (mediaStream) {
+      this.local.stream = mediaStream
+      for (const track of mediaStream.getTracks()) {
+        this.connection.addTrack(track, mediaStream)
       }
     }
   }
 
+  /**
+   * Changes state of the local stream, sending relevant command to the connected peer.
+   * @param {StreamState} state - new state.
+   */
   setLocalState({ muted, stopped }) {
     this.local = { ...this.local, muted, stopped }
     this.sendData({ type: controlType, state: { muted, stopped } })
   }
 
+  /**
+   * Attach remote stream to this connection.
+   * @param {Partial<Stream>} [remote] - attached stream.
+   */
   setRemote(remote = {}) {
     Object.assign(this.remote, remote)
   }
 
+  /**
+   * Send data to the connected peer.
+   * @param {?} data - sent data.
+   */
   sendData(data) {
     logger.trace(serialize(this, { data }), `sending data to ${this.playerId}`)
     try {
@@ -218,11 +302,16 @@ export class PeerConnection {
     } catch (error) {
       logger.warn(
         serialize(this, { data, error }),
-        `fail to send data to ${this.playerId}: ${error?.message || error}`
+        `fail to send data to ${this.playerId}: ${
+          error instanceof Error ? error.message : error
+        }`
       )
     }
   }
 
+  /**
+   * Destroys current connection, gracefully closing it.
+   */
   async destroy() {
     logger.info(serialize(this), `close connection to ${this.playerId}`)
     this.dataChannel?.send('bye')
@@ -230,6 +319,10 @@ export class PeerConnection {
   }
 }
 
+/**
+ * @param {PeerConnectionOptions['turnCredentials']} turnCredentials - credentials to connect to the TURN server
+ * @returns {RTCIceServer[]} list of TURN and STUN servers.
+ */
 function getIceServers({ username, credentials: credential }) {
   return [
     { urls: 'stun:coturn.tabulous.fr' },
@@ -243,12 +336,23 @@ function getIceServers({ username, credentials: credential }) {
   ]
 }
 
-function hasOfferCollistion(type, { makingOffer, connection }) {
+/**
+ * @param {RTCSdpType | RTCIceCandidateType} type - received signal from server
+ * @param {PeerConnection} connection - current peer connection.
+ * @returns {boolean} whether to ignore received offer.
+ */
+function hasOfferCollision(type, { makingOffer, connection }) {
   return (
     type === 'offer' && (makingOffer || connection.signalingState !== 'stable')
   )
 }
 
+/**
+ * Utility function to serialize a PeerCnonection instance.
+ * @param {PeerConnection} connection - the serialized instance.
+ * @param {Record<string, any>} [extra] - extra data to be logged.
+ * @returns {Record<string, any>} the serialized object
+ */
 function serialize(
   {
     connection: {
@@ -258,8 +362,11 @@ function serialize(
       signalingState,
       localDescription,
       remoteDescription
-    } = {},
-    dataChannel: { binaryType, readyState, reliable } = {},
+    } = /** @type {RTCPeerConnection} */ ({}),
+    dataChannel: {
+      binaryType,
+      readyState
+    } = /** @type {RTCDataChannel} */ ({}),
     playerId,
     polite,
     established,
@@ -280,7 +387,7 @@ function serialize(
       localDescription,
       remoteDescription
     },
-    dataChannel: { binaryType, readyState, reliable },
-    ...extra
+    dataChannel: { binaryType, readyState },
+    ...(extra ?? {})
   }
 }

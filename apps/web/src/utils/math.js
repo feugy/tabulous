@@ -1,12 +1,19 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Vector3} Vector3
+ * @typedef {import('@babylonjs/core').BoundingBox} BoundingBox
+ * @typedef {import('@src/3d/utils').ScreenPosition} ScreenPosition
+ */
+
 /**
  * @typedef {object} Rectangle A 2D rectangle defined by its minimum and maximum points.
- * @property {import('../3d/utils').ScreenPosition} min - a 2D point representing the lowest corner of this rectangle.
- * @property {import('../3d/utils').ScreenPosition} max - a 2D point representing the highest corner of this rectangle.
+ * @property {ScreenPosition} min - a 2D point representing the lowest corner of this rectangle.
+ * @property {ScreenPosition} max - a 2D point representing the highest corner of this rectangle.
  */
 
 /**
  * @typedef {object} Circle A 2D circle defined by its center point and radius.
- * @property {import('../3d/utils').ScreenPosition} center - a 2D point representing center.
+ * @property {ScreenPosition} center - a 2D point representing center.
  * @property {number} radius - a radius distance.
  */
 
@@ -45,8 +52,8 @@ export function normalize(value, maxInput, min, max) {
 
 /**
  * Computes Euclidean distance between two (screen coordinates) points.
- * @param {import('../3d/utils').ScreenPosition} first - first screen position.
- * @param {import('../3d/utils').ScreenPosition} second - second screen position.
+ * @param {ScreenPosition} first - first screen position.
+ * @param {ScreenPosition} second - second screen position.
  */
 export function distance(first, second) {
   return Math.sqrt(
@@ -56,8 +63,8 @@ export function distance(first, second) {
 
 /**
  * Projects a point in 3D space to the ground plane.
- * @param {import('@babylonjs/core').Vector3} vector - a 3D vector object with x, y, and z coordinates.
- * @returns {import('@babylonjs/core').Vector2} the equivalent 2D vector, where x is unchanged and resulting y is z.
+ * @param {Partial<Vector3>} [vector] - a 3D vector object with x, y, and z coordinates.
+ * @returns {ScreenPosition} the equivalent 2D vector, where x is unchanged and resulting y is z.
  */
 export function projectToGround({ x = 0, z = 0 } = {}) {
   return { x, y: z }
@@ -65,7 +72,7 @@ export function projectToGround({ x = 0, z = 0 } = {}) {
 
 /**
  * Projects a 3D bounding box to the ground plane and return the corresponding rectangle.
- * @param {import('@babylonjs/core').BoundingBox} box - a 3D bounding box, with its minimumWorld and maximumWorld 3D points.
+ * @param {Partial<BoundingBox>} [box] - a 3D bounding box, with its minimumWorld and maximumWorld 3D points.
  * @returns {Rectangle} the corresponding rectangle projected to the ground plane.
  */
 export function buildGroundRectangle({ minimumWorld, maximumWorld } = {}) {
@@ -77,7 +84,7 @@ export function buildGroundRectangle({ minimumWorld, maximumWorld } = {}) {
 
 /**
  * Returns the biggest circle fully enclosed within the provided rectangle.
- * @param {Rectangle} rectangle - a given 2D rectangle.
+ * @param {Partial<Rectangle>} [rectangle] - a given 2D rectangle.
  * @returns {Circle} the enclosed 2D circle.
  */
 export function buildEnclosedCircle({ min, max } = {}) {

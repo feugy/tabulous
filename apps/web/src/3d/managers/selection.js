@@ -1,5 +1,12 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').LinesMesh} LinesMesh
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ * @typedef {import('@src/3d/utils').ScreenPosition} ScreenPosition
+ */
+
 import { Axis, Space } from '@babylonjs/core/Maths/math.axis.js'
-import { Color4 } from '@babylonjs/core/Maths/math.color.js'
+import { Color3, Color4 } from '@babylonjs/core/Maths/math.color.js'
 import { Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import { CreateLines } from '@babylonjs/core/Meshes/Builders/linesBuilder.js'
 import { ExtrudeShape } from '@babylonjs/core/Meshes/Builders/shapeBuilder.js'
@@ -21,22 +28,29 @@ class SelectionManager {
    * - draw a selection box (a single rectangle on the table)
    * - select all meshes contained in the selection box, highlighting them
    * - clear previous selection
-   *
-   * @property {Set<import('@babylonjs/core').Mesh>} meshes - active selection of meshes.
-   * @property {Observable<Set<import('@babylonjs/core').Mesh>>} onSelectionObservable - emits when selection is modified.
    */
   constructor() {
     // we need to keep this set immutable, because it is referenced when adding to it
     const meshes = new Set()
+    /** @type {Set<Mesh>} meshes - active selection of meshes. */
+    this.meshes
     Object.defineProperty(this, 'meshes', { get: () => meshes })
+    /** @type {Observable<Set<Mesh>>} emits when selection is modified. */
     this.onSelectionObservable = new Observable()
-    // private
-    this.scene = null
-    this.handScene = null
-    this.box = null
-    this.skipNotify = false
+    /** @type {Scene} */
+    this.scene
+    /** @type {Scene} */
+    this.handScene
+    /** @type {Color4} */
     this.color = Color4.FromHexString('#00ff00')
+    /** @protected @type {?LinesMesh} */
+    this.box = null
+    /** @protected @type {boolean} */
+    this.skipNotify = false
+    /** @protected @type {Map<string, Set<Mesh>>} */
     this.selectionByPeerId = new Map()
+    /** @protected @type {Map<string, Color4>} */
+    this.colorByPlayerId = new Map()
   }
 
   /**
@@ -64,13 +78,13 @@ class SelectionManager {
         Color4.FromHexString(color)
       ])
     )
-    this.color = this.colorByPlayerId.get(playerId)
+    this.color = /** @type {Color4} */ (this.colorByPlayerId.get(playerId))
   }
 
   /**
    * Draws selection box between two points (in screen coordinates)
-   * @param {import('../utils').ScreenPosition} start - selection box's start screen position.
-   * @param {import('../utils').ScreenPosition} end - selection box's end screen position.
+   * @param {ScreenPosition} start - selection box's start screen position.
+   * @param {ScreenPosition} end - selection box's end screen position.
    */
   drawSelectionBox(start, end) {
     if (!this.scene) return
@@ -80,12 +94,13 @@ class SelectionManager {
       : this.scene
 
     this.box?.dispose()
-    const points = [
+    // TODO what if some points are null?
+    const points = /** @type {Vector3[]} */ ([
       screenToGround(scene, start),
       screenToGround(scene, { x: start.x, y: end.y }),
       screenToGround(scene, end),
       screenToGround(scene, { x: end.x, y: start.y })
-    ]
+    ])
     points.push(points[0].clone())
 
     this.box = CreateLines(
@@ -104,10 +119,12 @@ class SelectionManager {
       this.box?.dispose()
       // extrude a polygon from the lines, but since extrusion goes along Z axis,
       // rotate the points first
-      const position = screenToGround(scene, {
-        x: start.x + (end.x - start.x) / 2,
-        y: start.y + (end.y - start.y) / 2
-      })
+      const position = /** @type {Vector3} */ (
+        screenToGround(scene, {
+          x: start.x + (end.x - start.x) / 2,
+          y: start.y + (end.y - start.y) / 2
+        })
+      )
       const rotation = Quaternion.RotationAxis(Axis.X, Math.PI / 2)
       for (const point of points) {
         point.rotateByQuaternionAroundPointToRef(rotation, position, point)
@@ -149,7 +166,6 @@ class SelectionManager {
 
       logger.info({ start, end, meshes: this.meshes }, `new multiple selection`)
       box.dispose()
-      start = null
     }
   }
 
@@ -162,14 +178,7 @@ class SelectionManager {
    * Adds meshes into selection (if not already in).
    * Ignores mesh already selected by other players.
    * Recursively inculdes anchored meshes.
-   * @param {Mesh} - mesh added to the active selection.
-   * @param {Color4} [color] - color used to highlight mesh, default to manager's color.
-   */
-  /**
-   * Adds mesh into selection (if not already in).
-   * Ignores mesh already selected by other players.
-   * Recursively inculdes anchored meshes.
-   * @param {Mesh[]} - array of meshes added to the active selection.
+   * @param {Mesh[]|Mesh} meshes - mesh(es) added to the active selection.
    * @param {Color4} [color] - color used to highlight mesh, default to manager's color.
    */
   select(meshes, color) {
@@ -195,14 +204,10 @@ class SelectionManager {
   }
 
   /**
-   * Removes mesh from the selection, including anchored meshes.
-   * Ignores meshes selected by other players.
-   * @param {Mesh} mesh - mesh to remove from the active selection.
-   */
-  /**
    * Removes meshes from the selection, including anchored meshes.
    * Ignores meshes selected by other players.
-   * @param {Mesh[]} meshes - array of meshes to remove from the active selection.
+   * @param {Mesh[]|Mesh} meshes - mesh(es) to remove from the active selection.
+   * @returns {void}
    */
   unselect(meshes) {
     if (!Array.isArray(meshes)) {
@@ -213,7 +218,7 @@ class SelectionManager {
     const otherSelections = [...this.selectionByPeerId.values()]
     for (const mesh of meshes) {
       if (!otherSelections.find(selection => selection.has(mesh))) {
-        unselected.push(mesh, ...findAnchored(mesh))
+        unselected.push(mesh, ...findSnapped(mesh))
       }
     }
     for (const mesh of unselected) {
@@ -251,12 +256,12 @@ class SelectionManager {
   /**
    * Applies selection from peer players: highlight selected meshes with the player's own color.
    * Ignores meshes that are part of current player's selection.
-   * @async
    * @param {string[]} meshIds - ids of selected meshes.
    * @param {string} playerId - id of the peer selecting these meshes.s.
    */
   apply(meshIds, playerId) {
-    if (!playerId) {
+    const color = this.colorByPlayerId.get(playerId)
+    if (!color) {
       return
     }
     const selection = this.selectionByPeerId.get(playerId) ?? new Set()
@@ -270,7 +275,7 @@ class SelectionManager {
         selection,
         null,
         this.scene.getMeshById(id),
-        this.colorByPlayerId.get(playerId)
+        color
       )
     }
     if (selection.size) {
@@ -298,15 +303,22 @@ class SelectionManager {
  */
 export const selectionManager = new SelectionManager()
 
+/**
+ * @param {Set<Mesh>[]} allSelections - list of all players' active selection.
+ * @param {Set<Mesh>} selection - active selection.
+ * @param {Observable<Set<Mesh>>?} observable - to notifiy with the new selection
+ * @param {?Mesh} mesh - added mesh.
+ * @param {Color4} color - selection color.
+ */
 function addToSelection(allSelections, selection, observable, mesh, color) {
   if (
     mesh &&
     !isMeshLocked(mesh) &&
     !allSelections.find(selection => selection.has(mesh))
   ) {
-    for (const added of [mesh, ...findAnchored(mesh)]) {
+    for (const added of [mesh, ...findSnapped(mesh)]) {
       selection.add(added)
-      added.overlayColor = color
+      added.overlayColor = Color3.FromArray(color.asArray())
       added.overlayAlpha = 0.5
       added.edgesWidth = 3.0
       added.edgesColor = color
@@ -320,27 +332,41 @@ function addToSelection(allSelections, selection, observable, mesh, color) {
   }
 }
 
-function findAnchored(mesh) {
-  if (!mesh.metadata?.anchors?.length > 0) {
+/**
+ * @param {?Mesh} mesh - tested mesh.
+ * @returns {Mesh[]} list of snapped meshes, if any.
+ */
+function findSnapped(mesh) {
+  if (!mesh || (mesh.metadata?.anchors?.length ?? 0) === 0) {
     return []
   }
   const scene = mesh.getScene()
+  /** @type {Mesh[]} */
   const anchored = []
-  for (const { snappedId } of mesh.metadata.anchors) {
+  for (const { snappedId } of mesh.metadata.anchors ?? []) {
     if (snappedId) {
       const mesh = scene.getMeshById(snappedId)
-      anchored.push(mesh, ...findAnchored(mesh))
+      if (mesh) {
+        anchored.push(mesh, ...findSnapped(mesh))
+      }
     }
   }
   return anchored
 }
 
+/**
+ * @param {Set<Mesh>} selection - active selection.
+ * @param {Mesh} mesh - added mesh.
+ */
 function removeFromSelection(selection, mesh) {
   selection.delete(mesh)
   mesh.renderOverlay = false
   mesh.disableEdgesRendering()
 }
 
+/**
+ * @param {SelectionManager} manager - manager instance.
+ */
 function reorderSelection(manager) {
   // keep selection ordered from lowest to highest: it'll guarantuee gravity application
   const ordered = sortByElevation(manager.meshes)
@@ -351,6 +377,10 @@ function reorderSelection(manager) {
   manager.onSelectionObservable.notifyObservers(manager.meshes)
 }
 
+/**
+ * @param {SelectionManager} manager - manager instance.
+ * @returns {Mesh|undefined} first selected mesh.
+ */
 function getFirstSelected(manager) {
   return manager.meshes.values().next().value
 }

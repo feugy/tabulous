@@ -1,12 +1,19 @@
 <script>
+  // ts-check
+
+  /** @typedef {import('@src/utils').CssColorVariables} CssColorVariables*/
+
+  /** @type {string} component's width (css style). **/
   export let width = '100%'
+  /** @type {string} component's height (css style). **/
   export let height = '100%'
+  /** @type {CssColorVariables} css variable used as background color. **/
   export let tone = 'base-dark'
 
   $: background = `var(--${tone})`
   $: light = `var(--${computeLight(tone)})`
 
-  function computeLight(color) {
+  function computeLight(/** @type {CssColorVariables} */ color) {
     const [name, shade] = color.split('-')
     const newShade =
       shade === 'darkest'

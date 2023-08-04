@@ -1,4 +1,5 @@
 <script>
+  // @ts-check
   import { fps } from '@src/stores/game-engine'
   import { _ } from 'svelte-intl'
 </script>

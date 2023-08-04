@@ -230,6 +230,7 @@ _Hints_
 Tail server logs: `journalctl -f -u tabulous -o cat | jq`
 Tail nginx logs: `tail -f /var/log/nginx/access.log`
 Clean logs: `sudo journalctl --vacuum-time=2months`
+Tail logs remotely: `ssh ubuntu@vps-XYZ.vps.ovh.net "journalctl -f -o cat -u tabulous" | jq -R 'fromjson? | .time |= (./1000 | strftime("%Y-%m-%d %H:%M:%S"))'`
 
 ## Tabulous Configuration
 

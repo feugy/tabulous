@@ -9,6 +9,7 @@ import {
 
 export const it = test.extend({
   coverageMap: [
+    // @ts-expect-error
     // eslint-disable-next-line no-empty-pattern
     async ({}, use) => {
       const coverageMap = await initializeCoverage()
@@ -18,12 +19,12 @@ export const it = test.extend({
     { scope: 'worker' }
   ],
 
-  // @ts-ignore
+  // @ts-expect-error
   page: async ({ browserName, page, coverageMap }, use) => {
     if (browserName !== 'chromium') {
       console.log(`coverage is not supported on ${browserName}`)
     } else {
-      const handleConsole = (...args) => {
+      const handleConsole = (/** @type {...?} */ ...args) => {
         console.log(...args)
       }
       page.on('console', handleConsole)
@@ -31,6 +32,7 @@ export const it = test.extend({
       await page.coverage.startJSCoverage()
       await use(page)
       page.removeListener('console', handleConsole)
+      // @ts-expect-error
       await extendCoverage(coverageMap, await page.coverage.stopJSCoverage())
     }
   }

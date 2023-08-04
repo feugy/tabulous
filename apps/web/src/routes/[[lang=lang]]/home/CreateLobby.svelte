@@ -1,7 +1,9 @@
 <script>
+  // @ts-check
   import { createEventDispatcher } from 'svelte'
   import { _ } from 'svelte-intl'
 
+  /** @type {import('svelte').EventDispatcher<{ select: void }>}*/
   const dispatch = createEventDispatcher()
 
   function handleClick() {

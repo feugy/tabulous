@@ -1,3 +1,4 @@
+// @ts-check
 import { RuleViewer } from '@src/components'
 import { gameAssetsUrl } from '@src/utils'
 import { fireEvent, render, screen } from '@testing-library/svelte'
@@ -15,15 +16,21 @@ import {
 } from 'vitest'
 
 describe.each([{ lang: 'fr' }, { lang: 'en' }])('$lang', ({ lang }) => {
-  beforeAll(() => locale.set(lang))
+  beforeAll(() => {
+    locale.set(lang)
+  })
 
-  afterAll(() => locale.set('fr'))
+  afterAll(() => {
+    locale.set('fr')
+  })
 
   describe('RuleViewer component', () => {
     const handleChange = vi.fn()
     const game = 'cards'
 
-    beforeEach(vi.resetAllMocks)
+    beforeEach(() => {
+      vi.resetAllMocks()
+    })
 
     function renderComponent(props = {}) {
       return render(
@@ -124,44 +131,49 @@ describe.each([{ lang: 'fr' }, { lang: 'en' }])('$lang', ({ lang }) => {
       expect(handleChange).toHaveBeenCalledTimes(2)
     })
 
-    it('pans the imagee', async () => {
+    it('pans the image', async () => {
       renderComponent({ lastPage: 2 })
-      const image = screen.queryByRole('img')
-      image.getBoundingClientRect = () => ({ width: 300, height: 500 })
+      const image = /** @type {HTMLImageElement} */ (screen.queryByRole('img'))
+      image.getBoundingClientRect = () =>
+        /** @type {DOMRect} **/ ({ width: 300, height: 500 })
       fireEvent.load(image)
       const container = image.parentElement
-      expect(container.scrollTop).toBe(0)
-      expect(container.scrollLeft).toBe(0)
+      expect(container?.scrollTop).toBe(0)
+      expect(container?.scrollLeft).toBe(0)
       const downEvent = new Event('pointerdown')
       Object.assign(downEvent, { clientX: 100, clientY: 100 })
-      fireEvent(container, downEvent)
+      fireEvent(/** @type {HTMLImageElement} */ (container), downEvent)
       const moveEvent = new Event('pointermove')
       Object.assign(moveEvent, { clientX: 50, clientY: 75 })
       fireEvent(window, moveEvent)
       fireEvent.pointerUp(image)
-      expect(container.scrollTop).toBe(25)
-      expect(container.scrollLeft).toBe(50)
+      expect(container?.scrollTop).toBe(25)
+      expect(container?.scrollLeft).toBe(50)
       expect(handleChange).not.toHaveBeenCalled()
     })
 
     it('zooms the image out and in', async () => {
       renderComponent({ lastPage: 2 })
-      const image = screen.queryByRole('img')
+      const image = /** @type {HTMLImageElement} */ (screen.queryByRole('img'))
+      const parentElement = /** @type {HTMLImageElement} */ (
+        image.parentElement
+      )
       const width = 300
       const height = 500
-      image.getBoundingClientRect = () => ({ width, height })
+      image.getBoundingClientRect = () =>
+        /** @type {DOMRect} **/ ({ width, height })
       fireEvent.load(image)
       expect(image).toHaveStyle({
         width: `90px`,
         height: `150px`
       })
-      fireEvent.wheel(image.parentElement, { deltaY: -10 })
-      fireEvent.wheel(image.parentElement, { deltaY: -5 })
+      fireEvent.wheel(parentElement, { deltaY: -10 })
+      fireEvent.wheel(parentElement, { deltaY: -5 })
       expect(image).toHaveStyle({
         width: `150px`,
         height: `250px`
       })
-      fireEvent.wheel(image.parentElement, { deltaY: 5 })
+      fireEvent.wheel(parentElement, { deltaY: 5 })
       expect(image).toHaveStyle({
         width: `120px`,
         height: `200px`
@@ -172,13 +184,17 @@ describe.each([{ lang: 'fr' }, { lang: 'en' }])('$lang', ({ lang }) => {
     it('can not zoom the image to far', async () => {
       const minZoom = 0.5
       renderComponent({ minZoom })
-      const image = screen.queryByRole('img')
+      const image = /** @type {HTMLImageElement} */ (screen.queryByRole('img'))
+      const parentElement = /** @type {HTMLImageElement} */ (
+        image.parentElement
+      )
       const width = 300
       const height = 500
-      image.getBoundingClientRect = () => ({ width, height })
+      image.getBoundingClientRect = () =>
+        /** @type {DOMRect} **/ ({ width, height })
       fireEvent.load(image)
       for (let i = 0; i < 20; i++) {
-        fireEvent.wheel(image.parentElement, { deltaY: 1 })
+        fireEvent.wheel(parentElement, { deltaY: 1 })
       }
       expect(image).toHaveStyle({
         width: `${width * minZoom}px`,
@@ -190,13 +206,17 @@ describe.each([{ lang: 'fr' }, { lang: 'en' }])('$lang', ({ lang }) => {
     it('can not zoom the image to close', async () => {
       const maxZoom = 1.6
       renderComponent({ maxZoom })
-      const image = screen.queryByRole('img')
+      const image = /** @type {HTMLImageElement} */ (screen.queryByRole('img'))
+      const parentElement = /** @type {HTMLImageElement} */ (
+        image.parentElement
+      )
       const width = 300
       const height = 500
-      image.getBoundingClientRect = () => ({ width, height })
+      image.getBoundingClientRect = () =>
+        /** @type {DOMRect} **/ ({ width, height })
       fireEvent.load(image)
       for (let i = 0; i < 20; i++) {
-        fireEvent.wheel(image.parentElement, { deltaY: -1 })
+        fireEvent.wheel(parentElement, { deltaY: -1 })
       }
       expect(image).toHaveStyle({
         width: `${width * maxZoom}px`,

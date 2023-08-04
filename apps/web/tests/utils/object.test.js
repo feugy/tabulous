@@ -1,3 +1,4 @@
+// @ts-check
 import { getValue } from '@src/utils'
 import { describe, expect, it } from 'vitest'
 

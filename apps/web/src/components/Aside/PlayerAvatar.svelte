@@ -1,16 +1,28 @@
 <script>
+  // @ts-check
+  /**
+   * @typedef {import('@src/stores/game-manager').Player} Player
+   * @typedef {import('@src/graphql').PlayerFragment} PlayerFragment
+   */
+
   import { stream$ } from '@src/stores/stream'
   import { _ } from 'svelte-intl'
 
   import PlayerThumbnail from '../PlayerThumbnail.svelte'
 
-  export let player = null
+  /** @type {Player|undefined} player displayed. */
+  export let player = undefined
+  /** @type {?MediaStream} video/audio stream for this player. */
   export let stream = null
+  /** @type {boolean} whether this avatar is for the authenticated local user. */
   export let isLocal = false
+  /** @type {boolean} whether the stream audio was muted. */
   export let muted = false
+  /** @type {boolean} whether the stream video was stopped. */
   export let stopped = false
 
-  let video
+  /** @type {?HTMLVideoElement} */
+  let video = null
 
   $: mediaStream = isLocal ? $stream$ : stream
   $: hasStream = Boolean(mediaStream) && !stopped

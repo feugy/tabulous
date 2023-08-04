@@ -1,4 +1,25 @@
 <script>
+  // @ts-check
+  /**
+   * @typedef {import('@babylonjs/core').Engine} Engine
+   * @typedef {import('@src/graphql').Friendship} Friendship
+   * @typedef {import('@src/graphql').GameOrGameParameters} GameOrGameParameters
+   * @typedef {import('@src/graphql').PlayerWithSearchable} PlayerWithSearchable
+   * @typedef {import('@src/graphql').PlayerWithTurnCredentials} PlayerWithTurnCredentials
+   * @typedef {import('@tabulous/server/src/utils').Schema} Schema
+   * @typedef {import('@src/types').JSONValue} JSONValue
+   * @typedef {import('@src/utils').SizeObserver} SizeObserver
+   * @typedef {import('rxjs').Subscription} Subscription
+   */
+  /**
+   * @template T
+   * @typedef {import('@src/types').DeepRequired<T>} DeepRequired
+   */
+  /**
+   * @template T
+   * @typedef {import('rxjs').Observable<T>} Observable
+   */
+
   import { Aside } from '@src/components'
   import {
     connected,
@@ -46,18 +67,29 @@
   import RadialMenu from './RadialMenu.svelte'
 
   /** @type {import('./$types').PageData} */
-  export let data = {}
+  export let data
 
+  /** @type {DeepRequired<PlayerWithTurnCredentials>} */
+  const session = /** @type {?} */ (data.session)
   const longTapDelay = 250
+  /** @type {Engine} */
   let engine
+  /** @type {?HTMLCanvasElement} */
   let canvas
+  /** @type {?HTMLDivElement} */
   let interaction
+  /** @type {?HTMLDivElement} */
   let hand
+  /** @type {SizeObserver}*/
   let dimensionObserver
+  /** @type {Subscription} */
   let dimensionSubscription
-  let gameParameters
+  /** @type {?{ schema: Schema }} */
+  let gameParameters = null
+  /** @type {Observable<Friendship[]>} */
   let friends
-  let restoreColors
+  /** @type {?() => void} */
+  let restoreColors = null
   let isJoining = false
 
   $: if (browser && $playerColor) {
@@ -69,17 +101,21 @@
     $engineLoading || engine ? engine.actionNamesByKey : undefined
 
   onMount(() => {
-    engine = initEngine({ canvas, interaction, longTapDelay, hand })
-    initIndicators({ engine, canvas, hand })
-    askForGame()
-    dimensionObserver = observeDimension(interaction, 0)
-    dimensionSubscription = dimensionObserver.dimension$.subscribe(
-      ({ width, height }) => {
-        canvas.style.width = `${width}px`
-        canvas.style.height = `${height}px`
-        engine?.resize()
-      }
-    )
+    if (canvas && interaction && hand) {
+      engine = initEngine({ canvas, interaction, longTapDelay, hand })
+      initIndicators({ engine, canvas, hand })
+      askForGame()
+      dimensionObserver = observeDimension(interaction, 0)
+      dimensionSubscription = dimensionObserver.dimension$.subscribe(
+        ({ width, height }) => {
+          if (canvas) {
+            canvas.style.width = `${width}px`
+            canvas.style.height = `${height}px`
+            engine?.resize()
+          }
+        }
+      )
+    }
     friends = listFriends()
     return () => restoreColors?.()
   })
@@ -88,25 +124,25 @@
     restoreColors?.()
     dimensionObserver?.disconnect()
     dimensionSubscription?.unsubscribe()
-    await leaveGame(data.session.player)
+    await leaveGame(session.player)
     engine?.dispose()
   })
 
-  async function askForGame(parameters) {
+  async function askForGame(/** @type {JSONValue|undefined} */ parameters) {
     gameParameters = null
     try {
       isJoining = true
       const result = await joinGame({
         gameId: $page.params.gameId,
-        ...data.session,
+        ...session,
         parameters,
         onDeletion: () => {
           toastInfo({ contentKey: 'labels.game-deleted-by-owner' })
           goto(`/${$locale}/home`)
         }
       })
-      restoreColors = applyGameColors(result.colors)
-      if (result?.schemaString) {
+      restoreColors = applyGameColors(result.colors ?? {})
+      if (result && 'schemaString' in result && result.schemaString) {
         gameParameters = {
           schema: JSON.parse(result.schemaString)
         }
@@ -116,7 +152,7 @@
       }
     } catch (err) {
       console.error(err)
-      toastError({ content: err.message })
+      toastError({ content: /** @type {Error} */ (err).message })
       goto(`/${$locale}/home`)
     } finally {
       isJoining = false
@@ -127,7 +163,9 @@
     interaction?.focus()
   }
 
-  function handleSubmitParameters({ detail: parameters }) {
+  function handleSubmitParameters(
+    /** @type {CustomEvent<{ submit: JSONValue }>} */ { detail: parameters }
+  ) {
     askForGame(parameters)
   }
 </script>
@@ -136,7 +174,7 @@
   <LoadingScreen visible={$engineLoading || isJoining} {actionNamesByButton} />
   <Aside
     game={$currentGame}
-    player={data.session.player}
+    user={session.player}
     playerById={$gamePlayerById}
     connected={$connected}
     thread={$thread}

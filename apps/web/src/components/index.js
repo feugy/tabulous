@@ -1,3 +1,4 @@
+// @ts-check
 export { default as Aside } from './Aside/index.js'
 export { default as Breadcrumb } from './Breadcrumb.svelte'
 export { default as Button } from './Button.svelte'

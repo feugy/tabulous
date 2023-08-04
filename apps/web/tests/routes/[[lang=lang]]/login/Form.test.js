@@ -1,3 +1,4 @@
+// @ts-check
 import { faker } from '@faker-js/faker'
 import Form from '@src/routes/[[lang=lang]]/login/Form.svelte'
 import { authUrl } from '@src/utils'
@@ -32,8 +33,8 @@ describe('Login Form component', () => {
 
   beforeEach(() => {
     vi.resetAllMocks()
-    id$.set()
-    password$.set()
+    id$.set(undefined)
+    password$.set(undefined)
   })
 
   afterAll(() => {

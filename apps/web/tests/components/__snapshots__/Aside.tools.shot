@@ -2,11 +2,11 @@
 
 exports[`Friends only 1`] = `
 <main
-  class="flex w-full h-screen"
+  class="flex w-full h-screen s-704Ys9uC0Q3P"
   style="height: 100vh;"
 >
   <section
-    class="flex-1"
+    class="flex-1 s-704Ys9uC0Q3P"
   />
    
   <aside
@@ -445,6 +445,7 @@ exports[`Friends only 1`] = `
               class="s-2FHiERVIQQ6s"
             >
               <span
+                aria-expanded="true"
                 aria-haspopup="menu"
                 class="wrapper s-JM3fRWrV7jJU"
               >
@@ -503,11 +504,11 @@ exports[`Friends only 1`] = `
 
 exports[`Lobby 1`] = `
 <main
-  class="flex w-full h-screen"
+  class="flex w-full h-screen s-704Ys9uC0Q3P"
   style="height: 100vh;"
 >
   <section
-    class="flex-1"
+    class="flex-1 s-704Ys9uC0Q3P"
   />
    
   <aside
@@ -999,11 +1000,11 @@ exports[`Lobby 1`] = `
 
 exports[`Multiple connected 1`] = `
 <main
-  class="flex w-full h-screen"
+  class="flex w-full h-screen s-704Ys9uC0Q3P"
   style="height: 100vh;"
 >
   <section
-    class="flex-1"
+    class="flex-1 s-704Ys9uC0Q3P"
   >
     <button
       class="s-NMyTiX1zi6rz"
@@ -1420,11 +1421,11 @@ exports[`Multiple connected 1`] = `
 
 exports[`No peers 1`] = `
 <main
-  class="flex w-full h-screen"
+  class="flex w-full h-screen s-704Ys9uC0Q3P"
   style="height: 100vh;"
 >
   <section
-    class="flex-1"
+    class="flex-1 s-704Ys9uC0Q3P"
   />
    
   <aside
@@ -1675,11 +1676,11 @@ exports[`No peers, no rules book 1`] = `undefined`;
 
 exports[`Single connected 1`] = `
 <main
-  class="flex w-full h-screen"
+  class="flex w-full h-screen s-704Ys9uC0Q3P"
   style="height: 100vh;"
 >
   <section
-    class="flex-1"
+    class="flex-1 s-704Ys9uC0Q3P"
   />
    
   <aside
@@ -2028,11 +2029,11 @@ exports[`Single connected 1`] = `
 
 exports[`Single connected, no rules book, thread 1`] = `
 <main
-  class="flex w-full h-screen"
+  class="flex w-full h-screen s-704Ys9uC0Q3P"
   style="height: 100vh;"
 >
   <section
-    class="flex-1"
+    class="flex-1 s-704Ys9uC0Q3P"
   />
    
   <aside

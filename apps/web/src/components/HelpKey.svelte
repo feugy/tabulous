@@ -1,8 +1,16 @@
 <script>
+  // ts-check
+  /**
+   * @typedef {import('@src/utils').CssColorVariables} CssColorVariables
+   */
+
   import Skeleton from './Skeleton.svelte'
 
+  /** @type {string} documented key. */
   export let key = ''
+  /** @type {string} skeleton's height (css style). */
   export let height
+  /** @type {CssColorVariables} skeleton's color scheme variable */
   export let tone
 
   const iconPromise = import('@src/svg/help')

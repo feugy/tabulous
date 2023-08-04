@@ -1,3 +1,11 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Engine} Engine
+ * @typedef {import('@babylonjs/core').Observer<?>} Observer
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@tabulous/server/src/graphql/types').Mesh} SerializedMesh
+ */
+
 import { NullEngine } from '@babylonjs/core/Engines/nullEngine'
 import { Logger } from '@babylonjs/core/Misc/logger'
 import { faker } from '@faker-js/faker'
@@ -16,6 +24,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { expectAnimationEnd } from '../test-utils'
 
 describe('createEngine()', () => {
+  /** @type {Engine} */
   let engine
   const playerId = faker.string.uuid()
   const peerId1 = faker.string.uuid()
@@ -28,7 +37,7 @@ describe('createEngine()', () => {
   const applySelection = vi.spyOn(selectionManager, 'apply')
   const targetInit = vi.spyOn(targetManager, 'init')
   const handInit = vi.spyOn(handManager, 'init')
-  const translate = key => key
+  const translate = (/** @type {string} */ key) => key
 
   beforeEach(() => {
     Logger.LogLevels = 0
@@ -39,14 +48,13 @@ describe('createEngine()', () => {
   })
 
   it('initializes engine with parameters', () => {
-    const doubleTapDelay = faker.number.int(999)
     const longTapDelay = faker.number.int(999)
     engine = createEngine({
+      // @ts-expect-error different constructor signatures
       Engine: NullEngine,
       canvas,
       interaction,
       hand,
-      doubleTapDelay,
       longTapDelay,
       translate
     })
@@ -55,7 +63,6 @@ describe('createEngine()', () => {
     expect(handManager.enabled).toBe(false)
     expect(inputInit).toHaveBeenCalledWith(
       expect.objectContaining({
-        doubleTapDelay,
         longTapDelay,
         interaction
       })
@@ -71,6 +78,7 @@ describe('createEngine()', () => {
   // TODO input manager stopAll()
 
   describe('given an engine', () => {
+    /** @type {?Observer} */
     let loadingObserver
     const colorByPlayerId = new Map([[playerId, '#f0f']])
     const receiveLoading = vi.fn()
@@ -78,6 +86,7 @@ describe('createEngine()', () => {
     beforeEach(() => {
       vi.clearAllMocks()
       engine = createEngine({
+        // @ts-expect-error different constructor signatures
         Engine: NullEngine,
         canvas,
         interaction,
@@ -89,7 +98,9 @@ describe('createEngine()', () => {
       loadingObserver = engine.onLoadingObservable.add(receiveLoading)
     })
 
-    afterEach(() => engine.onLoadingObservable.remove(loadingObserver))
+    afterEach(() => {
+      engine.onLoadingObservable.remove(loadingObserver)
+    })
 
     it('can load() game data, including colors and peers selections', async () => {
       applySelection.mockResolvedValue()
@@ -98,6 +109,7 @@ describe('createEngine()', () => {
         { playerId, selectedIds: ['1', '2'] },
         { playerId: peerId1, selectedIds: ['3'] }
       ]
+      /** @type {SerializedMesh} */
       const mesh = {
         shape: 'card',
         depth: 0.2,
@@ -110,11 +122,11 @@ describe('createEngine()', () => {
         z: -10
       }
       await engine.load(
-        { meshes: [mesh], hands: [], selections },
-        { playerId, colorByPlayerId, preferences: {} },
+        { id: '', created: Date.now(), meshes: [mesh], hands: [], selections },
+        { playerId, colorByPlayerId, preferences: { playerId } },
         false
       )
-      engine.scenes[1].onDataLoadedObservable.notifyObservers()
+      engine.scenes[1].onDataLoadedObservable.notifyObservers(engine.scenes[1])
       expect(engine.scenes[1].getMeshById(mesh.id)).toBeDefined()
       expect(engine.isLoading).toBe(false)
       expect(updateColors).toHaveBeenCalledWith(playerId, colorByPlayerId)
@@ -168,6 +180,7 @@ describe('createEngine()', () => {
         { playerId, selectedIds: ['1', '2'] },
         { playerId: peerId1, selectedIds: ['3'] }
       ]
+      /** @type {SerializedMesh} */
       const mesh = {
         shape: 'card',
         depth: 0.2,
@@ -181,15 +194,15 @@ describe('createEngine()', () => {
       }
       expect(engine.isLoading).toBe(false)
       await engine.load(
-        { meshes: [mesh], hands: [], selections },
-        { playerId, colorByPlayerId },
+        { id: '', created: Date.now(), meshes: [mesh], hands: [], selections },
+        { playerId, colorByPlayerId, preferences: { playerId } },
         true
       )
       expect(engine.isLoading).toBe(true)
       expect(receiveLoading).toHaveBeenCalledWith(true, expect.anything())
       expect(receiveLoading).toHaveBeenCalledTimes(1)
       receiveLoading.mockClear()
-      engine.scenes[1].onDataLoadedObservable.notifyObservers()
+      engine.scenes[1].onDataLoadedObservable.notifyObservers(engine.scenes[1])
       await sleep(150)
       expect(engine.isLoading).toBe(false)
       expect(engine.scenes[1].getMeshById(mesh.id)).toBeDefined()
@@ -221,14 +234,22 @@ describe('createEngine()', () => {
       expect(engine.isLoading).toBe(false)
       await engine.load(
         {
+          id: '',
+          created: Date.now(),
           meshes: [],
-          hands: [{ playerId, meshes: [{ id: 'box', shape: 'card' }] }]
+          hands: [
+            { playerId, meshes: [{ id: 'box', shape: 'card', texture: '' }] }
+          ]
         },
-        { playerId, colorByPlayerId, preferences: { angle: angleOnPlay } },
+        {
+          playerId,
+          colorByPlayerId,
+          preferences: { playerId, angle: angleOnPlay }
+        },
         true
       )
       expect(engine.isLoading).toBe(true)
-      engine.scenes[1].onDataLoadedObservable.notifyObservers()
+      engine.scenes[1].onDataLoadedObservable.notifyObservers(engine.scenes[1])
       expect(engine.isLoading).toBe(false)
       expect(handManager.enabled).toBe(true)
       expect(handInit).toHaveBeenCalledWith({
@@ -241,6 +262,7 @@ describe('createEngine()', () => {
     })
 
     it('invokes observer before disposing', () => {
+      /** @type {string[]} */
       const ordering = []
       const handleBeforeDispose = vi
         .fn()
@@ -259,11 +281,13 @@ describe('createEngine()', () => {
     it('can load game specific actions', async () => {
       await engine.load(
         {
+          id: '',
+          created: Date.now(),
           meshes: [],
           hands: [],
           actions: { button1: ['rotate', 'pop'], button3: ['random'] }
         },
-        { playerId, colorByPlayerId, preferences: {} },
+        { playerId, colorByPlayerId, preferences: { playerId } },
         true
       )
 
@@ -285,11 +309,19 @@ describe('createEngine()', () => {
         const duration = 200
         await engine.load(
           {
+            id: '',
+            created: Date.now(),
             meshes: [
-              { id: 'card1', shape: 'card', drawable: { duration } },
+              {
+                id: 'card1',
+                shape: 'card',
+                texture: '',
+                drawable: { duration }
+              },
               {
                 id: 'card2',
                 shape: 'card',
+                texture: '',
                 drawable: { duration },
                 stackable: {},
                 quantifiable: {}
@@ -297,13 +329,14 @@ describe('createEngine()', () => {
               {
                 id: 'card3',
                 shape: 'card',
+                texture: '',
                 drawable: { duration },
                 flippable: {}
               }
             ],
             hands: []
           },
-          { playerId, colorByPlayerId, preferences: {} },
+          { playerId, colorByPlayerId, preferences: { playerId } },
           true
         )
         engine.start()
@@ -312,8 +345,8 @@ describe('createEngine()', () => {
 
       it('removes drawn mesh from main scene', async () => {
         const [, scene] = engine.scenes
-        const drawn = scene.getMeshById('card2')
-        drawn.metadata.draw()
+        const drawn = /** @type {Mesh} */ (scene.getMeshById('card2'))
+        drawn.metadata.draw?.()
         await expectAnimationEnd(drawn.getBehaviorByName(DrawBehaviorName))
         expect(scene.getMeshById(drawn.id)).toBeNull()
         const game = engine.serialize()
@@ -327,8 +360,12 @@ describe('createEngine()', () => {
           [faker.string.uuid(), '#123456']
         ])
         await engine.load(
-          { ...engine.serialize(), hands: [] },
-          { playerId, colorByPlayerId: updatedColorByPlayerId, preferences: {} }
+          { id: '', created: Date.now(), ...engine.serialize(), hands: [] },
+          {
+            playerId,
+            colorByPlayerId: updatedColorByPlayerId,
+            preferences: { playerId }
+          }
         )
         expect(updateColors).toHaveBeenCalledWith(
           playerId,
@@ -378,6 +415,6 @@ describe('createEngine()', () => {
   })
 })
 
-function getIds(meshes) {
+function getIds(/** @type {SerializedMesh[]|undefined} */ meshes) {
   return meshes?.map(({ id }) => id) ?? []
 }

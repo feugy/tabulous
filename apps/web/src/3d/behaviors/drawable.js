@@ -1,7 +1,14 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@tabulous/server/src/graphql/types').DrawableState} DrawableState
+ * @typedef {import('@src/3d/utils').FloatKeyFrame} FloatKeyFrame
+ * @typedef {import('@src/3d/utils').Vector3KeyFrame} Vector3KeyFrame
+ */
+
 import { Animation } from '@babylonjs/core/Animations/animation'
 
 import { handManager } from '../managers/hand'
-import { actionNames } from '../utils/actions'
 import {
   attachFunctions,
   detachFromParent,
@@ -10,28 +17,18 @@ import {
 import { AnimateBehavior } from './animatable'
 import { DrawBehaviorName } from './names'
 
-/**
- * @typedef {object} DrawableState behavior persistent state, including:
- * @property {boolean} [unflipOnPick=true] - unflip flipped mesh when picking them in hand.
- * @property {boolean} [flipOnPlay=false] - flip flipable meshes when playing them from hand.
- * @property {number} [angleOnPick=0] - set angle of rotable meshes when picking them in hand.
- * @property {number} [duration=750] - duration (in milliseconds) of the draw animation.
- */
+/** @typedef {Required<DrawableState>} RequiredDrawableState */
 
 export class DrawBehavior extends AnimateBehavior {
   /**
    * Creates behavior to draw mesh from and to player's hand.
-   *
-   * @extends {AnimateBehavior}
-   * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
-   * @property {DrawableState} state - the behavior's current state.
-   *
    * @param {DrawableState} state - behavior state.
    */
   constructor(state = {}) {
-    super(state)
-    this.state = state
-    // private
+    super()
+    /** @type {RequiredDrawableState} state - the behavior's current state. */
+    this.state = /** @type {RequiredDrawableState} */ (state)
+    /** @protected @type {Animation} */
     this.fadeAnimation = new Animation(
       'draw',
       'visibility',
@@ -50,14 +47,14 @@ export class DrawBehavior extends AnimateBehavior {
 
   /**
    * Does nothing.
-   * @see {@link import('@babylonjs/core').Behavior.init}
+   * @see https://doc.babylonjs.com/typedoc/interfaces/babylon.behavior#init
    */
   init() {}
 
   /**
    * Attaches this behavior to a mesh, adding to its metadata:
    * - the `draw()` method.
-   * @param {import('@babylonjs/core').Mesh} mesh - which becomes drawable.
+   * @param {Mesh} mesh - which becomes drawable.
    */
   attach(mesh) {
     this.mesh = mesh
@@ -82,7 +79,7 @@ export class DrawBehavior extends AnimateBehavior {
 
   /**
    * Runs the animation to move mesh from main scene to hand.
-   * @async
+   * @returns {Promise<void>}
    */
   async animateToHand() {
     const {
@@ -108,7 +105,7 @@ export class DrawBehavior extends AnimateBehavior {
 
   /**
    * Runs the animation to move mesh from hand to main scene
-   * @async
+   * @returns {Promise<void>}
    */
   async animateToMain() {
     const {
@@ -146,10 +143,16 @@ export class DrawBehavior extends AnimateBehavior {
       throw new Error('Can not restore state without mesh')
     }
     this.state = { duration, unflipOnPick, flipOnPlay, angleOnPick }
-    attachFunctions(this, actionNames.draw)
+    attachFunctions(this, 'draw')
   }
 }
 
+/**
+ *
+ * @param {Mesh} mesh - animated mesh.
+ * @param {boolean} [invert=false] - whether to invert or not.
+ * @returns {Promise<{ fadeKeys: FloatKeyFrame[], moveKeys: Vector3KeyFrame[] }>} generated key frames.
+ */
 async function buildAnimationKeys(mesh, invert = false) {
   // delay so that all observer of onAction to perform: we need the mesh to be have not parents before getting its position
   await Promise.resolve()
@@ -158,7 +161,7 @@ async function buildAnimationKeys(mesh, invert = false) {
     fadeKeys: [
       {
         frame: invert ? 100 : 0,
-        values: [1, null, -0.0000758616630226917, null]
+        values: [1, null, -0.0000758616630226917]
       },
       {
         frame: invert ? 80 : 20,

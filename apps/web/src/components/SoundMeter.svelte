@@ -1,10 +1,12 @@
 <script>
+  // @ts-check
   import { BehaviorSubject } from 'rxjs'
   import { onDestroy } from 'svelte'
 
+  /** @type {?MediaStream} monitored media stream. */
   export let mediaStream = null
 
-  const levelDb = new BehaviorSubject()
+  const levelDb = new BehaviorSubject(0)
   const audioContext = new AudioContext()
   const refreshDelayMs = 250
 
@@ -12,8 +14,10 @@
   analyser.fftSize = 512
   const samples = new Float32Array(analyser.fftSize)
 
-  let input = null
-  let timer = null
+  /** @type {MediaStreamAudioSourceNode} */
+  let input
+  /** @type {ReturnType<typeof setTimeout>} */
+  let timer
 
   $: if (mediaStream) {
     clearSoundMeter()

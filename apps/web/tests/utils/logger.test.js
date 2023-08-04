@@ -1,13 +1,24 @@
+// @ts-check
+/**
+ * @template {any[]} P, R
+ * @typedef {import('vitest').SpyInstance<P, R>} SpyInstance
+ */
+
 import { faker } from '@faker-js/faker'
 import { makeLogger } from '@src/utils/logger'
 import { randomUUID } from 'crypto'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 describe('Logger', () => {
+  /** @type {SpyInstance<Parameters<typeof console.trace>, void>} */
   let trace
+  /** @type {SpyInstance<Parameters<typeof console.log>, void>} */
   let log
+  /** @type {SpyInstance<Parameters<typeof console.info>, void>} */
   let info
+  /** @type {SpyInstance<Parameters<typeof console.warn>, void>} */
   let warn
+  /** @type {SpyInstance<Parameters<typeof console.error>, void>} */
   let error
 
   beforeEach(() => {
@@ -93,6 +104,7 @@ describe('Logger', () => {
     it('reports unknown level', () => {
       const level = faker.commerce.productMaterial()
 
+      // @ts-expect-error string can not be assigned to Level
       expect(configureLoggers({ anchorable: level })).not.toHaveProperty(
         'anchorable',
         level

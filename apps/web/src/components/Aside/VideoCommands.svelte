@@ -1,4 +1,5 @@
 <script>
+  // @ts-check
   import {
     acquireMediaStream,
     cameras$,
@@ -12,7 +13,9 @@
   import Dropdown from '../Dropdown.svelte'
   import SoundMeter from '../SoundMeter.svelte'
 
+  /** @type {boolean} whether the stream audio was muted. */
   export let muted = false
+  /** @type {boolean} whether the stream video was stopped. */
   export let stopped = false
 
   function toggleMic() {
@@ -35,7 +38,9 @@
     }
   }
 
-  function selectMedia({ detail: media }) {
+  function selectMedia(
+    /** @type {CustomEvent<MediaDeviceInfo>} */ { detail: media }
+  ) {
     acquireMediaStream(media)
   }
 </script>

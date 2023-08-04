@@ -1,9 +1,19 @@
 <script>
+  // @ts-check
+  /**
+   * @typedef {import('@src/utils').ScreenPosition} ScreenPosition
+   */
+
+  /** @type {string} label's content. */
   export let content
+  /** @type {undefined|(() => void)} an optional callback when label is clicked. */
   export let onClick
+  /** @type {boolean|undefined} whether this label is currently hovered. */
   export let hovered
+  /** @type {ScreenPosition} absolute screen position for this label (0,0 by default). */
   export let screenPosition = { x: 0, y: 0 }
-  export let color = '#7a7a7a'
+  /** @type {string|undefined} label's color (hexcode or color name). */
+  export let color = undefined
 
   function interact() {
     onClick?.()
@@ -12,9 +22,8 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
-  style="top: {screenPosition.y}px; left: {screenPosition.x}px; --color:{color}; pointer-events:{onClick
-    ? 'auto'
-    : 'none'};"
+  style="top: {screenPosition.y}px; left: {screenPosition.x}px; --color:{color ??
+    '#7a7a7a'}; pointer-events:{onClick ? 'auto' : 'none'};"
   class:hovered
   on:click={interact}
   on:keydown={interact}

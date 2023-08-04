@@ -3,7 +3,6 @@
   import { faker } from '@faker-js/faker'
   import { Button, Toaster } from '@src/components'
 
-  let message = null
   const icons = [
     'build',
     'adjust',
@@ -14,6 +13,12 @@
   ]
 
   const colors = ['#d6a63d', '#41d26d', '#ffa280', undefined, undefined]
+
+  let message = {
+    icon: icons[0],
+    color: colors[0],
+    content: 'Hello world'
+  }
 
   function addToast() {
     message = {

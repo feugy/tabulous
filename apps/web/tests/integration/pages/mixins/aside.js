@@ -5,11 +5,16 @@ import { expect } from '../../utils/index.js'
 /**
  * @typedef {import('@playwright/test').Page} Page
  * @typedef {import('@playwright/test').Locator} Locator
+ * @typedef {import('../../utils').Locale} Locale
  */
 
 export class AsideMixin {
+  /**
+   * @param {Page} page - the actual page.
+   * @param {Locale} lang - current language.
+   */
   constructor(page, lang) {
-    /** @type {string} */
+    /** @type {Locale} */
     this.lang = lang
     /** @type {Page} */
     this.page = page
@@ -61,13 +66,13 @@ export class AsideMixin {
 
   /**
    * Expects several friends. It tests request/proposal state.
-   * @param {object[]} friends - expected friends objects.
+   * @param {import('@tabulous/server/src/graphql/types').Friendship[]} friends - expected friends objects.
    * @returns {Promise<void>}
    */
   async expectFriends(friends) {
-    for (const [i, friendItem] of Object.entries(
-      await this.friendItems.all()
-    )) {
+    for (const [i, friendItem] of [
+      ...(await this.friendItems.all())
+    ].entries()) {
       const { player, isRequest, isProposal } = friends[i]
       const label = isRequest
         ? translate('labels.friendship-requested', player, this.lang)
@@ -83,13 +88,13 @@ export class AsideMixin {
 
   /**
    * Expects several players/attendees.
-   * @param {object[]} players - expected players objects.
+   * @param {import('@tabulous/server/src/graphql/types').Player[]} players - expected players objects.
    * @returns {Promise<void>}
    */
   async expectPlayers(players) {
-    for (const [i, playerItem] of Object.entries(
-      await this.playerItems.all()
-    )) {
+    for (const [i, playerItem] of [
+      ...(await this.playerItems.all())
+    ].entries()) {
       const player = players[i]
       expect(
         await playerItem.locator('span').first().textContent(),

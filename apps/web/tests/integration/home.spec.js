@@ -1,4 +1,4 @@
-// @ts-checkcan promo
+// @ts-check
 import { faker } from '@faker-js/faker'
 import { supportedLanguages } from '@src/params/lang.js'
 // note: we can't import the full vitest because it mockeypatches Jest symbols, which Playwright doesn't like
@@ -14,14 +14,15 @@ import {
   translate
 } from './utils/index.js'
 
-for (const { lang } of [{ lang: 'fr' }, { lang: 'en' }]) {
+for (const { lang } of /** @type {{ lang: import('./utils').Locale }[]} */ ([
+  { lang: 'fr' },
+  { lang: 'en' }
+])) {
   describe(`${lang} Home page`, () => {
     const catalog = [
       {
         name: 'playground',
-        locales: { fr: { title: 'Aire de jeu' }, en: { title: 'Playground' } },
-        minAge: null,
-        minTime: null
+        locales: { fr: { title: 'Aire de jeu' }, en: { title: 'Playground' } }
       },
       {
         name: 'klondike',
@@ -532,7 +533,7 @@ for (const { lang } of [{ lang: 'fr' }, { lang: 'en' }]) {
         players: [player]
       }
       let gameJoined = lobby
-      /** @type {import('./utils/server.js').GraphQlMockResult} */
+      /** @type {import('./utils/server').GraphQlMockResult} */
       let graphQlMocks
 
       beforeEach(async ({ page }) => {
@@ -626,9 +627,8 @@ for (const { lang } of [{ lang: 'fr' }, { lang: 'en' }]) {
 
       it('can kick a lobby guest', async ({ page }) => {
         const homePage = new HomePage(page, lang)
-        graphQlMocks.onQuery((operation, request) => {
+        graphQlMocks.onQuery(operation => {
           if (operation === 'kick') {
-            console.log(request)
             graphQlMocks.sendToSubscription({
               data: {
                 receiveGameUpdates: { ...lobby, players: [player] }
@@ -642,6 +642,7 @@ for (const { lang } of [{ lang: 'fr' }, { lang: 'en' }]) {
     })
 
     describe('given some friends', () => {
+      /** @type {import('./utils/server').GraphQlMockResult} */
       let graphQlMocks
 
       beforeEach(async ({ page }) => {

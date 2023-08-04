@@ -1,3 +1,4 @@
+// @ts-check
 import MinimizableSection from '@src/components/MinimizableSection.svelte'
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import { tick } from 'svelte'
@@ -9,7 +10,9 @@ describe('MinimizableSection component', () => {
   const handleChange = vi.fn()
   const handleResize = vi.fn()
 
-  beforeEach(vi.resetAllMocks)
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
 
   describe.each([
     ['top', 75],
@@ -55,7 +58,9 @@ describe('MinimizableSection component', () => {
 
     it('can resize', async () => {
       renderComponent()
-      const gutter = screen.queryByRole('scrollbar')
+      const gutter = /** @type {HTMLElement} */ (
+        screen.queryByRole('scrollbar')
+      )
       const downEvent = new Event('pointerdown')
       Object.assign(downEvent, { x: 100, y: 200 })
       fireEvent(gutter, downEvent)
@@ -83,7 +88,9 @@ describe('MinimizableSection component', () => {
 
     it('can not resize when minimized', async () => {
       renderComponent({ minimized: true })
-      const gutter = screen.queryByRole('scrollbar')
+      const gutter = /** @type {HTMLElement} */ (
+        screen.queryByRole('scrollbar')
+      )
       const downEvent = new Event('pointerdown')
       Object.assign(downEvent, { x: 100, y: 200 })
       fireEvent(gutter, downEvent)
@@ -102,6 +109,7 @@ describe('MinimizableSection component', () => {
     })
 
     describe('given some tabs', () => {
+      /** @type {HTMLElement[]} */
       let tabs
 
       beforeEach(() => {

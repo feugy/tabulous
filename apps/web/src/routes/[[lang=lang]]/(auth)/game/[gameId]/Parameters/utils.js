@@ -1,13 +1,40 @@
+// @ts-check
+/**
+ * @typedef {import('@src/types').JSONValue} JSONValue
+ * @typedef {Partial<import('@tabulous/server/src/utils').Schema>} Schema
+ * @typedef {import('svelte').ComponentType} ComponentType
+ */
+
 import Choice from './Choice.svelte'
 
+/**
+ * @typedef {object} Field
+ * @property {string} name - field name.
+ * @property {string} property - data property in values.
+ * @property {JSONValue} values - validated values.
+ * @property {ComponentType} component - Svelte component used for rendering.
+ */
+
+/** @typedef {Schema & { value: JSONValue }} Violation schema violations. */
+
+/**
+ * Builds Svelte components to collect and validate data described in a JSON Schema.
+ * Also uses provided values for conditional validations.
+ * @param {Record<string, JSONValue>} values - validated data.
+ * @param {Schema} schema - JSON Schema describing expected data.
+ * @param {boolean} [nested] - for internal use
+ * @returns {Field[]} a list of field to be rendered.
+ * @see https://ajv.js.org/json-schema.html
+ */
 export function buildComponents(values, schema, nested = false) {
+  /** @type {Field[]} */
   const components = []
   for (const [name, property] of Object.entries(schema?.properties ?? {})) {
     if (property.enum) {
       components.push({ name, property, values, component: Choice })
     }
   }
-  findViolations(values, schema, values, condition => {
+  findViolations(values, schema, values, (/** @type {Schema} */ condition) => {
     components.push(...buildComponents(values, condition, true))
   })
   if (!nested) {
@@ -23,6 +50,15 @@ export function buildComponents(values, schema, nested = false) {
   return components
 }
 
+/**
+ * Validates provided values against the schema.
+ * @param {JSONValue} value - validated value.
+ * @param {Schema} schema - JSON schema.
+ * @param {JSONValue} context - contextual data where to look for references.
+ * @param {(schema: Schema) => void} [enrichProps] optional callback invoked when processing conditional schema.
+ * Invoked with the then or else schema clause.
+ * @returns {Violation[]} a list of schema violations.
+ */
 export function findViolations(value, schema, context = {}, enrichProps) {
   let {
     enum: candidates,
@@ -56,6 +92,7 @@ export function findViolations(value, schema, context = {}, enrichProps) {
     else: conditionElse
   } = schema
 
+  /** @type {Violation[]} */
   const violations = []
 
   if (candidates) {
@@ -245,7 +282,7 @@ export function findViolations(value, schema, context = {}, enrichProps) {
   if (
     !!oneOf &&
     oneOf.filter(
-      condition =>
+      (/** @type {Schema} */ condition) =>
         findViolations(value, condition, context, enrichProps).length === 0
     ).length !== 1
   ) {
@@ -254,7 +291,7 @@ export function findViolations(value, schema, context = {}, enrichProps) {
   if (
     !!anyOf &&
     anyOf.every(
-      condition =>
+      (/** @type {Schema} */ condition) =>
         findViolations(value, condition, context, enrichProps).length !== 0
     )
   ) {
@@ -263,7 +300,7 @@ export function findViolations(value, schema, context = {}, enrichProps) {
   if (
     !!allOf &&
     allOf.some(
-      condition =>
+      (/** @type {Schema} */ condition) =>
         findViolations(value, condition, context, enrichProps).length !== 0
     )
   ) {
@@ -293,6 +330,11 @@ export function findViolations(value, schema, context = {}, enrichProps) {
   return violations
 }
 
+/**
+ * @param {Schema|JSONValue} condition - Schema describing the path to searched data.
+ * @param {JSONValue} [context] - Contextual data where to find the data.
+ * @returns {JSONValue} the desired data.
+ */
 function resolveData(condition, context = {}) {
   if (typeof condition !== 'object' || !('$data' in condition)) {
     return condition
@@ -311,6 +353,11 @@ function resolveData(condition, context = {}) {
   return value
 }
 
+/**
+ * @param {JSONValue} a - first value to compare.
+ * @param {JSONValue} b - second value to compare.
+ * @returns {boolean} whether these values are deeply equal.
+ */
 function equals(a, b) {
   if (typeof a !== typeof b) {
     return false

@@ -1,3 +1,10 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@tabulous/server/src/graphql/types').RotableState} RotableState
+ * @typedef {import('@src/3d/utils').Vector3KeyFrame} Vector3KeyFrame
+ */
+
 import { Vector3 } from '@babylonjs/core/Maths/math'
 
 import { makeLogger } from '../../utils/logger'
@@ -14,15 +21,11 @@ import { convertToLocal, getAbsoluteRotation } from '../utils/vector'
 import { AnimateBehavior } from './animatable'
 import { RotateBehaviorName } from './names'
 
+/** @typedef {RotableState & Required<Pick<RotableState, 'duration'>>} RequiredRotableState */
+
 const logger = makeLogger('rotable')
 
 const rotationStep = Math.PI * 0.5
-
-/**
- * @typedef {object} RotableState behavior persistent state, including:
- * @property {number} angle - current rotation (in radian).
- * @property {number} [duration=200] - duration (in milliseconds) of the rotation animation.
- */
 
 export class RotateBehavior extends AnimateBehavior {
   /**
@@ -30,16 +33,11 @@ export class RotateBehavior extends AnimateBehavior {
    * It will add to this mesh's metadata:
    * - a `rotate()` function to rotate by 45°.
    * - a rotation `angle` (in radian).
-   *
-   * @extends {AnimateBehavior}
-   * @property {import('@babylonjs/core').Mesh} mesh - the related mesh.
-   * @property {RotableState} state - the behavior's current state.
-   *
    * @param {RotableState} state - behavior state.
    */
   constructor(state = {}) {
-    super(state)
-    this._state = state
+    super()
+    this._state = /** @type {RequiredRotableState} */ (state)
   }
 
   /**
@@ -50,8 +48,7 @@ export class RotateBehavior extends AnimateBehavior {
   }
 
   /**
-   * Gets this behavior's state.
-   * @returns {RotableState} this behavior's state for serialization.
+   * @property {RequiredRotableState} state - this behavior's current state.
    */
   get state() {
     const angle = this.mesh
@@ -68,7 +65,7 @@ export class RotateBehavior extends AnimateBehavior {
    * When attaching/detaching this mesh to a parent, adjust rotation angle
    * according to the parent's own rotation, so that rotating the parent
    * will accordingly rotate the child.
-   * @param {import('@babylonjs/core').Mesh} mesh - which becomes detailable.
+   * @param {Mesh} mesh - which becomes detailable.
    */
   attach(mesh) {
     super.attach(mesh)
@@ -83,7 +80,7 @@ export class RotateBehavior extends AnimateBehavior {
    * - returns
    * Does nothing if the mesh is already being animated.
    *
-   * @param {number} angle? - new rotation angle. When not set, adds PI/2 to the current rotation.
+   * @param {number} [angle] - new rotation angle. When not set, adds PI/2 to the current rotation.
    * @returns {Promise<void>}
    */
   async rotate(angle) {
@@ -133,7 +130,7 @@ export class RotateBehavior extends AnimateBehavior {
       {
         animation: moveAnimation,
         duration,
-        keys: [
+        keys: /** @type {Vector3KeyFrame[]} */ ([
           { frame: 0, values: [x, y, z] },
           {
             frame: 50,
@@ -143,7 +140,7 @@ export class RotateBehavior extends AnimateBehavior {
             ).asArray()
           },
           { frame: 100, values: [x, y, z] }
-        ]
+        ])
       }
     )
   }
@@ -161,7 +158,7 @@ export class RotateBehavior extends AnimateBehavior {
     this.mesh.setParent(null)
     this.mesh.rotation.y = angle
     this.mesh.setParent(parent)
-    attachFunctions(this, actionNames.rotate)
+    attachFunctions(this, 'rotate')
     attachProperty(this, 'angle', () => this.state.angle)
   }
 }

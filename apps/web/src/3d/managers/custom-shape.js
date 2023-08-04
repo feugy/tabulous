@@ -1,3 +1,8 @@
+// @ts-check
+/**
+ * @typedef {import('@src/graphql').Game} Game
+ */
+
 import { makeLogger } from '../../utils/logger'
 import { getDieModelFile } from '../meshes'
 
@@ -6,21 +11,21 @@ const logger = makeLogger('custom-shape')
 class CustomShapeManager {
   /**
    * Creates a manager to download and cache custom mesh shapes.
-   * @property {string} gameAssetsUrl? - base url hosting the game shape files.
    */
   constructor() {
+    /** @type {string} base url hosting the game shape files. */
     this.gameAssetsUrl = ''
-    // private
+    /** @internal @type {Map<string, string>} */
     this.dataByFile = new Map()
   }
 
   /**
    * Initialize manager with scene and configuration values.
    * @param {object} params - parameters, including:
-   * @param {array]} params.meshes - list of meshes.
-   * @param {array} params.hands? - list of hand meshes
-   * @param {string} params.gameAssetsUrl? - base url hosting the game shape files.
-   * @param {import('../../graphql').Game} game - loaded game data.
+   * @param {string} [params.gameAssetsUrl] - base url hosting the game shape files.
+   * @param {Game['meshes']} params.meshes - list of meshes.
+   * @param {Game['hands']} params.hands - list of hand meshes
+   * @returns {Promise<void>}
    */
   async init({ gameAssetsUrl, meshes, hands }) {
     logger.debug(
@@ -34,7 +39,7 @@ class CustomShapeManager {
     ])
     const downloads = []
     for (const file of files) {
-      downloads.push(download(file, this))
+      downloads.push(downloadAndStore(this, file))
     }
     await Promise.all(downloads)
     logger.debug(
@@ -79,19 +84,31 @@ class CustomShapeManager {
  */
 export const customShapeManager = new CustomShapeManager()
 
+/**
+ * @param {Game['meshes']} meshes
+ * @returns {string[]}
+ */
 function extractFiles(meshes) {
+  /** @type {string[]} */
   const files = []
   for (const { shape, file, faces } of meshes ?? []) {
     if (shape === 'custom') {
-      files.push(file)
+      // TODO throw if no file
+      files.push(/** @type {string} */ (file))
     } else if (shape === 'die') {
-      files.push(getDieModelFile(faces))
+      // TODO throw if no faces
+      files.push(getDieModelFile(/** @type {number} */ (faces)))
     }
   }
   return files
 }
 
-async function download(file, manager) {
+/**
+ * @param {CustomShapeManager} manager - manager instance.
+ * @param {string} file - downloaded file.
+ * @returns {Promise<void>} resolves when the file is downloaded.
+ */
+async function downloadAndStore(manager, file) {
   logger.debug({ file }, `starts downloading ${file}`)
   try {
     const response = await fetch(`${manager.gameAssetsUrl}${file}`)
@@ -106,6 +123,11 @@ async function download(file, manager) {
   }
 }
 
+/**
+ * @param {CustomShapeManager} manager - manager instance.
+ * @param {string} file - downloaded file.
+ * @param {ArrayBuffer} arrayBuffer - file binary data.
+ */
 function store({ dataByFile }, file, arrayBuffer) {
   logger.info({ file }, `stores data for ${file}`)
   const bytes = new Uint8Array(arrayBuffer)

@@ -1,3 +1,13 @@
+// @ts-check
+/**
+ * @typedef {import('@src/graphql').Friendship} Friendship
+ * @typedef {import('@src/graphql').PlayerFragment} PlayerFragment
+ */
+/**
+ * @template {any[]} P, R
+ * @typedef {import('vitest').Mock<P, R>} Mock
+ */
+
 import { faker } from '@faker-js/faker'
 import { FriendList } from '@src/components'
 import {
@@ -6,7 +16,7 @@ import {
   invite,
   kick,
   requestFriendship,
-  searchPlayers
+  searchPlayers as actualSearchPlayers
 } from '@src/stores'
 import {
   fireEvent,
@@ -24,8 +34,12 @@ vi.mock('@src/stores/friends')
 vi.mock('@src/stores/players')
 vi.mock('@src/stores/game-manager')
 
+const searchPlayers = /** @type {Mock<[string], Promise<PlayerFragment[]>>} */ (
+  actualSearchPlayers
+)
+
 describe('FriendList component', () => {
-  const currentPlayer = {
+  const user = {
     id: makeId('p0'),
     username: 'Karen',
     usernameSearchable: true
@@ -64,9 +78,7 @@ describe('FriendList component', () => {
   })
 
   function renderComponent(props = {}) {
-    return render(
-      html`<${FriendList} currentPlayer=${currentPlayer} ...${props} />`
-    )
+    return render(html`<${FriendList} user=${user} ...${props} />`)
   }
 
   it('displays a disclaimer when list is empty', () => {
@@ -131,7 +143,9 @@ describe('FriendList component', () => {
 
     expect(endFriendship).not.toHaveBeenCalled()
 
-    const confirmation = screen.queryByRole('dialog')
+    const confirmation = /** @type {HTMLElement} */ (
+      screen.queryByRole('dialog')
+    )
     expect(confirmation).toBeInTheDocument()
 
     await fireEvent.click(
@@ -152,7 +166,9 @@ describe('FriendList component', () => {
 
     expect(endFriendship).not.toHaveBeenCalled()
 
-    const confirmation = screen.queryByRole('dialog')
+    const confirmation = /** @type {HTMLElement} */ (
+      screen.queryByRole('dialog')
+    )
     expect(confirmation).toBeInTheDocument()
 
     await fireEvent.click(
@@ -174,7 +190,9 @@ describe('FriendList component', () => {
 
     expect(endFriendship).not.toHaveBeenCalled()
 
-    const confirmation = screen.queryByRole('dialog')
+    const confirmation = /** @type {HTMLElement} */ (
+      screen.queryByRole('dialog')
+    )
     expect(confirmation).toBeInTheDocument()
 
     await fireEvent.click(
@@ -190,7 +208,9 @@ describe('FriendList component', () => {
   describe('given search results', () => {
     const playerA = { id: makeId('p5'), username: 'Beth' }
     const playerB = { id: makeId('p6'), username: 'Zack' }
+    /** @type {HTMLInputElement} */
     let textbox
+    /** @type {HTMLButtonElement} */
     let requestButton
 
     beforeEach(() => {
@@ -318,7 +338,7 @@ describe('FriendList component', () => {
         playerById: new Map([
           [player1.id, player1],
           [player2.id, player2],
-          [currentPlayer.id, currentPlayer]
+          [user.id, user]
         ])
       })
 
@@ -333,6 +353,7 @@ describe('FriendList component', () => {
       const { player: player1 } = friends[0]
       const { player: player2 } = friends[friends.length - 1]
       const { player: player3 } = friends[friends.length - 2]
+      /** @type {HTMLElement[]} */
       let playerItems
 
       beforeEach(() => {
@@ -343,7 +364,7 @@ describe('FriendList component', () => {
             [player2.id, player2],
             [player1.id, player1],
             [player3.id, player3],
-            [currentPlayer.id, currentPlayer]
+            [user.id, user]
           ])
         })
 
@@ -363,7 +384,10 @@ describe('FriendList component', () => {
           })
         )
 
-        expect(requestFriendship).toHaveBeenCalledWith(player2)
+        expect(requestFriendship).toHaveBeenCalledWith({
+          ...player2,
+          label: ''
+        })
         expect(requestFriendship).toHaveBeenCalledOnce()
       })
     })
@@ -374,7 +398,7 @@ describe('FriendList component', () => {
       renderComponent({
         friends,
         game,
-        playerById: new Map([[currentPlayer.id, currentPlayer]])
+        playerById: new Map([[user.id, user]])
       })
 
       expect(screen.queryAllByRole('listitem')).toHaveLength(0)
@@ -489,7 +513,9 @@ describe('FriendList component', () => {
         playerById: new Map([[player.id, { ...player, isOwner: true }]])
       })
 
-      const playerItem = screen.getByText(player.username).parentElement
+      const playerItem = /** @type {HTMLElement} */ (
+        screen.getByText(player.username).parentElement
+      )
       await userEvent.hover(playerItem)
       await userEvent.hover(playerItem)
       expect(
@@ -507,7 +533,9 @@ describe('FriendList component', () => {
         playerById: new Map([[player.id, { ...player, isGuest: true }]])
       })
 
-      const playerItem = screen.getByText(player.username).parentElement
+      const playerItem = /** @type {HTMLElement} */ (
+        screen.getByText(player.username).parentElement
+      )
       await userEvent.hover(playerItem)
       const kickButton = within(playerItem).getByRole('button', {
         name: 'highlight_remove'
@@ -526,7 +554,9 @@ describe('FriendList component', () => {
         playerById: new Map([[player.id, player]])
       })
 
-      const playerItem = screen.getByText(player.username).parentElement
+      const playerItem = /** @type {HTMLElement} */ (
+        screen.getByText(player.username).parentElement
+      )
       await userEvent.hover(playerItem)
       if (canKickPlayer) {
         const kickButton = within(playerItem).getByRole('button', {
@@ -547,8 +577,11 @@ describe('FriendList component', () => {
   })
 })
 
-function expectFriendships(actualItems, expectedFriends) {
-  for (const [i, item] of Object.entries(actualItems)) {
+function expectFriendships(
+  /** @type {HTMLElement[]} */ actualItems,
+  /** @type {Friendship[]} */ expectedFriends
+) {
+  for (const [i, item] of actualItems.entries()) {
     const { player, isRequest, isProposal } = expectedFriends[i]
     const label = isRequest
       ? translate('labels.friendship-requested', player)
@@ -563,8 +596,11 @@ function expectFriendships(actualItems, expectedFriends) {
   expect(actualItems).toHaveLength(expectedFriends.length)
 }
 
-function expectPlayers(actualItems, expectedPlayers) {
-  for (const [i, item] of Object.entries(actualItems)) {
+function expectPlayers(
+  /** @type {HTMLElement[]} */ actualItems,
+  /** @type {PlayerFragment[]} */ expectedPlayers
+) {
+  for (const [i, item] of actualItems.entries()) {
     expect(
       within(item).getByRole('term'),
       `player rank #${1 + i}`
@@ -573,7 +609,7 @@ function expectPlayers(actualItems, expectedPlayers) {
   expect(actualItems).toHaveLength(expectedPlayers.length)
 }
 
-function expectSelected(element, isSelected = true) {
+function expectSelected(/** @type {HTMLElement} */ element, isSelected = true) {
   expect(element.closest('li')).toHaveAttribute(
     'aria-checked',
     isSelected ? 'true' : 'false'

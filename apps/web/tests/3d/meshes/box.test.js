@@ -1,4 +1,11 @@
-import { Color4 } from '@babylonjs/core/Maths/math.color'
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').PBRSpecularGlossinessMaterial} Material
+ */
+
+import { Color3 } from '@babylonjs/core/Maths/math.color'
 import { faker } from '@faker-js/faker'
 import { controlManager, materialManager } from '@src/3d/managers'
 import { createBox } from '@src/3d/meshes'
@@ -10,6 +17,7 @@ import {
   expectPosition
 } from '../../test-utils'
 
+/** @type {Scene} */
 let scene
 configures3dTestEngine(created => (scene = created.scene))
 
@@ -17,7 +25,7 @@ beforeAll(() => materialManager.init({ scene }))
 
 describe('createBox()', () => {
   it('creates a box with default values, faces and no behavior', async () => {
-    const mesh = await createBox()
+    const mesh = await createBox({ id: '', texture: '' }, scene)
     expect(mesh.name).toEqual('box')
     expectDimension(mesh, [1, 1, 1])
     expect(mesh.isPickable).toBe(false)
@@ -30,33 +38,40 @@ describe('createBox()', () => {
 
   it('creates a box with a single color', async () => {
     const color = '#1E282F'
-    const mesh = await createBox({ texture: color })
+    const mesh = await createBox({ id: '', texture: color }, scene)
     expect(mesh.name).toEqual('box')
     expectDimension(mesh, [1, 1, 1])
     expect(mesh.isPickable).toBe(false)
-    expect(mesh.material.diffuseColor).toEqual(
-      Color4.FromHexString(color).toLinearSpace()
+    expect(/** @type {Material} */ (mesh.material).diffuseColor).toEqual(
+      Color3.FromHexString(color).toLinearSpace()
     )
   })
 
   it('creates a box with initial transformation', async () => {
-    const mesh = await createBox({
-      width: 4,
-      height: 8,
-      depth: 2,
-      transform: { pitch: Math.PI * -0.5 }
-    })
+    const mesh = await createBox(
+      {
+        id: '',
+        texture: '',
+        width: 4,
+        height: 8,
+        depth: 2,
+        transform: { pitch: Math.PI * -0.5 }
+      },
+      scene
+    )
     expect(mesh.name).toEqual('box')
     expectDimension(mesh, [2, 8, 4])
   })
 
   describe('given a box with initial position, dimension, images and behaviors', () => {
+    /** @type {Mesh} */
     let mesh
 
     const width = faker.number.int(999)
     const height = faker.number.int(999)
     const id = faker.string.uuid()
     const depth = faker.number.int(999)
+    const texture = faker.color.rgb()
     const x = faker.number.int(999)
     const y = faker.number.int(999)
     const z = faker.number.int(999)
@@ -75,17 +90,21 @@ describe('createBox()', () => {
     }
 
     beforeEach(async () => {
-      mesh = await createBox({
-        id,
-        width,
-        height,
-        depth,
-        x,
-        y,
-        z,
-        faceUV,
-        ...behaviors
-      })
+      mesh = await createBox(
+        {
+          id,
+          texture,
+          width,
+          height,
+          depth,
+          x,
+          y,
+          z,
+          faceUV,
+          ...behaviors
+        },
+        scene
+      )
     })
 
     it('has all the expected data', () => {
@@ -120,6 +139,7 @@ describe('createBox()', () => {
       expect(mesh.metadata.serialize()).toEqual({
         shape: 'box',
         id,
+        texture,
         x,
         y,
         z,

@@ -1,28 +1,48 @@
 <script>
+  // @ts-check
+  /** @typedef {import('@src/components').MenuOption} MenuOption */
+
   import { createEventDispatcher } from 'svelte'
 
   import Button from './Button.svelte'
   import Menu from './Menu.svelte'
 
+  /** @type {MenuOption[]} options displayed in the drop down menu. */
   export let options
+  /** @type {?MenuOption} currently active option. */
   export let value = null
+  /** @type {boolean} whether to use the active option as button text, or fixed text. */
   export let valueAsText = true
+  /** @type {boolean} whether to display a drop down arrow in the button. */
   export let withArrow = true
+  /** @type {?string} fixed button text, unless using `valueAsText`. */
   export let text = null
+  /** @type {boolean} whether the drop down menu is open. */
   export let open = false
+  /** @type {boolean} whether the drop down menu should open when clicking on the button. */
   export let openOnClick = true
 
+  /** @type {import('svelte').EventDispatcher<{ click: void, select: ?MenuOption, close: void }>} */
   const dispatch = createEventDispatcher()
+  /** @type {?HTMLUListElement } reference to the menu. */
   let menu
+  /** @type {?HTMLSpanElement } reference to the button's wrapper. */
   let anchor
 
   $: iconOnly = !valueAsText && !text
+  $: optionAColor =
+    value && typeof value === 'object' && 'color' in value ? value.color : null
   $: if (valueAsText) {
-    text = value?.color
-      ? ' '
-      : value && options?.includes(value)
-      ? value.label || value
-      : null
+    text =
+      !value || (typeof value === 'object' && 'color' in value)
+        ? ' '
+        : options?.includes(value)
+        ? typeof value === 'object' && 'Component' in value
+          ? null
+          : typeof value === 'string'
+          ? value
+          : value.label
+        : null
   }
 
   function handleClick() {
@@ -40,7 +60,7 @@
     }
   }
 
-  function handleKey(event) {
+  function handleKey(/** @type {KeyboardEvent} */ event) {
     if (event.key === ' ' || event.key === 'Enter') {
       event.preventDefault()
       handleArrowClick()
@@ -60,8 +80,8 @@
     <slot name="icon" />
     <span
       slot="text"
-      style:--color={value?.color}
-      class:color={Boolean(value?.color)}>{text || ''}</span
+      style:--color={optionAColor}
+      class:color={Boolean(optionAColor)}>{text || ''}</span
     >
     {#if withArrow && options.length > 1}
       <i

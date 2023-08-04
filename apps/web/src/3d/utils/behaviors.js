@@ -1,3 +1,15 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@tabulous/server/src/graphql/types').Dimension} Dimension
+ * @typedef {import('@tabulous/server/src/graphql/types').Mesh} _SerializedMesh
+ * @typedef {import('@src/3d/behaviors').AnimateBehavior} AnimateBehavior
+ * @typedef {import('@src/3d/behaviors').TargetBehavior} TargetBehavior
+ * @typedef {import('@src/3d/behaviors/names')} _BehaviorNames
+ * @typedef {import('@src/3d/behaviors/randomizable').Extras} Extras
+ * @typedef {import('@src/3d/managers/target').DropZone} DropZone
+ */
+
 import { Animation } from '@babylonjs/core/Animations/animation'
 import { Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
@@ -29,9 +41,12 @@ import { RotateBehavior } from '../behaviors/rotable'
 import { StackBehavior } from '../behaviors/stackable'
 import { applyGravity, getCenterAltitudeAbove } from './gravity'
 
-/** @typedef {import('@babylonjs/core').Behavior} Behavior */
-/** @typedef {import('@babylonjs/core').Mesh} Mesh */
+/** @typedef {_BehaviorNames[keyof _BehaviorNames]} BehaviorNames */
+/** @typedef {AnchorBehavior|DetailBehavior|DrawBehavior|FlipBehavior|LockBehavior|MoveBehavior|QuantityBehavior|RandomBehavior|RotateBehavior|StackBehavior} Behavior */
+/** @typedef {Record<string, ?> & Pick<SerializedMesh, 'anchorable'|'detailable'|'movable'|'drawable'|'flippable'|'lockable'|'quantifiable'|'randomizable'|'rotable'|'stackable'>} BehaviorState */
+/** @typedef {_SerializedMesh & { randomizable?: _SerializedMesh['randomizable'] & Partial<Extras> }} SerializedMesh */
 
+/** @type {?[BehaviorNames, { new (state: ?): Behavior }][]} */
 let constructors = null
 
 function getConstructors() {
@@ -59,25 +74,21 @@ function getConstructors() {
  * For example, when given parameters contain 'anchorable' object, it creates an AnchorBehavior
  * and attach it to the mesh.
  * @param {Mesh} mesh - the modified mesh.
- * @param {object} params - parameters, which may contain behavior specific states.
- * @returns {object} an hash of registered behaviors, by their names.
+ * @param {BehaviorState} params - parameters, which may contain behavior specific states.
  */
 export function registerBehaviors(mesh, params) {
-  const registered = {}
   for (const [name, constructor] of getConstructors()) {
     if (params[name]) {
-      registered[name] = new constructor(params[name])
-      mesh.addBehavior(registered[name], true)
+      mesh.addBehavior(new constructor(params[name]), true)
     }
   }
-  return registered
 }
 
 /**
  * Restores a mesh behaviors states from the provided paramerter object.
  * Warning! stackable behavior is ignored, since it needs all mesh to exist before being restored.
  * @param {Behavior[]} behaviors - list of serialized behaviors.
- * @param {object} state hash of behavior states.
+ * @param {BehaviorState} state hash of behavior states.
  */
 export function restoreBehaviors(behaviors, state) {
   for (const behavior of behaviors) {
@@ -90,9 +101,10 @@ export function restoreBehaviors(behaviors, state) {
 /**
  * Creates an hash which keys are behavior names, and values their respective states, when relevant.
  * @param {Behavior[]} behaviors - list of serialized behaviors.
- * @returns {object} an hash of behavior states.
+ * @returns {BehaviorState} an hash of behavior states.
  */
 export function serializeBehaviors(behaviors) {
+  /** @type {BehaviorState} */
   const result = {}
   for (const behavior of behaviors) {
     result[behavior.name] = behavior.state ? { ...behavior.state } : undefined
@@ -103,14 +115,14 @@ export function serializeBehaviors(behaviors) {
 /**
  * Moves, with an animation if possible, a mesh to a given position.
  * When requested, will apply gravity at the end.
- * @async
  * @param {Mesh} mesh - the moved mesh.
  * @param {Vector3} absolutePosition - its final, absolute position.
- * @param {Vector3} rotation - its final rotation (set to null to leave unmodified).
- * @param {number} duration - how long, in ms, the move will last.
+ * @param {?Vector3} rotation - its final rotation (set to null to leave unmodified).
+ * @param {number} [duration] - how long, in ms, the move will last.
  * @param {boolean} [withGravity=false] - whether to apply gravity at the end.
+ * @returns {void|Promise<void>}
  */
-export async function animateMove(
+export function animateMove(
   mesh,
   absolutePosition,
   rotation,
@@ -118,7 +130,9 @@ export async function animateMove(
   withGravity = false
 ) {
   const movable = getAnimatableBehavior(mesh)
-  if (mesh.getEngine().isLoading || !movable || !duration) {
+  if (!mesh.getEngine().isLoading && movable && duration) {
+    return movable.moveTo(absolutePosition, rotation, duration, withGravity)
+  } else {
     mesh.setAbsolutePosition(absolutePosition)
     if (rotation) {
       mesh.rotation = rotation
@@ -126,15 +140,13 @@ export async function animateMove(
     if (withGravity) {
       applyGravity(mesh)
     }
-  } else {
-    await movable.moveTo(absolutePosition, rotation, duration, withGravity)
   }
 }
 
 /**
  * Finds and returns an animatable behavior of a given mesh.
- * @param {Mesh} mesh? - related mesh.
- * @returns {AnimatableBehavior} an Animatable behavior (or one of its subimplementation) if any.
+ * @param {Mesh} [mesh] - related mesh.
+ * @returns {?MoveBehavior|FlipBehavior|DrawBehavior|RotateBehavior|RandomBehavior|AnimateBehavior|undefined} an Animatable behavior (or one of its subimplementation) if any.
  */
 export function getAnimatableBehavior(mesh) {
   return (
@@ -149,8 +161,8 @@ export function getAnimatableBehavior(mesh) {
 
 /**
  * Finds and returns a targetable behavior of a given mesh.
- * @param {Mesh} mesh? - related mesh.
- * @returns {TargetBehavior} a Target behavior (or one of its subimplementation) if any.
+ * @param {Mesh} [mesh] - related mesh.
+ * @returns {?StackBehavior|AnchorBehavior|QuantityBehavior|TargetBehavior|undefined} a Target behavior (or one of its subimplementation) if any.
  */
 export function getTargetableBehavior(mesh) {
   return (
@@ -163,7 +175,7 @@ export function getTargetableBehavior(mesh) {
 
 /**
  * Indicates whether a mesh is flipped or not.
- * @param {Mesh} mesh? - related mesh.
+ * @param {Mesh} [mesh] - related mesh.
  * @returns {boolean} whether the mesh is flipped.
  */
 export function isMeshFlipped(mesh) {
@@ -172,7 +184,7 @@ export function isMeshFlipped(mesh) {
 
 /**
  * Indicates whether a mesh has been rotated twice (its angle is PI).
- * @param {Mesh} mesh? - related mesh.
+ * @param {Mesh} [mesh] - related mesh.
  * @returns {boolean} whether the mesh is inverted.
  */
 export function isMeshInverted(mesh) {
@@ -181,7 +193,7 @@ export function isMeshInverted(mesh) {
 
 /**
  * Indicates whether a mesh is locked (prevents moves and interactions)
- * @param {Mesh} mesh? - related mesh.
+ * @param {Mesh} [mesh] - related mesh.
  * @returns {boolean} whether the mesh is locked.
  */
 export function isMeshLocked(mesh) {
@@ -191,7 +203,7 @@ export function isMeshLocked(mesh) {
 /**
  * Returns absolute position of all part centers of a given mesh (after applying any transformations).
  * @param {Mesh} mesh - related mesh
- * @returns {Vector3[]|null} a list of absolute positions.
+ * @returns {Vector3[]} a list of absolute positions.
  */
 export function getMeshAbsolutePartCenters(mesh) {
   if (!mesh.metadata?.partCenters?.length) {
@@ -210,13 +222,15 @@ export function getMeshAbsolutePartCenters(mesh) {
 /**
  * Attaches a read-only property to a given behavior's mesh metadata.
  * Behavior must be attached to a mesh.
+ * @template T
  * @param {Behavior} behavior - related behavior.
  * @param {string} property - name of the created property.
- * @param {function} getter - getter function.
+ * @param {() => T} getter - getter function.
  */
 export function attachProperty(behavior, property, getter) {
+  if (!behavior.mesh) return
   if (!behavior.mesh.metadata) {
-    behavior.mesh.metadata = {}
+    behavior.mesh.metadata = /** @type {?} */ ({})
   }
   Object.defineProperty(behavior.mesh.metadata, property, {
     get: getter,
@@ -228,22 +242,27 @@ export function attachProperty(behavior, property, getter) {
 /**
  * Attaches a behavior function to its mesh's metadata.
  * Behavior must be attached to a mesh.
- * @param {Behavior} behavior - related behavior.
- * @param {string[]} functionNames - one or several behavior function names.
+ * @template {Behavior} B
+ * @param {B} behavior - related behavior.
+ * @param {(keyof B)[]} functionNames - one or several behavior function names.
  */
 export function attachFunctions(behavior, ...functionNames) {
+  if (!behavior.mesh) return
   if (!behavior.mesh.metadata) {
-    behavior.mesh.metadata = {}
+    behavior.mesh.metadata = /** @type {?} */ ({})
   }
+  const metadata = /** @type {?} */ (behavior.mesh.metadata)
   for (const functionName of functionNames) {
-    behavior.mesh.metadata[functionName] = behavior[functionName].bind(behavior)
+    metadata[functionName] = /** @type {function } */ (
+      behavior[functionName]
+    ).bind(behavior)
   }
 }
 
 /**
  * @typedef {object} AnimationSpec - an animation's specifications:
  * @property {Animation} animation - the animation object ran (controls one property of the animated mesh).
- * @property {object[]} keys - a list of keys for the animation object, as allowed by Babylon's Animation.Parse() methode
+ * @property {(FloatKeyFrame|Vector3KeyFrame|QuaternionKeyFrame)[]} keys - a list of keys for the animation object, as allowed by Babylon's Animation.Parse() methode
  * @property {number} duration - duration in milliseconds.
  */
 
@@ -258,14 +277,18 @@ export function attachFunctions(behavior, ...functionNames) {
  * - the behavior's onAnimationEndObservable observers are notified.
  *
  * The animation keys are serialized as per Babylon's Animation Curve Editor.
- * @async
- * @param {import('../behaviors').AnimateBehavior} behavior - animated behavior.
- * @param {function} onEnd - function invoked when all animations have completed.
+ * @param {AnimateBehavior} behavior - animated behavior.
+ * @param {?() => void} onEnd - function invoked when all animations have completed.
  * @param {AnimationSpec[]} animationSpecs - list of animation specs.
+ * @returns {Promise<void>}
  */
 export function runAnimation(behavior, onEnd, ...animationSpecs) {
   const { mesh, frameRate, onAnimationEndObservable } = behavior
+  if (!mesh) {
+    return Promise.resolve(void 0)
+  }
   const lastFrame = buildLastFrame(frameRate, animationSpecs)
+  /** @type {Animation[]} */
   const animations = []
   for (const { animation, keys } of animationSpecs) {
     animations.push(animation)
@@ -276,7 +299,12 @@ export function runAnimation(behavior, onEnd, ...animationSpecs) {
         ? parseQuaternion
         : parseFloat
     animation.setKeys(
-      keys.map(key => parse(key, lastFrame)).sort((a, b) => a.frame - b.frame)
+      keys
+        .map(key =>
+          // @ts-expect-error
+          parse(key, lastFrame)
+        )
+        .sort((a, b) => a.frame - b.frame)
     )
   }
   // prevents interactions and collisions
@@ -294,6 +322,7 @@ export function runAnimation(behavior, onEnd, ...animationSpecs) {
         behavior.isAnimated = false
         // framed animation may not exactly end where we want, so force the final position
         for (const { animation } of animationSpecs) {
+          // @ts-expect-error can not use animation.targetProperty to index Mesh
           mesh[animation.targetProperty] =
             animation.getKeys()[animation.getKeys().length - 1].value
         }
@@ -301,7 +330,7 @@ export function runAnimation(behavior, onEnd, ...animationSpecs) {
         if (onEnd) {
           onEnd()
         }
-        resolve()
+        resolve(void 0)
         onAnimationEndObservable.notifyObservers()
       })
   )
@@ -314,7 +343,7 @@ export function runAnimation(behavior, onEnd, ...animationSpecs) {
  * returns a function to re-attach to the original parent (or new, if it has changed meanwhile).
  * @param {Mesh} mesh - detached mesh.
  * @param {boolean} [detachChildren=true] - set to detach the mesh from its children.
- * @returns {function} a function to re-attach to the original (or new) parent.
+ * @returns {() => void} a function to re-attach to the original (or new) parent.
  */
 export function detachFromParent(mesh, detachChildren = true) {
   let parent = mesh.parent
@@ -323,6 +352,7 @@ export function detachFromParent(mesh, detachChildren = true) {
   const savedSetter = mesh.setParent.bind(mesh)
   mesh.setParent = newParent => {
     parent = newParent
+    return mesh
   }
 
   const children = detachChildren
@@ -347,7 +377,7 @@ export function detachFromParent(mesh, detachChildren = true) {
 /**
  * Computes the final position of a given above a drop zone
  * @param {Mesh} droppedMesh - mesh dropped above zone.
- * @param {import('../behaviors').DropZone} zone - drop zone.
+ * @param {DropZone} zone - drop zone.
  * @returns {Vector3} absolute position for this mesh.
  */
 export function getPositionAboveZone(droppedMesh, zone) {
@@ -355,12 +385,18 @@ export function getPositionAboveZone(droppedMesh, zone) {
   const { x, z } = zone.mesh.getAbsolutePosition()
   return new Vector3(
     x,
-    getCenterAltitudeAbove(zone.targetable.mesh, droppedMesh),
+    getCenterAltitudeAbove(
+      /** @type {Mesh} */ (zone.targetable.mesh),
+      droppedMesh
+    ),
     z
   )
 }
 
-function buildLastFrame(frameRate, animationSpecs) {
+function buildLastFrame(
+  /** @type {number} */ frameRate,
+  /** @type {AnimationSpec[]} */ animationSpecs
+) {
   let maxDuration = 0
   for (const { duration } of animationSpecs) {
     maxDuration = Math.max(duration, maxDuration)
@@ -368,46 +404,71 @@ function buildLastFrame(frameRate, animationSpecs) {
   return Math.round(frameRate * (maxDuration / 1050))
 }
 
-// inspired from Animation.Parse() https://github.com/BabylonJS/Babylon.js/blob/d105658037e04471898a12232e5605c9b800c3dd/packages/dev/core/src/Animations/animation.ts#L1304
+// inspired from Animation.Parse() https://github.com/BabylonJS/Babylon.js/blob/fab7d3b3e16cb8bda0a16b3d2d9b825c953d3488/packages/dev/core/src/Animations/animation.ts#L1316
 
+/**
+ * @template {Array<number>} T
+ * @typedef {object} KeyFrame
+ * @property {number} frame
+ * @property {[...T, ?T|undefined, ?T|undefined]} values
+ */
+/** @typedef {KeyFrame<[number, number, number]>} Vector3KeyFrame */
+/** @typedef {KeyFrame<[number, number, number, number]>} QuaternionKeyFrame */
+
+/**
+ * @typedef {object} FloatKeyFrame
+ * @property {number} frame
+ * @property {[number, ?number|undefined, ?number|undefined]} values
+ */
+
+/**
+ * @param {Vector3KeyFrame} data
+ * @param {number} lastFrame
+ * @returns {import('@babylonjs/core').IAnimationKey}
+ */
 function parseVector3(
-  { frame, values: [x, y, z, inTangent, outTangent, interpolation] },
+  { frame, values: [x, y, z, inTangent, outTangent] },
   lastFrame
 ) {
   return {
     frame: (frame * lastFrame) / 100,
     value: Vector3.FromArray([x, y, z]),
     inTangent: inTangent ? Vector3.FromArray(inTangent) : undefined,
-    outTangent: outTangent ? Vector3.FromArray(outTangent) : undefined,
-    interpolation: interpolation ? Vector3.FromArray(interpolation) : undefined
+    outTangent: outTangent ? Vector3.FromArray(outTangent) : undefined
   }
 }
 
+/**
+ * @param {QuaternionKeyFrame} data
+ * @param {number} lastFrame
+ * @returns {import('@babylonjs/core').IAnimationKey}
+ */
 function parseQuaternion(
-  { frame, values: [x, y, z, w, inTangent, outTangent, interpolation] },
+  { frame, values: [x, y, z, w, inTangent, outTangent] },
   lastFrame
 ) {
   return {
     frame: (frame * lastFrame) / 100,
     value: Quaternion.FromArray([x, y, z, w]),
     inTangent: inTangent ? Quaternion.FromArray(inTangent) : undefined,
-    outTangent: outTangent ? Quaternion.FromArray(outTangent) : undefined,
-    interpolation: interpolation
-      ? Quaternion.FromArray(interpolation)
-      : undefined
+    outTangent: outTangent ? Quaternion.FromArray(outTangent) : undefined
   }
 }
 
+/**
+ * @param {FloatKeyFrame} data
+ * @param {number} lastFrame
+ * @returns {import('@babylonjs/core').IAnimationKey}
+ */
 function parseFloat(
-  { frame, values: [value, inTangent, outTangent, interpolation] },
+  { frame, values: [value, inTangent, outTangent] },
   lastFrame
 ) {
   return {
     frame: (frame * lastFrame) / 100,
     value,
     inTangent,
-    outTangent,
-    interpolation
+    outTangent
   }
 }
 
@@ -418,11 +479,7 @@ function parseFloat(
  * Otherwise, creates a box.
  * @param {string} name - new mesh's name
  * @param {Mesh} parent - mesh to copy dimensions and shape from.
- * @param {object} dimensions? - target dimensions. When specified, prevail on parent's shape:
- * @param {number} dimensions.width - target's width.
- * @param {number} dimensions.height - target's height.
- * @param {number} dimensions.depth - target's depth.
- * @param {number} dimensions.diameter - target's diameter.
+ * @param {Dimension} [dimensions] - target dimensions. When specified, prevail on parent's shape:
  * @returns {Mesh} created target mesh.
  */
 export function buildTargetMesh(name, parent, dimensions) {
@@ -430,7 +487,8 @@ export function buildTargetMesh(name, parent, dimensions) {
   const { x, y, z } = parent.getBoundingInfo().boundingBox.extendSizeWorld
   const scene = parent.getScene()
   const isCylindric =
-    dimensions?.diameter || (parent.isCylindric && !dimensions?.width)
+    'diameter' in (dimensions ?? {}) ||
+    (parent.isCylindric && !dimensions?.width)
   const created = isCylindric
     ? CreateCylinder(
         name,

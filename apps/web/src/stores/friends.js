@@ -1,6 +1,14 @@
+// @ts-check
+/**
+ * @typedef {import('rxjs').Subscription} Subscription
+ * @typedef {import('@src/graphql').PlayerFragment} Player
+ * @typedef {import('@src/graphql').Friendship} Friendship
+ * @typedef {import('@src/graphql').FriendshipUpdate} FriendshipUpdate
+ */
+
+import * as graphQL from '@src/graphql'
 import { BehaviorSubject } from 'rxjs'
 
-import * as graphQL from '../graphql'
 import { makeLogger } from '../utils'
 import { runMutation, runQuery, runSubscription } from './graphql-client'
 import { buildLocaleComparator } from './locale'
@@ -8,7 +16,9 @@ import { notify } from './notifications'
 
 const logger = makeLogger('friends')
 
+/** @type {Subscription} */
 let listFriendsSubsciprion
+/** @type {(a: Friendship, b: Friendship) => number} */
 let byUsername
 buildLocaleComparator('player.username').subscribe(
   value => (byUsername = value)
@@ -17,13 +27,13 @@ buildLocaleComparator('player.username').subscribe(
 /**
  * Fetches friend list and subscribes to friendship updates.
  * Returns immediately an empty observable, which will update when the list will be available, or updated.
- * @returns {Observable<Friendship[]>} an observable containing up-to-date list of friendships and requests.
+ * @returns {import('rxjs').Observable<Friendship[]>} an observable containing up-to-date list of friendships and requests.
  */
 export function listFriends() {
   if (listFriendsSubsciprion) {
     listFriendsSubsciprion.unsubscribe()
   }
-  const friends$ = new BehaviorSubject([])
+  const friends$ = new BehaviorSubject(/** @type {Friendship[]} */ ([]))
   fetchFriendList(friends$)
 
   listFriendsSubsciprion = runSubscription(
@@ -62,14 +72,19 @@ export async function endFriendship(player) {
   await runMutation(graphQL.endFriendship, { id: player.id })
 }
 
-async function fetchFriendList(list$) {
+async function fetchFriendList(
+  /** @type {BehaviorSubject<Friendship[]>} */ list$
+) {
   logger.debug('fetch friends list')
   const friends = await runQuery(graphQL.listFriends, {}, false)
   logger.info(`received ${friends.length} friend(s) and request(s)`)
   list$.next(friends.sort(byUsername))
 }
 
-function applyFriendshipUpdate(list$, update) {
+function applyFriendshipUpdate(
+  /** @type {BehaviorSubject<Friendship[]>} */ list$,
+  /** @type {FriendshipUpdate} */ update
+) {
   logger.debug(update, 'processing friendship update')
   let notificationLabel = null
   if (update.requested || update.proposed) {

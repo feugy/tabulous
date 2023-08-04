@@ -1,15 +1,52 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Engine} Engine
+ * @typedef {import('@src/3d/managers/camera').cameraManager} cameraManager
+ * @typedef {import('@src/3d/managers/camera').CameraPosition} CameraPosition
+ * @typedef {import('@src/3d/managers/control').Action} Action
+ * @typedef {import('@src/3d/managers/control').Move} Move
+ * @typedef {import('@src/3d/engine').PlayerSelection} PlayerSelection
+ * @typedef {import('@src/graphql').Game} Game
+ * @typedef {import('@src/stores/game-manager').GameWithSelections} GameWithSelections
+ * @typedef {import('@src/stores/game-manager').Player} Player
+ * @typedef {import('@src/stores/peer-channels').Message} PeerMessage
+ * @typedef {import('@tabulous/server/src/graphql/types').Hand} Hand
+ * @typedef {import('@tabulous/server/src/graphql/types').Mesh} Mesh
+ * @typedef {import('@tabulous/server/src/graphql/types').Message} Message
+ * @typedef {import('@tabulous/server/src/graphql/types').TurnCredentials} TurnCredentials
+ * @typedef {import('rxjs').Subscription} Subscription
+ * @typedef {import('../test-utils').RunQueryMock} RunQueryMock
+ * @typedef {import('../test-utils').RunMutationMock} RunMutationMock
+ * @typedef {import('../test-utils').RunSubscriptionMock} RunSubscriptionMock
+ */
+/**
+ * @template T
+ * @typedef {import('rxjs').BehaviorSubject<T>} BehaviorSubject
+ */
+/**
+ * @template T
+ * @typedef {import('vitest').MockedObject<T>} MockedObject
+ */
+/**
+ * @template {any[]} P, R
+ * @typedef {import('vitest').Mock<P, R>} Mock
+ */
+
 import { Observable } from '@babylonjs/core/Misc/observable'
 import { faker } from '@faker-js/faker'
 import * as graphQL from '@src/graphql'
-import { loadThread, serializeThread } from '@src/stores/discussion'
 import {
-  action,
-  cameraSaves,
-  engine as engine$,
-  handMeshes as handMeshes$,
-  loadCameraSaves,
-  remoteSelection,
-  selectedMeshes
+  loadThread,
+  serializeThread as actualSerializeThread
+} from '@src/stores/discussion'
+import {
+  action as actualAction,
+  cameraSaves as actualCameraSaves,
+  engine as actualEngine,
+  handMeshes as actualHandMeshes,
+  loadCameraSaves as actualLoadCameraSaves,
+  remoteSelection as actualRemoteSelection,
+  selectedMeshes as actualSelectedMeshes
 } from '@src/stores/game-engine'
 import {
   createGame,
@@ -24,20 +61,20 @@ import {
   receiveGameListUpdates
 } from '@src/stores/game-manager'
 import {
-  runMutation,
-  runQuery,
-  runSubscription
+  runMutation as actualRunMutation,
+  runQuery as actualRunQuery,
+  runSubscription as actualRunSubscription
 } from '@src/stores/graphql-client'
 import { notify } from '@src/stores/notifications'
 import {
   closeChannels,
-  connectWith,
-  lastConnectedId,
-  lastDisconnectedId,
-  lastMessageReceived,
-  lastMessageSent,
+  connectWith as actualConnectWith,
+  lastConnectedId as actualLastConnectedId,
+  lastDisconnectedId as actualLastDisconnectedId,
+  lastMessageReceived as actualLastMessageReceived,
+  lastMessageSent as actualLastMessageSent,
   openChannels,
-  send
+  send as actualSend
 } from '@src/stores/peer-channels'
 import { lastToast } from '@src/stores/toaster'
 import {
@@ -67,9 +104,9 @@ vi.mock('@src/stores/game-engine', () => {
     action: new Subject(),
     cameraSaves: new Subject(),
     handMeshes: new Subject(),
-    engine: new BehaviorSubject(),
+    engine: new BehaviorSubject(null),
     loadCameraSaves: vi.fn(),
-    selectedMeshes: new BehaviorSubject([]),
+    selectedMeshes: new BehaviorSubject(new Set()),
     remoteSelection: new Subject()
   }
 })
@@ -81,48 +118,94 @@ vi.mock('@src/stores/peer-channels', () => {
     connectWith: vi.fn(),
     lastConnectedId: new Subject(),
     lastDisconnectedId: new Subject(),
-    lastMessageReceived: new Subject({}),
-    lastMessageSent: new Subject({}),
+    lastMessageReceived: new Subject(),
+    lastMessageSent: new Subject(),
     send: vi.fn(),
     openChannels: vi.fn()
   }
 })
 vi.mock('@src/3d/utils')
 
+const serializeThread = /** @type {Mock<[], Message[]>} */ (
+  actualSerializeThread
+)
+const connectWith =
+  /** @type {Mock<[string, TurnCredentials], Promise<?>>}  */ (
+    actualConnectWith
+  )
+const lastConnectedId = /** @type {BehaviorSubject<string>} */ (
+  actualLastConnectedId
+)
+const lastDisconnectedId = /** @type {BehaviorSubject<string>} */ (
+  actualLastDisconnectedId
+)
+const lastMessageReceived = /** @type {Subject<PeerMessage>} */ (
+  actualLastMessageReceived
+)
+const lastMessageSent = /** @type {Subject<PeerMessage>} */ (
+  actualLastMessageSent
+)
+const send = /** @type {Mock<[object, ?string|undefined], void>} */ (actualSend)
+const runQuery = /** @type {RunQueryMock} */ (actualRunQuery)
+const runMutation = /** @type {RunMutationMock} */ (actualRunMutation)
+const runSubscription = /** @type {RunSubscriptionMock} */ (
+  actualRunSubscription
+)
+const action = /** @type {BehaviorSubject<Action|Move>} */ (actualAction)
+const engine$ = /** @type {BehaviorSubject<?Engine>} */ (actualEngine)
+const handMeshes$ = /** @type {BehaviorSubject<any[]>} */ (actualHandMeshes)
+const cameraSaves = /** @type {BehaviorSubject<CameraPosition[]>} */ (
+  actualCameraSaves
+)
+const loadCameraSaves =
+  /** @type {Mock<Parameters<cameraManager['loadSaves']>, Promise<void>>} */ (
+    actualLoadCameraSaves
+  )
+const remoteSelection = /** @type {Subject<PlayerSelection>} */ (
+  actualRemoteSelection
+)
+const selectedMeshes = /** @type {BehaviorSubject<Set<?>>} */ (
+  actualSelectedMeshes
+)
+
 const gamePlayerByIdReceived = vi.fn()
 const playerColorReceived = vi.fn()
 const toastReceived = vi.fn()
 const promotionReceived = vi.fn()
 const deletionReceived = vi.fn()
-const turnCredentials = { turn: 'credentials' }
-const engine = {
+/** @type {TurnCredentials} */
+const turnCredentials = { username: 'turn', credentials: 'foo' }
+
+/** @type {MockedObject<Engine>} */
+const engine = /** @type {?} */ ({
   scenes: [],
-  load: vi.fn().mockResolvedValue(),
+  load: vi.fn().mockResolvedValue(undefined),
   serialize: vi.fn().mockReturnValue({}),
   onDisposeObservable: new Observable(),
   onBeforeDisposeObservable: new Observable()
-}
+})
 const gameUpdates$ = new Subject()
+/** @type {Subscription[]} */
 let subscriptions
 
-const player = {
+const player = /** @type {Player} */ ({
   id: 'player',
   username: 'player',
   isGuest: false
-}
-const partner1 = {
+})
+const partner1 = /** @type {Player} */ ({
   id: 'partner1',
   username: 'partner 1'
-}
-const partner2 = {
+})
+const partner2 = /** @type {Player} */ ({
   id: 'partner2',
   username: 'partner 2',
   isGuest: false
-}
-const partner3 = {
+})
+const partner3 = /** @type {Player} */ ({
   id: 'partner3',
   username: 'partner 3'
-}
+})
 
 beforeAll(() => {
   subscriptions = [
@@ -132,7 +215,9 @@ beforeAll(() => {
   ]
 })
 
-beforeEach(() => vi.resetAllMocks())
+beforeEach(() => {
+  vi.resetAllMocks()
+})
 
 afterAll(() =>
   subscriptions.forEach(subscription => subscription.unsubscribe())
@@ -151,12 +236,17 @@ describe('given no engine', async () => {
       id: faker.string.uuid(),
       meshes: [],
       players: [player, partner1, partner2, partner3],
-      messages: ['coucou', 'yeah'],
+      messages: [
+        { playerId: player.id, time: Date.now() - 5000, text: 'coucou' },
+        { playerId: player.id, time: Date.now() - 2000, text: 'yeah' }
+      ],
       hands: []
     }
 
     beforeEach(() => {
-      loadCameraSaves.mockImplementation(data => cameraSaves.next(data))
+      loadCameraSaves.mockImplementation(async data => {
+        cameraSaves.next(data)
+      })
       runSubscription.mockReturnValueOnce(new Subject())
     })
 
@@ -348,7 +438,7 @@ describe('given no engine', async () => {
         expect(promotionReceived).toHaveBeenCalledOnce()
         expect(deletionReceived).not.toHaveBeenCalled()
         expect(send).not.toHaveBeenCalled()
-        expect(playerColorReceived).toHaveLastReturnedWith()
+        expect(playerColorReceived).toHaveLastReturnedWith(undefined)
         expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(
           new Map([
             [
@@ -377,7 +467,7 @@ describe('given no engine', async () => {
         expect(deletionReceived).toHaveBeenCalledOnce()
         expect(promotionReceived).not.toHaveBeenCalled()
         expect(send).not.toHaveBeenCalled()
-        expect(playerColorReceived).toHaveLastReturnedWith()
+        expect(playerColorReceived).toHaveLastReturnedWith(undefined)
         expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(new Map())
       })
     })
@@ -388,12 +478,14 @@ describe('given a mocked game engine', () => {
   beforeAll(() => engine$.next(engine))
 
   beforeEach(() => {
-    loadCameraSaves.mockImplementation(data => cameraSaves.next(data))
+    loadCameraSaves.mockImplementation(async data => {
+      cameraSaves.next(data)
+    })
     runSubscription.mockReturnValueOnce(new Subject())
   })
 
   afterEach(() => {
-    engine.onDisposeObservable.notifyObservers()
+    engine.onDisposeObservable.notifyObservers(engine)
     engine.onDisposeObservable.clear()
     engine.onBeforeDisposeObservable.clear()
   })
@@ -403,24 +495,25 @@ describe('given a mocked game engine', () => {
 
     it('loads game data into the game engine', async () => {
       const gameId = faker.string.uuid()
-      const meshes = [{ id: 'mesh1' }]
-      const hands = [
+      const meshes = /** @type {Mesh[]} */ ([{ id: 'mesh1' }])
+      const hands = /** @type {Hand[]} */ ([
         { playerId: 'anotherPlayerId', meshes: [{ id: 'mesh2' }] },
         { playerId: player.id, meshes: [{ id: 'mesh3' }] }
-      ]
+      ])
       const color = '#00ff00'
       const preferences = [
         { playerId: 'anotherPlayerId', color: '#ffffff' },
         { playerId: player.id, color }
       ]
-      const game = {
+      /** @type {Game} */
+      const game = /** @type {?} */ ({
         id: gameId,
         kind: 'belote',
         meshes,
         players: [player],
         hands,
         preferences
-      }
+      })
       const colorByPlayerId = buildPlayerColors(game)
       engine.serialize.mockReturnValue({
         meshes,
@@ -502,21 +595,24 @@ describe('given a mocked game engine', () => {
 
     it('loads camera positions upon game loading', async () => {
       const gameId = faker.string.uuid()
-      const meshes = [{ id: 'mesh1' }]
-      const hands = [{ playerId: player.id, meshes: [] }]
+      const meshes = /** @type {Mesh[]} */ ([{ id: 'mesh1' }])
+      const hands = /** @type {Hand[]} */ ([
+        { playerId: player.id, meshes: [] }
+      ])
       const cameras = [
         { playerId: player.id, index: 1 },
         { playerId: partner1.id, index: 0 },
         { playerId: player.id, index: 0 }
       ]
-      const game = {
+      /** @type {Game} */
+      const game = /** @type {?} */ ({
         id: gameId,
         kind: 'belote',
         meshes,
         players: [player],
         hands,
         cameras
-      }
+      })
       engine.serialize.mockReturnValueOnce({ meshes, handMeshes: [] })
       serializeThread.mockReturnValueOnce([])
       runMutation.mockResolvedValueOnce(game)
@@ -554,9 +650,14 @@ describe('given a mocked game engine', () => {
 
     it('loads message thread upon game loading', async () => {
       const gameId = faker.string.uuid()
-      const meshes = [{ id: 'mesh1' }]
-      const hands = [{ playerId: player.id, meshes: [] }]
-      const messages = ['coucou', 'yeah']
+      const meshes = /** @type {Mesh[]} */ ([{ id: 'mesh1' }])
+      const hands = /** @type {Hand[]} */ ([
+        { playerId: player.id, meshes: [] }
+      ])
+      const messages = [
+        { playerId: player.id, time: Date.now(), text: 'coucou' },
+        { playerId: player.id, time: Date.now(), text: 'yeah' }
+      ]
       const game = {
         id: gameId,
         kind: 'belote',
@@ -595,7 +696,7 @@ describe('given a mocked game engine', () => {
 
     it('loads game data without player hand', async () => {
       const gameId = faker.string.uuid()
-      const meshes = [{ id: 'mesh2' }]
+      const meshes = /** @type {Mesh[]} */ ([{ id: 'mesh2' }])
       const game = {
         id: gameId,
         kind: 'belote',
@@ -678,8 +779,13 @@ describe('given a mocked game engine', () => {
     })
 
     describe('with a loaded game', () => {
-      const meshes = [{ id: 'mesh1' }, { id: 'mesh2' }, { id: 'mesh3' }]
-      const game = {
+      const meshes = /** @type {Mesh[]} */ ([
+        { id: 'mesh1' },
+        { id: 'mesh2' },
+        { id: 'mesh3' }
+      ])
+      /** @type {Game} */
+      const game = /** @type {?} */ ({
         id: faker.string.uuid(),
         kind: 'belote',
         meshes,
@@ -690,19 +796,19 @@ describe('given a mocked game engine', () => {
           { playerId: partner1.id, index: 0 }
         ],
         messages: [],
-        zoomSpec: { min: 4, initial: 15 },
+        zoomSpec: { min: 4, max: 15 },
         tableSpec: { width: 75, height: 50 },
         preferences: [
           { playerId: partner1.id, color: '#0000ff' },
           { playerId: player.id, color: '#00ff00' },
           { playerId: partner2.id, color: '#ffffff' }
         ]
-      }
+      })
 
       beforeEach(async () => {
         vi.useFakeTimers()
         prepareGame(game)
-        selectedMeshes.next([])
+        selectedMeshes.next(new Set())
         engine.serialize.mockReturnValue({
           ...game,
           meshes,
@@ -716,16 +822,18 @@ describe('given a mocked game engine', () => {
           onDeletion: deletionReceived
         })
         vi.clearAllMocks()
-        serializeThread.mockReturnValue(game.messages)
+        serializeThread.mockReturnValue(game.messages ?? [])
       })
 
-      afterEach(() => vi.useRealTimers())
+      afterEach(() => {
+        vi.useRealTimers()
+      })
 
       it('sends game data to joining player', async () => {
         await connectPeerAndExpectGameSync(
           {
             ...game,
-            hands: [...game.hands, { playerId: player.id, meshes: [] }]
+            hands: [...(game.hands ?? []), { playerId: player.id, meshes: [] }]
           },
           partner1.id
         )
@@ -768,8 +876,8 @@ describe('given a mocked game engine', () => {
         await connectPeerAndExpectGameSync(
           {
             ...game,
-            players: [...game.players, partner2],
-            hands: [...game.hands, { playerId: player.id, meshes: [] }]
+            players: [...(game.players ?? []), partner2],
+            hands: [...(game.hands ?? []), { playerId: player.id, meshes: [] }]
           },
           partner2.id
         )
@@ -814,14 +922,29 @@ describe('given a mocked game engine', () => {
       })
 
       it('saves game data after some actions', async () => {
-        action.next({ data: {} })
-        action.next({ data: {} })
-        const hands = [...game.hands, { playerId: player.id, meshes: [] }]
+        action.next({
+          fn: 'push',
+          args: [],
+          pos: undefined,
+          meshId: meshes[0].id,
+          fromHand: false
+        })
+        action.next({
+          pos: [1, 0, 0],
+          meshId: meshes[0].id,
+          fromHand: false,
+          fn: undefined,
+          args: undefined
+        })
+        const hands = [
+          ...(game.hands ?? []),
+          { playerId: player.id, meshes: [] }
+        ]
         vi.runAllTimers()
         expect(runMutation).toHaveBeenCalledWith(graphQL.saveGame, {
           game: {
             ...game,
-            cameras: [...game.cameras],
+            cameras: [...(game.cameras ?? [])],
             hands,
             kind: undefined,
             zoomSpec: undefined,
@@ -846,12 +969,18 @@ describe('given a mocked game engine', () => {
       })
 
       it('saves message thread upon reception', () => {
-        const messages = ['hej!', 'hallo!!']
+        const peerId = faker.string.uuid()
+        const messages = [
+          { playerId: peerId, time: Date.now(), text: 'hej!' },
+          { playerId: peerId, time: Date.now(), text: 'hallo!!' }
+        ]
         lastMessageReceived.next({
-          data: { type: 'message', message: messages[0] }
+          data: { type: 'message', message: messages[0] },
+          playerId: peerId
         })
         lastMessageReceived.next({
-          data: { type: 'message', message: messages[1] }
+          data: { type: 'message', message: messages[1] },
+          playerId: peerId
         })
         serializeThread.mockReturnValue(messages)
         vi.runAllTimers()
@@ -864,12 +993,18 @@ describe('given a mocked game engine', () => {
       })
 
       it('saves message thread upon send', () => {
-        const messages = ['hej!', 'hallo!!']
+        const peerId = faker.string.uuid()
+        const messages = [
+          { playerId: peerId, time: Date.now(), text: 'hej!' },
+          { playerId: peerId, time: Date.now(), text: 'hallo!!' }
+        ]
         lastMessageSent.next({
-          data: { type: 'message', message: messages[0] }
+          data: { type: 'message', message: messages[0] },
+          playerId: peerId
         })
         lastMessageSent.next({
-          data: { type: 'message', message: messages[1] }
+          data: { type: 'message', message: messages[1] },
+          playerId: peerId
         })
         serializeThread.mockReturnValue(messages)
         vi.runAllTimers()
@@ -882,15 +1017,23 @@ describe('given a mocked game engine', () => {
       })
 
       it('saves message ordered thread', async () => {
-        const messages = ['hej!', 'hallo!!', 'salut!!!']
+        const peerId = faker.string.uuid()
+        const messages = [
+          { playerId: peerId, time: Date.now(), text: 'hej!' },
+          { playerId: peerId, time: Date.now(), text: 'hallo!!' },
+          { playerId: peerId, time: Date.now(), text: 'salut!!!' }
+        ]
         lastMessageSent.next({
-          data: { type: 'message', message: messages[0] }
+          data: { type: 'message', message: messages[0] },
+          playerId: peerId
         })
         lastMessageReceived.next({
-          data: { type: 'message', message: messages[1] }
+          data: { type: 'message', message: messages[1] },
+          playerId: peerId
         })
         lastMessageSent.next({
-          data: { type: 'message', message: messages[2] }
+          data: { type: 'message', message: messages[2] },
+          playerId: peerId
         })
         serializeThread.mockReturnValue(messages)
         vi.runAllTimers()
@@ -904,17 +1047,32 @@ describe('given a mocked game engine', () => {
           {
             ...game,
             messages,
-            hands: [...game.hands, { playerId: player.id, meshes: [] }]
+            hands: [...(game.hands ?? []), { playerId: player.id, meshes: [] }]
           },
           partner1.id
         )
       })
 
       it('merges and saves its camera positions', async () => {
-        const playerCameras = [{ pos: 'a' }, { pos: 'b' }]
-        cameraSaves.next(playerCameras)
+        const playerCameras = [
+          {
+            hash: 'a',
+            target: [0, 0, 0],
+            elevation: 10,
+            alpha: 1,
+            beta: 1
+          },
+          {
+            hash: 'b',
+            target: [0, 0, 0],
+            elevation: 10,
+            alpha: 1,
+            beta: 1
+          }
+        ]
+        cameraSaves.next(playerCameras ?? [])
         const cameras = [
-          game.cameras[1],
+          (game.cameras ?? [])[1],
           { playerId: player.id, index: 0, ...playerCameras[0] },
           { playerId: player.id, index: 1, ...playerCameras[1] }
         ]
@@ -926,23 +1084,39 @@ describe('given a mocked game engine', () => {
           {
             ...game,
             cameras,
-            hands: [...game.hands, { playerId: player.id, meshes: [] }]
+            hands: [...(game.hands ?? []), { playerId: player.id, meshes: [] }]
           },
           partner1.id
         )
       })
 
       it('merges and saves other cameras', () => {
-        const cameras = [{ pos: 'a' }, { pos: 'b' }]
+        const cameras = [
+          {
+            hash: 'a',
+            target: [0, 0, 0],
+            elevation: 10,
+            alpha: 1,
+            beta: 1
+          },
+          {
+            hash: 'b',
+            target: [0, 0, 0],
+            elevation: 10,
+            alpha: 1,
+            beta: 1
+          }
+        ]
         lastMessageReceived.next({
-          data: { type: 'saveCameras', cameras, playerId: partner1.id }
+          data: { type: 'saveCameras', cameras, playerId: partner1.id },
+          playerId: partner1.id
         })
 
         expect(runMutation).toHaveBeenCalledWith(graphQL.saveGame, {
           game: {
             id: game.id,
             cameras: [
-              game.cameras[0],
+              (game.cameras ?? [])[0],
               { playerId: partner1.id, index: 0, ...cameras[0] },
               { playerId: partner1.id, index: 1, ...cameras[1] }
             ]
@@ -957,7 +1131,10 @@ describe('given a mocked game engine', () => {
         handMeshes$.next(handMeshes)
         const expectedGame = {
           id: game.id,
-          hands: [...game.hands, { playerId: player.id, meshes: handMeshes }]
+          hands: [
+            ...(game.hands ?? []),
+            { playerId: player.id, meshes: handMeshes }
+          ]
         }
         expect(runMutation).toHaveBeenCalledWith(graphQL.saveGame, {
           game: expectedGame
@@ -974,12 +1151,13 @@ describe('given a mocked game engine', () => {
             type: 'saveHand',
             meshes: handMeshes,
             playerId: partner1.id
-          }
+          },
+          playerId: partner1.id
         })
         const expectedGame = {
           id: game.id,
           hands: [
-            ...game.hands,
+            ...(game.hands ?? []),
             { playerId: player.id, meshes: [] },
             { playerId: partner1.id, meshes: handMeshes }
           ]
@@ -993,21 +1171,23 @@ describe('given a mocked game engine', () => {
       })
 
       it('merges and shares current player selections', async () => {
-        selectedMeshes.next([{ id: 'mesh1' }, { id: 'mesh3' }, { id: 'mesh2' }])
+        selectedMeshes.next(
+          new Set([{ id: 'mesh1' }, { id: 'mesh3' }, { id: 'mesh2' }])
+        )
         await connectPeerAndExpectGameSync(
           {
             ...game,
             selections: [
               { playerId: player.id, selectedIds: ['mesh1', 'mesh3', 'mesh2'] }
             ],
-            hands: [...game.hands, { playerId: player.id, meshes: [] }]
+            hands: [...(game.hands ?? []), { playerId: player.id, meshes: [] }]
           },
           partner1.id
         )
       })
 
       it('merges and shares remote peer selections', async () => {
-        selectedMeshes.next([{ id: 'mesh1' }])
+        selectedMeshes.next(new Set([{ id: 'mesh1' }]))
         remoteSelection.next({
           selectedIds: ['mesh2', 'mesh3'],
           playerId: partner2.id
@@ -1019,7 +1199,7 @@ describe('given a mocked game engine', () => {
               { playerId: player.id, selectedIds: ['mesh1'] },
               { playerId: partner2.id, selectedIds: ['mesh2', 'mesh3'] }
             ],
-            hands: [...game.hands, { playerId: player.id, meshes: [] }]
+            hands: [...(game.hands ?? []), { playerId: player.id, meshes: [] }]
           },
           partner1.id
         )
@@ -1031,7 +1211,7 @@ describe('given a mocked game engine', () => {
         expect(deletionReceived).toHaveBeenCalledOnce()
         expect(promotionReceived).not.toHaveBeenCalled()
         expect(send).not.toHaveBeenCalled()
-        expect(playerColorReceived).toHaveLastReturnedWith()
+        expect(playerColorReceived).toHaveLastReturnedWith(undefined)
         expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(new Map())
       })
 
@@ -1065,7 +1245,9 @@ describe('given a mocked game engine', () => {
           true
         )
         expect(engine.load).toHaveBeenCalledOnce()
-        expect(loadCameraSaves).toHaveBeenCalledWith(game.cameras.slice(0, 1))
+        expect(loadCameraSaves).toHaveBeenCalledWith(
+          (game.cameras ?? []).slice(0, 1)
+        )
         expect(loadCameraSaves).toHaveBeenCalledOnce()
         expect(loadThread).toHaveBeenCalledWith(game.messages)
         expect(loadThread).toHaveBeenCalledOnce()
@@ -1074,7 +1256,7 @@ describe('given a mocked game engine', () => {
           {
             type: 'game-sync',
             ...game,
-            hands: [...game.hands, { meshes: [], playerId: player.id }],
+            hands: [...(game.hands ?? []), { meshes: [], playerId: player.id }],
             selections: []
           },
           undefined
@@ -1102,11 +1284,14 @@ describe('given a mocked game engine', () => {
       describe('leaveGame()', () => {
         it('saves game data', async () => {
           await leaveGame(player)
-          const hands = [...game.hands, { playerId: player.id, meshes: [] }]
+          const hands = [
+            ...(game.hands ?? []),
+            { playerId: player.id, meshes: [] }
+          ]
           expect(runMutation).toHaveBeenCalledWith(graphQL.saveGame, {
             game: {
               ...game,
-              cameras: [...game.cameras],
+              cameras: [...(game.cameras ?? [])],
               hands,
               kind: undefined,
               zoomSpec: undefined,
@@ -1118,35 +1303,50 @@ describe('given a mocked game engine', () => {
           expect(runMutation).toHaveBeenCalledOnce()
           expect(engine.serialize).toHaveBeenCalledOnce()
           expect(send).not.toHaveBeenCalled()
-          expect(playerColorReceived).toHaveLastReturnedWith()
+          expect(playerColorReceived).toHaveLastReturnedWith(undefined)
           expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(new Map())
         })
       })
     })
 
     describe('with online players', () => {
-      const meshes = [{ id: 'mesh1' }, { id: 'mesh2' }, { id: 'mesh3' }]
+      const meshes = /** @type {Mesh[]} */ ([
+        { id: 'mesh1' },
+        { id: 'mesh2' },
+        { id: 'mesh3' }
+      ])
       const id = faker.string.uuid()
+      /** @type {Game} */
       const game = {
         id,
         kind: 'belote',
+        created: Date.now(),
         meshes,
         players: [
-          { currentGameId: faker.string.uuid(), ...partner3 },
-          { currentGameId: id, ...player },
-          { currentGameId: id, ...partner1 },
+          { ...partner3, currentGameId: faker.string.uuid() },
+          { ...player, currentGameId: id },
+          { ...partner1, currentGameId: id },
           partner2
         ],
         hands: [
-          { playerId: 'anotherPlayerId', meshes: [{ id: 'mesh2' }] },
-          { playerId: player.id, meshes: [{ id: 'mesh3' }] }
+          {
+            playerId: 'anotherPlayerId',
+            meshes: /** @type {Mesh[]} */ ([{ id: 'mesh2' }])
+          },
+          {
+            playerId: player.id,
+            meshes: /** @type {Mesh[]} */ ([{ id: 'mesh3' }])
+          }
         ],
-        cameras: [
-          { playerId: player.id, index: 0, pos: '10' },
-          { playerId: partner1.id, index: 0, pos: '1' },
-          { playerId: partner2.id, index: 0, pos: '100' }
+        cameras: /** @type {?} */ ([
+          { playerId: player.id, index: 0, target: [10, 10, 10] },
+          { playerId: partner1.id, index: 0, target: [1, 1, 1] },
+          { playerId: partner2.id, index: 0, target: [100, 100, 100] }
+        ]),
+        messages: [
+          { playerId: partner3.id, time: Date.now() - 3000, text: 'coucou' },
+          { playerId: player.id, time: Date.now(), text: 'yeah' }
         ],
-        messages: ['coucou', 'yeah'],
         preferences: [
           { playerId: partner1.id, color: '#0000ff' },
           { playerId: partner2.id, color: '#ffffff' },
@@ -1160,10 +1360,10 @@ describe('given a mocked game engine', () => {
         const gameParameters = {
           ...game,
           players: [
-            { currentGameId: id, ...player },
-            { currentGameId: id, ...partner1 },
-            { isGuest: true, ...partner2 },
-            { currentGameId: faker.string.uuid(), ...partner3 }
+            { ...player, currentGameId: id },
+            { ...partner1, currentGameId: id },
+            { ...partner2, isGuest: true },
+            { ...partner3, currentGameId: faker.string.uuid() }
           ],
           schemaString: '{}'
         }
@@ -1193,7 +1393,7 @@ describe('given a mocked game engine', () => {
 
       describe('with loaded game for peers', () => {
         beforeEach(async () => {
-          engine.serialize.mockResolvedValue({})
+          engine.serialize.mockResolvedValue({ meshes: [], handMeshes: [] })
           connectWith.mockImplementationOnce(async () => {
             await nextPromise()
             lastMessageReceived.next({
@@ -1230,17 +1430,18 @@ describe('given a mocked game engine', () => {
             true
           )
           expect(engine.load).toHaveBeenCalledOnce()
-          expect(loadCameraSaves).toHaveBeenCalledWith(game.cameras.slice(2))
+          expect(loadCameraSaves).toHaveBeenCalledWith(
+            (game.cameras ?? []).slice(2)
+          )
           expect(loadCameraSaves).toHaveBeenCalledOnce()
           expect(loadThread).toHaveBeenCalledWith(game.messages)
           expect(loadThread).toHaveBeenCalledOnce()
           expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(
             new Map(
-              game.players.map(gamer => [
+              (game.players ?? []).map(gamer => [
                 gamer.id,
                 {
                   ...gamer,
-                  currentGameId: undefined,
                   ...findPlayerPreferences(game, gamer.id),
                   isHost: gamer.id === partner1.id,
                   playing: gamer.id === partner2.id
@@ -1272,7 +1473,22 @@ describe('given a mocked game engine', () => {
 
         it('share cameras with other peers', async () => {
           vi.clearAllMocks()
-          const cameras = [{ pos: 'a' }, { pos: 'b' }]
+          const cameras = [
+            {
+              hash: 'a',
+              target: [0, 0, 0],
+              elevation: 10,
+              alpha: 1,
+              beta: 1
+            },
+            {
+              hash: 'b',
+              target: [0, 0, 0],
+              elevation: 10,
+              alpha: 1,
+              beta: 1
+            }
+          ]
           cameraSaves.next(cameras)
           expect(engine.serialize).not.toHaveBeenCalled()
           expect(send).toHaveBeenCalledWith({
@@ -1308,7 +1524,7 @@ describe('given a mocked game engine', () => {
         it('takes host role when being the first online', async () => {
           serializeThread.mockReturnValueOnce([])
           engine.serialize.mockReturnValueOnce({
-            meshes: game.meshes,
+            meshes: /** @type {Mesh[]} */ (game.meshes),
             handMeshes: []
           })
           lastDisconnectedId.next(player.id)
@@ -1316,9 +1532,11 @@ describe('given a mocked game engine', () => {
           expect(send).toHaveBeenCalledWith(
             {
               type: 'game-sync',
-              id: game.id,
               ...game,
-              hands: [...game.hands, { playerId: partner2.id, meshes: [] }],
+              hands: [
+                ...(game.hands ?? []),
+                { playerId: partner2.id, meshes: [] }
+              ],
               messages: [],
               selections: []
             },
@@ -1331,7 +1549,7 @@ describe('given a mocked game engine', () => {
               [
                 partner3.id,
                 {
-                  ...partner3,
+                  ...(game.players ?? [])[0],
                   ...findPlayerPreferences(game, partner3.id),
                   isHost: false,
                   playing: false
@@ -1342,6 +1560,7 @@ describe('given a mocked game engine', () => {
                 {
                   ...player,
                   ...findPlayerPreferences(game, player.id),
+                  currentGameId: game.id,
                   isHost: false,
                   playing: false
                 }
@@ -1351,6 +1570,7 @@ describe('given a mocked game engine', () => {
                 {
                   ...partner1,
                   ...findPlayerPreferences(game, partner1.id),
+                  currentGameId: game.id,
                   isHost: false,
                   playing: false
                 }
@@ -1380,14 +1600,20 @@ describe('given a mocked game engine', () => {
           expect(toastReceived).toHaveBeenCalledOnce()
 
           vi.clearAllMocks()
-          const newcamera = { pos: 'a' }
+          const newcamera = {
+            hash: 'a',
+            target: [0, 0, 0],
+            elevation: 10,
+            alpha: 1,
+            beta: 1
+          }
           cameraSaves.next([newcamera])
           expect(runMutation).toHaveBeenCalledWith(graphQL.saveGame, {
             game: {
               id: game.id,
               cameras: [
-                game.cameras[0],
-                game.cameras[1],
+                (game.cameras ?? [])[0],
+                (game.cameras ?? [])[1],
                 { playerId: partner2.id, index: 0, ...newcamera }
               ]
             }
@@ -1406,7 +1632,7 @@ describe('given a mocked game engine', () => {
               [
                 partner3.id,
                 {
-                  ...partner3,
+                  ...(game.players ?? [])[0],
                   ...findPlayerPreferences(game, partner3.id),
                   isHost: false,
                   playing: false
@@ -1417,6 +1643,7 @@ describe('given a mocked game engine', () => {
                 {
                   ...player,
                   ...findPlayerPreferences(game, player.id),
+                  currentGameId: game.id,
                   // this player will not be host when the new host will send their first update
                   isHost: true,
                   playing: false
@@ -1427,6 +1654,7 @@ describe('given a mocked game engine', () => {
                 {
                   ...partner1,
                   ...findPlayerPreferences(game, partner1.id),
+                  currentGameId: game.id,
                   // this player will become host when they'll send their first update
                   isHost: false,
                   playing: true
@@ -1477,7 +1705,7 @@ describe('given a mocked game engine', () => {
     })
 
     it('can invite multiple guests', async () => {
-      runMutation.mockResolvedValueOnce()
+      runMutation.mockResolvedValueOnce(true)
       expect(await invite(game.id, guest.id, guest2.id)).toBeUndefined()
       expect(runMutation).toHaveBeenCalledWith(graphQL.invite, {
         gameId: game.id,
@@ -1585,8 +1813,8 @@ describe('receiveGameListUpdates()', () => {
 })
 
 async function connectPeerAndExpectGameSync(
-  { cameras, selections, ...gameData },
-  playerId
+  /** @type {GameWithSelections} */ { cameras, selections, ...gameData },
+  /** @type {string} */ playerId
 ) {
   send.mockReset()
   lastConnectedId.next(playerId)
@@ -1594,10 +1822,10 @@ async function connectPeerAndExpectGameSync(
   expect(send).toHaveBeenCalledWith(
     {
       type: 'game-sync',
-      cameras: [...cameras].sort((a, b) => +a.index - +b.index),
+      cameras: [...(cameras ?? [])].sort((a, b) => +a.index - +b.index),
       ...gameData,
       selections: selections ?? [
-        { playerId: gameData.players[0].id, selectedIds: [] }
+        { playerId: gameData.players?.[0].id, selectedIds: [] }
       ]
     },
     playerId
@@ -1605,16 +1833,16 @@ async function connectPeerAndExpectGameSync(
   expect(send).toHaveBeenCalledOnce()
 }
 
-function prepareGame(game) {
-  engine.onDisposeObservable.notifyObservers()
+function prepareGame(/** @type {Partial<Game>} */ game) {
+  engine.onDisposeObservable.notifyObservers(engine)
   runSubscription.mockReset()
   runSubscription.mockImplementation(subscription =>
-    subscription === graphQL.receiveGameUpdates ? gameUpdates$ : null
+    subscription === graphQL.receiveGameUpdates ? gameUpdates$ : new Subject()
   )
   runMutation.mockResolvedValue({
     ...game,
-    meshes: [...game.meshes],
-    hands: [...game.hands]
+    meshes: [...(game.meshes ?? [])],
+    hands: [...(game.hands ?? [])]
   })
 }
 

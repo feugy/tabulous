@@ -1,7 +1,16 @@
 <script>
+  // @ts-check
+  /**
+   * @typedef {import('@src/graphql').GameOrGameParameters} GameOrGameParameters
+   * @typedef {import('@src/graphql').PlayerFragment} PlayerFragment
+   * @typedef {import('@src/graphql').LightPlayer} LightPlayer
+   * @typedef {import('@src/graphql').PlayerWithSearchable} Player
+   * @typedef {import('@src/graphql').Friendship} Friendship
+   */
+
   import { requestFriendship, searchPlayers } from '@src/stores'
   import { isLobby } from '@src/utils'
-import { debounceTime, map, Subject, switchMap } from 'rxjs'
+  import { debounceTime, map, Subject, switchMap } from 'rxjs'
   import { onMount } from 'svelte'
   import { _ } from 'svelte-intl'
 
@@ -10,15 +19,24 @@ import { debounceTime, map, Subject, switchMap } from 'rxjs'
   import InviteDialogue from './InviteDialogue.svelte'
   import PlayerList from './PlayerList.svelte'
 
+  /** @type {Player} authenticated player. */
+  export let user
+  /** @type {?GameOrGameParameters} game data. */
   export let game = null
-  export let currentPlayer = null
+  /** @type {?Map<string, LightPlayer>} map of game/lobby players by their ids. */
   export let playerById = null
+  /** @type {Friendship[]} list of all friendships. */
   export let friends = []
 
+  /** @type {?HTMLInputElement} */
   let inputRef
-  let candidates
-  let futureFriend
+  /** @type {(PlayerFragment & { label:string })[]} list of search result candidate players. */
+  let candidates = []
+  /** @type {?PlayerFragment & { label:string }} selected player in candidate list. */
+  let futureFriend = null
+  /** @type {{ player: LightPlayer, isNotFriend: boolean }[]} players of the current game/loby if any. */
   let players = []
+  /** @type {Friendship[]} list of friendships that are not active players. */
   let friendships = []
   let openInviteDialogue = false
   let search = new Subject()
@@ -37,7 +55,7 @@ import { debounceTime, map, Subject, switchMap } from 'rxjs'
         }
       }
       for (const player of playerById.values()) {
-        if (player.id !== currentPlayer.id) {
+        if (player.id !== user.id) {
           players.push({ player, isNotFriend: !friendIds.has(player.id) })
         }
       }
@@ -60,24 +78,26 @@ import { debounceTime, map, Subject, switchMap } from 'rxjs'
       .subscribe({ next: results => (candidates = results) })
   )
 
-  async function findCandidates({ target }) {
-    const text = target?.value ?? ''
+  async function findCandidates(/** @type {Event} */ { target }) {
+    const text = /** @type {?HTMLInputElement} */ (target)?.value ?? ''
     if (text.length >= 2) {
       search.next(text)
     } else {
-      candidates = undefined
-      futureFriend = undefined
+      candidates = []
+      futureFriend = null
     }
   }
 
-  function handleMakeFriendRequest({ detail: player } = {}) {
-    if (player?.id) {
-      futureFriend = player
+  function handleMakeFriendRequest(
+    /** @type {CustomEvent<?PlayerFragment>|MouseEvent} */ event
+  ) {
+    if (typeof event.detail === 'object' && event.detail?.id) {
+      futureFriend = { ...event.detail, label: '' }
     }
     if (futureFriend) {
       requestFriendship(futureFriend)
-      candidates = undefined
-      futureFriend = undefined
+      candidates = []
+      futureFriend = null
     }
   }
 </script>
@@ -86,7 +106,7 @@ import { debounceTime, map, Subject, switchMap } from 'rxjs'
   <section aria-roledescription="player-list">
     <h3>{$_(isLobby(game) ? 'titles.attendee-list' : 'titles.player-list')}</h3>
     <PlayerList {players} {game} on:makeFriend={handleMakeFriendRequest} />
-    {#if game.availableSeats > 0}
+    {#if (game.availableSeats ?? 0) > 0}
       <div>
         <Button
           icon="gamepad"
@@ -107,7 +127,7 @@ import { debounceTime, map, Subject, switchMap } from 'rxjs'
 {:else}
   <section aria-roledescription="friend-list">
     <h3>{$_('titles.friend-list')}</h3>
-    <UsernameSearchability searchable={currentPlayer.usernameSearchable} />
+    <UsernameSearchability searchable={user.usernameSearchable} />
     <FriendList friends={friendships} />
     <div>
       <Typeahead

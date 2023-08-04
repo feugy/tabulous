@@ -1,21 +1,39 @@
 <script>
+  // @ts-check
+  /**
+   * @typedef {import('@src/types').JSONValue} JSONValue
+   * @typedef {import('@src/components').LabelMenuOption} LabelMenuOption
+   * @typedef {import('@src/components').ColorMenuOption} ColorMenuOption
+   * @typedef {Partial<import('@tabulous/server/src/utils').Schema>} Schema
+   */
+
   import { Dropdown } from '@src/components'
   import { gameAssetsUrl, injectLocale } from '@src/utils'
   import { _, locale } from 'svelte-intl'
 
   import { findViolations } from './utils'
 
+  /** @type {string} property's name. */
   export let name
+  /** @type {Schema}} represented property. */
   export let property
+  /** @type {JSONValue} chosen values. */
   export let values
 
   // only build options for valid candidates
-  $: options = findCandidates(property, name, values).map(value => ({
-    value,
-    color: property.description === 'color' ? value : undefined,
-    label: translate(value),
-    image: findImage(property, value)
-  }))
+  /** @type {(LabelMenuOption|ColorMenuOption)[]} */
+  $: options = findCandidates(property, name, values).map(value => {
+    /** @type {LabelMenuOption|ColorMenuOption} */
+    const result = {
+      value,
+      label: translate(value),
+      image: findImage(property, value)
+    }
+    if (property.description === 'color') {
+      result.color = value
+    }
+    return result
+  })
 
   // value must be one of the option because DropDown + Menu are using strict equality
   $: value = options.find(candidate => candidate.value === values[name])
@@ -25,20 +43,29 @@
     setTimeout(() => handleSelection({ detail: options[0] }), 0)
   }
 
-  function handleSelection({ detail }) {
+  function handleSelection(
+    /** @type {{ detail: LabelMenuOption|ColorMenuOption }} */ { detail }
+  ) {
     values[name] = detail.value
   }
 
-  function translate(key) {
+  function translate(/** @type {string} */ key) {
     return property.metadata?.[$locale]?.[key] ?? key
   }
 
-  function findImage(property, key) {
+  function findImage(
+    /** @type {Schema} */ property,
+    /** @type {string} */ key
+  ) {
     return property.metadata?.images?.[key]
   }
 
-  function findCandidates(property, name, values) {
-    const candidates = property.enum
+  function findCandidates(
+    /** @type {Schema} */ property,
+    /** @type {string} */ name,
+    /** @type {JSONValue} */ values
+  ) {
+    const candidates = /** @type {JSONValue[]} */ (property.enum)
     const schema = { type: 'object', properties: { [name]: property } }
     const result = candidates.filter(
       value => findViolations({ [name]: value }, schema, values).length === 0

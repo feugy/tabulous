@@ -1,22 +1,32 @@
 <script context="module">
+  // @ts-check
   let nextId = 1
 </script>
 
 <script>
+  // @ts-check
+  /** @typedef {import('@src/components').SectionTab} SectionTab */
+
   import { buildCornerClipPath } from '@src/utils/dom'
   import { createEventDispatcher } from 'svelte'
 
   import Button from './Button.svelte'
 
+  /** @type {boolean} whether this section is minimized. */
   export let minimized = false
+  /** @type {'top'|'bottom'|'left'|'right'} placement for this section within its absolute parent. */
   export let placement = 'top'
+  /** @type {string|undefined} initial dimension: width for left/right sections, height for top/bottom sections. */
   export let dimension = undefined
+  /** @type {SectionTab[]|undefined} optional list of tabs inside this this section. */
   export let tabs = undefined
+  /** @type {number} index of the current tab, if any.*/
   export let currentTab = 0
 
   const id = `minimizable-section-${nextId++}`
 
   $: vertical = placement === 'top' || placement === 'bottom'
+  /** @type {{ node: 'offsetHeight'|'offsetWidth', event: 'x'|'y', style: 'width'|'height', negate: boolean, transition: string }} */
   $: props = vertical
     ? {
         style: 'height',
@@ -34,7 +44,7 @@
       }
   $: innerTabs = Array.isArray(tabs)
     ? tabs
-    : [
+    : /** @type {SectionTab[]} */ ([
         {
           icon: minimized
             ? placement === 'top'
@@ -52,24 +62,28 @@
             ? 'navigate_before'
             : 'navigate_next'
         }
-      ]
-  $: tabIndexPerkey = new Map(innerTabs.map(({ key }, index) => [key, index]))
+      ])
+  $: tabIndexPerKey = new Map(innerTabs.map(({ key }, index) => [key, index]))
 
+  /** @type {import('svelte').EventDispatcher<{ change: { currentTab: number }, minimize: { minimized: boolean }, resize: { size: number }}>} */
   let dispatch = createEventDispatcher()
   let isResizing = false
   let innerDimension = dimension ?? '25vw'
+  /** @type {MouseEvent} */
   let previousEvent
+  /** @type {HTMLElement} */
   let node
+  /** @type {number} */
   let size
 
   // https://yqnn.github.io/svg-path-editor/
-  $: corner1 = buildCornerClipPath({ placement })
-  $: corner2 = buildCornerClipPath({ placement, inverted: true })
+  $: [cornerId1, corner1] = buildCornerClipPath({ placement })
+  $: [cornerId2, corner2] = buildCornerClipPath({ placement, inverted: true })
 
-  function handleClick(i) {
-    const shouldChange = i !== currentTab
+  function handleClick(/** @type {number} */ tabRank) {
+    const shouldChange = tabRank !== currentTab
     if (shouldChange) {
-      currentTab = i
+      currentTab = tabRank
       if (!minimized) {
         innerDimension = `${node[props.node]}px`
       }
@@ -81,7 +95,7 @@
     }
   }
 
-  function handleDown(event) {
+  function handleDown(/** @type {MouseEvent} */ event) {
     isResizing = false
     if (!minimized) {
       event.preventDefault()
@@ -92,7 +106,7 @@
     }
   }
 
-  function handleMove(event) {
+  function handleMove(/** @type {MouseEvent} */ event) {
     if (!isResizing && (event.movementX || event.movementY)) {
       isResizing = true
     }
@@ -110,12 +124,13 @@
     window.removeEventListener('pointerup', handleUp)
   }
 
-  function handleKey(event) {
-    const index = tabIndexPerkey.get(event.key)
+  function handleKey(/** @type {KeyboardEvent} */ event) {
+    const index = tabIndexPerKey.get(event.key)
+    const element = /** @type {HTMLElement} */ (event.target)
     if (
       index !== undefined &&
-      !event.target.isContentEditable &&
-      event.target.nodeName !== 'INPUT'
+      !element.isContentEditable &&
+      element.nodeName !== 'INPUT'
     ) {
       handleClick(index)
       event.preventDefault()
@@ -138,7 +153,7 @@
     <menu class:vertical class={placement}>
       <ol
         role="tablist"
-        style="--corner1: url(#{corner1.id}); --corner2: url(#{corner2.id});"
+        style="--corner1: url(#{cornerId1}); --corner2: url(#{cornerId2});"
       >
         <li class="bg" />
         {#each innerTabs as { icon, key }, i}
@@ -165,19 +180,11 @@
         on:pointerdown|stopPropagation={handleDown}
       />
       <svg style="width:0px; height:0px">
-        <clipPath id={corner1.id} clipPathUnits="objectBoundingBox">
-          <path
-            d={corner1.d}
-            transform-origin="0.5 0.5"
-            transform={corner1.transform}
-          />
+        <clipPath id={cornerId1} clipPathUnits="objectBoundingBox">
+          <path {...corner1} />
         </clipPath>
-        <clipPath id={corner2.id} clipPathUnits="objectBoundingBox">
-          <path
-            d={corner2.d}
-            transform-origin="0.5 0.5"
-            transform={corner2.transform}
-          />
+        <clipPath id={cornerId2} clipPathUnits="objectBoundingBox">
+          <path {...corner2} />
         </clipPath>
       </svg>
     </menu>

@@ -1,14 +1,24 @@
 <script>
+  // @ts-check
+  /**
+   * @typedef {import('@src/graphql').Game} Game
+   * @typedef {import('@src/stores/game-manager').Player} Player
+   */
+
   import { Button, Input } from '@src/components'
   import { createEventDispatcher } from 'svelte'
   import { _ } from 'svelte-intl'
 
+  /** @type {Game['messages']} discussion thread. */
   export let thread
+  /** @type {Map<string, Player>} a map of player details by their id. */
   export let playerById
 
+  /** @type {import('svelte').EventDispatcher<{ sendMessage: { text: string } }>} */
   const dispatch = createEventDispatcher()
   let text = ''
-  let messageContainer
+  /** @type {?HTMLDivElement} */
+  let messageContainer = null
 
   $: if (messageContainer && thread) {
     // automatically scrolls to last when receiving a new message

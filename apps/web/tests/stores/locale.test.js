@@ -1,3 +1,4 @@
+// @ts-check
 import { buildLocaleComparator, comparator$ } from '@src/stores/locale'
 import { shuffle } from '@src/utils'
 import { get } from 'svelte/store'
@@ -5,7 +6,9 @@ import { locale } from 'svelte-intl'
 import { afterEach, describe, expect, it } from 'vitest'
 
 describe('comparator$', () => {
-  afterEach(() => locale.set('fr'))
+  afterEach(() => {
+    locale.set('fr')
+  })
 
   it('is initialized with default locale', async () => {
     expect(get(comparator$).resolvedOptions()).toMatchObject({

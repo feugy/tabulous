@@ -4,7 +4,7 @@
   import avatar from '@tests/fixtures/avatar.png'
   import { players as playerWithColors } from '@tests/fixtures/Discussion.testdata'
 
-  const currentPlayer = {
+  const user = {
     id: '135790',
     username: 'Fernande',
     usernameSearchable: true
@@ -46,22 +46,22 @@
   <Tool
     name="Empty list"
     props={{
-      currentPlayer,
+      user,
       friends: []
     }}
   />
   <Tool
     name="With friends"
-    props={{ currentPlayer, friends: players.map(player => ({ player })) }}
+    props={{ user, friends: players.map(player => ({ player })) }}
   />
   <Tool
     name="With requests and proposals"
-    props={{ currentPlayer, friends: friendsWithRequests }}
+    props={{ user, friends: friendsWithRequests }}
   />
   <Tool
     name="With lobby"
     props={{
-      currentPlayer: { ...currentPlayer, usernameSearchable: false },
+      user: { ...user, usernameSearchable: false },
       game: { availableSeats: 5 },
       playerById,
       friends: friendsWithRequests
@@ -70,7 +70,7 @@
   <Tool
     name="With game"
     props={{
-      currentPlayer: { ...currentPlayer, usernameSearchable: false },
+      user: { ...user, usernameSearchable: false },
       game: { kind: 'klondike', availableSeats: 3 },
       playerById,
       friends: friendsWithRequests
@@ -79,7 +79,7 @@
   <Tool
     name="With game with no seats"
     props={{
-      currentPlayer: { ...currentPlayer, usernameSearchable: false },
+      user: { ...user, usernameSearchable: false },
       game: { kind: 'klondike' },
       playerById,
       friends: friendsWithRequests

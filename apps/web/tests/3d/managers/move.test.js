@@ -1,11 +1,29 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').ArcRotateCamera} ArcRotateCamera
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').Observer<?>} Observer
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ * @typedef {import('@src/3d/behaviors/targetable').DropDetails} DropDetails
+ * @typedef {import('@src/3d/managers/move').PreMoveDetails} PreMoveDetails
+ * @typedef {import('@src/3d/managers/move').MoveDetails} MoveDetails
+ * @typedef {import('@src/3d/managers/control').Action} Action
+ * @typedef {import('@src/3d/managers/control').Move} Move
+ * @typedef {import('@src/3d/managers/target').DropZone} DropZone
+ */
+/**
+ * @template {any[]} P, R
+ * @typedef {import('vitest').Mock<P, R>} Mock
+ */
+
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
 import {
   MoveBehavior,
   MoveBehaviorName,
-  StackBehavior,
   TargetBehavior
 } from '@src/3d/behaviors'
+import { StackBehavior } from '@src/3d/behaviors/stackable'
 import {
   controlManager,
   handManager,
@@ -41,15 +59,25 @@ import {
 describe('MoveManager', () => {
   const centerX = 1024
   const centerY = 512
+  /** @type {Mock<[Move|Action], void>} */
   const actionRecorded = vi.fn()
+  /** @type {Mock<[MoveDetails], void>} */
   const moveRecorded = vi.fn()
+  /** @type {Mock<[PreMoveDetails], void>} */
   const preMoveRecorded = vi.fn()
+  /** @type {Scene} */
   let scene
+  /** @type {Scene} */
   let handScene
+  /** @type {ArcRotateCamera} */
   let camera
+  /** @type {?Observer} */
   let actionObserver
+  /** @type {?Observer} */
   let moveObserver
+  /** @type {?Observer} */
   let preMoveObserver
+  /** @type {DropDetails[]} */
   let drops
 
   configures3dTestEngine(created => {
@@ -60,7 +88,7 @@ describe('MoveManager', () => {
 
   beforeAll(() => {
     controlManager.init({ scene, handScene })
-    targetManager.init({ scene, color: '#0000ff' })
+    targetManager.init({ scene, color: '#0000ff', playerId: '' })
     indicatorManager.init({ scene })
     actionObserver = controlManager.onActionObservable.add(actionRecorded)
     moveObserver = manager.onMoveObservable.add(moveRecorded)
@@ -69,7 +97,7 @@ describe('MoveManager', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    createTable()
+    createTable(undefined, scene)
     drops = []
     selectionManager.clear()
   })
@@ -82,7 +110,7 @@ describe('MoveManager', () => {
 
   it('has initial state', () => {
     expect(manager.inProgress).toBe(false)
-    expect(manager.elevation).toBeNull()
+    expect(manager.elevation).toBeUndefined()
   })
 
   it('can not continue before start', () => {
@@ -140,6 +168,7 @@ describe('MoveManager', () => {
     it('handles invalid behavior', () => {
       const behavior = new MoveBehavior()
       manager.registerMovable(behavior)
+      // @ts-expect-error: undefined is not allowed
       manager.registerMovable()
     })
   })
@@ -148,6 +177,7 @@ describe('MoveManager', () => {
     it('handles invalid behavior', () => {
       const behavior = new MoveBehavior()
       manager.unregisterMovable(behavior)
+      // @ts-expect-error: undefined is not allowed
       manager.unregisterMovable()
     })
 
@@ -164,7 +194,9 @@ describe('MoveManager', () => {
   })
 
   describe('given single mesh', () => {
+    /** @type {Mesh} */
     let moved
+    /** @type {Mesh[]} */
     let targets
 
     beforeAll(() => manager.init({ scene }))
@@ -216,15 +248,15 @@ describe('MoveManager', () => {
         expect(actionRecorded).toHaveBeenCalledTimes(1)
         expectMoveRecorded(moveRecorded, moved)
         expect(preMoveRecorded).toHaveBeenCalledTimes(1)
-        expect(preMoveRecorded.mock.calls[0][0].map(({ id }) => id)).toEqual([
-          moved.id
-        ])
+        expect(
+          preMoveRecorded.mock.calls[0][0].meshes.map(({ id }) => id)
+        ).toEqual([moved.id])
       })
 
       it('can change moved mesh', () => {
         const moved2 = createMovable('box2')
         expect(selectionManager.meshes.has(moved2)).toBe(false)
-        manager.onPreMoveObservable.addOnce(meshes => {
+        manager.onPreMoveObservable.addOnce(({ meshes }) => {
           meshes.splice(0, meshes.length, moved2)
         })
         manager.start(moved, { x: centerX, y: centerY })
@@ -245,9 +277,9 @@ describe('MoveManager', () => {
         expect(actionRecorded).toHaveBeenCalledTimes(1)
         expectMoveRecorded(moveRecorded, moved2)
         expect(preMoveRecorded).toHaveBeenCalledTimes(1)
-        expect(preMoveRecorded.mock.calls[0][0].map(({ id }) => id)).toEqual([
-          moved2.id
-        ])
+        expect(
+          preMoveRecorded.mock.calls[0][0].meshes.map(({ id }) => id)
+        ).toEqual([moved2.id])
       })
     })
 
@@ -290,7 +322,7 @@ describe('MoveManager', () => {
 
       it('elevates moved when detecting a collision', () => {
         const obstacle = createBox('obstacle', { size: 2 })
-        obstacle.setAbsolutePosition(1, 0.5, 1)
+        obstacle.setAbsolutePosition(new Vector3(1, 0.5, 1))
 
         manager.continue({ x: centerX + 20, y: centerY })
         expectPosition(moved, [
@@ -302,11 +334,11 @@ describe('MoveManager', () => {
 
       it('elevates moved mesh above stacked obstacles', () => {
         const obstacle1 = createBox('obstacle1', {})
-        obstacle1.setAbsolutePosition(1, 0.5, 1)
+        obstacle1.setAbsolutePosition(new Vector3(1, 0.5, 1))
         const obstacle2 = createBox('obstacle2', {})
-        obstacle2.setAbsolutePosition(1, 2, 1)
+        obstacle2.setAbsolutePosition(new Vector3(1, 2, 1))
         const obstacle3 = createBox('obstacle3', {})
-        obstacle3.setAbsolutePosition(1, 3.5, 1)
+        obstacle3.setAbsolutePosition(new Vector3(1, 3.5, 1))
 
         manager.continue({ x: centerX + 20, y: centerY })
         expectPosition(moved, [
@@ -398,7 +430,7 @@ describe('MoveManager', () => {
 
       it('disables other operations', async () => {
         await manager.stop()
-        manager.continue()
+        manager.continue({ x: 0, y: 0 })
         await manager.stop()
         expectPosition(moved, [1, getDimensions(moved).height / 2, 1])
         expect(actionRecorded).toHaveBeenCalledWith(
@@ -418,12 +450,17 @@ describe('MoveManager', () => {
   })
 
   describe('given a mesh in hand', () => {
+    /** @type {Mesh} */
     let moved
+    /** @type {Vector3} */
     let cameraPosition
     const handOverlay = document.createElement('div')
-    vi.spyOn(window, 'getComputedStyle').mockImplementation(() => ({
-      height: `${centerY / 2}px`
-    }))
+    vi.spyOn(window, 'getComputedStyle').mockImplementation(
+      () =>
+        /** @type {CSSStyleDeclaration} */ ({
+          height: `${centerY / 2}px`
+        })
+    )
 
     beforeAll(() => {
       manager.init({ scene })
@@ -433,14 +470,15 @@ describe('MoveManager', () => {
 
     beforeEach(() => {
       moved = createCard(
-        { id: 'box', x: 1, y: 1, z: 1, drawable: {}, movable: {} },
+        { id: 'box', texture: '', x: 1, y: 1, z: 1, drawable: {}, movable: {} },
         handScene
       )
       camera.setPosition(cameraPosition)
     })
 
     it('moves according to hand camera', async () => {
-      scene.activeCamera.setPosition(new Vector3(10, 0, 0))
+      const camera = /** @type {ArcRotateCamera} */ (scene.activeCamera)
+      camera.setPosition(new Vector3(10, 0, 0))
       manager.start(moved, { x: centerX, y: centerY })
       expect(manager.inProgress).toBe(true)
       expectPosition(moved, [1, 1 + manager.elevation, 1])
@@ -467,7 +505,10 @@ describe('MoveManager', () => {
       inputManager.onDragObservable.notifyObservers({
         type: 'dragStart',
         mesh: moved,
-        event
+        button: 1,
+        timestamp: Date.now(),
+        pointers: 1,
+        event: /** @type {PointerEvent} */ (event)
       })
       const deltaX = 2.029703219946068
       const deltaZ = -2.1969471586981797
@@ -475,7 +516,10 @@ describe('MoveManager', () => {
       inputManager.onDragObservable.notifyObservers({
         type: 'drag',
         mesh: moved,
-        event
+        button: 1,
+        timestamp: Date.now(),
+        pointers: 1,
+        event: /** @type {PointerEvent} */ (event)
       })
       await sleep()
       manager.continue(event)
@@ -515,7 +559,9 @@ describe('MoveManager', () => {
         expect.anything()
       )
       expectCloseVector(
-        Vector3.FromArray(actionRecorded.mock.calls[2][0].pos),
+        Vector3.FromArray(
+          /** @type {number[]} */ (actionRecorded.mock.calls[2]?.[0]?.pos)
+        ),
         [deltaX, manager.elevation, deltaZ]
       )
       expect(actionRecorded).toHaveBeenCalledTimes(3)
@@ -556,7 +602,9 @@ describe('MoveManager', () => {
   })
 
   describe('given active selection', () => {
+    /** @type {Mesh[]} */
     let moved
+    /** @type {Mesh[]} */
     let targets
 
     beforeAll(() => manager.init({ scene }))
@@ -617,11 +665,9 @@ describe('MoveManager', () => {
         expect(manager.getActiveZones()).toHaveLength(0)
         expectMoveRecorded(moveRecorded, moved[2], moved[0], moved[1])
         expect(preMoveRecorded).toHaveBeenCalledTimes(1)
-        expect(preMoveRecorded.mock.calls[0][0].map(({ id }) => id)).toEqual([
-          moved[2].id,
-          moved[0].id,
-          moved[1].id
-        ])
+        expect(
+          preMoveRecorded.mock.calls[0][0].meshes.map(({ id }) => id)
+        ).toEqual([moved[2].id, moved[0].id, moved[1].id])
       })
 
       it('ignores disabled, selected mesh', () => {
@@ -729,9 +775,9 @@ describe('MoveManager', () => {
       it('elevates entire selection on collision', () => {
         const deltaX = 0.8257662057876587
         const obstacle1 = createBox('obstacle1', { size: 2 })
-        obstacle1.setAbsolutePosition(1, 0.5, 1)
+        obstacle1.setAbsolutePosition(new Vector3(1, 0.5, 1))
         const obstacle2 = createBox('obstacle2', { size: 2 })
-        obstacle2.setAbsolutePosition(-10, 0, -10)
+        obstacle2.setAbsolutePosition(new Vector3(-10, 0, -10))
 
         manager.continue({ x: centerX + 20, y: centerY })
         expectPosition(moved[0], [
@@ -1032,6 +1078,7 @@ describe('MoveManager', () => {
   })
 
   describe('given parent and active selection', () => {
+    /** @type {Mesh[]} */
     let moved
 
     beforeAll(() => manager.init({ scene }))
@@ -1104,6 +1151,7 @@ describe('MoveManager', () => {
   })
 
   describe('given a stack of meshes', () => {
+    /** @type {Mesh[]} */
     let moved
 
     beforeAll(() => manager.init({ scene }))
@@ -1113,9 +1161,12 @@ describe('MoveManager', () => {
         createMovable(),
         createMovable('box1', new Vector3(0, 5, 0)),
         createMovable('box2', new Vector3(-3, 0.5, -3))
-      ].map(movable => movable.addBehavior(new StackBehavior(), true))
-      moved[0].metadata.push(moved[1].id, true)
-      moved[0].metadata.push(moved[2].id, true)
+      ].map(movable => {
+        movable.addBehavior(new StackBehavior(), true)
+        return movable
+      })
+      moved[0].metadata.push?.(moved[1].id, true)
+      moved[0].metadata.push?.(moved[2].id, true)
       actionRecorded.mockClear()
       moveRecorded.mockClear()
     })
@@ -1220,21 +1271,34 @@ describe('MoveManager', () => {
     return target
   }
 
-  function expectDroppedEvent(rank, target, moved) {
+  function expectDroppedEvent(
+    /** @type {number} */ rank,
+    /** @type {Mesh} */ target,
+    /** @type {Mesh[]} */ moved
+  ) {
     expect(drops[rank]?.zone.mesh.id).toEqual(target.id)
     expect(getIds(drops[rank]?.dropped)).toEqual(getIds(moved))
   }
 })
 
-function expectZoneForMeshes(targetId, meshes) {
-  const zone = manager.getActiveZones().find(({ mesh }) => mesh.id === targetId)
+function expectZoneForMeshes(
+  /** @type {string} */ targetId,
+  /** @type {Mesh[]} */ meshes
+) {
+  const zone = /** @type {DropZone}) */ (
+    manager.getActiveZones().find(({ mesh }) => mesh.id === targetId)
+  )
   expect(zone).toBeDefined()
   expect(getIds(targetManager.droppablesByDropZone.get(zone))).toEqual(
     getIds(meshes)
   )
 }
 
-function getAltitudeOnCollision(moved, obstacle, offset = 0) {
+function getAltitudeOnCollision(
+  /** @type {Mesh} */ moved,
+  /** @type {Mesh} */ obstacle,
+  offset = 0
+) {
   return (
     obstacle.getBoundingInfo().boundingBox.maximumWorld.y +
     getDimensions(moved).height * 0.5 +
@@ -1243,6 +1307,6 @@ function getAltitudeOnCollision(moved, obstacle, offset = 0) {
   )
 }
 
-function getIds(meshes = []) {
+function getIds(/** @type {Mesh[]} */ meshes = []) {
   return meshes.map(({ id }) => id)
 }

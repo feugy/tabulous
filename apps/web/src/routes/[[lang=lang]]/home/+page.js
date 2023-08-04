@@ -1,3 +1,6 @@
+// @ts-check
+/** @typedef {import('@src/graphql').Game} Game */
+
 import { createGame, listCatalog, listGames } from '@src/stores'
 import { redirect } from '@sveltejs/kit'
 
@@ -9,14 +12,16 @@ export async function load({ parent, url, params: { lang } }) {
     listCatalog(),
     hasPlayer ? listGames() : Promise.resolve(null)
   ])
+  /** @type {?Error} */
   let creationError = null
   const name = url.searchParams.get('game-name')
   if (name && hasPlayer) {
-    let gameId
+    /** @type {?Game['id']} */
+    let gameId = null
     try {
       gameId = (await createGame(name)).id
     } catch (err) {
-      creationError = err
+      creationError = /** @type {Error} */ (err)
     }
     if (gameId) {
       throw redirect(307, `${lang ? `/${lang}` : ''}/game/${gameId}`)

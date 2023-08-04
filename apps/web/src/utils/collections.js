@@ -1,8 +1,10 @@
+// @ts-check
 /**
  * Shuffle an array, several times, using Fisher–Yates algorithm.
- * @param {any[]} source - source array.
+ * @template T
+ * @param {T[]|null} source - source array.
  * @param {number} [iterations=3] - how many times the array is shuffled.
- * @returns {any[]} a randomized copy of the source array.
+ * @returns {T[]} a randomized copy of the source array.
  * @see {@link https://bost.ocks.org/mike/shuffle/}
  */
 export function shuffle(source = [], iterations = 5) {

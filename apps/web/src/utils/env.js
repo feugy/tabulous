@@ -1,3 +1,4 @@
+// @ts-check
 /**
  * Base URL for game assets (with no traling slash).
  * @type {string}

@@ -1,3 +1,12 @@
+// @ts-check
+/**
+ * @typedef {import('@babylonjs/core').Mesh} Mesh
+ * @typedef {import('@babylonjs/core').Scene} Scene
+ * @typedef {import('@src/3d/behaviors/movable').MoveBehavior} MoveBehavior
+ * @typedef {import('@src/3d/managers/target').DropZone} DropZone
+ * @typedef {import('@src/3d/utils').ScreenPosition} ScreenPosition
+ */
+
 import { BoundingInfo } from '@babylonjs/core/Culling/boundingInfo.js'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'
 import { Observable } from '@babylonjs/core/Misc/observable.js'
@@ -15,8 +24,13 @@ import { targetManager } from './target'
 const logger = makeLogger('move')
 
 /**
- * @typedef {object} MoveData
- * @property {object} mesh - moved mesh.
+ * @typedef {object} MoveDetails
+ * @property {Mesh} mesh - moved mesh.
+ */
+
+/**
+ * @typedef {object} PreMoveDetails
+ * @property {Mesh[]} meshes - meshes that are about to be moved.
  */
 
 class MoveManager {
@@ -28,21 +42,23 @@ class MoveManager {
    * - release mesh on table, or on their relevant target
    *
    * Prior to move operation, the onPreMoveObservable allows to add or remove meshes to the list.
-   *
-   * @property {number} elevation - elevation applied to meshes while dragging them.
-   * @property {boolean} inProgress - true while a move operation is in progress.
-   * @property {Observable<MoveData>} onMoveObservable - emits when moving a given mesh.
-   * @property {Observable<import('@babylonjs/core').Mesh[]>} onPreMoveObservable - emits prior to starting the operation.
    */
   constructor() {
-    this.elevation = null
+    /** @type {number} elevation applied to meshes while dragging them. */
+    this.elevation
+    /** @type {boolean} true while a move operation is in progress. */
     this.inProgress = false
+    /** @type {Observable<MoveDetails>} emits when moving a given mesh. */
     this.onMoveObservable = new Observable()
+    /** @type {Observable<PreMoveDetails>} emits prior to starting the operation. */
     this.onPreMoveObservable = new Observable()
-    // private
-    this.scene = null
+    /** @internal @type {Scene} main scene. */
+    this.scene
+    /** @internal @type {Set<string>} managed mesh ids. */
     this.meshIds = new Set()
+    /** @internal @type {Map<string, MoveBehavior>} managed behaviors by their mesh id. */
     this.behaviorByMeshId = new Map()
+    /** @internal @type {Set<Mesh>} set of meshes to re-select after moving them. */
     this.autoSelect = new Set()
   }
 
@@ -61,11 +77,11 @@ class MoveManager {
    * Start moving a managed mesh, recording its position.
    * If it is part of the active selection, moves the entire selection.
    * Does nothing on unmanaged meshes or mesh with disabled behavior.
-   * @param {import('@babel/core').Mesh} mesh - to be moved.
-   * @param {MouseEvent|TouchEvent} event - mouse or touch event containing the screen position.
+   * @param {Mesh} mesh - to be moved.
+   * @param {ScreenPosition} event - mouse or touch event containing the screen position.
    */
   start(mesh, event) {
-    if (!this.meshIds.has(mesh?.id) || isDisabled(this, mesh)) {
+    if (!this.isManaging(mesh) || isDisabled(this, mesh)) {
       return
     }
 
@@ -73,16 +89,23 @@ class MoveManager {
     let sceneUsed = mesh.getScene()
     const meshes = selectionManager.meshes.has(mesh)
       ? [...selectionManager.meshes].filter(
-          mesh => this.meshIds.has(mesh?.id) && mesh.getScene() === sceneUsed
+          mesh => this.isManaging(mesh) && mesh.getScene() === sceneUsed
         )
       : [mesh]
+    /** @type {Mesh[]} */
     let moved = []
     for (const mesh of meshes) {
-      if (!meshes.includes(mesh.parent) && !isDisabled(this, mesh)) {
+      if (
+        !meshes.includes(/** @type {Mesh} */ (mesh.parent)) &&
+        !isDisabled(this, mesh)
+      ) {
         moved.push(mesh)
       }
     }
-    let lastPosition = screenToGround(sceneUsed, event)
+
+    let lastPosition = /** @type {Vector3} */ (screenToGround(sceneUsed, event))
+
+    /** @type {Set<DropZone>} */
     let zones = new Set()
     this.inProgress = true
     const actionObserver = controlManager.onActionObservable.add(
@@ -104,16 +127,16 @@ class MoveManager {
       }
     )
 
-    const deselectAuto = meshes => {
+    const deselectAuto = (/** @type {(?Mesh)[]} */ meshes) => {
       for (const mesh of meshes) {
-        if (this.autoSelect.has(mesh)) {
+        if (mesh && this.autoSelect.has(mesh)) {
           selectionManager.unselect(mesh)
           this.autoSelect.delete(mesh)
         }
       }
     }
 
-    const startMoving = mesh => {
+    const startMoving = (/** @type {Mesh} */ mesh) => {
       if (!selectionManager.meshes.has(mesh)) {
         this.autoSelect.add(mesh)
         selectionManager.select(mesh)
@@ -125,7 +148,7 @@ class MoveManager {
     }
 
     // dynamically assign continue function to keep moved, zones and lastPosition in scope
-    this.continue = event => {
+    this.continue = (/** @type {ScreenPosition} */ event) => {
       if (moved.length === 0) return
       for (const zone of zones) {
         targetManager.clear(zone)
@@ -133,7 +156,9 @@ class MoveManager {
       zones.clear()
 
       if (sceneUsed !== this.scene || isAboveTable(this.scene, event)) {
-        const currentPosition = screenToGround(sceneUsed, event)
+        const currentPosition = /** @type {Vector3} */ (
+          screenToGround(sceneUsed, event)
+        )
         const move = currentPosition.subtract(lastPosition)
         logger.debug({ moved, event, move }, `continue move operation`)
         lastPosition = currentPosition
@@ -149,7 +174,8 @@ class MoveManager {
           mesh.setAbsolutePosition(mesh.absolutePosition.addInPlace(move))
           const zone = targetManager.findDropZone(
             mesh,
-            this.behaviorByMeshId.get(mesh.id).state.kind
+            /** @type {MoveBehavior} */ (this.behaviorByMeshId.get(mesh.id))
+              .state.kind
           )
           if (zone) {
             zones.add(zone)
@@ -169,12 +195,12 @@ class MoveManager {
     this.getActiveZones = () => [...zones]
 
     // dynamically assign exclude function to keep moved in scope
-    this.isMoving = mesh => {
+    this.isMoving = (/** @type {?Mesh} */ mesh) => {
       return moved.some(({ id }) => id === mesh?.id)
     }
 
     // dynamically assign exclude function to keep moved in scope
-    this.exclude = (...meshes) => {
+    this.exclude = (/** @type {(?Mesh)[]} */ ...meshes) => {
       moved = moved.filter(({ id }) =>
         meshes.every(excluded => excluded?.id !== id)
       )
@@ -182,9 +208,13 @@ class MoveManager {
     }
 
     // dynamically assign include function to keep moved in scope
-    this.include = (...meshes) => {
+    this.include = (/** @type {(?Mesh)[]} */ ...meshes) => {
       for (const mesh of meshes) {
-        if (!moved.find(({ id }) => id === mesh?.id)) {
+        if (
+          mesh &&
+          !moved.find(({ id }) => id === mesh.id) &&
+          this.isManaging(mesh)
+        ) {
           moved.push(mesh)
           startMoving(mesh)
         }
@@ -209,6 +239,7 @@ class MoveManager {
 
       deselectAuto(moved)
       // trigger drop operation on all identified drop zones
+      /** @type {Mesh[]} */
       const dropped = []
       for (const zone of zones) {
         const meshes = targetManager.dropOn(zone)
@@ -232,7 +263,7 @@ class MoveManager {
           const { x, y, z } = mesh.absolutePosition
           const {
             state: { snapDistance, duration }
-          } = this.behaviorByMeshId.get(mesh.id)
+          } = /** @type {MoveBehavior} */ (this.behaviorByMeshId.get(mesh.id))
           const absolutePosition = new Vector3(
             Math.round(x / snapDistance) * snapDistance,
             y,
@@ -258,7 +289,7 @@ class MoveManager {
       { moved, position: lastPosition.asArray() },
       `start move operation`
     )
-    this.onPreMoveObservable.notifyObservers(moved)
+    this.onPreMoveObservable.notifyObservers({ meshes: moved })
     moved = [...moved]
     for (const mesh of moved) {
       startMoving(mesh)
@@ -270,52 +301,56 @@ class MoveManager {
    * Updates the last position and identifies potential targets.
    * Stops the operation when the pointer leaves the table.
    * Does nothing if the operation was not started, or stopped.
-   * @param {MouseEvent|TouchEvent} event - mouse or touch event containing the screen position.
+   * @param {ScreenPosition} event - mouse or touch event containing the screen position.
    */
-  continue() {}
+  // eslint-disable-next-line no-unused-vars
+  continue(event) {}
 
   /**
    * Removes some of the moved meshes.
    * They will stay with their current position.
-   * @param {import('@babylonjs/core').Mesh...} meshes - excluded meshes.
+   * @param {...?Mesh} meshes - excluded meshes.
    */
-  exclude() {}
+  // eslint-disable-next-line no-unused-vars
+  exclude(...meshes) {}
 
   /**
    * Adds some meshes to the moving selection.
    * Does nothing if no operation is in progress.
-   * @param {import('@babylonjs/core').Mesh...} meshes - included meshes.
+   * @param {...?Mesh} meshes - included meshes.
    */
-  include() {}
+  // eslint-disable-next-line no-unused-vars
+  include(...meshes) {}
 
   /**
    * Stops the move operation, releasing mesh(es) on its(their) target if any, or on the table.
    * When released on table, mesh(es) are snapped to the grid with possible animation.
    * Awaits until (all) animation(s) completes.
-   * @async
+   * @returns {Promise<void>}
    */
   async stop() {}
 
   /**
    * Returns all drop zones actives while moving meshes
-   * @return {import('../behaviors').DropZone} an array (possibly empty) of active zones
+   * @returns {(DropZone)[]} an array (possibly empty) of active zones
    */
   getActiveZones() {
     return []
   }
 
   /**
-   * @param {import('@babylonjs/core').Mesh} mesh - tested mesh
+   * @param {?Mesh} mesh - tested mesh
    * @returns {boolean} whether this mesh is being moved
    */
-  isMoving() {
+  // eslint-disable-next-line no-unused-vars
+  isMoving(mesh) {
     return false
   }
 
   /**
    * Registers a new MoveBehavior, making it possible to move its mesh.
    * Does nothing if this behavior is already managed.
-   * @param {MoveBehavior} behavior - movable behavior
+   * @param {?MoveBehavior} behavior - movable behavior
    */
   registerMovable(behavior) {
     if (behavior?.mesh?.id) {
@@ -327,26 +362,30 @@ class MoveManager {
   /**
    * Unregisters an existing MoveBehavior.
    * Does nothing on unmanaged behaviors.
-   * @param {MoveBehavior} behavior - movable behavior
+   * @param {?MoveBehavior} behavior - movable behavior
    */
   unregisterMovable(behavior) {
-    if (this.meshIds.has(behavior?.mesh?.id) && !behavior.mesh.isPhantom) {
+    if (
+      behavior?.mesh &&
+      this.isManaging(behavior?.mesh) &&
+      !behavior.mesh.isPhantom
+    ) {
       this.meshIds.delete(behavior.mesh.id)
       this.behaviorByMeshId.delete(behavior.mesh.id)
     }
   }
 
   /**
-   * @param {import('@babel/core').Mesh} mesh - tested mesh
+   * @param {?Mesh} [mesh] - tested mesh
    * @returns {boolean} whether this mesh is controlled or not
    */
   isManaging(mesh) {
-    return this.meshIds.has(mesh?.id)
+    return mesh != undefined && this.meshIds.has(mesh.id)
   }
 
   /**
    * Notify listerners of moving meshes
-   * @param {...import('@babel/core').Mesh} meshes - moving meshes
+   * @param {...Mesh} meshes - moving meshes
    */
   notifyMove(...meshes) {
     for (const mesh of meshes) {
@@ -361,25 +400,40 @@ class MoveManager {
  */
 export const moveManager = new MoveManager()
 
+/**
+ * @param {Mesh[]} moved - moved meshes.
+ * @returns {{ min: Vector3, max: Vector3 }} bounding box info for this group of meshes.
+ */
 function computeMovedExtend(moved) {
-  let min
-  let max
+  /** @type {Vector3} */
+  let min = Vector3.Zero()
+  /** @type {Vector3} */
+  let max = Vector3.Zero()
+  let initialized = false
   // evaluates the bounding box of all moved meshes
   for (const mesh of moved) {
     mesh.computeWorldMatrix(true)
     const { minimumWorld, maximumWorld } = mesh.getBoundingInfo().boundingBox
-    if (!min) {
-      min = minimumWorld
-      max = maximumWorld
-    } else {
+    if (initialized) {
       min = Vector3.Minimize(min, minimumWorld)
       max = Vector3.Maximize(max, maximumWorld)
+    } else {
+      initialized = true
+      min = minimumWorld
+      max = maximumWorld
     }
   }
   return { min, max }
 }
 
+/**
+ * @param {Scene} scene - scene used for moving meshes .
+ * @param {Mesh[]} moved - moved meshes.
+ * @param {Vector3} min - moved mesh bounding box minimum.
+ * @returns {BoundingInfo[]} a list of possibly colliding bounding boxes.
+ */
 function findCollidingBoundingBoxes({ meshes }, moved, min) {
+  /** @type {BoundingInfo[]} */
   const boxes = []
   for (const mesh of meshes) {
     if (
@@ -397,15 +451,23 @@ function findCollidingBoundingBoxes({ meshes }, moved, min) {
   return boxes
 }
 
+/**
+ * @param {BoundingInfo[]} boundingBoxes - a list of possibly colliding bounding boxes.
+ * @param {Vector3} min - moved mesh bounding box minimum.
+ * @param {Vector3} max - moved mesh bounding box maximum.
+ * @return {number} how much the moved meshes should be elevated.
+ */
 function elevateWhenColliding(boundingBoxes, min, max) {
   const movedBoundingInfo = new BoundingInfo(min, max)
+  /** @type {?Vector3} */
   let highest = null
+  /** @type {BoundingInfo[]} */
   const removed = []
   for (const box of boundingBoxes) {
-    if (movedBoundingInfo.intersects(box)) {
+    if (movedBoundingInfo.intersects(box, false)) {
       const { maximumWorld } = box.boundingBox
       removed.push(box)
-      highest = (highest?.y ?? 0) < maximumWorld.y ? maximumWorld : highest
+      highest = !highest || highest.y < maximumWorld.y ? maximumWorld : highest
     }
   }
   for (const box of removed) {
@@ -425,12 +487,17 @@ function elevateWhenColliding(boundingBoxes, min, max) {
   return 0
 }
 
+/**
+ * @param {MoveManager} manager - manager instance.
+ * @param {Mesh} mesh - tested mesh.
+ * @returns {boolean} whether this mesh could be moved.
+ */
 function isDisabled({ behaviorByMeshId }, mesh) {
   return (
-    behaviorByMeshId.get(mesh.id).enabled === false &&
+    behaviorByMeshId.get(mesh.id)?.enabled === false &&
     (!mesh.metadata?.stack ||
       mesh.metadata.stack.every(
-        mesh => behaviorByMeshId.get(mesh.id).enabled === false
+        mesh => behaviorByMeshId.get(mesh.id)?.enabled === false
       ) ||
       !selectionManager.meshes.has(
         mesh.metadata.stack[mesh.metadata.stack.length - 1]

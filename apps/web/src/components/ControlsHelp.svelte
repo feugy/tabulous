@@ -1,4 +1,10 @@
 <script>
+  // @ts-check
+  /**
+   * @typedef {import('@tabulous/server/src/graphql/types').ActionSpec} ActionSpec
+   * @typedef {import('@tabulous/server/src/graphql/types').ActionName} ActionName
+   */
+
   import { buttonIds } from '@src/3d/utils/actions'
   import { isTouchScreen } from '@src/utils'
   import { _ } from 'svelte-intl'
@@ -9,7 +15,9 @@
   import HelpKey from './HelpKey.svelte'
   import Skeleton from './Skeleton.svelte'
 
+  /** @type {Map<keyof ActionSpec, ActionName[]>} map of action names by a given button. */
   export let actionNamesByButton = new Map()
+  /** @type {Map<string, ActionName[]>} map of action names by a given shorcut. */
   export let actionNamesByKey = new Map()
 
   const isTouch = isTouchScreen()
@@ -21,11 +29,12 @@
   $: button2Actions = actionNamesByButton?.get(buttonIds.button2)
   $: button3Actions = actionNamesByButton?.get(buttonIds.button3)
 
-  function mapToLabels(actions) {
+  function mapToLabels(/** @type {ActionName[]} */ actions) {
     return actions.map(action => $_(`labels.help-${action}`)).join('<br/>')
   }
 </script>
 
+<!-- eslint-disable svelte/no-at-html-tags -->
 <div>
   <h3>{$_('titles.object-controls')}</h3>
   <dl>
@@ -33,7 +42,8 @@
       {#await iconPromise}
         <Skeleton height="74px" {tone} />
       {:then { RightObject, TwoPointersObject }}
-        {#if isTouch}<TwoPointersObject />{:else} <RightObject />{/if}
+        {#if isTouch}<TwoPointersObject />{:else}
+          <RightObject />{/if}
       {/await}
     </dt>
     <dd>{$_('labels.help-open-menu')}</dd>
@@ -53,7 +63,8 @@
       {#await iconPromise}
         <Skeleton height="55px" {tone} />
       {:then { LeftDragObject, PointerDragObject }}
-        {#if isTouch}<PointerDragObject />{:else} <LeftDragObject />{/if}
+        {#if isTouch}<PointerDragObject />{:else}
+          <LeftDragObject />{/if}
       {/await}
     </dt>
     <dd>{$_('labels.help-move')}</dd>
@@ -61,7 +72,8 @@
       {#await iconPromise}
         <Skeleton height="55px" {tone} />
       {:then { LeftDrag, PointerDrag }}
-        {#if isTouch}<PointerDrag />{:else} <LeftDrag />{/if}
+        {#if isTouch}<PointerDrag />{:else}
+          <LeftDrag />{/if}
       {/await}
     </dt>
     <dd>{$_('labels.help-add-to-selection')}</dd>
@@ -69,7 +81,8 @@
       {#await iconPromise}
         <Skeleton height="80px" {tone} />
       {:then { LeftOutside, PointerOutside }}
-        {#if isTouch}<PointerOutside />{:else} <LeftOutside />{/if}
+        {#if isTouch}<PointerOutside />{:else}
+          <LeftOutside />{/if}
       {/await}
     </dt>
     <dd>{$_('labels.help-clear-selection')}</dd>
@@ -81,7 +94,8 @@
       {#await iconPromise}
         <Skeleton height="55px" {tone} />
       {:then { Arrows, RightDrag, TwoPointersDrag }}
-        {#if isTouch}<TwoPointersDrag />{:else} <RightDrag />{/if}
+        {#if isTouch}<TwoPointersDrag />{:else}
+          <RightDrag />{/if}
         <Arrows />
       {/await}
     </dt>
@@ -90,7 +104,8 @@
       {#await iconPromise}
         <Skeleton height="74px" {tone} />
       {:then { CtrlArrows, MiddleDrag, ThreePointersDrag }}
-        {#if isTouch}<ThreePointersDrag />{:else} <MiddleDrag />{/if}
+        {#if isTouch}<ThreePointersDrag />{:else}
+          <MiddleDrag />{/if}
         <CtrlArrows />
       {/await}
     </dt>
@@ -99,7 +114,8 @@
       {#await iconPromise}
         <Skeleton height="70px" {tone} />
       {:then { MouseWheel, Pinch }}
-        {#if isTouch}<Pinch />{:else} <MouseWheel />{/if}
+        {#if isTouch}<Pinch />{:else}
+          <MouseWheel />{/if}
       {/await}
     </dt>
     <dd>{$_('labels.help-zoom')}</dd>
