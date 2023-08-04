@@ -225,8 +225,8 @@ mutation invite($gameId: ID!, $playerIds: [ID!]!) {
   }
 }
 
-mutation kick($gameId: ID!, $kickedId: ID!) {
-  kick(gameId: $gameId, playerId: $kickedId) {
+mutation kick($gameId: ID!, $playerId: ID!) {
+  kick(gameId: $gameId, playerId: $playerId) {
     id
   }
 }

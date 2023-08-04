@@ -627,8 +627,10 @@ for (const { lang } of /** @type {{ lang: import('./utils').Locale }[]} */ ([
 
       it('can kick a lobby guest', async ({ page }) => {
         const homePage = new HomePage(page, lang)
-        graphQlMocks.onQuery(operation => {
+        const kickSpy = fn()
+        graphQlMocks.onQuery((operation, req) => {
           if (operation === 'kick') {
+            kickSpy(req)
             graphQlMocks.sendToSubscription({
               data: {
                 receiveGameUpdates: { ...lobby, players: [player] }
@@ -638,6 +640,13 @@ for (const { lang } of /** @type {{ lang: import('./utils').Locale }[]} */ ([
           }
         })
         await homePage.kick(friends[0].player.username)
+        // TODO find how to extend playwrigh's expect.
+        // @ts-expect-error: playwright does not know about vitest matchers
+        expect(kickSpy).toHaveBeenCalledWith(
+          expect.objectContaining({
+            variables: { gameId: lobby.id, playerId: friends[0].player.id }
+          })
+        )
       })
     })
 
