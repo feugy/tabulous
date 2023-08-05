@@ -2,7 +2,7 @@
 /**
  * @typedef {import('@babylonjs/core').AbstractMesh} AbstractMesh
  * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@tabulous/server/src/graphql/types').InitialTransform} InitialTransform
+ * @typedef {import('@tabulous/server/src/graphql').InitialTransform} InitialTransform
  */
 
 /**

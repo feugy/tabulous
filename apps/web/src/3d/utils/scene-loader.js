@@ -2,10 +2,10 @@
 /**
  * @typedef {import('@babylonjs/core').Mesh} Mesh
  * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@tabulous/server/src/graphql/types').AnchorableState} AnchorableState
- * @typedef {import('@tabulous/server/src/graphql/types').Mesh} SerializedMesh
- * @typedef {import('@tabulous/server/src/graphql/types').Shape} Shape
- * @typedef {import('@tabulous/server/src/graphql/types').StackableState} StackableState
+ * @typedef {import('@tabulous/server/src/graphql').AnchorableState} AnchorableState
+ * @typedef {import('@tabulous/server/src/graphql').Mesh} SerializedMesh
+ * @typedef {import('@tabulous/server/src/graphql').Shape} Shape
+ * @typedef {import('@tabulous/server/src/graphql').StackableState} StackableState
  * @typedef {import('@src/3d/behaviors/anchorable').AnchorBehavior} AnchorBehavior
  * @typedef {import('@src/3d/behaviors/stackable').StackBehavior} StackBehavior
  */

@@ -4,7 +4,7 @@
  * @typedef {import('@babylonjs/core').Material} Material
  * @typedef {import('@babylonjs/core').Mesh} Mesh
  * @typedef {import('@babylonjs/core').Texture} Texture
- * @typedef {import('@tabulous/server/src/graphql/types').TableSpec} TableSpec
+ * @typedef {import('@tabulous/server/src/graphql').TableSpec} TableSpec
  */
 
 import { Vector3 } from '@babylonjs/core/Maths/math.vector.js'

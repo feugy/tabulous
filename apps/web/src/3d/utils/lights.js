@@ -1,7 +1,7 @@
 // @ts-check
 /**
  * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@tabulous/server/src/graphql/types').TableSpec} TableSpec
+ * @typedef {import('@tabulous/server/src/graphql').TableSpec} TableSpec
  */
 
 // mandatory side effect

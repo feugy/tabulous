@@ -8,7 +8,7 @@
  * @typedef {import('@src/3d/managers/input').LongData} LongData
  * @typedef {import('@src/stores/peer-channels').Connected} Connected
  * @typedef {import('@src/stores/peer-channels').Message} Message
- * @typedef {import('@tabulous/server/src/graphql/types').Mesh} SerializedMesh
+ * @typedef {import('@tabulous/server/src/graphql').Mesh} SerializedMesh
  * @typedef {import('rxjs').Subscription} Subscription
  */
 /**

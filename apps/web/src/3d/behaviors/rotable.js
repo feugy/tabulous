@@ -1,7 +1,7 @@
 // @ts-check
 /**
  * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@tabulous/server/src/graphql/types').RotableState} RotableState
+ * @typedef {import('@tabulous/server/src/graphql').RotableState} RotableState
  * @typedef {import('@src/3d/utils').Vector3KeyFrame} Vector3KeyFrame
  */
 

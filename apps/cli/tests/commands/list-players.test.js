@@ -1,7 +1,7 @@
 // @ts-check
 /**
  * @typedef {import('../../src').Command} Command
- * @typedef {import('@tabulous/server/src/graphql/types').Player} Player
+ * @typedef {import('@tabulous/server/src/graphql').Player} Player
  */
 
 import { faker } from '@faker-js/faker'

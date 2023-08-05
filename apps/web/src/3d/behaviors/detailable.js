@@ -1,7 +1,7 @@
 // @ts-check
 /**
  * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@tabulous/server/src/graphql/types').DetailableState} DetailableState
+ * @typedef {import('@tabulous/server/src/graphql').DetailableState} DetailableState
  */
 
 import { controlManager } from '../managers/control'

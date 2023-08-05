@@ -1,7 +1,7 @@
 // @ts-check
 /**
  * @typedef {import('@tabulous/server/src/services/games')._PlayerPreference} NonIndexablePreferences
- * @typedef {import('@tabulous/server/src/graphql/types').ColorSpec} ColorSpec
+ * @typedef {import('@tabulous/server/src/graphql').ColorSpec} ColorSpec
  * @typedef {import('@src/graphql').GameOrGameParameters} GameOrGameParameters
  */
 

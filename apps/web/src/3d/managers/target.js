@@ -3,8 +3,8 @@
  * @typedef {import('@babylonjs/core').Mesh} Mesh
  * @typedef {import('@babylonjs/core').Scene} Scene
  * @typedef {import('@babylonjs/core').Vector3} Vector3
- * @typedef {import('@tabulous/server/src/graphql/types').Anchor} Anchor
- * @typedef {import('@tabulous/server/src/graphql/types').Targetable} Targetable
+ * @typedef {import('@tabulous/server/src/graphql').Anchor} Anchor
+ * @typedef {import('@tabulous/server/src/graphql').Targetable} Targetable
  * @typedef {import('@src/3d/behaviors/targetable').TargetBehavior} TargetBehavior
  * @typedef {import('@src/3d/behaviors/targetable').DropDetails} DropDetails
  * @typedef {import('@src/3d/utils').ScreenPosition} ScreenPosition

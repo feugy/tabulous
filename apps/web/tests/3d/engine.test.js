@@ -3,7 +3,7 @@
  * @typedef {import('@babylonjs/core').Engine} Engine
  * @typedef {import('@babylonjs/core').Observer<?>} Observer
  * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@tabulous/server/src/graphql/types').Mesh} SerializedMesh
+ * @typedef {import('@tabulous/server/src/graphql').Mesh} SerializedMesh
  */
 
 import { NullEngine } from '@babylonjs/core/Engines/nullEngine'

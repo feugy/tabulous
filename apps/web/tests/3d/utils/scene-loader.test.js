@@ -3,7 +3,7 @@
  * @typedef {import('@babylonjs/core').Engine} Engine
  * @typedef {import('@babylonjs/core').Mesh} Mesh
  * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@tabulous/server/src/graphql/types').Mesh} SerializedMesh
+ * @typedef {import('@tabulous/server/src/graphql').Mesh} SerializedMesh
  * @typedef {import('@src/3d/utils/scene-loader').MeshCreator} MeshCreator
  */
 

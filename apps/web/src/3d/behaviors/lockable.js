@@ -1,7 +1,7 @@
 // @ts-check
 /**
  * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@tabulous/server/src/graphql/types').LockableState} LockableState
+ * @typedef {import('@tabulous/server/src/graphql').LockableState} LockableState
  */
 
 import { makeLogger } from '../../utils/logger'

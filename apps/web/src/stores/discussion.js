@@ -1,6 +1,6 @@
 // @ts-check
 /**
- * @typedef {import('@tabulous/server/src/graphql/types').Message} Message
+ * @typedef {import('@tabulous/server/src/graphql').Message} Message
  * @typedef {import('@src/stores/peer-channels').Message} WebRTCMessage
  */
 

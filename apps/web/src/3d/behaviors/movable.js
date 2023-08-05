@@ -1,7 +1,7 @@
 // @ts-check
 /**
  * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@tabulous/server/src/graphql/types').MovableState} MovableState
+ * @typedef {import('@tabulous/server/src/graphql').MovableState} MovableState
  */
 
 import { moveManager } from '../managers/move'

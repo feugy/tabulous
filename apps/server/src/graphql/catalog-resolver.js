@@ -1,8 +1,8 @@
 // @ts-check
 /**
- * @typedef {import('./types').CatalogItem} CatalogItem
- * @typedef {import('./types').GrantAccessArgs} GrantAccessArgs
- * @typedef {import('./types').RevokeAccessArgs} RevokeAccessArgs
+ * @typedef {import('.').CatalogItem} CatalogItem
+ * @typedef {import('.').GrantAccessArgs} GrantAccessArgs
+ * @typedef {import('.').RevokeAccessArgs} RevokeAccessArgs
  * @typedef {import('./utils').GraphQLAnonymousContext} GraphQLAnonymousContext
  * @typedef {import('./utils').GraphQLContext} GraphQLContext
  */

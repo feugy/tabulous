@@ -24,7 +24,7 @@ import type {
   Signal,
   TargetedPlayerArgs,
   UpdateCurrentPlayerArgs
-} from '@tabulous/server/src/graphql/types'
+} from '@tabulous/server/src/graphql'
 import type { TypedDocumentNode } from '@urql/core'
 
 declare module '@src/graphql' {

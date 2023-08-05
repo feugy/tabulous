@@ -1,7 +1,7 @@
 // @ts-check
 /**
  * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@tabulous/server/src/graphql/types').DrawableState} DrawableState
+ * @typedef {import('@tabulous/server/src/graphql').DrawableState} DrawableState
  * @typedef {import('@src/3d/utils').FloatKeyFrame} FloatKeyFrame
  * @typedef {import('@src/3d/utils').Vector3KeyFrame} Vector3KeyFrame
  */

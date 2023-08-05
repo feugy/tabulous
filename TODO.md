@@ -2,7 +2,6 @@
 
 ## Road to beta
 
-- move server graphql types in a d.ts file
 - create type for migration files
 - ts-check game files
 - replace windicss with a successor (tailwind or UnoCSS)

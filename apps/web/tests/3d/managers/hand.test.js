@@ -6,7 +6,7 @@
  * @typedef {import('@babylonjs/core').Observer<?>} Observer
  * @typedef {import('@babylonjs/core').Scene} Scene
  * @typedef {import('@src/3d/behaviors').DrawBehavior} DrawBehavior
- * @typedef {import('@tabulous/server/src/graphql/types').Mesh} SerializableMesh
+ * @typedef {import('@tabulous/server/src/graphql').Mesh} SerializableMesh
  */
 /**
  * @template {any[]} P, R

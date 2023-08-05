@@ -8,10 +8,10 @@
  * @typedef {import('@src/graphql').Game} Game
  * @typedef {import('@src/graphql').GameOrGameParameters} GameOrGameParameters
  * @typedef {import('@src/types').JSONValue} JSONValue
- * @typedef {import('@tabulous/server/src/graphql/types').CameraPosition} SharedCameraPosition
- * @typedef {import('@tabulous/server/src/graphql/types').Hand} Hand
- * @typedef {import('@tabulous/server/src/graphql/types').Mesh} Mesh
- * @typedef {import('@tabulous/server/src/graphql/types').TurnCredentials} TurnCredentials
+ * @typedef {import('@tabulous/server/src/graphql').CameraPosition} SharedCameraPosition
+ * @typedef {import('@tabulous/server/src/graphql').Hand} Hand
+ * @typedef {import('@tabulous/server/src/graphql').Mesh} Mesh
+ * @typedef {import('@tabulous/server/src/graphql').TurnCredentials} TurnCredentials
  * @typedef {import('rxjs').Subscription} Subscription
  */
 /**

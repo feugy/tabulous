@@ -1,8 +1,8 @@
 // @ts-check
 /**
  * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@tabulous/server/src/graphql/types').Anchor} Anchor
- * @typedef {import('@tabulous/server/src/graphql/types').Targetable} Targetable
+ * @typedef {import('@tabulous/server/src/graphql').Anchor} Anchor
+ * @typedef {import('@tabulous/server/src/graphql').Targetable} Targetable
  * @typedef {import('@src/3d/managers/target').SingleDropZone} SingleDropZone
  * @typedef {import('@src/3d/managers/target').DropZone} DropZone
  */

@@ -2,8 +2,8 @@
 /**
  * @typedef {import('@babylonjs/core').Animatable} Animatable
  * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@tabulous/server/src/graphql/types').CameraPosition} RawCameraPosition
- * @typedef {import('@tabulous/server/src/graphql/types').ZoomSpec} ZoomSpec
+ * @typedef {import('@tabulous/server/src/graphql').CameraPosition} RawCameraPosition
+ * @typedef {import('@tabulous/server/src/graphql').ZoomSpec} ZoomSpec
  * @typedef {import('@src/3d/utils').ScreenPosition} ScreenPosition
  */
 

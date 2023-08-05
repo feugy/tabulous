@@ -1,6 +1,6 @@
 // @ts-check
 /**
- * @typedef {import('./types').LoggerLevel} LoggerLevel
+ * @typedef {import('.').LoggerLevel} LoggerLevel
  * @typedef {import('./utils').GraphQLAnonymousContext} GraphQLAnonymousContext
  * @typedef {import('./utils').GraphQLContext} GraphQLContext
  */

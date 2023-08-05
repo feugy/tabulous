@@ -1,5 +1,5 @@
 // @ts-check
-/** @typedef {import('@tabulous/server/src/graphql/types').CatalogItem} CatalogItem */
+/** @typedef {import('@tabulous/server/src/graphql').CatalogItem} CatalogItem */
 
 import { gql } from '@urql/core'
 import chalkTemplate from 'chalk-template'

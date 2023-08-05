@@ -1,7 +1,7 @@
 <script>
   // @ts-check
   /**
-   * @typedef {import('@tabulous/server/src/graphql/types').ActionName} ActionName
+   * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
    * @typedef {import('@src/stores/game-manager').Player} Player
    * @typedef {import('@src/stores/indicators').VisibleIndicator} VisibleIndicator
    * @typedef {import('@src/stores/indicators').VisibleFeedback} VisibleFeedback

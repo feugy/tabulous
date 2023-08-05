@@ -1,8 +1,8 @@
 // @ts-check
 /**
  * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@tabulous/server/src/graphql/types').Anchor} Anchor
- * @typedef {import('@tabulous/server/src/graphql/types').StackableState} StackableState
+ * @typedef {import('@tabulous/server/src/graphql').Anchor} Anchor
+ * @typedef {import('@tabulous/server/src/graphql').StackableState} StackableState
  * @typedef {import('@src/3d/behaviors/animatable').AnimateBehavior} AnimateBehavior
  * @typedef {import('@src/3d/behaviors/targetable').DropDetails} DropDetails
  * @typedef {import('@src/3d/managers/control').Action} Action

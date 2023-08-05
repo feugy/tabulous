@@ -1,8 +1,8 @@
 <script>
   // @ts-check
   /**
-   * @typedef {import('@tabulous/server/src/graphql/types').ActionSpec} ActionSpec
-   * @typedef {import('@tabulous/server/src/graphql/types').ActionName} ActionName
+   * @typedef {import('@tabulous/server/src/graphql').ActionSpec} ActionSpec
+   * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
    */
 
   import { buttonIds } from '@src/3d/utils/actions'

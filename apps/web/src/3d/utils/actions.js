@@ -1,8 +1,8 @@
 // @ts-check
 /**
- * @typedef {import('@tabulous/server/src/graphql/types').ActionName} ActionName
- * @typedef {import('@tabulous/server/src/graphql/types').ButtonName} ButtonName
- * @typedef {import('@tabulous/server/src/graphql/types').Mesh} SerializedMesh
+ * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
+ * @typedef {import('@tabulous/server/src/graphql').ButtonName} ButtonName
+ * @typedef {import('@tabulous/server/src/graphql').Mesh} SerializedMesh
  * @typedef {import('@src/types').Translate} Translate
  */
 

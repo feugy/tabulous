@@ -1,8 +1,8 @@
 // @ts-check
 /**
  * @typedef {import('rxjs').Subscription} Subscription
- * @typedef {import('@tabulous/server/src/graphql/types').Player} Player
- * @typedef {import('@tabulous/server/src/graphql/types').TurnCredentials} TurnCredentials
+ * @typedef {import('@tabulous/server/src/graphql').Player} Player
+ * @typedef {import('@tabulous/server/src/graphql').TurnCredentials} TurnCredentials
  * @typedef {import('@src/utils').StreamState} StreamState
  * @typedef {import('@src/utils').Stream} Stream
  */

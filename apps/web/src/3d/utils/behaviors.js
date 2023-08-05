@@ -1,8 +1,8 @@
 // @ts-check
 /**
  * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@tabulous/server/src/graphql/types').Dimension} Dimension
- * @typedef {import('@tabulous/server/src/graphql/types').Mesh} _SerializedMesh
+ * @typedef {import('@tabulous/server/src/graphql').Dimension} Dimension
+ * @typedef {import('@tabulous/server/src/graphql').Mesh} _SerializedMesh
  * @typedef {import('@src/3d/behaviors').AnimateBehavior} AnimateBehavior
  * @typedef {import('@src/3d/behaviors').TargetBehavior} TargetBehavior
  * @typedef {import('@src/3d/behaviors/names')} _BehaviorNames

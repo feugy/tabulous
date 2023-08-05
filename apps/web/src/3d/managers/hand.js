@@ -3,9 +3,9 @@
  * @typedef {import('@babylonjs/core').Engine} Engine
  * @typedef {import('@babylonjs/core').Mesh} Mesh
  * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@tabulous/server/src/graphql/types').Dimension} Dimension
- * @typedef {import('@tabulous/server/src/graphql/types').Hand} Hand
- * @typedef {import('@tabulous/server/src/graphql/types').Mesh} SerializedMesh
+ * @typedef {import('@tabulous/server/src/graphql').Dimension} Dimension
+ * @typedef {import('@tabulous/server/src/graphql').Hand} Hand
+ * @typedef {import('@tabulous/server/src/graphql').Mesh} SerializedMesh
  * @typedef {import('@src/3d/behaviors/anchorable').AnchorBehavior} AnchorBehavior
  * @typedef {import('@src/3d/behaviors/drawable').DrawBehavior} DrawBehavior
  * @typedef {import('@src/3d/behaviors/flippable').FlipBehavior} FlipBehavior

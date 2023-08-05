@@ -2,7 +2,7 @@
 /**
  * @typedef {import('@babylonjs/core').Mesh} Mesh
  * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@tabulous/server/src/graphql/types').AnchorableState} AnchorableState
+ * @typedef {import('@tabulous/server/src/graphql').AnchorableState} AnchorableState
  * @typedef {import('@src/3d/behaviors/stackable').StackBehavior} StackBehavior
  * @typedef {import('@src/3d/behaviors/targetable').DropDetails} DropDetails
  * @typedef {import('@src/3d/managers/control').Action} Action

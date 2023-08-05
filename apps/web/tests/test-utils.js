@@ -15,7 +15,7 @@
  * @typedef {import('@src/stores/graphql-client').runSubscription} RunSubscription
  * @typedef {import('@src/types').Translate} Translate
  * @typedef {import('@src/utils').ScreenPosition} ScreenPosition
- * @typedef {import('@tabulous/server/src/graphql/types').ActionName} ActionName
+ * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
  * @typedef {import('fastify').FastifyInstance} FastifyInstance
  * @typedef {typeof import('@src/3d/managers/indicator').indicatorManager} IndicatorManager
  */
