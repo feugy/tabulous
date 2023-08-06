@@ -1,15 +1,7 @@
 // @ts-check
-/**
- * @typedef {typeof import('@tabulous/server/src/repositories').default} Repositories
- */
-
 import { iteratePage } from './utils.js'
 
-/**
- * Applies the migration.
- * @param {Repositories} repositories - connected repositories.
- * @returns {Promise<void>}
- */
+/** @type {import('.').Apply} */
 export async function apply(repositories) {
   await iteratePage(repositories.games, async game => {
     let modified = false

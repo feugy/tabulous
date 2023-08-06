@@ -1,15 +1,6 @@
 // @ts-check
-/**
- * @typedef {import('ioredis').Redis} Redis
- * @typedef {typeof import('@tabulous/server/src/repositories').default} Repositories
- */
 
-/**
- * Applies the migration.
- * @param {Repositories} repositories - connected repositories.
- * @param {Redis} redis - initialized Redis client.
- * @returns {Promise<void>}
- */
+/** @type {import('.').Apply} */
 export async function apply({ players }, redis) {
   console.log('delete undefined provider index')
   await redis.del('index:players:providers:undefined:undefined')
