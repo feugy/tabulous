@@ -573,9 +573,8 @@ describe('HandManager', () => {
           positions[1],
           positions[2]
         ])
-        expect(draggableToHandReceived).toHaveBeenCalledTimes(2)
-        expect(draggableToHandReceived).toHaveBeenNthCalledWith(
-          2,
+        expect(draggableToHandReceived).toHaveBeenCalledTimes(1)
+        expect(draggableToHandReceived).toHaveBeenLastCalledWith(
           true,
           expect.anything()
         )
@@ -596,12 +595,6 @@ describe('HandManager', () => {
           [mesh.id, ...movedPosition.asArray()],
           positions[2]
         ])
-        expect(draggableToHandReceived).toHaveBeenCalledTimes(4)
-        expect(draggableToHandReceived).toHaveBeenNthCalledWith(
-          4,
-          true,
-          expect.anything()
-        )
 
         movedPosition = new Vector3(4, 1, z)
         mesh.setAbsolutePosition(movedPosition)
@@ -619,9 +612,8 @@ describe('HandManager', () => {
           [handCards[2].id, ...positions[1].slice(1)],
           [mesh.id, ...positions[2].slice(1)]
         ])
-        expect(draggableToHandReceived).toHaveBeenCalledTimes(5)
-        expect(draggableToHandReceived).toHaveBeenNthCalledWith(
-          5,
+        expect(draggableToHandReceived).toHaveBeenCalledTimes(2)
+        expect(draggableToHandReceived).toHaveBeenLastCalledWith(
           false,
           expect.anything()
         )
@@ -643,9 +635,8 @@ describe('HandManager', () => {
           event: /** @type {PointerEvent} */ ({})
         })
         await waitForLayout()
-        expect(draggableToHandReceived).toHaveBeenCalledTimes(2)
-        expect(draggableToHandReceived).toHaveBeenNthCalledWith(
-          2,
+        expect(draggableToHandReceived).toHaveBeenCalledTimes(1)
+        expect(draggableToHandReceived).toHaveBeenLastCalledWith(
           true,
           expect.anything()
         )
@@ -683,9 +674,8 @@ describe('HandManager', () => {
           [mesh2.id, ...positions[1].slice(1)],
           [mesh3.id, ...positions[2].slice(1)]
         ])
-        expect(draggableToHandReceived).toHaveBeenCalledTimes(5)
-        expect(draggableToHandReceived).toHaveBeenNthCalledWith(
-          5,
+        expect(draggableToHandReceived).toHaveBeenCalledTimes(2)
+        expect(draggableToHandReceived).toHaveBeenLastCalledWith(
           false,
           expect.anything()
         )
@@ -882,9 +872,8 @@ describe('HandManager', () => {
             pointers: 1,
             event: /** @type {PointerEvent} */ ({ x: 289.7, y: 175 })
           })
-          expect(draggableToHandReceived).toHaveBeenCalledTimes(2)
-          expect(draggableToHandReceived).toHaveBeenNthCalledWith(
-            2,
+          expect(draggableToHandReceived).toHaveBeenCalledTimes(1)
+          expect(draggableToHandReceived).toHaveBeenLastCalledWith(
             true,
             expect.anything()
           )
@@ -898,9 +887,8 @@ describe('HandManager', () => {
             event: /** @type {PointerEvent} */ ({ x: 289.7, y: 175 })
           })
           await waitForLayout()
-          expect(draggableToHandReceived).toHaveBeenCalledTimes(3)
-          expect(draggableToHandReceived).toHaveBeenNthCalledWith(
-            3,
+          expect(draggableToHandReceived).toHaveBeenCalledTimes(2)
+          expect(draggableToHandReceived).toHaveBeenLastCalledWith(
             false,
             expect.anything()
           )
@@ -1066,12 +1054,6 @@ describe('HandManager', () => {
           pointers: 1,
           event: /** @type {PointerEvent} */ ({ x: 289.7, y: 175 })
         })
-        expect(draggableToHandReceived).toHaveBeenCalledTimes(1)
-        expect(draggableToHandReceived).toHaveBeenNthCalledWith(
-          1,
-          false,
-          expect.anything()
-        )
         inputManager.onDragObservable.notifyObservers({
           type: 'dragStop',
           mesh: null,
@@ -1081,12 +1063,7 @@ describe('HandManager', () => {
           event: /** @type {PointerEvent} */ ({ x: 289.7, y: 175 })
         })
         await expect(waitForLayout()).rejects.toThrow()
-        expect(draggableToHandReceived).toHaveBeenCalledTimes(2)
-        expect(draggableToHandReceived).toHaveBeenNthCalledWith(
-          2,
-          false,
-          expect.anything()
-        )
+        expect(draggableToHandReceived).not.toHaveBeenCalled()
         expect(getPositions(handCards)).toEqual(positions)
         expect(actionRecorded).not.toHaveBeenCalled()
       })
@@ -1103,12 +1080,6 @@ describe('HandManager', () => {
           pointers: 1,
           event: /** @type {PointerEvent} */ ({ x: 289.7, y: 175 })
         })
-        expect(draggableToHandReceived).toHaveBeenCalledTimes(1)
-        expect(draggableToHandReceived).toHaveBeenNthCalledWith(
-          1,
-          false,
-          expect.anything()
-        )
         inputManager.onDragObservable.notifyObservers({
           type: 'dragStop',
           mesh,
@@ -1118,12 +1089,7 @@ describe('HandManager', () => {
           event: /** @type {PointerEvent} */ ({ x: 289.7, y: 175 })
         })
         await expect(waitForLayout()).rejects.toThrow()
-        expect(draggableToHandReceived).toHaveBeenCalledTimes(2)
-        expect(draggableToHandReceived).toHaveBeenNthCalledWith(
-          2,
-          false,
-          expect.anything()
-        )
+        expect(draggableToHandReceived).not.toHaveBeenCalled()
         expect(getPositions(handCards)).toEqual(positions)
         expect(actionRecorded).not.toHaveBeenCalled()
       })

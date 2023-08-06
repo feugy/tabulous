@@ -358,16 +358,18 @@ function handleAction(manager, action) {
  */
 async function handDrag(manager, { type, mesh, event }) {
   const { handScene, duration } = manager
-  // TODO only notify stops when required
-  manager.onDraggableToHandObservable.notifyObservers(false)
   if (!hasSelectedDrawableMeshes(mesh)) {
     return
   }
-  if (type !== 'dragStop') {
-    manager.onDraggableToHandObservable.notifyObservers(true)
-  }
 
   if (!mesh) return
+
+  if (type === 'dragStart') {
+    manager.onDraggableToHandObservable.notifyObservers(true)
+  } else if (type === 'dragStop') {
+    manager.onDraggableToHandObservable.notifyObservers(false)
+  }
+
   if (mesh.getScene() === handScene) {
     let moved = manager.moved
     if (type === 'dragStart') {
