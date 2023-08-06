@@ -114,14 +114,19 @@ class MoveManager {
         if (fn === actionNames.draw) {
           const mesh = moved.find(({ id }) => id === meshId)
           if (mesh && mesh.getScene() !== this.scene) {
+            // mesh dragged from hand to main scene
             const idx = moved.indexOf(mesh)
             moved.splice(idx, 1)
+            const wasAutoselected = this.autoSelect.delete(mesh)
             const newMesh = this.scene.getMeshById(meshId)
             if (newMesh) {
               moved.splice(idx, 0, newMesh)
               sceneUsed = this.scene
               lastPosition = newMesh.absolutePosition.clone()
               lastPosition.y -= this.elevation
+              if (wasAutoselected) {
+                this.autoSelect.add(newMesh)
+              }
             }
           }
         }
