@@ -5,7 +5,6 @@
  * @typedef {import('../repositories/players').Friendship} Friendship
  */
 
-import Ajv from 'ajv/dist/2020.js'
 import { concatMap, mergeMap, Subject } from 'rxjs'
 
 import repositories from '../repositories/index.js'
@@ -14,6 +13,7 @@ import {
   FriendshipProposed
 } from '../repositories/players.js'
 import {
+  ajv,
   createMeshes,
   enrichAssets,
   getParameterSchema,
@@ -245,8 +245,6 @@ const colors = [
 /** @type {Subject<string[]>} */
 const gameListsUpdate$ = new Subject()
 
-const ajv = new Ajv({ $data: true, allErrors: true, strictSchema: false })
-
 /**
  * @typedef {object} GameListUpdate an updated list of player games.
  * @property {string} playerId - the corresponding player id.
@@ -371,7 +369,6 @@ export async function promoteGame(gameId, kind, player) {
     throw new Error(`Game ${gameId} is already a full game`)
   }
   await checkGameLimit(player, [gameId])
-  // TODO descriptor may not exist!
   const descriptor = await findDescriptor(kind, player)
 
   // trim some data out of the descriptor before saving it as game properties

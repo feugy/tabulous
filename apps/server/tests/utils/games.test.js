@@ -1134,6 +1134,18 @@ describe('getParameterSchema()', () => {
     expect(askForParameters).toHaveBeenCalledWith({ game, player })
   })
 
+  it('handles invalid schema', async () => {
+    askForParameters.mockResolvedValue([1, 2, 3])
+    expect(
+      await getParameterSchema({
+        descriptor: { askForParameters },
+        game,
+        player
+      })
+    ).toBeNull()
+    expect(askForParameters).toHaveBeenCalledWith({ game, player })
+  })
+
   it('enriches image metadatas', async () => {
     const { schema } = /** @type {GameParameters} */ (
       await getParameterSchema({

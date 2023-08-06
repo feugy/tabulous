@@ -15,6 +15,7 @@
 
 import { randomUUID } from 'node:crypto'
 
+import Ajv from 'ajv/dist/2020.js'
 import merge from 'deepmerge'
 
 import { shuffle } from './collections.js'
@@ -53,6 +54,15 @@ import { shuffle } from './collections.js'
  * @property {string} [anchorId] - id of the anchor to snap to.
  * @property {number} [count] - number of mesh drawn from bag.
  */
+
+/**
+ * Unique AJV instance used for game parameter validation.
+ */
+export const ajv = new Ajv({
+  $data: true,
+  allErrors: true,
+  strictSchema: false
+})
 
 /**
  * Creates a unique game from a game descriptor.
@@ -500,10 +510,9 @@ function addHash(position) {
  */
 export async function getParameterSchema({ descriptor, game, player }) {
   const schema = await descriptor?.askForParameters?.({ game, player })
-  if (!schema) {
+  if (!schema || !ajv.validateSchema(schema)) {
     return null
   }
-  // TODO validates schema's compliance
   for (const property of Object.values(schema.properties)) {
     if (property.metadata?.images) {
       for (const [name, image] of Object.entries(property.metadata.images)) {
