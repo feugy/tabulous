@@ -91,13 +91,14 @@ export const customShapeManager = new CustomShapeManager()
 function extractFiles(meshes) {
   /** @type {string[]} */
   const files = []
-  for (const { shape, file, faces } of meshes ?? []) {
+  for (const { id, shape, file, faces } of meshes ?? []) {
     if (shape === 'custom') {
-      // TODO throw if no file
+      if (!file) {
+        throw new Error(`Custom shaped mesh '${id}' is missing a file`)
+      }
       files.push(/** @type {string} */ (file))
     } else if (shape === 'die') {
-      // TODO throw if no faces
-      files.push(getDieModelFile(/** @type {number} */ (faces)))
+      files.push(getDieModelFile(faces ?? 0))
     }
   }
   return files

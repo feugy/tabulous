@@ -184,6 +184,28 @@ describe('CustomShapeManager', () => {
       expect(manager.get(file)).toEqual(expectedData.pawn)
       expect(request).toHaveBeenCalledTimes(1)
     })
+
+    it('throws on custom mesh without file', async () => {
+      const id = faker.string.uuid()
+      await expect(
+        manager.init({
+          gameAssetsUrl,
+          meshes: [{ id, texture: '', shape: 'custom' }],
+          hands: undefined
+        })
+      ).rejects.toThrow(`Custom shaped mesh '${id}' is missing a file`)
+    })
+
+    it('throws on dice without face', async () => {
+      const id = faker.string.uuid()
+      await expect(
+        manager.init({
+          gameAssetsUrl,
+          meshes: [{ id, texture: '', shape: 'die' }],
+          hands: undefined
+        })
+      ).rejects.toThrow(`0 faces dice are not supported`)
+    })
   })
 
   describe('given initialised', () => {
