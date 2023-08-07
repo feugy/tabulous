@@ -28,10 +28,12 @@ let table = null
  * Useful to know where on the ground a player has clicked.
  * @param {Scene} scene - current scene.
  * @param {ScreenPosition} position - screen position.
- * @returns {?Vector3} 3D point on the ground plane (Y axis) for this position, if any.
+ * @returns {Vector3} 3D point on the ground plane (Y axis) for this position, if any.
  */
 export function screenToGround(scene, { x, y }) {
-  return scene.createPickingRay(x, y, null, null).intersectsAxis('y')
+  return /** @type {Vector3} */ (
+    scene.createPickingRay(x, y, null, null).intersectsAxis('y')
+  )
 }
 
 /**

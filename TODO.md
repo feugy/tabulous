@@ -22,7 +22,7 @@
 - bug: a game with no available seats and no other player should not display the friend list tab
 - bug: game shortcuts ignore active selection to only apply to hover mesh
 - bug: 6-takes: snapping to the wrong anchor (when 2 players are snapping to different anchors)
-- chore: a couple TODOs in the code
+- chore: serves babylonjs ktx2Decoder.js along with other files.
 - chore: Placing %sveltekit.body% directly inside <body> is not recommended
 - score card (Mah-jong, Belote)
 - command to reset some mesh state and restart a game (Mah-jong, Belote)
@@ -40,7 +40,6 @@
 ## Server
 
 - bug: lobby to parametrized game: handle concurrent parameters (playground)
-- chore: a couple TODOs in the code
 - allows a single connection per player (discards other JWTs)
 - better coTURN integration (password management and rotation)
 

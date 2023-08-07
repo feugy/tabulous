@@ -345,7 +345,7 @@ class InputManager {
         `type: pointermove x: ${event.x} y: ${event.y} id: ${event.pointerId}`
       )
       lastMoveEvent = event
-      const pointer = screenToGround(scene, event)?.asArray()
+      const pointer = screenToGround(scene, event).asArray()
       if (pointer) {
         this.onPointerObservable.notifyObservers(pointer)
       }

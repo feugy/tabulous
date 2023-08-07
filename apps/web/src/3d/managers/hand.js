@@ -380,9 +380,7 @@ async function handDrag(manager, { type, mesh, event }) {
     }
     manager.moved = moved
     if (moved.length && isHandMeshNextToMain(manager, event)) {
-      const position = /** @type {Vector3} */ (
-        screenToGround(manager.scene, event)
-      )
+      const position = screenToGround(manager.scene, event)
       const origin = moved[0].absolutePosition.x
       /** @type {Mesh[]} */
       const droppedList = []
@@ -537,15 +535,11 @@ function recordDraw(mesh, finalPosition) {
 function computeExtent(manager, engine) {
   const { handScene } = manager
   const size = getViewPortSize(engine)
-  const topLeft = /** @type {Vector3} */ (
-    screenToGround(handScene, { x: 0, y: 0 })
-  )
-  const bottomRight = /** @type {Vector3} */ (
-    screenToGround(handScene, {
-      x: size.width,
-      y: size.height
-    })
-  )
+  const topLeft = screenToGround(handScene, { x: 0, y: 0 })
+  const bottomRight = screenToGround(handScene, {
+    x: size.width,
+    y: size.height
+  })
   manager.extent = {
     size,
     minX: topLeft.x,
@@ -616,9 +610,7 @@ async function layoutMeshs(manager) {
       : (contentDimensions.width - availableWidth) / (meshes.length - 1))
   let y = 0
   const z =
-    /** @type {Vector3} */ (
-      screenToGround(handScene, { x: 0, y: extent.screenHeight })
-    ).z -
+    screenToGround(handScene, { x: 0, y: extent.screenHeight }).z -
     contentDimensions.depth * 0.5
   /** @type {(void|Promise<void>)[]} */
   const promises = []
