@@ -217,6 +217,7 @@ class HandManager {
             if (idx >= 0) {
               this.moved.splice(idx, 1)
             }
+            storeMeshDimensions(this)
             this.changes$.next()
           }
         }
@@ -357,7 +358,7 @@ function handleAction(manager, action) {
  * @returns {Promise<void>}
  */
 async function handDrag(manager, { type, mesh, event }) {
-  const { handScene, duration } = manager
+  const { handScene } = manager
   if (!hasSelectedDrawableMeshes(mesh)) {
     return
   }
@@ -382,7 +383,6 @@ async function handDrag(manager, { type, mesh, event }) {
       const position = /** @type {Vector3} */ (
         screenToGround(manager.scene, event)
       )
-      // TODO what it position is null
       const origin = moved[0].absolutePosition.x
       /** @type {Mesh[]} */
       const droppedList = []
@@ -438,12 +438,8 @@ async function handDrag(manager, { type, mesh, event }) {
         saved.mesh.setAbsolutePosition(saved.position)
         animateMove(saved.mesh, current, null, saved.duration)
       }
-      // final layout after all animation are over
-      // TODO wait for the destroy animation instead
-      setTimeout(() => layoutMeshs(manager), duration * 1.1)
-    } else {
-      layoutMeshs(manager)
     }
+    layoutMeshs(manager)
   } else if (isMainMeshNextToHand(manager, mesh)) {
     if (type !== 'dragStop') {
       inputManager.stopDrag(event)
