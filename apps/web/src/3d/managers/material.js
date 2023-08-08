@@ -14,9 +14,25 @@ import { PBRBaseMaterial } from '@babylonjs/core/Materials/PBR/pbrBaseMaterial.j
 import { PBRSpecularGlossinessMaterial } from '@babylonjs/core/Materials/PBR/pbrSpecularGlossinessMaterial.js'
 import { Texture } from '@babylonjs/core/Materials/Textures/texture.js'
 import { Color3, Color4 } from '@babylonjs/core/Maths/math.color.js'
+import { KhronosTextureContainer2 } from '@babylonjs/core/Misc/khronosTextureContainer2'
 import { injectLocale } from '@src/utils'
 
 import { makeLogger } from '../../utils/logger'
+
+KhronosTextureContainer2.URLConfig.jsDecoderModule =
+  '/babylonjs/babylon.ktx2Decoder.js'
+KhronosTextureContainer2.URLConfig.wasmUASTCToASTC =
+  '/babylonjs/ktx2Transcoders/1/uastc_astc.wasm'
+KhronosTextureContainer2.URLConfig.wasmUASTCToBC7 =
+  '/babylonjs/ktx2Transcoders/1/uastc_bc7.wasm'
+KhronosTextureContainer2.URLConfig.wasmUASTCToRGBA_UNORM =
+  '/babylonjs/ktx2Transcoders/1/uastc_rgba32_unorm.wasm'
+KhronosTextureContainer2.URLConfig.wasmUASTCToRGBA_SRGB =
+  '/babylonjs/ktx2Transcoders/1/uastc_rgba32_srgb.wasm'
+KhronosTextureContainer2.URLConfig.jsMSCTranscoder =
+  '/babylonjs/ktx2Transcoders/1/msc_basis_transcoder.js'
+KhronosTextureContainer2.URLConfig.wasmMSCTranscoder =
+  '/babylonjs/ktx2Transcoders/1/msc_basis_transcoder.wasm'
 
 const logger = makeLogger('material')
 

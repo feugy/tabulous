@@ -1,14 +1,11 @@
 # TODO
 
-## Road to beta
-
-- ts-check game files
-- replace windicss with a successor (tailwind or UnoCSS)
-- automerge.js
-
 ## Refactor
 
 - graphQL + mesh: replace prismRotation with initialRotation
+- ts-check game files
+- replace windicss with a successor (tailwind or UnoCSS)
+- automerge.js
 - add tests for web/src/utils/peer-connection
 - group candidate target per kind for performance
 - keep anchor ids
