@@ -1,3 +1,5 @@
+// @ts-check
+
 // https://coolors.co/b36b00-cb0a2a-adc2ad-1e152a-9c9c9c-eea93f-2274a5
 export const colors = {
   base: '#b36b00',
@@ -6,6 +8,9 @@ export const colors = {
   players: ['#cb0a2a', '#1e152a', '#9c9c9c', '#eea93f', '#2274a5']
 }
 
+/** @typedef {'east'|'south'|'west'|'north'} Wall */
+
+/** @type {Record<Wall, Wall>} */
 export const walls = {
   east: 'east',
   south: 'south',

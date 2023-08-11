@@ -1,6 +1,10 @@
+// @ts-check
+/** @typedef {import('@tabulous/server/src/graphql').Mesh} Mesh */
+
 import { kinds } from '../constants.js'
 
-export function buildSticks(playerRank) {
+export function buildSticks(/** @type {number} */ playerRank) {
+  /** @type {Mesh[]} */
   const sticks = []
   const { x, z, angle, offset } =
     playerRank === 0
@@ -16,7 +20,7 @@ export function buildSticks(playerRank) {
     { name: 5000, quantity: 2 },
     { name: 10000, quantity: 1 }
   ].entries()) {
-    const kind = kinds[`sticks${name}`]
+    const kind = kinds[/** @type {'sticks100'} */ (`sticks${name}`)]
     sticks.push({
       id: `stick-${name}-${playerRank}`,
       shape: 'roundToken',

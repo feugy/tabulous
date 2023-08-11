@@ -1,5 +1,9 @@
+// @ts-check
+/** @typedef {import('@tabulous/server/src/graphql').Mesh} Mesh */
+
 import { shapes } from '../constants.js'
 
+/** @returns {Mesh} */
 export function buildDealerMark() {
   return {
     id: 'dealer-mark',

@@ -1,26 +1,50 @@
-export * from './logic/build.js'
-export { colors } from './logic/constants.js'
-export * from './logic/player.js'
+// @ts-check
+/**
+ * @typedef {import('@tabulous/server/src/services/catalog').ActionSpec} ActionSpec
+ * @typedef {import('@tabulous/server/src/services/catalog').GameDescriptor} GameDescriptor
+ */
 
-export const locales = {
+import { build } from './logic/build.js'
+import { colors } from './logic/constants.js'
+import { addPlayer, askForParameters } from './logic/player.js'
+
+const locales = {
   fr: { title: 'Mah-jong' },
   en: { title: 'Mah-jong' }
 }
 
-export const rulesBookPageCount = 44
+const rulesBookPageCount = 44
 
-export const minSeats = 4
+const minSeats = 4
 
-export const maxSeats = 4
+const maxSeats = 4
 
-export const minTime = 60
+const minTime = 60
 
-export const tableSpec = { texture: '#36823e' }
+const tableSpec = { texture: '#36823e' }
 
-export const zoomSpec = { hand: 35, min: 20, max: 90 }
+const zoomSpec = { hand: 35, min: 20, max: 90 }
 
-export const actions = {
+/** @type {ActionSpec} */
+const actions = {
   button1: ['rotate', 'random'],
   button2: ['flip'],
   button3: ['detail']
+}
+
+/** @type {GameDescriptor} */
+export default {
+  name: 'mah-jong',
+  actions,
+  colors,
+  locales,
+  maxSeats,
+  minSeats,
+  minTime,
+  rulesBookPageCount,
+  tableSpec,
+  zoomSpec,
+  askForParameters,
+  addPlayer,
+  build
 }

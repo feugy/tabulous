@@ -1,6 +1,10 @@
+// @ts-check
+/** @typedef {import('@tabulous/server/src/graphql').Mesh} Mesh */
+
 import { faceUVs, kinds, maxTilePByKind, shapes } from '../constants.js'
 
 export function buildTiles() {
+  /** @type {Mesh[]} */
   const meshes = []
   for (const [kind, max] of maxTilePByKind) {
     for (let rank = 1; rank <= max; rank++) {
