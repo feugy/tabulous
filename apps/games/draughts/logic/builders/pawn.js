@@ -1,6 +1,10 @@
+// @ts-check
+/** @typedef {import('@tabulous/server/src/graphql').Mesh} Mesh */
+
 import { blackId, colors, counts, sizes, whiteId } from '../constants.js'
 
 export function buildPawns() {
+  /** @type {Mesh[]} */
   const meshes = []
   for (const kind of [whiteId, blackId]) {
     for (let index = 1; index <= counts.pawns; index++) {
