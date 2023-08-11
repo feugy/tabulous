@@ -269,7 +269,7 @@ export default {
   GameParameters: {
     /**
      * Serializer for schema.
-     * @param {import('../services/games').GameParameters} obj - serialized game parameter schema
+     * @param {import('../services/games').GameParameters<?>} obj - serialized game parameter schema
      * @returns {string}
      */
     schemaString: obj => JSON.stringify(obj.schema)

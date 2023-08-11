@@ -2,7 +2,7 @@
 /**
  * @typedef {import('../../src/services/games').Anchor} Anchor
  * @typedef {import('../../src/services/games').GameDescriptor} GameDescriptor
- * @typedef {import('../../src/services/games').GameParameters} GameParameters
+ * @typedef {import('../../src/services/games').GameParameters<?>} GameParameters
  * @typedef {import('../../src/services/games').Mesh} Mesh
  * @typedef {import('../../src/services/games').Point} Point
  * @typedef {import('../../src/services/games').StartedGameData} StartedGameData

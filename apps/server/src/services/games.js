@@ -217,14 +217,21 @@ import { canAccess } from './catalog.js'
 
 /** @typedef { Record<string, ?> & _PlayerPreference } PlayerPreference */
 
-/** @typedef {import('ajv').JSONSchemaType<?>} Schema */
+/**
+ * @template Parameters
+ * @typedef {import('ajv').JSONSchemaType<Parameters>} Schema
+ */
 
 /**
+ * @template Parameters
  * @typedef {object} _GameParameters parameters required to join a given game.
- * @property {Schema} schema - a JSON Type Definition schema used to validate required parmeters.
+ * @property {Schema<Parameters>} schema - a JSON Type Definition schema used to validate required parmeters.
  * @property {string} [error] - validation error, when relevant.
  */
-/** @typedef {GameData & _GameParameters} GameParameters */
+/**
+ * @template Parameters
+ * @typedef {GameData & _GameParameters<Parameters>} GameParameters
+ */
 
 const maxOwnedGames = 6
 
@@ -351,7 +358,7 @@ async function findDescriptor(name, player) {
  * @param {string} gameId - loaded game id.
  * @param {string} kind - game's kind.
  * @param {Player} player - joining guest
- * @returns {Promise<?GameData|GameParameters>} the promoted game, its parameters, or null.
+ * @returns {Promise<?GameData|GameParameters<?>>} the promoted game, its parameters, or null.
  * @throws {Error} when no descriptor could be found for this kind.
  * @throws {Error} when this game is restricted and was not granted to player.
  * @throws {Error} when player already owns too many games (not counting this one).
@@ -473,10 +480,11 @@ function isAdmin(player) {
  * - no game could match this game id.
  * - requesting user is neither a player nor a guest.
  * - the player is not a guest
+ * @template Parameters
  * @param {string} gameId - loaded game id.
  * @param {Player} player - joining guest
- * @param {?object} [parameters] - parameters values for this player, when joining for the first time.
- * @returns {Promise<?GameData|GameParameters>} the loaded game, its parameters, or null.
+ * @param {?Parameters} [parameters] - parameters values for this player, when joining for the first time.
+ * @returns {Promise<?GameData|GameParameters<Parameters>>} the loaded game, its parameters, or null.
  * @throws {Error} when player is a guest and the game has no more availabe seats.
  * @throws {Error} when player is a guest and an error occured while adding them.
  */
@@ -558,7 +566,8 @@ function isGuest(game, userId) {
 }
 
 /**
- * @param {Schema} schema - JSONSchema to validate
+ * @template Parameters
+ * @param {Schema<Parameters>} schema - JSONSchema to validate
  * @param {object} parameters - validated object
  * @returns {string|undefined} a validation error string or undefined
  */
@@ -783,7 +792,7 @@ export async function countOwnGames(playerId, excludedGameIds = []) {
 }
 
 /**
- * @param {GameData|GameParameters} game - serialized game
+ * @param {GameData|GameParameters<?>} game - serialized game
  * @returns {object} important serialized fields
  */
 function serializeForLogs({

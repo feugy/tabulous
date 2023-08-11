@@ -93,12 +93,12 @@ export type {
 } from '../services/games'
 
 export type GameParameters = Pick<
-  games.GameParameters,
+  games.GameParameters<unknown>,
   'error' | 'id' | 'kind'
 > &
   Partial<
     Pick<
-      games.GameParameters,
+      games.GameParameters<unknown>,
       | 'locales'
       | 'preferences'
       | 'rulesBookPageCount'

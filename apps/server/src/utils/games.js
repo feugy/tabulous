@@ -4,13 +4,15 @@
  * @typedef {import('../services/catalog').GameDescriptor} GameDescriptor
  * @typedef {import('../services/games').GameData} GameData
  * @typedef {import('../services/games').StartedGameData} StartedGameData
- * @typedef {import('../services/games').GameParameters} GameParameters
- * @typedef {import('../services/games').Schema} Schema
  * @typedef {import('../services/games').Mesh} Mesh
  * @typedef {import('../services/games').Anchor} Anchor
  * @typedef {import('../services/games').Hand} Hand
  * @typedef {import('../services/games').CameraPosition} CameraPosition
  * @typedef {import('../services/games').PlayerPreference} PlayerPreference
+ */
+/**
+ * @template Parameters
+ * @typedef {import('../services/games').GameParameters<Parameters>} GameParameters
  */
 
 import { randomUUID } from 'node:crypto'
@@ -506,7 +508,7 @@ function addHash(position) {
  * @param {?Pick<GameDescriptor, 'askForParameters'>} args.descriptor - game descriptor.
  * @param {StartedGameData} args.game - current game's data.
  * @param {Player} args.player - player for which descriptor is retrieved.
- * @returns {Promise<?GameParameters>} the parameter schema, or null.
+ * @returns {Promise<?GameParameters<?>>} the parameter schema, or null.
  */
 export async function getParameterSchema({ descriptor, game, player }) {
   const schema = await descriptor?.askForParameters?.({ game, player })
@@ -533,10 +535,11 @@ export async function getParameterSchema({ descriptor, game, player }) {
  * Returns all possible values of a preference that were not picked by other players.
  * For example: `findAvailableValues(preferences, 'color', colors.players)` returns available colors.
  *
+ * @template T
  * @param {PlayerPreference[]} preferences - list of player preferences objects.
  * @param {string} name - name of the preference considered.
- * @param {any[]} possibleValues - list of possible values.
- * @returns {any[]} filtered possible values (could be empty).
+ * @param {T[]} possibleValues - list of possible values.
+ * @returns {T[]} filtered possible values (could be empty).
  */
 export function findAvailableValues(preferences, name, possibleValues) {
   return possibleValues.filter(value =>

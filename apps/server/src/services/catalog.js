@@ -2,12 +2,27 @@
 /**
  * @typedef {import('./players').Player} Player
  * @typedef {import('./games').StartedGameData} GameData
- * @typedef {import('./games').Schema} Schema
  * @typedef {import('../utils/games').GameSetup} GameSetup
+ */
+/**
+ * @template T
+ * @typedef {import('./games').Schema<T>} Schema
  */
 
 import repositories from '../repositories/index.js'
 import { makeLogger } from '../utils/index.js'
+
+/** @typedef {() => GameSetup | Promise<GameSetup>} Build */
+
+/**
+ * @template Parameters
+ * @typedef {(game: GameData, guest: Player, parameters: ?Parameters) => GameData | Promise<GameData>} AddPlayer
+ */
+
+/**
+ * @template Parameters
+ * @typedef {(args: { game: GameData; player: Player }) => ?Schema<Parameters> | Promise<?Schema<Parameters>>} AskForParameters
+ */
 
 /**
  * @typedef {object} GameDescriptor a catalog item
@@ -24,9 +39,9 @@ import { makeLogger } from '../utils/index.js'
  * @property {TableSpec} [tableSpec] - table specifications to customize visual.
  * @property {ColorSpec} [colors] - allowed colors for players and UI.
  * @property {ActionSpec} [actions] - action customizations.
- * @property {() => GameSetup | Promise<GameSetup>} [build] - function invoked build initial game.
- * @property {(game: GameData, guest: Player, parameters: ?object) => GameData | Promise<GameData>} [addPlayer] - function invoked when a player joins a game for the first time.
- * @property {(args: { game: GameData; player: Player }) => Schema | Promise<Schema>} [askForParameters] - function invoked to generate a joining player's parameters.
+ * @property {Build} [build] - function invoked build initial game.
+ * @property {AddPlayer<?>} [addPlayer] - function invoked when a player joins a game for the first time.
+ * @property {AskForParameters<?>} [askForParameters] - function invoked to generate a joining player's parameters.
  */
 
 /**
