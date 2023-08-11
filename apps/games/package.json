@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "Tabulous game descriptors and assets",
   "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p jsconfig.json --noEmit"
+  },
   "dependencies": {
     "@tabulous/server": "workspace:*"
   }
