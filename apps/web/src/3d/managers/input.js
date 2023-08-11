@@ -340,10 +340,6 @@ class InputManager {
 
     const handlePointerMove = (/** @type {PointerEvent} */ event) => {
       if (!this.enabled || !hasMoved(pointers, event)) return
-      logger.trace(
-        { event },
-        `type: pointermove x: ${event.x} y: ${event.y} id: ${event.pointerId}`
-      )
       lastMoveEvent = event
       const pointer = screenToGround(scene, event).asArray()
       if (pointer) {
@@ -420,6 +416,8 @@ class InputManager {
               } with button ${dragOrigin.button}`
             )
             this.onDragObservable.notifyObservers(data)
+          } else {
+            dragOrigin = null
           }
         }
 
