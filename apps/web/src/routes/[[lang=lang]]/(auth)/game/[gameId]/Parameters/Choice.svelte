@@ -4,7 +4,7 @@
    * @typedef {import('@src/types').JSONValue} JSONValue
    * @typedef {import('@src/components').LabelMenuOption} LabelMenuOption
    * @typedef {import('@src/components').ColorMenuOption} ColorMenuOption
-   * @typedef {Partial<import('@tabulous/server/src/utils').Schema>} Schema
+   * @typedef {Partial<import('@tabulous/server/src/services/catalog').Schema<?>>} Schema
    */
 
   import { Dropdown } from '@src/components'

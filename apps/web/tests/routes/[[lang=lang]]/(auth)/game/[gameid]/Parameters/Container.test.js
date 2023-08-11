@@ -1,7 +1,5 @@
 // @ts-check
-/**
- * @typedef {Partial<import('@tabulous/server/src/utils').Schema>} Schema
- */
+/** @typedef {Partial<import('@tabulous/server/src/services/catalog').Schema<?>>} Schema */
 
 import Parameters from '@src/routes/[[lang=lang]]/(auth)/game/[gameId]/Parameters/Container.svelte'
 import { fireEvent, render, screen } from '@testing-library/svelte'
