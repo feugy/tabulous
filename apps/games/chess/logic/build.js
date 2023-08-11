@@ -1,6 +1,8 @@
+// @ts-check
 import { buildBoard, buildPieces } from './builders/index.js'
 import { blackId, whiteId } from './constants.js'
 
+/** @type {import('@tabulous/server/src/services/catalog').Build} */
 export function build() {
   return {
     /**
@@ -12,7 +14,6 @@ export function build() {
      * - 2 knights
      * - 8 pawns
      * and the game board.
-     * @type {import('@tabulous/server/src/services/games').Mesh[]}
      */
     meshes: [buildBoard(), ...buildPieces(whiteId), ...buildPieces(blackId)]
   }

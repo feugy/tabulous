@@ -1,3 +1,6 @@
+// @ts-check
+/** @typedef {import('./constants').Side} Side */
+
 import {
   buildCameraPosition,
   findAvailableValues
@@ -5,6 +8,12 @@ import {
 
 import { blackId, cameraPositions, whiteId } from './constants.js'
 
+/**
+ * @typedef {object} Parameters
+ * @property {Side} side - player and pieces color;
+ */
+
+/** @type {import('@tabulous/server/src/services/catalog').AskForParameters<Parameters>} */
 export function askForParameters({ game: { preferences } }) {
   const sides = findAvailableValues(preferences, 'side', [whiteId, blackId])
   return sides.length <= 1
@@ -14,6 +23,7 @@ export function askForParameters({ game: { preferences } }) {
         additionalProperties: false,
         properties: {
           side: {
+            type: 'string',
             description: 'color',
             enum: sides,
             metadata: { fr: { name: 'Couleur' }, en: { name: 'Color' } }
@@ -23,19 +33,21 @@ export function askForParameters({ game: { preferences } }) {
       }
 }
 
+/** @type {import('@tabulous/server/src/services/catalog').AddPlayer<Parameters>} */
 export function addPlayer(game, player, parameters) {
   const { cameras, preferences } = game
   // use selected preferences, or look for the first player color, and choose the other one.
-  const side =
+  const side = /** @type {Side} */ (
     preferences.length === 2
       ? preferences[0].side === whiteId
         ? blackId
         : whiteId
-      : parameters.side
+      : parameters?.side
+  )
   // stores preferences for the next player added.
   preferences[preferences.length - 1].side = side
   preferences[preferences.length - 1].color =
-    game.colors.players[side === whiteId ? 1 : 0]
+    game.colors?.players?.[side === whiteId ? 1 : 0]
   // set camera based on selected side.
   cameras.push(
     buildCameraPosition({

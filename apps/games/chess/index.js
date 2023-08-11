@@ -1,37 +1,62 @@
-export * from './logic/build.js'
-export * from './logic/players.js'
+// @ts-check
+/**
+ * @typedef {import('@tabulous/server/src/services/catalog').ActionSpec} ActionSpec
+ * @typedef {import('@tabulous/server/src/services/catalog').GameDescriptor} GameDescriptor
+ */
 
-export const locales = {
+import { build } from './logic/build.js'
+import { addPlayer, askForParameters } from './logic/players.js'
+
+const locales = {
   fr: { title: 'Echecs' },
   en: { title: 'Chess' }
 }
 
-export const minSeats = 2
+const minSeats = 2
 
-export const maxSeats = 2
+const maxSeats = 2
 
-export const rulesBookPageCount = 3
+const rulesBookPageCount = 3
 
-export const minTime = 30
+const minTime = 30
 
-export const minAge = 6
+const minAge = 6
 
-export const tableSpec = {
+const tableSpec = {
   texture: '/table-textures/wood-1.webp',
   width: 100,
   height: 100
 }
 
-export const zoomSpec = { min: 20 }
+const zoomSpec = { min: 20 }
 
 // https://coolors.co/dda15e-606c38-fefae0-bd5d2c-6d938e
-export const colors = {
+const colors = {
   base: '#dda15e',
   primary: '#606c38',
   secondary: '#fefae0',
   players: ['#dda15e', '#606c38']
 }
 
-export const actions = {
+/** @type {ActionSpec} */
+const actions = {
   button1: ['rotate']
+}
+
+/** @type {GameDescriptor} */
+export default {
+  name: 'chess',
+  actions,
+  colors,
+  locales,
+  maxSeats,
+  minAge,
+  minSeats,
+  minTime,
+  rulesBookPageCount,
+  tableSpec,
+  zoomSpec,
+  askForParameters,
+  addPlayer,
+  build
 }
