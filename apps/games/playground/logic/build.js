@@ -1,3 +1,6 @@
+// @ts-check
+/** @typedef {import('@tabulous/server/src/graphql').Mesh} Mesh */
+
 import { stackMeshes } from '@tabulous/server/src/utils/index.js'
 
 const sizes = {
@@ -9,6 +12,7 @@ const spacing = {
 }
 
 export function buildCards(full = false) {
+  /** @type {Mesh[]} */
   const cards = []
   for (const suit of ['spades', 'diamonds', 'clubs', 'hearts']) {
     for (let index = 1; index <= 13; index++) {
@@ -41,7 +45,12 @@ export function buildCards(full = false) {
   return cards
 }
 
-export function buildDice(faces, count, offset = 0) {
+export function buildDice(
+  /** @type {number} */ faces,
+  /** @type {number} */ count,
+  offset = 0
+) {
+  /** @type {Mesh[]} */
   const dices = []
   for (let rank = 1; rank <= count; rank++) {
     dices.push({

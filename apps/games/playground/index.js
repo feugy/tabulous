@@ -1,24 +1,41 @@
-export * from './logic/players.js'
+// @ts-check
+/** @typedef {import('@tabulous/server/src/services/catalog.js').GameDescriptor} GameDescriptor */
 
-export function build() {
+import { addPlayer, askForParameters } from './logic/players.js'
+
+function build() {
   return { meshes: [] }
 }
 
-export const locales = {
+const locales = {
   fr: { title: 'Aire de jeux' },
   en: { title: 'Playground' }
 }
 
-export const minSeats = 2
+const minSeats = 2
 
-export const maxSeats = 8
+const maxSeats = 8
 
-export const zoomSpec = { hand: 25 }
+const zoomSpec = { hand: 25 }
 
-export const tableSpec = { texture: '#046724ff' }
+const tableSpec = { texture: '#046724ff' }
 
-export const colors = {
+const colors = {
   base: '#51a16a',
   primary: '#c45335',
   secondary: '#e6c994'
+}
+
+/** @type {GameDescriptor} */
+export default {
+  name: 'playground',
+  locales,
+  minSeats,
+  maxSeats,
+  zoomSpec,
+  tableSpec,
+  colors,
+  build,
+  addPlayer,
+  askForParameters
 }

@@ -1,5 +1,15 @@
+// @ts-check
 import { buildCards, buildDice } from './build.js'
 
+/**
+ * @typedef {object} Parameters
+ * @property {number} cardCount - How many cards in the deck: 54, 3é, 0.
+ * @property {number} die4Count - 'How many 4-faces die: 0~5.
+ * @property {number} die6Count - 'How many 6-faces die: 0~5.
+ * @property {number} die8Count - 'How many 8-faces die: 0~5.
+ */
+
+/** @type {import('@tabulous/server/src/services/catalog').AskForParameters<Parameters>} */
 export function askForParameters({ game: { preferences } }) {
   return preferences.length
     ? null
@@ -44,6 +54,7 @@ export function askForParameters({ game: { preferences } }) {
       }
 }
 
+/** @type {import('@tabulous/server/src/services/catalog').AddPlayer<Parameters>} */
 export function addPlayer(game, player, parameters) {
   if (parameters) {
     const { cardCount, die4Count, die6Count, die8Count } = parameters
