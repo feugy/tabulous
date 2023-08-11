@@ -1,5 +1,7 @@
+// @ts-check
 import { buildCameraPosition } from '@tabulous/server/src/utils/index.js'
 
+/** @type {import('@tabulous/server/src/services/catalog').AddPlayer<?>} */
 export function addPlayer(game, player) {
   game.cameras.push(
     buildCameraPosition({

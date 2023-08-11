@@ -1,29 +1,51 @@
-export * from './logic/build.js'
-export * from './logic/players.js'
+// @ts-check
+/**
+ * @typedef {import('@tabulous/server/src/services/catalog').ActionSpec} ActionSpec
+ * @typedef {import('@tabulous/server/src/services/catalog').GameDescriptor} GameDescriptor
+ */
 
-export const locales = {
+import { build } from './logic/build.js'
+import { addPlayer } from './logic/players.js'
+
+const locales = {
   fr: { title: 'Solitaire' },
   en: { title: 'Klondike' }
 }
 
-export const minTime = 15
+const minTime = 15
 
-export const minAge = 7
+const minAge = 7
 
-export const minSeats = 1
+const minSeats = 1
 
-export const maxSeats = 1
+const maxSeats = 1
 
-export const tableSpec = { texture: '#325532ff' }
+const tableSpec = { texture: '#325532ff' }
 
-export const colors = {
+const colors = {
   base: '#afe619',
   primary: '#8367c7',
   secondary: '#73778c'
 }
 
-export const actions = {
+/** @type {ActionSpec} */
+const actions = {
   button1: ['flip'],
   button2: ['rotate'],
   button3: ['detail']
+}
+
+/** @type {GameDescriptor} */
+export default {
+  name: 'klondike',
+  locales,
+  minTime,
+  minAge,
+  minSeats,
+  maxSeats,
+  tableSpec,
+  colors,
+  actions,
+  addPlayer,
+  build
 }
