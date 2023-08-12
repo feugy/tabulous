@@ -1,9 +1,9 @@
 // @ts-check
 /** @typedef {import('@tabulous/server/src/services/catalog').GameDescriptor} GameDescriptor */
 
-export * from './logic/build.js'
+export { build } from './logic/build.js'
 export { colors } from './logic/constants.js'
-export * from './logic/player.js'
+export { addPlayer, askForParameters } from './logic/player.js'
 
 /** @type {GameDescriptor['locales']} */
 export const locales = {

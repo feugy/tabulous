@@ -207,3 +207,38 @@ jobs:
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
           coverage-reports: apps/web/coverage/clover-integration.xml
+
+  games_tests:
+    name: Games tests
+
+    runs-on: ubuntu-latest
+    needs: [lint-and-format]
+
+    steps:
+      - name: Check code out
+        uses: actions/checkout@v2
+
+      - name: Intall Pnpm
+        uses: pnpm/action-setup@v2
+
+      - name: Set Node.js up
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --ignore-scripts
+
+      - name: Run Game test
+        run: pnpm test:games
+        env:
+          TZ: CET
+
+      - name: Send coverage to Codacy
+        if: always()
+        continue-on-error: true
+        uses: codacy/codacy-coverage-reporter-action@master
+        with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: apps/cli/coverage/clover.xml
