@@ -56,21 +56,19 @@ export function askForParameters({ game: { preferences } }) {
 
 /** @type {import('@tabulous/server/src/services/catalog').AddPlayer<Parameters>} */
 export function addPlayer(game, player, parameters) {
-  if (parameters) {
-    const { cardCount, die4Count, die6Count, die8Count } = parameters
-    let offset = 0
-    if (cardCount) {
-      game.meshes.push(...buildCards(cardCount === 54))
-    }
-    if (die4Count) {
-      game.meshes.push(...buildDice(4, die4Count, (offset -= 3)))
-    }
-    if (die6Count) {
-      game.meshes.push(...buildDice(6, die6Count, (offset -= 3)))
-    }
-    if (die8Count) {
-      game.meshes.push(...buildDice(8, die8Count, (offset -= 3)))
-    }
+  const { cardCount, die4Count, die6Count, die8Count } = parameters
+  let offset = 0
+  if (cardCount) {
+    game.meshes.push(...buildCards(cardCount === 54))
+  }
+  if (die4Count) {
+    game.meshes.push(...buildDice(4, die4Count, (offset -= 3)))
+  }
+  if (die6Count) {
+    game.meshes.push(...buildDice(6, die6Count, (offset -= 3)))
+  }
+  if (die8Count) {
+    game.meshes.push(...buildDice(8, die8Count, (offset -= 3)))
   }
   return game
 }

@@ -611,7 +611,7 @@ async function enrichWithPlayer({ descriptor, game, guest, parameters }) {
   if (!descriptor?.addPlayer) {
     return game
   }
-  return enrichAssets(await descriptor.addPlayer(game, guest, parameters))
+  return enrichAssets(await descriptor.addPlayer(game, guest, parameters ?? {}))
 }
 
 /**

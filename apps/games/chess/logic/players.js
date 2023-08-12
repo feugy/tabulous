@@ -42,7 +42,7 @@ export function addPlayer(game, player, parameters) {
       ? preferences[0].side === whiteId
         ? blackId
         : whiteId
-      : parameters?.side
+      : parameters.side
   )
   // stores preferences for the next player added.
   preferences[preferences.length - 1].side = side

@@ -3,8 +3,8 @@
 ## Refactor
 
 - graphQL + mesh: replace prismRotation with initialRotation
-- ts-check game files
 - replace windicss with a successor (tailwind or UnoCSS)
+- move Discussion bellow PlayerList with a title and no fixed height
 - automerge.js
 - add tests for web/src/utils/peer-connection
 - group candidate target per kind for performance
@@ -19,8 +19,8 @@
 - bug: a game with no available seats and no other player should not display the friend list tab
 - bug: game shortcuts ignore active selection to only apply to hover mesh
 - bug: 6-takes: snapping to the wrong anchor (when 2 players are snapping to different anchors)
-- chore: serves babylonjs ktx2Decoder.js along with other files.
 - chore: Placing %sveltekit.body% directly inside <body> is not recommended
+- replay
 - score card (Mah-jong, Belote)
 - command to reset some mesh state and restart a game (Mah-jong, Belote)
 - check headings ordering
@@ -42,7 +42,6 @@
 
 ## Hosting
 
-- scheduled DB backups: cp /var/lib/redis/dump.{rdb,"$(date +%Y%m%d-%H%M).rdb"}
 - firewall
 - where to store secrets?
 - deploy in a folder named after the commit SHA

@@ -382,7 +382,7 @@ export function stackMeshes(meshes) {
  * If the anchor is already used, tries to stack the meshes (the current snapped mesh must be in provided meshes).
  * Abort the operation when meshes can't be stacked.
  * @param {string} anchorId - desired anchor id.
- * @param {Mesh|undefined} mesh - snapped mesh, if any.
+ * @param {?Mesh|undefined} mesh - snapped mesh, if any.
  * @param {Mesh[]} meshes - all meshes to search the anchor in.
  * @return {boolean} true if the mesh could be snapped or stacked. False otherwise.
  */
