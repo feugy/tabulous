@@ -1,6 +1,6 @@
 <script>
   // @ts-check
-  /** @typedef {import('@tabulous/server/src/graphql/types').Mesh} Mesh */
+  /** @typedef {import('@tabulous/server/src/graphql').Mesh} Mesh */
 
   import { MinimizableSection } from '@src/components'
   import { beforeUpdate } from 'svelte'

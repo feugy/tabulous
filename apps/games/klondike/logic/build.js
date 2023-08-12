@@ -1,28 +1,27 @@
+// @ts-check
 import { buildBoard, buildCards } from './builders/index.js'
 import { anchorIds, counts } from './constants.js'
 
 const bagId = 'cards'
 
+/** @type {import('@tabulous/server/src/services/catalog').Build} */
 export function build() {
   /**
    * 13 cards of each suit: spades, diamonds, clubs, hearts.
    * +
    * 1 board for all cards
-   * @type {import('@tabulous/server/src/services/games').Mesh[]}
    */
   const meshes = [...buildCards(), buildBoard()]
 
   /**
    * Bags to randomize:
    * - one for all remaining cards
-   * @type {Map<string, string[]>}
    */
   const bags = new Map([[bagId, meshes.slice(0, -1).map(({ id }) => id)]])
 
   /**
    * Pre-define slots: 1 on first column, 2 on second column, and so on.
    * Remainings are on discard
-   * @type {import('@tabulous/server/src/services/utils').Slot[]}
    */
   const slots = [
     ...makeColumnSlots(),

@@ -1,3 +1,6 @@
+// @ts-check
+/** @typedef {import('@tabulous/server/src/graphql').Mesh} Mesh */
+
 import {
   buildCameraPosition,
   findAvailableValues
@@ -6,17 +9,25 @@ import {
 import { buildSticks } from './builders/index.js'
 import { colors } from './constants.js'
 
+/**
+ * @typedef {object} Parameters
+ * @property {string} color - player color;
+ */
+
+/** @type {import('@tabulous/server/src/services/catalog').AskForParameters<Parameters>} */
 export function askForParameters({ game: { preferences } }) {
   return {
     type: 'object',
     additionalProperties: false,
     properties: {
       color: {
+        type: 'string',
         description: 'color',
         enum: findAvailableValues(preferences, 'color', colors.players),
         metadata: { fr: { name: 'Couleur' }, en: { name: 'Color' } }
       }
-    }
+    },
+    required: ['color']
   }
 }
 
@@ -27,9 +38,7 @@ export function askForParameters({ game: { preferences } }) {
  * - third is looking toward south,
  * - fourth is looking toward east
  * Then creates sticks for counting points
- * @param {TODO} game - game data, including meshes and hands.
- * @param {TODO} player - joining player.
- * @returns {TODO} altered game data.
+ * @type {import('@tabulous/server/src/services/catalog').AddPlayer<Parameters>}
  */
 export function addPlayer(game, player) {
   const rank = game.preferences.length - 1

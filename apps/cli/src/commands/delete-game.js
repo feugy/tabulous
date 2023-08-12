@@ -1,5 +1,5 @@
 // @ts-check
-/** @typedef {import('@tabulous/server/src/graphql/types').Game} Game */
+/** @typedef {import('@tabulous/server/src/graphql').Game} Game */
 
 import { gql } from '@urql/core'
 import chalkTemplate from 'chalk-template'

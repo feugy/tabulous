@@ -1,8 +1,8 @@
 // @ts-check
 /**
  * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@tabulous/server/src/graphql/types').QuantifiableState} QuantifiableState
- * @typedef {import('@tabulous/server/src/graphql/types').Mesh} SerializedMesh
+ * @typedef {import('@tabulous/server/src/graphql').QuantifiableState} QuantifiableState
+ * @typedef {import('@tabulous/server/src/graphql').Mesh} SerializedMesh
  * @typedef {import('@src/3d/behaviors/targetable').DropZone} DropZone
  * @typedef {import('@src/3d/behaviors/targetable').SingleDropZone} SingleDropZone
  * @typedef {import('@src/3d/behaviors/targetable').DropDetails} DropDetails

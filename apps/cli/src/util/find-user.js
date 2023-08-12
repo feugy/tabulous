@@ -1,5 +1,5 @@
 // @ts-check
-/** @typedef {import('@tabulous/server/src/graphql/types').Player} Player */
+/** @typedef {import('@tabulous/server/src/graphql').Player} Player */
 
 import { gql } from '@urql/core'
 

@@ -2,7 +2,7 @@
 /**
  * @typedef {import('@babylonjs/core').Axis} Axis
  * @typedef {import('@babylonjs/core').Mesh} Mesh
- * @typedef {import('@tabulous/server/src/graphql/types').RandomizableState} RandomizableState
+ * @typedef {import('@tabulous/server/src/graphql').RandomizableState} RandomizableState
  * @typedef {import('@src/3d/utils').AnimationSpec} AnimationSpec
  * @typedef {import('@src/3d/utils').QuaternionKeyFrame} QuaternionKeyFrame
  * @typedef {import('@src/3d/utils').Vector3KeyFrame} Vector3KeyFrame

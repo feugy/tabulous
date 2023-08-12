@@ -1,15 +1,15 @@
 // @ts-check
 /**
- * @typedef {import('./types').AddPlayerArgs} AddPlayerArgs
- * @typedef {import('./types').Friendship} Friendship
- * @typedef {import('./types').FriendshipUpdate} FriendshipUpdate
- * @typedef {import('./types').ListPlayersArgs} ListPlayersArgs
- * @typedef {import('./types').LogInArgs} LogInArgs
- * @typedef {import('./types').Player} Player
- * @typedef {import('./types').PlayerWithTurnCredentials} PlayerWithTurnCredentials
- * @typedef {import('./types').SearchPlayersArgs} SearchPlayersArgs
- * @typedef {import('./types').TargetedPlayerArgs} TargetedPlayerArgs
- * @typedef {import('./types').UpdateCurrentPlayerArgs} UpdateCurrentPlayerArgs
+ * @typedef {import('.').AddPlayerArgs} AddPlayerArgs
+ * @typedef {import('.').Friendship} Friendship
+ * @typedef {import('.').FriendshipUpdate} FriendshipUpdate
+ * @typedef {import('.').ListPlayersArgs} ListPlayersArgs
+ * @typedef {import('.').LogInArgs} LogInArgs
+ * @typedef {import('.').Player} Player
+ * @typedef {import('.').PlayerWithTurnCredentials} PlayerWithTurnCredentials
+ * @typedef {import('.').SearchPlayersArgs} SearchPlayersArgs
+ * @typedef {import('.').TargetedPlayerArgs} TargetedPlayerArgs
+ * @typedef {import('.').UpdateCurrentPlayerArgs} UpdateCurrentPlayerArgs
  * @typedef {import('./utils').GraphQLContext} GraphQLContext
  * @typedef {import('./utils').PubSubQueue} PubSubQueue
  */

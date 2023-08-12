@@ -103,8 +103,7 @@ class MoveManager {
       }
     }
 
-    // TODO what if no last position?
-    let lastPosition = /** @type {Vector3} */ (screenToGround(sceneUsed, event))
+    let lastPosition = screenToGround(sceneUsed, event)
 
     /** @type {Set<DropZone>} */
     let zones = new Set()
@@ -114,14 +113,19 @@ class MoveManager {
         if (fn === actionNames.draw) {
           const mesh = moved.find(({ id }) => id === meshId)
           if (mesh && mesh.getScene() !== this.scene) {
+            // mesh dragged from hand to main scene
             const idx = moved.indexOf(mesh)
             moved.splice(idx, 1)
+            const wasAutoselected = this.autoSelect.delete(mesh)
             const newMesh = this.scene.getMeshById(meshId)
             if (newMesh) {
               moved.splice(idx, 0, newMesh)
               sceneUsed = this.scene
               lastPosition = newMesh.absolutePosition.clone()
               lastPosition.y -= this.elevation
+              if (wasAutoselected) {
+                this.autoSelect.add(newMesh)
+              }
             }
           }
         }
@@ -157,10 +161,7 @@ class MoveManager {
       zones.clear()
 
       if (sceneUsed !== this.scene || isAboveTable(this.scene, event)) {
-        // TODO what if no current position?
-        const currentPosition = /** @type {Vector3} */ (
-          screenToGround(sceneUsed, event)
-        )
+        const currentPosition = screenToGround(sceneUsed, event)
         const move = currentPosition.subtract(lastPosition)
         logger.debug({ moved, event, move }, `continue move operation`)
         lastPosition = currentPosition

@@ -1,3 +1,9 @@
+// @ts-check
+/**
+ * @typedef {import('@tabulous/server/src/graphql').Anchor} Anchor
+ * @typedef {import('@tabulous/server/src/graphql').Mesh} Mesh
+ */
+
 import {
   anchorIds,
   counts,
@@ -8,6 +14,7 @@ import {
   suits
 } from '../constants.js'
 
+/** @returns {Mesh} */
 export function buildBoard() {
   return {
     shape: 'card',
@@ -19,7 +26,7 @@ export function buildBoard() {
     anchorable: {
       anchors: [
         { id: anchorIds.reserve, ...positions.reserve, ...sizes.card },
-        { ...positions.discard, ...sizes.card },
+        { id: 'discard', ...positions.discard, ...sizes.card },
         ...buildGoalAnchors(),
         ...buildColumnAnchors()
       ]
@@ -28,9 +35,11 @@ export function buildBoard() {
 }
 
 function buildGoalAnchors() {
+  /** @type {Anchor[]} */
   const anchors = []
   for (const [column, suit] of suits.entries()) {
     anchors.push({
+      id: `goal-${suit}`,
       x: positions.goal.x + spacing.column.x * column,
       z: positions.goal.z,
       ...sizes.card,
@@ -41,6 +50,7 @@ function buildGoalAnchors() {
 }
 
 function buildColumnAnchors() {
+  /** @type {Anchor[]} */
   const anchors = []
   for (let column = 0; column < counts.columns; column++) {
     anchors.push({

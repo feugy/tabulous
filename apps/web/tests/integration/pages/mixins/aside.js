@@ -66,7 +66,7 @@ export class AsideMixin {
 
   /**
    * Expects several friends. It tests request/proposal state.
-   * @param {import('@tabulous/server/src/graphql/types').Friendship[]} friends - expected friends objects.
+   * @param {import('@tabulous/server/src/graphql').Friendship[]} friends - expected friends objects.
    * @returns {Promise<void>}
    */
   async expectFriends(friends) {
@@ -88,7 +88,7 @@ export class AsideMixin {
 
   /**
    * Expects several players/attendees.
-   * @param {import('@tabulous/server/src/graphql/types').Player[]} players - expected players objects.
+   * @param {import('@tabulous/server/src/graphql').Player[]} players - expected players objects.
    * @returns {Promise<void>}
    */
   async expectPlayers(players) {

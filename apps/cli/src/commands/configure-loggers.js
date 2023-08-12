@@ -1,5 +1,5 @@
 // @ts-check
-/** @typedef {import('@tabulous/server/src/graphql/types').LoggerLevel} LoggerLevel */
+/** @typedef {import('@tabulous/server/src/graphql').LoggerLevel} LoggerLevel */
 
 import { gql } from '@urql/core'
 import chalkTemplate from 'chalk-template'

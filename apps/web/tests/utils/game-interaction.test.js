@@ -7,8 +7,8 @@
  * @typedef {import('@src/utils/game-interaction').ActionMenuProps} ActionMenuProps
  * @typedef {import('@src/utils/game-interaction').MenuItem} MenuItem
  * @typedef {import('@src/types').MeshMetadata} MeshMetadata
- * @typedef {import('@tabulous/server/src/graphql/types').ActionName} ActionName
- * @typedef {import('@tabulous/server/src/graphql/types').Mesh} SerializedMesh
+ * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
+ * @typedef {import('@tabulous/server/src/graphql').Mesh} SerializedMesh
  * @typedef {import('rxjs').Subscription} Subscription
  */
 /**

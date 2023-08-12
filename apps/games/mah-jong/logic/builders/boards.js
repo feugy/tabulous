@@ -1,5 +1,13 @@
+// @ts-check
+/**
+ * @typedef {import('@tabulous/server/src/graphql').Anchor} Anchor
+ * @typedef {import('@tabulous/server/src/graphql').Mesh} Mesh
+ * @typedef {import('../constants').Wall} Wall
+ */
+
 import { kinds, riverSize, shapes, walls, wallSize } from '../constants.js'
 
+/** @returns {Mesh} */
 export function buildMainBoard() {
   const { east, south, west, north } = walls
   return {
@@ -22,7 +30,14 @@ export function buildMainBoard() {
   }
 }
 
-function buildWallAnchors({ wall, isHorizontal, angle }) {
+function buildWallAnchors(
+  /** @type {{ wall: Wall, isHorizontal: boolean, angle: number }} */ {
+    wall,
+    isHorizontal,
+    angle
+  }
+) {
+  /** @type {Anchor[]} */
   const anchors = []
   const { width, height, depth } = shapes.anchor
   const start = (width * wallSize - 2) * -0.5
@@ -49,7 +64,14 @@ function buildWallAnchors({ wall, isHorizontal, angle }) {
   return anchors
 }
 
-function buildRiverAnchors({ river, isHorizontal, angle }) {
+function buildRiverAnchors(
+  /** @type {{ wall: Wall, isHorizontal: boolean, angle: number }} */ {
+    wall,
+    isHorizontal,
+    angle
+  }
+) {
+  /** @type {Anchor[]} */
   const anchors = []
   const { width, height, depth } = shapes.anchor
   const anchorWidth = width * 1.2
@@ -61,7 +83,7 @@ function buildRiverAnchors({ river, isHorizontal, angle }) {
   for (let column = 0; column < 3; column++) {
     for (let rank = 0; rank < riverSize; rank++) {
       anchors.push({
-        id: `river-${river}-${column + 1}-${rank + 1}`,
+        id: `river-${wall}-${column + 1}-${rank + 1}`,
         kinds: [kinds.tile],
         x:
           start * invertX +

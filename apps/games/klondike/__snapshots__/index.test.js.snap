@@ -1,0 +1,4755 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls each allowed players with a valid JSON schema 1`] = `
+{
+  "availableSeats": 0,
+  "cameras": [
+    {
+      "alpha": 4.71238898038469,
+      "beta": 0.39269908169872414,
+      "elevation": 30,
+      "hash": "0-0--2-4.71238898038469-0.39269908169872414-30",
+      "index": 0,
+      "playerId": "player-1",
+      "target": [
+        0,
+        0,
+        -2,
+      ],
+    },
+  ],
+  "created": 1691859511667,
+  "guestIds": [],
+  "hands": [],
+  "id": "game-unique-id",
+  "kind": "klondike",
+  "locales": {
+    "en": {
+      "title": "Klondike",
+    },
+    "fr": {
+      "title": "Solitaire",
+    },
+  },
+  "meshes": [
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/diamonds-1.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "diamonds-1",
+      "movable": {
+        "kind": "diamonds",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/diamonds-1.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/diamonds-2.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "diamonds-2",
+      "movable": {
+        "kind": "diamonds",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/diamonds-2.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/diamonds-3.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "diamonds-3",
+      "movable": {
+        "kind": "diamonds",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/diamonds-3.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/diamonds-4.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "diamonds-4",
+      "movable": {
+        "kind": "diamonds",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/diamonds-4.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/diamonds-5.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "diamonds-5",
+      "movable": {
+        "kind": "diamonds",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/diamonds-5.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/diamonds-6.1.svg",
+      },
+      "flippable": {
+        "isFlipped": false,
+      },
+      "height": 0.01,
+      "id": "diamonds-6",
+      "movable": {
+        "kind": "diamonds",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/diamonds-6.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "snappedId": "diamonds-8",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/diamonds-7.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "diamonds-7",
+      "movable": {
+        "kind": "diamonds",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/diamonds-7.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/diamonds-8.1.svg",
+      },
+      "flippable": {
+        "isFlipped": false,
+      },
+      "height": 0.01,
+      "id": "diamonds-8",
+      "movable": {
+        "kind": "diamonds",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/diamonds-8.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "snappedId": "diamonds-10",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/diamonds-9.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "diamonds-9",
+      "movable": {
+        "kind": "diamonds",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/diamonds-9.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "snappedId": "diamonds-11",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/diamonds-10.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "diamonds-10",
+      "movable": {
+        "kind": "diamonds",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/diamonds-10.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/diamonds-11.1.svg",
+      },
+      "flippable": {
+        "isFlipped": false,
+      },
+      "height": 0.01,
+      "id": "diamonds-11",
+      "movable": {
+        "kind": "diamonds",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/diamonds-11.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "snappedId": "diamonds-13",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/diamonds-12.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "diamonds-12",
+      "movable": {
+        "kind": "diamonds",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/diamonds-12.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "snappedId": "clubs-1",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/diamonds-13.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "diamonds-13",
+      "movable": {
+        "kind": "diamonds",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/diamonds-13.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "snappedId": "clubs-2",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/clubs-1.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "clubs-1",
+      "movable": {
+        "kind": "clubs",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/clubs-1.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/clubs-2.1.svg",
+      },
+      "flippable": {
+        "isFlipped": false,
+      },
+      "height": 0.01,
+      "id": "clubs-2",
+      "movable": {
+        "kind": "clubs",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/clubs-2.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "snappedId": "clubs-4",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/clubs-3.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "clubs-3",
+      "movable": {
+        "kind": "clubs",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/clubs-3.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "snappedId": "clubs-5",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/clubs-4.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "clubs-4",
+      "movable": {
+        "kind": "clubs",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/clubs-4.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "snappedId": "clubs-6",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/clubs-5.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "clubs-5",
+      "movable": {
+        "kind": "clubs",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/clubs-5.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "snappedId": "clubs-7",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/clubs-6.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "clubs-6",
+      "movable": {
+        "kind": "clubs",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/clubs-6.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/clubs-7.1.svg",
+      },
+      "flippable": {
+        "isFlipped": false,
+      },
+      "height": 0.01,
+      "id": "clubs-7",
+      "movable": {
+        "kind": "clubs",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/clubs-7.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "snappedId": "clubs-9",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/clubs-8.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "clubs-8",
+      "movable": {
+        "kind": "clubs",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/clubs-8.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "snappedId": "clubs-10",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/clubs-9.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "clubs-9",
+      "movable": {
+        "kind": "clubs",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/clubs-9.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "snappedId": "clubs-11",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/clubs-10.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "clubs-10",
+      "movable": {
+        "kind": "clubs",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/clubs-10.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "snappedId": "clubs-12",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/clubs-11.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "clubs-11",
+      "movable": {
+        "kind": "clubs",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/clubs-11.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "snappedId": "clubs-13",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/clubs-12.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "clubs-12",
+      "movable": {
+        "kind": "clubs",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/clubs-12.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/clubs-13.1.svg",
+      },
+      "flippable": {
+        "isFlipped": false,
+      },
+      "height": 0.01,
+      "id": "clubs-13",
+      "movable": {
+        "kind": "clubs",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/clubs-13.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "snappedId": "hearts-2",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/hearts-1.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "hearts-1",
+      "movable": {
+        "kind": "hearts",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/hearts-1.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "snappedId": "hearts-3",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/hearts-2.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "hearts-2",
+      "movable": {
+        "kind": "hearts",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/hearts-2.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "snappedId": "hearts-4",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/hearts-3.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "hearts-3",
+      "movable": {
+        "kind": "hearts",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/hearts-3.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "snappedId": "hearts-5",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/hearts-4.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "hearts-4",
+      "movable": {
+        "kind": "hearts",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/hearts-4.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "snappedId": "hearts-6",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/hearts-5.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "hearts-5",
+      "movable": {
+        "kind": "hearts",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/hearts-5.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "snappedId": "hearts-7",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/hearts-6.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "hearts-6",
+      "movable": {
+        "kind": "hearts",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/hearts-6.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/hearts-7.1.svg",
+      },
+      "flippable": {
+        "isFlipped": false,
+      },
+      "height": 0.01,
+      "id": "hearts-7",
+      "movable": {
+        "kind": "hearts",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/hearts-7.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/hearts-8.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "hearts-8",
+      "movable": {
+        "kind": "hearts",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+        "stackIds": [
+          "hearts-9",
+          "hearts-10",
+          "hearts-11",
+          "hearts-12",
+          "hearts-13",
+          "spades-1",
+          "spades-2",
+          "spades-3",
+          "spades-4",
+          "spades-5",
+          "spades-6",
+          "spades-7",
+          "spades-8",
+          "spades-9",
+          "spades-10",
+          "spades-11",
+          "spades-12",
+          "spades-13",
+          "diamonds-1",
+          "diamonds-2",
+          "diamonds-3",
+          "diamonds-4",
+          "diamonds-5",
+        ],
+      },
+      "texture": "/assets/textures/hearts-8.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/hearts-9.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "hearts-9",
+      "movable": {
+        "kind": "hearts",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/hearts-9.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/hearts-10.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "hearts-10",
+      "movable": {
+        "kind": "hearts",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/hearts-10.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/hearts-11.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "hearts-11",
+      "movable": {
+        "kind": "hearts",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/hearts-11.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/hearts-12.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "hearts-12",
+      "movable": {
+        "kind": "hearts",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/hearts-12.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/hearts-13.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "hearts-13",
+      "movable": {
+        "kind": "hearts",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/hearts-13.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/spades-1.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "spades-1",
+      "movable": {
+        "kind": "spades",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/spades-1.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/spades-2.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "spades-2",
+      "movable": {
+        "kind": "spades",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/spades-2.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/spades-3.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "spades-3",
+      "movable": {
+        "kind": "spades",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/spades-3.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/spades-4.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "spades-4",
+      "movable": {
+        "kind": "spades",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/spades-4.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/spades-5.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "spades-5",
+      "movable": {
+        "kind": "spades",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/spades-5.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/spades-6.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "spades-6",
+      "movable": {
+        "kind": "spades",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/spades-6.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/spades-7.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "spades-7",
+      "movable": {
+        "kind": "spades",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/spades-7.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/spades-8.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "spades-8",
+      "movable": {
+        "kind": "spades",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/spades-8.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/spades-9.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "spades-9",
+      "movable": {
+        "kind": "spades",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/spades-9.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/spades-10.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "spades-10",
+      "movable": {
+        "kind": "spades",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/spades-10.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/spades-11.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "spades-11",
+      "movable": {
+        "kind": "spades",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/spades-11.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/spades-12.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "spades-12",
+      "movable": {
+        "kind": "spades",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/spades-12.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/spades-13.1.svg",
+      },
+      "flippable": {
+        "isFlipped": true,
+      },
+      "height": 0.01,
+      "id": "spades-13",
+      "movable": {
+        "kind": "spades",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/spades-13.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "reserve",
+            "snappedId": "hearts-8",
+            "width": 3,
+            "x": -12.25,
+            "z": 11.5,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "discard",
+            "width": 3,
+            "x": -8.25,
+            "z": 11.5,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "goal-diamonds",
+            "kinds": [
+              "diamonds",
+            ],
+            "width": 3,
+            "x": -0.25,
+            "z": 11.5,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "goal-clubs",
+            "kinds": [
+              "clubs",
+            ],
+            "width": 3,
+            "x": 3.75,
+            "z": 11.5,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "goal-hearts",
+            "kinds": [
+              "hearts",
+            ],
+            "width": 3,
+            "x": 7.75,
+            "z": 11.5,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "goal-spades",
+            "kinds": [
+              "spades",
+            ],
+            "width": 3,
+            "x": 11.75,
+            "z": 11.5,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "column-1",
+            "snappedId": "diamonds-6",
+            "width": 3,
+            "x": -12.25,
+            "z": 6.55,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "column-2",
+            "snappedId": "diamonds-7",
+            "width": 3,
+            "x": -8.25,
+            "z": 6.55,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "column-3",
+            "snappedId": "diamonds-9",
+            "width": 3,
+            "x": -4.25,
+            "z": 6.55,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "column-4",
+            "snappedId": "diamonds-12",
+            "width": 3,
+            "x": -0.25,
+            "z": 6.55,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "column-5",
+            "snappedId": "clubs-3",
+            "width": 3,
+            "x": 3.75,
+            "z": 6.55,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "column-6",
+            "snappedId": "clubs-8",
+            "width": 3,
+            "x": 7.75,
+            "z": 6.55,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "column-7",
+            "snappedId": "hearts-1",
+            "width": 3,
+            "x": 11.75,
+            "z": 6.55,
+          },
+        ],
+      },
+      "depth": 30,
+      "faceUV": [
+        [
+          1,
+          1,
+          0,
+          0,
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+        ],
+      ],
+      "height": 0.01,
+      "id": "board",
+      "shape": "card",
+      "texture": "board.ktx2",
+      "width": 30,
+      "x": -0.75,
+      "y": -0.005,
+    },
+  ],
+  "messages": [],
+  "name": "klondike",
+  "ownerId": "",
+  "playerIds": [
+    "player-1",
+  ],
+  "preferences": [
+    {
+      "color": undefined,
+      "playerId": "player-1",
+    },
+  ],
+}
+`;
+
+exports[`klondike game descriptor > build() > builds game setup 1`] = `
+{
+  "bags": Map {
+    "cards" => [
+      "diamonds-1",
+      "diamonds-2",
+      "diamonds-3",
+      "diamonds-4",
+      "diamonds-5",
+      "diamonds-6",
+      "diamonds-7",
+      "diamonds-8",
+      "diamonds-9",
+      "diamonds-10",
+      "diamonds-11",
+      "diamonds-12",
+      "diamonds-13",
+      "clubs-1",
+      "clubs-2",
+      "clubs-3",
+      "clubs-4",
+      "clubs-5",
+      "clubs-6",
+      "clubs-7",
+      "clubs-8",
+      "clubs-9",
+      "clubs-10",
+      "clubs-11",
+      "clubs-12",
+      "clubs-13",
+      "hearts-1",
+      "hearts-2",
+      "hearts-3",
+      "hearts-4",
+      "hearts-5",
+      "hearts-6",
+      "hearts-7",
+      "hearts-8",
+      "hearts-9",
+      "hearts-10",
+      "hearts-11",
+      "hearts-12",
+      "hearts-13",
+      "spades-1",
+      "spades-2",
+      "spades-3",
+      "spades-4",
+      "spades-5",
+      "spades-6",
+      "spades-7",
+      "spades-8",
+      "spades-9",
+      "spades-10",
+      "spades-11",
+      "spades-12",
+      "spades-13",
+    ],
+  },
+  "meshes": [
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/diamonds-1.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "diamonds-1",
+      "movable": {
+        "kind": "diamonds",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/diamonds-1.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/diamonds-2.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "diamonds-2",
+      "movable": {
+        "kind": "diamonds",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/diamonds-2.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/diamonds-3.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "diamonds-3",
+      "movable": {
+        "kind": "diamonds",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/diamonds-3.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/diamonds-4.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "diamonds-4",
+      "movable": {
+        "kind": "diamonds",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/diamonds-4.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/diamonds-5.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "diamonds-5",
+      "movable": {
+        "kind": "diamonds",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/diamonds-5.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/diamonds-6.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "diamonds-6",
+      "movable": {
+        "kind": "diamonds",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/diamonds-6.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/diamonds-7.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "diamonds-7",
+      "movable": {
+        "kind": "diamonds",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/diamonds-7.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/diamonds-8.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "diamonds-8",
+      "movable": {
+        "kind": "diamonds",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/diamonds-8.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/diamonds-9.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "diamonds-9",
+      "movable": {
+        "kind": "diamonds",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/diamonds-9.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/diamonds-10.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "diamonds-10",
+      "movable": {
+        "kind": "diamonds",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/diamonds-10.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/diamonds-11.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "diamonds-11",
+      "movable": {
+        "kind": "diamonds",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/diamonds-11.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/diamonds-12.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "diamonds-12",
+      "movable": {
+        "kind": "diamonds",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/diamonds-12.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/diamonds-13.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "diamonds-13",
+      "movable": {
+        "kind": "diamonds",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/diamonds-13.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/clubs-1.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "clubs-1",
+      "movable": {
+        "kind": "clubs",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/clubs-1.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/clubs-2.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "clubs-2",
+      "movable": {
+        "kind": "clubs",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/clubs-2.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/clubs-3.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "clubs-3",
+      "movable": {
+        "kind": "clubs",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/clubs-3.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/clubs-4.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "clubs-4",
+      "movable": {
+        "kind": "clubs",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/clubs-4.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/clubs-5.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "clubs-5",
+      "movable": {
+        "kind": "clubs",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/clubs-5.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/clubs-6.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "clubs-6",
+      "movable": {
+        "kind": "clubs",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/clubs-6.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/clubs-7.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "clubs-7",
+      "movable": {
+        "kind": "clubs",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/clubs-7.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/clubs-8.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "clubs-8",
+      "movable": {
+        "kind": "clubs",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/clubs-8.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/clubs-9.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "clubs-9",
+      "movable": {
+        "kind": "clubs",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/clubs-9.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/clubs-10.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "clubs-10",
+      "movable": {
+        "kind": "clubs",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/clubs-10.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/clubs-11.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "clubs-11",
+      "movable": {
+        "kind": "clubs",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/clubs-11.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/clubs-12.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "clubs-12",
+      "movable": {
+        "kind": "clubs",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/clubs-12.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/clubs-13.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "clubs-13",
+      "movable": {
+        "kind": "clubs",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/clubs-13.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/hearts-1.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "hearts-1",
+      "movable": {
+        "kind": "hearts",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/hearts-1.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/hearts-2.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "hearts-2",
+      "movable": {
+        "kind": "hearts",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/hearts-2.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/hearts-3.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "hearts-3",
+      "movable": {
+        "kind": "hearts",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/hearts-3.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/hearts-4.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "hearts-4",
+      "movable": {
+        "kind": "hearts",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/hearts-4.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/hearts-5.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "hearts-5",
+      "movable": {
+        "kind": "hearts",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/hearts-5.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/hearts-6.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "hearts-6",
+      "movable": {
+        "kind": "hearts",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/hearts-6.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/hearts-7.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "hearts-7",
+      "movable": {
+        "kind": "hearts",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/hearts-7.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/hearts-8.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "hearts-8",
+      "movable": {
+        "kind": "hearts",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/hearts-8.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/hearts-9.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "hearts-9",
+      "movable": {
+        "kind": "hearts",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/hearts-9.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/hearts-10.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "hearts-10",
+      "movable": {
+        "kind": "hearts",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/hearts-10.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/hearts-11.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "hearts-11",
+      "movable": {
+        "kind": "hearts",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/hearts-11.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/hearts-12.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "hearts-12",
+      "movable": {
+        "kind": "hearts",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/hearts-12.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/hearts-13.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "hearts-13",
+      "movable": {
+        "kind": "hearts",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/hearts-13.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/spades-1.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "spades-1",
+      "movable": {
+        "kind": "spades",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/spades-1.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/spades-2.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "spades-2",
+      "movable": {
+        "kind": "spades",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/spades-2.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/spades-3.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "spades-3",
+      "movable": {
+        "kind": "spades",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/spades-3.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/spades-4.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "spades-4",
+      "movable": {
+        "kind": "spades",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/spades-4.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/spades-5.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "spades-5",
+      "movable": {
+        "kind": "spades",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/spades-5.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/spades-6.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "spades-6",
+      "movable": {
+        "kind": "spades",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/spades-6.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/spades-7.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "spades-7",
+      "movable": {
+        "kind": "spades",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/spades-7.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/spades-8.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "spades-8",
+      "movable": {
+        "kind": "spades",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/spades-8.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/spades-9.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "spades-9",
+      "movable": {
+        "kind": "spades",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/spades-9.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/spades-10.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "spades-10",
+      "movable": {
+        "kind": "spades",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/spades-10.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/spades-11.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "spades-11",
+      "movable": {
+        "kind": "spades",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/spades-11.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/spades-12.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "spades-12",
+      "movable": {
+        "kind": "spades",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/spades-12.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "bottom",
+            "width": 3,
+            "z": -1,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "top",
+            "width": 3,
+            "z": 1,
+          },
+        ],
+      },
+      "depth": 4.25,
+      "detailable": {
+        "backImage": "/assets/images/french-suited-card-back.1.svg",
+        "frontImage": "/assets/images/spades-13.1.svg",
+      },
+      "flippable": {},
+      "height": 0.01,
+      "id": "spades-13",
+      "movable": {
+        "kind": "spades",
+      },
+      "rotable": {},
+      "shape": "card",
+      "stackable": {
+        "priority": 1,
+      },
+      "texture": "/assets/textures/spades-13.1.ktx2",
+      "width": 3,
+    },
+    {
+      "anchorable": {
+        "anchors": [
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "reserve",
+            "width": 3,
+            "x": -12.25,
+            "z": 11.5,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "discard",
+            "width": 3,
+            "x": -8.25,
+            "z": 11.5,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "goal-diamonds",
+            "kinds": [
+              "diamonds",
+            ],
+            "width": 3,
+            "x": -0.25,
+            "z": 11.5,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "goal-clubs",
+            "kinds": [
+              "clubs",
+            ],
+            "width": 3,
+            "x": 3.75,
+            "z": 11.5,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "goal-hearts",
+            "kinds": [
+              "hearts",
+            ],
+            "width": 3,
+            "x": 7.75,
+            "z": 11.5,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "goal-spades",
+            "kinds": [
+              "spades",
+            ],
+            "width": 3,
+            "x": 11.75,
+            "z": 11.5,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "column-1",
+            "width": 3,
+            "x": -12.25,
+            "z": 6.55,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "column-2",
+            "width": 3,
+            "x": -8.25,
+            "z": 6.55,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "column-3",
+            "width": 3,
+            "x": -4.25,
+            "z": 6.55,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "column-4",
+            "width": 3,
+            "x": -0.25,
+            "z": 6.55,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "column-5",
+            "width": 3,
+            "x": 3.75,
+            "z": 6.55,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "column-6",
+            "width": 3,
+            "x": 7.75,
+            "z": 6.55,
+          },
+          {
+            "depth": 4.25,
+            "height": 0.01,
+            "id": "column-7",
+            "width": 3,
+            "x": 11.75,
+            "z": 6.55,
+          },
+        ],
+      },
+      "depth": 30,
+      "faceUV": [
+        [
+          1,
+          1,
+          0,
+          0,
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+        ],
+      ],
+      "height": 0.01,
+      "id": "board",
+      "shape": "card",
+      "texture": "board.ktx2",
+      "width": 30,
+      "x": -0.75,
+      "y": -0.005,
+    },
+  ],
+  "slots": [
+    {
+      "anchorId": "column-1",
+      "bagId": "cards",
+      "count": 1,
+      "flippable": {
+        "isFlipped": false,
+      },
+    },
+    {
+      "anchorId": "column-2",
+      "bagId": "cards",
+      "count": 1,
+      "flippable": {
+        "isFlipped": true,
+      },
+    },
+    {
+      "anchorId": "column-2.bottom",
+      "bagId": "cards",
+      "count": 1,
+      "flippable": {
+        "isFlipped": false,
+      },
+    },
+    {
+      "anchorId": "column-3",
+      "bagId": "cards",
+      "count": 1,
+      "flippable": {
+        "isFlipped": true,
+      },
+    },
+    {
+      "anchorId": "column-3.bottom",
+      "bagId": "cards",
+      "count": 1,
+      "flippable": {
+        "isFlipped": true,
+      },
+    },
+    {
+      "anchorId": "column-3.bottom.bottom",
+      "bagId": "cards",
+      "count": 1,
+      "flippable": {
+        "isFlipped": false,
+      },
+    },
+    {
+      "anchorId": "column-4",
+      "bagId": "cards",
+      "count": 1,
+      "flippable": {
+        "isFlipped": true,
+      },
+    },
+    {
+      "anchorId": "column-4.bottom",
+      "bagId": "cards",
+      "count": 1,
+      "flippable": {
+        "isFlipped": true,
+      },
+    },
+    {
+      "anchorId": "column-4.bottom.bottom",
+      "bagId": "cards",
+      "count": 1,
+      "flippable": {
+        "isFlipped": true,
+      },
+    },
+    {
+      "anchorId": "column-4.bottom.bottom.bottom",
+      "bagId": "cards",
+      "count": 1,
+      "flippable": {
+        "isFlipped": false,
+      },
+    },
+    {
+      "anchorId": "column-5",
+      "bagId": "cards",
+      "count": 1,
+      "flippable": {
+        "isFlipped": true,
+      },
+    },
+    {
+      "anchorId": "column-5.bottom",
+      "bagId": "cards",
+      "count": 1,
+      "flippable": {
+        "isFlipped": true,
+      },
+    },
+    {
+      "anchorId": "column-5.bottom.bottom",
+      "bagId": "cards",
+      "count": 1,
+      "flippable": {
+        "isFlipped": true,
+      },
+    },
+    {
+      "anchorId": "column-5.bottom.bottom.bottom",
+      "bagId": "cards",
+      "count": 1,
+      "flippable": {
+        "isFlipped": true,
+      },
+    },
+    {
+      "anchorId": "column-5.bottom.bottom.bottom.bottom",
+      "bagId": "cards",
+      "count": 1,
+      "flippable": {
+        "isFlipped": false,
+      },
+    },
+    {
+      "anchorId": "column-6",
+      "bagId": "cards",
+      "count": 1,
+      "flippable": {
+        "isFlipped": true,
+      },
+    },
+    {
+      "anchorId": "column-6.bottom",
+      "bagId": "cards",
+      "count": 1,
+      "flippable": {
+        "isFlipped": true,
+      },
+    },
+    {
+      "anchorId": "column-6.bottom.bottom",
+      "bagId": "cards",
+      "count": 1,
+      "flippable": {
+        "isFlipped": true,
+      },
+    },
+    {
+      "anchorId": "column-6.bottom.bottom.bottom",
+      "bagId": "cards",
+      "count": 1,
+      "flippable": {
+        "isFlipped": true,
+      },
+    },
+    {
+      "anchorId": "column-6.bottom.bottom.bottom.bottom",
+      "bagId": "cards",
+      "count": 1,
+      "flippable": {
+        "isFlipped": true,
+      },
+    },
+    {
+      "anchorId": "column-6.bottom.bottom.bottom.bottom.bottom",
+      "bagId": "cards",
+      "count": 1,
+      "flippable": {
+        "isFlipped": false,
+      },
+    },
+    {
+      "anchorId": "column-7",
+      "bagId": "cards",
+      "count": 1,
+      "flippable": {
+        "isFlipped": true,
+      },
+    },
+    {
+      "anchorId": "column-7.bottom",
+      "bagId": "cards",
+      "count": 1,
+      "flippable": {
+        "isFlipped": true,
+      },
+    },
+    {
+      "anchorId": "column-7.bottom.bottom",
+      "bagId": "cards",
+      "count": 1,
+      "flippable": {
+        "isFlipped": true,
+      },
+    },
+    {
+      "anchorId": "column-7.bottom.bottom.bottom",
+      "bagId": "cards",
+      "count": 1,
+      "flippable": {
+        "isFlipped": true,
+      },
+    },
+    {
+      "anchorId": "column-7.bottom.bottom.bottom.bottom",
+      "bagId": "cards",
+      "count": 1,
+      "flippable": {
+        "isFlipped": true,
+      },
+    },
+    {
+      "anchorId": "column-7.bottom.bottom.bottom.bottom.bottom",
+      "bagId": "cards",
+      "count": 1,
+      "flippable": {
+        "isFlipped": true,
+      },
+    },
+    {
+      "anchorId": "column-7.bottom.bottom.bottom.bottom.bottom.bottom",
+      "bagId": "cards",
+      "count": 1,
+      "flippable": {
+        "isFlipped": false,
+      },
+    },
+    {
+      "anchorId": "reserve",
+      "bagId": "cards",
+      "flippable": {
+        "isFlipped": true,
+      },
+    },
+  ],
+}
+`;

@@ -94,13 +94,12 @@ class SelectionManager {
       : this.scene
 
     this.box?.dispose()
-    // TODO what if some points are null?
-    const points = /** @type {Vector3[]} */ ([
+    const points = [
       screenToGround(scene, start),
       screenToGround(scene, { x: start.x, y: end.y }),
       screenToGround(scene, end),
       screenToGround(scene, { x: end.x, y: start.y })
-    ])
+    ]
     points.push(points[0].clone())
 
     this.box = CreateLines(
@@ -119,12 +118,10 @@ class SelectionManager {
       this.box?.dispose()
       // extrude a polygon from the lines, but since extrusion goes along Z axis,
       // rotate the points first
-      const position = /** @type {Vector3} */ (
-        screenToGround(scene, {
-          x: start.x + (end.x - start.x) / 2,
-          y: start.y + (end.y - start.y) / 2
-        })
-      )
+      const position = screenToGround(scene, {
+        x: start.x + (end.x - start.x) / 2,
+        y: start.y + (end.y - start.y) / 2
+      })
       const rotation = Quaternion.RotationAxis(Axis.X, Math.PI / 2)
       for (const point of points) {
         point.rotateByQuaternionAroundPointToRef(rotation, position, point)

@@ -1,8 +1,8 @@
 // @ts-check
 /**
- * @typedef {import('./types').AwaitSignalArgs} AwaitSignalArgs
- * @typedef {import('./types').SendSignalArgs} SendSignalArgs
- * @typedef {import('./types').Signal} Signal
+ * @typedef {import('.').AwaitSignalArgs} AwaitSignalArgs
+ * @typedef {import('.').SendSignalArgs} SendSignalArgs
+ * @typedef {import('.').Signal} Signal
  * @typedef {import('./utils').GraphQLContext} GraphQLContext
  * @typedef {import('./utils').PubSubQueue} PubSubQueue
  */

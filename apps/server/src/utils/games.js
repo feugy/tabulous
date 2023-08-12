@@ -4,17 +4,20 @@
  * @typedef {import('../services/catalog').GameDescriptor} GameDescriptor
  * @typedef {import('../services/games').GameData} GameData
  * @typedef {import('../services/games').StartedGameData} StartedGameData
- * @typedef {import('../services/games').GameParameters} GameParameters
- * @typedef {import('../services/games').Schema} Schema
  * @typedef {import('../services/games').Mesh} Mesh
  * @typedef {import('../services/games').Anchor} Anchor
  * @typedef {import('../services/games').Hand} Hand
  * @typedef {import('../services/games').CameraPosition} CameraPosition
  * @typedef {import('../services/games').PlayerPreference} PlayerPreference
  */
+/**
+ * @template Parameters
+ * @typedef {import('../services/games').GameParameters<Parameters>} GameParameters
+ */
 
 import { randomUUID } from 'node:crypto'
 
+import Ajv from 'ajv/dist/2020.js'
 import merge from 'deepmerge'
 
 import { shuffle } from './collections.js'
@@ -53,6 +56,15 @@ import { shuffle } from './collections.js'
  * @property {string} [anchorId] - id of the anchor to snap to.
  * @property {number} [count] - number of mesh drawn from bag.
  */
+
+/**
+ * Unique AJV instance used for game parameter validation.
+ */
+export const ajv = new Ajv({
+  $data: true,
+  allErrors: true,
+  strictSchema: false
+})
 
 /**
  * Creates a unique game from a game descriptor.
@@ -333,10 +345,17 @@ export function draw(stackId, count, meshes) {
   const stack = findMesh(stackId, meshes)
   if (stack) {
     for (let i = 0; i < count; i++) {
-      drawn.push(drawMesh(stack, meshes))
+      const mesh = drawMesh(stack, meshes)
+      if (!mesh) {
+        if (stack.stackable?.stackIds?.length === 0) {
+          drawn.push(stack)
+        }
+        break
+      }
+      drawn.push(mesh)
     }
   }
-  return /** @type {Mesh[]} */ (drawn.filter(Boolean))
+  return drawn
 }
 
 /**
@@ -370,7 +389,7 @@ export function stackMeshes(meshes) {
  * If the anchor is already used, tries to stack the meshes (the current snapped mesh must be in provided meshes).
  * Abort the operation when meshes can't be stacked.
  * @param {string} anchorId - desired anchor id.
- * @param {Mesh|undefined} mesh - snapped mesh, if any.
+ * @param {?Mesh|undefined} mesh - snapped mesh, if any.
  * @param {Mesh[]} meshes - all meshes to search the anchor in.
  * @return {boolean} true if the mesh could be snapped or stacked. False otherwise.
  */
@@ -496,14 +515,13 @@ function addHash(position) {
  * @param {?Pick<GameDescriptor, 'askForParameters'>} args.descriptor - game descriptor.
  * @param {StartedGameData} args.game - current game's data.
  * @param {Player} args.player - player for which descriptor is retrieved.
- * @returns {Promise<?GameParameters>} the parameter schema, or null.
+ * @returns {Promise<?GameParameters<?>>} the parameter schema, or null.
  */
 export async function getParameterSchema({ descriptor, game, player }) {
   const schema = await descriptor?.askForParameters?.({ game, player })
-  if (!schema) {
+  if (!schema || !ajv.validateSchema(schema)) {
     return null
   }
-  // TODO validates schema's compliance
   for (const property of Object.values(schema.properties)) {
     if (property.metadata?.images) {
       for (const [name, image] of Object.entries(property.metadata.images)) {
@@ -524,10 +542,11 @@ export async function getParameterSchema({ descriptor, game, player }) {
  * Returns all possible values of a preference that were not picked by other players.
  * For example: `findAvailableValues(preferences, 'color', colors.players)` returns available colors.
  *
+ * @template T
  * @param {PlayerPreference[]} preferences - list of player preferences objects.
  * @param {string} name - name of the preference considered.
- * @param {any[]} possibleValues - list of possible values.
- * @returns {any[]} filtered possible values (could be empty).
+ * @param {T[]} possibleValues - list of possible values.
+ * @returns {T[]} filtered possible values (could be empty).
  */
 export function findAvailableValues(preferences, name, possibleValues) {
   return possibleValues.filter(value =>

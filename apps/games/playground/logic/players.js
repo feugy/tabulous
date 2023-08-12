@@ -1,5 +1,15 @@
+// @ts-check
 import { buildCards, buildDice } from './build.js'
 
+/**
+ * @typedef {object} Parameters
+ * @property {number} cardCount - How many cards in the deck: 54, 3é, 0.
+ * @property {number} die4Count - 'How many 4-faces die: 0~5.
+ * @property {number} die6Count - 'How many 6-faces die: 0~5.
+ * @property {number} die8Count - 'How many 8-faces die: 0~5.
+ */
+
+/** @type {import('@tabulous/server/src/services/catalog').AskForParameters<Parameters>} */
 export function askForParameters({ game: { preferences } }) {
   return preferences.length
     ? null
@@ -44,22 +54,21 @@ export function askForParameters({ game: { preferences } }) {
       }
 }
 
+/** @type {import('@tabulous/server/src/services/catalog').AddPlayer<Parameters>} */
 export function addPlayer(game, player, parameters) {
-  if (parameters) {
-    const { cardCount, die4Count, die6Count, die8Count } = parameters
-    let offset = 0
-    if (cardCount) {
-      game.meshes.push(...buildCards(cardCount === 54))
-    }
-    if (die4Count) {
-      game.meshes.push(...buildDice(4, die4Count, (offset -= 3)))
-    }
-    if (die6Count) {
-      game.meshes.push(...buildDice(6, die6Count, (offset -= 3)))
-    }
-    if (die8Count) {
-      game.meshes.push(...buildDice(8, die8Count, (offset -= 3)))
-    }
+  const { cardCount, die4Count, die6Count, die8Count } = parameters
+  let offset = 0
+  if (cardCount) {
+    game.meshes.push(...buildCards(cardCount === 54))
+  }
+  if (die4Count) {
+    game.meshes.push(...buildDice(4, die4Count, (offset -= 3)))
+  }
+  if (die6Count) {
+    game.meshes.push(...buildDice(6, die6Count, (offset -= 3)))
+  }
+  if (die8Count) {
+    game.meshes.push(...buildDice(8, die8Count, (offset -= 3)))
   }
   return game
 }

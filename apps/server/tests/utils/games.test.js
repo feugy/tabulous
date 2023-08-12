@@ -2,7 +2,7 @@
 /**
  * @typedef {import('../../src/services/games').Anchor} Anchor
  * @typedef {import('../../src/services/games').GameDescriptor} GameDescriptor
- * @typedef {import('../../src/services/games').GameParameters} GameParameters
+ * @typedef {import('../../src/services/games').GameParameters<?>} GameParameters
  * @typedef {import('../../src/services/games').Mesh} Mesh
  * @typedef {import('../../src/services/games').Point} Point
  * @typedef {import('../../src/services/games').StartedGameData} StartedGameData
@@ -615,7 +615,12 @@ describe('draw()', () => {
 
   it('can deplete a stack', () => {
     const { meshes } = game
-    expect(draw('C', 10, meshes)).toEqual([meshes[3], meshes[4], meshes[0]])
+    expect(draw('C', 10, meshes)).toEqual([
+      meshes[3],
+      meshes[4],
+      meshes[0],
+      meshes[2]
+    ])
     expect(meshes[2].stackable?.stackIds).toEqual([])
   })
 
@@ -1124,6 +1129,18 @@ describe('getParameterSchema()', () => {
 
   it('handles no schema', async () => {
     askForParameters.mockResolvedValue(null)
+    expect(
+      await getParameterSchema({
+        descriptor: { askForParameters },
+        game,
+        player
+      })
+    ).toBeNull()
+    expect(askForParameters).toHaveBeenCalledWith({ game, player })
+  })
+
+  it('handles invalid schema', async () => {
+    askForParameters.mockResolvedValue([1, 2, 3])
     expect(
       await getParameterSchema({
         descriptor: { askForParameters },

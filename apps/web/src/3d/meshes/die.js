@@ -2,7 +2,7 @@
 /**
  * @typedef {import('@babylonjs/core').Mesh} Mesh
  * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@tabulous/server/src/graphql/types').RandomizableState} RandomizableState
+ * @typedef {import('@tabulous/server/src/graphql').RandomizableState} RandomizableState
  * @typedef {import('@src/3d/utils/behaviors').SerializedMesh} SerializedMesh
  */
 

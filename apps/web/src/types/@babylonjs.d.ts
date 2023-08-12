@@ -23,7 +23,7 @@ import type {
   ButtonName,
   Mesh as SerializedMesh,
   PlayerPreference
-} from '@tabulous/server/src/graphql/types'
+} from '@tabulous/server/src/graphql'
 
 interface LoadPlayerData {
   /** current player id (to determine their hand)). */

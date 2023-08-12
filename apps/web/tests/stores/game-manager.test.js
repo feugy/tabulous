@@ -10,10 +10,10 @@
  * @typedef {import('@src/stores/game-manager').GameWithSelections} GameWithSelections
  * @typedef {import('@src/stores/game-manager').Player} Player
  * @typedef {import('@src/stores/peer-channels').Message} PeerMessage
- * @typedef {import('@tabulous/server/src/graphql/types').Hand} Hand
- * @typedef {import('@tabulous/server/src/graphql/types').Mesh} Mesh
- * @typedef {import('@tabulous/server/src/graphql/types').Message} Message
- * @typedef {import('@tabulous/server/src/graphql/types').TurnCredentials} TurnCredentials
+ * @typedef {import('@tabulous/server/src/graphql').Hand} Hand
+ * @typedef {import('@tabulous/server/src/graphql').Mesh} Mesh
+ * @typedef {import('@tabulous/server/src/graphql').Message} Message
+ * @typedef {import('@tabulous/server/src/graphql').TurnCredentials} TurnCredentials
  * @typedef {import('rxjs').Subscription} Subscription
  * @typedef {import('../test-utils').RunQueryMock} RunQueryMock
  * @typedef {import('../test-utils').RunMutationMock} RunMutationMock

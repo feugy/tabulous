@@ -1,6 +1,16 @@
+// @ts-check
+/**
+ * @typedef {import("@tabulous/server/src/utils").CameraPosition} CameraPosition
+ */
+
+/** @typedef {'white'|'black'} Side */
+
+/** @type {Side} */
 export const whiteId = 'white'
+/** @type {Side} */
 export const blackId = 'black'
 
+/** @type {Record<Side, string>} */
 export const colors = {
   [whiteId]: '#efd3c0ff',
   [blackId]: '#603b23ff'
@@ -33,6 +43,7 @@ export const pieces = [
   'rook-2'
 ]
 
+/** @type {Record<Side, Partial<CameraPosition>>} */
 export const cameraPositions = {
   [blackId]: {
     alpha: Math.PI / 2,

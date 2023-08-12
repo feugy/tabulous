@@ -500,6 +500,7 @@ describe('MoveManager', () => {
       let event = { x: centerX, y: centerY }
       manager.start(moved, event)
       expect(manager.inProgress).toBe(true)
+      expect(selectionManager.meshes.has(moved)).toBe(true)
       expectPosition(moved, [1, 1 + manager.elevation, 1])
 
       inputManager.onDragObservable.notifyObservers({
@@ -524,11 +525,13 @@ describe('MoveManager', () => {
       await sleep()
       manager.continue(event)
 
-      const mainMoved = scene.getMeshById(moved.id)
+      const mainMoved = /** @type {Mesh} */ (scene.getMeshById(moved.id))
       expect(mainMoved).not.toBeNull()
       expectPosition(mainMoved, [deltaX, manager.elevation, deltaZ])
       expect(manager.inProgress).toBe(true)
       expect(drops).toHaveLength(0)
+
+      manager.stop()
 
       expect(actionRecorded).toHaveBeenNthCalledWith(
         1,
@@ -567,6 +570,8 @@ describe('MoveManager', () => {
       expect(actionRecorded).toHaveBeenCalledTimes(3)
       expect(manager.getActiveZones()).toHaveLength(0)
       expectMoveRecorded(moveRecorded, moved)
+      expect(selectionManager.meshes.has(moved)).toBe(false)
+      expect(selectionManager.meshes.has(mainMoved)).toBe(false)
     })
 
     it(

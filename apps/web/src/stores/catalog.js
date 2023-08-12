@@ -1,6 +1,6 @@
 // @ts-check
 /**
- * @typedef {import('@tabulous/server/src/graphql/types').CatalogItem} CatalogItem
+ * @typedef {import('@tabulous/server/src/graphql').CatalogItem} CatalogItem
  */
 
 import * as graphQL from '@src/graphql'

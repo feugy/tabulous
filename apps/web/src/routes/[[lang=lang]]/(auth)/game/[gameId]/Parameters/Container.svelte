@@ -1,7 +1,7 @@
 <script>
   // @ts-check
   /**
-   * @typedef {import('@tabulous/server/src/utils').Schema} Schema
+   * @typedef {Partial<import('@tabulous/server/src/services/catalog').Schema<?>>} Schema
    * @typedef {import('@src/types').JSONValue} JSONValue
    */
 

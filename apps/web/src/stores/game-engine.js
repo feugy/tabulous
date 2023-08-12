@@ -4,7 +4,7 @@
  * @typedef {import('@babylonjs/core').Mesh} Mesh
  * @typedef {import('@babylonjs/core').Observable<?>} BabylonObservable
  * @typedef {import('@babylonjs/core').Observer<?>} BabylonObserver
- * @typedef {import('@tabulous/server/src/graphql/types').Player} Player
+ * @typedef {import('@tabulous/server/src/graphql').Player} Player
  * @typedef {import('@src/3d/managers/camera').CameraPosition} CameraPosition
  * @typedef {import('@src/3d/managers/control').Action} Action
  * @typedef {import('@src/3d/managers/control').Move} Move

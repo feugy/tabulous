@@ -3,8 +3,8 @@
  * @typedef {import('@babylonjs/core').Animatable} Animatable
  * @typedef {import('@babylonjs/core').Mesh} Mesh
  * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@tabulous/server/src/graphql/types').ActionName} ActionName
- * @typedef {import('@tabulous/server/src/graphql/types').ZoomSpec} ZoomSpec
+ * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
+ * @typedef {import('@tabulous/server/src/graphql').ZoomSpec} ZoomSpec
  * @typedef {import('@src/3d/managers/camera').CameraPosition} CameraPosition
  * @typedef {import('@src/3d/utils').ScreenPosition} ScreenPosition
  */

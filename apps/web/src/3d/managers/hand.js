@@ -3,9 +3,9 @@
  * @typedef {import('@babylonjs/core').Engine} Engine
  * @typedef {import('@babylonjs/core').Mesh} Mesh
  * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@tabulous/server/src/graphql/types').Dimension} Dimension
- * @typedef {import('@tabulous/server/src/graphql/types').Hand} Hand
- * @typedef {import('@tabulous/server/src/graphql/types').Mesh} SerializedMesh
+ * @typedef {import('@tabulous/server/src/graphql').Dimension} Dimension
+ * @typedef {import('@tabulous/server/src/graphql').Hand} Hand
+ * @typedef {import('@tabulous/server/src/graphql').Mesh} SerializedMesh
  * @typedef {import('@src/3d/behaviors/anchorable').AnchorBehavior} AnchorBehavior
  * @typedef {import('@src/3d/behaviors/drawable').DrawBehavior} DrawBehavior
  * @typedef {import('@src/3d/behaviors/flippable').FlipBehavior} FlipBehavior
@@ -217,6 +217,7 @@ class HandManager {
             if (idx >= 0) {
               this.moved.splice(idx, 1)
             }
+            storeMeshDimensions(this)
             this.changes$.next()
           }
         }
@@ -357,17 +358,19 @@ function handleAction(manager, action) {
  * @returns {Promise<void>}
  */
 async function handDrag(manager, { type, mesh, event }) {
-  const { handScene, duration } = manager
-  // TODO only notify stops when required
-  manager.onDraggableToHandObservable.notifyObservers(false)
+  const { handScene } = manager
   if (!hasSelectedDrawableMeshes(mesh)) {
     return
   }
-  if (type !== 'dragStop') {
-    manager.onDraggableToHandObservable.notifyObservers(true)
-  }
 
   if (!mesh) return
+
+  if (type === 'dragStart') {
+    manager.onDraggableToHandObservable.notifyObservers(true)
+  } else if (type === 'dragStop') {
+    manager.onDraggableToHandObservable.notifyObservers(false)
+  }
+
   if (mesh.getScene() === handScene) {
     let moved = manager.moved
     if (type === 'dragStart') {
@@ -377,10 +380,7 @@ async function handDrag(manager, { type, mesh, event }) {
     }
     manager.moved = moved
     if (moved.length && isHandMeshNextToMain(manager, event)) {
-      const position = /** @type {Vector3} */ (
-        screenToGround(manager.scene, event)
-      )
-      // TODO what it position is null
+      const position = screenToGround(manager.scene, event)
       const origin = moved[0].absolutePosition.x
       /** @type {Mesh[]} */
       const droppedList = []
@@ -436,12 +436,8 @@ async function handDrag(manager, { type, mesh, event }) {
         saved.mesh.setAbsolutePosition(saved.position)
         animateMove(saved.mesh, current, null, saved.duration)
       }
-      // final layout after all animation are over
-      // TODO wait for the destroy animation instead
-      setTimeout(() => layoutMeshs(manager), duration * 1.1)
-    } else {
-      layoutMeshs(manager)
     }
+    layoutMeshs(manager)
   } else if (isMainMeshNextToHand(manager, mesh)) {
     if (type !== 'dragStop') {
       inputManager.stopDrag(event)
@@ -539,15 +535,11 @@ function recordDraw(mesh, finalPosition) {
 function computeExtent(manager, engine) {
   const { handScene } = manager
   const size = getViewPortSize(engine)
-  const topLeft = /** @type {Vector3} */ (
-    screenToGround(handScene, { x: 0, y: 0 })
-  )
-  const bottomRight = /** @type {Vector3} */ (
-    screenToGround(handScene, {
-      x: size.width,
-      y: size.height
-    })
-  )
+  const topLeft = screenToGround(handScene, { x: 0, y: 0 })
+  const bottomRight = screenToGround(handScene, {
+    x: size.width,
+    y: size.height
+  })
   manager.extent = {
     size,
     minX: topLeft.x,
@@ -618,9 +610,7 @@ async function layoutMeshs(manager) {
       : (contentDimensions.width - availableWidth) / (meshes.length - 1))
   let y = 0
   const z =
-    /** @type {Vector3} */ (
-      screenToGround(handScene, { x: 0, y: extent.screenHeight })
-    ).z -
+    screenToGround(handScene, { x: 0, y: extent.screenHeight }).z -
     contentDimensions.depth * 0.5
   /** @type {(void|Promise<void>)[]} */
   const promises = []

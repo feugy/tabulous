@@ -2,7 +2,7 @@
 /**
  * @typedef {import('../../src').Command} Command
  * @typedef {import('../../src/commands/show-player').Game} Game
- * @typedef {import('@tabulous/server/src/graphql/types').Player} Player
+ * @typedef {import('@tabulous/server/src/graphql').Player} Player
  */
 
 import { faker } from '@faker-js/faker'

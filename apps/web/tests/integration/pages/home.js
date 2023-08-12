@@ -114,7 +114,7 @@ export const HomePage = mixin(
     /**
      * Expects several catalog items, sorted by their locale title.
      * Lobby link creation is expected first.
-     * @param {import('@tabulous/server/src/graphql/types').CatalogItem[]} catalog - expected catalog items.
+     * @param {import('@tabulous/server/src/graphql').CatalogItem[]} catalog - expected catalog items.
      * @param {boolean} [withLobby=true] - whether to include link to create lobby or not.
      * @returns {Promise<void>}
      */

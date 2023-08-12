@@ -3,7 +3,7 @@
  * @typedef {import('@babylonjs/core').Mesh} Mesh
  * @typedef {import('@babylonjs/core').Observer<?>} Observer
  * @typedef {import('@babylonjs/core').Scene} Scene
- * @typedef {import('@tabulous/server/src/graphql/types').Anchor} Anchor
+ * @typedef {import('@tabulous/server/src/graphql').Anchor} Anchor
  */
 /**
  * @template {any[]} P, R

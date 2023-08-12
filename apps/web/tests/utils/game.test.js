@@ -1,6 +1,6 @@
 // @ts-check
 /**
- * @typedef {import('@tabulous/server/src/graphql/types').Game} Game
+ * @typedef {import('@tabulous/server/src/graphql').Game} Game
  */
 
 import { faker } from '@faker-js/faker'

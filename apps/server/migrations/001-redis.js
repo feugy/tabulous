@@ -1,8 +1,5 @@
 // @ts-check
 /**
- * @typedef {typeof import('@tabulous/server/src/repositories').default} Repositories
- */
-/**
  * @template {{id: string}} M
  * @typedef {import('@tabulous/server/src/repositories/abstract-repository').AbstractRepository<M> } AbstractRepository
  */
@@ -11,11 +8,7 @@ import { access, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-/**
- * Applies the migration.
- * @param {Repositories} repositories - connected repositories.
- * @returns {Promise<void>}
- */
+/** @type {import('.').Apply} */
 export async function apply(repositories) {
   await migrateJSONData(repositories.players)
   await migrateJSONData(repositories.games)

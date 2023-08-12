@@ -1,3 +1,4 @@
+// @ts-check
 export const suits = ['diamonds', 'clubs', 'hearts', 'spades']
 
 export const sizes = {

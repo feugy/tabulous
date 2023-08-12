@@ -117,7 +117,9 @@ async function readAvailableVersions(folder) {
  */
 async function applyMigration(file, redis) {
   console.log(`[migration] loading migration file: ${file}`)
-  const { apply } = await import(`./${file}`)
+  const { apply } = /** @type {{ apply: import('.').Apply }} */ (
+    await import(`./${file}`)
+  )
   await apply(repositories, redis)
   console.log(`[migration] ${file} applied`)
 }

@@ -1,5 +1,6 @@
 3d models/
 apps/games/
+apps/web/public/babylonjs/
 certbot/
 coverage/
 data/

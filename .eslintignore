@@ -1,6 +1,7 @@
 apps/games/assets/
 apps/games/descriptors/
 apps/web/.svelte-kit/
+apps/web/public/babylonjs/
 coverage/
 dist/
 dist-atelier/

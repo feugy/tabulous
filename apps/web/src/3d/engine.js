@@ -1,7 +1,7 @@
 // @ts-check
 /**
  * @typedef {import('@babylonjs/core').Engine} Engine
- * @typedef {import('@tabulous/server/src/graphql/types').PlayerPreference} PlayerPreferenceSerializedMesh
+ * @typedef {import('@tabulous/server/src/graphql').PlayerPreference} PlayerPreferenceSerializedMesh
  * @typedef {import('@src/common').Locale} Locale
  * @typedef {import('@src/graphql').Game} Game
  * @typedef {import('@src/types').Translate} Translate

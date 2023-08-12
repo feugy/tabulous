@@ -1,4 +1,8 @@
+// @ts-check
+/** @typedef {import('@tabulous/server/src/graphql').Mesh} Mesh */
+
 export function buildDice() {
+  /** @type {Mesh[]} */
   const dices = []
   const diameter = 0.6
   for (let rank = 1; rank <= 2; rank++) {

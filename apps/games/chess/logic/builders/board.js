@@ -1,5 +1,12 @@
+// @ts-check
+/**
+ * @typedef {import('@tabulous/server/src/graphql').Anchor} Anchor
+ * @typedef {import('@tabulous/server/src/graphql').Mesh} Mesh
+ */
+
 import { blackId, faceUVs, pieces, sizes, whiteId } from '../constants.js'
 
+/** @returns {Mesh} */
 export function buildBoard() {
   return {
     shape: 'roundedTile',
@@ -12,6 +19,7 @@ export function buildBoard() {
   }
 }
 
+/** @returns {Anchor[]} */
 function buildAnchors() {
   const anchors = []
   const max = pieces.length
@@ -33,7 +41,9 @@ function buildAnchors() {
   return anchors
 }
 
-function getPieceId({ column, row }) {
+function getPieceId(
+  /** @type {{ column: number, row: number }} */ { column, row }
+) {
   return row === 0
     ? `${[whiteId]}-${pieces[column]}`
     : row === pieces.length - 1

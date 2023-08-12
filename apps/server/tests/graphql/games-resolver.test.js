@@ -1,10 +1,10 @@
 // @ts-check
 /**
  * @typedef {import('fastify').FastifyInstance} FastifyInstance
- * @typedef {import('../../src/services/players').Player} Player
- * @typedef {import('../../src/services/games').GameData} GameData
- * @typedef {import('../../src/services/games').GameListUpdate} GameListUpdate
- * @typedef {import('../../src/services/games').GameParameters} GameParameters
+ * @typedef {import('@tabulous/server/src/services/players').Player} Player
+ * @typedef {import('@tabulous/server/src/services/games').GameData} GameData
+ * @typedef {import('@tabulous/server/src/services/games').GameListUpdate} GameListUpdate
+ * @typedef {import('@tabulous/server/src/services/games').GameParameters<?>} GameParameters
  */
 
 import { faker } from '@faker-js/faker'

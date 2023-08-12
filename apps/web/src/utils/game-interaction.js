@@ -15,7 +15,7 @@
  * @typedef {import('@src/3d/utils').ScreenPosition} ScreenPosition
  * @typedef {import('@src/types').BabylonToRxMapping} BabylonToRxMapping
  * @typedef {import('@src/types').MeshActions} MeshActions
- * @typedef {import('@tabulous/server/src/graphql/types').ActionName} ActionName
+ * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
  */
 
 import {

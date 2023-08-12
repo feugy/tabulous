@@ -22,6 +22,7 @@
     "start": "pnpm run -r --stream --if-present start",
     "test": "pnpm -r --stream --if-present t",
     "test:cli": "pnpm --filter cli t",
+    "test:games": "pnpm --filter games t",
     "test:server": "pnpm --filter server t",
     "test:web": "pnpm --filter web t",
     "test:integration": "pnpm --filter web test:integration",

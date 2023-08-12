@@ -1,16 +1,16 @@
 // @ts-check
 /**
- * @typedef {import('./types').CreateGameArgs} CreateGameArgs
- * @typedef {import('./types').DeleteGameArgs} DeleteGameArgs
- * @typedef {import('./types').Game} Game
- * @typedef {import('./types').GameParameters} GameParameters
- * @typedef {import('./types').GamePlayer} Player
- * @typedef {import('./types').InviteArgs} InviteArgs
- * @typedef {import('./types').JoinGameArgs} JoinGameArgs
- * @typedef {import('./types').KickArgs} KickArgs
- * @typedef {import('./types').PromoteGameArgs} PromoteGameArgs
- * @typedef {import('./types').ReceiveGameUpdatesArgs} ReceiveGameUpdatesArgs
- * @typedef {import('./types').SaveGameArgs} SaveGameArgs
+ * @typedef {import('.').CreateGameArgs} CreateGameArgs
+ * @typedef {import('.').DeleteGameArgs} DeleteGameArgs
+ * @typedef {import('.').Game} Game
+ * @typedef {import('.').GameParameters} GameParameters
+ * @typedef {import('.').GamePlayer} Player
+ * @typedef {import('.').InviteArgs} InviteArgs
+ * @typedef {import('.').JoinGameArgs} JoinGameArgs
+ * @typedef {import('.').KickArgs} KickArgs
+ * @typedef {import('.').PromoteGameArgs} PromoteGameArgs
+ * @typedef {import('.').ReceiveGameUpdatesArgs} ReceiveGameUpdatesArgs
+ * @typedef {import('.').SaveGameArgs} SaveGameArgs
  * @typedef {import('./utils').GraphQLContext} GraphQLContext
  * @typedef {import('./utils').PubSubQueue} PubSubQueue
  */
@@ -269,7 +269,7 @@ export default {
   GameParameters: {
     /**
      * Serializer for schema.
-     * @param {import('../services/games').GameParameters} obj - serialized game parameter schema
+     * @param {import('../services/games').GameParameters<?>} obj - serialized game parameter schema
      * @returns {string}
      */
     schemaString: obj => JSON.stringify(obj.schema)

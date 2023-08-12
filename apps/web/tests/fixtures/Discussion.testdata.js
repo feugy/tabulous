@@ -2,7 +2,7 @@
 /**
  * @typedef {import('@src/graphql').Game} Game
  * @typedef {import('@src/graphql').LightPlayer} LightPlayer
- * @typedef {import('@tabulous/server/src/graphql/types').PlayerPreference} PlayerPreference
+ * @typedef {import('@tabulous/server/src/graphql').PlayerPreference} PlayerPreference
  */
 /**
  * @typedef {import('@src/stores/game-manager').Player} Player

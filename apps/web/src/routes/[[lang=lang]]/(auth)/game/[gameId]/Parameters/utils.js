@@ -1,7 +1,7 @@
 // @ts-check
 /**
  * @typedef {import('@src/types').JSONValue} JSONValue
- * @typedef {Partial<import('@tabulous/server/src/utils').Schema>} Schema
+ * @typedef {Partial<import('@tabulous/server/src/services/catalog').Schema<?>>} Schema
  * @typedef {import('svelte').ComponentType} ComponentType
  */
 
