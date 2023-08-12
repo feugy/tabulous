@@ -345,10 +345,17 @@ export function draw(stackId, count, meshes) {
   const stack = findMesh(stackId, meshes)
   if (stack) {
     for (let i = 0; i < count; i++) {
-      drawn.push(drawMesh(stack, meshes))
+      const mesh = drawMesh(stack, meshes)
+      if (!mesh) {
+        if (stack.stackable?.stackIds?.length === 0) {
+          drawn.push(stack)
+        }
+        break
+      }
+      drawn.push(mesh)
     }
   }
-  return /** @type {Mesh[]} */ (drawn.filter(Boolean))
+  return drawn
 }
 
 /**

@@ -23,6 +23,16 @@ export function buildDescriptorTestSuite(
   /** @type {GameDescriptor} */ descriptor
 ) {
   describe(`${name} game descriptor`, () => {
+    vi.mock('node:crypto', async () => {
+      // no random factor so we get stable UUIDs.
+      const actual = /** @type {?} */ (await vi.importActual('node:crypto'))
+      let counter = 1
+      return {
+        ...actual,
+        randomUUID: () => `00000000-0000-0000-0000-000000${counter++}`
+      }
+    })
+
     beforeEach(() => {
       // no random factor so we get stable results with game random bags.
       vi.spyOn(Math, 'random').mockReturnValue(0)
@@ -183,7 +193,10 @@ function buildParameters(/** @type {?Schema} */ schema) {
   if (schema?.type === 'object') {
     for (const property of schema.required) {
       const propSchema = schema.properties[property]
-      const value = propSchema.enum?.[0] ?? null
+      const value =
+        (property === 'playerCount'
+          ? propSchema.enum?.[propSchema.enum.length - 1]
+          : propSchema.enum?.[0]) ?? null
       result[property] = value
     }
   }

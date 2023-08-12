@@ -615,7 +615,12 @@ describe('draw()', () => {
 
   it('can deplete a stack', () => {
     const { meshes } = game
-    expect(draw('C', 10, meshes)).toEqual([meshes[3], meshes[4], meshes[0]])
+    expect(draw('C', 10, meshes)).toEqual([
+      meshes[3],
+      meshes[4],
+      meshes[0],
+      meshes[2]
+    ])
     expect(meshes[2].stackable?.stackIds).toEqual([])
   })
 
