@@ -55,7 +55,7 @@ describe('createCard()', () => {
         texture: '',
         width: 4,
         depth: 2,
-        transform: { pitch: Math.PI * -0.5 }
+        transform: { yaw: Math.PI * -0.5 }
       },
       scene
     )

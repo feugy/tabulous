@@ -5,7 +5,7 @@
  * @typedef {import('@src/3d/utils/behaviors').SerializedMesh} SerializedMesh
  */
 
-import { Matrix, Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector.js'
+import { Vector3, Vector4 } from '@babylonjs/core/Maths/math.vector.js'
 import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder.js'
 
 import { controlManager } from '../managers/control'
@@ -30,7 +30,6 @@ export function createPrism(
     width = 3,
     height = 1,
     edges = 6,
-    prismRotation = 0,
     texture,
     faceUV = [
       [0 / 3, 0, 1 / 3, 1],
@@ -54,10 +53,6 @@ export function createPrism(
   )
   mesh.name = 'prism'
   materialManager.configure(mesh, texture)
-  if (prismRotation) {
-    const rotation = Matrix.RotationYawPitchRoll(prismRotation, 0, 0)
-    mesh.bakeTransformIntoVertices(rotation)
-  }
   applyInitialTransform(mesh, transform)
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.isPickable = false
@@ -75,7 +70,6 @@ export function createPrism(
       faceUV,
       transform,
       edges,
-      prismRotation,
       width,
       height,
       ...serializeBehaviors(mesh.behaviors)

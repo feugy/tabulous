@@ -28,7 +28,6 @@ fragment mesh on Mesh {
   height
   depth
   edges
-  prismRotation
   diameter
   borderRadius
   faces

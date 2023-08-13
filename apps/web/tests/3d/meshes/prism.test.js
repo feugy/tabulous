@@ -76,7 +76,6 @@ describe('createPrism()', () => {
     const y = faker.number.int(999)
     const z = faker.number.int(999)
     const texture = faker.color.rgb()
-    const prismRotation = faker.number.int(999)
     const faceUV = [
       Array.from({ length: 4 }, () => faker.number.int(999)),
       Array.from({ length: 4 }, () => faker.number.int(999)),
@@ -97,7 +96,6 @@ describe('createPrism()', () => {
           id,
           texture,
           edges,
-          prismRotation,
           width,
           height,
           x,
@@ -151,7 +149,6 @@ describe('createPrism()', () => {
         faceUV,
         width,
         edges,
-        prismRotation,
         height,
         detailable: behaviors.detailable,
         rotable: {

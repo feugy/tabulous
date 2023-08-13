@@ -73,7 +73,6 @@ import { canAccess } from './catalog.js'
  * @property {number} [borderRadius] - corner radius, for rounded tiles.
  * @property {string} [file] - path to the custom mesh OBJ file.
  * @property {number} [edges] - number of edges, for prisms.
- * @property {number} [prismRotation] - initial rotation angle, baked in vertices, for prisms.
  * @property {number} [faces] - number of faces, for dice.
  * @property {DetailableState} [detailable] - if this mesh could be detailed, contains details.
  * @property {MovableState} [movable] - if this mesh could be moved, contains move state.

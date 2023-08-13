@@ -1,7 +1,6 @@
 # TODO
 
-- graphQL + mesh: replace prismRotation with initialRotation
-- keep anchor ids
+- keep anchor ids (reused ids to fix: drop-zone, anchor-X)
 
 ## Refactor
 
