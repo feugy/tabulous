@@ -1,14 +1,15 @@
 # TODO
 
+- move Discussion bellow PlayerList with a title and no fixed height
+- graphQL + mesh: replace prismRotation with initialRotation
+- keep anchor ids
+
 ## Refactor
 
-- graphQL + mesh: replace prismRotation with initialRotation
-- replace windicss with a successor (tailwind or UnoCSS)
-- move Discussion bellow PlayerList with a title and no fixed height
 - automerge.js
+- replace windicss with a successor (tailwind or UnoCSS)
 - add tests for web/src/utils/peer-connection
 - group candidate target per kind for performance
-- keep anchor ids
 - create Animation objects as part of runAnimation() (constant frameRate of 60)
 - all manager managing a collection of behaviors should check their capabilities + stackable/anchorable
 - game-manager is just a gigantic mess!!! no single responsibility, global state all over the place
@@ -19,7 +20,6 @@
 - bug: a game with no available seats and no other player should not display the friend list tab
 - bug: game shortcuts ignore active selection to only apply to hover mesh
 - bug: 6-takes: snapping to the wrong anchor (when 2 players are snapping to different anchors)
-- chore: Placing %sveltekit.body% directly inside <body> is not recommended
 - replay
 - score card (Mah-jong, Belote)
 - command to reset some mesh state and restart a game (Mah-jong, Belote)
