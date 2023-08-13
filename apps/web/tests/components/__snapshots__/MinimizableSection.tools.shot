@@ -92,6 +92,12 @@ exports[`Bottom 1`] = `
       <div
         class="discussion s-4DrpFHLJm4IA"
       >
+        <h3
+          class="s-4DrpFHLJm4IA"
+        >
+          Discussion
+        </h3>
+         
         <div
           class="messages s-4DrpFHLJm4IA"
         >
@@ -334,6 +340,12 @@ exports[`Left 1`] = `
       <div
         class="discussion s-4DrpFHLJm4IA"
       >
+        <h3
+          class="s-4DrpFHLJm4IA"
+        >
+          Discussion
+        </h3>
+         
         <div
           class="messages s-4DrpFHLJm4IA"
         >
@@ -601,6 +613,12 @@ exports[`Multiple horizontal, custom tabs 1`] = `
       <div
         class="discussion s-4DrpFHLJm4IA"
       >
+        <h3
+          class="s-4DrpFHLJm4IA"
+        >
+          Discussion
+        </h3>
+         
         <div
           class="messages s-4DrpFHLJm4IA"
         >
@@ -868,6 +886,12 @@ exports[`Multiple vertical, custom tabs 1`] = `
       <div
         class="discussion s-4DrpFHLJm4IA"
       >
+        <h3
+          class="s-4DrpFHLJm4IA"
+        >
+          Discussion
+        </h3>
+         
         <div
           class="messages s-4DrpFHLJm4IA"
         >
@@ -1110,6 +1134,12 @@ exports[`Right 1`] = `
       <div
         class="discussion s-4DrpFHLJm4IA"
       >
+        <h3
+          class="s-4DrpFHLJm4IA"
+        >
+          Discussion
+        </h3>
+         
         <div
           class="messages s-4DrpFHLJm4IA"
         >
@@ -1352,6 +1382,12 @@ exports[`Top 1`] = `
       <div
         class="discussion s-4DrpFHLJm4IA"
       >
+        <h3
+          class="s-4DrpFHLJm4IA"
+        >
+          Discussion
+        </h3>
+         
         <div
           class="messages s-4DrpFHLJm4IA"
         >

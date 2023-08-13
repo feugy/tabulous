@@ -7,7 +7,6 @@
   name="Components/Confirm Dialogue"
   props={{
     open: true,
-    closable: true,
     message: `Vous avez beau dire, y'a pas seulement que de la pomme, y'a autre chose, ce 
 serait pas des fois de la betterave ? Hein ?`,
     title: 'Ils boivent'

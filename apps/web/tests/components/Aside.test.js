@@ -32,7 +32,6 @@ const helpButtonText = 'help F1'
 const friendsButtonText = 'people_alt F2'
 const rulesButtonText = 'auto_stories F3'
 const playersButonText = 'contacts F4'
-const discussionButtonText = 'question_answer F5'
 
 describe('Aside component', () => {
   const handleSend = vi.fn()
@@ -98,7 +97,7 @@ describe('Aside component', () => {
     ).toHaveAttribute('aria-expanded', 'true')
   })
 
-  it('only has help and friends tabs on single player game without rules book', () => {
+  it('only has help on single player game without rules book', () => {
     renderComponent({
       game: { kind: 'belote' },
       user,
@@ -106,16 +105,13 @@ describe('Aside component', () => {
         players.slice(0, 1).map(player => [player.id, player])
       )
     })
-    expect(extractText(screen.getAllByRole('tab'))).toEqual([
-      friendsButtonText,
-      helpButtonText
-    ])
+    expect(extractText(screen.getAllByRole('tab'))).toEqual([helpButtonText])
     expect(
       extractAttribute(screen.getAllByRole('tab'), 'aria-expanded')
-    ).toEqual(['false', 'false'])
+    ).toEqual(['false'])
   })
 
-  it('has help, friends and rules book on single player game', () => {
+  it('has help and rules book on single player game', () => {
     renderComponent({
       user,
       game: { kind: 'splendor', rulesBookPageCount: 4 },
@@ -123,15 +119,14 @@ describe('Aside component', () => {
     })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
       rulesButtonText,
-      friendsButtonText,
       helpButtonText
     ])
     expect(
       extractAttribute(screen.getAllByRole('tab'), 'aria-expanded')
-    ).toEqual(['false', 'false', 'false'])
+    ).toEqual(['false', 'false'])
   })
 
-  it('has help, friends, discussion and peer tabs on game without rules book', () => {
+  it('has help, friends and peer tabs on game without rules book', () => {
     renderComponent({
       user,
       game: { kind: 'splendor' },
@@ -140,7 +135,53 @@ describe('Aside component', () => {
     })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
       playersButonText,
-      discussionButtonText,
+      friendsButtonText,
+      helpButtonText
+    ])
+    expect(
+      extractAttribute(screen.getAllByRole('tab'), 'aria-expanded')
+    ).toEqual(['true', 'true', 'true'])
+    const avatars = screen.getAllByTestId('player-avatar')
+    expect(extractText(avatars)).toEqual(
+      players.slice(1).map(({ username }) => username)
+    )
+    expect(avatars[0].children[0]).not.toHaveClass('hasStream')
+    expect(avatars[1].children[0]).not.toHaveClass('hasStream')
+  })
+
+  it('has help, friends and peer tabs on game without rules book and no available seats', () => {
+    renderComponent({
+      user,
+      game: { kind: 'splendor', availableSeats: 0 },
+      playerById: toMap(players),
+      thread
+    })
+    expect(extractText(screen.getAllByRole('tab'))).toEqual([
+      playersButonText,
+      friendsButtonText,
+      helpButtonText
+    ])
+    expect(
+      extractAttribute(screen.getAllByRole('tab'), 'aria-expanded')
+    ).toEqual(['true', 'true', 'true'])
+    const avatars = screen.getAllByTestId('player-avatar')
+    expect(extractText(avatars)).toEqual(
+      players.slice(1).map(({ username }) => username)
+    )
+    expect(avatars[0].children[0]).not.toHaveClass('hasStream')
+    expect(avatars[1].children[0]).not.toHaveClass('hasStream')
+  })
+
+  it('has help, friends, rules book and peer tabs on game', () => {
+    renderComponent({
+      user,
+      game: { kind: 'splendor', rulesBookPageCount: 4 },
+      playerById: toMap(players),
+      thread
+    })
+    expect(extractText(screen.getAllByRole('tab'))).toEqual([
+      playersButonText,
+      rulesButtonText,
       friendsButtonText,
       helpButtonText
     ])
@@ -155,32 +196,7 @@ describe('Aside component', () => {
     expect(avatars[1].children[0]).not.toHaveClass('hasStream')
   })
 
-  it('has help, friends, rules book, discussion and peer tabs on game', () => {
-    renderComponent({
-      user,
-      game: { kind: 'splendor', rulesBookPageCount: 4 },
-      playerById: toMap(players),
-      thread
-    })
-    expect(extractText(screen.getAllByRole('tab'))).toEqual([
-      playersButonText,
-      discussionButtonText,
-      rulesButtonText,
-      friendsButtonText,
-      helpButtonText
-    ])
-    expect(
-      extractAttribute(screen.getAllByRole('tab'), 'aria-expanded')
-    ).toEqual(['true', 'true', 'true', 'true', 'true'])
-    const avatars = screen.getAllByTestId('player-avatar')
-    expect(extractText(avatars)).toEqual(
-      players.slice(1).map(({ username }) => username)
-    )
-    expect(avatars[0].children[0]).not.toHaveClass('hasStream')
-    expect(avatars[1].children[0]).not.toHaveClass('hasStream')
-  })
-
-  it('has only friends, discussion and peer tabs on lobby', () => {
+  it('has only friends and peer tabs on lobby', () => {
     renderComponent({
       user,
       game: { rulesBookPageCount: 4 },
@@ -189,12 +205,11 @@ describe('Aside component', () => {
     })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
       playersButonText,
-      discussionButtonText,
       friendsButtonText
     ])
     expect(
       extractAttribute(screen.getAllByRole('tab'), 'aria-expanded')
-    ).toEqual(['true', 'true', 'true'])
+    ).toEqual(['true', 'true'])
   })
 
   it('has streams for connected peers', async () => {
@@ -207,13 +222,12 @@ describe('Aside component', () => {
     })
     expect(extractText(screen.getAllByRole('tab'))).toEqual([
       playersButonText,
-      discussionButtonText,
       friendsButtonText,
       helpButtonText
     ])
     expect(
       extractAttribute(screen.getAllByRole('tab'), 'aria-expanded')
-    ).toEqual(['true', 'true', 'true', 'true'])
+    ).toEqual(['true', 'true', 'true'])
 
     const avatars = screen.getAllByTestId('player-avatar')
 
@@ -232,7 +246,7 @@ describe('Aside component', () => {
     ).toBeInTheDocument()
 
     await userEvent.type(screen.getByRole('textbox'), thread?.[0].text ?? '')
-    fireEvent.click(screen.getByRole('button'))
+    fireEvent.click(screen.getByRole('button', { name: 'send' }))
 
     expect(handleSend).toHaveBeenCalledWith(
       expect.objectContaining({

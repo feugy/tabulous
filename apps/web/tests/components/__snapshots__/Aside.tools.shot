@@ -563,36 +563,6 @@ exports[`Lobby 1`] = `
              
           </li>
           <li
-            class="s-vqhOCvFa7LzI"
-          >
-            <button
-              aria-expanded="true"
-              aria-selected="false"
-              class="transparent s-NMyTiX1zi6rz"
-              role="tab"
-            >
-              <div
-                class="s-NMyTiX1zi6rz"
-              >
-                <span
-                  class="material-icons s-NMyTiX1zi6rz"
-                >
-                  question_answer
-                </span>
-                
-                
-              </div>
-               
-              <span
-                class="badge s-NMyTiX1zi6rz"
-              >
-                F5
-              </span>
-            </button>
-            <!--&lt;Button&gt;-->
-             
-          </li>
-          <li
             class="s-vqhOCvFa7LzI active"
           >
             <button
@@ -987,6 +957,159 @@ exports[`Lobby 1`] = `
             <!--&lt;PlayerList&gt;-->
              
           </section>
+           
+          <div
+            class="discussion s-4DrpFHLJm4IA"
+          >
+            <h3
+              class="s-4DrpFHLJm4IA"
+            >
+              Discussion
+            </h3>
+             
+            <div
+              class="messages s-4DrpFHLJm4IA"
+            >
+              <span
+                class="from s-4DrpFHLJm4IA"
+                style="--player-color: #9c3096;"
+              >
+                Fernand Naudin
+              </span>
+              <span
+                class="message s-4DrpFHLJm4IA"
+              >
+                Qu'est-ce qui se passe encore ?
+              </span>
+              <span
+                class="from s-4DrpFHLJm4IA"
+                style="--player-color: #ff4500;"
+              >
+                Maître Follas
+              </span>
+              <span
+                class="message s-4DrpFHLJm4IA"
+              >
+                Notre ami va se faire un plaisir de vous l'expliquer.
+              </span>
+              <span
+                class="from s-4DrpFHLJm4IA"
+                style="--player-color: #239646;"
+              >
+                Pascal
+              </span>
+              <span
+                class="message s-4DrpFHLJm4IA"
+              >
+                Les Volfoni ont organisé à la péniche une petite réunion des cadres, façon meeting, si vous voyez ce que je veux dire.
+M'enfin quoi, on parle dans votre dos.
+              </span>
+              <span
+                class="from s-4DrpFHLJm4IA"
+                style="--player-color: #9c3096;"
+              >
+                Fernand Naudin
+              </span>
+              <span
+                class="message s-4DrpFHLJm4IA"
+              >
+                Et tu tiens ça d'où ?
+              </span>
+              <span
+                class="from s-4DrpFHLJm4IA"
+                style="--player-color: #239646;"
+              >
+                Pascal
+              </span>
+              <span
+                class="message s-4DrpFHLJm4IA"
+              >
+                Je ne peux pas le dire, j'ai promis. Ce serait mal.
+              </span>
+              <span
+                class="from s-4DrpFHLJm4IA"
+                style="--player-color: #9c3096;"
+              >
+                Fernand Naudin
+              </span>
+              <span
+                class="message s-4DrpFHLJm4IA"
+              >
+                Alors ?
+              </span>
+              <span
+                class="from s-4DrpFHLJm4IA"
+                style="--player-color: #ff4500;"
+              >
+                Maître Follas
+              </span>
+              <span
+                class="message s-4DrpFHLJm4IA"
+              >
+                Eh bien. Euh. Y'a deux solutions : ou on se dérange, ou on méprise. 
+Oui, évidemment, n'importe comment une tournée d'inspection peut jamais nuire, bien sûr.
+              </span>
+              <span
+                class="from s-4DrpFHLJm4IA"
+                style="--player-color: #9c3096;"
+              >
+                Fernand Naudin
+              </span>
+              <span
+                class="message s-4DrpFHLJm4IA"
+              >
+                Bon, on va y aller, hmm ?
+              </span>
+              <span
+                class="from s-4DrpFHLJm4IA"
+                style="--player-color: #239646;"
+              >
+                Pascal
+              </span>
+              <span
+                class="message s-4DrpFHLJm4IA"
+              >
+                Monsieur Fernand, y'a peut-être une place pour moi dans votre auto. Des fois que la réunion devienne houleuse ... J'ai une présence tranquillisante.
+              </span>
+            </div>
+             
+            <form
+              class="s-4DrpFHLJm4IA"
+            >
+              <fieldset
+                class="s-Fe6WNbR-55zp"
+              >
+                 
+                <input
+                  class="s-Fe6WNbR-55zp"
+                />
+              </fieldset>
+              <!--&lt;Input&gt;-->
+               
+              <button
+                class="s-NMyTiX1zi6rz"
+                disabled=""
+                title="Envoyer à tous"
+                type="submit"
+              >
+                <div
+                  class="s-NMyTiX1zi6rz"
+                >
+                  <span
+                    class="material-icons s-NMyTiX1zi6rz"
+                  >
+                    send
+                  </span>
+                  
+                  
+                </div>
+                 
+              </button>
+              <!--&lt;Button&gt;-->
+            </form>
+          </div>
+          <!--&lt;Discussion&gt;-->
+          
           
           <!--&lt;Container&gt;-->
         </div>
@@ -1089,36 +1212,6 @@ exports[`Multiple connected 1`] = `
                 class="badge s-NMyTiX1zi6rz"
               >
                 F4
-              </span>
-            </button>
-            <!--&lt;Button&gt;-->
-             
-          </li>
-          <li
-            class="s-vqhOCvFa7LzI"
-          >
-            <button
-              aria-expanded="true"
-              aria-selected="false"
-              class="transparent s-NMyTiX1zi6rz"
-              role="tab"
-            >
-              <div
-                class="s-NMyTiX1zi6rz"
-              >
-                <span
-                  class="material-icons s-NMyTiX1zi6rz"
-                >
-                  question_answer
-                </span>
-                
-                
-              </div>
-               
-              <span
-                class="badge s-NMyTiX1zi6rz"
-              >
-                F5
               </span>
             </button>
             <!--&lt;Button&gt;-->
@@ -1494,36 +1587,6 @@ exports[`No peers 1`] = `
                 <span
                   class="material-icons s-NMyTiX1zi6rz"
                 >
-                  people_alt
-                </span>
-                
-                
-              </div>
-               
-              <span
-                class="badge s-NMyTiX1zi6rz"
-              >
-                F2
-              </span>
-            </button>
-            <!--&lt;Button&gt;-->
-             
-          </li>
-          <li
-            class="s-vqhOCvFa7LzI"
-          >
-            <button
-              aria-expanded="true"
-              aria-selected="false"
-              class="transparent s-NMyTiX1zi6rz"
-              role="tab"
-            >
-              <div
-                class="s-NMyTiX1zi6rz"
-              >
-                <span
-                  class="material-icons s-NMyTiX1zi6rz"
-                >
                   help
                 </span>
                 
@@ -1729,36 +1792,6 @@ exports[`Single connected 1`] = `
                 class="badge s-NMyTiX1zi6rz"
               >
                 F4
-              </span>
-            </button>
-            <!--&lt;Button&gt;-->
-             
-          </li>
-          <li
-            class="s-vqhOCvFa7LzI"
-          >
-            <button
-              aria-expanded="true"
-              aria-selected="false"
-              class="transparent s-NMyTiX1zi6rz"
-              role="tab"
-            >
-              <div
-                class="s-NMyTiX1zi6rz"
-              >
-                <span
-                  class="material-icons s-NMyTiX1zi6rz"
-                >
-                  question_answer
-                </span>
-                
-                
-              </div>
-               
-              <span
-                class="badge s-NMyTiX1zi6rz"
-              >
-                F5
               </span>
             </button>
             <!--&lt;Button&gt;-->
@@ -2082,36 +2115,6 @@ exports[`Single connected, no rules book, thread 1`] = `
                 class="badge s-NMyTiX1zi6rz"
               >
                 F4
-              </span>
-            </button>
-            <!--&lt;Button&gt;-->
-             
-          </li>
-          <li
-            class="s-vqhOCvFa7LzI"
-          >
-            <button
-              aria-expanded="true"
-              aria-selected="false"
-              class="transparent s-NMyTiX1zi6rz"
-              role="tab"
-            >
-              <div
-                class="s-NMyTiX1zi6rz"
-              >
-                <span
-                  class="material-icons s-NMyTiX1zi6rz"
-                >
-                  question_answer
-                </span>
-                
-                
-              </div>
-               
-              <span
-                class="badge s-NMyTiX1zi6rz"
-              >
-                F5
               </span>
             </button>
             <!--&lt;Button&gt;-->

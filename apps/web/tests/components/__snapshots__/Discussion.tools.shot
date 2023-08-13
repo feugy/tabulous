@@ -7,6 +7,12 @@ exports[`Long thread 1`] = `
   <div
     class="discussion s-4DrpFHLJm4IA"
   >
+    <h3
+      class="s-4DrpFHLJm4IA"
+    >
+      Discussion
+    </h3>
+     
     <div
       class="messages s-4DrpFHLJm4IA"
     >
@@ -156,6 +162,12 @@ exports[`short thread 1`] = `
 <div
   class="discussion s-4DrpFHLJm4IA"
 >
+  <h3
+    class="s-4DrpFHLJm4IA"
+  >
+    Discussion
+  </h3>
+   
   <div
     class="messages s-4DrpFHLJm4IA"
   >

@@ -14,11 +14,7 @@
   import { isLobby as checkIfLobby } from '@src/utils'
   import { _ } from 'svelte-intl'
 
-  import ControlsHelp from '../ControlsHelp.svelte'
-  import Discussion from '../Discussion.svelte'
-  import FriendList from '../FriendList/index.js'
-  import MinimizableSection from '../MinimizableSection.svelte'
-  import RuleViewer from '../RuleViewer.svelte'
+  import { ControlsHelp, FriendList, MinimizableSection, RuleViewer } from '..'
   import AvatarGrid from './AvatarGrid.svelte'
   import VideoCommands from './VideoCommands.svelte'
 
@@ -41,7 +37,6 @@
 
   const helpId = 'help'
   const playersId = 'players'
-  const discussionId = 'discussion'
   const rulesId = 'rules'
   const friendsId = 'friends'
 
@@ -60,6 +55,9 @@
   $: {
     tabs = [{ icon: 'people_alt', id: friendsId, key: 'F2' }]
     if (game) {
+      if ((game.availableSeats ?? 0) === 0 && playerById.size === 1) {
+        tabs.splice(0, 1)
+      }
       if (!isLobby) {
         tabs.push({ icon: 'help', id: helpId, key: 'F1' })
         if ((game.rulesBookPageCount ?? 0) > 1) {
@@ -67,12 +65,7 @@
         }
       }
       if (hasPeers) {
-        tabs.splice(
-          0,
-          0,
-          { icon: 'contacts', id: playersId, key: 'F4' },
-          { icon: 'question_answer', id: discussionId, key: 'F5' }
-        )
+        tabs.splice(0, 0, { icon: 'contacts', id: playersId, key: 'F4' })
       }
     }
     tab = isLobby ? tabs.length - 1 : 0
@@ -109,9 +102,7 @@
           </div>
         {/if}
       </div>
-      {#if tabs[tab]?.id === discussionId}
-        <Discussion {thread} {playerById} on:sendMessage />
-      {:else if tabs[tab]?.id === rulesId}
+      {#if tabs[tab]?.id === rulesId}
         <RuleViewer
           game={game?.kind}
           lastPage={(game?.rulesBookPageCount ?? 1) - 1}
@@ -119,7 +110,14 @@
       {:else if tabs[tab]?.id === helpId}
         <ControlsHelp {actionNamesByButton} {actionNamesByKey} />
       {:else if tabs[tab]?.id === friendsId}
-        <FriendList {friends} {playerById} {game} {user} />
+        <FriendList
+          {friends}
+          {thread}
+          {playerById}
+          {game}
+          {user}
+          on:sendMessage
+        />
       {/if}
     </div>
   </MinimizableSection>
