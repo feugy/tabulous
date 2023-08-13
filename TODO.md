@@ -1,6 +1,5 @@
 # TODO
 
-- move Discussion bellow PlayerList with a title and no fixed height
 - graphQL + mesh: replace prismRotation with initialRotation
 - keep anchor ids
 
@@ -17,7 +16,6 @@
 
 ## UI
 
-- bug: a game with no available seats and no other player should not display the friend list tab
 - bug: game shortcuts ignore active selection to only apply to hover mesh
 - bug: 6-takes: snapping to the wrong anchor (when 2 players are snapping to different anchors)
 - replay

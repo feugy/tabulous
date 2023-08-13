@@ -219,7 +219,7 @@ describe('given a connected repository and several players', () => {
           total: 3,
           from: 0,
           size: 10,
-          results: [models[9], models[8], models[7]]
+          results: [models[8], models[9], models[7]]
         })
       })
 
@@ -274,7 +274,7 @@ describe('given a connected repository and several players', () => {
           total: 6,
           from: 2,
           size: 3,
-          results: [models[8], models[2], models[3]]
+          results: [models[9], models[2], models[3]]
         })
 
         expect(
@@ -340,9 +340,9 @@ describe('given a connected repository and several players', () => {
           size: 10,
           total: 6,
           results: [
-            models[9],
             models[5],
             models[8],
+            models[9],
             models[2],
             models[3],
             models[7]

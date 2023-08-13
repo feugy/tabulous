@@ -77,7 +77,11 @@ export default defineConfig(({ mode }) => ({
     alias: [{ find: /^svelte$/, replacement: 'svelte/internal' }],
     include: ['**/*.test.js'],
     deps: {
-      inline: ['msw', 'svelte-hyperscript', 'whatwg-fetch']
+      optimizer: {
+        web: {
+          include: ['msw', 'svelte-hyperscript', 'whatwg-fetch']
+        }
+      }
     },
     globals: true, // needed for Atelier
     environment: 'jsdom',
