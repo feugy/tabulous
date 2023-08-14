@@ -519,6 +519,7 @@ describe('StackBehavior', () => {
       let [poped] = await (mesh.metadata.pop ? mesh.metadata.pop() : [])
       expect(poped?.id).toBe('box3')
       expectInteractible(poped)
+      expect(poped.parent?.id).toBeUndefined()
       expectStacked([mesh, box2, box1])
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
@@ -531,6 +532,7 @@ describe('StackBehavior', () => {
       ;[poped] = await (mesh.metadata.pop ? mesh.metadata.pop() : [])
       expect(poped?.id).toBe('box1')
       expectInteractible(poped)
+      expect(poped.parent?.id).toBeUndefined()
       expectStacked([mesh, box2])
       expect(recordSpy).toHaveBeenCalledTimes(2)
       expect(recordSpy).toHaveBeenNthCalledWith(2, {
@@ -543,6 +545,7 @@ describe('StackBehavior', () => {
       ;[poped] = await (mesh.metadata.pop ? mesh.metadata.pop() : [])
       expect(poped?.id).toBe('box2')
       expectInteractible(poped)
+      expect(poped.parent?.id).toBeUndefined()
       expectStacked([mesh])
       expect(recordSpy).toHaveBeenCalledTimes(3)
       expect(recordSpy).toHaveBeenNthCalledWith(3, {
@@ -563,6 +566,7 @@ describe('StackBehavior', () => {
         expectAnimationEnd(getAnimatableBehavior(box3))
       ])
       expect(poped?.id).toBe('box3')
+      expect(poped.parent?.id).toBeUndefined()
       expectInteractible(poped)
       expectStacked([mesh, box2, box1])
       expect(recordSpy).toHaveBeenCalledTimes(1)
@@ -587,8 +591,10 @@ describe('StackBehavior', () => {
       ])
       expect(poped1?.id).toBe('box3')
       expectInteractible(poped1)
+      expect(poped1.parent?.id).toBeUndefined()
       expect(poped2?.id).toBe('box1')
       expectInteractible(poped2)
+      expect(poped2.parent?.id).toBeUndefined()
       expectStacked([mesh, box2])
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
@@ -617,6 +623,10 @@ describe('StackBehavior', () => {
       expectInteractible(poped2)
       expectInteractible(poped3)
       expectInteractible(poped4)
+      expect(poped1.parent?.id).toBeUndefined()
+      expect(poped2.parent?.id).toBeUndefined()
+      expect(poped3.parent?.id).toBeUndefined()
+      expect(poped4.parent?.id).toBeUndefined()
       expectStacked([mesh])
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
@@ -634,6 +644,7 @@ describe('StackBehavior', () => {
       const [poped] = await (box3.metadata.pop ? box3.metadata.pop() : [])
       expect(poped?.id).toBe('box2')
       expectInteractible(poped)
+      expect(poped.parent?.id).toBeUndefined()
       expectStacked([mesh, box3, box1])
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
@@ -650,6 +661,7 @@ describe('StackBehavior', () => {
 
       moveManager.notifyMove(box2)
       expectInteractible(box2)
+      expect(box2.parent?.id).toBeUndefined()
       expectStacked([mesh, box3, box1])
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
@@ -665,6 +677,7 @@ describe('StackBehavior', () => {
 
       box2.metadata.draw?.()
       expectInteractible(box2)
+      expect(box2.parent?.id).toBeUndefined()
       expectStacked([mesh, box3, box1])
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
@@ -701,6 +714,7 @@ describe('StackBehavior', () => {
       let [poped] = await (mesh.metadata.pop ? mesh.metadata.pop() : [])
       expect(poped?.id).toBe('box3')
       expectInteractible(poped, true, false)
+      expect(poped.parent?.id).toBeUndefined()
       expectStacked([mesh, box2, box1])
       expect(recordSpy).toHaveBeenCalledTimes(1)
       expect(recordSpy).toHaveBeenCalledWith({
@@ -1025,9 +1039,9 @@ describe('StackBehavior', () => {
     })
 
     it('can not push no mesh', () => {
-      // @ts-expect-error no arguments
+      // @ts-expect-error: no arguments
       expect(mesh.metadata.canPush?.()).toBe(false)
-      // @ts-expect-error null is not acceptable
+      // @ts-expect-error: null is not acceptable
       expect(mesh.metadata.canPush?.(null)).toBe(false)
     })
 
