@@ -11,7 +11,7 @@ import windi from 'vite-plugin-windicss'
 
 // This file is used by
 // - vite
-export default defineConfig(({ mode }) => ({
+export default defineConfig({
   envPrefix: 'WEB_',
   plugins: [
     basicSsl(),
@@ -52,7 +52,8 @@ export default defineConfig(({ mode }) => ({
     })
   ],
   build: {
-    sourcemap: mode === 'integration' ? 'inline' : true
+    // ToFix: since @babylonjs/core@6.16.0, sourcemap: 'inline' break.
+    sourcemap: true
   },
   optimizeDeps: {
     exclude: ['@urql/svelte', '@atelier-wb/ui']
@@ -87,4 +88,4 @@ export default defineConfig(({ mode }) => ({
     environment: 'jsdom',
     setupFiles: ['tests/setup']
   }
-}))
+})
