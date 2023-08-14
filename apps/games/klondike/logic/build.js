@@ -1,6 +1,6 @@
 // @ts-check
 import { buildBoard, buildCards } from './builders/index.js'
-import { anchorIds, counts } from './constants.js'
+import { anchorIds } from './constants.js'
 
 const bagId = 'cards'
 
@@ -24,28 +24,8 @@ export function build() {
    * Remainings are on discard
    */
   const slots = [
-    ...makeColumnSlots(),
     { bagId, anchorId: anchorIds.reserve, flippable: { isFlipped: true } }
   ]
 
   return { meshes, bags, slots }
-}
-
-function makeColumnSlots() {
-  const slots = []
-  for (let column = 0; column < counts.columns; column++) {
-    for (let row = 0; row <= column; row++) {
-      let anchorId = `${anchorIds.column}-${column + 1}`
-      for (let index = 0; index < row; index++) {
-        anchorId += '.bottom'
-      }
-      slots.push({
-        bagId,
-        anchorId,
-        count: 1,
-        flippable: { isFlipped: row !== column }
-      })
-    }
-  }
-  return slots
 }
