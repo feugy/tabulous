@@ -17,9 +17,10 @@ export function buildCards(full = false) {
   for (const suit of ['spades', 'diamonds', 'clubs', 'hearts']) {
     for (let index = 1; index <= 13; index++) {
       if (full || index === 1 || index >= 7) {
+        const id = `${suit}-${index}`
         cards.push({
           shape: 'card',
-          id: `${suit}-${index}`,
+          id,
           texture: `/assets/textures/${suit}-${index}.1.ktx2`,
           ...sizes.card,
           detailable: {
@@ -28,8 +29,8 @@ export function buildCards(full = false) {
           },
           anchorable: {
             anchors: [
-              { id: 'bottom', z: spacing.cardAnchor.z, ...sizes.card },
-              { id: 'top', z: -spacing.cardAnchor.z, ...sizes.card }
+              { id: `${id}-bottom`, z: spacing.cardAnchor.z, ...sizes.card },
+              { id: `${id}-top`, z: -spacing.cardAnchor.z, ...sizes.card }
             ]
           },
           flippable: { isFlipped: true },
