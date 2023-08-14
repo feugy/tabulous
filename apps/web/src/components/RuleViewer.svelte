@@ -106,7 +106,7 @@
     class="image-container"
     bind:this={container}
     on:pointerdown={handleDragStart}
-    on:wheel|preventDefault={handleZoom}
+    on:wheel|passive={handleZoom}
   >
     {#if game}
       <img

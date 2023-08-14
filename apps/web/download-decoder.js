@@ -1,6 +1,6 @@
 // @ts-check
 import { createWriteStream } from 'node:fs'
-import { mkdir, readFile } from 'node:fs/promises'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { Readable } from 'node:stream'
 import { finished } from 'node:stream/promises'
@@ -14,6 +14,7 @@ async function main() {
     KhronosTextureContainer2.URLConfig.jsDecoderModule,
     destination
   )
+  await removeSourceMap(file)
   for (const otherFile of await extractFilePaths(file)) {
     await download(otherFile, destination)
   }
@@ -46,6 +47,11 @@ async function download(
     )
   )
   return destination
+}
+
+async function removeSourceMap(/** @type {string} */ file) {
+  const content = await readFile(file, 'utf8')
+  await writeFile(file, content.replace(/\/\/# sourceMappingURL=\W+/, ''))
 }
 
 main()

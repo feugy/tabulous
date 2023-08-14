@@ -18,7 +18,7 @@ const logger = makeLogger('input')
 const PinchMovementThreshold = 10
 const PinchMinimumDistance = 200
 const PinchAttemptThreshold = 3
-const DragMinimumDistance = 1
+const DragMinimumDistance = 0.5
 
 /**
  * @internal
@@ -528,7 +528,7 @@ class InputManager {
     interaction.addEventListener('pointerdown', handlePointerDown)
     interaction.addEventListener('pointermove', handlePointerMove)
     interaction.addEventListener('pointerup', handlePointerUp)
-    interaction.addEventListener('wheel', handleWheel)
+    interaction.addEventListener('wheel', handleWheel, { passive: true })
     interaction.addEventListener('keydown', handleKeyDown)
     const cameraObserver = onCameraMove.add(handleCameraMove)
     this.dispose = () => {
