@@ -275,10 +275,10 @@ export class AnchorBehavior extends TargetBehavior {
     this.state = { anchors, duration }
     for (const [
       i,
-      { x, y, z, width, depth, height, diameter, snappedId, ...zoneProps }
+      { id, x, y, z, width, depth, height, diameter, snappedId, ...zoneProps }
     ] of this.state.anchors.entries()) {
       const dropZone = buildTargetMesh(
-        `anchor-${i}`,
+        id,
         this.mesh,
         diameter
           ? { diameter, height }

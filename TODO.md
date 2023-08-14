@@ -1,7 +1,5 @@
 # TODO
 
-- keep anchor ids (reused ids to fix: drop-zone, anchor-X)
-
 ## Refactor
 
 - automerge.js

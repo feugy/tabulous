@@ -52,7 +52,7 @@ describe('ControlManager', () => {
     anchorable = createBox('box2', {})
     anchorable.addBehavior(
       new AnchorBehavior({
-        anchors: [{ id: '1', width: 1, height: 1, depth: 0.5 }]
+        anchors: [{ id: 'anchor-0', width: 1, height: 1, depth: 0.5 }]
       }),
       true
     )

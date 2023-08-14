@@ -1276,7 +1276,7 @@ describe('HandManager', () => {
               z: -10,
               movable: {},
               anchorable: {
-                anchors: [{ id: '1', playerId }],
+                anchors: [{ id: 'anchor-0', playerId }],
                 duration: anchorDuration
               }
             },
