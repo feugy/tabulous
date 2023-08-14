@@ -14,7 +14,8 @@ import { faker } from '@faker-js/faker'
 import {
   ajv,
   createMeshes,
-  pickRandom
+  pickRandom,
+  reportReusedIds
 } from '@tabulous/server/src/utils/index.js'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -128,6 +129,7 @@ export function buildDescriptorTestSuite(
               player,
               buildParameters(schema)
             )
+            reportReusedIds(game, true)
             expect(game).toMatchSnapshot()
           }
         })

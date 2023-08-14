@@ -26,6 +26,7 @@ import {
   findMesh,
   findOrCreateHand,
   getParameterSchema,
+  reportReusedIds,
   snapTo,
   stackMeshes,
   unsnap
@@ -1264,6 +1265,105 @@ describe('findAvailableValues()', () => {
         colors
       )
     ).toEqual(colors)
+  })
+})
+
+describe('reportReusedIds()', () => {
+  const warn = vi.spyOn(console, 'warn')
+  /** @type {StartedGameData} */
+  const game = {
+    id: '',
+    name: 'test-game',
+    kind: 'test',
+    created: Date.now(),
+    locales: { en: { title: '' }, fr: { title: '' } },
+    ownerId: '',
+    availableSeats: 0,
+    meshes: [],
+    hands: [],
+    preferences: [],
+    cameras: [],
+    messages: [],
+    playerIds: [],
+    guestIds: []
+  }
+
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
+
+  it('does not report valid descriptor', () => {
+    reportReusedIds({
+      ...game,
+      meshes: [
+        { id: 'box1', shape: 'box', texture: '' },
+        { id: 'box2', shape: 'box', texture: '' }
+      ],
+      hands: [
+        {
+          playerId: 'a',
+          meshes: [
+            { id: 'box3', shape: 'box', texture: '' },
+            { id: 'box4', shape: 'box', texture: '' }
+          ]
+        },
+        {
+          playerId: 'b',
+          meshes: [{ id: 'box5', shape: 'box', texture: '' }]
+        }
+      ]
+    })
+    expect(warn).not.toHaveBeenCalled()
+  })
+
+  it('reports reused mesh ids', () => {
+    reportReusedIds({
+      ...game,
+      meshes: [
+        { id: 'box1', shape: 'box', texture: '' },
+        { id: 'box2', shape: 'box', texture: '' },
+        { id: 'box3', shape: 'box', texture: '' },
+        { id: 'box1', shape: 'box', texture: '' }
+      ],
+      hands: [
+        {
+          playerId: 'a',
+          meshes: [{ id: 'box3', shape: 'box', texture: '' }]
+        }
+      ]
+    })
+    expect(warn).toHaveBeenCalledOnce()
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('box1, box3'))
+  })
+
+  it('reports reused anchor ids', () => {
+    reportReusedIds({
+      ...game,
+      meshes: [
+        {
+          id: 'box1',
+          shape: 'box',
+          texture: '',
+          anchorable: { anchors: [{ id: 'anchor1' }] }
+        },
+        { id: 'box2', shape: 'box', texture: '' }
+      ],
+      hands: [
+        {
+          playerId: 'a',
+          meshes: [
+            {
+              id: 'box3',
+              shape: 'box',
+              texture: '',
+              anchorable: { anchors: [{ id: 'anchor1' }, { id: 'box2' }] }
+            }
+          ]
+        }
+      ]
+    })
+    expect(warn).toHaveBeenCalledOnce()
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('anchor1, box2'))
   })
 })
 

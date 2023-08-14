@@ -18,7 +18,8 @@ import {
   enrichAssets,
   getParameterSchema,
   makeLogger,
-  pickRandom
+  pickRandom,
+  reportReusedIds
 } from '../utils/index.js'
 import { canAccess } from './catalog.js'
 
@@ -305,6 +306,7 @@ export async function createGame(kind, player) {
       preferences: []
     })
   )
+  reportReusedIds(game)
   notifyAllPeers(game)
   logger.debug({ ctx, res: serializeForLogs(game) }, 'created new game')
   return game
@@ -399,6 +401,7 @@ export async function promoteGame(gameId, kind, player) {
       preferences: []
     })
   )
+  reportReusedIds(game)
   notifyAllPeers(game)
   logger.debug(
     { ctx, res: serializeForLogs(game) },
@@ -541,6 +544,7 @@ export async function joinGame(gameId, player, parameters) {
         parameters: parameters ?? null
       })
     )
+    reportReusedIds(savedGame)
     notifyAllPeers(savedGame)
     logger.debug({ ctx, res: serializeForLogs(savedGame) }, 'joined game')
     return savedGame

@@ -553,3 +553,38 @@ export function findAvailableValues(preferences, name, possibleValues) {
     preferences.every(pref => value !== pref[name])
   )
 }
+
+/**
+ * Crawls game data to find mesh and anchor ids that are not unique.
+ * Reports them on console.
+ * @param {Pick<GameData, 'meshes'|'hands'|'kind'|'id'>} game - checked game data.
+ * @param {boolean} throwViolations - whether to throw instead of reporting
+ */
+export function reportReusedIds(game, throwViolations = false) {
+  const meshes = [...game.meshes].concat(
+    ...game.hands.map(({ meshes }) => meshes)
+  )
+  const uniqueIds = new Set()
+  const reusedIds = new Set()
+
+  function check(/** @type {Anchor|Mesh} */ { id }) {
+    if (uniqueIds.has(id)) {
+      reusedIds.add(id)
+    } else {
+      uniqueIds.add(id)
+    }
+  }
+  for (const mesh of meshes) {
+    check(mesh)
+    mesh.anchorable?.anchors?.forEach(check)
+  }
+  if (reusedIds.size) {
+    const message = `game ${game.kind} (${game.id}) has reused ids: ${[
+      ...reusedIds
+    ].join(', ')}`
+    if (throwViolations) {
+      throw new Error(message)
+    }
+    console.warn(message)
+  }
+}
