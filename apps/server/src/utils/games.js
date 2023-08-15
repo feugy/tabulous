@@ -213,19 +213,30 @@ function fillSlot(
 }
 
 /**
- * Crawl all meshes to find a given anchor Alter game data to draw some meshes from a given anchor into a player's hand.
- * @param {string} anchorId - desired anchor id.
+ * @overload
+ * Finds an anchor from a path.
+ * @param {string} path - path to the desired anchor id, its steps separated with '.'.
  * @param {Mesh[]} meshes - list of mesh to search into.
+ * @param {boolean} [throwOnMiss=true]
+ * @returns {Anchor} the desired anchor.
+ * @throws {Error} when the anchor could not be found.
+ *
+ * @overload
+ * Finds an anchor from a path. Can return null if no anchor could be found.
+ * @param {string} path - path to the desired anchor id, its steps separated with '.'.
+ * @param {Mesh[]} meshes - list of mesh to search into.
+ * @param {false} throwOnMiss
  * @returns {?Anchor} the desired anchor, or null if it can't be found.
  */
-export function findAnchor(anchorId, meshes) {
-  if (!meshes) {
-    return null
-  }
-  let candidates = [...meshes]
+export function findAnchor(
+  /** @type {string} */ path,
+  /** @type {Mesh[]} */ meshes,
+  throwOnMiss = true
+) {
+  let candidates = [...(meshes ?? [])]
   let anchor
-  for (let leg of anchorId.split('.')) {
-    const match = findMeshAndAnchor(leg, candidates)
+  for (let leg of path.split('.')) {
+    const match = findMeshAndAnchor(leg, candidates, throwOnMiss)
     if (!match) {
       return null
     }
@@ -236,17 +247,35 @@ export function findAnchor(anchorId, meshes) {
 }
 
 /**
- * @param {Anchor['id']} anchorId - anchor id.
+ * @overload
+ * Finds an anchor and its parent mesh.
+ * @param {string} anchorId - anchor id.
  * @param {Mesh[]} meshes - list of mesh to search into.
+ * @param {boolean} [throwOnMiss=true]
+ * @returns {{ mesh: Mesh; anchor: Anchor }} tuple of mesh and anchor, if any.
+ * @throws {Error} when no mesh with such anchor could be found.
+ *
+ * @overload
+ * Finds an anchor and its parent mesh. Can return null id no mesh has such anchor.
+ * @param {string} anchorId - anchor id.
+ * @param {Mesh[]} meshes - list of mesh to search into.
+ * @param {false} throwOnMiss
  * @returns {?{ mesh: Mesh; anchor: Anchor }} tuple of mesh and anchor, if any.
  */
-function findMeshAndAnchor(anchorId, meshes) {
+function findMeshAndAnchor(
+  /** @type {string} */ anchorId,
+  /** @type {Mesh[]} */ meshes,
+  throwOnMiss = true
+) {
   for (const mesh of meshes) {
     for (const anchor of mesh.anchorable?.anchors ?? []) {
       if (anchor.id === anchorId) {
         return { mesh, anchor }
       }
     }
+  }
+  if (throwOnMiss) {
+    throw new Error(`No anchor with id ${anchorId}`)
   }
   return null
 }
@@ -278,7 +307,7 @@ function removeDandlingMeshes(meshesByBagId, allMeshes) {
  * @param {string} params.fromAnchor - id of the anchor to draw from.
  * @param {number} [params.count = 1] - number of drawn mesh
  * @param {any} [params.props = {}] - other props merged into draw meshes.
- * @throws {Error} when no anchor could be found
+ * @throws {Error} when no anchor or stack could be found
  */
 export function drawInHand(
   game,
@@ -287,15 +316,14 @@ export function drawInHand(
   const hand = findOrCreateHand(game, playerId)
   const { meshes } = game
   const anchor = findAnchor(fromAnchor, meshes)
-  if (!anchor) {
-    throw new Error(`no anchor with id '${fromAnchor}'`)
-  }
-  const stack = findMesh(anchor.snappedId, meshes)
+  const stack = findMesh(anchor.snappedId, meshes, false)
   if (!stack) {
-    return
+    throw new Error(`Anchor ${fromAnchor} has no snapped mesh`)
   }
   for (let i = 0; i < count; i++) {
-    const drawn = /** @type {Mesh} */ (drawMesh(stack, meshes) || stack)
+    /** @type {Mesh} */
+    const drawn =
+      stack.stackable?.stackIds?.length === 0 ? stack : drawMesh(stack, meshes)
     mergeProps(drawn, props)
     hand.meshes.push(drawn)
     meshes.splice(meshes.indexOf(drawn), 1)
@@ -324,28 +352,62 @@ export function findOrCreateHand(game, playerId) {
 }
 
 /**
+ * @overload
  * Finds a mesh by id.
  * @param {?string|undefined} id - desired mesh id.
  * @param {Mesh[]} meshes - mesh list to search in.
+ * @param {boolean} [throwOnMiss=true] - throws if mesh can't be found.
+ * @returns {Mesh} corresponding mesh.
+ *
+ * @overload
+ * Finds a mesh by id.
+ * @param {?string|undefined} id - desired mesh id.
+ * @param {Mesh[]} meshes - mesh list to search in.
+ * @param {false} throwOnMiss - does not throw can't be found.
  * @returns {?Mesh} corresponding mesh, if any.
  */
-export function findMesh(id, meshes) {
-  return meshes?.find(mesh => mesh.id === id) ?? null
+export function findMesh(
+  /** @type {?string|undefined} */ id,
+  /** @type {Mesh[]} */ meshes,
+  throwOnMiss = true
+) {
+  const mesh = meshes?.find(mesh => mesh.id === id) ?? null
+  if (throwOnMiss && !mesh) {
+    throw new Error(`No mesh with id ${id}`)
+  }
+  return mesh
 }
 
 /**
+ * @overload
  * Draw one or several meshes from a given stack.
  * @param {string} stackId - id of a stacked mesh to draw from.
  * @param {number} count - number of drawned meshes.
  * @param {Mesh[]} meshes - mesh list to search in.
+ * @param {boolean} [throwOnMiss=true]
+ * @returns {Mesh[]} drawn meshes.
+ * @throws {Error} when not all desired meshes could be drawn.
+ *
+ * @overload
+ * Draw one or several meshes from a given stack.
+ * Can return a smaller or empty array when not all desired mesh could be drawn.
+ * @param {string} stackId - id of a stacked mesh to draw from.
+ * @param {number} count - number of drawned meshes.
+ * @param {Mesh[]} meshes - mesh list to search in.
+ * @param {false} throwOnMiss
  * @returns {Mesh[]} drawn meshes, if any.
  */
-export function draw(stackId, count, meshes) {
+export function draw(
+  /** @type {string} */ stackId,
+  /** @type {number} */ count,
+  /** @type {Mesh[]} */ meshes,
+  throwOnMiss = true
+) {
   const drawn = []
-  const stack = findMesh(stackId, meshes)
+  const stack = findMesh(stackId, meshes, throwOnMiss)
   if (stack) {
     for (let i = 0; i < count; i++) {
-      const mesh = drawMesh(stack, meshes)
+      const mesh = drawMesh(stack, meshes, throwOnMiss)
       if (!mesh) {
         if (stack.stackable?.stackIds?.length === 0) {
           drawn.push(stack)
@@ -359,14 +421,32 @@ export function draw(stackId, count, meshes) {
 }
 
 /**
+ * @overload
+ * Draw a single mesh from a stack.
  * @param {Mesh} stack - stack to draw from.
  * @param {Mesh[]} meshes - mesh list to search in.
+ * @param {boolean} [throwOnMiss=true]
+ * @returns {Mesh} drawn mesh.
+ * @throws {Error} when no mesh could be drawn.
+ *
+ * @overload
+ * Draw a single mesh from a stack. Can return null if no mesh could be drawn.
+ * @param {Mesh} stack - stack to draw from.
+ * @param {Mesh[]} meshes - mesh list to search in.
+ * @param {false} throwOnMiss
  * @returns {?Mesh} drawn meshes, if any.
  */
-function drawMesh(stack, meshes) {
+function drawMesh(
+  /** @type {Mesh} */ stack,
+  /** @type {Mesh[]} */ meshes,
+  throwOnMiss = true
+) {
+  if (!stack.stackable?.stackIds && throwOnMiss) {
+    throw new Error(`Mesh ${stack.id} is not stackable`)
+  }
   if (stack.stackable?.stackIds?.length) {
     const id = stack.stackable.stackIds.pop()
-    return findMesh(id, meshes)
+    return findMesh(id, meshes, throwOnMiss)
   }
   return null
 }
@@ -384,22 +464,44 @@ export function stackMeshes(meshes) {
 }
 
 /**
+ * @overload
  * Snap a given mesh onto the specified anchor.
  * Search for the anchor within provided meshes.
  * If the anchor is already used, tries to stack the meshes (the current snapped mesh must be in provided meshes).
  * Abort the operation when meshes can't be stacked.
  * @param {string} anchorId - desired anchor id.
- * @param {?Mesh|undefined} mesh - snapped mesh, if any.
+ * @param {?Mesh} mesh - snapped mesh, if any.
  * @param {Mesh[]} meshes - all meshes to search the anchor in.
+ * @param {boolean} [throwOnMiss=true]
+ * @return {boolean} true if the mesh could be snapped or stacked. False otherwise.
+ * @throws {Error} when mesh could not be snapped to anchor.
+ *
+ * @overload
+ * Snap a given mesh onto the specified anchor.
+ * Search for the anchor within provided meshes.
+ * If the anchor is already used, tries to stack the meshes (the current snapped mesh must be in provided meshes).
+ * Abort the operation when meshes can't be stacked, or if mesh can't be snapped to anchor.
+ * @param {string} anchorId - desired anchor id.
+ * @param {?Mesh} mesh - snapped mesh, if any.
+ * @param {Mesh[]} meshes - all meshes to search the anchor in.
+ * @param {false} throwOnMiss
  * @return {boolean} true if the mesh could be snapped or stacked. False otherwise.
  */
-export function snapTo(anchorId, mesh, meshes) {
-  const anchor = findAnchor(anchorId, meshes)
+export function snapTo(
+  /** @type {string} */ anchorId,
+  /** @type {?Mesh} */ mesh,
+  /** @type {Mesh[]} */ meshes,
+  throwOnMiss = true
+) {
+  const anchor = findAnchor(anchorId, meshes, throwOnMiss)
   if (!anchor || !mesh) {
+    if (throwOnMiss) {
+      throw new Error(`No mesh to snap on anchor ${anchorId}`)
+    }
     return false
   }
   if (anchor.snappedId) {
-    const snapped = findMesh(anchor.snappedId, meshes)
+    const snapped = findMesh(anchor.snappedId, meshes, throwOnMiss)
     if (!canStack(snapped, mesh)) {
       return false
     }
@@ -411,20 +513,36 @@ export function snapTo(anchorId, mesh, meshes) {
 }
 
 /**
+ * @overload
  * Unsnapps a mesh from a given anchor.
  * @param {string} anchorId - desired anchor id.
  * @param {Mesh[]} meshes - all meshes to search the anchor in.
- * @returns {?Mesh} unsnapped meshes, or undefined if the anchor does not exist,
- * has no snapped mesh, or has an unexisting snapped mesh
+ * @param {boolean} [throwOnMiss=true]
+ * @returns {?Mesh} unsnapped meshes, or null if anchor has no snapped mesh
+ * @throws {Error} when anchor (or snapped mesh) could not be found.
+ *
+ * @overload
+ * Unsnapps a mesh from a given anchor. Can return null if anchor (or snapped mesh) could not be found.
+ * @param {string} anchorId - desired anchor id.
+ * @param {Mesh[]} meshes - all meshes to search the anchor in.
+ * @param {false} throwOnMiss
+ * @returns {?Mesh} unsnapped meshes, or null if anchor does not exist, has no snapped mesh.
  */
-export function unsnap(anchorId, meshes) {
-  const anchor = findAnchor(anchorId, meshes)
+export function unsnap(
+  /** @type {string} */ anchorId,
+  /** @type {Mesh[]} */ meshes,
+  throwOnMiss = true
+) {
+  const anchor = findAnchor(anchorId, meshes, throwOnMiss)
   if (!anchor || !anchor.snappedId) {
+    if (throwOnMiss) {
+      throw new Error(`Anchor ${anchorId} has no snapped mesh`)
+    }
     return null
   }
   const id = anchor.snappedId
   anchor.snappedId = null
-  return findMesh(id, meshes)
+  return findMesh(id, meshes, throwOnMiss)
 }
 
 /**
@@ -447,11 +565,25 @@ export function mergeProps(object, props) {
 }
 
 /**
- * Decrements a quantifiable mesh, by creating another one (when relevant)
+ * @overload
+ * Decrements a quantifiable mesh, by creating another one.
  * @param {?Mesh|undefined} mesh - quantifiable mesh
- * @returns {?Mesh} the created object, if relevant
+ * @param {boolean} [throwOnMiss=true]
+ * @returns {Mesh} the created object
+ * @throws {Error} when mesh can not be found or decremented.
+ *
+ * @overload
+ * Decrements a quantifiable mesh, by creating another one.
+ * Can return null if mesh can not be found or drecremented.
+ * @param {?Mesh|undefined} mesh - quantifiable mesh
+ * @param {false} throwOnMiss
+ * @returns {?Mesh} the created object, when relevant
+ *
+ * @param {?Mesh|undefined} mesh
+ * @param {boolean} [throwOnMiss]
+ * @returns {?Mesh}
  */
-export function decrement(mesh) {
+export function decrement(mesh, throwOnMiss = true) {
   if (
     mesh?.quantifiable?.quantity !== undefined &&
     mesh.quantifiable.quantity > 1
@@ -462,6 +594,11 @@ export function decrement(mesh) {
     })
     mesh.quantifiable.quantity--
     return clone
+  }
+  if (throwOnMiss) {
+    throw new Error(
+      `Mesh ${mesh?.id} is not quantifiable or has a quantity of 1`
+    )
   }
   return null
 }
