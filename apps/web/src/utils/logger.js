@@ -14,6 +14,7 @@
 
 /** @type {Record<string, LevelWithOnOff>} */
 const levels = {
+  animatable: 'warn',
   anchorable: 'warn',
   camera: 'warn',
   catalog: 'warn',

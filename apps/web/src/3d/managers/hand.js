@@ -380,15 +380,14 @@ async function handDrag(manager, { type, mesh, event }) {
     }
     manager.moved = moved
     if (moved.length && isHandMeshNextToMain(manager, event)) {
-      const position = screenToGround(manager.scene, event)
+      const { x: positionX, z } = screenToGround(manager.scene, event)
       const origin = moved[0].absolutePosition.x
       /** @type {Mesh[]} */
       const droppedList = []
       /** @type {?{ mesh: Mesh, position: Vector3, duration?: number }} */
       let saved = null
       for (const movedMesh of [...moved]) {
-        const x = position.x + movedMesh.absolutePosition.x - origin
-        const { z } = position
+        const x = positionX + movedMesh.absolutePosition.x - origin
         logger.info(
           { mesh: movedMesh, x, z },
           `play mesh ${movedMesh.id} from hand by dragging`
@@ -444,9 +443,13 @@ async function handDrag(manager, { type, mesh, event }) {
     } else {
       const drawn = selectionManager.getSelection(mesh)
       logger.debug({ drawn }, `dragged meshes into hand`)
+      const { x: positionX } = screenToGround(manager.scene, event)
+      const z = -manager.contentDimensions.depth
+      const origin = drawn[0].absolutePosition.x
       for (const mesh of drawn) {
         mesh.isPhantom = true
-        const newMesh = await createHandMesh(manager, mesh)
+        const x = positionX + mesh.absolutePosition.x - origin
+        const newMesh = await createHandMesh(manager, mesh, { x, z })
         logger.info(
           { mesh: newMesh },
           `pick mesh ${newMesh.id} in hand by dragging`
@@ -506,12 +509,9 @@ async function createMainMesh(manager, handMesh, extraState = {}) {
  */
 async function createHandMesh(manager, mainMesh, extraState = {}) {
   mainMesh.metadata.unsnapAll?.()
-  const newMesh = await createMeshFromState(
-    { ...mainMesh.metadata.serialize(), ...extraState },
-    manager.handScene
-  )
-  transformOnPick(manager, newMesh)
-  return newMesh
+  const state = { ...mainMesh.metadata.serialize(), ...extraState }
+  transformOnPick(state)
+  return await createMeshFromState(state, manager.handScene)
 }
 
 /**
@@ -667,23 +667,20 @@ function getDrawable(mesh) {
 }
 
 /**
- * @param {HandManager} manager - manager instance.
- * @param {Mesh} mesh - picked mesh.
+ * @param {SerializedMesh} state - picked mesh state.
  */
-function transformOnPick({ onHandChangeObservable }, mesh) {
-  onHandChangeObservable.addOnce(async () => {
-    const drawable = getDrawable(mesh)
-    if (!drawable) return
-    const { angleOnPick, unflipOnPick } = drawable.state
-    if (mesh.metadata.flip && isMeshFlipped(mesh) && unflipOnPick) {
-      logger.debug({ mesh }, `un-flips ${mesh.id}`)
-      await mesh.metadata.flip()
-    }
-    if (mesh.metadata.rotate && mesh.metadata.angle !== angleOnPick) {
-      logger.debug({ mesh, angleOnPick }, `rotates ${mesh.id}`)
-      await mesh.metadata.rotate(angleOnPick)
-    }
-  })
+function transformOnPick(state) {
+  const { drawable } = state
+  if (!drawable) return
+  if (state.flippable?.isFlipped && drawable.unflipOnPick) {
+    logger.debug({ state }, `un-flips ${state.id}`)
+    state.flippable.isFlipped = false
+  }
+  const { angleOnPick } = drawable
+  if (state.rotable && angleOnPick && state.rotable.angle !== angleOnPick) {
+    logger.debug({ state, angleOnPick }, `rotates ${state.id}`)
+    state.rotable.angle = angleOnPick
+  }
 }
 
 /**
@@ -814,7 +811,8 @@ async function pickMesh(manager, mesh) {
   logger.info({ mesh }, `pick mesh ${mesh.id} in hand`)
   recordDraw(mesh)
   animateToHand(mesh)
-  const { minX, minZ } = manager.extent
+  const { minZ } = manager.extent
+  const { width } = manager.contentDimensions
   const { depth } = getDimensions(mesh)
-  await createHandMesh(manager, mesh, { x: minX, z: minZ + depth * 0.5 })
+  await createHandMesh(manager, mesh, { x: width * -0.5, z: minZ - depth })
 }
