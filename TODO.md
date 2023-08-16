@@ -14,7 +14,9 @@
 ## UI
 
 - bug: game shortcuts ignore active selection to only apply to hover mesh
-- bug: 6-takes: snapping to the wrong anchor (when 2 players are snapping to different anchors)
+- bug: mesh dragged from main to hand are misplaced when camera is rotated
+- ability to interact with main meshes throught the opened hand (how do we select multiple in hand?)
+- hand count indicators
 - replay
 - score card (Mah-jong, Belote)
 - command to reset some mesh state and restart a game (Mah-jong, Belote)
