@@ -147,7 +147,7 @@ export class StackBehavior extends TargetBehavior {
             [poped],
             0,
             true,
-            /** @type {StackBehavior} */ (setBase(poped, null, [poped]))
+            /** @type {StackBehavior} */ (setBase(poped, null))
           )
           setStatus(stack, stack.length - 1, true, this)
         }
@@ -257,7 +257,7 @@ export class StackBehavior extends TargetBehavior {
       })
     }
     for (const mesh of meshPushed) {
-      setBase(mesh, base, stack)
+      setBase(mesh, base)
     }
   }
 
@@ -284,7 +284,7 @@ export class StackBehavior extends TargetBehavior {
     for (let times = 0; times < limit; times++) {
       const mesh = /** @type {Mesh} */ (stack.pop())
       poped.push(mesh)
-      setBase(mesh, null, [mesh])
+      setBase(mesh, null)
       updateIndicator(mesh, 0)
       // note: no need to enable the poped mesh target: since it was last, it's always enabled
       setStatus(stack, stack.length - 1, true, this)
@@ -342,8 +342,9 @@ export class StackBehavior extends TargetBehavior {
     if (
       old.length <= 1 ||
       old[0]?.getBehaviorByName(StackBehaviorName)?.isReordering
-    )
+    ) {
       return
+    }
 
     const posById = new Map(old.map(({ id }, i) => [id, i]))
     /** @type {Mesh[]} */
@@ -361,9 +362,12 @@ export class StackBehavior extends TargetBehavior {
     )
 
     // updates stack and base internals
-    const baseBehavior = setBase(stack[0], null, stack)
+    const baseBehavior = /** @type {AttachedStackBehavior} */ (
+      setBase(stack[0], null)
+    )
+    baseBehavior.stack = stack
     for (const mesh of stack.slice(1)) {
-      setBase(mesh, baseBehavior, stack)
+      setBase(mesh, baseBehavior)
     }
     // updates targets
     setStatus(old, old.length - 1, false, this)
@@ -591,7 +595,7 @@ export class StackBehavior extends TargetBehavior {
       this.removeZone(this.dropZone)
     }
     this.dropZone = this.addZone(
-      buildTargetMesh('drop-zone', this.mesh),
+      buildTargetMesh(`stack-zone-${this.mesh.id}`, this.mesh),
       this._state
     )
 
@@ -642,25 +646,22 @@ function setStatus(stack, rank, enabled, behavior) {
 /**
  * @param {Mesh} mesh - updated mesh.
  * @param {?AttachedStackBehavior} base - base behavior applied.
- * @param {Mesh[]} stack - stack applied.
  * @returns {?AttachedStackBehavior}
  */
-function setBase(mesh, base, stack) {
+function setBase(mesh, base) {
   const targetable = /** @type {?AttachedStackBehavior} */ (
     getTargetableBehavior(mesh)
   )
   if (targetable) {
-    targetable.base = base
-    targetable.stack = stack
+    const parent = /** @type {?Mesh} */ (mesh.parent)
     if (base) {
       mesh.setParent(base.mesh)
-    } else if (
-      mesh.parent &&
-      stack.includes(/** @type {Mesh} */ (mesh.parent))
-    ) {
+    } else if (parent && targetable.stack.includes(parent)) {
       // only reset's mesh parent if it is in the stack
       mesh.setParent(null)
     }
+    targetable.base = base
+    targetable.stack = base?.stack ?? [mesh]
   }
   return targetable
 }

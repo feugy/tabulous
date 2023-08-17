@@ -468,7 +468,6 @@ function expectOnTop(
 }
 
 /**
- *
  * @param {Mesh} mesh - actual mesh
  * @param {boolean} isInteractible - whether this mesh should be interactible.
  * @param {boolean} [isMovable] - whether this mesh should be movable.

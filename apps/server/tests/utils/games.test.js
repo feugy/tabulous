@@ -26,6 +26,7 @@ import {
   findMesh,
   findOrCreateHand,
   getParameterSchema,
+  reportReusedIds,
   snapTo,
   stackMeshes,
   unsnap
@@ -223,34 +224,6 @@ describe('createMeshes()', () => {
       expectSnappedByName(meshes, slots[0].name, board?.anchorable.anchors[0])
       expect(board?.anchorable.anchors[1].snappedId).toBeUndefined()
       expectSnappedByName(meshes, slots[1].name, board?.anchorable.anchors[2])
-    })
-
-    it('does not snap on unknown anchor', async () => {
-      const slots = [
-        { bagId: 'cards', anchorId: 'first', count: 1, name: 'first' },
-        { bagId: 'cards', anchorId: 'unknown', count: 1, name: 'unsnapped' }
-      ]
-      const meshes =
-        /** @type {(Mesh & { name: string, anchorable: { anchors: Anchor[] } })[]} */ (
-          await createMeshes('cards', {
-            build: () => ({ meshes: initialMeshes, slots, bags })
-          })
-        )
-      const board = meshes.find(({ id }) => id === 'board')
-      expect(board).toBeDefined()
-
-      expectSnappedByName(meshes, slots[0].name, board?.anchorable.anchors[0])
-      expect(board?.anchorable.anchors[1].snappedId).toBeUndefined()
-      expect(board?.anchorable.anchors[2].snappedId).toBeUndefined()
-      const unsnapped = meshes.find(mesh => mesh.name === slots[1].name)
-      expect(unsnapped).toBeDefined()
-      for (const {
-        anchorable: { anchors }
-      } of meshes) {
-        for (const anchor of anchors) {
-          expect(anchor.snappedId).not.toEqual(unsnapped?.id)
-        }
-      }
     })
 
     it('snaps a random mesh on chained anchor', async () => {
@@ -625,11 +598,19 @@ describe('draw()', () => {
   })
 
   it('does nothing on unstackable meshes', () => {
-    expect(draw('A', 1, game.meshes)).toEqual([])
+    expect(draw('A', 1, game.meshes, false)).toEqual([])
+  })
+
+  it('can throw on unstackable meshes', () => {
+    expect(() => draw('A', 1, game.meshes)).toThrow('Mesh A is not stackable')
   })
 
   it('does nothing on unknown meshes', () => {
-    expect(draw('K', 1, game.meshes)).toEqual([])
+    expect(draw('K', 1, game.meshes, false)).toEqual([])
+  })
+
+  it('can throw on unknown meshes', () => {
+    expect(() => draw('K', 1, game.meshes)).toThrow('No mesh with id K')
   })
 })
 
@@ -657,7 +638,7 @@ describe('drawInHand()', () => {
 
   it('throws error on unknown anchor', () => {
     expect(() => drawInHand(game, { playerId, fromAnchor: 'unknown' })).toThrow(
-      `no anchor with id 'unknown'`
+      `No anchor with id unknown`
     )
   })
 
@@ -724,23 +705,11 @@ describe('drawInHand()', () => {
     })
   })
 
-  it('draws nothing from empty anchor', () => {
-    // @ts-expect-error: this path is defined
-    game.meshes[1].anchorable.anchors[0].snappedId = null
-    drawInHand(game, { playerId, count: 2, fromAnchor: 'discard' })
-    expect(game).toEqual({
-      hands: [{ playerId, meshes: [] }],
-      meshes: [
-        { id: 'A' },
-        {
-          id: 'B',
-          anchorable: { anchors: [{ id: 'discard', snappedId: null }] }
-        },
-        { id: 'C', stackable: { stackIds: ['A', 'E', 'D'] } },
-        { id: 'D' },
-        { id: 'E' }
-      ]
-    })
+  it('throws when drawing from empty anchor', () => {
+    delete game.meshes[1].anchorable?.anchors?.[0].snappedId
+    expect(() =>
+      drawInHand(game, { playerId, count: 2, fromAnchor: 'discard' })
+    ).toThrow('Anchor discard has no snapped mesh')
   })
 })
 
@@ -756,12 +725,19 @@ describe('findMesh()', () => {
     expect(findMesh(meshes[8].id, meshes)).toEqual(meshes[8])
   })
 
-  it('returns null for unknown ids', () => {
-    expect(findMesh(faker.string.uuid(), meshes)).toBeNull()
-    expect(findMesh(meshes[0].id, [])).toBeNull()
-    // @ts-expect-error: Expected 2 arguments, but got 1
-    expect(findMesh(meshes[0].id)).toBeNull()
-  })
+  it.each([faker.string.uuid(), meshes[0].id])(
+    'returns null on unknown ids',
+    anchor => {
+      expect(findMesh(anchor, [], false)).toBeNull()
+    }
+  )
+
+  it.each([faker.string.uuid(), meshes[0].id])(
+    'can throw on unknown ids',
+    id => {
+      expect(() => findMesh(id, [])).toThrow(`No mesh with id ${id}`)
+    }
+  )
 })
 
 describe('findOrCreateHand()', () => {
@@ -806,12 +782,21 @@ describe('findAnchor()', () => {
     { id: 'mesh4', anchorable: { anchors: anchors.slice(6) } }
   ])
 
-  it('returns null on unknown anchor', () => {
-    expect(findAnchor(faker.string.uuid(), meshes)).toBeNull()
-    expect(findAnchor(anchors[0].id, [])).toBeNull()
-    // @ts-expect-error: Expected 2 arguments, but got 1
-    expect(findAnchor(anchors[0].id)).toBeNull()
-  })
+  it.each([faker.string.uuid(), anchors[0].id])(
+    'returns null on unknown anchor',
+    anchor => {
+      expect(findAnchor(anchor, [], false)).toBeNull()
+    }
+  )
+
+  it.each([faker.string.uuid(), anchors[0].id])(
+    'can throw on unknown anchor',
+    anchor => {
+      expect(() => findAnchor(anchor, [])).toThrow(
+        `No anchor with id ${anchor}`
+      )
+    }
+  )
 
   it('returns existing anchor', () => {
     expect(findAnchor(anchors[0].id, meshes)).toEqual(anchors[0])
@@ -911,14 +896,26 @@ describe('snapTo()', () => {
 
   it('ignores unknown anchor', () => {
     const state = cloneAsJSON(meshes)
-    expect(snapTo('anchor10', meshes[0], meshes)).toBe(false)
+    expect(snapTo('anchor10', meshes[0], meshes, false)).toBe(false)
     expect(state).toEqual(meshes)
+  })
+
+  it('can throw on unknown anchor', () => {
+    expect(() => snapTo('anchor10', meshes[0], meshes)).toThrow(
+      'No anchor with id anchor10'
+    )
   })
 
   it('ignores unknown mesh', () => {
     const state = cloneAsJSON(meshes)
-    expect(snapTo('anchor1', undefined, meshes)).toBe(false)
+    expect(snapTo('anchor1', null, meshes, false)).toBe(false)
     expect(state).toEqual(meshes)
+  })
+
+  it('can throw on unknown mesh', () => {
+    expect(() => snapTo('anchor1', null, meshes)).toThrow(
+      'No mesh to snap on anchor anchor1'
+    )
   })
 })
 
@@ -950,14 +947,29 @@ describe('unsnap()', () => {
   })
 
   it('returns nothing on unknown anchor', () => {
-    expect(unsnap('unknown', meshes)).toBeNull()
+    expect(unsnap('unknown', meshes, false)).toBeNull()
+  })
+
+  it('can throw on unknown anchor', () => {
+    expect(() => unsnap('unknown', meshes)).toThrow('No anchor with id unknown')
   })
 
   it('returns nothing on anchor with no snapped mesh', () => {
-    expect(unsnap('anchor2', meshes)).toBeNull()
+    expect(unsnap('anchor2', meshes, false)).toBeNull()
   })
+
+  it('can throw on anchor with no snapped mesh', () => {
+    expect(() => unsnap('anchor2', meshes)).toThrow(
+      'Anchor anchor2 has no snapped mesh'
+    )
+  })
+
   it('returns nothing on anchor with unknown snapped mesh', () => {
-    expect(unsnap('anchor4', meshes)).toBeNull()
+    expect(unsnap('anchor4', meshes, false)).toBeNull()
+  })
+
+  it('can throw on anchor with unknown snapped mesh', () => {
+    expect(() => unsnap('anchor4', meshes)).toThrow('No mesh with id unknown')
   })
 
   it('returns mesh and unsnapps it', () => {
@@ -1015,8 +1027,14 @@ describe('stackMeshes()', () => {
 describe('decrement()', () => {
   it('ignores non quantifiable meshes', () => {
     const mesh = /** @type {Mesh} */ ({ id: 'mesh1' })
-    expect(decrement(mesh)).toBeNull()
+    expect(decrement(mesh, false)).toBeNull()
     expect(mesh).toEqual({ id: 'mesh1' })
+  })
+
+  it('can throw on non quantifiable meshes', () => {
+    expect(() => decrement(/** @type {Mesh} */ ({ id: 'mesh1' }))).toThrow(
+      'Mesh mesh1 is not quantifiable or has a quantity of 1'
+    )
   })
 
   it('ignores quantifiable mesh of 1', () => {
@@ -1024,8 +1042,16 @@ describe('decrement()', () => {
       id: 'mesh1',
       quantifiable: { quantity: 1 }
     })
-    expect(decrement(mesh)).toBeNull()
+    expect(decrement(mesh, false)).toBeNull()
     expect(mesh).toEqual({ id: 'mesh1', quantifiable: { quantity: 1 } })
+  })
+
+  it('can throw on quantifiable mesh of 1', () => {
+    expect(() =>
+      decrement(
+        /** @type {Mesh} */ ({ id: 'mesh1', quantifiable: { quantity: 1 } })
+      )
+    ).toThrow('Mesh mesh1 is not quantifiable or has a quantity of 1')
   })
 
   it('decrements a quantifiable mesh by 1', () => {
@@ -1264,6 +1290,105 @@ describe('findAvailableValues()', () => {
         colors
       )
     ).toEqual(colors)
+  })
+})
+
+describe('reportReusedIds()', () => {
+  const warn = vi.spyOn(console, 'warn')
+  /** @type {StartedGameData} */
+  const game = {
+    id: '',
+    name: 'test-game',
+    kind: 'test',
+    created: Date.now(),
+    locales: { en: { title: '' }, fr: { title: '' } },
+    ownerId: '',
+    availableSeats: 0,
+    meshes: [],
+    hands: [],
+    preferences: [],
+    cameras: [],
+    messages: [],
+    playerIds: [],
+    guestIds: []
+  }
+
+  beforeEach(() => {
+    vi.resetAllMocks()
+  })
+
+  it('does not report valid descriptor', () => {
+    reportReusedIds({
+      ...game,
+      meshes: [
+        { id: 'box1', shape: 'box', texture: '' },
+        { id: 'box2', shape: 'box', texture: '' }
+      ],
+      hands: [
+        {
+          playerId: 'a',
+          meshes: [
+            { id: 'box3', shape: 'box', texture: '' },
+            { id: 'box4', shape: 'box', texture: '' }
+          ]
+        },
+        {
+          playerId: 'b',
+          meshes: [{ id: 'box5', shape: 'box', texture: '' }]
+        }
+      ]
+    })
+    expect(warn).not.toHaveBeenCalled()
+  })
+
+  it('reports reused mesh ids', () => {
+    reportReusedIds({
+      ...game,
+      meshes: [
+        { id: 'box1', shape: 'box', texture: '' },
+        { id: 'box2', shape: 'box', texture: '' },
+        { id: 'box3', shape: 'box', texture: '' },
+        { id: 'box1', shape: 'box', texture: '' }
+      ],
+      hands: [
+        {
+          playerId: 'a',
+          meshes: [{ id: 'box3', shape: 'box', texture: '' }]
+        }
+      ]
+    })
+    expect(warn).toHaveBeenCalledOnce()
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('box1, box3'))
+  })
+
+  it('reports reused anchor ids', () => {
+    reportReusedIds({
+      ...game,
+      meshes: [
+        {
+          id: 'box1',
+          shape: 'box',
+          texture: '',
+          anchorable: { anchors: [{ id: 'anchor1' }] }
+        },
+        { id: 'box2', shape: 'box', texture: '' }
+      ],
+      hands: [
+        {
+          playerId: 'a',
+          meshes: [
+            {
+              id: 'box3',
+              shape: 'box',
+              texture: '',
+              anchorable: { anchors: [{ id: 'anchor1' }, { id: 'box2' }] }
+            }
+          ]
+        }
+      ]
+    })
+    expect(warn).toHaveBeenCalledOnce()
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('anchor1, box2'))
   })
 })
 

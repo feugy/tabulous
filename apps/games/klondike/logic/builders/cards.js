@@ -8,9 +8,10 @@ export function buildCards() {
   const meshes = []
   for (const suit of suits) {
     for (let index = 1; index <= counts.suits; index++) {
+      const id = `${suit}-${index}`
       meshes.push({
         shape: 'card',
-        id: `${suit}-${index}`,
+        id,
         texture: `/assets/textures/${suit}-${index}.1.ktx2`,
         ...sizes.card,
         detailable: {
@@ -19,8 +20,8 @@ export function buildCards() {
         },
         anchorable: {
           anchors: [
-            { id: 'bottom', z: spacing.cardAnchor.z, ...sizes.card },
-            { id: 'top', z: -spacing.cardAnchor.z, ...sizes.card }
+            { id: `${id}-bottom`, z: spacing.cardAnchor.z, ...sizes.card },
+            { id: `${id}-top`, z: -spacing.cardAnchor.z, ...sizes.card }
           ]
         },
         movable: { kind: suit },

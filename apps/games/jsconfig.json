@@ -1,4 +1,10 @@
 {
   "extends": "../../jsconfig.json",
-  "include": ["**/*.js"]
+  "include": [
+    "chess/**/*.js",
+    "draughts/**/*.js",
+    "klondike/**/*.js",
+    "mah-jong/**/*.js",
+    "playground/**/*.js"
+  ]
 }

@@ -123,12 +123,12 @@ describe('applyInitialTransform() 3D utility', () => {
   })
 
   it('can rotate on X', () => {
-    applyInitialTransform(box, { yaw: Math.PI * 0.5 })
+    applyInitialTransform(box, { pitch: Math.PI * 0.5 })
     expectDimension(box, [4, 2, 8])
   })
 
   it('can rotate on Y', () => {
-    applyInitialTransform(box, { pitch: Math.PI * 0.5 })
+    applyInitialTransform(box, { yaw: Math.PI * 0.5 })
     expectDimension(box, [2, 8, 4])
   })
 

@@ -100,7 +100,8 @@
 }
 
 html,
-body {
+body,
+#body {
   @apply font-sans h-full m-0 text-$ink font-300;
   font-family: var(--font-base);
   background: var(--page-bg);
@@ -130,7 +131,7 @@ h4 {
   @apply text-lg;
 }
 
-body {
+#body {
   @apply relative flex flex-col h-max min-h-full overflow-auto;
 
   & > :first-child {

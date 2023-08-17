@@ -1,11 +1,13 @@
 <script>
   // @ts-check
   /**
-   * @typedef {import('@src/graphql').GameOrGameParameters} GameOrGameParameters
-   * @typedef {import('@src/graphql').PlayerFragment} PlayerFragment
-   * @typedef {import('@src/graphql').LightPlayer} LightPlayer
-   * @typedef {import('@src/graphql').PlayerWithSearchable} Player
    * @typedef {import('@src/graphql').Friendship} Friendship
+   * @typedef {import('@src/graphql').Game} Game
+   * @typedef {import('@src/graphql').GameOrGameParameters} GameOrGameParameters
+   * @typedef {import('@src/graphql').LightPlayer} LightPlayer
+   * @typedef {import('@src/graphql').PlayerFragment} PlayerFragment
+   * @typedef {import('@src/graphql').PlayerWithSearchable} PlayerWithSearchable
+   * @typedef {import('@src/stores/game-manager').Player} Player
    */
 
   import { requestFriendship, searchPlayers } from '@src/stores'
@@ -14,19 +16,21 @@
   import { onMount } from 'svelte'
   import { _ } from 'svelte-intl'
 
-  import { Button, Typeahead, UsernameSearchability } from '..'
+  import { Button, Discussion, Typeahead, UsernameSearchability } from '..'
   import FriendList from './FriendList.svelte'
   import InviteDialogue from './InviteDialogue.svelte'
   import PlayerList from './PlayerList.svelte'
 
-  /** @type {Player} authenticated player. */
+  /** @type {PlayerWithSearchable} authenticated player. */
   export let user
   /** @type {?GameOrGameParameters} game data. */
   export let game = null
-  /** @type {?Map<string, LightPlayer>} map of game/lobby players by their ids. */
+  /** @type {?Map<string, Player>} map of game/lobby players by their ids. */
   export let playerById = null
   /** @type {Friendship[]} list of all friendships. */
   export let friends = []
+  /** @type {Game['messages']} list of message threads*/
+  export let thread = undefined
 
   /** @type {?HTMLInputElement} */
   let inputRef
@@ -34,7 +38,7 @@
   let candidates = []
   /** @type {?PlayerFragment & { label:string }} selected player in candidate list. */
   let futureFriend = null
-  /** @type {{ player: LightPlayer, isNotFriend: boolean }[]} players of the current game/loby if any. */
+  /** @type {{ player: Player, isNotFriend: boolean }[]} players of the current game/loby if any. */
   let players = []
   /** @type {Friendship[]} list of friendships that are not active players. */
   let friendships = []
@@ -124,6 +128,9 @@
       />
     {/if}
   </section>
+  {#if playerById}
+    <Discussion {thread} {playerById} on:sendMessage />
+  {/if}
 {:else}
   <section aria-roledescription="friend-list">
     <h3>{$_('titles.friend-list')}</h3>
@@ -152,7 +159,11 @@
 
 <style lang="postcss">
   section {
-    @apply flex flex-col p-6 overflow-hidden;
+    @apply flex flex-col p-6;
+
+    &:not(:last-child) {
+      @apply pb-0;
+    }
   }
 
   h3 {

@@ -15,11 +15,7 @@
 
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
-import {
-  DrawBehaviorName,
-  FlipBehaviorName,
-  RotateBehaviorName
-} from '@src/3d/behaviors'
+import { DrawBehaviorName, RotateBehaviorName } from '@src/3d/behaviors'
 import {
   controlManager,
   handManager as manager,
@@ -307,11 +303,7 @@ describe('HandManager', () => {
       expectFlipped(card, true)
       card.metadata.draw?.()
       const newMesh = getMeshById(handScene, card.id)
-      await Promise.all([
-        expectAnimationEnd(newMesh.getBehaviorByName(FlipBehaviorName)),
-        expectAnimationEnd(card.getBehaviorByName(DrawBehaviorName)),
-        waitForLayout()
-      ])
+      await waitForLayout()
       expectFlipped(newMesh, false)
       expect(actionRecorded).toHaveBeenCalledWith(
         {
@@ -322,11 +314,7 @@ describe('HandManager', () => {
         },
         expect.anything()
       )
-      expect(actionRecorded).toHaveBeenCalledWith(
-        { meshId: newMesh.id, fn: 'flip', args: [], fromHand: true, duration },
-        expect.anything()
-      )
-      expect(actionRecorded).toHaveBeenCalledTimes(2)
+      expect(actionRecorded).toHaveBeenCalledOnce()
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
@@ -334,19 +322,13 @@ describe('HandManager', () => {
       const [card] = cards
       const angle = Math.PI
       getDrawBehavior(card).state.angleOnPick = angle
-      await card.metadata.rotate?.()
-      await card.metadata.rotate?.()
-      await card.metadata.rotate?.()
+      await card.metadata.rotate?.(Math.PI * -0.5)
       expectRotated(card, Math.PI * -0.5)
       actionRecorded.mockReset()
 
       card.metadata.draw?.()
       const newMesh = getMeshById(handScene, card.id)
-      await Promise.all([
-        expectAnimationEnd(newMesh.getBehaviorByName(RotateBehaviorName)),
-        expectAnimationEnd(card.getBehaviorByName(DrawBehaviorName)),
-        waitForLayout()
-      ])
+      await waitForLayout()
       expectRotated(newMesh, angle)
       expect(actionRecorded).toHaveBeenCalledWith(
         {
@@ -357,17 +339,7 @@ describe('HandManager', () => {
         },
         expect.anything()
       )
-      expect(actionRecorded).toHaveBeenCalledWith(
-        {
-          meshId: newMesh.id,
-          fn: 'rotate',
-          fromHand: true,
-          args: [expect.any(Number)],
-          duration: 200
-        },
-        expect.anything()
-      )
-      expect(actionRecorded).toHaveBeenCalledTimes(2)
+      expect(actionRecorded).toHaveBeenCalledOnce()
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
       expect(newMesh.getBehaviorByName(RotateBehaviorName)?.state.angle).toBe(
         angle
@@ -856,65 +828,61 @@ describe('HandManager', () => {
         )
       })
 
-      it(
-        'moves mesh to hand by dragging',
-        async () => {
-          const mesh = cards[0]
-          const stopDrag = vi.spyOn(inputManager, 'stopDrag')
+      it('moves mesh to hand by dragging', async () => {
+        const mesh = cards[0]
+        const stopDrag = vi.spyOn(inputManager, 'stopDrag')
 
-          let movedPosition = new Vector3(1, 0, -19)
-          mesh.setAbsolutePosition(movedPosition)
-          inputManager.onDragObservable.notifyObservers({
-            type: 'dragStart',
-            mesh,
-            timestamp: Date.now(),
-            button: 1,
-            pointers: 1,
-            event: /** @type {PointerEvent} */ ({ x: 289.7, y: 175 })
-          })
-          expect(draggableToHandReceived).toHaveBeenCalledTimes(1)
-          expect(draggableToHandReceived).toHaveBeenLastCalledWith(
-            true,
-            expect.anything()
-          )
-          expect(stopDrag).toHaveBeenCalledTimes(1)
-          inputManager.onDragObservable.notifyObservers({
-            type: 'dragStop',
-            mesh,
-            timestamp: Date.now(),
-            button: 1,
-            pointers: 1,
-            event: /** @type {PointerEvent} */ ({ x: 289.7, y: 175 })
-          })
-          await waitForLayout()
-          expect(draggableToHandReceived).toHaveBeenCalledTimes(2)
-          expect(draggableToHandReceived).toHaveBeenLastCalledWith(
-            false,
-            expect.anything()
-          )
-          expect(scene.getMeshById(mesh.id)?.id).toBeUndefined()
-          const newMesh = getMeshById(handScene, mesh.id)
-          expect(newMesh?.id).toBeDefined()
-          const unitWidth = cardWidth + gap
-          expectPosition(handCards[1], [unitWidth * -1.5, 0.005, computeZ()])
-          expectPosition(handCards[0], [unitWidth * -0.5, 0.005, computeZ()])
-          expectPosition(newMesh, [unitWidth * 0.5, 0.005, computeZ()])
-          expectPosition(handCards[2], [unitWidth * 1.5, 0.005, computeZ()])
-          expect(actionRecorded).toHaveBeenCalledWith(
-            {
-              meshId: mesh.id,
-              fn: 'draw',
-              args: [expect.any(Object)],
-              fromHand: false
-            },
-            expect.anything()
-          )
-          expect(actionRecorded).toHaveBeenCalledTimes(1)
-          expect(controlManager.isManaging(newMesh)).toBe(true)
-          expect(moveManager.isManaging(newMesh)).toBe(true)
-        },
-        { retry: 3 }
-      )
+        let movedPosition = new Vector3(1, 0, -19)
+        mesh.setAbsolutePosition(movedPosition)
+        inputManager.onDragObservable.notifyObservers({
+          type: 'dragStart',
+          mesh,
+          timestamp: Date.now(),
+          button: 1,
+          pointers: 1,
+          event: /** @type {PointerEvent} */ ({ x: 289.7, y: 175 })
+        })
+        expect(draggableToHandReceived).toHaveBeenCalledTimes(1)
+        expect(draggableToHandReceived).toHaveBeenLastCalledWith(
+          true,
+          expect.anything()
+        )
+        expect(stopDrag).toHaveBeenCalledTimes(1)
+        inputManager.onDragObservable.notifyObservers({
+          type: 'dragStop',
+          mesh,
+          timestamp: Date.now(),
+          button: 1,
+          pointers: 1,
+          event: /** @type {PointerEvent} */ ({ x: 289.7, y: 175 })
+        })
+        await waitForLayout()
+        expect(draggableToHandReceived).toHaveBeenCalledTimes(2)
+        expect(draggableToHandReceived).toHaveBeenLastCalledWith(
+          false,
+          expect.anything()
+        )
+        expect(scene.getMeshById(mesh.id)?.id).toBeUndefined()
+        const newMesh = getMeshById(handScene, mesh.id)
+        expect(newMesh?.id).toBeDefined()
+        const unitWidth = cardWidth + gap
+        expectPosition(handCards[1], [unitWidth * -1.5, 0.005, computeZ()])
+        expectPosition(handCards[0], [unitWidth * -0.5, 0.005, computeZ()])
+        expectPosition(handCards[2], [unitWidth * 0.5, 0.005, computeZ()])
+        expectPosition(newMesh, [unitWidth * 1.5, 0.005, computeZ()])
+        expect(actionRecorded).toHaveBeenCalledWith(
+          {
+            meshId: mesh.id,
+            fn: 'draw',
+            args: [expect.any(Object)],
+            fromHand: false
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenCalledTimes(1)
+        expect(controlManager.isManaging(newMesh)).toBe(true)
+        expect(moveManager.isManaging(newMesh)).toBe(true)
+      })
 
       it('moves all selected meshes to hand by dragging', async () => {
         const [mesh1, mesh2, mesh3] = cards
@@ -951,12 +919,12 @@ describe('HandManager', () => {
         const newMesh3 = getMeshById(handScene, mesh3.id)
         expect(newMesh3?.id).toBeDefined()
         const unitWidth = cardWidth + gap
-        expectPosition(newMesh3, [unitWidth * -2.5, 0.005, computeZ()])
-        expectPosition(handCards[1], [unitWidth * -1.5, 0.005, computeZ()])
-        expectPosition(handCards[0], [unitWidth * -0.5, 0.005, computeZ()])
-        expectPosition(newMesh2, [unitWidth * 0.5, 0.005, computeZ()])
-        expectPosition(newMesh1, [unitWidth * 1.5, 0.005, computeZ()])
-        expectPosition(handCards[2], [unitWidth * 2.5, 0.005, computeZ()])
+        expectPosition(handCards[1], [unitWidth * -2.5, 0.005, computeZ()])
+        expectPosition(handCards[0], [unitWidth * -1.5, 0.005, computeZ()])
+        expectPosition(newMesh3, [unitWidth * -0.5, 0.005, computeZ()])
+        expectPosition(handCards[2], [unitWidth * 0.5, 0.005, computeZ()])
+        expectPosition(newMesh2, [unitWidth * 1.5, 0.005, computeZ()])
+        expectPosition(newMesh1, [unitWidth * 2.5, 0.005, computeZ()])
         expect(actionRecorded).toHaveBeenCalledWith(
           {
             meshId: mesh1.id,
@@ -1017,10 +985,7 @@ describe('HandManager', () => {
           event: /** @type {PointerEvent} */ ({ x: 289.7, y: 175 })
         })
         const newMesh = getMeshById(handScene, mesh.id)
-        await Promise.all([
-          expectAnimationEnd(newMesh.getBehaviorByName(FlipBehaviorName)),
-          waitForLayout()
-        ])
+        await waitForLayout()
         expectFlipped(newMesh, false)
         expect(actionRecorded).toHaveBeenCalledWith(
           {
@@ -1031,17 +996,47 @@ describe('HandManager', () => {
           },
           expect.anything()
         )
+        expect(actionRecorded).toHaveBeenCalledOnce()
+      })
+
+      it('rotates rotated mesh while dragging into hand', async () => {
+        const [, , mesh] = cards
+        const angle = Math.PI
+        getDrawBehavior(mesh).state.angleOnPick = angle
+        await mesh.metadata.rotate?.(Math.PI * -0.5)
+        actionRecorded.mockReset()
+        expectRotated(mesh, Math.PI * -0.5)
+        let movedPosition = new Vector3(1, 0, -19)
+        mesh.setAbsolutePosition(movedPosition)
+        inputManager.onDragObservable.notifyObservers({
+          type: 'dragStart',
+          mesh,
+          timestamp: Date.now(),
+          button: 1,
+          pointers: 1,
+          event: /** @type {PointerEvent} */ ({ x: 289.7, y: 175 })
+        })
+        inputManager.onDragObservable.notifyObservers({
+          type: 'dragStop',
+          mesh,
+          timestamp: Date.now(),
+          button: 1,
+          pointers: 1,
+          event: /** @type {PointerEvent} */ ({ x: 289.7, y: 175 })
+        })
+        const newMesh = getMeshById(handScene, mesh.id)
+        await waitForLayout()
+        expectRotated(newMesh, angle)
         expect(actionRecorded).toHaveBeenCalledWith(
           {
             meshId: newMesh.id,
-            fn: 'flip',
-            args: [],
-            fromHand: true,
-            duration
+            fn: 'draw',
+            args: [expect.any(Object)],
+            fromHand: false
           },
           expect.anything()
         )
-        expect(actionRecorded).toHaveBeenCalledTimes(2)
+        expect(actionRecorded).toHaveBeenCalledOnce()
       })
 
       it('ignores drag operations from without mesh', async () => {
@@ -1276,7 +1271,7 @@ describe('HandManager', () => {
               z: -10,
               movable: {},
               anchorable: {
-                anchors: [{ id: '1', playerId }],
+                anchors: [{ id: 'anchor-0', playerId }],
                 duration: anchorDuration
               }
             },

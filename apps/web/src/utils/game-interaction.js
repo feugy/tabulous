@@ -365,6 +365,11 @@ export function attachInputs({ engine, doubleTapDelay, actionMenuProps$ }) {
                 `stop moving mesh ${mesh.id}`
               )
               moveManager.stop()
+            } else {
+              logger.debug(
+                { rotatePosition, panPosition, isPanInProgress },
+                'stopping drag operation'
+              )
             }
             selectionPosition = null
             rotatePosition = null

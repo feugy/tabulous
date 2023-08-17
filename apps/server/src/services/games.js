@@ -18,7 +18,8 @@ import {
   enrichAssets,
   getParameterSchema,
   makeLogger,
-  pickRandom
+  pickRandom,
+  reportReusedIds
 } from '../utils/index.js'
 import { canAccess } from './catalog.js'
 
@@ -73,7 +74,6 @@ import { canAccess } from './catalog.js'
  * @property {number} [borderRadius] - corner radius, for rounded tiles.
  * @property {string} [file] - path to the custom mesh OBJ file.
  * @property {number} [edges] - number of edges, for prisms.
- * @property {number} [prismRotation] - initial rotation angle, baked in vertices, for prisms.
  * @property {number} [faces] - number of faces, for dice.
  * @property {DetailableState} [detailable] - if this mesh could be detailed, contains details.
  * @property {MovableState} [movable] - if this mesh could be moved, contains move state.
@@ -306,6 +306,7 @@ export async function createGame(kind, player) {
       preferences: []
     })
   )
+  reportReusedIds(game)
   notifyAllPeers(game)
   logger.debug({ ctx, res: serializeForLogs(game) }, 'created new game')
   return game
@@ -400,6 +401,7 @@ export async function promoteGame(gameId, kind, player) {
       preferences: []
     })
   )
+  reportReusedIds(game)
   notifyAllPeers(game)
   logger.debug(
     { ctx, res: serializeForLogs(game) },
@@ -542,6 +544,7 @@ export async function joinGame(gameId, player, parameters) {
         parameters: parameters ?? null
       })
     )
+    reportReusedIds(savedGame)
     notifyAllPeers(savedGame)
     logger.debug({ ctx, res: serializeForLogs(savedGame) }, 'joined game')
     return savedGame

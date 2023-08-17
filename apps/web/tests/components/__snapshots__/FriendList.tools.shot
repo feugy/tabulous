@@ -397,541 +397,691 @@ exports[`With friends 1`] = `
 `;
 
 exports[`With game 1`] = `
-<section
-  aria-roledescription="player-list"
-  class="s-2FHiERVIQQ6s"
->
-  <h3
+HTMLCollection [
+  <section
+    aria-roledescription="player-list"
     class="s-2FHiERVIQQ6s"
   >
-    Joueur·euse·s
-  </h3>
-   
-  <ol
-    class="s-i-J0I6k9Mfa4"
-  >
-    <li
+    <h3
+      class="s-2FHiERVIQQ6s"
+    >
+      Joueur·euse·s
+    </h3>
+     
+    <ol
       class="s-i-J0I6k9Mfa4"
     >
-      <figure
-        class="s-engCJu8q-fNe colored"
-        style="--dimension: 40px; --color: #9c3096; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
-      >
-        <img
-          alt="avatar for Fernand Naudin"
-          class="s-engCJu8q-fNe"
-          height="40"
-          referrerpolicy="no-referrer"
-          width="40"
-        />
-         
-        <figcaption
-          class="s-engCJu8q-fNe abbreviated"
-        >
-          FN
-        </figcaption>
-      </figure>
-      <!--&lt;PlayerThumbnail&gt;-->
-       
-      <span
+      <li
         class="s-i-J0I6k9Mfa4"
-        role="term"
       >
-        Fernand Naudin
-      </span>
-       
-      <span
-        class="buttons s-i-J0I6k9Mfa4"
-      >
-         
-      </span>
-       
-    </li>
-    <li
-      class="s-i-J0I6k9Mfa4"
-    >
-      <figure
-        class="s-engCJu8q-fNe colored"
-        style="--dimension: 40px; --color: #ff4500; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
-      >
-        <img
-          alt="avatar for Maître Follas"
-          class="s-engCJu8q-fNe"
-          height="40"
-          referrerpolicy="no-referrer"
-          width="40"
-        />
-         
-        <figcaption
-          class="s-engCJu8q-fNe abbreviated"
+        <figure
+          class="s-engCJu8q-fNe colored"
+          style="--dimension: 40px; --color: #9c3096; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
         >
-          MF
-        </figcaption>
-      </figure>
-      <!--&lt;PlayerThumbnail&gt;-->
-       
-      <span
-        class="s-i-J0I6k9Mfa4"
-        role="term"
-      >
-        Maître Follas
+          <img
+            alt="avatar for Fernand Naudin"
+            class="s-engCJu8q-fNe"
+            height="40"
+            referrerpolicy="no-referrer"
+            width="40"
+          />
+           
+          <figcaption
+            class="s-engCJu8q-fNe abbreviated"
+          >
+            FN
+          </figcaption>
+        </figure>
+        <!--&lt;PlayerThumbnail&gt;-->
+         
         <span
-          class="guest s-i-J0I6k9Mfa4"
+          class="s-i-J0I6k9Mfa4"
+          role="term"
         >
-          invité·e
+          Fernand Naudin
         </span>
-      </span>
-       
-      <span
-        class="buttons s-i-J0I6k9Mfa4"
-      >
-        <button
-          class="s-NMyTiX1zi6rz"
+         
+        <span
+          class="buttons s-i-J0I6k9Mfa4"
         >
-          <div
+           
+        </span>
+         
+      </li>
+      <li
+        class="s-i-J0I6k9Mfa4"
+      >
+        <figure
+          class="s-engCJu8q-fNe colored"
+          style="--dimension: 40px; --color: #ff4500; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+        >
+          <img
+            alt="avatar for Maître Follas"
+            class="s-engCJu8q-fNe"
+            height="40"
+            referrerpolicy="no-referrer"
+            width="40"
+          />
+           
+          <figcaption
+            class="s-engCJu8q-fNe abbreviated"
+          >
+            MF
+          </figcaption>
+        </figure>
+        <!--&lt;PlayerThumbnail&gt;-->
+         
+        <span
+          class="s-i-J0I6k9Mfa4"
+          role="term"
+        >
+          Maître Follas
+          <span
+            class="guest s-i-J0I6k9Mfa4"
+          >
+            invité·e
+          </span>
+        </span>
+         
+        <span
+          class="buttons s-i-J0I6k9Mfa4"
+        >
+          <button
             class="s-NMyTiX1zi6rz"
           >
-            <span
-              class="material-icons s-NMyTiX1zi6rz"
+            <div
+              class="s-NMyTiX1zi6rz"
             >
-              highlight_remove
-            </span>
-            
-            
-          </div>
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                highlight_remove
+              </span>
+              
+              
+            </div>
+             
+          </button>
+          <!--&lt;Button&gt;-->
            
-        </button>
-        <!--&lt;Button&gt;-->
+        </span>
          
-      </span>
-       
-    </li>
-    <li
-      class="s-i-J0I6k9Mfa4"
-    >
-      <figure
-        class="s-engCJu8q-fNe colored"
-        style="--dimension: 40px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
-      >
-        <img
-          alt="avatar for Pascal"
-          class="s-engCJu8q-fNe"
-          height="40"
-          referrerpolicy="no-referrer"
-          width="40"
-        />
-         
-        <figcaption
-          class="s-engCJu8q-fNe abbreviated"
-        >
-          P
-        </figcaption>
-      </figure>
-      <!--&lt;PlayerThumbnail&gt;-->
-       
-      <span
+      </li>
+      <li
         class="s-i-J0I6k9Mfa4"
-        role="term"
       >
-        Pascal
-      </span>
-       
-      <span
-        class="buttons s-i-J0I6k9Mfa4"
+        <figure
+          class="s-engCJu8q-fNe colored"
+          style="--dimension: 40px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+        >
+          <img
+            alt="avatar for Pascal"
+            class="s-engCJu8q-fNe"
+            height="40"
+            referrerpolicy="no-referrer"
+            width="40"
+          />
+           
+          <figcaption
+            class="s-engCJu8q-fNe abbreviated"
+          >
+            P
+          </figcaption>
+        </figure>
+        <!--&lt;PlayerThumbnail&gt;-->
+         
+        <span
+          class="s-i-J0I6k9Mfa4"
+          role="term"
+        >
+          Pascal
+        </span>
+         
+        <span
+          class="buttons s-i-J0I6k9Mfa4"
+        >
+           
+        </span>
+         
+      </li>
+    </ol>
+    <!--&lt;PlayerList&gt;-->
+     
+    <div
+      class="s-2FHiERVIQQ6s"
+    >
+      <button
+        class="has-text s-NMyTiX1zi6rz"
+      >
+        <div
+          class="s-NMyTiX1zi6rz"
+        >
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            gamepad
+          </span>
+          
+          <span
+            class="text s-NMyTiX1zi6rz"
+          >
+            Ajouter des joueur·e·s
+          </span>
+          
+        </div>
+         
+      </button>
+      <!--&lt;Button&gt;-->
+    </div>
+     
+     
+    <!--&lt;Portal&gt;-->
+    <!--&lt;Dialogue&gt;-->
+    <!--&lt;InviteDialogue&gt;-->
+  </section>,
+  <div
+    class="discussion s-4DrpFHLJm4IA"
+  >
+    <h3
+      class="s-4DrpFHLJm4IA"
+    >
+      Discussion
+    </h3>
+     
+    <div
+      class="messages s-4DrpFHLJm4IA"
+    />
+     
+    <form
+      class="s-4DrpFHLJm4IA"
+    >
+      <fieldset
+        class="s-Fe6WNbR-55zp"
       >
          
-      </span>
+        <input
+          class="s-Fe6WNbR-55zp"
+        />
+      </fieldset>
+      <!--&lt;Input&gt;-->
        
-    </li>
-  </ol>
-  <!--&lt;PlayerList&gt;-->
-   
-  <div
-    class="s-2FHiERVIQQ6s"
-  >
-    <button
-      class="has-text s-NMyTiX1zi6rz"
-    >
-      <div
+      <button
         class="s-NMyTiX1zi6rz"
+        disabled=""
+        title="Envoyer à tous"
+        type="submit"
       >
-        <span
-          class="material-icons s-NMyTiX1zi6rz"
+        <div
+          class="s-NMyTiX1zi6rz"
         >
-          gamepad
-        </span>
-        
-        <span
-          class="text s-NMyTiX1zi6rz"
-        >
-          Ajouter des joueur·e·s
-        </span>
-        
-      </div>
-       
-    </button>
-    <!--&lt;Button&gt;-->
-  </div>
-   
-   
-  <!--&lt;Portal&gt;-->
-  <!--&lt;Dialogue&gt;-->
-  <!--&lt;InviteDialogue&gt;-->
-</section>
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            send
+          </span>
+          
+          
+        </div>
+         
+      </button>
+      <!--&lt;Button&gt;-->
+    </form>
+  </div>,
+]
 `;
 
 exports[`With game with no seats 1`] = `
-<section
-  aria-roledescription="player-list"
-  class="s-2FHiERVIQQ6s"
->
-  <h3
+HTMLCollection [
+  <section
+    aria-roledescription="player-list"
     class="s-2FHiERVIQQ6s"
   >
-    Joueur·euse·s
-  </h3>
-   
-  <ol
-    class="s-i-J0I6k9Mfa4"
-  >
-    <li
+    <h3
+      class="s-2FHiERVIQQ6s"
+    >
+      Joueur·euse·s
+    </h3>
+     
+    <ol
       class="s-i-J0I6k9Mfa4"
     >
-      <figure
-        class="s-engCJu8q-fNe colored"
-        style="--dimension: 40px; --color: #9c3096; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
-      >
-        <img
-          alt="avatar for Fernand Naudin"
-          class="s-engCJu8q-fNe"
-          height="40"
-          referrerpolicy="no-referrer"
-          width="40"
-        />
-         
-        <figcaption
-          class="s-engCJu8q-fNe abbreviated"
-        >
-          FN
-        </figcaption>
-      </figure>
-      <!--&lt;PlayerThumbnail&gt;-->
-       
-      <span
+      <li
         class="s-i-J0I6k9Mfa4"
-        role="term"
       >
-        Fernand Naudin
-      </span>
-       
-      <span
-        class="buttons s-i-J0I6k9Mfa4"
-      >
-         
-      </span>
-       
-    </li>
-    <li
-      class="s-i-J0I6k9Mfa4"
-    >
-      <figure
-        class="s-engCJu8q-fNe colored"
-        style="--dimension: 40px; --color: #ff4500; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
-      >
-        <img
-          alt="avatar for Maître Follas"
-          class="s-engCJu8q-fNe"
-          height="40"
-          referrerpolicy="no-referrer"
-          width="40"
-        />
-         
-        <figcaption
-          class="s-engCJu8q-fNe abbreviated"
+        <figure
+          class="s-engCJu8q-fNe colored"
+          style="--dimension: 40px; --color: #9c3096; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
         >
-          MF
-        </figcaption>
-      </figure>
-      <!--&lt;PlayerThumbnail&gt;-->
-       
-      <span
-        class="s-i-J0I6k9Mfa4"
-        role="term"
-      >
-        Maître Follas
+          <img
+            alt="avatar for Fernand Naudin"
+            class="s-engCJu8q-fNe"
+            height="40"
+            referrerpolicy="no-referrer"
+            width="40"
+          />
+           
+          <figcaption
+            class="s-engCJu8q-fNe abbreviated"
+          >
+            FN
+          </figcaption>
+        </figure>
+        <!--&lt;PlayerThumbnail&gt;-->
+         
         <span
-          class="guest s-i-J0I6k9Mfa4"
+          class="s-i-J0I6k9Mfa4"
+          role="term"
         >
-          invité·e
+          Fernand Naudin
         </span>
-      </span>
-       
-      <span
-        class="buttons s-i-J0I6k9Mfa4"
-      >
-        <button
-          class="s-NMyTiX1zi6rz"
+         
+        <span
+          class="buttons s-i-J0I6k9Mfa4"
         >
-          <div
+           
+        </span>
+         
+      </li>
+      <li
+        class="s-i-J0I6k9Mfa4"
+      >
+        <figure
+          class="s-engCJu8q-fNe colored"
+          style="--dimension: 40px; --color: #ff4500; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+        >
+          <img
+            alt="avatar for Maître Follas"
+            class="s-engCJu8q-fNe"
+            height="40"
+            referrerpolicy="no-referrer"
+            width="40"
+          />
+           
+          <figcaption
+            class="s-engCJu8q-fNe abbreviated"
+          >
+            MF
+          </figcaption>
+        </figure>
+        <!--&lt;PlayerThumbnail&gt;-->
+         
+        <span
+          class="s-i-J0I6k9Mfa4"
+          role="term"
+        >
+          Maître Follas
+          <span
+            class="guest s-i-J0I6k9Mfa4"
+          >
+            invité·e
+          </span>
+        </span>
+         
+        <span
+          class="buttons s-i-J0I6k9Mfa4"
+        >
+          <button
             class="s-NMyTiX1zi6rz"
           >
-            <span
-              class="material-icons s-NMyTiX1zi6rz"
+            <div
+              class="s-NMyTiX1zi6rz"
             >
-              highlight_remove
-            </span>
-            
-            
-          </div>
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                highlight_remove
+              </span>
+              
+              
+            </div>
+             
+          </button>
+          <!--&lt;Button&gt;-->
            
-        </button>
-        <!--&lt;Button&gt;-->
+        </span>
          
-      </span>
-       
-    </li>
-    <li
-      class="s-i-J0I6k9Mfa4"
-    >
-      <figure
-        class="s-engCJu8q-fNe colored"
-        style="--dimension: 40px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
-      >
-        <img
-          alt="avatar for Pascal"
-          class="s-engCJu8q-fNe"
-          height="40"
-          referrerpolicy="no-referrer"
-          width="40"
-        />
-         
-        <figcaption
-          class="s-engCJu8q-fNe abbreviated"
-        >
-          P
-        </figcaption>
-      </figure>
-      <!--&lt;PlayerThumbnail&gt;-->
-       
-      <span
+      </li>
+      <li
         class="s-i-J0I6k9Mfa4"
-        role="term"
       >
-        Pascal
-      </span>
-       
-      <span
-        class="buttons s-i-J0I6k9Mfa4"
+        <figure
+          class="s-engCJu8q-fNe colored"
+          style="--dimension: 40px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+        >
+          <img
+            alt="avatar for Pascal"
+            class="s-engCJu8q-fNe"
+            height="40"
+            referrerpolicy="no-referrer"
+            width="40"
+          />
+           
+          <figcaption
+            class="s-engCJu8q-fNe abbreviated"
+          >
+            P
+          </figcaption>
+        </figure>
+        <!--&lt;PlayerThumbnail&gt;-->
+         
+        <span
+          class="s-i-J0I6k9Mfa4"
+          role="term"
+        >
+          Pascal
+        </span>
+         
+        <span
+          class="buttons s-i-J0I6k9Mfa4"
+        >
+           
+        </span>
+         
+      </li>
+    </ol>
+    <!--&lt;PlayerList&gt;-->
+     
+  </section>,
+  <div
+    class="discussion s-4DrpFHLJm4IA"
+  >
+    <h3
+      class="s-4DrpFHLJm4IA"
+    >
+      Discussion
+    </h3>
+     
+    <div
+      class="messages s-4DrpFHLJm4IA"
+    />
+     
+    <form
+      class="s-4DrpFHLJm4IA"
+    >
+      <fieldset
+        class="s-Fe6WNbR-55zp"
       >
          
-      </span>
+        <input
+          class="s-Fe6WNbR-55zp"
+        />
+      </fieldset>
+      <!--&lt;Input&gt;-->
        
-    </li>
-  </ol>
-  <!--&lt;PlayerList&gt;-->
-   
-</section>
+      <button
+        class="s-NMyTiX1zi6rz"
+        disabled=""
+        title="Envoyer à tous"
+        type="submit"
+      >
+        <div
+          class="s-NMyTiX1zi6rz"
+        >
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            send
+          </span>
+          
+          
+        </div>
+         
+      </button>
+      <!--&lt;Button&gt;-->
+    </form>
+  </div>,
+]
 `;
 
 exports[`With lobby 1`] = `
-<section
-  aria-roledescription="player-list"
-  class="s-2FHiERVIQQ6s"
->
-  <h3
+HTMLCollection [
+  <section
+    aria-roledescription="player-list"
     class="s-2FHiERVIQQ6s"
   >
-    Participant·e·s
-  </h3>
-   
-  <ol
-    class="s-i-J0I6k9Mfa4"
-  >
-    <li
+    <h3
+      class="s-2FHiERVIQQ6s"
+    >
+      Participant·e·s
+    </h3>
+     
+    <ol
       class="s-i-J0I6k9Mfa4"
     >
-      <figure
-        class="s-engCJu8q-fNe colored"
-        style="--dimension: 40px; --color: #9c3096; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
-      >
-        <img
-          alt="avatar for Fernand Naudin"
-          class="s-engCJu8q-fNe"
-          height="40"
-          referrerpolicy="no-referrer"
-          width="40"
-        />
-         
-        <figcaption
-          class="s-engCJu8q-fNe abbreviated"
-        >
-          FN
-        </figcaption>
-      </figure>
-      <!--&lt;PlayerThumbnail&gt;-->
-       
-      <span
+      <li
         class="s-i-J0I6k9Mfa4"
-        role="term"
       >
-        Fernand Naudin
-      </span>
-       
-      <span
-        class="buttons s-i-J0I6k9Mfa4"
-      >
-         
-      </span>
-       
-    </li>
-    <li
-      class="s-i-J0I6k9Mfa4"
-    >
-      <figure
-        class="s-engCJu8q-fNe colored"
-        style="--dimension: 40px; --color: #ff4500; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
-      >
-        <img
-          alt="avatar for Maître Follas"
-          class="s-engCJu8q-fNe"
-          height="40"
-          referrerpolicy="no-referrer"
-          width="40"
-        />
-         
-        <figcaption
-          class="s-engCJu8q-fNe abbreviated"
+        <figure
+          class="s-engCJu8q-fNe colored"
+          style="--dimension: 40px; --color: #9c3096; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
         >
-          MF
-        </figcaption>
-      </figure>
-      <!--&lt;PlayerThumbnail&gt;-->
-       
-      <span
-        class="s-i-J0I6k9Mfa4"
-        role="term"
-      >
-        Maître Follas
+          <img
+            alt="avatar for Fernand Naudin"
+            class="s-engCJu8q-fNe"
+            height="40"
+            referrerpolicy="no-referrer"
+            width="40"
+          />
+           
+          <figcaption
+            class="s-engCJu8q-fNe abbreviated"
+          >
+            FN
+          </figcaption>
+        </figure>
+        <!--&lt;PlayerThumbnail&gt;-->
+         
         <span
-          class="guest s-i-J0I6k9Mfa4"
+          class="s-i-J0I6k9Mfa4"
+          role="term"
         >
-          invité·e
+          Fernand Naudin
         </span>
-      </span>
-       
-      <span
-        class="buttons s-i-J0I6k9Mfa4"
-      >
-        <button
-          class="s-NMyTiX1zi6rz"
+         
+        <span
+          class="buttons s-i-J0I6k9Mfa4"
         >
-          <div
-            class="s-NMyTiX1zi6rz"
-          >
-            <span
-              class="material-icons s-NMyTiX1zi6rz"
-            >
-              highlight_remove
-            </span>
-            
-            
-          </div>
            
-        </button>
-        <!--&lt;Button&gt;-->
+        </span>
          
-      </span>
-       
-    </li>
-    <li
-      class="s-i-J0I6k9Mfa4"
-    >
-      <figure
-        class="s-engCJu8q-fNe colored"
-        style="--dimension: 40px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
-      >
-        <img
-          alt="avatar for Pascal"
-          class="s-engCJu8q-fNe"
-          height="40"
-          referrerpolicy="no-referrer"
-          width="40"
-        />
-         
-        <figcaption
-          class="s-engCJu8q-fNe abbreviated"
-        >
-          P
-        </figcaption>
-      </figure>
-      <!--&lt;PlayerThumbnail&gt;-->
-       
-      <span
+      </li>
+      <li
         class="s-i-J0I6k9Mfa4"
-        role="term"
       >
-        Pascal
-      </span>
-       
-      <span
-        class="buttons s-i-J0I6k9Mfa4"
-      >
-        <button
-          class="s-NMyTiX1zi6rz"
+        <figure
+          class="s-engCJu8q-fNe colored"
+          style="--dimension: 40px; --color: #ff4500; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
         >
-          <div
+          <img
+            alt="avatar for Maître Follas"
+            class="s-engCJu8q-fNe"
+            height="40"
+            referrerpolicy="no-referrer"
+            width="40"
+          />
+           
+          <figcaption
+            class="s-engCJu8q-fNe abbreviated"
+          >
+            MF
+          </figcaption>
+        </figure>
+        <!--&lt;PlayerThumbnail&gt;-->
+         
+        <span
+          class="s-i-J0I6k9Mfa4"
+          role="term"
+        >
+          Maître Follas
+          <span
+            class="guest s-i-J0I6k9Mfa4"
+          >
+            invité·e
+          </span>
+        </span>
+         
+        <span
+          class="buttons s-i-J0I6k9Mfa4"
+        >
+          <button
             class="s-NMyTiX1zi6rz"
           >
-            <span
-              class="material-icons s-NMyTiX1zi6rz"
+            <div
+              class="s-NMyTiX1zi6rz"
             >
-              highlight_remove
-            </span>
-            
-            
-          </div>
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                highlight_remove
+              </span>
+              
+              
+            </div>
+             
+          </button>
+          <!--&lt;Button&gt;-->
            
-        </button>
-        <!--&lt;Button&gt;-->
+        </span>
          
-      </span>
-       
-    </li>
-  </ol>
-  <!--&lt;PlayerList&gt;-->
-   
+      </li>
+      <li
+        class="s-i-J0I6k9Mfa4"
+      >
+        <figure
+          class="s-engCJu8q-fNe colored"
+          style="--dimension: 40px; --color: #239646; --top: undefinedpx; --left: undefinedpx; --border-width: 3px"
+        >
+          <img
+            alt="avatar for Pascal"
+            class="s-engCJu8q-fNe"
+            height="40"
+            referrerpolicy="no-referrer"
+            width="40"
+          />
+           
+          <figcaption
+            class="s-engCJu8q-fNe abbreviated"
+          >
+            P
+          </figcaption>
+        </figure>
+        <!--&lt;PlayerThumbnail&gt;-->
+         
+        <span
+          class="s-i-J0I6k9Mfa4"
+          role="term"
+        >
+          Pascal
+        </span>
+         
+        <span
+          class="buttons s-i-J0I6k9Mfa4"
+        >
+          <button
+            class="s-NMyTiX1zi6rz"
+          >
+            <div
+              class="s-NMyTiX1zi6rz"
+            >
+              <span
+                class="material-icons s-NMyTiX1zi6rz"
+              >
+                highlight_remove
+              </span>
+              
+              
+            </div>
+             
+          </button>
+          <!--&lt;Button&gt;-->
+           
+        </span>
+         
+      </li>
+    </ol>
+    <!--&lt;PlayerList&gt;-->
+     
+    <div
+      class="s-2FHiERVIQQ6s"
+    >
+      <button
+        class="has-text s-NMyTiX1zi6rz"
+      >
+        <div
+          class="s-NMyTiX1zi6rz"
+        >
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            gamepad
+          </span>
+          
+          <span
+            class="text s-NMyTiX1zi6rz"
+          >
+            Ajouter des particiant·e·s
+          </span>
+          
+        </div>
+         
+      </button>
+      <!--&lt;Button&gt;-->
+    </div>
+     
+     
+    <!--&lt;Portal&gt;-->
+    <!--&lt;Dialogue&gt;-->
+    <!--&lt;InviteDialogue&gt;-->
+  </section>,
   <div
-    class="s-2FHiERVIQQ6s"
+    class="discussion s-4DrpFHLJm4IA"
   >
-    <button
-      class="has-text s-NMyTiX1zi6rz"
+    <h3
+      class="s-4DrpFHLJm4IA"
     >
-      <div
-        class="s-NMyTiX1zi6rz"
+      Discussion
+    </h3>
+     
+    <div
+      class="messages s-4DrpFHLJm4IA"
+    />
+     
+    <form
+      class="s-4DrpFHLJm4IA"
+    >
+      <fieldset
+        class="s-Fe6WNbR-55zp"
       >
-        <span
-          class="material-icons s-NMyTiX1zi6rz"
-        >
-          gamepad
-        </span>
-        
-        <span
-          class="text s-NMyTiX1zi6rz"
-        >
-          Ajouter des particiant·e·s
-        </span>
-        
-      </div>
+         
+        <input
+          class="s-Fe6WNbR-55zp"
+        />
+      </fieldset>
+      <!--&lt;Input&gt;-->
        
-    </button>
-    <!--&lt;Button&gt;-->
-  </div>
-   
-   
-  <!--&lt;Portal&gt;-->
-  <!--&lt;Dialogue&gt;-->
-  <!--&lt;InviteDialogue&gt;-->
-</section>
+      <button
+        class="s-NMyTiX1zi6rz"
+        disabled=""
+        title="Envoyer à tous"
+        type="submit"
+      >
+        <div
+          class="s-NMyTiX1zi6rz"
+        >
+          <span
+            class="material-icons s-NMyTiX1zi6rz"
+          >
+            send
+          </span>
+          
+          
+        </div>
+         
+      </button>
+      <!--&lt;Button&gt;-->
+    </form>
+  </div>,
+]
 `;
 
 exports[`With requests and proposals 1`] = `

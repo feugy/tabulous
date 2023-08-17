@@ -34,6 +34,7 @@
 </script>
 
 <div class="discussion">
+  <h3>{$_('titles.discussion')}</h3>
   <div class="messages" bind:this={messageContainer}>
     {#each thread || [] as { playerId, text }}
       {@const { username, color } = playerById.get(playerId) ?? {
@@ -57,7 +58,7 @@
 
 <style lang="postcss">
   .discussion {
-    @apply flex flex-col overflow-auto p-2 shadow-md justify-end h-full;
+    @apply flex flex-col overflow-auto p-6 justify-end;
   }
 
   .messages {
@@ -77,7 +78,7 @@
   }
 
   .from {
-    @apply font-medium pr-2 text-$player-color;
+    @apply font-medium text-$player-color;
   }
 
   form {

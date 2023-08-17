@@ -164,7 +164,6 @@ type Mesh {
   prisms
   """
   edges: Float
-  prismRotation: Float
   """
   dice
   """
@@ -400,7 +399,6 @@ input MeshInput {
   prisms
   """
   edges: Float
-  prismRotation: Float
   """
   dice
   """

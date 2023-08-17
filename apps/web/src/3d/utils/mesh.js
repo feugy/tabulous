@@ -50,8 +50,8 @@ export function getDimensions(mesh) {
 export function applyInitialTransform(mesh, transform) {
   if (transform) {
     const { yaw, pitch, roll, scaleX, scaleY, scaleZ } = transform
-    mesh.rotation.x = yaw ?? 0
-    mesh.rotation.y = pitch ?? 0
+    mesh.rotation.x = pitch ?? 0
+    mesh.rotation.y = yaw ?? 0
     mesh.rotation.z = roll ?? 0
     mesh.scaling.x = scaleX ?? 1
     mesh.scaling.y = scaleY ?? 1

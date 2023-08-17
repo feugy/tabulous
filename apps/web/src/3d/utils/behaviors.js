@@ -15,6 +15,7 @@ import { Quaternion, Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder'
 import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
 
+import { makeLogger } from '../../utils/logger'
 import { AnchorBehavior } from '../behaviors/anchorable'
 import { DetailBehavior } from '../behaviors/detailable'
 import { DrawBehavior } from '../behaviors/drawable'
@@ -45,6 +46,8 @@ import { applyGravity, getCenterAltitudeAbove } from './gravity'
 /** @typedef {AnchorBehavior|DetailBehavior|DrawBehavior|FlipBehavior|LockBehavior|MoveBehavior|QuantityBehavior|RandomBehavior|RotateBehavior|StackBehavior} Behavior */
 /** @typedef {Record<string, ?> & Pick<SerializedMesh, 'anchorable'|'detailable'|'movable'|'drawable'|'flippable'|'lockable'|'quantifiable'|'randomizable'|'rotable'|'stackable'>} BehaviorState */
 /** @typedef {_SerializedMesh & { randomizable?: _SerializedMesh['randomizable'] & Partial<Extras> }} SerializedMesh */
+
+const animationLogger = makeLogger('animatable')
 
 /** @type {?[BehaviorNames, { new (state: ?): Behavior }][]} */
 let constructors = null
@@ -313,10 +316,15 @@ export function runAnimation(behavior, onEnd, ...animationSpecs) {
   const wasHittable = mesh.isHittable
   mesh.isHittable = false
   behavior.isAnimated = true
+  animationLogger.debug({ mesh, animations }, `starts animations on ${mesh.id}`)
   return new Promise(resolve =>
     mesh
       .getScene()
       .beginDirectAnimation(mesh, animations, 0, lastFrame, false, 1, () => {
+        animationLogger.debug(
+          { mesh, animations, wasPickable, wasHittable },
+          `end animations on ${mesh.id}`
+        )
         mesh.isPickable = wasPickable
         mesh.isHittable = wasHittable
         behavior.isAnimated = false

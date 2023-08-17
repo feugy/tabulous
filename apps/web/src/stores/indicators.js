@@ -98,15 +98,17 @@ export const visibleIndicators = merge(
     merge(of(new Set()), selectedMeshes),
     merge(of(null), actionMenuProps),
     merge(of(/** @type {Indicator[]} */ ([])), indicators$),
-    handPosition$
+    handPosition$,
+    hoveredMesh$
   ),
-  map(([, selected, menuProps, indicators, handPosition]) =>
+  map(([, selected, menuProps, indicators, handPosition, hovered]) =>
     getVisibleIndicators(
       visible$.value,
       selected,
       menuProps,
       indicators,
-      handPosition
+      handPosition,
+      hovered
     )
   ),
   map(enrichWithHovered),
@@ -131,13 +133,15 @@ export const visibleFeedbacks = merge(visible$, indicators$).pipe(
  * @param {?ActionMenuProps} menuProps - current menu items, if any.
  * @param {Indicator[]} indicators - list of all indicators.
  * @param {number} handPosition - position of the limit between main and hand scene.
+ * @param {?Mesh} hovered - currently hovered mesh.
  */
 function getVisibleIndicators(
   allVisible,
   selected,
   menuProps,
   indicators,
-  handPosition
+  handPosition,
+  hovered
 ) {
   return /** @type {(ManagedPointer|ManagedIndicator)[]} */ (
     allVisible
@@ -149,7 +153,7 @@ function getVisibleIndicators(
         )
       : hasMenu(menuProps, selected)
       ? getMenuIndicators(menuProps, indicators)
-      : getSelectedIndicators(selected, indicators)
+      : getSelectedIndicators(hovered, selected, indicators)
   )
 }
 
@@ -170,11 +174,14 @@ function getMenuIndicators(
 }
 
 function getSelectedIndicators(
+  /** @type {?Mesh} */ hovered,
   /** @type {Set<Mesh>} */ selected,
   /** @type {Indicator[]} */ indicators
 ) {
   return indicators.filter(indicator =>
-    'mesh' in indicator ? selected.has(indicator.mesh) : false
+    'mesh' in indicator
+      ? hovered === indicator.mesh || selected.has(indicator.mesh)
+      : false
   )
 }
 

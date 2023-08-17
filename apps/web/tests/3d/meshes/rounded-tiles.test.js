@@ -61,7 +61,7 @@ describe('createRoundedTile()', () => {
       scene
     )
     expect(mesh.name).toEqual('roundedTile')
-    expectDimension(mesh, [2, 8, 4])
+    expectDimension(mesh, [4, 2, 8])
   })
 
   describe('given a tile with initial position, dimension, images and behaviors', () => {

@@ -246,7 +246,7 @@ export class QuantityBehavior extends TargetBehavior {
       this.removeZone(/** @type {SingleDropZone} */ (this.dropZone))
     }
     this.dropZone = this.addZone(
-      buildTargetMesh('drop-zone', this.mesh),
+      buildTargetMesh(`quantifiable-zone-${this.mesh.id}`, this.mesh),
       this.state
     )
 
