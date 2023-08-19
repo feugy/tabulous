@@ -580,7 +580,7 @@ describe('AnchorBehavior', () => {
       const [snapped, snappedOfSnapped] = meshes
       snapped.addBehavior(
         new AnchorBehavior({
-          anchors: [{ id: '1', z: -1, snappedId: snappedOfSnapped.id }]
+          anchors: [{ id: '10', z: -1, snappedId: snappedOfSnapped.id }]
         })
       )
       expectSnapped(snapped, snappedOfSnapped, 0)

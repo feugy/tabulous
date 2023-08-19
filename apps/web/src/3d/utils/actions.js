@@ -49,8 +49,7 @@ export const actionNames = {
  */
 export const buttonIds = {
   button1: 'button1',
-  button2: 'button2',
-  button3: 'button3'
+  button2: 'button2'
 }
 
 /**

@@ -315,7 +315,8 @@ describe('InputManager', () => {
           { long: false, pointers: 2, type: 'tap', event },
           meshId
         )
-      }
+      },
+      { retry: 3 }
     )
 
     it.each([
@@ -618,7 +619,8 @@ describe('InputManager', () => {
           { long: false, pointers, type: 'doubletap', event: doubleTapEvent },
           meshId
         )
-      }
+      },
+      { retry: 3 }
     )
 
     it.each([

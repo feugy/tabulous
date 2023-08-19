@@ -1,7 +1,7 @@
 <script>
   // ts-check
-  import { LongLeftObject, LongPointerObject } from '@src/svg/help'
+  import { RightObject, TwoPointersObject } from '@src/svg/help'
   import { isTouchScreen } from '@src/utils'
 </script>
 
-{#if isTouchScreen()}<LongPointerObject />{:else} <LongLeftObject />{/if}
+{#if isTouchScreen()}<TwoPointersObject />{:else} <RightObject />{/if}

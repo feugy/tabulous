@@ -27,7 +27,6 @@
 
   $: button1Actions = actionNamesByButton?.get(buttonIds.button1)
   $: button2Actions = actionNamesByButton?.get(buttonIds.button2)
-  $: button3Actions = actionNamesByButton?.get(buttonIds.button3)
 
   function mapToLabels(/** @type {ActionName[]} */ actions) {
     return actions.map(action => $_(`labels.help-${action}`)).join('<br/>')
@@ -38,14 +37,7 @@
 <div>
   <h3>{$_('titles.object-controls')}</h3>
   <dl>
-    <dt>
-      {#await iconPromise}
-        <Skeleton height="74px" {tone} />
-      {:then { RightObject, TwoPointersObject }}
-        {#if isTouch}<TwoPointersObject />{:else}
-          <RightObject />{/if}
-      {/await}
-    </dt>
+    <dt><HelpButton3 /></dt>
     <dd>{$_('labels.help-open-menu')}</dd>
     {#if button1Actions?.length}
       <dt><HelpButton1 /></dt>
@@ -54,10 +46,6 @@
     {#if button2Actions?.length}
       <dt><HelpButton2 /></dt>
       <dd>{@html mapToLabels(button2Actions)}</dd>
-    {/if}
-    {#if button3Actions?.length}
-      <dt><HelpButton3 /></dt>
-      <dd>{@html mapToLabels(button3Actions)}</dd>
     {/if}
     <dt>
       {#await iconPromise}
@@ -86,6 +74,15 @@
       {/await}
     </dt>
     <dd>{$_('labels.help-clear-selection')}</dd>
+    <dt>
+      {#await iconPromise}
+        <Skeleton height="74px" {tone} />
+      {:then { HoverObject, LongPointerObject }}
+        {#if isTouch}<LongPointerObject />{:else}
+          <HoverObject />{/if}
+      {/await}
+    </dt>
+    <dd>{$_('labels.help-detail')}</dd>
   </dl>
 
   <h3>{$_('titles.camera-controls')}</h3>

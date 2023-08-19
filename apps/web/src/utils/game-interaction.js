@@ -18,17 +18,7 @@
  * @typedef {import('@tabulous/server/src/graphql').ActionName} ActionName
  */
 
-import {
-  delayWhen,
-  filter,
-  interval,
-  map,
-  merge,
-  of,
-  scan,
-  Subject,
-  withLatestFrom
-} from 'rxjs'
+import { filter, Subject } from 'rxjs'
 
 import {
   cameraManager,
@@ -96,7 +86,7 @@ const cameraRotationShare = 8
 // Units added to the camera position when applying elevation
 const cameraElevationShare = 24
 
-const { button1, button2, button3 } = buttonIds
+const { button1, button2 } = buttonIds
 const {
   decrement,
   detail,
@@ -117,11 +107,11 @@ const {
  * Attach to game engine's input manager observables to implement game interaction model.
  * @param {object} params - parameters, including:
  * @param {Engine} params.engine - current 3D engine.
- * @param {number} params.doubleTapDelay - number of milliseconds between 2 taps to be considered as a double tap.
+ * @param {number} params.hoverDelay - number of milliseconds the cursor should stay above a mesh to trigger details.
  * @param {Subject<?ActionMenuProps>} params.actionMenuProps$ - subject emitting when action menu should be displayed and hidden.
  * @returns {Subscription[]} an array of observable subscriptions
  */
-export function attachInputs({ engine, doubleTapDelay, actionMenuProps$ }) {
+export function attachInputs({ engine, hoverDelay, actionMenuProps$ }) {
   /** @type {?ScreenPosition} */
   let selectionPosition = null
   /** @type {?ScreenPosition} */
@@ -140,6 +130,8 @@ export function attachInputs({ engine, doubleTapDelay, actionMenuProps$ }) {
   const pinchs$ = new Subject()
   /** @type {Subject<KeyData>} */
   const keys$ = new Subject()
+  /** @type {Subject<HoverData>} */
+  const hovers$ = new Subject()
   /** @type {Subject<MeshDetails>} */
   const details$ = new Subject()
   /** @type {Subject<Action|Move>} */
@@ -173,6 +165,11 @@ export function attachInputs({ engine, doubleTapDelay, actionMenuProps$ }) {
       observer: null
     },
     {
+      observable: inputManager.onHoverObservable,
+      subject: hovers$,
+      observer: null
+    },
+    {
       observable: controlManager.onDetailedObservable,
       subject: details$,
       observer: null
@@ -201,28 +198,82 @@ export function attachInputs({ engine, doubleTapDelay, actionMenuProps$ }) {
     }
   }
 
+  /** @type {ReturnType<setTimeout>} */
+  let showDetailsTimer
+  let detailsOpen = false
+
+  function resetDetails() {
+    clearTimeout(showDetailsTimer)
+    if (detailsOpen) {
+      detailsOpen = false
+      controlManager.onDetailedObservable.notifyObservers(null)
+    }
+  }
+
   return [
     /**
-     * Implements actions on user taps:
-     * - click/tap always closes menu
+     * On mesh hover:
+     * - hover start displays details, unless dragging
+     * - hover stop hides details
+     *
+     * Wait for a given time before triggering details, in case any interruption (hover stop, drag, wheel...) would occur.
+     */
+    hovers$.subscribe({
+      next: ({ type, mesh }) => {
+        if (type === 'hoverStop') {
+          resetDetails()
+        } else if (type === 'hoverStart') {
+          showDetailsTimer = setTimeout(
+            () => triggerAction(mesh, detail),
+            hoverDelay
+          )
+        }
+      }
+    }),
+
+    /**
+     * On user taps/clics:
+     * - click/tap always closes menu and details
      * - click/tap clears selection unless tapping/clicking it
-     * - right click on mesh opens its menu
+     * - single left click/tap on mesh triggers 1st action
+     * - long left click/long 2 fingers tap triggers 2nd action
+     * - long tap on mesh triggers hover
      */
     taps$.subscribe({
-      next: ({ mesh, button, event, pointers, fromHand }) => {
+      next: ({ long, mesh, button, event, pointers, fromHand }) => {
         resetMenu()
+        resetDetails()
         const kind = pointerKind(event, button, pointers)
         if (mesh) {
           if (!selectionManager.meshes.has(mesh)) {
             selectionManager.clear()
           }
           if (kind === 'right') {
-            const actions = computeMenuProps(mesh, fromHand)
-            logger.info(
-              { mesh, event, actions },
-              `display menu for mesh ${mesh.id}`
-            )
-            actionMenuProps$.next(actions)
+            if (!isMouse(event) && long) {
+              // long 2 finger tap
+              const actions = engine.actionNamesByButton.get(button2)
+              if (actions) {
+                applyMatchingAction(actions, mesh, fromHand)
+              }
+            } else {
+              const actions = computeMenuProps(mesh, fromHand)
+              logger.info(
+                { mesh, event, actions },
+                `display menu for mesh ${mesh.id}`
+              )
+              actionMenuProps$.next(actions)
+            }
+          } else if (kind === 'left') {
+            if (!isMouse(event) && long) {
+              mesh.metadata.detail?.()
+            } else {
+              const actions = engine.actionNamesByButton.get(
+                long ? button2 : button1
+              )
+              if (actions) {
+                applyMatchingAction(actions, mesh, fromHand)
+              }
+            }
           }
         } else if (kind === 'left') {
           selectionManager.clear()
@@ -231,157 +282,111 @@ export function attachInputs({ engine, doubleTapDelay, actionMenuProps$ }) {
     }),
 
     /**
-     * Implements actions on mouse single clicks:
-     * - single left click/tap on mesh flips it
-     * - long left click/double tap on mesh rotates it
-     * - double left click/long tap on mesh opens its details (and clears stack size)
-     * - any double click immediately following a single click discards the operation
-     */
-    taps$
-      .pipe(
-        filter(({ mesh }) => Boolean(mesh)),
-        delayWhen(({ type }) => interval(type === 'tap' ? doubleTapDelay : 0)),
-        scan((previous, data) => {
-          if (data.type === 'tap' && previous?.type === 'doubletap') {
-            previous.type = 'doubletap'
-            return null
-          }
-          return data
-        }, /** @type {?TapData} */ (null)),
-        filter(data => data !== null)
-      )
-      .subscribe({
-        next: async data => {
-          const { type, mesh, button, event, long, pointers, fromHand } =
-            /** @type {TapData} */ (data)
-          const kind = pointerKind(event, button, pointers)
-          if (kind === 'left') {
-            const actions = engine.actionNamesByButton.get(
-              type === 'doubletap' ? button2 : long ? button3 : button1
-            )
-            if (actions) {
-              applyMatchingAction(actions, /** @type {Mesh} */ (mesh), fromHand)
-            }
-          }
-        }
-      }),
-
-    /**
      * Implements actions on drag operations:
-     * - starting dragging always closes menu
+     * - starting dragging always closes menu and details
      * - dragging table with left click/finger selects meshes
      * - dragging table with right click/two fingers pans the camera
      * - dragging table with middle click/three fingers rotates the camera
      * - dragging mesh moves it
-     *
-     * Ignores any drag event that would occur immediately after a tap, and before we could
-     * determine if it was a single or a double tap
      */
-    drags$
-      .pipe(
-        withLatestFrom(merge(of(null), taps$)),
-        filter(
-          ([drag, tap]) =>
-            !tap || drag.timestamp > tap.timestamp + doubleTapDelay
-        ),
-        map(([drag]) => drag)
-      )
-      .subscribe({
-        next: ({ type, mesh, button, long, pointers, event }) => {
-          if (type === 'dragStart') {
-            resetMenu()
-            const kind = pointerKind(event, button, pointers)
-            if (mesh) {
-              if (kind === 'left') {
-                if (!selectionManager.meshes.has(mesh)) {
-                  selectionManager.clear()
-                }
-                logger.info(
-                  { mesh, button, long, pointers, event },
-                  `start moving mesh ${mesh.id}`
-                )
-                moveManager.start(mesh, event)
+    drags$.subscribe({
+      next: ({ type, mesh, button, long, pointers, event }) => {
+        if (type === 'dragStart') {
+          resetMenu()
+          resetDetails()
+          const kind = pointerKind(event, button, pointers)
+          if (mesh) {
+            if (kind === 'left') {
+              if (!selectionManager.meshes.has(mesh)) {
+                selectionManager.clear()
               }
-            }
-            if (!moveManager.inProgress) {
-              const position = { x: event.x, y: event.y }
-              if (kind === 'left') {
-                logger.info(
-                  { button, long, pointers, event },
-                  `start selecting meshes`
-                )
-                selectionPosition = position
-              } else if (kind === 'right') {
-                logger.info(
-                  { button, long, pointers, event },
-                  `start panning camera`
-                )
-                panPosition = position
-              } else if (kind === 'middle') {
-                logger.info(
-                  { button, long, pointers, event },
-                  `start rotating camera`
-                )
-                rotatePosition = position
-              }
-            }
-          } else if (type === 'drag') {
-            if (rotatePosition) {
-              // for alpha, rotate clockwise when panning the top side of the screen, and anti-clockwise when panning the bottom side
-              const deltaX =
-                event.y < window.innerHeight / 2
-                  ? event.x - rotatePosition.x
-                  : rotatePosition.x - event.x
-              const deltaY = event.y - rotatePosition.y
-              cameraManager.rotate(
-                Math.abs(deltaX) < 8
-                  ? 0
-                  : deltaX < 0
-                  ? -Math.PI / cameraRotationShare
-                  : Math.PI / cameraRotationShare,
-                Math.abs(deltaY) < 4 ? 0 : normalize(deltaY, 10, 0, Math.PI / 6)
-              )
-              rotatePosition = event
-            } else if (panPosition) {
-              if (!isPanInProgress) {
-                cameraManager.pan(panPosition, event, 100).then(() => {
-                  isPanInProgress = false
-                })
-                panPosition = event
-                isPanInProgress = true
-              }
-            } else if (selectionPosition) {
-              selectionManager.drawSelectionBox(selectionPosition, event)
-            } else if (mesh) {
-              moveManager.continue(event)
-            }
-          } else if (type === 'dragStop') {
-            if (selectionPosition) {
-              logger.info({ button, long, pointers, event }, `selecting meshes`)
-              selectionManager.selectWithinBox()
-            } else if (mesh) {
               logger.info(
                 { mesh, button, long, pointers, event },
-                `stop moving mesh ${mesh.id}`
+                `start moving mesh ${mesh.id}`
               )
-              moveManager.stop()
-            } else {
-              logger.debug(
-                { rotatePosition, panPosition, isPanInProgress },
-                'stopping drag operation'
-              )
+              moveManager.start(mesh, event)
             }
-            selectionPosition = null
-            rotatePosition = null
-            panPosition = null
-            isPanInProgress = false
           }
+          if (!moveManager.inProgress) {
+            const position = { x: event.x, y: event.y }
+            if (kind === 'left') {
+              logger.info(
+                { button, long, pointers, event },
+                `start selecting meshes`
+              )
+              selectionPosition = position
+            } else if (kind === 'right') {
+              logger.info(
+                { button, long, pointers, event },
+                `start panning camera`
+              )
+              panPosition = position
+            } else if (kind === 'middle') {
+              logger.info(
+                { button, long, pointers, event },
+                `start rotating camera`
+              )
+              rotatePosition = position
+            }
+          }
+        } else if (type === 'drag') {
+          resetDetails()
+          if (rotatePosition) {
+            // for alpha, rotate clockwise when panning the top side of the screen, and anti-clockwise when panning the bottom side
+            const deltaX =
+              event.y < window.innerHeight / 2
+                ? event.x - rotatePosition.x
+                : rotatePosition.x - event.x
+            const deltaY = event.y - rotatePosition.y
+            cameraManager.rotate(
+              Math.abs(deltaX) < 8
+                ? 0
+                : deltaX < 0
+                ? -Math.PI / cameraRotationShare
+                : Math.PI / cameraRotationShare,
+              Math.abs(deltaY) < 4 ? 0 : normalize(deltaY, 10, 0, Math.PI / 6)
+            )
+            rotatePosition = event
+          } else if (panPosition) {
+            if (!isPanInProgress) {
+              cameraManager.pan(panPosition, event, 100).then(() => {
+                isPanInProgress = false
+              })
+              panPosition = event
+              isPanInProgress = true
+            }
+          } else if (selectionPosition) {
+            selectionManager.drawSelectionBox(selectionPosition, event)
+          } else if (mesh) {
+            moveManager.continue(event)
+          }
+        } else if (type === 'dragStop') {
+          if (selectionPosition) {
+            logger.info({ button, long, pointers, event }, `selecting meshes`)
+            selectionManager.selectWithinBox()
+          } else if (mesh) {
+            logger.info(
+              { mesh, button, long, pointers, event },
+              `stop moving mesh ${mesh.id}`
+            )
+            moveManager.stop()
+          } else {
+            logger.debug(
+              { rotatePosition, panPosition, isPanInProgress },
+              'stopping drag operation'
+            )
+          }
+          selectionPosition = null
+          rotatePosition = null
+          panPosition = null
+          isPanInProgress = false
         }
-      }),
+      }
+    }),
 
     /**
      * Implements actions on mouse wheel:
-     * - close menu
+     * - close menu and details
      * - zoom camera in and out
      */
     wheels$.subscribe({
@@ -389,19 +394,21 @@ export function attachInputs({ engine, doubleTapDelay, actionMenuProps$ }) {
         event.preventDefault()
         logger.info({ event }, `zooming camera with wheel`)
         resetMenu()
+        resetDetails()
         cameraManager.zoom(event.deltaY * 0.1)
       }
     }),
 
     /**
      * Implements actions on finger pinch:
-     * - close menu when start pinching
+     * - close menu and details when start pinching
      * - zoom camera in and out on pinch
      */
     pinchs$.subscribe({
       next: ({ type, pinchDelta, event }) => {
         if (type === 'pinchStart') {
           resetMenu()
+          resetDetails
         } else if (type === 'pinch') {
           const normalized = normalize(pinchDelta, 30, 0, 15)
           if (Math.abs(normalized) > 3) {
@@ -417,7 +424,12 @@ export function attachInputs({ engine, doubleTapDelay, actionMenuProps$ }) {
      * - closes menu
      */
     details$.subscribe({
-      next: resetMenu
+      next: event => {
+        resetMenu()
+        if (event) {
+          detailsOpen = true
+        }
+      }
     }),
 
     /**
@@ -447,17 +459,27 @@ export function attachInputs({ engine, doubleTapDelay, actionMenuProps$ }) {
 
     /**
      * Implements camera pan global keys:
+     * - Ctrl + ArrowUp/ArrowDown to rotate beta angle (x-axis)
+     * - Ctrl + ArrowLeft/ArrowRight to rotate alpha angle (y-axis)
      * - ArrowUp/ArrowDown to pan vertically
      * - ArrowLeft/ArrowRight to pan horizontally
      */
-    keys$
-      .pipe(
-        filter(
-          ({ key, modifiers }) => !modifiers?.ctrl && key.startsWith('Arrow')
-        )
-      )
-      .subscribe({
-        next: ({ key }) => {
+    keys$.pipe(filter(({ key }) => key.startsWith('Arrow'))).subscribe({
+      next: ({ key, modifiers }) => {
+        if (modifiers?.ctrl) {
+          cameraManager.rotate(
+            key === 'ArrowLeft'
+              ? -Math.PI / cameraRotationShare
+              : key === 'ArrowRight'
+              ? Math.PI / cameraRotationShare
+              : 0,
+            key === 'ArrowDown'
+              ? Math.PI / cameraElevationShare
+              : key === 'ArrowUp'
+              ? -Math.PI / cameraElevationShare
+              : 0
+          )
+        } else {
           const x = engine.getRenderWidth() * 0.5
           const y = engine.getRenderHeight() * 0.5
           let vertical = 0
@@ -473,35 +495,8 @@ export function attachInputs({ engine, doubleTapDelay, actionMenuProps$ }) {
           }
           cameraManager.pan({ x, y }, { x: x + horizontal, y: y + vertical })
         }
-      }),
-
-    /**
-     * Implements camera rotation global keys:
-     * - Ctrl + ArrowUp/ArrowDown to rotate beta angle (x-axis)
-     * - Ctrl + ArrowLeft/ArrowRight to rotate alpha angle (y-axis)
-     */
-    keys$
-      .pipe(
-        filter(
-          ({ key, modifiers }) => modifiers?.ctrl && key.startsWith('Arrow')
-        )
-      )
-      .subscribe({
-        next: ({ key }) => {
-          cameraManager.rotate(
-            key === 'ArrowLeft'
-              ? -Math.PI / cameraRotationShare
-              : key === 'ArrowRight'
-              ? Math.PI / cameraRotationShare
-              : 0,
-            key === 'ArrowDown'
-              ? Math.PI / cameraElevationShare
-              : key === 'ArrowUp'
-              ? -Math.PI / cameraElevationShare
-              : 0
-          )
-        }
-      }),
+      }
+    }),
 
     /**
      * Implements camera zoom global keys:

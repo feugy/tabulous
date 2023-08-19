@@ -67,7 +67,7 @@ describe('FlipBehavior', () => {
   })
 
   it('can hydrate with default state', () => {
-    const behavior = createAttachedFlippable()
+    const behavior = createAttachedFlippable('box')
 
     behavior.fromState()
     expect(behavior.state).toEqual({
@@ -86,7 +86,7 @@ describe('FlipBehavior', () => {
     let behavior
 
     beforeEach(() => {
-      behavior = createAttachedFlippable({ duration: 50 })
+      behavior = createAttachedFlippable('box', { duration: 50 })
       mesh = /** @type {Mesh} */ (behavior.mesh)
       behavior.onAnimationEndObservable.add(animationEndReceived)
     })
@@ -152,9 +152,11 @@ describe('FlipBehavior', () => {
       let granChild
 
       beforeEach(() => {
-        child = /** @type {Mesh} */ (createAttachedFlippable().mesh)
+        child = /** @type {Mesh} */ (createAttachedFlippable('child').mesh)
         child.setParent(mesh)
-        granChild = /** @type {Mesh} */ (createAttachedFlippable().mesh)
+        granChild = /** @type {Mesh} */ (
+          createAttachedFlippable('granChild').mesh
+        )
         granChild.setParent(child)
       })
 
@@ -256,9 +258,12 @@ describe('FlipBehavior', () => {
   })
 })
 
-function createAttachedFlippable(/** @type {FlippableState} */ state) {
+function createAttachedFlippable(
+  /** @type {string} */ id,
+  /** @type {FlippableState} */ state
+) {
   const behavior = new FlipBehavior(state)
-  const mesh = createBox('box', {})
+  const mesh = createBox(id, {})
   mesh.addBehavior(behavior, true)
   return behavior
 }

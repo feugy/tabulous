@@ -1,13 +1,94 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Routes/game/[gameId]/Mesh Details 1`] = `
-<button
+exports[`Bottom left 1`] = `
+<div
   class="s-gZ7FSfCNWLAv open"
+  style="--width:0px; --left:6000px; --top:5000px"
+>
+  <img
+    alt=""
+    class="s-gZ7FSfCNWLAv"
+    src="http://localhost:3001/games/assets/images/fr/diamonds-13.1.svg"
+  />
+</div>
+`;
+
+exports[`Bottom right 1`] = `
+<div
+  class="s-gZ7FSfCNWLAv open"
+  style="--width:0px; --left:0px; --top:5000px"
+>
+  <img
+    alt=""
+    class="s-gZ7FSfCNWLAv"
+    src="http://localhost:3001/games/assets/images/fr/spades-13.1.svg"
+  />
+</div>
+`;
+
+exports[`Multiple 1`] = `
+<div
+  class="s-gZ7FSfCNWLAv open"
+  style="--width:0px; --left:150px; --top:50px"
 >
   <img
     alt=""
     class="s-gZ7FSfCNWLAv"
     src="http://localhost:3001/games/assets/images/fr/hearts-12.1.svg"
   />
-</button>
+  <img
+    alt=""
+    class="s-gZ7FSfCNWLAv"
+    src="http://localhost:3001/games/assets/images/fr/spades-12.1.svg"
+  />
+  <img
+    alt=""
+    class="s-gZ7FSfCNWLAv"
+    src="http://localhost:3001/games/assets/images/fr/diamonds-12.1.svg"
+  />
+  <img
+    alt=""
+    class="s-gZ7FSfCNWLAv"
+    src="http://localhost:3001/games/assets/images/fr/clubs-12.1.svg"
+  />
+</div>
+`;
+
+exports[`Single 1`] = `
+<div
+  class="s-gZ7FSfCNWLAv open"
+  style="--width:0px; --left:50px; --top:150px"
+>
+  <img
+    alt=""
+    class="s-gZ7FSfCNWLAv"
+    src="http://localhost:3001/games/assets/images/fr/hearts-12.1.svg"
+  />
+</div>
+`;
+
+exports[`Top left 1`] = `
+<div
+  class="s-gZ7FSfCNWLAv open"
+  style="--width:0px; --left:6000px; --top:0px"
+>
+  <img
+    alt=""
+    class="s-gZ7FSfCNWLAv"
+    src="http://localhost:3001/games/assets/images/fr/clubs-13.1.svg"
+  />
+</div>
+`;
+
+exports[`Top right 1`] = `
+<div
+  class="s-gZ7FSfCNWLAv open"
+  style="--width:0px; --left:0px; --top:0px"
+>
+  <img
+    alt=""
+    class="s-gZ7FSfCNWLAv"
+    src="http://localhost:3001/games/assets/images/fr/hearts-13.1.svg"
+  />
+</div>
 `;

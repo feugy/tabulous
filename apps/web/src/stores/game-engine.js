@@ -19,10 +19,20 @@
  * @typedef {import('@src/utils/game-interaction').ActionMenuProps} ActionMenuProps
  */
 
+import { createEngine } from '@src/3d'
+import {
+  cameraManager,
+  controlManager,
+  handManager,
+  indicatorManager,
+  inputManager,
+  selectionManager
+} from '@src/3d/managers'
+import { actionNames } from '@src/3d/utils'
+import { attachInputs } from '@src/utils/game-interaction'
 import {
   auditTime,
   BehaviorSubject,
-  delay,
   filter,
   map,
   merge,
@@ -32,17 +42,6 @@ import {
 import { get } from 'svelte/store'
 import { locale, translate } from 'svelte-intl'
 
-import { createEngine } from '../3d'
-import {
-  cameraManager,
-  controlManager,
-  handManager,
-  indicatorManager,
-  inputManager,
-  selectionManager
-} from '../3d/managers'
-import { actionNames } from '../3d/utils/actions'
-import { attachInputs } from '../utils/game-interaction'
 import {
   connected,
   lastDisconnectedId,
@@ -106,7 +105,7 @@ export const remoteSelection = remoteSelection$.asObservable()
 /**
  * Emits mesh details when the player requested them.
  */
-export const meshDetails = meshDetails$.pipe(map(({ data }) => data))
+export const meshDetails = meshDetails$.asObservable()
 
 /**
  * Emits the list of indicators (stack size, anchor labels, peer pointers...), when it changes.
@@ -124,8 +123,7 @@ export const selectedMeshes = selectedMeshes$.asObservable()
 /**
  * Emits meshes player would like to open menu on.
  */
-export const actionMenuProps = actionMenuProps$.pipe(delay(300))
-// note: we delay by 300ms so that browser does not fire a click on menu when double-tapping a mesh
+export const actionMenuProps = actionMenuProps$.asObservable()
 
 /**
  * Emits camera saved positions.
@@ -165,9 +163,8 @@ export const highlightHand = highlightHand$.asObservable()
 
 /**
  * @typedef {object} EngineParams
- * @property {number} [pointerThrottle=150] - number of milliseconds during which pointer will be ignored before being shared with peers.
- * @property {number} [longTapDelay=250] - number of milliseconds to hold pointer down before it is considered as long.
- * @property {number} [doubleTapDelay=350] - number of milliseconds between 2 taps to be considered as a double tap.
+ * @property {number} pointerThrottle - number of milliseconds during which pointer will be ignored before being shared with peers.
+ * @property {number} longTapDelay - number of milliseconds to hold pointer down before it is considered as long.
  * @return {import('@babylonjs/core').Engine} the created engine.
 
  */
@@ -184,12 +181,7 @@ export const highlightHand = highlightHand$.asObservable()
  * @param {Omit<Parameters<createEngine>[0], 'locale'|'longTapDelay'|'translate'|'Engine'> & EngineParams} params - engine creation parameters.
  * @return {Engine} the created engine.
  */
-export function initEngine({
-  pointerThrottle = 150,
-  doubleTapDelay = 350,
-  longTapDelay = 250,
-  ...engineProps
-}) {
+export function initEngine({ pointerThrottle, longTapDelay, ...engineProps }) {
   const engine = createEngine({
     longTapDelay,
     locale: /** @type {Locale} */ (get(locale)),
@@ -270,8 +262,8 @@ export function initEngine({
 
   // implements game interaction model
   const subscriptions = attachInputs({
-    doubleTapDelay,
     actionMenuProps$,
+    hoverDelay: longTapDelay,
     engine
   })
 

@@ -1,78 +1,73 @@
 <script>
   // @ts-check
-  /** @typedef {import('@src/3d/managers/control').MeshDetails['data']} MeshDetails */
+  /**
+   * @typedef {import('@src/3d/managers/control').MeshDetails} MeshDetails
+   * @typedef {import('@src/utils').ScreenPosition} ScreenPosition
+   */
 
   import { gameAssetsUrl, injectLocale } from '@src/utils'
-  import { afterUpdate, createEventDispatcher } from 'svelte'
+  import { tick } from 'svelte'
   import { locale } from 'svelte-intl'
 
-  /** @type {?MeshDetails} */
-  export let mesh = null
+  /** @type {?MeshDetails} displayed mesh(es). */
+  export let details = null
 
-  /** @type {import('svelte').EventDispatcher<{ close: void, open: void }>} */
-  const dispatch = createEventDispatcher()
-  /** @type {?MeshDetails} */
-  let previous = null
-  let isListeningKey = false
-  $: open = Boolean(mesh)
-  $: if (open) {
-    setTimeout(() => (isListeningKey = true), 100)
-  } else {
-    isListeningKey = false
+  /** @type {?HTMLDivElement} */
+  let container = null
+  let style = ''
+
+  $: if (details?.position) {
+    updateStyle()
   }
 
-  afterUpdate(() => {
-    if (previous !== mesh) {
-      dispatch(previous ? 'close' : 'open')
-      previous = mesh
+  let loop = 1
+  async function updateStyle() {
+    if (loop < 10 && (container?.offsetWidth ?? 0) === 0) {
+      loop++
+      await tick()
+      updateStyle()
+      return
     }
-  })
-
-  function handleClose() {
-    mesh = null
-  }
-
-  function handleKey() {
-    if (isListeningKey) {
-      handleClose()
-    }
+    loop = 1
+    style = `--width:${container?.offsetWidth}px; --left:${details?.position.x}px; --top:${details?.position.y}px`
   }
 </script>
 
-<svelte:window on:keydown={handleKey} />
-
-{#if open}
-  <button
-    class:open
-    on:click={handleClose}
-    on:keydown={handleKey}
-    on:pointerdown|stopPropagation
-  >
-    <img
-      src="{gameAssetsUrl}{injectLocale(
-        /** @type {MeshDetails} */ (mesh).image,
-        'images',
-        $locale
-      )}"
-      alt=""
-    />
-  </button>
-{/if}
+<div
+  bind:this={container}
+  class:open={(details?.images?.length ?? 0) > 0}
+  {style}
+>
+  {#each details?.images ?? [] as image}
+    <img src="{gameAssetsUrl}{injectLocale(image, 'images', $locale)}" alt="" />
+  {/each}
+</div>
 
 <style lang="postcss">
-  button {
-    @apply invisible flex absolute z-10 inset-0 w-full justify-center items-center pointer-events-none py-[5%] px-0 max-w-9/10 m-x-auto;
+  div {
+    @apply flex flex-wrap gap-4 absolute z-10 pointer-events-none;
+    --padding: 20px;
+    --imageWidth: 50vw;
+    --imageHeight: 50vh;
+    max-width: calc(100vw - var(--padding) * 2);
+    top: calc(
+      min(
+        max(var(--top), var(--padding)),
+        100vh - var(--imageHeight) - var(--padding)
+      )
+    );
+    left: calc(
+      min(
+        max(var(--left), var(--padding)),
+        100vw - var(--width) - var(--padding)
+      )
+    );
 
-    &.open {
-      @apply visible pointer-events-auto;
-
-      & img {
-        @apply opacity-100 translate-y-0;
-      }
+    & > img {
+      @apply w-auto h-auto;
+      max-width: var(--imageWidth);
+      max-height: var(--imageHeight);
+      filter: drop-shadow(0 0 20px var(--shadow-dark));
     }
-  }
-
-  img {
-    @apply h-full w-full object-contain opacity-0 transition-all duration-500 transform-gpu translate-y-10;
   }
 </style>

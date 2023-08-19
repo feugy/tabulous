@@ -1,58 +1,309 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`A few items 1`] = `
-<button
-  class="has-text s-NMyTiX1zi6rz"
->
-  <div
-    class="s-NMyTiX1zi6rz"
+HTMLCollection [
+  <aside
+    class="s-4nVDVOrf1Uux"
+    style="left: 25%; top: 25%; --size: 130px; animation: __svelte_1296847330_0 0ms linear 0ms 1 both;"
   >
-    
-    <span
-      class="text s-NMyTiX1zi6rz"
+    <ul
+      class="s-4nVDVOrf1Uux"
+      role="menu"
     >
-      Close
-    </span>
-    
-  </div>
-   
-</button>
+      <li
+        class="s-4nVDVOrf1Uux"
+        style="animation: __svelte_650708873_0 0ms linear 0ms 1 both;"
+      >
+        <button
+          class="s-NMyTiX1zi6rz"
+        >
+          <div
+            class="s-NMyTiX1zi6rz"
+          >
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              home
+            </span>
+            
+            
+          </div>
+           
+        </button>
+        <!--&lt;Button&gt;-->
+         
+      </li>
+      <li
+        class="s-4nVDVOrf1Uux"
+        style="animation: __svelte_3958401901_0 0ms linear 0ms 1 both;"
+      >
+        <button
+          class="s-NMyTiX1zi6rz"
+          secondary="true"
+        >
+          <div
+            class="s-NMyTiX1zi6rz"
+          >
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              settings
+            </span>
+            
+            
+          </div>
+           
+        </button>
+        <!--&lt;Button&gt;-->
+         
+      </li>
+    </ul>
+     
+  </aside>,
+  <button
+    class="has-text s-NMyTiX1zi6rz"
+  >
+    <div
+      class="s-NMyTiX1zi6rz"
+    >
+      
+      <span
+        class="text s-NMyTiX1zi6rz"
+      >
+        Close
+      </span>
+      
+    </div>
+     
+  </button>,
+]
 `;
 
 exports[`More items 1`] = `
-<button
-  class="has-text s-NMyTiX1zi6rz"
->
-  <div
-    class="s-NMyTiX1zi6rz"
+HTMLCollection [
+  <aside
+    class="s-4nVDVOrf1Uux"
+    style="left: 25%; top: 25%; --size: 180px; animation: __svelte_1296847330_0 0ms linear 0ms 1 both;"
   >
-    
-    <span
-      class="text s-NMyTiX1zi6rz"
+    <ul
+      class="s-4nVDVOrf1Uux"
+      role="menu"
     >
-      Close
-    </span>
-    
-  </div>
-   
-</button>
+      <li
+        class="s-4nVDVOrf1Uux"
+        style="animation: __svelte_930000001_0 0ms linear 0ms 1 both;"
+      >
+        <button
+          class="s-NMyTiX1zi6rz"
+        >
+          <div
+            class="s-NMyTiX1zi6rz"
+          >
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              home
+            </span>
+            
+            
+          </div>
+           
+        </button>
+        <!--&lt;Button&gt;-->
+         
+      </li>
+      <li
+        class="s-4nVDVOrf1Uux"
+        style="animation: __svelte_3368425836_0 0ms linear 0ms 1 both;"
+      >
+        <button
+          class="s-NMyTiX1zi6rz"
+          secondary="true"
+        >
+          <div
+            class="s-NMyTiX1zi6rz"
+          >
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              settings
+            </span>
+            
+            
+          </div>
+           
+        </button>
+        <!--&lt;Button&gt;-->
+         
+      </li>
+      <li
+        class="s-4nVDVOrf1Uux"
+        style="animation: __svelte_234368173_0 0ms linear 0ms 1 both;"
+      >
+        <button
+          class="s-NMyTiX1zi6rz"
+          secondary="true"
+        >
+          <div
+            class="s-NMyTiX1zi6rz"
+          >
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              face
+            </span>
+            
+            
+          </div>
+           
+        </button>
+        <!--&lt;Button&gt;-->
+         
+      </li>
+      <li
+        class="s-4nVDVOrf1Uux"
+        style="animation: __svelte_3699852378_0 0ms linear 0ms 1 both;"
+      >
+        <button
+          class="s-NMyTiX1zi6rz"
+        >
+          <div
+            class="s-NMyTiX1zi6rz"
+          >
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              lock
+            </span>
+            
+            
+          </div>
+           
+        </button>
+        <!--&lt;Button&gt;-->
+         
+      </li>
+      <li
+        class="s-4nVDVOrf1Uux"
+        style="animation: __svelte_2025481201_0 0ms linear 0ms 1 both;"
+      >
+        <button
+          class="s-NMyTiX1zi6rz"
+        >
+          <div
+            class="s-NMyTiX1zi6rz"
+          >
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              flip
+            </span>
+            
+            
+          </div>
+           
+        </button>
+        <!--&lt;Button&gt;-->
+         
+      </li>
+      <li
+        class="s-4nVDVOrf1Uux"
+        style="animation: __svelte_3306837136_0 0ms linear 0ms 1 both;"
+      >
+        <button
+          class="s-NMyTiX1zi6rz"
+        >
+          <div
+            class="s-NMyTiX1zi6rz"
+          >
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              shuffle
+            </span>
+            
+            
+          </div>
+           
+        </button>
+        <!--&lt;Button&gt;-->
+         
+      </li>
+      <li
+        class="s-4nVDVOrf1Uux"
+        style="animation: __svelte_2770042485_0 0ms linear 0ms 1 both;"
+      >
+        <button
+          class="s-NMyTiX1zi6rz"
+        >
+          <div
+            class="s-NMyTiX1zi6rz"
+          >
+            <span
+              class="material-icons s-NMyTiX1zi6rz"
+            >
+              rotate_left
+            </span>
+            
+            
+          </div>
+           
+        </button>
+        <!--&lt;Button&gt;-->
+         
+      </li>
+    </ul>
+     
+  </aside>,
+  <button
+    class="has-text s-NMyTiX1zi6rz"
+  >
+    <div
+      class="s-NMyTiX1zi6rz"
+    >
+      
+      <span
+        class="text s-NMyTiX1zi6rz"
+      >
+        Close
+      </span>
+      
+    </div>
+     
+  </button>,
+]
 `;
 
 exports[`No items 1`] = `
-<button
-  class="has-text s-NMyTiX1zi6rz"
->
-  <div
-    class="s-NMyTiX1zi6rz"
+HTMLCollection [
+  <aside
+    class="s-4nVDVOrf1Uux"
+    style="left: 25%; top: 25%; --size: 110px; animation: __svelte_1296847330_0 0ms linear 0ms 1 both;"
   >
-    
     <span
-      class="text s-NMyTiX1zi6rz"
+      class="no-actions s-4nVDVOrf1Uux"
+      role="menu"
+      style="animation: __svelte_1296847330_0 0ms linear 0ms 1 both;"
     >
-      Close
+      Aucune action
     </span>
-    
-  </div>
-   
-</button>
+     
+  </aside>,
+  <button
+    class="has-text s-NMyTiX1zi6rz"
+  >
+    <div
+      class="s-NMyTiX1zi6rz"
+    >
+      
+      <span
+        class="text s-NMyTiX1zi6rz"
+      >
+        Close
+      </span>
+      
+    </div>
+     
+  </button>,
+]
 `;

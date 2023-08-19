@@ -22,11 +22,12 @@ const DragMinimumDistance = 0.5
 
 /**
  * @internal
- * @template {Event} T
+ * @template Type
+ * @template {Event} Evt
  * @typedef {object} EventData
- * @property {string} type - event type.
+ * @property {Type} type - event type.
  * @property {number} timestamp - input timestamp in milliseconds.
- * @property {T} event - the original event object.
+ * @property {Evt} event - the original event object.
  */
 
 /**
@@ -37,7 +38,7 @@ const DragMinimumDistance = 0.5
  * @property {boolean} fromHand - whether the event occured on the hand or the main scene.
  * @property {boolean} long - whether pinch started with a long press.
  *
- * @typedef {EventData<PointerEvent> & _TapData} TapData tap events ('tap', 'doubletap' type).
+ * @typedef {EventData<'tap'|'doubletap', PointerEvent> & _TapData} TapData tap events.
  */
 
 /**
@@ -47,7 +48,7 @@ const DragMinimumDistance = 0.5
  * @property {number} pointers - number of pointers pressed.
  * @property {boolean} [long] - whether pinch started with a long press ('dragStart' only).
  *
- * @typedef {EventData<PointerEvent> & _DragData} DragData drag events ('dragStart', 'drag', 'dragStop' type).
+ * @typedef {EventData<'dragStart'|'drag'|'dragStop', PointerEvent> & _DragData} DragData drag events.
  */
 
 /**
@@ -57,21 +58,21 @@ const DragMinimumDistance = 0.5
  * @property {string} key - which key was pressed
  * @see https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_key_values
  *
- * @typedef {EventData<KeyboardEvent> & _KeyData} KeyData keyboard events ('keyDown' type).
+ * @typedef {EventData<'keyDown', KeyboardEvent> & _KeyData} KeyData keyboard events.
  */
 
 /**
  * @typedef {object} _WheelData
  * @property {?Mesh} mesh - mesh upon which event occured.
  *
- * @typedef {EventData<WheelEvent> & _WheelData} WheelData Mouse wheel events ('wheel' type).
+ * @typedef {EventData<'wheel', WheelEvent> & _WheelData} WheelData Mouse wheel events.
  */
 
 /**
  * @typedef {object} _LongData
  * @property {number} pointers - number of pointers pressed.
  *
- * @typedef {EventData<PointerEvent> & _LongData} LongData Long pointer events ('longPointer' type)
+ * @typedef {EventData<'longPointer', PointerEvent> & _LongData} LongData Long pointer events.
  */
 
 /**
@@ -80,14 +81,14 @@ const DragMinimumDistance = 0.5
  * @property {number} pinchDelta - how many pixels more (or less) between the two pointers since the previous event.
  * @property {boolean} [long] - whether pinch started with a long press ('pinchStart' only).
  *
- * @typedef {EventData<PointerEvent> & _PinchData} PinchData Pinch events ('pinchStart', 'pinch', 'pinchStop' type)
+ * @typedef {EventData<'pinchStart'|'pinch'|'pinchStop', PointerEvent> & _PinchData} PinchData Pinch events.
  */
 
 /**
  * @typedef {object} _HoverData
  * @property {Mesh} mesh - mesh upon which event occured.
  *
- * @typedef {EventData<PointerEvent> & _HoverData} HoverData Hover events ('hoverStart', 'hoverStop' type)
+ * @typedef {EventData<'hoverStart'|'hoverStop', PointerEvent> & _HoverData} HoverData Hover events.
  */
 
 /**
@@ -199,6 +200,7 @@ class InputManager {
       /** @type {Mesh} */ mesh
     ) => {
       if (hoveredByPointerId.get(event.pointerId) !== mesh) {
+        /** @type {HoverData} */
         const data = { type: 'hoverStart', mesh, event, timestamp: Date.now() }
         logger.info(data, `start hovering ${mesh.id}`)
         hoveredByPointerId.set(event.pointerId, mesh)
@@ -212,6 +214,7 @@ class InputManager {
       if ('pointerId' in event && event.pointerId !== undefined) {
         const mesh = hoveredByPointerId.get(event.pointerId)
         if (mesh) {
+          /** @type {HoverData} */
           const data = { type: 'hoverStop', mesh, event, timestamp: Date.now() }
           logger.info(data, `stop hovering ${mesh.id}`)
           hoveredByPointerId.delete(event.pointerId)
@@ -229,6 +232,7 @@ class InputManager {
     this.stopDrag = (/** @type {PointerEvent} */ event) => {
       if (dragOrigin) {
         const meshId = dragOrigin.mesh?.id
+        /** @type {DragData} */
         const data = {
           type: 'dragStop',
           ...dragOrigin,
@@ -255,6 +259,7 @@ class InputManager {
     // dynamically creates stopPinch to keep pinchPointers hidden
     this.stopPinch = (/** @type {PointerEvent} */ event) => {
       if (pinch.confirmed) {
+        /** @type {PinchData} */
         const data = {
           type: 'pinchStop',
           event,
@@ -316,6 +321,7 @@ class InputManager {
         deferLong: /** @type {typeof window.setTimeout} */ (setTimeout)(() => {
           // @ts-expect-error: pointerTimes does contain event.pointerId
           pointerTimes.get(event.pointerId).long = true
+          /** @type {LongData} */
           const data = {
             type: 'longPointer',
             event,
@@ -372,6 +378,7 @@ class InputManager {
             pinch.distance >= PinchMinimumDistance
           ) {
             pinch.confirmed = true
+            /** @type {PinchData} */
             const data = {
               type: 'pinchStart',
               pinchDelta,
@@ -389,6 +396,7 @@ class InputManager {
         }
 
         if (pinch.confirmed) {
+          /** @type {PinchData} */
           const data = {
             type: 'pinch',
             pinchDelta,
@@ -403,6 +411,7 @@ class InputManager {
         if (!dragOrigin) {
           dragOrigin = [...pointers.values()][0]
           if (distance(dragOrigin.event, event) >= DragMinimumDistance) {
+            /** @type {DragData} */
             const data = {
               type: 'dragStart',
               ...dragOrigin,
@@ -423,6 +432,7 @@ class InputManager {
 
         // when dragging with multiple pointers, only consider drag origin moves
         if (dragOrigin?.event.pointerId === event.pointerId) {
+          /** @type {DragData} */
           const data = {
             type: 'drag',
             ...dragOrigin,
@@ -459,6 +469,7 @@ class InputManager {
         pointerTimes.delete(pointerId)
         pointers.delete(pointerId)
       } else if (pointers.has(pointerId)) {
+        /** @type {TapData} */
         const data = {
           type:
             Date.now() - lastTap < Scene.DoubleClickDelay ? 'doubletap' : 'tap',
@@ -490,6 +501,7 @@ class InputManager {
       if (!this.enabled || event.deltaX) return
       logger.debug({ event }, `type: wheel x: ${event.x} y: ${event.y}`)
       const { mesh } = computeMetas(event)
+      /** @type {WheelData} */
       const data = {
         type: 'wheel',
         mesh,
@@ -502,6 +514,7 @@ class InputManager {
 
     const handleKeyDown = (/** @type {KeyboardEvent} */ event) => {
       if (!this.enabled) return
+      /** @type {KeyData} */
       const data = {
         type: 'keyDown',
         meshes: [...hoveredByPointerId.values()],

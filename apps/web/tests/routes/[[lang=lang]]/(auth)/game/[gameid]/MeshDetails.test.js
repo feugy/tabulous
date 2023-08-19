@@ -1,70 +1,44 @@
 // @ts-check
+/** @typedef {import('@src/3d/managers').MeshDetails} MeshDetailsProps */
+
 import MeshDetails from '@src/routes/[[lang=lang]]/(auth)/game/[gameId]/MeshDetails.svelte'
-import { gameAssetsUrl, sleep } from '@src/utils'
-import { fireEvent, render, screen } from '@testing-library/svelte'
-import { tick } from 'svelte'
+import { gameAssetsUrl } from '@src/utils'
+import { render, screen } from '@testing-library/svelte'
 import html from 'svelte-htm'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 describe('/game/[gameId] MeshDetails component', () => {
-  const handleClose = vi.fn()
-  const handleOpen = vi.fn()
-
-  const mesh1 = { image: '/image1.webp' }
+  /** @type {MeshDetailsProps} */
+  const details = { position: { x: 250, y: 120 }, images: ['/image1.webp'] }
 
   function renderComponent(props = {}) {
-    return render(
-      html`<${MeshDetails}
-        ...${props}
-        on:close=${handleClose}
-        on:open=${handleOpen}
-      />`
-    )
+    return render(html`<${MeshDetails} ...${props} />`)
   }
 
   beforeEach(() => {
     vi.resetAllMocks()
   })
 
-  it('displays a mesh image', async () => {
-    renderComponent({ mesh: mesh1 })
-    const image = screen.queryByRole('img')
-    expect(image).toBeInTheDocument()
-    expect(image).toHaveAttribute('src', `${gameAssetsUrl}${mesh1.image}`)
-    expect(handleOpen).toHaveBeenCalledTimes(1)
-    expect(handleClose).not.toHaveBeenCalled()
+  it('displays a mesh image', () => {
+    renderComponent({ details })
+    const imageElement = screen.queryByRole('img')
+    expect(imageElement).toBeInTheDocument()
+    expect(imageElement).toHaveAttribute(
+      'src',
+      `${gameAssetsUrl}${details.images[0]}`
+    )
   })
 
-  describe('given being open', () => {
-    /** @type {HTMLImageElement} */
-    let image
-
-    beforeEach(() => {
-      renderComponent({ mesh: mesh1 })
-      image = screen.getByRole('img')
-      handleOpen.mockReset()
-    })
-
-    it('closes on click', async () => {
-      fireEvent.click(image)
-      await tick()
-      expect(image).not.toBeInTheDocument()
-      expect(handleClose).toHaveBeenCalledTimes(1)
-    })
-
-    it('closes on key', async () => {
-      await sleep(200)
-      fireEvent.keyDown(image, { key: 'a' })
-      await tick()
-      expect(image).not.toBeInTheDocument()
-      expect(handleClose).toHaveBeenCalledTimes(1)
-    })
-
-    it('does not immediately close on key', async () => {
-      fireEvent.keyDown(image, { key: 'a' })
-      await tick()
-      expect(image).toBeInTheDocument()
-      expect(handleClose).not.toHaveBeenCalled()
-    })
+  it('displays a multiple images', () => {
+    const images = ['/image1.webp', '/image2.webp', '/image3.webp']
+    renderComponent({ details: { ...details, images } })
+    const imageElements = screen.queryAllByRole('img')
+    expect(imageElements).toHaveLength(images.length)
+    for (const [i, image] of images.entries()) {
+      expect(imageElements[i]).toHaveAttribute(
+        'src',
+        `${gameAssetsUrl}${image}`
+      )
+    }
   })
 })

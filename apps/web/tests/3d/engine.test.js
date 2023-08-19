@@ -285,7 +285,7 @@ describe('createEngine()', () => {
           created: Date.now(),
           meshes: [],
           hands: [],
-          actions: { button1: ['rotate', 'pop'], button3: ['random'] }
+          actions: { button1: ['rotate', 'pop'], button2: ['random'] }
         },
         { playerId, colorByPlayerId, preferences: { playerId } },
         true
@@ -297,7 +297,7 @@ describe('createEngine()', () => {
             "rotate",
             "pop",
           ],
-          "button3" => [
+          "button2" => [
             "random",
           ],
         }
@@ -383,9 +383,6 @@ describe('createEngine()', () => {
             ],
             "button2" => [
               "rotate",
-            ],
-            "button3" => [
-              "detail",
             ],
           }
         `)

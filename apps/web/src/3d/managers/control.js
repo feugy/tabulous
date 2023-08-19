@@ -37,9 +37,8 @@ import { actionNames } from '../utils/actions'
  * @property {number} [duration] - optional animation duration, in milliseconds.
  *
  * @typedef {object} MeshDetails details of a given mesh.
- * @property {Mesh} mesh - the detailed mesh.
- * @property {object} data - detailed data, including:
- * @property {string} data.image? - image for that mesh.
+ * @property {ScreenPosition} position - screen position (2D pixels) of the detailed mesh.
+ * @property {string[]} images - list of images for this mesh (could be multiple for stacked meshes).
  */
 
 class ControlManager {
@@ -52,7 +51,7 @@ class ControlManager {
   constructor() {
     /** @type {Observable<Action|Move>} emits applied actions. */
     this.onActionObservable = new Observable()
-    /** @type {Observable<MeshDetails>} emits when displaying details of a given mesh. */
+    /** @type {Observable<?MeshDetails>} emits when displaying details of a given mesh. */
     this.onDetailedObservable = new Observable()
     /** @type {Observable<Map<String, Mesh>>} emits the list of controlled meshes. */
     this.onControlledObservable = new Observable()

@@ -266,7 +266,7 @@ describe('getScreenPosition() 3D utility', () => {
 
 describe('getAbsoluteRotation() 3D utility', () => {
   it('returns rotation of a single mesh', () => {
-    const mesh = createBox('box')
+    const mesh = createBox('box2')
     const angle = Math.PI * 0.5
     mesh.rotation.z = angle
     mesh.computeWorldMatrix(true)
