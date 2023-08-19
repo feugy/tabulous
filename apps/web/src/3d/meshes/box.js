@@ -11,7 +11,7 @@ import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder.js'
 import { controlManager } from '../managers/control'
 import { materialManager } from '../managers/material'
 import { registerBehaviors, serializeBehaviors } from '../utils/behaviors'
-import { applyInitialTransform } from '../utils/mesh'
+import { applyInitialTransform, setExtras } from '../utils/mesh'
 
 /**
  * Creates a box.
@@ -65,24 +65,25 @@ export function createBox(
   applyInitialTransform(mesh, transform)
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.isPickable = false
-  mesh.isHittable = true
 
-  mesh.metadata = {
-    serialize: () => ({
-      shape: /** @type {'box'} */ (mesh.name),
-      id,
-      x: mesh.absolutePosition.x,
-      y: mesh.absolutePosition.y,
-      z: mesh.absolutePosition.z,
-      texture,
-      faceUV,
-      transform,
-      width,
-      height,
-      depth,
-      ...serializeBehaviors(mesh.behaviors)
-    })
-  }
+  setExtras(mesh, {
+    metadata: {
+      serialize: () => ({
+        shape: /** @type {'box'} */ (mesh.name),
+        id,
+        x: mesh.absolutePosition.x,
+        y: mesh.absolutePosition.y,
+        z: mesh.absolutePosition.z,
+        texture,
+        faceUV,
+        transform,
+        width,
+        height,
+        depth,
+        ...serializeBehaviors(mesh.behaviors)
+      })
+    }
+  })
 
   registerBehaviors(mesh, behaviorStates)
 

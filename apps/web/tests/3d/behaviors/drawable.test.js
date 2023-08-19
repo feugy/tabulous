@@ -93,7 +93,7 @@ describe('DrawBehavior', () => {
       behavior = /** @type {DrawBehavior} */ (
         mesh.getBehaviorByName(DrawBehaviorName)
       )
-      behavior.onAnimationEndObservable.add(animationEndReceived)
+      mesh.onAnimationEnd.add(animationEndReceived)
     })
 
     it('can hydrate from state', () => {

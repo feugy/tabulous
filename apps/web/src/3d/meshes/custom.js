@@ -14,7 +14,7 @@ import { customShapeManager } from '../managers/custom-shape'
 import { materialManager } from '../managers/material'
 import { registerBehaviors, serializeBehaviors } from '../utils/behaviors'
 import { getGroundAltitude } from '../utils/gravity'
-import { applyInitialTransform } from '../utils/mesh'
+import { applyInitialTransform, setExtras } from '../utils/mesh'
 
 OBJFileLoader.UV_SCALING = new Vector2(-1, 1)
 
@@ -75,21 +75,22 @@ export async function createCustom(
 
   mesh.setAbsolutePosition(new Vector3(x, y ?? getGroundAltitude(mesh), z))
   mesh.isPickable = false
-  mesh.isHittable = true
 
-  mesh.metadata = {
-    serialize: () => ({
-      shape: 'custom',
-      file,
-      texture,
-      id,
-      x: mesh.absolutePosition.x,
-      y: mesh.absolutePosition.y,
-      z: mesh.absolutePosition.z,
-      transform,
-      ...serializeBehaviors(mesh.behaviors)
-    })
-  }
+  setExtras(mesh, {
+    metadata: {
+      serialize: () => ({
+        shape: 'custom',
+        file,
+        texture,
+        id,
+        x: mesh.absolutePosition.x,
+        y: mesh.absolutePosition.y,
+        z: mesh.absolutePosition.z,
+        transform,
+        ...serializeBehaviors(mesh.behaviors)
+      })
+    }
+  })
 
   registerBehaviors(mesh, behaviorStates)
 

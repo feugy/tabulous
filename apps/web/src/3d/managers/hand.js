@@ -340,12 +340,7 @@ function handleAction(manager, action) {
   if (fn === actionNames.rotate || fn === actionNames.flip) {
     const handMesh = manager.handScene.getMeshById(meshId)
     if (handMesh) {
-      const behavior = handMesh.getBehaviorByName(
-        /** @type {'rotable'} */ (
-          fn === actionNames.rotate ? RotateBehaviorName : FlipBehaviorName
-        )
-      )
-      behavior?.onAnimationEndObservable.addOnce(() => {
+      handMesh.onAnimationEnd.addOnce(() => {
         logger.info(action, 'detects hand change')
         manager.changes$.next()
       })
@@ -655,7 +650,7 @@ function getViewPortSize(engine) {
 function animateToHand(mesh) {
   mesh.isPhantom = true
   const drawable = /** @type {DrawBehavior} */ (getDrawable(mesh))
-  drawable.onAnimationEndObservable.addOnce(() => mesh.dispose())
+  mesh.onAnimationEnd.addOnce(() => mesh.dispose())
   drawable.animateToHand()
 }
 

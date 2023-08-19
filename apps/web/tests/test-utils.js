@@ -47,11 +47,9 @@ import {
   RotateBehaviorName
 } from '@src/3d/behaviors/names'
 import { indicatorManager } from '@src/3d/managers'
-import {
-  getAnimatableBehavior,
-  getTargetableBehavior
-} from '@src/3d/utils/behaviors'
+import { getTargetableBehavior } from '@src/3d/utils/behaviors'
 import { getCenterAltitudeAbove } from '@src/3d/utils/gravity'
+import { setExtras } from '@src/3d/utils/mesh'
 import { ExtendedScene } from '@src/3d/utils/scene'
 import { makeLogger } from '@src/utils/logger'
 import fastify from 'fastify'
@@ -210,16 +208,12 @@ export function configures3dTestEngine(callback, ...engineProps) {
 
 /** @type {CreateBox} */
 export function createBox(...args) {
-  const box = CreateBox(...args)
-  box.isHittable = true
-  return box
+  return setExtras(CreateBox(...args))
 }
 
 /** @type {CreateCylinder} */
 export function createCylinder(...args) {
-  const cylinder = CreateCylinder(...args)
-  cylinder.isHittable = true
-  return cylinder
+  return setExtras(CreateCylinder(...args))
 }
 
 /**
@@ -317,7 +311,8 @@ export function expectZoneEnabled(mesh, rank = 0, enabled = true) {
  */
 export function expectPickable(mesh, isPickable = true) {
   expect(mesh.isPickable).toBe(isPickable)
-  expect(getAnimatableBehavior(mesh)?.isAnimated).toBe(!isPickable)
+  expect(mesh.isHittable).toBe(isPickable)
+  expect(mesh.animationInProgress).toBe(!isPickable)
 }
 
 /**
@@ -497,9 +492,7 @@ export function expectInteractible(mesh, isInteractible = true, isMovable) {
  * @returns {Promise<void>}
  */
 export async function expectAnimationEnd(behavior) {
-  await new Promise(resolve =>
-    behavior?.onAnimationEndObservable.addOnce(resolve)
-  )
+  await new Promise(resolve => behavior?.mesh?.onAnimationEnd.addOnce(resolve))
 }
 
 /**

@@ -6,10 +6,10 @@
  */
 
 import { Animation } from '@babylonjs/core/Animations/animation'
-import { Observable } from '@babylonjs/core/Misc/observable'
 
 import { runAnimation } from '../utils/behaviors'
 import { applyGravity } from '../utils/gravity'
+import { isAnimationInProgress } from '../utils/mesh'
 import { convertToLocal } from '../utils/vector'
 import { AnimateBehaviorName } from './names'
 
@@ -23,12 +23,8 @@ export class AnimateBehavior {
   constructor({ frameRate } = {}) {
     /** @type {?Mesh} mesh - the related mesh. */
     this.mesh = null
-    /** @type {boolean} isAnimated - true when this mesh is being animated. */
-    this.isAnimated = false
     /** @type {number} frameRate - number of frames per second. */
     this.frameRate = frameRate ?? 60
-    /** @type {Observable<void>} onAnimationEndObservable - emits when animation has ended. */
-    this.onAnimationEndObservable = new Observable()
     /** @type {Animation} */
     this.moveAnimation = new Animation(
       'move',
@@ -88,8 +84,8 @@ export class AnimateBehavior {
    * @returns {Promise<void>}
    */
   async moveTo(to, rotation, duration, gravity = true) {
-    const { isAnimated, mesh, moveAnimation, rotateAnimation } = this
-    if (isAnimated || !mesh) {
+    const { mesh, moveAnimation, rotateAnimation } = this
+    if (!mesh || isAnimationInProgress(mesh)) {
       return
     }
     const frameSpecs = [

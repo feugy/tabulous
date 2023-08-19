@@ -11,7 +11,11 @@
 
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
-import { FlipBehavior, FlipBehaviorName } from '@src/3d/behaviors'
+import {
+  AnchorBehavior,
+  FlipBehavior,
+  FlipBehaviorName
+} from '@src/3d/behaviors'
 import { controlManager } from '@src/3d/managers'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -67,7 +71,7 @@ describe('FlipBehavior', () => {
   })
 
   it('can hydrate with default state', () => {
-    const behavior = createAttachedFlippable('box')
+    const [behavior] = createAttachedFlippable('box')
 
     behavior.fromState()
     expect(behavior.state).toEqual({
@@ -86,9 +90,8 @@ describe('FlipBehavior', () => {
     let behavior
 
     beforeEach(() => {
-      behavior = createAttachedFlippable('box', { duration: 50 })
-      mesh = /** @type {Mesh} */ (behavior.mesh)
-      behavior.onAnimationEndObservable.add(animationEndReceived)
+      ;[behavior, mesh] = createAttachedFlippable('box', { duration: 50 })
+      mesh.onAnimationEnd.add(animationEndReceived)
     })
 
     it('attaches metadata to its mesh', () => {
@@ -152,11 +155,9 @@ describe('FlipBehavior', () => {
       let granChild
 
       beforeEach(() => {
-        child = /** @type {Mesh} */ (createAttachedFlippable('child').mesh)
+        ;[, child] = createAttachedFlippable('child')
         child.setParent(mesh)
-        granChild = /** @type {Mesh} */ (
-          createAttachedFlippable('granChild').mesh
-        )
+        ;[, granChild] = createAttachedFlippable('granChild')
         granChild.setParent(child)
       })
 
@@ -255,9 +256,47 @@ describe('FlipBehavior', () => {
       expect(recordSpy).toHaveBeenCalledOnce()
       expect(animationEndReceived).toHaveBeenCalledOnce()
     })
+
+    it('can not flip while a children is animating', async () => {
+      const [, granChild] = createAttachedFlippable('granChild')
+      const [, child] = createAttachedFlippable('child')
+      child.addBehavior(
+        new AnchorBehavior({
+          anchors: [{ id: 'child-1', snappedId: 'granChild' }]
+        }),
+        true
+      )
+      mesh.addBehavior(
+        new AnchorBehavior({ anchors: [{ id: 'mesh-1', snappedId: 'child' }] }),
+        true
+      )
+
+      expectPickable(mesh)
+      expectFlipped(mesh, false)
+      expectPickable(child)
+      expectFlipped(child, false)
+      expectPickable(granChild)
+      expectFlipped(granChild, false)
+
+      await Promise.all([
+        granChild.metadata.flip?.(),
+        child.metadata.flip?.(),
+        mesh.metadata.flip?.()
+      ])
+
+      expectPickable(mesh)
+      expectFlipped(mesh, false)
+      expectPickable(child)
+      expectFlipped(child, false)
+      expectPickable(granChild)
+      expectFlipped(granChild)
+      expect(recordSpy).toHaveBeenCalledOnce()
+      expect(animationEndReceived).not.toHaveBeenCalled()
+    })
   })
 })
 
+/** @returns {[FlipBehavior, Mesh]} */
 function createAttachedFlippable(
   /** @type {string} */ id,
   /** @type {FlippableState} */ state
@@ -265,5 +304,5 @@ function createAttachedFlippable(
   const behavior = new FlipBehavior(state)
   const mesh = createBox(id, {})
   mesh.addBehavior(behavior, true)
-  return behavior
+  return [behavior, mesh]
 }

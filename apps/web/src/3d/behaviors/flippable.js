@@ -15,7 +15,7 @@ import {
   runAnimation
 } from '../utils/behaviors'
 import { applyGravity } from '../utils/gravity'
-import { getDimensions } from '../utils/mesh'
+import { getDimensions, isAnimationInProgress } from '../utils/mesh'
 import { AnimateBehavior } from './animatable'
 import { FlipBehaviorName } from './names'
 
@@ -67,12 +67,11 @@ export class FlipBehavior extends AnimateBehavior {
   async flip() {
     const {
       state: { duration, isFlipped },
-      isAnimated,
       mesh,
       rotateAnimation,
       moveAnimation
     } = this
-    if (isAnimated || !mesh || isMeshLocked(mesh)) {
+    if (!mesh || isMeshLocked(mesh) || isAnimationInProgress(mesh)) {
       return
     }
     logger.debug({ mesh }, `start flipping ${mesh.id}`)
