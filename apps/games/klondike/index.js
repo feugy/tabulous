@@ -31,6 +31,5 @@ export const colors = {
 /** @type {GameDescriptor['actions']} */
 export const actions = {
   button1: ['flip'],
-  button2: ['rotate'],
-  button3: ['detail']
+  button2: ['rotate']
 }

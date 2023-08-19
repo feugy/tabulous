@@ -28,6 +28,5 @@ export const zoomSpec = { hand: 35, min: 20, max: 90 }
 /** @type {GameDescriptor['actions']} */
 export const actions = {
   button1: ['rotate', 'random'],
-  button2: ['flip'],
-  button3: ['detail']
+  button2: ['flip']
 }

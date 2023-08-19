@@ -54,7 +54,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/diamonds-1.1.svg",
       },
       "flippable": {
@@ -95,7 +94,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/diamonds-2.1.svg",
       },
       "flippable": {
@@ -135,7 +133,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/diamonds-3.1.svg",
       },
       "flippable": {
@@ -176,7 +173,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/diamonds-4.1.svg",
       },
       "flippable": {
@@ -216,7 +212,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/diamonds-5.1.svg",
       },
       "flippable": {
@@ -256,7 +251,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/diamonds-6.1.svg",
       },
       "flippable": {
@@ -321,7 +315,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/diamonds-7.1.svg",
       },
       "flippable": {
@@ -361,7 +354,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/diamonds-8.1.svg",
       },
       "flippable": {
@@ -401,7 +393,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/diamonds-9.1.svg",
       },
       "flippable": {
@@ -441,7 +432,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/diamonds-10.1.svg",
       },
       "flippable": {
@@ -481,7 +471,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/diamonds-11.1.svg",
       },
       "flippable": {
@@ -521,7 +510,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/diamonds-12.1.svg",
       },
       "flippable": {
@@ -561,7 +549,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/diamonds-13.1.svg",
       },
       "flippable": {
@@ -601,7 +588,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/clubs-1.1.svg",
       },
       "flippable": {
@@ -641,7 +627,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/clubs-2.1.svg",
       },
       "flippable": {
@@ -681,7 +666,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/clubs-3.1.svg",
       },
       "flippable": {
@@ -721,7 +705,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/clubs-4.1.svg",
       },
       "flippable": {
@@ -761,7 +744,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/clubs-5.1.svg",
       },
       "flippable": {
@@ -801,7 +783,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/clubs-6.1.svg",
       },
       "flippable": {
@@ -841,7 +822,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/clubs-7.1.svg",
       },
       "flippable": {
@@ -881,7 +861,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/clubs-8.1.svg",
       },
       "flippable": {
@@ -921,7 +900,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/clubs-9.1.svg",
       },
       "flippable": {
@@ -961,7 +939,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/clubs-10.1.svg",
       },
       "flippable": {
@@ -1001,7 +978,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/clubs-11.1.svg",
       },
       "flippable": {
@@ -1041,7 +1017,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/clubs-12.1.svg",
       },
       "flippable": {
@@ -1081,7 +1056,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/clubs-13.1.svg",
       },
       "flippable": {
@@ -1121,7 +1095,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/hearts-1.1.svg",
       },
       "flippable": {
@@ -1161,7 +1134,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/hearts-2.1.svg",
       },
       "flippable": {
@@ -1201,7 +1173,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/hearts-3.1.svg",
       },
       "flippable": {
@@ -1241,7 +1212,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/hearts-4.1.svg",
       },
       "flippable": {
@@ -1282,7 +1252,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/hearts-5.1.svg",
       },
       "flippable": {
@@ -1323,7 +1292,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/hearts-6.1.svg",
       },
       "flippable": {
@@ -1364,7 +1332,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/hearts-7.1.svg",
       },
       "flippable": {
@@ -1405,7 +1372,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/hearts-8.1.svg",
       },
       "flippable": {
@@ -1446,7 +1412,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/hearts-9.1.svg",
       },
       "flippable": {
@@ -1487,7 +1452,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/hearts-10.1.svg",
       },
       "flippable": {
@@ -1527,7 +1491,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/hearts-11.1.svg",
       },
       "flippable": {
@@ -1568,7 +1531,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/hearts-12.1.svg",
       },
       "flippable": {
@@ -1609,7 +1571,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/hearts-13.1.svg",
       },
       "flippable": {
@@ -1650,7 +1611,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/spades-1.1.svg",
       },
       "flippable": {
@@ -1691,7 +1651,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/spades-2.1.svg",
       },
       "flippable": {
@@ -1732,7 +1691,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/spades-3.1.svg",
       },
       "flippable": {
@@ -1772,7 +1730,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/spades-4.1.svg",
       },
       "flippable": {
@@ -1813,7 +1770,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/spades-5.1.svg",
       },
       "flippable": {
@@ -1854,7 +1810,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/spades-6.1.svg",
       },
       "flippable": {
@@ -1895,7 +1850,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/spades-7.1.svg",
       },
       "flippable": {
@@ -1936,7 +1890,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/spades-8.1.svg",
       },
       "flippable": {
@@ -1976,7 +1929,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/spades-9.1.svg",
       },
       "flippable": {
@@ -2017,7 +1969,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/spades-10.1.svg",
       },
       "flippable": {
@@ -2058,7 +2009,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/spades-11.1.svg",
       },
       "flippable": {
@@ -2099,7 +2049,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/spades-12.1.svg",
       },
       "flippable": {
@@ -2139,7 +2088,6 @@ exports[`klondike game descriptor > askForParameters() + addPlayer() > enrolls e
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/spades-13.1.svg",
       },
       "flippable": {
@@ -2412,7 +2360,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/diamonds-1.1.svg",
       },
       "flippable": {},
@@ -2450,7 +2397,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/diamonds-2.1.svg",
       },
       "flippable": {},
@@ -2488,7 +2434,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/diamonds-3.1.svg",
       },
       "flippable": {},
@@ -2526,7 +2471,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/diamonds-4.1.svg",
       },
       "flippable": {},
@@ -2564,7 +2508,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/diamonds-5.1.svg",
       },
       "flippable": {},
@@ -2602,7 +2545,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/diamonds-6.1.svg",
       },
       "flippable": {},
@@ -2640,7 +2582,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/diamonds-7.1.svg",
       },
       "flippable": {},
@@ -2678,7 +2619,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/diamonds-8.1.svg",
       },
       "flippable": {},
@@ -2716,7 +2656,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/diamonds-9.1.svg",
       },
       "flippable": {},
@@ -2754,7 +2693,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/diamonds-10.1.svg",
       },
       "flippable": {},
@@ -2792,7 +2730,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/diamonds-11.1.svg",
       },
       "flippable": {},
@@ -2830,7 +2767,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/diamonds-12.1.svg",
       },
       "flippable": {},
@@ -2868,7 +2804,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/diamonds-13.1.svg",
       },
       "flippable": {},
@@ -2906,7 +2841,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/clubs-1.1.svg",
       },
       "flippable": {},
@@ -2944,7 +2878,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/clubs-2.1.svg",
       },
       "flippable": {},
@@ -2982,7 +2915,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/clubs-3.1.svg",
       },
       "flippable": {},
@@ -3020,7 +2952,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/clubs-4.1.svg",
       },
       "flippable": {},
@@ -3058,7 +2989,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/clubs-5.1.svg",
       },
       "flippable": {},
@@ -3096,7 +3026,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/clubs-6.1.svg",
       },
       "flippable": {},
@@ -3134,7 +3063,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/clubs-7.1.svg",
       },
       "flippable": {},
@@ -3172,7 +3100,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/clubs-8.1.svg",
       },
       "flippable": {},
@@ -3210,7 +3137,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/clubs-9.1.svg",
       },
       "flippable": {},
@@ -3248,7 +3174,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/clubs-10.1.svg",
       },
       "flippable": {},
@@ -3286,7 +3211,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/clubs-11.1.svg",
       },
       "flippable": {},
@@ -3324,7 +3248,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/clubs-12.1.svg",
       },
       "flippable": {},
@@ -3362,7 +3285,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/clubs-13.1.svg",
       },
       "flippable": {},
@@ -3400,7 +3322,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/hearts-1.1.svg",
       },
       "flippable": {},
@@ -3438,7 +3359,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/hearts-2.1.svg",
       },
       "flippable": {},
@@ -3476,7 +3396,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/hearts-3.1.svg",
       },
       "flippable": {},
@@ -3514,7 +3433,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/hearts-4.1.svg",
       },
       "flippable": {},
@@ -3552,7 +3470,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/hearts-5.1.svg",
       },
       "flippable": {},
@@ -3590,7 +3507,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/hearts-6.1.svg",
       },
       "flippable": {},
@@ -3628,7 +3544,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/hearts-7.1.svg",
       },
       "flippable": {},
@@ -3666,7 +3581,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/hearts-8.1.svg",
       },
       "flippable": {},
@@ -3704,7 +3618,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/hearts-9.1.svg",
       },
       "flippable": {},
@@ -3742,7 +3655,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/hearts-10.1.svg",
       },
       "flippable": {},
@@ -3780,7 +3692,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/hearts-11.1.svg",
       },
       "flippable": {},
@@ -3818,7 +3729,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/hearts-12.1.svg",
       },
       "flippable": {},
@@ -3856,7 +3766,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/hearts-13.1.svg",
       },
       "flippable": {},
@@ -3894,7 +3803,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/spades-1.1.svg",
       },
       "flippable": {},
@@ -3932,7 +3840,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/spades-2.1.svg",
       },
       "flippable": {},
@@ -3970,7 +3877,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/spades-3.1.svg",
       },
       "flippable": {},
@@ -4008,7 +3914,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/spades-4.1.svg",
       },
       "flippable": {},
@@ -4046,7 +3951,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/spades-5.1.svg",
       },
       "flippable": {},
@@ -4084,7 +3988,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/spades-6.1.svg",
       },
       "flippable": {},
@@ -4122,7 +4025,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/spades-7.1.svg",
       },
       "flippable": {},
@@ -4160,7 +4062,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/spades-8.1.svg",
       },
       "flippable": {},
@@ -4198,7 +4099,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/spades-9.1.svg",
       },
       "flippable": {},
@@ -4236,7 +4136,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/spades-10.1.svg",
       },
       "flippable": {},
@@ -4274,7 +4173,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/spades-11.1.svg",
       },
       "flippable": {},
@@ -4312,7 +4210,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/spades-12.1.svg",
       },
       "flippable": {},
@@ -4350,7 +4247,6 @@ exports[`klondike game descriptor > build() > builds game setup 1`] = `
       },
       "depth": 4.25,
       "detailable": {
-        "backImage": "/assets/images/french-suited-card-back.1.svg",
         "frontImage": "/assets/images/spades-13.1.svg",
       },
       "flippable": {},
