@@ -13,7 +13,6 @@
 
 ## UI
 
-- bug: flipping anchored mesh and its parent results in wrong final rotation > single isAnimated + forbid action if parent is animating
 - bug: game shortcuts ignore active selection to only apply to hover mesh
 - bug: mesh dragged from main to hand are misplaced when camera is rotated
 - ability to interact with main meshes throught the opened hand (how do we select multiple in hand?)

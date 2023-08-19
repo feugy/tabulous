@@ -22,8 +22,8 @@
     "chalk-template": "^1.1.0",
     "dotenv": "^16.3.1",
     "es-main": "^1.2.0",
-    "fast-jwt": "^3.1.1",
-    "graphql": "^16.7.1",
+    "fast-jwt": "^3.2.0",
+    "graphql": "^16.8.0",
     "lodash.camelcase": "^4.3.0",
     "lodash.kebabcase": "^4.1.1",
     "undici": "^5.23.0"
