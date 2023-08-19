@@ -1176,63 +1176,55 @@ describe('Game interaction model', () => {
       { key: 'v', action: detail },
       { key: 'l', action: toggleLock }
     ])(`triggers mesh $action on '$key' key`, ({ key, action }) => {
-      const [box1, , , box4] = meshes
+      const [box1] = meshes
       inputManager.onKeyObservable.notifyObservers({
         type: 'keyDown',
-        meshes: [box1, box4],
+        mesh: box1,
         key,
         timestamp: Date.now(),
         event: makeKeyEvent(),
         modifiers: { alt: false, ctrl: false, shift: false, meta: false }
       })
       expectMeshActions(box1, action)
-      expectMeshActions(box4, action)
     })
 
-    it(`triggers mesh pop on 'u' key`, () => {
-      const [, box2, box3] = meshes
+    it(`triggers selection pop on 'u' key`, () => {
+      const [, , box3] = meshes
       box3.metadata.pop.mockResolvedValue([])
       inputManager.onKeyObservable.notifyObservers({
         type: 'keyDown',
-        meshes: [box3, box2],
+        mesh: box3,
         key: 'u',
         timestamp: Date.now(),
         event: makeKeyEvent(),
         modifiers: { alt: false, ctrl: false, shift: false, meta: false }
       })
       expectMeshActions(box3, pop)
-      // box2 is not stackable
-      expectMeshActions(box2)
     })
 
-    it(`triggers mesh decrement on 'u' key`, () => {
-      const [, box2, , , , , box7, , box9] = meshes
+    it(`triggers selection decrement on 'u' key`, () => {
+      const [, , , , , , box7] = meshes
       inputManager.onKeyObservable.notifyObservers({
         type: 'keyDown',
-        meshes: [box7, box2, box9],
+        mesh: box7,
         key: 'u',
         timestamp: Date.now(),
         event: makeKeyEvent(),
         modifiers: { alt: false, ctrl: false, shift: false, meta: false }
       })
       expectMeshActions(box7, decrement)
-      expectMeshActions(box9, decrement)
-      // box2 is not stackable
-      expectMeshActions(box2)
     })
 
     it('does nothing on unsupported key', () => {
-      const [, box2, , , , , box7, , box9] = meshes
+      const [, box2] = meshes
       inputManager.onKeyObservable.notifyObservers({
         type: 'keyDown',
-        meshes: [box7, box2, box9],
+        mesh: null,
         key: 'k',
         timestamp: Date.now(),
         event: makeKeyEvent(),
         modifiers: { alt: false, ctrl: false, shift: false, meta: false }
       })
-      expectMeshActions(box7)
-      expectMeshActions(box9)
       expectMeshActions(box2)
       expect(cameraManager.save).not.toHaveBeenCalled()
       expect(cameraManager.restore).not.toHaveBeenCalled()
@@ -1543,7 +1535,29 @@ describe('Game interaction model', () => {
         const [box1, , box3, , box5, box6] = meshes
         inputManager.onKeyObservable.notifyObservers({
           type: 'keyDown',
-          meshes: [],
+          mesh: null,
+          key,
+          timestamp: Date.now(),
+          event: makeKeyEvent(),
+          modifiers: { alt: false, ctrl: false, shift: false, meta: false }
+        })
+        expectMeshActions(box1, action)
+        expectMeshActions(box3, stackAction)
+        // box5 & box6 are stacked with box3
+        expectMeshActions(box5)
+        expectMeshActions(box6)
+      })
+
+      it.each(
+        /** @type {{ key: string, action: ActionName, stackAction: ActionName }[]} */ ([
+          { key: 'f', action: flip, stackAction: 'flipAll' },
+          { key: 'r', action: rotate, stackAction: rotate }
+        ])
+      )(`triggers $action on '$key' key`, ({ key, action, stackAction }) => {
+        const [box1, , box3, , box5, box6] = meshes
+        inputManager.onKeyObservable.notifyObservers({
+          type: 'keyDown',
+          mesh: null,
           key,
           timestamp: Date.now(),
           event: makeKeyEvent(),
@@ -1565,7 +1579,7 @@ describe('Game interaction model', () => {
         const [box1, , box3, , box5, box6] = meshes
         inputManager.onKeyObservable.notifyObservers({
           type: 'keyDown',
-          meshes: [],
+          mesh: null,
           key,
           timestamp: Date.now(),
           event: makeKeyEvent(),
@@ -1581,7 +1595,7 @@ describe('Game interaction model', () => {
         const [box1, , box3, , box5, box6] = meshes
         inputManager.onKeyObservable.notifyObservers({
           type: 'keyDown',
-          meshes: [],
+          mesh: null,
           key: 'v',
           timestamp: Date.now(),
           event: makeKeyEvent(),
@@ -1601,7 +1615,7 @@ describe('Game interaction model', () => {
         box6.metadata.canPush.mockReturnValue(true)
         inputManager.onKeyObservable.notifyObservers({
           type: 'keyDown',
-          meshes: [],
+          mesh: null,
           key: 'g',
           timestamp: Date.now(),
           event: makeKeyEvent(),
@@ -1621,7 +1635,7 @@ describe('Game interaction model', () => {
         box8.metadata.canIncrement.mockReturnValue(true)
         inputManager.onKeyObservable.notifyObservers({
           type: 'keyDown',
-          meshes: [],
+          mesh: null,
           key: 'g',
           timestamp: Date.now(),
           event: makeKeyEvent(),
@@ -1641,7 +1655,7 @@ describe('Game interaction model', () => {
         box6.metadata.canPush.mockReturnValue(true)
         inputManager.onKeyObservable.notifyObservers({
           type: 'keyDown',
-          meshes: [],
+          mesh: null,
           key: 'u',
           timestamp: Date.now(),
           event: makeKeyEvent(),
@@ -1659,7 +1673,7 @@ describe('Game interaction model', () => {
         selectionManager.select([box7, box8, box1])
         inputManager.onKeyObservable.notifyObservers({
           type: 'keyDown',
-          meshes: [],
+          mesh: null,
           key: 'u',
           timestamp: Date.now(),
           event: makeKeyEvent(),
@@ -1719,7 +1733,7 @@ describe('Game interaction model', () => {
     ])(`pans camera on '$key' key`, ({ key, x, y }) => {
       inputManager.onKeyObservable.notifyObservers({
         type: 'keyDown',
-        meshes: [],
+        mesh: null,
         key,
         timestamp: Date.now(),
         event: makeKeyEvent(),
@@ -1795,7 +1809,7 @@ describe('Game interaction model', () => {
     ])(`rotate camera on 'ctrl+$key' key`, ({ key, alpha, beta }) => {
       inputManager.onKeyObservable.notifyObservers({
         type: 'keyDown',
-        meshes: [],
+        mesh: null,
         key,
         modifiers: { ctrl: true, alt: false, shift: false, meta: false },
         event: makeKeyEvent(),
@@ -1849,7 +1863,7 @@ describe('Game interaction model', () => {
     it(`zooms camera in on '+' key`, () => {
       inputManager.onKeyObservable.notifyObservers({
         type: 'keyDown',
-        meshes: [],
+        mesh: null,
         key: '+',
         modifiers: { ctrl: false, alt: false, shift: false, meta: false },
         event: makeKeyEvent(),
@@ -1864,7 +1878,7 @@ describe('Game interaction model', () => {
     it(`zooms camera out on '-' key`, () => {
       inputManager.onKeyObservable.notifyObservers({
         type: 'keyDown',
-        meshes: [],
+        mesh: null,
         key: '-',
         modifiers: { ctrl: false, alt: false, shift: false, meta: false },
         event: makeKeyEvent(),
@@ -1880,7 +1894,7 @@ describe('Game interaction model', () => {
       const number = faker.number.int({ min: 1, max: 9 })
       inputManager.onKeyObservable.notifyObservers({
         type: 'keyDown',
-        meshes: [],
+        mesh: null,
         key: `${number}`,
         modifiers: { ctrl: true, alt: false, shift: false, meta: false },
         event: makeKeyEvent(),
@@ -1894,7 +1908,7 @@ describe('Game interaction model', () => {
     it(`restores camera to origin on 'Home' key`, () => {
       inputManager.onKeyObservable.notifyObservers({
         type: 'keyDown',
-        meshes: [],
+        mesh: null,
         key: 'Home',
         modifiers: { ctrl: false, alt: false, shift: false, meta: false },
         event: makeKeyEvent(),
@@ -1909,7 +1923,7 @@ describe('Game interaction model', () => {
       const number = faker.number.int({ min: 1, max: 9 })
       inputManager.onKeyObservable.notifyObservers({
         type: 'keyDown',
-        meshes: [],
+        mesh: null,
         key: `${number}`,
         modifiers: { ctrl: false, alt: false, shift: false, meta: false },
         event: makeKeyEvent(),

@@ -438,15 +438,15 @@ export function attachInputs({ engine, hoverDelay, actionMenuProps$ }) {
     keys$
       .pipe(
         filter(
-          ({ key, meshes }) =>
+          ({ key, mesh }) =>
             engine.actionNamesByKey.has(key) &&
-            (meshes.length || selectionManager.meshes.size) > 0
+            (Boolean(mesh) || selectionManager.meshes.size > 0)
         )
       )
       .subscribe({
-        next: ({ meshes, key }) => {
-          const actualMeshes = meshes.length
-            ? meshes
+        next: ({ mesh, key }) => {
+          const actualMeshes = mesh
+            ? [mesh]
             : [selectionManager.meshes.values().next().value]
           for (const mesh of actualMeshes) {
             applyMatchingAction(

@@ -13,7 +13,6 @@
 
 ## UI
 
-- bug: game shortcuts ignore active selection to only apply to hover mesh
 - ability to interact with main meshes throught the opened hand (how do we select multiple in hand?)
 - replay
 - score card (Mah-jong, Belote)

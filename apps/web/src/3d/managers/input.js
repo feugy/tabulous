@@ -53,7 +53,7 @@ const DragMinimumDistance = 0.5
 
 /**
  * @typedef {object} _KeyData
- * @property {Mesh[]} meshes - meshes upon which event occured.
+ * @property {?Mesh} mesh - mesh upon which event occured.
  * @property {KeyModifiers} modifiers - for key event, active modifiers.
  * @property {string} key - which key was pressed
  * @see https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_key_values
@@ -517,7 +517,7 @@ class InputManager {
       /** @type {KeyData} */
       const data = {
         type: 'keyDown',
-        meshes: [...hoveredByPointerId.values()],
+        mesh: hoveredByPointerId.values().next().value ?? null,
         key: event.key.length === 1 ? event.key.toLowerCase() : event.key,
         modifiers: {
           alt: event.altKey,
@@ -528,7 +528,7 @@ class InputManager {
         event,
         timestamp: Date.now()
       }
-      logger.debug(data, `type: keydown ${data.key} on (${data.meshes[0]?.id})`)
+      logger.debug(data, `type: keydown ${data.key} on (${data.mesh?.id})`)
       this.onKeyObservable.notifyObservers(data)
     }
 
