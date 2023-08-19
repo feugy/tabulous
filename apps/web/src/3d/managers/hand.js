@@ -31,6 +31,7 @@ import { debounceTime, Subject } from 'rxjs'
 import { getPixelDimension, observeDimension } from '../../utils/dom'
 import { makeLogger } from '../../utils/logger'
 import {
+  AnchorBehaviorName,
   DrawBehaviorName,
   FlipBehaviorName,
   MoveBehaviorName,
@@ -814,5 +815,13 @@ async function pickMesh(manager, mesh) {
   const { minZ } = manager.extent
   const { width } = manager.contentDimensions
   const { depth } = getDimensions(mesh)
-  await createHandMesh(manager, mesh, { x: width * -0.5, z: minZ - depth })
+  const snappedMeshs = /** @type {Mesh[]} */ (
+    (mesh.getBehaviorByName(AnchorBehaviorName)?.getSnappedIds() ?? [])
+      .map(id => mesh.getScene().getMeshById(id))
+      .filter(Boolean)
+  )
+  await Promise.all([
+    ...snappedMeshs.map(mesh => pickMesh(manager, mesh)),
+    createHandMesh(manager, mesh, { x: width * -0.5, z: minZ - depth })
+  ])
 }

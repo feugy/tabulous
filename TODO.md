@@ -13,14 +13,14 @@
 
 ## UI
 
-- bug: draw mesh with anchor in hand: anchored mesh are destroyed
+- bug: flipping anchored mesh and its parent results in wrong final rotation > single isAnimated + forbid action if parent is animating
 - bug: game shortcuts ignore active selection to only apply to hover mesh
 - bug: mesh dragged from main to hand are misplaced when camera is rotated
 - ability to interact with main meshes throught the opened hand (how do we select multiple in hand?)
-- hand count indicators
 - replay
 - score card (Mah-jong, Belote)
 - command to reset some mesh state and restart a game (Mah-jong, Belote)
+- hand count on peer pointers/player tab?
 - check headings ordering
 - anchorable: flip/unflip on snap
 - hide/distinguish non-connected participants?

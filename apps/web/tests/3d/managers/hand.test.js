@@ -76,6 +76,7 @@ describe('HandManager', () => {
   const cardWidth = 3
   const cardDepth = 4.25
   const duration = 50
+  const unitWidth = cardWidth + gap
   const viewPortDimensions = {
     width: 59.81750317696051,
     height: 47.21061769667048
@@ -296,6 +297,92 @@ describe('HandManager', () => {
       expect(registerFeedbackSpy).not.toHaveBeenCalled()
     })
 
+    it('recursively includes anchored meshes when drawing to hand', async () => {
+      const [, , card3] = cards
+      const card2 = createMesh(
+        {
+          id: 'box6',
+          anchorable: { anchors: [{ id: 'box6-1', snappedId: 'box3' }] }
+        },
+        scene
+      )
+      const card1 = createMesh(
+        {
+          id: 'box5',
+          anchorable: { anchors: [{ id: 'box5-1', snappedId: 'box6' }] }
+        },
+        scene
+      )
+      card1.metadata.draw?.()
+      await waitForLayout()
+      await expectAnimationEnd(card1.getBehaviorByName(DrawBehaviorName))
+      expect(scene.getMeshById(card1.id)?.id).toBeUndefined()
+      expect(scene.getMeshById(card2.id)?.id).toBeUndefined()
+      expect(scene.getMeshById(card3.id)?.id).toBeUndefined()
+      const newMesh1 = getMeshById(handScene, card1.id)
+      expect(newMesh1?.id).toBeDefined()
+      const newMesh2 = getMeshById(handScene, card2.id)
+      expect(newMesh2?.id).toBeDefined()
+      const newMesh3 = getMeshById(handScene, card3.id)
+      expect(newMesh3?.id).toBeDefined()
+      expectPosition(newMesh1, [unitWidth * 1, 0.005, computeZ()])
+      expectPosition(newMesh2, [unitWidth * 0, 0.005, computeZ()])
+      expectPosition(newMesh3, [unitWidth * -1, 0.005, computeZ()])
+      expect(changeReceived).toHaveBeenCalledTimes(1)
+      expect(actionRecorded).toHaveBeenCalledWith(
+        {
+          meshId: card1.id,
+          fn: 'draw',
+          args: [expect.any(Object)],
+          fromHand: false
+        },
+        expect.anything()
+      )
+      expect(actionRecorded).toHaveBeenCalledWith(
+        {
+          meshId: card2.id,
+          fn: 'draw',
+          args: [expect.any(Object)],
+          fromHand: false
+        },
+        expect.anything()
+      )
+      expect(actionRecorded).toHaveBeenCalledWith(
+        {
+          meshId: card1.id,
+          fn: 'unsnap',
+          args: [card2.id],
+          fromHand: false
+        },
+        expect.anything()
+      )
+      expect(actionRecorded).toHaveBeenCalledWith(
+        {
+          meshId: card3.id,
+          fn: 'draw',
+          args: [expect.any(Object)],
+          fromHand: false
+        },
+        expect.anything()
+      )
+      expect(actionRecorded).toHaveBeenCalledWith(
+        {
+          meshId: card2.id,
+          fn: 'unsnap',
+          args: [card3.id],
+          fromHand: false
+        },
+        expect.anything()
+      )
+      expect(actionRecorded).toHaveBeenCalledTimes(5)
+      expect(controlManager.isManaging(newMesh1)).toBe(true)
+      expect(moveManager.isManaging(newMesh1)).toBe(true)
+      expect(controlManager.isManaging(newMesh2)).toBe(true)
+      expect(moveManager.isManaging(newMesh2)).toBe(true)
+      expect(controlManager.isManaging(newMesh3)).toBe(true)
+      expect(moveManager.isManaging(newMesh3)).toBe(true)
+    })
+
     it('unflips flipped mesh while drawing into hand', async () => {
       const [card] = cards
       await card.metadata.flip?.()
@@ -403,9 +490,7 @@ describe('HandManager', () => {
           { id: 'box17', x: 2, y: 0, z: 0 },
           { id: 'box18', x: 2, y: 0, z: 0 },
           { id: 'box19', x: 2, y: 0, z: 0 }
-        ].map(state =>
-          createMesh(/** @type {SerializableMesh} */ (state), scene)
-        )
+        ].map(state => createMesh(state, scene))
       )
 
       for (const card of cards) {
@@ -433,9 +518,7 @@ describe('HandManager', () => {
           { id: 'box20', x: 1, y: 1, z: -1 },
           { id: 'box21', x: 0, y: 0, z: 0 },
           { id: 'box22', x: 2, y: 0, z: 0 }
-        ].map(state =>
-          createMesh(/** @type {SerializableMesh} */ (state), handScene)
-        )
+        ].map(state => createMesh(state, handScene))
         await waitForLayout()
         changeReceived.mockReset()
         camera.lockedTarget = new Vector3(0, 0, 0)
@@ -461,7 +544,6 @@ describe('HandManager', () => {
         const [, card2] = cards
         card2.metadata.draw?.()
         await waitForLayout()
-        const unitWidth = cardWidth + gap
         expectPosition(handScene.getMeshById(card2.id), [
           unitWidth * -1.5,
           0,
@@ -477,7 +559,6 @@ describe('HandManager', () => {
         engine.onResizeObservable.notifyObservers(engine)
         engine.onResizeObservable.notifyObservers(engine)
         await waitForLayout()
-        const unitWidth = cardWidth + gap
         expectPosition(handCards[1], [-unitWidth, 0.005, computeZ()])
         expectPosition(handCards[0], [0, 0.005, computeZ()])
         expectPosition(handCards[2], [unitWidth, 0.005, computeZ()])
@@ -489,7 +570,6 @@ describe('HandManager', () => {
         // @ts-expect-error
         window.resizeObservers[0].notify()
         await waitForLayout()
-        const unitWidth = cardWidth + gap
         expectPosition(handCards[1], [-unitWidth, 0.005, computeZ()])
         expectPosition(handCards[0], [0, 0.005, computeZ()])
         expectPosition(handCards[2], [unitWidth, 0.005, computeZ()])
@@ -675,7 +755,6 @@ describe('HandManager', () => {
         const newMesh = getMeshById(scene, mesh.id)
         expect(newMesh?.id).toBeDefined()
         expectPosition(newMesh, [6, 2.005, 0])
-        const unitWidth = cardWidth + gap
         expectPosition(handCards[0], [unitWidth * -0.5, 0.005, computeZ()])
         expectPosition(handCards[2], [unitWidth * 0.5, 0.005, computeZ()])
         expect(actionRecorded).toHaveBeenCalledWith(
@@ -865,7 +944,6 @@ describe('HandManager', () => {
         expect(scene.getMeshById(mesh.id)?.id).toBeUndefined()
         const newMesh = getMeshById(handScene, mesh.id)
         expect(newMesh?.id).toBeDefined()
-        const unitWidth = cardWidth + gap
         expectPosition(handCards[1], [unitWidth * -1.5, 0.005, computeZ()])
         expectPosition(handCards[0], [unitWidth * -0.5, 0.005, computeZ()])
         expectPosition(handCards[2], [unitWidth * 0.5, 0.005, computeZ()])
@@ -918,7 +996,6 @@ describe('HandManager', () => {
         expect(newMesh2?.id).toBeDefined()
         const newMesh3 = getMeshById(handScene, mesh3.id)
         expect(newMesh3?.id).toBeDefined()
-        const unitWidth = cardWidth + gap
         expectPosition(handCards[1], [unitWidth * -2.5, 0.005, computeZ()])
         expectPosition(handCards[0], [unitWidth * -1.5, 0.005, computeZ()])
         expectPosition(newMesh3, [unitWidth * -0.5, 0.005, computeZ()])
@@ -1546,7 +1623,7 @@ describe('HandManager', () => {
   }
 
   function createMesh(
-    /** @type {SerializableMesh} */ state,
+    /** @type {Partial<SerializableMesh> & Pick<SerializableMesh, 'id'>} */ state,
     /** @type {Scene} */ scene
   ) {
     return createCard(
@@ -1558,6 +1635,7 @@ describe('HandManager', () => {
         flippable: { duration },
         movable: {},
         stackable: { duration: stackDuration },
+        texture: '',
         ...state
       },
       scene
