@@ -75,7 +75,7 @@ describe('HandManager', () => {
   const verticalPadding = 0.5
   const cardWidth = 3
   const cardDepth = 4.25
-  const duration = 50
+  const duration = 10
   const unitWidth = cardWidth + gap
   const viewPortDimensions = {
     width: 59.81750317696051,
