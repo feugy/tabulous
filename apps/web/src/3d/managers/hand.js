@@ -31,6 +31,7 @@ import { debounceTime, Subject } from 'rxjs'
 import { getPixelDimension, observeDimension } from '../../utils/dom'
 import { makeLogger } from '../../utils/logger'
 import {
+  AnchorBehaviorName,
   DrawBehaviorName,
   FlipBehaviorName,
   MoveBehaviorName,
@@ -124,9 +125,9 @@ class HandManager {
     this.moved = []
     /** @internal @type {Subject<void>} */
     this.changes$ = new Subject()
-    this.changes$.pipe(debounceTime(10)).subscribe({
+    this.changes$.pipe(debounceTime(this.duration)).subscribe({
       next: () => {
-        // because we delay thr processing, the hand scene could have been disposed
+        // because we delay the processing, the hand scene could have been disposed
         if (this.handScene) {
           storeMeshDimensions(this)
           layoutMeshs(this)
@@ -339,12 +340,7 @@ function handleAction(manager, action) {
   if (fn === actionNames.rotate || fn === actionNames.flip) {
     const handMesh = manager.handScene.getMeshById(meshId)
     if (handMesh) {
-      const behavior = handMesh.getBehaviorByName(
-        /** @type {'rotable'} */ (
-          fn === actionNames.rotate ? RotateBehaviorName : FlipBehaviorName
-        )
-      )
-      behavior?.onAnimationEndObservable.addOnce(() => {
+      handMesh.onAnimationEnd.addOnce(() => {
         logger.info(action, 'detects hand change')
         manager.changes$.next()
       })
@@ -443,7 +439,7 @@ async function handDrag(manager, { type, mesh, event }) {
     } else {
       const drawn = selectionManager.getSelection(mesh)
       logger.debug({ drawn }, `dragged meshes into hand`)
-      const { x: positionX } = screenToGround(manager.scene, event)
+      const { x: positionX } = screenToGround(manager.handScene, event)
       const z = -manager.contentDimensions.depth
       const origin = drawn[0].absolutePosition.x
       for (const mesh of drawn) {
@@ -654,7 +650,7 @@ function getViewPortSize(engine) {
 function animateToHand(mesh) {
   mesh.isPhantom = true
   const drawable = /** @type {DrawBehavior} */ (getDrawable(mesh))
-  drawable.onAnimationEndObservable.addOnce(() => mesh.dispose())
+  mesh.onAnimationEnd.addOnce(() => mesh.dispose())
   drawable.animateToHand()
 }
 
@@ -814,5 +810,13 @@ async function pickMesh(manager, mesh) {
   const { minZ } = manager.extent
   const { width } = manager.contentDimensions
   const { depth } = getDimensions(mesh)
-  await createHandMesh(manager, mesh, { x: width * -0.5, z: minZ - depth })
+  const snappedMeshs = /** @type {Mesh[]} */ (
+    (mesh.getBehaviorByName(AnchorBehaviorName)?.getSnappedIds() ?? [])
+      .map(id => mesh.getScene().getMeshById(id))
+      .filter(Boolean)
+  )
+  await Promise.all([
+    ...snappedMeshs.map(mesh => pickMesh(manager, mesh)),
+    createHandMesh(manager, mesh, { x: width * -0.5, z: minZ - depth })
+  ])
 }

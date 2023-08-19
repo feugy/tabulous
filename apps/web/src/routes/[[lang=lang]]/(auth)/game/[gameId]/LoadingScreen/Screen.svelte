@@ -21,7 +21,6 @@
 
   $: button1Actions = actionNamesByButton?.get(buttonIds.button1)
   $: button2Actions = actionNamesByButton?.get(buttonIds.button2)
-  $: button3Actions = actionNamesByButton?.get(buttonIds.button3)
 
   function mapToLabels(/** @type {ActionName[]} */ actions) {
     return actions.map(action => $_(`tooltips.${action}`)).join('<br/>')
@@ -48,12 +47,10 @@
           <p>{@html mapToLabels(button2Actions)}</p>
         </li>
       {/if}
-      {#if button3Actions?.length}
-        <li>
-          <HelpButton3 />
-          <p>{@html mapToLabels(button3Actions)}</p>
-        </li>
-      {/if}
+      <li>
+        <HelpButton3 />
+        <p>{$_('tooltips.open-menu')}</p>
+      </li>
     </ul>
   </div>
 {/if}

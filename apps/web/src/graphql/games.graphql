@@ -158,7 +158,6 @@ fragment fullGame on Game {
   actions {
     button1
     button2
-    button3
   }
 }
 

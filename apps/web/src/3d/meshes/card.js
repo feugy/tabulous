@@ -11,7 +11,7 @@ import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder.js'
 import { controlManager } from '../managers/control'
 import { materialManager } from '../managers/material'
 import { registerBehaviors, serializeBehaviors } from '../utils/behaviors'
-import { applyInitialTransform } from '../utils/mesh'
+import { applyInitialTransform, setExtras } from '../utils/mesh'
 
 /**
  * Creates a card mesh.
@@ -64,24 +64,25 @@ export function createCard(
   applyInitialTransform(mesh, transform)
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.isPickable = false
-  mesh.isHittable = true
 
-  mesh.metadata = {
-    serialize: () => ({
-      shape: /** @type {'card'} */ (mesh.name),
-      id,
-      x: mesh.absolutePosition.x,
-      y: mesh.absolutePosition.y,
-      z: mesh.absolutePosition.z,
-      width,
-      height,
-      depth,
-      texture,
-      faceUV,
-      transform,
-      ...serializeBehaviors(mesh.behaviors)
-    })
-  }
+  setExtras(mesh, {
+    metadata: {
+      serialize: () => ({
+        shape: /** @type {'card'} */ (mesh.name),
+        id,
+        x: mesh.absolutePosition.x,
+        y: mesh.absolutePosition.y,
+        z: mesh.absolutePosition.z,
+        width,
+        height,
+        depth,
+        texture,
+        faceUV,
+        transform,
+        ...serializeBehaviors(mesh.behaviors)
+      })
+    }
+  })
 
   registerBehaviors(mesh, behaviorStates)
 

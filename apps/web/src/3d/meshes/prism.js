@@ -11,7 +11,7 @@ import { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder.
 import { controlManager } from '../managers/control'
 import { materialManager } from '../managers/material'
 import { registerBehaviors, serializeBehaviors } from '../utils/behaviors'
-import { applyInitialTransform } from '../utils/mesh'
+import { applyInitialTransform, setExtras } from '../utils/mesh'
 
 /**
  * Creates a prism, with a given number of base edge (starting at 3).
@@ -56,25 +56,26 @@ export function createPrism(
   applyInitialTransform(mesh, transform)
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.isPickable = false
-  mesh.isHittable = true
-  mesh.isCylindric = true
 
-  mesh.metadata = {
-    serialize: () => ({
-      shape: /** @type {'prism'} */ (mesh.name),
-      id,
-      x: mesh.absolutePosition.x,
-      y: mesh.absolutePosition.y,
-      z: mesh.absolutePosition.z,
-      texture,
-      faceUV,
-      transform,
-      edges,
-      width,
-      height,
-      ...serializeBehaviors(mesh.behaviors)
-    })
-  }
+  setExtras(mesh, {
+    isCylindric: true,
+    metadata: {
+      serialize: () => ({
+        shape: /** @type {'prism'} */ (mesh.name),
+        id,
+        x: mesh.absolutePosition.x,
+        y: mesh.absolutePosition.y,
+        z: mesh.absolutePosition.z,
+        texture,
+        faceUV,
+        transform,
+        edges,
+        width,
+        height,
+        ...serializeBehaviors(mesh.behaviors)
+      })
+    }
+  })
 
   registerBehaviors(mesh, behaviorStates)
 

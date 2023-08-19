@@ -13,16 +13,13 @@
 
 ## UI
 
-- bug: game shortcuts ignore active selection to only apply to hover mesh
-- bug: mesh dragged from main to hand are misplaced when camera is rotated
 - ability to interact with main meshes throught the opened hand (how do we select multiple in hand?)
-- hand count indicators
 - replay
 - score card (Mah-jong, Belote)
 - command to reset some mesh state and restart a game (Mah-jong, Belote)
+- hand count on peer pointers/player tab?
 - check headings ordering
 - anchorable: flip/unflip on snap
-- detailable/stackable behavior: preview a stack of meshes
 - hide/distinguish non-connected participants?
 - distribute multiple meshes to players' hand
 - hand support for quantifiable behavior
@@ -30,6 +27,8 @@
 - "box" space for unusued/undesired meshes
 - command to "switch place" around the table, for games like Belote
 - always go fullscreen when entering game?
+- molette + drag: decrement/pop multiple
+- shift + drop: put below
 
 ## Server
 
@@ -47,49 +46,32 @@
 
 ## Known "wont-fix" issues
 
-- moving items bellow other does not apply gravity to them
+- moving a mesh that is below other meshes only moves the moved mesh and does not apply gravity to remaining ones.
 
 ## Interaction model
 
-| Action on table  | Tabletopia                        | Tabulous                                |
-| ---------------- | --------------------------------- | --------------------------------------- |
-| zoom camera      | +/-, molette                      | +/-, molette, pinch                     |
-| move camera      | W/A/S/D, left drag,               | arrows, right drag, 2 fingers drag      |
-| rotate camera    | right drag                        | ctrl+arrow, middle drag, 3 fingers drag |
-| multiple select  | shift+left click, shift+left drag | left drag, finger drag                  |
-| fullscreen       | ~/esc                             | _button_                                |
-| save camera      | shift+number, _menu action_       | ctrl+number, _button_                   |
-| restore camera   | number, _menu action_             | number, _button_                        |
-| menu             | right click                       | _N/A_                                   |
-| toggle hand      | _menu action_                     | H, _button_                             |
-| toggle interface | _menu action_                     | _N/A_                                   |
-| help             | F1, _button_, _menu action_       | F1, _N/A_                               |
-| magnify          | Z, _menu action_                  | _N/A_                                   |
+| Action on table | Commands                                |
+| --------------- | --------------------------------------- |
+| zoom camera     | +/-, molette, pinch                     |
+| move camera     | arrows, right drag, 2 fingers drag      |
+| rotate camera   | ctrl+arrow, middle drag, 3 fingers drag |
+| multiple select | left drag, finger drag                  |
+| fullscreen      | _button_                                |
+| save camera     | ctrl+number, _button_                   |
+| restore camera  | number, _button_                        |
+| toggle hand     | H, _button_                             |
+| help            | F1, _button_                            |
 
-| Action on Mesh | Tabletopia                                     | Tabulous                                        |
-| -------------- | ---------------------------------------------- | ----------------------------------------------- |
-| move           | left drag                                      | left drag, 1 finger drag                        |
-| select         | left click                                     | _N/A_                                           |
-| menu           | right click                                    | right click, 2 fingers tap                      |
-| view details   | double left click                              | V, long left click, long tap, _menu action_     |
-| flip           | F, _menu action_                               | F, left click, tap, _menu action_               |
-| rotate         | Ctrl+left drag, Q/E/PgUp/PgDown, _menu action_ | R, double left click, double tap, _menu action_ |
-| (un)lock       | L, _menu action_                               | L, _menu action_                                |
-| put under      | U, _menu action_                               | _N/A_                                           |
-| take to hand   | T, move to screen bottom, _menu action (draw)_ | D, move to screen bottom, _menu action_         |
-| stack together | ??                                             | G, _menu action_                                |
-
-| Action on Stacks    | Tabletopia                              | Tabulous         |
-| ------------------- | --------------------------------------- | ---------------- |
-| shuffle             | _menu action_                           | S, _menu action_ |
-| draw N to hand      | molette+left drag, _menu action (take)_ | D, _menu action_ |
-| pop N to tableottom | ??                                      | U, _menu action_ |
-| deal N              | molette+left drag, _menu action (deal)_ | _N/A_            |
-| stack on top        | _move over_                             | _move over_      |
-| stack at the bottom | Shift+_move over_                       | _N/A_            |
+| Action on Mesh | Commands                            |
+| -------------- | ----------------------------------- |
+| move           | left drag, 1 finger drag            |
+| action menu    | right click, 2 fingers tap          |
+| view details   | long hover, long tap                |
+| 1st action     | left click, tap                     |
+| 2st action     | long left click, long 2 fingers tap |
 
 In Tabletopia, being forced to do click (either select or menu) before triggering actions (shortcut or menu) is a bummer.
-They support keyboard, but not fingers.
+They support keyboard, but no touchable interface.
 
 ## Game lifecycle
 

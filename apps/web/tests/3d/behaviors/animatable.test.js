@@ -27,9 +27,7 @@ describe('AnimateBehavior', () => {
     const behavior = new AnimateBehavior()
     expect(behavior.name).toEqual(AnimateBehaviorName)
     expect(behavior.mesh).toBeNull()
-    expect(behavior.isAnimated).toBe(false)
     expect(behavior.frameRate).toEqual(60)
-    expect(behavior.onAnimationEndObservable).toBeDefined()
 
     const mesh = createBox('box', {})
     mesh.addBehavior(behavior, true)
@@ -41,15 +39,7 @@ describe('AnimateBehavior', () => {
     const behavior = new AnimateBehavior({ frameRate })
     expect(behavior.name).toEqual(AnimateBehaviorName)
     expect(behavior.mesh).toBeNull()
-    expect(behavior.isAnimated).toBe(false)
     expect(behavior.frameRate).toEqual(frameRate)
-  })
-
-  it('does not move without mesh', async () => {
-    const behavior = new AnimateBehavior()
-    behavior.onAnimationEndObservable.addOnce(animationEndReceived)
-    await behavior.moveTo(new Vector3(10, 5, 4), null, 50)
-    expect(animationEndReceived).not.toHaveBeenCalled()
   })
 
   describe('given attached to a mesh', () => {
@@ -63,7 +53,7 @@ describe('AnimateBehavior', () => {
       behavior = new AnimateBehavior()
       mesh.addBehavior(behavior, true)
       mesh.getScene()._pendingData = []
-      behavior.onAnimationEndObservable.add(animationEndReceived)
+      mesh.onAnimationEnd.add(animationEndReceived)
       // @ts-expect-error isLoading is not optional
       delete mesh.getEngine().isLoading
     })

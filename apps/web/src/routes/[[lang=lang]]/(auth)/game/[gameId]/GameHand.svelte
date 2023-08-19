@@ -43,6 +43,7 @@
     dimension="25vh"
     {minimized}><div class="hand" bind:this={node} /></MinimizableSection
   >
+  {#if meshCount > 0}<strong>{meshCount}</strong>{/if}
 </aside>
 
 <style lang="postcss">
@@ -56,7 +57,7 @@
     &.highlight:before {
       @apply block relative w-full border border-solid border-opacity-50;
       content: '';
-      border-top-width: 50px;
+      border-top-width: 51px;
       border-image: radial-gradient(
           farthest-side ellipse at bottom center,
           var(--color),
@@ -64,6 +65,16 @@
         )
         100% 0 0 0;
     }
+
+    &.highlight > strong {
+      @apply top-0;
+    }
+  }
+
+  strong {
+    @apply absolute rounded-full leading-4 text-sm p-0.5
+         flex justify-center items-center bg-$base-light
+         -top-13 left-20 min-w-5 z-10;
   }
 
   .hand {

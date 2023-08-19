@@ -14,6 +14,7 @@ import {
   detachFromParent,
   runAnimation
 } from '../utils/behaviors'
+import { isAnimationInProgress } from '../utils/mesh'
 import { AnimateBehavior } from './animatable'
 import { DrawBehaviorName } from './names'
 
@@ -85,14 +86,14 @@ export class DrawBehavior extends AnimateBehavior {
     const {
       state: { duration },
       mesh,
-      isAnimated,
       fadeAnimation,
       moveAnimation
     } = this
-    if (isAnimated || !mesh) {
+    if (!mesh || isAnimationInProgress(mesh)) {
       return
     }
-    this.isAnimated = true
+    // eagerly set animationInProgress, because buildAnimationKeys will delay runAnimation
+    mesh.animationInProgress = true
     const attach = detachFromParent(mesh)
     const { fadeKeys, moveKeys } = await buildAnimationKeys(mesh)
     await runAnimation(
@@ -111,14 +112,12 @@ export class DrawBehavior extends AnimateBehavior {
     const {
       state: { duration },
       mesh,
-      isAnimated,
       moveAnimation,
       fadeAnimation
     } = this
-    if (isAnimated || !mesh) {
+    if (!mesh || isAnimationInProgress(mesh)) {
       return
     }
-    this.isAnimated = true
     const attach = detachFromParent(mesh)
     const { moveKeys, fadeKeys } = await buildAnimationKeys(mesh, true)
     await runAnimation(

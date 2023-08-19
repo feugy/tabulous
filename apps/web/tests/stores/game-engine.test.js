@@ -174,7 +174,13 @@ describe('initEngine()', () => {
     })
 
     it('configures and starts an engine', () => {
-      const created = gameEngine.initEngine({ canvas, interaction, hand })
+      const created = gameEngine.initEngine({
+        canvas,
+        interaction,
+        hand,
+        pointerThrottle: 10,
+        longTapDelay: 100
+      })
       expect(engine.start).toHaveBeenCalledTimes(1)
       expect(get(gameEngine.engine)).toEqual(engine)
       expect(created).toEqual(engine)
@@ -187,7 +193,8 @@ describe('initEngine()', () => {
           canvas,
           interaction,
           hand,
-          pointerThrottle: 10
+          pointerThrottle: 10,
+          longTapDelay: 100
         })
         sendToPeer.mockReset()
       })
@@ -348,10 +355,12 @@ describe('initEngine()', () => {
       })
 
       it('proxies mesh detail events', () => {
-        const data = { image: faker.image.avatar() }
-        controlManager.onDetailedObservable.notifyObservers(
-          /** @type {MeshDetails} */ ({ data })
-        )
+        /** @type {MeshDetails} */
+        const data = {
+          position: { x: 0, y: 10 },
+          images: [faker.image.avatar()]
+        }
+        controlManager.onDetailedObservable.notifyObservers(data)
         expect(receiveMeshDetail).toHaveBeenCalledWith(data)
         expect(receiveMeshDetail).toHaveBeenCalledTimes(1)
       })

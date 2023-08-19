@@ -137,7 +137,7 @@ describe('TargetManager', () => {
 
       it('ignores targets with kinds below kind-less mesh', () => {
         zone1.kinds = ['card']
-        const mesh = createBox('box', {})
+        const mesh = createBox('box2', {})
         mesh.setAbsolutePosition(aboveZone1)
 
         expect(manager.findDropZone(mesh)).toBeNull()
@@ -145,7 +145,7 @@ describe('TargetManager', () => {
 
       it('ignores disabled targets', () => {
         zone1.enabled = false
-        const mesh = createBox('box', {})
+        const mesh = createBox('box2', {})
         mesh.setAbsolutePosition(aboveZone1)
 
         expect(manager.findDropZone(mesh)).toBeNull()
@@ -153,7 +153,7 @@ describe('TargetManager', () => {
 
       it('ignores target part of the current selection', () => {
         selectionManager.select(/** @type {Mesh} */ (zone1.targetable.mesh))
-        const mesh = createBox('box', {})
+        const mesh = createBox('box2', {})
         mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
 
         expect(manager.findDropZone(mesh)).toBeNull()
@@ -368,7 +368,7 @@ describe('TargetManager', () => {
 
       it('ignores targets with kinds when providing no kind', () => {
         zone1.kinds = ['card']
-        const mesh = createBox('box', {})
+        const mesh = createBox('box2', {})
         mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
 
         expect(manager.findPlayerZone(mesh)).toBeNull()
@@ -376,7 +376,7 @@ describe('TargetManager', () => {
 
       it('ignores disabled targets', () => {
         zone1.enabled = false
-        const mesh = createBox('box', {})
+        const mesh = createBox('box2', {})
         mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
 
         expect(manager.findPlayerZone(mesh)).toBeNull()
@@ -384,7 +384,7 @@ describe('TargetManager', () => {
 
       it('ignores target part of the current selection', () => {
         selectionManager.select(/** @type {Mesh} */ (zone1.targetable.mesh))
-        const mesh = createBox('box', {})
+        const mesh = createBox('box2', {})
         mesh.setAbsolutePosition(zone1.mesh.absolutePosition)
 
         expect(manager.findPlayerZone(mesh)).toBeNull()

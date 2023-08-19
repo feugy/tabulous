@@ -71,7 +71,7 @@
 
   /** @type {DeepRequired<PlayerWithTurnCredentials>} */
   const session = /** @type {?} */ (data.session)
-  const longTapDelay = 250
+  const longTapDelay = 500
   /** @type {Engine} */
   let engine
   /** @type {?HTMLCanvasElement} */
@@ -102,7 +102,13 @@
 
   onMount(() => {
     if (canvas && interaction && hand) {
-      engine = initEngine({ canvas, interaction, longTapDelay, hand })
+      engine = initEngine({
+        canvas,
+        interaction,
+        longTapDelay,
+        pointerThrottle: 150,
+        hand
+      })
       initIndicators({ engine, canvas, hand })
       askForGame()
       dimensionObserver = observeDimension(interaction, 0)
@@ -159,10 +165,6 @@
     }
   }
 
-  function handleCloseDetails() {
-    interaction?.focus()
-  }
-
   function handleSubmitParameters(
     /** @type {CustomEvent<{ submit: JSONValue }>} */ { detail: parameters }
   ) {
@@ -210,7 +212,7 @@
         on:submit={handleSubmitParameters}
       />
     {/if}
-    <MeshDetails mesh={$meshDetails} on:close={handleCloseDetails} />
+    <MeshDetails details={$meshDetails} />
   </div>
   <RadialMenu {...$actionMenuProps || {}} />
   <CursorInfo halos={longInputs} />

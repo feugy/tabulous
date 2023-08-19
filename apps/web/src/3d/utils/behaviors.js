@@ -1,5 +1,6 @@
 // @ts-check
 /**
+ * @typedef {import('@babylonjs/core').AbstractMesh} AbstractMesh
  * @typedef {import('@babylonjs/core').Mesh} Mesh
  * @typedef {import('@tabulous/server/src/graphql').Dimension} Dimension
  * @typedef {import('@tabulous/server/src/graphql').Mesh} _SerializedMesh
@@ -41,6 +42,7 @@ import { RandomBehavior } from '../behaviors/randomizable'
 import { RotateBehavior } from '../behaviors/rotable'
 import { StackBehavior } from '../behaviors/stackable'
 import { applyGravity, getCenterAltitudeAbove } from './gravity'
+import { setExtras } from './mesh'
 
 /** @typedef {_BehaviorNames[keyof _BehaviorNames]} BehaviorNames */
 /** @typedef {AnchorBehavior|DetailBehavior|DrawBehavior|FlipBehavior|LockBehavior|MoveBehavior|QuantityBehavior|RandomBehavior|RotateBehavior|StackBehavior} Behavior */
@@ -272,12 +274,12 @@ export function attachFunctions(behavior, ...functionNames) {
 /**
  * Runs in parallel a list of animations for a given AnimateBehavior.
  * While running animations:
- * - the behavior's isAnimated is true
- * - the behavior's mesh is not pickable
+ * - the mesh's animationInProgress is true
+ * - the mesh is not pickable
  *
  * When all animation have completed:
  * - onEnd function is synchronously invoked
- * - the behavior's onAnimationEndObservable observers are notified.
+ * - the mesh's onAnimationEnd observers are notified.
  *
  * The animation keys are serialized as per Babylon's Animation Curve Editor.
  * @param {AnimateBehavior} behavior - animated behavior.
@@ -285,8 +287,7 @@ export function attachFunctions(behavior, ...functionNames) {
  * @param {AnimationSpec[]} animationSpecs - list of animation specs.
  * @returns {Promise<void>}
  */
-export function runAnimation(behavior, onEnd, ...animationSpecs) {
-  const { mesh, frameRate, onAnimationEndObservable } = behavior
+export function runAnimation({ mesh, frameRate }, onEnd, ...animationSpecs) {
   if (!mesh) {
     return Promise.resolve(void 0)
   }
@@ -315,7 +316,7 @@ export function runAnimation(behavior, onEnd, ...animationSpecs) {
   mesh.isPickable = false
   const wasHittable = mesh.isHittable
   mesh.isHittable = false
-  behavior.isAnimated = true
+  mesh.animationInProgress = true
   animationLogger.debug({ mesh, animations }, `starts animations on ${mesh.id}`)
   return new Promise(resolve =>
     mesh
@@ -327,7 +328,7 @@ export function runAnimation(behavior, onEnd, ...animationSpecs) {
         )
         mesh.isPickable = wasPickable
         mesh.isHittable = wasHittable
-        behavior.isAnimated = false
+        mesh.animationInProgress = false
         // framed animation may not exactly end where we want, so force the final position
         for (const { animation } of animationSpecs) {
           // @ts-expect-error can not use animation.targetProperty to index Mesh
@@ -339,7 +340,7 @@ export function runAnimation(behavior, onEnd, ...animationSpecs) {
           onEnd()
         }
         resolve(void 0)
-        onAnimationEndObservable.notifyObservers()
+        mesh.onAnimationEnd.notifyObservers()
       })
   )
 }
@@ -349,36 +350,37 @@ export function runAnimation(behavior, onEnd, ...animationSpecs) {
  * one needs to temporary detach an animated mesh from its parent, or rotation may alter the movements.
  * This function detaches a given mesh, keeping its absolute position and rotation unchanged, then
  * returns a function to re-attach to the original parent (or new, if it has changed meanwhile).
- * @param {Mesh} mesh - detached mesh.
+ * @template {AbstractMesh} M
+ * @param {M} mesh - detached mesh.
  * @param {boolean} [detachChildren=true] - set to detach the mesh from its children.
  * @returns {() => void} a function to re-attach to the original (or new) parent.
  */
 export function detachFromParent(mesh, detachChildren = true) {
-  let parent = mesh.parent
+  let parent = /** @type {?M} */ (mesh.parent)
   mesh.setParent(null)
+  parent?.detachedChildren.push(mesh)
 
   const savedSetter = mesh.setParent.bind(mesh)
-  mesh.setParent = newParent => {
+  mesh.setParent = (/** @type {?M} */ newParent) => {
     parent = newParent
     return mesh
   }
 
-  const children = detachChildren
-    ? mesh.getChildMeshes(
-        true,
-        ({ name }) => !name.startsWith('drop-') && !name.startsWith('anchor-')
-      )
+  mesh.detachedChildren = detachChildren
+    ? mesh.getChildMeshes(true, child => !(/** @type {M} */ (child).isDropZone))
     : []
-  for (const child of children) {
+  for (const child of mesh.detachedChildren) {
     child.setParent(null)
   }
 
   return () => {
     mesh.setParent = savedSetter
     mesh.setParent(parent)
-    for (const child of children) {
+    parent?.detachedChildren.splice(parent.detachedChildren.indexOf(mesh), 1)
+    for (const child of mesh.detachedChildren) {
       child.setParent(mesh)
     }
+    mesh.detachedChildren = []
   }
 }
 
@@ -508,6 +510,7 @@ export function buildTargetMesh(name, parent, dimensions) {
         dimensions ?? { width: x * 2, height: y * 2, depth: z * 2 },
         scene
       )
+  setExtras(created, { isCylindric, isHittable: false })
   created.isCylindric = isCylindric
   created.setParent(parent)
   created.position = Vector3.Zero()

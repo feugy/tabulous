@@ -256,7 +256,6 @@ enum ActionName {
 type ActionSpec {
   button1: [ActionName]
   button2: [ActionName]
-  button3: [ActionName]
 }
 
 input GameInput {

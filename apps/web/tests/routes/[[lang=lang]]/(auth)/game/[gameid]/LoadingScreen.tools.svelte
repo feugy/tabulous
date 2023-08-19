@@ -3,8 +3,8 @@
   import { actionNames, buttonIds } from '@src/3d/utils/actions'
   import LoadingScreen from '@src/routes/[[lang=lang]]/(auth)/game/[gameId]/LoadingScreen'
 
-  const { button1, button2, button3 } = buttonIds
-  const { flip, draw, random, detail, rotate } = actionNames
+  const { button1, button2 } = buttonIds
+  const { flip, draw, random, rotate } = actionNames
 </script>
 
 <ToolBox
@@ -14,8 +14,7 @@
     visible: true,
     actionNamesByButton: new Map([
       [button1, [flip, random]],
-      [button2, [detail]],
-      [button3, [rotate]]
+      [button2, [rotate]]
     ])
   }}
 >
@@ -25,7 +24,7 @@
     props={{
       actionNamesByButton: new Map([
         [button1, [rotate]],
-        [button3, [draw]]
+        [button2, [draw]]
       ])
     }}
   />

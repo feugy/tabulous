@@ -70,11 +70,19 @@ declare module '@babylonjs/core' {
 
   interface AbstractMesh {
     /** indicates a cylindric mesh like a round token. */
-    isCylindric?: boolean
+    isCylindric: boolean
     /** indicates whether this mesh could be hit by a ray. */
-    isHittable?: boolean
-    /** indicates an mesh used for animation purpose that should not be serialized nor hitted. */
-    isPhantom?: boolean
+    isHittable: boolean
+    /** indicates a mesh used for animation purpose that should not be serialized nor hitted. */
+    isPhantom: boolean
+    /** indicates a mesh used as a drop zone (anchors, stacks).  */
+    isDropZone: boolean
+    /** indicates a behavior's animation in progress (could be only one at a time). */
+    animationInProgress: boolean
+    /** List of children temporaly detached during animations  */
+    detachedChildren: AbstractMesh[]
+    /** emits when a behavior's animation has ended. */
+    onAnimationEnd: Observable<void>
     /** this mesh's attached behaviors. */
     behaviors: Behavior[]
     getBehaviorByName(name: 'anchorable'): ?AnchorBehavior

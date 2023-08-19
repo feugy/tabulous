@@ -49,7 +49,7 @@ import {
  * @property {string[]} selectedIds - list of selected mesh ids
  */
 
-const { detail, flip, random, rotate } = actionNames
+const { flip, random, rotate } = actionNames
 
 /**
  * Creates the Babylon's 3D engine, with its single scene, and its render loop.
@@ -128,8 +128,7 @@ export function createEngine({
       for (const [button, actions] of Object.entries(
         game.actions ?? {
           [buttonIds.button1]: [flip, random],
-          [buttonIds.button2]: [rotate],
-          [buttonIds.button3]: [detail]
+          [buttonIds.button2]: [rotate]
         }
       )) {
         actionNamesByButton.set(button, actions)

@@ -154,7 +154,7 @@ tooltips:
   increment: Group the active selection together
   lock: Lock
   move: Move
-  open-menu: Open menu
+  open-menu: Open action menu
   pan-camera: Move
   play: Play on the table
   pop: Pop from the stack

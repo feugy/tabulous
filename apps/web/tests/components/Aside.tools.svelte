@@ -59,8 +59,7 @@
     friends,
     actionNamesByButton: new Map([
       [buttonIds.button1, [actionNames.flip]],
-      [buttonIds.button2, [actionNames.detail]],
-      [buttonIds.button3, [actionNames.rotate]]
+      [buttonIds.button2, [actionNames.detail]]
     ]),
     actionNamesByKey: new Map([
       [$_('shortcuts.flip'), [actionNames.flip]],

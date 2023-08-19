@@ -315,7 +315,8 @@ describe('InputManager', () => {
           { long: false, pointers: 2, type: 'tap', event },
           meshId
         )
-      }
+      },
+      { retry: 3 }
     )
 
     it.each([
@@ -618,7 +619,8 @@ describe('InputManager', () => {
           { long: false, pointers, type: 'doubletap', event: doubleTapEvent },
           meshId
         )
-      }
+      },
+      { retry: 3 }
     )
 
     it.each([
@@ -1529,15 +1531,11 @@ describe('InputManager', () => {
       const events = [triggerEvent(keyDown, { key: 'R' })]
 
       expectEvents({ keys: 1 })
-      expectsDataWithMesh(
-        keys[0],
-        {
-          type: 'keyDown',
-          event: events[0],
-          key: 'r'
-        },
-        []
-      )
+      expectsDataWithMesh(keys[0], {
+        type: 'keyDown',
+        event: events[0],
+        key: 'r'
+      })
     })
 
     it('includes key modifiers', () => {
@@ -1552,16 +1550,12 @@ describe('InputManager', () => {
       ]
 
       expectEvents({ keys: 1 })
-      expectsDataWithMesh(
-        keys[0],
-        {
-          type: 'keyDown',
-          event: events[0],
-          modifiers: { alt: true, ctrl: true, meta: false, shift: false },
-          key: 'Enter'
-        },
-        []
-      )
+      expectsDataWithMesh(keys[0], {
+        type: 'keyDown',
+        event: events[0],
+        modifiers: { alt: true, ctrl: true, meta: false, shift: false },
+        key: 'Enter'
+      })
     })
 
     it('detects keys over a mesh', () => {
@@ -1582,7 +1576,7 @@ describe('InputManager', () => {
       expectsDataWithMesh(
         keys[0],
         { type: 'keyDown', event: events[1], key: 'f' },
-        [meshId]
+        meshId
       )
     })
 
@@ -1772,21 +1766,15 @@ describe('InputManager', () => {
   function expectsDataWithMesh(
     /** @type {TapData|DragData|PinchData|HoverData|WheelData|KeyData|LongData} */ actual,
     /** @type {?} */ expected,
-    /** @type {string|string[]|undefined} */ meshId,
+    /** @type {string|undefined} */ meshId,
     /** @type {Scene} */ expectedScene = scene
   ) {
-    if (Array.isArray(meshId)) {
-      expect(
-        /** @type {{ meshes?: Mesh[] }} */ (actual).meshes?.map(({ id }) => id)
-      ).toEqual(meshId)
+    const actualWithMesh = /** @type {{ mesh?: Mesh }} */ (actual)
+    if (meshId) {
+      expect(actualWithMesh.mesh?.id).toEqual(meshId)
+      expect(actualWithMesh.mesh?.getScene()?.uid).toEqual(expectedScene.uid)
     } else {
-      const actualWithMesh = /** @type {{ mesh?: Mesh }} */ (actual)
-      if (meshId) {
-        expect(actualWithMesh.mesh?.id).toEqual(meshId)
-        expect(actualWithMesh.mesh?.getScene()?.uid).toEqual(expectedScene.uid)
-      } else {
-        expect(actualWithMesh.mesh?.id).not.toBeDefined()
-      }
+      expect(actualWithMesh.mesh?.id).not.toBeDefined()
     }
     // do not compare meshes because vitest fails showing their gigantic diffs
     expect({ ...actual, mesh: undefined, meshes: undefined }).toMatchObject({

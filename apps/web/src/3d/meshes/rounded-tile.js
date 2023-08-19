@@ -14,7 +14,7 @@ import { CSG } from '@babylonjs/core/Meshes/csg.js'
 import { controlManager } from '../managers/control'
 import { materialManager } from '../managers/material'
 import { registerBehaviors, serializeBehaviors } from '../utils/behaviors'
-import { applyInitialTransform } from '../utils/mesh'
+import { applyInitialTransform, setExtras } from '../utils/mesh'
 
 /**
  * Creates a tile with rounded corners.
@@ -79,26 +79,27 @@ export function createRoundedTile(
   applyInitialTransform(mesh, transform)
   mesh.setAbsolutePosition(new Vector3(x, y, z))
   mesh.isPickable = false
-  mesh.isHittable = true
   tileMesh.dispose(false, true)
 
-  mesh.metadata = {
-    serialize: () => ({
-      shape: /** @type {'roundedTile'} */ (mesh.name),
-      id,
-      x: mesh.absolutePosition.x,
-      y: mesh.absolutePosition.y,
-      z: mesh.absolutePosition.z,
-      width,
-      height,
-      depth,
-      borderRadius,
-      texture,
-      faceUV,
-      transform,
-      ...serializeBehaviors(mesh.behaviors)
-    })
-  }
+  setExtras(mesh, {
+    metadata: {
+      serialize: () => ({
+        shape: /** @type {'roundedTile'} */ (mesh.name),
+        id,
+        x: mesh.absolutePosition.x,
+        y: mesh.absolutePosition.y,
+        z: mesh.absolutePosition.z,
+        width,
+        height,
+        depth,
+        borderRadius,
+        texture,
+        faceUV,
+        transform,
+        ...serializeBehaviors(mesh.behaviors)
+      })
+    }
+  })
 
   registerBehaviors(mesh, behaviorStates)
 

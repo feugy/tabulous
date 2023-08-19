@@ -17,6 +17,7 @@ import {
   runAnimation
 } from '../utils/behaviors'
 import { applyGravity } from '../utils/gravity'
+import { isAnimationInProgress } from '../utils/mesh'
 import { convertToLocal, getAbsoluteRotation } from '../utils/vector'
 import { AnimateBehavior } from './animatable'
 import { RotateBehaviorName } from './names'
@@ -86,16 +87,14 @@ export class RotateBehavior extends AnimateBehavior {
   async rotate(angle) {
     const {
       _state: { duration },
-      isAnimated,
       mesh,
       rotateAnimation,
       moveAnimation
     } = this
-    if (isAnimated || !mesh || isMeshLocked(mesh)) {
+    if (!mesh || isMeshLocked(mesh) || isAnimationInProgress(mesh)) {
       return
     }
     logger.debug({ mesh }, `start rotating ${mesh.id}`)
-    this.isAnimated = true
 
     const [x, y, z] = mesh.position.asArray()
     const [pitch, yaw, roll] = mesh.rotation.asArray()

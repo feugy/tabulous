@@ -44,7 +44,7 @@ describe('TargetBehavior', () => {
       })
     )
 
-    const mesh2 = createBox('box1', {})
+    const mesh2 = createBox('box2', {})
     const zone2 = behavior.addZone(mesh2, {
       extent: 2,
       kinds: ['box', 'card'],
@@ -137,7 +137,7 @@ describe('TargetBehavior', () => {
       const id = `${playerId}.drop-zone.${meshId}`
       const mesh1 = createBox(meshId, {})
       behavior.addZone(mesh1, { extent: 1.2, playerId })
-      const mesh2 = createBox('box1', {})
+      const mesh2 = createBox('box2', {})
       behavior.addZone(mesh2, {
         extent: 2,
         kinds: ['box', 'card'],

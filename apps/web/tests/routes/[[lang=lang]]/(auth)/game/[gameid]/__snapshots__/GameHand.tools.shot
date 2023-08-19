@@ -101,6 +101,7 @@ exports[`Default (not visible) 1`] = `
     </span>
   </section>
   <!--&lt;MinimizableSection&gt;-->
+   
 </aside>
 `;
 
@@ -205,6 +206,7 @@ exports[`Highlighted 1`] = `
     </span>
   </section>
   <!--&lt;MinimizableSection&gt;-->
+   
 </aside>
 `;
 
@@ -309,5 +311,11 @@ exports[`With some meshes 1`] = `
     </span>
   </section>
   <!--&lt;MinimizableSection&gt;-->
+   
+  <strong
+    class="s-arsGkgsa96wJ"
+  >
+    2
+  </strong>
 </aside>
 `;

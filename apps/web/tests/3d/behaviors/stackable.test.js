@@ -166,7 +166,8 @@ describe('StackBehavior', () => {
 
     beforeEach(() => {
       ;[mesh, box1, box2, box3] = Array.from({ length: 4 }, (_, rank) => {
-        const box = createBox(`box${rank}`, {})
+        const id = `box${rank}`
+        const box = createBox(id, {})
         box.setAbsolutePosition(new Vector3(rank, rank, rank))
         box.addBehavior(new StackBehavior({ duration: 10 }), true)
         box.addBehavior(new FlipBehavior({ duration: 100 }), true)
@@ -175,8 +176,8 @@ describe('StackBehavior', () => {
         box.addBehavior(
           new AnchorBehavior({
             anchors: [
-              { id: '1', x: -0.5 },
-              { id: '2', x: 0.5 }
+              { id: `${id}-1`, x: -0.5 },
+              { id: `${id}-2`, x: 0.5 }
             ]
           })
         )

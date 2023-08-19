@@ -86,6 +86,7 @@ export class TargetBehavior {
     mesh.visibility = 0
     mesh.isPickable = false
     mesh.isHittable = false
+    mesh.isDropZone = true
     mesh.scalingDeterminant = 1.01
     /** @type {SingleDropZone} */
     const zone = {

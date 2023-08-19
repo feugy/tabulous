@@ -15,7 +15,7 @@
   /** @type {number} maximum number of saveable positions. */
   export let maxCount = 9
   /** @type {number} number of milliseconds to hold pointer down before it is considered as long. */
-  export let longTapDelay = 250
+  export let longTapDelay
 
   /** @type {Map<number, number>} */
   const timeByPointerId = new Map()

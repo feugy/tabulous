@@ -12,6 +12,7 @@
 import { Vector3 } from '@babylonjs/core/Maths/math.vector'
 import { faker } from '@faker-js/faker'
 import {
+  AnchorBehavior,
   FlipBehavior,
   RotateBehavior,
   RotateBehaviorName
@@ -73,7 +74,7 @@ describe('RotateBehavior', () => {
   })
 
   it('can hydrate with default state', () => {
-    const behavior = createAttachedRotable()
+    const [behavior] = createAttachedRotable('box')
 
     behavior.fromState()
     expect(behavior.state).toEqual({
@@ -92,9 +93,8 @@ describe('RotateBehavior', () => {
     let behavior
 
     beforeEach(() => {
-      behavior = createAttachedRotable({ duration: 50 })
-      mesh = /** @type {Mesh} */ (behavior.mesh)
-      behavior.onAnimationEndObservable.add(animationEndReceived)
+      ;[behavior, mesh] = createAttachedRotable('box', { duration: 50 })
+      mesh.onAnimationEnd.add(animationEndReceived)
     })
 
     it('attaches metadata to its mesh', () => {
@@ -123,10 +123,10 @@ describe('RotateBehavior', () => {
       const angle = Math.PI * 0.5
       const state = { angle, duration: faker.number.int(999) }
       behavior.fromState(state)
-      const parent = createAttachedRotable({
+      const [, parent] = createAttachedRotable('parent', {
         duration: 50,
         angle: Math.PI * 0.75
-      }).mesh
+      })
       mesh.setParent(parent)
       expectRotated(mesh, angle)
 
@@ -152,7 +152,7 @@ describe('RotateBehavior', () => {
       mesh.setAbsolutePosition(new Vector3(x, 10, z))
       mesh.addBehavior(new FlipBehavior({ isFlipped: true }), true)
 
-      const child = createAttachedRotable().mesh
+      const [, child] = createAttachedRotable('child')
       child.addBehavior(new FlipBehavior(), true)
       child.setParent(mesh)
 
@@ -172,7 +172,7 @@ describe('RotateBehavior', () => {
       const z = faker.number.int(999)
       mesh.setAbsolutePosition(new Vector3(x, 10, z))
 
-      const child = createAttachedRotable().mesh
+      const [, child] = createAttachedRotable('child')
       child.setParent(mesh)
 
       expectRotated(mesh, 0)
@@ -266,7 +266,7 @@ describe('RotateBehavior', () => {
       await mesh.metadata.rotate?.()
       expectRotated(mesh, angle)
 
-      const child = createAttachedRotable().mesh
+      const [, child] = createAttachedRotable('child')
 
       child.setParent(mesh)
       expectRotated(mesh, angle)
@@ -276,7 +276,7 @@ describe('RotateBehavior', () => {
     it('applies current rotation to removed child', async () => {
       const angle = Math.PI * 0.5
       await mesh.metadata.rotate?.()
-      const child = createAttachedRotable().mesh
+      const [, child] = createAttachedRotable('child')
       await child.metadata.rotate?.()
       child.setParent(mesh)
       expectRotated(mesh, angle)
@@ -307,12 +307,53 @@ describe('RotateBehavior', () => {
       expectRotated(mesh, 0)
       expect(animationEndReceived).not.toHaveBeenCalled()
     })
+
+    it('can not rotate while a children is animating', async () => {
+      const [, granChild] = createAttachedRotable('granChild')
+      const [, child] = createAttachedRotable('child')
+      child.addBehavior(
+        new AnchorBehavior({
+          anchors: [{ id: 'child-1', snappedId: 'granChild' }]
+        }),
+        true
+      )
+      mesh.addBehavior(
+        new AnchorBehavior({ anchors: [{ id: 'mesh-1', snappedId: 'child' }] }),
+        true
+      )
+
+      expectPickable(mesh)
+      expectRotated(mesh, 0)
+      expectPickable(child)
+      expectRotated(child, 0)
+      expectPickable(granChild)
+      expectRotated(granChild, 0)
+
+      await Promise.all([
+        granChild.metadata.rotate?.(),
+        child.metadata.rotate?.(),
+        mesh.metadata.rotate?.()
+      ])
+
+      expectPickable(mesh)
+      expectRotated(mesh, 0)
+      expectPickable(child)
+      expectRotated(child, 0)
+      expectPickable(granChild)
+      expectRotated(granChild, Math.PI * 0.5)
+      expect(recordSpy).toHaveBeenCalledOnce()
+      expect(animationEndReceived).not.toHaveBeenCalled()
+    })
   })
 })
 
-function createAttachedRotable(/** @type {RotableState}*/ state) {
+/** @returns {[RotateBehavior, Mesh]} */
+function createAttachedRotable(
+  /** @type {string} */ id,
+  /** @type {RotableState}*/ state
+) {
   const behavior = new RotateBehavior(state)
-  const mesh = createBox('box', {})
+  const mesh = createBox(id, {})
   mesh.addBehavior(behavior, true)
-  return /** @type {RotateBehavior & { mesh: Mesh }} */ (behavior)
+  return [behavior, mesh]
 }

@@ -2,11 +2,18 @@
 /**
  * @typedef {import('@babylonjs/core').Mesh} Mesh
  * @typedef {import('@babylonjs/core').Observer<?>} Observer
+ * @typedef {import('@babylonjs/core').Scene} Scene
  */
 
+import { Vector3 } from '@babylonjs/core'
 import { faker } from '@faker-js/faker'
-import { DetailBehavior, DetailBehaviorName } from '@src/3d/behaviors'
-import { controlManager } from '@src/3d/managers'
+import {
+  DetailBehavior,
+  DetailBehaviorName,
+  StackBehaviorName
+} from '@src/3d/behaviors'
+import { StackBehavior } from '@src/3d/behaviors/stackable'
+import { controlManager, indicatorManager } from '@src/3d/managers'
 import {
   afterAll,
   beforeAll,
@@ -20,7 +27,10 @@ import {
 import { configures3dTestEngine, createBox } from '../../test-utils'
 
 describe('DetailBehavior', () => {
-  configures3dTestEngine()
+  /** @type {Scene} */
+  let scene
+
+  configures3dTestEngine(created => (scene = created.scene))
 
   const onDetailsReceived = vi.fn()
   /** @type {?Observer} */
@@ -33,6 +43,7 @@ describe('DetailBehavior', () => {
   beforeAll(() => {
     onDetailsObserver =
       controlManager.onDetailedObservable.add(onDetailsReceived)
+    indicatorManager.init({ scene })
   })
 
   afterAll(() => {
@@ -115,7 +126,10 @@ describe('DetailBehavior', () => {
       mesh.metadata.detail?.()
       expect(onDetailsReceived).toHaveBeenCalledTimes(1)
       expect(onDetailsReceived).toHaveBeenCalledWith(
-        { mesh, data: { image: frontImage } },
+        {
+          position: { x: 1024, y: 512 },
+          images: frontImage ? [frontImage] : []
+        },
         expect.anything()
       )
     })
@@ -125,7 +139,53 @@ describe('DetailBehavior', () => {
       mesh.metadata.detail?.()
       expect(onDetailsReceived).toHaveBeenCalledTimes(1)
       expect(onDetailsReceived).toHaveBeenCalledWith(
-        { mesh, data: { image: backImage } },
+        { position: { x: 1024, y: 512 }, images: backImage ? [backImage] : [] },
+        expect.anything()
+      )
+    })
+  })
+
+  describe('given attached to a stacked mesh', () => {
+    /** @type {Mesh} */
+    let mesh
+    const images = ['image1', 'image2', 'image3']
+
+    beforeEach(() => {
+      ;[, mesh] = images.map((frontImage, rank) => {
+        const box = createBox(`box${rank + 1}`, {})
+        box.setAbsolutePosition(new Vector3(rank, rank, rank))
+        box.addBehavior(new StackBehavior({ duration: 10 }), true)
+        box.addBehavior(new DetailBehavior({ frontImage }), true)
+        return box
+      })
+      mesh
+        .getBehaviorByName(StackBehaviorName)
+        ?.fromState({ stackIds: ['box1', 'box3'] })
+    })
+
+    it('shows all stacked meshes, reverse', () => {
+      mesh.metadata.detail?.()
+      expect(onDetailsReceived).toHaveBeenCalledTimes(1)
+      expect(onDetailsReceived).toHaveBeenCalledWith(
+        {
+          position: { x: 1048.4849005729236, y: 480.00893477155284 },
+          images: ['image3', 'image1', 'image2']
+        },
+        expect.anything()
+      )
+    })
+
+    it('omits meshes with no images', () => {
+      const box = createBox(`box4`, {})
+      box.addBehavior(new StackBehavior({ duration: 10 }), true)
+      mesh.metadata.push?.(box.id, true)
+      mesh.metadata.detail?.()
+      expect(onDetailsReceived).toHaveBeenCalledTimes(1)
+      expect(onDetailsReceived).toHaveBeenCalledWith(
+        {
+          position: { x: 1048.4849005729236, y: 480.00893477155284 },
+          images: ['image3', 'image1', 'image2']
+        },
         expect.anything()
       )
     })

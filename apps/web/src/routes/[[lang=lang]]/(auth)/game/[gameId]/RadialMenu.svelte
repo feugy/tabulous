@@ -12,7 +12,7 @@
         getComputedStyle(
           /** @type {Element} */ (document.querySelector(':root'))
         )
-          .getPropertyValue('--short')
+          .getPropertyValue('--xshort')
           .trim() || '0ms'
       )
     )
@@ -73,7 +73,7 @@
     const oX = radius
     const oY = radius
     return {
-      delay: enterDuration * 0.75 * args.i,
+      delay: enterDuration * 0.5 * args.i,
       duration: enterDuration,
       css: (/** @type {number} */ t) =>
         `opacity: ${t};left: ${oX - t * (oX - x)}px; top: ${
@@ -105,8 +105,7 @@
         role="menu"
         class="no-actions"
         transition:fade|global={{
-          duration: enterDuration,
-          delay: enterDuration
+          duration: enterDuration
         }}>{$_('labels.no-actions')}</span
       >
     {:else}

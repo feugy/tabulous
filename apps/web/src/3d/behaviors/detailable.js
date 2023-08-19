@@ -2,6 +2,7 @@
 /**
  * @typedef {import('@babylonjs/core').Mesh} Mesh
  * @typedef {import('@tabulous/server/src/graphql').DetailableState} DetailableState
+ * @typedef {import('../utils').ScreenPosition} ScreenPosition
  */
 
 import { controlManager } from '../managers/control'
@@ -10,7 +11,8 @@ import {
   attachProperty,
   selectDetailedFace
 } from '../utils/behaviors'
-import { DetailBehaviorName } from './names'
+import { getMeshScreenPosition } from '../utils/vector'
+import { DetailBehaviorName, StackBehaviorName } from './names'
 
 export class DetailBehavior {
   /**
@@ -61,11 +63,17 @@ export class DetailBehavior {
    */
   detail() {
     if (!this.mesh) return
+    const stackable = this.mesh.getBehaviorByName(StackBehaviorName)
     controlManager.onDetailedObservable.notifyObservers({
-      mesh: this.mesh,
-      data: {
-        image: /** @type {string} */ (selectDetailedFace(this.mesh))
-      }
+      position: /** @type {ScreenPosition} */ (
+        getMeshScreenPosition(this.mesh)
+      ),
+      images: /** @type {string[]} */ (
+        (stackable?.stack ?? [this.mesh])
+          .map(selectDetailedFace)
+          .reverse()
+          .filter(Boolean)
+      )
     })
   }
 

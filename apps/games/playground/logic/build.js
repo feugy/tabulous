@@ -24,8 +24,7 @@ export function buildCards(full = false) {
           texture: `/assets/textures/${suit}-${index}.1.ktx2`,
           ...sizes.card,
           detailable: {
-            frontImage: `/assets/images/${suit}-${index}.1.svg`,
-            backImage: `/assets/images/french-suited-card-back.1.svg`
+            frontImage: `/assets/images/${suit}-${index}.1.svg`
           },
           anchorable: {
             anchors: [

@@ -21,7 +21,7 @@ import {
   runAnimation
 } from '../utils/behaviors'
 import { applyGravity } from '../utils/gravity'
-import { getDimensions } from '../utils/mesh'
+import { getDimensions, isAnimationInProgress } from '../utils/mesh'
 import { AnimateBehavior } from './animatable'
 import { RandomBehaviorName } from './names'
 
@@ -106,11 +106,10 @@ export class RandomBehavior extends AnimateBehavior {
       state: { face: oldFace, duration, canBeSet },
       max,
       quaternionPerFace,
-      isAnimated,
       mesh,
       rollAnimation
     } = this
-    if (isAnimated || !mesh || !canBeSet) {
+    if (!mesh || !canBeSet || isAnimationInProgress(mesh)) {
       return
     }
     if (face < 1 || face > max) {
@@ -149,14 +148,13 @@ export class RandomBehavior extends AnimateBehavior {
   async random(face) {
     const {
       state: { face: oldFace, duration },
-      isAnimated,
       max,
       quaternionPerFace,
       mesh,
       rollAnimation,
       moveAnimation
     } = this
-    if (isAnimated || !mesh) {
+    if (!mesh || isAnimationInProgress(mesh)) {
       return
     }
     if (!face) {

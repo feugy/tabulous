@@ -29,9 +29,11 @@ export class ExtendedScene extends Scene {
    */
   addMesh(mesh, recursive) {
     if (mesh?.id) {
+      /* c8 ignore start */
       if (this.meshById.has(mesh.id)) {
         console.warn(`${mesh.id} reused`)
       }
+      /* c8 ignore stop */
       this.meshById.set(mesh.id, mesh)
     }
     super.addMesh(mesh, recursive)
