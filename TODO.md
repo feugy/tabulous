@@ -14,7 +14,6 @@
 ## UI
 
 - bug: game shortcuts ignore active selection to only apply to hover mesh
-- bug: mesh dragged from main to hand are misplaced when camera is rotated
 - ability to interact with main meshes throught the opened hand (how do we select multiple in hand?)
 - replay
 - score card (Mah-jong, Belote)

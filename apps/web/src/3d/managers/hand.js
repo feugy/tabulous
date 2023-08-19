@@ -439,7 +439,7 @@ async function handDrag(manager, { type, mesh, event }) {
     } else {
       const drawn = selectionManager.getSelection(mesh)
       logger.debug({ drawn }, `dragged meshes into hand`)
-      const { x: positionX } = screenToGround(manager.scene, event)
+      const { x: positionX } = screenToGround(manager.handScene, event)
       const z = -manager.contentDimensions.depth
       const origin = drawn[0].absolutePosition.x
       for (const mesh of drawn) {
