@@ -76,8 +76,7 @@ export function buildDescriptorTestSuite(
       })
       expectObject(descriptor, 'actions', {
         button1: ['array', 'string', actionNames],
-        button2: ['array', 'string', actionNames],
-        button3: ['array', 'string', actionNames]
+        button2: ['array', 'string', actionNames]
       })
       expectFunction(descriptor, 'addPlayer')
       expectFunction(descriptor, 'askForParameters')

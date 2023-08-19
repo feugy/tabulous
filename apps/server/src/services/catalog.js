@@ -98,8 +98,7 @@ import { makeLogger } from '../utils/index.js'
 /**
  * @typedef {object} ActionSpec action buttons configuration.
  * @property {ActionName[]} [button1] - actions assigned to tab/left click, if any.
- * @property {ActionName[]} [button2] - actions assigned to double tap/double left click, if any.
- * @property {ActionName[]} [button3] - actions assigned to long tab/long left click, if any.
+ * @property {ActionName[]} [button2] - actions assigned to long 2 fingers tap/long left click, if any
  */
 
 const logger = makeLogger('catalog-service')
