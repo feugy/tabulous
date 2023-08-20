@@ -27,7 +27,7 @@ buildLocaleComparator('player.username').subscribe(
 /**
  * Fetches friend list and subscribes to friendship updates.
  * Returns immediately an empty observable, which will update when the list will be available, or updated.
- * @returns {import('rxjs').Observable<Friendship[]>} an observable containing up-to-date list of friendships and requests.
+ * @returns an observable containing up-to-date list of friendships and requests.
  */
 export function listFriends() {
   if (listFriendsSubsciprion) {

@@ -55,7 +55,7 @@ describe('searchPlayers()', () => {
     expect(runQueryMock).toHaveBeenCalledWith(graphQL.searchPlayers, {
       search: username
     })
-    expect(runQueryMock).toHaveBeenCalledTimes(1)
+    expect(runQueryMock).toHaveBeenCalledOnce()
   })
 })
 
@@ -68,7 +68,7 @@ describe('logIn()', () => {
       id,
       password
     })
-    expect(runMutationMock).toHaveBeenCalledTimes(1)
+    expect(runMutationMock).toHaveBeenCalledOnce()
     expect(goto).not.toHaveBeenCalled()
   })
 
@@ -80,7 +80,7 @@ describe('logIn()', () => {
       id,
       password
     })
-    expect(runMutationMock).toHaveBeenCalledTimes(1)
+    expect(runMutationMock).toHaveBeenCalledOnce()
     expect(goto).not.toHaveBeenCalled()
   })
 })
@@ -89,7 +89,7 @@ describe('logOut()', () => {
   it('navigates to logout endpoint', async () => {
     await logOut()
     expect(goto).toHaveBeenCalledWith(`/logout`)
-    expect(goto).toHaveBeenCalledTimes(1)
+    expect(goto).toHaveBeenCalledOnce()
   })
 })
 
@@ -99,14 +99,14 @@ describe('recoverSession()', () => {
     runQueryMock.mockRejectedValueOnce(new Error('forbidden'))
     expect(await recoverSession(fetch, bearer)).toBeNull()
     expect(runQueryMock).toHaveBeenCalledWith(graphQL.getCurrentPlayer)
-    expect(runQueryMock).toHaveBeenCalledTimes(1)
+    expect(runQueryMock).toHaveBeenCalledOnce()
     expect(initGraphQlClient).toHaveBeenCalledWith({
       graphQlUrl,
       fetch,
       bearer,
       subscriptionSupport: false
     })
-    expect(initGraphQlClient).toHaveBeenCalledTimes(1)
+    expect(initGraphQlClient).toHaveBeenCalledOnce()
     expect(goto).not.toHaveBeenCalled()
   })
 
@@ -116,14 +116,14 @@ describe('recoverSession()', () => {
     runQueryMock.mockResolvedValueOnce(session)
     expect(await recoverSession(fetch, bearer)).toEqual(session)
     expect(runQueryMock).toHaveBeenCalledWith(graphQL.getCurrentPlayer)
-    expect(runQueryMock).toHaveBeenCalledTimes(1)
+    expect(runQueryMock).toHaveBeenCalledOnce()
     expect(initGraphQlClient).toHaveBeenCalledWith({
       graphQlUrl,
       fetch,
       bearer,
       subscriptionSupport: false
     })
-    expect(initGraphQlClient).toHaveBeenCalledTimes(1)
+    expect(initGraphQlClient).toHaveBeenCalledOnce()
     expect(goto).not.toHaveBeenCalled()
   })
 })
@@ -133,7 +133,7 @@ describe('acceptTerms()', () => {
     runMutationMock.mockResolvedValueOnce(player)
     expect(await acceptTerms()).toEqual(player)
     expect(runMutationMock).toHaveBeenCalledWith(graphQL.acceptTerms)
-    expect(runMutationMock).toHaveBeenCalledTimes(1)
+    expect(runMutationMock).toHaveBeenCalledOnce()
   })
 })
 
@@ -147,6 +147,6 @@ describe('updateCurrentPlayer()', () => {
       username,
       avatar
     })
-    expect(runMutationMock).toHaveBeenCalledTimes(1)
+    expect(runMutationMock).toHaveBeenCalledOnce()
   })
 })

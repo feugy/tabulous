@@ -56,11 +56,14 @@ declare module '@src/graphql' {
       > & { players?: LightPlayer[] })
   const createGame: TypedDocumentNode<{ createGame: LightGame }, CreateGameArgs>
   const deleteGame: TypedDocumentNode<
-    { deleteGame: Pick<Game, 'id'> },
+    { deleteGame: Pick<Game, 'id'> | null },
     DeleteGameArgs
   >
-  const invite: TypedDocumentNode<{ invite: Pick<Game, 'id'> }, InviteArgs>
-  const kick: TypedDocumentNode<{ kick: Pick<Game, 'id'> }, KickArgs>
+  const invite: TypedDocumentNode<
+    { invite: Pick<Game, 'id'> | null },
+    InviteArgs
+  >
+  const kick: TypedDocumentNode<{ kick: Pick<Game, 'id'> | null }, KickArgs>
   const listGames: TypedDocumentNode<{ listGames: LightGame[] }>
   const receiveGameListUpdates: TypedDocumentNode<{
     receiveGameListUpdates: LightGame[]
@@ -73,13 +76,13 @@ declare module '@src/graphql' {
   >
   const promoteGame: TypedDocumentNode<
     {
-      promoteGame: GameOrGameParameters
+      promoteGame: GameOrGameParameters | null
     },
     PromoteGameArgs
   >
   const joinGame: TypedDocumentNode<
     {
-      joinGame: GameOrGameParameters
+      joinGame: GameOrGameParameters | null
     },
     JoinGameArgs
   >
@@ -91,7 +94,7 @@ declare module '@src/graphql' {
   >
   const saveGame: TypedDocumentNode<
     {
-      saveGame: Pick<Game, 'id'>
+      saveGame: Pick<Game, 'id'> | null
     },
     SaveGameArgs
   >

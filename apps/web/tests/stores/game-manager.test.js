@@ -471,6 +471,23 @@ describe('given no engine', async () => {
         expect(gamePlayerByIdReceived).toHaveBeenLastCalledWith(new Map())
       })
     })
+
+    it('returns null when game does not exist', async () => {
+      runMutation.mockResolvedValueOnce(null)
+      expect(
+        await joinGame({ gameId: lobby.id, player, turnCredentials })
+      ).toBeNull()
+      expect(runMutation).toHaveBeenCalledWith(graphQL.joinGame, {
+        gameId: lobby.id,
+        parameters: undefined
+      })
+      expect(runMutation).toHaveBeenCalledOnce()
+      expect(runSubscription).not.toHaveBeenCalled()
+      expect(loadThread).not.toHaveBeenCalled()
+      expect(connectWith).not.toHaveBeenCalled()
+      expect(openChannels).not.toHaveBeenCalled()
+      expect(toastReceived).not.toHaveBeenCalled()
+    })
   })
 })
 

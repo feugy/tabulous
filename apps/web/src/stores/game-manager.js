@@ -159,7 +159,7 @@ export async function listGames() {
 /**
  * Subscribes to current game list updates, to keep the list fresh.
  * @param {LightGame[]} [currentGames] - current game list.
- * @returns {Observable<Game[]>} an observable containing up-to-date current games.
+ * @returns an observable containing up-to-date current games.
  */
 export function receiveGameListUpdates(currentGames) {
   if (listGamesSubscription) {
@@ -182,7 +182,7 @@ export function receiveGameListUpdates(currentGames) {
  * Creates a new game of a given kind on server, registering current player in it,
  * and receiving its id.
  * @param {string} [kind] - created game kind (omit to create a lobby).
- * @returns {Promise<Game>} the created game data.
+ * @returns the created game data.
  */
 export async function createGame(kind) {
   const game = await runMutation(graphQL.createGame, { kind })
@@ -298,10 +298,14 @@ export async function joinGame({
     unsubscribeCurrentGame()
   }
 
-  let game = await runMutation(graphQL.joinGame, {
+  const game = await runMutation(graphQL.joinGame, {
     gameId,
     parameters: parameters ? JSON.stringify(parameters) : undefined
   })
+  if (!game) {
+    logger.info({ gameId }, `trying to join unexisting game ${gameId}`)
+    return null
+  }
   logger.info(
     { game },
     `entering ${isLobby(game) ? 'lobby' : 'game'} ${gameId}`
