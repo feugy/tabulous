@@ -2,33 +2,34 @@
 
 ## Refactor
 
-- automerge.js
+- try out automerge.js (can it share increments? can it support replay?)
 - replace windicss with a successor (tailwind or UnoCSS)
 - add tests for web/src/utils/peer-connection
 - group candidate target per kind for performance
+- all manager managing a collection of behaviors should check their capabilities
+- stackable/anchorable should check the capabilities of stacked/anchored meshes
 - create Animation objects as part of runAnimation() (constant frameRate of 60)
-- all manager managing a collection of behaviors should check their capabilities + stackable/anchorable
-- game-manager is just a gigantic mess!!! no single responsibility, global state all over the place
-- stackable duration override's movable duration on
+- game-manager might be teardown in several simpler parts
+- stackable duration override's movable duration
 
 ## UI
 
+- bug: back button to navigate to a deleted game
 - ability to interact with main meshes throught the opened hand (how do we select multiple in hand?)
+- anchorable: flip/unflip on snap
+- hand count on peer pointers/player tab?
 - replay
 - score card (Mah-jong, Belote)
 - command to reset some mesh state and restart a game (Mah-jong, Belote)
-- hand count on peer pointers/player tab?
-- check headings ordering
-- anchorable: flip/unflip on snap
+- "box" space for unusued/undesired meshes
 - hide/distinguish non-connected participants?
 - distribute multiple meshes to players' hand
-- hand support for quantifiable behavior
-- put/draw under
-- "box" space for unusued/undesired meshes
-- command to "switch place" around the table, for games like Belote
+- shift + drop/drag: put/pop below the stack
+- molette + (shift) + drag: decrement/pop multiple
+- hand support for quantifiable
 - always go fullscreen when entering game?
-- molette + drag: decrement/pop multiple
-- shift + drop: put below
+- command to "switch place" around the table, for games like Belote
+- check headings ordering
 
 ## Server
 

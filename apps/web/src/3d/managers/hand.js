@@ -673,7 +673,7 @@ function transformOnPick(state) {
     state.flippable.isFlipped = false
   }
   const { angleOnPick } = drawable
-  if (state.rotable && angleOnPick && state.rotable.angle !== angleOnPick) {
+  if (state.rotable && state.rotable.angle !== angleOnPick) {
     logger.debug({ state, angleOnPick }, `rotates ${state.id}`)
     state.rotable.angle = angleOnPick
   }

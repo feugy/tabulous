@@ -11,7 +11,7 @@ Meet your friends online to play your favorite games!
 
 Once authenticated, you'll have access to the catalog (Chess, Klondike, Draughts...), and you can start new games.
 
-The game 3D engine lets you handle cards, die, pawns, tokens, boards... as you would do in real life.
+The game 3D engine lets you handle cards, dice, pawns, tokens, boards... as you would do in real life.
 
 Each game comes with a rule book, but the rules are not enforced, and you are free to apply yours.
 
@@ -23,7 +23,7 @@ Tabulous is built in Javascript with Sveltekit, Babylon.js, Rx.js, Fastify and R
 
 ## How to use
 
-You need [git], [Node.js 16][node], [PNPM] and [Redis]
+You need [git], [Node.js 20][node], [PNPM] and [Redis]
 
 1. Checkout the code:
 

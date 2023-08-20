@@ -1077,14 +1077,17 @@ describe('HandManager', () => {
       })
 
       it('rotates rotated mesh while dragging into hand', async () => {
-        const [, , mesh] = cards
+        const [, , mesh, mesh2] = cards
         const angle = Math.PI
         getDrawBehavior(mesh).state.angleOnPick = angle
         await mesh.metadata.rotate?.(Math.PI * -0.5)
+        await mesh2.metadata.rotate?.()
         actionRecorded.mockReset()
         expectRotated(mesh, Math.PI * -0.5)
-        let movedPosition = new Vector3(1, 0, -19)
-        mesh.setAbsolutePosition(movedPosition)
+        expectRotated(mesh2, Math.PI * 0.5)
+        selectionManager.select([mesh, mesh2])
+        mesh.setAbsolutePosition(new Vector3(1, 0, -19))
+        mesh2.setAbsolutePosition(new Vector3(1, 0, -19))
         inputManager.onDragObservable.notifyObservers({
           type: 'dragStart',
           mesh,
@@ -1101,19 +1104,32 @@ describe('HandManager', () => {
           pointers: 1,
           event: /** @type {PointerEvent} */ ({ x: 289.7, y: 175 })
         })
-        const newMesh = getMeshById(handScene, mesh.id)
         await waitForLayout()
+        const newMesh = getMeshById(handScene, mesh.id)
+        expect(newMesh?.id).toBeDefined()
+        const newMesh2 = getMeshById(handScene, mesh2.id)
+        expect(newMesh2?.id).toBeDefined()
         expectRotated(newMesh, angle)
+        expectRotated(newMesh2, 0)
         expect(actionRecorded).toHaveBeenCalledWith(
           {
-            meshId: newMesh.id,
+            meshId: mesh.id,
             fn: 'draw',
             args: [expect.any(Object)],
             fromHand: false
           },
           expect.anything()
         )
-        expect(actionRecorded).toHaveBeenCalledOnce()
+        expect(actionRecorded).toHaveBeenCalledWith(
+          {
+            meshId: mesh2.id,
+            fn: 'draw',
+            args: [expect.any(Object)],
+            fromHand: false
+          },
+          expect.anything()
+        )
+        expect(actionRecorded).toHaveBeenCalledTimes(2)
       })
 
       it('ignores drag operations from without mesh', async () => {
