@@ -16,9 +16,9 @@ import { selectionManager } from './selection'
 const logger = makeLogger('input')
 
 const PinchMovementThreshold = 10
-const PinchMinimumDistance = 200
+const PinchMinimumDistance = 100
 const PinchAttemptThreshold = 3
-const DragMinimumDistance = 0.5
+const DragMinimumDistance = 5
 
 /**
  * @internal
@@ -105,6 +105,8 @@ const DragMinimumDistance = 0.5
  * @property {number} button - the pointer button used
  * @property {PointerEvent} event - the original event object.
  * @property {number} timestamp - input timestamp in milliseconds.
+ * @property {boolean} long - whether this pointer is a long press.
+ * @property {ReturnType<typeof window.setTimeout>} deferLong - timeout id for long press.
  */
 
 class InputManager {
@@ -161,8 +163,6 @@ class InputManager {
     // different fingers will have different ids
     /** @type {Map<number, StoredPointer>} */
     const pointers = new Map()
-    /** @type {Map<number, { long: boolean, deferLong: number }>} */
-    const pointerTimes = new Map()
     const pinch = {
       /** @type {?StoredPointer} */
       first: null,
@@ -177,8 +177,9 @@ class InputManager {
     /** @type {Map<number, Mesh>} */
     let hoveredByPointerId = new Map()
     let lastTap = 0
-    let tapPointers = 1
     let lastMoveEvent = /** @type {PointerEvent} */ ({})
+    /** @type {Set<number>} */
+    let pressedPointerIds = new Set()
     this.enabled = enabled
     this.longTapDelay = longTapDelay
     this.dispose?.()
@@ -244,9 +245,7 @@ class InputManager {
           pointers: pointers.size,
           timestamp: Date.now()
         }
-        clearLong()
-        pointerTimes.clear()
-        pointers.clear()
+        clearLongsAnPointers()
         logger.info(
           data,
           `end dragging ${meshId ?? ''} with button ${dragOrigin.button}`
@@ -264,12 +263,10 @@ class InputManager {
           type: 'pinchStop',
           event,
           pinchDelta: 0,
-          pointers: 2,
+          pointers: pointers.size,
           timestamp: Date.now()
         }
-        clearLong()
-        pointerTimes.clear()
-        pointers.clear()
+        clearLongsAnPointers()
         logger.info(data, `stop pinching`)
         this.onPinchObservable.notifyObservers(data)
       }
@@ -280,10 +277,16 @@ class InputManager {
       pinch.confirmed = false
     }
 
-    function clearLong() {
-      for (const [, { deferLong }] of pointerTimes) {
+    function clearLongs() {
+      for (const { deferLong } of pointers.values()) {
         clearTimeout(deferLong)
       }
+    }
+
+    function clearLongsAnPointers() {
+      clearLongs()
+      pointers.clear()
+      pressedPointerIds.clear()
     }
 
     /**
@@ -310,17 +313,16 @@ class InputManager {
         `type: pointerdown x: ${event.x} y: ${event.y} id: ${event.pointerId}`
       )
       const { button, mesh } = computeMetas(event)
+      pressedPointerIds.add(event.pointerId)
       pointers.set(event.pointerId, {
         mesh,
         button: /** @type {number} */ (button),
         event,
-        timestamp: Date.now()
-      })
-      pointerTimes.set(event.pointerId, {
+        timestamp: Date.now(),
         long: false,
-        deferLong: /** @type {typeof window.setTimeout} */ (setTimeout)(() => {
-          // @ts-expect-error: pointerTimes does contain event.pointerId
-          pointerTimes.get(event.pointerId).long = true
+        deferLong: setTimeout(() => {
+          // @ts-expect-error: pointerId is present in pointers.
+          pointers.get(event.pointerId).long = true
           /** @type {LongData} */
           const data = {
             type: 'longPointer',
@@ -339,6 +341,7 @@ class InputManager {
         pinch.second = second
         pinch.distance = distance(first.event, second.event)
         pinch.attempts = 0
+        logger.debug({ pinch }, 'potential pinch operation')
       } else if (pointers.size > 2) {
         this.stopPinch(event)
       }
@@ -351,7 +354,7 @@ class InputManager {
       if (pointer) {
         this.onPointerObservable.notifyObservers(pointer)
       }
-      clearLong()
+      clearLongs()
       const { mesh } = computeMetas(event)
       if (mesh !== hoveredByPointerId.get(event.pointerId)) {
         this.stopHover(event)
@@ -370,6 +373,7 @@ class InputManager {
         }
         pinch.distance = distance(pinch.first.event, pinch.second.event)
         const pinchDelta = oldDistance - pinch.distance
+        logger.debug({ pinch, pinchDelta }, 'pinch attempt')
 
         if (!pinch.confirmed) {
           pinch.attempts++
@@ -384,7 +388,7 @@ class InputManager {
               pinchDelta,
               event,
               pointers: 2,
-              long: pointerTimes.get(event.pointerId)?.long,
+              long: pointers.get(event.pointerId)?.long,
               timestamp: pointers.get(event.pointerId)?.timestamp ?? 0
             }
             logger.info(data, `start ${data.long ? 'long ' : ' '}pinching`)
@@ -401,7 +405,7 @@ class InputManager {
             type: 'pinch',
             pinchDelta,
             event,
-            pointers: 2,
+            pointers: pointers.size,
             timestamp: Date.now()
           }
           logger.debug(data, `pinching by ${pinchDelta}`)
@@ -416,7 +420,7 @@ class InputManager {
               type: 'dragStart',
               ...dragOrigin,
               pointers: pointers.size,
-              long: pointerTimes.get(dragOrigin.event.pointerId)?.long
+              long: pointers.get(dragOrigin.event.pointerId)?.long
             }
             logger.info(
               data,
@@ -456,43 +460,52 @@ class InputManager {
         { event },
         `type: pointerup x: ${event.x} y: ${event.y} id: ${event.pointerId}`
       )
-      const { button, mesh } = computeMetas(event)
       const { pointerId } = event
       if (dragOrigin) {
         this.stopDrag(event)
       } else if (pinch.confirmed) {
         this.stopPinch(event)
-      } else if (pointers.size > 1) {
+      } else if (pressedPointerIds.size > 1) {
         // when tapping with multiple pointers, ignore all but the last
-        tapPointers = pointers.size
-        clearTimeout(pointerTimes.get(pointerId)?.deferLong)
-        pointerTimes.delete(pointerId)
-        pointers.delete(pointerId)
+        pressedPointerIds.delete(pointerId)
+        clearTimeout(pointers.get(pointerId)?.deferLong)
       } else if (pointers.has(pointerId)) {
+        const storedPointer = /** @type {StoredPointer} */ (
+          pointers.get(pointerId)
+        )
         /** @type {TapData} */
         const data = {
           type:
             Date.now() - lastTap < Scene.DoubleClickDelay ? 'doubletap' : 'tap',
-          mesh,
-          button: /** @type {number} */ (button),
-          event,
-          pointers: tapPointers,
-          long: pointerTimes.get(pointerId)?.long ?? false,
-          fromHand: mesh?.getScene() === handScene,
-          timestamp: pointers.get(pointerId)?.timestamp ?? 0
+          pointers: pointers.size,
+          ...storedPointer,
+          fromHand: storedPointer.mesh?.getScene() === handScene,
+          event
         }
-        clearLong()
-        pointerTimes.clear()
-        pointers.clear()
+        // for multiple pointers, potentially use long, timestamp and mesh from others
+        for (const [oterhPointerId, { mesh, long, timestamp }] of pointers) {
+          if (oterhPointerId !== pointerId) {
+            if (long && !data.long) {
+              data.long = true
+            }
+            if (timestamp < data.timestamp) {
+              data.timestamp = timestamp
+            }
+            if (mesh && !data.mesh) {
+              data.mesh = mesh
+              data.fromHand = mesh.getScene() === handScene
+            }
+          }
+        }
+        clearLongsAnPointers()
 
         logger.info(
           data,
           `${data.long ? 'Long ' : ' '}${data.type} on ${
-            mesh?.id ?? 'table'
-          } with button ${button}`
+            data.mesh?.id ?? 'table'
+          } with button ${data.button}`
         )
         this.onTapObservable.notifyObservers(data)
-        tapPointers = 1
         lastTap = Date.now()
       }
     }

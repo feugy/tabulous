@@ -287,10 +287,22 @@ describe('InputManager', () => {
     it.each([
       { title: '', pointerA: { x: 300, y: 900 }, pointerB: { x: 350, y: 950 } },
       {
-        title: ' on mesh',
-        pointerA: { x: 1024, y: 512 },
-        pointerB: { x: 905, y: 573 },
+        title: ' on multiple meshes',
+        pointerA: { x: 1024, y: 512 }, // box 2
+        pointerB: { x: 905, y: 573 }, // box 3
         meshId: 'box3'
+      },
+      {
+        title: ' on mesh and table',
+        pointerA: { x: 1024, y: 512 }, // box 2
+        pointerB: { x: 1100, y: 150 }, // table
+        meshId: 'box2'
+      },
+      {
+        title: ' on same mesh and table',
+        pointerA: { x: 1048, y: 525 }, // box 1
+        pointerB: { x: 1050, y: 520 }, // box 1
+        meshId: 'box1'
       }
     ])(
       'handles multiple pointers taps$title',
@@ -388,9 +400,21 @@ describe('InputManager', () => {
       },
       {
         title: ' on mesh',
-        pointerA: { x: 1152, y: 344 },
-        pointerB: { x: 905, y: 573 },
+        pointerA: { x: 1152, y: 344 }, // box 2
+        pointerB: { x: 905, y: 573 }, // box 3
         meshId: 'box3'
+      },
+      {
+        title: ' on mesh and table',
+        pointerA: { x: 1024, y: 512 }, // box 2
+        pointerB: { x: 1100, y: 150 }, // table
+        meshId: 'box2'
+      },
+      {
+        title: ' on same mesh and table',
+        pointerA: { x: 1048, y: 525 }, // box 1
+        pointerB: { x: 1050, y: 520 }, // box 1
+        meshId: 'box1'
       }
     ])(
       'handles multiple pointers long tap$title',
@@ -737,7 +761,7 @@ describe('InputManager', () => {
       {
         title: ' on mesh',
         pointerA: { x: 1152, y: 344 },
-        pointerB: { x: 1252, y: 244 },
+        pointerB: { x: 1100, y: 344 },
         meshId: 'box4'
       }
     ])(
